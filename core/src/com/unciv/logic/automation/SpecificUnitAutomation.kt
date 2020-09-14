@@ -1,8 +1,8 @@
 ﻿package com.unciv.logic.automation
 
 import com.unciv.logic.battle.MapUnitCombatant
+import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.CivilizationInfo
-import com.unciv.logic.civilization.GreatPersonManager
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.map.MapUnit
@@ -10,8 +10,6 @@ import com.unciv.logic.map.TileInfo
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.tile.TileResource
 import com.unciv.models.stats.Stats
-import com.unciv.models.translations.equalsPlaceholderText
-import com.unciv.models.translations.getPlaceholderParameters
 import com.unciv.ui.worldscreen.unit.UnitActions
 
 object SpecificUnitAutomation {
@@ -204,7 +202,16 @@ object SpecificUnitAutomation {
             for (bonus in it.cityStats.statPercentBonusList.values) stats.add(bonus)
             stats.toHashMap()[relatedStat]!!
         }
+
+
         for (city in citiesByStatBoost) {
+            val applicableTiles = city.getWorkableTiles().filter {
+                it.isLand && it.resource == null && !it.isCityCenter()
+                        && (unit.currentTile == it || unit.movement.canMoveTo(it))
+                        && !it.containsGreatImprovement()
+            }
+            if (applicableTiles.none()) continue
+
             val pathToCity = unit.movement.getShortestPath(city.getCenterTile())
 
             if (pathToCity.isEmpty()) continue
@@ -214,14 +221,9 @@ object SpecificUnitAutomation {
             }
 
             // if we got here, we're pretty close, start looking!
-            val chosenTile = city.getTiles()
-                    .filter {
-                        it.isLand && it.resource == null && !it.isCityCenter()
-                                && (unit.currentTile == it || unit.movement.canMoveTo(it))
-                                && !it.containsGreatImprovement()
-                    }.sortedByDescending { Automation.rankTile(it, unit.civInfo) }
-                    .firstOrNull { unit.movement.canReach(it) } // to another city
-            if (chosenTile == null) continue
+            val chosenTile = applicableTiles.sortedByDescending { Automation.rankTile(it, unit.civInfo) }
+                    .firstOrNull { unit.movement.canReach(it) }
+            if (chosenTile == null) continue // to another city
 
             unit.movement.headTowards(chosenTile)
             if (unit.currentTile == chosenTile)

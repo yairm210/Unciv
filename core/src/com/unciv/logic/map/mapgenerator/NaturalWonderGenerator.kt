@@ -82,7 +82,7 @@ class NaturalWonderGenerator(val ruleset: Ruleset){
                 && wonder.occursOn!!.contains(it.getLastTerrain().name)
                 && it.neighbors.none { neighbor -> neighbor.getBaseTerrain().name == Constants.grassland }
                 && it.neighbors.count{ neighbor -> neighbor.getBaseTerrain().name == Constants.mountain } <= 2
-                && it.neighbors.count{ neighbor -> neighbor.getBaseTerrain().name == Constants.mountain || neighbor.getBaseTerrain().name == Constants.hill } <= 4
+                && it.neighbors.count{ neighbor -> neighbor.getBaseTerrain().name == Constants.mountain || neighbor.isHill() } <= 4
         }
 
         trySpawnOnSuitableLocation(suitableLocations, wonder)
@@ -100,7 +100,7 @@ class NaturalWonderGenerator(val ruleset: Ruleset){
                 && it.neighbors.none { neighbor -> neighbor.getBaseTerrain().name == Constants.desert }
                 && it.neighbors.none { neighbor -> neighbor.getBaseTerrain().name == Constants.mountain }
                 && it.neighbors.none { neighbor -> neighbor.getLastTerrain().name == Constants.marsh }
-                && it.neighbors.count{ neighbor -> neighbor.getBaseTerrain().name == Constants.hill } <= 2
+                && it.neighbors.count{ neighbor -> neighbor.isHill() } <= 2
         }
 
         trySpawnOnSuitableLocation(suitableLocations, wonder)
@@ -114,7 +114,7 @@ class NaturalWonderGenerator(val ruleset: Ruleset){
         val wonder = ruleset.terrains[Constants.grandMesa]!!
         val suitableLocations = tileMap.values.filter { it.resource == null && it.improvement == null
                 && wonder.occursOn!!.contains(it.getLastTerrain().name)
-                && it.neighbors.count{ neighbor -> neighbor.getBaseTerrain().name == Constants.hill } >= 2
+                && it.neighbors.count{ neighbor -> neighbor.isHill() } >= 2
                 && it.neighbors.none { neighbor -> neighbor.getBaseTerrain().name == Constants.grassland }
                 && it.neighbors.count { neighbor -> neighbor.getBaseTerrain().name == Constants.mountain } <= 2
         }
@@ -224,7 +224,7 @@ class NaturalWonderGenerator(val ruleset: Ruleset){
                 && wonder.occursOn!!.contains(it.getLastTerrain().name)
                 && it.neighbors.count { neighbor -> neighbor.getBaseTerrain().name == Constants.mountain } <= 4
                 && it.neighbors.count { neighbor -> neighbor.getBaseTerrain().name == Constants.mountain ||
-                neighbor.getBaseTerrain().name == Constants.hill
+                neighbor.isHill()
         } >= 3
                 && it.neighbors.count { neighbor -> neighbor.getBaseTerrain().name == Constants.desert } <= 3
                 && it.neighbors.count { neighbor -> neighbor.getBaseTerrain().name == Constants.tundra } <= 3
@@ -240,7 +240,7 @@ class NaturalWonderGenerator(val ruleset: Ruleset){
         val wonder = ruleset.terrains[Constants.cerroDePotosi]!!
         val suitableLocations = tileMap.values.filter { it.resource == null && it.improvement == null
                 && wonder.occursOn!!.contains(it.getLastTerrain().name)
-                && it.neighbors.any { neighbor -> neighbor.getBaseTerrain().name == Constants.hill }
+                && it.neighbors.any { neighbor -> neighbor.isHill() }
         }
 
         trySpawnOnSuitableLocation(suitableLocations, wonder)

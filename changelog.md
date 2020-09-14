@@ -1,3 +1,69 @@
+## 3.10.9
+
+Resolved #3115 - AI no longer congregates great people in cities where it can't improve tiles
+
+Fixed AI unit upgrading - can now 'skip' over intermediate units, the way the "promote unit" action works. #3115
+
+Parameterized some uniques, fixes some minor bugs - By HadeanLake
+
+UI update - By lishaoxia1985
+
+Experimental - Can now move multiple military units to nearby tiles at the same turn in Desktop, via shift-click
+
+Translation updates
+
+## 3.10.8
+
+Resolved #3048 - Fixed ANRs on 'Resume' on huge save files
+
+Mod management screen improvements
+
+Resolved #3059 - better city expansion rules
+
+Resolved #3081 - fixed bug in air interception
+
+Show that air units can move to tiles within attack range - By bringert
+
+Fixed #3066, crash in chooseMilitaryUnit and some great people actions - By HadeanLake
+
+Translation updates
+
+## 3.10.7
+
+Mods can handle situations where there is no military unit that is available for construction
+
+Getting the mod list for download now works from Android as well
+
+Resolved #3076 - automation now happens at the end of turn rather than the beginning
+
+UI fixes for rounded edge boxes - By lishaoxia1985
+
+Can construct Farms near freshwater in all terrains - By HadeanLake
+
+Translation updates
+
+## 3.10.6
+
+Options button now appears in main menu
+
+Added "automated workers don't replace improvements" setting (#3050)
+
+Separated base ruleset mods in new game screen - cannot activate multiple base ruleset mods
+
+Resolved #2886 - new Plains+Forest tiles by The Bucketeer that don't hide the rivers behind them :)
+
+Resolved #3053 - improvements can be built on neutral tiles
+
+Resolved #3065 - Ottomans' unique is now according to Vanilla
+
+By HadeanLake:
+
+- Added Aztecs nation
+- A Few UI fixes 
+- New uniques and stuff for mods 
+
+UI fixes - By lishaoxia1985
+
 ## 3.10.5
 
 Added Mod Management screen!

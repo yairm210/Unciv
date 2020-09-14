@@ -115,11 +115,11 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo, centerOnTech: Tec
             techTable.add(era.toLabel().addBorder(2f, color)).fill().colspan(columnSpan)
         }
 
-        for (i in 0..9) {
+        for (rowIndex in 0..9) {
             techTable.row().pad(5f).padRight(40f)
 
-            for (j in techMatrix.indices) {
-                val tech = techMatrix[j][i]
+            for (columnIndex in techMatrix.indices) {
+                val tech = techMatrix[columnIndex][rowIndex]
                 if (tech == null)
                     techTable.add() // empty cell
 
@@ -128,7 +128,7 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo, centerOnTech: Tec
 
                     techNameToButton[tech.name] = techButton
                     techButton.onClick { selectTechnology(tech, false) }
-                    techTable.add(techButton)
+                    techTable.add(techButton).fillX()
                 }
             }
         }
@@ -157,7 +157,7 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo, centerOnTech: Tec
             }
 
             if (!civTech.isResearched(techName) || techName == Constants.futureTech)
-                text += "\r\n" + turnsToTech[techName] + " ${Fonts.turn}".tr()
+                text += "\r\n" + turnsToTech[techName] + "${Fonts.turn}".tr()
 
             techButton.text.setText(text)
         }

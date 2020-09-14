@@ -161,13 +161,20 @@ class CityStats {
         return stats
     }
 
-    fun getGrowthBonusFromPolicies(): Float {
+    fun getGrowthBonusFromPoliciesAndWonders(): Float {
         var bonus = 0f
+
+        // This is to be deprecated and converted to "+[]% growth in all cities" and "+[]% growth in capital" - keeping it here to that mods with this can still work for now
         if (cityInfo.civInfo.hasUnique("+10% food growth in capital") && cityInfo.isCapital())
-            bonus += 0.1f
+            bonus += 10f
         if (cityInfo.civInfo.hasUnique("+15% growth in all cities"))
-            bonus += 0.15f
-        return bonus
+            bonus += 15f
+
+        for(unique in cityInfo.civInfo.getMatchingUniques("+[]% growth in all cities"))
+            bonus += unique.params[0].toFloat()
+        if (cityInfo.isCapital()) for(unique in cityInfo.civInfo.getMatchingUniques("+[]% growth in capital"))
+            bonus += unique.params[0].toFloat()
+        return bonus/100
     }
 
     // needs to be a separate function because we need to know the global happiness state
@@ -357,6 +364,7 @@ class CityStats {
         return construction.name == filter
                 || (filter == "land units" && construction is BaseUnit && construction.unitType.isLandUnit())
                 || (filter == "naval units" && construction is BaseUnit && construction.unitType.isWaterUnit())
+                || (filter == "ranged units" && construction is BaseUnit && construction.unitType == UnitType.Ranged)
                 || (filter == "mounted units" && construction is BaseUnit && construction.unitType == UnitType.Mounted)
                 || (filter == "military units" && construction is BaseUnit && !construction.unitType.isCivilian())
                 || (filter == "melee units" && construction is BaseUnit && construction.unitType.isMelee())
@@ -490,7 +498,7 @@ class CityStats {
 
         // Since growth bonuses are special, (applied afterwards) they will be displayed separately in the user interface as well.
         if(totalFood>0) {
-            val foodFromGrowthBonuses = getGrowthBonusFromPolicies() * totalFood
+            val foodFromGrowthBonuses = getGrowthBonusFromPoliciesAndWonders() * totalFood
             newFinalStatList["Policies"]!!.food += foodFromGrowthBonuses
             totalFood = newFinalStatList.values.map { it.food }.sum() // recalculate again
         }

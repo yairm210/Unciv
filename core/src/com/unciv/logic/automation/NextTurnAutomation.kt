@@ -11,7 +11,6 @@ import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.logic.map.BFS
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.trade.*
-import com.unciv.models.ruleset.ModOptions
 import com.unciv.models.ruleset.ModOptionsConstants
 import com.unciv.models.ruleset.VictoryType
 import com.unciv.models.ruleset.tech.Technology
@@ -19,7 +18,7 @@ import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.translations.tr
 import kotlin.math.min
 
-object NextTurnAutomation{
+object NextTurnAutomation {
 
     /** Top-level AI turn tasklist */
     fun automateCivMoves(civInfo: CivilizationInfo) {
@@ -31,8 +30,8 @@ object NextTurnAutomation{
         if(civInfo.isMajorCiv()) {
             if(!civInfo.gameInfo.ruleSet.modOptions.uniques.contains(ModOptionsConstants.diplomaticRelationshipsCannotChange)) {
                 declareWar(civInfo)
-//            offerDeclarationOfFriendship(civInfo)
                 offerPeaceTreaty(civInfo)
+//            offerDeclarationOfFriendship(civInfo)
             }
             offerResearchAgreement(civInfo)
             exchangeLuxuries(civInfo)
@@ -473,7 +472,7 @@ object NextTurnAutomation{
 
             city.cityConstructions.chooseNextConstruction()
             if (city.health < city.getMaxHealth())
-                Automation.trainMilitaryUnit(city) // override previous decision if city is under attack
+                Automation.tryTrainMilitaryUnit(city) // override previous decision if city is under attack
         }
     }
 

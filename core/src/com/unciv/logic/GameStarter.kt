@@ -156,15 +156,16 @@ object GameStarter {
             fun placeNearStartingPosition(unitName: String) {
                 civ.placeUnitNearTile(startingLocation.position, unitName)
             }
-            placeNearStartingPosition(Constants.settler)
             val warriorEquivalent = getWarriorEquivalent(civ)
-            if(warriorEquivalent!=null) placeNearStartingPosition(warriorEquivalent)
-
-            if (!civ.isPlayerCivilization() && civ.isMajorCiv()) {
-                for (unit in gameInfo.getDifficulty().aiFreeUnits) {
-                    val unitToAdd = if (unit == "Warrior") warriorEquivalent else unit
-                    if (unitToAdd != null) placeNearStartingPosition(unitToAdd)
-                }
+            val startingUnits = when {
+                civ.isPlayerCivilization() -> gameInfo.getDifficulty().startingUnits
+                civ.isMajorCiv() -> gameInfo.getDifficulty().aiMajorCivStartingUnits
+                else -> gameInfo.getDifficulty().aiCityStateStartingUnits
+            }
+            
+            for (unit in startingUnits) {
+                val unitToAdd = if (unit == "Warrior") warriorEquivalent else unit
+                if (unitToAdd != null) placeNearStartingPosition(unitToAdd)
             }
         }
     }
@@ -213,9 +214,9 @@ object GameStarter {
                     for (startBias in civ.nation.startBias) {
                         if (startBias.startsWith("Avoid ")) {
                             val tileToAvoid = startBias.removePrefix("Avoid [").removeSuffix("]")
-                            preferredTiles = preferredTiles.filter { it.baseTerrain != tileToAvoid && it.terrainFeature != tileToAvoid }
+                            preferredTiles = preferredTiles.filter { !it.fitsUniqueFilter(tileToAvoid) }
                         } else if (startBias == Constants.coast) preferredTiles = preferredTiles.filter { it.isCoastalTile() }
-                        else preferredTiles = preferredTiles.filter { it.baseTerrain == startBias || it.terrainFeature == startBias }
+                        else preferredTiles = preferredTiles.filter { it.fitsUniqueFilter(startBias) }
                     }
 
                     startingLocation = if (preferredTiles.isNotEmpty()) preferredTiles.random() else freeTiles.random()

@@ -1,6 +1,7 @@
 package com.unciv.ui.pickerscreens
 
 import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextArea
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
@@ -21,7 +22,7 @@ class ModManagementScreen: PickerScreen() {
         setDefaultCloseAction(MainMenuScreen())
         refresh()
 
-        topTable.add(modTable).pad(10f)
+        topTable.add(ScrollPane(modTable)).height(topTable.height).pad(10f)
 
         downloadTable.add(getDownloadButton()).row()
 
@@ -42,15 +43,15 @@ class ModManagementScreen: PickerScreen() {
                     repo.name = repo.name.replace('-', ' ')
                     val downloadButton = repo.name.toTextButton()
                     downloadButton.onClick {
-                        descriptionLabel.setText(repo.description + "\n" + "[${repo.stargazers_count}] Stars".tr())
+                        descriptionLabel.setText(repo.description + "\n" + "[${repo.stargazers_count}]✯".tr())
                         removeRightSideClickListeners()
                         rightSideButton.enable()
                         rightSideButton.setText("Download [${repo.name}]".tr())
                         rightSideButton.onClick {
-                            rightSideButton.setText("Downloading...")
+                            rightSideButton.setText("Downloading...".tr())
                             rightSideButton.disable()
                             downloadMod(repo.svn_url) {
-                                rightSideButton.setText("Done!".tr())
+                                rightSideButton.setText("Downloaded!".tr())
                             }
                         }
                     }
@@ -59,18 +60,18 @@ class ModManagementScreen: PickerScreen() {
             }
         }
 
-        topTable.add(downloadTable)
+        topTable.add(ScrollPane(downloadTable)).height(topTable.height)
     }
 
     fun getDownloadButton(): TextButton {
-        val downloadButton = "Download mod".toTextButton()
+        val downloadButton = "Download mod from URL".toTextButton()
         downloadButton.onClick {
             val popup = Popup(this)
-            val textArea = TextArea("https://github.com/yairm210/Unciv-IV-mod",skin)
+            val textArea = TextArea("https://github.com/...",skin)
             popup.add(textArea).width(stage.width/2).row()
             val downloadButton = "Download".toTextButton()
             downloadButton.onClick {
-                downloadButton.setText("Downloading...")
+                downloadButton.setText("Downloading...".tr())
                 downloadButton.disable()
                 downloadMod(textArea.text) { popup.close() }
             }
@@ -84,7 +85,7 @@ class ModManagementScreen: PickerScreen() {
     fun downloadMod(gitRepoUrl:String, postAction:()->Unit={}){
         thread { // to avoid ANRs - we've learnt our lesson from previous download-related actions
             try {
-                Github.downloadAndExtract(gitRepoUrl+"/archive/master.zip",
+                Github.downloadAndExtract("$gitRepoUrl/archive/master.zip",
                         Gdx.files.local("mods"))
                 Gdx.app.postRunnable {
                     ResponsePopup("Downloaded!", this)

@@ -7,6 +7,7 @@ import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
+import com.unciv.logic.GameInfo
 import com.unciv.logic.GameSaver
 import com.unciv.logic.GameStarter
 import com.unciv.logic.map.mapgenerator.MapGenerator
@@ -21,6 +22,7 @@ import com.unciv.ui.newgamescreen.NewGameScreen
 import com.unciv.ui.pickerscreens.ModManagementScreen
 import com.unciv.ui.saves.LoadGameScreen
 import com.unciv.ui.utils.*
+import com.unciv.ui.worldscreen.mainmenu.OptionsPopup
 import kotlin.concurrent.thread
 
 class MainMenuScreen: CameraStageBaseScreen() {
@@ -45,7 +47,7 @@ class MainMenuScreen: CameraStageBaseScreen() {
         // If we were in a mod, some of the resource images for the background map we're creating
         // will not exist unless we reset the ruleset and images
         ImageGetter.ruleset = RulesetCache.getBaseRuleset()
-        ImageGetter.refreshAtlas()
+        //ImageGetter.refreshAtlas()
 
         thread(name = "ShowMapBackground") {
             val newMap = MapGenerator(RulesetCache.getBaseRuleset())
@@ -76,7 +78,7 @@ class MainMenuScreen: CameraStageBaseScreen() {
         val autosaveGame = GameSaver.getSave(autosave, false)
         if (autosaveGame.exists()) {
             val resumeTable = getTableBlock("Resume","OtherIcons/Resume") { autoLoadGame() }
-            column1.add(resumeTable).padTop(0f).row()
+            column1.add(resumeTable).row()
         }
 
         val quickstartTable = getTableBlock("Quickstart", "OtherIcons/Quickstart") { quickstartNewGame() }
@@ -107,6 +109,11 @@ class MainMenuScreen: CameraStageBaseScreen() {
             { game.setScreen(ModManagementScreen()) }
             column2.add(modsTable).row()
         }
+
+
+        val optionsTable = getTableBlock("Options", "OtherIcons/Options")
+            { OptionsPopup(this).open() }
+        column2.add(optionsTable).row()
 
 
         val table=Table().apply { defaults().pad(10f) }
@@ -159,15 +166,28 @@ class MainMenuScreen: CameraStageBaseScreen() {
 
 
     private fun autoLoadGame() {
-        try {
-            game.loadGame(autosave)
-            dispose()
-        }
-        catch (outOfMemory:OutOfMemoryError){
-            ResponsePopup("Not enough memory on phone to load game!", this)
-        }
-        catch (ex: Exception) { // silent fail if we can't read the autosave
-            ResponsePopup("Cannot resume game!", this)
+        ResponsePopup("Loading...", this)
+        thread { // Load game from file to class on separate thread to avoid ANR...
+            val savedGame: GameInfo
+            try {
+                savedGame = GameSaver.loadGameByName(autosave)
+            } catch (outOfMemory: OutOfMemoryError) {
+                ResponsePopup("Not enough memory on phone to load game!", this)
+                return@thread
+            } catch (ex: Exception) { // silent fail if we can't read the autosave for any reason
+                ResponsePopup("Cannot resume game!", this)
+                return@thread
+            }
+
+            Gdx.app.postRunnable { /// ... and load it into the screen on main thread for GL context
+                try {
+                    game.loadGame(savedGame)
+                    dispose()
+                } catch (outOfMemory: OutOfMemoryError) {
+                    ResponsePopup("Not enough memory on phone to load game!", this)
+                }
+
+            }
         }
     }
 

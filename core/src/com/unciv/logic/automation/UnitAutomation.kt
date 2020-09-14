@@ -37,7 +37,7 @@ object UnitAutomation {
             return true
         }
 
-        // Nothing immediate, let's look further. Number increases exponentially with distance - at 10 this took a looong time
+        // Nothing immediate, lets look further. Number increases exponentially with distance - at 10 this took a looong time
         for (tile in unit.currentTile.getTilesInDistance(5))
             if (isGoodTileToExplore(unit, tile)) {
                 unit.movement.headTowards(tile)
@@ -73,11 +73,9 @@ object UnitAutomation {
     }
 
     internal fun tryUpgradeUnit(unit: MapUnit): Boolean {
-        val upgradesTo = unit.baseUnit().upgradesTo
-        if (upgradesTo == null) return false
-
-        val upgradedUnit = unit.civInfo.gameInfo.ruleSet.units.getValue(upgradesTo)
-        if (!upgradedUnit.isBuildable(unit.civInfo)) return false
+        if (unit.baseUnit.upgradesTo == null) return false
+        val upgradedUnit = unit.getUnitToUpgradeTo()
+        if (!upgradedUnit.isBuildable(unit.civInfo)) return false // for resource reasons, usually
 
         val upgradeAction = UnitActions.getUpgradeAction(unit)
         if (upgradeAction == null) return false

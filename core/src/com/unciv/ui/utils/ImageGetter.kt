@@ -3,6 +3,7 @@ package com.unciv.ui.utils
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.Texture
+import com.badlogic.gdx.graphics.g2d.NinePatch
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
 import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.scenes.scene2d.Actor
@@ -10,6 +11,7 @@ import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable
+import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
@@ -65,11 +67,11 @@ object ImageGetter {
         }
     }
 
-    fun refreshAtlas() {
+    /*fun refreshAtlas() {
         atlas.dispose() // To avoid OutOfMemory exceptions
         atlas = TextureAtlas("game.atlas")
         setTextureRegionDrawables()
-    }
+    }*/
 
     fun getWhiteDot() =  getImage(whiteDotLocation)
     fun getDot(dotColor: Color) = getWhiteDot().apply { color = dotColor}
@@ -87,10 +89,10 @@ object ImageGetter {
         else return textureRegionDrawables[whiteDotLocation]!!
     }
 
-    fun getRoundedEdgeTableBackground(tintColor: Color?=null): Drawable? {
-        val drawable = getDrawable("OtherIcons/civTableBackground")
-        drawable.minHeight=0f
-        drawable.minWidth=0f
+    fun getRoundedEdgeTableBackground(tintColor: Color?=null): NinePatchDrawable {
+        val drawable = NinePatchDrawable(NinePatch(getDrawable("OtherIcons/buttonBackground").region,25,25,0,0)).apply {
+            setPadding(5f,15f,5f,15f)
+        }
         if(tintColor==null) return drawable
         return drawable.tint(tintColor)
     }

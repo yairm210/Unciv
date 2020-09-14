@@ -54,7 +54,7 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(CameraStageBaseS
     }
 
     private fun Table.addCategory(str: String, showHideTable: Table) {
-        val width = cityScreen.stage.width / 4 - 2 * pad
+        val width = cityScreen.stage.width / 4
         val showHideTableWrapper = Table()
                 .add(showHideTable)
                 .minWidth(width)
@@ -115,7 +115,7 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(CameraStageBaseS
                                 }).open()
                     }
                     if ((cityScreen.city.hasSoldBuildingThisTurn && !cityScreen.city.civInfo.gameInfo.gameParameters.godMode) || cityScreen.city.isPuppet
-                            || !UncivGame.Current.worldScreen.isPlayersTurn)
+                            || !UncivGame.Current.worldScreen.isPlayersTurn || !cityScreen.canChangeState)
                         sellBuildingButton.disable()
                 }
                 wonderDetailsTable.addSeparator()

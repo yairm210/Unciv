@@ -33,7 +33,7 @@
 		"resourceBonusStats": {"production": 1},
 		"maintenance": 1,
 		"hurryCostModifier": 25,
-		"uniques": ["Must not be on plains"],
+		"uniques": ["Must not be on [Plains]"],
 		"requiredTech": "Calendar"
 	},
 	{
@@ -48,7 +48,7 @@
 		"name": "Library",
 		"hurryCostModifier": 25,
 		"maintenance": 1,
-		"uniques": ["+1 Science Per 2 Population"],
+		"uniques": ["[+1 Science] Per [2] Population in this city"],
 		"requiredTech": "Writing"
 	},
 	{
@@ -68,7 +68,7 @@
 		"uniqueTo": "China",
 		"hurryCostModifier": 25,
 		"gold": 2,
-		"uniques": ["+1 Science Per 2 Population"],
+		"uniques": ["[+1 Science] Per [2] Population in this city"],
 		"requiredTech": "Writing"
 	},
 	{
@@ -84,22 +84,32 @@
 		"food": 2,
 		"production": 1,
 		"hurryCostModifier": 25,
-		"uniques": ["Must be next to river"],
+		"uniques": ["Must be on [River]"],
 		"requiredTech": "The Wheel"
 	},
-	
-	/*
+	{
+		"name": "Floating Gardens",
+		"replaces": "Water Mill",
+		"uniqueTo": "Aztecs",
+		"cost": 75,
+		"food": 2,
+		"production": 1,
+		"uniques": ["[+2 Food] from [Lakes] tiles in this city", "Must be next to [Fresh water]"],
+		"hurryCostModifier": 25,
+		"maintenance": 1,
+		"percentStatBonus": {"food": 15},
+		"requiredTech": "The Wheel"     
+	},
 	{
 		"name": "Temple of Artemis",
 		"culture": 1,
 		"isWonder": true,
+		"cost": 185,
 		"greatPersonPoints": {"production": 1},
-		"uniques": ["+10% Growth in all Cities.","+15% Production towards Ranged Units."],
-		"requiredTech": "Archery"
-		"quote": "'It is not so much for its beauty that the forest makes a claim upon men's hearts, as for that subtle something, that quality of air, that emanation from old trees, that so wonderfully changes and renews a weary spirit.' - Robert Louis Stevenson"
+		"uniques": ["+[10]% growth in all cities", "+[15]% Production when constructing [ranged units]"],
+		"requiredTech": "Archery",
+		"quote": "'It is not so much for its beauty that the forest makes a claim upon men's hearts, as for that subtle something, that quality of air, that emanation from old trees, that so wonderfully changes and renews a weary spirit.'  - Robert Louis Stevenson"
 	},
-	*/
-	
 	{
 		"name": "Walls",
 		"cityStrength": 5,
@@ -139,7 +149,7 @@
 		"gold": 5,
 		"greatPersonPoints": {"gold": 1},
 		"isWonder": true,
-		"uniques": ["Can only be built in coastal cities", "[+1 Gold] from [Water] tiles in this city"],
+		"uniques": ["Must be next to [Coast]", "[+1 Gold] from [Water] tiles in this city"],
 		"requiredTech": "Iron Working",
 		"quote": "'Why man, he doth bestride the narrow world like a colossus, and we petty men walk under his huge legs, and peep about to find ourselves dishonorable graves.' - William Shakespeare, Julius Caesar"
 	},
@@ -179,7 +189,7 @@
 		"hurryCostModifier": 25,
 		"maintenance": 1,
 		"resourceBonusStats": {"food": 1},
-		"uniques": ["Can only be built in coastal cities", "[+1 Food] from [Ocean] tiles in this city", "[+1 Food] from [Coast] tiles in this city"],
+		"uniques": ["Must be next to [Coast]", "[+1 Food] from [Ocean] tiles in this city", "[+1 Food] from [Coast] tiles in this city"],
 		"requiredTech": "Optics"
 	},
 	{
@@ -188,7 +198,7 @@
 		"greatPersonPoints": {"gold": 1},
 		"isWonder": true,
 		"providesFreeBuilding":  "Lighthouse",
-		"uniques": ["Can only be built in coastal cities", "All military naval units receive +1 movement and +1 sight"],
+		"uniques": ["Must be next to [Coast]", "All military naval units receive +1 movement and +1 sight"],
 		"requiredTech": "Optics",
 		"quote": "'They that go down to the sea in ships, that do business in great waters; these see the works of the Lord, and his wonders in the deep.' - The Bible, Psalms 107:23-24"
 	},
@@ -309,16 +319,15 @@
 		"hurryCostModifier": 25,
 		"requiredTech": "Currency"
 	},
-	
 	/*
-	{ //Must be built in or near Desert
+	{ // Will be Introduced in Gods & Kings. Flood plains are not supposed to be affected by this wonder. Add stats to all desert tiles and then add negative stats to flood plains to undo the effect on them for now
 		"name": "Petra",
 		"culture": 1,
 		"isWonder": true,
 		"greatPersonPoints": {"production": 1},
-		"uniques": ["+1 Food and +1 Production from all worked Desert tiles in the City (except Flood plains).","+6 Culture when discovering Archeology."],
-		"requiredTech": "Currency"
-		"quote": "'...who drinks the water I shall give him, says the Lord, will have a spring inside him welling up for eternal life. Let them bring me to your holy mountain in the place where you dwell. Across the desert and through the mountain to the Canyon of the Crescent Moon...' - Indiana Jones"
+		"uniques": ["Must be next to [Desert]", "[+1 Food, +1 Production] from [Desert] tiles in this city", "[-1 Food, -1 Production] from [Flood plains] tiles in this city", "[+6 Culture] once [Archaeology] is discovered"],
+		"requiredTech": "Currency",
+		"quote": "'...who drinks the water I shall give him, says the Lord, will have a spring inside him welling up for eternal life. Let them bring me to your holy mountain in the place where you dwell. Across the desert and through the mountain to the Canyon of the Crescent Moon...'  - Indiana Jones"
 	},
 	*/
 	{
@@ -341,6 +350,14 @@
 	
 	// Medieval Era
 	
+	{
+		"name": "Garden",
+		"cost": 120,
+		"uniques": ["+[25]% great person generation in this city", "Must be next to [Fresh water]"],
+		"hurryCostModifier": 25,
+		"maintenance": 1,
+		"requiredTech": "Theology"
+	},
 	{
 		"name": "Monastery",
 		"maintenance": 0,
@@ -379,7 +396,7 @@
 		"happiness": 4,
 		"greatPersonPoints": {"production": 1},
 		"isWonder": true,
-		"uniques": ["Golden Age length increases +50%"],
+		"uniques": ["Golden Age length increased by [50]%"],
 		"requiredTech": "Civil Service",
 		"quote": "'The katun is established at Chichen Itza. The settlement of the Itza shall take place there. The quetzal shall come, the green bird shall come. Ah Kantenal shall come. It is the word of God. The Itza shall come.'  - The Books of Chilam Balam"
 	},
@@ -389,7 +406,7 @@
 		"greatPersonPoints": {"gold": 1},
 		"culture": 1,
 		"isWonder": true,
-		"uniques": ["Gold from all trade routes +25%","Must have an owned mountain within 2 tiles"],
+		"uniques": ["Gold from all trade routes +25%","Must have an owned [Mountain] within [2] tiles"],
 		"requiredTech": "Guilds",
 		"quote": "'Few romances can ever surpass that of the granite citadel on top of the beetling precipices of Machu Picchu, the crown of Inca Land.'  - Hiram Bingham"
 	},
@@ -428,7 +445,7 @@
 		"maintenance": 2,
 		"hurryCostModifier": 25,
 		"uniques": ["[+1 Production] from [Water resource] tiles in this city",
-			"Connects trade routes over water","Can only be built in coastal cities"],
+			"Connects trade routes over water","Must be next to [Coast]"],
 		"requiredTech": "Compass"
 	},
 	{
@@ -481,6 +498,7 @@
 		"culture": 2,
 		"hurryCostModifier": 25,
 		"requiredBuilding": "Walls",
+		"uniques": ["[+1 Gold] once [Flight] is discovered"],
 		"requiredTech": "Chivalry"
 	},
 	{
@@ -659,7 +677,7 @@
 		"maintenance": 2,
 		"requiredBuilding": "Harbor",
 		"uniques": ["[+1 Production, +1 Gold] from [Water resource] tiles in this city",
-			"Can only be built in coastal cities", "+[15]% production when building [naval units] in this city"],
+			"Must be next to [Coast]", "+[15]% production when building [naval units] in this city"],
 		"requiredTech": "Navigation"
 	},
 	{
@@ -688,7 +706,7 @@
 		"hurryCostModifier": 25,
 		"maintenance": 2,
 		"percentStatBonus": {"production": 10},
-		"uniques": ["Must not be on hill"],
+		"uniques": ["Must not be on [Hill]"],
 		"requiredTech": "Economics"
 	},
 	
@@ -701,7 +719,7 @@
 		"requiredBuilding": "University",
 		"maintenance": 3,
 		"hurryCostModifier": 0,
-		"uniques": ["+1 Science Per 2 Population"],
+		"uniques": ["[+1 Science] Per [2] Population in this city"],
 		"requiredTech": "Scientific Theory"
 	},
 	{
@@ -760,6 +778,17 @@
 		"requiredTech": "Industrialization",
 		"quote": "'To achieve great things, two things are needed: a plan, and not quite enough time.'  - Leonard Bernstein"
 	},
+	/* This works and even has icon but AI cannot manage its Aluminum at this moment
+	{
+		"name": "Hydro Plant",
+		"cost": 360,
+		"requiredResource": "Aluminum",
+		"hurryCostModifier": 25,
+		"maintenance": 3,
+		"uniques": ["Must be on [River]","[+1 Production] from [River] tiles in this city"],
+		"requiredTech": "Electricity"
+	},
+	*/
 	
 	// Modern Era
 	
@@ -832,7 +861,7 @@
 		"greatPersonPoints": {"gold": 1},
 		"isWonder": true,
 		"uniques": ["[+1 Happiness, +2 Culture, +3 Gold] from every [Castle]",
-			"Must have an owned mountain within 2 tiles"],
+			"Must have an owned [Mountain] within [2] tiles"],
 		"requiredTech": "Railroad",
 		"quote": "'...the location is one of the most beautiful to be found, holy and unapproachable, a worthy temple for the divine friend who has brought salvation and true blessing to the world.'  - King Ludwig II of Bavaria"
 		
@@ -872,7 +901,7 @@
 		"isWonder": true,
 		"greatPersonPoints": {"culture": 2},
 		"percentStatBonus": {"culture": 50},
-		"uniques": ["Free Social Policy","Can only be built in coastal cities"],
+		"uniques": ["Free Social Policy","Must be next to [Coast]"],
 		"requiredTech": "Ecology",
 		"quote": "'Those who lose dreaming are lost.'  - Australian Aboriginal saying"
 	},
@@ -908,7 +937,7 @@
 		"name": "SS Booster",
 		"requiredResource": "Aluminum",
 		"requiredTech": "Robotics",
-		"uniques": ["Spaceship part"]
+		"uniques": ["Spaceship part", "Cannot be purchased"]
 	},
 	{
 		"name": "Apollo Program",
@@ -935,18 +964,18 @@
 		"name": "SS Cockpit",
 		"requiredResource": "Aluminum",
 		"requiredTech": "Satellites",
-		"uniques": ["Spaceship part"]
+		"uniques": ["Spaceship part", "Cannot be purchased"]
 	},
 	{
 		"name": "SS Engine",
 		"requiredResource": "Aluminum",
 		"requiredTech": "Particle Physics",
-		"uniques": ["Spaceship part"]
+		"uniques": ["Spaceship part", "Cannot be purchased"]
 	},
 	{
 		"name": "SS Stasis Chamber",
 		"requiredResource": "Aluminum",
 		"requiredTech": "Nanotechnology",
-		"uniques": ["Spaceship part"]
+		"uniques": ["Spaceship part", "Cannot be purchased"]
 	}
 ]

@@ -117,8 +117,8 @@ class CityButton(val city: CityInfo, private val tileGroup: WorldTileGroup): Tab
     private fun addAirUnitTable() {
         if (!showAdditionalInfoTags || tileGroup.tileInfo.airUnits.isEmpty()) return
         val secondarycolor = city.civInfo.nation.getInnerColor()
-        val airUnitTable = Table().apply { defaults().pad(5f) }
-        airUnitTable.background = ImageGetter.getRoundedEdgeTableBackground(city.civInfo.nation.getOuterColor())
+        val airUnitTable = Table()
+        airUnitTable.background = ImageGetter.getRoundedEdgeTableBackground(city.civInfo.nation.getOuterColor()).apply { setMinSize(0f,0f) }
         val aircraftImage = ImageGetter.getImage("OtherIcons/Aircraft")
         aircraftImage.color = secondarycolor
         airUnitTable.add(aircraftImage).size(15f)
@@ -175,49 +175,49 @@ class CityButton(val city: CityInfo, private val tileGroup: WorldTileGroup): Tab
 
         if (city.isInResistance()) {
             val resistanceImage = ImageGetter.getImage("StatIcons/Resistance")
-            iconTable.add(resistanceImage).size(20f).pad(2f).padLeft(5f)
+            iconTable.add(resistanceImage).size(20f).padLeft(5f)
         }
 
         if (city.isPuppet) {
             val puppetImage = ImageGetter.getImage("OtherIcons/Puppet")
             puppetImage.color = secondaryColor
-            iconTable.add(puppetImage).size(20f).pad(2f).padLeft(5f)
+            iconTable.add(puppetImage).size(20f).padLeft(5f)
         }
 
         if (city.isBeingRazed) {
             val fireImage = ImageGetter.getImage("OtherIcons/Fire")
-            iconTable.add(fireImage).size(20f).pad(2f).padLeft(5f)
+            iconTable.add(fireImage).size(20f).padLeft(5f)
         }
         if (city.isCapital()) {
             if (city.civInfo.isCityState()) {
                 val cityStateImage = ImageGetter.getNationIcon("CityState")
                         .apply { color = secondaryColor }
-                iconTable.add(cityStateImage).size(20f).pad(2f).padLeft(10f)
+                iconTable.add(cityStateImage).size(20f).padLeft(5f)
             } else {
                 val starImage = ImageGetter.getImage("OtherIcons/Star").apply { color = Color.LIGHT_GRAY }
-                iconTable.add(starImage).size(20f).pad(2f).padLeft(10f)
+                iconTable.add(starImage).size(20f).padLeft(5f)
             }
         } else if (belongsToViewingCiv() && city.isConnectedToCapital()) {
             val connectionImage = ImageGetter.getStatIcon("CityConnection")
             connectionImage.color = secondaryColor
-            iconTable.add(connectionImage).size(20f).pad(2f).padLeft(5f)
+            iconTable.add(connectionImage).size(20f).padLeft(5f)
         }
 
         iconTable.add(getPopulationGroup(uncivGame.viewEntireMapForDebug
                 || belongsToViewingCiv()
-                || worldScreen.viewingCiv.isSpectator())).padLeft(10f)
+                || worldScreen.viewingCiv.isSpectator())).padLeft(5f)
 
         val cityButtonText = city.name
         val label = cityButtonText.toLabel(secondaryColor)
-        iconTable.add(label).pad(10f) // sufficient horizontal padding
+        iconTable.add(label).padRight(20f).padLeft(20f) // sufficient horizontal padding
                 .fillY() // provide full-height clicking area
 
         if (uncivGame.viewEntireMapForDebug || belongsToViewingCiv() || worldScreen.viewingCiv.isSpectator())
-            iconTable.add(getConstructionGroup(city.cityConstructions)).padRight(10f).padLeft(10f)
+            iconTable.add(getConstructionGroup(city.cityConstructions))
         else if (city.civInfo.isMajorCiv()) {
             val nationIcon = ImageGetter.getNationIcon(city.civInfo.nation.name)
             nationIcon.color = secondaryColor
-            iconTable.add(nationIcon).size(20f).padRight(10f)
+            iconTable.add(nationIcon).size(20f)
         }
         return iconTable
     }
@@ -256,7 +256,7 @@ class CityButton(val city: CityInfo, private val tileGroup: WorldTileGroup): Tab
 
         val groupHeight = 25f
         var groupWidth = populationLabel.width
-        if (showGrowth) groupWidth += 20f
+        if (showGrowth) groupWidth += 12f
         group.setSize(groupWidth, groupHeight)
 
         if (showGrowth) {
@@ -276,30 +276,34 @@ class CityButton(val city: CityInfo, private val tileGroup: WorldTileGroup): Tab
             group.addActor(growthBar)
 
             val turnLabel : Label
-            if (city.isGrowing()) {
-                val turnsToGrowth = city.getNumTurnsToNewPopulation()
-                if (turnsToGrowth != null) {
-                    if (turnsToGrowth < 100) {
-                        turnLabel = turnsToGrowth.toString().toLabel()
+            when {
+                city.isGrowing() -> {
+                    val turnsToGrowth = city.getNumTurnsToNewPopulation()
+                    turnLabel = if (turnsToGrowth != null) {
+                        if (turnsToGrowth < 100) {
+                            turnsToGrowth.toString().toLabel()
+                        } else {
+                            "∞".toLabel()
+                        }
                     } else {
-                        turnLabel = "∞".toLabel()
+                        "∞".toLabel()
                     }
-                } else {
+                }
+                city.isStarving() -> {
+                    val turnsToStarvation = city.getNumTurnsToStarvation()
+                    turnLabel = if (turnsToStarvation != null) {
+                        if (turnsToStarvation < 100) {
+                            turnsToStarvation.toString().toLabel()
+                        } else {
+                            "∞".toLabel()
+                        }
+                    } else {
+                        "∞".toLabel()
+                    }
+                }
+                else -> {
                     turnLabel = "∞".toLabel()
                 }
-            } else if (city.isStarving()) {
-                val turnsToStarvation = city.getNumTurnsToStarvation()
-                if (turnsToStarvation != null) {
-                    if (turnsToStarvation < 100) {
-                        turnLabel = turnsToStarvation.toString().toLabel()
-                    } else {
-                        turnLabel = "∞".toLabel()
-                    }
-                } else {
-                    turnLabel = "∞".toLabel()
-                }
-            } else {
-                turnLabel = "∞".toLabel()
             }
             turnLabel.color = city.civInfo.nation.getInnerColor()
             turnLabel.setFontSize(14)
@@ -315,9 +319,11 @@ class CityButton(val city: CityInfo, private val tileGroup: WorldTileGroup): Tab
     }
 
     private fun getConstructionGroup(cityConstructions: CityConstructions): Group {
+        val cityCurrentConstruction = cityConstructions.getCurrentConstruction()
         val group= Group()
         val groupHeight = 25f
-        group.setSize(40f,groupHeight)
+        val groupWidth = if(cityCurrentConstruction is PerpetualConstruction) 15f else 40f
+        group.setSize(groupWidth,groupHeight)
 
         val circle = ImageGetter.getCircle()
         circle.setSize(25f,25f)
@@ -334,10 +340,9 @@ class CityButton(val city: CityInfo, private val tileGroup: WorldTileGroup): Tab
         group.addActor(image)
 
         val secondaryColor = cityConstructions.cityInfo.civInfo.nation.getInnerColor()
-        val cityCurrentConstruction = cityConstructions.getCurrentConstruction()
         if(cityCurrentConstruction !is PerpetualConstruction) {
             val turnsToConstruction = cityConstructions.turnsToConstruction(cityCurrentConstruction.name)
-            val label = turnsToConstruction.toString().toLabel(secondaryColor,14)
+            val label = (if(turnsToConstruction < 100) turnsToConstruction.toString() else "∞").toLabel(secondaryColor,14)
             label.pack()
             group.addActor(label)
 

@@ -23,6 +23,8 @@ class GameSettings {
     var showTutorials: Boolean = true
     var autoAssignCityProduction: Boolean = true
     var autoBuildingRoads: Boolean = true
+    var automatedWorkersReplaceImprovements = true
+
     var showMinimap: Boolean = true
     var showPixelUnits: Boolean = false
     var showPixelImprovements: Boolean = true
