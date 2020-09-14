@@ -226,12 +226,11 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
                 && (selectedTile.militaryUnit!!.civInfo == worldScreen.viewingCiv || worldScreen.viewingCiv.isSpectator())
                 && selectedTile.militaryUnit!! !in selectedUnits
                 && (selectedTile.civilianUnit == null || selectedUnit != selectedTile.civilianUnit)) {
-            if (Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT)) selectUnit(selectedTile.militaryUnit!!, true)
-            else selectUnit(selectedTile.militaryUnit!!)
+            selectUnit(selectedTile.militaryUnit!!, Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT))
         } else if (selectedTile.civilianUnit != null
                 && (selectedTile.civilianUnit!!.civInfo == worldScreen.viewingCiv || worldScreen.viewingCiv.isSpectator())
                 && selectedUnit != selectedTile.civilianUnit) {
-            selectUnit(selectedTile.civilianUnit!!)
+            selectUnit(selectedTile.civilianUnit!!, Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT))
         } else if (selectedTile == previouslySelectedUnit?.currentTile) {
             // tapping the same tile again will deselect a unit.
             // important for single-tap-move to abort moving easily

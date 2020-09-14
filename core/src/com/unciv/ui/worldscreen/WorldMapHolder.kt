@@ -223,7 +223,7 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
             if (unit.currentMovement == 0f) unitGroup.color.a = 0.5f
             unitGroup.touchable = Touchable.enabled
             unitGroup.onClick {
-                worldScreen.bottomUnitTable.selectUnit(unit)
+                worldScreen.bottomUnitTable.selectUnit(unit, Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT))
                 worldScreen.shouldUpdate = true
                 unitActionOverlay?.remove()
             }
