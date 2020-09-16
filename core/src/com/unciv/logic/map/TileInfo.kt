@@ -248,11 +248,13 @@ open class TileInfo {
         for (unique in improvement.uniqueObjects) if (unique.placeholderText == "[] once [] is discovered"
                 && observingCiv.tech.isResearched(unique.params[1])) stats.add(Stats.parse(unique.params[0]))
 
-        if(city!=null) {
+        if (city != null) {
             val cityWideUniques = city.cityConstructions.builtBuildingUniqueMap.getUniques("[] from [] tiles in this city")
             val civWideUniques = city.civInfo.getMatchingUniques("[] from every []")
-            val improvementUniques = improvement.uniqueObjects.filter { it.placeholderText == "[] on [] tiles once [] is discovered"
-                    && observingCiv.tech.isResearched(it.params[2]) }
+            val improvementUniques = improvement.uniqueObjects.filter {
+                it.placeholderText == "[] on [] tiles once [] is discovered"
+                        && observingCiv.tech.isResearched(it.params[2])
+            }
             for (unique in cityWideUniques + civWideUniques + improvementUniques) {
                 if (improvement.name == unique.params[1]
                         || (unique.params[1] == "Great Improvement" && improvement.isGreatImprovement())
@@ -267,12 +269,14 @@ open class TileInfo {
                 && observingCiv.hasUnique("Tile yield from Great Improvements +100%"))
             stats.add(improvement) // again, for the double effect
 
-        for(unique in improvement.uniqueObjects)
+        for (unique in improvement.uniqueObjects)
             if (unique.placeholderText == "[] for each adjacent []") {
                 val adjacent = unique.params[1]
-                val numberOfBonuses = neighbors.count { it.improvement == adjacent
-                        || it.fitsUniqueFilter(adjacent)
-                        || it.roadStatus.name == adjacent}
+                val numberOfBonuses = neighbors.count {
+                    it.improvement == adjacent
+                            || it.fitsUniqueFilter(adjacent)
+                            || it.roadStatus.name == adjacent
+                }
                 stats.add(Stats.parse(unique.params[0]).times(numberOfBonuses.toFloat()))
             }
 

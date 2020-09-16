@@ -25,6 +25,9 @@ class PolicyPickerScreen(val worldScreen: WorldScreen, civInfo: CivilizationInfo
 
         rightSideButton.setText("{Adopt policy}\r\n(".tr() + policies.storedCulture + "/" + policies.getCultureNeededForNextPolicy() + ")")
 
+        if (viewingCiv.gameInfo.ruleSet.policyBranches.values.flatMap { it.policies }.all { it.name in policies.adoptedPolicies})
+            rightSideButton.setText("All policies adopted".tr())
+
         setDefaultCloseAction()
         if (policies.freePolicies > 0) {
             rightSideButton.setText("Adopt free policy".tr())
