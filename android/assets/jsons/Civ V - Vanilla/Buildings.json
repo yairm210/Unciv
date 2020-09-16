@@ -132,7 +132,7 @@
 		"culture": 1,
 		"greatPersonPoints": {"production": 1},
 		"isWonder": true,
-		"uniques": ["Worker construction increased 25%","Provides 2 free workers"],
+		"uniques": ["Worker construction increased 25%","[2] free [Worker] units appear"],
 		"requiredTech": "Masonry",
 		"quote": "'O, let not the pains of death which come upon thee enter into my body. I am the god Tem, and I am the foremost part of the sky, and the power which protecteth me is that which is with all the gods forever.'  - The Book of the Dead, translated by Sir Ernest Alfred Wallis Budge"
 	},
@@ -667,7 +667,7 @@
 		"culture": 1,
 		"happiness": 4,
 		"isWonder": true,
-		"uniques": ["2 free Great Artists appear"],
+		"uniques": ["[2] free [Great Artist] units appear"],
 		"requiredTech": "Archaeology",
 		"quote": "'Every genuine work of art has as much reason for being as the earth and the sun'  - Ralph Waldo Emerson"
 	},
@@ -955,7 +955,7 @@
 		"isWonder": true,
 		"greatPersonPoints": {"science": 1},		
 		"providesFreeBuilding":  "Spaceship Factory",
-		"uniques": ["2 free great scientists appear",
+		"uniques": ["[2] free [Great Scientist] units appear",
 			"+[25]% production when building [Spaceship part] in this city"],
 		"requiredTech": "Satellites",
 		"quote": "'The wonder is, not that the field of stars is so vast, but that man has measured it.'  - Anatole France"

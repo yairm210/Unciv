@@ -352,6 +352,7 @@ class Building : NamedStats(), IConstruction {
         for (unique in uniqueObjects)
             UniqueTriggerActivation.triggerCivwideUnique(unique, civInfo)
 
+        // ALL these are deprecated as of 3.10.10 and are currently here to not break mods relying on them
         if ("2 free Great Artists appear" in uniques) {
             civInfo.addUnit("Great Artist", cityConstructions.cityInfo)
             civInfo.addUnit("Great Artist", cityConstructions.cityInfo)
@@ -364,6 +365,8 @@ class Building : NamedStats(), IConstruction {
             civInfo.addUnit(Constants.worker, cityConstructions.cityInfo)
             civInfo.addUnit(Constants.worker, cityConstructions.cityInfo)
         }
+
+
         if ("Enemy land units must spend 1 extra movement point when inside your territory (obsolete upon Dynamite)" in uniques)
             civInfo.updateHasActiveGreatWall()
 

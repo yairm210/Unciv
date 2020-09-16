@@ -34,6 +34,12 @@ object UniqueTriggerActivation {
                 if (civInfo.cities.any { it.isCapital() } && (unitName != Constants.settler || !civInfo.isOneCityChallenger()))
                     civInfo.addUnit(unitName, civInfo.getCapital())
             }
+            "[] free [] units appear" -> {
+                val unitName = unique.params[1]
+                if (civInfo.cities.any { it.isCapital() } && (unitName != Constants.settler || !civInfo.isOneCityChallenger()))
+                    for (i in 1..unique.params[0].toInt())
+                        civInfo.addUnit(unitName, civInfo.getCapital())
+            }
             "Free Social Policy" -> civInfo.policies.freePolicies++
             "Empire enters golden age" ->
                 civInfo.goldenAges.enterGoldenAge()
