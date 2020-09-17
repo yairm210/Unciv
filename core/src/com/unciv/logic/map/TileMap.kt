@@ -18,6 +18,7 @@ class TileMap {
     @Transient var bottomY = 0
     @delegate:Transient val maxLatitude: Float by lazy { if (values.isEmpty()) 0f else values.map { abs(it.latitude) }.max()!! }
     @delegate:Transient val maxLongitude: Float by lazy { if (values.isEmpty()) 0f else values.map { abs(it.longitude) }.max()!! }
+    @Transient val naturalWonders = ArrayList<String>()
 
     var mapParameters = MapParameters()
 
@@ -268,6 +269,8 @@ class TileMap {
             tileInfo.ruleset = ruleset
             tileInfo.setTerrainTransients()
             tileInfo.setUnitTransients(setUnitCivTransients)
+            if (tileInfo.isNaturalWonder())
+                naturalWonders.add(tileInfo.naturalWonder!!)
         }
     }
 }
