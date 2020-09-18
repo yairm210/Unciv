@@ -217,13 +217,13 @@ object Battle {
     }
 
     private fun tryGetCultureFromKilling(civUnit:ICombatant, defeatedUnit:MapUnitCombatant){
-        //Aztecs get half the strength of the unit killed in culture and honor opener does the same thing.
-        //They stack. So you get culture equal to 100% of the dead unit's strength.
+        //Aztecs get melee strength of the unit killed in culture and honor opener does the same thing.
+        //They stack. So you get culture equal to 200% of the dead unit's strength.
         val civInfo = civUnit.getCivInfo()
         if (defeatedUnit.getCivInfo().isBarbarian() && civInfo.hasUnique("Gain Culture when you kill a barbarian unit"))
-            civInfo.policies.addCulture(max(defeatedUnit.unit.baseUnit.strength, defeatedUnit.unit.baseUnit.rangedStrength) / 2)
+            civInfo.policies.addCulture(defeatedUnit.unit.baseUnit.strength)
         if (civInfo.hasUnique("Gains culture from each enemy unit killed"))
-            civInfo.policies.addCulture(max(defeatedUnit.unit.baseUnit.strength, defeatedUnit.unit.baseUnit.rangedStrength) / 2)
+            civInfo.policies.addCulture(defeatedUnit.unit.baseUnit.strength)
     }
 
     private fun tryGetGoldFromKilling(civUnit:ICombatant, defeatedUnit:MapUnitCombatant) {
