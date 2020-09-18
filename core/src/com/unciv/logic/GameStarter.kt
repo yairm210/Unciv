@@ -74,10 +74,13 @@ object GameStarter {
                     civInfo.tech.addTechnology(tech)
 
             // generic start with technology unique
-            for(unique in civInfo.getMatchingUniques("Start with [] technology")) {
+            for(unique in civInfo.getMatchingUniques("Starts with []")) {
+                // get the parameter from the unique
+                val techName = unique.params[0]
+
                 // check if the technology is in the ruleset and not already researched
-                if (ruleset.technologies.containsKey(unique.params[0]) && !civInfo.tech.isResearched(unique.params[0]))
-                    civInfo.tech.addTechnology(unique.params[0])
+                if (ruleset.technologies.containsKey(techName) && !civInfo.tech.isResearched(techName))
+                    civInfo.tech.addTechnology(techName)
             }
 
             // add all techs to spectators
