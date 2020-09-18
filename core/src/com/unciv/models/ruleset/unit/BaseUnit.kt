@@ -54,7 +54,7 @@ class BaseUnit : INamed, IConstruction {
 
     fun getDescription(forPickerScreen:Boolean): String {
         val sb = StringBuilder()
-        if(requiredResource!=null) sb.appendln("{Requires} {$requiredResource}".tr())
+        if(requiredResource!=null) sb.appendln("Consumes 1 [{$requiredResource}]".tr())
         if(!forPickerScreen) {
             if(uniqueTo!=null) sb.appendln("Unique to [$uniqueTo], replaces [$replaces]".tr())
             else sb.appendln("{Cost}: $cost".tr())
@@ -77,7 +77,7 @@ class BaseUnit : INamed, IConstruction {
             sb.appendln(promotions.joinToString(", ", " ") { it.tr() })
         }
 
-        return sb.toString()
+        return sb.toString().trim()
     }
 
     fun getMapUnit(ruleset: Ruleset): MapUnit {

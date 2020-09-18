@@ -6,11 +6,12 @@ import com.unciv.UncivGame
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.UncivSound
 import com.unciv.models.stats.Stats
+import com.unciv.models.translations.tr
 import com.unciv.ui.utils.*
 import kotlin.math.roundToInt
 
-class CityScreenTileTable(val cityScreen: CityScreen): Table(){
-    val innerTable = Table()
+class CityScreenTileTable(private val cityScreen: CityScreen): Table(){
+    private val innerTable = Table()
     val city = cityScreen.city
     init{
         innerTable.background = ImageGetter.getBackground(ImageGetter.getBlue().lerp(Color.BLACK, 0.5f))
@@ -28,7 +29,7 @@ class CityScreenTileTable(val cityScreen: CityScreen): Table(){
         innerTable.clearChildren()
 
         val stats = selectedTile.getTileStats(city, city.civInfo)
-        innerTable.pad(20f)
+        innerTable.pad(5f)
 
         innerTable.add(selectedTile.toString(city.civInfo).toLabel()).colspan(2)
         innerTable.row()
@@ -40,8 +41,9 @@ class CityScreenTileTable(val cityScreen: CityScreen): Table(){
 
             val buyTileButton = "Buy for [$goldCostOfTile] gold".toTextButton()
             buyTileButton.onClick(UncivSound.Coin) {
-                city.expansion.buyTile(selectedTile)
-                UncivGame.Current.setScreen(CityScreen(city))
+                val purchasePrompt = "Currently you have [${city.civInfo.gold}] gold.".tr() + "\n" +
+                        "Would you like to purchase [Tile] for [$goldCostOfTile] gold?".tr()
+                YesNoPopup(purchasePrompt, { city.expansion.buyTile(selectedTile);UncivGame.Current.setScreen(CityScreen(city)) }, cityScreen).open()
             }
             if((goldCostOfTile>city.civInfo.gold && !city.civInfo.gameInfo.gameParameters.godMode)
                     || city.isPuppet
@@ -49,7 +51,6 @@ class CityScreenTileTable(val cityScreen: CityScreen): Table(){
                 buyTileButton.disable()
 
             innerTable.add(buyTileButton).row()
-            innerTable.add("You have [${city.civInfo.gold}] gold".toLabel(Color.YELLOW, 16)).padTop(2f)
         }
 
         if(city.civInfo.cities.filterNot { it==city }
