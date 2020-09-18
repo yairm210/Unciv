@@ -3,7 +3,6 @@ package com.unciv.logic.civilization
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
-import com.unciv.JsonParser
 import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
 import com.unciv.logic.UncivShowableException
@@ -12,12 +11,14 @@ import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomacyManager
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
+import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.trade.TradeEvaluation
 import com.unciv.logic.trade.TradeRequest
 import com.unciv.models.ruleset.*
 import com.unciv.models.ruleset.tile.ResourceSupplyList
+import com.unciv.models.ruleset.tile.TileResource
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.equalsPlaceholderText
@@ -56,6 +57,7 @@ class CivilizationInfo {
     var civName = ""
     var tech = TechManager()
     var policies = PolicyManager()
+    var questManager = QuestManager()
     var goldenAges = GoldenAgeManager()
     var greatPeople = GreatPersonManager()
     var victoryManager=VictoryManager()
@@ -89,6 +91,7 @@ class CivilizationInfo {
         toReturn.civName = civName
         toReturn.tech = tech.clone()
         toReturn.policies = policies.clone()
+        toReturn.questManager = questManager.clone()
         toReturn.goldenAges = goldenAges.clone()
         toReturn.greatPeople = greatPeople.clone()
         toReturn.victoryManager = victoryManager.clone()
@@ -133,6 +136,11 @@ class CivilizationInfo {
     fun isCityState(): Boolean = nation.isCityState()
     fun getCityStateType(): CityStateType = nation.cityStateType!!
     fun isMajorCiv() = nation.isMajorCiv()
+    fun isAlive(): Boolean = !isDefeated()
+
+    fun isFriendWith(otherCiv: CivilizationInfo): Boolean = knows(otherCiv) && getDiplomacyManager(otherCiv).relationshipLevel() >= RelationshipLevel.Friend
+    fun hasEverBeenFriendWith(otherCiv: CivilizationInfo): Boolean = getDiplomacyManager(otherCiv).everBeenFriends
+    fun hasMetCivTerritory(otherCiv: CivilizationInfo) = exploredTiles.any { gameInfo.tileMap[it].getOwner() == otherCiv }
 
     fun victoryType(): VictoryType {
         if(gameInfo.gameParameters.victoryTypes.size==1)
@@ -160,6 +168,13 @@ class CivilizationInfo {
         return newResourceSupplyList
     }
 
+    fun getViewableResources(): Sequence<TileResource> =
+            gameInfo.ruleSet.tileResources.values
+                    .filter { it.revealedBy == null || tech.isResearched(it.revealedBy!!) }
+                    .asSequence()
+
+    fun isCapitalConnectedToCity(city: CityInfo): Boolean = citiesConnectedToCapitalToMediums.keys.contains(city)
+
 
     /**
      * Returns a dictionary of ALL resource names, and the amount that the civ has of each
@@ -186,6 +201,8 @@ class CivilizationInfo {
 
     //region Units
     fun getCivUnits(): Sequence<MapUnit> = units.asSequence()
+    fun getCivGreatPeople(): Sequence<MapUnit> =
+            getCivUnits().filter { mapUnit -> mapUnit.baseUnit.uniques.any { it.equalsPlaceholderText("Great Person - []") } }
 
     fun addUnit(mapUnit: MapUnit, updateCivInfo:Boolean=true){
         val newList = ArrayList(units)
@@ -367,10 +384,14 @@ class CivilizationInfo {
 
     fun setTransients() {
         goldenAges.civInfo = this
+
         policies.civInfo = this
         if(policies.adoptedPolicies.size>0 && policies.numberOfAdoptedPolicies == 0)
             policies.numberOfAdoptedPolicies = policies.adoptedPolicies.count { !it.endsWith("Complete") }
         policies.setTransients()
+
+        questManager.civInfo = this
+        questManager.setTransients()
 
         if(citiesCreated==0 && cities.any())
             citiesCreated = cities.filter { it.name in nation.cities }.count()
@@ -437,6 +458,9 @@ class CivilizationInfo {
         val nextTurnStats = statsForNextTurn
 
         policies.endTurn(nextTurnStats.culture.toInt())
+
+        if (isCityState())
+            questManager.endTurn()
 
         // disband units until there are none left OR the gold values are normal
         if (!isBarbarian() && gold < -100 && nextTurnStats.gold.toInt() < 0) {

@@ -4,12 +4,10 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.SplitPane
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
+import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.UncivGame
-import com.unciv.logic.civilization.AlertType
-import com.unciv.logic.civilization.CityStateType
-import com.unciv.logic.civilization.CivilizationInfo
-import com.unciv.logic.civilization.PopupAlert
+import com.unciv.logic.civilization.*
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomacyManager
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers.*
@@ -18,8 +16,10 @@ import com.unciv.logic.trade.TradeLogic
 import com.unciv.logic.trade.TradeOffer
 import com.unciv.logic.trade.TradeType
 import com.unciv.models.ruleset.ModOptionsConstants
+import com.unciv.models.ruleset.Quest
 import com.unciv.models.translations.tr
 import com.unciv.ui.utils.*
+import kotlin.math.floor
 import kotlin.math.roundToInt
 import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 
@@ -64,6 +64,12 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
             else relationship.color = Color.GREEN
             relationship.setSize(30f,30f)
             civIndicator.addActor(relationship)
+
+            if (civ.isCityState() && civ.questManager.haveQuestsFor(viewingCiv)) {
+                val questIcon = ImageGetter.getImage("OtherIcons/Quest").surroundWithCircle(size = 30f, color = Color.GOLDENROD)
+                civIndicator.addActor(questIcon)
+                questIcon.setX(floor(civIndicator.width - questIcon.width))
+            }
 
             leftSideTable.add(civIndicator).row()
 
@@ -171,7 +177,32 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
             }
         }
 
+        for (assignedQuest in otherCiv.questManager.assignedQuests.filter { it.assignee == viewingCiv.civName}) {
+            diplomacyTable.addSeparator()
+            diplomacyTable.add(getQuestTable(assignedQuest)).row()
+        }
+
         return diplomacyTable
+    }
+
+    private fun getQuestTable(assignedQuest: AssignedQuest): Table {
+        val questTable = Table()
+        questTable.defaults().pad(10f)
+
+        val quest: Quest = viewingCiv.gameInfo.ruleSet.quests[assignedQuest.questName]!!
+        val remainingTurns: Int = assignedQuest.getRemainingTurns()
+        val title = quest.name + " (+${quest.influece.toInt()} influence)"
+        val description = assignedQuest.getDescription()
+
+        questTable.add(title.toLabel(fontSize = 24)).row()
+        questTable.add(description.toLabel()).row()
+        if (quest.duration > 0)
+            questTable.add("Remaining ${remainingTurns} turns".toLabel()).row()
+
+        questTable.onClick {
+            assignedQuest.onClickAction()
+        }
+        return questTable
     }
 
     private fun getMajorCivDiplomacyTable(otherCiv: CivilizationInfo): Table {

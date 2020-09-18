@@ -238,6 +238,16 @@ class GameInfo {
                 .forEach { it.addNotification("A new barbarian encampment has spawned!", tile.position, Color.RED) }
     }
 
+    fun notifyCityStatesOfBarbarianEncampmentCleared(killer: CivilizationInfo, target: TileInfo) {
+        for (cityState in getAliveCityStates())
+            cityState.questManager.campKillNotification(killer, target)
+    }
+
+    fun notifyCityStatesOfConquer(killer: CivilizationInfo, target: CivilizationInfo) {
+        for (cityState in getAliveCityStates())
+            cityState.questManager.cityStateKillNotification(killer, target)
+    }
+
     // All cross-game data which needs to be altered (e.g. when removing or changing a name of a building/tech)
     // will be done here, and not in CivInfo.setTransients or CityInfo
     fun setTransients() {
