@@ -40,7 +40,7 @@ class TradePopup(worldScreen: WorldScreen): Popup(worldScreen){
         fun getOfferText(offer:TradeOffer): String {
             var tradeText = offer.getOfferText()
             if (offer.type == TradeType.Luxury_Resource || offer.type == TradeType.Strategic_Resource)
-                tradeText += "\n" + "Owned: [${ourResources[offer.name]}]"
+                tradeText += "\n" + "Owned: [${ourResources[offer.name]}]".tr()
             return tradeText
         }
 
