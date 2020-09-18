@@ -32,7 +32,7 @@ class GreatPersonPickerScreen(val civInfo:CivilizationInfo) : PickerScreen() {
                 theChosenOne = unit
                 val unitDescription=HashSet<String>()
                 unit.uniques.forEach { unitDescription.add(it.tr()) }
-                pick("Get ".tr() +unit.name.tr())
+                pick("Get [${unit.name}]".tr())
                 descriptionLabel.setText(unitDescription.joinToString())
             }
             topTable.add(button).pad(10f).row()
