@@ -62,7 +62,7 @@ class CityScreenCityPickerTable(val cityScreen: CityScreen) : Table(){
 
         cityNameTable.add(currentCityLabel)
 
-        add(cityNameTable).width(stage.width/3)
+        add(cityNameTable).width(stage.width/4)
 
 
         if (civInfo.cities.size > 1) {
