@@ -47,7 +47,7 @@ open class PickerScreen : CameraStageBaseScreen() {
 
     fun setDefaultCloseAction(previousScreen: CameraStageBaseScreen?=null) {
         closeButton.onClick {
-            if(previousScreen!=null) game.setScreen(previousScreen)
+            if (previousScreen != null) game.setScreen(previousScreen)
             else game.setWorldScreen()
             dispose()
         }

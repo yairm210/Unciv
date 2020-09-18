@@ -137,9 +137,9 @@ object BattleDamage {
                 }
                 if (numberOfAttackersSurroundingDefender > 1)
                     modifiers["Flanking"] = 0.1f * (numberOfAttackersSurroundingDefender - 1) //https://www.carlsguides.com/strategy/civilization5/war/combatbonuses.php
-
-                if (tileToAttackFrom != null && tileToAttackFrom.isConnectedByRiver(defender.getTile())) {
-                    if (!tileToAttackFrom.hasConnection(attacker.getCivInfo()) // meaning, the tiles are not road-connected for this civ
+                if (attacker.getTile().aerialDistanceTo(defender.getTile()) == 1 && attacker.getTile().isConnectedByRiver(defender.getTile())
+                        && !attacker.unit.hasUnique("Amphibious")) {
+                    if (!attacker.getTile().hasConnection(attacker.getCivInfo()) // meaning, the tiles are not road-connected for this civ
                             || !defender.getTile().hasConnection(attacker.getCivInfo())
                             || !attacker.getCivInfo().tech.roadsConnectAcrossRivers) {
                         modifiers["Across river"] = -0.2f
@@ -192,7 +192,7 @@ object BattleDamage {
         if (carrierDefenceBonus > 0) modifiers["Armor Plating"] = carrierDefenceBonus
 
         for(unique in defender.unit.getMatchingUniques("+[]% defence in [] tiles")) {
-            if (tile.baseTerrain == unique.params[1] || tile.terrainFeature == unique.params[1])
+            if (tile.fitsUniqueFilter(unique.params[1]))
                 modifiers["[${unique.params[1]}] defence"] = unique.params[0].toFloat() / 100
         }
 
@@ -210,11 +210,11 @@ object BattleDamage {
         if(!tile.isFriendlyTerritory(unit.getCivInfo()) && unit.unit.hasUnique("+20% bonus outside friendly territory"))
             modifiers["Foreign Land"] = 0.2f
 
-        // This is to be deprecated and converted to "+[]% combat bonus in []" - keeping it here to that mods with this can still work for now
+        // As of 3.10.6 This is to be deprecated and converted to "+[]% combat bonus in []" - keeping it here to that mods with this can still work for now
         if (unit.unit.hasUnique("+25% bonus in Snow, Tundra and Hills") &&
                 (tile.baseTerrain == Constants.snow
                         || tile.baseTerrain == Constants.tundra
-                        || tile.baseTerrain == Constants.hill) &&
+                        || tile.isHill()) &&
                 // except when there is a vegetation
                 (tile.terrainFeature != Constants.forest
                         || tile.terrainFeature != Constants.jungle))
@@ -229,17 +229,14 @@ object BattleDamage {
                         .any { it.hasUnique("-10% combat strength for adjacent enemy units") && it.civInfo.isAtWarWith(unit.getCivInfo()) })
             modifiers["Haka War Dance"] = -0.1f
 
-        // This is to be deprecated and converted to "+[]% combat bonus in []" - keeping it here to that mods with this can still work for now
+        // As of 3.10.6 This is to be deprecated and converted to "+[]% combat bonus in []" - keeping it here to that mods with this can still work for now
         if(unit.unit.hasUnique("+33% combat bonus in Forest/Jungle")
                 && (tile.terrainFeature== Constants.forest || tile.terrainFeature==Constants.jungle))
             modifiers[tile.terrainFeature!!]=0.33f
 
         for (unique in unit.unit.getUniques().filter { it.placeholderText == "+[]% combat bonus in []" })
-            if (tile.terrainFeature == unique.params[1])
-                modifiers[tile.terrainFeature!!] = unique.params[0].toFloat() / 100
-            else if (tile.baseTerrain == unique.params[1]
-                    && tile.terrainFeature == null)
-                modifiers[tile.baseTerrain] = unique.params[0].toFloat() / 100
+            if (tile.getLastTerrain().name == unique.params[1])
+                modifiers[unique.params[1]] = unique.params[0].toFloat() / 100
 
         val isRoughTerrain = tile.isRoughTerrain()
         for (BDM in getBattleDamageModifiersOfUnit(unit.unit)) {

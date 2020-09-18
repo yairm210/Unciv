@@ -339,8 +339,8 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
         }
         updateNextTurnButton(hasOpenPopups()) // This must be before the notifications update, since its position is based on it
         notificationsScroll.update(viewingCiv.notifications)
-        notificationsScroll.setPosition(stage.width - notificationsScroll.width - 5f,
-                nextTurnButton.y - notificationsScroll.height - 5f)
+        notificationsScroll.setPosition(stage.width - notificationsScroll.width*0.5f - 10f,
+                nextTurnButton.y - notificationsScroll.height*0.5f - 5f)
     }
 
     private fun getCurrentTutorialTask(): String {
@@ -593,8 +593,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
                     val nextDueUnit = viewingCiv.getNextDueUnit()
                     if (nextDueUnit != null) {
                         mapHolder.setCenterPosition(nextDueUnit.currentTile.position, false, false)
-                        bottomUnitTable.selectedCity = null
-                        bottomUnitTable.selectedUnit = nextDueUnit
+                        bottomUnitTable.selectUnit(nextDueUnit)
                         shouldUpdate = true
                     }
                 }
@@ -687,7 +686,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
 
         // Deselect Unit
         if (bottomUnitTable.selectedUnit != null) {
-            bottomUnitTable.selectedUnit = null
+            bottomUnitTable.selectUnit()
             bottomUnitTable.isVisible = false
             shouldUpdate = true
             return

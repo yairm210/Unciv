@@ -2,12 +2,9 @@ package com.unciv.ui.worldscreen
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.math.Vector2
-import com.badlogic.gdx.scenes.scene2d.Event
 import com.badlogic.gdx.scenes.scene2d.Group
-import com.badlogic.gdx.scenes.scene2d.InputListener
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Table
-import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.utils.Align
 import com.unciv.UncivGame
 import com.unciv.logic.HexMath
@@ -18,21 +15,12 @@ import com.unciv.ui.utils.onClick
 import com.unciv.ui.utils.surroundWithCircle
 import kotlin.math.max
 import kotlin.math.min
-import kotlin.math.sqrt
 
-class Minimap(val mapHolder: WorldMapHolder) : ScrollPane(null){
-    val allTiles = Group()
-    val tileImages = HashMap<TileInfo, Image>()
-
-
-    fun setScrollTomapHolder(){
-        scrollPercentX = mapHolder.scrollPercentX
-        scrollPercentY = mapHolder.scrollPercentY
-    }
+class Minimap(val mapHolder: WorldMapHolder) : Table(){
+    private val allTiles = Group()
+    private val tileImages = HashMap<TileInfo, Image>()
 
     init {
-        setScrollingDisabled(true, true)
-
         var topX = 0f
         var topY = 0f
         var bottomX = 0f
@@ -55,7 +43,6 @@ class Minimap(val mapHolder: WorldMapHolder) : ScrollPane(null){
                     positionalVector.y * 0.5f * groupSize)
             hex.onClick {
                 mapHolder.setCenterPosition(tileInfo.position)
-                setScrollTomapHolder()
             }
             allTiles.addActor(hex)
             tileImages[tileInfo] = hex
@@ -74,15 +61,8 @@ class Minimap(val mapHolder: WorldMapHolder) : ScrollPane(null){
         // so we zero out the starting position of the whole board so they will be displayed as well
         allTiles.setSize(topX - bottomX, topY - bottomY)
 
-        actor = allTiles
+        add(allTiles)
         layout()
-        updateVisualScroll()
-        mapHolder.addListener(object : InputListener() {
-            override fun handle(e: Event?): Boolean {
-                setScrollTomapHolder()
-                return true
-            }
-        })
     }
 
     fun update(cloneCivilization: CivilizationInfo) {
@@ -100,7 +80,6 @@ class Minimap(val mapHolder: WorldMapHolder) : ScrollPane(null){
                 nationIcon.setPosition(hex.x - nationIcon.width/3,hex.y - nationIcon.height/3)
                 nationIcon.onClick {
                     mapHolder.setCenterPosition(tileInfo.position)
-                    setScrollTomapHolder()
                 }
                 allTiles.addActor(nationIcon)
             }
@@ -118,7 +97,7 @@ class MinimapHolder(mapHolder: WorldMapHolder): Table(){
         pack()
     }
 
-    fun getWrappedMinimap(): Table {
+    private fun getWrappedMinimap(): Table {
         val internalMinimapWrapper = Table()
 //         // Temporarily disabled until we can make them work nicely together
 //        val sizePercent = worldScreen.game.settings.minimapSize
@@ -141,7 +120,7 @@ class MinimapHolder(mapHolder: WorldMapHolder): Table(){
         return externalMinimapWrapper
     }
 
-    fun getToggleIcons():Table{
+    private fun getToggleIcons():Table{
         val toggleIconTable=Table()
         val settings = UncivGame.Current.settings
 

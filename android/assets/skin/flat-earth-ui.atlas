@@ -4,24 +4,6 @@ size: 512,512
 format: RGBA8888
 filter: Linear,Linear
 repeat: none
-button
-  rotate: false
-  xy: 91, 136
-  size: 56, 42
-  split: 18, 18, 0, 0
-  pad: 13, 14, 3, 2
-  orig: 56, 42
-  offset: 0, 0
-  index: -1
-button-pressed
-  rotate: false
-  xy: 91, 92
-  size: 56, 42
-  split: 18, 18, 0, 0
-  pad: 13, 14, 3, 2
-  orig: 56, 42
-  offset: 0, 0
-  index: -1
 checkbox
   rotate: false
   xy: 183, 304
@@ -125,15 +107,6 @@ splitpane-vertical
   split: 1, 1, 1, 1
   pad: 0, 0, 0, 0
   orig: 11, 4
-  offset: 0, 0
-  index: -1
-textfield
-  rotate: false
-  xy: 142, 226
-  size: 30, 30
-  split: 4, 4, 4, 4
-  pad: 4, 4, 1, 1
-  orig: 30, 30
   offset: 0, 0
   index: -1
 white

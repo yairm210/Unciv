@@ -1,3 +1,45 @@
+## 3.10.10
+
+Generified "[X] free [] units"
+
+Resolved #3130 - "All policies adopted" shown in policy picker screen when relevant
+
+Multiselect applies to civilian units and from city overlays
+
+UI Upgrade - By lishaoxia1985
+
+Translation updates
+
+## 3.10.9
+
+Resolved #3115 - AI no longer congregates great people in cities where it can't improve tiles
+
+Fixed AI unit upgrading - can now 'skip' over intermediate units, the way the "promote unit" action works. #3115
+
+Parameterized some uniques, fixes some minor bugs - By HadeanLake
+
+UI update - By lishaoxia1985
+
+Experimental - Can now move multiple military units to nearby tiles at the same turn in Desktop, via shift-click
+
+Translation updates
+
+## 3.10.8
+
+Resolved #3048 - Fixed ANRs on 'Resume' on huge save files
+
+Mod management screen improvements
+
+Resolved #3059 - better city expansion rules
+
+Resolved #3081 - fixed bug in air interception
+
+Show that air units can move to tiles within attack range - By bringert
+
+Fixed #3066, crash in chooseMilitaryUnit and some great people actions - By HadeanLake
+
+Translation updates
+
 ## 3.10.7
 
 Mods can handle situations where there is no military unit that is available for construction

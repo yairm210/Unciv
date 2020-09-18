@@ -1269,6 +1269,21 @@
 		"uniques": ["Evasion"]
 		"attackSound": "shot"
 	},
+	{
+		// "Hovering unit" unique gives ability to get into impassable tiles - and only that (no vision bonus or flying over ocean)
+		// Unit embarks like any other ground unit and has penalty for attacking over river or from embarked state
+		// "Unable to capture cities"
+		"name": "Helicopter Gunship",
+		"unitType": "Melee",
+		"movement": 6,
+		"strength": 60,
+		"cost": 425,
+		"requiredTech": "Computers",
+		"requiredResource": "Aluminum",
+		"uniques": ["Bonus vs Armor 100%", "Ignores terrain cost", "No defensive terrain bonuses", "Can move after attacking"],
+		"attackSound": "shot",
+		"hurryCostModifier": 20
+	},
 	*/
 	
 	/*
@@ -1293,7 +1308,7 @@
 	{
 		"name": "Great Artist",
 		"unitType": "Civilian",
-		"uniques": ["Can start an 8-turn golden age", "Can construct [Landmark]", "Great Person - [Culture]", "Unbuildable"],
+		"uniques": ["Can start an [8]-turn golden age", "Can construct [Landmark]", "Great Person - [Culture]", "Unbuildable"],
 		"movement": 2
 	},
 	{
@@ -1318,7 +1333,7 @@
 	{
 		"name": "Great General",
 		"unitType": "Civilian",
-		"uniques": ["Can start an 8-turn golden age", "Bonus for units in 2 tile radius 15%", "Can construct [Citadel]",
+		"uniques": ["Can start an [8]-turn golden age", "Bonus for units in 2 tile radius 15%", "Can construct [Citadel]",
 			"Great Person - [War]", "Unbuildable"],
 		"movement": 2
 	},
@@ -1327,7 +1342,7 @@
 		"unitType": "Civilian",
 		"uniqueTo": "Mongolia",
 		"replaces": "Great General",
-		"uniques": ["Can start an 8-turn golden age","Bonus for units in 2 tile radius 15%",
+		"uniques": ["Can start an [8]-turn golden age","Bonus for units in 2 tile radius 15%",
 			"Heal adjacent units for an additional 15 HP per turn", "Can construct [Citadel]", "Great Person - [War]", "Unbuildable"],
 		"movement": 5
 	}

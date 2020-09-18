@@ -83,7 +83,7 @@ class EmpireOverviewScreen(private var viewingPlayer:CivilizationInfo, defaultPa
             civTable.background = ImageGetter.getBackground(Color.BLACK)
             civTable.add("[${relevantCivs.size}] Civilizations in the game".toLabel()).pad(5f).colspan(4).row()
             val titleTable = Table()
-            titleTable.add("Our Civilization:".toLabel()).pad(5f)
+            titleTable.add("Our Civilization:".toLabel())
             titleTable.add(ImageGetter.getNationIndicator(viewingPlayer.nation,25f)).pad(5f)
             titleTable.add(viewingPlayer.civName.toLabel()).left().row()
             civTable.add(titleTable).colspan(4).row()

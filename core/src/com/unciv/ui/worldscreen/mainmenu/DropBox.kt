@@ -4,7 +4,6 @@ import com.badlogic.gdx.files.FileHandle
 import com.unciv.logic.GameInfo
 import com.unciv.logic.GameSaver
 import com.unciv.logic.civilization.CivilizationInfo
-import com.unciv.models.metadata.GameSettings
 import com.unciv.ui.saves.Gzip
 import java.io.*
 import java.net.HttpURLConnection
@@ -177,7 +176,7 @@ object Github {
     fun tryGetGithubReposWithTopic(): ArrayList<Repo> {
         val inputStream = download("https://api.github.com/search/repositories?q=topic:unciv-mod")
         if (inputStream == null) return ArrayList()
-        return GameSaver.json().fromJson(RepoSearch::class.java, inputStream!!.bufferedReader().readText()).items
+        return GameSaver.json().fromJson(RepoSearch::class.java, inputStream.bufferedReader().readText()).items
     }
 
     class RepoSearch{

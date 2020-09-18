@@ -20,6 +20,7 @@
 		"type": "Land",
 		"food": 2,
 		"movementCost": 1,
+		"defenceBonus": -0.1,
 		"RGB": [109,139,53]
 	},
 	{
@@ -28,6 +29,7 @@
 		"food": 1,
 		"production": 1,
 		"movementCost": 1,
+		"defenceBonus": -0.1,
 		"RGB": [200,208,161]
 	},
 	{
@@ -107,8 +109,9 @@
 		"food": -1,
 		"movementCost": 3,
 		"unbuildable": true,
-		"defenceBonus": -0.1,
-		"occursOn": ["Grassland"]
+		"defenceBonus": -0.15,
+		"occursOn": ["Grassland"],
+		"uniques": ["Rare feature"]
 	},
 	{
 		"name": "Fallout",
@@ -129,7 +132,7 @@
 		"unbuildable": true,
 		"defenceBonus": -0.1,
 		"occursOn": ["Desert"],
-		"uniques": ["Fresh water"]
+		"uniques": ["Fresh water", "Rare feature"]
 	},
 	{
 		"name": "Flood plains",
@@ -152,7 +155,8 @@
 		"movementCost": 1,
 		"food": 1,
 		"production": 1,
-		"occursOn": ["Coast"]
+		"occursOn": ["Coast"],
+		"uniques": ["Rare feature"]
 	},
  
 	// Natural Wonders

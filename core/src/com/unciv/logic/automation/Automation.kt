@@ -5,6 +5,7 @@ import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.BFS
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.ruleset.VictoryType
+import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.ruleset.unit.UnitType
 import com.unciv.models.stats.Stats
@@ -26,12 +27,13 @@ object Automation {
             rank += stats.production
             rank += stats.science / 2
             rank += stats.culture / 2
-            rank += stats.gold / 5 // it's barely worth anything at this points
+            rank += stats.gold / 5 // it's barely worth anything at this point
         } else {
             if (stats.food <= 2 || city.civInfo.getHappiness() > 5) rank += stats.food * 1.2f * foodWeight //food get more value to keep city growing
             else rank += (2.4f + (stats.food - 2) / 2) * foodWeight // 1.2 point for each food up to 2, from there on half a point
 
-            if (city.civInfo.gold < 0 && city.civInfo.statsForNextTurn.gold <= 0) rank += stats.gold // we have a global problem
+            if (city.civInfo.gold < 0 && city.civInfo.statsForNextTurn.gold <= 0)
+                rank += stats.gold // we have a global problem
             else rank += stats.gold / 3 // 3 gold is worse than 2 production
 
             rank += stats.production
@@ -80,7 +82,8 @@ object Automation {
         else { // randomize type of unit and take the most expensive of its kind
             val availableTypes = militaryUnits.map { it.unitType }.distinct().filterNot { it == UnitType.Scout }.toList()
             if (availableTypes.isEmpty()) return null
-            chosenUnit = militaryUnits.filter { it.unitType == availableTypes.random() }.maxBy { it.cost }!!
+            val randomType = availableTypes.random()
+            chosenUnit = militaryUnits.filter { it.unitType == randomType }.maxBy { it.cost }!!
         }
         return chosenUnit.name
     }
@@ -89,7 +92,7 @@ object Automation {
         // Since units become exponentially stronger per combat strength increase, we square em all
         fun square(x:Int) = x*x
         val unitStrength =  civInfo.getCivUnits().map { square(max(it.baseUnit().strength, it.baseUnit().rangedStrength)) }.sum()
-        return (sqrt(unitStrength.toDouble())).toInt() + 1 //avoid 0, becaus we divide by the result
+        return sqrt(unitStrength.toDouble()).toInt() + 1 //avoid 0, because we divide by the result
     }
 
     fun threatAssessment(assessor:CivilizationInfo, assessed: CivilizationInfo): ThreatLevel {
@@ -110,11 +113,14 @@ object Automation {
         val stats = tile.getTileStats(null, civInfo)
         var rank = rankStatsValue(stats, civInfo)
         if (tile.improvement == null) rank += 0.5f // improvement potential!
-        if (tile.hasViewableResource(civInfo)) rank += 1.0f
+        if (tile.hasViewableResource(civInfo)) {
+            val resource = tile.getTileResource()
+            if (resource.resourceType != ResourceType.Bonus) rank += 1f // for usage
+            if (tile.improvement == null) rank += 1f // improvement potential - resources give lots when improved!
+        }
         return rank
     }
 
-    @JvmStatic
     fun rankStatsValue(stats: Stats, civInfo: CivilizationInfo): Float {
         var rank = 0.0f
         if (stats.food <= 2) rank += (stats.food * 1.2f) //food get more value to keep city growing
