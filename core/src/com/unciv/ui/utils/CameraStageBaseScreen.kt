@@ -95,16 +95,16 @@ open class CameraStageBaseScreen : Screen {
 
     /** It returns the assigned [InputListener] */
     fun onBackButtonClicked(action:()->Unit): InputListener {
-        val listener = object : InputListener(){
+        val listener = object : InputListener() {
             override fun keyDown(event: InputEvent?, keycode: Int): Boolean {
-                if(keycode == Input.Keys.BACK || keycode == Input.Keys.ESCAPE){
+                if (keycode == Input.Keys.BACK || keycode == Input.Keys.ESCAPE) {
                     action()
                     return true
                 }
                 return false
             }
         }
-        stage.addListener( listener )
+        stage.addListener(listener)
         return listener
     }
 

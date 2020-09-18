@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.utils.Align
+import com.unciv.UncivGame
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.ruleset.VictoryType
 import com.unciv.models.translations.tr
@@ -74,8 +75,10 @@ class VictoryScreen(val worldScreen: WorldScreen) : PickerScreen() {
 
         if (playerCivInfo.isDefeated()) {
             wonOrLost("")
-        } else if(!someoneHasWon)
+        } else if(!someoneHasWon) {
             setDefaultCloseAction()
+            onBackButtonClicked { game.setWorldScreen() }
+        }
     }
 
 
