@@ -1,6 +1,7 @@
 package com.unciv.models.ruleset.unit
 
 import com.unciv.models.ruleset.Ruleset
+import com.unciv.models.ruleset.Unique
 import com.unciv.models.stats.INamed
 import com.unciv.models.translations.Translations
 import com.unciv.models.translations.tr
@@ -8,7 +9,8 @@ import com.unciv.models.translations.tr
 class Promotion : INamed{
     override lateinit var name: String
     var prerequisites = listOf<String>()
-    lateinit var effect:String
+    var effect=""
+    val unique:Unique by lazy { Unique(effect) }
     var unitTypes = listOf<String>() // The json parser wouldn't agree to deserialize this as a list of UnitTypes. =(
 
     fun getDescription(promotionsForUnitType: Collection<Promotion>, forCivilopedia:Boolean=false, ruleSet:Ruleset? = null):String {
@@ -17,11 +19,11 @@ class Promotion : INamed{
         stringBuilder.appendln(Translations.translateBonusOrPenalty(effect.tr()))
 
         if(prerequisites.isNotEmpty()) {
-            val prerequisitesString:ArrayList<String> = arrayListOf()
-            for (i in prerequisites.filter { promotionsForUnitType.any { promotion ->  promotion.name==it } }){
+            val prerequisitesString: ArrayList<String> = arrayListOf()
+            for (i in prerequisites.filter { promotionsForUnitType.any { promotion -> promotion.name == it } }) {
                 prerequisitesString.add(i.tr())
             }
-            stringBuilder.appendln("{Requires}: ".tr()+prerequisitesString.joinToString(" OR ".tr()))
+            stringBuilder.appendln("{Requires}: ".tr() + prerequisitesString.joinToString(" OR ".tr()))
         }
         if(forCivilopedia){
             if (unitTypes.isNotEmpty()) {

@@ -1,5 +1,6 @@
 package com.unciv.ui.mapeditor
 
+import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.InputEvent
@@ -9,21 +10,20 @@ import com.badlogic.gdx.scenes.scene2d.ui.SelectBox
 import com.badlogic.gdx.scenes.scene2d.ui.Skin
 import com.badlogic.gdx.utils.Array
 import com.unciv.logic.MapSaver
-import com.unciv.logic.map.Scenario
+import com.unciv.logic.map.ScenarioMap
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.translations.tr
 import com.unciv.ui.newgamescreen.GameSetupInfo
-import com.unciv.ui.newgamescreen.IPreviousScreen
 import com.unciv.ui.utils.*
 
 class MapEditorScreen(): CameraStageBaseScreen() {
     var mapName = ""
     var tileMap = TileMap()
     var scenarioName = ""   // when loading map: mapName is taken as default for scenarioName
-    var scenario: Scenario? = null // main indicator whether scenario information is present
+    var scenarioMap: ScenarioMap? = null // main indicator whether scenario information is present
     var ruleset = Ruleset().apply { add(RulesetCache.getBaseRuleset()) } // Since we change this in scenarios, we can't take the base ruleset directly
 
     var gameSetupInfo = GameSetupInfo()
@@ -39,7 +39,7 @@ class MapEditorScreen(): CameraStageBaseScreen() {
         if (mapToLoad == null) {
             val existingSaves = MapSaver.getMaps()
             if (existingSaves.isNotEmpty())
-                mapToLoad = existingSaves.first()
+                mapToLoad = existingSaves.first().name()
         }
 
         if (mapToLoad != null) {
@@ -51,22 +51,24 @@ class MapEditorScreen(): CameraStageBaseScreen() {
         initialize()
     }
 
+    constructor(mapFile:FileHandle):this(MapSaver.loadMap(mapFile))
+
     constructor(map: TileMap) : this() {
         tileMap = map
         initialize()
     }
 
-    constructor(scenario: Scenario, scenarioName: String = "") : this() {
-        tileMap = scenario.tileMap
+    constructor(scenarioMap: ScenarioMap, scenarioName: String = "") : this() {
+        tileMap = scenarioMap.tileMap
         mapName = scenarioName
-        this.scenario = scenario
+        this.scenarioMap = scenarioMap
         this.scenarioName = scenarioName
 
-        gameSetupInfo.gameParameters = scenario.gameParameters
+        gameSetupInfo.gameParameters = scenarioMap.gameParameters
 
         // Since the ruleset is referenced directly from other places, we can't just replace it directly
         ruleset.clear()
-        ruleset.add(RulesetCache.getComplexRuleset(scenario.gameParameters))
+        ruleset.add(RulesetCache.getComplexRuleset(scenarioMap.gameParameters))
         initialize()
     }
 
@@ -177,7 +179,7 @@ class MapEditorScreen(): CameraStageBaseScreen() {
     }
 
     fun hasScenario(): Boolean {
-        return this.scenario != null
+        return this.scenarioMap != null
     }
 }
 

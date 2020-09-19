@@ -17,6 +17,7 @@ import com.unciv.models.ruleset.tile.TileResource
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.ruleset.unit.Promotion
 import com.unciv.models.stats.INamed
+import java.lang.StringBuilder
 import kotlin.collections.set
 
 object ModOptionsConstants {
@@ -28,6 +29,7 @@ class ModOptions {
     var techsToRemove = HashSet<String>()
     var buildingsToRemove = HashSet<String>()
     var unitsToRemove = HashSet<String>()
+    var nationsToRemove = HashSet<String>()
     var uniques = HashSet<String>()
 }
 
@@ -64,18 +66,19 @@ class Ruleset {
 
     fun add(ruleset: Ruleset) {
         buildings.putAll(ruleset.buildings)
-        for(buildingToRemove in ruleset.modOptions.buildingsToRemove) buildings.remove(buildingToRemove)
+        for (buildingToRemove in ruleset.modOptions.buildingsToRemove) buildings.remove(buildingToRemove)
         difficulties.putAll(ruleset.difficulties)
         nations.putAll(ruleset.nations)
         policyBranches.putAll(ruleset.policyBranches)
         technologies.putAll(ruleset.technologies)
-        for(techToRemove in ruleset.modOptions.techsToRemove) technologies.remove(techToRemove)
+        for (techToRemove in ruleset.modOptions.techsToRemove) technologies.remove(techToRemove)
         terrains.putAll(ruleset.terrains)
         tileImprovements.putAll(ruleset.tileImprovements)
         tileResources.putAll(ruleset.tileResources)
         unitPromotions.putAll(ruleset.unitPromotions)
         units.putAll(ruleset.units)
-        for(unitToRemove in ruleset.modOptions.unitsToRemove) units.remove(unitToRemove)
+        for (unitToRemove in ruleset.modOptions.unitsToRemove) units.remove(unitToRemove)
+        for (nationToRemove in ruleset.modOptions.nationsToRemove) nations.remove(nationToRemove)
         mods += ruleset.mods
     }
 
@@ -95,19 +98,19 @@ class Ruleset {
     }
 
 
-    fun load(folderHandle :FileHandle ) {
+    fun load(folderHandle: FileHandle, printOutput:Boolean) {
         val gameBasicsStartTime = System.currentTimeMillis()
 
         val modOptionsFile = folderHandle.child("ModOptions.json")
-        if(modOptionsFile.exists()){
+        if (modOptionsFile.exists()) {
             try {
                 modOptions = jsonParser.getFromJson(ModOptions::class.java, modOptionsFile)
+            } catch (ex: Exception) {
             }
-            catch (ex:Exception){}
         }
 
-        val techFile =folderHandle.child("Techs.json")
-        if(techFile.exists()) {
+        val techFile = folderHandle.child("Techs.json")
+        if (techFile.exists()) {
             val techColumns = jsonParser.getFromJson(Array<TechColumn>::class.java, techFile)
             for (techColumn in techColumns) {
                 for (tech in techColumn.techs) {
@@ -119,25 +122,25 @@ class Ruleset {
         }
 
         val buildingsFile = folderHandle.child("Buildings.json")
-        if(buildingsFile.exists()) buildings += createHashmap(jsonParser.getFromJson(Array<Building>::class.java, buildingsFile))
+        if (buildingsFile.exists()) buildings += createHashmap(jsonParser.getFromJson(Array<Building>::class.java, buildingsFile))
 
         val terrainsFile = folderHandle.child("Terrains.json")
-        if(terrainsFile.exists()) terrains += createHashmap(jsonParser.getFromJson(Array<Terrain>::class.java, terrainsFile))
+        if (terrainsFile.exists()) terrains += createHashmap(jsonParser.getFromJson(Array<Terrain>::class.java, terrainsFile))
 
         val resourcesFile = folderHandle.child("TileResources.json")
-        if(resourcesFile.exists()) tileResources += createHashmap(jsonParser.getFromJson(Array<TileResource>::class.java, resourcesFile))
+        if (resourcesFile.exists()) tileResources += createHashmap(jsonParser.getFromJson(Array<TileResource>::class.java, resourcesFile))
 
         val improvementsFile = folderHandle.child("TileImprovements.json")
-        if(improvementsFile.exists()) tileImprovements += createHashmap(jsonParser.getFromJson(Array<TileImprovement>::class.java, improvementsFile))
+        if (improvementsFile.exists()) tileImprovements += createHashmap(jsonParser.getFromJson(Array<TileImprovement>::class.java, improvementsFile))
 
         val unitsFile = folderHandle.child("Units.json")
-        if(unitsFile.exists()) units += createHashmap(jsonParser.getFromJson(Array<BaseUnit>::class.java, unitsFile))
+        if (unitsFile.exists()) units += createHashmap(jsonParser.getFromJson(Array<BaseUnit>::class.java, unitsFile))
 
         val promotionsFile = folderHandle.child("UnitPromotions.json")
-        if(promotionsFile.exists()) unitPromotions += createHashmap(jsonParser.getFromJson(Array<Promotion>::class.java, promotionsFile))
+        if (promotionsFile.exists()) unitPromotions += createHashmap(jsonParser.getFromJson(Array<Promotion>::class.java, promotionsFile))
 
         val policiesFile = folderHandle.child("Policies.json")
-        if(policiesFile.exists()) {
+        if (policiesFile.exists()) {
             policyBranches += createHashmap(jsonParser.getFromJson(Array<PolicyBranch>::class.java, policiesFile))
             for (branch in policyBranches.values) {
                 branch.requires = ArrayList()
@@ -151,16 +154,16 @@ class Ruleset {
         }
 
         val nationsFile = folderHandle.child("Nations.json")
-        if(nationsFile.exists()) {
+        if (nationsFile.exists()) {
             nations += createHashmap(jsonParser.getFromJson(Array<Nation>::class.java, nationsFile))
             for (nation in nations.values) nation.setTransients()
         }
 
         val difficultiesFile = folderHandle.child("Difficulties.json")
-        if(difficultiesFile.exists()) difficulties += createHashmap(jsonParser.getFromJson(Array<Difficulty>::class.java, difficultiesFile))
+        if (difficultiesFile.exists()) difficulties += createHashmap(jsonParser.getFromJson(Array<Difficulty>::class.java, difficultiesFile))
 
         val gameBasicsLoadTime = System.currentTimeMillis() - gameBasicsStartTime
-        println("Loading game basics - " + gameBasicsLoadTime + "ms")
+        if(printOutput) println("Loading ruleset - " + gameBasicsLoadTime + "ms")
     }
 
     /** Building costs are unique in that they are dependant on info in the technology part.
@@ -168,7 +171,7 @@ class Ruleset {
      *  Alternatively, if you edit a tech column's building costs, you want it to affect all buildings in that column.
      *  This deals with that
      *  */
-    fun updateBuildingCosts(){
+    fun updateBuildingCosts() {
         for (building in buildings.values) {
             if (building.cost == 0) {
                 val column = technologies[building.requiredTech]?.column
@@ -182,19 +185,32 @@ class Ruleset {
         return technologies.values.map { it.column!!.era }.distinct()
     }
 
-    fun getEraNumber(era:String) = getEras().indexOf(era)
+    fun getEraNumber(era: String) = getEras().indexOf(era)
+    fun getSummary(): String {
+        val stringList = ArrayList<String>()
+        if (modOptions.isBaseRuleset) stringList += "Base Ruleset\n"
+        if (technologies.isNotEmpty()) stringList.add(technologies.size.toString() + " Techs")
+        if (nations.isNotEmpty()) stringList.add(nations.size.toString() + " Nations")
+        if (units.isNotEmpty()) stringList.add(units.size.toString() + " Units")
+        if (buildings.isNotEmpty()) stringList.add(buildings.size.toString() + " Buildings")
+        if (tileResources.isNotEmpty()) stringList.add(tileResources.size.toString() + " Resources")
+        if (tileImprovements.isNotEmpty()) stringList.add(tileImprovements.size.toString() + " Improvements")
+        stringList += ""
+        return stringList.joinToString()
+    }
 }
 
 /** Loading mods is expensive, so let's only do it once and
  * save all of the loaded rulesets somewhere for later use
  *  */
 object RulesetCache :HashMap<String,Ruleset>() {
-    fun loadRulesets(consoleMode:Boolean=false) {
+    fun loadRulesets(consoleMode:Boolean=false, printOutput: Boolean=false) {
+        clear()
         for (ruleset in BaseRuleset.values()) {
             val fileName = "jsons/${ruleset.fullName}"
             val fileHandle = if (consoleMode) FileHandle(fileName)
             else Gdx.files.internal(fileName)
-            this[ruleset.fullName] = Ruleset().apply { load(fileHandle) }
+            this[ruleset.fullName] = Ruleset().apply { load(fileHandle, printOutput) }
         }
 
         val modsHandles = if(consoleMode) FileHandle("mods").list()
@@ -204,15 +220,17 @@ object RulesetCache :HashMap<String,Ruleset>() {
             if (modFolder.name().startsWith('.')) continue
             try {
                 val modRuleset = Ruleset()
-                modRuleset.load(modFolder.child("jsons"))
+                modRuleset.load(modFolder.child("jsons"), printOutput)
                 modRuleset.name = modFolder.name()
                 this[modRuleset.name] = modRuleset
-                println("Mod loaded successfully: " + modRuleset.name)
-                checkModLinks(modRuleset)
+                if(printOutput) println("Mod loaded successfully: " + modRuleset.name)
+                if(printOutput) checkModLinks(modRuleset)
             } catch (ex: Exception) {
-                println("Exception loading mod '${modFolder.name()}':")
-                println("  ${ex.localizedMessage}")
-                println("  (Source file ${ex.stackTrace[0].fileName} line ${ex.stackTrace[0].lineNumber})")
+                if (printOutput) {
+                    println("Exception loading mod '${modFolder.name()}':")
+                    println("  ${ex.localizedMessage}")
+                    println("  (Source file ${ex.stackTrace[0].fileName} line ${ex.stackTrace[0].lineNumber})")
+                }
             }
         }
     }

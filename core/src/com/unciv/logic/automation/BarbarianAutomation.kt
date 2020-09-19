@@ -66,7 +66,7 @@ class BarbarianAutomation(val civInfo: CivilizationInfo) {
         // 3 - trying to attack enemy
         // if a embarked melee unit can land and attack next turn, do not attack from water.
         if (BattleHelper.tryDisembarkUnitToAttackPosition(unit)) return
-        if (BattleHelper.tryAttackNearbyEnemy(unit)) return
+        if (!unit.type.isCivilian() && BattleHelper.tryAttackNearbyEnemy(unit)) return
 
         // 4 - trying to pillage tile or route
         if (UnitAutomation.tryPillageImprovement(unit)) return

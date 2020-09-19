@@ -4,8 +4,6 @@ import com.unciv.Constants
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.ruleset.unit.UnitType
-import com.unciv.models.translations.equalsPlaceholderText
-import com.unciv.models.translations.getPlaceholderParameters
 import java.util.*
 import kotlin.collections.HashMap
 import kotlin.collections.set
@@ -25,7 +23,7 @@ object BattleDamage {
         val modifiers = mutableListOf<BattleDamageModifier>()
         for (ability in unit.getUniques()) {
             // This beut allows us to have generic unit uniques: "Bonus vs City 75%", "Penatly vs Mounted 25%" etc.
-            val regexResult = Regex(BONUS_VS_UNIT_TYPE).matchEntire(ability)
+            val regexResult = Regex(BONUS_VS_UNIT_TYPE).matchEntire(ability.text)
             if (regexResult == null) continue
             val vs = regexResult.groups[2]!!.value
             val modificationAmount = regexResult.groups[3]!!.value.toFloat() / 100  // if it says 15%, that's 0.15f in modification
@@ -40,11 +38,12 @@ object BattleDamage {
 
     private fun getGeneralModifiers(combatant: ICombatant, enemy: ICombatant): HashMap<String, Float> {
         val modifiers = HashMap<String, Float>()
-        fun addToModifiers(BDM:BattleDamageModifier){
-            val text = BDM.getText()
-            if(!modifiers.containsKey(text)) modifiers[text]=0f
-            modifiers[text]=modifiers[text]!!+BDM.modificationAmount
+        fun addToModifiers(text:String, amount:Float) {
+            if (!modifiers.containsKey(text)) modifiers[text] = 0f
+            modifiers[text] = modifiers[text]!! + amount
         }
+        fun addToModifiers(BDM:BattleDamageModifier) =
+                addToModifiers(BDM.getText(), BDM.modificationAmount)
 
         val civInfo = combatant.getCivInfo()
         if (combatant is MapUnitCombatant) {
@@ -59,6 +58,11 @@ object BattleDamage {
                     addToModifiers(BDM)
                 if (BDM.vs == "air units" && enemy.getUnitType().isAirUnit())
                     addToModifiers(BDM)
+            }
+
+            for (unique in combatant.unit.getMatchingUniques("+[]% Strength vs []")) {
+                if (unique.params[1] == enemy.getName())
+                    addToModifiers("vs [${unique.params[1]}]", unique.params[0].toFloat() / 100)
             }
 
             //https://www.carlsguides.com/strategy/civilization5/war/combatbonuses.php
@@ -114,8 +118,8 @@ object BattleDamage {
             modifiers.putAll(getTileSpecificModifiers(attacker, defender.getTile()))
 
             for (ability in attacker.unit.getUniques()) {
-                if(ability.equalsPlaceholderText("Bonus as Attacker []%")) {
-                    val bonus = ability.getPlaceholderParameters()[0].toFloat() / 100
+                if(ability.placeholderText == "Bonus as Attacker []%") {
+                    val bonus = ability.params[0].toFloat() / 100
                     if (modifiers.containsKey("Attacker Bonus"))
                         modifiers["Attacker Bonus"] = modifiers["Attacker Bonus"]!! + bonus
                     else modifiers["Attacker Bonus"] = bonus
@@ -133,9 +137,9 @@ object BattleDamage {
                 }
                 if (numberOfAttackersSurroundingDefender > 1)
                     modifiers["Flanking"] = 0.1f * (numberOfAttackersSurroundingDefender - 1) //https://www.carlsguides.com/strategy/civilization5/war/combatbonuses.php
-
-                if (tileToAttackFrom != null && tileToAttackFrom.isConnectedByRiver(defender.getTile())) {
-                    if (!tileToAttackFrom.hasConnection(attacker.getCivInfo()) // meaning, the tiles are not road-connected for this civ
+                if (attacker.getTile().aerialDistanceTo(defender.getTile()) == 1 && attacker.getTile().isConnectedByRiver(defender.getTile())
+                        && !attacker.unit.hasUnique("Amphibious")) {
+                    if (!attacker.getTile().hasConnection(attacker.getCivInfo()) // meaning, the tiles are not road-connected for this civ
                             || !defender.getTile().hasConnection(attacker.getCivInfo())
                             || !attacker.getCivInfo().tech.roadsConnectAcrossRivers) {
                         modifiers["Across river"] = -0.2f
@@ -175,19 +179,22 @@ object BattleDamage {
 
         modifiers.putAll(getTileSpecificModifiers(defender, tile))
 
-        if (!defender.unit.hasUnique("No defensive terrain bonus")) {
-            val tileDefenceBonus = tile.getDefensiveBonus()
-            if (tileDefenceBonus > 0)
-                modifiers["Tile"] = tileDefenceBonus
-        }
+        val tileDefenceBonus = tile.getDefensiveBonus()
+        if (!defender.unit.hasUnique("No defensive terrain bonus") || tileDefenceBonus < 0)
+            modifiers["Tile"] = tileDefenceBonus
 
-        if(attacker.isRanged()) {
-            val defenceVsRanged = 0.25f * defender.unit.getUniques().count { it == "+25% Defence against ranged attacks" }
+        if (attacker.isRanged()) {
+            val defenceVsRanged = 0.25f * defender.unit.getUniques().count { it.text == "+25% Defence against ranged attacks" }
             if (defenceVsRanged > 0) modifiers["defence vs ranged"] = defenceVsRanged
         }
 
-        val carrierDefenceBonus = 0.25f * defender.unit.getUniques().count { it == "+25% Combat Bonus when defending" }
+        val carrierDefenceBonus = 0.25f * defender.unit.getUniques().count { it.text == "+25% Combat Bonus when defending" }
         if (carrierDefenceBonus > 0) modifiers["Armor Plating"] = carrierDefenceBonus
+
+        for(unique in defender.unit.getMatchingUniques("+[]% defence in [] tiles")) {
+            if (tile.fitsUniqueFilter(unique.params[1]))
+                modifiers["[${unique.params[1]}] defence"] = unique.params[0].toFloat() / 100
+        }
 
 
         if (defender.unit.isFortified())
@@ -203,10 +210,11 @@ object BattleDamage {
         if(!tile.isFriendlyTerritory(unit.getCivInfo()) && unit.unit.hasUnique("+20% bonus outside friendly territory"))
             modifiers["Foreign Land"] = 0.2f
 
+        // As of 3.10.6 This is to be deprecated and converted to "+[]% combat bonus in []" - keeping it here to that mods with this can still work for now
         if (unit.unit.hasUnique("+25% bonus in Snow, Tundra and Hills") &&
                 (tile.baseTerrain == Constants.snow
                         || tile.baseTerrain == Constants.tundra
-                        || tile.baseTerrain == Constants.hill) &&
+                        || tile.isHill()) &&
                 // except when there is a vegetation
                 (tile.terrainFeature != Constants.forest
                         || tile.terrainFeature != Constants.jungle))
@@ -221,10 +229,14 @@ object BattleDamage {
                         .any { it.hasUnique("-10% combat strength for adjacent enemy units") && it.civInfo.isAtWarWith(unit.getCivInfo()) })
             modifiers["Haka War Dance"] = -0.1f
 
-
+        // As of 3.10.6 This is to be deprecated and converted to "+[]% combat bonus in []" - keeping it here to that mods with this can still work for now
         if(unit.unit.hasUnique("+33% combat bonus in Forest/Jungle")
                 && (tile.terrainFeature== Constants.forest || tile.terrainFeature==Constants.jungle))
             modifiers[tile.terrainFeature!!]=0.33f
+
+        for (unique in unit.unit.getUniques().filter { it.placeholderText == "+[]% combat bonus in []" })
+            if (tile.getLastTerrain().name == unique.params[1])
+                modifiers[unique.params[1]] = unique.params[0].toFloat() / 100
 
         val isRoughTerrain = tile.isRoughTerrain()
         for (BDM in getBattleDamageModifiersOfUnit(unit.unit)) {

@@ -2,6 +2,7 @@ package com.unciv.ui.newgamescreen
 
 import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox
 import com.badlogic.gdx.scenes.scene2d.ui.Skin
 import com.badlogic.gdx.utils.Array
@@ -21,6 +22,7 @@ import kotlin.concurrent.thread
 
 
 class GameSetupInfo(var gameId:String, var gameParameters: GameParameters, var mapParameters: MapParameters) {
+    var mapFile: FileHandle? = null
     constructor() : this("", GameParameters(), MapParameters())
     constructor(gameInfo: GameInfo) : this("", gameInfo.gameParameters.clone(), gameInfo.tileMap.mapParameters)
     constructor(gameParameters: GameParameters, mapParameters: MapParameters) : this("", gameParameters, mapParameters)

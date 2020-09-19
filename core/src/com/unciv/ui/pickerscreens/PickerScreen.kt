@@ -47,7 +47,7 @@ open class PickerScreen : CameraStageBaseScreen() {
 
     fun setDefaultCloseAction(previousScreen: CameraStageBaseScreen?=null) {
         closeButton.onClick {
-            if(previousScreen!=null) game.setScreen(previousScreen)
+            if (previousScreen != null) game.setScreen(previousScreen)
             else game.setWorldScreen()
             dispose()
         }
@@ -61,5 +61,10 @@ open class PickerScreen : CameraStageBaseScreen() {
     protected fun pick(rightButtonText: String) {
         if(UncivGame.Current.worldScreen.isPlayersTurn) rightSideButton.enable()
         rightSideButton.setText(rightButtonText)
+    }
+
+    fun removeRightSideClickListeners(){
+        rightSideButton.listeners.filter { it != rightSideButton.clickListener }
+                .forEach { rightSideButton.removeListener(it) }
     }
 }

@@ -7,10 +7,10 @@ buildscript {
 
     repositories {
         // Chinese mirrors for quicker loading for chinese devs - uncomment if you're chinese
-//        maven{ url "https://maven.aliyun.com/repository/jcenter"}
-//        maven{ url "https://maven.aliyun.com/repository/google"}
-//        maven{ url "https://maven.aliyun.com/repository/gradle-plugin"}
-//        maven{ url "https://maven.aliyun.com/repository/public"}
+//        maven{ url = uri("https://maven.aliyun.com/repository/jcenter") }
+//        maven{ url = uri("https://maven.aliyun.com/repository/google") }
+//        maven{ url = uri("https://maven.aliyun.com/repository/gradle-plugin") }
+//        maven{ url = uri("https://maven.aliyun.com/repository/public") }
         google()
         mavenLocal()
         mavenCentral()
@@ -38,10 +38,10 @@ allprojects {
 
     repositories {
         // Chinese mirrors for quicker loading for chinese devs - uncomment if you're chinese
-        // maven{ url "https://maven.aliyun.com/repository/jcenter"}
-        // maven{ url "https://maven.aliyun.com/repository/google"}
-        // maven{ url "https://maven.aliyun.com/repository/gradle-plugin"}
-        // maven{ url "https://maven.aliyun.com/repository/public"}
+        // maven{ url = uri("https://maven.aliyun.com/repository/jcenter") }
+        // maven{ url = uri("https://maven.aliyun.com/repository/google") }
+        // maven{ url = uri("https://maven.aliyun.com/repository/gradle-plugin") }
+        // maven{ url = uri("https://maven.aliyun.com/repository/public") }
         google()
         jcenter()
         mavenLocal()

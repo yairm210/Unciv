@@ -3,12 +3,14 @@ package com.unciv.ui.utils
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.Pixmap
 import com.badlogic.gdx.graphics.Texture
+import com.badlogic.gdx.graphics.TextureData
 import com.badlogic.gdx.graphics.g2d.BitmapFont
 import com.badlogic.gdx.graphics.g2d.BitmapFont.BitmapFontData
 import com.badlogic.gdx.graphics.g2d.BitmapFont.Glyph
 import com.badlogic.gdx.graphics.g2d.GlyphLayout
 import com.badlogic.gdx.graphics.g2d.PixmapPacker
 import com.badlogic.gdx.graphics.g2d.TextureRegion
+import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.utils.Array
 import com.badlogic.gdx.utils.Disposable
 import com.unciv.UncivGame
@@ -54,7 +56,8 @@ class NativeBitmapFontData(val fontImplementation: NativeFontImplementation) : B
     override fun getGlyph(ch: Char): Glyph {
         var glyph: Glyph? = super.getGlyph(ch)
         if (glyph == null) {
-            val charPixmap = fontImplementation.getCharPixmap(ch)
+            if(ch == '\uD83D' || ch == '\uD83C' ) return Glyph() // This is the 'first character' of an emoji - empty space
+            val charPixmap = getPixmapFromChar(ch)
 
             glyph = Glyph()
             glyph.id = ch.toInt()
@@ -79,6 +82,17 @@ class NativeBitmapFontData(val fontImplementation: NativeFontImplementation) : B
         return glyph
     }
 
+    private fun getPixmapFromChar(ch: Char): Pixmap {
+        return when (ch) {
+            Fonts.strength[1] -> Fonts.extractPixmapFromTextureRegion(ImageGetter.getDrawable("StatIcons/Strength").region)
+            Fonts.rangedStrength[1] -> Fonts.extractPixmapFromTextureRegion(ImageGetter.getDrawable("StatIcons/RangedStrength").region)
+            Fonts.range[1] -> Fonts.extractPixmapFromTextureRegion(ImageGetter.getDrawable("StatIcons/Range").region)
+            Fonts.movement -> Fonts.extractPixmapFromTextureRegion(ImageGetter.getDrawable("StatIcons/Movement").region)
+            Fonts.turn -> Fonts.extractPixmapFromTextureRegion(ImageGetter.getDrawable("EmojiIcons/Turn").region)
+            else -> fontImplementation.getCharPixmap(ch)
+        }
+    }
+
     override fun getGlyphs(run: GlyphLayout.GlyphRun, str: CharSequence, start: Int, end: Int, lastGlyph: Glyph?) {
         packer.packToTexture = true // All glyphs added after this are packed directly to the texture.
         super.getGlyphs(run, str, start, end, lastGlyph)
@@ -100,4 +114,37 @@ object Fonts {
         font.setOwnsTexture(true)
         font
     }
+
+    // From https://stackoverflow.com/questions/29451787/libgdx-textureregion-to-pixmap
+    fun extractPixmapFromTextureRegion(textureRegion:TextureRegion):Pixmap {
+        val textureData = textureRegion.texture.textureData
+        if (!textureData.isPrepared) {
+            textureData.prepare()
+        }
+        val pixmap = Pixmap(
+                textureRegion.regionWidth,
+                textureRegion.regionHeight,
+                textureData.format
+        )
+        pixmap.drawPixmap(
+                textureData.consumePixmap(), // The other Pixmap
+                0, // The target x-coordinate (top left corner)
+                0, // The target y-coordinate (top left corner)
+                textureRegion.regionX, // The source x-coordinate (top left corner)
+                textureRegion.regionY, // The source y-coordinate (top left corner)
+                textureRegion.regionWidth, // The width of the area from the other Pixmap in pixels
+                textureRegion.regionHeight // The height of the area from the other Pixmap in pixels
+        )
+        return pixmap
+    }
+
+    const val food = "\uD83C\uDF4E"
+    const val gold = "\uD83D\uDCB0"
+    const val turn = '⏳'
+    const val strength = "\uD83D\uDCAA"
+    const val rangedStrength = "\uD83C\uDFF9"
+    const val movement = '➡'
+    const val range = "\uD83D\uDCCF"
+
+//    const val production = '⚙'
 }

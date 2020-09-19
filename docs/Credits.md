@@ -175,6 +175,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Stonehenge](https://thenounproject.com/term/stonehenge/543289/) By icon 54
 * [Ho Chi Minh mausoleum](https://thenounproject.com/thanhloc1009/collection/asia-landmark/?i=2412921) By Phạm Thanh Lộc for Mausoleum of Halicarnassus
 * Icon for Statue of Zeus made by [JackRainy](https://github.com/JackRainy), based on [King](https://thenounproject.com/eucalyp/collection/game-elements-glyph1/?i=3155251) By Eucalyp
+* [temple](https://thenounproject.com/search/?q=temple&i=28256) By Fabio Meroni for Temple of Artemis
 
 ### Classical Era
 
@@ -192,6 +193,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Aqueduct](https://thenounproject.com/term/aqueduct/24639/) By Arthur Shlain
 * [Great Wall](https://thenounproject.com/search/?q=great%20wall&i=545909) By icon 54
 * [Rice Field](https://thenounproject.com/term/rice-field/2511648/) by Graphic Engineer for Terrace farm
+* [Canoe](https://thenounproject.com/term/canoe/402285/) By Viktor Fedyuk (Tim P) for Floating Gardens
  
 ### Medieval Era
 
@@ -214,6 +216,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Notre Dame](https://thenounproject.com/term/notre-dame/1361725/) By Marco Livolsi
 * [Bullets](https://thenounproject.com/term/bullets/810156/) By Aldric Rodriguez for Armory 
 * [Machu Picchu](https://thenounproject.com/browse/?i=1678226/) By [Chanut is Industries](https://thenounproject.com/chanut-is)
+* [Garden](https://thenounproject.com/search/?q=garden&i=1478380) By Bharat 
 
 ### Renaissance Era
 
@@ -494,6 +497,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Competition](https://thenounproject.com/search/?q=move%20fast&i=1743826) by luca fruzza
 * Icon for Flight Deck is made by [JackRainy](https://github.com/JackRainy)
 * Icon for Armor Plating is made by [JackRainy](https://github.com/JackRainy)
+* [Slingshot](https://thenounproject.com/term/slingshot/9106/) by James Keuning for Slinger Withdraw
 
 ## Others 
 
@@ -518,6 +522,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Puppet](https://thenounproject.com/search/?q=puppet&i=285735) By Ben Davis for puppeted cities
 * [City](https://thenounproject.com/search/?q=city&i=1765370) By Muhajir ila Robbi in the Icon center
 * [Lock](https://thenounproject.com/search/?q=lock&i=3217613) by Vadim Solomakhin for locked tiles
+* [Hourglass](https://thenounproject.com/search/?q=hourglass&i=142268) by I Create Stuff for the 'Turn' icon
 
 ## Main menu
 
@@ -527,6 +532,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Go back](https://thenounproject.com/search/?q=go%20back&i=1901947) by Salvia Santos for Resume
 * [Multiplayer](https://thenounproject.com/search/?q=multiplayer&i=1215652) by Roy Charles
 * [Options](https://thenounproject.com/search/?q=options&i=866090) By Thengakola
+* [Package](https://thenounproject.com/search/?q=package&i=1886048) by shashank singh 
 
 # Sound credits
 

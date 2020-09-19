@@ -7,12 +7,13 @@ import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.translations.TranslationFileWriter
 import com.unciv.models.translations.Translations
-import com.unciv.models.translations.eitherSquareBraceRegex
 import com.unciv.models.translations.squareBraceRegex
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
+import java.io.OutputStream
+import java.io.PrintStream
 import java.util.*
 
 @RunWith(GdxTestRunner::class)
@@ -22,9 +23,19 @@ class TranslationTests {
 
     @Before
     fun loadTranslations() {
+        // Since the ruleset and translation loader have their own output,
+        // We 'disable' the output stream for their outputs, and only enable it for the twst itself.
+        val outputChannel = System.out
+        System.setOut(PrintStream(object : OutputStream() {
+            override fun write(b: Int) {}
+        }))
+//        System.setOut(TextWriter.Null)
+//        Console(). //(TextWriter.Null);
         translations.readAllLanguagesTranslation()
         RulesetCache.loadRulesets()
         ruleset = RulesetCache.getBaseRuleset()
+        System.setOut(outputChannel)
+//        Console.SetOut()
     }
 
     @Test
@@ -50,7 +61,7 @@ class TranslationTests {
     private fun allStringAreTranslated(strings: Set<String>): Boolean {
         var allStringsHaveTranslation = true
         for (entry in strings) {
-            val key = if(entry.contains('[')) entry.replace(squareBraceRegex,"[]") else entry
+            val key = if (entry.contains('[')) entry.replace(squareBraceRegex, "[]") else entry
             if (!translations.containsKey(key)) {
                 allStringsHaveTranslation = false
                 println(entry)
@@ -70,7 +81,6 @@ class TranslationTests {
 
     /** For every translatable string find its placeholders and check if all translations have them */
     @Test
-    // TODO - This was broken and was then fixed, but it requires manual work
     fun allTranslationsHaveCorrectPlaceholders() {
         var allTranslationsHaveCorrectPlaceholders = true
         val languages = translations.getLanguages()
@@ -97,12 +107,11 @@ class TranslationTests {
 
     @Test
     fun allPlaceholderKeysMatchEntry() {
-        val squareBraceRegex = Regex("""\[([^]]*)]""")
         var allPlaceholderKeysMatchEntry = true
         for (key in translations.keys) {
-            if ( !key.contains('[') ) continue
+            if (!key.contains('[')) continue
             val translationEntry = translations[key]!!.entry
-            val keyFromEntry = translationEntry.replace(squareBraceRegex,"[]")
+            val keyFromEntry = translationEntry.replace(squareBraceRegex, "[]")
             if (key != keyFromEntry) {
                 allPlaceholderKeysMatchEntry = false
                 println("Entry $translationEntry found under bad key $key")
@@ -116,13 +125,33 @@ class TranslationTests {
     }
 
     @Test
+    fun noTwoPlaceholdersAreTheSame() {
+        var noTwoPlaceholdersAreTheSame = true
+        for (translationEntry in translations.values) {
+            val placeholders = squareBraceRegex.findAll(translationEntry.entry)
+                    .map { it.value }.toList()
+
+            for (placeholder in placeholders)
+                if (placeholders.count { it == placeholder } > 1) {
+                    noTwoPlaceholdersAreTheSame = false
+                    println("Entry $translationEntry has the parameter $placeholder more than once")
+                    break
+                }
+        }
+        Assert.assertTrue(
+                "This test will only pass when no translation keys have the same parameter twice",
+                noTwoPlaceholdersAreTheSame
+        )
+    }
+
+    @Test
     fun allTranslationsEndWithASpace() {
         val templateLines = Gdx.files.internal(TranslationFileWriter.templateFileLocation).reader().readLines()
         var failed = false
         for (line in templateLines) {
             if (line.endsWith(" =")) {
                 println("$line ends without a space at the end")
-                failed=true
+                failed = true
             }
         }
         Assert.assertFalse(failed)

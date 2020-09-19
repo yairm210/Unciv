@@ -40,6 +40,9 @@ class TechManager {
     private var techsInProgress = HashMap<String, Int>()
     var overflowScience = 0
 
+    /** In civ IV, you can auto-convert a certain percentage of gold in cities to science */
+    var goldPercentConvertedToScience = 0.6f
+
     //region state-changing functions
     fun clone(): TechManager {
         val toReturn = TechManager()
@@ -50,6 +53,7 @@ class TechManager {
         toReturn.scienceOfLast8Turns = scienceOfLast8Turns.clone()
         toReturn.scienceFromResearchAgreements = scienceFromResearchAgreements
         toReturn.overflowScience = overflowScience
+        toReturn.goldPercentConvertedToScience = goldPercentConvertedToScience
         return toReturn
     }
 
@@ -94,8 +98,8 @@ class TechManager {
 
     fun remainingScienceToTech(techName: String) = costOfTech(techName) - researchOfTech(techName)
 
-    fun turnsToTech(techName: String): Int {
-        return max(1, ceil(remainingScienceToTech(techName).toDouble() / civInfo.statsForNextTurn.science).toInt())
+    fun turnsToTech(techName: String): String {
+        return if (civInfo.cities.isEmpty()) "∞" else max(1, ceil(remainingScienceToTech(techName).toDouble() / civInfo.statsForNextTurn.science).toInt()).toString()
     }
 
     fun isResearched(techName: String): Boolean = techsResearched.contains(techName)

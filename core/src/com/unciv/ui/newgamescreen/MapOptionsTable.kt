@@ -74,11 +74,6 @@ class MapOptionsTable(val newGameScreen: NewGameScreen): Table() {
         scenarioMapOptionsTable.add(scenarioMapSelectBox).maxWidth(newGameScreen.stage.width / 2)
                 .right().row()
 
-        // The SelectBox auto displays the text a object.toString(), which on the FileHandle itself includes the folder path.
-        //  So we wrap it in another object with a custom toString()
-        class FileHandleWrapper(val fileHandle: FileHandle){
-            override fun toString() = fileHandle.name()
-        }
 
         val scenarioFiles = getScenarioFiles()
         val scenarioSelectBox = SelectBox<FileHandleWrapper>(CameraStageBaseScreen.skin)
@@ -98,14 +93,12 @@ class MapOptionsTable(val newGameScreen: NewGameScreen): Table() {
             mapTypeSpecificTable.clear()
             if (mapTypeSelectBox.selected.value == MapType.custom) {
                 mapParameters.type = MapType.custom
-                mapParameters.name = mapFileSelectBox.selected
+                mapParameters.name = mapFileSelectBox.selected.toString()
                 mapTypeSpecificTable.add(savedMapOptionsTable)
-                newGameScreen.gameSetupInfo.gameParameters.godMode = false
                 newGameScreen.unlockTables()
-                newGameScreen.updateTables()
             } else if (mapTypeSelectBox.selected.value == MapType.scenarioMap) {
                 mapParameters.type = MapType.scenarioMap
-                mapParameters.name = scenarioMapSelectBox.selected
+                mapParameters.name = scenarioMapSelectBox.selected.toString()
                 mapTypeSpecificTable.add(scenarioMapOptionsTable)
                 val scenario = MapSaver.loadScenario(mapParameters.name)
                 newGameScreen.gameSetupInfo.gameParameters = scenario.gameParameters
@@ -113,7 +106,6 @@ class MapOptionsTable(val newGameScreen: NewGameScreen): Table() {
                 newGameScreen.updateRuleset()
                 // update PlayerTable and GameOptionsTable
                 newGameScreen.lockTables()
-                newGameScreen.updateTables()
             } else if(mapTypeSelectBox.selected.value == MapType.scenario){
                 selectSavedGameAsScenario(scenarioSelectBox.selected.fileHandle)
                 mapTypeSpecificTable.add(scenarioOptionsTable)
@@ -121,11 +113,11 @@ class MapOptionsTable(val newGameScreen: NewGameScreen): Table() {
             } else { // generated map
                 mapParameters.name = ""
                 mapParameters.type = generatedMapOptionsTable.mapTypeSelectBox.selected.value
-                newGameScreen.gameSetupInfo.gameParameters.godMode = false
                 mapTypeSpecificTable.add(generatedMapOptionsTable)
                 newGameScreen.unlockTables()
-                newGameScreen.updateTables()
             }
+            newGameScreen.gameSetupInfo.gameParameters.godMode = false
+            newGameScreen.updateTables()
         }
 
         // activate once, so when we had a file map before we'll have the right things set for another one
@@ -137,26 +129,46 @@ class MapOptionsTable(val newGameScreen: NewGameScreen): Table() {
         add(mapTypeSpecificTable).colspan(2).row()
     }
 
-    private fun getMapFileSelectBox(): SelectBox<String> {
-        val mapFileSelectBox = SelectBox<String>(CameraStageBaseScreen.skin)
-        val mapNames = Array<String>()
-        for (mapName in MapSaver.getMaps()) mapNames.add(mapName)
-        mapFileSelectBox.items = mapNames
-        if (mapParameters.name in mapNames) mapFileSelectBox.selected = mapParameters.name
+    private fun getMapFileSelectBox(): SelectBox<FileHandleWrapper> {
+        val mapFileSelectBox = SelectBox<FileHandleWrapper>(CameraStageBaseScreen.skin)
+        val mapFiles = Array<FileHandleWrapper>()
+        for (mapFile in MapSaver.getMaps())
+            mapFiles.add(FileHandleWrapper(mapFile))
+        for(mod in Gdx.files.local("mods").list()){
+            val mapsFolder = mod.child("maps")
+            if(mapsFolder.exists())
+                for(map in mapsFolder.list())
+                    mapFiles.add(FileHandleWrapper(map))
+        }
+        mapFileSelectBox.items = mapFiles
+        val selectedItem = mapFiles.firstOrNull { it.fileHandle.name()==mapParameters.name }
+        if (selectedItem != null) {
+            mapFileSelectBox.selected = selectedItem
+            newGameScreen.gameSetupInfo.mapFile = mapFileSelectBox.selected.fileHandle
+        }
+        else if (!mapFiles.isEmpty) {
+            mapFileSelectBox.selected = mapFiles.first()
+            newGameScreen.gameSetupInfo.mapFile = mapFileSelectBox.selected.fileHandle
+        }
 
-        mapFileSelectBox.onChange { mapParameters.name = mapFileSelectBox.selected!! }
+        mapFileSelectBox.onChange {
+            val mapFile =  mapFileSelectBox.selected.fileHandle
+            mapParameters.name = mapFile.name()
+            newGameScreen.gameSetupInfo.mapFile = mapFile
+        }
         return mapFileSelectBox
     }
 
-    private fun getScenarioFileSelectBox(): SelectBox<String> {
-        val scenarioFileSelectBox = SelectBox<String>(CameraStageBaseScreen.skin)
-        val scenarioNames = Array<String>()
-        for (scenarioName in MapSaver.getScenarios()) scenarioNames.add(scenarioName)
-        scenarioFileSelectBox.items = scenarioNames
-        if (mapParameters.name in scenarioNames) scenarioFileSelectBox.selected = mapParameters.name
+    private fun getScenarioFileSelectBox(): SelectBox<FileHandleWrapper> {
+        val scenarioFileSelectBox = SelectBox<FileHandleWrapper>(CameraStageBaseScreen.skin)
+        val scenarioFiles = Array<FileHandleWrapper>()
+        for (scenarioName in MapSaver.getScenarios()) scenarioFiles.add(FileHandleWrapper(scenarioName))
+        scenarioFileSelectBox.items = scenarioFiles
+        val selectedItem = scenarioFiles.firstOrNull { it.fileHandle.name()==mapParameters.name }
+        if(selectedItem!=null ) scenarioFileSelectBox.selected = selectedItem
 
         scenarioFileSelectBox.onChange {
-            mapParameters.name = scenarioFileSelectBox.selected!!
+            mapParameters.name = scenarioFileSelectBox.selected!!.fileHandle.name()
             val scenario = MapSaver.loadScenario(mapParameters.name)
             newGameScreen.apply {
                 gameSetupInfo.gameParameters = scenario.gameParameters
@@ -168,5 +180,9 @@ class MapOptionsTable(val newGameScreen: NewGameScreen): Table() {
         return scenarioFileSelectBox
     }
 
-
+    // The SelectBox auto displays the text a object.toString(), which on the FileHandle itself includes the folder path.
+    //  So we wrap it in another object with a custom toString()
+    class FileHandleWrapper(val fileHandle: FileHandle){
+        override fun toString() = fileHandle.name()
+    }
 }

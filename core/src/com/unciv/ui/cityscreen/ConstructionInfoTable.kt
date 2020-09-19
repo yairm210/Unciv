@@ -8,6 +8,7 @@ import com.unciv.logic.city.PerpetualConstruction
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.translations.tr
+import com.unciv.ui.utils.Fonts
 import com.unciv.ui.utils.ImageGetter
 import com.unciv.ui.utils.surroundWithCircle
 import com.unciv.ui.utils.toLabel
@@ -23,7 +24,7 @@ class ConstructionInfoTable(val city: CityInfo): Table() {
 
     fun update(selectedConstruction: IConstruction?) {
         selectedConstructionTable.clear()
-        selectedConstructionTable.pad(20f)
+        selectedConstructionTable.pad(5f)
 
         if (selectedConstruction == null) {
             isVisible = false
@@ -61,25 +62,20 @@ class ConstructionInfoTable(val city: CityInfo): Table() {
         selectedConstructionTable.add(buildingText.toLabel()).row()
 
 
-        val description: String
-        if (construction is BaseUnit)
-            description = construction.getDescription(true)
-        else if (construction is Building)
-            description = construction.getDescription(true, city.civInfo, city.civInfo.gameInfo.ruleSet)
-        else if(construction is PerpetualConstruction)
-            description = construction.description.replace("[rate]","[${construction.getConversionRate(city)}]") .tr()
-        else description="" // Should never happen
+        val description: String = when (construction) {
+            is BaseUnit -> construction.getDescription(true)
+            is Building -> construction.getDescription(true, city.civInfo, city.civInfo.gameInfo.ruleSet)
+            is PerpetualConstruction -> construction.description.replace("[rate]","[${construction.getConversionRate(city)}]") .tr()
+            else -> "" // Should never happen
+        }
 
         val descriptionLabel = description.toLabel()
         descriptionLabel.setWrap(true)
-        descriptionLabel.width = stage.width / 4
-
-        val descriptionScroll = ScrollPane(descriptionLabel)
-        selectedConstructionTable.add(descriptionScroll).colspan(2).width(stage.width / 4).height(stage.height / 8)
+        selectedConstructionTable.add(descriptionLabel).colspan(2).width(stage.width / 4)
 
     }
 
     companion object {
-        internal fun turnOrTurns(turns: Int): String = "\r\n$turns ${(if (turns > 1) " {turns}" else " {turn}").tr()}"
+        internal fun turnOrTurns(turns: Int): String = "\r\n$turns${Fonts.turn}"
     }
 }

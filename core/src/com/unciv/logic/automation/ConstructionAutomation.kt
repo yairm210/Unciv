@@ -96,10 +96,11 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
     }
 
     private fun addMilitaryUnitChoice() {
-        if(!isAtWar && !cityIsOverAverageProduction) return // don't make any military units here. Infrastructure first!
+        if (!isAtWar && !cityIsOverAverageProduction) return // don't make any military units here. Infrastructure first!
         if ((!isAtWar && civInfo.statsForNextTurn.gold > 0 && militaryUnits < cities * 2)
                 || (isAtWar && civInfo.gold > -50)) {
             val militaryUnit = Automation.chooseMilitaryUnit(cityInfo)
+            if (militaryUnit == null) return
             val unitsToCitiesRatio = cities.toFloat() / (militaryUnits + 1)
             // most buildings and civ units contribute the the civ's growth, military units are anti-growth
             var modifier = sqrt(unitsToCitiesRatio) / 2
@@ -107,7 +108,8 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
             else if (isAtWar) modifier *= unitsToCitiesRatio * 2
             if (!cityIsOverAverageProduction) modifier /= 5 // higher production cities will deal with this
 
-            if (cityInfo.getCenterTile().civilianUnit?.name == Constants.settler
+            val civilianUnit = cityInfo.getCenterTile().civilianUnit
+            if (civilianUnit != null && civilianUnit.hasUnique(Constants.settlerUnique)
                     && cityInfo.getCenterTile().getTilesInDistance(5).none { it.militaryUnit?.civInfo == civInfo })
                 modifier = 5f // there's a settler just sitting here, doing nothing - BAD
 

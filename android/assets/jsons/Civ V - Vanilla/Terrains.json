@@ -20,6 +20,7 @@
 		"type": "Land",
 		"food": 2,
 		"movementCost": 1,
+		"defenceBonus": -0.1,
 		"RGB": [109,139,53]
 	},
 	{
@@ -28,6 +29,7 @@
 		"food": 1,
 		"production": 1,
 		"movementCost": 1,
+		"defenceBonus": -0.1,
 		"RGB": [200,208,161]
 	},
 	{
@@ -50,7 +52,8 @@
 		"type": "Water",
 		"food": 2,
 		"gold": 1,
-		"RGB": [ 200, 200, 255]
+		"RGB": [ 200, 200, 255],
+		"uniques": ["Fresh water"]
 	},
 	{
 		"name": "Hill",
@@ -86,7 +89,8 @@
 		"unbuildable": true,
 		"defenceBonus": 0.25,
 		"occursOn": ["Tundra","Plains","Grassland","Hill"],
-		"rough": true
+		"rough": true,
+		"uniques": ["Provides a one-time Production bonus to the closest city when cut down"]
 	},
 	{
 		"name": "Jungle",
@@ -105,8 +109,9 @@
 		"food": -1,
 		"movementCost": 3,
 		"unbuildable": true,
-		"defenceBonus": -0.1,
-		"occursOn": ["Grassland"]
+		"defenceBonus": -0.15,
+		"occursOn": ["Grassland"],
+		"uniques": ["Rare feature"]
 	},
 	{
 		"name": "Fallout",
@@ -126,7 +131,8 @@
 		"movementCost": 1,
 		"unbuildable": true,
 		"defenceBonus": -0.1,
-		"occursOn": ["Desert"]
+		"occursOn": ["Desert"],
+		"uniques": ["Fresh water", "Rare feature"]
 	},
 	{
 		"name": "Flood plains",
@@ -149,7 +155,8 @@
 		"movementCost": 1,
 		"food": 1,
 		"production": 1,
-		"occursOn": ["Coast"]
+		"occursOn": ["Coast"],
+		"uniques": ["Rare feature"]
 	},
  
 	// Natural Wonders
@@ -188,7 +195,7 @@
 		"uniques": ["Grants 500 Gold to the first civilization to discover it"],
 		"weight": 2
 	},
-	{
+	{ // This will count as "Fresh water" in civ 6
 		"name": "Fountain of Youth",
 		"type": "NaturalWonder",
 		"happiness": 10,
@@ -263,4 +270,17 @@
 		"unbuildable": true,
 		"weight": 10
 	}
+	/*
+	{// Will be introduced in Brave New World. Despite being a lake, it cannot be sailed on and it blocks line of sight like a mountain. 
+		"name": "Lake Victoria",
+		"type": "NaturalWonder",
+		"food": 6,
+		"occursOn": [Plains"],
+		"turnsInto": "Mountain",
+		"impassable": true,
+		"unbuildable": true,
+		"uniques": ["Fresh water"],
+		"weight": 5
+	}
+	*/
 ]	

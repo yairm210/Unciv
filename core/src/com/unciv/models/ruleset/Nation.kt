@@ -2,11 +2,11 @@ package com.unciv.models.ruleset
 
 import com.badlogic.gdx.graphics.Color
 import com.unciv.Constants
-import com.unciv.UniqueAbility
 import com.unciv.logic.civilization.CityStateType
 import com.unciv.models.stats.INamed
 import com.unciv.models.translations.Translations
 import com.unciv.models.translations.tr
+import com.unciv.ui.utils.Fonts
 import com.unciv.ui.utils.colorFromRGB
 
 enum class VictoryType {
@@ -36,7 +36,6 @@ class Nation : INamed {
     var hateHello = ""
 
     lateinit var outerColor: List<Int>
-    var unique: UniqueAbility? = null
     var uniqueName = ""
     var uniques = HashSet<String>()
     val uniqueObjects: List<Unique> by lazy { uniques.map { Unique(it) } }
@@ -91,17 +90,11 @@ class Nation : INamed {
             textList += getLeaderDisplayName().tr()
             textList += ""
         }
-        if (unique != null) {
-            textList += unique!!.displayName.tr() + ":"
-            textList += "  " + unique!!.description.tr()
 
-            textList += ""
-        }
-        else {
-            if (uniqueName != "") textList += uniqueName.tr() + ":"
-            textList += "  " + uniques.joinToString(", ").tr()
-            textList += ""
-        }
+        if (uniqueName != "") textList += uniqueName.tr() + ":"
+        textList += "  " + uniques.joinToString(", ") { it.tr() }
+        textList += ""
+
         if (startBias.isNotEmpty()) {
             textList += "Start bias:".tr() + startBias.joinToString(", ", " ") { it.tr() }
             textList += ""
@@ -110,7 +103,7 @@ class Nation : INamed {
         addUniqueUnitsText(textList, ruleset)
         addUniqueImprovementsText(textList, ruleset)
 
-        return textList.joinToString("\n").tr().trim()
+        return textList.joinToString("\n")
     }
 
     private fun addUniqueBuildingsText(textList: ArrayList<String>, ruleset: Ruleset) {
@@ -150,19 +143,19 @@ class Nation : INamed {
                 if (unit.cost != originalUnit.cost)
                     textList += "  {Cost} " + "[${unit.cost}] vs [${originalUnit.cost}]".tr()
                 if (unit.strength != originalUnit.strength)
-                    textList += "  {Strength} " + "[${unit.strength}] vs [${originalUnit.strength}]".tr()
+                    textList += "  ${Fonts.strength} " + "[${unit.strength}] vs [${originalUnit.strength}]".tr()
                 if (unit.rangedStrength != originalUnit.rangedStrength)
-                    textList += "  {Ranged strength} " + "[${unit.rangedStrength}] vs [${originalUnit.rangedStrength}]".tr()
+                    textList += "  ${Fonts.rangedStrength} " + "[${unit.rangedStrength}] vs [${originalUnit.rangedStrength}]".tr()
                 if (unit.range != originalUnit.range)
-                    textList += "  {Range} " + "[${unit.range}] vs [${originalUnit.range}]".tr()
+                    textList += "  ${Fonts.range} " + "[${unit.range}] vs [${originalUnit.range}]".tr()
                 if (unit.movement != originalUnit.movement)
-                    textList += "  {Movement} " + "[${unit.movement}] vs [${originalUnit.movement}]".tr()
+                    textList += "  ${Fonts.movement} " + "[${unit.movement}] vs [${originalUnit.movement}]".tr()
                 if (originalUnit.requiredResource != null && unit.requiredResource == null)
                     textList += "  " + "[${originalUnit.requiredResource}] not required".tr()
                 for (unique in unit.uniques.filterNot { it in originalUnit.uniques })
                     textList += "  " + Translations.translateBonusOrPenalty(unique)
                 for (unique in originalUnit.uniques.filterNot { it in unit.uniques })
-                    textList += "  " + "Lost ability".tr() + "(vs " + originalUnit.name.tr() + "): " + Translations.translateBonusOrPenalty(unique)
+                    textList += "  " + "Lost ability".tr() + "(" + "vs [${originalUnit.name}]".tr() + "): " + Translations.translateBonusOrPenalty(unique)
                 for (promotion in unit.promotions.filter { it !in originalUnit.promotions })
                     textList += "  " + promotion.tr() + " (" + Translations.translateBonusOrPenalty(ruleset.unitPromotions[promotion]!!.effect) + ")"
             } else {

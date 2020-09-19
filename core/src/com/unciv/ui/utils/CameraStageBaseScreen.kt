@@ -13,6 +13,7 @@ import com.badlogic.gdx.scenes.scene2d.*
 import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener
+import com.badlogic.gdx.scenes.scene2d.utils.Drawable
 import com.badlogic.gdx.utils.viewport.ExtendViewport
 import com.unciv.UncivGame
 import com.unciv.models.Tutorial
@@ -75,17 +76,18 @@ open class CameraStageBaseScreen : Screen {
         val skin by lazy {
             val skin = Skin().apply {
                 add("Nativefont", Fonts.font, BitmapFont::class.java)
+                add("Button", ImageGetter.getRoundedEdgeTableBackground(), Drawable::class.java)
                 addRegions(TextureAtlas("skin/flat-earth-ui.atlas"))
                 load(Gdx.files.internal("skin/flat-earth-ui.json"))
             }
-            skin.get(TextButton.TextButtonStyle::class.java).font = Fonts.font.apply { data.setScale(20/45f) }
-            skin.get(CheckBox.CheckBoxStyle::class.java).font= Fonts.font.apply { data.setScale(20/45f) }
-            skin.get(CheckBox.CheckBoxStyle::class.java).fontColor= Color.WHITE
-            skin.get(Label.LabelStyle::class.java).font= Fonts.font.apply { data.setScale(18/45f) }
-            skin.get(Label.LabelStyle::class.java).fontColor= Color.WHITE
-            skin.get(TextField.TextFieldStyle::class.java).font = Fonts.font.apply { data.setScale(18/45f) }
-            skin.get(SelectBox.SelectBoxStyle::class.java).font = Fonts.font.apply { data.setScale(20/45f) }
-            skin.get(SelectBox.SelectBoxStyle::class.java).listStyle.font = Fonts.font.apply { data.setScale(20/45f) }
+            skin.get(TextButton.TextButtonStyle::class.java).font = Fonts.font.apply { data.setScale(20 / ORIGINAL_FONT_SIZE) }
+            skin.get(CheckBox.CheckBoxStyle::class.java).font = Fonts.font.apply { data.setScale(20 / ORIGINAL_FONT_SIZE) }
+            skin.get(CheckBox.CheckBoxStyle::class.java).fontColor = Color.WHITE
+            skin.get(Label.LabelStyle::class.java).font = Fonts.font.apply { data.setScale(18 / ORIGINAL_FONT_SIZE) }
+            skin.get(Label.LabelStyle::class.java).fontColor = Color.WHITE
+            skin.get(TextField.TextFieldStyle::class.java).font = Fonts.font.apply { data.setScale(18 / ORIGINAL_FONT_SIZE) }
+            skin.get(SelectBox.SelectBoxStyle::class.java).font = Fonts.font.apply { data.setScale(20 / ORIGINAL_FONT_SIZE) }
+            skin.get(SelectBox.SelectBoxStyle::class.java).listStyle.font = Fonts.font.apply { data.setScale(20 / ORIGINAL_FONT_SIZE) }
             skin
         }
         internal var batch: Batch = SpriteBatch()
@@ -93,16 +95,16 @@ open class CameraStageBaseScreen : Screen {
 
     /** It returns the assigned [InputListener] */
     fun onBackButtonClicked(action:()->Unit): InputListener {
-        val listener = object : InputListener(){
+        val listener = object : InputListener() {
             override fun keyDown(event: InputEvent?, keycode: Int): Boolean {
-                if(keycode == Input.Keys.BACK || keycode == Input.Keys.ESCAPE){
+                if (keycode == Input.Keys.BACK || keycode == Input.Keys.ESCAPE) {
                     action()
                     return true
                 }
                 return false
             }
         }
-        stage.addListener( listener )
+        stage.addListener(listener)
         return listener
     }
 
@@ -241,6 +243,11 @@ fun String.toTextButton() = TextButton(this.tr(), CameraStageBaseScreen.skin)
 fun String.toLabel() = Label(this.tr(),CameraStageBaseScreen.skin)
 fun Int.toLabel() = this.toString().toLabel()
 
+/** All text is originally rendered in 50px, and thn scaled to fit the size of the text we need now.
+ * This has several advantages: It means we only render each character once (good for both runtime and RAM),
+ * AND it means that our 'custom' emojis only need to be once size (50px) and they'll be rescaled for what's needed. */
+const val ORIGINAL_FONT_SIZE = 50f
+
 // We don't want to use setFontSize and setFontColor because they set the font,
 //  which means we need to rebuild the font cache which means more memory allocation.
 fun String.toLabel(fontColor:Color= Color.WHITE, fontSize:Int=18): Label {
@@ -250,15 +257,15 @@ fun String.toLabel(fontColor:Color= Color.WHITE, fontSize:Int=18): Label {
         labelStyle.fontColor = fontColor
         if (fontSize != 18) labelStyle.font = Fonts.font
     }
-    return Label(this.tr(),labelStyle).apply { setFontScale(fontSize/45f) }
+    return Label(this.tr(), labelStyle).apply { setFontScale(fontSize/ORIGINAL_FONT_SIZE) }
 }
 
 
-fun Label.setFontColor(color:Color): Label {style=Label.LabelStyle(style).apply { fontColor=color }; return this}
+fun Label.setFontColor(color:Color): Label { style=Label.LabelStyle(style).apply { fontColor=color }; return this }
 
 fun Label.setFontSize(size:Int): Label {
     style = Label.LabelStyle(style)
     style.font = Fonts.font
     style = style // because we need it to call the SetStyle function. Yuk, I know.
-    return this.apply { setFontScale(size/45f) } // for chaining
+    return this.apply { setFontScale(size/ORIGINAL_FONT_SIZE) } // for chaining
 }

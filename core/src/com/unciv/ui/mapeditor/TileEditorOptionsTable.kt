@@ -184,7 +184,7 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
                     }
 
                     val nationIcon = getHex(Color.WHITE, ImageGetter.getNationIndicator(nation, 40f))
-                    setCurrentHex(nationIcon,"Player $playerIndex starting location")
+                    setCurrentHex(nationIcon,"Player [$playerIndex] starting location")
                 }
                 nationTable.add(nationImage).row()
             }
@@ -315,7 +315,7 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
 
     private fun getPlayerIndexString(player: Player): String {
         val index = gameParameters.players.indexOf(player) + 1
-        return "Player $index"
+        return "Player [$index]".tr()
     }
 
     private fun getCrossedIcon(): Actor {
@@ -539,6 +539,8 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
                 -> if (topTerrain.unbuildable && improvement.isGreatImprovement())
                     tileInfo.terrainFeature = null
             topTerrain.unbuildable -> tileInfo.improvement = null      // forbid on unbuildable feature
+            improvement.hasUnique("Can also be built on tiles adjacent to fresh water")
+                    && tileInfo.isAdjacentToFreshwater -> Unit // allow farms on tiles adjacent to fresh water
             "Can only be built on Coastal tiles" in improvement.uniques && tileInfo.isCoastalTile()
                 -> Unit                             // allow Moai where appropriate
             else -> tileInfo.improvement = null

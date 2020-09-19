@@ -54,23 +54,21 @@
 		"upgradesTo": "Swordsman",
 		"attackSound": "nonmetalhit"
 	},
-	/*
 	{
 		"name": "Jaguar",
 		"unitType": "Melee",
-		"uniqueTo": "Aztec",
+		"uniqueTo": "Aztecs",
 		"replaces": "Warrior",
 		"movement": 2,
 		"strength": 8,
 		"cost": 40,
 		"hurryCostModifier": 20,
 		"obsoleteTech": "Metal Casting",
-		"uniques": ["+33% combat bonus in Forest/Jungle","Woodsmah","Heals 25 damage if it kills an Unit"],
+		"uniques": ["+[33]% combat bonus in [Forest]", "+[33]% combat bonus in [Jungle]", "Heals [25] damage if it kills a unit"],
+		"promotions": ["Woodsman"],
 		"upgradesTo": "Swordsman",
 		"attackSound": "nonmetalhit"
-		//Aztec unique unit, moves faster and fights better in Forest and Jungle. He also heals 25 if he kills an enemy.
 	},
-	*/
 	{
 		"name": "Brute",
 		"unitType": "Melee",
@@ -133,7 +131,7 @@
 		"movement": 4,
 		"cost": 30,
 		"requiredTech": "Sailing",
-		"uniques": ["Cannot enter ocean tiles until Astronomy","May create improvements on water resources"],
+		"uniques": ["Cannot enter ocean tiles until Astronomy", "May create improvements on water resources"],
 		"hurryCostModifier": 20
 	},
 	{
@@ -175,7 +173,7 @@
 		"requiredResource": "Horses",
 		"upgradesTo": "Knight",
 		"obsoleteTech": "Chivalry",
-		"uniques": ["No defensive terrain bonus","Rough terrain penalty"],
+		"uniques": ["No defensive terrain bonus", "Rough terrain penalty"],
 		"hurryCostModifier": 20,
 		"attackSound": "arrow"
 	},
@@ -191,7 +189,7 @@
 		"requiredTech": "The Wheel",
 		"upgradesTo": "Knight",
 		"obsoleteTech": "Chivalry",
-		"uniques": ["No defensive terrain bonus","Rough terrain penalty"],
+		"uniques": ["No defensive terrain bonus", "Rough terrain penalty"],
 		"hurryCostModifier": 20,
 		"attackSound": "arrow"
 	},
@@ -342,7 +340,7 @@
 		"upgradesTo": "Longswordsman",
 		"obsoleteTech": "Gunpowder",
 		"hurryCostModifier": 20,
-		"uniques": ["+33% combat bonus in Forest/Jungle"],
+		"uniques": ["+[33]% combat bonus in [Forest]", "+[33]% combat bonus in [Jungle]"],
 		"attackSound": "metalhit"
 	},
 	{
@@ -656,7 +654,7 @@
 		"requiredTech": "Astronomy",
 		"upgradesTo": "Ironclad",
 		"obsoleteTech": "Combustion",
-		"uniques": ["+1 Visibility Range","May withdraw before melee"],
+		"uniques": ["+1 Visibility Range","May withdraw before melee ([50]%)"],
 		"hurryCostModifier": 20
 	},
 	{
@@ -904,7 +902,7 @@
 		"requiredTech": "Rifling",
 		"obsoleteTech": "Replaceable Parts",
 		"upgradesTo": "Great War Infantry",
-		"uniques": ["+25% bonus in Snow, Tundra and Hills", "Double movement in Snow, Tundra and Hills"],
+		"uniques": ["+[25]% combat bonus in [Snow]", "+[25]% combat bonus in [Tundra]", "+[25]% combat bonus in [Hill]", "Double movement in Snow, Tundra and Hills"],
 		"hurryCostModifier": 20,
 		"attackSound": "shot"
 	},
@@ -1071,7 +1069,7 @@
 		"interceptRange": 2,
 		"cost": 375,
 		"requiredTech": "Combustion",
-		"uniques": ["Can attack submarines", "[40]% chance to intercept air attacks", "May withdraw before melee"], // todo: add bonus vs submarines
+		"uniques": ["Can attack submarines", "[40]% chance to intercept air attacks", "May withdraw before melee ([50]%)"], // todo: add bonus vs submarines
 		"hurryCostModifier": 20
 	},
 	{
@@ -1271,6 +1269,21 @@
 		"uniques": ["Evasion"]
 		"attackSound": "shot"
 	},
+	{
+		// "Hovering unit" unique gives ability to get into impassable tiles - and only that (no vision bonus or flying over ocean)
+		// Unit embarks like any other ground unit and has penalty for attacking over river or from embarked state
+		// "Unable to capture cities"
+		"name": "Helicopter Gunship",
+		"unitType": "Melee",
+		"movement": 6,
+		"strength": 60,
+		"cost": 425,
+		"requiredTech": "Computers",
+		"requiredResource": "Aluminum",
+		"uniques": ["Bonus vs Armor 100%", "Ignores terrain cost", "No defensive terrain bonuses", "Can move after attacking"],
+		"attackSound": "shot",
+		"hurryCostModifier": 20
+	},
 	*/
 	
 	/*
@@ -1295,7 +1308,7 @@
 	{
 		"name": "Great Artist",
 		"unitType": "Civilian",
-		"uniques": ["Can start an 8-turn golden age", "Can construct [Landmark]", "Great Person - [Culture]", "Unbuildable"],
+		"uniques": ["Can start an [8]-turn golden age", "Can construct [Landmark]", "Great Person - [Culture]", "Unbuildable"],
 		"movement": 2
 	},
 	{
@@ -1320,7 +1333,7 @@
 	{
 		"name": "Great General",
 		"unitType": "Civilian",
-		"uniques": ["Can start an 8-turn golden age", "Bonus for units in 2 tile radius 15%", "Can construct [Citadel]",
+		"uniques": ["Can start an [8]-turn golden age", "Bonus for units in 2 tile radius 15%", "Can construct [Citadel]",
 			"Great Person - [War]", "Unbuildable"],
 		"movement": 2
 	},
@@ -1329,7 +1342,7 @@
 		"unitType": "Civilian",
 		"uniqueTo": "Mongolia",
 		"replaces": "Great General",
-		"uniques": ["Can start an 8-turn golden age","Bonus for units in 2 tile radius 15%",
+		"uniques": ["Can start an [8]-turn golden age","Bonus for units in 2 tile radius 15%",
 			"Heal adjacent units for an additional 15 HP per turn", "Can construct [Citadel]", "Great Person - [War]", "Unbuildable"],
 		"movement": 5
 	}

@@ -93,7 +93,7 @@ class PlayerPickerTable(val previousScreen: IPreviousScreen, var gameParameters:
      */
     private fun reassignRemovedModReferences() {
         for (player in gameParameters.players) {
-            if (!previousScreen.ruleset.nations.containsKey(player.chosenCiv))
+            if (!previousScreen.ruleset.nations.containsKey(player.chosenCiv) || previousScreen.ruleset.nations[player.chosenCiv]!!.isCityState())
                 player.chosenCiv = Constants.random
         }
     }
@@ -275,8 +275,6 @@ class PlayerPickerTable(val previousScreen: IPreviousScreen, var gameParameters:
         for (nation in previousScreen.ruleset.nations.values
                 .filter { it.isMajorCiv() || it.isSpectator() }) {
             if (gameParameters.players.any { it.chosenCiv == nation.name })
-                continue
-            if (!UncivGame.Current.settings.spectatorMode && nation.isSpectator())
                 continue
             nations.add(nation)
         }

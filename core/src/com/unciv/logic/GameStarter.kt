@@ -23,8 +23,10 @@ object GameStarter {
 
         if (gameSetupInfo.mapParameters.type == MapType.scenarioMap)
             gameInfo.tileMap = MapSaver.loadScenario(gameSetupInfo.mapParameters.name).tileMap
-        else if (gameSetupInfo.mapParameters.name != "")
-            gameInfo.tileMap = MapSaver.loadMap(gameSetupInfo.mapParameters.name)
+        else if (gameSetupInfo.mapParameters.name != "") {
+            gameInfo.tileMap = MapSaver.loadMap(gameSetupInfo.mapFile!!)
+        }
+
         else gameInfo.tileMap = MapGenerator(ruleset).generateMap(gameSetupInfo.mapParameters)
         gameInfo.tileMap.mapParameters = gameSetupInfo.mapParameters
 
@@ -136,13 +138,13 @@ object GameStarter {
                 gameInfo.tileMap)
 
         // For later starting eras, or for civs like Polynesia with a different Warrior, we need different starting units
-        fun getWarriorEquivalent(civ: CivilizationInfo): String {
+        fun getWarriorEquivalent(civ: CivilizationInfo): String? {
             val availableMilitaryUnits = gameInfo.ruleSet.units.values.filter {
                 it.isBuildable(civ)
                         && it.unitType.isLandUnit()
                         && !it.unitType.isCivilian()
             }
-            return availableMilitaryUnits.maxBy { max(it.strength, it.rangedStrength) }!!.name
+            return availableMilitaryUnits.maxBy { max(it.strength, it.rangedStrength) }?.name
         }
         // no starting units for Barbarians and Spectators
         for (civ in gameInfo.civilizations.filter { !it.isBarbarian() && !it.isSpectator() }) {
@@ -154,14 +156,16 @@ object GameStarter {
             fun placeNearStartingPosition(unitName: String) {
                 civ.placeUnitNearTile(startingLocation.position, unitName)
             }
-            placeNearStartingPosition(Constants.settler)
-            placeNearStartingPosition(getWarriorEquivalent(civ))
-
-            if (!civ.isPlayerCivilization() && civ.isMajorCiv()) {
-                for (unit in gameInfo.getDifficulty().aiFreeUnits) {
-                    val unitToAdd = if (unit == "Warrior") getWarriorEquivalent(civ) else unit
-                    placeNearStartingPosition(unitToAdd)
-                }
+            val warriorEquivalent = getWarriorEquivalent(civ)
+            val startingUnits = when {
+                civ.isPlayerCivilization() -> gameInfo.getDifficulty().startingUnits
+                civ.isMajorCiv() -> gameInfo.getDifficulty().aiMajorCivStartingUnits
+                else -> gameInfo.getDifficulty().aiCityStateStartingUnits
+            }
+            
+            for (unit in startingUnits) {
+                val unitToAdd = if (unit == "Warrior") warriorEquivalent else unit
+                if (unitToAdd != null) placeNearStartingPosition(unitToAdd)
             }
         }
     }
@@ -210,9 +214,9 @@ object GameStarter {
                     for (startBias in civ.nation.startBias) {
                         if (startBias.startsWith("Avoid ")) {
                             val tileToAvoid = startBias.removePrefix("Avoid [").removeSuffix("]")
-                            preferredTiles = preferredTiles.filter { it.baseTerrain != tileToAvoid && it.terrainFeature != tileToAvoid }
+                            preferredTiles = preferredTiles.filter { !it.fitsUniqueFilter(tileToAvoid) }
                         } else if (startBias == Constants.coast) preferredTiles = preferredTiles.filter { it.isCoastalTile() }
-                        else preferredTiles = preferredTiles.filter { it.baseTerrain == startBias || it.terrainFeature == startBias }
+                        else preferredTiles = preferredTiles.filter { it.fitsUniqueFilter(startBias) }
                     }
 
                     startingLocation = if (preferredTiles.isNotEmpty()) preferredTiles.random() else freeTiles.random()

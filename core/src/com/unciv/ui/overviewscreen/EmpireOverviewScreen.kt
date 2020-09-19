@@ -5,6 +5,7 @@ import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Label
+import com.badlogic.gdx.scenes.scene2d.ui.Slider
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
@@ -26,6 +27,7 @@ class EmpireOverviewScreen(private var viewingPlayer:CivilizationInfo, defaultPa
     private val topTable = Table().apply { defaults().pad(10f) }
     private val centerTable = Table().apply { defaults().pad(5f) }
 
+
     init {
         onBackButtonClicked { game.setWorldScreen() }
         val clicks = HashMap<String,() -> Unit>()
@@ -46,20 +48,8 @@ class EmpireOverviewScreen(private var viewingPlayer:CivilizationInfo, defaultPa
         topTable.add(setCityInfoButton)
 
         val setStatsInfoButton = "Stats".toTextButton()
-        val setStats = {
-            game.settings.addCompletedTutorialTask("See your stats breakdown")
-            centerTable.clear()
-            centerTable.add(ScrollPane(Table().apply {
-                defaults().pad(40f)
-                add(getHappinessTable()).top()
-                add(getGoldTable()).top()
-                add(getScienceTable()).top()
-                add(getGreatPeopleTable()).top()
-            }))
-            centerTable.pack()
-        }
-        clicks["Stats"] = setStats
-        setStatsInfoButton.onClick(setStats)
+        clicks["Stats"] = {setStats()}
+        setStatsInfoButton.onClick{setStats()}
         topTable.add(setStatsInfoButton)
 
         val setCurrentTradesButton = "Trades".toTextButton()
@@ -93,7 +83,7 @@ class EmpireOverviewScreen(private var viewingPlayer:CivilizationInfo, defaultPa
             civTable.background = ImageGetter.getBackground(Color.BLACK)
             civTable.add("[${relevantCivs.size}] Civilizations in the game".toLabel()).pad(5f).colspan(4).row()
             val titleTable = Table()
-            titleTable.add("Our Civilization:".toLabel()).pad(5f)
+            titleTable.add("Our Civilization:".toLabel())
             titleTable.add(ImageGetter.getNationIndicator(viewingPlayer.nation,25f)).pad(5f)
             titleTable.add(viewingPlayer.civName.toLabel()).left().row()
             civTable.add(titleTable).colspan(4).row()
@@ -148,6 +138,19 @@ class EmpireOverviewScreen(private var viewingPlayer:CivilizationInfo, defaultPa
         table.add(centerTable).height(stage.height - topTable.height).expand().row()
         table.setFillParent(true)
         stage.addActor(table)
+    }
+
+    private fun setStats() {
+        game.settings.addCompletedTutorialTask("See your stats breakdown")
+        centerTable.clear()
+        centerTable.add(ScrollPane(Table().apply {
+            defaults().pad(40f)
+            add(getHappinessTable()).top()
+            add(getGoldTable()).top()
+            add(getScienceTable()).top()
+            add(getGreatPeopleTable()).top()
+        }))
+        centerTable.pack()
     }
 
     private fun getTradesTable(): Table {
@@ -221,19 +224,36 @@ class EmpireOverviewScreen(private var viewingPlayer:CivilizationInfo, defaultPa
         val goldTable = Table(skin)
         goldTable.defaults().pad(5f)
         val goldHeader = Table(skin)
-        goldHeader.add(ImageGetter.getStatIcon("Gold")).pad(5f,0f,5f,12f).size(20f)
+        goldHeader.add(ImageGetter.getStatIcon("Gold")).pad(5f, 0f, 5f, 12f).size(20f)
         goldHeader.add("Gold".toLabel(fontSize = 24)).padTop(5f)
         goldTable.add(goldHeader).colspan(2).row()
         goldTable.addSeparator()
-        var total=0f
+        var total = 0f
         for (entry in viewingPlayer.stats().getStatMapForNextTurn()) {
-            if(entry.value.gold==0f) continue
+            if (entry.value.gold == 0f) continue
             goldTable.add(entry.key.tr())
             goldTable.add(entry.value.gold.roundToInt().toString()).right().row()
             total += entry.value.gold
         }
         goldTable.add("Total".tr())
         goldTable.add(total.roundToInt().toString()).right()
+
+        if(viewingPlayer.gameInfo.ruleSet.modOptions.uniques.contains("Can convert gold to science with sliders")) {
+            goldTable.addSeparator()
+            val sliderTable = Table()
+            sliderTable.add("Convert gold to science".toLabel()).row()
+            val slider = Slider(0f, 1f, 0.1f, false, skin)
+            slider.value = viewingPlayer.tech.goldPercentConvertedToScience
+
+            slider.onChange {
+                viewingPlayer.tech.goldPercentConvertedToScience = slider.value
+                viewingPlayer.cities.forEach { it.cityStats.update() }
+                setStats()
+            }
+            sliderTable.add(slider)
+            goldTable.add(sliderTable).colspan(2)
+        }
+
         goldTable.pack()
         return goldTable
     }
@@ -298,9 +318,9 @@ class EmpireOverviewScreen(private var viewingPlayer:CivilizationInfo, defaultPa
         val table=Table(skin).apply { defaults().pad(5f) }
         table.add("Name".tr())
         table.add("Action".tr())
-        table.add("Strength".tr())
-        table.add("Ranged strength".tr())
-        table.add("Movement".tr())
+        table.add(Fonts.strength)
+        table.add(Fonts.rangedStrength)
+        table.add(Fonts.movement.toString())
         table.add("Closest city".tr())
         table.add("Promotions".tr())
         table.add("Health".tr())
@@ -525,6 +545,12 @@ class EmpireOverviewScreen(private var viewingPlayer:CivilizationInfo, defaultPa
                 backgroundColor = civ.nation.getOuterColor()
                 labelColor = civ.nation.getInnerColor()
             } else {
+                civGroup.add(
+                        "?".toLabel(Color.WHITE)
+                        .apply { this.setAlignment(Align.center) }
+                        .surroundWithCircle(27f).apply { circle.color = Color.BLACK }
+                        .surroundWithCircle(30f, false).apply { circle.color = Color.WHITE }
+                )
                 backgroundColor = Color.DARK_GRAY
                 labelText = "???"
             }
@@ -533,7 +559,7 @@ class EmpireOverviewScreen(private var viewingPlayer:CivilizationInfo, defaultPa
             val label = labelText.toLabel(labelColor)
             label.setAlignment(Align.center)
 
-            civGroup.add(label).pad(10f)
+            civGroup.add(label).padLeft(10f)
             civGroup.pack()
             return civGroup
         }

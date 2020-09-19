@@ -37,7 +37,7 @@ object UnitAutomation {
             return true
         }
 
-        // Nothing immediate, let's look further. Number increases exponentially with distance - at 10 this took a looong time
+        // Nothing immediate, lets look further. Number increases exponentially with distance - at 10 this took a looong time
         for (tile in unit.currentTile.getTilesInDistance(5))
             if (isGoodTileToExplore(unit, tile)) {
                 unit.movement.headTowards(tile)
@@ -73,11 +73,9 @@ object UnitAutomation {
     }
 
     internal fun tryUpgradeUnit(unit: MapUnit): Boolean {
-        val upgradesTo = unit.baseUnit().upgradesTo
-        if (upgradesTo == null) return false
-
-        val upgradedUnit = unit.civInfo.gameInfo.ruleSet.units.getValue(upgradesTo)
-        if (!upgradedUnit.isBuildable(unit.civInfo)) return false
+        if (unit.baseUnit.upgradesTo == null) return false
+        val upgradedUnit = unit.getUnitToUpgradeTo()
+        if (!upgradedUnit.isBuildable(unit.civInfo)) return false // for resource reasons, usually
 
         val upgradeAction = UnitActions.getUpgradeAction(unit)
         if (upgradeAction == null) return false
@@ -91,7 +89,7 @@ object UnitAutomation {
             throw IllegalStateException("Barbarians is not allowed here.")
 
         if(unit.type.isCivilian()) {
-            if (unit.name == Constants.settler)
+            if (unit.hasUnique(Constants.settlerUnique))
                 return SpecificUnitAutomation.automateSettlerActions(unit)
 
             if (unit.hasUnique(Constants.workerUnique))
@@ -103,7 +101,7 @@ object UnitAutomation {
             if (unit.name == Constants.greatGeneral || unit.baseUnit.replaces == Constants.greatGeneral)
                 return SpecificUnitAutomation.automateGreatGeneral(unit)
 
-            if (unit.getUniques().any { it.equalsPlaceholderText("Can construct []") })
+            if (unit.hasUnique("Can construct []"))
                 return SpecificUnitAutomation.automateImprovementPlacer(unit) // includes great people plus moddable units
 
             return // The AI doesn't know how to handle unknown civilian units
@@ -261,7 +259,8 @@ object UnitAutomation {
         val settlerOrGreatPersonToAccompany = unit.civInfo.getCivUnits()
                 .firstOrNull {
                     val tile = it.currentTile
-                    (it.name == Constants.settler || it.name in GreatPersonManager().statToGreatPersonMapping.values)
+                    it.type==UnitType.Civilian &&
+                    (it.hasUnique(Constants.settlerUnique) || unit.name in GreatPersonManager().statToGreatPersonMapping.values)
                             && tile.militaryUnit == null && unit.movement.canMoveTo(tile) && unit.movement.canReach(tile)
                 }
         if (settlerOrGreatPersonToAccompany == null) return false

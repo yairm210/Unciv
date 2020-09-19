@@ -342,7 +342,7 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
                 button.disable()
                 cityScreen.closeAllPopups()
 
-                val purchasePrompt = "Currently you have [${city.civInfo.gold}] gold.".tr() + "\n\n" +
+                val purchasePrompt = "Currently you have [${city.civInfo.gold}] gold.".tr() + "\n" +
                         "Would you like to purchase [${construction.name}] for [$constructionGoldCost] gold?".tr()
                 YesNoPopup(purchasePrompt, { purchaseConstruction(construction) }, cityScreen, { cityScreen.update() }).open()
             }

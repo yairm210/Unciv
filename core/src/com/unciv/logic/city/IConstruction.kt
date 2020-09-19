@@ -4,6 +4,7 @@ import com.unciv.Constants
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.stats.INamed
 import com.unciv.models.translations.tr
+import com.unciv.ui.utils.Fonts
 import kotlin.math.roundToInt
 
 interface IConstruction : INamed {
@@ -23,7 +24,7 @@ open class PerpetualConstruction(override var name: String, val description: Str
         return isBuildable(cityConstructions)
     }
     open fun getProductionTooltip(cityInfo: CityInfo) : String
-            = "\r\n${(cityInfo.cityStats.currentCityStats.production / CONVERSION_RATE).roundToInt()}/${"{turn}".tr()}"
+            = "\r\n${(cityInfo.cityStats.currentCityStats.production / CONVERSION_RATE).roundToInt()}/${Fonts.turn}"
     open fun getConversionRate(cityInfo: CityInfo) : Int
             = CONVERSION_RATE
 
@@ -34,7 +35,7 @@ open class PerpetualConstruction(override var name: String, val description: Str
                 return cityConstructions.cityInfo.civInfo.tech.getTechUniques().contains("Enables conversion of city production to science")
             }
             override fun getProductionTooltip(cityInfo: CityInfo): String {
-                return "\r\n${(cityInfo.cityStats.currentCityStats.production / getConversionRate(cityInfo)).roundToInt()}/${"{turn}".tr()}"
+                return "\r\n${(cityInfo.cityStats.currentCityStats.production / getConversionRate(cityInfo)).roundToInt()}/${Fonts.turn}"
             }
             override fun getConversionRate(cityInfo: CityInfo) = (1/cityInfo.cityStats.getScienceConversionRate()).roundToInt()
         }

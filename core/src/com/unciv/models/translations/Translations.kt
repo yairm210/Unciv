@@ -71,7 +71,7 @@ class Translations : LinkedHashMap<String, TranslationEntry>(){
     }
 
 
-    private fun tryReadTranslationForLanguage(language: String) {
+    private fun tryReadTranslationForLanguage(language: String, printOutput: Boolean) {
         val translationStart = System.currentTimeMillis()
 
         val translationFileName = "jsons/translations/$language.properties"
@@ -99,7 +99,7 @@ class Translations : LinkedHashMap<String, TranslationEntry>(){
         createTranslations(language, languageTranslations)
 
         val translationFilesTime = System.currentTimeMillis() - translationStart
-        println("Loading translation file for $language - " + translationFilesTime + "ms")
+        if(printOutput) println("Loading translation file for $language - " + translationFilesTime + "ms")
     }
 
     private fun createTranslations(language: String,
@@ -120,7 +120,7 @@ class Translations : LinkedHashMap<String, TranslationEntry>(){
     }
 
     fun tryReadTranslationForCurrentLanguage(){
-        tryReadTranslationForLanguage(UncivGame.Current.settings.language)
+        tryReadTranslationForLanguage(UncivGame.Current.settings.language, false)
     }
 
     // This function is too strange for me, however, let's keep it "as is" for now. - JackRainy
@@ -152,7 +152,7 @@ class Translations : LinkedHashMap<String, TranslationEntry>(){
                 .filter { Gdx.files.internal("jsons/translations/$it.properties").exists() }
     }
 
-    fun readAllLanguagesTranslation() {
+    fun readAllLanguagesTranslation(printOutput:Boolean=false) {
         // Apparently you can't iterate over the files in a directory when running out of a .jar...
         // https://www.badlogicgames.com/forum/viewtopic.php?f=11&t=27250
         // which means we need to list everything manually =/
@@ -160,11 +160,11 @@ class Translations : LinkedHashMap<String, TranslationEntry>(){
         val translationStart = System.currentTimeMillis()
 
         for (language in getLanguagesWithTranslationFile()) {
-            tryReadTranslationForLanguage(language)
+            tryReadTranslationForLanguage(language, printOutput)
         }
 
         val translationFilesTime = System.currentTimeMillis() - translationStart
-        println("Loading translation files - "+translationFilesTime+"ms")
+        if(printOutput) println("Loading translation files - "+translationFilesTime+"ms")
     }
 
     fun loadPercentageCompleteOfLanguages(){

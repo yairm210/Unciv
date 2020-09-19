@@ -23,6 +23,8 @@ class GameSettings {
     var showTutorials: Boolean = true
     var autoAssignCityProduction: Boolean = true
     var autoBuildingRoads: Boolean = true
+    var automatedWorkersReplaceImprovements = true
+
     var showMinimap: Boolean = true
     var showPixelUnits: Boolean = false
     var showPixelImprovements: Boolean = true
@@ -34,10 +36,8 @@ class GameSettings {
     var orderTradeOffersByAmount = true
     var windowState = WindowState()
     var isFreshlyCreated = false
-    var minimapSize = 20
-    var minimapSquare = false
     var extendedMapEditor = false
-    var spectatorMode = false
+    var showModManager = false
 
     init {
         // 26 = Android Oreo. Versions below may display permanent icon in notification bar.

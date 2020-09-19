@@ -8,7 +8,7 @@
 			{
 				"name": "Aristocracy",
 				"effect": "+15% production when constructing wonders, +1 happiness for every 10 citizens in a city",
-				"uniques": ["+[15]% Production when constructing [Wonders]", "+1 happiness for every 10 citizens in a city"],
+				"uniques": ["+[15]% Production when constructing [Wonders]", "[+1 Happiness] per [10] population in all cities"],
 				"row": 1,
 				"column": 1
 			},
@@ -29,7 +29,7 @@
 			{
 				"name": "Landed Elite",
 				"effect": "+10% food growth and +2 food in capital",
-				"uniques": ["+10% food growth in capital", "[+2 Food] in capital"],
+				"uniques": ["+[10]% growth in capital", "[+2 Food] in capital"],
 				"requires": ["Legalism"],
 				"row": 2,
 				"column": 2
@@ -45,7 +45,7 @@
 			{
 				"name": "Tradition Complete",
 				"effect": "+15% growth and +2 food in all cities",
-				"uniques": ["+15% growth in all cities","[+2 Food] in all cities"]
+				"uniques": ["+[15]% growth in all cities","[+2 Food] in all cities"]
 			}
 		]
 	},
@@ -439,7 +439,7 @@
 			{
 				"name": "Freedom Complete",
 				"effect": "Tile yield from great improvement +100%, golden ages increase by 50%",
-				"uniques": ["Tile yield from Great Improvements +100%", "Golden Age length increases +50%"]
+				"uniques": ["Tile yield from Great Improvements +100%", "Golden Age length increased by [50]%"]
 			}
 		]
 	},

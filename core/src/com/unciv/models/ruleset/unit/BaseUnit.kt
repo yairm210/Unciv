@@ -6,9 +6,11 @@ import com.unciv.logic.city.IConstruction
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.MapUnit
 import com.unciv.models.ruleset.Ruleset
+import com.unciv.models.ruleset.Unique
 import com.unciv.models.translations.Translations
 import com.unciv.models.translations.tr
 import com.unciv.models.stats.INamed
+import com.unciv.ui.utils.Fonts
 import kotlin.math.pow
 
 // This is BaseUnit because Unit is already a base Kotlin class and to avoid mixing the two up
@@ -29,6 +31,7 @@ class BaseUnit : INamed, IConstruction {
     var requiredTech:String? = null
     var requiredResource:String? = null
     var uniques =HashSet<String>()
+    val uniqueObjects: List<Unique> by lazy { uniques.map { Unique(it) } }
     var promotions =HashSet<String>()
     var obsoleteTech:String?=null
     var upgradesTo:String? = null
@@ -38,20 +41,20 @@ class BaseUnit : INamed, IConstruction {
 
 
     fun getShortDescription(): String {
-        val infoList= mutableListOf<String>()
-        for(unique in uniques)
-            infoList+= Translations.translateBonusOrPenalty(unique)
-        for(promotion in promotions)
+        val infoList = mutableListOf<String>()
+        if (strength != 0) infoList += "$strength${Fonts.strength}"
+        if (rangedStrength != 0) infoList += "$rangedStrength${Fonts.rangedStrength}"
+        if (movement != 2) infoList += "$movement${Fonts.movement}"
+        for (promotion in promotions)
             infoList += promotion.tr()
-        if(strength!=0) infoList += "{Strength}: $strength".tr()
-        if(rangedStrength!=0) infoList += "{Ranged strength}: $rangedStrength".tr()
-        if(movement!=2) infoList+="{Movement}: $movement".tr()
+        for (unique in uniques)
+            infoList += Translations.translateBonusOrPenalty(unique)
         return infoList.joinToString()
     }
 
     fun getDescription(forPickerScreen:Boolean): String {
         val sb = StringBuilder()
-        if(requiredResource!=null) sb.appendln("{Requires} {$requiredResource}".tr())
+        if(requiredResource!=null) sb.appendln("Consumes 1 [{$requiredResource}]".tr())
         if(!forPickerScreen) {
             if(uniqueTo!=null) sb.appendln("Unique to [$uniqueTo], replaces [$replaces]".tr())
             else sb.appendln("{Cost}: $cost".tr())
@@ -59,12 +62,12 @@ class BaseUnit : INamed, IConstruction {
             if(upgradesTo!=null) sb.appendln("Upgrades to [$upgradesTo]".tr())
             if(obsoleteTech!=null) sb.appendln("Obsolete with [$obsoleteTech]".tr())
         }
-        if(strength!=0){
-            sb.append("{Strength}: $strength".tr())
-            if(rangedStrength!=0)  sb.append(", {Ranged strength}: $rangedStrength".tr())
-            if(rangedStrength!=0)  sb.append(", {Range}: $range".tr())
-            sb.appendln()
+        if(strength!=0) {
+            sb.append("$strength${Fonts.strength}, ")
+            if (rangedStrength != 0) sb.append("$rangedStrength${Fonts.rangedStrength}, ")
+            if (rangedStrength != 0) sb.append("$range${Fonts.range}, ")
         }
+        sb.appendln("$movement${Fonts.movement}")
 
         for(unique in uniques)
             sb.appendln(Translations.translateBonusOrPenalty(unique))
@@ -74,8 +77,7 @@ class BaseUnit : INamed, IConstruction {
             sb.appendln(promotions.joinToString(", ", " ") { it.tr() })
         }
 
-        sb.appendln("{Movement}: $movement".tr())
-        return sb.toString()
+        return sb.toString().trim()
     }
 
     fun getMapUnit(ruleset: Ruleset): MapUnit {
@@ -87,7 +89,7 @@ class BaseUnit : INamed, IConstruction {
         return unit
     }
 
-    override fun canBePurchased() = true
+    override fun canBePurchased() = "Cannot be purchased" !in uniques
 
     override fun getProductionCost(civInfo: CivilizationInfo): Int {
         var productionCost = cost.toFloat()
@@ -137,8 +139,8 @@ class BaseUnit : INamed, IConstruction {
         if (uniques.contains("Requires Manhattan Project") && !civInfo.hasUnique("Enables nuclear weapon"))
             return "Requires Manhattan Project"
         if (requiredResource!=null && !civInfo.hasResource(requiredResource!!) && !civInfo.gameInfo.gameParameters.godMode) return "Consumes 1 [$requiredResource]"
-        if (name == Constants.settler && civInfo.isCityState()) return "No settler for city-states"
-        if (name == Constants.settler && civInfo.isOneCityChallenger()) return "No settler for players in One City Challenge"
+        if (uniques.contains(Constants.settlerUnique) && civInfo.isCityState()) return "No settler for city-states"
+        if (uniques.contains(Constants.settlerUnique) && civInfo.isOneCityChallenger()) return "No settler for players in One City Challenge"
         return ""
     }
 

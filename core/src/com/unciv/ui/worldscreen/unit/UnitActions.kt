@@ -14,8 +14,6 @@ import com.unciv.models.UncivSound
 import com.unciv.models.UnitAction
 import com.unciv.models.UnitActionType
 import com.unciv.models.ruleset.Building
-import com.unciv.models.translations.equalsPlaceholderText
-import com.unciv.models.translations.getPlaceholderParameters
 import com.unciv.models.translations.tr
 import com.unciv.ui.pickerscreens.ImprovementPickerScreen
 import com.unciv.ui.pickerscreens.PromotionPickerScreen
@@ -25,14 +23,12 @@ import com.unciv.ui.worldscreen.WorldScreen
 
 object UnitActions {
 
-    const val CAN_UNDERTAKE = "Can undertake"
-
     fun getUnitActions(unit: MapUnit, worldScreen: WorldScreen): List<UnitAction> {
         val tile = unit.getTile()
         val unitTable = worldScreen.bottomUnitTable
         val actionList = ArrayList<UnitAction>()
 
-        if (unit.action != null && unit.action!!.startsWith("moveTo")) {
+        if (unit.isMoving()) {
             actionList += UnitAction(
                     type = UnitActionType.StopMovement,
                     action = { unit.action = null }
@@ -289,83 +285,91 @@ object UnitActions {
                 type = UnitActionType.ConstructImprovement,
                 isCurrentAction = unit.currentTile.hasImprovementInProgress(),
                 action = {
-                    worldScreen.game.setScreen(ImprovementPickerScreen(tile) { unitTable.selectedUnit = null })
+                    worldScreen.game.setScreen(ImprovementPickerScreen(tile) { unitTable.selectUnit() })
                 }.takeIf { canConstruct })
     }
 
     private fun addGreatPersonActions(unit: MapUnit, actionList: ArrayList<UnitAction>, tile: TileInfo) {
 
-        if (unit.hasUnique("Can hurry technology research") && !unit.isEmbarked()) {
-            actionList += UnitAction(
-                    type = UnitActionType.HurryResearch,
-                    uncivSound = UncivSound.Chimes,
-                    action = {
-                        unit.civInfo.tech.hurryResearch()
-                        addGoldPerGreatPersonUsage(unit.civInfo)
-                        unit.destroy()
-                    }.takeIf { unit.civInfo.tech.currentTechnologyName() != null && unit.currentMovement > 0 })
-        }
-
-        if (unit.hasUnique("Can start an 8-turn golden age") && !unit.isEmbarked()) {
-            actionList += UnitAction(
-                    type = UnitActionType.StartGoldenAge,
-                    uncivSound = UncivSound.Chimes,
-                    action = {
-                        unit.civInfo.goldenAges.enterGoldenAge()
-                        addGoldPerGreatPersonUsage(unit.civInfo)
-                        unit.destroy()
-                    }.takeIf { unit.currentMovement > 0 })
-        }
-
-        if (unit.hasUnique("Can speed up construction of a wonder") && !unit.isEmbarked()) {
-            val canHurryWonder = if (unit.currentMovement == 0f || !tile.isCityCenter()) false
-            else {
-                val currentConstruction = tile.getCity()!!.cityConstructions.getCurrentConstruction()
-                if (currentConstruction !is Building) false
-                else currentConstruction.isWonder || currentConstruction.isNationalWonder
+        if (unit.currentMovement > 0) for (unique in unit.getUniques()) when (unique.placeholderText) {
+            "Can hurry technology research" -> {
+                actionList += UnitAction(
+                        type = UnitActionType.HurryResearch,
+                        uncivSound = UncivSound.Chimes,
+                        action = {
+                            unit.civInfo.tech.hurryResearch()
+                            addGoldPerGreatPersonUsage(unit.civInfo)
+                            unit.destroy()
+                        }.takeIf { unit.civInfo.tech.currentTechnologyName() != null })
             }
-            actionList += UnitAction(
-                    type = UnitActionType.HurryWonder,
-                    uncivSound = UncivSound.Chimes,
-                    action = {
-                        tile.getCity()!!.cityConstructions.apply {
-                            addProductionPoints(300 + 30 * tile.getCity()!!.population.population) //http://civilization.wikia.com/wiki/Great_engineer_(Civ5)
-                            constructIfEnough()
-                        }
-                        addGoldPerGreatPersonUsage(unit.civInfo)
-                        unit.destroy()
-                    }.takeIf { canHurryWonder })
-        }
-
-        if (unit.hasUnique("Can undertake a trade mission with City-State, giving a large sum of gold and [30] Influence")
-                && !unit.isEmbarked()) {
-            val canConductTradeMission = tile.owningCity?.civInfo?.isCityState() == true
-                    && tile.owningCity?.civInfo?.isAtWarWith(unit.civInfo) == false
-                    && unit.currentMovement > 0
-            actionList += UnitAction(
-                    type = UnitActionType.ConductTradeMission,
-                    uncivSound = UncivSound.Chimes,
-                    action = {
-                        // http://civilization.wikia.com/wiki/Great_Merchant_(Civ5)
-                        var goldEarned = (350 + 50 * unit.civInfo.getEraNumber()) * unit.civInfo.gameInfo.gameParameters.gameSpeed.modifier
-                        if (unit.civInfo.hasUnique("Double gold from Great Merchant trade missions"))
-                            goldEarned *= 2
-                        unit.civInfo.gold += goldEarned.toInt()
-                        val relevantUnique = unit.getUniques().first { it.startsWith(CAN_UNDERTAKE) }
-                        val influenceEarned = Regex("\\d+").find(relevantUnique)!!.value.toInt()
-                        tile.owningCity!!.civInfo.getDiplomacyManager(unit.civInfo).influence += influenceEarned
-                        unit.civInfo.addNotification("Your trade mission to [${tile.owningCity!!.civInfo}] has earned you [${goldEarned.toInt()}] gold and [$influenceEarned] influence!", null, Color.GOLD)
-                        addGoldPerGreatPersonUsage(unit.civInfo)
-                        unit.destroy()
-                    }.takeIf { canConductTradeMission })
+            "Can start an []-turn golden age" -> {
+                val turnsToGoldenAge = unique.params[0].toInt()
+                actionList += UnitAction(
+                        type = UnitActionType.StartGoldenAge,
+                        uncivSound = UncivSound.Chimes,
+                        action = {
+                            unit.civInfo.goldenAges.enterGoldenAge(turnsToGoldenAge)
+                            addGoldPerGreatPersonUsage(unit.civInfo)
+                            unit.destroy()
+                        }.takeIf { unit.currentTile.getOwner() != null && unit.currentTile.getOwner() == unit.civInfo })
+            }
+            // As of 3.10.7 This is to be deprecated and converted to "Can start an []-turn golden age" - keeping it here to that mods with this can still work for now
+            "Can start an 8-turn golden age" -> {
+                actionList += UnitAction(
+                        type = UnitActionType.StartGoldenAge,
+                        uncivSound = UncivSound.Chimes,
+                        action = {
+                            unit.civInfo.goldenAges.enterGoldenAge(8)
+                            addGoldPerGreatPersonUsage(unit.civInfo)
+                            unit.destroy()
+                        }.takeIf { unit.currentTile.getOwner() != null && unit.currentTile.getOwner() == unit.civInfo })
+            }
+            "Can speed up construction of a wonder" -> {
+                val canHurryWonder = if (!tile.isCityCenter()) false
+                else {
+                    val currentConstruction = tile.getCity()!!.cityConstructions.getCurrentConstruction()
+                    if (currentConstruction !is Building) false
+                    else currentConstruction.isWonder || currentConstruction.isNationalWonder
+                }
+                actionList += UnitAction(
+                        type = UnitActionType.HurryWonder,
+                        uncivSound = UncivSound.Chimes,
+                        action = {
+                            tile.getCity()!!.cityConstructions.apply {
+                                addProductionPoints(300 + 30 * tile.getCity()!!.population.population) //http://civilization.wikia.com/wiki/Great_engineer_(Civ5)
+                                constructIfEnough()
+                            }
+                            addGoldPerGreatPersonUsage(unit.civInfo)
+                            unit.destroy()
+                        }.takeIf { canHurryWonder })
+            }
+            "Can undertake a trade mission with City-State, giving a large sum of gold and [] Influence" -> {
+                val canConductTradeMission = tile.owningCity?.civInfo?.isCityState() == true
+                        && tile.owningCity?.civInfo?.isAtWarWith(unit.civInfo) == false
+                val influenceEarned = unique.params[0].toInt()
+                actionList += UnitAction(
+                        type = UnitActionType.ConductTradeMission,
+                        uncivSound = UncivSound.Chimes,
+                        action = {
+                            // http://civilization.wikia.com/wiki/Great_Merchant_(Civ5)
+                            var goldEarned = ((350 + 50 * unit.civInfo.getEraNumber()) * unit.civInfo.gameInfo.gameParameters.gameSpeed.modifier).toInt()
+                            if (unit.civInfo.hasUnique("Double gold from Great Merchant trade missions"))
+                                goldEarned *= 2
+                            unit.civInfo.gold += goldEarned
+                            tile.owningCity!!.civInfo.getDiplomacyManager(unit.civInfo).influence += influenceEarned
+                            unit.civInfo.addNotification("Your trade mission to [${tile.owningCity!!.civInfo}] has earned you [${goldEarned}] gold and [$influenceEarned] influence!", null, Color.GOLD)
+                            addGoldPerGreatPersonUsage(unit.civInfo)
+                            unit.destroy()
+                        }.takeIf { canConductTradeMission })
+            }
         }
     }
 
 
     fun getImprovementConstructionActions(unit: MapUnit, tile: TileInfo): ArrayList<UnitAction> {
         val finalActions = ArrayList<UnitAction>()
-        for (unique in unit.getUniques().filter { it.equalsPlaceholderText("Can construct []") }) {
-            val improvementName = unique.getPlaceholderParameters()[0]
+        for (unique in unit.getMatchingUniques("Can construct []")) {
+            val improvementName = unique.params[0]
             finalActions +=  UnitAction(
                     type = UnitActionType.Create,
                     title = "Create [$improvementName]",
@@ -439,7 +443,7 @@ object UnitActions {
                 uncivSound = UncivSound.Fortify,
                 action = {
                     unit.fortify()
-                    unitTable.selectedUnit = null
+                    unitTable.selectUnit()
                 }.takeIf { unit.currentMovement > 0 })
 
         if (unit.health < 100) {
@@ -448,7 +452,7 @@ object UnitActions {
                     title = UnitActionType.FortifyUntilHealed.value,
                     action = {
                         unit.fortifyUntilHealed()
-                        unitTable.selectedUnit = null
+                        unitTable.selectUnit()
                     }.takeIf { unit.currentMovement > 0 })
             actionList += actionForWounded
         }
@@ -465,7 +469,7 @@ object UnitActions {
                 isCurrentAction = isSleeping,
                 action = {
                     unit.action = Constants.unitActionSleep
-                    unitTable.selectedUnit = null
+                    unitTable.selectUnit()
                 }.takeIf { !isSleeping })
 
         if (unit.health < 100 && !isSleeping) {
@@ -474,7 +478,7 @@ object UnitActions {
                     title = UnitActionType.SleepUntilHealed.value,
                     action = {
                         unit.action = Constants.unitActionSleepUntilHealed
-                        unitTable.selectedUnit = null
+                        unitTable.selectUnit()
                     })
             actionList += actionForWounded
         }

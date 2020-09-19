@@ -11,10 +11,12 @@ import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.tr
 import com.unciv.ui.cityscreen.ConstructionInfoTable
+import com.unciv.ui.utils.Fonts
 import com.unciv.ui.utils.withItem
 import com.unciv.ui.utils.withoutItem
 import java.util.*
 import kotlin.collections.ArrayList
+import kotlin.math.ceil
 import kotlin.math.roundToInt
 
 /**
@@ -69,6 +71,13 @@ class CityConstructions {
         val stats = Stats()
         for (building in getBuiltBuildings())
             stats.add(building.getStats(cityInfo.civInfo))
+
+        for (unique in builtBuildingUniqueMap.getAllUniques()) when (unique.placeholderText) {
+            "[] Per [] Population in this city" -> stats.add(Stats.parse(unique.params[0]).times(cityInfo.population.population / unique.params[1].toFloat()))
+            "[] once [] is discovered" -> if (cityInfo.civInfo.tech.isResearched(unique.params[1])) stats.add(Stats.parse(unique.params[0]))
+        }
+
+        // This is to be deprecated and converted to "[stats] Per [N] Population in this city" - keeping it here to that mods with this can still work for now
         stats.science += (builtBuildingUniqueMap.getAllUniques().count { it.text == "+1 Science Per 2 Population" } * cityInfo.population.population / 2).toFloat()
         return stats
     }
@@ -115,13 +124,13 @@ class CityConstructions {
 
     fun getProductionForTileInfo(): String {
         /* this is because there were rare errors tht I assume were caused because
-           currentContruction changed on another thread */
+           currentConstruction changed on another thread */
         val currentConstructionSnapshot = currentConstructionFromQueue
         var result = currentConstructionSnapshot.tr()
         if (currentConstructionSnapshot!=""
                 && !PerpetualConstruction.perpetualConstructionsMap.containsKey(currentConstructionSnapshot)) {
             val turnsLeft = turnsToConstruction(currentConstructionSnapshot)
-            result += ConstructionInfoTable.turnOrTurns(turnsLeft)
+            result += " - $turnsLeft${Fonts.turn}"
         }
         return result
     }
@@ -194,7 +203,7 @@ class CityConstructions {
             // Since this is only ever used for UI purposes, I feel fine with having it be a bit inefficient
             //   and recalculating the entire city stats
             // We don't want to change our current construction queue - what if we have an empty queue, too many changes to check for -
-            //  So we ust clone it and see what would happen f that was our construction
+            //  So we must clone it and see what would happen if that was our construction
             val cityConstructionsClone = clone()
             cityConstructionsClone.currentConstructionFromQueue = constructionName
             cityConstructionsClone.cityInfo = cityInfo
@@ -210,7 +219,7 @@ class CityConstructions {
         var production = cityStatsForConstruction.production.roundToInt()
         if (constructionName == Constants.settler) production += cityStatsForConstruction.food.toInt()
 
-        return Math.ceil((workLeft / production.toDouble())).toInt()
+        return ceil(workLeft / production.toDouble()).toInt()
     }
     //endregion
 
@@ -375,8 +384,9 @@ class CityConstructions {
     fun chooseNextConstruction() {
         validateConstructionQueue()
         if (constructionQueue.isNotEmpty()) {
-            currentConstructionIsUserSet = true
-            if (currentConstructionFromQueue != "" && getConstruction(currentConstructionFromQueue) !is PerpetualConstruction) return
+            if (currentConstructionFromQueue != ""
+                    // If the USER set a perpetual construction, then keep it!
+                    && (getConstruction(currentConstructionFromQueue) !is PerpetualConstruction || currentConstructionIsUserSet)) return
         }
 
         ConstructionAutomation(this).chooseNextConstruction()
@@ -386,9 +396,15 @@ class CityConstructions {
         if (isQueueFull()) return
         if (currentConstructionFromQueue == "" || currentConstructionFromQueue == "Nothing") {
             currentConstructionFromQueue = constructionName
-            currentConstructionIsUserSet = true
+        } else if (getConstruction(constructionQueue.last()) is PerpetualConstruction) {
+            if (getConstruction(constructionName) is PerpetualConstruction) {  // perpetual constructions will replace each other
+                constructionQueue.removeAt(constructionQueue.size - 1)
+                constructionQueue.add(constructionName)
+            } else
+                constructionQueue.add(constructionQueue.size - 1, constructionName) // insert new construction before perpetual one
         } else
             constructionQueue.add(constructionName)
+        currentConstructionIsUserSet = true
     }
 
     /** If this was done automatically, we should automatically try to choose a new construction and treat it as such */

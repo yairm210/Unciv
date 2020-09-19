@@ -30,13 +30,13 @@ class NotificationsScroll(internal val worldScreen: WorldScreen) : ScrollPane(nu
 
         notificationsTable.clearChildren()
         for (notification in notifications.toList().reversed()) { // toList to avoid concurrency problems
-            val label = notification.text.toLabel(Color.BLACK,14)
+            val label = notification.text.toLabel(Color.BLACK,30)
             val listItem = Table()
 
             listItem.add(ImageGetter.getCircle()
-                    .apply { color=notification.color }).size(10f).pad(5f)
-            listItem.background = ImageGetter.getRoundedEdgeTableBackground()
-            listItem.add(label).pad(5f).padRight(10f)
+                    .apply { color=notification.color }).size(20f).padRight(5f)
+            listItem.background = ImageGetter.getRoundedEdgeTableBackground().apply { setScale(0.5f) }
+            listItem.add(label)
 
             // using a large click area with no gap in between each message item.
             // this avoids accidentally clicking in between the messages, resulting in a map click
@@ -52,7 +52,7 @@ class NotificationsScroll(internal val worldScreen: WorldScreen) : ScrollPane(nu
         }
         notificationsTable.pack()
         pack()
-        height = min(notificationsTable.height,worldScreen.stage.height/3)
+        height = min(notificationsTable.height,worldScreen.stage.height * 2 / 3 - 15f)
     }
 
 }

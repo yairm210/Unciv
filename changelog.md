@@ -1,3 +1,134 @@
+## 3.10.10
+
+Generified "[X] free [] units"
+
+Resolved #3130 - "All policies adopted" shown in policy picker screen when relevant
+
+Multiselect applies to civilian units and from city overlays
+
+UI Upgrade - By lishaoxia1985
+
+Translation updates
+
+## 3.10.9
+
+Resolved #3115 - AI no longer congregates great people in cities where it can't improve tiles
+
+Fixed AI unit upgrading - can now 'skip' over intermediate units, the way the "promote unit" action works. #3115
+
+Parameterized some uniques, fixes some minor bugs - By HadeanLake
+
+UI update - By lishaoxia1985
+
+Experimental - Can now move multiple military units to nearby tiles at the same turn in Desktop, via shift-click
+
+Translation updates
+
+## 3.10.8
+
+Resolved #3048 - Fixed ANRs on 'Resume' on huge save files
+
+Mod management screen improvements
+
+Resolved #3059 - better city expansion rules
+
+Resolved #3081 - fixed bug in air interception
+
+Show that air units can move to tiles within attack range - By bringert
+
+Fixed #3066, crash in chooseMilitaryUnit and some great people actions - By HadeanLake
+
+Translation updates
+
+## 3.10.7
+
+Mods can handle situations where there is no military unit that is available for construction
+
+Getting the mod list for download now works from Android as well
+
+Resolved #3076 - automation now happens at the end of turn rather than the beginning
+
+UI fixes for rounded edge boxes - By lishaoxia1985
+
+Can construct Farms near freshwater in all terrains - By HadeanLake
+
+Translation updates
+
+## 3.10.6
+
+Options button now appears in main menu
+
+Added "automated workers don't replace improvements" setting (#3050)
+
+Separated base ruleset mods in new game screen - cannot activate multiple base ruleset mods
+
+Resolved #2886 - new Plains+Forest tiles by The Bucketeer that don't hide the rivers behind them :)
+
+Resolved #3053 - improvements can be built on neutral tiles
+
+Resolved #3065 - Ottomans' unique is now according to Vanilla
+
+By HadeanLake:
+
+- Added Aztecs nation
+- A Few UI fixes 
+- New uniques and stuff for mods 
+
+UI fixes - By lishaoxia1985
+
+## 3.10.5
+
+Added Mod Management screen!
+
+Can now download Mods directly from Github, with mod discoverability!
+
+Can now add Maps to mods, to dissimenate them through Github as well!
+
+Resolved #3035 - added nationsToRemove in modOptions
+
+Translation options
+
+## 3.10.4
+
+Resolved #2979 - Display countdown to negotiate peace in diplomacy screen
+
+Resolved #2844 - Can now immediately move units in Desktop with right-click
+
+Added unit symbols for Turn, Strength, Ranged Strength, Range and Movement as 'emojis'
+
+Resolved #2937 - can add large increments of gold in trades
+
+Keep the perpetual construciton going, if the user set it manually.
+
+Tech picker screen auto-handles eras of different lengths
+
+Can remove tile features outside your borders
+
+A mishmash of different fixes: Unit uniques and promotions, happiness calculation, etc.
+
+Added a new test that ensures no two placeholders are the same
+
+
+## 3.10.3
+
+Settler 'by name' recognition changed to 'by unique' recognition, allowing for modded settler-like units
+
+Can now disable diplomatic relationship changes in a mod
+
+MapGen doesn't place ancient ruins if they're not defined in the current ruleset
+
+Resolved #3016 - Policy branch uniques are translated properly
+
+Borders consist of both civ colors, making some borders (esp. Germany) much clearer
+
+Roads and railoads can be removed outside your borders
+
+More generifications!
+
+Merged Building and Policy unique activations
+
+Translation updates
+
 ## 3.10.2
 
 Added link checks when loading mods, so you'll know if you messed something up when making them

@@ -339,8 +339,8 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
         }
         updateNextTurnButton(hasOpenPopups()) // This must be before the notifications update, since its position is based on it
         notificationsScroll.update(viewingCiv.notifications)
-        notificationsScroll.setPosition(stage.width - notificationsScroll.width - 5f,
-                nextTurnButton.y - notificationsScroll.height - 5f)
+        notificationsScroll.setPosition(stage.width - notificationsScroll.width*0.5f - 10f,
+                nextTurnButton.y - notificationsScroll.height*0.5f - 5f)
     }
 
     private fun getCurrentTutorialTask(): String {
@@ -445,8 +445,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
             innerButton.color = colorFromRGB(7, 46, 43)
             techButtonHolder.add(innerButton)
             val turnsToTech = viewingCiv.tech.turnsToTech(currentTech)
-            innerButton.text.setText(currentTech.tr() + "\r\n" + turnsToTech
-                    + (if (turnsToTech > 1) " {turns}".tr() else " {turn}".tr()))
+            innerButton.text.setText(currentTech.tr() + "\r\n" + turnsToTech + Fonts.turn)
         } else if (viewingCiv.tech.canResearchTech() || viewingCiv.tech.researchedTechnologies.any()) {
             val buttonPic = Table()
             buttonPic.background = ImageGetter.getRoundedEdgeTableBackground(colorFromRGB(7, 46, 43))
@@ -594,8 +593,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
                     val nextDueUnit = viewingCiv.getNextDueUnit()
                     if (nextDueUnit != null) {
                         mapHolder.setCenterPosition(nextDueUnit.currentTile.position, false, false)
-                        bottomUnitTable.selectedCity = null
-                        bottomUnitTable.selectedUnit = nextDueUnit
+                        bottomUnitTable.selectUnit(nextDueUnit)
                         shouldUpdate = true
                     }
                 }
@@ -619,7 +617,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
                 }
 
             else ->
-                NextTurnAction("Next turn", Color.WHITE) {
+                NextTurnAction("${Fonts.turn}{Next turn}", Color.WHITE) {
                     game.settings.addCompletedTutorialTask("Pass a turn")
                     nextTurn()
                 }
@@ -688,7 +686,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
 
         // Deselect Unit
         if (bottomUnitTable.selectedUnit != null) {
-            bottomUnitTable.selectedUnit = null
+            bottomUnitTable.selectUnit()
             bottomUnitTable.isVisible = false
             shouldUpdate = true
             return
