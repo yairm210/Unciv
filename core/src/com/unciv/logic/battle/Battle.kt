@@ -239,7 +239,10 @@ object Battle {
 
         var XPModifier = 1f
         if (thisCombatant.getCivInfo().hasUnique("Military units gain 50% more Experience from combat")) XPModifier += 0.5f
-        if (thisCombatant.unit.hasUnique("50% Bonus XP gain")) XPModifier += 0.5f
+        if (thisCombatant.unit.hasUnique("50% Bonus XP gain")) XPModifier += 0.5f // As of 3.10.10 This is to be deprecated and converted to "[50]% Bonus XP gain" - keeping it here to that mods with this can still work for now
+
+        for (unique in thisCombatant.unit.getMatchingUniques("[]% Bonus XP gain"))
+            XPModifier +=  unique.params[0].toFloat() / 100
 
         val XPGained = (amount * XPModifier).toInt()
         thisCombatant.unit.promotions.XP += XPGained
@@ -247,10 +250,11 @@ object Battle {
 
         if(thisCombatant.getCivInfo().isMajorCiv()) {
             var greatGeneralPointsModifier = 1f
-            // Yeah sue me I didn't parse these params
-            if (thisCombatant.getCivInfo().hasUnique("[Great General] is earned [50]% faster"))
-                greatGeneralPointsModifier += 0.5f
-            if (thisCombatant.unit.hasUnique("Combat very likely to create Great Generals"))
+            for (unique in thisCombatant.unit.getMatchingUniques("[] is earned []% faster"))
+                if (unique.params[0] == Constants.greatGeneral)
+                    greatGeneralPointsModifier += unique.params[1].toFloat() / 100
+
+            if (thisCombatant.unit.hasUnique("Combat very likely to create Great Generals")) // As of 3.10.10 This is to be deprecated and converted to "[Great General] is earned []% faster" - keeping it here to that mods with this can still work for now
                 greatGeneralPointsModifier += 1f
 
             val greatGeneralPointsGained = (XPGained * greatGeneralPointsModifier).toInt()

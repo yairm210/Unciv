@@ -405,12 +405,11 @@
 		"requiredTech": "Horseback Riding",
 		"upgradesTo": "Knight",
 		"obsoleteTech": "Metallurgy",
-		//"promotions": ["Great Generals I"],
+		"promotions": ["Great Generals I"],
 		"requiredResource": "Horses",
-		"uniques": ["Can move after attacking", "No defensive terrain bonus", "Penalty vs City 33%", "Combat very likely to create Great Generals"],
+		"uniques": ["Can move after attacking", "No defensive terrain bonus", "Penalty vs City 33%"],
 		"hurryCostModifier": 20,
 		"attackSound": "horse"
-		// should have "Great Generals I" instead of "Combat very likely to create Great Generals" unique
 	},
 	
 	// Medieval Era
@@ -509,10 +508,9 @@
 		"upgradesTo": "Musketman",
 		"obsoleteTech": "Gunpowder",
 		"requiredResource": "Iron",
-		"uniques": ["Combat very likely to create Great Generals"],
-		"promotions": ["Shock I"],
+		"promotions": ["Shock I", "Great Generals II"],
 		"attackSound": "metalhit"
-		//Aside from the Great Generals II promotion, Samurai should also create Fishing Boats (not now, surely)
+		//Samurai should also create Fishing Boats (not now, surely)
 	},
 	{
 		"name": "Berserker",
@@ -662,10 +660,9 @@
 		"requiredResource": "Horses",
 		"upgradesTo": "Cavalry",
 		"obsoleteTech": "Military Science",
-		"uniques": ["Can move after attacking","No defensive terrain bonus","Combat very likely to create Great Generals","50% Bonus XP gain"],
+		"uniques": ["Can move after attacking","No defensive terrain bonus"],
+		"promotions": ["Great Generals I", "Quick Study"],
 		"attackSound": "arrow"
-		// should have "Great Generals I" promotion instead of "Combat very likely to create Great Generals" unique
-		// should have "Quick Study" promotion instead of "50% Bonus XP gain" unique
 		// Keshik should have no penalty attacking cities
 	},
 	
