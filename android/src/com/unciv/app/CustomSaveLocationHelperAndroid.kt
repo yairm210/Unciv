@@ -81,21 +81,20 @@ class CustomSaveLocationHelperAndroid(private val activity: Activity) : CustomSa
             val index = callbackIndex++
             callbacks.add(IndexedCallback(
                     index,
-                    { uri ->
-                        if (uri != null) {
-                            val game = activity.contentResolver.openInputStream(uri)
-                                    ?.reader()
-                                    ?.readText()
-                                    ?.run {
-                                        GameSaver.gameInfoFromString(this)
-                                    }
-                            if (game != null) {
-                                // If the user has saved the game from another platform (like Android),
-                                // then the save location might not be right so we have to correct for that
-                                // here
-                                game.customSaveLocation = uri.toString()
-                                block(game)
-                            }
+                    callback@{ uri ->
+                        if (uri == null) return@callback
+                        val game = activity.contentResolver.openInputStream(uri)
+                                ?.reader()
+                                ?.readText()
+                                ?.run {
+                                    GameSaver.gameInfoFromString(this)
+                                }
+                        if (game != null) {
+                            // If the user has saved the game from another platform (like Android),
+                            // then the save location might not be right so we have to correct for that
+                            // here
+                            game.customSaveLocation = uri.toString()
+                            block(game)
                         }
                     }
             ))
