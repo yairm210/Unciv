@@ -78,6 +78,15 @@ class LoadGameScreen(previousScreen:CameraStageBaseScreen) : PickerScreen() {
             }
         }
         rightSideTable.add(loadFromClipboardButton).row()
+        if (GameSaver.canLoadFromCustomSaveLocation()) {
+            val loadFromCustomLocation = "Load from custom location".toTextButton()
+            loadFromCustomLocation.onClick {
+                GameSaver.loadGameFromCustomLocation {
+                    game.loadGame(it)
+                }
+            }
+            rightSideTable.add(loadFromCustomLocation).row()
+        }
         rightSideTable.add(errorLabel).row()
 
         deleteSaveButton.onClick {

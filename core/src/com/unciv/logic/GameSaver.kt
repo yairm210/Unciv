@@ -14,6 +14,8 @@ object GameSaver {
     private const val saveFilesFolder = "SaveFiles"
     private const val multiplayerFilesFolder = "MultiplayerGames"
     private const val settingsFileName = "GameSettings.json"
+    @Volatile
+    var customSaveLocationHelper: CustomSaveLocationHelper? = null
 
     /** When set, we know we're on Android and can save to the app's personal external file directory
      * See https://developer.android.com/training/data-storage/app-specific#external-access-files */
@@ -37,8 +39,19 @@ object GameSaver {
         return localSaves + Gdx.files.absolute(externalFilesDirForAndroid + "/${getSubfolder(multiplayer)}").list().asSequence()
     }
 
-    fun saveGame(game: GameInfo, GameName: String, multiplayer: Boolean = false) {
-        json().toJson(game,getSave(GameName, multiplayer))
+    fun saveGame(game: GameInfo, GameName: String, multiplayer: Boolean = false, forcePrompt: Boolean = false, block: (() -> Unit)? = null) {
+        val customSaveLocation = game.customSaveLocation
+        val customSaveLocationHelper = this.customSaveLocationHelper
+        if (customSaveLocation != null && customSaveLocationHelper != null) {
+            customSaveLocationHelper.saveGame(game, GameName, forcePrompt, block)
+        } else {
+            json().toJson(game,getSave(GameName, multiplayer))
+            block?.invoke()
+        }
+    }
+
+    fun saveGameToCustomLocation(game: GameInfo, GameName: String, block: () -> Unit) {
+        customSaveLocationHelper!!.saveGame(game, GameName, forcePrompt = true, block =block)
     }
 
     fun loadGameByName(GameName: String, multiplayer: Boolean = false) =
@@ -49,6 +62,14 @@ object GameSaver {
         game.setTransients()
         return game
     }
+
+    fun loadGameFromCustomLocation(block: (GameInfo) -> Unit) {
+        customSaveLocationHelper!!.loadGame { game ->
+            block(game.apply { setTransients() })
+        }
+    }
+
+    fun canLoadFromCustomSaveLocation() = customSaveLocationHelper != null
 
     fun gameInfoFromString(gameData:String): GameInfo {
         val game = json().fromJson(GameInfo::class.java, gameData)
@@ -107,6 +128,15 @@ object GameSaver {
     }
 
     fun autoSaveSingleThreaded (gameInfo: GameInfo) {
+        // If the user has chosen a custom save location outside of the usual game directories,
+        // they'll probably expect us to overwrite that instead. E.g. if the user is saving their
+        // game to their Google Drive folder, they'll probably want that progress to be synced to
+        // other devices automatically so they don't have to remember to manually save before
+        // exiting the game.
+        gameInfo.customSaveLocation?.let {
+            saveGame(gameInfo,gameInfo.currentPlayer + " -  " + gameInfo.turns + " turns", false)
+            return
+        }
         saveGame(gameInfo, "Autosave")
 
         // keep auto-saves for the last 10 turns for debugging purposes

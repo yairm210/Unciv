@@ -40,6 +40,20 @@ class SaveGameScreen : PickerScreen() {
             Gdx.app.clipboard.contents = base64Gzip
         }
         newSave.add(copyJsonButton).row()
+        if (GameSaver.canLoadFromCustomSaveLocation()) {
+            val saveToCustomLocation = "Save to custom location".toTextButton()
+            saveToCustomLocation.enable()
+            saveToCustomLocation.onClick {
+                saveToCustomLocation.setText("Saving...".tr())
+                saveToCustomLocation.disable()
+                thread(name = "SaveGame") {
+                    GameSaver.saveGameToCustomLocation(UncivGame.Current.gameInfo, textField.text) {
+                        Gdx.app.postRunnable { UncivGame.Current.setWorldScreen() }
+                    }
+                }
+            }
+            newSave.add(saveToCustomLocation).row()
+        }
 
 
         val showAutosavesCheckbox = CheckBox("Show autosaves".tr(), skin)
@@ -56,8 +70,9 @@ class SaveGameScreen : PickerScreen() {
         rightSideButton.onClick {
             rightSideButton.setText("Saving...".tr())
             thread(name = "SaveGame") {
-                GameSaver.saveGame(UncivGame.Current.gameInfo, textField.text)
-                Gdx.app.postRunnable { UncivGame.Current.setWorldScreen() }
+                GameSaver.saveGame(UncivGame.Current.gameInfo, textField.text) {
+                    Gdx.app.postRunnable { UncivGame.Current.setWorldScreen() }
+                }
             }
         }
         rightSideButton.enable()
