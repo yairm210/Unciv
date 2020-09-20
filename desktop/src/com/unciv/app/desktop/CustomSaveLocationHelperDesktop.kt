@@ -12,21 +12,20 @@ import javax.swing.JFrame
 
 class CustomSaveLocationHelperDesktop : CustomSaveLocationHelper {
     override fun saveGame(gameInfo: GameInfo, gameName: String, forcePrompt: Boolean, block: (() -> Unit)?) {
-        gameInfo.customSaveLocation?.let {
-            if (!forcePrompt) {
-                File(it).outputStream()
-                        .writer()
-                        .use { writer ->
-                            writer.write(json().toJson(gameInfo))
-                        }
-                block?.invoke()
-                return
-            }
+        val customSaveLocation = gameInfo.customSaveLocation
+        if (customSaveLocation != null && !forcePrompt) {
+            File(customSaveLocation).outputStream()
+                    .writer()
+                    .use { writer ->
+                        writer.write(json().toJson(gameInfo))
+                    }
+            block?.invoke()
+            return
         }
 
         val fileChooser = JFileChooser().apply fileChooser@{
             currentDirectory = Gdx.files.local("").file()
-            selectedFile = File(gameInfo.customSaveLocation?: gameName)
+            selectedFile = File(gameInfo.customSaveLocation ?: gameName)
         }
 
         JFrame().apply frame@{
@@ -36,7 +35,8 @@ class CustomSaveLocationHelperDesktop : CustomSaveLocationHelper {
             fileChooser.showSaveDialog(this@frame)
             dispatchEvent(WindowEvent(this, WindowEvent.WINDOW_CLOSING))
         }
-        fileChooser.selectedFile?.let { file ->
+        val file = fileChooser.selectedFile
+        if (file != null) {
             gameInfo.customSaveLocation = file.absolutePath
             file.outputStream()
                     .writer()
@@ -59,7 +59,8 @@ class CustomSaveLocationHelperDesktop : CustomSaveLocationHelper {
             fileChooser.showOpenDialog(this@frame)
             dispatchEvent(WindowEvent(this, WindowEvent.WINDOW_CLOSING))
         }
-        fileChooser.selectedFile?.let { file ->
+        val file = fileChooser.selectedFile
+        if (file != null) {
             file.inputStream()
                     .reader()
                     .readText()

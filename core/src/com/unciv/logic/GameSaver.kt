@@ -133,8 +133,9 @@ object GameSaver {
         // game to their Google Drive folder, they'll probably want that progress to be synced to
         // other devices automatically so they don't have to remember to manually save before
         // exiting the game.
-        gameInfo.customSaveLocation?.let {
-            saveGame(gameInfo,gameInfo.currentPlayer + " -  " + gameInfo.turns + " turns", false)
+        if (gameInfo.customSaveLocation != null) {
+            // GameName is unused here since we're just overwriting the existing file
+            saveGame(gameInfo, "", false)
             return
         }
         saveGame(gameInfo, "Autosave")
@@ -143,8 +144,10 @@ object GameSaver {
         val newAutosaveFilename = saveFilesFolder + File.separator + "Autosave-${gameInfo.currentPlayer}-${gameInfo.turns}"
         getSave("Autosave").copyTo(Gdx.files.local(newAutosaveFilename))
 
-        fun getAutosaves(): Sequence<FileHandle> { return getSaves().filter { it.name().startsWith("Autosave") } }
-        while(getAutosaves().count()>10){
+        fun getAutosaves(): Sequence<FileHandle> {
+            return getSaves().filter { it.name().startsWith("Autosave") }
+        }
+        while (getAutosaves().count() > 10) {
             val saveToDelete = getAutosaves().minBy { it.lastModified() }!!
             deleteSave(saveToDelete.name())
         }
