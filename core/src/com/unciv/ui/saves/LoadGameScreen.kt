@@ -85,7 +85,7 @@ class LoadGameScreen(previousScreen:CameraStageBaseScreen) : PickerScreen() {
                     game.loadGame(it)
                 }
             }
-            rightSideTable.add(loadFromCustomLocation).row()
+            rightSideTable.add(loadFromCustomLocation).pad(10f).row()
         }
         rightSideTable.add(errorLabel).row()
 

@@ -52,7 +52,7 @@ class SaveGameScreen : PickerScreen() {
                     }
                 }
             }
-            newSave.add(saveToCustomLocation).row()
+            newSave.add(saveToCustomLocation).pad(10f).row()
         }
 
 
