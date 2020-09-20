@@ -13,6 +13,7 @@ import com.unciv.ui.pickerscreens.PickerScreen
 import com.unciv.ui.utils.*
 import java.text.SimpleDateFormat
 import java.util.*
+import java.util.concurrent.CancellationException
 import kotlin.concurrent.thread
 import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 
@@ -78,6 +79,20 @@ class LoadGameScreen(previousScreen:CameraStageBaseScreen) : PickerScreen() {
             }
         }
         rightSideTable.add(loadFromClipboardButton).row()
+        if (GameSaver.canLoadFromCustomSaveLocation()) {
+            val loadFromCustomLocation = "Load from custom location".toTextButton()
+            loadFromCustomLocation.onClick {
+                GameSaver.loadGameFromCustomLocation { gameInfo, exception ->
+                    if (gameInfo != null) {
+                        game.loadGame(gameInfo)
+                    } else if (exception !is CancellationException) {
+                        errorLabel.setText("Could not load game from custom location!".tr())
+                        exception?.printStackTrace()
+                    }
+                }
+            }
+            rightSideTable.add(loadFromCustomLocation).pad(10f).row()
+        }
         rightSideTable.add(errorLabel).row()
 
         deleteSaveButton.onClick {

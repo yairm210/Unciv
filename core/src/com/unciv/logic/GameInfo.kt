@@ -35,6 +35,8 @@ class GameInfo {
     var oneMoreTurnMode=false
     var currentPlayer=""
     var gameId = UUID.randomUUID().toString() // random string
+    @Volatile
+    var customSaveLocation: String? = null
 
     /** Simulate until any player wins,
      *  or turns exceeds indicated number
@@ -55,6 +57,7 @@ class GameInfo {
         toReturn.gameParameters = gameParameters
         toReturn.gameId = gameId
         toReturn.oneMoreTurnMode = oneMoreTurnMode
+        toReturn.customSaveLocation = customSaveLocation
         return toReturn
     }
 

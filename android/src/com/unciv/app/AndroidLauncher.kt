@@ -1,5 +1,6 @@
 package com.unciv.app
 
+import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import androidx.core.app.NotificationManagerCompat
@@ -13,8 +14,12 @@ import com.unciv.ui.utils.ORIGINAL_FONT_SIZE
 import java.io.File
 
 class AndroidLauncher : AndroidApplication() {
+    private var customSaveLocationHelper: CustomSaveLocationHelperAndroid? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            customSaveLocationHelper = CustomSaveLocationHelperAndroid(this)
+        }
         MultiplayerTurnCheckWorker.createNotificationChannels(applicationContext)
 
 		// Only allow mods on KK+, to avoid READ_EXTERNAL_STORAGE permission earlier versions need
@@ -29,7 +34,8 @@ class AndroidLauncher : AndroidApplication() {
                 version = BuildConfig.VERSION_NAME,
                 crashReportSender = CrashReportSenderAndroid(this),
                 exitEvent = this::finish,
-                fontImplementation = NativeFontAndroid(ORIGINAL_FONT_SIZE.toInt())
+                fontImplementation = NativeFontAndroid(ORIGINAL_FONT_SIZE.toInt()),
+                customSaveLocationHelper = customSaveLocationHelper
         )
         val game = UncivGame ( androidParameters )
         initialize(game, config)
@@ -76,5 +82,14 @@ class AndroidLauncher : AndroidApplication() {
         }
         catch (ex:Exception){}
         super.onResume()
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            // This should only happen on API 19+ but it's wrapped in the if check to keep the
+            // compiler happy
+            customSaveLocationHelper?.handleIntentData(requestCode, data?.data)
+        }
+        super.onActivityResult(requestCode, resultCode, data)
     }
 }

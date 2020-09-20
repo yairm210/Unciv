@@ -1,6 +1,7 @@
 package com.unciv.ui.saves
 
 import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextField
@@ -10,6 +11,7 @@ import com.unciv.logic.GameSaver
 import com.unciv.models.translations.tr
 import com.unciv.ui.pickerscreens.PickerScreen
 import com.unciv.ui.utils.*
+import java.util.concurrent.CancellationException
 import kotlin.concurrent.thread
 import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 
@@ -40,6 +42,29 @@ class SaveGameScreen : PickerScreen() {
             Gdx.app.clipboard.contents = base64Gzip
         }
         newSave.add(copyJsonButton).row()
+        if (GameSaver.canLoadFromCustomSaveLocation()) {
+            val saveToCustomLocation = "Save to custom location".toTextButton()
+            val errorLabel = "".toLabel(Color.RED)
+            saveToCustomLocation.enable()
+            saveToCustomLocation.onClick {
+                errorLabel.setText("")
+                saveToCustomLocation.setText("Saving...".tr())
+                saveToCustomLocation.disable()
+                thread(name = "SaveGame") {
+                    GameSaver.saveGameToCustomLocation(UncivGame.Current.gameInfo, textField.text) { e ->
+                        if (e == null) {
+                            Gdx.app.postRunnable { UncivGame.Current.setWorldScreen() }
+                        } else if (e !is CancellationException) {
+                            errorLabel.setText("Could not save game to custom location".tr())
+                            e.printStackTrace()
+                        }
+                        saveToCustomLocation.enable()
+                    }
+                }
+            }
+            newSave.add(saveToCustomLocation).pad(10f).row()
+            newSave.add(errorLabel).pad(0f, 10f, 10f, 10f).row()
+        }
 
 
         val showAutosavesCheckbox = CheckBox("Show autosaves".tr(), skin)
@@ -56,8 +81,9 @@ class SaveGameScreen : PickerScreen() {
         rightSideButton.onClick {
             rightSideButton.setText("Saving...".tr())
             thread(name = "SaveGame") {
-                GameSaver.saveGame(UncivGame.Current.gameInfo, textField.text)
-                Gdx.app.postRunnable { UncivGame.Current.setWorldScreen() }
+                GameSaver.saveGame(UncivGame.Current.gameInfo, textField.text) {
+                    Gdx.app.postRunnable { UncivGame.Current.setWorldScreen() }
+                }
             }
         }
         rightSideButton.enable()
