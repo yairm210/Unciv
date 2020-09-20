@@ -1,6 +1,7 @@
 package com.unciv.app
 
 import android.content.Intent
+import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.os.Build
 import android.os.Bundle
 import androidx.core.app.NotificationManagerCompat
@@ -82,6 +83,13 @@ class AndroidLauncher : AndroidApplication() {
         }
         catch (ex:Exception){}
         super.onResume()
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT && requestCode == REQ_WRITE_STORAGE && grantResults[0] == PERMISSION_GRANTED) {
+            customSaveLocationHelper?.continuePreviousRequest()
+        }
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
