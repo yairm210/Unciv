@@ -32,7 +32,7 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
 
     init {
         onBackButtonClicked { UncivGame.Current.setWorldScreen() }
-        val splitPane = SplitPane(ScrollPane(leftSideTable), ScrollPane(rightSideTable), false, skin)
+        val splitPane = SplitPane(ScrollPane(leftSideTable), rightSideTable, false, skin)
         splitPane.splitAmount = 0.2f
 
         updateLeftSideTable()
@@ -73,10 +73,10 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
         }
     }
 
-    fun updateRightSide(otherCiv: CivilizationInfo){
+    fun updateRightSide(otherCiv: CivilizationInfo) {
         rightSideTable.clear()
-        if(otherCiv.isCityState()) rightSideTable.add(getCityStateDiplomacyTable(otherCiv))
-        else rightSideTable.add(getMajorCivDiplomacyTable(otherCiv))
+        if (otherCiv.isCityState()) rightSideTable.add(getCityStateDiplomacyTable(otherCiv))
+        else rightSideTable.add(ScrollPane(getMajorCivDiplomacyTable(otherCiv))).height(stage.height)
     }
 
     fun setTrade(civ: CivilizationInfo): TradeTable {

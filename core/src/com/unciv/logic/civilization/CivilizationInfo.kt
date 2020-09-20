@@ -6,6 +6,7 @@ import com.unciv.Constants
 import com.unciv.JsonParser
 import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
+import com.unciv.logic.UncivShowableException
 import com.unciv.logic.automation.NextTurnAutomation
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
@@ -245,7 +246,9 @@ class CivilizationInfo {
         for (unit in gameInfo.ruleSet.units.values)
             if (unit.replaces == baseUnitName && unit.uniqueTo == civName)
                 return unit
-        return gameInfo.ruleSet.units[baseUnitName]!!
+        val baseUnit = gameInfo.ruleSet.units[baseUnitName]
+        if (baseUnit == null) throw UncivShowableException("Unit $baseUnitName doesn't seem to exist!")
+        return baseUnit
     }
 
     fun meetCivilization(otherCiv: CivilizationInfo) {
