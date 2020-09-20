@@ -96,7 +96,7 @@ class AndroidLauncher : AndroidApplication() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             // This should only happen on API 19+ but it's wrapped in the if check to keep the
             // compiler happy
-            customSaveLocationHelper?.handleIntentData(data?.data)
+            customSaveLocationHelper?.handleIntentData(requestCode, data?.data)
         }
         super.onActivityResult(requestCode, resultCode, data)
     }
