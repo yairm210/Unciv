@@ -184,6 +184,8 @@ class Building : NamedStats(), IConstruction {
     override fun getProductionCost(civInfo: CivilizationInfo): Int {
         var productionCost = cost.toFloat()
 
+        for (unique in uniqueObjects.filter { it.placeholderText == "Cost increases by [] per owned city" })
+            productionCost += civInfo.cities.count() * unique.params[0].toInt()
 
         if (civInfo.isPlayerCivilization()) {
             if (!isWonder)
