@@ -89,6 +89,23 @@
 		"upgradesTo": "Crossbowman",
 		"attackSound": "arrow"
 	},
+	/*
+	{
+		"name": "Archer",
+		"unitType": "Ranged",
+		"uniqueTo": "Barbarians",
+		"replaces": "Archer",
+		"movement": 2,
+		"strength": 4,
+		"rangedStrength": 7,
+		"cost": 40,
+		"requiredTech": "Archery",
+		"obsoleteTech": "Machinery",
+		"upgradesTo": "Crossbowman",
+		"attackSound": "arrow"
+		// Barbarian unique archer. Has same icon and name but +1 rangedStrength (in vanilla) and slightly different 3d texture
+	},
+	*/
 	{
 		"name": "Bowman",
 		"unitType": "Ranged",
@@ -236,7 +253,22 @@
 		"uniques": ["Bonus vs Mounted 50%","+10 HP when healing"],
 		"attackSound": "metalhit"
 	},
-	
+	/*
+	{
+		"name": "Spearman",
+		"unitType": "Melee",
+		"movement": 2,
+		"strength": 7,
+		"cost": 56,
+		"requiredTech": "Bronze Working",
+		"obsoleteTech": "Civil Service",
+		"upgradesTo": "Pikeman",
+		"uniques": ["Bonus vs Mounted 50%"],
+		"attackSound": "metalhit"
+		// Barbarian unique Spearman. Has same icon and name but slightly different 3d texture
+		// 10 strength in expansions
+	},
+	*/
 	
 	/* Classical Era */
 	{
@@ -249,7 +281,8 @@
 		"requiredTech": "Mathematics",
 		"obsoleteTech": "Physics",
 		"upgradesTo": "Trebuchet",
-		"uniques": ["Bonus vs City 200%","No defensive terrain bonus","Must set up to ranged attack"],
+		"uniques": ["Bonus vs City 200%", "No defensive terrain bonus",
+			"Must set up to ranged attack", "Limited Visibility"],
 		"hurryCostModifier": 20,
 		"attackSound": "throw"
 	},
@@ -265,7 +298,8 @@
 		"requiredTech": "Mathematics",
 		"obsoleteTech": "Physics",
 		"upgradesTo": "Trebuchet",
-		"uniques": ["Bonus vs City 200%","No defensive terrain bonus","Must set up to ranged attack"],
+		"uniques": ["Bonus vs City 200%", "No defensive terrain bonus",
+			"Must set up to ranged attack", "Limited Visibility"],
 		"hurryCostModifier": 20,
 		"attackSound": "throw"
 	},
@@ -281,6 +315,7 @@
 		"obsoleteTech": "Machinery",
 		"upgradesTo": "Crossbowman",
 		"attackSound": "arrow"
+		// will be introduced in G&K expansion
 	},
 	*/
 	{
@@ -306,10 +341,12 @@
 		"cost": 75,
 		"requiredTech": "Iron Working",
 		"upgradesTo": "Longswordsman",
+		"obsoleteTech": "Gunpowder",
 		"requiredResource": "Iron",
 		"uniques": ["Can construct roads"],
 		"hurryCostModifier": 20,
 		"attackSound": "metalhit"
+		// can construct fort (if required for fort tech is researched)
 	},
 	{
 		"name": "Mohawk Warrior",
@@ -326,6 +363,23 @@
 		"uniques": ["+[33]% combat bonus in [Forest]", "+[33]% combat bonus in [Jungle]"],
 		"attackSound": "metalhit"
 	},
+	/*
+	{
+		"name": "Swordsman",
+		"unitType": "Melee",
+		"movement": 2,
+		"strength": 11,
+		"cost": 75,
+		"requiredTech": "Iron Working",
+		"upgradesTo": "Longswordsman",
+		"obsoleteTech": "Gunpowder",
+		"requiredResource": "Iron",
+		"hurryCostModifier": 20,
+		"attackSound": "metalhit"
+		// Barbarian unique Swordsman. Has same icon and name but slightly different 3d texture
+		// 14 strength in expansions
+	},
+	*/
 	{
 		"name": "Horseman",
 		"unitType": "Mounted",
@@ -351,10 +405,12 @@
 		"requiredTech": "Horseback Riding",
 		"upgradesTo": "Knight",
 		"obsoleteTech": "Metallurgy",
+		//"promotions": ["Great Generals I"],
 		"requiredResource": "Horses",
-		"uniques": ["Can move after attacking","No defensive terrain bonus","Penalty vs City 33%" ],
+		"uniques": ["Can move after attacking", "No defensive terrain bonus", "Penalty vs City 33%", "Combat very likely to create Great Generals"],
 		"hurryCostModifier": 20,
 		"attackSound": "horse"
+		// should have "Great Generals I" instead of "Combat very likely to create Great Generals" unique
 	},
 	
 	// Medieval Era
@@ -471,7 +527,6 @@
 		"obsoleteTech": "Metallurgy",
 		"requiredResource": "Iron",
 		"uniques": ["Amphibious"],
-		"promotions": ["Shock I"],
 		"hurryCostModifier": 20,
 		"attackSound": "metalhit"
 		//Danish unique unit. Can attack from the sea without any penalty, and moves faster.
@@ -515,6 +570,7 @@
 		"upgradesTo": "Frigate",
 		"uniques": ["Cannot enter ocean tiles"],
 		"attackSound": "arrow"
+		// will be introduced in G&K expansion
 	},
 	{
 		"name": "Knight",
@@ -561,6 +617,7 @@
 		"uniques": ["Can move after attacking","No defensive terrain bonus", "Founds a new city", "+2 Visibility Range", "Defense bonus when embarked"],
 		"attackSound": "horse"
 		//Conquistador should have no penalty attacking cities
+		//Ability to found new cities can only be used on a foreign continent that does not contain the Spanish capital.
 	},
 	{
 		"name": "Naresuan's Elephant",
@@ -604,8 +661,11 @@
 		"requiredTech": "Chivalry",
 		"requiredResource": "Horses",
 		"upgradesTo": "Cavalry",
+		"obsoleteTech": "Military Science",
 		"uniques": ["Can move after attacking","No defensive terrain bonus","Combat very likely to create Great Generals","50% Bonus XP gain"],
 		"attackSound": "arrow"
+		// should have "Great Generals I" promotion instead of "Combat very likely to create Great Generals" unique
+		// should have "Quick Study" promotion instead of "50% Bonus XP gain" unique
 		// Keshik should have no penalty attacking cities
 	},
 	
@@ -792,6 +852,7 @@
 		"upgradesTo": "Machine Gun",
 		"obsoleteTech": "Ballistics",
 		"attackSound": "machinegun"
+		// will be introduced in Gods & Kings expansion
 	},
 	{
 		"name": "Rifleman",
@@ -830,6 +891,7 @@
 		"uniques": ["[50]% chance to intercept air attacks","Bonus vs Bomber 150%",
 			"6 tiles in every direction always visible"],
 		"attackSound": "shot"
+		// will be introduced in G&K expansion
 	},
 	{
 		"name": "Great War Bomber",
@@ -844,6 +906,7 @@
 		"upgradesTo": "Bomber",
 		"obsoleteTech": "Radar",
 		"attackSound": "shot"
+		// will be introduced in G&K expansion
 	},
 	{
 		"name": "Norwegian Ski Infantry",
@@ -881,6 +944,7 @@
 		"strength": 34,
 		"cost": 225,
 		"requiredTech": "Military Science",
+		"obsoleteTech": "Combustion",
 		"requiredResource": "Horses",
 		"upgradesTo": "Landship",
 		"uniques": ["Can move after attacking","No defensive terrain bonus","Penalty vs City 33%","Bonus vs wounded units 33%" ],
@@ -925,10 +989,7 @@
 		"cost": 375,
 		"requiredTech": "Radar",
 		"requiredResource": "Oil",
-		/*
-		"upgradesTo": "Jet Fighter",
-		"obsoleteTech": "Lasers",
-		*/
+		//"upgradesTo": "Jet Fighter",
 		"uniques": ["[100]% chance to intercept air attacks","Bonus vs Bomber 150%",
 			"6 tiles in every direction always visible"],
 		"attackSound": "shot"
@@ -945,6 +1006,7 @@
 		"interceptRange": 8,
 		"cost": 375,
 		"requiredTech": "Radar",
+		//"upgradesTo": "Jet Fighter",
 		"uniques": ["[100]% chance to intercept air attacks","Bonus vs Bomber 150%","Bonus vs Fighter 33%",
 			"6 tiles in every direction always visible"],
 		"attackSound": "shot"
@@ -959,10 +1021,7 @@
 		"cost": 375,
 		"requiredTech": "Radar",
 		"requiredResource": "Oil",
-		/*
-		"upgradesTo": "Stealth Bomber",
-		"obsoleteTech": "Stealth",
-		*/
+		//"upgradesTo": "Stealth Bomber",
 		"attackSound": "shot"
 	},
 	{
@@ -978,8 +1037,38 @@
 		"requiredTech": "Radar",
 		"requiredResource": "Oil",
 		"promotions": ["Evasion", "Siege I"],
+		//"upgradesTo": "Stealth Bomber",
 		"attackSound": "shot"
 	},
+	/*
+	{
+		"name": "Atomic Bomb",
+		"unitType": "AtomicBomber",
+		"movement": 1,
+		"strength": 150,
+		"rangedStrength": 150,
+		"range": 10,
+		"cost": 600,
+		"requiredTech": "Nuclear Fission",
+		"requiredResource": "Uranium",
+		"uniques": ["Requires Manhattan Project"]
+		// Plane rather than a missile - can be based in city or Carrier only. But cannot be intercepted because of a civ 5 bug that was never fixed.
+		// Single-use like missile
+		// No strength/rangedStrength tags in civ 5 xmls. Instead has NukeDamageLevel = 1 tag (Nuclear Missile has NukeDamageLevel = 2)
+	},
+	{
+		"name": "Guided Missile",
+		"unitType": "Missile",
+		"movement": 1,
+		"strength": 60,
+		"rangedStrength": 60,
+		"range": 8,
+		"cost": 150,
+		"requiredTech": "Satellites"
+		// don't cost Maintenance, but count towards the limit of air units in city
+		// requiredTech "Advanced ballistics" in expansions
+	},
+	*/
 	{
 		"name": "Nuclear Missile",
 		"unitType": "Missile",
@@ -1003,6 +1092,7 @@
 		"upgradesTo": "Tank",
 		"obsoleteTech": "Combined Arms",
 		"uniques": ["Can move after attacking","No defensive terrain bonus"]
+		// will be introduced in G&K expansion
 	},
 	{
 		"name": "Destroyer",
@@ -1012,8 +1102,8 @@
 		"interceptRange": 2,
 		"cost": 375,
 		"requiredTech": "Combustion",
-		"uniques": ["Can attack submarines", "[40]% chance to intercept air attacks", "May withdraw before melee ([50]%)"]
-		// todo: add bonus vs submarines
+		"uniques": ["Can attack submarines", "[40]% chance to intercept air attacks",
+			"May withdraw before melee ([50]%)", "Bonus vs WaterSubmarine 100%"]
 	},
 	{
 		"name": "Battleship",
@@ -1025,7 +1115,7 @@
 		"cost": 375,
 		"requiredResource": "Oil",
 		"requiredTech": "Electronics",
-		"uniques": ["Ranged attacks may be performed over obstacles", "Bonus vs City 30%"]
+		"uniques": ["Ranged attacks may be performed over obstacles"]
 	},
 	{
 		"name": "Submarine",
@@ -1035,6 +1125,7 @@
 		"rangedStrength": 60,
 		"cost": 325,
 		"requiredTech": "Refrigeration",
+		// "upgradesTo": "Nuclear Submarine",
 		"uniques": ["Bonus as Attacker [75]%", "Invisible to others", "Can only attack water", "Can attack submarines", "Can enter ice tiles"]
 	},
 	{
@@ -1047,6 +1138,7 @@
 		"upgradesTo": "Infantry",
 		"obsoleteTech": "Plastics",
 		"attackSound": "shot"
+		// will be introduced in G&K expansion
 	},
 	{
 		"name": "Foreign Legion",
@@ -1062,6 +1154,19 @@
 		"uniques": ["+20% bonus outside friendly territory"],
 		"attackSound": "shot"
 	},
+	/*
+	{
+		"name": "Paratrooper",
+		"unitType": "Melee",
+		"movement": 2,
+		"strength": 40,
+		"cost": 375,
+		"requiredTech": "Radar",
+		"uniques": ["May Paradrop"],
+		"attackSound": "shot"
+		// 65 strength in expansions, upgradesTo "XCOM Squad", "No Movement Cost to Pillage" in BNW
+	},
+	*/
 	{
 		"name": "Infantry",
 		"unitType": "Melee",
@@ -1083,6 +1188,8 @@
 		"cost": 350,
 		"requiredTech": "Ballistics",
 		"attackSound": "machinegun"
+		// will be introduced in G&K expansion
+		// Upgrades to Bazooka in BNW, Mechanized Infantry in G&K
 	},
 	{
 		"name": "Anti-Aircraft Gun",
@@ -1092,6 +1199,7 @@
 		"strength": 50,
 		"cost": 375,
 		"requiredTech": "Ballistics",
+		//"upgradesTo": "Mobile SAM",
 		"uniques": ["[100]% chance to intercept air attacks","Bonus vs air units 150%"],
 		"attackSound": "machinegun"
 	},
@@ -1104,7 +1212,6 @@
 		"requiredTech": "Combined Arms",
 		"requiredResource": "Oil",
 		"upgradesTo": "Modern Armor",
-		//obsoleteTech:"Robotics",
 		"uniques": ["Can move after attacking","No defensive terrain bonus"]
 	},
 	{
@@ -1127,6 +1234,7 @@
 		"strength": 50,
 		"cost": 300,
 		"requiredTech": "Combined Arms",
+		//"upgradesTo": "Helicopter Gunship",
 		"uniques": ["Bonus vs Armor 100%"]
 	},
 	{
@@ -1158,16 +1266,24 @@
 		"cost": 425,
 		"requiredTech": "Lasers",
 		"requiredResource": "Aluminum",
-		/*
-		"upgradesTo": "Giant Death Robot",
-		"obsoleteTech": "Nuclear Fusion",
-		*/
+		//"upgradesTo": "Giant Death Robot",
 		"uniques": ["Can move after attacking","No defensive terrain bonus"]
 	},
 	
 	/*
 	// Information Era
-	
+	{
+		"name": "Mobile SAM",
+		"unitType": "Melee",
+		"movement": 4,
+		"interceptRange": 2,
+		"strength": 40,
+		"cost": 425,
+		"requiredTech": "Computers",
+		"uniques": ["[100]% chance to intercept air attacks","Bonus vs air units 150%"],
+		"attackSound": "shot"
+		// 65 strength, 3 movement, requiredTech "Rocketry" in expansions
+	},
 	{
 		"name": "Jet Fighter",
 		"unitType": "Fighter",
@@ -1194,8 +1310,9 @@
 		"cost": 425,
 		"requiredTech": "Stealth",
 		"requiredResource": "Aluminium",
-		"uniques": ["Evasion"]
+		"uniques": ["Evasion", "6 tiles in every direction always visible"]
 		"attackSound": "shot"
+		// cannot be based on carrier
 	},
 	{
 		// "Hovering unit" unique gives ability to get into impassable tiles - and only that (no vision bonus or flying over ocean)
@@ -1210,6 +1327,34 @@
 		"requiredResource": "Aluminum",
 		"uniques": ["Bonus vs Armor 100%", "Ignores terrain cost", "No defensive terrain bonuses", "Can move after attacking"],
 		"attackSound": "shot"
+	},
+	{
+		"name": "Missile Cruiser",
+		"unitType": "WaterRanged",
+		"movement": 7,
+		"strength": 60,
+		"rangedStrength": 25,
+		"range": 3,
+		"interceptRange": 2,
+		"cost": 425,
+		"requiredTech": "Robotics",
+		"uniques": ["[100]% chance to intercept air attacks", "Can attack submarines",
+			"Ranged attacks may be performed over obstacles"]
+		// Can carry 3 missiles - Guided Missiles and Nuclear Missiles, Attack vs submarines 100
+		// 100 rangedStrength, 80 strength in expansions
+	},
+	{
+		"name": "Nuclear Submarine",
+		"unitType": "WaterSubmarine",
+		"movement": 6,
+		"strength": 30,
+		"range": 3,
+		"rangedStrength": 70,
+		"cost": 425,
+		"requiredTech": "Computers",
+		"uniques": ["Bonus vs Attacker [75]%", "Invisible to others", "Can only attack water", "Can attack submarines", "Can enter ice tiles","+1 Visibility Range"]
+		// Can carry 2 Missiles
+		// 50 strength, 85 rangedStrength, requiredTech "Telecommunications" in expansions
 	},
 	*/
 	
@@ -1272,4 +1417,50 @@
 			"Heal adjacent units for an additional 15 HP per turn", "Can construct [Citadel]", "Great Person - [War]", "Unbuildable"],
 		"movement": 5
 	}
+
+	/* Spaceship Parts */
+	/*
+	// Must be transported to the Capital for launch.
+	// Can be destroyed by any hostile military unit walking in their tile.
+	{
+		"name": "SS Booster",
+		"unitType": "Civilian",
+		"movement": 2,
+		"cost": 500,
+		"requiredTech": "Robotics",
+		"requiredResource": "Aluminum",
+		"uniques": ["Spaceship part", "Cannot be purchased"]
+		// costs 750 in G&K, 1500 in BNW
+	},
+	{
+		"name": "SS Cockpit",
+		"unitType": "Civilian",
+		"movement": 2,
+		"cost": 750,
+		"requiredTech": "Satellites",
+		"requiredResource": "Aluminum",
+		"uniques": ["Spaceship part", "Cannot be purchased"]
+		// costs 1500 in BNW
+	},
+	{
+		"name": "SS Engine",
+		"unitType": "Civilian",
+		"movement": 2,
+		"cost": 750,
+		"requiredTech": "Particle Physics",
+		"requiredResource": "Aluminum",
+		"uniques": ["Spaceship part", "Cannot be purchased"]
+		// costs 1500 in BNW
+	},
+	{
+		"name": "SS Stasis Chamber",
+		"unitType": "Civilian",
+		"movement": 2,
+		"cost": 750,
+		"requiredTech": "Nanotechnology",
+		"requiredResource": "Aluminum",
+		"uniques": ["Spaceship part", "Cannot be purchased"]
+		// costs 1500 in BNW
+	}
+	*/
 ]
