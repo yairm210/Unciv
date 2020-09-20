@@ -24,6 +24,7 @@ class CustomSaveLocationHelperAndroid(private val activity: Activity) : CustomSa
     @GuardedBy("this")
     @Volatile
     private var callbackIndex = 100
+
     @GuardedBy("this")
     private val callbacks = ArrayList<IndexedCallback>()
 
@@ -33,19 +34,17 @@ class CustomSaveLocationHelperAndroid(private val activity: Activity) : CustomSa
             callbacks.add(IndexedCallback(
                     index,
                     { uri ->
-                        uri?.let {
-                            saveGame(gameInfo, it)
+                        if (uri != null) {
+                            saveGame(gameInfo, uri)
                         }
                         block?.invoke()
                     }
             ))
             index
         }
-        gameInfo.customSaveLocation?.let { customSaveLocation ->
-            if (!forcePrompt) {
-                handleIntentData(callbackIndex, Uri.parse(customSaveLocation))
-                return
-            }
+        if (!forcePrompt && gameInfo.customSaveLocation != null) {
+            handleIntentData(callbackIndex, Uri.parse(gameInfo.customSaveLocation))
+            return
         }
 
         Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
@@ -83,18 +82,20 @@ class CustomSaveLocationHelperAndroid(private val activity: Activity) : CustomSa
             callbacks.add(IndexedCallback(
                     index,
                     { uri ->
-                        uri?.let {
-                            val game = activity.contentResolver.openInputStream(it)
+                        if (uri != null) {
+                            val game = activity.contentResolver.openInputStream(uri)
                                     ?.reader()
                                     ?.readText()
                                     ?.run {
                                         GameSaver.gameInfoFromString(this)
-                                    } ?: return@let
-                            // If the user has saved the game from another platform (like Android),
-                            // then the save location might not be right so we have to correct for that
-                            // here
-                            game.customSaveLocation = it.toString()
-                            block(game)
+                                    }
+                            if (game != null) {
+                                // If the user has saved the game from another platform (like Android),
+                                // then the save location might not be right so we have to correct for that
+                                // here
+                                game.customSaveLocation = uri.toString()
+                                block(game)
+                            }
                         }
                     }
             ))

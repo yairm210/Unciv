@@ -19,6 +19,7 @@ class CustomSaveLocationHelperDesktop : CustomSaveLocationHelper {
                         .use { writer ->
                             writer.write(json().toJson(gameInfo))
                         }
+                block?.invoke()
                 return
             }
         }
