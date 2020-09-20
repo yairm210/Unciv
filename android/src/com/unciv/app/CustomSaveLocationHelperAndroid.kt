@@ -1,20 +1,15 @@
 package com.unciv.app
 
-import android.Manifest.permission.WRITE_EXTERNAL_STORAGE
 import android.app.Activity
 import android.content.Intent
-import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.net.Uri
 import android.os.Build
 import androidx.annotation.GuardedBy
 import androidx.annotation.RequiresApi
-import androidx.core.content.ContextCompat
 import com.unciv.logic.CustomSaveLocationHelper
 import com.unciv.logic.GameInfo
 import com.unciv.logic.GameSaver
 import com.unciv.logic.GameSaver.json
-
-const val REQ_WRITE_STORAGE = 3
 
 // The Storage Access Framework is available from API 19 and up:
 // https://developer.android.com/guide/topics/providers/document-provider
@@ -31,15 +26,6 @@ class CustomSaveLocationHelperAndroid(private val activity: Activity) : CustomSa
     private var callbackIndex = 100
     @GuardedBy("this")
     private val callbacks = ArrayList<IndexedCallback>()
-
-    /**
-     * Used to keep track of the callback that's saved before requesting write permissions so we can
-     * continue where we left off once the permission is granted
-     */
-    @GuardedBy("this")
-    private var pendingCallbackIndex: Pair<Int, String>? = null
-        @Synchronized get
-        @Synchronized set
 
     override fun saveGame(gameInfo: GameInfo, gameName: String, forcePrompt: Boolean, block: (() -> Unit)?) {
         val callbackIndex = synchronized(this) {
@@ -62,16 +48,6 @@ class CustomSaveLocationHelperAndroid(private val activity: Activity) : CustomSa
             }
         }
 
-        // For some reason it seems you can save to an existing file that you open without the
-        // permission, but you can't write to a file that you've requested be created so if this is
-        // a "Save as" operation then we need to get permission to write first
-        if (ContextCompat.checkSelfPermission(activity, WRITE_EXTERNAL_STORAGE) != PERMISSION_GRANTED
-                && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            pendingCallbackIndex = callbackIndex to gameName
-            activity.requestPermissions(arrayOf(WRITE_EXTERNAL_STORAGE), REQ_WRITE_STORAGE)
-            return
-        }
-
         Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
             type = "application/json"
             putExtra(Intent.EXTRA_TITLE, gameName)
@@ -79,16 +55,6 @@ class CustomSaveLocationHelperAndroid(private val activity: Activity) : CustomSa
         }
     }
 
-    fun continuePreviousRequest() {
-        pendingCallbackIndex?.let {
-            Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
-                type = "application/json"
-                putExtra(Intent.EXTRA_TITLE, it.second)
-                activity.startActivityForResult(this, it.first)
-            }
-            pendingCallbackIndex = null
-        }
-    }
 
     // This will be called on the main thread
     fun handleIntentData(requestCode: Int, uri: Uri?) {
