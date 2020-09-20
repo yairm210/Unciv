@@ -28,7 +28,7 @@ class CustomSaveLocationHelperAndroid(private val activity: Activity) : CustomSa
     @GuardedBy("this")
     private val callbacks = ArrayList<IndexedCallback>()
 
-    override fun saveGame(gameInfo: GameInfo, gameName: String, forcePrompt: Boolean, block: (() -> Unit)?) {
+    override fun saveGame(gameInfo: GameInfo, gameName: String, forcePrompt: Boolean, saveCompleteCallback: ((Exception?) -> Unit)?) {
         val callbackIndex = synchronized(this) {
             val index = callbackIndex++
             callbacks.add(IndexedCallback(
@@ -36,8 +36,10 @@ class CustomSaveLocationHelperAndroid(private val activity: Activity) : CustomSa
                     { uri ->
                         if (uri != null) {
                             saveGame(gameInfo, uri)
+                            saveCompleteCallback?.invoke(null)
+                        } else {
+                            saveCompleteCallback?.invoke(RuntimeException("Uri was null"))
                         }
-                        block?.invoke()
                     }
             ))
             index
@@ -76,25 +78,33 @@ class CustomSaveLocationHelperAndroid(private val activity: Activity) : CustomSa
                 }
     }
 
-    override fun loadGame(block: (GameInfo) -> Unit) {
+    override fun loadGame(loadCompleteCallback: (GameInfo?, Exception?) -> Unit) {
         val callbackIndex = synchronized(this) {
             val index = callbackIndex++
             callbacks.add(IndexedCallback(
                     index,
                     callback@{ uri ->
                         if (uri == null) return@callback
-                        val game = activity.contentResolver.openInputStream(uri)
-                                ?.reader()
-                                ?.readText()
-                                ?.run {
-                                    GameSaver.gameInfoFromString(this)
-                                }
+                        var exception: Exception? = null
+                        val game = try {
+                            activity.contentResolver.openInputStream(uri)
+                                    ?.reader()
+                                    ?.readText()
+                                    ?.run {
+                                        GameSaver.gameInfoFromString(this)
+                                    }
+                        } catch (e: Exception) {
+                            exception = e
+                            null
+                        }
                         if (game != null) {
                             // If the user has saved the game from another platform (like Android),
                             // then the save location might not be right so we have to correct for that
                             // here
                             game.customSaveLocation = uri.toString()
-                            block(game)
+                            loadCompleteCallback(game, null)
+                        } else {
+                            loadCompleteCallback(null, RuntimeException("Failed to load save game", exception))
                         }
                     }
             ))

@@ -39,19 +39,19 @@ object GameSaver {
         return localSaves + Gdx.files.absolute(externalFilesDirForAndroid + "/${getSubfolder(multiplayer)}").list().asSequence()
     }
 
-    fun saveGame(game: GameInfo, GameName: String, multiplayer: Boolean = false, forcePrompt: Boolean = false, block: (() -> Unit)? = null) {
+    fun saveGame(game: GameInfo, GameName: String, multiplayer: Boolean = false, forcePrompt: Boolean = false, saveCompletionCallback: ((Exception?) -> Unit)? = null) {
         val customSaveLocation = game.customSaveLocation
         val customSaveLocationHelper = this.customSaveLocationHelper
         if (customSaveLocation != null && customSaveLocationHelper != null) {
-            customSaveLocationHelper.saveGame(game, GameName, forcePrompt, block)
+            customSaveLocationHelper.saveGame(game, GameName, forcePrompt, saveCompletionCallback)
         } else {
-            json().toJson(game,getSave(GameName, multiplayer))
-            block?.invoke()
+            json().toJson(game, getSave(GameName, multiplayer))
+            saveCompletionCallback?.invoke(null)
         }
     }
 
-    fun saveGameToCustomLocation(game: GameInfo, GameName: String, block: () -> Unit) {
-        customSaveLocationHelper!!.saveGame(game, GameName, forcePrompt = true, block =block)
+    fun saveGameToCustomLocation(game: GameInfo, GameName: String, saveCompletionCallback: (Exception?) -> Unit) {
+        customSaveLocationHelper!!.saveGame(game, GameName, forcePrompt = true, saveCompleteCallback = saveCompletionCallback)
     }
 
     fun loadGameByName(GameName: String, multiplayer: Boolean = false) =
@@ -63,15 +63,15 @@ object GameSaver {
         return game
     }
 
-    fun loadGameFromCustomLocation(block: (GameInfo) -> Unit) {
-        customSaveLocationHelper!!.loadGame { game ->
-            block(game.apply { setTransients() })
+    fun loadGameFromCustomLocation(loadCompletionCallback: (GameInfo?, Exception?) -> Unit) {
+        customSaveLocationHelper!!.loadGame { game, e ->
+            loadCompletionCallback(game?.apply { setTransients() }, e)
         }
     }
 
     fun canLoadFromCustomSaveLocation() = customSaveLocationHelper != null
 
-    fun gameInfoFromString(gameData:String): GameInfo {
+    fun gameInfoFromString(gameData: String): GameInfo {
         val game = json().fromJson(GameInfo::class.java, gameData)
         game.setTransients()
         return game

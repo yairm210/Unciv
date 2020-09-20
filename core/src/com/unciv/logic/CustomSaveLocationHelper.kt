@@ -6,8 +6,8 @@ package com.unciv.logic
  */
 interface CustomSaveLocationHelper {
     /**
-     * Saves a game asynchronously with a given default name and then calls the [block] callback
-     * upon completion. The [block] callback will be called from the same thread that this method
+     * Saves a game asynchronously with a given default name and then calls the [saveCompleteCallback] callback
+     * upon completion. The [saveCompleteCallback] callback will be called from the same thread that this method
      * is called from. If the [GameInfo] object already has the
      * [customSaveLocation][GameInfo.customSaveLocation] property defined (not null), then the user
      * will not be prompted to select a location for the save unless [forcePrompt] is set to true
@@ -17,12 +17,12 @@ interface CustomSaveLocationHelper {
             gameInfo: GameInfo,
             gameName: String,
             forcePrompt: Boolean = false,
-            block: (() -> Unit)? = null
+            saveCompleteCallback: ((Exception?) -> Unit)? = null
     )
 
     /**
-     * Loads a game from an external source asynchronously, then calls [block] with the loaded
+     * Loads a game from an external source asynchronously, then calls [loadCompleteCallback] with the loaded
      * [GameInfo]
      */
-    fun loadGame(block: (GameInfo) -> Unit)
+    fun loadGame(loadCompleteCallback: (GameInfo?, Exception?) -> Unit)
 }
