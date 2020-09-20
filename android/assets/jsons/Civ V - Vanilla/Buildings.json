@@ -170,6 +170,7 @@
 		"uniques": ["+15% Combat Strength for all units when attacking Cities"],
 		"requiredTech": "Bronze Working",
 		"quote": "'He spoke, the son of Kronos, and nodded his head with the dark brows, and the immortally anointed hair of the great god swept from his divine head, and all Olympos was shaken' - The Iliad"
+		// "Requires adopted [Honor]" in BNW
 	},
 	{
 		"name": "Mausoleum of Halicarnassus",

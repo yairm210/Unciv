@@ -233,6 +233,7 @@ class Building : NamedStats(), IConstruction {
         if (uniques.contains("Unbuildable")) return "Unbuildable"
 
         val cityCenter = construction.cityInfo.getCenterTile()
+        val civInfo = construction.cityInfo.civInfo
 
         for(unique in uniqueObjects) when (unique.placeholderText) {
             "Must be on []" -> if (!cityCenter.fitsUniqueFilter(unique.params[0])) return unique.text
@@ -244,6 +245,7 @@ class Building : NamedStats(), IConstruction {
                         it.fitsUniqueFilter(unique.params[0]) && it.getOwner() == construction.cityInfo.civInfo }) return unique.text
             "Can only be built in annexed cities" -> if (construction.cityInfo.isPuppet || construction.cityInfo.foundingCiv == ""
                     || construction.cityInfo.civInfo.civName == construction.cityInfo.foundingCiv) return unique.text
+            "Requires adopted []" -> if (!civInfo.policies.adoptedPolicies.contains(unique.params[0])) return "Policy is not adopted"
 
             "Must have an owned mountain within 2 tiles" ->  // Deprecated as of 3.10.8 . Use "Must have an owned [Mountain] within [2] tiles" instead
                 if (cityCenter.getTilesInDistance(2)
@@ -261,7 +263,6 @@ class Building : NamedStats(), IConstruction {
                 if (!cityCenter.isAdjacentToFreshwater) return  unique.text
         }
 
-        val civInfo = construction.cityInfo.civInfo
         if (uniqueTo != null && uniqueTo != civInfo.civName) return "Unique to $uniqueTo"
         if (civInfo.gameInfo.ruleSet.buildings.values.any { it.uniqueTo == civInfo.civName && it.replaces == name })
             return "Our unique building replaces this"

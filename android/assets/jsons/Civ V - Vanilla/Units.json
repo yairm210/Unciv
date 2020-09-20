@@ -555,6 +555,7 @@
 		"upgradesTo": "Musketman",
 		"obsoleteTech": "Gunpowder",
 		"attackSound": "metalhit"
+		//"Requires adopted [Mercenary Army]" in BNW
 	},
 	{
 		"name": "Galleass",
@@ -1048,7 +1049,7 @@
 		"cost": 600,
 		"requiredTech": "Nuclear Fission",
 		"requiredResource": "Uranium",
-		"uniques": ["Requires Manhattan Project"]
+		"uniques": ["Nuclear weapon", "Requires [Manhattan Project]"]
 		// Plane rather than a missile - can be based in city or Carrier only. But cannot be intercepted because of a civ 5 bug that was never fixed.
 		// Single-use like missile
 		// No strength/rangedStrength tags in civ 5 xmls. Instead has NukeDamageLevel = 1 tag (Nuclear Missile has NukeDamageLevel = 2)
@@ -1076,7 +1077,7 @@
 		"cost": 1000,
 		"requiredTech": "Rocketry",
 		"requiredResource": "Uranium",
-		"uniques": ["Requires Manhattan Project"]
+		"uniques": ["Nuclear weapon", "Requires [Manhattan Project]"]
 	},
 	{
 		"name": "Landship",
@@ -1426,7 +1427,7 @@
 		"cost": 500,
 		"requiredTech": "Robotics",
 		"requiredResource": "Aluminum",
-		"uniques": ["Spaceship part", "Cannot be purchased"]
+		"uniques": ["Spaceship part", "Cannot be purchased", "Requires [Apollo Program]"]
 		// costs 750 in G&K, 1500 in BNW
 	},
 	{
@@ -1436,7 +1437,7 @@
 		"cost": 750,
 		"requiredTech": "Satellites",
 		"requiredResource": "Aluminum",
-		"uniques": ["Spaceship part", "Cannot be purchased"]
+		"uniques": ["Spaceship part", "Cannot be purchased", "Requires [Apollo Program]"]
 		// costs 1500 in BNW
 	},
 	{
@@ -1446,7 +1447,7 @@
 		"cost": 750,
 		"requiredTech": "Particle Physics",
 		"requiredResource": "Aluminum",
-		"uniques": ["Spaceship part", "Cannot be purchased"]
+		"uniques": ["Spaceship part", "Cannot be purchased", "Requires [Apollo Program]"]
 		// costs 1500 in BNW
 	},
 	{
@@ -1456,7 +1457,7 @@
 		"cost": 750,
 		"requiredTech": "Nanotechnology",
 		"requiredResource": "Aluminum",
-		"uniques": ["Spaceship part", "Cannot be purchased"]
+		"uniques": ["Spaceship part", "Cannot be purchased", "Requires [Apollo Program]"]
 		// costs 1500 in BNW
 	}
 	*/
