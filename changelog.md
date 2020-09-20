@@ -1,3 +1,15 @@
+## 3.10.10
+
+Generified "[X] free [] units"
+
+Resolved #3130 - "All policies adopted" shown in policy picker screen when relevant
+
+Multiselect applies to civilian units and from city overlays
+
+UI Upgrade - By lishaoxia1985
+
+Translation updates
+
 ## 3.10.9
 
 Resolved #3115 - AI no longer congregates great people in cities where it can't improve tiles
