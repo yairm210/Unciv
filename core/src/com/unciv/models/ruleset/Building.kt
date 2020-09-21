@@ -245,7 +245,9 @@ class Building : NamedStats(), IConstruction {
                         it.fitsUniqueFilter(unique.params[0]) && it.getOwner() == construction.cityInfo.civInfo }) return unique.text
             "Can only be built in annexed cities" -> if (construction.cityInfo.isPuppet || construction.cityInfo.foundingCiv == ""
                     || construction.cityInfo.civInfo.civName == construction.cityInfo.foundingCiv) return unique.text
-            "Requires adopted []" -> if (!civInfo.policies.adoptedPolicies.contains(unique.params[0])) return "Policy is not adopted"
+            "Requires []" -> if (unique.params[0] in civInfo.gameInfo.ruleSet.buildings) {
+                if (civInfo.cities.none { it.cityConstructions.containsBuildingOrEquivalent(unique.params[0]) }) return unique.text // Wonder is not built
+            } else if (!civInfo.policies.adoptedPolicies.contains(unique.params[0])) return "Policy is not adopted" // this reason should not be displayed
 
             "Must have an owned mountain within 2 tiles" ->  // Deprecated as of 3.10.8 . Use "Must have an owned [Mountain] within [2] tiles" instead
                 if (cityCenter.getTilesInDistance(2)

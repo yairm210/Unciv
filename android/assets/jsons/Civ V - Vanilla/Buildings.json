@@ -170,7 +170,7 @@
 		"uniques": ["+15% Combat Strength for all units when attacking Cities"],
 		"requiredTech": "Bronze Working",
 		"quote": "'He spoke, the son of Kronos, and nodded his head with the dark brows, and the immortally anointed hair of the great god swept from his divine head, and all Olympos was shaken' - The Iliad"
-		// "Requires adopted [Honor]" in BNW
+		// "Requires [Honor]" in BNW
 	},
 	{
 		"name": "Mausoleum of Halicarnassus",
@@ -584,7 +584,7 @@
 	
 	{
 		"name": "Observatory",
-		"maintenance": 2,
+		"maintenance": 0,
 		"hurryCostModifier": 15,
 		"percentStatBonus": {"science": 50},
 		"requiredBuilding": "Library",
@@ -641,6 +641,7 @@
 		"uniques": ["+5% Production for every Trade Route with a City-State in the empire"],
 		"requiredBuilding": "Market",
 		"requiredTech": "Banking"
+		// will be introduced in BNW expansion pack
 	},
 	{
 		"name": "Forbidden Palace",
@@ -710,7 +711,7 @@
 	{
 		"name": "Seaport",
 		"hurryCostModifier": 25,
-		"maintenance": 2,
+		"maintenance": 3,
 		"requiredBuilding": "Harbor",
 		"uniques": ["[+1 Production, +1 Gold] from [Water resource] tiles in this city",
 			"Must be next to [Coast]", "+[15]% production when building [naval units] in this city"],

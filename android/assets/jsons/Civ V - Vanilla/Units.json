@@ -555,7 +555,7 @@
 		"upgradesTo": "Musketman",
 		"obsoleteTech": "Gunpowder",
 		"attackSound": "metalhit"
-		//"Requires adopted [Mercenary Army]" in BNW
+		//"Requires [Mercenary Army]" in BNW
 	},
 	{
 		"name": "Galleass",
