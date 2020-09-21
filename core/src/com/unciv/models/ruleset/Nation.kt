@@ -39,6 +39,7 @@ class Nation : INamed {
     var uniqueName = ""
     var uniques = HashSet<String>()
     val uniqueObjects: List<Unique> by lazy { uniques.map { Unique(it) } }
+    var uniqueText = ""
     var innerColor: List<Int>? = null
     var startBias = ArrayList<String>()
 
@@ -92,8 +93,13 @@ class Nation : INamed {
         }
 
         if (uniqueName != "") textList += uniqueName.tr() + ":"
-        textList += "  " + uniques.joinToString(", ") { it.tr() }
-        textList += ""
+        if (uniqueText != "") {
+            textList += " " + uniqueText.tr()
+        }
+        else {
+            textList += "  " + uniques.joinToString(", ") { it.tr() }
+            textList += ""
+        }
 
         if (startBias.isNotEmpty()) {
             textList += "Start bias:".tr() + startBias.joinToString(", ", " ") { it.tr() }
