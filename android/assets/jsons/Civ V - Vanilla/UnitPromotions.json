@@ -423,7 +423,7 @@
 	},
 	{
 		"name": "Targeting I (air)",
-		"prerequisites": ["Interception I","Dogfighting I", "Siege I","Bombardment I"]
+		"prerequisites": ["Interception I","Dogfighting I", "Siege I","Bombardment I"],
 		"effect": "Bonus vs water units 15%",
 		"unitTypes": ["Fighter","Bomber"]
 	},
@@ -441,6 +441,22 @@
 	},
 	
 	// Uniques
+	{
+		"name": "Morale", // Heroic Epic
+		"effect": "+[15]% Combat Strength"
+	},
+	{
+		"name": "Great Generals I", // only for Companion Cavalry, Keshik and their subsequent upgrades
+		"effect": "[Great General] is earned [50]% faster"
+	},
+	{
+		"name": "Great Generals II", // only for Samurai and subsequent upgrades
+		"effect": "[Great General] is earned [100]% faster"
+	},
+	{
+		"name": "Quick Study", // only for Keshik and subsequent upgrades
+		"effect": "[50]% Bonus XP gain"
+	},
 	{
 		"name": "Haka War Dance", // only for Maori Warrior and subsequent upgrades
 		"effect": "-10% combat strength for adjacent enemy units"

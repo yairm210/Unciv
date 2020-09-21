@@ -65,6 +65,9 @@ object BattleDamage {
                     addToModifiers("vs [${unique.params[1]}]", unique.params[0].toFloat() / 100)
             }
 
+            for (unique in combatant.unit.getMatchingUniques("+[]% Combat Strength"))
+                addToModifiers("Combat Strength", unique.params[0].toFloat() / 100)
+
             //https://www.carlsguides.com/strategy/civilization5/war/combatbonuses.php
             val civHappiness = civInfo.getHappiness()
             if (civHappiness < 0)

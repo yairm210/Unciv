@@ -32,7 +32,7 @@
 		"requiredNearbyImprovedResources": ["Marble", "Stone"],
 		"resourceBonusStats": {"production": 1},
 		"maintenance": 1,
-		"hurryCostModifier": 25,
+		"hurryCostModifier": 0,
 		"uniques": ["Must not be on [Plains]"],
 		"requiredTech": "Calendar"
 	},
@@ -170,6 +170,7 @@
 		"uniques": ["+15% Combat Strength for all units when attacking Cities"],
 		"requiredTech": "Bronze Working",
 		"quote": "'He spoke, the son of Kronos, and nodded his head with the dark brows, and the immortally anointed hair of the great god swept from his divine head, and all Olympos was shaken' - The Iliad"
+		// "Requires [Honor]" in BNW
 	},
 	{
 		"name": "Mausoleum of Halicarnassus",
@@ -213,10 +214,12 @@
 	},
 	{
 		"name": "Circus Maximus",
+		"cost": 125,
 		"happiness": 5,
 		"culture": 1,
 		"isNationalWonder": true,
 		"requiredBuildingInAllCities": "Colosseum",
+		"uniques": ["Cost increases by [30] per owned city"],
 		"requiredTech": "Horseback Riding"
 	},
 	{
@@ -231,7 +234,7 @@
 	{
 		"name": "Courthouse",
 		"maintenance": 4,
-		"hurryCostModifier": 25,
+		"hurryCostModifier": 50,
 		"uniques": ["Remove extra unhappiness from annexed cities",
 			"Can only be built in annexed cities"],
 		"requiredTech": "Mathematics"
@@ -250,6 +253,7 @@
 		"greatPersonPoints": {"culture": 1},
 		"requiredTech": "Construction",
 		"quote": "'Regard your soldiers as your children, and they will follow you into the deepest valleys; look on them as your own beloved sons, and they will stand by you even unto death.'  - Sun Tzu"
+		// will be introduced in G&K expansion pack
 	},
 	{
 		"name": "Temple",
@@ -265,8 +269,8 @@
 		"replaces": "Temple",
 		"uniqueTo": "Egypt",
 		"uniques": ["Doubles Gold given to enemy if city is captured"],
-		"culture": 3,
-		"happiness": 1,
+		"culture": 2,
+		"happiness": 2,
 		"specialistSlots": {"culture": 1},
 		"requiredBuilding": "Monument",
 		"hurryCostModifier": 25,
@@ -277,7 +281,7 @@
 		"replaces": "Temple",
 		"uniqueTo": "Songhai",
 		"maintenance": 0,
-		"hurryCostModifier": 15,
+		"hurryCostModifier": 25,
 		"culture": 4,
 		"requiredBuilding": "Monument",
 		"requiredTech": "Philosophy"
@@ -292,11 +296,30 @@
 		"quote": "'The ancient Oracle said that I was the wisest of all the Greeks. It is because I alone, of all the Greeks, know that I know nothing'  - Socrates"
 	},
 	{
+		"name": "National Epic",
+		"cost": 125,
+		"culture": 1,
+		"uniques": ["+[25]% great person generation in this city", "Cost increases by [30] per owned city"],
+		"isNationalWonder": true,
+		"requiredBuildingInAllCities": "Monument",
+		"requiredTech": "Philosophy"
+	},
+	{
 		"name": "Market",
 		"gold": 2,
 		"specialistSlots": {"gold": 1},
 		"hurryCostModifier": 25,
 		"percentStatBonus": {"gold": 25},
+		"requiredTech": "Currency"
+	},
+	{
+		"name": "National Treasury",
+		"cost": 125,
+		"gold": 8,
+		"culture": 1,
+		"isNationalWonder": true,
+		"requiredBuildingInAllCities": "Market",
+		"uniques": ["Cost increases by [30] per owned city"],
 		"requiredTech": "Currency"
 	},
 	{
@@ -333,7 +356,7 @@
 	{
 		"name": "Aqueduct",
 		"maintenance": 1,
-		"hurryCostModifier": 25,
+		"hurryCostModifier": 0,
 		"uniques": ["[40]% of food is carried over after population increases"],
 		"requiredTech": "Engineering"
 	},
@@ -346,6 +369,15 @@
 		"uniques": ["Enemy land units must spend 1 extra movement point when inside your territory (obsolete upon Dynamite)"],
 		"requiredTech": "Engineering",
 		"quote": "'The art of war teaches us to rely not on the likelihood of the enemy's not attacking, but rather on the fact that we have made our position unassailable.'  - Sun Tzu"
+	},
+	{
+		"name": "Heroic Epic",
+		"cost": 125,
+		"culture": 1,
+		"isNationalWonder": true,
+		"requiredBuildingInAllCities": "Barracks",
+		"uniques": ["All newly-trained [non-air] units in this city receive the [Morale] promotion", "Cost increases by [30] per owned city"],
+		"requiredTech": "Iron Working"
 	},
 	
 	// Medieval Era
@@ -377,18 +409,14 @@
 	},
 	{
 		"name": "National College",
+		"cost": 125,
 		"science": 3,
 		"culture": 1,
 		"isNationalWonder": true,
 		"percentStatBonus": {"science": 50},
 		"requiredBuildingInAllCities": "Library",
+		"uniques": ["Cost increases by [30] per owned city"],
 		"requiredTech": "Philosophy"
-	},
-	{
-		"name": "Manhattan Project",
-		"isNationalWonder": true,
-		"uniques": ["Enables nuclear weapon"],
-		"requiredTech": "Nuclear Fission"
 	},
 	{
 		"name": "Chichen Itza",
@@ -473,12 +501,13 @@
 	},
 	{
 		"name": "Oxford University",
+		"cost": 125,
 		"science": 3,
 		"culture": 1,
 		"isNationalWonder": true,
 		"percentStatBonus": {"science": 50},
 		"requiredBuildingInAllCities": "University",
-		"uniques": ["Free Technology"],
+		"uniques": ["Free Technology", "Cost increases by [30] per owned city"],
 		"requiredTech": "Education"
 	},
 	{
@@ -488,6 +517,7 @@
 		"hurryCostModifier": 25,
 		"requiredBuilding": "Walls",
 		"requiredTech": "Chivalry"
+		// 4 cityStrength in vanilla, no ExtraCityHitPoints in vanilla
 	},
 	{
 		"name": "Mughal Fort",
@@ -520,13 +550,16 @@
 		"uniques": ["All newly-trained [relevant] units in this city receive the [Drill I] promotion"],
 		"requiredTech": "Chivalry",
 		"quote": "'Justice is an unassailable fortress, built on the brow of a mountain which cannot be overthrown by the violence of torrents, nor demolished by the force of armies.'  - Joseph Addison"
+		// will be introduced in G&K expansion pack
 	},
 	{
 		"name": "Ironworks",
+		"cost": 125,
 		"production": 8,
 		"culture": 1,
 		"isNationalWonder": true,
 		"requiredBuildingInAllCities": "Workshop",
+		"uniques": ["Cost increases by [30] per owned city"],
 		"requiredTech": "Machinery"
 	},
 	{
@@ -551,8 +584,8 @@
 	
 	{
 		"name": "Observatory",
-		"maintenance": 2,
-		"hurryCostModifier": 25,
+		"maintenance": 0,
+		"hurryCostModifier": 15,
 		"percentStatBonus": {"science": 50},
 		"requiredBuilding": "Library",
 		"uniques": ["Must be next to [Mountain]"],
@@ -608,6 +641,7 @@
 		"uniques": ["+5% Production for every Trade Route with a City-State in the empire"],
 		"requiredBuilding": "Market",
 		"requiredTech": "Banking"
+		// will be introduced in BNW expansion pack
 	},
 	{
 		"name": "Forbidden Palace",
@@ -634,6 +668,7 @@
 		"uniques": ["Free Great Person"],
 		"requiredTech": "Printing Press",
 		"quote": "'Don't clap too hard - it's a very old building.' - John Osbourne"
+		// will be introduced in G&K expansion pack
 	},
 	{
 		"name": "Himeji Castle",
@@ -656,10 +691,12 @@
 	},
 	{
 		"name": "Hermitage",
+		"cost": 125,
 		"percentStatBonus": {"culture": 50},
 		"culture": 5,
 		"isNationalWonder": true,
 		"requiredBuildingInAllCities": "Opera House",
+		"uniques": ["Cost increases by [30] per owned city"],
 		"requiredTech": "Archaeology"
 	}, 
 	{
@@ -674,7 +711,7 @@
 	{
 		"name": "Seaport",
 		"hurryCostModifier": 25,
-		"maintenance": 2,
+		"maintenance": 3,
 		"requiredBuilding": "Harbor",
 		"uniques": ["[+1 Production, +1 Gold] from [Water resource] tiles in this city",
 			"Must be next to [Coast]", "+[15]% production when building [naval units] in this city"],
@@ -733,10 +770,20 @@
 		"requiredResource": "Coal",
 		"requiredTech": "Industrialization"
 	},
+	/*
+	{
+		"name": "Arsenal",
+		"cityStrength": 6,
+		"hurryCostModifier": 25,
+		"requiredBuilding": "Castle",
+		"requiredTech": "Rifling"
+		//+9 City Defense Strength, +25 City Hit Points, requiredTech "Metallurgy" in expansions
+	},
+	*/
 	{
 		"name": "Military Academy",
 		"xpForNewUnits": 15,
-		"hurryCostModifier": 25,
+		"hurryCostModifier": 0,
 		"maintenance": 1,
 		"requiredBuilding": "Armory",
 		"requiredTech": "Military Science"
@@ -783,7 +830,7 @@
 		"name": "Hydro Plant",
 		"cost": 360,
 		"requiredResource": "Aluminum",
-		"hurryCostModifier": 25,
+		"hurryCostModifier": 0,
 		"maintenance": 3,
 		"uniques": ["Must be on [River]","[+1 Production] from [River] tiles in this city"],
 		"requiredTech": "Electricity"
@@ -835,6 +882,16 @@
 		"maintenance": 2,
 		"requiredTech": "Refrigeration"
 	},
+	/*
+	{
+		"name": "Military Base",
+		"cityStrength": 12,
+		"hurryCostModifier": 25,
+		"requiredBuilding": "Arsenal",
+		"requiredTech": "Telegraph"
+		//+25 City Hit Points, requiredTech "Replaceable parts" in expansions
+	},
+	*/
 	{
 		"name": "Cristo Redentor",
 		"culture": 5,
@@ -864,7 +921,7 @@
 			"Must have an owned [Mountain] within [2] tiles"],
 		"requiredTech": "Railroad",
 		"quote": "'...the location is one of the most beautiful to be found, holy and unapproachable, a worthy temple for the divine friend who has brought salvation and true blessing to the world.'  - King Ludwig II of Bavaria"
-		
+		// will be introduced in G&K expansion pack
 	},
 	
 	// Information Era
@@ -875,6 +932,12 @@
 		"maintenance": 3,
 		"requiredTech": "Pharmaceuticals",
 		"uniques": ["[25]% of food is carried over after population increases"]
+	},
+	{
+		"name": "Manhattan Project",
+		"isNationalWonder": true,
+		"uniques": ["Enables nuclear weapon"],
+		"requiredTech": "Nuclear Fission"
 	},
 	{
 		"name": "Nuclear Plant",
@@ -914,7 +977,18 @@
 		"providesFreeBuilding": "Broadcast Tower"
 		"uniques": ["+1 population in each city","+1 happiness in each city"]
 		"requiredTech": "Telecommunications" // todo doesn't exist yet!
-	},*/
+		// will be introduced in G&K expansion pack
+	},
+	{
+		"name": "United Nations",
+		"isWonder": true,
+		"culture": 1,
+		"greatPersonPoints": {"gold": 2},
+		"uniques": ["Triggers voting for the Diplomatic Victory"],
+		"quote": "'More than ever before in human history, we share a common destiny. We can master it only if we face it together. And that is why we have the United Nations.'  - Kofi Annan"
+		"requiredTech": "Globalization", // todo doesn't exist yet!
+	},
+	*/
 	{
 		"name": "Pentagon",
 		"isWonder": true,
@@ -959,6 +1033,7 @@
 			"+[25]% production when building [Spaceship part] in this city"],
 		"requiredTech": "Satellites",
 		"quote": "'The wonder is, not that the field of stars is so vast, but that man has measured it.'  - Anatole France"
+		// will be introduced in G&K expansion pack
 	},
 	{
 		"name": "SS Cockpit",

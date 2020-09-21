@@ -194,7 +194,9 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Great Wall](https://thenounproject.com/search/?q=great%20wall&i=545909) By icon 54
 * [Rice Field](https://thenounproject.com/term/rice-field/2511648/) by Graphic Engineer for Terrace farm
 * [Canoe](https://thenounproject.com/term/canoe/402285/) By Viktor Fedyuk (Tim P) for Floating Gardens
- 
+* [Arc de Triomphe](https://thenounproject.com/search/?q=Arc+de+Triomphe&i=789893) By Andrejs Kirma, LV for National Epic
+* [Bank](https://thenounproject.com/term/bank/213472/) by By P Thanga Vignesh for National Treasury
+
 ### Medieval Era
 
 * [College](https://thenounproject.com/term/college/129978/) By Alexander Skowalsky for University

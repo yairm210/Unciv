@@ -217,13 +217,13 @@ object Battle {
     }
 
     private fun tryGetCultureFromKilling(civUnit:ICombatant, defeatedUnit:MapUnitCombatant){
-        //Aztecs get half the strength of the unit killed in culture and honor opener does the same thing.
-        //They stack. So you get culture equal to 100% of the dead unit's strength.
+        //Aztecs get melee strength of the unit killed in culture and honor opener does the same thing.
+        //They stack. So you get culture equal to 200% of the dead unit's strength.
         val civInfo = civUnit.getCivInfo()
         if (defeatedUnit.getCivInfo().isBarbarian() && civInfo.hasUnique("Gain Culture when you kill a barbarian unit"))
-            civInfo.policies.addCulture(max(defeatedUnit.unit.baseUnit.strength, defeatedUnit.unit.baseUnit.rangedStrength) / 2)
+            civInfo.policies.addCulture(defeatedUnit.unit.baseUnit.strength)
         if (civInfo.hasUnique("Gains culture from each enemy unit killed"))
-            civInfo.policies.addCulture(max(defeatedUnit.unit.baseUnit.strength, defeatedUnit.unit.baseUnit.rangedStrength) / 2)
+            civInfo.policies.addCulture(defeatedUnit.unit.baseUnit.strength)
     }
 
     private fun tryGetGoldFromKilling(civUnit:ICombatant, defeatedUnit:MapUnitCombatant) {
@@ -239,7 +239,10 @@ object Battle {
 
         var XPModifier = 1f
         if (thisCombatant.getCivInfo().hasUnique("Military units gain 50% more Experience from combat")) XPModifier += 0.5f
-        if (thisCombatant.unit.hasUnique("50% Bonus XP gain")) XPModifier += 0.5f
+        if (thisCombatant.unit.hasUnique("50% Bonus XP gain")) XPModifier += 0.5f // As of 3.10.10 This is to be deprecated and converted to "[50]% Bonus XP gain" - keeping it here to that mods with this can still work for now
+
+        for (unique in thisCombatant.unit.getMatchingUniques("[]% Bonus XP gain"))
+            XPModifier +=  unique.params[0].toFloat() / 100
 
         val XPGained = (amount * XPModifier).toInt()
         thisCombatant.unit.promotions.XP += XPGained
@@ -247,10 +250,11 @@ object Battle {
 
         if(thisCombatant.getCivInfo().isMajorCiv()) {
             var greatGeneralPointsModifier = 1f
-            // Yeah sue me I didn't parse these params
-            if (thisCombatant.getCivInfo().hasUnique("[Great General] is earned [50]% faster"))
-                greatGeneralPointsModifier += 0.5f
-            if (thisCombatant.unit.hasUnique("Combat very likely to create Great Generals"))
+            for (unique in thisCombatant.unit.getMatchingUniques("[] is earned []% faster"))
+                if (unique.params[0] == Constants.greatGeneral)
+                    greatGeneralPointsModifier += unique.params[1].toFloat() / 100
+
+            if (thisCombatant.unit.hasUnique("Combat very likely to create Great Generals")) // As of 3.10.10 This is to be deprecated and converted to "[Great General] is earned []% faster" - keeping it here to that mods with this can still work for now
                 greatGeneralPointsModifier += 1f
 
             val greatGeneralPointsGained = (XPGained * greatGeneralPointsModifier).toInt()
