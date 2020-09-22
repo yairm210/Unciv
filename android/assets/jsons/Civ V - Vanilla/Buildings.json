@@ -281,6 +281,7 @@
 		"replaces": "Temple",
 		"uniqueTo": "Songhai",
 		"maintenance": 0,
+		"specialistSlots": {"culture": 1},
 		"hurryCostModifier": 25,
 		"culture": 4,
 		"requiredBuilding": "Monument",
@@ -403,7 +404,7 @@
 		"culture": 1,
 		"greatPersonPoints": {"culture": 1},
 		"isWonder": true,
-		"uniques": ["+[33]% great person generation in all cities"],
+		"uniques": ["+[25]% great person generation in all cities"],
 		"requiredTech": "Theology",
 		"quote": "'For it soars to a height to match the sky, and as if surging up from among the other buildings it stands on high and looks down upon the remainder of the city, adorning it, because it is a part of it, but glorying in its own beauty'  - Procopius, De Aedificis"
 	},
@@ -451,7 +452,7 @@
 		"name": "Longhouse",
 		"replaces": "Workshop",
 		"uniqueTo": "Iroquois",
-		"cost": 140,
+		"cost": 100,
 		"maintenance": 2,
 		"production": 2,
 		"specialistSlots": {"production": 1},
@@ -505,7 +506,6 @@
 		"science": 3,
 		"culture": 1,
 		"isNationalWonder": true,
-		"percentStatBonus": {"science": 50},
 		"requiredBuildingInAllCities": "University",
 		"uniques": ["Free Technology", "Cost increases by [30] per owned city"],
 		"requiredTech": "Education"
@@ -622,7 +622,7 @@
 		"name": "Satrap's Court",
 		"replaces": "Bank",
 		"uniqueTo": "Persia",	
-		"gold": 3,
+		"gold": 2,
 		"specialistSlots": {"gold": 1},
 		"happiness": 2,
 		"hurryCostModifier": 15,
@@ -742,8 +742,7 @@
 		"specialistSlots": {"production": 1},
 		"hurryCostModifier": 25,
 		"maintenance": 2,
-		"percentStatBonus": {"production": 10},
-		"uniques": ["Must not be on [Hill]"],
+		"uniques": ["Must not be on [Hill]", "+[10]% Production when constructing [Buildings]"],
 		"requiredTech": "Economics"
 	},
 	
@@ -904,7 +903,7 @@
 	{
 		"name": "Kremlin",
 		"culture": 3,
-		"cityHealth": 12,
+		"cityStrength": 12,
 		"isWonder": true,
 		"uniques": ["Defensive buildings in all cities are 25% more effective"],
 		"requiredTech": "Railroad",
