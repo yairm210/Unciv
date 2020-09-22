@@ -122,7 +122,7 @@
 		"name": "Remove Marsh",
 		"turnsToBuild": 6,
 		"terrainsCanBeBuiltOn": ["Marsh"],
-		"techRequired": "Bronze Working",
+		"techRequired": "Masonry",
 		"uniques": ["Can be built outside your borders"]
 	},
 

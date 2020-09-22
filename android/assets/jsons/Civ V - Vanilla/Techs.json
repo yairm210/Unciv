@@ -563,6 +563,7 @@
 				"name": "Satellites",
 				"row": 5,
 				"prerequisites": ["Nuclear Fission","Rocketry"],
+				"uniques": ["Reveals the entire map"], 
 				"quote": "'Now, somehow, in some new way, the sky seemed almost alien.' - Lyndon B. Johnson"
 			},
 			{

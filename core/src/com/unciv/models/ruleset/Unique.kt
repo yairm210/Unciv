@@ -25,7 +25,7 @@ class UniqueMap:HashMap<String, ArrayList<Unique>>() {
     fun getAllUniques() = this.asSequence().flatMap { it.value.asSequence() }
 }
 
-// Buildings and policies both have 'triggered' effects, and so may Techs in the future.
+// Buildings, techs and policies can have 'triggered' effects
 object UniqueTriggerActivation {
     fun triggerCivwideUnique(unique: Unique, civInfo: CivilizationInfo) {
         when (unique.placeholderText) {
@@ -65,6 +65,8 @@ object UniqueTriggerActivation {
 
             "Quantity of strategic resources produced by the empire increased by 100%" -> civInfo.updateDetailedCivResources()
             "+20% attack bonus to all Military Units for 30 turns" -> civInfo.policies.autocracyCompletedTurns = 30
+
+            "Reveals the entire map" -> civInfo.exploredTiles.addAll(civInfo.gameInfo.tileMap.values.asSequence().map { it.position })
         }
     }
 
