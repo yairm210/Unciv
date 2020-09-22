@@ -1,3 +1,21 @@
+## 3.10.11
+
+Trade table options are now mousewheel-scrollable - #2824
+
+By HadeanLake:
+
+- Added national wonders
+- Fixed some minor building issues
+
+By givehub99:
+
+- Allowed mods to override unique text for nations
+- Added "Start with [] technology" unique
+
+Implement custom save locations for Android and Desktop - By wbrawner
+
+Translation updates
+
 ## 3.10.10
 
 Generified "[X] free [] units"
