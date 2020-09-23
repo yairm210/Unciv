@@ -10,7 +10,6 @@ import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Table
-import com.badlogic.gdx.scenes.scene2d.utils.Drawable
 import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable
 import com.badlogic.gdx.utils.Align
@@ -260,13 +259,10 @@ object ImageGetter {
     fun getCircle() = getImage("OtherIcons/Circle")
     fun getTriangle() = getImage("OtherIcons/Triangle")
 
-    fun getBackground(color:Color): Drawable {
-        val drawable = getDrawable("OtherIcons/TableBackground")
-        drawable.minHeight=0f
-        drawable.minWidth=0f
+    fun getBackground(color:Color): NinePatchDrawable {
+        val drawable = NinePatchDrawable(NinePatch(getDrawable("").region,0,0,0,0))
         return drawable.tint(color)
     }
-
 
     fun getResourceImage(resourceName: String, size:Float): Actor {
         val iconGroup = getImage("ResourceIcons/$resourceName").surroundWithCircle(size)
@@ -347,13 +343,13 @@ object ImageGetter {
         val line = getWhiteDot()
         val deltaX = (startX-endX).toDouble()
         val deltaY = (startY-endY).toDouble()
-        line.width = Math.sqrt(deltaX*deltaX+deltaY*deltaY).toFloat()
+        line.width = sqrt(deltaX*deltaX+deltaY*deltaY).toFloat()
         line.height = width // the width of the line, is the height of the
 
         // B
         line.setOrigin(Align.center)
         val radiansToDegrees = 180 / Math.PI
-        line.rotation = (Math.atan2(deltaY, deltaX) * radiansToDegrees).toFloat()
+        line.rotation = (atan2(deltaY, deltaX) * radiansToDegrees).toFloat()
 
         // C
         line.x = (startX+endX)/2 - line.width/2
