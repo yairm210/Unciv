@@ -868,7 +868,6 @@
 		"unitType": "WaterAircraftCarrier",
 		"movement": 5,
 		"strength": 40,
-		"rangedStrength": 40,
 		"cost": 375,
 		"requiredTech": "Electronics",
 		"uniques": ["Can carry 2 aircraft"]
