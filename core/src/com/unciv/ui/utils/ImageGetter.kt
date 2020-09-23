@@ -14,13 +14,10 @@ import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
-import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.models.ruleset.Nation
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.stats.Stats
-import kotlin.math.max
-import kotlin.math.min
 
 object ImageGetter {
     private const val whiteDotLocation = "OtherIcons/whiteDot"
@@ -343,13 +340,13 @@ object ImageGetter {
         val line = getWhiteDot()
         val deltaX = (startX-endX).toDouble()
         val deltaY = (startY-endY).toDouble()
-        line.width = sqrt(deltaX*deltaX+deltaY*deltaY).toFloat()
+        line.width = kotlin.math.sqrt(deltaX * deltaX + deltaY * deltaY).toFloat()
         line.height = width // the width of the line, is the height of the
 
         // B
         line.setOrigin(Align.center)
         val radiansToDegrees = 180 / Math.PI
-        line.rotation = (atan2(deltaY, deltaX) * radiansToDegrees).toFloat()
+        line.rotation = (kotlin.math.atan2(deltaY, deltaX) * radiansToDegrees).toFloat()
 
         // C
         line.x = (startX+endX)/2 - line.width/2

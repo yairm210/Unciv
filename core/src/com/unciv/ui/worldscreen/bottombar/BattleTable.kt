@@ -61,14 +61,13 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
 
     private fun tryGetAttacker(): ICombatant? {
         val unitTable = worldScreen.bottomUnitTable
-        if (unitTable.selectedUnit != null
-                && !unitTable.selectedUnit!!.type.isCivilian()) {
-            return MapUnitCombatant(unitTable.selectedUnit!!)
+        return if (unitTable.selectedUnit != null
+                && !unitTable.selectedUnit!!.type.isCivilian()
+                && unitTable.selectedUnit!!.type != UnitType.WaterAircraftCarrier) {
+            MapUnitCombatant(unitTable.selectedUnit!!)
         } else if (unitTable.selectedCity != null) {
-            return CityCombatant(unitTable.selectedCity!!)
-        } else {
-            return null // no attacker
-        }
+            CityCombatant(unitTable.selectedCity!!)
+        } else null // no attacker
     }
 
     private fun tryGetDefender(): ICombatant? {
