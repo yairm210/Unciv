@@ -33,6 +33,9 @@ class Difficulty: INamed {
     var turnBarbariansCanEnterPlayerTiles = 0
     var clearBarbarianCampReward = 25
 
+    // if this will be shown in Civilopedia
+    var showInPedia = true
+
     init {
         // For compatibility with old mods that use deprecated var aiFreeUnits and do not have startingUnits, aiCityStateStartingUnits, aiMajorCivStartingUnits
         if (startingUnits.isEmpty()) {

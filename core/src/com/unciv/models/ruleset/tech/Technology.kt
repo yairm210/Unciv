@@ -20,6 +20,9 @@ class Technology {
     var row: Int = 0
     var quote = ""
 
+    // if this will be shown in Civilopedia
+    var showInPedia = true
+
     fun getDescription(ruleset: Ruleset): String {
         val lineList = ArrayList<String>() // more readable than StringBuilder, with same performance for our use-case
         for (unique in uniques) lineList += unique.tr()

@@ -67,6 +67,9 @@ class Nation : INamed {
     @Transient
     var embarkDisembarkCosts1 = false
 
+    // if this will be shown in Civilopedia
+    var showInPedia = true
+
     fun setTransients() {
         outerColorObject = colorFromRGB(outerColor[0], outerColor[1], outerColor[2])
 

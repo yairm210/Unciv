@@ -13,6 +13,9 @@ class Promotion : INamed{
     val unique:Unique by lazy { Unique(effect) }
     var unitTypes = listOf<String>() // The json parser wouldn't agree to deserialize this as a list of UnitTypes. =(
 
+    // if this will be shown in Civilopedia
+    var showInPedia = true
+
     fun getDescription(promotionsForUnitType: Collection<Promotion>, forCivilopedia:Boolean=false, ruleSet:Ruleset? = null):String {
         // we translate it before it goes in to get uniques like "vs units in rough terrain" and after to get "vs city
         val stringBuilder = StringBuilder()

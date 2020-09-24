@@ -39,6 +39,9 @@ class BaseUnit : INamed, IConstruction {
     var uniqueTo:String?=null
     var attackSound:String?=null
 
+    // if this will be shown in Civilopedia
+    var showInPedia = true
+
 
     fun getShortDescription(): String {
         val infoList = mutableListOf<String>()

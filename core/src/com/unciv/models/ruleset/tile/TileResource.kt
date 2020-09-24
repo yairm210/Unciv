@@ -20,6 +20,9 @@ class TileResource : NamedStats() {
     var revealedBy: String? = null
     var unique: String? = null
 
+    // if this will be shown in Civilopedia
+    var showInPedia = true
+
 
     fun getDescription(ruleset: Ruleset): String {
         val stringBuilder = StringBuilder()

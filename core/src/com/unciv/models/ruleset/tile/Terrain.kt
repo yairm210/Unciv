@@ -38,6 +38,9 @@ class Terrain : NamedStats() {
     var impassable = false
     var rough = false
 
+    // if this will be shown in Civilopedia
+    var showInPedia = true
+
 
     fun getColor(): Color { // Can't be a lazy initialize, because we play around with the resulting color with lerp()s and the like
         if (RGB == null) return Color.GOLD

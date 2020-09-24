@@ -41,6 +41,9 @@ class Building : NamedStats(), IConstruction {
     var uniques = ArrayList<String>()
     val uniqueObjects:List<Unique> by lazy { uniques.map { Unique(it) } }
 
+    // if this will be shown in Civilopedia
+    var showInPedia = true
+
     /**
      * The bonus stats that a resource gets when this building is built
      */

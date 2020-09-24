@@ -27,6 +27,9 @@ class TileImprovement : NamedStats() {
     var uniques = ArrayList<String>()
     val uniqueObjects:List<Unique> by lazy { uniques.map { Unique(it) } }
 
+    // if this will be shown in Civilopedia
+    var showInPedia = true
+
     val turnsToBuild: Int = 0 // This is the base cost.
 
     fun getTurnsToBuild(civInfo: CivilizationInfo): Int {

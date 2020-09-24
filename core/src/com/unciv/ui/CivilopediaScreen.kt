@@ -49,28 +49,36 @@ class CivilopediaScreen(ruleset: Ruleset) : CameraStageBaseScreen() {
         onBackButtonClicked { UncivGame.Current.setWorldScreen() }
 
         categoryToEntries["Buildings"] = ruleset.buildings.values
+                .filter { it.showInPedia  }
                 .map { CivilopediaEntry(it.name,it.getDescription(false, null,ruleset),
                         ImageGetter.getConstructionImage(it.name).surroundWithCircle(50f)) }
         categoryToEntries["Resources"] = ruleset.tileResources.values
+                .filter { it.showInPedia  }
                 .map { CivilopediaEntry(it.name,it.getDescription(ruleset),
                         ImageGetter.getResourceImage(it.name,50f)) }
         categoryToEntries["Terrains"] = ruleset.terrains.values
+                .filter { it.showInPedia  }
                 .map { CivilopediaEntry(it.name,it.getDescription(ruleset),
                         terrainImage(it, ruleset) ) }
         categoryToEntries["Tile Improvements"] = ruleset.tileImprovements.values
+                .filter { it.showInPedia  }
                 .map { CivilopediaEntry(it.name,it.getDescription(ruleset,false),
                         ImageGetter.getImprovementIcon(it.name,50f)) }
         categoryToEntries["Units"] = ruleset.units.values
+                .filter { it.showInPedia  }
                 .map { CivilopediaEntry(it.name,it.getDescription(false),
                         ImageGetter.getConstructionImage(it.name).surroundWithCircle(50f)) }
         categoryToEntries["Nations"] = ruleset.nations.values
+                .filter { it.showInPedia  }
                 .filter { it.isMajorCiv() }
                 .map { CivilopediaEntry(it.name,it.getUniqueString(ruleset,false),
                         ImageGetter.getNationIndicator(it,50f)) }
         categoryToEntries["Technologies"] = ruleset.technologies.values
+                .filter { it.showInPedia  }
                 .map { CivilopediaEntry(it.name,it.getDescription(ruleset),
                         ImageGetter.getTechIconGroup(it.name,50f)) }
         categoryToEntries["Promotions"] = ruleset.unitPromotions.values
+                .filter { it.showInPedia  }
                 .map { CivilopediaEntry(it.name,it.getDescription(ruleset.unitPromotions.values, true, ruleset),
                         Table().apply { add(ImageGetter.getPromotionIcon(it.name)) }) }
 
@@ -78,6 +86,7 @@ class CivilopediaScreen(ruleset: Ruleset) : CameraStageBaseScreen() {
                 .map { CivilopediaEntry(it.key.replace("_"," "), it.value.joinToString("\n\n") { line -> line.tr() }) }
 
         categoryToEntries["Difficulty levels"] = ruleset.difficulties.values
+                .filter { it.showInPedia  }
                 .map { CivilopediaEntry(it.name, it.getDescription()) }
 
         val buttonTable = Table()
