@@ -96,6 +96,9 @@ class DiplomacyManager() {
     /** Total of each turn Science during Research Agreement */
     var totalOfScienceDuringRA = 0
 
+    /** Flag set to true when the two civs have been friends in the past */
+    var everBeenFriends: Boolean = false
+
     fun clone(): DiplomacyManager {
         val toReturn = DiplomacyManager()
         toReturn.otherCivName=otherCivName
@@ -106,6 +109,7 @@ class DiplomacyManager() {
         toReturn.flagsCountdown.putAll(flagsCountdown)
         toReturn.diplomaticModifiers.putAll(diplomaticModifiers)
         toReturn.totalOfScienceDuringRA=totalOfScienceDuringRA
+        toReturn.everBeenFriends = everBeenFriends
         return toReturn
     }
 
@@ -285,6 +289,12 @@ class DiplomacyManager() {
         nextTurnFlags()
         if (civInfo.isCityState() && !otherCiv().isCityState())
             nextTurnCityStateInfluence()
+        updateEverBeenFriends()
+    }
+
+    /** Updates [everBeenFriends] if the two civilization are currently at least friends */
+    private fun updateEverBeenFriends() {
+        everBeenFriends = everBeenFriends || relationshipLevel() >= RelationshipLevel.Friend
     }
 
     private fun nextTurnCityStateInfluence() {

@@ -166,8 +166,8 @@ fun Actor.onChange(function: () -> Unit): Actor {
     return this
 }
 
-fun Actor.surroundWithCircle(size:Float,resizeActor:Boolean=true): IconCircleGroup {
-    return IconCircleGroup(size,this,resizeActor)
+fun Actor.surroundWithCircle(size: Float, resizeActor: Boolean = true, color: Color = Color.WHITE): IconCircleGroup {
+    return IconCircleGroup(size,this,resizeActor, color)
 }
 
 fun Actor.addBorder(size:Float,color:Color,expandCell:Boolean=false):Table{

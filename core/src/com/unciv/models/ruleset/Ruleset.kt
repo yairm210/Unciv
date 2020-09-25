@@ -1,11 +1,8 @@
 package com.unciv.models.ruleset
 
-import com.badlogic.gdx.Files
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.files.FileHandle
-import com.unciv.Constants
 import com.unciv.JsonParser
-import com.unciv.UncivGame
 import com.unciv.logic.UncivShowableException
 import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.metadata.GameParameters
@@ -17,7 +14,6 @@ import com.unciv.models.ruleset.tile.TileResource
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.ruleset.unit.Promotion
 import com.unciv.models.stats.INamed
-import java.lang.StringBuilder
 import kotlin.collections.set
 
 object ModOptionsConstants {
@@ -46,6 +42,7 @@ class Ruleset {
     val units = LinkedHashMap<String, BaseUnit>()
     val unitPromotions = LinkedHashMap<String, Promotion>()
     val nations = LinkedHashMap<String, Nation>()
+    val quests = LinkedHashMap<String, Quest>()
     val policyBranches = LinkedHashMap<String, PolicyBranch>()
     val difficulties = LinkedHashMap<String, Difficulty>()
     val mods = LinkedHashSet<String>()
@@ -70,6 +67,7 @@ class Ruleset {
         difficulties.putAll(ruleset.difficulties)
         nations.putAll(ruleset.nations)
         policyBranches.putAll(ruleset.policyBranches)
+        quests.putAll(ruleset.quests)
         technologies.putAll(ruleset.technologies)
         for (techToRemove in ruleset.modOptions.techsToRemove) technologies.remove(techToRemove)
         terrains.putAll(ruleset.terrains)
@@ -87,6 +85,7 @@ class Ruleset {
         difficulties.clear()
         nations.clear()
         policyBranches.clear()
+        quests.clear()
         technologies.clear()
         buildings.clear()
         terrains.clear()
@@ -138,6 +137,9 @@ class Ruleset {
 
         val promotionsFile = folderHandle.child("UnitPromotions.json")
         if (promotionsFile.exists()) unitPromotions += createHashmap(jsonParser.getFromJson(Array<Promotion>::class.java, promotionsFile))
+
+        val questsFile = folderHandle.child("Quests.json")
+        if (questsFile.exists()) quests += createHashmap(jsonParser.getFromJson(Array<Quest>::class.java, questsFile))
 
         val policiesFile = folderHandle.child("Policies.json")
         if (policiesFile.exists()) {
