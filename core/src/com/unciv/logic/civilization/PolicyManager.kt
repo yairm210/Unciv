@@ -76,10 +76,17 @@ class PolicyManager {
         var policyCultureCost = 25 + (numberOfAdoptedPolicies * 6).toDouble().pow(1.7)
         var cityModifier = 0.3f * (civInfo.cities.count { !it.isPuppet } - 1)
 
+        // As of 3.10.11 These are to be deprecated. Keeping it here so that mods with this can still work for now.
+        // Use "Culture cost of adopting new Policies reduced by [10]%" and "Each city founded increases culture cost of policies [33]% less than normal" instead
         if (civInfo.hasUnique("Each city founded increases culture cost of policies 33% less than normal"))
             cityModifier *= (2 / 3f)
         for(unique in civInfo.getMatchingUniques("Culture cost of adopting new Policies reduced by 10%"))
             policyCultureCost *= 0.9
+
+        for (unique in civInfo.getMatchingUniques("Each city founded increases culture cost of policies []% less than normal"))
+            cityModifier *= 1 - unique.params[0].toFloat() / 100
+        for (unique in civInfo.getMatchingUniques("Culture cost of adopting new Policies reduced by []%"))
+            policyCultureCost *= 1 - unique.params[0].toFloat() / 100
         if (civInfo.isPlayerCivilization())
             policyCultureCost *= civInfo.getDifficulty().policyCostModifier
         policyCultureCost *= civInfo.gameInfo.gameParameters.gameSpeed.modifier

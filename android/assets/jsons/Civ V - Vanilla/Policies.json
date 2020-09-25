@@ -80,7 +80,7 @@
 			{
 				"name": "Representation",
 				"effect": "Each city founded increases culture cost of policies 33% less than normal. Starts a golden age.",
-				"uniques": ["Each city founded increases culture cost of policies 33% less than normal", "Empire enters golden age"],
+				"uniques": ["Each city founded increases culture cost of policies [33]% less than normal", "Empire enters golden age"],
 				"requires": ["Citizenship"],
 				"row": 2,
 				"column": 3
@@ -199,7 +199,7 @@
 			{
 				"name": "Piety Complete",
 				"effect": "Reduce culture cost of future policies by 10%",
-				"uniques": ["Culture cost of adopting new Policies reduced by 10%"]
+				"uniques": ["Culture cost of adopting new Policies reduced by [10]%"]
 			}
 		]
 	},/*{

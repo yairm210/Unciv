@@ -896,7 +896,7 @@
 		"culture": 5,
 		"isWonder": true,
 		"greatPersonPoints": {"culture": 2},		
-		"uniques": ["Culture cost of adopting new Policies reduced by 10%"],
+		"uniques": ["Culture cost of adopting new Policies reduced by [10]%"],
 		"requiredTech": "Flight",
 		"quote": "'Come to me, all who labor and are heavy burdened, and I will give you rest.'  - New Testament, Matthew 11:28"
 	},
