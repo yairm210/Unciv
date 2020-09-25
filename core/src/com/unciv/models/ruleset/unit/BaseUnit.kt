@@ -39,7 +39,6 @@ class BaseUnit : INamed, IConstruction {
     var uniqueTo:String?=null
     var attackSound:String?=null
 
-
     fun getShortDescription(): String {
         val infoList = mutableListOf<String>()
         if (strength != 0) infoList += "$strength${Fonts.strength}"

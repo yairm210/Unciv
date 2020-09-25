@@ -49,6 +49,7 @@ class CivilopediaScreen(ruleset: Ruleset) : CameraStageBaseScreen() {
         onBackButtonClicked { UncivGame.Current.setWorldScreen() }
 
         categoryToEntries["Buildings"] = ruleset.buildings.values
+                .filter { "Will not be displayed in Civilopedia" !in it.uniques }
                 .map { CivilopediaEntry(it.name,it.getDescription(false, null,ruleset),
                         ImageGetter.getConstructionImage(it.name).surroundWithCircle(50f)) }
         categoryToEntries["Resources"] = ruleset.tileResources.values
@@ -61,6 +62,7 @@ class CivilopediaScreen(ruleset: Ruleset) : CameraStageBaseScreen() {
                 .map { CivilopediaEntry(it.name,it.getDescription(ruleset,false),
                         ImageGetter.getImprovementIcon(it.name,50f)) }
         categoryToEntries["Units"] = ruleset.units.values
+                .filter { "Will not be displayed in Civilopedia" !in it.uniques }
                 .map { CivilopediaEntry(it.name,it.getDescription(false),
                         ImageGetter.getConstructionImage(it.name).surroundWithCircle(50f)) }
         categoryToEntries["Nations"] = ruleset.nations.values
