@@ -39,9 +39,6 @@ class BaseUnit : INamed, IConstruction {
     var uniqueTo:String?=null
     var attackSound:String?=null
 
-    // whether to show it as a nation's unique
-    var showAsUnique = true
-
     fun getShortDescription(): String {
         val infoList = mutableListOf<String>()
         if (strength != 0) infoList += "$strength${Fonts.strength}"

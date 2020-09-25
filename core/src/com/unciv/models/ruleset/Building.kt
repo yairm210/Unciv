@@ -46,10 +46,6 @@ class Building : NamedStats(), IConstruction {
      */
     var resourceBonusStats: Stats? = null
 
-    // whether to show it as a nation's unique
-    var showAsUnique = true
-
-
     fun getShortDescription(ruleset: Ruleset): String { // should fit in one line
         val infoList= mutableListOf<String>()
         val str = getStats(null).toString()
