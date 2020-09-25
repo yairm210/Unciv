@@ -49,8 +49,8 @@ object ImageGetter {
     fun reload(){
         textureRegionDrawables.clear()
         // These are the drawables from the base game
-        for(region in atlas.regions){
-            val drawable =TextureRegionDrawable(region)
+        for(region in atlas.regions) {
+            val drawable = TextureRegionDrawable(region)
             textureRegionDrawables[region.name] = drawable
         }
 
