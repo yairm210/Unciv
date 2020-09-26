@@ -191,13 +191,13 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
 
         val quest: Quest = viewingCiv.gameInfo.ruleSet.quests[assignedQuest.questName]!!
         val remainingTurns: Int = assignedQuest.getRemainingTurns()
-        val title = quest.name + " (+${quest.influece.toInt()} influence)"
+        val title = "[${quest.name}] (+[${quest.influece.toInt()}] influence)"
         val description = assignedQuest.getDescription()
 
         questTable.add(title.toLabel(fontSize = 24)).row()
         questTable.add(description.toLabel()).row()
         if (quest.duration > 0)
-            questTable.add("Remaining ${remainingTurns} turns".toLabel()).row()
+            questTable.add("Remaining [${remainingTurns}] turns".toLabel()).row()
 
         questTable.onClick {
             assignedQuest.onClickAction()
