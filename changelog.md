@@ -1,3 +1,19 @@
+## 3.10.12
+
+Resolved #3186 - Diplomacy overview displays war/peace status and not relationship level.
+
+Better trade cancellation when all cities are offered (also includes player-to-player cases, not only AI)
+
+Fixed modded images not loading properly
+
+Removed edge case option where the AI can trade you all of their cities
+
+Parameterized few uniques, fixed "Mass Media" tech in mods - By HadeanLake
+
+Hide Unit or Building as Unique - By givehub99
+
+Update translations
+
 ## 3.10.11
 
 Trade table options are now mousewheel-scrollable - #2824
