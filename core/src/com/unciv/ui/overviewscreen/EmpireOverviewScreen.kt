@@ -73,46 +73,7 @@ class EmpireOverviewScreen(private var viewingPlayer:CivilizationInfo, defaultPa
 
         val setDiplomacyButton = "Diplomacy".toTextButton()
         setDiplomacyButton.onClick {
-            centerTable.clear()
-            val relevantCivs = viewingPlayer.gameInfo.civilizations.filter { !it.isBarbarian() && !it.isCityState() }
-            val playerKnowsAndUndefeatedCivs = relevantCivs.filter { playerKnows(it) && !it.isDefeated() }
-            val playerKnowsAndDefeatedCivs = relevantCivs.filter { playerKnows(it) && it.isDefeated() }
-            if (playerKnowsAndUndefeatedCivs.size > 1)
-                centerTable.add(getDiplomacyGroup())
-            val civTable = Table()
-            civTable.background = ImageGetter.getBackground(Color.BLACK)
-            civTable.add("[${relevantCivs.size}] Civilizations in the game".toLabel()).pad(5f).colspan(4).row()
-            val titleTable = Table()
-            titleTable.add("Our Civilization:".toLabel())
-            titleTable.add(ImageGetter.getNationIndicator(viewingPlayer.nation,25f)).pad(5f)
-            titleTable.add(viewingPlayer.civName.toLabel()).left().row()
-            civTable.add(titleTable).colspan(4).row()
-            civTable.addSeparator()
-            civTable.add("Known and alive ([${playerKnowsAndUndefeatedCivs.size - 1}])".toLabel()).pad(5f).colspan(4).row()
-            if (playerKnowsAndUndefeatedCivs.size > 1){
-                civTable.addSeparator()
-                playerKnowsAndUndefeatedCivs.filter { it != viewingPlayer }.forEach {
-                    civTable.add(ImageGetter.getNationIndicator(it.nation,25f)).pad(5f)
-                    if (playerKnowsAndUndefeatedCivs.indexOf(it) % 2 == 0)
-                        civTable.add(it.civName.toLabel()).left().row()
-                    else civTable.add(it.civName.toLabel()).left()
-                }
-            }
-            civTable.addSeparator()
-            civTable.add("Known and defeated ([${playerKnowsAndDefeatedCivs.size}])".toLabel()).pad(5f).colspan(4).row()
-            if (playerKnowsAndDefeatedCivs.isNotEmpty()){
-                civTable.addSeparator()
-                playerKnowsAndDefeatedCivs.forEach {
-                    civTable.add(ImageGetter.getNationIndicator(it.nation,25f)).pad(5f)
-                    if (playerKnowsAndDefeatedCivs.indexOf(it) % 2 != 0)
-                        civTable.add(it.civName.toLabel()).left().row()
-                    else civTable.add(it.civName.toLabel()).left()
-                }
-            }
-            val civTableScrollPane = ScrollPane(civTable)
-            civTableScrollPane.setOverscroll(false,false)
-            centerTable.add(civTableScrollPane.addBorder(2f, Color.WHITE)).pad(10f)
-            centerTable.pack()
+            setDiplomacyTable()
         }
         topTable.add(setDiplomacyButton)
 
@@ -138,6 +99,49 @@ class EmpireOverviewScreen(private var viewingPlayer:CivilizationInfo, defaultPa
         table.add(centerTable).height(stage.height - topTable.height).expand().row()
         table.setFillParent(true)
         stage.addActor(table)
+    }
+
+    private fun setDiplomacyTable() {
+        centerTable.clear()
+        val relevantCivs = viewingPlayer.gameInfo.civilizations.filter { !it.isBarbarian() && !it.isCityState() }
+        val playerKnowsAndUndefeatedCivs = relevantCivs.filter { playerKnows(it) && !it.isDefeated() }
+        val playerKnowsAndDefeatedCivs = relevantCivs.filter { playerKnows(it) && it.isDefeated() }
+        if (playerKnowsAndUndefeatedCivs.size > 1)
+            centerTable.add(getDiplomacyGroup())
+        val civTable = Table()
+        civTable.background = ImageGetter.getBackground(Color.BLACK)
+        civTable.add("[${relevantCivs.size}] Civilizations in the game".toLabel()).pad(5f).colspan(4).row()
+        val titleTable = Table()
+        titleTable.add("Our Civilization:".toLabel())
+        titleTable.add(ImageGetter.getNationIndicator(viewingPlayer.nation, 25f)).pad(5f)
+        titleTable.add(viewingPlayer.civName.toLabel()).left().row()
+        civTable.add(titleTable).colspan(4).row()
+        civTable.addSeparator()
+        civTable.add("Known and alive ([${playerKnowsAndUndefeatedCivs.size - 1}])".toLabel()).pad(5f).colspan(4).row()
+        if (playerKnowsAndUndefeatedCivs.size > 1) {
+            civTable.addSeparator()
+            playerKnowsAndUndefeatedCivs.filter { it != viewingPlayer }.forEach {
+                civTable.add(ImageGetter.getNationIndicator(it.nation, 25f)).pad(5f)
+                if (playerKnowsAndUndefeatedCivs.indexOf(it) % 2 == 0)
+                    civTable.add(it.civName.toLabel()).left().row()
+                else civTable.add(it.civName.toLabel()).left()
+            }
+        }
+        civTable.addSeparator()
+        civTable.add("Known and defeated ([${playerKnowsAndDefeatedCivs.size}])".toLabel()).pad(5f).colspan(4).row()
+        if (playerKnowsAndDefeatedCivs.isNotEmpty()) {
+            civTable.addSeparator()
+            playerKnowsAndDefeatedCivs.forEach {
+                civTable.add(ImageGetter.getNationIndicator(it.nation, 25f)).pad(5f)
+                if (playerKnowsAndDefeatedCivs.indexOf(it) % 2 != 0)
+                    civTable.add(it.civName.toLabel()).left().row()
+                else civTable.add(it.civName.toLabel()).left()
+            }
+        }
+        val civTableScrollPane = ScrollPane(civTable)
+        civTableScrollPane.setOverscroll(false, false)
+        centerTable.add(civTableScrollPane.addBorder(2f, Color.WHITE)).pad(10f)
+        centerTable.pack()
     }
 
     private fun setStats() {
@@ -371,17 +375,17 @@ class EmpireOverviewScreen(private var viewingPlayer:CivilizationInfo, defaultPa
         val playerKnowsAndUndefeatedCivs = relevantCivs.filter { playerKnows(it) && !it.isDefeated() }
         val freeHeight = stage.height - topTable.height
         val group = Group()
-        group.setSize(freeHeight,freeHeight)
+        group.setSize(freeHeight, freeHeight)
         val civGroups = HashMap<String, Actor>()
         val civLines = HashMap<String, MutableSet<Actor>>()
-        for(i in 0..playerKnowsAndUndefeatedCivs.lastIndex){
+        for (i in 0..playerKnowsAndUndefeatedCivs.lastIndex) {
             val civ = playerKnowsAndUndefeatedCivs[i]
 
-            val civGroup = ImageGetter.getNationIndicator(civ.nation,30f)
+            val civGroup = ImageGetter.getNationIndicator(civ.nation, 30f)
 
-            val vector = HexMath.getVectorForAngle(2 * Math.PI.toFloat() *i / playerKnowsAndUndefeatedCivs.size)
+            val vector = HexMath.getVectorForAngle(2 * Math.PI.toFloat() * i / playerKnowsAndUndefeatedCivs.size)
             civGroup.center(group)
-            civGroup.moveBy(vector.x*freeHeight/2.25f, vector.y*freeHeight/2.25f)
+            civGroup.moveBy(vector.x * freeHeight / 2.25f, vector.y * freeHeight / 2.25f)
             civGroup.touchable = Touchable.enabled
             civGroup.onClick {
                 onCivClicked(civLines, civ.civName)
@@ -393,8 +397,7 @@ class EmpireOverviewScreen(private var viewingPlayer:CivilizationInfo, defaultPa
 
         for (civ in relevantCivs.filter { playerKnows(it) && !it.isDefeated() })
             for (diplomacy in civ.diplomacy.values.filter {
-                it.otherCiv().isMajorCiv()
-                        && playerKnows(it.otherCiv()) && !it.otherCiv().isDefeated()
+                it.otherCiv().isMajorCiv() && playerKnows(it.otherCiv()) && !it.otherCiv().isDefeated()
             }) {
                 val civGroup = civGroups[civ.civName]!!
                 val otherCivGroup = civGroups[diplomacy.otherCivName]!!
@@ -405,8 +408,7 @@ class EmpireOverviewScreen(private var viewingPlayer:CivilizationInfo, defaultPa
                 val statusLine = ImageGetter.getLine(civGroup.x + civGroup.width / 2, civGroup.y + civGroup.height / 2,
                         otherCivGroup.x + otherCivGroup.width / 2, otherCivGroup.y + otherCivGroup.height / 2, 2f)
 
-                val diplomacyLevel = diplomacy.diplomaticModifiers.values.sum()
-                statusLine.color = getColorForDiplomacyLevel(diplomacyLevel)
+                statusLine.color = if (diplomacy.diplomaticStatus == DiplomaticStatus.Peace) Color.GREEN else Color.RED
 
                 civLines[civ.civName]!!.add(statusLine)
 
@@ -447,17 +449,6 @@ class EmpireOverviewScreen(private var viewingPlayer:CivilizationInfo, defaultPa
         // it happens only when all are visible except selected one
         // invert visibility of the selected civ's lines
             selectedLines.forEach { it.isVisible = !it.isVisible }
-    }
-
-    private fun getColorForDiplomacyLevel(value: Float): Color {
-
-        var amplitude = min(1.0f,abs(value)/80) // 80 = RelationshipLevel.Ally
-        val shade = max(0.5f - amplitude, 0.0f)
-        amplitude = max(amplitude, 0.5f)
-
-        return Color( if (sign(value) < 0) amplitude else shade,
-                      if (sign(value) > 0) amplitude else shade,
-                      shade,1.0f)
     }
 
 
