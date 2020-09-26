@@ -79,7 +79,10 @@ class MapOptionsTable(val newGameScreen: NewGameScreen): Table() {
         val scenarioSelectBox = SelectBox<FileHandleWrapper>(CameraStageBaseScreen.skin)
         if (scenarioFiles.any()) {
             for (savedGame in getScenarioFiles()) {
-                scenarioSelectBox.items.add(FileHandleWrapper(savedGame))
+                try {  // Sometimes, we have scenarios that are dependent on mods that we don't have and so they can't be loaded.
+                    selectSavedGameAsScenario(savedGame)
+                    scenarioSelectBox.items.add(FileHandleWrapper(savedGame))
+                } catch (ex: Exception) {}
             }
             scenarioSelectBox.items = scenarioSelectBox.items // it doesn't register them until you do this.
             scenarioSelectBox.selected = scenarioSelectBox.items.first()
