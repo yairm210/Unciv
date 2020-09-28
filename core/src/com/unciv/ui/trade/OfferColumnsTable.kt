@@ -65,34 +65,42 @@ class OfferColumnsTable(val tradeLogic: TradeLogic, val screen: DiplomacyScreen,
     }
 
 
+    class goldSelectionPopup(screen: DiplomacyScreen, offer: TradeOffer, ourOffers: TradeOffersList,
+                             offeringCiv: CivilizationInfo, onChange: () -> Unit):Popup(screen){
+        init {
+            val existingGoldOffer = ourOffers.firstOrNull { it.type == TradeType.Gold }
+            if (existingGoldOffer != null)
+                offer.amount = existingGoldOffer.amount
+            val amountLabel = offer.amount.toLabel()
+            val minitable = Table().apply { defaults().pad(5f) }
+
+            fun incrementAmount(delta: Int) {
+                offer.amount += delta
+                if (offer.amount < 0) offer.amount = 0
+                if (offer.amount > offeringCiv.gold) offer.amount = offeringCiv.gold
+                amountLabel.setText(offer.amount)
+            }
+
+            minitable.add("-500".toTextButton().onClick { incrementAmount(-500) })
+            minitable.add("-50".toTextButton().onClick { incrementAmount(-50) })
+            minitable.add(amountLabel)
+            minitable.add("+50".toTextButton().onClick { incrementAmount(50) })
+            minitable.add("+500".toTextButton().onClick { incrementAmount(500) })
+
+            add(minitable).row()
+
+            addCloseButton {
+                if (existingGoldOffer == null)
+                    ourOffers.add(offer)
+                else existingGoldOffer.amount = offer.amount
+                onChange()
+            }
+        }
+    }
+
     fun openGoldSelectionPopup(offer: TradeOffer, ourOffers: TradeOffersList, offeringCiv: CivilizationInfo) {
-        val selectionPopup = Popup(screen)
-        val existingGoldOffer = ourOffers.firstOrNull { it.type == TradeType.Gold }
-        if (existingGoldOffer != null)
-            offer.amount = existingGoldOffer.amount
-        val amountLabel = offer.amount.toLabel()
-        val minitable = Table().apply { defaults().pad(5f) }
-
-        fun incrementAmount(delta: Int) {
-            offer.amount += delta
-            if (offer.amount < 0) offer.amount = 0
-            if (offer.amount > offeringCiv.gold) offer.amount = offeringCiv.gold
-            amountLabel.setText(offer.amount)
-        }
-
-        minitable.add("-500".toTextButton().onClick { incrementAmount(-500) })
-        minitable.add("-50".toTextButton().onClick { incrementAmount(-50) })
-        minitable.add(amountLabel)
-        minitable.add("+50".toTextButton().onClick { incrementAmount(50) })
-        minitable.add("+500".toTextButton().onClick { incrementAmount(500) })
-        selectionPopup.add(minitable).row()
-
-        selectionPopup.addCloseButton {
-            if (existingGoldOffer == null)
-                ourOffers.add(offer)
-            else existingGoldOffer.amount = offer.amount
-            onChange()
-        }
+        if (screen.stage.actors.any { it is goldSelectionPopup }) return
+        val selectionPopup = goldSelectionPopup(screen, offer, ourOffers, offeringCiv, onChange)
         selectionPopup.open()
     }
 
