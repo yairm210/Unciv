@@ -45,11 +45,20 @@ class CivInfoStats(val civInfo: CivilizationInfo){
         var transportationUpkeep = 0
         // we no longer use .flatMap, because there are a lot of tiles and keeping them all in a list
         // just to go over them once is a waste of memory - there are low-end phones who don't have much ram
-        val ignoreHillTiles = civInfo.hasUnique("No Maintenance costs for improvements in Hills")
+
+        val ignoredTileTypes = civInfo.getMatchingUniques("No Maintenance costs for improvements in []").map { it.params[0]  }
+        // accounting for both the old way and the new way of doing no maintenance in hills
+        val ignoreHillTiles = civInfo.hasUnique("No Maintenance costs for improvements in Hills")|| "Hills" in ignoredTileTypes
+
         for (city  in civInfo.cities) {
             for (tile in city.getTiles()) {
                 if (tile.isCityCenter()) continue
                 if (ignoreHillTiles && tile.isHill()) continue
+
+                if (tile.terrainFeature in ignoredTileTypes || tile.baseTerrain in ignoredTileTypes) {
+                    continue
+                }
+
                 val tileUpkeep =
                     when (tile.roadStatus) {
                         RoadStatus.Road -> 1
