@@ -1,3 +1,15 @@
+## 3.10.13
+
+Better checking for unloadable scenarios
+
+Resolved #3085 - reconquering our cities while they were still in resistance leads to them not having resistance against us
+
+Cannot open multiple gold selection popups in trade table
+
+"No Maintenance costs for improvements in []" genericified - By givehub99
+
+Tranlation updates
+
 ## 3.10.12
 
 Resolved #3186 - Diplomacy overview displays war/peace status and not relationship level.
