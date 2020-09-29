@@ -33,7 +33,8 @@ enum class DiplomacyFlags{
     SettledCitiesNearUs,
     AgreedToNotSettleNearUs,
     IgnoreThemSettlingNearUs,
-    ProvideMilitaryUnit
+    ProvideMilitaryUnit,
+    EverBeenFriends
 }
 
 enum class DiplomaticModifiers{
@@ -285,6 +286,16 @@ class DiplomacyManager() {
         nextTurnFlags()
         if (civInfo.isCityState() && !otherCiv().isCityState())
             nextTurnCityStateInfluence()
+        updateEverBeenFriends()
+    }
+
+    /** True when the two civs have been friends in the past */
+    fun everBeenFriends(): Boolean = hasFlag(DiplomacyFlags.EverBeenFriends)
+
+    /** Set [DiplomacyFlags.EverBeenFriends] if the two civilization are currently at least friends */
+    private fun updateEverBeenFriends() {
+        if (relationshipLevel() >= RelationshipLevel.Friend && !everBeenFriends())
+            setFlag(DiplomacyFlags.EverBeenFriends, -1)
     }
 
     private fun nextTurnCityStateInfluence() {
@@ -310,21 +321,35 @@ class DiplomacyManager() {
     }
 
     private fun nextTurnFlags() {
-        for (flag in flagsCountdown.keys.toList()) {
-            if (flag == DiplomacyFlags.ResearchAgreement.name){
+        loop@ for (flag in flagsCountdown.keys.toList()) {
+            // No need to decrement negative countdown flags: they do not expire
+            if (flagsCountdown[flag]!! > 0)
+                flagsCountdown[flag] = flagsCountdown[flag]!! - 1
+
+            // At the end of every turn
+            if (flag == DiplomacyFlags.ResearchAgreement.name)
                 totalOfScienceDuringRA += civInfo.statsForNextTurn.science.toInt()
-            }
-            flagsCountdown[flag] = flagsCountdown[flag]!! - 1
+
+            // Only when flag is expired
             if (flagsCountdown[flag] == 0) {
-                if (flag == DiplomacyFlags.ResearchAgreement.name && !otherCivDiplomacy().hasFlag(DiplomacyFlags.ResearchAgreement))
-                    sciencefromResearchAgreement()
-                if (flag == DiplomacyFlags.ProvideMilitaryUnit.name && civInfo.cities.isEmpty() || otherCiv().cities.isEmpty())
-                    continue
+                when (flag) {
+                    DiplomacyFlags.ResearchAgreement.name -> {
+                        if (!otherCivDiplomacy().hasFlag(DiplomacyFlags.ResearchAgreement))
+                            sciencefromResearchAgreement()
+                    }
+                    DiplomacyFlags.ProvideMilitaryUnit.name -> {
+                        // Do not unset the flag
+                        if (civInfo.cities.isEmpty() || otherCiv().cities.isEmpty())
+                            continue@loop
+                        else
+                            civInfo.giftMilitaryUnitTo(otherCiv())
+                    }
+                    DiplomacyFlags.AgreedToNotSettleNearUs.name -> {
+                        addModifier(DiplomaticModifiers.FulfilledPromiseToNotSettleCitiesNearUs, 10f)
+                    }
+                }
+
                 flagsCountdown.remove(flag)
-                if (flag == DiplomacyFlags.AgreedToNotSettleNearUs.name)
-                    addModifier(DiplomaticModifiers.FulfilledPromiseToNotSettleCitiesNearUs, 10f)
-                else if (flag == DiplomacyFlags.ProvideMilitaryUnit.name)
-                    civInfo.giftMilitaryUnitTo(otherCiv())
             }
         }
     }

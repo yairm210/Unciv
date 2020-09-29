@@ -59,6 +59,8 @@ class TechManager {
         return toReturn
     }
 
+    fun getNumberOfTechsResearched(): Int = techsResearched.size
+
     fun getRuleset() = civInfo.gameInfo.ruleSet
 
     fun costOfTech(techName: String): Int {

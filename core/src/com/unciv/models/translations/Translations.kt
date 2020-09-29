@@ -283,3 +283,15 @@ fun String.equalsPlaceholderText(str:String): Boolean {
 }
 
 fun String.getPlaceholderParameters() = squareBraceRegex.findAll(this).map { it.groups[1]!!.value }.toList()
+
+/** Substitutes placeholders with [strings], respecting order of appearance. */
+fun String.fillPlaceholders(vararg strings: String): String {
+    val keys = this.getPlaceholderParameters()
+    if (keys.size > strings.size)
+        throw Exception("String $this has a different number of placeholders ${keys.joinToString()} (${keys.size}) than the substitutive strings ${strings.joinToString()} (${strings.size})!")
+
+    var filledString = this
+    for (i in keys.indices)
+        filledString = filledString.replaceFirst(keys[i], strings[i])
+    return filledString
+}
