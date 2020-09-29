@@ -137,7 +137,7 @@ class CivilizationInfo {
     fun getCityStateType(): CityStateType = nation.cityStateType!!
     fun isMajorCiv() = nation.isMajorCiv()
     fun isAlive(): Boolean = !isDefeated()
-    fun hasEverBeenFriendWith(otherCiv: CivilizationInfo): Boolean = getDiplomacyManager(otherCiv).everBeenFriends
+    fun hasEverBeenFriendWith(otherCiv: CivilizationInfo): Boolean = getDiplomacyManager(otherCiv).everBeenFriends()
 
     fun victoryType(): VictoryType {
         if(gameInfo.gameParameters.victoryTypes.size==1)

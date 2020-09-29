@@ -33,7 +33,8 @@ enum class DiplomacyFlags{
     SettledCitiesNearUs,
     AgreedToNotSettleNearUs,
     IgnoreThemSettlingNearUs,
-    ProvideMilitaryUnit
+    ProvideMilitaryUnit,
+    EverBeenFriends
 }
 
 enum class DiplomaticModifiers{
@@ -96,9 +97,6 @@ class DiplomacyManager() {
     /** Total of each turn Science during Research Agreement */
     var totalOfScienceDuringRA = 0
 
-    /** Flag set to true when the two civs have been friends in the past */
-    var everBeenFriends: Boolean = false
-
     fun clone(): DiplomacyManager {
         val toReturn = DiplomacyManager()
         toReturn.otherCivName=otherCivName
@@ -109,7 +107,6 @@ class DiplomacyManager() {
         toReturn.flagsCountdown.putAll(flagsCountdown)
         toReturn.diplomaticModifiers.putAll(diplomaticModifiers)
         toReturn.totalOfScienceDuringRA=totalOfScienceDuringRA
-        toReturn.everBeenFriends = everBeenFriends
         return toReturn
     }
 
@@ -292,9 +289,13 @@ class DiplomacyManager() {
         updateEverBeenFriends()
     }
 
-    /** Updates [everBeenFriends] if the two civilization are currently at least friends */
+    /** True when the two civs have been friends in the past */
+    fun everBeenFriends(): Boolean = hasFlag(DiplomacyFlags.EverBeenFriends)
+
+    /** Set [DiplomacyFlags.EverBeenFriends] if the two civilization are currently at least friends */
     private fun updateEverBeenFriends() {
-        everBeenFriends = everBeenFriends || relationshipLevel() >= RelationshipLevel.Friend
+        if (relationshipLevel() >= RelationshipLevel.Friend && !everBeenFriends())
+            setFlag(DiplomacyFlags.EverBeenFriends, -1)
     }
 
     private fun nextTurnCityStateInfluence() {
@@ -320,21 +321,35 @@ class DiplomacyManager() {
     }
 
     private fun nextTurnFlags() {
-        for (flag in flagsCountdown.keys.toList()) {
-            if (flag == DiplomacyFlags.ResearchAgreement.name){
+        loop@ for (flag in flagsCountdown.keys.toList()) {
+            // No need to decrement negative countdown flags: they do not expire
+            if (flagsCountdown[flag]!! > 0)
+                flagsCountdown[flag] = flagsCountdown[flag]!! - 1
+
+            // At the end of every turn
+            if (flag == DiplomacyFlags.ResearchAgreement.name)
                 totalOfScienceDuringRA += civInfo.statsForNextTurn.science.toInt()
-            }
-            flagsCountdown[flag] = flagsCountdown[flag]!! - 1
+
+            // Only when flag is expired
             if (flagsCountdown[flag] == 0) {
-                if (flag == DiplomacyFlags.ResearchAgreement.name && !otherCivDiplomacy().hasFlag(DiplomacyFlags.ResearchAgreement))
-                    sciencefromResearchAgreement()
-                if (flag == DiplomacyFlags.ProvideMilitaryUnit.name && civInfo.cities.isEmpty() || otherCiv().cities.isEmpty())
-                    continue
+                when (flag) {
+                    DiplomacyFlags.ResearchAgreement.name -> {
+                        if (!otherCivDiplomacy().hasFlag(DiplomacyFlags.ResearchAgreement))
+                            sciencefromResearchAgreement()
+                    }
+                    DiplomacyFlags.ProvideMilitaryUnit.name -> {
+                        // Do not unset the flag
+                        if (civInfo.cities.isEmpty() || otherCiv().cities.isEmpty())
+                            continue@loop
+                        else
+                            civInfo.giftMilitaryUnitTo(otherCiv())
+                    }
+                    DiplomacyFlags.AgreedToNotSettleNearUs.name -> {
+                        addModifier(DiplomaticModifiers.FulfilledPromiseToNotSettleCitiesNearUs, 10f)
+                    }
+                }
+
                 flagsCountdown.remove(flag)
-                if (flag == DiplomacyFlags.AgreedToNotSettleNearUs.name)
-                    addModifier(DiplomaticModifiers.FulfilledPromiseToNotSettleCitiesNearUs, 10f)
-                else if (flag == DiplomacyFlags.ProvideMilitaryUnit.name)
-                    civInfo.giftMilitaryUnitTo(otherCiv())
             }
         }
     }
