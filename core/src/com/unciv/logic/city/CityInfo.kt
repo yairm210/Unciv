@@ -15,7 +15,6 @@ import com.unciv.logic.map.TileMap
 import com.unciv.logic.trade.TradeLogic
 import com.unciv.logic.trade.TradeOffer
 import com.unciv.logic.trade.TradeType
-import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.tile.ResourceSupplyList
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.unit.BaseUnit
@@ -44,6 +43,7 @@ class CityInfo {
     var id: String = UUID.randomUUID().toString()
     var name: String = ""
     var foundingCiv = ""
+    var previousOwner = "" // This is so that cities in resistance that re recaptured aren't in resistance anymore
     var turnAcquired = 0
     var health = 200
     var resistanceCounter = 0
@@ -391,6 +391,9 @@ class CityInfo {
         conqueringCiv.addNotification("Received [$goldPlundered] Gold for capturing [$name]", centerTileInfo.position, Color.GOLD)
 
         val oldCiv = civInfo
+        val reconqueredOurCity = previousOwner == conqueringCiv.civName
+
+        previousOwner = oldCiv.civName
         // must be before moving the city to the conquering civ,
         // so the repercussions are properly checked
         diplomaticRepercussionsForConqueringCity(oldCiv, conqueringCiv)
@@ -398,10 +401,12 @@ class CityInfo {
         moveToCiv(conqueringCiv)
         Battle.destroyIfDefeated(oldCiv, conqueringCiv)
 
-        if(population.population>1) population.population -= 1 + population.population/4 // so from 2-4 population, remove 1, from 5-8, remove 2, etc.
+        if (population.population > 1) population.population -= 1 + population.population / 4 // so from 2-4 population, remove 1, from 5-8, remove 2, etc.
         reassignPopulation()
 
-        resistanceCounter = population.population  // I checked, and even if you puppet there's resistance for conquering
+        if (reconqueredOurCity && resistanceCounter != 0) // we reconquered our city while it was still in resistance - we get it back with no resistance
+            resistanceCounter = 0
+        else resistanceCounter = population.population  // I checked, and even if you puppet there's resistance for conquering
         isPuppet = true
         health = getMaxHealth() / 2 // I think that cities recover to half health when conquered?
         cityStats.update()
