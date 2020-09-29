@@ -304,9 +304,9 @@ class MapUnit {
         updateUniques()
     }
 
-    fun useMovementPoints(amount:Float){
+    fun useMovementPoints(amount:Float) {
         currentMovement -= amount
-        if(currentMovement<0) currentMovement = 0f
+        if (currentMovement < 0) currentMovement = 0f
     }
 
     fun doAction() {

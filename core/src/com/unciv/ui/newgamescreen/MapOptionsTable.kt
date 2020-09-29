@@ -80,10 +80,11 @@ class MapOptionsTable(val newGameScreen: NewGameScreen): Table() {
         if (scenarioFiles.any()) {
             for (savedGame in getScenarioFiles()) {
                 try {  // Sometimes, we have scenarios that are dependent on mods that we don't have and so they can't be loaded.
-                    selectSavedGameAsScenario(savedGame)
+                    GameSaver.loadGameFromFile(savedGame)
                     scenarioSelectBox.items.add(FileHandleWrapper(savedGame))
                 } catch (ex: Exception) {}
             }
+
             scenarioSelectBox.items = scenarioSelectBox.items // it doesn't register them until you do this.
             scenarioSelectBox.selected = scenarioSelectBox.items.first()
             // needs to be after the item change, so it doesn't activate before we choose the Scenario maptype
