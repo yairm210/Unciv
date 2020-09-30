@@ -79,7 +79,7 @@ class QuestManager {
 
         decrementQuestCountdowns()
 
-        handleGlobalQuests()
+        handleExpiredGlobalQuests()
         handleIndividualQuests()
 
         tryStartNewGlobalQuest()
@@ -208,13 +208,13 @@ class QuestManager {
         }
     }
 
-    private fun handleGlobalQuests() {
+    private fun handleExpiredGlobalQuests() {
         val globalQuestsExpired = assignedQuests.filter { it.isGlobal() && it.isExpired() }.map { it.questName }.distinct()
         for (globalQuestName in globalQuestsExpired)
-            handleGlobalQuest(globalQuestName)
+            handleExpiredGlobalQuest(globalQuestName)
     }
 
-    private fun handleGlobalQuest(questName: String) {
+    private fun handleExpiredGlobalQuest(questName: String) {
         val quests = assignedQuests.filter { it.questName == questName }
         if (quests.isEmpty())
             return
