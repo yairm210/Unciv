@@ -267,6 +267,8 @@ object Battle {
 
         attackerCiv.addNotification("We have conquered the city of [${city.name}]!", city.location, Color.RED)
 
+        attackerCiv.gameInfo.notifyCityStatesOfConquest(attackerCiv, city.civInfo)
+
         city.getCenterTile().apply {
             if(militaryUnit!=null) militaryUnit!!.destroy()
             if(civilianUnit!=null) captureCivilianUnit(attacker, MapUnitCombatant(civilianUnit!!))

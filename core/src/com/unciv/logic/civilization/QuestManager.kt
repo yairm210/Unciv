@@ -86,6 +86,35 @@ class QuestManager {
         tryStartNewIndividualQuests()
     }
 
+    /** Get notified that [killer] cleared a Barbarian Encampement on [tile] */
+    fun campKillNotification(killer: CivilizationInfo, tile: TileInfo) {
+        val assignedQuest = assignedQuests.filter {
+            it.assignee == killer.civName &&
+            it.questName == "Kill Camp" &&
+            it.data1.toFloat() == tile.position.x &&
+            it.data2.toFloat() == tile.position.y
+        }.firstOrNull()
+
+        if (assignedQuest != null) {
+            giveReward(assignedQuest)
+            assignedQuests.remove(assignedQuest)
+        }
+    }
+
+    /** Get notified that [killer] conquered [cityState] */
+    fun cityStateKillNotification(killer: CivilizationInfo, cityState: CivilizationInfo) {
+        val assignedQuest = assignedQuests.filter {
+            it.assignee == killer.civName &&
+                    it.questName == "Kill City State" &&
+                    it.data1 == cityState.civName
+        }.firstOrNull()
+
+        if (assignedQuest != null) {
+            giveReward(assignedQuest)
+            assignedQuests.remove(assignedQuest)
+        }
+    }
+
     private fun decrementQuestCountdowns() {
         if (globalQuestCountdown > 0)
             globalQuestCountdown -= 1
@@ -245,7 +274,18 @@ class QuestManager {
             var data2 = ""
 
             when (quest.name) {
+                "Kill Camp" -> {
+                    val camp = getBarbarianEncampmentForQuest(assignee)!!
+                    data1 = camp.position.x.toInt().toString()
+                    data2 = camp.position.y.toInt().toString()
+                }
+                "Connect Resource" -> data1 = getResourceForQuest(assignee)!!.name
                 "Construct Wonder" -> data1 = getWonderToBuildForQuest(assignee)!!.name
+                "Great Person" -> data1 = getGreatPersonForQuest(assignee)!!.name
+                "Kill City State" -> data1 = getCityStateTargetForQuest(assignee)!!.civName
+                "Find Player" -> data1 = getCivilizationToFindForQuest(assignee)!!.civName
+                "Find Natural Wonder" -> data1 = getNaturalWonderToFindForQuest(assignee)!!
+                "Contest Culture" -> data1 = assignee.policies.totalAccumulatedCulture.toString()
                 "Contest Techs" -> data1 = assignee.tech.getNumberOfTechsResearched().toString()
             }
 
@@ -282,7 +322,14 @@ class QuestManager {
 
         return when (quest.name) {
             "Route" -> civInfo.hasEverBeenFriendWith(challenger) && !civInfo.isCapitalConnectedToCity(challenger.getCapital())
+            "Kill Camp" -> getBarbarianEncampmentForQuest(challenger) != null
+            "Connect Resource" -> civInfo.hasEverBeenFriendWith(challenger) && getResourceForQuest(challenger) != null
             "Construct Wonder" -> civInfo.hasEverBeenFriendWith(challenger) && getWonderToBuildForQuest(challenger) != null
+            "Great Person" -> civInfo.hasEverBeenFriendWith(challenger) && getGreatPersonForQuest(challenger) != null
+            //TODO: friendly (Personality) city states won't ask for this
+            "Kill City State" -> getCityStateTargetForQuest(challenger) != null
+            "Find Player" -> civInfo.hasEverBeenFriendWith(challenger) && getCivilizationToFindForQuest(challenger) != null
+            "Find Natural Wonder" -> civInfo.hasEverBeenFriendWith(challenger) && getNaturalWonderToFindForQuest(challenger) != null
             else -> true
         }
     }
@@ -292,7 +339,11 @@ class QuestManager {
         val assignee = civInfo.gameInfo.getCivilization(assignedQuest.assignee)
         return when (assignedQuest.questName) {
             "Route" -> civInfo.isCapitalConnectedToCity(assignee.getCapital())
+            "Connect Resource" -> assignee.detailedCivResources.map { it.resource }.contains(civInfo.gameInfo.ruleSet.tileResources[assignedQuest.data1])
             "Construct Wonder" -> assignee.cities.any { it.cityConstructions.isBuilt(assignedQuest.data1) }
+            "Great Person" -> assignee.getCivGreatPeople().any { it.baseUnit.getThisOrReplacedBaseUnit(civInfo.gameInfo.ruleSet).name == assignedQuest.data1 }
+            "Find Player" -> assignee.hasMetCivTerritory(civInfo.gameInfo.getCivilization(assignedQuest.data1))
+            "Find Natural Wonder" -> assignee.naturalWonders.contains(assignedQuest.data1)
             else -> false
         }
     }
@@ -301,7 +352,10 @@ class QuestManager {
     private fun isObsolete(assignedQuest: AssignedQuest): Boolean {
         val assignee = civInfo.gameInfo.getCivilization(assignedQuest.assignee)
         return when (assignedQuest.questName) {
+            "Kill Camp" -> !civInfo.gameInfo.tileMap[assignedQuest.data1.toInt(), assignedQuest.data2.toInt()].hasBarbarianEncampment()
             "Construct Wonder" -> civInfo.gameInfo.getCities().any { it.civInfo != assignee && it.cityConstructions.isBuilt(assignedQuest.data1) }
+            "Kill City State" -> civInfo.gameInfo.getCivilization(assignedQuest.data1).isDefeated()
+            "Find Player" -> civInfo.gameInfo.getCivilization(assignedQuest.data1).isDefeated()
             else -> false
         }
     }
@@ -320,12 +374,56 @@ class QuestManager {
     private fun getScoreForQuest(assignedQuest: AssignedQuest): Int {
         val assignee = civInfo.gameInfo.getCivilization(assignedQuest.assignee)
         return when (assignedQuest.questName) {
+            "Contest Culture" -> assignee.policies.totalAccumulatedCulture - assignedQuest.data1.toInt()
             "Contest Techs" -> assignee.tech.getNumberOfTechsResearched() - assignedQuest.data1.toInt()
             else -> 0
         }
     }
 
     //region get-quest-target
+    /**
+     * Returns a random [TileInfo] containing a Barbarian encampment within 8 tiles of [civInfo]
+     * to be destroyed
+     */
+    private fun getBarbarianEncampmentForQuest(challenger: CivilizationInfo): TileInfo? {
+        val encampments = civInfo.getCapital().getCenterTile().getTilesInDistance(8)
+                .filter { it.hasBarbarianEncampment() }.toList()
+
+        if (encampments.isNotEmpty())
+            return encampments.random()
+
+        return null
+    }
+
+    /**
+     * Returns a random resource to be connected to the [challenger]'s trade route as a quest.
+     * The resource must be a [ResourceType.Luxury] or [ResourceType.Strategic], must not be owned
+     * by the [civInfo] and the [challenger], and must be viewable by the [challenger];
+     * if none exists, it returns null.
+     */
+    private fun getResourceForQuest(challenger: CivilizationInfo): TileResource? {
+        val viewableResources = challenger.getViewableResources()
+
+        val ownedByCityStateResources = civInfo.detailedCivResources.map { it.resource }
+                .filter { it.resourceType != ResourceType.Bonus }
+
+        val ownedByMajorResources = challenger.detailedCivResources.map { it.resource }
+                .filter { it.resourceType != ResourceType.Bonus }
+
+        val notOwnedResources = civInfo.gameInfo.ruleSet.tileResources.values
+                .filter {
+                    it.resourceType != ResourceType.Bonus &&
+                            viewableResources.contains(it) &&
+                            !ownedByCityStateResources.contains(it) &&
+                            !ownedByMajorResources.contains(it)
+                }
+
+        if (notOwnedResources.isNotEmpty())
+            return notOwnedResources.random()
+
+        return null
+    }
+
     private fun getWonderToBuildForQuest(challenger: CivilizationInfo): Building? {
         val wonders = civInfo.gameInfo.ruleSet.buildings.values
                 .filter { building ->
@@ -336,6 +434,66 @@ class QuestManager {
 
         if (wonders.isNotEmpty())
             return wonders.random()
+
+        return null
+    }
+
+    /**
+     * Returns a Great Person [BaseUnit] that is not owned by both the [challenger] and the [civInfo]
+     */
+    private fun getGreatPersonForQuest(challenger: CivilizationInfo): BaseUnit? {
+        val ruleSet = civInfo.gameInfo.ruleSet
+        val greatPeople = ruleSet.units.values
+                .filter { baseUnit -> baseUnit.uniques.any { it.equalsPlaceholderText("Great Person - []") } }
+                .map { it.getThisOrReplacedBaseUnit(ruleSet) }.distinct()
+                .subtract(
+                        challenger.getCivGreatPeople().map { it.baseUnit.getThisOrReplacedBaseUnit(ruleSet) }.distinct().toList())
+                .subtract(
+                        civInfo.getCivGreatPeople().map { it.baseUnit.getThisOrReplacedBaseUnit(ruleSet) }.distinct().toList())
+
+        if (greatPeople.isNotEmpty())
+            return greatPeople.random()
+
+        return null
+    }
+
+    /**
+     * Returns a random [CivilizationInfo] (city state) as a target to be killed by [challenger] as
+     * a quest. The city state returned is known by [challenger] and not allied to [civInfo];
+     * if none exists, it returns null.
+     */
+    private fun getCityStateTargetForQuest(challenger: CivilizationInfo): CivilizationInfo? {
+        val targetCityStates = civInfo.gameInfo.getAliveCityStates()
+                .filter { it != civInfo && challenger.knows(it) }
+
+        if (targetCityStates.isNotEmpty())
+            return targetCityStates.random()
+
+        return null
+    }
+
+    /**
+     * Returns a random [CivilizationInfo] (major) that [challenger] has met, but whose territory he
+     * cannot see; if none exists, it returns null.
+     */
+    private fun getCivilizationToFindForQuest(challenger: CivilizationInfo): CivilizationInfo? {
+        val civilizationsToFind = challenger.getKnownCivs()
+                .filter { it.isAlive() && it.isMajorCiv() && !challenger.hasMetCivTerritory(it) }
+
+        if (civilizationsToFind.isNotEmpty())
+            return civilizationsToFind.random()
+
+        return null
+    }
+
+    /**
+     * Returns a random [NaturalWonder] not yet discovered by [challenger].
+     */
+    private fun getNaturalWonderToFindForQuest(challenger: CivilizationInfo): String? {
+        val naturalWondersToFind = civInfo.gameInfo.tileMap.naturalWonders.subtract(challenger.naturalWonders)
+
+        if (naturalWondersToFind.isNotEmpty())
+            return naturalWondersToFind.random()
 
         return null
     }
@@ -372,6 +530,14 @@ class AssignedQuest(val questName: String = "",
             "Route" -> {
                 game.setWorldScreen()
                 game.worldScreen.mapHolder.setCenterPosition(gameInfo.getCivilization(assigner).getCapital().location, selectUnit = false)
+            }
+            "Kill Camp" -> {
+                game.setWorldScreen()
+                game.worldScreen.mapHolder.setCenterPosition(Vector2(data1.toFloat(), data2.toFloat()), selectUnit = false)
+            }
+            "Kill City State" -> {
+                game.setWorldScreen()
+                game.worldScreen.mapHolder.setCenterPosition(gameInfo.getCivilization(data1).getCapital().location, selectUnit = false)
             }
         }
     }

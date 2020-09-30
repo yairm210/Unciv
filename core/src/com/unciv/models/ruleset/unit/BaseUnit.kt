@@ -88,6 +88,13 @@ class BaseUnit : INamed, IConstruction {
         return unit
     }
 
+    fun getThisOrReplacedBaseUnit(ruleset: Ruleset): BaseUnit {
+        if (replaces != null)
+            return ruleset.units[replaces!!]!!
+        else
+            return ruleset.units[name]!!
+    }
+
     override fun canBePurchased() = "Cannot be purchased" !in uniques
 
     override fun getProductionCost(civInfo: CivilizationInfo): Int {

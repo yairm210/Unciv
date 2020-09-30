@@ -330,6 +330,7 @@ open class TileInfo {
     }
 
     fun hasImprovementInProgress() = improvementInProgress != null
+    fun hasBarbarianEncampment(): Boolean = improvement == Constants.barbarianEncampment
 
     @delegate:Transient
     private val _isCoastalTile: Boolean by lazy { neighbors.any { it.baseTerrain == Constants.coast } }

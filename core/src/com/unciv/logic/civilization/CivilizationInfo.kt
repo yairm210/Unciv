@@ -138,6 +138,7 @@ class CivilizationInfo {
     fun isMajorCiv() = nation.isMajorCiv()
     fun isAlive(): Boolean = !isDefeated()
     fun hasEverBeenFriendWith(otherCiv: CivilizationInfo): Boolean = getDiplomacyManager(otherCiv).everBeenFriends()
+    fun hasMetCivTerritory(otherCiv: CivilizationInfo) = exploredTiles.any { gameInfo.tileMap[it].getOwner() == otherCiv }
 
     fun victoryType(): VictoryType {
         if(gameInfo.gameParameters.victoryTypes.size==1)
@@ -164,6 +165,11 @@ class CivilizationInfo {
             newResourceSupplyList.add(resourceSupply.resource,resourceSupply.amount,"All")
         return newResourceSupplyList
     }
+
+    fun getViewableResources(): Sequence<TileResource> =
+            gameInfo.ruleSet.tileResources.values
+                    .filter { it.revealedBy == null || tech.isResearched(it.revealedBy!!) }
+                    .asSequence()
 
     fun isCapitalConnectedToCity(city: CityInfo): Boolean = citiesConnectedToCapitalToMediums.keys.contains(city)
 
@@ -193,6 +199,8 @@ class CivilizationInfo {
 
     //region Units
     fun getCivUnits(): Sequence<MapUnit> = units.asSequence()
+    fun getCivGreatPeople(): Sequence<MapUnit> =
+            getCivUnits().filter { mapUnit -> mapUnit.baseUnit.uniques.any { it.equalsPlaceholderText("Great Person - []") } }
 
     fun addUnit(mapUnit: MapUnit, updateCivInfo:Boolean=true){
         val newList = ArrayList(units)

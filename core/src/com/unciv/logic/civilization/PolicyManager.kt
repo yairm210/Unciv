@@ -19,6 +19,8 @@ class PolicyManager {
 
     var freePolicies = 0
     var storedCulture = 0
+    /** Logs the total amount of culture generated */
+    var totalAccumulatedCulture = 0
     internal val adoptedPolicies = HashSet<String>()
     var numberOfAdoptedPolicies = 0
     var shouldOpenPolicyPicker = false
@@ -33,6 +35,7 @@ class PolicyManager {
         toReturn.freePolicies = freePolicies
         toReturn.shouldOpenPolicyPicker = shouldOpenPolicyPicker
         toReturn.storedCulture = storedCulture
+        toReturn.totalAccumulatedCulture = totalAccumulatedCulture
         toReturn.legalismState.putAll(legalismState)
         toReturn.autocracyCompletedTurns = autocracyCompletedTurns
         return toReturn
@@ -60,6 +63,7 @@ class PolicyManager {
     fun addCulture(culture: Int){
         val couldAdoptPolicyBefore = canAdoptPolicy()
         storedCulture += culture
+        totalAccumulatedCulture += culture
         if (!couldAdoptPolicyBefore && canAdoptPolicy())
             shouldOpenPolicyPicker = true
     }

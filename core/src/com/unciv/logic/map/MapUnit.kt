@@ -533,6 +533,9 @@ class MapUnit {
 
         civInfo.gold += goldGained.toInt()
         civInfo.addNotification("We have captured a barbarian encampment and recovered [${goldGained.toInt()}] gold!", tile.position, Color.RED)
+
+        // Notify City States that someone cleared this camp to dispatch quest rewards
+        civInfo.gameInfo.notifyCityStatesOfBarbarianEncampmentCleared(civInfo, tile)
     }
 
     fun disband() {

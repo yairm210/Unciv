@@ -4,7 +4,6 @@
     "description": "Build a road to connect your capital to our city.",
     "influence": 50
   },
-  /*
   {
     "name": "Kill Camp",
     "description": "We feel threatened by a Barbarian Camp near our city. Please take care of it.",
@@ -15,11 +14,11 @@
   {
     "name": "Connect Resource",
     "description": "In order to make our civilizations stronger, connect [Resource] to your trade network."
-  },*/
+  },
   {
     "name": "Construct Wonder",
     "description": "We recommend you to start building [Wonder] to show the whole world your civilization strength."
-  },/*
+  },
   {
     "name": "Great Person",
     "description": "Great People can change the course of a Civilization! You will be rewarded for acquiring a new [Great Person]."
@@ -37,7 +36,7 @@
   {
     "name": "Find Natural Wonder",
     "description": "Send your best explorers on a quest to discover Natural Wonders. Nobody knows the location of [Natural Wonder] yet."
-  },*/
+  },
   /* G&K */
   /*
   {
@@ -53,14 +52,13 @@
     "duration": 30
   },
   */
-  /*
   {
     "name": "Contest Culture",
     "description": "The civilization with the largest Culture growth will gain a reward.",
     "type": "Global",
     "duration": 30,
     "minimumCivs": 3
-  },*/
+  },
   /*
   {
     "name": "Contest Faith",
