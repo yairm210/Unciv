@@ -290,15 +290,14 @@ open class TileInfo {
             improvement.techRequired?.let { civInfo.tech.isResearched(it) } == false -> false
             getOwner() != null && getOwner() != civInfo &&
                     !improvement.hasUnique("Can be built outside your borders") -> false
-            !canImprovementBeBuiltHere(improvement) -> false
-            else -> getTileResource().improvement == improvement.name && hasViewableResource(civInfo)
+            else -> canImprovementBeBuiltHere(improvement, hasViewableResource(civInfo))
         }
     }
 
     /** Without regards to what civinfo it is, a lot of the checks are ust for the improvement on the tile.
      *  Doubles as a check for the map editor.
      */
-    fun canImprovementBeBuiltHere(improvement: TileImprovement): Boolean {
+    fun canImprovementBeBuiltHere(improvement: TileImprovement, resourceIsVisible:Boolean = true): Boolean {
         val topTerrain = getLastTerrain()
 
         return when {
@@ -316,7 +315,7 @@ open class TileInfo {
             improvement.hasUnique("Can also be built on tiles adjacent to fresh water")
                     && isAdjacentToFreshwater -> true
             "Can only be built on Coastal tiles" in improvement.uniques && isCoastalTile() -> true
-            else -> true
+            else -> getTileResource().improvement == improvement.name && resourceIsVisible
         }
     }
 
@@ -422,7 +421,7 @@ open class TileInfo {
             lineList += milUnitString
         }
         var defenceBonus = getDefensiveBonus()
-        if (defenceBonus != 0.0f) {
+        if (defenceBonus != 0f) {
             var defencePercentString = (defenceBonus * 100).toInt().toString() + "%"
             if (!defencePercentString.startsWith("-")) defencePercentString = "+$defencePercentString"
             lineList += "[$defencePercentString] to unit defence".tr()
