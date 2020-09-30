@@ -168,8 +168,8 @@ class CivilizationInfo {
 
     fun getViewableResources(): Sequence<TileResource> =
             gameInfo.ruleSet.tileResources.values
-                    .filter { it.revealedBy == null || tech.isResearched(it.revealedBy!!) }
                     .asSequence()
+                    .filter { it.revealedBy == null || tech.isResearched(it.revealedBy!!) }
 
     fun isCapitalConnectedToCity(city: CityInfo): Boolean = citiesConnectedToCapitalToMediums.keys.contains(city)
 
