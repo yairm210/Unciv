@@ -315,7 +315,7 @@ open class TileInfo {
             improvement.hasUnique("Can also be built on tiles adjacent to fresh water")
                     && isAdjacentToFreshwater -> true
             "Can only be built on Coastal tiles" in improvement.uniques && isCoastalTile() -> true
-            else -> getTileResource().improvement == improvement.name && resourceIsVisible
+            else -> resourceIsVisible && getTileResource().improvement == improvement.name
         }
     }
 
