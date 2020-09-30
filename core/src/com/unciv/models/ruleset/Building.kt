@@ -249,6 +249,7 @@ class Building : NamedStats(), IConstruction {
                     if (civInfo.cities.none { it.cityConstructions.containsBuildingOrEquivalent(filter) }) return unique.text // Wonder is not built
                 } else if (!civInfo.policies.adoptedPolicies.contains(filter)) return "Policy is not adopted" // this reason should not be displayed
             }
+            "Obsolete with []" -> if (civInfo.tech.isResearched(unique.params[0])) return unique.text
 
             "Must have an owned mountain within 2 tiles" ->  // Deprecated as of 3.10.8 . Use "Must have an owned [Mountain] within [2] tiles" instead
                 if (cityCenter.getTilesInDistance(2)

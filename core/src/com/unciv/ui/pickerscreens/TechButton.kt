@@ -5,10 +5,7 @@ import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.logic.civilization.TechManager
-import com.unciv.ui.utils.CameraStageBaseScreen
-import com.unciv.ui.utils.ImageGetter
-import com.unciv.ui.utils.surroundWithCircle
-import com.unciv.ui.utils.toLabel
+import com.unciv.ui.utils.*
 
 class TechButton(techName:String, private val techManager: TechManager, isWorldScreen: Boolean = true) : Table(CameraStageBaseScreen.skin) {
     val text= "".toLabel().apply { setAlignment(Align.center) }
@@ -44,9 +41,9 @@ class TechButton(techName:String, private val techManager: TechManager, isWorldS
         val techIconSize = 30f
 
         val civName = techManager.civInfo.civName
-        val gameBasics = techManager.civInfo.gameInfo.ruleSet
+        val ruleset = techManager.civInfo.gameInfo.ruleSet
 
-        val tech = gameBasics.technologies[techName]!!
+        val tech = ruleset.technologies[techName]!!
 
         for (unit in tech.getEnabledUnits(techManager.civInfo))
             techEnabledIcons.add(ImageGetter.getConstructionImage(unit.name).surroundWithCircle(techIconSize))
@@ -54,16 +51,26 @@ class TechButton(techName:String, private val techManager: TechManager, isWorldS
         for (building in tech.getEnabledBuildings(techManager.civInfo))
             techEnabledIcons.add(ImageGetter.getConstructionImage(building.name).surroundWithCircle(techIconSize))
 
-        for (improvement in gameBasics.tileImprovements.values
+        for(building in tech.getObsoletedBuildings(techManager.civInfo) )
+            techEnabledIcons.add(ImageGetter.getConstructionImage(building.name).surroundWithCircle(techIconSize).apply {
+                val closeImage = ImageGetter.getImage("OtherIcons/Close")
+                closeImage.setSize(techIconSize/2,techIconSize/2)
+                closeImage.color = Color.RED
+                closeImage.center(this)
+                addActor(closeImage)
+            })
+
+        for (improvement in ruleset.tileImprovements.values
                 .filter { it.techRequired == techName || it.uniqueObjects.any { u -> u.params.contains(techName) }
-                        || it.improvingTech == techName }
-                .filter { it.uniqueTo==null || it.uniqueTo==civName }) {
+                        || it.improvingTech == techName
+                        || it.uniqueObjects.any { it.placeholderText=="[] once [] is discovered" && it.params[1]==techName } }
+                .filter { it.uniqueTo==null || it.uniqueTo==civName })
             if (improvement.name.startsWith("Remove"))
                 techEnabledIcons.add(ImageGetter.getImage("OtherIcons/Stop")).size(techIconSize)
             else techEnabledIcons.add(ImageGetter.getImprovementIcon(improvement.name, techIconSize))
-        }
 
-        for (resource in gameBasics.tileResources.values.filter { it.revealedBy == techName })
+
+        for (resource in ruleset.tileResources.values.filter { it.revealedBy == techName })
             techEnabledIcons.add(ImageGetter.getResourceImage(resource.name, techIconSize))
 
         for (unique in tech.uniques)
@@ -72,7 +79,6 @@ class TechButton(techName:String, private val techManager: TechManager, isWorldS
 
         if (isWorldScreen) rightSide.add(techEnabledIcons)
         else rightSide.add(techEnabledIcons)
-//                .width(techEnabledIcons.children.size * (techIconSize+6f))
                 .minWidth(225f)
     }
 }

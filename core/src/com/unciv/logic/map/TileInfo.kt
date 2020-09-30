@@ -245,8 +245,9 @@ open class TileInfo {
         if (improvement.improvingTech != null && observingCiv.tech.isResearched(improvement.improvingTech!!))
             stats.add(improvement.improvingTechStats!!) // eg Chemistry for mines
 
-        for (unique in improvement.uniqueObjects) if (unique.placeholderText == "[] once [] is discovered"
-                && observingCiv.tech.isResearched(unique.params[1])) stats.add(Stats.parse(unique.params[0]))
+        for (unique in improvement.uniqueObjects)
+            if (unique.placeholderText == "[] once [] is discovered" && observingCiv.tech.isResearched(unique.params[1]))
+                stats.add(Stats.parse(unique.params[0]))
 
         if (city != null) {
             val cityWideUniques = city.cityConstructions.builtBuildingUniqueMap.getUniques("[] from [] tiles in this city")

@@ -32,7 +32,7 @@ class Technology {
             if (!mapOfImprovedImprovements.containsKey(key)) mapOfImprovedImprovements[key] = ArrayList()
             mapOfImprovedImprovements[key]!!.add(improvement.name)
         }
-        for ( improvements in mapOfImprovedImprovements) {
+        for (improvements in mapOfImprovedImprovements) {
             val impimpString = improvements.key.tr() + improvements.value.joinToString(", "," ") { it.tr() }
             lineList += impimpString
         }
@@ -69,6 +69,9 @@ class Technology {
                 lineList += " * " + wonder.name.tr() + " (" + wonder.getShortDescription(ruleset) + ")"
         }
 
+        for(building in getObsoletedBuildings(viewingCiv))
+            lineList += "[${building.name}] obsoleted"
+
         val revealedResource = ruleset.tileResources.values.filter { it.revealedBy == name }
                 .map { it.name }.firstOrNull() // can only be one
         if (revealedResource != null) lineList += "Reveals [$revealedResource] on the map".tr()
@@ -92,6 +95,12 @@ class Technology {
             enabledBuildings = enabledBuildings.filterNot { it.name == "Manhattan Project" }
 
         return enabledBuildings
+    }
+
+    fun getObsoletedBuildings(civInfo: CivilizationInfo): Sequence<Building> {
+        val obsoletedBuildings = civInfo.gameInfo.ruleSet.buildings.values.asSequence()
+                .filter { it.uniqueObjects.any { it.placeholderText=="Obsolete with []" && it.params[0]==name } }
+        return obsoletedBuildings.filter { civInfo.getEquivalentBuilding(it.name)==it }
     }
 
     fun getEnabledUnits(civInfo: CivilizationInfo): List<BaseUnit> {
