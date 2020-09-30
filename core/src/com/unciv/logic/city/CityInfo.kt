@@ -19,12 +19,12 @@ import com.unciv.models.ruleset.tile.ResourceSupplyList
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
+import com.unciv.models.stats.StatMap
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.equalsPlaceholderText
 import com.unciv.models.translations.getPlaceholderParameters
 import com.unciv.ui.utils.withoutItem
 import java.util.*
-import kotlin.collections.HashMap
 import kotlin.collections.HashSet
 import kotlin.math.ceil
 import kotlin.math.max
@@ -243,16 +243,16 @@ class CityInfo {
 
     fun containsBuildingUnique(unique:String) = cityConstructions.getBuiltBuildings().any { it.uniques.contains(unique) }
 
-    fun getGreatPersonMap():HashMap<String,Stats> {
-        val stats = HashMap<String, Stats>()
-        if (population.specialists.toString() != "")
-            stats["Specialists"] = population.specialists.times(3f)
+    fun getGreatPersonMap():StatMap {
+        val stats = StatMap()
+        for((specialist, amount) in population.getNewSpecialists())
+            stats.add("Specialists", getRuleset().specialists[specialist]!!.greatPersonPoints.times(amount))
 
         val buildingStats = Stats()
         for (building in cityConstructions.getBuiltBuildings())
             if (building.greatPersonPoints != null)
                 buildingStats.add(building.greatPersonPoints!!)
-        if (buildingStats.toString() != "")
+        if (!buildingStats.isEmpty())
             stats["Buildings"] = buildingStats
 
         for (entry in stats) {

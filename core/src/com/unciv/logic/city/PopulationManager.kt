@@ -20,6 +20,8 @@ class PopulationManager {
 
     // Being deprecated out
     val specialists = Stats()
+    // In favor of this bad boy
+    val specialistAllocations = Counter<String>()
 
     fun getNewSpecialists() = convertStatsToSpecialistHashmap(specialists)
 

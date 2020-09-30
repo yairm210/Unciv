@@ -85,7 +85,7 @@ class Building : NamedStats(), IConstruction {
         if (providesFreeBuilding != null)
             stringBuilder.appendln("Provides a free [$providesFreeBuilding] in the city".tr())
         if(uniques.isNotEmpty()) stringBuilder.appendln(uniques.asSequence().map { it.tr() }.joinToString("\n"))
-        if (stats.toString() != "")
+        if (!stats.isEmpty())
             stringBuilder.appendln(stats)
 
         val percentStats = getStatPercentageBonuses(civInfo)

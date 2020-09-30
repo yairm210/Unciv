@@ -5,6 +5,7 @@ import com.unciv.UncivGame
 import com.unciv.logic.civilization.CityStateType
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.logic.map.RoadStatus
+import com.unciv.models.Counter
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.Unique
 import com.unciv.models.ruleset.unit.BaseUnit
@@ -260,10 +261,10 @@ class CityStats {
         return stats
     }
 
-    private fun getStatsFromSpecialists(specialists: HashMap<String, Int>): Stats {
+    private fun getStatsFromSpecialists(specialists: Counter<String>): Stats {
         val stats = Stats()
         for (entry in specialists.filter { it.value > 0 })
-            stats.add(getStatsOfSpecialist(entry.key) * entry.value.toFloat())
+            stats.add(getStatsOfSpecialist(entry.key) * entry.value)
         return stats
     }
 

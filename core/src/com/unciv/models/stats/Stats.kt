@@ -57,11 +57,15 @@ open class Stats() {
         return stats
     }
 
+    operator fun times(number: Int) = times(number.toFloat())
+
     operator fun times(number: Float): Stats {
         val hashMap = toHashMap()
         for (stat in Stat.values()) hashMap[stat] = number * hashMap[stat]!!
         return Stats(hashMap)
     }
+
+    fun isEmpty() = equals(Stats())
 
     override fun toString(): String {
         return toHashMap().filter { it.value != 0f }

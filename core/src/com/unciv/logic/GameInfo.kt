@@ -253,16 +253,17 @@ class GameInfo {
             throw UncivShowableException("Missing mods: [$missingMods]")
         }
 
+        // TODO: Scheduled for removal 3.10.14
         // Renames as of version 3.1.8, because of translation conflicts with the property "Range" and the difficulty "Immortal"
         // Needs to be BEFORE tileMap.setTransients, because the units' setTransients is called from there
-        for (tile in tileMap.values)
-            for (unit in tile.getUnits()) {
-                if (unit.name == "Immortal") unit.name = "Persian Immortal"
-                if (unit.promotions.promotions.contains("Range")) {
-                    unit.promotions.promotions.remove("Range")
-                    unit.promotions.promotions.add("Extended Range")
-                }
-            }
+//        for (tile in tileMap.values)
+//            for (unit in tile.getUnits()) {
+//                if (unit.name == "Immortal") unit.name = "Persian Immortal"
+//                if (unit.promotions.promotions.contains("Range")) {
+//                    unit.promotions.promotions.remove("Range")
+//                    unit.promotions.promotions.add("Extended Range")
+//                }
+//            }
 
         tileMap.setTransients(ruleSet)
 
@@ -285,67 +286,72 @@ class GameInfo {
                 civInfo.policies.adoptedPolicies.remove("Facism")
                 civInfo.policies.adoptedPolicies.add("Fascism")
             }
+        }
+
 
             // This doesn't HAVE to go here, but why not.
             // As of version 3.1.3, trade offers of "Declare war on X" and "Introduction to X" were changed to X,
             //   with the extra text being added only on UI display (solved a couple of problems).
-            for (trade in civInfo.tradeRequests.map { it.trade }) {
-                for (offer in trade.theirOffers.union(trade.ourOffers)) {
-                    offer.name = offer.name.removePrefix("Declare war on ")
-                    offer.name = offer.name.removePrefix("Introduction to ")
-                }
-            }
+            // TODO: Scheduled for removal 3.10.14
+//            for (trade in civInfo.tradeRequests.map { it.trade }) {
+//                for (offer in trade.theirOffers.union(trade.ourOffers)) {
+//                    offer.name = offer.name.removePrefix("Declare war on ")
+//                    offer.name = offer.name.removePrefix("Introduction to ")
+//                }
+//            }
 
+            // TODO: Scheduled for removal 3.10.14
             // As of 3.4.9 cities are referenced by id, not by name
             // So try to update every tradeRequest (if there are no conflicting names)
-            for (tradeRequest in civInfo.tradeRequests) {
-                val trade = tradeRequest.trade
-                val toRemove = ArrayList<TradeOffer>()
-                for (offer in trade.ourOffers) {
-                    if (offer.type == TradeType.City) {
-                        val countNames = civInfo.cities.count { it.name == offer.name }
+//            for (tradeRequest in civInfo.tradeRequests) {
+//                val trade = tradeRequest.trade
+//                val toRemove = ArrayList<TradeOffer>()
+//                for (offer in trade.ourOffers) {
+//                    if (offer.type == TradeType.City) {
+//                        val countNames = civInfo.cities.count { it.name == offer.name }
+//
+//                        if (countNames == 1)
+//                            offer.name = civInfo.cities.first { it.name == offer.name }.id
+//                        // There are conflicting names: we can't guess what city was being offered
+//                        else if (countNames > 1)
+//                            toRemove.add(offer)
+//                    }
+//                }
+//
+//                trade.ourOffers.removeAll(toRemove)
+//                toRemove.clear()
+//
+//                val themCivInfo = getCivilization(tradeRequest.requestingCiv)
+//                for (offer in trade.theirOffers) {
+//                    if (offer.type == TradeType.City) {
+//                        val countNames = themCivInfo.cities.count { it.name == offer.name }
+//
+//                        if (countNames == 1)
+//                            offer.name = themCivInfo.cities.first { it.name == offer.name }.id
+//                        // There are conflicting names: we can't guess what city was being offered
+//                        else if (countNames > 1)
+//                            toRemove.add(offer)
+//                    }
+//                }
+//
+//                trade.theirOffers.removeAll(toRemove)
+//            }
 
-                        if (countNames == 1)
-                            offer.name = civInfo.cities.first { it.name == offer.name }.id
-                        // There are conflicting names: we can't guess what city was being offered
-                        else if (countNames > 1)
-                            toRemove.add(offer)
-                    }
-                }
-
-                trade.ourOffers.removeAll(toRemove)
-                toRemove.clear()
-
-                val themCivInfo = getCivilization(tradeRequest.requestingCiv)
-                for (offer in trade.theirOffers) {
-                    if (offer.type == TradeType.City) {
-                        val countNames = themCivInfo.cities.count { it.name == offer.name }
-
-                        if (countNames == 1)
-                            offer.name = themCivInfo.cities.first { it.name == offer.name }.id
-                        // There are conflicting names: we can't guess what city was being offered
-                        else if (countNames > 1)
-                            toRemove.add(offer)
-                    }
-                }
-
-                trade.theirOffers.removeAll(toRemove)
-            }
-
+            // TODO: Scheduled for removal 3.10.14
             // As of 3.4.9 cities are referenced by id, not by name
-            val toRemove = ArrayList<PopupAlert>()
-            for (popupAlert in civInfo.popupAlerts.filter { it.type == AlertType.CityConquered }) {
-                val countNames = getCities().count { it.name == popupAlert.value }
-
-                if (countNames == 1)
-                    popupAlert.value = getCities().first { it.name == popupAlert.value }.id
-                else if (countNames > 1) {
-                    // Sorry again, conflicting names: who knows what city you conquered?
-                    toRemove.add(popupAlert)
-                }
-            }
-            civInfo.popupAlerts.removeAll(toRemove)
-        }
+//            val toRemove = ArrayList<PopupAlert>()
+//            for (popupAlert in civInfo.popupAlerts.filter { it.type == AlertType.CityConquered }) {
+//                val countNames = getCities().count { it.name == popupAlert.value }
+//
+//                if (countNames == 1)
+//                    popupAlert.value = getCities().first { it.name == popupAlert.value }.id
+//                else if (countNames > 1) {
+//                    // Sorry again, conflicting names: who knows what city you conquered?
+//                    toRemove.add(popupAlert)
+//                }
+//            }
+//            civInfo.popupAlerts.removeAll(toRemove)
+//        }
 
         for (civInfo in civilizations) civInfo.setNationTransient()
         for (civInfo in civilizations) civInfo.setTransients()
@@ -364,7 +370,7 @@ class GameInfo {
             for (cityInfo in civInfo.cities) cityInfo.cityStats.updateCityHappiness()
 
             for (cityInfo in civInfo.cities) {
-                if(cityInfo.cityConstructions.currentConstruction!="") { // move it to the top of the queue
+                if (cityInfo.cityConstructions.currentConstruction != "") { // move it to the top of the queue
                     val constructionQueue = cityInfo.cityConstructions.constructionQueue
                     val itemsInQueue = constructionQueue.toList()
                     constructionQueue.clear()
@@ -372,6 +378,13 @@ class GameInfo {
                     constructionQueue.addAll(itemsInQueue)
                     cityInfo.cityConstructions.currentConstruction = ""
                 }
+
+                // As of 3.10.14, specialists are saved by name not by stat
+//                for((key, value) in cityInfo.population.specialists.toHashMap())
+//                    cityInfo.population.specialistAllocations.add(
+//                            cityInfo.population.specialistNameByStat(key), value.toInt())
+//                cityInfo.population.specialists.clear()
+
                 cityInfo.cityStats.update()
             }
         }

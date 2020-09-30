@@ -317,4 +317,5 @@ object RulesetCache :HashMap<String,Ruleset>() {
 class Specialist: NamedStats() {
     var color = ArrayList<Int>()
     val colorObject by lazy { colorFromRGB(color) }
+    var greatPersonPoints= Stats()
 }
