@@ -16,6 +16,7 @@ import com.unciv.models.ruleset.unit.Promotion
 import com.unciv.models.stats.INamed
 import com.unciv.models.stats.NamedStats
 import com.unciv.models.stats.Stats
+import com.unciv.ui.utils.colorFromRGB
 import kotlin.collections.set
 
 object ModOptionsConstants {
@@ -313,4 +314,7 @@ object RulesetCache :HashMap<String,Ruleset>() {
     }
 }
 
-class Specialist: NamedStats()
+class Specialist: NamedStats() {
+    var color = ArrayList<Int>()
+    val colorObject by lazy { colorFromRGB(color) }
+}

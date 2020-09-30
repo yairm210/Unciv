@@ -19,14 +19,16 @@ class SpecialistAllocationTable(val cityScreen: CityScreen): Table(CameraStageBa
 
             val stat = statToMaximumSpecialist.key
 
-            val assignedSpecialists = cityInfo.population.specialists.get(stat).toInt()
-            val maxSpecialists = cityInfo.population.getMaxSpecialists().get(stat).toInt()
+            val specialistName = cityInfo.population.specialistNameByStat(stat)
+            val newSpecialists = cityInfo.population.getNewSpecialists()
+            val assignedSpecialists = newSpecialists[specialistName]!!
+            val maxSpecialists = cityInfo.population.getMaxSpecialistsNew()[specialistName]!!
 
-            if (cityScreen.canChangeState) add(getUnassignButton(assignedSpecialists,stat))
+            if (cityScreen.canChangeState) add(getUnassignButton(assignedSpecialists, stat))
             add(getAllocationTable(assignedSpecialists, maxSpecialists, stat)).pad(10f)
-            if (cityScreen.canChangeState) add(getAssignButton(assignedSpecialists,maxSpecialists,stat))
+            if (cityScreen.canChangeState) add(getAssignButton(assignedSpecialists, maxSpecialists, stat))
             addSeparatorVertical().pad(10f)
-            add(getSpecialistStatsTable(stat)).row()
+            add(getSpecialistStatsTable(specialistName)).row()
         }
         pack()
     }
@@ -74,13 +76,13 @@ class SpecialistAllocationTable(val cityScreen: CityScreen): Table(CameraStageBa
     }
 
 
-    private fun getSpecialistStatsTable(stat: Stat): Table {
+    private fun getSpecialistStatsTable(specialistName: String): Table {
         val specialistStatTable = Table().apply { defaults().pad(5f) }
-        val specialistStats = cityInfo.cityStats.getStatsOfSpecialist(stat).toHashMap()
+        val specialistStats = cityInfo.cityStats.getStatsOfSpecialist(specialistName).toHashMap()
         for (entry in specialistStats) {
             if (entry.value == 0f) continue
-            specialistStatTable.add(ImageGetter.getStatIcon(entry.key.toString())).size(20f)
-            specialistStatTable.add(entry.value.toInt().toString().toLabel()).padRight(10f)
+            specialistStatTable.add(ImageGetter.getStatIcon(entry.key.name)).size(20f)
+            specialistStatTable.add(entry.value.toInt().toLabel()).padRight(10f)
         }
         return specialistStatTable
     }

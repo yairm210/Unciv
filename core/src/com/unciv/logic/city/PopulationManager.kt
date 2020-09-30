@@ -3,6 +3,7 @@ package com.unciv.logic.city
 import com.badlogic.gdx.graphics.Color
 import com.unciv.logic.automation.Automation
 import com.unciv.logic.map.TileInfo
+import com.unciv.models.Counter
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import com.unciv.ui.utils.withItem
@@ -22,8 +23,8 @@ class PopulationManager {
 
     fun getNewSpecialists() = convertStatsToSpecialistHashmap(specialists)
 
-    fun convertStatsToSpecialistHashmap(stats: Stats):HashMap<String,Int> {
-        val specialistHashmap = HashMap<String, Int>()
+    fun convertStatsToSpecialistHashmap(stats: Stats):Counter<String> {
+        val specialistHashmap = Counter<String>()
         for ((stat, amount) in stats.toHashMap()) {
             if (amount == 0f) continue
             val specialistName = specialistNameByStat(stat)
@@ -78,8 +79,6 @@ class PopulationManager {
         }
     }
 
-    internal fun getStatsOfSpecialist(stat: Stat) = cityInfo.cityStats.getStatsOfSpecialist(stat)
-
     internal fun getStatsOfSpecialist(name:String) = cityInfo.cityStats.getStatsOfSpecialist(name)
 
     internal fun specialistNameByStat(stat: Stat) = when (stat) {
@@ -109,10 +108,10 @@ class PopulationManager {
         val bestJob: Stat? = specialists.toHashMap()
                 .filter { maxSpecialistsMap.containsKey(it.key) && it.value < maxSpecialistsMap[it.key]!! }
                 .map { it.key }
-                .maxBy { Automation.rankSpecialist(getStatsOfSpecialist(it), cityInfo) }
+                .maxBy { Automation.rankSpecialist(getStatsOfSpecialist(specialistNameByStat(it)), cityInfo) }
         var valueBestSpecialist = 0f
         if (bestJob != null) {
-            val specialistStats = getStatsOfSpecialist(bestJob)
+            val specialistStats = getStatsOfSpecialist(specialistNameByStat(bestJob))
             valueBestSpecialist = Automation.rankSpecialist(specialistStats, cityInfo)
         }
 
@@ -157,10 +156,10 @@ class PopulationManager {
             val worstJob: Stat? = specialists.toHashMap()
                     .filter { it.value > 0 }
                     .map { it.key }
-                    .minBy { Automation.rankSpecialist(getStatsOfSpecialist(it), cityInfo) }
+                    .minBy { Automation.rankSpecialist(getStatsOfSpecialist(specialistNameByStat(it)), cityInfo) }
             var valueWorstSpecialist = 0f
             if (worstJob != null)
-                valueWorstSpecialist = Automation.rankSpecialist(getStatsOfSpecialist(worstJob), cityInfo)
+                valueWorstSpecialist = Automation.rankSpecialist(getStatsOfSpecialist(specialistNameByStat(worstJob)), cityInfo)
 
             //un-assign population
             if ((worstWorkedTile != null && valueWorstTile < valueWorstSpecialist)
@@ -177,5 +176,7 @@ class PopulationManager {
             maximumSpecialists.add(building.specialistSlots!!)
         return maximumSpecialists
     }
+
+    fun getMaxSpecialistsNew() = convertStatsToSpecialistHashmap(getMaxSpecialists())
 
 }

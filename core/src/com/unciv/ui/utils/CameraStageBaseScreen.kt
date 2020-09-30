@@ -124,9 +124,8 @@ var Button.isEnabled: Boolean
     get() = touchable == Touchable.enabled
     set(value) = if (value) enable() else disable()
 
-fun colorFromRGB(r: Int, g: Int, b: Int): Color {
-    return Color(r/255f, g/255f, b/255f, 1f)
-}
+fun colorFromRGB(r: Int, g: Int, b: Int) = Color(r/255f, g/255f, b/255f, 1f)
+fun colorFromRGB(rgb:List<Int>) = colorFromRGB(rgb[0],rgb[1],rgb[2])
 
 fun Actor.centerX(parent:Actor){ x = parent.width/2 - width/2 }
 fun Actor.centerY(parent:Actor){ y = parent.height/2- height/2}

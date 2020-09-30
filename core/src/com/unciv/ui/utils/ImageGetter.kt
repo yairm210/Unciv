@@ -306,7 +306,7 @@ object ImageGetter {
     fun getSpecialistIcon(stat: Stat, isFilled: Boolean =true): Image {
         val specialist = getImage("StatIcons/Specialist")
         if (!isFilled) specialist.color = Color.GRAY
-        else specialist.color=when(stat){
+        else specialist.color = when (stat) {
             Stat.Production -> Color.BROWN
             Stat.Gold -> Color.GOLD
             Stat.Science -> Color.BLUE

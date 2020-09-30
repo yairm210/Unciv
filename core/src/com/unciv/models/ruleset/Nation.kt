@@ -68,10 +68,10 @@ class Nation : INamed {
     var embarkDisembarkCosts1 = false
 
     fun setTransients() {
-        outerColorObject = colorFromRGB(outerColor[0], outerColor[1], outerColor[2])
+        outerColorObject = colorFromRGB(outerColor)
 
         if (innerColor == null) innerColorObject = Color.BLACK
-        else innerColorObject = colorFromRGB(innerColor!![0], innerColor!![1], innerColor!![2])
+        else innerColorObject = colorFromRGB(innerColor!!)
 
         if (uniques.contains("All units move through Forest and Jungle Tiles in friendly territory as if they have roads. These tiles can be used to establish City Connections upon researching the Wheel."))
             forestsAndJunglesAreRoads = true

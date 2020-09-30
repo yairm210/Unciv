@@ -41,7 +41,7 @@ class Terrain : NamedStats() {
 
     fun getColor(): Color { // Can't be a lazy initialize, because we play around with the resulting color with lerp()s and the like
         if (RGB == null) return Color.GOLD
-        return colorFromRGB(RGB!![0], RGB!![1], RGB!![2])
+        return colorFromRGB(RGB!!)
     }
 
 
