@@ -252,16 +252,11 @@ class CityStats {
     }
 
     fun getStatsOfSpecialist(specialistName:String): Stats {
-        val stats = cityInfo.getRuleset().specialists[specialistName]!!.clone()
+        val specialist = cityInfo.getRuleset().specialists[specialistName]
+        if (specialist == null) return Stats()
+        val stats = specialist.clone()
         for (unique in cityInfo.civInfo.getMatchingUniques("[] from every specialist"))
             stats.add(Stats.parse(unique.params[0]))
-        return stats
-    }
-
-    private fun getStatsFromSpecialists(specialists: Stats): Stats {
-        val stats = Stats()
-        for (entry in specialists.toHashMap().filter { it.value > 0 })
-            stats.add(getStatsOfSpecialist(entry.key) * entry.value)
         return stats
     }
 
