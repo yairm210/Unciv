@@ -14,6 +14,8 @@ import com.unciv.models.ruleset.tile.TileResource
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.ruleset.unit.Promotion
 import com.unciv.models.stats.INamed
+import com.unciv.models.stats.NamedStats
+import com.unciv.models.stats.Stats
 import kotlin.collections.set
 
 object ModOptionsConstants {
@@ -43,6 +45,7 @@ class Ruleset {
     val unitPromotions = LinkedHashMap<String, Promotion>()
     val nations = LinkedHashMap<String, Nation>()
     val quests = LinkedHashMap<String, Quest>()
+    val specialists = LinkedHashMap<String, Specialist>()
     val policyBranches = LinkedHashMap<String, PolicyBranch>()
     val difficulties = LinkedHashMap<String, Difficulty>()
     val mods = LinkedHashSet<String>()
@@ -68,6 +71,7 @@ class Ruleset {
         nations.putAll(ruleset.nations)
         policyBranches.putAll(ruleset.policyBranches)
         quests.putAll(ruleset.quests)
+        specialists.putAll(ruleset.specialists)
         technologies.putAll(ruleset.technologies)
         for (techToRemove in ruleset.modOptions.techsToRemove) technologies.remove(techToRemove)
         terrains.putAll(ruleset.terrains)
@@ -92,6 +96,7 @@ class Ruleset {
         tileImprovements.clear()
         tileResources.clear()
         unitPromotions.clear()
+        specialists.clear()
         units.clear()
         mods.clear()
     }
@@ -140,6 +145,9 @@ class Ruleset {
 
         val questsFile = folderHandle.child("Quests.json")
         if (questsFile.exists()) quests += createHashmap(jsonParser.getFromJson(Array<Quest>::class.java, questsFile))
+
+        val specialistsFile = folderHandle.child("Specialists.json")
+        if (specialistsFile.exists()) specialists += createHashmap(jsonParser.getFromJson(Array<Specialist>::class.java, specialistsFile))
 
         val policiesFile = folderHandle.child("Policies.json")
         if (policiesFile.exists()) {
@@ -304,3 +312,5 @@ object RulesetCache :HashMap<String,Ruleset>() {
         return newRuleset
     }
 }
+
+class Specialist: NamedStats()

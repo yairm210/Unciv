@@ -1,0 +1,18 @@
+[
+	{
+		"name":"Scientist",
+		"science":3
+	},
+	{
+		"name":"Merchant",
+		"gold":3
+	},
+	{
+		"name":"Artist",
+		"culture":2
+	},
+	{
+		"name":"Engineer",
+		"production":2
+	}
+]

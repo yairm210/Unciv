@@ -15,19 +15,36 @@ class PopulationManager {
     var population = 1
     var foodStored = 0
 
+    // Being deprecated out
     val specialists = Stats()
+
+    fun getNewSpecialists(): HashMap<String, Int> {
+        val specialistHashmap = HashMap<String, Int>()
+        for ((stat, amount) in specialists.toHashMap()) {
+            if (amount == 0f) continue
+            val specialistName = when (stat) {
+                Stat.Production -> "Engineer"
+                Stat.Gold -> "Merchant"
+                Stat.Science -> "Scientist"
+                Stat.Culture -> "Artist"
+                else -> TODO()
+            }
+            specialistHashmap[specialistName] = amount.toInt()
+        }
+        return specialistHashmap
+    }
 
     //region pure functions
     fun clone(): PopulationManager {
         val toReturn = PopulationManager()
         toReturn.specialists.add(specialists)
-        toReturn.population=population
-        toReturn.foodStored=foodStored
+        toReturn.population = population
+        toReturn.foodStored = foodStored
         return toReturn
     }
 
     fun getNumberOfSpecialists(): Int {
-        return (specialists.science + specialists.production + specialists.culture + specialists.gold).toInt()
+        return getNewSpecialists().values.sum()
     }
 
     fun getFreePopulation(): Int {
@@ -49,17 +66,11 @@ class PopulationManager {
         foodStored += food
         if (food < 0)
             cityInfo.civInfo.addNotification("[" + cityInfo.name + "] is starving!", cityInfo.location, Color.RED)
-        if (foodStored < 0)
-        // starvation!
-        {
-            if (population > 1) {
-                population--
-            }
+        if (foodStored < 0) {        // starvation!
+            if (population > 1) population--
             foodStored = 0
         }
-        if (foodStored >= getFoodToNextPopulation())
-        // growth!
-        {
+        if (foodStored >= getFoodToNextPopulation()){  // growth!
             foodStored -= getFoodToNextPopulation()
             val percentOfFoodCarriedOver = cityInfo.cityConstructions.builtBuildingUniqueMap
                     .getUniques("[]% of food is carried over after population increases")
@@ -70,6 +81,8 @@ class PopulationManager {
             cityInfo.civInfo.addNotification("[" + cityInfo.name + "] has grown!", cityInfo.location, Color.GREEN)
         }
     }
+
+    internal fun getStatsOfSpecialist(stat: Stat) = cityInfo.cityStats.getStatsOfSpecialist(stat)
 
     // todo - change tile choice according to city!
     // if small city, favor production above all, ignore gold!
@@ -90,10 +103,10 @@ class PopulationManager {
         val bestJob: Stat? = specialists.toHashMap()
                 .filter { maxSpecialistsMap.containsKey(it.key) && it.value < maxSpecialistsMap[it.key]!! }
                 .map { it.key }
-                .maxBy { Automation.rankSpecialist(cityInfo.cityStats.getStatsOfSpecialist(it), cityInfo) }
+                .maxBy { Automation.rankSpecialist(getStatsOfSpecialist(it), cityInfo) }
         var valueBestSpecialist = 0f
         if (bestJob != null) {
-            val specialistStats = cityInfo.cityStats.getStatsOfSpecialist(bestJob)
+            val specialistStats = getStatsOfSpecialist(bestJob)
             valueBestSpecialist = Automation.rankSpecialist(specialistStats, cityInfo)
         }
 
@@ -133,14 +146,13 @@ class PopulationManager {
 
 
             //evaluate specialists
-            val policies = cityInfo.civInfo.policies.adoptedPolicies
             val worstJob: Stat? = specialists.toHashMap()
                     .filter { it.value > 0 }
                     .map {it.key}
-                    .minBy { Automation.rankSpecialist(cityInfo.cityStats.getStatsOfSpecialist(it), cityInfo) }
+                    .minBy { Automation.rankSpecialist(getStatsOfSpecialist(it), cityInfo) }
             var valueWorstSpecialist = 0f
             if (worstJob != null)
-                valueWorstSpecialist = Automation.rankSpecialist(cityInfo.cityStats.getStatsOfSpecialist(worstJob), cityInfo)
+                valueWorstSpecialist = Automation.rankSpecialist(getStatsOfSpecialist(worstJob), cityInfo)
 
             //un-assign population
             if ((worstWorkedTile != null && valueWorstTile < valueWorstSpecialist)

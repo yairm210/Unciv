@@ -251,10 +251,24 @@ class CityStats {
         return stats
     }
 
-    private fun getStatsFromSpecialists(specialists: Stats, policies: HashSet<String>): Stats {
+    fun getStatsOfSpecialist(specialistName:String): Stats {
+        val stats = cityInfo.getRuleset().specialists[specialistName]!!.clone()
+        for (unique in cityInfo.civInfo.getMatchingUniques("[] from every specialist"))
+            stats.add(Stats.parse(unique.params[0]))
+        return stats
+    }
+
+    private fun getStatsFromSpecialists(specialists: Stats): Stats {
         val stats = Stats()
         for (entry in specialists.toHashMap().filter { it.value > 0 })
             stats.add(getStatsOfSpecialist(entry.key) * entry.value)
+        return stats
+    }
+
+    private fun getStatsFromSpecialists(specialists: HashMap<String, Int>): Stats {
+        val stats = Stats()
+        for (entry in specialists.filter { it.value > 0 })
+            stats.add(getStatsOfSpecialist(entry.key) * entry.value.toFloat())
         return stats
     }
 
@@ -391,7 +405,7 @@ class CityStats {
             production = cityInfo.population.getFreePopulation().toFloat()
         }
         newBaseStatList["Tile yields"] = getStatsFromTiles()
-        newBaseStatList["Specialists"] = getStatsFromSpecialists(cityInfo.population.specialists, civInfo.policies.adoptedPolicies)
+        newBaseStatList["Specialists"] = getStatsFromSpecialists(cityInfo.population.getNewSpecialists())
         newBaseStatList["Trade routes"] = getStatsFromTradeRoute()
         newBaseStatList["Buildings"] = cityInfo.cityConstructions.getStats()
         newBaseStatList["Policies"] = getStatsFromUniques(civInfo.policies.policyUniques.getAllUniques())
