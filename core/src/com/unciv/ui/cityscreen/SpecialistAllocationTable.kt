@@ -25,7 +25,7 @@ class SpecialistAllocationTable(val cityScreen: CityScreen): Table(CameraStageBa
             val maxSpecialists = cityInfo.population.getMaxSpecialistsNew()[specialistName]!!
 
             if (cityScreen.canChangeState) add(getUnassignButton(assignedSpecialists, stat))
-            add(getAllocationTable(assignedSpecialists, maxSpecialists, stat)).pad(10f)
+            add(getAllocationTable(assignedSpecialists, maxSpecialists, specialistName)).pad(10f)
             if (cityScreen.canChangeState) add(getAssignButton(assignedSpecialists, maxSpecialists, stat))
             addSeparatorVertical().pad(10f)
             add(getSpecialistStatsTable(specialistName)).row()
@@ -34,11 +34,14 @@ class SpecialistAllocationTable(val cityScreen: CityScreen): Table(CameraStageBa
     }
 
 
-    fun getAllocationTable(assignedSpecialists: Int, maxSpecialists: Int, stat: Stat):Table{
+    fun getAllocationTable(assignedSpecialists: Int, maxSpecialists: Int, specialistName: String):Table{
 
         val specialistIconTable = Table()
+        val specialistObject = cityInfo.getRuleset().specialists[specialistName]!!
         for (i in 1..maxSpecialists) {
-            val icon = ImageGetter.getSpecialistIcon(stat, i <= assignedSpecialists)
+            val color = if (i <= assignedSpecialists) specialistObject.colorObject
+            else Color.GRAY // unassigned
+            val icon = ImageGetter.getSpecialistIcon(color)
             specialistIconTable.add(icon).size(30f)
         }
         return specialistIconTable

@@ -150,15 +150,15 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(CameraStageBaseS
                 addBuildingInfo(building, specialistBuildingsTable)
                 val specialistIcons = Table()
                 specialistIcons.row().size(20f).pad(5f)
-                for (stat in building.specialistSlots!!.toHashMap())
+                for (stat in building.specialistSlots!!.toHashMap()) {
+                    if (stat.value == 0f) continue
+                    val specialist = cityInfo.getRuleset().specialists[cityInfo.population.specialistNameByStat(stat.key)]!!
                     for (i in 0 until stat.value.toInt())
-                        specialistIcons.add(ImageGetter.getSpecialistIcon(stat.key)).size(20f)
+                        specialistIcons.add(ImageGetter.getSpecialistIcon(specialist.colorObject)).size(20f)
+                }
 
                 specialistBuildingsTable.add(specialistIcons).pad(0f).row()
             }
-
-            // specialist allocation
-//            addCategory("Specialist Allocation", SpecialistAllocationTable(cityScreen)) todo
         }
 
         if (!otherBuildings.isEmpty()) {
