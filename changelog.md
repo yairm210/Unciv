@@ -8,7 +8,7 @@ Cannot open multiple gold selection popups in trade table
 
 "No Maintenance costs for improvements in []" genericified - By givehub99
 
-Tranlation updates
+Translation updates
 
 ## 3.10.12
 

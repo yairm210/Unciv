@@ -285,17 +285,27 @@ open class TileInfo {
 
     /** Returns true if the [improvement] can be built on this [TileInfo] */
     fun canBuildImprovement(improvement: TileImprovement, civInfo: CivilizationInfo): Boolean {
-        val topTerrain = getLastTerrain()
         return when {
-            isCityCenter() -> false
-            improvement.name == this.improvement -> false
             improvement.uniqueTo != null && improvement.uniqueTo != civInfo.civName -> false
             improvement.techRequired?.let { civInfo.tech.isResearched(it) } == false -> false
-            "Cannot be built on bonus resource" in improvement.uniques && resource != null
-                    && getTileResource().resourceType == ResourceType.Bonus -> false
             getOwner() != null && getOwner() != civInfo &&
                     !improvement.hasUnique("Can be built outside your borders") -> false
+            !canImprovementBeBuiltHere(improvement) -> false
+            else -> getTileResource().improvement == improvement.name && hasViewableResource(civInfo)
+        }
+    }
 
+    /** Without regards to what civinfo it is, a lot of the checks are ust for the improvement on the tile.
+     *  Doubles as a check for the map editor.
+     */
+    fun canImprovementBeBuiltHere(improvement: TileImprovement): Boolean {
+        val topTerrain = getLastTerrain()
+
+        return when {
+            improvement.name == this.improvement -> false
+            isCityCenter() -> false
+            "Cannot be built on bonus resource" in improvement.uniques && resource != null
+                    && getTileResource().resourceType == ResourceType.Bonus -> false
             improvement.terrainsCanBeBuiltOn.contains(topTerrain.name) -> true
             improvement.name == "Road" && roadStatus == RoadStatus.None -> true
             improvement.name == "Railroad" && this.roadStatus != RoadStatus.Railroad -> true
@@ -306,7 +316,7 @@ open class TileInfo {
             improvement.hasUnique("Can also be built on tiles adjacent to fresh water")
                     && isAdjacentToFreshwater -> true
             "Can only be built on Coastal tiles" in improvement.uniques && isCoastalTile() -> true
-            else -> hasViewableResource(civInfo) && getTileResource().improvement == improvement.name
+            else -> true
         }
     }
 

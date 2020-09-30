@@ -516,35 +516,9 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
             return
         }
         val improvement = tileInfo.getTileImprovement()!!
-        val resource = if (tileInfo.resource!=null) tileInfo.getTileResource() else null
-        when {
-            // Precedence, simplified: terrainsCanBeBuiltOn, then improves-resource, then 'everywhere', default to false
-            // 'everywhere' improvements (city ruins, encampments, ancient ruins, great improvements)
-            // are recognized as without terrainsCanBeBuiltOn and with turnsToBuild == 0
-            "Cannot be built on bonus resource" in improvement.uniques
-                        && tileInfo.resource != null
-                        && resource?.resourceType == ResourceType.Bonus
-                -> tileInfo.improvement = null      // forbid if this unique matches
-            tileInfo.isLand      // Fishing boats have Coast allowed even though they're meant resource-only
-                        && topTerrain.name in improvement.terrainsCanBeBuiltOn
-                -> Unit     // allow where top terrain explicitly named
-            resource?.improvement == improvement.name
-                        && (!topTerrain.unbuildable || topTerrain.name in improvement.resourceTerrainAllow)
-                -> Unit     // allow where it improves a resource and feature OK
-            tileInfo.isWater || topTerrain.impassable
-                -> tileInfo.improvement = null      // forbid if water or mountains
-            improvement.terrainsCanBeBuiltOn.isEmpty() && improvement.turnsToBuild == 0
-                    // Allow Great Improvement but clear unbuildable terrain feature
-                    // Allow barbarian camps, ruins and similar without clear
-                -> if (topTerrain.unbuildable && improvement.isGreatImprovement())
-                    tileInfo.terrainFeature = null
-            topTerrain.unbuildable -> tileInfo.improvement = null      // forbid on unbuildable feature
-            improvement.hasUnique("Can also be built on tiles adjacent to fresh water")
-                    && tileInfo.isAdjacentToFreshwater -> Unit // allow farms on tiles adjacent to fresh water
-            "Can only be built on Coastal tiles" in improvement.uniques && tileInfo.isCoastalTile()
-                -> Unit                             // allow Moai where appropriate
-            else -> tileInfo.improvement = null
-        }
+        tileInfo.improvement = null // Unset, and check if it can be reset. If so, do it, if not, invalid.
+        if (tileInfo.canImprovementBeBuiltHere(improvement))
+            tileInfo.improvement = improvement.name
     }
 
     private fun setCurrentHex(tileInfo: TileInfo, text:String){
