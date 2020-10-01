@@ -247,6 +247,7 @@ class QuestManager {
 
             when (quest.name) {
                 QuestName.ConstructWonder.value -> data1 = getWonderToBuildForQuest(assignee)!!.name
+                QuestName.GreatPerson.value -> data1 = getGreatPersonForQuest(assignee)!!.name
             }
 
             val newQuest = AssignedQuest(
@@ -283,6 +284,7 @@ class QuestManager {
         return when (quest.name) {
             QuestName.Route.value -> civInfo.hasEverBeenFriendWith(challenger) && !civInfo.isCapitalConnectedToCity(challenger.getCapital())
             QuestName.ConstructWonder.value -> civInfo.hasEverBeenFriendWith(challenger) && getWonderToBuildForQuest(challenger) != null
+            QuestName.GreatPerson.value -> civInfo.hasEverBeenFriendWith(challenger) && getGreatPersonForQuest(challenger) != null
             else -> true
         }
     }
@@ -293,6 +295,7 @@ class QuestManager {
         return when (assignedQuest.questName) {
             QuestName.Route.value -> civInfo.isCapitalConnectedToCity(assignee.getCapital())
             QuestName.ConstructWonder.value -> assignee.cities.any { it.cityConstructions.isBuilt(assignedQuest.data1) }
+            QuestName.GreatPerson.value -> assignee.getCivGreatPeople().any { it.baseUnit.getReplacedUnit(civInfo.gameInfo.ruleSet).name == assignedQuest.data1 }
             else -> false
         }
     }
@@ -339,6 +342,28 @@ class QuestManager {
 
         return null
     }
+
+    /**
+     * Returns a Great Person [BaseUnit] that is not owned by both the [challenger] and the [civInfo]
+     */
+    private fun getGreatPersonForQuest(challenger: CivilizationInfo): BaseUnit? {
+        val ruleSet = civInfo.gameInfo.ruleSet
+
+        val challengerGreatPeople = challenger.getCivGreatPeople().map { it.baseUnit.getReplacedUnit(ruleSet) }
+        val cityStateGreatPeople = civInfo.getCivGreatPeople().map { it.baseUnit.getReplacedUnit(ruleSet) }
+
+        val greatPeople = ruleSet.units.values
+                .filter { baseUnit -> baseUnit.uniques.any { it.equalsPlaceholderText("Great Person - []") } }
+                .map { it.getReplacedUnit(ruleSet) }
+                .distinct()
+                .filter { !challengerGreatPeople.contains(it) && !cityStateGreatPeople.contains(it) }
+
+        if (greatPeople.isNotEmpty())
+            return greatPeople.random()
+
+        return null
+    }
+
     //endregion
 }
 

@@ -19,11 +19,11 @@
   {
     "name": "Construct Wonder",
     "description": "We recommend you to start building [wonder] to show the whole world your civilization strength."
-  }/*,
+  },
   {
     "name": "Acquire Great Person",
     "description": "Great People can change the course of a Civilization! You will be rewarded for acquiring a new [greatPerson]."
-  },
+  }/*,
   {
     "name": "Conquer City State",
     "description": "You will be rewarded for conquering the city state of [cityState]!",

@@ -193,6 +193,7 @@ class CivilizationInfo {
 
     //region Units
     fun getCivUnits(): Sequence<MapUnit> = units.asSequence()
+    fun getCivGreatPeople(): Sequence<MapUnit> = getCivUnits().filter { mapUnit -> mapUnit.hasUnique("Great Person - []") }
 
     fun addUnit(mapUnit: MapUnit, updateCivInfo:Boolean=true){
         val newList = ArrayList(units)
