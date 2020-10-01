@@ -7,6 +7,7 @@ import com.unciv.logic.GameInfo
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.Quest
+import com.unciv.models.ruleset.QuestName
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.tile.TileResource
 import com.unciv.models.ruleset.unit.BaseUnit
@@ -245,8 +246,7 @@ class QuestManager {
             var data2 = ""
 
             when (quest.name) {
-                "Construct Wonder" -> data1 = getWonderToBuildForQuest(assignee)!!.name
-                "Contest Techs" -> data1 = assignee.tech.getNumberOfTechsResearched().toString()
+                QuestName.ConstructWonder.value -> data1 = getWonderToBuildForQuest(assignee)!!.name
             }
 
             val newQuest = AssignedQuest(
@@ -281,8 +281,8 @@ class QuestManager {
             return false
 
         return when (quest.name) {
-            "Route" -> civInfo.hasEverBeenFriendWith(challenger) && !civInfo.isCapitalConnectedToCity(challenger.getCapital())
-            "Construct Wonder" -> civInfo.hasEverBeenFriendWith(challenger) && getWonderToBuildForQuest(challenger) != null
+            QuestName.Route.value -> civInfo.hasEverBeenFriendWith(challenger) && !civInfo.isCapitalConnectedToCity(challenger.getCapital())
+            QuestName.ConstructWonder.value -> civInfo.hasEverBeenFriendWith(challenger) && getWonderToBuildForQuest(challenger) != null
             else -> true
         }
     }
@@ -291,8 +291,8 @@ class QuestManager {
     private fun isComplete(assignedQuest: AssignedQuest): Boolean {
         val assignee = civInfo.gameInfo.getCivilization(assignedQuest.assignee)
         return when (assignedQuest.questName) {
-            "Route" -> civInfo.isCapitalConnectedToCity(assignee.getCapital())
-            "Construct Wonder" -> assignee.cities.any { it.cityConstructions.isBuilt(assignedQuest.data1) }
+            QuestName.Route.value -> civInfo.isCapitalConnectedToCity(assignee.getCapital())
+            QuestName.ConstructWonder.value -> assignee.cities.any { it.cityConstructions.isBuilt(assignedQuest.data1) }
             else -> false
         }
     }
@@ -301,7 +301,7 @@ class QuestManager {
     private fun isObsolete(assignedQuest: AssignedQuest): Boolean {
         val assignee = civInfo.gameInfo.getCivilization(assignedQuest.assignee)
         return when (assignedQuest.questName) {
-            "Construct Wonder" -> civInfo.gameInfo.getCities().any { it.civInfo != assignee && it.cityConstructions.isBuilt(assignedQuest.data1) }
+            QuestName.ConstructWonder.value -> civInfo.gameInfo.getCities().any { it.civInfo != assignee && it.cityConstructions.isBuilt(assignedQuest.data1) }
             else -> false
         }
     }
@@ -320,7 +320,7 @@ class QuestManager {
     private fun getScoreForQuest(assignedQuest: AssignedQuest): Int {
         val assignee = civInfo.gameInfo.getCivilization(assignedQuest.assignee)
         return when (assignedQuest.questName) {
-            "Contest Techs" -> assignee.tech.getNumberOfTechsResearched() - assignedQuest.data1.toInt()
+            // Waiting for contest quests
             else -> 0
         }
     }
@@ -369,7 +369,7 @@ class AssignedQuest(val questName: String = "",
         val game = UncivGame.Current
 
         when (questName) {
-            "Route" -> {
+            QuestName.Route.value -> {
                 game.setWorldScreen()
                 game.worldScreen.mapHolder.setCenterPosition(gameInfo.getCivilization(assigner).getCapital().location, selectUnit = false)
             }

@@ -6,7 +6,7 @@
   },
   /*
   {
-    "name": "Kill Camp",
+    "name": "Clear Barbarian Camp",
     "description": "We feel threatened by a Barbarian Camp near our city. Please take care of it.",
     "type": "Global",
     "influence": 50,
@@ -14,30 +14,30 @@
   },
   {
     "name": "Connect Resource",
-    "description": "In order to make our civilizations stronger, connect [Resource] to your trade network."
+    "description": "In order to make our civilizations stronger, connect [tileResource] to your trade network."
   },*/
   {
     "name": "Construct Wonder",
-    "description": "We recommend you to start building [Wonder] to show the whole world your civilization strength."
-  },/*
+    "description": "We recommend you to start building [wonder] to show the whole world your civilization strength."
+  }/*,
   {
-    "name": "Great Person",
-    "description": "Great People can change the course of a Civilization! You will be rewarded for acquiring a new [Great Person]."
+    "name": "Acquire Great Person",
+    "description": "Great People can change the course of a Civilization! You will be rewarded for acquiring a new [greatPerson]."
   },
   {
-    "name": "Kill City State",
-    "description": "You will be rewarded for destroying the city state of [Target]!",
+    "name": "Conquer City State",
+    "description": "You will be rewarded for conquering the city state of [cityState]!",
     "influence": 80
   },
   {
     "name": "Find Player",
-    "description": "You have yet to discover where [Civilization] set up their cities. You will be rewarded for finding their territories.",
+    "description": "You have yet to discover where [civName] set up their cities. You will be rewarded for finding their territories.",
     "influence": 35
   },
   {
     "name": "Find Natural Wonder",
-    "description": "Send your best explorers on a quest to discover Natural Wonders. Nobody knows the location of [Natural Wonder] yet."
-  },*/
+    "description": "Send your best explorers on a quest to discover Natural Wonders. Nobody knows the location of [naturalWonder] yet."
+  }*/
   /* G&K */
   /*
   {
@@ -52,23 +52,20 @@
     "influence": 20,
     "duration": 30
   },
-  */
-  /*
   {
     "name": "Contest Culture",
     "description": "The civilization with the largest Culture growth will gain a reward.",
     "type": "Global",
     "duration": 30,
     "minimumCivs": 3
-  },*/
-  /*
+  },
   {
     "name": "Contest Faith",
     "description": "",
     "type": "Global",
     "duration": 30,
     "minimumCivs": 3
-  },*/
+  },
   {
     "name": "Contest Techs",
     "description": "The civilization with the largest number of new Technologies researched will gain a reward.",
@@ -76,7 +73,6 @@
     "duration": 30,
     "minimumCivs": 3
   },
-  /*
   {
     "name": "Invest",
     "description": "",
@@ -94,15 +90,12 @@
     "name": "Denounce Civilization",
     "description": "",
     "duration": 30
-  }
-  */
-  /*
+  },
   {
     "name": "Spread Religion",
     "description": ""
   },
   */
-
   /* BNW */
   /*
   {
