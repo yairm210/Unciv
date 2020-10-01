@@ -2,6 +2,18 @@ package com.unciv.models.ruleset
 
 import com.unciv.models.stats.INamed
 
+enum class QuestName(val value: String) {
+    Route("Route"),
+    ClearBarbarianCamp("Clear Barbarian Camp"),
+    ConstructWonder("Construct Wonder"),
+    ConnectResource("Connect Resource"),
+    GreatPerson("Acquire Great Person"),
+    ConquerCityState("Conquer City State"),
+    FindPlayer("Find Player"),
+    FindNaturalWonder("Find Natural Wonder"),
+    None("")
+}
+
 enum class QuestType {
     Individual,
     Global
