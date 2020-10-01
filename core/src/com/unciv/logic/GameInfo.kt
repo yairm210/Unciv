@@ -380,10 +380,10 @@ class GameInfo {
                 }
 
                 // As of 3.10.14, specialists are saved by name not by stat
-//                for((key, value) in cityInfo.population.specialists.toHashMap())
-//                    cityInfo.population.specialistAllocations.add(
-//                            cityInfo.population.specialistNameByStat(key), value.toInt())
-//                cityInfo.population.specialists.clear()
+                for((key, value) in cityInfo.population.specialists.toHashMap().filter { it.value>0 })
+                    cityInfo.population.specialistAllocations.add(
+                            cityInfo.population.specialistNameByStat(key), value.toInt())
+                cityInfo.population.specialists.clear()
 
                 cityInfo.cityStats.update()
             }

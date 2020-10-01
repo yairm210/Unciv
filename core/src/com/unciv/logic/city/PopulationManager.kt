@@ -18,12 +18,12 @@ class PopulationManager {
     var population = 1
     var foodStored = 0
 
-    // Being deprecated out
+    @Deprecated("As of 3.10.14, changed to Counter<String> to accomodate dynamic specialist types. Use specialistAllocations instead.")
     val specialists = Stats()
     // In favor of this bad boy
     val specialistAllocations = Counter<String>()
 
-    fun getNewSpecialists() = convertStatsToSpecialistHashmap(specialists)
+    fun getNewSpecialists() = specialistAllocations //convertStatsToSpecialistHashmap(specialists)
 
     fun convertStatsToSpecialistHashmap(stats: Stats):Counter<String> {
         val specialistHashmap = Counter<String>()
@@ -38,7 +38,7 @@ class PopulationManager {
     //region pure functions
     fun clone(): PopulationManager {
         val toReturn = PopulationManager()
-        toReturn.specialists.add(specialists)
+        toReturn.specialistAllocations.add(specialistAllocations)
         toReturn.population = population
         toReturn.foodStored = foodStored
         return toReturn
@@ -105,15 +105,15 @@ class PopulationManager {
         val valueBestTile = if (bestTile == null) 0f
         else Automation.rankTileForCityWork(bestTile, cityInfo, foodWeight)
 
-        //evaluate specialists
-        val maxSpecialistsMap = getMaxSpecialists().toHashMap()
-        val bestJob: Stat? = specialists.toHashMap()
-                .filter { maxSpecialistsMap.containsKey(it.key) && it.value < maxSpecialistsMap[it.key]!! }
+        val bestJob: String? = getMaxSpecialistsNew()
+                .filter { specialistAllocations[it.key]!!<it.value }
                 .map { it.key }
-                .maxBy { Automation.rankSpecialist(getStatsOfSpecialist(specialistNameByStat(it)), cityInfo) }
+                .maxBy { Automation.rankSpecialist(getStatsOfSpecialist(it), cityInfo) }
+
+
         var valueBestSpecialist = 0f
         if (bestJob != null) {
-            val specialistStats = getStatsOfSpecialist(specialistNameByStat(bestJob))
+            val specialistStats = getStatsOfSpecialist(bestJob)
             valueBestSpecialist = Automation.rankSpecialist(specialistStats, cityInfo)
         }
 
@@ -121,7 +121,7 @@ class PopulationManager {
         if (valueBestTile > valueBestSpecialist) {
             if (bestTile != null)
                 cityInfo.workedTiles = cityInfo.workedTiles.withItem(bestTile.position)
-        } else if (bestJob != null) specialists.add(bestJob, 1f)
+        } else if (bestJob != null) specialistAllocations.add(bestJob, 1)
     }
 
     fun unassignExtraPopulation() {
@@ -133,11 +133,13 @@ class PopulationManager {
         }
 
         // unassign specialists that cannot be (e.g. the city was captured and one of the specialist buildings was destroyed)
-        val maxSpecialists = getMaxSpecialists().toHashMap()
-        val specialistsHashmap = specialists.toHashMap()
-        for (entry in maxSpecialists)
-            if (specialistsHashmap[entry.key]!! > entry.value)
-                specialists.add(entry.key, maxSpecialists[entry.key]!! - specialistsHashmap[entry.key]!!)
+        val maxSpecialists = getMaxSpecialistsNew()
+        val specialistsHashmap = specialistAllocations
+        for ((specialistName, amount) in maxSpecialists)
+            if (specialistsHashmap[specialistName]!! > amount)
+                specialistAllocations[specialistName]=amount
+
+
 
         while (getFreePopulation() < 0) {
             //evaluate tiles
@@ -153,21 +155,20 @@ class PopulationManager {
             val valueWorstTile = if (worstWorkedTile == null) 0f
             else Automation.rankTileForCityWork(worstWorkedTile, cityInfo)
 
-
             //evaluate specialists
-            val worstJob: Stat? = specialists.toHashMap()
-                    .filter { it.value > 0 }
-                    .map { it.key }
-                    .minBy { Automation.rankSpecialist(getStatsOfSpecialist(specialistNameByStat(it)), cityInfo) }
+            val worstJob: String? = specialistAllocations.keys
+                    .minBy { Automation.rankSpecialist(getStatsOfSpecialist(it), cityInfo) }
             var valueWorstSpecialist = 0f
             if (worstJob != null)
-                valueWorstSpecialist = Automation.rankSpecialist(getStatsOfSpecialist(specialistNameByStat(worstJob)), cityInfo)
+                valueWorstSpecialist = Automation.rankSpecialist(getStatsOfSpecialist(worstJob), cityInfo)
+
+
 
             //un-assign population
             if ((worstWorkedTile != null && valueWorstTile < valueWorstSpecialist)
                     || worstJob == null) {
                 cityInfo.workedTiles = cityInfo.workedTiles.withoutItem(worstWorkedTile!!.position)
-            } else specialists.add(worstJob, -1f)
+            } else specialistAllocations.add(worstJob, -1)
         }
 
     }

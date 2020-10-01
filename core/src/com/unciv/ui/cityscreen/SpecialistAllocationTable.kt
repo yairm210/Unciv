@@ -54,7 +54,7 @@ class SpecialistAllocationTable(val cityScreen: CityScreen): Table(CameraStageBa
                 .apply { this.setAlignment(Align.center) }
                 .surroundWithCircle(30f).apply { circle.color= Color.GREEN.cpy().lerp(Color.BLACK,0.2f) }
         assignButton.onClick {
-            cityInfo.population.specialists.add(stat, 1f)
+            cityInfo.population.specialistAllocations.add(cityInfo.population.specialistNameByStat(stat), 1)
             cityInfo.cityStats.update()
             cityScreen.update()
         }
@@ -68,7 +68,7 @@ class SpecialistAllocationTable(val cityScreen: CityScreen): Table(CameraStageBa
                 .apply { this.setAlignment(Align.center) }
                 .surroundWithCircle(30f).apply { circle.color= Color.RED.cpy().lerp(Color.BLACK,0.1f) }
         unassignButton.onClick {
-            cityInfo.population.specialists.add(stat, -1f)
+            cityInfo.population.specialistAllocations.add(cityInfo.population.specialistNameByStat(stat), -1)
             cityInfo.cityStats.update()
             cityScreen.update()
         }

@@ -319,7 +319,7 @@ class CityInfo {
         var foodPerTurn = 0f
         while (foodWeight < 3 && foodPerTurn <= 0) {
             workedTiles = hashSetOf()
-            population.specialists.clear()
+            population.specialistAllocations.clear()
             for (i in 0..population.population)
                 population.autoAssignPopulation(foodWeight)
             cityStats.update()
