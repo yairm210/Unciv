@@ -167,6 +167,12 @@ class TileMap {
         for (promotion in unit.baseUnit.promotions)
             unit.promotions.addPromotion(promotion, true)
 
+        for (unique in civInfo.getMatchingUniques("[] units gain the [] promotion")) {
+            if (unique.params[0] == unit.type.name) {
+                unit.promotions.addPromotion(unique.params[1], true)
+            }
+        }
+
         // And update civ stats, since the new unit changes both unit upkeep and resource consumption
         civInfo.updateStatsForNextTurn()
         civInfo.updateDetailedCivResources()
