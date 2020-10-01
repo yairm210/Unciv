@@ -251,6 +251,7 @@ class QuestManager {
                 QuestName.ConnectResource.value -> data1 = getResourceForQuest(assignee)!!.name
                 QuestName.ConstructWonder.value -> data1 = getWonderToBuildForQuest(assignee)!!.name
                 QuestName.GreatPerson.value -> data1 = getGreatPersonForQuest(assignee)!!.name
+                QuestName.FindNaturalWonder.value -> data1 = getNaturalWonderToFindForQuest(assignee)!!
             }
 
             val newQuest = AssignedQuest(
@@ -289,6 +290,7 @@ class QuestManager {
             QuestName.ConnectResource.value -> civInfo.hasEverBeenFriendWith(challenger) && getResourceForQuest(challenger) != null
             QuestName.ConstructWonder.value -> civInfo.hasEverBeenFriendWith(challenger) && getWonderToBuildForQuest(challenger) != null
             QuestName.GreatPerson.value -> civInfo.hasEverBeenFriendWith(challenger) && getGreatPersonForQuest(challenger) != null
+            QuestName.FindNaturalWonder.value -> civInfo.hasEverBeenFriendWith(challenger) && getNaturalWonderToFindForQuest(challenger) != null
             else -> true
         }
     }
@@ -301,6 +303,7 @@ class QuestManager {
             QuestName.ConnectResource.value -> assignee.detailedCivResources.map { it.resource }.contains(civInfo.gameInfo.ruleSet.tileResources[assignedQuest.data1])
             QuestName.ConstructWonder.value -> assignee.cities.any { it.cityConstructions.isBuilt(assignedQuest.data1) }
             QuestName.GreatPerson.value -> assignee.getCivGreatPeople().any { it.baseUnit.getReplacedUnit(civInfo.gameInfo.ruleSet).name == assignedQuest.data1 }
+            QuestName.FindNaturalWonder.value -> assignee.naturalWonders.contains(assignedQuest.data1)
             else -> false
         }
     }
@@ -372,6 +375,18 @@ class QuestManager {
     }
 
     /**
+     * Returns a random [NaturalWonder] not yet discovered by [challenger].
+     */
+    private fun getNaturalWonderToFindForQuest(challenger: CivilizationInfo): String? {
+        val naturalWondersToFind = civInfo.gameInfo.tileMap.naturalWonders.subtract(challenger.naturalWonders)
+
+        if (naturalWondersToFind.isNotEmpty())
+            return naturalWondersToFind.random()
+
+        return null
+    }
+
+    /**
      * Returns a Great Person [BaseUnit] that is not owned by both the [challenger] and the [civInfo]
      */
     private fun getGreatPersonForQuest(challenger: CivilizationInfo): BaseUnit? {
@@ -387,7 +402,7 @@ class QuestManager {
                 .distinct()
                 .filter { !challengerGreatPeople.contains(it) && !cityStateGreatPeople.contains(it) }
                 .toList()
-        
+
         if (greatPeople.isNotEmpty())
             return greatPeople.random()
 
