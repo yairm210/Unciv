@@ -4,7 +4,6 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Button
 import com.badlogic.gdx.scenes.scene2d.ui.Table
-import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup
 import com.badlogic.gdx.utils.Align
 import com.unciv.UncivGame
 import com.unciv.logic.map.MapUnit
@@ -17,13 +16,17 @@ import com.unciv.ui.utils.*
 class PromotionPickerScreen(val unit: MapUnit) : PickerScreen() {
     private var selectedPromotion: Promotion? = null
 
+    private fun acceptPromotion(promotion: Promotion?) {
+        // if user managed to click disabled button, still do nothing
+        if (promotion == null) return
 
-    fun acceptPromotion(promotion: Promotion?) {
-        unit.promotions.addPromotion(promotion!!.name)
-        if(unit.promotions.canBePromoted()) game.setScreen(PromotionPickerScreen(unit))
-        else game.setWorldScreen()
+        unit.promotions.addPromotion(promotion.name)
+        if (unit.promotions.canBePromoted())
+            game.setScreen(PromotionPickerScreen(unit))
+        else
+            game.setWorldScreen()
         dispose()
-        game.worldScreen.shouldUpdate=true
+        game.worldScreen.shouldUpdate = true
     }
 
     init {
@@ -37,7 +40,7 @@ class PromotionPickerScreen(val unit: MapUnit) : PickerScreen() {
         }
         val canBePromoted = unit.promotions.canBePromoted()
         val canChangeState = game.worldScreen.canChangeState
-        if(!canBePromoted || !canChangeState)
+        if (!canBePromoted || !canChangeState)
             rightSideButton.disable()
 
         val availablePromotionsGroup = Table()
@@ -59,10 +62,13 @@ class PromotionPickerScreen(val unit: MapUnit) : PickerScreen() {
             selectPromotionButton.add(promotion.name.toLabel()).pad(10f).padRight(20f)
             selectPromotionButton.touchable = Touchable.enabled
             selectPromotionButton.onClick {
-                if(canBePromoted && isPromotionAvailable && !unitHasPromotion && canChangeState)
+                if(canBePromoted && isPromotionAvailable && !unitHasPromotion && canChangeState) {
+                    selectedPromotion = promotion
                     rightSideButton.enable()
-                else rightSideButton.disable()
-                selectedPromotion = promotion
+                } else {
+                    selectedPromotion = null
+                    rightSideButton.disable()
+                }
                 rightSideButton.setText(promotion.name.tr())
 
                 descriptionLabel.setText(promotion.getDescription(promotionsForUnitType))
@@ -70,7 +76,7 @@ class PromotionPickerScreen(val unit: MapUnit) : PickerScreen() {
 
             availablePromotionsGroup.add(selectPromotionButton)
 
-            if(canBePromoted && isPromotionAvailable && canChangeState) {
+            if (canBePromoted && isPromotionAvailable && canChangeState) {
                 val pickNow = "Pick now!".toLabel()
                 pickNow.setAlignment(Align.center)
                 pickNow.onClick {
@@ -78,7 +84,7 @@ class PromotionPickerScreen(val unit: MapUnit) : PickerScreen() {
                 }
                 availablePromotionsGroup.add(pickNow).padLeft(10f).fillY()
             }
-            else if(unitHasPromotion) selectPromotionButton.color= Color.GREEN
+            else if (unitHasPromotion) selectPromotionButton.color = Color.GREEN
             else selectPromotionButton.color= Color.GRAY
 
             availablePromotionsGroup.row()
