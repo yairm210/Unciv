@@ -196,16 +196,18 @@ class TileMap {
                 /*
             Okay so, if we're looking at a tile from a to c with b in the middle,
             we have several scenarios:
-            1. a>b -  - I can see everything, b does not hide c
+            1. a>b
+                1.1. a>b, a>c - I can see everything, b does not hide c
+                1.2. a>b, a==c - pitfall between a and c, no hiding
             2. a==b
-                2.1 a==b==0, all flat ground, no hiding
+                2.1 a==b==c, all flat ground or water, no hiding
                 2.2 a>0, b>=c - b hides c from view (say I am in a forest/jungle and b is a forest/jungle, or hill)
                 2.3 a>0, c>b - c is tall enough I can see it over b!
             3. a<b
                 3.1 b>=c - b hides c
                 3.2 b<c - c is tall enough I can see it over b!
 
-            This can all be summed up as "I can see c if a>b || c>b || b==0 "
+            This can all be summed up as "I can see c if a>b || c>b || a==c && a>=b "
             */
 
                 val containsViewableNeighborThatCanSeeOver = tile.neighbors.any {
@@ -213,7 +215,7 @@ class TileMap {
                     viewableTiles.contains(it) && (
                             currentTileHeight > neighborHeight // a>b
                                     || targetTileHeight > neighborHeight // c>b
-                                    || neighborHeight == 0) // b==0
+                                    || neighborHeight <= currentTileHeight && currentTileHeight == targetTileHeight) // a==c && a>=b
                 }
                 if (containsViewableNeighborThatCanSeeOver) tilesToAddInDistanceI.add(tile)
             }

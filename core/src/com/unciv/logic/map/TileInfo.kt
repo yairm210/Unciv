@@ -130,6 +130,7 @@ open class TileInfo {
     // and the toSequence so that aggregations (like neighbors.flatMap{it.units} don't take up their own space
 
     fun getHeight(): Int {
+        if (isWater) return -1
         if (baseTerrain == Constants.mountain) return 4
         if (isHill()) return 2
         if (terrainFeature == Constants.forest || terrainFeature == Constants.jungle) return 1
