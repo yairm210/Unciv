@@ -9,7 +9,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Slider
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
-import com.unciv.UncivGame
 import com.unciv.logic.HexMath
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
@@ -20,7 +19,8 @@ import com.unciv.models.translations.tr
 import com.unciv.ui.pickerscreens.PromotionPickerScreen
 import com.unciv.ui.utils.*
 import java.text.DecimalFormat
-import kotlin.math.*
+import kotlin.math.abs
+import kotlin.math.roundToInt
 import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 
 class EmpireOverviewScreen(private var viewingPlayer:CivilizationInfo, defaultPage: String = "Cities") : CameraStageBaseScreen(){
@@ -31,11 +31,6 @@ class EmpireOverviewScreen(private var viewingPlayer:CivilizationInfo, defaultPa
     init {
         onBackButtonClicked { game.setWorldScreen() }
         val clicks = HashMap<String,() -> Unit>()
-
-        val closeButton = Constants.close.toTextButton()
-        closeButton.onClick { game.setWorldScreen() }
-        closeButton.y = stage.height - closeButton.height - 5
-        topTable.add(closeButton)
 
         val setCityInfoButton = "Cities".toTextButton()
         val setCities = {
@@ -88,6 +83,13 @@ class EmpireOverviewScreen(private var viewingPlayer:CivilizationInfo, defaultPa
         topTable.add(setResourcesButton)
         if (viewingPlayer.detailedCivResources.isEmpty())
             setResourcesButton.disable()
+
+        val closeButton = Constants.close.toTextButton().apply {
+            setColor(0.75f, 0.1f, 0.1f, 1f)
+        }
+        closeButton.onClick { game.setWorldScreen() }
+        closeButton.y = stage.height - closeButton.height - 5
+        topTable.add(closeButton)
 
         topTable.pack()
 
