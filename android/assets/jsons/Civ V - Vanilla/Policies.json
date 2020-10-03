@@ -191,7 +191,7 @@
 				"name": "Free Religion",
 				"effect": "+1 culture for each monument, temple and monastery. Gain a free policy.",
 				"uniques": ["[+1 Culture] from every [Monument]", "[+1 Culture] from every [Temple]", "[+1 Culture] from every [Monastery]",
-					"Free Social Policy"],
+					"2 free Social Policies"],
 				"requires": ["Mandate Of Heaven","Reformation"],
 				"row": 3,
 				"column": 4
