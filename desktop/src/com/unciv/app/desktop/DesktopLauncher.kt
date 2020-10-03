@@ -32,6 +32,8 @@ internal object DesktopLauncher {
 
     @JvmStatic
     fun main(arg: Array<String>) {
+        
+        System.setProperty("org.lwjgl.opengl.Display.allowSoftwareOpenGL", "true")
 
         packImages()
 
