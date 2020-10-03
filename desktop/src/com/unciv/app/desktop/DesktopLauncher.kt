@@ -32,7 +32,8 @@ internal object DesktopLauncher {
 
     @JvmStatic
     fun main(arg: Array<String>) {
-        
+        // Solves a rendering problem in specific GPUs and drivers.
+        // For more info see https://github.com/yairm210/Unciv/pull/3202 and https://github.com/LWJGL/lwjgl/issues/119
         System.setProperty("org.lwjgl.opengl.Display.allowSoftwareOpenGL", "true")
 
         packImages()

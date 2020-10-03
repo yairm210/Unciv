@@ -1,3 +1,21 @@
+## 3.11.0
+
+City-States Quests introduced! - by r3versi
+
+Moddable Specialists, part 1 of 2
+
+New unit images by The Bucketeer!
+
+Rendering fix for specific GPUs and drivers - by CrispyXYZ
+
+Promotion exploit fixed - by Jack Rainy
+
+Modding - Buildings can be rendered obsolete (unbuildable) by techs
+
+"[] units gain the [] promotion" unique - By givehub99
+
+Translation updates
+
 ## 3.10.13
 
 Better checking for unloadable scenarios
