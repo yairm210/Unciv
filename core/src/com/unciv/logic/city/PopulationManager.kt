@@ -4,7 +4,6 @@ import com.badlogic.gdx.graphics.Color
 import com.unciv.logic.automation.Automation
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.Counter
-import com.unciv.models.ruleset.Specialist
 import com.unciv.models.stats.Stats
 import com.unciv.ui.utils.withItem
 import com.unciv.ui.utils.withoutItem
@@ -89,7 +88,7 @@ class PopulationManager {
         val valueBestTile = if (bestTile == null) 0f
         else Automation.rankTileForCityWork(bestTile, cityInfo, foodWeight)
 
-        val bestJob: String? = getMaxSpecialistsNew()
+        val bestJob: String? = getMaxSpecialists()
                 .filter { specialistAllocations[it.key]!!<it.value }
                 .map { it.key }
                 .maxBy { Automation.rankSpecialist(getStatsOfSpecialist(it), cityInfo) }
@@ -117,7 +116,7 @@ class PopulationManager {
         }
 
         // unassign specialists that cannot be (e.g. the city was captured and one of the specialist buildings was destroyed)
-        val maxSpecialists = getMaxSpecialistsNew()
+        val maxSpecialists = getMaxSpecialists()
         val specialistsHashmap = specialistAllocations
         for ((specialistName, amount) in maxSpecialists)
             if (specialistsHashmap[specialistName]!! > amount)
@@ -157,7 +156,7 @@ class PopulationManager {
 
     }
 
-    fun getMaxSpecialistsNew(): Counter<String> {
+    fun getMaxSpecialists(): Counter<String> {
         val counter = Counter<String>()
         for (building in cityInfo.cityConstructions.getBuiltBuildings())
             counter.add(building.newSpecialists())

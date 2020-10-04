@@ -132,7 +132,7 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(CameraStageBaseS
         for (building in cityInfo.cityConstructions.getBuiltBuildings()) {
             when {
                 building.isWonder || building.isNationalWonder -> wonders.add(building)
-                building.specialistSlots != null -> specialistBuildings.add(building)
+                !building.newSpecialists().isEmpty() -> specialistBuildings.add(building)
                 else -> otherBuildings.add(building)
             }
         }
@@ -151,11 +151,10 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(CameraStageBaseS
                 addBuildingInfo(building, specialistBuildingsTable)
                 val specialistIcons = Table()
                 specialistIcons.row().size(20f).pad(5f)
-                for (stat in building.specialistSlots!!.toHashMap()) {
-                    if (stat.value == 0f) continue
-                    val specialist = cityInfo.getRuleset().specialists[Specialist.specialistNameByStat(stat.key)]
+                for ((specialistName, amount) in building.newSpecialists()) {
+                    val specialist = cityInfo.getRuleset().specialists[specialistName]
                     if (specialist == null) continue // probably a mod that doesn't have the specialist defined yet
-                    for (i in 0 until stat.value.toInt())
+                    for (i in 0 until amount)
                         specialistIcons.add(ImageGetter.getSpecialistIcon(specialist.colorObject)).size(20f)
                 }
 

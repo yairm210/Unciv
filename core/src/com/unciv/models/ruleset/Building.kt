@@ -19,10 +19,19 @@ class Building : NamedStats(), IConstruction {
     var cost: Int = 0
     var maintenance = 0
     private var percentStatBonus: Stats? = null
-    var specialistSlots: Stats? = null
+    var specialistSlots: Counter<String>? = null
     fun newSpecialists(): Counter<String> {
-        if(specialistSlots==null) return Counter<String>()
-        return Specialist.convertStatsToSpecialistHashmap(specialistSlots!!)
+        if (specialistSlots == null) return Counter<String>()
+        // Could have old specialist values of "gold", "science" etc - change them to the new specialist names
+        val counter = Counter<String>()
+        for ((entry, amount) in specialistSlots!!) {
+            val equivalentStat = Stat.values().firstOrNull { it.name.toLowerCase() == entry }
+
+            if (equivalentStat != null)
+                counter[Specialist.specialistNameByStat(equivalentStat)] = amount
+            else counter[entry] = amount
+        }
+        return counter
     }
     var greatPersonPoints: Stats? = null
     /** Extra cost percentage when purchasing */
@@ -108,13 +117,8 @@ class Building : NamedStats(), IConstruction {
             if (gpp.culture != 0f) stringBuilder.appendln("+" + gpp.culture.toInt() + " "+"[Great Artist] points".tr())
         }
 
-        if (this.specialistSlots != null) {
-            val ss = this.specialistSlots!!
-            if (ss.production != 0f) stringBuilder.appendln("+" + ss.production.toInt() + " " + "[Engineer specialist] slots".tr())
-            if (ss.gold       != 0f) stringBuilder.appendln("+" + ss.gold      .toInt() + " " + "[Merchant specialist] slots".tr())
-            if (ss.science    != 0f) stringBuilder.appendln("+" + ss.science   .toInt() + " " + "[Scientist specialist] slots".tr())
-            if (ss.culture    != 0f) stringBuilder.appendln("+" + ss.culture   .toInt() + " " + "[Artist specialist] slots".tr())
-        }
+        for((specialistName, amount) in newSpecialists())
+            stringBuilder.appendln("+$amount "+"[$specialistName] slots".tr())
 
         if (resourceBonusStats != null) {
             val resources = ruleset.tileResources.values.filter { name == it.building }.joinToString { it.name.tr() }
@@ -394,7 +398,6 @@ class Building : NamedStats(), IConstruction {
     fun isStatRelated(stat: Stat): Boolean {
         if (get(stat) > 0) return true
         if (getStatPercentageBonuses(null).get(stat)>0) return true
-        if (specialistSlots!=null && specialistSlots!!.get(stat)>0) return true
         if(resourceBonusStats!=null && resourceBonusStats!!.get(stat)>0) return true
         return false
     }

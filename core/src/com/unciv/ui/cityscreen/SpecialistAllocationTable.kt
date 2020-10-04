@@ -5,8 +5,6 @@ import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.UncivGame
-import com.unciv.models.ruleset.Specialist
-import com.unciv.models.stats.Stat
 import com.unciv.ui.utils.*
 
 class SpecialistAllocationTable(val cityScreen: CityScreen): Table(CameraStageBaseScreen.skin){
@@ -15,10 +13,10 @@ class SpecialistAllocationTable(val cityScreen: CityScreen): Table(CameraStageBa
     fun update() {
         clear()
 
-        for ((specialistName, amount) in cityInfo.population.getMaxSpecialistsNew()) {
+        for ((specialistName, amount) in cityInfo.population.getMaxSpecialists()) {
             val newSpecialists = cityInfo.population.getNewSpecialists()
             val assignedSpecialists = newSpecialists[specialistName]!!
-            val maxSpecialists = cityInfo.population.getMaxSpecialistsNew()[specialistName]!!
+            val maxSpecialists = cityInfo.population.getMaxSpecialists()[specialistName]!!
 
             if (cityScreen.canChangeState) add(getUnassignButton(assignedSpecialists, specialistName))
             add(getAllocationTable(assignedSpecialists, maxSpecialists, specialistName)).pad(10f)
