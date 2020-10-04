@@ -14,6 +14,7 @@ import com.unciv.models.metadata.GameParameters
 import com.unciv.models.ruleset.Difficulty
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
+import com.unciv.models.ruleset.Specialist
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -382,7 +383,7 @@ class GameInfo {
                 // As of 3.10.14, specialists are saved by name not by stat
                 for((key, value) in cityInfo.population.specialists.toHashMap().filter { it.value>0 })
                     cityInfo.population.specialistAllocations.add(
-                            cityInfo.population.specialistNameByStat(key), value.toInt())
+                            Specialist.specialistNameByStat(key), value.toInt())
                 cityInfo.population.specialists.clear()
 
                 cityInfo.cityStats.update()

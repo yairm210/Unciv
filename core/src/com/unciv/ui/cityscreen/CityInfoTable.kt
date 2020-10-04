@@ -8,6 +8,7 @@ import com.unciv.UncivGame
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.GreatPersonManager
 import com.unciv.models.ruleset.Building
+import com.unciv.models.ruleset.Specialist
 import com.unciv.models.stats.Stat
 import com.unciv.models.translations.tr
 import com.unciv.ui.utils.*
@@ -152,7 +153,7 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(CameraStageBaseS
                 specialistIcons.row().size(20f).pad(5f)
                 for (stat in building.specialistSlots!!.toHashMap()) {
                     if (stat.value == 0f) continue
-                    val specialist = cityInfo.getRuleset().specialists[cityInfo.population.specialistNameByStat(stat.key)]
+                    val specialist = cityInfo.getRuleset().specialists[Specialist.specialistNameByStat(stat.key)]
                     if (specialist == null) continue // probably a mod that doesn't have the specialist defined yet
                     for (i in 0 until stat.value.toInt())
                         specialistIcons.add(ImageGetter.getSpecialistIcon(specialist.colorObject)).size(20f)

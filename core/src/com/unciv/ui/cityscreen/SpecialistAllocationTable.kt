@@ -5,6 +5,7 @@ import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.UncivGame
+import com.unciv.models.ruleset.Specialist
 import com.unciv.models.stats.Stat
 import com.unciv.ui.utils.*
 
@@ -14,19 +15,14 @@ class SpecialistAllocationTable(val cityScreen: CityScreen): Table(CameraStageBa
     fun update() {
         clear()
 
-        for (statToMaximumSpecialist in cityInfo.population.getMaxSpecialists().toHashMap()) {
-            if (statToMaximumSpecialist.value == 0f) continue
-
-            val stat = statToMaximumSpecialist.key
-
-            val specialistName = cityInfo.population.specialistNameByStat(stat)
+        for ((specialistName, amount) in cityInfo.population.getMaxSpecialistsNew()) {
             val newSpecialists = cityInfo.population.getNewSpecialists()
             val assignedSpecialists = newSpecialists[specialistName]!!
             val maxSpecialists = cityInfo.population.getMaxSpecialistsNew()[specialistName]!!
 
-            if (cityScreen.canChangeState) add(getUnassignButton(assignedSpecialists, stat))
+            if (cityScreen.canChangeState) add(getUnassignButton(assignedSpecialists, specialistName))
             add(getAllocationTable(assignedSpecialists, maxSpecialists, specialistName)).pad(10f)
-            if (cityScreen.canChangeState) add(getAssignButton(assignedSpecialists, maxSpecialists, stat))
+            if (cityScreen.canChangeState) add(getAssignButton(assignedSpecialists, maxSpecialists, specialistName))
             addSeparatorVertical().pad(10f)
             add(getSpecialistStatsTable(specialistName)).row()
         }
@@ -47,14 +43,14 @@ class SpecialistAllocationTable(val cityScreen: CityScreen): Table(CameraStageBa
         return specialistIconTable
     }
 
-    private fun getAssignButton(assignedSpecialists: Int, maxSpecialists: Int, stat: Stat):Actor {
+    private fun getAssignButton(assignedSpecialists: Int, maxSpecialists: Int, specialistName: String):Actor {
 
         if (assignedSpecialists >= maxSpecialists || cityInfo.isPuppet) return Table()
         val assignButton = "+".toLabel(Color.BLACK,24)
                 .apply { this.setAlignment(Align.center) }
                 .surroundWithCircle(30f).apply { circle.color= Color.GREEN.cpy().lerp(Color.BLACK,0.2f) }
         assignButton.onClick {
-            cityInfo.population.specialistAllocations.add(cityInfo.population.specialistNameByStat(stat), 1)
+            cityInfo.population.specialistAllocations.add(specialistName, 1)
             cityInfo.cityStats.update()
             cityScreen.update()
         }
@@ -63,12 +59,12 @@ class SpecialistAllocationTable(val cityScreen: CityScreen): Table(CameraStageBa
         return assignButton
     }
 
-    private fun getUnassignButton(assignedSpecialists: Int, stat: Stat):Actor {
+    private fun getUnassignButton(assignedSpecialists: Int, specialistName: String):Actor {
         val unassignButton = "-".toLabel(Color.BLACK,24)
                 .apply { this.setAlignment(Align.center) }
                 .surroundWithCircle(30f).apply { circle.color= Color.RED.cpy().lerp(Color.BLACK,0.1f) }
         unassignButton.onClick {
-            cityInfo.population.specialistAllocations.add(cityInfo.population.specialistNameByStat(stat), -1)
+            cityInfo.population.specialistAllocations.add(specialistName, -1)
             cityInfo.cityStats.update()
             cityScreen.update()
         }

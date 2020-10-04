@@ -4,6 +4,7 @@ import com.unciv.Constants
 import com.unciv.logic.city.CityConstructions
 import com.unciv.logic.city.IConstruction
 import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.models.Counter
 import com.unciv.models.stats.NamedStats
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
@@ -19,6 +20,10 @@ class Building : NamedStats(), IConstruction {
     var maintenance = 0
     private var percentStatBonus: Stats? = null
     var specialistSlots: Stats? = null
+    fun newSpecialists(): Counter<String> {
+        if(specialistSlots==null) return Counter<String>()
+        return Specialist.convertStatsToSpecialistHashmap(specialistSlots!!)
+    }
     var greatPersonPoints: Stats? = null
     /** Extra cost percentage when purchasing */
     private var hurryCostModifier = 0

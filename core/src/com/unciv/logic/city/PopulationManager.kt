@@ -4,7 +4,7 @@ import com.badlogic.gdx.graphics.Color
 import com.unciv.logic.automation.Automation
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.Counter
-import com.unciv.models.stats.Stat
+import com.unciv.models.ruleset.Specialist
 import com.unciv.models.stats.Stats
 import com.unciv.ui.utils.withItem
 import com.unciv.ui.utils.withoutItem
@@ -25,15 +25,6 @@ class PopulationManager {
 
     fun getNewSpecialists() = specialistAllocations //convertStatsToSpecialistHashmap(specialists)
 
-    fun convertStatsToSpecialistHashmap(stats: Stats):Counter<String> {
-        val specialistHashmap = Counter<String>()
-        for ((stat, amount) in stats.toHashMap()) {
-            if (amount == 0f) continue
-            val specialistName = specialistNameByStat(stat)
-            specialistHashmap[specialistName] = amount.toInt()
-        }
-        return specialistHashmap
-    }
 
     //region pure functions
     fun clone(): PopulationManager {
@@ -83,13 +74,6 @@ class PopulationManager {
 
     internal fun getStatsOfSpecialist(name:String) = cityInfo.cityStats.getStatsOfSpecialist(name)
 
-    internal fun specialistNameByStat(stat: Stat) = when (stat) {
-        Stat.Production -> "Engineer"
-        Stat.Gold -> "Merchant"
-        Stat.Science -> "Scientist"
-        Stat.Culture -> "Artist"
-        else -> TODO()
-    }
 
     // todo - change tile choice according to city!
     // if small city, favor production above all, ignore gold!
@@ -173,13 +157,11 @@ class PopulationManager {
 
     }
 
-    fun getMaxSpecialists(): Stats {
-        val maximumSpecialists = Stats()
-        for (building in cityInfo.cityConstructions.getBuiltBuildings().filter { it.specialistSlots!=null })
-            maximumSpecialists.add(building.specialistSlots!!)
-        return maximumSpecialists
+    fun getMaxSpecialistsNew(): Counter<String> {
+        val counter = Counter<String>()
+        for (building in cityInfo.cityConstructions.getBuiltBuildings())
+            counter.add(building.newSpecialists())
+        return counter
     }
-
-    fun getMaxSpecialistsNew() = convertStatsToSpecialistHashmap(getMaxSpecialists())
 
 }
