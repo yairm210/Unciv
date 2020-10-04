@@ -298,7 +298,7 @@ open class TileInfo {
     /** Without regards to what civinfo it is, a lot of the checks are ust for the improvement on the tile.
      *  Doubles as a check for the map editor.
      */
-    fun canImprovementBeBuiltHere(improvement: TileImprovement, resourceIsVisible:Boolean = true): Boolean {
+    fun canImprovementBeBuiltHere(improvement: TileImprovement, resourceIsVisible:Boolean = resource!=null): Boolean {
         val topTerrain = getLastTerrain()
 
         return when {
