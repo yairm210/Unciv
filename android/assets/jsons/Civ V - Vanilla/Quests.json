@@ -75,7 +75,7 @@
   },
   {
     "name": "Invest",
-    "description": "Our people is rejoycing thanks to a tourism boom. For a certain amount of time, any Gold donation will yeld double the Influence.",
+    "description": "Our people are rejoycing thanks to a tourism boom. For a certain amount of time, any Gold donation will yeld double the Influence.",
     "type": "Global",
     "influence": 0,
     "duration": 30,
