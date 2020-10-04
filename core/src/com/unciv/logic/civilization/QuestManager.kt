@@ -353,11 +353,13 @@ class QuestManager {
         val cityStateGreatPeople = civInfo.getCivGreatPeople().map { it.baseUnit.getReplacedUnit(ruleSet) }
 
         val greatPeople = ruleSet.units.values
+                .asSequence()
                 .filter { baseUnit -> baseUnit.uniques.any { it.equalsPlaceholderText("Great Person - []") } }
                 .map { it.getReplacedUnit(ruleSet) }
                 .distinct()
                 .filter { !challengerGreatPeople.contains(it) && !cityStateGreatPeople.contains(it) }
-
+                .toList()
+        
         if (greatPeople.isNotEmpty())
             return greatPeople.random()
 
