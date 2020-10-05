@@ -286,7 +286,6 @@ object TranslationFileWriter {
         return when (name) {
             "Buildings" -> emptyArray<Building>().javaClass
             "Difficulties" -> emptyArray<Difficulty>().javaClass
-            "GreatPeopleNames" -> this.javaClass // dummy value
             "Nations" -> emptyArray<Nation>().javaClass
             "Policies" -> emptyArray<PolicyBranch>().javaClass
             "Quests" -> emptyArray<Quest>().javaClass

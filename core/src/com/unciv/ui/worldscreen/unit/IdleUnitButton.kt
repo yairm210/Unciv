@@ -21,8 +21,8 @@ class IdleUnitButton (
 
     init {
         val imageSize = 25f
-        if(!previous){
-            image.setSize(imageSize,imageSize)
+        if(!previous) {
+            image.setSize(imageSize, imageSize)
             image.setOrigin(Align.center)
             image.rotateBy(180f)
         }
