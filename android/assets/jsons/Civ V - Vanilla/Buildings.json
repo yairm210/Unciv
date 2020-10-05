@@ -742,7 +742,7 @@
 		"specialistSlots": {"Engineer": 1},
 		"hurryCostModifier": 25,
 		"maintenance": 2,
-		"uniques": ["Must not be on [Hill]", "+[10]% Production when constructing [Buildings]"],
+		"uniques": ["Must not be on [Hill]", "+[10]% production when building [Buildings] in this city"],
 		"requiredTech": "Economics"
 	},
 	
