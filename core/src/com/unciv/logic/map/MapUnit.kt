@@ -34,9 +34,7 @@ class MapUnit {
     // which in turn is a component of getShortestPath and canReach
     @Transient var ignoresTerrainCost = false
     @Transient var roughTerrainPenalty = false
-    @Transient var doubleMovementInCoast = false
-    @Transient var doubleMovementInForestAndJungle = false
-    @Transient var doubleMovementInSnowTundraAndHills = false
+    @Transient var doubleMovements = HashSet<String>()
     @Transient var canEnterIceTiles = false
     @Transient var cannotEnterOceanTiles = false
     @Transient var cannotEnterOceanTilesUntilAstronomy = false
@@ -137,9 +135,26 @@ class MapUnit {
 
         ignoresTerrainCost = hasUnique("Ignores terrain cost")
         roughTerrainPenalty = hasUnique("Rough terrain penalty")
-        doubleMovementInCoast = hasUnique("Double movement in coast")
-        doubleMovementInForestAndJungle = hasUnique("Double movement rate through Forest and Jungle")
-        doubleMovementInSnowTundraAndHills = hasUnique("Double movement in Snow, Tundra and Hills")
+
+        doubleMovements.clear()
+
+        for (unique in getMatchingUniques("Double movement in []")) {
+            doubleMovements.add(unique.params[0])
+        }
+
+        if (hasUnique("Double movement in coast")) {
+            doubleMovements.add("Coast")
+        }
+        if (hasUnique("Double movement rate through Forest and Jungle")) {
+            doubleMovements.add("Forest")
+            doubleMovements.add("Jungle")
+        }
+        if (hasUnique("Double movement in Snow, Tundra and Hills")) {
+            doubleMovements.add("Snow")
+            doubleMovements.add("Tundra")
+            doubleMovements.add("Hills")
+        }
+
         canEnterIceTiles = hasUnique("Can enter ice tiles")
         cannotEnterOceanTiles = hasUnique("Cannot enter ocean tiles")
         cannotEnterOceanTilesUntilAstronomy = hasUnique("Cannot enter ocean tiles until Astronomy")
