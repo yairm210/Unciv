@@ -192,11 +192,13 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo, centerOnTech: Tec
                 val lineColor = when {
                     civTech.isResearched(tech.name) && !tech.isContinuallyResearchable() -> researchedTechColor
                     civTech.isResearched(prerequisite) -> researchableTechColor
+                    tempTechsToResearch.contains(tech.name) -> queuedTechColor
                     else -> Color.GRAY
                 }
                 line.color = lineColor
 
                 techTable.addActor(line)
+                line.toBack()
                 lines.add(line)
             }
         }
