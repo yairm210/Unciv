@@ -676,7 +676,7 @@
 		"isWonder": true,
 		"greatPersonPoints": {"production": 2},
 		"providesFreeBuilding": "Castle",
-		"uniques": ["+15% combat strength for units fighting in friendly territory"],
+		"uniques": ["+[15]% combat strength for units fighting in friendly territory"],
 		"requiredTech": "Gunpowder",
 		"quote": "'Bushido is realized in the presence of death. This means choosing death whenever there is a choice between life and death. There is no other reasoning.'  - Yamamoto Tsunetomo"
 	},
@@ -907,7 +907,7 @@
 		"isWonder": true,
 		"uniques": ["Defensive buildings in all cities are 25% more effective"],
 		"requiredTech": "Railroad",
-		"quote": "'The Law is a fortress on a hill that armies cannot take or floods wash away.'   â€“- The Prophet Muhammed"
+		"quote": "'The Law is a fortress on a hill that armies cannot take or floods wash away.'   â€?- The Prophet Muhammed"
 	},
 	{
 		"name": "Neuschwanstein",

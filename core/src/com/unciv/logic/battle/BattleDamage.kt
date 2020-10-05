@@ -206,7 +206,6 @@ object BattleDamage {
         return modifiers
     }
 
-    // courtesy of HadeanLake on Github
     private fun addStackingModifier(modifiers : HashMap<String,Float>, text : String, modificationAmount : Float) {
         if (modifiers.containsKey(text)) modifiers[text] = modifiers[text]!! + modificationAmount
         else modifiers[text] = modificationAmount
@@ -235,7 +234,7 @@ object BattleDamage {
                 addStackingModifier(modifiers, foreignLandText, 0.2f)
             }
 
-            for(unique in unit.getCivInfo().getMatchingUniques("+[]% bonus outside friendly territory")) {
+            for(unique in unit.unit.getMatchingUniques("+[]% bonus outside friendly territory")) {
                 addStackingModifier(modifiers, foreignLandText, unique.params[0].toFloat() / 100)
             }
         }
