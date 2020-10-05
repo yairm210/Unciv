@@ -206,23 +206,37 @@ object BattleDamage {
         return modifiers
     }
 
+    // courtesy of HadeanLake on Github
+    private fun addStackingModifier(modifiers : HashMap<String,Float>, text : String, modificationAmount : Float) {
+        if (modifiers.containsKey(text)) modifiers[text] = modifiers[text]!! + modificationAmount
+        else modifiers[text] = modificationAmount
+    }
+
     private fun getTileSpecificModifiers(unit: MapUnitCombatant, tile: TileInfo): HashMap<String,Float> {
         val modifiers = HashMap<String,Float>()
 
         if(tile.isFriendlyTerritory(unit.getCivInfo())) {
+            val friendlyLandText = "Friendly Land"
+
+            // As of 3.11.0 This is to be deprecated and converted to "+[15]% combat strength for units fighting in friendly territory" - keeping it here to that mods with this can still work for now
+            // Civ 5 does not use "Himeji Castle"
             if (unit.getCivInfo().hasUnique("+15% combat strength for units fighting in friendly territory")) {
-                modifiers["Himeji Castle"] = 0.15f
+                addStackingModifier(modifiers, friendlyLandText, 0.15f)
             }
             for(unique in unit.getCivInfo().getMatchingUniques("+[]% combat strength for units fighting in friendly territory")) {
-                modifiers["Bonus in friendly territory"] = unique.params[0].toFloat() / 100
+                addStackingModifier(modifiers, friendlyLandText, unique.params[0].toFloat() / 100)
             }
         }
         else {
+            val foreignLandText = "Foreign Land"
+
+            // As of 3.11.0 This is to be deprecated and converted to "+[20]% bonus outside friendly territory" - keeping it here to that mods with this can still work for now
             if(unit.unit.hasUnique("+20% bonus outside friendly territory")) {
-                modifiers["Foreign Land"] = 0.2f
+                addStackingModifier(modifiers, foreignLandText, 0.2f)
             }
+
             for(unique in unit.getCivInfo().getMatchingUniques("+[]% bonus outside friendly territory")) {
-                modifiers["Bonus outside friendly territory"] = unique.params[0].toFloat() / 100
+                addStackingModifier(modifiers, foreignLandText, unique.params[0].toFloat() / 100)
             }
         }
 
