@@ -14,6 +14,8 @@ class SpecialistAllocationTable(val cityScreen: CityScreen): Table(CameraStageBa
         clear()
 
         for ((specialistName, amount) in cityInfo.population.getMaxSpecialists()) {
+            if (!cityInfo.getRuleset().specialists.containsKey(specialistName)) // specialist doesn't exist in this ruleset, probably a mod
+                continue
             val newSpecialists = cityInfo.population.getNewSpecialists()
             val assignedSpecialists = newSpecialists[specialistName]!!
             val maxSpecialists = cityInfo.population.getMaxSpecialists()[specialistName]!!

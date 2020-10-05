@@ -75,6 +75,8 @@ class QuestManager {
             return
         }
 
+        if (civInfo.cities.none()) return // don't assign quests until we have a city
+
         seedGlobalQuestCountdown()
         seedIndividualQuestsCountdown()
 
