@@ -290,6 +290,7 @@ object TranslationFileWriter {
             "Nations" -> emptyArray<Nation>().javaClass
             "Policies" -> emptyArray<PolicyBranch>().javaClass
             "Quests" -> emptyArray<Quest>().javaClass
+            "Specialists" -> emptyArray<Specialist>().javaClass
             "Techs" -> emptyArray<TechColumn>().javaClass
             "Terrains" -> emptyArray<Terrain>().javaClass
             "TileImprovements" -> emptyArray<TileImprovement>().javaClass
