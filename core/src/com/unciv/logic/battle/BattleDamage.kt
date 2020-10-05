@@ -214,7 +214,7 @@ object BattleDamage {
                 modifiers["Himeji Castle"] = 0.15f
             }
             for(unique in unit.getCivInfo().getMatchingUniques("+[]% combat strength for units fighting in friendly territory")) {
-                modifiers["[${unique.params[0]}] nation bonus in friendly territory"] = unique.params[0].toFloat() / 100
+                modifiers["Bonus in friendly territory"] = unique.params[0].toFloat() / 100
             }
         }
         else {
@@ -222,7 +222,7 @@ object BattleDamage {
                 modifiers["Foreign Land"] = 0.2f
             }
             for(unique in unit.getCivInfo().getMatchingUniques("+[]% bonus outside friendly territory")) {
-                modifiers["[${unique.params[0]}] unit bonus outside friendly territory"] = unique.params[0].toFloat() / 100
+                modifiers["Bonus outside friendly territory"] = unique.params[0].toFloat() / 100
             }
         }
 
