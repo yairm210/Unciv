@@ -208,10 +208,23 @@ object BattleDamage {
 
     private fun getTileSpecificModifiers(unit: MapUnitCombatant, tile: TileInfo): HashMap<String,Float> {
         val modifiers = HashMap<String,Float>()
-        if(tile.isFriendlyTerritory(unit.getCivInfo()) && unit.getCivInfo().hasUnique("+15% combat strength for units fighting in friendly territory"))
-            modifiers["Himeji Castle"] = 0.15f
-        if(!tile.isFriendlyTerritory(unit.getCivInfo()) && unit.unit.hasUnique("+20% bonus outside friendly territory"))
-            modifiers["Foreign Land"] = 0.2f
+
+        if(tile.isFriendlyTerritory(unit.getCivInfo())) {
+            if (unit.getCivInfo().hasUnique("+15% combat strength for units fighting in friendly territory")) {
+                modifiers["Himeji Castle"] = 0.15f
+            }
+            for(unique in unit.getCivInfo().getMatchingUniques("+[]% combat strength for units fighting in friendly territory")) {
+                modifiers["[${unique.params[0]}] nation bonus in friendly territory"] = unique.params[0].toFloat() / 100
+            }
+        }
+        else {
+            if(unit.unit.hasUnique("+20% bonus outside friendly territory")) {
+                modifiers["Foreign Land"] = 0.2f
+            }
+            for(unique in unit.getCivInfo().getMatchingUniques("+[]% bonus outside friendly territory")) {
+                modifiers["[${unique.params[0]}] unit bonus outside friendly territory"] = unique.params[0].toFloat() / 100
+            }
+        }
 
         // As of 3.10.6 This is to be deprecated and converted to "+[]% combat bonus in []" - keeping it here to that mods with this can still work for now
         if (unit.unit.hasUnique("+25% bonus in Snow, Tundra and Hills") &&
