@@ -42,13 +42,13 @@
   /*
   {
     "name": "Give Gold",
-    "description": "",
+    "description": "We are suffering great poverty, and unless we receive a sum of [250] Gold, it's only a matter of time before we collapse.",
     "influence": 20,
     "duration": 30
   },
   {
     "name": "Pledge to Protect",
-    "description": "",
+    "description": "Our peoples deserve to be protected by the likes of you. By signing a Protection Pedging, you'll confirm the bond that ties us.",
     "influence": 20,
     "duration": 30
   },
@@ -61,7 +61,7 @@
   },
   {
     "name": "Contest Faith",
-    "description": "",
+    "description": "The civilization with the largest Faith growth will gain a reward.",
     "type": "Global",
     "duration": 30,
     "minimumCivs": 3
@@ -75,7 +75,7 @@
   },
   {
     "name": "Invest",
-    "description": "",
+    "description": "Our people are rejoycing thanks to a tourism boom. For a certain amount of time, any Gold donation will yeld double the Influence.",
     "type": "Global",
     "influence": 0,
     "duration": 30,
