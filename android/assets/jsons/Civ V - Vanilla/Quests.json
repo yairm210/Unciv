@@ -23,7 +23,7 @@
   {
     "name": "Acquire Great Person",
     "description": "Great People can change the course of a Civilization! You will be rewarded for acquiring a new [greatPerson]."
-  }/*,
+  },/*
   {
     "name": "Conquer City State",
     "description": "You will be rewarded for conquering the city state of [cityState]!",
@@ -33,11 +33,11 @@
     "name": "Find Player",
     "description": "You have yet to discover where [civName] set up their cities. You will be rewarded for finding their territories.",
     "influence": 35
-  },
+  },*/
   {
     "name": "Find Natural Wonder",
     "description": "Send your best explorers on a quest to discover Natural Wonders. Nobody knows the location of [naturalWonder] yet."
-  }*/
+  }
   /* G&K */
   /*
   {
