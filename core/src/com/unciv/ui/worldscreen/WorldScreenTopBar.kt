@@ -84,7 +84,7 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
 
         statsTable.add(goldLabel)
         val goldImage = ImageGetter.getStatIcon("Gold")
-        statsTable.add(goldImage).padRight(20f).size(20f)
+        statsTable.add(goldImage).padRight(20f).padBottom(6f).size(20f)
         val invokeStatsPage = {
                 worldScreen.game.setScreen(EmpireOverviewScreen(worldScreen.selectedCiv, "Stats"))
         }
@@ -93,14 +93,14 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
 
         statsTable.add(scienceLabel) //.apply { setAlignment(Align.center) }).align(Align.top)
         val scienceImage = ImageGetter.getStatIcon("Science")
-        statsTable.add(scienceImage).padRight(20f).size(20f)
+        statsTable.add(scienceImage).padRight(20f).padBottom(6f).size(20f)
         val invokeTechScreen = {
                 worldScreen.game.setScreen(TechPickerScreen(worldScreen.selectedCiv))
         }
         scienceLabel.onClick(invokeTechScreen)
         scienceImage.onClick(invokeTechScreen)
 
-        statsTable.add(happinessImage).size(20f)
+        statsTable.add(happinessImage).padBottom(6f).size(20f)
         statsTable.add(happinessLabel).padRight(20f)//.apply { setAlignment(Align.center) }).align(Align.top)
         val invokeResourcesPage = {
                 worldScreen.game.setScreen(EmpireOverviewScreen(worldScreen.selectedCiv, "Resources"))
@@ -110,7 +110,7 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
 
         statsTable.add(cultureLabel)//.apply { setAlignment(Align.center) }).align(Align.top)
         val cultureImage = ImageGetter.getStatIcon("Culture")
-        statsTable.add(cultureImage).size(20f)
+        statsTable.add(cultureImage).padBottom(6f).size(20f)
         val invokePoliciesPage = {
                 worldScreen.game.setScreen(PolicyPickerScreen(worldScreen, worldScreen.selectedCiv))
         }
