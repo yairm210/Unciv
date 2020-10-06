@@ -214,12 +214,12 @@ object BattleDamage {
     private fun getTileSpecificModifiers(unit: MapUnitCombatant, tile: TileInfo): HashMap<String,Float> {
         val modifiers = HashMap<String,Float>()
 
-        // As of 3.11.0 This is to be deprecated and converted to "+[15]% combat strength for units fighting in friendly territory" - keeping it here to that mods with this can still work for now
+        // As of 3.11.0 This is to be deprecated and converted to "+[15]% combat bonus for units fighting in [Friendly Land]" - keeping it here to that mods with this can still work for now
         // Civ 5 does not use "Himeji Castle"
         if(tile.isFriendlyTerritory(unit.getCivInfo()) && unit.getCivInfo().hasUnique("+15% combat strength for units fighting in friendly territory"))
             addStackingModifier(modifiers, "Friendly Land", 0.15f)
 
-        // As of 3.11.0 This is to be deprecated and converted to "+[20]% bonus outside friendly territory" - keeping it here to that mods with this can still work for now
+        // As of 3.11.0 This is to be deprecated and converted to "+[20]% combat bonus in [Foreign Land]" - keeping it here to that mods with this can still work for now
         if(!tile.isFriendlyTerritory(unit.getCivInfo()) && unit.unit.hasUnique("+20% bonus outside friendly territory"))
             addStackingModifier(modifiers, "Foreign Land", 0.2f)
 
