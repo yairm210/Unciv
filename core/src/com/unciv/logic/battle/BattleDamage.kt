@@ -3,6 +3,7 @@ package com.unciv.logic.battle
 import com.unciv.Constants
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
+import com.unciv.models.Counter
 import com.unciv.models.ruleset.unit.UnitType
 import java.util.*
 import kotlin.collections.HashMap
@@ -11,7 +12,7 @@ import kotlin.math.max
 import kotlin.math.pow
 import kotlin.math.roundToInt
 
-class BattleDamageModifier(val vs:String,val modificationAmount:Float){
+class BattleDamageModifier(val vs:String, val modificationAmount:Float){
     fun getText(): String = "vs $vs"
 }
 
@@ -36,14 +37,10 @@ object BattleDamage {
     }
 
 
-    private fun getGeneralModifiers(combatant: ICombatant, enemy: ICombatant): HashMap<String, Float> {
-        val modifiers = HashMap<String, Float>()
-        fun addToModifiers(text:String, amount:Float) {
-            if (!modifiers.containsKey(text)) modifiers[text] = 0f
-            modifiers[text] = modifiers[text]!! + amount
-        }
+    private fun getGeneralModifiers(combatant: ICombatant, enemy: ICombatant): Counter<String> {
+        val modifiers = Counter<String>()
         fun addToModifiers(BDM:BattleDamageModifier) =
-                addToModifiers(BDM.getText(), BDM.modificationAmount)
+                modifiers.add(BDM.getText(), (BDM.modificationAmount*100).toInt())
 
         val civInfo = combatant.getCivInfo()
         if (combatant is MapUnitCombatant) {
@@ -62,75 +59,71 @@ object BattleDamage {
 
             for (unique in combatant.unit.getMatchingUniques("+[]% Strength vs []")) {
                 if (unique.params[1] == enemy.getName())
-                    addToModifiers("vs [${unique.params[1]}]", unique.params[0].toFloat() / 100)
+                    modifiers.add("vs [${unique.params[1]}]", unique.params[0].toInt())
             }
 
             for (unique in combatant.unit.getMatchingUniques("+[]% Combat Strength"))
-                addToModifiers("Combat Strength", unique.params[0].toFloat() / 100)
+                modifiers.add("Combat Strength", unique.params[0].toInt())
 
             //https://www.carlsguides.com/strategy/civilization5/war/combatbonuses.php
             val civHappiness = civInfo.getHappiness()
             if (civHappiness < 0)
-                modifiers["Unhappiness"] = max(0.02f * civHappiness, -0.9f) // otherwise it could exceed -100% and start healing enemy units...
+                modifiers["Unhappiness"] = max(2 * civHappiness, -90) // otherwise it could exceed -100% and start healing enemy units...
 
             if (civInfo.hasUnique("Wounded military units deal +25% damage") && combatant.getHealth() < 100) {
-                modifiers["Wounded unit"] = 0.25f
+                modifiers["Wounded unit"] = 25
             }
 
             if (civInfo.hasUnique("+15% combat strength for melee units which have another military unit in an adjacent tile")
                     && combatant.isMelee()
                     && combatant.getTile().neighbors.flatMap { it.getUnits() }
                             .any { it.civInfo == civInfo && !it.type.isCivilian() && !it.type.isAirUnit() })
-                modifiers["Discipline"] = 0.15f
+                modifiers["Discipline"] = 15
 
             val requiredResource = combatant.unit.baseUnit.requiredResource
             if (requiredResource != null && civInfo.getCivResourcesByName()[requiredResource]!! < 0
                     && !civInfo.isBarbarian()) {
-                modifiers["Missing resource"] = -0.25f
+                modifiers["Missing resource"] = -25
             }
 
             val nearbyCivUnits = combatant.unit.getTile().getTilesInDistance(2)
                     .filter { it.civilianUnit?.civInfo == combatant.unit.civInfo }
                     .map { it.civilianUnit }
             if (nearbyCivUnits.any { it!!.hasUnique("Bonus for units in 2 tile radius 15%") }) {
-                val greatGeneralModifier = if (combatant.unit.civInfo.hasUnique("Great General provides double combat bonus")) 0.3f else 0.15f
+                val greatGeneralModifier = if (combatant.unit.civInfo.hasUnique("Great General provides double combat bonus")) 30 else 15
                 modifiers["Great General"] = greatGeneralModifier
             }
 
             if(civInfo.goldenAges.isGoldenAge() && civInfo.hasUnique("+10% Strength for all units during Golden Age"))
-                modifiers["Golden Age"] = 0.1f
+                modifiers["Golden Age"] = 10
 
             if (enemy.getCivInfo().isCityState() && civInfo.hasUnique("+30% Strength when fighting City-State units and cities"))
-                modifiers["vs [City-States]"] = 0.3f
+                modifiers["vs [City-States]"] = 30
 
         }
 
         if (enemy.getCivInfo().isBarbarian()) {
-            modifiers["Difficulty"] = civInfo.gameInfo.getDifficulty().barbarianBonus
+            modifiers["Difficulty"] = (civInfo.gameInfo.getDifficulty().barbarianBonus*100).toInt()
             if (civInfo.hasUnique("+25% bonus vs Barbarians"))
-                modifiers["vs Barbarians"] = 0.25f
+                modifiers["vs Barbarians"] = 25
         }
         
         return modifiers
     }
 
-    fun getAttackModifiers(attacker: ICombatant, tileToAttackFrom:TileInfo?, defender: ICombatant): HashMap<String, Float> {
+    fun getAttackModifiers(attacker: ICombatant, tileToAttackFrom:TileInfo?, defender: ICombatant): Counter<String> {
         val modifiers = getGeneralModifiers(attacker, defender)
 
         if (attacker is MapUnitCombatant) {
-            modifiers.putAll(getTileSpecificModifiers(attacker, defender.getTile()))
+            modifiers.add(getTileSpecificModifiers(attacker, defender.getTile()))
 
             for (ability in attacker.unit.getUniques()) {
-                if(ability.placeholderText == "Bonus as Attacker []%") {
-                    val bonus = ability.params[0].toFloat() / 100
-                    if (modifiers.containsKey("Attacker Bonus"))
-                        modifiers["Attacker Bonus"] = modifiers["Attacker Bonus"]!! + bonus
-                    else modifiers["Attacker Bonus"] = bonus
-                }
+                if (ability.placeholderText == "Bonus as Attacker []%")
+                    modifiers.add("Attacker Bonus", ability.params[0].toInt())
             }
 
             if (attacker.unit.isEmbarked() && !attacker.unit.hasUnique("Amphibious"))
-                modifiers["Landing"] = -0.5f
+                modifiers["Landing"] = -50
 
             if (attacker.isMelee()) {
                 val numberOfAttackersSurroundingDefender = defender.getTile().neighbors.count {
@@ -139,89 +132,82 @@ object BattleDamage {
                             && MapUnitCombatant(it.militaryUnit!!).isMelee()
                 }
                 if (numberOfAttackersSurroundingDefender > 1)
-                    modifiers["Flanking"] = 0.1f * (numberOfAttackersSurroundingDefender - 1) //https://www.carlsguides.com/strategy/civilization5/war/combatbonuses.php
+                    modifiers["Flanking"] = 10 * (numberOfAttackersSurroundingDefender - 1) //https://www.carlsguides.com/strategy/civilization5/war/combatbonuses.php
                 if (attacker.getTile().aerialDistanceTo(defender.getTile()) == 1 && attacker.getTile().isConnectedByRiver(defender.getTile())
                         && !attacker.unit.hasUnique("Amphibious")) {
                     if (!attacker.getTile().hasConnection(attacker.getCivInfo()) // meaning, the tiles are not road-connected for this civ
                             || !defender.getTile().hasConnection(attacker.getCivInfo())
                             || !attacker.getCivInfo().tech.roadsConnectAcrossRivers) {
-                        modifiers["Across river"] = -0.2f
+                        modifiers["Across river"] = -20
                     }
                 }
             }
 
             if (attacker.getCivInfo().policies.autocracyCompletedTurns > 0)
-                modifiers["Autocracy Complete"] = 0.2f
+                modifiers["Autocracy Complete"] = 20
 
             if (defender is CityCombatant &&
                     attacker.getCivInfo().hasUnique("+15% Combat Strength for all units when attacking Cities"))
-                modifiers["Statue of Zeus"] = 0.15f
+                modifiers["Statue of Zeus"] = 15
         } else if (attacker is CityCombatant) {
             if (attacker.getCivInfo().hasUnique("+50% attacking strength for cities with garrisoned units")
                     && attacker.city.getCenterTile().militaryUnit != null)
-                modifiers["Oligarchy"] = 0.5f
+                modifiers["Oligarchy"] = 50
         }
 
         return modifiers
     }
 
-    fun getDefenceModifiers(attacker: ICombatant, defender: MapUnitCombatant): HashMap<String, Float> {
-        val modifiers = HashMap<String, Float>()
+    fun getDefenceModifiers(attacker: ICombatant, defender: MapUnitCombatant): Counter<String> {
+        val modifiers = getGeneralModifiers(defender, attacker)
         val tile = defender.getTile()
 
         if (defender.unit.isEmbarked()) {
             // embarked units get no defensive modifiers apart from this unique
             if (defender.unit.hasUnique("Defense bonus when embarked") ||
                     defender.getCivInfo().hasUnique("Embarked units can defend themselves"))
-                modifiers["Embarked"] = 1f
+                modifiers["Embarked"] = 100
 
             return modifiers
         }
-
-        modifiers.putAll(getGeneralModifiers(defender, attacker))
 
         modifiers.putAll(getTileSpecificModifiers(defender, tile))
 
         val tileDefenceBonus = tile.getDefensiveBonus()
         if (!defender.unit.hasUnique("No defensive terrain bonus") || tileDefenceBonus < 0)
-            modifiers["Tile"] = tileDefenceBonus
+            modifiers["Tile"] = (tileDefenceBonus*100).toInt()
 
         if (attacker.isRanged()) {
-            val defenceVsRanged = 0.25f * defender.unit.getUniques().count { it.text == "+25% Defence against ranged attacks" }
+            val defenceVsRanged = 25 * defender.unit.getUniques().count { it.text == "+25% Defence against ranged attacks" }
             if (defenceVsRanged > 0) modifiers["defence vs ranged"] = defenceVsRanged
         }
 
-        val carrierDefenceBonus = 0.25f * defender.unit.getUniques().count { it.text == "+25% Combat Bonus when defending" }
+        val carrierDefenceBonus = 25 * defender.unit.getUniques().count { it.text == "+25% Combat Bonus when defending" }
         if (carrierDefenceBonus > 0) modifiers["Armor Plating"] = carrierDefenceBonus
 
         for(unique in defender.unit.getMatchingUniques("+[]% defence in [] tiles")) {
             if (tile.fitsUniqueFilter(unique.params[1]))
-                modifiers["[${unique.params[1]}] defence"] = unique.params[0].toFloat() / 100
+                modifiers["[${unique.params[1]}] defence"] = unique.params[0].toInt()
         }
 
 
         if (defender.unit.isFortified())
-            modifiers["Fortification"] = 0.2f * defender.unit.getFortificationTurns()
+            modifiers["Fortification"] = 20 * defender.unit.getFortificationTurns()
 
         return modifiers
     }
 
-    private fun addStackingModifier(modifiers : HashMap<String,Float>, text : String, modificationAmount : Float) {
-        if (modifiers.containsKey(text)) modifiers[text] = modifiers[text]!! + modificationAmount
-        else modifiers[text] = modificationAmount
-    }
-
-    private fun getTileSpecificModifiers(unit: MapUnitCombatant, tile: TileInfo): HashMap<String,Float> {
-        val modifiers = HashMap<String,Float>()
+    private fun getTileSpecificModifiers(unit: MapUnitCombatant, tile: TileInfo): Counter<String> {
+        val modifiers = Counter<String>()
 
         // As of 3.11.0 This is to be deprecated and converted to "+[15]% combat bonus for units fighting in [Friendly Land]" - keeping it here to that mods with this can still work for now
         // Civ 5 does not use "Himeji Castle"
         if(tile.isFriendlyTerritory(unit.getCivInfo()) && unit.getCivInfo().hasUnique("+15% combat strength for units fighting in friendly territory"))
-            addStackingModifier(modifiers, "Friendly Land", 0.15f)
+            modifiers.add("Friendly Land", 15)
 
         // As of 3.11.0 This is to be deprecated and converted to "+[20]% combat bonus in [Foreign Land]" - keeping it here to that mods with this can still work for now
         if(!tile.isFriendlyTerritory(unit.getCivInfo()) && unit.unit.hasUnique("+20% bonus outside friendly territory"))
-            addStackingModifier(modifiers, "Foreign Land", 0.2f)
+            modifiers.add("Foreign Land", 20)
 
         for (unique in unit.unit.getMatchingUniques("+[]% combat bonus in []")
                 + unit.getCivInfo().getMatchingUniques("+[]% combat bonus for units fighting in []")) {
@@ -229,7 +215,7 @@ object BattleDamage {
             if (filter == tile.getLastTerrain().name
                     || filter == "Foreign Land" && !tile.isFriendlyTerritory(unit.getCivInfo())
                     || filter == "Friendly Land" && tile.isFriendlyTerritory(unit.getCivInfo()))
-                addStackingModifier(modifiers, filter, unique.params[0].toFloat() / 100)
+                modifiers.add(filter, unique.params[0].toInt())
         }
 
         // As of 3.10.6 This is to be deprecated and converted to "+[]% combat bonus in []" - keeping it here to that mods with this can still work for now
@@ -240,44 +226,42 @@ object BattleDamage {
                 // except when there is a vegetation
                 (tile.terrainFeature != Constants.forest
                         || tile.terrainFeature != Constants.jungle))
-            modifiers[tile.baseTerrain] = 0.25f
+            modifiers[tile.baseTerrain] = 25
 
         for(unique in unit.getCivInfo().getMatchingUniques("+[]% Strength if within [] tiles of a []")) {
             if (tile.getTilesInDistance(unique.params[1].toInt()).any { it.improvement == unique.params[2] })
-                modifiers[unique.params[2]] = unique.params[0].toFloat() / 100
+                modifiers[unique.params[2]] = unique.params[0].toInt()
         }
 
         if(tile.neighbors.flatMap { it.getUnits() }
                         .any { it.hasUnique("-10% combat strength for adjacent enemy units") && it.civInfo.isAtWarWith(unit.getCivInfo()) })
-            modifiers["Haka War Dance"] = -0.1f
+            modifiers["Haka War Dance"] = -10
 
         // As of 3.10.6 This is to be deprecated and converted to "+[]% combat bonus in []" - keeping it here to that mods with this can still work for now
         if(unit.unit.hasUnique("+33% combat bonus in Forest/Jungle")
                 && (tile.terrainFeature== Constants.forest || tile.terrainFeature==Constants.jungle))
-            modifiers[tile.terrainFeature!!]=0.33f
+            modifiers[tile.terrainFeature!!]=33
 
         val isRoughTerrain = tile.isRoughTerrain()
         for (BDM in getBattleDamageModifiersOfUnit(unit.unit)) {
             val text = BDM.getText()
-            if (BDM.vs == "units in open terrain" && !isRoughTerrain) {
-                if (modifiers.containsKey(text))
-                    modifiers[text] = modifiers[text]!! + BDM.modificationAmount
-                else modifiers[text] = BDM.modificationAmount
-            }
-            if (BDM.vs == "units in rough terrain" && isRoughTerrain) {
-                if (modifiers.containsKey(text))
-                    modifiers[text] = modifiers[text]!! + BDM.modificationAmount
-                else modifiers[text] = BDM.modificationAmount
-            }
+            // this will change when we change over everything to ints
+            if (BDM.vs == "units in open terrain" && !isRoughTerrain) modifiers.add(text, (BDM.modificationAmount*100).toInt())
+            if (BDM.vs == "units in rough terrain" && isRoughTerrain) modifiers.add(text, (BDM.modificationAmount*100).toInt())
         }
 
         return modifiers
     }
 
-    private fun modifiersToMultiplicationBonus(modifiers: HashMap<String, Float>): Float {
-        // modifiers are like 0.1 for a 10% bonus, -0.1 for a 10% loss
+    fun Counter<String>.toOldModifiers(): HashMap<String, Float> {
+        val modifiers = HashMap<String,Float>()
+        for((key,value) in this) modifiers[key] = value.toFloat()/100
+        return modifiers
+    }
+
+    private fun modifiersToMultiplicationBonus(modifiers: Counter<String>): Float {
         var finalModifier = 1f
-        for (modifierValue in modifiers.values) finalModifier *= (1 + modifierValue)
+        for (modifierValue in modifiers.values) finalModifier *= (1 + modifierValue/100) // so 25 will result in *= 1.25
         return finalModifier
     }
 

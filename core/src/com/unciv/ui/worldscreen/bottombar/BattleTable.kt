@@ -123,14 +123,14 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
         val attackerModifiers =
                 BattleDamage.getAttackModifiers(attacker,null,defender).map {
                     val description = if(it.key.startsWith("vs ")) ("vs ["+it.key.replace("vs ","")+"]").tr() else it.key.tr()
-                    val percentage = (if(it.value>0)"+" else "")+(it.value*100).toInt()+"%"
+                    val percentage = (if(it.value>0)"+" else "")+ it.value +"%"
                     "$description: $percentage"
                 }
         val defenderModifiers =
                 if (defender is MapUnitCombatant)
                     BattleDamage.getDefenceModifiers(attacker, defender).map {
                         val description = if(it.key.startsWith("vs ")) ("vs ["+it.key.replace("vs ","")+"]").tr() else it.key.tr()
-                        val percentage = (if(it.value>0)"+" else "")+(it.value*100).toInt()+"%"
+                        val percentage = (if(it.value>0)"+" else "")+ it.value +"%"
                         "$description: $percentage"
                     }
                 else listOf()

@@ -16,6 +16,8 @@ Minor UI fixes - By mrahimygk
 
 Connect Resource Quest implemented - By r3versi
 
+Translation updates
+
 ## 3.11.0
 
 City-States Quests introduced! - by r3versi
