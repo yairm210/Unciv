@@ -1,3 +1,21 @@
+## 3.11.1
+
+MODDABLE SPECIALISTS ARE GO!
+
+Mods downloaded in-game on Android don't disappear
+
+Fixes for minor bugs from the previous version
+
+Fixed Windmill unique
+
+Tech lines are colored for tracing paths on complex trees
+
+Fixed minimap framerate-lowering bug
+
+Minor UI fixes - By mrahimygk
+
+Connect Resource Quest implemented - By r3versi
+
 ## 3.11.0
 
 City-States Quests introduced! - by r3versi
