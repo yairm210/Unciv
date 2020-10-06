@@ -54,7 +54,7 @@ class TileSetStrings {
     fun getTerrainFeatureOverlay(terrainFeature: String) = getString(tileSetLocation, terrainFeature, overlay)
 
     fun getCityTile(baseTerrain: String?, era: String?): String {
-        if (baseTerrain != null && era != null) getString(tilesLocation, baseTerrain, city, tag, era)
+        if (baseTerrain != null && era != null) return getString(tilesLocation, baseTerrain, city, tag, era)
         if (era != null) return getString(tilesLocation, city, tag, era)
         if (baseTerrain != null) return getString(tilesLocation, baseTerrain, "+", city)
         else return cityTile

@@ -138,16 +138,22 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) 
     fun getTileBaseImageLocations(viewingCiv: CivilizationInfo?): List<String>{
         if (viewingCiv==null  && !showEntireMap) return listOf(tileSetStrings.hexagon)
 
+        val shouldShowImprovement = tileInfo.improvement!=null && UncivGame.Current.settings.showPixelImprovements
+        val shouldShowResource = UncivGame.Current.settings.showPixelImprovements
+                && tileInfo.resource!=null &&
+                (showEntireMap || viewingCiv==null || tileInfo.hasViewableResource(viewingCiv))
+        val baseTerrainTileLocation = tileSetStrings.getTile(tileInfo.baseTerrain) // e.g. Grassland
+
+
         if (tileInfo.isCityCenter()) {
-            // Temporarily disabled until we can see the rivers behind the era cities =)
-//            val era = tileInfo.getOwner()!!.getEra()
-//            val terrainAndCityWithEra = tileSetStrings.getCityTile(tileInfo.baseTerrain, era)
-//            if (ImageGetter.imageExists(terrainAndCityWithEra))
-//                return listOf(terrainAndCityWithEra)
-//
-//            val cityWithEra = tileSetStrings.getCityTile(null, era)
-//            if (ImageGetter.imageExists(cityWithEra))
-//                return listOf(cityWithEra)
+            val era = tileInfo.getOwner()!!.getEra()
+            val terrainAndCityWithEra = tileSetStrings.getCityTile(tileInfo.baseTerrain, era)
+            if (ImageGetter.imageExists(terrainAndCityWithEra))
+                return listOf(terrainAndCityWithEra)
+
+            val cityWithEra = tileSetStrings.getCityTile(null, era)
+            if (ImageGetter.imageExists(cityWithEra))
+                return listOf(baseTerrainTileLocation, cityWithEra)
 
             val terrainAndCity = tileSetStrings.getCityTile(tileInfo.baseTerrain, null)
             if (ImageGetter.imageExists(terrainAndCity))
@@ -165,12 +171,6 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) 
                 return listOf(naturalWonder)
         }
 
-
-        val shouldShowImprovement = tileInfo.improvement!=null && UncivGame.Current.settings.showPixelImprovements
-        val shouldShowResource = UncivGame.Current.settings.showPixelImprovements
-                && tileInfo.resource!=null &&
-                (showEntireMap || viewingCiv==null || tileInfo.hasViewableResource(viewingCiv))
-        val baseTerrainTileLocation = tileSetStrings.getTile(tileInfo.baseTerrain) // e.g. Grassland
 
         if (tileInfo.terrainFeature != null) {
             // e.g. Grassland+Forest
