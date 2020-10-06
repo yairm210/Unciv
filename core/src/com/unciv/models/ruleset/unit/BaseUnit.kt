@@ -195,4 +195,9 @@ class BaseUnit : INamed, IConstruction {
     }
 
     override fun toString(): String = name
+
+    fun getReplacedUnit(ruleset: Ruleset): BaseUnit {
+        return if (replaces == null) this
+        else ruleset.units[replaces!!]!!
+    }
 }
