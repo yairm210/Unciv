@@ -251,6 +251,7 @@ class QuestManager {
                 QuestName.ConnectResource.value -> data1 = getResourceForQuest(assignee)!!.name
                 QuestName.ConstructWonder.value -> data1 = getWonderToBuildForQuest(assignee)!!.name
                 QuestName.GreatPerson.value -> data1 = getGreatPersonForQuest(assignee)!!.name
+                QuestName.FindPlayer.value -> data1 = getCivilizationToFindForQuest(assignee)!!.civName
                 QuestName.FindNaturalWonder.value -> data1 = getNaturalWonderToFindForQuest(assignee)!!
             }
 
@@ -290,6 +291,7 @@ class QuestManager {
             QuestName.ConnectResource.value -> civInfo.hasEverBeenFriendWith(challenger) && getResourceForQuest(challenger) != null
             QuestName.ConstructWonder.value -> civInfo.hasEverBeenFriendWith(challenger) && getWonderToBuildForQuest(challenger) != null
             QuestName.GreatPerson.value -> civInfo.hasEverBeenFriendWith(challenger) && getGreatPersonForQuest(challenger) != null
+            QuestName.FindPlayer.value -> civInfo.hasEverBeenFriendWith(challenger) && getCivilizationToFindForQuest(challenger) != null
             QuestName.FindNaturalWonder.value -> civInfo.hasEverBeenFriendWith(challenger) && getNaturalWonderToFindForQuest(challenger) != null
             else -> true
         }
@@ -303,6 +305,7 @@ class QuestManager {
             QuestName.ConnectResource.value -> assignee.detailedCivResources.map { it.resource }.contains(civInfo.gameInfo.ruleSet.tileResources[assignedQuest.data1])
             QuestName.ConstructWonder.value -> assignee.cities.any { it.cityConstructions.isBuilt(assignedQuest.data1) }
             QuestName.GreatPerson.value -> assignee.getCivGreatPeople().any { it.baseUnit.getReplacedUnit(civInfo.gameInfo.ruleSet).name == assignedQuest.data1 }
+            QuestName.FindPlayer.value -> assignee.hasMetCivTerritory(civInfo.gameInfo.getCivilization(assignedQuest.data1))
             QuestName.FindNaturalWonder.value -> assignee.naturalWonders.contains(assignedQuest.data1)
             else -> false
         }
@@ -313,6 +316,7 @@ class QuestManager {
         val assignee = civInfo.gameInfo.getCivilization(assignedQuest.assignee)
         return when (assignedQuest.questName) {
             QuestName.ConstructWonder.value -> civInfo.gameInfo.getCities().any { it.civInfo != assignee && it.cityConstructions.isBuilt(assignedQuest.data1) }
+            QuestName.FindPlayer.value -> civInfo.gameInfo.getCivilization(assignedQuest.data1).isDefeated()
             else -> false
         }
     }
@@ -409,6 +413,19 @@ class QuestManager {
         return null
     }
 
+    /**
+     * Returns a random [CivilizationInfo] (major) that [challenger] has met, but whose territory he
+     * cannot see; if none exists, it returns null.
+     */
+    private fun getCivilizationToFindForQuest(challenger: CivilizationInfo): CivilizationInfo? {
+        val civilizationsToFind = challenger.getKnownCivs()
+                .filter { it.isAlive() && it.isMajorCiv() && !challenger.hasMetCivTerritory(it) }
+
+        if (civilizationsToFind.isNotEmpty())
+            return civilizationsToFind.random()
+
+        return null
+    }
     //endregion
 }
 
