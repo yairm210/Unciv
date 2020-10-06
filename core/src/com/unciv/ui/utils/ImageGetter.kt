@@ -86,11 +86,11 @@ object ImageGetter {
      * Example:
      *      getLayeredImageColored("TileSets/FantasyHex/Units/Warrior", null, Color.GOLD, Color.RED)
      *
-     *      All images in the atlas that starts with "TileSets/FantasyHex/Units/Warrior" are retrieved
-     *      alphabetically:
+     *      All images in the atlas that match the pattern "TileSets/FantasyHex/Units/Warrior" or
+     *      "TileSets/FantasyHex/Units/Warrior-NUMBER" are retrieved alphabetically:
      *          - TileSets/FantasyHex/Units/Warrior
      *          - TileSets/FantasyHex/Units/Warrior-1
-     *          - TileSets/FantasyHex/Units/Warrior-2
+     *          - TileSets/FantasyHex/Units/Warrior-2983
      *
      *      It returns a list in which first layer has unmodified colors, the second is colored in
      *      GOLD and the third in RED.
