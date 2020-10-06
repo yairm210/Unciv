@@ -75,6 +75,8 @@ class QuestManager {
             return
         }
 
+        if (civInfo.cities.none()) return // don't assign quests until we have a city
+
         seedGlobalQuestCountdown()
         seedIndividualQuestsCountdown()
 
@@ -246,6 +248,7 @@ class QuestManager {
             var data2 = ""
 
             when (quest.name) {
+                QuestName.ConnectResource.value -> data1 = getResourceForQuest(assignee)!!.name
                 QuestName.ConstructWonder.value -> data1 = getWonderToBuildForQuest(assignee)!!.name
             }
 
@@ -282,6 +285,7 @@ class QuestManager {
 
         return when (quest.name) {
             QuestName.Route.value -> civInfo.hasEverBeenFriendWith(challenger) && !civInfo.isCapitalConnectedToCity(challenger.getCapital())
+            QuestName.ConnectResource.value -> civInfo.hasEverBeenFriendWith(challenger) && getResourceForQuest(challenger) != null
             QuestName.ConstructWonder.value -> civInfo.hasEverBeenFriendWith(challenger) && getWonderToBuildForQuest(challenger) != null
             else -> true
         }
@@ -292,6 +296,7 @@ class QuestManager {
         val assignee = civInfo.gameInfo.getCivilization(assignedQuest.assignee)
         return when (assignedQuest.questName) {
             QuestName.Route.value -> civInfo.isCapitalConnectedToCity(assignee.getCapital())
+            QuestName.ConnectResource.value -> assignee.detailedCivResources.map { it.resource }.contains(civInfo.gameInfo.ruleSet.tileResources[assignedQuest.data1])
             QuestName.ConstructWonder.value -> assignee.cities.any { it.cityConstructions.isBuilt(assignedQuest.data1) }
             else -> false
         }
@@ -326,6 +331,29 @@ class QuestManager {
     }
 
     //region get-quest-target
+
+    /**
+     * Returns a random resource to be connected to the [challenger]'s trade route as a quest.
+     * The resource must be a [ResourceType.Luxury] or [ResourceType.Strategic], must not be owned
+     * by the [civInfo] and the [challenger], and must be viewable by the [challenger];
+     * if none exists, it returns null.
+     */
+    private fun getResourceForQuest(challenger: CivilizationInfo): TileResource? {
+        val ownedByCityStateResources = civInfo.detailedCivResources.map { it.resource }
+        val ownedByMajorResources = challenger.detailedCivResources.map { it.resource }
+
+        val notOwnedResources = challenger.getViewableResources().filter {
+            it.resourceType != ResourceType.Bonus &&
+                    !ownedByCityStateResources.contains(it) &&
+                    !ownedByMajorResources.contains(it)
+        }
+
+        if (notOwnedResources.isNotEmpty())
+            return notOwnedResources.random()
+
+        return null
+    }
+
     private fun getWonderToBuildForQuest(challenger: CivilizationInfo): Building? {
         val wonders = civInfo.gameInfo.ruleSet.buildings.values
                 .filter { building ->

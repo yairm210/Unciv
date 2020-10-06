@@ -10,6 +10,7 @@ import com.unciv.UncivGame
 import com.unciv.logic.HexMath
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.TileInfo
+import com.unciv.ui.utils.IconCircleGroup
 import com.unciv.ui.utils.ImageGetter
 import com.unciv.ui.utils.onClick
 import com.unciv.ui.utils.surroundWithCircle
@@ -21,6 +22,8 @@ class Minimap(val mapHolder: WorldMapHolder) : Table(){
     private val tileImages = HashMap<TileInfo, Image>()
 
     init {
+        isTransform = false // don't try to resize rotate etc - this table has a LOT of children so that's valuable render time!
+
         var topX = 0f
         var topY = 0f
         var bottomX = 0f
@@ -65,23 +68,28 @@ class Minimap(val mapHolder: WorldMapHolder) : Table(){
         layout()
     }
 
+    private class CivAndImage(val civInfo: CivilizationInfo, val image: IconCircleGroup)
+    private val cityIcons = HashMap<TileInfo, CivAndImage>()
+
     fun update(cloneCivilization: CivilizationInfo) {
-        for(tileInfo in mapHolder.tileMap.values) {
-            val hex = tileImages[tileInfo]!!
-            if (!(UncivGame.Current.viewEntireMapForDebug || cloneCivilization.exploredTiles.contains(tileInfo.position)))
-                hex.color = Color.DARK_GRAY
-            else if (tileInfo.isCityCenter() && !tileInfo.isWater)
-                hex.color = tileInfo.getOwner()!!.nation.getInnerColor()
-            else if (tileInfo.getCity() != null && !tileInfo.isWater)
-                hex.color = tileInfo.getOwner()!!.nation.getOuterColor()
-            else hex.color = tileInfo.getBaseTerrain().getColor().lerp(Color.GRAY, 0.5f)
-            if (tileInfo.isCityCenter() && cloneCivilization.exploredTiles.contains(tileInfo.getCity()!!.getCenterTile().position)) {
-                val nationIcon= ImageGetter.getNationIndicator(tileInfo.owningCity!!.civInfo.nation,hex.width * 3)
+        for((tileInfo, hex) in tileImages) {
+            hex.color = when {
+                !(UncivGame.Current.viewEntireMapForDebug || cloneCivilization.exploredTiles.contains(tileInfo.position)) -> Color.DARK_GRAY
+                tileInfo.isCityCenter() && !tileInfo.isWater -> tileInfo.getOwner()!!.nation.getInnerColor()
+                tileInfo.getCity() != null && !tileInfo.isWater -> tileInfo.getOwner()!!.nation.getOuterColor()
+                else -> tileInfo.getBaseTerrain().getColor().lerp(Color.GRAY, 0.5f)
+            }
+
+            if (tileInfo.isCityCenter() && cloneCivilization.exploredTiles.contains(tileInfo.position)
+                    && (!cityIcons.containsKey(tileInfo) || cityIcons[tileInfo]!!.civInfo != tileInfo.getOwner())) {
+                if (cityIcons.containsKey(tileInfo)) cityIcons[tileInfo]!!.image.remove() // city changed hands - remove old icon
+                val nationIcon= ImageGetter.getNationIndicator(tileInfo.getOwner()!!.nation,hex.width * 3)
                 nationIcon.setPosition(hex.x - nationIcon.width/3,hex.y - nationIcon.height/3)
                 nationIcon.onClick {
                     mapHolder.setCenterPosition(tileInfo.position)
                 }
                 allTiles.addActor(nationIcon)
+                cityIcons[tileInfo] = CivAndImage(tileInfo.getOwner()!!, nationIcon)
             }
         }
     }

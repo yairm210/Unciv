@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.files.FileHandle
 import com.unciv.JsonParser
 import com.unciv.logic.UncivShowableException
+import com.unciv.models.Counter
 import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.metadata.GameParameters
 import com.unciv.models.ruleset.tech.TechColumn
@@ -15,6 +16,7 @@ import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.ruleset.unit.Promotion
 import com.unciv.models.stats.INamed
 import com.unciv.models.stats.NamedStats
+import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import com.unciv.ui.utils.colorFromRGB
 import kotlin.collections.set
@@ -318,4 +320,26 @@ class Specialist: NamedStats() {
     var color = ArrayList<Int>()
     val colorObject by lazy { colorFromRGB(color) }
     var greatPersonPoints= Stats()
+
+    companion object {
+
+        fun convertStatsToSpecialistHashmap(stats: Stats): Counter<String> {
+            val specialistHashmap = Counter<String>()
+            for ((stat, amount) in stats.toHashMap()) {
+                if (amount == 0f) continue
+                val specialistName = specialistNameByStat(stat)
+                specialistHashmap[specialistName] = amount.toInt()
+            }
+            return specialistHashmap
+        }
+
+
+        internal fun specialistNameByStat(stat: Stat) = when (stat) {
+            Stat.Production -> "Engineer"
+            Stat.Gold -> "Merchant"
+            Stat.Science -> "Scientist"
+            Stat.Culture -> "Artist"
+            else -> TODO()
+        }
+    }
 }

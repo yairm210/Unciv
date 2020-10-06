@@ -53,10 +53,6 @@ class AndroidLauncher : AndroidApplication() {
 		// Mod directory in the shared app data (where the user can see and modify)
 		val externalModsDir = File("${getExternalFilesDir(null)?.path}/mods")
 
-		// Empty out the mods directory so it can be replaced by the external one
-		// Done to ensure it only contains mods in the external dir (so users can delete some)
-		if (internalModsDir.exists()) internalModsDir.deleteRecursively()
-
 		// Copy external mod directory (with data user put in it) to internal (where it can be read)
 		if (!externalModsDir.exists()) externalModsDir.mkdirs() // this can fail sometimes, which is why we check if it exists again in the next line
         if (externalModsDir.exists()) externalModsDir.copyRecursively(internalModsDir)
