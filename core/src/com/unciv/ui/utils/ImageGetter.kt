@@ -96,9 +96,10 @@ object ImageGetter {
      *      GOLD and the third in RED.
      */
     fun getLayeredImageColored(baseFileName: String, vararg colors: Color?): ArrayList<Image> {
+        val regex = Regex("^$baseFileName(?>-\\d+)?$")
         val layerList = arrayListOf<Image>()
         val layers = textureRegionDrawables.keys
-                .filter { it.startsWith(baseFileName) }
+                .filter { regex.matches(it) }
                 .sorted()
 
         for (i in layers.indices) {
