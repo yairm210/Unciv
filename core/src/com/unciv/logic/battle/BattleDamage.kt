@@ -206,12 +206,31 @@ object BattleDamage {
         return modifiers
     }
 
+    private fun addStackingModifier(modifiers : HashMap<String,Float>, text : String, modificationAmount : Float) {
+        if (modifiers.containsKey(text)) modifiers[text] = modifiers[text]!! + modificationAmount
+        else modifiers[text] = modificationAmount
+    }
+
     private fun getTileSpecificModifiers(unit: MapUnitCombatant, tile: TileInfo): HashMap<String,Float> {
         val modifiers = HashMap<String,Float>()
+
+        // As of 3.11.0 This is to be deprecated and converted to "+[15]% combat strength for units fighting in friendly territory" - keeping it here to that mods with this can still work for now
+        // Civ 5 does not use "Himeji Castle"
         if(tile.isFriendlyTerritory(unit.getCivInfo()) && unit.getCivInfo().hasUnique("+15% combat strength for units fighting in friendly territory"))
-            modifiers["Himeji Castle"] = 0.15f
+            addStackingModifier(modifiers, "Friendly Land", 0.15f)
+
+        // As of 3.11.0 This is to be deprecated and converted to "+[20]% bonus outside friendly territory" - keeping it here to that mods with this can still work for now
         if(!tile.isFriendlyTerritory(unit.getCivInfo()) && unit.unit.hasUnique("+20% bonus outside friendly territory"))
-            modifiers["Foreign Land"] = 0.2f
+            addStackingModifier(modifiers, "Foreign Land", 0.2f)
+
+        for (unique in unit.unit.getMatchingUniques("+[]% combat bonus in []")
+                + unit.getCivInfo().getMatchingUniques("+[]% combat bonus for units fighting in []")) {
+            val filter = unique.params[1]
+            if (filter == tile.getLastTerrain().name
+                    || filter == "Foreign Land" && !tile.isFriendlyTerritory(unit.getCivInfo())
+                    || filter == "Friendly Land" && tile.isFriendlyTerritory(unit.getCivInfo()))
+                addStackingModifier(modifiers, filter, unique.params[0].toFloat() / 100)
+        }
 
         // As of 3.10.6 This is to be deprecated and converted to "+[]% combat bonus in []" - keeping it here to that mods with this can still work for now
         if (unit.unit.hasUnique("+25% bonus in Snow, Tundra and Hills") &&
@@ -236,10 +255,6 @@ object BattleDamage {
         if(unit.unit.hasUnique("+33% combat bonus in Forest/Jungle")
                 && (tile.terrainFeature== Constants.forest || tile.terrainFeature==Constants.jungle))
             modifiers[tile.terrainFeature!!]=0.33f
-
-        for (unique in unit.unit.getUniques().filter { it.placeholderText == "+[]% combat bonus in []" })
-            if (tile.getLastTerrain().name == unique.params[1])
-                modifiers[unique.params[1]] = unique.params[0].toFloat() / 100
 
         val isRoughTerrain = tile.isRoughTerrain()
         for (BDM in getBattleDamageModifiersOfUnit(unit.unit)) {

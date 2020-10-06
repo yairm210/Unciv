@@ -1149,7 +1149,7 @@
 		"requiredTech": "Replaceable Parts",
 		"upgradesTo": "Infantry",
 		"obsoleteTech": "Plastics",
-		"uniques": ["+20% bonus outside friendly territory"],
+		"uniques": ["+[20]% combat bonus in [Foreign Land]"],
 		"attackSound": "shot"
 	},
 	/*

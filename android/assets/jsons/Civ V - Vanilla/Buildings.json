@@ -676,7 +676,7 @@
 		"isWonder": true,
 		"greatPersonPoints": {"production": 2},
 		"providesFreeBuilding": "Castle",
-		"uniques": ["+15% combat strength for units fighting in friendly territory"],
+		"uniques": ["+[15]% combat bonus for units fighting in [Friendly Land]"],
 		"requiredTech": "Gunpowder",
 		"quote": "'Bushido is realized in the presence of death. This means choosing death whenever there is a choice between life and death. There is no other reasoning.'  - Yamamoto Tsunetomo"
 	},
