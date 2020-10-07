@@ -469,7 +469,7 @@
 		"outerColor": [225,105,0],
 		"innerColor": [255,255,78],
 		"uniqueName": "Wayfinding",
-		"uniques": ["Can embark and move over Coasts and Oceans immediately", "+1 Sight when embarked", "+[10]% Strength if within 2 tiles of a [Moai]"],
+		"uniques": ["Can embark and move over Coasts and Oceans immediately", "+1 Sight when embarked", "+[10]% Strength if within [2] tiles of a [Moai]"],
 		"cities": ["Honolulu","Samoa","Tonga","Nuku Hiva","Raiatea","Aotearoa","Tahiti","Hilo","Te Wai Pounamu","Rapa Nui",
 			"Tuamotu","Rarotonga","Tuvalu","Tubuai","Mangareva","Oahu","Kiritimati","Ontong Java","Niue","Rekohu",
 			"Rakahanga","Bora Bora","Kailua","Uvea","Futuna","Rotuma","Tokelau","Lahaina","Bellona","Mungava","Tikopia",
