@@ -122,6 +122,9 @@ class BaseUnit : INamed, IConstruction {
     fun getRejectionReason(construction: CityConstructions): String {
         if (unitType.isWaterUnit() && !construction.cityInfo.getCenterTile().isCoastalTile())
             return "Can only build water units in coastal cities"
+        if (uniqueObjects.any { it.placeholderText == "Not displayed as an available construction unless [] is built"
+                            && !construction.containsBuildingOrEquivalent(it.params[0]) })
+            return "Should not be displayed"
         val civRejectionReason = getRejectionReason(construction.cityInfo.civInfo)
         if (civRejectionReason != "") return civRejectionReason
         return ""

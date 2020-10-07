@@ -233,7 +233,6 @@ class Building : NamedStats(), IConstruction {
                 || rejectionReason.startsWith("Requires")
                 || rejectionReason.startsWith("Consumes")
                 || rejectionReason == "Wonder is being built elsewhere"
-                || rejectionReason == "Should not be displayed"
     }
 
     fun getRejectionReason(construction: CityConstructions):String {
