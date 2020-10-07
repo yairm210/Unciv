@@ -186,7 +186,7 @@ object BattleDamage {
         if (carrierDefenceBonus > 0) modifiers["Armor Plating"] = carrierDefenceBonus
 
         for(unique in defender.unit.getMatchingUniques("+[]% defence in [] tiles")) {
-            if (tile.fitsUniqueFilter(unique.params[1]))
+            if (tile.matchesUniqueFilter(unique.params[1]))
                 modifiers["[${unique.params[1]}] defence"] = unique.params[0].toInt()
         }
 
@@ -229,7 +229,7 @@ object BattleDamage {
             modifiers[tile.baseTerrain] = 25
 
         for(unique in unit.getCivInfo().getMatchingUniques("+[]% Strength if within [] tiles of a []")) {
-            if (tile.getTilesInDistance(unique.params[1].toInt()).any { it.improvement == unique.params[2] })
+            if (tile.getTilesInDistance(unique.params[1].toInt()).any { it.matchesUniqueFilter(unique.params[2]) })
                 modifiers[unique.params[2]] = unique.params[0].toInt()
         }
 

@@ -27,7 +27,7 @@ open class TileInfo {
     // This will be called often - farm can be built on Hill and tundra if adjacent to fresh water
     // and farms on adjacent to fresh water tiles will have +1 additional Food after researching Civil Service
     @delegate:Transient
-    val isAdjacentToFreshwater: Boolean by lazy { fitsUniqueFilter("River") || fitsUniqueFilter("Fresh water") || neighbors.any { it.fitsUniqueFilter("Fresh water") } }
+    val isAdjacentToFreshwater: Boolean by lazy { matchesUniqueFilter("River") || matchesUniqueFilter("Fresh water") || neighbors.any { it.matchesUniqueFilter("Fresh water") } }
 
     var militaryUnit: MapUnit? = null
     var civilianUnit: MapUnit? = null
@@ -190,7 +190,7 @@ open class TileInfo {
             val civWideUniques = city.civInfo.getMatchingUniques("[] from every []")
             for (unique in cityWideUniques + civWideUniques) {
                 val tileType = unique.params[1]
-                if (fitsUniqueFilter(tileType)
+                if (matchesUniqueFilter(tileType)
                         || (resource == tileType && hasViewableResource(observingCiv))
                         || (tileType == "Strategic resource" && hasViewableResource(observingCiv) && getTileResource().resourceType == ResourceType.Strategic)
                         || (tileType == "Water resource" && isWater && hasViewableResource(observingCiv))
@@ -275,7 +275,7 @@ open class TileInfo {
                 val adjacent = unique.params[1]
                 val numberOfBonuses = neighbors.count {
                     it.improvement == adjacent
-                            || it.fitsUniqueFilter(adjacent)
+                            || it.matchesUniqueFilter(adjacent)
                             || it.roadStatus.name == adjacent
                 }
                 stats.add(Stats.parse(unique.params[0]).times(numberOfBonuses.toFloat()))
@@ -320,7 +320,7 @@ open class TileInfo {
         }
     }
 
-    fun fitsUniqueFilter(filter:String): Boolean {
+    fun matchesUniqueFilter(filter:String): Boolean {
         return filter == baseTerrain
                 || filter == Constants.hill && isHill()
                 || filter == "River" && isAdjacentToRiver()
