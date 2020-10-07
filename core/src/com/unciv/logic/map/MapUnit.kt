@@ -697,20 +697,18 @@ class MapUnit {
     }
 
     fun matchesCategory(category:String): Boolean {
-        val truncatedCategory = category.replace(" units", "")
-
-        if (truncatedCategory == type.name)
+        if (category == type.name)
             return true
-        if (truncatedCategory == name)
+        if (category == name)
             return true
 
-        if (truncatedCategory == "Wounded" || truncatedCategory == "wounded")
+        if (category == "Wounded" || category == "wounded units")
             return true
-        if ((truncatedCategory == "Land" || truncatedCategory == "land") && type.isLandUnit())
+        if ((category == "Land" || category == "land units") && type.isLandUnit())
             return true
-        if ((truncatedCategory == "Water" || truncatedCategory == "water") && type.isWaterUnit())
+        if ((category == "Water" || category == "water units") && type.isWaterUnit())
             return true
-        if ((truncatedCategory == "Air" || truncatedCategory == "air") && type.isAirUnit())
+        if ((category == "Air" || category == "air units") && type.isAirUnit())
             return true
 
         return false
