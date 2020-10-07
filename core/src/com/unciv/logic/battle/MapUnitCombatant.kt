@@ -14,6 +14,7 @@ class MapUnitCombatant(val unit: MapUnit) : ICombatant {
     override fun isDefeated(): Boolean = unit.health <= 0
     override fun isInvisible(): Boolean = unit.isInvisible()
     override fun canAttack(): Boolean = unit.canAttack()
+    override fun matchesCategory(category:String) = unit.matchesCategory(category)
 
     override fun takeDamage(damage: Int) {
         unit.health -= damage
@@ -39,11 +40,5 @@ class MapUnitCombatant(val unit: MapUnit) : ICombatant {
         return unit.name+" of "+unit.civInfo.civName
     }
 
-    override fun matchesCategory(category:String): Boolean {
-        if (unit.matchesCategory(category)) {
-            return true
-        }
 
-        return false
-    }
 }

@@ -20,6 +20,7 @@ class CityCombatant(val city: CityInfo) : ICombatant {
     override fun isDefeated(): Boolean = city.health==1
     override fun isInvisible(): Boolean = false
     override fun canAttack(): Boolean = (!city.attackedThisTurn)
+    override fun matchesCategory(category:String) = category == "City"
 
     override fun takeDamage(damage: Int) {
         city.health -= damage
@@ -60,14 +61,6 @@ class CityCombatant(val city: CityInfo) : ICombatant {
         strength += buildingsStrength
 
         return strength.roundToInt()
-    }
-
-    override fun matchesCategory(category:String): Boolean {
-        if (category == "City") {
-            return true
-        }
-
-        return false
     }
 
     override fun toString(): String {return city.name} // for debug
