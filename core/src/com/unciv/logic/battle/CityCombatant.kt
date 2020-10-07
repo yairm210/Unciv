@@ -62,5 +62,13 @@ class CityCombatant(val city: CityInfo) : ICombatant {
         return strength.roundToInt()
     }
 
+    override fun matchesCategory(category:String): Boolean {
+        if (category == "City") {
+            return true
+        }
+
+        return false
+    }
+
     override fun toString(): String {return city.name} // for debug
 }

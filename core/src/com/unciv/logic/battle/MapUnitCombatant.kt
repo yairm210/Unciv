@@ -38,4 +38,12 @@ class MapUnitCombatant(val unit: MapUnit) : ICombatant {
     override fun toString(): String {
         return unit.name+" of "+unit.civInfo.civName
     }
+
+    override fun matchesCategory(category:String): Boolean {
+        if (unit.matchesCategory(category)) {
+            return true
+        }
+
+        return false
+    }
 }

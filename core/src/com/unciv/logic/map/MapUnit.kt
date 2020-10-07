@@ -696,5 +696,24 @@ class MapUnit {
         }
     }
 
+    fun matchesCategory(category:String): Boolean {
+        val truncatedCategory = category.replace(" units", "").toLowerCase()
+
+        if (truncatedCategory == type.toString().toLowerCase())
+            return true
+        if (truncatedCategory == name.toLowerCase())
+            return true
+        if (truncatedCategory == "wounded" && health < 100)
+            return true
+        if (truncatedCategory == "land" && type.isLandUnit())
+            return true
+        if (truncatedCategory == "water" && type.isWaterUnit())
+            return true
+        if (truncatedCategory == "air" && type.isAirUnit())
+            return true
+
+        return false
+    }
+
     //endregion
 }

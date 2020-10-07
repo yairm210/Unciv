@@ -452,7 +452,7 @@
 			{
 				"name": "Populism",
 				"effect": "Wounded military units deal +25% damage",
-				"uniques": ["Wounded military units deal +25% damage"],
+				"uniques": ["[Wounded] units deal +[25]% damage"],
 				"row": 1,
 				"column": 1
 			},
