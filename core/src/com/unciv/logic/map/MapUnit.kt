@@ -702,7 +702,7 @@ class MapUnit {
         if (category == name)
             return true
 
-        if (category == "Wounded" || category == "wounded units")
+        if ((category == "Wounded" || category == "wounded units") && health < 100)
             return true
         if ((category == "Land" || category == "land units") && type.isLandUnit())
             return true
