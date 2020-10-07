@@ -246,7 +246,8 @@ class CityInfo {
     fun getGreatPersonMap():StatMap {
         val stats = StatMap()
         for((specialist, amount) in population.getNewSpecialists())
-            stats.add("Specialists", getRuleset().specialists[specialist]!!.greatPersonPoints.times(amount))
+            if (getRuleset().specialists.containsKey(specialist)) // To solve problems in total remake mods
+                stats.add("Specialists", getRuleset().specialists[specialist]!!.greatPersonPoints.times(amount))
 
         val buildingStats = Stats()
         for (building in cityConstructions.getBuiltBuildings())
