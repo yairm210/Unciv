@@ -233,6 +233,7 @@ class Building : NamedStats(), IConstruction {
                 || rejectionReason.startsWith("Requires")
                 || rejectionReason.startsWith("Consumes")
                 || rejectionReason == "Wonder is being built elsewhere"
+                || rejectionReason == "Should not be displayed"
     }
 
     fun getRejectionReason(construction: CityConstructions):String {
@@ -242,6 +243,11 @@ class Building : NamedStats(), IConstruction {
 
         val cityCenter = construction.cityInfo.getCenterTile()
         val civInfo = construction.cityInfo.civInfo
+
+        // This overrides the others
+        if(uniqueObjects.any { it.placeholderText=="Not displayed as an available construction unless [] is built"
+                        && !construction.containsBuildingOrEquivalent(it.params[0])} )
+            return "Should not be displayed"
 
         for(unique in uniqueObjects) when (unique.placeholderText) {
             "Must be on []" -> if (!cityCenter.fitsUniqueFilter(unique.params[0])) return unique.text
