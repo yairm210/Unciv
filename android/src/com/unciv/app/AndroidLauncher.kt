@@ -47,16 +47,16 @@ class AndroidLauncher : AndroidApplication() {
 	 * replaces them with the ones in the external folder!)
 	 */
 	private fun copyMods() {
-		// Mod directory in the internal app data (where Gdx.files.local looks)
-		val internalModsDir = File("${filesDir.path}/mods")
+        // Mod directory in the internal app data (where Gdx.files.local looks)
+        val internalModsDir = File("${filesDir.path}/mods")
 
-		// Mod directory in the shared app data (where the user can see and modify)
-		val externalModsDir = File("${getExternalFilesDir(null)?.path}/mods")
+        // Mod directory in the shared app data (where the user can see and modify)
+        val externalModsDir = File("${getExternalFilesDir(null)?.path}/mods")
 
-		// Copy external mod directory (with data user put in it) to internal (where it can be read)
-		if (!externalModsDir.exists()) externalModsDir.mkdirs() // this can fail sometimes, which is why we check if it exists again in the next line
-        if (externalModsDir.exists()) externalModsDir.copyRecursively(internalModsDir)
-	}
+        // Copy external mod directory (with data user put in it) to internal (where it can be read)
+        if (!externalModsDir.exists()) externalModsDir.mkdirs() // this can fail sometimes, which is why we check if it exists again in the next line
+        if (externalModsDir.exists()) externalModsDir.copyRecursively(internalModsDir, true)
+    }
 
     override fun onPause() {
         if (UncivGame.Companion.isCurrentInitialized()
