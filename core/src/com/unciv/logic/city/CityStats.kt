@@ -372,19 +372,19 @@ class CityStats {
 
     fun constructionFitsFilter(construction:IConstruction, filter:String): Boolean {
         return construction.name == filter
-                || (filter == "land units" && construction is BaseUnit && construction.unitType.isLandUnit())
-                || (filter == "naval units" && construction is BaseUnit && construction.unitType.isWaterUnit())
-                || (filter == "ranged units" && construction is BaseUnit && construction.unitType == UnitType.Ranged)
-                || (filter == "mounted units" && construction is BaseUnit && construction.unitType == UnitType.Mounted)
-                || (filter == "military units" && construction is BaseUnit && !construction.unitType.isCivilian())
-                || (filter == "melee units" && construction is BaseUnit && construction.unitType.isMelee())
-                || (filter == "Buildings" && construction is Building && !(construction.isWonder || construction.isNationalWonder))
-                || (filter == "Wonders" && construction is Building && (construction.isWonder || construction.isNationalWonder))
-                || (construction is Building && construction.uniques.contains(filter))
+                || filter == "land units" && construction is BaseUnit && construction.unitType.isLandUnit()
+                || filter == "naval units" && construction is BaseUnit && construction.unitType.isWaterUnit()
+                || filter == "ranged units" && construction is BaseUnit && construction.unitType == UnitType.Ranged
+                || filter == "mounted units" && construction is BaseUnit && construction.unitType == UnitType.Mounted
+                || filter == "military units" && construction is BaseUnit && !construction.unitType.isCivilian()
+                || filter == "melee units" && construction is BaseUnit && construction.unitType.isMelee()
+                || filter == "Buildings" && construction is Building && !(construction.isWonder || construction.isNationalWonder)
+                || filter == "Wonders" && construction is Building && (construction.isWonder || construction.isNationalWonder)
+                || construction is Building && construction.uniques.contains(filter)
     }
 
     fun isConnectedToCapital(roadType: RoadStatus): Boolean {
-        if (cityInfo.civInfo.cities .count() < 2) return false// first city!
+        if (cityInfo.civInfo.cities.count() < 2) return false// first city!
 
         // Railroad, or harbor from railroad
         if (roadType == RoadStatus.Railroad) return cityInfo.isConnectedToCapital { it.any { it.contains("Railroad") } }

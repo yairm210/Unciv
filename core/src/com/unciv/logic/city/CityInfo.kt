@@ -170,6 +170,11 @@ class CityInfo {
             val resource = getRuleset().tileResources[building.requiredResource]!!
             cityResources.add(resource, -1, "Buildings")
         }
+        for(unique in cityConstructions.builtBuildingUniqueMap.getUniques("Provides [] []")) { // E.G "Provides [1] [Iron]"
+            val resource = getRuleset().tileResources[unique.params[1]]
+            if (resource != null)
+                cityResources.add(resource, unique.params[0].toInt(), "Buildings")
+        }
 
         return cityResources
     }
@@ -180,9 +185,7 @@ class CityInfo {
         for (tileInfo in getTiles().filter { it.resource != null }) {
             val resource = tileInfo.getTileResource()
             val amount = getTileResourceAmount(tileInfo)
-            if (amount > 0) {
-                cityResources.add(resource, amount, "City-States")
-            }
+            if (amount > 0) cityResources.add(resource, amount, "City-States")
         }
         return cityResources
     }
