@@ -8,6 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.PopupAlert
 import com.unciv.logic.civilization.TechManager
 import com.unciv.models.UncivSound
 import com.unciv.models.ruleset.tech.Technology
@@ -173,8 +174,10 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo, centerOnTech: Tec
         lines.clear()
 
         for (tech in civInfo.gameInfo.ruleSet.technologies.values) {
-            if (!techNameToButton.containsKey(tech.name))
-                throw Exception("tech ${tech.name} not found!")
+            if (!techNameToButton.containsKey(tech.name)) {
+                ResponsePopup("Tech [${tech.name}] appears to be missing - perhaps two techs have the same row & column", this)
+                continue
+            }
             val techButton = techNameToButton[tech.name]!!
             for (prerequisite in tech.prerequisites) {
                 val prerequisiteButton = techNameToButton[prerequisite]!!
