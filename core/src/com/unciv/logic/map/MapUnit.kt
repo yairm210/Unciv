@@ -7,8 +7,6 @@ import com.unciv.UncivGame
 import com.unciv.logic.automation.UnitAutomation
 import com.unciv.logic.automation.WorkerAutomation
 import com.unciv.logic.civilization.CivilizationInfo
-import com.unciv.logic.map.action.MapUnitAction
-import com.unciv.logic.map.action.StringAction
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.Unique
 import com.unciv.models.ruleset.unit.BaseUnit
@@ -46,23 +44,7 @@ class MapUnit {
     var currentMovement: Float = 0f
     var health:Int = 100
 
-    // todo: I see this is being serialized, should it be Transient?
-    var mapUnitAction : MapUnitAction? = null
-
-    var action: String? // work, automation, fortifying, I dunno what.
-        // getter and setter for compatibility: make sure string-based actions still work
-        get() {
-            val mapUnitActionVal = mapUnitAction
-            if (mapUnitActionVal is StringAction)
-                return mapUnitActionVal.action
-            // any other unit action does count as a unit action, thus is not null. The actual logic is not based on an action string, but realized by extending MapUnitAction
-            if (mapUnitActionVal != null)
-                return ""
-
-            return null // unit has no action
-        }
-        set(value) { mapUnitAction = if (value == null) null else StringAction(this, value) } // wrap traditional string-encoded actions into StringAction
-
+    var action: String?=null // work, automation, fortifying, I dunno what.
 
     var attacksThisTurn = 0
     var promotions = UnitPromotions()
@@ -302,7 +284,6 @@ class MapUnit {
     //region state-changing functions
     fun setTransients(ruleset: Ruleset) {
         promotions.unit = this
-        mapUnitAction?.unit = this
         baseUnit = ruleset.units[name]
                 ?: throw java.lang.Exception("Unit $name is not found!")
         updateUniques()
@@ -320,12 +301,10 @@ class MapUnit {
         val enemyUnitsInWalkingDistance = movement.getDistanceToTiles().keys
                 .filter { it.militaryUnit != null && civInfo.isAtWarWith(it.militaryUnit!!.civInfo) }
         if (enemyUnitsInWalkingDistance.isNotEmpty()) {
-            if (mapUnitAction?.shouldStopOnEnemyInSight() == true)
-                mapUnitAction = null
+            if (action?.startsWith("moveTo") == true) // stop on enemy in sight
+                action = null
             return  // Don't you dare move.
         }
-
-        mapUnitAction?.doPreTurnAction()
 
         val currentTile = getTile()
         if (isMoving()) {
