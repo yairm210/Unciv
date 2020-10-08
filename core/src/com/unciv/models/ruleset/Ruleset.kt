@@ -231,6 +231,7 @@ object RulesetCache :HashMap<String,Ruleset>() {
 
         for (modFolder in modsHandles) {
             if (modFolder.name().startsWith('.')) continue
+            if (!modFolder.isDirectory) continue
             try {
                 val modRuleset = Ruleset()
                 modRuleset.load(modFolder.child("jsons"), printOutput)
