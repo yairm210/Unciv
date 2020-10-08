@@ -1,3 +1,17 @@
+## 3.11.2
+
+Find Player, Find Natural Wonder and Acquire Great Person quests implemented - By r3versi
+
+Android now handles internally-downloaded and externally-given mods together wel
+
+Multiple small changes to make life easier for modders
+
+Era-specific city tiles for Ancient, Classical and Medieval eras
+
+Fixed Polynesia's unique - By givehub99
+
+Translation updates
+
 ## 3.11.1
 
 MODDABLE SPECIALISTS ARE GO!

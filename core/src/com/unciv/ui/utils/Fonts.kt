@@ -140,6 +140,7 @@ object Fonts {
 
     const val food = "\uD83C\uDF4E"
     const val gold = "\uD83D\uDCB0"
+
     const val turn = '⏳'
     const val strength = "\uD83D\uDCAA"
     const val rangedStrength = "\uD83C\uDFF9"
