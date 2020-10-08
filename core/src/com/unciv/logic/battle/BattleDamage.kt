@@ -45,18 +45,13 @@ object BattleDamage {
         val civInfo = combatant.getCivInfo()
         if (combatant is MapUnitCombatant) {
             for (BDM in getBattleDamageModifiersOfUnit(combatant.unit)) {
-                if (BDM.vs == enemy.getUnitType().toString())
+                if (enemy.matchesCategory(BDM.vs)) {
                     addToModifiers(BDM)
-                if (BDM.vs == "wounded units" && enemy is MapUnitCombatant && enemy.getHealth() < 100)
-                    addToModifiers(BDM)
-                if (BDM.vs == "land units" && enemy.getUnitType().isLandUnit())
-                    addToModifiers(BDM)
-                if (BDM.vs == "water units" && enemy.getUnitType().isWaterUnit())
-                    addToModifiers(BDM)
-                if (BDM.vs == "air units" && enemy.getUnitType().isAirUnit())
-                    addToModifiers(BDM)
+                }
+
             }
 
+            // As of 3.11.1 This is to be deprecated and converted to "Bonus vs x y%" - keeping it here so that mods with this can still work for now
             for (unique in combatant.unit.getMatchingUniques("+[]% Strength vs []")) {
                 if (unique.params[1] == enemy.getName())
                     modifiers.add("vs [${unique.params[1]}]", unique.params[0].toInt())
@@ -70,8 +65,14 @@ object BattleDamage {
             if (civHappiness < 0)
                 modifiers["Unhappiness"] = max(2 * civHappiness, -90) // otherwise it could exceed -100% and start healing enemy units...
 
+            // As of 3.11.0 This is to be deprecated and converted to "[Wounded] units deal +[25]% damage" - keeping it here so that mods with this can still work for now
             if (civInfo.hasUnique("Wounded military units deal +25% damage") && combatant.getHealth() < 100) {
                 modifiers["Wounded unit"] = 25
+            }
+            for (unique in civInfo.getMatchingUniques("[] units deal +[]% damage")) {
+                if (combatant.matchesCategory(unique.params[0])) {
+                    modifiers.add(unique.params[0], unique.params[1].toInt())
+                }
             }
 
             if (civInfo.hasUnique("+15% combat strength for melee units which have another military unit in an adjacent tile")

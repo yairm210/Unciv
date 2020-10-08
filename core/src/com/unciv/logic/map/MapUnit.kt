@@ -696,5 +696,23 @@ class MapUnit {
         }
     }
 
+    fun matchesCategory(category:String): Boolean {
+        if (category == type.name)
+            return true
+        if (category == name)
+            return true
+
+        if ((category == "Wounded" || category == "wounded units") && health < 100)
+            return true
+        if ((category == "Land" || category == "land units") && type.isLandUnit())
+            return true
+        if ((category == "Water" || category == "water units") && type.isWaterUnit())
+            return true
+        if ((category == "Air" || category == "air units") && type.isAirUnit())
+            return true
+
+        return false
+    }
+
     //endregion
 }
