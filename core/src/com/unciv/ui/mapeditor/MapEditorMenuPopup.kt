@@ -51,24 +51,27 @@ class MapEditorMenuPopup(var mapEditorScreen: MapEditorScreen): Popup(mapEditorS
 
     private fun Popup.addClearCurrentMapButton() {
         val clearCurrentMapButton = "Clear current map".toTextButton()
+
         clearCurrentMapButton.onClick {
-            for (tileGroup in mapEditorScreen.mapHolder.tileGroups.values) {
-                val tile = tileGroup.tileInfo
-                tile.baseTerrain = Constants.ocean
-                tile.terrainFeature = null
-                tile.naturalWonder = null
-                tile.hasBottomRiver=false
-                tile.hasBottomLeftRiver=false
-                tile.hasBottomRightRiver=false
-                tile.resource = null
-                tile.improvement = null
-                tile.improvementInProgress = null
-                tile.roadStatus = RoadStatus.None
+            YesNoPopup("Are you sure you want to clear the entire map?", {
+                for (tileGroup in mapEditorScreen.mapHolder.tileGroups.values) {
+                    val tile = tileGroup.tileInfo
+                    tile.baseTerrain = Constants.ocean
+                    tile.terrainFeature = null
+                    tile.naturalWonder = null
+                    tile.hasBottomRiver = false
+                    tile.hasBottomLeftRiver = false
+                    tile.hasBottomRightRiver = false
+                    tile.resource = null
+                    tile.improvement = null
+                    tile.improvementInProgress = null
+                    tile.roadStatus = RoadStatus.None
 
-                tile.setTransients()
+                    tile.setTransients()
 
-                tileGroup.update()
-            }
+                    tileGroup.update()
+                }
+            }, mapEditorScreen).open()
         }
         add(clearCurrentMapButton).row()
     }
