@@ -27,6 +27,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
     val militaryUnits = civUnits.filter { !it.type.isCivilian()}.count()
     val workers = civUnits.filter { it.hasUnique(Constants.workerUnique) }.count().toFloat()
     val cities = civInfo.cities.size
+    val allTechsAreResearched = civInfo.tech.getNumberOfTechsResearched() >= civInfo.gameInfo.ruleSet.technologies.size
 
     val buildableWorkboatUnits = cityInfo.cityConstructions.getConstructableUnits()
             .filter { it.uniques.contains("May create improvements on water resources") }
@@ -78,7 +79,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
         val theChosenOne: String
         if (relativeCostEffectiveness.isEmpty()) { // choose one of the special constructions instead
             // add science!
-            if (PerpetualConstruction.science.isBuildable(cityConstructions))
+            if (PerpetualConstruction.science.isBuildable(cityConstructions) && !allTechsAreResearched)
                 theChosenOne = "Science"
             else if (PerpetualConstruction.gold.isBuildable(cityConstructions))
                 theChosenOne = "Gold"
@@ -170,12 +171,13 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
     }
 
     private fun getWonderPriority(wonder: Building): Float {
-        if(wonder.uniques.contains("Enables construction of Spaceship parts"))
+        if (wonder.uniques.contains("Enables construction of Spaceship parts"))
             return 2f
         if (preferredVictoryType == VictoryType.Cultural
                 && wonder.name in listOf("Sistine Chapel", "Eiffel Tower", "Cristo Redentor", "Neuschwanstein", "Sydney Opera House"))
             return 3f
         if (wonder.isStatRelated(Stat.Science)) {
+            if (allTechsAreResearched) return .5f
             if (preferredVictoryType == VictoryType.Scientific) return 1.5f
             else return 1.3f
         }
@@ -244,8 +246,9 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
     }
 
     private fun addScienceBuildingChoice() {
+        if (allTechsAreResearched) return
         val scienceBuilding = buildableNotWonders.asSequence()
-                .filter { it.isStatRelated(Stat.Science) || it.name=="Library" } // only stat related in unique
+                .filter { it.isStatRelated(Stat.Science) || it.name == "Library" } // only stat related in unique
                 .minBy { it.cost }
         if (scienceBuilding != null) {
             var modifier = 1.1f
