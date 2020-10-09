@@ -45,6 +45,12 @@ class CityButton(val city: CityInfo, private val tileGroup: WorldTileGroup): Tab
         iconTable = getIconTable()
         add(iconTable).row()
 
+        if (city.civInfo.isCityState()) {
+            val diplomacyManager = city.civInfo.getDiplomacyManager(worldScreen.viewingCiv)
+            val influenceBar = ImageGetter.getInfluenceBar(diplomacyManager.influence, diplomacyManager.relationshipLevel())
+            add(influenceBar).row()
+        }
+
         pack()
         setOrigin(Align.center)
         centerX(tileGroup)
