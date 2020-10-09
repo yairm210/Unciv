@@ -258,63 +258,6 @@ object ImageGetter {
         return advancementGroup
     }
 
-    fun getInfluenceBar(influence: Float, relationshipLevel: RelationshipLevel, influenceBarSize: Float = 100f): Table {
-        val normalizedInfluence = max(-60f, min(influence, 60f)) / 30f
-
-        val color = when (relationshipLevel) {
-            RelationshipLevel.Unforgivable -> Color.RED
-            RelationshipLevel.Enemy -> Color.ORANGE
-            RelationshipLevel.Neutral, RelationshipLevel.Friend -> Color.LIME
-            RelationshipLevel.Ally -> Color.SKY
-            else -> Color.DARK_GRAY
-        }
-
-        val percentages = arrayListOf(0f, 0f, 0f, 0f)
-        when {
-            normalizedInfluence < -1f -> {
-                percentages[0] = -normalizedInfluence - 1f
-                percentages[1] = 1f
-            }
-            normalizedInfluence < 0f -> percentages[1] = -normalizedInfluence
-            normalizedInfluence < 1f -> percentages[2] = normalizedInfluence
-            else -> {
-                percentages[2] = 1f
-                percentages[3] = (normalizedInfluence - 1f)
-            }
-        }
-
-        fun getBarPiece(percentage: Float, color: Color, negative: Boolean): Table{
-            val barPieceSize = influenceBarSize / 4f
-            val barPiece = Table()
-            val full = getWhiteDot()
-            val empty = getWhiteDot()
-
-            full.color = color
-            empty.color = Color.DARK_GRAY
-
-            if (negative) {
-                barPiece.add(empty).size((1f - percentage) * barPieceSize, 5f)
-                barPiece.add(full).size(percentage * barPieceSize, 5f)
-            } else {
-                barPiece.add(full).size(percentage * barPieceSize, 5f)
-                barPiece.add(empty).size((1f - percentage) * barPieceSize, 5f)
-            }
-
-            return barPiece
-        }
-
-        val influenceBar = Table().apply {
-            defaults().pad(1f)
-            setSize(influenceBarSize, 5f)
-            background = getBackground(Color.BLACK)
-        }
-
-        for (i in 0..3)
-            influenceBar.add(getBarPiece(percentages[i], color, i < 2))
-
-        return influenceBar
-    }
-
     fun getHealthBar(currentHealth: Float, maxHealth: Float, healthBarSize: Float): Table {
         val healthPercent = currentHealth / maxHealth
         val healthBar = Table()

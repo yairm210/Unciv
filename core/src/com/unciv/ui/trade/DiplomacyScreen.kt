@@ -18,6 +18,7 @@ import com.unciv.logic.trade.TradeType
 import com.unciv.models.ruleset.ModOptionsConstants
 import com.unciv.models.ruleset.Quest
 import com.unciv.models.translations.tr
+import com.unciv.ui.tilegroups.CityButton
 import com.unciv.ui.utils.*
 import kotlin.math.floor
 import kotlin.math.roundToInt
@@ -391,7 +392,14 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
             else -> Color.RED
         }
 
-        relationshipTable.add(relationshipText.toLabel(relationshipColor))
+        relationshipTable.add(relationshipText.toLabel(relationshipColor)).row()
+        if (otherCivDiplomacyManager.civInfo.isCityState())
+            relationshipTable.add(
+                    CityButton.getInfluenceBar(
+                            otherCivDiplomacyManager.influence,
+                            otherCivDiplomacyManager.relationshipLevel(),
+                            200f, 10f)
+            ).colspan(2).pad(5f)
         return relationshipTable
     }
 
