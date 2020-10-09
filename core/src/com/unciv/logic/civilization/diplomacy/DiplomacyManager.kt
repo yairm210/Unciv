@@ -90,7 +90,7 @@ class DiplomacyManager() {
      *  Won't go below [MINIMUM_INFLUENCE] */
     var influence = 0f
         set(value) { field = max(value, MINIMUM_INFLUENCE) }
-
+        get() = if(civInfo.isAtWarWith(otherCiv())) MINIMUM_INFLUENCE else field
     /** For city-states. Resting point is the value of Influence at which it ceases changing by itself */
     var restingPoint = 0f
 
@@ -137,10 +137,9 @@ class DiplomacyManager() {
             return otherCiv().getDiplomacyManager(civInfo).relationshipLevel()
 
         if(civInfo.isCityState()) {
-            if(influence <= -60) return RelationshipLevel.Unforgivable
-            if(influence <= -30 || civInfo.isAtWarWith(otherCiv())) return RelationshipLevel.Enemy
-
-            if(influence >= 60) return RelationshipLevel.Ally
+            if(influence <= -30 || civInfo.isAtWarWith(otherCiv())) return RelationshipLevel.Unforgivable
+            if(influence < 0) return RelationshipLevel.Enemy
+            if(influence >= 60 && civInfo.getAllyCiv() == otherCivName) return RelationshipLevel.Ally
             if(influence >= 30) return RelationshipLevel.Friend
             return RelationshipLevel.Neutral
         }
