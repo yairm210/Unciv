@@ -307,6 +307,11 @@ open class TileInfo {
             "Cannot be built on bonus resource" in improvement.uniques && resource != null
                     && getTileResource().resourceType == ResourceType.Bonus -> false
             improvement.terrainsCanBeBuiltOn.contains(topTerrain.name) -> true
+            improvement.uniqueObjects.filter { it.placeholderText == "Must be next to []" }.any {
+                val filter = it.params[0]
+                if (filter == "River") return@any !isAdjacentToRiver()
+                else return@any !neighbors.any { it.matchesUniqueFilter(filter) }
+            } -> false
             improvement.name == "Road" && roadStatus == RoadStatus.None -> true
             improvement.name == "Railroad" && this.roadStatus != RoadStatus.Railroad -> true
             improvement.name == "Remove Road" && this.roadStatus == RoadStatus.Road -> true

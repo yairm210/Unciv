@@ -138,30 +138,26 @@ class Building : NamedStats(), IConstruction {
 
     fun getStats(civInfo: CivilizationInfo?): Stats {
         val stats = this.clone()
-        if(civInfo != null) {
-            val adoptedPolicies = civInfo.policies.adoptedPolicies
+        if (civInfo != null) {
             val baseBuildingName = getBaseBuilding(civInfo.gameInfo.ruleSet).name
 
-            for(unique in civInfo.getMatchingUniques("[] from every []")) {
+            for (unique in civInfo.getMatchingUniques("[] from every []")) {
                 if (unique.params[1] != baseBuildingName) continue
                 stats.add(Stats.parse(unique.params[0]))
             }
 
-            // todo policy
-            if (adoptedPolicies.contains("Humanism") && hashSetOf("University", "Observatory", "Public School").contains(baseBuildingName ))
-                stats.happiness += 1f
+            for (unique in uniqueObjects)
+                if (unique.placeholderText == "[] with []" && civInfo.hasResource(unique.params[1]) && Stats.isStats(unique.params[0]))
+                    stats.add(Stats.parse(unique.params[0]))
 
-            if(!isWonder)
-                for(unique in civInfo.getMatchingUniques("[] from all [] buildings")){
-                    if(isStatRelated(Stat.valueOf(unique.params[1])))
+            if (!isWonder)
+                for (unique in civInfo.getMatchingUniques("[] from all [] buildings")) {
+                    if (isStatRelated(Stat.valueOf(unique.params[1])))
                         stats.add(Stats.parse(unique.params[0]))
                 }
             else
-                for(unique in civInfo.getMatchingUniques("[] from every Wonder"))
+                for (unique in civInfo.getMatchingUniques("[] from every Wonder"))
                     stats.add(Stats.parse(unique.params[0]))
-
-            if (adoptedPolicies.contains("Police State") && baseBuildingName == "Courthouse")
-                stats.happiness += 3
 
         }
         return stats

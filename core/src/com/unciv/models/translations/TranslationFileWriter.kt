@@ -199,9 +199,11 @@ object TranslationFileWriter {
 
                 val parameters = string.getPlaceholderParameters()
                 var stringToTranslate = string
+
+                val existingParameterNames = HashSet<String>()
                 if (parameters.any()){
                     for(parameter in parameters) {
-                        val parameterName = when {
+                        var parameterName = when {
                             parameter.toIntOrNull() != null -> "amount"
                             Stat.values().any { it.name == parameter } -> "stat"
                             RulesetCache.getBaseRuleset().terrains.containsKey(parameter) -> "terrain"
@@ -217,6 +219,13 @@ object TranslationFileWriter {
                             Stats.isStats(parameter) -> "stats"
                             else -> "param"
                         }
+                        if (parameterName in existingParameterNames) {
+                            var i = 2
+                            while (parameterName + i in existingParameterNames) i++
+                            parameterName = parameterName + i
+                        }
+                        existingParameterNames += parameterName
+
                         stringToTranslate = stringToTranslate.replace(parameter, parameterName)
                     }
                 }

@@ -67,6 +67,61 @@ object ImageGetter {
         }
     }
 
+
+    /**
+     * Colors a multilayer image and returns it as a list of layers (Image).
+     *
+     * @param   baseFileName    The filename of the base image.
+     *                              For example: TileSets/FantasyHex/Units/Warrior
+     *
+     * @param   colors          The list of colors, one per layer. No coloring is applied to layers
+     *                              whose color is null.
+     *
+     * @return  The list of layers colored. The layers are sorted by NUMBER (see example below) order
+     *              and colors are applied, one per layer, in the same order. If a color is null, no
+     *              coloring is performed on such layer (it stays as it is). If there are less colors
+     *              than layers, the last layers are not colored. Defaults to an empty list if there
+     *              is no layer corresponding to baseFileName.
+     *
+     * Example:
+     *      getLayeredImageColored("TileSets/FantasyHex/Units/Warrior", null, Color.GOLD, Color.RED)
+     *
+     *      All images in the atlas that match the pattern "TileSets/FantasyHex/Units/Warrior" or
+     *      "TileSets/FantasyHex/Units/Warrior-NUMBER" are retrieved. NUMBERs must start from 1 and
+     *      be incremented by 1 per layer. If the n-th NUMBER is missing, the (n-1)-th layer is the
+     *      last one retrieved:
+     *      Given the layer names:
+     *          - TileSets/FantasyHex/Units/Warrior
+     *          - TileSets/FantasyHex/Units/Warrior-1
+     *          - TileSets/FantasyHex/Units/Warrior-2
+     *          - TileSets/FantasyHex/Units/Warrior-4
+     *      Only the base layer and layers 1 and 2 are retrieved.
+     *      The method returns then a list in which first layer has unmodified colors, the second is
+     *      colored in GOLD and the third in RED.
+     */
+    fun getLayeredImageColored(baseFileName: String, vararg colors: Color?): ArrayList<Image> {
+        if (!imageExists(baseFileName))
+            return arrayListOf()
+
+        val layerNames = mutableListOf(baseFileName)
+        val layerList = arrayListOf<Image>()
+
+        var i = 1
+        while (imageExists("$baseFileName-$i")) {
+            layerNames.add("$baseFileName-$i")
+            ++i
+        }
+
+        for (i in layerNames.indices) {
+            val image = getImage(layerNames[i])
+            if (i < colors.size && colors[i] != null)
+                image.color = colors[i]
+            layerList.add(image)
+        }
+
+        return layerList
+    }
+
     /*fun refreshAtlas() {
         atlas.dispose() // To avoid OutOfMemory exceptions
         atlas = TextureAtlas("game.atlas")

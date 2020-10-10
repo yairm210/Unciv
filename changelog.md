@@ -2,7 +2,7 @@
 
 Find Player, Find Natural Wonder and Acquire Great Person quests implemented - By r3versi
 
-Android now handles internally-downloaded and externally-given mods together wel
+Android now handles internally-downloaded and externally-given mods together well
 
 Multiple small changes to make life easier for modders
 
