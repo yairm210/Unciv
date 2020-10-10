@@ -168,18 +168,23 @@ class BaseUnit : INamed, IConstruction {
         if (this.unitType.isCivilian()) return true // tiny optimization makes save files a few bytes smaller
 
         var XP = construction.getBuiltBuildings().sumBy { it.xpForNewUnits }
+
+        // As of 3.11.2 This is to be deprecated and converted to "New [] units start with [] Experience" - keeping it here to that mods with this can still work for now
         for (unique in civInfo.getMatchingUniques("New military units start with [] Experience"))
             XP += unique.params[0].toInt()
+
+        for (unique in construction.cityInfo.cityConstructions.builtBuildingUniqueMap.getUniques("New [] units start with [] Experience in this city")
+                + civInfo.getMatchingUniques("New [] units start with [] Experience")) {
+            if (unit.matchesCategory(unique.params[0]))
+                XP += unique.params[1].toInt()
+        }
         unit.promotions.XP = XP
 
         for (unique in construction.cityInfo.cityConstructions.builtBuildingUniqueMap.getUniques("All newly-trained [] units in this city receive the [] promotion")) {
             val filter = unique.params[0]
             val promotion = unique.params[1]
-            if (unit.name == filter
-                    || (filter == "relevant" && civInfo.gameInfo.ruleSet.unitPromotions.values.any { unit.type.toString() in it.unitTypes && it.name == promotion })
-                    || unit.type.name == filter
-                    || (filter == "non-air" && !unit.type.isAirUnit())
-                    || uniques.contains(filter))
+
+            if (unit.matchesCategory(filter) || (filter == "relevant" && civInfo.gameInfo.ruleSet.unitPromotions.values.any { unit.type.toString() in it.unitTypes && it.name == promotion }))
                 unit.promotions.addPromotion(promotion, isFree = true)
         }
 

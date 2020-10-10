@@ -227,19 +227,19 @@
 	// Aircraft Carrier
 	{
 		"name": "Armor Plating I",
-		"effect": "+25% Combat Bonus when defending",
+		"effect": "Bonus as Defender [25]%",
 		"unitTypes": ["WaterAircraftCarrier"]
 	},
 	{
 		"name": "Armor Plating II",
 		"prerequisites": ["Armor Plating I"],
-		"effect": "+25% Combat Bonus when defending",
+		"effect": "Bonus as Defender [25]%",
 		"unitTypes": ["WaterAircraftCarrier"]
 	},
 	{
 		"name": "Armor Plating III",
 		"prerequisites": ["Armor Plating II"],
-		"effect": "+25% Combat Bonus when defending",
+		"effect": "Bonus as Defender [25]%",
 		"unitTypes": ["WaterAircraftCarrier"]
 	},
 	{
