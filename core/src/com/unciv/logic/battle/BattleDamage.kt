@@ -53,7 +53,7 @@ object BattleDamage {
 
             // As of 3.11.1 This is to be deprecated and converted to "Bonus vs x y%" - keeping it here so that mods with this can still work for now
             for (unique in combatant.unit.getMatchingUniques("+[]% Strength vs []")) {
-                if (unique.params[1] == enemy.getName())
+                if (enemy.matchesCategory(unique.params[1]))
                     modifiers.add("vs [${unique.params[1]}]", unique.params[0].toInt())
             }
 

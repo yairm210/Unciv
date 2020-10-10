@@ -342,18 +342,19 @@ class EmpireOverviewScreen(private var viewingPlayer:CivilizationInfo, defaultPa
                 game.worldScreen.mapHolder.setCenterPosition(unit.currentTile.position)
             }
             table.add(button).left()
-            val mapUnitAction = unit.mapUnitAction
-            if (mapUnitAction != null) table.add(if(mapUnitAction.name().startsWith("Fortify")) "Fortify".tr() else mapUnitAction.name().tr()) else table.add()
-            if(baseUnit.strength>0) table.add(baseUnit.strength.toString()) else table.add()
-            if(baseUnit.rangedStrength>0) table.add(baseUnit.rangedStrength.toString()) else table.add()
-            table.add(DecimalFormat("0.#").format(unit.currentMovement)+"/"+unit.getMaxMovement())
-            val closestCity = unit.getTile().getTilesInDistance(3).firstOrNull{it.isCityCenter()}
-            if (closestCity!=null) table.add(closestCity.getCity()!!.name.tr()) else table.add()
+            val mapUnitAction = unit.action
+            if (mapUnitAction == null) table.add()
+            else table.add(if (mapUnitAction.startsWith("Fortify")) "Fortify".tr() else mapUnitAction.tr())
+            if (baseUnit.strength > 0) table.add(baseUnit.strength.toString()) else table.add()
+            if (baseUnit.rangedStrength > 0) table.add(baseUnit.rangedStrength.toString()) else table.add()
+            table.add(DecimalFormat("0.#").format(unit.currentMovement) + "/" + unit.getMaxMovement())
+            val closestCity = unit.getTile().getTilesInDistance(3).firstOrNull { it.isCityCenter() }
+            if (closestCity != null) table.add(closestCity.getCity()!!.name.tr()) else table.add()
             val promotionsTable = Table()
             val promotionsForUnit = unit.civInfo.gameInfo.ruleSet.unitPromotions.values.filter { unit.promotions.promotions.contains(it.name) }     // force same sorting as on picker (.sorted() would be simpler code, but...)
-            for(promotion in promotionsForUnit)
+            for (promotion in promotionsForUnit)
                 promotionsTable.add(ImageGetter.getPromotionIcon(promotion.name))
-            if (unit.promotions.canBePromoted()) promotionsTable.add(ImageGetter.getImage("OtherIcons/Star").apply { color= Color.GOLDENROD }).size(24f).padLeft(8f)
+            if (unit.promotions.canBePromoted()) promotionsTable.add(ImageGetter.getImage("OtherIcons/Star").apply { color = Color.GOLDENROD }).size(24f).padLeft(8f)
             if (unit.canUpgrade()) promotionsTable.add(ImageGetter.getUnitIcon(unit.getUnitToUpgradeTo().name, Color.GREEN)).size(28f).padLeft(8f)
             promotionsTable.onClick {
                 if (unit.promotions.canBePromoted() || unit.promotions.promotions.isNotEmpty()) {

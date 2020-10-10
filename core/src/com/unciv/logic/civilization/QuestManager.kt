@@ -2,6 +2,7 @@ package com.unciv.logic.civilization
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.math.Vector2
+import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
 import com.unciv.logic.map.TileInfo
@@ -248,6 +249,11 @@ class QuestManager {
             var data2 = ""
 
             when (quest.name) {
+                QuestName.ClearBarbarianCamp.value -> {
+                    val camp = getBarbarianEncampmentForQuest(assignee)!!
+                    data1 = camp.position.x.toInt().toString()
+                    data2 = camp.position.y.toInt().toString()
+                }
                 QuestName.ConnectResource.value -> data1 = getResourceForQuest(assignee)!!.name
                 QuestName.ConstructWonder.value -> data1 = getWonderToBuildForQuest(assignee)!!.name
                 QuestName.GreatPerson.value -> data1 = getGreatPersonForQuest(assignee)!!.name
@@ -287,6 +293,7 @@ class QuestManager {
             return false
 
         return when (quest.name) {
+            QuestName.ClearBarbarianCamp.value -> getBarbarianEncampmentForQuest(challenger) != null
             QuestName.Route.value -> civInfo.hasEverBeenFriendWith(challenger) && !civInfo.isCapitalConnectedToCity(challenger.getCapital())
             QuestName.ConnectResource.value -> civInfo.hasEverBeenFriendWith(challenger) && getResourceForQuest(challenger) != null
             QuestName.ConstructWonder.value -> civInfo.hasEverBeenFriendWith(challenger) && getWonderToBuildForQuest(challenger) != null
@@ -315,6 +322,7 @@ class QuestManager {
     private fun isObsolete(assignedQuest: AssignedQuest): Boolean {
         val assignee = civInfo.gameInfo.getCivilization(assignedQuest.assignee)
         return when (assignedQuest.questName) {
+            QuestName.ClearBarbarianCamp.value -> civInfo.gameInfo.tileMap[assignedQuest.data1.toInt(), assignedQuest.data2.toInt()].improvement != Constants.barbarianEncampment
             QuestName.ConstructWonder.value -> civInfo.gameInfo.getCities().any { it.civInfo != assignee && it.cityConstructions.isBuilt(assignedQuest.data1) }
             QuestName.FindPlayer.value -> civInfo.gameInfo.getCivilization(assignedQuest.data1).isDefeated()
             else -> false
@@ -340,7 +348,37 @@ class QuestManager {
         }
     }
 
+    /**
+     * Gets notified a barbarian camp in [location] has been cleared by [civInfo].
+     * Since [QuestName.ClearBarbarianCamp] is a global quest, it could have been assigned to
+     * multiple civilizations, so after this notification all matching quests are removed.
+     */
+    fun barbarianCampCleared(civInfo: CivilizationInfo, location: Vector2) {
+        val matchingQuests = assignedQuests.asSequence()
+                .filter { it.questName == QuestName.ClearBarbarianCamp.value }
+                .filter { it.data1.toFloat() == location.x && it.data2.toFloat() == location.y }
+
+        val winningQuest = matchingQuests.filter { it.assignee == civInfo.civName }.firstOrNull()
+        if (winningQuest != null)
+            giveReward(winningQuest)
+
+        assignedQuests.removeAll(matchingQuests)
+    }
+
     //region get-quest-target
+    /**
+     * Returns a random [TileInfo] containing a Barbarian encampment within 8 tiles of [civInfo]
+     * to be destroyed
+     */
+    private fun getBarbarianEncampmentForQuest(challenger: CivilizationInfo): TileInfo? {
+        val encampments = civInfo.getCapital().getCenterTile().getTilesInDistance(8)
+                .filter { it.improvement == Constants.barbarianEncampment }.toList()
+
+        if (encampments.isNotEmpty())
+            return encampments.random()
+
+        return null
+    }
 
     /**
      * Returns a random resource to be connected to the [challenger]'s trade route as a quest.
@@ -456,6 +494,10 @@ class AssignedQuest(val questName: String = "",
         val game = UncivGame.Current
 
         when (questName) {
+            QuestName.ClearBarbarianCamp.value -> {
+                game.setWorldScreen()
+                game.worldScreen.mapHolder.setCenterPosition(Vector2(data1.toFloat(), data2.toFloat()), selectUnit = false)
+            }
             QuestName.Route.value -> {
                 game.setWorldScreen()
                 game.worldScreen.mapHolder.setCenterPosition(gameInfo.getCivilization(assigner).getCapital().location, selectUnit = false)

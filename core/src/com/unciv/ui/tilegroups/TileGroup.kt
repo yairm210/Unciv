@@ -53,9 +53,9 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) 
     protected var naturalWonderImage: Image? = null
 
     protected var pixelMilitaryUnitImageLocation = ""
-    protected var pixelMilitaryUnitImage: Image? = null
+    protected var pixelMilitaryUnitGroup = Group().apply { isTransform = false; setSize(groupSize, groupSize) }
     protected var pixelCivilianUnitImageLocation = ""
-    protected var pixelCivilianUnitImage: Image? = null
+    protected var pixelCivilianUnitGroup = Group().apply { isTransform = false; setSize(groupSize, groupSize) }
 
     val miscLayerGroup = Group().apply { isTransform = false; setSize(groupSize, groupSize) }
     var resourceImage: Actor? = null
@@ -92,6 +92,9 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) 
         this.addActor(unitLayerGroup)
         this.addActor(cityButtonLayerGroup)
         this.addActor(circleCrosshairFogLayerGroup)
+
+        terrainFeatureLayerGroup.addActor(pixelMilitaryUnitGroup)
+        terrainFeatureLayerGroup.addActor(pixelCivilianUnitGroup)
 
         updateTileImage(null)
 
@@ -597,15 +600,16 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) 
         }
 
         if (pixelMilitaryUnitImageLocation != newImageLocation) {
-            pixelMilitaryUnitImage?.remove()
-            pixelMilitaryUnitImage = null
+            pixelMilitaryUnitGroup.clear()
             pixelMilitaryUnitImageLocation = newImageLocation
 
             if (newImageLocation != "" && ImageGetter.imageExists(newImageLocation)) {
-                val pixelUnitImage = ImageGetter.getImage(newImageLocation)
-                terrainFeatureLayerGroup.addActor(pixelUnitImage)
-                setHexagonImageSize(pixelUnitImage)// Treat this as A TILE, which gets overlayed on the base tile.
-                pixelMilitaryUnitImage = pixelUnitImage
+                val nation = militaryUnit!!.civInfo.nation
+                val pixelUnitImages = ImageGetter.getLayeredImageColored(newImageLocation, null, nation.getInnerColor(), nation.getOuterColor())
+                for (pixelUnitImage in pixelUnitImages) {
+                    pixelMilitaryUnitGroup.addActor(pixelUnitImage)
+                    setHexagonImageSize(pixelUnitImage)// Treat this as A TILE, which gets overlayed on the base tile.
+                }
             }
         }
     }
@@ -613,9 +617,10 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) 
 
     fun updatePixelCivilianUnit(tileIsViewable: Boolean) {
         var newImageLocation = ""
+        val civilianUnit = tileInfo.civilianUnit
 
-        if (tileInfo.civilianUnit != null && tileIsViewable) {
-            val specificUnitIconLocation = tileSetStrings.unitsLocation + tileInfo.civilianUnit!!.name
+        if (civilianUnit != null && tileIsViewable) {
+            val specificUnitIconLocation = tileSetStrings.unitsLocation + civilianUnit.name
             newImageLocation = when {
                 !UncivGame.Current.settings.showPixelUnits -> ""
                 ImageGetter.imageExists(specificUnitIconLocation) -> specificUnitIconLocation
@@ -624,15 +629,16 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) 
         }
 
         if (pixelCivilianUnitImageLocation != newImageLocation) {
-            pixelCivilianUnitImage?.remove()
-            pixelCivilianUnitImage = null
+            pixelCivilianUnitGroup.clear()
             pixelCivilianUnitImageLocation = newImageLocation
 
             if (newImageLocation != "" && ImageGetter.imageExists(newImageLocation)) {
-                val pixelUnitImage = ImageGetter.getImage(newImageLocation)
-                terrainFeatureLayerGroup.addActor(pixelUnitImage)
-                setHexagonImageSize(pixelUnitImage)// Treat this as A TILE, which gets overlayed on the base tile.
-                pixelCivilianUnitImage = pixelUnitImage
+                val nation = civilianUnit!!.civInfo.nation
+                val pixelUnitImages = ImageGetter.getLayeredImageColored(newImageLocation, null, nation.getInnerColor(), nation.getOuterColor())
+                for (pixelUnitImage in pixelUnitImages) {
+                    pixelCivilianUnitGroup.addActor(pixelUnitImage)
+                    setHexagonImageSize(pixelUnitImage)// Treat this as A TILE, which gets overlayed on the base tile.
+                }
             }
         }
     }
