@@ -15,10 +15,12 @@ import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
+import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.models.ruleset.Nation
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tile.ResourceType
-import com.unciv.models.stats.Stat
+import kotlin.math.max
+import kotlin.math.min
 
 object ImageGetter {
     private const val whiteDotLocation = "OtherIcons/whiteDot"
