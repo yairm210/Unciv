@@ -1,3 +1,25 @@
+## 3.11.3
+
+AI doesn't construct science constructions when all techs are researched
+
+Added "Must be next to []" unique for tile improvements
+
+Resolved #3239 - simplified unit actions
+
+Added resource-providing building unique
+
+Confirmation popup when clearing the map in the map editor
+
+Files in the mod folder no longer crash the game on startup
+
+By r3versi:
+
+- Clear Barbarian Camp quest
+- Pixel unit colors based on civilization colors
+- City states influence bar
+
+Translation updates
+
 ## 3.11.2
 
 Find Player, Find Natural Wonder and Acquire Great Person quests implemented - By r3versi
@@ -21,6 +43,7 @@ Mods downloaded in-game on Android don't disappear
 Fixes for minor bugs from the previous version
 
 Fixed Windmill unique
+
 
 Tech lines are colored for tracing paths on complex trees
 
