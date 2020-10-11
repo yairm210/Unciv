@@ -252,6 +252,7 @@
 		"isWonder": true,
 		"greatPersonPoints": {"culture": 1},
 		"requiredTech": "Construction",
+		"uniques": ["Unbuildable", "Will not be displayed in Civilopedia"],
 		"quote": "'Regard your soldiers as your children, and they will follow you into the deepest valleys; look on them as your own beloved sons, and they will stand by you even unto death.'  - Sun Tzu"
 		// will be introduced in G&K expansion pack
 	},
@@ -547,7 +548,7 @@
 		"isWonder": true,
 		"providesFreeBuilding": "Castle",
 		"percentStatBonus": {"culture": 20},
-		"uniques": ["All newly-trained [relevant] units in this city receive the [Drill I] promotion"],
+		"uniques": ["All newly-trained [relevant] units in this city receive the [Drill I] promotion", "Unbuildable", "Will not be displayed in Civilopedia"],
 		"requiredTech": "Chivalry",
 		"quote": "'Justice is an unassailable fortress, built on the brow of a mountain which cannot be overthrown by the violence of torrents, nor demolished by the force of armies.'  - Joseph Addison"
 		// will be introduced in G&K expansion pack
@@ -633,15 +634,14 @@
 	{
 		"name": "Hanse",
 		"replaces": "Bank",
-		"uniqueTo": "Germany",		
 		"gold": 2,
 		"specialistSlots": {"Merchant": 1},
 		"hurryCostModifier": 15,
 		"percentStatBonus": {"gold": 25},
-		"uniques": ["+5% Production for every Trade Route with a City-State in the empire"],
+		"uniques": ["+5% Production for every Trade Route with a City-State in the empire", "Unbuildable", "Will not be displayed in Civilopedia"],
 		"requiredBuilding": "Market",
 		"requiredTech": "Banking"
-		// will be introduced in BNW expansion pack
+		// will be introduced in BNW expansion pack and unique for Germany
 	},
 	{
 		"name": "Forbidden Palace",
@@ -665,7 +665,7 @@
 		"culture": 1,
 		"isWonder": true,
 		"greatPersonPoints": {"culture": 1},		
-		"uniques": ["Free Great Person"],
+		"uniques": ["Free Great Person", "Unbuildable", "Will not be displayed in Civilopedia"],
 		"requiredTech": "Printing Press",
 		"quote": "'Don't clap too hard - it's a very old building.' - John Osbourne"
 		// will be introduced in G&K expansion pack
@@ -917,7 +917,7 @@
 		"greatPersonPoints": {"gold": 1},
 		"isWonder": true,
 		"uniques": ["[+1 Happiness, +2 Culture, +3 Gold] from every [Castle]",
-			"Must have an owned [Mountain] within [2] tiles"],
+			"Must have an owned [Mountain] within [2] tiles", "Unbuildable", "Will not be displayed in Civilopedia"],
 		"requiredTech": "Railroad",
 		"quote": "'...the location is one of the most beautiful to be found, holy and unapproachable, a worthy temple for the divine friend who has brought salvation and true blessing to the world.'  - King Ludwig II of Bavaria"
 		// will be introduced in G&K expansion pack
@@ -1029,7 +1029,7 @@
 		"greatPersonPoints": {"science": 1},		
 		"providesFreeBuilding":  "Spaceship Factory",
 		"uniques": ["[2] free [Great Scientist] units appear",
-			"+[25]% production when building [Spaceship part] in this city"],
+			"+[25]% production when building [Spaceship part] in this city", "Unbuildable", "Will not be displayed in Civilopedia"],
 		"requiredTech": "Satellites",
 		"quote": "'The wonder is, not that the field of stars is so vast, but that man has measured it.'  - Anatole France"
 		// will be introduced in G&K expansion pack
