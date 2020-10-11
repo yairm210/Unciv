@@ -259,6 +259,8 @@ object RulesetCache :HashMap<String,Ruleset>() {
                 println("${unit.name} requires resource ${unit.requiredResource} which does not exist!")
             if (unit.upgradesTo != null && !modRuleset.units.containsKey(unit.upgradesTo!!))
                 println("${unit.name} upgrades to unit ${unit.upgradesTo} which does not exist!")
+            if (unit.upgradesTo == unit.name)
+                println("${unit.name} upgrades to itself!")
             if (unit.replaces != null && !modRuleset.units.containsKey(unit.replaces!!))
                 println("${unit.replaces} replaces ${unit.replaces} which does not exist!")
         }

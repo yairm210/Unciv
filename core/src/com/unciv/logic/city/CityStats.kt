@@ -449,7 +449,7 @@ class CityStats {
         cityInfo.civInfo.updateStatsForNextTurn()
     }
 
-    private fun updateFinalStatList(){
+    private fun updateFinalStatList() {
         val newFinalStatList = LinkedHashMap<String, Stats>() // again, we don't edit the existing currentCityStats directly, in order to avoid concurrency exceptions
 
         for (entry in baseStatList)
@@ -507,7 +507,7 @@ class CityStats {
         totalFood = newFinalStatList.values.map { it.food }.sum() // recalculate because of previous change
 
         // Since growth bonuses are special, (applied afterwards) they will be displayed separately in the user interface as well.
-        if(totalFood>0) {
+        if (totalFood > 0) {
             val foodFromGrowthBonuses = getGrowthBonusFromPoliciesAndWonders() * totalFood
             newFinalStatList["Policies"]!!.food += foodFromGrowthBonuses
             totalFood = newFinalStatList.values.map { it.food }.sum() // recalculate again

@@ -216,8 +216,7 @@ class CityConstructions {
             cityInfo.cityStats.update()
         }
 
-        var production = cityStatsForConstruction.production.roundToInt()
-        if (constructionName == Constants.settler) production += cityStatsForConstruction.food.toInt()
+        val production = cityStatsForConstruction.production.roundToInt()
 
         return ceil(workLeft / production.toDouble()).toInt()
     }
