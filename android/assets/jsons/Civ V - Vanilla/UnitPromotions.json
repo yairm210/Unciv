@@ -208,38 +208,38 @@
 	// Submarine
 	{
 		"name": "Wolfpack I",
-		"effect": "Bonus as Attacker [25]%",
+		"effect": "+[25]% Strength when attacking",
 		"unitTypes": ["WaterSubmarine"]
 	},
 	{
 		"name": "Wolfpack II",
 		"prerequisites": ["Wolfpack I"],
-		"effect": "Bonus as Attacker [25]%",
+		"effect": "+[25]% Strength when attacking",
 		"unitTypes": ["WaterSubmarine"]
 	},
 	{
 		"name": "Wolfpack III",
 		"prerequisites": ["Wolfpack II"],
-		"effect": "Bonus as Attacker [25]%",
+		"effect": "+[25]% Strength when attacking",
 		"unitTypes": ["WaterSubmarine"]
 	},
 	
 	// Aircraft Carrier
 	{
 		"name": "Armor Plating I",
-		"effect": "Bonus as Defender [25]%",
+		"effect": "+[25]% Strength when defending",
 		"unitTypes": ["WaterAircraftCarrier"]
 	},
 	{
 		"name": "Armor Plating II",
 		"prerequisites": ["Armor Plating I"],
-		"effect": "Bonus as Defender [25]%",
+		"effect": "+[25]% Strength when defending",
 		"unitTypes": ["WaterAircraftCarrier"]
 	},
 	{
 		"name": "Armor Plating III",
 		"prerequisites": ["Armor Plating II"],
-		"effect": "Bonus as Defender [25]%",
+		"effect": "+[25]% Strength when defending",
 		"unitTypes": ["WaterAircraftCarrier"]
 	},
 	{
