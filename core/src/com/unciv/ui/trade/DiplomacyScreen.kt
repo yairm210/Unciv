@@ -94,14 +94,14 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
     }
 
 
-
     private fun getCityStateDiplomacyTable(otherCiv: CivilizationInfo): Table {
         val otherCivDiplomacyManager = otherCiv.getDiplomacyManager(viewingCiv)
 
         val diplomacyTable = Table()
         diplomacyTable.defaults().pad(10f)
         diplomacyTable.add(otherCiv.getLeaderDisplayName().toLabel(fontSize = 24)).row()
-        diplomacyTable.add(("Type: ".tr() + otherCiv.getCityStateType().toString().tr()).toLabel()).row()
+        diplomacyTable.add("{Type: } {${otherCiv.cityStateType}}".toLabel()).row()
+        diplomacyTable.add("{Personality: } {${otherCiv.cityStatePersonality}}".toLabel()).row()
         otherCiv.updateAllyCivForCityState()
         val ally = otherCiv.getAllyCiv()
         if (ally != "") {
@@ -120,7 +120,7 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
             diplomacyTable.add(nextLevelString.toLabel()).row()
         }
 
-        val friendBonusText = when (otherCiv.getCityStateType()) {
+        val friendBonusText = when (otherCiv.cityStateType) {
             CityStateType.Cultured -> ("Provides [" + (3 * (viewingCiv.getEraNumber() + 1)).toString() + "] culture at 30 Influence").tr()
             CityStateType.Maritime -> "Provides 3 food in capital and 1 food in other cities at 30 Influence".tr()
             CityStateType.Mercantile -> "Provides 3 happiness at 30 Influence".tr()
