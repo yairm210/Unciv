@@ -21,6 +21,7 @@ import com.unciv.models.UncivSound
 import com.unciv.models.translations.tr
 import com.unciv.ui.tutorials.TutorialController
 import kotlin.concurrent.thread
+import kotlin.random.Random
 
 open class CameraStageBaseScreen : Screen {
 
@@ -267,4 +268,21 @@ fun Label.setFontSize(size:Int): Label {
     style.font = Fonts.font
     style = style // because we need it to call the SetStyle function. Yuk, I know.
     return this.apply { setFontScale(size/ORIGINAL_FONT_SIZE) } // for chaining
+}
+
+
+fun <T> List<T>.randomWeighted(weights: List<Float>, random: Random = Random): T {
+    if (this.isEmpty()) throw NoSuchElementException("Empty list.")
+    if (this.size != weights.size) throw UnsupportedOperationException("Weights size does not match this list size.")
+
+    val totalWeight = weights.sum()
+    val randDouble = random.nextDouble()
+    var sum = 0f
+
+    for (i in weights.indices) {
+        sum += weights[i] / totalWeight
+        if (randDouble <= sum)
+            return this[i]
+    }
+    return this.last()
 }
