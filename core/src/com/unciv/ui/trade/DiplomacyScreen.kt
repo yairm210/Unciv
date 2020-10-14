@@ -33,7 +33,7 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
 
     init {
         onBackButtonClicked { UncivGame.Current.setWorldScreen() }
-        val splitPane = SplitPane(ScrollPane(leftSideTable), ScrollPane(rightSideTable), false, skin)
+        val splitPane = SplitPane(ScrollPane(leftSideTable), rightSideTable, false, skin)
         splitPane.splitAmount = 0.2f
 
         updateLeftSideTable()
@@ -82,7 +82,7 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
 
     fun updateRightSide(otherCiv: CivilizationInfo) {
         rightSideTable.clear()
-        if (otherCiv.isCityState()) rightSideTable.add(getCityStateDiplomacyTable(otherCiv))
+        if (otherCiv.isCityState()) rightSideTable.add(ScrollPane(getCityStateDiplomacyTable(otherCiv)))
         else rightSideTable.add(ScrollPane(getMajorCivDiplomacyTable(otherCiv))).height(stage.height)
     }
 
@@ -97,7 +97,7 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
     private fun getCityStateDiplomacyTable(otherCiv: CivilizationInfo): Table {
         val otherCivDiplomacyManager = otherCiv.getDiplomacyManager(viewingCiv)
 
-        val diplomacyTable = Table()
+        val diplomacyTable = Table().apply { width = this@DiplomacyScreen.stage.width - leftSideTable.width }
         diplomacyTable.defaults().pad(10f)
         diplomacyTable.add(otherCiv.getLeaderDisplayName().toLabel(fontSize = 24)).row()
         diplomacyTable.add("{Type: } {${otherCiv.cityStateType}}".toLabel()).row()
@@ -196,7 +196,8 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
         val description = assignedQuest.getDescription()
 
         questTable.add(title.toLabel(fontSize = 24)).row()
-        questTable.add(description.toLabel()).row()
+        questTable.add(description.toLabel().apply { setWrap(true); setAlignment(Align.center) })
+                .width(700f).row()
         if (quest.duration > 0)
             questTable.add("[${remainingTurns}] turns remaining".toLabel()).row()
 
