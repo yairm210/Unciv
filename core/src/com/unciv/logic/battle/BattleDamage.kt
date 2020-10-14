@@ -118,9 +118,14 @@ object BattleDamage {
         if (attacker is MapUnitCombatant) {
             modifiers.add(getTileSpecificModifiers(attacker, defender.getTile()))
 
+            // As of 3.11.3 This is to be deprecated and converted to "+[]% Strength when attacking" - keeping it here to that mods with this can still work for now
             for (ability in attacker.unit.getUniques()) {
                 if (ability.placeholderText == "Bonus as Attacker []%")
                     modifiers.add("Attacker Bonus", ability.params[0].toInt())
+            }
+
+            for(unique in attacker.unit.getMatchingUniques("+[]% Strength when attacking")) {
+                modifiers.add("Attacker Bonus", unique.params[0].toInt())
             }
 
             if (attacker.unit.isEmbarked() && !attacker.unit.hasUnique("Amphibious"))
@@ -175,7 +180,8 @@ object BattleDamage {
         modifiers.putAll(getTileSpecificModifiers(defender, tile))
 
         val tileDefenceBonus = tile.getDefensiveBonus()
-        if (!defender.unit.hasUnique("No defensive terrain bonus") || tileDefenceBonus < 0)
+        if ( (!defender.unit.hasUnique("No defensive terrain bonus") && tileDefenceBonus > 0)
+                || (!defender.unit.hasUnique("No defensive terrain penalty") && tileDefenceBonus < 0) )
             modifiers["Tile"] = (tileDefenceBonus*100).toInt()
 
         if (attacker.isRanged()) {
@@ -183,8 +189,13 @@ object BattleDamage {
             if (defenceVsRanged > 0) modifiers["defence vs ranged"] = defenceVsRanged
         }
 
+        // As of 3.11.2 This is to be deprecated and converted to "+[25]% Strength when defending" - keeping it here to that mods with this can still work for now
         val carrierDefenceBonus = 25 * defender.unit.getUniques().count { it.text == "+25% Combat Bonus when defending" }
-        if (carrierDefenceBonus > 0) modifiers["Armor Plating"] = carrierDefenceBonus
+        if (carrierDefenceBonus > 0) modifiers["Defender Bonus"] = carrierDefenceBonus
+
+        for(unique in defender.unit.getMatchingUniques("+[]% Strength when defending")) {
+            modifiers.add("Defender Bonus", unique.params[0].toInt())
+        }
 
         for(unique in defender.unit.getMatchingUniques("+[]% defence in [] tiles")) {
             if (tile.matchesUniqueFilter(unique.params[1]))

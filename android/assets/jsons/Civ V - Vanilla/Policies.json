@@ -482,7 +482,7 @@
 			{
 				"name": "Total War",
 				"effect": "+15% production when building military units and new military units start with 15 Experience",
-				"uniques": ["+[15]% Production when constructing [military units]", "New military units start with [15] Experience"],
+				"uniques": ["+[15]% Production when constructing [military units]", "New [military] units start with [15] Experience"],
 				"requires": ["Police State","Fascism"],
 				"row": 3,
 				"column": 4

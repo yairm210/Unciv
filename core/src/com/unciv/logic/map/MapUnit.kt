@@ -683,6 +683,9 @@ class MapUnit {
         if ((category == "Land" || category == "land units") && type.isLandUnit()) return true
         if ((category == "Water" || category == "water units") && type.isWaterUnit()) return true
         if ((category == "Air" || category == "air units") && type.isAirUnit()) return true
+        if (category == "non-air" && !type.isAirUnit()) return true
+        if ((category == "military" || category == "military units") && type.isMilitary()) return true
+        if (hasUnique(category)) return true
 
         return false
     }
