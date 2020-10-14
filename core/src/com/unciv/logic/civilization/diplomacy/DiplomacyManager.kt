@@ -166,20 +166,55 @@ class DiplomacyManager() {
             return otherCivDiplomacy().getTurnsToRelationshipChange()
 
         if (civInfo.isCityState() && !otherCiv().isCityState()) {
-            val dropPerTurn = getCityStateInfluenceDegradeRate()
-            when {
-                relationshipLevel() >= RelationshipLevel.Ally -> return ceil((influence - 60f) / dropPerTurn).toInt() + 1
-                relationshipLevel() >= RelationshipLevel.Friend -> return ceil((influence - 30f) / dropPerTurn).toInt() + 1
-                else -> return 0
+            val dropPerTurn = getCityStateInfluenceDegrade()
+            return when {
+                relationshipLevel() >= RelationshipLevel.Ally -> ceil((influence - 60f) / dropPerTurn).toInt() + 1
+                relationshipLevel() >= RelationshipLevel.Friend -> ceil((influence - 30f) / dropPerTurn).toInt() + 1
+                else -> 0
             }
         }
         return 0
     }
 
-    fun getCityStateInfluenceDegradeRate(): Float {
-        if(otherCiv().hasUnique("City-State Influence degrades at half rate"))
-            return .5f
-        else return 1f
+    private fun getCityStateInfluenceDegrade(): Float {
+        if (influence < restingPoint)
+            return 0f
+
+        var decrement = when (civInfo.cityStatePersonality) {
+            CityStatePersonality.Hostile -> 1.5f
+            else -> 1f
+        }
+
+        var modifier = when (civInfo.cityStatePersonality) {
+            CityStatePersonality.Hostile -> 2f
+            CityStatePersonality.Irrational -> 1.5f
+            CityStatePersonality.Friendly -> .5f
+            else -> 1f
+        }
+
+        if (otherCiv().hasUnique("City-State Influence degrades at half rate"))
+            modifier *= .5f
+
+        return max(0f, decrement) * max(0f, modifier)
+    }
+
+    private fun getCityStateInfluenceRecovery(): Float {
+        if (influence > restingPoint)
+            return 0f
+
+        var increment = 1f
+
+        var modifier = when (civInfo.cityStatePersonality) {
+            CityStatePersonality.Friendly -> 2f
+            CityStatePersonality.Irrational -> 1.5f
+            CityStatePersonality.Hostile -> .5f
+            else -> 1f
+        }
+
+        if (otherCiv().hasUnique("City-State Influence recovers at twice the normal rate"))
+            modifier *= 2f
+
+        return max(0f, increment) * max(0f, modifier)
     }
 
     fun canDeclareWar() = turnsToPeaceTreaty()==0 && diplomaticStatus != DiplomaticStatus.War
@@ -300,14 +335,13 @@ class DiplomacyManager() {
     private fun nextTurnCityStateInfluence() {
         val initialRelationshipLevel = relationshipLevel()
 
-        val increment = if (otherCiv().hasUnique("City-State Influence recovers at twice the normal rate")) 2f else 1f
-        val decrement = getCityStateInfluenceDegradeRate()
-
-        if (influence > restingPoint)
+        if (influence > restingPoint) {
+            val decrement = getCityStateInfluenceDegrade()
             influence = max(restingPoint, influence - decrement)
-        else if (influence < restingPoint)
+        } else if (influence < restingPoint) {
+            val increment = getCityStateInfluenceRecovery()
             influence = min(restingPoint, influence + increment)
-        else influence = restingPoint
+        }
 
         if(!civInfo.isDefeated()) { // don't display city state relationship notifications when the city state is currently defeated
             val civCapitalLocation = if (civInfo.cities.isNotEmpty()) civInfo.getCapital().location else null
@@ -400,7 +434,7 @@ class DiplomacyManager() {
         if (!hasFlag(DiplomacyFlags.DeclarationOfFriendship))
             revertToZero(DiplomaticModifiers.DeclarationOfFriendship, 1 / 2f) //decreases slowly and will revert to full if it is declared later
 
-        if (otherCiv().isCityState() && otherCiv().getCityStateType() == CityStateType.Militaristic) {
+        if (otherCiv().isCityState() && otherCiv().cityStateType == CityStateType.Militaristic) {
             if (relationshipLevel() < RelationshipLevel.Friend) {
                 if (hasFlag(DiplomacyFlags.ProvideMilitaryUnit)) removeFlag(DiplomacyFlags.ProvideMilitaryUnit)
             } else {

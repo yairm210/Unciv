@@ -126,7 +126,7 @@ class CityStats {
         val stats = Stats()
 
         for (otherCiv in cityInfo.civInfo.getKnownCivs()) {
-            if (otherCiv.isCityState() && otherCiv.getCityStateType() == CityStateType.Maritime
+            if (otherCiv.isCityState() && otherCiv.cityStateType == CityStateType.Maritime
                     && otherCiv.getDiplomacyManager(cityInfo.civInfo).relationshipLevel() >= RelationshipLevel.Friend) {
                 if (cityInfo.isCapital()) stats.food += 3
                 else stats.food += 1

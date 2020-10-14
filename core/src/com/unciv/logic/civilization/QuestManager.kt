@@ -14,6 +14,7 @@ import com.unciv.models.ruleset.tile.TileResource
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.translations.equalsPlaceholderText
 import com.unciv.models.translations.fillPlaceholders
+import com.unciv.ui.utils.randomWeighted
 import kotlin.math.max
 import kotlin.random.Random
 
@@ -150,10 +151,10 @@ class QuestManager {
             if (numberValidMajorCivs >= quest.minimumCivs)
                 assignableQuests.add(quest)
         }
+        val weights = assignableQuests.map { getQuestWeight(it.name) }
 
-        //TODO: quest probabilities should change based on City State personality and traits
         if (assignableQuests.isNotEmpty()) {
-            val quest = assignableQuests.random()
+            val quest = assignableQuests.randomWeighted(weights)
             val assignees = civInfo.gameInfo.getAliveMajorCivs().filter { !it.isAtWarWith(civInfo) && isQuestValid(quest, it) }
 
             assignNewQuest(quest, assignees)
@@ -172,13 +173,14 @@ class QuestManager {
                 return
 
             val assignableQuests = civInfo.gameInfo.ruleSet.quests.values.filter { it.isIndividual() && isQuestValid(it, challenger) }
-            //TODO: quest probabilities should change based on City State personality and traits
-            if (assignableQuests.isNotEmpty()) {
+            val weights = assignableQuests.map { getQuestWeight(it.name) }
 
-                val quest = assignableQuests.random()
+            if (assignableQuests.isNotEmpty()) {
+                val quest = assignableQuests.randomWeighted(weights)
                 val assignees = arrayListOf(challenger)
 
                 assignNewQuest(quest, assignees)
+                break
             }
         }
     }
@@ -363,6 +365,67 @@ class QuestManager {
             giveReward(winningQuest)
 
         assignedQuests.removeAll(matchingQuests)
+    }
+
+    /**
+     * Returns the weight of the [questName], depends on city state trait and personality
+     */
+    private fun getQuestWeight(questName: String): Float {
+        var weight = 1f
+        val trait = civInfo.cityStateType
+        val personality = civInfo.cityStatePersonality
+        when (questName) {
+            QuestName.Route.value -> {
+                when (personality) {
+                    CityStatePersonality.Friendly -> weight *= 2f
+                    CityStatePersonality.Hostile -> weight *= .2f
+                }
+                when (trait) {
+                    CityStateType.Maritime -> weight *= 1.2f
+                    CityStateType.Mercantile -> weight *= 1.5f
+                }
+            }
+            QuestName.ConnectResource.value -> {
+                when (trait) {
+                    CityStateType.Maritime -> weight *= 2f
+                    CityStateType.Mercantile -> weight *= 3f
+                }
+            }
+            QuestName.ConstructWonder.value -> {
+                if (trait == CityStateType.Cultured)
+                    weight *= 3f
+            }
+            QuestName.GreatPerson.value -> {
+                if (trait == CityStateType.Cultured)
+                    weight *= 3f
+            }
+            QuestName.ConquerCityState.value -> {
+                if (trait == CityStateType.Militaristic)
+                    weight *= 2f
+                when (personality) {
+                    CityStatePersonality.Hostile -> weight *= 2f
+                    CityStatePersonality.Neutral -> weight *= .4f
+                }
+            }
+            QuestName.FindPlayer.value -> {
+                when (trait) {
+                    CityStateType.Maritime -> weight *= 3f
+                    CityStateType.Mercantile -> weight *= 2f
+                }
+            }
+            QuestName.FindNaturalWonder.value -> {
+                if (trait == CityStateType.Militaristic)
+                    weight *= .5f
+                if (personality == CityStatePersonality.Hostile)
+                    weight *= .3f
+            }
+            QuestName.ClearBarbarianCamp.value -> {
+                weight *= 3f
+                if (trait == CityStateType.Militaristic)
+                    weight *= 3f
+            }
+        }
+        return weight
     }
 
     //region get-quest-target

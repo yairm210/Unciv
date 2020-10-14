@@ -109,6 +109,7 @@ class CivilizationInfo {
         toReturn.popupAlerts.addAll(popupAlerts)
         toReturn.tradeRequests.addAll(tradeRequests)
         toReturn.naturalWonders.addAll(naturalWonders)
+        toReturn.cityStatePersonality = cityStatePersonality
         return toReturn
     }
 
@@ -117,7 +118,6 @@ class CivilizationInfo {
         if (isPlayerCivilization()) return gameInfo.getDifficulty()
         return gameInfo.ruleSet.difficulties["Chieftain"]!!
     }
-
     fun getDiplomacyManager(civInfo: CivilizationInfo) = getDiplomacyManager(civInfo.civName)
     fun getDiplomacyManager(civName: String) = diplomacy[civName]!!
     /** Returns only undefeated civs, aka the ones we care about */
@@ -134,7 +134,8 @@ class CivilizationInfo {
     fun isBarbarian() =  nation.isBarbarian()
     fun isSpectator() = nation.isSpectator()
     fun isCityState(): Boolean = nation.isCityState()
-    fun getCityStateType(): CityStateType = nation.cityStateType!!
+    val cityStateType: CityStateType get() = nation.cityStateType!!
+    var cityStatePersonality: CityStatePersonality = CityStatePersonality.Neutral
     fun isMajorCiv() = nation.isMajorCiv()
     fun isAlive(): Boolean = !isDefeated()
     fun hasEverBeenFriendWith(otherCiv: CivilizationInfo): Boolean = getDiplomacyManager(otherCiv).everBeenFriends()

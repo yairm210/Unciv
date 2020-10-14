@@ -111,7 +111,7 @@ object NextTurnAutomation {
     private fun useGold(civInfo: CivilizationInfo) {
         if (civInfo.victoryType() == VictoryType.Cultural) {
             for (cityState in civInfo.getKnownCivs()
-                    .filter { it.isCityState() && it.getCityStateType() == CityStateType.Cultured }) {
+                    .filter { it.isCityState() && it.cityStateType == CityStateType.Cultured }) {
                 val diploManager = cityState.getDiplomacyManager(civInfo)
                 if (diploManager.influence < 40) { // we want to gain influence with them
                     tryGainInfluence(civInfo, cityState)
@@ -122,7 +122,7 @@ object NextTurnAutomation {
 
         if (civInfo.getHappiness() < 5) {
             for (cityState in civInfo.getKnownCivs()
-                    .filter { it.isCityState() && it.getCityStateType() == CityStateType.Mercantile }) {
+                    .filter { it.isCityState() && it.cityStateType == CityStateType.Mercantile }) {
                 val diploManager = cityState.getDiplomacyManager(civInfo)
                 if (diploManager.influence < 40) { // we want to gain influence with them
                     tryGainInfluence(civInfo, cityState)
