@@ -71,7 +71,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
     private var backButtonListener : InputListener
 
     // An initialized val always turned out to illegally be null...
-    lateinit var keyPressDispatcher: HashMap<Char,(() -> Unit)>
+    lateinit var keyPressDispatcher: HashMap<Char, (() -> Unit)>
 
 
     init {
@@ -185,7 +185,9 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
                 private val pressedKeys = mutableSetOf<Int>()
                 private var infiniteAction : RepeatAction? = null
                 private val amountToMove = 30 / mapHolder.scaleX
-                private val ALLOWED_KEYS = setOf(Input.Keys.W,Input.Keys.S,Input.Keys.A,Input.Keys.D)
+                private val ALLOWED_KEYS = setOf(Input.Keys.W,Input.Keys.S,Input.Keys.A,Input.Keys.D,
+                        Input.Keys.UP, Input.Keys.DOWN, Input.Keys.LEFT, Input.Keys.RIGHT )
+
 
                 override fun keyDown(event: InputEvent?, keycode: Int): Boolean {
                     if (keycode !in ALLOWED_KEYS) return false
@@ -202,10 +204,10 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
                 fun whileKeyPressedLoop() {
                     for (keycode in pressedKeys) {
                         when (keycode) {
-                            Input.Keys.W -> mapHolder.scrollY -= amountToMove
-                            Input.Keys.S -> mapHolder.scrollY += amountToMove
-                            Input.Keys.A -> mapHolder.scrollX -= amountToMove
-                            Input.Keys.D -> mapHolder.scrollX += amountToMove
+                            Input.Keys.W, Input.Keys.UP -> mapHolder.scrollY -= amountToMove
+                            Input.Keys.S, Input.Keys.DOWN -> mapHolder.scrollY += amountToMove
+                            Input.Keys.A, Input.Keys.LEFT -> mapHolder.scrollX -= amountToMove
+                            Input.Keys.D, Input.Keys.RIGHT -> mapHolder.scrollX += amountToMove
                         }
                     }
                     mapHolder.updateVisualScroll()

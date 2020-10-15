@@ -7,6 +7,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Button
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
+import com.unciv.UncivGame
 import com.unciv.logic.map.RoadStatus
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.ruleset.tile.TileImprovement
@@ -34,6 +35,7 @@ class ImprovementPickerScreen(val tileInfo: TileInfo, val onAccept: ()->Unit) : 
 
     init {
         setDefaultCloseAction()
+        onBackButtonClicked { UncivGame.Current.setWorldScreen() }
 
         rightSideButton.setText("Pick improvement".tr())
         rightSideButton.onClick {

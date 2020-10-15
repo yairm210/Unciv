@@ -1,5 +1,7 @@
 ## 3.11.4
 
+Added city images by The Bucketeer for all eras up to Modern
+
 Influence bar not displayed for city-states that don't know the viewing civ
 
 Resolved #3254 - Solved bug in calculating turns to production for settlers
