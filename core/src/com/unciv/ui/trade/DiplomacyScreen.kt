@@ -138,7 +138,7 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
 
         val friendBonusLabel = friendBonusText.toLabel(friendBonusLabelColor)
                 .apply { setWrap(true); setAlignment(Align.center) }
-        diplomacyTable.add(friendBonusLabel).width(650f).row()
+        diplomacyTable.add(friendBonusLabel).width(rightSideTable.width - 50f).row()
 
         diplomacyTable.addSeparator()
 
@@ -197,7 +197,7 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
 
         questTable.add(title.toLabel(fontSize = 24)).row()
         questTable.add(description.toLabel().apply { setWrap(true); setAlignment(Align.center) })
-                .width(650f).row()
+                .width(rightSideTable.width - 50f).row()
         if (quest.duration > 0)
             questTable.add("[${remainingTurns}] turns remaining".toLabel()).row()
 
