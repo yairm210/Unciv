@@ -70,8 +70,6 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
 
     private var backButtonListener : InputListener
 
-    // An initialized val always turned out to illegally be null...
-    lateinit var keyPressDispatcher: HashMap<Char, (() -> Unit)>
 
 
     init {
@@ -226,19 +224,9 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
                     }
                     return true
                 }
-
-                override fun keyTyped(event: InputEvent?, character: Char): Boolean {
-                    if (character.toLowerCase() in keyPressDispatcher && !hasOpenPopups()) {
-                        //try-catch mainly for debugging. Breakpoints in the vicinity can make the event fire twice in rapid succession, second time the context can be invalid
-                        try {
-                            keyPressDispatcher[character.toLowerCase()]?.invoke()
-                        } catch (ex: Exception) {}
-                        return true
-                    }
-                    return super.keyTyped(event, character)
-                }
             }
         )
+
     }
 
     private fun loadLatestMultiplayerState(){
@@ -488,7 +476,6 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
         nextTurnButton.labelCell.pad(10f)
         val nextTurnActionWrapped = { nextTurnAction() }
         nextTurnButton.onClick (nextTurnActionWrapped)
-        if (!::keyPressDispatcher.isInitialized) keyPressDispatcher = hashMapOf()
         keyPressDispatcher[' '] = nextTurnActionWrapped
         keyPressDispatcher['n'] = nextTurnActionWrapped
 

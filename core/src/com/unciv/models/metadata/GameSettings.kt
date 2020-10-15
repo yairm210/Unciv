@@ -12,7 +12,7 @@ class GameSettings {
     var checkForDueUnits: Boolean = true
     var singleTapMove: Boolean = false
     var language: String = "English"
-    var resolution: String = "900x600"
+    var resolution: String = "900x600" // Aut-detecting resolution was a BAD IDEA since it needs to be based on DPI AND resolution.
     var tutorialsShown = HashSet<String>()
     var tutorialTasksCompleted = HashSet<String>()
     var hasCrashedRecently = false

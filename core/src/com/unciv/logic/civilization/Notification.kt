@@ -11,7 +11,7 @@ import com.unciv.ui.worldscreen.WorldScreen
  * [action] is not realized as lambda, as it would be too easy to introduce references to objects
  * there that should not be serialized to the saved game.
  */
-open class Notification(
+open class Notification (
         // default parameters necessary for json deserialization
         var text: String = "",
         var color: Color = Color.BLACK,
