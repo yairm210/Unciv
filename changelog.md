@@ -1,3 +1,15 @@
+## 3.11.4
+
+Influence bar not displayed for city-states that don't know the viewing civ
+
+Resolved #3254 - Solved bug in calculating turns to production for settlers
+
+New parameterized uniques - By givehub99
+
+City-states personalities - By r3versi
+
+Translation updates
+
 ## 3.11.3
 
 AI doesn't construct science constructions when all techs are researched
