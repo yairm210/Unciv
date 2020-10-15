@@ -34,7 +34,6 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
     var unitActionOverlay :Actor?=null
 
     // Used to transfer data on the "move here" button that should be created, from the side thread to the main thread
-    // This is a hashmap in preparation for moving multiple units at once
     class MoveHereButtonDto(val unitToTurnsToDestination: HashMap<MapUnit,Int>, val tileInfo: TileInfo)
 
     internal fun addTiles() {

@@ -3267,14 +3267,14 @@ TechIcons/Writing
   index: -1
 TileSets/Default/Tiles/River-Bottom
   rotate: false
-  xy: 1992, 402
+  xy: 1992, 399
   size: 32, 28
   orig: 32, 28
   offset: 0, 0
   index: -1
 TileSets/FantasyHex/Tiles/River-Bottom
   rotate: false
-  xy: 1992, 402
+  xy: 1992, 399
   size: 32, 28
   orig: 32, 28
   offset: 0, 0
@@ -3454,65 +3454,65 @@ TileSets/FantasyHex/Tiles/City-Ancient era
   orig: 32, 32
   offset: 0, 0
   index: -1
-TileSets/FantasyHex/Tiles/City-Ancient era - Copy
+TileSets/FantasyHex/Tiles/City-Classical era
   rotate: false
   xy: 2004, 838
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-TileSets/FantasyHex/Tiles/City-Classical era
+TileSets/FantasyHex/Tiles/City-Industrial era
   rotate: false
-  xy: 2004, 804
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: -1
-TileSets/FantasyHex/Tiles/City-Classical era - Copy
-  rotate: false
-  xy: 2004, 770
-  size: 32, 32
-  orig: 32, 32
+  xy: 2004, 803
+  size: 32, 33
+  orig: 32, 33
   offset: 0, 0
   index: -1
 TileSets/FantasyHex/Tiles/City-Medieval era
   rotate: false
-  xy: 2004, 736
+  xy: 2004, 769
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-TileSets/FantasyHex/Tiles/City-Medieval era - Copy
+TileSets/FantasyHex/Tiles/City-Modern era
   rotate: false
-  xy: 2004, 702
+  xy: 2004, 733
+  size: 32, 34
+  orig: 32, 34
+  offset: 0, 0
+  index: -1
+TileSets/FantasyHex/Tiles/City-Renaissance era
+  rotate: false
+  xy: 2004, 699
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 TileSets/FantasyHex/Tiles/Coal
   rotate: false
-  xy: 1998, 642
+  xy: 804, 137
   size: 32, 28
   orig: 32, 28
   offset: 0, 0
   index: -1
 TileSets/FantasyHex/Tiles/Coast
   rotate: false
-  xy: 804, 137
+  xy: 838, 137
   size: 32, 28
   orig: 32, 28
   offset: 0, 0
   index: -1
 TileSets/FantasyHex/Tiles/Coast+Atoll
   rotate: false
-  xy: 838, 137
+  xy: 872, 140
   size: 32, 28
   orig: 32, 28
   offset: 0, 0
   index: -1
 TileSets/FantasyHex/Tiles/Coast+Ice
   rotate: false
-  xy: 872, 140
+  xy: 1998, 639
   size: 32, 28
   orig: 32, 28
   offset: 0, 0
@@ -3687,7 +3687,7 @@ TileSets/FantasyHex/Tiles/Grassland+Fallout
   index: -1
 TileSets/FantasyHex/Tiles/Grassland+Farm
   rotate: false
-  xy: 1992, 612
+  xy: 1992, 609
   size: 32, 28
   orig: 32, 28
   offset: 0, 0
@@ -3841,7 +3841,7 @@ TileSets/FantasyHex/Tiles/Hill+Forest+Trading post
   index: -1
 TileSets/FantasyHex/Tiles/Hill+Marble+Quarry
   rotate: false
-  xy: 1992, 552
+  xy: 1992, 549
   size: 32, 28
   orig: 32, 28
   offset: 0, 0
@@ -4044,7 +4044,7 @@ TileSets/FantasyHex/Tiles/Pearls
   index: -1
 TileSets/FantasyHex/Tiles/Plains
   rotate: false
-  xy: 1992, 492
+  xy: 1992, 489
   size: 32, 28
   orig: 32, 28
   offset: 0, 0
@@ -4058,7 +4058,7 @@ TileSets/FantasyHex/Tiles/Plains+City
   index: -1
 TileSets/FantasyHex/Tiles/Plains+Fallout
   rotate: false
-  xy: 1992, 462
+  xy: 1992, 459
   size: 32, 28
   orig: 32, 28
   offset: 0, 0
@@ -4177,7 +4177,7 @@ TileSets/FantasyHex/Tiles/Polder
   index: -1
 TileSets/FantasyHex/Tiles/Quarry
   rotate: false
-  xy: 1992, 432
+  xy: 1992, 429
   size: 32, 28
   orig: 32, 28
   offset: 0, 0
@@ -4541,7 +4541,7 @@ TileSets/FantasyHex/Units/Chu-Ko-Nu
   index: -1
 TileSets/FantasyHex/Units/CivilianLandUnit
   rotate: false
-  xy: 1998, 672
+  xy: 1998, 669
   size: 32, 28
   orig: 32, 28
   offset: 0, 0
@@ -4709,7 +4709,7 @@ TileSets/FantasyHex/Units/Great Scientist
   index: -1
 TileSets/FantasyHex/Units/Great War Infantry
   rotate: false
-  xy: 1992, 582
+  xy: 1992, 579
   size: 32, 28
   orig: 32, 28
   offset: 0, 0
@@ -5017,7 +5017,7 @@ TileSets/FantasyHex/Units/Panzer
   index: -1
 TileSets/FantasyHex/Units/Paratrooper
   rotate: false
-  xy: 1992, 522
+  xy: 1992, 519
   size: 32, 28
   orig: 32, 28
   offset: 0, 0
