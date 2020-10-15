@@ -3,6 +3,7 @@ package com.unciv.ui.worldscreen
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.math.Interpolation
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.*
@@ -444,5 +445,10 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
         if(scale < 1 && scale > 0.5f)
         for(tileGroup in tileGroups.values)
             tileGroup.cityButtonLayerGroup.setScale(scale)
+    }
+
+    // For debugging purposes
+    override fun draw(batch: Batch?, parentAlpha: Float) {
+        super.draw(batch, parentAlpha)
     }
 }

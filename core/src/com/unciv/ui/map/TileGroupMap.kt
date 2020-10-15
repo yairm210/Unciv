@@ -1,5 +1,6 @@
 package com.unciv.ui.map
 
+import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.unciv.logic.HexMath
@@ -70,5 +71,11 @@ class TileGroupMap<T: TileGroup>(val tileGroups: Collection<T>, val padding: Flo
                 .add(stageCoords)
                 .sub(groupSize.toFloat() / 2f, groupSize.toFloat() / 2f)
                 .scl(1f / trueGroupSize)
+    }
+
+
+    // For debugging purposes
+    override fun draw(batch: Batch?, parentAlpha: Float) {
+        super.draw(batch, parentAlpha)
     }
 }

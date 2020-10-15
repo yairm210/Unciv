@@ -1,6 +1,7 @@
 package com.unciv.ui.tilegroups
 
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.Touchable
@@ -31,7 +32,11 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) 
     Circle, Crosshair, Fog layer
     City name
      */
-    val baseLayerGroup = Group().apply { isTransform = false; setSize(groupSize, groupSize) }
+
+    // For recognizing the group in the profiler
+    class BaseLayerGroupClass:Group()
+    val baseLayerGroup = BaseLayerGroupClass().apply { isTransform = false; setSize(groupSize, groupSize)  }
+
     protected var tileBaseImages: ArrayList<Image> = ArrayList()
     /** List of ;-delimited image locations comprising the layers -
      * for instance, "desert+flood plains" might have an improvment for which there is a certain image eg "desert+flood plains+farm"
@@ -43,8 +48,9 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) 
     protected var baseTerrainOverlayImage: Image? = null
     protected var baseTerrain: String = ""
 
-
-    val terrainFeatureLayerGroup = Group().apply { isTransform = false; setSize(groupSize, groupSize) }
+    class TerrainFeatureLayerGroupClass:Group()
+    val terrainFeatureLayerGroup = TerrainFeatureLayerGroupClass()
+            .apply { isTransform = false; setSize(groupSize, groupSize) }
 
     // These are for OLD tiles - for instance the "forest" symbol on the forest
     protected var terrainFeatureOverlayImage: Image? = null
@@ -57,7 +63,9 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) 
     protected var pixelCivilianUnitImageLocation = ""
     protected var pixelCivilianUnitGroup = Group().apply { isTransform = false; setSize(groupSize, groupSize) }
 
-    val miscLayerGroup = Group().apply { isTransform = false; setSize(groupSize, groupSize) }
+    class MiscLayerGroupClass:Group()
+    val miscLayerGroup = MiscLayerGroupClass().apply { isTransform = false; setSize(groupSize, groupSize) }
+
     var resourceImage: Actor? = null
     var resource: String? = null
     private val roadImages = HashMap<TileInfo, RoadImage>()
@@ -65,7 +73,8 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) 
 
     val icons = TileGroupIcons(this)
 
-    val unitLayerGroup = Group().apply { isTransform = false; setSize(groupSize, groupSize);touchable = Touchable.disabled }
+    class UnitLayerGroupClass:Group()
+    val unitLayerGroup = UnitLayerGroupClass().apply { isTransform = false; setSize(groupSize, groupSize);touchable = Touchable.disabled }
 
     val cityButtonLayerGroup = Group().apply { isTransform = true; setSize(groupSize, groupSize);
         touchable = Touchable.childrenOnly; setOrigin(Align.center) }
@@ -162,7 +171,6 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) 
             if (ImageGetter.imageExists(terrainAndCity))
                 return listOf(terrainAndCity)
 
-//            val cityWithEra = tileSetStrings.getCityTile()
             if (ImageGetter.imageExists(tileSetStrings.cityTile))
                 return listOf(tileSetStrings.cityTile)
         }
@@ -676,5 +684,10 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) 
 
     fun hideCircle() {
         circleImage.isVisible = false
+    }
+
+    /** This exists so we can easily find the TileGroup draw method in the android profiling, otherwise it's just a mass of Group.draw->drawChildren->Group.draw etc. */
+    override fun draw(batch: Batch?, parentAlpha: Float) {
+        super.draw(batch, parentAlpha)
     }
 }
