@@ -143,7 +143,7 @@ class Nation : INamed {
     private fun addUniqueUnitsText(textList: ArrayList<String>, ruleset: Ruleset) {
         for (unit in ruleset.units.values
                 .filter { it.uniqueTo == name && "Will not be displayed in Civilopedia" !in it.uniques}) {
-            if (unit.replaces != null) {
+            if (unit.replaces != null && ruleset.units.containsKey(unit.replaces!!)) {
                 val originalUnit = ruleset.units[unit.replaces!!]!!
                 textList += unit.name.tr() + " - " + "Replaces [${originalUnit.name}]".tr()
                 if (unit.cost != originalUnit.cost)
@@ -164,7 +164,10 @@ class Nation : INamed {
                     textList += "  " + "Lost ability".tr() + "(" + "vs [${originalUnit.name}]".tr() + "): " + Translations.translateBonusOrPenalty(unique)
                 for (promotion in unit.promotions.filter { it !in originalUnit.promotions })
                     textList += "  " + promotion.tr() + " (" + Translations.translateBonusOrPenalty(ruleset.unitPromotions[promotion]!!.effect) + ")"
-            } else {
+            } else if(unit.replaces != null){
+                textList += unit.name.tr() + " - " + "Replaces [${unit.replaces}], which is not found in the ruleset!".tr()
+            }
+            else {
                 textList += unit.name.tr()
                 textList += "  " + unit.getDescription(true).split("\n").joinToString("\n  ")
             }

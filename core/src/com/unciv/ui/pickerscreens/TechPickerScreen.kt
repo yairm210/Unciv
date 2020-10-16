@@ -175,11 +175,15 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo, centerOnTech: Tec
 
         for (tech in civInfo.gameInfo.ruleSet.technologies.values) {
             if (!techNameToButton.containsKey(tech.name)) {
-                ResponsePopup("Tech [${tech.name}] appears to be missing - perhaps two techs have the same row & column", this)
+                ResponsePopup("Tech ${tech.name} appears to be missing - perhaps two techs have the same row & column", this)
                 continue
             }
             val techButton = techNameToButton[tech.name]!!
             for (prerequisite in tech.prerequisites) {
+                if (!techNameToButton.containsKey(prerequisite)) {
+                    ResponsePopup("Tech $prerequisite. prerequisite of ${tech.name}, appears to be missing - perhaps two techs have the same row & column", this)
+                    continue
+                }
                 val prerequisiteButton = techNameToButton[prerequisite]!!
                 val techButtonCoords = Vector2(0f, techButton.height / 2)
                 techButton.localToStageCoordinates(techButtonCoords)
