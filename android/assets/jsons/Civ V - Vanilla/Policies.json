@@ -104,7 +104,7 @@
 		"name": "Honor",
 		"era": "Ancient era",
 		"effect": "+25% bonus vs Barbarians; gain Culture when you kill a barbarian unit",
-		"uniques": ["+25% bonus vs Barbarians", "Gain Culture when you kill a barbarian unit", "Notified of new Barbarian encampments"],
+		"uniques": ["+25% bonus vs Barbarians", "Earn [100]% of [Barbarians] opponent's [Strength] as [Culture] for kills", "Notified of new Barbarian encampments"],
 		"policies": [
 			{
 				"name": "Warrior Code",
@@ -147,7 +147,7 @@
 			{
 				"name": "Honor Complete",
 				"effect": "Gain gold for each unit killed",
-				"uniques": ["Gain gold for each unit killed"],
+				"uniques": ["Earn [10]% of [military] opponent's [Cost] as [Gold] for kills"],
 			}
 		]
 	},{
