@@ -14,13 +14,14 @@ class CapitalConnectionsFinder(private val civInfo: CivilizationInfo) {
 
     private val allCivCities = civInfo.gameInfo.getCities()
 
-    private val theWheelIsResearched = civInfo.tech.isResearched("The Wheel")
-    private val railroadIsResearched = civInfo.tech.isResearched("Railroad")
-
     private val road = RoadStatus.Road.name
     private val railroad = RoadStatus.Railroad.name
     private val harborFromRoad = "Harbor-Road"
     private val harborFromRailroad = "Harbor-Railroad"
+
+    private val ruleset = civInfo.gameInfo.ruleSet
+    private val theWheelIsResearched = ruleset.tileImprovements.containsKey(road) && civInfo.tech.isResearched(ruleset.tileImprovements[road]!!.techRequired!!)
+    private val railroadIsResearched = ruleset.tileImprovements.containsKey(railroad) && civInfo.tech.isResearched(ruleset.tileImprovements[railroad]!!.techRequired!!)
 
     init {
         citiesReachedToMediums[civInfo.getCapital()] = hashSetOf("Start")
