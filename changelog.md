@@ -1,3 +1,22 @@
+## 3.11.5
+
+Performance improvements for main screen rendering - should be much less laggy now
+
+Mod management screen is now generally available :)
+
+Resolved #3265 - added keyboard shortcuts to tile improvements
+
+City connections work when road and railroad required techs are changed (in mods)
+
+Can now move around the world screen with the arrow keys as well as WASD
+
+By r3versi:
+
+- Diplomacy Screen right table is scrollable 
+- Fix for barbarian quest 
+
+Translation updates
+
 ## 3.11.4
 
 Added city images by The Bucketeer for all eras up to Modern
