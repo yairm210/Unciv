@@ -82,7 +82,7 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
 
     fun updateRightSide(otherCiv: CivilizationInfo) {
         rightSideTable.clear()
-        if (otherCiv.isCityState()) rightSideTable.add(getCityStateDiplomacyTable(otherCiv))
+        if (otherCiv.isCityState()) rightSideTable.add(ScrollPane(getCityStateDiplomacyTable(otherCiv)))
         else rightSideTable.add(ScrollPane(getMajorCivDiplomacyTable(otherCiv))).height(stage.height)
     }
 
@@ -97,7 +97,7 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
     private fun getCityStateDiplomacyTable(otherCiv: CivilizationInfo): Table {
         val otherCivDiplomacyManager = otherCiv.getDiplomacyManager(viewingCiv)
 
-        val diplomacyTable = Table()
+        val diplomacyTable = Table().apply { width = this@DiplomacyScreen.stage.width - leftSideTable.width }
         diplomacyTable.defaults().pad(10f)
         diplomacyTable.add(otherCiv.getLeaderDisplayName().toLabel(fontSize = 24)).row()
         diplomacyTable.add("{Type: } {${otherCiv.cityStateType}}".toLabel()).row()
@@ -137,8 +137,8 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
             friendBonusLabelColor = Color.GRAY
 
         val friendBonusLabel = friendBonusText.toLabel(friendBonusLabelColor)
-        diplomacyTable.add(friendBonusLabel).row()
-
+                .apply { setWrap(true); setAlignment(Align.center) }
+        diplomacyTable.add(friendBonusLabel).width(rightSideTable.width - 50f).row()
 
         diplomacyTable.addSeparator()
 
@@ -196,7 +196,8 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
         val description = assignedQuest.getDescription()
 
         questTable.add(title.toLabel(fontSize = 24)).row()
-        questTable.add(description.toLabel()).row()
+        questTable.add(description.toLabel().apply { setWrap(true); setAlignment(Align.center) })
+                .width(rightSideTable.width - 50f).row()
         if (quest.duration > 0)
             questTable.add("[${remainingTurns}] turns remaining".toLabel()).row()
 
