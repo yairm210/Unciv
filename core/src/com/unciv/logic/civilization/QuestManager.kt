@@ -358,7 +358,7 @@ class QuestManager {
     fun barbarianCampCleared(civInfo: CivilizationInfo, location: Vector2) {
         val matchingQuests = assignedQuests.asSequence()
                 .filter { it.questName == QuestName.ClearBarbarianCamp.value }
-                .filter { it.data1.toFloat() == location.x && it.data2.toFloat() == location.y }
+                .filter { it.data1.toInt() == location.x.toInt() && it.data2.toInt() == location.y.toInt() }
 
         val winningQuest = matchingQuests.filter { it.assignee == civInfo.civName }.firstOrNull()
         if (winningQuest != null)
