@@ -11,6 +11,7 @@ import com.unciv.UncivGame
 import com.unciv.logic.map.RoadStatus
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.ruleset.tile.TileImprovement
+import com.unciv.models.stats.Stats
 import com.unciv.models.translations.tr
 import com.unciv.ui.utils.*
 import kotlin.math.round
@@ -56,6 +57,7 @@ class ImprovementPickerScreen(val tileInfo: TileInfo, val onAccept: ()->Unit) : 
             improvementButtonTable.add(image).size(30f).pad(10f)
 
             var labelText = improvement.name.tr()
+            if (improvement.shortcutKey != null) labelText += " (${improvement.shortcutKey})"
             val turnsToBuild = improvement.getTurnsToBuild(currentPlayerCiv)
             if (turnsToBuild > 0) labelText += " - $turnsToBuild${Fonts.turn}"
             val provideResource = tileInfo.hasViewableResource(currentPlayerCiv) && tileInfo.getTileResource().improvement == improvement.name
@@ -76,7 +78,11 @@ class ImprovementPickerScreen(val tileInfo: TileInfo, val onAccept: ()->Unit) : 
 
             val pickNow = "Pick now!".toLabel().onClick { accept(improvement) }
 
-            val statIcons = Table()
+            if (improvement.shortcutKey != null)
+                keyPressDispatcher[improvement.shortcutKey] = { accept(improvement) }
+
+
+            val statIcons = getStatIconsTable(provideResource, removeImprovement)
 
             // get benefits of the new improvement
             val stats = tileInfo.getImprovementStats(improvement, currentPlayerCiv, tileInfo.getCity())
@@ -87,49 +93,59 @@ class ImprovementPickerScreen(val tileInfo: TileInfo, val onAccept: ()->Unit) : 
                 stats.add(existingStats.times(-1.0f))
             }
 
-            // icons of benefits (food, gold, etc) by improvement
-            val statsTable = Table()
-            statsTable.defaults()
-            for (stat in stats.toHashMap()) {
-                val statValue = round(stat.value).toInt()
-                if (statValue == 0) continue
-
-                statsTable.add(ImageGetter.getStatIcon(stat.key.name)).size(20f).padRight(3f)
-
-                val valueLabel = statValue.toString().toLabel()
-                valueLabel.color = if (statValue < 0) Color.RED else Color.WHITE
-
-                statsTable.add(valueLabel).padRight(13f)
-            }
-
-            // icon for adding the resource by improvement
-            if (provideResource)
-                statIcons.add(ImageGetter.getResourceImage(tileInfo.resource.toString(), 30f)).pad(3f)
-
-            // icon for removing the resource by replacing improvement
-            if (removeImprovement && tileInfo.hasViewableResource(currentPlayerCiv) && tileInfo.getTileResource().improvement == tileInfo.improvement) {
-                val crossedResource = Group()
-                val cross = ImageGetter.getImage("OtherIcons/Close")
-                cross.setSize(30f, 30f)
-                cross.color = Color.RED
-                val resourceIcon = ImageGetter.getResourceImage(tileInfo.resource.toString(), 30f)
-                crossedResource.addActor(resourceIcon)
-                crossedResource.addActor(cross)
-                statIcons.add(crossedResource).padTop(30f).padRight(33f)
-            }
-
+            val statsTable = getStatsTable(stats)
             statIcons.add(statsTable).padLeft(13f)
+
+
             regularImprovements.add(statIcons).align(Align.right)
 
             val improvementButton = Button(skin)
             improvementButton.add(improvementButtonTable).pad(5f).fillY()
-            if (improvement.name == tileInfo.improvementInProgress) improvementButton.color= Color.GREEN
+            if (improvement.name == tileInfo.improvementInProgress) improvementButton.color = Color.GREEN
             regularImprovements.add(improvementButton)
             regularImprovements.add(pickNow).padLeft(10f)
             regularImprovements.row()
         }
 
         topTable.add(regularImprovements)
+    }
+
+    private fun getStatIconsTable(provideResource: Boolean, removeImprovement: Boolean): Table {
+        val statIcons = Table()
+
+        // icon for adding the resource by improvement
+        if (provideResource)
+            statIcons.add(ImageGetter.getResourceImage(tileInfo.resource.toString(), 30f)).pad(3f)
+
+        // icon for removing the resource by replacing improvement
+        if (removeImprovement && tileInfo.hasViewableResource(currentPlayerCiv) && tileInfo.getTileResource().improvement == tileInfo.improvement) {
+            val crossedResource = Group()
+            val cross = ImageGetter.getImage("OtherIcons/Close")
+            cross.setSize(30f, 30f)
+            cross.color = Color.RED
+            val resourceIcon = ImageGetter.getResourceImage(tileInfo.resource.toString(), 30f)
+            crossedResource.addActor(resourceIcon)
+            crossedResource.addActor(cross)
+            statIcons.add(crossedResource).padTop(30f).padRight(33f)
+        }
+        return statIcons
+    }
+
+    // icons of benefits (food, gold, etc) by improvement
+    private fun getStatsTable(stats: Stats): Table {
+        val statsTable = Table()
+        for (stat in stats.toHashMap()) {
+            val statValue = round(stat.value).toInt()
+            if (statValue == 0) continue
+
+            statsTable.add(ImageGetter.getStatIcon(stat.key.name)).size(20f).padRight(3f)
+
+            val valueLabel = statValue.toString().toLabel()
+            valueLabel.color = if (statValue < 0) Color.RED else Color.WHITE
+
+            statsTable.add(valueLabel).padRight(13f)
+        }
+        return statsTable
     }
 }
 
