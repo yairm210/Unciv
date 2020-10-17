@@ -129,7 +129,6 @@ class OptionsPopup(val previousScreen:CameraStageBaseScreen) : Popup(previousScr
         addHeader("Other options")
 
         addYesNoRow("Extended map editor", settings.extendedMapEditor) { settings.extendedMapEditor = it }
-        addYesNoRow("Experimental mod manager", settings.showModManager) { settings.showModManager = it; reloadWorldAndOptions() }
 
         addSoundEffectsVolumeSlider()
         addMusicVolumeSlider()

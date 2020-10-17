@@ -104,11 +104,10 @@ class MainMenuScreen: CameraStageBaseScreen() {
             { if(stage.actors.none { it is MapEditorMainScreenPopup }) MapEditorMainScreenPopup(this) }
         column2.add(mapEditorScreenTable).row()
 
-        if(game.settings.showModManager) {
-            val modsTable = getTableBlock("Mods", "OtherIcons/Mods")
-            { game.setScreen(ModManagementScreen()) }
-            column2.add(modsTable).row()
-        }
+        val modsTable = getTableBlock("Mods", "OtherIcons/Mods")
+        { game.setScreen(ModManagementScreen()) }
+        column2.add(modsTable).row()
+
 
 
         val optionsTable = getTableBlock("Options", "OtherIcons/Options")

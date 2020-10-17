@@ -37,7 +37,6 @@ class GameSettings {
     var windowState = WindowState()
     var isFreshlyCreated = false
     var extendedMapEditor = false
-    var showModManager = false
 
     init {
         // 26 = Android Oreo. Versions below may display permanent icon in notification bar.
