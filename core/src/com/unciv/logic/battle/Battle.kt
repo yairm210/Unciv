@@ -106,7 +106,7 @@ object Battle {
             bonusUniques.addAll(civUnit.unit.getMatchingUniques(bonusUniquePlaceholderText))
         }
 
-        // As of 3.11.5 This is to be deprecated and converted to "Earn [100]% of [Barbarians] opponent's [Strength] as [Culture] for kills" - keeping it here so that mods with this can still work for now
+        // As of 3.11.5 This is to be deprecated and converted to "Earn [100]% of [Barbarian] opponent's [Strength] as [Culture] for kills" - keeping it here so that mods with this can still work for now
         if (defeatedUnit.unit.civInfo.isBarbarian() && civUnit.getCivInfo().hasUnique("Gain Culture when you kill a barbarian unit")) {
             cultureReward += unitStr
         }

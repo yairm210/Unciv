@@ -686,7 +686,7 @@ class MapUnit {
         if (category == "non-air" && !type.isAirUnit()) return true
         if ((category == "military" || category == "military units") && type.isMilitary()) return true
         if (hasUnique(category)) return true
-        if (category == "Barbarians" && civInfo.isBarbarian()) return true
+        if ((category == "Barbarians" || category == "Barbarian") && civInfo.isBarbarian()) return true
 
         return false
     }

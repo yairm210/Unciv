@@ -104,7 +104,7 @@
 		"name": "Honor",
 		"era": "Ancient era",
 		"effect": "+25% bonus vs Barbarians; gain Culture when you kill a barbarian unit",
-		"uniques": ["+25% bonus vs Barbarians", "Earn [100]% of [Barbarians] opponent's [Strength] as [Culture] for kills", "Notified of new Barbarian encampments"],
+		"uniques": ["+25% bonus vs Barbarians", "Earn [100]% of [Barbarian] opponent's [Strength] as [Culture] for kills", "Notified of new Barbarian encampments"],
 		"policies": [
 			{
 				"name": "Warrior Code",
