@@ -92,7 +92,12 @@ object Battle {
     }
 
     private fun tryEarnFromKilling(civUnit:ICombatant, defeatedUnit:MapUnitCombatant){
+        val unitStr = max(defeatedUnit.unit.baseUnit.strength, defeatedUnit.unit.baseUnit.rangedStrength)
+        val unitCost = defeatedUnit.unit.baseUnit.cost
         val bonusUniquePlaceholderText = "Earn []% of [] opponent's [] as [] for kills"
+
+        var goldReward = 0
+        var cultureReward = 0
         var bonusUniques = ArrayList<Unique>()
 
         bonusUniques.addAll(civUnit.getCivInfo().getMatchingUniques(bonusUniquePlaceholderText))
@@ -101,20 +106,20 @@ object Battle {
             bonusUniques.addAll(civUnit.unit.getMatchingUniques(bonusUniquePlaceholderText))
         }
 
-        // As of 3.11.4 This is to be deprecated and converted to "Earn [100]% of [Barbarians] opponent's [Strength] as [Culture] for kills" - keeping it here so that mods with this can still work for now
-        bonusUniques.add(Unique("Earn ["
-                + 100 * civUnit.getCivInfo().getMatchingUniques("Gain Culture when you kill a barbarian unit").count()
-                + "]% of [Barbarians] opponent's [Strength] as [Culture] for kills"))
+        // As of 3.11.5 This is to be deprecated and converted to "Earn [100]% of [Barbarians] opponent's [Strength] as [Culture] for kills" - keeping it here so that mods with this can still work for now
+        if (defeatedUnit.unit.civInfo.isBarbarian() && civUnit.getCivInfo().hasUnique("Gain Culture when you kill a barbarian unit")) {
+            cultureReward += unitStr
+        }
 
-        // As of 3.11.4 This is to be deprecated and converted to "Earn [100]% of [military] opponent's [Strength] as [Culture] for kills" - keeping it here so that mods with this can still work for now
-        bonusUniques.add(Unique("Earn ["
-                + 100 * civUnit.getCivInfo().getMatchingUniques("Gains culture from each enemy unit killed").count()
-                + "]% of [military] opponent's [Strength] as [Culture] for kills"))
+        // As of 3.11.5 This is to be deprecated and converted to "Earn [100]% of [military] opponent's [Strength] as [Culture] for kills" - keeping it here so that mods with this can still work for now
+        if (civUnit.getCivInfo().hasUnique("Gains culture from each enemy unit killed")) {
+            cultureReward += unitStr
+        }
 
-        // As of 3.11.4 This is to be deprecated and converted to "Earn [10]% of [military] opponent's [Cost] as [Gold] for kills" - keeping it here so that mods with this can still work for now
-        bonusUniques.add(Unique("Earn ["
-                + 10 * civUnit.getCivInfo().getMatchingUniques("Gain gold for each unit killed").count()
-                + "]% of [military] opponent's [Cost] as [Gold] for kills"))
+        // As of 3.11.5 This is to be deprecated and converted to "Earn [10]% of [military] opponent's [Cost] as [Gold] for kills" - keeping it here so that mods with this can still work for now
+        if (civUnit.getCivInfo().hasUnique("Gain gold for each unit killed")) {
+            goldReward += (unitCost.toFloat() * 0.10).toInt()
+        }
 
         for (unique in bonusUniques) {
             if (!defeatedUnit.matchesCategory(unique.params[1])) {
@@ -124,14 +129,18 @@ object Battle {
             val yieldPercent = unique.params[0].toFloat() / 100
             val defeatedUnitYieldSourceType = unique.params[2]
             val yieldType = unique.params[3]
-            val yieldTypeSourceAmount = if (defeatedUnitYieldSourceType == "Cost") defeatedUnit.unit.baseUnit.cost else max(defeatedUnit.unit.baseUnit.strength, defeatedUnit.unit.baseUnit.rangedStrength)
+            val yieldTypeSourceAmount = if (defeatedUnitYieldSourceType == "Cost") unitCost else unitStr
             val yieldAmount = (yieldTypeSourceAmount * yieldPercent).toInt()
 
+
             if (yieldType == "Gold")
-                civUnit.getCivInfo().gold += yieldAmount
+                goldReward += yieldAmount
             else if (yieldType == "Culture")
-                civUnit.getCivInfo().policies.addCulture(yieldAmount)
+                cultureReward += yieldAmount
         }
+
+        civUnit.getCivInfo().policies.addCulture(cultureReward)
+        civUnit.getCivInfo().gold += goldReward
     }
 
     private fun takeDamage(attacker: ICombatant, defender: ICombatant) {
