@@ -76,12 +76,10 @@ object Battle {
         // Add culture when defeating a barbarian when Honor policy is adopted, gold from enemy killed when honor is complete
         // or any enemy military unit with Sacrificial captives unique (can be either attacker or defender!)
         if (defender.isDefeated() && defender is MapUnitCombatant && !defender.getUnitType().isCivilian()) {
-            tryGetCultureFromKilling(attacker, defender)
-            tryGetGoldFromKilling(attacker, defender)
+            tryEarnFromKilling(attacker, defender)
             tryHealAfterKilling(attacker, defender)
         } else if (attacker.isDefeated() && attacker is MapUnitCombatant && !attacker.getUnitType().isCivilian()) {
-            tryGetCultureFromKilling(defender, attacker)
-            tryGetGoldFromKilling(defender, attacker)
+            tryEarnFromKilling(defender, attacker)
             tryHealAfterKilling(defender, attacker)
         }
 
@@ -91,6 +89,58 @@ object Battle {
             else if (attacker.unit.isMoving())
                 attacker.unit.action = null
         }
+    }
+
+    private fun tryEarnFromKilling(civUnit:ICombatant, defeatedUnit:MapUnitCombatant){
+        val unitStr = max(defeatedUnit.unit.baseUnit.strength, defeatedUnit.unit.baseUnit.rangedStrength)
+        val unitCost = defeatedUnit.unit.baseUnit.cost
+        val bonusUniquePlaceholderText = "Earn []% of [] opponent's [] as [] for kills"
+
+        var goldReward = 0
+        var cultureReward = 0
+        var bonusUniques = ArrayList<Unique>()
+
+        bonusUniques.addAll(civUnit.getCivInfo().getMatchingUniques(bonusUniquePlaceholderText))
+
+        if (civUnit is MapUnitCombatant) {
+            bonusUniques.addAll(civUnit.unit.getMatchingUniques(bonusUniquePlaceholderText))
+        }
+
+        // As of 3.11.5 This is to be deprecated and converted to "Earn [100]% of [Barbarian] opponent's [Strength] as [Culture] for kills" - keeping it here so that mods with this can still work for now
+        if (defeatedUnit.unit.civInfo.isBarbarian() && civUnit.getCivInfo().hasUnique("Gain Culture when you kill a barbarian unit")) {
+            cultureReward += unitStr
+        }
+
+        // As of 3.11.5 This is to be deprecated and converted to "Earn [100]% of [military] opponent's [Strength] as [Culture] for kills" - keeping it here so that mods with this can still work for now
+        if (civUnit.getCivInfo().hasUnique("Gains culture from each enemy unit killed")) {
+            cultureReward += unitStr
+        }
+
+        // As of 3.11.5 This is to be deprecated and converted to "Earn [10]% of [military] opponent's [Cost] as [Gold] for kills" - keeping it here so that mods with this can still work for now
+        if (civUnit.getCivInfo().hasUnique("Gain gold for each unit killed")) {
+            goldReward += (unitCost.toFloat() * 0.10).toInt()
+        }
+
+        for (unique in bonusUniques) {
+            if (!defeatedUnit.matchesCategory(unique.params[1])) {
+                continue
+            }
+
+            val yieldPercent = unique.params[0].toFloat() / 100
+            val defeatedUnitYieldSourceType = unique.params[2]
+            val yieldType = unique.params[3]
+            val yieldTypeSourceAmount = if (defeatedUnitYieldSourceType == "Cost") unitCost else unitStr
+            val yieldAmount = (yieldTypeSourceAmount * yieldPercent).toInt()
+
+
+            if (yieldType == "Gold")
+                goldReward += yieldAmount
+            else if (yieldType == "Culture")
+                cultureReward += yieldAmount
+        }
+
+        civUnit.getCivInfo().policies.addCulture(cultureReward)
+        civUnit.getCivInfo().gold += goldReward
     }
 
     private fun takeDamage(attacker: ICombatant, defender: ICombatant) {
@@ -214,21 +264,6 @@ object Battle {
         } else if (attacker is CityCombatant) {
             attacker.city.attackedThisTurn = true
         }
-    }
-
-    private fun tryGetCultureFromKilling(civUnit:ICombatant, defeatedUnit:MapUnitCombatant){
-        //Aztecs get melee strength of the unit killed in culture and honor opener does the same thing.
-        //They stack. So you get culture equal to 200% of the dead unit's strength.
-        val civInfo = civUnit.getCivInfo()
-        if (defeatedUnit.getCivInfo().isBarbarian() && civInfo.hasUnique("Gain Culture when you kill a barbarian unit"))
-            civInfo.policies.addCulture(defeatedUnit.unit.baseUnit.strength)
-        if (civInfo.hasUnique("Gains culture from each enemy unit killed"))
-            civInfo.policies.addCulture(defeatedUnit.unit.baseUnit.strength)
-    }
-
-    private fun tryGetGoldFromKilling(civUnit:ICombatant, defeatedUnit:MapUnitCombatant) {
-        if (civUnit.getCivInfo().hasUnique("Gain gold for each unit killed"))
-            civUnit.getCivInfo().gold += defeatedUnit.unit.baseUnit.getProductionCost(defeatedUnit.getCivInfo()) / 10
     }
 
     // XP!
