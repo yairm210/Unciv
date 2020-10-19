@@ -33,8 +33,14 @@ class MapGenerator(val ruleset: Ruleset) {
         map.mapParameters = mapParameters
         map.mapParameters.seed = seed
 
-        if (mapType == MapType.empty)
+        if (mapType == MapType.empty) {
+            for (tile in map.values) {
+                tile.baseTerrain = Constants.ocean
+                tile.setTerrainTransients()
+            }
+
             return map
+        }
 
         seedRNG(seed)
         MapLandmassGenerator(randomness).generateLand(map,ruleset)
