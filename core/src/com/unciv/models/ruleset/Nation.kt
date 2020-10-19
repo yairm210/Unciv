@@ -115,8 +115,7 @@ class Nation : INamed {
     private fun addUniqueBuildingsText(textList: ArrayList<String>, ruleset: Ruleset) {
         for (building in ruleset.buildings.values
                 .filter { it.uniqueTo == name && "Will not be displayed in Civilopedia" !in it.uniques}) {
-            if (building.replaces == null) textList += building.getShortDescription(ruleset)
-            else {
+            if (building.replaces != null && ruleset.buildings.containsKey(building.replaces!!)) {
                 val originalBuilding = ruleset.buildings[building.replaces!!]!!
 
                 textList += building.name.tr() + " - " + "Replaces [${originalBuilding.name}]".tr()
@@ -136,7 +135,9 @@ class Nation : INamed {
                 if (building.cityHealth != originalBuilding.cityHealth)
                     textList += "  {City health} " + "[${building.cityHealth}] vs [${originalBuilding.cityHealth}]".tr()
                 textList += ""
-            }
+            } else if (building.replaces != null) {
+                textList += building.name.tr() + " - " + "Replaces [${building.replaces}], which is not found in the ruleset!".tr()
+            } else textList += building.getShortDescription(ruleset)
         }
     }
 
