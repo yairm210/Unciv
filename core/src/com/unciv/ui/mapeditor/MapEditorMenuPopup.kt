@@ -71,7 +71,7 @@ class MapEditorMenuPopup(var mapEditorScreen: MapEditorScreen): Popup(mapEditorS
 
                     tileGroup.update()
                 }
-            }, mapEditorScreen).open()
+            }, mapEditorScreen).open(true)
         }
         add(clearCurrentMapButton).row()
     }

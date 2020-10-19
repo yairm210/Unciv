@@ -105,7 +105,7 @@ class Ruleset {
     }
 
 
-    fun load(folderHandle: FileHandle, printOutput:Boolean) {
+    fun load(folderHandle: FileHandle, printOutput: Boolean) {
         val gameBasicsStartTime = System.currentTimeMillis()
 
         val modOptionsFile = folderHandle.child("ModOptions.json")
@@ -176,7 +176,7 @@ class Ruleset {
         if (difficultiesFile.exists()) difficulties += createHashmap(jsonParser.getFromJson(Array<Difficulty>::class.java, difficultiesFile))
 
         val gameBasicsLoadTime = System.currentTimeMillis() - gameBasicsStartTime
-        if(printOutput) println("Loading ruleset - " + gameBasicsLoadTime + "ms")
+        if (printOutput) println("Loading ruleset - " + gameBasicsLoadTime + "ms")
     }
 
     /** Building costs are unique in that they are dependant on info in the technology part.
@@ -211,6 +211,68 @@ class Ruleset {
         stringList += ""
         return stringList.joinToString()
     }
+
+
+    fun checkModLinks(): String {
+        val lines = ArrayList<String>()
+
+        // Checks for all mods
+        for (unit in units.values)
+            if (unit.upgradesTo == unit.name)
+                lines += "${unit.name} upgrades to itself!"
+
+        for (tech in technologies.values) {
+            for (otherTech in tech.column!!.techs) {
+                if (tech != otherTech && otherTech.row == tech.row)
+                    lines += "${tech.name} is in the same row as ${otherTech.name}!"
+            }
+        }
+
+        if (!modOptions.isBaseRuleset) return lines.joinToString("\n")
+
+
+        for (unit in units.values) {
+            if (unit.requiredTech != null && !technologies.containsKey(unit.requiredTech!!))
+                lines += "${unit.name} requires tech ${unit.requiredTech} which does not exist!"
+            if (unit.obsoleteTech != null && !technologies.containsKey(unit.obsoleteTech!!))
+                lines += "${unit.name} obsoletes at tech ${unit.obsoleteTech} which does not exist!"
+            if (unit.requiredResource != null && !tileResources.containsKey(unit.requiredResource!!))
+                lines += "${unit.name} requires resource ${unit.requiredResource} which does not exist!"
+            if (unit.upgradesTo != null && !units.containsKey(unit.upgradesTo!!))
+                lines += "${unit.name} upgrades to unit ${unit.upgradesTo} which does not exist!"
+            if (unit.replaces != null && !units.containsKey(unit.replaces!!))
+                lines += "${unit.replaces} replaces ${unit.replaces} which does not exist!"
+        }
+
+        for (building in buildings.values) {
+            if (building.requiredTech != null && !technologies.containsKey(building.requiredTech!!))
+                lines += "${building.name} requires tech ${building.requiredTech} which does not exist!"
+            if (building.requiredResource != null && !tileResources.containsKey(building.requiredResource!!))
+                lines += "${building.name} requires resource ${building.requiredResource} which does not exist!"
+            if (building.replaces != null && !buildings.containsKey(building.replaces!!))
+                lines += "${building.name} replaces ${building.replaces} which does not exist!"
+        }
+
+        for (resource in tileResources.values) {
+            if (resource.revealedBy != null && !technologies.containsKey(resource.revealedBy!!))
+                lines += "${resource.name} revealed by tech ${resource.revealedBy} which does not exist!"
+            if (resource.improvement != null && !tileImprovements.containsKey(resource.improvement!!))
+                lines += "${resource.name} improved by improvement ${resource.improvement} which does not exist!"
+        }
+
+        for (improvement in tileImprovements.values) {
+            if (improvement.techRequired != null && !technologies.containsKey(improvement.techRequired!!))
+                lines += "${improvement.name} requires tech ${improvement.techRequired} which does not exist!"
+        }
+
+        for (tech in technologies.values) {
+            for (prereq in tech.prerequisites) {
+                if (!technologies.containsKey(prereq))
+                    lines += "${tech.name} requires tech $prereq which does not exist!"
+            }
+        }
+        return lines.joinToString("\n")
+    }
 }
 
 /** Loading mods is expensive, so let's only do it once and
@@ -226,8 +288,8 @@ object RulesetCache :HashMap<String,Ruleset>() {
             this[ruleset.fullName] = Ruleset().apply { load(fileHandle, printOutput) }
         }
 
-        val modsHandles = if(consoleMode) FileHandle("mods").list()
-                                else Gdx.files.local("mods").list()
+        val modsHandles = if (consoleMode) FileHandle("mods").list()
+        else Gdx.files.local("mods").list()
 
         for (modFolder in modsHandles) {
             if (modFolder.name().startsWith('.')) continue
@@ -237,8 +299,10 @@ object RulesetCache :HashMap<String,Ruleset>() {
                 modRuleset.load(modFolder.child("jsons"), printOutput)
                 modRuleset.name = modFolder.name()
                 this[modRuleset.name] = modRuleset
-                if(printOutput) println("Mod loaded successfully: " + modRuleset.name)
-                if(printOutput) checkModLinks(modRuleset)
+                if (printOutput) {
+                    println("Mod loaded successfully: " + modRuleset.name)
+                    println(modRuleset.checkModLinks())
+                }
             } catch (ex: Exception) {
                 if (printOutput) {
                     println("Exception loading mod '${modFolder.name()}':")
@@ -249,55 +313,6 @@ object RulesetCache :HashMap<String,Ruleset>() {
         }
     }
 
-    fun checkModLinks(modRuleset: Ruleset) {
-        for (unit in modRuleset.units.values) {
-            if (unit.requiredTech != null && !modRuleset.technologies.containsKey(unit.requiredTech!!))
-                println("${unit.name} requires tech ${unit.requiredTech} which does not exist!")
-            if (unit.obsoleteTech != null && !modRuleset.technologies.containsKey(unit.obsoleteTech!!))
-                println("${unit.name} obsoletes at tech ${unit.obsoleteTech} which does not exist!")
-            if (unit.requiredResource != null && !modRuleset.tileResources.containsKey(unit.requiredResource!!))
-                println("${unit.name} requires resource ${unit.requiredResource} which does not exist!")
-            if (unit.upgradesTo != null && !modRuleset.units.containsKey(unit.upgradesTo!!))
-                println("${unit.name} upgrades to unit ${unit.upgradesTo} which does not exist!")
-            if (unit.upgradesTo == unit.name)
-                println("${unit.name} upgrades to itself!")
-            if (unit.replaces != null && !modRuleset.units.containsKey(unit.replaces!!))
-                println("${unit.replaces} replaces ${unit.replaces} which does not exist!")
-        }
-
-        for (building in modRuleset.buildings.values) {
-            if (building.requiredTech != null && !modRuleset.technologies.containsKey(building.requiredTech!!))
-                println("${building.name} requires tech ${building.requiredTech} which does not exist!")
-            if (building.requiredResource != null && !modRuleset.tileResources.containsKey(building.requiredResource!!))
-                println("${building.name} requires resource ${building.requiredResource} which does not exist!")
-            if (building.replaces != null && !modRuleset.buildings.containsKey(building.replaces!!))
-                println("${building.name} replaces ${building.replaces} which does not exist!")
-        }
-
-        for (resource in modRuleset.tileResources.values) {
-            if (resource.revealedBy != null && !modRuleset.technologies.containsKey(resource.revealedBy!!))
-                println("${resource.name} revealed by tech ${resource.revealedBy} which does not exist!")
-            if (resource.improvement != null && !modRuleset.tileImprovements.containsKey(resource.improvement!!))
-                println("${resource.name} improved by improvement ${resource.improvement} which does not exist!")
-        }
-
-        for (improvement in modRuleset.tileImprovements.values) {
-            if (improvement.techRequired != null && !modRuleset.technologies.containsKey(improvement.techRequired!!))
-                println("${improvement.name} requires tech ${improvement.techRequired} which does not exist!")
-        }
-
-        for (tech in modRuleset.technologies.values) {
-            for (prereq in tech.prerequisites) {
-                if (!modRuleset.technologies.containsKey(prereq))
-                    println("${tech.name} requires tech $prereq which does not exist!")
-            }
-            for (otherTech in tech.column!!.techs) {
-                if (tech != otherTech && otherTech.row == tech.row)
-                    println("${tech.name} is in the same row as ${otherTech.name}!")
-            }
-        }
-
-    }
 
     fun getBaseRuleset() = this[BaseRuleset.Civ_V_Vanilla.fullName]!!
 
@@ -325,18 +340,6 @@ class Specialist: NamedStats() {
     var greatPersonPoints= Stats()
 
     companion object {
-
-        fun convertStatsToSpecialistHashmap(stats: Stats): Counter<String> {
-            val specialistHashmap = Counter<String>()
-            for ((stat, amount) in stats.toHashMap()) {
-                if (amount == 0f) continue
-                val specialistName = specialistNameByStat(stat)
-                specialistHashmap[specialistName] = amount.toInt()
-            }
-            return specialistHashmap
-        }
-
-
         internal fun specialistNameByStat(stat: Stat) = when (stat) {
             Stat.Production -> "Engineer"
             Stat.Gold -> "Merchant"
