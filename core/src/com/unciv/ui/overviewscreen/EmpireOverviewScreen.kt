@@ -324,8 +324,8 @@ class EmpireOverviewScreen(private var viewingPlayer:CivilizationInfo, defaultPa
         val table=Table(skin).apply { defaults().pad(5f) }
         table.add("Name".tr())
         table.add("Action".tr())
-        table.add(Fonts.strength)
-        table.add(Fonts.rangedStrength)
+        table.add(Fonts.strength.toString())
+        table.add(Fonts.rangedStrength.toString())
         table.add(Fonts.movement.toString())
         table.add("Closest city".tr())
         table.add("Promotions".tr())
