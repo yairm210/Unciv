@@ -19,6 +19,7 @@ import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.models.ruleset.Nation
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tile.ResourceType
+import com.unciv.models.stats.Stats
 import kotlin.math.max
 import kotlin.math.min
 
@@ -188,6 +189,18 @@ object ImageGetter {
     val foodCircleColor =  colorFromRGB(129, 199, 132)
     val productionCircleColor = Color.BROWN.cpy().lerp(Color.WHITE,0.5f)!!
     val goldCircleColor = Color.GOLD.cpy().lerp(Color.WHITE,0.5f)!!
+    val cultureCircleColor = Color.PURPLE.cpy().lerp(Color.WHITE,0.5f)!!
+    val scienceCircleColor = Color.BLUE.cpy().lerp(Color.WHITE,0.5f)!!
+    fun getColorFromStats(stats:Stats) = when {
+        stats.food > 0 -> foodCircleColor
+        stats.production > 0 -> productionCircleColor
+        stats.gold > 0 -> goldCircleColor
+        stats.culture > 0 -> cultureCircleColor
+        stats.science > 0 -> scienceCircleColor
+        else -> Color.WHITE
+    }
+
+
     fun getImprovementIcon(improvementName:String, size:Float=20f):Actor{
         if(improvementName.startsWith("Remove") || improvementName == Constants.cancelImprovementOrder)
             return getImage("OtherIcons/Stop")
@@ -202,13 +215,7 @@ object ImageGetter {
         val improvement = ruleset.tileImprovements[improvementName]
         if(improvement==null)
             throw Exception("No improvement $improvementName found in ruleset!")
-        when {
-            improvement.food>0 -> iconGroup.circle.color= foodCircleColor
-            improvement.production>0 -> iconGroup.circle.color= productionCircleColor
-            improvement.gold>0 -> iconGroup.circle.color= goldCircleColor
-            improvement.science>0 -> iconGroup.circle.color= Color.BLUE.cpy().lerp(Color.WHITE,0.5f)
-            improvement.culture>0 -> iconGroup.circle.color= Color.PURPLE.cpy().lerp(Color.WHITE,0.5f)
-        }
+        iconGroup.circle.color = getColorFromStats(improvement)
 
         return iconGroup
     }
@@ -265,23 +272,19 @@ object ImageGetter {
     fun getResourceImage(resourceName: String, size:Float): Actor {
         val iconGroup = getImage("ResourceIcons/$resourceName").surroundWithCircle(size)
         val resource = ruleset.tileResources[resourceName]
-        if(resource==null) throw Exception("No resource $resourceName found in ruleset!")
-        when {
-            resource.food > 0 -> iconGroup.circle.color = foodCircleColor
-            resource.production > 0 -> iconGroup.circle.color = productionCircleColor
-            resource.gold > 0 -> iconGroup.circle.color = goldCircleColor
-        }
+        if (resource == null) throw Exception("No resource $resourceName found in ruleset!")
+        iconGroup.circle.color = getColorFromStats(resource)
 
-        if(resource.resourceType==ResourceType.Luxury){
+        if (resource.resourceType == ResourceType.Luxury) {
             val happiness = getStatIcon("Happiness")
-            happiness.setSize(size/2,size/2)
-            happiness.x = iconGroup.width-happiness.width
+            happiness.setSize(size / 2, size / 2)
+            happiness.x = iconGroup.width - happiness.width
             iconGroup.addActor(happiness)
         }
-        if(resource.resourceType==ResourceType.Strategic){
+        if (resource.resourceType == ResourceType.Strategic) {
             val production = getStatIcon("Production")
-            production.setSize(size/2,size/2)
-            production.x = iconGroup.width-production.width
+            production.setSize(size / 2, size / 2)
+            production.x = iconGroup.width - production.width
             iconGroup.addActor(production)
         }
         return iconGroup
