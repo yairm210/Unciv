@@ -1,3 +1,21 @@
+## 3.11.6
+
+Added "locate mod errors" button in the options menu for discovering broken links in base ruleset mods
+
+Resolved another crash caused by incorrect ruleset mod definitions
+
+Checking something that might solve the Mystery of the Disappearing C's
+
+Added culture and science colors to resources
+
+Split civilopedia "buildings" category into "buildings" and "wonders"
+
+Resolved #3274 - empty maps start with ocean tiles
+
+Consolidated unit kill bonus uniques - By givehub99
+
+Translation updates
+
 ## 3.11.5
 
 Performance improvements for main screen rendering - should be much less laggy now
