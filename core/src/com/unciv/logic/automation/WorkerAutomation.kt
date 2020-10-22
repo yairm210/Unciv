@@ -151,13 +151,16 @@ class WorkerAutomation(val unit: MapUnit) {
             return false
 
         if (tile.improvement == null) {
-            if (tile.improvementInProgress != null) return true
+            val progressImprovement = tile.improvementInProgress
+            if (progressImprovement != null && unit.canBuildImprovement(unit.civInfo.gameInfo.ruleSet.tileImprovements[progressImprovement]!!)) return true
             val chosenImprovement = chooseImprovement(tile, civInfo)
-            if (chosenImprovement != null && tile.canBuildImprovement(chosenImprovement, civInfo)) return true
+            if (chosenImprovement != null && tile.canBuildImprovement(chosenImprovement, civInfo) && unit.canBuildImprovement(chosenImprovement)) return true
         } else if (!tile.containsGreatImprovement() && tile.hasViewableResource(civInfo)
-                && tile.getTileResource().improvement != tile.improvement
-                && tile.canBuildImprovement(chooseImprovement(tile, civInfo)!!, civInfo))
-            return true
+                && tile.getTileResource().improvement != tile.improvement) {
+            val chosenImprovement = chooseImprovement(tile, civInfo)
+            if (tile.canBuildImprovement(chosenImprovement!!, civInfo) && unit.canBuildImprovement(chosenImprovement))
+                return true
+        }
 
         return false // cou;dn't find anything to construct here
     }
@@ -199,7 +202,7 @@ class WorkerAutomation(val unit: MapUnit) {
             // While AI sucks in strategical placement of forts, allow a human does it manually
             !civInfo.isPlayerCivilization() && evaluateFortPlacement(tile,civInfo,false) -> Constants.fort
             // I think we can assume that the unique improvement is better
-            uniqueImprovement!=null && tile.canBuildImprovement(uniqueImprovement,civInfo) -> uniqueImprovement.name
+            uniqueImprovement!=null && tile.canBuildImprovement(uniqueImprovement,civInfo) && unit.canBuildImprovement(uniqueImprovement) -> uniqueImprovement.name
 
             tile.terrainFeature == "Fallout" -> "Remove Fallout"
             tile.terrainFeature == Constants.marsh -> "Remove Marsh"

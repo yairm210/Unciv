@@ -9,6 +9,7 @@ import com.unciv.logic.automation.WorkerAutomation
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.Unique
+import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.ruleset.unit.UnitType
 import java.text.DecimalFormat
@@ -177,8 +178,14 @@ class MapUnit {
 
     fun isIdle(): Boolean {
         if (currentMovement == 0f) return false
-        if (hasUnique(Constants.workerUnique) && getTile().improvementInProgress != null) return false
-        if (hasUnique("Can construct roads") && currentTile.improvementInProgress == "Road") return false
+
+        val currentTileImprovement = getTile().improvementInProgress
+
+        // As of 3.11.6 This is to be deprecated and converted to "Can build [Road]" - keeping it here so that mods with this can still work for now
+        if (hasUnique("Can construct roads") && currentTileImprovement == "Road") return false
+
+        if (currentTileImprovement != null && canBuildImprovement(civInfo.gameInfo.ruleSet.tileImprovements[currentTileImprovement]!!)) return false
+
         if (isFortified()) return false
         if (action == Constants.unitActionExplore || isSleeping()
                 || action == Constants.unitActionAutomation || isMoving()) return false
@@ -420,8 +427,12 @@ class MapUnit {
     fun endTurn() {
         doAction()
 
-        if (hasUnique(Constants.workerUnique) && getTile().improvementInProgress != null) workOnImprovement()
-        if (hasUnique("Can construct roads") && currentTile.improvementInProgress == "Road") workOnImprovement()
+        val currentTileImprovement = getTile().improvementInProgress
+
+        // As of 3.11.6 This is to be deprecated and converted to "Can build [Road]" - keeping it here so that mods with this can still work for now
+        if (hasUnique("Can construct roads") && currentTileImprovement == "Road") workOnImprovement()
+
+        if (currentTileImprovement != null && canBuildImprovement(civInfo.gameInfo.ruleSet.tileImprovements[currentTileImprovement]!!)) workOnImprovement()
         if (currentMovement == getMaxMovement().toFloat() && isFortified()) {
             val currentTurnsFortified = getFortificationTurns()
             if (currentTurnsFortified < 2)
@@ -655,6 +666,21 @@ class MapUnit {
     fun interceptDamagePercentBonus():Int {
         return getUniques().filter { it.placeholderText == "Bonus when intercepting []%" }
                 .sumBy { it.params[0].toInt() }
+    }
+
+    fun canBuildAnImprovement() : Boolean {
+        if (hasUnique(Constants.workerUnique) || hasUnique(Constants.canBuildUnique))
+            return true
+        return false
+    }
+
+    fun canBuildImprovement(improvement: TileImprovement) : Boolean {
+        if (hasUnique(Constants.workerUnique) && !improvement.hasUnique(Constants.cantNormallyBuildUnique))
+            return true
+        if (getMatchingUniques(Constants.canBuildUnique).any { it.params[0] == improvement.name } ) {
+            return true
+        }
+        return false
     }
 
     private fun getCitadelDamage() {

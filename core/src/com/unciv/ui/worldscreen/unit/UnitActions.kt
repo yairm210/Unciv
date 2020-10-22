@@ -35,8 +35,8 @@ object UnitActions {
             )
         }
 
-        val workingOnImprovement = unit.hasUnique("Can build improvements on tiles")
-                && unit.currentTile.hasImprovementInProgress()
+        val currentTileImprovement = unit.currentTile.improvementInProgress
+        val workingOnImprovement = currentTileImprovement != null && unit.canBuildImprovement(unit.civInfo.gameInfo.ruleSet.tileImprovements[currentTileImprovement]!!)
         if (!unit.isFortified() && !unit.canFortify()
                 && unit.currentMovement > 0 && !workingOnImprovement) {
             addSleepActions(actionList, unit, unitTable)
@@ -109,6 +109,8 @@ object UnitActions {
         return null
     }
 
+
+    // As of 3.11.6 This is to be deprecated and converted to "Can build [Road]" - keeping it here so that mods with this can still work for now
     private fun addConstructRoadsAction(unit: MapUnit, tile: TileInfo, actionList: ArrayList<UnitAction>) {
         val improvement = RoadStatus.Road.improvement(unit.civInfo.gameInfo.ruleSet) ?: return
         if (unit.hasUnique("Can construct roads")
@@ -259,33 +261,36 @@ object UnitActions {
     }
 
     private fun addWorkerActions(unit: MapUnit, actionList: ArrayList<UnitAction>, tile: TileInfo, worldScreen: WorldScreen, unitTable: UnitTable) {
-        if (!unit.hasUnique("Can build improvements on tiles")) return
+        if (!unit.canBuildAnImprovement()) return
 
-        // Allow automate/unautomate when embarked, but not building improvements - see #1963
-        if (Constants.unitActionAutomation == unit.action) {
-            actionList += UnitAction(
-                    type = UnitActionType.StopAutomation,
-                    action = { unit.action = null }
-            )
-        } else {
-            actionList += UnitAction(
-                    type = UnitActionType.Automate,
-                    action = {
-                        unit.action = Constants.unitActionAutomation
-                        WorkerAutomation(unit).automateWorkerAction()
-                    }.takeIf { unit.currentMovement > 0 })
+        // don't allow non-civilian units to automate building, at least for now
+        if (unit.type.isCivilian()) {
+            // Allow automate/unautomate when embarked, but not building improvements - see #1963
+            if (Constants.unitActionAutomation == unit.action) {
+                actionList += UnitAction(
+                        type = UnitActionType.StopAutomation,
+                        action = { unit.action = null }
+                )
+            } else {
+                actionList += UnitAction(
+                        type = UnitActionType.Automate,
+                        action = {
+                            unit.action = Constants.unitActionAutomation
+                            WorkerAutomation(unit).automateWorkerAction()
+                        }.takeIf { unit.currentMovement > 0 })
+            }
         }
 
         if(unit.isEmbarked()) return
 
         val canConstruct =unit.currentMovement > 0
                 && !tile.isCityCenter()
-                && unit.civInfo.gameInfo.ruleSet.tileImprovements.values.any { tile.canBuildImprovement(it, unit.civInfo) }
+                && unit.civInfo.gameInfo.ruleSet.tileImprovements.values.any { tile.canBuildImprovement(it, unit.civInfo) && unit.canBuildImprovement(it) }
         actionList += UnitAction(
                 type = UnitActionType.ConstructImprovement,
                 isCurrentAction = unit.currentTile.hasImprovementInProgress(),
                 action = {
-                    worldScreen.game.setScreen(ImprovementPickerScreen(tile) { unitTable.selectUnit() })
+                    worldScreen.game.setScreen(ImprovementPickerScreen(tile, unit) { unitTable.selectUnit() })
                 }.takeIf { canConstruct })
     }
 

@@ -343,10 +343,9 @@
 		"upgradesTo": "Longswordsman",
 		"obsoleteTech": "Gunpowder",
 		"requiredResource": "Iron",
-		"uniques": ["Can construct roads"],
+		"uniques": ["Can build [Road]", "Can build [Fort]"],
 		"hurryCostModifier": 20,
 		"attackSound": "metalhit"
-		// can construct fort (if required for fort tech is researched)
 	},
 	{
 		"name": "Mohawk Warrior",

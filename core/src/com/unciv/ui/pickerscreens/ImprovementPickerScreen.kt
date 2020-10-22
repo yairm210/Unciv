@@ -10,13 +10,14 @@ import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.map.RoadStatus
 import com.unciv.logic.map.TileInfo
+import com.unciv.logic.map.MapUnit
 import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.tr
 import com.unciv.ui.utils.*
 import kotlin.math.round
 
-class ImprovementPickerScreen(val tileInfo: TileInfo, val onAccept: ()->Unit) : PickerScreen() {
+class ImprovementPickerScreen(val tileInfo: TileInfo, val mapUnit : MapUnit, val onAccept: ()->Unit) : PickerScreen() {
     private var selectedImprovement: TileImprovement? = null
     val currentPlayerCiv = game.gameInfo.getCurrentPlayerCivilization()
 
@@ -47,7 +48,7 @@ class ImprovementPickerScreen(val tileInfo: TileInfo, val onAccept: ()->Unit) : 
         regularImprovements.defaults().pad(5f)
 
         for (improvement in tileInfo.tileMap.gameInfo.ruleSet.tileImprovements.values) {
-            if (!tileInfo.canBuildImprovement(improvement, currentPlayerCiv)) continue
+            if (!tileInfo.canBuildImprovement(improvement, currentPlayerCiv) || !mapUnit.canBuildImprovement(improvement)) continue
             if (improvement.name == tileInfo.improvement) continue
 
             val improvementButtonTable = Table()
