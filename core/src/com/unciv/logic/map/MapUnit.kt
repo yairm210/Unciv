@@ -31,6 +31,8 @@ class MapUnit {
     // a major component of getDistanceToTilesWithinTurn,
     // which in turn is a component of getShortestPath and canReach
     @Transient var ignoresTerrainCost = false
+    @Transient var allTilesCosts1 = false
+    @Transient var canPassThroughImpassableTiles = false
     @Transient var roughTerrainPenalty = false
     @Transient var doubleMovementInCoast = false
     @Transient var doubleMovementInForestAndJungle = false
@@ -121,6 +123,8 @@ class MapUnit {
 
         tempUniques = uniques
 
+        allTilesCosts1 = hasUnique("All tiles costs 1")
+        canPassThroughImpassableTiles = hasUnique("Can pass through impassable tiles")
         ignoresTerrainCost = hasUnique("Ignores terrain cost")
         roughTerrainPenalty = hasUnique("Rough terrain penalty")
         doubleMovementInCoast = hasUnique("Double movement in coast")
@@ -439,6 +443,7 @@ class MapUnit {
             }
 
         getCitadelDamage()
+        getTerrainDamage()
     }
 
     fun startTurn() {
@@ -655,6 +660,20 @@ class MapUnit {
     fun interceptDamagePercentBonus():Int {
         return getUniques().filter { it.placeholderText == "Bonus when intercepting []%" }
                 .sumBy { it.params[0].toInt() }
+    }
+
+    private fun getTerrainDamage() {
+        // hard coded mountain damage for now
+        if (getTile().baseTerrain == Constants.mountain) {
+            val tileDamage = 50
+            health -= tileDamage
+
+            if (health <= 0) {
+                civInfo.addNotification("Our [$name] took [$tileDamage] tile damage and was destroyed", currentTile.position, Color.RED)
+                destroy()
+            } else civInfo.addNotification("Our [$name] took [$tileDamage] tile damage", currentTile.position, Color.RED)
+        }
+
     }
 
     private fun getCitadelDamage() {
