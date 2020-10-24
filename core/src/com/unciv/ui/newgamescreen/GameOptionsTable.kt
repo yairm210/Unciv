@@ -192,18 +192,19 @@ class GameOptionsTable(val previousScreen: IPreviousScreen, val updatePlayerPick
             if (mod.name in gameParameters.mods) checkBox.isChecked = true
             checkBox.onChange {
                 if (checkBox.isChecked) {
+                    val modLinkErrors = mod.checkModLinks()
+                    if (modLinkErrors != "") {
+                        ToastPopup("The mod you selected is incorrectly defined!\n\n$modLinkErrors", previousScreen as CameraStageBaseScreen)
+                        checkBox.isChecked = false
+                        return@onChange
+                    }
+
                     if (mod.modOptions.isBaseRuleset)
                         for (oldBaseRuleset in gameParameters.mods)
                             if (modRulesets.firstOrNull { it.name == oldBaseRuleset }?.modOptions?.isBaseRuleset == true)
                                 gameParameters.mods.remove(oldBaseRuleset)
-                    try {
-                        gameParameters.mods.add(mod.name)
-                        reloadRuleset() // This can FAIL at updateBuildingCosts if the mod is incorrectly defined! So we need to popup!
-                    } catch (ex:Exception){
-                        ToastPopup("The mod you selected is incorrectly defined!", previousScreen as CameraStageBaseScreen)
-                        gameParameters.mods.remove(mod.name)
-                        reloadRuleset()
-                    }
+                    gameParameters.mods.add(mod.name)
+                    reloadRuleset() // This can FAIL at updateBuildingCosts if the mod is incorrectly defined! So we need to popup!
                 }
                 else {
                         gameParameters.mods.remove(mod.name)
