@@ -342,7 +342,7 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
         val resources = ArrayList<Actor>()
         resources.add(getHex(Color.WHITE, getCrossedResource()).apply {
             onClick {
-                tileAction = {it.resource=null}
+                tileAction = { it.resource = null }
                 setCurrentHex(getHex(Color.WHITE, getCrossedResource()), "Clear resource")
             }
         })
@@ -350,12 +350,12 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
         for (resource in ruleset.tileResources.values) {
             val resourceHex = getHex(Color.WHITE, ImageGetter.getResourceImage(resource.name, 40f))
             resourceHex.onClick {
-                tileAction = {it.resource = resource.name}
+                tileAction = { it.resource = resource.name }
 
                 // for the tile image
                 val tileInfo = TileInfo()
                 tileInfo.ruleset = mapEditorScreen.ruleset
-                val terrain = resource.terrainsCanBeFoundOn.first()
+                val terrain = resource.terrainsCanBeFoundOn.first { ruleset.terrains.containsKey(it) }
                 val terrainObject = ruleset.terrains[terrain]!!
                 if (terrainObject.type == TerrainType.TerrainFeature) {
                     tileInfo.baseTerrain =
