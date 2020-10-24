@@ -196,10 +196,19 @@ class GameOptionsTable(val previousScreen: IPreviousScreen, val updatePlayerPick
                         for (oldBaseRuleset in gameParameters.mods)
                             if (modRulesets.firstOrNull { it.name == oldBaseRuleset }?.modOptions?.isBaseRuleset == true)
                                 gameParameters.mods.remove(oldBaseRuleset)
-                    gameParameters.mods.add(mod.name)
+                    try {
+                        gameParameters.mods.add(mod.name)
+                        reloadRuleset() // This can FAIL at updateBuildingCosts if the mod is incorrectly defined! So we need to popup!
+                    } catch (ex:Exception){
+                        ToastPopup("The mod you selected is incorrectly defined!", previousScreen as CameraStageBaseScreen)
+                        gameParameters.mods.remove(mod.name)
+                        reloadRuleset()
+                    }
                 }
-                else gameParameters.mods.remove(mod.name)
-                reloadRuleset()
+                else {
+                        gameParameters.mods.remove(mod.name)
+                        reloadRuleset()
+                    }
                 update()
                 var desiredCiv = ""
                 if (checkBox.isChecked) {
