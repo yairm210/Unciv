@@ -33,7 +33,7 @@ class ModManagementScreen: PickerScreen() {
 
             } catch (ex: Exception) {
                 Gdx.app.postRunnable {
-                    ResponsePopup("Could not download mod list", this)
+                    ToastPopup("Could not download mod list", this)
                 }
                 return@thread
             }
@@ -88,13 +88,13 @@ class ModManagementScreen: PickerScreen() {
                 Github.downloadAndExtract("$gitRepoUrl/archive/master.zip",
                         Gdx.files.local("mods"))
                 Gdx.app.postRunnable {
-                    ResponsePopup("Downloaded!", this)
+                    ToastPopup("Downloaded!", this)
                     RulesetCache.loadRulesets()
                     refresh()
                 }
             } catch (ex:Exception){
                 Gdx.app.postRunnable {
-                    ResponsePopup("Could not download mod", this)
+                    ToastPopup("Could not download mod", this)
                 }
             }
             finally {
