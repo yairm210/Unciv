@@ -359,7 +359,7 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
                 val terrainObject = ruleset.terrains[terrain]!!
                 if (terrainObject.type == TerrainType.TerrainFeature) {
                     tileInfo.baseTerrain =
-                            if (terrainObject.occursOn != null) terrainObject.occursOn.first()
+                            if (terrainObject.occursOn.isNotEmpty()) terrainObject.occursOn.first()
                             else "Grassland"
                     tileInfo.terrainFeature = terrain
                 } else tileInfo.baseTerrain = terrain
@@ -379,7 +379,7 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
             val tileInfo = TileInfo()
             if (terrain.type == TerrainType.TerrainFeature) {
                 tileInfo.baseTerrain = when {
-                    terrain.occursOn != null -> terrain.occursOn.first()
+                    terrain.occursOn.isNotEmpty() -> terrain.occursOn.first()
                     else -> "Grassland"
                 }
                 tileInfo.terrainFeature = terrain.name
@@ -493,7 +493,7 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
 
         if (tileInfo.terrainFeature != null) {
             val terrainFeature = tileInfo.getTerrainFeature()!!
-            if(terrainFeature.occursOn!=null && !terrainFeature.occursOn.contains(tileInfo.baseTerrain))
+            if(terrainFeature.occursOn.isNotEmpty() && !terrainFeature.occursOn.contains(tileInfo.baseTerrain))
                 tileInfo.terrainFeature=null
         }
         if (tileInfo.resource != null) {

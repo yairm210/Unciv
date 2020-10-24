@@ -258,8 +258,8 @@ class Ruleset {
                 lines += "${resource.name} revealed by tech ${resource.revealedBy} which does not exist!"
             if (resource.improvement != null && !tileImprovements.containsKey(resource.improvement!!))
                 lines += "${resource.name} improved by improvement ${resource.improvement} which does not exist!"
-            for(terrain in resource.terrainsCanBeFoundOn)
-                if(!terrains.containsKey(terrain))
+            for (terrain in resource.terrainsCanBeFoundOn)
+                if (!terrains.containsKey(terrain))
                     lines += "${resource.name} can be found on terrain $terrain which does not exist!"
         }
 
@@ -270,12 +270,12 @@ class Ruleset {
                 if (!terrains.containsKey(terrain))
                     lines += "${improvement.name} can be built on terrain $terrain which does not exist!"
         }
-//        
-//        for(terrain in terrains.values){
-//            for(baseTerrain in terrain.occursOn)
-//                if (!terrains.containsKey(baseTerrain))
-//                    lines += "${improvement.name} can be built on terrain $terrain which does not exist!"
-//        }
+
+        for (terrain in terrains.values) {
+            for (baseTerrain in terrain.occursOn)
+                if (!terrains.containsKey(baseTerrain))
+                    lines += "${terrain.name} occurs on terrain $baseTerrain which does not exist!"
+        }
 
         for (tech in technologies.values) {
             for (prereq in tech.prerequisites) {
