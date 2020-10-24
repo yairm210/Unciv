@@ -111,6 +111,13 @@ I'm not planning on it.
 
 It means paying money to Apple, yet another release path,
  and since I don't have an IOS device it means I can't test it properly.
+ 
+## How come this isn't working on my Raspberry Pi?
+
+LibGDX doesn't work on Raspberry, and so neither does Unciv. 
+
+If you're really invested, I'd be thrilled if you could make it work - this seems to be possible, see 
+https://github.com/chrishumphreys/LIbGDX-Pi for his detailed instructions
 
 ## How can I learn to play? Where's the wiki?
 
