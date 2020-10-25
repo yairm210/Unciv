@@ -313,7 +313,11 @@ class CityInfo {
         cityStats.update()
         tryUpdateRoadStatus()
         attackedThisTurn = false
-        if (isInResistance()) resistanceCounter--
+        if (isInResistance()) {
+            resistanceCounter--
+            if (!isInResistance())
+                civInfo.addNotification("The resistance in [$name] has ended!", location, Color.YELLOW)
+        }
 
         if (isPuppet) reassignPopulation()
     }

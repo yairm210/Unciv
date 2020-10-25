@@ -147,13 +147,13 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) 
     }
 
 
-    fun getTileBaseImageLocations(viewingCiv: CivilizationInfo?): List<String>{
-        if (viewingCiv==null  && !showEntireMap) return listOf(tileSetStrings.hexagon)
+    fun getTileBaseImageLocations(viewingCiv: CivilizationInfo?): List<String> {
+        if (viewingCiv == null && !showEntireMap) return listOf(tileSetStrings.hexagon)
 
-        val shouldShowImprovement = tileInfo.improvement!=null && UncivGame.Current.settings.showPixelImprovements
+        val shouldShowImprovement = tileInfo.improvement != null && UncivGame.Current.settings.showPixelImprovements
         val shouldShowResource = UncivGame.Current.settings.showPixelImprovements
-                && tileInfo.resource!=null &&
-                (showEntireMap || viewingCiv==null || tileInfo.hasViewableResource(viewingCiv))
+                && tileInfo.resource != null &&
+                (showEntireMap || viewingCiv == null || tileInfo.hasViewableResource(viewingCiv))
         val baseTerrainTileLocation = tileSetStrings.getTile(tileInfo.baseTerrain) // e.g. Grassland
 
 
@@ -175,8 +175,7 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) 
                 return listOf(tileSetStrings.cityTile)
         }
 
-        if (tileInfo.isNaturalWonder())
-        {
+        if (tileInfo.isNaturalWonder()) {
             val naturalWonder = tileSetStrings.getTile(tileInfo.naturalWonder!!)
             if (ImageGetter.imageExists(naturalWonder))
                 return listOf(naturalWonder)
@@ -186,20 +185,20 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) 
         if (tileInfo.terrainFeature != null) {
             // e.g. Grassland+Forest
             val baseTerrainAndFeatureTileLocation = "$baseTerrainTileLocation+${tileInfo.terrainFeature}"
-            if(shouldShowImprovement && shouldShowResource){
+            if (shouldShowImprovement && shouldShowResource) {
                 // e.g. Grassland+Forest+Deer+Camp
                 val baseFeatureImprovementAndResourceLocation =
                         "$baseTerrainAndFeatureTileLocation+${tileInfo.improvement}+${tileInfo.resource}"
                 if (ImageGetter.imageExists(baseFeatureImprovementAndResourceLocation))
                     return listOf(baseFeatureImprovementAndResourceLocation)
             }
-            if(shouldShowImprovement){
+            if (shouldShowImprovement) {
                 // e.g. Grassland+Forest+Lumber mill
                 val baseFeatureAndImprovementTileLocation = "$baseTerrainAndFeatureTileLocation+${tileInfo.improvement}"
                 if (ImageGetter.imageExists(baseFeatureAndImprovementTileLocation))
                     return listOf(baseFeatureAndImprovementTileLocation)
             }
-            if(shouldShowResource){
+            if (shouldShowResource) {
                 // e.g. Grassland+Forest+Silver
                 val baseTerrainFeatureAndResourceLocation = "$baseTerrainAndFeatureTileLocation+${tileInfo.resource}"
                 if (ImageGetter.imageExists(baseTerrainFeatureAndResourceLocation))
@@ -207,10 +206,10 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) 
             }
 
             if (ImageGetter.imageExists(baseTerrainAndFeatureTileLocation)) {
-                if(shouldShowImprovement){
+                if (shouldShowImprovement) {
                     val improvementImageLocation = tileSetStrings.getTile(tileInfo.improvement!!)
                     // E.g. (Desert+Flood plains, Moai)
-                    if(ImageGetter.imageExists(improvementImageLocation))
+                    if (ImageGetter.imageExists(improvementImageLocation))
                         return listOf(baseTerrainAndFeatureTileLocation, improvementImageLocation)
                 }
                 return listOf(baseTerrainAndFeatureTileLocation)
@@ -218,28 +217,43 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) 
         }
 
         // No terrain feature
-        if(shouldShowImprovement){
-            // E.g. Grassland+Farm
-            val baseTerrainAndImprovement  = "$baseTerrainTileLocation+${tileInfo.improvement}"
-            if (ImageGetter.imageExists(baseTerrainAndImprovement))
-                return listOf(baseTerrainAndImprovement)
+        if (shouldShowImprovement) {
+            if (shouldShowImprovement && shouldShowResource) {
+                // e.g. Desert+Farm+Wheat
+                val baseImprovementAndResourceLocation =
+                        "$baseTerrainTileLocation+${tileInfo.improvement}+${tileInfo.resource}"
+                if (ImageGetter.imageExists(baseImprovementAndResourceLocation))
+                    return listOf(baseImprovementAndResourceLocation)
+            }
+            if (shouldShowImprovement) {
+                // e.g. Desert+Farm
+                val baseTerrainAndImprovementLocation = "$baseTerrainTileLocation+${tileInfo.improvement}"
+                if (ImageGetter.imageExists(baseTerrainAndImprovementLocation))
+                    return listOf(baseTerrainAndImprovementLocation)
+            }
+            if (shouldShowResource) {
+                // e.g. Desert+Wheat
+                val baseTerrainAndResourceLocation = "$baseTerrainTileLocation+${tileInfo.resource}"
+                if (ImageGetter.imageExists(baseTerrainAndResourceLocation))
+                    return listOf(baseTerrainAndResourceLocation)
+            }
         }
 
-        if (ImageGetter.imageExists(baseTerrainTileLocation)){
-            if(shouldShowImprovement){
+        if (ImageGetter.imageExists(baseTerrainTileLocation)) {
+            if (shouldShowImprovement) {
                 val improvementImageLocation = tileSetStrings.getTile(tileInfo.improvement!!)
-                if(shouldShowResource){
+                if (shouldShowResource) {
                     // E.g. (Grassland, Plantation+Spices)
-                    val improvementAndResourceImageLocation = improvementImageLocation+"+${tileInfo.resource}"
-                    if(ImageGetter.imageExists(improvementAndResourceImageLocation))
-                        return listOf(baseTerrainTileLocation,improvementAndResourceImageLocation)
+                    val improvementAndResourceImageLocation = improvementImageLocation + "+${tileInfo.resource}"
+                    if (ImageGetter.imageExists(improvementAndResourceImageLocation))
+                        return listOf(baseTerrainTileLocation, improvementAndResourceImageLocation)
                 }
                 // E.g. (Desert, Mine)
-                if(ImageGetter.imageExists(improvementImageLocation))
+                if (ImageGetter.imageExists(improvementImageLocation))
                     return listOf(baseTerrainTileLocation, improvementImageLocation)
             }
 
-            if(shouldShowResource){
+            if (shouldShowResource) {
                 // e.g. (Plains, Gems)
                 val resourceImageLocation = tileSetStrings.getTile(tileInfo.resource!!)
                 if (ImageGetter.imageExists(resourceImageLocation))

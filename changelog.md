@@ -1,3 +1,15 @@
+## 3.11.7
+
+Resolved #3285 - added a notification when cities are no longer in resistance
+
+More tile variants are enabled (e.g. "baseTile+resource+improvement")
+
+Fixed some more silly bugs caused by badly configured mods
+
+New snow-versions of existing tiles :)
+
+Can no longer start a new game with an incorrectly defined mod! :)
+
 ## 3.11.6
 
 Added "locate mod errors" button in the options menu for discovering broken links in base ruleset mods
