@@ -26,6 +26,7 @@ class TileImprovement : NamedStats() {
     var uniqueTo:String? = null
     var uniques = ArrayList<String>()
     val uniqueObjects:List<Unique> by lazy { uniques.map { Unique(it) } }
+    val shortcutKey: Char? = null
 
     val turnsToBuild: Int = 0 // This is the base cost.
 

@@ -118,8 +118,19 @@ internal object DesktopLauncher {
         // Apparently some chipsets, like NVIDIA Tegra 3 graphics chipset (used in Asus TF700T tablet),
         // don't support non-power-of-two texture sizes - kudos @yuroller!
         // https://github.com/yairm210/UnCiv/issues/1340
-        settings.maxWidth = 2048
-        settings.maxHeight = 2048
+
+        /**
+         * These should be as big as possible in order to accommodate ALL the images together in one bug file.
+         * Why? Because the rendering function of the main screen renders all the images consecutively, and every time it needs to switch between textures,
+         * this causes a delay, leading to horrible lag if there are enough switches.
+         * The cost of this specific solution is that the entire game.png needs be be kept in-memory constantly.
+         * It's currently only 1.5MB so it should be okay, but it' an important point to remember for the future.
+         * Sidenode: Modded tilesets don't have this problem, since all the images are included in the mod's single PNG.
+         * Probably. Unless they have some truly huge images.
+         */
+        settings.maxWidth = 4096
+        settings.maxHeight = 4096
+
         settings.combineSubdirectories = true
         settings.pot = true
         settings.fast = true

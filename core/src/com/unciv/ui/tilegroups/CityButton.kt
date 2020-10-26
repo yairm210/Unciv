@@ -1,6 +1,7 @@
 package com.unciv.ui.tilegroups
 
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.math.Interpolation
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
@@ -48,7 +49,7 @@ class CityButton(val city: CityInfo, private val tileGroup: WorldTileGroup): Tab
         iconTable = getIconTable()
         add(iconTable).row()
 
-        if (city.civInfo.isCityState()) {
+        if (city.civInfo.isCityState() && city.civInfo.knows(worldScreen.viewingCiv)) {
             val diplomacyManager = city.civInfo.getDiplomacyManager(worldScreen.viewingCiv)
             val influenceBar = getInfluenceBar(diplomacyManager.influence, diplomacyManager.relationshipLevel())
             add(influenceBar).row()
@@ -178,7 +179,10 @@ class CityButton(val city: CityInfo, private val tileGroup: WorldTileGroup): Tab
 
     private fun getIconTable(): Table {
         val secondaryColor = city.civInfo.nation.getInnerColor()
-        val iconTable = Table()
+        class IconTable:Table(){
+            override fun draw(batch: Batch?, parentAlpha: Float) { super.draw(batch, parentAlpha) }
+        }
+        val iconTable = IconTable()
         iconTable.touchable=Touchable.enabled
         iconTable.background = ImageGetter.getRoundedEdgeTableBackground(city.civInfo.nation.getOuterColor())
 
@@ -256,9 +260,13 @@ class CityButton(val city: CityInfo, private val tileGroup: WorldTileGroup): Tab
     private fun getPopulationGroup(showGrowth: Boolean): Group {
         val growthGreen = Color(0.0f, 0.5f, 0.0f, 1.0f)
 
-        val group = Group()
 
-        val populationLabel = city.population.population.toString().toLabel()
+        class PopulationGroup:Group() { // for recognition in the profiler
+            override fun draw(batch: Batch?, parentAlpha: Float) { super.draw(batch, parentAlpha) }
+        }
+        val group = PopulationGroup().apply { isTransform=false }
+
+        val populationLabel = city.population.population.toLabel()
         populationLabel.color = city.civInfo.nation.getInnerColor()
 
         group.addActor(populationLabel)
@@ -288,31 +296,13 @@ class CityButton(val city: CityInfo, private val tileGroup: WorldTileGroup): Tab
             when {
                 city.isGrowing() -> {
                     val turnsToGrowth = city.getNumTurnsToNewPopulation()
-                    turnLabel = if (turnsToGrowth != null) {
-                        if (turnsToGrowth < 100) {
-                            turnsToGrowth.toString().toLabel()
-                        } else {
-                            "∞".toLabel()
-                        }
-                    } else {
-                        "∞".toLabel()
-                    }
+                    turnLabel = if (turnsToGrowth != null && turnsToGrowth < 100) turnsToGrowth.toString().toLabel() else "∞".toLabel()
                 }
                 city.isStarving() -> {
                     val turnsToStarvation = city.getNumTurnsToStarvation()
-                    turnLabel = if (turnsToStarvation != null) {
-                        if (turnsToStarvation < 100) {
-                            turnsToStarvation.toString().toLabel()
-                        } else {
-                            "∞".toLabel()
-                        }
-                    } else {
-                        "∞".toLabel()
-                    }
+                    turnLabel = if (turnsToStarvation != null && turnsToStarvation < 100) turnsToStarvation.toString().toLabel() else "∞".toLabel()
                 }
-                else -> {
-                    turnLabel = "∞".toLabel()
-                }
+                else -> turnLabel = "∞".toLabel()
             }
             turnLabel.color = city.civInfo.nation.getInnerColor()
             turnLabel.setFontSize(14)
@@ -329,29 +319,36 @@ class CityButton(val city: CityInfo, private val tileGroup: WorldTileGroup): Tab
 
     private fun getConstructionGroup(cityConstructions: CityConstructions): Group {
         val cityCurrentConstruction = cityConstructions.getCurrentConstruction()
-        val group= Group()
+
+        class ConstructionGroup : Group() { // for recognition in the profiler
+            override fun draw(batch: Batch?, parentAlpha: Float) {
+                super.draw(batch, parentAlpha)
+            }
+        }
+
+        val group = ConstructionGroup().apply { isTransform = false }
         val groupHeight = 25f
-        val groupWidth = if(cityCurrentConstruction is PerpetualConstruction) 15f else 40f
-        group.setSize(groupWidth,groupHeight)
+        val groupWidth = if (cityCurrentConstruction is PerpetualConstruction) 15f else 40f
+        group.setSize(groupWidth, groupHeight)
 
         val circle = ImageGetter.getCircle()
-        circle.setSize(25f,25f)
+        circle.setSize(25f, 25f)
         val image = ImageGetter.getConstructionImage(cityConstructions.currentConstructionFromQueue)
-        image.setSize(18f,18f)
+        image.setSize(18f, 18f)
         image.centerY(group)
-        image.x = group.width-image.width
+        image.x = group.width - image.width
 
         // center the circle on the production image
-        circle.x = image.x + (image.width-circle.width)/2
-        circle.y = image.y + (image.height-circle.height)/2
+        circle.x = image.x + (image.width - circle.width) / 2
+        circle.y = image.y + (image.height - circle.height) / 2
 
         group.addActor(circle)
         group.addActor(image)
 
         val secondaryColor = cityConstructions.cityInfo.civInfo.nation.getInnerColor()
-        if(cityCurrentConstruction !is PerpetualConstruction) {
+        if (cityCurrentConstruction !is PerpetualConstruction) {
             val turnsToConstruction = cityConstructions.turnsToConstruction(cityCurrentConstruction.name)
-            val label = (if(turnsToConstruction < 100) turnsToConstruction.toString() else "∞").toLabel(secondaryColor,14)
+            val label = (if (turnsToConstruction < 100) turnsToConstruction.toString() else "∞").toLabel(secondaryColor, 14)
             label.pack()
             group.addActor(label)
 
@@ -412,7 +409,10 @@ class CityButton(val city: CityInfo, private val tileGroup: WorldTileGroup): Tab
                 return barPiece
             }
 
-            val influenceBar = Table().apply {
+            class InfluenceTable:Table() { // for recognition in the profiler
+                override fun draw(batch: Batch?, parentAlpha: Float) { super.draw(batch, parentAlpha) }
+            }
+            val influenceBar = InfluenceTable().apply {
                 defaults().pad(1f)
                 setSize(width, height)
                 background = ImageGetter.getBackground(Color.BLACK)
@@ -423,6 +423,11 @@ class CityButton(val city: CityInfo, private val tileGroup: WorldTileGroup): Tab
 
             return influenceBar
         }
+    }
+
+    // For debugging purposes
+    override fun draw(batch: Batch?, parentAlpha: Float) {
+        super.draw(batch, parentAlpha)
     }
 
 }

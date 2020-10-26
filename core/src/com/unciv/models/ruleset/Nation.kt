@@ -115,8 +115,7 @@ class Nation : INamed {
     private fun addUniqueBuildingsText(textList: ArrayList<String>, ruleset: Ruleset) {
         for (building in ruleset.buildings.values
                 .filter { it.uniqueTo == name && "Will not be displayed in Civilopedia" !in it.uniques}) {
-            if (building.replaces == null) textList += building.getShortDescription(ruleset)
-            else {
+            if (building.replaces != null && ruleset.buildings.containsKey(building.replaces!!)) {
                 val originalBuilding = ruleset.buildings[building.replaces!!]!!
 
                 textList += building.name.tr() + " - " + "Replaces [${originalBuilding.name}]".tr()
@@ -136,14 +135,16 @@ class Nation : INamed {
                 if (building.cityHealth != originalBuilding.cityHealth)
                     textList += "  {City health} " + "[${building.cityHealth}] vs [${originalBuilding.cityHealth}]".tr()
                 textList += ""
-            }
+            } else if (building.replaces != null) {
+                textList += building.name.tr() + " - " + "Replaces [${building.replaces}], which is not found in the ruleset!".tr()
+            } else textList += building.getShortDescription(ruleset)
         }
     }
 
     private fun addUniqueUnitsText(textList: ArrayList<String>, ruleset: Ruleset) {
         for (unit in ruleset.units.values
                 .filter { it.uniqueTo == name && "Will not be displayed in Civilopedia" !in it.uniques}) {
-            if (unit.replaces != null) {
+            if (unit.replaces != null && ruleset.units.containsKey(unit.replaces!!)) {
                 val originalUnit = ruleset.units[unit.replaces!!]!!
                 textList += unit.name.tr() + " - " + "Replaces [${originalUnit.name}]".tr()
                 if (unit.cost != originalUnit.cost)
@@ -164,7 +165,10 @@ class Nation : INamed {
                     textList += "  " + "Lost ability".tr() + "(" + "vs [${originalUnit.name}]".tr() + "): " + Translations.translateBonusOrPenalty(unique)
                 for (promotion in unit.promotions.filter { it !in originalUnit.promotions })
                     textList += "  " + promotion.tr() + " (" + Translations.translateBonusOrPenalty(ruleset.unitPromotions[promotion]!!.effect) + ")"
-            } else {
+            } else if(unit.replaces != null){
+                textList += unit.name.tr() + " - " + "Replaces [${unit.replaces}], which is not found in the ruleset!".tr()
+            }
+            else {
                 textList += unit.name.tr()
                 textList += "  " + unit.getDescription(true).split("\n").joinToString("\n  ")
             }

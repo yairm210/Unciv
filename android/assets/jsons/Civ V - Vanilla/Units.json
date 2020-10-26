@@ -743,7 +743,7 @@
 		"requiredTech": "Gunpowder",
 		"upgradesTo": "Rifleman",
 		"obsoleteTech": "Rifling",
-		"uniques": ["Heals [50] damage if it kills a unit", "Bonus as Attacker [25]%"],
+		"uniques": ["Heals [50] damage if it kills a unit", "+[25]% Strength when attacking"],
 		"attackSound": "shot"
 	},
 	{
@@ -1124,7 +1124,7 @@
 		"cost": 325,
 		"requiredTech": "Refrigeration",
 		// "upgradesTo": "Nuclear Submarine",
-		"uniques": ["Bonus as Attacker [75]%", "Invisible to others", "Can only attack water", "Can attack submarines", "Can enter ice tiles"]
+		"uniques": ["+[75]% Strength when attacking", "Invisible to others", "Can only attack water", "Can attack submarines", "Can enter ice tiles"]
 	},
 	{
 		"name": "Great War Infantry",

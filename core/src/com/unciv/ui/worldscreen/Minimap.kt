@@ -1,6 +1,7 @@
 package com.unciv.ui.worldscreen
 
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.ui.Image
@@ -160,5 +161,11 @@ class MinimapHolder(mapHolder: WorldMapHolder): Table(){
     fun update(civInfo:CivilizationInfo){
         isVisible = UncivGame.Current.settings.showMinimap
         minimap.update(civInfo)
+    }
+
+
+    // For debugging purposes
+    override fun draw(batch: Batch?, parentAlpha: Float) {
+        super.draw(batch, parentAlpha)
     }
 }

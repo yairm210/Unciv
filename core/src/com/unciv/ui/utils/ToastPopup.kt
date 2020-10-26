@@ -4,7 +4,7 @@ import kotlin.concurrent.thread
 
 //Its a popUp which will close itself after a given amount of time
 //Standard time is one second (in milliseconds)
-class ResponsePopup (message: String, screen: CameraStageBaseScreen, time: Long = 1000) : Popup(screen){
+class ToastPopup (message: String, screen: CameraStageBaseScreen, time: Long = 1000) : Popup(screen){
     private val visibilityTime = time
     init {
         addGoodSizedLabel(message)

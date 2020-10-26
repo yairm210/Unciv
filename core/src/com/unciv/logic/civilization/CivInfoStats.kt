@@ -46,7 +46,10 @@ class CivInfoStats(val civInfo: CivilizationInfo){
         // we no longer use .flatMap, because there are a lot of tiles and keeping them all in a list
         // just to go over them once is a waste of memory - there are low-end phones who don't have much ram
 
-        val ignoredTileTypes = civInfo.getMatchingUniques("No Maintenance costs for improvements in []").map { it.params[0]  }
+        val ignoredTileTypes = civInfo.getMatchingUniques("No Maintenance costs for improvements in []")
+                .map { it.params[0]  }.toHashSet() // needs to be .toHashSet()ed,
+        // Because we go over every tile in every city and check if it's in this list, which can get real heavy.
+
         // accounting for both the old way and the new way of doing no maintenance in hills
         val ignoreHillTiles = civInfo.hasUnique("No Maintenance costs for improvements in Hills")|| "Hills" in ignoredTileTypes
 
@@ -85,7 +88,7 @@ class CivInfoStats(val civInfo: CivilizationInfo){
 
         //City-States culture bonus
         for (otherCiv in civInfo.getKnownCivs()) {
-            if (otherCiv.isCityState() && otherCiv.getCityStateType() == CityStateType.Cultured
+            if (otherCiv.isCityState() && otherCiv.cityStateType == CityStateType.Cultured
                     && otherCiv.getDiplomacyManager(civInfo.civName).relationshipLevel() >= RelationshipLevel.Friend) {
                 val cultureBonus = Stats()
                 var culture = 3f * (civInfo.getEraNumber() + 1)
@@ -153,7 +156,7 @@ class CivInfoStats(val civInfo: CivilizationInfo){
 
         //From city-states
         for (otherCiv in civInfo.getKnownCivs()) {
-            if (otherCiv.isCityState() && otherCiv.getCityStateType() == CityStateType.Mercantile
+            if (otherCiv.isCityState() && otherCiv.cityStateType == CityStateType.Mercantile
                     && otherCiv.getDiplomacyManager(civInfo).relationshipLevel() >= RelationshipLevel.Friend) {
                 if (statMap.containsKey("City-States"))
                     statMap["City-States"] = statMap["City-States"]!! + 3f

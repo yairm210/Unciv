@@ -82,13 +82,13 @@ class MultiplayerScreen(previousScreen: CameraStageBaseScreen) : PickerScreen() 
         //rightTable Setup
         copyUserIdButton.onClick {
             Gdx.app.clipboard.contents = game.settings.userId
-            ResponsePopup("UserID copied to clipboard".tr(), this)
+            ToastPopup("UserID copied to clipboard".tr(), this)
         }
         rightSideTable.add(copyUserIdButton).padBottom(30f).row()
 
         copyGameIdButton.onClick {
             Gdx.app.clipboard.contents = selectedGame.gameId
-            ResponsePopup("GameID copied to clipboard".tr(), this)
+            ToastPopup("GameID copied to clipboard".tr(), this)
         }
         rightSideTable.add(copyGameIdButton).row()
 
@@ -132,7 +132,7 @@ class MultiplayerScreen(previousScreen: CameraStageBaseScreen) : PickerScreen() 
         }
 
         if (gameIsAlreadySavedAsMultiplayer(gameId)) {
-            ResponsePopup("Game is already added".tr(), this)
+            ToastPopup("Game is already added".tr(), this)
             return
         }
 
@@ -235,7 +235,7 @@ class MultiplayerScreen(previousScreen: CameraStageBaseScreen) : PickerScreen() 
                 leftSubTable.add(gameTable).row()
             } catch (ex: Exception) {
                 //skipping one save is not fatal
-                ResponsePopup("Could not refresh!".tr(), this)
+                ToastPopup("Could not refresh!".tr(), this)
                 continue
             }
         }
@@ -260,7 +260,7 @@ class MultiplayerScreen(previousScreen: CameraStageBaseScreen) : PickerScreen() 
                     //skipping one is not fatal
                     //Trying to use as many prev. used strings as possible
                     Gdx.app.postRunnable {
-                        ResponsePopup("Could not download game!".tr() + " ${multiplayerGameList.getValue(gameId)}", this)
+                        ToastPopup("Could not download game!".tr() + " ${multiplayerGameList.getValue(gameId)}", this)
                     }
                     continue
                 }
@@ -344,7 +344,7 @@ class EditMultiplayerGameInfoScreen(game: GameInfo, gameName: String, backScreen
                     backScreen.reloadGameListUI()
                 }catch (ex: Exception) {
                     askPopup.close()
-                    ResponsePopup("Could not delete game!".tr(), this)
+                    ToastPopup("Could not delete game!".tr(), this)
                 }
             }
             askPopup.addButton("No"){
@@ -415,7 +415,7 @@ class AddMultiplayerGameScreen(backScreen: MultiplayerScreen) : PickerScreen(){
             try {
                 UUID.fromString(IdChecker.checkAndReturnGameUuid(gameIDTextField.text))
             }catch (ex: Exception){
-                ResponsePopup("Invalid game ID!".tr(), this)
+                ToastPopup("Invalid game ID!".tr(), this)
                 return@onClick
             }
 

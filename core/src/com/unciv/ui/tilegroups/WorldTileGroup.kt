@@ -1,5 +1,6 @@
 package com.unciv.ui.tilegroups
 
+import com.badlogic.gdx.graphics.g2d.Batch
 import com.unciv.UncivGame
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.CivilizationInfo
@@ -61,4 +62,5 @@ class WorldTileGroup(internal val worldScreen: WorldScreen, tileInfo: TileInfo, 
         if (city == null) return false
         return worldScreen.bottomUnitTable.citySelected(city)
     }
+
 }

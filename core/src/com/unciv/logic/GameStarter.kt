@@ -2,6 +2,7 @@ package com.unciv.logic
 
 import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
+import com.unciv.logic.civilization.CityStatePersonality
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.*
 import com.unciv.logic.map.mapgenerator.MapGenerator
@@ -135,6 +136,7 @@ object GameStarter {
 
         for (cityStateName in availableCityStatesNames.take(newGameParameters.numberOfCityStates)) {
             val civ = CivilizationInfo(cityStateName)
+            civ.cityStatePersonality = CityStatePersonality.values().random()
             gameInfo.civilizations.add(civ)
             for(tech in ruleset.technologies.values.filter { it.uniques.contains("Starting tech") })
                 civ.tech.techsResearched.add(tech.name) // can't be .addTechnology because the civInfo isn't assigned yet

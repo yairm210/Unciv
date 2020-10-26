@@ -73,8 +73,8 @@ class CityConstructions {
             stats.add(building.getStats(cityInfo.civInfo))
 
         for (unique in builtBuildingUniqueMap.getAllUniques()) when (unique.placeholderText) {
-            "[] Per [] Population in this city" -> stats.add(Stats.parse(unique.params[0]).times(cityInfo.population.population / unique.params[1].toFloat()))
-            "[] once [] is discovered" -> if (cityInfo.civInfo.tech.isResearched(unique.params[1])) stats.add(Stats.parse(unique.params[0]))
+            "[] Per [] Population in this city" -> stats.add(unique.stats!!.times(cityInfo.population.population / unique.params[1].toFloat()))
+            "[] once [] is discovered" -> if (cityInfo.civInfo.tech.isResearched(unique.params[1])) stats.add(unique.stats!!)
         }
 
         // This is to be deprecated and converted to "[stats] Per [N] Population in this city" - keeping it here to that mods with this can still work for now
@@ -216,8 +216,7 @@ class CityConstructions {
             cityInfo.cityStats.update()
         }
 
-        var production = cityStatsForConstruction.production.roundToInt()
-        if (constructionName == Constants.settler) production += cityStatsForConstruction.food.toInt()
+        val production = cityStatsForConstruction.production.roundToInt()
 
         return ceil(workLeft / production.toDouble()).toInt()
     }

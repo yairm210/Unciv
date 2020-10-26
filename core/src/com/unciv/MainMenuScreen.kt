@@ -6,7 +6,6 @@ import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.Table
-import com.badlogic.gdx.utils.Align
 import com.unciv.logic.GameInfo
 import com.unciv.logic.GameSaver
 import com.unciv.logic.GameStarter
@@ -104,11 +103,10 @@ class MainMenuScreen: CameraStageBaseScreen() {
             { if(stage.actors.none { it is MapEditorMainScreenPopup }) MapEditorMainScreenPopup(this) }
         column2.add(mapEditorScreenTable).row()
 
-        if(game.settings.showModManager) {
-            val modsTable = getTableBlock("Mods", "OtherIcons/Mods")
-            { game.setScreen(ModManagementScreen()) }
-            column2.add(modsTable).row()
-        }
+        val modsTable = getTableBlock("Mods", "OtherIcons/Mods")
+        { game.setScreen(ModManagementScreen()) }
+        column2.add(modsTable).row()
+
 
 
         val optionsTable = getTableBlock("Options", "OtherIcons/Options")
@@ -166,16 +164,16 @@ class MainMenuScreen: CameraStageBaseScreen() {
 
 
     private fun autoLoadGame() {
-        ResponsePopup("Loading...", this)
+        ToastPopup("Loading...", this)
         thread { // Load game from file to class on separate thread to avoid ANR...
             val savedGame: GameInfo
             try {
                 savedGame = GameSaver.loadGameByName(autosave)
             } catch (outOfMemory: OutOfMemoryError) {
-                ResponsePopup("Not enough memory on phone to load game!", this)
+                ToastPopup("Not enough memory on phone to load game!", this)
                 return@thread
             } catch (ex: Exception) { // silent fail if we can't read the autosave for any reason
-                ResponsePopup("Cannot resume game!", this)
+                ToastPopup("Cannot resume game!", this)
                 return@thread
             }
 
@@ -184,7 +182,7 @@ class MainMenuScreen: CameraStageBaseScreen() {
                     game.loadGame(savedGame)
                     dispose()
                 } catch (outOfMemory: OutOfMemoryError) {
-                    ResponsePopup("Not enough memory on phone to load game!", this)
+                    ToastPopup("Not enough memory on phone to load game!", this)
                 }
 
             }

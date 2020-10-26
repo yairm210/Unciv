@@ -9,6 +9,7 @@
 		"uniques": ["Can also be built on tiles adjacent to fresh water", 
 			"[+1 Food] on [fresh water] tiles once [Civil Service] is discovered",
 			"[+1 Food] on [non-fresh water] tiles once [Fertilizer] is discovered"],
+		"shortcutKey": "F"
 	},
 	{
 		"name": "Lumber mill",
@@ -16,7 +17,8 @@
 		"production": 1,
 		"turnsToBuild": 7,
 		"techRequired": "Construction",
-		"uniques": ["[+1 Production] once [Scientific Theory] is discovered"]
+		"uniques": ["[+1 Production] once [Scientific Theory] is discovered"],
+		"shortcutKey": "L"
 	},
 	{
 		"name": "Mine",
@@ -24,7 +26,8 @@
 		"production": 1,
 		"turnsToBuild": 7,
 		"techRequired": "Mining",
-		"uniques": ["[+1 Production] once [Chemistry] is discovered"]
+		"uniques": ["[+1 Production] once [Chemistry] is discovered"],
+		"shortcutKey": "M"
 	},
 	{
 		"name": "Trading post",
@@ -32,7 +35,8 @@
 		"gold": 1,
 		"turnsToBuild": 7,
 		"techRequired": "Guilds",
-		"uniques": ["[+1 Gold] once [Economics] is discovered"]
+		"uniques": ["[+1 Gold] once [Economics] is discovered"],
+		"shortcutKey": "T"
 	},
 	
 	// Resource-specific
@@ -41,7 +45,8 @@
 		"resourceTerrainAllow": ["Forest"],
 		"turnsToBuild": 7,
 		"techRequired": "Trapping",
-		"uniques": ["[+1 Gold] once [Economics] is discovered"]
+		"uniques": ["[+1 Gold] once [Economics] is discovered"],
+		"shortcutKey": "C"
 	},
 	{
 		"name": "Oil well",
@@ -52,20 +57,23 @@
 		"name": "Pasture",
 		"turnsToBuild": 8,
 		"techRequired": "Animal Husbandry",
-		"uniques": ["[+1 Food] once [Fertilizer] is discovered"]
+		"uniques": ["[+1 Food] once [Fertilizer] is discovered"],
+		"shortcutKey": "P"
 	},
 	{
 		"name": "Plantation",
 		"turnsToBuild": 6,
 		"gold": 1,
 		"techRequired": "Calendar",
-		"uniques": ["[+1 Food] once [Fertilizer] is discovered"]
+		"uniques": ["[+1 Food] once [Fertilizer] is discovered"],
+		"shortcutKey": "P"
 	},
 	{
 		"name": "Quarry",
 		"turnsToBuild": 8,
 		"techRequired": "Masonry",
-		"uniques": ["[+1 Production] once [Chemistry] is discovered"]
+		"uniques": ["[+1 Production] once [Chemistry] is discovered"],
+		"shortcutKey": "Q"
 	},
 	{
 		"name": "Fishing Boats",
@@ -81,7 +89,8 @@
 		"terrainsCanBeBuiltOn": ["Plains","Grassland","Desert","Hill","Tundra","Snow","Forest","Jungle"],
 		"turnsToBuild": 6,
 		"techRequired": "Engineering",
-		"uniques": ["Gives a defensive bonus of [50]%", "Can be built outside your borders"]
+		"uniques": ["Gives a defensive bonus of [50]%", "Can be built outside your borders"],
+		"shortcutKey": "O"
 	},
 
 	// Transportation
@@ -89,7 +98,8 @@
 		"name": "Road",
 		"turnsToBuild": 4,
 		"techRequired": "The Wheel",
-		"uniques": ["Can be built outside your borders"]
+		"uniques": ["Can be built outside your borders"],
+		"shortcutKey": "R"
 	},
 	{
 		"name": "Railroad",
@@ -104,28 +114,32 @@
 		"turnsToBuild": 4,
 		"terrainsCanBeBuiltOn": ["Forest"],
 		"techRequired": "Mining",
-		"uniques": ["Can be built outside your borders"]
+		"uniques": ["Can be built outside your borders"],
+		"shortcutKey": "X"
 	},
 	{
 		"name": "Remove Jungle",
 		"turnsToBuild": 7,
 		"terrainsCanBeBuiltOn": ["Jungle"],
 		"techRequired": "Bronze Working",
-		"uniques": ["Can be built outside your borders"]
+		"uniques": ["Can be built outside your borders"],
+		"shortcutKey": "X"
 	},
 	{
 		"name": "Remove Fallout",
 		"turnsToBuild": 8,
 		"terrainsCanBeBuiltOn": ["Fallout"],
 		"techRequired": "Atomic Theory",
-		"uniques": ["Can be built outside your borders"]
+		"uniques": ["Can be built outside your borders"],
+		"shortcutKey": "X"
 	},
 	{
 		"name": "Remove Marsh",
 		"turnsToBuild": 6,
 		"terrainsCanBeBuiltOn": ["Marsh"],
 		"techRequired": "Masonry",
-		"uniques": ["Can be built outside your borders"]
+		"uniques": ["Can be built outside your borders"],
+		"shortcutKey": "X"
 	},
 
 	// These are unique and have unique in-game checks related to them
@@ -178,7 +192,8 @@
 		"culture": 1,
 		"turnsToBuild": 4,
 		"uniques": ["[+1 Culture] for each adjacent [Moai]", "Can only be built on Coastal tiles", "[+1 Gold] once [Flight] is discovered"],
-		"techRequired": "Construction"
+		"techRequired": "Construction",
+		"shortcutKey": "M"
 	},
 	{
 		"name": "Terrace farm",
@@ -189,7 +204,8 @@
 		"uniques": ["[+1 Food] for each adjacent [Mountain]", "Cannot be built on bonus resource",
 			"[+1 Food] on [fresh water] tiles once [Civil Service] is discovered",
 			"[+1 Food] on [non-fresh water] tiles once [Fertilizer] is discovered"],
-		"techRequired": "Construction"
+		"techRequired": "Construction",
+		"shortcutKey": "F"
 	},
 	
 	{ "name": "Ancient ruins" },

@@ -20,7 +20,9 @@ import com.unciv.models.Tutorial
 import com.unciv.models.UncivSound
 import com.unciv.models.translations.tr
 import com.unciv.ui.tutorials.TutorialController
+import java.util.HashMap
 import kotlin.concurrent.thread
+import kotlin.random.Random
 
 open class CameraStageBaseScreen : Screen {
 
@@ -29,18 +31,32 @@ open class CameraStageBaseScreen : Screen {
 
     protected val tutorialController by lazy { TutorialController(this) }
 
+    // An initialized val always turned out to illegally be null...
+    var keyPressDispatcher: HashMap<Char, (() -> Unit)>
+
     init {
-        val width:Float
-        val height:Float
-        if(game.settings.resolution=="Auto") { // Aut-detecting resolution was a BAD IDEA since it needs to be based on DPI AND resolution.
-            game.settings.resolution = "900x600"
-            game.settings.save()
-        }
+        keyPressDispatcher = hashMapOf()
         val resolutions: List<Float> = game.settings.resolution.split("x").map { it.toInt().toFloat() }
-        width = resolutions[0]
-        height = resolutions[1]
+        val width = resolutions[0]
+        val height = resolutions[1]
 
         stage = Stage(ExtendViewport(width, height), batch)
+
+
+        stage.addListener(
+                object : InputListener() {
+                    override fun keyTyped(event: InputEvent?, character: Char): Boolean {
+                        if (character.toLowerCase() in keyPressDispatcher && !hasOpenPopups()) {
+                            //try-catch mainly for debugging. Breakpoints in the vicinity can make the event fire twice in rapid succession, second time the context can be invalid
+                            try {
+                                keyPressDispatcher[character.toLowerCase()]?.invoke()
+                            } catch (ex: Exception) {}
+                            return true
+                        }
+                        return super.keyTyped(event, character)
+                    }
+                }
+        )
     }
 
     override fun show() {}
@@ -65,7 +81,7 @@ open class CameraStageBaseScreen : Screen {
 
     override fun dispose() {}
 
-    fun displayTutorial( tutorial: Tutorial, test: (()->Boolean)? = null ) {
+    fun displayTutorial(tutorial: Tutorial, test: (() -> Boolean)? = null) {
         if (!game.settings.showTutorials) return
         if (game.settings.tutorialsShown.contains(tutorial.name)) return
         if (test != null && !test()) return
@@ -94,7 +110,7 @@ open class CameraStageBaseScreen : Screen {
     }
 
     /** It returns the assigned [InputListener] */
-    fun onBackButtonClicked(action:()->Unit): InputListener {
+    fun onBackButtonClicked(action: () -> Unit): InputListener {
         val listener = object : InputListener() {
             override fun keyDown(event: InputEvent?, keycode: Int): Boolean {
                 if (keycode == Input.Keys.BACK || keycode == Input.Keys.ESCAPE) {
@@ -267,4 +283,21 @@ fun Label.setFontSize(size:Int): Label {
     style.font = Fonts.font
     style = style // because we need it to call the SetStyle function. Yuk, I know.
     return this.apply { setFontScale(size/ORIGINAL_FONT_SIZE) } // for chaining
+}
+
+
+fun <T> List<T>.randomWeighted(weights: List<Float>, random: Random = Random): T {
+    if (this.isEmpty()) throw NoSuchElementException("Empty list.")
+    if (this.size != weights.size) throw UnsupportedOperationException("Weights size does not match this list size.")
+
+    val totalWeight = weights.sum()
+    val randDouble = random.nextDouble()
+    var sum = 0f
+
+    for (i in weights.indices) {
+        sum += weights[i] / totalWeight
+        if (randDouble <= sum)
+            return this[i]
+    }
+    return this.last()
 }

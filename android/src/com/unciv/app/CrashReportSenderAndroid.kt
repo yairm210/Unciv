@@ -19,6 +19,7 @@ class CrashReportSenderAndroid(private val activity: Activity) : CrashReportSend
                                        "Game version: %s\n" +
                                        "OS version: %s\n" +
                                        "Device model: %s\n" +
+                                       "Mods: %s\n" +
                                        "Game data: %s\n"
     }
 
@@ -41,5 +42,5 @@ class CrashReportSenderAndroid(private val activity: Activity) : CrashReportSend
     }
 
     private fun buildEmailBody(report: CrashReport): String =
-            EMAIL_BODY.format(report.version, Build.VERSION.SDK_INT, Build.MODEL, report.gameInfo)
+            EMAIL_BODY.format(report.version, Build.VERSION.SDK_INT, Build.MODEL, report.mods.joinToString(), report.gameInfo)
 }

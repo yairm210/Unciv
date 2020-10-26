@@ -194,7 +194,7 @@ open class TileInfo {
                         || (resource == tileType && hasViewableResource(observingCiv))
                         || (tileType == "Strategic resource" && hasViewableResource(observingCiv) && getTileResource().resourceType == ResourceType.Strategic)
                         || (tileType == "Water resource" && isWater && hasViewableResource(observingCiv))
-                ) stats.add(Stats.parse(unique.params[0]))
+                ) stats.add(unique.stats!!)
             }
         }
 
@@ -247,7 +247,7 @@ open class TileInfo {
 
         for (unique in improvement.uniqueObjects)
             if (unique.placeholderText == "[] once [] is discovered" && observingCiv.tech.isResearched(unique.params[1]))
-                stats.add(Stats.parse(unique.params[0]))
+                stats.add(unique.stats!!)
 
         if (city != null) {
             val cityWideUniques = city.cityConstructions.builtBuildingUniqueMap.getUniques("[] from [] tiles in this city")
@@ -262,7 +262,7 @@ open class TileInfo {
                         || (unique.params[1] == "fresh water" && isAdjacentToFreshwater)
                         || (unique.params[1] == "non-fresh water" && !isAdjacentToFreshwater)
                 )
-                    stats.add(Stats.parse(unique.params[0]))
+                    stats.add(unique.stats!!)
             }
         }
 
@@ -278,7 +278,7 @@ open class TileInfo {
                             || it.matchesUniqueFilter(adjacent)
                             || it.roadStatus.name == adjacent
                 }
-                stats.add(Stats.parse(unique.params[0]).times(numberOfBonuses.toFloat()))
+                stats.add(unique.stats!!.times(numberOfBonuses.toFloat()))
             }
 
         return stats

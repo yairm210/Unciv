@@ -1,3 +1,66 @@
+## 3.11.7
+
+Resolved #3285 - added a notification when cities are no longer in resistance
+
+More tile variants are enabled (e.g. "baseTile+resource+improvement")
+
+Fixed some more silly bugs caused by badly configured mods
+
+New snow-versions of existing tiles :)
+
+Can no longer start a new game with an incorrectly defined mod! :)
+
+## 3.11.6
+
+Added "locate mod errors" button in the options menu for discovering broken links in base ruleset mods
+
+Resolved another crash caused by incorrect ruleset mod definitions
+
+Checking something that might solve the Mystery of the Disappearing C's
+
+Added culture and science colors to resources
+
+Split civilopedia "buildings" category into "buildings" and "wonders"
+
+Resolved #3274 - empty maps start with ocean tiles
+
+Consolidated unit kill bonus uniques - By givehub99
+
+Translation updates
+
+## 3.11.5
+
+Performance improvements for main screen rendering - should be much less laggy now
+
+Mod management screen is now generally available :)
+
+Resolved #3265 - added keyboard shortcuts to tile improvements
+
+City connections work when road and railroad required techs are changed (in mods)
+
+Can now move around the world screen with the arrow keys as well as WASD
+
+By r3versi:
+
+- Diplomacy Screen right table is scrollable 
+- Fix for barbarian quest 
+
+Translation updates
+
+## 3.11.4
+
+Added city images by The Bucketeer for all eras up to Modern
+
+Influence bar not displayed for city-states that don't know the viewing civ
+
+Resolved #3254 - Solved bug in calculating turns to production for settlers
+
+New parameterized uniques - By givehub99
+
+City-states personalities - By r3versi
+
+Translation updates
+
 ## 3.11.3
 
 AI doesn't construct science constructions when all techs are researched
