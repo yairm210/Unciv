@@ -184,9 +184,7 @@ class TileMap {
 
     fun getViewableTiles(position: Vector2, sightDistance: Int): List<TileInfo> {
         val viewableTiles = getTilesInDistance(position, 1).toMutableList()
-        val tile = get(position)
-        // mountains do not give sight bonus when on them
-        val currentTileHeight =  if (tile.baseTerrain == Constants.mountain) 0 else tile.getHeight()
+        val currentTileHeight = get(position).getHeight()
 
         for (i in 1..sightDistance) { // in each layer,
             // This is so we don't use tiles in the same distance to "see over",
