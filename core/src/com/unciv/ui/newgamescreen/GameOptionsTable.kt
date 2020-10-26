@@ -200,7 +200,7 @@ class GameOptionsTable(val previousScreen: IPreviousScreen, val updatePlayerPick
                     }
 
                     if (mod.modOptions.isBaseRuleset)
-                        for (oldBaseRuleset in gameParameters.mods)
+                        for (oldBaseRuleset in gameParameters.mods.toList()) // so we don't get concurrent modification excpetions
                             if (modRulesets.firstOrNull { it.name == oldBaseRuleset }?.modOptions?.isBaseRuleset == true)
                                 gameParameters.mods.remove(oldBaseRuleset)
                     gameParameters.mods.add(mod.name)
