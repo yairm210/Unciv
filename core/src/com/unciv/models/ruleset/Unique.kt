@@ -2,12 +2,16 @@ package com.unciv.models.ruleset
 
 import com.unciv.Constants
 import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.models.stats.Stats
 import com.unciv.models.translations.getPlaceholderParameters
 import com.unciv.models.translations.getPlaceholderText
 
 class Unique(val text:String){
     val placeholderText = text.getPlaceholderText()
     val params = text.getPlaceholderParameters()
+    /** This is so the heavy regex-based parsing is only activated once per unique, instead of every time it's called
+     *  - for instance, in the city screen, we call every tile unique for every tile, which can lead to ANRs */
+    val stats = params.firstOrNull { Stats.isStats(it) }?.let { Stats.parse(it) }
 }
 
 class UniqueMap:HashMap<String, ArrayList<Unique>>() {
