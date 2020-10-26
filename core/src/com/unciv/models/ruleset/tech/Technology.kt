@@ -86,9 +86,7 @@ class Technology {
     fun getEnabledBuildings(civInfo: CivilizationInfo): List<Building> {
         var enabledBuildings = civInfo.gameInfo.ruleSet.buildings.values.filter {
             it.requiredTech == name &&
-                    (it.uniqueTo == null || it.uniqueTo == civInfo.civName) &&
-                    "Unbuildable" !in it.uniques
-
+                    (it.uniqueTo == null || it.uniqueTo == civInfo.civName)
         }
         val replacedBuildings = enabledBuildings.mapNotNull { it.replaces }
         enabledBuildings = enabledBuildings.filter { it.name !in replacedBuildings }
@@ -108,8 +106,7 @@ class Technology {
     fun getEnabledUnits(civInfo: CivilizationInfo): List<BaseUnit> {
         var enabledUnits = civInfo.gameInfo.ruleSet.units.values.filter {
             it.requiredTech == name &&
-                    (it.uniqueTo == null || it.uniqueTo == civInfo.civName) &&
-                    "Unbuildable" !in it.uniques
+                    (it.uniqueTo == null || it.uniqueTo == civInfo.civName)
         }
         val replacedUnits = civInfo.gameInfo.ruleSet.units.values.filter { it.uniqueTo == civInfo.civName }
                 .mapNotNull { it.replaces }
