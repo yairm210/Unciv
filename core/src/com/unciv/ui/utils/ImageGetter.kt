@@ -272,7 +272,7 @@ object ImageGetter {
     fun getResourceImage(resourceName: String, size:Float): Actor {
         val iconGroup = getImage("ResourceIcons/$resourceName").surroundWithCircle(size)
         val resource = ruleset.tileResources[resourceName]
-        if (resource == null) throw Exception("No resource $resourceName found in ruleset!")
+        if (resource == null) return iconGroup // This is the result of a bad modding setup, just give em an empty circle. Their problem.
         iconGroup.circle.color = getColorFromStats(resource)
 
         if (resource.resourceType == ResourceType.Luxury) {
