@@ -1,3 +1,15 @@
+## 3.11.8
+
+Improved performance, especially in the City screen
+
+Avoided more badly-defined-mod crashes, and some rare non-mod crashes and ANRs
+
+Added mods to crash report, many crashes are caused by incorrectly defined mods
+
+Helicopter Gunship uniques - By givehub99
+
+Translation updates
+
 ## 3.11.7
 
 Resolved #3285 - added a notification when cities are no longer in resistance
