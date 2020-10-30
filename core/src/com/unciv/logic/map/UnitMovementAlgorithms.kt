@@ -8,11 +8,13 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
 
     // This function is called ALL THE TIME and should be as time-optimal as possible!
     fun getMovementCostBetweenAdjacentTiles(from: TileInfo, to: TileInfo, civInfo: CivilizationInfo): Float {
-        if (unit.allTilesCosts1)
-            return 1f
 
         if ((from.isLand != to.isLand) && !unit.civInfo.nation.embarkDisembarkCosts1 && unit.type.isLandUnit())
             return 100f // this is embarkment or disembarkment, and will take the entire turn
+
+        // land units will still spend all movement points to embark even with this unique
+        if (unit.allTilesCosts1)
+            return 1f
 
         var extraCost = 0f
 
