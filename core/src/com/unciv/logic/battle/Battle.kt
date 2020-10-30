@@ -63,7 +63,7 @@ object Battle {
         postBattleNationUniques(defender, attackedTile, attacker)
 
         // This needs to come BEFORE the move-to-tile, because if we haven't conquered it we can't move there =)
-        if (defender.isDefeated() && defender is CityCombatant && attacker.isMelee())
+        if (defender.isDefeated() && defender is CityCombatant && attacker is MapUnitCombatant && attacker.isMelee() && !attacker.unit.hasUnique("Unable to capture cities"))
             conquerCity(defender.city, attacker)
 
         // we're a melee unit and we destroyed\captured an enemy unit
