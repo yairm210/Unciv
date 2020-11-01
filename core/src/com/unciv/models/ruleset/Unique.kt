@@ -11,7 +11,11 @@ class Unique(val text:String){
     val params = text.getPlaceholderParameters()
     /** This is so the heavy regex-based parsing is only activated once per unique, instead of every time it's called
      *  - for instance, in the city screen, we call every tile unique for every tile, which can lead to ANRs */
-    val stats = params.firstOrNull { Stats.isStats(it) }?.let { Stats.parse(it) }
+    val stats: Stats by lazy {
+        val firstStatParam = params.firstOrNull { Stats.isStats(it) }
+        if (firstStatParam == null) Stats() // So badly-defined stats don't crash the entire game
+        else Stats.parse(firstStatParam)
+    }
 }
 
 class UniqueMap:HashMap<String, ArrayList<Unique>>() {
