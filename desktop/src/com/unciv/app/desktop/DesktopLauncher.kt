@@ -125,8 +125,10 @@ internal object DesktopLauncher {
          * this causes a delay, leading to horrible lag if there are enough switches.
          * The cost of this specific solution is that the entire game.png needs be be kept in-memory constantly.
          * It's currently only 1.5MB so it should be okay, but it' an important point to remember for the future.
-         * Sidenode: Modded tilesets don't have this problem, since all the images are included in the mod's single PNG.
+         * Sidenote: Modded tilesets don't have this problem, since all the images are included in the mod's single PNG.
          * Probably. Unless they have some truly huge images.
+         * Sidenote 2: Okay entire so custom tilesets do have this problem because they can get so big that what accommodates
+         * the regular tileset (4096) doesn't suit them. Looking at you 5hex.
          */
         settings.maxWidth = 4096
         settings.maxHeight = 4096
