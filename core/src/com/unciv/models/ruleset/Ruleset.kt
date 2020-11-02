@@ -242,6 +242,9 @@ class Ruleset {
                 lines += "${unit.name} upgrades to unit ${unit.upgradesTo} which does not exist!"
             if (unit.replaces != null && !units.containsKey(unit.replaces!!))
                 lines += "${unit.replaces} replaces ${unit.replaces} which does not exist!"
+            for (promotion in unit.promotions)
+                if (!unitPromotions.containsKey(promotion))
+                    lines += "${unit.replaces} contains promotion $promotion which does not exist!"
         }
 
         for (building in buildings.values) {
