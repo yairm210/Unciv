@@ -1,3 +1,15 @@
+## 3.11.9
+
+Tile editor can handle resources that don't naturally appear on any terrain
+
+AI can no longer raze capital cities
+
+Stats unique can no longer crash badly defined mods
+
+Added mod check for unit promotions and upgrades
+
+"Unable to capture cities" unique prevents the unit from conquering/capturing a city - By givehub99
+
 ## 3.11.8
 
 Improved performance, especially in the City screen
