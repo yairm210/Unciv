@@ -89,27 +89,28 @@ object GameSaver {
     fun getGeneralSettings(): GameSettings {
         val settingsFile = getGeneralSettingsFile()
         val settings: GameSettings =
-            if(!settingsFile.exists())
-                GameSettings().apply { isFreshlyCreated = true }
-            else try {
-                json().fromJson(GameSettings::class.java, settingsFile)
-            } catch (ex:Exception){
-                // I'm not sure of the circumstances,
-                // but some people were getting null settings, even though the file existed??? Very odd.
-                // ...Json broken or otherwise unreadable is the only possible reason.
-                println("Error reading settings file: ${ex.localizedMessage}")
-                println("  cause: ${ex.cause}")
-                GameSettings().apply { isFreshlyCreated = true }
-            }
+                if (!settingsFile.exists())
+                    GameSettings().apply { isFreshlyCreated = true }
+                else try {
+                    json().fromJson(GameSettings::class.java, settingsFile)
+                } catch (ex: Exception) {
+                    // I'm not sure of the circumstances,
+                    // but some people were getting null settings, even though the file existed??? Very odd.
+                    // ...Json broken or otherwise unreadable is the only possible reason.
+                    println("Error reading settings file: ${ex.localizedMessage}")
+                    println("  cause: ${ex.cause}")
+                    GameSettings().apply { isFreshlyCreated = true }
+                }
 
-        val currentTileSets = ImageGetter.atlas.regions.asSequence()
+        val atlas = ImageGetter.atlas
+        val currentTileSets = atlas.regions.asSequence()
                 .filter { it.name.startsWith("TileSets") }
                 .map { it.name.split("/")[1] }.distinct()
-        if(settings.tileSet !in currentTileSets) settings.tileSet = "Default"
+        if (settings.tileSet !in currentTileSets) settings.tileSet = "Default"
         return settings
     }
 
-    fun setGeneralSettings(gameSettings: GameSettings){
+    fun setGeneralSettings(gameSettings: GameSettings) {
         getGeneralSettingsFile().writeString(json().toJson(gameSettings), false)
     }
 

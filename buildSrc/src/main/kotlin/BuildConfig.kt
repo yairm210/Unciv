@@ -6,7 +6,7 @@ object BuildConfig {
     const val appCodeNumber = 491
     const val appVersion = "3.11.8"
 
-    const val gdxVersion = "1.9.10"
+    const val gdxVersion = "1.9.12"
     const val roboVMVersion = "2.3.1"
     const val ashleyVersion = "1.7.0"
     const val aiVersion = "1.8.0"
