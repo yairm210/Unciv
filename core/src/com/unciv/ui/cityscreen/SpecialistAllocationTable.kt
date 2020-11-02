@@ -18,7 +18,7 @@ class SpecialistAllocationTable(val cityScreen: CityScreen): Table(CameraStageBa
                 continue
             val newSpecialists = cityInfo.population.getNewSpecialists()
             val assignedSpecialists = newSpecialists[specialistName]!!
-            val maxSpecialists = cityInfo.population.getMaxSpecialists()[specialistName]!!
+            val maxSpecialists = amount
 
             if (cityScreen.canChangeState) add(getUnassignButton(assignedSpecialists, specialistName))
             add(getAllocationTable(assignedSpecialists, maxSpecialists, specialistName)).pad(10f)

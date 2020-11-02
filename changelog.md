@@ -6,9 +6,11 @@ AI can no longer raze capital cities
 
 Stats unique can no longer crash badly defined mods
 
-Added mod check for unit promotions and upgrades
+Added mod check for unit promotions and upgrades, and building costs
 
 "Unable to capture cities" unique prevents the unit from conquering/capturing a city - By givehub99
+
+Translation updates
 
 ## 3.11.8
 

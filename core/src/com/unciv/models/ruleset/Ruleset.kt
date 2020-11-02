@@ -228,6 +228,11 @@ class Ruleset {
             }
         }
 
+        for(building in buildings.values){
+            if (building.requiredTech == null && building.cost == 0)
+                lines += "${building.name} must either have an explicit cost or reference an existing tech!"
+        }
+
         if (!modOptions.isBaseRuleset) return lines.joinToString("\n")
 
 
@@ -256,8 +261,6 @@ class Ruleset {
                 lines += "${building.name} requires resource ${building.requiredResource} which does not exist!"
             if (building.replaces != null && !buildings.containsKey(building.replaces!!))
                 lines += "${building.name} replaces ${building.replaces} which does not exist!"
-            if (building.requiredTech == null && building.cost == 0)
-                lines += "${building.name} must either have an explicit cost or reference an existing tech!"
         }
 
         for (resource in tileResources.values) {
