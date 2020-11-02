@@ -348,6 +348,7 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
         })
 
         for (resource in ruleset.tileResources.values) {
+            if (resource.terrainsCanBeFoundOn.none { ruleset.terrains.containsKey(it) }) continue // This resource can't be placed
             val resourceHex = getHex(Color.WHITE, ImageGetter.getResourceImage(resource.name, 40f))
             resourceHex.onClick {
                 tileAction = { it.resource = resource.name }
