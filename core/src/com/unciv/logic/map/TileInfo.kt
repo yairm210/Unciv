@@ -332,6 +332,7 @@ open class TileInfo {
                 || filter == terrainFeature
                 || baseTerrainObject.uniques.contains(filter)
                 || terrainFeature != null && getTerrainFeature()!!.uniques.contains(filter)
+                || improvement == filter
                 || filter == "Water" && isWater
     }
 
