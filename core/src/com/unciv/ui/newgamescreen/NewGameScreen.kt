@@ -126,7 +126,7 @@ class NewGameScreen(previousScreen:CameraStageBaseScreen, _gameSetupInfo: GameSe
             }
         }
 
-        if (gameSetupInfo.gameParameters.isOnlineMultiplayer) {
+        if (newGame != null && gameSetupInfo.gameParameters.isOnlineMultiplayer) {
             newGame!!.isUpToDate = true // So we don't try to download it from dropbox the second after we upload it - the file is not yet ready for loading!
             try {
                 OnlineMultiplayer().tryUploadGame(newGame!!)
