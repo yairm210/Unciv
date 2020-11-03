@@ -25,7 +25,6 @@ import io.ktor.server.netty.Netty
 import java.io.File
 import java.util.*
 import kotlin.concurrent.timer
-import kotlin.system.exitProcess
 
 internal object DesktopLauncher {
     private var discordTimer: Timer? = null
@@ -48,7 +47,6 @@ internal object DesktopLauncher {
 
         val desktopParameters = UncivGameParameters(
                 versionFromJar,
-                exitEvent = { exitProcess(0) },
                 cancelDiscordEvent = { discordTimer?.cancel() },
                 fontImplementation = NativeFontDesktop(ORIGINAL_FONT_SIZE.toInt()),
                 customSaveLocationHelper = CustomSaveLocationHelperDesktop()

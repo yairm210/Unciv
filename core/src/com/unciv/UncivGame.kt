@@ -27,7 +27,6 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
 
     val version = parameters.version
     private val crashReportSender = parameters.crashReportSender
-    val exitEvent = parameters.exitEvent
     val cancelDiscordEvent = parameters.cancelDiscordEvent
     val fontImplementation = parameters.fontImplementation
     val consoleMode = parameters.consoleMode
