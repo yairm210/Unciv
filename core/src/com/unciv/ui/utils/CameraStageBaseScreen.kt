@@ -46,14 +46,14 @@ open class CameraStageBaseScreen : Screen {
         stage.addListener(
                 object : InputListener() {
                     override fun keyTyped(event: InputEvent?, character: Char): Boolean {
-                        if (character.toLowerCase() in keyPressDispatcher && !hasOpenPopups()) {
-                            //try-catch mainly for debugging. Breakpoints in the vicinity can make the event fire twice in rapid succession, second time the context can be invalid
-                            try {
-                                keyPressDispatcher[character.toLowerCase()]?.invoke()
-                            } catch (ex: Exception) {}
-                            return true
-                        }
-                        return super.keyTyped(event, character)
+                        if (character.toLowerCase() !in keyPressDispatcher || hasOpenPopups())
+                            return super.keyTyped(event, character)
+
+                        //try-catch mainly for debugging. Breakpoints in the vicinity can make the event fire twice in rapid succession, second time the context can be invalid
+                        try {
+                            keyPressDispatcher[character.toLowerCase()]?.invoke()
+                        } catch (ex: Exception) {}
+                        return true
                     }
                 }
         )
