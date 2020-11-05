@@ -52,6 +52,8 @@ One is our Discord server, which has a dedicated channel.
 
 The Brand New way of doing it is by putting your mod in a Github repository, and then users can download your mod directly to their phone!
 
+**When creating the repository, it's important that the main branch is called "master", not "main"**
+
 The Images and jsons folders need to be in the root directory of the repo - see [here](https://github.com/yairm210/Unciv-IV-mod) for example.
 
 Once you've tested that your mod CAN be downloaded, and that it works well once downloaded, you're ready for the final stage - GETTING IT TO THE USERS AUTOMATICALLY.
