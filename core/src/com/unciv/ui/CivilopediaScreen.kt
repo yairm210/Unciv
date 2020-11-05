@@ -49,7 +49,11 @@ class CivilopediaScreen(ruleset: Ruleset) : CameraStageBaseScreen() {
         onBackButtonClicked { UncivGame.Current.setWorldScreen() }
 
         categoryToEntries["Buildings"] = ruleset.buildings.values
-                .filter { "Will not be displayed in Civilopedia" !in it.uniques }
+                .filter { "Will not be displayed in Civilopedia" !in it.uniques && !(it.isWonder||it.isNationalWonder) }
+                .map { CivilopediaEntry(it.name,it.getDescription(false, null,ruleset),
+                        ImageGetter.getConstructionImage(it.name).surroundWithCircle(50f)) }
+        categoryToEntries["Wonders"] = ruleset.buildings.values
+                .filter { "Will not be displayed in Civilopedia" !in it.uniques && (it.isWonder||it.isNationalWonder) }
                 .map { CivilopediaEntry(it.name,it.getDescription(false, null,ruleset),
                         ImageGetter.getConstructionImage(it.name).surroundWithCircle(50f)) }
         categoryToEntries["Resources"] = ruleset.tileResources.values
@@ -145,7 +149,7 @@ class CivilopediaScreen(ruleset: Ruleset) : CameraStageBaseScreen() {
             }
             TerrainType.TerrainFeature -> {
                 tileInfo.terrainFeature = terrain.name
-                tileInfo.baseTerrain = terrain.occursOn?.last() ?: Constants.grassland
+                tileInfo.baseTerrain = terrain.occursOn.lastOrNull() ?: Constants.grassland
             }
             else ->
                 tileInfo.baseTerrain = terrain.name

@@ -32,6 +32,8 @@ class MapUnit {
     // a major component of getDistanceToTilesWithinTurn,
     // which in turn is a component of getShortestPath and canReach
     @Transient var ignoresTerrainCost = false
+    @Transient var allTilesCosts1 = false
+    @Transient var canPassThroughImpassableTiles = false
     @Transient var roughTerrainPenalty = false
     @Transient var doubleMovementInCoast = false
     @Transient var doubleMovementInForestAndJungle = false
@@ -122,6 +124,8 @@ class MapUnit {
 
         tempUniques = uniques
 
+        allTilesCosts1 = hasUnique("All tiles costs 1")
+        canPassThroughImpassableTiles = hasUnique("Can pass through impassable tiles")
         ignoresTerrainCost = hasUnique("Ignores terrain cost")
         roughTerrainPenalty = hasUnique("Rough terrain penalty")
         doubleMovementInCoast = hasUnique("Double movement in coast")
@@ -409,7 +413,7 @@ class MapUnit {
 
         var healing = when {
             tileInfo.isCityCenter() -> 20
-            tileInfo.isWater && isFriendlyTerritory && type.isWaterUnit() -> 15 // Water unit on friendly water
+            tileInfo.isWater && isFriendlyTerritory && (type.isWaterUnit() || isTransported) -> 15 // Water unit on friendly water
             tileInfo.isWater -> 0 // All other water cases
             tileInfo.getOwner() == null -> 10 // Neutral territory
             isFriendlyTerritory -> 15 // Allied territory
@@ -450,6 +454,7 @@ class MapUnit {
             }
 
         getCitadelDamage()
+        getTerrainDamage()
     }
 
     fun startTurn() {
@@ -668,6 +673,7 @@ class MapUnit {
                 .sumBy { it.params[0].toInt() }
     }
 
+
     fun canBuildAnImprovement() : Boolean {
         if (hasUnique(Constants.workerUnique) || hasUnique(Constants.canBuildUnique))
             return true
@@ -681,6 +687,18 @@ class MapUnit {
             return true
         }
         return false
+
+    private fun getTerrainDamage() {
+        // hard coded mountain damage for now
+        if (getTile().baseTerrain == Constants.mountain) {
+            val tileDamage = 50
+            health -= tileDamage
+
+            if (health <= 0) {
+                civInfo.addNotification("Our [$name] took [$tileDamage] tile damage and was destroyed", currentTile.position, Color.RED)
+                destroy()
+            } else civInfo.addNotification("Our [$name] took [$tileDamage] tile damage", currentTile.position, Color.RED)
+        }
     }
 
     private fun getCitadelDamage() {

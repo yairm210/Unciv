@@ -1,3 +1,59 @@
+## 3.11.9
+
+Tile editor can handle resources that don't naturally appear on any terrain
+
+AI can no longer raze capital cities
+
+Stats unique can no longer crash badly defined mods
+
+Added mod check for unit promotions and upgrades, and building costs
+
+"Unable to capture cities" unique prevents the unit from conquering/capturing a city - By givehub99
+
+Translation updates
+
+## 3.11.8
+
+Improved performance, especially in the City screen
+
+Avoided more badly-defined-mod crashes, and some rare non-mod crashes and ANRs
+
+Added mods to crash report, many crashes are caused by incorrectly defined mods
+
+Helicopter Gunship uniques - By givehub99
+
+Translation updates
+
+## 3.11.7
+
+Resolved #3285 - added a notification when cities are no longer in resistance
+
+More tile variants are enabled (e.g. "baseTile+resource+improvement")
+
+Fixed some more silly bugs caused by badly configured mods
+
+New snow-versions of existing tiles :)
+
+Can no longer start a new game with an incorrectly defined mod! :)
+
+## 3.11.6
+
+Added "locate mod errors" button in the options menu for discovering broken links in base ruleset mods
+
+Resolved another crash caused by incorrect ruleset mod definitions
+
+Checking something that might solve the Mystery of the Disappearing C's
+
+Added culture and science colors to resources
+
+Split civilopedia "buildings" category into "buildings" and "wonders"
+
+Resolved #3274 - empty maps start with ocean tiles
+
+Consolidated unit kill bonus uniques - By givehub99
+
+Translation updates
+
 ## 3.11.5
 
 Performance improvements for main screen rendering - should be much less laggy now

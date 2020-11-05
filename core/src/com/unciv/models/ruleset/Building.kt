@@ -143,21 +143,21 @@ class Building : NamedStats(), IConstruction {
 
             for (unique in civInfo.getMatchingUniques("[] from every []")) {
                 if (unique.params[1] != baseBuildingName) continue
-                stats.add(Stats.parse(unique.params[0]))
+                stats.add(unique.stats!!)
             }
 
             for (unique in uniqueObjects)
                 if (unique.placeholderText == "[] with []" && civInfo.hasResource(unique.params[1]) && Stats.isStats(unique.params[0]))
-                    stats.add(Stats.parse(unique.params[0]))
+                    stats.add(unique.stats!!)
 
             if (!isWonder)
                 for (unique in civInfo.getMatchingUniques("[] from all [] buildings")) {
                     if (isStatRelated(Stat.valueOf(unique.params[1])))
-                        stats.add(Stats.parse(unique.params[0]))
+                        stats.add(unique.stats!!)
                 }
             else
                 for (unique in civInfo.getMatchingUniques("[] from every Wonder"))
-                    stats.add(Stats.parse(unique.params[0]))
+                    stats.add(unique.stats!!)
 
         }
         return stats

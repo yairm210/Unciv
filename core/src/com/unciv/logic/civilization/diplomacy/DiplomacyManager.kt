@@ -428,6 +428,7 @@ class DiplomacyManager() {
         revertToZero(DiplomaticModifiers.BetrayedPromiseToNotSettleCitiesNearUs, 1 / 8f) // That's a bastardly thing to do
         revertToZero(DiplomaticModifiers.UnacceptableDemands, 1 / 4f)
         revertToZero(DiplomaticModifiers.LiberatedCity, 1 / 8f)
+        revertToZero(DiplomaticModifiers.StealingTerritory, 1 / 4f)
 
         setFriendshipBasedModifier()
 

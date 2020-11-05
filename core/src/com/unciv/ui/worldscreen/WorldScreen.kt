@@ -689,15 +689,10 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
             return
         }
 
-        // don't show a dialog, if it can't exit the game
-        if (game.exitEvent == null) {
-            return
-        }
-
         val promptWindow = Popup(this)
         promptWindow.addGoodSizedLabel("Do you want to exit the game?".tr())
         promptWindow.row()
-        promptWindow.addButton("Yes") { game.exitEvent?.invoke() }
+        promptWindow.addButton("Yes") { Gdx.app.exit() }
         promptWindow.addButton("No") {
             promptWindow.close()
         }

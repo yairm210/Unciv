@@ -33,7 +33,6 @@ class AndroidLauncher : AndroidApplication() {
         val androidParameters = UncivGameParameters(
                 version = BuildConfig.VERSION_NAME,
                 crashReportSender = CrashReportSenderAndroid(this),
-                exitEvent = this::finish,
                 fontImplementation = NativeFontAndroid(ORIGINAL_FONT_SIZE.toInt()),
                 customSaveLocationHelper = customSaveLocationHelper
         )

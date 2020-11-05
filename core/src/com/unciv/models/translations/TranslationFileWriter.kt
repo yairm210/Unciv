@@ -83,10 +83,6 @@ object TranslationFileWriter {
             val existingTranslationKeys = HashSet<String>()
 
             for (line in linesFromTemplates) {
-                if(line.contains("G&K")) {
-                    val x = line.length
-                }
-
                 if (!line.contains(" = ")) {
                     // small hack to insert empty lines
                     if (line.startsWith(specialNewLineCode)) {

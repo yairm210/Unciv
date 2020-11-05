@@ -8,6 +8,7 @@ import com.badlogic.gdx.utils.Array
 import com.unciv.MainMenuScreen
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.models.UncivSound
+import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.translations.TranslationFileWriter
 import com.unciv.models.translations.Translations
 import com.unciv.models.translations.tr
@@ -133,6 +134,7 @@ class OptionsPopup(val previousScreen:CameraStageBaseScreen) : Popup(previousScr
         addSoundEffectsVolumeSlider()
         addMusicVolumeSlider()
         addTranslationGeneration()
+        addModPopup()
         addSetUserId()
 
         innerTable.add("Version".toLabel()).pad(10f)
@@ -151,7 +153,7 @@ class OptionsPopup(val previousScreen:CameraStageBaseScreen) : Popup(previousScr
                                     settings.userId = clipboardContents
                                     settings.save()
                                     idSetLabel.setFontColor(Color.WHITE).setText("ID successfully set!".tr())
-                                }).open(true)
+                                }, previousScreen).open(true)
                         idSetLabel.isVisible = true
                     } catch (ex: Exception) {
                         idSetLabel.isVisible = true
@@ -191,6 +193,24 @@ class OptionsPopup(val previousScreen:CameraStageBaseScreen) : Popup(previousScr
             }
             innerTable.add(generateTranslationsButton).colspan(2).row()
         }
+    }
+
+    private fun addModPopup() {
+        val generateTranslationsButton = "Locate mod errors".toTextButton()
+        generateTranslationsButton.onClick {
+            var text = ""
+            for (mod in RulesetCache.values) {
+                val modLinks = mod.checkModLinks()
+                if (modLinks != "")
+                    text += "\n\n" + mod.name + "\n\n" + modLinks
+            }
+            val popup = Popup(screen)
+            popup.add(ScrollPane(text.toLabel()).apply { setOverscroll(false,false) })
+                    .maxHeight(screen.stage.height / 2).row()
+            popup.addCloseButton()
+            popup.open(true)
+        }
+        innerTable.add(generateTranslationsButton).colspan(2).row()
     }
 
     private fun addSoundEffectsVolumeSlider() {

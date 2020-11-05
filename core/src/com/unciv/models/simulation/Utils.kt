@@ -13,16 +13,16 @@ class MutableInt(var value: Int = 0) {
 }
 
 fun formatDuration(d: Duration): String {
-    var d = d
-    val days = d.toDays()
-    d = d.minusDays(days)
-    val hours = d.toHours()
-    d = d.minusHours(hours)
-    val minutes = d.toMinutes()
-    d = d.minusMinutes(minutes)
-    val seconds = d.seconds
-    d = d.minusSeconds(seconds)
-    val millis = d.toMillis()
+    var newDuration = d
+    val days = newDuration.toDays()
+    newDuration = newDuration.minusDays(days)
+    val hours = newDuration.toHours()
+    newDuration = newDuration.minusHours(hours)
+    val minutes = newDuration.toMinutes()
+    newDuration = newDuration.minusMinutes(minutes)
+    val seconds = newDuration.seconds
+    newDuration = newDuration.minusSeconds(seconds)
+    val millis = newDuration.toMillis()
     return (if (days == 0L) "" else "$days"+"d ") +
             (if (hours == 0L) "" else "$hours"+"h ") +
             (if (minutes == 0L) "" else "$minutes"+"m ") +

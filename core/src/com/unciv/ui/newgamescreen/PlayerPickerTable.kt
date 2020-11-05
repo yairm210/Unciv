@@ -44,6 +44,9 @@ class PlayerPickerTable(val previousScreen: IPreviousScreen, var gameParameters:
     var noRandom = false
 
     init {
+        for (player in gameParameters.players)
+            player.playerId = "" // This is to stop people from getting other users' IDs and cheating with them in multiplayer games
+
         top()
         add("Civilizations".toLabel(fontSize = 24)).padBottom(20f).row()
         add(ScrollPane(playerListTable).apply { setOverscroll(false, false) }).width(civBlocksWidth)
