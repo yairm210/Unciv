@@ -150,6 +150,9 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) 
     fun getTileBaseImageLocations(viewingCiv: CivilizationInfo?): List<String> {
         if (viewingCiv == null && !showEntireMap) return listOf(tileSetStrings.hexagon)
 
+        // JN Implementing toggle yields option (should ignore tiles which do not have yields e.g. mountains (i.e. tileinfo != mountain . . .)
+        val shouldShowYield = UncivGame.Current.settings.showTileYields
+
         val shouldShowImprovement = tileInfo.improvement != null && UncivGame.Current.settings.showPixelImprovements
         val shouldShowResource = UncivGame.Current.settings.showPixelImprovements
                 && tileInfo.resource != null &&
@@ -180,6 +183,25 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) 
             if (ImageGetter.imageExists(naturalWonder))
                 return listOf(naturalWonder)
         }
+
+
+       /*
+        // JN Showing tile yields
+        // if tile contains yield (e.g. not a mountain)
+        if (shouldShowYield){
+            // get tile yield
+            //val baseTerrainAndYieldLocation = "$baseTerrainTileLocation+${tileInfo.resource}"
+            val baseTerrainAndYieldLocation = "TileSets/FantasyHex/Tiles/Grassland+Farm"
+
+            println("showing yield")
+            // display
+            if (ImageGetter.imageExists(baseTerrainAndYieldLocation))
+            return listOf(baseTerrainAndYieldLocation)
+        }
+        else {println("not showing yield")}
+        //
+        */
+
 
 
         if (tileInfo.terrainFeature != null) {
@@ -317,7 +339,7 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) 
             || viewingCiv.exploredTiles.contains(tileInfo.position)
             || viewingCiv.isSpectator()
 
-    open fun update(viewingCiv: CivilizationInfo? = null, showResourcesAndImprovements: Boolean = true) {
+    open fun update(viewingCiv: CivilizationInfo? = null, showResourcesAndImprovements: Boolean = true,showTileYields: Boolean = true) {
 
         fun clearUnexploredTiles() {
             updateTileImage(null)
@@ -328,7 +350,7 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) 
 
             if (borderImages.isNotEmpty()) clearBorders()
 
-            icons.update(false, false, false, null)
+            icons.update(false,false ,false, false, null)
 
             fogImage.isVisible = true
         }
@@ -353,7 +375,7 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) 
         updatePixelMilitaryUnit(tileIsViewable && showMilitaryUnit)
         updatePixelCivilianUnit(tileIsViewable)
 
-        icons.update(showResourcesAndImprovements, tileIsViewable, showMilitaryUnit,viewingCiv)
+        icons.update(showResourcesAndImprovements,showTileYields , tileIsViewable, showMilitaryUnit,viewingCiv)
 
         updateCityImage()
         updateNaturalWonderImage()

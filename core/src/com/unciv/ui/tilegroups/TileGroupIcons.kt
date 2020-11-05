@@ -22,9 +22,13 @@ class TileGroupIcons(val tileGroup: TileGroup){
     var civilianUnitIcon: UnitGroup? = null
     var militaryUnitIcon: UnitGroup? = null
 
-    fun update(showResourcesAndImprovements: Boolean, tileIsViewable: Boolean, showMilitaryUnit: Boolean, viewingCiv:CivilizationInfo?) {
+    fun update(showResourcesAndImprovements: Boolean, showTileYields: Boolean, tileIsViewable: Boolean, showMilitaryUnit: Boolean, viewingCiv:CivilizationInfo?) {
         updateResourceIcon(showResourcesAndImprovements)
         updateImprovementIcon(showResourcesAndImprovements)
+
+        // JN
+
+        updateYieldIcon(showTileYields)
 
         civilianUnitIcon = newUnitIcon(tileGroup.tileInfo.civilianUnit, civilianUnitIcon,
                 tileIsViewable, -20f, viewingCiv)
@@ -109,6 +113,39 @@ class TileGroupIcons(val tileGroup: TileGroup){
             improvementIcon!!.color = Color.WHITE.cpy().apply { a = 0.7f }
         }
     }
+
+    // JN (TODO Edit)
+    fun updateYieldIcon(showTileYields: Boolean){
+
+        // TODO if current tile yields group doesnt match tilegroup.info yields (found in ruleset) , then update this (see updateResourceImage function below for template idea..)
+        // temporarily changing this so that all show food..
+        if (showTileYields){
+
+                //var tempYield = "Food"
+               // var tileStats =2
+               var tileStats = tileGroup.tileInfo.getTileStats(CivilizationInfo())
+            //if tileStats.food<2
+                if (tileStats.food < 2) {
+                    val newYieldIcon = ImageGetter.getYieldImage("Food", 20f)
+                    newYieldIcon.center(tileGroup)
+                    newYieldIcon.x = newYieldIcon.x + 22 // right
+                    newYieldIcon.y = newYieldIcon.y - 10 // bottom
+                    tileGroup.miscLayerGroup.addActor(newYieldIcon)
+                    tileGroup.resourceImage = newYieldIcon
+                }
+
+        }
+    /* //TODO implement this...
+        if (tileGroup.resourceImage != null) { // This could happen on any turn, since resources need certain techs to reveal them
+            val shouldDisplayResource =
+                    if (tileGroup.showEntireMap) tileGroup.tileInfo.resource != null
+                    else showTileYields
+                            && tileGroup.tileInfo.hasViewableResource(UncivGame.Current.worldScreen.viewingCiv)
+            tileGroup.resourceImage!!.isVisible = shouldDisplayResource
+        }*/
+    }
+
+
 
     fun updateResourceIcon(showResourcesAndImprovements: Boolean) {
         if (tileGroup.resource != tileGroup.tileInfo.resource) {
