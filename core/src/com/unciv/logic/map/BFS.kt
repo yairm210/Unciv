@@ -6,31 +6,33 @@ import java.util.ArrayDeque
 /**
  * Defines intermediate steps of a breadth-first search, for use in either get shortest path or get onnected tiles.
  */
-class BFS(val startingPoint: TileInfo, val predicate : (TileInfo) -> Boolean){
+class BFS(val startingPoint: TileInfo, val predicate : (TileInfo) -> Boolean) {
     var tilesToCheck = ArrayDeque<TileInfo>()
+
     /** each tile reached points to its parent tile, where we got to it from */
     val tilesReached = HashMap<TileInfo, TileInfo>()
 
-    init{
+    init {
         tilesToCheck.add(startingPoint)
         tilesReached[startingPoint] = startingPoint
     }
 
-    fun stepToEnd(){
-        while(tilesToCheck.isNotEmpty())
+    fun stepToEnd() {
+        while (tilesToCheck.isNotEmpty())
             nextStep()
     }
 
+
     fun stepUntilDestination(destination: TileInfo): BFS {
-        while(!tilesReached.containsKey(destination) && tilesToCheck.isNotEmpty())
+        while (!tilesReached.containsKey(destination) && tilesToCheck.isNotEmpty())
             nextStep()
         return this
     }
 
-    fun nextStep(){
+    fun nextStep() {
         val current = tilesToCheck.remove()
-        for(neighbor in current.neighbors){
-            if(predicate(neighbor) && !tilesReached.containsKey(neighbor)){
+        for (neighbor in current.neighbors) {
+            if (predicate(neighbor) && !tilesReached.containsKey(neighbor)) {
                 tilesReached[neighbor] = current
                 tilesToCheck.add(neighbor)
             }
@@ -41,7 +43,7 @@ class BFS(val startingPoint: TileInfo, val predicate : (TileInfo) -> Boolean){
         val path = ArrayList<TileInfo>()
         path.add(destination)
         var currentNode = destination
-        while(currentNode != startingPoint) {
+        while (currentNode != startingPoint) {
             val parent = tilesReached[currentNode]
             if (parent == null) return ArrayList()// destination is not in our path
             currentNode = parent
