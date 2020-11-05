@@ -118,22 +118,29 @@ class TileGroupIcons(val tileGroup: TileGroup){
     fun updateYieldIcon(showTileYields: Boolean){
 
         // TODO if current tile yields group doesnt match tilegroup.info yields (found in ruleset) , then update this (see updateResourceImage function below for template idea..)
-        // temporarily changing this so that all show food..
         if (showTileYields){
 
-                //var tempYield = "Food"
-               // var tileStats =2
-               var tileStats = tileGroup.tileInfo.getTileStats(CivilizationInfo())
-            //if tileStats.food<2
-                if (tileStats.food < 2) {
-                    val newYieldIcon = ImageGetter.getYieldImage("Food", 20f)
-                    newYieldIcon.center(tileGroup)
-                    newYieldIcon.x = newYieldIcon.x + 22 // right
-                    newYieldIcon.y = newYieldIcon.y - 10 // bottom
-                    tileGroup.miscLayerGroup.addActor(newYieldIcon)
-                    tileGroup.resourceImage = newYieldIcon
-                }
+            // TODO append number to yield image depending upon tilestats below (e.f. if (tileStats.food==2) 
+            var tileStats = tileGroup.tileInfo.getTileStats(CivilizationInfo())
 
+            // yield icon positions (yield: [x,y, value]) (coordinates will need adjusting
+            val yieldPositions = mapOf(
+                    "Food" to listOf(22,10),
+                    "Production" to listOf(9,10),
+                    "Gold" to listOf(22,-3),
+                    "Science" to listOf(9,-3),
+                    "Culture" to listOf(17,-13))
+            for (yieldType in yieldPositions) {
+
+
+                val newYieldIcon = ImageGetter.getYieldImage(yieldType.key, 14f)
+                newYieldIcon.center(tileGroup)
+                newYieldIcon.x = newYieldIcon.x + yieldType.value.get(0) // right
+                newYieldIcon.y = newYieldIcon.y - yieldType.value.get(1) // bottom
+                tileGroup.miscLayerGroup.addActor(newYieldIcon)
+                tileGroup.resourceImage = newYieldIcon
+
+            }
         }
     /* //TODO implement this...
         if (tileGroup.resourceImage != null) { // This could happen on any turn, since resources need certain techs to reveal them
