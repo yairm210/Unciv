@@ -122,9 +122,9 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
                 .filter { it.isWater && it.hasViewableResource(civInfo) && it.improvement == null }.toList()
         if (tilesThatNeedWorkboat.isEmpty()) return
 
-        // If we can't reach the tile we need to improve within 10 turns, it's probably unreachable.
+        // If we can't reach the tile we need to improve within 15 tiles, it's probably unreachable.
         val bfs = BFS(cityInfo.getCenterTile()) { (it.isWater || it.isCityCenter()) && it.isFriendlyTerritory(civInfo) }
-        for (i in 1..10) {
+        for (i in 1..15) {
             bfs.nextStep()
             if (tilesThatNeedWorkboat.any { bfs.hasReachedTile(it) })
                 break

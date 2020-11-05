@@ -188,6 +188,7 @@ object Github {
         var description = ""
         var svn_url = ""
         var stargazers_count = 0
+        var default_branch = ""
     }
 }
 
