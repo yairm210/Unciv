@@ -38,11 +38,8 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) 
     val baseLayerGroup = BaseLayerGroupClass().apply { isTransform = false; setSize(groupSize, groupSize)  }
 
     protected var tileBaseImages: ArrayList<Image> = ArrayList()
-    /** List of ;-delimited image locations comprising the layers -
-     * for instance, "desert+flood plains" might have an improvment for which there is a certain image eg "desert+flood plains+farm"
-     * or it might use a generic image, in which case you'd have the "desert+flood plains;academy"
-     * Easier to save and compare than with lists */
-    var tileImagesIdentifier = ""
+    /** List of image locations comprising the layers so we don't need to change images all the time */
+    var tileImageIdentifiers = listOf<String>()
 
     // This is for OLD tiles - the "mountain" symbol on mountains for instance
     protected var baseTerrainOverlayImage: Image? = null
@@ -277,8 +274,11 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) 
     private fun updateTileImage(viewingCiv: CivilizationInfo?) {
         val tileBaseImageLocations = getTileBaseImageLocations(viewingCiv)
 
-        val identifier = tileBaseImageLocations.joinToString(";")
-        if (identifier == tileImagesIdentifier) return
+        if(tileBaseImageLocations.size == tileImageIdentifiers.size) {
+            if (tileBaseImageLocations.withIndex().all { (i, imageLocation) -> tileImageIdentifiers[i] == imageLocation })
+                return // All image identifiers are the same as the current ones, no need to change anything
+        }
+        tileImageIdentifiers = tileBaseImageLocations
 
         for (image in tileBaseImages) image.remove()
         tileBaseImages.clear()
@@ -302,7 +302,6 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) 
             setHexagonImageSize(image)
             image.toBack()
         }
-        tileImagesIdentifier = identifier
     }
 
     fun showMilitaryUnit(viewingCiv: CivilizationInfo) = showEntireMap
