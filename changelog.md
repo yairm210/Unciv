@@ -1,3 +1,19 @@
+## 3.11.10
+
+AI no longer tries to construct work boats that can't reach their intended destination
+
+Can no longer see other players' IDs in a multiplayer game through the new game screen
+
+We now remove resources and improvements that are not in the ruleset when loading the game
+
+Tile rendering performance improvement
+
+Diplomatic penalty of stealing lands decreases by time - By ninjatao
+
+Fixed bug Carrier-based aircraft not healing - By jnecus
+
+Translation updates
+
 ## 3.11.9
 
 Tile editor can handle resources that don't naturally appear on any terrain
