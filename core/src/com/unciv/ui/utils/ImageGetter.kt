@@ -271,9 +271,11 @@ object ImageGetter {
     // JN (getting yield image)
     fun getYieldImage(resourceName: String, size:Float): Actor {
         val iconGroup = getImage("StatIcons/YieldIcons/$resourceName").surroundWithCircle(size)
-        val resource = ruleset.tileResources[resourceName]
-        if (resource == null) return iconGroup // This is the result of a bad modding setup, just give em an empty circle. Their problem.
-        iconGroup.circle.color = getColorFromStats(resource)
+
+        // Code below maybe be require to facilitate mods
+        //val resource = ruleset.tileResources[resourceName]
+        //if (resource == null) return iconGroup // This is the result of a bad modding setup, just give em an empty circle. Their problem.
+        //iconGroup.circle.color = getColorFromStats(resource)
         return iconGroup
     }
 

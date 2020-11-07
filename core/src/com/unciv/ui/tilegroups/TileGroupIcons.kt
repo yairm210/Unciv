@@ -113,12 +113,10 @@ class TileGroupIcons(val tileGroup: TileGroup){
         }
     }
 
-    // JN updating display of tile yields (if showTileYields option is selected)
+    // JN updating display of tile yields
     fun updateYieldIcon(showTileYields: Boolean){
 
         // Removing yield icons (in order to then update)
-        //tileGroup.yieldImage?.remove()
-        //tileGroup.miscLayerGroup.clear()
         tileGroup.yieldImageGroup.clear()
 
         if (showTileYields){
