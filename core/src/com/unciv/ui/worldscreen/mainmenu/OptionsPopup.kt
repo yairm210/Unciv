@@ -153,7 +153,7 @@ class OptionsPopup(val previousScreen:CameraStageBaseScreen) : Popup(previousScr
                                     settings.userId = clipboardContents
                                     settings.save()
                                     idSetLabel.setFontColor(Color.WHITE).setText("ID successfully set!".tr())
-                                }).open(true)
+                                }, previousScreen).open(true)
                         idSetLabel.isVisible = true
                     } catch (ex: Exception) {
                         idSetLabel.isVisible = true

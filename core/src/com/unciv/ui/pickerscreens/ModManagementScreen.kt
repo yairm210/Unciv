@@ -39,6 +39,7 @@ class ModManagementScreen: PickerScreen() {
 
             Gdx.app.postRunnable {
                 for (repo in repoList) {
+                    if (repo.default_branch != "master") continue
                     repo.name = repo.name.replace('-', ' ')
                     val downloadButton = repo.name.toTextButton()
                     downloadButton.onClick {
