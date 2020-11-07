@@ -268,19 +268,12 @@ object ImageGetter {
         return drawable.tint(color)
     }
 
-    // JN (getting yield image (temp returning food happiness for all (TODO modify (see getResourceImage)
+    // JN (getting yield image)
     fun getYieldImage(resourceName: String, size:Float): Actor {
-        val iconGroup = getImage("StatIcons/$resourceName").surroundWithCircle(size)
+        val iconGroup = getImage("StatIcons/YieldIcons/$resourceName").surroundWithCircle(size)
         val resource = ruleset.tileResources[resourceName]
         if (resource == null) return iconGroup // This is the result of a bad modding setup, just give em an empty circle. Their problem.
         iconGroup.circle.color = getColorFromStats(resource)
-
-       /* if (true) {
-            val happiness = getStatIcon("Happiness")
-            happiness.setSize(size / 2, size / 2)
-            happiness.x = iconGroup.width - happiness.width
-            iconGroup.addActor(happiness)
-        }*/
         return iconGroup
     }
 

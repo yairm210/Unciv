@@ -66,6 +66,10 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) 
     class MiscLayerGroupClass:Group()
     val miscLayerGroup = MiscLayerGroupClass().apply { isTransform = false; setSize(groupSize, groupSize) }
 
+    // JN
+    var yieldImageGroup = MiscLayerGroupClass().apply { isTransform = false; setSize(groupSize, groupSize) }
+
+
     var resourceImage: Actor? = null
     var resource: String? = null
     private val roadImages = HashMap<TileInfo, RoadImage>()
@@ -98,6 +102,8 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) 
         this.addActor(baseLayerGroup)
         this.addActor(terrainFeatureLayerGroup)
         this.addActor(miscLayerGroup)
+        // JN
+        this.addActor(yieldImageGroup)
         this.addActor(unitLayerGroup)
         this.addActor(cityButtonLayerGroup)
         this.addActor(circleCrosshairFogLayerGroup)
