@@ -134,46 +134,6 @@ class TileGroupIcons(val tileGroup: TileGroup){
     }
 
 
-/*
-    fun updateYieldIcon(showTileYields: Boolean){
-
-        // Removing yield icons (in order to then update)
-        tileGroup.yieldImageGroup.clear()
-
-        if (showTileYields){
-            var tileStats = tileGroup.tileInfo.getTileStats(CivilizationInfo())
-
-            // Location of yield icons within tiles
-            val yieldPositions = mapOf(
-                    "Food" to listOf(22,10,tileStats.food.toInt()),
-                    "Production" to listOf(9,10,tileStats.production.toInt()),
-                    "Gold" to listOf(22,-3,tileStats.gold.toInt()),
-                    "Science" to listOf(9,-3,tileStats.science.toInt()),
-                    "Culture" to listOf(17,-13,tileStats.culture.toInt()))
-
-            // If yield > 0 then an icon will be collected and displayed
-            for (yieldType in yieldPositions) {
-                val yieldTypeName = yieldType.key
-                val yieldNumber = yieldType.value.get(2).toString()
-                val yieldIconString = "$yieldTypeName$yieldNumber"
-                val newYieldIcon = ImageGetter.getYieldImage(yieldIconString,14f)
-
-                if (yieldNumber  != "0") {
-                    newYieldIcon.center(tileGroup)
-                    newYieldIcon.x = newYieldIcon.x + yieldType.value.get(0) // right
-                    newYieldIcon.y = newYieldIcon.y - yieldType.value.get(1) // bottom
-                    tileGroup.yieldImageGroup.addActor(newYieldIcon)
-                }
-            }
-
-
-                    //tileGroup.miscLayerGroup.addActor(newYieldIcon)}}
-                    //tileGroup.yieldImage = newYieldIcon}}
-        }
-    }
-*/
-
-
     fun updateResourceIcon(showResourcesAndImprovements: Boolean) {
         if (tileGroup.resource != tileGroup.tileInfo.resource) {
             tileGroup.resource = tileGroup.tileInfo.resource

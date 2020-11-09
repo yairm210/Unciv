@@ -322,7 +322,7 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) 
             || viewingCiv.exploredTiles.contains(tileInfo.position)
             || viewingCiv.isSpectator()
 
-    open fun update(viewingCiv: CivilizationInfo? = null, showResourcesAndImprovements: Boolean = true,showTileYields: Boolean = true) {
+    open fun update(viewingCiv: CivilizationInfo? = null, showResourcesAndImprovements: Boolean = true, showTileYields: Boolean = true) {
 
         fun clearUnexploredTiles() {
             updateTileImage(null)
