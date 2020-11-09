@@ -8,10 +8,7 @@ import com.badlogic.gdx.utils.Align
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.MapUnit
-import com.unciv.ui.utils.ImageGetter
-import com.unciv.ui.utils.UnitGroup
-import com.unciv.ui.utils.center
-import com.unciv.ui.utils.toLabel
+import com.unciv.ui.utils.*
 
 /** Helper class for TileGroup, which was getting too full */
 class TileGroupIcons(val tileGroup: TileGroup){
@@ -114,6 +111,30 @@ class TileGroupIcons(val tileGroup: TileGroup){
     }
 
     // JN updating display of tile yields
+    private fun updateYieldIcon(showTileYields: Boolean) {
+
+        // Removing yield icons (in order to update)
+        tileGroup.tileYieldGroup.clear()
+
+
+
+        if (showTileYields) {
+            tileGroup.tileYieldGroup.setStats(tileGroup.tileInfo.getTileStats(CivilizationInfo()))
+            tileGroup.tileYieldGroup.setOrigin(Align.center)
+            tileGroup.tileYieldGroup.setScale(0.7f)
+            tileGroup.tileYieldGroup.toFront()
+            tileGroup.tileYieldGroup.centerX(tileGroup)
+            tileGroup.tileYieldGroup.y = tileGroup.height * 0.25f - tileGroup.tileYieldGroup.height / 2
+            /*if (tileGroup.tileInfo.isWorked()) {
+                tileGroup.tileYieldGroup.color = Color.WHITE
+            } else if (!tileInfo.isCityCenter()) {
+                tileGroup.tileYieldGroup.color = Color.GRAY.cpy().apply { a = 0.5f }
+            }*/
+        }
+    }
+
+
+/*
     fun updateYieldIcon(showTileYields: Boolean){
 
         // Removing yield icons (in order to then update)
@@ -150,7 +171,7 @@ class TileGroupIcons(val tileGroup: TileGroup){
                     //tileGroup.yieldImage = newYieldIcon}}
         }
     }
-
+*/
 
 
     fun updateResourceIcon(showResourcesAndImprovements: Boolean) {

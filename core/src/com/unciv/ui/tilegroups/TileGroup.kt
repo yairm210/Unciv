@@ -13,6 +13,7 @@ import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.RoadStatus
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.ruleset.unit.UnitType
+import com.unciv.ui.cityscreen.YieldGroup
 import com.unciv.ui.utils.ImageGetter
 import com.unciv.ui.utils.center
 import com.unciv.ui.utils.centerX
@@ -64,8 +65,7 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) 
     val miscLayerGroup = MiscLayerGroupClass().apply { isTransform = false; setSize(groupSize, groupSize) }
 
     // JN
-    var yieldImageGroup = MiscLayerGroupClass().apply { isTransform = false; setSize(groupSize, groupSize) }
-
+    var tileYieldGroup = YieldGroup()
 
     var resourceImage: Actor? = null
     var resource: String? = null
@@ -100,7 +100,7 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) 
         this.addActor(terrainFeatureLayerGroup)
         this.addActor(miscLayerGroup)
         // JN
-        this.addActor(yieldImageGroup)
+        this.addActor(tileYieldGroup)
         this.addActor(unitLayerGroup)
         this.addActor(cityButtonLayerGroup)
         this.addActor(circleCrosshairFogLayerGroup)
