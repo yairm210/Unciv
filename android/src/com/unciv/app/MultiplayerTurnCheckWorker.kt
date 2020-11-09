@@ -71,18 +71,17 @@ class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParame
          * For more infos: https://developer.android.com/training/notify-user/channels.html#CreateChannel
          */
         fun createNotificationChannelInfo(appContext: Context) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                val name = appContext.resources.getString(R.string.Notify_ChannelInfo_Short)
-                val descriptionText = appContext.resources.getString(R.string.Notify_ChannelInfo_Long)
-                val importance = NotificationManager.IMPORTANCE_HIGH
-                val mChannel = NotificationChannel(NOTIFICATION_CHANNEL_ID_INFO, name, importance)
-                mChannel.description = descriptionText
-                mChannel.setShowBadge(true)
-                mChannel.setLockscreenVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return
+            val name = appContext.resources.getString(R.string.Notify_ChannelInfo_Short)
+            val descriptionText = appContext.resources.getString(R.string.Notify_ChannelInfo_Long)
+            val importance = NotificationManager.IMPORTANCE_HIGH
+            val mChannel = NotificationChannel(NOTIFICATION_CHANNEL_ID_INFO, name, importance)
+            mChannel.description = descriptionText
+            mChannel.setShowBadge(true)
+            mChannel.setLockscreenVisibility(NotificationCompat.VISIBILITY_PUBLIC)
 
-                val notificationManager = appContext.getSystemService(AndroidApplication.NOTIFICATION_SERVICE) as NotificationManager
-                notificationManager.createNotificationChannel(mChannel)
-            }
+            val notificationManager = appContext.getSystemService(AndroidApplication.NOTIFICATION_SERVICE) as NotificationManager
+            notificationManager.createNotificationChannel(mChannel)
         }
 
         /**
@@ -93,18 +92,17 @@ class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParame
          * For more infos: https://developer.android.com/training/notify-user/channels.html#CreateChannel
          */
         fun createNotificationChannelService(appContext: Context) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                val name = appContext.resources.getString(R.string.Notify_ChannelService_Short)
-                val descriptionText = appContext.resources.getString(R.string.Notify_ChannelService_Long)
-                val importance = NotificationManager.IMPORTANCE_MIN
-                val mChannel = NotificationChannel(NOTIFICATION_CHANNEL_ID_SERVICE, name, importance)
-                mChannel.setShowBadge(false)
-                mChannel.setLockscreenVisibility(NotificationCompat.VISIBILITY_PUBLIC)
-                mChannel.description = descriptionText
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return
+            val name = appContext.resources.getString(R.string.Notify_ChannelService_Short)
+            val descriptionText = appContext.resources.getString(R.string.Notify_ChannelService_Long)
+            val importance = NotificationManager.IMPORTANCE_MIN
+            val mChannel = NotificationChannel(NOTIFICATION_CHANNEL_ID_SERVICE, name, importance)
+            mChannel.setShowBadge(false)
+            mChannel.setLockscreenVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+            mChannel.description = descriptionText
 
-                val notificationManager = appContext.getSystemService(AndroidApplication.NOTIFICATION_SERVICE) as NotificationManager
-                notificationManager.createNotificationChannel(mChannel)
-            }
+            val notificationManager = appContext.getSystemService(AndroidApplication.NOTIFICATION_SERVICE) as NotificationManager
+            notificationManager.createNotificationChannel(mChannel)
         }
 
         /**
@@ -194,12 +192,11 @@ class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParame
          *  Therefore Unciv needs to create new ones and delete legacy ones.
          */
         private fun destroyOldChannels(appContext: Context) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                val notificationManager = appContext.getSystemService(AndroidApplication.NOTIFICATION_SERVICE) as NotificationManager
-                HISTORIC_NOTIFICATION_CHANNELS.forEach {
-                    if (null != notificationManager.getNotificationChannel(it)) {
-                        notificationManager.deleteNotificationChannel(it)
-                    }
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return
+            val notificationManager = appContext.getSystemService(AndroidApplication.NOTIFICATION_SERVICE) as NotificationManager
+            HISTORIC_NOTIFICATION_CHANNELS.forEach {
+                if (null != notificationManager.getNotificationChannel(it)) {
+                    notificationManager.deleteNotificationChannel(it)
                 }
             }
         }

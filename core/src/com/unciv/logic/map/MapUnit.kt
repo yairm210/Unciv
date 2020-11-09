@@ -349,7 +349,8 @@ class MapUnit {
                 if (tile.improvementInProgress == "Remove Road" || tile.improvementInProgress == "Remove Railroad")
                     tile.roadStatus = RoadStatus.None
                 else {
-                    if (tile.tileMap.gameInfo.ruleSet.terrains[tile.terrainFeature]!!.uniques
+                    // We put "tile.terrainFeature!=null" because of a strange edge case that SHOULD be solved from 3.11.11+, so we should remove it then and see
+                    if (tile.terrainFeature!=null && tile.tileMap.gameInfo.ruleSet.terrains[tile.terrainFeature!!]!!.uniques
                                     .contains("Provides a one-time Production bonus to the closest city when cut down"))
                         tryProvideProductionToClosestCity()
                     tile.terrainFeature = null

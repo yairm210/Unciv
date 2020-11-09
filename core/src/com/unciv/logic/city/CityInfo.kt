@@ -76,16 +76,7 @@ class CityInfo {
         this.location = cityLocation
         setTransients()
 
-        val nationCities = civInfo.nation.cities
-        val cityNameIndex = civInfo.citiesCreated % nationCities.size
-        val cityName = nationCities[cityNameIndex]
-
-        val cityNameRounds = civInfo.citiesCreated / nationCities.size
-        val cityNamePrefix = if(cityNameRounds==0) ""
-        else if(cityNameRounds==1) "New "
-        else "Neo "
-
-        name = cityNamePrefix + cityName
+        setNewCityName(civInfo)
 
         isOriginalCapital = civInfo.citiesCreated == 0
         civInfo.citiesCreated++
@@ -93,26 +84,40 @@ class CityInfo {
         civInfo.cities = civInfo.cities.toMutableList().apply { add(this@CityInfo) }
         civInfo.addNotification("[$name] has been founded!", cityLocation, Color.PURPLE)
 
-        if (civInfo.cities.size == 1) {
-            cityConstructions.addBuilding(capitalCityIndicator())
-        }
+        if (civInfo.cities.size == 1) cityConstructions.addBuilding(capitalCityIndicator())
 
         civInfo.policies.tryAddLegalismBuildings()
 
         expansion.reset()
 
-        val tile = getCenterTile()
 
         tryUpdateRoadStatus()
 
-        if (getRuleset().tileImprovements.containsKey("Remove "+tile.terrainFeature))
+        val tile = getCenterTile()
+        if (getRuleset().tileImprovements.containsKey("Remove " + tile.terrainFeature))
             tile.terrainFeature = null
+
+        tile.improvement = null
+        tile.improvementInProgress = null
 
         workedTiles = hashSetOf() //reassign 1st working tile
         population.autoAssignPopulation()
         cityStats.update()
 
         triggerCitiesSettledNearOtherCiv()
+    }
+
+    private fun setNewCityName(civInfo: CivilizationInfo) {
+        val nationCities = civInfo.nation.cities
+        val cityNameIndex = civInfo.citiesCreated % nationCities.size
+        val cityName = nationCities[cityNameIndex]
+
+        val cityNameRounds = civInfo.citiesCreated / nationCities.size
+        val cityNamePrefix = if (cityNameRounds == 0) ""
+        else if (cityNameRounds == 1) "New "
+        else "Neo "
+
+        name = cityNamePrefix + cityName
     }
 
 
