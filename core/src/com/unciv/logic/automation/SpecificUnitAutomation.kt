@@ -191,8 +191,6 @@ object SpecificUnitAutomation {
     }
 
     fun automateImprovementPlacer(unit: MapUnit) {
-        if (unit.getTile().militaryUnit == null) return // Don't move until you're accompanied by a military unit
-
         val improvementName = unit.getMatchingUniques("Can construct []").first().params[0]
         val improvement = unit.civInfo.gameInfo.ruleSet.tileImprovements[improvementName]!!
         val relatedStat = improvement.toHashMap().maxBy { it.value }!!.key
@@ -216,6 +214,7 @@ object SpecificUnitAutomation {
 
             if (pathToCity.isEmpty()) continue
             if (pathToCity.size > 2) {
+                if (unit.getTile().militaryUnit == null) return // Don't move until you're accompanied by a military unit
                 unit.movement.headTowards(city.getCenterTile())
                 return
             }
@@ -224,7 +223,7 @@ object SpecificUnitAutomation {
             val chosenTile = applicableTiles.sortedByDescending { Automation.rankTile(it, unit.civInfo) }
                     .firstOrNull { unit.movement.canReach(it) }
             if (chosenTile == null) continue // to another city
-
+            
             unit.movement.headTowards(chosenTile)
             if (unit.currentTile == chosenTile)
                 UnitActions.getImprovementConstructionActions(unit, unit.currentTile).firstOrNull()?.action?.invoke()
