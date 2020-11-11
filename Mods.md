@@ -76,4 +76,4 @@ When you open your app, it will query Github's list of repos with that topic, an
 
 ## Other
 
-There is now a [list of mods](https://docs.google.com/spreadsheets/d/1043Ng9ukrL3y8MUXBVl7-C9JsQGnBi5R5mkmS2l7FFg/edit#gid=0)!
+Existing mods can be found [here](https://github.com/topics/unciv-mod)!
