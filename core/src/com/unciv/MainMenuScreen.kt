@@ -104,7 +104,7 @@ class MainMenuScreen: CameraStageBaseScreen() {
         column2.add(mapEditorScreenTable).row()
 
         val modsTable = getTableBlock("Mods", "OtherIcons/Mods")
-        { game.setScreen(ModManagementScreen()) }
+            { game.setScreen(ModManagementScreen()) }
         column2.add(modsTable).row()
 
 

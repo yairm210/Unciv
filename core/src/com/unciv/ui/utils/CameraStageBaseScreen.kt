@@ -32,6 +32,7 @@ open class CameraStageBaseScreen : Screen {
     protected val tutorialController by lazy { TutorialController(this) }
 
     // An initialized val always turned out to illegally be null...
+    // Remember to always set LOWER CASE chars as the keys!
     var keyPressDispatcher: HashMap<Char, (() -> Unit)>
 
     init {
@@ -46,6 +47,7 @@ open class CameraStageBaseScreen : Screen {
         stage.addListener(
                 object : InputListener() {
                     override fun keyTyped(event: InputEvent?, character: Char): Boolean {
+
                         if (character.toLowerCase() !in keyPressDispatcher || hasOpenPopups())
                             return super.keyTyped(event, character)
 
