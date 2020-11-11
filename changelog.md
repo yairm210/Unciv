@@ -1,3 +1,17 @@
+## 3.11.11
+
+Resolved #3324 - Great Person units no longer require a military unit to accompany them if they're close enough to the destination
+
+Resolved #3326 - Settling a city removes the improvement in progress
+
+Resolved #3323 - improvement uniques are no longer added twice
+
+AI won't declare war if it doesn't know the location of any enemy city
+
+Fixed key shortcuts in improvement picker screen
+
+Translation updates
+
 ## 3.11.10
 
 AI no longer tries to construct work boats that can't reach their intended destination
