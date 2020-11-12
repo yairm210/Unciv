@@ -15,6 +15,8 @@ import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.automation.BattleHelper
 import com.unciv.logic.automation.UnitAutomation
+import com.unciv.logic.battle.Battle
+import com.unciv.logic.battle.MapUnitCombatant
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.*
@@ -61,8 +63,22 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
                     val unit = worldScreen.bottomUnitTable.selectedUnit
                     if (unit == null) return
                     thread {
-                        val canUnitReachTile = unit.movement.canReach(tileGroup.tileInfo)
-                        if (canUnitReachTile) moveUnitToTargetTile(listOf(unit), tileGroup.tileInfo)
+                        val tile = tileGroup.tileInfo
+
+                        val attackableTile = BattleHelper.getAttackableEnemies(unit, unit.movement.getDistanceToTiles())
+                                .firstOrNull { it.tileToAttack == tileGroup.tileInfo }
+                        if (unit.canAttack() && attackableTile != null) {
+                            Battle.moveAndAttack(MapUnitCombatant(unit), attackableTile)
+                            worldScreen.shouldUpdate=true
+                            return@thread
+                        }
+
+                        val canUnitReachTile = unit.movement.canReach(tile)
+                        if (canUnitReachTile) {
+                            moveUnitToTargetTile(listOf(unit), tile)
+                            return@thread
+                        }
+
                     }
                 }
             })
