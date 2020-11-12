@@ -261,6 +261,11 @@ class GameInfo {
                 tile.resource = null
             if (tile.improvement != null && !ruleSet.tileImprovements.containsKey(tile.improvement!!))
                 tile.improvement = null
+
+            for (unit in tile.getUnits())
+                for (promotion in unit.promotions.promotions.toList())
+                    if (!ruleSet.unitPromotions.containsKey(promotion))
+                        unit.promotions.promotions.remove(promotion)
         }
 
         tileMap.setTransients(ruleSet)
