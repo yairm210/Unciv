@@ -23,8 +23,7 @@ class TileGroupIcons(val tileGroup: TileGroup){
         updateResourceIcon(showResourcesAndImprovements)
         updateImprovementIcon(showResourcesAndImprovements)
 
-        // JN
-        updateYieldIcon(showTileYields)
+        updateYieldIcon(showTileYields) // JN
 
         civilianUnitIcon = newUnitIcon(tileGroup.tileInfo.civilianUnit, civilianUnitIcon,
                 tileIsViewable, -20f, viewingCiv)
@@ -119,17 +118,17 @@ class TileGroupIcons(val tileGroup: TileGroup){
 
 
         if (showTileYields) {
+            // Setting up YieldGroup Icon
             tileGroup.tileYieldGroup.setStats(tileGroup.tileInfo.getTileStats(CivilizationInfo()))
             tileGroup.tileYieldGroup.setOrigin(Align.center)
             tileGroup.tileYieldGroup.setScale(0.7f)
             tileGroup.tileYieldGroup.toFront()
             tileGroup.tileYieldGroup.centerX(tileGroup)
             tileGroup.tileYieldGroup.y = tileGroup.height * 0.25f - tileGroup.tileYieldGroup.height / 2
-            /*if (tileGroup.tileInfo.isWorked()) {
-                tileGroup.tileYieldGroup.color = Color.WHITE
-            } else if (!tileInfo.isCityCenter()) {
-                tileGroup.tileYieldGroup.color = Color.GRAY.cpy().apply { a = 0.5f }
-            }*/
+            tileGroup.tileYieldGroup.isVisible = true
+
+            // Adding YieldGroup to miscLayerGroup
+            tileGroup.miscLayerGroup.addActor(tileGroup.tileYieldGroup)
         }
     }
 

@@ -99,8 +99,6 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) 
         this.addActor(baseLayerGroup)
         this.addActor(terrainFeatureLayerGroup)
         this.addActor(miscLayerGroup)
-        // JN
-        this.addActor(tileYieldGroup)
         this.addActor(unitLayerGroup)
         this.addActor(cityButtonLayerGroup)
         this.addActor(circleCrosshairFogLayerGroup)
@@ -358,7 +356,7 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) 
         updatePixelMilitaryUnit(tileIsViewable && showMilitaryUnit)
         updatePixelCivilianUnit(tileIsViewable)
 
-        icons.update(showResourcesAndImprovements,showTileYields , tileIsViewable, showMilitaryUnit,viewingCiv)
+        icons.update(showResourcesAndImprovements,showTileYields, tileIsViewable, showMilitaryUnit,viewingCiv)
 
         updateCityImage()
         updateNaturalWonderImage()

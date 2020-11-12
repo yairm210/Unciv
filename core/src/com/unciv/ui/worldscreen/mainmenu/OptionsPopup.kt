@@ -84,8 +84,7 @@ class OptionsPopup(val previousScreen:CameraStageBaseScreen) : Popup(previousScr
 
         addYesNoRow ("Show worked tiles", settings.showWorkedTiles, true) { settings.showWorkedTiles = it }
         addYesNoRow ("Show resources and improvements", settings.showResourcesAndImprovements, true) { settings.showResourcesAndImprovements = it }
-        // JN
-        addYesNoRow ("Show tile yields", settings.showTileYields, true) { settings.showTileYields = it }
+        addYesNoRow ("Show tile yields", settings.showTileYields, true) { settings.showTileYields = it } // JN
         addYesNoRow ("Show tutorials", settings.showTutorials, true) {settings.showTutorials = it }
         addYesNoRow ("Show minimap", settings.showMinimap, true) { settings.showMinimap = it }
         addYesNoRow ("Show pixel units", settings.showPixelUnits, true) { settings.showPixelUnits = it }
