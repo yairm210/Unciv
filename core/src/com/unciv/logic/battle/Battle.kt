@@ -307,7 +307,7 @@ object Battle {
         }
         city.hasJustBeenConquered = true
 
-        if (!attackerCiv.isMajorCiv()) {
+        if (attackerCiv.isBarbarian()) {
             city.destroyCity()
             return
         }
