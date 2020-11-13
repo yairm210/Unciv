@@ -105,7 +105,7 @@ For example...
 
 Your game's name, the icon, screenshots, everythig a player sees about your game is marketing.
 
-Icons and bylines are especially improtant, since they're the first things your players will probably see.
+Icons and bylines are especially important, since they're the first things your players will probably see.
 
 I saw an almost 50% (!) by changing the icon, after seveeral experiments, which Google Play lets you conduct very easily.
 
@@ -120,7 +120,7 @@ The important parts are:
 - Game translation files should be AUTO GENERATED. This allows you to add new objects into the game with impunity,
  knowing that corresponding lines will be auto-added to the translations.
  
-- Translations for each language shoule be stored separately - this allows concurrent modification of several independant languages with no risk of conflict
+- Translations for each language should be stored separately - this allows concurrent modification of several independant languages with no risk of conflict
 
 - Translations should be PR'd in! This allows other speakers to question or change the proposed translations, and allows you to run tests on your translations.
 If you require a specific format, this is invaluable as it means that bad translations will be rejected at the door.
