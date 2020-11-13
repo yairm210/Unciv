@@ -18,13 +18,13 @@ class BFS(val startingPoint: TileInfo, val predicate : (TileInfo) -> Boolean) {
     }
 
     fun stepToEnd() {
-        while (tilesToCheck.isNotEmpty())
+        while (!hasEnded())
             nextStep()
     }
 
 
     fun stepUntilDestination(destination: TileInfo): BFS {
-        while (!tilesReached.containsKey(destination) && tilesToCheck.isNotEmpty())
+        while (!tilesReached.containsKey(destination) && !hasEnded())
             nextStep()
         return this
     }
@@ -51,6 +51,8 @@ class BFS(val startingPoint: TileInfo, val predicate : (TileInfo) -> Boolean) {
         }
         return path
     }
+
+    fun hasEnded() = tilesToCheck.isEmpty()
 
     fun hasReachedTile(tile: TileInfo) =
             tilesReached.containsKey(tile)

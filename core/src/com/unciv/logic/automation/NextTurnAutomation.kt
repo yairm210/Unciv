@@ -360,7 +360,11 @@ object NextTurnAutomation {
 
         //evaluate war
         val enemyCivs = civInfo.getKnownCivs()
-                .filterNot { it == civInfo || it.cities.isEmpty() || !civInfo.getDiplomacyManager(it).canDeclareWar() }
+                .filterNot { it == civInfo || it.cities.isEmpty() || !civInfo.getDiplomacyManager(it).canDeclareWar()
+                        || (it.cities.none { civInfo.exploredTiles.contains(it.location) }) }
+        // If the AI declares war on a civ without knowing the location of any cities, it'll just keep amassing an army and not sending it anywhere,
+        //   and end up at a massive disadvantage
+
         if (enemyCivs.isEmpty()) return
 
         val civWithBestMotivationToAttack = enemyCivs

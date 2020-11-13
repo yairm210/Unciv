@@ -186,12 +186,14 @@ class WorkerAutomation(val unit: MapUnit) {
             else -> tile.getTileResource().improvement
         }
 
-        val uniqueImprovement = civInfo.gameInfo.ruleSet.tileImprovements.values
+        val tileImprovements = civInfo.gameInfo.ruleSet.tileImprovements
+        val uniqueImprovement = tileImprovements.values
                 .firstOrNull { it.uniqueTo==civInfo.civName}
 
         val improvementString = when {
             tile.improvementInProgress != null -> tile.improvementInProgress
-            improvementStringForResource != null -> improvementStringForResource
+            improvementStringForResource != null && tileImprovements.containsKey(improvementStringForResource)
+                    && tileImprovements[improvementStringForResource]!!.turnsToBuild!=0 -> improvementStringForResource
             tile.containsGreatImprovement() -> null
             tile.containsUnfinishedGreatImprovement() -> null
 

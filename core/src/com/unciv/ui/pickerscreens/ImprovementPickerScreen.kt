@@ -79,7 +79,7 @@ class ImprovementPickerScreen(val tileInfo: TileInfo, val onAccept: ()->Unit) : 
             val pickNow = "Pick now!".toLabel().onClick { accept(improvement) }
 
             if (improvement.shortcutKey != null)
-                keyPressDispatcher[improvement.shortcutKey] = { accept(improvement) }
+                keyPressDispatcher[improvement.shortcutKey.toLowerCase()] = { accept(improvement) }
 
 
             val statIcons = getStatIconsTable(provideResource, removeImprovement)

@@ -128,6 +128,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
             bfs.nextStep()
             if (tilesThatNeedWorkboat.any { bfs.hasReachedTile(it) })
                 break
+            if (bfs.hasEnded()) break
         }
         if (tilesThatNeedWorkboat.none { bfs.hasReachedTile(it) }) return
 

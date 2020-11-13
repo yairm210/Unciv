@@ -1,5 +1,6 @@
 ﻿package com.unciv.logic.automation
 
+import com.unciv.logic.battle.Battle
 import com.unciv.logic.battle.MapUnitCombatant
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.CivilizationInfo
@@ -191,8 +192,6 @@ object SpecificUnitAutomation {
     }
 
     fun automateImprovementPlacer(unit: MapUnit) {
-        if (unit.getTile().militaryUnit == null) return // Don't move until you're accompanied by a military unit
-
         val improvementName = unit.getMatchingUniques("Can construct []").first().params[0]
         val improvement = unit.civInfo.gameInfo.ruleSet.tileImprovements[improvementName]!!
         val relatedStat = improvement.toHashMap().maxBy { it.value }!!.key
@@ -216,6 +215,7 @@ object SpecificUnitAutomation {
 
             if (pathToCity.isEmpty()) continue
             if (pathToCity.size > 2) {
+                if (unit.getTile().militaryUnit == null) return // Don't move until you're accompanied by a military unit
                 unit.movement.headTowards(city.getCenterTile())
                 return
             }
@@ -224,7 +224,7 @@ object SpecificUnitAutomation {
             val chosenTile = applicableTiles.sortedByDescending { Automation.rankTile(it, unit.civInfo) }
                     .firstOrNull { unit.movement.canReach(it) }
             if (chosenTile == null) continue // to another city
-
+            
             unit.movement.headTowards(chosenTile)
             if (unit.currentTile == chosenTile)
                 UnitActions.getImprovementConstructionActions(unit, unit.currentTile).firstOrNull()?.action?.invoke()
@@ -296,16 +296,24 @@ object SpecificUnitAutomation {
 
     // This really needs to be changed, to have better targetting for missiles
     fun automateMissile(unit: MapUnit) {
-        if (BattleHelper.tryAttackNearbyEnemy(unit)) return
 
         val tilesInRange = unit.currentTile.getTilesInDistance(unit.getRange()*2)
+
+        for(tile in tilesInRange) {
+            // For now AI will only use nukes against cities because in all honesty that's the best use for them.
+            if (tile.isCityCenter() && tile.getOwner()!!.isAtWarWith(unit.civInfo)) {
+                Battle.nuke(MapUnitCombatant(unit), tile)
+                return
+            }
+        }
+
 
         val immediatelyReachableCities = tilesInRange
                 .filter { unit.movement.canMoveTo(it) }
 
         for (city in immediatelyReachableCities) {
             if (city.getTilesInDistance(unit.getRange())
-                            .any { BattleHelper.containsAttackableEnemy(it, MapUnitCombatant(unit)) }) {
+                            .any { it.isCityCenter() && it.getOwner()!!.isAtWarWith(unit.civInfo) }) {
                 unit.movement.moveToTile(city)
                 return
             }
