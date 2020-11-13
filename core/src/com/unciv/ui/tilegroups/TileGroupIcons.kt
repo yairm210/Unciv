@@ -112,9 +112,8 @@ class TileGroupIcons(val tileGroup: TileGroup){
     // JN updating display of tile yields
     private fun updateYieldIcon(showTileYields: Boolean) {
 
-        // Removing yield icons (in order to update)
-        tileGroup.tileYieldGroup.clear()
-
+        // Hiding yield icons (in order to update)
+        tileGroup.tileYieldGroup.isVisible = false
 
 
         if (showTileYields) {
