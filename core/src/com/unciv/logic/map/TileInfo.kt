@@ -319,7 +319,8 @@ open class TileInfo {
             improvement.name == "Remove Railroad" && this.roadStatus == RoadStatus.Railroad -> true
             improvement.name == Constants.cancelImprovementOrder && this.improvementInProgress != null -> true
             topTerrain.unbuildable && (topTerrain.name !in improvement.resourceTerrainAllow) -> false
-            isAdjacentToFreshwater && improvement.hasUnique("Can also be built on tiles adjacent to fresh water") -> true
+            // DO NOT reverse this &&. isAdjacentToFreshwater() is a lazy which calls a function, and reversing it breaks the tests.
+            improvement.hasUnique("Can also be built on tiles adjacent to fresh water") && isAdjacentToFreshwater -> true
             "Can only be built on Coastal tiles" in improvement.uniques && isCoastalTile() -> true
             else -> resourceIsVisible && getTileResource().improvement == improvement.name
         }
