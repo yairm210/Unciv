@@ -1,3 +1,19 @@
+## 3.11.12
+
+AI no longer nukes single units
+
+Can right-click to attack when a unit is selected
+
+City states can now conquer cities, as per Civ V
+
+Mods can now remove promotions between versions without breaking existing saves
+
+Fixed archaeological dig being built by workers in Civ V expansion mod
+
+Spectator can handle free-policy-giving techs in mods
+
+Translation updates
+
 ## 3.11.11
 
 Resolved #3324 - Great Person units no longer require a military unit to accompany them if they're close enough to the destination

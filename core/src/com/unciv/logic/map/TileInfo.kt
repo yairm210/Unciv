@@ -319,8 +319,7 @@ open class TileInfo {
             improvement.name == "Remove Railroad" && this.roadStatus == RoadStatus.Railroad -> true
             improvement.name == Constants.cancelImprovementOrder && this.improvementInProgress != null -> true
             topTerrain.unbuildable && (topTerrain.name !in improvement.resourceTerrainAllow) -> false
-            improvement.hasUnique("Can also be built on tiles adjacent to fresh water")
-                    && isAdjacentToFreshwater -> true
+            isAdjacentToFreshwater && improvement.hasUnique("Can also be built on tiles adjacent to fresh water") -> true
             "Can only be built on Coastal tiles" in improvement.uniques && isCoastalTile() -> true
             else -> resourceIsVisible && getTileResource().improvement == improvement.name
         }
@@ -334,6 +333,7 @@ open class TileInfo {
                 || baseTerrainObject.uniques.contains(filter)
                 || terrainFeature != null && getTerrainFeature()!!.uniques.contains(filter)
                 || improvement == filter
+//                || resource == filter // TODO uncomment in next version
                 || filter == "Water" && isWater
     }
 
