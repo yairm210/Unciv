@@ -171,14 +171,15 @@ class MainMenuScreen: CameraStageBaseScreen() {
             try {
                 savedGame = GameSaver.loadGameByName(autosave)
             } catch (outOfMemory: OutOfMemoryError) {
-                ToastPopup("Not enough memory on phone to load game!", this)
+                Gdx.app.postRunnable { ToastPopup("Not enough memory on phone to load game!", this) }
                 return@thread
             } catch (ex: Exception) { // silent fail if we can't read the autosave for any reason - try to load the last autosave by turn number first
+                // This can help for situations when the autosave is corrupted
                 try {
                     val autosaves = GameSaver.getSaves().filter { it.name() != autosave && it.name().startsWith(autosave) }
                     savedGame = GameSaver.loadGameFromFile(autosaves.maxBy { it.lastModified() }!!)
                 } catch (ex: Exception) {
-                    ToastPopup("Cannot resume game!", this)
+                    Gdx.app.postRunnable { ToastPopup("Cannot resume game!", this) }
                     return@thread
                 }
             }
