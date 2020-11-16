@@ -1,3 +1,15 @@
+## 3.11.13
+
+Probably solved the Mysterious Disappearing C's once and for all! #3327
+
+We now check compatibility of newly selected mods to the existing mod ruleset
+
+Resolved #3341 - City-state diplomacy screen is shown properly when entering from a city button
+
+Resolved #3071 - Disabled annoying camera momentum on Desktop
+
+Autoload previous autosave when current autosave file is corrupted
+
 ## 3.11.12
 
 AI no longer nukes single units
