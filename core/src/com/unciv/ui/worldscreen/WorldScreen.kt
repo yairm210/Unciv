@@ -630,7 +630,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
             update()
             showTutorialsOnNextTurn()
         }
-//        topBar.selectedCivLabel.setText(Gdx.graphics.framesPerSecond) // for framerate testing
+        topBar.selectedCivLabel.setText(Gdx.graphics.framesPerSecond) // for framerate testing
 
         super.render(delta)
     }

@@ -75,7 +75,14 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) 
     class UnitLayerGroupClass:Group(){
         override fun draw(batch: Batch?, parentAlpha: Float) { super.draw(batch, parentAlpha) }
     }
+
+    class UnitImageLayerGroupClass:Group(){
+        override fun draw(batch: Batch?, parentAlpha: Float) { super.draw(batch, parentAlpha) }
+    }
+    // We separate the units from the units' backgrounds, because all the background elements are in the same texture, and the units' aren't
     val unitLayerGroup = UnitLayerGroupClass().apply { isTransform = false; setSize(groupSize, groupSize);touchable = Touchable.disabled }
+    val unitImageLayerGroup = UnitImageLayerGroupClass().apply { isTransform = false; setSize(groupSize, groupSize);touchable = Touchable.disabled }
+
 
     val cityButtonLayerGroup = Group().apply { setSize(groupSize, groupSize);
         touchable = Touchable.childrenOnly; setOrigin(Align.center) }

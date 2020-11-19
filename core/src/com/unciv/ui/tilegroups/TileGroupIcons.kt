@@ -65,6 +65,12 @@ class TileGroupIcons(val tileGroup: TileGroup){
             newImage.center(tileGroup)
             newImage.y += yFromCenter
 
+            // We "steal" the unit image so that all backgrounds are rendered next to each other
+            // to save texture swapping and improve framerate
+            tileGroup.unitImageLayerGroup.addActor(newImage.unitBaseImage)
+            newImage.unitBaseImage.center(tileGroup)
+            newImage.unitBaseImage.y += yFromCenter
+
             // Display number of carried air units
             if (unit.getTile().airUnits.any { unit.isTransportTypeOf(it) } && !unit.getTile().isCityCenter()) {
                 val holder = Table()
