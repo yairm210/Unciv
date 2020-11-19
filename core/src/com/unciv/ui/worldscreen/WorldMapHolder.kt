@@ -460,16 +460,20 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
         worldScreen.shouldUpdate=true
     }
 
-    override fun zoom(zoomScale:Float){
+    override fun zoom(zoomScale:Float) {
         super.zoom(zoomScale)
-        val scale = 1/scaleX  // don't use zoomScale itself, in case it was out of bounds and not applied
-        if(scale < 1 && scale > 0.5f)
-        for(tileGroup in tileGroups.values)
-            tileGroup.cityButtonLayerGroup.setScale(scale)
+        val scale = 1 / scaleX  // don't use zoomScale itself, in case it was out of bounds and not applied
+        if (scale >= 1)
+            for (tileGroup in tileGroups.values)
+                tileGroup.cityButtonLayerGroup.isTransform = false // to save on rendering time to improve framerate
+        if (scale < 1 && scale > 0.5f)
+            for (tileGroup in tileGroups.values) {
+                tileGroup.cityButtonLayerGroup.isTransform = true
+                tileGroup.cityButtonLayerGroup.setScale(scale)
+            }
     }
 
     // For debugging purposes
-    override fun draw(batch: Batch?, parentAlpha: Float) {
-        super.draw(batch, parentAlpha)
-    }
+    override fun draw(batch: Batch?, parentAlpha: Float) { super.draw(batch, parentAlpha) }
+    override fun act(delta: Float) { super.act(delta) }
 }

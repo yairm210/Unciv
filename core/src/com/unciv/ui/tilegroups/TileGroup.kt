@@ -77,7 +77,7 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) 
     }
     val unitLayerGroup = UnitLayerGroupClass().apply { isTransform = false; setSize(groupSize, groupSize);touchable = Touchable.disabled }
 
-    val cityButtonLayerGroup = Group().apply { isTransform = true; setSize(groupSize, groupSize);
+    val cityButtonLayerGroup = Group().apply { setSize(groupSize, groupSize);
         touchable = Touchable.childrenOnly; setOrigin(Align.center) }
 
     val circleCrosshairFogLayerGroup = Group().apply { isTransform = false; setSize(groupSize, groupSize) }

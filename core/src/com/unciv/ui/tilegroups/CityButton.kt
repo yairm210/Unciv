@@ -25,7 +25,6 @@ class CityButton(val city: CityInfo, private val tileGroup: WorldTileGroup): Tab
     val uncivGame = worldScreen.game
 
     init {
-        isTransform = true // If this is not set then the city button won't scale!
         touchable = Touchable.disabled
     }
 
