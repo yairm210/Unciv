@@ -1,5 +1,7 @@
 package com.unciv.ui.worldscreen.unit
 
+import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.Input
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Touchable
@@ -72,10 +74,9 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table() {
     private fun getUnitActionButton(unitAction: UnitAction): Button {
         val iconAndKey = getIconAndKeyForUnitAction(unitAction.title)
 
-        // If android version detected, hotkeys will not be displayed
-        var hotKeys = true
-        if (this.worldScreen.game.version == "android"){hotKeys = false}
-        if (!hotKeys){iconAndKey.key = 0.toChar()}
+        // If peripheral keyboard not detected, hotkeys will not be displayed
+        val keyboardAvailable = Gdx.input.isPeripheralAvailable(Input.Peripheral.HardwareKeyboard)
+        if (!keyboardAvailable){iconAndKey.key = 0.toChar()}
 
         val actionButton = Button(CameraStageBaseScreen.skin)
         actionButton.add(iconAndKey.Icon).size(20f).pad(5f)
