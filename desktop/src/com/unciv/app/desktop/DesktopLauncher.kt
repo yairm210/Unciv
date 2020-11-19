@@ -8,20 +8,18 @@ import com.badlogic.gdx.backends.lwjgl.LwjglApplication
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.tools.texturepacker.TexturePacker
+import com.badlogic.gdx.tools.texturepacker.TexturePackerFileProcessor
 import com.unciv.UncivGame
 import com.unciv.UncivGameParameters
 import com.unciv.models.translations.tr
 import com.unciv.ui.utils.ORIGINAL_FONT_SIZE
-import io.ktor.application.call
-import io.ktor.http.HttpStatusCode
-import io.ktor.request.receiveText
-import io.ktor.response.respond
-import io.ktor.response.respondText
-import io.ktor.routing.get
-import io.ktor.routing.post
-import io.ktor.routing.routing
-import io.ktor.server.engine.embeddedServer
-import io.ktor.server.netty.Netty
+import io.ktor.application.*
+import io.ktor.http.*
+import io.ktor.request.*
+import io.ktor.response.*
+import io.ktor.routing.*
+import io.ktor.server.engine.*
+import io.ktor.server.netty.*
 import java.io.File
 import java.util.*
 import kotlin.concurrent.timer
@@ -52,7 +50,7 @@ internal object DesktopLauncher {
                 customSaveLocationHelper = CustomSaveLocationHelperDesktop()
         )
 
-        val game = UncivGame ( desktopParameters )
+        val game = UncivGame(desktopParameters)
 
         if(!RaspberryPiDetector.isRaspberryPi()) // No discord RPC for Raspberry Pi, see https://github.com/yairm210/Unciv/issues/1624
             tryActivateDiscord(game)
@@ -122,15 +120,19 @@ internal object DesktopLauncher {
          * Why? Because the rendering function of the main screen renders all the images consecutively, and every time it needs to switch between textures,
          * this causes a delay, leading to horrible lag if there are enough switches.
          * The cost of this specific solution is that the entire game.png needs be be kept in-memory constantly.
-         * It's currently only 1.5MB so it should be okay, but it' an important point to remember for the future.
-         * Sidenote: Modded tilesets don't have this problem, since all the images are included in the mod's single PNG.
-         * Probably. Unless they have some truly huge images.
-         * Sidenote 2: Okay entire so custom tilesets do have this problem because they can get so big that what accommodates
-         * the regular tileset (4096) doesn't suit them. Looking at you 5hex.
+         * Now here we come to what Fred Colon would call an Imp Arse.
+         * On the one hand, certain tilesets (ahem 5hex ahem) are really big.
+         * You wouldn't believe how hugely mindbogglingly big they are. So theoretically we should want all of their images to be together.
+         * HOWEVER certain chipsets (see https://github.com/yairm210/Unciv/issues/3330) only seem to support to up to 2048 width*height so this is maximum we can have.
+         * Practically this means that big custom tilesets will have to reload the texture a lot when covering the map and so the
+         *    panning on the map will tend to lag a lot :(
+         *
+         *    TL;DR this should be 2048.
          */
-        settings.maxWidth = 4096
-        settings.maxHeight = 4096
+        settings.maxWidth = 2048
+        settings.maxHeight = 2048
 
+        // Trying to disable the subdirectory combine lead to even worse results. Don't.
         settings.combineSubdirectories = true
         settings.pot = true
         settings.fast = true
@@ -152,10 +154,10 @@ internal object DesktopLauncher {
         }
 
         val texturePackingTime = System.currentTimeMillis() - startTime
-        println("Packing textures - "+texturePackingTime+"ms")
+        println("Packing textures - " + texturePackingTime + "ms")
     }
 
-    private fun packImagesIfOutdated (settings: TexturePacker.Settings, input: String, output: String, packFileName: String) {
+    private fun packImagesIfOutdated(settings: TexturePacker.Settings, input: String, output: String, packFileName: String) {
         fun File.listTree(): Sequence<File> = when {
                 this.isFile -> sequenceOf(this)
                 this.isDirectory -> this.listFiles().asSequence().flatMap { it.listTree() }
@@ -165,9 +167,10 @@ internal object DesktopLauncher {
         val atlasFile = File("$output${File.separator}$packFileName.atlas")
         if (atlasFile.exists() && File("$output${File.separator}$packFileName.png").exists()) {
             val atlasModTime = atlasFile.lastModified()
-            if (!File(input).listTree().any { it.extension in listOf("png","jpg","jpeg") && it.lastModified() > atlasModTime }) return
+            if (!File(input).listTree().any { it.extension in listOf("png", "jpg", "jpeg") && it.lastModified() > atlasModTime }) return
         }
-        TexturePacker.process(settings, input, output, packFileName )
+
+        TexturePacker.process(settings, input, output, packFileName)
     }
 
     private fun tryActivateDiscord(game: UncivGame) {
@@ -180,7 +183,7 @@ internal object DesktopLauncher {
             discordTimer = timer(name = "Discord", daemon = true, period = 1000) {
                 try {
                     updateRpc(game)
-                } catch (ex:Exception){}
+                } catch (ex: Exception){}
             }
         } catch (ex: Exception) {
             println("Could not initialize Discord")

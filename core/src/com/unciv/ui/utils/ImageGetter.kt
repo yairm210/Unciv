@@ -57,6 +57,15 @@ object ImageGetter {
             textureRegionDrawables[region.name] = drawable
         }
 
+        for(folder in Gdx.files.internal("SingleImages").list())
+            for(image in folder.list()) {
+                val texture = Texture(image)
+                // Since these aren't part of the packed texture we need to set this manually for each one
+                // Unfortunately since it's not power-of-2
+                texture.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear)
+                textureRegionDrawables[folder.name() + "/" + image.nameWithoutExtension()] = TextureRegionDrawable(texture)
+            }
+
         // These are from the mods
         for(mod in ruleset.mods){
             val modAtlasFile = Gdx.files.local("mods/$mod/game.atlas")
