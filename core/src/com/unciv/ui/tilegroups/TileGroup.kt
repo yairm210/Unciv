@@ -60,7 +60,9 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) 
     protected var pixelCivilianUnitImageLocation = ""
     protected var pixelCivilianUnitGroup = Group().apply { isTransform = false; setSize(groupSize, groupSize) }
 
-    class MiscLayerGroupClass:Group()
+    class MiscLayerGroupClass:Group(){
+        override fun draw(batch: Batch?, parentAlpha: Float) { super.draw(batch, parentAlpha) }
+    }
     val miscLayerGroup = MiscLayerGroupClass().apply { isTransform = false; setSize(groupSize, groupSize) }
 
     var resourceImage: Actor? = null
@@ -70,7 +72,9 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) 
 
     val icons = TileGroupIcons(this)
 
-    class UnitLayerGroupClass:Group()
+    class UnitLayerGroupClass:Group(){
+        override fun draw(batch: Batch?, parentAlpha: Float) { super.draw(batch, parentAlpha) }
+    }
     val unitLayerGroup = UnitLayerGroupClass().apply { isTransform = false; setSize(groupSize, groupSize);touchable = Touchable.disabled }
 
     val cityButtonLayerGroup = Group().apply { isTransform = true; setSize(groupSize, groupSize);
