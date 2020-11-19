@@ -1,3 +1,15 @@
+## 3.11.14
+
+500th version, my goodness 0_0
+
+Resolved #3330 - Fixed black images on specific chipsets
+
+Multiple framerate improvement tricks - should feel smoother!
+
+Hide hotkeys on devices without keyboard - by jnecus
+
+Fixed a few more crash possibilities from badly configured mods
+
 ## 3.11.13
 
 Probably solved the Mysterious Disappearing C's once and for all! #3327
