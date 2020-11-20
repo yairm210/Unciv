@@ -21,7 +21,8 @@ class CityTileGroup(private val city: CityInfo, tileInfo: TileInfo, tileSetStrin
             icons.addPopulationIcon(ImageGetter.getImage("OtherIcons/Star")
                     .apply { color = Color.GOLD })
         }
-
+        unitLayerGroup.isVisible = false
+        unitImageLayerGroup.isVisible = false
     }
 
     fun update() {

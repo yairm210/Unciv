@@ -25,7 +25,6 @@ class CityButton(val city: CityInfo, private val tileGroup: WorldTileGroup): Tab
     val uncivGame = worldScreen.game
 
     init {
-        isTransform = true // If this is not set then the city button won't scale!
         touchable = Touchable.disabled
     }
 
@@ -216,14 +215,18 @@ class CityButton(val city: CityInfo, private val tileGroup: WorldTileGroup): Tab
             iconTable.add(connectionImage).size(20f).padLeft(5f)
         }
 
-        iconTable.add(getPopulationGroup(uncivGame.viewEntireMapForDebug
+        val populationGroup = getPopulationGroup(uncivGame.viewEntireMapForDebug
                 || belongsToViewingCiv()
-                || worldScreen.viewingCiv.isSpectator())).padLeft(5f)
+                || worldScreen.viewingCiv.isSpectator())
+        iconTable.add(populationGroup).padLeft(5f)
+        populationGroup.toBack()
 
         val cityButtonText = city.name
         val label = cityButtonText.toLabel(secondaryColor)
         iconTable.add(label).padRight(20f).padLeft(20f) // sufficient horizontal padding
                 .fillY() // provide full-height clicking area
+        label.toBack() // this is so the label is rendered right before the population group,
+        //  so we save the font texture and avoid another texture switch
 
         if (uncivGame.viewEntireMapForDebug || belongsToViewingCiv() || worldScreen.viewingCiv.isSpectator())
             iconTable.add(getConstructionGroup(city.cityConstructions))
@@ -309,6 +312,9 @@ class CityButton(val city: CityInfo, private val tileGroup: WorldTileGroup): Tab
             turnLabel.pack()
 
             group.addActor(turnLabel)
+            turnLabel.toBack() // this is so both labels are rendered next to each other -
+            // this is important because when switching to a label, we switch out the texture we're using to use the font texture,
+            //  so this has a direct impact on framerate!
             turnLabel.x = growthBar.x + growthBar.width + 1
         }
 

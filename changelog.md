@@ -1,3 +1,43 @@
+## 3.11.14
+
+500th version, my goodness 0_0
+
+Resolved #3330 - Fixed black images on specific chipsets
+
+Multiple framerate improvement tricks - should feel smoother!
+
+Hide hotkeys on devices without keyboard - by jnecus
+
+Fixed a few more crash possibilities from badly configured mods
+
+## 3.11.13
+
+Probably solved the Mysterious Disappearing C's once and for all! #3327
+
+We now check compatibility of newly selected mods to the existing mod ruleset
+
+Resolved #3341 - City-state diplomacy screen is shown properly when entering from a city button
+
+Resolved #3071 - Disabled annoying camera momentum on Desktop
+
+Autoload previous autosave when current autosave file is corrupted
+
+## 3.11.12
+
+AI no longer nukes single units
+
+Can right-click to attack when a unit is selected
+
+City states can now conquer cities, as per Civ V
+
+Mods can now remove promotions between versions without breaking existing saves
+
+Fixed archaeological dig being built by workers in Civ V expansion mod
+
+Spectator can handle free-policy-giving techs in mods
+
+Translation updates
+
 ## 3.11.11
 
 Resolved #3324 - Great Person units no longer require a military unit to accompany them if they're close enough to the destination

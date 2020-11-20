@@ -35,6 +35,7 @@ class TileGroupMap<T: TileGroup>(val tileGroups: Collection<T>, val padding: Flo
         val featureLayers = ArrayList<Group>()
         val miscLayers = ArrayList<Group>()
         val unitLayers = ArrayList<Group>()
+        val unitImageLayers = ArrayList<Group>()
         val cityButtonLayers = ArrayList<Group>()
         val circleCrosshairFogLayers = ArrayList<Group>()
 
@@ -45,6 +46,7 @@ class TileGroupMap<T: TileGroup>(val tileGroups: Collection<T>, val padding: Flo
             featureLayers.add(group.terrainFeatureLayerGroup.apply { setPosition(group.x,group.y) })
             miscLayers.add(group.miscLayerGroup.apply { setPosition(group.x,group.y) })
             unitLayers.add(group.unitLayerGroup.apply { setPosition(group.x,group.y) })
+            unitImageLayers.add(group.unitImageLayerGroup.apply { setPosition(group.x,group.y) })
             cityButtonLayers.add(group.cityButtonLayerGroup.apply { setPosition(group.x,group.y) })
             circleCrosshairFogLayers.add(group.circleCrosshairFogLayerGroup.apply { setPosition(group.x,group.y) })
         }
@@ -54,6 +56,7 @@ class TileGroupMap<T: TileGroup>(val tileGroups: Collection<T>, val padding: Flo
         for(group in circleCrosshairFogLayers) addActor(group)
         for(group in tileGroups) addActor(group) // The above layers are for the visual layers, this is for the clickability of the tile
         for(group in unitLayers) addActor(group) // Aaand units above everything else.
+        for(group in unitImageLayers) addActor(group) // This is so the individual textures for the units are rendered together
         for(group in cityButtonLayers) addActor(group) // city buttons + clickability
 
 

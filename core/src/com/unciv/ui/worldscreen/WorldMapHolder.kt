@@ -1,5 +1,6 @@
 package com.unciv.ui.worldscreen
 
+import com.badlogic.gdx.Application
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
 import com.badlogic.gdx.graphics.Color
@@ -35,6 +36,10 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
     val tileGroups = HashMap<TileInfo, WorldTileGroup>()
 
     var unitActionOverlay :Actor?=null
+
+    init {
+        if (Gdx.app.type == Application.ApplicationType.Desktop) this.setFlingTime(0f)
+    }
 
     // Used to transfer data on the "move here" button that should be created, from the side thread to the main thread
     class MoveHereButtonDto(val unitToTurnsToDestination: HashMap<MapUnit,Int>, val tileInfo: TileInfo)
@@ -455,16 +460,20 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
         worldScreen.shouldUpdate=true
     }
 
-    override fun zoom(zoomScale:Float){
+    override fun zoom(zoomScale:Float) {
         super.zoom(zoomScale)
-        val scale = 1/scaleX  // don't use zoomScale itself, in case it was out of bounds and not applied
-        if(scale < 1 && scale > 0.5f)
-        for(tileGroup in tileGroups.values)
-            tileGroup.cityButtonLayerGroup.setScale(scale)
+        val scale = 1 / scaleX  // don't use zoomScale itself, in case it was out of bounds and not applied
+        if (scale >= 1)
+            for (tileGroup in tileGroups.values)
+                tileGroup.cityButtonLayerGroup.isTransform = false // to save on rendering time to improve framerate
+        if (scale < 1 && scale > 0.5f)
+            for (tileGroup in tileGroups.values) {
+                tileGroup.cityButtonLayerGroup.isTransform = true
+                tileGroup.cityButtonLayerGroup.setScale(scale)
+            }
     }
 
     // For debugging purposes
-    override fun draw(batch: Batch?, parentAlpha: Float) {
-        super.draw(batch, parentAlpha)
-    }
+    override fun draw(batch: Batch?, parentAlpha: Float) { super.draw(batch, parentAlpha) }
+    override fun act(delta: Float) { super.act(delta) }
 }
