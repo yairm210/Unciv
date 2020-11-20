@@ -204,6 +204,7 @@ object UnitActions {
     }
 
     private fun addExplorationActions(unit: MapUnit, actionList: ArrayList<UnitAction>) {
+        if (!UncivGame.Current.settings.showExploreAction) return
         if (unit.type.isAirUnit()) return
         if (unit.action != Constants.unitActionExplore) {
             actionList += UnitAction(
@@ -260,19 +261,21 @@ object UnitActions {
     private fun addWorkerActions(unit: MapUnit, actionList: ArrayList<UnitAction>, tile: TileInfo, worldScreen: WorldScreen, unitTable: UnitTable) {
         if (!unit.hasUnique("Can build improvements on tiles")) return
 
-        // Allow automate/unautomate when embarked, but not building improvements - see #1963
-        if (Constants.unitActionAutomation == unit.action) {
-            actionList += UnitAction(
-                    type = UnitActionType.StopAutomation,
-                    action = { unit.action = null }
-            )
-        } else {
-            actionList += UnitAction(
-                    type = UnitActionType.Automate,
-                    action = {
-                        unit.action = Constants.unitActionAutomation
-                        WorkerAutomation(unit).automateWorkerAction()
-                    }.takeIf { unit.currentMovement > 0 })
+        if (UncivGame.Current.settings.showAutomateAction) {
+            // Allow automate/unautomate when embarked, but not building improvements - see #1963
+            if (Constants.unitActionAutomation == unit.action) {
+                actionList += UnitAction(
+                        type = UnitActionType.StopAutomation,
+                        action = { unit.action = null }
+                )
+            } else {
+                actionList += UnitAction(
+                        type = UnitActionType.Automate,
+                        action = {
+                            unit.action = Constants.unitActionAutomation
+                            WorkerAutomation(unit).automateWorkerAction()
+                        }.takeIf { unit.currentMovement > 0 })
+            }
         }
 
         if(unit.isEmbarked()) return

@@ -118,6 +118,8 @@ class OptionsPopup(val previousScreen:CameraStageBaseScreen) : Popup(previousScr
                 }
             }
         }
+        addYesNoRow ("Show Explore action", settings.showExploreAction) { settings.showExploreAction = it }
+        addYesNoRow ("Show Automate action", settings.showAutomateAction) { settings.showAutomateAction = it }
         addYesNoRow ("Auto-build roads", settings.autoBuildingRoads) { settings.autoBuildingRoads = it }
         addYesNoRow ("Automated workers replace improvements", settings.automatedWorkersReplaceImprovements) { settings.automatedWorkersReplaceImprovements = it }
         addYesNoRow ("Order trade offers by amount", settings.orderTradeOffersByAmount) { settings.orderTradeOffersByAmount = it }

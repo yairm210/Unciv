@@ -24,6 +24,8 @@ class GameSettings {
     var autoAssignCityProduction: Boolean = true
     var autoBuildingRoads: Boolean = true
     var automatedWorkersReplaceImprovements = true
+    var showExploreAction = true
+    var showAutomateAction = true
 
     var showMinimap: Boolean = true
     var showPixelUnits: Boolean = false
