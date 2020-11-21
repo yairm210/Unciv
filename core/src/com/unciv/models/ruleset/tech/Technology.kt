@@ -49,7 +49,8 @@ class Technology {
         val enabledUnits = getEnabledUnits(viewingCiv)
         if (enabledUnits.isNotEmpty()) {
             lineList += "{Units enabled}: "
-            for (unit in enabledUnits)
+            for (unit in enabledUnits
+                    .filter { "Will not be displayed in Tech Tree" !in it.uniques})
                 lineList += " * " + unit.name.tr() + " (" + unit.getShortDescription() + ")"
         }
 
@@ -58,7 +59,8 @@ class Technology {
         val regularBuildings = enabledBuildings.filter { !it.isWonder && !it.isNationalWonder }
         if (regularBuildings.isNotEmpty()) {
             lineList += "{Buildings enabled}: "
-            for (building in regularBuildings)
+            for (building in regularBuildings
+                    .filter { "Will not be displayed in Tech Tree" !in it.uniques})
                 lineList += "* " + building.name.tr() + " (" + building.getShortDescription(ruleset) + ")"
         }
 
