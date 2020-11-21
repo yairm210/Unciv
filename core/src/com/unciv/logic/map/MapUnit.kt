@@ -349,7 +349,8 @@ class MapUnit {
                 if (tile.improvementInProgress == "Remove Road" || tile.improvementInProgress == "Remove Railroad")
                     tile.roadStatus = RoadStatus.None
                 else {
-                    if (tile.tileMap.gameInfo.ruleSet.terrains[tile.terrainFeature]!!.uniques
+                    // We put "tile.terrainFeature!=null" because of a strange edge case that SHOULD be solved from 3.11.11+, so we should remove it then and see
+                    if (tile.terrainFeature!=null && tile.tileMap.gameInfo.ruleSet.terrains[tile.terrainFeature!!]!!.uniques
                                     .contains("Provides a one-time Production bonus to the closest city when cut down"))
                         tryProvideProductionToClosestCity()
                     tile.terrainFeature = null
@@ -492,7 +493,7 @@ class MapUnit {
         if(!hasUnique("All healing effects doubled") && type.isLandUnit() && type.isMilitary()) {
             val gainDoubleHealPromotion = tile.neighbors
                     .any { it.containsUnique("Grants Rejuvenation (all healing effects doubled) to adjacent military land units for the rest of the game") }
-            if (gainDoubleHealPromotion)
+            if (gainDoubleHealPromotion && civInfo.gameInfo.ruleSet.unitPromotions.containsKey("Rejuvenation"))
                 promotions.addPromotion("Rejuvenation", true)
         }
 
@@ -573,14 +574,17 @@ class MapUnit {
                 civInfo.addNotification("We have discovered the lost technology of [$tech] in the ruins!", tile.position, Color.BLUE)
             }
 
-        actions.add {
-            val chosenUnit = listOf(Constants.settler, Constants.worker, "Warrior")
-                    .filter { civInfo.gameInfo.ruleSet.units.containsKey(it) }.random(tileBasedRandom)
-            if (!(civInfo.isCityState() || civInfo.isOneCityChallenger()) || chosenUnit != Constants.settler) { //City-States and OCC don't get settler from ruins
-                civInfo.placeUnitNearTile(tile.position, chosenUnit)
-                civInfo.addNotification("A [$chosenUnit] has joined us!", tile.position, Color.BROWN)
+
+        val possibleUnits = listOf(Constants.settler, Constants.worker, "Warrior")
+                .filter { civInfo.gameInfo.ruleSet.units.containsKey(it) }
+        if(possibleUnits.isNotEmpty())
+            actions.add {
+                val chosenUnit = possibleUnits.random(tileBasedRandom)
+                if (!(civInfo.isCityState() || civInfo.isOneCityChallenger()) || chosenUnit != Constants.settler) { //City-States and OCC don't get settler from ruins
+                    civInfo.placeUnitNearTile(tile.position, chosenUnit)
+                    civInfo.addNotification("A [$chosenUnit] has joined us!", tile.position, Color.BROWN)
+                }
             }
-        }
 
         if (!type.isCivilian())
             actions.add {

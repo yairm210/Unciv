@@ -21,7 +21,7 @@ import kotlin.math.roundToInt
 
 class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
 
-    private var selectedCivLabel = worldScreen.selectedCiv.civName.toLabel()
+    var selectedCivLabel = worldScreen.selectedCiv.civName.toLabel()
     private var  selectedCivIconHolder = Container<Actor>()
 
     private val turnsLabel = "Turns: 0/400".toLabel()

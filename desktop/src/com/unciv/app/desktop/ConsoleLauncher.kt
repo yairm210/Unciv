@@ -12,12 +12,7 @@ import com.unciv.models.metadata.GameSpeed
 import com.unciv.models.metadata.Player
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.simulation.Simulation
-import com.unciv.models.simulation.SimulationStep
-import com.unciv.models.simulation.formatDuration
 import com.unciv.ui.newgamescreen.GameSetupInfo
-import java.time.Duration
-import kotlin.concurrent.thread
-import kotlin.system.exitProcess
 
 internal object ConsoleLauncher {
     @JvmStatic
@@ -27,7 +22,6 @@ internal object ConsoleLauncher {
         val consoleParameters = UncivGameParameters(
                 version,
                 null,
-                { exitProcess(0) },
                 null,
                 null,
                 true

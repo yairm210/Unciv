@@ -190,11 +190,12 @@ open class TileInfo {
             val civWideUniques = city.civInfo.getMatchingUniques("[] from every []")
             for (unique in cityWideUniques + civWideUniques) {
                 val tileType = unique.params[1]
+                if (tileType == improvement) continue // This is added to the calculation in getImprovementStats. we don't want to add it twice
                 if (matchesUniqueFilter(tileType)
                         || (resource == tileType && hasViewableResource(observingCiv))
                         || (tileType == "Strategic resource" && hasViewableResource(observingCiv) && getTileResource().resourceType == ResourceType.Strategic)
                         || (tileType == "Water resource" && isWater && hasViewableResource(observingCiv))
-                ) stats.add(unique.stats!!)
+                ) stats.add(unique.stats)
             }
         }
 
@@ -247,7 +248,7 @@ open class TileInfo {
 
         for (unique in improvement.uniqueObjects)
             if (unique.placeholderText == "[] once [] is discovered" && observingCiv.tech.isResearched(unique.params[1]))
-                stats.add(unique.stats!!)
+                stats.add(unique.stats)
 
         if (city != null) {
             val cityWideUniques = city.cityConstructions.builtBuildingUniqueMap.getUniques("[] from [] tiles in this city")
@@ -262,7 +263,7 @@ open class TileInfo {
                         || (unique.params[1] == "fresh water" && isAdjacentToFreshwater)
                         || (unique.params[1] == "non-fresh water" && !isAdjacentToFreshwater)
                 )
-                    stats.add(unique.stats!!)
+                    stats.add(unique.stats)
             }
         }
 
@@ -278,7 +279,7 @@ open class TileInfo {
                             || it.matchesUniqueFilter(adjacent)
                             || it.roadStatus.name == adjacent
                 }
-                stats.add(unique.stats!!.times(numberOfBonuses.toFloat()))
+                stats.add(unique.stats.times(numberOfBonuses.toFloat()))
             }
 
         return stats
@@ -318,8 +319,8 @@ open class TileInfo {
             improvement.name == "Remove Railroad" && this.roadStatus == RoadStatus.Railroad -> true
             improvement.name == Constants.cancelImprovementOrder && this.improvementInProgress != null -> true
             topTerrain.unbuildable && (topTerrain.name !in improvement.resourceTerrainAllow) -> false
-            improvement.hasUnique("Can also be built on tiles adjacent to fresh water")
-                    && isAdjacentToFreshwater -> true
+            // DO NOT reverse this &&. isAdjacentToFreshwater() is a lazy which calls a function, and reversing it breaks the tests.
+            improvement.hasUnique("Can also be built on tiles adjacent to fresh water") && isAdjacentToFreshwater -> true
             "Can only be built on Coastal tiles" in improvement.uniques && isCoastalTile() -> true
             else -> resourceIsVisible && getTileResource().improvement == improvement.name
         }
@@ -333,6 +334,7 @@ open class TileInfo {
                 || baseTerrainObject.uniques.contains(filter)
                 || terrainFeature != null && getTerrainFeature()!!.uniques.contains(filter)
                 || improvement == filter
+//                || resource == filter // TODO uncomment in next version
                 || filter == "Water" && isWater
     }
 
@@ -427,7 +429,7 @@ open class TileInfo {
             milUnitString += " - " + militaryUnit!!.civInfo.civName.tr()
             lineList += milUnitString
         }
-        var defenceBonus = getDefensiveBonus()
+        val defenceBonus = getDefensiveBonus()
         if (defenceBonus != 0f) {
             var defencePercentString = (defenceBonus * 100).toInt().toString() + "%"
             if (!defencePercentString.startsWith("-")) defencePercentString = "+$defencePercentString"

@@ -307,7 +307,7 @@ object Battle {
         }
         city.hasJustBeenConquered = true
 
-        if (!attackerCiv.isMajorCiv()) {
+        if (attackerCiv.isBarbarian()) {
             city.destroyCity()
             return
         }
@@ -387,8 +387,8 @@ object Battle {
 
             fun declareWar(civSuffered: CivilizationInfo) {
                 if (civSuffered != attackingCiv
-                        && civSuffered.knows(attackingCiv)
-                        && civSuffered.getDiplomacyManager(attackingCiv).canDeclareWar()) {
+                        && attackingCiv.knows(attackingCiv)
+                        && attackingCiv.getDiplomacyManager(civSuffered).canDeclareWar()) {
                     civSuffered.getDiplomacyManager(attackingCiv).declareWar()
                 }
             }

@@ -38,11 +38,8 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) 
     val baseLayerGroup = BaseLayerGroupClass().apply { isTransform = false; setSize(groupSize, groupSize)  }
 
     protected var tileBaseImages: ArrayList<Image> = ArrayList()
-    /** List of ;-delimited image locations comprising the layers -
-     * for instance, "desert+flood plains" might have an improvment for which there is a certain image eg "desert+flood plains+farm"
-     * or it might use a generic image, in which case you'd have the "desert+flood plains;academy"
-     * Easier to save and compare than with lists */
-    var tileImagesIdentifier = ""
+    /** List of image locations comprising the layers so we don't need to change images all the time */
+    var tileImageIdentifiers = listOf<String>()
 
     // This is for OLD tiles - the "mountain" symbol on mountains for instance
     protected var baseTerrainOverlayImage: Image? = null
@@ -63,7 +60,9 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) 
     protected var pixelCivilianUnitImageLocation = ""
     protected var pixelCivilianUnitGroup = Group().apply { isTransform = false; setSize(groupSize, groupSize) }
 
-    class MiscLayerGroupClass:Group()
+    class MiscLayerGroupClass:Group(){
+        override fun draw(batch: Batch?, parentAlpha: Float) { super.draw(batch, parentAlpha) }
+    }
     val miscLayerGroup = MiscLayerGroupClass().apply { isTransform = false; setSize(groupSize, groupSize) }
 
     var resourceImage: Actor? = null
@@ -73,10 +72,19 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) 
 
     val icons = TileGroupIcons(this)
 
-    class UnitLayerGroupClass:Group()
-    val unitLayerGroup = UnitLayerGroupClass().apply { isTransform = false; setSize(groupSize, groupSize);touchable = Touchable.disabled }
+    class UnitLayerGroupClass:Group(){
+        override fun draw(batch: Batch?, parentAlpha: Float) { super.draw(batch, parentAlpha) }
+    }
 
-    val cityButtonLayerGroup = Group().apply { isTransform = true; setSize(groupSize, groupSize);
+    class UnitImageLayerGroupClass:Group(){
+        override fun draw(batch: Batch?, parentAlpha: Float) { super.draw(batch, parentAlpha) }
+    }
+    // We separate the units from the units' backgrounds, because all the background elements are in the same texture, and the units' aren't
+    val unitLayerGroup = UnitLayerGroupClass().apply { isTransform = false; setSize(groupSize, groupSize);touchable = Touchable.disabled }
+    val unitImageLayerGroup = UnitImageLayerGroupClass().apply { isTransform = false; setSize(groupSize, groupSize);touchable = Touchable.disabled }
+
+
+    val cityButtonLayerGroup = Group().apply { setSize(groupSize, groupSize);
         touchable = Touchable.childrenOnly; setOrigin(Align.center) }
 
     val circleCrosshairFogLayerGroup = Group().apply { isTransform = false; setSize(groupSize, groupSize) }
@@ -277,8 +285,11 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) 
     private fun updateTileImage(viewingCiv: CivilizationInfo?) {
         val tileBaseImageLocations = getTileBaseImageLocations(viewingCiv)
 
-        val identifier = tileBaseImageLocations.joinToString(";")
-        if (identifier == tileImagesIdentifier) return
+        if(tileBaseImageLocations.size == tileImageIdentifiers.size) {
+            if (tileBaseImageLocations.withIndex().all { (i, imageLocation) -> tileImageIdentifiers[i] == imageLocation })
+                return // All image identifiers are the same as the current ones, no need to change anything
+        }
+        tileImageIdentifiers = tileBaseImageLocations
 
         for (image in tileBaseImages) image.remove()
         tileBaseImages.clear()
@@ -302,7 +313,6 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) 
             setHexagonImageSize(image)
             image.toBack()
         }
-        tileImagesIdentifier = identifier
     }
 
     fun showMilitaryUnit(viewingCiv: CivilizationInfo) = showEntireMap

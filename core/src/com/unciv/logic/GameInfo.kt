@@ -98,10 +98,10 @@ class GameInfo {
 
         while (thisPlayer.playerType == PlayerType.AI
             || turns < UncivGame.Current.simulateUntilTurnForDebug
-                || (turns < simulateMaxTurns && simulateUntilWin)
+                || turns < simulateMaxTurns && simulateUntilWin
                 // For multiplayer, if there are 3+ players and one is defeated or spectator,
                 // we'll want to skip over their turn
-                || ((thisPlayer.isDefeated() || thisPlayer.isSpectator()) && gameParameters.isOnlineMultiplayer)
+                || gameParameters.isOnlineMultiplayer && (thisPlayer.isDefeated() || thisPlayer.isSpectator())
         ) {
             if (!thisPlayer.isDefeated() || thisPlayer.isBarbarian()) {
                 NextTurnAutomation.automateCivMoves(thisPlayer)
@@ -254,17 +254,19 @@ class GameInfo {
             throw UncivShowableException("Missing mods: [$missingMods]")
         }
 
-        // TODO: Scheduled for removal 3.10.14
-        // Renames as of version 3.1.8, because of translation conflicts with the property "Range" and the difficulty "Immortal"
-        // Needs to be BEFORE tileMap.setTransients, because the units' setTransients is called from there
-//        for (tile in tileMap.values)
-//            for (unit in tile.getUnits()) {
-//                if (unit.name == "Immortal") unit.name = "Persian Immortal"
-//                if (unit.promotions.promotions.contains("Range")) {
-//                    unit.promotions.promotions.remove("Range")
-//                    unit.promotions.promotions.add("Extended Range")
-//                }
-//            }
+        // Mods can change, leading to things on the map that are no longer defined in the mod.
+        // So we remove them so the game doesn't crash when it tries to access them.
+        for (tile in tileMap.values) {
+            if (tile.resource != null && !ruleSet.tileResources.containsKey(tile.resource!!))
+                tile.resource = null
+            if (tile.improvement != null && !ruleSet.tileImprovements.containsKey(tile.improvement!!))
+                tile.improvement = null
+
+            for (unit in tile.getUnits())
+                for (promotion in unit.promotions.promotions.toList())
+                    if (!ruleSet.unitPromotions.containsKey(promotion))
+                        unit.promotions.promotions.remove(promotion)
+        }
 
         tileMap.setTransients(ruleSet)
 
@@ -290,69 +292,7 @@ class GameInfo {
         }
 
 
-            // This doesn't HAVE to go here, but why not.
-            // As of version 3.1.3, trade offers of "Declare war on X" and "Introduction to X" were changed to X,
-            //   with the extra text being added only on UI display (solved a couple of problems).
-            // TODO: Scheduled for removal 3.10.14
-//            for (trade in civInfo.tradeRequests.map { it.trade }) {
-//                for (offer in trade.theirOffers.union(trade.ourOffers)) {
-//                    offer.name = offer.name.removePrefix("Declare war on ")
-//                    offer.name = offer.name.removePrefix("Introduction to ")
-//                }
-//            }
-
-            // TODO: Scheduled for removal 3.10.14
-            // As of 3.4.9 cities are referenced by id, not by name
-            // So try to update every tradeRequest (if there are no conflicting names)
-//            for (tradeRequest in civInfo.tradeRequests) {
-//                val trade = tradeRequest.trade
-//                val toRemove = ArrayList<TradeOffer>()
-//                for (offer in trade.ourOffers) {
-//                    if (offer.type == TradeType.City) {
-//                        val countNames = civInfo.cities.count { it.name == offer.name }
-//
-//                        if (countNames == 1)
-//                            offer.name = civInfo.cities.first { it.name == offer.name }.id
-//                        // There are conflicting names: we can't guess what city was being offered
-//                        else if (countNames > 1)
-//                            toRemove.add(offer)
-//                    }
-//                }
-//
-//                trade.ourOffers.removeAll(toRemove)
-//                toRemove.clear()
-//
-//                val themCivInfo = getCivilization(tradeRequest.requestingCiv)
-//                for (offer in trade.theirOffers) {
-//                    if (offer.type == TradeType.City) {
-//                        val countNames = themCivInfo.cities.count { it.name == offer.name }
-//
-//                        if (countNames == 1)
-//                            offer.name = themCivInfo.cities.first { it.name == offer.name }.id
-//                        // There are conflicting names: we can't guess what city was being offered
-//                        else if (countNames > 1)
-//                            toRemove.add(offer)
-//                    }
-//                }
-//
-//                trade.theirOffers.removeAll(toRemove)
-//            }
-
-            // TODO: Scheduled for removal 3.10.14
-            // As of 3.4.9 cities are referenced by id, not by name
-//            val toRemove = ArrayList<PopupAlert>()
-//            for (popupAlert in civInfo.popupAlerts.filter { it.type == AlertType.CityConquered }) {
-//                val countNames = getCities().count { it.name == popupAlert.value }
-//
-//                if (countNames == 1)
-//                    popupAlert.value = getCities().first { it.name == popupAlert.value }.id
-//                else if (countNames > 1) {
-//                    // Sorry again, conflicting names: who knows what city you conquered?
-//                    toRemove.add(popupAlert)
-//                }
-//            }
-//            civInfo.popupAlerts.removeAll(toRemove)
-//        }
+        // This doesn't HAVE to go here, but why not.
 
         for (civInfo in civilizations) civInfo.setNationTransient()
         for (civInfo in civilizations) civInfo.setTransients()

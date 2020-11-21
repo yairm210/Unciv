@@ -48,7 +48,8 @@ object UniqueTriggerActivation {
                     for (i in 1..unique.params[0].toInt())
                         civInfo.addUnit(unitName, civInfo.getCapital())
             }
-            "Free Social Policy" -> civInfo.policies.freePolicies++
+            // spectators get all techs at start of game, and if (in a mod) a tech gives a free policy, the game stucks on the policy picker screen
+            "Free Social Policy" -> if(!civInfo.isSpectator()) civInfo.policies.freePolicies++
             "Empire enters golden age" ->
                 civInfo.goldenAges.enterGoldenAge()
             "Free Great Person" -> {

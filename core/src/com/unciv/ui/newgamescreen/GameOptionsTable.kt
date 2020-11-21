@@ -199,12 +199,35 @@ class GameOptionsTable(val previousScreen: IPreviousScreen, val updatePlayerPick
                         return@onChange
                     }
 
+                    val previousMods = gameParameters.mods.toList()
+
                     if (mod.modOptions.isBaseRuleset)
-                        for (oldBaseRuleset in gameParameters.mods.toList()) // so we don't get concurrent modification excpetions
+                        for (oldBaseRuleset in previousMods) // so we don't get concurrent modification excpetions
                             if (modRulesets.firstOrNull { it.name == oldBaseRuleset }?.modOptions?.isBaseRuleset == true)
                                 gameParameters.mods.remove(oldBaseRuleset)
                     gameParameters.mods.add(mod.name)
-                    reloadRuleset() // This can FAIL at updateBuildingCosts if the mod is incorrectly defined! So we need to popup!
+
+                    var isCompatibleWithCurrentRuleset = true
+                    try {
+                        val newRuleset = RulesetCache.getComplexRuleset(gameParameters)
+                        newRuleset.modOptions.isBaseRuleset = true
+                        val complexModLinkErrors = newRuleset.checkModLinks()
+                        if (complexModLinkErrors != "") isCompatibleWithCurrentRuleset = false
+                    } catch (x: Exception) {
+                        // This happens if a building is dependent on a tech not in the base ruleset
+                        //  because newRuleset.updateBuildingCosts() in getComplexRulset() throws an error
+                        isCompatibleWithCurrentRuleset = false
+                    }
+
+                    if (!isCompatibleWithCurrentRuleset) {
+                        ToastPopup("The mod you selected is incompatible with the defined ruleset!\n\n$modLinkErrors", previousScreen as CameraStageBaseScreen)
+                        checkBox.isChecked = false
+                        gameParameters.mods.clear()
+                        gameParameters.mods.addAll(previousMods)
+                        return@onChange
+                    }
+
+                    reloadRuleset()
                 }
                 else {
                         gameParameters.mods.remove(mod.name)

@@ -97,7 +97,7 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
     private fun getCityStateDiplomacyTable(otherCiv: CivilizationInfo): Table {
         val otherCivDiplomacyManager = otherCiv.getDiplomacyManager(viewingCiv)
 
-        val diplomacyTable = Table().apply { width = this@DiplomacyScreen.stage.width - leftSideTable.width }
+        val diplomacyTable = Table()
         diplomacyTable.defaults().pad(10f)
         diplomacyTable.add(otherCiv.getLeaderDisplayName().toLabel(fontSize = 24)).row()
         diplomacyTable.add("{Type: } {${otherCiv.cityStateType}}".toLabel()).row()
@@ -137,8 +137,8 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
             friendBonusLabelColor = Color.GRAY
 
         val friendBonusLabel = friendBonusText.toLabel(friendBonusLabelColor)
-                .apply { setWrap(true); setAlignment(Align.center) }
-        diplomacyTable.add(friendBonusLabel).width(rightSideTable.width - 50f).row()
+                .apply { setAlignment(Align.center) }
+        diplomacyTable.add(friendBonusLabel).row()
 
         diplomacyTable.addSeparator()
 

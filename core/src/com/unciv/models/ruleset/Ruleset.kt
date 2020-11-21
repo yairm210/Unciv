@@ -228,7 +228,7 @@ class Ruleset {
             }
         }
 
-        for(building in buildings.values){
+        for (building in buildings.values) {
             if (building.requiredTech == null && building.cost == 0)
                 lines += "${building.name} must either have an explicit cost or reference an existing tech!"
         }
@@ -346,7 +346,7 @@ object RulesetCache :HashMap<String,Ruleset>() {
         for (mod in loadedMods.sortedByDescending { it.modOptions.isBaseRuleset }) {
             newRuleset.add(mod)
             newRuleset.mods += mod.name
-            if(mod.modOptions.isBaseRuleset){
+            if (mod.modOptions.isBaseRuleset) {
                 newRuleset.modOptions = mod.modOptions
             }
         }
