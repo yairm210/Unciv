@@ -146,13 +146,12 @@ internal object DesktopLauncher {
             packImagesIfOutdated(settings, "../ImagesToPackSeparately/BuildingIcons", ".", "BuildingIcons")
             packImagesIfOutdated(settings, "../ImagesToPackSeparately/FlagIcons", ".", "FlagIcons")
             packImagesIfOutdated(settings, "../ImagesToPackSeparately/UnitIcons", ".", "UnitIcons")
-
         }
 
         // pack for mods as well
         val modDirectory = File("mods")
-        if(modDirectory.exists()) {
-            for (mod in modDirectory.listFiles()!!){
+        if (modDirectory.exists()) {
+            for (mod in modDirectory.listFiles()!!) {
                 if (!mod.isHidden && File(mod.path + "/Images").exists())
                     packImagesIfOutdated(settings, mod.path + "/Images", mod.path, "game")
             }
