@@ -88,7 +88,7 @@ class CityInfo {
 
         civInfo.policies.tryAddLegalismBuildings()
 
-        for (unique in civInfo.getMatchingUniques("Get a free [] []")) {
+        for (unique in civInfo.getMatchingUniques("Gain a free [] []")) {
             val freeBuildingName = unique.params[0]
             val cityFilter = unique.params[1]
             if (cityFilter == "in every city" || (cityFilter == "in every coastal city" && getCenterTile().isCoastalTile()) ) {
