@@ -49,16 +49,24 @@ object ImageGetter {
     }
 
     /** Required every time the ruleset changes, in order to load mod-specific images */
-    fun reload(){
+    fun reload() {
         textureRegionDrawables.clear()
         // These are the drawables from the base game
-        for(region in atlas.regions) {
+        for (region in atlas.regions) {
             val drawable = TextureRegionDrawable(region)
             textureRegionDrawables[region.name] = drawable
         }
 
-        for(folder in Gdx.files.internal("SingleImages").list())
-            for(image in folder.list()) {
+        for (singleImagesFolder in sequenceOf("BuildingIcons", "FlagIcons", "UnitIcons")) {
+            val tempAtlas = TextureAtlas("$singleImagesFolder.atlas")
+            for (region in tempAtlas.regions) {
+                val drawable = TextureRegionDrawable(region)
+                textureRegionDrawables["$singleImagesFolder/"+region.name] = drawable
+            }
+        }
+
+        for (folder in Gdx.files.internal("SingleImages").list())
+            for (image in folder.list()) {
                 val texture = Texture(image)
                 // Since these aren't part of the packed texture we need to set this manually for each one
                 // Unfortunately since it's not power-of-2
@@ -67,7 +75,7 @@ object ImageGetter {
             }
 
         // These are from the mods
-        for(mod in ruleset.mods){
+        for (mod in ruleset.mods) {
             val modAtlasFile = Gdx.files.local("mods/$mod/game.atlas")
             if (modAtlasFile.exists()) {
                 val modAtlas = TextureAtlas(modAtlasFile)

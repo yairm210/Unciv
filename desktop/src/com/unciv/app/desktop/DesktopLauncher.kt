@@ -141,8 +141,13 @@ internal object DesktopLauncher {
         settings.filterMag = Texture.TextureFilter.MipMapLinearLinear
         settings.filterMin = Texture.TextureFilter.MipMapLinearLinear
 
-        if (File("../Images").exists()) // So we don't run this from within a fat JAR
+        if (File("../Images").exists()) { // So we don't run this from within a fat JAR
             packImagesIfOutdated(settings, "../Images", ".", "game")
+            packImagesIfOutdated(settings, "../ImagesToPackSeparately/BuildingIcons", ".", "BuildingIcons")
+            packImagesIfOutdated(settings, "../ImagesToPackSeparately/FlagIcons", ".", "FlagIcons")
+            packImagesIfOutdated(settings, "../ImagesToPackSeparately/UnitIcons", ".", "UnitIcons")
+
+        }
 
         // pack for mods as well
         val modDirectory = File("mods")
