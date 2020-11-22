@@ -380,10 +380,10 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
     fun getRelationshipTable(otherCivDiplomacyManager: DiplomacyManager): Table {
         val relationshipTable = Table()
 
-        val opinionOfUs = if(otherCivDiplomacyManager.civInfo.isCityState()) otherCivDiplomacyManager.influence.toInt()
+        val opinionOfUs = if (otherCivDiplomacyManager.civInfo.isCityState()) otherCivDiplomacyManager.influence.toInt()
         else otherCivDiplomacyManager.opinionOfOtherCiv().toInt()
 
-        relationshipTable.add("Our relationship: ".toLabel())
+        relationshipTable.add("{Our relationship}: ".toLabel())
         val relationshipLevel = otherCivDiplomacyManager.relationshipLevel()
         val relationshipText = relationshipLevel.name.tr() + " ($opinionOfUs)"
         val relationshipColor = when (relationshipLevel) {

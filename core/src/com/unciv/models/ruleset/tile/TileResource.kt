@@ -30,16 +30,16 @@ class TileResource : NamedStats() {
         stringBuilder.appendln("Can be found on ".tr() + terrainsCanBeBuiltOnString.joinToString(", "))
         stringBuilder.appendln()
         stringBuilder.appendln("Improved by [$improvement]".tr())
-        stringBuilder.appendln("Bonus stats for improvement: ".tr() + "$improvementStats".tr())
+        stringBuilder.appendln("{Bonus stats for improvement}: ".tr() + "$improvementStats".tr())
 
         val buildingsThatConsumeThis = ruleset.buildings.values.filter { it.requiredResource==name }
         if(buildingsThatConsumeThis.isNotEmpty())
-            stringBuilder.appendln("Buildings that consume this resource: ".tr()
+            stringBuilder.appendln("{Buildings that consume this resource}: ".tr()
                     + buildingsThatConsumeThis.joinToString { it.name.tr() })
 
         val unitsThatConsumeThis = ruleset.units.values.filter { it.requiredResource==name }
         if(unitsThatConsumeThis.isNotEmpty())
-            stringBuilder.appendln("Units that consume this resource: ".tr()
+            stringBuilder.appendln("{Units that consume this resource}: ".tr()
                     + unitsThatConsumeThis.joinToString { it.name.tr() })
 
         if(unique!=null) stringBuilder.appendln(unique!!.tr())
