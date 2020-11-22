@@ -46,11 +46,11 @@ class TechButton(techName:String, private val techManager: TechManager, isWorldS
         val tech = ruleset.technologies[techName]!!
 
         for (unit in tech.getEnabledUnits(techManager.civInfo)
-                .filter { "Will not be displayed in Tech Tree" !in it.uniques})
+                .filter { "Will not be displayed in Civilopedia" !in it.uniques})
             techEnabledIcons.add(ImageGetter.getConstructionImage(unit.name).surroundWithCircle(techIconSize))
 
         for (building in tech.getEnabledBuildings(techManager.civInfo)
-                .filter { "Will not be displayed in Tech Tree" !in it.uniques})
+                .filter { "Will not be displayed in Civilopedia" !in it.uniques})
             techEnabledIcons.add(ImageGetter.getConstructionImage(building.name).surroundWithCircle(techIconSize))
 
         for(building in tech.getObsoletedBuildings(techManager.civInfo) )

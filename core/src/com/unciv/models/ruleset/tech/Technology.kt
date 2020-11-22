@@ -50,7 +50,7 @@ class Technology {
         if (enabledUnits.isNotEmpty()) {
             lineList += "{Units enabled}: "
             for (unit in enabledUnits
-                    .filter { "Will not be displayed in Tech Tree" !in it.uniques})
+                    .filter { "Will not be displayed in Civilopedia" !in it.uniques})
                 lineList += " * " + unit.name.tr() + " (" + unit.getShortDescription() + ")"
         }
 
@@ -60,7 +60,7 @@ class Technology {
         if (regularBuildings.isNotEmpty()) {
             lineList += "{Buildings enabled}: "
             for (building in regularBuildings
-                    .filter { "Will not be displayed in Tech Tree" !in it.uniques})
+                    .filter { "Will not be displayed in Civilopedia" !in it.uniques})
                 lineList += "* " + building.name.tr() + " (" + building.getShortDescription(ruleset) + ")"
         }
 
