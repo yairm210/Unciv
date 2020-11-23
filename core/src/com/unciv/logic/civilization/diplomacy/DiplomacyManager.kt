@@ -526,14 +526,12 @@ class DiplomacyManager() {
         diplomaticStatus = DiplomaticStatus.Peace
         otherCivDiplomacy().diplomaticStatus = DiplomaticStatus.Peace
 
-        if (otherCiv().isAtWarWith(civInfo)) {
-            for (civ in getCommonKnownCivs()) {
-                civ.addNotification(
-                        "[${civInfo.civName}] and [${otherCiv().civName}] have signed the Peace Treaty!",
-                        null,
-                        Color.WHITE
-                )
-            }
+        for (civ in getCommonKnownCivs()) {
+            civ.addNotification(
+                    "[${civInfo.civName}] and [${otherCiv().civName}] have signed the Peace Treaty!",
+                    null,
+                    Color.WHITE
+            )
         }
 
         val otherCiv = otherCiv()
