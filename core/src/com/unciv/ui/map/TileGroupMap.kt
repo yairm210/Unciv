@@ -78,7 +78,6 @@ class TileGroupMap<T: TileGroup>(val tileGroups: Collection<T>, val padding: Flo
 
 
     // For debugging purposes
-    override fun draw(batch: Batch?, parentAlpha: Float) {
-        super.draw(batch, parentAlpha)
-    }
+    override fun draw(batch: Batch?, parentAlpha: Float) { super.draw(batch, parentAlpha) }
+    override fun act(delta: Float) { super.act(delta) }
 }
