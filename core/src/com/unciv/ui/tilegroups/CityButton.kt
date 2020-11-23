@@ -228,8 +228,16 @@ class CityButton(val city: CityInfo, private val tileGroup: WorldTileGroup): Tab
         label.toBack() // this is so the label is rendered right before the population group,
         //  so we save the font texture and avoid another texture switch
 
-        if (uncivGame.viewEntireMapForDebug || belongsToViewingCiv() || worldScreen.viewingCiv.isSpectator())
-            iconTable.add(getConstructionGroup(city.cityConstructions))
+        if (uncivGame.viewEntireMapForDebug || belongsToViewingCiv() || worldScreen.viewingCiv.isSpectator()) {
+            val constructionGroup = getConstructionGroup(city.cityConstructions)
+            iconTable.add(constructionGroup)
+            constructionGroup.toBack() // We do this so the construction group is right before the label.
+            // What we end up with is construction group > label > population group.
+            // Since the label in the construction group is rendered *last* (toFront()),
+            // and the two labels in the the population group are rendered *first* (toBack()),
+            // What we get is that ALL 4 LABELS are rendered one after the other,
+            // and so the glyph texture only needs to be swapped in once rather than 4 times! :)
+        }
         else if (city.civInfo.isMajorCiv()) {
             val nationIcon = ImageGetter.getNationIcon(city.civInfo.nation.name)
             nationIcon.color = secondaryColor
@@ -339,17 +347,17 @@ class CityButton(val city: CityInfo, private val tileGroup: WorldTileGroup): Tab
 
         val circle = ImageGetter.getCircle()
         circle.setSize(25f, 25f)
-        val image = ImageGetter.getConstructionImage(cityConstructions.currentConstructionFromQueue)
-        image.setSize(18f, 18f)
-        image.centerY(group)
-        image.x = group.width - image.width
+        val constructionImage = ImageGetter.getConstructionImage(cityConstructions.currentConstructionFromQueue)
+        constructionImage.setSize(18f, 18f)
+        constructionImage.centerY(group)
+        constructionImage.x = group.width - constructionImage.width
 
         // center the circle on the production image
-        circle.x = image.x + (image.width - circle.width) / 2
-        circle.y = image.y + (image.height - circle.height) / 2
+        circle.x = constructionImage.x + (constructionImage.width - circle.width) / 2
+        circle.y = constructionImage.y + (constructionImage.height - circle.height) / 2
 
         group.addActor(circle)
-        group.addActor(image)
+        group.addActor(constructionImage)
 
         val secondaryColor = cityConstructions.cityInfo.civInfo.nation.getInnerColor()
         if (cityCurrentConstruction !is PerpetualConstruction) {
@@ -365,6 +373,12 @@ class CityButton(val city: CityInfo, private val tileGroup: WorldTileGroup): Tab
             productionBar.x = 10f
             label.x = productionBar.x - label.width - 3
             group.addActor(productionBar)
+            productionBar.toBack() // Since the production bar is based on whiteDot.png in the MAIN texture,
+            // and the constructionImage may be a building or unit which have their own textures,
+            // we move the production bar's rendering to be next to the circle's rendering,
+            // so we have circle - bar - constructionImage - label (2 texture switches and ending with label)
+            // which is the minimal amount of switches we can have here
+            label.toFront()
         }
         return group
     }
