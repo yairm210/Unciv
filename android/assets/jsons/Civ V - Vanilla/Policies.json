@@ -322,7 +322,7 @@
 			{
 				"name": "Free Thought",
 				"effect": "+1 science from every trading post, +17% science from universities",
-				"uniques": ["[+1 Gold] from every [Trading post]", "+[17]% [Science] from every [University]"],
+				"uniques": ["[+1 Science] from every [Trading post]", "+[17]% [Science] from every [University]"],
 				"requires": ["Secularism"],
 				"row": 2,
 				"column": 1
