@@ -52,6 +52,7 @@ class TileGroupIcons(val tileGroup: TileGroup){
     fun newUnitIcon(unit: MapUnit?, oldUnitGroup: UnitGroup?, isViewable: Boolean, yFromCenter: Float, viewingCiv: CivilizationInfo?): UnitGroup? {
         var newImage: UnitGroup? = null
         // The unit can change within one update - for instance, when attacking, the attacker replaces the defender!
+        oldUnitGroup?.unitBaseImage?.remove()
         oldUnitGroup?.remove()
 
         if (unit != null && isViewable) { // Tile is visible
