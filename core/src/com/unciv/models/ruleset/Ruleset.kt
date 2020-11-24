@@ -217,9 +217,14 @@ class Ruleset {
         val lines = ArrayList<String>()
 
         // Checks for all mods
-        for (unit in units.values)
+        for (unit in units.values) {
             if (unit.upgradesTo == unit.name)
                 lines += "${unit.name} upgrades to itself!"
+            if (!unit.unitType.isCivilian() && unit.strength == 0)
+                lines += "${unit.name} is a military unit but has no assigned strength!"
+            if (unit.unitType.isRanged() && unit.rangedStrength == 0)
+                lines += "${unit.name} is a ranged unit but has no assigned rangedStrength!"
+        }
 
         for (tech in technologies.values) {
             for (otherTech in tech.column!!.techs) {
