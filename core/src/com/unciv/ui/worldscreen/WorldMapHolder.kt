@@ -468,7 +468,10 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
                 tileGroup.cityButtonLayerGroup.isTransform = false // to save on rendering time to improve framerate
         if (scale < 1 && scale > 0.5f)
             for (tileGroup in tileGroups.values) {
-                tileGroup.cityButtonLayerGroup.isTransform = true
+                // ONLY set those groups that have active citybuttons as transformable!
+                // This is massively framerate-improving!
+                if (tileGroup.cityButtonLayerGroup.hasChildren())
+                    tileGroup.cityButtonLayerGroup.isTransform = true
                 tileGroup.cityButtonLayerGroup.setScale(scale)
             }
     }

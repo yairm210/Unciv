@@ -22,11 +22,16 @@ import kotlin.random.Random
 
 /** A lot of the render time was spent on snapshot arrays of the TileGroupMap's groups, in the act() function.
  * This class is to avoid the overhead of useless act() calls. */
-open class ActionlessGroup:Group(){
+open class ActionlessGroup(val checkHit:Boolean=false):Group() {
     override fun act(delta: Float) {}
+    override fun hit(x: Float, y: Float, touchable: Boolean): Actor? {
+        if (checkHit)
+            return super.hit(x, y, touchable)
+        return null
+    }
 }
 
-open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) : ActionlessGroup() {
+open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) : ActionlessGroup(true) {
     val groupSize = 54f
 
     /*
@@ -88,8 +93,7 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) 
     val unitLayerGroup = UnitLayerGroupClass().apply { isTransform = false; setSize(groupSize, groupSize);touchable = Touchable.disabled }
     val unitImageLayerGroup = UnitImageLayerGroupClass().apply { isTransform = false; setSize(groupSize, groupSize);touchable = Touchable.disabled }
 
-
-    val cityButtonLayerGroup = Group().apply { setSize(groupSize, groupSize);
+    val cityButtonLayerGroup = Group().apply { isTransform = false; setSize(groupSize, groupSize);
         touchable = Touchable.childrenOnly; setOrigin(Align.center) }
 
     val circleCrosshairFogLayerGroup = ActionlessGroup().apply { isTransform = false; setSize(groupSize, groupSize) }
