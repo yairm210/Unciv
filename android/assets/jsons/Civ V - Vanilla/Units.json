@@ -1232,8 +1232,22 @@
 		"strength": 50,
 		"cost": 300,
 		"requiredTech": "Combined Arms",
-		//"upgradesTo": "Helicopter Gunship",
+		"upgradesTo": "Helicopter Gunship",
 		"uniques": ["Bonus vs Armor 100%"]
+	},
+	{
+		// "Hovering unit" unique gives ability to get into impassable tiles - and only that (no vision bonus or flying over ocean)
+		// Unit embarks like any other ground unit and has penalty for attacking over river or from embarked state
+		// "Unable to capture cities"
+		"name": "Helicopter Gunship",
+		"unitType": "Melee",
+		"movement": 6,
+		"strength": 60,
+		"cost": 425,
+		"requiredTech": "Computers",
+		"requiredResource": "Aluminum",
+		"uniques": ["Bonus vs Armor 100%", "No defensive terrain bonuses", "Can move after attacking", "All tiles costs 1", "Can pass through impassable tiles", "Unable to capture cities"],
+		"attackSound": "shot"
 	},
 	{
 		"name": "Rocket Artillery",
@@ -1311,20 +1325,6 @@
 		"uniques": ["Evasion", "6 tiles in every direction always visible"]
 		"attackSound": "shot"
 		// cannot be based on carrier
-	},
-	{
-		// "Hovering unit" unique gives ability to get into impassable tiles - and only that (no vision bonus or flying over ocean)
-		// Unit embarks like any other ground unit and has penalty for attacking over river or from embarked state
-		// "Unable to capture cities"
-		"name": "Helicopter Gunship",
-		"unitType": "Melee",
-		"movement": 6,
-		"strength": 60,
-		"cost": 425,
-		"requiredTech": "Computers",
-		"requiredResource": "Aluminum",
-		"uniques": ["Bonus vs Armor 100%", "Ignores terrain cost", "No defensive terrain bonuses", "Can move after attacking"],
-		"attackSound": "shot"
 	},
 	{
 		"name": "Missile Cruiser",
