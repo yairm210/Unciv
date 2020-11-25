@@ -612,9 +612,11 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) 
         val militaryUnit = tileInfo.militaryUnit
         if (militaryUnit != null && showMilitaryUnit) {
             val unitType = militaryUnit.type
+            val specificUnitIconLocationNation = tileSetStrings.unitsLocation + militaryUnit.name + "-" + militaryUnit.civInfo.nation.style
             val specificUnitIconLocation = tileSetStrings.unitsLocation + militaryUnit.name
             newImageLocation = when {
                 !UncivGame.Current.settings.showPixelUnits -> ""
+                ImageGetter.imageExists(specificUnitIconLocationNation) -> specificUnitIconLocationNation
                 ImageGetter.imageExists(specificUnitIconLocation) -> specificUnitIconLocation
 
                 militaryUnit.baseUnit.replaces!=null &&
@@ -653,8 +655,10 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) 
 
         if (civilianUnit != null && tileIsViewable) {
             val specificUnitIconLocation = tileSetStrings.unitsLocation + civilianUnit.name
+            val specificUnitIconLocationNation = tileSetStrings.unitsLocation + civilianUnit.name + "-" + civilianUnit.civInfo.nation.style
             newImageLocation = when {
                 !UncivGame.Current.settings.showPixelUnits -> ""
+                ImageGetter.imageExists(specificUnitIconLocationNation) -> specificUnitIconLocationNation
                 ImageGetter.imageExists(specificUnitIconLocation) -> specificUnitIconLocation
                 else -> ""
             }
