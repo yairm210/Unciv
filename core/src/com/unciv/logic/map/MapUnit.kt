@@ -227,7 +227,8 @@ class MapUnit {
         var unit = baseUnit()
 
         // Go up the upgrade tree until you find the last one which is buildable
-        while (unit.upgradesTo!=null && civInfo.tech.isResearched(unit.getDirectUpgradeUnit(civInfo).requiredTech!!))
+        while (unit.upgradesTo!=null && unit.getDirectUpgradeUnit(civInfo).requiredTech
+                        .let { it==null || civInfo.tech.isResearched(it) })
             unit = unit.getDirectUpgradeUnit(civInfo)
         return unit
     }

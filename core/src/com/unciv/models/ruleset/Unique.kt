@@ -1,6 +1,7 @@
 package com.unciv.models.ruleset
 
 import com.unciv.Constants
+import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.getPlaceholderParameters
@@ -35,18 +36,19 @@ class UniqueMap:HashMap<String, ArrayList<Unique>>() {
 
 // Buildings, techs and policies can have 'triggered' effects
 object UniqueTriggerActivation {
-    fun triggerCivwideUnique(unique: Unique, civInfo: CivilizationInfo) {
+    fun triggerCivwideUnique(unique: Unique, civInfo: CivilizationInfo, cityInfo:CityInfo?=null) {
+        val chosenCity = if(cityInfo!=null) cityInfo else civInfo.cities.firstOrNull { it.isCapital() }
         when (unique.placeholderText) {
             "Free [] appears" -> {
                 val unitName = unique.params[0]
-                if (civInfo.cities.any { it.isCapital() } && (unitName != Constants.settler || !civInfo.isOneCityChallenger()))
-                    civInfo.addUnit(unitName, civInfo.getCapital())
+                if (chosenCity != null && (unitName != Constants.settler || !civInfo.isOneCityChallenger()))
+                    civInfo.addUnit(unitName, chosenCity)
             }
             "[] free [] units appear" -> {
                 val unitName = unique.params[1]
-                if (civInfo.cities.any { it.isCapital() } && (unitName != Constants.settler || !civInfo.isOneCityChallenger()))
+                if (chosenCity!=null && (unitName != Constants.settler || !civInfo.isOneCityChallenger()))
                     for (i in 1..unique.params[0].toInt())
-                        civInfo.addUnit(unitName, civInfo.getCapital())
+                        civInfo.addUnit(unitName, chosenCity)
             }
             // spectators get all techs at start of game, and if (in a mod) a tech gives a free policy, the game stucks on the policy picker screen
             "Free Social Policy" -> if(!civInfo.isSpectator()) civInfo.policies.freePolicies++
@@ -59,10 +61,10 @@ object UniqueTriggerActivation {
                     val greatPerson = when (preferredVictoryType) {
                         VictoryType.Cultural -> "Great Artist"
                         VictoryType.Scientific -> "Great Scientist"
-                        else ->
-                            civInfo.gameInfo.ruleSet.units.keys.filter { it.startsWith("Great") }.random()
+                        else -> civInfo.gameInfo.ruleSet.units.values
+                                .filter { it.uniqueObjects.any { it.placeholderText == "Great Person - []" } }.map { it.name }.random()
                     }
-                    civInfo.addUnit(greatPerson)
+                    civInfo.addUnit(greatPerson, chosenCity)
                 }
             }
             "+1 population in each city" ->
