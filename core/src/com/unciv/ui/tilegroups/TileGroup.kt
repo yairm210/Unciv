@@ -20,8 +20,18 @@ import kotlin.math.PI
 import kotlin.math.atan
 import kotlin.random.Random
 
+/** A lot of the render time was spent on snapshot arrays of the TileGroupMap's groups, in the act() function.
+ * This class is to avoid the overhead of useless act() calls. */
+open class ActionlessGroup(val checkHit:Boolean=false):Group() {
+    override fun act(delta: Float) {}
+    override fun hit(x: Float, y: Float, touchable: Boolean): Actor? {
+        if (checkHit)
+            return super.hit(x, y, touchable)
+        return null
+    }
+}
 
-open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) : Group() {
+open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) : ActionlessGroup(true) {
     val groupSize = 54f
 
     /*
@@ -34,7 +44,7 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) 
      */
 
     // For recognizing the group in the profiler
-    class BaseLayerGroupClass:Group()
+    class BaseLayerGroupClass:ActionlessGroup()
     val baseLayerGroup = BaseLayerGroupClass().apply { isTransform = false; setSize(groupSize, groupSize)  }
 
     protected var tileBaseImages: ArrayList<Image> = ArrayList()
@@ -45,7 +55,7 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) 
     protected var baseTerrainOverlayImage: Image? = null
     protected var baseTerrain: String = ""
 
-    class TerrainFeatureLayerGroupClass:Group()
+    class TerrainFeatureLayerGroupClass:ActionlessGroup()
     val terrainFeatureLayerGroup = TerrainFeatureLayerGroupClass()
             .apply { isTransform = false; setSize(groupSize, groupSize) }
 
@@ -56,11 +66,11 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) 
     protected var naturalWonderImage: Image? = null
 
     protected var pixelMilitaryUnitImageLocation = ""
-    protected var pixelMilitaryUnitGroup = Group().apply { isTransform = false; setSize(groupSize, groupSize) }
+    protected var pixelMilitaryUnitGroup = ActionlessGroup().apply { isTransform = false; setSize(groupSize, groupSize) }
     protected var pixelCivilianUnitImageLocation = ""
-    protected var pixelCivilianUnitGroup = Group().apply { isTransform = false; setSize(groupSize, groupSize) }
+    protected var pixelCivilianUnitGroup = ActionlessGroup().apply { isTransform = false; setSize(groupSize, groupSize) }
 
-    class MiscLayerGroupClass:Group(){
+    class MiscLayerGroupClass:ActionlessGroup(){
         override fun draw(batch: Batch?, parentAlpha: Float) { super.draw(batch, parentAlpha) }
     }
     val miscLayerGroup = MiscLayerGroupClass().apply { isTransform = false; setSize(groupSize, groupSize) }
@@ -76,18 +86,17 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) 
         override fun draw(batch: Batch?, parentAlpha: Float) { super.draw(batch, parentAlpha) }
     }
 
-    class UnitImageLayerGroupClass:Group(){
+    class UnitImageLayerGroupClass:ActionlessGroup(){
         override fun draw(batch: Batch?, parentAlpha: Float) { super.draw(batch, parentAlpha) }
     }
     // We separate the units from the units' backgrounds, because all the background elements are in the same texture, and the units' aren't
     val unitLayerGroup = UnitLayerGroupClass().apply { isTransform = false; setSize(groupSize, groupSize);touchable = Touchable.disabled }
     val unitImageLayerGroup = UnitImageLayerGroupClass().apply { isTransform = false; setSize(groupSize, groupSize);touchable = Touchable.disabled }
 
-
-    val cityButtonLayerGroup = Group().apply { setSize(groupSize, groupSize);
+    val cityButtonLayerGroup = Group().apply { isTransform = false; setSize(groupSize, groupSize);
         touchable = Touchable.childrenOnly; setOrigin(Align.center) }
 
-    val circleCrosshairFogLayerGroup = Group().apply { isTransform = false; setSize(groupSize, groupSize) }
+    val circleCrosshairFogLayerGroup = ActionlessGroup().apply { isTransform = false; setSize(groupSize, groupSize) }
     private val circleImage = ImageGetter.getCircle() // for blue and red circles on the tile
     private val crosshairImage = ImageGetter.getImage("OtherIcons/Crosshair") // for when a unit is targete
     protected val fogImage = ImageGetter.getImage(tileSetStrings.crosshatchHexagon)
@@ -612,12 +621,15 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) 
         val militaryUnit = tileInfo.militaryUnit
         if (militaryUnit != null && showMilitaryUnit) {
             val unitType = militaryUnit.type
-            val specificUnitIconLocationNation = tileSetStrings.unitsLocation + militaryUnit.name + "-" + militaryUnit.civInfo.nation.style
-            val specificUnitIconLocation = tileSetStrings.unitsLocation + militaryUnit.name
+            val specificUnitIconLocation = when {
+                militaryUnit.civInfo.nation.style != "" -> tileSetStrings.unitsLocation + militaryUnit.name + "-" + militaryUnit.civInfo.nation.style
+            else ->
+                tileSetStrings.unitsLocation + militaryUnit.name
+            }
             newImageLocation = when {
                 !UncivGame.Current.settings.showPixelUnits -> ""
-                ImageGetter.imageExists(specificUnitIconLocationNation) -> specificUnitIconLocationNation
                 ImageGetter.imageExists(specificUnitIconLocation) -> specificUnitIconLocation
+                ImageGetter.imageExists(tileSetStrings.unitsLocation + militaryUnit.name) -> tileSetStrings.unitsLocation + militaryUnit.name
 
                 militaryUnit.baseUnit.replaces!=null &&
                         ImageGetter.imageExists(tileSetStrings.unitsLocation + militaryUnit.baseUnit.replaces) ->
@@ -654,12 +666,16 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) 
         val civilianUnit = tileInfo.civilianUnit
 
         if (civilianUnit != null && tileIsViewable) {
-            val specificUnitIconLocation = tileSetStrings.unitsLocation + civilianUnit.name
-            val specificUnitIconLocationNation = tileSetStrings.unitsLocation + civilianUnit.name + "-" + civilianUnit.civInfo.nation.style
+            val specificUnitIconLocation = when {
+                civilianUnit.civInfo.nation.style != "" -> tileSetStrings.unitsLocation + civilianUnit.name + "-" + civilianUnit.civInfo.nation.style
+                else ->
+                    tileSetStrings.unitsLocation + civilianUnit.name
+            }
             newImageLocation = when {
                 !UncivGame.Current.settings.showPixelUnits -> ""
-                ImageGetter.imageExists(specificUnitIconLocationNation) -> specificUnitIconLocationNation
                 ImageGetter.imageExists(specificUnitIconLocation) -> specificUnitIconLocation
+                ImageGetter.imageExists(tileSetStrings.unitsLocation + civilianUnit.name) -> tileSetStrings.unitsLocation + civilianUnit.name
+
                 else -> ""
             }
         }
@@ -691,13 +707,12 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) 
     }
 
     fun updateRiver(currentImage:Image?, shouldDisplay:Boolean,imageName:String): Image? {
-        if(!shouldDisplay){
+        if (!shouldDisplay) {
             currentImage?.remove()
             return null
-        }
-        else{
-            if(currentImage!=null) return currentImage
-            if(!ImageGetter.imageExists(imageName)) return null // Old "Default" tileset gets no rivers.
+        } else {
+            if (currentImage != null) return currentImage
+            if (!ImageGetter.imageExists(imageName)) return null // Old "Default" tileset gets no rivers.
             val newImage = ImageGetter.getImage(imageName)
             baseLayerGroup.addActor(newImage)
             setHexagonImageSize(newImage)
@@ -715,7 +730,6 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) 
     }
 
     /** This exists so we can easily find the TileGroup draw method in the android profiling, otherwise it's just a mass of Group.draw->drawChildren->Group.draw etc. */
-    override fun draw(batch: Batch?, parentAlpha: Float) {
-        super.draw(batch, parentAlpha)
-    }
+    override fun draw(batch: Batch?, parentAlpha: Float) { super.draw(batch, parentAlpha) }
+    override fun act(delta: Float) { super.act(delta) }
 }
