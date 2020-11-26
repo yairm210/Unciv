@@ -105,7 +105,11 @@ open class TileInfo {
 
     fun getCity(): CityInfo? = owningCity
 
-    fun getLastTerrain(): Terrain = if (terrainFeature != null) getTerrainFeature()!! else if (naturalWonder != null) getNaturalWonder() else getBaseTerrain()
+    fun getLastTerrain(): Terrain = when {
+        terrainFeature != null -> getTerrainFeature()!!
+        naturalWonder != null -> getNaturalWonder()
+        else -> getBaseTerrain()
+    }
 
     fun getTileResource(): TileResource =
             if (resource == null) throw Exception("No resource exists for this tile!")
