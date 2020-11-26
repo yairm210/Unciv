@@ -614,17 +614,21 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) 
             }
         }
     }
-
     fun updatePixelMilitaryUnit(showMilitaryUnit: Boolean) {
         var newImageLocation = ""
 
         val militaryUnit = tileInfo.militaryUnit
         if (militaryUnit != null && showMilitaryUnit) {
             val unitType = militaryUnit.type
-            val specificUnitIconLocation = tileSetStrings.unitsLocation + militaryUnit.name
+            val specificUnitIconLocation = when {
+                militaryUnit.civInfo.nation.style != "" -> tileSetStrings.unitsLocation + militaryUnit.name + "-" + militaryUnit.civInfo.nation.style
+                else ->
+                    tileSetStrings.unitsLocation + militaryUnit.name
+            }
             newImageLocation = when {
                 !UncivGame.Current.settings.showPixelUnits -> ""
                 ImageGetter.imageExists(specificUnitIconLocation) -> specificUnitIconLocation
+                ImageGetter.imageExists(tileSetStrings.unitsLocation + militaryUnit.name) -> tileSetStrings.unitsLocation + militaryUnit.name
 
                 militaryUnit.baseUnit.replaces!=null &&
                         ImageGetter.imageExists(tileSetStrings.unitsLocation + militaryUnit.baseUnit.replaces) ->
@@ -661,10 +665,16 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) 
         val civilianUnit = tileInfo.civilianUnit
 
         if (civilianUnit != null && tileIsViewable) {
-            val specificUnitIconLocation = tileSetStrings.unitsLocation + civilianUnit.name
+            val specificUnitIconLocation = when {
+                civilianUnit.civInfo.nation.style != "" -> tileSetStrings.unitsLocation + civilianUnit.name + "-" + civilianUnit.civInfo.nation.style
+                else ->
+                    tileSetStrings.unitsLocation + civilianUnit.name
+            }
             newImageLocation = when {
                 !UncivGame.Current.settings.showPixelUnits -> ""
                 ImageGetter.imageExists(specificUnitIconLocation) -> specificUnitIconLocation
+                ImageGetter.imageExists(tileSetStrings.unitsLocation + civilianUnit.name) -> tileSetStrings.unitsLocation + civilianUnit.name
+
                 else -> ""
             }
         }
