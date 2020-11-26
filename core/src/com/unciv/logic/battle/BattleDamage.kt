@@ -273,7 +273,7 @@ object BattleDamage {
 
     private fun modifiersToMultiplicationBonus(modifiers: Counter<String>): Float {
         var finalModifier = 1f
-        for (modifierValue in modifiers.values) finalModifier *= (1 + modifierValue/100) // so 25 will result in *= 1.25
+        for (modifierValue in modifiers.values) finalModifier *= (1 + modifierValue/100f) // so 25 will result in *= 1.25
         return finalModifier
     }
 
