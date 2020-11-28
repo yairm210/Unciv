@@ -123,8 +123,8 @@ class BaseUnit : INamed, IConstruction {
     fun getRejectionReason(construction: CityConstructions): String {
         if (unitType.isWaterUnit() && !construction.cityInfo.getCenterTile().isCoastalTile())
             return "Can only build water units in coastal cities"
-        if (uniqueObjects.any { it.placeholderText == "Not displayed as an available construction unless [] is built" ||
-                        it.placeholderText == "Not displayed as an available construction without []"
+        if (uniqueObjects.any { (it.placeholderText == "Not displayed as an available construction unless [] is built" ||
+                        it.placeholderText == "Not displayed as an available construction without []")
                             && ((construction.cityInfo.civInfo.gameInfo.ruleSet.buildings.containsKey(it.params[0])
                         && !construction.containsBuildingOrEquivalent(it.params[0]))
                         || ((construction.cityInfo.civInfo.gameInfo.ruleSet.tileResources.containsKey(it.params[0])
