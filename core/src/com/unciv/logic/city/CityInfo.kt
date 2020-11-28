@@ -185,9 +185,20 @@ class CityInfo {
             cityResources.add(resource, -1, "Buildings")
         }
         for(unique in cityConstructions.builtBuildingUniqueMap.getUniques("Provides [] []")) { // E.G "Provides [1] [Iron]"
+
+            var amountToAdd = (unique.params[0]).toInt()
             val resource = getRuleset().tileResources[unique.params[1]]
-            if (resource != null)
-                cityResources.add(resource, unique.params[0].toInt(), "Buildings")
+            if (resource != null) {
+                if (resource.resourceType == ResourceType.Strategic){
+                        if (civInfo.hasUnique("Quantity of strategic resources produced by the empire increased by 100%")){
+                            amountToAdd *= 2}
+                }
+                if (civInfo.hasUnique("Double quantity of [] produced")) {
+                    val resourceCheck = getRuleset().tileResources[unique.params[1]]
+                    if (resourceCheck!!.name == resource.name){
+                        amountToAdd *= 2}
+                }
+            cityResources.add(resource, amountToAdd, "Buildings")}
         }
 
         return cityResources
