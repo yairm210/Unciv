@@ -125,6 +125,11 @@ class BaseUnit : INamed, IConstruction {
         if (uniqueObjects.any { it.placeholderText == "Not displayed as an available construction unless [] is built"
                             && !construction.containsBuildingOrEquivalent(it.params[0]) })
             return "Should not be displayed"
+        if (uniqueObjects.any { it.placeholderText == "Not displayed as an available construction without []"
+                        && (!construction.cityInfo.civInfo.hasResource(it.params[0])
+                        && !construction.cityInfo.civInfo.gameInfo.gameParameters.godMode)
+                        ||     !construction.containsBuildingOrEquivalent(it.params[0]) })
+            return "Should not be displayed"
         val civRejectionReason = getRejectionReason(construction.cityInfo.civInfo)
         if (civRejectionReason != "") return civRejectionReason
         return ""
