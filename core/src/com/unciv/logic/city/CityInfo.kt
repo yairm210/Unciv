@@ -176,7 +176,7 @@ class CityInfo {
 
         for (tileInfo in getTiles().filter { it.resource != null }) {
             val resource = tileInfo.getTileResource()
-            val amount = getTileResourceAmount(tileInfo)
+            val amount = getTileResourceAmount(tileInfo) * civInfo.getResourceModifier(resource)
             if (amount > 0) cityResources.add(resource, amount, "Tiles")
         }
 
@@ -186,8 +186,8 @@ class CityInfo {
         }
         for(unique in cityConstructions.builtBuildingUniqueMap.getUniques("Provides [] []")) { // E.G "Provides [1] [Iron]"
             val resource = getRuleset().tileResources[unique.params[1]]
-            if (resource != null)
-                cityResources.add(resource, unique.params[0].toInt(), "Buildings")
+            val amount = unique.params[0].toInt() * resource?.let { civInfo.getResourceModifier(it) }!!
+            cityResources.add(resource, amount, "Buildings")
         }
 
         return cityResources
@@ -221,12 +221,7 @@ class CityInfo {
             var amountToAdd = 1
             if (resource.resourceType == ResourceType.Strategic) {
                 amountToAdd = 2
-                if (civInfo.hasUnique("Quantity of strategic resources produced by the empire increased by 100%"))
-                    amountToAdd *= 2
             }
-            for (unique in civInfo.getMatchingUniques("Double quantity of [] produced"))
-                if (unique.params[0] == resource.name)
-                    amountToAdd *= 2
             if (resource.resourceType == ResourceType.Luxury
                     && containsBuildingUnique("Provides 1 extra copy of each improved luxury resource near this City"))
                 amountToAdd *= 2
