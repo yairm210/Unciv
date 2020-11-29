@@ -186,8 +186,8 @@ class CityInfo {
         }
         for(unique in cityConstructions.builtBuildingUniqueMap.getUniques("Provides [] []")) { // E.G "Provides [1] [Iron]"
             val resource = getRuleset().tileResources[unique.params[1]]
-            val amount = unique.params[0].toInt() * resource?.let { civInfo.getResourceModifier(it) }!!
-            cityResources.add(resource, amount, "Buildings")
+            if(resource!=null){
+                cityResources.add(resource, unique.params[0].toInt() * civInfo.getResourceModifier(resource), "Buildings") }
         }
 
         return cityResources
