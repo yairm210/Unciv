@@ -20,6 +20,7 @@ object BattleDamage {
 
     const val BONUS_VS_UNIT_TYPE = """(Bonus|Penalty) vs (.*) (\d*)%"""
 
+    // This should be deprecated and converted to "+[]% Strength vs []", "-[]% Strength vs []"
     private fun getBattleDamageModifiersOfUnit(unit:MapUnit): MutableList<BattleDamageModifier> {
         val modifiers = mutableListOf<BattleDamageModifier>()
         for (ability in unit.getUniques()) {
@@ -27,7 +28,7 @@ object BattleDamage {
             val regexResult = Regex(BONUS_VS_UNIT_TYPE).matchEntire(ability.text)
             if (regexResult == null) continue
             val vs = regexResult.groups[2]!!.value
-            val modificationAmount = regexResult.groups[3]!!.value.toFloat() / 100  // if it says 15%, that's 0.15f in modification
+            val modificationAmount = regexResult.groups[3]!!.value.toFloat()
             if (regexResult.groups[1]!!.value == "Bonus")
                 modifiers.add(BattleDamageModifier(vs, modificationAmount))
             else
@@ -40,7 +41,7 @@ object BattleDamage {
     private fun getGeneralModifiers(combatant: ICombatant, enemy: ICombatant): Counter<String> {
         val modifiers = Counter<String>()
         fun addToModifiers(BDM:BattleDamageModifier) =
-                modifiers.add(BDM.getText(), (BDM.modificationAmount*100).toInt())
+                modifiers.add(BDM.getText(), (BDM.modificationAmount).toInt())
 
         val civInfo = combatant.getCivInfo()
         if (combatant is MapUnitCombatant) {
@@ -51,10 +52,13 @@ object BattleDamage {
 
             }
 
-            // As of 3.11.1 This is to be deprecated and converted to "Bonus vs x y%" - keeping it here so that mods with this can still work for now
             for (unique in combatant.unit.getMatchingUniques("+[]% Strength vs []")) {
                 if (enemy.matchesCategory(unique.params[1]))
                     modifiers.add("vs [${unique.params[1]}]", unique.params[0].toInt())
+            }
+            for (unique in combatant.unit.getMatchingUniques("-[]% Strength vs []")) {
+                if (enemy.matchesCategory(unique.params[1]))
+                    modifiers.add("vs [${unique.params[1]}]", -unique.params[0].toInt())
             }
 
             for (unique in combatant.unit.getMatchingUniques("+[]% Combat Strength"))
@@ -300,7 +304,7 @@ object BattleDamage {
      */
     private fun getDefendingStrength(attacker: ICombatant, defender: ICombatant): Float {
         var defenceModifier = 1f
-        if(defender is MapUnitCombatant) defenceModifier = modifiersToMultiplicationBonus(getDefenceModifiers(attacker,defender))
+        if (defender is MapUnitCombatant) defenceModifier = modifiersToMultiplicationBonus(getDefenceModifiers(attacker, defender))
         return defender.getDefendingStrength() * defenceModifier
     }
 
