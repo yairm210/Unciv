@@ -521,6 +521,7 @@ class CivilizationInfo {
     fun addUnit(unitName:String, city: CityInfo?=null) {
         if (cities.isEmpty()) return
         val cityToAddTo = city ?: cities.random()
+        if (!gameInfo.ruleSet.units.containsKey(unitName)) return
         val unit = getEquivalentUnit(unitName)
         placeUnitNearTile(cityToAddTo.location, unit.name)
         if (unit.uniques.any { it.equalsPlaceholderText("Great Person - []") })

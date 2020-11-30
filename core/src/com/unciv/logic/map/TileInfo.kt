@@ -453,7 +453,7 @@ open class TileInfo {
     }
 
     fun setTerrainTransients() {
-        baseTerrainObject = ruleset.terrains[baseTerrain]!! // This is a HACK.
+        baseTerrainObject = ruleset.terrains[baseTerrain]!!
         isWater = getBaseTerrain().type == TerrainType.Water
         isLand = getBaseTerrain().type == TerrainType.Land
         isOcean = baseTerrain == Constants.ocean
