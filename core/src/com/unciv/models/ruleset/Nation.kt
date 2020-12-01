@@ -24,7 +24,7 @@ class Nation : INamed {
     fun getLeaderDisplayName() = if (isCityState()) name
     else "[$leaderName] of [$name]"
 
-    var style = ""
+    val style = ""
     var cityStateType: CityStateType? = null
     var preferredVictoryType: VictoryType = VictoryType.Neutral
     var declaringWar = ""
