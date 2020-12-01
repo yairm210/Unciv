@@ -126,6 +126,8 @@ object UnitAutomation {
         // Accompany settlers
         if (tryAccompanySettlerOrGreatPerson(unit)) return
 
+        if(tryHeadTowardsSiegedCity(unit)) return
+
         if (unit.health < 50 && tryHealUnit(unit)) return // do nothing but heal
 
         // if a embarked melee unit can land and attack next turn, do not attack from water.
@@ -265,6 +267,31 @@ object UnitAutomation {
                 }
         if (settlerOrGreatPersonToAccompany == null) return false
         unit.movement.headTowards(settlerOrGreatPersonToAccompany.currentTile)
+        return true
+    }
+
+    private fun tryHeadTowardsSiegedCity(unit: MapUnit): Boolean {
+        val siegedCities = unit.civInfo.cities
+                .filter { unit.civInfo == it.civInfo }
+                .filter { it.health < (it.getMaxHealth() * 0.75) } //Weird health issues and making sure that not all forces move to good defenses
+                .filterNot { it.isInResistance() } //Don't stop pushing keep the battle tempo up
+                .asSequence()
+
+        val strongestForce = siegedCities
+                .asSequence().map { it.getCenterTile().getTilesAtDistance(2) }
+                .flatMap { it.asSequence() }
+                .sortedByDescending { it.getInfluence() }
+                .firstOrNull { unit.movement.canReach(it) }
+        
+        if (strongestForce != null) {
+            return headTowardsSiegedCity(unit, strongestForce)
+        }
+        return false
+    }
+    
+    private fun headTowardsSiegedCity(unit: MapUnit, strongestForce: TileInfo): Boolean {
+        unit.movement.headTowards(strongestForce)
+
         return true
     }
 
