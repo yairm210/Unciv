@@ -255,12 +255,11 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
             }
 
         } catch (ex: Exception) {
-            val couldntDownloadLatestGame = Popup(this)
-            couldntDownloadLatestGame.addGoodSizedLabel("Couldn't download the latest game state!").row()
-            couldntDownloadLatestGame.addCloseButton()
-            couldntDownloadLatestGame.addAction(Actions.delay(5f, Actions.run { couldntDownloadLatestGame.close() }))
-
             Gdx.app.postRunnable {
+                val couldntDownloadLatestGame = Popup(this)
+                couldntDownloadLatestGame.addGoodSizedLabel("Couldn't download the latest game state!").row()
+                couldntDownloadLatestGame.addCloseButton()
+                couldntDownloadLatestGame.addAction(Actions.delay(5f, Actions.run { couldntDownloadLatestGame.close() }))
                 loadingGamePopup.close()
                 couldntDownloadLatestGame.open()
             }
