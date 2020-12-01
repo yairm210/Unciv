@@ -6,7 +6,6 @@ import com.unciv.logic.map.TileInfo
 import com.unciv.models.Counter
 import com.unciv.models.ruleset.unit.UnitType
 import java.util.*
-import kotlin.collections.HashMap
 import kotlin.collections.set
 import kotlin.math.max
 import kotlin.math.pow
@@ -218,11 +217,11 @@ object BattleDamage {
 
         // As of 3.11.0 This is to be deprecated and converted to "+[15]% combat bonus for units fighting in [Friendly Land]" - keeping it here to that mods with this can still work for now
         // Civ 5 does not use "Himeji Castle"
-        if(tile.isFriendlyTerritory(unit.getCivInfo()) && unit.getCivInfo().hasUnique("+15% combat strength for units fighting in friendly territory"))
+        if (tile.isFriendlyTerritory(unit.getCivInfo()) && unit.getCivInfo().hasUnique("+15% combat strength for units fighting in friendly territory"))
             modifiers.add("Friendly Land", 15)
 
         // As of 3.11.0 This is to be deprecated and converted to "+[20]% combat bonus in [Foreign Land]" - keeping it here to that mods with this can still work for now
-        if(!tile.isFriendlyTerritory(unit.getCivInfo()) && unit.unit.hasUnique("+20% bonus outside friendly territory"))
+        if (!tile.isFriendlyTerritory(unit.getCivInfo()) && unit.unit.hasUnique("+20% bonus outside friendly territory"))
             modifiers.add("Foreign Land", 20)
 
         for (unique in unit.unit.getMatchingUniques("+[]% combat bonus in []")
@@ -244,34 +243,28 @@ object BattleDamage {
                         || tile.terrainFeature != Constants.jungle))
             modifiers[tile.baseTerrain] = 25
 
-        for(unique in unit.getCivInfo().getMatchingUniques("+[]% Strength if within [] tiles of a []")) {
+        for (unique in unit.getCivInfo().getMatchingUniques("+[]% Strength if within [] tiles of a []")) {
             if (tile.getTilesInDistance(unique.params[1].toInt()).any { it.matchesUniqueFilter(unique.params[2]) })
                 modifiers[unique.params[2]] = unique.params[0].toInt()
         }
 
-        if(tile.neighbors.flatMap { it.getUnits() }
+        if (tile.neighbors.flatMap { it.getUnits() }
                         .any { it.hasUnique("-10% combat strength for adjacent enemy units") && it.civInfo.isAtWarWith(unit.getCivInfo()) })
             modifiers["Haka War Dance"] = -10
 
         // As of 3.10.6 This is to be deprecated and converted to "+[]% combat bonus in []" - keeping it here to that mods with this can still work for now
-        if(unit.unit.hasUnique("+33% combat bonus in Forest/Jungle")
-                && (tile.terrainFeature== Constants.forest || tile.terrainFeature==Constants.jungle))
-            modifiers[tile.terrainFeature!!]=33
+        if (unit.unit.hasUnique("+33% combat bonus in Forest/Jungle")
+                && (tile.terrainFeature == Constants.forest || tile.terrainFeature == Constants.jungle))
+            modifiers[tile.terrainFeature!!] = 33
 
         val isRoughTerrain = tile.isRoughTerrain()
         for (BDM in getBattleDamageModifiersOfUnit(unit.unit)) {
             val text = BDM.getText()
             // this will change when we change over everything to ints
-            if (BDM.vs == "units in open terrain" && !isRoughTerrain) modifiers.add(text, (BDM.modificationAmount*100).toInt())
-            if (BDM.vs == "units in rough terrain" && isRoughTerrain) modifiers.add(text, (BDM.modificationAmount*100).toInt())
+            if (BDM.vs == "units in open terrain" && !isRoughTerrain) modifiers.add(text, (BDM.modificationAmount).toInt())
+            if (BDM.vs == "units in rough terrain" && isRoughTerrain) modifiers.add(text, (BDM.modificationAmount).toInt())
         }
 
-        return modifiers
-    }
-
-    fun Counter<String>.toOldModifiers(): HashMap<String, Float> {
-        val modifiers = HashMap<String,Float>()
-        for((key,value) in this) modifiers[key] = value.toFloat()/100
         return modifiers
     }
 
