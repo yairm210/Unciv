@@ -142,6 +142,9 @@ object UnitAutomation {
         if (tryAdvanceTowardsCloseEnemy(unit)) return
 
         if (unit.health < 100 && tryHealUnit(unit)) return
+        
+        // Focus all units on weakest enemy city
+        if (tryHeadTowardsWeakestCity(unit)) return
 
         // Focus all units without a specific target on the enemy city closest to one of our cities
         if (tryHeadTowardsEnemyCity(unit)) return
@@ -266,6 +269,28 @@ object UnitAutomation {
         if (settlerOrGreatPersonToAccompany == null) return false
         unit.movement.headTowards(settlerOrGreatPersonToAccompany.currentTile)
         return true
+    }
+
+    private fun tryHeadTowardsWeakestCity(unit: MapUnit): Boolean {
+        if (unit.civInfo.cities.isEmpty()) return false
+
+        var enemyCities = unit.civInfo.gameInfo.civilizations
+                .filter { unit.civInfo.isAtWarWith(it) }
+                .flatMap { it.cities }.asSequence()
+                .filter { it.location in unit.civInfo.exploredTiles }
+
+        if (unit.type.isRanged()) // ranged units don't harm capturable cities, waste of a turn
+            enemyCities = enemyCities.filterNot { it.health == 1 }
+
+        val weakestEnemyCity = enemyCities
+                .asSequence().map { it.getCenterTile() }
+                .sortedBy { it.getInfluence() }
+                .firstOrNull { unit.movement.canReach(it) }
+
+        if (weakestEnemyCity != null) {
+            return headTowardsEnemyCity(unit, weakestEnemyCity)
+        }
+        return false
     }
 
     private fun tryHeadTowardsEnemyCity(unit: MapUnit): Boolean {
