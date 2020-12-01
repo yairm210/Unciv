@@ -147,6 +147,8 @@ object UnitAutomation {
         if (tryHeadTowardsEnemyCity(unit)) return
 
         if (tryHeadTowardsEncampment(unit)) return
+        
+        if (tryPatrolBoarders(unit)) return
 
         // else, try to go o unreached tiles
         if (tryExplore(unit)) return
@@ -266,6 +268,27 @@ object UnitAutomation {
         if (settlerOrGreatPersonToAccompany == null) return false
         unit.movement.headTowards(settlerOrGreatPersonToAccompany.currentTile)
         return true
+    }
+    
+    private fun tryPatrolBoarders(unit: MapUnit): Boolean {
+        if (unit.type == UnitType.Scout) return false
+
+        val friendlyCitiesTiles = unit.civInfo.cities
+                .filter { unit.civInfo == it.civInfo }
+                .flatMap { it.tiles }
+                .asSequence().map { unit.currentTile.tileMap.get(it) }
+        
+        val weakestInfluenceTile = friendlyCitiesTiles
+                .filter { it.getInfluence() > 0 && (it in unit.civInfo.viewableTiles) }
+                .sortedByDescending { it.getInfluence() }
+                .firstOrNull { unit.movement.canReach(it) }
+        
+        if (weakestInfluenceTile != null) {
+            if (unit.type.isLandUnit() && weakestInfluenceTile.isWater) return false
+            unit.movement.headTowards(weakestInfluenceTile)
+            return true
+        }
+        return false
     }
 
     private fun tryHeadTowardsEnemyCity(unit: MapUnit): Boolean {
