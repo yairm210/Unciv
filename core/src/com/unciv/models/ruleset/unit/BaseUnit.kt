@@ -125,8 +125,8 @@ class BaseUnit : INamed, IConstruction {
             return "Can only build water units in coastal cities"
         if (uniqueObjects.any { (it.placeholderText == "Not displayed as an available construction without []")
                         && (!construction.containsBuildingOrEquivalent(it.params[0])
-                        || !construction.cityInfo.civInfo.hasResource(it.params[0])
-                        || !construction.cityInfo.civInfo.gameInfo.gameParameters.godMode)})
+                        && !construction.cityInfo.civInfo.hasResource(it.params[0])
+                        && !construction.cityInfo.civInfo.gameInfo.gameParameters.godMode)})
             return "Should not be displayed"
         val civRejectionReason = getRejectionReason(construction.cityInfo.civInfo)
         if (civRejectionReason != "") return civRejectionReason
