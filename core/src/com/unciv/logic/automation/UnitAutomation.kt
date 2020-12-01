@@ -125,6 +125,8 @@ object UnitAutomation {
 
         // Accompany settlers
         if (tryAccompanySettlerOrGreatPerson(unit)) return
+        
+        if(tryTakeBackCapturedCity(unit)) return
 
         if (unit.health < 50 && tryHealUnit(unit)) return // do nothing but heal
 
@@ -266,6 +268,28 @@ object UnitAutomation {
         if (settlerOrGreatPersonToAccompany == null) return false
         unit.movement.headTowards(settlerOrGreatPersonToAccompany.currentTile)
         return true
+    }
+
+    private fun tryTakeBackCapturedCity(unit: MapUnit): Boolean {
+        var capturedCities = unit.civInfo.gameInfo.civilizations
+                .filter { unit.civInfo.isAtWarWith(it) }
+                .flatMap { it.cities }.asSequence()
+                .filter { unit.civInfo.civName == it.foundingCiv && it.isInResistance() && it.health < it.getMaxHealth() } //Most likely just been captured
+                .asSequence()
+
+        if (unit.type.isRanged()) // ranged units don't harm capturable cities, waste of a turn
+            capturedCities = capturedCities.filterNot { it.health == 1 }
+
+        val closestReachableCapturedCity = capturedCities
+                .asSequence().map { it.getCenterTile() }
+                .filter { unit.movement.canReach(it) }
+                .minBy { it.aerialDistanceTo(unit.getTile()) }
+
+        if (closestReachableCapturedCity != null) {
+            return headTowardsEnemyCity(unit, closestReachableCapturedCity)
+        }
+        return false
+
     }
 
     private fun tryHeadTowardsEnemyCity(unit: MapUnit): Boolean {
