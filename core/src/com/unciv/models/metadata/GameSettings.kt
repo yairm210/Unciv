@@ -9,6 +9,7 @@ data class WindowState (val width:Int=0, val height:Int=0)
 class GameSettings {
     var showWorkedTiles: Boolean = false
     var showResourcesAndImprovements: Boolean = true
+    var showInfluenceMap: Boolean = false
     var checkForDueUnits: Boolean = true
     var singleTapMove: Boolean = false
     var language: String = "English"

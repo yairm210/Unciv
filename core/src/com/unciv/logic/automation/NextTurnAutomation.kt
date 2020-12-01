@@ -42,6 +42,7 @@ object NextTurnAutomation {
             updateDiplomaticRelationshipForCityStates(civInfo)
         }
 
+        updateMemory(civInfo)
         chooseTechToResearch(civInfo)
         automateCityBombardment(civInfo)
         useGold(civInfo)
@@ -274,6 +275,23 @@ object NextTurnAutomation {
             if ((1..10).random() <= 5)
                 civInfo.getDiplomacyManager(civ).signDeclarationOfFriendship()
         }
+    }
+    
+    private fun updateMemory(civInfo: CivilizationInfo) {
+        civInfo.memoryManager.seenPrevLastRound = civInfo.memoryManager.seenLastRound
+        civInfo.memoryManager.setBaselineStrength()
+        var otherCivUnits = civInfo.viewableTiles.asSequence()
+                .map { it.getUnits() }.flatten()
+                .filter { it.civInfo != civInfo && it.type.isMilitary() }
+
+        var otherCivUnitsCount = otherCivUnits.count()
+
+        if (otherCivUnitsCount > civInfo.memoryManager.seenLastRound && civInfo.memoryManager.seenLastRound >= civInfo.memoryManager.seenPrevLastRound) {
+            for (unit in otherCivUnits) {
+                civInfo.memoryManager.addCivUnit(unit)
+            }
+        }
+        civInfo.memoryManager.seenLastRound = otherCivUnitsCount
     }
 
     private fun offerResearchAgreement(civInfo: CivilizationInfo) {

@@ -18,6 +18,7 @@ class TileGroupIcons(val tileGroup: TileGroup){
 
     var improvementIcon: Actor? = null
     var populationIcon: Image? = null //reuse for acquire icon
+    var influenceSizeTable: Table? = null
 
     var civilianUnitIcon: UnitGroup? = null
     var militaryUnitIcon: UnitGroup? = null
@@ -25,11 +26,30 @@ class TileGroupIcons(val tileGroup: TileGroup){
     fun update(showResourcesAndImprovements: Boolean, tileIsViewable: Boolean, showMilitaryUnit: Boolean, viewingCiv:CivilizationInfo?) {
         updateResourceIcon(showResourcesAndImprovements)
         updateImprovementIcon(showResourcesAndImprovements)
+        /*
+        if (viewingCiv != null) {
+            InfluenceMap.setInfluenceScore(viewingCiv, viewingCiv.viewableTiles)
+        }
+        */
 
         civilianUnitIcon = newUnitIcon(tileGroup.tileInfo.civilianUnit, civilianUnitIcon,
                 tileIsViewable, -20f, viewingCiv)
         militaryUnitIcon = newUnitIcon(tileGroup.tileInfo.militaryUnit, militaryUnitIcon,
                 tileIsViewable && showMilitaryUnit, 20f, viewingCiv)
+    }
+    
+    fun addInfluenceScore(table: Table = Table().apply { defaults().pad(5f) }) {
+        influenceSizeTable?.remove()
+        influenceSizeTable = table
+        influenceSizeTable!!.add(tileGroup.tileInfo.getInfluence().toString().toLabel(Color.BLACK, 16))
+        influenceSizeTable!!.setOrigin(Align.center)
+        influenceSizeTable!!.center(tileGroup)
+        tileGroup.miscLayerGroup.addActor(influenceSizeTable)
+    }
+    
+    fun removeInfluenceScore() {
+        influenceSizeTable?.remove()
+        influenceSizeTable = null
     }
 
     fun addPopulationIcon(icon: Image = ImageGetter.getStatIcon("Population")

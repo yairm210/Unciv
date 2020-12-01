@@ -9,7 +9,6 @@ import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.ruleset.unit.UnitType
-import com.unciv.models.translations.equalsPlaceholderText
 import com.unciv.ui.worldscreen.unit.UnitActions
 
 object UnitAutomation {
@@ -125,6 +124,10 @@ object UnitAutomation {
 
         // Accompany settlers
         if (tryAccompanySettlerOrGreatPerson(unit)) return
+        
+        if(tryTakeBackCapturedCity(unit)) return
+
+        if(tryHeadTowardsSiegedCity(unit)) return
 
         if (unit.health < 50 && tryHealUnit(unit)) return // do nothing but heal
 
@@ -142,11 +145,16 @@ object UnitAutomation {
         if (tryAdvanceTowardsCloseEnemy(unit)) return
 
         if (unit.health < 100 && tryHealUnit(unit)) return
+        
+        // Focus all units on weakest enemy city
+        if (tryHeadTowardsWeakestCity(unit)) return
 
         // Focus all units without a specific target on the enemy city closest to one of our cities
         if (tryHeadTowardsEnemyCity(unit)) return
 
         if (tryHeadTowardsEncampment(unit)) return
+        
+        if (tryPatrolBoarders(unit)) return
 
         // else, try to go o unreached tiles
         if (tryExplore(unit)) return
@@ -173,6 +181,24 @@ object UnitAutomation {
         if (unitDistanceToTiles.isEmpty()) return true // can't move, so...
         val currentUnitTile = unit.getTile()
 
+        // I'm sure this doesn't kill performance /s
+        val tilesWithRangedEnemyUnits = unit.currentTile.getTilesInDistance(3)
+                .map { it.getUnits().filter { unit.civInfo.isAtWarWith(it.civInfo) }.toList() }
+                .toList().flatten()
+
+        var tilesInRangeOfAttack = tilesWithRangedEnemyUnits.map {
+            it.getTile().getTilesInDistance(it.getRange()).toList()
+        }.flatten()
+
+        // Same with this
+        val tilesWithinBomardmentRange = unit.currentTile.getTilesInDistance(3)
+                .filter { it.isCityCenter() }
+                .filter { it.getCity()?.civInfo!!.isAtWarWith(unit.civInfo) }
+                .map { it.getTilesInDistance(it.getCity()!!.range).toList() }
+                .toList().flatten()
+
+        tilesInRangeOfAttack = ((tilesInRangeOfAttack union tilesWithinBomardmentRange).toList())
+
         if (tryPillageImprovement(unit)) return true
 
         val tilesByHealingRate = tilesInDistance.groupBy { unit.rankTileForHealing(it) }
@@ -188,14 +214,26 @@ object UnitAutomation {
 
         var bestTilesForHealing = tilesByHealingRate.maxBy { it.key }!!.value
         // within the tiles with best healing rate (say 15), we'll prefer one which has the highest defensive bonuses
-        val bestTilesWithoutBombardableTiles = bestTilesForHealing.filterNot { it.getTilesInDistance(2)
-                .any { it.isCityCenter() && it.getOwner()!!.isAtWarWith(unit.civInfo) } }
-        if(bestTilesWithoutBombardableTiles.any()) bestTilesForHealing = bestTilesWithoutBombardableTiles
-        val bestTileForHealing = bestTilesForHealing.maxBy { it.getDefensiveBonus() }!!
+        //val bestTilesWithoutBombardableTiles = bestTilesForHealing.filterNot { it.getTilesInDistance(3)
+        //        .any { it.isCityCenter() && it.getOwner()!!.isAtWarWith(unit.civInfo) } }
+        //if(bestTilesWithoutBombardableTiles.any()) bestTilesForHealing = bestTilesWithoutBombardableTiles
+
+        // Dirty Hack
+        bestTilesForHealing = (((bestTilesForHealing subtract tilesInRangeOfAttack) union (listOf(currentUnitTile))).toList())
+
+        if (bestTilesForHealing.isEmpty()) {
+            unit.fortifyIfCan()
+            return true
+        }
+
+        //val bestTileForHealing = bestTilesForHealing.maxBy { it.getDefensiveBonus() }!!
+        val bestTileForHealing = bestTilesForHealing.minBy { it.getInfluence() }!! // See if influence mapping helps
         val bestTileForHealingRank = unit.rankTileForHealing(bestTileForHealing)
 
+        // Tell them to explicitly move if they are in range
         if (currentUnitTile != bestTileForHealing
-            && bestTileForHealingRank > unit.rankTileForHealing(currentUnitTile))
+            && bestTileForHealingRank > unit.rankTileForHealing(currentUnitTile) 
+                || currentUnitTile in tilesInRangeOfAttack)
             unit.movement.moveToTile(bestTileForHealing)
 
         unit.fortifyIfCan()
@@ -249,7 +287,12 @@ object UnitAutomation {
         val closestEnemy = closeEnemies.minBy { it.tileToAttack.aerialDistanceTo(unit.getTile()) }
 
         if (closestEnemy != null) {
-            unit.movement.headTowards(closestEnemy.tileToAttackFrom)
+            val tileOfLeastInfuence = closestEnemy.tileToAttackFrom.getTilesAtDistance(1)
+                    .sortedBy { it.getInfluence() }
+                    .firstOrNull()
+            if (tileOfLeastInfuence != null) {
+                unit.movement.headTowards(tileOfLeastInfuence)
+            }
             return true
         }
         return false
@@ -266,6 +309,96 @@ object UnitAutomation {
         if (settlerOrGreatPersonToAccompany == null) return false
         unit.movement.headTowards(settlerOrGreatPersonToAccompany.currentTile)
         return true
+    }
+    
+    private fun tryPatrolBoarders(unit: MapUnit): Boolean {
+        if (unit.type == UnitType.Scout) return false
+
+        val friendlyCitiesTiles = unit.civInfo.cities
+                .filter { unit.civInfo == it.civInfo }
+                .flatMap { it.tiles }
+                .asSequence().map { unit.currentTile.tileMap.get(it) }
+        
+        val weakestInfluenceTile = friendlyCitiesTiles
+                .filter { it.getInfluence() > 0 && (it in unit.civInfo.viewableTiles) }
+                .sortedByDescending { it.getInfluence() }
+                .firstOrNull { unit.movement.canReach(it) }
+        
+        if (weakestInfluenceTile != null) {
+            if (unit.type.isLandUnit() && weakestInfluenceTile.isWater) return false
+            unit.movement.headTowards(weakestInfluenceTile)
+            return true
+        }
+        return false
+    }
+    
+    private fun tryTakeBackCapturedCity(unit: MapUnit): Boolean {
+        var capturedCities = unit.civInfo.gameInfo.civilizations
+                .filter { unit.civInfo.isAtWarWith(it) }
+                .flatMap { it.cities }.asSequence()
+                .filter { unit.civInfo.civName == it.foundingCiv && it.isInResistance() && it.health < it.getMaxHealth() } //Most likely just been captured
+                .asSequence()
+
+        if (unit.type.isRanged()) // ranged units don't harm capturable cities, waste of a turn
+            capturedCities = capturedCities.filterNot { it.health == 1 }
+
+        val closestReachableCapturedCity = capturedCities
+                .asSequence().map { it.getCenterTile() }
+                .filter { unit.movement.canReach(it) }
+                .minBy { it.aerialDistanceTo(unit.getTile()) }
+
+        if (closestReachableCapturedCity != null) {
+            return headTowardsEnemyCity(unit, closestReachableCapturedCity)
+        }
+        return false
+
+    }
+    
+    private fun tryHeadTowardsSiegedCity(unit: MapUnit): Boolean {
+        val siegedCities = unit.civInfo.cities
+                .filter { unit.civInfo == it.civInfo }
+                .filter { it.health < (it.getMaxHealth() * 0.75) } //Weird health issues and making sure that not all forces move to good defenses
+                .filterNot { it.isInResistance() } //Don't stop pushing keep the battle tempo up
+                .asSequence()
+
+        val strongestForce = siegedCities
+                .asSequence().map { it.getCenterTile().getTilesAtDistance(2) }
+                .flatMap { it.asSequence() }
+                .sortedByDescending { it.getInfluence() }
+                .firstOrNull { unit.movement.canReach(it) }
+        
+        if (strongestForce != null) {
+            return headTowardsSiegedCity(unit, strongestForce)
+        }
+        return false
+    }
+    
+    private fun headTowardsSiegedCity(unit: MapUnit, strongestForce: TileInfo): Boolean {
+        unit.movement.headTowards(strongestForce)
+
+        return true
+    }
+    
+    private fun tryHeadTowardsWeakestCity(unit: MapUnit): Boolean {
+        if (unit.civInfo.cities.isEmpty()) return false
+
+        var enemyCities = unit.civInfo.gameInfo.civilizations
+                .filter { unit.civInfo.isAtWarWith(it) }
+                .flatMap { it.cities }.asSequence()
+                .filter { it.location in unit.civInfo.exploredTiles }
+
+        if (unit.type.isRanged()) // ranged units don't harm capturable cities, waste of a turn
+            enemyCities = enemyCities.filterNot { it.health == 1 }
+
+        val weakestEnemyCity = enemyCities
+                .asSequence().map { it.getCenterTile() }
+                .sortedBy { it.getInfluence() }
+                .firstOrNull { unit.movement.canReach(it) }
+
+        if (weakestEnemyCity != null) {
+            return headTowardsEnemyCity(unit, weakestEnemyCity)
+        }
+        return false
     }
 
     private fun tryHeadTowardsEnemyCity(unit: MapUnit): Boolean {

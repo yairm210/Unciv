@@ -12,6 +12,7 @@ import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomacyManager
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
+import com.unciv.logic.map.InfluenceMap.setInfluenceScore
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.trade.TradeEvaluation
@@ -62,6 +63,7 @@ class CivilizationInfo {
     var greatPeople = GreatPersonManager()
     var victoryManager=VictoryManager()
     var diplomacy = HashMap<String, DiplomacyManager>()
+    var memoryManager = MemoryManager()
     var notifications = ArrayList<Notification>()
     val popupAlerts = ArrayList<PopupAlert>()
     private var allyCivName = ""
@@ -95,6 +97,7 @@ class CivilizationInfo {
         toReturn.goldenAges = goldenAges.clone()
         toReturn.greatPeople = greatPeople.clone()
         toReturn.victoryManager = victoryManager.clone()
+        toReturn.memoryManager = memoryManager.clone()
         toReturn.allyCivName = allyCivName
         for (diplomacyManager in diplomacy.values.map { it.clone() })
             toReturn.diplomacy.put(diplomacyManager.otherCivName, diplomacyManager)
@@ -382,6 +385,7 @@ class CivilizationInfo {
 
     fun setTransients() {
         goldenAges.civInfo = this
+        memoryManager.civInfo = this
 
         policies.civInfo = this
         if(policies.adoptedPolicies.size>0 && policies.numberOfAdoptedPolicies == 0)
@@ -423,6 +427,7 @@ class CivilizationInfo {
     fun updateDetailedCivResources() = transients().updateDetailedCivResources()
 
     fun startTurn() {
+        setInfluenceScore(this)
         policies.startTurn()
         updateStatsForNextTurn() // for things that change when turn passes e.g. golden age, city state influence
 

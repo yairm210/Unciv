@@ -21,8 +21,14 @@ class TileInfoTable(private val viewingCiv :CivilizationInfo) : Table(CameraStag
         if (tile != null && (UncivGame.Current.viewEntireMapForDebug || viewingCiv.exploredTiles.contains(tile.position)) ) {
             add(getStatsTable(tile))
             add(tile.toString(viewingCiv).toLabel()).colspan(2).pad(10f)
-        }
+            row()
+            add("Total Influence: " + tile.getInfluence().toString()).colspan(3).align(Align.right)
+            row()
+            add("Friendly Influence: " + tile.friendlyInfluenceScore.toString()).colspan(3).align(Align.right)
+            row()
+            add("Enemy Influence: " + tile.enemyInfluenceScore.toString()).colspan(3).align(Align.right)
 
+        }
         pack()
     }
 

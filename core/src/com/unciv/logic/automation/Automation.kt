@@ -82,6 +82,19 @@ object Automation {
         else { // randomize type of unit and take the most expensive of its kind
             val availableTypes = militaryUnits.map { it.unitType }.distinct().filterNot { it == UnitType.Scout }.toList()
             if (availableTypes.isEmpty()) return null
+            
+            var otherCivCities = city.civInfo.gameInfo.civilizations
+                    .flatMap { it.cities }.asSequence()
+                    .filter { it.location in city.civInfo.exploredTiles }
+
+            val closestOtherCivCities = otherCivCities
+                    .asSequence().map { it.getCenterTile() }
+                    .sortedBy { cityCenterTile ->
+                        // sort enemy cities by closeness to our cities, and only then choose the first reachable - checking canReach is comparatively very time-intensive!
+                        city.civInfo.cities.asSequence().map { cityCenterTile.aerialDistanceTo(it.getCenterTile()) }.min()!!
+                    }
+
+
             val randomType = availableTypes.random()
             chosenUnit = militaryUnits.filter { it.unitType == randomType }.maxBy { it.cost }!!
         }

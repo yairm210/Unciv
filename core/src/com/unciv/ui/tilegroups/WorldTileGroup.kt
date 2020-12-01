@@ -25,12 +25,17 @@ class WorldTileGroup(internal val worldScreen: WorldScreen, tileInfo: TileInfo, 
         val city = tileInfo.getCity()
 
         icons.removePopulationIcon()
+        icons.removeInfluenceScore()
         val tileIsViewable = isViewable(viewingCiv)
         val showEntireMap = UncivGame.Current.viewEntireMapForDebug
 
         if (tileIsViewable && tileInfo.isWorked() && UncivGame.Current.settings.showWorkedTiles
                 && city!!.civInfo == viewingCiv)
             icons.addPopulationIcon()
+
+        if (tileIsViewable && UncivGame.Current.settings.showInfluenceMap)
+            icons.addInfluenceScore()
+
         // update city buttons in explored tiles or entire map
         if (showEntireMap || viewingCiv.exploredTiles.contains(tileInfo.position))
             updateCityButton(city, tileIsViewable || showEntireMap) // needs to be before the update so the units will be above the city button

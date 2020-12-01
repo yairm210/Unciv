@@ -154,6 +154,16 @@ class MinimapHolder(mapHolder: WorldMapHolder): Table(){
             worldScreen.shouldUpdate=true
         }
         toggleIconTable.add(resourceImage)
+        
+        val influenceMapImage = ImageGetter.getStatIcon("Specialist").surroundWithCircle(40f)
+        influenceMapImage.circle.color = Color.BLACK
+        influenceMapImage.actor.color.a = if(settings.showInfluenceMap) 1f else 0.5f
+        influenceMapImage.onClick {
+            settings.showInfluenceMap = !settings.showInfluenceMap
+            influenceMapImage.actor.color.a = if(settings.showInfluenceMap) 1f else 0.5f
+            worldScreen.shouldUpdate=true
+        }
+        toggleIconTable.add(influenceMapImage).row()
         toggleIconTable.pack()
         return toggleIconTable
     }
