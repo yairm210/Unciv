@@ -173,6 +173,24 @@ object UnitAutomation {
         if (unitDistanceToTiles.isEmpty()) return true // can't move, so...
         val currentUnitTile = unit.getTile()
 
+        // I'm sure this doesn't kill performance /s
+        val tilesWithRangedEnemyUnits = unit.currentTile.getTilesInDistance(3)
+                .map { it.getUnits().filter { unit.civInfo.isAtWarWith(it.civInfo) }.toList() }
+                .toList().flatten()
+
+        var tilesInRangeOfAttack = tilesWithRangedEnemyUnits.map {
+            it.getTile().getTilesInDistance(it.getRange()).toList()
+        }.flatten()
+
+        // Same with this
+        val tilesWithinBomardmentRange = unit.currentTile.getTilesInDistance(3)
+                .filter { it.isCityCenter() }
+                .filter { it.getCity()?.civInfo!!.isAtWarWith(unit.civInfo) }
+                .map { it.getTilesInDistance(it.getCity()!!.range).toList() }
+                .toList().flatten()
+
+        tilesInRangeOfAttack = ((tilesInRangeOfAttack union tilesWithinBomardmentRange).toList())
+
         if (tryPillageImprovement(unit)) return true
 
         val tilesByHealingRate = tilesInDistance.groupBy { unit.rankTileForHealing(it) }
@@ -188,14 +206,26 @@ object UnitAutomation {
 
         var bestTilesForHealing = tilesByHealingRate.maxBy { it.key }!!.value
         // within the tiles with best healing rate (say 15), we'll prefer one which has the highest defensive bonuses
-        val bestTilesWithoutBombardableTiles = bestTilesForHealing.filterNot { it.getTilesInDistance(2)
-                .any { it.isCityCenter() && it.getOwner()!!.isAtWarWith(unit.civInfo) } }
-        if(bestTilesWithoutBombardableTiles.any()) bestTilesForHealing = bestTilesWithoutBombardableTiles
-        val bestTileForHealing = bestTilesForHealing.maxBy { it.getDefensiveBonus() }!!
+        //val bestTilesWithoutBombardableTiles = bestTilesForHealing.filterNot { it.getTilesInDistance(3)
+        //        .any { it.isCityCenter() && it.getOwner()!!.isAtWarWith(unit.civInfo) } }
+        //if(bestTilesWithoutBombardableTiles.any()) bestTilesForHealing = bestTilesWithoutBombardableTiles
+
+        // Dirty Hack
+        bestTilesForHealing = (((bestTilesForHealing subtract tilesInRangeOfAttack) union (listOf(currentUnitTile))).toList())
+
+        if (bestTilesForHealing.isEmpty()) {
+            unit.fortifyIfCan()
+            return true
+        }
+
+        //val bestTileForHealing = bestTilesForHealing.maxBy { it.getDefensiveBonus() }!!
+        val bestTileForHealing = bestTilesForHealing.minBy { it.getInfluence() }!! // See if influence mapping helps
         val bestTileForHealingRank = unit.rankTileForHealing(bestTileForHealing)
 
+        // Tell them to explicitly move if they are in range
         if (currentUnitTile != bestTileForHealing
-            && bestTileForHealingRank > unit.rankTileForHealing(currentUnitTile))
+            && bestTileForHealingRank > unit.rankTileForHealing(currentUnitTile) 
+                || currentUnitTile in tilesInRangeOfAttack)
             unit.movement.moveToTile(bestTileForHealing)
 
         unit.fortifyIfCan()
