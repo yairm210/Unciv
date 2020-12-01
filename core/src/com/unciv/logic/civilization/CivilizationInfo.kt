@@ -12,6 +12,7 @@ import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomacyManager
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
+import com.unciv.logic.map.InfluenceMap.setInfluenceScore
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.trade.TradeEvaluation
@@ -436,6 +437,7 @@ class CivilizationInfo {
     fun updateDetailedCivResources() = transients().updateDetailedCivResources()
 
     fun startTurn() {
+        setInfluenceScore(this)
         policies.startTurn()
         updateStatsForNextTurn() // for things that change when turn passes e.g. golden age, city state influence
 
