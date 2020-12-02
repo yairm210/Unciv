@@ -1,3 +1,20 @@
+## 3.11.17
+
+Fixed rare errors
+
+First attempt at making Unciv Android-TV-compatible
+
+By 9kgsofrice:
+
+- adds val to modoptions and check to battle.kt to adjust max xp from barbarians 
+- "Uncapturable" unique 
+- unique "[] units gain the [] promotion" affects exisiting units 
+- Hide build menu constructions requiring resources with unique 
+- Nation "style" can define unit appearance 
+- Changes check to remove national wonders on city ownership changes to rely on building.isNationalWonder 
+
+Translation updates
+
 ## 3.11.16
 
 Resolved #3364 - Fixed certain battle modifiers not activating
