@@ -173,23 +173,19 @@ object UnitAutomation {
         if (unitDistanceToTiles.isEmpty()) return true // can't move, so...
         val currentUnitTile = unit.getTile()
 
-        // I'm sure this doesn't kill performance /s
         val tilesWithRangedEnemyUnits = unit.currentTile.getTilesInDistance(3)
-                .map { it.getUnits().filter { unit.civInfo.isAtWarWith(it.civInfo) }.toList() }
-                .toList().flatten()
+                .flatMap { it.getUnits().filter { unit.civInfo.isAtWarWith(it.civInfo) } }
 
-        var tilesInRangeOfAttack = tilesWithRangedEnemyUnits.map {
-            it.getTile().getTilesInDistance(it.getRange()).toList()
-        }.flatten()
+        var tilesInRangeOfAttack = tilesWithRangedEnemyUnits
+                .flatMap { it.getTile().getTilesInDistance(it.getRange())
+        }
 
-        // Same with this
         val tilesWithinBomardmentRange = unit.currentTile.getTilesInDistance(3)
                 .filter { it.isCityCenter() }
                 .filter { it.getCity()?.civInfo!!.isAtWarWith(unit.civInfo) }
-                .map { it.getTilesInDistance(it.getCity()!!.range).toList() }
-                .toList().flatten()
+                .flatMap { it.getTilesInDistance(it.getCity()!!.range) }
 
-        tilesInRangeOfAttack = ((tilesInRangeOfAttack union tilesWithinBomardmentRange).toList())
+        tilesInRangeOfAttack = (tilesInRangeOfAttack + tilesWithinBomardmentRange)
 
         if (tryPillageImprovement(unit)) return true
 
@@ -210,8 +206,7 @@ object UnitAutomation {
         //        .any { it.isCityCenter() && it.getOwner()!!.isAtWarWith(unit.civInfo) } }
         //if(bestTilesWithoutBombardableTiles.any()) bestTilesForHealing = bestTilesWithoutBombardableTiles
 
-        // Dirty Hack
-        bestTilesForHealing = (((bestTilesForHealing subtract tilesInRangeOfAttack) union (listOf(currentUnitTile))).toList())
+        bestTilesForHealing = (bestTilesForHealing - tilesInRangeOfAttack) + bestTilesForHealing
 
         if (bestTilesForHealing.isEmpty()) {
             unit.fortifyIfCan()
