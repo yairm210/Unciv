@@ -78,6 +78,16 @@ object UniqueTriggerActivation {
             "+20% attack bonus to all Military Units for 30 turns" -> civInfo.policies.autocracyCompletedTurns = 30
 
             "Reveals the entire map" -> civInfo.exploredTiles.addAll(civInfo.gameInfo.tileMap.values.asSequence().map { it.position })
+
+            "[] units gain the [] promotion" -> {
+                val filter = unique.params[0]
+                val promotion = unique.params[1]
+                for (unit in civInfo.getCivUnits())
+                    if (unit.matchesCategory(filter)
+                            || (filter == "relevant"
+                                    && civInfo.gameInfo.ruleSet.unitPromotions.values.any { unit.type.toString() in it.unitTypes
+                                    && it.name == promotion }))
+                unit.promotions.addPromotion(promotion, isFree = true)}
         }
     }
 
