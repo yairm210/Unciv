@@ -537,7 +537,7 @@ class CityInfo {
                 .forEach { workedTiles = workedTiles.withoutItem(it); population.autoAssignPopulation() }
 
         // Remove all national wonders
-        for(building in cityConstructions.getBuiltBuildings().filter { it.requiredBuildingInAllCities!=null })
+        for(building in cityConstructions.getBuiltBuildings().filter { it.isNationalWonder })
             cityConstructions.removeBuilding(building.name)
 
         // Remove/relocate palace for old Civ
