@@ -13,7 +13,7 @@ import com.unciv.logic.GameSaver
 import com.unciv.ui.utils.ORIGINAL_FONT_SIZE
 import java.io.File
 
-class AndroidLauncher : AndroidApplication() {
+open class AndroidLauncher : AndroidApplication() {
     private var customSaveLocationHelper: CustomSaveLocationHelperAndroid? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -88,3 +88,5 @@ class AndroidLauncher : AndroidApplication() {
         super.onActivityResult(requestCode, resultCode, data)
     }
 }
+
+class AndroidTvLauncher:AndroidLauncher()

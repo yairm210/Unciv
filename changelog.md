@@ -1,3 +1,35 @@
+## 3.11.16
+
+Resolved #3364 - Fixed certain battle modifiers not activating
+
+Resources provided by buildings are affected by resource amount uniques - by 9kgsofrice
+
+Fixed minor crashing bugs in misconfigured mods
+
+Display mod incompatibilities  when attempting to start a new game
+
+Translation updates
+
+## 3.11.15
+
+HUGE framerate improvements! :D
+
+Resolved #3347 - units spawned by buildings are spawned in the city the building was built in
+
+Added mod checks that combat units have strength and ranged units have rangedStrength
+
+Can now handle units upgrading to units with no required tech
+
+Resolved #3360 - notify peace treaty to all common known civs
+
+AI settlers can no longer settle after movement with no movement points
+
+Fixed Free Thought trading post bonus - By ravignir
+
+Units/buildings with "Will not be displayed in Civilopedia" now will not show in tech tree - By 9kgsofrice
+
+Translation updates
+
 ## 3.11.14
 
 500th version, my goodness 0_0
