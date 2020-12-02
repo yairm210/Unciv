@@ -208,10 +208,11 @@ class GameOptionsTable(val previousScreen: IPreviousScreen, val updatePlayerPick
                     gameParameters.mods.add(mod.name)
 
                     var isCompatibleWithCurrentRuleset = true
+                    var complexModLinkErrors = ""
                     try {
                         val newRuleset = RulesetCache.getComplexRuleset(gameParameters)
                         newRuleset.modOptions.isBaseRuleset = true
-                        val complexModLinkErrors = newRuleset.checkModLinks()
+                        complexModLinkErrors = newRuleset.checkModLinks()
                         if (complexModLinkErrors != "") isCompatibleWithCurrentRuleset = false
                     } catch (x: Exception) {
                         // This happens if a building is dependent on a tech not in the base ruleset
@@ -220,7 +221,7 @@ class GameOptionsTable(val previousScreen: IPreviousScreen, val updatePlayerPick
                     }
 
                     if (!isCompatibleWithCurrentRuleset) {
-                        ToastPopup("The mod you selected is incompatible with the defined ruleset!\n\n$modLinkErrors", previousScreen as CameraStageBaseScreen)
+                        ToastPopup("The mod you selected is incompatible with the defined ruleset!\n\n$complexModLinkErrors", previousScreen as CameraStageBaseScreen)
                         checkBox.isChecked = false
                         gameParameters.mods.clear()
                         gameParameters.mods.addAll(previousMods)
@@ -228,11 +229,10 @@ class GameOptionsTable(val previousScreen: IPreviousScreen, val updatePlayerPick
                     }
 
                     reloadRuleset()
+                } else {
+                    gameParameters.mods.remove(mod.name)
+                    reloadRuleset()
                 }
-                else {
-                        gameParameters.mods.remove(mod.name)
-                        reloadRuleset()
-                    }
                 update()
                 var desiredCiv = ""
                 if (checkBox.isChecked) {

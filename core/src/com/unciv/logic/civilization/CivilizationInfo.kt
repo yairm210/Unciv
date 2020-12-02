@@ -18,6 +18,7 @@ import com.unciv.logic.trade.TradeEvaluation
 import com.unciv.logic.trade.TradeRequest
 import com.unciv.models.ruleset.*
 import com.unciv.models.ruleset.tile.ResourceSupplyList
+import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.tile.TileResource
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stats
@@ -184,6 +185,18 @@ class CivilizationInfo {
         for(entry in getCivResources())
             hashMap[entry.resource.name] = entry.amount
         return hashMap
+    }
+
+    fun getResourceModifier(resource: TileResource): Int {
+        var resourceModifier = 1
+        for (unique in getMatchingUniques("Double quantity of [] produced"))
+            if (unique.params[0] == resource.name)
+                resourceModifier *= 2
+        if (resource.resourceType == ResourceType.Strategic) {
+            if (hasUnique("Quantity of strategic resources produced by the empire increased by 100%"))
+                resourceModifier *= 2
+        }
+        return resourceModifier
     }
 
     fun hasResource(resourceName:String): Boolean = getCivResourcesByName()[resourceName]!!>0
@@ -521,6 +534,7 @@ class CivilizationInfo {
     fun addUnit(unitName:String, city: CityInfo?=null) {
         if (cities.isEmpty()) return
         val cityToAddTo = city ?: cities.random()
+        if (!gameInfo.ruleSet.units.containsKey(unitName)) return
         val unit = getEquivalentUnit(unitName)
         placeUnitNearTile(cityToAddTo.location, unit.name)
         if (unit.uniques.any { it.equalsPlaceholderText("Great Person - []") })

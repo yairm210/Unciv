@@ -73,12 +73,9 @@ class Nation : INamed {
         if (innerColor == null) innerColorObject = Color.BLACK
         else innerColorObject = colorFromRGB(innerColor!!)
 
-        if (uniques.contains("All units move through Forest and Jungle Tiles in friendly territory as if they have roads. These tiles can be used to establish City Connections upon researching the Wheel."))
-            forestsAndJunglesAreRoads = true
-        if (uniques.contains("Units ignore terrain costs when moving into any tile with Hills"))
-            ignoreHillMovementCost = true
-        if (uniques.contains("Units pay only 1 movement point to embark and disembark"))
-            embarkDisembarkCosts1 = true
+        forestsAndJunglesAreRoads = uniques.contains("All units move through Forest and Jungle Tiles in friendly territory as if they have roads. These tiles can be used to establish City Connections upon researching the Wheel.")
+        ignoreHillMovementCost = uniques.contains("Units ignore terrain costs when moving into any tile with Hills")
+        embarkDisembarkCosts1 = uniques.contains("Units pay only 1 movement point to embark and disembark")
     }
 
     lateinit var cities: ArrayList<String>

@@ -493,9 +493,9 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
         }
 
         if (tileInfo.terrainFeature != null) {
-            val terrainFeature = tileInfo.getTerrainFeature()!!
-            if(terrainFeature.occursOn.isNotEmpty() && !terrainFeature.occursOn.contains(tileInfo.baseTerrain))
-                tileInfo.terrainFeature=null
+            val terrainFeature = tileInfo.getTerrainFeature()
+            if (terrainFeature==null || terrainFeature.occursOn.isNotEmpty() && !terrainFeature.occursOn.contains(tileInfo.baseTerrain))
+                tileInfo.terrainFeature = null
         }
         if (tileInfo.resource != null) {
             val resource = tileInfo.getTileResource()
