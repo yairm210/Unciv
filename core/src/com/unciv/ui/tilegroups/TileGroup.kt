@@ -614,7 +614,6 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) 
             }
         }
     }
-
     fun updatePixelMilitaryUnit(showMilitaryUnit: Boolean) {
         var newImageLocation = ""
 
@@ -624,8 +623,11 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) 
             val specificUnitIconLocation = tileSetStrings.unitsLocation + militaryUnit.name
             newImageLocation = when {
                 !UncivGame.Current.settings.showPixelUnits -> ""
+                militaryUnit.civInfo.nation.style=="" &&
+                        ImageGetter.imageExists(specificUnitIconLocation) -> specificUnitIconLocation
+                ImageGetter.imageExists(specificUnitIconLocation + "-" + militaryUnit.civInfo.nation.style) ->
+                    specificUnitIconLocation + "-" + militaryUnit.civInfo.nation.style
                 ImageGetter.imageExists(specificUnitIconLocation) -> specificUnitIconLocation
-
                 militaryUnit.baseUnit.replaces!=null &&
                         ImageGetter.imageExists(tileSetStrings.unitsLocation + militaryUnit.baseUnit.replaces) ->
                     tileSetStrings.unitsLocation + militaryUnit.baseUnit.replaces
@@ -664,6 +666,10 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) 
             val specificUnitIconLocation = tileSetStrings.unitsLocation + civilianUnit.name
             newImageLocation = when {
                 !UncivGame.Current.settings.showPixelUnits -> ""
+                civilianUnit.civInfo.nation.style=="" &&
+                        ImageGetter.imageExists(specificUnitIconLocation) -> specificUnitIconLocation
+                ImageGetter.imageExists(specificUnitIconLocation + "-" + civilianUnit.civInfo.nation.style) ->
+                    specificUnitIconLocation + "-" + civilianUnit.civInfo.nation.style
                 ImageGetter.imageExists(specificUnitIconLocation) -> specificUnitIconLocation
                 else -> ""
             }
