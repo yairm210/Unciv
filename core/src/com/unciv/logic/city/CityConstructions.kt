@@ -34,8 +34,6 @@ class CityConstructions {
 
     var builtBuildings = HashSet<String>()
     val inProgressConstructions = HashMap<String, Int>()
-    @Deprecated("As of 3.7.5, all constructions are in the queue")
-    var currentConstruction=""
     var currentConstructionFromQueue: String
         get() {
             if(constructionQueue.isEmpty()) return "" else return constructionQueue.first()

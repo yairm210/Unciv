@@ -311,14 +311,6 @@ class GameInfo {
             for (cityInfo in civInfo.cities) cityInfo.cityStats.updateCityHappiness()
 
             for (cityInfo in civInfo.cities) {
-                if (cityInfo.cityConstructions.currentConstruction != "") { // move it to the top of the queue
-                    val constructionQueue = cityInfo.cityConstructions.constructionQueue
-                    val itemsInQueue = constructionQueue.toList()
-                    constructionQueue.clear()
-                    constructionQueue.add(cityInfo.cityConstructions.currentConstruction)
-                    constructionQueue.addAll(itemsInQueue)
-                    cityInfo.cityConstructions.currentConstruction = ""
-                }
 
                 // As of 3.10.14, specialists are saved by name not by stat
                 for((key, value) in cityInfo.population.specialists.toHashMap().filter { it.value>0 })
