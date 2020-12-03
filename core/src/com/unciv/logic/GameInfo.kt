@@ -266,6 +266,17 @@ class GameInfo {
                 for (promotion in unit.promotions.promotions.toList())
                     if (!ruleSet.unitPromotions.containsKey(promotion))
                         unit.promotions.promotions.remove(promotion)
+
+            for (city in civilizations.asSequence().flatMap { it.cities.asSequence() }) {
+                for (building in city.cityConstructions.builtBuildings.toHashSet())
+                    if (!ruleSet.buildings.containsKey(building))
+                        city.cityConstructions.builtBuildings.remove(building)
+                for (building in city.cityConstructions.constructionQueue.toList())
+                    if (!ruleSet.buildings.containsKey(building))
+                        city.cityConstructions.constructionQueue.remove(building)
+            }
+
+
         }
 
         tileMap.setTransients(ruleSet)
