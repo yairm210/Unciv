@@ -528,7 +528,7 @@ class DiplomacyManager() {
 
         for (civ in getCommonKnownCivs()) {
             civ.addNotification(
-                    "[${civInfo.civName}] and [${otherCiv().civName}] have signed the Peace Treaty!",
+                    "[${civInfo.civName}] and [${otherCiv().civName}] have signed a Peace Treaty!",
                     null,
                     Color.WHITE
             )
