@@ -524,7 +524,7 @@ class CityInfo {
         }
     }
 
-    fun moveToCiv(newCivInfo: CivilizationInfo){
+    fun moveToCiv(newCivInfo: CivilizationInfo) {
         val oldCiv = civInfo
         civInfo.cities = civInfo.cities.toMutableList().apply { remove(this@CityInfo) }
         newCivInfo.cities = newCivInfo.cities.toMutableList().apply { add(this@CityInfo) }
@@ -533,33 +533,37 @@ class CityInfo {
         turnAcquired = civInfo.gameInfo.turns
 
         // now that the tiles have changed, we need to reassign population
-        workedTiles.filterNot { tiles.contains(it) }
-                .forEach { workedTiles = workedTiles.withoutItem(it); population.autoAssignPopulation() }
-
-        // Remove all national wonders
-        for(building in cityConstructions.getBuiltBuildings().filter { it.isNationalWonder })
-            cityConstructions.removeBuilding(building.name)
+        for (it in workedTiles.filterNot { tiles.contains(it) }) {
+            workedTiles = workedTiles.withoutItem(it)
+            population.autoAssignPopulation()
+        }
 
         // Remove/relocate palace for old Civ
         val capitalCityIndicator = capitalCityIndicator()
-        if(cityConstructions.isBuilt(capitalCityIndicator)){
+        if (cityConstructions.isBuilt(capitalCityIndicator)) {
             cityConstructions.removeBuilding(capitalCityIndicator)
-            if(oldCiv.cities.isNotEmpty()){
+            if (oldCiv.cities.isNotEmpty()) {
                 oldCiv.cities.first().cityConstructions.addBuilding(capitalCityIndicator) // relocate palace
             }
         }
+
+
+        // Remove all national wonders (must come after the palace relocation because that's a national wonder too!)
+        for (building in cityConstructions.getBuiltBuildings().filter { it.isNationalWonder })
+            cityConstructions.removeBuilding(building.name)
+
 
         // Locate palace for newCiv if this is the only city they have
         if (newCivInfo.cities.count() == 1) {
             cityConstructions.addBuilding(capitalCityIndicator)
         }
 
-        isBeingRazed=false
+        isBeingRazed = false
 
         // Transfer unique buildings
-        for(building in cityConstructions.getBuiltBuildings()) {
+        for (building in cityConstructions.getBuiltBuildings()) {
             val civEquivalentBuilding = newCivInfo.getEquivalentBuilding(building.name)
-            if(building != civEquivalentBuilding) {
+            if (building != civEquivalentBuilding) {
                 cityConstructions.removeBuilding(building.name)
                 cityConstructions.addBuilding(civEquivalentBuilding.name)
             }
