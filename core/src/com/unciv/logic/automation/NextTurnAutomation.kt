@@ -305,6 +305,8 @@ object NextTurnAutomation {
                 .map { it.value.otherCiv() }
                 .filterNot { it == civInfo || it.isBarbarian() || it.cities.isEmpty() }
                 .filter { !civInfo.getDiplomacyManager(it).hasFlag(DiplomacyFlags.DeclinedPeace) }
+                // Don't allow AIs to offer peace to ity states allied with their enemies
+                .filterNot { it.isCityState() && it.getAllyCiv()!="" && civInfo.isAtWarWith(civInfo.gameInfo.getCivilization(it.getAllyCiv())) }
 
         for (enemy in enemiesCiv) {
             val enemiesStrength = Automation.evaluteCombatStrength(enemy)
