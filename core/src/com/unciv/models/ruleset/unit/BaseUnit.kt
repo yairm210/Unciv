@@ -5,6 +5,7 @@ import com.unciv.logic.city.CityConstructions
 import com.unciv.logic.city.IConstruction
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.MapUnit
+import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.Unique
 import com.unciv.models.translations.Translations
@@ -122,9 +123,14 @@ class BaseUnit : INamed, IConstruction {
     fun getRejectionReason(construction: CityConstructions): String {
         if (unitType.isWaterUnit() && !construction.cityInfo.getCenterTile().isCoastalTile())
             return "Can only build water units in coastal cities"
-        if (uniqueObjects.any { it.placeholderText == "Not displayed as an available construction unless [] is built"
-                            && !construction.containsBuildingOrEquivalent(it.params[0]) })
-            return "Should not be displayed"
+        for (unique in uniqueObjects.filter { it.placeholderText == "Not displayed as an available construction without []"}) {
+            val filter = unique.params[0]
+            return if (construction.containsBuildingOrEquivalent(filter)
+                    || (construction.cityInfo.civInfo.gameInfo.ruleSet.tileResources.containsKey(filter)
+                            && construction.cityInfo.civInfo.hasResource(filter)))
+                ""
+            else "Should not be displayed"
+        }
         val civRejectionReason = getRejectionReason(construction.cityInfo.civInfo)
         if (civRejectionReason != "") return civRejectionReason
         return ""
