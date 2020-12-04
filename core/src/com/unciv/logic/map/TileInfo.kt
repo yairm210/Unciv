@@ -105,7 +105,7 @@ open class TileInfo {
         return null
     }
     
-    fun getInfluence(): Float = friendlyInfluenceScore + enemyInfluenceScore
+    fun getInfluence(): Float = influenceScore
 
     fun getCity(): CityInfo? = owningCity
 
