@@ -1246,7 +1246,7 @@
 		"cost": 425,
 		"requiredTech": "Computers",
 		"requiredResource": "Aluminum",
-		"uniques": ["Bonus vs Armor 100%", "No defensive terrain bonuses", "Can move after attacking", "All tiles costs 1", "Can pass through impassable tiles", "Unable to capture cities"],
+		"uniques": ["Bonus vs Armor 100%", "No defensive terrain bonuses", "Can move after attacking", "All tiles cost 1 movement", "Can pass through impassable tiles", "Unable to capture cities"],
 		"attackSound": "shot"
 	},
 	{
