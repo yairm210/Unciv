@@ -206,7 +206,7 @@ object UnitAutomation {
         //        .any { it.isCityCenter() && it.getOwner()!!.isAtWarWith(unit.civInfo) } }
         //if(bestTilesWithoutBombardableTiles.any()) bestTilesForHealing = bestTilesWithoutBombardableTiles
 
-        bestTilesForHealing = (bestTilesForHealing - tilesInRangeOfAttack) + bestTilesForHealing
+        bestTilesForHealing = (bestTilesForHealing + currentUnitTile) - tilesInRangeOfAttack
 
         if (bestTilesForHealing.isEmpty()) {
             unit.fortifyIfCan()
