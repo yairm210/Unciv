@@ -249,11 +249,11 @@ object UnitAutomation {
         val closestEnemy = closeEnemies.minBy { it.tileToAttack.aerialDistanceTo(unit.getTile()) }
 
         if (closestEnemy != null) {
-            val tileOfLeastInfuence = closestEnemy.tileToAttackFrom.getTilesAtDistance(1)
+            val tileOfLeastInfluence = closestEnemy.tileToAttackFrom.getTilesAtDistance(1)
                     .sortedBy { it.getInfluence() }
-                    .firstOrNull()
-            if (tileOfLeastInfuence != null) {
-                unit.movement.headTowards(tileOfLeastInfuence)
+                    .firstOrNull { unit.movement.canReach(it) }
+            if (tileOfLeastInfluence != null) {
+                unit.movement.headTowards(tileOfLeastInfluence)
             }
             return true
         }
