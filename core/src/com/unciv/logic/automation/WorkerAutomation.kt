@@ -75,7 +75,7 @@ class WorkerAutomation(val unit: MapUnit) {
         if(citiesThatNeedConnecting.none()) return false // do nothing.
 
         val citiesThatNeedConnectingBfs = citiesThatNeedConnecting
-                .sortedBy { it.getCenterTile().aerialDistanceTo(unit.getTile()) }
+                .sortedBy { it.getCenterTile().aerialDistanceTo(unit.civInfo.getCapital().getCenterTile()) }
                 .map { city -> BFS(city.getCenterTile()){it.isLand && unit.movement.canPassThrough(it)} }
 
         val connectedCities = unit.civInfo.cities.filter { it.isCapital() || it.cityStats.isConnectedToCapital(targetRoad) }
