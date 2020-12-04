@@ -272,27 +272,21 @@ object UnitAutomation {
 
     private fun tryHeadTowardsSiegedCity(unit: MapUnit): Boolean {
         val siegedCities = unit.civInfo.cities
-                .filter { unit.civInfo == it.civInfo }
-                .filter { it.health < (it.getMaxHealth() * 0.75) } //Weird health issues and making sure that not all forces move to good defenses
-                .filterNot { it.isInResistance() } //Don't stop pushing keep the battle tempo up
                 .asSequence()
+                .filter { unit.civInfo == it.civInfo &&
+                        it.health < (it.getMaxHealth() * 0.75) && //Weird health issues and making sure that not all forces move to good defenses
+                        it.isInResistance() } //Don't stop pushing keep the battle tempo up
 
         val strongestForce = siegedCities
-                .asSequence().map { it.getCenterTile().getTilesAtDistance(2) }
-                .flatMap { it.asSequence() }
+                .flatMap { it.getCenterTile().getTilesAtDistance(2) }
                 .sortedByDescending { it.getInfluence() }
                 .firstOrNull { unit.movement.canReach(it) }
         
         if (strongestForce != null) {
-            return headTowardsSiegedCity(unit, strongestForce)
+            unit.movement.headTowards(strongestForce)
+            return true
         }
         return false
-    }
-    
-    private fun headTowardsSiegedCity(unit: MapUnit, strongestForce: TileInfo): Boolean {
-        unit.movement.headTowards(strongestForce)
-
-        return true
     }
 
     private fun tryHeadTowardsEnemyCity(unit: MapUnit): Boolean {
