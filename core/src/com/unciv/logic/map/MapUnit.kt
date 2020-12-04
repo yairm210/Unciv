@@ -123,7 +123,7 @@ class MapUnit {
 
         tempUniques = uniques
 
-        allTilesCosts1 = hasUnique("All tiles costs 1")
+        allTilesCosts1 = hasUnique("All tiles cost 1 movement") || hasUnique("All tiles costs 1")
         canPassThroughImpassableTiles = hasUnique("Can pass through impassable tiles")
         ignoresTerrainCost = hasUnique("Ignores terrain cost")
         roughTerrainPenalty = hasUnique("Rough terrain penalty")
