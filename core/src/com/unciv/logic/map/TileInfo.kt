@@ -164,7 +164,7 @@ open class TileInfo {
     fun getWorkingCity(): CityInfo? {
         val civInfo = getOwner()
         if (civInfo == null) return null
-        return civInfo.cities.firstOrNull { it.workedTiles.contains(position) }
+        return civInfo.cities.firstOrNull { it.isWorked(this) }
     }
 
     fun isWorked(): Boolean {
