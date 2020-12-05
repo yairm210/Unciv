@@ -158,6 +158,7 @@ class CityInfo {
     fun getCenterTile(): TileInfo = centerTileInfo
     fun getTiles(): Sequence<TileInfo> = tiles.asSequence().map { tileMap[it] }
     fun getWorkableTiles() = tilesInRange.asSequence().filter { it.getOwner() == civInfo }
+    fun isWorked(tileInfo: TileInfo) = workedTiles.contains(tileInfo.position)
 
     fun isCapital(): Boolean = cityConstructions.builtBuildings.contains(capitalCityIndicator())
     fun capitalCityIndicator(): String = getRuleset().buildings.values.first { it.uniques.contains("Indicates the capital city") }.name

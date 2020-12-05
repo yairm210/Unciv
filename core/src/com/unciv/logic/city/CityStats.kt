@@ -39,7 +39,7 @@ class CityStats {
     private fun getStatsFromTiles(): Stats {
         val stats = Stats()
         for (cell in cityInfo.tilesInRange
-                .filter { cityInfo.location == it.position || cityInfo.workedTiles.contains(it.position) })
+                .filter { cityInfo.location == it.position || cityInfo.isWorked(it) })
             stats.add(cell.getTileStats(cityInfo, cityInfo.civInfo))
         return stats
     }
