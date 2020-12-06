@@ -123,95 +123,101 @@ class BaseUnit : INamed, IConstruction {
     fun getRejectionReason(construction: CityConstructions): String {
         if (unitType.isWaterUnit() && !construction.cityInfo.getCenterTile().isCoastalTile())
             return "Can only build water units in coastal cities"
-        for (unique in uniqueObjects.filter { it.placeholderText == "Not displayed as an available construction without []"}) {
+        for (unique in uniqueObjects.filter { it.placeholderText == "Not displayed as an available construction without []" }) {
             val filter = unique.params[0]
-            return if (construction.containsBuildingOrEquivalent(filter)
-                    || (construction.cityInfo.civInfo.gameInfo.ruleSet.tileResources.containsKey(filter)
-                            && construction.cityInfo.civInfo.hasResource(filter)))
-                ""
-            else "Should not be displayed"
-        }
-        val civRejectionReason = getRejectionReason(construction.cityInfo.civInfo)
-        if (civRejectionReason != "") return civRejectionReason
-        return ""
+            if ((filter in construction.cityInfo.civInfo.gameInfo.ruleSet.tileResources && !construction.cityInfo.civInfo.hasResource(filter))
+                || (filter in construction.cityInfo.civInfo.gameInfo.ruleSet.buildings && !construction.containsBuildingOrEquivalent(filter)))
+                return "Should not be displayed"
+/*if (filter in construction.cityInfo.civInfo.gameInfo.ruleSet.buildings && ) return "Should not be displayed"*/
     }
 
-    fun getRejectionReason(civInfo: CivilizationInfo): String {
-        if (uniques.contains("Unbuildable")) return "Unbuildable"
-        if (requiredTech!=null && !civInfo.tech.isResearched(requiredTech!!)) return "$requiredTech not researched"
-        if (obsoleteTech!=null && civInfo.tech.isResearched(obsoleteTech!!)) return "Obsolete by $obsoleteTech"
-        if (uniqueTo!=null && uniqueTo!=civInfo.civName) return "Unique to $uniqueTo"
-        if (civInfo.gameInfo.ruleSet.units.values.any { it.uniqueTo==civInfo.civName && it.replaces==name }) return "Our unique unit replaces this"
-        if (!civInfo.gameInfo.gameParameters.nuclearWeaponsEnabled
-                && uniques.contains("Nuclear weapon")) return "Disabled by setting"
-        for (unique in uniqueObjects.filter { it.placeholderText == "Requires []" }) {
-            val filter = unique.params[0]
-            if (filter in civInfo.gameInfo.ruleSet.buildings) {
-                if (civInfo.cities.none { it.cityConstructions.containsBuildingOrEquivalent(filter) }) return unique.text // Wonder is not built
-            } else if (!civInfo.policies.adoptedPolicies.contains(filter)) return "Policy is not adopted"
-        }
-        if (requiredResource!=null && !civInfo.hasResource(requiredResource!!) && !civInfo.gameInfo.gameParameters.godMode) return "Consumes 1 [$requiredResource]"
-        if (uniques.contains(Constants.settlerUnique) && civInfo.isCityState()) return "No settler for city-states"
-        if (uniques.contains(Constants.settlerUnique) && civInfo.isOneCityChallenger()) return "No settler for players in One City Challenge"
-        return ""
-    }
 
-    fun isBuildable(civInfo: CivilizationInfo) = getRejectionReason(civInfo)==""
+val civRejectionReason = getRejectionReason(construction.cityInfo.civInfo)
+if (civRejectionReason != "") return civRejectionReason
+return ""
+}
 
-    override fun isBuildable(cityConstructions: CityConstructions): Boolean {
-        return getRejectionReason(cityConstructions) == ""
-    }
+fun getRejectionReason(civInfo: CivilizationInfo): String {
+if (uniques.contains("Unbuildable")) return "Unbuildable"
+if (requiredTech!=null && !civInfo.tech.isResearched(requiredTech!!)) return "$requiredTech not researched"
+if (obsoleteTech!=null && civInfo.tech.isResearched(obsoleteTech!!)) return "Obsolete by $obsoleteTech"
+if (uniqueTo!=null && uniqueTo!=civInfo.civName) return "Unique to $uniqueTo"
+if (civInfo.gameInfo.ruleSet.units.values.any { it.uniqueTo==civInfo.civName && it.replaces==name }) return "Our unique unit replaces this"
+if (!civInfo.gameInfo.gameParameters.nuclearWeaponsEnabled
+    && uniques.contains("Nuclear weapon")) return "Disabled by setting"
+for (unique in uniqueObjects.filter { it.placeholderText == "Requires []" }) {
+val filter = unique.params[0]
+if (filter in civInfo.gameInfo.ruleSet.buildings) {
+    if (civInfo.cities.none { it.cityConstructions.containsBuildingOrEquivalent(filter) }) return unique.text // Wonder is not built
+} else if (!civInfo.policies.adoptedPolicies.contains(filter)) return "Policy is not adopted"
+}
+for (unique in uniqueObjects.filter { it.placeholderText == "Not displayed as an available construction without []" }) {
+val filter = unique.params[0]
+if (filter in civInfo.gameInfo.ruleSet.tileResources && !civInfo.hasResource(filter)) return "Should not be displayed"
+/*if (filter in civInfo.gameInfo.ruleSet.buildings && cityConstructions.containsBuildingOrEquivalent(filter)) return "Should not be displayed"
+*/}
+if (requiredResource!=null && !civInfo.hasResource(requiredResource!!) && !civInfo.gameInfo.gameParameters.godMode) return "Consumes 1 [$requiredResource]"
+if (uniques.contains(Constants.settlerUnique) && civInfo.isCityState()) return "No settler for city-states"
+if (uniques.contains(Constants.settlerUnique) && civInfo.isOneCityChallenger()) return "No settler for players in One City Challenge"
+return ""
+}
 
-    override fun postBuildEvent(construction: CityConstructions, wasBought: Boolean): Boolean {
-        val civInfo = construction.cityInfo.civInfo
-        val unit = civInfo.placeUnitNearTile(construction.cityInfo.location, name)
-        if (unit == null) return false // couldn't place the unit, so there's actually no unit =(
+fun isBuildable(civInfo: CivilizationInfo) = getRejectionReason(civInfo)==""
 
-        //movement penalty
-        if (wasBought && !unit.hasUnique("Can move immediately once bought") && !civInfo.gameInfo.gameParameters.godMode)
-            unit.currentMovement = 0f
+override fun isBuildable(cityConstructions: CityConstructions): Boolean {
+return getRejectionReason(cityConstructions) == ""
+}
 
-        if (this.unitType.isCivilian()) return true // tiny optimization makes save files a few bytes smaller
+override fun postBuildEvent(construction: CityConstructions, wasBought: Boolean): Boolean {
+val civInfo = construction.cityInfo.civInfo
+val unit = civInfo.placeUnitNearTile(construction.cityInfo.location, name)
+if (unit == null) return false // couldn't place the unit, so there's actually no unit =(
 
-        var XP = construction.getBuiltBuildings().sumBy { it.xpForNewUnits }
+//movement penalty
+if (wasBought && !unit.hasUnique("Can move immediately once bought") && !civInfo.gameInfo.gameParameters.godMode)
+unit.currentMovement = 0f
 
-        // As of 3.11.2 This is to be deprecated and converted to "New [] units start with [] Experience" - keeping it here to that mods with this can still work for now
-        for (unique in civInfo.getMatchingUniques("New military units start with [] Experience"))
-            XP += unique.params[0].toInt()
+if (this.unitType.isCivilian()) return true // tiny optimization makes save files a few bytes smaller
 
-        for (unique in construction.cityInfo.cityConstructions.builtBuildingUniqueMap.getUniques("New [] units start with [] Experience in this city")
-                + civInfo.getMatchingUniques("New [] units start with [] Experience")) {
-            if (unit.matchesCategory(unique.params[0]))
-                XP += unique.params[1].toInt()
-        }
-        unit.promotions.XP = XP
+var XP = construction.getBuiltBuildings().sumBy { it.xpForNewUnits }
 
-        for (unique in construction.cityInfo.cityConstructions.builtBuildingUniqueMap.getUniques("All newly-trained [] units in this city receive the [] promotion")) {
-            val filter = unique.params[0]
-            val promotion = unique.params[1]
+// As of 3.11.2 This is to be deprecated and converted to "New [] units start with [] Experience" - keeping it here to that mods with this can still work for now
+for (unique in civInfo.getMatchingUniques("New military units start with [] Experience"))
+XP += unique.params[0].toInt()
 
-            if (unit.matchesCategory(filter) || (filter == "relevant" && civInfo.gameInfo.ruleSet.unitPromotions.values.any { unit.type.toString() in it.unitTypes && it.name == promotion }))
-                unit.promotions.addPromotion(promotion, isFree = true)
-        }
+for (unique in construction.cityInfo.cityConstructions.builtBuildingUniqueMap.getUniques("New [] units start with [] Experience in this city")
+    + civInfo.getMatchingUniques("New [] units start with [] Experience")) {
+if (unit.matchesCategory(unique.params[0]))
+    XP += unique.params[1].toInt()
+}
+unit.promotions.XP = XP
 
-        // This is to be deprecated and converted to "All newly-trained [] in this city receive the [] promotion" - keeping it here to that mods with this can still work for now
-        if (unit.type in listOf(UnitType.Melee,UnitType.Mounted,UnitType.Armor)
-            && construction.cityInfo.containsBuildingUnique("All newly-trained melee, mounted, and armored units in this city receive the Drill I promotion"))
-            unit.promotions.addPromotion("Drill I", isFree = true)
+for (unique in construction.cityInfo.cityConstructions.builtBuildingUniqueMap.getUniques("All newly-trained [] units in this city receive the [] promotion")) {
+val filter = unique.params[0]
+val promotion = unique.params[1]
 
-        return true
-    }
+if (unit.matchesCategory(filter) || (filter == "relevant" && civInfo.gameInfo.ruleSet.unitPromotions.values.any { unit.type.toString() in it.unitTypes && it.name == promotion }))
+    unit.promotions.addPromotion(promotion, isFree = true)
+}
 
-    override fun getResource(): String? = requiredResource
+// This is to be deprecated and converted to "All newly-trained [] in this city receive the [] promotion" - keeping it here to that mods with this can still work for now
+if (unit.type in listOf(UnitType.Melee,UnitType.Mounted,UnitType.Armor)
+&& construction.cityInfo.containsBuildingUnique("All newly-trained melee, mounted, and armored units in this city receive the Drill I promotion"))
+unit.promotions.addPromotion("Drill I", isFree = true)
 
-    fun getDirectUpgradeUnit(civInfo: CivilizationInfo):BaseUnit{
-        return civInfo.getEquivalentUnit(upgradesTo!!)
-    }
+return true
+}
 
-    override fun toString(): String = name
+override fun getResource(): String? = requiredResource
 
-    fun getReplacedUnit(ruleset: Ruleset): BaseUnit {
-        return if (replaces == null) this
-        else ruleset.units[replaces!!]!!
-    }
+fun getDirectUpgradeUnit(civInfo: CivilizationInfo):BaseUnit{
+return civInfo.getEquivalentUnit(upgradesTo!!)
+}
+
+override fun toString(): String = name
+
+fun getReplacedUnit(ruleset: Ruleset): BaseUnit {
+return if (replaces == null) this
+else ruleset.units[replaces!!]!!
+}
 }
