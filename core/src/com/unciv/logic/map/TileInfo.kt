@@ -293,7 +293,7 @@ open class TileInfo {
     fun canBuildImprovement(improvement: TileImprovement, civInfo: CivilizationInfo): Boolean {
         return when {
             improvement.uniqueTo != null && improvement.uniqueTo != civInfo.civName -> false
-            improvement.techRequired!=null && !civInfo.tech.isResearched(improvement.techRequired) -> false
+            improvement.techRequired != null && !civInfo.tech.isResearched(improvement.techRequired!!) -> false
             getOwner() != civInfo && !improvement.hasUnique("Can be built outside your borders") -> false
             else -> canImprovementBeBuiltHere(improvement, hasViewableResource(civInfo))
         }
