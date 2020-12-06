@@ -125,11 +125,9 @@ class BaseUnit : INamed, IConstruction {
             return "Can only build water units in coastal cities"
         for (unique in uniqueObjects.filter { it.placeholderText == "Not displayed as an available construction without []"}) {
             val filter = unique.params[0]
-            return if (construction.containsBuildingOrEquivalent(filter)
-                    || (construction.cityInfo.civInfo.gameInfo.ruleSet.tileResources.containsKey(filter)
-                            && construction.cityInfo.civInfo.hasResource(filter)))
-                ""
-            else "Should not be displayed"
+            if ((filter in construction.cityInfo.civInfo.gameInfo.ruleSet.tileResources && !construction.cityInfo.civInfo.hasResource(filter))
+                    || (filter in construction.cityInfo.civInfo.gameInfo.ruleSet.buildings && !construction.containsBuildingOrEquivalent(filter)))
+                return "Should not be displayed"
         }
         val civRejectionReason = getRejectionReason(construction.cityInfo.civInfo)
         if (civRejectionReason != "") return civRejectionReason
