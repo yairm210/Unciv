@@ -128,7 +128,6 @@ class BaseUnit : INamed, IConstruction {
             if ((filter in construction.cityInfo.civInfo.gameInfo.ruleSet.tileResources && !construction.cityInfo.civInfo.hasResource(filter))
                 || (filter in construction.cityInfo.civInfo.gameInfo.ruleSet.buildings && !construction.containsBuildingOrEquivalent(filter)))
                 return "Should not be displayed"
-/*if (filter in construction.cityInfo.civInfo.gameInfo.ruleSet.buildings && ) return "Should not be displayed"*/
     }
 
 

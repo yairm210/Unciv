@@ -252,13 +252,6 @@ class Building : NamedStats(), IConstruction {
                         || (it.params[0] in civInfo.gameInfo.ruleSet.tileResources && !construction.cityInfo.civInfo.hasResource(it.params[0])))
                 } )
             return "Should not be displayed"
-        /*if(uniqueObjects.any { it.placeholderText=="Not displayed as an available construction without []"
-
-            && /*(construction.containsBuildingOrEquivalent(it.params[0])
-                    ||*/ (!construction.cityInfo.civInfo.hasResource(it.params[0])
-                        && !construction.cityInfo.civInfo.gameInfo.ruleSet.tileResources.containsKey(it.params[0]))})
-            return "Should not be displayed"*/
-            /*else return "Should not be displayed"*/
 
         for(unique in uniqueObjects) when (unique.placeholderText) {
             "Must be on []" -> if (!cityCenter.matchesUniqueFilter(unique.params[0])) return unique.text
