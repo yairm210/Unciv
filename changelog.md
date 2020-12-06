@@ -1,3 +1,19 @@
+## 3.11.18
+
+Improvements can't be built in neutral areas, as per Civ V
+
+Added button to add construction items directly to the queue
+
+Mods can handle removing existing buildings
+
+Don't allow AI to offer peace to city states allied with their enemies
+
+Helicopter Gunship - By givehub99
+
+Workers stop building (most) duplicate roads connecting cities - By ninjatao
+
+Translation updates
+
 ## 3.11.17
 
 Fixed rare errors
