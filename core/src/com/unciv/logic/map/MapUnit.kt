@@ -89,11 +89,12 @@ class MapUnit {
                 && civInfo.hasUnique("All military naval units receive +1 movement and +1 sight"))
             movement += 1
 
+        // Deprecated as of 3.11.18
         if (type.isWaterUnit() && civInfo.hasUnique("+2 movement for all naval units"))
             movement += 2
 
         for (unique in civInfo.getMatchingUniques("+[] Movement for all [] units"))
-            if (unique.params[1] == type.name)
+            if (matchesCategory(unique.params[1]))
                 movement += unique.params[0].toInt()
 
         if (civInfo.goldenAges.isGoldenAge() &&
