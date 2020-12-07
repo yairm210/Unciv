@@ -107,9 +107,9 @@ class PolicyPickerScreen(val worldScreen: WorldScreen, civInfo: CivilizationInfo
 
         if (!policy.name.endsWith("Complete")) {
             if (policy.requires!!.isNotEmpty())
-                policyText += "{Requires} ".tr() + policy.requires!!.joinToString { it.tr() }
+                policyText += "Requires [" + policy.requires!!.joinToString { it.tr() }+"]"
             else
-                policyText += ("{Unlocked at} {" + policy.branch.era + "}").tr()
+                policyText += "{Unlocked at} {" + policy.branch.era + "}"
         }
         descriptionLabel.setText(policyText.joinToString("\r\n") { it.tr() })
     }
@@ -123,13 +123,10 @@ class PolicyPickerScreen(val worldScreen: WorldScreen, civInfo: CivilizationInfo
             policyButton = policy.name.toTextButton()
         }
 
-        if (viewingCiv.policies.isAdopted(policy.name)) { // existing
-            policyButton.color = Color.GREEN
-        } else if (!viewingCiv.policies.isAdoptable(policy))
-        // non-available
-        {
-            policyButton.color = Color.GRAY
-        }
+        if (viewingCiv.policies.isAdopted(policy.name)) policyButton.color = Color.GREEN // existing
+        else if (!viewingCiv.policies.isAdoptable(policy)) policyButton.color = Color.GRAY // non-available
+
+
         policyButton.onClick { pickPolicy(policy) }
         policyButton.pack()
         return policyButton
