@@ -13,20 +13,9 @@ There are two kinds of mods:
 - Base Ruleset mods - these replace the entire existing ruleset - tech tree, units, policies, nations etc - to give an entirely different experience than the base game. These generally require quite a bit of work, but give a whole new experience, and so are the most popular.
 - Extension mods - these add new nations/units/buildings/resources to a base ruleset - can be either to the default ruleset, or to a base ruleset mod
 
-## Mod location
+## Mod components
 
 Mods are located in a `/mods` directory, on Desktop that should be next to your .jar file.
-
-In Android, they should go into the `Android/data/com.unciv.app/files/mods` directory.
-
-In Chromebook, go to "Play files", should be on the sidebar on the left side of the window under "My files".
-Click the 3 vertical dots on the top right-hand corner of the window below the "X".
-If the option "Show all Play folders" does not have a check next to it click it. You should see some new files that appear on your screen.
-*Now* navigate to `Android/data/com.unciv.app/files/mods`
-
-When loading a mod, it needs to be in its own folder in `/mods` - this is how you will work when you're editing your mod
-
-## Mod components
 
 Mods have 2 subfolders:
 - jsons - here you should put files that alter the data of game objects, the order of the files is as in [the base json files](https://github.com/yairm210/Unciv/tree/master/android/assets/jsons)
@@ -78,6 +67,18 @@ When you open your app, it will query Github's list of repos with that topic, an
 - You should now see a list of your mods and a "Download mod" button.
 - Click "Download mod", enter the location of your Github page
 - The game will automatically download and extract your mod, and it'll be ready to use!
+
+
+## Mod location for manual loading of mods
+
+In Android, they should go into the `Android/data/com.unciv.app/files/mods` directory.
+
+In Chromebook, go to "Play files", should be on the sidebar on the left side of the window under "My files".
+Click the 3 vertical dots on the top right-hand corner of the window below the "X".
+If the option "Show all Play folders" does not have a check next to it click it. You should see some new files that appear on your screen.
+*Now* navigate to `Android/data/com.unciv.app/files/mods`
+
+When loading a mod, it needs to be in its own folder in `/mods` - this is how you will work when you're editing your mod
 
 ## Other
 
