@@ -47,7 +47,7 @@ class Technology {
 
         val viewingCiv = UncivGame.Current.worldScreen.viewingCiv
         val enabledUnits = getEnabledUnits(viewingCiv)
-        if (enabledUnits.isNotEmpty()) {
+        if (enabledUnits.any { "Will not be displayed in Civilopedia" !in it.uniques}) {
             lineList += "{Units enabled}: "
             for (unit in enabledUnits
                     .filter { "Will not be displayed in Civilopedia" !in it.uniques})
@@ -57,7 +57,7 @@ class Technology {
         val enabledBuildings = getEnabledBuildings(viewingCiv)
 
         val regularBuildings = enabledBuildings.filter { !it.isWonder && !it.isNationalWonder }
-        if (regularBuildings.isNotEmpty()) {
+        if (regularBuildings.any { "Will not be displayed in Civilopedia" !in it.uniques}) {
             lineList += "{Buildings enabled}: "
             for (building in regularBuildings
                     .filter { "Will not be displayed in Civilopedia" !in it.uniques})
@@ -65,9 +65,10 @@ class Technology {
         }
 
         val wonders = enabledBuildings.filter { it.isWonder || it.isNationalWonder }
-        if (wonders.isNotEmpty()) {
+        if (wonders.any { "Will not be displayed in Civilopedia" !in it.uniques }) {
             lineList += "{Wonders enabled}: "
-            for (wonder in wonders)
+            for (wonder in wonders
+                    .filter { "Will not be displayed in Civilopedia" !in it.uniques})
                 lineList += " * " + wonder.name.tr() + " (" + wonder.getShortDescription(ruleset) + ")"
         }
 
