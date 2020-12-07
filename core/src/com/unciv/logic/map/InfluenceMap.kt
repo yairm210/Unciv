@@ -131,24 +131,20 @@ object InfluenceMap {
 
     private fun containsEnemyUnit(tile: TileInfo, viewingCiv: CivilizationInfo): Boolean {
         for (unit in tile.getUnits()) {
-            if (unit.civInfo == viewingCiv) return false
-            if (unit.civInfo.isAtWarWith(viewingCiv)) return true
+            if (unit.civInfo != viewingCiv && unit.civInfo.isAtWarWith(viewingCiv)) return true
         }
         if (tile.isCityCenter()) {
-            if (tile.getCity()?.civInfo == viewingCiv) return false
-            if (tile.getCity()?.civInfo?.isAtWarWith(viewingCiv)!!) return true
+            if (tile.getCity()!!.civInfo != viewingCiv && tile.getCity()!!.civInfo.isAtWarWith(viewingCiv)) return true
         }
         return false
     }
 
     private fun containsNeutralUnit(tile: TileInfo, viewingCiv: CivilizationInfo): Boolean {
         for (unit in tile.getUnits()) {
-            if (unit.civInfo == viewingCiv) return false
-            if (!unit.civInfo.isAtWarWith(viewingCiv)) return true
+            if (unit.civInfo != viewingCiv && !unit.civInfo.isAtWarWith(viewingCiv)) return true
         }
         if (tile.isCityCenter()) {
-            if (tile.getCity()?.civInfo == viewingCiv) return false
-            if (!tile.getCity()?.civInfo?.isAtWarWith(viewingCiv)!!) return true
+            if (tile.getCity()!!.civInfo != viewingCiv && !(tile.getCity()!!.civInfo.isAtWarWith(viewingCiv))) return true
         }
         return false
     }
@@ -158,7 +154,7 @@ object InfluenceMap {
             if (unit.civInfo == viewingCiv) return true
         }
         if (tile.isCityCenter()) {
-            if (tile.getCity()?.civInfo == viewingCiv) return true
+            if (tile.getCity()!!.civInfo == viewingCiv) return true
         }
         return false
     }

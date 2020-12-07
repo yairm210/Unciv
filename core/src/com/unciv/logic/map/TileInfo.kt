@@ -19,6 +19,9 @@ open class TileInfo {
     @Transient var owningCity:CityInfo?=null
     @Transient private lateinit var baseTerrainObject:Terrain
 
+    @Transient var friendlyInfluenceScore: Float = 0F
+    @Transient var enemyInfluenceScore: Float = 0F
+
     // These are for performance - checked with every tile movement and "canEnter" check, which makes them performance-critical
     @Transient var isLand = false
     @Transient var isWater = false
@@ -54,9 +57,6 @@ open class TileInfo {
         get() = HexMath.getLatitude(position)
     val longitude: Float
         get() = HexMath.getLongitude(position)
-
-    var friendlyInfluenceScore: Float = 0F
-    var enemyInfluenceScore: Float = 0F
 
     fun clone(): TileInfo {
         val toReturn = TileInfo()
