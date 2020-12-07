@@ -1,5 +1,6 @@
 package com.unciv.ui.utils
 
+import com.badlogic.gdx.Gdx
 import kotlin.concurrent.thread
 
 //Its a popUp which will close itself after a given amount of time
@@ -17,7 +18,7 @@ class ToastPopup (message: String, screen: CameraStageBaseScreen, time: Long = 1
     private fun startTimer(){
         thread (name = "ResponsePopup") {
             Thread.sleep(visibilityTime)
-            this.close()
+            Gdx.app.postRunnable { this.close() }
         }
     }
 

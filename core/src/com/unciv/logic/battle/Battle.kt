@@ -267,7 +267,7 @@ object Battle {
     // XP!
     private fun addXp(thisCombatant:ICombatant, amount:Int, otherCombatant:ICombatant){
         if(thisCombatant !is MapUnitCombatant) return
-        if(thisCombatant.unit.promotions.totalXpProduced() >= 30 && otherCombatant.getCivInfo().isBarbarian())
+        if(thisCombatant.unit.promotions.totalXpProduced() >= thisCombatant.unit.civInfo.gameInfo.ruleSet.modOptions.maxXPfromBarbarians && otherCombatant.getCivInfo().isBarbarian())
             return
 
         var XPModifier = 1f
@@ -333,7 +333,8 @@ object Battle {
 
     private fun captureCivilianUnit(attacker: ICombatant, defender: ICombatant){
         // barbarians don't capture civilians
-        if(attacker.getCivInfo().isBarbarian()){
+        if(attacker.getCivInfo().isBarbarian()
+                ||(defender as MapUnitCombatant).unit.hasUnique("Uncapturable")){
             defender.takeDamage(100)
             return
         }
@@ -341,7 +342,7 @@ object Battle {
         // need to save this because if the unit is captured its owner wil be overwritten
         val defenderCiv = defender.getCivInfo()
 
-        val capturedUnit = (defender as MapUnitCombatant).unit
+        val capturedUnit = defender.unit
         capturedUnit.civInfo.addNotification("An enemy ["+attacker.getName()+"] has captured our ["+defender.getName()+"]",
                 defender.getTile().position, Color.RED)
 

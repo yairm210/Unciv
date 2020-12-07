@@ -39,7 +39,7 @@ class CityStats {
     private fun getStatsFromTiles(): Stats {
         val stats = Stats()
         for (cell in cityInfo.tilesInRange
-                .filter { cityInfo.location == it.position || cityInfo.workedTiles.contains(it.position) })
+                .filter { cityInfo.location == it.position || cityInfo.isWorked(it) })
             stats.add(cell.getTileStats(cityInfo, cityInfo.civInfo))
         return stats
     }
@@ -50,7 +50,7 @@ class CityStats {
             val civInfo = cityInfo.civInfo
             stats.gold = civInfo.getCapital().population.population * 0.15f + cityInfo.population.population * 1.1f - 1 // Calculated by http://civilization.wikia.com/wiki/Trade_route_(Civ5)
             for (unique in civInfo.getMatchingUniques("[] from each Trade Route"))
-                stats.add(unique.stats!!)
+                stats.add(unique.stats)
             if (civInfo.hasUnique("Gold from all trade routes +25%")) stats.gold *= 1.25f // Machu Pichu speciality
         }
         return stats
@@ -215,7 +215,7 @@ class CityStats {
 
         if (cityInfo.getCenterTile().militaryUnit != null)
             for (unique in civInfo.getMatchingUniques("[] in all cities with a garrison"))
-                happinessFromPolicies += unique.stats!!.happiness
+                happinessFromPolicies += unique.stats.happiness
 
         newHappinessList["Policies"] = happinessFromPolicies
 
@@ -247,7 +247,7 @@ class CityStats {
         else stats.add(stat, 2f) // science and gold specialists
 
         for(unique in cityInfo.civInfo.getMatchingUniques("[] from every specialist"))
-            stats.add(unique.stats!!)
+            stats.add(unique.stats)
 
         return stats
     }
@@ -257,7 +257,7 @@ class CityStats {
         if (specialist == null) return Stats()
         val stats = specialist.clone()
         for (unique in cityInfo.civInfo.getMatchingUniques("[] from every specialist"))
-            stats.add(unique.stats!!)
+            stats.add(unique.stats)
         return stats
     }
 
@@ -275,10 +275,10 @@ class CityStats {
             if ((unique.placeholderText == "[] in capital" && cityInfo.isCapital())
                     || unique.placeholderText == "[] in all cities"
                     || (unique.placeholderText == "[] in all cities with a garrison" && cityInfo.getCenterTile().militaryUnit != null))
-                stats.add(unique.stats!!)
+                stats.add(unique.stats)
             if (unique.placeholderText == "[] per [] population in all cities") {
                 val amountOfEffects = (cityInfo.population.population / unique.params[1].toInt()).toFloat()
-                stats.add(unique.stats!!.times(amountOfEffects))
+                stats.add(unique.stats.times(amountOfEffects))
             }
             if (unique.text == "+1 gold and -1 unhappiness for every 2 citizens in capital" && cityInfo.isCapital()) {
                 stats.gold += (cityInfo.population.population / 2).toFloat()

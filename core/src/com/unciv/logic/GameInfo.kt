@@ -5,6 +5,7 @@ import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.automation.NextTurnAutomation
 import com.unciv.logic.city.CityConstructions
+import com.unciv.logic.city.PerpetualConstruction
 import com.unciv.logic.civilization.*
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
@@ -266,6 +267,21 @@ class GameInfo {
                 for (promotion in unit.promotions.promotions.toList())
                     if (!ruleSet.unitPromotions.containsKey(promotion))
                         unit.promotions.promotions.remove(promotion)
+
+            for (city in civilizations.asSequence().flatMap { it.cities.asSequence() }) {
+                for (building in city.cityConstructions.builtBuildings.toHashSet())
+                    if (!ruleSet.buildings.containsKey(building))
+                        city.cityConstructions.builtBuildings.remove(building)
+
+                // Remove invalid buildings or units from the queue - don't just check buildings and units because it might be a special construction as well
+                for (construction in city.cityConstructions.constructionQueue.toList()) {
+                    if (!ruleSet.buildings.containsKey(construction) && !ruleSet.units.containsKey(construction)
+                            && !PerpetualConstruction.perpetualConstructionsMap.containsKey(construction))
+                        city.cityConstructions.constructionQueue.remove(construction)
+                }
+            }
+
+
         }
 
         tileMap.setTransients(ruleSet)
@@ -311,20 +327,18 @@ class GameInfo {
             for (cityInfo in civInfo.cities) cityInfo.cityStats.updateCityHappiness()
 
             for (cityInfo in civInfo.cities) {
-                if (cityInfo.cityConstructions.currentConstruction != "") { // move it to the top of the queue
-                    val constructionQueue = cityInfo.cityConstructions.constructionQueue
-                    val itemsInQueue = constructionQueue.toList()
-                    constructionQueue.clear()
-                    constructionQueue.add(cityInfo.cityConstructions.currentConstruction)
-                    constructionQueue.addAll(itemsInQueue)
-                    cityInfo.cityConstructions.currentConstruction = ""
-                }
-
                 // As of 3.10.14, specialists are saved by name not by stat
-                for((key, value) in cityInfo.population.specialists.toHashMap().filter { it.value>0 })
+                for ((key, value) in cityInfo.population.specialists.toHashMap().filter { it.value > 0 })
                     cityInfo.population.specialistAllocations.add(
                             Specialist.specialistNameByStat(key), value.toInt())
                 cityInfo.population.specialists.clear()
+
+                /** We remove constructions from the queue that aren't defined in the ruleset.
+                 * This can lead to situations where the city is puppeted and had its construction removed, and there's no way to user-set it
+                 * So for cities like those, we'll auto-set the construction
+                 */
+                if (cityInfo.isPuppet && cityInfo.cityConstructions.constructionQueue.isEmpty())
+                    cityInfo.cityConstructions.chooseNextConstruction()
 
                 cityInfo.cityStats.update()
             }

@@ -32,6 +32,7 @@ class ModOptions {
     var unitsToRemove = HashSet<String>()
     var nationsToRemove = HashSet<String>()
     var uniques = HashSet<String>()
+    val maxXPfromBarbarians = 30
 }
 
 class Ruleset {

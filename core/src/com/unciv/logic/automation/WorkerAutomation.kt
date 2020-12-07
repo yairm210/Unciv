@@ -75,11 +75,11 @@ class WorkerAutomation(val unit: MapUnit) {
         if(citiesThatNeedConnecting.none()) return false // do nothing.
 
         val citiesThatNeedConnectingBfs = citiesThatNeedConnecting
-                .sortedBy { it.getCenterTile().aerialDistanceTo(unit.getTile()) }
+                .sortedBy { it.getCenterTile().aerialDistanceTo(unit.civInfo.getCapital().getCenterTile()) }
                 .map { city -> BFS(city.getCenterTile()){it.isLand && unit.movement.canPassThrough(it)} }
 
-        val connectedCities = unit.civInfo.cities.filter { it.isCapital() || it.cityStats.isConnectedToCapital(targetRoad) }
-                .map { it.getCenterTile() }
+        val connectedCities = unit.civInfo.cities
+                .filter { it.isCapital() || it.cityStats.isConnectedToCapital(targetRoad) }.map { it.getCenterTile() }
 
         // Since further away cities take longer to get to and - most importantly - the canReach() to them is very long,
         // we order cities by their closeness to the worker first, and then check for each one whether there's a viable path

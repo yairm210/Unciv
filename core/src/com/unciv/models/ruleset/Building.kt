@@ -246,6 +246,13 @@ class Building : NamedStats(), IConstruction {
         if(uniqueObjects.any { it.placeholderText=="Not displayed as an available construction unless [] is built"
                         && !construction.containsBuildingOrEquivalent(it.params[0])} )
             return "Should not be displayed"
+        
+        for (unique in uniqueObjects.filter { it.placeholderText == "Not displayed as an available construction without []"}) {
+            val filter = unique.params[0]
+            if ((filter in civInfo.gameInfo.ruleSet.tileResources && !construction.cityInfo.civInfo.hasResource(filter))
+                    || (filter in civInfo.gameInfo.ruleSet.buildings && !construction.containsBuildingOrEquivalent(filter)))
+                return "Should not be displayed"
+        }
 
         for(unique in uniqueObjects) when (unique.placeholderText) {
             "Must be on []" -> if (!cityCenter.matchesUniqueFilter(unique.params[0])) return unique.text
