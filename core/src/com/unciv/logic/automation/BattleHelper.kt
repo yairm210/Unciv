@@ -143,7 +143,7 @@ object BattleHelper {
 
         else if (nonCityTilesToAttack.isNotEmpty()) // second priority, units
             //enemyTileToAttack = nonCityTilesToAttack.minBy { Battle.getMapCombatantOfTile(it.tileToAttack)!!.getHealth() }
-            enemyTileToAttack = nonCityTilesToAttack.minBy { it.tileToAttack.getInfluence() } // See if influence mapping helps
+            enemyTileToAttack = nonCityTilesToAttack.minBy { it.tileToAttack.getInfluence() } // See if influence mapping helps. Attack areas that you control the most.
         else if (cityWithHealthLeft != null) enemyTileToAttack = cityWithHealthLeft // third priority, city
 
         return enemyTileToAttack

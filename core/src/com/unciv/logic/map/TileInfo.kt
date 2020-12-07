@@ -55,7 +55,8 @@ open class TileInfo {
     val longitude: Float
         get() = HexMath.getLongitude(position)
 
-    var influenceScore: Float = 0F
+    var friendlyInfluenceScore: Float = 0F
+    var enemyInfluenceScore: Float = 0F
 
     fun clone(): TileInfo {
         val toReturn = TileInfo()
@@ -105,7 +106,7 @@ open class TileInfo {
         return null
     }
     
-    fun getInfluence(): Float = influenceScore
+    fun getInfluence(): Float = enemyInfluenceScore - friendlyInfluenceScore
 
     fun getCity(): CityInfo? = owningCity
 
