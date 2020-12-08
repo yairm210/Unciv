@@ -1235,6 +1235,21 @@
 		"upgradesTo": "Helicopter Gunship",
 		"uniques": ["Bonus vs Armor 100%"]
 	},
+	
+	{
+		// "Hovering unit" unique gives ability to get into impassable tiles - and only that (no vision bonus or flying over ocean)
+		// Unit embarks like any other ground unit and has penalty for attacking over river or from embarked state
+		"name": "Helicopter Gunship",
+		"unitType": "Melee",
+		"movement": 6,
+		"strength": 60,
+		"cost": 425,
+		"requiredTech": "Computers",
+		"requiredResource": "Aluminum",
+		"uniques": ["Bonus vs Armor 100%", "No defensive terrain bonus", "Can move after attacking", "All tiles cost 1 movement",
+			"Can pass through impassable tiles", "Unable to capture cities"],
+		"attackSound": "shot"
+	},
 	{
 		"name": "Rocket Artillery",
 		"unitType": "Siege",
@@ -1268,7 +1283,7 @@
 		"uniques": ["Can move after attacking","No defensive terrain bonus"]
 	},
 	
-	/*
+	/* // THIS STUFF IS COMMENTED OUT!!!
 	// Information Era
 	{
 		"name": "Mobile SAM",
@@ -1281,20 +1296,6 @@
 		"uniques": ["[100]% chance to intercept air attacks","Bonus vs air units 150%"],
 		"attackSound": "shot"
 		// 65 strength, 3 movement, requiredTech "Rocketry" in expansions
-	},
-	{
-		// "Hovering unit" unique gives ability to get into impassable tiles - and only that (no vision bonus or flying over ocean)
-		// Unit embarks like any other ground unit and has penalty for attacking over river or from embarked state
-		"name": "Helicopter Gunship",
-		"unitType": "Melee",
-		"movement": 6,
-		"strength": 60,
-		"cost": 425,
-		"requiredTech": "Computers",
-		"requiredResource": "Aluminum",
-		"uniques": ["Bonus vs Armor 100%", "No defensive terrain bonus", "Can move after attacking", "All tiles cost 1 movement",
-			"Can pass through impassable tiles", "Unable to capture cities"],
-		"attackSound": "shot"
 	},
 	{
 		"name": "Jet Fighter",
