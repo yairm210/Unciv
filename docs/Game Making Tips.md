@@ -97,15 +97,15 @@ There are lots of people who will play your game only because it's open source, 
 For example... 
 
 - Being the best 4X game means competing with the biggest names out there
-- Being the best 4X game for Linux means many less competitors
-- Being the best Open Source 4X game means about 5 competitors
-- Being the best Open Source 4X game for Android... means having no competitors.
+- Being the best 4X game for Linux means many less competitors, but All The Cool Kids (tm) are multiplatforming nowadays so you're still outperformed.
+- Being the best Open Source 4X game means about 5 competitors, and no money is involved either so the average entry is not as polished.
+- Being the best Open Source 4X game for Android... means having so few competitors that it's totally doable.
 
 ## Everything is marketing.
 
 Your game's name, the icon, screenshots, everythig a player sees about your game is marketing.
 
-Icons and bylines are especially improtant, since they're the first things your players will probably see.
+Icons and bylines are especially important, since they're the first things your players will probably see.
 
 I saw an almost 50% (!) by changing the icon, after seveeral experiments, which Google Play lets you conduct very easily.
 
@@ -120,7 +120,7 @@ The important parts are:
 - Game translation files should be AUTO GENERATED. This allows you to add new objects into the game with impunity,
  knowing that corresponding lines will be auto-added to the translations.
  
-- Translations for each language shoule be stored separately - this allows concurrent modification of several independant languages with no risk of conflict
+- Translations for each language should be stored separately - this allows concurrent modification of several independant languages with no risk of conflict
 
 - Translations should be PR'd in! This allows other speakers to question or change the proposed translations, and allows you to run tests on your translations.
 If you require a specific format, this is invaluable as it means that bad translations will be rejected at the door.
@@ -137,8 +137,40 @@ Since this is an Open Source game, I'm working on a 0$ budget, so we just store 
 
 Is this secure? No, but does it need to be? You need to think of the cost vs the value.
 
-Same thing with Mods. Steam handles its mods itself.
+Same thing with Mods. Steam is big and secure so it handles its mods itself.
 
-We just allow to download from Github, which lets us use all of Github's built in functions (user management, readmes, stars, versioning...) at no extra cost.
+We are small and open, so we just allow to download from Github, which lets us use all of Github's built in functions (user management, readmes, stars, versioning...) at no extra cost.
 
-And unlike the Dropbox usage, with is masically abuse, Github is built for thiss kind of thing! This is exactly the kind of use case they were thnking of to start with!
+And unlike the Dropbox usage, which is basically abuse, Github is built for thiss kind of thing!
+This is exactly the kind of use case they were thinking of to start with!
+
+
+# The Reckoning
+
+There comes a time in every project where the cool stuff is done. All the cutting-edge awesomeness and algorithmic playdough is done, and now all (hah) it needs is polish.
+
+You know who loves polish? Players! Sure, there are some that say "a good game is good even if it's basic" but they have *standards* for what a basic game should have as well.
+
+And the numbers don't lie. Polished games sell themselves better, and so are played more.
+
+You know who **doesn't** love polish? DEVELOPERS.
+
+When your game is relatively simple, then the options for polish are more limited, but the more complex the game, the more polish-venues there are.
+
+And it can be an ABSOLUTE GRIND. Another weird use-case, another ingame option, "better performance" (I must have spent dozens of hours on different performance related actions)
+
+And the worst thing is, that everyone notices when it's missing, but no one notices when it's there. A hundred versions of polish - literally - and the average player may notice only a slight change.
+
+And then comes the moment when you ask yourself, why bother? What are we even doing here?
+
+For me, the answers are as follows:
+
+A. To build something truly great, you have to keep going way beyond when it stops being fun.
+B. There's a community of people that like what you're doing and want there to be more of it :)
+C. You know you want to keep coding, and what, you think you're going to start another project and it'll work out as well? You've tried that multiple times, and let's face it the chance of you making a second game that goes so well is really small unless you invest in it as much time as you have in this, and yeah, then you'll be back in this position again.
+
+And that's basically the loop I've been in for the last hundred versions or so! Solve bugs, fix edge cases, improve AI, accept PRs. Lots of mod-related changes, both to stop the game breaking when people do things in mods that they shouldn't and to allow them more freedom in making them.
+
+I don't think I'll ever really continue to finish G&K, I'm DEFINITELY not planning on implementing BNW mechanics which frankly I think are...not great.
+
+That's where I am right now. Kind of done with the game, but considering that I thought that half a year ago and releases are still releasing roughly every week, also kind of not.

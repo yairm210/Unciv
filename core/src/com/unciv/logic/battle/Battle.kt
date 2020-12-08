@@ -63,7 +63,7 @@ object Battle {
         postBattleNationUniques(defender, attackedTile, attacker)
 
         // This needs to come BEFORE the move-to-tile, because if we haven't conquered it we can't move there =)
-        if (defender.isDefeated() && defender is CityCombatant && attacker.isMelee())
+        if (defender.isDefeated() && defender is CityCombatant && attacker is MapUnitCombatant && attacker.isMelee() && !attacker.unit.hasUnique("Unable to capture cities"))
             conquerCity(defender.city, attacker)
 
         // we're a melee unit and we destroyed\captured an enemy unit
@@ -122,9 +122,7 @@ object Battle {
         }
 
         for (unique in bonusUniques) {
-            if (!defeatedUnit.matchesCategory(unique.params[1])) {
-                continue
-            }
+            if (!defeatedUnit.matchesCategory(unique.params[1])) continue
 
             val yieldPercent = unique.params[0].toFloat() / 100
             val defeatedUnitYieldSourceType = unique.params[2]
@@ -269,7 +267,7 @@ object Battle {
     // XP!
     private fun addXp(thisCombatant:ICombatant, amount:Int, otherCombatant:ICombatant){
         if(thisCombatant !is MapUnitCombatant) return
-        if(thisCombatant.unit.promotions.totalXpProduced() >= 30 && otherCombatant.getCivInfo().isBarbarian())
+        if(thisCombatant.unit.promotions.totalXpProduced() >= thisCombatant.unit.civInfo.gameInfo.ruleSet.modOptions.maxXPfromBarbarians && otherCombatant.getCivInfo().isBarbarian())
             return
 
         var XPModifier = 1f
@@ -303,13 +301,13 @@ object Battle {
         attackerCiv.addNotification("We have conquered the city of [${city.name}]!", city.location, Color.RED)
 
         city.getCenterTile().apply {
-            if(militaryUnit!=null) militaryUnit!!.destroy()
-            if(civilianUnit!=null) captureCivilianUnit(attacker, MapUnitCombatant(civilianUnit!!))
-            for(airUnit in airUnits.toList()) airUnit.destroy()
+            if (militaryUnit != null) militaryUnit!!.destroy()
+            if (civilianUnit != null) captureCivilianUnit(attacker, MapUnitCombatant(civilianUnit!!))
+            for (airUnit in airUnits.toList()) airUnit.destroy()
         }
         city.hasJustBeenConquered = true
 
-        if (!attackerCiv.isMajorCiv()){
+        if (attackerCiv.isBarbarian()) {
             city.destroyCity()
             return
         }
@@ -317,10 +315,9 @@ object Battle {
         if (attackerCiv.isPlayerCivilization()) {
             attackerCiv.popupAlerts.add(PopupAlert(AlertType.CityConquered, city.id))
             UncivGame.Current.settings.addCompletedTutorialTask("Conquer a city")
-        }
-        else {
+        } else {
             city.puppetCity(attackerCiv)
-            if (city.population.population < 4) {
+            if (city.population.population < 4 && !city.isOriginalCapital) {
                 city.annexCity()
                 city.isBeingRazed = true
             }
@@ -328,15 +325,16 @@ object Battle {
     }
 
     fun getMapCombatantOfTile(tile:TileInfo): ICombatant? {
-        if(tile.isCityCenter()) return CityCombatant(tile.getCity()!!)
-        if(tile.militaryUnit!=null) return MapUnitCombatant(tile.militaryUnit!!)
-        if(tile.civilianUnit!=null) return MapUnitCombatant(tile.civilianUnit!!)
+        if (tile.isCityCenter()) return CityCombatant(tile.getCity()!!)
+        if (tile.militaryUnit != null) return MapUnitCombatant(tile.militaryUnit!!)
+        if (tile.civilianUnit != null) return MapUnitCombatant(tile.civilianUnit!!)
         return null
     }
 
     private fun captureCivilianUnit(attacker: ICombatant, defender: ICombatant){
         // barbarians don't capture civilians
-        if(attacker.getCivInfo().isBarbarian()){
+        if(attacker.getCivInfo().isBarbarian()
+                ||(defender as MapUnitCombatant).unit.hasUnique("Uncapturable")){
             defender.takeDamage(100)
             return
         }
@@ -344,7 +342,7 @@ object Battle {
         // need to save this because if the unit is captured its owner wil be overwritten
         val defenderCiv = defender.getCivInfo()
 
-        val capturedUnit = (defender as MapUnitCombatant).unit
+        val capturedUnit = defender.unit
         capturedUnit.civInfo.addNotification("An enemy ["+attacker.getName()+"] has captured our ["+defender.getName()+"]",
                 defender.getTile().position, Color.RED)
 
@@ -390,8 +388,8 @@ object Battle {
 
             fun declareWar(civSuffered: CivilizationInfo) {
                 if (civSuffered != attackingCiv
-                        && civSuffered.knows(attackingCiv)
-                        && civSuffered.getDiplomacyManager(attackingCiv).canDeclareWar()) {
+                        && attackingCiv.knows(attackingCiv)
+                        && attackingCiv.getDiplomacyManager(civSuffered).canDeclareWar()) {
                     civSuffered.getDiplomacyManager(attackingCiv).declareWar()
                 }
             }

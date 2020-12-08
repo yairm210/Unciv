@@ -126,7 +126,7 @@ class NewGameScreen(previousScreen:CameraStageBaseScreen, _gameSetupInfo: GameSe
             }
         }
 
-        if (gameSetupInfo.gameParameters.isOnlineMultiplayer) {
+        if (newGame != null && gameSetupInfo.gameParameters.isOnlineMultiplayer) {
             newGame!!.isUpToDate = true // So we don't try to download it from dropbox the second after we upload it - the file is not yet ready for loading!
             try {
                 OnlineMultiplayer().tryUploadGame(newGame!!)
@@ -137,7 +137,7 @@ class NewGameScreen(previousScreen:CameraStageBaseScreen, _gameSetupInfo: GameSe
                 // Save gameId to clipboard because you have to do it anyway.
                 Gdx.app.clipboard.contents = newGame!!.gameId
                 // Popup to notify the User that the gameID got copied to the clipboard
-                Gdx.app.postRunnable { ResponsePopup("gameID copied to clipboard".tr(), UncivGame.Current.worldScreen, 2500) }
+                Gdx.app.postRunnable { ToastPopup("gameID copied to clipboard".tr(), UncivGame.Current.worldScreen, 2500) }
             } catch (ex: Exception) {
                 Gdx.app.postRunnable {
                     val cantUploadNewGamePopup = Popup(this)

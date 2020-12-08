@@ -237,21 +237,21 @@ class MapGenerator(val ruleset: Ruleset) {
     }
 
     /**
-     * [MapParameters.vegetationOccurrance] is the threshold for vegetation spawn
+     * [MapParameters.vegetationRichness] is the threshold for vegetation spawn
      */
     private fun spawnVegetation(tileMap: TileMap) {
         val vegetationSeed = randomness.RNG.nextInt().toDouble()
-        val candidateTerrains = Constants.vegetation.flatMap{ ruleset.terrains[it]!!.occursOn!! }
+        val candidateTerrains = Constants.vegetation.flatMap{ ruleset.terrains[it]!!.occursOn }
         for (tile in tileMap.values.asSequence().filter { it.baseTerrain in candidateTerrains && it.terrainFeature == null
                 && (!it.isHill() || Constants.hill in candidateTerrains) }) {
             val vegetation = (randomness.getPerlinNoise(tile, vegetationSeed, scale = 3.0, nOctaves = 1) + 1.0) / 2.0
 
             if (vegetation <= tileMap.mapParameters.vegetationRichness)
-                tile.terrainFeature = Constants.vegetation.filter { ruleset.terrains[it]!!.occursOn!!.contains(tile.baseTerrain) }.random(randomness.RNG)
+                tile.terrainFeature = Constants.vegetation.filter { ruleset.terrains[it]!!.occursOn.contains(tile.baseTerrain) }.random(randomness.RNG)
         }
     }
     /**
-     * [MapParameters.rareFeaturesProbability] is the probability of spawning a rare feature
+     * [MapParameters.rareFeaturesRichness] is the probability of spawning a rare feature
      */
     private fun spawnRareFeatures(tileMap: TileMap) {
         val rareFeatures = ruleset.terrains.values.filter {
@@ -259,8 +259,8 @@ class MapGenerator(val ruleset: Ruleset) {
         }
         for (tile in tileMap.values.asSequence().filter { it.terrainFeature == null }) {
             if (randomness.RNG.nextDouble() <= tileMap.mapParameters.rareFeaturesRichness) {
-                val possibleFeatures = rareFeatures.filter { it.occursOn != null && it.occursOn.contains(tile.baseTerrain)
-                        && (!tile.isHill() || it.occursOn.contains(Constants.hill) )}
+                val possibleFeatures = rareFeatures.filter { it.occursOn.contains(tile.baseTerrain)
+                        && (!tile.isHill() || it.occursOn.contains(Constants.hill)) }
                 if (possibleFeatures.any())
                     tile.terrainFeature = possibleFeatures.random(randomness.RNG).name
             }

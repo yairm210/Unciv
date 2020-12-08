@@ -13,7 +13,7 @@ import com.unciv.logic.GameSaver
 import com.unciv.ui.utils.ORIGINAL_FONT_SIZE
 import java.io.File
 
-class AndroidLauncher : AndroidApplication() {
+open class AndroidLauncher : AndroidApplication() {
     private var customSaveLocationHelper: CustomSaveLocationHelperAndroid? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,7 +33,6 @@ class AndroidLauncher : AndroidApplication() {
         val androidParameters = UncivGameParameters(
                 version = BuildConfig.VERSION_NAME,
                 crashReportSender = CrashReportSenderAndroid(this),
-                exitEvent = this::finish,
                 fontImplementation = NativeFontAndroid(ORIGINAL_FONT_SIZE.toInt()),
                 customSaveLocationHelper = customSaveLocationHelper
         )
@@ -89,3 +88,5 @@ class AndroidLauncher : AndroidApplication() {
         super.onActivityResult(requestCode, resultCode, data)
     }
 }
+
+class AndroidTvLauncher:AndroidLauncher()

@@ -1,7 +1,6 @@
 package com.unciv.logic.city
 
 import com.badlogic.gdx.graphics.Color
-import com.unciv.Constants
 import com.unciv.logic.automation.ConstructionAutomation
 import com.unciv.logic.civilization.AlertType
 import com.unciv.logic.civilization.PopupAlert
@@ -34,8 +33,6 @@ class CityConstructions {
 
     var builtBuildings = HashSet<String>()
     val inProgressConstructions = HashMap<String, Int>()
-    @Deprecated("As of 3.7.5, all constructions are in the queue")
-    var currentConstruction=""
     var currentConstructionFromQueue: String
         get() {
             if(constructionQueue.isEmpty()) return "" else return constructionQueue.first()
@@ -73,8 +70,8 @@ class CityConstructions {
             stats.add(building.getStats(cityInfo.civInfo))
 
         for (unique in builtBuildingUniqueMap.getAllUniques()) when (unique.placeholderText) {
-            "[] Per [] Population in this city" -> stats.add(Stats.parse(unique.params[0]).times(cityInfo.population.population / unique.params[1].toFloat()))
-            "[] once [] is discovered" -> if (cityInfo.civInfo.tech.isResearched(unique.params[1])) stats.add(Stats.parse(unique.params[0]))
+            "[] Per [] Population in this city" -> stats.add(unique.stats.times(cityInfo.population.population / unique.params[1].toFloat()))
+            "[] once [] is discovered" -> if (cityInfo.civInfo.tech.isResearched(unique.params[1])) stats.add(unique.stats)
         }
 
         // This is to be deprecated and converted to "[stats] Per [N] Population in this city" - keeping it here to that mods with this can still work for now

@@ -342,24 +342,25 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
         val resources = ArrayList<Actor>()
         resources.add(getHex(Color.WHITE, getCrossedResource()).apply {
             onClick {
-                tileAction = {it.resource=null}
+                tileAction = { it.resource = null }
                 setCurrentHex(getHex(Color.WHITE, getCrossedResource()), "Clear resource")
             }
         })
 
         for (resource in ruleset.tileResources.values) {
+            if (resource.terrainsCanBeFoundOn.none { ruleset.terrains.containsKey(it) }) continue // This resource can't be placed
             val resourceHex = getHex(Color.WHITE, ImageGetter.getResourceImage(resource.name, 40f))
             resourceHex.onClick {
-                tileAction = {it.resource = resource.name}
+                tileAction = { it.resource = resource.name }
 
                 // for the tile image
                 val tileInfo = TileInfo()
                 tileInfo.ruleset = mapEditorScreen.ruleset
-                val terrain = resource.terrainsCanBeFoundOn.first()
+                val terrain = resource.terrainsCanBeFoundOn.first { ruleset.terrains.containsKey(it) }
                 val terrainObject = ruleset.terrains[terrain]!!
                 if (terrainObject.type == TerrainType.TerrainFeature) {
                     tileInfo.baseTerrain =
-                            if (terrainObject.occursOn != null) terrainObject.occursOn.first()
+                            if (terrainObject.occursOn.isNotEmpty()) terrainObject.occursOn.first()
                             else "Grassland"
                     tileInfo.terrainFeature = terrain
                 } else tileInfo.baseTerrain = terrain
@@ -379,7 +380,7 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
             val tileInfo = TileInfo()
             if (terrain.type == TerrainType.TerrainFeature) {
                 tileInfo.baseTerrain = when {
-                    terrain.occursOn != null -> terrain.occursOn.first()
+                    terrain.occursOn.isNotEmpty() -> terrain.occursOn.first()
                     else -> "Grassland"
                 }
                 tileInfo.terrainFeature = terrain.name
@@ -492,9 +493,9 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
         }
 
         if (tileInfo.terrainFeature != null) {
-            val terrainFeature = tileInfo.getTerrainFeature()!!
-            if(terrainFeature.occursOn!=null && !terrainFeature.occursOn.contains(tileInfo.baseTerrain))
-                tileInfo.terrainFeature=null
+            val terrainFeature = tileInfo.getTerrainFeature()
+            if (terrainFeature==null || terrainFeature.occursOn.isNotEmpty() && !terrainFeature.occursOn.contains(tileInfo.baseTerrain))
+                tileInfo.terrainFeature = null
         }
         if (tileInfo.resource != null) {
             val resource = tileInfo.getTileResource()

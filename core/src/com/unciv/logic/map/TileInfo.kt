@@ -105,7 +105,11 @@ open class TileInfo {
 
     fun getCity(): CityInfo? = owningCity
 
-    fun getLastTerrain(): Terrain = if (terrainFeature != null) getTerrainFeature()!! else if (naturalWonder != null) getNaturalWonder() else getBaseTerrain()
+    fun getLastTerrain(): Terrain = when {
+        terrainFeature != null -> getTerrainFeature()!!
+        naturalWonder != null -> getNaturalWonder()
+        else -> getBaseTerrain()
+    }
 
     fun getTileResource(): TileResource =
             if (resource == null) throw Exception("No resource exists for this tile!")
@@ -160,7 +164,7 @@ open class TileInfo {
     fun getWorkingCity(): CityInfo? {
         val civInfo = getOwner()
         if (civInfo == null) return null
-        return civInfo.cities.firstOrNull { it.workedTiles.contains(position) }
+        return civInfo.cities.firstOrNull { it.isWorked(this) }
     }
 
     fun isWorked(): Boolean {
@@ -190,11 +194,12 @@ open class TileInfo {
             val civWideUniques = city.civInfo.getMatchingUniques("[] from every []")
             for (unique in cityWideUniques + civWideUniques) {
                 val tileType = unique.params[1]
+                if (tileType == improvement) continue // This is added to the calculation in getImprovementStats. we don't want to add it twice
                 if (matchesUniqueFilter(tileType)
                         || (resource == tileType && hasViewableResource(observingCiv))
                         || (tileType == "Strategic resource" && hasViewableResource(observingCiv) && getTileResource().resourceType == ResourceType.Strategic)
                         || (tileType == "Water resource" && isWater && hasViewableResource(observingCiv))
-                ) stats.add(Stats.parse(unique.params[0]))
+                ) stats.add(unique.stats)
             }
         }
 
@@ -247,7 +252,7 @@ open class TileInfo {
 
         for (unique in improvement.uniqueObjects)
             if (unique.placeholderText == "[] once [] is discovered" && observingCiv.tech.isResearched(unique.params[1]))
-                stats.add(Stats.parse(unique.params[0]))
+                stats.add(unique.stats)
 
         if (city != null) {
             val cityWideUniques = city.cityConstructions.builtBuildingUniqueMap.getUniques("[] from [] tiles in this city")
@@ -262,7 +267,7 @@ open class TileInfo {
                         || (unique.params[1] == "fresh water" && isAdjacentToFreshwater)
                         || (unique.params[1] == "non-fresh water" && !isAdjacentToFreshwater)
                 )
-                    stats.add(Stats.parse(unique.params[0]))
+                    stats.add(unique.stats)
             }
         }
 
@@ -278,7 +283,7 @@ open class TileInfo {
                             || it.matchesUniqueFilter(adjacent)
                             || it.roadStatus.name == adjacent
                 }
-                stats.add(Stats.parse(unique.params[0]).times(numberOfBonuses.toFloat()))
+                stats.add(unique.stats.times(numberOfBonuses.toFloat()))
             }
 
         return stats
@@ -288,9 +293,8 @@ open class TileInfo {
     fun canBuildImprovement(improvement: TileImprovement, civInfo: CivilizationInfo): Boolean {
         return when {
             improvement.uniqueTo != null && improvement.uniqueTo != civInfo.civName -> false
-            improvement.techRequired?.let { civInfo.tech.isResearched(it) } == false -> false
-            getOwner() != null && getOwner() != civInfo &&
-                    !improvement.hasUnique("Can be built outside your borders") -> false
+            improvement.techRequired != null && !civInfo.tech.isResearched(improvement.techRequired!!) -> false
+            getOwner() != civInfo && !improvement.hasUnique("Can be built outside your borders") -> false
             else -> canImprovementBeBuiltHere(improvement, hasViewableResource(civInfo))
         }
     }
@@ -318,8 +322,8 @@ open class TileInfo {
             improvement.name == "Remove Railroad" && this.roadStatus == RoadStatus.Railroad -> true
             improvement.name == Constants.cancelImprovementOrder && this.improvementInProgress != null -> true
             topTerrain.unbuildable && (topTerrain.name !in improvement.resourceTerrainAllow) -> false
-            improvement.hasUnique("Can also be built on tiles adjacent to fresh water")
-                    && isAdjacentToFreshwater -> true
+            // DO NOT reverse this &&. isAdjacentToFreshwater() is a lazy which calls a function, and reversing it breaks the tests.
+            improvement.hasUnique("Can also be built on tiles adjacent to fresh water") && isAdjacentToFreshwater -> true
             "Can only be built on Coastal tiles" in improvement.uniques && isCoastalTile() -> true
             else -> resourceIsVisible && getTileResource().improvement == improvement.name
         }
@@ -332,6 +336,8 @@ open class TileInfo {
                 || filter == terrainFeature
                 || baseTerrainObject.uniques.contains(filter)
                 || terrainFeature != null && getTerrainFeature()!!.uniques.contains(filter)
+                || improvement == filter
+//                || resource == filter // TODO uncomment in next version
                 || filter == "Water" && isWater
     }
 
@@ -426,7 +432,7 @@ open class TileInfo {
             milUnitString += " - " + militaryUnit!!.civInfo.civName.tr()
             lineList += milUnitString
         }
-        var defenceBonus = getDefensiveBonus()
+        val defenceBonus = getDefensiveBonus()
         if (defenceBonus != 0f) {
             var defencePercentString = (defenceBonus * 100).toInt().toString() + "%"
             if (!defencePercentString.startsWith("-")) defencePercentString = "+$defencePercentString"
@@ -446,7 +452,7 @@ open class TileInfo {
     }
 
     fun setTerrainTransients() {
-        baseTerrainObject = ruleset.terrains[baseTerrain]!! // This is a HACK.
+        baseTerrainObject = ruleset.terrains[baseTerrain]!!
         isWater = getBaseTerrain().type == TerrainType.Water
         isLand = getBaseTerrain().type == TerrainType.Land
         isOcean = baseTerrain == Constants.ocean

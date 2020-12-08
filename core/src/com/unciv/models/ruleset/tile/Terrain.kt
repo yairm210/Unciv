@@ -20,7 +20,7 @@ class Terrain : NamedStats() {
     var unbuildable = false
 
     /** For terrain features */
-    val occursOn: Collection<String>? = null
+    val occursOn = ArrayList<String>()
 
     /** Used by Natural Wonders: it is the baseTerrain on top of which the Natural Wonder is placed */
     val turnsInto: String? = null
@@ -48,7 +48,7 @@ class Terrain : NamedStats() {
     fun getDescription(ruleset: Ruleset): String {
         val sb = StringBuilder()
         sb.appendln(this.clone().toString())
-        if (occursOn != null)
+        if (occursOn.isNotEmpty())
             sb.appendln("Occurs on [${occursOn.joinToString(", ") { it.tr() }}]".tr())
 
         if (turnsInto != null)

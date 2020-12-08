@@ -33,10 +33,8 @@ class MapEditorMenuPopup(var mapEditorScreen: MapEditorScreen): Popup(mapEditorS
         addSaveMapButton()
         addCopyMapAsTextButton()
         addLoadMapButton()
-        addUploadMapButton()
-        if (UncivGame.Current.settings.extendedMapEditor) {
-            addScenarioButton()
-        }
+//        addUploadMapButton()
+        if (UncivGame.Current.settings.extendedMapEditor) addScenarioButton()
         addExitMapEditorButton()
         addCloseOptionsButton()
     }
@@ -95,7 +93,7 @@ class MapEditorMenuPopup(var mapEditorScreen: MapEditorScreen): Popup(mapEditorS
                     }
                     close()
                     Gdx.app.postRunnable {
-                        ResponsePopup("Map saved", mapEditorScreen) // todo - add this text to translations
+                        ToastPopup("Map saved", mapEditorScreen) // todo - add this text to translations
                     }
                 } catch (ex: Exception) {
                     ex.printStackTrace()

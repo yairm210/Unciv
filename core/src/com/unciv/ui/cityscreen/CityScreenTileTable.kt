@@ -54,11 +54,11 @@ class CityScreenTileTable(private val cityScreen: CityScreen): Table(){
         }
 
         if(city.civInfo.cities.filterNot { it==city }
-                        .any { it.workedTiles.contains(selectedTile.position) }) {
+                        .any { it.isWorked(selectedTile) }) {
             innerTable.add("Worked by [${selectedTile.getWorkingCity()!!.name}]".toLabel()).row()
         }
 
-        if(city.workedTiles.contains(selectedTile.position)){
+        if(city.isWorked(selectedTile)){
             if(selectedTile.isLocked()) {
                 val unlockButton = "Unlock".toTextButton()
                 unlockButton.onClick {

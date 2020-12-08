@@ -32,6 +32,7 @@ class ModOptions {
     var unitsToRemove = HashSet<String>()
     var nationsToRemove = HashSet<String>()
     var uniques = HashSet<String>()
+    val maxXPfromBarbarians = 30
 }
 
 class Ruleset {
@@ -217,15 +218,25 @@ class Ruleset {
         val lines = ArrayList<String>()
 
         // Checks for all mods
-        for (unit in units.values)
+        for (unit in units.values) {
             if (unit.upgradesTo == unit.name)
                 lines += "${unit.name} upgrades to itself!"
+            if (!unit.unitType.isCivilian() && unit.strength == 0)
+                lines += "${unit.name} is a military unit but has no assigned strength!"
+            if (unit.unitType.isRanged() && unit.rangedStrength == 0)
+                lines += "${unit.name} is a ranged unit but has no assigned rangedStrength!"
+        }
 
         for (tech in technologies.values) {
             for (otherTech in tech.column!!.techs) {
                 if (tech != otherTech && otherTech.row == tech.row)
                     lines += "${tech.name} is in the same row as ${otherTech.name}!"
             }
+        }
+
+        for (building in buildings.values) {
+            if (building.requiredTech == null && building.cost == 0)
+                lines += "${building.name} must either have an explicit cost or reference an existing tech!"
         }
 
         if (!modOptions.isBaseRuleset) return lines.joinToString("\n")
@@ -241,7 +252,11 @@ class Ruleset {
             if (unit.upgradesTo != null && !units.containsKey(unit.upgradesTo!!))
                 lines += "${unit.name} upgrades to unit ${unit.upgradesTo} which does not exist!"
             if (unit.replaces != null && !units.containsKey(unit.replaces!!))
-                lines += "${unit.replaces} replaces ${unit.replaces} which does not exist!"
+                lines += "${unit.name} replaces ${unit.replaces} which does not exist!"
+            for (promotion in unit.promotions)
+                if (!unitPromotions.containsKey(promotion))
+                    lines += "${unit.replaces} contains promotion $promotion which does not exist!"
+
         }
 
         for (building in buildings.values) {
@@ -258,11 +273,23 @@ class Ruleset {
                 lines += "${resource.name} revealed by tech ${resource.revealedBy} which does not exist!"
             if (resource.improvement != null && !tileImprovements.containsKey(resource.improvement!!))
                 lines += "${resource.name} improved by improvement ${resource.improvement} which does not exist!"
+            for (terrain in resource.terrainsCanBeFoundOn)
+                if (!terrains.containsKey(terrain))
+                    lines += "${resource.name} can be found on terrain $terrain which does not exist!"
         }
 
         for (improvement in tileImprovements.values) {
             if (improvement.techRequired != null && !technologies.containsKey(improvement.techRequired!!))
                 lines += "${improvement.name} requires tech ${improvement.techRequired} which does not exist!"
+            for (terrain in improvement.terrainsCanBeBuiltOn)
+                if (!terrains.containsKey(terrain))
+                    lines += "${improvement.name} can be built on terrain $terrain which does not exist!"
+        }
+
+        for (terrain in terrains.values) {
+            for (baseTerrain in terrain.occursOn)
+                if (!terrains.containsKey(baseTerrain))
+                    lines += "${terrain.name} occurs on terrain $baseTerrain which does not exist!"
         }
 
         for (tech in technologies.values) {
@@ -324,7 +351,7 @@ object RulesetCache :HashMap<String,Ruleset>() {
         for (mod in loadedMods.sortedByDescending { it.modOptions.isBaseRuleset }) {
             newRuleset.add(mod)
             newRuleset.mods += mod.name
-            if(mod.modOptions.isBaseRuleset){
+            if (mod.modOptions.isBaseRuleset) {
                 newRuleset.modOptions = mod.modOptions
             }
         }

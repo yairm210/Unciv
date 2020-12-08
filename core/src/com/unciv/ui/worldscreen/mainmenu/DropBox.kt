@@ -42,6 +42,11 @@ object DropBox {
                 val reader = BufferedReader(InputStreamReader(errorStream))
                 println(reader.readText())
                 return null
+            } catch (error: Error) {
+                println(error.message)
+                val reader = BufferedReader(InputStreamReader(errorStream))
+                println(reader.readText())
+                return null
             }
         }
     }
@@ -188,6 +193,7 @@ object Github {
         var description = ""
         var svn_url = ""
         var stargazers_count = 0
+        var default_branch = ""
     }
 }
 

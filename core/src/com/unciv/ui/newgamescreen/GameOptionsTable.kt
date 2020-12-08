@@ -192,14 +192,47 @@ class GameOptionsTable(val previousScreen: IPreviousScreen, val updatePlayerPick
             if (mod.name in gameParameters.mods) checkBox.isChecked = true
             checkBox.onChange {
                 if (checkBox.isChecked) {
+                    val modLinkErrors = mod.checkModLinks()
+                    if (modLinkErrors != "") {
+                        ToastPopup("The mod you selected is incorrectly defined!\n\n$modLinkErrors", previousScreen as CameraStageBaseScreen)
+                        checkBox.isChecked = false
+                        return@onChange
+                    }
+
+                    val previousMods = gameParameters.mods.toList()
+
                     if (mod.modOptions.isBaseRuleset)
-                        for (oldBaseRuleset in gameParameters.mods)
+                        for (oldBaseRuleset in previousMods) // so we don't get concurrent modification excpetions
                             if (modRulesets.firstOrNull { it.name == oldBaseRuleset }?.modOptions?.isBaseRuleset == true)
                                 gameParameters.mods.remove(oldBaseRuleset)
                     gameParameters.mods.add(mod.name)
+
+                    var isCompatibleWithCurrentRuleset = true
+                    var complexModLinkErrors = ""
+                    try {
+                        val newRuleset = RulesetCache.getComplexRuleset(gameParameters)
+                        newRuleset.modOptions.isBaseRuleset = true
+                        complexModLinkErrors = newRuleset.checkModLinks()
+                        if (complexModLinkErrors != "") isCompatibleWithCurrentRuleset = false
+                    } catch (x: Exception) {
+                        // This happens if a building is dependent on a tech not in the base ruleset
+                        //  because newRuleset.updateBuildingCosts() in getComplexRulset() throws an error
+                        isCompatibleWithCurrentRuleset = false
+                    }
+
+                    if (!isCompatibleWithCurrentRuleset) {
+                        ToastPopup("The mod you selected is incompatible with the defined ruleset!\n\n$complexModLinkErrors", previousScreen as CameraStageBaseScreen)
+                        checkBox.isChecked = false
+                        gameParameters.mods.clear()
+                        gameParameters.mods.addAll(previousMods)
+                        return@onChange
+                    }
+
+                    reloadRuleset()
+                } else {
+                    gameParameters.mods.remove(mod.name)
+                    reloadRuleset()
                 }
-                else gameParameters.mods.remove(mod.name)
-                reloadRuleset()
                 update()
                 var desiredCiv = ""
                 if (checkBox.isChecked) {

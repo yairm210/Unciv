@@ -149,7 +149,7 @@ class CivilopediaScreen(ruleset: Ruleset) : CameraStageBaseScreen() {
             }
             TerrainType.TerrainFeature -> {
                 tileInfo.terrainFeature = terrain.name
-                tileInfo.baseTerrain = terrain.occursOn?.last() ?: Constants.grassland
+                tileInfo.baseTerrain = terrain.occursOn.lastOrNull() ?: Constants.grassland
             }
             else ->
                 tileInfo.baseTerrain = terrain.name

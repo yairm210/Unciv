@@ -7,6 +7,7 @@ import com.unciv.logic.city.CityConstructions
 import com.unciv.logic.city.PerpetualConstruction
 import com.unciv.logic.civilization.CityAction
 import com.unciv.logic.civilization.PlayerType
+import com.unciv.logic.map.BFS
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.VictoryType
 import com.unciv.models.stats.Stat
@@ -28,13 +29,6 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
     val workers = civUnits.filter { it.hasUnique(Constants.workerUnique) }.count().toFloat()
     val cities = civInfo.cities.size
     val allTechsAreResearched = civInfo.tech.getNumberOfTechsResearched() >= civInfo.gameInfo.ruleSet.technologies.size
-
-    val buildableWorkboatUnits = cityInfo.cityConstructions.getConstructableUnits()
-            .filter { it.uniques.contains("May create improvements on water resources") }
-    val canBuildWorkboat = buildableWorkboatUnits.any()
-            && !cityInfo.getTiles().any { it.civilianUnit?.hasUnique("May create improvements on water resources")==true }
-    val needWorkboat = canBuildWorkboat
-            && cityInfo.getTiles().any { it.isWater && it.hasViewableResource(civInfo) && it.improvement == null }
 
     val isAtWar = civInfo.isAtWar()
     val preferredVictoryType = civInfo.victoryType()
@@ -119,9 +113,26 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
     }
 
     private fun addWorkBoatChoice() {
-        if (needWorkboat) {
-            addChoice(relativeCostEffectiveness, buildableWorkboatUnits.minBy { it.cost }!!.name, 0.6f)
+        val buildableWorkboatUnits = cityInfo.cityConstructions.getConstructableUnits()
+                .filter { it.uniques.contains("May create improvements on water resources") }
+        val canBuildWorkboat = buildableWorkboatUnits.any()
+                && !cityInfo.getTiles().any { it.civilianUnit?.hasUnique("May create improvements on water resources") == true }
+        if (!canBuildWorkboat) return
+        val tilesThatNeedWorkboat = cityInfo.getTiles()
+                .filter { it.isWater && it.hasViewableResource(civInfo) && it.improvement == null }.toList()
+        if (tilesThatNeedWorkboat.isEmpty()) return
+
+        // If we can't reach the tile we need to improve within 15 tiles, it's probably unreachable.
+        val bfs = BFS(cityInfo.getCenterTile()) { (it.isWater || it.isCityCenter()) && it.isFriendlyTerritory(civInfo) }
+        for (i in 1..15) {
+            bfs.nextStep()
+            if (tilesThatNeedWorkboat.any { bfs.hasReachedTile(it) })
+                break
+            if (bfs.hasEnded()) break
         }
+        if (tilesThatNeedWorkboat.none { bfs.hasReachedTile(it) }) return
+
+        addChoice(relativeCostEffectiveness, buildableWorkboatUnits.minBy { it.cost }!!.name, 0.6f)
     }
 
     private fun addWorkerChoice() {

@@ -97,15 +97,15 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
     private fun getCityStateDiplomacyTable(otherCiv: CivilizationInfo): Table {
         val otherCivDiplomacyManager = otherCiv.getDiplomacyManager(viewingCiv)
 
-        val diplomacyTable = Table().apply { width = this@DiplomacyScreen.stage.width - leftSideTable.width }
+        val diplomacyTable = Table()
         diplomacyTable.defaults().pad(10f)
         diplomacyTable.add(otherCiv.getLeaderDisplayName().toLabel(fontSize = 24)).row()
-        diplomacyTable.add("{Type: } {${otherCiv.cityStateType}}".toLabel()).row()
-        diplomacyTable.add("{Personality: } {${otherCiv.cityStatePersonality}}".toLabel()).row()
+        diplomacyTable.add("{Type}:  {${otherCiv.cityStateType}}".toLabel()).row()
+        diplomacyTable.add("{Personality}:  {${otherCiv.cityStatePersonality}}".toLabel()).row()
         otherCiv.updateAllyCivForCityState()
         val ally = otherCiv.getAllyCiv()
         if (ally != "") {
-            val allyString = "{Ally: }{$ally} {Influence: }".tr() +
+            val allyString = "{Ally}: {$ally} {Influence}: ".tr() +
                     otherCiv.getDiplomacyManager(ally).influence.toString()
             diplomacyTable.add(allyString.toLabel()).row()
         }
@@ -137,8 +137,8 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
             friendBonusLabelColor = Color.GRAY
 
         val friendBonusLabel = friendBonusText.toLabel(friendBonusLabelColor)
-                .apply { setWrap(true); setAlignment(Align.center) }
-        diplomacyTable.add(friendBonusLabel).width(rightSideTable.width - 50f).row()
+                .apply { setAlignment(Align.center) }
+        diplomacyTable.add(friendBonusLabel).row()
 
         diplomacyTable.addSeparator()
 
@@ -380,10 +380,10 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
     fun getRelationshipTable(otherCivDiplomacyManager: DiplomacyManager): Table {
         val relationshipTable = Table()
 
-        val opinionOfUs = if(otherCivDiplomacyManager.civInfo.isCityState()) otherCivDiplomacyManager.influence.toInt()
+        val opinionOfUs = if (otherCivDiplomacyManager.civInfo.isCityState()) otherCivDiplomacyManager.influence.toInt()
         else otherCivDiplomacyManager.opinionOfOtherCiv().toInt()
 
-        relationshipTable.add("Our relationship: ".toLabel())
+        relationshipTable.add("{Our relationship}: ".toLabel())
         val relationshipLevel = otherCivDiplomacyManager.relationshipLevel()
         val relationshipText = relationshipLevel.name.tr() + " ($opinionOfUs)"
         val relationshipColor = when (relationshipLevel) {

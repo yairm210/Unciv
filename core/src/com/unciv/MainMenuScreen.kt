@@ -6,7 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.Table
-import com.badlogic.gdx.utils.Align
+import com.badlogic.gdx.utils.SerializationException
 import com.unciv.logic.GameInfo
 import com.unciv.logic.GameSaver
 import com.unciv.logic.GameStarter
@@ -105,7 +105,7 @@ class MainMenuScreen: CameraStageBaseScreen() {
         column2.add(mapEditorScreenTable).row()
 
         val modsTable = getTableBlock("Mods", "OtherIcons/Mods")
-        { game.setScreen(ModManagementScreen()) }
+            { game.setScreen(ModManagementScreen()) }
         column2.add(modsTable).row()
 
 
@@ -165,17 +165,23 @@ class MainMenuScreen: CameraStageBaseScreen() {
 
 
     private fun autoLoadGame() {
-        ResponsePopup("Loading...", this)
+        ToastPopup("Loading...", this)
         thread { // Load game from file to class on separate thread to avoid ANR...
-            val savedGame: GameInfo
+            var savedGame: GameInfo
             try {
                 savedGame = GameSaver.loadGameByName(autosave)
             } catch (outOfMemory: OutOfMemoryError) {
-                ResponsePopup("Not enough memory on phone to load game!", this)
+                Gdx.app.postRunnable { ToastPopup("Not enough memory on phone to load game!", this) }
                 return@thread
-            } catch (ex: Exception) { // silent fail if we can't read the autosave for any reason
-                ResponsePopup("Cannot resume game!", this)
-                return@thread
+            } catch (ex: Exception) { // silent fail if we can't read the autosave for any reason - try to load the last autosave by turn number first
+                // This can help for situations when the autosave is corrupted
+                try {
+                    val autosaves = GameSaver.getSaves().filter { it.name() != autosave && it.name().startsWith(autosave) }
+                    savedGame = GameSaver.loadGameFromFile(autosaves.maxBy { it.lastModified() }!!)
+                } catch (ex: Exception) {
+                    Gdx.app.postRunnable { ToastPopup("Cannot resume game!", this) }
+                    return@thread
+                }
             }
 
             Gdx.app.postRunnable { /// ... and load it into the screen on main thread for GL context
@@ -183,7 +189,7 @@ class MainMenuScreen: CameraStageBaseScreen() {
                     game.loadGame(savedGame)
                     dispose()
                 } catch (outOfMemory: OutOfMemoryError) {
-                    ResponsePopup("Not enough memory on phone to load game!", this)
+                    ToastPopup("Not enough memory on phone to load game!", this)
                 }
 
             }

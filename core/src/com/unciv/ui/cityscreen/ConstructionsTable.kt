@@ -5,7 +5,7 @@ import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.utils.Align
-import com.unciv.UncivGame
+import com.unciv.logic.city.CityConstructions
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.city.IConstruction
 import com.unciv.logic.city.PerpetualConstruction
@@ -108,6 +108,8 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
 
         constructionsQueueTable.addSeparator()
         constructionsQueueTable.add(getHeader("Construction queue".tr())).fillX()
+        constructionsQueueTable.addSeparator()
+
 
         if (queue.isNotEmpty()) {
             queue.forEachIndexed { i, constructionName ->
@@ -138,7 +140,7 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
             if(unit.requiredResource != null)
                 buttonText += "\n"+"Consumes 1 [${unit.requiredResource}]".tr()
 
-            val productionButton = getProductionButton(unit,
+            val productionButton = getConstructionButton(unit,
                     buttonText,
                     unit.getRejectionReason(cityConstructions))
             units.add(productionButton)
@@ -149,7 +151,7 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
             var buttonText = building.name.tr() + turnOrTurns(turnsToBuilding)
             if(building.requiredResource != null)
                 buttonText += "\n"+"Consumes 1 [${building.requiredResource}]".tr()
-            val productionTextButton = getProductionButton(building,
+            val productionTextButton = getConstructionButton(building,
                     buttonText,
                     building.getRejectionReason(cityConstructions)
             )
@@ -160,7 +162,7 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
 
         for (specialConstruction in PerpetualConstruction.perpetualConstructionsMap.values
                 .filter { it.shouldBeDisplayed(cityConstructions) }) {
-            specialConstructions += getProductionButton(specialConstruction,
+            specialConstructions += getConstructionButton(specialConstruction,
                     "Produce [${specialConstruction.name}]".tr()
                             + specialConstruction.getProductionTooltip(city))
         }
@@ -230,38 +232,54 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
                 Color.BROWN.cpy().lerp(Color.WHITE, 0.5f), Color.WHITE)
     }
 
-    private fun getProductionButton(construction: IConstruction, buttonText: String, rejectionReason: String = ""): Table {
-        val pickProductionButton = Table()
 
-        pickProductionButton.align(Align.left).pad(5f)
-        pickProductionButton.background = ImageGetter.getBackground(Color.BLACK)
-        pickProductionButton.touchable = Touchable.enabled
+    private fun getConstructionButton(construction: IConstruction, buttonText: String, rejectionReason: String = ""): Table {
+        val pickConstructionButton = Table()
+
+        pickConstructionButton.align(Align.left).pad(5f)
+        pickConstructionButton.background = ImageGetter.getBackground(Color.BLACK)
+        pickConstructionButton.touchable = Touchable.enabled
 
         if (!isSelectedQueueEntry() && cityScreen.selectedConstruction != null && cityScreen.selectedConstruction == construction) {
-            pickProductionButton.background = ImageGetter.getBackground(Color.GREEN.cpy().lerp(Color.BLACK, 0.5f))
+            pickConstructionButton.background = ImageGetter.getBackground(Color.GREEN.cpy().lerp(Color.BLACK, 0.5f))
         }
 
-        pickProductionButton.add(getProgressBar(construction.name)).padRight(5f)
-        pickProductionButton.add(ImageGetter.getConstructionImage(construction.name).surroundWithCircle(40f)).padRight(10f)
-        pickProductionButton.add(buttonText.toLabel()).expandX().fillX().left().row()
+        pickConstructionButton.add(getProgressBar(construction.name)).padRight(5f)
+        pickConstructionButton.add(ImageGetter.getConstructionImage(construction.name).surroundWithCircle(40f)).padRight(10f)
+        pickConstructionButton.add(buttonText.toLabel()).expandX().fillX()
+
+        if(!cannotAddConstructionToQueue(construction, cityScreen.city, cityScreen.city.cityConstructions)) {
+            val addToQueueButton = ImageGetter.getImage("OtherIcons/New").apply { color = Color.BLACK }.surroundWithCircle(40f)
+            addToQueueButton.onClick { addConstructionToQueue(construction, cityScreen.city.cityConstructions) }
+            pickConstructionButton.add(addToQueueButton)
+        }
+        pickConstructionButton.row()
 
         // no rejection reason means we can build it!
         if(rejectionReason != "") {
-            pickProductionButton.color = Color.GRAY
-            pickProductionButton.add(rejectionReason.toLabel(Color.RED).apply{ setWrap(true)} )
-                    .colspan(pickProductionButton.columns).fillX().left().padTop(2f)
+            pickConstructionButton.color = Color.GRAY
+            pickConstructionButton.add(rejectionReason.toLabel(Color.RED).apply{ wrap = true } )
+                    .colspan(pickConstructionButton.columns).fillX().left().padTop(2f)
         }
-        pickProductionButton.onClick {
+        pickConstructionButton.onClick {
             cityScreen.selectedConstruction = construction
             cityScreen.selectedTile = null
             selectedQueueEntry = -1
             cityScreen.update()
         }
 
-        return pickProductionButton
+        return pickConstructionButton
     }
 
     private fun isSelectedQueueEntry(): Boolean = selectedQueueEntry >= 0
+
+    fun cannotAddConstructionToQueue(construction:IConstruction, city:CityInfo, cityConstructions:CityConstructions): Boolean {
+        return cityConstructions.isQueueFull()
+                || !cityConstructions.getConstruction(construction.name).isBuildable(cityConstructions)
+                || !cityScreen.canChangeState
+                || construction is PerpetualConstruction && cityConstructions.isBeingConstructedOrEnqueued(construction.name)
+                || city.isPuppet
+    }
 
     private fun getQueueButton(construction: IConstruction?): TextButton {
         val city = cityScreen.city
@@ -283,24 +301,22 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
         } else {
             button = "Add to queue".toTextButton()
             if (construction == null
-                    || cityConstructions.isQueueFull()
-                    || !cityConstructions.getConstruction(construction.name).isBuildable(cityConstructions)
-                    || !cityScreen.canChangeState
-                    || construction is PerpetualConstruction && cityConstructions.isBeingConstructedOrEnqueued(construction.name)
-                    || city.isPuppet) {
+                    || cannotAddConstructionToQueue(construction, city, cityConstructions)) {
                 button.disable()
             } else {
-                button.onClick {
-                    cityConstructions.addToQueue(construction.name)
-                    if (!construction.shouldBeDisplayed(cityConstructions)) cityScreen.selectedConstruction = null
-                    cityScreen.update()
-                    cityScreen.game.settings.addCompletedTutorialTask("Pick construction")
-                }
+                button.onClick { addConstructionToQueue(construction, cityConstructions) }
             }
         }
 
         button.labelCell.pad(5f)
         return button
+    }
+
+    fun addConstructionToQueue(construction:IConstruction, cityConstructions: CityConstructions) {
+        cityConstructions.addToQueue(construction.name)
+        if (!construction.shouldBeDisplayed(cityConstructions)) cityScreen.selectedConstruction = null
+        cityScreen.update()
+        cityScreen.game.settings.addCompletedTutorialTask("Pick construction")
     }
 
 
@@ -327,8 +343,8 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
 
         val button = "".toTextButton()
 
-        if (construction == null || construction is PerpetualConstruction || (!construction.canBePurchased() && !city.civInfo.gameInfo.gameParameters.godMode)
-        ) {
+        if (construction == null || construction is PerpetualConstruction ||
+                (!construction.canBePurchased() && !city.civInfo.gameInfo.gameParameters.godMode)) {
             // fully disable a "buy" button only for "priceless" buildings such as wonders
             // for all other cases, the price should be displayed
             button.setText("Buy".tr())

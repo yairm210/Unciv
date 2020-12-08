@@ -49,16 +49,33 @@ object ImageGetter {
     }
 
     /** Required every time the ruleset changes, in order to load mod-specific images */
-    fun reload(){
+    fun reload() {
         textureRegionDrawables.clear()
         // These are the drawables from the base game
-        for(region in atlas.regions) {
+        for (region in atlas.regions) {
             val drawable = TextureRegionDrawable(region)
             textureRegionDrawables[region.name] = drawable
         }
 
+        for (singleImagesFolder in sequenceOf("BuildingIcons", "FlagIcons", "UnitIcons")) {
+            val tempAtlas = TextureAtlas("$singleImagesFolder.atlas")
+            for (region in tempAtlas.regions) {
+                val drawable = TextureRegionDrawable(region)
+                textureRegionDrawables["$singleImagesFolder/"+region.name] = drawable
+            }
+        }
+
+        for (folder in Gdx.files.internal("SingleImages").list())
+            for (image in folder.list()) {
+                val texture = Texture(image)
+                // Since these aren't part of the packed texture we need to set this manually for each one
+                // Unfortunately since it's not power-of-2
+                texture.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear)
+                textureRegionDrawables[folder.name() + "/" + image.nameWithoutExtension()] = TextureRegionDrawable(texture)
+            }
+
         // These are from the mods
-        for(mod in ruleset.mods){
+        for (mod in ruleset.mods) {
             val modAtlasFile = Gdx.files.local("mods/$mod/game.atlas")
             if (modAtlasFile.exists()) {
                 val modAtlas = TextureAtlas(modAtlasFile)
@@ -201,29 +218,28 @@ object ImageGetter {
     }
 
 
-    fun getImprovementIcon(improvementName:String, size:Float=20f):Actor{
-        if(improvementName.startsWith("Remove") || improvementName == Constants.cancelImprovementOrder)
+    fun getImprovementIcon(improvementName:String, size:Float=20f):Actor {
+        if (improvementName.startsWith("Remove") || improvementName == Constants.cancelImprovementOrder)
             return getImage("OtherIcons/Stop")
-        if(improvementName.startsWith("StartingLocation ")){
+        if (improvementName.startsWith("StartingLocation ")) {
             val nationName = improvementName.removePrefix("StartingLocation ")
             val nation = ruleset.nations[nationName]!!
-            return getNationIndicator(nation,size)
+            return getNationIndicator(nation, size)
         }
 
         val iconGroup = getImage("ImprovementIcons/$improvementName").surroundWithCircle(size)
 
         val improvement = ruleset.tileImprovements[improvementName]
-        if(improvement==null)
-            throw Exception("No improvement $improvementName found in ruleset!")
-        iconGroup.circle.color = getColorFromStats(improvement)
+        if (improvement != null)
+            iconGroup.circle.color = getColorFromStats(improvement)
 
         return iconGroup
     }
 
     fun getConstructionImage(construction: String): Image {
-        if(ruleset.buildings.containsKey(construction)) return getImage("BuildingIcons/$construction")
-        if(ruleset.units.containsKey(construction)) return getUnitIcon(construction)
-        if(construction=="Nothing") return getImage("OtherIcons/Sleep")
+        if (ruleset.buildings.containsKey(construction)) return getImage("BuildingIcons/$construction")
+        if (ruleset.units.containsKey(construction)) return getUnitIcon(construction)
+        if (construction == "Nothing") return getImage("OtherIcons/Sleep")
         return getStatIcon(construction)
     }
 
@@ -272,7 +288,7 @@ object ImageGetter {
     fun getResourceImage(resourceName: String, size:Float): Actor {
         val iconGroup = getImage("ResourceIcons/$resourceName").surroundWithCircle(size)
         val resource = ruleset.tileResources[resourceName]
-        if (resource == null) throw Exception("No resource $resourceName found in ruleset!")
+        if (resource == null) return iconGroup // This is the result of a bad modding setup, just give em an empty circle. Their problem.
         iconGroup.circle.color = getColorFromStats(resource)
 
         if (resource.resourceType == ResourceType.Luxury) {

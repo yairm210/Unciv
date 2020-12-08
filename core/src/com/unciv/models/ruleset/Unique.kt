@@ -1,13 +1,22 @@
 package com.unciv.models.ruleset
 
 import com.unciv.Constants
+import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.models.stats.Stats
 import com.unciv.models.translations.getPlaceholderParameters
 import com.unciv.models.translations.getPlaceholderText
 
 class Unique(val text:String){
     val placeholderText = text.getPlaceholderText()
     val params = text.getPlaceholderParameters()
+    /** This is so the heavy regex-based parsing is only activated once per unique, instead of every time it's called
+     *  - for instance, in the city screen, we call every tile unique for every tile, which can lead to ANRs */
+    val stats: Stats by lazy {
+        val firstStatParam = params.firstOrNull { Stats.isStats(it) }
+        if (firstStatParam == null) Stats() // So badly-defined stats don't crash the entire game
+        else Stats.parse(firstStatParam)
+    }
 }
 
 class UniqueMap:HashMap<String, ArrayList<Unique>>() {
@@ -27,20 +36,22 @@ class UniqueMap:HashMap<String, ArrayList<Unique>>() {
 
 // Buildings, techs and policies can have 'triggered' effects
 object UniqueTriggerActivation {
-    fun triggerCivwideUnique(unique: Unique, civInfo: CivilizationInfo) {
+    fun triggerCivwideUnique(unique: Unique, civInfo: CivilizationInfo, cityInfo:CityInfo?=null) {
+        val chosenCity = if(cityInfo!=null) cityInfo else civInfo.cities.firstOrNull { it.isCapital() }
         when (unique.placeholderText) {
             "Free [] appears" -> {
                 val unitName = unique.params[0]
-                if (civInfo.cities.any { it.isCapital() } && (unitName != Constants.settler || !civInfo.isOneCityChallenger()))
-                    civInfo.addUnit(unitName, civInfo.getCapital())
+                if (chosenCity != null && (unitName != Constants.settler || !civInfo.isOneCityChallenger()))
+                    civInfo.addUnit(unitName, chosenCity)
             }
             "[] free [] units appear" -> {
                 val unitName = unique.params[1]
-                if (civInfo.cities.any { it.isCapital() } && (unitName != Constants.settler || !civInfo.isOneCityChallenger()))
+                if (chosenCity!=null && (unitName != Constants.settler || !civInfo.isOneCityChallenger()))
                     for (i in 1..unique.params[0].toInt())
-                        civInfo.addUnit(unitName, civInfo.getCapital())
+                        civInfo.addUnit(unitName, chosenCity)
             }
-            "Free Social Policy" -> civInfo.policies.freePolicies++
+            // spectators get all techs at start of game, and if (in a mod) a tech gives a free policy, the game stucks on the policy picker screen
+            "Free Social Policy" -> if(!civInfo.isSpectator()) civInfo.policies.freePolicies++
             "Empire enters golden age" ->
                 civInfo.goldenAges.enterGoldenAge()
             "Free Great Person" -> {
@@ -50,10 +61,10 @@ object UniqueTriggerActivation {
                     val greatPerson = when (preferredVictoryType) {
                         VictoryType.Cultural -> "Great Artist"
                         VictoryType.Scientific -> "Great Scientist"
-                        else ->
-                            civInfo.gameInfo.ruleSet.units.keys.filter { it.startsWith("Great") }.random()
+                        else -> civInfo.gameInfo.ruleSet.units.values
+                                .filter { it.uniqueObjects.any { it.placeholderText == "Great Person - []" } }.map { it.name }.random()
                     }
-                    civInfo.addUnit(greatPerson)
+                    civInfo.addUnit(greatPerson, chosenCity)
                 }
             }
             "+1 population in each city" ->
@@ -67,6 +78,15 @@ object UniqueTriggerActivation {
             "+20% attack bonus to all Military Units for 30 turns" -> civInfo.policies.autocracyCompletedTurns = 30
 
             "Reveals the entire map" -> civInfo.exploredTiles.addAll(civInfo.gameInfo.tileMap.values.asSequence().map { it.position })
+
+            "[] units gain the [] promotion" -> {
+                val filter = unique.params[0]
+                val promotion = unique.params[1]
+                for (unit in civInfo.getCivUnits())
+                    if (unit.matchesCategory(filter)
+                            || (civInfo.gameInfo.ruleSet.unitPromotions.values.any {  it.name == promotion
+                                    && unit.type.name in it.unitTypes }))
+                unit.promotions.addPromotion(promotion, isFree = true)}
         }
     }
 

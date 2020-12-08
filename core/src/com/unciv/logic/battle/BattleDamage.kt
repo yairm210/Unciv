@@ -6,7 +6,6 @@ import com.unciv.logic.map.TileInfo
 import com.unciv.models.Counter
 import com.unciv.models.ruleset.unit.UnitType
 import java.util.*
-import kotlin.collections.HashMap
 import kotlin.collections.set
 import kotlin.math.max
 import kotlin.math.pow
@@ -20,6 +19,7 @@ object BattleDamage {
 
     const val BONUS_VS_UNIT_TYPE = """(Bonus|Penalty) vs (.*) (\d*)%"""
 
+    // This should be deprecated and converted to "+[]% Strength vs []", "-[]% Strength vs []"
     private fun getBattleDamageModifiersOfUnit(unit:MapUnit): MutableList<BattleDamageModifier> {
         val modifiers = mutableListOf<BattleDamageModifier>()
         for (ability in unit.getUniques()) {
@@ -27,7 +27,7 @@ object BattleDamage {
             val regexResult = Regex(BONUS_VS_UNIT_TYPE).matchEntire(ability.text)
             if (regexResult == null) continue
             val vs = regexResult.groups[2]!!.value
-            val modificationAmount = regexResult.groups[3]!!.value.toFloat() / 100  // if it says 15%, that's 0.15f in modification
+            val modificationAmount = regexResult.groups[3]!!.value.toFloat()
             if (regexResult.groups[1]!!.value == "Bonus")
                 modifiers.add(BattleDamageModifier(vs, modificationAmount))
             else
@@ -40,7 +40,7 @@ object BattleDamage {
     private fun getGeneralModifiers(combatant: ICombatant, enemy: ICombatant): Counter<String> {
         val modifiers = Counter<String>()
         fun addToModifiers(BDM:BattleDamageModifier) =
-                modifiers.add(BDM.getText(), (BDM.modificationAmount*100).toInt())
+                modifiers.add(BDM.getText(), (BDM.modificationAmount).toInt())
 
         val civInfo = combatant.getCivInfo()
         if (combatant is MapUnitCombatant) {
@@ -51,10 +51,13 @@ object BattleDamage {
 
             }
 
-            // As of 3.11.1 This is to be deprecated and converted to "Bonus vs x y%" - keeping it here so that mods with this can still work for now
             for (unique in combatant.unit.getMatchingUniques("+[]% Strength vs []")) {
                 if (enemy.matchesCategory(unique.params[1]))
                     modifiers.add("vs [${unique.params[1]}]", unique.params[0].toInt())
+            }
+            for (unique in combatant.unit.getMatchingUniques("-[]% Strength vs []")) {
+                if (enemy.matchesCategory(unique.params[1]))
+                    modifiers.add("vs [${unique.params[1]}]", -unique.params[0].toInt())
             }
 
             for (unique in combatant.unit.getMatchingUniques("+[]% Combat Strength"))
@@ -214,11 +217,11 @@ object BattleDamage {
 
         // As of 3.11.0 This is to be deprecated and converted to "+[15]% combat bonus for units fighting in [Friendly Land]" - keeping it here to that mods with this can still work for now
         // Civ 5 does not use "Himeji Castle"
-        if(tile.isFriendlyTerritory(unit.getCivInfo()) && unit.getCivInfo().hasUnique("+15% combat strength for units fighting in friendly territory"))
+        if (tile.isFriendlyTerritory(unit.getCivInfo()) && unit.getCivInfo().hasUnique("+15% combat strength for units fighting in friendly territory"))
             modifiers.add("Friendly Land", 15)
 
         // As of 3.11.0 This is to be deprecated and converted to "+[20]% combat bonus in [Foreign Land]" - keeping it here to that mods with this can still work for now
-        if(!tile.isFriendlyTerritory(unit.getCivInfo()) && unit.unit.hasUnique("+20% bonus outside friendly territory"))
+        if (!tile.isFriendlyTerritory(unit.getCivInfo()) && unit.unit.hasUnique("+20% bonus outside friendly territory"))
             modifiers.add("Foreign Land", 20)
 
         for (unique in unit.unit.getMatchingUniques("+[]% combat bonus in []")
@@ -240,40 +243,34 @@ object BattleDamage {
                         || tile.terrainFeature != Constants.jungle))
             modifiers[tile.baseTerrain] = 25
 
-        for(unique in unit.getCivInfo().getMatchingUniques("+[]% Strength if within [] tiles of a []")) {
+        for (unique in unit.getCivInfo().getMatchingUniques("+[]% Strength if within [] tiles of a []")) {
             if (tile.getTilesInDistance(unique.params[1].toInt()).any { it.matchesUniqueFilter(unique.params[2]) })
                 modifiers[unique.params[2]] = unique.params[0].toInt()
         }
 
-        if(tile.neighbors.flatMap { it.getUnits() }
+        if (tile.neighbors.flatMap { it.getUnits() }
                         .any { it.hasUnique("-10% combat strength for adjacent enemy units") && it.civInfo.isAtWarWith(unit.getCivInfo()) })
             modifiers["Haka War Dance"] = -10
 
         // As of 3.10.6 This is to be deprecated and converted to "+[]% combat bonus in []" - keeping it here to that mods with this can still work for now
-        if(unit.unit.hasUnique("+33% combat bonus in Forest/Jungle")
-                && (tile.terrainFeature== Constants.forest || tile.terrainFeature==Constants.jungle))
-            modifiers[tile.terrainFeature!!]=33
+        if (unit.unit.hasUnique("+33% combat bonus in Forest/Jungle")
+                && (tile.terrainFeature == Constants.forest || tile.terrainFeature == Constants.jungle))
+            modifiers[tile.terrainFeature!!] = 33
 
         val isRoughTerrain = tile.isRoughTerrain()
         for (BDM in getBattleDamageModifiersOfUnit(unit.unit)) {
             val text = BDM.getText()
             // this will change when we change over everything to ints
-            if (BDM.vs == "units in open terrain" && !isRoughTerrain) modifiers.add(text, (BDM.modificationAmount*100).toInt())
-            if (BDM.vs == "units in rough terrain" && isRoughTerrain) modifiers.add(text, (BDM.modificationAmount*100).toInt())
+            if (BDM.vs == "units in open terrain" && !isRoughTerrain) modifiers.add(text, (BDM.modificationAmount).toInt())
+            if (BDM.vs == "units in rough terrain" && isRoughTerrain) modifiers.add(text, (BDM.modificationAmount).toInt())
         }
 
         return modifiers
     }
 
-    fun Counter<String>.toOldModifiers(): HashMap<String, Float> {
-        val modifiers = HashMap<String,Float>()
-        for((key,value) in this) modifiers[key] = value.toFloat()/100
-        return modifiers
-    }
-
     private fun modifiersToMultiplicationBonus(modifiers: Counter<String>): Float {
         var finalModifier = 1f
-        for (modifierValue in modifiers.values) finalModifier *= (1 + modifierValue/100) // so 25 will result in *= 1.25
+        for (modifierValue in modifiers.values) finalModifier *= (1 + modifierValue/100f) // so 25 will result in *= 1.25
         return finalModifier
     }
 
@@ -300,7 +297,7 @@ object BattleDamage {
      */
     private fun getDefendingStrength(attacker: ICombatant, defender: ICombatant): Float {
         var defenceModifier = 1f
-        if(defender is MapUnitCombatant) defenceModifier = modifiersToMultiplicationBonus(getDefenceModifiers(attacker,defender))
+        if (defender is MapUnitCombatant) defenceModifier = modifiersToMultiplicationBonus(getDefenceModifiers(attacker, defender))
         return defender.getDefendingStrength() * defenceModifier
     }
 

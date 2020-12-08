@@ -20,9 +20,9 @@ class ModManagementScreen: PickerScreen() {
 
     init {
         setDefaultCloseAction(MainMenuScreen())
-        refresh()
+        refreshModTable()
 
-        topTable.add(ScrollPane(modTable)).height(topTable.height).pad(10f)
+        topTable.add(ScrollPane(modTable)).height(scrollPane.height).pad(10f)
 
         downloadTable.add(getDownloadButton()).row()
 
@@ -30,16 +30,16 @@ class ModManagementScreen: PickerScreen() {
             val repoList: ArrayList<Github.Repo>
             try {
                 repoList = Github.tryGetGithubReposWithTopic()
-
             } catch (ex: Exception) {
                 Gdx.app.postRunnable {
-                    ResponsePopup("Could not download mod list", this)
+                    ToastPopup("Could not download mod list", this)
                 }
                 return@thread
             }
 
             Gdx.app.postRunnable {
                 for (repo in repoList) {
+                    if (repo.default_branch != "master") continue
                     repo.name = repo.name.replace('-', ' ')
                     val downloadButton = repo.name.toTextButton()
                     downloadButton.onClick {
@@ -57,10 +57,12 @@ class ModManagementScreen: PickerScreen() {
                     }
                     downloadTable.add(downloadButton).row()
                 }
+                downloadTable.pack()
+                (downloadTable.parent as ScrollPane).actor = downloadTable
             }
         }
 
-        topTable.add(ScrollPane(downloadTable)).height(topTable.height)
+        topTable.add(ScrollPane(downloadTable)).height(scrollPane.height)//.size(downloadTable.width, topTable.height)
     }
 
     fun getDownloadButton(): TextButton {
@@ -69,13 +71,13 @@ class ModManagementScreen: PickerScreen() {
             val popup = Popup(this)
             val textArea = TextArea("https://github.com/...",skin)
             popup.add(textArea).width(stage.width/2).row()
-            val downloadButton = "Download".toTextButton()
-            downloadButton.onClick {
-                downloadButton.setText("Downloading...".tr())
-                downloadButton.disable()
+            val actualDownloadButton = "Download".toTextButton()
+            actualDownloadButton.onClick {
+                actualDownloadButton.setText("Downloading...".tr())
+                actualDownloadButton.disable()
                 downloadMod(textArea.text) { popup.close() }
             }
-            popup.add(downloadButton).row()
+            popup.add(actualDownloadButton).row()
             popup.addCloseButton()
             popup.open()
         }
@@ -88,13 +90,13 @@ class ModManagementScreen: PickerScreen() {
                 Github.downloadAndExtract("$gitRepoUrl/archive/master.zip",
                         Gdx.files.local("mods"))
                 Gdx.app.postRunnable {
-                    ResponsePopup("Downloaded!", this)
+                    ToastPopup("Downloaded!", this)
                     RulesetCache.loadRulesets()
-                    refresh()
+                    refreshModTable()
                 }
             } catch (ex:Exception){
                 Gdx.app.postRunnable {
-                    ResponsePopup("Could not download mod", this)
+                    ToastPopup("Could not download mod", this)
                 }
             }
             finally {
@@ -103,7 +105,7 @@ class ModManagementScreen: PickerScreen() {
         }
     }
 
-    fun refresh(){
+    fun refreshModTable(){
         modTable.clear()
         val currentMods = RulesetCache.values.filter { it.name != "" }
         for (mod in currentMods) {
@@ -126,6 +128,6 @@ class ModManagementScreen: PickerScreen() {
         if(modFileHandle.isDirectory) modFileHandle.deleteDirectory()
         else modFileHandle.delete()
         RulesetCache.loadRulesets()
-        refresh()
+        refreshModTable()
     }
 }

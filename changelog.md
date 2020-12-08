@@ -1,3 +1,176 @@
+## 3.11.18
+
+Improvements can't be built in neutral areas, as per Civ V
+
+Added button to add construction items directly to the queue
+
+Mods can handle removing existing buildings
+
+Don't allow AI to offer peace to city states allied with their enemies
+
+Helicopter Gunship - By givehub99
+
+Workers stop building (most) duplicate roads connecting cities - By ninjatao
+
+Translation updates
+
+## 3.11.17
+
+Fixed rare errors
+
+First attempt at making Unciv Android-TV-compatible
+
+By 9kgsofrice:
+
+- adds val to modoptions and check to battle.kt to adjust max xp from barbarians 
+- "Uncapturable" unique 
+- unique "[] units gain the [] promotion" affects exisiting units 
+- Hide build menu constructions requiring resources with unique 
+- Nation "style" can define unit appearance 
+- Changes check to remove national wonders on city ownership changes to rely on building.isNationalWonder 
+
+Translation updates
+
+## 3.11.16
+
+Resolved #3364 - Fixed certain battle modifiers not activating
+
+Resources provided by buildings are affected by resource amount uniques - by 9kgsofrice
+
+Fixed minor crashing bugs in misconfigured mods
+
+Display mod incompatibilities  when attempting to start a new game
+
+Translation updates
+
+## 3.11.15
+
+HUGE framerate improvements! :D
+
+Resolved #3347 - units spawned by buildings are spawned in the city the building was built in
+
+Added mod checks that combat units have strength and ranged units have rangedStrength
+
+Can now handle units upgrading to units with no required tech
+
+Resolved #3360 - notify peace treaty to all common known civs
+
+AI settlers can no longer settle after movement with no movement points
+
+Fixed Free Thought trading post bonus - By ravignir
+
+Units/buildings with "Will not be displayed in Civilopedia" now will not show in tech tree - By 9kgsofrice
+
+Translation updates
+
+## 3.11.14
+
+500th version, my goodness 0_0
+
+Resolved #3330 - Fixed black images on specific chipsets
+
+Multiple framerate improvement tricks - should feel smoother!
+
+Hide hotkeys on devices without keyboard - by jnecus
+
+Fixed a few more crash possibilities from badly configured mods
+
+## 3.11.13
+
+Probably solved the Mysterious Disappearing C's once and for all! #3327
+
+We now check compatibility of newly selected mods to the existing mod ruleset
+
+Resolved #3341 - City-state diplomacy screen is shown properly when entering from a city button
+
+Resolved #3071 - Disabled annoying camera momentum on Desktop
+
+Autoload previous autosave when current autosave file is corrupted
+
+## 3.11.12
+
+AI no longer nukes single units
+
+Can right-click to attack when a unit is selected
+
+City states can now conquer cities, as per Civ V
+
+Mods can now remove promotions between versions without breaking existing saves
+
+Fixed archaeological dig being built by workers in Civ V expansion mod
+
+Spectator can handle free-policy-giving techs in mods
+
+Translation updates
+
+## 3.11.11
+
+Resolved #3324 - Great Person units no longer require a military unit to accompany them if they're close enough to the destination
+
+Resolved #3326 - Settling a city removes the improvement in progress
+
+Resolved #3323 - improvement uniques are no longer added twice
+
+AI won't declare war if it doesn't know the location of any enemy city
+
+Fixed key shortcuts in improvement picker screen
+
+Translation updates
+
+## 3.11.10
+
+AI no longer tries to construct work boats that can't reach their intended destination
+
+Can no longer see other players' IDs in a multiplayer game through the new game screen
+
+We now remove resources and improvements that are not in the ruleset when loading the game
+
+Tile rendering performance improvement
+
+Diplomatic penalty of stealing lands decreases by time - By ninjatao
+
+Fixed bug Carrier-based aircraft not healing - By jnecus
+
+Translation updates
+
+## 3.11.9
+
+Tile editor can handle resources that don't naturally appear on any terrain
+
+AI can no longer raze capital cities
+
+Stats unique can no longer crash badly defined mods
+
+Added mod check for unit promotions and upgrades, and building costs
+
+"Unable to capture cities" unique prevents the unit from conquering/capturing a city - By givehub99
+
+Translation updates
+
+## 3.11.8
+
+Improved performance, especially in the City screen
+
+Avoided more badly-defined-mod crashes, and some rare non-mod crashes and ANRs
+
+Added mods to crash report, many crashes are caused by incorrectly defined mods
+
+Helicopter Gunship uniques - By givehub99
+
+Translation updates
+
+## 3.11.7
+
+Resolved #3285 - added a notification when cities are no longer in resistance
+
+More tile variants are enabled (e.g. "baseTile+resource+improvement")
+
+Fixed some more silly bugs caused by badly configured mods
+
+New snow-versions of existing tiles :)
+
+Can no longer start a new game with an incorrectly defined mod! :)
+
 ## 3.11.6
 
 Added "locate mod errors" button in the options menu for discovering broken links in base ruleset mods

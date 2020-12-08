@@ -428,6 +428,7 @@ class DiplomacyManager() {
         revertToZero(DiplomaticModifiers.BetrayedPromiseToNotSettleCitiesNearUs, 1 / 8f) // That's a bastardly thing to do
         revertToZero(DiplomaticModifiers.UnacceptableDemands, 1 / 4f)
         revertToZero(DiplomaticModifiers.LiberatedCity, 1 / 8f)
+        revertToZero(DiplomaticModifiers.StealingTerritory, 1 / 4f)
 
         setFriendshipBasedModifier()
 
@@ -525,14 +526,12 @@ class DiplomacyManager() {
         diplomaticStatus = DiplomaticStatus.Peace
         otherCivDiplomacy().diplomaticStatus = DiplomaticStatus.Peace
 
-        if (otherCiv().isAtWarWith(civInfo)) {
-            for (civ in getCommonKnownCivs()) {
-                civ.addNotification(
-                        "[${civInfo.civName}] and [${otherCiv().civName}] have signed the Peace Treaty!",
-                        null,
-                        Color.WHITE
-                )
-            }
+        for (civ in getCommonKnownCivs()) {
+            civ.addNotification(
+                    "[${civInfo.civName}] and [${otherCiv().civName}] have signed a Peace Treaty!",
+                    null,
+                    Color.WHITE
+            )
         }
 
         val otherCiv = otherCiv()
