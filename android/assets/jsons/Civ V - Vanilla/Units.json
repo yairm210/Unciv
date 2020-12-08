@@ -1235,10 +1235,10 @@
 		"upgradesTo": "Helicopter Gunship",
 		"uniques": ["Bonus vs Armor 100%"]
 	},
+	
 	{
 		// "Hovering unit" unique gives ability to get into impassable tiles - and only that (no vision bonus or flying over ocean)
 		// Unit embarks like any other ground unit and has penalty for attacking over river or from embarked state
-		// "Unable to capture cities"
 		"name": "Helicopter Gunship",
 		"unitType": "Melee",
 		"movement": 6,
@@ -1283,7 +1283,7 @@
 		"uniques": ["Can move after attacking","No defensive terrain bonus"]
 	},
 	
-	/*
+	/* // THIS STUFF IS COMMENTED OUT!!!
 	// Information Era
 	{
 		"name": "Mobile SAM",
