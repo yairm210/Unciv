@@ -77,6 +77,14 @@ class BasicTests {
         UncivGame.Current.settings = GameSettings().apply { language = "Italian" }
     }
 
+    @Test
+    fun baseRulesetHasNoBugs() {
+        ruleset.modOptions.isBaseRuleset=true
+        val modCheck = ruleset.checkModLinks()
+        if(modCheck!="") println(modCheck)
+        Assert.assertTrue(modCheck == "")
+    }
+
 
 //    @Test // This should NOT run as part of the test suite!
 //    fun tryGetGithubTopicInfo(){
