@@ -99,7 +99,12 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
 
         val diplomacyTable = Table()
         diplomacyTable.defaults().pad(10f)
-        diplomacyTable.add(otherCiv.getLeaderDisplayName().toLabel(fontSize = 24)).row()
+
+        val displayNameTable = Table()
+        displayNameTable.add(ImageGetter.getNationIndicator(otherCiv.nation, 24f)).pad(0f,0f,5f,10f)
+        displayNameTable.add(otherCiv.getLeaderDisplayName().toLabel(fontSize = 24))
+        diplomacyTable.add(displayNameTable).row()
+
         diplomacyTable.add("{Type}:  {${otherCiv.cityStateType}}".toLabel()).row()
         diplomacyTable.add("{Personality}:  {${otherCiv.cityStatePersonality}}".toLabel()).row()
         otherCiv.updateAllyCivForCityState()
@@ -213,7 +218,10 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
         val diplomacyTable = Table()
         diplomacyTable.defaults().pad(10f)
 
-        diplomacyTable.add(otherCiv.getLeaderDisplayName().toLabel(fontSize = 24)).row()
+        val displayNameTable = Table()
+        displayNameTable.add(ImageGetter.getNationIndicator(otherCiv.nation, 24f)).pad(0f,0f,5f,5f)
+        displayNameTable.add(otherCiv.getLeaderDisplayName().toLabel(fontSize = 24))
+        diplomacyTable.add(displayNameTable).row()
         if (otherCivDiplomacyManager.relationshipLevel() <= RelationshipLevel.Enemy)
             diplomacyTable.add(otherCiv.nation.hateHello.toLabel()).row()
         else
