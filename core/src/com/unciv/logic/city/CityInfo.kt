@@ -184,9 +184,8 @@ class CityInfo {
             val tileImprovement = tileInfo.getTileImprovement() ?: continue
             for (unique in tileImprovement.uniqueObjects)
                 if (unique.placeholderText == "Provides [] []"){
-                    val resource = getRuleset().tileResources[unique.params[1]]
-                    if(resource!=null){
-                        cityResources.add(resource, unique.params[0].toInt() * civInfo.getResourceModifier(resource), "Tiles") }
+                    val resource = getRuleset().tileResources[unique.params[1]] ?: continue
+                    cityResources.add(resource, unique.params[0].toInt() * civInfo.getResourceModifier(resource), "Tiles")
 
             }
         }
