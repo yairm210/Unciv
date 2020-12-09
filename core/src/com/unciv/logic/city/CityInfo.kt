@@ -181,8 +181,8 @@ class CityInfo {
             if (amount > 0) cityResources.add(resource, amount, "Tiles")
         }
         for (tileInfo in getTiles().filter { it.improvement!= null }) {
-            val tileImprovement = tileInfo.getTileImprovement() ?: continue
-            for (unique in tileImprovement.uniqueObjects)
+            val tileImprovement = tileInfo.getTileImprovement()
+            for (unique in tileImprovement!!.uniqueObjects)
                 if (unique.placeholderText == "Provides [] []"){
                     val resource = getRuleset().tileResources[unique.params[1]] ?: continue
                     cityResources.add(resource, unique.params[0].toInt() * civInfo.getResourceModifier(resource), "Tiles")
