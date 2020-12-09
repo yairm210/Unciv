@@ -85,9 +85,4 @@ class BasicTests {
         Assert.assertTrue(modCheck == "")
     }
 
-
-//    @Test // This should NOT run as part of the test suite!
-//    fun tryGetGithubTopicInfo(){
-//        println(Github.tryGetGithubReposWithTopic())
-//    }
 }
