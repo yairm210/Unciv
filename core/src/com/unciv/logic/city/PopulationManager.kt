@@ -79,33 +79,33 @@ class PopulationManager {
     // if small city, favor production above all, ignore gold!
     // if larger city, food should be worth less!
     internal fun autoAssignPopulation(foodWeight: Float = 1f) {
-        if (getFreePopulation() == 0) return
+        for (i in 1..getFreePopulation()) {
+            //evaluate tiles
+            val bestTile: TileInfo? = cityInfo.getTiles()
+                    .filter { it.aerialDistanceTo(cityInfo.getCenterTile()) <= 3 }
+                    .filterNot { it.isWorked() || cityInfo.location == it.position }
+                    .maxBy { Automation.rankTileForCityWork(it, cityInfo, foodWeight) }
+            val valueBestTile = if (bestTile == null) 0f
+            else Automation.rankTileForCityWork(bestTile, cityInfo, foodWeight)
 
-        //evaluate tiles
-        val bestTile: TileInfo? = cityInfo.getTiles()
-                .filter { it.aerialDistanceTo(cityInfo.getCenterTile()) <= 3 }
-                .filterNot { it.isWorked() || cityInfo.location == it.position }
-                .maxBy { Automation.rankTileForCityWork(it, cityInfo, foodWeight) }
-        val valueBestTile = if (bestTile == null) 0f
-        else Automation.rankTileForCityWork(bestTile, cityInfo, foodWeight)
-
-        val bestJob: String? = getMaxSpecialists()
-                .filter { specialistAllocations[it.key]!! < it.value }
-                .map { it.key }
-                .maxBy { Automation.rankSpecialist(getStatsOfSpecialist(it), cityInfo) }
+            val bestJob: String? = getMaxSpecialists()
+                    .filter { specialistAllocations[it.key]!! < it.value }
+                    .map { it.key }
+                    .maxBy { Automation.rankSpecialist(getStatsOfSpecialist(it), cityInfo) }
 
 
-        var valueBestSpecialist = 0f
-        if (bestJob != null) {
-            val specialistStats = getStatsOfSpecialist(bestJob)
-            valueBestSpecialist = Automation.rankSpecialist(specialistStats, cityInfo)
+            var valueBestSpecialist = 0f
+            if (bestJob != null) {
+                val specialistStats = getStatsOfSpecialist(bestJob)
+                valueBestSpecialist = Automation.rankSpecialist(specialistStats, cityInfo)
+            }
+
+            //assign population
+            if (valueBestTile > valueBestSpecialist) {
+                if (bestTile != null)
+                    cityInfo.workedTiles = cityInfo.workedTiles.withItem(bestTile.position)
+            } else if (bestJob != null) specialistAllocations.add(bestJob, 1)
         }
-
-        //assign population
-        if (valueBestTile > valueBestSpecialist) {
-            if (bestTile != null)
-                cityInfo.workedTiles = cityInfo.workedTiles.withItem(bestTile.position)
-        } else if (bestJob != null) specialistAllocations.add(bestJob, 1)
     }
 
     fun unassignExtraPopulation() {

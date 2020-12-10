@@ -74,9 +74,7 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
 
             leftSideTable.add(civIndicator).row()
 
-            civIndicator.onClick {
-                updateRightSide(civ)
-            }
+            civIndicator.onClick { updateRightSide(civ) }
         }
     }
 

@@ -598,12 +598,13 @@ class CityInfo {
 
     fun getGoldForSellingBuilding(buildingName:String) = getRuleset().buildings[buildingName]!!.cost / 10
 
-    fun sellBuilding(buildingName:String){
-        cityConstructions.builtBuildings.remove(buildingName)
+    fun sellBuilding(buildingName:String) {
         cityConstructions.removeBuilding(buildingName)
         civInfo.gold += getGoldForSellingBuilding(buildingName)
-        hasSoldBuildingThisTurn=true
+        hasSoldBuildingThisTurn = true
 
+        population.unassignExtraPopulation() // If the building provided specialists, release them to other work
+        population.autoAssignPopulation()
         cityStats.update()
         civInfo.updateDetailedCivResources() // this building could be a resource-requiring one
     }
