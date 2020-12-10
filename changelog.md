@@ -1,3 +1,23 @@
+## 3.11.19
+
+Reassign population after selling a specialist-providing building
+
+Resolved #3289 - can place unbuildable improvements that can exist on tiles
+
+Added nation icons to the leader names in the diplomacy screen
+
+Fixed ANR caused by too many saved games
+
+Selected unit stays selected when single-tap moved into a tile with another unit
+
+
+By 9kgsofrice:
+
+- resources can be added by tile improvement with unique "Provides [] []" 
+- wonder text will not be displayed & "[] enabled:" will not show if nothing visible in list 
+- Specialists can add happiness 
+- "Should not be displayed without []" unique for constructions accomodates resources and buildings
+
 ## 3.11.18
 
 Improvements can't be built in neutral areas, as per Civ V
