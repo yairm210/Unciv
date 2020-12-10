@@ -36,9 +36,9 @@ object ImageGetter {
 
     // We then shove all the drawables into a hashmap, because the atlas specifically tells us
     //   that the search on it is inefficient
-    val textureRegionDrawables = HashMap<String,TextureRegionDrawable>()
+    val textureRegionDrawables = HashMap<String, TextureRegionDrawable>()
 
-    init{
+    init {
         reload()
     }
 
@@ -61,7 +61,7 @@ object ImageGetter {
             val tempAtlas = TextureAtlas("$singleImagesFolder.atlas")
             for (region in tempAtlas.regions) {
                 val drawable = TextureRegionDrawable(region)
-                textureRegionDrawables["$singleImagesFolder/"+region.name] = drawable
+                textureRegionDrawables["$singleImagesFolder/" + region.name] = drawable
             }
         }
 
@@ -77,12 +77,11 @@ object ImageGetter {
         // These are from the mods
         for (mod in ruleset.mods) {
             val modAtlasFile = Gdx.files.local("mods/$mod/game.atlas")
-            if (modAtlasFile.exists()) {
-                val modAtlas = TextureAtlas(modAtlasFile)
-                for (region in modAtlas.regions) {
-                    val drawable = TextureRegionDrawable(region)
-                    textureRegionDrawables[region.name] = drawable
-                }
+            if (!modAtlasFile.exists()) continue
+            val modAtlas = TextureAtlas(modAtlasFile)
+            for (region in modAtlas.regions) {
+                val drawable = TextureRegionDrawable(region)
+                textureRegionDrawables[region.name] = drawable
             }
         }
     }
@@ -142,16 +141,10 @@ object ImageGetter {
         return layerList
     }
 
-    /*fun refreshAtlas() {
-        atlas.dispose() // To avoid OutOfMemory exceptions
-        atlas = TextureAtlas("game.atlas")
-        setTextureRegionDrawables()
-    }*/
+    fun getWhiteDot() = getImage(whiteDotLocation)
+    fun getDot(dotColor: Color) = getWhiteDot().apply { color = dotColor }
 
-    fun getWhiteDot() =  getImage(whiteDotLocation)
-    fun getDot(dotColor: Color) = getWhiteDot().apply { color = dotColor}
-
-    fun getExternalImage(fileName:String): Image {
+    fun getExternalImage(fileName: String): Image {
         return Image(TextureRegion(Texture("ExtraImages/$fileName")))
     }
 
@@ -160,55 +153,54 @@ object ImageGetter {
     }
 
     fun getDrawable(fileName: String): TextureRegionDrawable {
-        if(textureRegionDrawables.containsKey(fileName)) return textureRegionDrawables[fileName]!!
+        if (textureRegionDrawables.containsKey(fileName)) return textureRegionDrawables[fileName]!!
         else return textureRegionDrawables[whiteDotLocation]!!
     }
 
-    fun getRoundedEdgeTableBackground(tintColor: Color?=null): NinePatchDrawable {
-        val drawable = NinePatchDrawable(NinePatch(getDrawable("OtherIcons/buttonBackground").region,25,25,0,0)).apply {
-            setPadding(5f,15f,5f,15f)
+    fun getRoundedEdgeTableBackground(tintColor: Color? = null): NinePatchDrawable {
+        val drawable = NinePatchDrawable(NinePatch(getDrawable("OtherIcons/buttonBackground").region, 25, 25, 0, 0)).apply {
+            setPadding(5f, 15f, 5f, 15f)
         }
-        if(tintColor==null) return drawable
+        if (tintColor == null) return drawable
         return drawable.tint(tintColor)
     }
 
 
-    fun imageExists(fileName:String) = textureRegionDrawables.containsKey(fileName)
-    fun techIconExists(techName:String) = imageExists("TechIcons/$techName")
+    fun imageExists(fileName: String) = textureRegionDrawables.containsKey(fileName)
+    fun techIconExists(techName: String) = imageExists("TechIcons/$techName")
 
     fun getStatIcon(statName: String): Image {
         return getImage("StatIcons/$statName")
-                .apply { setSize(20f,20f)}
+                .apply { setSize(20f, 20f) }
     }
 
-    fun getUnitIcon(unitName:String,color:Color= Color.BLACK):Image{
-        return getImage("UnitIcons/$unitName").apply { this.color=color }
+    fun getUnitIcon(unitName: String, color: Color = Color.BLACK): Image {
+        return getImage("UnitIcons/$unitName").apply { this.color = color }
     }
 
-    fun getNationIndicator(nation: Nation, size:Float): IconCircleGroup {
-        val civIconName = if(nation.isCityState()) "CityState" else nation.name
-        if(nationIconExists(civIconName)){
+    fun getNationIndicator(nation: Nation, size: Float): IconCircleGroup {
+        val civIconName = if (nation.isCityState()) "CityState" else nation.name
+        if (nationIconExists(civIconName)) {
             val cityStateIcon = getNationIcon(civIconName)
             cityStateIcon.color = nation.getInnerColor()
-            return cityStateIcon.surroundWithCircle(size*0.9f).apply { circle.color = nation.getOuterColor() }
-                    .surroundWithCircle(size,false).apply { circle.color=nation.getInnerColor() }
-        }
-        else{
+            return cityStateIcon.surroundWithCircle(size * 0.9f).apply { circle.color = nation.getOuterColor() }
+                    .surroundWithCircle(size, false).apply { circle.color = nation.getInnerColor() }
+        } else {
             return getCircle().apply { color = nation.getOuterColor() }
                     .surroundWithCircle(size).apply { circle.color = nation.getInnerColor() }
 
         }
     }
 
-    fun nationIconExists(nation:String) = imageExists("NationIcons/$nation")
-    fun getNationIcon(nation:String) = getImage("NationIcons/$nation")
+    fun nationIconExists(nation: String) = imageExists("NationIcons/$nation")
+    fun getNationIcon(nation: String) = getImage("NationIcons/$nation")
 
-    val foodCircleColor =  colorFromRGB(129, 199, 132)
-    val productionCircleColor = Color.BROWN.cpy().lerp(Color.WHITE,0.5f)!!
-    val goldCircleColor = Color.GOLD.cpy().lerp(Color.WHITE,0.5f)!!
-    val cultureCircleColor = Color.PURPLE.cpy().lerp(Color.WHITE,0.5f)!!
-    val scienceCircleColor = Color.BLUE.cpy().lerp(Color.WHITE,0.5f)!!
-    fun getColorFromStats(stats:Stats) = when {
+    val foodCircleColor = colorFromRGB(129, 199, 132)
+    val productionCircleColor = Color.BROWN.cpy().lerp(Color.WHITE, 0.5f)!!
+    val goldCircleColor = Color.GOLD.cpy().lerp(Color.WHITE, 0.5f)!!
+    val cultureCircleColor = Color.PURPLE.cpy().lerp(Color.WHITE, 0.5f)!!
+    val scienceCircleColor = Color.BLUE.cpy().lerp(Color.WHITE, 0.5f)!!
+    fun getColorFromStats(stats: Stats) = when {
         stats.food > 0 -> foodCircleColor
         stats.production > 0 -> productionCircleColor
         stats.gold > 0 -> goldCircleColor
@@ -218,7 +210,7 @@ object ImageGetter {
     }
 
 
-    fun getImprovementIcon(improvementName:String, size:Float=20f):Actor {
+    fun getImprovementIcon(improvementName: String, size: Float = 20f): Actor {
         if (improvementName.startsWith("Remove") || improvementName == Constants.cancelImprovementOrder)
             return getImage("OtherIcons/Stop")
         if (improvementName.startsWith("StartingLocation ")) {
@@ -243,28 +235,28 @@ object ImageGetter {
         return getStatIcon(construction)
     }
 
-    fun getPromotionIcon(promotionName:String): Actor {
+    fun getPromotionIcon(promotionName: String): Actor {
         var level = 0
 
         when {
-            promotionName.endsWith(" I") -> level=1
-            promotionName.endsWith(" II") -> level=2
-            promotionName.endsWith(" III") -> level=3
+            promotionName.endsWith(" I") -> level = 1
+            promotionName.endsWith(" II") -> level = 2
+            promotionName.endsWith(" III") -> level = 3
         }
 
-        val basePromotionName = if(level==0) promotionName
-        else promotionName.substring(0, promotionName.length-level-1)
+        val basePromotionName = if (level == 0) promotionName
+        else promotionName.substring(0, promotionName.length - level - 1)
 
-        if(imageExists("UnitPromotionIcons/$basePromotionName")) {
+        if (imageExists("UnitPromotionIcons/$basePromotionName")) {
             val icon = getImage("UnitPromotionIcons/$basePromotionName")
-            icon.color = colorFromRGB(255,226,0)
+            icon.color = colorFromRGB(255, 226, 0)
             val circle = icon.surroundWithCircle(30f)
-            circle.circle.color = colorFromRGB(0,12,49)
-            if(level!=0){
+            circle.circle.color = colorFromRGB(0, 12, 49)
+            if (level != 0) {
                 val starTable = Table().apply { defaults().pad(2f) }
-                for(i in 1..level) starTable.add(getImage("OtherIcons/Star")).size(8f)
+                for (i in 1..level) starTable.add(getImage("OtherIcons/Star")).size(8f)
                 starTable.centerX(circle)
-                starTable.y=5f
+                starTable.y = 5f
                 circle.addActor(starTable)
             }
             return circle
@@ -277,15 +269,15 @@ object ImageGetter {
     fun getCircle() = getImage("OtherIcons/Circle")
     fun getTriangle() = getImage("OtherIcons/Triangle")
 
-    fun getBackground(color:Color): Drawable {
+    fun getBackground(color: Color): Drawable {
         val drawable = getDrawable("OtherIcons/TableBackground")
-        drawable.minHeight=0f
-        drawable.minWidth=0f
+        drawable.minHeight = 0f
+        drawable.minWidth = 0f
         return drawable.tint(color)
     }
 
 
-    fun getResourceImage(resourceName: String, size:Float): Actor {
+    fun getResourceImage(resourceName: String, size: Float): Actor {
         val iconGroup = getImage("ResourceIcons/$resourceName").surroundWithCircle(size)
         val resource = ruleset.tileResources[resourceName]
         if (resource == null) return iconGroup // This is the result of a bad modding setup, just give em an empty circle. Their problem.
@@ -322,7 +314,7 @@ object ImageGetter {
                 .surroundWithCircle(circleSize)
     }
 
-    fun getProgressBarVertical(width:Float,height:Float,percentComplete:Float,progressColor:Color,backgroundColor:Color): Table {
+    fun getProgressBarVertical(width: Float, height: Float, percentComplete: Float, progressColor: Color, backgroundColor: Color): Table {
         val advancementGroup = Table()
         val completionHeight = height * percentComplete
         advancementGroup.add(getImage(whiteDotLocation).apply { color = backgroundColor })
@@ -353,7 +345,7 @@ object ImageGetter {
         return healthBar
     }
 
-    fun getLine(startX:Float,startY:Float,endX:Float,endY:Float, width:Float): Image {
+    fun getLine(startX: Float, startY: Float, endX: Float, endY: Float, width: Float): Image {
         /** The simplest way to draw a line between 2 points seems to be:
          * A. Get a pixel dot, set its width to the required length (hypotenuse)
          * B. Set its rotational center, and set its rotation
@@ -362,9 +354,9 @@ object ImageGetter {
 
         // A
         val line = getWhiteDot()
-        val deltaX = (startX-endX).toDouble()
-        val deltaY = (startY-endY).toDouble()
-        line.width = Math.sqrt(deltaX*deltaX+deltaY*deltaY).toFloat()
+        val deltaX = (startX - endX).toDouble()
+        val deltaY = (startY - endY).toDouble()
+        line.width = Math.sqrt(deltaX * deltaX + deltaY * deltaY).toFloat()
         line.height = width // the width of the line, is the height of the
 
         // B
@@ -373,16 +365,15 @@ object ImageGetter {
         line.rotation = (Math.atan2(deltaY, deltaX) * radiansToDegrees).toFloat()
 
         // C
-        line.x = (startX+endX)/2 - line.width/2
-        line.y = (startY+endY)/2 - line.height/2
+        line.x = (startX + endX) / 2 - line.width / 2
+        line.y = (startY + endY) / 2 - line.height / 2
 
         return line
     }
 
-    fun getSpecialistIcon(color:Color): Image {
+    fun getSpecialistIcon(color: Color): Image {
         val specialist = getImage("StatIcons/Specialist")
         specialist.color = color
         return specialist
     }
 }
-

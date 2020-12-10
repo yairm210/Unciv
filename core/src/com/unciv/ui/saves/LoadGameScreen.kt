@@ -1,10 +1,13 @@
 package com.unciv.ui.saves
 
 import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
+import com.badlogic.gdx.utils.Align
 import com.unciv.UncivGame
 import com.unciv.logic.GameSaver
 import com.unciv.logic.UncivShowableException
@@ -129,37 +132,55 @@ class LoadGameScreen(previousScreen:CameraStageBaseScreen) : PickerScreen() {
 
     private fun updateLoadableGames(showAutosaves:Boolean) {
         saveTable.clear()
-        for (save in GameSaver.getSaves().sortedByDescending { it.lastModified() }) {
-            if (save.name().startsWith("Autosave") && !showAutosaves) continue
-            val textButton = TextButton(save.name(), skin)
-            textButton.onClick {
-                selectedSave = save.name()
-                copySavedGameToClipboardButton.enable()
-                var textToSet = save.name()
 
-                val savedAt = Date(save.lastModified())
-                descriptionLabel.setText("Loading...".tr())
-                textToSet += "\n{Saved at}: ".tr() + SimpleDateFormat("yyyy-MM-dd HH:mm").format(savedAt)
-                thread { // Even loading the game to get its metadata can take a long time on older phones
-                    try {
-                        val game = GameSaver.loadGameFromFile(save)
-                        val playerCivNames = game.civilizations.filter { it.isPlayerCivilization() }.joinToString { it.civName.tr() }
-                        textToSet += "\n" + playerCivNames +
-                                ", " + game.difficulty.tr() + ", ${Fonts.turn}" + game.turns
-                    } catch (ex: Exception) {
-                        textToSet += "\n{Could not load game}!".tr()
-                    }
+        val loadImage =ImageGetter.getImage("OtherIcons/Load")
+        loadImage.setSize(50f,50f) // So the origin sets correctly
+        loadImage.setOrigin(Align.center)
+        loadImage.addAction(Actions.rotateBy(360f, 2f))
+        saveTable.add(loadImage).size(50f)
 
-                    Gdx.app.postRunnable {
-                        descriptionLabel.setText(textToSet)
-                        rightSideButton.setText("Load [${save.name()}]".tr())
-                        rightSideButton.enable()
-                        deleteSaveButton.enable()
-                        deleteSaveButton.color = Color.RED
-                    }
+        thread { // Apparently, even jut getting the list of saves can cause ANRs -
+            // not sure how many saves these guys had but Google Play reports this to have happened hundreds of times
+            // .toList() because otherwise the lastModified will only be checked inside the postRunnable
+            val saves = GameSaver.getSaves().sortedByDescending { it.lastModified() }.toList()
+
+            Gdx.app.postRunnable {
+                saveTable.clear()
+                for (save in saves) {
+                    if (save.name().startsWith("Autosave") && !showAutosaves) continue
+                    val textButton = TextButton(save.name(), skin)
+                    textButton.onClick { onSaveSelected(save) }
+                    saveTable.add(textButton).pad(5f).row()
                 }
             }
-            saveTable.add(textButton).pad(5f).row()
+        }
+    }
+
+    private fun onSaveSelected(save: FileHandle) {
+        selectedSave = save.name()
+        copySavedGameToClipboardButton.enable()
+        var textToSet = save.name()
+
+        val savedAt = Date(save.lastModified())
+        descriptionLabel.setText("Loading...".tr())
+        textToSet += "\n{Saved at}: ".tr() + SimpleDateFormat("yyyy-MM-dd HH:mm").format(savedAt)
+        thread { // Even loading the game to get its metadata can take a long time on older phones
+            try {
+                val game = GameSaver.loadGameFromFile(save)
+                val playerCivNames = game.civilizations.filter { it.isPlayerCivilization() }.joinToString { it.civName.tr() }
+                textToSet += "\n" + playerCivNames +
+                        ", " + game.difficulty.tr() + ", ${Fonts.turn}" + game.turns
+            } catch (ex: Exception) {
+                textToSet += "\n{Could not load game}!".tr()
+            }
+
+            Gdx.app.postRunnable {
+                descriptionLabel.setText(textToSet)
+                rightSideButton.setText("Load [${save.name()}]".tr())
+                rightSideButton.enable()
+                deleteSaveButton.enable()
+                deleteSaveButton.color = Color.RED
+            }
         }
     }
 
