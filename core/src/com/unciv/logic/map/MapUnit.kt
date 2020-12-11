@@ -166,7 +166,7 @@ class MapUnit {
             visibilityRange += getUniques().count { it.text == "+1 Visibility Range" }
             if (hasUnique("+2 Visibility Range")) visibilityRange += 2 // This shouldn't be stackable
             if (hasUnique("Limited Visibility")) visibilityRange -= 1
-            if (civInfo.hasUnique("+1 Sight for all land military units"))
+            if (civInfo.hasUnique("+1 Sight for all land military units") && type.isMilitary() && type.isLandUnit())
                 visibilityRange += 1
             if (type.isWaterUnit() && !type.isCivilian()
                     && civInfo.hasUnique("All military naval units receive +1 movement and +1 sight"))
