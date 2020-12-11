@@ -14,7 +14,6 @@ Selected unit stays selected when single-tap moved into a tile with another unit
 By 9kgsofrice:
 
 - resources can be added by tile improvement with unique "Provides [] []" 
-- wonder text will not be displayed & "[] enabled:" will not show if nothing visible in list 
 - Specialists can add happiness 
 - "Should not be displayed without []" unique for constructions accomodates resources and buildings
 

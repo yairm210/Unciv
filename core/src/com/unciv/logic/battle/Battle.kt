@@ -388,8 +388,8 @@ object Battle {
 
             fun declareWar(civSuffered: CivilizationInfo) {
                 if (civSuffered != attackingCiv
-                        && attackingCiv.knows(attackingCiv)
-                        && attackingCiv.getDiplomacyManager(civSuffered).canDeclareWar()) {
+                        && civSuffered.knows(attackingCiv)
+                        && civSuffered.getDiplomacyManager(attackingCiv).canDeclareWar()) {
                     civSuffered.getDiplomacyManager(attackingCiv).declareWar()
                 }
             }
