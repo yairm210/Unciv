@@ -174,50 +174,38 @@ class CityInfo {
 
     fun getCityResources(): ResourceSupplyList {
         val cityResources = ResourceSupplyList()
+        var origin = if (civInfo.isCityState()) "City-States" else ""
 
         for (tileInfo in getTiles().filter { it.resource != null }) {
+
             val resource = tileInfo.getTileResource()
             val amount = getTileResourceAmount(tileInfo) * civInfo.getResourceModifier(resource)
-            if (amount > 0) cityResources.add(resource, amount, "Tiles")
+            if (origin != "City-States") origin = "Tiles"
+            if (amount > 0) cityResources.add(resource, amount, origin)
         }
         for (tileInfo in getTiles()) {
             if (tileInfo.improvement== null) continue
             val tileImprovement = tileInfo.getTileImprovement()
+            if (origin != "City-States") origin = "Tiles"
             for (unique in tileImprovement!!.uniqueObjects)
                 if (unique.placeholderText == "Provides [] []") {
                     val resource = getRuleset().tileResources[unique.params[1]] ?: continue
-                    cityResources.add(resource, unique.params[0].toInt() * civInfo.getResourceModifier(resource), "Tiles")
+                    cityResources.add(resource, unique.params[0].toInt() * civInfo.getResourceModifier(resource), origin)
                 }
             }
 
         for (building in cityConstructions.getBuiltBuildings().filter { it.requiredResource != null }) {
+            if (origin == "City-States") continue //otherwise, we could be spending resources to operate city state buildings
             val resource = getRuleset().tileResources[building.requiredResource]!!
             cityResources.add(resource, -1, "Buildings")
         }
         for(unique in cityConstructions.builtBuildingUniqueMap.getUniques("Provides [] []")) { // E.G "Provides [1] [Iron]"
             val resource = getRuleset().tileResources[unique.params[1]]
+            if (origin != "City-States") origin = "Buildings"
             if(resource!=null){
-                cityResources.add(resource, unique.params[0].toInt() * civInfo.getResourceModifier(resource), "Buildings") }
+                cityResources.add(resource, unique.params[0].toInt() * civInfo.getResourceModifier(resource), origin) }
         }
 
-        return cityResources
-    }
-
-    fun getCityResourcesForAlly(): ResourceSupplyList {
-        val cityResources = ResourceSupplyList()
-
-        for (tileInfo in getTiles().filter { it.resource != null }) {
-            val resource = tileInfo.getTileResource()
-            val amount = getTileResourceAmount(tileInfo)
-            if (amount > 0) cityResources.add(resource, amount, "City-States")
-        }
-
-        for(unique in cityConstructions.builtBuildingUniqueMap.getUniques("Provides [] []")) { // E.G "Provides [1] [Iron]"
-            val resource = getRuleset().tileResources[unique.params[1]]
-            if(resource!=null){
-                cityResources.add(resource, unique.params[0].toInt() * civInfo.getResourceModifier(resource), "City-States") }
-        }
-        
         return cityResources
     }
 
