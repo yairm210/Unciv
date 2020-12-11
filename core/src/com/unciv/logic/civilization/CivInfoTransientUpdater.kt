@@ -146,7 +146,8 @@ class CivInfoTransientUpdater(val civInfo: CivilizationInfo) {
         if (!civInfo.isCityState()) {
             for (otherCiv in civInfo.getKnownCivs().filter { it.getAllyCiv() == civInfo.civName }) {
                 for (city in otherCiv.cities) {
-                    newDetailedCivResources.add(city.getCityResources())
+                    for(resourceSupply in city.getCityResources())
+                        newDetailedCivResources.add(resourceSupply.resource,resourceSupply.amount,"City-States")
                 }
             }
         }

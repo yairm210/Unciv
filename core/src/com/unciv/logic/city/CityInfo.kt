@@ -178,29 +178,25 @@ class CityInfo {
         for (tileInfo in getTiles().filter { it.resource != null }) {
             val resource = tileInfo.getTileResource()
             val amount = getTileResourceAmount(tileInfo) * civInfo.getResourceModifier(resource)
-            val origin = if (civInfo.isCityState()) "City-States" else "Tiles"
-            if (amount > 0) cityResources.add(resource, amount, origin)
+            if (amount > 0) cityResources.add(resource, amount, "Tiles")
         }
         for (tileInfo in getTiles()) {
             if (tileInfo.improvement == null) continue
             val tileImprovement = tileInfo.getTileImprovement()
-            val origin = if (civInfo.isCityState()) "City-States" else "Tiles"
             for (unique in tileImprovement!!.uniqueObjects)
                 if (unique.placeholderText == "Provides [] []") {
                     val resource = getRuleset().tileResources[unique.params[1]] ?: continue
-                    cityResources.add(resource, unique.params[0].toInt() * civInfo.getResourceModifier(resource), origin)
+                    cityResources.add(resource, unique.params[0].toInt() * civInfo.getResourceModifier(resource), "Tiles")
                 }
         }
         for (building in cityConstructions.getBuiltBuildings().filter { it.requiredResource != null }) {
-            if (civInfo.isCityState()) continue //otherwise, we could be spending resources to operate city state buildings
             val resource = getRuleset().tileResources[building.requiredResource]!!
             cityResources.add(resource, -1, "Buildings")
         }
         for(unique in cityConstructions.builtBuildingUniqueMap.getUniques("Provides [] []")) { // E.G "Provides [1] [Iron]"
             val resource = getRuleset().tileResources[unique.params[1]]
-            val origin = if (civInfo.isCityState()) "City-States" else "Buildings"
             if(resource!=null){
-                cityResources.add(resource, unique.params[0].toInt() * civInfo.getResourceModifier(resource), origin) }
+                cityResources.add(resource, unique.params[0].toInt() * civInfo.getResourceModifier(resource), "Tiles") }
         }
 
         return cityResources
