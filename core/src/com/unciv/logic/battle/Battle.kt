@@ -283,11 +283,8 @@ object Battle {
 
         if(thisCombatant.getCivInfo().isMajorCiv()) {
             var greatGeneralPointsModifier = 1f
-            for (unique in thisCombatant.unit.getMatchingUniques("[] is earned []% faster"))
+            for (unique in thisCombatant.unit.getMatchingUniques("[] is earned []% faster") + thisCombatant.unit.civInfo.getMatchingUniques("[] is earned []% faster"))
                     if (unique.params[0] == Constants.greatGeneral)
-                    greatGeneralPointsModifier += unique.params[1].toFloat() / 100
-            for (unique in thisCombatant.unit.civInfo.getMatchingUniques("[] is earned []% faster"))
-                if (unique.params[0] == Constants.greatGeneral)
                     greatGeneralPointsModifier += unique.params[1].toFloat() / 100
 
             if (thisCombatant.unit.hasUnique("Combat very likely to create Great Generals")) // As of 3.10.10 This is to be deprecated and converted to "[Great General] is earned []% faster" - keeping it here to that mods with this can still work for now
