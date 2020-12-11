@@ -211,6 +211,13 @@ class CityInfo {
             val amount = getTileResourceAmount(tileInfo)
             if (amount > 0) cityResources.add(resource, amount, "City-States")
         }
+
+        for(unique in cityConstructions.builtBuildingUniqueMap.getUniques("Provides [] []")) { // E.G "Provides [1] [Iron]"
+            val resource = getRuleset().tileResources[unique.params[1]]
+            if(resource!=null){
+                cityResources.add(resource, unique.params[0].toInt() * civInfo.getResourceModifier(resource), "City-States") }
+        }
+        
         return cityResources
     }
 
