@@ -284,6 +284,9 @@ object Battle {
         if(thisCombatant.getCivInfo().isMajorCiv()) {
             var greatGeneralPointsModifier = 1f
             for (unique in thisCombatant.unit.getMatchingUniques("[] is earned []% faster"))
+                    if (unique.params[0] == Constants.greatGeneral)
+                    greatGeneralPointsModifier += unique.params[1].toFloat() / 100
+            for (unique in thisCombatant.unit.civInfo.getMatchingUniques("[] is earned []% faster"))
                 if (unique.params[0] == Constants.greatGeneral)
                     greatGeneralPointsModifier += unique.params[1].toFloat() / 100
 
