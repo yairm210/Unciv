@@ -722,6 +722,7 @@ class MapUnit {
     fun matchesFilter(filter: String): Boolean {
         if (filter == type.name) return true
         if (filter == name) return true
+        if (filter == "All") return true
         if ((filter == "Wounded" || filter == "wounded units") && health < 100) return true
         if ((filter == "Land" || filter == "land units") && type.isLandUnit()) return true
         if ((filter == "Water" || filter == "water units") && type.isWaterUnit()) return true

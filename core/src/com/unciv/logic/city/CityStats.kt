@@ -330,7 +330,7 @@ class CityStats {
         }
 
         for (unique in cityInfo.cityConstructions.builtBuildingUniqueMap.getUniques("+[]% production when building [] in this city")) {
-            if (constructionFitsFilter(currentConstruction, unique.params[1]))
+            if (constructionMatchesFilter(currentConstruction, unique.params[1]))
                 stats.production += unique.params[0].toInt()
         }
 
@@ -354,7 +354,7 @@ class CityStats {
 
 
         for (unique in uniques.filter { it.placeholderText == "+[]% Production when constructing []" }) {
-            if (constructionFitsFilter(currentConstruction, unique.params[1]))
+            if (constructionMatchesFilter(currentConstruction, unique.params[1]))
                 stats.production += unique.params[0].toInt()
         }
 
@@ -373,7 +373,7 @@ class CityStats {
         return stats
     }
 
-    fun constructionFitsFilter(construction:IConstruction, filter:String): Boolean {
+    fun constructionMatchesFilter(construction:IConstruction, filter:String): Boolean {
         return construction.name == filter
                 || filter == "land units" && construction is BaseUnit && construction.unitType.isLandUnit()
                 || filter == "naval units" && construction is BaseUnit && construction.unitType.isWaterUnit()
