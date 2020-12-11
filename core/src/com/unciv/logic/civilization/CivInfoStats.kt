@@ -1,6 +1,5 @@
 package com.unciv.logic.civilization
 
-import com.unciv.Constants
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.logic.map.RoadStatus
 import com.unciv.models.metadata.BASE_GAME_DURATION_TURNS
@@ -15,29 +14,37 @@ import kotlin.math.pow
 /** CivInfo class was getting too crowded */
 class CivInfoStats(val civInfo: CivilizationInfo){
 
-    private fun getUnitUpkeep(): Int {
+    private fun getUnitMaintenance(): Int {
         val baseUnitCost = 0.5f
         val freeUnits = 3
         var unitsToPayFor = civInfo.getCivUnits()
-        if(civInfo.hasUnique("Units in cities cost no Maintenance"))
-            // Only land military units can truly "garrison"
+        if (civInfo.hasUnique("Units in cities cost no Maintenance"))
+        // Only land military units can truly "garrison"
             unitsToPayFor = unitsToPayFor.filterNot {
                 it.getTile().isCityCenter() && it.canGarrison()
             }
 
+
         var numberOfUnitsToPayFor = max(0f, unitsToPayFor.count().toFloat() - freeUnits)
-        if(civInfo.hasUnique("-25% land units maintenance")){
+
+        // Deprecated and generalized as of 3.11.20 - here for mod transition period
+        if (civInfo.hasUnique("-25% land units maintenance")) {
             val numberOfUnitsWithDiscount = min(numberOfUnitsToPayFor, unitsToPayFor.count { it.type.isLandUnit() }.toFloat())
             numberOfUnitsToPayFor -= 0.25f * numberOfUnitsWithDiscount
         }
 
+        for (unique in civInfo.getMatchingUniques("-[]% [] unit maintenance costs")) {
+            val numberOfUnitsWithDiscount = min(numberOfUnitsToPayFor, unitsToPayFor.count { it.matchesFilter(unique.params[1]) }.toFloat())
+            numberOfUnitsToPayFor -= numberOfUnitsWithDiscount * (1 - unique.params[0].toFloat() / 100)
+        }
+
         val turnLimit = BASE_GAME_DURATION_TURNS * civInfo.gameInfo.gameParameters.gameSpeed.modifier
         val gameProgress = civInfo.gameInfo.turns / turnLimit // as game progresses Maintenance cost rises
-        var cost = baseUnitCost*numberOfUnitsToPayFor*(1+gameProgress)
-        cost = cost.pow(1+gameProgress/3) // Why 3? To spread 1 to 1.33
-        if(!civInfo.isPlayerCivilization())
+        var cost = baseUnitCost * numberOfUnitsToPayFor * (1 + gameProgress)
+        cost = cost.pow(1 + gameProgress / 3) // Why 3? To spread 1 to 1.33
+        if (!civInfo.isPlayerCivilization())
             cost *= civInfo.gameInfo.getDifficulty().aiUnitMaintenanceModifier
-        if(civInfo.hasUnique("-33% unit upkeep costs")) cost *= 0.66f
+        if (civInfo.hasUnique("-33% unit upkeep costs")) cost *= 0.66f
         return cost.toInt()
     }
 
@@ -100,7 +107,7 @@ class CivInfoStats(val civInfo: CivilizationInfo){
         }
 
         statMap["Transportation upkeep"] = Stats().apply { gold=- getTransportationUpkeep().toFloat()}
-        statMap["Unit upkeep"] = Stats().apply { gold=- getUnitUpkeep().toFloat()}
+        statMap["Unit upkeep"] = Stats().apply { gold=- getUnitMaintenance().toFloat()}
 
         if (civInfo.hasUnique("50% of excess happiness added to culture towards policies")) {
             val happiness = civInfo.getHappiness()

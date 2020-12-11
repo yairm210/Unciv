@@ -109,7 +109,7 @@ class MapUnit {
             movement += 2
 
         for (unique in civInfo.getMatchingUniques("+[] Movement for all [] units"))
-            if (matchesCategory(unique.params[1]))
+            if (matchesFilter(unique.params[1]))
                 movement += unique.params[0].toInt()
 
         if (civInfo.goldenAges.isGoldenAge() &&
@@ -719,17 +719,17 @@ class MapUnit {
         }
     }
 
-    fun matchesCategory(category: String): Boolean {
-        if (category == type.name) return true
-        if (category == name) return true
-        if ((category == "Wounded" || category == "wounded units") && health < 100) return true
-        if ((category == "Land" || category == "land units") && type.isLandUnit()) return true
-        if ((category == "Water" || category == "water units") && type.isWaterUnit()) return true
-        if ((category == "Air" || category == "air units") && type.isAirUnit()) return true
-        if (category == "non-air" && !type.isAirUnit()) return true
-        if ((category == "military" || category == "military units") && type.isMilitary()) return true
-        if (hasUnique(category)) return true
-        if ((category == "Barbarians" || category == "Barbarian") && civInfo.isBarbarian()) return true
+    fun matchesFilter(filter: String): Boolean {
+        if (filter == type.name) return true
+        if (filter == name) return true
+        if ((filter == "Wounded" || filter == "wounded units") && health < 100) return true
+        if ((filter == "Land" || filter == "land units") && type.isLandUnit()) return true
+        if ((filter == "Water" || filter == "water units") && type.isWaterUnit()) return true
+        if ((filter == "Air" || filter == "air units") && type.isAirUnit()) return true
+        if (filter == "non-air" && !type.isAirUnit()) return true
+        if ((filter == "military" || filter == "military units") && type.isMilitary()) return true
+        if (hasUnique(filter)) return true
+        if ((filter == "Barbarians" || filter == "Barbarian") && civInfo.isBarbarian()) return true
 
         return false
     }

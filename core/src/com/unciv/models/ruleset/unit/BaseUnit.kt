@@ -5,7 +5,6 @@ import com.unciv.logic.city.CityConstructions
 import com.unciv.logic.city.IConstruction
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.MapUnit
-import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.Unique
 import com.unciv.models.translations.Translations
@@ -179,7 +178,7 @@ class BaseUnit : INamed, IConstruction {
 
         for (unique in construction.cityInfo.cityConstructions.builtBuildingUniqueMap.getUniques("New [] units start with [] Experience in this city")
                 + civInfo.getMatchingUniques("New [] units start with [] Experience")) {
-            if (unit.matchesCategory(unique.params[0]))
+            if (unit.matchesFilter(unique.params[0]))
                 XP += unique.params[1].toInt()
         }
         unit.promotions.XP = XP
@@ -188,7 +187,7 @@ class BaseUnit : INamed, IConstruction {
             val filter = unique.params[0]
             val promotion = unique.params[1]
 
-            if (unit.matchesCategory(filter) || (filter == "relevant" && civInfo.gameInfo.ruleSet.unitPromotions.values.any { unit.type.toString() in it.unitTypes && it.name == promotion }))
+            if (unit.matchesFilter(filter) || (filter == "relevant" && civInfo.gameInfo.ruleSet.unitPromotions.values.any { unit.type.toString() in it.unitTypes && it.name == promotion }))
                 unit.promotions.addPromotion(promotion, isFree = true)
         }
 

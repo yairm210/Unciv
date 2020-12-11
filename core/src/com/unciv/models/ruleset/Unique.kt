@@ -83,7 +83,7 @@ object UniqueTriggerActivation {
                 val filter = unique.params[0]
                 val promotion = unique.params[1]
                 for (unit in civInfo.getCivUnits())
-                    if (unit.matchesCategory(filter)
+                    if (unit.matchesFilter(filter)
                             || (civInfo.gameInfo.ruleSet.unitPromotions.values.any {  it.name == promotion
                                     && unit.type.name in it.unitTypes }))
                 unit.promotions.addPromotion(promotion, isFree = true)}
