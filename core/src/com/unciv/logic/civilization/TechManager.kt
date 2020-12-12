@@ -210,7 +210,20 @@ class TechManager {
         overflowScience = limitOverflowScience(overflowscience)
         addTechnology(currentTechnology)
     }
+    fun getExtraScience(scienceGet : Int) {
+        //edited the fun hurryResearch()
+        val currentTechnology = currentTechnologyName()
+        if (currentTechnology == null) return
+        techsInProgress[currentTechnology] = researchOfTech(currentTechnology) + scienceGet
+        if (techsInProgress[currentTechnology]!! < costOfTech(currentTechnology))
+            return
 
+        // We finished it!
+        // http://www.civclub.net/bbs/forum.php?mod=viewthread&tid=123976
+        val extraScienceLeftOver = techsInProgress[currentTechnology]!! - costOfTech(currentTechnology)
+        overflowScience += limitOverflowScience(extraScienceLeftOver)
+        addTechnology(currentTechnology)
+    }
     fun getFreeTechnology(techName: String) {
         freeTechs--
         addTechnology(techName)
