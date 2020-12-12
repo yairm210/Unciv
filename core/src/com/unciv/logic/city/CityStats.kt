@@ -377,8 +377,12 @@ class CityStats {
         return construction.name == filter
                 || filter == "land units" && construction is BaseUnit && construction.unitType.isLandUnit()
                 || filter == "naval units" && construction is BaseUnit && construction.unitType.isWaterUnit()
+                || filter == "air units" && construction is BaseUnit && construction.unitType.isAirUnit()
                 || filter == "ranged units" && construction is BaseUnit && construction.unitType == UnitType.Ranged
                 || filter == "mounted units" && construction is BaseUnit && construction.unitType == UnitType.Mounted
+                || filter == "armor units" && construction is BaseUnit && construction.unitType == UnitType.Armor
+                || filter == "siege units" && construction is BaseUnit && construction.unitType == UnitType.Siege
+                || filter == "missile units" && construction is BaseUnit && construction.unitType == UnitType.Missile
                 || filter == "military units" && construction is BaseUnit && !construction.unitType.isCivilian()
                 || filter == "melee units" && construction is BaseUnit && construction.unitType.isMelee()
                 || filter == "Buildings" && construction is Building && !(construction.isWonder || construction.isNationalWonder)
