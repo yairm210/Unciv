@@ -303,7 +303,7 @@ class CityConstructions {
                 else
                     civ.addNotification("[${construction.name}] has been built in a faraway land",null,Color.BROWN)
             }
-            if(construction.science > 0 && cityInfo.civInfo.hasUnique("Receive a tech boost when scientific buildings/wonders built in capital")){
+            if(construction.science > 0 && cityInfo.civInfo.hasUnique("Receive a tech boost when scientific buildings/wonders are built in capital")){
                 cityInfo.civInfo.tech.getExtraScience(cityInfo.civInfo.tech.scienceOfLast8Turns.sum() / 8)
             }
         } else
