@@ -296,7 +296,7 @@ object UnitActions {
                         type = UnitActionType.HurryResearch,
                         uncivSound = UncivSound.Chimes,
                         action = {
-                            unit.civInfo.tech.hurryResearch()
+                            unit.civInfo.tech.addScience(unit.civInfo.tech.getScienceFromGreatScientist())
                             addGoldPerGreatPersonUsage(unit.civInfo)
                             unit.destroy()
                         }.takeIf { unit.civInfo.tech.currentTechnologyName() != null })
