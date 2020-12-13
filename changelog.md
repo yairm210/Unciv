@@ -1,3 +1,22 @@
+## 3.12.0
+
+Option to display tile yields on world screen - by jnecus
+
+Added much-needed "+[]% Production when constructing [] units" unique
+
+Added "All" filter for units
+
+Resolved #3408 - Unit maintenance cost reduction generalized, now works for Ottomans
+
+Resolved #3409 - American unique grants extra sight only to military land units
+
+Fixed crash when nuking Barbarian units
+
+By 9kgsofrice:
+
+- GG bonus generation now checks for civinfo uniques 
+- City-state resources from all sources shared with ally civ 
+
 ## 3.11.19
 
 Reassign population after selling a specialist-providing building
