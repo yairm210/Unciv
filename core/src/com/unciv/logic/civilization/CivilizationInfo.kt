@@ -479,7 +479,7 @@ class CivilizationInfo {
                 var civMilitaryUnits = getCivUnits().filter { !it.type.isCivilian() }
                 if (civMilitaryUnits.any()) {
                     val unitToDisband = civMilitaryUnits.first()
-                    unitToDisband.destroy()
+                    unitToDisband.disband()
                     civMilitaryUnits -= unitToDisband
                     val unitName = unitToDisband.name
                     addNotification("Cannot provide unit upkeep for [$unitName] - unit has been disbanded!", null, Color.RED)
