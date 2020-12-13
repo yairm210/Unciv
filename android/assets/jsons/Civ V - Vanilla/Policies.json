@@ -93,7 +93,7 @@
 		"policies": [
 			{
 				"name": "Warrior Code",
-				"uniques":["+[20]% Production when constructing [melee units]"],
+				"uniques":["+[20]% Production when constructing [Melee] units"],
 				"row": 1,
 				"column": 2
 			},
@@ -413,7 +413,7 @@
 			},
 			{
 				"name": "Total War",
-				"uniques": ["+[15]% Production when constructing [military units]", "New [military] units start with [15] Experience"],
+				"uniques": ["+[15]% Production when constructing [Military] units", "New [Military] units start with [15] Experience"],
 				"requires": ["Police State","Fascism"],
 				"row": 3,
 				"column": 4

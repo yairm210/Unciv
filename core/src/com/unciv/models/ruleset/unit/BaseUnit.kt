@@ -212,7 +212,7 @@ class BaseUnit : INamed, IConstruction {
         else ruleset.units[replaces!!]!!
     }
 
-    fun matchesFilter(filter:String):Boolean{
+    fun matchesFilter(filter:String):Boolean {
         if (filter == unitType.name) return true
         if (filter == name) return true
         if (filter == "All") return true
@@ -220,7 +220,7 @@ class BaseUnit : INamed, IConstruction {
         if ((filter == "Water" || filter == "water units") && unitType.isWaterUnit()) return true
         if ((filter == "Air" || filter == "air units") && unitType.isAirUnit()) return true
         if (filter == "non-air" && !unitType.isAirUnit()) return true
-        if ((filter == "military" || filter == "military units") && unitType.isMilitary()) return true
+        if ((filter == "military" || filter == "Military" || filter == "military units") && unitType.isMilitary()) return true
         return false
     }
 }

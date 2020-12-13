@@ -358,6 +358,11 @@ class CityStats {
                 stats.production += unique.params[0].toInt()
         }
 
+        for (unique in uniques.filter { it.placeholderText == "+[]% Production when constructing [] units" }) {
+            if (currentConstruction is BaseUnit && currentConstruction.matchesFilter(unique.params[1]))
+                stats.production += unique.params[0].toInt()
+        }
+
 
         if (cityInfo.cityConstructions.getBuiltBuildings().any { it.isWonder }
                 && uniques.any { it.text == "+33% culture in all cities with a world wonder" })
@@ -375,12 +380,14 @@ class CityStats {
 
     fun constructionMatchesFilter(construction:IConstruction, filter:String): Boolean {
         return construction.name == filter
+                // All of these are deprecated as of 3.11.20
                 || filter == "land units" && construction is BaseUnit && construction.unitType.isLandUnit()
                 || filter == "naval units" && construction is BaseUnit && construction.unitType.isWaterUnit()
                 || filter == "ranged units" && construction is BaseUnit && construction.unitType == UnitType.Ranged
                 || filter == "mounted units" && construction is BaseUnit && construction.unitType == UnitType.Mounted
                 || filter == "military units" && construction is BaseUnit && !construction.unitType.isCivilian()
                 || filter == "melee units" && construction is BaseUnit && construction.unitType.isMelee()
+
                 || filter == "Buildings" && construction is Building && !(construction.isWonder || construction.isNationalWonder)
                 || filter == "Wonders" && construction is Building && (construction.isWonder || construction.isNationalWonder)
                 || construction is Building && construction.uniques.contains(filter)
