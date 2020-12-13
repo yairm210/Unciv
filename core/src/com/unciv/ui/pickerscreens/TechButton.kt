@@ -64,7 +64,6 @@ class TechButton(techName:String, private val techManager: TechManager, isWorldS
 
         for (improvement in ruleset.tileImprovements.values
                 .filter { it.techRequired == techName || it.uniqueObjects.any { u -> u.params.contains(techName) }
-                        || it.improvingTech == techName
                         || it.uniqueObjects.any { it.placeholderText=="[] once [] is discovered" && it.params[1]==techName } }
                 .filter { it.uniqueTo==null || it.uniqueTo==civName })
             if (improvement.name.startsWith("Remove"))

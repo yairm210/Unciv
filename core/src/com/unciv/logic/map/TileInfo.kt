@@ -246,10 +246,6 @@ open class TileInfo {
         if (hasViewableResource(observingCiv) && getTileResource().improvement == improvement.name)
             stats.add(getTileResource().improvementStats!!.clone()) // resource-specific improvement
 
-        // As of 3.10.5 This is to be deprecated and converted to "[stats] once [tech] is discovered" - keeping it here to that mods with this can still work for now
-        if (improvement.improvingTech != null && observingCiv.tech.isResearched(improvement.improvingTech!!))
-            stats.add(improvement.improvingTechStats!!) // eg Chemistry for mines
-
         for (unique in improvement.uniqueObjects)
             if (unique.placeholderText == "[] once [] is discovered" && observingCiv.tech.isResearched(unique.params[1]))
                 stats.add(unique.stats)

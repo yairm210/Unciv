@@ -68,10 +68,6 @@ object BattleDamage {
             if (civHappiness < 0)
                 modifiers["Unhappiness"] = max(2 * civHappiness, -90) // otherwise it could exceed -100% and start healing enemy units...
 
-            // As of 3.11.0 This is to be deprecated and converted to "[Wounded] units deal +[25]% damage" - keeping it here so that mods with this can still work for now
-            if (civInfo.hasUnique("Wounded military units deal +25% damage") && combatant.getHealth() < 100) {
-                modifiers["Wounded unit"] = 25
-            }
             for (unique in civInfo.getMatchingUniques("[] units deal +[]% damage")) {
                 if (combatant.matchesCategory(unique.params[0])) {
                     modifiers.add(unique.params[0], unique.params[1].toInt())
@@ -120,12 +116,6 @@ object BattleDamage {
 
         if (attacker is MapUnitCombatant) {
             modifiers.add(getTileSpecificModifiers(attacker, defender.getTile()))
-
-            // As of 3.11.3 This is to be deprecated and converted to "+[]% Strength when attacking" - keeping it here to that mods with this can still work for now
-            for (ability in attacker.unit.getUniques()) {
-                if (ability.placeholderText == "Bonus as Attacker []%")
-                    modifiers.add("Attacker Bonus", ability.params[0].toInt())
-            }
 
             for(unique in attacker.unit.getMatchingUniques("+[]% Strength when attacking")) {
                 modifiers.add("Attacker Bonus", unique.params[0].toInt())
@@ -192,10 +182,6 @@ object BattleDamage {
             if (defenceVsRanged > 0) modifiers["defence vs ranged"] = defenceVsRanged
         }
 
-        // As of 3.11.2 This is to be deprecated and converted to "+[25]% Strength when defending" - keeping it here to that mods with this can still work for now
-        val carrierDefenceBonus = 25 * defender.unit.getUniques().count { it.text == "+25% Combat Bonus when defending" }
-        if (carrierDefenceBonus > 0) modifiers["Defender Bonus"] = carrierDefenceBonus
-
         for(unique in defender.unit.getMatchingUniques("+[]% Strength when defending")) {
             modifiers.add("Defender Bonus", unique.params[0].toInt())
         }
@@ -215,14 +201,6 @@ object BattleDamage {
     private fun getTileSpecificModifiers(unit: MapUnitCombatant, tile: TileInfo): Counter<String> {
         val modifiers = Counter<String>()
 
-        // As of 3.11.0 This is to be deprecated and converted to "+[15]% combat bonus for units fighting in [Friendly Land]" - keeping it here to that mods with this can still work for now
-        // Civ 5 does not use "Himeji Castle"
-        if (tile.isFriendlyTerritory(unit.getCivInfo()) && unit.getCivInfo().hasUnique("+15% combat strength for units fighting in friendly territory"))
-            modifiers.add("Friendly Land", 15)
-
-        // As of 3.11.0 This is to be deprecated and converted to "+[20]% combat bonus in [Foreign Land]" - keeping it here to that mods with this can still work for now
-        if (!tile.isFriendlyTerritory(unit.getCivInfo()) && unit.unit.hasUnique("+20% bonus outside friendly territory"))
-            modifiers.add("Foreign Land", 20)
 
         for (unique in unit.unit.getMatchingUniques("+[]% combat bonus in []")
                 + unit.getCivInfo().getMatchingUniques("+[]% combat bonus for units fighting in []")) {
@@ -233,15 +211,6 @@ object BattleDamage {
                 modifiers.add(filter, unique.params[0].toInt())
         }
 
-        // As of 3.10.6 This is to be deprecated and converted to "+[]% combat bonus in []" - keeping it here to that mods with this can still work for now
-        if (unit.unit.hasUnique("+25% bonus in Snow, Tundra and Hills") &&
-                (tile.baseTerrain == Constants.snow
-                        || tile.baseTerrain == Constants.tundra
-                        || tile.isHill()) &&
-                // except when there is a vegetation
-                (tile.terrainFeature != Constants.forest
-                        || tile.terrainFeature != Constants.jungle))
-            modifiers[tile.baseTerrain] = 25
 
         for (unique in unit.getCivInfo().getMatchingUniques("+[]% Strength if within [] tiles of a []")) {
             if (tile.getTilesInDistance(unique.params[1].toInt()).any { it.matchesUniqueFilter(unique.params[2]) })
@@ -252,10 +221,6 @@ object BattleDamage {
                         .any { it.hasUnique("-10% combat strength for adjacent enemy units") && it.civInfo.isAtWarWith(unit.getCivInfo()) })
             modifiers["Haka War Dance"] = -10
 
-        // As of 3.10.6 This is to be deprecated and converted to "+[]% combat bonus in []" - keeping it here to that mods with this can still work for now
-        if (unit.unit.hasUnique("+33% combat bonus in Forest/Jungle")
-                && (tile.terrainFeature == Constants.forest || tile.terrainFeature == Constants.jungle))
-            modifiers[tile.terrainFeature!!] = 33
 
         val isRoughTerrain = tile.isRoughTerrain()
         for (BDM in getBattleDamageModifiersOfUnit(unit.unit)) {

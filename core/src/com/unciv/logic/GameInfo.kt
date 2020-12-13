@@ -327,12 +327,6 @@ class GameInfo {
             for (cityInfo in civInfo.cities) cityInfo.cityStats.updateCityHappiness()
 
             for (cityInfo in civInfo.cities) {
-                // As of 3.10.14, specialists are saved by name not by stat
-                for ((key, value) in cityInfo.population.specialists.toHashMap().filter { it.value > 0 })
-                    cityInfo.population.specialistAllocations.add(
-                            Specialist.specialistNameByStat(key), value.toInt())
-                cityInfo.population.specialists.clear()
-
                 /** We remove constructions from the queue that aren't defined in the ruleset.
                  * This can lead to situations where the city is puppeted and had its construction removed, and there's no way to user-set it
                  * So for cities like those, we'll auto-set the construction

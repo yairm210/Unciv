@@ -307,16 +307,6 @@ class CityStats {
         val currentConstruction = cityInfo.cityConstructions.getCurrentConstruction()
 
         // This is to be deprecated and converted to "+[]% production when building [] in this city" - keeping it here to that mods with this can still work for now
-        if (currentConstruction is Building && currentConstruction.uniques.contains("Spaceship part")) {
-            if (cityInfo.containsBuildingUnique("Increases production of spaceship parts by 15%"))
-                stats.production += 15
-            if (cityInfo.civInfo.hasUnique("Increases production of spaceship parts by 25%"))
-                stats.production += 25
-            if (cityInfo.containsBuildingUnique("Increases production of spaceship parts by 50%"))
-                stats.production += 50
-        }
-
-        // This is to be deprecated and converted to "+[]% production when building [] in this city" - keeping it here to that mods with this can still work for now
         if (currentConstruction is BaseUnit) {
             if (currentConstruction.unitType == UnitType.Mounted
                     && cityInfo.containsBuildingUnique("+15% Production when building Mounted Units in this city"))
@@ -380,7 +370,7 @@ class CityStats {
 
     fun constructionMatchesFilter(construction:IConstruction, filter:String): Boolean {
         return construction.name == filter
-                // All of these are deprecated as of 3.11.20
+                // All of these are deprecated as of 3.11.20 in favor of "+[]% Production when constructing [] units"
                 || filter == "land units" && construction is BaseUnit && construction.unitType.isLandUnit()
                 || filter == "naval units" && construction is BaseUnit && construction.unitType.isWaterUnit()
                 || filter == "ranged units" && construction is BaseUnit && construction.unitType == UnitType.Ranged

@@ -37,14 +37,6 @@ class Technology {
             lineList += impimpString
         }
 
-        val improvedImprovements = ruleset.tileImprovements.values
-                .filter { it.improvingTech == name }.groupBy { it.improvingTechStats.toString() }
-        for (improvement in improvedImprovements) {
-            val impimpString = improvement.value.joinToString { it.name.tr() } +
-                    " {provide" + (if (improvement.value.size == 1) "s" else "") + "} " + improvement.key
-            lineList += impimpString.tr()
-        }
-
         val viewingCiv = UncivGame.Current.worldScreen.viewingCiv
         val enabledUnits = getEnabledUnits(viewingCiv)
         if (enabledUnits.any { "Will not be displayed in Civilopedia" !in it.uniques}) {
