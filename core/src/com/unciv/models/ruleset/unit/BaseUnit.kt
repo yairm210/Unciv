@@ -211,4 +211,16 @@ class BaseUnit : INamed, IConstruction {
         return if (replaces == null) this
         else ruleset.units[replaces!!]!!
     }
+
+    fun matchesFilter(filter:String):Boolean{
+        if (filter == unitType.name) return true
+        if (filter == name) return true
+        if (filter == "All") return true
+        if ((filter == "Land" || filter == "land units") && unitType.isLandUnit()) return true
+        if ((filter == "Water" || filter == "water units") && unitType.isWaterUnit()) return true
+        if ((filter == "Air" || filter == "air units") && unitType.isAirUnit()) return true
+        if (filter == "non-air" && !unitType.isAirUnit()) return true
+        if ((filter == "military" || filter == "military units") && unitType.isMilitary()) return true
+        return false
+    }
 }

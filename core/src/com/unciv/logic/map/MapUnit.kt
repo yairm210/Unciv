@@ -720,15 +720,8 @@ class MapUnit {
     }
 
     fun matchesFilter(filter: String): Boolean {
-        if (filter == type.name) return true
-        if (filter == name) return true
-        if (filter == "All") return true
+        if (baseUnit.matchesFilter(filter)) return true
         if ((filter == "Wounded" || filter == "wounded units") && health < 100) return true
-        if ((filter == "Land" || filter == "land units") && type.isLandUnit()) return true
-        if ((filter == "Water" || filter == "water units") && type.isWaterUnit()) return true
-        if ((filter == "Air" || filter == "air units") && type.isAirUnit()) return true
-        if (filter == "non-air" && !type.isAirUnit()) return true
-        if ((filter == "military" || filter == "military units") && type.isMilitary()) return true
         if (hasUnique(filter)) return true
         if ((filter == "Barbarians" || filter == "Barbarian") && civInfo.isBarbarian()) return true
 
