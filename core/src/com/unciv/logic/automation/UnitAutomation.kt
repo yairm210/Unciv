@@ -135,6 +135,8 @@ object UnitAutomation {
         // if there is an attackable unit in the vicinity, attack!
         if (BattleHelper.tryAttackNearbyEnemy(unit)) return
 
+        if(tryTakeBackCapturedCity(unit)) return
+
         if (tryGarrisoningUnit(unit)) return
 
         if (unit.health < 80 && tryHealUnit(unit)) return
@@ -382,6 +384,30 @@ object UnitAutomation {
             if (rangedUnits.any()) targets = rangedUnits
         }
         return targets.minBy { it.getHealth() }
+    }
+
+    private fun tryTakeBackCapturedCity(unit: MapUnit): Boolean {
+        var capturedCities = unit.civInfo.getKnownCivs().asSequence()
+                .flatMap { it.cities.asSequence() }
+                .filter { unit.civInfo.isAtWarWith(it.civInfo) &&
+                        unit.civInfo.civName == it.foundingCiv &&
+                        it.isInResistance() &&
+                        it.health < it.getMaxHealth()} //Most likely just been captured
+
+
+        if (unit.type.isRanged()) // ranged units don't harm capturable cities, waste of a turn
+            capturedCities = capturedCities.filterNot { it.health == 1 }
+
+        val closestReachableCapturedCity = capturedCities
+                .map { it.getCenterTile() }
+                .sortedBy { it.aerialDistanceTo(unit.getTile()) }
+                .firstOrNull { unit.movement.canReach(it) }
+
+        if (closestReachableCapturedCity != null) {
+            return headTowardsEnemyCity(unit, closestReachableCapturedCity)
+        }
+        return false
+
     }
 
     private fun tryGarrisoningUnit(unit: MapUnit): Boolean {
