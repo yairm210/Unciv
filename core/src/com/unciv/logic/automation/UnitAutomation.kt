@@ -175,7 +175,6 @@ object UnitAutomation {
             return false // will heal anyway, and attacks don't hurt
 
         val unitDistanceToTiles = unit.movement.getDistanceToTiles()
-        val tilesInDistance = unitDistanceToTiles.keys.filter { unit.movement.canMoveTo(it) }
         if (unitDistanceToTiles.isEmpty()) return true // can't move, so...
 
 
@@ -183,10 +182,26 @@ object UnitAutomation {
 
         if (tryPillageImprovement(unit)) return true
 
-        val tilesByHealingRate = tilesInDistance.groupBy { unit.rankTileForHealing(it) }
+
+        val tilesWithRangedEnemyUnits = unit.currentTile.getTilesInDistance(3)
+                .flatMap { it.getUnits().filter { unit.civInfo.isAtWarWith(it.civInfo) } }
+
+        val tilesInRangeOfAttack = tilesWithRangedEnemyUnits
+                .flatMap { it.getTile().getTilesInDistance(it.getRange()) }
+
+        val tilesWithinBomardmentRange = unit.currentTile.getTilesInDistance(3)
+                .filter { it.isCityCenter() && it.getCity()!!.civInfo.isAtWarWith(unit.civInfo) }
+                .flatMap { it.getTilesInDistance(it.getCity()!!.range) }
+
+        val dangerousTiles = (tilesInRangeOfAttack + tilesWithinBomardmentRange).toHashSet()
+
+
+        val viableTilesForHealing = unitDistanceToTiles.keys
+                .filter { it !in dangerousTiles && unit.movement.canMoveTo(it) }
+        val tilesByHealingRate = viableTilesForHealing.groupBy { unit.rankTileForHealing(it) }
 
         if (tilesByHealingRate.keys.none { it != 0 }) { // We can't heal here at all! We're probably embarked
-            val reachableCityTile = unit.civInfo.cities.map { it.getCenterTile() }
+            val reachableCityTile = unit.civInfo.cities.asSequence().map { it.getCenterTile() }
                     .sortedBy { it.aerialDistanceTo(unit.currentTile) }
                     .firstOrNull { unit.movement.canReach(it) }
             if (reachableCityTile != null) unit.movement.headTowards(reachableCityTile)
@@ -194,13 +209,7 @@ object UnitAutomation {
             return true
         }
 
-        var bestTilesForHealing = tilesByHealingRate.maxBy { it.key }!!.value
-        // within the tiles with best healing rate (say 15), we'll prefer one which has the highest defensive bonuses
-        val bestTilesWithoutBombardableTiles = bestTilesForHealing.filterNot {
-            it.getTilesInDistance(2)
-                    .any { it.isCityCenter() && it.getOwner()!!.isAtWarWith(unit.civInfo) }
-        }
-        if (bestTilesWithoutBombardableTiles.any()) bestTilesForHealing = bestTilesWithoutBombardableTiles
+        val bestTilesForHealing = tilesByHealingRate.maxBy { it.key }!!.value
         val bestTileForHealing = bestTilesForHealing.maxBy { it.getDefensiveBonus() }!!
         val bestTileForHealingRank = unit.rankTileForHealing(bestTileForHealing)
 
