@@ -9,7 +9,6 @@ import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.ruleset.unit.UnitType
-import com.unciv.models.translations.equalsPlaceholderText
 import com.unciv.ui.worldscreen.unit.UnitActions
 
 object UnitAutomation {
@@ -125,6 +124,8 @@ object UnitAutomation {
 
         // Accompany settlers
         if (tryAccompanySettlerOrGreatPerson(unit)) return
+
+        if(tryHeadTowardsSiegedCity(unit)) return
 
         if (unit.health < 50 && tryHealUnit(unit)) return // do nothing but heal
 
@@ -267,6 +268,25 @@ object UnitAutomation {
         unit.movement.headTowards(settlerOrGreatPersonToAccompany.currentTile)
         return true
     }
+
+    private fun tryHeadTowardsSiegedCity(unit: MapUnit): Boolean {
+        val siegedCities = unit.civInfo.cities
+                .asSequence()
+                .filter { unit.civInfo == it.civInfo &&
+                        it.health < it.getMaxHealth() * 0.75 } //Weird health issues and making sure that not all forces move to good defenses
+
+        val reachableTileNearSiegedCity = siegedCities
+                .flatMap { it.getCenterTile().getTilesAtDistance(2) }
+                .sortedBy { it.aerialDistanceTo(unit.currentTile) }
+                .firstOrNull { unit.movement.canReach(it) }
+
+        if (reachableTileNearSiegedCity != null) {
+            unit.movement.headTowards(reachableTileNearSiegedCity)
+            return true
+        }
+        return false
+    }
+
 
     private fun tryHeadTowardsEnemyCity(unit: MapUnit): Boolean {
         if (unit.civInfo.cities.isEmpty()) return false
