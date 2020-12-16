@@ -1,3 +1,21 @@
+## 3.12.1
+
+By nob0dy73:
+
+- AI no longer tries to heal units in dangerous tiles
+- AI units try to take back captured cities
+- AI units try to head towards sieged cities
+
+AI knows not to try and heal units which would heal anyway
+
+Forced disband now provides gold
+
+Solved ANR on load screen when loading large games
+
+Deprecation of old unique formats in favor of newer, more generalized ones
+
+Implemented missing Korean UA - By kasterra
+
 ## 3.12.0
 
 Option to display tile yields on world screen - by jnecus
