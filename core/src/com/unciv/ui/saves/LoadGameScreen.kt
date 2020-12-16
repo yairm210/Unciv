@@ -38,24 +38,30 @@ class LoadGameScreen(previousScreen:CameraStageBaseScreen) : PickerScreen() {
         topTable.add(rightSideTable)
 
         rightSideButton.onClick {
-            try {
-                UncivGame.Current.loadGame(selectedSave)
-            }
-            catch (ex:Exception){
-                val cantLoadGamePopup = Popup(this)
-                cantLoadGamePopup.addGoodSizedLabel("It looks like your saved game can't be loaded!").row()
-                if (ex is UncivShowableException && ex.localizedMessage != null) {
-                    // thrown exceptions are our own tests and can be shown to the user
-                    cantLoadGamePopup.addGoodSizedLabel(ex.localizedMessage).row()
-                    cantLoadGamePopup.addCloseButton()
-                    cantLoadGamePopup.open()
-                } else {
-                    cantLoadGamePopup.addGoodSizedLabel("If you could copy your game data (\"Copy saved game to clipboard\" - ").row()
-                    cantLoadGamePopup.addGoodSizedLabel("  paste into an email to yairm210@hotmail.com)").row()
-                    cantLoadGamePopup.addGoodSizedLabel("I could maybe help you figure out what went wrong, since this isn't supposed to happen!").row()
-                    cantLoadGamePopup.addCloseButton()
-                    cantLoadGamePopup.open()
-                    ex.printStackTrace()
+            ToastPopup("Loading...", this)
+            thread {
+                try {
+                    // This is what can lead to ANRs - reading the file and setting the transients, that's why this is in another thread
+                    val loadedGame = GameSaver.loadGameByName(selectedSave)
+                    Gdx.app.postRunnable { UncivGame.Current.loadGame(loadedGame) }
+                } catch (ex: Exception) {
+                    Gdx.app.postRunnable {
+                        val cantLoadGamePopup = Popup(this)
+                        cantLoadGamePopup.addGoodSizedLabel("It looks like your saved game can't be loaded!").row()
+                        if (ex is UncivShowableException && ex.localizedMessage != null) {
+                            // thrown exceptions are our own tests and can be shown to the user
+                            cantLoadGamePopup.addGoodSizedLabel(ex.localizedMessage).row()
+                            cantLoadGamePopup.addCloseButton()
+                            cantLoadGamePopup.open()
+                        } else {
+                            cantLoadGamePopup.addGoodSizedLabel("If you could copy your game data (\"Copy saved game to clipboard\" - ").row()
+                            cantLoadGamePopup.addGoodSizedLabel("  paste into an email to yairm210@hotmail.com)").row()
+                            cantLoadGamePopup.addGoodSizedLabel("I could maybe help you figure out what went wrong, since this isn't supposed to happen!").row()
+                            cantLoadGamePopup.addCloseButton()
+                            cantLoadGamePopup.open()
+                            ex.printStackTrace()
+                        }
+                    }
                 }
             }
         }
