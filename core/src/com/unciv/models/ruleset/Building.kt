@@ -310,7 +310,7 @@ class Building : NamedStats(), IConstruction {
                         !it.isPuppet && !it.cityConstructions
                                 .containsBuildingOrEquivalent(requiredBuildingInAllCities!!)
                     })
-                return "Requires a [$requiredBuildingInAllCities] in all cities"
+                return "Requires a [${civInfo.getEquivalentBuilding(requiredBuildingInAllCities!!)}] in all cities"
             if (civInfo.cities.any { it != construction.cityInfo && it.cityConstructions.isBeingConstructedOrEnqueued(name) })
                 return "National Wonder is being built elsewhere"
             if (civInfo.isCityState())
@@ -323,7 +323,7 @@ class Building : NamedStats(), IConstruction {
         }
 
         if (requiredBuilding != null && !construction.containsBuildingOrEquivalent(requiredBuilding!!))
-            return "Requires a [$requiredBuilding] in this city"
+            return "Requires a [${civInfo.getEquivalentBuilding(requiredBuilding!!)}] in this city"
         if (cannotBeBuiltWith != null && construction.isBuilt(cannotBeBuiltWith!!))
             return "Cannot be built with $cannotBeBuiltWith"
 
