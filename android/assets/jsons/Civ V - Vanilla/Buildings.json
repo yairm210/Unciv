@@ -948,8 +948,7 @@
 		"maintenance": 3,
 		"cannotBeBuiltWith": "Nuclear Plant",
 		"requiredTech": "Ecology",
-		"uniques": ["Must be next to [Desert]", "Requires a [Factory] in this city"],
-]
+		"uniques": ["Requires a [Factory] in this city", "Must be next to [Desert]"],
 	},
 	{
 		"name": "Sydney Opera House",
@@ -995,8 +994,7 @@
 		"production": 3,
 		"requiredResource": "Aluminum",
 		"cost": 360,
-		"uniques": ["+[50]% production when building [Spaceship part] in this city"],
-		"uniques": ["Requires a [Factory] in this city"],
+		"uniques": ["Requires a [Factory] in this city", "+[50]% production when building [Spaceship part] in this city"],
 		"requiredTech": "Robotics"
 	},
 	{
