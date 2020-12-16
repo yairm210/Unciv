@@ -174,28 +174,26 @@ class TechManager {
 
     fun nextTurn(scienceForNewTurn: Int) {
         addCurrentScienceToScienceOfLast8Turns()
-        val currentTechnology = currentTechnologyName()
-        if (currentTechnology == null) return
-        techsInProgress[currentTechnology] = researchOfTech(currentTechnology) + scienceForNewTurn
+        if (currentTechnologyName() == null) return
+
+        var finalScienceToAdd = scienceForNewTurn
+
         if (scienceFromResearchAgreements != 0) {
-            techsInProgress[currentTechnology] = techsInProgress[currentTechnology]!! + scienceFromResearchAgreements()
+            finalScienceToAdd += scienceFromResearchAgreements()
             scienceFromResearchAgreements = 0
         }
         if (overflowScience != 0) { // https://forums.civfanatics.com/threads/the-mechanics-of-overflow-inflation.517970/
             val techsResearchedKnownCivs = civInfo.getKnownCivs()
                     .count { it.isMajorCiv() && it.tech.isResearched(currentTechnologyName()!!) }
             val undefeatedCivs = civInfo.gameInfo.civilizations.count { it.isMajorCiv() && !it.isDefeated() }
-            techsInProgress[currentTechnology] = techsInProgress[currentTechnology]!! + ((1 + techsResearchedKnownCivs / undefeatedCivs.toFloat() * 0.3f) * overflowScience).toInt()
+            val finalScienceFromOverflow = ((1 + techsResearchedKnownCivs / undefeatedCivs.toFloat() * 0.3f) * overflowScience).toInt()
+            finalScienceToAdd += finalScienceFromOverflow
             overflowScience = 0
         }
-        if (techsInProgress[currentTechnology]!! < costOfTech(currentTechnology))
-            return
 
-        // We finished it!
-        val overflowscience = techsInProgress[currentTechnology]!! - costOfTech(currentTechnology)
-        overflowScience = limitOverflowScience(overflowscience)
-        addTechnology(currentTechnology)
+        addScience(finalScienceToAdd)
     }
+
     fun addScience(scienceGet : Int) {
         val currentTechnology = currentTechnologyName()
         if (currentTechnology == null) return
@@ -209,6 +207,7 @@ class TechManager {
         overflowScience += limitOverflowScience(extraScienceLeftOver)
         addTechnology(currentTechnology)
     }
+
     fun getFreeTechnology(techName: String) {
         freeTechs--
         addTechnology(techName)
@@ -297,14 +296,11 @@ class TechManager {
 
     fun updateTransientBooleans() {
         wayfinding = civInfo.hasUnique("Can embark and move over Coasts and Oceans immediately")
-        if (researchedTechUniques.contains("Enables embarkation for land units") || wayfinding)
-            unitsCanEmbark = true
+        unitsCanEmbark = wayfinding || researchedTechUniques.contains("Enables embarkation for land units")
 
-        if (researchedTechUniques.contains("Enables embarked units to enter ocean tiles") || wayfinding)
-            embarkedUnitsCanEnterOcean = true
-
-        if (researchedTechUniques.contains("Improves movement speed on roads")) movementSpeedOnRoadsImproved = true
-        if (researchedTechUniques.contains("Roads connect tiles across rivers")) roadsConnectAcrossRivers = true
+        embarkedUnitsCanEnterOcean = wayfinding || researchedTechUniques.contains("Enables embarked units to enter ocean tiles")
+        movementSpeedOnRoadsImproved = researchedTechUniques.contains("Improves movement speed on roads")
+        roadsConnectAcrossRivers = researchedTechUniques.contains("Roads connect tiles across rivers")
     }
 
     fun getBestRoadAvailable(): RoadStatus {
