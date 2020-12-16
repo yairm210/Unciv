@@ -378,6 +378,10 @@ class Building : NamedStats(), IConstruction {
         if ("Enemy land units must spend 1 extra movement point when inside your territory (obsolete upon Dynamite)" in uniques)
             civInfo.updateHasActiveGreatWall()
 
+        // Korean unique - apparently gives the same as the research agreement
+        if (science > 0 && civInfo.hasUnique("Receive a tech boost when scientific buildings/wonders are built in capital"))
+            civInfo.tech.addScience(civInfo.tech.scienceOfLast8Turns.sum() / 8)
+
         cityConstructions.cityInfo.cityStats.update() // new building, new stats
         civInfo.updateDetailedCivResources() // this building/unit could be a resource-requiring one
         civInfo.transients().updateCitiesConnectedToCapital(false) // could be a connecting building, like a harbor

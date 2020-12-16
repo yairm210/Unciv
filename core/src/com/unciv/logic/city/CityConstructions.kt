@@ -288,7 +288,7 @@ class CityConstructions {
         construction.postBuildEvent(this)
         if (construction.name in inProgressConstructions)
             inProgressConstructions.remove(construction.name)
-        if(construction.name == currentConstructionFromQueue)
+        if (construction.name == currentConstructionFromQueue)
             removeCurrentConstruction()
 
         validateConstructionQueue() // if we've build e.g. the Great Lighthouse, then Lighthouse is no longer relevant in the queue
@@ -299,10 +299,7 @@ class CityConstructions {
                 if (civ.exploredTiles.contains(cityInfo.location))
                     civ.addNotification("[${construction.name}] has been built in [${cityInfo.name}]", cityInfo.location, Color.BROWN)
                 else
-                    civ.addNotification("[${construction.name}] has been built in a faraway land",null,Color.BROWN)
-            }
-            if(construction.science > 0 && cityInfo.civInfo.hasUnique("Receive a tech boost when scientific buildings/wonders are built in capital")){
-                cityInfo.civInfo.tech.addScience(cityInfo.civInfo.tech.scienceOfLast8Turns.sum() / 8)
+                    civ.addNotification("[${construction.name}] has been built in a faraway land", null, Color.BROWN)
             }
         } else
             cityInfo.civInfo.addNotification("[${construction.name}] has been built in [" + cityInfo.name + "]", cityInfo.location, Color.BROWN)
