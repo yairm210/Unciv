@@ -228,10 +228,10 @@ class CivilizationInfo {
         }
     }
 
-    fun removeUnit(mapUnit: MapUnit){
+    fun removeUnit(mapUnit: MapUnit) {
         val newList = ArrayList(units)
         newList.remove(mapUnit)
-        units=newList
+        units = newList
         updateStatsForNextTurn() // unit upkeep
         updateDetailedCivResources()
     }

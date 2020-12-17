@@ -218,8 +218,7 @@
 		"happiness": 5,
 		"culture": 1,
 		"isNationalWonder": true,
-		"requiredBuildingInAllCities": "Colosseum",
-		"uniques": ["Cost increases by [30] per owned city"],
+		"uniques": ["Requires a [Colosseum] in all cities", "Cost increases by [30] per owned city"],
 		"requiredTech": "Horseback Riding"
 	},
 	{
@@ -300,9 +299,8 @@
 		"name": "National Epic",
 		"cost": 125,
 		"culture": 1,
-		"uniques": ["+[25]% great person generation in this city", "Cost increases by [30] per owned city"],
 		"isNationalWonder": true,
-		"requiredBuildingInAllCities": "Monument",
+		"uniques": ["Requires a [Monument] in all cities", "+[25]% great person generation in this city", "Cost increases by [30] per owned city"],
 		"requiredTech": "Philosophy"
 	},
 	{
@@ -319,8 +317,7 @@
 		"gold": 8,
 		"culture": 1,
 		"isNationalWonder": true,
-		"requiredBuildingInAllCities": "Market",
-		"uniques": ["Cost increases by [30] per owned city"],
+		"uniques": ["Requires a [Market] in all cities", "Cost increases by [30] per owned city"],
 		"requiredTech": "Currency"
 	},
 	{
@@ -376,8 +373,8 @@
 		"cost": 125,
 		"culture": 1,
 		"isNationalWonder": true,
-		"requiredBuildingInAllCities": "Barracks",
-		"uniques": ["All newly-trained [non-air] units in this city receive the [Morale] promotion", "Cost increases by [30] per owned city"],
+		"uniques": ["Requires a [Barracks] in all cities", "All newly-trained [non-air] units in this city receive the [Morale] promotion",
+			"Cost increases by [30] per owned city"],
 		"requiredTech": "Iron Working"
 	},
 	
@@ -415,8 +412,7 @@
 		"culture": 1,
 		"isNationalWonder": true,
 		"percentStatBonus": {"science": 50},
-		"requiredBuildingInAllCities": "Library",
-		"uniques": ["Cost increases by [30] per owned city"],
+		"uniques": ["Requires a [Library] in all cities", "Cost increases by [30] per owned city"],
 		"requiredTech": "Philosophy"
 	},
 	{
@@ -505,8 +501,7 @@
 		"science": 3,
 		"culture": 1,
 		"isNationalWonder": true,
-		"requiredBuildingInAllCities": "University",
-		"uniques": ["Free Technology", "Cost increases by [30] per owned city"],
+		"uniques": ["Requires a [University] in all cities", "Free Technology", "Cost increases by [30] per owned city"],
 		"requiredTech": "Education"
 	},
 	{
@@ -556,8 +551,7 @@
 		"production": 8,
 		"culture": 1,
 		"isNationalWonder": true,
-		"requiredBuildingInAllCities": "Workshop",
-		"uniques": ["Cost increases by [30] per owned city"],
+		"uniques": ["Requires a [Workshop] in all cities", "Cost increases by [30] per owned city"],
 		"requiredTech": "Machinery"
 	},
 	{
@@ -691,8 +685,7 @@
 		"percentStatBonus": {"culture": 50},
 		"culture": 5,
 		"isNationalWonder": true,
-		"requiredBuildingInAllCities": "Opera House",
-		"uniques": ["Cost increases by [30] per owned city"],
+		"uniques": ["Requires a [Opera House] in all cities", "Cost increases by [30] per owned city"],
 		"requiredTech": "Archaeology"
 	}, 
 	{

@@ -273,6 +273,9 @@ class Building : NamedStats(), IConstruction {
             "Requires a [] in this city" -> if (!construction.containsBuildingOrEquivalent(unique.params[0]))
                 return "Requires a [${civInfo.getEquivalentBuilding(unique.params[0])}] in this city" // replace with civ-specific building for user
 
+            "Requires a [] in all cities" -> if (civInfo.cities.any { !it.cityConstructions.containsBuildingOrEquivalent(unique.params[0]) } )
+                return "Requires a [${civInfo.getEquivalentBuilding(unique.params[0])}] in all cities" // replace with civ-specific building for user
+
             "Obsolete with []" -> if (civInfo.tech.isResearched(unique.params[0])) return unique.text
 
             "Must have an owned mountain within 2 tiles" ->  // Deprecated as of 3.10.8 . Use "Must have an owned [Mountain] within [2] tiles" instead
