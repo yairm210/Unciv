@@ -119,6 +119,11 @@ class CityStats {
                 && !cityInfo.civInfo.tech.isResearched("Steam Power"))
             stats.culture += 2
 
+        for (unique in cityInfo.civInfo.getMatchingUniques("[] per turn from cities before []")) {
+            if (!cityInfo.civInfo.tech.isResearched(unique.params[1])
+                    && !cityInfo.civInfo.policies.adoptedPolicies.contains(unique.params[1]))
+                stats.add(unique.stats)
+        }
         return stats
     }
 
