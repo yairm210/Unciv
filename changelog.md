@@ -1,3 +1,21 @@
+## 3.12.2
+
+Resolved #3422 - added fast switch between adjacent cities in city screen
+
+Resolved #3428 - added a toggle for displaying yield icons
+
+Resolved #3427 - "player ready" screen appears when loading game in Hotseat multiplayer
+
+City-states make peace with enemies when their allies do
+
+Long tech descriptions are now scrollable
+
+"Requires a {building}" notifications show the civ's equivalent to the building, if overridden
+
+Korean UA activates on buildings added from buying and on national wonders
+
+Translation updates
+
 ## 3.12.1
 
 By nob0dy73:
