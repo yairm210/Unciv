@@ -67,8 +67,6 @@ object Constants {
     const val disabled = "disabled"
     const val enabled = "enabled"
 
-    const val scienceConversionEffect = "Production to science conversion in cities increased by 33%"
-
     const val ancientEra = "Ancient era"
     const val classicalEra = "Classical era"
     const val medievalEra = "Medieval era"

@@ -18,11 +18,11 @@ class CityStatsTable(val cityScreen: CityScreen): Table() {
 
     init {
         pad(2f)
-        background = ImageGetter.getBackground(colorFromRGB(194,180,131))
+        background = ImageGetter.getBackground(colorFromRGB(194, 180, 131))
 
         innerTable.pad(5f)
         innerTable.defaults().pad(2f)
-        innerTable.background = ImageGetter.getBackground(Color.BLACK.cpy().apply { a=0.8f })
+        innerTable.background = ImageGetter.getBackground(Color.BLACK.cpy().apply { a = 0.8f })
 
         add(innerTable).fill()
     }
@@ -31,8 +31,8 @@ class CityStatsTable(val cityScreen: CityScreen): Table() {
         innerTable.clear()
 
         val ministatsTable = Table()
-        for(stat in cityInfo.cityStats.currentCityStats.toHashMap()) {
-            if(stat.key == Stat.Happiness || stat.key == Stat.Faith) continue
+        for (stat in cityInfo.cityStats.currentCityStats.toHashMap()) {
+            if (stat.key == Stat.Happiness || stat.key == Stat.Faith) continue
             ministatsTable.add(ImageGetter.getStatIcon(stat.key.name)).size(20f).padRight(5f)
             ministatsTable.add(round(stat.value).toInt().toString().toLabel()).padRight(10f)
         }
@@ -59,9 +59,9 @@ class CityStatsTable(val cityScreen: CityScreen): Table() {
                 } else {
                     "Stopped expansion".tr()
                 }
-        if (cityInfo.expansion.chooseNewTileToOwn()!=null)
+        if (cityInfo.expansion.chooseNewTileToOwn() != null)
             turnsToExpansionString += " (" + cityInfo.expansion.cultureStored + "/" +
-                cityInfo.expansion.getCultureToNextTile() + ")"
+                    cityInfo.expansion.getCultureToNextTile() + ")"
 
         var turnsToPopString =
                 when {

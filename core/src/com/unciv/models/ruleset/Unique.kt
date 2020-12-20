@@ -36,22 +36,24 @@ class UniqueMap:HashMap<String, ArrayList<Unique>>() {
 
 // Buildings, techs and policies can have 'triggered' effects
 object UniqueTriggerActivation {
-    fun triggerCivwideUnique(unique: Unique, civInfo: CivilizationInfo, cityInfo:CityInfo?=null) {
-        val chosenCity = if(cityInfo!=null) cityInfo else civInfo.cities.firstOrNull { it.isCapital() }
+    fun triggerCivwideUnique(unique: Unique, civInfo: CivilizationInfo, cityInfo: CityInfo? = null) {
+        val chosenCity = if (cityInfo != null) cityInfo else civInfo.cities.firstOrNull { it.isCapital() }
         when (unique.placeholderText) {
             "Free [] appears" -> {
                 val unitName = unique.params[0]
-                if (chosenCity != null && (unitName != Constants.settler || !civInfo.isOneCityChallenger()))
+                val unit = civInfo.gameInfo.ruleSet.units[unitName]
+                if (chosenCity != null && unit != null && (!unit.uniques.contains("Founds a new city") || !civInfo.isOneCityChallenger()))
                     civInfo.addUnit(unitName, chosenCity)
             }
             "[] free [] units appear" -> {
                 val unitName = unique.params[1]
-                if (chosenCity!=null && (unitName != Constants.settler || !civInfo.isOneCityChallenger()))
+                val unit = civInfo.gameInfo.ruleSet.units[unitName]
+                if (chosenCity != null && unit != null && (!unit.uniques.contains("Founds a new city") || !civInfo.isOneCityChallenger()))
                     for (i in 1..unique.params[0].toInt())
                         civInfo.addUnit(unitName, chosenCity)
             }
             // spectators get all techs at start of game, and if (in a mod) a tech gives a free policy, the game stucks on the policy picker screen
-            "Free Social Policy" -> if(!civInfo.isSpectator()) civInfo.policies.freePolicies++
+            "Free Social Policy" -> if (!civInfo.isSpectator()) civInfo.policies.freePolicies++
             "Empire enters golden age" ->
                 civInfo.goldenAges.enterGoldenAge()
             "Free Great Person" -> {
@@ -84,9 +86,11 @@ object UniqueTriggerActivation {
                 val promotion = unique.params[1]
                 for (unit in civInfo.getCivUnits())
                     if (unit.matchesFilter(filter)
-                            || (civInfo.gameInfo.ruleSet.unitPromotions.values.any {  it.name == promotion
-                                    && unit.type.name in it.unitTypes }))
-                unit.promotions.addPromotion(promotion, isFree = true)}
+                            || (civInfo.gameInfo.ruleSet.unitPromotions.values.any {
+                                it.name == promotion && unit.type.name in it.unitTypes
+                            }))
+                        unit.promotions.addPromotion(promotion, isFree = true)
+            }
         }
     }
 
