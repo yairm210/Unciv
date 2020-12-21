@@ -249,8 +249,8 @@ class Building : NamedStats(), IConstruction {
         
         for (unique in uniqueObjects.filter { it.placeholderText == "Not displayed as an available construction without []"}) {
             val filter = unique.params[0]
-            if (filter in civInfo.gameInfo.ruleSet.tileResources && !construction.cityInfo.civInfo.hasResource(filter)
-                    || filter in civInfo.gameInfo.ruleSet.buildings && !construction.containsBuildingOrEquivalent(filter))
+            if ((filter in civInfo.gameInfo.ruleSet.tileResources && !construction.cityInfo.civInfo.hasResource(filter))
+                    || (filter in civInfo.gameInfo.ruleSet.buildings && !construction.containsBuildingOrEquivalent(filter)))
                 return "Should not be displayed"
         }
 
@@ -264,12 +264,12 @@ class Building : NamedStats(), IConstruction {
                         it.matchesUniqueFilter(unique.params[0]) && it.getOwner() == construction.cityInfo.civInfo }) return unique.text
             "Can only be built in annexed cities" -> if (construction.cityInfo.isPuppet || construction.cityInfo.foundingCiv == ""
                     || construction.cityInfo.civInfo.civName == construction.cityInfo.foundingCiv) return unique.text
-
-            "Requires []" -> { val filter = unique.params[0] // This is for wonders and policies
+            "Requires []" -> { val filter = unique.params[0]
                 if (filter in civInfo.gameInfo.ruleSet.buildings) {
                     if (civInfo.cities.none { it.cityConstructions.containsBuildingOrEquivalent(filter) }) return unique.text // Wonder is not built
                 } else if (!civInfo.policies.adoptedPolicies.contains(filter)) return "Policy is not adopted" // this reason should not be displayed
             }
+
             "Requires a [] in this city" -> if (!construction.containsBuildingOrEquivalent(unique.params[0]))
                 return "Requires a [${civInfo.getEquivalentBuilding(unique.params[0])}] in this city" // replace with civ-specific building for user
 
@@ -329,11 +329,8 @@ class Building : NamedStats(), IConstruction {
             if (civInfo.victoryManager.unconstructedSpaceshipParts()[name] == 0) return "Don't need to build any more of these!"
         }
 
-        // Deprecated as of 3.12.2 - changed to "Requires a [] in this city" unique
         if (requiredBuilding != null && !construction.containsBuildingOrEquivalent(requiredBuilding!!))
             return "Requires a [${civInfo.getEquivalentBuilding(requiredBuilding!!)}] in this city"
-
-
         if (cannotBeBuiltWith != null && construction.isBuilt(cannotBeBuiltWith!!))
             return "Cannot be built with $cannotBeBuiltWith"
 

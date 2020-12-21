@@ -258,9 +258,9 @@
 		"name": "Temple",
 		"culture": 3,
 		"specialistSlots": {"Artist": 1},
+		"requiredBuilding": "Monument",
 		"maintenance": 2,
 		"hurryCostModifier": 25,
-		"uniques": ["Requires a [Monument] in this city"]
 		"requiredTech": "Philosophy"
 	},
 	{
@@ -271,8 +271,8 @@
 		"culture": 2,
 		"happiness": 2,
 		"specialistSlots": {"Artist": 1},
+		"requiredBuilding": "Monument",
 		"hurryCostModifier": 25,
-		"uniques": ["Requires a [Monument] in this city"]
 		"requiredTech": "Philosophy"
 	},
 	{
@@ -283,7 +283,7 @@
 		"specialistSlots": {"Artist": 1},
 		"hurryCostModifier": 25,
 		"culture": 4,
-		"uniques": ["Requires a [Monument] in this city"]
+		"requiredBuilding": "Monument",
 		"requiredTech": "Philosophy"
 	},
 	{
@@ -479,8 +479,8 @@
 		"hurryCostModifier": 15,
 		"percentStatBonus": {"science": 33},
 		"specialistSlots": {"Scientist": 2},
-		"uniques": ["[+2 Science] from [Jungle] tiles in this city", "Requires a [Library] in this city"],
-		"uniques": []
+		"requiredBuilding": "Library",
+		"uniques": ["[+2 Science] from [Jungle] tiles in this city"],
 		"requiredTech": "Education"
 	},
 	{
@@ -492,7 +492,8 @@
 		"percentStatBonus": {"science": 33},
 		"specialistSlots": {"Scientist": 2},
 		"culture": 3,
-		"uniques": ["[+2 Science] from [Jungle] tiles in this city", "Requires a [Library] in this city"],
+		"requiredBuilding": "Library",
+		"uniques": ["[+2 Science] from [Jungle] tiles in this city"],
 		"requiredTech": "Education"
 	},
 	{
@@ -509,7 +510,7 @@
 		"cityStrength": 7,
 		"cityHealth": 25,
 		"hurryCostModifier": 25,
-		"uniques": ["Requires a [Walls] in this city"],
+		"requiredBuilding": "Walls",
 		"requiredTech": "Chivalry"
 		// 4 cityStrength in vanilla, no ExtraCityHitPoints in vanilla
 	},
@@ -521,7 +522,8 @@
 		"cityHealth": 25,
 		"culture": 2,
 		"hurryCostModifier": 25,
-		"uniques": ["[+1 Gold] once [Flight] is discovered", "Requires a [Walls] in this city"],
+		"requiredBuilding": "Walls",
+		"uniques": ["[+1 Gold] once [Flight] is discovered"],
 		"requiredTech": "Chivalry"
 	},
 	{
@@ -568,7 +570,7 @@
 		"xpForNewUnits": 15,
 		"hurryCostModifier": 25,
 		"maintenance": 1,
-		"uniques": ["Requires a [Barracks] in this city"],
+		"requiredBuilding": "Barracks",
 		"requiredTech": "Steel"
 	},
 	
@@ -579,7 +581,8 @@
 		"maintenance": 0,
 		"hurryCostModifier": 15,
 		"percentStatBonus": {"science": 50},
-		"uniques": ["Must be next to [Mountain]", "Requires a [Library] in this city"],
+		"requiredBuilding": "Library",
+		"uniques": ["Must be next to [Mountain]"],
 		"requiredTech": "Astronomy"
 	},
 	{
@@ -587,8 +590,8 @@
 		"culture": 4,
 		"specialistSlots": {"Artist": 1},
 		"hurryCostModifier": 10,
+		"requiredBuilding": "Temple",
 		"maintenance": 2,
-		"uniques": ["Requires a [Temple] in this city"],
 		"requiredTech": "Acoustics"
 	},
 	{
@@ -606,7 +609,7 @@
 		"specialistSlots": {"Merchant": 1},
 		"hurryCostModifier": 15,
 		"percentStatBonus": {"gold": 25},
-		"uniques": ["Requires a [Market] in this city"],
+		"requiredBuilding": "Market",
 		"requiredTech": "Banking"
 	},
 	{
@@ -618,7 +621,7 @@
 		"happiness": 2,
 		"hurryCostModifier": 15,
 		"percentStatBonus": {"gold": 25},
-		"uniques": ["Requires a [Market] in this city"],
+		"requiredBuilding": "Market",
 		"requiredTech": "Banking"
 	},
 	{
@@ -629,7 +632,8 @@
 		"specialistSlots": {"Merchant": 1},
 		"hurryCostModifier": 15,
 		"percentStatBonus": {"gold": 25},
-		"uniques": ["+5% Production for every Trade Route with a City-State in the empire", "Requires a [Market] in this city"],
+		"uniques": ["+5% Production for every Trade Route with a City-State in the empire"],
+		"requiredBuilding": "Market",
 		"requiredTech": "Banking"
 		// will be introduced in BNW expansion pack
 	},
@@ -647,7 +651,7 @@
 		"happiness": 3,
 		"hurryCostModifier": 10,
 		"maintenance": 2,
-		"uniques": ["Requires a [Colosseum] in this city"],
+		"requiredBuilding": "Colosseum",
 		"requiredTech": "Printing Press"
 	},
 	{
@@ -674,9 +678,9 @@
 		"name": "Museum",
 		"culture": 5,
 		"specialistSlots": {"Artist": 2},
+		"requiredBuilding": "Opera House",
 		"maintenance": 3,
 		"hurryCostModifier": 0,
-		"uniques": ["Requires a [Opera House] in this city"],
 		"requiredTech": "Archaeology"
 	},
 	{
@@ -701,7 +705,8 @@
 		"name": "Seaport",
 		"hurryCostModifier": 25,
 		"maintenance": 3,
-		"uniques": ["Requires a [Harbor] in this city", "[+1 Production, +1 Gold] from [Water resource] tiles in this city",
+		"requiredBuilding": "Harbor",
+		"uniques": ["[+1 Production, +1 Gold] from [Water resource] tiles in this city",
 			"Must be next to [Coast]", "+[15]% production when building [naval units] in this city"],
 		"requiredTech": "Navigation"
 	},
@@ -740,9 +745,10 @@
 		"name": "Public School",
 		"science": 3,
 		"specialistSlots": {"Scientist": 1},
+		"requiredBuilding": "University",
 		"maintenance": 3,
 		"hurryCostModifier": 0,
-		"uniques": ["Requires a [University] in this city", "[+1 Science] Per [2] Population in this city"],
+		"uniques": ["[+1 Science] Per [2] Population in this city"],
 		"requiredTech": "Scientific Theory"
 	},
 	{
@@ -750,10 +756,10 @@
 		"production": 4,
 		"percentStatBonus": {"production": 10},
 		"specialistSlots": {"Engineer": 2},
+		"requiredBuilding": "Workshop",
 		"maintenance": 3,
 		"hurryCostModifier": 0,
 		"requiredResource": "Coal",
-		"uniques": ["Requires a [Workshop] in this city"],
 		"requiredTech": "Industrialization"
 	},
 	/*
@@ -761,7 +767,7 @@
 		"name": "Arsenal",
 		"cityStrength": 6,
 		"hurryCostModifier": 25,
-		"uniques": ["Requires a [Castle] in this city"],
+		"requiredBuilding": "Castle",
 		"requiredTech": "Rifling"
 		//+9 City Defense Strength, +25 City Hit Points, requiredTech "Metallurgy" in expansions
 	},
@@ -771,7 +777,7 @@
 		"xpForNewUnits": 15,
 		"hurryCostModifier": 0,
 		"maintenance": 1,
-		"uniques": ["Requires a [Armory] in this city"],
+		"requiredBuilding": "Armory",
 		"requiredTech": "Military Science"
 	},
 	{
@@ -787,9 +793,9 @@
 	{
 		"name": "Hospital",
 		"food": 5,
+		"requiredBuilding": "Aqueduct",
 		"maintenance": 2,
 		"hurryCostModifier": 0,
-		"uniques": ["Requires a [Aqueduct] in this city"],
 		"requiredTech": "Biology"
 	},
 	{
@@ -798,7 +804,7 @@
 		"percentStatBonus": {"gold": 25},
 		"specialistSlots": {"Merchant": 2},
 		"hurryCostModifier": 15,
-		"uniques": ["Requires a [Bank] in this city"],
+		"requiredBuilding": "Bank",
 		"requiredTech": "Electricity"
 	},
 	{
@@ -829,8 +835,8 @@
 		"name": "Broadcast Tower",
 		"culture": 3,
 		"percentStatBonus": {"culture": 33},
+		"requiredBuilding": "Museum",
 		"maintenance": 3,
-		"uniques": ["Requires a [Museum] in this city"],
 		"requiredTech": "Radio"
 	},
 	{
@@ -857,15 +863,15 @@
 		"science": 4,		
 		"percentStatBonus": {"science": 50},
 		"specialistSlots": {"Scientist": 1},
+		"requiredBuilding": "Public School",
 		"maintenance": 3,
-		"uniques": ["Requires a [Public School] in this city"],
 		"requiredTech": "Plastics"
 	},
 	{
 		"name": "Stadium",
 		"happiness": 4,
+		"requiredBuilding": "Theatre",
 		"maintenance": 2,
-		"uniques": ["Requires a [Theatre] in this city"],
 		"requiredTech": "Refrigeration"
 	},
 	/*
@@ -873,7 +879,7 @@
 		"name": "Military Base",
 		"cityStrength": 12,
 		"hurryCostModifier": 25,
-		"uniques": ["Requires a [Arsenal] in this city"],
+		"requiredBuilding": "Arsenal",
 		"requiredTech": "Telegraph"
 		//+25 City Hit Points, requiredTech "Replaceable parts" in expansions
 	},
@@ -914,9 +920,10 @@
 	
 	{
 		"name": "Medical Lab",
+		"requiredBuilding": "Hospital",
 		"maintenance": 3,
 		"requiredTech": "Pharmaceuticals",
-		"uniques": ["Requires a [Hospital] in this city", "[25]% of food is carried over after population increases"]
+		"uniques": ["[25]% of food is carried over after population increases"]
 	},
 	{
 		"name": "Manhattan Project",
@@ -928,20 +935,21 @@
 		"name": "Nuclear Plant",
 		"production": 5,		
 		"percentStatBonus": {"production": 15},
+		"requiredBuilding": "Factory",
 		"maintenance": 3,
 		"cannotBeBuiltWith": "Solar Plant",
 		"requiredResource": "Uranium",
-		"uniques": ["Requires a [Factory] in this city"],
 		"requiredTech": "Nuclear Fission"
 	},
 	{
 		"name": "Solar Plant",
 		"production": 5,		
 		"percentStatBonus": {"production": 15},
+		"requiredBuilding": "Factory",
 		"maintenance": 3,
 		"cannotBeBuiltWith": "Nuclear Plant",
 		"requiredTech": "Ecology",
-		"uniques": ["Requires a [Factory] in this city", "Must be next to [Desert]"],
+		"uniques": ["Must be next to [Desert]"]
 	},
 	{
 		"name": "Sydney Opera House",
@@ -987,7 +995,8 @@
 		"production": 3,
 		"requiredResource": "Aluminum",
 		"cost": 360,
-		"uniques": ["Requires a [Factory] in this city", "+[50]% production when building [Spaceship part] in this city"],
+		"requiredBuilding": "Factory",
+		"uniques": ["+[50]% production when building [Spaceship part] in this city"],
 		"requiredTech": "Robotics"
 	},
 	{
