@@ -2,7 +2,6 @@ package com.unciv.logic.civilization
 
 
 import com.badlogic.gdx.graphics.Color
-import com.unciv.Constants
 import com.unciv.logic.map.MapSize
 import com.unciv.logic.map.RoadStatus
 import com.unciv.models.ruleset.Unique
@@ -17,18 +16,26 @@ import kotlin.math.max
 import kotlin.math.min
 
 class TechManager {
-    @Transient lateinit var civInfo: CivilizationInfo
-    @Transient var researchedTechnologies = ArrayList<Technology>()
-    @Transient private var researchedTechUniques = ArrayList<String>()
+    @Transient
+    lateinit var civInfo: CivilizationInfo
+    @Transient
+    var researchedTechnologies = ArrayList<Technology>()
+    @Transient
+    private var researchedTechUniques = ArrayList<Unique>()
 
     // MapUnit.canPassThrough is the most called function in the game, and having these extremey specific booleans is or way of improving the time cost
-    @Transient var wayfinding = false
-    @Transient var unitsCanEmbark = false
-    @Transient var embarkedUnitsCanEnterOcean = false
+    @Transient
+    var wayfinding = false
+    @Transient
+    var unitsCanEmbark = false
+    @Transient
+    var embarkedUnitsCanEnterOcean = false
 
     // UnitMovementAlgorithms.getMovementCostBetweenAdjacentTiles is a close second =)
-    @Transient var movementSpeedOnRoadsImproved = false
-    @Transient var roadsConnectAcrossRivers = false
+    @Transient
+    var movementSpeedOnRoadsImproved = false
+    @Transient
+    var roadsConnectAcrossRivers = false
 
     var freeTechs = 0
 
@@ -167,7 +174,7 @@ class TechManager {
     private fun scienceFromResearchAgreements(): Int {
         // https://forums.civfanatics.com/resources/research-agreements-bnw.25568/
         var researchAgreementModifier = 0.5f
-        for(unique in civInfo.getMatchingUniques("Science gained from research agreements +50%"))
+        for (unique in civInfo.getMatchingUniques("Science gained from research agreements +50%"))
             researchAgreementModifier += 0.25f
         return (scienceFromResearchAgreements / 3 * researchAgreementModifier).toInt()
     }
@@ -194,7 +201,7 @@ class TechManager {
         addScience(finalScienceToAdd)
     }
 
-    fun addScience(scienceGet : Int) {
+    fun addScience(scienceGet: Int) {
         val currentTechnology = currentTechnologyName()
         if (currentTechnology == null) return
         techsInProgress[currentTechnology] = researchOfTech(currentTechnology) + scienceGet
@@ -225,7 +232,7 @@ class TechManager {
             techsToResearch.remove(techName)
         researchedTechnologies = researchedTechnologies.withItem(newTech)
         for (unique in newTech.uniques) {
-            researchedTechUniques = researchedTechUniques.withItem(unique)
+            researchedTechUniques = researchedTechUniques.withItem(Unique(unique))
             UniqueTriggerActivation.triggerCivwideUnique(Unique(unique), civInfo)
         }
         updateTransientBooleans()
@@ -277,12 +284,11 @@ class TechManager {
                 if (constructionName in obsoleteUnits) {
                     val text = "[$constructionName] has been obsolete and will be removed from construction queue in [${city.name}]!"
                     civInfo.addNotification(text, city.location, Color.BROWN)
-                }
-                else city.cityConstructions.constructionQueue.add(newConstructionName)
+                } else city.cityConstructions.constructionQueue.add(newConstructionName)
             }
         }
 
-        for(unique in civInfo.getMatchingUniques("Receive free [] when you discover []")) {
+        for (unique in civInfo.getMatchingUniques("Receive free [] when you discover []")) {
             if (unique.params[1] != techName) continue
             civInfo.addUnit(unique.params[0])
         }
@@ -290,17 +296,17 @@ class TechManager {
 
     fun setTransients() {
         researchedTechnologies.addAll(techsResearched.map { getRuleset().technologies[it]!! })
-        researchedTechUniques.addAll(researchedTechnologies.flatMap { it.uniques })
+        researchedTechUniques.addAll(researchedTechnologies.asSequence().flatMap { it.uniques.asSequence() }.map { Unique(it) })
         updateTransientBooleans()
     }
 
     fun updateTransientBooleans() {
         wayfinding = civInfo.hasUnique("Can embark and move over Coasts and Oceans immediately")
-        unitsCanEmbark = wayfinding || researchedTechUniques.contains("Enables embarkation for land units")
+        unitsCanEmbark = wayfinding || civInfo.hasUnique("Enables embarkation for land units")
 
-        embarkedUnitsCanEnterOcean = wayfinding || researchedTechUniques.contains("Enables embarked units to enter ocean tiles")
-        movementSpeedOnRoadsImproved = researchedTechUniques.contains("Improves movement speed on roads")
-        roadsConnectAcrossRivers = researchedTechUniques.contains("Roads connect tiles across rivers")
+        embarkedUnitsCanEnterOcean = wayfinding || civInfo.hasUnique("Enables embarked units to enter ocean tiles")
+        movementSpeedOnRoadsImproved = civInfo.hasUnique("Improves movement speed on roads")
+        roadsConnectAcrossRivers = civInfo.hasUnique("Roads connect tiles across rivers")
     }
 
     fun getBestRoadAvailable(): RoadStatus {
@@ -308,7 +314,7 @@ class TechManager {
         if (roadImprovement == null || !isResearched(roadImprovement.techRequired!!)) return RoadStatus.None
 
         val railroadImprovement = RoadStatus.Railroad.improvement(getRuleset())
-        val canBuildRailroad = railroadImprovement!=null && isResearched(railroadImprovement.techRequired!!)
+        val canBuildRailroad = railroadImprovement != null && isResearched(railroadImprovement.techRequired!!)
 
         return if (canBuildRailroad) RoadStatus.Railroad else RoadStatus.Road
     }

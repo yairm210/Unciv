@@ -11,7 +11,6 @@ import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomacyManager
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
-import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.trade.TradeEvaluation
@@ -34,6 +33,7 @@ class CivilizationInfo {
 
     @Transient
     lateinit var gameInfo: GameInfo
+
     @Transient
     lateinit var nation: Nation
 
@@ -44,8 +44,10 @@ class CivilizationInfo {
      */
     @Transient
     private var units = listOf<MapUnit>()
+
     @Transient
     var viewableTiles = setOf<TileInfo>()
+
     @Transient
     var viewableInvisibleUnitsTiles = setOf<TileInfo>()
 
@@ -56,14 +58,18 @@ class CivilizationInfo {
     /** This is for performance since every movement calculation depends on this, see MapUnit comment */
     @Transient
     var hasActiveGreatWall = false
+
     @Transient
     var statsForNextTurn = Stats()
+
     @Transient
     var happinessForNextTurn = 0
+
     @Transient
     var detailedCivResources = ResourceSupplyList()
 
     var playerType = PlayerType.AI
+
     /** Used in online multiplayer for human players */
     var playerId = ""
     var gold = 0
@@ -223,7 +229,8 @@ class CivilizationInfo {
     fun getMatchingUniques(uniqueTemplate: String): Sequence<Unique> {
         return nation.uniqueObjects.asSequence().filter { it.placeholderText == uniqueTemplate } +
                 cities.asSequence().flatMap { it.cityConstructions.builtBuildingUniqueMap.getUniques(uniqueTemplate).asSequence() } +
-                policies.policyUniques.getUniques(uniqueTemplate)
+                policies.policyUniques.getUniques(uniqueTemplate) +
+                tech.getTechUniques()
     }
 
     //region Units
@@ -365,7 +372,7 @@ class CivilizationInfo {
 
     fun canSignResearchAgreement(): Boolean {
         if (!isMajorCiv()) return false
-        if (!tech.getTechUniques().contains("Enables Research agreements")) return false
+        if (!hasUnique("Enables Research agreements")) return false
         if (gameInfo.ruleSet.technologies.values
                         .none { tech.canBeResearched(it.name) && !tech.isResearched(it.name) }) return false
         return true
