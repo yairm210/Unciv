@@ -35,7 +35,7 @@ class CivInfoStats(val civInfo: CivilizationInfo){
 
         for (unique in civInfo.getMatchingUniques("-[]% [] unit maintenance costs")) {
             val numberOfUnitsWithDiscount = min(numberOfUnitsToPayFor, unitsToPayFor.count { it.matchesFilter(unique.params[1]) }.toFloat())
-            numberOfUnitsToPayFor -= numberOfUnitsWithDiscount * (1 - unique.params[0].toFloat() / 100)
+            numberOfUnitsToPayFor -= numberOfUnitsWithDiscount * unique.params[0].toFloat() / 100
         }
 
         val turnLimit = BASE_GAME_DURATION_TURNS * civInfo.gameInfo.gameParameters.gameSpeed.modifier
