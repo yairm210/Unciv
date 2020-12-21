@@ -32,12 +32,18 @@ import kotlin.math.min
 import kotlin.math.roundToInt
 
 class CityInfo {
-    @Transient lateinit var civInfo: CivilizationInfo
-    @Transient lateinit private var centerTileInfo:TileInfo  // cached for better performance
-    @Transient val range = 2
-    @Transient lateinit var tileMap: TileMap
-    @Transient lateinit var tilesInRange:HashSet<TileInfo>
-    @Transient var hasJustBeenConquered = false  // this is so that military units can enter the city, even before we decide what to do with it
+    @Transient
+    lateinit var civInfo: CivilizationInfo
+    @Transient
+    lateinit private var centerTileInfo: TileInfo  // cached for better performance
+    @Transient
+    val range = 2
+    @Transient
+    lateinit var tileMap: TileMap
+    @Transient
+    lateinit var tilesInRange: HashSet<TileInfo>
+    @Transient
+    var hasJustBeenConquered = false  // this is so that military units can enter the city, even before we decide what to do with it
 
     var location: Vector2 = Vector2.Zero
     var id: String = UUID.randomUUID().toString()
@@ -55,14 +61,17 @@ class CityInfo {
 
     /** All tiles that this city controls */
     var tiles = HashSet<Vector2>()
+
     /** Tiles that have population assigned to them */
     var workedTiles = HashSet<Vector2>()
+
     /** Tiles that the population in them won't be reassigned */
     var lockedTiles = HashSet<Vector2>()
     var isBeingRazed = false
     var attackedThisTurn = false
     var hasSoldBuildingThisTurn = false
     var isPuppet = false
+
     /** The very first found city is the _original_ capital,
      * while the _current_ capital can be any other city after the original one is captured.
      * It is important to distinct them since the original cannot be razed and defines the Domination Victory. */
@@ -91,7 +100,7 @@ class CityInfo {
         for (unique in civInfo.getMatchingUniques("Gain a free [] []")) {
             val freeBuildingName = unique.params[0]
             val cityFilter = unique.params[1]
-            if (cityFilter == "in every city" || (cityFilter == "in every coastal city" && getCenterTile().isCoastalTile()) ) {
+            if (cityFilter == "in every city" || (cityFilter == "in every coastal city" && getCenterTile().isCoastalTile())) {
                 if (!cityConstructions.isBuilt(freeBuildingName))
                     cityConstructions.addBuilding(freeBuildingName)
             }
@@ -154,7 +163,6 @@ class CityInfo {
     }
 
 
-
     fun getCenterTile(): TileInfo = centerTileInfo
     fun getTiles(): Sequence<TileInfo> = tiles.asSequence().map { tileMap[it] }
     fun getWorkableTiles() = tilesInRange.asSequence().filter { it.getOwner() == civInfo }
@@ -163,10 +171,11 @@ class CityInfo {
     fun isCapital(): Boolean = cityConstructions.builtBuildings.contains(capitalCityIndicator())
     fun capitalCityIndicator(): String = getRuleset().buildings.values.first { it.uniques.contains("Indicates the capital city") }.name
 
-    fun isConnectedToCapital(connectionTypePredicate: (Set<String>) -> Boolean = {true}): Boolean {
+    fun isConnectedToCapital(connectionTypePredicate: (Set<String>) -> Boolean = { true }): Boolean {
         val mediumTypes = civInfo.citiesConnectedToCapitalToMediums[this] ?: return false
         return connectionTypePredicate(mediumTypes)
     }
+
     fun isInResistance() = resistanceCounter > 0
 
 
@@ -193,10 +202,11 @@ class CityInfo {
             val resource = getRuleset().tileResources[building.requiredResource]!!
             cityResources.add(resource, -1, "Buildings")
         }
-        for(unique in cityConstructions.builtBuildingUniqueMap.getUniques("Provides [] []")) { // E.G "Provides [1] [Iron]"
+        for (unique in cityConstructions.builtBuildingUniqueMap.getUniques("Provides [] []")) { // E.G "Provides [1] [Iron]"
             val resource = getRuleset().tileResources[unique.params[1]]
-            if(resource!=null){
-                cityResources.add(resource, unique.params[0].toInt() * civInfo.getResourceModifier(resource), "Tiles") }
+            if (resource != null) {
+                cityResources.add(resource, unique.params[0].toInt() * civInfo.getResourceModifier(resource), "Tiles")
+            }
         }
 
         return cityResources
@@ -205,17 +215,17 @@ class CityInfo {
     fun getTileResourceAmount(tileInfo: TileInfo): Int {
         if (tileInfo.resource == null) return 0
         val resource = tileInfo.getTileResource()
-        if (resource.revealedBy!=null && !civInfo.tech.isResearched(resource.revealedBy!!)) return 0
+        if (resource.revealedBy != null && !civInfo.tech.isResearched(resource.revealedBy!!)) return 0
 
         // Even if the improvement exists (we conquered an enemy city or somesuch) or we have a city on it, we won't get the resource until the correct tech is researched
-        if (resource.improvement!=null) {
+        if (resource.improvement != null) {
             val improvement = getRuleset().tileImprovements[resource.improvement!!]!!
             if (improvement.techRequired != null && !civInfo.tech.isResearched(improvement.techRequired!!)) return 0
         }
 
         if (resource.improvement == tileInfo.improvement || tileInfo.isCityCenter()
                 // Per https://gaming.stackexchange.com/questions/53155/do-manufactories-and-customs-houses-sacrifice-the-strategic-or-luxury-resources
-                || (resource.resourceType==ResourceType.Strategic && tileInfo.containsGreatImprovement())) {
+                || (resource.resourceType == ResourceType.Strategic && tileInfo.containsGreatImprovement())) {
             var amountToAdd = 1
             if (resource.resourceType == ResourceType.Strategic) {
                 amountToAdd = 2
@@ -240,7 +250,7 @@ class CityInfo {
         if (!isGrowing()) return null
         val roundedFoodPerTurn = foodForNextTurn().toFloat()
         val remainingFood = population.getFoodToNextPopulation() - population.foodStored
-        var turnsToGrowth = ceil( remainingFood / roundedFoodPerTurn).toInt()
+        var turnsToGrowth = ceil(remainingFood / roundedFoodPerTurn).toInt()
         if (turnsToGrowth < 1) turnsToGrowth = 1
         return turnsToGrowth
     }
@@ -251,11 +261,11 @@ class CityInfo {
         return population.foodStored / -foodForNextTurn() + 1
     }
 
-    fun containsBuildingUnique(unique:String) = cityConstructions.getBuiltBuildings().any { it.uniques.contains(unique) }
+    fun containsBuildingUnique(unique: String) = cityConstructions.getBuiltBuildings().any { it.uniques.contains(unique) }
 
-    fun getGreatPersonMap():StatMap {
+    fun getGreatPersonMap(): StatMap {
         val stats = StatMap()
-        for((specialist, amount) in population.getNewSpecialists())
+        for ((specialist, amount) in population.getNewSpecialists())
             if (getRuleset().specialists.containsKey(specialist)) // To solve problems in total remake mods
                 stats.add("Specialists", getRuleset().specialists[specialist]!!.greatPersonPoints.times(amount))
 
@@ -275,7 +285,7 @@ class CityInfo {
                 val statName = greatUnitUnique.getPlaceholderParameters()[0]
                 val stat = Stat.values().firstOrNull { it.name == statName }
                 // this is not very efficient, and if it causes problems we can try and think of a way of improving it
-                if (stat != null) entry.value.add(stat, entry.value.get(stat) * unique.params[1].toFloat()/100)
+                if (stat != null) entry.value.add(stat, entry.value.get(stat) * unique.params[1].toFloat() / 100)
             }
 
             for (unique in civInfo.getMatchingUniques("+[]% great person generation in all cities")
@@ -297,7 +307,9 @@ class CityInfo {
         return 200 + cityConstructions.getBuiltBuildings().sumBy { it.cityHealth }
     }
 
-    override fun toString(): String {return name} // for debug
+    override fun toString(): String {
+        return name
+    } // for debug
     //endregion
 
     //region state-changing functions
@@ -313,7 +325,7 @@ class CityInfo {
         cityConstructions.setTransients()
     }
 
-    fun startTurn(){
+    fun startTurn() {
         // Construct units at the beginning of the turn,
         // so they won't be generated out in the open and vulnerable to enemy attacks before you can control them
         cityConstructions.constructIfEnough()
@@ -439,7 +451,7 @@ class CityInfo {
 
         // How can you conquer a city but not know the civ you conquered it from?!
         // I don't know either, but some of our players have managed this, and crashed their game!
-        if(!conqueringCiv.knows(oldCiv))
+        if (!conqueringCiv.knows(oldCiv))
             conqueringCiv.meetCivilization(oldCiv)
 
         oldCiv.getDiplomacyManager(conqueringCiv)
@@ -498,10 +510,10 @@ class CityInfo {
         val respecForLiberatingOurCity = 10f + percentageOfCivPopulationInThatCity.roundToInt()
 
         // In order to get "plus points" in Diplomacy, you have to establish diplomatic relations if you haven't yet
-        if(!conqueringCiv.knows(foundingCiv))
+        if (!conqueringCiv.knows(foundingCiv))
             conqueringCiv.meetCivilization(foundingCiv)
 
-        if(foundingCiv.isMajorCiv()) {
+        if (foundingCiv.isMajorCiv()) {
             foundingCiv.getDiplomacyManager(conqueringCiv)
                     .addModifier(DiplomaticModifiers.CapturedOurCities, respecForLiberatingOurCity)
         } else {
@@ -570,23 +582,21 @@ class CityInfo {
         tryUpdateRoadStatus()
     }
 
-    private fun tryUpdateRoadStatus(){
-        if(getCenterTile().roadStatus==RoadStatus.None){
+    private fun tryUpdateRoadStatus() {
+        if (getCenterTile().roadStatus == RoadStatus.None) {
             val roadImprovement = getRuleset().tileImprovements["Road"]
-            if(roadImprovement!=null && roadImprovement.techRequired in civInfo.tech.techsResearched)
-            getCenterTile().roadStatus=RoadStatus.Road
-        }
-
-        else if (getCenterTile().roadStatus != RoadStatus.Railroad) {
+            if (roadImprovement != null && roadImprovement.techRequired in civInfo.tech.techsResearched)
+                getCenterTile().roadStatus = RoadStatus.Road
+        } else if (getCenterTile().roadStatus != RoadStatus.Railroad) {
             val railroadImprovement = getRuleset().tileImprovements["Railroad"]
             if (railroadImprovement != null && railroadImprovement.techRequired in civInfo.tech.techsResearched)
                 getCenterTile().roadStatus = RoadStatus.Railroad
         }
     }
 
-    fun getGoldForSellingBuilding(buildingName:String) = getRuleset().buildings[buildingName]!!.cost / 10
+    fun getGoldForSellingBuilding(buildingName: String) = getRuleset().buildings[buildingName]!!.cost / 10
 
-    fun sellBuilding(buildingName:String) {
+    fun sellBuilding(buildingName: String) {
         cityConstructions.removeBuilding(buildingName)
         civInfo.gold += getGoldForSellingBuilding(buildingName)
         hasSoldBuildingThisTurn = true
@@ -617,19 +627,18 @@ class CityInfo {
      But if they don't keep their promise they get a -20 that will only fully disappear in 160 turns.
      There's a lot of triggering going on here.
      */
-    private fun triggerCitiesSettledNearOtherCiv(){
-        val citiesWithin6Tiles = civInfo.gameInfo.civilizations.filter { it.isMajorCiv() && it!=civInfo }
+    private fun triggerCitiesSettledNearOtherCiv() {
+        val citiesWithin6Tiles = civInfo.gameInfo.civilizations.filter { it.isMajorCiv() && it != civInfo }
                 .flatMap { it.cities }
                 .filter { it.getCenterTile().aerialDistanceTo(getCenterTile()) <= 6 }
         val civsWithCloseCities = citiesWithin6Tiles.map { it.civInfo }.distinct()
                 .filter { it.knows(civInfo) && it.exploredTiles.contains(location) }
-        for(otherCiv in civsWithCloseCities)
-            otherCiv.getDiplomacyManager(civInfo).setFlag(DiplomacyFlags.SettledCitiesNearUs,30)
+        for (otherCiv in civsWithCloseCities)
+            otherCiv.getDiplomacyManager(civInfo).setFlag(DiplomacyFlags.SettledCitiesNearUs, 30)
     }
 
-    fun canPurchase(construction : IConstruction) : Boolean {
-        if (construction is BaseUnit)
-        {
+    fun canPurchase(construction: IConstruction): Boolean {
+        if (construction is BaseUnit) {
             val tile = getCenterTile()
             if (construction.unitType.isCivilian())
                 return tile.civilianUnit == null

@@ -14,15 +14,22 @@ import com.unciv.ui.utils.Fonts
 import kotlin.math.abs
 
 open class TileInfo {
-    @Transient lateinit var tileMap: TileMap
-    @Transient lateinit var ruleset: Ruleset  // a tile can be a tile with a ruleset, even without a map.
-    @Transient var owningCity:CityInfo?=null
-    @Transient private lateinit var baseTerrainObject:Terrain
+    @Transient
+    lateinit var tileMap: TileMap
+    @Transient
+    lateinit var ruleset: Ruleset  // a tile can be a tile with a ruleset, even without a map.
+    @Transient
+    var owningCity: CityInfo? = null
+    @Transient
+    private lateinit var baseTerrainObject: Terrain
 
     // These are for performance - checked with every tile movement and "canEnter" check, which makes them performance-critical
-    @Transient var isLand = false
-    @Transient var isWater = false
-    @Transient var isOcean = false
+    @Transient
+    var isLand = false
+    @Transient
+    var isWater = false
+    @Transient
+    var isOcean = false
 
     // This will be called often - farm can be built on Hill and tundra if adjacent to fresh water
     // and farms on adjacent to fresh water tiles will have +1 additional Food after researching Civil Service
@@ -80,7 +87,7 @@ open class TileInfo {
     }
 
     fun containsUnfinishedGreatImprovement(): Boolean {
-        if(improvementInProgress==null) return false
+        if (improvementInProgress == null) return false
         return ruleset.tileImprovements[improvementInProgress!!]!!.isGreatImprovement()
     }
 
@@ -298,7 +305,7 @@ open class TileInfo {
     /** Without regards to what civinfo it is, a lot of the checks are just for the improvement on the tile.
      *  Doubles as a check for the map editor.
      */
-    fun canImprovementBeBuiltHere(improvement: TileImprovement, resourceIsVisible:Boolean = resource!=null): Boolean {
+    fun canImprovementBeBuiltHere(improvement: TileImprovement, resourceIsVisible: Boolean = resource != null): Boolean {
         val topTerrain = getLastTerrain()
 
         return when {
@@ -325,7 +332,7 @@ open class TileInfo {
         }
     }
 
-    fun matchesUniqueFilter(filter:String): Boolean {
+    fun matchesUniqueFilter(filter: String): Boolean {
         return filter == baseTerrain
                 || filter == Constants.hill && isHill()
                 || filter == "River" && isAdjacentToRiver()
@@ -382,8 +389,8 @@ open class TileInfo {
     }
 
     /** The two tiles have a river between them */
-    fun isConnectedByRiver(otherTile:TileInfo): Boolean {
-        if(otherTile==this) throw Exception("Should not be called to compare to self!")
+    fun isConnectedByRiver(otherTile: TileInfo): Boolean {
+        if (otherTile == this) throw Exception("Should not be called to compare to self!")
         val xDifference = this.position.x - otherTile.position.x
         val yDifference = this.position.y - otherTile.position.y
 

@@ -22,21 +22,27 @@ import kotlin.collections.ArrayList
 class UncivShowableException(missingMods: String) : Exception(missingMods)
 
 class GameInfo {
-    @Transient lateinit var difficultyObject: Difficulty // Since this is static game-wide, and was taking a large part of nextTurn
-    @Transient lateinit var currentPlayerCiv:CivilizationInfo // this is called thousands of times, no reason to search for it with a find{} every time
+    @Transient
+    lateinit var difficultyObject: Difficulty // Since this is static game-wide, and was taking a large part of nextTurn
+    @Transient
+    lateinit var currentPlayerCiv: CivilizationInfo // this is called thousands of times, no reason to search for it with a find{} every time
+
     /** This is used in multiplayer games, where I may have a saved game state on my phone
      * that is inconsistent with the saved game on the cloud */
-    @Transient var isUpToDate=false
-    @Transient lateinit var ruleSet:Ruleset
+    @Transient
+    var isUpToDate = false
+    @Transient
+    lateinit var ruleSet: Ruleset
 
     var civilizations = mutableListOf<CivilizationInfo>()
-    var difficulty="Chieftain" // difficulty is game-wide, think what would happen if 2 human players could play on different difficulties?
+    var difficulty = "Chieftain" // difficulty is game-wide, think what would happen if 2 human players could play on different difficulties?
     var tileMap: TileMap = TileMap()
-    var gameParameters= GameParameters()
+    var gameParameters = GameParameters()
     var turns = 0
-    var oneMoreTurnMode=false
-    var currentPlayer=""
+    var oneMoreTurnMode = false
+    var currentPlayer = ""
     var gameId = UUID.randomUUID().toString() // random string
+
     @Volatile
     var customSaveLocation: String? = null
 
@@ -53,9 +59,9 @@ class GameInfo {
         val toReturn = GameInfo()
         toReturn.tileMap = tileMap.clone()
         toReturn.civilizations.addAll(civilizations.map { it.clone() })
-        toReturn.currentPlayer=currentPlayer
+        toReturn.currentPlayer = currentPlayer
         toReturn.turns = turns
-        toReturn.difficulty=difficulty
+        toReturn.difficulty = difficulty
         toReturn.gameParameters = gameParameters
         toReturn.gameId = gameId
         toReturn.oneMoreTurnMode = oneMoreTurnMode
@@ -66,11 +72,11 @@ class GameInfo {
     fun getPlayerToViewAs(): CivilizationInfo {
         if (!gameParameters.isOnlineMultiplayer) return currentPlayerCiv // non-online, play as human player
         val userId = UncivGame.Current.settings.userId
-        if (civilizations.any { it.playerId == userId}) return civilizations.first { it.playerId == userId }
+        if (civilizations.any { it.playerId == userId }) return civilizations.first { it.playerId == userId }
         else return getBarbarianCivilization()// you aren't anyone. How did you even get this game? Can you spectate?
     }
 
-    fun getCivilization(civName:String) = civilizations.first { it.civName==civName }
+    fun getCivilization(civName: String) = civilizations.first { it.civName == civName }
     fun getCurrentPlayerCivilization() = currentPlayerCiv
     fun getBarbarianCivilization() = getCivilization(Constants.barbarians)
     fun getDifficulty() = difficultyObject
@@ -85,10 +91,10 @@ class GameInfo {
         var currentPlayerIndex = civilizations.indexOf(thisPlayer)
 
 
-        fun switchTurn(){
+        fun switchTurn() {
             thisPlayer.endTurn()
-            currentPlayerIndex = (currentPlayerIndex+1) % civilizations.size
-            if(currentPlayerIndex==0){
+            currentPlayerIndex = (currentPlayerIndex + 1) % civilizations.size
+            if (currentPlayerIndex == 0) {
                 turns++
             }
             thisPlayer = civilizations[currentPlayerIndex]
@@ -98,7 +104,7 @@ class GameInfo {
         switchTurn()
 
         while (thisPlayer.playerType == PlayerType.AI
-            || turns < UncivGame.Current.simulateUntilTurnForDebug
+                || turns < UncivGame.Current.simulateUntilTurnForDebug
                 || turns < simulateMaxTurns && simulateUntilWin
                 // For multiplayer, if there are 3+ players and one is defeated or spectator,
                 // we'll want to skip over their turn
@@ -160,8 +166,7 @@ class GameInfo {
                 val unitName = tile.militaryUnit!!.name
                 thisPlayer.addNotification("An enemy [$unitName] was spotted $inOrNear our territory", tile.position, Color.RED)
             }
-        }
-        else {
+        } else {
             val positions = tiles.map { it.position }
             thisPlayer.addNotification("[${positions.size}] enemy units were spotted $inOrNear our territory", Color.RED, LocationAction(positions))
         }
@@ -216,15 +221,15 @@ class GameInfo {
         val barbarianCiv = getBarbarianCivilization()
         barbarianCiv.tech.techsResearched = allResearchedTechs.toHashSet()
         val unitList = ruleSet.units.values
-                .filter { !it.unitType.isCivilian()}
+                .filter { !it.unitType.isCivilian() }
                 .filter { it.isBuildable(barbarianCiv) }
 
         val landUnits = unitList.filter { it.unitType.isLandUnit() }
         val waterUnits = unitList.filter { it.unitType.isWaterUnit() }
 
-        val unit:String
-        if(waterUnits.isNotEmpty() && tileToPlace.isCoastalTile() && Random().nextBoolean())
-            unit=waterUnits.random().name
+        val unit: String
+        if (waterUnits.isNotEmpty() && tileToPlace.isCoastalTile() && Random().nextBoolean())
+            unit = waterUnits.random().name
         else unit = landUnits.random().name
 
         tileMap.placeUnitNearTile(tileToPlace.position, unit, getBarbarianCivilization())
@@ -235,8 +240,10 @@ class GameInfo {
      * adopted Honor policy and have explored the [tile] where the Barbarian Encampent has spawned.
      */
     fun notifyCivsOfBarbarianEncampment(tile: TileInfo) {
-        civilizations.filter { it.hasUnique("Notified of new Barbarian encampments")
-                && it.exploredTiles.contains(tile.position) }
+        civilizations.filter {
+            it.hasUnique("Notified of new Barbarian encampments")
+                    && it.exploredTiles.contains(tile.position)
+        }
                 .forEach { it.addNotification("A new barbarian encampment has spawned!", tile.position, Color.RED) }
     }
 
@@ -345,7 +352,7 @@ class GameInfo {
             cityConstructions.builtBuildings.remove(oldBuildingName)
             cityConstructions.builtBuildings.add(newBuildingName)
         }
-        cityConstructions.constructionQueue.replaceAll { if(it==oldBuildingName) newBuildingName else it }
+        cityConstructions.constructionQueue.replaceAll { if (it == oldBuildingName) newBuildingName else it }
         if (cityConstructions.inProgressConstructions.containsKey(oldBuildingName)) {
             cityConstructions.inProgressConstructions[newBuildingName] = cityConstructions.inProgressConstructions[oldBuildingName]!!
             cityConstructions.inProgressConstructions.remove(oldBuildingName)
