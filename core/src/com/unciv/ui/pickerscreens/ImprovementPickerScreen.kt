@@ -21,7 +21,7 @@ class ImprovementPickerScreen(val tileInfo: TileInfo, val onAccept: ()->Unit) : 
     val currentPlayerCiv = game.gameInfo.getCurrentPlayerCivilization()
 
     fun accept(improvement: TileImprovement?) {
-        if (improvement == null) return
+        if (improvement == null || improvement.name == tileInfo.improvementInProgress) return
         if (improvement.name == Constants.cancelImprovementOrder) {
             tileInfo.stopWorkingOnImprovement()
             // no onAccept() - Worker can stay selected
@@ -58,7 +58,8 @@ class ImprovementPickerScreen(val tileInfo: TileInfo, val onAccept: ()->Unit) : 
 
             var labelText = improvement.name.tr()
             if (improvement.shortcutKey != null) labelText += " (${improvement.shortcutKey})"
-            val turnsToBuild = improvement.getTurnsToBuild(currentPlayerCiv)
+            val turnsToBuild = if (tileInfo.improvementInProgress == improvement.name) tileInfo.turnsToImprovement
+            else improvement.getTurnsToBuild(currentPlayerCiv)
             if (turnsToBuild > 0) labelText += " - $turnsToBuild${Fonts.turn}"
             val provideResource = tileInfo.hasViewableResource(currentPlayerCiv) && tileInfo.getTileResource().improvement == improvement.name
             if (provideResource) labelText += "\n" + "Provides [${tileInfo.resource}]".tr()
@@ -76,7 +77,9 @@ class ImprovementPickerScreen(val tileInfo: TileInfo, val onAccept: ()->Unit) : 
                 descriptionLabel.setText(improvement.getDescription(ruleSet))
             }
 
-            val pickNow = "Pick now!".toLabel().onClick { accept(improvement) }
+            val pickNow = if (tileInfo.improvementInProgress != improvement.name)
+                "Pick now!".toLabel().onClick { accept(improvement) }
+            else "Current construction".toLabel()
 
             if (improvement.shortcutKey != null)
                 keyPressDispatcher[improvement.shortcutKey.toLowerCase()] = { accept(improvement) }
@@ -148,4 +151,3 @@ class ImprovementPickerScreen(val tileInfo: TileInfo, val onAccept: ()->Unit) : 
         return statsTable
     }
 }
-
