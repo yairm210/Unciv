@@ -260,7 +260,8 @@ class GameInfo {
         for (tile in tileMap.values) {
             if (tile.resource != null && !ruleSet.tileResources.containsKey(tile.resource!!))
                 tile.resource = null
-            if (tile.improvement != null && !ruleSet.tileImprovements.containsKey(tile.improvement!!))
+            if (tile.improvement != null && !ruleSet.tileImprovements.containsKey(tile.improvement!!)
+                    && !tile.improvement!!.startsWith("StartingLocation ")) // To not remove the starting locations in GameStarter.startNewGame()
                 tile.improvement = null
 
             for (unit in tile.getUnits())
