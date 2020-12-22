@@ -67,7 +67,9 @@ class CityStatsTable(val cityScreen: CityScreen): Table() {
                 when {
                     cityInfo.isGrowing() -> "[${cityInfo.getNumTurnsToNewPopulation()}] turns to new population".tr()
                     cityInfo.isStarving() -> "[${cityInfo.getNumTurnsToStarvation()}] turns to lose population".tr()
-                    cityInfo.cityConstructions.currentConstructionFromQueue == Constants.settler -> "Food converts to production".tr()
+                    cityInfo.getRuleset().units[cityInfo.cityConstructions.currentConstructionFromQueue]
+                            .let { it != null && it.uniques.contains("Excess Food converted to Production when under construction") }
+                    -> "Food converts to production".tr()
                     else -> "Stopped population growth".tr()
                 }
         turnsToPopString += " (" + cityInfo.population.foodStored + "/" + cityInfo.population.getFoodToNextPopulation() + ")"

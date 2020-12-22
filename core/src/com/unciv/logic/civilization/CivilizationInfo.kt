@@ -230,7 +230,7 @@ class CivilizationInfo {
         return nation.uniqueObjects.asSequence().filter { it.placeholderText == uniqueTemplate } +
                 cities.asSequence().flatMap { it.cityConstructions.builtBuildingUniqueMap.getUniques(uniqueTemplate).asSequence() } +
                 policies.policyUniques.getUniques(uniqueTemplate) +
-                tech.getTechUniques()
+                tech.getTechUniques().filter { it.placeholderText == uniqueTemplate }
     }
 
     //region Units

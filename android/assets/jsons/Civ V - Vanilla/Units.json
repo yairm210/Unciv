@@ -15,7 +15,7 @@
 		"unitType": "Civilian",
 		"movement": 2,
 		"cost": 106,
-		"uniques": ["Founds a new city"],
+		"uniques": ["Founds a new city", "Excess Food converted to Production when under construction"],
 		"hurryCostModifier": 20
 	},
 	{

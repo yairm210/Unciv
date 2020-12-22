@@ -122,7 +122,7 @@ class TechManager {
         return tech.prerequisites.all { isResearched(it) }
     }
 
-    fun getTechUniques() = researchedTechUniques
+    fun getTechUniques() = researchedTechUniques.asSequence()
 
     //endregion
 
@@ -231,9 +231,9 @@ class TechManager {
         if (!newTech.isContinuallyResearchable())
             techsToResearch.remove(techName)
         researchedTechnologies = researchedTechnologies.withItem(newTech)
-        for (unique in newTech.uniques) {
-            researchedTechUniques = researchedTechUniques.withItem(Unique(unique))
-            UniqueTriggerActivation.triggerCivwideUnique(Unique(unique), civInfo)
+        for (unique in newTech.uniqueObjects) {
+            researchedTechUniques = researchedTechUniques.withItem(unique)
+            UniqueTriggerActivation.triggerCivwideUnique(unique, civInfo)
         }
         updateTransientBooleans()
 
@@ -296,7 +296,7 @@ class TechManager {
 
     fun setTransients() {
         researchedTechnologies.addAll(techsResearched.map { getRuleset().technologies[it]!! })
-        researchedTechUniques.addAll(researchedTechnologies.asSequence().flatMap { it.uniques.asSequence() }.map { Unique(it) })
+        researchedTechUniques.addAll(researchedTechnologies.asSequence().flatMap { it.uniqueObjects.asSequence() })
         updateTransientBooleans()
     }
 
