@@ -451,7 +451,7 @@ object NextTurnAutomation {
             when {
                 unit.type.isRanged() -> rangedUnits.add(unit)
                 unit.type.isMelee() -> meleeUnits.add(unit)
-                unit.name == Constants.greatGeneral || unit.baseUnit.replaces == Constants.greatGeneral
+                unit.hasUnique("Bonus for units in 2 tile radius 15%")
                     -> generals.add(unit) //generals move after military units
                 else -> civilianUnits.add(unit)
             }

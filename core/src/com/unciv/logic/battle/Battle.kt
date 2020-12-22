@@ -269,10 +269,13 @@ object Battle {
         if(thisCombatant.getCivInfo().isMajorCiv()) {
             var greatGeneralPointsModifier = 1f
             val unitUniques = thisCombatant.unit.getMatchingUniques("[] is earned []% faster")
-            val civUniques = thisCombatant.unit.civInfo.getMatchingUniques("[] is earned []% faster")
-            for (unique in unitUniques + civUniques)
-                    if (unique.params[0] == Constants.greatGeneral)
+            val civUniques = thisCombatant.getCivInfo().getMatchingUniques("[] is earned []% faster")
+            for (unique in unitUniques + civUniques) {
+                val unitName = unique.params[0]
+                val unit = thisCombatant.getCivInfo().gameInfo.ruleSet.units[unitName]
+                if (unit != null && unit.uniques.contains("Great Person - [War]"))
                     greatGeneralPointsModifier += unique.params[1].toFloat() / 100
+            }
 
             val greatGeneralPointsGained = (XPGained * greatGeneralPointsModifier).toInt()
             thisCombatant.getCivInfo().greatPeople.greatGeneralPoints += greatGeneralPointsGained

@@ -97,7 +97,7 @@ object UnitAutomation {
             if (unit.name == "Work Boats")
                 return SpecificUnitAutomation.automateWorkBoats(unit)
 
-            if (unit.name == Constants.greatGeneral || unit.baseUnit.replaces == Constants.greatGeneral)
+            if (unit.hasUnique("Bonus for units in 2 tile radius 15%"))
                 return SpecificUnitAutomation.automateGreatGeneral(unit)
 
             if (unit.hasUnique("Can construct []"))
