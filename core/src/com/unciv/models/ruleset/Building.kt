@@ -271,19 +271,6 @@ class Building : NamedStats(), IConstruction {
                     }) return unique.text
             "Can only be built in annexed cities" -> if (construction.cityInfo.isPuppet || construction.cityInfo.foundingCiv == ""
                     || construction.cityInfo.civInfo.civName == construction.cityInfo.foundingCiv) return unique.text
-            "Requires []" -> {
-                val filter = unique.params[0]
-                if (filter in civInfo.gameInfo.ruleSet.buildings) {
-                    if (civInfo.cities.none { it.cityConstructions.containsBuildingOrEquivalent(filter) }) return unique.text // Wonder is not built
-                } else if (!civInfo.policies.adoptedPolicies.contains(filter)) return "Policy is not adopted" // this reason should not be displayed
-            }
-
-            "Requires a [] in this city" -> if (!construction.containsBuildingOrEquivalent(unique.params[0]))
-                return "Requires a [${civInfo.getEquivalentBuilding(unique.params[0])}] in this city" // replace with civ-specific building for user
-
-            "Requires a [] in all cities" -> if (civInfo.cities.any { !it.cityConstructions.containsBuildingOrEquivalent(unique.params[0]) })
-                return "Requires a [${civInfo.getEquivalentBuilding(unique.params[0])}] in all cities" // replace with civ-specific building for user
-
             "Obsolete with []" -> if (civInfo.tech.isResearched(unique.params[0])) return unique.text
 
             "Must have an owned mountain within 2 tiles" ->  // Deprecated as of 3.10.8 . Use "Must have an owned [Mountain] within [2] tiles" instead
@@ -335,6 +322,21 @@ class Building : NamedStats(), IConstruction {
         if ("Spaceship part" in uniques) {
             if (!civInfo.hasUnique("Enables construction of Spaceship parts")) return "Apollo project not built!"
             if (civInfo.victoryManager.unconstructedSpaceshipParts()[name] == 0) return "Don't need to build any more of these!"
+        }
+
+        for (unique in uniqueObjects) when (unique.placeholderText) {
+            "Requires []" -> {
+                val filter = unique.params[0]
+                if (filter in civInfo.gameInfo.ruleSet.buildings) {
+                    if (civInfo.cities.none { it.cityConstructions.containsBuildingOrEquivalent(filter) }) return unique.text // Wonder is not built
+                } else if (!civInfo.policies.adoptedPolicies.contains(filter)) return "Policy is not adopted" // this reason should not be displayed
+            }
+
+            "Requires a [] in this city" -> if (!construction.containsBuildingOrEquivalent(unique.params[0]))
+                return "Requires a [${civInfo.getEquivalentBuilding(unique.params[0])}] in this city" // replace with civ-specific building for user
+
+            "Requires a [] in all cities" -> if (civInfo.cities.any { !it.cityConstructions.containsBuildingOrEquivalent(unique.params[0]) })
+                return "Requires a [${civInfo.getEquivalentBuilding(unique.params[0])}] in all cities" // replace with civ-specific building for user
         }
 
         if (requiredBuilding != null && !construction.containsBuildingOrEquivalent(requiredBuilding!!))
