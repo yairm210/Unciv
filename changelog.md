@@ -1,3 +1,19 @@
+## 3.12.3
+
+Fixed starting positions not activating on new game
+
+Resolved #3445 - national wonders no longer shown when already built
+
+Replaced hardcoded Settler and Great General checks with their uniques
+
+Resolved #3384 - Civ uniques now take all researched tech uniques!
+
+Added road and railroad costs to improvement description
+
+Resolved #3437 - reselecting improvement in progress does not reset progress
+
+Resolved #3441 - fixed reverse maintenance cost unique
+
 ## 3.12.2
 
 Resolved #3422 - added fast switch between adjacent cities in city screen
