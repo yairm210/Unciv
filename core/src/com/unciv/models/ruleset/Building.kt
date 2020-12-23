@@ -255,8 +255,8 @@ class Building : NamedStats(), IConstruction {
 
         for (unique in uniqueObjects.filter { it.placeholderText == "Not displayed as an available construction without []" }) {
             val filter = unique.params[0]
-            if ((filter in civInfo.gameInfo.ruleSet.tileResources && !construction.cityInfo.civInfo.hasResource(filter))
-                    || (filter in civInfo.gameInfo.ruleSet.buildings && !construction.containsBuildingOrEquivalent(filter)))
+            if (filter in civInfo.gameInfo.ruleSet.tileResources && !construction.cityInfo.civInfo.hasResource(filter)
+                    || filter in civInfo.gameInfo.ruleSet.buildings && !construction.containsBuildingOrEquivalent(filter))
                 return "Should not be displayed"
         }
 
@@ -332,11 +332,19 @@ class Building : NamedStats(), IConstruction {
                 } else if (!civInfo.policies.adoptedPolicies.contains(filter)) return "Policy is not adopted" // this reason should not be displayed
             }
 
-            "Requires a [] in this city" -> if (!construction.containsBuildingOrEquivalent(unique.params[0]))
-                return "Requires a [${civInfo.getEquivalentBuilding(unique.params[0])}] in this city" // replace with civ-specific building for user
+            "Requires a [] in this city" -> {
+                val filter = unique.params[0]
+                if (civInfo.gameInfo.ruleSet.buildings.containsKey(filter)
+                        && !construction.containsBuildingOrEquivalent(filter))
+                    return "Requires a [${civInfo.getEquivalentBuilding(filter)}] in this city" // replace with civ-specific building for user
+            }
 
-            "Requires a [] in all cities" -> if (civInfo.cities.any { !it.cityConstructions.containsBuildingOrEquivalent(unique.params[0]) })
-                return "Requires a [${civInfo.getEquivalentBuilding(unique.params[0])}] in all cities" // replace with civ-specific building for user
+            "Requires a [] in all cities" -> {
+                val filter = unique.params[0]
+                if (civInfo.gameInfo.ruleSet.buildings.containsKey(filter)
+                        && civInfo.cities.any { !it.cityConstructions.containsBuildingOrEquivalent(unique.params[0]) })
+                    return "Requires a [${civInfo.getEquivalentBuilding(unique.params[0])}] in all cities"  // replace with civ-specific building for user
+            }
         }
 
         if (requiredBuilding != null && !construction.containsBuildingOrEquivalent(requiredBuilding!!))
