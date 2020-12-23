@@ -245,7 +245,7 @@
 			},
 			{
 				"name": "Protectionism",
-				"uniques": ["+1 happiness from each luxury resource"],
+				"uniques": ["+1 happiness from each type of luxury resource"],
 				"requires": ["Entrepreneurship","Patronage"],
 				"row": 3,
 				"column": 3

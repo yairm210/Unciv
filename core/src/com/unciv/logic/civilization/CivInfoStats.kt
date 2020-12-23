@@ -138,7 +138,7 @@ class CivInfoStats(val civInfo: CivilizationInfo){
 
         // TODO - happinessPerUnique should be difficulty-dependent, 5 on Settler and Chieftian and 4 on other difficulties (should be parameter, not in code)
         var happinessPerUniqueLuxury = 4f + civInfo.getDifficulty().extraHappinessPerLuxury
-        for(unique in civInfo.getMatchingUniques("+1 happiness from each luxury resource"))
+        for(unique in civInfo.getMatchingUniques("+1 happiness from each type of luxury resource"))
             happinessPerUniqueLuxury += 1
         statMap["Luxury resources"]= civInfo.getCivResources().map { it.resource }
                 .count { it.resourceType === ResourceType.Luxury } * happinessPerUniqueLuxury
