@@ -205,42 +205,7 @@ object Battle {
             attacker.getCivInfo().placeUnitNearTile(attackedTile.position, defender.getName())
             attacker.getCivInfo().gold += 25
         }
-        /*if (defender.isDefeated() && attacker.getCivInfo().hasUnique("[]% chance of capturing defeated [] [] units and earning []")
-            if (attacker is MapUnitCombatant)
-                for (unique in attacker.unit.getMatchingUniques("Heals [] damage if it kills a unit")) {
-                    val amountToHeal = unique.params[0].toInt()
-                    attacker.unit.healBy(amountToHeal)
-                }
-            for (unique in attacker.unit.getMatchingUniques("[]% Bonus XP gain"))
-                XPModifier +=  unique.params[0].toFloat() / 100{
-                    val percentage = unique.params[0]
-                if attacker.isMelee() && attacker.getUnitType().isWaterUnit()
-                        && defender.getUnitType().isWaterUnit() && defender.getCivInfo().isBarbarian()
-                        && Random().nextDouble() > ){
-                    attacker.getCivInfo().placeUnitNearTile(attackedTile.position, defender.getName())
-                    attacker.getCivInfo().gold += 25
-                }
-        }
 
-        if (defender.isDefeated() && attacker.isMelee() && attacker is MapUnitCombatant)
-                for (unique in attacker.unit.getMatchingUniques("[]% chance of capturing defeated [] [] units and earning []")) {
-                    val percentage = unique.params[0].toFloat() / 100
-                    val defeatedUnit = defender.getUnitType()
-                    val stats = unique.params[4]
-                    if (defeatedUnit.matchesCategory(unique.params[2])
-                            && Random().nextDouble() > percentage)
-                    attacker.unit.healBy(amountToHeal)
-                }
-        for (unique in attacker.unit.getMatchingUniques("[]% Bonus XP gain"))
-            XPModifier +=  unique.params[0].toFloat() / 100{
-                val percentage = unique.params[0]
-                if attacker.isMelee() && attacker.getUnitType().isWaterUnit()
-                        && defender.getUnitType().isWaterUnit() && defender.getCivInfo().isBarbarian()
-                        && Random().nextDouble() > ){
-                attacker.getCivInfo().placeUnitNearTile(attackedTile.position, defender.getName())
-                attacker.getCivInfo().gold += 25
-            }
-            }*/
     }
 
     private fun tryCaptureMilitary(civUnit:ICombatant, attackedTile: TileInfo, defeatedUnit:MapUnitCombatant){
@@ -263,7 +228,7 @@ object Battle {
             val capturePercent = unique.params[0].toFloat() / 100
             val yieldAmount = unique.params[3].toInt()
 
-            if (Random().nextDouble() > capturePercent) {
+            if (Random().nextDouble() < capturePercent) {
                 civUnit.getCivInfo().placeUnitNearTile(attackedTile.position, defeatedUnit.getName())
 
                 goldReward += yieldAmount
