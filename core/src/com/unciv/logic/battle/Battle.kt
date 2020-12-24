@@ -235,6 +235,7 @@ object Battle {
             }
 
             civUnit.getCivInfo().gold += goldReward
+            civUnit.getCivInfo().addNotification("A [${defeatedUnit.getName()}] has joined us!", attackedTile.position, Color.RED)
         }
     }
 
