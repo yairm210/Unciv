@@ -5,7 +5,6 @@ object Constants {
     const val workerUnique = "Can build improvements on tiles"
     const val settler = "Settler"
     const val settlerUnique = "Founds a new city"
-    const val greatGeneral = "Great General"
 
     const val impassable = "Impassable"
     const val ocean = "Ocean"
@@ -66,8 +65,6 @@ object Constants {
     const val close = "Close"
     const val disabled = "disabled"
     const val enabled = "enabled"
-
-    const val scienceConversionEffect = "Production to science conversion in cities increased by 33%"
 
     const val ancientEra = "Ancient era"
     const val classicalEra = "Classical era"

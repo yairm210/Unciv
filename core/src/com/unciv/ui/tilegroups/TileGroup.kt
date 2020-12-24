@@ -13,6 +13,7 @@ import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.RoadStatus
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.ruleset.unit.UnitType
+import com.unciv.ui.cityscreen.YieldGroup
 import com.unciv.ui.utils.ImageGetter
 import com.unciv.ui.utils.center
 import com.unciv.ui.utils.centerX
@@ -74,6 +75,8 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) 
         override fun draw(batch: Batch?, parentAlpha: Float) { super.draw(batch, parentAlpha) }
     }
     val miscLayerGroup = MiscLayerGroupClass().apply { isTransform = false; setSize(groupSize, groupSize) }
+
+    var tileYieldGroup = YieldGroup() // JN
 
     var resourceImage: Actor? = null
     var resource: String? = null
@@ -336,7 +339,7 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) 
             || viewingCiv.exploredTiles.contains(tileInfo.position)
             || viewingCiv.isSpectator()
 
-    open fun update(viewingCiv: CivilizationInfo? = null, showResourcesAndImprovements: Boolean = true) {
+    open fun update(viewingCiv: CivilizationInfo? = null, showResourcesAndImprovements: Boolean = true, showTileYields: Boolean = true) {
 
         fun clearUnexploredTiles() {
             updateTileImage(null)
@@ -347,7 +350,7 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) 
 
             if (borderImages.isNotEmpty()) clearBorders()
 
-            icons.update(false, false, false, null)
+            icons.update(false,false ,false, false, null)
 
             fogImage.isVisible = true
         }
@@ -372,7 +375,7 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) 
         updatePixelMilitaryUnit(tileIsViewable && showMilitaryUnit)
         updatePixelCivilianUnit(tileIsViewable)
 
-        icons.update(showResourcesAndImprovements, tileIsViewable, showMilitaryUnit,viewingCiv)
+        icons.update(showResourcesAndImprovements,showTileYields, tileIsViewable, showMilitaryUnit,viewingCiv)
 
         updateCityImage()
         updateNaturalWonderImage()

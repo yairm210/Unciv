@@ -9,6 +9,7 @@ import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.utils.Align
 import com.unciv.logic.GameInfo
 import com.unciv.logic.GameSaver
+import com.unciv.logic.civilization.PlayerType
 import com.unciv.models.metadata.GameSettings
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.translations.Translations
@@ -17,6 +18,7 @@ import com.unciv.ui.utils.CameraStageBaseScreen
 import com.unciv.ui.utils.CrashController
 import com.unciv.ui.utils.ImageGetter
 import com.unciv.ui.utils.center
+import com.unciv.ui.worldscreen.PlayerReadyScreen
 import com.unciv.ui.worldscreen.WorldScreen
 import java.util.*
 import kotlin.concurrent.thread
@@ -119,9 +121,12 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
         ImageGetter.ruleset = gameInfo.ruleSet
         ImageGetter.reload()
         Gdx.input.inputProcessor = null // Since we will set the world screen when we're ready,
-                                        // This is to avoid ANRs when loading.
-        worldScreen = WorldScreen(gameInfo.getPlayerToViewAs())
-        setWorldScreen()
+        if (gameInfo.civilizations.count { it.playerType == PlayerType.Human } > 1 && !gameInfo.gameParameters.isOnlineMultiplayer)
+            setScreen(PlayerReadyScreen(gameInfo.getPlayerToViewAs()))
+        else {
+            worldScreen = WorldScreen(gameInfo.getPlayerToViewAs())
+            setWorldScreen()
+        }
     }
 
     fun loadGame(gameName: String) {

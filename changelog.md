@@ -1,3 +1,74 @@
+## 3.12.3
+
+Fixed starting positions not activating on new game
+
+Resolved #3445 - national wonders no longer shown when already built
+
+Replaced hardcoded Settler and Great General checks with their uniques
+
+Resolved #3384 - Civ uniques now take all researched tech uniques!
+
+Added road and railroad costs to improvement description
+
+Resolved #3437 - reselecting improvement in progress does not reset progress
+
+Resolved #3441 - fixed reverse maintenance cost unique
+
+## 3.12.2
+
+Resolved #3422 - added fast switch between adjacent cities in city screen
+
+Resolved #3428 - added a toggle for displaying yield icons
+
+Resolved #3427 - "player ready" screen appears when loading game in Hotseat multiplayer
+
+City-states make peace with enemies when their allies do
+
+Long tech descriptions are now scrollable
+
+"Requires a {building}" notifications show the civ's equivalent to the building, if overridden
+
+Korean UA activates on buildings added from buying and on national wonders
+
+Translation updates
+
+## 3.12.1
+
+By nob0dy73:
+
+- AI no longer tries to heal units in dangerous tiles
+- AI units try to take back captured cities
+- AI units try to head towards sieged cities
+
+AI knows not to try and heal units which would heal anyway
+
+Forced disband now provides gold
+
+Solved ANR on load screen when loading large games
+
+Deprecation of old unique formats in favor of newer, more generalized ones
+
+Implemented missing Korean UA - By kasterra
+
+## 3.12.0
+
+Option to display tile yields on world screen - by jnecus
+
+Added much-needed "+[]% Production when constructing [] units" unique
+
+Added "All" filter for units
+
+Resolved #3408 - Unit maintenance cost reduction generalized, now works for Ottomans
+
+Resolved #3409 - American unique grants extra sight only to military land units
+
+Fixed crash when nuking Barbarian units
+
+By 9kgsofrice:
+
+- GG bonus generation now checks for civinfo uniques 
+- City-state resources from all sources shared with ally civ 
+
 ## 3.11.19
 
 Reassign population after selling a specialist-providing building

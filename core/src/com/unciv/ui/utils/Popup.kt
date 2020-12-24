@@ -34,7 +34,6 @@ open class Popup(val screen: CameraStageBaseScreen): Table(CameraStageBaseScreen
         screen.stage.addActor(this)
         pack()
         center(screen.stage)
-
     }
 
     open fun close() {

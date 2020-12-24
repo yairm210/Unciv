@@ -4,6 +4,7 @@ import com.unciv.UncivGame
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.Ruleset
+import com.unciv.models.ruleset.Unique
 import com.unciv.models.translations.tr
 import com.unciv.models.ruleset.unit.BaseUnit
 import java.util.*
@@ -15,6 +16,7 @@ class Technology {
     var cost: Int = 0
     var prerequisites = HashSet<String>()
     var uniques = ArrayList<String>()
+    val uniqueObjects: List<Unique> by lazy { uniques.map { Unique(it) } }
 
     var column: TechColumn? = null // The column that this tech is in the tech tree
     var row: Int = 0
@@ -35,14 +37,6 @@ class Technology {
         for (improvements in mapOfImprovedImprovements) {
             val impimpString = improvements.key.tr() + improvements.value.joinToString(", "," ") { it.tr() }
             lineList += impimpString
-        }
-
-        val improvedImprovements = ruleset.tileImprovements.values
-                .filter { it.improvingTech == name }.groupBy { it.improvingTechStats.toString() }
-        for (improvement in improvedImprovements) {
-            val impimpString = improvement.value.joinToString { it.name.tr() } +
-                    " {provide" + (if (improvement.value.size == 1) "s" else "") + "} " + improvement.key
-            lineList += impimpString.tr()
         }
 
         val viewingCiv = UncivGame.Current.worldScreen.viewingCiv

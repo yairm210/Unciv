@@ -35,7 +35,7 @@ class CivInfoStats(val civInfo: CivilizationInfo){
 
         for (unique in civInfo.getMatchingUniques("-[]% [] unit maintenance costs")) {
             val numberOfUnitsWithDiscount = min(numberOfUnitsToPayFor, unitsToPayFor.count { it.matchesFilter(unique.params[1]) }.toFloat())
-            numberOfUnitsToPayFor -= numberOfUnitsWithDiscount * (1 - unique.params[0].toFloat() / 100)
+            numberOfUnitsToPayFor -= numberOfUnitsWithDiscount * unique.params[0].toFloat() / 100
         }
 
         val turnLimit = BASE_GAME_DURATION_TURNS * civInfo.gameInfo.gameParameters.gameSpeed.modifier
@@ -81,7 +81,9 @@ class CivInfoStats(val civInfo: CivilizationInfo){
         // Inca unique according to https://civilization.fandom.com/wiki/Incan_%28Civ5%29
         if (civInfo.hasUnique("50% Maintenance costs reduction"))
             transportationUpkeep /= 2
-        if (civInfo.hasUnique("Maintenance on roads & railroads reduced by 33%, +2 gold from all trade routes"))
+        if (civInfo.hasUnique("Maintenance on roads & railroads reduced by 33%")
+                //presume we want to deprecate the old one at some point?
+                ||civInfo.hasUnique("Maintenance on roads & railroads reduced by 33%, +2 gold from all trade routes"))
             transportationUpkeep = (transportationUpkeep * 2 / 3f).toInt()
         return transportationUpkeep
     }
@@ -136,7 +138,7 @@ class CivInfoStats(val civInfo: CivilizationInfo){
 
         // TODO - happinessPerUnique should be difficulty-dependent, 5 on Settler and Chieftian and 4 on other difficulties (should be parameter, not in code)
         var happinessPerUniqueLuxury = 4f + civInfo.getDifficulty().extraHappinessPerLuxury
-        for(unique in civInfo.getMatchingUniques("+1 happiness from each luxury resource"))
+        for(unique in civInfo.getMatchingUniques("+1 happiness from each type of luxury resource"))
             happinessPerUniqueLuxury += 1
         statMap["Luxury resources"]= civInfo.getCivResources().map { it.resource }
                 .count { it.resourceType === ResourceType.Luxury } * happinessPerUniqueLuxury

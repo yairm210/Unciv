@@ -12,13 +12,20 @@ import kotlin.math.abs
 
 class TileMap {
 
-    @Transient lateinit var gameInfo: GameInfo
-    @Transient var tileMatrix = ArrayList<ArrayList<TileInfo?>>() // this works several times faster than a hashmap, the performance difference is really astounding
-    @Transient var leftX = 0
-    @Transient var bottomY = 0
-    @delegate:Transient val maxLatitude: Float by lazy { if (values.isEmpty()) 0f else values.map { abs(it.latitude) }.max()!! }
-    @delegate:Transient val maxLongitude: Float by lazy { if (values.isEmpty()) 0f else values.map { abs(it.longitude) }.max()!! }
-    @delegate:Transient val naturalWonders: List<String> by lazy { tileList.asSequence().filter { it.isNaturalWonder() }.map { it.naturalWonder!! }.distinct().toList() }
+    @Transient
+    lateinit var gameInfo: GameInfo
+    @Transient
+    var tileMatrix = ArrayList<ArrayList<TileInfo?>>() // this works several times faster than a hashmap, the performance difference is really astounding
+    @Transient
+    var leftX = 0
+    @Transient
+    var bottomY = 0
+    @delegate:Transient
+    val maxLatitude: Float by lazy { if (values.isEmpty()) 0f else values.map { abs(it.latitude) }.max()!! }
+    @delegate:Transient
+    val maxLongitude: Float by lazy { if (values.isEmpty()) 0f else values.map { abs(it.longitude) }.max()!! }
+    @delegate:Transient
+    val naturalWonders: List<String> by lazy { tileList.asSequence().filter { it.isNaturalWonder() }.map { it.naturalWonder!! }.distinct().toList() }
 
     var mapParameters = MapParameters()
 
@@ -31,19 +38,20 @@ class TileMap {
     constructor()
 
     /** generates an hexagonal map of given radius */
-    constructor(radius:Int, ruleset: Ruleset){
-        for(vector in HexMath.getVectorsInDistance(Vector2.Zero, radius))
+    constructor(radius: Int, ruleset: Ruleset) {
+        for (vector in HexMath.getVectorsInDistance(Vector2.Zero, radius))
             tileList.add(TileInfo().apply { position = vector; baseTerrain = Constants.grassland })
         setTransients(ruleset)
     }
 
     /** generates a rectangular map of given width and height*/
     constructor(width: Int, height: Int, ruleset: Ruleset) {
-        for(x in -width/2..width/2)
-            for (y in -height/2..height/2)
+        for (x in -width / 2..width / 2)
+            for (y in -height / 2..height / 2)
                 tileList.add(TileInfo().apply {
-                    position = HexMath.evenQ2HexCoords(Vector2(x.toFloat(),y.toFloat()))
-                    baseTerrain = Constants.grassland })
+                    position = HexMath.evenQ2HexCoords(Vector2(x.toFloat(), y.toFloat()))
+                    baseTerrain = Constants.grassland
+                })
         setTransients(ruleset)
     }
 
@@ -58,17 +66,17 @@ class TileMap {
         return contains(vector.x.toInt(), vector.y.toInt())
     }
 
-    fun contains(x:Int, y:Int): Boolean {
-        val arrayXIndex = x-leftX
-        if(arrayXIndex<0 || arrayXIndex>=tileMatrix.size) return false
-        val arrayYIndex = y-bottomY
-        if(arrayYIndex<0 || arrayYIndex>=tileMatrix[arrayXIndex].size) return false
+    fun contains(x: Int, y: Int): Boolean {
+        val arrayXIndex = x - leftX
+        if (arrayXIndex < 0 || arrayXIndex >= tileMatrix.size) return false
+        val arrayYIndex = y - bottomY
+        if (arrayYIndex < 0 || arrayYIndex >= tileMatrix[arrayXIndex].size) return false
         return tileMatrix[arrayXIndex][arrayYIndex] != null
     }
 
-    operator fun get(x:Int, y:Int):TileInfo{
-        val arrayXIndex = x-leftX
-        val arrayYIndex = y-bottomY
+    operator fun get(x: Int, y: Int): TileInfo {
+        val arrayXIndex = x - leftX
+        val arrayYIndex = y - bottomY
         return tileMatrix[arrayXIndex][arrayYIndex]!!
     }
 
@@ -134,7 +142,7 @@ class TileMap {
         // both the civ name and actual civ need to be in here in order to calculate the canMoveTo...Darn
         unit.assignOwner(civInfo, false)
 
-        var unitToPlaceTile : TileInfo? = null
+        var unitToPlaceTile: TileInfo? = null
         // try to place at the original point (this is the most probable scenario)
         val currentTile = get(position)
         if (unit.movement.canMoveTo(currentTile)) unitToPlaceTile = currentTile
@@ -145,7 +153,7 @@ class TileMap {
             var potentialCandidates = getPassableNeighbours(currentTile)
             while (unitToPlaceTile == null && tryCount++ < 10) {
                 unitToPlaceTile = potentialCandidates
-                        .sortedByDescending { if(unit.type.isLandUnit()) it.isLand else true } // Land units should prefer to go into land tiles
+                        .sortedByDescending { if (unit.type.isLandUnit()) it.isLand else true } // Land units should prefer to go into land tiles
                         .firstOrNull { unit.movement.canMoveTo(it) }
                 if (unitToPlaceTile != null) continue
                 // if it's not found yet, let's check their neighbours
@@ -228,7 +236,7 @@ class TileMap {
      * @return stripped clone of [TileMap]
      */
     fun stripAllUnits(): TileMap {
-        return clone().apply { tileList.forEach {it.stripUnits()} }
+        return clone().apply { tileList.forEach { it.stripUnits() } }
     }
 
     /** Strips all units and starting location from [TileMap] for specified [Player]
@@ -237,7 +245,9 @@ class TileMap {
      */
     fun stripPlayer(player: Player) {
         tileList.forEach {
-            if (it.improvement == "StartingLocation " + player.chosenCiv) { it.improvement = null }
+            if (it.improvement == "StartingLocation " + player.chosenCiv) {
+                it.improvement = null
+            }
             for (unit in it.getUnits()) if (unit.owner == player.chosenCiv) unit.removeFromTile()
         }
     }
@@ -249,28 +259,30 @@ class TileMap {
      */
     fun switchPlayersNation(player: Player, newNation: Nation) {
         tileList.forEach {
-            if (it.improvement == "StartingLocation " + player.chosenCiv) { it.improvement = "StartingLocation "+newNation.name }
+            if (it.improvement == "StartingLocation " + player.chosenCiv) {
+                it.improvement = "StartingLocation " + newNation.name
+            }
             for (unit in it.getUnits()) if (unit.owner == player.chosenCiv) {
                 unit.owner = newNation.name
-                unit.civInfo = CivilizationInfo(newNation.name).apply { nation=newNation }
+                unit.civInfo = CivilizationInfo(newNation.name).apply { nation = newNation }
             }
         }
     }
 
-    fun setTransients(ruleset: Ruleset, setUnitCivTransients:Boolean=true) { // In the map editor, no Civs or Game exist, so we won't set the unit transients
-        val topY= tileList.asSequence().map { it.position.y.toInt() }.max()!!
-        bottomY= tileList.asSequence().map { it.position.y.toInt() }.min()!!
-        val rightX= tileList.asSequence().map { it.position.x.toInt() }.max()!!
+    fun setTransients(ruleset: Ruleset, setUnitCivTransients: Boolean = true) { // In the map editor, no Civs or Game exist, so we won't set the unit transients
+        val topY = tileList.asSequence().map { it.position.y.toInt() }.max()!!
+        bottomY = tileList.asSequence().map { it.position.y.toInt() }.min()!!
+        val rightX = tileList.asSequence().map { it.position.x.toInt() }.max()!!
         leftX = tileList.asSequence().map { it.position.x.toInt() }.min()!!
 
-        for(x in leftX..rightX){
+        for (x in leftX..rightX) {
             val row = ArrayList<TileInfo?>()
-            for(y in bottomY..topY) row.add(null)
+            for (y in bottomY..topY) row.add(null)
             tileMatrix.add(row)
         }
 
-        for (tileInfo in values){
-            tileMatrix[tileInfo.position.x.toInt()-leftX][tileInfo.position.y.toInt()-bottomY] = tileInfo
+        for (tileInfo in values) {
+            tileMatrix[tileInfo.position.x.toInt() - leftX][tileInfo.position.y.toInt() - bottomY] = tileInfo
             tileInfo.tileMap = this
             tileInfo.ruleset = ruleset
             tileInfo.setTerrainTransients()
@@ -278,4 +290,3 @@ class TileMap {
         }
     }
 }
-

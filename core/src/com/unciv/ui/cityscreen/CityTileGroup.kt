@@ -26,7 +26,7 @@ class CityTileGroup(private val city: CityInfo, tileInfo: TileInfo, tileSetStrin
     }
 
     fun update() {
-        super.update(city.civInfo, true)
+        super.update(city.civInfo, true, false)
 
         // this needs to happen on update, because we can buy tiles, which changes the definition of the bought tiles...
         when {

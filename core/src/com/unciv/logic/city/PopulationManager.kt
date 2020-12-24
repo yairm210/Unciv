@@ -17,9 +17,6 @@ class PopulationManager {
     var population = 1
     var foodStored = 0
 
-    @Deprecated("As of 3.10.14, changed to Counter<String> to accommodate dynamic specialist types. Use specialistAllocations instead.")
-    val specialists = Stats()
-
     // In favor of this bad boy
     val specialistAllocations = Counter<String>()
 

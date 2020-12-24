@@ -19,10 +19,6 @@ class TileImprovement : NamedStats() {
 
     var techRequired: String? = null
 
-    @Deprecated("Deprecated as of 3.10.5. Use [stats] once [tech] is discovered unique instead")
-    var improvingTech: String? = null
-    @Deprecated("Deprecated as of 3.10.5. Use [stats] once [tech] is discovered unique instead")
-    var improvingTechStats: Stats? = null
     var uniqueTo:String? = null
     var uniques = ArrayList<String>()
     val uniqueObjects:List<Unique> by lazy { uniques.map { Unique(it) } }
@@ -44,10 +40,6 @@ class TileImprovement : NamedStats() {
         val stringBuilder = StringBuilder()
         val statsDesc = this.clone().toString()
         if (statsDesc.isNotEmpty()) stringBuilder.appendln(statsDesc)
-        if (improvingTech != null && improvingTechStats != null) {
-            val improveStatsDesc = improvingTechStats.toString()
-            if (improveStatsDesc.isNotEmpty()) stringBuilder.appendln("[$improveStatsDesc] with [${improvingTech!!}]".tr())
-        }
         if (uniqueTo!=null && !forPickerScreen) stringBuilder.appendln("Unique to [$uniqueTo]".tr())
         if (!terrainsCanBeBuiltOn.isEmpty()) {
             val terrainsCanBeBuiltOnString: ArrayList<String> = arrayListOf()

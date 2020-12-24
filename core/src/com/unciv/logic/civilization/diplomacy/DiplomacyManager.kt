@@ -522,9 +522,24 @@ class DiplomacyManager() {
         }
     }
 
-    fun makePeace() {
+    /** Should only be called from makePeace */
+    private fun makePeaceOneSide() {
         diplomaticStatus = DiplomaticStatus.Peace
-        otherCivDiplomacy().diplomaticStatus = DiplomaticStatus.Peace
+        val otherCiv = otherCiv()
+        // Get out of others' territory
+        for (unit in civInfo.getCivUnits().filter { it.getTile().getOwner() == otherCiv })
+            unit.movement.teleportToClosestMoveableTile()
+
+        // Our ally city states make peace with us
+        for (thirdCiv in civInfo.getKnownCivs())
+            if (thirdCiv.getAllyCiv() == civInfo.civName && thirdCiv.isAtWarWith(otherCiv))
+                thirdCiv.getDiplomacyManager(otherCiv).makePeace()
+    }
+
+
+    fun makePeace() {
+        makePeaceOneSide()
+        otherCivDiplomacy().makePeaceOneSide()
 
         for (civ in getCommonKnownCivs()) {
             civ.addNotification(
@@ -533,15 +548,6 @@ class DiplomacyManager() {
                     Color.WHITE
             )
         }
-
-        val otherCiv = otherCiv()
-        // We get out of their territory
-        for (unit in civInfo.getCivUnits().filter { it.getTile().getOwner() == otherCiv })
-            unit.movement.teleportToClosestMoveableTile()
-
-        // And we get out of theirs
-        for (unit in otherCiv.getCivUnits().filter { it.getTile().getOwner() == civInfo })
-            unit.movement.teleportToClosestMoveableTile()
     }
 
     fun hasFlag(flag:DiplomacyFlags) = flagsCountdown.containsKey(flag.name)

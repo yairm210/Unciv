@@ -106,20 +106,6 @@ object Battle {
             bonusUniques.addAll(civUnit.unit.getMatchingUniques(bonusUniquePlaceholderText))
         }
 
-        // As of 3.11.5 This is to be deprecated and converted to "Earn [100]% of [Barbarian] opponent's [Strength] as [Culture] for kills" - keeping it here so that mods with this can still work for now
-        if (defeatedUnit.unit.civInfo.isBarbarian() && civUnit.getCivInfo().hasUnique("Gain Culture when you kill a barbarian unit")) {
-            cultureReward += unitStr
-        }
-
-        // As of 3.11.5 This is to be deprecated and converted to "Earn [100]% of [military] opponent's [Strength] as [Culture] for kills" - keeping it here so that mods with this can still work for now
-        if (civUnit.getCivInfo().hasUnique("Gains culture from each enemy unit killed")) {
-            cultureReward += unitStr
-        }
-
-        // As of 3.11.5 This is to be deprecated and converted to "Earn [10]% of [military] opponent's [Cost] as [Gold] for kills" - keeping it here so that mods with this can still work for now
-        if (civUnit.getCivInfo().hasUnique("Gain gold for each unit killed")) {
-            goldReward += (unitCost.toFloat() * 0.10).toInt()
-        }
 
         for (unique in bonusUniques) {
             if (!defeatedUnit.matchesCategory(unique.params[1])) continue
@@ -267,13 +253,12 @@ object Battle {
     // XP!
     private fun addXp(thisCombatant:ICombatant, amount:Int, otherCombatant:ICombatant){
         if(thisCombatant !is MapUnitCombatant) return
-        if(thisCombatant.unit.promotions.totalXpProduced() >= thisCombatant.unit.civInfo.gameInfo.ruleSet.modOptions.maxXPfromBarbarians && otherCombatant.getCivInfo().isBarbarian())
+        if(thisCombatant.unit.promotions.totalXpProduced() >= thisCombatant.unit.civInfo.gameInfo.ruleSet.modOptions.maxXPfromBarbarians
+                && otherCombatant.getCivInfo().isBarbarian())
             return
 
         var XPModifier = 1f
         if (thisCombatant.getCivInfo().hasUnique("Military units gain 50% more Experience from combat")) XPModifier += 0.5f
-        if (thisCombatant.unit.hasUnique("50% Bonus XP gain")) XPModifier += 0.5f // As of 3.10.10 This is to be deprecated and converted to "[50]% Bonus XP gain" - keeping it here to that mods with this can still work for now
-
         for (unique in thisCombatant.unit.getMatchingUniques("[]% Bonus XP gain"))
             XPModifier +=  unique.params[0].toFloat() / 100
 
@@ -283,12 +268,14 @@ object Battle {
 
         if(thisCombatant.getCivInfo().isMajorCiv()) {
             var greatGeneralPointsModifier = 1f
-            for (unique in thisCombatant.unit.getMatchingUniques("[] is earned []% faster"))
-                if (unique.params[0] == Constants.greatGeneral)
+            val unitUniques = thisCombatant.unit.getMatchingUniques("[] is earned []% faster")
+            val civUniques = thisCombatant.getCivInfo().getMatchingUniques("[] is earned []% faster")
+            for (unique in unitUniques + civUniques) {
+                val unitName = unique.params[0]
+                val unit = thisCombatant.getCivInfo().gameInfo.ruleSet.units[unitName]
+                if (unit != null && unit.uniques.contains("Great Person - [War]"))
                     greatGeneralPointsModifier += unique.params[1].toFloat() / 100
-
-            if (thisCombatant.unit.hasUnique("Combat very likely to create Great Generals")) // As of 3.10.10 This is to be deprecated and converted to "[Great General] is earned []% faster" - keeping it here to that mods with this can still work for now
-                greatGeneralPointsModifier += 1f
+            }
 
             val greatGeneralPointsGained = (XPGained * greatGeneralPointsModifier).toInt()
             thisCombatant.getCivInfo().greatPeople.greatGeneralPoints += greatGeneralPointsGained
