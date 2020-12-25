@@ -190,7 +190,7 @@ object Battle {
         if (defender.isDefeated() && defender.getCivInfo().isBarbarian()
                 && attackedTile.improvement == Constants.barbarianEncampment
                 && attacker.getCivInfo().hasUnique("67% chance to earn 25 Gold and recruit a Barbarian unit from a conquered encampment")
-                && Random().nextDouble() > 0.67) {
+                && Random().nextDouble() < 0.67) {
             attacker.getCivInfo().placeUnitNearTile(attackedTile.position, defender.getName())
             attacker.getCivInfo().gold += 25
             attacker.getCivInfo().addNotification("A barbarian [${defender.getName()}] has joined us!", attackedTile.position, Color.RED)
