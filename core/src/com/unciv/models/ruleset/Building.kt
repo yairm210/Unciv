@@ -42,7 +42,7 @@ class Building : NamedStats(), IConstruction {
     private var hurryCostModifier = 0
     var isWonder = false
     var isNationalWonder = false
-    private var requiredBuilding: String? = null
+    var requiredBuilding: String? = null
     var requiredBuildingInAllCities: String? = null
 
     /** A strategic resource that will be consumed by this building */

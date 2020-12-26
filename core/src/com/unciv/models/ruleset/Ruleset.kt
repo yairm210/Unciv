@@ -266,6 +266,8 @@ class Ruleset {
                 lines += "${building.name} requires resource ${building.requiredResource} which does not exist!"
             if (building.replaces != null && !buildings.containsKey(building.replaces!!))
                 lines += "${building.name} replaces ${building.replaces} which does not exist!"
+            if (building.requiredBuilding != null && !buildings.containsKey(building.requiredBuilding!!))
+                lines += "${building.name} requires ${building.requiredBuilding} which does not exist!"
         }
 
         for (resource in tileResources.values) {
