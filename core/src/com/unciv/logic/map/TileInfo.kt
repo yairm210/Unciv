@@ -319,8 +319,8 @@ open class TileInfo {
                 if (filter == "River") return@any !isAdjacentToRiver()
                 else return@any !neighbors.any { it.matchesUniqueFilter(filter) }
             } -> false
-            improvement.name == "Road" && roadStatus == RoadStatus.None -> true
-            improvement.name == "Railroad" && this.roadStatus != RoadStatus.Railroad -> true
+            improvement.name == "Road" && roadStatus == RoadStatus.None && !isWater -> true
+            improvement.name == "Railroad" && this.roadStatus != RoadStatus.Railroad && !isWater -> true
             improvement.name == "Remove Road" && this.roadStatus == RoadStatus.Road -> true
             improvement.name == "Remove Railroad" && this.roadStatus == RoadStatus.Railroad -> true
             improvement.name == Constants.cancelImprovementOrder && this.improvementInProgress != null -> true

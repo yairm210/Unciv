@@ -188,7 +188,7 @@ class Building : NamedStats(), IConstruction {
     }
 
     override fun canBePurchased(): Boolean {
-        return !isWonder && !isNationalWonder && ("Cannot be purchased" !in uniques)
+        return !isWonder && !isNationalWonder && "Cannot be purchased" !in uniques
     }
 
 
