@@ -347,8 +347,11 @@ class Building : NamedStats(), IConstruction {
             }
         }
 
-        if (requiredBuilding != null && !construction.containsBuildingOrEquivalent(requiredBuilding!!))
+        if (requiredBuilding != null && !construction.containsBuildingOrEquivalent(requiredBuilding!!)) {
+            if (!civInfo.gameInfo.ruleSet.buildings.containsKey(requiredBuilding!!))
+                return "Requires a [${requiredBuilding}] in this city, which doesn't seem to exist in this ruleset!"
             return "Requires a [${civInfo.getEquivalentBuilding(requiredBuilding!!)}] in this city"
+        }
         if (cannotBeBuiltWith != null && construction.isBuilt(cannotBeBuiltWith!!))
             return "Cannot be built with $cannotBeBuiltWith"
 
