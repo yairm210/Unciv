@@ -333,7 +333,7 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
     // so multiple callees of this function have been optimized,
     // because optimization on this function results in massive benefits!
     fun canPassThrough(tile: TileInfo): Boolean {
-        if (tile.isImpassible()){
+        if (tile.isImpassible()) {
             // special exception - ice tiles are technically impassible, but some units can move through them anyway
             // helicopters can pass through impassable tiles like mountains
             if (!(tile.terrainFeature == Constants.ice && unit.canEnterIceTiles) && !unit.canPassThroughImpassableTiles)
@@ -359,14 +359,7 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
         }
         if (tile.naturalWonder != null) return false
 
-        val tileOwner = tile.getOwner()
-        if (tileOwner != null && tileOwner != unit.civInfo) { // comparing the CivInfo objects is cheaper than comparing strings
-            if (tile.isCityCenter() && unit.civInfo.isAtWarWith(tileOwner)
-                    && !tile.getCity()!!.hasJustBeenConquered) return false
-            if (!unit.civInfo.canEnterTiles(tileOwner)
-                    && !(unit.civInfo.isPlayerCivilization() && tileOwner.isCityState())) return false
-            // AIs won't enter city-state's border.
-        }
+        if (!tile.canCivEnter(unit.civInfo)) return false
 
         val firstUnit = tile.getFirstUnit()
         if (firstUnit != null && firstUnit.civInfo != unit.civInfo && unit.civInfo.isAtWarWith(firstUnit.civInfo))
@@ -374,6 +367,7 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
 
         return true
     }
+
 
     fun getDistanceToTiles(): PathsToTilesWithinTurn = getDistanceToTilesWithinTurn(unit.currentTile.position, unit.currentMovement)
 

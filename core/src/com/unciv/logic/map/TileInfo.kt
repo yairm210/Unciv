@@ -406,6 +406,18 @@ open class TileInfo {
 
     fun isAdjacentToRiver() = neighbors.any { isConnectedByRiver(it) }
 
+    fun canCivEnter(civInfo: CivilizationInfo): Boolean {
+        val tileOwner = getOwner()
+        if (tileOwner == null || tileOwner == civInfo) return true
+        // comparing the CivInfo objects is cheaper than comparing strings
+        if (isCityCenter() && civInfo.isAtWarWith(tileOwner)
+                && !getCity()!!.hasJustBeenConquered) return false
+        if (!civInfo.canEnterTiles(tileOwner)
+                && !(civInfo.isPlayerCivilization() && tileOwner.isCityState())) return false
+        // AIs won't enter city-state's border.
+        return true
+    }
+
     fun toString(viewingCiv: CivilizationInfo?): String {
         val lineList = ArrayList<String>() // more readable than StringBuilder, with same performance for our use-case
         val isViewableToPlayer = viewingCiv == null || UncivGame.Current.viewEntireMapForDebug

@@ -310,7 +310,13 @@ object NextTurnAutomation {
 
         for (enemy in enemiesCiv) {
             val enemiesStrength = Automation.evaluteCombatStrength(enemy)
-            if (civInfo.victoryType() != VictoryType.Cultural
+
+            // If we don't have an unobstructed path to the enemy, offer peace even though we can beat them
+            val canReachEnemy = BFS(civInfo.getCapital().getCenterTile()){ it.canCivEnter(civInfo) }
+            canReachEnemy.stepToEnd()
+
+            if (enemy.cities.any { canReachEnemy.hasReachedTile(it.getCenterTile()) }
+                    && civInfo.victoryType() != VictoryType.Cultural
                     && enemiesStrength < ourCombatStrength * 2) {
                 continue //We're losing, but can still fight. Refuse peace.
             }
