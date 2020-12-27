@@ -74,6 +74,20 @@ object UniqueTriggerActivation {
                     city.population.population += 1
                     city.population.autoAssignPopulation()
                 }
+            "+[] population in each city" -> {
+                val amount = unique.params[0].toInt()
+                for (city in civInfo.cities) {
+                    city.population.population += amount
+                    city.population.autoAssignPopulation()
+                }
+            }
+            "+[] population in this city" -> {
+                val amount = unique.params[0].toInt()
+                if (chosenCity != null) {
+                    chosenCity.population.population += amount
+                    chosenCity.population.autoAssignPopulation()
+                }
+            }
             "Free Technology" -> civInfo.tech.freeTechs += 1
 
             "Quantity of strategic resources produced by the empire increased by 100%" -> civInfo.updateDetailedCivResources()
