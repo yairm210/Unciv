@@ -20,7 +20,6 @@ import com.unciv.models.translations.tr
 import com.unciv.ui.mapeditor.GameParametersScreen
 import com.unciv.ui.utils.*
 import java.util.*
-import kotlin.reflect.typeOf
 
 /**
  * This [Table] is used to pick or edit players information for new game/scenario creation.
@@ -38,8 +37,10 @@ class PlayerPickerTable(val previousScreen: IPreviousScreen, var gameParameters:
     val playerListTable = Table()
     val nationsPopupWidth = previousScreen.stage.width / 2f
     val civBlocksWidth = previousScreen.stage.width / 3
+
     /** Locks player table for editing, used during new game creation with scenario.*/
     var locked = false
+
     /** No random civilization is available, used during map editing.*/
     var noRandom = false
 
@@ -88,7 +89,7 @@ class PlayerPickerTable(val previousScreen: IPreviousScreen, var gameParameters:
                     }).pad(10f)
         }
         // can enable start game when more than 1 active player
-        previousScreen.setRightSideButtonEnabled(gameParameters.players.count{ it.chosenCiv != Constants.spectator } > 1)
+        previousScreen.setRightSideButtonEnabled(gameParameters.players.count { it.chosenCiv != Constants.spectator } > 1)
     }
 
     /**
@@ -216,48 +217,48 @@ class PlayerPickerTable(val previousScreen: IPreviousScreen, var gameParameters:
         val nationsPopup = Popup(previousScreen as CameraStageBaseScreen)
         val nationListTable = Table()
 
-        val randomPlayerTable = Table()
-        randomPlayerTable.background = ImageGetter.getBackground(Color.BLACK)
+        val ruleset = previousScreen.ruleset
+        val height = previousScreen.stage.height * 0.8f
+        nationsPopup.add(ScrollPane(nationListTable).apply { setOverscroll(false, false) })
+                .size(civBlocksWidth + 10, height)  // +10, because the nation table has a 5f pad, for a total of +10f
+        val nationDetailsTable = Table()
+        nationsPopup.add(ScrollPane(nationDetailsTable).apply { setOverscroll(false, false) })
+                .size(civBlocksWidth + 10, height) // Same here, see above
 
-        randomPlayerTable.add("?".toLabel(Color.WHITE, 30)
-                .apply { this.setAlignment(Align.center) }
-                .surroundWithCircle(45f).apply { circle.color = Color.BLACK }
-                .surroundWithCircle(50f, false).apply { circle.color = Color.WHITE }).pad(10f)
-        randomPlayerTable.add(Constants.random.toLabel())
-        randomPlayerTable.touchable = Touchable.enabled
-        randomPlayerTable.onClick {
-            player.chosenCiv = Constants.random
-            nationsPopup.close()
-            update()
-        }
-
-        if (!noRandom) { nationListTable.add(randomPlayerTable).pad(10f).width(nationsPopupWidth).row() }
-
-        for (nation in getAvailablePlayerCivs()) {
-            // don't show current player civ
+        val randomNation = Nation().apply { name = "Random"; innerColor = listOf(255, 255, 255); outerColor = listOf(0, 0, 0); setTransients() }
+        val nations = ArrayList<Nation>()
+        if (!noRandom) nations += randomNation
+        nations += getAvailablePlayerCivs()
+        for (nation in nations) {
             if (player.chosenCiv == nation.name)
                 continue
             // only humans can spectate, sorry robots
             if (player.playerType == PlayerType.AI && nation.isSpectator())
                 continue
+            val nationTable = NationTable(nation, civBlocksWidth, 0f) // no need for min height
+            nationListTable.add(nationTable).row()//.width(civBlocksWidth).row()
+            nationTable.onClick {
+                nationDetailsTable.clear()
 
-            nationListTable.add(NationTable(nation, nationsPopupWidth, previousScreen.ruleset).onClick {
-                if (previousScreen is GameParametersScreen)
-                    previousScreen.mapEditorScreen.tileMap.switchPlayersNation(player, nation)
-                player.chosenCiv = nation.name
-                nationsPopup.close()
-                update()
-            }).pad(10f).width(nationsPopupWidth).row()
+                val nationUniqueLabel = nation.getUniqueString(ruleset).toLabel(nation.getInnerColor())
+                nationUniqueLabel.setWrap(true)
+                nationDetailsTable.add(NationTable(nation, civBlocksWidth, height, ruleset))
+                nationDetailsTable.onClick {
+                    if (previousScreen is GameParametersScreen)
+                        previousScreen.mapEditorScreen.tileMap.switchPlayersNation(player, nation)
+                    player.chosenCiv = nation.name
+                    nationsPopup.close()
+                    update()
+                }
+            }
         }
 
-        nationsPopup.add(ScrollPane(nationListTable).apply { setOverscroll(false,false) })
-                .height(previousScreen.stage.height * 0.8f)
         nationsPopup.pack()
 
         val closeImage = ImageGetter.getImage("OtherIcons/Close")
-        closeImage.setSize(30f,30f)
+        closeImage.setSize(30f, 30f)
         val closeImageHolder = Group() // This is to add it some more clickable space, to make it easier to click on the phone
-        closeImageHolder.setSize(50f,50f)
+        closeImageHolder.setSize(50f, 50f)
         closeImage.center(closeImageHolder)
         closeImageHolder.addActor(closeImage)
         closeImageHolder.onClick { nationsPopup.close() }
