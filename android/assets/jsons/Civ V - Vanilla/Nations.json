@@ -632,7 +632,7 @@
 		"afterPeace": "Viracocha has frowned upon our war, and has agreed to our peace agreements.",
 		"tradeRequest": "The Incan people offer this fair trade.",
 				
-		"outerColor": [253,245,155],
+		"outerColor": [253,204,153],
 		"innerColor": [4,144,95],
 		"uniqueName": "Great Andean Road",
 		"uniques": ["Units ignore terrain costs when moving into any tile with Hills", "50% Maintenance costs reduction",
@@ -668,31 +668,7 @@
 			"Sarpsborg","Odense","Aalborg","Stavanger","Vorbasse","Schleswig","Kristiansand","Halogaland","Randers",
 			"Fredrikstad","Kolding","Horsens","Tromsoe","Vejle","Koge","Sandnes","Holstebro","Slagelse","Drammen",
 			"Hillerod","Sonderborg","Skien","Svendborg","Holbaek","Hjorring","Fladstrand","Haderslev","Ringsted","Skrive"]
-	}, /*
-	{        
-	    "name": "Sweden",
-		"leaderName": "Gustavus Adolphus",
-		"adjective": ["Swedish"],
-		"startBias": ["Tundra"],
-		"preferredVictoryType": "Diplomatic",
-		
-		"startIntroPart1": "All hail the transcendent King Gustavus Adolphus, founder of the Swedish Empire and her most distinguished military tactician. It was during your reign that Sweden emerged as one of the greatest powers in Europe, due in no small part to your wisdom, both on and off the battlefield. As king, you initiated a number of domestic reforms that ensured the economic stability and prosperity of your people. As the general who came to be known as the "Lion of the North," your visionary designs in warfare gained the admiration of military commanders the world over. Thanks to your triumphs in the Thirty Years' War, you were assured a legacy as one of history's greatest generals.",
-		"startIntroPart2": "Oh noble King, the people long for your prudent leadership, hopeful that once again they will see your kingdom rise to glory. Will you devise daring new strategies, leading your armies to victory on the theater of war? Will you build a civilization that stands the test of time?",
-		
-		"declaringWar": "The Hakkapeliittas will ride again and your men will fall just at the sight of my cavalry!God with us!",
-		"attacked": "Ha ha ha, captain Gars will be very glad to head out to war again.",
-		"defeated": "I am Sweden's king. You can take my lands, my people, my kingdom, but you will never reach the House of Vasa.",
-		"introduction": "Stranger, welcome to the Snow King's kingdom! I am Gustavus Adolphus,member of the esteemed House of Vasa",
-		
-		"neutralHello": "Oh","welcome!",
-		"hateHello": "Oh, it is you.",
-		"tradeRequest": "My friend, it is my belief that this settlement can benefit both our peoples.",
-		"innerColor": [194,97,255]
-		"cities": ["StockHolm","Malmo","Gothenburg","Visby","Upssala","Umea","Lund","Kiruna","Helsingborg",
-		"Orebro","Vasteras","Linkoping","Norrkoping","Gavle","Karlskrona","Halmstad","Karlstad","Vaxjo",
-		"Copenhagen","Jonkoping",Boras",]
-	},
-	*/
+	}, 
 	
 	    
 
