@@ -235,7 +235,7 @@ class CivilizationInfo {
 
     //region Units
     fun getCivUnits(): Sequence<MapUnit> = units.asSequence()
-    fun getCivGreatPeople(): Sequence<MapUnit> = getCivUnits().filter { mapUnit -> mapUnit.hasUnique("Great Person - []") }
+    fun getCivGreatPeople(): Sequence<MapUnit> = getCivUnits().filter { mapUnit -> mapUnit.isGreatPerson() }
 
     fun addUnit(mapUnit: MapUnit, updateCivInfo: Boolean = true) {
         val newList = ArrayList(units)
@@ -402,6 +402,10 @@ class CivilizationInfo {
         }
     }
 
+
+    fun getGreatPeople() = gameInfo.ruleSet.units.values.asSequence()
+            .filter { it.isGreatPerson() }.map { getEquivalentUnit(it.name) }.toHashSet()
+
     //endregion
 
     //region state-changing functions
@@ -559,7 +563,7 @@ class CivilizationInfo {
         if (!gameInfo.ruleSet.units.containsKey(unitName)) return
         val unit = getEquivalentUnit(unitName)
         placeUnitNearTile(cityToAddTo.location, unit.name)
-        if (unit.uniques.any { it.equalsPlaceholderText("Great Person - []") })
+        if (unit.isGreatPerson())
             addNotification("A [${unit.name}] has been born in [${cityToAddTo.name}]!", cityToAddTo.location, Color.GOLD)
     }
 

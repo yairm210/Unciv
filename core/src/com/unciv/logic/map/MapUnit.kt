@@ -304,6 +304,8 @@ class MapUnit {
 
     fun canGarrison() = type.isMilitary() && type.isLandUnit()
 
+    fun isGreatPerson() = baseUnit.isGreatPerson()
+
     //endregion
 
     //region state-changing functions

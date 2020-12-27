@@ -502,7 +502,7 @@ class QuestManager {
 
         val greatPeople = ruleSet.units.values
                 .asSequence()
-                .filter { baseUnit -> baseUnit.uniques.any { it.equalsPlaceholderText("Great Person - []") } }
+                .filter { it.isGreatPerson() }
                 .map { it.getReplacedUnit(ruleSet) }
                 .distinct()
                 .filter { !challengerGreatPeople.contains(it) && !cityStateGreatPeople.contains(it) }

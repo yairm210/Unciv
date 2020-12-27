@@ -1,6 +1,5 @@
 package com.unciv.models.ruleset
 
-import com.unciv.Constants
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.stats.Stats
@@ -59,14 +58,21 @@ object UniqueTriggerActivation {
             "Free Great Person" -> {
                 if (civInfo.isPlayerCivilization()) civInfo.greatPeople.freeGreatPeople++
                 else {
+                    val greatPeople = civInfo.getGreatPeople()
+                    if (greatPeople.isEmpty()) return
+                    var greatPerson = civInfo.getGreatPeople().random()
+
                     val preferredVictoryType = civInfo.victoryType()
-                    val greatPerson = when (preferredVictoryType) {
-                        VictoryType.Cultural -> "Great Artist"
-                        VictoryType.Scientific -> "Great Scientist"
-                        else -> civInfo.gameInfo.ruleSet.units.values
-                                .filter { it.uniqueObjects.any { it.placeholderText == "Great Person - []" } }.map { it.name }.random()
+                    if (preferredVictoryType == VictoryType.Cultural) {
+                        val culturalGP = greatPeople.firstOrNull { it.uniques.contains("Great Person - [Culture]") }
+                        if (culturalGP != null) greatPerson = culturalGP
                     }
-                    civInfo.addUnit(greatPerson, chosenCity)
+                    if (preferredVictoryType == VictoryType.Scientific) {
+                        val scientificGP = greatPeople.firstOrNull { it.uniques.contains("Great Person - [Science]") }
+                        if (scientificGP != null) greatPerson = scientificGP
+                    }
+
+                    civInfo.addUnit(greatPerson.name, chosenCity)
                 }
             }
             "+1 population in each city" ->

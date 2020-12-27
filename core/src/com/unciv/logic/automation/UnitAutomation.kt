@@ -279,7 +279,7 @@ object UnitAutomation {
                 .firstOrNull {
                     val tile = it.currentTile
                     it.type == UnitType.Civilian &&
-                            (it.hasUnique(Constants.settlerUnique) || unit.name in GreatPersonManager().statToGreatPersonMapping.values)
+                            (it.hasUnique(Constants.settlerUnique) || unit.isGreatPerson())
                             && tile.militaryUnit == null && unit.movement.canMoveTo(tile) && unit.movement.canReach(tile)
                 }
         if (settlerOrGreatPersonToAccompany == null) return false
