@@ -6,12 +6,12 @@ Unfortunately, the game only understands code, so mods are our way to give a deg
 Mods can *add, replace and remove* basic game definitions, such as units, nations, buildings, improvements, resources and terrains.
 Games loaded with these mods will function according to the mod definition.
 
-The game only knows how to recognize existing definitions, so you can't add *new* unique abilities to nations/units/buildings/etc, only to play around with existing ones
+The game only knows how to recognize existing definitions, so you can't add *new* unique abilities to nations/units/buildings/etc, only play around with existing ones
 
 There are two kinds of mods:
 
 - Base Ruleset mods - these replace the entire existing ruleset - tech tree, units, policies, nations etc - to give an entirely different experience than the base game. These generally require quite a bit of work, but give a whole new experience, and so are the most popular.
-- Extension mods - these add new nations/units/buildings/resources to a base ruleset - can be either to the default ruleset, or to a base ruleset mod
+- Extension mods - these add new nations/units/buildings/resources to a base ruleset - can be either to the default ruleset, or to a base ruleset mod. Easy to do and probably the better place to get started.
 
 ## Mod components
 
