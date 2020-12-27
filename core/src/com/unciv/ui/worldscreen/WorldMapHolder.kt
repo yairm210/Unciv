@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.math.Interpolation
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.*
+import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.scenes.scene2d.actions.FloatAction
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener
@@ -423,11 +424,11 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
         }
     }
 
-
+    var blinkAction:Action? = null
     fun setCenterPosition(vector: Vector2, immediately: Boolean = false, selectUnit: Boolean = true) {
         val tileGroup = tileGroups.values.firstOrNull { it.tileInfo.position == vector } ?: return
         selectedTile = tileGroup.tileInfo
-        if(selectUnit)
+        if (selectUnit)
             worldScreen.bottomUnitTable.tileSelected(selectedTile!!)
 
         val originalScrollX = scrollX
@@ -436,16 +437,15 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
         // We want to center on the middle of the tilegroup (TG.getX()+TG.getWidth()/2)
         // and so the scroll position (== filter the screen starts) needs to be half the ScrollMap away
         val finalScrollX = tileGroup.x + tileGroup.width / 2 - width / 2
-        
+
         // Here it's the same, only the Y axis is inverted - when at 0 we're at the top, not bottom - so we invert it back.
         val finalScrollY = maxY - (tileGroup.y + tileGroup.width / 2 - height / 2)
 
-        if(immediately){
+        if (immediately) {
             scrollX = finalScrollX
             scrollY = finalScrollY
             updateVisualScroll()
-        }
-        else {
+        } else {
             val action = object : FloatAction(0f, 1f, 0.4f) {
                 override fun update(percent: Float) {
                     scrollX = finalScrollX * percent + originalScrollX * (1 - percent)
@@ -457,7 +457,16 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
             addAction(action)
         }
 
-        worldScreen.shouldUpdate=true
+        removeAction(blinkAction) // so we don't have multiple blinks at once
+        blinkAction = Actions.repeat(3, Actions.sequence(
+                Actions.run { tileGroup.circleImage.isVisible = false },
+                Actions.delay(.3f),
+                Actions.run { tileGroup.circleImage.isVisible = true },
+                Actions.delay(.3f)
+        ))
+        addAction(blinkAction) // Don't set it on the group because it's an actionlss group
+
+        worldScreen.shouldUpdate = true
     }
 
     override fun zoom(zoomScale:Float) {
