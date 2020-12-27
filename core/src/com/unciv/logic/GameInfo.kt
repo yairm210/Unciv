@@ -262,35 +262,7 @@ class GameInfo {
             throw UncivShowableException("Missing mods: [$missingMods]")
         }
 
-        // Mods can change, leading to things on the map that are no longer defined in the mod.
-        // So we remove them so the game doesn't crash when it tries to access them.
-        for (tile in tileMap.values) {
-            if (tile.resource != null && !ruleSet.tileResources.containsKey(tile.resource!!))
-                tile.resource = null
-            if (tile.improvement != null && !ruleSet.tileImprovements.containsKey(tile.improvement!!)
-                    && !tile.improvement!!.startsWith("StartingLocation ")) // To not remove the starting locations in GameStarter.startNewGame()
-                tile.improvement = null
-
-            for (unit in tile.getUnits())
-                for (promotion in unit.promotions.promotions.toList())
-                    if (!ruleSet.unitPromotions.containsKey(promotion))
-                        unit.promotions.promotions.remove(promotion)
-
-            for (city in civilizations.asSequence().flatMap { it.cities.asSequence() }) {
-                for (building in city.cityConstructions.builtBuildings.toHashSet())
-                    if (!ruleSet.buildings.containsKey(building))
-                        city.cityConstructions.builtBuildings.remove(building)
-
-                // Remove invalid buildings or units from the queue - don't just check buildings and units because it might be a special construction as well
-                for (construction in city.cityConstructions.constructionQueue.toList()) {
-                    if (!ruleSet.buildings.containsKey(construction) && !ruleSet.units.containsKey(construction)
-                            && !PerpetualConstruction.perpetualConstructionsMap.containsKey(construction))
-                        city.cityConstructions.constructionQueue.remove(construction)
-                }
-            }
-
-
-        }
+        removeMissingModReferences()
 
         tileMap.setTransients(ruleSet)
 
@@ -344,6 +316,46 @@ class GameInfo {
 
                 cityInfo.cityStats.update()
             }
+        }
+    }
+
+
+    // Mods can change, leading to things on the map that are no longer defined in the mod.
+    // So we remove them so the game doesn't crash when it tries to access them.
+    private fun removeMissingModReferences() {
+        for (tile in tileMap.values) {
+            if (tile.resource != null && !ruleSet.tileResources.containsKey(tile.resource!!))
+                tile.resource = null
+            if (tile.improvement != null && !ruleSet.tileImprovements.containsKey(tile.improvement!!)
+                    && !tile.improvement!!.startsWith("StartingLocation ")) // To not remove the starting locations in GameStarter.startNewGame()
+                tile.improvement = null
+
+            for (unit in tile.getUnits()) {
+                if (!ruleSet.units.containsKey(unit.name)) tile.removeUnit(unit)
+
+                for (promotion in unit.promotions.promotions.toList())
+                    if (!ruleSet.unitPromotions.containsKey(promotion))
+                        unit.promotions.promotions.remove(promotion)
+            }
+
+        }
+
+        for (city in civilizations.asSequence().flatMap { it.cities.asSequence() }) {
+            for (building in city.cityConstructions.builtBuildings.toHashSet())
+                if (!ruleSet.buildings.containsKey(building))
+                    city.cityConstructions.builtBuildings.remove(building)
+
+            // Remove invalid buildings or units from the queue - don't just check buildings and units because it might be a special construction as well
+            for (construction in city.cityConstructions.constructionQueue.toList()) {
+                if (!ruleSet.buildings.containsKey(construction) && !ruleSet.units.containsKey(construction)
+                        && !PerpetualConstruction.perpetualConstructionsMap.containsKey(construction))
+                    city.cityConstructions.constructionQueue.remove(construction)
+            }
+        }
+        for (civinfo in civilizations) {
+            for (tech in civinfo.tech.techsResearched.toList())
+                if (!ruleSet.technologies.containsKey(tech))
+                    civinfo.tech.techsResearched.remove(tech)
         }
     }
 

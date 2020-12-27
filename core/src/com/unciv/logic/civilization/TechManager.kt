@@ -18,6 +18,7 @@ import kotlin.math.min
 class TechManager {
     @Transient
     lateinit var civInfo: CivilizationInfo
+    /** This is the Transient list of Technologies */
     @Transient
     var researchedTechnologies = ArrayList<Technology>()
     @Transient
@@ -42,6 +43,7 @@ class TechManager {
     /** For calculating Great Scientist yields - see https://civilization.fandom.com/wiki/Great_Scientist_(Civ5)  */
     var scienceOfLast8Turns = IntArray(8) { 0 }
     var scienceFromResearchAgreements = 0
+    /** This is the lit of strings, which is serialized */
     var techsResearched = HashSet<String>()
 
     /** When moving towards a certain tech, the user doesn't have to manually pick every one. */

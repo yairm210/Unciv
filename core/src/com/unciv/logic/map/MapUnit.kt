@@ -495,13 +495,7 @@ class MapUnit {
                 .forEach { unit -> unit.destroy() }
     }
 
-    fun removeFromTile() {
-        when {
-            type.isAirUnit() -> currentTile.airUnits.remove(this)
-            type.isCivilian() -> getTile().civilianUnit = null
-            else -> getTile().militaryUnit = null
-        }
-    }
+    fun removeFromTile() = currentTile.removeUnit(this)
 
     fun moveThroughTile(tile: TileInfo) {
         if (tile.improvement == Constants.ancientRuins && civInfo.isMajorCiv())

@@ -483,7 +483,19 @@ open class TileInfo {
     }
 
     fun stripUnits() {
-        for (unit in this.getUnits()) unit.removeFromTile()
+        for (unit in this.getUnits()) removeUnit(unit)
+    }
+
+
+    /** If the unit isn't in the ruleset we can't even know what type of unit this is! So check each place
+     * This works with no transients so can be called from gameInfo.setTransients with no fear
+     */
+    fun removeUnit(mapUnit: MapUnit){
+        when {
+            airUnits.contains(mapUnit) -> airUnits.remove(mapUnit)
+            civilianUnit == mapUnit -> civilianUnit = null
+            else -> militaryUnit = null
+        }
     }
 
     fun startWorkingOnImprovement(improvement: TileImprovement, civInfo: CivilizationInfo) {
