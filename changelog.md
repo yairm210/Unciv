@@ -1,3 +1,22 @@
+## 3.12.4
+
+Resolved #3424 - Added blink on event location
+
+AI declares peace with civs they can't reach, solving 'endless stalemate war' problems
+
+
+Game can handle mods removing units and technologies between versions
+
+"Free great person" can no longer grant units unique to another civ
+
+Added required building dependency check for mods
+
+Caught modding errors - classic.
+
+Modded water units with worker unique no longer build roads in water
+
+Fixed chance of Arabian unique activating - By 9kgsofrice
+
 ## 3.12.3
 
 Fixed starting positions not activating on new game
