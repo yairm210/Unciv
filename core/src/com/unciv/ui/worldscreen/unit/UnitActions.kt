@@ -279,7 +279,7 @@ object UnitActions {
 
         val canConstruct = !tile.isCityCenter()
                 && unit.civInfo.gameInfo.ruleSet.tileImprovements.values
-                .any { tile.canBuildImprovement(it, unit.civInfo) }
+                    .any { tile.canBuildImprovement(it, unit.civInfo) }
         actionList += UnitAction(
                 type = UnitActionType.ConstructImprovement,
                 isCurrentAction = unit.currentTile.hasImprovementInProgress(),

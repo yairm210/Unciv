@@ -190,10 +190,6 @@ class CivilizationInfo {
         return newResourceSupplyList
     }
 
-    fun getViewableResources(): List<TileResource> =
-            gameInfo.ruleSet.tileResources.values
-                    .filter { it.revealedBy == null || tech.isResearched(it.revealedBy!!) }
-
     fun isCapitalConnectedToCity(city: CityInfo): Boolean = citiesConnectedToCapitalToMediums.keys.contains(city)
 
 

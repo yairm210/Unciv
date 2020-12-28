@@ -12,7 +12,6 @@ import com.unciv.models.ruleset.QuestName
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.tile.TileResource
 import com.unciv.models.ruleset.unit.BaseUnit
-import com.unciv.models.translations.equalsPlaceholderText
 import com.unciv.models.translations.fillPlaceholders
 import com.unciv.ui.utils.randomWeighted
 import kotlin.math.max
@@ -453,11 +452,15 @@ class QuestManager {
         val ownedByCityStateResources = civInfo.detailedCivResources.map { it.resource }
         val ownedByMajorResources = challenger.detailedCivResources.map { it.resource }
 
-        val notOwnedResources = challenger.getViewableResources().filter {
+        val resourcesOnMap = civInfo.gameInfo.tileMap.values.asSequence().mapNotNull { it.resource }.distinct()
+        val viewableResourcesForChallenger = resourcesOnMap.map { civInfo.gameInfo.ruleSet.tileResources[it]!! }
+                .filter { it.revealedBy == null || challenger.tech.isResearched(it.revealedBy!!) }
+
+        val notOwnedResources = viewableResourcesForChallenger.filter {
             it.resourceType != ResourceType.Bonus &&
                     !ownedByCityStateResources.contains(it) &&
                     !ownedByMajorResources.contains(it)
-        }
+        }.toList()
 
         if (notOwnedResources.isNotEmpty())
             return notOwnedResources.random()
