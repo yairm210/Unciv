@@ -158,10 +158,11 @@ class WorkerAutomation(val unit: MapUnit) {
             if (chosenImprovement != null && tile.canBuildImprovement(chosenImprovement, civInfo)) return true
         } else if (!tile.containsGreatImprovement() && tile.hasViewableResource(civInfo)
                 && tile.getTileResource().improvement != tile.improvement
-                && tile.canBuildImprovement(chooseImprovement(tile, civInfo)!!, civInfo))
+                && chooseImprovement(tile, civInfo) // if the chosen improvement is not null and buildable
+                        .let { it != null && tile.canBuildImprovement(it, civInfo) })
             return true
 
-        return false // cou;dn't find anything to construct here
+        return false // couldn't find anything to construct here
     }
 
     fun getPriority(tileInfo: TileInfo, civInfo: CivilizationInfo): Int {
