@@ -447,8 +447,10 @@ class MapUnit {
     fun endTurn() {
         doAction()
 
-        if (hasUnique(Constants.workerUnique) && getTile().improvementInProgress != null) workOnImprovement()
-        if (hasUnique("Can construct roads") && currentTile.improvementInProgress == "Road") workOnImprovement()
+        if (currentMovement > 0 && hasUnique(Constants.workerUnique)
+                && getTile().improvementInProgress != null) workOnImprovement()
+        if (currentMovement > 0 && hasUnique("Can construct roads")
+                && currentTile.improvementInProgress == "Road") workOnImprovement()
         if (currentMovement == getMaxMovement().toFloat() && isFortified()) {
             val currentTurnsFortified = getFortificationTurns()
             if (currentTurnsFortified < 2)
