@@ -99,7 +99,8 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
         diplomacyTable.defaults().pad(10f)
 
         val displayNameTable = Table()
-        displayNameTable.add(ImageGetter.getNationIndicator(otherCiv.nation, 24f)).pad(0f,0f,5f,10f)
+        displayNameTable.add(ImageGetter.getNationIndicator(otherCiv.nation, 24f))
+                .pad(0f,0f,5f,10f)
         displayNameTable.add(otherCiv.getLeaderDisplayName().toLabel(fontSize = 24))
         diplomacyTable.add(displayNameTable).row()
 

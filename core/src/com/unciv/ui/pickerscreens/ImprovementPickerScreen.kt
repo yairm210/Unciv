@@ -21,12 +21,13 @@ class ImprovementPickerScreen(val tileInfo: TileInfo, val onAccept: ()->Unit) : 
     val currentPlayerCiv = game.gameInfo.getCurrentPlayerCivilization()
 
     fun accept(improvement: TileImprovement?) {
-        if (improvement == null || improvement.name == tileInfo.improvementInProgress) return
+        if (improvement == null) return
         if (improvement.name == Constants.cancelImprovementOrder) {
             tileInfo.stopWorkingOnImprovement()
             // no onAccept() - Worker can stay selected
         } else {
-            tileInfo.startWorkingOnImprovement(improvement, currentPlayerCiv)
+            if (improvement.name != tileInfo.improvementInProgress)
+                tileInfo.startWorkingOnImprovement(improvement, currentPlayerCiv)
             if (tileInfo.civilianUnit != null) tileInfo.civilianUnit!!.action = null // this is to "wake up" the worker if it's sleeping
             onAccept()
         }
