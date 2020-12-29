@@ -1,3 +1,17 @@
+## 3.12.5
+
+Resolved #3470 - popups now make the rest of the screen unclickable to avoid exploits
+
+Resolved #3431 - Redesigned the player picker, to scroll through civs and display them separately
+
+Resolved #3476 - captured civilian units no longer move on the same turn
+
+Resolved #3331 - resources for city-state quests are taken from resources on the map
+
+Resolved #3464 - units only advance improvements when they have movement points left
+
+Fixed minor automation bug for modded terrains
+
 ## 3.12.4
 
 Resolved #3424 - Added blink on event location
