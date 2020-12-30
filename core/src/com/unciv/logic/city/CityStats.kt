@@ -541,7 +541,7 @@ class CityStats {
             newFinalStatList.clear()  // NOPE
 
         if (newFinalStatList.values.map { it.production }.sum() < 1)  // Minimum production for things to progress
-            newFinalStatList["Production"] = Stats().apply { production += 1 }
+            newFinalStatList["Production"] = Stats().apply { production = 1F }
         finalStatList = newFinalStatList
     }
 
