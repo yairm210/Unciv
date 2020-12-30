@@ -221,10 +221,6 @@ class CityStats {
             happinessFromPolicies += 1f
         happinessFromPolicies += getStatsFromUniques(civInfo.policies.policyUniques.getAllUniques()).happiness
 
-        if (cityInfo.getCenterTile().militaryUnit != null)
-            for (unique in civInfo.getMatchingUniques("[] in all cities with a garrison"))
-                happinessFromPolicies += unique.stats.happiness
-
         newHappinessList["Policies"] = happinessFromPolicies
 
         if (hasExtraAnnexUnhappiness()) newHappinessList["Occupied City"] = -2f //annexed city
