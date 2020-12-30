@@ -466,8 +466,10 @@ class CityStats {
         val statPercentBonusesSum = Stats()
         for (bonus in statPercentBonusList.values) statPercentBonusesSum.add(bonus)
 
-        for (entry in newFinalStatList.values)
+        for (entry in newFinalStatList.values) {
             entry.production *= 1 + statPercentBonusesSum.production / 100
+            if (entry.production <= 0 ) entry.production = 0F
+        }
 
         val statsFromProduction = getStatsFromProduction(newFinalStatList.values.map { it.production }.sum())
         baseStatList = LinkedHashMap(baseStatList).apply { put("Construction", statsFromProduction) } // concurrency-safe addition
