@@ -77,10 +77,10 @@ object Battle {
         // or any enemy military unit with Sacrificial captives unique (can be either attacker or defender!)
         if (defender.isDefeated() && defender is MapUnitCombatant && !defender.getUnitType().isCivilian()) {
             tryEarnFromKilling(attacker, defender)
-            tryHealAfterKilling(attacker, defender)
+            tryHealAfterKilling(attacker)
         } else if (attacker.isDefeated() && attacker is MapUnitCombatant && !attacker.getUnitType().isCivilian()) {
             tryEarnFromKilling(defender, attacker)
-            tryHealAfterKilling(defender, attacker)
+            tryHealAfterKilling(defender)
         }
 
         if (attacker is MapUnitCombatant) {
@@ -98,7 +98,7 @@ object Battle {
 
         var goldReward = 0
         var cultureReward = 0
-        var bonusUniques = ArrayList<Unique>()
+        val bonusUniques = ArrayList<Unique>()
 
         bonusUniques.addAll(civUnit.getCivInfo().getMatchingUniques(bonusUniquePlaceholderText))
 
@@ -177,7 +177,7 @@ object Battle {
         }
     }
 
-    private fun tryHealAfterKilling(attacker: ICombatant, defender: ICombatant) {
+    private fun tryHealAfterKilling(attacker: ICombatant) {
         if (attacker is MapUnitCombatant)
             for (unique in attacker.unit.getMatchingUniques("Heals [] damage if it kills a unit")) {
                 val amountToHeal = unique.params[0].toInt()
@@ -321,7 +321,7 @@ object Battle {
     private fun captureCivilianUnit(attacker: ICombatant, defender: MapUnitCombatant) {
         // barbarians don't capture civilians
         if (attacker.getCivInfo().isBarbarian()
-                || (defender as MapUnitCombatant).unit.hasUnique("Uncapturable")) {
+                || defender.unit.hasUnique("Uncapturable")) {
             defender.takeDamage(100)
             return
         }
@@ -337,6 +337,9 @@ object Battle {
         if (capturedUnit.name == Constants.settler) {
             val tile = capturedUnit.getTile()
             capturedUnit.destroy()
+            // This is so that future checks which check if a unit has been caatured are caught give the right answer
+            //  For example, in postBattleMoveToAttackedTile
+            capturedUnit.civInfo = attacker.getCivInfo()
             attacker.getCivInfo().placeUnitNearTile(tile.position, Constants.worker)
         } else {
             capturedUnit.civInfo.removeUnit(capturedUnit)
