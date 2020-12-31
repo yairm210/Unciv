@@ -71,7 +71,7 @@ class Technology {
 
         val revealedResource = ruleset.tileResources.values.filter { it.revealedBy == name }
                 .map { it.name }.firstOrNull() // can only be one
-        if (revealedResource != null) lineList += "Reveals [$revealedResource] on the map".tr()
+        if (revealedResource != null) lineList += "Reveals [$revealedResource] on the map"
 
         val tileImprovements = ruleset.tileImprovements.values.filter { it.techRequired == name }
         if (tileImprovements.isNotEmpty())
