@@ -14,6 +14,7 @@ import com.unciv.models.translations.tr
 import com.unciv.ui.pickerscreens.PickerScreen
 import com.unciv.ui.saves.Gzip
 import com.unciv.ui.utils.*
+import kotlin.concurrent.thread
 import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 
 class LoadMapScreen(previousMap: TileMap?) : PickerScreen(){
@@ -36,10 +37,21 @@ class LoadMapScreen(previousMap: TileMap?) : PickerScreen(){
 
         rightSideButton.setText("Load map".tr())
         rightSideButton.onClick {
-            val mapEditorScreen = if (scenarioMap) MapEditorScreen(MapSaver.loadScenario(chosenMap!!), chosenMap!!.name())
-            else MapEditorScreen(chosenMap!!)
-            UncivGame.Current.setScreen(mapEditorScreen)
-            dispose()
+            thread {
+                if (scenarioMap) {
+                    val scenario = MapSaver.loadScenario(chosenMap!!)
+                    Gdx.app.postRunnable {
+                        UncivGame.Current.setScreen(MapEditorScreen(scenario, chosenMap!!.name()))
+                        dispose()
+                    }
+                } else {
+                    val map = MapSaver.loadMap(chosenMap!!)
+                    Gdx.app.postRunnable {
+                        UncivGame.Current.setScreen(MapEditorScreen(map))
+                        dispose()
+                    }
+                }
+            }
         }
 
         topTable.add(ScrollPane(mapsTable)).height(stage.height * 2 / 3)
