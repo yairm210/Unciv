@@ -39,7 +39,7 @@ class CivInfoStats(val civInfo: CivilizationInfo){
         }
 
         val turnLimit = BASE_GAME_DURATION_TURNS * civInfo.gameInfo.gameParameters.gameSpeed.modifier
-        val gameProgress = civInfo.gameInfo.turns / turnLimit // as game progresses Maintenance cost rises
+        val gameProgress = min(civInfo.gameInfo.turns / turnLimit, 1f) // as game progresses Maintenance cost rises
         var cost = baseUnitCost * numberOfUnitsToPayFor * (1 + gameProgress)
         cost = cost.pow(1 + gameProgress / 3) // Why 3? To spread 1 to 1.33
         if (!civInfo.isPlayerCivilization())
