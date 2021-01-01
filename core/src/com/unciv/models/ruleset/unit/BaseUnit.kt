@@ -124,12 +124,15 @@ class BaseUnit : INamed, IConstruction {
             return "Can only build water units in coastal cities"
         for (unique in uniqueObjects.filter { it.placeholderText == "Not displayed as an available construction without []" }) {
             val filter = unique.params[0]
-            if ((filter in construction.cityInfo.civInfo.gameInfo.ruleSet.tileResources && !construction.cityInfo.civInfo.hasResource(filter))
-                    || (filter in construction.cityInfo.civInfo.gameInfo.ruleSet.buildings && !construction.containsBuildingOrEquivalent(filter)))
+            if (filter in construction.cityInfo.civInfo.gameInfo.ruleSet.tileResources && !construction.cityInfo.civInfo.hasResource(filter)
+                    || filter in construction.cityInfo.civInfo.gameInfo.ruleSet.buildings && !construction.containsBuildingOrEquivalent(filter))
                 return "Should not be displayed"
         }
         val civRejectionReason = getRejectionReason(construction.cityInfo.civInfo)
         if (civRejectionReason != "") return civRejectionReason
+        for (unique in uniqueObjects.filter { it.placeholderText == "Requires at least [] population" })
+            if (unique.params[0].toInt() > construction.cityInfo.population.population)
+                return unique.text
         return ""
     }
 
@@ -138,7 +141,8 @@ class BaseUnit : INamed, IConstruction {
         if (requiredTech != null && !civInfo.tech.isResearched(requiredTech!!)) return "$requiredTech not researched"
         if (obsoleteTech != null && civInfo.tech.isResearched(obsoleteTech!!)) return "Obsolete by $obsoleteTech"
         if (uniqueTo != null && uniqueTo != civInfo.civName) return "Unique to $uniqueTo"
-        if (civInfo.gameInfo.ruleSet.units.values.any { it.uniqueTo == civInfo.civName && it.replaces == name }) return "Our unique unit replaces this"
+        if (civInfo.gameInfo.ruleSet.units.values.any { it.uniqueTo == civInfo.civName && it.replaces == name })
+            return "Our unique unit replaces this"
         if (!civInfo.gameInfo.gameParameters.nuclearWeaponsEnabled
                 && uniques.contains("Nuclear weapon")) return "Disabled by setting"
         for (unique in uniqueObjects.filter { it.placeholderText == "Requires []" }) {
