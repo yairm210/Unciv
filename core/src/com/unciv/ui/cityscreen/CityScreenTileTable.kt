@@ -46,7 +46,8 @@ class CityScreenTileTable(private val cityScreen: CityScreen): Table() {
                         "Would you like to purchase [Tile] for [$goldCostOfTile] gold?".tr()
                 YesNoPopup(purchasePrompt, { city.expansion.buyTile(selectedTile);UncivGame.Current.setScreen(CityScreen(city)) }, cityScreen).open()
             }
-            if (goldCostOfTile > city.civInfo.gold && !city.civInfo.gameInfo.gameParameters.godMode
+            val canPurchase = goldCostOfTile == 0 || city.civInfo.gold >= goldCostOfTile
+            if (!canPurchase && !city.civInfo.gameInfo.gameParameters.godMode
                     || city.isPuppet
                     || !cityScreen.canChangeState)
                 buyTileButton.disable()
