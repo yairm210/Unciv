@@ -248,17 +248,6 @@ class CityStats {
         return !cityInfo.containsBuildingUnique("Remove extra unhappiness from annexed cities")
     }
 
-    fun getStatsOfSpecialist(stat: Stat): Stats {
-        val stats = Stats()
-        if (stat == Stat.Culture || stat == Stat.Science) stats.add(stat, 3f)
-        else stats.add(stat, 2f) // science and gold specialists
-
-        for (unique in cityInfo.civInfo.getMatchingUniques("[] from every specialist"))
-            stats.add(unique.stats)
-
-        return stats
-    }
-
     fun getStatsOfSpecialist(specialistName: String): Stats {
         val specialist = cityInfo.getRuleset().specialists[specialistName]
         if (specialist == null) return Stats()

@@ -155,9 +155,11 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
                     buttonText,
                     building.getRejectionReason(cityConstructions)
             )
-            if (building.isWonder) buildableWonders += productionTextButton
-            else if (building.isNationalWonder) buildableNationalWonders += productionTextButton
-            else buildableBuildings += productionTextButton
+            when {
+                building.isWonder -> buildableWonders += productionTextButton
+                building.isNationalWonder -> buildableNationalWonders += productionTextButton
+                else -> buildableBuildings += productionTextButton
+            }
         }
 
         for (specialConstruction in PerpetualConstruction.perpetualConstructionsMap.values
