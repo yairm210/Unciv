@@ -35,7 +35,6 @@ import java.util.*
  */
 class PlayerPickerTable(val previousScreen: IPreviousScreen, var gameParameters: GameParameters): Table() {
     val playerListTable = Table()
-    val nationsPopupWidth = previousScreen.stage.width / 2f
     val civBlocksWidth = previousScreen.stage.width / 3
 
     /** Locks player table for editing, used during new game creation with scenario.*/
@@ -50,7 +49,7 @@ class PlayerPickerTable(val previousScreen: IPreviousScreen, var gameParameters:
 
         top()
         add("Civilizations".toLabel(fontSize = 24)).padBottom(20f).row()
-        add(ScrollPane(playerListTable).apply { setOverscroll(false, false) }).width(civBlocksWidth)
+        add(ScrollPane(playerListTable, skin).apply { setOverscroll(false, false) }).width(civBlocksWidth)
         update()
     }
 
@@ -72,10 +71,10 @@ class PlayerPickerTable(val previousScreen: IPreviousScreen, var gameParameters:
         for (player in gameParameters.players) {
             playerListTable.add(getPlayerTable(player)).width(civBlocksWidth).padBottom(20f).row()
         }
-        if (gameParameters.players.count() < gameBasics.nations.values.count { it.isMajorCiv() }
-                && !locked) {
-            playerListTable.add("+".toLabel(Color.BLACK, 30).apply { this.setAlignment(Align.center) }
-                    .surroundWithCircle(50f).onClick {
+        if (!locked && gameParameters.players.size < gameBasics.nations.values.count { it.isMajorCiv() }) {
+            val addPlayerButton = "+".toLabel(Color.BLACK, 30).apply { this.setAlignment(Align.center) }
+                    .surroundWithCircle(50f)
+                    .onClick {
                         var player = Player()
                         // no random mode - add first not spectator civ if still available
                         if (noRandom) {
@@ -86,7 +85,8 @@ class PlayerPickerTable(val previousScreen: IPreviousScreen, var gameParameters:
                         }
                         gameParameters.players.add(player)
                         update()
-                    }).pad(10f)
+                    }
+            playerListTable.add(addPlayerButton).pad(10f)
         }
         // can enable start game when more than 1 active player
         previousScreen.setRightSideButtonEnabled(gameParameters.players.count { it.chosenCiv != Constants.spectator } > 1)
@@ -152,7 +152,7 @@ class PlayerPickerTable(val previousScreen: IPreviousScreen, var gameParameters:
             val playerIdTextfield = TextField(player.playerId, CameraStageBaseScreen.skin)
             playerIdTextfield.messageText = "Please input Player ID!".tr()
             playerTable.add(playerIdTextfield).colspan(2).fillX().pad(5f)
-            var errorLabel = "✘".toLabel(Color.RED)
+            val errorLabel = "✘".toLabel(Color.RED)
             playerTable.add(errorLabel).pad(5f).row()
 
             fun onPlayerIdTextUpdated() {
@@ -275,7 +275,7 @@ class PlayerPickerTable(val previousScreen: IPreviousScreen, var gameParameters:
      * @return [ArrayList] of available [Nation]s
      */
     private fun getAvailablePlayerCivs(): ArrayList<Nation> {
-        var nations = ArrayList<Nation>()
+        val nations = ArrayList<Nation>()
         for (nation in previousScreen.ruleset.nations.values
                 .filter { it.isMajorCiv() || it.isSpectator() }) {
             if (gameParameters.players.any { it.chosenCiv == nation.name })

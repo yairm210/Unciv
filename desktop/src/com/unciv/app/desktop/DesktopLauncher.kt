@@ -52,7 +52,7 @@ internal object DesktopLauncher {
 
         val game = UncivGame(desktopParameters)
 
-        if(!RaspberryPiDetector.isRaspberryPi()) // No discord RPC for Raspberry Pi, see https://github.com/yairm210/Unciv/issues/1624
+        if (!RaspberryPiDetector.isRaspberryPi()) // No discord RPC for Raspberry Pi, see https://github.com/yairm210/Unciv/issues/1624
             tryActivateDiscord(game)
 
         LwjglApplication(game, config)
@@ -163,10 +163,10 @@ internal object DesktopLauncher {
 
     private fun packImagesIfOutdated(settings: TexturePacker.Settings, input: String, output: String, packFileName: String) {
         fun File.listTree(): Sequence<File> = when {
-                this.isFile -> sequenceOf(this)
-                this.isDirectory -> this.listFiles().asSequence().flatMap { it.listTree() }
-                else -> sequenceOf()
-            }
+            this.isFile -> sequenceOf(this)
+            this.isDirectory -> this.listFiles().asSequence().flatMap { it.listTree() }
+            else -> sequenceOf()
+        }
 
         val atlasFile = File("$output${File.separator}$packFileName.atlas")
         if (atlasFile.exists() && File("$output${File.separator}$packFileName.png").exists()) {
@@ -187,7 +187,8 @@ internal object DesktopLauncher {
             discordTimer = timer(name = "Discord", daemon = true, period = 1000) {
                 try {
                     updateRpc(game)
-                } catch (ex: Exception){}
+                } catch (ex: Exception) {
+                }
             }
         } catch (ex: Exception) {
             println("Could not initialize Discord")
@@ -195,12 +196,12 @@ internal object DesktopLauncher {
     }
 
     private fun updateRpc(game: UncivGame) {
-        if(!game.isInitialized) return
+        if (!game.isInitialized) return
         val presence = DiscordRichPresence()
         val currentPlayerCiv = game.gameInfo.getCurrentPlayerCivilization()
-        presence.details=currentPlayerCiv.nation.getLeaderDisplayName().tr()
+        presence.details = currentPlayerCiv.nation.getLeaderDisplayName().tr()
         presence.largeImageKey = "logo" // The actual image is uploaded to the discord app / applications webpage
-        presence.largeImageText ="Turn".tr()+" " + currentPlayerCiv.gameInfo.turns
+        presence.largeImageText = "Turn".tr() + " " + currentPlayerCiv.gameInfo.turns
         DiscordRPC.INSTANCE.Discord_UpdatePresence(presence)
     }
 }
