@@ -632,8 +632,8 @@
 		"afterPeace": "Viracocha has frowned upon our war, and has agreed to our peace agreements.",
 		"tradeRequest": "The Incan people offer this fair trade.",
 				
-		"outerColor": [253,245,155],
-		"innerColor": [4,144,95],
+		"outerColor": [255,184,33],
+		"innerColor": [3,115,86],
 		"uniqueName": "Great Andean Road",
 		"uniques": ["Units ignore terrain costs when moving into any tile with Hills", "50% Maintenance costs reduction",
 			"No Maintenance costs for improvements in Hills"],
