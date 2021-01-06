@@ -88,7 +88,7 @@ class CivInfoStats(val civInfo: CivilizationInfo){
         return transportationUpkeep
     }
 
-    fun getStatMapForNextTurn(): HashMap<String, Stats> {
+    fun getStatMapForNextTurn(): StatMap {
         val statMap = StatMap()
         for (city in civInfo.cities) {
             for (entry in city.cityStats.finalStatList)
