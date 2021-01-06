@@ -228,8 +228,8 @@ class Ruleset {
         }
 
         for (tech in technologies.values) {
-            for (otherTech in tech.column!!.techs) {
-                if (tech != otherTech && otherTech.row == tech.row)
+            for (otherTech in technologies.values) {
+                if (tech != otherTech && otherTech.column == tech.column && otherTech.row == tech.row)
                     lines += "${tech.name} is in the same row as ${otherTech.name}!"
             }
         }
