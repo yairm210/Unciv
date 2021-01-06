@@ -1,3 +1,17 @@
+## 3.12.7
+
+Resolved #3473 - show city's happiness drilldown
+
+Better 'conflicting tech' check for mods
+
+Resolved #3469 - more readable Inca colors
+
+Resolved #3497 - city state quests always show correctly when diplomacy screen accessed from city button
+
+Fixed crash when attempting to issue a 'connect to capital' quest for a civ with no capital
+
+Translation updates
+
 ## 3.12.6
 
 Resolved #3483 - settlers require at least 2 population to construct, as per Civ V
