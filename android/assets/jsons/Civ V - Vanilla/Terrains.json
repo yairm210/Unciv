@@ -6,7 +6,7 @@
 		"food": 1,
 		"gold": 1,
 		"movementCost": 1,
-		"RGB": [95,152,176]
+		"RGB": [45,108,145]
 	},
 	{
 		"name": "Coast",
