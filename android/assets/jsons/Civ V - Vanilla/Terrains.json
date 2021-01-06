@@ -6,14 +6,14 @@
 		"food": 1,
 		"gold": 1,
 		"movementCost": 1,
-		"RGB": [100,100,255]
+		"RGB": [95,152,176]
 	},
 	{
 		"name": "Coast",
 		"type": "Water",
 		"food": 1,
 		"movementCost": 1,
-		"RGB": [150,150,255]
+		"RGB": [107,167,193]
 	},
 	{
 		"name": "Grassland",
@@ -21,7 +21,7 @@
 		"food": 2,
 		"movementCost": 1,
 		"defenceBonus": -0.1,
-		"RGB": [109,139,53]
+		"RGB": [97,171,58]
 	},
 	{
 		"name": "Plains",
@@ -30,7 +30,7 @@
 		"production": 1,
 		"movementCost": 1,
 		"defenceBonus": -0.1,
-		"RGB": [200,208,161]
+		"RGB": [168,185,102]
 	},
 	{
 		"name": "Tundra",
@@ -38,21 +38,21 @@
 		"food": 1,
 		"movementCost": 1,
 		"defenceBonus": -0.1,
-		"RGB": [125,122,113]
+		"RGB": [189,204,191]
 	},
 	{
 		"name": "Desert",
 		"type": "Land",
 		"movementCost": 1,
 		"defenceBonus": -0.1,
-		"RGB": [ 255, 255, 102]
+		"RGB": [ 230, 230, 113]
 	},
 	{
 		"name": "Lakes",
 		"type": "Water",
 		"food": 2,
 		"gold": 1,
-		"RGB": [ 200, 200, 255],
+		"RGB": [ 123, 202, 226],
 		"uniques": ["Fresh water"]
 	},
 	{
@@ -61,21 +61,21 @@
 		"production": 2,
 		"movementCost": 2,
 		"defenceBonus": 0.25,
-		"RGB": [74,81,40],
+		"RGB": [105,125,72],
 		"rough": true
 	},
 	{
 		"name": "Mountain",
 		"type": "Land",
 		"impassable": true,
-		"RGB": [89, 45, 0]
+		"RGB": [120, 120, 120]
 	},
 	{
 		"name": "Snow",
 		"type": "Land",
 		"movementCost": 1,
 		"defenceBonus": -0.1,
-		"RGB": [153, 255, 255]
+		"RGB": [231, 242, 249]
 	},
 	
 	// Terrain features
