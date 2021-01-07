@@ -49,7 +49,7 @@ class PlayerPickerTable(val previousScreen: IPreviousScreen, var gameParameters:
 
         top()
         add("Civilizations".toLabel(fontSize = 24)).padBottom(20f).row()
-        add(ScrollPane(playerListTable, skin).apply { setOverscroll(false, false) }).width(civBlocksWidth)
+        add(ScrollPane(playerListTable).apply { setOverscroll(false, false) }).width(civBlocksWidth)
         update()
     }
 
