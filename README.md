@@ -6,7 +6,7 @@
 [![F-Droid](https://img.shields.io/f-droid/v/com.unciv.app)](https://f-droid.org/en/packages/com.unciv.app/)
 [![itch.io](https://img.shields.io/static/v1?label=itch.io&message=Unciv&color=607D8B&logo=itch.io)](https://yairm210.itch.io/unciv)
 
-[![Travis CI w/ Logo](https://img.shields.io/travis/yairm210/UnCiv/master.svg?logo=travis)](https://travis-ci.org/yairm210/UnCiv)
+[![Travis CI w/ Logo](https://img.shields.io/travis/yairm210/Unciv/master.svg?logo=travis)](https://travis-ci.com/yairm210/Unciv)
 [![Discord Chat](https://img.shields.io/discord/586194543280390151.svg)](https://discord.gg/bjrB4Xw)
 
 [![LibGDX](https://img.shields.io/badge/libgdx-1.9.10-red.svg)](https://libgdx.badlogicgames.com/)
@@ -26,7 +26,7 @@ Is this order:
     * UI+UX improvements (suggestions welcome!)
     * Better automation, AI etc. in-game
 * Development and distribution cycle - Done! (tests, f-droid/Google Play/itch.io deployment)
-* Missing features from Vanilla - Natural wonders (done!), city-state quests, missing civs etc.
+* Missing features from Vanilla - Natural wonders , city-state quests, missing civs etc. - mostly done!
 * G&K mechanics - religion, faith etc.
 * BNW mechanics - trade routes etc.
 
