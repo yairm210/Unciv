@@ -1,4 +1,4 @@
-# Unciv - Civ V for Android+Desktop
+# Unciv - FOSS Civ V for Android+Desktop
 
 ![](/extraImages/GithubPreviewImage.png)
 
