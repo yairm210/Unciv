@@ -37,7 +37,6 @@ class Nation : INamed {
     var hateHello = ""
 
     lateinit var outerColor: List<Int>
-    val hideUniques = ""
     var uniqueName = ""
     var uniques = HashSet<String>()
     val uniqueObjects: List<Unique> by lazy { uniques.map { Unique(it) } }
@@ -112,7 +111,6 @@ class Nation : INamed {
     }
 
     private fun addUniqueBuildingsText(textList: ArrayList<String>, ruleset: Ruleset) {
-        if (hideUniques.contains("Buildings")) return
         for (building in ruleset.buildings.values
                 .filter { it.uniqueTo == name && "Will not be displayed in Civilopedia" !in it.uniques}) {
             if (building.replaces != null && ruleset.buildings.containsKey(building.replaces!!)) {
@@ -142,7 +140,6 @@ class Nation : INamed {
     }
 
     private fun addUniqueUnitsText(textList: ArrayList<String>, ruleset: Ruleset) {
-        if (hideUniques.contains("Units")) return
         for (unit in ruleset.units.values
                 .filter { it.uniqueTo == name && "Will not be displayed in Civilopedia" !in it.uniques}) {
             if (unit.replaces != null && ruleset.units.containsKey(unit.replaces!!)) {
@@ -179,7 +176,6 @@ class Nation : INamed {
     }
 
     private fun addUniqueImprovementsText(textList: ArrayList<String>, ruleset: Ruleset) {
-        if (hideUniques.contains("Improvements")) return
         for (improvement in ruleset.tileImprovements.values
                 .filter { it.uniqueTo == name }) {
 
