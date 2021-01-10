@@ -44,6 +44,7 @@ class Building : NamedStats(), IConstruction {
     var requiredBuildingInAllCities: String? = null
     /** A strategic resource that will be consumed by this building */
     var requiredResource: String? = null
+    var requiredResources: Counter<String>? = null
     /** City can only be built if one of these resources is nearby - it must be improved! */
     private var requiredNearbyImprovedResources: List<String>? = null
     private var cannotBeBuiltWith: String? = null
@@ -96,6 +97,9 @@ class Building : NamedStats(), IConstruction {
             stringBuilder.appendln("Requires [$requiredBuilding] to be built in the city".tr())
         if (!forBuildingPickerScreen && requiredBuildingInAllCities != null)
             stringBuilder.appendln("Requires [$requiredBuildingInAllCities] to be built in all cities".tr())
+        if(requiredResources!=null)
+            for ((entry, amount) in requiredResources!!) {
+                stringBuilder.appendln("Consumes [$amount] [$entry]".tr())}
         if(requiredResource!=null)
             stringBuilder.appendln("Consumes 1 [$requiredResource]".tr())
         if (providesFreeBuilding != null)
@@ -336,6 +340,13 @@ class Building : NamedStats(), IConstruction {
 
         if (cannotBeBuiltWith != null && construction.isBuilt(cannotBeBuiltWith!!))
             return "Cannot be built with $cannotBeBuiltWith"
+
+        if (requiredResources != null && !civInfo.gameInfo.gameParameters.godMode){
+            for ((entry, amount) in requiredResources!!) {
+                if (civInfo.getCivResourcesByName()[entry]!!<amount)
+                    return "Consumes [$amount] [$entry]".tr()
+            }
+        }
 
         if (requiredResource != null && !civInfo.hasResource(requiredResource!!) && !civInfo.gameInfo.gameParameters.godMode)
             return "Consumes 1 [$requiredResource]"

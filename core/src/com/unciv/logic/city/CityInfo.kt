@@ -189,6 +189,11 @@ class CityInfo {
                     cityResources.add(resource, unique.params[0].toInt() * civInfo.getResourceModifier(resource), "Tiles")
                 }
         }
+        for (building in cityConstructions.getBuiltBuildings().filter { it.requiredResources != null }) {
+            for ((entry, amount) in building.requiredResources!!) {
+                cityResources.add(getRuleset().tileResources[entry]!!, -amount, "Buildings")
+            }
+        }
         for (building in cityConstructions.getBuiltBuildings().filter { it.requiredResource != null }) {
             val resource = getRuleset().tileResources[building.requiredResource]!!
             cityResources.add(resource, -1, "Buildings")

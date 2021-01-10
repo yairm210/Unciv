@@ -80,6 +80,14 @@ object BattleDamage {
                             .any { it.civInfo == civInfo && !it.type.isCivilian() && !it.type.isAirUnit() })
                 modifiers["Discipline"] = 15
 
+            val requiredRes = combatant.unit.baseUnit.requiredResources
+            if (requiredRes != null && !civInfo.isBarbarian()) {
+                for ((entry) in requiredRes) {
+                    if (civInfo.getCivResourcesByName()[entry]!! < 0)
+                    modifiers["Missing resource"] = -25
+                }
+            }
+
             val requiredResource = combatant.unit.baseUnit.requiredResource
             if (requiredResource != null && civInfo.getCivResourcesByName()[requiredResource]!! < 0
                     && !civInfo.isBarbarian()) {

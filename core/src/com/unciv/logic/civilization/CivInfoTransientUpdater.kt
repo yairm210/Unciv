@@ -153,6 +153,12 @@ class CivInfoTransientUpdater(val civInfo: CivilizationInfo) {
         }
 
         for (dip in civInfo.diplomacy.values) newDetailedCivResources.add(dip.resourcesFromTrade())
+
+        for (resources in civInfo.getCivUnits().mapNotNull { it.baseUnit.requiredResources })
+            for ((entry, amount) in resources) {
+                newDetailedCivResources.add(civInfo.gameInfo.ruleSet.tileResources[entry]!!,-amount,"Units")
+            }
+
         for(resource in civInfo.getCivUnits().mapNotNull { it.baseUnit.requiredResource }
                 .map { civInfo.gameInfo.ruleSet.tileResources[it]!! })
             newDetailedCivResources.add(resource,-1,"Units")

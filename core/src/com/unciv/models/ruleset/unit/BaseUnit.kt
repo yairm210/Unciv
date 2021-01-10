@@ -5,6 +5,7 @@ import com.unciv.logic.city.CityConstructions
 import com.unciv.logic.city.IConstruction
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.MapUnit
+import com.unciv.models.Counter
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.Unique
 import com.unciv.models.translations.Translations
@@ -30,6 +31,7 @@ class BaseUnit : INamed, IConstruction {
     lateinit var unitType: UnitType
     var requiredTech:String? = null
     var requiredResource:String? = null
+    var requiredResources: Counter<String>? = null
     var uniques =HashSet<String>()
     val uniqueObjects: List<Unique> by lazy { uniques.map { Unique(it) } }
     var promotions =HashSet<String>()
@@ -146,6 +148,13 @@ class BaseUnit : INamed, IConstruction {
             if (filter in civInfo.gameInfo.ruleSet.buildings) {
                 if (civInfo.cities.none { it.cityConstructions.containsBuildingOrEquivalent(filter) }) return unique.text // Wonder is not built
             } else if (!civInfo.policies.adoptedPolicies.contains(filter)) return "Policy is not adopted"
+        }
+
+        if (requiredResources != null && !civInfo.gameInfo.gameParameters.godMode){
+            for ((entry, amount) in requiredResources!!) {
+                if (civInfo.getCivResourcesByName()[entry]!!<amount)
+                    return "Consumes [$amount] [$entry]".tr()
+            }
         }
         if (requiredResource!=null && !civInfo.hasResource(requiredResource!!) && !civInfo.gameInfo.gameParameters.godMode) return "Consumes 1 [$requiredResource]"
         if (uniques.contains(Constants.settlerUnique) && civInfo.isCityState()) return "No settler for city-states"
