@@ -28,8 +28,10 @@ The Game State:
 
 The UI:
 
+* MainMenuScreen
+* NewGameScreen
 * WorldScreen
-* CityScree
+* CityScreen
 * MapEditorScreen
 * Picker Screens - TechPickerScreen, PolicyPickerScreen, ImprovementPickerScreen, PromotionPickerScreen
 
@@ -126,6 +128,18 @@ The information for all of these is in json files in `android\assets\jsons`
 `UncivGame` is the 'base' class for the UI, from which everything starts, but it itself doesn't do much.
 
 When we change a screen, we're changing a value in UncivGame, the interesting stuff happens in the screens themselves.
+
+## The main menu - `MainMenuScreen`
+
+This is what the user sees when first entering the game. It acts as a hub to loading games, adding mods, options etc, without loading an actual game upfront - this allows us to differentiate between "User can't enter game" and "User can't load game" problems
+
+## Starting a new game - `NewGameScreen`
+
+This is basically a giant setting screen for GameOptions and MapOptions classes, divided into:
+
+* GameOptionsTable - game speed, mods, etc
+* MapOptionsTable - either from preexisting map file or generated, in which case: size, map generation type, etc.
+* PlayerPickerTable - What civs are in the game and who controls them
 
 ## The World Screen - `WorldScreen`
 
