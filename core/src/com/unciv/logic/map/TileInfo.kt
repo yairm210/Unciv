@@ -16,18 +16,23 @@ import kotlin.math.abs
 open class TileInfo {
     @Transient
     lateinit var tileMap: TileMap
+
     @Transient
     lateinit var ruleset: Ruleset  // a tile can be a tile with a ruleset, even without a map.
+
     @Transient
     var owningCity: CityInfo? = null
+
     @Transient
     private lateinit var baseTerrainObject: Terrain
 
     // These are for performance - checked with every tile movement and "canEnter" check, which makes them performance-critical
     @Transient
     var isLand = false
+
     @Transient
     var isWater = false
+
     @Transient
     var isOcean = false
 
@@ -174,9 +179,7 @@ open class TileInfo {
         return civInfo.cities.firstOrNull { it.isWorked(this) }
     }
 
-    fun isWorked(): Boolean {
-        return getWorkingCity() != null
-    }
+    fun isWorked(): Boolean = getWorkingCity() != null
 
     fun isLocked(): Boolean {
         val workingCity = getWorkingCity()
@@ -490,7 +493,7 @@ open class TileInfo {
     /** If the unit isn't in the ruleset we can't even know what type of unit this is! So check each place
      * This works with no transients so can be called from gameInfo.setTransients with no fear
      */
-    fun removeUnit(mapUnit: MapUnit){
+    fun removeUnit(mapUnit: MapUnit) {
         when {
             airUnits.contains(mapUnit) -> airUnits.remove(mapUnit)
             civilianUnit == mapUnit -> civilianUnit = null
