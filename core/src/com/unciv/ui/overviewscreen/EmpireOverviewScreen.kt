@@ -7,8 +7,10 @@ import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Slider
 import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
+import com.unciv.UncivGame
 import com.unciv.logic.HexMath
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
@@ -28,62 +30,36 @@ class EmpireOverviewScreen(private var viewingPlayer:CivilizationInfo, defaultPa
     private val topTable = Table().apply { defaults().pad(10f) }
     private val centerTable = Table().apply { defaults().pad(5f) }
 
+    val setCategoryActions = HashMap<String, () -> Unit>()
+    val categoryButtons = HashMap<String, TextButton>()
+
+    fun addCategory(name:String, table:Table, disabled:Boolean=false) {
+        val button = name.toTextButton()
+        val setCategoryAction = {
+            centerTable.clear()
+            centerTable.add(ScrollPane(table).apply { setOverscroll(false, false) })
+                    .height(stage.height * 0.8f)
+            centerTable.pack()
+            for ((key, categoryButton) in categoryButtons)
+                if (key == name) categoryButton.color = Color.BLUE
+                else categoryButton.color = Color.WHITE
+        }
+        setCategoryActions[name] = setCategoryAction
+        categoryButtons[name] = button
+        button.onClick(setCategoryAction)
+        if (disabled) button.disable()
+        topTable.add(button)
+    }
 
     init {
         onBackButtonClicked { game.setWorldScreen() }
-        val clicks = HashMap<String, () -> Unit>()
 
-        val setCityInfoButton = "Cities".toTextButton()
-        val setCities = {
-            centerTable.clear()
-            centerTable.add(CityOverviewTable(viewingPlayer, this))
-            centerTable.pack()
-        }
-        clicks["Cities"] = setCities
-        setCityInfoButton.onClick(setCities)
-        topTable.add(setCityInfoButton)
-
-        val setStatsInfoButton = "Stats".toTextButton()
-        clicks["Stats"] = { setStats() }
-        setStatsInfoButton.onClick { setStats() }
-        topTable.add(setStatsInfoButton)
-
-        val setCurrentTradesButton = "Trades".toTextButton()
-        setCurrentTradesButton.onClick {
-            centerTable.clear()
-            centerTable.add(ScrollPane(getTradesTable())).height(stage.height * 0.8f) // so it doesn't cover the navigation buttons
-            centerTable.pack()
-        }
-        topTable.add(setCurrentTradesButton)
-        if (viewingPlayer.diplomacy.values.all { it.trades.isEmpty() })
-            setCurrentTradesButton.disable()
-
-        val setUnitsButton = "Units".toTextButton()
-        setUnitsButton.onClick {
-            centerTable.clear()
-            centerTable.add(ScrollPane(getUnitTable()).apply { setOverscroll(false, false) }).height(stage.height * 0.8f)
-            centerTable.pack()
-        }
-        topTable.add(setUnitsButton)
-
-
-        val setDiplomacyButton = "Diplomacy".toTextButton()
-        setDiplomacyButton.onClick {
-            setDiplomacyTable()
-        }
-        topTable.add(setDiplomacyButton)
-
-        val setResourcesButton = "Resources".toTextButton()
-        val setResources = {
-            centerTable.clear()
-            centerTable.add(ScrollPane(getResourcesTable())).size(stage.width * 0.8f, stage.height * 0.8f)
-            centerTable.pack()
-        }
-        clicks["Resources"] = setResources
-        setResourcesButton.onClick(setResources)
-        topTable.add(setResourcesButton)
-        if (viewingPlayer.detailedCivResources.isEmpty())
-            setResourcesButton.disable()
+        addCategory("Cities", CityOverviewTable(viewingPlayer, this))
+        addCategory("Stats", getStatsTable())
+        addCategory("Trades", getTradesTable(), viewingPlayer.diplomacy.values.all { it.trades.isEmpty() })
+        addCategory("Units", getUnitTable())
+        addCategory("Diplomacy", DiplomacyTable(viewingPlayer, stage.height * 0.8f))
+        addCategory("Resources", getResourcesTable(), viewingPlayer.detailedCivResources.isEmpty())
 
         val closeButton = Constants.close.toTextButton().apply {
             setColor(0.75f, 0.1f, 0.1f, 1f)
@@ -94,7 +70,7 @@ class EmpireOverviewScreen(private var viewingPlayer:CivilizationInfo, defaultPa
 
         topTable.pack()
 
-        clicks[defaultPage]?.invoke()
+        setCategoryActions[defaultPage]?.invoke()
 
         val table = Table()
         table.add(topTable).row()
@@ -104,82 +80,101 @@ class EmpireOverviewScreen(private var viewingPlayer:CivilizationInfo, defaultPa
         stage.addActor(table)
     }
 
-    private fun setDiplomacyTable(includeCityStates:Boolean=false) {
-        centerTable.clear()
-        val relevantCivs = viewingPlayer.gameInfo.civilizations.filter { !it.isBarbarian() && (includeCityStates || !it.isCityState()) }
-        val diplomacyGroup = DiplomacyGroup(viewingPlayer, stage.height - topTable.height, includeCityStates)
-        val playerKnowsAndUndefeatedCivs = relevantCivs.filter { diplomacyGroup.playerKnows(it) && !it.isDefeated() }
-        val playerKnowsAndDefeatedCivs = relevantCivs.filter { diplomacyGroup.playerKnows(it) && it.isDefeated() }
-        if (playerKnowsAndUndefeatedCivs.size > 1)
-            centerTable.add(diplomacyGroup)
-        fun getCivMinitable(civInfo: CivilizationInfo):Table{
-            val table = Table()
-            table.add(ImageGetter.getNationIndicator(civInfo.nation, 25f)).pad(5f)
-            table.add(civInfo.civName.toLabel()).left()
-            table.touchable = Touchable.enabled
-            table.onClick {
-                game.setScreen(DiplomacyScreen(viewingPlayer).apply { updateRightSide(civInfo) })
-            }
-            return table
-        }
-
-        val titleTable = Table()
-        titleTable.add("Our Civilization:".toLabel())
-        titleTable.add(ImageGetter.getNationIndicator(viewingPlayer.nation, 25f)).pad(5f)
-        titleTable.add(viewingPlayer.civName.toLabel()).left().row()
-
-
-        val civTable = Table()
-        civTable.defaults().pad(5f)
-        civTable.background = ImageGetter.getBackground(Color.BLACK)
-        civTable.add("[${relevantCivs.size}] Civilizations in the game".toLabel()).pad(5f).colspan(2).row()
-        civTable.add(titleTable).colspan(2).row()
-        civTable.addSeparator()
-        civTable.add("Known and alive ([${playerKnowsAndUndefeatedCivs.size - 1}])".toLabel()).pad(5f).colspan(2).row()
-        if (playerKnowsAndUndefeatedCivs.size > 1) {
-            civTable.addSeparator()
-            playerKnowsAndUndefeatedCivs.filter { it != viewingPlayer }.forEach {
-                civTable.add(getCivMinitable(it)).left()
-                if (playerKnowsAndUndefeatedCivs.indexOf(it) % 2 == 0) civTable.row()
-            }
-        }
-        civTable.addSeparator()
-        civTable.add("Known and defeated ([${playerKnowsAndDefeatedCivs.size}])".toLabel()).pad(5f).colspan(2).row()
-        if (playerKnowsAndDefeatedCivs.isNotEmpty()) {
-            civTable.addSeparator()
-            playerKnowsAndDefeatedCivs.forEach {
-                civTable.add(getCivMinitable(it)).left()
-                if (playerKnowsAndUndefeatedCivs.indexOf(it) % 2 == 0) civTable.row()
-            }
-        }
-        val civTableScrollPane = ScrollPane(civTable)
-        civTableScrollPane.setOverscroll(false, false)
-
-        val toggleCityStatesButton = "City-States".toTextButton()
-        toggleCityStatesButton.color = if(includeCityStates)Color.RED else Color.GREEN
-        toggleCityStatesButton.onClick { setDiplomacyTable(!includeCityStates) }
-        civTable.add(toggleCityStatesButton).row()
-
-        val floatingTable = Table()
-        floatingTable.add(toggleCityStatesButton).row()
-        floatingTable.add(civTableScrollPane.addBorder(2f, Color.WHITE)).pad(10f)
-
-        centerTable.add(floatingTable)
-        centerTable.pack()
-    }
-
-    private fun setStats() {
+    private fun getStatsTable(): Table {
         game.settings.addCompletedTutorialTask("See your stats breakdown")
-        centerTable.clear()
-        centerTable.add(ScrollPane(Table().apply {
+        return Table().apply {
             defaults().pad(40f)
             add(getHappinessTable()).top()
             add(getGoldTable()).top()
             add(getScienceTable()).top()
             add(getGreatPeopleTable()).top()
-        }))
-        centerTable.pack()
+        }
     }
+
+    private class DiplomacyTable(val viewingPlayer: CivilizationInfo, val diplomacyGroupHeight:Float):Table(){
+        var includeCityStates = false
+        init {
+            update()
+        }
+
+        fun update(){
+            clear()
+            val relevantCivs = viewingPlayer.gameInfo.civilizations.filter { !it.isBarbarian() && (includeCityStates || !it.isCityState()) }
+            val diplomacyGroup = DiplomacyGroup(viewingPlayer, diplomacyGroupHeight, includeCityStates)
+            val playerKnowsAndUndefeatedCivs = relevantCivs.filter { diplomacyGroup.playerKnows(it) && !it.isDefeated() }
+            val playerKnowsAndDefeatedCivs = relevantCivs.filter { diplomacyGroup.playerKnows(it) && it.isDefeated() }
+            if (playerKnowsAndUndefeatedCivs.size > 1)
+                add(diplomacyGroup)
+
+            val titleTable = Table()
+            titleTable.add("Our Civilization:".toLabel())
+            titleTable.add(ImageGetter.getNationIndicator(viewingPlayer.nation, 25f)).pad(5f)
+            titleTable.add(viewingPlayer.civName.toLabel()).left().row()
+
+
+            val civTableScrollPane = getCivTableScroll(relevantCivs, titleTable, playerKnowsAndUndefeatedCivs, playerKnowsAndDefeatedCivs)
+
+            val toggleCityStatesButton = "City-States".toTextButton()
+            toggleCityStatesButton.color = if(includeCityStates)Color.RED else Color.GREEN
+            toggleCityStatesButton.onClick { includeCityStates=!includeCityStates; update() }
+
+            val floatingTable = Table()
+            floatingTable.add(toggleCityStatesButton).row()
+            floatingTable.add(civTableScrollPane.addBorder(2f, Color.WHITE)).pad(10f)
+            add(floatingTable)
+        }
+
+
+        fun getCivMinitable(civInfo: CivilizationInfo):Table {
+            val table = Table()
+            table.add(ImageGetter.getNationIndicator(civInfo.nation, 25f)).pad(5f)
+            table.add(civInfo.civName.toLabel()).left()
+            table.touchable = Touchable.enabled
+            table.onClick {
+                UncivGame.Current.setScreen(DiplomacyScreen(viewingPlayer).apply { updateRightSide(civInfo) })
+            }
+            return table
+        }
+
+        private fun getCivTableScroll(relevantCivs: List<CivilizationInfo>, titleTable: Table,
+                                      playerKnowsAndUndefeatedCivs: List<CivilizationInfo>, playerKnowsAndDefeatedCivs: List<CivilizationInfo>): ScrollPane {
+            val civTable = Table()
+            civTable.defaults().pad(5f)
+            civTable.background = ImageGetter.getBackground(Color.BLACK)
+            civTable.add("[${relevantCivs.size}] Civilizations in the game".toLabel()).pad(5f).colspan(2).row()
+            civTable.add(titleTable).colspan(2).row()
+            civTable.addSeparator()
+            civTable.add("Known and alive ([${playerKnowsAndUndefeatedCivs.size - 1}])".toLabel()).pad(5f).colspan(2).row()
+            if (playerKnowsAndUndefeatedCivs.size > 1) {
+                civTable.addSeparator()
+                playerKnowsAndUndefeatedCivs.filter { it != viewingPlayer }.forEach {
+                    civTable.add(getCivMinitable(it)).left()
+                    if (playerKnowsAndUndefeatedCivs.indexOf(it) % 2 == 0) civTable.row()
+                }
+            }
+            civTable.addSeparator()
+            civTable.add("Known and defeated ([${playerKnowsAndDefeatedCivs.size}])".toLabel()).pad(5f).colspan(2).row()
+            if (playerKnowsAndDefeatedCivs.isNotEmpty()) {
+                civTable.addSeparator()
+                playerKnowsAndDefeatedCivs.forEach {
+                    civTable.add(getCivMinitable(it)).left()
+                    if (playerKnowsAndUndefeatedCivs.indexOf(it) % 2 == 0) civTable.row()
+                }
+            }
+            val civTableScrollPane = ScrollPane(civTable)
+            civTableScrollPane.setOverscroll(false, false)
+            return civTableScrollPane
+        }
+    }
+
+
+//
+//    private fun setStats() {
+//
+//        centerTable.clear()
+//        centerTable.add(ScrollPane())
+//        centerTable.pack()
+//    }
 
     private fun getTradesTable(): Table {
         val tradesTable = Table().apply { defaults().pad(10f) }
@@ -276,7 +271,7 @@ class EmpireOverviewScreen(private var viewingPlayer:CivilizationInfo, defaultPa
             slider.onChange {
                 viewingPlayer.tech.goldPercentConvertedToScience = slider.value
                 viewingPlayer.cities.forEach { it.cityStats.update() }
-                setStats()
+                setCategoryActions["Stats"]!!()
             }
             sliderTable.add(slider)
             goldTable.add(sliderTable).colspan(2)
