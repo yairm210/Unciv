@@ -1,3 +1,19 @@
+## 3.12.8
+
+Game can handle policies and ongoing constructions "disappearing" between mod versions
+
+Resolved #3520 - picker screens go back on Back button / Esc
+
+Resolved #3519 - Added 'exit game from back button' to main menu screen
+
+Removed placeholder science and production boost from Computers tech
+
+Resolved #3503 - Civilopedia and Overview show what 'panel' you're currently on
+
+Resolved #3501 - Added city-state toggle to diplomacy overview, clicking on civ names in overview opens diplomacy screen
+
+Better default tile colors - By ravingir
+
 ## 3.12.7
 
 Resolved #3473 - show city's happiness drilldown
