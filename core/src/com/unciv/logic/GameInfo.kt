@@ -347,12 +347,18 @@ class GameInfo {
                 if (!ruleSet.buildings.containsKey(building))
                     city.cityConstructions.builtBuildings.remove(building)
 
+            fun isInvalidConstruction(construction: String) = !ruleSet.buildings.containsKey(construction) && !ruleSet.units.containsKey(construction)
+                    && !PerpetualConstruction.perpetualConstructionsMap.containsKey(construction)
+
             // Remove invalid buildings or units from the queue - don't just check buildings and units because it might be a special construction as well
             for (construction in city.cityConstructions.constructionQueue.toList()) {
-                if (!ruleSet.buildings.containsKey(construction) && !ruleSet.units.containsKey(construction)
-                        && !PerpetualConstruction.perpetualConstructionsMap.containsKey(construction))
+                if (isInvalidConstruction(construction))
                     city.cityConstructions.constructionQueue.remove(construction)
             }
+            // And from being in progess
+            for (construction in city.cityConstructions.inProgressConstructions.keys.toList())
+                if (isInvalidConstruction(construction))
+                    city.cityConstructions.inProgressConstructions.remove(construction)
         }
         for (civinfo in civilizations) {
             for (tech in civinfo.tech.techsResearched.toList())
