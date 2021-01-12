@@ -128,6 +128,10 @@ class MainMenuScreen: CameraStageBaseScreen() {
         stage.addActor(scroll)
 
         onBackButtonClicked {
+            if(hasOpenPopups()) {
+                closeAllPopups()
+                return@onBackButtonClicked
+            }
             val promptWindow = Popup(this)
             promptWindow.addGoodSizedLabel("Do you want to exit the game?".tr())
             promptWindow.row()
