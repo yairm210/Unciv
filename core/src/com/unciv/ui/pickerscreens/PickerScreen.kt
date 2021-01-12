@@ -46,11 +46,13 @@ open class PickerScreen : CameraStageBaseScreen() {
     }
 
     fun setDefaultCloseAction(previousScreen: CameraStageBaseScreen?=null) {
-        closeButton.onClick {
+        val closeAction = {
             if (previousScreen != null) game.setScreen(previousScreen)
             else game.setWorldScreen()
             dispose()
         }
+        closeButton.onClick(closeAction)
+        onBackButtonClicked(closeAction)
     }
 
     fun setRightSideButtonEnabled(bool: Boolean) {
@@ -59,7 +61,7 @@ open class PickerScreen : CameraStageBaseScreen() {
     }
 
     protected fun pick(rightButtonText: String) {
-        if(UncivGame.Current.worldScreen.isPlayersTurn) rightSideButton.enable()
+        if (UncivGame.Current.worldScreen.isPlayersTurn) rightSideButton.enable()
         rightSideButton.setText(rightButtonText)
     }
 

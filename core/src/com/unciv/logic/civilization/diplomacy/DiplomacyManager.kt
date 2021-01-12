@@ -477,10 +477,11 @@ class DiplomacyManager() {
         otherCivDiplomacy.setModifier(DiplomaticModifiers.DeclaredWarOnUs,-20f)
         if(otherCiv.isCityState()) otherCivDiplomacy.influence -= 60
 
-        for(thirdCiv in civInfo.getKnownCivs()){
-            if(thirdCiv.isAtWarWith(otherCiv))
-                thirdCiv.getDiplomacyManager(civInfo).addModifier(DiplomaticModifiers.SharedEnemy,5f)
-            else thirdCiv.getDiplomacyManager(civInfo).addModifier(DiplomaticModifiers.WarMongerer,-5f)
+        for(thirdCiv in civInfo.getKnownCivs()) {
+            if (thirdCiv.isAtWarWith(otherCiv)) {
+                if (thirdCiv.isCityState()) thirdCiv.getDiplomacyManager(civInfo).influence += 10
+                else thirdCiv.getDiplomacyManager(civInfo).addModifier(DiplomaticModifiers.SharedEnemy, 5f)
+            } else thirdCiv.getDiplomacyManager(civInfo).addModifier(DiplomaticModifiers.WarMongerer, -5f)
         }
 
         if(hasFlag(DiplomacyFlags.DeclarationOfFriendship)) {
@@ -530,10 +531,14 @@ class DiplomacyManager() {
         for (unit in civInfo.getCivUnits().filter { it.getTile().getOwner() == otherCiv })
             unit.movement.teleportToClosestMoveableTile()
 
-        // Our ally city states make peace with us
-        for (thirdCiv in civInfo.getKnownCivs())
+        for (thirdCiv in civInfo.getKnownCivs()) {
+            // Our ally city states make peace with us
             if (thirdCiv.getAllyCiv() == civInfo.civName && thirdCiv.isAtWarWith(otherCiv))
                 thirdCiv.getDiplomacyManager(otherCiv).makePeace()
+            // Other ccity states that are not our ally don't like the fact that we made peace with their enemy
+            if (thirdCiv.getAllyCiv() != civInfo.civName && thirdCiv.isAtWarWith(otherCiv))
+                thirdCiv.getDiplomacyManager(civInfo).influence -= 10
+        }
     }
 
 

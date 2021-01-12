@@ -1,3 +1,54 @@
+## 3.12.7
+
+Resolved #3473 - show city's happiness drilldown
+
+Better 'conflicting tech' check for mods
+
+Resolved #3469 - more readable Inca colors
+
+Resolved #3497 - city state quests always show correctly when diplomacy screen accessed from city button
+
+Fixed crash when attempting to issue a 'connect to capital' quest for a civ with no capital
+
+Translation updates
+
+## 3.12.6
+
+Resolved #3483 - settlers require at least 2 population to construct, as per Civ V
+
+Set a max cap on unit maintenance - does not increase past the base turn limit
+
+Resolved #3472 - can purchase 'free' tiles in cities even with negative gold
+
+Resolved #3490 - fixed formatting problem in trade popup
+
+Resolved #3489 - City state influence is affected by war/peace with their enemies
+
+Resolved #3475 - capturing settlers moves us to the captured units' tile
+
+Better visual aircraft indicators
+
+Solved ANRs when loading big maps in editor screen
+
+By 9kgsofrice:
+
+- Modded buildings never lead cities to negative production
+- "happiness from garrison" effect was duplicated 
+
+## 3.12.5
+
+Resolved #3470 - popups now make the rest of the screen unclickable to avoid exploits
+
+Resolved #3431 - Redesigned the player picker, to scroll through civs and display them separately
+
+Resolved #3476 - captured civilian units no longer move on the same turn
+
+Resolved #3331 - resources for city-state quests are taken from resources on the map
+
+Resolved #3464 - units only advance improvements when they have movement points left
+
+Fixed minor automation bug for modded terrains
+
 ## 3.12.4
 
 Resolved #3424 - Added blink on event location

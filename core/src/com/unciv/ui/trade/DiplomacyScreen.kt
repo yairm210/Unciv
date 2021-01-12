@@ -200,8 +200,8 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
         val description = assignedQuest.getDescription()
 
         questTable.add(title.toLabel(fontSize = 24)).row()
-        questTable.add(description.toLabel().apply { setWrap(true); setAlignment(Align.center) })
-                .width(rightSideTable.width - 50f).row()
+        questTable.add(description.toLabel().apply { wrap = true; setAlignment(Align.center) })
+                .width(stage.width/2).row()
         if (quest.duration > 0)
             questTable.add("[${remainingTurns}] turns remaining".toLabel()).row()
 

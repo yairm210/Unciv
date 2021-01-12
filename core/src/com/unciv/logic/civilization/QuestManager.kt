@@ -295,7 +295,8 @@ class QuestManager {
 
         return when (quest.name) {
             QuestName.ClearBarbarianCamp.value -> getBarbarianEncampmentForQuest(challenger) != null
-            QuestName.Route.value -> civInfo.hasEverBeenFriendWith(challenger) && !civInfo.isCapitalConnectedToCity(challenger.getCapital())
+            QuestName.Route.value -> civInfo.hasEverBeenFriendWith(challenger) && challenger.cities.any()
+                    && !civInfo.isCapitalConnectedToCity(challenger.getCapital())
             QuestName.ConnectResource.value -> civInfo.hasEverBeenFriendWith(challenger) && getResourceForQuest(challenger) != null
             QuestName.ConstructWonder.value -> civInfo.hasEverBeenFriendWith(challenger) && getWonderToBuildForQuest(challenger) != null
             QuestName.GreatPerson.value -> civInfo.hasEverBeenFriendWith(challenger) && getGreatPersonForQuest(challenger) != null

@@ -56,7 +56,7 @@ class TradePopup(worldScreen: WorldScreen): Popup(worldScreen){
         val scrollHeight = min(tradeOffersTable.height, worldScreen.stage.height/2)
         add(ScrollPane(tradeOffersTable)).height(scrollHeight).row()
 
-        addGoodSizedLabel(nation.tradeRequest).colspan(columns).row()
+        addGoodSizedLabel(nation.tradeRequest).colspan(2).row()
 
         val soundsGoodButton = addButton("Sounds good!"){
             val tradeLogic = TradeLogic(viewingCiv, requestingCiv)

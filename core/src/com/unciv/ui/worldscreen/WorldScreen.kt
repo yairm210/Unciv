@@ -68,9 +68,6 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
     var shouldUpdate = false
 
 
-    private var backButtonListener: InputListener
-
-
     init {
         topBar.setPosition(0f, stage.height - topBar.height)
         topBar.width = stage.width
@@ -155,7 +152,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
 
         tutorialController.allTutorialsShowedCallback = { shouldUpdate = true }
 
-        backButtonListener = onBackButtonClicked { backButtonAndESCHandler() }
+        onBackButtonClicked { backButtonAndESCHandler() }
 
         addKeyboardListener() // for map panning by W,S,A,D
 

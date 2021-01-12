@@ -221,10 +221,6 @@ class CityStats {
             happinessFromPolicies += 1f
         happinessFromPolicies += getStatsFromUniques(civInfo.policies.policyUniques.getAllUniques()).happiness
 
-        if (cityInfo.getCenterTile().militaryUnit != null)
-            for (unique in civInfo.getMatchingUniques("[] in all cities with a garrison"))
-                happinessFromPolicies += unique.stats.happiness
-
         newHappinessList["Policies"] = happinessFromPolicies
 
         if (hasExtraAnnexUnhappiness()) newHappinessList["Occupied City"] = -2f //annexed city
@@ -250,17 +246,6 @@ class CityStats {
     private fun hasExtraAnnexUnhappiness(): Boolean {
         if (cityInfo.civInfo.civName == cityInfo.foundingCiv || cityInfo.foundingCiv == "" || cityInfo.isPuppet) return false
         return !cityInfo.containsBuildingUnique("Remove extra unhappiness from annexed cities")
-    }
-
-    fun getStatsOfSpecialist(stat: Stat): Stats {
-        val stats = Stats()
-        if (stat == Stat.Culture || stat == Stat.Science) stats.add(stat, 3f)
-        else stats.add(stat, 2f) // science and gold specialists
-
-        for (unique in cityInfo.civInfo.getMatchingUniques("[] from every specialist"))
-            stats.add(unique.stats)
-
-        return stats
     }
 
     fun getStatsOfSpecialist(specialistName: String): Stats {
@@ -541,7 +526,7 @@ class CityStats {
             newFinalStatList.clear()  // NOPE
 
         if (newFinalStatList.values.map { it.production }.sum() < 1)  // Minimum production for things to progress
-            newFinalStatList["Production"] = Stats().apply { production += 1 }
+            newFinalStatList["Production"] = Stats().apply { production = 1F }
         finalStatList = newFinalStatList
     }
 

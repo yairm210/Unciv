@@ -15,6 +15,7 @@ import com.unciv.logic.map.MapParameters
 import com.unciv.logic.map.MapSize
 import com.unciv.logic.map.MapType
 import com.unciv.models.ruleset.RulesetCache
+import com.unciv.models.translations.tr
 import com.unciv.ui.MultiplayerScreen
 import com.unciv.ui.mapeditor.*
 import com.unciv.ui.newgamescreen.GameSetupInfo
@@ -125,6 +126,20 @@ class MainMenuScreen: CameraStageBaseScreen() {
         scroll.center(stage)
         scroll.setOverscroll(false, false)
         stage.addActor(scroll)
+
+        onBackButtonClicked {
+            if(hasOpenPopups()) {
+                closeAllPopups()
+                return@onBackButtonClicked
+            }
+            val promptWindow = Popup(this)
+            promptWindow.addGoodSizedLabel("Do you want to exit the game?".tr())
+            promptWindow.row()
+            promptWindow.addButton("Yes") { Gdx.app.exit() }
+            promptWindow.addButton("No") { promptWindow.close() }
+            // show the dialog
+            promptWindow.open()     // true = always on top
+        }
     }
 
 

@@ -49,7 +49,7 @@ class NewGameScreen(previousScreen:CameraStageBaseScreen, _gameSetupInfo: GameSe
         setDefaultCloseAction(previousScreen)
         scrollPane.setScrollingDisabled(true, true)
 
-        topTable.add(ScrollPane(newGameOptionsTable).apply { setOverscroll(false, false) })
+        topTable.add(ScrollPane(newGameOptionsTable, skin).apply { setOverscroll(false, false) })
                 .maxHeight(topTable.parent.height).width(stage.width / 3).padTop(20f).top()
         topTable.addSeparatorVertical()
         topTable.add(ScrollPane(mapOptionsTable).apply { setOverscroll(false, false) })

@@ -51,7 +51,7 @@ class MapEditorScreen(): CameraStageBaseScreen() {
         initialize()
     }
 
-    constructor(mapFile:FileHandle):this(MapSaver.loadMap(mapFile))
+    constructor(mapFile:FileHandle):this()
 
     constructor(map: TileMap) : this() {
         tileMap = map
