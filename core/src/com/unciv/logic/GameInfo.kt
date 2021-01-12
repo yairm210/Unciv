@@ -24,6 +24,7 @@ class UncivShowableException(missingMods: String) : Exception(missingMods)
 class GameInfo {
     @Transient
     lateinit var difficultyObject: Difficulty // Since this is static game-wide, and was taking a large part of nextTurn
+
     @Transient
     lateinit var currentPlayerCiv: CivilizationInfo // this is called thousands of times, no reason to search for it with a find{} every time
 
@@ -31,6 +32,7 @@ class GameInfo {
      * that is inconsistent with the saved game on the cloud */
     @Transient
     var isUpToDate = false
+
     @Transient
     lateinit var ruleSet: Ruleset
 
@@ -356,6 +358,9 @@ class GameInfo {
             for (tech in civinfo.tech.techsResearched.toList())
                 if (!ruleSet.technologies.containsKey(tech))
                     civinfo.tech.techsResearched.remove(tech)
+            for (policy in civinfo.policies.adoptedPolicies.toList())
+                if (!ruleSet.policies.containsKey(policy))
+                    civinfo.policies.adoptedPolicies.remove(policy)
         }
     }
 

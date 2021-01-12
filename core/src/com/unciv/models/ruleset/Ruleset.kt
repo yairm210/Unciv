@@ -51,6 +51,7 @@ class Ruleset {
     val quests = LinkedHashMap<String, Quest>()
     val specialists = LinkedHashMap<String, Specialist>()
     val policyBranches = LinkedHashMap<String, PolicyBranch>()
+    val policies = LinkedHashMap<String, Policy>()
     val difficulties = LinkedHashMap<String, Difficulty>()
     val mods = LinkedHashSet<String>()
     var modOptions = ModOptions()
@@ -74,6 +75,7 @@ class Ruleset {
         difficulties.putAll(ruleset.difficulties)
         nations.putAll(ruleset.nations)
         policyBranches.putAll(ruleset.policyBranches)
+        policies.putAll(ruleset.policies)
         quests.putAll(ruleset.quests)
         specialists.putAll(ruleset.specialists)
         technologies.putAll(ruleset.technologies)
@@ -93,6 +95,7 @@ class Ruleset {
         difficulties.clear()
         nations.clear()
         policyBranches.clear()
+        policies.clear()
         quests.clear()
         technologies.clear()
         buildings.clear()
@@ -159,9 +162,11 @@ class Ruleset {
             for (branch in policyBranches.values) {
                 branch.requires = ArrayList()
                 branch.branch = branch
+                policies[branch.name] = branch
                 for (policy in branch.policies) {
                     policy.branch = branch
                     if (policy.requires == null) policy.requires = arrayListOf(branch.name)
+                    policies[policy.name] = policy
                 }
                 branch.policies.last().name = branch.name + " Complete"
             }

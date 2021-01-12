@@ -1,10 +1,8 @@
 package com.unciv.logic.civilization
 
-import com.unciv.Constants
 import com.unciv.models.ruleset.Policy
 import com.unciv.models.ruleset.UniqueMap
 import com.unciv.models.ruleset.UniqueTriggerActivation
-import com.unciv.models.ruleset.VictoryType
 import kotlin.math.min
 import kotlin.math.pow
 import kotlin.math.roundToInt
@@ -12,17 +10,20 @@ import kotlin.math.roundToInt
 
 class PolicyManager {
 
-    @Transient lateinit var civInfo: CivilizationInfo
+    @Transient
+    lateinit var civInfo: CivilizationInfo
+
     // Needs to be separate from the actual adopted policies, so that
     //  in different game versions, policies can have different effects
-    @Transient internal val policyUniques = UniqueMap()
+    @Transient
+    internal val policyUniques = UniqueMap()
 
     var freePolicies = 0
     var storedCulture = 0
     internal val adoptedPolicies = HashSet<String>()
     var numberOfAdoptedPolicies = 0
     var shouldOpenPolicyPicker = false
-            get() = field && canAdoptPolicy()
+        get() = field && canAdoptPolicy()
     var legalismState = HashMap<String, String>()
     var autocracyCompletedTurns = 0
 
@@ -38,26 +39,23 @@ class PolicyManager {
         return toReturn
     }
 
-    fun getPolicyByName(name:String): Policy = getAllPolicies().first { it.name==name }
-            
+    fun getPolicyByName(name: String): Policy = civInfo.gameInfo.ruleSet.policies[name]!!
+
     fun setTransients() {
         for (policyName in adoptedPolicies)
             addPolicyToTransients(getPolicyByName(policyName))
     }
 
-    fun addPolicyToTransients(policy: Policy){
-        for(unique in policy.uniqueObjects)
+    fun addPolicyToTransients(policy: Policy) {
+        for (unique in policy.uniqueObjects)
             policyUniques.addUnique(unique)
     }
-
-    private fun getAllPolicies() = civInfo.gameInfo.ruleSet.policyBranches.values.asSequence()
-            .flatMap { it.policies.asSequence()+sequenceOf(it) }
 
     fun startTurn() {
         tryAddLegalismBuildings()
     }
 
-    fun addCulture(culture: Int){
+    fun addCulture(culture: Int) {
         val couldAdoptPolicyBefore = canAdoptPolicy()
         storedCulture += culture
         if (!couldAdoptPolicyBefore && canAdoptPolicy())
@@ -80,7 +78,7 @@ class PolicyManager {
         // Use "Culture cost of adopting new Policies reduced by [10]%" and "Each city founded increases culture cost of policies [33]% less than normal" instead
         if (civInfo.hasUnique("Each city founded increases culture cost of policies 33% less than normal"))
             cityModifier *= (2 / 3f)
-        for(unique in civInfo.getMatchingUniques("Culture cost of adopting new Policies reduced by 10%"))
+        for (unique in civInfo.getMatchingUniques("Culture cost of adopting new Policies reduced by 10%"))
             policyCultureCost *= 0.9
 
         for (unique in civInfo.getMatchingUniques("Each city founded increases culture cost of policies []% less than normal"))
@@ -99,7 +97,7 @@ class PolicyManager {
     fun isAdopted(policyName: String): Boolean = adoptedPolicies.contains(policyName)
 
     fun isAdoptable(policy: Policy): Boolean {
-        if(isAdopted(policy.name)) return false
+        if (isAdopted(policy.name)) return false
         if (policy.name.endsWith("Complete")) return false
         if (!getAdoptedPolicies().containsAll(policy.requires!!)) return false
         if (civInfo.gameInfo.ruleSet.getEraNumber(policy.branch.era) > civInfo.getEraNumber()) return false
@@ -110,7 +108,7 @@ class PolicyManager {
         if (freePolicies == 0 && storedCulture < getCultureNeededForNextPolicy())
             return false
 
-        val hasAdoptablePolicies = getAllPolicies()
+        val hasAdoptablePolicies = civInfo.gameInfo.ruleSet.policies.values
                 .any { civInfo.policies.isAdoptable(it) }
         return hasAdoptablePolicies
     }
@@ -138,8 +136,6 @@ class PolicyManager {
             }
         }
 
-        val hasCapital = civInfo.cities.any { it.isCapital() }
-
         for (unique in policy.uniqueObjects)
             UniqueTriggerActivation.triggerCivwideUnique(unique, civInfo)
 
@@ -153,15 +149,17 @@ class PolicyManager {
     }
 
     fun tryAddLegalismBuildings() {
-        if(!civInfo.hasUnique("Immediately creates a cheapest available cultural building in each of your first 4 cities for free"))
+        if (!civInfo.hasUnique("Immediately creates a cheapest available cultural building in each of your first 4 cities for free"))
             return
-        if(legalismState.size >= 4) return
+        if (legalismState.size >= 4) return
 
         val candidateCities = civInfo.cities
                 .sortedBy { it.turnAcquired }
                 .subList(0, min(4, civInfo.cities.size))
-                .filter { it.id !in legalismState
-                        && it.cityConstructions.hasBuildableCultureBuilding() }
+                .filter {
+                    it.id !in legalismState
+                            && it.cityConstructions.hasBuildableCultureBuilding()
+                }
         for (city in candidateCities) {
             val builtBuilding = city.cityConstructions.addCultureBuilding()
             legalismState[city.id] = builtBuilding!!
