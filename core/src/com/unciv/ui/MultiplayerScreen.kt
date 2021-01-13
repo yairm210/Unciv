@@ -221,7 +221,7 @@ class MultiplayerScreen(previousScreen: CameraStageBaseScreen) : PickerScreen() 
 
                 gameButton.onClick {
                     selectedGameFile = gameSaveFile
-                    if(multiplayerGames[gameSaveFile] != null){
+                    if (multiplayerGames[gameSaveFile] != null){
                         copyGameIdButton.enable()
                         editButton.enable()
                     }
