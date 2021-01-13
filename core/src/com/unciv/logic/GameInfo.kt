@@ -355,7 +355,7 @@ class GameInfo {
                 if (isInvalidConstruction(construction))
                     city.cityConstructions.constructionQueue.remove(construction)
             }
-            // And from being in progess
+            // And from being in progress
             for (construction in city.cityConstructions.inProgressConstructions.keys.toList())
                 if (isInvalidConstruction(construction))
                     city.cityConstructions.inProgressConstructions.remove(construction)

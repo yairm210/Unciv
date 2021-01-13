@@ -8,7 +8,7 @@ import com.unciv.logic.civilization.TechManager
 import com.unciv.ui.utils.*
 
 class TechButton(techName:String, private val techManager: TechManager, isWorldScreen: Boolean = true) : Table(CameraStageBaseScreen.skin) {
-    val text= "".toLabel().apply { setAlignment(Align.center) }
+    val text = "".toLabel().apply { setAlignment(Align.center) }
 
     init {
         touchable = Touchable.enabled
@@ -26,8 +26,7 @@ class TechButton(techName:String, private val techManager: TechManager, isWorldS
             val percentComplete = (techCost - remainingTech) / techCost.toFloat()
             add(ImageGetter.getProgressBarVertical(2f, 50f, percentComplete, Color.BLUE, Color.WHITE)).pad(10f)
             rightSide.add(text).padBottom(5f).row()
-        }
-        else rightSide.add(text).height(25f).padBottom(5f).row()
+        } else rightSide.add(text).height(25f).padBottom(5f).row()
 
         addTechEnabledIcons(techName, isWorldScreen, rightSide)
 
@@ -46,26 +45,29 @@ class TechButton(techName:String, private val techManager: TechManager, isWorldS
         val tech = ruleset.technologies[techName]!!
 
         for (unit in tech.getEnabledUnits(techManager.civInfo)
-                .filter { "Will not be displayed in Civilopedia" !in it.uniques})
+                .filter { "Will not be displayed in Civilopedia" !in it.uniques })
             techEnabledIcons.add(ImageGetter.getConstructionImage(unit.name).surroundWithCircle(techIconSize))
 
         for (building in tech.getEnabledBuildings(techManager.civInfo)
-                .filter { "Will not be displayed in Civilopedia" !in it.uniques})
+                .filter { "Will not be displayed in Civilopedia" !in it.uniques })
             techEnabledIcons.add(ImageGetter.getConstructionImage(building.name).surroundWithCircle(techIconSize))
 
-        for(building in tech.getObsoletedBuildings(techManager.civInfo) )
+        for (building in tech.getObsoletedBuildings(techManager.civInfo)
+                .filter { "Will not be displayed in Civilopedia" !in it.uniques })
             techEnabledIcons.add(ImageGetter.getConstructionImage(building.name).surroundWithCircle(techIconSize).apply {
                 val closeImage = ImageGetter.getImage("OtherIcons/Close")
-                closeImage.setSize(techIconSize/2,techIconSize/2)
+                closeImage.setSize(techIconSize / 2, techIconSize / 2)
                 closeImage.color = Color.RED
                 closeImage.center(this)
                 addActor(closeImage)
             })
 
         for (improvement in ruleset.tileImprovements.values
-                .filter { it.techRequired == techName || it.uniqueObjects.any { u -> u.params.contains(techName) }
-                        || it.uniqueObjects.any { it.placeholderText=="[] once [] is discovered" && it.params[1]==techName } }
-                .filter { it.uniqueTo==null || it.uniqueTo==civName })
+                .filter {
+                    it.techRequired == techName || it.uniqueObjects.any { u -> u.params.contains(techName) }
+                            || it.uniqueObjects.any { it.placeholderText == "[] once [] is discovered" && it.params[1] == techName }
+                }
+                .filter { it.uniqueTo == null || it.uniqueTo == civName })
             if (improvement.name.startsWith("Remove"))
                 techEnabledIcons.add(ImageGetter.getImage("OtherIcons/Stop")).size(techIconSize)
             else techEnabledIcons.add(ImageGetter.getImprovementIcon(improvement.name, techIconSize))
