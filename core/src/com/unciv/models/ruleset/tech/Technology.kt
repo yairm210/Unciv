@@ -66,7 +66,8 @@ class Technology {
                 lineList += " * " + wonder.name.tr() + " (" + wonder.getShortDescription(ruleset) + ")"
         }
 
-        for(building in getObsoletedBuildings(viewingCiv))
+        for(building in getObsoletedBuildings(viewingCiv)
+                .filter { "Will not be displayed in Civilopedia" !in it.uniques })
             lineList += "[${building.name}] obsoleted"
 
         val revealedResource = ruleset.tileResources.values.filter { it.revealedBy == name }

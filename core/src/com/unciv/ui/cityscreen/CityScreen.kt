@@ -215,14 +215,19 @@ class CityScreen(internal val city: CityInfo): CameraStageBaseScreen() {
         game.worldScreen.mapHolder.setCenterPosition(city.location)
         game.worldScreen.bottomUnitTable.selectUnit()
     }
+
     fun page(delta: Int) {
         val civInfo = city.civInfo
         val numCities = civInfo.cities.size
         if (numCities == 0) return
         val indexOfCity = civInfo.cities.indexOf(city)
         val indexOfNextCity = (indexOfCity + delta + numCities) % numCities
+        // not entirely sure this is necessary, since we're changing screens we're changing stages as well?
         stage.removeListener(keyListener)
-        game.setScreen(CityScreen(civInfo.cities[indexOfNextCity]))
+        val newCityScreen = CityScreen(civInfo.cities[indexOfNextCity])
+        newCityScreen.showConstructionsTable = showConstructionsTable // stay on stats drilldown between cities
+        newCityScreen.update()
+        game.setScreen(newCityScreen)
     }
 
     private fun getKeyboardListener(): InputListener = object : InputListener() {
@@ -235,9 +240,5 @@ class CityScreen(internal val city: CityInfo): CameraStageBaseScreen() {
             }
             return true
         }
-    }
-
-    fun updateExitCityButton(){
-
     }
 }
