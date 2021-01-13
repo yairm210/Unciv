@@ -163,5 +163,14 @@ object GameSaver {
         val game = json().fromJson(GameInfo::class.java, gameData)
         return game.getCivilization(game.currentPlayer)
     }
+
+    /**
+     * Returns the gameId from a GameInfo which was saved as JSON for multiplayer
+     * Does not initialize transitive GameInfo data.
+     * It is therefore stateless and save to call for Multiplayer Turn Notifier.
+     */
+    fun getGameIdFromFile(gameFile: FileHandle): String {
+        return json().fromJson(GameInfo::class.java, gameFile).gameId
+    }
 }
 

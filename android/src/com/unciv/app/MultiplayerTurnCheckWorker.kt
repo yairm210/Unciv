@@ -13,6 +13,7 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.work.*
 import com.badlogic.gdx.backends.android.AndroidApplication
 import com.unciv.logic.GameInfo
+import com.unciv.logic.GameSaver
 import com.unciv.models.metadata.GameSettings
 import com.unciv.ui.worldscreen.mainmenu.OnlineMultiplayer
 import java.io.PrintWriter
@@ -20,6 +21,7 @@ import java.io.StringWriter
 import java.io.Writer
 import java.util.*
 import java.util.concurrent.TimeUnit
+import kotlin.concurrent.thread
 
 
 class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParameters)
@@ -160,12 +162,23 @@ class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParame
             }
         }
 
-        fun startTurnChecker(applicationContext: Context, gameInfo: GameInfo, settings: GameSettings) {
-            if (gameInfo.currentPlayerCiv.playerId == settings.userId) {
+        fun startTurnChecker(applicationContext: Context, currentGameInfo: GameInfo, settings: GameSettings) {
+            val gameFiles = GameSaver.getSaves(true)
+            val gameIds = Array(gameFiles.count()) {""}
+
+            var count = 0
+            try {
+                for (gameFile in gameFiles) {
+                    gameIds[count] = GameSaver.getGameIdFromFile(gameFile)
+                    count++
+                }
+            } catch (ex: Exception) { }
+
+            if (currentGameInfo.currentPlayerCiv.playerId == settings.userId) {
                 // May be useful to remind a player that he forgot to complete his turn.
                 notifyUserAboutTurn(applicationContext)
             } else {
-                val inputData = workDataOf(Pair(FAIL_COUNT, 0), Pair(GAME_ID, gameInfo.gameId),
+                val inputData = workDataOf(Pair(FAIL_COUNT, 0), Pair(GAME_ID, gameIds),
                         Pair(USER_ID, settings.userId), Pair(CONFIGURED_DELAY, settings.multiplayerTurnCheckerDelayInMinutes),
                         Pair(PERSISTENT_NOTIFICATION_ENABLED, settings.multiplayerTurnCheckerPersistentNotificationEnabled))
 
@@ -206,17 +219,26 @@ class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParame
         val showPersistNotific = inputData.getBoolean(PERSISTENT_NOTIFICATION_ENABLED, true)
         val configuredDelay = inputData.getInt(CONFIGURED_DELAY, 5)
         try {
-            val currentTurnPlayer = OnlineMultiplayer().tryDownloadCurrentTurnCiv(inputData.getString(GAME_ID)!!)
-            if (currentTurnPlayer.playerId == inputData.getString(USER_ID)!!) {
-                notifyUserAboutTurn(applicationContext)
-                with(NotificationManagerCompat.from(applicationContext)) {
-                    cancel(NOTIFICATION_ID_SERVICE)
+            val gameIds = inputData.getStringArray(GAME_ID)!!
+            for (gameId in gameIds){
+                //gameId could be an empty string if startTurnChecker fails to load all files
+                if (gameId.isEmpty())
+                    continue
+
+                val currentTurnPlayer = OnlineMultiplayer().tryDownloadCurrentTurnCiv(gameId)
+
+                if (currentTurnPlayer.playerId == inputData.getString(USER_ID)!!) {
+                    notifyUserAboutTurn(applicationContext)
+                    with(NotificationManagerCompat.from(applicationContext)) {
+                        cancel(NOTIFICATION_ID_SERVICE)
+                    }
+                    break
+                } else {
+                    if (showPersistNotific) { updatePersistentNotification(inputData) }
+                    // We have to reset the fail counter since no exception appeared
+                    val inputDataFailReset = Data.Builder().putAll(inputData).putInt(FAIL_COUNT, 0).build()
+                    enqueue(applicationContext, configuredDelay, inputDataFailReset)
                 }
-            } else {
-                if (showPersistNotific) { updatePersistentNotification(inputData) }
-                // We have to reset the fail counter since no exception appeared
-                val inputDataFailReset = Data.Builder().putAll(inputData).putInt(FAIL_COUNT, 0).build()
-                enqueue(applicationContext, configuredDelay, inputDataFailReset)
             }
         } catch (ex: Exception) {
             val failCount = inputData.getInt(FAIL_COUNT, 0)
