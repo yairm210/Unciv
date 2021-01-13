@@ -17,9 +17,8 @@ import kotlin.concurrent.thread
 
 class MultiplayerScreen(previousScreen: CameraStageBaseScreen) : PickerScreen() {
 
-    private lateinit var selectedGame: GameInfo
-    private lateinit var selectedGameName: String
-    private var multiplayerGameList = mutableMapOf<String, FileHandle>()
+    private lateinit var selectedGameFile: FileHandle
+    private var multiplayerGameList = mutableMapOf<String, FileHandle>() //Map<GameId, gameFile>
     private val rightSideTable = Table()
     private val leftSideTable = Table()
 
@@ -87,13 +86,13 @@ class MultiplayerScreen(previousScreen: CameraStageBaseScreen) : PickerScreen() 
         rightSideTable.add(copyUserIdButton).padBottom(30f).row()
 
         copyGameIdButton.onClick {
-            Gdx.app.clipboard.contents = selectedGame.gameId
+            Gdx.app.clipboard.contents = getGameIdFromFile(selectedGameFile)
             ToastPopup("GameID copied to clipboard".tr(), this)
         }
         rightSideTable.add(copyGameIdButton).row()
 
         editButton.onClick {
-            game.setScreen(EditMultiplayerGameInfoScreen(selectedGame, selectedGameName, this))
+            game.setScreen(EditMultiplayerGameInfoScreen(getGameIdFromFile(selectedGameFile)!!, selectedGameFile.name(), this))
             //game must be unselected in case the game gets deleted inside the EditScreen
             unselectGame()
         }
@@ -169,7 +168,7 @@ class MultiplayerScreen(previousScreen: CameraStageBaseScreen) : PickerScreen() 
     //the game will be downloaded opon joining it anyway
     private fun joinMultiplaerGame(){
         try {
-            game.loadGame(selectedGame)
+            game.loadGame(GameSaver.loadGameFromFile(selectedGameFile))
         } catch (ex: Exception) {
             val errorPopup = Popup(this)
             errorPopup.addGoodSizedLabel("Could not download game!".tr())
@@ -203,32 +202,45 @@ class MultiplayerScreen(previousScreen: CameraStageBaseScreen) : PickerScreen() 
         for (gameSaveFile in savedGames) {
             try {
                 val gameTable = Table()
-                val game = gameSaver.loadGameFromFile(gameSaveFile)
-
-                //Add games to list so saves don't have to be loaded as Files so often
-                if (!gameIsAlreadySavedAsMultiplayer(game.gameId))
-                    multiplayerGameList[game.gameId] = gameSaveFile
-
-                if (isUsersTurn(game)) {
-                    gameTable.add(ImageGetter.getNationIndicator(game.currentPlayerCiv.nation, 50f))
-                } else {
-                    gameTable.add()
-                }
+                val turnIndicator = Table()
+                turnIndicator.add(ImageGetter.getImage("EmojiIcons/Turn"))
+                gameTable.add(turnIndicator)
 
                 val lastModifiedMillis = gameSaveFile.lastModified()
                 val gameButton = gameSaveFile.name().toTextButton()
+                var currentTurnUser = ""
+
                 gameButton.onClick {
-                    selectedGame = game
-                    selectedGameName = gameSaveFile.name()
-                    copyGameIdButton.enable()
-                    editButton.enable()
+                    selectedGameFile = gameSaveFile
+                    if(getGameIdFromFile(gameSaveFile) != null){
+                        copyGameIdButton.enable()
+                        editButton.enable()
+                    }
                     rightSideButton.enable()
 
                     //get Minutes since last modified
                     val lastSavedMinutesAgo = (System.currentTimeMillis() - lastModifiedMillis) / 60000
                     var descriptionText = "Last refresh: [$lastSavedMinutesAgo] minutes ago".tr() + "\r\n"
-                    descriptionText += "Current Turn:".tr() + " ${selectedGame.currentPlayer}\r\n"
+                    descriptionText += "Current Turn:".tr() + " ${currentTurnUser}\r\n"
                     descriptionLabel.setText(descriptionText)
+                }
+
+                thread {
+                    val game = gameSaver.loadGameFromFile(gameSaveFile)
+
+                    //Add games to list so saves don't have to be loaded as Files so often
+                    if (!gameIsAlreadySavedAsMultiplayer(game.gameId)) {
+                        multiplayerGameList[game.gameId] = gameSaveFile
+                    }
+
+                    Gdx.app.postRunnable {
+                        turnIndicator.clear()
+                        if (isUsersTurn(game)) {
+                            turnIndicator.add(ImageGetter.getNationIndicator(game.currentPlayerCiv.nation, 50f))
+                        }
+
+                        currentTurnUser = game.currentPlayer
+                    }
                 }
 
                 gameTable.add(gameButton).pad(5f).row()
@@ -239,6 +251,7 @@ class MultiplayerScreen(previousScreen: CameraStageBaseScreen) : PickerScreen() 
                 continue
             }
         }
+
         leftSideTable.clear()
         leftSideTable.add(leftSubTable)
     }
@@ -319,11 +332,18 @@ class MultiplayerScreen(previousScreen: CameraStageBaseScreen) : PickerScreen() 
     fun removeFromList(gameId: String){
         multiplayerGameList.remove(gameId)
     }
+
+    fun getGameIdFromFile(fileHandle: FileHandle) : String?{
+        val gameIds = multiplayerGameList.filterValues { it == fileHandle }.keys
+        if (gameIds.isNotEmpty())
+            return gameIds.first()
+        return null
+    }
 }
 
 //Subscreen of MultiplayerScreen to edit and delete saves
 //backScreen is used for getting back to the MultiplayerScreen so it doesn't have to be created over and over again
-class EditMultiplayerGameInfoScreen(game: GameInfo, gameName: String, backScreen: MultiplayerScreen): PickerScreen(){
+class EditMultiplayerGameInfoScreen(gameId: String, gameName: String, backScreen: MultiplayerScreen): PickerScreen(){
     init {
         val textField = TextField(gameName, skin)
 
@@ -367,9 +387,9 @@ class EditMultiplayerGameInfoScreen(game: GameInfo, gameName: String, backScreen
         rightSideButton.onClick {
             rightSideButton.setText("Saving...".tr())
             try {
-                backScreen.removeFromList(game.gameId)
+                backScreen.removeFromList(gameId)
                 //using addMultiplayerGame will download the game from Dropbox so the descriptionLabel displays the right things
-                backScreen.addMultiplayerGame(game.gameId, textField.text)
+                backScreen.addMultiplayerGame(gameId, textField.text)
                 GameSaver.deleteSave(gameName, true)
                 backScreen.game.setScreen(backScreen)
                 backScreen.reloadGameListUI()
