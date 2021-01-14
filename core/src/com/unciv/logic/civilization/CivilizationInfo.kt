@@ -19,6 +19,7 @@ import com.unciv.models.ruleset.*
 import com.unciv.models.ruleset.tile.ResourceSupplyList
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.tile.TileResource
+import com.unciv.models.ruleset.UniqueMap
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.equalsPlaceholderText
@@ -69,6 +70,9 @@ class CivilizationInfo {
     var detailedCivResources = ResourceSupplyList()
 
     var playerType = PlayerType.AI
+
+    @Transient
+    var mapUnitUniqueMap = UniqueMap()
 
     /** Used in online multiplayer for human players */
     var playerId = ""

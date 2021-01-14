@@ -138,7 +138,6 @@ class CivInfoTransientUpdater(val civInfo: CivilizationInfo) {
 
         civInfo.citiesConnectedToCapitalToMediums = citiesReachedToMediums
     }
-
     fun updateDetailedCivResources() {
         val newDetailedCivResources = ResourceSupplyList()
         for (city in civInfo.cities) newDetailedCivResources.add(city.getCityResources())
@@ -153,6 +152,14 @@ class CivInfoTransientUpdater(val civInfo: CivilizationInfo) {
         }
 
         for (dip in civInfo.diplomacy.values) newDetailedCivResources.add(dip.resourcesFromTrade())
+
+        for (unique in civInfo.mapUnitUniqueMap.getUniques("Consumes [] []")) { // E.G "Consumes [1] [Iron]"
+            val amount = unique.params[0].toInt()
+            val resource = civInfo.gameInfo.ruleSet.tileResources[unique.params[1]]
+            if (resource != null) {
+                newDetailedCivResources.add(resource, -amount, "Units")
+            }
+        }
         for(resource in civInfo.getCivUnits().mapNotNull { it.baseUnit.requiredResource }
                 .map { civInfo.gameInfo.ruleSet.tileResources[it]!! })
             newDetailedCivResources.add(resource,-1,"Units")

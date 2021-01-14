@@ -139,6 +139,11 @@ class MapUnit {
 
         tempUniques = uniques
 
+        civInfo.mapUnitUniqueMap.clear()
+        for(unit in civInfo.getCivUnits())
+            for(unique in unit.tempUniques)
+                civInfo.mapUnitUniqueMap.addUnique(unique)
+
         // "All tiles costs 1" obsoleted in 3.11.18
         allTilesCosts1 = hasUnique("All tiles cost 1 movement") || hasUnique("All tiles costs 1")
         canPassThroughImpassableTiles = hasUnique("Can pass through impassable tiles")
