@@ -77,6 +77,15 @@ object GameSaver {
         return game
     }
 
+    /**
+     * WARNING! transitive GameInfo data not initialized
+     * The returned GameInfo can not be used for most circumstances because its not initialized!
+     * It is therefore stateless and save to call for Multiplayer Turn Notifier, unlike gameInfoFromString().
+     */
+    fun gameInfoFromStringWithoutTransients(gameData: String): GameInfo {
+        return json().fromJson(GameInfo::class.java, gameData)
+    }
+
     fun deleteSave(GameName: String, multiplayer: Boolean = false){
         getSave(GameName, multiplayer).delete()
     }

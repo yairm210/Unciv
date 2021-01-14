@@ -12,6 +12,7 @@ import androidx.core.app.NotificationCompat.DEFAULT_VIBRATE
 import androidx.core.app.NotificationManagerCompat
 import androidx.work.*
 import com.badlogic.gdx.backends.android.AndroidApplication
+import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
 import com.unciv.logic.GameSaver
 import com.unciv.models.metadata.GameSettings
@@ -43,6 +44,7 @@ class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParame
 
         private const val FAIL_COUNT = "FAIL_COUNT"
         private const val GAME_ID = "GAME_ID"
+        private const val GAME_NAMES = "GAME_NAMES"
         private const val USER_ID = "USER_ID"
         private const val CONFIGURED_DELAY = "CONFIGURED_DELAY"
         private const val PERSISTENT_NOTIFICATION_ENABLED = "PERSISTENT_NOTIFICATION_ENABLED"
@@ -165,20 +167,26 @@ class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParame
         fun startTurnChecker(applicationContext: Context, currentGameInfo: GameInfo, settings: GameSettings) {
             val gameFiles = GameSaver.getSaves(true)
             val gameIds = Array(gameFiles.count()) {""}
+            val gameNames = Array(gameFiles.count()) {""}
 
             var count = 0
-            try {
-                for (gameFile in gameFiles) {
+            for (gameFile in gameFiles) {
+                try {
                     gameIds[count] = GameSaver.getGameIdFromFile(gameFile)
+                    gameNames[count] = gameFile.name()
                     count++
+                } catch (ex: Exception) {
+                    //only getGameIdFromFile can throw an exception
+                    //nothing will be added to the arrays if it fails
+                    //just skip one file
                 }
-            } catch (ex: Exception) { }
+            }
 
             if (currentGameInfo.currentPlayerCiv.playerId == settings.userId) {
                 // May be useful to remind a player that he forgot to complete his turn.
                 notifyUserAboutTurn(applicationContext)
             } else {
-                val inputData = workDataOf(Pair(FAIL_COUNT, 0), Pair(GAME_ID, gameIds),
+                val inputData = workDataOf(Pair(FAIL_COUNT, 0), Pair(GAME_ID, gameIds), Pair(GAME_NAMES, gameNames),
                         Pair(USER_ID, settings.userId), Pair(CONFIGURED_DELAY, settings.multiplayerTurnCheckerDelayInMinutes),
                         Pair(PERSISTENT_NOTIFICATION_ENABLED, settings.multiplayerTurnCheckerPersistentNotificationEnabled))
 
@@ -218,28 +226,44 @@ class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParame
     override fun doWork(): Result {
         val showPersistNotific = inputData.getBoolean(PERSISTENT_NOTIFICATION_ENABLED, true)
         val configuredDelay = inputData.getInt(CONFIGURED_DELAY, 5)
+
         try {
             val gameIds = inputData.getStringArray(GAME_ID)!!
+            val gameNames = inputData.getStringArray(GAME_NAMES)!!
+            var arrayIndex = 0
+            // We only want to notify the user or update persisted notification once but still want
+            // to download all games to update the files hence this bool
+            var foundGame = false
+
             for (gameId in gameIds){
                 //gameId could be an empty string if startTurnChecker fails to load all files
                 if (gameId.isEmpty())
                     continue
 
-                val currentTurnPlayer = OnlineMultiplayer().tryDownloadCurrentTurnCiv(gameId)
+                val game = OnlineMultiplayer().tryDownloadGameUninitialized(gameId)
+                val currentTurnPlayer = game.getCivilization(game.currentPlayer)
+
+                //Save game so MultiplayerScreen gets updated
+                GameSaver.saveGame(game, gameNames[arrayIndex], true)
 
                 if (currentTurnPlayer.playerId == inputData.getString(USER_ID)!!) {
-                    notifyUserAboutTurn(applicationContext)
-                    with(NotificationManagerCompat.from(applicationContext)) {
-                        cancel(NOTIFICATION_ID_SERVICE)
-                    }
-                    break
-                } else {
-                    if (showPersistNotific) { updatePersistentNotification(inputData) }
-                    // We have to reset the fail counter since no exception appeared
-                    val inputDataFailReset = Data.Builder().putAll(inputData).putInt(FAIL_COUNT, 0).build()
-                    enqueue(applicationContext, configuredDelay, inputDataFailReset)
+                    foundGame = true
                 }
+                arrayIndex++
             }
+
+            if (foundGame){
+                notifyUserAboutTurn(applicationContext)
+                with(NotificationManagerCompat.from(applicationContext)) {
+                    cancel(NOTIFICATION_ID_SERVICE)
+                }
+            } else {
+                if (showPersistNotific) { updatePersistentNotification(inputData) }
+                // We have to reset the fail counter since no exception appeared
+                val inputDataFailReset = Data.Builder().putAll(inputData).putInt(FAIL_COUNT, 0).build()
+                enqueue(applicationContext, configuredDelay, inputDataFailReset)
+            }
+
         } catch (ex: Exception) {
             val failCount = inputData.getInt(FAIL_COUNT, 0)
             if (failCount > 3) {
