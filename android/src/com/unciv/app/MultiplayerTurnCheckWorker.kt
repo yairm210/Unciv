@@ -12,7 +12,6 @@ import androidx.core.app.NotificationCompat.DEFAULT_VIBRATE
 import androidx.core.app.NotificationManagerCompat
 import androidx.work.*
 import com.badlogic.gdx.backends.android.AndroidApplication
-import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
 import com.unciv.logic.GameSaver
 import com.unciv.models.metadata.GameSettings
@@ -22,7 +21,6 @@ import java.io.StringWriter
 import java.io.Writer
 import java.util.*
 import java.util.concurrent.TimeUnit
-import kotlin.concurrent.thread
 
 
 class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParameters)
