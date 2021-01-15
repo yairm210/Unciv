@@ -85,7 +85,14 @@ object BattleDamage {
                     && !civInfo.isBarbarian()) {
                 modifiers["Missing resource"] = -25
             }
-
+            for (unique in combatant.unit.getMatchingUniques("Consumes [] []")) {
+                val amount = unique.params[0].toInt()
+                val resource = unique.params[1]
+                if (civInfo.getCivResourcesByName()[resource]!! < amount
+                        && !civInfo.isBarbarian()) {
+                    modifiers["Missing resource"] = -25
+                }
+            }
             val nearbyCivUnits = combatant.unit.getTile().getTilesInDistance(2)
                     .filter { it.civilianUnit?.civInfo == combatant.unit.civInfo }
                     .map { it.civilianUnit }
