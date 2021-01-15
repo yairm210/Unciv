@@ -10,6 +10,8 @@ import com.unciv.logic.city.CityInfo
 import com.unciv.logic.city.IConstruction
 import com.unciv.logic.city.PerpetualConstruction
 import com.unciv.models.UncivSound
+import com.unciv.models.ruleset.Building
+import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
 import com.unciv.models.translations.tr
 import com.unciv.ui.cityscreen.ConstructionInfoTable.Companion.turnOrTurns
@@ -123,15 +125,11 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
             constructionsQueueTable.add("Queue empty".toLabel()).pad(2f).row()
     }
 
-    private fun updateAvailableConstructions() {
+    private fun getConstructionButtonDTOs():ArrayList<ConstructionButtonDTO> {
+        val constructionButtonDTOList = ArrayList<ConstructionButtonDTO>()
+
         val city = cityScreen.city
         val cityConstructions = city.cityConstructions
-
-        val units = ArrayList<Table>()
-        val buildableWonders = ArrayList<Table>()
-        val buildableNationalWonders = ArrayList<Table>()
-        val buildableBuildings = ArrayList<Table>()
-        val specialConstructions = ArrayList<Table>()
 
         for (unit in city.getRuleset().units.values.filter { it.shouldBeDisplayed(cityConstructions) }) {
             val useStoredProduction = !cityConstructions.isBeingConstructedOrEnqueued(unit.name)
@@ -140,33 +138,56 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
             if (unit.requiredResource != null)
                 buttonText += "\n" + "Consumes 1 [${unit.requiredResource}]".tr()
 
-            val productionButton = getConstructionButton(ConstructionButtonDTO(unit,
+            constructionButtonDTOList.add(ConstructionButtonDTO(unit,
                     buttonText,
                     unit.getRejectionReason(cityConstructions)))
-            units.add(productionButton)
         }
+
 
         for (building in city.getRuleset().buildings.values.filter { it.shouldBeDisplayed(cityConstructions) }) {
             val turnsToBuilding = cityConstructions.turnsToConstruction(building.name)
             var buttonText = building.name.tr() + turnOrTurns(turnsToBuilding)
             if (building.requiredResource != null)
                 buttonText += "\n" + "Consumes 1 [${building.requiredResource}]".tr()
-            val productionTextButton = getConstructionButton(ConstructionButtonDTO(building,
+
+            constructionButtonDTOList.add(ConstructionButtonDTO(building,
                     buttonText,
                     building.getRejectionReason(cityConstructions)
             ))
-            when {
-                building.isWonder -> buildableWonders += productionTextButton
-                building.isNationalWonder -> buildableNationalWonders += productionTextButton
-                else -> buildableBuildings += productionTextButton
-            }
         }
 
         for (specialConstruction in PerpetualConstruction.perpetualConstructionsMap.values
                 .filter { it.shouldBeDisplayed(cityConstructions) }) {
-            specialConstructions += getConstructionButton(ConstructionButtonDTO(specialConstruction,
+            constructionButtonDTOList.add(ConstructionButtonDTO(specialConstruction,
                     "Produce [${specialConstruction.name}]".tr()
                             + specialConstruction.getProductionTooltip(city)))
+        }
+
+        return constructionButtonDTOList
+    }
+
+    private fun updateAvailableConstructions() {
+        val units = ArrayList<Table>()
+        val buildableWonders = ArrayList<Table>()
+        val buildableNationalWonders = ArrayList<Table>()
+        val buildableBuildings = ArrayList<Table>()
+        val specialConstructions = ArrayList<Table>()
+
+        val constructionButtonDTOList = getConstructionButtonDTOs()
+
+        for(dto in constructionButtonDTOList) {
+            val constructionButton = getConstructionButton(dto)
+            when (dto.construction) {
+                is BaseUnit -> units.add(constructionButton)
+                is Building -> {
+                    when {
+                        dto.construction.isWonder -> buildableWonders += constructionButton
+                        dto.construction.isNationalWonder -> buildableNationalWonders += constructionButton
+                        else -> buildableBuildings += constructionButton
+                    }
+                }
+                is PerpetualConstruction -> specialConstructions.add(constructionButton)
+            }
         }
 
         availableConstructionsTable.addCategory("Units", units, constructionsQueueTable.width)
