@@ -301,11 +301,13 @@ class CivilizationInfo {
     }
 
     fun getEquivalentUnit(baseUnitName: String): BaseUnit {
+        val baseUnit = gameInfo.ruleSet.units[baseUnitName]
+        if (baseUnit == null) throw UncivShowableException("Unit $baseUnitName doesn't seem to exist!")
+        if (baseUnit.replaces != null) return getEquivalentUnit(baseUnit.replaces!!) // Equivalent of unique unit is the equivalent of the replaced unit
+
         for (unit in gameInfo.ruleSet.units.values)
             if (unit.replaces == baseUnitName && unit.uniqueTo == civName)
                 return unit
-        val baseUnit = gameInfo.ruleSet.units[baseUnitName]
-        if (baseUnit == null) throw UncivShowableException("Unit $baseUnitName doesn't seem to exist!")
         return baseUnit
     }
 

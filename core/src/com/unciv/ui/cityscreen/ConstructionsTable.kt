@@ -1,5 +1,6 @@
 package com.unciv.ui.cityscreen
 
+import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Table
@@ -10,10 +11,13 @@ import com.unciv.logic.city.CityInfo
 import com.unciv.logic.city.IConstruction
 import com.unciv.logic.city.PerpetualConstruction
 import com.unciv.models.UncivSound
+import com.unciv.models.ruleset.Building
+import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
 import com.unciv.models.translations.tr
 import com.unciv.ui.cityscreen.ConstructionInfoTable.Companion.turnOrTurns
 import com.unciv.ui.utils.*
+import kotlin.concurrent.thread
 import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 
 class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScreen.skin) {
@@ -52,44 +56,23 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
     }
 
     fun update(selectedConstruction: IConstruction?) {
-        val queueScrollY = constructionsQueueScrollPane.scrollY
-        val constrScrollY = availableConstructionsScrollPane.scrollY
-
-        clearContent()
-
         updateButtons(selectedConstruction)
-
         updateConstructionQueue()
-        constructionsQueueScrollPane.layout()
-        constructionsQueueScrollPane.scrollY = queueScrollY
-        constructionsQueueScrollPane.updateVisualScroll()
-        getCell(constructionsQueueScrollPane).maxHeight(stage.height / 3 - 10f)
-
-        // Need to pack before computing space left for bottom panel
-        pack()
-        val usedHeight = showCityInfoTableButton.height + constructionsQueueScrollPane.height + buttons.height + 3f * pad + 10f
-
+        pack() // Need to pack before computing space left for bottom panel
         updateAvailableConstructions()
-        availableConstructionsScrollPane.layout()
-        availableConstructionsScrollPane.scrollY = constrScrollY
-        availableConstructionsScrollPane.updateVisualScroll()
-        getCell(availableConstructionsScrollPane).maxHeight(stage.height - usedHeight)
-
         pack()
-    }
-
-    private fun clearContent() {
-        constructionsQueueTable.clear()
-        buttons.clear()
-        availableConstructionsTable.clear()
     }
 
     private fun updateButtons(construction: IConstruction?) {
+        buttons.clear()
         buttons.add(getQueueButton(construction)).padRight(5f)
         buttons.add(getBuyButton(construction))
     }
 
     private fun updateConstructionQueue() {
+        val queueScrollY = constructionsQueueScrollPane.scrollY
+        constructionsQueueTable.clear()
+
         val city = cityScreen.city
         val cityConstructions = city.cityConstructions
         val currentConstruction = cityConstructions.currentConstructionFromQueue
@@ -121,59 +104,105 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
             }
         } else
             constructionsQueueTable.add("Queue empty".toLabel()).pad(2f).row()
+
+
+        constructionsQueueScrollPane.layout()
+        constructionsQueueScrollPane.scrollY = queueScrollY
+        constructionsQueueScrollPane.updateVisualScroll()
+        getCell(constructionsQueueScrollPane).maxHeight(stage.height / 3 - 10f)
     }
 
-    private fun updateAvailableConstructions() {
+    private fun getConstructionButtonDTOs():ArrayList<ConstructionButtonDTO> {
+        val constructionButtonDTOList = ArrayList<ConstructionButtonDTO>()
+
         val city = cityScreen.city
         val cityConstructions = city.cityConstructions
 
+        for (unit in city.getRuleset().units.values.filter { it.shouldBeDisplayed(cityConstructions) }) {
+            val useStoredProduction = !cityConstructions.isBeingConstructedOrEnqueued(unit.name)
+            val turnsToUnit = cityConstructions.turnsToConstruction(unit.name, useStoredProduction)
+            var buttonText = unit.name.tr() + turnOrTurns(turnsToUnit)
+            if (unit.requiredResource != null)
+                buttonText += "\n" + "Consumes 1 [${unit.requiredResource}]".tr()
+
+            constructionButtonDTOList.add(ConstructionButtonDTO(unit,
+                    buttonText,
+                    unit.getRejectionReason(cityConstructions)))
+        }
+
+
+        for (building in city.getRuleset().buildings.values.filter { it.shouldBeDisplayed(cityConstructions) }) {
+            val turnsToBuilding = cityConstructions.turnsToConstruction(building.name)
+            var buttonText = building.name.tr() + turnOrTurns(turnsToBuilding)
+            if (building.requiredResource != null)
+                buttonText += "\n" + "Consumes 1 [${building.requiredResource}]".tr()
+
+            constructionButtonDTOList.add(ConstructionButtonDTO(building,
+                    buttonText,
+                    building.getRejectionReason(cityConstructions)
+            ))
+        }
+
+        for (specialConstruction in PerpetualConstruction.perpetualConstructionsMap.values
+                .filter { it.shouldBeDisplayed(cityConstructions) }) {
+            constructionButtonDTOList.add(ConstructionButtonDTO(specialConstruction,
+                    "Produce [${specialConstruction.name}]".tr()
+                            + specialConstruction.getProductionTooltip(city)))
+        }
+
+        return constructionButtonDTOList
+    }
+
+    private fun updateAvailableConstructions() {
+        val constrScrollY = availableConstructionsScrollPane.scrollY
+
+        if(!availableConstructionsTable.hasChildren()) { //
+            availableConstructionsTable.add("Loading...".toLabel()).pad(10f)
+        }
         val units = ArrayList<Table>()
         val buildableWonders = ArrayList<Table>()
         val buildableNationalWonders = ArrayList<Table>()
         val buildableBuildings = ArrayList<Table>()
         val specialConstructions = ArrayList<Table>()
 
-        for (unit in city.getRuleset().units.values.filter { it.shouldBeDisplayed(cityConstructions) }) {
-            val useStoredProduction = !cityConstructions.isBeingConstructedOrEnqueued(unit.name)
-            val turnsToUnit = cityConstructions.turnsToConstruction(unit.name, useStoredProduction)
-            var buttonText = unit.name.tr() + turnOrTurns(turnsToUnit)
-            if(unit.requiredResource != null)
-                buttonText += "\n"+"Consumes 1 [${unit.requiredResource}]".tr()
+        thread {
+            val constructionButtonDTOList = getConstructionButtonDTOs() // Since this can be a heavy operation and leads to many ANRs on older phones...
 
-            val productionButton = getConstructionButton(unit,
-                    buttonText,
-                    unit.getRejectionReason(cityConstructions))
-            units.add(productionButton)
-        }
+            Gdx.app.postRunnable {
+                availableConstructionsTable.clear()
 
-        for (building in city.getRuleset().buildings.values.filter { it.shouldBeDisplayed(cityConstructions)}) {
-            val turnsToBuilding = cityConstructions.turnsToConstruction(building.name)
-            var buttonText = building.name.tr() + turnOrTurns(turnsToBuilding)
-            if(building.requiredResource != null)
-                buttonText += "\n"+"Consumes 1 [${building.requiredResource}]".tr()
-            val productionTextButton = getConstructionButton(building,
-                    buttonText,
-                    building.getRejectionReason(cityConstructions)
-            )
-            when {
-                building.isWonder -> buildableWonders += productionTextButton
-                building.isNationalWonder -> buildableNationalWonders += productionTextButton
-                else -> buildableBuildings += productionTextButton
+                for (dto in constructionButtonDTOList) {
+                    val constructionButton = getConstructionButton(dto)
+                    when (dto.construction) {
+                        is BaseUnit -> units.add(constructionButton)
+                        is Building -> {
+                            when {
+                                dto.construction.isWonder -> buildableWonders += constructionButton
+                                dto.construction.isNationalWonder -> buildableNationalWonders += constructionButton
+                                else -> buildableBuildings += constructionButton
+                            }
+                        }
+                        is PerpetualConstruction -> specialConstructions.add(constructionButton)
+                    }
+                }
+
+                availableConstructionsTable.addCategory("Units", units, constructionsQueueTable.width)
+                availableConstructionsTable.addCategory("Wonders", buildableWonders, constructionsQueueTable.width)
+                availableConstructionsTable.addCategory("National Wonders", buildableNationalWonders, constructionsQueueTable.width)
+                availableConstructionsTable.addCategory("Buildings", buildableBuildings, constructionsQueueTable.width)
+                availableConstructionsTable.addCategory("Other", specialConstructions, constructionsQueueTable.width)
+
+
+                availableConstructionsScrollPane.layout()
+                availableConstructionsScrollPane.scrollY = constrScrollY
+                availableConstructionsScrollPane.updateVisualScroll()
+                val usedHeight = showCityInfoTableButton.height + constructionsQueueScrollPane.height + buttons.height + 3f * pad + 10f
+                getCell(availableConstructionsScrollPane).maxHeight(stage.height - usedHeight)
+                pack()
+
+                setPosition(5f, stage.height - 5f, Align.topLeft)
             }
         }
-
-        for (specialConstruction in PerpetualConstruction.perpetualConstructionsMap.values
-                .filter { it.shouldBeDisplayed(cityConstructions) }) {
-            specialConstructions += getConstructionButton(specialConstruction,
-                    "Produce [${specialConstruction.name}]".tr()
-                            + specialConstruction.getProductionTooltip(city))
-        }
-
-        availableConstructionsTable.addCategory("Units", units, constructionsQueueTable.width)
-        availableConstructionsTable.addCategory("Wonders", buildableWonders, constructionsQueueTable.width)
-        availableConstructionsTable.addCategory("National Wonders", buildableNationalWonders, constructionsQueueTable.width)
-        availableConstructionsTable.addCategory("Buildings", buildableBuildings, constructionsQueueTable.width)
-        availableConstructionsTable.addCategory("Other", specialConstructions, constructionsQueueTable.width)
     }
 
     private fun getQueueEntry(constructionQueueIndex: Int, name: String): Table {
@@ -234,8 +263,9 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
                 Color.BROWN.cpy().lerp(Color.WHITE, 0.5f), Color.WHITE)
     }
 
-
-    private fun getConstructionButton(construction: IConstruction, buttonText: String, rejectionReason: String = ""): Table {
+    class ConstructionButtonDTO(val construction: IConstruction, val buttonText: String, val rejectionReason: String = "")
+    private fun getConstructionButton(constructionButtonDTO: ConstructionButtonDTO): Table {
+        val construction = constructionButtonDTO.construction
         val pickConstructionButton = Table()
 
         pickConstructionButton.align(Align.left).pad(5f)
@@ -248,9 +278,9 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
 
         pickConstructionButton.add(getProgressBar(construction.name)).padRight(5f)
         pickConstructionButton.add(ImageGetter.getConstructionImage(construction.name).surroundWithCircle(40f)).padRight(10f)
-        pickConstructionButton.add(buttonText.toLabel()).expandX().fillX()
+        pickConstructionButton.add(constructionButtonDTO.buttonText.toLabel()).expandX().fillX()
 
-        if(!cannotAddConstructionToQueue(construction, cityScreen.city, cityScreen.city.cityConstructions)) {
+        if (!cannotAddConstructionToQueue(construction, cityScreen.city, cityScreen.city.cityConstructions)) {
             val addToQueueButton = ImageGetter.getImage("OtherIcons/New").apply { color = Color.BLACK }.surroundWithCircle(40f)
             addToQueueButton.onClick { addConstructionToQueue(construction, cityScreen.city.cityConstructions) }
             pickConstructionButton.add(addToQueueButton)
@@ -258,9 +288,9 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
         pickConstructionButton.row()
 
         // no rejection reason means we can build it!
-        if(rejectionReason != "") {
+        if (constructionButtonDTO.rejectionReason != "") {
             pickConstructionButton.color = Color.GRAY
-            pickConstructionButton.add(rejectionReason.toLabel(Color.RED).apply{ wrap = true } )
+            pickConstructionButton.add(constructionButtonDTO.rejectionReason.toLabel(Color.RED).apply { wrap = true })
                     .colspan(pickConstructionButton.columns).fillX().left().padTop(2f)
         }
         pickConstructionButton.onClick {
