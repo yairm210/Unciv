@@ -34,11 +34,11 @@ Is this order:
 
 ## How can I help?
 
-Programmers start [here!](https://github.com/yairm210/Unciv/wiki/Getting-Started)
+Programmers start [here](https://github.com/yairm210/Unciv/wiki/Getting-Started)!
 
-Translators start [here!](https://github.com/yairm210/Unciv/wiki/Translating)
+Translators start [here](https://github.com/yairm210/Unciv/wiki/Translating)!
 
-Modders start [here!](https://github.com/yairm210/Unciv/wiki/Mods)
+Modders start [here](https://github.com/yairm210/Unciv/wiki/Mods)!
 
 You can join us in any of the open issue, or work on improving anything you want - once you're finished, issue a pull request and it'll go into the next version!
 
@@ -59,7 +59,7 @@ If not, then the feature won't be added until we've finished all the features fr
 
 THE most common request, hands down. Everyone wants their favorite Civ in the game, I get that. But there are so many other things to work on - automations, AI, UI, graphics, bugs, and of course other features from the original game that are currently missing. Eventually we'll have them all, but the key word is "eventually".
 
-In the meantime, you can [mod it yourself!](https://github.com/yairm210/Unciv/wiki/Mods)
+In the meantime, you can [mod it yourself](https://github.com/yairm210/Unciv/wiki/Mods)!
 
 ## Will you implement Civ VI?
 
