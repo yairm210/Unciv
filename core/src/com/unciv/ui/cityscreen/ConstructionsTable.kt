@@ -1,5 +1,6 @@
 package com.unciv.ui.cityscreen
 
+import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Table
@@ -16,6 +17,7 @@ import com.unciv.models.stats.Stat
 import com.unciv.models.translations.tr
 import com.unciv.ui.cityscreen.ConstructionInfoTable.Companion.turnOrTurns
 import com.unciv.ui.utils.*
+import kotlin.concurrent.thread
 import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 
 class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScreen.skin) {
@@ -54,17 +56,10 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
     }
 
     fun update(selectedConstruction: IConstruction?) {
-
         updateButtons(selectedConstruction)
-
         updateConstructionQueue()
-
-        // Need to pack before computing space left for bottom panel
-        pack()
-
-
+        pack() // Need to pack before computing space left for bottom panel
         updateAvailableConstructions()
-
         pack()
     }
 
@@ -160,43 +155,54 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
 
     private fun updateAvailableConstructions() {
         val constrScrollY = availableConstructionsScrollPane.scrollY
-        val usedHeight = showCityInfoTableButton.height + constructionsQueueScrollPane.height + buttons.height + 3f * pad + 10f
 
-        availableConstructionsTable.clear()
+        if(!availableConstructionsTable.hasChildren()) { //
+            availableConstructionsTable.add("Loading...".toLabel()).pad(10f)
+        }
         val units = ArrayList<Table>()
         val buildableWonders = ArrayList<Table>()
         val buildableNationalWonders = ArrayList<Table>()
         val buildableBuildings = ArrayList<Table>()
         val specialConstructions = ArrayList<Table>()
 
-        val constructionButtonDTOList = getConstructionButtonDTOs()
+        thread {
+            val constructionButtonDTOList = getConstructionButtonDTOs() // Since this can be a heavy operation and leads to many ANRs on older phones...
 
-        for (dto in constructionButtonDTOList) {
-            val constructionButton = getConstructionButton(dto)
-            when (dto.construction) {
-                is BaseUnit -> units.add(constructionButton)
-                is Building -> {
-                    when {
-                        dto.construction.isWonder -> buildableWonders += constructionButton
-                        dto.construction.isNationalWonder -> buildableNationalWonders += constructionButton
-                        else -> buildableBuildings += constructionButton
+            Gdx.app.postRunnable {
+                availableConstructionsTable.clear()
+
+                for (dto in constructionButtonDTOList) {
+                    val constructionButton = getConstructionButton(dto)
+                    when (dto.construction) {
+                        is BaseUnit -> units.add(constructionButton)
+                        is Building -> {
+                            when {
+                                dto.construction.isWonder -> buildableWonders += constructionButton
+                                dto.construction.isNationalWonder -> buildableNationalWonders += constructionButton
+                                else -> buildableBuildings += constructionButton
+                            }
+                        }
+                        is PerpetualConstruction -> specialConstructions.add(constructionButton)
                     }
                 }
-                is PerpetualConstruction -> specialConstructions.add(constructionButton)
+
+                availableConstructionsTable.addCategory("Units", units, constructionsQueueTable.width)
+                availableConstructionsTable.addCategory("Wonders", buildableWonders, constructionsQueueTable.width)
+                availableConstructionsTable.addCategory("National Wonders", buildableNationalWonders, constructionsQueueTable.width)
+                availableConstructionsTable.addCategory("Buildings", buildableBuildings, constructionsQueueTable.width)
+                availableConstructionsTable.addCategory("Other", specialConstructions, constructionsQueueTable.width)
+
+
+                availableConstructionsScrollPane.layout()
+                availableConstructionsScrollPane.scrollY = constrScrollY
+                availableConstructionsScrollPane.updateVisualScroll()
+                val usedHeight = showCityInfoTableButton.height + constructionsQueueScrollPane.height + buttons.height + 3f * pad + 10f
+                getCell(availableConstructionsScrollPane).maxHeight(stage.height - usedHeight)
+                pack()
+
+                setPosition(5f, stage.height - 5f, Align.topLeft)
             }
         }
-
-        availableConstructionsTable.addCategory("Units", units, constructionsQueueTable.width)
-        availableConstructionsTable.addCategory("Wonders", buildableWonders, constructionsQueueTable.width)
-        availableConstructionsTable.addCategory("National Wonders", buildableNationalWonders, constructionsQueueTable.width)
-        availableConstructionsTable.addCategory("Buildings", buildableBuildings, constructionsQueueTable.width)
-        availableConstructionsTable.addCategory("Other", specialConstructions, constructionsQueueTable.width)
-
-
-        availableConstructionsScrollPane.layout()
-        availableConstructionsScrollPane.scrollY = constrScrollY
-        availableConstructionsScrollPane.updateVisualScroll()
-        getCell(availableConstructionsScrollPane).maxHeight(stage.height - usedHeight)
     }
 
     private fun getQueueEntry(constructionQueueIndex: Int, name: String): Table {
