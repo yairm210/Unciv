@@ -90,7 +90,10 @@ class SaveGameScreen : PickerScreen() {
         rightSideButton.setText("Saving...".tr())
         thread(name = "SaveGame") {
             GameSaver.saveGame(UncivGame.Current.gameInfo, gameNameTextField.text) {
-                Gdx.app.postRunnable { UncivGame.Current.setWorldScreen() }
+                Gdx.app.postRunnable {
+                    if (it != null) ToastPopup("Could not save game!", this)
+                    else UncivGame.Current.setWorldScreen()
+                }
             }
         }
     }
