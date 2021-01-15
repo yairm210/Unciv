@@ -324,15 +324,12 @@ class Building : NamedStats(), IConstruction {
             if (civInfo.victoryManager.unconstructedSpaceshipParts()[name] == 0) return "Don't need to build any more of these!"
         }
 
-        if (uniques.contains("Consumes [] []")) {
-            for (unique in uniqueObjects) when (unique.placeholderText) {
-                "Consumes [] []" -> {
-                    val resource = unique.params[1]
-                    val amount = unique.params[0].toInt()
-                    if ((civInfo.getCivResourcesByName()[resource]!!<amount) && !civInfo.gameInfo.gameParameters.godMode)
-                    return "Consumes [$amount] [$resource]"
-                }
-            }
+
+        for (unique in uniqueObjects.filter { it.placeholderText == "Consumes [] []" }) {
+            val resource = unique.params[1]
+            val amount = unique.params[0].toInt()
+            if ((civInfo.getCivResourcesByName()[resource]!!<amount) && !civInfo.gameInfo.gameParameters.godMode)
+                return "Consumes [$amount] [$resource]"
         }
 
         for (unique in uniqueObjects) when (unique.placeholderText) {

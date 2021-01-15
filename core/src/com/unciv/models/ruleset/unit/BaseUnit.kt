@@ -152,15 +152,11 @@ class BaseUnit : INamed, IConstruction {
             } else if (!civInfo.policies.adoptedPolicies.contains(filter)) return "Policy is not adopted"
         }
         if (requiredResource != null && !civInfo.hasResource(requiredResource!!) && !civInfo.gameInfo.gameParameters.godMode) return "Consumes 1 [$requiredResource]"
-        if (uniques.contains("Consumes [] []")) {
-            for (unique in uniqueObjects) when (unique.placeholderText) {
-                "Consumes [] []" -> {
+        for (unique in uniqueObjects.filter { it.placeholderText == "Consumes [] []" }) {
                     val resource = unique.params[1]
                     val amount = unique.params[0].toInt()
                     if ((civInfo.getCivResourcesByName()[resource]!!<amount) && !civInfo.gameInfo.gameParameters.godMode)
                         return "Consumes [$amount] [$resource]"
-                }
-            }
         }
         if (uniques.contains(Constants.settlerUnique) && civInfo.isCityState()) return "No settler for city-states"
         if (uniques.contains(Constants.settlerUnique) && civInfo.isOneCityChallenger()) return "No settler for players in One City Challenge"

@@ -74,6 +74,13 @@ class CivilizationInfo {
     @Transient
     var mapUnitUniqueMap = UniqueMap()
 
+    fun updateUniques() {
+        mapUnitUniqueMap.clear()
+        for (unit in getCivUnits())
+            for (unique in unit.tempUniques)
+                mapUnitUniqueMap.addUnique(unique)
+    }
+
     /** Used in online multiplayer for human players */
     var playerId = ""
     var gold = 0
@@ -241,6 +248,7 @@ class CivilizationInfo {
         val newList = ArrayList(units)
         newList.add(mapUnit)
         units = newList
+        updateUniques()
 
         if (updateCivInfo) {
             // Not relevant when updating tileinfo transients, since some info of the civ itself isn't yet available,
@@ -254,6 +262,7 @@ class CivilizationInfo {
         val newList = ArrayList(units)
         newList.remove(mapUnit)
         units = newList
+        updateUniques()
         updateStatsForNextTurn() // unit upkeep
         updateDetailedCivResources()
     }

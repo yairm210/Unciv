@@ -152,7 +152,6 @@ class CivInfoTransientUpdater(val civInfo: CivilizationInfo) {
         }
 
         for (dip in civInfo.diplomacy.values) newDetailedCivResources.add(dip.resourcesFromTrade())
-
         for (unique in civInfo.mapUnitUniqueMap.getUniques("Consumes [] []")) { // E.G "Consumes [1] [Iron]"
             val amount = unique.params[0].toInt()
             val resource = civInfo.gameInfo.ruleSet.tileResources[unique.params[1]]
