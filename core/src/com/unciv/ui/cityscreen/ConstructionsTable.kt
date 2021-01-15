@@ -54,44 +54,30 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
     }
 
     fun update(selectedConstruction: IConstruction?) {
-        val queueScrollY = constructionsQueueScrollPane.scrollY
-        val constrScrollY = availableConstructionsScrollPane.scrollY
-
-        clearContent()
 
         updateButtons(selectedConstruction)
 
         updateConstructionQueue()
-        constructionsQueueScrollPane.layout()
-        constructionsQueueScrollPane.scrollY = queueScrollY
-        constructionsQueueScrollPane.updateVisualScroll()
-        getCell(constructionsQueueScrollPane).maxHeight(stage.height / 3 - 10f)
 
         // Need to pack before computing space left for bottom panel
         pack()
-        val usedHeight = showCityInfoTableButton.height + constructionsQueueScrollPane.height + buttons.height + 3f * pad + 10f
+
 
         updateAvailableConstructions()
-        availableConstructionsScrollPane.layout()
-        availableConstructionsScrollPane.scrollY = constrScrollY
-        availableConstructionsScrollPane.updateVisualScroll()
-        getCell(availableConstructionsScrollPane).maxHeight(stage.height - usedHeight)
 
         pack()
     }
 
-    private fun clearContent() {
-        constructionsQueueTable.clear()
-        buttons.clear()
-        availableConstructionsTable.clear()
-    }
-
     private fun updateButtons(construction: IConstruction?) {
+        buttons.clear()
         buttons.add(getQueueButton(construction)).padRight(5f)
         buttons.add(getBuyButton(construction))
     }
 
     private fun updateConstructionQueue() {
+        val queueScrollY = constructionsQueueScrollPane.scrollY
+        constructionsQueueTable.clear()
+
         val city = cityScreen.city
         val cityConstructions = city.cityConstructions
         val currentConstruction = cityConstructions.currentConstructionFromQueue
@@ -123,6 +109,12 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
             }
         } else
             constructionsQueueTable.add("Queue empty".toLabel()).pad(2f).row()
+
+
+        constructionsQueueScrollPane.layout()
+        constructionsQueueScrollPane.scrollY = queueScrollY
+        constructionsQueueScrollPane.updateVisualScroll()
+        getCell(constructionsQueueScrollPane).maxHeight(stage.height / 3 - 10f)
     }
 
     private fun getConstructionButtonDTOs():ArrayList<ConstructionButtonDTO> {
@@ -167,6 +159,10 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
     }
 
     private fun updateAvailableConstructions() {
+        val constrScrollY = availableConstructionsScrollPane.scrollY
+        val usedHeight = showCityInfoTableButton.height + constructionsQueueScrollPane.height + buttons.height + 3f * pad + 10f
+
+        availableConstructionsTable.clear()
         val units = ArrayList<Table>()
         val buildableWonders = ArrayList<Table>()
         val buildableNationalWonders = ArrayList<Table>()
@@ -175,7 +171,7 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
 
         val constructionButtonDTOList = getConstructionButtonDTOs()
 
-        for(dto in constructionButtonDTOList) {
+        for (dto in constructionButtonDTOList) {
             val constructionButton = getConstructionButton(dto)
             when (dto.construction) {
                 is BaseUnit -> units.add(constructionButton)
@@ -195,6 +191,12 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
         availableConstructionsTable.addCategory("National Wonders", buildableNationalWonders, constructionsQueueTable.width)
         availableConstructionsTable.addCategory("Buildings", buildableBuildings, constructionsQueueTable.width)
         availableConstructionsTable.addCategory("Other", specialConstructions, constructionsQueueTable.width)
+
+
+        availableConstructionsScrollPane.layout()
+        availableConstructionsScrollPane.scrollY = constrScrollY
+        availableConstructionsScrollPane.updateVisualScroll()
+        getCell(availableConstructionsScrollPane).maxHeight(stage.height - usedHeight)
     }
 
     private fun getQueueEntry(constructionQueueIndex: Int, name: String): Table {
