@@ -78,7 +78,12 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
 
         minimapWrapper.x = stage.width - minimapWrapper.width
 
-        mapHolder.addTiles()
+        try { // Most memory errors occur here, so this is a sort of catch-all
+            mapHolder.addTiles()
+        } catch (outOfMemoryError:OutOfMemoryError){
+            mapHolder.clear() // hopefully enough memory will be freed to be able to display the toast popup
+            ToastPopup("Not enough memory on phone to load game!", this)
+        }
 
         techButtonHolder.touchable = Touchable.enabled
         techButtonHolder.onClick(UncivSound.Paper) {
