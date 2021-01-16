@@ -201,11 +201,14 @@ class CityConstructions {
         val cityStatsForConstruction: Stats
         if (currentConstructionFromQueue == constructionName) cityStatsForConstruction = cityInfo.cityStats.currentCityStats
         else {
-            // The ol' Switcharoo - what would our stats be if that was our current construction?
-            // Since this is only ever used for UI purposes, I feel fine with having it be a bit inefficient
-            //   and recalculating the entire city stats
-            // We don't want to change our current construction queue - what if we have an empty queue, too many changes to check for -
-            //  So we must clone it and see what would happen if that was our construction
+            /*
+            The ol' Switcharoo - what would our stats be if that was our current construction?
+            Since this is only ever used for UI purposes, I feel fine with having it be a bit inefficient
+            and recalculating the entire city stats
+            We don't want to change our current construction queue - what if we have an empty queue,
+             this can affect the city if we run it on another thread like in ConstructionsTable -
+            So we run the numbers for the other construction
+            */
 
             val construction = cityInfo.cityConstructions.getConstruction(constructionName)
             cityInfo.cityStats.update(construction)
