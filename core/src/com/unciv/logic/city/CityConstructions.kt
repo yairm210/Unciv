@@ -199,15 +199,11 @@ class CityConstructions {
             //   and recalculating the entire city stats
             // We don't want to change our current construction queue - what if we have an empty queue, too many changes to check for -
             //  So we must clone it and see what would happen if that was our construction
-            val cityConstructionsClone = clone()
-            cityConstructionsClone.currentConstructionFromQueue = constructionName
-            cityConstructionsClone.cityInfo = cityInfo
-            cityConstructionsClone.setTransients()
-            cityInfo.cityConstructions = cityConstructionsClone
-            cityInfo.cityStats.update()
+
+            val construction = cityInfo.cityConstructions.getConstruction(constructionName)
+            cityInfo.cityStats.update(construction)
             cityStatsForConstruction = cityInfo.cityStats.currentCityStats
             // revert!
-            cityInfo.cityConstructions = this
             cityInfo.cityStats.update()
         }
 

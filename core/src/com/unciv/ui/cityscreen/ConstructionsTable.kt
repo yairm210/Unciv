@@ -166,9 +166,10 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
         val specialConstructions = ArrayList<Table>()
 
         thread {
-            val constructionButtonDTOList = getConstructionButtonDTOs() // Since this can be a heavy operation and leads to many ANRs on older phones...
 
             Gdx.app.postRunnable {
+                // For some bizarre reason, moving this to another thread messes up the entire construction list?! Haven't figured out why yet
+                val constructionButtonDTOList = getConstructionButtonDTOs() // Since this can be a heavy operation and leads to many ANRs on older phones...
                 availableConstructionsTable.clear()
 
                 for (dto in constructionButtonDTOList) {

@@ -89,9 +89,8 @@ class CityStats {
         return stats
     }
 
-    private fun getStatPercentBonusesFromMarble(): Stats {
+    private fun getStatPercentBonusesFromMarble(construction: IConstruction): Stats {
         val stats = Stats()
-        val construction = cityInfo.cityConstructions.getCurrentConstruction()
 
         if (construction is Building
                 && construction.isWonder
@@ -147,12 +146,11 @@ class CityStats {
         return stats
     }
 
-    private fun getStatPercentBonusesFromNationUnique(): Stats {
+    private fun getStatPercentBonusesFromNationUnique(currentConstruction: IConstruction): Stats {
         val stats = Stats()
 
-        stats.add(getStatPercentBonusesFromUniques(cityInfo.civInfo.nation.uniqueObjects.asSequence()))
+        stats.add(getStatPercentBonusesFromUniques(currentConstruction, cityInfo.civInfo.nation.uniqueObjects.asSequence()))
 
-        val currentConstruction = cityInfo.cityConstructions.getCurrentConstruction()
         if (currentConstruction is Building
                 && cityInfo.civInfo.getCapital().cityConstructions.builtBuildings.contains(currentConstruction.name)
                 && cityInfo.civInfo.hasUnique("+25% Production towards any buildings that already exist in the Capital"))
@@ -295,9 +293,8 @@ class CityStats {
         return stats
     }
 
-    private fun getStatPercentBonusesFromBuildings(): Stats {
+    private fun getStatPercentBonusesFromBuildings(currentConstruction: IConstruction): Stats {
         val stats = cityInfo.cityConstructions.getStatPercentBonuses()
-        val currentConstruction = cityInfo.cityConstructions.getCurrentConstruction()
 
         // This is to be deprecated and converted to "+[]% production when building [] in this city" - keeping it here to that mods with this can still work for now
         if (currentConstruction is BaseUnit) {
@@ -320,10 +317,9 @@ class CityStats {
         return stats
     }
 
-    private fun getStatPercentBonusesFromUniques(uniques: Sequence<Unique>): Stats {
+    private fun getStatPercentBonusesFromUniques(currentConstruction: IConstruction, uniques: Sequence<Unique>): Stats {
         val stats = Stats()
 
-        val currentConstruction = cityInfo.cityConstructions.getCurrentConstruction()
         if (currentConstruction.name == Constants.settler && cityInfo.isCapital()
                 && uniques.any { it.text == "Training of settlers increased +50% in capital" })
             stats.production += 50f
@@ -406,16 +402,16 @@ class CityStats {
     }
 
 
-    fun updateStatPercentBonusList() {
+    fun updateStatPercentBonusList(currentConstruction:IConstruction) {
         val newStatPercentBonusList = LinkedHashMap<String, Stats>()
         newStatPercentBonusList["Golden Age"] = getStatPercentBonusesFromGoldenAge(cityInfo.civInfo.goldenAges.isGoldenAge())
-        newStatPercentBonusList["Policies"] = getStatPercentBonusesFromUniques(cityInfo.civInfo.policies.policyUniques.getAllUniques())
-        newStatPercentBonusList["Buildings"] = getStatPercentBonusesFromBuildings()
-        newStatPercentBonusList["Wonders"] = getStatPercentBonusesFromUniques(cityInfo.civInfo.getBuildingUniques())
+        newStatPercentBonusList["Policies"] = getStatPercentBonusesFromUniques(currentConstruction, cityInfo.civInfo.policies.policyUniques.getAllUniques())
+        newStatPercentBonusList["Buildings"] = getStatPercentBonusesFromBuildings(currentConstruction)
+        newStatPercentBonusList["Wonders"] = getStatPercentBonusesFromUniques(currentConstruction, cityInfo.civInfo.getBuildingUniques())
         newStatPercentBonusList["Railroad"] = getStatPercentBonusesFromRailroad()
-        newStatPercentBonusList["Marble"] = getStatPercentBonusesFromMarble()
+        newStatPercentBonusList["Marble"] = getStatPercentBonusesFromMarble(currentConstruction)
         newStatPercentBonusList["Computers"] = getStatPercentBonusesFromComputers()
-        newStatPercentBonusList["National ability"] = getStatPercentBonusesFromNationUnique()
+        newStatPercentBonusList["National ability"] = getStatPercentBonusesFromNationUnique(currentConstruction)
         newStatPercentBonusList["Puppet City"] = getStatPercentBonusesFromPuppetCity()
 
         if (UncivGame.Current.superchargedForDebug) {
@@ -427,13 +423,13 @@ class CityStats {
         statPercentBonusList = newStatPercentBonusList
     }
 
-    fun update() {
+    fun update(currentConstruction: IConstruction = cityInfo.cityConstructions.getCurrentConstruction()) {
         // We need to compute Tile yields before happiness
         updateBaseStatList()
         updateCityHappiness()
-        updateStatPercentBonusList()
+        updateStatPercentBonusList(currentConstruction)
 
-        updateFinalStatList() // again, we don't edit the existing currentCityStats directly, in order to avoid concurrency exceptions
+        updateFinalStatList(currentConstruction) // again, we don't edit the existing currentCityStats directly, in order to avoid concurrency exceptions
 
         val newCurrentCityStats = Stats()
         for (stat in finalStatList.values) newCurrentCityStats.add(stat)
@@ -442,7 +438,7 @@ class CityStats {
         cityInfo.civInfo.updateStatsForNextTurn()
     }
 
-    private fun updateFinalStatList() {
+    private fun updateFinalStatList(currentConstruction: IConstruction) {
         val newFinalStatList = LinkedHashMap<String, Stats>() // again, we don't edit the existing currentCityStats directly, in order to avoid concurrency exceptions
 
         for (entry in baseStatList)
@@ -515,9 +511,8 @@ class CityStats {
         newFinalStatList["Maintenance"] = Stats().apply { gold -= buildingsMaintenance.toInt() }
 
 
-        val currentconstruction = cityInfo.cityConstructions.currentConstructionFromQueue
-        if (totalFood > 0 && cityInfo.getRuleset().units[currentconstruction]
-                        .let { it != null && it.uniques.contains("Excess Food converted to Production when under construction") }) {
+        if (totalFood > 0 && currentConstruction is BaseUnit
+                && currentConstruction.uniques.contains("Excess Food converted to Production when under construction")) {
             newFinalStatList["Excess food to production"] =
                     Stats().apply { production = totalFood; food = -totalFood }
         }
