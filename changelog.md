@@ -1,3 +1,23 @@
+## 3.12.9
+
+Solved common ANR in city screen
+
+Can handle and detect mods where the requiredBuildingInAllCities does not exist in the ruleset
+
+Made some memory errors clearer to the user
+
+Problems when saving game are now user-visible
+
+Resolved #3533 - Added confirmation when saving over existing save
+
+Fixed "Unique GP available from GP picker screen" bug
+
+Resolved #3526 - stats drilldown remains when moving between cities
+
+Buildings not displayed in civilopedia are not show to be obsoleted in tech tree
+
+Improved MultiplayerScreen loading speed - By GGGuenni
+
 ## 3.12.8
 
 Game can handle policies and ongoing constructions "disappearing" between mod versions
