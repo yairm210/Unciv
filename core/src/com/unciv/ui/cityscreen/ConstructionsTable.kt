@@ -42,9 +42,9 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
         }
 
         constructionsQueueScrollPane = ScrollPane(constructionsQueueTable.addBorder(2f, Color.WHITE))
-        constructionsQueueScrollPane.setOverscroll(false,false)
+        constructionsQueueScrollPane.setOverscroll(false, false)
         availableConstructionsScrollPane = ScrollPane(availableConstructionsTable.addBorder(2f, Color.WHITE))
-        availableConstructionsScrollPane.setOverscroll(false,false)
+        availableConstructionsScrollPane.setOverscroll(false, false)
 
         constructionsQueueTable.background = ImageGetter.getBackground(Color.BLACK)
         availableConstructionsTable.background = ImageGetter.getBackground(Color.BLACK)
@@ -98,7 +98,7 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
             queue.forEachIndexed { i, constructionName ->
                 if (i != 0)  // This is already displayed as "Current construction"
                     constructionsQueueTable.add(getQueueEntry(i, constructionName))
-                        .expandX().fillX().row()
+                            .expandX().fillX().row()
                 if (i != queue.size - 1)
                     constructionsQueueTable.addSeparator()
             }
@@ -112,7 +112,7 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
         getCell(constructionsQueueScrollPane).maxHeight(stage.height / 3 - 10f)
     }
 
-    private fun getConstructionButtonDTOs():ArrayList<ConstructionButtonDTO> {
+    private fun getConstructionButtonDTOs(): ArrayList<ConstructionButtonDTO> {
         val constructionButtonDTOList = ArrayList<ConstructionButtonDTO>()
 
         val city = cityScreen.city
@@ -156,7 +156,7 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
     private fun updateAvailableConstructions() {
         val constrScrollY = availableConstructionsScrollPane.scrollY
 
-        if(!availableConstructionsTable.hasChildren()) { //
+        if (!availableConstructionsTable.hasChildren()) { //
             availableConstructionsTable.add("Loading...".toLabel()).pad(10f)
         }
         val units = ArrayList<Table>()
@@ -225,11 +225,11 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
 
         val constructionResource = cityConstructions.getConstruction(name).getResource()
 
-        if(constructionResource != null)
-            text += "\n"+"Consumes 1 [$constructionResource]".tr()
+        if (constructionResource != null)
+            text += "\n" + "Consumes 1 [$constructionResource]".tr()
 
         table.defaults().pad(2f).minWidth(40f)
-        if(isFirstConstructionOfItsKind) table.add(getProgressBar(name)).minWidth(5f)
+        if (isFirstConstructionOfItsKind) table.add(getProgressBar(name)).minWidth(5f)
         else table.add().minWidth(5f)
         table.add(ImageGetter.getConstructionImage(name).surroundWithCircle(40f)).padRight(10f)
         table.add(text.toLabel()).expandX().fillX().left()
@@ -252,7 +252,7 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
         return table
     }
 
-    fun getProgressBar(constructionName:String): Table {
+    fun getProgressBar(constructionName: String): Table {
         val cityConstructions = cityScreen.city.cityConstructions
         val construction = cityConstructions.getConstruction(constructionName)
         if (construction is PerpetualConstruction) return Table()
@@ -265,6 +265,7 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
     }
 
     class ConstructionButtonDTO(val construction: IConstruction, val buttonText: String, val rejectionReason: String = "")
+
     private fun getConstructionButton(constructionButtonDTO: ConstructionButtonDTO): Table {
         val construction = constructionButtonDTO.construction
         val pickConstructionButton = Table()
@@ -306,7 +307,7 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
 
     private fun isSelectedQueueEntry(): Boolean = selectedQueueEntry >= 0
 
-    fun cannotAddConstructionToQueue(construction:IConstruction, city:CityInfo, cityConstructions:CityConstructions): Boolean {
+    fun cannotAddConstructionToQueue(construction: IConstruction, city: CityInfo, cityConstructions: CityConstructions): Boolean {
         return cityConstructions.isQueueFull()
                 || !cityConstructions.getConstruction(construction.name).isBuildable(cityConstructions)
                 || !cityScreen.canChangeState
@@ -325,7 +326,7 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
                 button.disable()
             else {
                 button.onClick {
-                    cityConstructions.removeFromQueue(selectedQueueEntry,false)
+                    cityConstructions.removeFromQueue(selectedQueueEntry, false)
                     cityScreen.selectedConstruction = null
                     selectedQueueEntry = -1
                     cityScreen.update()
@@ -345,7 +346,7 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
         return button
     }
 
-    fun addConstructionToQueue(construction:IConstruction, cityConstructions: CityConstructions) {
+    fun addConstructionToQueue(construction: IConstruction, cityConstructions: CityConstructions) {
         cityConstructions.addToQueue(construction.name)
         if (!construction.shouldBeDisplayed(cityConstructions)) cityScreen.selectedConstruction = null
         cityScreen.update()
@@ -400,7 +401,7 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
                     || !cityScreen.canChangeState
                     || city.isPuppet || city.isInResistance()
                     || !city.canPurchase(construction)
-                    || (constructionGoldCost > city.civInfo.gold && !city.civInfo.gameInfo.gameParameters.godMode) )
+                    || (constructionGoldCost > city.civInfo.gold && !city.civInfo.gameInfo.gameParameters.godMode))
                 button.disable()
         }
 
@@ -450,7 +451,7 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
             tab.touchable = Touchable.enabled
             tab.onClick {
                 tab.touchable = Touchable.disabled
-                city.cityConstructions.removeFromQueue(constructionQueueIndex,false)
+                city.cityConstructions.removeFromQueue(constructionQueueIndex, false)
                 cityScreen.selectedConstruction = null
                 cityScreen.update()
             }

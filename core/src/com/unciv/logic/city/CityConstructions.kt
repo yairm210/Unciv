@@ -27,17 +27,24 @@ import kotlin.math.roundToInt
  * @property constructionQueue a list of constructions names enqueued
  */
 class CityConstructions {
-    @Transient lateinit var cityInfo: CityInfo
-    @Transient private var builtBuildingObjects = ArrayList<Building>()
-    @Transient val builtBuildingUniqueMap = UniqueMap()
+    @Transient
+    lateinit var cityInfo: CityInfo
+
+    @Transient
+    private var builtBuildingObjects = ArrayList<Building>()
+
+    @Transient
+    val builtBuildingUniqueMap = UniqueMap()
 
     var builtBuildings = HashSet<String>()
     val inProgressConstructions = HashMap<String, Int>()
     var currentConstructionFromQueue: String
         get() {
-            if(constructionQueue.isEmpty()) return "" else return constructionQueue.first()
+            if (constructionQueue.isEmpty()) return "" else return constructionQueue.first()
         }
-        set(value) { if(constructionQueue.isEmpty()) constructionQueue.add(value) else constructionQueue[0]=value }
+        set(value) {
+            if (constructionQueue.isEmpty()) constructionQueue.add(value) else constructionQueue[0] = value
+        }
     var currentConstructionIsUserSet = false
     var constructionQueue = mutableListOf<String>()
     val queueMaxSize = 10
@@ -47,7 +54,7 @@ class CityConstructions {
         val toReturn = CityConstructions()
         toReturn.builtBuildings.addAll(builtBuildings)
         toReturn.inProgressConstructions.putAll(inProgressConstructions)
-        toReturn.currentConstructionIsUserSet=currentConstructionIsUserSet
+        toReturn.currentConstructionIsUserSet = currentConstructionIsUserSet
         toReturn.constructionQueue.addAll(constructionQueue)
         return toReturn
     }
@@ -122,7 +129,7 @@ class CityConstructions {
            currentConstruction changed on another thread */
         val currentConstructionSnapshot = currentConstructionFromQueue
         var result = currentConstructionSnapshot.tr()
-        if (currentConstructionSnapshot!=""
+        if (currentConstructionSnapshot != ""
                 && !PerpetualConstruction.perpetualConstructionsMap.containsKey(currentConstructionSnapshot)) {
             val turnsLeft = turnsToConstruction(currentConstructionSnapshot)
             result += " - $turnsLeft${Fonts.turn}"
@@ -163,14 +170,14 @@ class CityConstructions {
             }
         }
 
-        class NotBuildingOrUnitException(message:String):Exception(message)
+        class NotBuildingOrUnitException(message: String) : Exception(message)
         throw NotBuildingOrUnitException("$constructionName is not a building or a unit!")
     }
 
     internal fun getBuiltBuildings(): Sequence<Building> = builtBuildingObjects.asSequence()
 
     fun containsBuildingOrEquivalent(building: String): Boolean =
-            isBuilt(building) || getBuiltBuildings().any{it.replaces==building}
+            isBuilt(building) || getBuiltBuildings().any { it.replaces == building }
 
     fun getWorkDone(constructionName: String): Int {
         if (inProgressConstructions.containsKey(constructionName)) return inProgressConstructions[constructionName]!!
@@ -188,7 +195,7 @@ class CityConstructions {
 
     fun turnsToConstruction(constructionName: String, useStoredProduction: Boolean = true): Int {
         val workLeft = getRemainingWork(constructionName, useStoredProduction)
-        if(workLeft < 0) // we've done more work than actually necessary - possible if circumstances cause buildings to be cheaper later
+        if (workLeft < 0) // we've done more work than actually necessary - possible if circumstances cause buildings to be cheaper later
             return 1 // we'll finish this next turn
 
         val cityStatsForConstruction: Stats
@@ -214,9 +221,11 @@ class CityConstructions {
     //endregion
 
     //region state changing functions
-    fun setTransients(){
-        builtBuildingObjects = ArrayList(builtBuildings.map { cityInfo.getRuleset().buildings[it]
-                    ?: throw java.lang.Exception("Building $it is not found!")})
+    fun setTransients() {
+        builtBuildingObjects = ArrayList(builtBuildings.map {
+            cityInfo.getRuleset().buildings[it]
+                    ?: throw java.lang.Exception("Building $it is not found!")
+        })
         updateUniques()
     }
 
@@ -226,11 +235,11 @@ class CityConstructions {
         inProgressConstructions[currentConstructionFromQueue] = inProgressConstructions[currentConstructionFromQueue]!! + productionToAdd
     }
 
-    fun constructIfEnough(){
+    fun constructIfEnough() {
         validateConstructionQueue()
 
         val construction = getConstruction(currentConstructionFromQueue)
-        if(construction is PerpetualConstruction) chooseNextConstruction() // check every turn if we could be doing something better, because this doesn't end by itself
+        if (construction is PerpetualConstruction) chooseNextConstruction() // check every turn if we could be doing something better, because this doesn't end by itself
         else {
             val productionCost = construction.getProductionCost(cityInfo.civInfo)
             if (inProgressConstructions.containsKey(currentConstructionFromQueue)
@@ -244,7 +253,7 @@ class CityConstructions {
         validateConstructionQueue()
         validateInProgressConstructions()
 
-        if(getConstruction(currentConstructionFromQueue) !is PerpetualConstruction)
+        if (getConstruction(currentConstructionFromQueue) !is PerpetualConstruction)
             addProductionPoints(cityStats.production.roundToInt())
     }
 
@@ -301,24 +310,24 @@ class CityConstructions {
             cityInfo.civInfo.addNotification("[${construction.name}] has been built in [" + cityInfo.name + "]", cityInfo.location, Color.BROWN)
     }
 
-    fun addBuilding(buildingName:String){
+    fun addBuilding(buildingName: String) {
         val buildingObject = cityInfo.getRuleset().buildings[buildingName]!!
         builtBuildingObjects = builtBuildingObjects.withItem(buildingObject)
         builtBuildings.add(buildingName)
         updateUniques()
     }
 
-    fun removeBuilding(buildingName:String){
+    fun removeBuilding(buildingName: String) {
         val buildingObject = cityInfo.getRuleset().buildings[buildingName]!!
         builtBuildingObjects = builtBuildingObjects.withoutItem(buildingObject)
         builtBuildings.remove(buildingName)
         updateUniques()
     }
 
-    fun updateUniques(){
+    fun updateUniques() {
         builtBuildingUniqueMap.clear()
-        for(building in getBuiltBuildings())
-            for(unique in building.uniqueObjects)
+        for (building in getBuiltBuildings())
+            for (unique in building.uniqueObjects)
                 builtBuildingUniqueMap.addUnique(unique)
     }
 
@@ -369,7 +378,7 @@ class CityConstructions {
         return cultureBuildingToBuild
     }
 
-    private fun removeCurrentConstruction() = removeFromQueue(0,true)
+    private fun removeCurrentConstruction() = removeFromQueue(0, true)
 
     fun chooseNextConstruction() {
         validateConstructionQueue()
@@ -398,14 +407,13 @@ class CityConstructions {
     }
 
     /** If this was done automatically, we should automatically try to choose a new construction and treat it as such */
-    fun removeFromQueue(constructionQueueIndex: Int, automatic:Boolean) {
+    fun removeFromQueue(constructionQueueIndex: Int, automatic: Boolean) {
         constructionQueue.removeAt(constructionQueueIndex)
-        if (constructionQueue.isEmpty()){
-            if(automatic) chooseNextConstruction()
+        if (constructionQueue.isEmpty()) {
+            if (automatic) chooseNextConstruction()
             else constructionQueue.add("Nothing") // To prevent Construction Automation
             currentConstructionIsUserSet = false
-        }
-        else currentConstructionIsUserSet = true // we're just continuing the regular queue
+        } else currentConstructionIsUserSet = true // we're just continuing the regular queue
     }
 
     fun raisePriority(constructionQueueIndex: Int) {
@@ -414,7 +422,7 @@ class CityConstructions {
 
     // Lowering == Highering next element in queue
     fun lowerPriority(constructionQueueIndex: Int) {
-        raisePriority(constructionQueueIndex+1)
+        raisePriority(constructionQueueIndex + 1)
     }
 
     //endregion
@@ -423,4 +431,4 @@ class CityConstructions {
         this[idx1] = this[idx2]
         this[idx2] = tmp
     }
-} // for json parsing, we need to have a default constructor
+}
