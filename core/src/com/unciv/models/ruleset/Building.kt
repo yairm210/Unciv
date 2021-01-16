@@ -307,6 +307,8 @@ class Building : NamedStats(), IConstruction {
         if (isNationalWonder) {
             if (civInfo.cities.any { it.cityConstructions.isBuilt(name) })
                 return "National Wonder is already built"
+            if (requiredBuildingInAllCities != null && civInfo.gameInfo.ruleSet.buildings[requiredBuildingInAllCities!!] == null)
+                return "Required building in all cities does not exist in the ruleset!"
             if (requiredBuildingInAllCities != null
                     && civInfo.cities.any {
                         !it.isPuppet && !it.cityConstructions
