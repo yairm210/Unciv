@@ -30,5 +30,8 @@ jobs:
           java-version: '8'
 
       # Runs a set of commands using the runners shell
-      - name: Run a multi-line script
+      - name: check
         run: ./gradlew check
+
+      - name: test
+        run: ./gradlew tests:test
