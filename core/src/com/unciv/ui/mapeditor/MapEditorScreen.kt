@@ -1,21 +1,15 @@
 package com.unciv.ui.mapeditor
 
-import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.InputEvent
 import com.badlogic.gdx.scenes.scene2d.InputListener
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
-import com.badlogic.gdx.scenes.scene2d.ui.SelectBox
-import com.badlogic.gdx.scenes.scene2d.ui.Skin
-import com.badlogic.gdx.utils.Array
-import com.unciv.logic.MapSaver
 import com.unciv.logic.map.ScenarioMap
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
-import com.unciv.models.translations.tr
 import com.unciv.ui.newgamescreen.GameSetupInfo
 import com.unciv.ui.utils.*
 
@@ -33,25 +27,6 @@ class MapEditorScreen(): CameraStageBaseScreen() {
 
     private val showHideEditorOptionsButton = ">".toTextButton()
 
-
-    constructor(mapNameToLoad: String?) : this() {
-        var mapToLoad = mapNameToLoad
-        if (mapToLoad == null) {
-            val existingSaves = MapSaver.getMaps()
-            if (existingSaves.isNotEmpty())
-                mapToLoad = existingSaves.first().name()
-        }
-
-        if (mapToLoad != null) {
-            mapName = mapToLoad
-            scenarioName = mapToLoad
-            tileMap = MapSaver.loadMap(mapName)
-        }
-
-        initialize()
-    }
-
-    constructor(mapFile:FileHandle):this()
 
     constructor(map: TileMap) : this() {
         tileMap = map
@@ -178,24 +153,7 @@ class MapEditorScreen(): CameraStageBaseScreen() {
         }
     }
 
-    fun hasScenario(): Boolean {
-        return this.scenarioMap != null
-    }
-}
-
-class TranslatedSelectBox(values : Collection<String>, default:String, skin: Skin) : SelectBox<TranslatedSelectBox.TranslatedString>(skin) {
-    class TranslatedString(val value: String) {
-        val translation = value.tr()
-        override fun toString() = translation
-    }
-
-    init {
-        val array = Array<TranslatedString>()
-        values.forEach { array.add(TranslatedString(it)) }
-        items = array
-        val defaultItem = array.firstOrNull { it.value == default }
-        selected = if (defaultItem != null) defaultItem else array.first()
-    }
+    fun hasScenario() = this.scenarioMap != null
 }
 
 

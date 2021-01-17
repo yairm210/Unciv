@@ -16,7 +16,7 @@ import kotlin.random.Random
 
 
 class MapGenerator(val ruleset: Ruleset) {
-    var randomness = MapGenerationRandomness()
+    private var randomness = MapGenerationRandomness()
 
     fun generateMap(mapParameters: MapParameters, seed: Long = System.currentTimeMillis()): TileMap {
         val mapRadius = mapParameters.size.radius
@@ -185,9 +185,11 @@ class MapGenerator(val ruleset: Ruleset) {
             var elevation = randomness.getPerlinNoise(tile, elevationSeed, scale = 2.0)
                     elevation = abs(elevation).pow(1.0 - tileMap.mapParameters.elevationExponent.toDouble()) * elevation.sign
 
-            if (elevation <= 0.5) tile.baseTerrain = Constants.plains
-            else if (elevation <= 0.7) tile.baseTerrain = Constants.hill
-            else if (elevation <= 1.0) tile.baseTerrain = Constants.mountain
+            when {
+                elevation <= 0.5 -> tile.baseTerrain = Constants.plains
+                elevation <= 0.7 -> tile.baseTerrain = Constants.hill
+                elevation <= 1.0 -> tile.baseTerrain = Constants.mountain
+            }
         }
     }
 
@@ -342,10 +344,11 @@ class MapGenerationRandomness{
 }
 
 
-class RiverCoordinate(val position: Vector2, val bottomRightOrLeft: BottomRightOrLeft){
-    enum class BottomRightOrLeft{
+class RiverCoordinate(val position: Vector2, val bottomRightOrLeft: BottomRightOrLeft) {
+    enum class BottomRightOrLeft {
         /** 7 O'Clock of the tile */
         BottomLeft,
+
         /** 5 O'Clock of the tile */
         BottomRight
     }
@@ -366,4 +369,3 @@ class RiverCoordinate(val position: Vector2, val bottomRightOrLeft: BottomRightO
         }
     }
 }
-

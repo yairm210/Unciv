@@ -119,19 +119,20 @@ class BaseUnit : INamed, IConstruction {
                 || rejectionReason.startsWith("Consumes")
     }
 
-    fun getRejectionReason(construction: CityConstructions): String {
-        if (unitType.isWaterUnit() && !construction.cityInfo.getCenterTile().isCoastalTile())
+    fun getRejectionReason(cityConstructions: CityConstructions): String {
+        if (unitType.isWaterUnit() && !cityConstructions.cityInfo.getCenterTile().isCoastalTile())
             return "Can only build water units in coastal cities"
+        val civInfo = cityConstructions.cityInfo.civInfo
         for (unique in uniqueObjects.filter { it.placeholderText == "Not displayed as an available construction without []" }) {
             val filter = unique.params[0]
-            if (filter in construction.cityInfo.civInfo.gameInfo.ruleSet.tileResources && !construction.cityInfo.civInfo.hasResource(filter)
-                    || filter in construction.cityInfo.civInfo.gameInfo.ruleSet.buildings && !construction.containsBuildingOrEquivalent(filter))
+            if (filter in civInfo.gameInfo.ruleSet.tileResources && !civInfo.hasResource(filter)
+                    || filter in civInfo.gameInfo.ruleSet.buildings && !cityConstructions.containsBuildingOrEquivalent(filter))
                 return "Should not be displayed"
         }
-        val civRejectionReason = getRejectionReason(construction.cityInfo.civInfo)
+        val civRejectionReason = getRejectionReason(civInfo)
         if (civRejectionReason != "") return civRejectionReason
         for (unique in uniqueObjects.filter { it.placeholderText == "Requires at least [] population" })
-            if (unique.params[0].toInt() > construction.cityInfo.population.population)
+            if (unique.params[0].toInt() > cityConstructions.cityInfo.population.population)
                 return unique.text
         return ""
     }
