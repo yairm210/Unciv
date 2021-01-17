@@ -359,6 +359,8 @@ object UnitActions {
         val finalActions = ArrayList<UnitAction>()
         for (unique in unit.getMatchingUniques("Can construct []")) {
             val improvementName = unique.params[0]
+            val improvement = tile.ruleset.tileImprovements[improvementName]
+            if (improvement == null) continue
             finalActions += UnitAction(
                     type = UnitActionType.Create,
                     title = "Create [$improvementName]",
@@ -381,9 +383,8 @@ object UnitActions {
                         addGoldPerGreatPersonUsage(unit.civInfo)
                         unit.destroy()
                     }.takeIf {
-                        unit.currentMovement > 0f && !tile.isWater &&
-                                !tile.isCityCenter() && !tile.isImpassible() &&
-                                tile.improvement != improvementName &&
+                        unit.currentMovement > 0f && tile.canBuildImprovement(improvement, unit.civInfo)
+                                && !tile.isImpassible() && // Not 100% sure that this check is necessary...
                                 // citadel can be built only next to or within own borders
                                 (improvementName != Constants.citadel ||
                                         tile.neighbors.any { it.getOwner() == unit.civInfo })
