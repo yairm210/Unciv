@@ -354,6 +354,10 @@ class CityStats {
         if (uniques.any { it.text == "Culture in all cities increased by 25%" })
             stats.culture += 25f
 
+        for (unique in uniques.filter {"+[]% [] in all cities"}) {
+            stats.add(Stat.valueOf(unique.params[1]), unique.params[0].toFloat())
+        }
+
         return stats
     }
 
