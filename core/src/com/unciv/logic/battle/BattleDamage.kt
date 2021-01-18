@@ -219,7 +219,7 @@ object BattleDamage {
 
         if (tile.neighbors.flatMap { it.getUnits() }
                         .any { it.hasUnique("-10% combat strength for adjacent enemy units") && it.civInfo.isAtWarWith(unit.getCivInfo()) })
-            modifiers["Haka War Dance"] = -10
+            modifiers["Intimidation"] = -10
 
 
         val isRoughTerrain = tile.isRoughTerrain()
