@@ -65,8 +65,19 @@ jobs:
           echo ./butler push deploy/Unciv-Linux64.zip yairm210/unciv:Linux64     --userversion ${{steps.tag.outputs.tag}};
           ./gradlew desktop:zipLinuxFilesForJar;
 
-          
+
+      - name: Upload binaries to release
+        if: github.event_name == 'push' && contains(github.ref, 'refs/tags/') 
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: deploy/*
+          tag: ${{ github.ref }}
+          overwrite: true
+          file_glob: true
+
       - name: Upload release binaries
+        if: cancelled() && github.event_name == 'push' && contains(github.ref, 'refs/tags/')
         uses: alexellis/upload-assets@0.2.2
         env:
           GITHUB_TOKEN: ${{ github.token }}
