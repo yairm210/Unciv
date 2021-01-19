@@ -66,3 +66,9 @@ jobs:
           ./gradlew desktop:zipLinuxFilesForJar;
 
           
+      - name: Upload release binaries
+        uses: alexellis/upload-assets@0.2.2
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          asset_paths: '["desktop/build/libs/Unciv.jar","deploy/Unciv-Linux32.zip","deploy/Unciv-Linux64.zip","deploy/Unciv-Windows32.zip","deploy/Unciv-Windows64.zip","deploy/linuxFilesForJar.zip"]'
