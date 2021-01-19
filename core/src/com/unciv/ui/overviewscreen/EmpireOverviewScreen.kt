@@ -158,7 +158,7 @@ class EmpireOverviewScreen(private var viewingPlayer:CivilizationInfo, defaultPa
                 civTable.addSeparator()
                 playerKnowsAndDefeatedCivs.forEach {
                     civTable.add(getCivMinitable(it)).left()
-                    if (playerKnowsAndUndefeatedCivs.indexOf(it) % 2 == 0) civTable.row()
+                    if (playerKnowsAndDefeatedCivs.indexOf(it) % 2 == 0) civTable.row()
                 }
             }
             val civTableScrollPane = ScrollPane(civTable)

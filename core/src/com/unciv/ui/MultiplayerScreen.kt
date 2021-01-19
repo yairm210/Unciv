@@ -8,6 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.unciv.logic.GameInfo
 import com.unciv.logic.GameSaver
 import com.unciv.logic.IdChecker
+import com.unciv.logic.UncivShowableException
 import com.unciv.models.translations.tr
 import com.unciv.ui.pickerscreens.PickerScreen
 import com.unciv.ui.utils.*
@@ -209,22 +210,27 @@ class MultiplayerScreen(previousScreen: CameraStageBaseScreen) : PickerScreen() 
         }
 
         for (gameSaveFile in savedGames) {
+            val gameTable = Table()
+            val turnIndicator = Table()
+            var currentTurnUser = ""
+
             try {
-                val gameTable = Table()
-                val turnIndicator = Table()
                 turnIndicator.add(ImageGetter.getImage("EmojiIcons/Turn"))
                 gameTable.add(turnIndicator)
 
                 val lastModifiedMillis = gameSaveFile.lastModified()
                 val gameButton = gameSaveFile.name().toTextButton()
-                var currentTurnUser = ""
 
                 gameButton.onClick {
                     selectedGameFile = gameSaveFile
                     if (multiplayerGames[gameSaveFile] != null){
                         copyGameIdButton.enable()
                         editButton.enable()
+                    } else {
+                        copyGameIdButton.disable()
+                        editButton.disable()
                     }
+
                     rightSideButton.enable()
 
                     //get Minutes since last modified
@@ -234,7 +240,16 @@ class MultiplayerScreen(previousScreen: CameraStageBaseScreen) : PickerScreen() 
                     descriptionLabel.setText(descriptionText)
                 }
 
-                thread {
+                gameTable.add(gameButton).pad(5f).row()
+                leftSubTable.add(gameTable).row()
+            } catch (ex: Exception) {
+                //skipping one save is not fatal
+                ToastPopup("Could not refresh!".tr(), this)
+                continue
+            }
+
+            thread (name = "loadGameFile") {
+                try {
                     val game = gameSaver.loadGameFromFile(gameSaveFile)
 
                     //Add games to list so saves don't have to be loaded as Files so often
@@ -250,14 +265,24 @@ class MultiplayerScreen(previousScreen: CameraStageBaseScreen) : PickerScreen() 
                         //set variable so it can be displayed when gameButton.onClick gets called
                         currentTurnUser = game.currentPlayer
                     }
-                }
+                }catch (usx: UncivShowableException){
+                    //Gets thrown when mods are not installed
+                    Gdx.app.postRunnable {
+                        val popup = Popup(this)
+                        popup.addGoodSizedLabel(usx.message!! + " in ${gameSaveFile.name()}").row()
+                        popup.addCloseButton()
+                        popup.open(true)
 
-                gameTable.add(gameButton).pad(5f).row()
-                leftSubTable.add(gameTable).row()
-            } catch (ex: Exception) {
-                //skipping one save is not fatal
-                ToastPopup("Could not refresh!".tr(), this)
-                continue
+                        turnIndicator.clear()
+                        turnIndicator.add(ImageGetter.getImage("StatIcons/Malcontent")).size(50f)
+                    }
+                }catch (ex: Exception){
+                    Gdx.app.postRunnable {
+                        ToastPopup("Could not refresh!".tr(), this)
+                        turnIndicator.clear()
+                        turnIndicator.add(ImageGetter.getImage("StatIcons/Malcontent")).size(50f)
+                    }
+                }
             }
         }
 
