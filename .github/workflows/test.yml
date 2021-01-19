@@ -9,7 +9,6 @@ on:
     branches: [ master ]
   pull_request:
     branches: [ master ]
-  release:
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -25,12 +24,12 @@ jobs:
     steps:
       
       - name: Get tag
-        if: github.event_name == 'release'
+        if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
         id: tag
         uses: dawidd6/action-get-tag@v1
         
       - name: Use tag
-        if: github.event_name == 'release'
+        if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
         run: echo ${{steps.tag.outputs.tag}}
 
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
