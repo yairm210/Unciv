@@ -56,14 +56,15 @@ jobs:
           chmod +x butler;
           ./butler -V;
           ./gradlew desktop:packrWindows32;
-          echo ./butler push deploy/Unciv-Windows32.zip yairm210/unciv:Windows32 --userversion ${{steps.tag.outputs.tag}};
+          ./butler push deploy/Unciv-Windows32.zip yairm210/unciv:Windows32 --userversion ${{steps.tag.outputs.tag}};
           ./gradlew desktop:packrWindows64;
-          echo ./butler push deploy/Unciv-Windows64.zip yairm210/unciv:Windows64 --userversion ${{steps.tag.outputs.tag}};
+          ./butler push deploy/Unciv-Windows64.zip yairm210/unciv:Windows64 --userversion ${{steps.tag.outputs.tag}};
           ./gradlew desktop:packrLinux32;
-          echo ./butler push deploy/Unciv-Linux32.zip yairm210/unciv:Linux32     --userversion ${{steps.tag.outputs.tag}};
+          ./butler push deploy/Unciv-Linux32.zip yairm210/unciv:Linux32     --userversion ${{steps.tag.outputs.tag}};
           ./gradlew desktop:packrLinux64;
-          echo ./butler push deploy/Unciv-Linux64.zip yairm210/unciv:Linux64     --userversion ${{steps.tag.outputs.tag}};
+          ./butler push deploy/Unciv-Linux64.zip yairm210/unciv:Linux64     --userversion ${{steps.tag.outputs.tag}};
           ./gradlew desktop:zipLinuxFilesForJar;
+          mv desktop/build/libs/Unciv.jar deploy/Unciv.jar
 
 
       - name: Upload binaries to release
@@ -75,11 +76,3 @@ jobs:
           tag: ${{ github.ref }}
           overwrite: true
           file_glob: true
-
-      - name: Upload release binaries
-        if: cancelled() && github.event_name == 'push' && contains(github.ref, 'refs/tags/')
-        uses: alexellis/upload-assets@0.2.2
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
-        with:
-          asset_paths: '["desktop/build/libs/Unciv.jar","deploy/Unciv-Linux32.zip","deploy/Unciv-Linux64.zip","deploy/Unciv-Windows32.zip","deploy/Unciv-Windows64.zip","deploy/linuxFilesForJar.zip"]'
