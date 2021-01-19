@@ -25,6 +25,9 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       
+      - name: check bulter secret
+        run: echo ${{ secrets.BUTLER_API_KEY }}
+        
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
 
@@ -47,6 +50,8 @@ jobs:
       
       - name: release
         if: github.event_name == 'push' && contains(github.ref, 'refs/tags/') 
+        env:
+          BUTLER_API_KEY: ${{ secrets.BUTLER_API_KEY }}
         run: |
           echo this is a release!
           wget -O jdk-windows-64.zip https://github.com/ojdkbuild/ojdkbuild/releases/download/java-1.8.0-openjdk-1.8.0.232-1.b09/java-1.8.0-openjdk-1.8.0.232-1.b09.ojdkbuild.windows.x86_64.zip  > /dev/null;
