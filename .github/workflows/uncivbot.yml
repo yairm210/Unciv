@@ -20,10 +20,11 @@ jobs:
             var reachedPreviousVersion = false
             result.data.forEach(commit => {
               if(reachedPreviousVersion) return
+              var author = commit.author.login
+              if(author=="uncivbot[bot]") return
+              var commitMessage = commit.commit.message.split("\n")[0];
+            
               commitSummary += "\n\n" + commitMessage
-            //  var author = commit.author.login
-            //  if(author=="uncivbot[bot]") return
-            //  var commitMessage = commit.commit.message.split("\n")[0];
             //  if(commitMessage.match(/^\d+\.\d+\.\d+$/)){ // match EXACT version, like 3.4.55  ^ is for start-of-line, $ for end-of-line
             //    reachedPreviousVersion=true
             //    console.log(commitMessage)
