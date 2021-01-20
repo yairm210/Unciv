@@ -24,20 +24,20 @@ jobs:
               if (author=="uncivbot[bot]") return
               var commitMessage = commit.commit.message.split("\n")[0];
             
-              commitSummary += "\n\n" + commitMessage
+              //commitSummary += "\n\n" + commitMessage
               if(commitMessage.match(/^\d+\.\d+\.\d+$/)){ // match EXACT version, like 3.4.55  ^ is for start-of-line, $ for end-of-line
                 reachedPreviousVersion=true
                 console.log(commitMessage)
                 return
               }
-            //  if(commitMessage.startsWith("Merge ")) return
-            //  commitMessage = commitMessage.replace(/\(\#\d+\)/,"") // match PR auto-text, like (#2345)
-            //  if (author != owner){
-            //    if (ownerToCommits.get(author)==undefined) ownerToCommits.set(author,[])
-            //    ownerToCommits.get(author)?.push(commitMessage)
-            //  }
-            //  else commitSummary += "\n\n" + commitMessage
-            //});
+              if(commitMessage.startsWith("Merge ")) return
+              commitMessage = commitMessage.replace(/\(\#\d+\)/,"") // match PR auto-text, like (#2345)
+              if (author != owner){
+                if (ownerToCommits.get(author)==undefined) ownerToCommits.set(author,[])
+                ownerToCommits.get(author)?.push(commitMessage)
+              }
+              else commitSummary += "\n\n" + commitMessage
+            });
             //ownerToCommits.forEach((commits,author)=>{
             //  commitSummary += "\n\nBy "+author+":"
             //  commits.forEach(commitMessage => {commitSummary+="\n- "+commitMessage})
