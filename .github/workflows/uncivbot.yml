@@ -41,7 +41,7 @@ jobs:
             //ownerToCommits.forEach((commits,author)=>{
             //  commitSummary += "\n\nBy "+author+":"
             //  commits.forEach(commitMessage => {commitSummary+="\n- "+commitMessage})
-            })
+            //})
             github.issues.createComment({
               issue_number: context.issue.number,
               owner: context.repo.owner,
