@@ -23,9 +23,8 @@ jobs:
               var author = commit.author.login
               if (author=="uncivbot[bot]") return
               var commitMessage = commit.commit.message.split("\n")[0];
-            
-              //commitSummary += "\n\n" + commitMessage
-              if(commitMessage.match(/^\d+\.\d+\.\d+$/)){ // match EXACT version, like 3.4.55  ^ is for start-of-line, $ for end-of-line
+          
+              if (commitMessage.match(/^\d+\.\d+\.\d+$/)){ // match EXACT version, like 3.4.55  ^ is for start-of-line, $ for end-of-line
                 reachedPreviousVersion=true
                 console.log(commitMessage)
                 return
@@ -38,10 +37,13 @@ jobs:
               }
               else commitSummary += "\n\n" + commitMessage
             });
-            //ownerToCommits.forEach((commits,author)=>{
-            //  commitSummary += "\n\nBy "+author+":"
-            //  commits.forEach(commitMessage => {commitSummary+="\n- "+commitMessage})
-            //})
+            ownerToCommits.forEach((commits,author)=>{
+              if (commits.length==1) commitSummary += "\n\n" + commitMessage+" By "+author
+              else {
+                commitSummary += "\n\nBy "+author+":"
+                commits.forEach(commitMessage => {commitSummary+="\n- "+commitMessage})
+              }
+            })
             github.issues.createComment({
               issue_number: context.issue.number,
               owner: context.repo.owner,
