@@ -11,7 +11,7 @@ jobs:
         with:
           github-token: ${{secrets.GITHUB_TOKEN}}
           script: |
-            var result = await context.github.repos.listCommits(context.repo({ per_page: 50 }));
+            var result = await github.repos.listCommits(context.repo({ per_page: 50 }));
             //var commitSummary = "";
             //var ownerToCommits = {}
             //var reachedPreviousVersion = false
