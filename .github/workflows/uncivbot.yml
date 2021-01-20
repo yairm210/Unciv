@@ -42,6 +42,7 @@ jobs:
               if (commits.length==1) commitSummary += "\n\n" + commitMessage+" By "+author
               else {
                 commitSummary += "\n\nBy "+author+":"
+                console.log(JSON.stringify(commits))
                 commits.forEach(commitMessage => {commitSummary+="\n- "+commitMessage})
               }
             })
