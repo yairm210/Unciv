@@ -41,11 +41,11 @@ jobs:
             
               console.log("entry = "+JSON.stringify(entry))
               const [author, commits] = entry;
-              if (commits.length==1) commitSummary += "\n\n" + commitMessage+" By "+author
+              if (commits.length==1) commitSummary += "\n\n" + commits[0] + " By "+author
               else {
                 commitSummary += "\n\nBy "+author+":"
                 console.log(JSON.stringify(commits))
-                commits.forEach(commitMessage => {commitSummary+="\n- "+commitMessage})
+                commits.forEach(commitMessage => { commitSummary += "\n- "+commitMessage })
               }
             })
             github.issues.createComment({
