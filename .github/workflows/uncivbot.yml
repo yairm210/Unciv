@@ -37,7 +37,8 @@ jobs:
               }
               else commitSummary += "\n\n" + commitMessage
             });
-            ownerToCommits.forEach((commits,author)=>{
+            Object.entries(ownerToCommits).forEach(entry => {
+              const [commits,author] = entry;
               if (commits.length==1) commitSummary += "\n\n" + commitMessage+" By "+author
               else {
                 commitSummary += "\n\nBy "+author+":"
