@@ -189,7 +189,8 @@ class WorkerAutomation(val unit: MapUnit) {
             else -> tile.getTileResource().improvement
         }
 
-        val tileImprovements = civInfo.gameInfo.ruleSet.tileImprovements
+        // turnsToBuild is what defines them as buildable
+        val tileImprovements = civInfo.gameInfo.ruleSet.tileImprovements.filter { it.value.turnsToBuild!=0 }
         val uniqueImprovement = tileImprovements.values
                 .firstOrNull { it.uniqueTo == civInfo.civName }
 
