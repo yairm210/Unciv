@@ -48,7 +48,7 @@ class ImprovementPickerScreen(val tileInfo: TileInfo, val onAccept: ()->Unit) : 
         regularImprovements.defaults().pad(5f)
 
         for (improvement in tileInfo.tileMap.gameInfo.ruleSet.tileImprovements.values) {
-            if (improvement.hasUnique("Great Improvement")) continue
+            if (improvement.hasUnique("Unbuildable")) continue
             if (!tileInfo.canBuildImprovement(improvement, currentPlayerCiv)) continue
             if (improvement.name == tileInfo.improvement) continue
 
