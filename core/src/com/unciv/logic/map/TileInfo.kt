@@ -316,6 +316,7 @@ open class TileInfo {
             isCityCenter() -> false
             "Cannot be built on bonus resource" in improvement.uniques && resource != null
                     && getTileResource().resourceType == ResourceType.Bonus -> false
+            improvement.uniques.contains("Great Improvement") && isLand -> true
             improvement.terrainsCanBeBuiltOn.contains(topTerrain.name) -> true
             improvement.uniqueObjects.filter { it.placeholderText == "Must be next to []" }.any {
                 val filter = it.params[0]
