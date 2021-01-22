@@ -20,7 +20,7 @@ jobs:
   # This workflow contains a single job called "build"
   build:
     # We can't simply put !startsWith - see https://github.community/t/expression-syntax-for-not-startswith/17040
-    if: startsWith(github.event.pull_request.body, "Update ") != true
+    if: startsWith(github.event.pull_request.body, 'Update ') != true
     runs-on: ubuntu-latest
 
     # Steps represent a sequence of tasks that will be executed as part of the job
