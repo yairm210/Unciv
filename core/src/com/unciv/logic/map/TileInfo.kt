@@ -208,6 +208,8 @@ open class TileInfo {
                 if (matchesUniqueFilter(tileType)
                         || (resource == tileType && hasViewableResource(observingCiv))
                         || (tileType == "Strategic resource" && hasViewableResource(observingCiv) && getTileResource().resourceType == ResourceType.Strategic)
+                        || (tileType == "Luxury resource" && hasViewableResource(observingCiv) && getTileResource().resourceType == ResourceType.Luxury)
+                        || (tileType == "Bonus resource" && hasViewableResource(observingCiv) && getTileResource().resourceType == ResourceType.Bonus)
                         || (tileType == "Water resource" && isWater && hasViewableResource(observingCiv))
                 ) stats.add(unique.stats)
             }
