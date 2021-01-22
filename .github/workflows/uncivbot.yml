@@ -3,7 +3,7 @@ name: UncivBot
 on: [issue_comment]
 
 jobs:
-  comment:
+  summary:
     if: github.event.comment.body == 'summary'
     runs-on: ubuntu-latest
     steps:
@@ -29,7 +29,7 @@ jobs:
                 console.log(commitMessage)
                 return
               }
-              if(commitMessage.startsWith("Merge ")) return
+              if (commitMessage.startsWith("Merge ")) return
               commitMessage = commitMessage.replace(/\(\#\d+\)/,"") // match PR auto-text, like (#2345)
               if (author != context.repo.owner){
                 if (ownerToCommits[author] == undefined) ownerToCommits[author]=[]
@@ -51,3 +51,53 @@ jobs:
               repo: context.repo.repo,
               body: commitSummary
             })
+
+  merge_translations:
+    if: github.event.comment.body == 'merge translations'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/github-script@v3
+        with:
+          github-token: ${{secrets.GITHUB_TOKEN}}
+          script: |
+            async function branchExists(branchName) {
+              try {
+                await github.git.getRef({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  ref: 'heads/' + branchName })
+                return true
+              } catch (err) {
+                return false
+              }
+            }
+
+            async function getDefaultBranch() {
+              var repo = await github.repos.get({owner: context.repo.owner, repo: context.repo.repo})
+              return repo.data.default_branch
+            }
+            
+            console.log(await getDefaultBranch())
+            console.log(await branchExists("translations"))
+
+            //async function createTranslationBranchIfNeeded(context: Context<Webhooks.WebhookPayloadIssueComment>) {
+            //  if (await branchExists(context, translations)) return
+
+            //  var defaultBranch = await getDefaultBranch(context)
+            //  var currentHead = await context.github.git.getRef(context.repo({ ref: 'heads/' + defaultBranch }))
+            //  var currentSha = currentHead.data.object.sha
+            //  app.log("Current sha: " + currentSha)
+            //  await context.github.git.createRef(context.repo({ ref: `refs/heads/translations`, sha: currentSha }))
+            //  await context.github.issues.createComment(context.issue({ body: 'Translations branch created' }))
+            //}
+            //async function createTranslationPrIfNeeded(context: Context<Webhooks.WebhookPayloadIssueComment>,
+            //  owner: string, translations: string) {
+            //  var translationPulls = await context.github.pulls.list(context.repo({ state: "open", head: owner + ":" + translations }));
+            //  if (translationPulls.data.length == 0) {
+            //    var defaultBranch = await getDefaultBranch(context);
+            //    await context.github.pulls.create(context.repo({ title: "Translations update", head: translations, base: defaultBranch }));
+            //    await context.github.issues.createComment(context.issue({ body: 'Translations PR created' }));
+            //  }
+            //}
+
+  
