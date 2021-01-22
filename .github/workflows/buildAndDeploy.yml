@@ -1,6 +1,6 @@
 # This is a basic workflow to help you get started with Actions
 
-name: CI
+name: Build and deploy
 
 # Controls when the action will run. 
 on:
@@ -20,6 +20,7 @@ jobs:
   # This workflow contains a single job called "build"
   build:
     # The type of runner that the job will run on
+    if: !startsWith(github.event.pull_request.body, "Update ")
     runs-on: ubuntu-latest
 
     # Steps represent a sequence of tasks that will be executed as part of the job
