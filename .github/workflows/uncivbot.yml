@@ -108,7 +108,7 @@ jobs:
               var translationPrs = await github.pulls.list({ 
                 owner: context.repo.owner,
                 repo: context.repo.repo,
-                state: "open",
+                state: "open"
                 })
               
               translationPrs.data.forEach(async pr => { 
@@ -125,7 +125,6 @@ jobs:
                   pull_number: pr.number,
                   base: translations })
               
-              if (pr.data.state == "open" && pr.data.mergeable)
                 await github.pulls.merge({
                   owner: context.repo.owner,
                   repo: context.repo.repo,
