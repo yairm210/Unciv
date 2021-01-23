@@ -125,11 +125,16 @@ jobs:
                   pull_number: pr.number,
                   base: translations })
               
+              try {
                 await github.pulls.merge({
                   owner: context.repo.owner,
                   repo: context.repo.repo,
                   pull_number: pr.number,
                   merge_method: "squash" })
+              } catch (err) {
+                console.log(err)
+              }
+                
             }
                         
             await createTranslationBranchIfNeeded()
