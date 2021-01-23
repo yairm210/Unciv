@@ -111,7 +111,7 @@ jobs:
                 state: "open",
                 })
               
-              translationPrs.data.forEach(pr => { 
+              translationPrs.data.forEach(async pr => { 
                 if (pr.labels.some(label => label.name == "mergeable translation"))
                   await tryMergePr(pr)
               })
