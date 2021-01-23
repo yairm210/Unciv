@@ -92,12 +92,12 @@ jobs:
                 owner: context.repo.owner, 
                 repo: context.repo.repo,
                 ref: `refs/heads/`+translations,
-                sha: currentSha }))
+                sha: currentSha })
               await context.github.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: 'Translations branch created' })
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: 'Translations branch created' })
             }
             
             await createTranslationBranchIfNeeded()
