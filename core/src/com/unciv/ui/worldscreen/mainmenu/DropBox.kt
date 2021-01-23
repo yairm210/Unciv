@@ -135,16 +135,6 @@ class OnlineMultiplayer {
         val zippedGameInfo = DropBox.downloadFileAsString(getGameLocation(gameId))
         return GameSaver.gameInfoFromStringWithoutTransients(Gzip.unzip(zippedGameInfo))
     }
-
-    /**
-     * Returns current turn's player.
-     * Does not initialize transitive GameInfo data.
-     * It is therefore stateless and save to call for Multiplayer Turn Notifier, unlike tryDownloadGame().
-     */
-    fun tryDownloadCurrentTurnCiv(gameId: String): CivilizationInfo {
-        val zippedGameInfo = DropBox.downloadFileAsString(getGameLocation(gameId))
-        return GameSaver.currentTurnCivFromString(Gzip.unzip(zippedGameInfo))
-    }
 }
 
 object Github {

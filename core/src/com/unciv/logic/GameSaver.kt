@@ -164,16 +164,6 @@ object GameSaver {
     }
 
     /**
-     * Returns current turn's player from GameInfo JSON-String for multiplayer.
-     * Does not initialize transitive GameInfo data.
-     * It is therefore stateless and save to call for Multiplayer Turn Notifier, unlike gameInfoFromString().
-     */
-    fun currentTurnCivFromString(gameData: String): CivilizationInfo {
-        val game = json().fromJson(GameInfo::class.java, gameData)
-        return game.getCivilization(game.currentPlayer)
-    }
-
-    /**
      * Returns the gameId from a GameInfo which was saved as JSON for multiplayer
      * Does not initialize transitive GameInfo data.
      * It is therefore stateless and save to call for Multiplayer Turn Notifier.
