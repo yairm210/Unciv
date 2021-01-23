@@ -119,7 +119,7 @@ jobs:
             
             
             await createTranslationBranchIfNeeded()
-            mergeExistingTranslationsIntoBranch()
+            await mergeExistingTranslationsIntoBranch()
             
             //async function createTranslationPrIfNeeded(context: Context<Webhooks.WebhookPayloadIssueComment>,
             //  owner: string, translations: string) {
