@@ -112,7 +112,7 @@ jobs:
                 })
               
               translationPrs.data.forEach(pr => { 
-                if (pr.labels.includes("mergeable translations))
+                if (pr.labels.includes("mergeable translations"))
                   console.log(pr.title)
               })
             }
