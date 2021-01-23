@@ -60,7 +60,8 @@ jobs:
     steps:
       - uses: actions/github-script@v3
         with:
-          github-token: ${{ secrets.ACTIONS_ACCESS_TOKEN }}
+          github-token: ${{secrets.GITHUB_TOKEN}}
+          # github-token: ${{ secrets.ACTIONS_ACCESS_TOKEN }}
           script: |
             async function branchExists(branchName) {
               try {
