@@ -112,13 +112,27 @@ jobs:
                 })
               
               translationPrs.data.forEach(pr => { 
-                console.log(pr.labels)
                 if (pr.labels.some(label => label.name == "mergeable translation"))
-                  console.log(pr.title)
+                  await tryMergePr(pr)
               })
             }
             
-            
+            async function tryMergePr(pr){
+              if (pr.base.ref != translations)
+                await github.pulls.update({ 
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  pull_number: pr.number,
+                  base: translations })
+              
+              if (pr.data.state == "open" && pr.data.mergeable)
+                await context.github.pulls.merge(
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  pull_number: pr.number,
+                  merge_method: "squash" })
+            }
+                        
             await createTranslationBranchIfNeeded()
             await mergeExistingTranslationsIntoBranch()
             
