@@ -82,17 +82,21 @@ jobs:
             async function createTranslationBranchIfNeeded() {
               if (await branchExists(translations)) return
               var defaultBranch = await getDefaultBranch()
+              
               var currentHead = await github.git.getRef({
                 owner: context.repo.owner, 
                 repo: context.repo.repo, 
                 ref: 'heads/' + defaultBranch })
+              
               var currentSha = currentHead.data.object.sha
               console.log("Current sha: " + currentSha)
+              
               await github.git.createRef({
                 owner: context.repo.owner, 
                 repo: context.repo.repo,
                 ref: `refs/heads/`+translations,
                 sha: currentSha })
+              
               await github.issues.createComment({
                 issue_number: context.issue.number,
                 owner: context.repo.owner,
@@ -106,7 +110,8 @@ jobs:
                 repo: context.repo.repo,
                 state: "open",
                 })
-              translationPrs.forEach(pr => { console.log(pr) })
+              
+              translationPrs.data.forEach(pr => { console.log(pr) })
             }
             
             
