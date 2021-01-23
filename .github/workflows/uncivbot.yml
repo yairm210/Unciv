@@ -111,7 +111,10 @@ jobs:
                 state: "open",
                 })
               
-              translationPrs.data.forEach(pr => { console.log(pr) })
+              translationPrs.data.forEach(pr => { 
+                if (pr.labels.includes("mergeable translations))
+                  console.log(pr.title)
+              })
             }
             
             
