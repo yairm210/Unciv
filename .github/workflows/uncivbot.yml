@@ -100,7 +100,18 @@ jobs:
                 body: 'Translations branch created' })
             }
             
+            async function mergeExistingTranslationsIntoBranch(){
+              var translationPrs = github.pulls.list({ 
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                state: "open",
+                })
+              translationPrs.forEach(pr => { console.log(pr) })
+            }
+            
+            
             await createTranslationBranchIfNeeded()
+            mergeExistingTranslationsIntoBranch()
             
             //async function createTranslationPrIfNeeded(context: Context<Webhooks.WebhookPayloadIssueComment>,
             //  owner: string, translations: string) {
