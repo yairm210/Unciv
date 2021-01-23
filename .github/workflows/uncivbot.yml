@@ -105,7 +105,7 @@ jobs:
             }
             
             async function mergeExistingTranslationsIntoBranch(){
-              var translationPrs = github.pulls.list({ 
+              var translationPrs = await github.pulls.list({ 
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 state: "open",
