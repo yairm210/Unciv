@@ -309,8 +309,9 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
     private fun getHealthBar(currentHealth: Int, maxHealth: Int, expectedDamage:Int): Table {
         val healthBar = Table()
         val totalWidth = 100f
-        fun addHealthToBar(image: Image, amount:Int){
-            healthBar.add(image).size(amount*totalWidth/maxHealth,3f)
+        fun addHealthToBar(image: Image, amount:Int) {
+            val width = totalWidth * amount/maxHealth
+            healthBar.add(image).size(width.coerceIn(0f,totalWidth),3f)
         }
         addHealthToBar(ImageGetter.getDot(Color.BLACK), maxHealth-currentHealth)
 
