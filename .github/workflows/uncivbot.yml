@@ -1,6 +1,8 @@
 name: UncivBot
 
-on: [issue_comment]
+on:
+  issue_comment:
+  workflow_dispatch:
 
 jobs:
   summary:
@@ -53,7 +55,7 @@ jobs:
             })
 
   merge_translations:
-    if: github.event.comment.body == 'merge translations'
+    if: github.event_name == "workflow_dispatch" || github.event.comment.body == 'merge translations'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/github-script@v3
