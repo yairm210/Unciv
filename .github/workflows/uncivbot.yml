@@ -58,7 +58,7 @@ jobs:
     steps:
       - uses: actions/github-script@v3
         with:
-          github-token: ${{secrets.GITHUB_TOKEN}}
+          github-token: ${{secrets.ACTIONS_ACCESS_TOKEN}}
           script: |
             async function branchExists(branchName) {
               try {
@@ -131,6 +131,7 @@ jobs:
                   repo: context.repo.repo,
                   pull_number: pr.number,
                   merge_method: "squash" })
+                console.log("Merged #"+pr.number+", "+pr.title)
               } catch (err) {
                 console.log(err)
               }
