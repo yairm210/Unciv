@@ -126,7 +126,7 @@ jobs:
                   base: translations })
               
               if (pr.data.state == "open" && pr.data.mergeable)
-                await context.github.pulls.merge({
+                await github.pulls.merge({
                   owner: context.repo.owner,
                   repo: context.repo.repo,
                   pull_number: pr.number,
