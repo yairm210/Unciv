@@ -60,7 +60,11 @@ jobs:
     steps:
       - uses: actions/github-script@v3
         with:
-          # github-token: ${{secrets.GITHUB_TOKEN}}
+          # SO, the story is that when using the default access token you CANNOT merge PRs from forks.
+          # _Badly_ documented in multiple places, including here: https://docs.github.com/en/actions/reference/authentication-in-a-workflow
+          # To get around this, we created a Personal Access Token,
+          #  put it as one of the secrets in the repo settings (https://github.com/yairm210/Unciv/settings/secrets/actions),
+          #  and use that instead.
           github-token: ${{ secrets.ACTIONS_ACCESS_TOKEN }}
           script: |
             async function branchExists(branchName) {
@@ -114,10 +118,13 @@ jobs:
                 state: "open"
                 })
               
-              translationPrs.data.forEach(async pr => { 
+              // When we used a forEach loop here, only one merge would happen at each run,
+              //  because we essentially started multiple async tasks in parallel and they conflicted.
+              // Instead, we use X of Y as per https://stackoverflow.com/questions/37576685/using-async-await-with-a-foreach-loop
+              for (const pr of translationPrs.data) {
                 if (pr.labels.some(label => label.name == "mergeable translation"))
                   await tryMergePr(pr)
-              })
+              }
             }
             
             async function tryMergePr(pr){
