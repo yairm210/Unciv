@@ -82,8 +82,8 @@ jobs:
             }
 
             async function getDefaultBranch() {
-              var repo = await github.repos.get(repo)
-              return repo.data.default_branch
+              var repoData = await github.repos.get(repo)
+              return repoData.data.default_branch
             }
             
             var translations = "translations"
