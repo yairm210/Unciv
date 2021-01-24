@@ -138,7 +138,7 @@ jobs:
             await createTranslationBranchIfNeeded()
             await mergeExistingTranslationsIntoBranch()
             
-            async function createTranslationPrIfNeeded(owner: string) {
+            async function createTranslationPrIfNeeded(owner) {
               var translationPulls = await github.pulls.list({...repo,
                   state: "open",
                   head: context.repo.owner + ":" + translations });
