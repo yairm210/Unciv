@@ -135,10 +135,8 @@ jobs:
                 
             }
                         
-            await createTranslationBranchIfNeeded()
-            await mergeExistingTranslationsIntoBranch()
             
-            async function createTranslationPrIfNeeded(owner) {
+            async function createTranslationPrIfNeeded() {
               var translationPulls = await github.pulls.list({...repo,
                   state: "open",
                   head: context.repo.owner + ":" + translations });
@@ -155,5 +153,8 @@ jobs:
                   body: 'Translations PR created' });
               }
             }
-
+                      
+            await createTranslationBranchIfNeeded()
+            await mergeExistingTranslationsIntoBranch()
+            await createTranslationPrIfNeeded()
   
