@@ -67,12 +67,14 @@ jobs:
           #  and use that instead.
           github-token: ${{ secrets.ACTIONS_ACCESS_TOKEN }}
           script: |
+            
+            const repo = {
+                  owner: context.repo.owner,
+                  repo: context.repo.repo }
+            
             async function branchExists(branchName) {
               try {
-                await github.git.getRef({
-                  owner: context.repo.owner,
-                  repo: context.repo.repo,
-                  ref: 'heads/' + branchName })
+                await github.git.getRef({...repo, ref: 'heads/' + branchName })
                 return true
               } catch (err) {
                 return false
@@ -80,7 +82,7 @@ jobs:
             }
 
             async function getDefaultBranch() {
-              var repo = await github.repos.get({owner: context.repo.owner, repo: context.repo.repo})
+              var repo = await github.repos.get(repo)
               return repo.data.default_branch
             }
             
@@ -90,33 +92,22 @@ jobs:
               if (await branchExists(translations)) return
               var defaultBranch = await getDefaultBranch()
               
-              var currentHead = await github.git.getRef({
-                owner: context.repo.owner, 
-                repo: context.repo.repo, 
-                ref: 'heads/' + defaultBranch })
+              var currentHead = await github.git.getRef({...repo, ref: 'heads/' + defaultBranch })
               
               var currentSha = currentHead.data.object.sha
               console.log("Current sha: " + currentSha)
               
-              await github.git.createRef({
-                owner: context.repo.owner, 
-                repo: context.repo.repo,
+              await github.git.createRef({...repo,
                 ref: `refs/heads/`+translations,
                 sha: currentSha })
               
-              await github.issues.createComment({
+              await github.issues.createComment({...repo,
                 issue_number: context.issue.number,
-                owner: context.repo.owner,
-                repo: context.repo.repo,
                 body: 'Translations branch created' })
             }
             
             async function mergeExistingTranslationsIntoBranch(){
-              var translationPrs = await github.pulls.list({ 
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                state: "open"
-                })
+              var translationPrs = await github.pulls.list({ ...repo, state: "open" })
               
               // When we used a forEach loop here, only one merge would happen at each run,
               //  because we essentially started multiple async tasks in parallel and they conflicted.
@@ -129,16 +120,12 @@ jobs:
             
             async function tryMergePr(pr){
               if (pr.base.ref != translations)
-                await github.pulls.update({ 
-                  owner: context.repo.owner,
-                  repo: context.repo.repo,
+                await github.pulls.update({ ...repo,
                   pull_number: pr.number,
                   base: translations })
               
               try {
-                await github.pulls.merge({
-                  owner: context.repo.owner,
-                  repo: context.repo.repo,
+                await github.pulls.merge({...repo,
                   pull_number: pr.number,
                   merge_method: "squash" })
                 console.log("Merged #"+pr.number+", "+pr.title)
@@ -151,14 +138,22 @@ jobs:
             await createTranslationBranchIfNeeded()
             await mergeExistingTranslationsIntoBranch()
             
-            //async function createTranslationPrIfNeeded(context: Context<Webhooks.WebhookPayloadIssueComment>,
-            //  owner: string, translations: string) {
-            //  var translationPulls = await context.github.pulls.list(context.repo({ state: "open", head: owner + ":" + translations }));
-            //  if (translationPulls.data.length == 0) {
-            //    var defaultBranch = await getDefaultBranch(context);
-            //    await context.github.pulls.create(context.repo({ title: "Translations update", head: translations, base: defaultBranch }));
-            //    await context.github.issues.createComment(context.issue({ body: 'Translations PR created' }));
-            //  }
-            //}
+            async function createTranslationPrIfNeeded(owner: string) {
+              var translationPulls = await github.pulls.list({...repo,
+                  state: "open",
+                  head: context.repo.owner + ":" + translations });
+
+              if (translationPulls.data.length == 0) {
+                var defaultBranch = await getDefaultBranch(context);
+                await github.pulls.create({...repo,
+                  title: "Translations update",
+                  head: translations,
+                  base: defaultBranch });
+
+                await github.issues.createComment({...repo,
+                  issue_number: context.issue.number,
+                  body: 'Translations PR created' });
+              }
+            }
 
   
