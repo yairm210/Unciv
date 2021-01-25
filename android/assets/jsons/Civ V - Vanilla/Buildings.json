@@ -599,7 +599,7 @@
 		"culture": 1,
 		"isWonder": true,
 		"greatPersonPoints": {"culture": 2},
-		"uniques": ["Culture in all cities increased by 25%"],
+		"uniques": ["+[25]% [Culture] in all cities"],
 		"requiredTech": "Acoustics",
 		"quote": "'I live and love in God's peculiar light.' - Michelangelo Buonarroti"
 	},

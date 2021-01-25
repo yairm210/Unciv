@@ -331,6 +331,10 @@ class CityStats {
                     stats.production += unique.params[0].toInt()
             }
 
+        // For instance "+[50]% [Production]
+        for (unique in uniques.filter { it.placeholderText == "+[]% [] in all cities"})
+            stats.add(Stat.valueOf(unique.params[1]), unique.params[0].toFloat())
+
 
         for (unique in uniques.filter { it.placeholderText == "+[]% Production when constructing []" }) {
             if (constructionMatchesFilter(currentConstruction, unique.params[1]))
