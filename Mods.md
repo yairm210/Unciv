@@ -11,6 +11,7 @@ The game only knows how to recognize existing definitions, so you can't add *new
 There are two kinds of mods:
 
 - Base Ruleset mods - these replace the entire existing ruleset - tech tree, units, policies, nations etc - to give an entirely different experience than the base game. These generally require quite a bit of work, but give a whole new experience, and so are the most popular.
+
 - Extension mods - these add new nations/units/buildings/resources to a base ruleset - can be either to the default ruleset, or to a base ruleset mod. Easy to do and probably the better place to get started.
 
 ## Mod components
@@ -23,6 +24,8 @@ Mods have 2 subfolders:
 These images are built (at runtime) into a single image with an 'altas', so if you see "game.atlas" and "game.png" files being generated, now you know what for.
 
 In order to remove objects from the game, you'll need to create a ModOptions file in the `/jsons` subfolder - there's an example [here](https://github.com/yairm210/Unciv-mod-example/blob/master/Removing%20Things/jsons/ModOptions.json)
+
+In a base ruleset mod, ALL the original objects are removed - this is done by adding a `"isBaseRuleset":true` configuration to your modOptions file, [like so](https://github.com/k4zoo/Civilization-6-Mod/blob/master/jsons/ModOptions.json)
 
 For an example, you can refer to [the example mod](https://github.com/yairm210/Unciv-mod-example) - just download the Example-Aliens-Mod and put it in a `/mods` folder next to the jar, run Unciv, start a new game, and you'll be able to enable the mod, which will allow to you pick Aliens as a playable civilization!
 
