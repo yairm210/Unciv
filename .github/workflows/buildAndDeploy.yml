@@ -1,6 +1,6 @@
 # This is a basic workflow to help you get started with Actions
 
-name: CI
+name: Build and deploy
 
 # Controls when the action will run. 
 on:
@@ -19,15 +19,14 @@ on:
 jobs:
   # This workflow contains a single job called "build"
   build:
-    # The type of runner that the job will run on
+    # On push events only, if it's a "Update X" commit, it's probably something done through the UI - 
+    #  so an .md or yaml change, and not something we need to rebuild over
+    # We can't simply put !startsWith - see https://github.community/t/expression-syntax-for-not-startswith/17040
+    if: github.event_name != 'push' || startsWith(github.event.commits[0].message, 'Update ') != true
     runs-on: ubuntu-latest
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      
-      - name: check bulter secret
-        run: echo ${{ secrets.BUTLER_API_KEY }}
-        
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
 
