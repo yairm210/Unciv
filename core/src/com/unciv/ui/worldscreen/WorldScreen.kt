@@ -80,7 +80,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
 
         try { // Most memory errors occur here, so this is a sort of catch-all
             mapHolder.addTiles()
-        } catch (outOfMemoryError:OutOfMemoryError){
+        } catch (outOfMemoryError: OutOfMemoryError) {
             mapHolder.clear() // hopefully enough memory will be freed to be able to display the toast popup
             ToastPopup("Not enough memory on phone to load game!", this)
         }
@@ -183,7 +183,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
                 object : InputListener() {
                     private val pressedKeys = mutableSetOf<Int>()
                     private var infiniteAction: RepeatAction? = null
-                    private val amountToMove = 30 / mapHolder.scaleX
+                    private val amountToMove = 6 / mapHolder.scaleX
                     private val ALLOWED_KEYS = setOf(Input.Keys.W, Input.Keys.S, Input.Keys.A, Input.Keys.D,
                             Input.Keys.UP, Input.Keys.DOWN, Input.Keys.LEFT, Input.Keys.RIGHT)
 
@@ -194,7 +194,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
                         pressedKeys.add(keycode)
                         if (infiniteAction == null) {
                             // create a copy of the action, because removeAction() will destroy this instance
-                            infiniteAction = Actions.forever(Actions.delay(0.05f, Actions.run { whileKeyPressedLoop() }))
+                            infiniteAction = Actions.forever(Actions.delay(0.01f, Actions.run { whileKeyPressedLoop() }))
                             mapHolder.addAction(infiniteAction)
                         }
                         return true
