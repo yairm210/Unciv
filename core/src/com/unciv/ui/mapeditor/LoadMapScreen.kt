@@ -45,8 +45,14 @@ class LoadMapScreen(previousMap: TileMap?) : PickerScreen(){
                         dispose()
                     }
                 } else {
+                    Gdx.app.postRunnable {
+                        val popup = Popup(this)
+                        popup.addGoodSizedLabel("Loading...")
+                        popup.open()
+                    }
                     val map = MapSaver.loadMap(chosenMap!!)
                     Gdx.app.postRunnable {
+                        Gdx.input.inputProcessor = null // This is to stop ANRs happening here, until the map editor screen sets up.
                         UncivGame.Current.setScreen(MapEditorScreen(map))
                         dispose()
                     }
