@@ -1,3 +1,19 @@
+## 3.12.10
+
+Solved ANRs when loading large maps in map editor
+
+Mitigated some concurrency related crashes
+
+Resolved #3436 - parametrized "+[]% [] in all cities"
+
+Smoother map panning
+
+Multiple game support for TurnChecker - By GGGuenni
+
+Avoid overflow of the health bar in the overkill situation - By JackRainy
+
+Translation updates
+
 ## 3.12.9
 
 Solved common ANR in city screen
