@@ -265,10 +265,10 @@ class CityStats {
     private fun getStatsFromUniques(uniques: Sequence<Unique>): Stats {
         val stats = Stats()
 
-        for (unique in uniques) {
-            if ((unique.placeholderText == "[] in capital" && cityInfo.isCapital())
+        for (unique in uniques.toList()) { // Should help  mitigate getConstructionButtonDTOs concurrency problems.
+            if (unique.placeholderText == "[] in capital" && cityInfo.isCapital()
                     || unique.placeholderText == "[] in all cities"
-                    || (unique.placeholderText == "[] in all cities with a garrison" && cityInfo.getCenterTile().militaryUnit != null))
+                    || unique.placeholderText == "[] in all cities with a garrison" && cityInfo.getCenterTile().militaryUnit != null)
                 stats.add(unique.stats)
             if (unique.placeholderText == "[] per [] population in all cities") {
                 val amountOfEffects = (cityInfo.population.population / unique.params[1].toInt()).toFloat()
@@ -317,8 +317,11 @@ class CityStats {
         return stats
     }
 
-    private fun getStatPercentBonusesFromUniques(currentConstruction: IConstruction, uniques: Sequence<Unique>): Stats {
+    private fun getStatPercentBonusesFromUniques(currentConstruction: IConstruction, uniqueSequence: Sequence<Unique>): Stats {
         val stats = Stats()
+        val uniques = uniqueSequence.toList().asSequence()
+          // Since this is sometimes run from a different thread (getConstructionButtonDTOs),
+          // this helps mitigate concurrency problems.
 
         if (currentConstruction.name == Constants.settler && cityInfo.isCapital()
                 && uniques.any { it.text == "Training of settlers increased +50% in capital" })

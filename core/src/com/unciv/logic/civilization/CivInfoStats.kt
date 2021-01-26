@@ -143,11 +143,14 @@ class CivInfoStats(val civInfo: CivilizationInfo){
         statMap["Luxury resources"]= civInfo.getCivResources().map { it.resource }
                 .count { it.resourceType === ResourceType.Luxury } * happinessPerUniqueLuxury
 
-        for(city in civInfo.cities){
-            for(keyvalue in city.cityStats.happinessList){
-                if(statMap.containsKey(keyvalue.key))
-                    statMap[keyvalue.key] = statMap[keyvalue.key]!!+keyvalue.value
-                else statMap[keyvalue.key] = keyvalue.value
+        for(city in civInfo.cities) {
+            // There appears to be a concurrency problem? In concurrent thread in ConstructionsTable.getConstructionButtonDTOs
+                // Literally no idea how, since happinessList is ONLY replaced, NEVER altered.
+                // Oh well, toList() should solve the problem, wherever it may come from.
+            for ((key, value) in city.cityStats.happinessList.toList()) {
+                if (statMap.containsKey(key))
+                    statMap[key] = statMap[key]!! + value
+                else statMap[key] = value
             }
         }
 
