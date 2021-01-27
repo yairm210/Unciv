@@ -12,6 +12,7 @@ class GameSettings {
     var showTileYields: Boolean = false
     var checkForDueUnits: Boolean = true
     var singleTapMove: Boolean = false
+    var unitMovementIncludesImpassibles: Boolean = false
     var language: String = "English"
     var resolution: String = "900x600" // Auto-detecting resolution was a BAD IDEA since it needs to be based on DPI AND resolution.
     var tutorialsShown = HashSet<String>()

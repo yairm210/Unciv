@@ -2,6 +2,7 @@ package com.unciv.logic.map
 
 import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
+import com.unciv.UncivGame
 import com.unciv.logic.civilization.CivilizationInfo
 
 class UnitMovementAlgorithms(val unit:MapUnit) {
@@ -57,7 +58,12 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
 
     class ParentTileAndTotalDistance(val parentTile: TileInfo, val totalDistance: Float)
 
+    val MOVEMENT_TESTING = UncivGame.Current.settings.unitMovementIncludesImpassibles
+    fun isUnknownTileWeShouldAssumeToBePassable(tileInfo: TileInfo) = MOVEMENT_TESTING && !unit.civInfo.exploredTiles.contains(tileInfo.position)
+
     fun getDistanceToTilesWithinTurn(origin: Vector2, unitMovement: Float): PathsToTilesWithinTurn {
+        if(MOVEMENT_TESTING) return getDistanceToTilesWithinTurnIncludingUnknownImpassibles(origin, unitMovement)
+
         val distanceToTiles = PathsToTilesWithinTurn()
         if (unitMovement == 0f) return distanceToTiles
 
@@ -102,6 +108,53 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
         return distanceToTiles
     }
 
+    fun getDistanceToTilesWithinTurnIncludingUnknownImpassibles(origin: Vector2, unitMovement: Float): PathsToTilesWithinTurn {
+        val distanceToTiles = PathsToTilesWithinTurn()
+        if (unitMovement == 0f) return distanceToTiles
+
+        val currentUnitTile = unit.currentTile
+        // This is for performance, because this is called all the time
+        val unitTile = if(origin==currentUnitTile.position) currentUnitTile else currentUnitTile.tileMap[origin]
+        distanceToTiles[unitTile] = ParentTileAndTotalDistance(unitTile, 0f)
+        var tilesToCheck = listOf(unitTile)
+
+        while (tilesToCheck.isNotEmpty()) {
+            val updatedTiles = ArrayList<TileInfo>()
+            for (tileToCheck in tilesToCheck)
+                for (neighbor in tileToCheck.neighbors) {
+                    var totalDistanceToTile: Float
+
+                    if (unit.civInfo.exploredTiles.contains(neighbor.position)) {
+                        if (!canPassThrough(neighbor))
+                            totalDistanceToTile = unitMovement // Can't go here.
+                        // The reason that we don't just "return" is so that when calculating how to reach an enemy,
+                        // You need to assume his tile is reachable, otherwise all movement algs on reaching enemy
+                        // cities and units goes kaput.
+
+                        else {
+                            val distanceBetweenTiles = getMovementCostBetweenAdjacentTiles(tileToCheck, neighbor, unit.civInfo)
+                            totalDistanceToTile = distanceToTiles[tileToCheck]!!.totalDistance + distanceBetweenTiles
+                        }
+                    } else totalDistanceToTile = distanceToTiles[tileToCheck]!!.totalDistance + 1f // If we don't know then we just guess it to be 1.
+
+                    if (!distanceToTiles.containsKey(neighbor) || distanceToTiles[neighbor]!!.totalDistance > totalDistanceToTile) { // this is the new best path
+                        if (totalDistanceToTile < unitMovement)  // We can still keep moving from here!
+                            updatedTiles += neighbor
+                        else
+                            totalDistanceToTile = unitMovement
+                        // In Civ V, you can always travel between adjacent tiles, even if you don't technically
+                        // have enough movement points - it simple depletes what you have
+
+                        distanceToTiles[neighbor] = ParentTileAndTotalDistance(tileToCheck, totalDistanceToTile)
+                    }
+                }
+
+            tilesToCheck = updatedTiles
+        }
+
+        return distanceToTiles
+    }
+
     /** Returns an empty list if there's no way to get there */
     fun getShortestPath(destination: TileInfo): List<TileInfo> {
         val currentTile = unit.getTile()
@@ -127,7 +180,8 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
                         distanceToDestination[tileToCheck] = distanceToTilesThisTurn[reachableTile]!!.totalDistance
                     else {
                         if (movementTreeParents.containsKey(reachableTile)) continue // We cannot be faster than anything existing...
-                        if (!canMoveTo(reachableTile)) continue // This is a tile that we can't actually enter - either an intermediary tile containing our unit, or an enemy unit/city
+                        if (!isUnknownTileWeShouldAssumeToBePassable(reachableTile) &&
+                                 !canMoveTo(reachableTile)) continue // This is a tile that we can't actually enter - either an intermediary tile containing our unit, or an enemy unit/city
                         movementTreeParents[reachableTile] = tileToCheck
                         newTilesToCheck.add(reachableTile)
                     }
