@@ -146,6 +146,12 @@ class BaseUnit : INamed, IConstruction {
             return "Our unique unit replaces this"
         if (!civInfo.gameInfo.gameParameters.nuclearWeaponsEnabled
                 && uniques.contains("Nuclear weapon")) return "Disabled by setting"
+
+        for (unique in uniqueObjects.filter { it.placeholderText == "Unlocked with []" })
+            if(civInfo.tech.researchedTechnologies.none { it.era() == unique.params[0] || it.name == unique.params[0] }
+                    && !civInfo.policies.isAdopted(unique.params[0]))
+                        return unique.text
+
         for (unique in uniqueObjects.filter { it.placeholderText == "Requires []" }) {
             val filter = unique.params[0]
             if (filter in civInfo.gameInfo.ruleSet.buildings) {

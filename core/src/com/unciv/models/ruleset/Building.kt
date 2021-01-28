@@ -290,6 +290,11 @@ class Building : NamedStats(), IConstruction {
             return "Our unique building replaces this"
         if (requiredTech != null && !civInfo.tech.isResearched(requiredTech!!)) return "$requiredTech not researched"
 
+        for (unique in uniqueObjects.filter { it.placeholderText == "Unlocked with []" })
+            if(civInfo.tech.researchedTechnologies.none { it.era() == unique.params[0] || it.name == unique.params[0] }
+                    && !civInfo.policies.isAdopted(unique.params[0]))
+                return unique.text
+
         // Regular wonders
         if (isWonder) {
             if (civInfo.gameInfo.getCities().any { it.cityConstructions.isBuilt(name) })
