@@ -101,6 +101,7 @@ class PolicyManager {
         if (policy.name.endsWith("Complete")) return false
         if (!getAdoptedPolicies().containsAll(policy.requires!!)) return false
         if (civInfo.gameInfo.ruleSet.getEraNumber(policy.branch.era) > civInfo.getEraNumber()) return false
+        if (policy.uniqueObjects.any { it.placeholderText=="Incompatible with []" && adoptedPolicies.contains(it.params[0]) }) return false
         return true
     }
 
