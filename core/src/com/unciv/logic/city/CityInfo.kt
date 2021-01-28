@@ -99,8 +99,7 @@ class CityInfo {
 
         for (unique in civInfo.getMatchingUniques("Gain a free [] []")) {
             val freeBuildingName = unique.params[0]
-            val cityFilter = unique.params[1]
-            if (cityFilter == "in every city" || (cityFilter == "in every coastal city" && getCenterTile().isCoastalTile())) {
+            if (matchesFilter(unique.params[1])) {
                 if (!cityConstructions.isBuilt(freeBuildingName))
                     cityConstructions.addBuilding(freeBuildingName)
             }
@@ -648,5 +647,17 @@ class CityInfo {
         }
         return true
     }
+
+    fun matchesFilter(filter: String): Boolean {
+        return when {
+            filter == "in this city" -> true
+            filter == "in all cities" -> true
+            filter == "in all coastal cities" && getCenterTile().isCoastalTile() -> true
+            filter == "in capital" && isCapital() -> true
+            filter == "in all cities with a world wonder" && cityConstructions.getBuiltBuildings().any { it.isWonder } -> true
+            else -> false
+        }
+    }
+
     //endregion
 }

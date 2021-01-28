@@ -218,13 +218,20 @@ class CivilizationInfo {
 
     fun hasResource(resourceName: String): Boolean = getCivResourcesByName()[resourceName]!! > 0
 
-    fun getBuildingUniques(): Sequence<Unique> = cities.asSequence().flatMap { it.cityConstructions.builtBuildingUniqueMap.getAllUniques() }
+    fun getCivWideBuildingUniques(): Sequence<Unique> = cities.asSequence().flatMap {
+        it.cityConstructions.builtBuildingUniqueMap.getAllUniques()
+                .filter { it.params.isEmpty() || it.params.last() != "in this city" }
+    }
 
     fun hasUnique(unique: String) = getMatchingUniques(unique).any()
 
+    // Does not return local uniques, only global ones.
     fun getMatchingUniques(uniqueTemplate: String): Sequence<Unique> {
         return nation.uniqueObjects.asSequence().filter { it.placeholderText == uniqueTemplate } +
-                cities.asSequence().flatMap { it.cityConstructions.builtBuildingUniqueMap.getUniques(uniqueTemplate).asSequence() } +
+                cities.asSequence().flatMap {
+                    it.cityConstructions.builtBuildingUniqueMap.getUniques(uniqueTemplate).asSequence()
+                            .filter { it.params.isEmpty() || it.params.last() != "in this city" }
+                } +
                 policies.policyUniques.getUniques(uniqueTemplate) +
                 tech.getTechUniques().filter { it.placeholderText == uniqueTemplate }
     }

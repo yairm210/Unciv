@@ -26,11 +26,6 @@ class GoldenAgeManager{
 
     fun enterGoldenAge(unmodifiedNumberOfTurns: Int = 10) {
         var turnsToGoldenAge = unmodifiedNumberOfTurns.toFloat()
-
-        // as of 3.10.7 This is to be deprecated and converted to "Golden Age length increased by []%" - keeping it here to that mods with this can still work for now
-        for(unique in civInfo.getMatchingUniques("Golden Age length increases +50%"))
-            turnsToGoldenAge *= 1.5f
-
         for(unique in civInfo.getMatchingUniques("Golden Age length increased by []%"))
             turnsToGoldenAge *= (unique.params[0].toFloat()/100 + 1)
         turnsToGoldenAge *= civInfo.gameInfo.gameParameters.gameSpeed.modifier
