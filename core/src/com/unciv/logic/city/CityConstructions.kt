@@ -208,13 +208,15 @@ class CityConstructions {
             We don't want to change our current construction queue - what if we have an empty queue,
              this can affect the city if we run it on another thread like in ConstructionsTable -
             So we run the numbers for the other construction
+            ALSO apparently if we run on the actual cityStats from another thread,
+              we get all sorts of fun concurrency problems when accessing various parts of the cityStats.
+            SO, we create an entirely new CityStats and iterate there - problem solve!
             */
-
+            val cityStats = CityStats()
+            cityStats.cityInfo = cityInfo
             val construction = cityInfo.cityConstructions.getConstruction(constructionName)
-            cityInfo.cityStats.update(construction)
-            cityStatsForConstruction = cityInfo.cityStats.currentCityStats
-            // revert!
-            cityInfo.cityStats.update()
+            cityStats.update(construction)
+            cityStatsForConstruction = cityStats.currentCityStats
         }
 
         val production = cityStatsForConstruction.production.roundToInt()
