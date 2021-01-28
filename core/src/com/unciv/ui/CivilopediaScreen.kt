@@ -145,7 +145,7 @@ class CivilopediaScreen(ruleset: Ruleset) : CameraStageBaseScreen() {
 
         stage.addActor(splitPane)
 
-        description.setWrap(true)
+        description.wrap = true
 
         val entrySelectScroll = ScrollPane(entrySelectTable)
         entrySelectScroll.setupOverscroll(5f, 1f, 200f)

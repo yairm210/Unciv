@@ -70,7 +70,7 @@ class ConstructionInfoTable(val city: CityInfo): Table() {
         }
 
         val descriptionLabel = description.toLabel()
-        descriptionLabel.setWrap(true)
+        descriptionLabel.wrap = true
         selectedConstructionTable.add(descriptionLabel).colspan(2).width(stage.width / 4)
 
     }

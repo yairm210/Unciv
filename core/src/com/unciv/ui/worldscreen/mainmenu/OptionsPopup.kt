@@ -41,7 +41,7 @@ class OptionsPopup(val previousScreen:CameraStageBaseScreen) : Popup(previousScr
         scrollPane.setScrollingDisabled(true, false)
         add(scrollPane).maxHeight(screen.stage.height * 0.6f).row()
 
-        addCloseButton() {
+        addCloseButton {
             if(previousScreen is WorldScreen)
                 previousScreen.enableNextTurnButtonAfterOptions()
         }

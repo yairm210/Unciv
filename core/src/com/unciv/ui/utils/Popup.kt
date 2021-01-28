@@ -57,7 +57,7 @@ open class Popup(val screen: CameraStageBaseScreen): Table(CameraStageBaseScreen
 
     fun addGoodSizedLabel(text: String, size:Int=18): Cell<Label> {
         val label = text.toLabel(fontSize = size)
-        label.setWrap(true)
+        label.wrap = true
         label.setAlignment(Align.center)
         return add(label).width(screen.stage.width / 2)
     }

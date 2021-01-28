@@ -412,7 +412,7 @@ object NextTurnAutomation {
             modifierMap["Far away cities"] = -10
 
         val landPathBFS = BFS(ourCity.getCenterTile()) {
-            val owner = it.getOwner();
+            val owner = it.getOwner()
             it.isLand && !it.isImpassible()
                     && (owner == otherCiv || owner == null || civInfo.canEnterTiles(owner))
         }
