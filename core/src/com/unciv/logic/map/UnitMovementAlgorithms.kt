@@ -251,7 +251,7 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
     fun headTowards(destination: TileInfo): TileInfo {
         val destinationTileThisTurn = getTileToMoveToThisTurn(destination)
         moveToTile(destinationTileThisTurn)
-        return destinationTileThisTurn
+        return unit.currentTile
     }
 
     /** This is performance-heavy - use as last resort, only after checking everything else! */
