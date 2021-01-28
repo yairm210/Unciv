@@ -62,7 +62,8 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
             && !unit.civInfo.exploredTiles.contains(tileInfo.position)
 
     fun getDistanceToTilesWithinTurn(origin: Vector2, unitMovement: Float): PathsToTilesWithinTurn {
-        if (UncivGame.Current.settings.unitMovementIncludesImpassibles) return getDistanceToTilesWithinTurnIncludingUnknownImpassibles(origin, unitMovement)
+        if (UncivGame.Current.settings.unitMovementIncludesImpassibles)
+            return getDistanceToTilesWithinTurnIncludingUnknownImpassibles(origin, unitMovement)
 
         val distanceToTiles = PathsToTilesWithinTurn()
         if (unitMovement == 0f) return distanceToTiles
@@ -284,8 +285,65 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
             unit.putInTile(allowedTile)
     }
 
+    fun moveToTileIncludingUnknownImpassibles(destination: TileInfo){
+        if (destination == unit.getTile()) return // already here!
+
+        if (unit.type.isAirUnit()) { // they move differently from all other units
+            unit.action = null
+            unit.removeFromTile()
+            unit.isTransported = false // it has left the carrier by own means
+            unit.putInTile(destination)
+            unit.currentMovement = 0f
+            return
+        }
+
+        val distanceToTiles = getDistanceToTiles()
+        val pathToDestination = distanceToTiles.getPathToTile(destination)
+        val lastReachableTile = pathToDestination.last { canMoveTo(it) }
+        val pathToLastReachableTile = distanceToTiles.getPathToTile(lastReachableTile)
+
+        if (!unit.civInfo.gameInfo.gameParameters.godMode) {
+            unit.currentMovement -= distanceToTiles[lastReachableTile]!!.totalDistance
+            if (unit.currentMovement < 0.1) unit.currentMovement = 0f // silly floats which are "almost zero"
+        }
+        if (unit.isFortified() || unit.action == Constants.unitActionSetUp || unit.isSleeping())
+            unit.action = null // unfortify/setup after moving
+
+        // If this unit is a carrier, keep record of its air payload whereabouts.
+        val origin = unit.getTile()
+        unit.removeFromTile()
+        unit.putInTile(lastReachableTile)
+
+        // The .toList() here is because we have a sequence that's running on the units in the tile,
+        // then if we move one of the units we'll get a ConcurrentModificationException, se we save them all to a list
+        for (payload in origin.getUnits().filter { it.isTransported && unit.canTransport(it) }.toList()) {  // bring along the payloads
+            payload.removeFromTile()
+            payload.putInTile(lastReachableTile)
+            payload.isTransported = true // restore the flag to not leave the payload in the cit
+        }
+
+        // Unit maintenance changed
+        if (unit.canGarrison()
+                && (origin.isCityCenter() || lastReachableTile.isCityCenter())
+                && unit.civInfo.hasUnique("Units in cities cost no Maintenance")
+        ) unit.civInfo.updateStatsForNextTurn()
+
+        // Move through all intermediate tiles to get ancient ruins, barb encampments
+        // and to view tiles along the way
+        // We only activate the moveThroughTile AFTER the putInTile because of a really weird bug -
+        // If you're going to (or past) a ruin, and you activate the ruin bonus, and A UNIT spawns.
+        // That unit could now be blocking your entrance to the destination, so the putInTile would fail! =0
+        // Instead, we move you to the destination directly, and only afterwards activate the various tiles on the way.
+        for (tile in pathToLastReachableTile) {
+            unit.moveThroughTile(tile)
+        }
+
+    }
 
     fun moveToTile(destination: TileInfo) {
+        if(UncivGame.Current.settings.unitMovementIncludesImpassibles)
+            return moveToTileIncludingUnknownImpassibles(destination)
+
         if (destination == unit.getTile()) return // already here!
 
         class CantEnterThisTileException(msg: String) : Exception(msg)
