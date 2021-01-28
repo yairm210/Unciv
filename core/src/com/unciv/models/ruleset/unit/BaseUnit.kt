@@ -32,6 +32,7 @@ class BaseUnit : INamed, IConstruction {
     var requiredResource: String? = null
     var uniques = HashSet<String>()
     val uniqueObjects: List<Unique> by lazy { uniques.map { Unique(it) } }
+    var replacementTextForUniques = ""
     var promotions = HashSet<String>()
     var obsoleteTech: String? = null
     var upgradesTo: String? = null
@@ -46,7 +47,8 @@ class BaseUnit : INamed, IConstruction {
         if (movement != 2) infoList += "$movement${Fonts.movement}"
         for (promotion in promotions)
             infoList += promotion.tr()
-        for (unique in uniques)
+        if (replacementTextForUniques != "") infoList += replacementTextForUniques
+        else for (unique in uniques)
             infoList += Translations.translateBonusOrPenalty(unique)
         return infoList.joinToString()
     }
@@ -68,7 +70,8 @@ class BaseUnit : INamed, IConstruction {
         }
         sb.appendln("$movement${Fonts.movement}")
 
-        for (unique in uniques)
+        if (replacementTextForUniques != "") sb.appendln(replacementTextForUniques)
+        else for (unique in uniques)
             sb.appendln(Translations.translateBonusOrPenalty(unique))
 
         if (promotions.isNotEmpty()) {
