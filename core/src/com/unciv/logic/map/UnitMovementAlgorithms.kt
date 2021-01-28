@@ -58,11 +58,11 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
 
     class ParentTileAndTotalDistance(val parentTile: TileInfo, val totalDistance: Float)
 
-    val MOVEMENT_TESTING = UncivGame.Current.settings.unitMovementIncludesImpassibles
-    fun isUnknownTileWeShouldAssumeToBePassable(tileInfo: TileInfo) = MOVEMENT_TESTING && !unit.civInfo.exploredTiles.contains(tileInfo.position)
+    fun isUnknownTileWeShouldAssumeToBePassable(tileInfo: TileInfo) = UncivGame.Current.settings.unitMovementIncludesImpassibles
+            && !unit.civInfo.exploredTiles.contains(tileInfo.position)
 
     fun getDistanceToTilesWithinTurn(origin: Vector2, unitMovement: Float): PathsToTilesWithinTurn {
-        if(MOVEMENT_TESTING) return getDistanceToTilesWithinTurnIncludingUnknownImpassibles(origin, unitMovement)
+        if (UncivGame.Current.settings.unitMovementIncludesImpassibles) return getDistanceToTilesWithinTurnIncludingUnknownImpassibles(origin, unitMovement)
 
         val distanceToTiles = PathsToTilesWithinTurn()
         if (unitMovement == 0f) return distanceToTiles

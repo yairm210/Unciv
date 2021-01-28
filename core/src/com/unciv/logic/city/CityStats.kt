@@ -170,13 +170,6 @@ class CityStats {
 
     fun getGrowthBonusFromPoliciesAndWonders(): Float {
         var bonus = 0f
-
-        // This is to be deprecated and converted to "+[]% growth in all cities" and "+[]% growth in capital" - keeping it here to that mods with this can still work for now
-        if (cityInfo.civInfo.hasUnique("+10% food growth in capital") && cityInfo.isCapital())
-            bonus += 10f
-        if (cityInfo.civInfo.hasUnique("+15% growth in all cities"))
-            bonus += 15f
-
         for (unique in cityInfo.civInfo.getMatchingUniques("+[]% growth in all cities"))
             bonus += unique.params[0].toFloat()
         if (cityInfo.isCapital()) for (unique in cityInfo.civInfo.getMatchingUniques("+[]% growth in capital"))
@@ -295,19 +288,6 @@ class CityStats {
 
     private fun getStatPercentBonusesFromBuildings(currentConstruction: IConstruction): Stats {
         val stats = cityInfo.cityConstructions.getStatPercentBonuses()
-
-        // This is to be deprecated and converted to "+[]% production when building [] in this city" - keeping it here to that mods with this can still work for now
-        if (currentConstruction is BaseUnit) {
-            if (currentConstruction.unitType == UnitType.Mounted
-                    && cityInfo.containsBuildingUnique("+15% Production when building Mounted Units in this city"))
-                stats.production += 15
-            if (currentConstruction.unitType.isLandUnit()
-                    && cityInfo.containsBuildingUnique("+15% production of land units"))
-                stats.production += 15
-            if (currentConstruction.unitType.isWaterUnit()
-                    && cityInfo.containsBuildingUnique("+15% production of naval units"))
-                stats.production += 15
-        }
 
         for (unique in cityInfo.cityConstructions.builtBuildingUniqueMap.getUniques("+[]% production when building [] in this city")) {
             if (constructionMatchesFilter(currentConstruction, unique.params[1]))

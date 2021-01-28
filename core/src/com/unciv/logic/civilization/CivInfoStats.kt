@@ -27,11 +27,6 @@ class CivInfoStats(val civInfo: CivilizationInfo){
 
         var numberOfUnitsToPayFor = max(0f, unitsToPayFor.count().toFloat() - freeUnits)
 
-        // Deprecated and generalized as of 3.11.20 - here for mod transition period
-        if (civInfo.hasUnique("-25% land units maintenance")) {
-            val numberOfUnitsWithDiscount = min(numberOfUnitsToPayFor, unitsToPayFor.count { it.type.isLandUnit() }.toFloat())
-            numberOfUnitsToPayFor -= 0.25f * numberOfUnitsWithDiscount
-        }
 
         for (unique in civInfo.getMatchingUniques("-[]% [] unit maintenance costs")) {
             val numberOfUnitsWithDiscount = min(numberOfUnitsToPayFor, unitsToPayFor.count { it.matchesFilter(unique.params[1]) }.toFloat())
