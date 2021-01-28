@@ -258,7 +258,10 @@ object Battle {
             return
 
         var XPModifier = 1f
+        // keep until deprecated
         if (thisCombatant.getCivInfo().hasUnique("Military units gain 50% more Experience from combat")) XPModifier += 0.5f
+        for (unique in thisCombatant.getCivInfo().getMatchingUniques("Military units gain []% more Experience from combat"))
+            XPModifier += unique.params[0].toFloat() / 100
         for (unique in thisCombatant.unit.getMatchingUniques("[]% Bonus XP gain"))
             XPModifier += unique.params[0].toFloat() / 100
 
