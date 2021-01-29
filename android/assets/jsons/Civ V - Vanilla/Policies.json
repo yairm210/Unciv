@@ -193,13 +193,14 @@
 			},
 			{
 				"name": "Scholasticism",
-				"requires": ["Philantropy"],
 				"uniques":["Allied City-States provide Science equal to [25]% of what they produce for themselves"],
+				"requires": ["Philantropy"],
 				"row": 2,
 				"column": 2
 			},
 			{
 				"name": "Cultural Diplomacy",
+				"uniques": ["Quantity of Resources gifted by City-States increased by [100]%"],
 				"requires": ["Scholasticism"],
 				"row": 3,
 				"column": 2
