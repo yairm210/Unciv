@@ -218,7 +218,7 @@
 		"policies": [
 			{
 				"name": "Trade Unions",
-				"uniques": ["Maintenance on roads & railroads reduced by 33%", "[+2 Gold] from each Trade Route"],
+				"uniques": ["Maintenance on roads & railroads reduced by [33]%", "[+2 Gold] from each Trade Route"],
 				"row": 1,
 				"column": 2
 			},

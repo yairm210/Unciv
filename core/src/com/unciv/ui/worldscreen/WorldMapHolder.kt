@@ -113,8 +113,7 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
         if (previousSelectedUnits.isNotEmpty() && previousSelectedUnits.any { it.getTile() != tileInfo }
                 && worldScreen.isPlayersTurn
                 && previousSelectedUnits.any { it.movement.canMoveTo(tileInfo) ||
-                        it.movement.isUnknownTileWeShouldAssumeToBePassable(tileInfo)
-                }) {
+                        it.movement.isUnknownTileWeShouldAssumeToBePassable(tileInfo)}) {
             // this can take a long time, because of the unit-to-tile calculation needed, so we put it in a different thread
             addTileOverlaysWithUnitMovement(previousSelectedUnits, tileInfo)
         } else addTileOverlays(tileInfo) // no unit movement but display the units in the tile etc.
