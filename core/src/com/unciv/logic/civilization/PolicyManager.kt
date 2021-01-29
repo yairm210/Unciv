@@ -163,7 +163,7 @@ class PolicyManager {
                 }
         for (city in candidateCities) {
             val builtBuilding = city.cityConstructions.addCultureBuilding()
-            legalismState[city.id] = builtBuilding!!
+            if (builtBuilding != null) legalismState[city.id] = builtBuilding!!
         }
     }
 }
