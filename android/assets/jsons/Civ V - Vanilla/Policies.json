@@ -105,7 +105,7 @@
 			},
 			{
 				"name": "Military Tradition",
-				"uniques":["Military units gain 50% more Experience from combat"],
+				"uniques":["[Military] units gain [50]% more Experience from combat"],
 				"requires": ["Warrior Code"],
 				"row": 2,
 				"column": 2
