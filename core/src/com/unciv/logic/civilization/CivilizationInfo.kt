@@ -21,7 +21,6 @@ import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.tile.TileResource
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stats
-import com.unciv.models.translations.equalsPlaceholderText
 import com.unciv.models.translations.tr
 import com.unciv.ui.victoryscreen.RankingType
 import java.util.*
@@ -597,11 +596,18 @@ class CivilizationInfo {
         }
     }
 
-    fun giveGoldGift(otherCiv: CivilizationInfo, giftAmount: Int) {
-        if (!otherCiv.isCityState()) throw Exception("You can only gain influence with City-States!")
+    fun influenceGainedByGift(cityState: CivilizationInfo, giftAmount: Int): Int {
+        var influenceGained = giftAmount / 10f
+        for (unique in cityState.getMatchingUniques("Gifts of Gold to City-States generate []% more Influence"))
+            influenceGained *= (100f + unique.params[0].toInt()) / 100
+        return influenceGained.toInt()
+    }
+
+    fun giveGoldGift(cityState: CivilizationInfo, giftAmount: Int) {
+        if (!cityState.isCityState()) throw Exception("You can only gain influence with City-States!")
         gold -= giftAmount
-        otherCiv.getDiplomacyManager(this).influence += giftAmount / 10
-        otherCiv.updateAllyCivForCityState()
+        cityState.getDiplomacyManager(this).influence += influenceGainedByGift(cityState, giftAmount)
+        cityState.updateAllyCivForCityState()
         updateStatsForNextTurn()
     }
 

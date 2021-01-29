@@ -147,7 +147,7 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
         diplomacyTable.addSeparator()
 
         val giftAmount = 250
-        val influenceAmount = giftAmount / 10
+        val influenceAmount = viewingCiv.influenceGainedByGift(otherCiv, giftAmount)
         val giftButton = "Gift [$giftAmount] gold (+[$influenceAmount] influence)".toTextButton()
         giftButton.onClick {
             viewingCiv.giveGoldGift(otherCiv, giftAmount)

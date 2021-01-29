@@ -177,14 +177,17 @@
 	},/*{
 		"name": "Patronage",
 		"era": "Classical era",
+		"uniques": ["City-State Influence degrades [25]% slower"],
 		"policies": [
 			{
 				"name": "Philantropy",
+				"uniques":["Gifts of Gold to City-States generate [25]% more Influence"],
 				"row": 1,
 				"column": 2
 			},
 			{
 				"name": "Aesthetics",
+				"uniques":["Resting point for Influence with City-States is increased by [20]"],
 				"row": 1,
 				"column": 4
 			},
