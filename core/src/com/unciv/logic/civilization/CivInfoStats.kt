@@ -108,6 +108,14 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
                 cultureBonus.add(Stat.Culture, culture)
                 statMap.add("City-States", cultureBonus)
             }
+
+
+            if (otherCiv.isCityState() && otherCiv.getDiplomacyManager(civInfo.civName).relationshipLevel() >= RelationshipLevel.Ally) {
+                val sciencePercentage = civInfo
+                        .getMatchingUniques("Allied City-States provide Science equal to []% of what they produce for themselves")
+                        .sumBy { it.params[0].toInt() }
+                statMap.add("City-States",Stats().apply { science = otherCiv.statsForNextTurn.science * (sciencePercentage/100f) })
+            }
         }
 
         statMap["Transportation upkeep"] = Stats().apply { gold = -getTransportationUpkeep().toFloat() }

@@ -194,6 +194,7 @@
 			{
 				"name": "Scholasticism",
 				"requires": ["Philantropy"],
+				"uniques":["Allied City-States provide Science equal to [25]% of what they produce for themselves"],
 				"row": 2,
 				"column": 2
 			},
