@@ -1,3 +1,21 @@
+## 3.12.11
+
+Added experimental movement which assumes unknown tiles are impassible - hopefully will resolve #3009
+
+Solved mod incompatibility with Legalism issues
+
+Multiple unique parametrization improvements
+
+Added 'replacementTextForUniques' parameter to buildings and units for custom text
+
+Add a "Unlocked at [tech/era/policy]" unique to buildings and units
+
+"Save game" errors are now correctly caught and displayed to the user
+
+Added mutually exclusive policy branches :)
+
+Parameterize Civ Unique for increased XP gain - By SpacedOutChicken
+
 ## 3.12.10
 
 Solved ANRs when loading large maps in map editor
