@@ -248,10 +248,17 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo, centerOnTech: Tec
             return
         }
 
-
+        val pathToTech = civTech.getRequiredTechsToDestination(tech)
+        for (requiredTech in pathToTech)
+            for (unique in requiredTech.uniqueObjects)
+                if (unique.placeholderText == "Incompatible with []" && civTech.isResearched(unique.params[0])) {
+                    rightSideButton.setText(unique.text.tr())
+                    rightSideButton.disable()
+                    return
+                }
 
         tempTechsToResearch.clear()
-        tempTechsToResearch.addAll(civTech.getRequiredTechsToDestination(tech))
+        tempTechsToResearch.addAll(pathToTech.map { it.name })
 
         pick("Research [${tempTechsToResearch[0]}]".tr())
         setButtonsInfo()
