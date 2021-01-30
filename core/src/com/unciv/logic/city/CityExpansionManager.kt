@@ -33,11 +33,17 @@ class CityExpansionManager {
     // The second seems to be more based, so I'll go with that
     fun getCultureToNextTile(): Int {
         var cultureToNextTile = 6 * (max(0, tilesClaimed()) + 1.4813).pow(1.3)
+        for (unique in cityInfo.civInfo.getMatchingUniques("-[]% Culture cost of acquiring tiles []")) {
+            if (cityInfo.matchesFilter(unique.params[1]))
+                cultureToNextTile *= (1 - unique.params[0].toFloat() / 100)
+        }
+        // Deprecated as of 3.12.10 - replaced with "-[]% Culture cost of acquiring tiles []", either [in capital] or [in this city] or [in all cities]
         if (cityInfo.civInfo.hasUnique("Cost of acquiring new tiles reduced by 25%"))
             cultureToNextTile *= 0.75 //Speciality of Angkor Wat
         if (cityInfo.containsBuildingUnique("Culture and Gold costs of acquiring new tiles reduced by 25% in this city"))
             cultureToNextTile *= 0.75 // Specialty of Krepost
         if (cityInfo.civInfo.hasUnique("Increased rate of border expansion")) cultureToNextTile *= 0.75
+
         return cultureToNextTile.roundToInt()
     }
 
@@ -56,11 +62,15 @@ class CityExpansionManager {
         val distanceFromCenter = tileInfo.aerialDistanceTo(cityInfo.getCenterTile())
         var cost = baseCost * (distanceFromCenter - 1) + tilesClaimed() * 5.0
 
+        for (unique in cityInfo.civInfo.getMatchingUniques("-[]% Gold cost of acquiring tiles []")) {
+            if (cityInfo.matchesFilter(unique.params[1]))
+                cost *= (1 - unique.params[0].toFloat() / 100)
+        }
+        // Deprecated as of 3.12.10 - replaced with "-[]% Gold cost of acquiring tiles []", either [in capital] or [in this city] or [in all cities]
         if (cityInfo.civInfo.hasUnique("Cost of acquiring new tiles reduced by 25%"))
             cost *= 0.75 //Speciality of Angkor Wat
         if (cityInfo.containsBuildingUnique("Culture and Gold costs of acquiring new tiles reduced by 25% in this city"))
             cost *= 0.75 // Specialty of Krepost
-
         if (cityInfo.civInfo.hasUnique("-50% cost when purchasing tiles"))
             cost /= 2
         return cost.toInt()

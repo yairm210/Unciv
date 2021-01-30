@@ -160,7 +160,7 @@
 		"xpForNewUnits": 15,
 		"hurryCostModifier": 25,
 		"maintenance": 1,
-		"uniques": ["Culture and Gold costs of acquiring new tiles reduced by 25% in this city"],
+		"uniques": ["-[25]% Culture cost of acquiring tiles [in this city]","-[]% Gold cost of acquiring tiles [in this city]"],
 		"requiredTech": "Bronze Working"
 	},
 	{
@@ -532,7 +532,7 @@
 		"culture": 1,
 		"greatPersonPoints": {"production": 1},
 		"isWonder": true,
-		"uniques": ["Cost of acquiring new tiles reduced by 25%"],
+		"uniques": ["-[25]% Culture cost of acquiring tiles [in all cities]","-[25]% Gold cost of acquiring tiles [in all cities]"],
 		"requiredTech": "Chivalry",
 		"quote": "'The temple is like no other building in the world. It has towers and decoration and all the refinements which the human genius can conceive of.'  - Antonio da Magdalena"
 	},
