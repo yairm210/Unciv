@@ -209,7 +209,7 @@
 		"requiredNearbyImprovedResources": ["Horses","Sheep","Cattle"],
 		"resourceBonusStats": {"production": 1},
 		"hurryCostModifier": 25,
-		"uniques": ["+[15]% production when building [mounted units] in this city"],
+		"uniques": ["+[15]% Production when constructing [Mounted] units [in this city]"]
 		"requiredTech": "Horseback Riding"
 	},
 	{
@@ -463,7 +463,8 @@
 		"requiredNearbyImprovedResources": ["Iron"],
 		"resourceBonusStats": {"production": 1},
 		"requiredTech": "Metal Casting",
-		"uniques": ["+[15]% production when building [land units] in this city", "+[15]% production when building [Spaceship part] in this city"]
+		"uniques": ["+[15]% Production when constructing [Spaceship part] units [in this city]",
+			"+[15]% Production when constructing [Land] units [in this city]"]
 	},
 	{
 		"name": "Harbor",
@@ -599,7 +600,7 @@
 		"culture": 1,
 		"isWonder": true,
 		"greatPersonPoints": {"culture": 2},
-		"uniques": ["+[25]% [Culture] in all cities"],
+		"uniques": ["+[25]% [Culture] [in all cities]"],
 		"requiredTech": "Acoustics",
 		"quote": "'I live and love in God's peculiar light.' - Michelangelo Buonarroti"
 	},
@@ -707,7 +708,7 @@
 		"maintenance": 3,
 		"requiredBuilding": "Harbor",
 		"uniques": ["[+1 Production, +1 Gold] from [Water resource] tiles in this city",
-			"Must be next to [Coast]", "+[15]% production when building [naval units] in this city"],
+			"Must be next to [Coast]", "+[15]% Production when constructing [Water] units [in this city]"]
 		"requiredTech": "Navigation"
 	},
 	{
@@ -735,7 +736,7 @@
 		"specialistSlots": {"Engineer": 1},
 		"hurryCostModifier": 25,
 		"maintenance": 2,
-		"uniques": ["Must not be on [Hill]", "+[10]% production when building [Buildings] in this city"],
+		"uniques": ["Must not be on [Hill]", "+[10]% Production when constructing [Buildings] [in this city]"],
 		"requiredTech": "Economics"
 	},
 	
@@ -996,7 +997,7 @@
 		"requiredResource": "Aluminum",
 		"cost": 360,
 		"requiredBuilding": "Factory",
-		"uniques": ["+[50]% production when building [Spaceship part] in this city"],
+		"uniques": ["+[50]% Production when constructing [Spaceship part] units [in this city]"],
 		"requiredTech": "Robotics"
 	},
 	{
@@ -1022,7 +1023,7 @@
 		"greatPersonPoints": {"science": 1},		
 		"providesFreeBuilding":  "Spaceship Factory",
 		"uniques": ["[2] free [Great Scientist] units appear",
-			"+[25]% production when building [Spaceship part] in this city"],
+			"+[25]% Production when constructing [Spaceship part] units [in this city]"],
 		"requiredTech": "Satellites",
 		"quote": "'The wonder is, not that the field of stars is so vast, but that man has measured it.'  - Anatole France"
 		// will be introduced in G&K expansion pack

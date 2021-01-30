@@ -338,7 +338,11 @@ class MapUnit {
             val destination = action!!.replace("moveTo ", "").split(",").dropLastWhile { it.isEmpty() }.toTypedArray()
             val destinationVector = Vector2(destination[0].toFloat(), destination[1].toFloat())
             val destinationTile = currentTile.tileMap[destinationVector]
-            if (!movement.canReach(destinationTile)) return // That tile that we were moving towards is now unreachable
+            if (!movement.canReach(destinationTile)){ // That tile that we were moving towards is now unreachable -
+                // for instance we headed towards an unknown tile and it's apparently unreachable
+                action = null
+                return
+            }
             val gotTo = movement.headTowards(destinationTile)
             if (gotTo == currentTile) // We didn't move at all
                 return
@@ -500,8 +504,6 @@ class MapUnit {
     fun removeFromTile() = currentTile.removeUnit(this)
 
     fun moveThroughTile(tile: TileInfo) {
-        if (tile.improvement == Constants.ancientRuins && civInfo.isMajorCiv())
-            getAncientRuinBonus(tile)
         if (tile.improvement == Constants.barbarianEncampment && !civInfo.isBarbarian())
             clearEncampment(tile)
 

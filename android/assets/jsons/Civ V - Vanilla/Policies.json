@@ -49,7 +49,7 @@
 		"policies": [
 			{
 				"name": "Collective Rule",
-				"uniques": ["Training of settlers increased +50% in capital", "Free [Settler] appears"],
+				"uniques": ["+[50]% Production when constructing [Settler] units [in capital]", "Free [Settler] appears"],
 				"row": 1,
 				"column": 1
 			},
@@ -156,7 +156,7 @@
 			},
 			{
 				"name": "Reformation",
-				"uniques": ["+33% culture in all cities with a world wonder", "Empire enters golden age"],
+				"uniques": ["+[33]% [Culture] [in all cities with a world wonder]", "Empire enters golden age"],
 				"requires": ["Organized Religion"],
 				"row": 2,
 				"column": 3
@@ -177,25 +177,30 @@
 	},/*{
 		"name": "Patronage",
 		"era": "Classical era",
+		"uniques": ["City-State Influence degrades [25]% slower"],
 		"policies": [
 			{
 				"name": "Philantropy",
+				"uniques":["Gifts of Gold to City-States generate [25]% more Influence"],
 				"row": 1,
 				"column": 2
 			},
 			{
 				"name": "Aesthetics",
+				"uniques":["Resting point for Influence with City-States is increased by [20]"],
 				"row": 1,
 				"column": 4
 			},
 			{
 				"name": "Scholasticism",
+				"uniques":["Allied City-States provide Science equal to [25]% of what they produce for themselves"],
 				"requires": ["Philantropy"],
 				"row": 2,
 				"column": 2
 			},
 			{
 				"name": "Cultural Diplomacy",
+				"uniques": ["Quantity of Resources gifted by City-States increased by [100]%"],
 				"requires": ["Scholasticism"],
 				"row": 3,
 				"column": 2
@@ -213,12 +218,12 @@
 	},*/
 	{
 		"name": "Commerce",
-		"uniques": ["+25% gold in capital"],
+		"uniques": ["+[25]% [Gold] [in capital]"],
 		"era": "Medieval era",
 		"policies": [
 			{
 				"name": "Trade Unions",
-				"uniques": ["Maintenance on roads & railroads reduced by 33%", "[+2 Gold] from each Trade Route"],
+				"uniques": ["Maintenance on roads & railroads reduced by [33]%", "[+2 Gold] from each Trade Route"],
 				"row": 1,
 				"column": 2
 			},

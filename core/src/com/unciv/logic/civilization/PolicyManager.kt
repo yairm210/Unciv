@@ -101,6 +101,7 @@ class PolicyManager {
         if (policy.name.endsWith("Complete")) return false
         if (!getAdoptedPolicies().containsAll(policy.requires!!)) return false
         if (civInfo.gameInfo.ruleSet.getEraNumber(policy.branch.era) > civInfo.getEraNumber()) return false
+        if (policy.uniqueObjects.any { it.placeholderText=="Incompatible with []" && adoptedPolicies.contains(it.params[0]) }) return false
         return true
     }
 
@@ -162,7 +163,7 @@ class PolicyManager {
                 }
         for (city in candidateCities) {
             val builtBuilding = city.cityConstructions.addCultureBuilding()
-            legalismState[city.id] = builtBuilding!!
+            if (builtBuilding != null) legalismState[city.id] = builtBuilding!!
         }
     }
 }

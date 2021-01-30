@@ -28,7 +28,7 @@ class CivInfoTransientUpdater(val civInfo: CivilizationInfo) {
         civInfo.exploredTiles.addAll(newlyExploredTiles)
 
 
-        val viewedCivs = HashMap<CivilizationInfo,TileInfo>()
+        val viewedCivs = HashMap<CivilizationInfo, TileInfo>()
         for (tile in civInfo.viewableTiles) {
             val tileOwner = tile.getOwner()
             if (tileOwner != null) viewedCivs[tileOwner] = tile
@@ -66,7 +66,7 @@ class CivInfoTransientUpdater(val civInfo: CivilizationInfo) {
         newViewableTiles.addAll(ownedTiles)
         val neighboringUnownedTiles = ownedTiles.flatMap { it.neighbors.filter { it.getOwner() != civInfo } }
         newViewableTiles.addAll(neighboringUnownedTiles)
-        newViewableTiles.addAll(civInfo.getCivUnits().flatMap { it.viewableTiles.asSequence().filter { it.getOwner()!=civInfo } })
+        newViewableTiles.addAll(civInfo.getCivUnits().flatMap { it.viewableTiles.asSequence().filter { it.getOwner() != civInfo } })
 
         if (!civInfo.isCityState()) {
             for (otherCiv in civInfo.getKnownCivs()) {
@@ -144,18 +144,22 @@ class CivInfoTransientUpdater(val civInfo: CivilizationInfo) {
         for (city in civInfo.cities) newDetailedCivResources.add(city.getCityResources())
 
         if (!civInfo.isCityState()) {
+            var resourceBonusPercentage = 1f
+            for (unique in civInfo.getMatchingUniques("Quantity of Resources gifted by City-States increased by []%"))
+                resourceBonusPercentage += unique.params[0].toFloat() / 100
             for (otherCiv in civInfo.getKnownCivs().filter { it.getAllyCiv() == civInfo.civName }) {
                 for (city in otherCiv.cities) {
-                    for(resourceSupply in city.getCityResources())
-                        newDetailedCivResources.add(resourceSupply.resource,resourceSupply.amount,"City-States")
+                    for (resourceSupply in city.getCityResources())
+                        newDetailedCivResources.add(resourceSupply.resource,
+                                (resourceSupply.amount * resourceBonusPercentage).toInt(), "City-States")
                 }
             }
         }
 
         for (dip in civInfo.diplomacy.values) newDetailedCivResources.add(dip.resourcesFromTrade())
-        for(resource in civInfo.getCivUnits().mapNotNull { it.baseUnit.requiredResource }
+        for (resource in civInfo.getCivUnits().mapNotNull { it.baseUnit.requiredResource }
                 .map { civInfo.gameInfo.ruleSet.tileResources[it]!! })
-            newDetailedCivResources.add(resource,-1,"Units")
+            newDetailedCivResources.add(resource, -1, "Units")
         civInfo.detailedCivResources = newDetailedCivResources
     }
 }

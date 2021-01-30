@@ -21,7 +21,6 @@ import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.tile.TileResource
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stats
-import com.unciv.models.translations.equalsPlaceholderText
 import com.unciv.models.translations.tr
 import com.unciv.ui.victoryscreen.RankingType
 import java.util.*
@@ -218,13 +217,20 @@ class CivilizationInfo {
 
     fun hasResource(resourceName: String): Boolean = getCivResourcesByName()[resourceName]!! > 0
 
-    fun getBuildingUniques(): Sequence<Unique> = cities.asSequence().flatMap { it.cityConstructions.builtBuildingUniqueMap.getAllUniques() }
+    fun getCivWideBuildingUniques(): Sequence<Unique> = cities.asSequence().flatMap {
+        it.cityConstructions.builtBuildingUniqueMap.getAllUniques()
+                .filter { it.params.isEmpty() || it.params.last() != "in this city" }
+    }
 
     fun hasUnique(unique: String) = getMatchingUniques(unique).any()
 
+    // Does not return local uniques, only global ones.
     fun getMatchingUniques(uniqueTemplate: String): Sequence<Unique> {
         return nation.uniqueObjects.asSequence().filter { it.placeholderText == uniqueTemplate } +
-                cities.asSequence().flatMap { it.cityConstructions.builtBuildingUniqueMap.getUniques(uniqueTemplate).asSequence() } +
+                cities.asSequence().flatMap {
+                    it.cityConstructions.builtBuildingUniqueMap.getUniques(uniqueTemplate).asSequence()
+                            .filter { it.params.isEmpty() || it.params.last() != "in this city" }
+                } +
                 policies.policyUniques.getUniques(uniqueTemplate) +
                 tech.getTechUniques().filter { it.placeholderText == uniqueTemplate }
     }
@@ -590,11 +596,18 @@ class CivilizationInfo {
         }
     }
 
-    fun giveGoldGift(otherCiv: CivilizationInfo, giftAmount: Int) {
-        if (!otherCiv.isCityState()) throw Exception("You can only gain influence with City-States!")
+    fun influenceGainedByGift(cityState: CivilizationInfo, giftAmount: Int): Int {
+        var influenceGained = giftAmount / 10f
+        for (unique in cityState.getMatchingUniques("Gifts of Gold to City-States generate []% more Influence"))
+            influenceGained *= (100f + unique.params[0].toInt()) / 100
+        return influenceGained.toInt()
+    }
+
+    fun giveGoldGift(cityState: CivilizationInfo, giftAmount: Int) {
+        if (!cityState.isCityState()) throw Exception("You can only gain influence with City-States!")
         gold -= giftAmount
-        otherCiv.getDiplomacyManager(this).influence += giftAmount / 10
-        otherCiv.updateAllyCivForCityState()
+        cityState.getDiplomacyManager(this).influence += influenceGainedByGift(cityState, giftAmount)
+        cityState.updateAllyCivForCityState()
         updateStatsForNextTurn()
     }
 

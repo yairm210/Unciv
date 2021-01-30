@@ -80,7 +80,7 @@ class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParame
             val mChannel = NotificationChannel(NOTIFICATION_CHANNEL_ID_INFO, name, importance)
             mChannel.description = descriptionText
             mChannel.setShowBadge(true)
-            mChannel.setLockscreenVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+            mChannel.lockscreenVisibility = NotificationCompat.VISIBILITY_PUBLIC
 
             val notificationManager = appContext.getSystemService(AndroidApplication.NOTIFICATION_SERVICE) as NotificationManager
             notificationManager.createNotificationChannel(mChannel)
@@ -100,7 +100,7 @@ class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParame
             val importance = NotificationManager.IMPORTANCE_MIN
             val mChannel = NotificationChannel(NOTIFICATION_CHANNEL_ID_SERVICE, name, importance)
             mChannel.setShowBadge(false)
-            mChannel.setLockscreenVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+            mChannel.lockscreenVisibility = NotificationCompat.VISIBILITY_PUBLIC
             mChannel.description = descriptionText
 
             val notificationManager = appContext.getSystemService(AndroidApplication.NOTIFICATION_SERVICE) as NotificationManager

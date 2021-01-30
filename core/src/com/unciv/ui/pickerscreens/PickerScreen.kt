@@ -23,7 +23,7 @@ open class PickerScreen : CameraStageBaseScreen() {
         bottomTable.add(closeButton).pad(10f)
 
         descriptionLabel = "".toLabel()
-        descriptionLabel.setWrap(true)
+        descriptionLabel.wrap = true
         val labelScroll = ScrollPane(descriptionLabel)
         bottomTable.add(labelScroll).pad(5f).fill().expand()
 

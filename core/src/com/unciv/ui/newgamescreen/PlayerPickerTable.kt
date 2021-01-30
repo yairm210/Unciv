@@ -241,7 +241,7 @@ class PlayerPickerTable(val previousScreen: IPreviousScreen, var gameParameters:
                 nationDetailsTable.clear()
 
                 val nationUniqueLabel = nation.getUniqueString(ruleset).toLabel(nation.getInnerColor())
-                nationUniqueLabel.setWrap(true)
+                nationUniqueLabel.wrap = true
                 nationDetailsTable.add(NationTable(nation, civBlocksWidth, height, ruleset))
                 nationDetailsTable.onClick {
                     if (previousScreen is GameParametersScreen)

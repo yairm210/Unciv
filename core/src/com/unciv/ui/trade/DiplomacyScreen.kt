@@ -69,7 +69,7 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
             if (civ.isCityState() && civ.questManager.haveQuestsFor(viewingCiv)) {
                 val questIcon = ImageGetter.getImage("OtherIcons/Quest").surroundWithCircle(size = 30f, color = Color.GOLDENROD)
                 civIndicator.addActor(questIcon)
-                questIcon.setX(floor(civIndicator.width - questIcon.width))
+                questIcon.x = floor(civIndicator.width - questIcon.width)
             }
 
             leftSideTable.add(civIndicator).row()
@@ -147,7 +147,7 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
         diplomacyTable.addSeparator()
 
         val giftAmount = 250
-        val influenceAmount = giftAmount / 10
+        val influenceAmount = viewingCiv.influenceGainedByGift(otherCiv, giftAmount)
         val giftButton = "Gift [$giftAmount] gold (+[$influenceAmount] influence)".toTextButton()
         giftButton.onClick {
             viewingCiv.giveGoldGift(otherCiv, giftAmount)

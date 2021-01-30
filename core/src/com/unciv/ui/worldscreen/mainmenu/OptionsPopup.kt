@@ -41,7 +41,7 @@ class OptionsPopup(val previousScreen:CameraStageBaseScreen) : Popup(previousScr
         scrollPane.setScrollingDisabled(true, false)
         add(scrollPane).maxHeight(screen.stage.height * 0.6f).row()
 
-        addCloseButton() {
+        addCloseButton {
             if(previousScreen is WorldScreen)
                 previousScreen.enableNextTurnButtonAfterOptions()
         }
@@ -108,6 +108,8 @@ class OptionsPopup(val previousScreen:CameraStageBaseScreen) : Popup(previousScr
 
         addYesNoRow ("Check for idle units", settings.checkForDueUnits, true) { settings.checkForDueUnits = it }
         addYesNoRow ("Move units with a single tap", settings.singleTapMove) { settings.singleTapMove = it }
+        addYesNoRow ("Movement assumes unknown tiles to be passable", settings.unitMovementIncludesImpassibles)
+            { settings.unitMovementIncludesImpassibles = it }
         addYesNoRow ("Auto-assign city production", settings.autoAssignCityProduction, true) {
             settings.autoAssignCityProduction = it
             if (it && previousScreen is WorldScreen &&

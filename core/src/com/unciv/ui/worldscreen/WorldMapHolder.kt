@@ -112,7 +112,8 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
 
         if (previousSelectedUnits.isNotEmpty() && previousSelectedUnits.any { it.getTile() != tileInfo }
                 && worldScreen.isPlayersTurn
-                && previousSelectedUnits.any { it.movement.canMoveTo(tileInfo) }) {
+                && previousSelectedUnits.any { it.movement.canMoveTo(tileInfo) ||
+                        it.movement.isUnknownTileWeShouldAssumeToBePassable(tileInfo)}) {
             // this can take a long time, because of the unit-to-tile calculation needed, so we put it in a different thread
             addTileOverlaysWithUnitMovement(previousSelectedUnits, tileInfo)
         } else addTileOverlays(tileInfo) // no unit movement but display the units in the tile etc.
@@ -376,7 +377,7 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
                     // The tile is within move range
                     tileToColor.showCircle(Color.BLUE, 0.3f)
                 }
-            if (unit.movement.canMoveTo(tile))
+            if (unit.movement.canMoveTo(tile) || unit.movement.isUnknownTileWeShouldAssumeToBePassable(tile))
                 tileToColor.showCircle(Color.WHITE,
                         if (UncivGame.Current.settings.singleTapMove || isAirUnit) 0.7f else 0.3f)
         }

@@ -45,8 +45,12 @@ object GameSaver {
         if (customSaveLocation != null && customSaveLocationHelper != null) {
             customSaveLocationHelper.saveGame(game, GameName, forcePrompt, saveCompletionCallback)
         } else {
-            json().toJson(game, getSave(GameName, multiplayer))
-            saveCompletionCallback?.invoke(null)
+            try {
+                json().toJson(game, getSave(GameName, multiplayer))
+                saveCompletionCallback?.invoke(null)
+            } catch (ex: Exception) {
+                saveCompletionCallback?.invoke(ex)
+            }
         }
     }
 

@@ -59,6 +59,7 @@ class Building : NamedStats(), IConstruction {
     var quote: String = ""
     private var providesFreeBuilding: String? = null
     var uniques = ArrayList<String>()
+    var replacementTextForUniques = ""
     val uniqueObjects: List<Unique> by lazy { uniques.map { Unique(it) } }
 
     /**
@@ -80,7 +81,10 @@ class Building : NamedStats(), IConstruction {
         }
         if (requiredNearbyImprovedResources != null)
             infoList += ("Requires worked [" + requiredNearbyImprovedResources!!.joinToString("/") { it.tr() } + "] near city").tr()
-        if (uniques.isNotEmpty()) infoList += uniques.joinToString { it.tr() }
+        if (uniques.isNotEmpty()) {
+            if (replacementTextForUniques != "") infoList += replacementTextForUniques
+            else infoList += uniques.joinToString { it.tr() }
+        }
         if (cityStrength != 0) infoList += "{City strength} +".tr() + cityStrength
         if (cityHealth != 0) infoList += "{City health} +".tr() + cityHealth
         if (xpForNewUnits != 0) infoList += "+$xpForNewUnits {XP for new units}".tr()
@@ -104,7 +108,10 @@ class Building : NamedStats(), IConstruction {
             stringBuilder.appendln("Consumes 1 [$requiredResource]".tr())
         if (providesFreeBuilding != null)
             stringBuilder.appendln("Provides a free [$providesFreeBuilding] in the city".tr())
-        if (uniques.isNotEmpty()) stringBuilder.appendln(uniques.asSequence().map { it.tr() }.joinToString("\n"))
+        if (uniques.isNotEmpty()){
+            if (replacementTextForUniques != "") stringBuilder.appendln(replacementTextForUniques)
+            else stringBuilder.appendln(uniques.asSequence().map { it.tr() }.joinToString("\n"))
+        }
         if (!stats.isEmpty())
             stringBuilder.appendln(stats)
 
@@ -289,6 +296,11 @@ class Building : NamedStats(), IConstruction {
         if (civInfo.gameInfo.ruleSet.buildings.values.any { it.uniqueTo == civInfo.civName && it.replaces == name })
             return "Our unique building replaces this"
         if (requiredTech != null && !civInfo.tech.isResearched(requiredTech!!)) return "$requiredTech not researched"
+
+        for (unique in uniqueObjects.filter { it.placeholderText == "Unlocked with []" })
+            if(civInfo.tech.researchedTechnologies.none { it.era() == unique.params[0] || it.name == unique.params[0] }
+                    && !civInfo.policies.isAdopted(unique.params[0]))
+                return unique.text
 
         // Regular wonders
         if (isWonder) {

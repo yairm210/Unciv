@@ -70,7 +70,7 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
         val sliderLabel = "{Brush Size} $brushSize".toLabel()
 
         slider.onChange {
-            brushSize = slider.getValue().toInt()
+            brushSize = slider.value.toInt()
             sliderLabel.setText("{Brush Size} $brushSize".tr())
         }
 
@@ -276,7 +276,7 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
             val nationImage = ImageGetter.getNationIndicator(nation, 40f)
             nationsTable.add(nationImage).row()
             nationImage.onClick {
-                currentNation = nation;
+                currentNation = nation
                 currentPlayer = getPlayerIndexString(player)
                 setUnitTileAction()
             }
@@ -289,7 +289,7 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
                 val nationImage = ImageGetter.getNationIndicator(nation, 40f)
                 nationsTable.add(nationImage).row()
                 nationImage.onClick {
-                    currentNation = nation;
+                    currentNation = nation
                     currentPlayer = ""
                     setUnitTileAction()
                 }

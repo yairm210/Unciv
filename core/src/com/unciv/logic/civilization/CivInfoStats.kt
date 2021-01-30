@@ -12,7 +12,7 @@ import kotlin.math.min
 import kotlin.math.pow
 
 /** CivInfo class was getting too crowded */
-class CivInfoStats(val civInfo: CivilizationInfo){
+class CivInfoStats(val civInfo: CivilizationInfo) {
 
     private fun getUnitMaintenance(): Int {
         val baseUnitCost = 0.5f
@@ -27,11 +27,6 @@ class CivInfoStats(val civInfo: CivilizationInfo){
 
         var numberOfUnitsToPayFor = max(0f, unitsToPayFor.count().toFloat() - freeUnits)
 
-        // Deprecated and generalized as of 3.11.20 - here for mod transition period
-        if (civInfo.hasUnique("-25% land units maintenance")) {
-            val numberOfUnitsWithDiscount = min(numberOfUnitsToPayFor, unitsToPayFor.count { it.type.isLandUnit() }.toFloat())
-            numberOfUnitsToPayFor -= 0.25f * numberOfUnitsWithDiscount
-        }
 
         for (unique in civInfo.getMatchingUniques("-[]% [] unit maintenance costs")) {
             val numberOfUnitsWithDiscount = min(numberOfUnitsToPayFor, unitsToPayFor.count { it.matchesFilter(unique.params[1]) }.toFloat())
@@ -54,13 +49,13 @@ class CivInfoStats(val civInfo: CivilizationInfo){
         // just to go over them once is a waste of memory - there are low-end phones who don't have much ram
 
         val ignoredTileTypes = civInfo.getMatchingUniques("No Maintenance costs for improvements in []")
-                .map { it.params[0]  }.toHashSet() // needs to be .toHashSet()ed,
+                .map { it.params[0] }.toHashSet() // needs to be .toHashSet()ed,
         // Because we go over every tile in every city and check if it's in this list, which can get real heavy.
 
         // accounting for both the old way and the new way of doing no maintenance in hills
-        val ignoreHillTiles = civInfo.hasUnique("No Maintenance costs for improvements in Hills")|| "Hills" in ignoredTileTypes
+        val ignoreHillTiles = civInfo.hasUnique("No Maintenance costs for improvements in Hills") || "Hills" in ignoredTileTypes
 
-        for (city  in civInfo.cities) {
+        for (city in civInfo.cities) {
             for (tile in city.getTiles()) {
                 if (tile.isCityCenter()) continue
                 if (ignoreHillTiles && tile.isHill()) continue
@@ -70,21 +65,28 @@ class CivInfoStats(val civInfo: CivilizationInfo){
                 }
 
                 val tileUpkeep =
-                    when (tile.roadStatus) {
-                        RoadStatus.Road -> 1
-                        RoadStatus.Railroad -> 2
-                        RoadStatus.None -> 0
-                    }
+                        when (tile.roadStatus) {
+                            RoadStatus.Road -> 1
+                            RoadStatus.Railroad -> 2
+                            RoadStatus.None -> 0
+                        }
                 transportationUpkeep += tileUpkeep
             }
         }
         // Inca unique according to https://civilization.fandom.com/wiki/Incan_%28Civ5%29
+        // Deprecated as of 3.12. in favor of "Maintenance on roads & railroads reduced by [50]%"
         if (civInfo.hasUnique("50% Maintenance costs reduction"))
             transportationUpkeep /= 2
+
+        // Deprecated as of 3.12. in favor of "Maintenance on roads & railroads reduced by [33]%"
         if (civInfo.hasUnique("Maintenance on roads & railroads reduced by 33%")
                 //presume we want to deprecate the old one at some point?
-                ||civInfo.hasUnique("Maintenance on roads & railroads reduced by 33%, +2 gold from all trade routes"))
+                || civInfo.hasUnique("Maintenance on roads & railroads reduced by 33%, +2 gold from all trade routes"))
             transportationUpkeep = (transportationUpkeep * 2 / 3f).toInt()
+
+        for (unique in civInfo.getMatchingUniques("Maintenance on roads & railroads reduced by []%"))
+            transportationUpkeep = (transportationUpkeep * (100f - unique.params[0].toInt()) / 100).toInt()
+
         return transportationUpkeep
     }
 
@@ -106,14 +108,22 @@ class CivInfoStats(val civInfo: CivilizationInfo){
                 cultureBonus.add(Stat.Culture, culture)
                 statMap.add("City-States", cultureBonus)
             }
+
+
+            if (otherCiv.isCityState() && otherCiv.getDiplomacyManager(civInfo.civName).relationshipLevel() >= RelationshipLevel.Ally) {
+                val sciencePercentage = civInfo
+                        .getMatchingUniques("Allied City-States provide Science equal to []% of what they produce for themselves")
+                        .sumBy { it.params[0].toInt() }
+                statMap.add("City-States",Stats().apply { science = otherCiv.statsForNextTurn.science * (sciencePercentage/100f) })
+            }
         }
 
-        statMap["Transportation upkeep"] = Stats().apply { gold=- getTransportationUpkeep().toFloat()}
-        statMap["Unit upkeep"] = Stats().apply { gold=- getUnitMaintenance().toFloat()}
+        statMap["Transportation upkeep"] = Stats().apply { gold = -getTransportationUpkeep().toFloat() }
+        statMap["Unit upkeep"] = Stats().apply { gold = -getUnitMaintenance().toFloat() }
 
         if (civInfo.hasUnique("50% of excess happiness added to culture towards policies")) {
             val happiness = civInfo.getHappiness()
-            if(happiness>0) statMap.add("Policies", Stats().apply { culture=happiness/2f })
+            if (happiness > 0) statMap.add("Policies", Stats().apply { culture = happiness / 2f })
         }
 
         // negative gold hurts science
@@ -125,8 +135,8 @@ class CivInfoStats(val civInfo: CivilizationInfo){
             statMap["Treasury deficit"] = Stats().apply { science = scienceDeficit }
         }
         val goldDifferenceFromTrade = civInfo.diplomacy.values.sumBy { it.goldPerTurn() }
-        if(goldDifferenceFromTrade!=0)
-            statMap["Trade"] = Stats().apply { gold= goldDifferenceFromTrade.toFloat() }
+        if (goldDifferenceFromTrade != 0)
+            statMap["Trade"] = Stats().apply { gold = goldDifferenceFromTrade.toFloat() }
 
         return statMap
     }
@@ -138,15 +148,15 @@ class CivInfoStats(val civInfo: CivilizationInfo){
 
         // TODO - happinessPerUnique should be difficulty-dependent, 5 on Settler and Chieftian and 4 on other difficulties (should be parameter, not in code)
         var happinessPerUniqueLuxury = 4f + civInfo.getDifficulty().extraHappinessPerLuxury
-        for(unique in civInfo.getMatchingUniques("+1 happiness from each type of luxury resource"))
+        for (unique in civInfo.getMatchingUniques("+1 happiness from each type of luxury resource"))
             happinessPerUniqueLuxury += 1
-        statMap["Luxury resources"]= civInfo.getCivResources().map { it.resource }
+        statMap["Luxury resources"] = civInfo.getCivResources().map { it.resource }
                 .count { it.resourceType === ResourceType.Luxury } * happinessPerUniqueLuxury
 
-        for(city in civInfo.cities) {
+        for (city in civInfo.cities) {
             // There appears to be a concurrency problem? In concurrent thread in ConstructionsTable.getConstructionButtonDTOs
-                // Literally no idea how, since happinessList is ONLY replaced, NEVER altered.
-                // Oh well, toList() should solve the problem, wherever it may come from.
+            // Literally no idea how, since happinessList is ONLY replaced, NEVER altered.
+            // Oh well, toList() should solve the problem, wherever it may come from.
             for ((key, value) in city.cityStats.happinessList.toList()) {
                 if (statMap.containsKey(key))
                     statMap[key] = statMap[key]!! + value
@@ -155,7 +165,7 @@ class CivInfoStats(val civInfo: CivilizationInfo){
         }
 
         if (civInfo.hasUnique("Provides 1 happiness per 2 additional social policies adopted")) {
-            if(!statMap.containsKey("Policies")) statMap["Policies"]=0f
+            if (!statMap.containsKey("Policies")) statMap["Policies"] = 0f
             statMap["Policies"] = statMap["Policies"]!! +
                     civInfo.policies.getAdoptedPolicies().count { !it.endsWith("Complete") } / 2
         }
