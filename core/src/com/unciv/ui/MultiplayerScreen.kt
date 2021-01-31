@@ -9,6 +9,7 @@ import com.unciv.logic.GameInfo
 import com.unciv.logic.GameSaver
 import com.unciv.logic.IdChecker
 import com.unciv.logic.UncivShowableException
+import com.unciv.logic.civilization.PlayerType
 import com.unciv.models.translations.tr
 import com.unciv.ui.pickerscreens.PickerScreen
 import com.unciv.ui.utils.*
@@ -379,9 +380,6 @@ class EditMultiplayerGameInfoScreen(game: GameInfo, gameName: String, backScreen
         topTable.add("Rename".toLabel()).row()
         topTable.add(textField).pad(10f).padBottom(30f).width(stage.width/2).row()
 
-        //TODO Change delete to "give up"
-            //->turn a player into an AI so everyone can still play without the user
-                //->should only be possible on the users turn because it has to be uploaded afterwards
         val deleteButton = "Delete save".toTextButton()
         deleteButton.onClick {
             val askPopup = Popup(this)
@@ -402,7 +400,22 @@ class EditMultiplayerGameInfoScreen(game: GameInfo, gameName: String, backScreen
             askPopup.open()
         }.apply { color = Color.RED }
 
-        topTable.add(deleteButton)
+        val giveUpButton = "Give up".toTextButton()
+        giveUpButton.onClick {
+            val askPopup = Popup(this)
+            askPopup.addGoodSizedLabel("Are you sure you want to give up?".tr()).row()
+            askPopup.addButton("Yes"){
+                giveUp(game.gameId, gameName, backScreen)
+                askPopup.close()
+            }
+            askPopup.addButton("No"){
+                askPopup.close()
+            }
+            askPopup.open()
+        }.apply { color = Color.RED }
+
+        topTable.add(deleteButton).pad(10f).row()
+        topTable.add(giveUpButton)
 
         //CloseButton Setup
         closeButton.setText("Back".tr())
@@ -428,6 +441,66 @@ class EditMultiplayerGameInfoScreen(game: GameInfo, gameName: String, backScreen
                 errorPopup.row()
                 errorPopup.addCloseButton()
                 errorPopup.open()
+            }
+        }
+    }
+
+    /**
+     * Helper function to decrease indentation
+     * Turns the current playerCiv into an AI civ and uploads the game afterwards.
+     */
+    private fun giveUp(gameId: String, gameName: String, backScreen: MultiplayerScreen){
+        //Create a popup
+        val popup = Popup(this)
+        popup.addGoodSizedLabel("Working...".tr()).row()
+        popup.open()
+
+        thread {
+            try {
+                //download to work with newest game state
+                val gameInfo = OnlineMultiplayer().tryDownloadGame(gameId)
+                val playerCiv = gameInfo.currentPlayerCiv
+
+                //only give up if it's the users turn
+                //this ensures that no one can upload a newer game state while we try to give up
+                if (playerCiv.playerId == game.settings.userId){
+                    //call next turn first to make sure everything works like intended
+                    //this skips everything like trade request which will be handled by the AI on the following turn
+                    gameInfo.nextTurn()
+                    //Set own civ info to AI
+                    playerCiv.playerType = PlayerType.AI
+                    playerCiv.playerId = ""
+
+                    //Add notification so everyone knows what happened
+                    //call for every civ cause AI players are skipped anyway
+                    for (civ in gameInfo.civilizations){
+                        civ.addNotification("[${playerCiv.civName}] gave up and is now controlled by AI".tr(), Color.RED)
+                    }
+
+                    //save game so multiplayer list stays up to date
+                    GameSaver.saveGame(gameInfo, gameName, true)
+                    OnlineMultiplayer().tryUploadGame(gameInfo)
+                    Gdx.app.postRunnable {
+                        popup.close()
+                        //go back to the MultiplayerScreen
+                        backScreen.game.setScreen(backScreen)
+                        backScreen.reloadGameListUI()
+                    }
+                } else {
+                    Gdx.app.postRunnable {
+                        //change popup text
+                        popup.innerTable.clear()
+                        popup.addGoodSizedLabel("You can only give up if it's your turn".tr()).row()
+                        popup.addCloseButton()
+                    }
+                }
+            } catch (ex: Exception) {
+                Gdx.app.postRunnable {
+                    //change popup text
+                    popup.innerTable.clear()
+                    popup.addGoodSizedLabel("Could not upload game!".tr()).row()
+                    popup.addCloseButton()
+                }
             }
         }
     }
