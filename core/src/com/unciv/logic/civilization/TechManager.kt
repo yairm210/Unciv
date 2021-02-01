@@ -119,6 +119,8 @@ class TechManager {
 
     fun canBeResearched(techName: String): Boolean {
         val tech = getRuleset().technologies[techName]!!
+        if (tech.uniqueObjects.any { it.placeholderText=="Incompatible with []" && isResearched(it.params[0]) })
+            return false
         if (isResearched(tech.name) && !tech.isContinuallyResearchable())
             return false
         return tech.prerequisites.all { isResearched(it) }
@@ -128,7 +130,7 @@ class TechManager {
 
     //endregion
 
-    fun getRequiredTechsToDestination(destinationTech: Technology): List<String> {
+    fun getRequiredTechsToDestination(destinationTech: Technology): List<Technology> {
         val prerequisites = Stack<Technology>()
 
         val checkPrerequisites = ArrayDeque<Technology>()
@@ -146,7 +148,7 @@ class TechManager {
             prerequisites.add(techToCheck)
         }
 
-        return prerequisites.sortedBy { it.column!!.columnNumber }.map { it.name }
+        return prerequisites.sortedBy { it.column!!.columnNumber }
     }
 
     fun getScienceFromGreatScientist(): Int {
