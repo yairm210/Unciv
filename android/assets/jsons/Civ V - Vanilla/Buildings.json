@@ -160,7 +160,7 @@
 		"xpForNewUnits": 15,
 		"hurryCostModifier": 25,
 		"maintenance": 1,
-		"uniques": ["-[25]% Culture cost of acquiring tiles [in this city]","-[]% Gold cost of acquiring tiles [in this city]"],
+		"uniques": ["-[25]% Culture cost of acquiring tiles [in this city]","-[25]% Gold cost of acquiring tiles [in this city]"],
 		"requiredTech": "Bronze Working"
 	},
 	{

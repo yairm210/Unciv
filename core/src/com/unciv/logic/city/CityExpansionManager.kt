@@ -35,7 +35,7 @@ class CityExpansionManager {
         var cultureToNextTile = 6 * (max(0, tilesClaimed()) + 1.4813).pow(1.3)
         for (unique in cityInfo.civInfo.getMatchingUniques("-[]% Culture cost of acquiring tiles []")) {
             if (cityInfo.matchesFilter(unique.params[1]))
-                cultureToNextTile *= (1 - unique.params[0].toFloat() / 100)
+                cultureToNextTile *= (100f - unique.params[0].toInt()) / 100
         }
         // Deprecated as of 3.12.10 - replaced with "-[]% Culture cost of acquiring tiles []", either [in capital] or [in this city] or [in all cities]
         if (cityInfo.civInfo.hasUnique("Cost of acquiring new tiles reduced by 25%"))
@@ -64,7 +64,7 @@ class CityExpansionManager {
 
         for (unique in cityInfo.civInfo.getMatchingUniques("-[]% Gold cost of acquiring tiles []")) {
             if (cityInfo.matchesFilter(unique.params[1]))
-                cost *= (1 - unique.params[0].toFloat() / 100)
+                cost *= (100f - unique.params[0].toInt()) / 100
         }
         // Deprecated as of 3.12.10 - replaced with "-[]% Gold cost of acquiring tiles []", either [in capital] or [in this city] or [in all cities]
         if (cityInfo.civInfo.hasUnique("Cost of acquiring new tiles reduced by 25%"))
