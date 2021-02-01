@@ -400,19 +400,14 @@ class EditMultiplayerGameInfoScreen(game: GameInfo, gameName: String, backScreen
             askPopup.open()
         }.apply { color = Color.RED }
 
-        val giveUpButton = "Give up".toTextButton()
+        val giveUpButton = "Resign".toTextButton()
         giveUpButton.onClick {
-            val askPopup = Popup(this)
-            askPopup.addGoodSizedLabel("Are you sure you want to give up?".tr()).row()
-            askPopup.addButton("Yes"){
-                giveUp(game.gameId, gameName, backScreen)
-                askPopup.close()
-            }
-            askPopup.addButton("No"){
-                askPopup.close()
-            }
+            val askPopup = YesNoPopup("Are you sure you want to resign?", {
+                        giveUp(game.gameId, gameName, backScreen)
+                    }, this)
             askPopup.open()
-        }.apply { color = Color.RED }
+        }
+        giveUpButton.apply { color = Color.RED }
 
         topTable.add(deleteButton).pad(10f).row()
         topTable.add(giveUpButton)
@@ -452,7 +447,7 @@ class EditMultiplayerGameInfoScreen(game: GameInfo, gameName: String, backScreen
     private fun giveUp(gameId: String, gameName: String, backScreen: MultiplayerScreen){
         //Create a popup
         val popup = Popup(this)
-        popup.addGoodSizedLabel("Working...".tr()).row()
+        popup.addGoodSizedLabel("Working...").row()
         popup.open()
 
         thread {
@@ -474,7 +469,7 @@ class EditMultiplayerGameInfoScreen(game: GameInfo, gameName: String, backScreen
                     //Add notification so everyone knows what happened
                     //call for every civ cause AI players are skipped anyway
                     for (civ in gameInfo.civilizations){
-                        civ.addNotification("[${playerCiv.civName}] gave up and is now controlled by AI".tr(), Color.RED)
+                        civ.addNotification("[${playerCiv.civName}] resigned and is now controlled by AI", Color.RED)
                     }
 
                     //save game so multiplayer list stays up to date
@@ -490,7 +485,7 @@ class EditMultiplayerGameInfoScreen(game: GameInfo, gameName: String, backScreen
                     Gdx.app.postRunnable {
                         //change popup text
                         popup.innerTable.clear()
-                        popup.addGoodSizedLabel("You can only give up if it's your turn".tr()).row()
+                        popup.addGoodSizedLabel("You can only resign if it's your turn").row()
                         popup.addCloseButton()
                     }
                 }
@@ -498,7 +493,7 @@ class EditMultiplayerGameInfoScreen(game: GameInfo, gameName: String, backScreen
                 Gdx.app.postRunnable {
                     //change popup text
                     popup.innerTable.clear()
-                    popup.addGoodSizedLabel("Could not upload game!".tr()).row()
+                    popup.addGoodSizedLabel("Could not upload game!").row()
                     popup.addCloseButton()
                 }
             }
