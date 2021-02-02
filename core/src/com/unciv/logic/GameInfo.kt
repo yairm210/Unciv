@@ -103,7 +103,12 @@ class GameInfo {
             thisPlayer.startTurn()
         }
 
-        switchTurn()
+        //check is important or else switchTurn
+        //would skip a turn if an AI civ calls nextTurn
+        //this happens when resigning a multiplayer game
+        if (thisPlayer.isPlayerCivilization()){
+            switchTurn()
+        }
 
         while (thisPlayer.playerType == PlayerType.AI
                 || turns < UncivGame.Current.simulateUntilTurnForDebug
