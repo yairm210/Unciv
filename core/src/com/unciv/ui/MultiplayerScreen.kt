@@ -459,12 +459,12 @@ class EditMultiplayerGameInfoScreen(game: GameInfo, gameName: String, backScreen
                 //only give up if it's the users turn
                 //this ensures that no one can upload a newer game state while we try to give up
                 if (playerCiv.playerId == game.settings.userId){
-                    //call next turn first to make sure everything works like intended
-                    //this skips everything like trade request which will be handled by the AI on the following turn
-                    gameInfo.nextTurn()
                     //Set own civ info to AI
                     playerCiv.playerType = PlayerType.AI
                     playerCiv.playerId = ""
+
+                    //call next turn so turn gets simulated by AI
+                    gameInfo.nextTurn()
 
                     //Add notification so everyone knows what happened
                     //call for every civ cause AI players are skipped anyway
