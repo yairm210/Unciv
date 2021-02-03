@@ -125,6 +125,8 @@ cityFilters allow us to choose the range of cities affected by this unique:
 
 "+[15]% combat bonus for units fighting in [Friendly Land]"
 
+"Science gained from research agreements +50%"
+
 ## Buildings-only
 
 "Doubles Gold given to enemy if city is captured"
