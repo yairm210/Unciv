@@ -51,6 +51,29 @@ Please note that using resources is only supported in some, not all, use cases (
 
 This is due to the fact that resources can be visible to some civs while invisible to others.
 
+### unitFilter
+
+unitFilters allow us to activate uniques for specific units, based on:
+
+- unit name
+- unit type
+- "Land" for land units
+- "Water" for water units
+- "Air" for air units
+- "non-air" for non-air units
+- "Military" for military units
+- "All", as a catch all for all units.
+
+### cityFilter
+
+cityFilters allow us to choose the range of cities affected by this unique:
+
+- "in this city"
+- "in all cities"
+- "in all coastal cities"
+- "in capital"
+- "in all cities with a world wonder"
+
 ## Building uniques
 
 ### Stat uniques
@@ -63,7 +86,7 @@ This is due to the fact that resources can be visible to some civs while invisib
 
 ### Production uniques
 
-"+[amount]% Production when constructing [unitType] units", "+[amount]% Production when constructing [unitType] units [cityFilter]" - 
+"+[amount]% Production when constructing [unitFilter] units", "+[amount]% Production when constructing [unitFilter] units [cityFilter]" - The city produces extra Production when a unit fitting the filter in under construction.
 
 ### Location uniques
 
