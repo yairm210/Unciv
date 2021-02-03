@@ -18,6 +18,12 @@
 An open-source Android/Desktop port of Civ V,
 Made with LibGDX on Android Studio
 
+## Is this any good?
+
+Depends what you're looking for. If you're in the market for high-res graphics, amazing soundtracks, animations etc, I highly recommend Firaxis's Civ-V-like game, "Civilization V".
+
+If you want a small, fast, moddable, FOSS, in-depth 4X that can still run on a potato, you've come to the right place :)
+
 ## What's the roadmap?
 
 Is this order:
