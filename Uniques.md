@@ -74,7 +74,7 @@ cityFilters allow us to choose the range of cities affected by this unique:
 - "in capital"
 - "in all cities with a world wonder"
 
-## Building uniques
+## General uniques
 
 ### Stat uniques
 
