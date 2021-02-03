@@ -84,29 +84,64 @@ cityFilters allow us to choose the range of cities affected by this unique:
 
 "+[amount]% growth in all cities", "+[amount]% growth in capital" - 'Growth' is the amount of food retained by a city after calculating all bonuses and removing food eaten by population - that is, the food that leads to population growth.
 
+"[stats] once [techName] is discovered"
+
+"+[amount]% [stat] [cityfilter]" - For example, "+[25]% [Culture] [in all cities]"
+
 ### Production uniques
 
 "+[amount]% Production when constructing [unitFilter] units", "+[amount]% Production when constructing [unitFilter] units [cityFilter]" - The city produces extra Production when a unit fitting the filter in under construction.
 
-### Location uniques
+### Construction condition uniques
 
 "Must be on [tileFilter]", "Must not be on [tileFilter]" - limits the buildings that can be built in a city according the the tile type that the city center is built on.
 
 "Must be next to [tileFilter]" - Same. In addition to the regular tileFilter options, accepts "Fresh water" as an option, which includes river-adjacent tiles on top of lake-adjacent tiles (which is merely a consequence of Lakes having a 'Fresh water' uniques and tileFilter accepting Base Terrain uniques)
 
+"Requires a [buildingName] in all cities"
+
+"Can only be built in annexed cities"
+
+"Must have an owned [tileFilter] within [amount] tiles"
 
 ### Special
 
 "Indicates the capital city" - Unciv requires a specific building to indicate the capital city, which is used for many things. In total overhaul mods, you can change the building that indicates this.
 
-"Free Technology" - Self explanatory.
+"Free Technology"
 
-"Free Social Policy" - Self explanatory.
+"Free Social Policy"
 
 "Empire enters golden age" - if already in a golden age, it is extended by the number of turns that a new golden age would have given.
 
-"Worker construction increased 25%" - Self explanatory.
+"Worker construction increased 25%"
 
 "-[amount]% Culture cost of acquiring tiles [cityFilter]","-[amount]% Gold cost of acquiring tiles [cityFilter]" - self explanatory.
 
 "[amount] free [unitName] units appear", "Free [unitName] appears" - Self explanatory. If given to a building, the units will appear next to the city the building was constructed in. If the specified unit can construct cities, the unique will not activate for One-City Challenge players.
+
+"Free Great Person" - Same. Great Person DOES NOT count towards your Great Person generation.
+
+"Cost increases by [amount] per owned city"
+
+"Remove extra unhappiness from annexed cities"
+
+"Unhappiness from population decreased by [amount]%"
+
+"Doubles Gold given to enemy if city is captured"
+
+"+[amount]% great person generation in this city"
+
+"Provides 1 extra copy of each improved luxury resource near this City"
+
+"[40]% of food is carried over after population increases"
+
+"All newly-trained [unitFilter] units in this city receive the [promotionName] promotion"
+
+"Golden Age length increased by [amount]%"
+
+"Gold from all trade routes +25%"
+
+"Connects trade routes over water"
+
+"+[15]% combat bonus for units fighting in [Friendly Land]"
