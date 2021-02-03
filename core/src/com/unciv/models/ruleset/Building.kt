@@ -465,5 +465,5 @@ class Building : NamedStats(), IConstruction {
         return ruleset.tileImprovements[improvementUnique.params[0]]!!
     }
 
-    fun isSellable() = !isWonder && !isNationalWonder
+    fun isSellable() = !isWonder && !isNationalWonder && !uniques.contains("Unsellable")
 }
