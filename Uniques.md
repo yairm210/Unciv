@@ -88,33 +88,16 @@ cityFilters allow us to choose the range of cities affected by this unique:
 
 ### Stat uniques
 
-"[stats] Per [amount] Population in this city" - provides the given stats for every [amount] of population. For instance, "[+2 Science] Per [2] Population in this city" would provide only 4 Science in a city with 5 population - since there are only 2 'sets' of 2 population in the city, each providing 2 Science.
-
-"[stats] from [tileFilter] tiles in this city" - Adds the given stats to the yield of tiles matching the filter. The yield is still received by the tiles being worked - so even if you have 5 such tiles, but none of them are worked, the city will remain unaffected.
-
 "+[amount]% growth in all cities", "+[amount]% growth in capital" - 'Growth' is the amount of food retained by a city after calculating all bonuses and removing food eaten by population - that is, the food that leads to population growth.
 
-"[stats] once [techName] is discovered"
 
 "+[amount]% [stat] [cityfilter]" - For example, "+[25]% [Culture] [in all cities]"
 
-### Production uniques
+### Other
 
 "+[amount]% Production when constructing [unitFilter] units", "+[amount]% Production when constructing [unitFilter] units [cityFilter]" - The city produces extra Production when a unit fitting the filter in under construction.
 
-### Construction condition uniques
-
-"Must be on [tileFilter]", "Must not be on [tileFilter]" - limits the buildings that can be built in a city according the the tile type that the city center is built on.
-
-"Must be next to [tileFilter]" - Same. In addition to the regular tileFilter options, accepts "Fresh water" as an option, which includes river-adjacent tiles on top of lake-adjacent tiles (which is merely a consequence of Lakes having a 'Fresh water' uniques and tileFilter accepting Base Terrain uniques)
-
-"Requires a [buildingName] in all cities"
-
-"Can only be built in annexed cities"
-
-"Must have an owned [tileFilter] within [amount] tiles"
-
-### Special
+"Unhappiness from population decreased by [amount]%" - Despite appearances, this is a global unique, affecting all cities.
 
 "Indicates the capital city" - Unciv requires a specific building to indicate the capital city, which is used for many things. In total overhaul mods, you can change the building that indicates this.
 
@@ -134,20 +117,6 @@ cityFilters allow us to choose the range of cities affected by this unique:
 
 "Cost increases by [amount] per owned city"
 
-"Remove extra unhappiness from annexed cities"
-
-"Unhappiness from population decreased by [amount]%"
-
-"Doubles Gold given to enemy if city is captured"
-
-"+[amount]% great person generation in this city"
-
-"Provides 1 extra copy of each improved luxury resource near this City"
-
-"[40]% of food is carried over after population increases"
-
-"All newly-trained [unitFilter] units in this city receive the [promotionName] promotion"
-
 "Golden Age length increased by [amount]%"
 
 "Gold from all trade routes +25%"
@@ -155,3 +124,38 @@ cityFilters allow us to choose the range of cities affected by this unique:
 "Connects trade routes over water"
 
 "+[15]% combat bonus for units fighting in [Friendly Land]"
+
+## Buildings-only
+
+"Doubles Gold given to enemy if city is captured"
+
+"[40]% of food is carried over after population increases"
+
+"All newly-trained [unitFilter] units in this city receive the [promotionName] promotion"
+
+"+[amount]% great person generation in this city"
+
+"Provides 1 extra copy of each improved luxury resource near this City"
+
+"Remove extra unhappiness from annexed cities"
+
+
+### Stat uniques
+
+"[stats] Per [amount] Population in this city" - provides the given stats for every [amount] of population. For instance, "[+2 Science] Per [2] Population in this city" would provide only 4 Science in a city with 5 population - since there are only 2 'sets' of 2 population in the city, each providing 2 Science.
+
+"[stats] from [tileFilter] tiles in this city" - Adds the given stats to the yield of tiles matching the filter. The yield is still received by the tiles being worked - so even if you have 5 such tiles, but none of them are worked, the city will remain unaffected.
+
+"[stats] once [techName] is discovered"
+
+### Construction condition uniques
+
+"Must be on [tileFilter]", "Must not be on [tileFilter]" - limits the buildings that can be built in a city according the the tile type that the city center is built on.
+
+"Must be next to [tileFilter]" - Same. In addition to the regular tileFilter options, accepts "Fresh water" as an option, which includes river-adjacent tiles on top of lake-adjacent tiles (which is merely a consequence of Lakes having a 'Fresh water' uniques and tileFilter accepting Base Terrain uniques)
+
+"Requires a [buildingName] in all cities"
+
+"Can only be built in annexed cities"
+
+"Must have an owned [tileFilter] within [amount] tiles"
