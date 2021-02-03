@@ -100,3 +100,13 @@ cityFilters allow us to choose the range of cities affected by this unique:
 "Indicates the capital city" - Unciv requires a specific building to indicate the capital city, which is used for many things. In total overhaul mods, you can change the building that indicates this.
 
 "Free Technology" - Self explanatory.
+
+"Free Social Policy" - Self explanatory.
+
+"Empire enters golden age" - if already in a golden age, it is extended by the number of turns that a new golden age would have given.
+
+"Worker construction increased 25%" - Self explanatory.
+
+"-[amount]% Culture cost of acquiring tiles [cityFilter]","-[amount]% Gold cost of acquiring tiles [cityFilter]" - self explanatory.
+
+"[amount] free [unitName] units appear", "Free [unitName] appears" - Self explanatory. If given to a building, the units will appear next to the city the building was constructed in. If the specified unit can construct cities, the unique will not activate for One-City Challenge players.
