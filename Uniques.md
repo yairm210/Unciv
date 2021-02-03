@@ -17,8 +17,9 @@ Parameters come in various types, and will be addressed as such inside the [squa
 - amount - This indicates a whole, (usually) positive number, like "2" or "13".
 - unitName, buildingName, improvementName etc - Rather self explanatory. Examples: "Warrior", "Library', and "Mine", accordingly.
 - stat - This is one of the 6 major stats in the game - "Gold", "Science", "Production", "Food", "Happiness" and "Culture". Note that the stat names need to be capitalized!
-- stats - which we will discuss shortly
-- tileFilter - which we will discuss shortly
+- stats - see below
+- tileFilter - see below
+- unitType - 
 
 ### stats
 
@@ -39,6 +40,7 @@ tilefilters allow us to specify tiles according to a number of different aspects
 - Terrain feature uniques
 - Tile improvements
 - "Water"
+- "River" (as in all 'river on tile' contexts, it means 'adjacent to a river on at least on side')
 
 So for instance, the unique "[stats] from [tileFilter] tiles in this city" can match several cases:
 - "[+2 Food] from [Lakes] tiles in this city"
@@ -51,11 +53,27 @@ This is due to the fact that resources can be visible to some civs while invisib
 
 ## Building uniques
 
+### Stat uniques
+
+"[stats] Per [amount] Population in this city" - provides the given stats for every [amount] of population. For instance, "[+2 Science] Per [2] Population in this city" would provide only 4 Science in a city with 5 population - since there are only 2 'sets' of 2 population in the city, each providing 2 Science.
+
+"[stats] from [tileFilter] tiles in this city" - Adds the given stats to the yield of tiles matching the filter. The yield is still received by the tiles being worked - so even if you have 5 such tiles, but none of them are worked, the city will remain unaffected.
+
+"+[amount]% growth in all cities", "+[amount]% growth in capital" - 'Growth' is the amount of food retained by a city after calculating all bonuses and removing food eaten by population - that is, the food that leads to population growth.
+
+### Production uniques
+
+"+[amount]% Production when constructing [unitType] units", "+[amount]% Production when constructing [unitType] units [cityFilter]" - 
+
 ### Location uniques
 
 "Must be on [tileFilter]", "Must not be on [tileFilter]" - limits the buildings that can be built in a city according the the tile type that the city center is built on.
+
+"Must be next to [tileFilter]" - Same. In addition to the regular tileFilter options, accepts "Fresh water" as an option, which includes river-adjacent tiles on top of lake-adjacent tiles (which is merely a consequence of Lakes having a 'Fresh water' uniques and tileFilter accepting Base Terrain uniques)
+
 
 ### Special
 
 "Indicates the capital city" - Unciv requires a specific building to indicate the capital city, which is used for many things. In total overhaul mods, you can change the building that indicates this.
 
+"Free Technology" - Self explanatory.
