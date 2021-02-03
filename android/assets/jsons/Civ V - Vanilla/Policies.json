@@ -2,7 +2,7 @@
 	{
 		"name": "Tradition",
 		"era": "Ancient era",
-		"uniques": ["[+3 Culture] in capital", "Increased rate of border expansion"],
+		"uniques": ["[+3 Culture] in capital", "-[25]% Culture cost of acquiring tiles [in all cities]"],
 		"policies": [
 			{
 				"name": "Aristocracy",
