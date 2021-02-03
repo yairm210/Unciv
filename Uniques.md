@@ -90,12 +90,29 @@ cityFilters allow us to choose the range of cities affected by this unique:
 
 "+[amount]% growth in all cities", "+[amount]% growth in capital" - 'Growth' is the amount of food retained by a city after calculating all bonuses and removing food eaten by population - that is, the food that leads to population growth.
 
-
 "+[amount]% [stat] [cityfilter]" - For example, "+[25]% [Culture] [in all cities]"
+
+"[stats] from every specialist"
+
+"[stats] from every [object]" - where 'object' can be one of:
+- Building name
+- tileFilter
+- Resource name
+- "Strategic resource", "Luxury resource", "Bonus resource", "Water resource"
 
 ### Other
 
 "+[amount]% Production when constructing [unitFilter] units", "+[amount]% Production when constructing [unitFilter] units [cityFilter]" - The city produces extra Production when a unit fitting the filter in under construction.
+
+"+[amount]% Production when constructing [constructionType]", "+[amount]% Production when constructing [constructionType] [cityfilter]" - where constructionType can be one of the following:
+- Construction name (unit or building name)
+- "Buildings"
+- "Wonders"
+- Building unique
+
+"Culture cost of adopting new Policies reduced by [amount]%"
+
+"Defensive buildings in all cities are 25% more effective"
 
 "Unhappiness from population decreased by [amount]%" - Despite appearances, this is a global unique, affecting all cities.
 
@@ -127,6 +144,11 @@ cityFilters allow us to choose the range of cities affected by this unique:
 
 "Science gained from research agreements +50%"
 
+"Cost of purchasing items in cities reduced by [amount]%" - 'Purchasing' refers to the gold cost of buying buildings or units, not the amount of production needed to construct.
+
+"Gold cost of upgrading military units reduced by 33%"
+
+
 ## Buildings-only
 
 "Doubles Gold given to enemy if city is captured"
@@ -141,6 +163,9 @@ cityFilters allow us to choose the range of cities affected by this unique:
 
 "Remove extra unhappiness from annexed cities"
 
+"Provides 1 happiness per 2 additional social policies adopted"
+
+"Cannot be purchased"
 
 ### Stat uniques
 
