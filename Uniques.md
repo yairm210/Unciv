@@ -10,6 +10,16 @@ In the json files, this looks something like `"uniques": ["Requires a [Market] i
 
 As seen in the above example, in order to provide flexibility and generalization, Uniques have certain *parameters*, marked by the fact that they are inside square braces. These parameters can be changed, and the game will recognize the text inside them and act accordingly.
 
+## Unique locations
+
+Most uniques are "Global uniques" - meaning, they can be put in one of four places:
+- Nation uniques - Always active for a specific Nation
+- Policy uniques - Active once the policy has been chosen
+- Building uniques - Active once the building has been constructed in any city
+- Tech uniques - active once the tech has been researched
+
+Most uniques are *ongoing* - they describe something continuous. Some, however, are one-time actions (free technology, free unit, etc) - these cannot be put in a Nation unique, since unlike the other categories, there is no specific time to activate them. 
+
 ## Parameter types
 
 Parameters come in various types, and will be addressed as such inside the [square brackets].
