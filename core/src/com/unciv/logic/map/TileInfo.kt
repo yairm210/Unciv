@@ -442,10 +442,14 @@ open class TileInfo {
         if (terrainFeature != null) lineList += terrainFeature!!.tr()
         if (resource != null && (viewingCiv == null || hasViewableResource(viewingCiv))) lineList += resource!!.tr()
         if (naturalWonder != null) lineList += naturalWonder!!.tr()
-        if (roadStatus !== RoadStatus.None && !isCityCenter()) lineList += roadStatus.toString().tr()
+        if (roadStatus !== RoadStatus.None && !isCityCenter()) lineList += roadStatus.name.tr()
         if (improvement != null) lineList += improvement!!.tr()
-        if (improvementInProgress != null && isViewableToPlayer)
-            lineList += "{$improvementInProgress} - $turnsToImprovement${Fonts.turn}".tr()
+        if (improvementInProgress != null && isViewableToPlayer) {
+            var line = "{$improvementInProgress}"
+            if (turnsToImprovement > 0) line += " - $turnsToImprovement${Fonts.turn}"
+            else line += " ({Under construction})"
+            lineList += line.tr()
+        }
         if (civilianUnit != null && isViewableToPlayer)
             lineList += civilianUnit!!.name.tr() + " - " + civilianUnit!!.civInfo.civName.tr()
         if (militaryUnit != null && isViewableToPlayer) {

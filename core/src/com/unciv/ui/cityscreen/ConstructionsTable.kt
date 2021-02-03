@@ -31,8 +31,10 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
     private val constructionsQueueTable = Table()
     private val availableConstructionsTable = Table()
     private val buttons = Table()
-
     private val pad = 10f
+
+    var improvementBuildingToConstruct:Building?=null
+
 
     init {
         showCityInfoTableButton = "Show stats drilldown".toTextButton()
@@ -347,8 +349,15 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
     }
 
     fun addConstructionToQueue(construction: IConstruction, cityConstructions: CityConstructions) {
+        if (construction is Building && construction.uniqueObjects.any { it.placeholderText=="Creates a [] improvement on a specific tile" }){
+            cityScreen.selectedTile
+            improvementBuildingToConstruct = construction
+            return
+        }
+
         cityConstructions.addToQueue(construction.name)
-        if (!construction.shouldBeDisplayed(cityConstructions)) cityScreen.selectedConstruction = null
+        if (!construction.shouldBeDisplayed(cityConstructions)) // For buildings - unlike units which can be queued multiple times
+            cityScreen.selectedConstruction = null
         cityScreen.update()
         cityScreen.game.settings.addCompletedTutorialTask("Pick construction")
     }
