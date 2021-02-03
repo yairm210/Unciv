@@ -18,8 +18,9 @@ Parameters come in various types, and will be addressed as such inside the [squa
 - unitName, buildingName, improvementName etc - Rather self explanatory. Examples: "Warrior", "Library', and "Mine", accordingly.
 - stat - This is one of the 6 major stats in the game - "Gold", "Science", "Production", "Food", "Happiness" and "Culture". Note that the stat names need to be capitalized!
 - stats - which we will discuss shortly
+- tileFilter - which we will discuss shortly
 
-### [stats]
+### stats
 
 This indicates a text comprised of specific stats and is slightly more complex.
 
@@ -27,3 +28,34 @@ Each stats is comprised of several stat changes, each in the form of "+{amount} 
 For example: "+1 Science".
 
 These can be strung together with ", " between them, for example: "+2 Production, +3 Food".
+
+### tileFilter
+
+tilefilters allow us to specify tiles according to a number of different aspects:
+
+- Base terrain
+- Terrain features
+- Base terrain uniques
+- Terrain feature uniques
+- Tile improvements
+- "Water"
+
+So for instance, the unique "[stats] from [tileFilter] tiles in this city" can match several cases:
+- "[+2 Food] from [Lakes] tiles in this city"
+- "[+1 Gold] from [Water] tiles in this city"
+- "[+1 Production] from [Forest] tiles in this city"
+
+Please note that using resources is only supported in some, not all, use cases (specifically, "[+2 Gold] from [Marble] tiles in this city" is okay)
+
+This is due to the fact that resources can be visible to some civs while invisible to others.
+
+## Building uniques
+
+### Location uniques
+
+"Must be on [tileFilter]", "Must not be on [tileFilter]" - limits the buildings that can be built in a city according the the tile type that the city center is built on.
+
+### Special
+
+"Indicates the capital city" - Unciv requires a specific building to indicate the capital city, which is used for many things. In total overhaul mods, you can change the building that indicates this.
+
