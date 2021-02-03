@@ -318,6 +318,12 @@ open class TileInfo {
             isCityCenter() -> false
             "Cannot be built on bonus resource" in improvement.uniques && resource != null
                     && getTileResource().resourceType == ResourceType.Bonus -> false
+
+            // Road improvements can change on tiles withh irremovable improvements - nothing else can, though.
+            improvement.name != RoadStatus.Railroad.name && improvement.name != RoadStatus.Railroad.name
+                    && improvement.name != "Remove Road" && improvement.name != "Remove Railroad"
+                    && getTileImprovement().let { it!=null && it.hasUnique("Irremovable") } -> false
+
             // Tiles with no terrains, and no turns to build, are like great improvements - they're placeable
             improvement.terrainsCanBeBuiltOn.isEmpty() && improvement.turnsToBuild==0 && isLand -> true
             improvement.terrainsCanBeBuiltOn.contains(topTerrain.name) -> true
