@@ -49,7 +49,7 @@ class MultiplayerScreen(previousScreen: CameraStageBaseScreen) : PickerScreen() 
             helpPopup.addGoodSizedLabel("").row()
 
             helpPopup.addGoodSizedLabel("Once you've created your game, the Game ID gets automatically copied to your clipboard so you can send it to the other players.").row()
-            helpPopup.addGoodSizedLabel("Players can enter your game by copying the game ID to the clipboard, and clicking on the 'Add Multiplayer Game' button").row()
+            helpPopup.addGoodSizedLabel("Players can enter your game by copying the game ID to the clipboard, and clicking on the 'Add multiplayer game' button").row()
             helpPopup.addGoodSizedLabel("").row()
 
             helpPopup.addGoodSizedLabel("The symbol of your nation will appear next to the game when it's your turn").row()
