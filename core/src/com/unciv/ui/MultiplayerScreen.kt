@@ -24,11 +24,11 @@ class MultiplayerScreen(previousScreen: CameraStageBaseScreen) : PickerScreen() 
     private val rightSideTable = Table()
     private val leftSideTable = Table()
 
-    private val editButtonText = "Edit Game Info".tr()
-    private val addGameText = "Add Multiplayer Game".tr()
-    private val copyGameIdText = "Copy Game ID".tr()
-    private val copyUserIdText = "Copy User ID".tr()
-    private val refreshText = "Refresh List".tr()
+    private val editButtonText = "Game settings".tr()
+    private val addGameText = "Add multiplayer game".tr()
+    private val copyGameIdText = "Copy game ID".tr()
+    private val copyUserIdText = "Copy user ID".tr()
+    private val refreshText = "Refresh list".tr()
 
     private val editButton = TextButton(editButtonText, skin).apply { disable() }
     private val addGameButton = TextButton(addGameText, skin)
@@ -44,15 +44,15 @@ class MultiplayerScreen(previousScreen: CameraStageBaseScreen) : PickerScreen() 
         val helpButton = TextButton("?", skin)
         helpButton.onClick {
             val helpPopup = Popup(this)
-            helpPopup.addGoodSizedLabel("To create a multiplayer game, check the 'multiplayer' toggle in the New Game screen, and for each human player insert that player's user ID.".tr()).row()
-            helpPopup.addGoodSizedLabel("You can assign your own user ID there easily, and other players can copy their user IDs here and send them to you for you to include them in the game.".tr()).row()
+            helpPopup.addGoodSizedLabel("To create a multiplayer game, check the 'multiplayer' toggle in the New Game screen, and for each human player insert that player's user ID.").row()
+            helpPopup.addGoodSizedLabel("You can assign your own user ID there easily, and other players can copy their user IDs here and send them to you for you to include them in the game.").row()
             helpPopup.addGoodSizedLabel("").row()
 
-            helpPopup.addGoodSizedLabel("Once you've created your game, the Game ID gets automatically copied to your clipboard so you can send it to the other players.".tr()).row()
-            helpPopup.addGoodSizedLabel("Players can enter your game by copying the game ID to the clipboard, and clicking on the 'Add Multiplayer Game' button".tr()).row()
+            helpPopup.addGoodSizedLabel("Once you've created your game, the Game ID gets automatically copied to your clipboard so you can send it to the other players.").row()
+            helpPopup.addGoodSizedLabel("Players can enter your game by copying the game ID to the clipboard, and clicking on the 'Add multiplayer game' button").row()
             helpPopup.addGoodSizedLabel("").row()
 
-            helpPopup.addGoodSizedLabel("The symbol of your nation will appear next to the game when it's your turn".tr()).row()
+            helpPopup.addGoodSizedLabel("The symbol of your nation will appear next to the game when it's your turn").row()
 
             helpPopup.addCloseButton()
             helpPopup.open()
@@ -77,13 +77,13 @@ class MultiplayerScreen(previousScreen: CameraStageBaseScreen) : PickerScreen() 
         // leftTable Setup
         reloadGameListUI()
 
-        // A Button to add the currently running game to multiplayerGameList if not yet done
-//        addCurrentGameButton()
+        // A Button to add the currently running game as multiplayer game
+        //addCurrentGameButton()
 
         //rightTable Setup
         copyUserIdButton.onClick {
             Gdx.app.clipboard.contents = game.settings.userId
-            ToastPopup("UserID copied to clipboard".tr(), this)
+            ToastPopup("UserID copied to clipboard", this)
         }
         rightSideTable.add(copyUserIdButton).padBottom(30f).row()
 
@@ -91,7 +91,7 @@ class MultiplayerScreen(previousScreen: CameraStageBaseScreen) : PickerScreen() 
             val gameInfo = multiplayerGames[selectedGameFile]
             if (gameInfo != null) {
                 Gdx.app.clipboard.contents = gameInfo.gameId
-                ToastPopup("GameID copied to clipboard".tr(), this)
+                ToastPopup("GameID copied to clipboard", this)
             }
         }
         rightSideTable.add(copyGameIdButton).row()
@@ -117,7 +117,7 @@ class MultiplayerScreen(previousScreen: CameraStageBaseScreen) : PickerScreen() 
         rightSideTable.add(refreshButton).row()
 
         //RightSideButton Setup
-        rightSideButton.setText("Join Game".tr())
+        rightSideButton.setText("Join game".tr())
         rightSideButton.onClick {
             joinMultiplaerGame()
         }
@@ -131,7 +131,7 @@ class MultiplayerScreen(previousScreen: CameraStageBaseScreen) : PickerScreen() 
             UUID.fromString(IdChecker.checkAndReturnGameUuid(gameId!!))
         } catch (ex: Exception) {
             val errorPopup = Popup(this)
-            errorPopup.addGoodSizedLabel("Invalid game ID!".tr())
+            errorPopup.addGoodSizedLabel("Invalid game ID!")
             errorPopup.row()
             errorPopup.addCloseButton()
             errorPopup.open()
@@ -139,7 +139,7 @@ class MultiplayerScreen(previousScreen: CameraStageBaseScreen) : PickerScreen() 
         }
 
         if (gameIsAlreadySavedAsMultiplayer(gameId)) {
-            ToastPopup("Game is already added".tr(), this)
+            ToastPopup("Game is already added", this)
             return
         }
 
@@ -159,7 +159,7 @@ class MultiplayerScreen(previousScreen: CameraStageBaseScreen) : PickerScreen() 
             } catch (ex: Exception) {
                 Gdx.app.postRunnable {
                     val errorPopup = Popup(this)
-                    errorPopup.addGoodSizedLabel("Could not download game!".tr())
+                    errorPopup.addGoodSizedLabel("Could not download game!")
                     errorPopup.row()
                     errorPopup.addCloseButton()
                     errorPopup.open()
@@ -179,7 +179,7 @@ class MultiplayerScreen(previousScreen: CameraStageBaseScreen) : PickerScreen() 
             game.loadGame(multiplayerGames[selectedGameFile]!!)
         } catch (ex: Exception) {
             val errorPopup = Popup(this)
-            errorPopup.addGoodSizedLabel("Could not download game!".tr())
+            errorPopup.addGoodSizedLabel("Could not download game!")
             errorPopup.row()
             errorPopup.addCloseButton()
             errorPopup.open()
@@ -188,9 +188,7 @@ class MultiplayerScreen(previousScreen: CameraStageBaseScreen) : PickerScreen() 
 
     private fun gameIsAlreadySavedAsMultiplayer(gameId: String) : Boolean{
         val games = multiplayerGames.filterValues { it.gameId == gameId }
-        if (games.isNotEmpty())
-            return true
-        return false
+        return games.isNotEmpty()
     }
 
     //reloads all gameFiles to refresh UI
@@ -203,7 +201,7 @@ class MultiplayerScreen(previousScreen: CameraStageBaseScreen) : PickerScreen() 
             savedGames = gameSaver.getSaves(true)
         } catch (ex: Exception) {
             val errorPopup = Popup(this)
-            errorPopup.addGoodSizedLabel("Could not refresh!".tr())
+            errorPopup.addGoodSizedLabel("Could not refresh!")
             errorPopup.row()
             errorPopup.addCloseButton()
             errorPopup.open()
@@ -245,7 +243,7 @@ class MultiplayerScreen(previousScreen: CameraStageBaseScreen) : PickerScreen() 
                 leftSubTable.add(gameTable).row()
             } catch (ex: Exception) {
                 //skipping one save is not fatal
-                ToastPopup("Could not refresh!".tr(), this)
+                ToastPopup("Could not refresh!", this)
                 continue
             }
 
@@ -279,7 +277,7 @@ class MultiplayerScreen(previousScreen: CameraStageBaseScreen) : PickerScreen() 
                     }
                 }catch (ex: Exception){
                     Gdx.app.postRunnable {
-                        ToastPopup("Could not refresh!".tr(), this)
+                        ToastPopup("Could not refresh!", this)
                         turnIndicator.clear()
                         turnIndicator.add(ImageGetter.getImage("StatIcons/Malcontent")).size(50f)
                     }
@@ -308,7 +306,7 @@ class MultiplayerScreen(previousScreen: CameraStageBaseScreen) : PickerScreen() 
                     //skipping one is not fatal
                     //Trying to use as many prev. used strings as possible
                     Gdx.app.postRunnable {
-                        ToastPopup("Could not download game!".tr() + " ${entry.key.name()}", this)
+                        ToastPopup("Could not download game!" + " ${entry.key.name()}", this)
                     }
                     continue
                 }
@@ -340,7 +338,7 @@ class MultiplayerScreen(previousScreen: CameraStageBaseScreen) : PickerScreen() 
                 reloadGameListUI()
             } catch (ex: Exception) {
                 val errorPopup = Popup(this)
-                errorPopup.addGoodSizedLabel("Could not save game!".tr())
+                errorPopup.addGoodSizedLabel("Could not save game!")
                 errorPopup.row()
                 errorPopup.addCloseButton()
                 errorPopup.open()
@@ -361,13 +359,19 @@ class MultiplayerScreen(previousScreen: CameraStageBaseScreen) : PickerScreen() 
 
     //check if its the users turn
     private fun isUsersTurn(gameInfo: GameInfo) : Boolean{
-        return (gameInfo.currentPlayerCiv.playerId == game.settings.userId)
+        return gameInfo.currentPlayerCiv.playerId == game.settings.userId
     }
 
-    fun removeFromList(gameInfo: GameInfo){
+    fun removeMultiplayerGame(gameInfo: GameInfo, gameName: String){
         val games = multiplayerGames.filterValues { it == gameInfo }.keys
-        if (games.isNotEmpty())
-            multiplayerGames.remove(games.first())
+        if (games.isNotEmpty()){
+            try {
+                GameSaver.deleteSave(gameName, true)
+                multiplayerGames.remove(games.first())
+            }catch (ex: Exception) {
+                ToastPopup("Could not delete game!", this)
+            }
+        }
     }
 }
 
@@ -382,21 +386,11 @@ class EditMultiplayerGameInfoScreen(game: GameInfo, gameName: String, backScreen
 
         val deleteButton = "Delete save".toTextButton()
         deleteButton.onClick {
-            val askPopup = Popup(this)
-            askPopup.addGoodSizedLabel("Are you sure you want to delete this map?".tr()).row()
-            askPopup.addButton("Yes"){
-                try {
-                    GameSaver.deleteSave(gameName, true)
-                    backScreen.game.setScreen(backScreen)
-                    backScreen.reloadGameListUI()
-                }catch (ex: Exception) {
-                    askPopup.close()
-                    ToastPopup("Could not delete game!".tr(), this)
-                }
-            }
-            askPopup.addButton("No"){
-                askPopup.close()
-            }
+            val askPopup = YesNoPopup("Are you sure you want to delete this map?", {
+                backScreen.removeMultiplayerGame(game, gameName)
+                backScreen.game.setScreen(backScreen)
+                backScreen.reloadGameListUI()
+            }, this)
             askPopup.open()
         }.apply { color = Color.RED }
 
@@ -423,20 +417,12 @@ class EditMultiplayerGameInfoScreen(game: GameInfo, gameName: String, backScreen
         rightSideButton.enable()
         rightSideButton.onClick {
             rightSideButton.setText("Saving...".tr())
-            try {
-                backScreen.removeFromList(game)
-                //using addMultiplayerGame will download the game from Dropbox so the descriptionLabel displays the right things
-                backScreen.addMultiplayerGame(game.gameId, textField.text)
-                GameSaver.deleteSave(gameName, true)
-                backScreen.game.setScreen(backScreen)
-                backScreen.reloadGameListUI()
-            }catch (ex: Exception) {
-                val errorPopup = Popup(this)
-                errorPopup.addGoodSizedLabel("Could not save game!".tr())
-                errorPopup.row()
-                errorPopup.addCloseButton()
-                errorPopup.open()
-            }
+            //remove the old game file
+            backScreen.removeMultiplayerGame(game, gameName)
+            //using addMultiplayerGame will download the game from Dropbox so the descriptionLabel displays the right things
+            backScreen.addMultiplayerGame(game.gameId, textField.text)
+            backScreen.game.setScreen(backScreen)
+            backScreen.reloadGameListUI()
         }
     }
 
@@ -532,7 +518,7 @@ class AddMultiplayerGameScreen(backScreen: MultiplayerScreen) : PickerScreen(){
             try {
                 UUID.fromString(IdChecker.checkAndReturnGameUuid(gameIDTextField.text))
             }catch (ex: Exception){
-                ToastPopup("Invalid game ID!".tr(), this)
+                ToastPopup("Invalid game ID!", this)
                 return@onClick
             }
 
