@@ -47,7 +47,7 @@ tilefilters allow us to specify tiles according to a number of different aspects
 - Base terrain uniques
 - Terrain feature uniques
 - Tile improvements
-- "Water"
+- "Water", "Land"
 - "River" (as in all 'river on tile' contexts, it means 'adjacent to a river on at least on side')
 
 So for instance, the unique "[stats] from [tileFilter] tiles in this city" can match several cases:
@@ -130,15 +130,13 @@ cityFilters allow us to choose the range of cities affected by this unique:
 
 "Free Great Person" - Same. Great Person DOES NOT count towards your Great Person generation.
 
-"Cost increases by [amount] per owned city"
-
 "Golden Age length increased by [amount]%"
 
 "Gold from all trade routes +25%"
 
 "Connects trade routes over water"
 
-"+[15]% combat bonus for units fighting in [Friendly Land]"
+"+[amount]% combat bonus for units fighting in [landFilter]" - where landFiltervis one of "Friendly Land", 
 
 "Science gained from research agreements +50%"
 
@@ -164,6 +162,9 @@ cityFilters allow us to choose the range of cities affected by this unique:
 "Provides 1 happiness per 2 additional social policies adopted"
 
 "Cannot be purchased"
+
+"Cost increases by [amount] per owned city"
+
 
 ### Stat uniques
 
