@@ -27,9 +27,7 @@ Parameters come in various types, and will be addressed as such inside the [squa
 - amount - This indicates a whole, (usually) positive number, like "2" or "13".
 - unitName, buildingName, improvementName etc - Rather self explanatory. Examples: "Warrior", "Library', and "Mine", accordingly.
 - stat - This is one of the 6 major stats in the game - "Gold", "Science", "Production", "Food", "Happiness" and "Culture". Note that the stat names need to be capitalized!
-- stats - see below
-- tileFilter - see below
-- unitType - 
+- stats, tileFilter, unitFilter, cityFilter - these are more complex and are addressed individually
 
 ### stats
 
