@@ -412,7 +412,11 @@ class MapUnit {
         var amountToHealBy = rankTileForHealing(getTile())
         if (amountToHealBy == 0) return
 
+        // deprecated as of 3.12.11
         if (hasUnique("+10 HP when healing")) amountToHealBy += 10
+
+        for (unique in getMatchingUniques("+[] HP when healing"))
+            amountToHealBy += unique.params[0].toInt()
         val maxAdjacentHealingBonus = currentTile.getTilesInDistance(1)
                 .flatMap { it.getUnits().asSequence() }.map { it.adjacentHealingBonus() }.max()
         if (maxAdjacentHealingBonus != null)
