@@ -5,6 +5,7 @@ import com.unciv.logic.city.CityConstructions
 import com.unciv.logic.city.IConstruction
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.Counter
+import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.stats.NamedStats
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
@@ -108,7 +109,7 @@ class Building : NamedStats(), IConstruction {
             stringBuilder.appendln("Consumes 1 [$requiredResource]".tr())
         if (providesFreeBuilding != null)
             stringBuilder.appendln("Provides a free [$providesFreeBuilding] in the city".tr())
-        if (uniques.isNotEmpty()){
+        if (uniques.isNotEmpty()) {
             if (replacementTextForUniques != "") stringBuilder.appendln(replacementTextForUniques)
             else stringBuilder.appendln(uniques.asSequence().map { it.tr() }.joinToString("\n"))
         }
@@ -298,7 +299,7 @@ class Building : NamedStats(), IConstruction {
         if (requiredTech != null && !civInfo.tech.isResearched(requiredTech!!)) return "$requiredTech not researched"
 
         for (unique in uniqueObjects.filter { it.placeholderText == "Unlocked with []" })
-            if(civInfo.tech.researchedTechnologies.none { it.era() == unique.params[0] || it.name == unique.params[0] }
+            if (civInfo.tech.researchedTechnologies.none { it.era() == unique.params[0] || it.name == unique.params[0] }
                     && !civInfo.policies.isAdopted(unique.params[0]))
                 return unique.text
 
@@ -404,6 +405,18 @@ class Building : NamedStats(), IConstruction {
         }
         cityConstructions.addBuilding(name)
 
+
+        val improvement = getImprovement(civInfo.gameInfo.ruleSet)
+        if (improvement != null) {
+            val tileWithImprovement = cityConstructions.cityInfo.getTiles().firstOrNull { it.improvementInProgress == improvement.name }
+            if (tileWithImprovement != null) {
+                tileWithImprovement.turnsToImprovement = 0
+                tileWithImprovement.improvementInProgress = null
+                tileWithImprovement.improvement = improvement.name
+            }
+        }
+
+
         if (providesFreeBuilding != null && !cityConstructions.containsBuildingOrEquivalent(providesFreeBuilding!!)) {
             var buildingToAdd = providesFreeBuilding!!
 
@@ -444,4 +457,13 @@ class Building : NamedStats(), IConstruction {
         if (replaces == null) return this
         else return ruleset.buildings[replaces!!]!!
     }
+
+    fun getImprovement(ruleset: Ruleset): TileImprovement? {
+        val improvementUnique = uniqueObjects
+                .firstOrNull { it.placeholderText == "Creates a [] improvement on a specific tile" }
+        if (improvementUnique == null) return null
+        return ruleset.tileImprovements[improvementUnique.params[0]]!!
+    }
+
+    fun isSellable() = !isWonder && !isNationalWonder && !uniques.contains("Unsellable")
 }
