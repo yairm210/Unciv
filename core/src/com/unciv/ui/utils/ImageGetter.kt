@@ -316,7 +316,9 @@ object ImageGetter {
 
     fun getProgressBarVertical(width: Float, height: Float, percentComplete: Float, progressColor: Color, backgroundColor: Color): Table {
         val advancementGroup = Table()
-        val completionHeight = height * percentComplete
+        var completionHeight = height * percentComplete
+        if (completionHeight > height)
+            completionHeight = height
         advancementGroup.add(getImage(whiteDotLocation).apply { color = backgroundColor })
                 .size(width, height - completionHeight).row()
         advancementGroup.add(getImage(whiteDotLocation).apply { color = progressColor }).size(width, completionHeight)
