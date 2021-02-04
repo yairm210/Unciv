@@ -355,6 +355,7 @@ open class TileInfo {
                 || improvement == filter
 //                || resource == filter // TODO uncomment in next version
                 || filter == "Water" && isWater
+                || filter == "Land" && isLand
     }
 
     fun hasImprovementInProgress() = improvementInProgress != null
