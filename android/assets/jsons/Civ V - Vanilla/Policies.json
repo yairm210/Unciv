@@ -31,7 +31,7 @@
 			},
 			{
 				"name": "Monarchy",
-				"uniques": ["+1 gold and -1 unhappiness for every 2 citizens in capital"],
+				"uniques": ["[+1 Gold, +1 Happiness] per [2] population [in capital]"],
 				"requires": ["Legalism"],
 				"row": 2,
 				"column": 4

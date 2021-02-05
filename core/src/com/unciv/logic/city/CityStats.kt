@@ -252,10 +252,20 @@ class CityStats {
                     || unique.placeholderText == "[] in all cities"
                     || unique.placeholderText == "[] in all cities with a garrison" && cityInfo.getCenterTile().militaryUnit != null)
                 stats.add(unique.stats)
+
+            // "[stats] per [amount] population [cityfilter]"
+            if (unique.placeholderText=="[] per [] population []" && cityInfo.matchesFilter(unique.params[2])) {
+                val amountOfEffects = (cityInfo.population.population / unique.params[1].toInt()).toFloat()
+                stats.add(unique.stats.times(amountOfEffects))
+            }
+
+            // Deprecated by 3.12.13 - replaced by "[] per [] population [in all cities]"
             if (unique.placeholderText == "[] per [] population in all cities") {
                 val amountOfEffects = (cityInfo.population.population / unique.params[1].toInt()).toFloat()
                 stats.add(unique.stats.times(amountOfEffects))
             }
+
+            // Deprecated by 3.12.13 - replaced by "[+1 Gold, +1 Happiness] per [2] population [in capital]"
             if (unique.text == "+1 gold and -1 unhappiness for every 2 citizens in capital" && cityInfo.isCapital()) {
                 stats.gold += (cityInfo.population.population / 2).toFloat()
                 stats.happiness += (cityInfo.population.population / 2).toFloat()
@@ -272,18 +282,6 @@ class CityStats {
             stats.production += 20f
             stats.culture += 20f
         }
-        return stats
-    }
-
-    private fun getStatPercentBonusesFromBuildings(currentConstruction: IConstruction): Stats {
-        val stats = cityInfo.cityConstructions.getStatPercentBonuses()
-
-        // Deprecated as of 3.12.11 - replaces with "+[amount]% Production when constructing [unitFilter] units [in this city]"
-        for (unique in cityInfo.cityConstructions.builtBuildingUniqueMap.getUniques("+[]% production when building [] in this city")) {
-            if (constructionMatchesFilter(currentConstruction, unique.params[1]))
-                stats.production += unique.params[0].toInt()
-        }
-
         return stats
     }
 
@@ -361,14 +359,6 @@ class CityStats {
 
     fun constructionMatchesFilter(construction: IConstruction, filter: String): Boolean {
         return construction.name == filter
-                // All of these are deprecated as of 3.11.20 in favor of "+[]% Production when constructing [] units"
-                || filter == "land units" && construction is BaseUnit && construction.unitType.isLandUnit()
-                || filter == "naval units" && construction is BaseUnit && construction.unitType.isWaterUnit()
-                || filter == "ranged units" && construction is BaseUnit && construction.unitType == UnitType.Ranged
-                || filter == "mounted units" && construction is BaseUnit && construction.unitType == UnitType.Mounted
-                || filter == "military units" && construction is BaseUnit && !construction.unitType.isCivilian()
-                || filter == "melee units" && construction is BaseUnit && construction.unitType.isMelee()
-
                 || filter == "Buildings" && construction is Building && !(construction.isWonder || construction.isNationalWonder)
                 || filter == "Wonders" && construction is Building && (construction.isWonder || construction.isNationalWonder)
                 || construction is Building && construction.uniques.contains(filter)
@@ -409,7 +399,7 @@ class CityStats {
         newStatPercentBonusList["Golden Age"] = getStatPercentBonusesFromGoldenAge(cityInfo.civInfo.goldenAges.isGoldenAge())
         newStatPercentBonusList["Policies"] = getStatPercentBonusesFromUniques(currentConstruction, cityInfo.civInfo.policies.policyUniques.getAllUniques())
         newStatPercentBonusList["Buildings"] = getStatPercentBonusesFromUniques(currentConstruction, citySpecificUniques)
-                .plus(getStatPercentBonusesFromBuildings(currentConstruction)) // This function is to be deprecated but it'll take a while.
+                .plus(cityInfo.cityConstructions.getStatPercentBonuses()) // This function is to be deprecated but it'll take a while.
         newStatPercentBonusList["Wonders"] = getStatPercentBonusesFromUniques(currentConstruction, cityInfo.civInfo.getCivWideBuildingUniques())
         newStatPercentBonusList["Railroad"] = getStatPercentBonusesFromRailroad()
         newStatPercentBonusList["Resources"] = getStatPercentBonusesFromResources(currentConstruction)

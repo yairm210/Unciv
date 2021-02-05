@@ -280,17 +280,6 @@ class Building : NamedStats(), IConstruction {
             "Can only be built in annexed cities" -> if (construction.cityInfo.isPuppet || construction.cityInfo.foundingCiv == ""
                     || construction.cityInfo.civInfo.civName == construction.cityInfo.foundingCiv) return unique.text
             "Obsolete with []" -> if (civInfo.tech.isResearched(unique.params[0])) return unique.text
-
-            "Must have an owned mountain within 2 tiles" ->  // Deprecated as of 3.10.8 . Use "Must have an owned [Mountain] within [2] tiles" instead
-                if (cityCenter.getTilesInDistance(2)
-                                .none { it.baseTerrain == Constants.mountain && it.getOwner() == construction.cityInfo.civInfo })
-                    return unique.text
-            "Must be next to river" -> // Deprecated as of 3.10.8 . Use "Must be on [River]" instead
-                if (!cityCenter.isAdjacentToRiver()) return unique.text
-            "Can only be built in coastal cities" ->  // Deprecated as of 3.10.8 . Use "Must be next to [Coast]" instead
-                if (!cityCenter.isCoastalTile()) return unique.text
-            "Must border a source of fresh water" ->  // Deprecated as of 3.10.8 . Use "Must be next to [Fresh water]" instead
-                if (!cityCenter.isAdjacentToFreshwater) return unique.text
         }
 
         if (uniqueTo != null && uniqueTo != civInfo.civName) return "Unique to $uniqueTo"
