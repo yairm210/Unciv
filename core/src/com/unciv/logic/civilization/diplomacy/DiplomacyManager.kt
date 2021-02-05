@@ -308,7 +308,8 @@ class DiplomacyManager() {
 
     // for performance reasons we don't want to call this every time we want to see if a unit can move through a tile
     fun updateHasOpenBorders() {
-        val newHasOpenBorders = civInfo.getAllyCiv() == otherCivName || otherCiv().getAllyCiv() == civInfo.civName
+        // City-states can enter ally's territory (the opposite is true anyway even without open borders)
+        val newHasOpenBorders = civInfo.getAllyCiv() == otherCivName
                 || trades.flatMap { it.theirOffers }.any { it.name == Constants.openBorders && it.duration > 0 }
 
         val bordersWereClosed = hasOpenBorders && !newHasOpenBorders
