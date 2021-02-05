@@ -1,3 +1,18 @@
+- [Overview](#overview)
+- [Unique locations](#unique-locations)
+- [Parameter types](#parameter-types)
+  * [stats](#stats)
+  * [tileFilter](#tilefilter)
+  * [unitFilter](#unitfilter)
+  * [cityFilter](#cityfilter)
+- [General uniques](#general-uniques)
+  * [Stat uniques](#stat-uniques)
+  * [Other](#other)
+- [Buildings-only](#buildings-only)
+  * [Stat uniques](#stat-uniques-1)
+  * [Construction condition uniques](#construction-condition-uniques)
+
+
 ## Overview
 
 Every type of object has some traits that are shared across all, or most, objects of its kind. For example, a building's stat increase, cost and required tech; a unit's type, movement and attack; a resource's type, improvement and bonus stats from improvement. All such traits have their own fields in the said object types.
@@ -18,7 +33,7 @@ Most uniques are "Global uniques" - meaning, they can be put in one of four plac
 - Building uniques - Active once the building has been constructed in any city
 - Tech uniques - active once the tech has been researched
 
-Most uniques are *ongoing* - they describe something continuous. Some, however, are one-time actions (free technology, free unit, etc) - these cannot be put in a Nation unique, since unlike the other categories, there is no specific time to activate them. 
+Most uniques are *ongoing* - they describe something continuous. Some, however, are one-time actions (free technology, free unit, etc) - these cannot be put in a Nation unique, since unlike the other categories, there is no specific time to activate them. Such uniques will be marked in the documentation as "one time effect".
 
 ## Parameter types
 
@@ -98,6 +113,20 @@ cityFilters allow us to choose the range of cities affected by this unique:
 - Resource name
 - "Strategic resource", "Luxury resource", "Bonus resource", "Water resource"
 
+### One time effect
+
+"[amount] free [unitName] units appear", "Free [unitName] appears" - Self explanatory. If given to a building, the units will appear next to the city the building was constructed in. If the specified unit can construct cities, the unique will not activate for One-City Challenge players.
+
+"Free Great Person" - Same. Great Person DOES NOT count towards your Great Person generation.
+
+"Receive free [unitName] when you discover [techName]" - this is rather special, as it's activated not when you receive the unique, but rather when the specified tech is researched.
+
+"Free Technology"
+
+"Free Social Policy"
+
+"Empire enters golden age" - if already in a golden age, it is extended by the number of turns that a new golden age would have given.
+
 ### Other
 
 "+[amount]% Production when constructing [unitFilter] units", "+[amount]% Production when constructing [unitFilter] units [cityFilter]" - The city produces extra Production when a unit fitting the filter in under construction.
@@ -116,19 +145,9 @@ cityFilters allow us to choose the range of cities affected by this unique:
 
 "Indicates the capital city" - Unciv requires a specific building to indicate the capital city, which is used for many things. In total overhaul mods, you can change the building that indicates this.
 
-"Free Technology"
-
-"Free Social Policy"
-
-"Empire enters golden age" - if already in a golden age, it is extended by the number of turns that a new golden age would have given.
-
 "Worker construction increased 25%"
 
 "-[amount]% Culture cost of acquiring tiles [cityFilter]","-[amount]% Gold cost of acquiring tiles [cityFilter]" - self explanatory.
-
-"[amount] free [unitName] units appear", "Free [unitName] appears" - Self explanatory. If given to a building, the units will appear next to the city the building was constructed in. If the specified unit can construct cities, the unique will not activate for One-City Challenge players.
-
-"Free Great Person" - Same. Great Person DOES NOT count towards your Great Person generation.
 
 "Golden Age length increased by [amount]%"
 
