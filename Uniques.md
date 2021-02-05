@@ -7,6 +7,7 @@
   * [cityFilter](#cityfilter)
 - [General uniques](#general-uniques)
   * [Stat uniques](#stat-uniques)
+  * [One time effect](#one-time-effect)
   * [Other](#other)
 - [Buildings-only](#buildings-only)
   * [Stat uniques](#stat-uniques-1)
@@ -113,6 +114,12 @@ cityFilters allow us to choose the range of cities affected by this unique:
 - Resource name
 - "Strategic resource", "Luxury resource", "Bonus resource", "Water resource"
 
+"[stats] per turn from cities before [techName]"
+
+"[stats] from each Trade Route"
+
+"[stats] per [amount] population in all cities"
+
 ### One time effect
 
 "[amount] free [unitName] units appear", "Free [unitName] appears" - Self explanatory. If given to a building, the units will appear next to the city the building was constructed in. If the specified unit can construct cities, the unique will not activate for One-City Challenge players.
@@ -127,7 +134,34 @@ cityFilters allow us to choose the range of cities affected by this unique:
 
 "Empire enters golden age" - if already in a golden age, it is extended by the number of turns that a new golden age would have given.
 
+### Unit-affecting uniques
+
+"+[amount] Movement for all [unitFilter] units"
+
+"+[amount]% combat bonus for units fighting in [landFilter]" - where landFilter is one of
+- Last terrain name (as in: Plains+Forest is considered Forest, not Plains)
+- "Friendly Land", for land under your control, or under friendly city-state / major civ with open borders
+- "Foreign Land", for all non-friendly land
+
+"+1 Sight for all land military units" - I don't like this either.
+
+"Units fight as though they were at full strength even when damaged"
+
+"+[amount]% Strength if within [amount] tiles of a [tileFilter]" - for example, "+[10]% Strength if within [2] tiles of a [Moai]"
+
+"+1 Movement for all embarked units"
+
+"Units pay only 1 movement point to embark and disembark"
+
+"Melee units pay no movement cost to pillage"
+
 ### Other
+
+"Unhappiness from number of Cities doubled"
+
+"-[amount]% [unitFilter] unit maintenance costs"
+
+"Unhappiness from population decreased by [amount]%" - Despite appearances, this is a global unique, affecting all cities.
 
 "+[amount]% Production when constructing [unitFilter] units", "+[amount]% Production when constructing [unitFilter] units [cityFilter]" - The city produces extra Production when a unit fitting the filter in under construction.
 
@@ -139,15 +173,19 @@ cityFilters allow us to choose the range of cities affected by this unique:
 
 "Culture cost of adopting new Policies reduced by [amount]%"
 
-"Defensive buildings in all cities are 25% more effective"
+"Food and Culture from Friendly City-States are increased by 50%"
 
-"Unhappiness from population decreased by [amount]%" - Despite appearances, this is a global unique, affecting all cities.
+"Double Happiness from Natural Wonders"
+
+"Tile yields from Natural Wonders doubled"
+
+"Defensive buildings in all cities are 25% more effective"
 
 "Indicates the capital city" - Unciv requires a specific building to indicate the capital city, which is used for many things. In total overhaul mods, you can change the building that indicates this.
 
 "Worker construction increased 25%"
 
-"-[amount]% Culture cost of acquiring tiles [cityFilter]","-[amount]% Gold cost of acquiring tiles [cityFilter]" - self explanatory.
+"-[amount]% Culture cost of acquiring tiles [cityFilter]","-[amount]% Gold cost of acquiring tiles [cityFilter]"
 
 "Golden Age length increased by [amount]%"
 
@@ -155,13 +193,23 @@ cityFilters allow us to choose the range of cities affected by this unique:
 
 "Connects trade routes over water"
 
-"+[amount]% combat bonus for units fighting in [landFilter]" - where landFiltervis one of "Friendly Land", 
+"[greatPersonName] is earned [amount]% faster"
 
 "Science gained from research agreements +50%"
 
 "Cost of purchasing items in cities reduced by [amount]%" - 'Purchasing' refers to the gold cost of buying buildings or units, not the amount of production needed to construct.
 
+"Maintenance on roads & railroads reduced by [amount]%"
+
 "Gold cost of upgrading military units reduced by 33%"
+
+"City-State Influence degrades [amount]% slower"
+
+"City-State Influence recovers at twice the normal rate"
+
+"Great General provides double combat bonus"
+
+"Double quantity of [resourceName] produced"
 
 
 ## Buildings-only
