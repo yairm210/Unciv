@@ -206,7 +206,7 @@ class MapGenerator(val ruleset: Ruleset) {
         val scale = tileMap.mapParameters.tilesPerBiomeArea.toDouble()
 
         for (tile in tileMap.values) {
-            if (tile.isWater || tile.baseTerrain in arrayOf(Constants.mountain, Constants.hill))
+            if (tile.isWater)
                 continue
 
             val humidity = (randomness.getPerlinNoise(tile, humiditySeed, scale = scale, nOctaves = 1) + 1.0) / 2.0
@@ -216,25 +216,43 @@ class MapGenerator(val ruleset: Ruleset) {
             var temperature = ((5.0 * latitudeTemperature + randomTemperature) / 6.0)
             temperature = abs(temperature).pow(1.0 - tileMap.mapParameters.temperatureExtremeness) * temperature.sign
 
+
+            // Set the baseTerrain of the Tile in a Var, so it isn't lost when a "flat" baseTerrain is chosen
+            tile.terrainRelief = tile.baseTerrain
+
             tile.baseTerrain = when {
                 temperature < -0.4 -> {
                     if (humidity < 0.5) Constants.snow
                     else Constants.tundra
                 }
                 temperature < 0.8 -> {
-                    if (humidity < 0.5) Constants.plains
+                    if (humidity < 0.5) {
+                        Constants.plains
+                    }
                     else Constants.grassland
                 }
                 temperature <= 1.0 -> {
                     if (humidity < 0.7) Constants.desert
-                    else Constants.plains
+                    else Constants.savannah
                 }
                 else -> {
                     println(temperature)
                     Constants.lakes
                 }
-
             }
+
+            // The climate (base tile if relief <= 0.5, aka "plains") is put in tile.terrainClimate
+            tile.terrainClimate = tile.baseTerrain
+
+            // The relief (hill, moutain, flat aka plains, lake) is put in tile.terrainRelief.
+            if (tile.terrainRelief == Constants.hill || tile.terrainRelief == Constants.mountain){
+                tile.baseTerrain = tile.terrainRelief + "-" + tile.baseTerrain
+            } else if (tile.baseTerrain != Constants.lakes) {
+                tile.terrainRelief = "Flat"
+            } else {
+                tile.terrainRelief = Constants.lakes
+            }
+
         }
     }
 

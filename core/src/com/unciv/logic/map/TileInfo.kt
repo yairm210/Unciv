@@ -14,6 +14,7 @@ import com.unciv.ui.utils.Fonts
 import kotlin.math.abs
 
 open class TileInfo {
+
     @Transient
     lateinit var tileMap: TileMap
 
@@ -47,6 +48,8 @@ open class TileInfo {
 
     var position: Vector2 = Vector2.Zero
     lateinit var baseTerrain: String
+    lateinit var terrainRelief: String
+    lateinit var terrainClimate: String
     var terrainFeature: String? = null
     var naturalWonder: String? = null
     var resource: String? = null
@@ -56,7 +59,7 @@ open class TileInfo {
     var roadStatus = RoadStatus.None
     var turnsToImprovement: Int = 0
 
-    fun isHill() = baseTerrain == Constants.hill
+    fun isHill() = baseTerrain == Constants.hill  || baseTerrain.substringBefore(delimiter = "-") == Constants.hill
 
     var hasBottomRightRiver = false
     var hasBottomRiver = false
@@ -348,6 +351,7 @@ open class TileInfo {
     fun matchesUniqueFilter(filter: String): Boolean {
         return filter == baseTerrain
                 || filter == Constants.hill && isHill()
+                || filter == Constants.mountain && baseTerrain.substringBefore(delimiter = "-") == Constants.mountain
                 || filter == "River" && isAdjacentToRiver()
                 || filter == terrainFeature
                 || baseTerrainObject.uniques.contains(filter)

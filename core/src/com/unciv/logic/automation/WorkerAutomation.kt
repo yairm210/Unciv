@@ -213,7 +213,7 @@ class WorkerAutomation(val unit: MapUnit) {
             tile.terrainFeature == "Oasis" -> null
             tile.terrainFeature == Constants.forest -> "Lumber mill"
             tile.isHill() -> "Mine"
-            tile.baseTerrain in listOf(Constants.grassland, Constants.desert, Constants.plains) -> "Farm"
+            tile.baseTerrain in listOf(Constants.grassland, Constants.desert, Constants.plains, Constants.savannah) -> "Farm"
             tile.isAdjacentToFreshwater -> "Farm"
             tile.baseTerrain in listOf(Constants.tundra, Constants.snow) -> Constants.tradingPost
             else -> null

@@ -17,6 +17,7 @@ object Constants {
     const val grassland = "Grassland"
     const val tundra = "Tundra"
     const val snow = "Snow"
+    const val savannah = "Savannah"
 
     const val forest = "Forest"
     const val jungle = "Jungle"

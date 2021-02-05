@@ -206,6 +206,7 @@ object BattleDamage {
                 + unit.getCivInfo().getMatchingUniques("+[]% combat bonus for units fighting in []")) {
             val filter = unique.params[1]
             if (filter == tile.getLastTerrain().name
+                    || filter == tile.getLastTerrain().name.substringBefore(delimiter = "-")
                     || filter == "Foreign Land" && !tile.isFriendlyTerritory(unit.getCivInfo())
                     || filter == "Friendly Land" && tile.isFriendlyTerritory(unit.getCivInfo()))
                 modifiers.add(filter, unique.params[0].toInt())
