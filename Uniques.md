@@ -158,6 +158,8 @@ cityFilters allow us to choose the range of cities affected by this unique:
 
 "Melee units pay no movement cost to pillage"
 
+"[unitFilter] units gain [amount]% more Experience from combat"
+
 ### Other
 
 "Unhappiness from number of Cities doubled"
