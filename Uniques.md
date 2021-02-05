@@ -247,10 +247,12 @@ cityFilters allow us to choose the range of cities affected by this unique:
 
 "Must be on [tileFilter]", "Must not be on [tileFilter]" - limits the buildings that can be built in a city according the the tile type that the city center is built on.
 
-"Must be next to [tileFilter]" - Same. In addition to the regular tileFilter options, accepts "Fresh water" as an option, which includes river-adjacent tiles on top of lake-adjacent tiles (which is merely a consequence of Lakes having a 'Fresh water' uniques and tileFilter accepting Base Terrain uniques)
+"Must be next to [tileFilter]", "Must not be next to [tileFilter]" - Same. In addition to the regular tileFilter options, accepts "Fresh water" as an option, which includes river-adjacent tiles on top of lake-adjacent tiles (which is merely a consequence of Lakes having a 'Fresh water' uniques and tileFilter accepting Base Terrain uniques)
+
+"Must have an owned [tileFilter] within [amount] tiles"
 
 "Requires a [buildingName] in all cities"
 
 "Can only be built in annexed cities"
 
-"Must have an owned [tileFilter] within [amount] tiles"
+"Obsolete with [techName]" - Building cannot be built once the tech is researched
