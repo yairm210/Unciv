@@ -172,6 +172,10 @@ cityFilters allow us to choose the range of cities affected by this unique:
 
 "Quantity of Resources gifted by City-States increased by [amount]%"
 
+"Food and Culture from Friendly City-States are increased by 50%"
+
+"City-State Influence recovers at twice the normal rate"
+
 ### Other
 
 "Unhappiness from number of Cities doubled"
@@ -191,8 +195,6 @@ cityFilters allow us to choose the range of cities affected by this unique:
 "Culture cost of adopting new Policies reduced by [amount]%"
 
 "Each city founded increases culture cost of policies [33]% less than normal"
-
-"Food and Culture from Friendly City-States are increased by 50%"
 
 "Double Happiness from Natural Wonders"
 
@@ -221,10 +223,6 @@ cityFilters allow us to choose the range of cities affected by this unique:
 "Maintenance on roads & railroads reduced by [amount]%"
 
 "Gold cost of upgrading military units reduced by 33%"
-
-"City-State Influence degrades [amount]% slower"
-
-"City-State Influence recovers at twice the normal rate"
 
 "Great General provides double combat bonus"
 
