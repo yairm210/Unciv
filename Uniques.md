@@ -192,6 +192,11 @@ cityFilters allow us to choose the range of cities affected by this unique:
 - "Wonders"
 - Building unique
 
+"Cost of purchasing [stat] buildings reduced by [amount]%" - Stat-related buildings are defined as one of the following:
+- Provides that stat directly (e.g. +1 Culture)
+- Provides a percentage bonus for that stat (e.g. +10% Production)
+- Provides that stat as a bonus for resources (e.g. +1 Food for Wheat)
+
 "Culture cost of adopting new Policies reduced by [amount]%"
 
 "Each city founded increases culture cost of policies [33]% less than normal"
