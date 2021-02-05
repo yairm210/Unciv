@@ -102,9 +102,11 @@ cityFilters allow us to choose the range of cities affected by this unique:
 
 ### Stat uniques
 
-"+[amount]% growth in all cities", "+[amount]% growth in capital" - 'Growth' is the amount of food retained by a city after calculating all bonuses and removing food eaten by population - that is, the food that leads to population growth.
+"+[amount]% growth [cityFilter]" - for example "+[15]% growth [in all cities]". 'Growth' is the amount of food retained by a city after calculating all bonuses and removing food eaten by population - that is, the food that leads to population growth. "+[amount]% growth in all cities" and "+[amount]% growth in capital" are to be deprecated and should not be used.
 
-"+[amount]% [stat] [cityfilter]" - For example, "+[25]% [Culture] [in all cities]"
+"+[amount]% [stat] [cityFilter]" - For example, "+[25]% [Culture] [in all cities]"
+
+"[stats] [cityFilter]" - for example "[+3 Culture] [in capital]", "[+2 Food] [in all cities]". "[stats] in capital", "[stats] in all cities" are to be deprecated and should not be used.
 
 "[stats] from every specialist"
 
