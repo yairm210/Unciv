@@ -73,17 +73,6 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
                 transportationUpkeep += tileUpkeep
             }
         }
-        // Inca unique according to https://civilization.fandom.com/wiki/Incan_%28Civ5%29
-        // Deprecated as of 3.12. in favor of "Maintenance on roads & railroads reduced by [50]%"
-        if (civInfo.hasUnique("50% Maintenance costs reduction"))
-            transportationUpkeep /= 2
-
-        // Deprecated as of 3.12. in favor of "Maintenance on roads & railroads reduced by [33]%"
-        if (civInfo.hasUnique("Maintenance on roads & railroads reduced by 33%")
-                //presume we want to deprecate the old one at some point?
-                || civInfo.hasUnique("Maintenance on roads & railroads reduced by 33%, +2 gold from all trade routes"))
-            transportationUpkeep = (transportationUpkeep * 2 / 3f).toInt()
-
         for (unique in civInfo.getMatchingUniques("Maintenance on roads & railroads reduced by []%"))
             transportationUpkeep = (transportationUpkeep * (100f - unique.params[0].toInt()) / 100).toInt()
 

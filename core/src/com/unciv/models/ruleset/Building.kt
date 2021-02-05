@@ -5,6 +5,7 @@ import com.unciv.logic.city.CityConstructions
 import com.unciv.logic.city.IConstruction
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.Counter
+import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.stats.NamedStats
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
@@ -108,7 +109,7 @@ class Building : NamedStats(), IConstruction {
             stringBuilder.appendln("Consumes 1 [$requiredResource]".tr())
         if (providesFreeBuilding != null)
             stringBuilder.appendln("Provides a free [$providesFreeBuilding] in the city".tr())
-        if (uniques.isNotEmpty()){
+        if (uniques.isNotEmpty()) {
             if (replacementTextForUniques != "") stringBuilder.appendln(replacementTextForUniques)
             else stringBuilder.appendln(uniques.asSequence().map { it.tr() }.joinToString("\n"))
         }
@@ -270,7 +271,7 @@ class Building : NamedStats(), IConstruction {
         for (unique in uniqueObjects) when (unique.placeholderText) {
             "Must be on []" -> if (!cityCenter.matchesUniqueFilter(unique.params[0])) return unique.text
             "Must not be on []" -> if (cityCenter.matchesUniqueFilter(unique.params[0])) return unique.text
-            "Must be next to []" -> if (!(unique.params[0] == "Fresh water" && cityCenter.isAdjacentToRiver()) // Fresh water is special, in that rivers are not tiles themselves but also fit the filter..
+            "Must be next to []" -> if (!(unique.params[0] == "Fresh water" && cityCenter.isAdjacentToRiver()) // Fresh water is special, in that rivers are not tiles themselves but also fit the filter.
                     && cityCenter.getTilesInDistance(1).none { it.matchesUniqueFilter(unique.params[0]) }) return unique.text
             "Must not be next to []" -> if (cityCenter.getTilesInDistance(1).any { it.matchesUniqueFilter(unique.params[0]) }) return unique.text
             "Must have an owned [] within [] tiles" -> if (cityCenter.getTilesInDistance(unique.params[1].toInt()).none {
@@ -279,17 +280,6 @@ class Building : NamedStats(), IConstruction {
             "Can only be built in annexed cities" -> if (construction.cityInfo.isPuppet || construction.cityInfo.foundingCiv == ""
                     || construction.cityInfo.civInfo.civName == construction.cityInfo.foundingCiv) return unique.text
             "Obsolete with []" -> if (civInfo.tech.isResearched(unique.params[0])) return unique.text
-
-            "Must have an owned mountain within 2 tiles" ->  // Deprecated as of 3.10.8 . Use "Must have an owned [Mountain] within [2] tiles" instead
-                if (cityCenter.getTilesInDistance(2)
-                                .none { it.baseTerrain == Constants.mountain && it.getOwner() == construction.cityInfo.civInfo })
-                    return unique.text
-            "Must be next to river" -> // Deprecated as of 3.10.8 . Use "Must be on [River]" instead
-                if (!cityCenter.isAdjacentToRiver()) return unique.text
-            "Can only be built in coastal cities" ->  // Deprecated as of 3.10.8 . Use "Must be next to [Coast]" instead
-                if (!cityCenter.isCoastalTile()) return unique.text
-            "Must border a source of fresh water" ->  // Deprecated as of 3.10.8 . Use "Must be next to [Fresh water]" instead
-                if (!cityCenter.isAdjacentToFreshwater) return unique.text
         }
 
         if (uniqueTo != null && uniqueTo != civInfo.civName) return "Unique to $uniqueTo"
@@ -298,7 +288,7 @@ class Building : NamedStats(), IConstruction {
         if (requiredTech != null && !civInfo.tech.isResearched(requiredTech!!)) return "$requiredTech not researched"
 
         for (unique in uniqueObjects.filter { it.placeholderText == "Unlocked with []" })
-            if(civInfo.tech.researchedTechnologies.none { it.era() == unique.params[0] || it.name == unique.params[0] }
+            if (civInfo.tech.researchedTechnologies.none { it.era() == unique.params[0] || it.name == unique.params[0] }
                     && !civInfo.policies.isAdopted(unique.params[0]))
                 return unique.text
 
@@ -404,6 +394,18 @@ class Building : NamedStats(), IConstruction {
         }
         cityConstructions.addBuilding(name)
 
+
+        val improvement = getImprovement(civInfo.gameInfo.ruleSet)
+        if (improvement != null) {
+            val tileWithImprovement = cityConstructions.cityInfo.getTiles().firstOrNull { it.improvementInProgress == improvement.name }
+            if (tileWithImprovement != null) {
+                tileWithImprovement.turnsToImprovement = 0
+                tileWithImprovement.improvementInProgress = null
+                tileWithImprovement.improvement = improvement.name
+            }
+        }
+
+
         if (providesFreeBuilding != null && !cityConstructions.containsBuildingOrEquivalent(providesFreeBuilding!!)) {
             var buildingToAdd = providesFreeBuilding!!
 
@@ -444,4 +446,13 @@ class Building : NamedStats(), IConstruction {
         if (replaces == null) return this
         else return ruleset.buildings[replaces!!]!!
     }
+
+    fun getImprovement(ruleset: Ruleset): TileImprovement? {
+        val improvementUnique = uniqueObjects
+                .firstOrNull { it.placeholderText == "Creates a [] improvement on a specific tile" }
+        if (improvementUnique == null) return null
+        return ruleset.tileImprovements[improvementUnique.params[0]]!!
+    }
+
+    fun isSellable() = !isWonder && !isNationalWonder && !uniques.contains("Unsellable")
 }

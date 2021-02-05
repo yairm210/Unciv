@@ -216,6 +216,7 @@ object TranslationFileWriter {
                                     || parameter == "in all coastal cities"
                                     || parameter == "in capital"
                                     || parameter == "in all cities with a world wonder"
+                                    || parameter == "in all cities connected to capital"
                             -> "cityFilter"
                             else -> "param"
                         }

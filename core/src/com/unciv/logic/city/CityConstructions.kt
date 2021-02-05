@@ -413,7 +413,17 @@ class CityConstructions {
 
     /** If this was done automatically, we should automatically try to choose a new construction and treat it as such */
     fun removeFromQueue(constructionQueueIndex: Int, automatic: Boolean) {
-        constructionQueue.removeAt(constructionQueueIndex)
+        val constructionName = constructionQueue.removeAt(constructionQueueIndex)
+        val construction = getConstruction(constructionName)
+        if (construction is Building) {
+            val improvement = construction.getImprovement(cityInfo.getRuleset())
+            if (improvement != null) {
+                val tileWithImprovement = cityInfo.getTiles().firstOrNull { it.improvementInProgress == improvement.name }
+                tileWithImprovement?.improvementInProgress = null
+                tileWithImprovement?.turnsToImprovement = 0
+            }
+        }
+
         if (constructionQueue.isEmpty()) {
             if (automatic) chooseNextConstruction()
             else constructionQueue.add("Nothing") // To prevent Construction Automation

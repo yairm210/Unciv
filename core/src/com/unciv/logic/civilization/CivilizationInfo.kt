@@ -85,8 +85,10 @@ class CivilizationInfo {
     private var allyCivName = ""
     var naturalWonders = ArrayList<String>()
 
-    //** for trades here, ourOffers is the current civ's offers, and theirOffers is what the requesting civ offers  */
+    /** for trades here, ourOffers is the current civ's offers, and theirOffers is what the requesting civ offers  */
     val tradeRequests = ArrayList<TradeRequest>()
+    /** See DiplomacyManager.flagsCountdown to why not eEnum */
+    private var flagsCountdown = HashMap<String,Int>()
 
     // if we only use lists, and change the list each time the cities are changed,
     // we won't get concurrent modification exceptions.
@@ -128,6 +130,7 @@ class CivilizationInfo {
         toReturn.tradeRequests.addAll(tradeRequests)
         toReturn.naturalWonders.addAll(naturalWonders)
         toReturn.cityStatePersonality = cityStatePersonality
+        toReturn.flagsCountdown.putAll(flagsCountdown)
         return toReturn
     }
 

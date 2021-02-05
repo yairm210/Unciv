@@ -318,6 +318,12 @@ open class TileInfo {
             isCityCenter() -> false
             "Cannot be built on bonus resource" in improvement.uniques && resource != null
                     && getTileResource().resourceType == ResourceType.Bonus -> false
+
+            // Road improvements can change on tiles withh irremovable improvements - nothing else can, though.
+            improvement.name != RoadStatus.Railroad.name && improvement.name != RoadStatus.Railroad.name
+                    && improvement.name != "Remove Road" && improvement.name != "Remove Railroad"
+                    && getTileImprovement().let { it!=null && it.hasUnique("Irremovable") } -> false
+
             // Tiles with no terrains, and no turns to build, are like great improvements - they're placeable
             improvement.terrainsCanBeBuiltOn.isEmpty() && improvement.turnsToBuild==0 && isLand -> true
             improvement.terrainsCanBeBuiltOn.contains(topTerrain.name) -> true
@@ -349,6 +355,7 @@ open class TileInfo {
                 || improvement == filter
 //                || resource == filter // TODO uncomment in next version
                 || filter == "Water" && isWater
+                || filter == "Land" && isLand
     }
 
     fun hasImprovementInProgress() = improvementInProgress != null
@@ -442,10 +449,14 @@ open class TileInfo {
         if (terrainFeature != null) lineList += terrainFeature!!.tr()
         if (resource != null && (viewingCiv == null || hasViewableResource(viewingCiv))) lineList += resource!!.tr()
         if (naturalWonder != null) lineList += naturalWonder!!.tr()
-        if (roadStatus !== RoadStatus.None && !isCityCenter()) lineList += roadStatus.toString().tr()
+        if (roadStatus !== RoadStatus.None && !isCityCenter()) lineList += roadStatus.name.tr()
         if (improvement != null) lineList += improvement!!.tr()
-        if (improvementInProgress != null && isViewableToPlayer)
-            lineList += "{$improvementInProgress} - $turnsToImprovement${Fonts.turn}".tr()
+        if (improvementInProgress != null && isViewableToPlayer) {
+            var line = "{$improvementInProgress}"
+            if (turnsToImprovement > 0) line += " - $turnsToImprovement${Fonts.turn}"
+            else line += " ({Under construction})"
+            lineList += line.tr()
+        }
         if (civilianUnit != null && isViewableToPlayer)
             lineList += civilianUnit!!.name.tr() + " - " + civilianUnit!!.civInfo.civName.tr()
         if (militaryUnit != null && isViewableToPlayer) {

@@ -1,3 +1,24 @@
+## 3.12.12
+
+Added "Irremovable" unique to tile improvements
+
+Added Unsellable unique to buildings
+
+Added improvement-constructing buildings
+
+Added mutually exclusive tech paths using "Incompatible with [otherTech]" unique for techs
+
+Translation updates for new cityFilter
+
+By GGGuenni:
+- Refactoring of MultiplayerScreen 
+- Avoid overflow of the construction bar 
+- Adding resign function for multiplayer 
+
+By SpacedOutChicken:
+- Add "Land" as possible input to tile-related uniques 
+- New uniques for border expansion - "-[]% Gold cost of acquiring tiles []" and "-[]% Culture cost of acquiring tiles []" 
+
 ## 3.12.11
 
 Added experimental movement which assumes unknown tiles are impassible - hopefully will resolve #3009
