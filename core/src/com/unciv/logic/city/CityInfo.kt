@@ -655,6 +655,7 @@ class CityInfo {
             filter == "in all coastal cities" && getCenterTile().isCoastalTile() -> true
             filter == "in capital" && isCapital() -> true
             filter == "in all cities with a world wonder" && cityConstructions.getBuiltBuildings().any { it.isWonder } -> true
+            filter == "in all cities connected to capital" -> isConnectedToCapital()
             else -> false
         }
     }
