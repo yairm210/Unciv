@@ -300,50 +300,6 @@ object NextTurnAutomation {
         }
     }
 
-    private fun offerPeaceTreaty(civInfo: CivilizationInfo) {
-        if (!civInfo.isAtWar() || civInfo.cities.isEmpty() || civInfo.diplomacy.isEmpty()) return
-
-        val ourCombatStrength = Automation.evaluteCombatStrength(civInfo)
-        val enemiesCiv = civInfo.diplomacy.filter { it.value.diplomaticStatus == DiplomaticStatus.War }
-                .map { it.value.otherCiv() }
-                .filterNot { it == civInfo || it.isBarbarian() || it.cities.isEmpty() }
-                .filter { !civInfo.getDiplomacyManager(it).hasFlag(DiplomacyFlags.DeclinedPeace) }
-                // Don't allow AIs to offer peace to ity states allied with their enemies
-                .filterNot { it.isCityState() && it.getAllyCiv() != "" && civInfo.isAtWarWith(civInfo.gameInfo.getCivilization(it.getAllyCiv())) }
-
-        for (enemy in enemiesCiv) {
-            val enemiesStrength = Automation.evaluteCombatStrength(enemy)
-
-            // If we don't have an unobstructed path to the enemy, offer peace even though we can beat them
-            val canReachEnemy = BFS(civInfo.getCapital().getCenterTile()) { it.canCivEnter(civInfo) }
-            canReachEnemy.stepToEnd()
-
-            if (enemy.cities.any { canReachEnemy.hasReachedTile(it.getCenterTile()) }
-                    && civInfo.victoryType() != VictoryType.Cultural
-                    && enemiesStrength < ourCombatStrength * 2) {
-                continue //We're losing, but can still fight. Refuse peace.
-            }
-
-            // pay for peace
-            val tradeLogic = TradeLogic(civInfo, enemy)
-
-            tradeLogic.currentTrade.ourOffers.add(TradeOffer(Constants.peaceTreaty, TradeType.Treaty))
-            tradeLogic.currentTrade.theirOffers.add(TradeOffer(Constants.peaceTreaty, TradeType.Treaty))
-
-            if (civInfo.gold > 0) {
-                var moneyWeNeedToPay = -TradeEvaluation().evaluatePeaceCostForThem(civInfo, enemy)
-                if (moneyWeNeedToPay > civInfo.gold) { // we need to make up for this somehow...
-                    moneyWeNeedToPay = civInfo.gold
-                }
-                if (moneyWeNeedToPay > 0) {
-                    tradeLogic.currentTrade.ourOffers.add(TradeOffer("Gold".tr(), TradeType.Gold, moneyWeNeedToPay))
-                }
-            }
-
-            enemy.tradeRequests.add(TradeRequest(civInfo.civName, tradeLogic.currentTrade.reverse()))
-        }
-    }
-
     private fun updateDiplomaticRelationshipForCityStates(civInfo: CivilizationInfo) {
         // Check if city-state invaded by other civs
         for (otherCiv in civInfo.getKnownCivs().filter { it.isMajorCiv() }) {
@@ -392,6 +348,13 @@ object NextTurnAutomation {
         val ourCombatStrength = Automation.evaluteCombatStrength(civInfo).toFloat()
         val theirCombatStrength = Automation.evaluteCombatStrength(otherCiv)
         if (theirCombatStrength > ourCombatStrength) return 0
+
+
+        val reachableEnemyCitiesBfs = BFS(civInfo.getCapital().getCenterTile()) { it.canCivEnter(civInfo) }
+        reachableEnemyCitiesBfs.stepToEnd()
+        val reachableEnemyCities = otherCiv.cities.filter { reachableEnemyCitiesBfs.hasReachedTile(it.getCenterTile()) }
+        if (reachableEnemyCities.isEmpty()) return 0 // Can't even reach the enemy city, no point in war.
+
 
         val modifierMap = HashMap<String, Int>()
         val combatStrengthRatio = ourCombatStrength / theirCombatStrength
@@ -445,6 +408,42 @@ object NextTurnAutomation {
 
         return modifierMap.values.sum()
     }
+
+
+    private fun offerPeaceTreaty(civInfo: CivilizationInfo) {
+        if (!civInfo.isAtWar() || civInfo.cities.isEmpty() || civInfo.diplomacy.isEmpty()) return
+
+        val enemiesCiv = civInfo.diplomacy.filter { it.value.diplomaticStatus == DiplomaticStatus.War }
+                .map { it.value.otherCiv() }
+                .filterNot { it == civInfo || it.isBarbarian() || it.cities.isEmpty() }
+                .filter { !civInfo.getDiplomacyManager(it).hasFlag(DiplomacyFlags.DeclinedPeace) }
+                // Don't allow AIs to offer peace to city states allied with their enemies
+                .filterNot { it.isCityState() && it.getAllyCiv() != "" && civInfo.isAtWarWith(civInfo.gameInfo.getCivilization(it.getAllyCiv())) }
+
+        for (enemy in enemiesCiv) {
+            val motivationToAttack = motivationToAttack(civInfo, enemy)
+            if (motivationToAttack >= 10) continue // We can still fight. Refuse peace.
+
+            // pay for peace
+            val tradeLogic = TradeLogic(civInfo, enemy)
+
+            tradeLogic.currentTrade.ourOffers.add(TradeOffer(Constants.peaceTreaty, TradeType.Treaty))
+            tradeLogic.currentTrade.theirOffers.add(TradeOffer(Constants.peaceTreaty, TradeType.Treaty))
+
+            if (civInfo.gold > 0) {
+                var moneyWeNeedToPay = -TradeEvaluation().evaluatePeaceCostForThem(civInfo, enemy)
+                if (moneyWeNeedToPay > civInfo.gold) { // we need to make up for this somehow...
+                    moneyWeNeedToPay = civInfo.gold
+                }
+                if (moneyWeNeedToPay > 0) {
+                    tradeLogic.currentTrade.ourOffers.add(TradeOffer("Gold".tr(), TradeType.Gold, moneyWeNeedToPay))
+                }
+            }
+
+            enemy.tradeRequests.add(TradeRequest(civInfo.civName, tradeLogic.currentTrade.reverse()))
+        }
+    }
+
 
     private fun automateUnits(civInfo: CivilizationInfo) {
         val rangedUnits = mutableListOf<MapUnit>()
@@ -552,8 +551,8 @@ object NextTurnAutomation {
         val cityDistances = arrayListOf<CityDistance>()
         for (civ1city in civ1.cities)
             for (civ2city in civ2.cities)
-                cityDistances.add(CityDistance(civ1city, civ2city,
-                        civ1city.getCenterTile().aerialDistanceTo(civ2city.getCenterTile())))
+                cityDistances += CityDistance(civ1city, civ2city,
+                        civ1city.getCenterTile().aerialDistanceTo(civ2city.getCenterTile()))
 
         return cityDistances.minBy { it.aerialDistance }!!
     }
