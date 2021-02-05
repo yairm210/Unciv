@@ -160,6 +160,18 @@ cityFilters allow us to choose the range of cities affected by this unique:
 
 "[unitFilter] units gain [amount]% more Experience from combat"
 
+### City-state related uniques
+
+"City-State Influence degrades [amount]% slower"
+
+"Gifts of Gold to City-States generate [amount]% more Influence"
+
+"Resting point for Influence with City-States is increased by [amount]"
+
+"Allied City-States provide Science equal to [amount]% of what they produce for themselves"
+
+"Quantity of Resources gifted by City-States increased by [amount]%"
+
 ### Other
 
 "Unhappiness from number of Cities doubled"
