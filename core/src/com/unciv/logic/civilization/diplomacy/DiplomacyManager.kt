@@ -108,8 +108,8 @@ class DiplomacyManager() {
     }
 
     constructor(civilizationInfo: CivilizationInfo, OtherCivName:String) : this() {
-        civInfo=civilizationInfo
-        otherCivName=OtherCivName
+        civInfo = civilizationInfo
+        otherCivName = OtherCivName
         updateHasOpenBorders()
     }
 
@@ -308,8 +308,8 @@ class DiplomacyManager() {
 
     // for performance reasons we don't want to call this every time we want to see if a unit can move through a tile
     fun updateHasOpenBorders() {
-        val newHasOpenBorders = trades.flatMap { it.theirOffers }
-                .any { it.name == Constants.openBorders && it.duration > 0 }
+        val newHasOpenBorders = civInfo.getAllyCiv() == otherCivName || otherCiv().getAllyCiv() == civInfo.civName
+                || trades.flatMap { it.theirOffers }.any { it.name == Constants.openBorders && it.duration > 0 }
 
         val bordersWereClosed = hasOpenBorders && !newHasOpenBorders
         hasOpenBorders = newHasOpenBorders
