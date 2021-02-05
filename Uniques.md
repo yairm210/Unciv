@@ -118,7 +118,7 @@ cityFilters allow us to choose the range of cities affected by this unique:
 
 "[stats] from each Trade Route"
 
-"[stats] per [amount] population in all cities"
+"[stats] per [amount] population [cityFilter]"
 
 ### One time effect
 
