@@ -4,7 +4,8 @@ import com.unciv.models.Counter
 import com.unciv.models.ruleset.VictoryType
 
 class VictoryManager {
-    @Transient lateinit var civInfo: CivilizationInfo
+    @Transient
+    lateinit var civInfo: CivilizationInfo
 
     var requiredSpaceshipParts = Counter<String>()
     var currentsSpaceshipParts = Counter<String>()
@@ -32,10 +33,10 @@ class VictoryManager {
 
     private fun hasVictoryType(victoryType: VictoryType) = civInfo.gameInfo.gameParameters.victoryTypes.contains(victoryType)
 
-    fun hasWonScientificVictory() = hasVictoryType(VictoryType.Scientific) && spaceshipPartsRemaining()==0
+    fun hasWonScientificVictory() = hasVictoryType(VictoryType.Scientific) && spaceshipPartsRemaining() == 0
 
     fun hasWonCulturalVictory() = hasVictoryType(VictoryType.Cultural)
-            && civInfo.policies.adoptedPolicies.count{it.endsWith("Complete")} > 4
+            && civInfo.policies.adoptedPolicies.count { it.endsWith("Complete") } > 4
 
     fun hasWonDominationVictory(): Boolean {
         return (hasVictoryType(VictoryType.Domination) || hasVictoryType(VictoryType.Scenario)) &&
@@ -43,12 +44,13 @@ class VictoryManager {
     }
 
     fun hasWonVictoryType(): VictoryType? {
-        if(!civInfo.isMajorCiv()) return null
-        if(hasWonDominationVictory()) return VictoryType.Domination
-        if(hasWonScientificVictory()) return VictoryType.Scientific
-        if(hasWonCulturalVictory()) return VictoryType.Cultural
+        if (!civInfo.isMajorCiv()) return null
+        if (hasWonDominationVictory()) return VictoryType.Domination
+        if (hasWonScientificVictory()) return VictoryType.Scientific
+        if (hasWonCulturalVictory()) return VictoryType.Cultural
+        if (civInfo.hasUnique("Triggers victory")) return VictoryType.Neutral
         return null
     }
 
-    fun hasWon() = hasWonVictoryType()!=null
+    fun hasWon() = hasWonVictoryType() != null
 }

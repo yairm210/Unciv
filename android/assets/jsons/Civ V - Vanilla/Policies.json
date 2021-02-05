@@ -89,7 +89,8 @@
 	{
 		"name": "Honor",
 		"era": "Ancient era",
-		"uniques": ["+25% bonus vs Barbarians", "Earn [100]% of [Barbarian] opponent's [Strength] as [Culture] for kills", "Notified of new Barbarian encampments"],
+		"uniques": ["+25% bonus vs Barbarians", "Earn [100]% of [Barbarian] opponent's [Strength] as [Culture] for kills",
+			"Notified of new Barbarian encampments"],
 		"policies": [
 			{
 				"name": "Warrior Code",
@@ -112,7 +113,7 @@
 			},
 			{
 				"name": "Military Caste",
-				"uniques": ["[+1 Happiness, +2 Culture] in all cities with a garrison"],
+				"uniques": ["[+1 Happiness, +2 Culture] [in all cities with a garrison]"],
 				"requires": ["Discipline"],
 				"row": 2,
 				"column": 4
