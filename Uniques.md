@@ -173,6 +173,8 @@ cityFilters allow us to choose the range of cities affected by this unique:
 
 "Culture cost of adopting new Policies reduced by [amount]%"
 
+"Each city founded increases culture cost of policies [33]% less than normal"
+
 "Food and Culture from Friendly City-States are increased by 50%"
 
 "Double Happiness from Natural Wonders"
