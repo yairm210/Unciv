@@ -92,9 +92,9 @@ object UniqueTriggerActivation {
                 val promotion = unique.params[1]
                 for (unit in civInfo.getCivUnits())
                     if (unit.matchesFilter(filter)
-                            || (civInfo.gameInfo.ruleSet.unitPromotions.values.any {
+                            || civInfo.gameInfo.ruleSet.unitPromotions.values.any {
                                 it.name == promotion && unit.type.name in it.unitTypes
-                            }))
+                            })
                         unit.promotions.addPromotion(promotion, isFree = true)
             }
         }
