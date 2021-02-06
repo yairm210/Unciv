@@ -357,8 +357,10 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
     }
 
     private fun updateTilegroupsForSelectedUnit(unit: MapUnit, playerViewableTilePositions: HashSet<Vector2>) {
-
-        tileGroups[unit.getTile()]!!.selectUnit(unit)
+        val tileGroup = tileGroups[unit.getTile()]
+        if (tileGroup == null) return // Entirely unclear when this happens, but this seems to happen since version 520 (3.12.9)
+        // so maybe has to do with the construction list being asyc?
+        tileGroup.selectUnit(unit)
 
         val isAirUnit = unit.type.isAirUnit()
         val tilesInMoveRange =

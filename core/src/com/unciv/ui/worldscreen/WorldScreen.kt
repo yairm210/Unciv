@@ -37,6 +37,7 @@ import com.unciv.ui.worldscreen.unit.UnitActionsTable
 import com.unciv.ui.worldscreen.unit.UnitTable
 import java.util.*
 import kotlin.concurrent.thread
+import kotlin.concurrent.timer
 
 class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
     val gameInfo = game.gameInfo
@@ -145,13 +146,11 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
         if (gameInfo.gameParameters.isOnlineMultiplayer && !isPlayersTurn) {
             // restart the timer
             stopMultiPlayerRefresher()
+
             // isDaemon = true, in order to not block the app closing
-            multiPlayerRefresher = Timer("multiPlayerRefresh", true).apply {
-                schedule(object : TimerTask() { //todo maybe not use timer for web request, from timer docs "Timer tasks should complete quickly."
-                    override fun run() {
-                        loadLatestMultiplayerState()
-                    }
-                }, 0, 10000) // 10 seconds
+            // DO NOT use Timer() since this seems to (maybe?) translate to com.badlogic.gdx.utils.Timer? Not sure about this.
+            multiPlayerRefresher = timer("multiPlayerRefresh", true, period = 10000) {
+                loadLatestMultiplayerState()
             }
         }
 
@@ -249,7 +248,6 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
                 return
             } else { //else we found it is the player's turn again, turn off polling and load turn
                 stopMultiPlayerRefresher()
-
                 latestGame.isUpToDate = true
                 Gdx.app.postRunnable { game.loadGame(latestGame) }
             }
