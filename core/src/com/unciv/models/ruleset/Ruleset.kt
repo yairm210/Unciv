@@ -252,8 +252,9 @@ class Ruleset {
                 lines += "${unit.name} requires tech ${unit.requiredTech} which does not exist!"
             if (unit.obsoleteTech != null && !technologies.containsKey(unit.obsoleteTech!!))
                 lines += "${unit.name} obsoletes at tech ${unit.obsoleteTech} which does not exist!"
-            if (unit.requiredResource != null && !tileResources.containsKey(unit.requiredResource!!))
-                lines += "${unit.name} requires resource ${unit.requiredResource} which does not exist!"
+            for (resource in unit.getResourceRequirements().keys)
+                if (!tileResources.containsKey(resource))
+                    lines += "${unit.name} requires resource $resource which does not exist!"
             if (unit.upgradesTo != null && !units.containsKey(unit.upgradesTo!!))
                 lines += "${unit.name} upgrades to unit ${unit.upgradesTo} which does not exist!"
             if (unit.replaces != null && !units.containsKey(unit.replaces!!))
@@ -267,7 +268,7 @@ class Ruleset {
         for (building in buildings.values) {
             if (building.requiredTech != null && !technologies.containsKey(building.requiredTech!!))
                 lines += "${building.name} requires tech ${building.requiredTech} which does not exist!"
-            for(resource in building.getResourceRequirements().keys)
+            for (resource in building.getResourceRequirements().keys)
                 if (!tileResources.containsKey(resource))
                     lines += "${building.name} requires resource $resource which does not exist!"
             if (building.replaces != null && !buildings.containsKey(building.replaces!!))

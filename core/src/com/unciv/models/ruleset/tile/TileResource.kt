@@ -37,7 +37,7 @@ class TileResource : NamedStats() {
             stringBuilder.appendln("{Buildings that consume this resource}: ".tr()
                     + buildingsThatConsumeThis.joinToString { it.name.tr() })
 
-        val unitsThatConsumeThis = ruleset.units.values.filter { it.requiredResource == name }
+        val unitsThatConsumeThis = ruleset.units.values.filter { it.getResourceRequirements().containsKey(name) }
         if (unitsThatConsumeThis.isNotEmpty())
             stringBuilder.appendln("{Units that consume this resource}: ".tr()
                     + unitsThatConsumeThis.joinToString { it.name.tr() })

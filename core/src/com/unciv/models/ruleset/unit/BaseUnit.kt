@@ -55,7 +55,10 @@ class BaseUnit : INamed, IConstruction {
 
     fun getDescription(forPickerScreen: Boolean): String {
         val sb = StringBuilder()
-        if (requiredResource != null) sb.appendln("Consumes 1 [{$requiredResource}]".tr())
+        for ((resource, amount) in getResourceRequirements()) {
+            if (amount == 1) sb.appendln("Consumes 1 [$resource]".tr())
+            else sb.appendln("Consumes [$amount]] [$resource]".tr())
+        }
         if (!forPickerScreen) {
             if (uniqueTo != null) sb.appendln("Unique to [$uniqueTo], replaces [$replaces]".tr())
             else sb.appendln("{Cost}: $cost".tr())
@@ -161,7 +164,13 @@ class BaseUnit : INamed, IConstruction {
                 if (civInfo.cities.none { it.cityConstructions.containsBuildingOrEquivalent(filter) }) return unique.text // Wonder is not built
             } else if (!civInfo.policies.adoptedPolicies.contains(filter)) return "Policy is not adopted"
         }
-        if (requiredResource != null && !civInfo.hasResource(requiredResource!!) && !civInfo.gameInfo.gameParameters.godMode) return "Consumes 1 [$requiredResource]"
+
+        for ((resource, amount) in getResourceRequirements())
+            if (civInfo.getCivResourcesByName()[resource]!! < amount) {
+                if (amount == 1) return "Consumes 1 [$resource]" // Again, to preserve existing translations
+                else return "Consumes [$amount] [$resource]"
+            }
+
         if (uniques.contains(Constants.settlerUnique) && civInfo.isCityState()) return "No settler for city-states"
         if (uniques.contains(Constants.settlerUnique) && civInfo.isOneCityChallenger()) return "No settler for players in One City Challenge"
         return ""

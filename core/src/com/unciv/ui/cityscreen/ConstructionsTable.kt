@@ -124,8 +124,10 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
             val useStoredProduction = !cityConstructions.isBeingConstructedOrEnqueued(unit.name)
             val turnsToUnit = cityConstructions.turnsToConstruction(unit.name, useStoredProduction)
             var buttonText = unit.name.tr() + turnOrTurns(turnsToUnit)
-            if (unit.requiredResource != null)
-                buttonText += "\n" + "Consumes 1 [${unit.requiredResource}]".tr()
+            for ((resource, amount) in unit.getResourceRequirements()) {
+                if (amount == 1) buttonText += "\n" + "Consumes 1 [$resource]".tr()
+                else buttonText += "\n" + "Consumes [$amount] [$resource]".tr()
+            }
 
             constructionButtonDTOList.add(ConstructionButtonDTO(unit,
                     buttonText,
