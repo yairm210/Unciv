@@ -137,6 +137,8 @@ cityFilters allow us to choose the range of cities affected by this unique:
 
 "Empire enters golden age" - if already in a golden age, it is extended by the number of turns that a new golden age would have given.
 
+"Reveals the entire map"
+
 ### Unit-affecting uniques
 
 "+[amount] Movement for all [unitFilter] units"
@@ -159,6 +161,8 @@ cityFilters allow us to choose the range of cities affected by this unique:
 "Melee units pay no movement cost to pillage"
 
 "[unitFilter] units gain [amount]% more Experience from combat"
+
+"[unitFilter] units gain the [promotionName] promotion"
 
 ### City-state related uniques
 
