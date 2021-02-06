@@ -14,8 +14,7 @@
 
 # What is this?
 
-An open-source Android/Desktop port of Civ V,
-Made with LibGDX on Android Studio
+An open-source, mod-friendly Android+Desktop remake of Civ V, made with LibGDX
 
 ## Is this any good?
 
