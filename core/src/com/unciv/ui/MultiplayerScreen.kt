@@ -15,12 +15,14 @@ import com.unciv.ui.pickerscreens.PickerScreen
 import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.mainmenu.OnlineMultiplayer
 import java.util.*
+import java.util.concurrent.ConcurrentHashMap
 import kotlin.concurrent.thread
 
 class MultiplayerScreen(previousScreen: CameraStageBaseScreen) : PickerScreen() {
 
     private lateinit var selectedGameFile: FileHandle
-    private var multiplayerGames = mutableMapOf<FileHandle, GameInfo>()
+    // Concurrent because we can get concurrent modification errors if we change things around while running redownloadAllGames() in another thread
+    private var multiplayerGames = ConcurrentHashMap<FileHandle, GameInfo>()
     private val rightSideTable = Table()
     private val leftSideTable = Table()
 
