@@ -51,8 +51,7 @@ Again, [translation file](/android/assets/jsons/Translations/Buildings.json) for
 
 ## Civ Unique
 
-All Civ uniques require touching actual code - you can try it if ou feel you're up to it, but if not,
- send me an email to yairm210@hotmail.com (if you've finished all of the above) and I'll be happy to lend you a hand!
+Check out our [list of uniques](../uniques) to see all the cool special effects you can add to your civilization!
 
 ## Icon considerations
 
