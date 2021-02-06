@@ -299,7 +299,8 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
 
         val distanceToTiles = getDistanceToTiles()
         val pathToDestination = distanceToTiles.getPathToTile(destination)
-        val lastReachableTile = pathToDestination.last { canMoveTo(it) }
+        val movableTiles = pathToDestination.takeWhile {  canPassThrough(it) }
+        val lastReachableTile = movableTiles.last { canMoveTo(it) }
         val pathToLastReachableTile = distanceToTiles.getPathToTile(lastReachableTile)
 
         if (!unit.civInfo.gameInfo.gameParameters.godMode) {
@@ -419,7 +420,7 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
         if (!canPassThrough(tile))
             return false
 
-        if(tile.isCityCenter() && tile.getOwner()!=unit.civInfo) return false // even if they'll let us pass through, we can't enter their city
+        if (tile.isCityCenter() && tile.getOwner() != unit.civInfo) return false // even if they'll let us pass through, we can't enter their city
 
         if (unit.type.isCivilian())
             return tile.civilianUnit == null && (tile.militaryUnit == null || tile.militaryUnit!!.owner == unit.owner)
