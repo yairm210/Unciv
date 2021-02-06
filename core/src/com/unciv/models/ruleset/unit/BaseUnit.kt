@@ -151,9 +151,9 @@ class BaseUnit : INamed, IConstruction {
                 && uniques.contains("Nuclear weapon")) return "Disabled by setting"
 
         for (unique in uniqueObjects.filter { it.placeholderText == "Unlocked with []" })
-            if(civInfo.tech.researchedTechnologies.none { it.era() == unique.params[0] || it.name == unique.params[0] }
+            if (civInfo.tech.researchedTechnologies.none { it.era() == unique.params[0] || it.name == unique.params[0] }
                     && !civInfo.policies.isAdopted(unique.params[0]))
-                        return unique.text
+                return unique.text
 
         for (unique in uniqueObjects.filter { it.placeholderText == "Requires []" }) {
             val filter = unique.params[0]
@@ -208,7 +208,6 @@ class BaseUnit : INamed, IConstruction {
         return true
     }
 
-    override fun getResource(): String? = requiredResource
 
     fun getDirectUpgradeUnit(civInfo: CivilizationInfo): BaseUnit {
         return civInfo.getEquivalentUnit(upgradesTo!!)
@@ -234,4 +233,13 @@ class BaseUnit : INamed, IConstruction {
     }
 
     fun isGreatPerson() = uniqueObjects.any { it.placeholderText == "Great Person - []" }
+
+    override fun getResourceRequirements(): HashMap<String, Int> {
+        val resourceRequirements = HashMap<String, Int>()
+        if (requiredResource != null) resourceRequirements[requiredResource!!] = 1
+        for (unique in uniqueObjects)
+            if (unique.placeholderText == "Consumes [] []")
+                resourceRequirements[unique.params[1]] = unique.params[0].toInt()
+        return resourceRequirements
+    }
 }

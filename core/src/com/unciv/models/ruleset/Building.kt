@@ -1,6 +1,5 @@
 package com.unciv.models.ruleset
 
-import com.unciv.Constants
 import com.unciv.logic.city.CityConstructions
 import com.unciv.logic.city.IConstruction
 import com.unciv.logic.civilization.CivilizationInfo
@@ -12,6 +11,7 @@ import com.unciv.models.stats.Stats
 import com.unciv.models.translations.tr
 import java.util.*
 import kotlin.collections.ArrayList
+import kotlin.collections.HashMap
 import kotlin.math.pow
 
 
@@ -47,7 +47,7 @@ class Building : NamedStats(), IConstruction {
     var requiredBuildingInAllCities: String? = null
 
     /** A strategic resource that will be consumed by this building */
-    var requiredResource: String? = null
+    private var requiredResource: String? = null
 
     /** City can only be built if one of these resources is nearby - it must be improved! */
     private var requiredNearbyImprovedResources: List<String>? = null
@@ -105,8 +105,10 @@ class Building : NamedStats(), IConstruction {
             stringBuilder.appendln("Requires [$requiredBuilding] to be built in the city".tr())
         if (!forBuildingPickerScreen && requiredBuildingInAllCities != null)
             stringBuilder.appendln("Requires [$requiredBuildingInAllCities] to be built in all cities".tr())
-        if (requiredResource != null)
-            stringBuilder.appendln("Consumes 1 [$requiredResource]".tr())
+        for ((resource, amount) in getResourceRequirements()) {
+            if (amount == 1) stringBuilder.appendln("Consumes 1 [$resource]".tr()) // For now, to keep the existing translations
+            else stringBuilder.appendln("Consumes [$amount] [$resource]".tr())
+        }
         if (providesFreeBuilding != null)
             stringBuilder.appendln("Provides a free [$providesFreeBuilding] in the city".tr())
         if (uniques.isNotEmpty()) {
@@ -359,8 +361,11 @@ class Building : NamedStats(), IConstruction {
         if (cannotBeBuiltWith != null && construction.isBuilt(cannotBeBuiltWith!!))
             return "Cannot be built with $cannotBeBuiltWith"
 
-        if (requiredResource != null && !civInfo.hasResource(requiredResource!!) && !civInfo.gameInfo.gameParameters.godMode)
-            return "Consumes 1 [$requiredResource]"
+        for ((resource, amount) in getResourceRequirements())
+            if (civInfo.getCivResourcesByName()[resource]!! < amount) {
+                if (amount == 1) return "Consumes 1 [$resource]" // Again, to preserve existing translations
+                else return "Consumes [$amount] [$resource]"
+            }
 
         if (requiredNearbyImprovedResources != null) {
             val containsResourceWithImprovement = construction.cityInfo.getWorkableTiles()
@@ -381,9 +386,8 @@ class Building : NamedStats(), IConstruction {
         return ""
     }
 
-    override fun isBuildable(cityConstructions: CityConstructions): Boolean {
-        return getRejectionReason(cityConstructions) == ""
-    }
+    override fun isBuildable(cityConstructions: CityConstructions): Boolean =
+            getRejectionReason(cityConstructions) == ""
 
     override fun postBuildEvent(cityConstructions: CityConstructions, wasBought: Boolean): Boolean {
         val civInfo = cityConstructions.cityInfo.civInfo
@@ -433,8 +437,6 @@ class Building : NamedStats(), IConstruction {
         return true
     }
 
-    override fun getResource(): String? = requiredResource
-
     fun isStatRelated(stat: Stat): Boolean {
         if (get(stat) > 0) return true
         if (getStatPercentageBonuses(null).get(stat) > 0) return true
@@ -455,4 +457,13 @@ class Building : NamedStats(), IConstruction {
     }
 
     fun isSellable() = !isWonder && !isNationalWonder && !uniques.contains("Unsellable")
+
+    override fun getResourceRequirements(): HashMap<String, Int> {
+        val resourceRequirements = HashMap<String, Int>()
+        if (requiredResource != null) resourceRequirements[requiredResource!!] = 1
+        for (unique in uniqueObjects)
+            if (unique.placeholderText == "Consumes [] []")
+                resourceRequirements[unique.params[1]] = unique.params[0].toInt()
+        return resourceRequirements
+    }
 }

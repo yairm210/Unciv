@@ -34,14 +34,19 @@ import kotlin.math.roundToInt
 class CityInfo {
     @Transient
     lateinit var civInfo: CivilizationInfo
+
     @Transient
     lateinit private var centerTileInfo: TileInfo  // cached for better performance
+
     @Transient
     val range = 2
+
     @Transient
     lateinit var tileMap: TileMap
+
     @Transient
     lateinit var tilesInRange: HashSet<TileInfo>
+
     @Transient
     var hasJustBeenConquered = false  // this is so that military units can enter the city, even before we decide what to do with it
 
@@ -197,9 +202,15 @@ class CityInfo {
                     cityResources.add(resource, unique.params[0].toInt() * civInfo.getResourceModifier(resource), "Tiles")
                 }
         }
-        for (building in cityConstructions.getBuiltBuildings().filter { it.requiredResource != null }) {
-            val resource = getRuleset().tileResources[building.requiredResource]!!
-            cityResources.add(resource, -1, "Buildings")
+        for (building in cityConstructions.getBuiltBuildings()) {
+            for ((resourceName, amount) in building.getResourceRequirements()) {
+                val resource = getRuleset().tileResources[resourceName]!!
+                cityResources.add(resource, -amount, "Buildings")
+            }
+            for (unique in building.uniqueObjects.filter { it.placeholderText == "Consumes [] []" }) {
+                val resource = getRuleset().tileResources[unique.params[1]]
+                if (resource != null) cityResources.add(resource, -unique.params[0].toInt(), "Buildings")
+            }
         }
         for (unique in cityConstructions.builtBuildingUniqueMap.getUniques("Provides [] []")) { // E.G "Provides [1] [Iron]"
             val resource = getRuleset().tileResources[unique.params[1]]

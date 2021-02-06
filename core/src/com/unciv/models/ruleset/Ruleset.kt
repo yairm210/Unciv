@@ -267,8 +267,9 @@ class Ruleset {
         for (building in buildings.values) {
             if (building.requiredTech != null && !technologies.containsKey(building.requiredTech!!))
                 lines += "${building.name} requires tech ${building.requiredTech} which does not exist!"
-            if (building.requiredResource != null && !tileResources.containsKey(building.requiredResource!!))
-                lines += "${building.name} requires resource ${building.requiredResource} which does not exist!"
+            for(resource in building.getResourceRequirements().keys)
+                if (!tileResources.containsKey(resource))
+                    lines += "${building.name} requires resource $resource which does not exist!"
             if (building.replaces != null && !buildings.containsKey(building.replaces!!))
                 lines += "${building.name} replaces ${building.replaces} which does not exist!"
             if (building.requiredBuilding != null && !buildings.containsKey(building.requiredBuilding!!))
@@ -315,7 +316,7 @@ class Ruleset {
  * save all of the loaded rulesets somewhere for later use
  *  */
 object RulesetCache :HashMap<String,Ruleset>() {
-    fun loadRulesets(consoleMode:Boolean=false, printOutput: Boolean=false) {
+    fun loadRulesets(consoleMode: Boolean = false, printOutput: Boolean = false) {
         clear()
         for (ruleset in BaseRuleset.values()) {
             val fileName = "jsons/${ruleset.fullName}"
@@ -373,7 +374,7 @@ object RulesetCache :HashMap<String,Ruleset>() {
 class Specialist: NamedStats() {
     var color = ArrayList<Int>()
     val colorObject by lazy { colorFromRGB(color) }
-    var greatPersonPoints= Stats()
+    var greatPersonPoints = Stats()
 
     companion object {
         internal fun specialistNameByStat(stat: Stat) = when (stat) {
