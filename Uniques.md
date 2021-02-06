@@ -139,6 +139,8 @@ cityFilters allow us to choose the range of cities affected by this unique:
 
 "Reveals the entire map"
 
+"Triggers victory"
+
 ### Unit-affecting uniques
 
 "+[amount] Movement for all [unitFilter] units"
