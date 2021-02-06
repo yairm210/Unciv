@@ -52,10 +52,13 @@ class NewGameScreen(previousScreen:CameraStageBaseScreen, _gameSetupInfo: GameSe
         topTable.add(ScrollPane(newGameOptionsTable, skin).apply { setOverscroll(false, false) })
                 .maxHeight(topTable.parent.height).width(stage.width / 3).padTop(20f).top()
         topTable.addSeparatorVertical()
-        topTable.add(ScrollPane(mapOptionsTable).apply { setOverscroll(false, false) })
+        topTable.add(ScrollPane(mapOptionsTable, skin).apply { setOverscroll(false, false) })
                 .maxHeight(topTable.parent.height).width(stage.width / 3).padTop(20f).top()
         topTable.addSeparatorVertical()
-        topTable.add(playerPickerTable).maxHeight(topTable.parent.height).width(stage.width / 3).padTop(20f).top()
+        topTable.add(ScrollPane(playerPickerTable, skin)
+                .apply { setOverscroll(false, false) }
+                .apply { setScrollingDisabled(true, false) })
+                .maxHeight(topTable.parent.height).width(stage.width / 3).padTop(20f).top()
 
         topTable.pack()
         topTable.setFillParent(true)
