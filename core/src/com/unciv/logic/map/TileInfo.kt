@@ -39,7 +39,8 @@ open class TileInfo {
     // This will be called often - farm can be built on Hill and tundra if adjacent to fresh water
     // and farms on adjacent to fresh water tiles will have +1 additional Food after researching Civil Service
     @delegate:Transient
-    val isAdjacentToFreshwater: Boolean by lazy { matchesUniqueFilter("River") || matchesUniqueFilter("Fresh water") || neighbors.any { it.matchesUniqueFilter("Fresh water") } }
+    val isAdjacentToFreshwater: Boolean by lazy { matchesUniqueFilter("River") || matchesUniqueFilter("Fresh water")
+            || neighbors.any { it.matchesUniqueFilter("Fresh water") } }
 
     var militaryUnit: MapUnit? = null
     var civilianUnit: MapUnit? = null

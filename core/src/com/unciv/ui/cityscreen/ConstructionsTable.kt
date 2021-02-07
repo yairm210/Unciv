@@ -228,9 +228,10 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
                 else turnOrTurns(turnsToComplete)
 
         val constructionResource = cityConstructions.getConstruction(name).getResourceRequirements()
+        for ((resource, amount) in constructionResource)
+            if (amount == 1) text += "\n" + "Consumes 1 [$resource]".tr()
+            else text += "\n" + "Consumes [$amount] [$resource]".tr()
 
-        if (constructionResource != null)
-            text += "\n" + "Consumes 1 [$constructionResource]".tr()
 
         table.defaults().pad(2f).minWidth(40f)
         if (isFirstConstructionOfItsKind) table.add(getProgressBar(name)).minWidth(5f)

@@ -40,7 +40,7 @@ class CityTileGroup(private val city: CityInfo, tileInfo: TileInfo, tileSetStrin
                 baseLayerGroup.color.a = 0.5f
             }
 
-            tileInfo.isWorked() && tileInfo.getWorkingCity()!=city -> {
+            tileInfo.isWorked() && tileInfo.getWorkingCity() != city -> {
                 // Don't fade out, but don't add a population icon either.
                 baseLayerGroup.color.a = 0.5f
             }
@@ -72,13 +72,12 @@ class CityTileGroup(private val city: CityInfo, tileInfo: TileInfo, tileSetStrin
         yieldGroup.setScale(0.7f)
         yieldGroup.toFront()
         yieldGroup.centerX(this)
-        yieldGroup.y= height * 0.25f - yieldGroup.height / 2
+        yieldGroup.y = height * 0.25f - yieldGroup.height / 2
 
         if (tileInfo.isWorked()) {
             yieldGroup.color = Color.WHITE
-        }
-        else if(!tileInfo.isCityCenter()){
-            yieldGroup.color = Color.GRAY.cpy().apply { a=0.5f }
+        } else if (!tileInfo.isCityCenter()) {
+            yieldGroup.color = Color.GRAY.cpy().apply { a = 0.5f }
         }
     }
 
@@ -89,12 +88,8 @@ class CityTileGroup(private val city: CityInfo, tileInfo: TileInfo, tileSetStrin
             populationIcon.setPosition(width / 2 - populationIcon.width / 2,
                     height * 0.85f - populationIcon.height / 2)
 
-            if (tileInfo.isWorked()) {
-                populationIcon.color = Color.WHITE
-            }
-            else if(!tileInfo.isCityCenter()){
-                populationIcon.color = Color.GRAY.cpy()
-            }
+            if (tileInfo.isWorked()) populationIcon.color = Color.WHITE
+            else if (!tileInfo.isCityCenter()) populationIcon.color = Color.GRAY.cpy()
 
             populationIcon.toFront()
         }
