@@ -33,7 +33,7 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
     private val buttons = Table()
     private val pad = 10f
 
-    var improvementBuildingToConstruct:Building?=null
+    var improvementBuildingToConstruct: Building? = null
 
 
     init {
@@ -124,8 +124,10 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
             val useStoredProduction = !cityConstructions.isBeingConstructedOrEnqueued(unit.name)
             val turnsToUnit = cityConstructions.turnsToConstruction(unit.name, useStoredProduction)
             var buttonText = unit.name.tr() + turnOrTurns(turnsToUnit)
-            if (unit.requiredResource != null)
-                buttonText += "\n" + "Consumes 1 [${unit.requiredResource}]".tr()
+            for ((resource, amount) in unit.getResourceRequirements()) {
+                if (amount == 1) buttonText += "\n" + "Consumes 1 [$resource]".tr()
+                else buttonText += "\n" + "Consumes [$amount] [$resource]".tr()
+            }
 
             constructionButtonDTOList.add(ConstructionButtonDTO(unit,
                     buttonText,
@@ -136,8 +138,10 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
         for (building in city.getRuleset().buildings.values.filter { it.shouldBeDisplayed(cityConstructions) }) {
             val turnsToBuilding = cityConstructions.turnsToConstruction(building.name)
             var buttonText = building.name.tr() + turnOrTurns(turnsToBuilding)
-            if (building.requiredResource != null)
-                buttonText += "\n" + "Consumes 1 [${building.requiredResource}]".tr()
+            for ((resource, amount) in building.getResourceRequirements()) {
+                if (amount == 1) buttonText += "\n" + "Consumes 1 [$resource]".tr()
+                else buttonText += "\n" + "Consumes [$amount] [$resource]".tr()
+            }
 
             constructionButtonDTOList.add(ConstructionButtonDTO(building,
                     buttonText,
@@ -223,10 +227,11 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
                 if (name in PerpetualConstruction.perpetualConstructionsMap) "\n∞"
                 else turnOrTurns(turnsToComplete)
 
-        val constructionResource = cityConstructions.getConstruction(name).getResource()
+        val constructionResource = cityConstructions.getConstruction(name).getResourceRequirements()
+        for ((resource, amount) in constructionResource)
+            if (amount == 1) text += "\n" + "Consumes 1 [$resource]".tr()
+            else text += "\n" + "Consumes [$amount] [$resource]".tr()
 
-        if (constructionResource != null)
-            text += "\n" + "Consumes 1 [$constructionResource]".tr()
 
         table.defaults().pad(2f).minWidth(40f)
         if (isFirstConstructionOfItsKind) table.add(getProgressBar(name)).minWidth(5f)
@@ -347,7 +352,7 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
     }
 
     fun addConstructionToQueue(construction: IConstruction, cityConstructions: CityConstructions) {
-        if (construction is Building && construction.uniqueObjects.any { it.placeholderText=="Creates a [] improvement on a specific tile" }){
+        if (construction is Building && construction.uniqueObjects.any { it.placeholderText == "Creates a [] improvement on a specific tile" }) {
             cityScreen.selectedTile
             improvementBuildingToConstruct = construction
             return

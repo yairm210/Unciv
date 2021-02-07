@@ -20,7 +20,7 @@ object BattleDamage {
     const val BONUS_VS_UNIT_TYPE = """(Bonus|Penalty) vs (.*) (\d*)%"""
 
     // This should be deprecated and converted to "+[]% Strength vs []", "-[]% Strength vs []"
-    private fun getBattleDamageModifiersOfUnit(unit:MapUnit): MutableList<BattleDamageModifier> {
+    private fun getBattleDamageModifiersOfUnit(unit: MapUnit): MutableList<BattleDamageModifier> {
         val modifiers = mutableListOf<BattleDamageModifier>()
         for (ability in unit.getUniques()) {
             // This beut allows us to have generic unit uniques: "Bonus vs City 75%", "Penatly vs Mounted 25%" etc.
@@ -39,7 +39,7 @@ object BattleDamage {
 
     private fun getGeneralModifiers(combatant: ICombatant, enemy: ICombatant): Counter<String> {
         val modifiers = Counter<String>()
-        fun addToModifiers(BDM:BattleDamageModifier) =
+        fun addToModifiers(BDM: BattleDamageModifier) =
                 modifiers.add(BDM.getText(), (BDM.modificationAmount).toInt())
 
         val civInfo = combatant.getCivInfo()
@@ -80,11 +80,11 @@ object BattleDamage {
                             .any { it.civInfo == civInfo && !it.type.isCivilian() && !it.type.isAirUnit() })
                 modifiers["Discipline"] = 15
 
-            val requiredResource = combatant.unit.baseUnit.requiredResource
-            if (requiredResource != null && civInfo.getCivResourcesByName()[requiredResource]!! < 0
-                    && !civInfo.isBarbarian()) {
-                modifiers["Missing resource"] = -25
-            }
+            val civResources = civInfo.getCivResourcesByName()
+            for (resource in combatant.unit.baseUnit.getResourceRequirements().keys)
+                if (civResources[resource]!! < 0 && !civInfo.isBarbarian())
+                    modifiers["Missing resource"] = -25
+
 
             val nearbyCivUnits = combatant.unit.getTile().getTilesInDistance(2)
                     .filter { it.civilianUnit?.civInfo == combatant.unit.civInfo }
@@ -94,7 +94,7 @@ object BattleDamage {
                 modifiers["Great General"] = greatGeneralModifier
             }
 
-            if(civInfo.goldenAges.isGoldenAge() && civInfo.hasUnique("+10% Strength for all units during Golden Age"))
+            if (civInfo.goldenAges.isGoldenAge() && civInfo.hasUnique("+10% Strength for all units during Golden Age"))
                 modifiers["Golden Age"] = 10
 
             if (enemy.getCivInfo().isCityState() && civInfo.hasUnique("+30% Strength when fighting City-State units and cities"))
@@ -103,21 +103,21 @@ object BattleDamage {
         }
 
         if (enemy.getCivInfo().isBarbarian()) {
-            modifiers["Difficulty"] = (civInfo.gameInfo.getDifficulty().barbarianBonus*100).toInt()
+            modifiers["Difficulty"] = (civInfo.gameInfo.getDifficulty().barbarianBonus * 100).toInt()
             if (civInfo.hasUnique("+25% bonus vs Barbarians"))
                 modifiers["vs Barbarians"] = 25
         }
-        
+
         return modifiers
     }
 
-    fun getAttackModifiers(attacker: ICombatant, tileToAttackFrom:TileInfo?, defender: ICombatant): Counter<String> {
+    fun getAttackModifiers(attacker: ICombatant, tileToAttackFrom: TileInfo?, defender: ICombatant): Counter<String> {
         val modifiers = getGeneralModifiers(attacker, defender)
 
         if (attacker is MapUnitCombatant) {
             modifiers.add(getTileSpecificModifiers(attacker, defender.getTile()))
 
-            for(unique in attacker.unit.getMatchingUniques("+[]% Strength when attacking")) {
+            for (unique in attacker.unit.getMatchingUniques("+[]% Strength when attacking")) {
                 modifiers.add("Attacker Bonus", unique.params[0].toInt())
             }
 
@@ -173,20 +173,20 @@ object BattleDamage {
         modifiers.putAll(getTileSpecificModifiers(defender, tile))
 
         val tileDefenceBonus = tile.getDefensiveBonus()
-        if ( (!defender.unit.hasUnique("No defensive terrain bonus") && tileDefenceBonus > 0)
-                || (!defender.unit.hasUnique("No defensive terrain penalty") && tileDefenceBonus < 0) )
-            modifiers["Tile"] = (tileDefenceBonus*100).toInt()
+        if ((!defender.unit.hasUnique("No defensive terrain bonus") && tileDefenceBonus > 0)
+                || (!defender.unit.hasUnique("No defensive terrain penalty") && tileDefenceBonus < 0))
+            modifiers["Tile"] = (tileDefenceBonus * 100).toInt()
 
         if (attacker.isRanged()) {
             val defenceVsRanged = 25 * defender.unit.getUniques().count { it.text == "+25% Defence against ranged attacks" }
             if (defenceVsRanged > 0) modifiers["defence vs ranged"] = defenceVsRanged
         }
 
-        for(unique in defender.unit.getMatchingUniques("+[]% Strength when defending")) {
+        for (unique in defender.unit.getMatchingUniques("+[]% Strength when defending")) {
             modifiers.add("Defender Bonus", unique.params[0].toInt())
         }
 
-        for(unique in defender.unit.getMatchingUniques("+[]% defence in [] tiles")) {
+        for (unique in defender.unit.getMatchingUniques("+[]% defence in [] tiles")) {
             if (tile.matchesUniqueFilter(unique.params[1]))
                 modifiers["[${unique.params[1]}] defence"] = unique.params[0].toInt()
         }
@@ -235,7 +235,7 @@ object BattleDamage {
 
     private fun modifiersToMultiplicationBonus(modifiers: Counter<String>): Float {
         var finalModifier = 1f
-        for (modifierValue in modifiers.values) finalModifier *= (1 + modifierValue/100f) // so 25 will result in *= 1.25
+        for (modifierValue in modifiers.values) finalModifier *= (1 + modifierValue / 100f) // so 25 will result in *= 1.25
         return finalModifier
     }
 
@@ -252,7 +252,7 @@ object BattleDamage {
      * Includes attack modifiers
      */
     private fun getAttackingStrength(attacker: ICombatant, tileToAttackFrom: TileInfo?, defender: ICombatant): Float {
-        val attackModifier = modifiersToMultiplicationBonus(getAttackModifiers(attacker,tileToAttackFrom, defender))
+        val attackModifier = modifiersToMultiplicationBonus(getAttackModifiers(attacker, tileToAttackFrom, defender))
         return attacker.getAttackingStrength() * attackModifier
     }
 
@@ -267,24 +267,24 @@ object BattleDamage {
     }
 
     fun calculateDamageToAttacker(attacker: ICombatant, tileToAttackFrom: TileInfo?, defender: ICombatant): Int {
-        if(attacker.isRanged()) return 0
-        if(defender.getUnitType().isCivilian()) return 0
-        val ratio = getAttackingStrength(attacker, tileToAttackFrom, defender) / getDefendingStrength(attacker,defender)
+        if (attacker.isRanged()) return 0
+        if (defender.getUnitType().isCivilian()) return 0
+        val ratio = getAttackingStrength(attacker, tileToAttackFrom, defender) / getDefendingStrength(attacker, defender)
         return (damageModifier(ratio, true) * getHealthDependantDamageRatio(defender)).roundToInt()
     }
 
     fun calculateDamageToDefender(attacker: ICombatant, tileToAttackFrom: TileInfo?, defender: ICombatant): Int {
-        val ratio = getAttackingStrength(attacker,tileToAttackFrom, defender) / getDefendingStrength(attacker,defender)
-        return (damageModifier(ratio,false) * getHealthDependantDamageRatio(attacker)).roundToInt()
+        val ratio = getAttackingStrength(attacker, tileToAttackFrom, defender) / getDefendingStrength(attacker, defender)
+        return (damageModifier(ratio, false) * getHealthDependantDamageRatio(attacker)).roundToInt()
     }
 
-    private fun damageModifier(attackerToDefenderRatio: Float, damageToAttacker:Boolean): Float {
+    private fun damageModifier(attackerToDefenderRatio: Float, damageToAttacker: Boolean): Float {
         // https://forums.civfanatics.com/threads/getting-the-combat-damage-math.646582/#post-15468029
         val strongerToWeakerRatio = attackerToDefenderRatio.pow(if (attackerToDefenderRatio < 1) -1 else 1)
-        var ratioModifier = ((((strongerToWeakerRatio + 3)/4).pow(4) +1)/2)
-        if((damageToAttacker && attackerToDefenderRatio>1) || (!damageToAttacker && attackerToDefenderRatio<1)) // damage ratio from the weaker party is inverted
+        var ratioModifier = ((((strongerToWeakerRatio + 3) / 4).pow(4) + 1) / 2)
+        if ((damageToAttacker && attackerToDefenderRatio > 1) || (!damageToAttacker && attackerToDefenderRatio < 1)) // damage ratio from the weaker party is inverted
             ratioModifier = ratioModifier.pow(-1)
         val randomCenteredAround30 = (24 + 12 * Random().nextFloat())
-        return  randomCenteredAround30 * ratioModifier
+        return randomCenteredAround30 * ratioModifier
     }
 }

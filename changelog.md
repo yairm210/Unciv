@@ -1,3 +1,27 @@
+## 3.12.13
+
+Added "Consumes [amount] [resource]" unique to units and buildings
+
+Hopefully mitigated some weird crashes and concurrency problems
+
+Game can handle mods removing tile features between versions
+
+Solved "quantum tunneling" bug for new movement algorithm
+
+Added custom victory conditions
+
+New cityFilter for cities connected to capital
+
+Deprecated old uniques
+
+Resolved #3578 - More readable colors for Korea civ, kudos @ravignir
+
+City-state allies are always considered to have open borders
+
+AI uses same calculation for declaring both war and peace - so it won't declare war only to immediately declare peace.
+
+Scroll indicators are displayed more consistently on the NewGameScreen - By devbeutler
+
 ## 3.12.12
 
 Added "Irremovable" unique to tile improvements

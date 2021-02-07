@@ -55,7 +55,10 @@ class BaseUnit : INamed, IConstruction {
 
     fun getDescription(forPickerScreen: Boolean): String {
         val sb = StringBuilder()
-        if (requiredResource != null) sb.appendln("Consumes 1 [{$requiredResource}]".tr())
+        for ((resource, amount) in getResourceRequirements()) {
+            if (amount == 1) sb.appendln("Consumes 1 [$resource]".tr())
+            else sb.appendln("Consumes [$amount]] [$resource]".tr())
+        }
         if (!forPickerScreen) {
             if (uniqueTo != null) sb.appendln("Unique to [$uniqueTo], replaces [$replaces]".tr())
             else sb.appendln("{Cost}: $cost".tr())
@@ -151,9 +154,9 @@ class BaseUnit : INamed, IConstruction {
                 && uniques.contains("Nuclear weapon")) return "Disabled by setting"
 
         for (unique in uniqueObjects.filter { it.placeholderText == "Unlocked with []" })
-            if(civInfo.tech.researchedTechnologies.none { it.era() == unique.params[0] || it.name == unique.params[0] }
+            if (civInfo.tech.researchedTechnologies.none { it.era() == unique.params[0] || it.name == unique.params[0] }
                     && !civInfo.policies.isAdopted(unique.params[0]))
-                        return unique.text
+                return unique.text
 
         for (unique in uniqueObjects.filter { it.placeholderText == "Requires []" }) {
             val filter = unique.params[0]
@@ -161,7 +164,13 @@ class BaseUnit : INamed, IConstruction {
                 if (civInfo.cities.none { it.cityConstructions.containsBuildingOrEquivalent(filter) }) return unique.text // Wonder is not built
             } else if (!civInfo.policies.adoptedPolicies.contains(filter)) return "Policy is not adopted"
         }
-        if (requiredResource != null && !civInfo.hasResource(requiredResource!!) && !civInfo.gameInfo.gameParameters.godMode) return "Consumes 1 [$requiredResource]"
+
+        for ((resource, amount) in getResourceRequirements())
+            if (civInfo.getCivResourcesByName()[resource]!! < amount) {
+                if (amount == 1) return "Consumes 1 [$resource]" // Again, to preserve existing translations
+                else return "Consumes [$amount] [$resource]"
+            }
+
         if (uniques.contains(Constants.settlerUnique) && civInfo.isCityState()) return "No settler for city-states"
         if (uniques.contains(Constants.settlerUnique) && civInfo.isOneCityChallenger()) return "No settler for players in One City Challenge"
         return ""
@@ -208,7 +217,6 @@ class BaseUnit : INamed, IConstruction {
         return true
     }
 
-    override fun getResource(): String? = requiredResource
 
     fun getDirectUpgradeUnit(civInfo: CivilizationInfo): BaseUnit {
         return civInfo.getEquivalentUnit(upgradesTo!!)
@@ -234,4 +242,13 @@ class BaseUnit : INamed, IConstruction {
     }
 
     fun isGreatPerson() = uniqueObjects.any { it.placeholderText == "Great Person - []" }
+
+    override fun getResourceRequirements(): HashMap<String, Int> {
+        val resourceRequirements = HashMap<String, Int>()
+        if (requiredResource != null) resourceRequirements[requiredResource!!] = 1
+        for (unique in uniqueObjects)
+            if (unique.placeholderText == "Consumes [] []")
+                resourceRequirements[unique.params[1]] = unique.params[0].toInt()
+        return resourceRequirements
+    }
 }

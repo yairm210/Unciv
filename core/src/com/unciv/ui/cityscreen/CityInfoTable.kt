@@ -181,8 +181,8 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(CameraStageBaseS
                 for ((key, value) in cityStats.baseStatList)
                     relevantBaseStats[key] = value.get(stat)
             else relevantBaseStats.putAll(cityStats.happinessList)
-            for(key in relevantBaseStats.keys.toList())
-                if(relevantBaseStats[key]==0f) relevantBaseStats.remove(key)
+            for (key in relevantBaseStats.keys.toList())
+                if (relevantBaseStats[key] == 0f) relevantBaseStats.remove(key)
 
             if (relevantBaseStats.isEmpty()) continue
 
@@ -220,7 +220,7 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(CameraStageBaseS
                 else statValuesTable.add("$decimal%".toLabel()).row() // negative bonus
             }
 
-            if(stat!=Stat.Happiness) {
+            if (stat != Stat.Happiness) {
                 statValuesTable.add("Final".toLabel(fontSize = FONT_SIZE_STAT_INFO_HEADER)).colspan(2).padTop(20f).row()
                 var finalTotal = 0f
                 for (entry in cityStats.finalStatList) {
