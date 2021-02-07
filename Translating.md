@@ -1,4 +1,14 @@
-Like most open-source projects, Unciv is developed at Github, so if you don't have a user you'll first have to create one.
+Like most open-source projects, Unciv is developed at Github, so if you don't have a user you'll first have to create one. The way Github works is the following:
+
+1. You create a 'fork' repo, i.e. copy, of Unciv that belongs to your user (myUser/Unciv)
+
+2. You make changes to your copy. These changes are called a 'commit'.
+
+3. You make a pull request, which is basically asking for the changes you made on myUser/Unciv to be merged into the main repo (yairm210/Unciv)
+
+When you ask to 'edit' a file in yairm210/Unciv, these stages happen *automatically* - but it's important to understand what's happening behind the scenes do you understand where the changes actually are!
+
+Make sure that you make the changes in the 'master' branch in your repo!
 
 The translation files are at https://github.com/yairm210/Unciv/tree/master/android/assets/jsons/translations
 
