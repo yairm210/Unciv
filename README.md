@@ -69,6 +69,10 @@ In the meantime, you can [mod it yourself](https://github.com/yairm210/Unciv/wik
 
 Considering how long it took to get this far, no.
 
+## World wrap?
+
+I've tried this with no success, if you figure out how to do this well PR it :)
+
 ## Is there a desktop version?
 
 Yes! Windows and Linux versions are available at [itch.io](https://yairm210.itch.io/unciv), and if you're using the Itch app, your game will stay up-to-date - and we release pretty frequently so that's an issue ;)
