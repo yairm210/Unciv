@@ -260,6 +260,7 @@ cityFilters allow us to choose the range of cities affected by this unique:
 
 "Cost increases by [amount] per owned city"
 
+"Unsellable"
 
 ### Stat uniques
 
