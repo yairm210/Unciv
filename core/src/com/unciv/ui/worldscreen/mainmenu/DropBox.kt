@@ -185,8 +185,8 @@ object Github {
         return GameSaver.json().fromJson(RepoSearch::class.java, inputStream.bufferedReader().readText()).items
     }
 
-    class RepoSearch{
-        var items=ArrayList<Repo>()
+    class RepoSearch {
+        var items = ArrayList<Repo>()
     }
 
     class Repo {

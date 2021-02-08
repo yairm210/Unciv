@@ -166,7 +166,8 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
                     // I can't think of any way to avoid this,
                     // but it's so rare and edge-case-y that ignoring its failure is actually acceptable, hence the empty catch
                     selectedUnit.movement.moveToTile(tileToMoveTo)
-                    if (selectedUnit.action == Constants.unitActionExplore) selectedUnit.action = null // remove explore on manual move
+                    if (selectedUnit.action == Constants.unitActionExplore || selectedUnit.isMoving())
+                        selectedUnit.action = null // remove explore on manual move
                     Sounds.play(UncivSound.Whoosh)
                     if (selectedUnit.currentTile != targetTile)
                         selectedUnit.action = "moveTo " + targetTile.position.x.toInt() + "," + targetTile.position.y.toInt()
