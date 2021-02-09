@@ -99,12 +99,9 @@ class MultiplayerScreen(previousScreen: CameraStageBaseScreen) : PickerScreen() 
         rightSideTable.add(copyGameIdButton).row()
 
         editButton.onClick {
-            val gameInfo = multiplayerGames[selectedGameFile]
-            if (gameInfo != null) {
-                game.setScreen(EditMultiplayerGameInfoScreen(gameInfo, selectedGameFile.name(), this))
-                //game must be unselected in case the game gets deleted inside the EditScreen
-                unselectGame()
-            }
+            game.setScreen(EditMultiplayerGameInfoScreen(multiplayerGames[selectedGameFile], selectedGameFile.name(), this))
+            //game must be unselected in case the game gets deleted inside the EditScreen
+            unselectGame()
         }
         rightSideTable.add(editButton).row()
 
@@ -226,12 +223,11 @@ class MultiplayerScreen(previousScreen: CameraStageBaseScreen) : PickerScreen() 
                     selectedGameFile = gameSaveFile
                     if (multiplayerGames[gameSaveFile] != null){
                         copyGameIdButton.enable()
-                        editButton.enable()
                     } else {
                         copyGameIdButton.disable()
-                        editButton.disable()
                     }
 
+                    editButton.enable()
                     rightSideButton.enable()
 
                     //get Minutes since last modified
@@ -364,22 +360,23 @@ class MultiplayerScreen(previousScreen: CameraStageBaseScreen) : PickerScreen() 
         return gameInfo.currentPlayerCiv.playerId == game.settings.userId
     }
 
-    fun removeMultiplayerGame(gameInfo: GameInfo, gameName: String){
+    fun removeMultiplayerGame(gameInfo: GameInfo?, gameName: String){
         val games = multiplayerGames.filterValues { it == gameInfo }.keys
-        if (games.isNotEmpty()){
-            try {
-                GameSaver.deleteSave(gameName, true)
+        try {
+            GameSaver.deleteSave(gameName, true)
+            if (games.isNotEmpty()){
                 multiplayerGames.remove(games.first())
-            }catch (ex: Exception) {
-                ToastPopup("Could not delete game!", this)
             }
+        }catch (ex: Exception) {
+            ToastPopup("Could not delete game!", this)
         }
+
     }
 }
 
 //Subscreen of MultiplayerScreen to edit and delete saves
 //backScreen is used for getting back to the MultiplayerScreen so it doesn't have to be created over and over again
-class EditMultiplayerGameInfoScreen(game: GameInfo, gameName: String, backScreen: MultiplayerScreen): PickerScreen(){
+class EditMultiplayerGameInfoScreen(game: GameInfo?, gameName: String, backScreen: MultiplayerScreen): PickerScreen(){
     init {
         val textField = TextField(gameName, skin)
 
@@ -399,7 +396,7 @@ class EditMultiplayerGameInfoScreen(game: GameInfo, gameName: String, backScreen
         val giveUpButton = "Resign".toTextButton()
         giveUpButton.onClick {
             val askPopup = YesNoPopup("Are you sure you want to resign?", {
-                        giveUp(game.gameId, gameName, backScreen)
+                        giveUp(game!!.gameId, gameName, backScreen)
                     }, this)
             askPopup.open()
         }
@@ -416,15 +413,21 @@ class EditMultiplayerGameInfoScreen(game: GameInfo, gameName: String, backScreen
 
         //RightSideButton Setup
         rightSideButton.setText("Save game".tr())
-        rightSideButton.enable()
         rightSideButton.onClick {
             rightSideButton.setText("Saving...".tr())
             //remove the old game file
             backScreen.removeMultiplayerGame(game, gameName)
             //using addMultiplayerGame will download the game from Dropbox so the descriptionLabel displays the right things
-            backScreen.addMultiplayerGame(game.gameId, textField.text)
+            backScreen.addMultiplayerGame(game!!.gameId, textField.text)
             backScreen.game.setScreen(backScreen)
             backScreen.reloadGameListUI()
+        }
+
+        if (game == null){
+            textField.isDisabled = true
+            textField.color = Color.GRAY
+            rightSideButton.disable()
+            giveUpButton.disable()
         }
     }
 
