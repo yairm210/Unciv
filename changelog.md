@@ -1,3 +1,17 @@
+## 3.12.14
+
+Catch for bug in new movement algorithm when you can't move to a unknown tile, but CAN pass through (but not move to) intermediate tiles.
+
+Units manually moved cancel existing move action
+
+Now get up to 100 mods in mod list (up from 30) - kudos @ravignir for noticing there were missing mods!
+
+Fixed queue showing "Consumes 1" when no resource is consumed
+
+Updated to latest LibGDX and Kotlin versions
+
+Game saves can now always be deleted - By GGGuenni
+
 ## 3.12.13
 
 Added "Consumes [amount] [resource]" unique to units and buildings
