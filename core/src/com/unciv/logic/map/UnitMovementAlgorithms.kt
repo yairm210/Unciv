@@ -285,7 +285,7 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
             unit.putInTile(allowedTile)
     }
 
-    fun moveToTileIncludingUnknownImpassibles(destination: TileInfo){
+    fun moveToTileIncludingUnknownImpassibles(destination: TileInfo) {
         if (destination == unit.getTile()) return // already here!
 
         if (unit.type.isAirUnit()) { // they move differently from all other units
@@ -299,8 +299,10 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
 
         val distanceToTiles = getDistanceToTiles()
         val pathToDestination = distanceToTiles.getPathToTile(destination)
-        val movableTiles = pathToDestination.takeWhile {  canPassThrough(it) }
-        val lastReachableTile = movableTiles.last { canMoveTo(it) }
+        val movableTiles = pathToDestination.takeWhile { canPassThrough(it) }
+        val lastReachableTile = movableTiles.lastOrNull { canMoveTo(it) }
+        if (lastReachableTile == null) // no tiles can pass though/can move to
+            return
         val pathToLastReachableTile = distanceToTiles.getPathToTile(lastReachableTile)
 
         if (!unit.civInfo.gameInfo.gameParameters.godMode) {
