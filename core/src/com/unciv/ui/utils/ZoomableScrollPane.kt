@@ -61,13 +61,11 @@ open class ZoomableScrollPane: ScrollPane(null) {
 
                 //this is the new feature to fake an infinite scroll
                 when {
-                    continousScrollingX && scrollPercentX >= 1 -> {
-                        //don't go to zero to not trigger the scrollPercentX <= 0
-                        scrollPercentX = 0.01f
+                    continousScrollingX && scrollPercentX >= 1 && deltaX < 0 -> {
+                        scrollPercentX = 0f
                     }
-                    continousScrollingX && scrollPercentX <= 0 -> {
-                        //same here
-                        scrollPercentX = 0.99f
+                    continousScrollingX && scrollPercentX <= 0 && deltaX > 0-> {
+                        scrollPercentX = 1f
                     }
                 }
 
