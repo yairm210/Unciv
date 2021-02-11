@@ -50,4 +50,3 @@ class GameParametersScreen(var mapEditorScreen: MapEditorScreen): IPreviousScree
         }
     }
 }
-

@@ -4,14 +4,15 @@ import com.badlogic.gdx.scenes.scene2d.ui.CheckBox
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Array
-import com.unciv.UncivGame
 import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.metadata.GameSpeed
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.VictoryType
 import com.unciv.models.translations.tr
-import com.unciv.ui.mapeditor.GameParametersScreen
-import com.unciv.ui.utils.*
+import com.unciv.ui.utils.CameraStageBaseScreen
+import com.unciv.ui.utils.ImageGetter
+import com.unciv.ui.utils.onChange
+import com.unciv.ui.utils.toLabel
 
 class GameOptionsTable(val previousScreen: IPreviousScreen, val updatePlayerPickerTable:(desiredCiv:String)->Unit)
     : Table(CameraStageBaseScreen.skin) {
@@ -173,87 +174,22 @@ class GameOptionsTable(val previousScreen: IPreviousScreen, val updatePlayerPick
     }
 
     fun Table.addModCheckboxes() {
-        val modRulesets = RulesetCache.values.filter { it.name != "" }
+        val table = ModCheckboxTable(gameParameters, previousScreen as CameraStageBaseScreen) {
+            reloadRuleset()
+            update()
 
-        val baseRulesetCheckboxes = ArrayList<CheckBox>()
-        val extentionRulesetModButtons = ArrayList<CheckBox>()
-
-        for (mod in modRulesets) {
-            val checkBox = CheckBox(mod.name.tr(), CameraStageBaseScreen.skin)
-            checkBox.isDisabled = locked
-            if (mod.name in gameParameters.mods) checkBox.isChecked = true
-            checkBox.onChange {
-                if (checkBox.isChecked) {
-                    val modLinkErrors = mod.checkModLinks()
-                    if (modLinkErrors != "") {
-                        ToastPopup("The mod you selected is incorrectly defined!\n\n$modLinkErrors", previousScreen as CameraStageBaseScreen)
-                        checkBox.isChecked = false
-                        return@onChange
-                    }
-
-                    val previousMods = gameParameters.mods.toList()
-
-                    if (mod.modOptions.isBaseRuleset)
-                        for (oldBaseRuleset in previousMods) // so we don't get concurrent modification excpetions
-                            if (modRulesets.firstOrNull { it.name == oldBaseRuleset }?.modOptions?.isBaseRuleset == true)
-                                gameParameters.mods.remove(oldBaseRuleset)
-                    gameParameters.mods.add(mod.name)
-
-                    var isCompatibleWithCurrentRuleset = true
-                    var complexModLinkErrors = ""
-                    try {
-                        val newRuleset = RulesetCache.getComplexRuleset(gameParameters)
-                        newRuleset.modOptions.isBaseRuleset = true
-                        complexModLinkErrors = newRuleset.checkModLinks()
-                        if (complexModLinkErrors != "") isCompatibleWithCurrentRuleset = false
-                    } catch (x: Exception) {
-                        // This happens if a building is dependent on a tech not in the base ruleset
-                        //  because newRuleset.updateBuildingCosts() in getComplexRulset() throws an error
-                        isCompatibleWithCurrentRuleset = false
-                    }
-
-                    if (!isCompatibleWithCurrentRuleset) {
-                        ToastPopup("The mod you selected is incompatible with the defined ruleset!\n\n$complexModLinkErrors", previousScreen as CameraStageBaseScreen)
-                        checkBox.isChecked = false
-                        gameParameters.mods.clear()
-                        gameParameters.mods.addAll(previousMods)
-                        return@onChange
-                    }
-
-                    reloadRuleset()
-                } else {
-                    gameParameters.mods.remove(mod.name)
-                    reloadRuleset()
+            var desiredCiv = ""
+            if (gameParameters.mods.contains(it)) {
+                val modNations = RulesetCache[it]?.nations
+                if (modNations != null && modNations.size > 0) {
+                    desiredCiv = modNations.keys.first()
                 }
-                update()
-                var desiredCiv = ""
-                if (checkBox.isChecked) {
-                    val modNations = RulesetCache[mod.name]?.nations
-                    if (modNations != null && modNations.size > 0) {
-                        desiredCiv = modNations.keys.first()
-                    }
-                }
-                updatePlayerPickerTable(desiredCiv)
             }
-            if (mod.modOptions.isBaseRuleset) baseRulesetCheckboxes.add(checkBox)
-            else extentionRulesetModButtons.add(checkBox)
+
+            updatePlayerPickerTable(desiredCiv)
         }
-
-        if (baseRulesetCheckboxes.any()) {
-            add("Base ruleset mods:".toLabel(fontSize = 24)).padTop(16f).colspan(2).row()
-            val modCheckboxTable = Table().apply { defaults().pad(5f) }
-            for (checkbox in baseRulesetCheckboxes) modCheckboxTable.add(checkbox).row()
-            add(modCheckboxTable).colspan(2).row()
-        }
-
-
-        if (extentionRulesetModButtons.any()) {
-            add("Extension mods:".toLabel(fontSize = 24)).padTop(16f).colspan(2).row()
-            val modCheckboxTable = Table().apply { defaults().pad(5f) }
-            for (checkbox in extentionRulesetModButtons) modCheckboxTable.add(checkbox).row()
-            add(modCheckboxTable).colspan(2).row()
-        }
-
+        add(table).row()
     }
 
 }
+
