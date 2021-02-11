@@ -333,15 +333,11 @@ class CivilizationInfo {
     fun isDefeated(): Boolean {
         // Dirty hack: exploredTiles are empty only before starting units are placed
         if (exploredTiles.isEmpty() || isBarbarian() || isSpectator()) return false
-        // Scenarios are 'to the death'... for now
-        if (gameInfo.gameParameters.victoryTypes.contains(VictoryType.Scenario))
-            return cities.isEmpty() && getCivUnits().none()
         else return cities.isEmpty() // No cities
                 && (citiesCreated > 0 || !getCivUnits().any { it.hasUnique(Constants.settlerUnique) })
     }
 
     fun getEra(): String {
-        // For scenarios with no techs
         if (gameInfo.ruleSet.technologies.isEmpty()) return "None"
         if (tech.researchedTechnologies.isEmpty())
             return gameInfo.ruleSet.getEras().first()
@@ -353,9 +349,7 @@ class CivilizationInfo {
         return maxEraOfTech
     }
 
-    fun getEraNumber(): Int {
-        return gameInfo.ruleSet.getEraNumber(getEra())
-    }
+    fun getEraNumber(): Int = gameInfo.ruleSet.getEraNumber(getEra())
 
     fun isAtWarWith(otherCiv: CivilizationInfo): Boolean {
         if (otherCiv.civName == civName) return false // never at war with itself

@@ -1,6 +1,5 @@
 package com.unciv.ui.newgamescreen
 
-import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox
@@ -10,7 +9,6 @@ import com.unciv.UncivGame
 import com.unciv.logic.*
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.map.MapParameters
-import com.unciv.logic.map.MapType
 import com.unciv.models.metadata.GameParameters
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.translations.tr
@@ -19,6 +17,7 @@ import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.mainmenu.OnlineMultiplayer
 import java.util.*
 import kotlin.concurrent.thread
+import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 
 
 class GameSetupInfo(var gameId:String, var gameParameters: GameParameters, var mapParameters: MapParameters) {
@@ -37,9 +36,10 @@ class GameSetupInfo(var gameId:String, var gameParameters: GameParameters, var m
 }
 
 class NewGameScreen(previousScreen:CameraStageBaseScreen, _gameSetupInfo: GameSetupInfo?=null): IPreviousScreen, PickerScreen() {
-    override val gameSetupInfo =  _gameSetupInfo ?: GameSetupInfo()
+    override val gameSetupInfo = _gameSetupInfo ?: GameSetupInfo()
     override var ruleset = RulesetCache.getComplexRuleset(gameSetupInfo.gameParameters) // needs to be set because the gameoptionstable etc. depend on this
     var newGameOptionsTable = GameOptionsTable(this) { desiredCiv: String -> playerPickerTable.update(desiredCiv) }
+
     // Has to be defined before the mapOptionsTable, since the mapOptionsTable refers to it on init
     var playerPickerTable = PlayerPickerTable(this, gameSetupInfo.gameParameters)
     var mapOptionsTable = MapOptionsTable(this)
@@ -103,19 +103,7 @@ class NewGameScreen(previousScreen:CameraStageBaseScreen, _gameSetupInfo: GameSe
 
     private fun newGameThread() {
         try {
-            if (mapOptionsTable.mapTypeSelectBox.selected.value == MapType.scenario) {
-                newGame = mapOptionsTable.selectedScenarioSaveGame
-                // to take the definition of which players are human and which are AI
-                for (player in gameSetupInfo.gameParameters.players) {
-                    newGame!!.getCivilization(player.chosenCiv).playerType = player.playerType
-                }
-                if (newGame!!.getCurrentPlayerCivilization().playerType == PlayerType.AI) {
-                    newGame!!.setTransients()
-                    newGame!!.nextTurn() // can't start the game on an AI turn
-                }
-                newGame!!.gameParameters.godMode = false
-            }
-            else newGame = GameStarter.startNewGame(gameSetupInfo)
+            newGame = GameStarter.startNewGame(gameSetupInfo)
         } catch (exception: Exception) {
             Gdx.app.postRunnable {
                 val cantMakeThatMapPopup = Popup(this)
@@ -155,7 +143,7 @@ class NewGameScreen(previousScreen:CameraStageBaseScreen, _gameSetupInfo: GameSe
         Gdx.graphics.requestRendering()
     }
 
-    fun updateRuleset(){
+    fun updateRuleset() {
         ruleset.clear()
         ruleset.add(RulesetCache.getComplexRuleset(gameSetupInfo.gameParameters))
     }

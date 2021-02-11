@@ -477,6 +477,35 @@ open class TileInfo {
         return lineList.joinToString("\n")
     }
 
+
+
+    fun hasEnemyInvisibleUnit(viewingCiv: CivilizationInfo): Boolean {
+        val unitsInTile = getUnits()
+        if (unitsInTile.none()) return false
+        if (unitsInTile.first().civInfo != viewingCiv &&
+                unitsInTile.firstOrNull { it.isInvisible() } != null) {
+            return true
+        }
+        return false
+    }
+
+    fun hasConnection(civInfo: CivilizationInfo) =
+            roadStatus != RoadStatus.None || forestOrJungleAreRoads(civInfo)
+
+
+    private fun forestOrJungleAreRoads(civInfo: CivilizationInfo) =
+            civInfo.nation.forestsAndJunglesAreRoads
+                    && (terrainFeature == Constants.jungle || terrainFeature == Constants.forest)
+                    && isFriendlyTerritory(civInfo)
+
+    fun isRulesetCompatible(ruleset: Ruleset): Boolean {
+        if (!ruleset.terrains.containsKey(baseTerrain)) return false
+        if (terrainFeature != null && !ruleset.terrains.containsKey(terrainFeature)) return false
+        if (resource != null && !ruleset.tileResources.containsKey(resource)) return false
+        if (improvement != null && !ruleset.tileImprovements.containsKey(baseTerrain)) return false
+        return true
+    }
+
     //endregion
 
     //region state-changing functions
@@ -527,23 +556,5 @@ open class TileInfo {
         turnsToImprovement = 0
     }
 
-    fun hasEnemyInvisibleUnit(viewingCiv: CivilizationInfo): Boolean {
-        val unitsInTile = getUnits()
-        if (unitsInTile.none()) return false
-        if (unitsInTile.first().civInfo != viewingCiv &&
-                unitsInTile.firstOrNull { it.isInvisible() } != null) {
-            return true
-        }
-        return false
-    }
-
-    fun hasConnection(civInfo: CivilizationInfo) =
-            roadStatus != RoadStatus.None || forestOrJungleAreRoads(civInfo)
-
-
-    private fun forestOrJungleAreRoads(civInfo: CivilizationInfo) =
-            civInfo.nation.forestsAndJunglesAreRoads
-                    && (terrainFeature == Constants.jungle || terrainFeature == Constants.forest)
-                    && isFriendlyTerritory(civInfo)
     //endregion
 }

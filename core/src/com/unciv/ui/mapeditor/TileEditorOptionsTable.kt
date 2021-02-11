@@ -56,12 +56,6 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
                 .onClick { setImprovements() }
         tabPickerTable.add(improvementsButton)
 
-        // debug Scenario mode
-        if (UncivGame.Current.settings.extendedMapEditor && mapEditorScreen.hasScenario()) {
-            val unitsButton = "Units".toTextButton().onClick { setUnits() }
-            tabPickerTable.add(unitsButton)
-        }
-
         tabPickerTable.pack()
 
         val sliderTab = Table()
@@ -160,59 +154,29 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
 
         val nationTable = Table()
 
-        if (UncivGame.Current.settings.extendedMapEditor) {
-            /** new scenario/improvements functionality
-             * We shouldn't be able to edit random players or spectators
-             * */
-            for (player in gameParameters.players) {
-                val playerIndex = gameParameters.players.indexOf(player) + 1
-                if (player.chosenCiv == Constants.random || player.chosenCiv == Constants.spectator)
-                    continue
-                val nation = ruleset.nations[player.chosenCiv]!!
-                val nationImage = ImageGetter.getNationIndicator(nation, 40f)
-                nationImage.onClick {
-                    val improvementName = "StartingLocation " + nation.name
-                    tileAction = {
-                        it.improvement = improvementName
-                        for (tileGroup in mapEditorScreen.mapHolder.tileGroups.values) {
-                            val tile = tileGroup.tileInfo
-                            if (tile.improvement == improvementName && tile != it)
-                                tile.improvement = null
-                            tile.setTerrainTransients()
-                            tileGroup.update()
-                        }
+        /** old way improvements for all civs
+         * */
+        for (nation in ruleset.nations.values) {
+            if (nation.isSpectator()) continue  // no improvements for spectator
+
+            val nationImage = getHex(Color.WHITE, ImageGetter.getNationIndicator(nation, 40f))
+            nationImage.onClick {
+                val improvementName = "StartingLocation " + nation.name
+                tileAction = {
+                    it.improvement = improvementName
+                    for (tileGroup in mapEditorScreen.mapHolder.tileGroups.values) {
+                        val tile = tileGroup.tileInfo
+                        if (tile.improvement == improvementName && tile != it)
+                            tile.improvement = null
+                        tile.setTerrainTransients()
+                        tileGroup.update()
                     }
-
-                    val nationIcon = getHex(Color.WHITE, ImageGetter.getNationIndicator(nation, 40f))
-                    setCurrentHex(nationIcon, "Player [$playerIndex] starting location")
                 }
-                nationTable.add(nationImage).row()
-            }
-        } else {
-            /** old way improvements for all civs
-             * */
-            for (nation in ruleset.nations.values) {
-                if (nation.isSpectator()) continue  // no improvements for spectator
 
-                val nationImage = getHex(Color.WHITE, ImageGetter.getNationIndicator(nation, 40f))
-                nationImage.onClick {
-                    val improvementName = "StartingLocation " + nation.name
-                    tileAction = {
-                        it.improvement = improvementName
-                        for (tileGroup in mapEditorScreen.mapHolder.tileGroups.values) {
-                            val tile = tileGroup.tileInfo
-                            if (tile.improvement == improvementName && tile != it)
-                                tile.improvement = null
-                            tile.setTerrainTransients()
-                            tileGroup.update()
-                        }
-                    }
-
-                    val nationIcon = getHex(Color.WHITE, ImageGetter.getNationIndicator(nation, 40f))
-                    setCurrentHex(nationIcon, "[${nation.name}] starting location")
-                }
-                nationTable.add(nationImage).row()
+                val nationIcon = getHex(Color.WHITE, ImageGetter.getNationIndicator(nation, 40f))
+                setCurrentHex(nationIcon, "[${nation.name}] starting location")
             }
+            nationTable.add(nationImage).row()
         }
 
         editorPickTable.add(AutoScrollPane(nationTable).apply { setScrollingDisabled(true, false) }).height(scrollPanelHeight)

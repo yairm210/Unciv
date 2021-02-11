@@ -22,7 +22,7 @@ import com.unciv.ui.utils.*
 import java.util.*
 
 /**
- * This [Table] is used to pick or edit players information for new game/scenario creation.
+ * This [Table] is used to pick or edit players information for new game creation.
  * Could be inserted to [NewGameScreen], [GameParametersScreen] or any other [Screen]
  * which provides [GameSetupInfo] and [Ruleset].
  * Upon player changes updates property [gameParameters]. Also updates available nations when mod changes.
@@ -37,7 +37,7 @@ class PlayerPickerTable(val previousScreen: IPreviousScreen, var gameParameters:
     val playerListTable = Table()
     val civBlocksWidth = previousScreen.stage.width / 3
 
-    /** Locks player table for editing, used during new game creation with scenario.*/
+    /** Locks player table for editing, currently unused, was previously used for scenarios and could be useful in the future.*/
     var locked = false
 
     /** No random civilization is available, used during map editing.*/

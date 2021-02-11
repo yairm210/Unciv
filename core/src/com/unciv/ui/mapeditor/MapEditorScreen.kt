@@ -5,7 +5,6 @@ import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.InputEvent
 import com.badlogic.gdx.scenes.scene2d.InputListener
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
-import com.unciv.logic.map.ScenarioMap
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
 import com.unciv.models.ruleset.Ruleset
@@ -16,9 +15,7 @@ import com.unciv.ui.utils.*
 class MapEditorScreen(): CameraStageBaseScreen() {
     var mapName = ""
     var tileMap = TileMap()
-    var scenarioName = ""   // when loading map: mapName is taken as default for scenarioName
-    var scenarioMap: ScenarioMap? = null // main indicator whether scenario information is present
-    var ruleset = Ruleset().apply { add(RulesetCache.getBaseRuleset()) } // Since we change this in scenarios, we can't take the base ruleset directly
+    var ruleset = Ruleset().apply { add(RulesetCache.getBaseRuleset()) }
 
     var gameSetupInfo = GameSetupInfo()
     lateinit var mapHolder: EditorMapHolder
@@ -30,20 +27,6 @@ class MapEditorScreen(): CameraStageBaseScreen() {
 
     constructor(map: TileMap) : this() {
         tileMap = map
-        initialize()
-    }
-
-    constructor(scenarioMap: ScenarioMap, scenarioName: String = "") : this() {
-        tileMap = scenarioMap.tileMap
-        mapName = scenarioName
-        this.scenarioMap = scenarioMap
-        this.scenarioName = scenarioName
-
-        gameSetupInfo.gameParameters = scenarioMap.gameParameters
-
-        // Since the ruleset is referenced directly from other places, we can't just replace it directly
-        ruleset.clear()
-        ruleset.add(RulesetCache.getComplexRuleset(scenarioMap.gameParameters))
         initialize()
     }
 
@@ -152,8 +135,6 @@ class MapEditorScreen(): CameraStageBaseScreen() {
             game.setScreen(MapEditorScreen(mapHolder.tileMap))
         }
     }
-
-    fun hasScenario() = this.scenarioMap != null
 }
 
 

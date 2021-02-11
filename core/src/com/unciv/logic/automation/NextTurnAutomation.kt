@@ -192,7 +192,7 @@ object NextTurnAutomation {
                         VictoryType.Cultural -> listOf("Piety", "Freedom", "Tradition", "Rationalism", "Commerce")
                         VictoryType.Scientific -> listOf("Rationalism", "Commerce", "Liberty", "Freedom", "Piety")
                         VictoryType.Domination -> listOf("Autocracy", "Honor", "Liberty", "Rationalism", "Freedom")
-                        VictoryType.Neutral, VictoryType.Scenario -> listOf()
+                        VictoryType.Neutral -> listOf()
                     }
             val policiesByPreference = adoptablePolicies
                     .groupBy {

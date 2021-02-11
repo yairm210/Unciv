@@ -5,7 +5,6 @@ import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
-import com.badlogic.gdx.utils.Align
 import com.unciv.MainMenuScreen
 import com.unciv.UncivGame
 import com.unciv.logic.MapSaver
@@ -17,45 +16,25 @@ import com.unciv.ui.utils.*
 import kotlin.concurrent.thread
 import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 
-class LoadMapScreen(previousMap: TileMap?) : PickerScreen(){
-    var chosenMap:FileHandle? = null
+class LoadMapScreen(previousMap: TileMap?) : PickerScreen() {
+    var chosenMap: FileHandle? = null
     val deleteButton = "Delete map".toTextButton()
-    var scenarioMap = false
     val mapsTable = Table().apply { defaults().pad(10f) }
 
     init {
-        if(UncivGame.Current.settings.extendedMapEditor) {
-            val toggleButton = "Toggle Scenario Map".toTextButton()
-            toggleButton.onClick {
-                scenarioMap = !scenarioMap
-                update()
-            }
-            toggleButton.centerX(stage)
-            toggleButton.setY(stage.height - 10f, Align.top)
-            stage.addActor(toggleButton)
-        }
-
         rightSideButton.setText("Load map".tr())
         rightSideButton.onClick {
             thread {
-                if (scenarioMap) {
-                    val scenario = MapSaver.loadScenario(chosenMap!!)
-                    Gdx.app.postRunnable {
-                        UncivGame.Current.setScreen(MapEditorScreen(scenario, chosenMap!!.name()))
-                        dispose()
-                    }
-                } else {
-                    Gdx.app.postRunnable {
-                        val popup = Popup(this)
-                        popup.addGoodSizedLabel("Loading...")
-                        popup.open()
-                    }
-                    val map = MapSaver.loadMap(chosenMap!!)
-                    Gdx.app.postRunnable {
-                        Gdx.input.inputProcessor = null // This is to stop ANRs happening here, until the map editor screen sets up.
-                        UncivGame.Current.setScreen(MapEditorScreen(map))
-                        dispose()
-                    }
+                Gdx.app.postRunnable {
+                    val popup = Popup(this)
+                    popup.addGoodSizedLabel("Loading...")
+                    popup.open()
+                }
+                val map = MapSaver.loadMap(chosenMap!!)
+                Gdx.app.postRunnable {
+                    Gdx.input.inputProcessor = null // This is to stop ANRs happening here, until the map editor screen sets up.
+                    UncivGame.Current.setScreen(MapEditorScreen(map))
+                    dispose()
                 }
             }
         }
@@ -108,38 +87,22 @@ class LoadMapScreen(previousMap: TileMap?) : PickerScreen(){
         deleteButton.disable()
         deleteButton.color = Color.RED
 
-        if (scenarioMap) {
-            deleteButton.setText("Delete Scenario Map".tr())
-            rightSideButton.setText("Load Scenario Map".tr())
+        deleteButton.setText("Delete map".tr())
+        rightSideButton.setText("Load map".tr())
 
-            mapsTable.clear()
-            for (scenario in MapSaver.getScenarios()) {
-                val loadScenarioButton = TextButton(scenario.name(), skin)
-                loadScenarioButton.onClick {
-                    rightSideButton.enable()
-                    chosenMap = scenario
-                    deleteButton.enable()
-                    deleteButton.color = Color.RED
-                }
-                mapsTable.add(loadScenarioButton).row()
+        mapsTable.clear()
+        for (map in MapSaver.getMaps()) {
+            val loadMapButton = TextButton(map.name(), skin)
+            loadMapButton.onClick {
+                rightSideButton.enable()
+                chosenMap = map
+                deleteButton.enable()
+                deleteButton.color = Color.RED
             }
-        } else {
-            deleteButton.setText("Delete map".tr())
-            rightSideButton.setText("Load map".tr())
-
-            mapsTable.clear()
-            for (map in MapSaver.getMaps()) {
-                val loadMapButton = TextButton(map.name(), skin)
-                loadMapButton.onClick {
-                    rightSideButton.enable()
-                    chosenMap = map
-                    deleteButton.enable()
-                    deleteButton.color = Color.RED
-                }
-                mapsTable.add(loadMapButton).row()
-            }
+            mapsTable.add(loadMapButton).row()
         }
     }
+
 }
 
 

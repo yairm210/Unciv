@@ -42,7 +42,7 @@ class OptionsPopup(val previousScreen:CameraStageBaseScreen) : Popup(previousScr
         add(scrollPane).maxHeight(screen.stage.height * 0.6f).row()
 
         addCloseButton {
-            if(previousScreen is WorldScreen)
+            if (previousScreen is WorldScreen)
                 previousScreen.enableNextTurnButtonAfterOptions()
         }
 
@@ -50,11 +50,11 @@ class OptionsPopup(val previousScreen:CameraStageBaseScreen) : Popup(previousScr
         center(previousScreen.stage)
     }
 
-    private fun addHeader (text: String) {
+    private fun addHeader(text: String) {
         innerTable2.add(text.toLabel(fontSize = 24)).colspan(2).padTop(if (innerTable2.cells.isEmpty) 0f else 20f).row()
     }
 
-    private fun addYesNoRow (text: String, initialValue: Boolean, updateWorld: Boolean = false, action: ((Boolean) -> Unit)) {
+    private fun addYesNoRow(text: String, initialValue: Boolean, updateWorld: Boolean = false, action: ((Boolean) -> Unit)) {
         innerTable2.add(text.toLabel())
         val button = YesNoButton(initialValue, CameraStageBaseScreen.skin) {
             action(it)
@@ -82,13 +82,13 @@ class OptionsPopup(val previousScreen:CameraStageBaseScreen) : Popup(previousScr
 
         addHeader("Display options")
 
-        addYesNoRow ("Show worked tiles", settings.showWorkedTiles, true) { settings.showWorkedTiles = it }
-        addYesNoRow ("Show resources and improvements", settings.showResourcesAndImprovements, true) { settings.showResourcesAndImprovements = it }
-        addYesNoRow ("Show tile yields", settings.showTileYields, true) { settings.showTileYields = it } // JN
-        addYesNoRow ("Show tutorials", settings.showTutorials, true) {settings.showTutorials = it }
-        addYesNoRow ("Show minimap", settings.showMinimap, true) { settings.showMinimap = it }
-        addYesNoRow ("Show pixel units", settings.showPixelUnits, true) { settings.showPixelUnits = it }
-        addYesNoRow ("Show pixel improvements", settings.showPixelImprovements, true) { settings.showPixelImprovements = it }
+        addYesNoRow("Show worked tiles", settings.showWorkedTiles, true) { settings.showWorkedTiles = it }
+        addYesNoRow("Show resources and improvements", settings.showResourcesAndImprovements, true) { settings.showResourcesAndImprovements = it }
+        addYesNoRow("Show tile yields", settings.showTileYields, true) { settings.showTileYields = it } // JN
+        addYesNoRow("Show tutorials", settings.showTutorials, true) { settings.showTutorials = it }
+        addYesNoRow("Show minimap", settings.showMinimap, true) { settings.showMinimap = it }
+        addYesNoRow("Show pixel units", settings.showPixelUnits, true) { settings.showPixelUnits = it }
+        addYesNoRow("Show pixel improvements", settings.showPixelImprovements, true) { settings.showPixelImprovements = it }
 
         addLanguageSelectBox()
 
@@ -96,7 +96,7 @@ class OptionsPopup(val previousScreen:CameraStageBaseScreen) : Popup(previousScr
 
         addTileSetSelectBox()
 
-        addYesNoRow ("Continuous rendering", settings.continuousRendering) {
+        addYesNoRow("Continuous rendering", settings.continuousRendering) {
             settings.continuousRendering = it
             Gdx.graphics.isContinuousRendering = it
         }
@@ -106,22 +106,22 @@ class OptionsPopup(val previousScreen:CameraStageBaseScreen) : Popup(previousScr
 
         addHeader("Gameplay options")
 
-        addYesNoRow ("Check for idle units", settings.checkForDueUnits, true) { settings.checkForDueUnits = it }
-        addYesNoRow ("Move units with a single tap", settings.singleTapMove) { settings.singleTapMove = it }
-        addYesNoRow ("Movement assumes unknown tiles to be passable", settings.unitMovementIncludesImpassibles)
-            { settings.unitMovementIncludesImpassibles = it }
-        addYesNoRow ("Auto-assign city production", settings.autoAssignCityProduction, true) {
+        addYesNoRow("Check for idle units", settings.checkForDueUnits, true) { settings.checkForDueUnits = it }
+        addYesNoRow("Move units with a single tap", settings.singleTapMove) { settings.singleTapMove = it }
+        addYesNoRow("Movement assumes unknown tiles to be passable", settings.unitMovementIncludesImpassibles)
+        { settings.unitMovementIncludesImpassibles = it }
+        addYesNoRow("Auto-assign city production", settings.autoAssignCityProduction, true) {
             settings.autoAssignCityProduction = it
             if (it && previousScreen is WorldScreen &&
-                previousScreen.viewingCiv.isCurrentPlayer() && previousScreen.viewingCiv.playerType == PlayerType.Human) {
+                    previousScreen.viewingCiv.isCurrentPlayer() && previousScreen.viewingCiv.playerType == PlayerType.Human) {
                 previousScreen.gameInfo.currentPlayerCiv.cities.forEach { city ->
                     city.cityConstructions.chooseNextConstruction()
                 }
             }
         }
-        addYesNoRow ("Auto-build roads", settings.autoBuildingRoads) { settings.autoBuildingRoads = it }
-        addYesNoRow ("Automated workers replace improvements", settings.automatedWorkersReplaceImprovements) { settings.automatedWorkersReplaceImprovements = it }
-        addYesNoRow ("Order trade offers by amount", settings.orderTradeOffersByAmount) { settings.orderTradeOffersByAmount = it }
+        addYesNoRow("Auto-build roads", settings.autoBuildingRoads) { settings.autoBuildingRoads = it }
+        addYesNoRow("Automated workers replace improvements", settings.automatedWorkersReplaceImprovements) { settings.automatedWorkersReplaceImprovements = it }
+        addYesNoRow("Order trade offers by amount", settings.orderTradeOffersByAmount) { settings.orderTradeOffersByAmount = it }
 
         addAutosaveTurnsSelectBox()
 
@@ -129,8 +129,6 @@ class OptionsPopup(val previousScreen:CameraStageBaseScreen) : Popup(previousScr
         addNotificationOptions()
 
         addHeader("Other options")
-
-        addYesNoRow("Extended map editor", settings.extendedMapEditor) { settings.extendedMapEditor = it }
 
         addSoundEffectsVolumeSlider()
         addMusicVolumeSlider()
@@ -206,7 +204,7 @@ class OptionsPopup(val previousScreen:CameraStageBaseScreen) : Popup(previousScr
                     text += "\n\n" + mod.name + "\n\n" + modLinks
             }
             val popup = Popup(screen)
-            popup.add(ScrollPane(text.toLabel()).apply { setOverscroll(false,false) })
+            popup.add(ScrollPane(text.toLabel()).apply { setOverscroll(false, false) })
                     .maxHeight(screen.stage.height / 2).row()
             popup.addCloseButton()
             popup.open(true)

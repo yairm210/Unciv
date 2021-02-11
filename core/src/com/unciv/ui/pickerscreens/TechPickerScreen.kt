@@ -28,7 +28,7 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo, centerOnTech: Tec
 
     /** We need this to be a separate table, and NOT the topTable, because *inhales*
      * When call setConnectingLines we need to pack() the table so that the lines will align correctly, BUT
-     *  this causes the table to be SMALLER THAN THE SCREEN for small tech trees e.g. scenarios,
+     *  this causes the table to be SMALLER THAN THE SCREEN for small tech trees from mods,
      *  meaning the tech tree is in a crumpled heap at the lower-left corner of the screen
      * Having this be a separate table allows us to leave the TopTable as is (that is: auto-width to fit the scrollPane)
      *  leaving us the juicy small tech tree right in the center.

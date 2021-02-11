@@ -47,8 +47,6 @@ class GameOptionsTable(val previousScreen: IPreviousScreen, val updatePlayerPick
         checkboxTable.addBarbariansCheckbox()
         checkboxTable.addOneCityChallengeCheckbox()
         checkboxTable.addNuclearWeaponsCheckbox()
-        if(UncivGame.Current.settings.extendedMapEditor)
-            checkboxTable.addGodmodeCheckbox()
         checkboxTable.addIsOnlineMultiplayerCheckbox()
         checkboxTable.addModCheckboxes()
         add(checkboxTable).colspan(2).row()
@@ -76,15 +74,13 @@ class GameOptionsTable(val previousScreen: IPreviousScreen, val updatePlayerPick
             addCheckbox("Enable nuclear weapons", gameParameters.nuclearWeaponsEnabled)
             { gameParameters.nuclearWeaponsEnabled = it }
 
-    private fun Table.addGodmodeCheckbox() =
-            addCheckbox("Scenario Editor", gameParameters.godMode, lockable = false)
-            { gameParameters.godMode = it }
 
-
-    private fun Table.addIsOnlineMultiplayerCheckbox()  =
-        addCheckbox("Online Multiplayer", gameParameters.isOnlineMultiplayer)
-        { gameParameters.isOnlineMultiplayer = it
-            updatePlayerPickerTable("") }
+    private fun Table.addIsOnlineMultiplayerCheckbox() =
+            addCheckbox("Online Multiplayer", gameParameters.isOnlineMultiplayer)
+            {
+                gameParameters.isOnlineMultiplayer = it
+                updatePlayerPickerTable("")
+            }
 
     private fun addCityStatesSelectBox() {
         add("{Number of City-States}:".toLabel())
@@ -132,7 +128,7 @@ class GameOptionsTable(val previousScreen: IPreviousScreen, val updatePlayerPick
     }
 
     private fun Table.addEraSelectBox() {
-        if (ruleset.technologies.isEmpty()) return // scenario with no techs
+        if (ruleset.technologies.isEmpty()) return // mod with no techs
         val eras = ruleset.technologies.values.filter { !it.uniques.contains("Starting tech") }.map { it.era() }.distinct()
         addSelectBox("{Starting Era}:", eras, gameParameters.startingEra)
         { gameParameters.startingEra = it }
@@ -147,7 +143,6 @@ class GameOptionsTable(val previousScreen: IPreviousScreen, val updatePlayerPick
         val victoryConditionsTable = Table().apply { defaults().pad(5f) }
         for (victoryType in VictoryType.values()) {
             if (victoryType == VictoryType.Neutral) continue
-            if (previousScreen !is GameParametersScreen && victoryType == VictoryType.Scenario) continue // scenario victory is only available for scenarios
             val victoryCheckbox = CheckBox(victoryType.name.tr(), CameraStageBaseScreen.skin)
             victoryCheckbox.name = victoryType.name
             victoryCheckbox.isChecked = gameParameters.victoryTypes.contains(victoryType)
@@ -178,10 +173,7 @@ class GameOptionsTable(val previousScreen: IPreviousScreen, val updatePlayerPick
     }
 
     fun Table.addModCheckboxes() {
-        val modRulesets = RulesetCache.values.filter {
-            it.name != ""
-                    && (it.name in gameParameters.mods || !it.modOptions.uniques.contains("Scenario only"))
-        } // Don't allow scenario mods for a regular 'new game'
+        val modRulesets = RulesetCache.values.filter { it.name != "" }
 
         val baseRulesetCheckboxes = ArrayList<CheckBox>()
         val extentionRulesetModButtons = ArrayList<CheckBox>()
