@@ -14,6 +14,7 @@ There are two kinds of mods:
 
 - Base Ruleset mods - these replace the entire existing ruleset - tech tree, units, policies, nations etc - to give an entirely different experience than the base game. These generally require quite a bit of work, but give a whole new experience, and so are the most popular.
 
+Creating and editing mods from your phone is NOT RECOMMENDED - it's *much easier* using a desktop device!
 
 ## Mod components
 
@@ -44,15 +45,17 @@ Copy it to a `/maps` folder in your *mod*, and you're done!
 
 ## Getting your mod out there
 
-There are 2 main venues for disseminating mods.
-
-One is our Discord server, which has a dedicated channel.
-
-The Brand New way of doing it is by putting your mod in a Github repository, and then users can download your mod directly to their phone!
+In order to make your mod downloadable by anyone, you need to create a Github repository (instructions [here](https://docs.github.com/en/github/getting-started-with-github/create-a-repo))
 
 **When creating the repository, it's important that the main branch is called "master", not "main"**
 
 The Images and jsons folders need to be in the root directory of the repo - see [here](https://github.com/yairm210/Unciv-IV-mod) for example.
+
+You can then manually download the mod from within the Mod Manager in Unciv:
+
+- From Unciv's main screen, click "Mods"
+- Click "Download mod from URL", and enter the location of your Github page
+- The game will automatically download and extract your mod, and it'll be ready to use!
 
 Once you've tested that your mod CAN be downloaded, and that it works well once downloaded, you're ready for the final stage - GETTING IT TO THE USERS AUTOMATICALLY.
 
@@ -62,18 +65,11 @@ In order to do this, all you need to do is:
 - Click the gear icon next to the About (top-right part of the page)
 - In 'Topics', add "unciv-mod"
 
-When you open your app, it will query Github's list of repos with that topic, and now YOUR repo will appear there!
-
-## Downloading mods from within the game
-
-- From within an existing game, open Menu - Options and enable "Experimental mod manager".
-- Return to the main menu, click "Mods"
-- You should now see a list of your mods and a "Download mod" button.
-- Click "Download mod", enter the location of your Github page
-- The game will automatically download and extract your mod, and it'll be ready to use!
-
+When you open your app, it will query Github's [list of repos with that topic](https://github.com/topics/unciv-mod), and now YOUR repo will appear there!
 
 ## Mod location for manual loading of mods
+
+In general, you should never be manually-loading your mods - not only is this clunky, it's also more error-prone. Unless you have a very specific use-case, you probably shouldn't be doing this.
 
 In Android, they should go into the `Android/data/com.unciv.app/files/mods` directory.
 
@@ -82,7 +78,7 @@ Click the 3 vertical dots on the top right-hand corner of the window below the "
 If the option "Show all Play folders" does not have a check next to it click it. You should see some new files that appear on your screen.
 *Now* navigate to `Android/data/com.unciv.app/files/mods`
 
-When loading a mod, it needs to be in its own folder in `/mods` - this is how you will work when you're editing your mod
+When loading a mod, it needs to be in its own folder in `/mods` - this is how you will work when you're editing your mod.
 
 ## Other
 
