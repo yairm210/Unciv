@@ -91,6 +91,10 @@ class MapOptionsTable(val newGameScreen: NewGameScreen): Table() {
             val mapFile = mapFileSelectBox.selected.fileHandle
             mapParameters.name = mapFile.name()
             newGameScreen.gameSetupInfo.mapFile = mapFile
+            val map = MapSaver.loadMap(mapFile)
+            newGameScreen.gameSetupInfo.gameParameters.mods = map.mapParameters.mods
+            newGameScreen.updateRuleset()
+            newGameScreen.updateTables()
         }
         return mapFileSelectBox
     }

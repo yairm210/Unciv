@@ -37,6 +37,9 @@ class MapParameters {
     var noRuins = false
     var noNaturalWonders = false
 
+    /** This is used mainly for the map editor, so you can continue editing a map under the ame ruleset you started with */
+    var mods = LinkedHashSet<String>()
+
     var seed: Long = 0
     var tilesPerBiomeArea = 6
     var maxCoastExtension = 2

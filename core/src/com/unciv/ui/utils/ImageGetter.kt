@@ -43,7 +43,6 @@ object ImageGetter {
     }
 
     fun setNewRuleset(ruleset: Ruleset) {
-        if (this.ruleset == ruleset) return
         this.ruleset = ruleset
         reload()
     }

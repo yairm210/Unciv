@@ -7,9 +7,11 @@ import com.unciv.UncivGame
 import com.unciv.logic.map.mapgenerator.MapGenerator
 import com.unciv.logic.map.MapParameters
 import com.unciv.logic.map.TileMap
+import com.unciv.models.metadata.GameParameters
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.translations.tr
 import com.unciv.ui.newgamescreen.MapParametersTable
+import com.unciv.ui.newgamescreen.ModCheckboxTable
 import com.unciv.ui.pickerscreens.PickerScreen
 import com.unciv.ui.utils.*
 import kotlin.concurrent.thread
@@ -19,6 +21,7 @@ import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 class NewMapScreen : PickerScreen() {
 
     private val mapParameters = MapParameters()
+    private val ruleset = RulesetCache.getBaseRuleset()
     private var generatedMap: TileMap? = null
 
     init {
@@ -28,12 +31,22 @@ class NewMapScreen : PickerScreen() {
             pad(10f)
             add("Map Options".toLabel(fontSize = 24)).row()
             add(MapParametersTable(mapParameters, isEmptyMapAllowed = true)).row()
+            add(ModCheckboxTable(mapParameters.mods, this@NewMapScreen) {
+                ruleset.clear()
+                val newRuleset = RulesetCache.getComplexRuleset(mapParameters.mods)
+                ruleset.add(newRuleset)
+                ruleset.mods += mapParameters.mods
+                ruleset.modOptions = newRuleset.modOptions
+
+                ImageGetter.ruleset = ruleset
+                ImageGetter.reload()
+            })
             pack()
         }
 
 
         topTable.apply {
-            add(ScrollPane(newMapScreenOptionsTable).apply { setOverscroll(false,false) })
+            add(ScrollPane(newMapScreenOptionsTable).apply { setOverscroll(false, false) })
                     .height(topTable.parent.height)
             pack()
             setFillParent(true)
@@ -47,11 +60,12 @@ class NewMapScreen : PickerScreen() {
             thread(name = "MapGenerator") {
                 try {
                     // Map generation can take a while and we don't want ANRs
-                    val ruleset = RulesetCache.getBaseRuleset()
                     generatedMap = MapGenerator(ruleset).generateMap(mapParameters)
 
                     Gdx.app.postRunnable {
-                        UncivGame.Current.setScreen(MapEditorScreen(generatedMap!!))
+                        val mapEditorScreen = MapEditorScreen(generatedMap!!)
+                        mapEditorScreen.ruleset = ruleset
+                        UncivGame.Current.setScreen(mapEditorScreen)
                     }
 
                 } catch (exception: Exception) {

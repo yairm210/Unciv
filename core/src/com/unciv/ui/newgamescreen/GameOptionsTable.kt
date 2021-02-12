@@ -174,7 +174,7 @@ class GameOptionsTable(val previousScreen: IPreviousScreen, val updatePlayerPick
     }
 
     fun Table.addModCheckboxes() {
-        val table = ModCheckboxTable(gameParameters, previousScreen as CameraStageBaseScreen) {
+        val table = ModCheckboxTable(gameParameters.mods, previousScreen as CameraStageBaseScreen) {
             reloadRuleset()
             update()
 

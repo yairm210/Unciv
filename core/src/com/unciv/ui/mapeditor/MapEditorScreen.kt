@@ -27,6 +27,7 @@ class MapEditorScreen(): CameraStageBaseScreen() {
 
     constructor(map: TileMap) : this() {
         tileMap = map
+        ruleset = RulesetCache.getComplexRuleset(map.mapParameters.mods)
         initialize()
     }
 

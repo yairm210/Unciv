@@ -16,6 +16,7 @@ import com.unciv.ui.pickerscreens.PickerScreen
 import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.mainmenu.OnlineMultiplayer
 import java.util.*
+import kotlin.collections.HashSet
 import kotlin.concurrent.thread
 import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 
@@ -91,6 +92,28 @@ class NewGameScreen(previousScreen:CameraStageBaseScreen, _gameSetupInfo: GameSe
             }
 
             Gdx.input.inputProcessor = null // remove input processing - nothing will be clicked!
+
+
+            if (gameSetupInfo.mapFile != null){
+                val map = MapSaver.loadMap(gameSetupInfo.mapFile!!)
+                val rulesetIncompatabilities = HashSet<String>()
+                for(tile in map.values) {
+                    val rulesetIncompat = tile.getRulesetIncompatability(ruleset)
+                    if (rulesetIncompat != "") rulesetIncompatabilities.add(rulesetIncompat)
+                }
+
+                if (rulesetIncompatabilities.isNotEmpty()) {
+                    val incompatibleMap = Popup(this)
+                    incompatibleMap.addGoodSizedLabel("Map is incompatible with the chosen ruleset!".tr()).row()
+                    for(incompat in rulesetIncompatabilities)
+                        incompatibleMap.addGoodSizedLabel(incompat).row()
+                    incompatibleMap.addCloseButton()
+                    incompatibleMap.open()
+                    game.setScreen(this) // to get the input back
+                    return@onClick
+                }
+            }
+
             rightSideButton.disable()
             rightSideButton.setText("Working...".tr())
 
@@ -146,6 +169,7 @@ class NewGameScreen(previousScreen:CameraStageBaseScreen, _gameSetupInfo: GameSe
     fun updateRuleset() {
         ruleset.clear()
         ruleset.add(RulesetCache.getComplexRuleset(gameSetupInfo.gameParameters.mods))
+        ImageGetter.setNewRuleset(ruleset)
     }
 
     fun lockTables() {

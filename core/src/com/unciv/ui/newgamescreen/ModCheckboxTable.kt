@@ -10,10 +10,9 @@ import com.unciv.ui.utils.ToastPopup
 import com.unciv.ui.utils.onChange
 import com.unciv.ui.utils.toLabel
 
-class ModCheckboxTable(val gameParameters: GameParameters, val screen: CameraStageBaseScreen, onUpdate: (String) -> Unit): Table(){
+class ModCheckboxTable(val mods:LinkedHashSet<String>, val screen: CameraStageBaseScreen, onUpdate: (String) -> Unit): Table(){
     init {
         val modRulesets = RulesetCache.values.filter { it.name != "" }
-        val mods = gameParameters.mods
 
         val baseRulesetCheckboxes = ArrayList<CheckBox>()
         val extentionRulesetModButtons = ArrayList<CheckBox>()
@@ -41,7 +40,7 @@ class ModCheckboxTable(val gameParameters: GameParameters, val screen: CameraSta
                     var isCompatibleWithCurrentRuleset = true
                     var complexModLinkErrors = ""
                     try {
-                        val newRuleset = RulesetCache.getComplexRuleset(gameParameters.mods)
+                        val newRuleset = RulesetCache.getComplexRuleset(mods)
                         newRuleset.modOptions.isBaseRuleset = true // This is so the checkModLinks finds all connections
                         complexModLinkErrors = newRuleset.checkModLinks()
                         if (complexModLinkErrors != "") isCompatibleWithCurrentRuleset = false
