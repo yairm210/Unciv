@@ -164,7 +164,7 @@ class GameOptionsTable(val previousScreen: IPreviousScreen, val updatePlayerPick
 
     fun reloadRuleset() {
         ruleset.clear()
-        val newRuleset = RulesetCache.getComplexRuleset(gameParameters)
+        val newRuleset = RulesetCache.getComplexRuleset(gameParameters.mods)
         ruleset.add(newRuleset)
         ruleset.mods += gameParameters.mods
         ruleset.modOptions = newRuleset.modOptions

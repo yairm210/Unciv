@@ -258,7 +258,7 @@ class GameInfo {
     // will be done here, and not in CivInfo.setTransients or CityInfo
     fun setTransients() {
         tileMap.gameInfo = this
-        ruleSet = RulesetCache.getComplexRuleset(gameParameters)
+        ruleSet = RulesetCache.getComplexRuleset(gameParameters.mods)
         // any mod the saved game lists that is currently not installed causes null pointer
         // exceptions in this routine unless it contained no new objects or was very simple.
         // Player's fault, so better complain early:

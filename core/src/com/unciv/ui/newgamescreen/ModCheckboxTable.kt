@@ -41,7 +41,7 @@ class ModCheckboxTable(val gameParameters: GameParameters, val screen: CameraSta
                     var isCompatibleWithCurrentRuleset = true
                     var complexModLinkErrors = ""
                     try {
-                        val newRuleset = RulesetCache.getComplexRuleset(gameParameters)
+                        val newRuleset = RulesetCache.getComplexRuleset(gameParameters.mods)
                         newRuleset.modOptions.isBaseRuleset = true // This is so the checkModLinks finds all connections
                         complexModLinkErrors = newRuleset.checkModLinks()
                         if (complexModLinkErrors != "") isCompatibleWithCurrentRuleset = false

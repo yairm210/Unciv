@@ -371,8 +371,6 @@ object RulesetCache :HashMap<String,Ruleset>() {
         return newRuleset
     }
 
-    fun getComplexRuleset(gameParameters: GameParameters): Ruleset =
-            getComplexRuleset(gameParameters.mods)
 }
 
 class Specialist: NamedStats() {

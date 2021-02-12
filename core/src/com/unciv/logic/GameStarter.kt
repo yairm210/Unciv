@@ -20,7 +20,7 @@ object GameStarter {
         val gameInfo = GameInfo()
 
         gameInfo.gameParameters = gameSetupInfo.gameParameters
-        val ruleset = RulesetCache.getComplexRuleset(gameInfo.gameParameters)
+        val ruleset = RulesetCache.getComplexRuleset(gameInfo.gameParameters.mods)
 
         if (gameSetupInfo.mapParameters.name != "") {
             gameInfo.tileMap = MapSaver.loadMap(gameSetupInfo.mapFile!!)

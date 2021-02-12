@@ -17,7 +17,7 @@ import com.unciv.ui.utils.*
  */
 class GameParametersScreen(var mapEditorScreen: MapEditorScreen): IPreviousScreen, PickerScreen() {
     override var gameSetupInfo = mapEditorScreen.gameSetupInfo.clone()
-    override var ruleset = RulesetCache.getComplexRuleset(gameSetupInfo.gameParameters)
+    override var ruleset = RulesetCache.getComplexRuleset(gameSetupInfo.gameParameters.mods)
     var playerPickerTable = PlayerPickerTable(this, gameSetupInfo.gameParameters)
     var gameOptionsTable = GameOptionsTable(this) { desiredCiv: String -> playerPickerTable.update(desiredCiv) }
 
