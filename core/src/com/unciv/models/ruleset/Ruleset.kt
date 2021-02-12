@@ -354,9 +354,9 @@ object RulesetCache :HashMap<String,Ruleset>() {
 
     fun getBaseRuleset() = this[BaseRuleset.Civ_V_Vanilla.fullName]!!.clone() // safeguard, o no-one edits the base ruleset by mistake
 
-    fun getComplexRuleset(gameParameters: GameParameters): Ruleset {
+    fun getComplexRuleset(mods:LinkedHashSet<String>):Ruleset{
         val newRuleset = Ruleset()
-        val loadedMods = gameParameters.mods.filter { containsKey(it) }.map { this[it]!! }
+        val loadedMods = mods.filter { containsKey(it) }.map { this[it]!! }
         if (loadedMods.none { it.modOptions.isBaseRuleset })
             newRuleset.add(getBaseRuleset())
         for (mod in loadedMods.sortedByDescending { it.modOptions.isBaseRuleset }) {
@@ -370,6 +370,9 @@ object RulesetCache :HashMap<String,Ruleset>() {
 
         return newRuleset
     }
+
+    fun getComplexRuleset(gameParameters: GameParameters): Ruleset =
+            getComplexRuleset(gameParameters.mods)
 }
 
 class Specialist: NamedStats() {
