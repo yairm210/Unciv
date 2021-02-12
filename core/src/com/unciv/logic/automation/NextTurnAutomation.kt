@@ -10,6 +10,7 @@ import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.logic.map.BFS
 import com.unciv.logic.map.MapUnit
+import com.unciv.logic.map.TileInfo
 import com.unciv.logic.trade.*
 import com.unciv.models.ruleset.ModOptionsConstants
 import com.unciv.models.ruleset.VictoryType
@@ -200,7 +201,7 @@ object NextTurnAutomation {
                             policyBranchPriority.indexOf(it.branch.name) else 10
                     }
 
-            val preferredPolicies = policiesByPreference.minBy { it.key }!!.value
+            val preferredPolicies = policiesByPreference.minByOrNull { it.key }!!.value
 
             val policyToAdopt = preferredPolicies.random()
             civInfo.policies.adopt(policyToAdopt)
@@ -329,7 +330,7 @@ object NextTurnAutomation {
         val enemyCivs = civInfo.getKnownCivs()
                 .filterNot {
                     it == civInfo || it.cities.isEmpty() || !civInfo.getDiplomacyManager(it).canDeclareWar()
-                            || (it.cities.none { civInfo.exploredTiles.contains(it.location) })
+                            || it.cities.none { civInfo.exploredTiles.contains(it.location) }
                 }
         // If the AI declares war on a civ without knowing the location of any cities, it'll just keep amassing an army and not sending it anywhere,
         //   and end up at a massive disadvantage
@@ -338,7 +339,7 @@ object NextTurnAutomation {
 
         val civWithBestMotivationToAttack = enemyCivs
                 .map { Pair(it, motivationToAttack(civInfo, it)) }
-                .maxBy { it.second }!!
+                .maxByOrNull { it.second }!!
 
         if (civWithBestMotivationToAttack.second >= 20)
             civInfo.getDiplomacyManager(civWithBestMotivationToAttack.first).declareWar()
@@ -350,7 +351,13 @@ object NextTurnAutomation {
         if (theirCombatStrength > ourCombatStrength) return 0
 
 
-        val reachableEnemyCitiesBfs = BFS(civInfo.getCapital().getCenterTile()) { it.canCivEnter(civInfo) }
+        fun isTileCanMoveThrough(tileInfo: TileInfo): Boolean {
+            val owner = tileInfo.getOwner()
+            return !tileInfo.isImpassible()
+                    && (owner == otherCiv || owner == null || civInfo.canEnterTiles(owner))
+        }
+
+        val reachableEnemyCitiesBfs = BFS(civInfo.getCapital().getCenterTile()) { isTileCanMoveThrough(it) }
         reachableEnemyCitiesBfs.stepToEnd()
         val reachableEnemyCities = otherCiv.cities.filter { reachableEnemyCitiesBfs.hasReachedTile(it.getCenterTile()) }
         if (reachableEnemyCities.isEmpty()) return 0 // Can't even reach the enemy city, no point in war.
@@ -375,9 +382,7 @@ object NextTurnAutomation {
             modifierMap["Far away cities"] = -10
 
         val landPathBFS = BFS(ourCity.getCenterTile()) {
-            val owner = it.getOwner()
-            it.isLand && !it.isImpassible()
-                    && (owner == otherCiv || owner == null || civInfo.canEnterTiles(owner))
+            it.isLand && isTileCanMoveThrough(it)
         }
 
         landPathBFS.stepUntilDestination(theirCity.getCenterTile())
@@ -507,9 +512,9 @@ object NextTurnAutomation {
                     currentConstruction is BaseUnit && currentConstruction.uniques.contains(Constants.settlerUnique)
                 }) {
 
-            val bestCity = civInfo.cities.maxBy { it.cityStats.currentCityStats.production }!!
+            val bestCity = civInfo.cities.maxByOrNull { it.cityStats.currentCityStats.production }!!
             if (bestCity.cityConstructions.builtBuildings.size > 1) // 2 buildings or more, otherwise focus on self first
-                bestCity.cityConstructions.currentConstructionFromQueue = settlerUnits.minBy { it.cost }!!.name
+                bestCity.cityConstructions.currentConstructionFromQueue = settlerUnits.minByOrNull { it.cost }!!.name
         }
     }
 
@@ -554,6 +559,6 @@ object NextTurnAutomation {
                 cityDistances += CityDistance(civ1city, civ2city,
                         civ1city.getCenterTile().aerialDistanceTo(civ2city.getCenterTile()))
 
-        return cityDistances.minBy { it.aerialDistance }!!
+        return cityDistances.minByOrNull { it.aerialDistance }!!
     }
 }

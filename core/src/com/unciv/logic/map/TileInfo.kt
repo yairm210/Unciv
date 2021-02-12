@@ -502,7 +502,8 @@ open class TileInfo {
         if (!ruleset.terrains.containsKey(baseTerrain)) return "Base terrain $baseTerrain does not exist in ruleset!"
         if (terrainFeature != null && !ruleset.terrains.containsKey(terrainFeature)) return "Terrain feature $terrainFeature does not exist in ruleset!"
         if (resource != null && !ruleset.tileResources.containsKey(resource)) return "Resource $resource does not exist in ruleset!"
-        if (improvement != null && !ruleset.tileImprovements.containsKey(improvement)) return "Improvement $improvement does not exist in ruleset!"
+        if (improvement != null && !improvement!!.startsWith("StartingLocation")
+                && !ruleset.tileImprovements.containsKey(improvement)) return "Improvement $improvement does not exist in ruleset!"
         return ""
     }
 
