@@ -13,13 +13,14 @@ import com.unciv.ui.utils.toLabel
 class ModCheckboxTable(val gameParameters: GameParameters, val screen: CameraStageBaseScreen, onUpdate: (String) -> Unit): Table(){
     init {
         val modRulesets = RulesetCache.values.filter { it.name != "" }
+        val mods = gameParameters.mods
 
         val baseRulesetCheckboxes = ArrayList<CheckBox>()
         val extentionRulesetModButtons = ArrayList<CheckBox>()
 
         for (mod in modRulesets) {
             val checkBox = CheckBox(mod.name.tr(), CameraStageBaseScreen.skin)
-            if (mod.name in gameParameters.mods) checkBox.isChecked = true
+            if (mod.name in mods) checkBox.isChecked = true
             checkBox.onChange {
                 if (checkBox.isChecked) {
                     val modLinkErrors = mod.checkModLinks()
@@ -29,19 +30,19 @@ class ModCheckboxTable(val gameParameters: GameParameters, val screen: CameraSta
                         return@onChange
                     }
 
-                    val previousMods = gameParameters.mods.toList()
+                    val previousMods = mods.toList()
 
                     if (mod.modOptions.isBaseRuleset)
                         for (oldBaseRuleset in previousMods) // so we don't get concurrent modification excpetions
                             if (modRulesets.firstOrNull { it.name == oldBaseRuleset }?.modOptions?.isBaseRuleset == true)
-                                gameParameters.mods.remove(oldBaseRuleset)
-                    gameParameters.mods.add(mod.name)
+                                mods.remove(oldBaseRuleset)
+                    mods.add(mod.name)
 
                     var isCompatibleWithCurrentRuleset = true
                     var complexModLinkErrors = ""
                     try {
                         val newRuleset = RulesetCache.getComplexRuleset(gameParameters)
-                        newRuleset.modOptions.isBaseRuleset = true
+                        newRuleset.modOptions.isBaseRuleset = true // This is so the checkModLinks finds all connections
                         complexModLinkErrors = newRuleset.checkModLinks()
                         if (complexModLinkErrors != "") isCompatibleWithCurrentRuleset = false
                     } catch (x: Exception) {
@@ -53,13 +54,13 @@ class ModCheckboxTable(val gameParameters: GameParameters, val screen: CameraSta
                     if (!isCompatibleWithCurrentRuleset) {
                         ToastPopup("The mod you selected is incompatible with the defined ruleset!\n\n$complexModLinkErrors", screen)
                         checkBox.isChecked = false
-                        gameParameters.mods.clear()
-                        gameParameters.mods.addAll(previousMods)
+                        mods.clear()
+                        mods.addAll(previousMods)
                         return@onChange
                     }
 
                 } else {
-                    gameParameters.mods.remove(mod.name)
+                    mods.remove(mod.name)
                 }
 
                 onUpdate(mod.name)

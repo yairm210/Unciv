@@ -498,13 +498,14 @@ open class TileInfo {
                     && (terrainFeature == Constants.jungle || terrainFeature == Constants.forest)
                     && isFriendlyTerritory(civInfo)
 
-    fun isRulesetCompatible(ruleset: Ruleset): Boolean {
-        if (!ruleset.terrains.containsKey(baseTerrain)) return false
-        if (terrainFeature != null && !ruleset.terrains.containsKey(terrainFeature)) return false
-        if (resource != null && !ruleset.tileResources.containsKey(resource)) return false
-        if (improvement != null && !ruleset.tileImprovements.containsKey(baseTerrain)) return false
-        return true
+    fun getRulesetIncompatability(ruleset: Ruleset):String{
+        if (!ruleset.terrains.containsKey(baseTerrain)) return "Base terrain $baseTerrain does not exist in ruleset!"
+        if (terrainFeature != null && !ruleset.terrains.containsKey(terrainFeature)) return "Terrain feature $terrainFeature does not exist in ruleset!"
+        if (resource != null && !ruleset.tileResources.containsKey(resource)) return "Resource $resource does not exist in ruleset!"
+        if (improvement != null && !ruleset.tileImprovements.containsKey(baseTerrain)) return "Improvement $improvement does not exist in ruleset!"
+        return ""
     }
+
 
     //endregion
 
@@ -515,6 +516,8 @@ open class TileInfo {
     }
 
     fun setTerrainTransients() {
+        if (!ruleset.terrains.containsKey(baseTerrain))
+            throw Exception()
         baseTerrainObject = ruleset.terrains[baseTerrain]!!
         isWater = getBaseTerrain().type == TerrainType.Water
         isLand = getBaseTerrain().type == TerrainType.Land
