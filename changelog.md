@@ -1,3 +1,11 @@
+## 3.12.15
+
+Mod-specific maps are go! :D
+
+Solved "AI doesn't declare war" bug
+
+Removed Scenario Maps entirely - was not a well thought-out concept and caused more confusion than actual fun.
+
 ## 3.12.14
 
 Catch for bug in new movement algorithm when you can't move to a unknown tile, but CAN pass through (but not move to) intermediate tiles.
