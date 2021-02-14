@@ -410,6 +410,13 @@ OtherIcons/Crosshair
   orig: 100, 100
   offset: 0, 0
   index: -1
+OtherIcons/Camera
+  rotate: false
+  xy: 500, 500
+  size: 100, 100
+  orig: 100, 100
+  offset: 0, 0
+  index: -1
 OtherIcons/DisbandUnit
   rotate: false
   xy: 1503, 1730

@@ -630,6 +630,10 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
         }
 //        topBar.selectedCivLabel.setText(Gdx.graphics.framesPerSecond) // for framerate testing
 
+        var scrollPos = Vector2(mapHolder.scrollX, mapHolder.scrollY);
+        var viewScale = Vector2(mapHolder.scaleX, mapHolder.scaleY);
+        minimapWrapper.minimap.updateScrollPosistion(scrollPos, viewScale)
+
         super.render(delta)
     }
 
