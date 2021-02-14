@@ -8,6 +8,8 @@ import kotlin.math.sqrt
 
 
 open class ZoomableScrollPane: ScrollPane(null) {
+    var continousScrollingX = false
+
     init{
         // Remove the existing inputListener
         // which defines that mouse scroll = vertical movement
