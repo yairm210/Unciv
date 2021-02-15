@@ -41,7 +41,7 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
     //would need a double for loop
     val allWorldTileGroups = ArrayList<WorldTileGroup>()
 
-    var unitActionOverlay: Actor? = null
+    val unitActionOverlays: ArrayList<Actor> = ArrayList()
 
     init {
         if (Gdx.app.type == Application.ApplicationType.Desktop) this.setFlingTime(0f)
@@ -121,7 +121,7 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
     }
 
     private fun onTileClicked(tileInfo: TileInfo) {
-        unitActionOverlay?.remove()
+        removeUnitActionOverlay()
         selectedTile = tileInfo
 
         val unitTable = worldScreen.bottomUnitTable
@@ -196,7 +196,7 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
                     worldScreen.shouldUpdate = true
                     if (selectedUnits.size > 1) { // We have more tiles to move
                         moveUnitToTargetTile(selectedUnits.subList(1, selectedUnits.size), targetTile)
-                    } else unitActionOverlay?.remove() //we're done here
+                    } else removeUnitActionOverlay() //we're done here
                 } catch (e: Exception) {
                 }
             }
@@ -250,34 +250,36 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
     }
 
     private fun addTileOverlays(tileInfo: TileInfo, moveHereDto: MoveHereButtonDto? = null) {
-        val table = Table().apply { defaults().pad(10f) }
-        if (moveHereDto != null && worldScreen.canChangeState)
-            table.add(getMoveHereButton(moveHereDto))
+        for (group in tileGroups[tileInfo]!!){
+            val table = Table().apply { defaults().pad(10f) }
+            if (moveHereDto != null && worldScreen.canChangeState)
+                table.add(getMoveHereButton(moveHereDto))
 
-        val unitList = ArrayList<MapUnit>()
-        if (tileInfo.isCityCenter()
-                && (tileInfo.getOwner() == worldScreen.viewingCiv || worldScreen.viewingCiv.isSpectator())) {
-            unitList.addAll(tileInfo.getCity()!!.getCenterTile().getUnits())
-        } else if (tileInfo.airUnits.isNotEmpty()
-                && (tileInfo.airUnits.first().civInfo == worldScreen.viewingCiv || worldScreen.viewingCiv.isSpectator())) {
-            unitList.addAll(tileInfo.getUnits())
-        }
-
-        for (unit in unitList) {
-            val unitGroup = UnitGroup(unit, 60f).surroundWithCircle(80f)
-            unitGroup.circle.color = Color.GRAY.cpy().apply { a = 0.5f }
-            if (unit.currentMovement == 0f) unitGroup.color.a = 0.5f
-            unitGroup.touchable = Touchable.enabled
-            unitGroup.onClick {
-                worldScreen.bottomUnitTable.selectUnit(unit, Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT))
-                worldScreen.shouldUpdate = true
-                unitActionOverlay?.remove()
+            val unitList = ArrayList<MapUnit>()
+            if (tileInfo.isCityCenter()
+                    && (tileInfo.getOwner() == worldScreen.viewingCiv || worldScreen.viewingCiv.isSpectator())) {
+                unitList.addAll(tileInfo.getCity()!!.getCenterTile().getUnits())
+            } else if (tileInfo.airUnits.isNotEmpty()
+                    && (tileInfo.airUnits.first().civInfo == worldScreen.viewingCiv || worldScreen.viewingCiv.isSpectator())) {
+                unitList.addAll(tileInfo.getUnits())
             }
-            table.add(unitGroup)
-        }
 
-        addOverlayOnTileGroup(tileInfo, table)
-        table.moveBy(0f, 60f)
+            for (unit in unitList) {
+                val unitGroup = UnitGroup(unit, 60f).surroundWithCircle(80f)
+                unitGroup.circle.color = Color.GRAY.cpy().apply { a = 0.5f }
+                if (unit.currentMovement == 0f) unitGroup.color.a = 0.5f
+                unitGroup.touchable = Touchable.enabled
+                unitGroup.onClick {
+                    worldScreen.bottomUnitTable.selectUnit(unit, Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT))
+                    worldScreen.shouldUpdate = true
+                    removeUnitActionOverlay()
+                }
+                table.add(unitGroup)
+            }
+
+            addOverlayOnTileGroup(group, table)
+            table.moveBy(0f, 60f)
+        }
     }
 
     private fun getMoveHereButton(dto: MoveHereButtonDto): Group {
@@ -313,9 +315,7 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
     }
 
 
-    private fun addOverlayOnTileGroup(tileInfo: TileInfo, actor: Actor) {
-
-        val group = tileGroups[tileInfo]!!.first()
+    private fun addOverlayOnTileGroup(group: TileGroup, actor: Actor) {
 
         actor.center(group)
         actor.x += group.x
@@ -324,7 +324,7 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
         actor.toFront()
 
         actor.y += actor.height
-        unitActionOverlay = actor
+        unitActionOverlays.add(actor)
 
     }
 
@@ -369,9 +369,8 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
                     updateTilegroupsForSelectedUnit(unit, playerViewableTilePositions)
                 }
             }
-            unitActionOverlay != null -> {
-                unitActionOverlay!!.remove()
-                unitActionOverlay = null
+            unitActionOverlays.isNotEmpty() -> {
+                removeUnitActionOverlay()
             }
         }
 
@@ -525,6 +524,12 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
                     tileGroup.cityButtonLayerGroup.isTransform = true
                 tileGroup.cityButtonLayerGroup.setScale(scale)
             }
+    }
+
+    fun removeUnitActionOverlay(){
+        for (overlay in unitActionOverlays)
+            overlay.remove()
+        unitActionOverlays.clear()
     }
 
     // For debugging purposes
