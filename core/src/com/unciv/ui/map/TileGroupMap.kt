@@ -110,6 +110,10 @@ class TileGroupMap<T: TileGroup>(val tileGroups: Collection<T>, val padding: Flo
         for(group in miscLayers) addActor(group)
         for(group in circleCrosshairFogLayers) addActor(group)
         for(group in tileGroups) addActor(group) // The above layers are for the visual layers, this is for the clickability of the tile
+        if (worldWrap){
+            for(group in leftMirrorTileGroups.values) addActor(group)
+            for(group in rightMirrorTileGroups.values) addActor(group)
+        }
         for(group in unitLayers) addActor(group) // Aaand units above everything else.
         for(group in unitImageLayers) addActor(group) // This is so the individual textures for the units are rendered together
         for(group in cityButtonLayers) addActor(group) // city buttons + clickability
