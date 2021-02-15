@@ -4,18 +4,29 @@ import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.unciv.logic.HexMath
+import com.unciv.logic.map.TileInfo
 import com.unciv.ui.tilegroups.TileGroup
 import kotlin.math.max
 import kotlin.math.min
 
-class TileGroupMap<T: TileGroup>(val tileGroups: Collection<T>, val padding: Float): Group(){
+class TileGroupMap<T: TileGroup>(val tileGroups: Collection<T>, val padding: Float, worldWrap: Boolean = true): Group(){
     var topX = -Float.MAX_VALUE
     var topY = -Float.MAX_VALUE
     var bottomX = Float.MAX_VALUE
     var bottomY = Float.MAX_VALUE
     val groupSize = 50
+    val leftMirrorTileGroups = HashMap<TileInfo, TileGroup>()
+    val rightMirrorTileGroups = HashMap<TileInfo, TileGroup>()
+
     init{
-        for(tileGroup in tileGroups){
+        if (worldWrap) {
+            for(tileGroup in tileGroups) {
+                leftMirrorTileGroups[tileGroup.tileInfo] = tileGroup.clone()
+                rightMirrorTileGroups[tileGroup.tileInfo] = tileGroup.clone()
+            }
+        }
+
+        for(tileGroup in tileGroups) {
             val positionalVector = HexMath.hex2WorldCoords(tileGroup.tileInfo.position)
 
             tileGroup.setPosition(positionalVector.x * 0.8f * groupSize.toFloat(),
@@ -27,8 +38,32 @@ class TileGroupMap<T: TileGroup>(val tileGroups: Collection<T>, val padding: Flo
             bottomY = min(bottomY, tileGroup.y)
         }
 
+        if (worldWrap){
+            for(tileGroup in leftMirrorTileGroups.values) {
+                val positionalVector = HexMath.hex2WorldCoords(tileGroup.tileInfo.position)
+
+                tileGroup.setPosition(positionalVector.x * 0.8f * groupSize.toFloat(),
+                        positionalVector.y * 0.8f * groupSize.toFloat())
+            }
+            for(tileGroup in rightMirrorTileGroups.values) {
+                val positionalVector = HexMath.hex2WorldCoords(tileGroup.tileInfo.position)
+
+                tileGroup.setPosition(positionalVector.x * 0.8f * groupSize.toFloat(),
+                        positionalVector.y * 0.8f * groupSize.toFloat())
+            }
+        }
+
         for (group in tileGroups) {
             group.moveBy(-bottomX + padding, -bottomY + padding * 0.5f)
+        }
+
+        if (worldWrap) {
+            for (group in leftMirrorTileGroups.values) {
+                group.moveBy(-bottomX + padding - bottomX * -2, -bottomY + padding * 0.5f)
+            }
+            for (group in rightMirrorTileGroups.values) {
+                group.moveBy(-bottomX + padding - bottomX * 2, -bottomY + padding * 0.5f)
+            }
         }
 
         val baseLayers = ArrayList<Group>()
@@ -49,6 +84,26 @@ class TileGroupMap<T: TileGroup>(val tileGroups: Collection<T>, val padding: Flo
             unitImageLayers.add(group.unitImageLayerGroup.apply { setPosition(group.x,group.y) })
             cityButtonLayers.add(group.cityButtonLayerGroup.apply { setPosition(group.x,group.y) })
             circleCrosshairFogLayers.add(group.circleCrosshairFogLayerGroup.apply { setPosition(group.x,group.y) })
+
+            if (worldWrap){
+                var group = leftMirrorTileGroups[group.tileInfo]!!
+                baseLayers.add(group.baseLayerGroup.apply { setPosition(group.x,group.y) })
+                featureLayers.add(group.terrainFeatureLayerGroup.apply { setPosition(group.x,group.y) })
+                miscLayers.add(group.miscLayerGroup.apply { setPosition(group.x,group.y) })
+                unitLayers.add(group.unitLayerGroup.apply { setPosition(group.x,group.y) })
+                unitImageLayers.add(group.unitImageLayerGroup.apply { setPosition(group.x,group.y) })
+                cityButtonLayers.add(group.cityButtonLayerGroup.apply { setPosition(group.x,group.y) })
+                circleCrosshairFogLayers.add(group.circleCrosshairFogLayerGroup.apply { setPosition(group.x,group.y) })
+
+                group = rightMirrorTileGroups[group.tileInfo]!!
+                baseLayers.add(group.baseLayerGroup.apply { setPosition(group.x,group.y) })
+                featureLayers.add(group.terrainFeatureLayerGroup.apply { setPosition(group.x,group.y) })
+                miscLayers.add(group.miscLayerGroup.apply { setPosition(group.x,group.y) })
+                unitLayers.add(group.unitLayerGroup.apply { setPosition(group.x,group.y) })
+                unitImageLayers.add(group.unitImageLayerGroup.apply { setPosition(group.x,group.y) })
+                cityButtonLayers.add(group.cityButtonLayerGroup.apply { setPosition(group.x,group.y) })
+                circleCrosshairFogLayers.add(group.circleCrosshairFogLayerGroup.apply { setPosition(group.x,group.y) })
+            }
         }
         for(group in baseLayers) addActor(group)
         for(group in featureLayers) addActor(group)
