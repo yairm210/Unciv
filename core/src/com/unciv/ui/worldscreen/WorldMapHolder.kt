@@ -26,6 +26,7 @@ import com.unciv.models.AttackableTile
 import com.unciv.models.UncivSound
 import com.unciv.models.ruleset.unit.UnitType
 import com.unciv.ui.map.TileGroupMap
+import com.unciv.ui.tilegroups.TileGroup
 import com.unciv.ui.tilegroups.TileSetStrings
 import com.unciv.ui.tilegroups.WorldTileGroup
 import com.unciv.ui.utils.*
@@ -52,15 +53,14 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
     internal fun addTiles() {
         val tileSetStrings = TileSetStrings()
         val daTileGroups = tileMap.values.map { WorldTileGroup(worldScreen, it, tileSetStrings) }
-        val mirrorTileGroupsLeft = ArrayList<WorldTileGroup>()
-        val mirrorTileGroupsRight = ArrayList<WorldTileGroup>()
+        val tileGroupMap = TileGroupMap(daTileGroups, worldScreen.stage.width)
+        val mirrorTileGroupsLeft = tileGroupMap.getMirrorTilesLeft()
+        val mirrorTileGroupsRight = tileGroupMap.getMirrorTilesRight()
 
         for (tileGroup in daTileGroups) {
             if (continousScrollingX){
-                val mirrorTileGroupLeft = tileGroup.addMirrorTile()
-                val mirrorTileGroupRight = tileGroup.addMirrorTile()
-                mirrorTileGroupsLeft.add(mirrorTileGroupLeft)
-                mirrorTileGroupsRight.add(mirrorTileGroupRight)
+                val mirrorTileGroupLeft = mirrorTileGroupsLeft[tileGroup.tileInfo]!!
+                val mirrorTileGroupRight = mirrorTileGroupsRight[tileGroup.tileInfo]!!
 
                 allWorldTileGroups.add(tileGroup)
                 allWorldTileGroups.add(mirrorTileGroupLeft)
@@ -72,8 +72,6 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
                 allWorldTileGroups.add(tileGroup)
             }
         }
-
-        val tileGroupMap = TileGroupMap(daTileGroups, worldScreen.stage.width)
 
         for (tileGroup in allWorldTileGroups) {
             tileGroup.cityButtonLayerGroup.onClick(UncivSound.Silent) {
@@ -110,11 +108,6 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
                     }
                 }
             })
-        }
-
-        if (continousScrollingX){
-            tileGroupMap.addMirrorTiles(mirrorTileGroupsRight, 1)
-            tileGroupMap.addMirrorTiles(mirrorTileGroupsLeft, -1)
         }
 
         actor = tileGroupMap
