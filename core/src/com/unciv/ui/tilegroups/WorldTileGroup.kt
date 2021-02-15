@@ -63,4 +63,5 @@ class WorldTileGroup(internal val worldScreen: WorldScreen, tileInfo: TileInfo, 
         return worldScreen.bottomUnitTable.citySelected(city)
     }
 
+    override fun clone(): WorldTileGroup = WorldTileGroup(worldScreen, tileInfo , tileSetStrings)
 }

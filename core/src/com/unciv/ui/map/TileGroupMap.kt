@@ -15,14 +15,14 @@ class TileGroupMap<T: TileGroup>(val tileGroups: Collection<T>, val padding: Flo
     var bottomX = Float.MAX_VALUE
     var bottomY = Float.MAX_VALUE
     val groupSize = 50
-    val leftMirrorTileGroups = HashMap<TileInfo, TileGroup>()
-    val rightMirrorTileGroups = HashMap<TileInfo, TileGroup>()
+    private val leftMirrorTileGroups = HashMap<TileInfo, T>()
+    private val rightMirrorTileGroups = HashMap<TileInfo, T>()
 
     init{
         if (worldWrap) {
             for(tileGroup in tileGroups) {
-                leftMirrorTileGroups[tileGroup.tileInfo] = tileGroup.clone()
-                rightMirrorTileGroups[tileGroup.tileInfo] = tileGroup.clone()
+                leftMirrorTileGroups[tileGroup.tileInfo] = tileGroup.clone() as T
+                rightMirrorTileGroups[tileGroup.tileInfo] = tileGroup.clone() as T
             }
         }
 
@@ -131,6 +131,8 @@ class TileGroupMap<T: TileGroup>(val tileGroups: Collection<T>, val padding: Flo
                 .scl(1f / trueGroupSize)
     }
 
+    fun getMirrorTilesLeft(): HashMap<TileInfo, T> = leftMirrorTileGroups
+    fun getMirrorTilesRight(): HashMap<TileInfo, T> = rightMirrorTileGroups
 
     // For debugging purposes
     override fun draw(batch: Batch?, parentAlpha: Float) { super.draw(batch, parentAlpha) }
