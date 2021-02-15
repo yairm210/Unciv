@@ -1,10 +1,14 @@
-## 3.12.15
+## 3.13.0
 
 Mod-specific maps are go! :D
+
+Movement algorithm updated - can no longer see whether you can move to unknown tiles
 
 Solved "AI doesn't declare war" bug
 
 Removed Scenario Maps entirely - was not a well thought-out concept and caused more confusion than actual fun.
+
+Better tech descriptions for increased improvement stats
 
 ## 3.12.14
 

@@ -24,7 +24,7 @@ open class PickerScreen : CameraStageBaseScreen() {
 
         descriptionLabel = "".toLabel()
         descriptionLabel.wrap = true
-        val labelScroll = ScrollPane(descriptionLabel)
+        val labelScroll = ScrollPane(descriptionLabel,skin)
         bottomTable.add(labelScroll).pad(5f).fill().expand()
 
         rightSideButton = "".toTextButton()
