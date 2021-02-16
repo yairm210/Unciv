@@ -1,3 +1,17 @@
+## 3.13.1
+
+Resolved #3600 - multiplayer game reloading and screen resize no longer reset map zoom and position
+
+Resolved #3495 - Added scrollbars to civilopedia and picker screens
+
+Map editor knows to remove resources that don't exist in mods
+
+Can now create as many tech rows as you wish in mods :)
+
+Display scroll position on minimap - By devbeutler
+
+Translation updates
+
 ## 3.13.0
 
 Mod-specific maps are go! :D
