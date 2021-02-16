@@ -466,6 +466,8 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
             if (terrainFeature == null || terrainFeature.occursOn.isNotEmpty() && !terrainFeature.occursOn.contains(tileInfo.baseTerrain))
                 tileInfo.terrainFeature = null
         }
+        if (tileInfo.resource != null && !ruleset.tileResources.containsKey(tileInfo.resource))
+            tileInfo.resource = null
         if (tileInfo.resource != null) {
             val resource = tileInfo.getTileResource()
             if (resource.terrainsCanBeFoundOn.none { it == tileInfo.baseTerrain || it == tileInfo.terrainFeature })
@@ -489,7 +491,7 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
         tileInfo.improvement = null // Unset, and check if it can be reset. If so, do it, if not, invalid.
         if (tileInfo.canImprovementBeBuiltHere(improvement)
                 // Allow building 'other' improvements like city ruins, barb encampments, Great Improvements etc
-                || (improvement.terrainsCanBeBuiltOn.isEmpty() && ruleset.tileResources.values.none { it.improvement==improvement.name }
+                || (improvement.terrainsCanBeBuiltOn.isEmpty() && ruleset.tileResources.values.none { it.improvement == improvement.name }
                         && !tileInfo.isImpassible() && tileInfo.isLand))
             tileInfo.improvement = improvement.name
     }
