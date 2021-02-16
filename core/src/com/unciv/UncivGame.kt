@@ -129,10 +129,6 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
         }
     }
 
-    fun loadGame(gameName: String) {
-        loadGame(GameSaver.loadGameByName(gameName))
-    }
-
     fun startMusic() {
         if (settings.musicVolume < 0.01) return
 
