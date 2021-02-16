@@ -93,21 +93,22 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo, centerOnTech: Tec
 
     private fun createTechTable() {
         val allTechs = civInfo.gameInfo.ruleSet.technologies.values
-        val columns = allTechs.map { it.column!!.columnNumber }.max()!! + 1
-        val techMatrix = Array<Array<Technology?>>(columns) { arrayOfNulls(10) } // Divided into columns, then rows
+        val columns = allTechs.map { it.column!!.columnNumber }.maxOrNull()!! + 1
+        val rows = allTechs.map { it.row }.maxOrNull()!! + 1
+        val techMatrix = Array<Array<Technology?>>(columns) { arrayOfNulls(rows) } // Divided into columns, then rows
 
         for (technology in allTechs) {
             techMatrix[technology.column!!.columnNumber][technology.row - 1] = technology
         }
 
         val erasNamesToColumns = LinkedHashMap<String, ArrayList<Int>>()
-        for(tech in allTechs) {
+        for (tech in allTechs) {
             val era = tech.era()
             if (!erasNamesToColumns.containsKey(era)) erasNamesToColumns[era] = ArrayList()
             val columnNumber = tech.column!!.columnNumber
             if (!erasNamesToColumns[era]!!.contains(columnNumber)) erasNamesToColumns[era]!!.add(columnNumber)
         }
-        var i=0
+        var i = 0
         for ((era, columns) in erasNamesToColumns) {
             val columnSpan = columns.size
             val color = if (i % 2 == 0) Color.BLUE else Color.FIREBRICK
