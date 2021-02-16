@@ -32,7 +32,6 @@ class TileGroupMap<T: TileGroup>(val tileGroups: Collection<T>, val padding: Flo
             tileGroup.setPosition(positionalVector.x * 0.8f * groupSize.toFloat(),
                     positionalVector.y * 0.8f * groupSize.toFloat())
 
-
             topX =
                 if (worldWrap)
                     // Well it's not pretty but it works
@@ -50,30 +49,25 @@ class TileGroupMap<T: TileGroup>(val tileGroups: Collection<T>, val padding: Flo
             bottomY = min(bottomY, tileGroup.y)
         }
 
-        if (worldWrap){
-            for(tileGroup in leftMirrorTileGroups.values) {
-                val positionalVector = HexMath.hex2WorldCoords(tileGroup.tileInfo.position)
-
-                tileGroup.setPosition(positionalVector.x * 0.8f * groupSize.toFloat(),
-                        positionalVector.y * 0.8f * groupSize.toFloat())
-            }
-            for(tileGroup in rightMirrorTileGroups.values) {
-                val positionalVector = HexMath.hex2WorldCoords(tileGroup.tileInfo.position)
-
-                tileGroup.setPosition(positionalVector.x * 0.8f * groupSize.toFloat(),
-                        positionalVector.y * 0.8f * groupSize.toFloat())
-            }
-        }
-
         for (group in tileGroups) {
             group.moveBy(-bottomX + padding, -bottomY + padding * 0.5f)
         }
 
         if (worldWrap) {
             for (group in leftMirrorTileGroups.values) {
+                val positionalVector = HexMath.hex2WorldCoords(group.tileInfo.position)
+
+                group.setPosition(positionalVector.x * 0.8f * groupSize.toFloat(),
+                        positionalVector.y * 0.8f * groupSize.toFloat())
+
                 group.moveBy(-bottomX + padding + bottomX * 2, -bottomY + padding * 0.5f)
             }
             for (group in rightMirrorTileGroups.values) {
+                val positionalVector = HexMath.hex2WorldCoords(group.tileInfo.position)
+
+                group.setPosition(positionalVector.x * 0.8f * groupSize.toFloat(),
+                        positionalVector.y * 0.8f * groupSize.toFloat())
+
                 group.moveBy(-bottomX + padding - bottomX * 2, -bottomY + padding * 0.5f)
             }
         }
