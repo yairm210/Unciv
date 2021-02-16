@@ -39,7 +39,7 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo, centerOnTech: Tec
     private var researchableTechs = civInfo.gameInfo.ruleSet.technologies.keys
             .filter { civTech.canBeResearched(it) }.toHashSet()
 
-    private val currentTechColor = colorFromRGB(7, 46, 43)
+    private val currentTechColor = colorFromRGB(100, 150, 254)
     private val researchedTechColor = colorFromRGB(133, 112, 39)
     private val researchableTechColor = colorFromRGB(28, 170, 0)
     private val queuedTechColor = colorFromRGB(39, 114, 154)
