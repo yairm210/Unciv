@@ -45,7 +45,7 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
 
     init {
         if (Gdx.app.type == Application.ApplicationType.Desktop) this.setFlingTime(0f)
-        if (tileMap.mapParameters.worldWrap) continousScrollingX = true
+        continousScrollingX = tileMap.mapParameters.worldWrap
     }
 
     // Used to transfer data on the "move here" button that should be created, from the side thread to the main thread
