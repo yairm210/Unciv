@@ -32,7 +32,19 @@ class TileGroupMap<T: TileGroup>(val tileGroups: Collection<T>, val padding: Flo
             tileGroup.setPosition(positionalVector.x * 0.8f * groupSize.toFloat(),
                     positionalVector.y * 0.8f * groupSize.toFloat())
 
-            topX = max(topX, tileGroup.x + groupSize)
+
+            topX =
+                if (worldWrap)
+                    // Well it's not pretty but it works
+                    // This is so topX is the same no matter what worldWrap is
+                    // wrapped worlds are missing one tile width on the right side
+                    // which would result in a smaller topX
+                    // The resulting topX was always missing 1.2 * groupSize in every possible
+                    // combination of map size and shape
+                    max(topX, tileGroup.x + groupSize * 2.2f)
+                else
+                    max(topX, tileGroup.x + groupSize)
+
             topY = max(topY, tileGroup.y + groupSize)
             bottomX = min(bottomX, tileGroup.x)
             bottomY = min(bottomY, tileGroup.y)
@@ -59,7 +71,7 @@ class TileGroupMap<T: TileGroup>(val tileGroups: Collection<T>, val padding: Flo
 
         if (worldWrap) {
             for (group in leftMirrorTileGroups.values) {
-                group.moveBy(-bottomX + padding - bottomX * -2, -bottomY + padding * 0.5f)
+                group.moveBy(-bottomX + padding + bottomX * 2, -bottomY + padding * 0.5f)
             }
             for (group in rightMirrorTileGroups.values) {
                 group.moveBy(-bottomX + padding - bottomX * 2, -bottomY + padding * 0.5f)
