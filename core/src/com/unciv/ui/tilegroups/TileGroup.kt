@@ -133,6 +133,8 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) 
         isTransform = false // performance helper - nothing here is rotated or scaled
     }
 
+    open fun clone(): TileGroup = TileGroup(tileInfo, tileSetStrings)
+
 
     //region init functions
     private fun addCircleImage() {
