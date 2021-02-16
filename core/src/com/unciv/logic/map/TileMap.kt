@@ -44,15 +44,15 @@ class TileMap {
     constructor()
 
     /** generates an hexagonal map of given radius */
-    constructor(radius: Int, ruleset: Ruleset) {
-        for (vector in HexMath.getVectorsInDistance(Vector2.Zero, radius))
+    constructor(radius: Int, ruleset: Ruleset, worldWrap: Boolean = false) {
+        for (vector in HexMath.getVectorsInDistance(Vector2.Zero, radius, worldWrap))
             tileList.add(TileInfo().apply { position = vector; baseTerrain = Constants.grassland })
         setTransients(ruleset)
     }
 
     /** generates a rectangular map of given width and height*/
-    constructor(width: Int, height: Int, ruleset: Ruleset) {
-        for (x in -width / 2..width / 2)
+    constructor(width: Int, height: Int, ruleset: Ruleset, worldWrap: Boolean = false) {
+        for (x in -width / 2 .. if (worldWrap) { width / 2 - 1 } else { width / 2 })
             for (y in -height / 2..height / 2)
                 tileList.add(TileInfo().apply {
                     position = HexMath.evenQ2HexCoords(Vector2(x.toFloat(), y.toFloat()))
