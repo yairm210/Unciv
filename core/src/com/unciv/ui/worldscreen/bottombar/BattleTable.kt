@@ -211,7 +211,7 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
         else {
             attackButton.onClick {
                 Battle.moveAndAttack(attacker, attackableTile)
-                worldScreen.mapHolder.unitActionOverlay?.remove() // the overlay was one of attacking
+                worldScreen.mapHolder.removeUnitActionOverlay() // the overlay was one of attacking
                 worldScreen.shouldUpdate = true
             }
         }
@@ -283,7 +283,7 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
         else {
             attackButton.onClick {
                 Battle.nuke(attacker, targetTile)
-                worldScreen.mapHolder.unitActionOverlay?.remove() // the overlay was one of attacking
+                worldScreen.mapHolder.removeUnitActionOverlay() // the overlay was one of attacking
                 worldScreen.shouldUpdate = true
             }
         }
