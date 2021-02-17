@@ -52,7 +52,7 @@ class TileMap {
 
     /** generates a rectangular map of given width and height*/
     constructor(width: Int, height: Int, ruleset: Ruleset, worldWrap: Boolean = false) {
-        for (x in -width / 2..width / 2)
+        for (x in -width / 2 .. if (worldWrap) { width / 2 - 1 } else { width / 2 })
             for (y in -height / 2..height / 2)
                 tileList.add(TileInfo().apply {
                     position = HexMath.evenQ2HexCoords(Vector2(x.toFloat(), y.toFloat()))

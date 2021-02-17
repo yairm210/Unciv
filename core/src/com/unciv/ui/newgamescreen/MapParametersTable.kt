@@ -31,7 +31,8 @@ class MapParametersTable(val mapParameters: MapParameters, val isEmptyMapAllowed
         addWorldSizeSelectBox()
         addNoRuinsCheckbox()
         addNoNaturalWondersCheckbox()
-        addWorldWrapCheckbox()
+        //uncomment when whole worldWrap feature is added
+        //addWorldWrapCheckbox()
         addAdvancedSettings()
     }
 
