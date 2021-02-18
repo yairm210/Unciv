@@ -75,8 +75,15 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
                     addSeparator()
                 }
 
-                if (!conqueringCiv.isOneCityChallenger()) {
-
+                if (conqueringCiv.isOneCityChallenger()) {
+                    add("Destroy".toTextButton().onClick {
+                        city.puppetCity(conqueringCiv)
+                        city.destroyCity()
+                        worldScreen.shouldUpdate = true
+                        close()
+                    }).row()
+                    addGoodSizedLabel("Destroying the city instantly razes the city to the ground.").row()
+                } else {
                     add("Annex".toTextButton().onClick {
                         city.puppetCity(conqueringCiv)
                         city.annexCity()
@@ -111,15 +118,6 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
                     }).row()
                     addGoodSizedLabel("Razing the city annexes it, and starts razing the city to the ground.").row()
                     addGoodSizedLabel("The population will gradually dwindle until the city is destroyed.").row()
-                } else {
-
-                    add("Destroy".toTextButton().onClick {
-                        city.puppetCity(conqueringCiv)
-                        city.destroyCity()
-                        worldScreen.shouldUpdate = true
-                        close()
-                    }).row()
-                    addGoodSizedLabel("Destroying the city instantly razes the city to the ground.").row()
                 }
             }
             AlertType.BorderConflict -> {
