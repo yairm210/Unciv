@@ -128,25 +128,26 @@ class TileMap {
                 }.filterNotNull()
 
     private fun getIfTileExistsOrNull(x: Int, y: Int) : TileInfo? {
-        if (contains(x, y)) {
+        if (contains(x, y))
             return get(x, y)
-        }
 
-        if (mapParameters.worldWrap) {
-            var radius = mapParameters.size.radius
-            if (mapParameters.shape == MapShape.rectangular)
-                radius = HexMath.getEquivalentRectangularSize(radius).x.toInt() / 2
+        if (!mapParameters.worldWrap)
+            return null
 
-            if (!contains(x, y)) { //tile is outside of the map
-                if (contains(x + radius, y - radius)) { //tile is on right side
-                    //get tile wrapped around from right to left
-                    return get(x + radius, y - radius)
-                } else if (contains(x - radius, y + radius)) { //tile is on left side
-                    //get tile wrapped around from left to right
-                    return get(x - radius, y + radius)
-                }
+        var radius = mapParameters.size.radius
+        if (mapParameters.shape == MapShape.rectangular)
+            radius = HexMath.getEquivalentRectangularSize(radius).x.toInt() / 2
+
+        if (!contains(x, y)) { //tile is outside of the map
+            if (contains(x + radius, y - radius)) { //tile is on right side
+                //get tile wrapped around from right to left
+                return get(x + radius, y - radius)
+            } else if (contains(x - radius, y + radius)) { //tile is on left side
+                //get tile wrapped around from left to right
+                return get(x - radius, y + radius)
             }
         }
+
         return null
     }
 
