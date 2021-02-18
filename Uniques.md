@@ -63,6 +63,7 @@ tilefilters allow us to specify tiles according to a number of different aspects
 - Base terrain uniques
 - Terrain feature uniques
 - Tile improvements
+- Resource
 - "Water", "Land"
 - "River" (as in all 'river on tile' contexts, it means 'adjacent to a river on at least on side')
 
@@ -71,9 +72,9 @@ So for instance, the unique "[stats] from [tileFilter] tiles in this city" can m
 - "[+1 Gold] from [Water] tiles in this city"
 - "[+1 Production] from [Forest] tiles in this city"
 
-Please note that using resources is only supported in some, not all, use cases (specifically, "[+2 Gold] from [Marble] tiles in this city" is okay)
+Please note that using resources is most use cases, but not in combat ones.
 
-This is due to the fact that resources can be visible to some civs while invisible to others.
+This is due to the fact that resources can be visible to some civs while invisible to others - so if you're attacking with a +10% combat bonus from Coal, while the enemy can't see coal, it could get weird.
 
 ### unitFilter
 
