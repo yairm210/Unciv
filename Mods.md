@@ -84,4 +84,4 @@ When loading a mod, it needs to be in its own folder in `/mods` - this is how yo
 
 Existing mods can be found [here](https://github.com/topics/unciv-mod)!
 
-A list of uniques and how to use them can be found [here](../uniques)!
+A list of uniques and how to use them can be found [here](uniques)!
