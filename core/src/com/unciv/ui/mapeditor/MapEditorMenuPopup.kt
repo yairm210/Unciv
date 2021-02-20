@@ -27,11 +27,9 @@ class MapEditorMenuPopup(var mapEditorScreen: MapEditorScreen): Popup(mapEditorS
         mapEditorScreen.stage.keyboardFocus = mapNameEditor
 
         addNewMapButton()
-        addClearCurrentMapButton()
         addSaveMapButton()
         addCopyMapAsTextButton()
         addLoadMapButton()
-//        addUploadMapButton()
         addExitMapEditorButton()
         addCloseOptionsButton()
     }
@@ -42,33 +40,6 @@ class MapEditorMenuPopup(var mapEditorScreen: MapEditorScreen): Popup(mapEditorS
             UncivGame.Current.setScreen(NewMapScreen())
         }
         add(newMapButton).row()
-    }
-
-    private fun Popup.addClearCurrentMapButton() {
-        val clearCurrentMapButton = "Clear current map".toTextButton()
-
-        clearCurrentMapButton.onClick {
-            YesNoPopup("Are you sure you want to clear the entire map?", {
-                for (tileGroup in mapEditorScreen.mapHolder.tileGroups.values) {
-                    val tile = tileGroup.tileInfo
-                    tile.baseTerrain = Constants.ocean
-                    tile.terrainFeature = null
-                    tile.naturalWonder = null
-                    tile.hasBottomRiver = false
-                    tile.hasBottomLeftRiver = false
-                    tile.hasBottomRightRiver = false
-                    tile.resource = null
-                    tile.improvement = null
-                    tile.improvementInProgress = null
-                    tile.roadStatus = RoadStatus.None
-
-                    tile.setTransients()
-
-                    tileGroup.update()
-                }
-            }, mapEditorScreen).open(true)
-        }
-        add(clearCurrentMapButton).row()
     }
 
     private fun Popup.addSaveMapButton() {
@@ -120,35 +91,6 @@ class MapEditorMenuPopup(var mapEditorScreen: MapEditorScreen): Popup(mapEditorS
             UncivGame.Current.setScreen(LoadMapScreen(mapEditorScreen.tileMap))
         }
         add(loadMapButton).row()
-    }
-
-    private fun Popup.addUploadMapButton() {
-        val uploadMapButton = "Upload map".toTextButton()
-        uploadMapButton.onClick {
-            thread(name = "MapUpload") {
-                try {
-                    val gzippedMap = Gzip.zip(Json().toJson(mapEditorScreen.tileMap))
-                    DropBox.uploadFile("/Maps/" + mapEditorScreen.mapName, gzippedMap)
-
-                    remove()
-                    Gdx.app.postRunnable {
-                        val uploadedSuccessfully = Popup(screen)
-                        uploadedSuccessfully.addGoodSizedLabel("Map uploaded successfully!").row()
-                        uploadedSuccessfully.addCloseButton()
-                        uploadedSuccessfully.open()
-                    }
-                } catch (ex: Exception) {
-                    remove()
-                    Gdx.app.postRunnable {
-                        val couldNotUpload = Popup(screen)
-                        couldNotUpload.addGoodSizedLabel("Could not upload map!").row()
-                        couldNotUpload.addCloseButton()
-                        couldNotUpload.open()
-                    }
-                }
-            }
-        }
-        add(uploadMapButton).row()
     }
 
 
