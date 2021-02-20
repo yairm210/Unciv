@@ -1,3 +1,19 @@
+## 3.13.2
+
+Resolved #3601 - selected current tech no longer looks like unresearchable tech
+
+Resolved #3610 - city sorting in overview is now done by translated, not original, name
+
+Resolved #3586 - Added 'Destroy' translation for capturing cities in one-city challenge
+
+Cleaned up map editor
+
+tileFilter now works with resources for most uniques!
+
+Added mod check for 'provides free building' which does not exist
+
+Translation updates
+
 ## 3.13.1
 
 Resolved #3600 - multiplayer game reloading and screen resize no longer reset map zoom and position
