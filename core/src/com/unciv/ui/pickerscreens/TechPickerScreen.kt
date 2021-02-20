@@ -150,7 +150,7 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo, centerOnTech: Tec
             var text = techName.tr()
 
             if (techName == selectedTech?.name) {
-                techButton.color = techButton.color.cpy().lerp(Color.LIGHT_GRAY, 0.5f)
+                techButton.color = techButton.color.cpy().lerp(Color.BLACK, 0.5f)
             }
 
             if (tempTechsToResearch.contains(techName) && tempTechsToResearch.size > 1) {
