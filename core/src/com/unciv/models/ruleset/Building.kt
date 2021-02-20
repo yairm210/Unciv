@@ -58,7 +58,7 @@ class Building : NamedStats(), IConstruction {
     var replaces: String? = null
     var uniqueTo: String? = null
     var quote: String = ""
-    private var providesFreeBuilding: String? = null
+    var providesFreeBuilding: String? = null
     var uniques = ArrayList<String>()
     var replacementTextForUniques = ""
     val uniqueObjects: List<Unique> by lazy { uniques.map { Unique(it) } }
