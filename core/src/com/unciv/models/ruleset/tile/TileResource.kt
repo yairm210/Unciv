@@ -23,26 +23,26 @@ class TileResource : NamedStats() {
 
     fun getDescription(ruleset: Ruleset): String {
         val stringBuilder = StringBuilder()
-        stringBuilder.appendln(resourceType.name.tr())
-        stringBuilder.appendln(this.clone().toString())
+        stringBuilder.appendLine(resourceType.name.tr())
+        stringBuilder.appendLine(this.clone().toString())
         val terrainsCanBeBuiltOnString: ArrayList<String> = arrayListOf()
         terrainsCanBeBuiltOnString.addAll(terrainsCanBeFoundOn.map { it.tr() })
-        stringBuilder.appendln("Can be found on ".tr() + terrainsCanBeBuiltOnString.joinToString(", "))
+        stringBuilder.appendLine("Can be found on ".tr() + terrainsCanBeBuiltOnString.joinToString(", "))
         stringBuilder.appendln()
-        stringBuilder.appendln("Improved by [$improvement]".tr())
-        stringBuilder.appendln("{Bonus stats for improvement}: ".tr() + "$improvementStats".tr())
+        stringBuilder.appendLine("Improved by [$improvement]".tr())
+        stringBuilder.appendLine("{Bonus stats for improvement}: ".tr() + "$improvementStats".tr())
 
         val buildingsThatConsumeThis = ruleset.buildings.values.filter { it.getResourceRequirements().containsKey(name) }
         if (buildingsThatConsumeThis.isNotEmpty())
-            stringBuilder.appendln("{Buildings that consume this resource}: ".tr()
+            stringBuilder.appendLine("{Buildings that consume this resource}: ".tr()
                     + buildingsThatConsumeThis.joinToString { it.name.tr() })
 
         val unitsThatConsumeThis = ruleset.units.values.filter { it.getResourceRequirements().containsKey(name) }
         if (unitsThatConsumeThis.isNotEmpty())
-            stringBuilder.appendln("{Units that consume this resource}: ".tr()
+            stringBuilder.appendLine("{Units that consume this resource}: ".tr()
                     + unitsThatConsumeThis.joinToString { it.name.tr() })
 
-        if (unique != null) stringBuilder.appendln(unique!!.tr())
+        if (unique != null) stringBuilder.appendLine(unique!!.tr())
         return stringBuilder.toString()
     }
 }

@@ -95,25 +95,25 @@ class Building : NamedStats(), IConstruction {
     fun getDescription(forBuildingPickerScreen: Boolean, civInfo: CivilizationInfo?, ruleset: Ruleset): String {
         val stats = getStats(civInfo)
         val stringBuilder = StringBuilder()
-        if (uniqueTo != null) stringBuilder.appendln("Unique to [$uniqueTo], replaces [$replaces]".tr())
-        if (!forBuildingPickerScreen) stringBuilder.appendln("{Cost}: $cost".tr())
-        if (isWonder) stringBuilder.appendln("Wonder".tr())
-        if (isNationalWonder) stringBuilder.appendln("National Wonder".tr())
+        if (uniqueTo != null) stringBuilder.appendLine("Unique to [$uniqueTo], replaces [$replaces]".tr())
+        if (!forBuildingPickerScreen) stringBuilder.appendLine("{Cost}: $cost".tr())
+        if (isWonder) stringBuilder.appendLine("Wonder".tr())
+        if (isNationalWonder) stringBuilder.appendLine("National Wonder".tr())
         if (!forBuildingPickerScreen && requiredTech != null)
-            stringBuilder.appendln("Required tech: [$requiredTech]".tr())
+            stringBuilder.appendLine("Required tech: [$requiredTech]".tr())
         if (!forBuildingPickerScreen && requiredBuilding != null)
-            stringBuilder.appendln("Requires [$requiredBuilding] to be built in the city".tr())
+            stringBuilder.appendLine("Requires [$requiredBuilding] to be built in the city".tr())
         if (!forBuildingPickerScreen && requiredBuildingInAllCities != null)
-            stringBuilder.appendln("Requires [$requiredBuildingInAllCities] to be built in all cities".tr())
+            stringBuilder.appendLine("Requires [$requiredBuildingInAllCities] to be built in all cities".tr())
         for ((resource, amount) in getResourceRequirements()) {
-            if (amount == 1) stringBuilder.appendln("Consumes 1 [$resource]".tr()) // For now, to keep the existing translations
-            else stringBuilder.appendln("Consumes [$amount] [$resource]".tr())
+            if (amount == 1) stringBuilder.appendLine("Consumes 1 [$resource]".tr()) // For now, to keep the existing translations
+            else stringBuilder.appendLine("Consumes [$amount] [$resource]".tr())
         }
         if (providesFreeBuilding != null)
-            stringBuilder.appendln("Provides a free [$providesFreeBuilding] in the city".tr())
+            stringBuilder.appendLine("Provides a free [$providesFreeBuilding] in the city".tr())
         if (uniques.isNotEmpty()) {
-            if (replacementTextForUniques != "") stringBuilder.appendln(replacementTextForUniques)
-            else stringBuilder.appendln(uniques.asSequence().map { it.tr() }.joinToString("\n"))
+            if (replacementTextForUniques != "") stringBuilder.appendLine(replacementTextForUniques)
+            else stringBuilder.appendLine(uniques.asSequence().map { it.tr() }.joinToString("\n"))
         }
         if (!stats.isEmpty())
             stringBuilder.appendln(stats)
@@ -127,28 +127,28 @@ class Building : NamedStats(), IConstruction {
 
         if (this.greatPersonPoints != null) {
             val gpp = this.greatPersonPoints!!
-            if (gpp.production != 0f) stringBuilder.appendln("+" + gpp.production.toInt() + " " + "[Great Engineer] points".tr())
-            if (gpp.gold != 0f) stringBuilder.appendln("+" + gpp.gold.toInt() + " " + "[Great Merchant] points".tr())
-            if (gpp.science != 0f) stringBuilder.appendln("+" + gpp.science.toInt() + " " + "[Great Scientist] points".tr())
-            if (gpp.culture != 0f) stringBuilder.appendln("+" + gpp.culture.toInt() + " " + "[Great Artist] points".tr())
+            if (gpp.production != 0f) stringBuilder.appendLine("+" + gpp.production.toInt() + " " + "[Great Engineer] points".tr())
+            if (gpp.gold != 0f) stringBuilder.appendLine("+" + gpp.gold.toInt() + " " + "[Great Merchant] points".tr())
+            if (gpp.science != 0f) stringBuilder.appendLine("+" + gpp.science.toInt() + " " + "[Great Scientist] points".tr())
+            if (gpp.culture != 0f) stringBuilder.appendLine("+" + gpp.culture.toInt() + " " + "[Great Artist] points".tr())
         }
 
         for ((specialistName, amount) in newSpecialists())
-            stringBuilder.appendln("+$amount " + "[$specialistName] slots".tr())
+            stringBuilder.appendLine("+$amount " + "[$specialistName] slots".tr())
 
         if (resourceBonusStats != null) {
             val resources = ruleset.tileResources.values.filter { name == it.building }.joinToString { it.name.tr() }
-            stringBuilder.appendln("$resources {provide} $resourceBonusStats".tr())
+            stringBuilder.appendLine("$resources {provide} $resourceBonusStats".tr())
         }
 
         if (requiredNearbyImprovedResources != null)
-            stringBuilder.appendln(("Requires worked [" + requiredNearbyImprovedResources!!.joinToString("/") { it.tr() } + "] near city").tr())
+            stringBuilder.appendLine(("Requires worked [" + requiredNearbyImprovedResources!!.joinToString("/") { it.tr() } + "] near city").tr())
 
-        if (cityStrength != 0) stringBuilder.appendln("{City strength} +".tr() + cityStrength)
-        if (cityHealth != 0) stringBuilder.appendln("{City health} +".tr() + cityHealth)
-        if (xpForNewUnits != 0) stringBuilder.appendln("+$xpForNewUnits {XP for new units}".tr())
+        if (cityStrength != 0) stringBuilder.appendLine("{City strength} +".tr() + cityStrength)
+        if (cityHealth != 0) stringBuilder.appendLine("{City health} +".tr() + cityHealth)
+        if (xpForNewUnits != 0) stringBuilder.appendLine("+$xpForNewUnits {XP for new units}".tr())
         if (maintenance != 0)
-            stringBuilder.appendln("{Maintenance cost}: $maintenance {Gold}".tr())
+            stringBuilder.appendLine("{Maintenance cost}: $maintenance {Gold}".tr())
         return stringBuilder.toString().trim()
     }
 

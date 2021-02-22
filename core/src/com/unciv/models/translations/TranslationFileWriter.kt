@@ -89,7 +89,7 @@ object TranslationFileWriter {
                         // this stops lots of line breaks between removed translations in G&K
                             stringBuilder.appendln()
                     } else // copy as-is
-                        stringBuilder.appendln(line)
+                        stringBuilder.appendLine(line)
                     continue
                 }
 
@@ -110,11 +110,11 @@ object TranslationFileWriter {
                 if (translationEntry != null && translationEntry.containsKey(language)) {
                     translationValue = translationEntry[language]!!
                     translationsOfThisLanguage++
-                } else stringBuilder.appendln(" # Requires translation!")
+                } else stringBuilder.appendLine(" # Requires translation!")
 
                 val lineToWrite = translationKey.replace("\n", "\\n") +
                         " = " + translationValue.replace("\n", "\\n")
-                stringBuilder.appendln(lineToWrite)
+                stringBuilder.appendLine(lineToWrite)
             }
 
             countOfTranslatedLines[language] = translationsOfThisLanguage
@@ -135,7 +135,7 @@ object TranslationFileWriter {
     private fun writeLanguagePercentages(percentages: HashMap<String, Int>) {
         val stringBuilder = StringBuilder()
         for (entry in percentages) {
-            stringBuilder.appendln(entry.key + " = " + entry.value)
+            stringBuilder.appendLine(entry.key + " = " + entry.value)
         }
         Gdx.files.local(TranslationFileReader.percentagesFileLocation).writeString(stringBuilder.toString(), false)
     }
