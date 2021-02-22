@@ -20,9 +20,11 @@
 	{
 		"name": "Granary", 
 		"food": 2,
-		"resourceBonusStats": {"food": 1},
 		"maintenance": 1,
 		"hurryCostModifier": 25,
+		"uniques": ["[+1 Food] from [Deer] tiles in this city",
+			"[+1 Food] from [Bananas] tiles in this city",
+			"[+1 Food] from [Wheat] tiles in this city"]
 		"requiredTech": "Pottery"
 	},
 	{
@@ -30,10 +32,11 @@
 		"happiness": 1,
 		"production": 1,
 		"requiredNearbyImprovedResources": ["Marble", "Stone"],
-		"resourceBonusStats": {"production": 1},
 		"maintenance": 1,
 		"hurryCostModifier": 0,
-		"uniques": ["Must not be on [Plains]"],
+		"uniques": ["Must not be on [Plains]",
+			"[+1 Production] from [Stone] tiles in this city",
+			"[+1 Production] from [Marble] tiles in this city"],
 		"requiredTech": "Calendar"
 	},
 	{
@@ -189,8 +192,8 @@
 		"name": "Lighthouse",
 		"hurryCostModifier": 25,
 		"maintenance": 1,
-		"resourceBonusStats": {"food": 1},
-		"uniques": ["Must be next to [Coast]", "[+1 Food] from [Ocean] tiles in this city", "[+1 Food] from [Coast] tiles in this city"],
+		"uniques": ["Must be next to [Coast]", "[+1 Food] from [Ocean] tiles in this city",
+			"[+1 Food] from [Coast] tiles in this city", "[+1 Food] from [Fish] tiles in this city" ],
 		"requiredTech": "Optics"
 	},
 	{
@@ -207,9 +210,11 @@
 		"name": "Stable", 
 		"maintenance": 1,
 		"requiredNearbyImprovedResources": ["Horses","Sheep","Cattle"],
-		"resourceBonusStats": {"production": 1},
 		"hurryCostModifier": 25,
-		"uniques": ["+[15]% Production when constructing [Mounted] units [in this city]"]
+		"uniques": ["+[15]% Production when constructing [Mounted] units [in this city]", 
+			"[+1 Production] from [Cattle] tiles in this city",
+			"[+1 Production] from [Horses] tiles in this city",
+			"[+1 Production] from [Sheep] tiles in this city"]
 		"requiredTech": "Horseback Riding"
 	},
 	{
@@ -335,9 +340,9 @@
 	{
 		"name": "Mint",
 		"maintenance": 0,
-		"requiredNearbyImprovedResources": ["Gold","Silver"],
-		"resourceBonusStats": {"gold": 2},
+		"requiredNearbyImprovedResources": ["Gold", "Silver"]
 		"hurryCostModifier": 25,
+		"uniques": ["[+2 Gold] from [Gold] tiles in this city", "[+2 Gold] from [Silver] tiles in this city"],
 		"requiredTech": "Currency"
 	},
 	/*
@@ -392,7 +397,7 @@
 		"name": "Monastery",
 		"maintenance": 0,
 		"requiredNearbyImprovedResources": ["Wine","Incense"],
-		"resourceBonusStats": {"culture": 2},
+		"uniques": ["[+2 Culture] from [Wine] tiles in this city", "[+2 Culture] from [Incense] tiles in this city"],
 		"hurryCostModifier": 25,
 		"requiredTech": "Theology"
 	},
@@ -461,10 +466,10 @@
 		"maintenance": 1,
 		"hurryCostModifier": 25,
 		"requiredNearbyImprovedResources": ["Iron"],
-		"resourceBonusStats": {"production": 1},
 		"requiredTech": "Metal Casting",
 		"uniques": ["+[15]% Production when constructing [Spaceship part] units [in this city]",
-			"+[15]% Production when constructing [Land] units [in this city]"]
+			"+[15]% Production when constructing [Land] units [in this city]",
+			"[+1 Production] from [Iron] tiles in this city"]
 	},
 	{
 		"name": "Harbor",

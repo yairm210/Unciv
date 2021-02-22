@@ -8,6 +8,7 @@ import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.stats.NamedStats
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
+import com.unciv.models.translations.fillPlaceholders
 import com.unciv.models.translations.tr
 import java.util.*
 import kotlin.collections.ArrayList
@@ -66,6 +67,7 @@ class Building : NamedStats(), IConstruction {
     /**
      * The bonus stats that a resource gets when this building is built
      */
+    @Deprecated("Since 3.13.3 - replaced with '[stats] from [resource] tiles in this city'")
     var resourceBonusStats: Stats? = null
 
     fun getShortDescription(ruleset: Ruleset): String { // should fit in one line
@@ -75,21 +77,35 @@ class Building : NamedStats(), IConstruction {
         for (stat in getStatPercentageBonuses(null).toHashMap())
             if (stat.value != 0f) infoList += "+${stat.value.toInt()}% ${stat.key.toString().tr()}"
 
-        val improvedResources = ruleset.tileResources.values.filter { it.building == name }.map { it.name.tr() }
-        if (improvedResources.isNotEmpty()) {
+        val improvedResources = ruleset.tileResources.values.asSequence().filter { it.building == name }.map { it.name.tr() }
+        if (improvedResources.any()) {
             // buildings that improve resources
-            infoList += improvedResources.joinToString() + " {provide} ".tr() + resourceBonusStats.toString()
+            infoList += improvedResources.joinToString() + " {provide} " + resourceBonusStats.toString()
         }
         if (requiredNearbyImprovedResources != null)
-            infoList += ("Requires worked [" + requiredNearbyImprovedResources!!.joinToString("/") { it.tr() } + "] near city").tr()
+            infoList += "Requires worked [" + requiredNearbyImprovedResources!!.joinToString("/") { it.tr() } + "] near city"
         if (uniques.isNotEmpty()) {
             if (replacementTextForUniques != "") infoList += replacementTextForUniques
-            else infoList += uniques.joinToString { it.tr() }
+            else infoList += getUniquesStrings()
         }
-        if (cityStrength != 0) infoList += "{City strength} +".tr() + cityStrength
-        if (cityHealth != 0) infoList += "{City health} +".tr() + cityHealth
-        if (xpForNewUnits != 0) infoList += "+$xpForNewUnits {XP for new units}".tr()
-        return infoList.joinToString()
+        if (cityStrength != 0) infoList += "{City strength} +$cityStrength"
+        if (cityHealth != 0) infoList += "{City health} +$cityHealth"
+        if (xpForNewUnits != 0) infoList += "+$xpForNewUnits {XP for new units}"
+        return infoList.joinToString("; ") { it.tr() }
+    }
+
+    fun getUniquesStrings(): ArrayList<String> {
+        val tileBonusHashmap = HashMap<String, ArrayList<String>>()
+        val finalUniques = ArrayList<String>()
+        for (unique in uniqueObjects)
+            if (unique.placeholderText == "[] from [] tiles in this city") {
+                val stats = unique.params[0]
+                if (!tileBonusHashmap.containsKey(stats)) tileBonusHashmap[stats] = ArrayList()
+                tileBonusHashmap[stats]!!.add(unique.params[1])
+            } else finalUniques += unique.text
+        for ((key, value) in tileBonusHashmap)
+            finalUniques += "[stats] from [tileFilter] tiles in this city".fillPlaceholders(key, value.joinToString { it.tr() })
+        return finalUniques
     }
 
     fun getDescription(forBuildingPickerScreen: Boolean, civInfo: CivilizationInfo?, ruleset: Ruleset): String {
@@ -113,10 +129,10 @@ class Building : NamedStats(), IConstruction {
             stringBuilder.appendLine("Provides a free [$providesFreeBuilding] in the city".tr())
         if (uniques.isNotEmpty()) {
             if (replacementTextForUniques != "") stringBuilder.appendLine(replacementTextForUniques)
-            else stringBuilder.appendLine(uniques.asSequence().map { it.tr() }.joinToString("\n"))
+            else stringBuilder.appendLine(getUniquesStrings().asSequence().map { it.tr() }.joinToString("\n"))
         }
         if (!stats.isEmpty())
-            stringBuilder.appendln(stats)
+            stringBuilder.appendLine(stats.toString())
 
         val percentStats = getStatPercentageBonuses(civInfo)
         if (percentStats.production != 0f) stringBuilder.append("+" + percentStats.production.toInt() + "% {Production}\n".tr())
