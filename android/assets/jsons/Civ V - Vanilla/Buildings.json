@@ -340,7 +340,7 @@
 	{
 		"name": "Mint",
 		"maintenance": 0,
-		"requiredNearbyImprovedResources": ["Gold", "Silver"]
+		"requiredNearbyImprovedResources": ["Aurum", "Silver"]
 		"hurryCostModifier": 25,
 		"uniques": ["[+2 Gold] from [Gold] tiles in this city", "[+2 Gold] from [Silver] tiles in this city"],
 		"requiredTech": "Currency"

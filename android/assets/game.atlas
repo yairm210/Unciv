@@ -956,7 +956,7 @@ ResourceIcons/Gems
   orig: 100, 100
   offset: 0, 0
   index: -1
-ResourceIcons/Gold
+ResourceIcons/Aurum
   rotate: false
   xy: 1911, 1639
   size: 100, 100
