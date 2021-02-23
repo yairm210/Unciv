@@ -105,7 +105,7 @@
 		"unitTypes": ["Mounted","Armor"]
 	},
 	{
-		"name": "Siege",
+		"name": "Besiege", // Not called "Siege" in order to not conflict with siege type units for translations
 		"prerequisites": ["Shock II","Drill II"],
 		"effect": "Bonus vs City 50%",
 		"unitTypes": ["Melee"]
