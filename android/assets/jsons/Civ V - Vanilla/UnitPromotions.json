@@ -105,7 +105,7 @@
 		"unitTypes": ["Mounted","Armor"]
 	},
 	{
-		"name": "Siege",
+		"name": "Siege Ability",
 		"prerequisites": ["Shock II","Drill II"],
 		"effect": "Bonus vs City 50%",
 		"unitTypes": ["Melee"]
