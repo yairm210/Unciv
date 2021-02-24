@@ -1,3 +1,17 @@
+## 3.13.3
+
+Map generation parameters are moddable, allowing players to create custom terrains for map generation!
+
+Custom mods with no water or grassland can now work!
+
+Changed "Gold" resource to be called "Gold Ore" and "Siege" promotion to "Besiege" to not conflict with the yield type for translations - #2458
+
+Maps incompatible with ruleset no longer popup errors when generating a new map
+
+All resource stats from buildings converted to building uniques
+
+Translation updates
+
 ## 3.13.2
 
 Resolved #3601 - selected current tech no longer looks like unresearchable tech
