@@ -6,8 +6,10 @@ import com.unciv.logic.HexMath
 import com.unciv.logic.map.*
 import com.unciv.models.Counter
 import com.unciv.models.ruleset.Ruleset
+import com.unciv.models.ruleset.Unique
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.tile.TerrainType
+import com.unciv.models.translations.equalsPlaceholderText
 import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.pow
@@ -213,27 +215,21 @@ class MapGenerator(val ruleset: Ruleset) {
 
             val randomTemperature = randomness.getPerlinNoise(tile, temperatureSeed, scale = scale, nOctaves = 1)
             val latitudeTemperature = 1.0 - 2.0 * abs(tile.latitude) / tileMap.maxLatitude
-            var temperature = ((5.0 * latitudeTemperature + randomTemperature) / 6.0)
+            var temperature = (5.0 * latitudeTemperature + randomTemperature) / 6.0
             temperature = abs(temperature).pow(1.0 - tileMap.mapParameters.temperatureExtremeness) * temperature.sign
 
-            tile.baseTerrain = when {
-                temperature < -0.4 -> {
-                    if (humidity < 0.5) Constants.snow
-                    else Constants.tundra
+            val matchingTerrain = ruleset.terrains.values.firstOrNull {
+                it.uniques.map { Unique(it) }.any {
+                    it.placeholderText == "Occurs at temperature between [] and [] and humidity between [] and []"
+                            && it.params[0].toFloat() < temperature && temperature < it.params[1].toFloat()
+                            && it.params[2].toFloat() < humidity && humidity < it.params[3].toFloat()
                 }
-                temperature < 0.8 -> {
-                    if (humidity < 0.5) Constants.plains
-                    else Constants.grassland
-                }
-                temperature <= 1.0 -> {
-                    if (humidity < 0.7) Constants.desert
-                    else Constants.plains
-                }
-                else -> {
-                    println(temperature)
-                    Constants.lakes
-                }
+            }
 
+            if (matchingTerrain != null) tile.baseTerrain = matchingTerrain.name
+            else {
+                tile.baseTerrain = ruleset.terrains.keys.first()
+                println("Temperature: $temperature, humidity: $humidity")
             }
         }
     }
