@@ -5,7 +5,6 @@ import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.utils.Array
 import com.unciv.JsonParser
 import com.unciv.logic.battle.BattleDamage
-import com.unciv.logic.map.MapUnit
 import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.ruleset.*
 import com.unciv.models.ruleset.tech.TechColumn
@@ -17,7 +16,6 @@ import com.unciv.models.ruleset.unit.Promotion
 import com.unciv.models.ruleset.unit.UnitType
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
-import com.unciv.ui.worldscreen.unit.UnitActions
 import java.lang.reflect.Field
 
 object TranslationFileWriter {
@@ -87,7 +85,7 @@ object TranslationFileWriter {
                     if (line.startsWith(specialNewLineCode)) {
                         if (!stringBuilder.endsWith("\r\n\r\n")) // don't double-add line breaks -
                         // this stops lots of line breaks between removed translations in G&K
-                            stringBuilder.appendln()
+                            stringBuilder.appendLine()
                     } else // copy as-is
                         stringBuilder.appendLine(line)
                     continue
@@ -223,7 +221,7 @@ object TranslationFileWriter {
                         if (parameterName in existingParameterNames) {
                             var i = 2
                             while (parameterName + i in existingParameterNames) i++
-                            parameterName = parameterName + i
+                            parameterName += i
                         }
                         existingParameterNames += parameterName
 
@@ -270,7 +268,7 @@ object TranslationFileWriter {
         return generatedStrings
     }
 
-    val untranslatableFieldSet = setOf(
+    private val untranslatableFieldSet = setOf(
             "aiFreeTechs", "aiFreeUnits", "attackSound", "building",
             "cannotBeBuiltWith", "cultureBuildings", "improvement", "improvingTech",
             "obsoleteTech", "occursOn", "prerequisites", "promotions",
