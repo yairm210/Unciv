@@ -4,10 +4,9 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextField
 import com.badlogic.gdx.utils.Align
-import com.unciv.models.translations.tr
 import com.unciv.ui.utils.*
 
-class CityScreenCityPickerTable(val cityScreen: CityScreen) : Table() {
+class CityScreenCityPickerTable(private val cityScreen: CityScreen) : Table() {
 
     fun update() {
         val city = cityScreen.city
@@ -52,11 +51,11 @@ class CityScreenCityPickerTable(val cityScreen: CityScreen) : Table() {
             val textArea = TextField(city.name, CameraStageBaseScreen.skin)
             textArea.alignment = Align.center
             editCityNamePopup.add(textArea).colspan(2).row()
-            editCityNamePopup.addCloseButton()
-            editCityNamePopup.addButton("Save".tr()) {
+            editCityNamePopup.addButton("Save") {
                 city.name = textArea.text
                 cityScreen.game.setScreen(CityScreen(city))
             }
+            editCityNamePopup.addCloseButton()
             editCityNamePopup.open()
         }
 
