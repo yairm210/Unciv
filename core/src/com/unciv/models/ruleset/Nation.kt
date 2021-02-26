@@ -1,4 +1,4 @@
-package com.unciv.models.ruleset
+ package com.unciv.models.ruleset
 
 import com.badlogic.gdx.graphics.Color
 import com.unciv.Constants
