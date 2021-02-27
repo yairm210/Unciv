@@ -218,8 +218,23 @@ class MapGenerator(val ruleset: Ruleset) {
             var temperature = (5.0 * latitudeTemperature + randomTemperature) / 6.0
             temperature = abs(temperature).pow(1.0 - tileMap.mapParameters.temperatureExtremeness) * temperature.sign
 
+            // Old, static map generation rules - necessary for existing base ruleset mods to continue to function
+            if (ruleset.terrains.values.asSequence().flatMap { it.uniqueObjects }
+                            .none { it.placeholderText == "Occurs at temperature between [] and [] and humidity between [] and []" }) {
+                tile.baseTerrain = when {
+                    temperature < -0.4 -> if (humidity < 0.5) Constants.snow   else Constants.tundra
+                    temperature < 0.8  -> if (humidity < 0.5) Constants.plains else Constants.grassland
+                    temperature <= 1.0 -> if (humidity < 0.7) Constants.desert else Constants.plains
+                    else -> {
+                        println(temperature)
+                        Constants.lakes
+                    }
+                }
+                continue
+            }
+
             val matchingTerrain = ruleset.terrains.values.firstOrNull {
-                it.uniques.map { Unique(it) }.any {
+                it.uniqueObjects.any {
                     it.placeholderText == "Occurs at temperature between [] and [] and humidity between [] and []"
                             && it.params[0].toFloat() < temperature && temperature < it.params[1].toFloat()
                             && it.params[2].toFloat() < humidity && humidity < it.params[3].toFloat()

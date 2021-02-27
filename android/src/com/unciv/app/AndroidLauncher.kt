@@ -29,7 +29,7 @@ open class AndroidLauncher : AndroidApplication() {
             if(externalfilesDir!=null) GameSaver.externalFilesDirForAndroid = externalfilesDir.path
 		}
 
-        val config = AndroidApplicationConfiguration().apply { useImmersiveMode = true }
+        val config = AndroidApplicationConfiguration().apply { useImmersiveMode = true; }
         val androidParameters = UncivGameParameters(
                 version = BuildConfig.VERSION_NAME,
                 crashReportSender = CrashReportSenderAndroid(this),
