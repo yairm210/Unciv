@@ -382,7 +382,8 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
                     // The tile is within move range
                     tileToColor.showCircle(Color.BLUE, 0.3f)
                 }
-            if (unit.movement.canMoveTo(tile) || unit.movement.isUnknownTileWeShouldAssumeToBePassable(tile) && !unit.type.isAirUnit())
+            if (unit.movement.canMoveTo(tile) ||
+                    unit.movement.isUnknownTileWeShouldAssumeToBePassable(tile) && !unit.type.isAirUnit())
                 tileToColor.showCircle(Color.WHITE,
                         if (UncivGame.Current.settings.singleTapMove || isAirUnit) 0.7f else 0.3f)
         }
