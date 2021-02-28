@@ -94,6 +94,8 @@ class LoadMapScreen(previousMap: TileMap?) : PickerScreen() {
         for (map in MapSaver.getMaps()) {
             val loadMapButton = TextButton(map.name(), skin)
             loadMapButton.onClick {
+                for (cell in mapsTable.cells) cell.actor.color = Color.WHITE
+                loadMapButton.color = Color.BLUE
                 rightSideButton.enable()
                 chosenMap = map
                 deleteButton.enable()
