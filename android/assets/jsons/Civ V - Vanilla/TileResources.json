@@ -157,7 +157,7 @@
 		"improvementStats": {"gold": 1}
 	},
 	{
-		"name": "Gold Ore", // Not called "Gold" in order to not conflict with siege type units for translations
+		"name": "Gold",
 		"resourceType": "Luxury",
 		"terrainsCanBeFoundOn": ["Grassland","Plains","Desert","Hill"],
 		"gold": 2,
