@@ -3952,6 +3952,13 @@ UnitPromotionIcons/Besiege
   orig: 50, 50
   offset: 0, 0
   index: -1
+UnitPromotionIcons/Siege
+  rotate: false
+  xy: 1530, 873
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: -1
 UnitPromotionIcons/Blitz
   rotate: false
   xy: 1954, 1982

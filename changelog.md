@@ -1,3 +1,17 @@
+## 3.13.4
+
+Merged save map functionality into load map screen - map saving is more streamlined!
+
+Resolved #3626 - Can rename multiplayer games
+
+Resolved #3622 - Can no longer try to send air units into unexplored tiles
+
+Strength bonus from capital is now part of the Palace bonuses to make it moddable
+
+Allow unit rename on promote - by David Howard
+
+Translations update
+
 ## 3.13.3
 
 Map generation parameters are moddable, allowing players to create custom terrains for map generation!
