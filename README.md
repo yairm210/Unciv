@@ -1,4 +1,4 @@
-# Unciv - Civ V for Android (+Desktop)
+# Unciv - FOSS Civ V for Android+Desktop
 
 ![](/extraImages/GithubPreviewImage.png)
 
@@ -6,17 +6,21 @@
 [![F-Droid](https://img.shields.io/f-droid/v/com.unciv.app)](https://f-droid.org/en/packages/com.unciv.app/)
 [![itch.io](https://img.shields.io/static/v1?label=itch.io&message=Unciv&color=607D8B&logo=itch.io)](https://yairm210.itch.io/unciv)
 
-[![Travis CI w/ Logo](https://img.shields.io/travis/yairm210/UnCiv/master.svg?logo=travis)](https://travis-ci.org/yairm210/UnCiv)
+[![Travis CI w/ Logo](https://img.shields.io/travis/yairm210/Unciv/master.svg?logo=travis)](https://travis-ci.com/yairm210/Unciv)
+![Build and deploy](https://github.com/yairm210/Unciv/workflows/Build%20and%20deploy/badge.svg)
 [![Discord Chat](https://img.shields.io/discord/586194543280390151.svg)](https://discord.gg/bjrB4Xw)
 
-[![LibGDX](https://img.shields.io/badge/libgdx-1.9.10-red.svg)](https://libgdx.badlogicgames.com/)
-[![Kotlin](https://img.shields.io/badge/kotlin-1.3.710-0095D5.svg?logo=kotlin)](http://kotlinlang.org/)
 
 
 # What is this?
 
-An open-source Android/Desktop port of Civ V,
-Made with LibGDX on Android Studio
+An open-source, mod-friendly Android+Desktop remake of Civ V, made with LibGDX
+
+## Is this any good?
+
+Depends what you're looking for. If you're in the market for high-res graphics, amazing soundtracks, animations etc, I highly recommend Firaxis's Civ-V-like game, "Civilization V".
+
+If you want a small, fast, moddable, FOSS, in-depth 4X that can still run on a potato, you've come to the right place :)
 
 ## What's the roadmap?
 
@@ -26,7 +30,7 @@ Is this order:
     * UI+UX improvements (suggestions welcome!)
     * Better automation, AI etc. in-game
 * Development and distribution cycle - Done! (tests, f-droid/Google Play/itch.io deployment)
-* Missing features from Vanilla - Natural wonders (done!), city-state quests, missing civs etc.
+* Missing features from Vanilla - Natural wonders , city-state quests, missing civs etc. - mostly done!
 * G&K mechanics - religion, faith etc.
 * BNW mechanics - trade routes etc.
 
@@ -34,11 +38,11 @@ Is this order:
 
 ## How can I help?
 
-Programmers start [here!](https://github.com/yairm210/Unciv/wiki/Getting-Started)
+Programmers start [here](https://github.com/yairm210/Unciv/wiki/Getting-Started)!
 
-Translators start [here!](https://github.com/yairm210/Unciv/wiki/Translating)
+Translators start [here](https://github.com/yairm210/Unciv/wiki/Translating)!
 
-Modders start [here!](https://github.com/yairm210/Unciv/wiki/Mods)
+Modders start [here](https://github.com/yairm210/Unciv/wiki/Mods)!
 
 You can join us in any of the open issue, or work on improving anything you want - once you're finished, issue a pull request and it'll go into the next version!
 
@@ -59,11 +63,15 @@ If not, then the feature won't be added until we've finished all the features fr
 
 THE most common request, hands down. Everyone wants their favorite Civ in the game, I get that. But there are so many other things to work on - automations, AI, UI, graphics, bugs, and of course other features from the original game that are currently missing. Eventually we'll have them all, but the key word is "eventually".
 
-In the meantime, you can [mod it yourself!](https://github.com/yairm210/Unciv/wiki/Mods)
+In the meantime, you can [mod it yourself](https://github.com/yairm210/Unciv/wiki/Mods)!
 
 ## Will you implement Civ VI?
 
 Considering how long it took to get this far, no.
+
+## World wrap?
+
+I've tried this with no success, if you figure out how to do this well PR it :)
 
 ## Is there a desktop version?
 
@@ -71,39 +79,7 @@ Yes! Windows and Linux versions are available at [itch.io](https://yairm210.itch
 
 If you have Java 8, and are familiar with the command line, there are (considerably smaller) JARs in [Releases](https://github.com/yairm210/UnCiv/releases) which you can run with `java -jar Unciv.jar`. This is also (currently) the only way to run the game on MacOS.
 
-Be aware that the game will generate files inside the folder where the Jar is located!
-
-If you also have JDK 8 installed, you can compile Unciv on your own by cloning (or downloading and unzipping) the project, opening a terminal in the Unciv folder and run the following commands:
-
-### Windows
-
-Running: `gradlew desktop:run`
-
-Building: `gradlew desktop:dist`
-
-### Linux/Mac OS
-
-Running: `./gradlew desktop:run`
-
-Building: `./gradlew desktop:dist`
-
-If the terminal returns `Permission denied` or `Command not found` on Mac/Linux, run `chmod +x ./gradlew` first. *This is a one-time procedure.*
-
-If you get an error that Android SDK folder wasn't found, firstly install it by doing in terminal:
-
-`sudo apt update && sudo apt install android-sdk` (Debian, Ubuntu, Mint etc.)
-
-After that you should put its folder to the file `local.properties` by adding this line:
-
-`sdk.dir = /path/to/android/sdk` which can be `/usr/lib/android-sdk` or something other.
-
-If during the first launch it throws an error that the JDK version is wrong try [this JDK installation](https://www.azul.com/downloads/zulu-community/?package=jdk).
-
-Gradle may take up to several minutes to download files. Be patient.
-After building, the output .JAR file should be in /desktop/build/libs/Unciv.jar
-
-For actual development, you'll probably need to download Android Studio and build it yourself - see Contributing :)
-
+If you want to build it from sratch for some reason, [we have instructions for that as well](https://github.com/yairm210/Unciv/wiki/Building-locally-without-Android-Studio)
 
 ## How about IOS?
 

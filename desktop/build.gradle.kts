@@ -125,7 +125,7 @@ tasks.register<Zip>("zipLinuxFilesForJar") {
 
 tasks.register("packr") {
     for(platform in PackrConfig.Platform.values())
-        finalizedBy("packr${platform.toString()}")
+        finalizedBy("packr$platform")
 }
 
 

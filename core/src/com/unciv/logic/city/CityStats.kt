@@ -89,26 +89,14 @@ class CityStats {
         return stats
     }
 
-    private fun getStatPercentBonusesFromMarble(): Stats {
+    private fun getStatPercentBonusesFromResources(construction: IConstruction): Stats {
         val stats = Stats()
-        val construction = cityInfo.cityConstructions.getCurrentConstruction()
 
         if (construction is Building
                 && construction.isWonder
                 && cityInfo.civInfo.getCivResources()
                         .any { it.amount > 0 && it.resource.unique == "+15% production towards Wonder construction" })
             stats.production += 15f
-
-        return stats
-    }
-
-    private fun getStatPercentBonusesFromComputers(): Stats {
-        val stats = Stats()
-
-        if (cityInfo.civInfo.hasUnique("+10% science and production in all cities")) {
-            stats.production += 10f
-            stats.science += 10f
-        }
 
         return stats
     }
@@ -147,12 +135,11 @@ class CityStats {
         return stats
     }
 
-    private fun getStatPercentBonusesFromNationUnique(): Stats {
+    private fun getStatPercentBonusesFromNationUnique(currentConstruction: IConstruction): Stats {
         val stats = Stats()
 
-        stats.add(getStatPercentBonusesFromUniques(cityInfo.civInfo.nation.uniqueObjects.asSequence()))
+        stats.add(getStatPercentBonusesFromUniques(currentConstruction, cityInfo.civInfo.nation.uniqueObjects.asSequence()))
 
-        val currentConstruction = cityInfo.cityConstructions.getCurrentConstruction()
         if (currentConstruction is Building
                 && cityInfo.civInfo.getCapital().cityConstructions.builtBuildings.contains(currentConstruction.name)
                 && cityInfo.civInfo.hasUnique("+25% Production towards any buildings that already exist in the Capital"))
@@ -172,17 +159,17 @@ class CityStats {
 
     fun getGrowthBonusFromPoliciesAndWonders(): Float {
         var bonus = 0f
-
-        // This is to be deprecated and converted to "+[]% growth in all cities" and "+[]% growth in capital" - keeping it here to that mods with this can still work for now
-        if (cityInfo.civInfo.hasUnique("+10% food growth in capital") && cityInfo.isCapital())
-            bonus += 10f
-        if (cityInfo.civInfo.hasUnique("+15% growth in all cities"))
-            bonus += 15f
-
+        // This requires more... complex navigation of the local uniques to merge into "+[amount]% growth [cityFilter]"
         for (unique in cityInfo.civInfo.getMatchingUniques("+[]% growth in all cities"))
             bonus += unique.params[0].toFloat()
+        // Deprecated as of 3.12.13 -> moved to "+[amount]% growth [in capital]"
         if (cityInfo.isCapital()) for (unique in cityInfo.civInfo.getMatchingUniques("+[]% growth in capital"))
             bonus += unique.params[0].toFloat()
+
+        // "+[amount]% growth [cityFilter]"
+        for (unique in cityInfo.civInfo.getMatchingUniques("+[]% growth []"))
+            if (cityInfo.matchesFilter(unique.params[0]))
+                bonus += unique.params[0].toFloat()
         return bonus / 100
     }
 
@@ -216,14 +203,11 @@ class CityStats {
         newHappinessList["Population"] = -unhappinessFromCitizens * unhappinessModifier
 
         var happinessFromPolicies = 0f
+        // Deprecated as of 3.12.13 - replaced by "[+1 Happiness] [in all cities connected to capital]"
         if (civInfo.hasUnique("+1 happiness for every city connected to capital")
                 && cityInfo.isConnectedToCapital())
             happinessFromPolicies += 1f
         happinessFromPolicies += getStatsFromUniques(civInfo.policies.policyUniques.getAllUniques()).happiness
-
-        if (cityInfo.getCenterTile().militaryUnit != null)
-            for (unique in civInfo.getMatchingUniques("[] in all cities with a garrison"))
-                happinessFromPolicies += unique.stats.happiness
 
         newHappinessList["Policies"] = happinessFromPolicies
 
@@ -237,7 +221,7 @@ class CityStats {
 
         newHappinessList["National ability"] = getStatsFromUniques(cityInfo.civInfo.nation.uniqueObjects.asSequence()).happiness
 
-        newHappinessList["Wonders"] = getStatsFromUniques(civInfo.getBuildingUniques()).happiness
+        newHappinessList["Wonders"] = getStatsFromUniques(civInfo.getCivWideBuildingUniques()).happiness
 
         newHappinessList["Tile yields"] = getStatsFromTiles().happiness
 
@@ -250,17 +234,6 @@ class CityStats {
     private fun hasExtraAnnexUnhappiness(): Boolean {
         if (cityInfo.civInfo.civName == cityInfo.foundingCiv || cityInfo.foundingCiv == "" || cityInfo.isPuppet) return false
         return !cityInfo.containsBuildingUnique("Remove extra unhappiness from annexed cities")
-    }
-
-    fun getStatsOfSpecialist(stat: Stat): Stats {
-        val stats = Stats()
-        if (stat == Stat.Culture || stat == Stat.Science) stats.add(stat, 3f)
-        else stats.add(stat, 2f) // science and gold specialists
-
-        for (unique in cityInfo.civInfo.getMatchingUniques("[] from every specialist"))
-            stats.add(unique.stats)
-
-        return stats
     }
 
     fun getStatsOfSpecialist(specialistName: String): Stats {
@@ -282,15 +255,31 @@ class CityStats {
     private fun getStatsFromUniques(uniques: Sequence<Unique>): Stats {
         val stats = Stats()
 
-        for (unique in uniques) {
-            if ((unique.placeholderText == "[] in capital" && cityInfo.isCapital())
+        for (unique in uniques.toList()) { // Should help  mitigate getConstructionButtonDTOs concurrency problems.
+
+            // Deprecated by 3.12.13 - replaced by "[stats] [cityFilter]"
+            if (unique.placeholderText == "[] in capital" && cityInfo.isCapital()
                     || unique.placeholderText == "[] in all cities"
-                    || (unique.placeholderText == "[] in all cities with a garrison" && cityInfo.getCenterTile().militaryUnit != null))
+                    || unique.placeholderText == "[] in all cities with a garrison" && cityInfo.getCenterTile().militaryUnit != null)
                 stats.add(unique.stats)
+
+            // "[stats] [cityFilter]"
+            if (unique.placeholderText == "[] []" && cityInfo.matchesFilter(unique.params[1]))
+                stats.add(unique.stats)
+
+            // "[stats] per [amount] population [cityfilter]"
+            if (unique.placeholderText=="[] per [] population []" && cityInfo.matchesFilter(unique.params[2])) {
+                val amountOfEffects = (cityInfo.population.population / unique.params[1].toInt()).toFloat()
+                stats.add(unique.stats.times(amountOfEffects))
+            }
+
+            // Deprecated by 3.12.13 - replaced by "[] per [] population [in all cities]"
             if (unique.placeholderText == "[] per [] population in all cities") {
                 val amountOfEffects = (cityInfo.population.population / unique.params[1].toInt()).toFloat()
                 stats.add(unique.stats.times(amountOfEffects))
             }
+
+            // Deprecated by 3.12.13 - replaced by "[+1 Gold, +1 Happiness] per [2] population [in capital]"
             if (unique.text == "+1 gold and -1 unhappiness for every 2 citizens in capital" && cityInfo.isCapital()) {
                 stats.gold += (cityInfo.population.population / 2).toFloat()
                 stats.happiness += (cityInfo.population.population / 2).toFloat()
@@ -310,35 +299,13 @@ class CityStats {
         return stats
     }
 
-    private fun getStatPercentBonusesFromBuildings(): Stats {
-        val stats = cityInfo.cityConstructions.getStatPercentBonuses()
-        val currentConstruction = cityInfo.cityConstructions.getCurrentConstruction()
-
-        // This is to be deprecated and converted to "+[]% production when building [] in this city" - keeping it here to that mods with this can still work for now
-        if (currentConstruction is BaseUnit) {
-            if (currentConstruction.unitType == UnitType.Mounted
-                    && cityInfo.containsBuildingUnique("+15% Production when building Mounted Units in this city"))
-                stats.production += 15
-            if (currentConstruction.unitType.isLandUnit()
-                    && cityInfo.containsBuildingUnique("+15% production of land units"))
-                stats.production += 15
-            if (currentConstruction.unitType.isWaterUnit()
-                    && cityInfo.containsBuildingUnique("+15% production of naval units"))
-                stats.production += 15
-        }
-
-        for (unique in cityInfo.cityConstructions.builtBuildingUniqueMap.getUniques("+[]% production when building [] in this city")) {
-            if (constructionMatchesFilter(currentConstruction, unique.params[1]))
-                stats.production += unique.params[0].toInt()
-        }
-
-        return stats
-    }
-
-    private fun getStatPercentBonusesFromUniques(uniques: Sequence<Unique>): Stats {
+    private fun getStatPercentBonusesFromUniques(currentConstruction: IConstruction, uniqueSequence: Sequence<Unique>): Stats {
         val stats = Stats()
+        val uniques = uniqueSequence.toList().asSequence()
+          // Since this is sometimes run from a different thread (getConstructionButtonDTOs),
+          // this helps mitigate concurrency problems.
 
-        val currentConstruction = cityInfo.cityConstructions.getCurrentConstruction()
+        // Deprecated as of 3.12.10 - changed to "+[50]% Production when constructing [Settler] units [in capital]"
         if (currentConstruction.name == Constants.settler && cityInfo.isCapital()
                 && uniques.any { it.text == "Training of settlers increased +50% in capital" })
             stats.production += 50f
@@ -351,25 +318,53 @@ class CityStats {
             }
 
 
+        // For instance "+[50]% [Production]
+        for (unique in uniques.filter { it.placeholderText == "+[]% [] in all cities"})
+            stats.add(Stat.valueOf(unique.params[1]), unique.params[0].toFloat())
+
+        // Params: "+[amount]% [Stat] [cityFilter]", pretty crazy amirite
+        // For instance "+[50]% [Production] [in all cities]
+        for (unique in uniques.filter { it.placeholderText == "+[]% [] []"})
+            if (cityInfo.matchesFilter(unique.params[2]))
+                stats.add(Stat.valueOf(unique.params[1]), unique.params[0].toFloat())
+
+
         for (unique in uniques.filter { it.placeholderText == "+[]% Production when constructing []" }) {
             if (constructionMatchesFilter(currentConstruction, unique.params[1]))
                 stats.production += unique.params[0].toInt()
         }
 
+        //  "+[amount]% Production when constructing [constructionFilter] [cityFilter]"
+        for (unique in uniques.filter { it.placeholderText == "+[]% Production when constructing [] []" }) {
+            if (constructionMatchesFilter(currentConstruction, unique.params[1]) && cityInfo.matchesFilter(unique.params[2]))
+                stats.production += unique.params[0].toInt()
+        }
+
+        // Deprecated as of 3.12.10 - changed to "+[amount]% Production when constructing [unitFilter] units [in all cities]"
         for (unique in uniques.filter { it.placeholderText == "+[]% Production when constructing [] units" }) {
             if (currentConstruction is BaseUnit && currentConstruction.matchesFilter(unique.params[1]))
                 stats.production += unique.params[0].toInt()
         }
 
+        // "+[amount]% Production when constructing [unitFilter] units [cityFilter]"
+        for (unique in uniques.filter { it.placeholderText == "+[]% Production when constructing [] units []" }) {
+            if (currentConstruction is BaseUnit && currentConstruction.matchesFilter(unique.params[1])
+                    && cityInfo.matchesFilter(unique.params[2]))
+                stats.production += unique.params[0].toInt()
+        }
 
+
+        // Deprecated as of 3.12.10 - changed to "+[33]% [Culture] [in all cities with a world wonder]"
         if (cityInfo.cityConstructions.getBuiltBuildings().any { it.isWonder }
                 && uniques.any { it.text == "+33% culture in all cities with a world wonder" })
             stats.culture += 33f
+        // Deprecated as of 3.12.10 - changed to "+[25]% [Gold] [in capital]" (Commerce policy)
         if (uniques.any { it.text == "+25% gold in capital" } && cityInfo.isCapital())
             stats.gold += 25f
         if (cityInfo.civInfo.getHappiness() >= 0 && uniques.any { it.text == "+15% science while empire is happy" })
             stats.science += 15f
 
+        // Deprecated as of 3.12.10 - changed to "+[25]% [Culture] [in all cities]" (Sistine Chapel)
         if (uniques.any { it.text == "Culture in all cities increased by 25%" })
             stats.culture += 25f
 
@@ -378,14 +373,6 @@ class CityStats {
 
     fun constructionMatchesFilter(construction: IConstruction, filter: String): Boolean {
         return construction.name == filter
-                // All of these are deprecated as of 3.11.20 in favor of "+[]% Production when constructing [] units"
-                || filter == "land units" && construction is BaseUnit && construction.unitType.isLandUnit()
-                || filter == "naval units" && construction is BaseUnit && construction.unitType.isWaterUnit()
-                || filter == "ranged units" && construction is BaseUnit && construction.unitType == UnitType.Ranged
-                || filter == "mounted units" && construction is BaseUnit && construction.unitType == UnitType.Mounted
-                || filter == "military units" && construction is BaseUnit && !construction.unitType.isCivilian()
-                || filter == "melee units" && construction is BaseUnit && construction.unitType.isMelee()
-
                 || filter == "Buildings" && construction is Building && !(construction.isWonder || construction.isNationalWonder)
                 || filter == "Wonders" && construction is Building && (construction.isWonder || construction.isNationalWonder)
                 || construction is Building && construction.uniques.contains(filter)
@@ -421,16 +408,16 @@ class CityStats {
     }
 
 
-    fun updateStatPercentBonusList() {
+    fun updateStatPercentBonusList(currentConstruction: IConstruction, citySpecificUniques: Sequence<Unique>) {
         val newStatPercentBonusList = LinkedHashMap<String, Stats>()
         newStatPercentBonusList["Golden Age"] = getStatPercentBonusesFromGoldenAge(cityInfo.civInfo.goldenAges.isGoldenAge())
-        newStatPercentBonusList["Policies"] = getStatPercentBonusesFromUniques(cityInfo.civInfo.policies.policyUniques.getAllUniques())
-        newStatPercentBonusList["Buildings"] = getStatPercentBonusesFromBuildings()
-        newStatPercentBonusList["Wonders"] = getStatPercentBonusesFromUniques(cityInfo.civInfo.getBuildingUniques())
+        newStatPercentBonusList["Policies"] = getStatPercentBonusesFromUniques(currentConstruction, cityInfo.civInfo.policies.policyUniques.getAllUniques())
+        newStatPercentBonusList["Buildings"] = getStatPercentBonusesFromUniques(currentConstruction, citySpecificUniques)
+                .plus(cityInfo.cityConstructions.getStatPercentBonuses()) // This function is to be deprecated but it'll take a while.
+        newStatPercentBonusList["Wonders"] = getStatPercentBonusesFromUniques(currentConstruction, cityInfo.civInfo.getCivWideBuildingUniques())
         newStatPercentBonusList["Railroad"] = getStatPercentBonusesFromRailroad()
-        newStatPercentBonusList["Marble"] = getStatPercentBonusesFromMarble()
-        newStatPercentBonusList["Computers"] = getStatPercentBonusesFromComputers()
-        newStatPercentBonusList["National ability"] = getStatPercentBonusesFromNationUnique()
+        newStatPercentBonusList["Resources"] = getStatPercentBonusesFromResources(currentConstruction)
+        newStatPercentBonusList["National ability"] = getStatPercentBonusesFromNationUnique(currentConstruction)
         newStatPercentBonusList["Puppet City"] = getStatPercentBonusesFromPuppetCity()
 
         if (UncivGame.Current.superchargedForDebug) {
@@ -442,13 +429,16 @@ class CityStats {
         statPercentBonusList = newStatPercentBonusList
     }
 
-    fun update() {
+    fun update(currentConstruction: IConstruction = cityInfo.cityConstructions.getCurrentConstruction()) {
+
+        val citySpecificUniques: Sequence<Unique> = cityInfo.cityConstructions.builtBuildingUniqueMap.getAllUniques()
+            .filter { it.params.isNotEmpty() && it.params.last()=="in this city" }
         // We need to compute Tile yields before happiness
         updateBaseStatList()
         updateCityHappiness()
-        updateStatPercentBonusList()
+        updateStatPercentBonusList(currentConstruction, citySpecificUniques)
 
-        updateFinalStatList() // again, we don't edit the existing currentCityStats directly, in order to avoid concurrency exceptions
+        updateFinalStatList(currentConstruction) // again, we don't edit the existing currentCityStats directly, in order to avoid concurrency exceptions
 
         val newCurrentCityStats = Stats()
         for (stat in finalStatList.values) newCurrentCityStats.add(stat)
@@ -457,7 +447,7 @@ class CityStats {
         cityInfo.civInfo.updateStatsForNextTurn()
     }
 
-    private fun updateFinalStatList() {
+    private fun updateFinalStatList(currentConstruction: IConstruction) {
         val newFinalStatList = LinkedHashMap<String, Stats>() // again, we don't edit the existing currentCityStats directly, in order to avoid concurrency exceptions
 
         for (entry in baseStatList)
@@ -530,9 +520,8 @@ class CityStats {
         newFinalStatList["Maintenance"] = Stats().apply { gold -= buildingsMaintenance.toInt() }
 
 
-        val currentconstruction = cityInfo.cityConstructions.currentConstructionFromQueue
-        if (totalFood > 0 && cityInfo.getRuleset().units[currentconstruction]
-                        .let { it != null && it.uniques.contains("Excess Food converted to Production when under construction") }) {
+        if (totalFood > 0 && currentConstruction is BaseUnit
+                && currentConstruction.uniques.contains("Excess Food converted to Production when under construction")) {
             newFinalStatList["Excess food to production"] =
                     Stats().apply { production = totalFood; food = -totalFood }
         }
@@ -541,7 +530,7 @@ class CityStats {
             newFinalStatList.clear()  // NOPE
 
         if (newFinalStatList.values.map { it.production }.sum() < 1)  // Minimum production for things to progress
-            newFinalStatList["Production"] = Stats().apply { production += 1 }
+            newFinalStatList["Production"] = Stats().apply { production = 1F }
         finalStatList = newFinalStatList
     }
 

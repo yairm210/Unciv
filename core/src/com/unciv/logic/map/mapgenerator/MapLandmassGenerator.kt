@@ -13,9 +13,9 @@ import kotlin.math.pow
 class MapLandmassGenerator(val randomness: MapGenerationRandomness) {
 
     fun generateLand(tileMap: TileMap, ruleset: Ruleset) {
-        if(ruleset.terrains.values.none { it.type== TerrainType.Water }) {
+        if (ruleset.terrains.values.none { it.type == TerrainType.Water }) {
             for (tile in tileMap.values)
-                tile.baseTerrain = Constants.grassland
+                tile.baseTerrain = ruleset.terrains.keys.first()
             return
         }
         when (tileMap.mapParameters.type) {
@@ -50,7 +50,7 @@ class MapLandmassGenerator(val randomness: MapGenerationRandomness) {
     private fun createPerlin(tileMap: TileMap) {
         val elevationSeed = randomness.RNG.nextInt().toDouble()
         for (tile in tileMap.values) {
-            var elevation = randomness.getPerlinNoise(tile, elevationSeed)
+            val elevation = randomness.getPerlinNoise(tile, elevationSeed)
             spawnLandOrWater(tile, elevation, tileMap.mapParameters.waterThreshold.toDouble())
         }
     }
@@ -58,7 +58,7 @@ class MapLandmassGenerator(val randomness: MapGenerationRandomness) {
     private fun createArchipelago(tileMap: TileMap) {
         val elevationSeed = randomness.RNG.nextInt().toDouble()
         for (tile in tileMap.values) {
-            var elevation = getRidgedPerlinNoise(tile, elevationSeed)
+            val elevation = getRidgedPerlinNoise(tile, elevationSeed)
             spawnLandOrWater(tile, elevation, 0.25 + tileMap.mapParameters.waterThreshold.toDouble())
         }
     }
@@ -67,7 +67,7 @@ class MapLandmassGenerator(val randomness: MapGenerationRandomness) {
         val elevationSeed = randomness.RNG.nextInt().toDouble()
         for (tile in tileMap.values) {
             var elevation = randomness.getPerlinNoise(tile, elevationSeed)
-            elevation = (elevation + getCircularNoise(tile, tileMap) ) / 2.0
+            elevation = (elevation + getCircularNoise(tile, tileMap)) / 2.0
             spawnLandOrWater(tile, elevation, tileMap.mapParameters.waterThreshold.toDouble())
         }
     }
@@ -83,7 +83,7 @@ class MapLandmassGenerator(val randomness: MapGenerationRandomness) {
 
     private fun getCircularNoise(tileInfo: TileInfo, tileMap: TileMap): Double {
         val randomScale = randomness.RNG.nextDouble()
-        val distanceFactor =  percentualDistanceToCenter(tileInfo, tileMap)
+        val distanceFactor = percentualDistanceToCenter(tileInfo, tileMap)
 
         return min(0.3, 1.0 - (5.0 * distanceFactor * distanceFactor + randomScale) / 3.0)
     }
@@ -98,7 +98,7 @@ class MapLandmassGenerator(val randomness: MapGenerationRandomness) {
     private fun percentualDistanceToCenter(tileInfo: TileInfo, tileMap: TileMap): Double {
         val mapRadius = tileMap.mapParameters.size.radius
         if (tileMap.mapParameters.shape == MapShape.hexagonal)
-            return HexMath.getDistance(Vector2.Zero, tileInfo.position).toDouble()/mapRadius
+            return HexMath.getDistance(Vector2.Zero, tileInfo.position).toDouble() / mapRadius
         else {
             val size = HexMath.getEquivalentRectangularSize(mapRadius)
             return HexMath.getDistance(Vector2.Zero, tileInfo.position).toDouble() / HexMath.getDistance(Vector2.Zero, Vector2(size.x / 2, size.y / 2))
@@ -120,8 +120,6 @@ class MapLandmassGenerator(val randomness: MapGenerationRandomness) {
 
     // region Cellular automata
     private fun generateLandCellularAutomata(tileMap: TileMap) {
-        val mapRadius = tileMap.mapParameters.size.radius
-        val mapType = tileMap.mapParameters.type
         val numSmooth = 4
 
         //init

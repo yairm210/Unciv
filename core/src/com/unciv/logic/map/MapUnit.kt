@@ -104,10 +104,6 @@ class MapUnit {
                 && civInfo.hasUnique("All military naval units receive +1 movement and +1 sight"))
             movement += 1
 
-        // Deprecated as of 3.11.18
-        if (type.isWaterUnit() && civInfo.hasUnique("+2 movement for all naval units"))
-            movement += 2
-
         for (unique in civInfo.getMatchingUniques("+[] Movement for all [] units"))
             if (matchesFilter(unique.params[1]))
                 movement += unique.params[0].toInt()
@@ -338,7 +334,11 @@ class MapUnit {
             val destination = action!!.replace("moveTo ", "").split(",").dropLastWhile { it.isEmpty() }.toTypedArray()
             val destinationVector = Vector2(destination[0].toFloat(), destination[1].toFloat())
             val destinationTile = currentTile.tileMap[destinationVector]
-            if (!movement.canReach(destinationTile)) return // That tile that we were moving towards is now unreachable
+            if (!movement.canReach(destinationTile)){ // That tile that we were moving towards is now unreachable -
+                // for instance we headed towards an unknown tile and it's apparently unreachable
+                action = null
+                return
+            }
             val gotTo = movement.headTowards(destinationTile)
             if (gotTo == currentTile) // We didn't move at all
                 return
@@ -447,8 +447,10 @@ class MapUnit {
     fun endTurn() {
         doAction()
 
-        if (hasUnique(Constants.workerUnique) && getTile().improvementInProgress != null) workOnImprovement()
-        if (hasUnique("Can construct roads") && currentTile.improvementInProgress == "Road") workOnImprovement()
+        if (currentMovement > 0 && hasUnique(Constants.workerUnique)
+                && getTile().improvementInProgress != null) workOnImprovement()
+        if (currentMovement > 0 && hasUnique("Can construct roads")
+                && currentTile.improvementInProgress == "Road") workOnImprovement()
         if (currentMovement == getMaxMovement().toFloat() && isFortified()) {
             val currentTurnsFortified = getFortificationTurns()
             if (currentTurnsFortified < 2)

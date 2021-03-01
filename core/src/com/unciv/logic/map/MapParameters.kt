@@ -25,11 +25,6 @@ object MapType {
     // Non-generated maps
     const val custom = "Custom"
 
-    // Loaded scenario
-    const val scenarioMap = "Scenario Map"
-
-    const val scenario = "Scenario"
-
     // All ocean tiles
     const val empty = "Empty"
 }
@@ -41,6 +36,9 @@ class MapParameters {
     var size: MapSize = MapSize.Medium
     var noRuins = false
     var noNaturalWonders = false
+
+    /** This is used mainly for the map editor, so you can continue editing a map under the ame ruleset you started with */
+    var mods = LinkedHashSet<String>()
 
     var seed: Long = 0
     var tilesPerBiomeArea = 6

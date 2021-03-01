@@ -1,7 +1,6 @@
 package com.unciv.ui.mapeditor
 
 import com.unciv.UncivGame
-import com.unciv.logic.map.ScenarioMap
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.translations.tr
 import com.unciv.ui.newgamescreen.GameOptionsTable
@@ -18,7 +17,7 @@ import com.unciv.ui.utils.*
  */
 class GameParametersScreen(var mapEditorScreen: MapEditorScreen): IPreviousScreen, PickerScreen() {
     override var gameSetupInfo = mapEditorScreen.gameSetupInfo.clone()
-    override var ruleset = RulesetCache.getComplexRuleset(gameSetupInfo.gameParameters)
+    override var ruleset = RulesetCache.getComplexRuleset(gameSetupInfo.gameParameters.mods)
     var playerPickerTable = PlayerPickerTable(this, gameSetupInfo.gameParameters)
     var gameOptionsTable = GameOptionsTable(this) { desiredCiv: String -> playerPickerTable.update(desiredCiv) }
 
@@ -34,11 +33,10 @@ class GameParametersScreen(var mapEditorScreen: MapEditorScreen): IPreviousScree
         rightSideButton.setText("OK".tr())
         rightSideButton.onClick {
             mapEditorScreen.gameSetupInfo = gameSetupInfo
-            mapEditorScreen.scenarioMap = ScenarioMap(mapEditorScreen.tileMap, mapEditorScreen.gameSetupInfo.gameParameters)
             mapEditorScreen.ruleset.clear()
             mapEditorScreen.ruleset.add(ruleset)
             mapEditorScreen.tileEditorOptions.update()
-            // Remove resources that are not applicable to this scenario
+            // Remove resources that are not applicable to this ruleset
             for(tile in mapEditorScreen.tileMap.values) {
                 if (tile.resource != null && !ruleset.tileResources.containsKey(tile.resource!!))
                     tile.resource = null
@@ -52,4 +50,3 @@ class GameParametersScreen(var mapEditorScreen: MapEditorScreen): IPreviousScree
         }
     }
 }
-

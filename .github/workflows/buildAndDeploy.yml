@@ -1,0 +1,82 @@
+# This is a basic workflow to help you get started with Actions
+
+name: Build and deploy
+
+# Controls when the action will run. 
+on:
+  # Triggers the workflow on push or pull request events but only for the master branch
+  push:
+    tags:
+      - '*' # This doesn't mean that it HAS to have a tag, only that the workflow triggers when we push a tag
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  build:
+    # On push events only, if it's a "Update X" commit, it's probably something done through the UI - 
+    #  so an .md or yaml change, and not something we need to rebuild over
+    # We can't simply put !startsWith - see https://github.community/t/expression-syntax-for-not-startswith/17040
+    if: github.event_name != 'push' || startsWith(github.event.commits[0].message, 'Update ') != true
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
+
+      - uses: actions/setup-java@v1
+        with:
+          java-version: '8'
+
+      # Runs a set of commands using the runners shell
+      - name: check
+        run: ./gradlew check
+
+      - name: test
+        run: ./gradlew tests:test
+      
+      
+      - name: Get tag # We can then get the tag using ${{steps.tag.outputs.tag}} as below
+        if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
+        id: tag
+        uses: dawidd6/action-get-tag@v1 
+      
+      - name: release
+        if: github.event_name == 'push' && contains(github.ref, 'refs/tags/') 
+        env:
+          BUTLER_API_KEY: ${{ secrets.BUTLER_API_KEY }}
+        run: |
+          echo this is a release!
+          wget -O jdk-windows-64.zip https://github.com/ojdkbuild/ojdkbuild/releases/download/java-1.8.0-openjdk-1.8.0.232-1.b09/java-1.8.0-openjdk-1.8.0.232-1.b09.ojdkbuild.windows.x86_64.zip  > /dev/null;
+          wget -O jdk-windows-32.zip https://github.com/ojdkbuild/ojdkbuild/releases/download/java-1.8.0-openjdk-1.8.0.252-2.b09-x86/java-1.8.0-openjdk-1.8.0.252-2.b09.ojdkbuild.windows.x86.zip > /dev/null;
+          wget -O butler.zip https://broth.itch.ovh/butler/linux-amd64/LATEST/archive/default > /dev/null;
+          unzip butler.zip;
+          chmod +x butler;
+          ./butler -V;
+          ./gradlew desktop:packrWindows32;
+          ./butler push deploy/Unciv-Windows32.zip yairm210/unciv:Windows32 --userversion ${{steps.tag.outputs.tag}};
+          ./gradlew desktop:packrWindows64;
+          ./butler push deploy/Unciv-Windows64.zip yairm210/unciv:Windows64 --userversion ${{steps.tag.outputs.tag}};
+          ./gradlew desktop:packrLinux32;
+          ./butler push deploy/Unciv-Linux32.zip yairm210/unciv:Linux32     --userversion ${{steps.tag.outputs.tag}};
+          ./gradlew desktop:packrLinux64;
+          ./butler push deploy/Unciv-Linux64.zip yairm210/unciv:Linux64     --userversion ${{steps.tag.outputs.tag}};
+          ./gradlew desktop:zipLinuxFilesForJar;
+          mv desktop/build/libs/Unciv.jar deploy/Unciv.jar
+
+
+      - name: Upload binaries to release
+        if: github.event_name == 'push' && contains(github.ref, 'refs/tags/') 
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: deploy/*
+          tag: ${{ github.ref }}
+          overwrite: true
+          file_glob: true

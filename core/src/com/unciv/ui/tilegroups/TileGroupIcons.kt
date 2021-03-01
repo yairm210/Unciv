@@ -75,13 +75,16 @@ class TileGroupIcons(val tileGroup: TileGroup) {
             if (unit.getTile().airUnits.any { unit.isTransportTypeOf(it) } && !unit.getTile().isCityCenter()) {
                 val holder = Table()
                 val secondarycolor = unit.civInfo.nation.getInnerColor()
-                val airUnitTable = Table().apply { defaults().pad(5f) }
-                airUnitTable.background = ImageGetter.getRoundedEdgeTableBackground(unit.civInfo.nation.getOuterColor())
+                val airUnitTable = Table().apply { defaults().pad(3f) }
+                airUnitTable.background = ImageGetter.getBackground(unit.civInfo.nation.getOuterColor())
                 val aircraftImage = ImageGetter.getImage("OtherIcons/Aircraft")
                 aircraftImage.color = secondarycolor
-                airUnitTable.add(aircraftImage).size(15f)
-                airUnitTable.add(unit.getTile().airUnits.size.toString().toLabel(secondarycolor, 14))
-                holder.add(airUnitTable).row()
+                airUnitTable.add(aircraftImage).size(10f)
+                airUnitTable.add(unit.getTile().airUnits.size.toString().toLabel(secondarycolor, 10))
+                val surroundedWithCircle = airUnitTable.surroundWithCircle(20f,false, unit.civInfo.nation.getOuterColor())
+                surroundedWithCircle.circle.width *= 1.5f
+                surroundedWithCircle.circle.centerX(surroundedWithCircle)
+                holder.add(surroundedWithCircle).row()
                 holder.setOrigin(Align.center)
                 holder.center(tileGroup)
                 newImage.addActor(holder)

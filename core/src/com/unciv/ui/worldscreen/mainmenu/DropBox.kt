@@ -127,13 +127,13 @@ class OnlineMultiplayer {
     }
 
     /**
-     * Returns current turn's player.
+     * WARNING!
      * Does not initialize transitive GameInfo data.
      * It is therefore stateless and save to call for Multiplayer Turn Notifier, unlike tryDownloadGame().
      */
-    fun tryDownloadCurrentTurnCiv(gameId: String): CivilizationInfo {
+    fun tryDownloadGameUninitialized(gameId: String): GameInfo {
         val zippedGameInfo = DropBox.downloadFileAsString(getGameLocation(gameId))
-        return GameSaver.currentTurnCivFromString(Gzip.unzip(zippedGameInfo))
+        return GameSaver.gameInfoFromStringWithoutTransients(Gzip.unzip(zippedGameInfo))
     }
 }
 
@@ -179,13 +179,14 @@ object Github {
 
 
     fun tryGetGithubReposWithTopic(): ArrayList<Repo> {
-        val inputStream = download("https://api.github.com/search/repositories?q=topic:unciv-mod")
+        // Default per-page is 30 - when we get to above 100 mods, we'll need to start search-queries
+        val inputStream = download("https://api.github.com/search/repositories?q=topic:unciv-mod&per_page=100")
         if (inputStream == null) return ArrayList()
         return GameSaver.json().fromJson(RepoSearch::class.java, inputStream.bufferedReader().readText()).items
     }
 
-    class RepoSearch{
-        var items=ArrayList<Repo>()
+    class RepoSearch {
+        var items = ArrayList<Repo>()
     }
 
     class Repo {

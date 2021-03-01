@@ -1,5 +1,6 @@
 package com.unciv.ui
 
+import com.badlogic.gdx.graphics.Color
 import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.ui.*
@@ -21,19 +22,23 @@ class CivilopediaScreen(ruleset: Ruleset) : CameraStageBaseScreen() {
     private val categoryToEntries = LinkedHashMap<String, Collection<CivilopediaEntry>>()
     private val categoryToButtons = LinkedHashMap<String, Button>()
 
-    private val entrySelectTable = Table().apply { defaults().pad(6f) }
+    private val entrySelectTable = Table().apply { defaults().pad(6f).left() }
     val description = "".toLabel()
 
 
     fun select(category: String) {
         entrySelectTable.clear()
+
+        for (button in categoryToButtons.values) button.color = Color.WHITE
+        categoryToButtons[category]!!.color = Color.BLUE
+
         var entries = categoryToEntries[category]!!
-        if(category!="Difficulty levels") // this is the only case where we need them in order
-                entries = entries.sortedBy { it.name.tr() }   // Alphabetical order of localized names
-        for (entry in entries){
+        if (category != "Difficulty levels") // this is the only case where we need them in order
+            entries = entries.sortedBy { it.name.tr() }   // Alphabetical order of localized names
+        for (entry in entries) {
             val entryButton = Button(skin)
-            if(entry.image!=null)
-                if (category=="Terrains")
+            if (entry.image != null)
+                if (category == "Terrains")
                     entryButton.add(entry.image).padRight(24f)
                 else
                     entryButton.add(entry.image).size(50f).padRight(10f)
@@ -49,39 +54,57 @@ class CivilopediaScreen(ruleset: Ruleset) : CameraStageBaseScreen() {
         onBackButtonClicked { UncivGame.Current.setWorldScreen() }
 
         categoryToEntries["Buildings"] = ruleset.buildings.values
-                .filter { "Will not be displayed in Civilopedia" !in it.uniques && !(it.isWonder||it.isNationalWonder) }
-                .map { CivilopediaEntry(it.name,it.getDescription(false, null,ruleset),
-                        ImageGetter.getConstructionImage(it.name).surroundWithCircle(50f)) }
+                .filter { "Will not be displayed in Civilopedia" !in it.uniques && !(it.isWonder || it.isNationalWonder) }
+                .map {
+                    CivilopediaEntry(it.name, it.getDescription(false, null, ruleset),
+                            ImageGetter.getConstructionImage(it.name).surroundWithCircle(50f))
+                }
         categoryToEntries["Wonders"] = ruleset.buildings.values
-                .filter { "Will not be displayed in Civilopedia" !in it.uniques && (it.isWonder||it.isNationalWonder) }
-                .map { CivilopediaEntry(it.name,it.getDescription(false, null,ruleset),
-                        ImageGetter.getConstructionImage(it.name).surroundWithCircle(50f)) }
+                .filter { "Will not be displayed in Civilopedia" !in it.uniques && (it.isWonder || it.isNationalWonder) }
+                .map {
+                    CivilopediaEntry(it.name, it.getDescription(false, null, ruleset),
+                            ImageGetter.getConstructionImage(it.name).surroundWithCircle(50f))
+                }
         categoryToEntries["Resources"] = ruleset.tileResources.values
-                .map { CivilopediaEntry(it.name,it.getDescription(ruleset),
-                        ImageGetter.getResourceImage(it.name,50f)) }
+                .map {
+                    CivilopediaEntry(it.name, it.getDescription(ruleset),
+                            ImageGetter.getResourceImage(it.name, 50f))
+                }
         categoryToEntries["Terrains"] = ruleset.terrains.values
-                .map { CivilopediaEntry(it.name,it.getDescription(ruleset),
-                        terrainImage(it, ruleset) ) }
+                .map {
+                    CivilopediaEntry(it.name, it.getDescription(ruleset),
+                            terrainImage(it, ruleset))
+                }
         categoryToEntries["Tile Improvements"] = ruleset.tileImprovements.values
-                .map { CivilopediaEntry(it.name,it.getDescription(ruleset,false),
-                        ImageGetter.getImprovementIcon(it.name,50f)) }
+                .map {
+                    CivilopediaEntry(it.name, it.getDescription(ruleset, false),
+                            ImageGetter.getImprovementIcon(it.name, 50f))
+                }
         categoryToEntries["Units"] = ruleset.units.values
                 .filter { "Will not be displayed in Civilopedia" !in it.uniques }
-                .map { CivilopediaEntry(it.name,it.getDescription(false),
-                        ImageGetter.getConstructionImage(it.name).surroundWithCircle(50f)) }
+                .map {
+                    CivilopediaEntry(it.name, it.getDescription(false),
+                            ImageGetter.getConstructionImage(it.name).surroundWithCircle(50f))
+                }
         categoryToEntries["Nations"] = ruleset.nations.values
                 .filter { it.isMajorCiv() }
-                .map { CivilopediaEntry(it.name,it.getUniqueString(ruleset,false),
-                        ImageGetter.getNationIndicator(it,50f)) }
+                .map {
+                    CivilopediaEntry(it.name, it.getUniqueString(ruleset, false),
+                            ImageGetter.getNationIndicator(it, 50f))
+                }
         categoryToEntries["Technologies"] = ruleset.technologies.values
-                .map { CivilopediaEntry(it.name,it.getDescription(ruleset),
-                        ImageGetter.getTechIconGroup(it.name,50f)) }
+                .map {
+                    CivilopediaEntry(it.name, it.getDescription(ruleset),
+                            ImageGetter.getTechIconGroup(it.name, 50f))
+                }
         categoryToEntries["Promotions"] = ruleset.unitPromotions.values
-                .map { CivilopediaEntry(it.name,it.getDescription(ruleset.unitPromotions.values, true, ruleset),
-                        Table().apply { add(ImageGetter.getPromotionIcon(it.name)) }) }
+                .map {
+                    CivilopediaEntry(it.name, it.getDescription(ruleset.unitPromotions.values, true, ruleset),
+                            Table().apply { add(ImageGetter.getPromotionIcon(it.name)) })
+                }
 
         categoryToEntries["Tutorials"] = tutorialController.getCivilopediaTutorials()
-                .map { CivilopediaEntry(it.key.replace("_"," "), it.value.joinToString("\n\n") { line -> line.tr() }) }
+                .map { CivilopediaEntry(it.key.replace("_", " "), it.value.joinToString("\n\n") { line -> line.tr() }) }
 
         categoryToEntries["Difficulty levels"] = ruleset.difficulties.values
                 .map { CivilopediaEntry(it.name, it.getDescription()) }
@@ -122,27 +145,22 @@ class CivilopediaScreen(ruleset: Ruleset) : CameraStageBaseScreen() {
 
         stage.addActor(splitPane)
 
-        description.setWrap(true)
+        description.wrap = true
 
-        val entrySelectScroll = ScrollPane(entrySelectTable)
-        entrySelectScroll.setupOverscroll(5f, 1f, 200f)
-        entryTable.add(entrySelectScroll)
-                .width(Value.percentWidth(0.25f, entryTable))
-                .fillY()
-                .pad(Value.percentWidth(0.02f, entryTable))
-        entryTable.add(ScrollPane(description)).colspan(4)
-                .width(Value.percentWidth(0.65f, entryTable))
-                .fillY()
-                .pad(Value.percentWidth(0.02f, entryTable))
-        // Simply changing these to x*width, y*height won't work
+        val entrySelectScroll = ScrollPane(entrySelectTable, skin)
+        entrySelectTable.left()
+        entrySelectScroll.setOverscroll(false, false)
+        entryTable.add(entrySelectScroll).width(stage.width*0.3f).padLeft(stage.width*0.02f)
+                .padRight(stage.width*0.03f)
+        entryTable.add(ScrollPane(description)).width(stage.width*0.6f).padRight(stage.width*0.05f)
 
         select("Tutorials")
     }
 
-    private fun terrainImage (terrain: Terrain, ruleset: Ruleset): Actor? {
+    private fun terrainImage(terrain: Terrain, ruleset: Ruleset): Actor? {
         val tileInfo = TileInfo()
         tileInfo.ruleset = ruleset
-        when(terrain.type) {
+        when (terrain.type) {
             TerrainType.NaturalWonder -> {
                 tileInfo.naturalWonder = terrain.name
                 tileInfo.baseTerrain = terrain.turnsInto ?: Constants.grassland
@@ -162,4 +180,3 @@ class CivilopediaScreen(ruleset: Ruleset) : CameraStageBaseScreen() {
         return group
     }
 }
-

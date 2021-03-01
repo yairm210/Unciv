@@ -91,8 +91,6 @@ class DiplomacyManager() {
     var influence = 0f
         set(value) { field = max(value, MINIMUM_INFLUENCE) }
         get() = if(civInfo.isAtWarWith(otherCiv())) MINIMUM_INFLUENCE else field
-    /** For city-states. Resting point is the value of Influence at which it ceases changing by itself */
-    var restingPoint = 0f
 
     /** Total of each turn Science during Research Agreement */
     var totalOfScienceDuringRA = 0
@@ -103,7 +101,6 @@ class DiplomacyManager() {
         toReturn.diplomaticStatus=diplomaticStatus
         toReturn.trades.addAll(trades.map { it.clone() })
         toReturn.influence = influence
-        toReturn.restingPoint = restingPoint
         toReturn.flagsCountdown.putAll(flagsCountdown)
         toReturn.diplomaticModifiers.putAll(diplomaticModifiers)
         toReturn.totalOfScienceDuringRA=totalOfScienceDuringRA
@@ -111,8 +108,8 @@ class DiplomacyManager() {
     }
 
     constructor(civilizationInfo: CivilizationInfo, OtherCivName:String) : this() {
-        civInfo=civilizationInfo
-        otherCivName=OtherCivName
+        civInfo = civilizationInfo
+        otherCivName = OtherCivName
         updateHasOpenBorders()
     }
 
@@ -176,11 +173,19 @@ class DiplomacyManager() {
         return 0
     }
 
+    // To be run from City-State DiplomacyManager, which holds the influence. Resting point for every major civ can be different.
+    fun getCityStateInfluenceRestingPoint(): Float {
+        var restingPoint = 0f
+        for(unique in otherCiv().getMatchingUniques("Resting point for Influence with City-States is increased by []"))
+            restingPoint += unique.params[0].toInt()
+        return restingPoint
+    }
+
     private fun getCityStateInfluenceDegrade(): Float {
-        if (influence < restingPoint)
+        if (influence < getCityStateInfluenceRestingPoint())
             return 0f
 
-        var decrement = when (civInfo.cityStatePersonality) {
+        val decrement = when (civInfo.cityStatePersonality) {
             CityStatePersonality.Hostile -> 1.5f
             else -> 1f
         }
@@ -192,17 +197,21 @@ class DiplomacyManager() {
             else -> 1f
         }
 
+        // Deprecated at 3.12.11 in favor of "City-State Influence degrades [50]% slower"
         if (otherCiv().hasUnique("City-State Influence degrades at half rate"))
             modifier *= .5f
+
+        for (unique in otherCiv().getMatchingUniques("City-State Influence degrades []% slower"))
+            modifier *= (100f - unique.params[0].toInt()) / 100
 
         return max(0f, decrement) * max(0f, modifier)
     }
 
     private fun getCityStateInfluenceRecovery(): Float {
-        if (influence > restingPoint)
+        if (influence > getCityStateInfluenceRestingPoint())
             return 0f
 
-        var increment = 1f
+        val increment = 1f
 
         var modifier = when (civInfo.cityStatePersonality) {
             CityStatePersonality.Friendly -> 2f
@@ -299,8 +308,9 @@ class DiplomacyManager() {
 
     // for performance reasons we don't want to call this every time we want to see if a unit can move through a tile
     fun updateHasOpenBorders() {
-        val newHasOpenBorders = trades.flatMap { it.theirOffers }
-                .any { it.name == Constants.openBorders && it.duration > 0 }
+        // City-states can enter ally's territory (the opposite is true anyway even without open borders)
+        val newHasOpenBorders = civInfo.getAllyCiv() == otherCivName
+                || trades.flatMap { it.theirOffers }.any { it.name == Constants.openBorders && it.duration > 0 }
 
         val bordersWereClosed = hasOpenBorders && !newHasOpenBorders
         hasOpenBorders = newHasOpenBorders
@@ -335,6 +345,7 @@ class DiplomacyManager() {
     private fun nextTurnCityStateInfluence() {
         val initialRelationshipLevel = relationshipLevel()
 
+        val restingPoint = getCityStateInfluenceRestingPoint()
         if (influence > restingPoint) {
             val decrement = getCityStateInfluenceDegrade()
             influence = max(restingPoint, influence - decrement)
@@ -477,10 +488,11 @@ class DiplomacyManager() {
         otherCivDiplomacy.setModifier(DiplomaticModifiers.DeclaredWarOnUs,-20f)
         if(otherCiv.isCityState()) otherCivDiplomacy.influence -= 60
 
-        for(thirdCiv in civInfo.getKnownCivs()){
-            if(thirdCiv.isAtWarWith(otherCiv))
-                thirdCiv.getDiplomacyManager(civInfo).addModifier(DiplomaticModifiers.SharedEnemy,5f)
-            else thirdCiv.getDiplomacyManager(civInfo).addModifier(DiplomaticModifiers.WarMongerer,-5f)
+        for(thirdCiv in civInfo.getKnownCivs()) {
+            if (thirdCiv.isAtWarWith(otherCiv)) {
+                if (thirdCiv.isCityState()) thirdCiv.getDiplomacyManager(civInfo).influence += 10
+                else thirdCiv.getDiplomacyManager(civInfo).addModifier(DiplomaticModifiers.SharedEnemy, 5f)
+            } else thirdCiv.getDiplomacyManager(civInfo).addModifier(DiplomaticModifiers.WarMongerer, -5f)
         }
 
         if(hasFlag(DiplomacyFlags.DeclarationOfFriendship)) {
@@ -530,10 +542,14 @@ class DiplomacyManager() {
         for (unit in civInfo.getCivUnits().filter { it.getTile().getOwner() == otherCiv })
             unit.movement.teleportToClosestMoveableTile()
 
-        // Our ally city states make peace with us
-        for (thirdCiv in civInfo.getKnownCivs())
+        for (thirdCiv in civInfo.getKnownCivs()) {
+            // Our ally city states make peace with us
             if (thirdCiv.getAllyCiv() == civInfo.civName && thirdCiv.isAtWarWith(otherCiv))
                 thirdCiv.getDiplomacyManager(otherCiv).makePeace()
+            // Other ccity states that are not our ally don't like the fact that we made peace with their enemy
+            if (thirdCiv.getAllyCiv() != civInfo.civName && thirdCiv.isAtWarWith(otherCiv))
+                thirdCiv.getDiplomacyManager(civInfo).influence -= 10
+        }
     }
 
 

@@ -13,8 +13,7 @@ enum class VictoryType {
     Neutral,
     Cultural,
     Domination,
-    Scientific,
-    Scenario
+    Scientific
 }
 
 class Nation : INamed {
@@ -65,6 +64,7 @@ class Nation : INamed {
     // Same for Inca unique
     @Transient
     var ignoreHillMovementCost = false
+
     @Transient
     var embarkDisembarkCosts1 = false
 
@@ -93,8 +93,7 @@ class Nation : INamed {
         if (uniqueName != "") textList += uniqueName.tr() + ":"
         if (uniqueText != "") {
             textList += " " + uniqueText.tr()
-        }
-        else {
+        } else {
             textList += "  " + uniques.joinToString(", ") { it.tr() }
             textList += ""
         }
@@ -112,7 +111,7 @@ class Nation : INamed {
 
     private fun addUniqueBuildingsText(textList: ArrayList<String>, ruleset: Ruleset) {
         for (building in ruleset.buildings.values
-                .filter { it.uniqueTo == name && "Will not be displayed in Civilopedia" !in it.uniques}) {
+                .filter { it.uniqueTo == name && "Will not be displayed in Civilopedia" !in it.uniques }) {
             if (building.replaces != null && ruleset.buildings.containsKey(building.replaces!!)) {
                 val originalBuilding = ruleset.buildings[building.replaces!!]!!
 
@@ -141,7 +140,7 @@ class Nation : INamed {
 
     private fun addUniqueUnitsText(textList: ArrayList<String>, ruleset: Ruleset) {
         for (unit in ruleset.units.values
-                .filter { it.uniqueTo == name && "Will not be displayed in Civilopedia" !in it.uniques}) {
+                .filter { it.uniqueTo == name && "Will not be displayed in Civilopedia" !in it.uniques }) {
             if (unit.replaces != null && ruleset.units.containsKey(unit.replaces!!)) {
                 val originalUnit = ruleset.units[unit.replaces!!]!!
                 textList += unit.name.tr() + " - " + "Replaces [${originalUnit.name}]".tr()
@@ -155,18 +154,18 @@ class Nation : INamed {
                     textList += "  ${Fonts.range} " + "[${unit.range}] vs [${originalUnit.range}]".tr()
                 if (unit.movement != originalUnit.movement)
                     textList += "  ${Fonts.movement} " + "[${unit.movement}] vs [${originalUnit.movement}]".tr()
-                if (originalUnit.requiredResource != null && unit.requiredResource == null)
-                    textList += "  " + "[${originalUnit.requiredResource}] not required".tr()
+                for (resource in originalUnit.getResourceRequirements().keys)
+                    if (!unit.getResourceRequirements().containsKey(resource))
+                        textList += "  " + "[$resource] not required".tr()
                 for (unique in unit.uniques.filterNot { it in originalUnit.uniques })
                     textList += "  " + Translations.translateBonusOrPenalty(unique)
                 for (unique in originalUnit.uniques.filterNot { it in unit.uniques })
                     textList += "  " + "Lost ability".tr() + "(" + "vs [${originalUnit.name}]".tr() + "): " + Translations.translateBonusOrPenalty(unique)
                 for (promotion in unit.promotions.filter { it !in originalUnit.promotions })
                     textList += "  " + promotion.tr() + " (" + Translations.translateBonusOrPenalty(ruleset.unitPromotions[promotion]!!.effect) + ")"
-            } else if(unit.replaces != null){
+            } else if (unit.replaces != null) {
                 textList += unit.name.tr() + " - " + "Replaces [${unit.replaces}], which is not found in the ruleset!".tr()
-            }
-            else {
+            } else {
                 textList += unit.name.tr()
                 textList += "  " + unit.getDescription(true).split("\n").joinToString("\n  ")
             }

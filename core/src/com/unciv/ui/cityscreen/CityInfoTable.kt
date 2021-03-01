@@ -8,7 +8,6 @@ import com.unciv.UncivGame
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.GreatPersonManager
 import com.unciv.models.ruleset.Building
-import com.unciv.models.ruleset.Specialist
 import com.unciv.models.stats.Stat
 import com.unciv.models.translations.tr
 import com.unciv.ui.utils.*
@@ -30,8 +29,8 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(CameraStageBaseS
             cityScreen.update()
         }
 
-        innerTable.width = cityScreen.stage.width/4
-        innerTable.background = ImageGetter.getBackground(ImageGetter.getBlue().lerp(Color.BLACK,0.5f))
+        innerTable.width = cityScreen.stage.width / 4
+        innerTable.background = ImageGetter.getBackground(ImageGetter.getBlue().lerp(Color.BLACK, 0.5f))
         scrollPane = ScrollPane(innerTable.addBorder(2f, Color.WHITE))
         scrollPane.setOverscroll(false, false)
 
@@ -64,7 +63,7 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(CameraStageBaseS
         val titleTable = Table()
                 .background(ImageGetter.getBackground(ImageGetter.getBlue()))
                 .pad(4f)
-                .addCell(str.toLabel(fontSize = FONT_SIZE_CATEGORY_HEADER))
+                .addCell(str.toLabel(fontSize = 24))
                 .onClick {
                     if (showHideTableWrapper.hasChildren()) {
                         showHideTableWrapper.clear()
@@ -78,7 +77,7 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(CameraStageBaseS
         add(showHideTableWrapper).row()
     }
 
-    private fun Table.addBuildingInfo(building: Building, wondersTable: Table){
+    private fun addBuildingInfo(building: Building, wondersTable: Table) {
         val wonderNameAndIconTable = Table()
         wonderNameAndIconTable.touchable = Touchable.enabled
         wonderNameAndIconTable.add(ImageGetter.getConstructionImage(building.name).surroundWithCircle(30f))
@@ -89,14 +88,14 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(CameraStageBaseS
         wondersTable.add(wonderDetailsTable).pad(5f).align(Align.left).row()
 
         wonderNameAndIconTable.onClick {
-            if(wonderDetailsTable.hasChildren())
+            if (wonderDetailsTable.hasChildren())
                 wonderDetailsTable.clear()
-            else{
+            else {
                 val detailsString = building.getDescription(true,
                         cityScreen.city.civInfo, cityScreen.city.civInfo.gameInfo.ruleSet)
-                wonderDetailsTable.add(detailsString.toLabel().apply { setWrap(true)})
-                        .width(cityScreen.stage.width/4 - 2*pad ).row() // when you set wrap, then you need to manually set the size of the label
-                if(!building.isWonder && !building.isNationalWonder) {
+                wonderDetailsTable.add(detailsString.toLabel().apply { wrap = true })
+                        .width(cityScreen.stage.width / 4 - 2 * pad).row() // when you set wrap, then you need to manually set the size of the label
+                if (building.isSellable()) {
                     val sellAmount = cityScreen.city.getGoldForSellingBuilding(building.name)
                     val sellBuildingButton = "Sell for [$sellAmount] gold".toTextButton()
                     wonderDetailsTable.add(sellBuildingButton).pad(5f).row()
@@ -115,7 +114,8 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(CameraStageBaseS
                                     cityScreen.update()
                                 }).open()
                     }
-                    if ((cityScreen.city.hasSoldBuildingThisTurn && !cityScreen.city.civInfo.gameInfo.gameParameters.godMode) || cityScreen.city.isPuppet
+                    if (cityScreen.city.hasSoldBuildingThisTurn && !cityScreen.city.civInfo.gameInfo.gameParameters.godMode
+                            || cityScreen.city.isPuppet
                             || !UncivGame.Current.worldScreen.isPlayersTurn || !cityScreen.canChangeState)
                         sellBuildingButton.disable()
                 }
@@ -139,8 +139,8 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(CameraStageBaseS
 
         if (wonders.isNotEmpty()) {
             val wondersTable = Table()
-            addCategory("Wonders",wondersTable)
-            for (building in wonders) addBuildingInfo(building,wondersTable)
+            addCategory("Wonders", wondersTable)
+            for (building in wonders) addBuildingInfo(building, wondersTable)
         }
 
         if (specialistBuildings.isNotEmpty()) {
@@ -162,7 +162,7 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(CameraStageBaseS
             }
         }
 
-        if (!otherBuildings.isEmpty()) {
+        if (otherBuildings.isNotEmpty()) {
             val regularBuildingsTable = Table()
             addCategory("Buildings", regularBuildingsTable)
             for (building in otherBuildings) addBuildingInfo(building, regularBuildingsTable)
@@ -172,17 +172,26 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(CameraStageBaseS
     private fun Table.addStatInfo() {
         val cityStats = cityScreen.city.cityStats
 
-        for(stat in Stat.values().filter { it!=Stat.Happiness }){
-            val relevantBaseStats = cityStats.baseStatList.filter { it.value.get(stat)!=0f }
-            if(relevantBaseStats.isEmpty()) continue
+
+        for (stat in Stat.values()) {
+            val relevantBaseStats = LinkedHashMap<String, Float>()
+
+            if (stat != Stat.Happiness)
+                for ((key, value) in cityStats.baseStatList)
+                    relevantBaseStats[key] = value.get(stat)
+            else relevantBaseStats.putAll(cityStats.happinessList)
+            for (key in relevantBaseStats.keys.toList())
+                if (relevantBaseStats[key] == 0f) relevantBaseStats.remove(key)
+
+            if (relevantBaseStats.isEmpty()) continue
 
             val statValuesTable = Table().apply { defaults().pad(2f) }
             addCategory(stat.name, statValuesTable)
 
-            statValuesTable.add("Base values".toLabel(fontSize= FONT_SIZE_STAT_INFO_HEADER)).pad(4f).colspan(2).row()
+            statValuesTable.add("Base values".toLabel(fontSize = FONT_SIZE_STAT_INFO_HEADER)).pad(4f).colspan(2).row()
             var sumOfAllBaseValues = 0f
-            for(entry in relevantBaseStats) {
-                val specificStatValue = entry.value.get(stat)
+            for (entry in relevantBaseStats) {
+                val specificStatValue = entry.value
                 sumOfAllBaseValues += specificStatValue
                 statValuesTable.add(entry.key.toLabel())
                 statValuesTable.add(DecimalFormat("0.#").format(specificStatValue).toLabel()).row()
@@ -191,8 +200,8 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(CameraStageBaseS
             statValuesTable.add("Total".toLabel())
             statValuesTable.add(DecimalFormat("0.#").format(sumOfAllBaseValues).toLabel()).row()
 
-            val relevantBonuses = cityStats.statPercentBonusList.filter { it.value.get(stat)!=0f }
-            if(relevantBonuses.isNotEmpty()) {
+            val relevantBonuses = cityStats.statPercentBonusList.filter { it.value.get(stat) != 0f }
+            if (relevantBonuses.isNotEmpty()) {
                 statValuesTable.add("Bonuses".toLabel(fontSize = FONT_SIZE_STAT_INFO_HEADER)).colspan(2).padTop(20f).row()
                 var sumOfBonuses = 0f
                 for (entry in relevantBonuses) {
@@ -210,19 +219,20 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(CameraStageBaseS
                 else statValuesTable.add("$decimal%".toLabel()).row() // negative bonus
             }
 
-
-            statValuesTable.add("Final".toLabel(fontSize = FONT_SIZE_STAT_INFO_HEADER)).colspan(2).padTop(20f).row()
-            var finalTotal = 0f
-            for (entry in cityStats.finalStatList) {
-                val specificStatValue = entry.value.get(stat)
-                finalTotal += specificStatValue
-                if (specificStatValue == 0f) continue
-                statValuesTable.add(entry.key.toLabel())
-                statValuesTable.add(DecimalFormat("0.#").format(specificStatValue).toLabel()).row()
+            if (stat != Stat.Happiness) {
+                statValuesTable.add("Final".toLabel(fontSize = FONT_SIZE_STAT_INFO_HEADER)).colspan(2).padTop(20f).row()
+                var finalTotal = 0f
+                for (entry in cityStats.finalStatList) {
+                    val specificStatValue = entry.value.get(stat)
+                    finalTotal += specificStatValue
+                    if (specificStatValue == 0f) continue
+                    statValuesTable.add(entry.key.toLabel())
+                    statValuesTable.add(DecimalFormat("0.#").format(specificStatValue).toLabel()).row()
+                }
+                statValuesTable.addSeparator()
+                statValuesTable.add("Total".toLabel())
+                statValuesTable.add(DecimalFormat("0.#").format(finalTotal).toLabel()).row()
             }
-            statValuesTable.addSeparator()
-            statValuesTable.add("Total".toLabel())
-            statValuesTable.add(DecimalFormat("0.#").format(finalTotal).toLabel()).row()
 
             statValuesTable.padBottom(4f)
         }
@@ -233,7 +243,7 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(CameraStageBaseS
         val statToGreatPerson = GreatPersonManager().statToGreatPersonMapping
         for (stat in Stat.values()) {
             if (!statToGreatPerson.containsKey(stat)) continue
-            if(greatPersonPoints.all { it.value.get(stat)==0f }) continue
+            if (greatPersonPoints.all { it.value.get(stat) == 0f }) continue
 
             val expanderName = "[" + statToGreatPerson[stat]!! + "] points"
             val greatPersonTable = Table()
@@ -248,9 +258,7 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(CameraStageBaseS
     }
 
     companion object {
-        private const val FONT_SIZE_CATEGORY_HEADER: Int = 24
         private const val FONT_SIZE_STAT_INFO_HEADER = 22
     }
 
 }
-

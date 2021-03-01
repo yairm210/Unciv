@@ -1,6 +1,5 @@
 package com.unciv.ui.newgamescreen
 
-import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox
@@ -18,7 +17,9 @@ import com.unciv.ui.pickerscreens.PickerScreen
 import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.mainmenu.OnlineMultiplayer
 import java.util.*
+import kotlin.collections.HashSet
 import kotlin.concurrent.thread
+import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 
 
 class GameSetupInfo(var gameId:String, var gameParameters: GameParameters, var mapParameters: MapParameters) {
@@ -37,9 +38,10 @@ class GameSetupInfo(var gameId:String, var gameParameters: GameParameters, var m
 }
 
 class NewGameScreen(previousScreen:CameraStageBaseScreen, _gameSetupInfo: GameSetupInfo?=null): IPreviousScreen, PickerScreen() {
-    override val gameSetupInfo =  _gameSetupInfo ?: GameSetupInfo()
-    override var ruleset = RulesetCache.getComplexRuleset(gameSetupInfo.gameParameters) // needs to be set because the gameoptionstable etc. depend on this
+    override val gameSetupInfo = _gameSetupInfo ?: GameSetupInfo()
+    override var ruleset = RulesetCache.getComplexRuleset(gameSetupInfo.gameParameters.mods) // needs to be set because the gameoptionstable etc. depend on this
     var newGameOptionsTable = GameOptionsTable(this) { desiredCiv: String -> playerPickerTable.update(desiredCiv) }
+
     // Has to be defined before the mapOptionsTable, since the mapOptionsTable refers to it on init
     var playerPickerTable = PlayerPickerTable(this, gameSetupInfo.gameParameters)
     var mapOptionsTable = MapOptionsTable(this)
@@ -49,13 +51,16 @@ class NewGameScreen(previousScreen:CameraStageBaseScreen, _gameSetupInfo: GameSe
         setDefaultCloseAction(previousScreen)
         scrollPane.setScrollingDisabled(true, true)
 
-        topTable.add(ScrollPane(newGameOptionsTable).apply { setOverscroll(false, false) })
+        topTable.add(ScrollPane(newGameOptionsTable, skin).apply { setOverscroll(false, false) })
                 .maxHeight(topTable.parent.height).width(stage.width / 3).padTop(20f).top()
         topTable.addSeparatorVertical()
-        topTable.add(ScrollPane(mapOptionsTable).apply { setOverscroll(false, false) })
+        topTable.add(ScrollPane(mapOptionsTable, skin).apply { setOverscroll(false, false) })
                 .maxHeight(topTable.parent.height).width(stage.width / 3).padTop(20f).top()
         topTable.addSeparatorVertical()
-        topTable.add(playerPickerTable).maxHeight(topTable.parent.height).width(stage.width / 3).padTop(20f).top()
+        topTable.add(ScrollPane(playerPickerTable, skin)
+                .apply { setOverscroll(false, false) }
+                .apply { setScrollingDisabled(true, false) })
+                .maxHeight(topTable.parent.height).width(stage.width / 3).padTop(20f).top()
 
         topTable.pack()
         topTable.setFillParent(true)
@@ -88,6 +93,28 @@ class NewGameScreen(previousScreen:CameraStageBaseScreen, _gameSetupInfo: GameSe
             }
 
             Gdx.input.inputProcessor = null // remove input processing - nothing will be clicked!
+
+
+            if (mapOptionsTable.mapTypeSelectBox.selected.value == MapType.custom){
+                val map = MapSaver.loadMap(gameSetupInfo.mapFile!!)
+                val rulesetIncompatabilities = HashSet<String>()
+                for(tile in map.values) {
+                    val rulesetIncompat = tile.getRulesetIncompatability(ruleset)
+                    if (rulesetIncompat != "") rulesetIncompatabilities.add(rulesetIncompat)
+                }
+
+                if (rulesetIncompatabilities.isNotEmpty()) {
+                    val incompatibleMap = Popup(this)
+                    incompatibleMap.addGoodSizedLabel("Map is incompatible with the chosen ruleset!".tr()).row()
+                    for(incompat in rulesetIncompatabilities)
+                        incompatibleMap.addGoodSizedLabel(incompat).row()
+                    incompatibleMap.addCloseButton()
+                    incompatibleMap.open()
+                    game.setScreen(this) // to get the input back
+                    return@onClick
+                }
+            }
+
             rightSideButton.disable()
             rightSideButton.setText("Working...".tr())
 
@@ -100,19 +127,7 @@ class NewGameScreen(previousScreen:CameraStageBaseScreen, _gameSetupInfo: GameSe
 
     private fun newGameThread() {
         try {
-            if (mapOptionsTable.mapTypeSelectBox.selected.value == MapType.scenario) {
-                newGame = mapOptionsTable.selectedScenarioSaveGame
-                // to take the definition of which players are human and which are AI
-                for (player in gameSetupInfo.gameParameters.players) {
-                    newGame!!.getCivilization(player.chosenCiv).playerType = player.playerType
-                }
-                if (newGame!!.getCurrentPlayerCivilization().playerType == PlayerType.AI) {
-                    newGame!!.setTransients()
-                    newGame!!.nextTurn() // can't start the game on an AI turn
-                }
-                newGame!!.gameParameters.godMode = false
-            }
-            else newGame = GameStarter.startNewGame(gameSetupInfo)
+            newGame = GameStarter.startNewGame(gameSetupInfo)
         } catch (exception: Exception) {
             Gdx.app.postRunnable {
                 val cantMakeThatMapPopup = Popup(this)
@@ -130,14 +145,16 @@ class NewGameScreen(previousScreen:CameraStageBaseScreen, _gameSetupInfo: GameSe
             newGame!!.isUpToDate = true // So we don't try to download it from dropbox the second after we upload it - the file is not yet ready for loading!
             try {
                 OnlineMultiplayer().tryUploadGame(newGame!!)
-                GameSaver.autoSave(newGame!!) {}
 
-                // Saved as Multiplayer game to show up in the session browser
-                GameSaver.saveGame(newGame!!, newGame!!.gameId, true)
                 // Save gameId to clipboard because you have to do it anyway.
                 Gdx.app.clipboard.contents = newGame!!.gameId
                 // Popup to notify the User that the gameID got copied to the clipboard
                 Gdx.app.postRunnable { ToastPopup("gameID copied to clipboard".tr(), UncivGame.Current.worldScreen, 2500) }
+
+                GameSaver.autoSave(newGame!!) {}
+
+                // Saved as Multiplayer game to show up in the session browser
+                GameSaver.saveGame(newGame!!, newGame!!.gameId, true)
             } catch (ex: Exception) {
                 Gdx.app.postRunnable {
                     val cantUploadNewGamePopup = Popup(this)
@@ -152,9 +169,10 @@ class NewGameScreen(previousScreen:CameraStageBaseScreen, _gameSetupInfo: GameSe
         Gdx.graphics.requestRendering()
     }
 
-    fun updateRuleset(){
+    fun updateRuleset() {
         ruleset.clear()
-        ruleset.add(RulesetCache.getComplexRuleset(gameSetupInfo.gameParameters))
+        ruleset.add(RulesetCache.getComplexRuleset(gameSetupInfo.gameParameters.mods))
+        ImageGetter.setNewRuleset(ruleset)
     }
 
     fun lockTables() {

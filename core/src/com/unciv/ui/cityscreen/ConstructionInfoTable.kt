@@ -16,7 +16,8 @@ import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 
 class ConstructionInfoTable(val city: CityInfo): Table() {
     val selectedConstructionTable = Table()
-    init{
+
+    init {
         selectedConstructionTable.background = ImageGetter.getBackground(ImageGetter.getBlue().lerp(Color.BLACK, 0.5f))
         add(selectedConstructionTable).pad(2f).fill()
         background = ImageGetter.getBackground(Color.WHITE)
@@ -41,7 +42,7 @@ class ConstructionInfoTable(val city: CityInfo): Table() {
         val cityConstructions = city.cityConstructions
 
         //val selectedConstructionTable = Table()
-        selectedConstructionTable.background = ImageGetter.getBackground(ImageGetter.getBlue().lerp(Color.BLACK,0.5f))
+        selectedConstructionTable.background = ImageGetter.getBackground(ImageGetter.getBlue().lerp(Color.BLACK, 0.5f))
         selectedConstructionTable.pad(10f)
 
         selectedConstructionTable.add(
@@ -55,8 +56,7 @@ class ConstructionInfoTable(val city: CityInfo): Table() {
             val turnsToComplete = cityConstructions.turnsToConstruction(construction.name)
             buildingText += ("\r\n" + "Cost".tr() + " " + construction.getProductionCost(city.civInfo).toString()).tr()
             buildingText += turnOrTurns(turnsToComplete)
-        }
-        else {
+        } else {
             buildingText += specialConstruction.getProductionTooltip(city)
         }
         selectedConstructionTable.add(buildingText.toLabel()).row()
@@ -65,12 +65,12 @@ class ConstructionInfoTable(val city: CityInfo): Table() {
         val description: String = when (construction) {
             is BaseUnit -> construction.getDescription(true)
             is Building -> construction.getDescription(true, city.civInfo, city.civInfo.gameInfo.ruleSet)
-            is PerpetualConstruction -> construction.description.replace("[rate]","[${construction.getConversionRate(city)}]") .tr()
+            is PerpetualConstruction -> construction.description.replace("[rate]", "[${construction.getConversionRate(city)}]").tr()
             else -> "" // Should never happen
         }
 
         val descriptionLabel = description.toLabel()
-        descriptionLabel.setWrap(true)
+        descriptionLabel.wrap = true
         selectedConstructionTable.add(descriptionLabel).colspan(2).width(stage.width / 4)
 
     }

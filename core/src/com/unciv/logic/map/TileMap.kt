@@ -14,16 +14,22 @@ class TileMap {
 
     @Transient
     lateinit var gameInfo: GameInfo
+
     @Transient
     var tileMatrix = ArrayList<ArrayList<TileInfo?>>() // this works several times faster than a hashmap, the performance difference is really astounding
+
     @Transient
     var leftX = 0
+
     @Transient
     var bottomY = 0
+
     @delegate:Transient
     val maxLatitude: Float by lazy { if (values.isEmpty()) 0f else values.map { abs(it.latitude) }.max()!! }
+
     @delegate:Transient
     val maxLongitude: Float by lazy { if (values.isEmpty()) 0f else values.map { abs(it.longitude) }.max()!! }
+
     @delegate:Transient
     val naturalWonders: List<String> by lazy { tileList.asSequence().filter { it.isNaturalWonder() }.map { it.naturalWonder!! }.distinct().toList() }
 
@@ -62,9 +68,7 @@ class TileMap {
         return toReturn
     }
 
-    operator fun contains(vector: Vector2): Boolean {
-        return contains(vector.x.toInt(), vector.y.toInt())
-    }
+    operator fun contains(vector: Vector2) = contains(vector.x.toInt(), vector.y.toInt())
 
     fun contains(x: Int, y: Int): Boolean {
         val arrayXIndex = x - leftX
@@ -270,10 +274,10 @@ class TileMap {
     }
 
     fun setTransients(ruleset: Ruleset, setUnitCivTransients: Boolean = true) { // In the map editor, no Civs or Game exist, so we won't set the unit transients
-        val topY = tileList.asSequence().map { it.position.y.toInt() }.max()!!
-        bottomY = tileList.asSequence().map { it.position.y.toInt() }.min()!!
-        val rightX = tileList.asSequence().map { it.position.x.toInt() }.max()!!
-        leftX = tileList.asSequence().map { it.position.x.toInt() }.min()!!
+        val topY = tileList.asSequence().map { it.position.y.toInt() }.maxOrNull()!!
+        bottomY = tileList.asSequence().map { it.position.y.toInt() }.minOrNull()!!
+        val rightX = tileList.asSequence().map { it.position.x.toInt() }.maxOrNull()!!
+        leftX = tileList.asSequence().map { it.position.x.toInt() }.minOrNull()!!
 
         for (x in leftX..rightX) {
             val row = ArrayList<TileInfo?>()

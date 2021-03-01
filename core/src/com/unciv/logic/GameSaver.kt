@@ -45,8 +45,12 @@ object GameSaver {
         if (customSaveLocation != null && customSaveLocationHelper != null) {
             customSaveLocationHelper.saveGame(game, GameName, forcePrompt, saveCompletionCallback)
         } else {
-            json().toJson(game, getSave(GameName, multiplayer))
-            saveCompletionCallback?.invoke(null)
+            try {
+                json().toJson(game, getSave(GameName, multiplayer))
+                saveCompletionCallback?.invoke(null)
+            } catch (ex: Exception) {
+                saveCompletionCallback?.invoke(ex)
+            }
         }
     }
 
@@ -75,6 +79,15 @@ object GameSaver {
         val game = json().fromJson(GameInfo::class.java, gameData)
         game.setTransients()
         return game
+    }
+
+    /**
+     * WARNING! transitive GameInfo data not initialized
+     * The returned GameInfo can not be used for most circumstances because its not initialized!
+     * It is therefore stateless and save to call for Multiplayer Turn Notifier, unlike gameInfoFromString().
+     */
+    fun gameInfoFromStringWithoutTransients(gameData: String): GameInfo {
+        return json().fromJson(GameInfo::class.java, gameData)
     }
 
     fun deleteSave(GameName: String, multiplayer: Boolean = false){
@@ -155,13 +168,12 @@ object GameSaver {
     }
 
     /**
-     * Returns current turn's player from GameInfo JSON-String for multiplayer.
+     * Returns the gameId from a GameInfo which was saved as JSON for multiplayer
      * Does not initialize transitive GameInfo data.
-     * It is therefore stateless and save to call for Multiplayer Turn Notifier, unlike gameInfoFromString().
+     * It is therefore stateless and save to call for Multiplayer Turn Notifier.
      */
-    fun currentTurnCivFromString(gameData: String): CivilizationInfo {
-        val game = json().fromJson(GameInfo::class.java, gameData)
-        return game.getCivilization(game.currentPlayer)
+    fun getGameIdFromFile(gameFile: FileHandle): String {
+        return json().fromJson(GameInfo::class.java, gameFile).gameId
     }
 }
 

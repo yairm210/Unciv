@@ -7,6 +7,7 @@
 		"science": 3,
 		"gold": 3,
 		"culture": 1,
+		"cityStrength": 2,
 		"cost": 1,
 		"uniques": ["Indicates the capital city"]
 	},
@@ -20,9 +21,11 @@
 	{
 		"name": "Granary", 
 		"food": 2,
-		"resourceBonusStats": {"food": 1},
 		"maintenance": 1,
 		"hurryCostModifier": 25,
+		"uniques": ["[+1 Food] from [Deer] tiles in this city",
+			"[+1 Food] from [Bananas] tiles in this city",
+			"[+1 Food] from [Wheat] tiles in this city"]
 		"requiredTech": "Pottery"
 	},
 	{
@@ -30,10 +33,11 @@
 		"happiness": 1,
 		"production": 1,
 		"requiredNearbyImprovedResources": ["Marble", "Stone"],
-		"resourceBonusStats": {"production": 1},
 		"maintenance": 1,
 		"hurryCostModifier": 0,
-		"uniques": ["Must not be on [Plains]"],
+		"uniques": ["Must not be on [Plains]",
+			"[+1 Production] from [Stone] tiles in this city",
+			"[+1 Production] from [Marble] tiles in this city"],
 		"requiredTech": "Calendar"
 	},
 	{
@@ -160,7 +164,7 @@
 		"xpForNewUnits": 15,
 		"hurryCostModifier": 25,
 		"maintenance": 1,
-		"uniques": ["Culture and Gold costs of acquiring new tiles reduced by 25% in this city"],
+		"uniques": ["-[25]% Culture cost of acquiring tiles [in this city]","-[25]% Gold cost of acquiring tiles [in this city]"],
 		"requiredTech": "Bronze Working"
 	},
 	{
@@ -189,8 +193,8 @@
 		"name": "Lighthouse",
 		"hurryCostModifier": 25,
 		"maintenance": 1,
-		"resourceBonusStats": {"food": 1},
-		"uniques": ["Must be next to [Coast]", "[+1 Food] from [Ocean] tiles in this city", "[+1 Food] from [Coast] tiles in this city"],
+		"uniques": ["Must be next to [Coast]", "[+1 Food] from [Ocean] tiles in this city",
+			"[+1 Food] from [Coast] tiles in this city", "[+1 Food] from [Fish] tiles in this city" ],
 		"requiredTech": "Optics"
 	},
 	{
@@ -207,9 +211,11 @@
 		"name": "Stable", 
 		"maintenance": 1,
 		"requiredNearbyImprovedResources": ["Horses","Sheep","Cattle"],
-		"resourceBonusStats": {"production": 1},
 		"hurryCostModifier": 25,
-		"uniques": ["+[15]% production when building [mounted units] in this city"],
+		"uniques": ["+[15]% Production when constructing [Mounted] units [in this city]", 
+			"[+1 Production] from [Cattle] tiles in this city",
+			"[+1 Production] from [Horses] tiles in this city",
+			"[+1 Production] from [Sheep] tiles in this city"]
 		"requiredTech": "Horseback Riding"
 	},
 	{
@@ -335,9 +341,9 @@
 	{
 		"name": "Mint",
 		"maintenance": 0,
-		"requiredNearbyImprovedResources": ["Gold","Silver"],
-		"resourceBonusStats": {"gold": 2},
+		"requiredNearbyImprovedResources": ["Gold Ore", "Silver"]
 		"hurryCostModifier": 25,
+		"uniques": ["[+2 Gold] from [Gold Ore] tiles in this city", "[+2 Gold] from [Silver] tiles in this city"],
 		"requiredTech": "Currency"
 	},
 	/*
@@ -392,7 +398,7 @@
 		"name": "Monastery",
 		"maintenance": 0,
 		"requiredNearbyImprovedResources": ["Wine","Incense"],
-		"resourceBonusStats": {"culture": 2},
+		"uniques": ["[+2 Culture] from [Wine] tiles in this city", "[+2 Culture] from [Incense] tiles in this city"],
 		"hurryCostModifier": 25,
 		"requiredTech": "Theology"
 	},
@@ -461,9 +467,10 @@
 		"maintenance": 1,
 		"hurryCostModifier": 25,
 		"requiredNearbyImprovedResources": ["Iron"],
-		"resourceBonusStats": {"production": 1},
 		"requiredTech": "Metal Casting",
-		"uniques": ["+[15]% production when building [land units] in this city", "+[15]% production when building [Spaceship part] in this city"]
+		"uniques": ["+[15]% Production when constructing [Spaceship part] units [in this city]",
+			"+[15]% Production when constructing [Land] units [in this city]",
+			"[+1 Production] from [Iron] tiles in this city"]
 	},
 	{
 		"name": "Harbor",
@@ -531,7 +538,7 @@
 		"culture": 1,
 		"greatPersonPoints": {"production": 1},
 		"isWonder": true,
-		"uniques": ["Cost of acquiring new tiles reduced by 25%"],
+		"uniques": ["-[25]% Culture cost of acquiring tiles [in all cities]","-[25]% Gold cost of acquiring tiles [in all cities]"],
 		"requiredTech": "Chivalry",
 		"quote": "'The temple is like no other building in the world. It has towers and decoration and all the refinements which the human genius can conceive of.'  - Antonio da Magdalena"
 	},
@@ -599,7 +606,7 @@
 		"culture": 1,
 		"isWonder": true,
 		"greatPersonPoints": {"culture": 2},
-		"uniques": ["Culture in all cities increased by 25%"],
+		"uniques": ["+[25]% [Culture] [in all cities]"],
 		"requiredTech": "Acoustics",
 		"quote": "'I live and love in God's peculiar light.' - Michelangelo Buonarroti"
 	},
@@ -707,7 +714,7 @@
 		"maintenance": 3,
 		"requiredBuilding": "Harbor",
 		"uniques": ["[+1 Production, +1 Gold] from [Water resource] tiles in this city",
-			"Must be next to [Coast]", "+[15]% production when building [naval units] in this city"],
+			"Must be next to [Coast]", "+[15]% Production when constructing [Water] units [in this city]"]
 		"requiredTech": "Navigation"
 	},
 	{
@@ -735,7 +742,7 @@
 		"specialistSlots": {"Engineer": 1},
 		"hurryCostModifier": 25,
 		"maintenance": 2,
-		"uniques": ["Must not be on [Hill]", "+[10]% production when building [Buildings] in this city"],
+		"uniques": ["Must not be on [Hill]", "+[10]% Production when constructing [Buildings] [in this city]"],
 		"requiredTech": "Economics"
 	},
 	
@@ -996,7 +1003,7 @@
 		"requiredResource": "Aluminum",
 		"cost": 360,
 		"requiredBuilding": "Factory",
-		"uniques": ["+[50]% production when building [Spaceship part] in this city"],
+		"uniques": ["+[50]% Production when constructing [Spaceship part] units [in this city]"],
 		"requiredTech": "Robotics"
 	},
 	{
@@ -1022,7 +1029,7 @@
 		"greatPersonPoints": {"science": 1},		
 		"providesFreeBuilding":  "Spaceship Factory",
 		"uniques": ["[2] free [Great Scientist] units appear",
-			"+[25]% production when building [Spaceship part] in this city"],
+			"+[25]% Production when constructing [Spaceship part] units [in this city]"],
 		"requiredTech": "Satellites",
 		"quote": "'The wonder is, not that the field of stars is so vast, but that man has measured it.'  - Anatole France"
 		// will be introduced in G&K expansion pack

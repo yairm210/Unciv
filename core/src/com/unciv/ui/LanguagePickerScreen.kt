@@ -34,7 +34,7 @@ class LanguageTable(val language:String, val percentComplete: Int):Table(){
 
 }
 
-class LanguagePickerScreen(): PickerScreen(){
+class LanguagePickerScreen : PickerScreen(){
     var chosenLanguage = "English"
 
     private val languageTables = ArrayList<LanguageTable>()
@@ -53,11 +53,11 @@ class LanguagePickerScreen(): PickerScreen(){
             |  instructions are in the Github readme! (Menu > Community > Github)
             """.trimMargin()
         topTable.add(translationDisclaimer.toLabel()).pad(10f).row()
-        val tableLanguages = Table();
-        tableLanguages.defaults().uniformX();
-        tableLanguages.defaults().pad(10.0f);
-        tableLanguages.defaults().fillX();
-        topTable.add(tableLanguages).row();
+        val tableLanguages = Table()
+        tableLanguages.defaults().uniformX()
+        tableLanguages.defaults().pad(10.0f)
+        tableLanguages.defaults().fillX()
+        topTable.add(tableLanguages).row()
 
         val languageCompletionPercentage = UncivGame.Current.translations
                 .percentCompleteOfLanguages

@@ -21,7 +21,6 @@ import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.tile.TileResource
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stats
-import com.unciv.models.translations.equalsPlaceholderText
 import com.unciv.models.translations.tr
 import com.unciv.ui.victoryscreen.RankingType
 import java.util.*
@@ -86,8 +85,10 @@ class CivilizationInfo {
     private var allyCivName = ""
     var naturalWonders = ArrayList<String>()
 
-    //** for trades here, ourOffers is the current civ's offers, and theirOffers is what the requesting civ offers  */
+    /** for trades here, ourOffers is the current civ's offers, and theirOffers is what the requesting civ offers  */
     val tradeRequests = ArrayList<TradeRequest>()
+    /** See DiplomacyManager.flagsCountdown to why not eEnum */
+    private var flagsCountdown = HashMap<String,Int>()
 
     // if we only use lists, and change the list each time the cities are changed,
     // we won't get concurrent modification exceptions.
@@ -129,6 +130,7 @@ class CivilizationInfo {
         toReturn.tradeRequests.addAll(tradeRequests)
         toReturn.naturalWonders.addAll(naturalWonders)
         toReturn.cityStatePersonality = cityStatePersonality
+        toReturn.flagsCountdown.putAll(flagsCountdown)
         return toReturn
     }
 
@@ -190,10 +192,6 @@ class CivilizationInfo {
         return newResourceSupplyList
     }
 
-    fun getViewableResources(): List<TileResource> =
-            gameInfo.ruleSet.tileResources.values
-                    .filter { it.revealedBy == null || tech.isResearched(it.revealedBy!!) }
-
     fun isCapitalConnectedToCity(city: CityInfo): Boolean = citiesConnectedToCapitalToMediums.keys.contains(city)
 
 
@@ -222,13 +220,20 @@ class CivilizationInfo {
 
     fun hasResource(resourceName: String): Boolean = getCivResourcesByName()[resourceName]!! > 0
 
-    fun getBuildingUniques(): Sequence<Unique> = cities.asSequence().flatMap { it.cityConstructions.builtBuildingUniqueMap.getAllUniques() }
+    fun getCivWideBuildingUniques(): Sequence<Unique> = cities.asSequence().flatMap {
+        it.cityConstructions.builtBuildingUniqueMap.getAllUniques()
+                .filter { it.params.isEmpty() || it.params.last() != "in this city" }
+    }
 
     fun hasUnique(unique: String) = getMatchingUniques(unique).any()
 
+    // Does not return local uniques, only global ones.
     fun getMatchingUniques(uniqueTemplate: String): Sequence<Unique> {
         return nation.uniqueObjects.asSequence().filter { it.placeholderText == uniqueTemplate } +
-                cities.asSequence().flatMap { it.cityConstructions.builtBuildingUniqueMap.getUniques(uniqueTemplate).asSequence() } +
+                cities.asSequence().flatMap {
+                    it.cityConstructions.builtBuildingUniqueMap.getUniques(uniqueTemplate).asSequence()
+                            .filter { it.params.isEmpty() || it.params.last() != "in this city" }
+                } +
                 policies.policyUniques.getUniques(uniqueTemplate) +
                 tech.getTechUniques().filter { it.placeholderText == uniqueTemplate }
     }
@@ -292,11 +297,13 @@ class CivilizationInfo {
     }
 
     fun getEquivalentUnit(baseUnitName: String): BaseUnit {
+        val baseUnit = gameInfo.ruleSet.units[baseUnitName]
+        if (baseUnit == null) throw UncivShowableException("Unit $baseUnitName doesn't seem to exist!")
+        if (baseUnit.replaces != null) return getEquivalentUnit(baseUnit.replaces!!) // Equivalent of unique unit is the equivalent of the replaced unit
+
         for (unit in gameInfo.ruleSet.units.values)
             if (unit.replaces == baseUnitName && unit.uniqueTo == civName)
                 return unit
-        val baseUnit = gameInfo.ruleSet.units[baseUnitName]
-        if (baseUnit == null) throw UncivShowableException("Unit $baseUnitName doesn't seem to exist!")
         return baseUnit
     }
 
@@ -326,15 +333,11 @@ class CivilizationInfo {
     fun isDefeated(): Boolean {
         // Dirty hack: exploredTiles are empty only before starting units are placed
         if (exploredTiles.isEmpty() || isBarbarian() || isSpectator()) return false
-        // Scenarios are 'to the death'... for now
-        if (gameInfo.gameParameters.victoryTypes.contains(VictoryType.Scenario))
-            return cities.isEmpty() && getCivUnits().none()
         else return cities.isEmpty() // No cities
                 && (citiesCreated > 0 || !getCivUnits().any { it.hasUnique(Constants.settlerUnique) })
     }
 
     fun getEra(): String {
-        // For scenarios with no techs
         if (gameInfo.ruleSet.technologies.isEmpty()) return "None"
         if (tech.researchedTechnologies.isEmpty())
             return gameInfo.ruleSet.getEras().first()
@@ -346,9 +349,7 @@ class CivilizationInfo {
         return maxEraOfTech
     }
 
-    fun getEraNumber(): Int {
-        return gameInfo.ruleSet.getEraNumber(getEra())
-    }
+    fun getEraNumber(): Int = gameInfo.ruleSet.getEraNumber(getEra())
 
     fun isAtWarWith(otherCiv: CivilizationInfo): Boolean {
         if (otherCiv.civName == civName) return false // never at war with itself
@@ -592,11 +593,18 @@ class CivilizationInfo {
         }
     }
 
-    fun giveGoldGift(otherCiv: CivilizationInfo, giftAmount: Int) {
-        if (!otherCiv.isCityState()) throw Exception("You can only gain influence with City-States!")
+    fun influenceGainedByGift(cityState: CivilizationInfo, giftAmount: Int): Int {
+        var influenceGained = giftAmount / 10f
+        for (unique in cityState.getMatchingUniques("Gifts of Gold to City-States generate []% more Influence"))
+            influenceGained *= (100f + unique.params[0].toInt()) / 100
+        return influenceGained.toInt()
+    }
+
+    fun giveGoldGift(cityState: CivilizationInfo, giftAmount: Int) {
+        if (!cityState.isCityState()) throw Exception("You can only gain influence with City-States!")
         gold -= giftAmount
-        otherCiv.getDiplomacyManager(this).influence += giftAmount / 10
-        otherCiv.updateAllyCivForCityState()
+        cityState.getDiplomacyManager(this).influence += influenceGainedByGift(cityState, giftAmount)
+        cityState.updateAllyCivForCityState()
         updateStatsForNextTurn()
     }
 

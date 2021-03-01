@@ -24,6 +24,7 @@ class UncivShowableException(missingMods: String) : Exception(missingMods)
 class GameInfo {
     @Transient
     lateinit var difficultyObject: Difficulty // Since this is static game-wide, and was taking a large part of nextTurn
+
     @Transient
     lateinit var currentPlayerCiv: CivilizationInfo // this is called thousands of times, no reason to search for it with a find{} every time
 
@@ -31,6 +32,7 @@ class GameInfo {
      * that is inconsistent with the saved game on the cloud */
     @Transient
     var isUpToDate = false
+
     @Transient
     lateinit var ruleSet: Ruleset
 
@@ -101,7 +103,12 @@ class GameInfo {
             thisPlayer.startTurn()
         }
 
-        switchTurn()
+        //check is important or else switchTurn
+        //would skip a turn if an AI civ calls nextTurn
+        //this happens when resigning a multiplayer game
+        if (thisPlayer.isPlayerCivilization()){
+            switchTurn()
+        }
 
         while (thisPlayer.playerType == PlayerType.AI
                 || turns < UncivGame.Current.simulateUntilTurnForDebug
@@ -251,7 +258,7 @@ class GameInfo {
     // will be done here, and not in CivInfo.setTransients or CityInfo
     fun setTransients() {
         tileMap.gameInfo = this
-        ruleSet = RulesetCache.getComplexRuleset(gameParameters)
+        ruleSet = RulesetCache.getComplexRuleset(gameParameters.mods)
         // any mod the saved game lists that is currently not installed causes null pointer
         // exceptions in this routine unless it contained no new objects or was very simple.
         // Player's fault, so better complain early:
@@ -324,6 +331,8 @@ class GameInfo {
     // So we remove them so the game doesn't crash when it tries to access them.
     private fun removeMissingModReferences() {
         for (tile in tileMap.values) {
+            if (tile.terrainFeature != null && !ruleSet.terrains.containsKey(tile.terrainFeature!!))
+                tile.terrainFeature = null
             if (tile.resource != null && !ruleSet.tileResources.containsKey(tile.resource!!))
                 tile.resource = null
             if (tile.improvement != null && !ruleSet.tileImprovements.containsKey(tile.improvement!!)
@@ -337,7 +346,6 @@ class GameInfo {
                     if (!ruleSet.unitPromotions.containsKey(promotion))
                         unit.promotions.promotions.remove(promotion)
             }
-
         }
 
         for (city in civilizations.asSequence().flatMap { it.cities.asSequence() }) {
@@ -345,17 +353,27 @@ class GameInfo {
                 if (!ruleSet.buildings.containsKey(building))
                     city.cityConstructions.builtBuildings.remove(building)
 
+            fun isInvalidConstruction(construction: String) = !ruleSet.buildings.containsKey(construction) && !ruleSet.units.containsKey(construction)
+                    && !PerpetualConstruction.perpetualConstructionsMap.containsKey(construction)
+
             // Remove invalid buildings or units from the queue - don't just check buildings and units because it might be a special construction as well
             for (construction in city.cityConstructions.constructionQueue.toList()) {
-                if (!ruleSet.buildings.containsKey(construction) && !ruleSet.units.containsKey(construction)
-                        && !PerpetualConstruction.perpetualConstructionsMap.containsKey(construction))
+                if (isInvalidConstruction(construction))
                     city.cityConstructions.constructionQueue.remove(construction)
             }
+            // And from being in progress
+            for (construction in city.cityConstructions.inProgressConstructions.keys.toList())
+                if (isInvalidConstruction(construction))
+                    city.cityConstructions.inProgressConstructions.remove(construction)
         }
+
         for (civinfo in civilizations) {
             for (tech in civinfo.tech.techsResearched.toList())
                 if (!ruleSet.technologies.containsKey(tech))
                     civinfo.tech.techsResearched.remove(tech)
+            for (policy in civinfo.policies.adoptedPolicies.toList())
+                if (!ruleSet.policies.containsKey(policy))
+                    civinfo.policies.adoptedPolicies.remove(policy)
         }
     }
 

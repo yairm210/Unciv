@@ -65,7 +65,7 @@ object Automation {
         // This is so that the AI doesn't use all its aluminum on units and have none left for spaceship parts
         val aluminum = city.civInfo.getCivResourcesByName()["Aluminum"]
         if (aluminum != null && aluminum < 2) // mods may have no aluminum
-            militaryUnits.filter { it.requiredResource != "Aluminum" }
+            militaryUnits.filter { !it.getResourceRequirements().containsKey("Aluminum") }
 
         val findWaterConnectedCitiesAndEnemies = BFS(city.getCenterTile()) { it.isWater || it.isCityCenter() }
         findWaterConnectedCitiesAndEnemies.stepToEnd()

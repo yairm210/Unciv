@@ -6,8 +6,10 @@ import com.unciv.logic.HexMath
 import com.unciv.logic.map.*
 import com.unciv.models.Counter
 import com.unciv.models.ruleset.Ruleset
+import com.unciv.models.ruleset.Unique
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.tile.TerrainType
+import com.unciv.models.translations.equalsPlaceholderText
 import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.pow
@@ -16,7 +18,7 @@ import kotlin.random.Random
 
 
 class MapGenerator(val ruleset: Ruleset) {
-    var randomness = MapGenerationRandomness()
+    private var randomness = MapGenerationRandomness()
 
     fun generateMap(mapParameters: MapParameters, seed: Long = System.currentTimeMillis()): TileMap {
         val mapRadius = mapParameters.size.radius
@@ -185,9 +187,11 @@ class MapGenerator(val ruleset: Ruleset) {
             var elevation = randomness.getPerlinNoise(tile, elevationSeed, scale = 2.0)
                     elevation = abs(elevation).pow(1.0 - tileMap.mapParameters.elevationExponent.toDouble()) * elevation.sign
 
-            if (elevation <= 0.5) tile.baseTerrain = Constants.plains
-            else if (elevation <= 0.7) tile.baseTerrain = Constants.hill
-            else if (elevation <= 1.0) tile.baseTerrain = Constants.mountain
+            when {
+                elevation <= 0.5 -> tile.baseTerrain = Constants.plains
+                elevation <= 0.7 -> tile.baseTerrain = Constants.hill
+                elevation <= 1.0 -> tile.baseTerrain = Constants.mountain
+            }
         }
     }
 
@@ -211,27 +215,36 @@ class MapGenerator(val ruleset: Ruleset) {
 
             val randomTemperature = randomness.getPerlinNoise(tile, temperatureSeed, scale = scale, nOctaves = 1)
             val latitudeTemperature = 1.0 - 2.0 * abs(tile.latitude) / tileMap.maxLatitude
-            var temperature = ((5.0 * latitudeTemperature + randomTemperature) / 6.0)
+            var temperature = (5.0 * latitudeTemperature + randomTemperature) / 6.0
             temperature = abs(temperature).pow(1.0 - tileMap.mapParameters.temperatureExtremeness) * temperature.sign
 
-            tile.baseTerrain = when {
-                temperature < -0.4 -> {
-                    if (humidity < 0.5) Constants.snow
-                    else Constants.tundra
+            // Old, static map generation rules - necessary for existing base ruleset mods to continue to function
+            if (ruleset.terrains.values.asSequence().flatMap { it.uniqueObjects }
+                            .none { it.placeholderText == "Occurs at temperature between [] and [] and humidity between [] and []" }) {
+                tile.baseTerrain = when {
+                    temperature < -0.4 -> if (humidity < 0.5) Constants.snow   else Constants.tundra
+                    temperature < 0.8  -> if (humidity < 0.5) Constants.plains else Constants.grassland
+                    temperature <= 1.0 -> if (humidity < 0.7) Constants.desert else Constants.plains
+                    else -> {
+                        println(temperature)
+                        Constants.lakes
+                    }
                 }
-                temperature < 0.8 -> {
-                    if (humidity < 0.5) Constants.plains
-                    else Constants.grassland
-                }
-                temperature <= 1.0 -> {
-                    if (humidity < 0.7) Constants.desert
-                    else Constants.plains
-                }
-                else -> {
-                    println(temperature)
-                    Constants.lakes
-                }
+                continue
+            }
 
+            val matchingTerrain = ruleset.terrains.values.firstOrNull {
+                it.uniqueObjects.any {
+                    it.placeholderText == "Occurs at temperature between [] and [] and humidity between [] and []"
+                            && it.params[0].toFloat() < temperature && temperature <= it.params[1].toFloat()
+                            && it.params[2].toFloat() < humidity && humidity <= it.params[3].toFloat()
+                }
+            }
+
+            if (matchingTerrain != null) tile.baseTerrain = matchingTerrain.name
+            else {
+                tile.baseTerrain = ruleset.terrains.keys.first()
+                println("Temperature: $temperature, humidity: $humidity")
             }
         }
     }
@@ -342,10 +355,11 @@ class MapGenerationRandomness{
 }
 
 
-class RiverCoordinate(val position: Vector2, val bottomRightOrLeft: BottomRightOrLeft){
-    enum class BottomRightOrLeft{
+class RiverCoordinate(val position: Vector2, val bottomRightOrLeft: BottomRightOrLeft) {
+    enum class BottomRightOrLeft {
         /** 7 O'Clock of the tile */
         BottomLeft,
+
         /** 5 O'Clock of the tile */
         BottomRight
     }
@@ -366,4 +380,3 @@ class RiverCoordinate(val position: Vector2, val bottomRightOrLeft: BottomRightO
         }
     }
 }
-

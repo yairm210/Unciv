@@ -26,52 +26,47 @@ class Technology {
         val lineList = ArrayList<String>() // more readable than StringBuilder, with same performance for our use-case
         for (unique in uniques) lineList += unique.tr()
 
-        val mapOfImprovedImprovements = HashMap<String, ArrayList<String>>()
-        for (improvement in ruleset.tileImprovements.values) for ( unique in improvement.uniqueObjects
-                .filter { it.placeholderText in setOf("[] once [] is discovered", "[] on [] tiles once [] is discovered")
-                        && it.params.last() == name }) {
-            val key = if (unique.params.size == 2 ) "The following improvements [${unique.params[0]}]:" else "The following improvements on [${unique.params[1]}] tiles [${unique.params[0]}]:"
-            if (!mapOfImprovedImprovements.containsKey(key)) mapOfImprovedImprovements[key] = ArrayList()
-            mapOfImprovedImprovements[key]!!.add(improvement.name)
-        }
-        for (improvements in mapOfImprovedImprovements) {
-            val impimpString = improvements.key.tr() + improvements.value.joinToString(", "," ") { it.tr() }
-            lineList += impimpString
-        }
+        for (improvement in ruleset.tileImprovements.values)
+            for (unique in improvement.uniqueObjects) {
+                if (unique.placeholderText == "[] once [] is discovered" && unique.params.last() == name)
+                    lineList += "[${unique.params[0]}] from every [${improvement.name}]"
+                else if (unique.placeholderText == "[] on [] tiles once [] is discovered" && unique.params.last() == name)
+                    lineList += "[${unique.params[0]}] from every [${improvement.name}] on [${unique.params[1]}] tiles"
+            }
 
         val viewingCiv = UncivGame.Current.worldScreen.viewingCiv
-        val enabledUnits = getEnabledUnits(viewingCiv)
-        if (enabledUnits.any { "Will not be displayed in Civilopedia" !in it.uniques}) {
+        val enabledUnits = getEnabledUnits(viewingCiv).filter { "Will not be displayed in Civilopedia" !in it.uniques }
+        if (enabledUnits.isNotEmpty()) {
             lineList += "{Units enabled}: "
-            for (unit in enabledUnits
-                    .filter { "Will not be displayed in Civilopedia" !in it.uniques})
+            for (unit in enabledUnits)
                 lineList += " * " + unit.name.tr() + " (" + unit.getShortDescription() + ")"
         }
 
         val enabledBuildings = getEnabledBuildings(viewingCiv)
 
-        val regularBuildings = enabledBuildings.filter { !it.isWonder && !it.isNationalWonder }
-        if (regularBuildings.any { "Will not be displayed in Civilopedia" !in it.uniques}) {
+        val regularBuildings = enabledBuildings.filter { !it.isWonder && !it.isNationalWonder
+                && "Will not be displayed in Civilopedia" !in it.uniques }
+        if (regularBuildings.isNotEmpty()) {
             lineList += "{Buildings enabled}: "
-            for (building in regularBuildings
-                    .filter { "Will not be displayed in Civilopedia" !in it.uniques})
+            for (building in regularBuildings)
                 lineList += "* " + building.name.tr() + " (" + building.getShortDescription(ruleset) + ")"
         }
 
-        val wonders = enabledBuildings.filter { it.isWonder || it.isNationalWonder }
-        if (wonders.any { "Will not be displayed in Civilopedia" !in it.uniques }) {
+        val wonders = enabledBuildings.filter { (it.isWonder || it.isNationalWonder)
+                && "Will not be displayed in Civilopedia" !in it.uniques }
+        if (wonders.isNotEmpty()) {
             lineList += "{Wonders enabled}: "
-            for (wonder in wonders
-                    .filter { "Will not be displayed in Civilopedia" !in it.uniques})
+            for (wonder in wonders)
                 lineList += " * " + wonder.name.tr() + " (" + wonder.getShortDescription(ruleset) + ")"
         }
 
-        for(building in getObsoletedBuildings(viewingCiv))
+        for(building in getObsoletedBuildings(viewingCiv)
+                .filter { "Will not be displayed in Civilopedia" !in it.uniques })
             lineList += "[${building.name}] obsoleted"
 
         val revealedResource = ruleset.tileResources.values.filter { it.revealedBy == name }
                 .map { it.name }.firstOrNull() // can only be one
-        if (revealedResource != null) lineList += "Reveals [$revealedResource] on the map".tr()
+        if (revealedResource != null) lineList += "Reveals [$revealedResource] on the map"
 
         val tileImprovements = ruleset.tileImprovements.values.filter { it.techRequired == name }
         if (tileImprovements.isNotEmpty())

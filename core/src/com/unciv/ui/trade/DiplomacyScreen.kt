@@ -69,7 +69,7 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
             if (civ.isCityState() && civ.questManager.haveQuestsFor(viewingCiv)) {
                 val questIcon = ImageGetter.getImage("OtherIcons/Quest").surroundWithCircle(size = 30f, color = Color.GOLDENROD)
                 civIndicator.addActor(questIcon)
-                questIcon.setX(floor(civIndicator.width - questIcon.width))
+                questIcon.x = floor(civIndicator.width - questIcon.width)
             }
 
             leftSideTable.add(civIndicator).row()
@@ -99,7 +99,8 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
         diplomacyTable.defaults().pad(10f)
 
         val displayNameTable = Table()
-        displayNameTable.add(ImageGetter.getNationIndicator(otherCiv.nation, 24f)).pad(0f,0f,5f,10f)
+        displayNameTable.add(ImageGetter.getNationIndicator(otherCiv.nation, 24f))
+                .pad(0f,0f,5f,10f)
         displayNameTable.add(otherCiv.getLeaderDisplayName().toLabel(fontSize = 24))
         diplomacyTable.add(displayNameTable).row()
 
@@ -146,7 +147,7 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
         diplomacyTable.addSeparator()
 
         val giftAmount = 250
-        val influenceAmount = giftAmount / 10
+        val influenceAmount = viewingCiv.influenceGainedByGift(otherCiv, giftAmount)
         val giftButton = "Gift [$giftAmount] gold (+[$influenceAmount] influence)".toTextButton()
         giftButton.onClick {
             viewingCiv.giveGoldGift(otherCiv, giftAmount)
@@ -199,8 +200,8 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
         val description = assignedQuest.getDescription()
 
         questTable.add(title.toLabel(fontSize = 24)).row()
-        questTable.add(description.toLabel().apply { setWrap(true); setAlignment(Align.center) })
-                .width(rightSideTable.width - 50f).row()
+        questTable.add(description.toLabel().apply { wrap = true; setAlignment(Align.center) })
+                .width(stage.width/2).row()
         if (quest.duration > 0)
             questTable.add("[${remainingTurns}] turns remaining".toLabel()).row()
 

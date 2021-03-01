@@ -20,7 +20,7 @@ class GameSettings {
     var soundEffectsVolume = 0.5f
     var musicVolume = 0.5f
     var turnsBetweenAutosaves = 1
-    var tileSet:String = "FantasyHex"
+    var tileSet: String = "FantasyHex"
     var showTutorials: Boolean = true
     var autoAssignCityProduction: Boolean = true
     var autoBuildingRoads: Boolean = true
@@ -37,7 +37,6 @@ class GameSettings {
     var orderTradeOffersByAmount = true
     var windowState = WindowState()
     var isFreshlyCreated = false
-    var extendedMapEditor = false
 
     init {
         // 26 = Android Oreo. Versions below may display permanent icon in notification bar.
@@ -46,14 +45,14 @@ class GameSettings {
         }
     }
 
-    fun save(){
+    fun save() {
         if (!isFreshlyCreated && Gdx.app?.type == Application.ApplicationType.Desktop) {
-            windowState = WindowState( Gdx.graphics.width, Gdx.graphics.height)
+            windowState = WindowState(Gdx.graphics.width, Gdx.graphics.height)
         }
         GameSaver.setGeneralSettings(this)
     }
 
-    fun addCompletedTutorialTask(tutorialTask:String){
+    fun addCompletedTutorialTask(tutorialTask: String) {
         tutorialTasksCompleted.add(tutorialTask)
         save()
     }

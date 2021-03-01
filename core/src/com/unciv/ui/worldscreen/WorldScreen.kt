@@ -14,6 +14,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
+import com.unciv.logic.GameInfo
 import com.unciv.logic.GameSaver
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
@@ -37,13 +38,14 @@ import com.unciv.ui.worldscreen.unit.UnitActionsTable
 import com.unciv.ui.worldscreen.unit.UnitTable
 import java.util.*
 import kotlin.concurrent.thread
+import kotlin.concurrent.timer
 
 class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
     val gameInfo = game.gameInfo
 
     var isPlayersTurn = viewingCiv == gameInfo.currentPlayerCiv // todo this should be updated when passing turns
     var selectedCiv = viewingCiv // Selected civilization, used in spectator and replay mode, equals viewingCiv in ordinary games
-    var fogOfWar = true
+    private var fogOfWar = true
     val canChangeState = isPlayersTurn && !viewingCiv.isSpectator()
     private var waitingForAutosave = false
 
@@ -68,9 +70,6 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
     var shouldUpdate = false
 
 
-    private var backButtonListener: InputListener
-
-
     init {
         topBar.setPosition(0f, stage.height - topBar.height)
         topBar.width = stage.width
@@ -81,7 +80,12 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
 
         minimapWrapper.x = stage.width - minimapWrapper.width
 
-        mapHolder.addTiles()
+        try { // Most memory errors occur here, so this is a sort of catch-all
+            mapHolder.addTiles()
+        } catch (outOfMemoryError: OutOfMemoryError) {
+            mapHolder.clear() // hopefully enough memory will be freed to be able to display the toast popup
+            ToastPopup("Not enough memory on phone to load game!", this)
+        }
 
         techButtonHolder.touchable = Touchable.enabled
         techButtonHolder.onClick(UncivSound.Paper) {
@@ -143,19 +147,17 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
         if (gameInfo.gameParameters.isOnlineMultiplayer && !isPlayersTurn) {
             // restart the timer
             stopMultiPlayerRefresher()
+
             // isDaemon = true, in order to not block the app closing
-            multiPlayerRefresher = Timer("multiPlayerRefresh", true).apply {
-                schedule(object : TimerTask() { //todo maybe not use timer for web request, from timer docs "Timer tasks should complete quickly."
-                    override fun run() {
-                        loadLatestMultiplayerState()
-                    }
-                }, 0, 10000) // 10 seconds
+            // DO NOT use Timer() since this seems to (maybe?) translate to com.badlogic.gdx.utils.Timer? Not sure about this.
+            multiPlayerRefresher = timer("multiPlayerRefresh", true, period = 10000) {
+                loadLatestMultiplayerState()
             }
         }
 
         tutorialController.allTutorialsShowedCallback = { shouldUpdate = true }
 
-        backButtonListener = onBackButtonClicked { backButtonAndESCHandler() }
+        onBackButtonClicked { backButtonAndESCHandler() }
 
         addKeyboardListener() // for map panning by W,S,A,D
 
@@ -181,7 +183,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
                 object : InputListener() {
                     private val pressedKeys = mutableSetOf<Int>()
                     private var infiniteAction: RepeatAction? = null
-                    private val amountToMove = 30 / mapHolder.scaleX
+                    private val amountToMove = 6 / mapHolder.scaleX
                     private val ALLOWED_KEYS = setOf(Input.Keys.W, Input.Keys.S, Input.Keys.A, Input.Keys.D,
                             Input.Keys.UP, Input.Keys.DOWN, Input.Keys.LEFT, Input.Keys.RIGHT)
 
@@ -192,7 +194,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
                         pressedKeys.add(keycode)
                         if (infiniteAction == null) {
                             // create a copy of the action, because removeAction() will destroy this instance
-                            infiniteAction = Actions.forever(Actions.delay(0.05f, Actions.run { whileKeyPressedLoop() }))
+                            infiniteAction = Actions.forever(Actions.delay(0.01f, Actions.run { whileKeyPressedLoop() }))
                             mapHolder.addAction(infiniteAction)
                         }
                         return true
@@ -247,9 +249,8 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
                 return
             } else { //else we found it is the player's turn again, turn off polling and load turn
                 stopMultiPlayerRefresher()
-
                 latestGame.isUpToDate = true
-                Gdx.app.postRunnable { game.loadGame(latestGame) }
+                Gdx.app.postRunnable { createNewWorldScreen(latestGame) }
             }
 
         } catch (ex: Exception) {
@@ -446,11 +447,11 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
     }
 
     private fun updateSelectedCiv() {
-        if (bottomUnitTable.selectedUnit != null)
-            selectedCiv = bottomUnitTable.selectedUnit!!.civInfo
-        else if (bottomUnitTable.selectedCity != null)
-            selectedCiv = bottomUnitTable.selectedCity!!.civInfo
-        else viewingCiv
+        when {
+            bottomUnitTable.selectedUnit != null -> selectedCiv = bottomUnitTable.selectedUnit!!.civInfo
+            bottomUnitTable.selectedCity != null -> selectedCiv = bottomUnitTable.selectedCity!!.civInfo
+            else -> viewingCiv
+        }
     }
 
     private fun createFogOfWarButton(): TextButton {
@@ -477,6 +478,24 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
         keyPressDispatcher['n'] = nextTurnActionWrapped
 
         return nextTurnButton
+    }
+
+
+    fun createNewWorldScreen(gameInfo:GameInfo) {
+
+        game.gameInfo = gameInfo
+        val newWorldScreen = WorldScreen(gameInfo.getPlayerToViewAs())
+        newWorldScreen.mapHolder.scrollX = mapHolder.scrollX
+        newWorldScreen.mapHolder.scrollY = mapHolder.scrollY
+        newWorldScreen.mapHolder.scaleX = mapHolder.scaleX
+        newWorldScreen.mapHolder.scaleY = mapHolder.scaleY
+        newWorldScreen.mapHolder.updateVisualScroll()
+
+        newWorldScreen.selectedCiv = gameInfo.getCivilization(selectedCiv.civName)
+        newWorldScreen.fogOfWar = fogOfWar
+
+        game.worldScreen = newWorldScreen
+        game.setWorldScreen()
     }
 
     private fun nextTurn() {
@@ -518,26 +537,12 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
             // do this on main thread - it's the only one that has a GL context to create images from
             Gdx.app.postRunnable {
 
-                fun createNewWorldScreen() {
-                    val newWorldScreen = WorldScreen(gameInfoClone.getPlayerToViewAs())
-                    newWorldScreen.mapHolder.scrollX = mapHolder.scrollX
-                    newWorldScreen.mapHolder.scrollY = mapHolder.scrollY
-                    newWorldScreen.mapHolder.scaleX = mapHolder.scaleX
-                    newWorldScreen.mapHolder.scaleY = mapHolder.scaleY
-                    newWorldScreen.mapHolder.updateVisualScroll()
-
-                    newWorldScreen.selectedCiv = gameInfoClone.getCivilization(selectedCiv.civName)
-                    newWorldScreen.fogOfWar = fogOfWar
-
-                    game.worldScreen = newWorldScreen
-                    game.setWorldScreen()
-                }
 
                 if (gameInfoClone.currentPlayerCiv.civName != viewingCiv.civName
                         && !gameInfoClone.gameParameters.isOnlineMultiplayer)
                     game.setScreen(PlayerReadyScreen(gameInfoClone.getCurrentPlayerCivilization()))
                 else {
-                    createNewWorldScreen()
+                    createNewWorldScreen(gameInfoClone)
                 }
 
                 if (shouldAutoSave) {
@@ -612,10 +617,8 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
     }
 
     override fun resize(width: Int, height: Int) {
-        if (stage.viewport.screenWidth != width || stage.viewport.screenHeight != height) {
-            game.worldScreen = WorldScreen(viewingCiv) // start over.
-            game.setWorldScreen()
-        }
+        if (stage.viewport.screenWidth != width || stage.viewport.screenHeight != height)
+            createNewWorldScreen(gameInfo) // start over
     }
 
 
@@ -629,6 +632,10 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
             showTutorialsOnNextTurn()
         }
 //        topBar.selectedCivLabel.setText(Gdx.graphics.framesPerSecond) // for framerate testing
+
+        val scrollPos = Vector2(mapHolder.scrollX, mapHolder.scrollY)
+        val viewScale = Vector2(mapHolder.scaleX, mapHolder.scaleY)
+        minimapWrapper.minimap.updateScrollPosistion(scrollPos, viewScale)
 
         super.render(delta)
     }

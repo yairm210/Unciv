@@ -28,21 +28,21 @@ class Language(val language:String, val percentComplete:Int){
 class OptionsPopup(val previousScreen:CameraStageBaseScreen) : Popup(previousScreen) {
     var selectedLanguage: String = "English"
     private val settings = previousScreen.game.settings
-    private val innerTable = Table(CameraStageBaseScreen.skin)
+    val innerTable2 = Table(CameraStageBaseScreen.skin)
 
     init {
         settings.addCompletedTutorialTask("Open the options table")
 
         rebuildInnerTable()
 
-        val scrollPane = ScrollPane(innerTable, skin)
+        val scrollPane = ScrollPane(innerTable2, skin)
         scrollPane.setOverscroll(false, false)
         scrollPane.fadeScrollBars = false
         scrollPane.setScrollingDisabled(true, false)
         add(scrollPane).maxHeight(screen.stage.height * 0.6f).row()
 
-        addCloseButton() {
-            if(previousScreen is WorldScreen)
+        addCloseButton {
+            if (previousScreen is WorldScreen)
                 previousScreen.enableNextTurnButtonAfterOptions()
         }
 
@@ -50,19 +50,19 @@ class OptionsPopup(val previousScreen:CameraStageBaseScreen) : Popup(previousScr
         center(previousScreen.stage)
     }
 
-    private fun addHeader (text: String) {
-        innerTable.add(text.toLabel(fontSize = 24)).colspan(2).padTop(if (innerTable.cells.isEmpty) 0f else 20f).row()
+    private fun addHeader(text: String) {
+        innerTable2.add(text.toLabel(fontSize = 24)).colspan(2).padTop(if (innerTable2.cells.isEmpty) 0f else 20f).row()
     }
 
-    private fun addYesNoRow (text: String, initialValue: Boolean, updateWorld: Boolean = false, action: ((Boolean) -> Unit)) {
-        innerTable.add(text.toLabel())
-        val button = YesNoButton(initialValue, skin) {
+    private fun addYesNoRow(text: String, initialValue: Boolean, updateWorld: Boolean = false, action: ((Boolean) -> Unit)) {
+        innerTable2.add(text.toLabel())
+        val button = YesNoButton(initialValue, CameraStageBaseScreen.skin) {
             action(it)
             settings.save()
             if (updateWorld && previousScreen is WorldScreen)
                 previousScreen.shouldUpdate = true
         }
-        innerTable.add(button).row()
+        innerTable2.add(button).row()
     }
 
     private fun reloadWorldAndOptions() {
@@ -78,17 +78,17 @@ class OptionsPopup(val previousScreen:CameraStageBaseScreen) : Popup(previousScr
 
     private fun rebuildInnerTable() {
         settings.save()
-        innerTable.clear()
+        innerTable2.clear()
 
         addHeader("Display options")
 
-        addYesNoRow ("Show worked tiles", settings.showWorkedTiles, true) { settings.showWorkedTiles = it }
-        addYesNoRow ("Show resources and improvements", settings.showResourcesAndImprovements, true) { settings.showResourcesAndImprovements = it }
-        addYesNoRow ("Show tile yields", settings.showTileYields, true) { settings.showTileYields = it } // JN
-        addYesNoRow ("Show tutorials", settings.showTutorials, true) {settings.showTutorials = it }
-        addYesNoRow ("Show minimap", settings.showMinimap, true) { settings.showMinimap = it }
-        addYesNoRow ("Show pixel units", settings.showPixelUnits, true) { settings.showPixelUnits = it }
-        addYesNoRow ("Show pixel improvements", settings.showPixelImprovements, true) { settings.showPixelImprovements = it }
+        addYesNoRow("Show worked tiles", settings.showWorkedTiles, true) { settings.showWorkedTiles = it }
+        addYesNoRow("Show resources and improvements", settings.showResourcesAndImprovements, true) { settings.showResourcesAndImprovements = it }
+        addYesNoRow("Show tile yields", settings.showTileYields, true) { settings.showTileYields = it } // JN
+        addYesNoRow("Show tutorials", settings.showTutorials, true) { settings.showTutorials = it }
+        addYesNoRow("Show minimap", settings.showMinimap, true) { settings.showMinimap = it }
+        addYesNoRow("Show pixel units", settings.showPixelUnits, true) { settings.showPixelUnits = it }
+        addYesNoRow("Show pixel improvements", settings.showPixelImprovements, true) { settings.showPixelImprovements = it }
 
         addLanguageSelectBox()
 
@@ -96,30 +96,30 @@ class OptionsPopup(val previousScreen:CameraStageBaseScreen) : Popup(previousScr
 
         addTileSetSelectBox()
 
-        addYesNoRow ("Continuous rendering", settings.continuousRendering) {
+        addYesNoRow("Continuous rendering", settings.continuousRendering) {
             settings.continuousRendering = it
             Gdx.graphics.isContinuousRendering = it
         }
 
         val continuousRenderingDescription = "When disabled, saves battery life but certain animations will be suspended"
-        innerTable.add(continuousRenderingDescription.toLabel(fontSize = 14)).colspan(2).padTop(20f).row()
+        innerTable2.add(continuousRenderingDescription.toLabel(fontSize = 14)).colspan(2).padTop(20f).row()
 
         addHeader("Gameplay options")
 
-        addYesNoRow ("Check for idle units", settings.checkForDueUnits, true) { settings.checkForDueUnits = it }
-        addYesNoRow ("Move units with a single tap", settings.singleTapMove) { settings.singleTapMove = it }
-        addYesNoRow ("Auto-assign city production", settings.autoAssignCityProduction, true) {
+        addYesNoRow("Check for idle units", settings.checkForDueUnits, true) { settings.checkForDueUnits = it }
+        addYesNoRow("Move units with a single tap", settings.singleTapMove) { settings.singleTapMove = it }
+        addYesNoRow("Auto-assign city production", settings.autoAssignCityProduction, true) {
             settings.autoAssignCityProduction = it
             if (it && previousScreen is WorldScreen &&
-                previousScreen.viewingCiv.isCurrentPlayer() && previousScreen.viewingCiv.playerType == PlayerType.Human) {
+                    previousScreen.viewingCiv.isCurrentPlayer() && previousScreen.viewingCiv.playerType == PlayerType.Human) {
                 previousScreen.gameInfo.currentPlayerCiv.cities.forEach { city ->
                     city.cityConstructions.chooseNextConstruction()
                 }
             }
         }
-        addYesNoRow ("Auto-build roads", settings.autoBuildingRoads) { settings.autoBuildingRoads = it }
-        addYesNoRow ("Automated workers replace improvements", settings.automatedWorkersReplaceImprovements) { settings.automatedWorkersReplaceImprovements = it }
-        addYesNoRow ("Order trade offers by amount", settings.orderTradeOffersByAmount) { settings.orderTradeOffersByAmount = it }
+        addYesNoRow("Auto-build roads", settings.autoBuildingRoads) { settings.autoBuildingRoads = it }
+        addYesNoRow("Automated workers replace improvements", settings.automatedWorkersReplaceImprovements) { settings.automatedWorkersReplaceImprovements = it }
+        addYesNoRow("Order trade offers by amount", settings.orderTradeOffersByAmount) { settings.orderTradeOffersByAmount = it }
 
         addAutosaveTurnsSelectBox()
 
@@ -128,16 +128,14 @@ class OptionsPopup(val previousScreen:CameraStageBaseScreen) : Popup(previousScr
 
         addHeader("Other options")
 
-        addYesNoRow("Extended map editor", settings.extendedMapEditor) { settings.extendedMapEditor = it }
-
         addSoundEffectsVolumeSlider()
         addMusicVolumeSlider()
         addTranslationGeneration()
         addModPopup()
         addSetUserId()
 
-        innerTable.add("Version".toLabel()).pad(10f)
-        innerTable.add(previousScreen.game.version.toLabel()).pad(10f).row()
+        innerTable2.add("Version".toLabel()).pad(10f)
+        innerTable2.add(previousScreen.game.version.toLabel()).pad(10f).row()
     }
 
     private fun addSetUserId() {
@@ -159,8 +157,8 @@ class OptionsPopup(val previousScreen:CameraStageBaseScreen) : Popup(previousScr
                         idSetLabel.setFontColor(Color.RED).setText("Invalid ID!".tr())
                     }
                 }
-        innerTable.add(takeUserIdFromClipboardButton).pad(5f).colspan(2).row()
-        innerTable.add(idSetLabel).colspan(2).row()
+        innerTable2.add(takeUserIdFromClipboardButton).pad(5f).colspan(2).row()
+        innerTable2.add(idSetLabel).colspan(2).row()
     }
 
     private fun addNotificationOptions() {
@@ -190,7 +188,7 @@ class OptionsPopup(val previousScreen:CameraStageBaseScreen) : Popup(previousScr
                 generateTranslationsButton.setText("Translation files are generated successfully.".tr())
                 generateTranslationsButton.disable()
             }
-            innerTable.add(generateTranslationsButton).colspan(2).row()
+            innerTable2.add(generateTranslationsButton).colspan(2).row()
         }
     }
 
@@ -204,16 +202,16 @@ class OptionsPopup(val previousScreen:CameraStageBaseScreen) : Popup(previousScr
                     text += "\n\n" + mod.name + "\n\n" + modLinks
             }
             val popup = Popup(screen)
-            popup.add(ScrollPane(text.toLabel()).apply { setOverscroll(false,false) })
+            popup.add(ScrollPane(text.toLabel()).apply { setOverscroll(false, false) })
                     .maxHeight(screen.stage.height / 2).row()
             popup.addCloseButton()
             popup.open(true)
         }
-        innerTable.add(generateTranslationsButton).colspan(2).row()
+        innerTable2.add(generateTranslationsButton).colspan(2).row()
     }
 
     private fun addSoundEffectsVolumeSlider() {
-        innerTable.add("Sound effects volume".tr())
+        innerTable2.add("Sound effects volume".tr())
 
         val soundEffectsVolumeSlider = Slider(0f, 1.0f, 0.1f, false, skin)
         soundEffectsVolumeSlider.value = settings.soundEffectsVolume
@@ -222,13 +220,13 @@ class OptionsPopup(val previousScreen:CameraStageBaseScreen) : Popup(previousScr
             settings.save()
             Sounds.play(UncivSound.Click)
         }
-        innerTable.add(soundEffectsVolumeSlider).pad(10f).row()
+        innerTable2.add(soundEffectsVolumeSlider).pad(10f).row()
     }
 
     private fun addMusicVolumeSlider() {
         val musicLocation = Gdx.files.local(previousScreen.game.musicLocation)
         if (musicLocation.exists()) {
-            innerTable.add("Music volume".tr())
+            innerTable2.add("Music volume".tr())
 
             val musicVolumeSlider = Slider(0f, 1.0f, 0.1f, false, skin)
             musicVolumeSlider.value = settings.musicVolume
@@ -242,12 +240,12 @@ class OptionsPopup(val previousScreen:CameraStageBaseScreen) : Popup(previousScr
 
                 music?.volume = 0.4f * musicVolumeSlider.value
             }
-            innerTable.add(musicVolumeSlider).pad(10f).row()
+            innerTable2.add(musicVolumeSlider).pad(10f).row()
         } else {
             val downloadMusicButton = "Download music".toTextButton()
-            innerTable.add(downloadMusicButton).colspan(2).row()
+            innerTable2.add(downloadMusicButton).colspan(2).row()
             val errorTable = Table()
-            innerTable.add(errorTable).colspan(2).row()
+            innerTable2.add(errorTable).colspan(2).row()
 
             downloadMusicButton.onClick {
                 downloadMusicButton.disable()
@@ -275,14 +273,14 @@ class OptionsPopup(val previousScreen:CameraStageBaseScreen) : Popup(previousScr
     }
 
     private fun addResolutionSelectBox() {
-        innerTable.add("Resolution".toLabel())
+        innerTable2.add("Resolution".toLabel())
 
         val resolutionSelectBox = SelectBox<String>(skin)
         val resolutionArray = Array<String>()
         resolutionArray.addAll("750x500", "900x600", "1050x700", "1200x800", "1500x1000")
         resolutionSelectBox.items = resolutionArray
         resolutionSelectBox.selected = settings.resolution
-        innerTable.add(resolutionSelectBox).minWidth(240f).pad(10f).row()
+        innerTable2.add(resolutionSelectBox).minWidth(240f).pad(10f).row()
 
         resolutionSelectBox.onChange {
             settings.resolution = resolutionSelectBox.selected
@@ -291,7 +289,7 @@ class OptionsPopup(val previousScreen:CameraStageBaseScreen) : Popup(previousScr
     }
 
     private fun addTileSetSelectBox() {
-        innerTable.add("Tileset".toLabel())
+        innerTable2.add("Tileset".toLabel())
 
         val tileSetSelectBox = SelectBox<String>(skin)
         val tileSetArray = Array<String>()
@@ -300,7 +298,7 @@ class OptionsPopup(val previousScreen:CameraStageBaseScreen) : Popup(previousScr
         for (tileset in tileSets) tileSetArray.add(tileset)
         tileSetSelectBox.items = tileSetArray
         tileSetSelectBox.selected = settings.tileSet
-        innerTable.add(tileSetSelectBox).minWidth(240f).pad(10f).row()
+        innerTable2.add(tileSetSelectBox).minWidth(240f).pad(10f).row()
 
         tileSetSelectBox.onChange {
             settings.tileSet = tileSetSelectBox.selected
@@ -309,7 +307,7 @@ class OptionsPopup(val previousScreen:CameraStageBaseScreen) : Popup(previousScr
     }
 
     private fun addAutosaveTurnsSelectBox() {
-        innerTable.add("Turns between autosaves".toLabel())
+        innerTable2.add("Turns between autosaves".toLabel())
 
         val autosaveTurnsSelectBox = SelectBox<Int>(skin)
         val autosaveTurnsArray = Array<Int>()
@@ -317,7 +315,7 @@ class OptionsPopup(val previousScreen:CameraStageBaseScreen) : Popup(previousScr
         autosaveTurnsSelectBox.items = autosaveTurnsArray
         autosaveTurnsSelectBox.selected = settings.turnsBetweenAutosaves
 
-        innerTable.add(autosaveTurnsSelectBox).pad(10f).row()
+        innerTable2.add(autosaveTurnsSelectBox).pad(10f).row()
 
         autosaveTurnsSelectBox.onChange {
             settings.turnsBetweenAutosaves = autosaveTurnsSelectBox.selected
@@ -326,7 +324,7 @@ class OptionsPopup(val previousScreen:CameraStageBaseScreen) : Popup(previousScr
     }
 
     private fun addMultiplayerTurnCheckerDelayBox() {
-        innerTable.add("Time between turn checks out-of-game (in minutes)".toLabel())
+        innerTable2.add("Time between turn checks out-of-game (in minutes)".toLabel())
 
         val checkDelaySelectBox = SelectBox<Int>(skin)
         val possibleDelaysArray = Array<Int>()
@@ -334,7 +332,7 @@ class OptionsPopup(val previousScreen:CameraStageBaseScreen) : Popup(previousScr
         checkDelaySelectBox.items = possibleDelaysArray
         checkDelaySelectBox.selected = settings.multiplayerTurnCheckerDelayInMinutes
 
-        innerTable.add(checkDelaySelectBox).pad(10f).row()
+        innerTable2.add(checkDelaySelectBox).pad(10f).row()
 
         checkDelaySelectBox.onChange {
             settings.multiplayerTurnCheckerDelayInMinutes = checkDelaySelectBox.selected
@@ -351,11 +349,11 @@ class OptionsPopup(val previousScreen:CameraStageBaseScreen) : Popup(previousScr
                 .forEach { languageArray.add(it) }
         if (languageArray.size == 0) return
 
-        innerTable.add("Language".toLabel())
+        innerTable2.add("Language".toLabel())
         languageSelectBox.items = languageArray
         val matchingLanguage = languageArray.firstOrNull { it.language == settings.language }
         languageSelectBox.selected = if (matchingLanguage != null) matchingLanguage else languageArray.first()
-        innerTable.add(languageSelectBox).minWidth(240f).pad(10f).row()
+        innerTable2.add(languageSelectBox).minWidth(240f).pad(10f).row()
 
         languageSelectBox.onChange {
             // Sometimes the "changed" is triggered even when we didn't choose something
