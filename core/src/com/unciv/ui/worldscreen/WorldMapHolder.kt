@@ -374,13 +374,8 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
             }
         }
 
-        try {
-            for (group in tileGroups[selectedTile]!!) {
-                group.showCircle(Color.WHITE)
-            }
-        } catch(ex: Exception){
-            //Dont know if this can happen
-            //better safe than sorry
+        for (group in tileGroups[selectedTile]!!) {
+            group.showCircle(Color.WHITE)
         }
 
         zoom(scaleX) // zoom to current scale, to set the size of the city buttons after "next turn"
