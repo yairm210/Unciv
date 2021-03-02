@@ -474,7 +474,7 @@ object UnitAutomation {
         if (tryGoToRuinAndEncampment(unit) && unit.currentMovement == 0f) return
         if (unit.health < 80 && tryHealUnit(unit)) return
         if (tryExplore(unit)) return
-        unit.civInfo.addNotification("[${unit.name}] finished exploring.", unit.currentTile.position, Color.GRAY)
+        unit.civInfo.addNotification("[${unit.displayName()}] finished exploring.", unit.currentTile.position, Color.GRAY)
         unit.action = null
     }
 

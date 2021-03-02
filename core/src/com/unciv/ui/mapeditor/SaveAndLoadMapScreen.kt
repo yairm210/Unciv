@@ -26,7 +26,7 @@ class SaveAndLoadMapScreen(mapToSave: TileMap?, save:Boolean = false) : PickerSc
     val mapNameTextField = TextField("", skin).apply { maxLength = 100 }
 
     init {
-        if(save) {
+        if (save) {
             rightSideButton.setText("Save map".tr())
             rightSideButton.onClick {
                 mapToSave!!.mapParameters.name = mapNameTextField.text
@@ -50,8 +50,7 @@ class SaveAndLoadMapScreen(mapToSave: TileMap?, save:Boolean = false) : PickerSc
                     }
                 }
             }
-        }
-        else {
+        } else {
             rightSideButton.setText("Load map".tr())
             rightSideButton.onClick {
                 thread {
@@ -75,12 +74,11 @@ class SaveAndLoadMapScreen(mapToSave: TileMap?, save:Boolean = false) : PickerSc
 
         val rightSideTable = Table().apply { defaults().pad(10f) }
 
-        if(save) {
+        if (save) {
             mapNameTextField.textFieldFilter = TextField.TextFieldFilter { _, char -> char != '\\' && char != '/' }
             mapNameTextField.text = "My new map"
             rightSideTable.add(mapNameTextField).width(300f).pad(10f)
-        }
-        else {
+        } else {
             val downloadMapButton = "Download map".toTextButton()
             downloadMapButton.onClick {
                 MapDownloadPopup(this).open()
@@ -90,7 +88,7 @@ class SaveAndLoadMapScreen(mapToSave: TileMap?, save:Boolean = false) : PickerSc
 
         rightSideTable.addSeparator()
 
-        if(save) {
+        if (save) {
             val copyMapAsTextButton = "Copy to clipboard".toTextButton()
             copyMapAsTextButton.onClick {
                 val json = Json().toJson(mapToSave)
@@ -98,8 +96,7 @@ class SaveAndLoadMapScreen(mapToSave: TileMap?, save:Boolean = false) : PickerSc
                 Gdx.app.clipboard.contents = base64Gzip
             }
             rightSideTable.add(copyMapAsTextButton).row()
-        }
-        else {
+        } else {
             val loadFromClipboardButton = "Load copied data".toTextButton()
             val couldNotLoadMapLabel = "Could not load map!".toLabel(Color.RED).apply { isVisible = false }
             loadFromClipboardButton.onClick {
@@ -156,5 +153,3 @@ class SaveAndLoadMapScreen(mapToSave: TileMap?, save:Boolean = false) : PickerSc
     }
 
 }
-
-
