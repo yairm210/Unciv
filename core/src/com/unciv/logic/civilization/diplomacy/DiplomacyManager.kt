@@ -95,6 +95,9 @@ class DiplomacyManager() {
     /** Total of each turn Science during Research Agreement */
     var totalOfScienceDuringRA = 0
 
+    /** Action to take when a unit grant should be made */
+    @Transient var onUnitGrant: () -> Unit = { civInfo.giftMilitaryUnitTo(otherCiv()) }
+
     fun clone(): DiplomacyManager {
         val toReturn = DiplomacyManager()
         toReturn.otherCivName=otherCivName
@@ -382,11 +385,13 @@ class DiplomacyManager() {
                             sciencefromResearchAgreement()
                     }
                     DiplomacyFlags.ProvideMilitaryUnit.name -> {
-                        // Do not unset the flag
-                        if (civInfo.cities.isEmpty() || otherCiv().cities.isEmpty())
+                        // Do not unset the flag - why tho?
+                        /**if (civInfo.cities.isEmpty() || otherCiv().cities.isEmpty())
                             continue@loop
                         else
                             civInfo.giftMilitaryUnitTo(otherCiv())
+                        */
+                        onUnitGrant()
                     }
                     DiplomacyFlags.AgreedToNotSettleNearUs.name -> {
                         addModifier(DiplomaticModifiers.FulfilledPromiseToNotSettleCitiesNearUs, 10f)
@@ -446,13 +451,19 @@ class DiplomacyManager() {
         if (!hasFlag(DiplomacyFlags.DeclarationOfFriendship))
             revertToZero(DiplomaticModifiers.DeclarationOfFriendship, 1 / 2f) //decreases slowly and will revert to full if it is declared later
 
-        if (otherCiv().isCityState() && otherCiv().cityStateType == CityStateType.Militaristic) {
+        if (civInfo.isCityState() && civInfo.cityStateType == CityStateType.Militaristic) {
             if (relationshipLevel() < RelationshipLevel.Friend) {
                 if (hasFlag(DiplomacyFlags.ProvideMilitaryUnit)) removeFlag(DiplomacyFlags.ProvideMilitaryUnit)
             } else {
                 if (!hasFlag(DiplomacyFlags.ProvideMilitaryUnit)) setFlag(DiplomacyFlags.ProvideMilitaryUnit, 20)
             }
         }
+        else if(hasFlag(DiplomacyFlags.ProvideMilitaryUnit)) {
+            // FIXME - this is to prevent players granting units to city-states in loaded games
+            // remove check next time savegame version is revved
+            removeFlag(DiplomacyFlags.ProvideMilitaryUnit)
+        }
+
     }
 
     /** Everything that happens to both sides equally when war is delcared by one side on the other */

@@ -620,13 +620,17 @@ class CivilizationInfo {
         return (basicGoldCostOfSignResearchAgreement * gameInfo.gameParameters.gameSpeed.modifier).toInt()
     }
 
-    fun giftMilitaryUnitTo(otherCiv: CivilizationInfo) {
-        val city = NextTurnAutomation.getClosestCities(this, otherCiv).city1
+    /**
+     * Give a random unit we can build to another civlization.
+     * Used by militaristic city-states
+     */
+    fun giftMilitaryUnitTo(receiver: CivilizationInfo) {
+        val city = NextTurnAutomation.getClosestCities(this, receiver).city2
         val militaryUnit = city.cityConstructions.getConstructableUnits()
                 .filter { !it.unitType.isCivilian() && it.unitType.isLandUnit() }
                 .toList().random()
-        placeUnitNearTile(city.location, militaryUnit.name)
-        addNotification("[${otherCiv.civName}] gave us a [${militaryUnit.name}] as gift near [${city.name}]!", null, Color.GREEN)
+        receiver.placeUnitNearTile(city.location, militaryUnit.name)
+        receiver.addNotification("[${civName}] gave us a [${militaryUnit.name}] as gift near [${city.name}]!", null, Color.GREEN)
     }
 
     fun getAllyCiv() = allyCivName

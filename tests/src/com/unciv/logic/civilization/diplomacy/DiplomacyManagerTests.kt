@@ -1,7 +1,9 @@
 package com.unciv.logic.civilization.diplomacy
 
 import com.unciv.logic.GameInfo
+import com.unciv.logic.civilization.CityStateType
 import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.models.ruleset.Nation
 import com.unciv.testing.GdxTestRunner
 import io.mockk.every
 import io.mockk.mockk
@@ -12,13 +14,14 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 
+
 @RunWith(GdxTestRunner::class)
 class DiplomacyManagerTests {
 
     private val mockGameInfo = mockk<GameInfo>()
     private val slot = slot<String>()
 
-    private val testCivilizationNames = arrayListOf("Russia", "America", "Germany", "Greece", "Babylon")
+    private val testCivilizationNames = arrayListOf("Russia", "America", "Germany", "Greece", "Babylon","Almaty")
     private val civilizations = testCivilizationNames.associateWith { CivilizationInfo(it) }
 
     private fun meetByName(civilization: String, civilizationToMeet: String) {
@@ -98,6 +101,40 @@ class DiplomacyManagerTests {
             america.getDiplomacyManager(russia).getCommonKnownCivs(),
             russia.getDiplomacyManager(america).getCommonKnownCivs()
         )
+    }
+
+    @Test
+    fun `militaristic city state grants units`() {
+        val almaty = civilizations.getValue("Almaty");
+        val testNation = Nation()
+        testNation.name = "Almaty"
+        testNation.cityStateType = CityStateType.Militaristic
+        almaty.nation = testNation
+        Assert.assertTrue(almaty.isCityState())
+        Assert.assertEquals(almaty.cityStateType, CityStateType.Militaristic)
+
+        // get a friend
+        val russiaNation = Nation()
+        russiaNation.name = "Russia"
+        val russia = civilizations.getValue("Russia")
+        russia.nation = russiaNation
+        russia.meetCivilization(almaty)
+        almaty.meetCivilization(russia)
+
+
+        var turnsToUnit = 20;
+        var unitsGranted = 0;
+        val almatyDiplo = almaty.getDiplomacyManager(russia)
+        almatyDiplo.onUnitGrant = { unitsGranted += 1 }
+        val russiaDiplo = russia.getDiplomacyManager(almaty)
+        repeat(turnsToUnit) {
+            almatyDiplo.influence = 50f;
+            russiaDiplo.influence = 50f;
+            russiaDiplo.nextTurn();
+            almatyDiplo.nextTurn();
+        }
+        Assert.assertEquals(1, unitsGranted)
+
     }
 
 }
