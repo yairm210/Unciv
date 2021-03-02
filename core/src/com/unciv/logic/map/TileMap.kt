@@ -357,7 +357,7 @@ class TileMap {
             val vectorShiftedLeft = Vector2(position.x + radius, position.y - radius)
             val vectorShiftedRight = Vector2(position.x - radius, position.y + radius)
 
-            return if (HexMath.getLatitude(vectorShiftedLeft) > HexMath.getLatitude(vectorShiftedRight))
+            return if (vectorShiftedRight.len() < vectorShiftedLeft.len())
                 vectorShiftedRight
             else
                 vectorShiftedLeft
