@@ -54,13 +54,12 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
         val tileSetStrings = TileSetStrings()
         val daTileGroups = tileMap.values.map { WorldTileGroup(worldScreen, it, tileSetStrings) }
         val tileGroupMap = TileGroupMap(daTileGroups, worldScreen.stage.width, continousScrollingX)
-        val mirrorTileGroupsLeft = tileGroupMap.getMirrorTilesLeft()
-        val mirrorTileGroupsRight = tileGroupMap.getMirrorTilesRight()
+        val mirrorTileGroups = tileGroupMap.getMirrorTiles()
 
         for (tileGroup in daTileGroups) {
             if (continousScrollingX){
-                val mirrorTileGroupLeft = mirrorTileGroupsLeft[tileGroup.tileInfo]!!
-                val mirrorTileGroupRight = mirrorTileGroupsRight[tileGroup.tileInfo]!!
+                val mirrorTileGroupLeft = mirrorTileGroups[tileGroup.tileInfo]!!.first
+                val mirrorTileGroupRight = mirrorTileGroups[tileGroup.tileInfo]!!.second
 
                 allWorldTileGroups.add(tileGroup)
                 allWorldTileGroups.add(mirrorTileGroupLeft)
