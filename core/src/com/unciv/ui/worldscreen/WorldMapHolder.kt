@@ -55,13 +55,12 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
         val tileSetStrings = TileSetStrings()
         val daTileGroups = tileMap.values.map { WorldTileGroup(worldScreen, it, tileSetStrings) }
         val tileGroupMap = TileGroupMap(daTileGroups, worldScreen.stage.width, continousScrollingX)
-        val mirrorTileGroupsLeft = tileGroupMap.getMirrorTilesLeft()
-        val mirrorTileGroupsRight = tileGroupMap.getMirrorTilesRight()
+        val mirrorTileGroups = tileGroupMap.getMirrorTiles()
 
         for (tileGroup in daTileGroups) {
             if (continousScrollingX){
-                val mirrorTileGroupLeft = mirrorTileGroupsLeft[tileGroup.tileInfo]!!
-                val mirrorTileGroupRight = mirrorTileGroupsRight[tileGroup.tileInfo]!!
+                val mirrorTileGroupLeft = mirrorTileGroups[tileGroup.tileInfo]!!.first
+                val mirrorTileGroupRight = mirrorTileGroups[tileGroup.tileInfo]!!.second
 
                 allWorldTileGroups.add(tileGroup)
                 allWorldTileGroups.add(mirrorTileGroupLeft)
@@ -375,13 +374,8 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
             }
         }
 
-        try {
-            for (group in tileGroups[selectedTile]!!) {
-                group.showCircle(Color.WHITE)
-            }
-        } catch(ex: Exception){
-            //Dont know if this can happen
-            //better safe than sorry
+        for (group in tileGroups[selectedTile]!!) {
+            group.showCircle(Color.WHITE)
         }
 
         zoom(scaleX) // zoom to current scale, to set the size of the city buttons after "next turn"

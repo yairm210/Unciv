@@ -73,31 +73,6 @@ open class ZoomableScrollPane: ScrollPane(null) {
 
                 if ((isScrollX && deltaX != 0f || isScrollY && deltaY != 0f)) cancelTouchFocus()
             }
-
-            //This is the default behavior of the fling implementation
-            override fun fling(event: InputEvent, x: Float, y: Float, button: Int) {
-                if (abs(x) > 150 && isScrollX) {
-                    //1f is the default value of flingTimer
-                    setFlingTime(1f)
-                    velocityX = x
-                    cancelTouchFocus()
-                }
-                if (abs(y) > 150 && isScrollY) {
-                    setFlingTime(1f)
-                    velocityY = -y
-                    cancelTouchFocus()
-                }
-            }
-
-            //Nothing changed here either
-            override fun handle(event: Event): Boolean {
-                if (super.handle(event)) {
-                    if ((event as InputEvent).type == InputEvent.Type.touchDown) setFlingTime(0f)
-                    return true
-                } else if (event is InputEvent && event.isTouchFocusCancel) //
-                    cancel()
-                return false
-            }
         }
     }
 }
