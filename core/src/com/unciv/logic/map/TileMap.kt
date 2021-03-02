@@ -52,7 +52,8 @@ class TileMap {
 
     /** generates a rectangular map of given width and height*/
     constructor(width: Int, height: Int, ruleset: Ruleset, worldWrap: Boolean = false) {
-        for (x in -width / 2 .. if (worldWrap) { width / 2 - 1 } else { width / 2 })
+        val halfway = if(worldWrap) width/2-1 else width/2
+        for (x in -width / 2 .. halfway)
             for (y in -height / 2..height / 2)
                 tileList.add(TileInfo().apply {
                     position = HexMath.evenQ2HexCoords(Vector2(x.toFloat(), y.toFloat()))
@@ -138,14 +139,13 @@ class TileMap {
         if (mapParameters.shape == MapShape.rectangular)
             radius = HexMath.getEquivalentRectangularSize(radius).x.toInt() / 2
 
-        if (!contains(x, y)) { //tile is outside of the map
-            if (contains(x + radius, y - radius)) { //tile is on right side
-                //get tile wrapped around from right to left
-                return get(x + radius, y - radius)
-            } else if (contains(x - radius, y + radius)) { //tile is on left side
-                //get tile wrapped around from left to right
-                return get(x - radius, y + radius)
-            }
+        //tile is outside of the map
+        if (contains(x + radius, y - radius)) { //tile is on right side
+            //get tile wrapped around from right to left
+            return get(x + radius, y - radius)
+        } else if (contains(x - radius, y + radius)) { //tile is on left side
+            //get tile wrapped around from left to right
+            return get(x - radius, y + radius)
         }
 
         return null
