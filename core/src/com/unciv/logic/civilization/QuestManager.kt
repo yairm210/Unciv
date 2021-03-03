@@ -5,6 +5,7 @@ import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
+import com.unciv.logic.map.BFS
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.Quest
@@ -295,8 +296,14 @@ class QuestManager {
 
         return when (quest.name) {
             QuestName.ClearBarbarianCamp.value -> getBarbarianEncampmentForQuest(challenger) != null
-            QuestName.Route.value -> civInfo.hasEverBeenFriendWith(challenger) && challenger.cities.any()
-                    && !civInfo.isCapitalConnectedToCity(challenger.getCapital())
+            QuestName.Route.value -> {
+                if (challenger.cities.none() || !civInfo.hasEverBeenFriendWith(challenger)
+                        || civInfo.isCapitalConnectedToCity(challenger.getCapital())) return false
+
+                val bfs = BFS(civInfo.getCapital().getCenterTile()) { it.isLand && !it.isImpassible() }
+                bfs.stepUntilDestination(challenger.getCapital().getCenterTile())
+                bfs.hasReachedTile(challenger.getCapital().getCenterTile())
+            }
             QuestName.ConnectResource.value -> civInfo.hasEverBeenFriendWith(challenger) && getResourceForQuest(challenger) != null
             QuestName.ConstructWonder.value -> civInfo.hasEverBeenFriendWith(challenger) && getWonderToBuildForQuest(challenger) != null
             QuestName.GreatPerson.value -> civInfo.hasEverBeenFriendWith(challenger) && getGreatPersonForQuest(challenger) != null
