@@ -14,6 +14,11 @@ open class PickerScreen : CameraStageBaseScreen() {
     protected var rightSideGroup = VerticalGroup()
     protected var rightSideButton: TextButton
     private var screenSplit = 0.85f
+
+    /**
+     * The table displaying the choices from which to pick (usually).
+     * Also the element which most of the screen realestate is devoted to displaying.
+     */
     protected var topTable: Table
     var bottomTable:Table = Table()
     internal var splitPane: SplitPane
@@ -24,7 +29,7 @@ open class PickerScreen : CameraStageBaseScreen() {
 
         descriptionLabel = "".toLabel()
         descriptionLabel.wrap = true
-        val labelScroll = ScrollPane(descriptionLabel)
+        val labelScroll = ScrollPane(descriptionLabel,skin)
         bottomTable.add(labelScroll).pad(5f).fill().expand()
 
         rightSideButton = "".toTextButton()

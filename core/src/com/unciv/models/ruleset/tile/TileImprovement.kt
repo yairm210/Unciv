@@ -39,14 +39,14 @@ class TileImprovement : NamedStats() {
     fun getDescription(ruleset: Ruleset, forPickerScreen: Boolean = true): String {
         val stringBuilder = StringBuilder()
         val statsDesc = this.clone().toString()
-        if (statsDesc.isNotEmpty()) stringBuilder.appendln(statsDesc)
-        if (uniqueTo!=null && !forPickerScreen) stringBuilder.appendln("Unique to [$uniqueTo]".tr())
+        if (statsDesc.isNotEmpty()) stringBuilder.appendLine(statsDesc)
+        if (uniqueTo!=null && !forPickerScreen) stringBuilder.appendLine("Unique to [$uniqueTo]".tr())
         if (!terrainsCanBeBuiltOn.isEmpty()) {
             val terrainsCanBeBuiltOnString: ArrayList<String> = arrayListOf()
             for (i in terrainsCanBeBuiltOn) {
                 terrainsCanBeBuiltOnString.add(i.tr())
             }
-            stringBuilder.appendln("Can be built on ".tr() + terrainsCanBeBuiltOnString.joinToString(", "))//language can be changed when setting changes.
+            stringBuilder.appendLine("Can be built on ".tr() + terrainsCanBeBuiltOnString.joinToString(", "))//language can be changed when setting changes.
         }
         val statsToResourceNames = HashMap<String, ArrayList<String>>()
         for (tr: TileResource in ruleset.tileResources.values.filter { it.improvement == name }) {
@@ -56,13 +56,13 @@ class TileImprovement : NamedStats() {
             statsToResourceNames[statsString]!!.add(tr.name.tr())
         }
         statsToResourceNames.forEach {
-            stringBuilder.appendln(it.key + " for ".tr() + it.value.joinToString(", "))
+            stringBuilder.appendLine(it.key + " for ".tr() + it.value.joinToString(", "))
         }
 
-        if (techRequired != null) stringBuilder.appendln("Required tech: [$techRequired]".tr())
+        if (techRequired != null) stringBuilder.appendLine("Required tech: [$techRequired]".tr())
 
         for(unique in uniques)
-            stringBuilder.appendln (unique.tr())
+            stringBuilder.appendLine(unique.tr())
 
         return stringBuilder.toString()
     }

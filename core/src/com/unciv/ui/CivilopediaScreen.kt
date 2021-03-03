@@ -22,7 +22,7 @@ class CivilopediaScreen(ruleset: Ruleset) : CameraStageBaseScreen() {
     private val categoryToEntries = LinkedHashMap<String, Collection<CivilopediaEntry>>()
     private val categoryToButtons = LinkedHashMap<String, Button>()
 
-    private val entrySelectTable = Table().apply { defaults().pad(6f) }
+    private val entrySelectTable = Table().apply { defaults().pad(6f).left() }
     val description = "".toLabel()
 
 
@@ -147,17 +147,12 @@ class CivilopediaScreen(ruleset: Ruleset) : CameraStageBaseScreen() {
 
         description.wrap = true
 
-        val entrySelectScroll = ScrollPane(entrySelectTable)
-        entrySelectScroll.setupOverscroll(5f, 1f, 200f)
-        entryTable.add(entrySelectScroll)
-                .width(Value.percentWidth(0.25f, entryTable))
-                .fillY()
-                .pad(Value.percentWidth(0.02f, entryTable))
-        entryTable.add(ScrollPane(description)).colspan(4)
-                .width(Value.percentWidth(0.65f, entryTable))
-                .fillY()
-                .pad(Value.percentWidth(0.02f, entryTable))
-        // Simply changing these to x*width, y*height won't work
+        val entrySelectScroll = ScrollPane(entrySelectTable, skin)
+        entrySelectTable.left()
+        entrySelectScroll.setOverscroll(false, false)
+        entryTable.add(entrySelectScroll).width(stage.width*0.3f).padLeft(stage.width*0.02f)
+                .padRight(stage.width*0.03f)
+        entryTable.add(ScrollPane(description)).width(stage.width*0.6f).padRight(stage.width*0.05f)
 
         select("Tutorials")
     }

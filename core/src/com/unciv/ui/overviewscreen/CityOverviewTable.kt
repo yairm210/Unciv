@@ -5,6 +5,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.models.translations.tr
 import com.unciv.ui.cityscreen.CityScreen
 import com.unciv.ui.utils.*
 import kotlin.math.max
@@ -93,7 +94,7 @@ class CityOverviewTable(val viewingPlayer: CivilizationInfo, val overviewScreen:
                 "Production" -> (city1.cityStats.currentCityStats.production - city2.cityStats.currentCityStats.production).toInt()
                 "Culture" -> (city1.cityStats.currentCityStats.culture - city2.cityStats.currentCityStats.culture).toInt()
                 "Happiness" -> (city1.cityStats.currentCityStats.happiness - city2.cityStats.currentCityStats.happiness).toInt()
-                else -> city2.name.compareTo(city1.name)
+                else -> city2.name.tr().compareTo(city1.name.tr())
             }
         }
 

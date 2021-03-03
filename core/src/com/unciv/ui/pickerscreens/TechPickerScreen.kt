@@ -93,21 +93,22 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo, centerOnTech: Tec
 
     private fun createTechTable() {
         val allTechs = civInfo.gameInfo.ruleSet.technologies.values
-        val columns = allTechs.map { it.column!!.columnNumber }.max()!! + 1
-        val techMatrix = Array<Array<Technology?>>(columns) { arrayOfNulls(10) } // Divided into columns, then rows
+        val columns = allTechs.map { it.column!!.columnNumber }.maxOrNull()!! + 1
+        val rows = allTechs.map { it.row }.maxOrNull()!! + 1
+        val techMatrix = Array<Array<Technology?>>(columns) { arrayOfNulls(rows) } // Divided into columns, then rows
 
         for (technology in allTechs) {
             techMatrix[technology.column!!.columnNumber][technology.row - 1] = technology
         }
 
         val erasNamesToColumns = LinkedHashMap<String, ArrayList<Int>>()
-        for(tech in allTechs) {
+        for (tech in allTechs) {
             val era = tech.era()
             if (!erasNamesToColumns.containsKey(era)) erasNamesToColumns[era] = ArrayList()
             val columnNumber = tech.column!!.columnNumber
             if (!erasNamesToColumns[era]!!.contains(columnNumber)) erasNamesToColumns[era]!!.add(columnNumber)
         }
-        var i=0
+        var i = 0
         for ((era, columns) in erasNamesToColumns) {
             val columnSpan = columns.size
             val color = if (i % 2 == 0) Color.BLUE else Color.FIREBRICK
@@ -115,7 +116,7 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo, centerOnTech: Tec
             techTable.add(era.toLabel().addBorder(2f, color)).fill().colspan(columnSpan)
         }
 
-        for (rowIndex in 0..9) {
+        for (rowIndex in 0..rows-1) {
             techTable.row().pad(5f).padRight(40f)
 
             for (columnIndex in techMatrix.indices) {
@@ -149,7 +150,7 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo, centerOnTech: Tec
             var text = techName.tr()
 
             if (techName == selectedTech?.name) {
-                techButton.color = techButton.color.cpy().lerp(Color.LIGHT_GRAY, 0.5f)
+                techButton.color = techButton.color.cpy().lerp(Color.BLACK, 0.5f)
             }
 
             if (tempTechsToResearch.contains(techName) && tempTechsToResearch.size > 1) {

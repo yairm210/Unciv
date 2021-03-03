@@ -14,7 +14,6 @@ import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
 import com.unciv.models.metadata.Player
 import com.unciv.models.ruleset.Nation
-import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.tile.TerrainType
 import com.unciv.models.translations.tr
 import com.unciv.ui.tilegroups.TileGroup
@@ -83,7 +82,7 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
         val baseTerrainTable = Table().apply { defaults().pad(20f) }
         val terrainFeaturesTable = Table().apply { defaults().pad(20f) }
 
-        terrainFeaturesTable.add(getHex(Color.WHITE, getRedCross(50f, 0.6f)).apply {
+        terrainFeaturesTable.add(getHex(getRedCross(50f, 0.6f)).apply {
             onClick {
                 tileAction = {
                     it.terrainFeature = null
@@ -92,7 +91,7 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
                     it.hasBottomLeftRiver = false
                     it.hasBottomRightRiver = false
                 }
-                setCurrentHex(getHex(Color.WHITE, getRedCross(40f, 0.6f)), "Clear terrain features")
+                setCurrentHex(getHex(getRedCross(40f, 0.6f)), "Clear terrain features")
             }
         }).row()
 
@@ -126,17 +125,17 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
         editorPickTable.clear()
 
         val improvementsTable = Table()
-        improvementsTable.add(getHex(Color.WHITE, getRedCross(40f, 0.6f)).apply {
+        improvementsTable.add(getHex(getRedCross(40f, 0.6f)).apply {
             onClick {
                 tileAction = { it.improvement = null }
-                setCurrentHex(getHex(Color.WHITE, getRedCross(40f, 0.6f)), "Clear improvements")
+                setCurrentHex(getHex(getRedCross(40f, 0.6f)), "Clear improvements")
             }
         }).row()
 
         for (improvement in ruleset.tileImprovements.values) {
             if (improvement.name.startsWith("Remove")) continue
             if (improvement.name == Constants.cancelImprovementOrder) continue
-            val improvementImage = getHex(Color.WHITE, ImageGetter.getImprovementIcon(improvement.name, 40f))
+            val improvementImage = getHex(ImageGetter.getImprovementIcon(improvement.name, 40f))
             improvementImage.onClick {
                 tileAction = {
                     when (improvement.name) {
@@ -145,7 +144,7 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
                         else -> it.improvement = improvement.name
                     }
                 }
-                val improvementIcon = getHex(Color.WHITE, ImageGetter.getImprovementIcon(improvement.name, 40f))
+                val improvementIcon = getHex(ImageGetter.getImprovementIcon(improvement.name, 40f))
                 setCurrentHex(improvementIcon, improvement.name.tr() + "\n" + improvement.clone().toString())
             }
             improvementsTable.add(improvementImage).row()
@@ -159,7 +158,7 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
         for (nation in ruleset.nations.values) {
             if (nation.isSpectator()) continue  // no improvements for spectator
 
-            val nationImage = getHex(Color.WHITE, ImageGetter.getNationIndicator(nation, 40f))
+            val nationImage = getHex(ImageGetter.getNationIndicator(nation, 40f))
             nationImage.onClick {
                 val improvementName = "StartingLocation " + nation.name
                 tileAction = {
@@ -173,7 +172,7 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
                     }
                 }
 
-                val nationIcon = getHex(Color.WHITE, ImageGetter.getNationIndicator(nation, 40f))
+                val nationIcon = getHex(ImageGetter.getNationIndicator(nation, 40f))
                 setCurrentHex(nationIcon, "[${nation.name}] starting location")
             }
             nationTable.add(nationImage).row()
@@ -214,12 +213,8 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
                             it.airUnits.add(unit)
                             if (!it.isCityCenter()) unit.isTransported = true  // if not city - air unit enters carrier
                         }
-                        unit.type.isCivilian() -> {
-                            it.civilianUnit = unit
-                        }
-                        else -> {
-                            it.militaryUnit = unit
-                        }
+                        unit.type.isCivilian() -> it.civilianUnit = unit
+                        else -> it.militaryUnit = unit
                     }
                     unit.currentTile = it // needed for unit icon - unit needs to know if it's embarked or not...
                 }
@@ -309,16 +304,16 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
 
     private fun getResourceActors(): ArrayList<Actor> {
         val resources = ArrayList<Actor>()
-        resources.add(getHex(Color.WHITE, getCrossedResource()).apply {
+        resources.add(getHex(getCrossedResource()).apply {
             onClick {
                 tileAction = { it.resource = null }
-                setCurrentHex(getHex(Color.WHITE, getCrossedResource()), "Clear resource")
+                setCurrentHex(getHex(getCrossedResource()), "Clear resource")
             }
         })
 
         for (resource in ruleset.tileResources.values) {
             if (resource.terrainsCanBeFoundOn.none { ruleset.terrains.containsKey(it) }) continue // This resource can't be placed
-            val resourceHex = getHex(Color.WHITE, ImageGetter.getResourceImage(resource.name, 40f))
+            val resourceHex = getHex(ImageGetter.getResourceImage(resource.name, 40f))
             resourceHex.onClick {
                 tileAction = { it.resource = resource.name }
 
@@ -427,9 +422,9 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
     }
 
 
-    private fun getHex(color: Color, image: Actor? = null): Group {
+    private fun getHex(image: Actor? = null): Group {
         val hex = ImageGetter.getImage(tileSetLocation + "Hexagon")
-        hex.color = color
+        hex.color = Color.WHITE
         hex.width *= 0.3f
         hex.height *= 0.3f
         val group = Group()
@@ -466,6 +461,8 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
             if (terrainFeature == null || terrainFeature.occursOn.isNotEmpty() && !terrainFeature.occursOn.contains(tileInfo.baseTerrain))
                 tileInfo.terrainFeature = null
         }
+        if (tileInfo.resource != null && !ruleset.tileResources.containsKey(tileInfo.resource))
+            tileInfo.resource = null
         if (tileInfo.resource != null) {
             val resource = tileInfo.getTileResource()
             if (resource.terrainsCanBeFoundOn.none { it == tileInfo.baseTerrain || it == tileInfo.terrainFeature })
@@ -489,7 +486,7 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
         tileInfo.improvement = null // Unset, and check if it can be reset. If so, do it, if not, invalid.
         if (tileInfo.canImprovementBeBuiltHere(improvement)
                 // Allow building 'other' improvements like city ruins, barb encampments, Great Improvements etc
-                || (improvement.terrainsCanBeBuiltOn.isEmpty() && ruleset.tileResources.values.none { it.improvement==improvement.name }
+                || (improvement.terrainsCanBeBuiltOn.isEmpty() && ruleset.tileResources.values.none { it.improvement == improvement.name }
                         && !tileInfo.isImpassible() && tileInfo.isLand))
             tileInfo.improvement = improvement.name
     }

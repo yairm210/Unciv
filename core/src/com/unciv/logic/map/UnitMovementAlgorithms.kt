@@ -31,8 +31,8 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
 
         if (areConnectedByRoad && (!areConnectedByRiver || civInfo.tech.roadsConnectAcrossRivers))
         {
-            return if (unit.civInfo.tech.movementSpeedOnRoadsImproved) 1 / 3f + extraCost
-            else 1 / 2f + extraCost
+            if (unit.civInfo.tech.movementSpeedOnRoadsImproved) return 1 / 3f + extraCost
+            else return 1 / 2f + extraCost
         }
         if (unit.ignoresTerrainCost) return 1f + extraCost
         if (areConnectedByRiver) return 100f  // Rivers take the entire turn to cross

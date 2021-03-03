@@ -21,7 +21,8 @@
 		"food": 2,
 		"movementCost": 1,
 		"defenceBonus": -0.1,
-		"RGB": [97,171,58]
+		"RGB": [97,171,58],
+		"uniques": ["Occurs at temperature between [-0.4] and [0.8] and humidity between [0.5] and [1]"]
 	},
 	{
 		"name": "Plains",
@@ -30,7 +31,9 @@
 		"production": 1,
 		"movementCost": 1,
 		"defenceBonus": -0.1,
-		"RGB": [168,185,102]
+		"RGB": [168,185,102],
+		"uniques": ["Occurs at temperature between [-0.4] and [0.8] and humidity between [0] and [0.5]",
+			"Occurs at temperature between [0.8] and [1] and humidity between [0.7] and [1]"]
 	},
 	{
 		"name": "Tundra",
@@ -38,14 +41,16 @@
 		"food": 1,
 		"movementCost": 1,
 		"defenceBonus": -0.1,
-		"RGB": [189,204,191]
+		"RGB": [189,204,191],
+		"uniques": ["Occurs at temperature between [-1] and [-0.4] and humidity between [0.5] and [1]"]
 	},
 	{
 		"name": "Desert",
 		"type": "Land",
 		"movementCost": 1,
 		"defenceBonus": -0.1,
-		"RGB": [ 230, 230, 113]
+		"RGB": [ 230, 230, 113],
+		"uniques": ["Occurs at temperature between [0.8] and [1] and humidity between [0] and [0.7]"]
 	},
 	{
 		"name": "Lakes",
@@ -75,7 +80,8 @@
 		"type": "Land",
 		"movementCost": 1,
 		"defenceBonus": -0.1,
-		"RGB": [231, 242, 249]
+		"RGB": [231, 242, 249],
+		"uniques": ["Occurs at temperature between [-1] and [-0.4] and humidity between [0] and [0.5]"]
 	},
 	
 	// Terrain features
