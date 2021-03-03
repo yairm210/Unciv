@@ -9,6 +9,7 @@ import com.unciv.UncivGame
 import com.unciv.logic.*
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.map.MapParameters
+import com.unciv.logic.map.MapType
 import com.unciv.models.metadata.GameParameters
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.translations.tr
@@ -94,7 +95,7 @@ class NewGameScreen(previousScreen:CameraStageBaseScreen, _gameSetupInfo: GameSe
             Gdx.input.inputProcessor = null // remove input processing - nothing will be clicked!
 
 
-            if (gameSetupInfo.mapFile != null){
+            if (mapOptionsTable.mapTypeSelectBox.selected.value == MapType.custom){
                 val map = MapSaver.loadMap(gameSetupInfo.mapFile!!)
                 val rulesetIncompatabilities = HashSet<String>()
                 for(tile in map.values) {
@@ -144,14 +145,16 @@ class NewGameScreen(previousScreen:CameraStageBaseScreen, _gameSetupInfo: GameSe
             newGame!!.isUpToDate = true // So we don't try to download it from dropbox the second after we upload it - the file is not yet ready for loading!
             try {
                 OnlineMultiplayer().tryUploadGame(newGame!!)
-                GameSaver.autoSave(newGame!!) {}
 
-                // Saved as Multiplayer game to show up in the session browser
-                GameSaver.saveGame(newGame!!, newGame!!.gameId, true)
                 // Save gameId to clipboard because you have to do it anyway.
                 Gdx.app.clipboard.contents = newGame!!.gameId
                 // Popup to notify the User that the gameID got copied to the clipboard
                 Gdx.app.postRunnable { ToastPopup("gameID copied to clipboard".tr(), UncivGame.Current.worldScreen, 2500) }
+
+                GameSaver.autoSave(newGame!!) {}
+
+                // Saved as Multiplayer game to show up in the session browser
+                GameSaver.saveGame(newGame!!, newGame!!.gameId, true)
             } catch (ex: Exception) {
                 Gdx.app.postRunnable {
                     val cantUploadNewGamePopup = Popup(this)

@@ -56,30 +56,30 @@ class BaseUnit : INamed, IConstruction {
     fun getDescription(forPickerScreen: Boolean): String {
         val sb = StringBuilder()
         for ((resource, amount) in getResourceRequirements()) {
-            if (amount == 1) sb.appendln("Consumes 1 [$resource]".tr())
-            else sb.appendln("Consumes [$amount]] [$resource]".tr())
+            if (amount == 1) sb.appendLine("Consumes 1 [$resource]".tr())
+            else sb.appendLine("Consumes [$amount]] [$resource]".tr())
         }
         if (!forPickerScreen) {
-            if (uniqueTo != null) sb.appendln("Unique to [$uniqueTo], replaces [$replaces]".tr())
-            else sb.appendln("{Cost}: $cost".tr())
-            if (requiredTech != null) sb.appendln("Required tech: [$requiredTech]".tr())
-            if (upgradesTo != null) sb.appendln("Upgrades to [$upgradesTo]".tr())
-            if (obsoleteTech != null) sb.appendln("Obsolete with [$obsoleteTech]".tr())
+            if (uniqueTo != null) sb.appendLine("Unique to [$uniqueTo], replaces [$replaces]".tr())
+            else sb.appendLine("{Cost}: $cost".tr())
+            if (requiredTech != null) sb.appendLine("Required tech: [$requiredTech]".tr())
+            if (upgradesTo != null) sb.appendLine("Upgrades to [$upgradesTo]".tr())
+            if (obsoleteTech != null) sb.appendLine("Obsolete with [$obsoleteTech]".tr())
         }
         if (strength != 0) {
             sb.append("$strength${Fonts.strength}, ")
             if (rangedStrength != 0) sb.append("$rangedStrength${Fonts.rangedStrength}, ")
             if (rangedStrength != 0) sb.append("$range${Fonts.range}, ")
         }
-        sb.appendln("$movement${Fonts.movement}")
+        sb.appendLine("$movement${Fonts.movement}")
 
-        if (replacementTextForUniques != "") sb.appendln(replacementTextForUniques)
+        if (replacementTextForUniques != "") sb.appendLine(replacementTextForUniques)
         else for (unique in uniques)
-            sb.appendln(Translations.translateBonusOrPenalty(unique))
+            sb.appendLine(Translations.translateBonusOrPenalty(unique))
 
         if (promotions.isNotEmpty()) {
             sb.append((if (promotions.size == 1) "Free promotion:" else "Free promotions:").tr())
-            sb.appendln(promotions.joinToString(", ", " ") { it.tr() })
+            sb.appendLine(promotions.joinToString(", ", " ") { it.tr() })
         }
 
         return sb.toString().trim()

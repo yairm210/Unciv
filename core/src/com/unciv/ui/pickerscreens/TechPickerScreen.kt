@@ -116,7 +116,7 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo, centerOnTech: Tec
             techTable.add(era.toLabel().addBorder(2f, color)).fill().colspan(columnSpan)
         }
 
-        for (rowIndex in 0..9) {
+        for (rowIndex in 0..rows-1) {
             techTable.row().pad(5f).padRight(40f)
 
             for (columnIndex in techMatrix.indices) {
@@ -150,7 +150,7 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo, centerOnTech: Tec
             var text = techName.tr()
 
             if (techName == selectedTech?.name) {
-                techButton.color = techButton.color.cpy().lerp(Color.LIGHT_GRAY, 0.5f)
+                techButton.color = techButton.color.cpy().lerp(Color.BLACK, 0.5f)
             }
 
             if (tempTechsToResearch.contains(techName) && tempTechsToResearch.size > 1) {

@@ -14,6 +14,9 @@ import com.unciv.models.ruleset.unit.UnitType
 import java.text.DecimalFormat
 import kotlin.random.Random
 
+/**
+ * The immutable properties and mutable game state of an individual unit present on the map
+ */
 class MapUnit {
 
     @Transient
@@ -57,7 +60,29 @@ class MapUnit {
     var cannotEnterOceanTilesUntilAstronomy = false
 
     lateinit var owner: String
+
+    /**
+     * Name key of the unit, used for serialization
+     */
     lateinit var name: String
+
+    /**
+     *  Name of this individual unit, usually resulting from promotion
+     */
+    var instanceName: String? = null
+
+    /**
+     * Name which should be displayed in UI
+     */
+    fun displayName(): String {
+        return if(instanceName == null) {
+            name
+        }
+        else {
+            "$instanceName ($name)"
+        }
+    }
+
     var currentMovement: Float = 0f
     var health: Int = 100
 
@@ -77,8 +102,11 @@ class MapUnit {
     //region pure functions
     fun clone(): MapUnit {
         val toReturn = MapUnit()
-        toReturn.owner = owner
+        toReturn.baseUnit = baseUnit
         toReturn.name = name
+        toReturn.civInfo = civInfo
+        toReturn.owner = owner
+        toReturn.instanceName = instanceName
         toReturn.currentMovement = currentMovement
         toReturn.health = health
         toReturn.action = action

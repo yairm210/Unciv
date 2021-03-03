@@ -350,10 +350,10 @@ class EmpireOverviewScreen(private var viewingPlayer:CivilizationInfo, defaultPa
         table.row()
         table.addSeparator()
 
-        for (unit in viewingPlayer.getCivUnits().sortedWith(compareBy({ it.name }, { !it.due },
+        for (unit in viewingPlayer.getCivUnits().sortedWith(compareBy({ it.displayName() }, { !it.due },
                 { it.currentMovement < 0.1f }, { abs(it.currentTile.position.x) + abs(it.currentTile.position.y) }))) {
             val baseUnit = unit.baseUnit()
-            val button = unit.name.toTextButton()
+            val button = unit.displayName().toTextButton()
             button.onClick {
                 game.setWorldScreen()
                 game.worldScreen.mapHolder.setCenterPosition(unit.currentTile.position)

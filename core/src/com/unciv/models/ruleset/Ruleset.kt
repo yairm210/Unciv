@@ -277,6 +277,8 @@ class Ruleset {
                 lines += "${building.name} requires ${building.requiredBuilding} which does not exist!"
             if (building.requiredBuildingInAllCities != null && !buildings.containsKey(building.requiredBuildingInAllCities!!))
                 lines += "${building.name} requires ${building.requiredBuildingInAllCities} in all cities which does not exist!"
+            if (building.providesFreeBuilding != null && !buildings.containsKey(building.providesFreeBuilding!!))
+                lines += "${building.name} provides a free ${building.providesFreeBuilding} which does not exist!"
         }
 
         for (resource in tileResources.values) {
