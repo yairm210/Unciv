@@ -1,3 +1,13 @@
+## 3.13.5
+
+Experimental World Wrap - By GGGuenni!
+
+Resolved #3639 - City states that can't be connected by land no longer assign road connection quests
+
+Fix when Trade Gold = 0 it also shows in offer - By lishaoxia1985
+
+Translation upates
+
 ## 3.13.4
 
 Merged save map functionality into load map screen - map saving is more streamlined!
