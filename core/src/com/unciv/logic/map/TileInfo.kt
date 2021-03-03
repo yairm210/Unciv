@@ -407,16 +407,15 @@ open class TileInfo {
     /** The two tiles have a river between them */
     fun isConnectedByRiver(otherTile: TileInfo): Boolean {
         if (otherTile == this) throw Exception("Should not be called to compare to self!")
-        val xDifference = this.position.x - otherTile.position.x
-        val yDifference = this.position.y - otherTile.position.y
 
-        return when {
-            yDifference < -1f || xDifference < -1f || yDifference > 1f || xDifference > 1f ->
-                throw Exception("Should never call this function on a non-neighbor!")
-            xDifference == 1f && yDifference == 1f -> hasBottomRiver // we're directly above it
-            xDifference == 1f -> hasBottomRightRiver // we're to the top-left of it
-            yDifference == 1f -> hasBottomLeftRiver // we're to the top-right of it
-            else -> otherTile.isConnectedByRiver(this) // we're below it, check the other tile
+        return when (tileMap.getNeighborTileClockPosition(this, otherTile)) {
+            2 -> otherTile.hasBottomLeftRiver // we're to the bottom-left of it
+            4 -> hasBottomRightRiver // we're to the top-right of it
+            6 -> hasBottomRiver // we're directly above it
+            8 -> hasBottomLeftRiver // we're to the top-left of it
+            10 -> otherTile.hasBottomRightRiver // we're to the bottom-right of it
+            12 -> otherTile.hasBottomRiver // we're directly below it
+            else -> throw Exception("Should never call this function on a non-neighbor!")
         }
     }
 

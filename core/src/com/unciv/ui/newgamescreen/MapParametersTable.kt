@@ -21,6 +21,7 @@ class MapParametersTable(val mapParameters: MapParameters, val isEmptyMapAllowed
     lateinit var mapTypeSelectBox: TranslatedSelectBox
     lateinit var noRuinsCheckbox: CheckBox
     lateinit var noNaturalWondersCheckbox: CheckBox
+    lateinit var worldWrapCheckbox: CheckBox
 
     init {
         skin = CameraStageBaseScreen.skin
@@ -30,6 +31,8 @@ class MapParametersTable(val mapParameters: MapParameters, val isEmptyMapAllowed
         addWorldSizeSelectBox()
         addNoRuinsCheckbox()
         addNoNaturalWondersCheckbox()
+        //uncomment when whole worldWrap feature is added
+        //addWorldWrapCheckbox()
         addAdvancedSettings()
     }
 
@@ -103,6 +106,15 @@ class MapParametersTable(val mapParameters: MapParameters, val isEmptyMapAllowed
             mapParameters.noNaturalWonders = noNaturalWondersCheckbox.isChecked
         }
         add(noNaturalWondersCheckbox).colspan(2).row()
+    }
+
+    private fun addWorldWrapCheckbox() {
+        worldWrapCheckbox = CheckBox("World Wrap".tr(), skin)
+        worldWrapCheckbox.isChecked = mapParameters.worldWrap
+        worldWrapCheckbox.onChange {
+            mapParameters.worldWrap = worldWrapCheckbox.isChecked
+        }
+        add(worldWrapCheckbox).colspan(2).row()
     }
 
     private fun addAdvancedSettings() {
