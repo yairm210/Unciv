@@ -12,6 +12,7 @@
 - [Buildings-only](#buildings-only)
   * [Stat uniques](#stat-uniques-1)
   * [Construction condition uniques](#construction-condition-uniques)
+- [Improvement uniques](#improvement-uniques)
 
 
 ## Overview
@@ -286,3 +287,23 @@ cityFilters allow us to choose the range of cities affected by this unique:
 "Can only be built in annexed cities"
 
 "Obsolete with [techName]" - Building cannot be built once the tech is researched
+
+## Improvement uniques
+
+"Obsolete with [techName]"
+
+"[stats] once [techName] is discovered"
+
+"Gives a defensive bonus of [amount]%"
+
+"Can be built outside your borders"
+
+"Costs [amount] gold per turn when in your territory"
+
+"Great Improvement"
+
+"[stats] for each adjacent [tileFilter]"
+
+"Can only be built on Coastal tiles"
+
+"Cannot be built on bonus resource"
