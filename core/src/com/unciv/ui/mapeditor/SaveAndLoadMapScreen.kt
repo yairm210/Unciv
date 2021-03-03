@@ -27,6 +27,7 @@ class SaveAndLoadMapScreen(mapToSave: TileMap?, save:Boolean = false) : PickerSc
 
     init {
         if (save) {
+            rightSideButton.enable()
             rightSideButton.setText("Save map".tr())
             rightSideButton.onClick {
                 mapToSave!!.mapParameters.name = mapNameTextField.text

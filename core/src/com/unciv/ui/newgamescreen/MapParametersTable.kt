@@ -3,6 +3,7 @@ package com.unciv.ui.newgamescreen
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox
 import com.badlogic.gdx.scenes.scene2d.ui.Slider
 import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.unciv.UncivGame
 import com.unciv.logic.map.MapParameters
 import com.unciv.logic.map.MapShape
 import com.unciv.logic.map.MapSize
@@ -31,8 +32,9 @@ class MapParametersTable(val mapParameters: MapParameters, val isEmptyMapAllowed
         addWorldSizeSelectBox()
         addNoRuinsCheckbox()
         addNoNaturalWondersCheckbox()
-        //uncomment when whole worldWrap feature is added
-        //addWorldWrapCheckbox()
+        if (UncivGame.Current.settings.showExperimentalWorldWrap) {
+            addWorldWrapCheckbox()
+        }
         addAdvancedSettings()
     }
 
