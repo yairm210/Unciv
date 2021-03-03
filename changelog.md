@@ -6,7 +6,7 @@ Resolved #3639 - City states that can't be connected by land no longer assign ro
 
 Fix when Trade Gold = 0 it also shows in offer - By lishaoxia1985
 
-Translation upates
+Translation updates
 
 ## 3.13.4
 

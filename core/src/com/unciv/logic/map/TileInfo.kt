@@ -305,6 +305,9 @@ open class TileInfo {
             improvement.uniqueTo != null && improvement.uniqueTo != civInfo.civName -> false
             improvement.techRequired != null && !civInfo.tech.isResearched(improvement.techRequired!!) -> false
             getOwner() != civInfo && !improvement.hasUnique("Can be built outside your borders") -> false
+            improvement.uniqueObjects.any {
+                it.placeholderText == "Obsolete with []" && civInfo.tech.isResearched(it.params[0])
+            } -> return false
             else -> canImprovementBeBuiltHere(improvement, hasViewableResource(civInfo))
         }
     }
