@@ -2,6 +2,7 @@ package com.unciv.ui.tilegroups
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.Batch
+import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.Touchable
@@ -501,7 +502,15 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) 
             }
             if (neighborOwner != tileOwner && !borderImages.containsKey(neighbor)) { // there should be a border here but there isn't
 
-                val relativeHexPosition = tileInfo.position.cpy().sub(neighbor.position)
+                val relativeHexPosition = when (tileInfo.tileMap.getNeighborTileClockPosition(tileInfo, neighbor)){
+                    2 -> Vector2(0f,-1f)
+                    4 -> Vector2(1f,0f)
+                    6 -> Vector2(1f,1f)
+                    8 -> Vector2(0f,1f)
+                    10 -> Vector2(-1f,0f)
+                    12 -> Vector2(-1f,-1f)
+                    else -> Vector2.Zero
+                }
                 val relativeWorldPosition = HexMath.hex2WorldCoords(relativeHexPosition)
 
                 // This is some crazy voodoo magic so I'll explain.
