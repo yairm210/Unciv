@@ -235,12 +235,11 @@ object ImageGetter {
     }
 
     fun getPromotionIcon(promotionName: String): Actor {
-        var level = 0
-
-        when {
-            promotionName.endsWith(" I") -> level = 1
-            promotionName.endsWith(" II") -> level = 2
-            promotionName.endsWith(" III") -> level = 3
+        val level = when {
+            promotionName.endsWith(" I") -> 1
+            promotionName.endsWith(" II") -> 2
+            promotionName.endsWith(" III") -> 3
+            else -> 0
         }
 
         val basePromotionName = if (level == 0) promotionName
