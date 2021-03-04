@@ -9,7 +9,7 @@ import com.unciv.ui.tilegroups.TileGroup
 import kotlin.math.max
 import kotlin.math.min
 
-class TileGroupMap<T: TileGroup>(val tileGroups: Collection<T>, val padding: Float, worldWrap: Boolean = false): Group(){
+class TileGroupMap<T: TileGroup>(val tileGroups: Collection<T>, val padding: Float, worldWrap: Boolean = false, tileGroupsToUnwrap: Collection<T>? = null): Group(){
     var topX = -Float.MAX_VALUE
     var topY = -Float.MAX_VALUE
     var bottomX = Float.MAX_VALUE
@@ -25,7 +25,13 @@ class TileGroupMap<T: TileGroup>(val tileGroups: Collection<T>, val padding: Flo
         }
 
         for(tileGroup in tileGroups) {
-            val positionalVector = HexMath.hex2WorldCoords(tileGroup.tileInfo.position)
+            val positionalVector = if (tileGroupsToUnwrap != null && tileGroupsToUnwrap.contains(tileGroup)){
+                HexMath.hex2WorldCoords(
+                        tileGroup.tileInfo.tileMap.getUnWrappedPosition(tileGroup.tileInfo.position)
+                )
+            } else {
+                HexMath.hex2WorldCoords(tileGroup.tileInfo.position)
+            }
 
             tileGroup.setPosition(positionalVector.x * 0.8f * groupSize.toFloat(),
                     positionalVector.y * 0.8f * groupSize.toFloat())
