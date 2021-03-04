@@ -467,6 +467,6 @@
 	},
 	{
 		"name": "Slinger Withdraw", // only for Slinger and subsequent upgrades
-		"effect": "May withdraw before melee ([133]%)"
+		"effect": "May withdraw before melee ([80]%)"
 	}
 ]
