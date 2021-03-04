@@ -343,4 +343,25 @@ class TileMap {
             else -> -1
         }
     }
+
+    /**
+     * Returns the closest position to (0, 0) outside the map which can be wrapped
+     * to the position of the given vector
+     */
+    fun getUnWrappedPosition(position: Vector2) : Vector2 {
+        if (!contains(position))
+            return position //The position is outside the map so its unwrapped already
+
+        var radius = mapParameters.size.radius
+        if (mapParameters.shape == MapShape.rectangular)
+            radius = HexMath.getEquivalentRectangularSize(radius).x.toInt() / 2
+
+        val vectorUnwrappedLeft = Vector2(position.x + radius, position.y - radius)
+        val vectorUnwrappedRight = Vector2(position.x - radius, position.y + radius)
+
+        return if (vectorUnwrappedRight.len() < vectorUnwrappedLeft.len())
+            vectorUnwrappedRight
+        else
+            vectorUnwrappedLeft
+    }
 }
