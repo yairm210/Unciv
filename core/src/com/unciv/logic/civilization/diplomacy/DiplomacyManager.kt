@@ -253,7 +253,8 @@ class DiplomacyManager() {
     fun resourcesFromTrade(): ResourceSupplyList {
         val counter = ResourceSupplyList()
         val resourcesMap = civInfo.gameInfo.ruleSet.tileResources
-        val isResourceFilter: (TradeOffer) -> Boolean = { it.type == TradeType.Strategic_Resource || it.type == TradeType.Luxury_Resource }
+        val isResourceFilter: (TradeOffer) -> Boolean = { (it.type == TradeType.Strategic_Resource || it.type == TradeType.Luxury_Resource)
+                && civInfo.gameInfo.ruleSet.tileResources.containsKey(it.name) }
         for (trade in trades) {
             for (offer in trade.ourOffers.filter(isResourceFilter))
                 counter.add(resourcesMap[offer.name]!!, -offer.amount, "Trade")
@@ -294,7 +295,7 @@ class DiplomacyManager() {
 
             for (offer in trade.ourOffers) {
                 if (offer.type in listOf(TradeType.Luxury_Resource, TradeType.Strategic_Resource)
-                        && offer.name in negativeCivResources) {
+                        && (offer.name in negativeCivResources || !civInfo.gameInfo.ruleSet.tileResources.containsKey(offer.name))) {
                     trades.remove(trade)
                     val otherCivTrades = otherCiv().getDiplomacyManager(civInfo).trades
                     otherCivTrades.removeAll { it.equals(trade.reverse()) }

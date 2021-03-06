@@ -292,6 +292,7 @@ class GameInfo {
                 civInfo.policies.adoptedPolicies.remove("Facism")
                 civInfo.policies.adoptedPolicies.add("Fascism")
             }
+
         }
 
 
