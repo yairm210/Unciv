@@ -12,6 +12,7 @@ import com.unciv.models.stats.Stats
 import com.unciv.models.translations.tr
 import com.unciv.ui.utils.Fonts
 import kotlin.math.abs
+import kotlin.math.min
 
 open class TileInfo {
     @Transient
@@ -398,7 +399,14 @@ open class TileInfo {
     fun aerialDistanceTo(otherTile: TileInfo): Int {
         val xDelta = position.x - otherTile.position.x
         val yDelta = position.y - otherTile.position.y
-        return listOf(abs(xDelta), abs(yDelta), abs(xDelta - yDelta)).max()!!.toInt()
+        val distance = listOf(abs(xDelta), abs(yDelta), abs(xDelta - yDelta)).maxOrNull()!!
+
+        val otherTileUnwrappedPos = tileMap.getUnWrappedPosition(otherTile.position)
+        val xDeltaWrapped = position.x - otherTileUnwrappedPos.x
+        val yDeltaWrapped = position.y - otherTileUnwrappedPos.y
+        val wrappedDistance = listOf(abs(xDeltaWrapped), abs(yDeltaWrapped), abs(xDeltaWrapped - yDeltaWrapped)).maxOrNull()!!
+
+        return min(distance, wrappedDistance).toInt()
     }
 
     fun isRoughTerrain() = getBaseTerrain().rough || getTerrainFeature()?.rough == true
