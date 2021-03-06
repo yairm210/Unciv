@@ -2,7 +2,6 @@
 
 import com.unciv.logic.battle.Battle
 import com.unciv.logic.battle.MapUnitCombatant
-import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
@@ -50,12 +49,12 @@ object SpecificUnitAutomation {
                 }
 
         val maxAffectedTroopsTile = militaryUnitTilesInDistance
-                .maxBy {
-                        it.key.getTilesInDistance(2).count {tile ->
-                            val militaryUnit = tile.militaryUnit
-                            militaryUnit != null && militaryUnit.civInfo == unit.civInfo
-                        }
-                    }?.key
+                .maxByOrNull {
+                    it.key.getTilesInDistance(2).count { tile ->
+                        val militaryUnit = tile.militaryUnit
+                        militaryUnit != null && militaryUnit.civInfo == unit.civInfo
+                    }
+                }?.key
         if (maxAffectedTroopsTile != null) {
             unit.movement.headTowards(maxAffectedTroopsTile)
             return
@@ -199,7 +198,7 @@ object SpecificUnitAutomation {
     fun automateImprovementPlacer(unit: MapUnit) {
         val improvementName = unit.getMatchingUniques("Can construct []").first().params[0]
         val improvement = unit.civInfo.gameInfo.ruleSet.tileImprovements[improvementName]!!
-        val relatedStat = improvement.toHashMap().maxBy { it.value }!!.key
+        val relatedStat = improvement.toHashMap().maxByOrNull { it.value }!!.key
 
         val citiesByStatBoost = unit.civInfo.cities.sortedByDescending {
             val stats = Stats()
@@ -260,9 +259,9 @@ object SpecificUnitAutomation {
                 }
 
         if (citiesByNearbyAirUnits.keys.any { it != 0 }) {
-            val citiesWithMostNeedOfAirUnits = citiesByNearbyAirUnits.maxBy { it.key }!!.value
+            val citiesWithMostNeedOfAirUnits = citiesByNearbyAirUnits.maxByOrNull { it.key }!!.value
             //todo: maybe groupby size and choose highest priority within the same size turns
-            val chosenCity = citiesWithMostNeedOfAirUnits.minBy { pathsToCities.getValue(it).size }!! // city with min path = least turns to get there
+            val chosenCity = citiesWithMostNeedOfAirUnits.minByOrNull { pathsToCities.getValue(it).size }!! // city with min path = least turns to get there
             val firstStepInPath = pathsToCities.getValue(chosenCity).first()
             unit.movement.moveToTile(firstStepInPath)
             return
@@ -294,7 +293,7 @@ object SpecificUnitAutomation {
 
         //todo: this logic looks similar to some parts of automateFighter, maybe pull out common code
         //todo: maybe groupby size and choose highest priority within the same size turns
-        val closestCityThatCanAttackFrom = citiesThatCanAttackFrom.minBy { pathsToCities[it]!!.size }!!
+        val closestCityThatCanAttackFrom = citiesThatCanAttackFrom.minByOrNull { pathsToCities[it]!!.size }!!
         val firstStepInPath = pathsToCities[closestCityThatCanAttackFrom]!!.first()
         airUnit.movement.moveToTile(firstStepInPath)
     }

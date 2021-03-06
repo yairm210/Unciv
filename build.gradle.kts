@@ -71,7 +71,6 @@ project(":desktop") {
 project(":android") {
     apply(plugin = "com.android.application")
     apply(plugin = "kotlin-android")
-    apply(plugin = "kotlin-android-extensions")
 
     val natives by configurations.creating
 
