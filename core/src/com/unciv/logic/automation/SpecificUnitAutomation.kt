@@ -163,15 +163,20 @@ object SpecificUnitAutomation {
                     it.isLand && (tileOwner == null || tileOwner == unit.civInfo) // don't allow settler to settle inside other civ's territory
                             && (unit.currentTile == it || unit.movement.canMoveTo(it))
                             && it !in tilesNearCities
-                }
+                }.toList()
 
         val luxuryResourcesInCivArea = unit.civInfo.cities.asSequence()
                 .flatMap { it.getTiles().asSequence() }.filter { it.resource != null }
                 .map { it.getTileResource() }.filter { it.resourceType == ResourceType.Luxury }
                 .distinct()
-        val bestCityLocation: TileInfo? = possibleCityLocations
-                .sortedByDescending { rankTileAsCityCenter(it, nearbyTileRankings, luxuryResourcesInCivArea) }
-                .firstOrNull { unit.movement.canReach(it) }
+
+        val citiesByRanking= possibleCityLocations
+                .map { Pair(it, rankTileAsCityCenter(it, nearbyTileRankings, luxuryResourcesInCivArea)) }
+                .sortedByDescending { it.second }.toList()
+
+        // It's possible that we'll see a tile "over the sea" that's better than the tiles close by, but that's not a reason to abandon the close tiles!
+        // Also this lead to some routing problems, see https://github.com/yairm210/Unciv/issues/3653
+        val bestCityLocation: TileInfo? = citiesByRanking.firstOrNull { unit.movement.getShortestPath(it.first).size < 4 }?.first
 
         if (bestCityLocation == null) { // We got a badass over here, all tiles within 5 are taken? Screw it, random walk.
             if (UnitAutomation.tryExplore(unit)) return // try to find new areas

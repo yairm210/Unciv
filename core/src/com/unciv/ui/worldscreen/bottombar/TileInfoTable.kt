@@ -21,6 +21,8 @@ class TileInfoTable(private val viewingCiv :CivilizationInfo) : Table(CameraStag
         if (tile != null && (UncivGame.Current.viewEntireMapForDebug || viewingCiv.exploredTiles.contains(tile.position)) ) {
             add(getStatsTable(tile))
             add(tile.toString(viewingCiv).toLabel()).colspan(2).pad(10f)
+            // For debug only!
+            add(tile.position.toString().toLabel()).colspan(2).pad(10f)
         }
 
         pack()
