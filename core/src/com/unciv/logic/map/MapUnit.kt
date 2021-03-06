@@ -593,7 +593,7 @@ class MapUnit {
 
         destroy()
         if (currentTile.getOwner() == civInfo)
-            civInfo.gold += baseUnit.getDisbandGold()
+            civInfo.gold += baseUnit.getDisbandGold(civInfo)
         if (civInfo.isDefeated()) civInfo.destroy()
     }
 

@@ -106,17 +106,17 @@ class BaseUnit : INamed, IConstruction {
         return productionCost.toInt()
     }
 
-    fun getBaseGoldCost() = (30.0 * cost).pow(0.75) * (1 + hurryCostModifier / 100)
+    fun getBaseGoldCost(civInfo: CivilizationInfo) = (30.0 * cost).pow(0.75) * (1 + hurryCostModifier / 100f) * civInfo.gameInfo.gameParameters.gameSpeed.modifier
 
     override fun getGoldCost(civInfo: CivilizationInfo): Int {
-        var cost = getBaseGoldCost()
+        var cost = getBaseGoldCost(civInfo)
         if (civInfo.hasUnique("Gold cost of purchasing units -33%")) cost *= 0.66f
         for (unique in civInfo.getMatchingUniques("Cost of purchasing items in cities reduced by []%"))
             cost *= 1 - (unique.params[0].toFloat() / 100)
         return (cost / 10).toInt() * 10 // rounded down o nearest ten
     }
 
-    fun getDisbandGold() = getBaseGoldCost().toInt() / 20
+    fun getDisbandGold(civInfo: CivilizationInfo) = getBaseGoldCost(civInfo).toInt() / 20
 
     override fun shouldBeDisplayed(construction: CityConstructions): Boolean {
         val rejectionReason = getRejectionReason(construction)

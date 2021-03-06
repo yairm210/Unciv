@@ -240,7 +240,7 @@ class Building : NamedStats(), IConstruction {
 
     override fun getGoldCost(civInfo: CivilizationInfo): Int {
         // https://forums.civfanatics.com/threads/rush-buying-formula.393892/
-        var cost = (30 * getProductionCost(civInfo)).toDouble().pow(0.75) * (1 + hurryCostModifier / 100)
+        var cost = (30 * getProductionCost(civInfo)).toDouble().pow(0.75) * (1 + hurryCostModifier / 100f)
 
         for (unique in civInfo.getMatchingUniques("Cost of purchasing items in cities reduced by []%"))
             cost *= 1 - (unique.params[0].toFloat() / 100)
