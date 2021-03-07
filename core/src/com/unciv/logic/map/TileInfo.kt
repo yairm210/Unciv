@@ -571,5 +571,52 @@ open class TileInfo {
         turnsToImprovement = 0
     }
 
+    fun normalizeToRuleset(ruleset: Ruleset){
+        if (!ruleset.terrains.containsKey(naturalWonder)) naturalWonder = null
+        if (naturalWonder != null) {
+            val naturalWonder = ruleset.terrains[naturalWonder]!!
+            baseTerrain = naturalWonder.turnsInto!!
+            terrainFeature = null
+            resource = null
+            improvement = null
+        }
+
+        if (!ruleset.terrains.containsKey(terrainFeature)) terrainFeature = null
+        if (terrainFeature != null) {
+            val terrainFeatureObject = ruleset.terrains[terrainFeature]!!
+            if (terrainFeatureObject.occursOn.isNotEmpty() && !terrainFeatureObject.occursOn.contains(baseTerrain))
+                terrainFeature = null
+        }
+
+
+        if (resource != null && !ruleset.tileResources.containsKey(resource)) resource = null
+        if (resource != null) {
+            val resourceObject = ruleset.tileResources[resource]!!
+            if (resourceObject.terrainsCanBeFoundOn.none { it == baseTerrain || it == terrainFeature })
+                resource = null
+        }
+
+        if (improvement != null) normalizeTileImprovement(ruleset)
+        if (isWater || isImpassible())
+            roadStatus = RoadStatus.None
+    }
+
+
+    private fun normalizeTileImprovement(ruleset: Ruleset) {
+        val topTerrain = getLastTerrain()
+        if (improvement!!.startsWith("StartingLocation")) {
+            if (!isLand || topTerrain.impassable) improvement = null
+            return
+        }
+        val improvementObject = ruleset.tileImprovements[improvement]!!
+        improvement = null // Unset, and check if it can be reset. If so, do it, if not, invalid.
+        if (canImprovementBeBuiltHere(improvementObject)
+                // Allow building 'other' improvements like city ruins, barb encampments, Great Improvements etc
+                || (improvementObject.terrainsCanBeBuiltOn.isEmpty()
+                        && ruleset.tileResources.values.none { it.improvement == improvementObject.name }
+                        && !isImpassible() && isLand))
+            improvement = improvementObject.name
+    }
+
     //endregion
 }

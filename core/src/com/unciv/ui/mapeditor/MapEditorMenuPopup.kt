@@ -1,71 +1,75 @@
 package com.unciv.ui.mapeditor
 
+import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
+import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.Constants
 import com.unciv.MainMenuScreen
 import com.unciv.UncivGame
 import com.unciv.logic.map.TileMap
 import com.unciv.models.metadata.Player
-import com.unciv.ui.utils.Popup
-import com.unciv.ui.utils.onClick
-import com.unciv.ui.utils.toTextButton
+import com.unciv.models.ruleset.RulesetCache
+import com.unciv.ui.newgamescreen.ModCheckboxTable
+import com.unciv.ui.utils.*
 
-class MapEditorMenuPopup(var mapEditorScreen: MapEditorScreen): Popup(mapEditorScreen){
+class MapEditorMenuPopup(var mapEditorScreen: MapEditorScreen): Popup(mapEditorScreen) {
 
     init {
-        addNewMapButton()
-        addSaveMapButton()
-        addLoadMapButton()
-        addExitMapEditorButton()
-        addCloseOptionsButton()
+        addButton("New map") { UncivGame.Current.setScreen(NewMapScreen()) }
+        addButton("Save map") { mapEditorScreen.game.setScreen(SaveAndLoadMapScreen(mapEditorScreen.tileMap, true)) }
+        addButton("Load map") { mapEditorScreen.game.setScreen(SaveAndLoadMapScreen(mapEditorScreen.tileMap)) }
+        addButton("Exit map editor") { mapEditorScreen.game.setScreen(MainMenuScreen()); mapEditorScreen.dispose() }
+        addButton("Change ruleset") { MapEditorRulesetPopup(mapEditorScreen).open(); close() }
+        addButton(Constants.close) { close() }
     }
 
-    private fun Popup.addNewMapButton() {
-        val newMapButton = "New map".toTextButton()
-        newMapButton.onClick {
-            UncivGame.Current.setScreen(NewMapScreen())
+    class MapEditorRulesetPopup(mapEditorScreen: MapEditorScreen) : Popup(mapEditorScreen) {
+        var ruleset = mapEditorScreen.ruleset.clone() // don't take the actual one, so w can decide to not make changes
+
+        init {
+            val mods = mapEditorScreen.tileMap.mapParameters.mods
+
+            val checkboxTable = ModCheckboxTable(mods, mapEditorScreen) {
+                ruleset.clear()
+                val newRuleset = RulesetCache.getComplexRuleset(mods)
+                ruleset.add(newRuleset)
+                ruleset.mods += mods
+                ruleset.modOptions = newRuleset.modOptions
+
+                ImageGetter.setNewRuleset(ruleset)
+            }
+
+            add(ScrollPane(checkboxTable)).maxHeight(mapEditorScreen.stage.height * 0.8f).row()
+
+            addButton("Save") {
+                val incompatibilities = mapEditorScreen.tileMap.values.map { it.getRulesetIncompatability(ruleset) }.toHashSet()
+                incompatibilities.remove("")
+
+                if (incompatibilities.isEmpty()) {
+                    mapEditorScreen.tileMap.mapParameters.mods = mods;
+                    mapEditorScreen.game.setScreen(MapEditorScreen(mapEditorScreen.tileMap)) // reset all images etc.
+                    return@addButton
+                }
+
+                val incompatTable = Table()
+                for (inc in incompatibilities)
+                    incompatTable.add(inc.toLabel()).row()
+                val incompatPopup = Popup(screen)
+                incompatPopup.add(ScrollPane(incompatTable)).maxHeight(stage.height * 0.8f).row()
+                incompatPopup.add("Change map to fit selected ruleset?").row()
+                incompatPopup.addButton("Yes") {
+                    for (tile in mapEditorScreen.tileMap.values)
+                        tile.normalizeToRuleset(ruleset)
+                    mapEditorScreen.tileMap.mapParameters.mods = mods
+                    mapEditorScreen.game.setScreen(MapEditorScreen(mapEditorScreen.tileMap)) // reset all images etc.
+                }
+                incompatPopup.addButton("No") { incompatPopup.close() }
+                incompatPopup.open(true)
+
+            }
+
+            // Reset - no changes
+            addCloseButton { ImageGetter.setNewRuleset(mapEditorScreen.ruleset) }
         }
-        add(newMapButton).row()
-    }
-
-    private fun Popup.addSaveMapButton() {
-        val saveMapButton = "Save map".toTextButton()
-        saveMapButton.onClick {
-            mapEditorScreen.game.setScreen(SaveAndLoadMapScreen(mapEditorScreen.tileMap, true))
-        }
-        add(saveMapButton).row()
-    }
-
-    private fun Popup.addLoadMapButton() {
-        val loadMapButton = "Load map".toTextButton()
-        loadMapButton.onClick {
-            UncivGame.Current.setScreen(SaveAndLoadMapScreen(mapEditorScreen.tileMap))
-        }
-        add(loadMapButton).row()
-    }
-
-
-    private fun Popup.addExitMapEditorButton() {
-        val exitMapEditorButton = "Exit map editor".toTextButton()
-        add(exitMapEditorButton).row()
-        exitMapEditorButton.onClick { mapEditorScreen.game.setScreen(MainMenuScreen()); mapEditorScreen.dispose() }
-    }
-
-    private fun Popup.addCloseOptionsButton() {
-        val closeOptionsButton = Constants.close.toTextButton()
-        closeOptionsButton.onClick { close() }
-        add(closeOptionsButton).row()
-    }
-
-    private fun getPlayersFromMap(tileMap: TileMap): ArrayList<Player> {
-        val tilesWithStartingLocations = tileMap.values
-                .filter { it.improvement != null && it.improvement!!.startsWith("StartingLocation ") }
-        var players = ArrayList<Player>()
-        for (tile in tilesWithStartingLocations) {
-            players.add(Player().apply{
-                chosenCiv = tile.improvement!!.removePrefix("StartingLocation ")
-            })
-        }
-        return players
     }
 
 }

@@ -443,53 +443,9 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
 
     fun updateTileWhenClicked(tileInfo: TileInfo) {
         tileAction(tileInfo)
-        normalizeTile(tileInfo)
+        tileInfo.normalizeToRuleset(ruleset)
     }
 
-    fun normalizeTile(tileInfo: TileInfo) {
-        /*Natural Wonder superpowers! */
-        if (tileInfo.naturalWonder != null) {
-            val naturalWonder = tileInfo.getNaturalWonder()
-            tileInfo.baseTerrain = naturalWonder.turnsInto!!
-            tileInfo.terrainFeature = null
-            tileInfo.resource = null
-            tileInfo.improvement = null
-        }
-
-        if (tileInfo.terrainFeature != null) {
-            val terrainFeature = tileInfo.getTerrainFeature()
-            if (terrainFeature == null || terrainFeature.occursOn.isNotEmpty() && !terrainFeature.occursOn.contains(tileInfo.baseTerrain))
-                tileInfo.terrainFeature = null
-        }
-        if (tileInfo.resource != null && !ruleset.tileResources.containsKey(tileInfo.resource))
-            tileInfo.resource = null
-        if (tileInfo.resource != null) {
-            val resource = tileInfo.getTileResource()
-            if (resource.terrainsCanBeFoundOn.none { it == tileInfo.baseTerrain || it == tileInfo.terrainFeature })
-                tileInfo.resource = null
-        }
-        if (tileInfo.improvement != null) {
-            normalizeTileImprovement(tileInfo)
-        }
-        if (tileInfo.isWater || tileInfo.isImpassible())
-            tileInfo.roadStatus = RoadStatus.None
-    }
-
-    private fun normalizeTileImprovement(tileInfo: TileInfo) {
-        val topTerrain = tileInfo.getLastTerrain()
-        if (tileInfo.improvement!!.startsWith("StartingLocation")) {
-            if (!tileInfo.isLand || topTerrain.impassable)
-                tileInfo.improvement = null
-            return
-        }
-        val improvement = tileInfo.getTileImprovement()!!
-        tileInfo.improvement = null // Unset, and check if it can be reset. If so, do it, if not, invalid.
-        if (tileInfo.canImprovementBeBuiltHere(improvement)
-                // Allow building 'other' improvements like city ruins, barb encampments, Great Improvements etc
-                || (improvement.terrainsCanBeBuiltOn.isEmpty() && ruleset.tileResources.values.none { it.improvement == improvement.name }
-                        && !tileInfo.isImpassible() && tileInfo.isLand))
-            tileInfo.improvement = improvement.name
-    }
 
     private fun setCurrentHex(tileInfo: TileInfo, text: String) {
         val tileGroup = TileGroup(tileInfo, TileSetStrings())
