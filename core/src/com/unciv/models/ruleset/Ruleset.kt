@@ -207,14 +207,13 @@ class Ruleset {
     fun getEraNumber(era: String) = getEras().indexOf(era)
     fun getSummary(): String {
         val stringList = ArrayList<String>()
-        if (modOptions.isBaseRuleset) stringList += "Base Ruleset\n"
+        if (modOptions.isBaseRuleset) stringList += "Base Ruleset"
         if (technologies.isNotEmpty()) stringList.add(technologies.size.toString() + " Techs")
         if (nations.isNotEmpty()) stringList.add(nations.size.toString() + " Nations")
         if (units.isNotEmpty()) stringList.add(units.size.toString() + " Units")
         if (buildings.isNotEmpty()) stringList.add(buildings.size.toString() + " Buildings")
         if (tileResources.isNotEmpty()) stringList.add(tileResources.size.toString() + " Resources")
         if (tileImprovements.isNotEmpty()) stringList.add(tileImprovements.size.toString() + " Improvements")
-        stringList += ""
         return stringList.joinToString()
     }
 
