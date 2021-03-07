@@ -106,7 +106,9 @@ class BaseUnit : INamed, IConstruction {
         return productionCost.toInt()
     }
 
-    fun getBaseGoldCost(civInfo: CivilizationInfo) = (30.0 * cost).pow(0.75) * (1 + hurryCostModifier / 100f) * civInfo.gameInfo.gameParameters.gameSpeed.modifier
+    fun getBaseGoldCost(civInfo: CivilizationInfo): Double {
+        return (30.0 * cost).pow(0.75) * (1 + hurryCostModifier / 100f) * civInfo.gameInfo.gameParameters.gameSpeed.modifier
+    }
 
     override fun getGoldCost(civInfo: CivilizationInfo): Int {
         var cost = getBaseGoldCost(civInfo)

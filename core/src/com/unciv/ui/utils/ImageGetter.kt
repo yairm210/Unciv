@@ -48,7 +48,7 @@ object ImageGetter {
     }
 
     /** Required every time the ruleset changes, in order to load mod-specific images */
-    fun reload() {
+    private fun reload() {
         textureRegionDrawables.clear()
         // These are the drawables from the base game
         for (region in atlas.regions) {

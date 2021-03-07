@@ -169,8 +169,7 @@ class GameOptionsTable(val previousScreen: IPreviousScreen, val updatePlayerPick
         ruleset.mods += gameParameters.mods
         ruleset.modOptions = newRuleset.modOptions
 
-        ImageGetter.ruleset = ruleset
-        ImageGetter.reload()
+        ImageGetter.setNewRuleset(ruleset)
     }
 
     fun Table.addModCheckboxes() {
