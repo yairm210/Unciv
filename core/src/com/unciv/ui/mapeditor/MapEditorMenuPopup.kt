@@ -45,7 +45,7 @@ class MapEditorMenuPopup(var mapEditorScreen: MapEditorScreen): Popup(mapEditorS
                 incompatibilities.remove("")
 
                 if (incompatibilities.isEmpty()) {
-                    mapEditorScreen.tileMap.mapParameters.mods = mods;
+                    mapEditorScreen.tileMap.mapParameters.mods = mods
                     mapEditorScreen.game.setScreen(MapEditorScreen(mapEditorScreen.tileMap)) // reset all images etc.
                     return@addButton
                 }
@@ -60,7 +60,7 @@ class MapEditorMenuPopup(var mapEditorScreen: MapEditorScreen): Popup(mapEditorS
                     for (tile in mapEditorScreen.tileMap.values)
                         tile.normalizeToRuleset(ruleset)
                     mapEditorScreen.tileMap.mapParameters.mods = mods
-                    mapEditorScreen.game.setScreen(MapEditorScreen(mapEditorScreen.tileMap)) // reset all images etc.
+                    mapEditorScreen.game.setScreen(MapEditorScreen(mapEditorScreen.tileMap))
                 }
                 incompatPopup.addButton("No") { incompatPopup.close() }
                 incompatPopup.open(true)

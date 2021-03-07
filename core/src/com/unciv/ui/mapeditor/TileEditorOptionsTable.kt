@@ -127,7 +127,7 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
         val improvementsTable = Table()
         improvementsTable.add(getHex(getRedCross(40f, 0.6f)).apply {
             onClick {
-                tileAction = { it.improvement = null }
+                tileAction = { it.improvement = null; it.roadStatus = RoadStatus.None }
                 setCurrentHex(getHex(getRedCross(40f, 0.6f)), "Clear improvements")
             }
         }).row()
@@ -353,6 +353,7 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
 
             group.onClick {
                 tileAction = {
+                    it.naturalWonder = null // If we're setting a base terrain it should remove the nat wonder
                     when (terrain.type) {
                         TerrainType.TerrainFeature -> it.terrainFeature = terrain.name
                         TerrainType.NaturalWonder -> it.naturalWonder = terrain.name
