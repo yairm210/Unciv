@@ -1,3 +1,19 @@
+## 3.13.6
+
+Can convert maps between different rulesets!
+
+Resolved #3635 - can remove natural wonders and roads in map editor
+
+Fixed hurry cost modifiers, and unit gold costs scaling by game speed
+
+Resolved #3651 - "Free great person" unique compatible with techs and Spectator
+
+Resolved #3653 - Settler AI no longer aims for far tiles
+
+Tech info can display more than one revealed resource
+
+"Obsolete with [techName]" unique works with improvements
+
 ## 3.13.5
 
 Experimental World Wrap - By GGGuenni!
