@@ -163,12 +163,11 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
                 val improvementName = "StartingLocation " + nation.name
                 tileAction = {
                     it.improvement = improvementName
-                    for (tileGroup in mapEditorScreen.mapHolder.tileGroups.values) {
-                        val tile = tileGroup.tileInfo
-                        if (tile.improvement == improvementName && tile != it)
-                            tile.improvement = null
-                        tile.setTerrainTransients()
-                        tileGroup.update()
+                    for ((tileInfo, tileGroups) in mapEditorScreen.mapHolder.tileGroups) {
+                        if (tileInfo.improvement == improvementName && tileInfo != it)
+                            tileInfo.improvement = null
+                        tileInfo.setTerrainTransients()
+                        tileGroups.forEach { it.update() }
                     }
                 }
 
