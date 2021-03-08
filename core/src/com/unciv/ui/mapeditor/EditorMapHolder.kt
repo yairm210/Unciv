@@ -13,20 +13,40 @@ import com.unciv.ui.utils.center
 import com.unciv.ui.utils.onClick
 
 class EditorMapHolder(internal val mapEditorScreen: MapEditorScreen, internal val tileMap: TileMap): ZoomableScrollPane() {
-    val tileGroups = HashMap<TileInfo, TileGroup>()
+    val tileGroups = HashMap<TileInfo, List<TileGroup>>()
     lateinit var tileGroupMap: TileGroupMap<TileGroup>
+    val allTileGroups = ArrayList<TileGroup>()
+
+    init {
+        continousScrollingX = tileMap.mapParameters.worldWrap
+    }
 
     internal fun addTiles(padding:Float) {
 
         val tileSetStrings = TileSetStrings()
-        for (tileInfo in tileMap.values)
-            tileGroups[tileInfo] = TileGroup(tileInfo, tileSetStrings)
+        val daTileGroups = tileMap.values.map { TileGroup(it, tileSetStrings) }
 
-        tileGroupMap = TileGroupMap(tileGroups.values, padding)
+        tileGroupMap = TileGroupMap(daTileGroups, padding, continousScrollingX)
         actor = tileGroupMap
+        val mirrorTileGroups = tileGroupMap.getMirrorTiles()
 
+        for (tileGroup in daTileGroups) {
+            if (continousScrollingX){
+                val mirrorTileGroupLeft = mirrorTileGroups[tileGroup.tileInfo]!!.first
+                val mirrorTileGroupRight = mirrorTileGroups[tileGroup.tileInfo]!!.second
 
-        for (tileGroup in tileGroups.values) {
+                allTileGroups.add(tileGroup)
+                allTileGroups.add(mirrorTileGroupLeft)
+                allTileGroups.add(mirrorTileGroupRight)
+
+                tileGroups[tileGroup.tileInfo] = listOf(tileGroup, mirrorTileGroupLeft, mirrorTileGroupRight)
+            } else {
+                tileGroups[tileGroup.tileInfo] = listOf(tileGroup)
+                allTileGroups.add(tileGroup)
+            }
+        }
+
+        for (tileGroup in allTileGroups) {
 
             // This is a hack to make the unit icons render correctly on the game, even though the map isn't part of a game
             // and the units aren't assigned to any "real" CivInfo
@@ -43,7 +63,8 @@ class EditorMapHolder(internal val mapEditorScreen: MapEditorScreen, internal va
                     mapEditorScreen.tileEditorOptions.updateTileWhenClicked(tileInfo)
 
                     tileInfo.setTerrainTransients()
-                    tileGroups[tileInfo]!!.update()
+                    for (tileGroup in tileGroups[tileInfo]!!)
+                        tileGroup.update()
                 }
             }
         }
@@ -60,7 +81,7 @@ class EditorMapHolder(internal val mapEditorScreen: MapEditorScreen, internal va
     }
 
     fun updateTileGroups() {
-        for (tileGroup in tileGroups.values)
+        for (tileGroup in allTileGroups)
             tileGroup.update()
     }
 
