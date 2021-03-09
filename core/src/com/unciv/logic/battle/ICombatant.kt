@@ -20,9 +20,9 @@ interface ICombatant{
     fun matchesCategory(category:String): Boolean
 
     fun isMelee(): Boolean {
-        return this.getUnitType().isMelee()
+        return getUnitType().isMelee()
     }
     fun isRanged(): Boolean {
-        return this.getUnitType().isRanged()
+        return getUnitType().isRanged()
     }
 }
