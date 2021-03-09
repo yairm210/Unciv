@@ -255,12 +255,12 @@ class MapGenerator(val ruleset: Ruleset) {
     private fun spawnVegetation(tileMap: TileMap) {
         val vegetationSeed = randomness.RNG.nextInt().toDouble()
         val candidateTerrains = Constants.vegetation.flatMap{ ruleset.terrains[it]!!.occursOn }
-        for (tile in tileMap.values.asSequence().filter { it.baseTerrain in candidateTerrains && it.terrainFeature == null
+        for (tile in tileMap.values.asSequence().filter { it.baseTerrain in candidateTerrains && it.terrainFeatures.isEmpty()
                 && (!it.isHill() || Constants.hill in candidateTerrains) }) {
             val vegetation = (randomness.getPerlinNoise(tile, vegetationSeed, scale = 3.0, nOctaves = 1) + 1.0) / 2.0
 
             if (vegetation <= tileMap.mapParameters.vegetationRichness)
-                tile.terrainFeature = Constants.vegetation.filter { ruleset.terrains[it]!!.occursOn.contains(tile.baseTerrain) }.random(randomness.RNG)
+                tile.terrainFeatures.add(Constants.vegetation.filter { ruleset.terrains[it]!!.occursOn.contains(tile.baseTerrain) }.random(randomness.RNG))
         }
     }
     /**
@@ -270,12 +270,12 @@ class MapGenerator(val ruleset: Ruleset) {
         val rareFeatures = ruleset.terrains.values.filter {
             it.type == TerrainType.TerrainFeature && it.uniques.contains("Rare feature")
         }
-        for (tile in tileMap.values.asSequence().filter { it.terrainFeature == null }) {
+        for (tile in tileMap.values.asSequence().filter { it.terrainFeatures.isEmpty() }) {
             if (randomness.RNG.nextDouble() <= tileMap.mapParameters.rareFeaturesRichness) {
                 val possibleFeatures = rareFeatures.filter { it.occursOn.contains(tile.baseTerrain)
                         && (!tile.isHill() || it.occursOn.contains(Constants.hill)) }
                 if (possibleFeatures.any())
-                    tile.terrainFeature = possibleFeatures.random(randomness.RNG).name
+                    tile.terrainFeatures.add(possibleFeatures.random(randomness.RNG).name)
             }
         }
     }
@@ -287,7 +287,7 @@ class MapGenerator(val ruleset: Ruleset) {
         tileMap.setTransients(ruleset)
         val temperatureSeed = randomness.RNG.nextInt().toDouble()
         for (tile in tileMap.values) {
-            if (tile.baseTerrain !in Constants.sea || tile.terrainFeature != null)
+            if (tile.baseTerrain !in Constants.sea || tile.terrainFeatures.isNotEmpty())
                 continue
 
             val randomTemperature = randomness.getPerlinNoise(tile, temperatureSeed, scale = tileMap.mapParameters.tilesPerBiomeArea.toDouble(), nOctaves = 1)
@@ -295,7 +295,7 @@ class MapGenerator(val ruleset: Ruleset) {
             var temperature = ((latitudeTemperature + randomTemperature) / 2.0)
             temperature = abs(temperature).pow(1.0 - tileMap.mapParameters.temperatureExtremeness) * temperature.sign
             if (temperature < -0.8)
-                tile.terrainFeature = Constants.ice
+                tile.terrainFeatures.add(Constants.ice)
         }
     }
 

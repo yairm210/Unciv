@@ -206,7 +206,7 @@ class GameInfo {
         val tilesWithin3ofExistingEncampment = existingEncampments.asSequence()
                 .flatMap { it.getTilesInDistance(3) }.toSet()
         val viableTiles = tileMap.values.filter {
-            it.isLand && it.terrainFeature == null
+            it.isLand && it.terrainFeatures.isEmpty()
                     && !it.isImpassible()
                     && it !in tilesWithin3ofExistingEncampment
                     && it !in allViewableTiles
@@ -332,8 +332,8 @@ class GameInfo {
     // So we remove them so the game doesn't crash when it tries to access them.
     private fun removeMissingModReferences() {
         for (tile in tileMap.values) {
-            if (tile.terrainFeature != null && !ruleSet.terrains.containsKey(tile.terrainFeature!!))
-                tile.terrainFeature = null
+            for (terrainFeature in tile.terrainFeatures.filter { !ruleSet.terrains.containsKey(it) })
+                tile.terrainFeatures.remove(terrainFeature)
             if (tile.resource != null && !ruleSet.tileResources.containsKey(tile.resource!!))
                 tile.resource = null
             if (tile.improvement != null && !ruleSet.tileImprovements.containsKey(tile.improvement!!)

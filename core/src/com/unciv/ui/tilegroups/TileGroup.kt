@@ -205,9 +205,10 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) 
         }
 
 
-        if (tileInfo.terrainFeature != null) {
+        if (tileInfo.terrainFeatures.isNotEmpty()) {
             // e.g. Grassland+Forest
-            val baseTerrainAndFeatureTileLocation = "$baseTerrainTileLocation+${tileInfo.terrainFeature}"
+            //TODO has to be changed to support all terrainFeatures in list just needs to compile for now
+            val baseTerrainAndFeatureTileLocation = "$baseTerrainTileLocation+${tileInfo.terrainFeatures[0]}"
             if (shouldShowImprovement && shouldShowResource) {
                 // e.g. Grassland+Forest+Deer+Camp
                 val baseFeatureImprovementAndResourceLocation =
@@ -610,8 +611,8 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) 
     }
 
     private fun updateTerrainFeatureImage() {
-        if (tileInfo.terrainFeature != terrainFeature) {
-            terrainFeature = tileInfo.terrainFeature
+        if (tileInfo.terrainFeatures.contains(terrainFeature)) {
+            terrainFeature = tileInfo.terrainFeatures.find { it == terrainFeature }
             if (terrainFeatureOverlayImage != null) terrainFeatureOverlayImage!!.remove()
             terrainFeatureOverlayImage = null
 

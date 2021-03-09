@@ -182,10 +182,10 @@ class WorkerAutomation(val unit: MapUnit) {
     private fun chooseImprovement(tile: TileInfo, civInfo: CivilizationInfo): TileImprovement? {
         val improvementStringForResource: String? = when {
             tile.resource == null || !tile.hasViewableResource(civInfo) -> null
-            tile.terrainFeature == Constants.marsh && !isImprovementOnFeatureAllowed(tile, civInfo) -> "Remove Marsh"
-            tile.terrainFeature == "Fallout" && !isImprovementOnFeatureAllowed(tile, civInfo) -> "Remove Fallout"    // for really mad modders
-            tile.terrainFeature == Constants.jungle && !isImprovementOnFeatureAllowed(tile, civInfo) -> "Remove Jungle"
-            tile.terrainFeature == Constants.forest && !isImprovementOnFeatureAllowed(tile, civInfo) -> "Remove Forest"
+            tile.terrainFeatures.contains(Constants.marsh) && !isImprovementOnFeatureAllowed(tile, civInfo) -> "Remove Marsh"
+            tile.terrainFeatures.contains("Fallout") && !isImprovementOnFeatureAllowed(tile, civInfo) -> "Remove Fallout"    // for really mad modders
+            tile.terrainFeatures.contains(Constants.jungle) && !isImprovementOnFeatureAllowed(tile, civInfo) -> "Remove Jungle"
+            tile.terrainFeatures.contains(Constants.forest) && !isImprovementOnFeatureAllowed(tile, civInfo) -> "Remove Forest"
             else -> tile.getTileResource().improvement
         }
 
@@ -207,11 +207,11 @@ class WorkerAutomation(val unit: MapUnit) {
             // I think we can assume that the unique improvement is better
             uniqueImprovement != null && tile.canBuildImprovement(uniqueImprovement, civInfo) -> uniqueImprovement.name
 
-            tile.terrainFeature == "Fallout" -> "Remove Fallout"
-            tile.terrainFeature == Constants.marsh -> "Remove Marsh"
-            tile.terrainFeature == Constants.jungle -> Constants.tradingPost
-            tile.terrainFeature == "Oasis" -> null
-            tile.terrainFeature == Constants.forest -> "Lumber mill"
+            tile.terrainFeatures.contains("Fallout") -> "Remove Fallout"
+            tile.terrainFeatures.contains(Constants.marsh) -> "Remove Marsh"
+            tile.terrainFeatures.contains(Constants.jungle) -> Constants.tradingPost
+            tile.terrainFeatures.contains("Oasis") -> null
+            tile.terrainFeatures.contains(Constants.forest) -> "Lumber mill"
             tile.isHill() -> "Mine"
             tile.baseTerrain in listOf(Constants.grassland, Constants.desert, Constants.plains) -> "Farm"
             tile.isAdjacentToFreshwater -> "Farm"
@@ -228,7 +228,7 @@ class WorkerAutomation(val unit: MapUnit) {
                 ?: return false
         val resourceImprovement = civInfo.gameInfo.ruleSet.tileImprovements[resourceImprovementName]
                 ?: return false
-        return resourceImprovement.resourceTerrainAllow.contains(tile.terrainFeature!!)
+        return tile.terrainFeatures.any { resourceImprovement.resourceTerrainAllow.contains(it) }
     }
 
     private fun isAcceptableTileForFort(tile: TileInfo, civInfo: CivilizationInfo): Boolean {

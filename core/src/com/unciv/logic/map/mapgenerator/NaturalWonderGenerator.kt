@@ -63,7 +63,7 @@ class NaturalWonderGenerator(val ruleset: Ruleset) {
             val location = suitableLocations.random()
             location.naturalWonder = wonder.name
             location.baseTerrain = wonder.turnsInto!!
-            location.terrainFeature = null
+            location.terrainFeatures.clear()
             return location
         }
 
@@ -156,7 +156,7 @@ class NaturalWonderGenerator(val ruleset: Ruleset) {
 
             location2.naturalWonder = wonder.name
             location2.baseTerrain = wonder.turnsInto!!
-            location2.terrainFeature = null
+            location2.terrainFeatures.clear()
         }
     }
 
@@ -178,7 +178,7 @@ class NaturalWonderGenerator(val ruleset: Ruleset) {
             for (tile in location.neighbors) {
                 if (tile.baseTerrain == Constants.coast) continue
                 tile.baseTerrain = Constants.coast
-                tile.terrainFeature = null
+                tile.terrainFeatures.clear()
                 tile.resource = null
                 tile.improvement = null
                 tile.setTerrainTransients()
@@ -214,7 +214,7 @@ class NaturalWonderGenerator(val ruleset: Ruleset) {
                     }
 
                 tile.baseTerrain = Constants.coast
-                tile.terrainFeature = null
+                tile.terrainFeatures.clear()
                 tile.resource = null
                 tile.improvement = null
                 tile.setTerrainTransients()

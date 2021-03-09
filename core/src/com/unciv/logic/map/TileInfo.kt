@@ -49,7 +49,7 @@ open class TileInfo {
 
     var position: Vector2 = Vector2.Zero
     lateinit var baseTerrain: String
-    var terrainFeature: String? = null
+    var terrainFeatures: ArrayList<String> = ArrayList()
     var naturalWonder: String? = null
     var resource: String? = null
     var improvement: String? = null
@@ -76,7 +76,7 @@ open class TileInfo {
         for (airUnit in airUnits) toReturn.airUnits.add(airUnit.clone())
         toReturn.position = position.cpy()
         toReturn.baseTerrain = baseTerrain
-        toReturn.terrainFeature = terrainFeature
+        toReturn.terrainFeatures = terrainFeatures
         toReturn.naturalWonder = naturalWonder
         toReturn.resource = resource
         toReturn.improvement = improvement
@@ -120,7 +120,7 @@ open class TileInfo {
     fun getCity(): CityInfo? = owningCity
 
     fun getLastTerrain(): Terrain = when {
-        terrainFeature != null -> getTerrainFeature()!!
+        terrainFeatures.isNotEmpty() -> getTerrainFeature(terrainFeatures.last())!!
         naturalWonder != null -> getNaturalWonder()
         else -> getBaseTerrain()
     }
@@ -151,7 +151,7 @@ open class TileInfo {
     fun getHeight(): Int {
         if (baseTerrain == Constants.mountain) return 4
         if (isHill()) return 2
-        if (terrainFeature == Constants.forest || terrainFeature == Constants.jungle) return 1
+        if (terrainFeatures.contains(Constants.forest) || terrainFeatures.contains(Constants.jungle)) return 1
         return 0
     }
 
@@ -173,8 +173,7 @@ open class TileInfo {
         }
     }
 
-    fun getTerrainFeature(): Terrain? =
-            if (terrainFeature == null) null else ruleset.terrains[terrainFeature!!]
+    fun getTerrainFeature(featureString: String): Terrain? = ruleset.terrains[featureString]
 
     fun getWorkingCity(): CityInfo? {
         val civInfo = getOwner()
@@ -194,8 +193,8 @@ open class TileInfo {
     fun getTileStats(city: CityInfo?, observingCiv: CivilizationInfo): Stats {
         var stats = getBaseTerrain().clone()
 
-        if (terrainFeature != null) {
-            val terrainFeatureBase = getTerrainFeature()
+        for (terrainFeature in terrainFeatures) {
+            val terrainFeatureBase = getTerrainFeature(terrainFeature)
             if (terrainFeatureBase!!.overrideStats)
                 stats = terrainFeatureBase.clone()
             else
@@ -355,9 +354,9 @@ open class TileInfo {
         return filter == baseTerrain
                 || filter == Constants.hill && isHill()
                 || filter == "River" && isAdjacentToRiver()
-                || filter == terrainFeature
+                || terrainFeatures.contains(filter)
                 || baseTerrainObject.uniques.contains(filter)
-                || terrainFeature != null && getTerrainFeature()!!.uniques.contains(filter)
+                || terrainFeatures.map { getTerrainFeature(it)?.uniques?.contains(filter) }.contains(true)
                 || improvement == filter
                 || civInfo != null && hasViewableResource(civInfo) && resource == filter
                 || filter == "Water" && isWater
@@ -409,7 +408,7 @@ open class TileInfo {
         return min(distance, wrappedDistance).toInt()
     }
 
-    fun isRoughTerrain() = getBaseTerrain().rough || getTerrainFeature()?.rough == true
+    fun isRoughTerrain() = getBaseTerrain().rough || terrainFeatures.map { getTerrainFeature(it)?.rough }.contains(true)
 
     override fun toString(): String { // for debugging, it helps to see what you're doing
         return toString(null)
@@ -458,7 +457,7 @@ open class TileInfo {
                 lineList += city.cityConstructions.getProductionForTileInfo()
         }
         lineList += baseTerrain.tr()
-        if (terrainFeature != null) lineList += terrainFeature!!.tr()
+        for (terrainFeature in terrainFeatures) lineList += terrainFeature.tr()
         if (resource != null && (viewingCiv == null || hasViewableResource(viewingCiv))) lineList += resource!!.tr()
         if (naturalWonder != null) lineList += naturalWonder!!.tr()
         if (roadStatus !== RoadStatus.None && !isCityCenter()) lineList += roadStatus.name.tr()
@@ -506,12 +505,13 @@ open class TileInfo {
 
     private fun forestOrJungleAreRoads(civInfo: CivilizationInfo) =
             civInfo.nation.forestsAndJunglesAreRoads
-                    && (terrainFeature == Constants.jungle || terrainFeature == Constants.forest)
+                    && (terrainFeatures.contains(Constants.jungle) || terrainFeatures.contains(Constants.forest))
                     && isFriendlyTerritory(civInfo)
 
     fun getRulesetIncompatability(ruleset: Ruleset):String{
         if (!ruleset.terrains.containsKey(baseTerrain)) return "Base terrain $baseTerrain does not exist in ruleset!"
-        if (terrainFeature != null && !ruleset.terrains.containsKey(terrainFeature)) return "Terrain feature $terrainFeature does not exist in ruleset!"
+        //Only the first missing terrainFeature gets returned
+        for (terrainFeature in terrainFeatures) if (!ruleset.terrains.containsKey(terrainFeature)) return "Terrain feature $terrainFeature does not exist in ruleset!"
         if (resource != null && !ruleset.tileResources.containsKey(resource)) return "Resource $resource does not exist in ruleset!"
         if (improvement != null && !improvement!!.startsWith("StartingLocation")
                 && !ruleset.tileImprovements.containsKey(improvement)) return "Improvement $improvement does not exist in ruleset!"
@@ -576,23 +576,24 @@ open class TileInfo {
         if (naturalWonder != null) {
             val naturalWonder = ruleset.terrains[naturalWonder]!!
             baseTerrain = naturalWonder.turnsInto!!
-            terrainFeature = null
+            terrainFeatures.clear()
             resource = null
             improvement = null
         }
 
-        if (!ruleset.terrains.containsKey(terrainFeature)) terrainFeature = null
-        if (terrainFeature != null) {
+        for (terrainFeature in terrainFeatures.filter { !ruleset.terrains.containsKey(it) })
+            terrainFeatures.remove(terrainFeature)
+        for (terrainFeature in terrainFeatures.toList()) {
             val terrainFeatureObject = ruleset.terrains[terrainFeature]!!
             if (terrainFeatureObject.occursOn.isNotEmpty() && !terrainFeatureObject.occursOn.contains(baseTerrain))
-                terrainFeature = null
+                terrainFeatures.remove(terrainFeature)
         }
 
 
         if (resource != null && !ruleset.tileResources.containsKey(resource)) resource = null
         if (resource != null) {
             val resourceObject = ruleset.tileResources[resource]!!
-            if (resourceObject.terrainsCanBeFoundOn.none { it == baseTerrain || it == terrainFeature })
+            if (resourceObject.terrainsCanBeFoundOn.none { it == baseTerrain || terrainFeatures.contains(it) })
                 resource = null
         }
 
