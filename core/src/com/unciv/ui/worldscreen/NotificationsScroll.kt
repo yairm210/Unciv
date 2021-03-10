@@ -30,12 +30,14 @@ class NotificationsScroll(internal val worldScreen: WorldScreen) : ScrollPane(nu
 
         notificationsTable.clearChildren()
         for (notification in notifications.toList().reversed()) { // toList to avoid concurrency problems
-            val label = notification.text.toLabel(Color.BLACK,30)
+            val label = notification.text.toLabel(Color.WHITE,30)
             val listItem = Table()
 
             listItem.add(ImageGetter.getCircle()
                     .apply { color=notification.color }).size(20f).padRight(5f)
-            listItem.background = ImageGetter.getRoundedEdgeTableBackground().apply { setScale(0.5f) }
+            listItem.background = ImageGetter
+                    .getRoundedEdgeTableBackground(ImageGetter.getBlue().lerp(Color.BLACK, 0.5f))
+                    .apply { setScale(0.5f) }
             listItem.add(label)
 
             // using a large click area with no gap in between each message item.
