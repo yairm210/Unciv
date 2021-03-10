@@ -93,6 +93,7 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo, centerOnTech: Tec
 
     private fun createTechTable() {
         val allTechs = civInfo.gameInfo.ruleSet.technologies.values
+        if (allTechs.isEmpty()) return
         val columns = allTechs.map { it.column!!.columnNumber }.maxOrNull()!! + 1
         val rows = allTechs.map { it.row }.maxOrNull()!! + 1
         val techMatrix = Array<Array<Technology?>>(columns) { arrayOfNulls(rows) } // Divided into columns, then rows
@@ -116,7 +117,7 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo, centerOnTech: Tec
             techTable.add(era.toLabel().addBorder(2f, color)).fill().colspan(columnSpan)
         }
 
-        for (rowIndex in 0..rows-1) {
+        for (rowIndex in 0..rows - 1) {
             techTable.row().pad(5f).padRight(40f)
 
             for (columnIndex in techMatrix.indices) {
