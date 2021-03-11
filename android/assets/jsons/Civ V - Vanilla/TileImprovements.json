@@ -7,7 +7,7 @@
 		"turnsToBuild": 7,
 		"techRequired": "Agriculture",
 		"uniques": ["Can also be built on tiles adjacent to fresh water", 
-			"[+1 Food] on [fresh water] tiles once [Civil Service] is discovered",
+			"[+1 Food] on [Fresh water] tiles once [Civil Service] is discovered",
 			"[+1 Food] on [non-fresh water] tiles once [Fertilizer] is discovered"],
 		"shortcutKey": "F"
 	},
