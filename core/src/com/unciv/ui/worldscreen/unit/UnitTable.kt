@@ -6,7 +6,6 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Table
-import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup
 import com.unciv.UncivGame
 import com.unciv.logic.battle.CityCombatant
 import com.unciv.logic.city.CityInfo
@@ -55,11 +54,11 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
         promotionsTable.touchable=Touchable.enabled
 
         add(Table().apply {
-            val unitNameAndLabel = Table().apply {
+            val unitIconAndLabel = Table().apply {
                 add(unitIconHolder)
                 add(unitNameLabel).pad(5f)
             }
-            add(unitNameAndLabel)
+            add(unitIconAndLabel)
 
             separator = addSeparator().actor!!
             add(promotionsTable).colspan(2).row()
@@ -71,19 +70,20 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
                 }
             }
 
-            addSeparator().actor!!
-            add(Table().apply {
+            val idleUnitsSwitcher = Table().apply {
+                add(prevIdleUnitButton).left()
+                add(nextIdleUnitButton).left()
+            }
+            addSeparator()
+            val closeAndSwitchUnitsTable = Table().apply {
                 deselectUnitButton.add(ImageGetter.getImage("OtherIcons/Close")).size(20f).pad(10f)
                 deselectUnitButton.pack()
                 deselectUnitButton.touchable = Touchable.enabled
-                deselectUnitButton.onClick { selectUnit(); worldScreen.shouldUpdate=true; this@UnitTable.isVisible=false }
+                deselectUnitButton.onClick { selectUnit(); worldScreen.shouldUpdate = true; this@UnitTable.isVisible = false }
                 add(deselectUnitButton)
-                val idleUnitsSwitcher = Table().apply {
-                    add(prevIdleUnitButton).left()
-                    add(nextIdleUnitButton).left()
-                }
                 add(idleUnitsSwitcher).left()
-            }).left()
+            }
+            add(closeAndSwitchUnitsTable).left()
         }).expand()
 
     }
