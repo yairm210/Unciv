@@ -361,7 +361,7 @@ open class TileInfo {
         }
     }
 
-    fun matchesUniqueFilter(filter: String, civInfo: CivilizationInfo?=null): Boolean {
+    fun cimatchesUniqueFilter(filter: String, civInfo: CivilizationInfo?=null): Boolean {
         return filter == baseTerrain
                 || filter == Constants.hill && isHill()
                 || filter == "River" && isAdjacentToRiver()

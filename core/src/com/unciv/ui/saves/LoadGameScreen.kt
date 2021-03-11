@@ -21,7 +21,7 @@ import kotlin.concurrent.thread
 import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 
 class LoadGameScreen(previousScreen:CameraStageBaseScreen) : PickerScreen() {
-    lateinit var selectedSave:String
+    lateinit var selectedSave: String
     private val copySavedGameToClipboardButton = "Copy saved game to clipboard".toTextButton()
     private val saveTable = Table()
     private val deleteSaveButton = "Delete save".toTextButton()
@@ -31,7 +31,7 @@ class LoadGameScreen(previousScreen:CameraStageBaseScreen) : PickerScreen() {
         setDefaultCloseAction(previousScreen)
 
         resetWindowState()
-        topTable.add(ScrollPane(saveTable)).height(stage.height*2/3)
+        topTable.add(ScrollPane(saveTable)).height(stage.height * 2 / 3)
 
         val rightSideTable = getRightSideTable()
 
@@ -81,7 +81,7 @@ class LoadGameScreen(previousScreen:CameraStageBaseScreen) : PickerScreen() {
                 UncivGame.Current.loadGame(loadedGame)
             } catch (ex: Exception) {
                 var text = "Could not load game from clipboard!".tr()
-                if (ex is UncivShowableException) text += "\n"+ex.message
+                if (ex is UncivShowableException) text += "\n" + ex.message
                 errorLabel.setText(text)
 
                 ex.printStackTrace()
@@ -121,8 +121,8 @@ class LoadGameScreen(previousScreen:CameraStageBaseScreen) : PickerScreen() {
 
         showAutosavesCheckbox.isChecked = false
         showAutosavesCheckbox.onChange {
-                updateLoadableGames(showAutosavesCheckbox.isChecked)
-            }
+            updateLoadableGames(showAutosavesCheckbox.isChecked)
+        }
         rightSideTable.add(showAutosavesCheckbox).row()
         return rightSideTable
     }
@@ -136,11 +136,11 @@ class LoadGameScreen(previousScreen:CameraStageBaseScreen) : PickerScreen() {
         descriptionLabel.setText("")
     }
 
-    private fun updateLoadableGames(showAutosaves:Boolean) {
+    private fun updateLoadableGames(showAutosaves: Boolean) {
         saveTable.clear()
 
-        val loadImage =ImageGetter.getImage("OtherIcons/Load")
-        loadImage.setSize(50f,50f) // So the origin sets correctly
+        val loadImage = ImageGetter.getImage("OtherIcons/Load")
+        loadImage.setSize(50f, 50f) // So the origin sets correctly
         loadImage.setOrigin(Align.center)
         loadImage.addAction(Actions.rotateBy(360f, 2f))
         saveTable.add(loadImage).size(50f)
@@ -176,6 +176,8 @@ class LoadGameScreen(previousScreen:CameraStageBaseScreen) : PickerScreen() {
                 val playerCivNames = game.civilizations.filter { it.isPlayerCivilization() }.joinToString { it.civName.tr() }
                 textToSet += "\n" + playerCivNames +
                         ", " + game.difficulty.tr() + ", ${Fonts.turn}" + game.turns
+                if (game.gameParameters.mods.isNotEmpty())
+                    textToSet += "\n {Mods:} ".tr() + game.gameParameters.mods.joinToString()
             } catch (ex: Exception) {
                 textToSet += "\n{Could not load game}!".tr()
             }
@@ -191,4 +193,3 @@ class LoadGameScreen(previousScreen:CameraStageBaseScreen) : PickerScreen() {
     }
 
 }
-
