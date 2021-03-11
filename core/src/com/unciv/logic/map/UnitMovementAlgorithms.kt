@@ -37,7 +37,8 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
         if (unit.ignoresTerrainCost) return 1f + extraCost
         if (areConnectedByRiver) return 100f  // Rivers take the entire turn to cross
 
-        if (unit.doubleMovementInForestAndJungle && (to.terrainFeature == Constants.forest || to.terrainFeature == Constants.jungle))
+        if (unit.doubleMovementInForestAndJungle &&
+                (to.terrainFeatures.contains(Constants.forest) || to.terrainFeatures.contains(Constants.jungle)))
             return 1f + extraCost // usually forest and jungle take 2 movements, so here it is 1
         if (civInfo.nation.ignoreHillMovementCost && to.isHill())
             return 1f + extraCost // usually hills take 2 movements, so here it is 1
@@ -335,7 +336,7 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
         if (tile.isImpassible()) {
             // special exception - ice tiles are technically impassible, but some units can move through them anyway
             // helicopters can pass through impassable tiles like mountains
-            if (!(tile.terrainFeature == Constants.ice && unit.canEnterIceTiles) && !unit.canPassThroughImpassableTiles)
+            if (!(tile.terrainFeatures.contains(Constants.ice) && unit.canEnterIceTiles) && !unit.canPassThroughImpassableTiles)
                 return false
         }
         if (tile.isLand

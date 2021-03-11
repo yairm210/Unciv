@@ -270,7 +270,7 @@ class MapGenerator(val ruleset: Ruleset) {
         val rareFeatures = ruleset.terrains.values.filter {
             it.type == TerrainType.TerrainFeature && it.uniques.contains("Rare feature")
         }
-        for (tile in tileMap.values.asSequence().filter { it.terrainFeature == null }) {
+        for (tile in tileMap.values.asSequence().filter { it.terrainFeatures.isEmpty() }) {
             if (randomness.RNG.nextDouble() <= tileMap.mapParameters.rareFeaturesRichness) {
                 val possibleFeatures = rareFeatures.filter { it.occursOn.contains(tile.baseTerrain)
                         && (!tile.isHill() || it.occursOn.contains(Constants.hill)) }
@@ -287,7 +287,7 @@ class MapGenerator(val ruleset: Ruleset) {
         tileMap.setTransients(ruleset)
         val temperatureSeed = randomness.RNG.nextInt().toDouble()
         for (tile in tileMap.values) {
-            if (tile.baseTerrain !in Constants.sea || tile.terrainFeature != null)
+            if (tile.baseTerrain !in Constants.sea || tile.terrainFeatures.any())
                 continue
 
             val randomTemperature = randomness.getPerlinNoise(tile, temperatureSeed, scale = tileMap.mapParameters.tilesPerBiomeArea.toDouble(), nOctaves = 1)
@@ -295,7 +295,7 @@ class MapGenerator(val ruleset: Ruleset) {
             var temperature = ((latitudeTemperature + randomTemperature) / 2.0)
             temperature = abs(temperature).pow(1.0 - tileMap.mapParameters.temperatureExtremeness) * temperature.sign
             if (temperature < -0.8)
-                tile.terrainFeature = Constants.ice
+                tile.terrainFeatures.add(Constants.ice)
         }
     }
 
