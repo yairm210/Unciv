@@ -281,8 +281,8 @@ object BattleDamage {
     private fun damageModifier(attackerToDefenderRatio: Float, damageToAttacker: Boolean): Float {
         // https://forums.civfanatics.com/threads/getting-the-combat-damage-math.646582/#post-15468029
         val strongerToWeakerRatio = attackerToDefenderRatio.pow(if (attackerToDefenderRatio < 1) -1 else 1)
-        var ratioModifier = ((((strongerToWeakerRatio + 3) / 4).pow(4) + 1) / 2)
-        if ((damageToAttacker && attackerToDefenderRatio > 1) || (!damageToAttacker && attackerToDefenderRatio < 1)) // damage ratio from the weaker party is inverted
+        var ratioModifier = (((strongerToWeakerRatio + 3) / 4).pow(4) + 1) / 2
+        if (damageToAttacker && attackerToDefenderRatio > 1 || !damageToAttacker && attackerToDefenderRatio < 1) // damage ratio from the weaker party is inverted
             ratioModifier = ratioModifier.pow(-1)
         val randomCenteredAround30 = (24 + 12 * Random().nextFloat())
         return randomCenteredAround30 * ratioModifier
