@@ -50,8 +50,8 @@ open class TileInfo {
     var position: Vector2 = Vector2.Zero
     lateinit var baseTerrain: String
     val terrainFeatures: ArrayList<String> = ArrayList()
-    var terrainFeature: String?
-        get() = terrainFeatures.firstOrNull()
+    var terrainFeature: String? = null
+        get() = terrainFeatures.firstOrNull() ?: field //if terrainFeatures contains no terrainFeature maybe one got deserialized to field
         set(value) {
             if (terrainFeatures.isNotEmpty()) {
                 if (value == null) terrainFeatures.removeAt(0)
@@ -533,6 +533,8 @@ open class TileInfo {
 
     //region state-changing functions
     fun setTransients() {
+        if (terrainFeatures.firstOrNull() == null && terrainFeature != null)// -> terranFeature getter returns terrainFeature field
+            terrainFeature = terrainFeature // getter returns field, setter calls terrainFeatures.add()
         setTerrainTransients()
         setUnitTransients(true)
     }
