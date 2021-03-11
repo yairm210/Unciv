@@ -22,14 +22,13 @@ class MapUnitCombatant(val unit: MapUnit) : ICombatant {
     }
 
     override fun getAttackingStrength(): Int {
-        if (isRanged()) return unit.baseUnit().rangedStrength
-        else return unit.baseUnit().strength
+        return if (isRanged()) unit.baseUnit().rangedStrength
+        else unit.baseUnit().strength
     }
 
     override fun getDefendingStrength(): Int {
-        if(unit.isEmbarked() && !unit.type.isCivilian())
-            return 5 * getCivInfo().getEraNumber()
-        return unit.baseUnit().strength
+        return if (unit.isEmbarked() && !unit.type.isCivilian()) 5 * getCivInfo().getEraNumber()
+        else unit.baseUnit().strength
     }
 
     override fun getUnitType(): UnitType {
