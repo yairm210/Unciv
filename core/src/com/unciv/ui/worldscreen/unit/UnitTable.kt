@@ -36,7 +36,6 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
         if (!append) selectedUnits.clear()
         selectedCity = null
         if (unit != null) selectedUnits.add(unit)
-        //println(unit.toString())
     }
 
     var selectedCity : CityInfo? = null
@@ -54,14 +53,26 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
 
         promotionsTable.touchable=Touchable.enabled
 
+        add(VerticalGroup().apply {
+            pad(5f)
+
+            deselectUnitButton.add(ImageGetter.getImage("OtherIcons/Close")).size(20f).pad(10f)
+            deselectUnitButton.pack()
+            deselectUnitButton.touchable = Touchable.enabled
+            deselectUnitButton.onClick { selectUnit(); worldScreen.shouldUpdate=true; this@UnitTable.isVisible=false }
+            addActor(deselectUnitButton)
+        }).left()
+
         add(Table().apply {
-            val unitNameAndLabel = Table().apply {
+            val moveBetweenUnitsTable = Table().apply {
+                add(prevIdleUnitButton)
                 add(unitIconHolder)
                 add(unitNameLabel).pad(5f)
+                add(nextIdleUnitButton)
             }
-            add(unitNameAndLabel)
+            add(moveBetweenUnitsTable).colspan(2).fill().row()
 
-            separator = addSeparator().actor!!
+            separator= addSeparator().actor!!
             add(promotionsTable).colspan(2).row()
             add(unitDescriptionTable)
             touchable = Touchable.enabled
@@ -70,20 +81,6 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
                     worldScreen.mapHolder.setCenterPosition(it, false, false)
                 }
             }
-
-            addSeparator().actor!!
-            add(Table().apply {
-                deselectUnitButton.add(ImageGetter.getImage("OtherIcons/Close")).size(20f).pad(10f)
-                deselectUnitButton.pack()
-                deselectUnitButton.touchable = Touchable.enabled
-                deselectUnitButton.onClick { selectUnit(); worldScreen.shouldUpdate=true; this@UnitTable.isVisible=false }
-                add(deselectUnitButton)
-                val idleUnitsSwitcher = Table().apply {
-                    add(prevIdleUnitButton).left()
-                    add(nextIdleUnitButton).left()
-                }
-                add(idleUnitsSwitcher).left()
-            }).left()
         }).expand()
 
     }
@@ -109,8 +106,7 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
             nextIdleUnitButton.disable()
         }
 
-        if(selectedUnit!=null) { // set texts - this is valid even when it's the same unit, because
-                                 // movement points and health change
+        if(selectedUnit!=null) { // set texts - this is valid even when it's the same unit, because movement points and health change
             if(selectedUnits.size==1) { //single selected unit
                 separator.isVisible = true
                 val unit = selectedUnit!!
@@ -118,9 +114,7 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
                 if (unit.health < 100) nameLabelText += " (" + unit.health + ")"
                 if (nameLabelText != unitNameLabel.text.toString()) {
                     unitNameLabel.setText(nameLabelText)
-                    selectedUnitHasChanged = true // We need to reload the health bar of the unit in
-                                                  // the icon - happens e.g. when picking the
-                                                  // Heal Instantly promotion
+                    selectedUnitHasChanged = true // We need to reload the health bar of the unit in the icon - happens e.g. when picking the Heal Instantly promotion
                 }
 
                 unitDescriptionTable.clear()
