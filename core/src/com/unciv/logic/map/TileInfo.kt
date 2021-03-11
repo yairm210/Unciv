@@ -49,7 +49,17 @@ open class TileInfo {
 
     var position: Vector2 = Vector2.Zero
     lateinit var baseTerrain: String
-    var terrainFeature: String? = null
+    val terrainFeatures: ArrayList<String> = ArrayList()
+    var terrainFeature: String?
+        get() = terrainFeatures.firstOrNull()
+        set(value) {
+            if (terrainFeatures.isNotEmpty()) {
+                if (value == null) terrainFeatures.removeAt(0)
+                else terrainFeatures[0] = value
+            } else {
+                if (value != null) terrainFeatures.add(value)
+            }
+        }
     var naturalWonder: String? = null
     var resource: String? = null
     var improvement: String? = null
