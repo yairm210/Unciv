@@ -50,6 +50,7 @@ open class TileInfo {
     var position: Vector2 = Vector2.Zero
     lateinit var baseTerrain: String
     val terrainFeatures: ArrayList<String> = ArrayList()
+    @Transient // So it won't be serialized from now on
     var terrainFeature: String? = null
         get() = terrainFeatures.firstOrNull() ?: field //if terrainFeatures contains no terrainFeature maybe one got deserialized to field
         set(value) {
@@ -86,7 +87,8 @@ open class TileInfo {
         for (airUnit in airUnits) toReturn.airUnits.add(airUnit.clone())
         toReturn.position = position.cpy()
         toReturn.baseTerrain = baseTerrain
-        toReturn.terrainFeature = terrainFeature
+//        toReturn.terrainFeature = terrainFeature
+        toReturn.terrainFeatures.addAll(terrainFeatures)
         toReturn.naturalWonder = naturalWonder
         toReturn.resource = resource
         toReturn.improvement = improvement
@@ -361,7 +363,7 @@ open class TileInfo {
         }
     }
 
-    fun cimatchesUniqueFilter(filter: String, civInfo: CivilizationInfo?=null): Boolean {
+    fun matchesUniqueFilter(filter: String, civInfo: CivilizationInfo?=null): Boolean {
         return filter == baseTerrain
                 || filter == Constants.hill && isHill()
                 || filter == "River" && isAdjacentToRiver()
@@ -533,8 +535,9 @@ open class TileInfo {
 
     //region state-changing functions
     fun setTransients() {
-        if (terrainFeatures.firstOrNull() == null && terrainFeature != null)// -> terranFeature getter returns terrainFeature field
+        if (terrainFeatures.firstOrNull() == null && terrainFeature != null) {// -> terranFeature getter returns terrainFeature field
             terrainFeature = terrainFeature // getter returns field, setter calls terrainFeatures.add()
+        }
         setTerrainTransients()
         setUnitTransients(true)
     }

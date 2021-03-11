@@ -61,9 +61,9 @@ class NaturalWonderGenerator(val ruleset: Ruleset) {
     private fun trySpawnOnSuitableLocation(suitableLocations: List<TileInfo>, wonder: Terrain): TileInfo? {
         if (suitableLocations.isNotEmpty()) {
             val location = suitableLocations.random()
+            clearTile(location)
             location.naturalWonder = wonder.name
             location.baseTerrain = wonder.turnsInto!!
-            location.terrainFeature = null
             return location
         }
 
@@ -146,17 +146,13 @@ class NaturalWonderGenerator(val ruleset: Ruleset) {
 
         val location = trySpawnOnSuitableLocation(suitableLocations, wonder)
         if (location != null) {
-            val location2 = location.neighbors
+            val possibleLocations = location.neighbors
                     .filter {
                         it.resource == null && it.improvement == null
                                 && wonder.occursOn.contains(it.getLastTerrain().name)
                                 && it.neighbors.all { it.isWater }
-                    }
-                    .toList().random()
-
-            location2.naturalWonder = wonder.name
-            location2.baseTerrain = wonder.turnsInto!!
-            location2.terrainFeature = null
+                    }.toList()
+            trySpawnOnSuitableLocation(possibleLocations, wonder)
         }
     }
 
@@ -178,10 +174,7 @@ class NaturalWonderGenerator(val ruleset: Ruleset) {
             for (tile in location.neighbors) {
                 if (tile.baseTerrain == Constants.coast) continue
                 tile.baseTerrain = Constants.coast
-                tile.terrainFeature = null
-                tile.resource = null
-                tile.improvement = null
-                tile.setTerrainTransients()
+                clearTile(tile)
             }
         }
     }
@@ -214,10 +207,7 @@ class NaturalWonderGenerator(val ruleset: Ruleset) {
                     }
 
                 tile.baseTerrain = Constants.coast
-                tile.terrainFeature = null
-                tile.resource = null
-                tile.improvement = null
-                tile.setTerrainTransients()
+                clearTile(tile)
             }
         }
     }
@@ -283,5 +273,12 @@ class NaturalWonderGenerator(val ruleset: Ruleset) {
         }
 
         trySpawnOnSuitableLocation(suitableLocations, wonder)
+    }
+
+    private fun clearTile(tile: TileInfo){
+        tile.terrainFeatures.clear()
+        tile.resource = null
+        tile.improvement = null
+        tile.setTerrainTransients()
     }
 }

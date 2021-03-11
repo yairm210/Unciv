@@ -206,7 +206,7 @@ class GameInfo {
         val tilesWithin3ofExistingEncampment = existingEncampments.asSequence()
                 .flatMap { it.getTilesInDistance(3) }.toSet()
         val viableTiles = tileMap.values.filter {
-            it.isLand && it.terrainFeature == null
+            it.isLand && it.terrainFeatures.isEmpty()
                     && !it.isImpassible()
                     && it !in tilesWithin3ofExistingEncampment
                     && it !in allViewableTiles
