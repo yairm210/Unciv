@@ -49,7 +49,17 @@ open class TileInfo {
 
     var position: Vector2 = Vector2.Zero
     lateinit var baseTerrain: String
+    val terrainFeatures: ArrayList<String> = ArrayList()
     var terrainFeature: String? = null
+        get() = terrainFeatures.firstOrNull() ?: field //if terrainFeatures contains no terrainFeature maybe one got deserialized to field
+        set(value) {
+            if (terrainFeatures.isNotEmpty()) {
+                if (value == null) terrainFeatures.removeAt(0)
+                else terrainFeatures[0] = value
+            } else {
+                if (value != null) terrainFeatures.add(value)
+            }
+        }
     var naturalWonder: String? = null
     var resource: String? = null
     var improvement: String? = null
@@ -523,6 +533,8 @@ open class TileInfo {
 
     //region state-changing functions
     fun setTransients() {
+        if (terrainFeatures.firstOrNull() == null && terrainFeature != null)// -> terranFeature getter returns terrainFeature field
+            terrainFeature = terrainFeature // getter returns field, setter calls terrainFeatures.add()
         setTerrainTransients()
         setUnitTransients(true)
     }
