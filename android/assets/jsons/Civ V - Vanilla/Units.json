@@ -680,7 +680,7 @@
 		"requiredTech": "Astronomy",
 		"upgradesTo": "Ironclad",
 		"obsoleteTech": "Combustion",
-		"uniques": ["+1 Visibility Range","May withdraw before melee ([50]%)"],
+		"uniques": ["+1 Visibility Range","May withdraw before melee ([80]%)"],
 		"hurryCostModifier": 30
 	},
 	{
@@ -1102,7 +1102,7 @@
 		"cost": 375,
 		"requiredTech": "Combustion",
 		"uniques": ["Can attack submarines", "[40]% chance to intercept air attacks",
-			"May withdraw before melee ([50]%)", "Bonus vs WaterSubmarine 100%"]
+			"May withdraw before melee ([80]%)", "Bonus vs WaterSubmarine 100%"]
 	},
 	{
 		"name": "Battleship",
