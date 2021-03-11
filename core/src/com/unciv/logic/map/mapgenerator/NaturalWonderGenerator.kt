@@ -127,7 +127,7 @@ class NaturalWonderGenerator(val ruleset: Ruleset) {
 
     /*
     Great Barrier Reef: Specifics currently unknown;
-    Assumption: at least 1 neighbour not water; no tundra; at least 1 neighbour coast; becomes coast
+    Assumption: at least 1 neighbour coast; no tundra; at least 1 neighbour coast; becomes coast
     */
     private fun spawnGreatBarrierReef(tileMap: TileMap) {
         val wonder = ruleset.terrains[Constants.greatBarrierReef]!!
@@ -136,6 +136,7 @@ class NaturalWonderGenerator(val ruleset: Ruleset) {
                     && wonder.occursOn.contains(it.getLastTerrain().name)
                     && abs(it.latitude) > tileMap.maxLatitude * 0.1
                     && abs(it.latitude) < tileMap.maxLatitude * 0.7
+                    && it.neighbors.any { it.baseTerrain == Constants.coast }
                     && it.neighbors.all { neighbor -> neighbor.isWater }
                     && it.neighbors.any { neighbor ->
                 neighbor.resource == null && neighbor.improvement == null

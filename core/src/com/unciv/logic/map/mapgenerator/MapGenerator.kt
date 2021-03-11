@@ -255,7 +255,7 @@ class MapGenerator(val ruleset: Ruleset) {
     private fun spawnVegetation(tileMap: TileMap) {
         val vegetationSeed = randomness.RNG.nextInt().toDouble()
         val candidateTerrains = Constants.vegetation.flatMap{ ruleset.terrains[it]!!.occursOn }
-        for (tile in tileMap.values.asSequence().filter { it.baseTerrain in candidateTerrains && it.terrainFeature == null
+        for (tile in tileMap.values.asSequence().filter { it.baseTerrain in candidateTerrains && it.terrainFeatures.isEmpty()
                 && (!it.isHill() || Constants.hill in candidateTerrains) }) {
             val vegetation = (randomness.getPerlinNoise(tile, vegetationSeed, scale = 3.0, nOctaves = 1) + 1.0) / 2.0
 
