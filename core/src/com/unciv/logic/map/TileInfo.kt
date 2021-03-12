@@ -65,6 +65,7 @@ open class TileInfo {
             } else {
                 if (value != null) terrainFeatures.add(value)
             }
+            field = null
         }
 
     private fun convertTerrainFeatureToArray() {
