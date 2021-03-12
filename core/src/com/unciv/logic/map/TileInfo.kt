@@ -384,7 +384,7 @@ open class TileInfo {
         return filter == baseTerrain
                 || filter == Constants.hill && isHill()
                 || filter == "River" && isAdjacentToRiver()
-                || filter == terrainFeature
+                || terrainFeatures.contains(filter)
                 || baseTerrainObject.uniques.contains(filter)
                 || getTerrainFeatures().any {it.uniques.contains(filter)}
                 || improvement == filter
