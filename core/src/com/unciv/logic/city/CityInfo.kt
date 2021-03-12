@@ -667,6 +667,7 @@ class CityInfo {
             filter == "in capital" && isCapital() -> true
             filter == "in all cities with a world wonder" && cityConstructions.getBuiltBuildings().any { it.isWonder } -> true
             filter == "in all cities connected to capital" -> isConnectedToCapital()
+            filter == "in all cities with a garrison" && getCenterTile().militaryUnit != null -> true
             else -> false
         }
     }
