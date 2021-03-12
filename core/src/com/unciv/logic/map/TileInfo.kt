@@ -54,6 +54,7 @@ open class TileInfo {
     val terrainFeatures: ArrayList<String> = ArrayList()
 
     @Transient // So it won't be serialized from now on
+    @Deprecated(message = "Since 3.13.7 - gets replaced by terrainFeatures")
     var terrainFeature: String? = null
         get() = terrainFeatures.firstOrNull()
                 ?: field //if terrainFeatures contains no terrainFeature maybe one got deserialized to field
@@ -64,7 +65,20 @@ open class TileInfo {
             } else {
                 if (value != null) terrainFeatures.add(value)
             }
+            field = null
         }
+
+    private fun convertTerrainFeatureToArray() {
+        if (terrainFeatures.firstOrNull() == null && terrainFeature != null)// -> terranFeature getter returns terrainFeature field
+            terrainFeature = terrainFeature // getter returns field, setter calls terrainFeatures.add()
+        //Note to Future GGGuenni
+        //TODO Use the following when terrainFeature got changed everywhere to support old saves in the future
+        //if (terrainFeature != null){
+            //terrainFeatures.add(terrainFeature)
+            //terrainFeature = null
+        //}
+    }
+
     var naturalWonder: String? = null
     var resource: String? = null
     var improvement: String? = null
@@ -92,6 +106,7 @@ open class TileInfo {
         toReturn.position = position.cpy()
         toReturn.baseTerrain = baseTerrain
 //        toReturn.terrainFeature = terrainFeature
+        convertTerrainFeatureToArray()
         toReturn.terrainFeatures.addAll(terrainFeatures)
         toReturn.naturalWonder = naturalWonder
         toReturn.resource = resource
@@ -538,9 +553,7 @@ open class TileInfo {
 
     //region state-changing functions
     fun setTransients() {
-        if (terrainFeatures.firstOrNull() == null && terrainFeature != null) {// -> terranFeature getter returns terrainFeature field
-            terrainFeature = terrainFeature // getter returns field, setter calls terrainFeatures.add()
-        }
+        convertTerrainFeatureToArray()
         setTerrainTransients()
         setUnitTransients(true)
     }
