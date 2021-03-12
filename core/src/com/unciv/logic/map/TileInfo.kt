@@ -151,7 +151,7 @@ open class TileInfo {
     fun getCity(): CityInfo? = owningCity
 
     fun getLastTerrain(): Terrain = when {
-        terrainFeature != null -> getTerrainFeature()!!
+        terrainFeatures.isNotEmpty() -> getTerrainFeatures().last()
         naturalWonder != null -> getNaturalWonder()
         else -> getBaseTerrain()
     }
@@ -204,8 +204,7 @@ open class TileInfo {
         }
     }
 
-    fun getTerrainFeature(): Terrain? =
-            if (terrainFeature == null) null else ruleset.terrains[terrainFeature!!]
+    fun getTerrainFeatures(): List<Terrain> = terrainFeatures.mapNotNull { ruleset.terrains[it] }
 
     fun getWorkingCity(): CityInfo? {
         val civInfo = getOwner()
@@ -225,9 +224,8 @@ open class TileInfo {
     fun getTileStats(city: CityInfo?, observingCiv: CivilizationInfo): Stats {
         var stats = getBaseTerrain().clone()
 
-        if (terrainFeature != null) {
-            val terrainFeatureBase = getTerrainFeature()
-            if (terrainFeatureBase!!.overrideStats)
+        for (terrainFeatureBase in getTerrainFeatures()) {
+            if (terrainFeatureBase.overrideStats)
                 stats = terrainFeatureBase.clone()
             else
                 stats.add(terrainFeatureBase)
@@ -388,7 +386,7 @@ open class TileInfo {
                 || filter == "River" && isAdjacentToRiver()
                 || filter == terrainFeature
                 || baseTerrainObject.uniques.contains(filter)
-                || terrainFeature != null && getTerrainFeature()!!.uniques.contains(filter)
+                || getTerrainFeatures().any {it.uniques.contains(filter)}
                 || improvement == filter
                 || civInfo != null && hasViewableResource(civInfo) && resource == filter
                 || filter == "Water" && isWater
@@ -440,7 +438,7 @@ open class TileInfo {
         return min(distance, wrappedDistance).toInt()
     }
 
-    fun isRoughTerrain() = getBaseTerrain().rough || getTerrainFeature()?.rough == true
+    fun isRoughTerrain() = getBaseTerrain().rough || getTerrainFeatures().any { it.rough }
 
     override fun toString(): String { // for debugging, it helps to see what you're doing
         return toString(null)
