@@ -53,7 +53,7 @@ open class TileInfo {
     lateinit var baseTerrain: String
     val terrainFeatures: ArrayList<String> = ArrayList()
 
-    @Transient // So it won't be serialized from now on
+    //@Transient // So it won't be serialized from now on
     @Deprecated(message = "Since 3.13.7 - gets replaced by terrainFeatures")
     var terrainFeature: String? = null
         get() = terrainFeatures.firstOrNull()
