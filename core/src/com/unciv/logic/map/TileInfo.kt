@@ -487,7 +487,7 @@ open class TileInfo {
                 lineList += city.cityConstructions.getProductionForTileInfo()
         }
         lineList += baseTerrain.tr()
-        if (terrainFeature != null) lineList += terrainFeature!!.tr()
+        for (terrainFeature in terrainFeatures) lineList += terrainFeature.tr()
         if (resource != null && (viewingCiv == null || hasViewableResource(viewingCiv))) lineList += resource!!.tr()
         if (naturalWonder != null) lineList += naturalWonder!!.tr()
         if (roadStatus !== RoadStatus.None && !isCityCenter()) lineList += roadStatus.name.tr()
@@ -539,6 +539,7 @@ open class TileInfo {
 
     fun getRulesetIncompatability(ruleset: Ruleset): String {
         if (!ruleset.terrains.containsKey(baseTerrain)) return "Base terrain $baseTerrain does not exist in ruleset!"
+        //TODO change getRulesetIncompatability to support multiple missing terrain features at once
         if (terrainFeature != null && !ruleset.terrains.containsKey(terrainFeature)) return "Terrain feature $terrainFeature does not exist in ruleset!"
         if (resource != null && !ruleset.tileResources.containsKey(resource)) return "Resource $resource does not exist in ruleset!"
         if (improvement != null && !improvement!!.startsWith("StartingLocation")
@@ -624,7 +625,7 @@ open class TileInfo {
         if (resource != null && !ruleset.tileResources.containsKey(resource)) resource = null
         if (resource != null) {
             val resourceObject = ruleset.tileResources[resource]!!
-            if (resourceObject.terrainsCanBeFoundOn.none { it == baseTerrain || it == terrainFeature })
+            if (resourceObject.terrainsCanBeFoundOn.none { it == baseTerrain || terrainFeatures.contains(it) })
                 resource = null
         }
 
