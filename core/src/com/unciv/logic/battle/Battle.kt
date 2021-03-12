@@ -456,49 +456,44 @@ object Battle {
         // according to some strategy guide the slinger's withdraw ability is inherited on upgrade,
         // according to the Ironclad entry of the wiki the Caravel's is lost on upgrade.
         // therefore: Implement the flag as unique for the Caravel and Destroyer, as promotion for the Slinger.
-        // I want base chance for Slingers to be 133% (so they still get 76% against the Brute)
-        // but I want base chance for navals to be 50% (assuming their attacker will often be the same baseunit)
-        // the diverging base chance is coded into the effect string as (133%) for now, with 50% as default
         if (attacker !is MapUnitCombatant) return false         // allow simple access to unit property
         if (defender !is MapUnitCombatant) return false
         if (defender.unit.isEmbarked()) return false
-        // Calculate success chance: Base chance from json, then ratios of *base* strength and mobility
         // Promotions have no effect as per what I could find in available documentation
         val attackBaseUnit = attacker.unit.baseUnit
         val defendBaseUnit = defender.unit.baseUnit
-        val baseChance = withdrawUnique.params[0].toFloat()
-        val percentChance = (baseChance
-                * defendBaseUnit.strength / attackBaseUnit.strength
-                * defendBaseUnit.movement / attackBaseUnit.movement).toInt()
-        // Roll the dice - note the effect of the surroundings, namely how much room there is to evade to,
-        // isn't yet factored in. But it should, and that's factored in by allowing the dice to choose
-        // any geometrically fitting tile first and *then* fail when checking the tile for viability.
-        val dice = Random().nextInt(100)
-        if (dice > percentChance) return false
-        // Calculate candidate tiles, geometry only
         val fromTile = defender.getTile()
         val attTile = attacker.getTile()
-        //assert(fromTile in attTile.neighbors)                 // function should never be called with attacker not adjacent to defender
-        // the following yields almost always exactly three tiles in a half-moon shape (exception: edge of map)
-        val candidateTiles = fromTile.neighbors.filterNot { it == attTile || it in attTile.neighbors }
-        if (candidateTiles.none()) return false              // impossible on our map shapes? No - corner of a rectangular map
-        val toTile = candidateTiles.toList().random()
-        // Now make sure the move is allowed - if not, sorry, bad luck
-        if (!defender.unit.movement.canMoveTo(toTile)) {        // forbid impassable or blocked
-            val blocker = toTile.militaryUnit
-            if (blocker != null) {
-                val notificationString = "[" + defendBaseUnit.name + "] could not withdraw from a [" +
-                        attackBaseUnit.name + "] - blocked."
-                defender.getCivInfo().addNotification(notificationString, toTile.position, Color.RED)
-                attacker.getCivInfo().addNotification(notificationString, toTile.position, Color.GREEN)
-            }
-            return false
+        fun canNotWithdrawTo(tile: TileInfo): Boolean { // if the tile is what the defender can't withdraw to, this fun will return true
+           return !defender.unit.movement.canMoveTo(tile)
+                   || defendBaseUnit.unitType.isLandUnit() && !tile.isLand // forbid retreat from land to sea - embarked already excluded
+                   || tile.isCityCenter() && tile.getOwner() != defender.getCivInfo() // forbid retreat into the city which doesn't belong to the defender
         }
-        if (defendBaseUnit.unitType.isLandUnit() && !toTile.isLand) return false        // forbid retreat from land to sea - embarked already excluded
-        if (toTile.isCityCenter()) return false                                         // forbid retreat into city
+        // base chance for all units is set to 80%
+        val baseChance = withdrawUnique.params[0].toFloat()
+        /* Calculate success chance: Base chance from json, calculation method from https://www.bilibili.com/read/cv2216728
+        In general, except attacker's tile, 5 tiles neighbors the defender :
+        2 of which are also attacker's neighbors ( we call them 2-Tiles) and the other 3 aren't (we call them 3-Tiles).
+        Withdraw chance depends on 2 factors : attacker's movement and how many tiles in 3-Tiles the defender can't withdraw to.
+        If the defender can withdraw, at first we choose a tile as toTile from 3-Tiles the defender can withdraw to.
+        If 3-Tiles the defender can withdraw to is null, we choose this from 2-Tiles the defender can withdraw to.
+        If 2-Tiles the defender can withdraw to is also null, we return false.
+        */
+        val percentChance = baseChance - max(0, (attackBaseUnit.movement-2)) * 20 -
+                fromTile.neighbors.filterNot { it == attTile || it in attTile.neighbors }.count { canNotWithdrawTo(it) } * 20
+        // Get a random number in [0,100) : if the number <= percentChance, defender will withdraw from melee
+        if (Random().nextInt(100) > percentChance) return false
+        val firstCandidateTiles = fromTile.neighbors.filterNot { it == attTile || it in attTile.neighbors }
+                .filterNot { canNotWithdrawTo(it) }
+        val secondCandidateTiles = fromTile.neighbors.filter { it in attTile.neighbors }
+                .filterNot { canNotWithdrawTo(it) }
+        val toTile: TileInfo = when {
+            firstCandidateTiles.any() -> firstCandidateTiles.toList().random()
+            secondCandidateTiles.any() -> secondCandidateTiles.toList().random()
+            else -> return false
+        }
         // Withdraw success: Do it - move defender to toTile for no cost
         // NOT defender.unit.movement.moveToTile(toTile) - we want a free teleport
-        // no need for any stats recalculation as neither fromTile nor toTile can be a city
         defender.unit.removeFromTile()
         defender.unit.putInTile(toTile)
         // and count 1 attack for attacker but leave it in place

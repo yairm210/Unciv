@@ -173,7 +173,7 @@
 		"production": 1,
 		"gold": 1,
 		"science": 2,
-		"occursOn": ["Coast"],
+		"occursOn": ["Ocean"],
 		"turnsInto": "Coast",
 		"impassable": true,
 		"unbuildable": true,

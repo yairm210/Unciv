@@ -1,3 +1,19 @@
+## 3.13.7
+
+Fixed Great Barrier Reef spawn rules
+
+Resolved #3681 - translation fix, "in every city" -> "in all cities"
+
+Mods with no techs should work again
+
+Resolved #3663 - fixed settler automation bug
+
+Added titles to mod management screen
+
+Withdraw before melee is the same as original game - By lishaoxia1985
+
+Initial checks for 'multiple terrain feature support' by GGGuenni
+
 ## 3.13.6
 
 Can convert maps between different rulesets!
