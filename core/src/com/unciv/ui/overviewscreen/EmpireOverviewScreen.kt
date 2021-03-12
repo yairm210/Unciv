@@ -30,19 +30,18 @@ class EmpireOverviewScreen(private var viewingPlayer:CivilizationInfo, defaultPa
     private val topTable = Table().apply { defaults().pad(10f) }
     private val centerTable = Table().apply { defaults().pad(5f) }
 
-    val setCategoryActions = HashMap<String, () -> Unit>()
-    val categoryButtons = HashMap<String, TextButton>()
+    private val setCategoryActions = HashMap<String, () -> Unit>()
+    private val categoryButtons = HashMap<String, TextButton>()
 
-    fun addCategory(name:String, table:Table, disabled:Boolean=false) {
+    private fun addCategory(name:String, table:Table, disabled:Boolean=false) {
         val button = name.toTextButton()
         val setCategoryAction = {
             centerTable.clear()
             centerTable.add(ScrollPane(table).apply { setOverscroll(false, false) })
                     .height(stage.height * 0.8f)
             centerTable.pack()
-            for ((key, categoryButton) in categoryButtons)
-                if (key == name) categoryButton.color = Color.BLUE
-                else categoryButton.color = Color.WHITE
+            for ((key, categoryButton) in categoryButtons.filterNot { it.value.touchable == Touchable.disabled })
+                categoryButton.color = if (key == name) Color.BLUE else Color.WHITE
         }
         setCategoryActions[name] = setCategoryAction
         categoryButtons[name] = button
@@ -167,19 +166,10 @@ class EmpireOverviewScreen(private var viewingPlayer:CivilizationInfo, defaultPa
         }
     }
 
-
-//
-//    private fun setStats() {
-//
-//        centerTable.clear()
-//        centerTable.add(ScrollPane())
-//        centerTable.pack()
-//    }
-
     private fun getTradesTable(): Table {
         val tradesTable = Table().apply { defaults().pad(10f) }
         val diplomacies = viewingPlayer.diplomacy.values.filter { it.trades.isNotEmpty() }
-                .sortedWith(Comparator { d0, d1 ->
+                .sortedWith { d0, d1 ->
                     val d0offers = d0.trades.first().ourOffers
                     val d1offers = d1.trades.first().ourOffers
                     val d0max = if (d0offers.isEmpty()) 0 else d0offers.maxBy { it.duration }!!.duration
@@ -189,7 +179,7 @@ class EmpireOverviewScreen(private var viewingPlayer:CivilizationInfo, defaultPa
                         d0max == d1max -> 0
                         else -> -1
                     }
-                })
+                }
         for(diplomacy in diplomacies) {
             for (trade in diplomacy.trades)
                 tradesTable.add(createTradeTable(trade, diplomacy.otherCiv())).row()
