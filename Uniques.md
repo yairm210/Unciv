@@ -1,10 +1,10 @@
 - [Overview](#overview)
-- [Unique locations](#unique-locations)
-- [Parameter types](#parameter-types)
-  * [stats](#stats)
-  * [tileFilter](#tilefilter)
-  * [unitFilter](#unitfilter)
-  * [cityFilter](#cityfilter)
+  - [Unique locations](#unique-locations)
+  - [Parameter types](#parameter-types)
+    * [stats](#stats)
+    * [tileFilter](#tilefilter)
+    * [unitFilter](#unitfilter)
+    * [cityFilter](#cityfilter)
 - [General uniques](#general-uniques)
   * [Stat uniques](#stat-uniques)
   * [One time effect](#one-time-effect)
@@ -27,7 +27,7 @@ In the json files, this looks something like `"uniques": ["Requires a [Market] i
 
 As seen in the above example, in order to provide flexibility and generalization, Uniques have certain *parameters*, marked by the fact that they are inside square braces. These parameters can be changed, and the game will recognize the text inside them and act accordingly.
 
-## Unique locations
+### Unique locations
 
 Most uniques are "Global uniques" - meaning, they can be put in one of four places:
 - Nation uniques - Always active for a specific Nation
@@ -37,7 +37,7 @@ Most uniques are "Global uniques" - meaning, they can be put in one of four plac
 
 Most uniques are *ongoing* - they describe something continuous. Some, however, are one-time actions (free technology, free unit, etc) - these cannot be put in a Nation unique, since unlike the other categories, there is no specific time to activate them. Such uniques will be marked in the documentation as "one time effect".
 
-## Parameter types
+### Parameter types
 
 Parameters come in various types, and will be addressed as such inside the [square brackets].
 
@@ -46,7 +46,7 @@ Parameters come in various types, and will be addressed as such inside the [squa
 - stat - This is one of the 6 major stats in the game - "Gold", "Science", "Production", "Food", "Happiness" and "Culture". Note that the stat names need to be capitalized!
 - stats, tileFilter, unitFilter, cityFilter - these are more complex and are addressed individually
 
-### stats
+#### stats
 
 This indicates a text comprised of specific stats and is slightly more complex.
 
@@ -55,7 +55,7 @@ For example: "+1 Science".
 
 These can be strung together with ", " between them, for example: "+2 Production, +3 Food".
 
-### tileFilter
+#### tileFilter
 
 tilefilters allow us to specify tiles according to a number of different aspects:
 
@@ -77,7 +77,7 @@ Please note that using resources is most use cases, but not in combat ones.
 
 This is due to the fact that resources can be visible to some civs while invisible to others - so if you're attacking with a +10% combat bonus from Coal, while the enemy can't see coal, it could get weird.
 
-### unitFilter
+#### unitFilter
 
 unitFilters allow us to activate uniques for specific units, based on:
 
@@ -90,7 +90,7 @@ unitFilters allow us to activate uniques for specific units, based on:
 - "Military" for military units
 - "All", as a catch all for all units.
 
-### cityFilter
+#### cityFilter
 
 cityFilters allow us to choose the range of cities affected by this unique:
 
