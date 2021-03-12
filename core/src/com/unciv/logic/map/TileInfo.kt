@@ -182,7 +182,7 @@ open class TileInfo {
     fun getHeight(): Int {
         if (baseTerrain == Constants.mountain) return 4
         if (isHill()) return 2
-        if (terrainFeature == Constants.forest || terrainFeature == Constants.jungle) return 1
+        if (terrainFeatures.contains(Constants.forest) || terrainFeatures.contains(Constants.jungle)) return 1
         return 0
     }
 
@@ -534,7 +534,7 @@ open class TileInfo {
 
     private fun forestOrJungleAreRoads(civInfo: CivilizationInfo) =
             civInfo.nation.forestsAndJunglesAreRoads
-                    && (terrainFeature == Constants.jungle || terrainFeature == Constants.forest)
+                    && (terrainFeatures.contains(Constants.jungle) || terrainFeatures.contains(Constants.forest))
                     && isFriendlyTerritory(civInfo)
 
     fun getRulesetIncompatability(ruleset: Ruleset): String {
