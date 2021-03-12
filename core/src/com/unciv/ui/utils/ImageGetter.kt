@@ -15,13 +15,12 @@ import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
-import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.models.ruleset.Nation
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.stats.Stats
-import kotlin.math.max
-import kotlin.math.min
+import kotlin.math.atan2
+import kotlin.math.sqrt
 
 object ImageGetter {
     private const val whiteDotLocation = "OtherIcons/whiteDot"
@@ -36,7 +35,7 @@ object ImageGetter {
 
     // We then shove all the drawables into a hashmap, because the atlas specifically tells us
     //   that the search on it is inefficient
-    val textureRegionDrawables = HashMap<String, TextureRegionDrawable>()
+    private val textureRegionDrawables = HashMap<String, TextureRegionDrawable>()
 
     init {
         reload()
@@ -152,8 +151,8 @@ object ImageGetter {
     }
 
     fun getDrawable(fileName: String): TextureRegionDrawable {
-        if (textureRegionDrawables.containsKey(fileName)) return textureRegionDrawables[fileName]!!
-        else return textureRegionDrawables[whiteDotLocation]!!
+        return if (textureRegionDrawables.containsKey(fileName)) textureRegionDrawables[fileName]!!
+        else textureRegionDrawables[whiteDotLocation]!!
     }
 
     fun getRoundedEdgeTableBackground(tintColor: Color? = null): NinePatchDrawable {
@@ -179,27 +178,25 @@ object ImageGetter {
 
     fun getNationIndicator(nation: Nation, size: Float): IconCircleGroup {
         val civIconName = if (nation.isCityState()) "CityState" else nation.name
-        if (nationIconExists(civIconName)) {
+        return if (nationIconExists(civIconName)) {
             val cityStateIcon = getNationIcon(civIconName)
             cityStateIcon.color = nation.getInnerColor()
-            return cityStateIcon.surroundWithCircle(size * 0.9f).apply { circle.color = nation.getOuterColor() }
+            cityStateIcon.surroundWithCircle(size * 0.9f).apply { circle.color = nation.getOuterColor() }
                     .surroundWithCircle(size, false).apply { circle.color = nation.getInnerColor() }
-        } else {
-            return getCircle().apply { color = nation.getOuterColor() }
-                    .surroundWithCircle(size).apply { circle.color = nation.getInnerColor() }
-
         }
+        else getCircle().apply { color = nation.getOuterColor() }
+                .surroundWithCircle(size).apply { circle.color = nation.getInnerColor() }
     }
 
-    fun nationIconExists(nation: String) = imageExists("NationIcons/$nation")
+    private fun nationIconExists(nation: String) = imageExists("NationIcons/$nation")
     fun getNationIcon(nation: String) = getImage("NationIcons/$nation")
 
     val foodCircleColor = colorFromRGB(129, 199, 132)
-    val productionCircleColor = Color.BROWN.cpy().lerp(Color.WHITE, 0.5f)!!
-    val goldCircleColor = Color.GOLD.cpy().lerp(Color.WHITE, 0.5f)!!
-    val cultureCircleColor = Color.PURPLE.cpy().lerp(Color.WHITE, 0.5f)!!
-    val scienceCircleColor = Color.BLUE.cpy().lerp(Color.WHITE, 0.5f)!!
-    fun getColorFromStats(stats: Stats) = when {
+    private val productionCircleColor = Color.BROWN.cpy().lerp(Color.WHITE, 0.5f)
+    private val goldCircleColor = Color.GOLD.cpy().lerp(Color.WHITE, 0.5f)
+    private val cultureCircleColor = Color.PURPLE.cpy().lerp(Color.WHITE, 0.5f)
+    private val scienceCircleColor = Color.BLUE.cpy().lerp(Color.WHITE, 0.5f)
+    private fun getColorFromStats(stats: Stats) = when {
         stats.food > 0 -> foodCircleColor
         stats.production > 0 -> productionCircleColor
         stats.gold > 0 -> goldCircleColor
@@ -211,7 +208,7 @@ object ImageGetter {
 
     fun getImprovementIcon(improvementName: String, size: Float = 20f): Actor {
         if (improvementName.startsWith("Remove") || improvementName == Constants.cancelImprovementOrder)
-            return getImage("OtherIcons/Stop")
+            return Table().apply { add(getImage("OtherIcons/Stop")).size(size) }
         if (improvementName.startsWith("StartingLocation ")) {
             val nationName = improvementName.removePrefix("StartingLocation ")
             val nation = ruleset.nations[nationName]!!
@@ -277,8 +274,7 @@ object ImageGetter {
 
     fun getResourceImage(resourceName: String, size: Float): Actor {
         val iconGroup = getImage("ResourceIcons/$resourceName").surroundWithCircle(size)
-        val resource = ruleset.tileResources[resourceName]
-        if (resource == null) return iconGroup // This is the result of a bad modding setup, just give em an empty circle. Their problem.
+        val resource = ruleset.tileResources[resourceName] ?: return iconGroup // This is the result of a bad modding setup, just give em an empty circle. Their problem.
         iconGroup.circle.color = getColorFromStats(resource)
 
         if (resource.resourceType == ResourceType.Luxury) {
@@ -356,13 +352,13 @@ object ImageGetter {
         val line = getWhiteDot()
         val deltaX = (startX - endX).toDouble()
         val deltaY = (startY - endY).toDouble()
-        line.width = Math.sqrt(deltaX * deltaX + deltaY * deltaY).toFloat()
+        line.width = sqrt(deltaX * deltaX + deltaY * deltaY).toFloat()
         line.height = width // the width of the line, is the height of the
 
         // B
         line.setOrigin(Align.center)
         val radiansToDegrees = 180 / Math.PI
-        line.rotation = (Math.atan2(deltaY, deltaX) * radiansToDegrees).toFloat()
+        line.rotation = (atan2(deltaY, deltaX) * radiansToDegrees).toFloat()
 
         // C
         line.x = (startX + endX) / 2 - line.width / 2

@@ -68,9 +68,7 @@ class TechButton(techName:String, private val techManager: TechManager, isWorldS
                             || it.uniqueObjects.any { it.placeholderText == "[] once [] is discovered" && it.params[1] == techName }
                 }
                 .filter { it.uniqueTo == null || it.uniqueTo == civName })
-            if (improvement.name.startsWith("Remove"))
-                techEnabledIcons.add(ImageGetter.getImage("OtherIcons/Stop")).size(techIconSize)
-            else techEnabledIcons.add(ImageGetter.getImprovementIcon(improvement.name, techIconSize))
+            techEnabledIcons.add(ImageGetter.getImprovementIcon(improvement.name, techIconSize))
 
 
         for (resource in ruleset.tileResources.values.filter { it.revealedBy == techName })
