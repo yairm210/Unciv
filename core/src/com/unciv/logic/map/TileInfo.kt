@@ -56,8 +56,14 @@ open class TileInfo {
     //@Transient // So it won't be serialized from now on
     @Deprecated(message = "Since 3.13.7 - gets replaced by terrainFeatures")
     var terrainFeature: String? = null
-        get() = terrainFeatures.firstOrNull()
-                ?: field //if terrainFeatures contains no terrainFeature maybe one got deserialized to field
+        get() {
+            //if terrainFeatures contains no terrainFeature maybe one got deserialized to field
+            if (terrainFeatures.firstOrNull() == null && field != null) {
+                terrainFeatures.add(field!!)
+                field = null
+            }
+            return terrainFeatures.firstOrNull()
+        }
         set(value) {
             if (terrainFeatures.isNotEmpty()) {
                 if (value == null) terrainFeatures.removeAt(0)
