@@ -24,8 +24,12 @@ object GameStarter {
 
         if (gameSetupInfo.mapParameters.name != "") {
             gameInfo.tileMap = MapSaver.loadMap(gameSetupInfo.mapFile!!)
-        } else gameInfo.tileMap = MapGenerator(ruleset).generateMap(gameSetupInfo.mapParameters)
-        gameInfo.tileMap.mapParameters = gameSetupInfo.mapParameters
+            // Don't override the map parameters - this can include if we world wrap or not!
+        } else {
+            gameInfo.tileMap = MapGenerator(ruleset).generateMap(gameSetupInfo.mapParameters)
+            gameInfo.tileMap.mapParameters = gameSetupInfo.mapParameters
+        }
+
 
         gameInfo.tileMap.gameInfo = gameInfo // need to set this transient before placing units in the map
         addCivilizations(gameSetupInfo.gameParameters, gameInfo, ruleset) // this is before gameInfo.setTransients, so gameInfo doesn't yet have the gameBasics

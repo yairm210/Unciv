@@ -77,7 +77,7 @@ object UnitActions {
                 action = {
                     if (!worldScreen.hasOpenPopups()) {
                         val disbandText = if (unit.currentTile.getOwner() == unit.civInfo)
-                            "Disband this unit for [${unit.baseUnit.getDisbandGold()}] gold?".tr()
+                            "Disband this unit for [${unit.baseUnit.getDisbandGold(unit.civInfo)}] gold?".tr()
                         else "Do you really want to disband this unit?".tr()
                         YesNoPopup(disbandText, { unit.disband(); worldScreen.shouldUpdate = true }).open()
                     }

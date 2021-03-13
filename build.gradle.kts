@@ -1,4 +1,3 @@
-import com.unciv.build.BuildConfig
 import com.unciv.build.BuildConfig.gdxVersion
 import com.unciv.build.BuildConfig.kotlinVersion
 import com.unciv.build.BuildConfig.roboVMVersion
@@ -7,10 +6,10 @@ buildscript {
 
     repositories {
         // Chinese mirrors for quicker loading for chinese devs - uncomment if you're chinese
-//        maven{ url = uri("https://maven.aliyun.com/repository/jcenter") }
-//        maven{ url = uri("https://maven.aliyun.com/repository/google") }
-//        maven{ url = uri("https://maven.aliyun.com/repository/gradle-plugin") }
-//        maven{ url = uri("https://maven.aliyun.com/repository/public") }
+        // maven{ url = uri("https://maven.aliyun.com/repository/jcenter") }
+        // maven{ url = uri("https://maven.aliyun.com/repository/google") }
+        // maven{ url = uri("https://maven.aliyun.com/repository/gradle-plugin") }
+        // maven{ url = uri("https://maven.aliyun.com/repository/public") }
         google()
         mavenLocal()
         mavenCentral()
@@ -21,7 +20,7 @@ buildscript {
     dependencies {
         classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${com.unciv.build.BuildConfig.kotlinVersion}")
         classpath("de.richsource.gradle.plugins:gwt-gradle-plugin:0.6")
-        classpath("com.android.tools.build:gradle:4.1.0")
+        classpath("com.android.tools.build:gradle:4.1.2")
         classpath("com.mobidevelop.robovm:robovm-gradle-plugin:2.3.1")
 
         // This is for wrapping the .jar file into a standalone executable
@@ -72,7 +71,6 @@ project(":desktop") {
 project(":android") {
     apply(plugin = "com.android.application")
     apply(plugin = "kotlin-android")
-    apply(plugin = "kotlin-android-extensions")
 
     val natives by configurations.creating
 
@@ -130,13 +128,13 @@ project(":core") {
 
             "implementation"("org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion")
 
-            "implementation"("junit:junit:4.12")
+            "implementation"("junit:junit:4.13.1")
             "implementation"("org.mockito:mockito-all:1.9.5")
 
             "implementation"("com.badlogicgames.gdx:gdx-backend-headless:$gdxVersion")
             "implementation"("com.badlogicgames.gdx:gdx:$gdxVersion")
 
-            "testImplementation"("junit:junit:4.12")
+            "testImplementation"("junit:junit:4.13.1")
             "testImplementation"("org.mockito:mockito-all:1.9.5")
             "testImplementation"("io.mockk:mockk:1.9.3")
 

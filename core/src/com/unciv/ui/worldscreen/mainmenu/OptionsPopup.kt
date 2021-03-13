@@ -128,6 +128,10 @@ class OptionsPopup(val previousScreen:CameraStageBaseScreen) : Popup(previousScr
 
         addHeader("Other options")
 
+        addYesNoRow("Show experimental world wrap for maps\nHIGHLY EXPERIMENTAL - YOU HAVE BEEN WARNED!",
+                settings.showExperimentalWorldWrap)
+        { settings.showExperimentalWorldWrap = it }
+
         addSoundEffectsVolumeSlider()
         addMusicVolumeSlider()
         addTranslationGeneration()

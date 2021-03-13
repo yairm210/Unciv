@@ -38,6 +38,8 @@ class GameSettings {
     var windowState = WindowState()
     var isFreshlyCreated = false
 
+    var showExperimentalWorldWrap = false
+
     init {
         // 26 = Android Oreo. Versions below may display permanent icon in notification bar.
         if (Gdx.app?.type == Application.ApplicationType.Android && Gdx.app.version < 26) {

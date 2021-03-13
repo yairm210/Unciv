@@ -1,3 +1,89 @@
+## 3.13.7
+
+Fixed Great Barrier Reef spawn rules
+
+Resolved #3681 - translation fix, "in every city" -> "in all cities"
+
+Mods with no techs should work again
+
+Resolved #3663 - fixed settler automation bug
+
+Added titles to mod management screen
+
+Withdraw before melee is the same as original game - By lishaoxia1985
+
+Initial checks for 'multiple terrain feature support' by GGGuenni
+
+## 3.13.6
+
+Can convert maps between different rulesets!
+
+Resolved #3635 - can remove natural wonders and roads in map editor
+
+Fixed hurry cost modifiers, and unit gold costs scaling by game speed
+
+Resolved #3651 - "Free great person" unique compatible with techs and Spectator
+
+Resolved #3653 - Settler AI no longer aims for far tiles
+
+Tech info can display more than one revealed resource
+
+"Obsolete with [techName]" unique works with improvements
+
+## 3.13.5
+
+Experimental World Wrap - By GGGuenni!
+
+Resolved #3639 - City states that can't be connected by land no longer assign road connection quests
+
+Fix when Trade Gold = 0 it also shows in offer - By lishaoxia1985
+
+Translation updates
+
+## 3.13.4
+
+Merged save map functionality into load map screen - map saving is more streamlined!
+
+Resolved #3626 - Can rename multiplayer games
+
+Resolved #3622 - Can no longer try to send air units into unexplored tiles
+
+Strength bonus from capital is now part of the Palace bonuses to make it moddable
+
+Allow unit rename on promote - by David Howard
+
+Translations update
+
+## 3.13.3
+
+Map generation parameters are moddable, allowing players to create custom terrains for map generation!
+
+Custom mods with no water or grassland can now work!
+
+Changed "Gold" resource to be called "Gold Ore" and "Siege" promotion to "Besiege" to not conflict with the yield type for translations - #2458
+
+Maps incompatible with ruleset no longer popup errors when generating a new map
+
+All resource stats from buildings converted to building uniques
+
+Translation updates
+
+## 3.13.2
+
+Resolved #3601 - selected current tech no longer looks like unresearchable tech
+
+Resolved #3610 - city sorting in overview is now done by translated, not original, name
+
+Resolved #3586 - Added 'Destroy' translation for capturing cities in one-city challenge
+
+Cleaned up map editor
+
+tileFilter now works with resources for most uniques!
+
+Added mod check for 'provides free building' which does not exist
+
+Translation updates
+
 ## 3.13.1
 
 Resolved #3600 - multiplayer game reloading and screen resize no longer reset map zoom and position

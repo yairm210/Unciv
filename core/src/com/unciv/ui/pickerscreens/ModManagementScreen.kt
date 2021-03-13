@@ -17,12 +17,19 @@ class ModManagementScreen: PickerScreen() {
 
     val modTable = Table().apply { defaults().pad(10f) }
     val downloadTable = Table().apply { defaults().pad(10f) }
+    val modActionTable = Table().apply { defaults().pad(10f) }
 
     init {
         setDefaultCloseAction(MainMenuScreen())
         refreshModTable()
 
-        topTable.add(ScrollPane(modTable)).height(scrollPane.height).pad(10f)
+        topTable.add("Current mods".toLabel())
+        topTable.add("Downloadable mods".toLabel())
+//        topTable.add("Mod actions")
+        topTable.row()
+
+
+        topTable.add(ScrollPane(modTable)).height(scrollPane.height*0.8f).pad(10f)
 
         downloadTable.add(getDownloadButton()).row()
 
@@ -62,7 +69,9 @@ class ModManagementScreen: PickerScreen() {
             }
         }
 
-        topTable.add(ScrollPane(downloadTable)).height(scrollPane.height)//.size(downloadTable.width, topTable.height)
+        topTable.add(ScrollPane(downloadTable)).height(scrollPane.height*0.8f)//.size(downloadTable.width, topTable.height)
+
+        topTable.add(modActionTable)
     }
 
     fun getDownloadButton(): TextButton {
@@ -110,6 +119,8 @@ class ModManagementScreen: PickerScreen() {
         val currentMods = RulesetCache.values.filter { it.name != "" }
         for (mod in currentMods) {
             val button = mod.name.toTextButton().onClick {
+//                modActionTable.add("Last updated: ${mod.getSummary()}")
+
                 rightSideButton.setText("Delete [${mod.name}]".tr())
                 rightSideButton.enable()
                 descriptionLabel.setText(mod.getSummary())

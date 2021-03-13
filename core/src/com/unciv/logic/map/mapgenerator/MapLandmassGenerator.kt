@@ -15,7 +15,7 @@ class MapLandmassGenerator(val randomness: MapGenerationRandomness) {
     fun generateLand(tileMap: TileMap, ruleset: Ruleset) {
         if (ruleset.terrains.values.none { it.type == TerrainType.Water }) {
             for (tile in tileMap.values)
-                tile.baseTerrain = Constants.grassland
+                tile.baseTerrain = ruleset.terrains.keys.first()
             return
         }
         when (tileMap.mapParameters.type) {

@@ -8,6 +8,7 @@ import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.stats.NamedStats
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
+import com.unciv.models.translations.fillPlaceholders
 import com.unciv.models.translations.tr
 import java.util.*
 import kotlin.collections.ArrayList
@@ -58,7 +59,7 @@ class Building : NamedStats(), IConstruction {
     var replaces: String? = null
     var uniqueTo: String? = null
     var quote: String = ""
-    private var providesFreeBuilding: String? = null
+    var providesFreeBuilding: String? = null
     var uniques = ArrayList<String>()
     var replacementTextForUniques = ""
     val uniqueObjects: List<Unique> by lazy { uniques.map { Unique(it) } }
@@ -66,6 +67,7 @@ class Building : NamedStats(), IConstruction {
     /**
      * The bonus stats that a resource gets when this building is built
      */
+    @Deprecated("Since 3.13.3 - replaced with '[stats] from [resource] tiles in this city'")
     var resourceBonusStats: Stats? = null
 
     fun getShortDescription(ruleset: Ruleset): String { // should fit in one line
@@ -75,48 +77,62 @@ class Building : NamedStats(), IConstruction {
         for (stat in getStatPercentageBonuses(null).toHashMap())
             if (stat.value != 0f) infoList += "+${stat.value.toInt()}% ${stat.key.toString().tr()}"
 
-        val improvedResources = ruleset.tileResources.values.filter { it.building == name }.map { it.name.tr() }
-        if (improvedResources.isNotEmpty()) {
+        val improvedResources = ruleset.tileResources.values.asSequence().filter { it.building == name }.map { it.name.tr() }
+        if (improvedResources.any()) {
             // buildings that improve resources
-            infoList += improvedResources.joinToString() + " {provide} ".tr() + resourceBonusStats.toString()
+            infoList += improvedResources.joinToString() + " {provide} " + resourceBonusStats.toString()
         }
         if (requiredNearbyImprovedResources != null)
-            infoList += ("Requires worked [" + requiredNearbyImprovedResources!!.joinToString("/") { it.tr() } + "] near city").tr()
+            infoList += "Requires worked [" + requiredNearbyImprovedResources!!.joinToString("/") { it.tr() } + "] near city"
         if (uniques.isNotEmpty()) {
             if (replacementTextForUniques != "") infoList += replacementTextForUniques
-            else infoList += uniques.joinToString { it.tr() }
+            else infoList += getUniquesStrings()
         }
-        if (cityStrength != 0) infoList += "{City strength} +".tr() + cityStrength
-        if (cityHealth != 0) infoList += "{City health} +".tr() + cityHealth
-        if (xpForNewUnits != 0) infoList += "+$xpForNewUnits {XP for new units}".tr()
-        return infoList.joinToString()
+        if (cityStrength != 0) infoList += "{City strength} +$cityStrength"
+        if (cityHealth != 0) infoList += "{City health} +$cityHealth"
+        if (xpForNewUnits != 0) infoList += "+$xpForNewUnits {XP for new units}"
+        return infoList.joinToString("; ") { it.tr() }
+    }
+
+    fun getUniquesStrings(): ArrayList<String> {
+        val tileBonusHashmap = HashMap<String, ArrayList<String>>()
+        val finalUniques = ArrayList<String>()
+        for (unique in uniqueObjects)
+            if (unique.placeholderText == "[] from [] tiles in this city") {
+                val stats = unique.params[0]
+                if (!tileBonusHashmap.containsKey(stats)) tileBonusHashmap[stats] = ArrayList()
+                tileBonusHashmap[stats]!!.add(unique.params[1])
+            } else finalUniques += unique.text
+        for ((key, value) in tileBonusHashmap)
+            finalUniques += "[stats] from [tileFilter] tiles in this city".fillPlaceholders(key, value.joinToString { it.tr() })
+        return finalUniques
     }
 
     fun getDescription(forBuildingPickerScreen: Boolean, civInfo: CivilizationInfo?, ruleset: Ruleset): String {
         val stats = getStats(civInfo)
         val stringBuilder = StringBuilder()
-        if (uniqueTo != null) stringBuilder.appendln("Unique to [$uniqueTo], replaces [$replaces]".tr())
-        if (!forBuildingPickerScreen) stringBuilder.appendln("{Cost}: $cost".tr())
-        if (isWonder) stringBuilder.appendln("Wonder".tr())
-        if (isNationalWonder) stringBuilder.appendln("National Wonder".tr())
+        if (uniqueTo != null) stringBuilder.appendLine("Unique to [$uniqueTo], replaces [$replaces]".tr())
+        if (!forBuildingPickerScreen) stringBuilder.appendLine("{Cost}: $cost".tr())
+        if (isWonder) stringBuilder.appendLine("Wonder".tr())
+        if (isNationalWonder) stringBuilder.appendLine("National Wonder".tr())
         if (!forBuildingPickerScreen && requiredTech != null)
-            stringBuilder.appendln("Required tech: [$requiredTech]".tr())
+            stringBuilder.appendLine("Required tech: [$requiredTech]".tr())
         if (!forBuildingPickerScreen && requiredBuilding != null)
-            stringBuilder.appendln("Requires [$requiredBuilding] to be built in the city".tr())
+            stringBuilder.appendLine("Requires [$requiredBuilding] to be built in the city".tr())
         if (!forBuildingPickerScreen && requiredBuildingInAllCities != null)
-            stringBuilder.appendln("Requires [$requiredBuildingInAllCities] to be built in all cities".tr())
+            stringBuilder.appendLine("Requires [$requiredBuildingInAllCities] to be built in all cities".tr())
         for ((resource, amount) in getResourceRequirements()) {
-            if (amount == 1) stringBuilder.appendln("Consumes 1 [$resource]".tr()) // For now, to keep the existing translations
-            else stringBuilder.appendln("Consumes [$amount] [$resource]".tr())
+            if (amount == 1) stringBuilder.appendLine("Consumes 1 [$resource]".tr()) // For now, to keep the existing translations
+            else stringBuilder.appendLine("Consumes [$amount] [$resource]".tr())
         }
         if (providesFreeBuilding != null)
-            stringBuilder.appendln("Provides a free [$providesFreeBuilding] in the city".tr())
+            stringBuilder.appendLine("Provides a free [$providesFreeBuilding] in the city".tr())
         if (uniques.isNotEmpty()) {
-            if (replacementTextForUniques != "") stringBuilder.appendln(replacementTextForUniques)
-            else stringBuilder.appendln(uniques.asSequence().map { it.tr() }.joinToString("\n"))
+            if (replacementTextForUniques != "") stringBuilder.appendLine(replacementTextForUniques)
+            else stringBuilder.appendLine(getUniquesStrings().asSequence().map { it.tr() }.joinToString("\n"))
         }
         if (!stats.isEmpty())
-            stringBuilder.appendln(stats)
+            stringBuilder.appendLine(stats.toString())
 
         val percentStats = getStatPercentageBonuses(civInfo)
         if (percentStats.production != 0f) stringBuilder.append("+" + percentStats.production.toInt() + "% {Production}\n".tr())
@@ -127,28 +143,28 @@ class Building : NamedStats(), IConstruction {
 
         if (this.greatPersonPoints != null) {
             val gpp = this.greatPersonPoints!!
-            if (gpp.production != 0f) stringBuilder.appendln("+" + gpp.production.toInt() + " " + "[Great Engineer] points".tr())
-            if (gpp.gold != 0f) stringBuilder.appendln("+" + gpp.gold.toInt() + " " + "[Great Merchant] points".tr())
-            if (gpp.science != 0f) stringBuilder.appendln("+" + gpp.science.toInt() + " " + "[Great Scientist] points".tr())
-            if (gpp.culture != 0f) stringBuilder.appendln("+" + gpp.culture.toInt() + " " + "[Great Artist] points".tr())
+            if (gpp.production != 0f) stringBuilder.appendLine("+" + gpp.production.toInt() + " " + "[Great Engineer] points".tr())
+            if (gpp.gold != 0f) stringBuilder.appendLine("+" + gpp.gold.toInt() + " " + "[Great Merchant] points".tr())
+            if (gpp.science != 0f) stringBuilder.appendLine("+" + gpp.science.toInt() + " " + "[Great Scientist] points".tr())
+            if (gpp.culture != 0f) stringBuilder.appendLine("+" + gpp.culture.toInt() + " " + "[Great Artist] points".tr())
         }
 
         for ((specialistName, amount) in newSpecialists())
-            stringBuilder.appendln("+$amount " + "[$specialistName] slots".tr())
+            stringBuilder.appendLine("+$amount " + "[$specialistName] slots".tr())
 
         if (resourceBonusStats != null) {
             val resources = ruleset.tileResources.values.filter { name == it.building }.joinToString { it.name.tr() }
-            stringBuilder.appendln("$resources {provide} $resourceBonusStats".tr())
+            stringBuilder.appendLine("$resources {provide} $resourceBonusStats".tr())
         }
 
         if (requiredNearbyImprovedResources != null)
-            stringBuilder.appendln(("Requires worked [" + requiredNearbyImprovedResources!!.joinToString("/") { it.tr() } + "] near city").tr())
+            stringBuilder.appendLine(("Requires worked [" + requiredNearbyImprovedResources!!.joinToString("/") { it.tr() } + "] near city").tr())
 
-        if (cityStrength != 0) stringBuilder.appendln("{City strength} +".tr() + cityStrength)
-        if (cityHealth != 0) stringBuilder.appendln("{City health} +".tr() + cityHealth)
-        if (xpForNewUnits != 0) stringBuilder.appendln("+$xpForNewUnits {XP for new units}".tr())
+        if (cityStrength != 0) stringBuilder.appendLine("{City strength} +".tr() + cityStrength)
+        if (cityHealth != 0) stringBuilder.appendLine("{City health} +".tr() + cityHealth)
+        if (xpForNewUnits != 0) stringBuilder.appendLine("+$xpForNewUnits {XP for new units}".tr())
         if (maintenance != 0)
-            stringBuilder.appendln("{Maintenance cost}: $maintenance {Gold}".tr())
+            stringBuilder.appendLine("{Maintenance cost}: $maintenance {Gold}".tr())
         return stringBuilder.toString().trim()
     }
 
@@ -224,7 +240,7 @@ class Building : NamedStats(), IConstruction {
 
     override fun getGoldCost(civInfo: CivilizationInfo): Int {
         // https://forums.civfanatics.com/threads/rush-buying-formula.393892/
-        var cost = (30 * getProductionCost(civInfo)).toDouble().pow(0.75) * (1 + hurryCostModifier / 100)
+        var cost = (30 * getProductionCost(civInfo)).toDouble().pow(0.75) * (1 + hurryCostModifier / 100f)
 
         for (unique in civInfo.getMatchingUniques("Cost of purchasing items in cities reduced by []%"))
             cost *= 1 - (unique.params[0].toFloat() / 100)
@@ -271,13 +287,13 @@ class Building : NamedStats(), IConstruction {
         }
 
         for (unique in uniqueObjects) when (unique.placeholderText) {
-            "Must be on []" -> if (!cityCenter.matchesUniqueFilter(unique.params[0])) return unique.text
-            "Must not be on []" -> if (cityCenter.matchesUniqueFilter(unique.params[0])) return unique.text
+            "Must be on []" -> if (!cityCenter.matchesUniqueFilter(unique.params[0], civInfo)) return unique.text
+            "Must not be on []" -> if (cityCenter.matchesUniqueFilter(unique.params[0], civInfo)) return unique.text
             "Must be next to []" -> if (!(unique.params[0] == "Fresh water" && cityCenter.isAdjacentToRiver()) // Fresh water is special, in that rivers are not tiles themselves but also fit the filter.
-                    && cityCenter.getTilesInDistance(1).none { it.matchesUniqueFilter(unique.params[0]) }) return unique.text
-            "Must not be next to []" -> if (cityCenter.getTilesInDistance(1).any { it.matchesUniqueFilter(unique.params[0]) }) return unique.text
+                    && cityCenter.getTilesInDistance(1).none { it.matchesUniqueFilter(unique.params[0], civInfo) }) return unique.text
+            "Must not be next to []" -> if (cityCenter.getTilesInDistance(1).any { it.matchesUniqueFilter(unique.params[0], civInfo) }) return unique.text
             "Must have an owned [] within [] tiles" -> if (cityCenter.getTilesInDistance(unique.params[1].toInt()).none {
-                        it.matchesUniqueFilter(unique.params[0]) && it.getOwner() == construction.cityInfo.civInfo
+                        it.matchesUniqueFilter(unique.params[0], civInfo) && it.getOwner() == construction.cityInfo.civInfo
                     }) return unique.text
             "Can only be built in annexed cities" -> if (construction.cityInfo.isPuppet || construction.cityInfo.foundingCiv == ""
                     || construction.cityInfo.civInfo.civName == construction.cityInfo.foundingCiv) return unique.text

@@ -207,14 +207,13 @@ class Ruleset {
     fun getEraNumber(era: String) = getEras().indexOf(era)
     fun getSummary(): String {
         val stringList = ArrayList<String>()
-        if (modOptions.isBaseRuleset) stringList += "Base Ruleset\n"
+        if (modOptions.isBaseRuleset) stringList += "Base Ruleset"
         if (technologies.isNotEmpty()) stringList.add(technologies.size.toString() + " Techs")
         if (nations.isNotEmpty()) stringList.add(nations.size.toString() + " Nations")
         if (units.isNotEmpty()) stringList.add(units.size.toString() + " Units")
         if (buildings.isNotEmpty()) stringList.add(buildings.size.toString() + " Buildings")
         if (tileResources.isNotEmpty()) stringList.add(tileResources.size.toString() + " Resources")
         if (tileImprovements.isNotEmpty()) stringList.add(tileImprovements.size.toString() + " Improvements")
-        stringList += ""
         return stringList.joinToString()
     }
 
@@ -277,6 +276,8 @@ class Ruleset {
                 lines += "${building.name} requires ${building.requiredBuilding} which does not exist!"
             if (building.requiredBuildingInAllCities != null && !buildings.containsKey(building.requiredBuildingInAllCities!!))
                 lines += "${building.name} requires ${building.requiredBuildingInAllCities} in all cities which does not exist!"
+            if (building.providesFreeBuilding != null && !buildings.containsKey(building.providesFreeBuilding!!))
+                lines += "${building.name} provides a free ${building.providesFreeBuilding} which does not exist!"
         }
 
         for (resource in tileResources.values) {

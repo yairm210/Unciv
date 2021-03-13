@@ -38,8 +38,7 @@ class NewMapScreen : PickerScreen() {
                 ruleset.mods += mapParameters.mods
                 ruleset.modOptions = newRuleset.modOptions
 
-                ImageGetter.ruleset = ruleset
-                ImageGetter.reload()
+                ImageGetter.setNewRuleset(ruleset)
             })
             pack()
         }

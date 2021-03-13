@@ -206,7 +206,7 @@ class GameInfo {
         val tilesWithin3ofExistingEncampment = existingEncampments.asSequence()
                 .flatMap { it.getTilesInDistance(3) }.toSet()
         val viableTiles = tileMap.values.filter {
-            it.isLand && it.terrainFeature == null
+            it.isLand && it.terrainFeatures.isEmpty()
                     && !it.isImpassible()
                     && it !in tilesWithin3ofExistingEncampment
                     && it !in allViewableTiles
@@ -292,6 +292,7 @@ class GameInfo {
                 civInfo.policies.adoptedPolicies.remove("Facism")
                 civInfo.policies.adoptedPolicies.add("Fascism")
             }
+
         }
 
 
@@ -331,7 +332,7 @@ class GameInfo {
     // So we remove them so the game doesn't crash when it tries to access them.
     private fun removeMissingModReferences() {
         for (tile in tileMap.values) {
-            if (tile.terrainFeature!=null && !ruleSet.terrains.containsKey(tile.terrainFeature!!))
+            if (tile.terrainFeature != null && !ruleSet.terrains.containsKey(tile.terrainFeature!!))
                 tile.terrainFeature = null
             if (tile.resource != null && !ruleSet.tileResources.containsKey(tile.resource!!))
                 tile.resource = null
@@ -346,7 +347,6 @@ class GameInfo {
                     if (!ruleSet.unitPromotions.containsKey(promotion))
                         unit.promotions.promotions.remove(promotion)
             }
-
         }
 
         for (city in civilizations.asSequence().flatMap { it.cities.asSequence() }) {
@@ -367,6 +367,7 @@ class GameInfo {
                 if (isInvalidConstruction(construction))
                     city.cityConstructions.inProgressConstructions.remove(construction)
         }
+
         for (civinfo in civilizations) {
             for (tech in civinfo.tech.techsResearched.toList())
                 if (!ruleSet.technologies.containsKey(tech))

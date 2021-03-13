@@ -144,7 +144,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
         if (gameInfo.gameParameters.isOnlineMultiplayer && !gameInfo.isUpToDate)
             isPlayersTurn = false // until we're up to date, don't let the player do anything
 
-        if (gameInfo.gameParameters.isOnlineMultiplayer && !isPlayersTurn && !gameInfo.isUpToDate) {
+        if (gameInfo.gameParameters.isOnlineMultiplayer && !isPlayersTurn) {
             // restart the timer
             stopMultiPlayerRefresher()
 

@@ -6,8 +6,10 @@ import com.unciv.logic.HexMath
 import com.unciv.logic.map.*
 import com.unciv.models.Counter
 import com.unciv.models.ruleset.Ruleset
+import com.unciv.models.ruleset.Unique
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.tile.TerrainType
+import com.unciv.models.translations.equalsPlaceholderText
 import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.pow
@@ -25,10 +27,10 @@ class MapGenerator(val ruleset: Ruleset) {
 
         if (mapParameters.shape == MapShape.rectangular) {
             val size = HexMath.getEquivalentRectangularSize(mapRadius)
-            map = TileMap(size.x.toInt(), size.y.toInt(), ruleset)
+            map = TileMap(size.x.toInt(), size.y.toInt(), ruleset, mapParameters.worldWrap)
         }
         else
-            map = TileMap(mapRadius, ruleset)
+            map = TileMap(mapRadius, ruleset, mapParameters.worldWrap)
 
         map.mapParameters = mapParameters
         map.mapParameters.seed = seed
@@ -213,27 +215,36 @@ class MapGenerator(val ruleset: Ruleset) {
 
             val randomTemperature = randomness.getPerlinNoise(tile, temperatureSeed, scale = scale, nOctaves = 1)
             val latitudeTemperature = 1.0 - 2.0 * abs(tile.latitude) / tileMap.maxLatitude
-            var temperature = ((5.0 * latitudeTemperature + randomTemperature) / 6.0)
+            var temperature = (5.0 * latitudeTemperature + randomTemperature) / 6.0
             temperature = abs(temperature).pow(1.0 - tileMap.mapParameters.temperatureExtremeness) * temperature.sign
 
-            tile.baseTerrain = when {
-                temperature < -0.4 -> {
-                    if (humidity < 0.5) Constants.snow
-                    else Constants.tundra
+            // Old, static map generation rules - necessary for existing base ruleset mods to continue to function
+            if (ruleset.terrains.values.asSequence().flatMap { it.uniqueObjects }
+                            .none { it.placeholderText == "Occurs at temperature between [] and [] and humidity between [] and []" }) {
+                tile.baseTerrain = when {
+                    temperature < -0.4 -> if (humidity < 0.5) Constants.snow   else Constants.tundra
+                    temperature < 0.8  -> if (humidity < 0.5) Constants.plains else Constants.grassland
+                    temperature <= 1.0 -> if (humidity < 0.7) Constants.desert else Constants.plains
+                    else -> {
+                        println(temperature)
+                        Constants.lakes
+                    }
                 }
-                temperature < 0.8 -> {
-                    if (humidity < 0.5) Constants.plains
-                    else Constants.grassland
-                }
-                temperature <= 1.0 -> {
-                    if (humidity < 0.7) Constants.desert
-                    else Constants.plains
-                }
-                else -> {
-                    println(temperature)
-                    Constants.lakes
-                }
+                continue
+            }
 
+            val matchingTerrain = ruleset.terrains.values.firstOrNull {
+                it.uniqueObjects.any {
+                    it.placeholderText == "Occurs at temperature between [] and [] and humidity between [] and []"
+                            && it.params[0].toFloat() < temperature && temperature <= it.params[1].toFloat()
+                            && it.params[2].toFloat() < humidity && humidity <= it.params[3].toFloat()
+                }
+            }
+
+            if (matchingTerrain != null) tile.baseTerrain = matchingTerrain.name
+            else {
+                tile.baseTerrain = ruleset.terrains.keys.first()
+                println("Temperature: $temperature, humidity: $humidity")
             }
         }
     }
@@ -244,7 +255,7 @@ class MapGenerator(val ruleset: Ruleset) {
     private fun spawnVegetation(tileMap: TileMap) {
         val vegetationSeed = randomness.RNG.nextInt().toDouble()
         val candidateTerrains = Constants.vegetation.flatMap{ ruleset.terrains[it]!!.occursOn }
-        for (tile in tileMap.values.asSequence().filter { it.baseTerrain in candidateTerrains && it.terrainFeature == null
+        for (tile in tileMap.values.asSequence().filter { it.baseTerrain in candidateTerrains && it.terrainFeatures.isEmpty()
                 && (!it.isHill() || Constants.hill in candidateTerrains) }) {
             val vegetation = (randomness.getPerlinNoise(tile, vegetationSeed, scale = 3.0, nOctaves = 1) + 1.0) / 2.0
 
@@ -259,7 +270,7 @@ class MapGenerator(val ruleset: Ruleset) {
         val rareFeatures = ruleset.terrains.values.filter {
             it.type == TerrainType.TerrainFeature && it.uniques.contains("Rare feature")
         }
-        for (tile in tileMap.values.asSequence().filter { it.terrainFeature == null }) {
+        for (tile in tileMap.values.asSequence().filter { it.terrainFeatures.isEmpty() }) {
             if (randomness.RNG.nextDouble() <= tileMap.mapParameters.rareFeaturesRichness) {
                 val possibleFeatures = rareFeatures.filter { it.occursOn.contains(tile.baseTerrain)
                         && (!tile.isHill() || it.occursOn.contains(Constants.hill)) }
@@ -276,7 +287,7 @@ class MapGenerator(val ruleset: Ruleset) {
         tileMap.setTransients(ruleset)
         val temperatureSeed = randomness.RNG.nextInt().toDouble()
         for (tile in tileMap.values) {
-            if (tile.baseTerrain !in Constants.sea || tile.terrainFeature != null)
+            if (tile.baseTerrain !in Constants.sea || tile.terrainFeatures.any())
                 continue
 
             val randomTemperature = randomness.getPerlinNoise(tile, temperatureSeed, scale = tileMap.mapParameters.tilesPerBiomeArea.toDouble(), nOctaves = 1)
@@ -284,7 +295,7 @@ class MapGenerator(val ruleset: Ruleset) {
             var temperature = ((latitudeTemperature + randomTemperature) / 2.0)
             temperature = abs(temperature).pow(1.0 - tileMap.mapParameters.temperatureExtremeness) * temperature.sign
             if (temperature < -0.8)
-                tile.terrainFeature = Constants.ice
+                tile.terrainFeatures.add(Constants.ice)
         }
     }
 
