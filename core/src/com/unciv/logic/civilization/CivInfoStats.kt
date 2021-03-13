@@ -60,7 +60,7 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
                 if (tile.isCityCenter()) continue
                 if (ignoreHillTiles && tile.isHill()) continue
 
-                if (tile.terrainFeature in ignoredTileTypes || tile.baseTerrain in ignoredTileTypes) {
+                if (tile.terrainFeatures.any { it in ignoredTileTypes }  || tile.baseTerrain in ignoredTileTypes) {
                     continue
                 }
 

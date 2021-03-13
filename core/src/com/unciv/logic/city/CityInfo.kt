@@ -116,8 +116,8 @@ class CityInfo {
         tryUpdateRoadStatus()
 
         val tile = getCenterTile()
-        if (getRuleset().tileImprovements.containsKey("Remove " + tile.terrainFeature))
-            tile.terrainFeature = null
+        for (terrainFeature in tile.terrainFeatures.filter { getRuleset().tileImprovements.containsKey("Remove $it") })
+            tile.terrainFeatures.remove(terrainFeature)
 
         tile.improvement = null
         tile.improvementInProgress = null
