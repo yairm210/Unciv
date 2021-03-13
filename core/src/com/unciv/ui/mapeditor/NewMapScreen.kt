@@ -18,9 +18,8 @@ import kotlin.concurrent.thread
 import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 
 /** New map generation screen */
-class NewMapScreen : PickerScreen() {
+class NewMapScreen(val mapParameters: MapParameters = MapParameters()) : PickerScreen() {
 
-    private val mapParameters = MapParameters()
     private val ruleset = RulesetCache.getBaseRuleset()
     private var generatedMap: TileMap? = null
 
