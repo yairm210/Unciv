@@ -260,7 +260,7 @@ class MapGenerator(val ruleset: Ruleset) {
             val vegetation = (randomness.getPerlinNoise(tile, vegetationSeed, scale = 3.0, nOctaves = 1) + 1.0) / 2.0
 
             if (vegetation <= tileMap.mapParameters.vegetationRichness)
-                tile.terrainFeature = Constants.vegetation.filter { ruleset.terrains[it]!!.occursOn.contains(tile.baseTerrain) }.random(randomness.RNG)
+                tile.terrainFeatures.add(Constants.vegetation.filter { ruleset.terrains[it]!!.occursOn.contains(tile.baseTerrain) }.random(randomness.RNG))
         }
     }
     /**
@@ -275,7 +275,7 @@ class MapGenerator(val ruleset: Ruleset) {
                 val possibleFeatures = rareFeatures.filter { it.occursOn.contains(tile.baseTerrain)
                         && (!tile.isHill() || it.occursOn.contains(Constants.hill)) }
                 if (possibleFeatures.any())
-                    tile.terrainFeature = possibleFeatures.random(randomness.RNG).name
+                    tile.terrainFeatures.add(possibleFeatures.random(randomness.RNG).name)
             }
         }
     }

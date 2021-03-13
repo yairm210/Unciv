@@ -22,7 +22,7 @@ class RiverGenerator(val randomness: MapGenerationRandomness){
 
         for(tile in map.values){
             if(tile.isAdjacentToRiver()){
-                if(tile.baseTerrain== Constants.desert && !tile.isHill()) tile.terrainFeature= Constants.floodPlains
+                if(tile.baseTerrain== Constants.desert && !tile.isHill()) tile.terrainFeatures.add(Constants.floodPlains)
                 else if(tile.baseTerrain== Constants.snow) tile.baseTerrain = Constants.tundra
                 else if(tile.baseTerrain== Constants.tundra) tile.baseTerrain = Constants.plains
                 tile.setTerrainTransients()
