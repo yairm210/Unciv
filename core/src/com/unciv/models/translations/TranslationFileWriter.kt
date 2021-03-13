@@ -207,7 +207,7 @@ object TranslationFileWriter {
                             RulesetCache.getBaseRuleset().buildings.containsKey(parameter)
                                     || parameter == "Wonders" -> "building"
 
-                            UnitType.values().any { it.name == parameter } || parameter=="Military" -> "unitType"
+                            UnitType.values().any { it.name == parameter } || parameter == "Military" -> "unitType"
                             Stats.isStats(parameter) -> "stats"
                             parameter == "in this city"
                                     || parameter == "in all cities"
@@ -215,6 +215,7 @@ object TranslationFileWriter {
                                     || parameter == "in capital"
                                     || parameter == "in all cities with a world wonder"
                                     || parameter == "in all cities connected to capital"
+                                    || parameter == "in all cities with a garrison"
                             -> "cityFilter"
                             else -> "param"
                         }
