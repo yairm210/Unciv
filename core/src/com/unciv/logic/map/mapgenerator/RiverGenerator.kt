@@ -50,27 +50,26 @@ class RiverGenerator(val randomness: MapGenerationRandomness){
                 RiverCoordinate.BottomRightOrLeft.values().random(randomness.RNG))
 
 
-        while(getAdjacentTiles(riverCoordinate, map).none { it.isWater }){
+        while(getAdjacentTiles(riverCoordinate, map).none { it.isWater }) {
             val possibleCoordinates = riverCoordinate.getAdjacentPositions()
                     .filter { map.contains(it.position) }
-            if(possibleCoordinates.none()) return // end of the line
+            if (possibleCoordinates.none()) return // end of the line
             val newCoordinate = possibleCoordinates
-                    .groupBy { getAdjacentTiles(it,map).map { it.aerialDistanceTo(endPosition) }.min()!! }
+                    .groupBy { getAdjacentTiles(it, map).map { it.aerialDistanceTo(endPosition) }.min()!! }
                     .minBy { it.key }!!
                     .component2().random(randomness.RNG)
 
             // set new rivers in place
             val riverCoordinateTile = map[riverCoordinate.position]
-            if(newCoordinate.position == riverCoordinate.position) // same tile, switched right-to-left
-                riverCoordinateTile.hasBottomRiver=true
-            else if(riverCoordinate.bottomRightOrLeft== RiverCoordinate.BottomRightOrLeft.BottomRight){
-                if(getAdjacentTiles(newCoordinate,map).contains(riverCoordinateTile)) // moved from our 5 O'Clock to our 3 O'Clock
+            if (newCoordinate.position == riverCoordinate.position) // same tile, switched right-to-left
+                riverCoordinateTile.hasBottomRiver = true
+            else if (riverCoordinate.bottomRightOrLeft == RiverCoordinate.BottomRightOrLeft.BottomRight) {
+                if (getAdjacentTiles(newCoordinate, map).contains(riverCoordinateTile)) // moved from our 5 O'Clock to our 3 O'Clock
                     riverCoordinateTile.hasBottomRightRiver = true
                 else // moved from our 5 O'Clock down in the 5 O'Clock direction - this is the 8 O'Clock river of the tile to our 4 O'Clock!
                     map[newCoordinate.position].hasBottomLeftRiver = true
-            }
-            else { // riverCoordinate.bottomRightOrLeft==RiverCoordinate.BottomRightOrLeft.Left
-                if(getAdjacentTiles(newCoordinate,map).contains(riverCoordinateTile)) // moved from our 7 O'Clock to our 9 O'Clock
+            } else { // riverCoordinate.bottomRightOrLeft==RiverCoordinate.BottomRightOrLeft.Left
+                if (getAdjacentTiles(newCoordinate, map).contains(riverCoordinateTile)) // moved from our 7 O'Clock to our 9 O'Clock
                     riverCoordinateTile.hasBottomLeftRiver = true
                 else // moved from our 7 O'Clock down in the 7 O'Clock direction
                     map[newCoordinate.position].hasBottomRightRiver = true
