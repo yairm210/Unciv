@@ -100,6 +100,7 @@ cityFilters allow us to choose the range of cities affected by this unique:
 - "in capital"
 - "in all cities with a world wonder"
 - "in all cities connected to capital"
+- "in all cities with a garrison"
 
 ## General uniques
 
