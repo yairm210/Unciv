@@ -469,7 +469,7 @@ class Building : NamedStats(), IConstruction {
         val improvementUnique = uniqueObjects
                 .firstOrNull { it.placeholderText == "Creates a [] improvement on a specific tile" }
         if (improvementUnique == null) return null
-        return ruleset.tileImprovements[improvementUnique.params[0]]!!
+        return ruleset.tileImprovements[improvementUnique.params[0]]
     }
 
     fun isSellable() = !isWonder && !isNationalWonder && !uniques.contains("Unsellable")
