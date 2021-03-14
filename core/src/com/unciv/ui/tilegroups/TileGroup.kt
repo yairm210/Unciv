@@ -63,7 +63,7 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) 
 
     // These are for OLD tiles - for instance the "forest" symbol on the forest
     protected var terrainFeatureOverlayImage: Image? = null
-    protected var terrainFeature: String? = null
+    protected val terrainFeatures: ArrayList<String> = ArrayList()
     protected var cityImage: Image? = null
     protected var naturalWonderImage: Image? = null
 
@@ -205,9 +205,9 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) 
         }
 
 
-        if (tileInfo.terrainFeature != null) {
+        if (tileInfo.terrainFeatures.isNotEmpty()) {
             // e.g. Grassland+Forest
-            val baseTerrainAndFeatureTileLocation = "$baseTerrainTileLocation+${tileInfo.terrainFeature}"
+            val baseTerrainAndFeatureTileLocation = "$baseTerrainTileLocation+${tileInfo.terrainFeatures.joinToString(separator = "+")}"
             if (shouldShowImprovement && shouldShowResource) {
                 // e.g. Grassland+Forest+Deer+Camp
                 val baseFeatureImprovementAndResourceLocation =
@@ -610,13 +610,14 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) 
     }
 
     private fun updateTerrainFeatureImage() {
-        if (tileInfo.terrainFeature != terrainFeature) {
-            terrainFeature = tileInfo.terrainFeature
+        if (tileInfo.terrainFeatures != terrainFeatures) {
+            terrainFeatures.clear()
+            terrainFeatures.addAll(tileInfo.terrainFeatures)
             if (terrainFeatureOverlayImage != null) terrainFeatureOverlayImage!!.remove()
             terrainFeatureOverlayImage = null
 
-            if (terrainFeature != null) {
-                val terrainFeatureOverlayLocation = tileSetStrings.getTerrainFeatureOverlay(terrainFeature!!)
+            if (terrainFeatures.isNotEmpty()) {
+                val terrainFeatureOverlayLocation = tileSetStrings.getTerrainFeatureOverlay(terrainFeatures.joinToString(separator = "+"))
                 if (!ImageGetter.imageExists(terrainFeatureOverlayLocation)) return
                 terrainFeatureOverlayImage = ImageGetter.getImage(terrainFeatureOverlayLocation)
                 terrainFeatureLayerGroup.addActor(terrainFeatureOverlayImage)
