@@ -617,7 +617,7 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) 
             terrainFeatureOverlayImage = null
 
             if (terrainFeatures.isNotEmpty()) {
-                val terrainFeatureOverlayLocation = tileSetStrings.getTerrainFeatureOverlay(terrainFeatures.joinToString(separator = "+"))
+                val terrainFeatureOverlayLocation = tileSetStrings.getTerrainFeatureOverlay(terrainFeatures)
                 if (!ImageGetter.imageExists(terrainFeatureOverlayLocation)) return
                 terrainFeatureOverlayImage = ImageGetter.getImage(terrainFeatureOverlayLocation)
                 terrainFeatureLayerGroup.addActor(terrainFeatureOverlayImage)
