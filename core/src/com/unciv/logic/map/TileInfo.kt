@@ -558,12 +558,12 @@ open class TileInfo {
 
     //region state-changing functions
     fun setTransients() {
-        convertTerrainFeatureToArray()
         setTerrainTransients()
         setUnitTransients(true)
     }
 
     fun setTerrainTransients() {
+        convertTerrainFeatureToArray()
         if (!ruleset.terrains.containsKey(baseTerrain))
             throw Exception()
         baseTerrainObject = ruleset.terrains[baseTerrain]!!
