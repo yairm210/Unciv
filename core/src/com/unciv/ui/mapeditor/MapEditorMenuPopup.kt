@@ -5,8 +5,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.Constants
 import com.unciv.MainMenuScreen
 import com.unciv.UncivGame
-import com.unciv.logic.map.TileMap
-import com.unciv.models.metadata.Player
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.ui.newgamescreen.ModCheckboxTable
 import com.unciv.ui.utils.*
@@ -41,7 +39,9 @@ class MapEditorMenuPopup(var mapEditorScreen: MapEditorScreen): Popup(mapEditorS
             add(ScrollPane(checkboxTable)).maxHeight(mapEditorScreen.stage.height * 0.8f).row()
 
             addButton("Save") {
-                val incompatibilities = mapEditorScreen.tileMap.values.map { it.getRulesetIncompatability(ruleset) }.toHashSet()
+                val incompatibilities = HashSet<String>()
+                for (set in mapEditorScreen.tileMap.values.map { it.getRulesetIncompatibility(ruleset) })
+                    incompatibilities.addAll(set)
                 incompatibilities.remove("")
 
                 if (incompatibilities.isEmpty()) {
