@@ -110,7 +110,7 @@
 		"isWonder": true,
 		"cost": 185,
 		"greatPersonPoints": {"production": 1},
-		"uniques": ["+[10]% growth in all cities", "+[15]% Production when constructing [Ranged] units"],
+		"uniques": ["+[10]% growth in all cities", "+[15]% Production when constructing [Ranged] units [in all cities]"],
 		"requiredTech": "Archery",
 		"quote": "'It is not so much for its beauty that the forest makes a claim upon men's hearts, as for that subtle something, that quality of air, that emanation from old trees, that so wonderfully changes and renews a weary spirit.'  - Robert Louis Stevenson"
 	},

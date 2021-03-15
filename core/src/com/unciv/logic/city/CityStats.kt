@@ -305,11 +305,6 @@ class CityStats {
           // Since this is sometimes run from a different thread (getConstructionButtonDTOs),
           // this helps mitigate concurrency problems.
 
-        // Deprecated as of 3.12.10 - changed to "+[50]% Production when constructing [Settler] units [in capital]"
-        if (currentConstruction.name == Constants.settler && cityInfo.isCapital()
-                && uniques.any { it.text == "Training of settlers increased +50% in capital" })
-            stats.production += 50f
-
         if (currentConstruction is Building && !currentConstruction.isWonder && !currentConstruction.isNationalWonder)
             for (unique in uniques.filter { it.placeholderText == "+[]% Production when constructing [] buildings" }) {
                 val stat = Stat.valueOf(unique.params[1])
@@ -340,12 +335,6 @@ class CityStats {
                 stats.production += unique.params[0].toInt()
         }
 
-        // Deprecated as of 3.12.10 - changed to "+[amount]% Production when constructing [unitFilter] units [in all cities]"
-        for (unique in uniques.filter { it.placeholderText == "+[]% Production when constructing [] units" }) {
-            if (currentConstruction is BaseUnit && currentConstruction.matchesFilter(unique.params[1]))
-                stats.production += unique.params[0].toInt()
-        }
-
         // "+[amount]% Production when constructing [unitFilter] units [cityFilter]"
         for (unique in uniques.filter { it.placeholderText == "+[]% Production when constructing [] units []" }) {
             if (currentConstruction is BaseUnit && currentConstruction.matchesFilter(unique.params[1])
@@ -354,19 +343,8 @@ class CityStats {
         }
 
 
-        // Deprecated as of 3.12.10 - changed to "+[33]% [Culture] [in all cities with a world wonder]"
-        if (cityInfo.cityConstructions.getBuiltBuildings().any { it.isWonder }
-                && uniques.any { it.text == "+33% culture in all cities with a world wonder" })
-            stats.culture += 33f
-        // Deprecated as of 3.12.10 - changed to "+[25]% [Gold] [in capital]" (Commerce policy)
-        if (uniques.any { it.text == "+25% gold in capital" } && cityInfo.isCapital())
-            stats.gold += 25f
         if (cityInfo.civInfo.getHappiness() >= 0 && uniques.any { it.text == "+15% science while empire is happy" })
             stats.science += 15f
-
-        // Deprecated as of 3.12.10 - changed to "+[25]% [Culture] [in all cities]" (Sistine Chapel)
-        if (uniques.any { it.text == "Culture in all cities increased by 25%" })
-            stats.culture += 25f
 
         return stats
     }

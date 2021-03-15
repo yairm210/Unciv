@@ -37,11 +37,7 @@ class CityExpansionManager {
             if (cityInfo.matchesFilter(unique.params[1]))
                 cultureToNextTile *= (100 - unique.params[0].toFloat()) / 100
         }
-        // Deprecated as of 3.12.10 - replaced with "-[]% Culture cost of acquiring tiles []", either [in capital] or [in this city] or [in all cities]
-        if (cityInfo.civInfo.hasUnique("Cost of acquiring new tiles reduced by 25%"))
-            cultureToNextTile *= 0.75 //Speciality of Angkor Wat
-        if (cityInfo.containsBuildingUnique("Culture and Gold costs of acquiring new tiles reduced by 25% in this city"))
-            cultureToNextTile *= 0.75 // Specialty of Krepost
+
         if (cityInfo.civInfo.hasUnique("Increased rate of border expansion")) cultureToNextTile *= 0.75
 
         return cultureToNextTile.roundToInt()
@@ -66,13 +62,6 @@ class CityExpansionManager {
             if (cityInfo.matchesFilter(unique.params[1]))
                 cost *= (100 - unique.params[0].toFloat()) / 100
         }
-        // Deprecated as of 3.12.10 - replaced with "-[]% Gold cost of acquiring tiles []", either [in capital] or [in this city] or [in all cities]
-        if (cityInfo.civInfo.hasUnique("Cost of acquiring new tiles reduced by 25%"))
-            cost *= 0.75 //Speciality of Angkor Wat
-        if (cityInfo.containsBuildingUnique("Culture and Gold costs of acquiring new tiles reduced by 25% in this city"))
-            cost *= 0.75 // Specialty of Krepost
-        if (cityInfo.civInfo.hasUnique("-50% cost when purchasing tiles"))
-            cost /= 2
         return cost.roundToInt()
     }
 
