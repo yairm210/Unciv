@@ -80,8 +80,8 @@ open class TileInfo {
         //Note to Future GGGuenni
         //TODO Use the following when terrainFeature got changed everywhere to support old saves in the future
         //if (terrainFeature != null){
-            //terrainFeatures.add(terrainFeature)
-            //terrainFeature = null
+        //terrainFeatures.add(terrainFeature)
+        //terrainFeature = null
         //}
     }
 
@@ -392,7 +392,7 @@ open class TileInfo {
                 || filter == "River" && isAdjacentToRiver()
                 || terrainFeatures.contains(filter)
                 || baseTerrainObject.uniques.contains(filter)
-                || getTerrainFeatures().any {it.uniques.contains(filter)}
+                || getTerrainFeatures().any { it.uniques.contains(filter) }
                 || improvement == filter
                 || civInfo != null && hasViewableResource(civInfo) && resource == filter
                 || filter == "Water" && isWater
@@ -643,11 +643,15 @@ open class TileInfo {
 
 
     private fun normalizeTileImprovement(ruleset: Ruleset) {
-        if (improvement!!.startsWith("StartingLocation")) {
+        if (improvement!!.startsWith("StartingLocation") == true) {
             if (!isLand || getLastTerrain().impassable) improvement = null
             return
         }
-        val improvementObject = ruleset.tileImprovements[improvement]!!
+        val improvementObject = ruleset.tileImprovements[improvement]
+        if (improvementObject == null) {
+            improvement = null
+            return
+        }
         improvement = null // Unset, and check if it can be reset. If so, do it, if not, invalid.
         if (canImprovementBeBuiltHere(improvementObject)
                 // Allow building 'other' improvements like city ruins, barb encampments, Great Improvements etc

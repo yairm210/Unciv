@@ -374,9 +374,11 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
             }
         }
 
-        for (group in tileGroups[selectedTile]!!) {
-            group.showCircle(Color.WHITE)
-        }
+        // Same as below - randomly, tileGroups doesn't seem to contain the selected tile, and this doesn't seem duplicatable
+        val worldTileGroupsForSelectedTile = tileGroups[selectedTile]
+        if (worldTileGroupsForSelectedTile != null)
+            for (group in worldTileGroupsForSelectedTile)
+                group.showCircle(Color.WHITE)
 
         zoom(scaleX) // zoom to current scale, to set the size of the city buttons after "next turn"
     }
