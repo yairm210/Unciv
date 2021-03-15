@@ -79,7 +79,7 @@ class MapUnit {
             name
         }
         else {
-            "$instanceName ($name)"
+            "$instanceName ({$name})"
         }
     }
 
