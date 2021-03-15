@@ -1,3 +1,19 @@
+## 3.13.8
+
+Resolved #3401, #3598, #3643 - game can be instantly closed and reopened on Android
+
+Remove tile improvements not in the current ruleset on normalizeTile
+
+Resolved #3686 - world wrapped 'continents' map now separates continents properly
+
+Resolved #3691 - 'new map' from map editor copies existing map parameters
+
+Game no longer crashes due to incorrect building-improvement modding
+
+UI improvements  - By lishaoxia1985
+
+Fixed Military Caste policy  - By absolutebull
+
 ## 3.13.7
 
 Fixed Great Barrier Reef spawn rules
