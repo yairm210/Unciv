@@ -41,7 +41,7 @@ open class CameraStageBaseScreen : Screen {
         val width = resolutions[0]
         val height = resolutions[1]
 
-        stage = Stage(ExtendViewport(width, height), batch)
+        stage = Stage(ExtendViewport(width, height), SpriteBatch())
 
 
         stage.addListener(
@@ -91,8 +91,10 @@ open class CameraStageBaseScreen : Screen {
     }
 
     companion object {
-        val skin by lazy {
-            val skin = Skin().apply {
+        lateinit var skin:Skin
+        fun setSkin() {
+            Fonts.resetFont()
+            skin = Skin().apply {
                 add("Nativefont", Fonts.font, BitmapFont::class.java)
                 add("Button", ImageGetter.getRoundedEdgeTableBackground(), Drawable::class.java)
                 addRegions(TextureAtlas("skin/flat-earth-ui.atlas"))

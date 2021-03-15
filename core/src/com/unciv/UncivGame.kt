@@ -5,6 +5,7 @@ import com.badlogic.gdx.Game
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
 import com.badlogic.gdx.audio.Music
+import com.badlogic.gdx.graphics.g2d.TextureAtlas
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.utils.Align
 import com.unciv.logic.GameInfo
@@ -14,10 +15,7 @@ import com.unciv.models.metadata.GameSettings
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.translations.Translations
 import com.unciv.ui.LanguagePickerScreen
-import com.unciv.ui.utils.CameraStageBaseScreen
-import com.unciv.ui.utils.CrashController
-import com.unciv.ui.utils.ImageGetter
-import com.unciv.ui.utils.center
+import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.PlayerReadyScreen
 import com.unciv.ui.worldscreen.WorldScreen
 import java.util.*
@@ -79,9 +77,23 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
         // Whatever needs graphics needs to be done on the main thread,
         // So it's basically a long set of deferred actions.
         settings = GameSaver.getGeneralSettings() // needed for the screen
-        screen = LoadingScreen()
+
+
+        /** When we recreate the GL context for whatever reason (say - we moved to a split screen on Android),
+         * ALL objects that were related to the old context - need to be recreated.
+         * So far we have:
+         * - All textures (hence the texture atlas)
+         * - SpriteBatch (hence CameraStageBaseScreen uses a new SpriteBatch for each screen)
+         * - Skin (hence CameraStageBaseScreen.setSkin())
+         * - Font (hence Fonts.resetFont() inside setSkin())
+         */
+        ImageGetter.atlas = TextureAtlas("game.atlas")
+        ImageGetter.setNewRuleset(ImageGetter.ruleset)
+        CameraStageBaseScreen.setSkin() // needs to come AFTER the Texture reset, since the buttons depend on it
 
         Gdx.graphics.isContinuousRendering = settings.continuousRendering
+        screen = LoadingScreen()
+
 
         thread(name = "LoadJSON") {
             RulesetCache.loadRulesets(printOutput = true)
@@ -96,6 +108,8 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
             // This stuff needs to run on the main thread because it needs the GL context
             Gdx.app.postRunnable {
                 ImageGetter.ruleset = RulesetCache.getBaseRuleset() // so that we can enter the map editor without having to load a game first
+
+
                 thread(name="Music") { startMusic() }
                 restoreSize()
 

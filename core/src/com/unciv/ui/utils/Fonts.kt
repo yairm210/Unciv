@@ -107,11 +107,11 @@ class NativeBitmapFontData(val fontImplementation: NativeFontImplementation) : B
 }
 
 object Fonts {
-    val font by lazy {
+    lateinit var font:BitmapFont
+    fun resetFont() {
         val fontData = NativeBitmapFontData(UncivGame.Current.fontImplementation!!)
-        val font = BitmapFont(fontData, fontData.regions, false)
+        font = BitmapFont(fontData, fontData.regions, false)
         font.setOwnsTexture(true)
-        font
     }
 
     // From https://stackoverflow.com/questions/29451787/libgdx-textureregion-to-pixmap
