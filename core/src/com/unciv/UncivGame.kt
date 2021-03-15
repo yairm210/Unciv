@@ -70,14 +70,11 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
             viewEntireMapForDebug = false
         }
         Current = this
-
-
         GameSaver.customSaveLocationHelper = customSaveLocationHelper
+
         // If this takes too long players, especially with older phones, get ANR problems.
         // Whatever needs graphics needs to be done on the main thread,
         // So it's basically a long set of deferred actions.
-        settings = GameSaver.getGeneralSettings() // needed for the screen
-
 
         /** When we recreate the GL context for whatever reason (say - we moved to a split screen on Android),
          * ALL objects that were related to the old context - need to be recreated.
@@ -90,6 +87,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
         ImageGetter.atlas = TextureAtlas("game.atlas")
         ImageGetter.setNewRuleset(ImageGetter.ruleset)
         CameraStageBaseScreen.setSkin() // needs to come AFTER the Texture reset, since the buttons depend on it
+        settings = GameSaver.getGeneralSettings() // needed for the screen - this also needs the atlas to be configured
 
         Gdx.graphics.isContinuousRendering = settings.continuousRendering
         screen = LoadingScreen()

@@ -30,24 +30,16 @@ object ImageGetter {
     // always have to switch between like 170 different textures.
     // So, we now use TexturePacker in the DesktopLauncher class to pack all the different images into single images,
     // and the atlas is what tells us what was packed where.
-    var atlas = TextureAtlas("game.atlas")
+    lateinit var atlas: TextureAtlas
     var ruleset = Ruleset()
 
     // We then shove all the drawables into a hashmap, because the atlas specifically tells us
     //   that the search on it is inefficient
     private val textureRegionDrawables = HashMap<String, TextureRegionDrawable>()
 
-    init {
-        reload()
-    }
-
+    /** Required every time the ruleset changes, in order to load mod-specific images */
     fun setNewRuleset(ruleset: Ruleset) {
         this.ruleset = ruleset
-        reload()
-    }
-
-    /** Required every time the ruleset changes, in order to load mod-specific images */
-    private fun reload() {
         textureRegionDrawables.clear()
         // These are the drawables from the base game
         for (region in atlas.regions) {
@@ -183,8 +175,7 @@ object ImageGetter {
             cityStateIcon.color = nation.getInnerColor()
             cityStateIcon.surroundWithCircle(size * 0.9f).apply { circle.color = nation.getOuterColor() }
                     .surroundWithCircle(size, false).apply { circle.color = nation.getInnerColor() }
-        }
-        else getCircle().apply { color = nation.getOuterColor() }
+        } else getCircle().apply { color = nation.getOuterColor() }
                 .surroundWithCircle(size).apply { circle.color = nation.getInnerColor() }
     }
 
@@ -274,7 +265,8 @@ object ImageGetter {
 
     fun getResourceImage(resourceName: String, size: Float): Actor {
         val iconGroup = getImage("ResourceIcons/$resourceName").surroundWithCircle(size)
-        val resource = ruleset.tileResources[resourceName] ?: return iconGroup // This is the result of a bad modding setup, just give em an empty circle. Their problem.
+        val resource = ruleset.tileResources[resourceName]
+                ?: return iconGroup // This is the result of a bad modding setup, just give em an empty circle. Their problem.
         iconGroup.circle.color = getColorFromStats(resource)
 
         if (resource.resourceType == ResourceType.Luxury) {
