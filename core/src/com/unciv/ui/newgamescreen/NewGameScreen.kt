@@ -97,16 +97,15 @@ class NewGameScreen(previousScreen:CameraStageBaseScreen, _gameSetupInfo: GameSe
 
             if (mapOptionsTable.mapTypeSelectBox.selected.value == MapType.custom){
                 val map = MapSaver.loadMap(gameSetupInfo.mapFile!!)
-                val rulesetIncompatabilities = HashSet<String>()
-                for(tile in map.values) {
-                    val rulesetIncompat = tile.getRulesetIncompatability(ruleset)
-                    if (rulesetIncompat != "") rulesetIncompatabilities.add(rulesetIncompat)
-                }
+                val rulesetIncompatibilities = HashSet<String>()
+                for (set in map.values.map { it.getRulesetIncompatibility(ruleset) })
+                    rulesetIncompatibilities.addAll(set)
+                rulesetIncompatibilities.remove("")
 
-                if (rulesetIncompatabilities.isNotEmpty()) {
+                if (rulesetIncompatibilities.isNotEmpty()) {
                     val incompatibleMap = Popup(this)
                     incompatibleMap.addGoodSizedLabel("Map is incompatible with the chosen ruleset!".tr()).row()
-                    for(incompat in rulesetIncompatabilities)
+                    for(incompat in rulesetIncompatibilities)
                         incompatibleMap.addGoodSizedLabel(incompat).row()
                     incompatibleMap.addCloseButton()
                     incompatibleMap.open()

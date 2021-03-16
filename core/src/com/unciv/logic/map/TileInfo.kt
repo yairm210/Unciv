@@ -543,14 +543,15 @@ open class TileInfo {
                     && (terrainFeatures.contains(Constants.jungle) || terrainFeatures.contains(Constants.forest))
                     && isFriendlyTerritory(civInfo)
 
-    fun getRulesetIncompatability(ruleset: Ruleset): String {
-        if (!ruleset.terrains.containsKey(baseTerrain)) return "Base terrain $baseTerrain does not exist in ruleset!"
-        //TODO change getRulesetIncompatability to support multiple missing terrain features at once
-        if (terrainFeature != null && !ruleset.terrains.containsKey(terrainFeature)) return "Terrain feature $terrainFeature does not exist in ruleset!"
-        if (resource != null && !ruleset.tileResources.containsKey(resource)) return "Resource $resource does not exist in ruleset!"
+    fun getRulesetIncompatibility(ruleset: Ruleset): HashSet<String> {
+        val out = HashSet<String>()
+        if (!ruleset.terrains.containsKey(baseTerrain)) out.add("Base terrain $baseTerrain does not exist in ruleset!")
+        for (terrainFeature in terrainFeatures.filter { !ruleset.terrains.containsKey(it) })
+            out.add("Terrain feature $terrainFeature does not exist in ruleset!")
+        if (resource != null && !ruleset.tileResources.containsKey(resource)) out.add("Resource $resource does not exist in ruleset!")
         if (improvement != null && !improvement!!.startsWith("StartingLocation")
-                && !ruleset.tileImprovements.containsKey(improvement)) return "Improvement $improvement does not exist in ruleset!"
-        return ""
+                && !ruleset.tileImprovements.containsKey(improvement)) out.add("Improvement $improvement does not exist in ruleset!")
+        return out
     }
 
 
@@ -558,12 +559,12 @@ open class TileInfo {
 
     //region state-changing functions
     fun setTransients() {
-        convertTerrainFeatureToArray()
         setTerrainTransients()
         setUnitTransients(true)
     }
 
     fun setTerrainTransients() {
+        convertTerrainFeatureToArray()
         if (!ruleset.terrains.containsKey(baseTerrain))
             throw Exception()
         baseTerrainObject = ruleset.terrains[baseTerrain]!!
