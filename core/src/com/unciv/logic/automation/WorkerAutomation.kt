@@ -228,7 +228,7 @@ class WorkerAutomation(val unit: MapUnit) {
                 ?: return false
         val resourceImprovement = civInfo.gameInfo.ruleSet.tileImprovements[resourceImprovementName]
                 ?: return false
-        return tile.terrainFeatures.any{resourceImprovement.resourceTerrainAllow.contains(it)}
+        return tile.terrainFeatures.any { resourceImprovement.resourceTerrainAllow.contains(it) }
     }
 
     private fun isAcceptableTileForFort(tile: TileInfo, civInfo: CivilizationInfo): Boolean {

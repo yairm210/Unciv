@@ -60,7 +60,7 @@ open class TileInfo {
     @Deprecated(message = "Since 3.13.7 - replaced by terrainFeatures")
     private var terrainFeature: String? = null
     private fun convertTerrainFeatureToArray() {
-        if (terrainFeature != null){
+        if (terrainFeature != null) {
             terrainFeatures.add(terrainFeature!!)
             terrainFeature = null
         }
