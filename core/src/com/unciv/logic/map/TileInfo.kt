@@ -417,10 +417,13 @@ open class TileInfo {
         val yDelta = position.y - otherTile.position.y
         val distance = listOf(abs(xDelta), abs(yDelta), abs(xDelta - yDelta)).maxOrNull()!!
 
-        val otherTileUnwrappedPos = tileMap.getUnWrappedPosition(otherTile.position)
-        val xDeltaWrapped = position.x - otherTileUnwrappedPos.x
-        val yDeltaWrapped = position.y - otherTileUnwrappedPos.y
-        val wrappedDistance = listOf(abs(xDeltaWrapped), abs(yDeltaWrapped), abs(xDeltaWrapped - yDeltaWrapped)).maxOrNull()!!
+        var wrappedDistance = Float.MAX_VALUE
+        if (tileMap.mapParameters.worldWrap) {
+            val otherTileUnwrappedPos = tileMap.getUnWrappedPosition(otherTile.position)
+            val xDeltaWrapped = position.x - otherTileUnwrappedPos.x
+            val yDeltaWrapped = position.y - otherTileUnwrappedPos.y
+            wrappedDistance = listOf(abs(xDeltaWrapped), abs(yDeltaWrapped), abs(xDeltaWrapped - yDeltaWrapped)).maxOrNull()!!
+        }
 
         return min(distance, wrappedDistance).toInt()
     }
