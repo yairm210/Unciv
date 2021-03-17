@@ -84,7 +84,7 @@
 		"overrideStats": true,
 		"defenceBonus": 0.25,
 		"RGB": [105,125,72],
-		"occursOn": ["Tundra","Plains","Grassland","Desert"],
+		"occursOn": ["snow","Tundra","Plains","Grassland","Desert"],
 		"rough": true
 	},
 	{
