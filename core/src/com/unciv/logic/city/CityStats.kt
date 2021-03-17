@@ -42,7 +42,8 @@ class CityStats {
     private fun getStatsFromTiles(): Stats {
         val stats = Stats()
         for (cell in cityInfo.tilesInRange
-                .filter { cityInfo.location == it.position || cityInfo.isWorked(it) })
+                .filter { cityInfo.location == it.position || cityInfo.isWorked(it) ||
+                        it.getTileImprovement()?.hasUnique("Provides yield without assigned population")==true && it.owningCity == cityInfo })
             stats.add(cell.getTileStats(cityInfo, cityInfo.civInfo))
         return stats
     }
