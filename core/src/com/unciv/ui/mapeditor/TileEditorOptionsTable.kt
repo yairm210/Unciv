@@ -354,7 +354,10 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
                 tileAction = {
                     it.naturalWonder = null // If we're setting a base terrain it should remove the nat wonder
                     when (terrain.type) {
-                        TerrainType.TerrainFeature -> it.terrainFeatures.add(terrain.name)
+                        TerrainType.TerrainFeature -> {
+                            if (terrain.occursOn.contains(it.getLastTerrain().name))
+                                it.terrainFeatures.add(terrain.name)
+                        }
                         TerrainType.NaturalWonder -> it.naturalWonder = terrain.name
                         else -> it.baseTerrain = terrain.name
                     }
