@@ -93,7 +93,7 @@ open class TileInfo {
     var roadStatus = RoadStatus.None
     var turnsToImprovement: Int = 0
 
-    fun isHill() = baseTerrain == Constants.hill
+    fun isHill() = terrainFeatures.contains(Constants.hill)
 
     var hasBottomRightRiver = false
     var hasBottomRiver = false
@@ -565,6 +565,7 @@ open class TileInfo {
 
     fun setTerrainTransients() {
         convertTerrainFeatureToArray()
+        convertHillToTerrainFeature()
         if (!ruleset.terrains.containsKey(baseTerrain))
             throw Exception()
         baseTerrainObject = ruleset.terrains[baseTerrain]!!
@@ -660,6 +661,17 @@ open class TileInfo {
                         && ruleset.tileResources.values.none { it.improvement == improvementObject.name }
                         && !isImpassible() && isLand))
             improvement = improvementObject.name
+    }
+
+    private fun convertHillToTerrainFeature(){
+        if (baseTerrain == Constants.hill){
+            baseTerrain = Constants.grassland
+            //We have to add hill as first terrain feature
+            val copy = terrainFeatures.toTypedArray()
+            terrainFeatures.clear()
+            terrainFeatures.add(Constants.hill)
+            terrainFeatures.addAll(copy)
+        }
     }
 
     //endregion
