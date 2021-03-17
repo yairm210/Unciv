@@ -21,8 +21,10 @@ class MapUnit {
 
     @Transient
     lateinit var civInfo: CivilizationInfo
+
     @Transient
     lateinit var baseUnit: BaseUnit
+
     @Transient
     internal lateinit var currentTile: TileInfo
 
@@ -40,22 +42,31 @@ class MapUnit {
     // which in turn is a component of getShortestPath and canReach
     @Transient
     var ignoresTerrainCost = false
+
     @Transient
     var allTilesCosts1 = false
+
     @Transient
     var canPassThroughImpassableTiles = false
+
     @Transient
     var roughTerrainPenalty = false
+
     @Transient
     var doubleMovementInCoast = false
+
     @Transient
     var doubleMovementInForestAndJungle = false
+
     @Transient
     var doubleMovementInSnowTundraAndHills = false
+
     @Transient
     var canEnterIceTiles = false
+
     @Transient
     var cannotEnterOceanTiles = false
+
     @Transient
     var cannotEnterOceanTilesUntilAstronomy = false
 
@@ -75,12 +86,8 @@ class MapUnit {
      * Name which should be displayed in UI
      */
     fun displayName(): String {
-        return if(instanceName == null) {
-            name
-        }
-        else {
-            "$instanceName ({$name})"
-        }
+        return if (instanceName == null) name
+        else "$instanceName ({$name})"
     }
 
     var currentMovement: Float = 0f
@@ -362,7 +369,7 @@ class MapUnit {
             val destination = action!!.replace("moveTo ", "").split(",").dropLastWhile { it.isEmpty() }.toTypedArray()
             val destinationVector = Vector2(destination[0].toFloat(), destination[1].toFloat())
             val destinationTile = currentTile.tileMap[destinationVector]
-            if (!movement.canReach(destinationTile)){ // That tile that we were moving towards is now unreachable -
+            if (!movement.canReach(destinationTile)) { // That tile that we were moving towards is now unreachable -
                 // for instance we headed towards an unknown tile and it's apparently unreachable
                 action = null
                 return
@@ -419,7 +426,7 @@ class MapUnit {
 
     private fun tryProvideProductionToClosestCity() {
         val tile = getTile()
-        val closestCity = civInfo.cities.minBy { it.getCenterTile().aerialDistanceTo(tile) }
+        val closestCity = civInfo.cities.minByOrNull { it.getCenterTile().aerialDistanceTo(tile) }
         if (closestCity == null) return
         val distance = closestCity.getCenterTile().aerialDistanceTo(tile)
         var productionPointsToAdd = if (distance == 1) 20 else 20 - (distance - 2) * 5
@@ -438,7 +445,7 @@ class MapUnit {
 
         if (hasUnique("+10 HP when healing")) amountToHealBy += 10
         val maxAdjacentHealingBonus = currentTile.getTilesInDistance(1)
-                .flatMap { it.getUnits().asSequence() }.map { it.adjacentHealingBonus() }.max()
+                .flatMap { it.getUnits().asSequence() }.map { it.adjacentHealingBonus() }.maxOrNull()
         if (maxAdjacentHealingBonus != null)
             amountToHealBy += maxAdjacentHealingBonus
         if (hasUnique("All healing effects doubled"))

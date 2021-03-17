@@ -203,7 +203,7 @@ class CityScreen(internal val city: CityInfo): CameraStageBaseScreen() {
                 selectedTile = tileInfo
                 selectedConstruction = null
                 if (tileGroup.isWorkable && canChangeState) {
-                    if (!tileInfo.isWorked() && city.population.getFreePopulation() > 0) {
+                    if (!tileInfo.providesYield() && city.population.getFreePopulation() > 0) {
                         city.workedTiles.add(tileInfo.position)
                         game.settings.addCompletedTutorialTask("Reassign worked tiles")
                     } else if (tileInfo.isWorked() && !tileInfo.isLocked())

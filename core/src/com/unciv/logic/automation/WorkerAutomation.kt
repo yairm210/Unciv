@@ -169,7 +169,7 @@ class WorkerAutomation(val unit: MapUnit) {
         var priority = 0
         if (tileInfo.getOwner() == civInfo) {
             priority += 2
-            if (tileInfo.isWorked()) priority += 3
+            if (tileInfo.providesYield()) priority += 3
         }
         // give a minor priority to tiles that we could expand onto
         else if (tileInfo.getOwner() == null && tileInfo.neighbors.any { it.getOwner() == civInfo })

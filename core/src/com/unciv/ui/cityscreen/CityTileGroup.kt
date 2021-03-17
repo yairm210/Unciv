@@ -74,11 +74,8 @@ class CityTileGroup(private val city: CityInfo, tileInfo: TileInfo, tileSetStrin
         yieldGroup.centerX(this)
         yieldGroup.y = height * 0.25f - yieldGroup.height / 2
 
-        if (tileInfo.isWorked()) {
-            yieldGroup.color = Color.WHITE
-        } else if (!tileInfo.isCityCenter()) {
-            yieldGroup.color = Color.GRAY.cpy().apply { a = 0.5f }
-        }
+        if (tileInfo.providesYield()) yieldGroup.color = Color.WHITE
+        else yieldGroup.color = Color.GRAY.cpy().apply { a = 0.5f }
     }
 
     private fun updatePopulationIcon() {
@@ -88,8 +85,8 @@ class CityTileGroup(private val city: CityInfo, tileInfo: TileInfo, tileSetStrin
             populationIcon.setPosition(width / 2 - populationIcon.width / 2,
                     height * 0.85f - populationIcon.height / 2)
 
-            if (tileInfo.isWorked()) populationIcon.color = Color.WHITE
-            else if (!tileInfo.isCityCenter()) populationIcon.color = Color.GRAY.cpy()
+            if (tileInfo.providesYield()) populationIcon.color = Color.WHITE
+            else populationIcon.color = Color.GRAY.cpy()
 
             populationIcon.toFront()
         }

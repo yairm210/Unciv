@@ -219,6 +219,7 @@ open class TileInfo {
     }
 
     fun isWorked(): Boolean = getWorkingCity() != null
+    fun providesYield() = getCity() != null && (isCityCenter() || isWorked())
 
     fun isLocked(): Boolean {
         val workingCity = getWorkingCity()
