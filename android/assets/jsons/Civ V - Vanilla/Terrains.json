@@ -61,15 +61,6 @@
 		"uniques": ["Fresh water"]
 	},
 	{
-		"name": "Hill",
-		"type": "Land",
-		"production": 2,
-		"movementCost": 2,
-		"defenceBonus": 0.25,
-		"RGB": [105,125,72],
-		"rough": true
-	},
-	{
 		"name": "Mountain",
 		"type": "Land",
 		"impassable": true,
@@ -85,6 +76,17 @@
 	},
 	
 	// Terrain features
+	{
+		"name": "Hill",
+		"type": "TerrainFeature",
+		"production": 2,
+		"movementCost": 2,
+		"overrideStats": true,
+		"defenceBonus": 0.25,
+		"RGB": [105,125,72],
+		"occursOn": ["Tundra","Plains","Grassland","Desert"],
+		"rough": true
+	},
 	{
 		"name": "Forest",
 		"type": "TerrainFeature",
