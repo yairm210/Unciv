@@ -308,3 +308,5 @@ cityFilters allow us to choose the range of cities affected by this unique:
 "Can only be built on Coastal tiles"
 
 "Cannot be built on bonus resource"
+
+"Tile provides yield without assigned population"
