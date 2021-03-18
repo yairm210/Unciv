@@ -402,7 +402,7 @@ object Battle {
             tile.improvementInProgress = null
             tile.turnsToImprovement = 0
             tile.roadStatus = RoadStatus.None
-            if (tile.isLand && !tile.isImpassible()) tile.terrainFeatures.contains("Fallout")
+            if (tile.isLand && !tile.isImpassible()) tile.terrainFeatures.add("Fallout")
         }
 
         for (civ in attacker.getCivInfo().getKnownCivs()) {
