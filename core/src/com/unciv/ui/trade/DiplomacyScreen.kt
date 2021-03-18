@@ -58,12 +58,12 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
                 .filterNot { it.isDefeated() || it == viewingCiv || it.isBarbarian() || it.isSpectator() }) {
             if (!viewingCiv.knows(civ)) continue
 
-            val civIndicator = ImageGetter.getNationIndicator(civ.nation,100f)
+            val civIndicator = ImageGetter.getNationIndicator(civ.nation, 100f)
 
             val relationship = ImageGetter.getCircle()
-            if(viewingCiv.isAtWarWith(civ)) relationship.color = Color.RED
+            if (viewingCiv.isAtWarWith(civ)) relationship.color = Color.RED
             else relationship.color = Color.GREEN
-            relationship.setSize(30f,30f)
+            relationship.setSize(30f, 30f)
             civIndicator.addActor(relationship)
 
             if (civ.isCityState() && civ.questManager.haveQuestsFor(viewingCiv)) {
@@ -86,7 +86,7 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
 
     fun setTrade(civ: CivilizationInfo): TradeTable {
         rightSideTable.clear()
-        val tradeTable =TradeTable(civ, this)
+        val tradeTable = TradeTable(civ, this)
         rightSideTable.add(tradeTable)
         return tradeTable
     }
@@ -100,7 +100,7 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
 
         val displayNameTable = Table()
         displayNameTable.add(ImageGetter.getNationIndicator(otherCiv.nation, 24f))
-                .pad(0f,0f,5f,10f)
+                .pad(0f, 0f, 5f, 10f)
         displayNameTable.add(otherCiv.getLeaderDisplayName().toLabel(fontSize = 24))
         diplomacyTable.add(displayNameTable).row()
 
@@ -158,7 +158,7 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
 
         val diplomacyManager = viewingCiv.getDiplomacyManager(otherCiv)
 
-        if(!viewingCiv.gameInfo.ruleSet.modOptions.uniques.contains(ModOptionsConstants.diplomaticRelationshipsCannotChange)) {
+        if (!viewingCiv.gameInfo.ruleSet.modOptions.uniques.contains(ModOptionsConstants.diplomaticRelationshipsCannotChange)) {
             if (viewingCiv.isAtWarWith(otherCiv)) {
                 val peaceButton = "Negotiate Peace".toTextButton()
                 peaceButton.onClick {
@@ -182,7 +182,7 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
             }
         }
 
-        for (assignedQuest in otherCiv.questManager.assignedQuests.filter { it.assignee == viewingCiv.civName}) {
+        for (assignedQuest in otherCiv.questManager.assignedQuests.filter { it.assignee == viewingCiv.civName }) {
             diplomacyTable.addSeparator()
             diplomacyTable.add(getQuestTable(assignedQuest)).row()
         }
@@ -201,7 +201,7 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
 
         questTable.add(title.toLabel(fontSize = 24)).row()
         questTable.add(description.toLabel().apply { wrap = true; setAlignment(Align.center) })
-                .width(stage.width/2).row()
+                .width(stage.width / 2).row()
         if (quest.duration > 0)
             questTable.add("[${remainingTurns}] turns remaining".toLabel()).row()
 
@@ -218,13 +218,19 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
         diplomacyTable.defaults().pad(10f)
 
         val displayNameTable = Table()
-        displayNameTable.add(ImageGetter.getNationIndicator(otherCiv.nation, 24f)).pad(0f,0f,5f,5f)
-        displayNameTable.add(otherCiv.getLeaderDisplayName().toLabel(fontSize = 24))
-        diplomacyTable.add(displayNameTable).row()
-        if (otherCivDiplomacyManager.relationshipLevel() <= RelationshipLevel.Enemy)
-            diplomacyTable.add(otherCiv.nation.hateHello.toLabel()).row()
-        else
-            diplomacyTable.add(otherCiv.nation.neutralHello.toLabel()).row()
+        displayNameTable.add(ImageGetter.getNationIndicator(otherCiv.nation, 24f)).pad(0f, 0f, 5f, 5f)
+        displayNameTable.add(otherCiv.getLeaderDisplayName().toLabel(fontSize = 24)).row()
+        val helloText = if (otherCivDiplomacyManager.relationshipLevel() <= RelationshipLevel.Enemy) otherCiv.nation.hateHello
+        else otherCiv.nation.neutralHello
+        displayNameTable.add(helloText.toLabel()).colspan(2)
+
+        val leaderIntroTable = Table()
+        val leaderPortraitImage = "LeaderIcons/" + otherCiv.nation.leaderName
+        if (ImageGetter.imageExists(leaderPortraitImage))
+            leaderIntroTable.add(ImageGetter.getImage(leaderPortraitImage)).size(100f).padRight(10f)
+        leaderIntroTable.add(displayNameTable)
+
+        diplomacyTable.add(leaderIntroTable).row()
         diplomacyTable.addSeparator()
 
         val diplomaticRelationshipsCanChange = !viewingCiv.gameInfo.ruleSet.modOptions.uniques.contains(ModOptionsConstants.diplomaticRelationshipsCannotChange)
@@ -240,7 +246,7 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
             }
             diplomacyTable.add(tradeButton).row()
             if (isNotPlayersTurn()) tradeButton.disable()
-        } else if(diplomaticRelationshipsCanChange) {
+        } else if (diplomaticRelationshipsCanChange) {
             val negotiatePeaceButton = "Negotiate Peace".toTextButton()
             negotiatePeaceButton.onClick {
                 val tradeTable = setTrade(otherCiv)
@@ -372,7 +378,7 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
         demandsTable.defaults().pad(10f)
 
         val dontSettleCitiesButton = "Please don't settle new cities near us.".toTextButton()
-        if(otherCiv.popupAlerts.any { it.type==AlertType.DemandToStopSettlingCitiesNear && it.value==viewingCiv.civName })
+        if (otherCiv.popupAlerts.any { it.type == AlertType.DemandToStopSettlingCitiesNear && it.value == viewingCiv.civName })
             dontSettleCitiesButton.disable()
         dontSettleCitiesButton.onClick {
             otherCiv.popupAlerts.add(PopupAlert(AlertType.DemandToStopSettlingCitiesNear, viewingCiv.civName))
@@ -424,12 +430,12 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
                 diplomacyManager.declareWar()
                 setRightSideFlavorText(otherCiv, otherCiv.nation.attacked, "Very well.")
                 updateLeftSideTable()
-                }, this).open()
+            }, this).open()
         }
         return declareWarButton
     }
 
-    private fun setRightSideFlavorText(otherCiv: CivilizationInfo, flavorText:String, response: String){
+    private fun setRightSideFlavorText(otherCiv: CivilizationInfo, flavorText: String, response: String) {
         val diplomacyTable = Table()
         diplomacyTable.defaults().pad(10f)
         diplomacyTable.add(otherCiv.getLeaderDisplayName().toLabel())
