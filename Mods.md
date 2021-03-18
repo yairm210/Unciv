@@ -67,6 +67,12 @@ In order to do this, all you need to do is:
 
 When you open your app, it will query Github's [list of repos with that topic](https://github.com/topics/unciv-mod), and now YOUR repo will appear there!
 
+## I have the mod, now what?
+
+The primary use of mods is to add them when starting a new game, or configuring a map. This will mean that both the ruleset of the mod, and the images, will be in use for that specific game/map.
+
+For mods which are primarily visual, there is a second use - through the mod manager, you can enable them as **permanent visual mods**. This means that the images from the mod will replace the original images everywhere in the game.
+
 ## Mod location for manual loading of mods
 
 In general, you should never be manually-loading your mods - not only is this clunky, it's also more error-prone. Unless you have a very specific use-case, you probably shouldn't be doing this.
@@ -85,3 +91,5 @@ When loading a mod, it needs to be in its own folder in `/mods` - this is how yo
 Existing mods can be found [here](https://github.com/topics/unciv-mod)!
 
 A list of uniques and how to use them can be found [here](uniques)!
+
+Some images don't exist at all in the base game, but can be added in mods. For example, [here](https://github.com/yairm210/Unciv-leader-portrait-mod-example) is an example of how to add leader portraits to mods, which can compliment the base game.
