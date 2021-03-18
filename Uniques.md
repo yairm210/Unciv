@@ -67,6 +67,7 @@ tilefilters allow us to specify tiles according to a number of different aspects
 - Resource
 - "Water", "Land"
 - "River" (as in all 'river on tile' contexts, it means 'adjacent to a river on at least on side')
+- Natural wonder
 
 So for instance, the unique "[stats] from [tileFilter] tiles in this city" can match several cases:
 - "[+2 Food] from [Lakes] tiles in this city"
