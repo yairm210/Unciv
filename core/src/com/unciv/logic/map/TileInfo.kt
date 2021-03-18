@@ -415,14 +415,14 @@ open class TileInfo {
     fun aerialDistanceTo(otherTile: TileInfo): Int {
         val xDelta = position.x - otherTile.position.x
         val yDelta = position.y - otherTile.position.y
-        val distance = listOf(abs(xDelta), abs(yDelta), abs(xDelta - yDelta)).maxOrNull()!!
+        val distance = maxOf(abs(xDelta), abs(yDelta), abs(xDelta - yDelta))
 
         var wrappedDistance = Float.MAX_VALUE
         if (tileMap.mapParameters.worldWrap) {
             val otherTileUnwrappedPos = tileMap.getUnWrappedPosition(otherTile.position)
             val xDeltaWrapped = position.x - otherTileUnwrappedPos.x
             val yDeltaWrapped = position.y - otherTileUnwrappedPos.y
-            wrappedDistance = listOf(abs(xDeltaWrapped), abs(yDeltaWrapped), abs(xDeltaWrapped - yDeltaWrapped)).maxOrNull()!!
+            wrappedDistance = maxOf(abs(xDeltaWrapped), abs(yDeltaWrapped), abs(xDeltaWrapped - yDeltaWrapped))
         }
 
         return min(distance, wrappedDistance).toInt()

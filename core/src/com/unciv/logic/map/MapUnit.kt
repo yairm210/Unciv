@@ -400,12 +400,12 @@ class MapUnit {
                 if (tile.improvementInProgress == "Remove Road" || tile.improvementInProgress == "Remove Railroad")
                     tile.roadStatus = RoadStatus.None
                 else {
-                    val removedFeature = tile.terrainFeatures.find { tile.tileMap.gameInfo.ruleSet.terrains[it]!!.uniques
-                            .contains("Provides a one-time Production bonus to the closest city when cut down") }
-                    if (removedFeature != null) {
+                    val removedFeature = tile.improvementInProgress!!.removePrefix("Remove ")
+                    if (tile.ruleset.terrains[removedFeature]!!.uniques
+                                    .contains("Provides a one-time Production bonus to the closest city when cut down")) {
                         tryProvideProductionToClosestCity(removedFeature)
-                        tile.terrainFeatures.remove(removedFeature)
                     }
+                    tile.terrainFeatures.remove(removedFeature)
                 }
             }
             tile.improvementInProgress == "Road" -> tile.roadStatus = RoadStatus.Road
@@ -418,7 +418,7 @@ class MapUnit {
         tile.improvementInProgress = null
     }
 
-    private fun tryProvideProductionToClosestCity(cause: String) {
+    private fun tryProvideProductionToClosestCity(removedTerrainFeature: String) {
         val tile = getTile()
         val closestCity = civInfo.cities.minBy { it.getCenterTile().aerialDistanceTo(tile) }
         if (closestCity == null) return
@@ -427,7 +427,7 @@ class MapUnit {
         if (tile.owningCity == null || tile.owningCity!!.civInfo != civInfo) productionPointsToAdd = productionPointsToAdd * 2 / 3
         if (productionPointsToAdd > 0) {
             closestCity.cityConstructions.addProductionPoints(productionPointsToAdd)
-            civInfo.addNotification("Clearing a [$cause] has created [$productionPointsToAdd] Production for [${closestCity.name}]", closestCity.location, Color.BROWN)
+            civInfo.addNotification("Clearing a [$removedTerrainFeature] has created [$productionPointsToAdd] Production for [${closestCity.name}]", closestCity.location, Color.BROWN)
         }
 
     }
