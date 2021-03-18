@@ -179,13 +179,18 @@ class MainMenuScreen: CameraStageBaseScreen() {
 
 
     private fun autoLoadGame() {
-        ToastPopup("Loading...", this)
+        val loadingPopup = Popup(this)
+        loadingPopup.addGoodSizedLabel("Loading...")
+        loadingPopup.open()
         thread { // Load game from file to class on separate thread to avoid ANR...
             var savedGame: GameInfo
             try {
                 savedGame = GameSaver.loadGameByName(autosave)
             } catch (outOfMemory: OutOfMemoryError) {
-                Gdx.app.postRunnable { ToastPopup("Not enough memory on phone to load game!", this) }
+                Gdx.app.postRunnable {
+                    loadingPopup.close()
+                    ToastPopup("Not enough memory on phone to load game!", this)
+                }
                 return@thread
             } catch (ex: Exception) { // silent fail if we can't read the autosave for any reason - try to load the last autosave by turn number first
                 // This can help for situations when the autosave is corrupted
@@ -193,7 +198,10 @@ class MainMenuScreen: CameraStageBaseScreen() {
                     val autosaves = GameSaver.getSaves().filter { it.name() != autosave && it.name().startsWith(autosave) }
                     savedGame = GameSaver.loadGameFromFile(autosaves.maxBy { it.lastModified() }!!)
                 } catch (ex: Exception) {
-                    Gdx.app.postRunnable { ToastPopup("Cannot resume game!", this) }
+                    Gdx.app.postRunnable {
+                        loadingPopup.close()
+                        ToastPopup("Cannot resume game!", this)
+                    }
                     return@thread
                 }
             }
@@ -203,6 +211,7 @@ class MainMenuScreen: CameraStageBaseScreen() {
                     game.loadGame(savedGame)
                     dispose()
                 } catch (outOfMemory: OutOfMemoryError) {
+                    loadingPopup.close()
                     ToastPopup("Not enough memory on phone to load game!", this)
                 }
 
