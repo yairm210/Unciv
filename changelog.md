@@ -1,3 +1,23 @@
+## 3.13.9
+
+Added "permanent visual mods" option to mod management
+
+Resolved #3614 - tileFilter works with natural wonders
+
+More uniform Trade overview
+
+Resolved #3705 - loading game popup stays until the game is loaded
+
+Added "Provides yield without assigned population" uniques to tile improvements
+
+Can now add leader portrait images to mods
+
+Unit name is translated when unit has a unique name
+
+By GGGuenni:
+- More terrainFeature refactoring
+- Toast popup not screen blocking
+
 ## 3.13.8
 
 Resolved #3401, #3598, #3643 - game can be instantly closed and reopened on Android

@@ -15,11 +15,11 @@ class YieldGroup : HorizontalGroup() {
     var currentStats=Stats()
 
     fun setStats(stats: Stats) {
-        if(currentStats.equals(stats)) return // don't need to update - this is a memory and time saver!
+        if (currentStats.equals(stats)) return // don't need to update - this is a memory and time saver!
         currentStats = stats
         clearChildren()
-        for (entry in stats.toHashMap().filter { it.value > 0 }) {
-            addActor(getStatIconsTable(entry.key.toString(), entry.value.toInt()))
+        for ((stat, amount) in stats.toHashMap().asSequence().filter { it.value > 0 }) {
+            addActor(getStatIconsTable(stat.name, amount.toInt()))
         }
         pack()
     }
