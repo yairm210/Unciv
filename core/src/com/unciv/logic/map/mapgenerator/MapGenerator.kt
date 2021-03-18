@@ -192,6 +192,7 @@ class MapGenerator(val ruleset: Ruleset) {
                 elevation <= 0.7 -> tile.baseTerrain = Constants.hill
                 elevation <= 1.0 -> tile.baseTerrain = Constants.mountain
             }
+            tile.setTerrainTransients()
         }
     }
 
@@ -230,6 +231,7 @@ class MapGenerator(val ruleset: Ruleset) {
                         Constants.lakes
                     }
                 }
+                tile.setTerrainTransients()
                 continue
             }
 
@@ -246,6 +248,7 @@ class MapGenerator(val ruleset: Ruleset) {
                 tile.baseTerrain = ruleset.terrains.keys.first()
                 println("Temperature: $temperature, humidity: $humidity")
             }
+            tile.setTerrainTransients()
         }
     }
 
