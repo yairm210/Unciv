@@ -292,9 +292,9 @@ open class TileInfo {
             }
             for (unique in cityWideUniques + civWideUniques + improvementUniques) {
                 if (improvement.name == unique.params[1]
-                        || (unique.params[1] == "Great Improvement" && improvement.isGreatImprovement())
-                        || (unique.params[1] == "fresh water" && isAdjacentToFreshwater)
-                        || (unique.params[1] == "non-fresh water" && !isAdjacentToFreshwater)
+                        || unique.params[1] == "Great Improvement" && improvement.isGreatImprovement()
+                        || unique.params[1] == "Fresh water" && isAdjacentToFreshwater
+                        || unique.params[1] == "non-fresh water" && !isAdjacentToFreshwater
                 )
                     stats.add(unique.stats)
             }
