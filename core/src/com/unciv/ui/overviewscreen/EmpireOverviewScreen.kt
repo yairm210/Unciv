@@ -169,14 +169,14 @@ class EmpireOverviewScreen(private var viewingPlayer:CivilizationInfo, defaultPa
     private fun getTradesTable(): Table {
         val tradesTable = Table().apply { defaults().pad(10f) }
         val diplomacies = viewingPlayer.diplomacy.values.filter { it.trades.isNotEmpty() }
-                .sortedWith { d0, d1 ->
-                    val d0offers = d0.trades.first().ourOffers
-                    val d1offers = d1.trades.first().ourOffers
-                    val d0max = if (d0offers.isEmpty()) 0 else d0offers.maxBy { it.duration }!!.duration
-                    val d1max = if (d1offers.isEmpty()) 0 else d1offers.maxBy { it.duration }!!.duration
+                .sortedWith { diplomacyManager1, diplomacyManager2 ->
+                    val d1OffersFromFirstTrade = diplomacyManager1.trades.first().ourOffers
+                    val d2OffersFromFirstTrade = diplomacyManager2.trades.first().ourOffers
+                    val d1MaxDuration = if (d1OffersFromFirstTrade.isEmpty()) 0 else d1OffersFromFirstTrade.maxByOrNull { it.duration }!!.duration
+                    val d2MaxDuration = if (d2OffersFromFirstTrade.isEmpty()) 0 else d2OffersFromFirstTrade.maxByOrNull { it.duration }!!.duration
                     when {
-                        d0max > d1max -> 1
-                        d0max == d1max -> 0
+                        d1MaxDuration > d2MaxDuration -> 1
+                        d1MaxDuration == d2MaxDuration -> 0
                         else -> -1
                     }
                 }
@@ -190,8 +190,8 @@ class EmpireOverviewScreen(private var viewingPlayer:CivilizationInfo, defaultPa
 
     private fun createTradeTable(trade: Trade, otherCiv:CivilizationInfo): Table {
         val generalTable = Table(skin)
-        generalTable.add(createOffersTable(viewingPlayer,trade.ourOffers, trade.theirOffers.size)).fillY()
-        generalTable.add(createOffersTable(otherCiv, trade.theirOffers, trade.ourOffers.size)).fillY()
+        generalTable.add(createOffersTable(viewingPlayer,trade.ourOffers, trade.theirOffers.size)).minWidth(stage.width/4).fillY()
+        generalTable.add(createOffersTable(otherCiv, trade.theirOffers, trade.ourOffers.size)).minWidth(stage.width/4).fillY()
         return generalTable
     }
 
