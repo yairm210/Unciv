@@ -399,6 +399,7 @@ open class TileInfo {
                 || civInfo != null && hasViewableResource(civInfo) && resource == filter
                 || filter == "Water" && isWater
                 || filter == "Land" && isLand
+                || filter == naturalWonder
     }
 
     fun hasImprovementInProgress() = improvementInProgress != null
