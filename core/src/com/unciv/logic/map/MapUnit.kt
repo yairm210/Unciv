@@ -399,7 +399,7 @@ class MapUnit {
             tile.improvementInProgress!!.startsWith("Remove") -> {
                 val tileImprovement = tile.getTileImprovement()
                 if (tileImprovement != null
-                        && tileImprovement.terrainsCanBeBuiltOn.contains(tile.terrainFeature)
+                        && tile.terrainFeatures.any { tileImprovement.terrainsCanBeBuiltOn.contains(it) }
                         && !tileImprovement.terrainsCanBeBuiltOn.contains(tile.baseTerrain)) {
                     tile.improvement = null // We removed a terrain (e.g. Forest) and the improvement (e.g. Lumber mill) requires it!
                     if (tile.resource != null) civInfo.updateDetailedCivResources()        // unlikely, but maybe a mod makes a resource improvement dependent on a terrain feature
@@ -407,11 +407,12 @@ class MapUnit {
                 if (tile.improvementInProgress == "Remove Road" || tile.improvementInProgress == "Remove Railroad")
                     tile.roadStatus = RoadStatus.None
                 else {
-                    // We put "tile.terrainFeature!=null" because of a strange edge case that SHOULD be solved from 3.11.11+, so we should remove it then and see
-                    if (tile.terrainFeature != null && tile.tileMap.gameInfo.ruleSet.terrains[tile.terrainFeature!!]!!.uniques
-                                    .contains("Provides a one-time Production bonus to the closest city when cut down"))
-                        tryProvideProductionToClosestCity()
-                    tile.terrainFeature = null
+                    val removedFeature = tile.improvementInProgress!!.removePrefix("Remove ")
+                    if (tile.ruleset.terrains[removedFeature]!!.uniques
+                                    .contains("Provides a one-time Production bonus to the closest city when cut down")) {
+                        tryProvideProductionToClosestCity(removedFeature)
+                    }
+                    tile.terrainFeatures.remove(removedFeature)
                 }
             }
             tile.improvementInProgress == "Road" -> tile.roadStatus = RoadStatus.Road
@@ -424,7 +425,7 @@ class MapUnit {
         tile.improvementInProgress = null
     }
 
-    private fun tryProvideProductionToClosestCity() {
+    private fun tryProvideProductionToClosestCity(removedTerrainFeature: String) {
         val tile = getTile()
         val closestCity = civInfo.cities.minByOrNull { it.getCenterTile().aerialDistanceTo(tile) }
         if (closestCity == null) return
@@ -433,7 +434,7 @@ class MapUnit {
         if (tile.owningCity == null || tile.owningCity!!.civInfo != civInfo) productionPointsToAdd = productionPointsToAdd * 2 / 3
         if (productionPointsToAdd > 0) {
             closestCity.cityConstructions.addProductionPoints(productionPointsToAdd)
-            civInfo.addNotification("Clearing a [${tile.terrainFeature}] has created [$productionPointsToAdd] Production for [${closestCity.name}]", closestCity.location, Color.BROWN)
+            civInfo.addNotification("Clearing a [$removedTerrainFeature] has created [$productionPointsToAdd] Production for [${closestCity.name}]", closestCity.location, Color.BROWN)
         }
 
     }

@@ -53,36 +53,17 @@ open class TileInfo {
     lateinit var baseTerrain: String
     val terrainFeatures: ArrayList<String> = ArrayList()
 
-    //@Transient // So it won't be serialized from now on
-    @Deprecated(message = "Since 3.13.7 - gets replaced by terrainFeatures")
-    var terrainFeature: String? = null
-        get() {
-            //if terrainFeatures contains no terrainFeature maybe one got deserialized to field
-            if (terrainFeatures.firstOrNull() == null && field != null) {
-                terrainFeatures.add(field!!)
-                field = null
-            }
-            return terrainFeatures.firstOrNull()
-        }
-        set(value) {
-            if (terrainFeatures.isNotEmpty()) {
-                if (value == null) terrainFeatures.removeAt(0)
-                else terrainFeatures[0] = value
-            } else {
-                if (value != null) terrainFeatures.add(value)
-            }
-            field = null
-        }
-
+    // Deprecation level can't be increased because of convertTerrainFeatureToArray
+    // Can't be flagged transient because it won't deserialize then
+    // but it should not serialize because it always has the default value on serialization and is flagged optional
+    // Can be removed together with convertTerrainFeatureToArray to drop support for save files from version 3.13.7 and below
+    @Deprecated(message = "Since 3.13.7 - replaced by terrainFeatures")
+    private var terrainFeature: String? = null
     private fun convertTerrainFeatureToArray() {
-        if (terrainFeatures.firstOrNull() == null && terrainFeature != null)// -> terranFeature getter returns terrainFeature field
-            terrainFeature = terrainFeature // getter returns field, setter calls terrainFeatures.add()
-        //Note to Future GGGuenni
-        //TODO Use the following when terrainFeature got changed everywhere to support old saves in the future
-        //if (terrainFeature != null){
-        //terrainFeatures.add(terrainFeature)
-        //terrainFeature = null
-        //}
+        if (terrainFeature != null) {
+            terrainFeatures.add(terrainFeature!!)
+            terrainFeature = null
+        }
     }
 
     var naturalWonder: String? = null
@@ -437,12 +418,15 @@ open class TileInfo {
     fun aerialDistanceTo(otherTile: TileInfo): Int {
         val xDelta = position.x - otherTile.position.x
         val yDelta = position.y - otherTile.position.y
-        val distance = listOf(abs(xDelta), abs(yDelta), abs(xDelta - yDelta)).maxOrNull()!!
+        val distance = maxOf(abs(xDelta), abs(yDelta), abs(xDelta - yDelta))
 
-        val otherTileUnwrappedPos = tileMap.getUnWrappedPosition(otherTile.position)
-        val xDeltaWrapped = position.x - otherTileUnwrappedPos.x
-        val yDeltaWrapped = position.y - otherTileUnwrappedPos.y
-        val wrappedDistance = listOf(abs(xDeltaWrapped), abs(yDeltaWrapped), abs(xDeltaWrapped - yDeltaWrapped)).maxOrNull()!!
+        var wrappedDistance = Float.MAX_VALUE
+        if (tileMap.mapParameters.worldWrap) {
+            val otherTileUnwrappedPos = tileMap.getUnWrappedPosition(otherTile.position)
+            val xDeltaWrapped = position.x - otherTileUnwrappedPos.x
+            val yDeltaWrapped = position.y - otherTileUnwrappedPos.y
+            wrappedDistance = maxOf(abs(xDeltaWrapped), abs(yDeltaWrapped), abs(xDeltaWrapped - yDeltaWrapped))
+        }
 
         return min(distance, wrappedDistance).toInt()
     }
