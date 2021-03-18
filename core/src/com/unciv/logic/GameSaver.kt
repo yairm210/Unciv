@@ -115,11 +115,6 @@ object GameSaver {
                     GameSettings().apply { isFreshlyCreated = true }
                 }
 
-        val atlas = ImageGetter.atlas
-        val currentTileSets = atlas.regions.asSequence()
-                .filter { it.name.startsWith("TileSets") }
-                .map { it.name.split("/")[1] }.distinct()
-        if (settings.tileSet !in currentTileSets) settings.tileSet = "Default"
         return settings
     }
 

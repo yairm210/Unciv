@@ -37,6 +37,7 @@ class GameSettings {
     var orderTradeOffersByAmount = true
     var windowState = WindowState()
     var isFreshlyCreated = false
+    var visualMods = HashSet<String>()
 
     var showExperimentalWorldWrap = false
 

@@ -114,13 +114,30 @@ class ModManagementScreen: PickerScreen() {
         }
     }
 
+    fun refreshModActions(mod: Ruleset) {
+        modActionTable.clear()
+        val visualMods = game.settings.visualMods
+        if (!visualMods.contains(mod.name))
+            modActionTable.add("Enable as permanent visual mod".toTextButton().onClick {
+                visualMods.add(mod.name); game.settings.save()
+                ImageGetter.setNewRuleset(ImageGetter.ruleset)
+                refreshModActions(mod)
+            })
+        else modActionTable.add("Disable as permanent visual mod".toTextButton().onClick {
+            visualMods.remove(mod.name)
+            game.settings.save()
+            ImageGetter.setNewRuleset(ImageGetter.ruleset)
+            refreshModActions(mod)
+        })
+        modActionTable.row()
+    }
+
     fun refreshModTable(){
         modTable.clear()
         val currentMods = RulesetCache.values.filter { it.name != "" }
         for (mod in currentMods) {
             val button = mod.name.toTextButton().onClick {
-//                modActionTable.add("Last updated: ${mod.getSummary()}")
-
+                refreshModActions(mod)
                 rightSideButton.setText("Delete [${mod.name}]".tr())
                 rightSideButton.enable()
                 descriptionLabel.setText(mod.getSummary())

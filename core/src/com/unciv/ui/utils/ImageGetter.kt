@@ -15,6 +15,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
+import com.unciv.UncivGame
 import com.unciv.models.ruleset.Nation
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tile.ResourceType
@@ -65,7 +66,7 @@ object ImageGetter {
             }
 
         // These are from the mods
-        for (mod in ruleset.mods) {
+        for (mod in UncivGame.Current.settings.visualMods + ruleset.mods) {
             val modAtlasFile = Gdx.files.local("mods/$mod/game.atlas")
             if (!modAtlasFile.exists()) continue
             val modAtlas = TextureAtlas(modAtlasFile)
