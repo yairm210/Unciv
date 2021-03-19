@@ -285,7 +285,9 @@ object ImageGetter {
         return iconGroup
     }
 
-    fun getTechIconGroup(techName: String, circleSize: Float): Group {
+    fun getTechIconGroup(techName: String, circleSize: Float) = getTechIcon(techName).surroundWithCircle(circleSize)
+
+    fun getTechIcon(techName: String): Image {
         val techIconColor = when (ruleset.technologies[techName]!!.era()) {
             Constants.ancientEra -> colorFromRGB(255, 87, 35)
             Constants.classicalEra -> colorFromRGB(233, 31, 99)
@@ -298,7 +300,6 @@ object ImageGetter {
             else -> Color.WHITE.cpy()
         }
         return getImage("TechIcons/$techName").apply { color = techIconColor.lerp(Color.BLACK, 0.6f) }
-                .surroundWithCircle(circleSize)
     }
 
     fun getProgressBarVertical(width: Float, height: Float, percentComplete: Float, progressColor: Color, backgroundColor: Color): Table {

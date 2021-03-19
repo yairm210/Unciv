@@ -52,7 +52,7 @@ class PopulationManager {
     fun nextTurn(food: Int) {
         foodStored += food
         if (food < 0)
-            cityInfo.civInfo.addNotification("[${cityInfo.name}] is starving!", cityInfo.location, Color.RED)
+            cityInfo.civInfo.addNotification("[${cityInfo.name}] is starving!", cityInfo.location, NotificationIcon.Growth, "OtherIcons/DisbandUnit")
         if (foodStored < 0) {        // starvation!
             if (population > 1) population--
             foodStored = 0

@@ -628,7 +628,7 @@ class MapUnit {
             actions.add {
                 val tech = researchableAncientEraTechs.random(tileBasedRandom).name
                 civInfo.tech.addTechnology(tech)
-                civInfo.addNotification("We have discovered the lost technology of [$tech] in the ruins!", tile.position, NotificationIcon.Science)
+                civInfo.addNotification("We have discovered the lost technology of [$tech] in the ruins!", tile.position, NotificationIcon.Science, tech)
             }
 
 

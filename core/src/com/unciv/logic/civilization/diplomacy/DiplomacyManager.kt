@@ -307,8 +307,8 @@ class DiplomacyManager() {
                     trades.remove(trade)
                     val otherCivTrades = otherCiv().getDiplomacyManager(civInfo).trades
                     otherCivTrades.removeAll { it.equals(trade.reverse()) }
-                    civInfo.addNotification("One of our trades with [$otherCivName] has been cut short", NotificationIcon.Trade)
-                    otherCiv().addNotification("One of our trades with [${civInfo.civName}] has been cut short", NotificationIcon.Trade)
+                    civInfo.addNotification("One of our trades with [$otherCivName] has been cut short", NotificationIcon.Trade, otherCivName)
+                    otherCiv().addNotification("One of our trades with [${civInfo.civName}] has been cut short", NotificationIcon.Trade, civInfo.civName)
                     civInfo.updateDetailedCivResources()
                 }
             }
@@ -487,11 +487,11 @@ class DiplomacyManager() {
         onWarDeclared()
         otherCivDiplomacy.onWarDeclared()
 
-        otherCiv.addNotification("[${civInfo.civName}] has declared war on us!", NotificationIcon.War)
+        otherCiv.addNotification("[${civInfo.civName}] has declared war on us!", NotificationIcon.War, civInfo.civName)
         otherCiv.popupAlerts.add(PopupAlert(AlertType.WarDeclaration, civInfo.civName))
 
         getCommonKnownCivs().forEach {
-            it.addNotification("[${civInfo.civName}] has declared war on [${otherCiv().civName}]!", NotificationIcon.War)
+            it.addNotification("[${civInfo.civName}] has declared war on [$otherCivName]!", civInfo.civName, NotificationIcon.War, otherCivName)
         }
 
         otherCivDiplomacy.setModifier(DiplomaticModifiers.DeclaredWarOnUs, -20f)
@@ -618,10 +618,10 @@ class DiplomacyManager() {
         setFlag(DiplomacyFlags.DeclarationOfFriendship, 30)
         otherCivDiplomacy().setFlag(DiplomacyFlags.DeclarationOfFriendship, 30)
         if (otherCiv().playerType == PlayerType.Human)
-            otherCiv().addNotification("[${civInfo.civName}] and [${otherCiv().civName}] have signed the Declaration of Friendship!", null, Color.WHITE)
+            otherCiv().addNotification("[${civInfo.civName}] and [$otherCivName] have signed the Declaration of Friendship!", null, Color.WHITE)
 
         for (thirdCiv in getCommonKnownCivs().filter { it.isMajorCiv() }) {
-            thirdCiv.addNotification("[${civInfo.civName}] and [${otherCiv().civName}] have signed the Declaration of Friendship!", null, Color.WHITE)
+            thirdCiv.addNotification("[${civInfo.civName}] and [$otherCivName] have signed the Declaration of Friendship!", null, Color.WHITE)
             thirdCiv.getDiplomacyManager(civInfo).setFriendshipBasedModifier()
         }
     }

@@ -553,9 +553,8 @@ class CivilizationInfo {
         addNotification(text, color, LocationAction(locations))
     }
 
-    fun addNotification(text: String, location: Vector2?, notificationIcon: String) {
-        val locations = if (location != null) listOf(location) else emptyList()
-        addNotification(text, LocationAction(locations), notificationIcon)
+    fun addNotification(text: String, location: Vector2, vararg notificationIcons: String) {
+        addNotification(text, LocationAction(listOf(location)), *notificationIcons)
     }
 
 

@@ -2,6 +2,7 @@ package com.unciv.ui.worldscreen
 
 import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.logic.civilization.Notification
@@ -33,11 +34,21 @@ class NotificationsScroll(internal val worldScreen: WorldScreen) : ScrollPane(nu
             val label = notification.text.toLabel(Color.BLACK, 30)
             val listItem = Table()
 
-            if (notification.icons.isNotEmpty())
-                for(icon in notification.icons)
-                    listItem.add(ImageGetter.getImage(icon)).size(20f).padRight(5f)
+            val iconSize = 20f
+            if (notification.icons.isNotEmpty()) {
+                val ruleset = worldScreen.gameInfo.ruleSet
+                for (icon in notification.icons) {
+                    val image: Actor = when {
+                        ruleset.technologies.containsKey(icon) -> ImageGetter.getTechIcon(icon)
+                        ruleset.nations.containsKey(icon) -> ImageGetter.getNationIndicator(ruleset.nations[icon]!!, iconSize)
+                        ruleset.units.containsKey(icon) -> ImageGetter.getUnitIcon(icon)
+                        else -> ImageGetter.getImage(icon)
+                    }
+                    listItem.add(image).size(iconSize).padRight(5f)
+                }
+            }
             else if(notification.color!=null) listItem.add(ImageGetter.getCircle()
-                    .apply { color = notification.color }).size(20f).padRight(5f)
+                    .apply { color = notification.color }).size(iconSize).padRight(5f)
             listItem.background = ImageGetter.getRoundedEdgeTableBackground().apply { setScale(0.5f) }
             listItem.add(label)
 
