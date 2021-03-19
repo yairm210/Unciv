@@ -227,10 +227,10 @@ open class TileInfo {
                 val tileType = unique.params[1]
                 if (tileType == improvement) continue // This is added to the calculation in getImprovementStats. we don't want to add it twice
                 if (matchesUniqueFilter(tileType, observingCiv)
-                        || (tileType == "Strategic resource" && hasViewableResource(observingCiv) && getTileResource().resourceType == ResourceType.Strategic)
-                        || (tileType == "Luxury resource" && hasViewableResource(observingCiv) && getTileResource().resourceType == ResourceType.Luxury)
-                        || (tileType == "Bonus resource" && hasViewableResource(observingCiv) && getTileResource().resourceType == ResourceType.Bonus)
-                        || (tileType == "Water resource" && isWater && hasViewableResource(observingCiv))
+                        || tileType == "Strategic resource" && hasViewableResource(observingCiv) && getTileResource().resourceType == ResourceType.Strategic
+                        || tileType == "Luxury resource" && hasViewableResource(observingCiv) && getTileResource().resourceType == ResourceType.Luxury
+                        || tileType == "Bonus resource" && hasViewableResource(observingCiv) && getTileResource().resourceType == ResourceType.Bonus
+                        || tileType == "Water resource" && isWater && hasViewableResource(observingCiv)
                 ) stats.add(unique.stats)
             }
         }
@@ -606,11 +606,12 @@ open class TileInfo {
         }
 
         for (terrainFeature in terrainFeatures.toList()) {
-            if (!ruleset.terrains.containsKey(terrainFeature)) {
+            val terrainFeatureObject = ruleset.terrains[terrainFeature]
+            if (terrainFeatureObject == null) {
                 terrainFeatures.remove(terrainFeature)
                 continue
             }
-            val terrainFeatureObject = ruleset.terrains[terrainFeature]!!
+
             if (terrainFeatureObject.occursOn.isNotEmpty() && !terrainFeatureObject.occursOn.contains(baseTerrain))
                 terrainFeatures.remove(terrainFeature)
         }

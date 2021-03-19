@@ -441,6 +441,8 @@ class MapUnit {
 
     private fun heal() {
         if (isEmbarked()) return // embarked units can't heal
+        if (civInfo.hasUnique("Can only heal by pillaging")) return
+
         var amountToHealBy = rankTileForHealing(getTile())
         if (amountToHealBy == 0) return
 
