@@ -1,8 +1,7 @@
 package com.unciv.logic.city
 
-import com.badlogic.gdx.graphics.Color
 import com.unciv.logic.automation.Automation
-import com.unciv.logic.civilization.NotificationType
+import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.map.TileInfo
 import com.unciv.ui.utils.withItem
 import com.unciv.ui.utils.withoutItem
@@ -144,7 +143,7 @@ class CityExpansionManager {
     fun nextTurn(culture: Float) {
         cultureStored += culture.toInt()
         if (cultureStored >= getCultureToNextTile() && addNewTileWithCulture())
-            cityInfo.civInfo.addNotification("[" + cityInfo.name + "] has expanded its borders!", cityInfo.location, NotificationType.Culture)
+            cityInfo.civInfo.addNotification("[" + cityInfo.name + "] has expanded its borders!", cityInfo.location, NotificationIcon.Culture)
     }
 
     fun setTransients() {

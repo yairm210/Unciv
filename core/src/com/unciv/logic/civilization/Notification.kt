@@ -7,13 +7,13 @@ import com.unciv.ui.pickerscreens.TechPickerScreen
 import com.unciv.ui.trade.DiplomacyScreen
 import com.unciv.ui.worldscreen.WorldScreen
 
-enum class NotificationType {
-    Culture,
-    Construction,
-    Growth,
-    War,
-    Trade,
-    Science
+object NotificationIcon {
+    val Culture = "StatIcons/Culture"
+    val Construction = "StatIcons/Production"
+    val Growth = "StatIcons/Population"
+    val War = "OtherIcons/Pillage"
+    val Trade = "StatIcons/Acquire"
+    val Science = "StatIcons/Science"
 }
 
 /**
@@ -24,7 +24,7 @@ open class Notification() {
 
     var text: String=""
     var color: Color?=null
-    var notificationType:NotificationType?=null
+    var icons: ArrayList<String> = ArrayList<String>() // Must be ArrayList and not List so it can be deserialized
     var action: NotificationAction? = null
 
     // default parameters necessary for json deserialization
@@ -34,9 +34,9 @@ open class Notification() {
         this.action = action
     }
 
-    constructor(text: String, notificationType: NotificationType, action: NotificationAction? = null) : this() {
+    constructor(text: String, notificationIcons: ArrayList<String>, action: NotificationAction? = null) : this() {
         this.text = text
-        this.notificationType = notificationType
+        this.icons = notificationIcons
         this.action = action
     }
 

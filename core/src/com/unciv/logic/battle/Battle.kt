@@ -6,7 +6,7 @@ import com.unciv.UncivGame
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.AlertType
 import com.unciv.logic.civilization.CivilizationInfo
-import com.unciv.logic.civilization.NotificationType
+import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.PopupAlert
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.map.RoadStatus
@@ -174,7 +174,7 @@ object Battle {
                         else " [" + defender.getName() + "]"
                     else " our [" + defender.getName() + "]"
             val notificationString = attackerString + whatHappenedString + defenderString
-            defender.getCivInfo().addNotification(notificationString, attackedTile.position, NotificationType.War)
+            defender.getCivInfo().addNotification(notificationString, attackedTile.position, NotificationIcon.War)
         }
     }
 
@@ -289,7 +289,7 @@ object Battle {
     private fun conquerCity(city: CityInfo, attacker: ICombatant) {
         val attackerCiv = attacker.getCivInfo()
 
-        attackerCiv.addNotification("We have conquered the city of [${city.name}]!", city.location, NotificationType.War)
+        attackerCiv.addNotification("We have conquered the city of [${city.name}]!", city.location, NotificationIcon.War)
 
         city.getCenterTile().apply {
             if (militaryUnit != null) militaryUnit!!.destroy()
@@ -335,7 +335,7 @@ object Battle {
 
         val capturedUnit = defender.unit
         capturedUnit.civInfo.addNotification("An enemy [" + attacker.getName() + "] has captured our [" + defender.getName() + "]",
-                defender.getTile().position, NotificationType.War)
+                defender.getTile().position, NotificationIcon.War)
 
         // Apparently in Civ V, captured settlers are converted to workers.
         if (capturedUnit.name == Constants.settler) {
@@ -433,17 +433,17 @@ object Battle {
             if (attacker.isDefeated()) {
                 attacker.getCivInfo()
                         .addNotification("Our [$attackerName] was destroyed by an intercepting [$interceptorName]",
-                                NotificationType.War)
+                                NotificationIcon.War)
                 defender.getCivInfo()
                         .addNotification("Our [$interceptorName] intercepted and destroyed an enemy [$attackerName]",
-                                interceptor.currentTile.position, NotificationType.War)
+                                interceptor.currentTile.position, NotificationIcon.War)
             } else {
                 attacker.getCivInfo()
                         .addNotification("Our [$attackerName] was attacked by an intercepting [$interceptorName]",
-                                NotificationType.War)
+                                NotificationIcon.War)
                 defender.getCivInfo()
                         .addNotification("Our [$interceptorName] intercepted and attacked an enemy [$attackerName]",
-                                interceptor.currentTile.position, NotificationType.War)
+                                interceptor.currentTile.position, NotificationIcon.War)
             }
             return
         }
@@ -498,8 +498,8 @@ object Battle {
         // and count 1 attack for attacker but leave it in place
         reduceAttackerMovementPointsAndAttacks(attacker, defender)
         val notificationString = "[" + defendBaseUnit.name + "] withdrew from a [" + attackBaseUnit.name + "]"
-        defender.getCivInfo().addNotification(notificationString, toTile.position, NotificationType.War)
-        attacker.getCivInfo().addNotification(notificationString, toTile.position, NotificationType.War)
+        defender.getCivInfo().addNotification(notificationString, toTile.position, NotificationIcon.War)
+        attacker.getCivInfo().addNotification(notificationString, toTile.position, NotificationIcon.War)
         return true
     }
 

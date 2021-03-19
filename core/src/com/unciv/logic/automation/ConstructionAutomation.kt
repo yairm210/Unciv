@@ -1,12 +1,11 @@
 package com.unciv.logic.automation
 
-import com.badlogic.gdx.graphics.Color
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.city.CityConstructions
 import com.unciv.logic.city.PerpetualConstruction
 import com.unciv.logic.civilization.CityAction
-import com.unciv.logic.civilization.NotificationType
+import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.map.BFS
 import com.unciv.models.ruleset.Building
@@ -87,7 +86,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
         // Nobody can plan 30 turns ahead, I don't care how cost-efficient you are.
         else theChosenOne = relativeCostEffectiveness.minBy { it.remainingWork }!!.choice
 
-        civInfo.addNotification("Work has started on [$theChosenOne]", NotificationType.Construction, CityAction(cityInfo.location))
+        civInfo.addNotification("Work has started on [$theChosenOne]",  CityAction(cityInfo.location), NotificationIcon.Construction)
         cityConstructions.currentConstructionFromQueue = theChosenOne
     }
 

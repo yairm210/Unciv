@@ -307,8 +307,8 @@ class DiplomacyManager() {
                     trades.remove(trade)
                     val otherCivTrades = otherCiv().getDiplomacyManager(civInfo).trades
                     otherCivTrades.removeAll { it.equals(trade.reverse()) }
-                    civInfo.addNotification("One of our trades with [$otherCivName] has been cut short", NotificationType.Trade)
-                    otherCiv().addNotification("One of our trades with [${civInfo.civName}] has been cut short", NotificationType.Trade)
+                    civInfo.addNotification("One of our trades with [$otherCivName] has been cut short", NotificationIcon.Trade)
+                    otherCiv().addNotification("One of our trades with [${civInfo.civName}] has been cut short", NotificationIcon.Trade)
                     civInfo.updateDetailedCivResources()
                 }
             }
@@ -417,8 +417,8 @@ class DiplomacyManager() {
                 trades.remove(trade)
                 for (offer in trade.ourOffers.union(trade.theirOffers).filter { it.duration == 0 }) { // this was a timed trade
                     if (offer in trade.theirOffers)
-                        civInfo.addNotification("[${offer.name}] from [$otherCivName] has ended", NotificationType.Trade)
-                    else civInfo.addNotification("[${offer.name}] to [$otherCivName] has ended", NotificationType.Trade)
+                        civInfo.addNotification("[${offer.name}] from [$otherCivName] has ended", NotificationIcon.Trade)
+                    else civInfo.addNotification("[${offer.name}] to [$otherCivName] has ended", NotificationIcon.Trade)
 
                     civInfo.updateStatsForNextTurn() // if they were bringing us gold per turn
                     civInfo.updateDetailedCivResources() // if they were giving us resources
@@ -471,7 +471,7 @@ class DiplomacyManager() {
         // Cancel all trades.
         for (trade in trades)
             for (offer in trade.theirOffers.filter { it.duration > 0 })
-                civInfo.addNotification("[" + offer.name + "] from [$otherCivName] has ended", NotificationType.Trade)
+                civInfo.addNotification("[" + offer.name + "] from [$otherCivName] has ended", NotificationIcon.Trade)
         trades.clear()
         updateHasOpenBorders()
 
@@ -487,11 +487,11 @@ class DiplomacyManager() {
         onWarDeclared()
         otherCivDiplomacy.onWarDeclared()
 
-        otherCiv.addNotification("[${civInfo.civName}] has declared war on us!", NotificationType.War)
+        otherCiv.addNotification("[${civInfo.civName}] has declared war on us!", NotificationIcon.War)
         otherCiv.popupAlerts.add(PopupAlert(AlertType.WarDeclaration, civInfo.civName))
 
         getCommonKnownCivs().forEach {
-            it.addNotification("[${civInfo.civName}] has declared war on [${otherCiv().civName}]!", NotificationType.War)
+            it.addNotification("[${civInfo.civName}] has declared war on [${otherCiv().civName}]!", NotificationIcon.War)
         }
 
         otherCivDiplomacy.setModifier(DiplomaticModifiers.DeclaredWarOnUs, -20f)

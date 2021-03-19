@@ -9,15 +9,11 @@ import com.unciv.logic.city.PerpetualConstruction
 import com.unciv.logic.civilization.*
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
-import com.unciv.logic.trade.TradeOffer
-import com.unciv.logic.trade.TradeType
 import com.unciv.models.metadata.GameParameters
 import com.unciv.models.ruleset.Difficulty
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
-import com.unciv.models.ruleset.Specialist
 import java.util.*
-import kotlin.collections.ArrayList
 
 class UncivShowableException(missingMods: String) : Exception(missingMods)
 
@@ -171,11 +167,11 @@ class GameInfo {
         if (tiles.size < 3) {
             for (tile in tiles) {
                 val unitName = tile.militaryUnit!!.name
-                thisPlayer.addNotification("An enemy [$unitName] was spotted $inOrNear our territory", tile.position, NotificationType.War)
+                thisPlayer.addNotification("An enemy [$unitName] was spotted $inOrNear our territory", tile.position, NotificationIcon.War)
             }
         } else {
             val positions = tiles.map { it.position }
-            thisPlayer.addNotification("[${positions.size}] enemy units were spotted $inOrNear our territory", NotificationType.War, LocationAction(positions))
+            thisPlayer.addNotification("[${positions.size}] enemy units were spotted $inOrNear our territory", LocationAction(positions), NotificationIcon.War)
         }
     }
 

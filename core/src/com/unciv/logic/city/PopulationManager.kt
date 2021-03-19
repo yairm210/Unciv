@@ -2,7 +2,7 @@ package com.unciv.logic.city
 
 import com.badlogic.gdx.graphics.Color
 import com.unciv.logic.automation.Automation
-import com.unciv.logic.civilization.NotificationType
+import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.Counter
 import com.unciv.ui.utils.withItem
@@ -65,7 +65,7 @@ class PopulationManager {
             foodStored += (getFoodToNextPopulation() * percentOfFoodCarriedOver / 100f).toInt()
             population++
             autoAssignPopulation()
-            cityInfo.civInfo.addNotification("[${cityInfo.name}] has grown!", cityInfo.location, NotificationType.Growth)
+            cityInfo.civInfo.addNotification("[${cityInfo.name}] has grown!", cityInfo.location, NotificationIcon.Growth)
         }
     }
 

@@ -3,7 +3,7 @@ package com.unciv.logic.city
 import com.badlogic.gdx.graphics.Color
 import com.unciv.logic.automation.ConstructionAutomation
 import com.unciv.logic.civilization.AlertType
-import com.unciv.logic.civilization.NotificationType
+import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.PopupAlert
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.UniqueMap
@@ -310,10 +310,10 @@ class CityConstructions {
                 if (civ.exploredTiles.contains(cityInfo.location))
                     civ.addNotification("[${construction.name}] has been built in [${cityInfo.name}]", cityInfo.location, Color.BROWN)
                 else
-                    civ.addNotification("[${construction.name}] has been built in a faraway land", null, Color.BROWN)
+                    civ.addNotification("[${construction.name}] has been built in a faraway land", "BuildingIcons/${construction.name}")
             }
         } else
-            cityInfo.civInfo.addNotification("[${construction.name}] has been built in [" + cityInfo.name + "]", cityInfo.location, NotificationType.Construction)
+            cityInfo.civInfo.addNotification("[${construction.name}] has been built in [" + cityInfo.name + "]", cityInfo.location, NotificationIcon.Construction)
     }
 
     fun addBuilding(buildingName: String) {

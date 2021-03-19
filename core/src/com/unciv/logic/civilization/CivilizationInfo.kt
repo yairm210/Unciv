@@ -553,9 +553,9 @@ class CivilizationInfo {
         addNotification(text, color, LocationAction(locations))
     }
 
-    fun addNotification(text: String, location: Vector2?, notificationType: NotificationType) {
+    fun addNotification(text: String, location: Vector2?, notificationIcon: String) {
         val locations = if (location != null) listOf(location) else emptyList()
-        addNotification(text, notificationType, LocationAction(locations))
+        addNotification(text, LocationAction(locations), notificationIcon)
     }
 
 
@@ -564,9 +564,12 @@ class CivilizationInfo {
         notifications.add(Notification(text, color, action))
     }
 
-    fun addNotification(text: String, notificationType: NotificationType, action: NotificationAction? = null) {
+    fun addNotification(text: String, vararg notificationIcons: String) = addNotification(text, null, *notificationIcons)
+
+    fun addNotification(text: String, action:NotificationAction?, vararg notificationIcons: String) {
         if (playerType == PlayerType.AI) return // no point in lengthening the saved game info if no one will read it
-        notifications.add(Notification(text, notificationType, action))
+        val arrayList = ArrayList<String>().apply { addAll(notificationIcons) }
+        notifications.add(Notification(text, arrayList, action))
     }
 
     fun addUnit(unitName: String, city: CityInfo? = null) {
