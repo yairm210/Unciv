@@ -7,6 +7,7 @@ import com.unciv.UncivGame
 import com.unciv.logic.automation.UnitAutomation
 import com.unciv.logic.automation.WorkerAutomation
 import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.NotificationType
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.Unique
 import com.unciv.models.ruleset.unit.BaseUnit
@@ -615,7 +616,7 @@ class MapUnit {
             val city = civInfo.cities.random(tileBasedRandom)
             city.population.population++
             city.population.autoAssignPopulation()
-            civInfo.addNotification("We have found survivors in the ruins - population added to [" + city.name + "]", tile.position, Color.GREEN)
+            civInfo.addNotification("We have found survivors in the ruins - population added to [" + city.name + "]", tile.position, NotificationType.Growth)
         }
         val researchableAncientEraTechs = tile.tileMap.gameInfo.ruleSet.technologies.values
                 .filter {
@@ -627,7 +628,7 @@ class MapUnit {
             actions.add {
                 val tech = researchableAncientEraTechs.random(tileBasedRandom).name
                 civInfo.tech.addTechnology(tech)
-                civInfo.addNotification("We have discovered the lost technology of [$tech] in the ruins!", tile.position, Color.BLUE)
+                civInfo.addNotification("We have discovered the lost technology of [$tech] in the ruins!", tile.position, NotificationType.Science)
             }
 
 
@@ -656,7 +657,7 @@ class MapUnit {
 
         actions.add {
             civInfo.policies.addCulture(20)
-            civInfo.addNotification("We have discovered cultural artifacts in the ruins! (+20 Culture)", tile.position, Color.GOLD)
+            civInfo.addNotification("We have discovered cultural artifacts in the ruins! (+20 Culture)", tile.position, NotificationType.Culture)
         }
 
         // Map of the surrounding area

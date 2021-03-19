@@ -171,11 +171,11 @@ class GameInfo {
         if (tiles.size < 3) {
             for (tile in tiles) {
                 val unitName = tile.militaryUnit!!.name
-                thisPlayer.addNotification("An enemy [$unitName] was spotted $inOrNear our territory", tile.position, Color.RED)
+                thisPlayer.addNotification("An enemy [$unitName] was spotted $inOrNear our territory", tile.position, NotificationType.War)
             }
         } else {
             val positions = tiles.map { it.position }
-            thisPlayer.addNotification("[${positions.size}] enemy units were spotted $inOrNear our territory", Color.RED, LocationAction(positions))
+            thisPlayer.addNotification("[${positions.size}] enemy units were spotted $inOrNear our territory", NotificationType.War, LocationAction(positions))
         }
     }
 

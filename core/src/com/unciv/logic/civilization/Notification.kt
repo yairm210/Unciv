@@ -7,16 +7,41 @@ import com.unciv.ui.pickerscreens.TechPickerScreen
 import com.unciv.ui.trade.DiplomacyScreen
 import com.unciv.ui.worldscreen.WorldScreen
 
+enum class NotificationType {
+    Culture,
+    Construction,
+    Growth,
+    War,
+    Trade,
+    Science
+}
+
 /**
  * [action] is not realized as lambda, as it would be too easy to introduce references to objects
  * there that should not be serialized to the saved game.
  */
-open class Notification (
-        // default parameters necessary for json deserialization
-        var text: String = "",
-        var color: Color = Color.BLACK,
-        var action: NotificationAction? = null
-)
+open class Notification() {
+
+    var text: String=""
+    var color: Color?=null
+    var notificationType:NotificationType?=null
+    var action: NotificationAction? = null
+
+    // default parameters necessary for json deserialization
+    constructor(text: String, color: Color, action: NotificationAction?) : this() {
+        this.text = text
+        this.color = color
+        this.action = action
+    }
+
+    constructor(text: String, notificationType: NotificationType, action: NotificationAction? = null) : this() {
+        this.text = text
+        this.notificationType = notificationType
+        this.action = action
+    }
+
+
+}
 
 /** defines what to do if the user clicks on a notification */
 interface NotificationAction {

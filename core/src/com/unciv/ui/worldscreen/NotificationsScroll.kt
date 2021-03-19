@@ -12,7 +12,7 @@ import kotlin.math.min
 
 class NotificationsScroll(internal val worldScreen: WorldScreen) : ScrollPane(null) {
 
-    var notificationsHash : Int = 0
+    var notificationsHash: Int = 0
 
     private var notificationsTable = Table()
 
@@ -24,17 +24,19 @@ class NotificationsScroll(internal val worldScreen: WorldScreen) : ScrollPane(nu
     internal fun update(notifications: MutableList<Notification>) {
 
         // no news? - keep our list as it is, especially don't reset scroll position
-        if(notificationsHash == notifications.hashCode())
+        if (notificationsHash == notifications.hashCode())
             return
         notificationsHash = notifications.hashCode()
 
         notificationsTable.clearChildren()
         for (notification in notifications.toList().reversed()) { // toList to avoid concurrency problems
-            val label = notification.text.toLabel(Color.BLACK,30)
+            val label = notification.text.toLabel(Color.BLACK, 30)
             val listItem = Table()
 
-            listItem.add(ImageGetter.getCircle()
-                    .apply { color=notification.color }).size(20f).padRight(5f)
+            if (notification.notificationType != null)
+                listItem.add(ImageGetter.getImage("NotificationIcons/" + notification.notificationType!!.name)).size(20f).padRight(5f)
+            else listItem.add(ImageGetter.getCircle()
+                    .apply { color = notification.color }).size(20f).padRight(5f)
             listItem.background = ImageGetter.getRoundedEdgeTableBackground().apply { setScale(0.5f) }
             listItem.add(label)
 
@@ -52,7 +54,7 @@ class NotificationsScroll(internal val worldScreen: WorldScreen) : ScrollPane(nu
         }
         notificationsTable.pack()
         pack()
-        height = min(notificationsTable.height,worldScreen.stage.height * 2 / 3 - 15f)
+        height = min(notificationsTable.height, worldScreen.stage.height * 2 / 3 - 15f)
     }
 
 }

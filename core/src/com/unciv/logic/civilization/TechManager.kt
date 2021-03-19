@@ -257,7 +257,7 @@ class TechManager {
                 }
             }
             for (it in getRuleset().policyBranches.values.filter { it.era == currentEra }) {
-                civInfo.addNotification("[" + it.name + "] policy branch unlocked!", null, Color.PURPLE)
+                civInfo.addNotification("[" + it.name + "] policy branch unlocked!", NotificationType.Culture)
             }
         }
 

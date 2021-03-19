@@ -3,6 +3,7 @@ package com.unciv.logic.city
 import com.badlogic.gdx.graphics.Color
 import com.unciv.logic.automation.ConstructionAutomation
 import com.unciv.logic.civilization.AlertType
+import com.unciv.logic.civilization.NotificationType
 import com.unciv.logic.civilization.PopupAlert
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.UniqueMap
@@ -312,7 +313,7 @@ class CityConstructions {
                     civ.addNotification("[${construction.name}] has been built in a faraway land", null, Color.BROWN)
             }
         } else
-            cityInfo.civInfo.addNotification("[${construction.name}] has been built in [" + cityInfo.name + "]", cityInfo.location, Color.BROWN)
+            cityInfo.civInfo.addNotification("[${construction.name}] has been built in [" + cityInfo.name + "]", cityInfo.location, NotificationType.Construction)
     }
 
     fun addBuilding(buildingName: String) {
