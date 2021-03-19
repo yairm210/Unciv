@@ -34,7 +34,7 @@ class NotificationsScroll(internal val worldScreen: WorldScreen) : ScrollPane(nu
             val label = notification.text.toLabel(Color.BLACK, 30)
             val listItem = Table()
 
-            val iconSize = 20f
+            val iconSize = 30f
             if (notification.icons.isNotEmpty()) {
                 val ruleset = worldScreen.gameInfo.ruleSet
                 for (icon in notification.icons) {

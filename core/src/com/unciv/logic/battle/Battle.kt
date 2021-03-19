@@ -174,7 +174,7 @@ object Battle {
                         else " [" + defender.getName() + "]"
                     else " our [" + defender.getName() + "]"
             val notificationString = attackerString + whatHappenedString + defenderString
-            defender.getCivInfo().addNotification(notificationString, attackedTile.position, NotificationIcon.War)
+            defender.getCivInfo().addNotification(notificationString, attackedTile.position, attacker.getName(), NotificationIcon.War, defender.getName())
         }
     }
 
@@ -194,7 +194,7 @@ object Battle {
                 && Random().nextDouble() < 0.67) {
             attacker.getCivInfo().placeUnitNearTile(attackedTile.position, defender.getName())
             attacker.getCivInfo().gold += 25
-            attacker.getCivInfo().addNotification("A barbarian [${defender.getName()}] has joined us!", attackedTile.position, Color.RED)
+            attacker.getCivInfo().addNotification("A barbarian [${defender.getName()}] has joined us!", attackedTile.position, defender.getName())
         }
 
         // Similarly, Ottoman unique
@@ -335,7 +335,7 @@ object Battle {
 
         val capturedUnit = defender.unit
         capturedUnit.civInfo.addNotification("An enemy [" + attacker.getName() + "] has captured our [" + defender.getName() + "]",
-                defender.getTile().position, NotificationIcon.War)
+                defender.getTile().position, attacker.getName(), NotificationIcon.War, defender.getName())
 
         // Apparently in Civ V, captured settlers are converted to workers.
         if (capturedUnit.name == Constants.settler) {
@@ -433,17 +433,17 @@ object Battle {
             if (attacker.isDefeated()) {
                 attacker.getCivInfo()
                         .addNotification("Our [$attackerName] was destroyed by an intercepting [$interceptorName]",
-                                NotificationIcon.War)
+                                attackerName, NotificationIcon.War, interceptorName)
                 defender.getCivInfo()
                         .addNotification("Our [$interceptorName] intercepted and destroyed an enemy [$attackerName]",
-                                interceptor.currentTile.position, NotificationIcon.War)
+                                interceptor.currentTile.position, interceptorName, NotificationIcon.War, attackerName)
             } else {
                 attacker.getCivInfo()
                         .addNotification("Our [$attackerName] was attacked by an intercepting [$interceptorName]",
-                                NotificationIcon.War)
+                                attackerName, NotificationIcon.War, interceptorName)
                 defender.getCivInfo()
                         .addNotification("Our [$interceptorName] intercepted and attacked an enemy [$attackerName]",
-                                interceptor.currentTile.position, NotificationIcon.War)
+                                interceptor.currentTile.position, interceptorName, NotificationIcon.War, attackerName)
             }
             return
         }
@@ -497,9 +497,11 @@ object Battle {
         defender.unit.putInTile(toTile)
         // and count 1 attack for attacker but leave it in place
         reduceAttackerMovementPointsAndAttacks(attacker, defender)
-        val notificationString = "[" + defendBaseUnit.name + "] withdrew from a [" + attackBaseUnit.name + "]"
-        defender.getCivInfo().addNotification(notificationString, toTile.position, NotificationIcon.War)
-        attacker.getCivInfo().addNotification(notificationString, toTile.position, NotificationIcon.War)
+
+        val attackingUnit = attackBaseUnit.name; val defendingUnit = defendBaseUnit.name
+        val notificationString = "[$defendingUnit] withdrew from a [$attackingUnit]"
+        defender.getCivInfo().addNotification(notificationString, toTile.position, defendingUnit, NotificationIcon.War, attackingUnit)
+        attacker.getCivInfo().addNotification(notificationString, toTile.position, defendingUnit, NotificationIcon.War, attackingUnit)
         return true
     }
 
