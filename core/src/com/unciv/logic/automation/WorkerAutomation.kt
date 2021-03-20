@@ -56,7 +56,7 @@ class WorkerAutomation(val unit: MapUnit) {
             return
         }
 
-        unit.civInfo.addNotification("[${unit.displayName()}] has no work to do.", unit.currentTile.position, Color.GRAY)
+        unit.civInfo.addNotification("[${unit.displayName()}] has no work to do.", unit.currentTile.position, unit.name, "OtherIcons/Sleep")
     }
 
 

@@ -309,12 +309,17 @@ class CityConstructions {
             cityInfo.civInfo.popupAlerts.add(PopupAlert(AlertType.WonderBuilt, construction.name))
             for (civ in cityInfo.civInfo.gameInfo.civilizations) {
                 if (civ.exploredTiles.contains(cityInfo.location))
-                    civ.addNotification("[${construction.name}] has been built in [${cityInfo.name}]", cityInfo.location, NotificationIcon.Construction, buildingIcon)
+                    civ.addNotification("[${construction.name}] has been built in [${cityInfo.name}]",
+                            cityInfo.location, NotificationIcon.Construction, buildingIcon)
                 else
                     civ.addNotification("[${construction.name}] has been built in a faraway land", buildingIcon)
             }
-        } else
-            cityInfo.civInfo.addNotification("[${construction.name}] has been built in [" + cityInfo.name + "]", cityInfo.location, NotificationIcon.Construction, buildingIcon)
+        } else {
+            val icon = if (construction is Building) buildingIcon else construction.name // could be a unit, in which case take the unit name.
+            cityInfo.civInfo.addNotification("[${construction.name}] has been built in [" + cityInfo.name + "]",
+                    cityInfo.location, NotificationIcon.Construction, icon)
+        }
+
     }
 
     fun addBuilding(buildingName: String) {

@@ -167,7 +167,7 @@ class GameInfo {
         if (tiles.size < 3) {
             for (tile in tiles) {
                 val unitName = tile.militaryUnit!!.name
-                thisPlayer.addNotification("An enemy [$unitName] was spotted $inOrNear our territory", tile.position, NotificationIcon.War)
+                thisPlayer.addNotification("An enemy [$unitName] was spotted $inOrNear our territory", tile.position, NotificationIcon.War, unitName)
             }
         } else {
             val positions = tiles.map { it.position }
@@ -247,7 +247,7 @@ class GameInfo {
             it.hasUnique("Notified of new Barbarian encampments")
                     && it.exploredTiles.contains(tile.position)
         }
-                .forEach { it.addNotification("A new barbarian encampment has spawned!", tile.position, Color.RED) }
+                .forEach { it.addNotification("A new barbarian encampment has spawned!", tile.position, NotificationIcon.War) }
     }
 
     // All cross-game data which needs to be altered (e.g. when removing or changing a name of a building/tech)

@@ -246,14 +246,10 @@ class TechManager {
 
         val currentEra = civInfo.getEra()
         if (previousEra != currentEra) {
-            civInfo.addNotification("You have entered the [$currentEra]!", null, Color.GOLD)
+            civInfo.addNotification("You have entered the [$currentEra]!", NotificationIcon.Science)
             if (civInfo.isMajorCiv()) {
                 for (knownCiv in civInfo.getKnownCivs()) {
-                    knownCiv.addNotification(
-                            "[${civInfo.civName}] has entered the [$currentEra]!",
-                            null,
-                            Color.BLUE
-                    )
+                    knownCiv.addNotification("[${civInfo.civName}] has entered the [$currentEra]!", civInfo.civName, NotificationIcon.Science)
                 }
             }
             for (it in getRuleset().policyBranches.values.filter { it.era == currentEra }) {
@@ -272,7 +268,7 @@ class TechManager {
                         .firstOrNull { it.isCityCenter() }
                 if (closestCityTile != null) {
                     val text = "[${revealedResource.name}] revealed near [${closestCityTile.getCity()!!.name}]"
-                    civInfo.addNotification(text, tileInfo.position, Color.BLUE)
+                    civInfo.addNotification(text, tileInfo.position, "ResourceIcons/"+revealedResource.name)
                     break
                 }
             }
@@ -287,7 +283,7 @@ class TechManager {
                 val newConstructionName = constructionName
                 if (constructionName in obsoleteUnits) {
                     val text = "[$constructionName] has been obsolete and will be removed from construction queue in [${city.name}]!"
-                    civInfo.addNotification(text, city.location, Color.BROWN)
+                    civInfo.addNotification(text, city.location, NotificationIcon.Construction)
                 } else city.cityConstructions.constructionQueue.add(newConstructionName)
             }
         }

@@ -26,16 +26,10 @@ object NotificationIcon {
 open class Notification() {
 
     var text: String=""
+    @Deprecated("As of 3.13.10 - replaced with icons")
     var color: Color?=null
-    var icons: ArrayList<String> = ArrayList<String>() // Must be ArrayList and not List so it can be deserialized
+    var icons: ArrayList<String> = ArrayList() // Must be ArrayList and not List so it can be deserialized
     var action: NotificationAction? = null
-
-    // default parameters necessary for json deserialization
-    constructor(text: String, color: Color, action: NotificationAction?) : this() {
-        this.text = text
-        this.color = color
-        this.action = action
-    }
 
     constructor(text: String, notificationIcons: ArrayList<String>, action: NotificationAction? = null) : this() {
         this.text = text

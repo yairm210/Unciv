@@ -6,6 +6,7 @@ import com.unciv.UncivGame
 import com.unciv.logic.automation.UnitAutomation
 import com.unciv.logic.automation.WorkerAutomation
 import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.RoadStatus
@@ -346,7 +347,8 @@ object UnitActions {
                                 goldEarned *= 2
                             unit.civInfo.gold += goldEarned
                             tile.owningCity!!.civInfo.getDiplomacyManager(unit.civInfo).influence += influenceEarned
-                            unit.civInfo.addNotification("Your trade mission to [${tile.owningCity!!.civInfo}] has earned you [${goldEarned}] gold and [$influenceEarned] influence!", null, Color.GOLD)
+                            unit.civInfo.addNotification("Your trade mission to [${tile.owningCity!!.civInfo}] has earned you [${goldEarned}] gold and [$influenceEarned] influence!",
+                                    tile.owningCity!!.civInfo.civName, NotificationIcon.Gold, NotificationIcon.Culture)
                             addGoldPerGreatPersonUsage(unit.civInfo)
                             unit.destroy()
                         }.takeIf { canConductTradeMission })
@@ -413,7 +415,7 @@ object UnitActions {
             nearestCity!!.expansion.takeOwnership(tile)
         }
         for (otherCiv in notifications)
-            otherCiv.addNotification("[${unit.civInfo}] has stolen your territory!", unit.currentTile.position, Color.RED)
+            otherCiv.addNotification("[${unit.civInfo}] has stolen your territory!", unit.currentTile.position, unit.civInfo.civName, NotificationIcon.War)
     }
 
     private fun addGoldPerGreatPersonUsage(civInfo: CivilizationInfo) {
@@ -424,7 +426,7 @@ object UnitActions {
         civInfo.gold += goldEarned
 
         val mausoleum = cityWithMausoleum.cityConstructions.getBuiltBuildings().first { it.uniques.contains(uniqueText) }
-        civInfo.addNotification("[${mausoleum.name}] has provided [$goldEarned] Gold!", cityWithMausoleum.location, Color.GOLD)
+        civInfo.addNotification("[${mausoleum.name}] has provided [$goldEarned] Gold!", cityWithMausoleum.location, NotificationIcon.Gold)
     }
 
     private fun addFortifyActions(actionList: ArrayList<UnitAction>, unit: MapUnit, unitTable: UnitTable) {

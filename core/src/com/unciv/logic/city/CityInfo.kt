@@ -6,6 +6,7 @@ import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.battle.Battle
 import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
@@ -96,7 +97,6 @@ class CityInfo {
         civInfo.citiesCreated++
 
         civInfo.cities = civInfo.cities.toMutableList().apply { add(this@CityInfo) }
-        civInfo.addNotification("[$name] has been founded!", cityLocation, Color.PURPLE)
 
         if (civInfo.cities.size == 1) cityConstructions.addBuilding(capitalCityIndicator())
 
@@ -345,7 +345,7 @@ class CityInfo {
         if (isInResistance()) {
             resistanceCounter--
             if (!isInResistance())
-                civInfo.addNotification("The resistance in [$name] has ended!", location, Color.YELLOW)
+                civInfo.addNotification("The resistance in [$name] has ended!", location, "StatIons/Resistance")
         }
 
         if (isPuppet) reassignPopulation()
@@ -374,7 +374,7 @@ class CityInfo {
         if (isBeingRazed) {
             population.population--
             if (population.population <= 0) { // there are strange cases where we get to -1
-                civInfo.addNotification("[$name] has been razed to the ground!", location, Color.RED)
+                civInfo.addNotification("[$name] has been razed to the ground!", location, "OtherIcons/Fire")
                 destroyCity()
             } else { //if not razed yet:
                 if (population.foodStored >= population.getFoodToNextPopulation()) { //if surplus in the granary...
@@ -425,7 +425,7 @@ class CityInfo {
         // Gain gold for plundering city
         val goldPlundered = getGoldForCapturingCity(conqueringCiv)
         conqueringCiv.gold += goldPlundered
-        conqueringCiv.addNotification("Received [$goldPlundered] Gold for capturing [$name]", centerTileInfo.position, Color.GOLD)
+        conqueringCiv.addNotification("Received [$goldPlundered] Gold for capturing [$name]", centerTileInfo.position, NotificationIcon.Gold)
 
         val oldCiv = civInfo
         val reconqueredOurCity = previousOwner == conqueringCiv.civName

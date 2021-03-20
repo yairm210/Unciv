@@ -435,7 +435,8 @@ class MapUnit {
         if (tile.owningCity == null || tile.owningCity!!.civInfo != civInfo) productionPointsToAdd = productionPointsToAdd * 2 / 3
         if (productionPointsToAdd > 0) {
             closestCity.cityConstructions.addProductionPoints(productionPointsToAdd)
-            civInfo.addNotification("Clearing a [$removedTerrainFeature] has created [$productionPointsToAdd] Production for [${closestCity.name}]", closestCity.location, Color.BROWN)
+            civInfo.addNotification("Clearing a [$removedTerrainFeature] has created [$productionPointsToAdd] Production for [${closestCity.name}]",
+                    closestCity.location, NotificationIcon.Construction)
         }
 
     }
@@ -581,7 +582,7 @@ class MapUnit {
             goldGained *= 3f
 
         civInfo.gold += goldGained.toInt()
-        civInfo.addNotification("We have captured a barbarian encampment and recovered [${goldGained.toInt()}] gold!", tile.position, Color.RED)
+        civInfo.addNotification("We have captured a barbarian encampment and recovered [${goldGained.toInt()}] gold!", tile.position, NotificationIcon.Gold)
     }
 
     fun disband() {
@@ -639,20 +640,20 @@ class MapUnit {
                 val chosenUnit = possibleUnits.random(tileBasedRandom)
                 if (!(civInfo.isCityState() || civInfo.isOneCityChallenger()) || chosenUnit != Constants.settler) { //City-States and OCC don't get settler from ruins
                     civInfo.placeUnitNearTile(tile.position, chosenUnit)
-                    civInfo.addNotification("A [$chosenUnit] has joined us!", tile.position, Color.BROWN)
+                    civInfo.addNotification("A [$chosenUnit] has joined us!", tile.position, chosenUnit)
                 }
             }
 
         if (!type.isCivilian())
             actions.add {
                 promotions.XP += 10
-                civInfo.addNotification("An ancient tribe trains our [$name] in their ways of combat!", tile.position, Color.RED)
+                civInfo.addNotification("An ancient tribe trains our [$name] in their ways of combat!", tile.position, name)
             }
 
         actions.add {
             val amount = listOf(25, 60, 100).random(tileBasedRandom)
             civInfo.gold += amount
-            civInfo.addNotification("We have found a stash of [$amount] gold in the ruins!", tile.position, Color.GOLD)
+            civInfo.addNotification("We have found a stash of [$amount] gold in the ruins!", tile.position, NotificationIcon.Gold)
         }
 
         actions.add {
@@ -669,7 +670,7 @@ class MapUnit {
                     .map { it.position }
             civInfo.exploredTiles.addAll(tilesToReveal)
             civInfo.updateViewableTiles()
-            civInfo.addNotification("We have found a crudely-drawn map in the ruins!", tile.position, Color.RED)
+            civInfo.addNotification("We have found a crudely-drawn map in the ruins!", tile.position, "ImprovementIcons/Ancient ruins")
         }
 
         (actions.random(tileBasedRandom))()
@@ -730,9 +731,9 @@ class MapUnit {
             health -= tileDamage
 
             if (health <= 0) {
-                civInfo.addNotification("Our [$name] took [$tileDamage] tile damage and was destroyed", currentTile.position, Color.RED)
+                civInfo.addNotification("Our [$name] took [$tileDamage] tile damage and was destroyed", currentTile.position, name, NotificationIcon.Death)
                 destroy()
-            } else civInfo.addNotification("Our [$name] took [$tileDamage] tile damage", currentTile.position, Color.RED)
+            } else civInfo.addNotification("Our [$name] took [$tileDamage] tile damage", currentTile.position, name)
         }
 
     }
@@ -749,10 +750,10 @@ class MapUnit {
             health -= 30
 
             if (health <= 0) {
-                civInfo.addNotification("An enemy [Citadel] has destroyed our [$name]", currentTile.position, Color.RED)
+                civInfo.addNotification("An enemy [Citadel] has destroyed our [$name]", currentTile.position, name, NotificationIcon.Death)
                 // todo - add notification for attacking civ
                 destroy()
-            } else civInfo.addNotification("An enemy [Citadel] has attacked our [$name]", currentTile.position, Color.RED)
+            } else civInfo.addNotification("An enemy [Citadel] has attacked our [$name]", currentTile.position, name)
         }
     }
 
