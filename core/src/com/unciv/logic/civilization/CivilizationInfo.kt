@@ -344,7 +344,7 @@ class CivilizationInfo {
         val maxEraOfTech = tech.researchedTechnologies
                 .asSequence()
                 .map { it.column!! }
-                .maxBy { it.columnNumber }!!
+                .maxByOrNull { it.columnNumber }!!
                 .era
         return maxEraOfTech
     }
@@ -484,7 +484,7 @@ class CivilizationInfo {
             if (offeringCiv.isDefeated() || !TradeEvaluation().isTradeValid(tradeRequest.trade, this, offeringCiv)) {
                 tradeRequests.remove(tradeRequest)
                 // Yes, this is the right direction. I checked.
-                offeringCiv.addNotification("Our proposed trade is no longer relevant!", Color.GOLD)
+                offeringCiv.addNotification("Our proposed trade is no longer relevant!", NotificationIcon.Trade)
             }
         }
         updateDetailedCivResources() // If you offered a trade last turn, this turn it will have been accepted/declined
@@ -509,7 +509,7 @@ class CivilizationInfo {
                     unitToDisband.disband()
                     civMilitaryUnits -= unitToDisband
                     val unitName = unitToDisband.displayName()
-                    addNotification("Cannot provide unit upkeep for [$unitName] - unit has been disbanded!", null, Color.RED)
+                    addNotification("Cannot provide unit upkeep for [$unitName] - unit has been disbanded!", unitName, NotificationIcon.Death)
                 }
             }
         }
@@ -550,17 +550,12 @@ class CivilizationInfo {
 
     fun addNotification(text: String, location: Vector2?, color: Color) {
         val locations = if (location != null) listOf(location) else emptyList()
-        addNotification(text, color, LocationAction(locations))
+        if (playerType == PlayerType.AI) return // no point in lengthening the saved game info if no one will read it
+        notifications.add(Notification(text, color, LocationAction(locations)))
     }
 
     fun addNotification(text: String, location: Vector2, vararg notificationIcons: String) {
         addNotification(text, LocationAction(listOf(location)), *notificationIcons)
-    }
-
-
-    fun addNotification(text: String, color: Color, action: NotificationAction? = null) {
-        if (playerType == PlayerType.AI) return // no point in lengthening the saved game info if no one will read it
-        notifications.add(Notification(text, color, action))
     }
 
     fun addNotification(text: String, vararg notificationIcons: String) = addNotification(text, null, *notificationIcons)
@@ -649,7 +644,7 @@ class CivilizationInfo {
         if (!isCityState()) return
         val maxInfluence = diplomacy
                 .filter { !it.value.otherCiv().isCityState() && !it.value.otherCiv().isDefeated() }
-                .maxBy { it.value.influence }
+                .maxByOrNull { it.value.influence }
         if (maxInfluence != null && maxInfluence.value.influence >= 60) {
             newAllyName = maxInfluence.key
         }

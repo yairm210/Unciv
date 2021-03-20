@@ -274,7 +274,8 @@ class QuestManager {
             newQuest.gameInfo = civInfo.gameInfo
 
             assignedQuests.add(newQuest)
-            assignee.addNotification("[${civInfo.civName}] assigned you a new quest: [${quest.name}].", Color.GOLD, DiplomacyAction(civInfo.civName))
+            assignee.addNotification("[${civInfo.civName}] assigned you a new quest: [${quest.name}].",
+                    DiplomacyAction(civInfo.civName), civInfo.civName, "OtherIcons/Quest")
 
             if (quest.isIndividual())
                 individualQuestCountdown[assignee.civName] = UNSET
@@ -345,7 +346,8 @@ class QuestManager {
 
         civInfo.getDiplomacyManager(assignedQuest.assignee).influence += rewardInfluence
         if (rewardInfluence > 0)
-            assignee.addNotification("[${civInfo.civName}] rewarded you with [${rewardInfluence.toInt()}] influence for completing the [${assignedQuest.questName}] quest.", civInfo.getCapital().location, Color.GOLD)
+            assignee.addNotification("[${civInfo.civName}] rewarded you with [${rewardInfluence.toInt()}] influence for completing the [${assignedQuest.questName}] quest.",
+                    civInfo.getCapital().location, civInfo.civName, "OtherIcons/Quest")
     }
 
     /** Returns the score for the [assignedQuest] */

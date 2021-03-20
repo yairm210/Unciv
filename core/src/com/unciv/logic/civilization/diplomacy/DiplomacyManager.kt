@@ -647,11 +647,11 @@ class DiplomacyManager() {
         setFlag(DiplomacyFlags.Denunceation, 30)
         otherCivDiplomacy().setFlag(DiplomacyFlags.Denunceation, 30)
 
-        otherCiv().addNotification("[${civInfo.civName}] has denounced us!", Color.RED)
+        otherCiv().addNotification("[${civInfo.civName}] has denounced us!", NotificationIcon.Diplomacy, civInfo.civName)
 
         // We, A, are denouncing B. What do other major civs (C,D, etc) think of this?
         getCommonKnownCivs().filter { it.isMajorCiv() }.forEach { thirdCiv ->
-            thirdCiv.addNotification("[${civInfo.civName}] has denounced [${otherCiv().civName}]!", null, Color.RED)
+            thirdCiv.addNotification("[${civInfo.civName}] has denounced [$otherCivName]!", civInfo.civName, NotificationIcon.Diplomacy, otherCivName)
             val thirdCivRelationshipWithOtherCiv = thirdCiv.getDiplomacyManager(otherCiv()).relationshipLevel()
             when (thirdCivRelationshipWithOtherCiv) {
                 RelationshipLevel.Unforgivable -> addModifier(DiplomaticModifiers.DenouncedOurEnemies, 15f)
@@ -665,14 +665,14 @@ class DiplomacyManager() {
     fun agreeNotToSettleNear() {
         otherCivDiplomacy().setFlag(DiplomacyFlags.AgreedToNotSettleNearUs, 100)
         addModifier(DiplomaticModifiers.UnacceptableDemands, -10f)
-        otherCiv().addNotification("[${civInfo.civName}] agreed to stop settling cities near us!", Color.MAROON)
+        otherCiv().addNotification("[${civInfo.civName}] agreed to stop settling cities near us!", NotificationIcon.Diplomacy, civInfo.civName)
     }
 
     fun refuseDemandNotToSettleNear() {
         addModifier(DiplomaticModifiers.UnacceptableDemands, -20f)
         otherCivDiplomacy().setFlag(DiplomacyFlags.IgnoreThemSettlingNearUs, 100)
         otherCivDiplomacy().addModifier(DiplomaticModifiers.RefusedToNotSettleCitiesNearUs, -15f)
-        otherCiv().addNotification("[${civInfo.civName}] refused to stop settling cities near us!", Color.MAROON)
+        otherCiv().addNotification("[${civInfo.civName}] refused to stop settling cities near us!", NotificationIcon.Diplomacy, civInfo.civName)
     }
 
 

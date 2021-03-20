@@ -40,8 +40,8 @@ class CivInfoTransientUpdater(val civInfo: CivilizationInfo) {
                 val metCiv = entry.key
                 if (metCiv == civInfo || metCiv.isBarbarian() || civInfo.diplomacy.containsKey(metCiv.civName)) continue
                 civInfo.meetCivilization(metCiv)
-                civInfo.addNotification("We have encountered [" + metCiv.civName + "]!", entry.value.position, Color.GOLD)
-                metCiv.addNotification("We have encountered [" + civInfo.civName + "]!", entry.value.position, Color.GOLD)
+                civInfo.addNotification("We have encountered [" + metCiv.civName + "]!", entry.value.position, metCiv.civName, NotificationIcon.Diplomacy)
+                metCiv.addNotification("We have encountered [" + civInfo.civName + "]!", entry.value.position, civInfo.civName, NotificationIcon.Diplomacy)
             }
 
             discoverNaturalWonders()
@@ -91,7 +91,7 @@ class CivInfoTransientUpdater(val civInfo: CivilizationInfo) {
             if (civInfo.naturalWonders.contains(tile.naturalWonder))
                 continue
             civInfo.discoverNaturalWonder(tile.naturalWonder!!)
-            civInfo.addNotification("We have discovered [" + tile.naturalWonder + "]!", tile.position, Color.GOLD)
+            civInfo.addNotification("We have discovered [" + tile.naturalWonder + "]!", tile.position, "StatIcons/Happiness")
 
             var goldGained = 0
             val discoveredNaturalWonders = civInfo.gameInfo.civilizations.filter { it != civInfo && it.isMajorCiv() }
@@ -109,7 +109,7 @@ class CivInfoTransientUpdater(val civInfo: CivilizationInfo) {
 
             if (goldGained > 0) {
                 civInfo.gold += goldGained
-                civInfo.addNotification("We have received [" + goldGained + "] Gold for discovering [" + tile.naturalWonder + "]", null, Color.GOLD)
+                civInfo.addNotification("We have received [" + goldGained + "] Gold for discovering [" + tile.naturalWonder + "]", NotificationIcon.Gold)
             }
 
         }

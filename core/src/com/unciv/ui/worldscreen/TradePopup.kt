@@ -4,6 +4,7 @@ import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.Constants
+import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.trade.TradeEvaluation
 import com.unciv.logic.trade.TradeLogic
@@ -75,7 +76,7 @@ class TradePopup(worldScreen: WorldScreen): Popup(worldScreen){
                 }
                 open()
             }
-            requestingCiv.addNotification("[${viewingCiv.civName}] has accepted your trade request", Color.GOLD)
+            requestingCiv.addNotification("[${viewingCiv.civName}] has accepted your trade request", viewingCiv.civName, NotificationIcon.Trade)
         }
 
         // In the meantime this became invalid, perhaps because we accepted previous trades
@@ -93,7 +94,7 @@ class TradePopup(worldScreen: WorldScreen): Popup(worldScreen){
                 diplomacyManager.setFlag(DiplomacyFlags.DeclinedPeace,5)
 
             close()
-            requestingCiv.addNotification("[${viewingCiv.civName}] has denied your trade request", Color.GOLD)
+            requestingCiv.addNotification("[${viewingCiv.civName}] has denied your trade request", viewingCiv.civName, NotificationIcon.Trade)
 
             worldScreen.shouldUpdate=true
         }

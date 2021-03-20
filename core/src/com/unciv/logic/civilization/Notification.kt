@@ -14,6 +14,9 @@ object NotificationIcon {
     val War = "OtherIcons/Pillage"
     val Trade = "StatIcons/Acquire"
     val Science = "StatIcons/Science"
+    val Gold = "StatIcons/Gold"
+    val Death = "OtherIcons/DisbandUnit"
+    val Diplomacy = "OtherIcons/Diplomacy"
 }
 
 /**
