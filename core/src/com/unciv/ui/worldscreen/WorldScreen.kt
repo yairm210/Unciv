@@ -71,6 +71,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
 
 
     init {
+        ImageGetter.setNewRuleset(gameInfo.ruleSet) // so that even if the multiplayerpoller pulls us back into a game after we changed rulesets, the images will be utd
         topBar.setPosition(0f, stage.height - topBar.height)
         topBar.width = stage.width
 
