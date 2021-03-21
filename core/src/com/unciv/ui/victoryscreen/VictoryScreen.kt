@@ -16,9 +16,10 @@ import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.WorldScreen
 
 class VictoryScreen(val worldScreen: WorldScreen) : PickerScreen() {
-
+    
+    val gameInfo = worldScreen.gameInfo
     private val playerCivInfo = worldScreen.viewingCiv
-    val victoryTypes = playerCivInfo.gameInfo.gameParameters.victoryTypes
+    val victoryTypes = gameInfo.gameParameters.victoryTypes
     private val scientificVictoryEnabled = victoryTypes.contains(VictoryType.Scientific)
     private val culturalVictoryEnabled = victoryTypes.contains(VictoryType.Cultural)
     private val dominationVictoryEnabled = victoryTypes.contains(VictoryType.Domination)
@@ -27,7 +28,7 @@ class VictoryScreen(val worldScreen: WorldScreen) : PickerScreen() {
     private val contentsTable = Table()
 
     init {
-        val difficultyLabel = ("{Difficulty}: {${worldScreen.gameInfo.difficulty}}").toLabel()
+        val difficultyLabel = ("{Difficulty}: {${gameInfo.difficulty}}").toLabel()
         difficultyLabel.setPosition(10f, stage.height - 10, Align.topLeft)
         stage.addActor(difficultyLabel)
 
@@ -61,7 +62,7 @@ class VictoryScreen(val worldScreen: WorldScreen) : PickerScreen() {
                 VictoryType.Neutral -> wonOrLost("You have won!")
             }
         }
-        for (civ in game.gameInfo.civilizations.filter { it.isMajorCiv() && it != playerCivInfo }) {
+        for (civ in gameInfo.civilizations.filter { it.isMajorCiv() && it != playerCivInfo }) {
             val civVictoryType = civ.victoryManager.hasWonVictoryType()
             if (civVictoryType != null) {
                 someoneHasWon = true
@@ -100,12 +101,12 @@ class VictoryScreen(val worldScreen: WorldScreen) : PickerScreen() {
         rightSideButton.isVisible = true
         rightSideButton.enable()
         rightSideButton.onClick {
-            game.setScreen(NewGameScreen(this, GameSetupInfo(worldScreen.gameInfo)))
+            game.setScreen(NewGameScreen(this, GameSetupInfo(gameInfo)))
         }
 
         closeButton.setText("One more turn...!".tr())
         closeButton.onClick {
-            playerCivInfo.gameInfo.oneMoreTurnMode = true
+            gameInfo.oneMoreTurnMode = true
             game.setWorldScreen()
         }
     }
@@ -177,7 +178,7 @@ class VictoryScreen(val worldScreen: WorldScreen) : PickerScreen() {
 
 
     private fun setGlobalVictoryTable() {
-        val majorCivs = game.gameInfo.civilizations.filter { it.isMajorCiv() }
+        val majorCivs = gameInfo.civilizations.filter { it.isMajorCiv() }
         val globalVictoryTable = Table().apply { defaults().pad(10f) }
 
         if (scientificVictoryEnabled) globalVictoryTable.add(getGlobalScientificVictoryColumn(majorCivs))
@@ -241,7 +242,7 @@ class VictoryScreen(val worldScreen: WorldScreen) : PickerScreen() {
     }
 
     private fun setCivRankingsTable() {
-        val majorCivs = game.gameInfo.civilizations.filter { it.isMajorCiv() }
+        val majorCivs = gameInfo.civilizations.filter { it.isMajorCiv() }
         val civRankingsTable = Table().apply { defaults().pad(5f) }
 
         for (category in RankingType.values()) {

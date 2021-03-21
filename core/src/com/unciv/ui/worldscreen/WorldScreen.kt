@@ -40,8 +40,7 @@ import java.util.*
 import kotlin.concurrent.thread
 import kotlin.concurrent.timer
 
-class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
-    val gameInfo = game.gameInfo
+class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
 
     var isPlayersTurn = viewingCiv == gameInfo.currentPlayerCiv // todo this should be updated when passing turns
     var selectedCiv = viewingCiv // Selected civilization, used in spectator and replay mode, equals viewingCiv in ordinary games
@@ -485,7 +484,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
     fun createNewWorldScreen(gameInfo:GameInfo) {
 
         game.gameInfo = gameInfo
-        val newWorldScreen = WorldScreen(gameInfo.getPlayerToViewAs())
+        val newWorldScreen = WorldScreen(gameInfo, gameInfo.getPlayerToViewAs())
         newWorldScreen.mapHolder.scrollX = mapHolder.scrollX
         newWorldScreen.mapHolder.scrollY = mapHolder.scrollY
         newWorldScreen.mapHolder.scaleX = mapHolder.scaleX
@@ -541,7 +540,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
 
                 if (gameInfoClone.currentPlayerCiv.civName != viewingCiv.civName
                         && !gameInfoClone.gameParameters.isOnlineMultiplayer)
-                    game.setScreen(PlayerReadyScreen(gameInfoClone.getCurrentPlayerCivilization()))
+                    game.setScreen(PlayerReadyScreen(gameInfoClone, gameInfoClone.getCurrentPlayerCivilization()))
                 else {
                     createNewWorldScreen(gameInfoClone)
                 }

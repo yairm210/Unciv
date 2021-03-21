@@ -26,7 +26,7 @@ class WorldScreenMenuPopup(val worldScreen: WorldScreen) : Popup(worldScreen) {
     init {
         addMenuButton("Main menu") { worldScreen.game.setScreen(MainMenuScreen()) }
         addMenuButton("Civilopedia") { worldScreen.game.setScreen(CivilopediaScreen(worldScreen.gameInfo.ruleSet)) }
-        addMenuButton("Save game") { worldScreen.game.setScreen(SaveGameScreen()) }
+        addMenuButton("Save game") { worldScreen.game.setScreen(SaveGameScreen(worldScreen.gameInfo)) }
         addMenuButton("Load game") { worldScreen.game.setScreen(LoadGameScreen(worldScreen)) }
 
         addMenuButton("Start new game") {

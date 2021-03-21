@@ -7,6 +7,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextField
 import com.badlogic.gdx.utils.Json
 import com.unciv.UncivGame
+import com.unciv.logic.GameInfo
 import com.unciv.logic.GameSaver
 import com.unciv.models.translations.tr
 import com.unciv.ui.pickerscreens.PickerScreen
@@ -16,7 +17,7 @@ import kotlin.concurrent.thread
 import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 
 
-class SaveGameScreen : PickerScreen() {
+class SaveGameScreen(val gameInfo: GameInfo) : PickerScreen() {
     val gameNameTextField = TextField("", skin)
     val currentSaves = Table()
 
@@ -29,7 +30,7 @@ class SaveGameScreen : PickerScreen() {
         topTable.add(ScrollPane(currentSaves)).height(stage.height * 2 / 3)
 
         val newSave = Table()
-        val defaultSaveName = game.gameInfo.currentPlayer + " -  " + game.gameInfo.turns + " turns"
+        val defaultSaveName = gameInfo.currentPlayer + " -  " + gameInfo.turns + " turns"
         gameNameTextField.text = defaultSaveName
 
         newSave.add("Saved game name".toLabel()).row()
@@ -37,7 +38,7 @@ class SaveGameScreen : PickerScreen() {
 
         val copyJsonButton = "Copy to clipboard".toTextButton()
         copyJsonButton.onClick {
-            val json = Json().toJson(game.gameInfo)
+            val json = Json().toJson(gameInfo)
             val base64Gzip = Gzip.zip(json)
             Gdx.app.clipboard.contents = base64Gzip
         }
@@ -51,9 +52,9 @@ class SaveGameScreen : PickerScreen() {
                 saveToCustomLocation.setText("Saving...".tr())
                 saveToCustomLocation.disable()
                 thread(name = "SaveGame") {
-                    GameSaver.saveGameToCustomLocation(UncivGame.Current.gameInfo, gameNameTextField.text) { e ->
+                    GameSaver.saveGameToCustomLocation(gameInfo, gameNameTextField.text) { e ->
                         if (e == null) {
-                            Gdx.app.postRunnable { UncivGame.Current.setWorldScreen() }
+                            Gdx.app.postRunnable { game.setWorldScreen() }
                         } else if (e !is CancellationException) {
                             errorLabel.setText("Could not save game to custom location".tr())
                             e.printStackTrace()
@@ -89,7 +90,7 @@ class SaveGameScreen : PickerScreen() {
     private fun saveGame() {
         rightSideButton.setText("Saving...".tr())
         thread(name = "SaveGame") {
-            GameSaver.saveGame(UncivGame.Current.gameInfo, gameNameTextField.text) {
+            GameSaver.saveGame(gameInfo, gameNameTextField.text) {
                 Gdx.app.postRunnable {
                     if (it != null) ToastPopup("Could not save game!", this)
                     else UncivGame.Current.setWorldScreen()

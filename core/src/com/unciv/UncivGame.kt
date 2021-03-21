@@ -133,9 +133,9 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
         ImageGetter.setNewRuleset(gameInfo.ruleSet)
         Gdx.input.inputProcessor = null // Since we will set the world screen when we're ready,
         if (gameInfo.civilizations.count { it.playerType == PlayerType.Human } > 1 && !gameInfo.gameParameters.isOnlineMultiplayer)
-            setScreen(PlayerReadyScreen(gameInfo.getPlayerToViewAs()))
+            setScreen(PlayerReadyScreen(gameInfo, gameInfo.getPlayerToViewAs()))
         else {
-            worldScreen = WorldScreen(gameInfo.getPlayerToViewAs())
+            worldScreen = WorldScreen(gameInfo, gameInfo.getPlayerToViewAs())
             setWorldScreen()
         }
     }

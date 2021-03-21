@@ -68,7 +68,7 @@ class OptionsPopup(val previousScreen:CameraStageBaseScreen) : Popup(previousScr
     private fun reloadWorldAndOptions() {
         settings.save()
         if (previousScreen is WorldScreen) {
-            previousScreen.game.worldScreen = WorldScreen(previousScreen.viewingCiv)
+            previousScreen.game.worldScreen = WorldScreen(previousScreen.gameInfo, previousScreen.viewingCiv)
             previousScreen.game.setWorldScreen()
         } else if (previousScreen is MainMenuScreen) {
             previousScreen.game.setScreen(MainMenuScreen())
