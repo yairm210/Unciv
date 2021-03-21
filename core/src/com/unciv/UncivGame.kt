@@ -171,7 +171,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
     }
 
     override fun pause() {
-        if (this::gameInfo.isInitialized) GameSaver.autoSave(this.gameInfo)
+        if (isGameInfoInitialized()) GameSaver.autoSave(this.gameInfo)
         super.pause()
     }
 
@@ -187,7 +187,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
         val threadList = Array(numThreads) { _ -> Thread() }
         Thread.enumerate(threadList)
 
-        if (::gameInfo.isInitialized){
+        if (isGameInfoInitialized()){
             val autoSaveThread = threadList.firstOrNull { it.name == "Autosave" }
             if (autoSaveThread != null && autoSaveThread.isAlive) {
                 // auto save is already in progress (e.g. started by onPause() event)

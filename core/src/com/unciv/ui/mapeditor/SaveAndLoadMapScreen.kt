@@ -37,7 +37,7 @@ class SaveAndLoadMapScreen(mapToSave: TileMap?, save:Boolean = false) : PickerSc
                         MapSaver.saveMap(mapNameTextField.text, mapToSave)
                         Gdx.app.postRunnable {
                             Gdx.input.inputProcessor = null // This is to stop ANRs happening here, until the map editor screen sets up.
-                            UncivGame.Current.setScreen(MapEditorScreen(mapToSave))
+                            game.setScreen(MapEditorScreen(mapToSave))
                             dispose()
                         }
                     } catch (ex: Exception) {
@@ -63,7 +63,7 @@ class SaveAndLoadMapScreen(mapToSave: TileMap?, save:Boolean = false) : PickerSc
                     val map = MapSaver.loadMap(chosenMap!!)
                     Gdx.app.postRunnable {
                         Gdx.input.inputProcessor = null // This is to stop ANRs happening here, until the map editor screen sets up.
-                        UncivGame.Current.setScreen(MapEditorScreen(map))
+                        game.setScreen(MapEditorScreen(map))
                         dispose()
                     }
                 }
@@ -105,7 +105,7 @@ class SaveAndLoadMapScreen(mapToSave: TileMap?, save:Boolean = false) : PickerSc
                     val clipboardContentsString = Gdx.app.clipboard.contents.trim()
                     val decoded = Gzip.unzip(clipboardContentsString)
                     val loadedMap = MapSaver.mapFromJson(decoded)
-                    UncivGame.Current.setScreen(MapEditorScreen(loadedMap))
+                    game.setScreen(MapEditorScreen(loadedMap))
                 } catch (ex: Exception) {
                     couldNotLoadMapLabel.isVisible = true
                 }
@@ -117,7 +117,7 @@ class SaveAndLoadMapScreen(mapToSave: TileMap?, save:Boolean = false) : PickerSc
         deleteButton.onClick {
             YesNoPopup("Are you sure you want to delete this map?", {
                 chosenMap!!.delete()
-                UncivGame.Current.setScreen(SaveAndLoadMapScreen(mapToSave))
+                game.setScreen(SaveAndLoadMapScreen(mapToSave))
             }, this).open()
         }
         rightSideTable.add(deleteButton).row()

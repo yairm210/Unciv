@@ -21,8 +21,8 @@ class PlayerReadyScreen(gameInfo: GameInfo, currentPlayerCiv: CivilizationInfo) 
 
         table.onClick {
             Gdx.app.postRunnable { // To avoid ANRs on Android when the creation of the worldscreen takes more than 500ms
-                UncivGame.Current.worldScreen = WorldScreen(gameInfo, currentPlayerCiv)
-                UncivGame.Current.setWorldScreen()
+                game.worldScreen = WorldScreen(gameInfo, currentPlayerCiv)
+                game.setWorldScreen()
             }
         }
         table.setFillParent(true)

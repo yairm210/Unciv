@@ -63,7 +63,7 @@ class NewMapScreen(val mapParameters: MapParameters = MapParameters()) : PickerS
                     Gdx.app.postRunnable {
                         val mapEditorScreen = MapEditorScreen(generatedMap!!)
                         mapEditorScreen.ruleset = ruleset
-                        UncivGame.Current.setScreen(mapEditorScreen)
+                        game.setScreen(mapEditorScreen)
                     }
 
                 } catch (exception: Exception) {
