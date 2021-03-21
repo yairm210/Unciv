@@ -345,7 +345,7 @@ class CityInfo {
         if (isInResistance()) {
             resistanceCounter--
             if (!isInResistance())
-                civInfo.addNotification("The resistance in [$name] has ended!", location, "StatIons/Resistance")
+                civInfo.addNotification("The resistance in [$name] has ended!", location, "StatIcons/Resistance")
         }
 
         if (isPuppet) reassignPopulation()
