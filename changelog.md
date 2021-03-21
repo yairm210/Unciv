@@ -1,3 +1,13 @@
+
+## 3.13.10
+
+Converted all color-coding of notifications to multi-icon notifications
+
+Resolved #3713 - Fixed misspelled "fresh water" in farm unique check
+
+Barbarians only heal by pillaging, simplified barbarian automation
+
+
 ## 3.13.9
 
 Added "permanent visual mods" option to mod management
