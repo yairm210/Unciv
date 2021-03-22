@@ -182,20 +182,20 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) 
 
         if (tileInfo.isCityCenter()) {
             val era = tileInfo.getOwner()!!.getEra()
-            val cityTerrainVariantWithEra = tileSetStrings.getCityTile(tileInfo.baseTerrain, era)
-            if (ImageGetter.imageExists(cityTerrainVariantWithEra))
-                return listOf(baseTerrainTileLocation, cityTerrainVariantWithEra)
+            val cityTerrainAndEraVariant = tileSetStrings.getCityTile(tileInfo.baseTerrain, era)
+            if (ImageGetter.imageExists(cityTerrainAndEraVariant))
+                return listOf(baseTerrainTileLocation, cityTerrainAndEraVariant)
 
-            val cityWithEra = tileSetStrings.getCityTile(null, era)
-            if (ImageGetter.imageExists(cityWithEra))
-                return listOf(baseTerrainTileLocation, cityWithEra)
+            val cityEraVariant = tileSetStrings.getCityTile(null, era)
+            if (ImageGetter.imageExists(cityEraVariant))
+                return listOf(baseTerrainTileLocation, cityEraVariant)
 
             val cityTerrainVariant = tileSetStrings.getCityTile(tileInfo.baseTerrain, null)
             if (ImageGetter.imageExists(cityTerrainVariant))
-                return listOf(cityTerrainVariant)
+                return listOf(baseTerrainTileLocation, cityTerrainVariant)
 
             if (ImageGetter.imageExists(tileSetStrings.cityTile))
-                return listOf(tileSetStrings.cityTile)
+                return listOf(baseTerrainTileLocation, tileSetStrings.cityTile)
         }
 
         if (tileInfo.isNaturalWonder()) {
