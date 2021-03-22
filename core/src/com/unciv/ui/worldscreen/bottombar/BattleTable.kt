@@ -61,14 +61,13 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
 
     private fun tryGetAttacker(): ICombatant? {
         val unitTable = worldScreen.bottomUnitTable
-        if (unitTable.selectedUnit != null
-                && !unitTable.selectedUnit!!.type.isCivilian()) {
-            return MapUnitCombatant(unitTable.selectedUnit!!)
-        } else if (unitTable.selectedCity != null) {
-            return CityCombatant(unitTable.selectedCity!!)
-        } else {
-            return null // no attacker
-        }
+        return if (unitTable.selectedUnit != null
+                && !unitTable.selectedUnit!!.type.isCivilian()
+                && !unitTable.selectedUnit!!.hasUnique("Cannot attack"))
+                    MapUnitCombatant(unitTable.selectedUnit!!)
+        else if (unitTable.selectedCity != null)
+            CityCombatant(unitTable.selectedCity!!)
+        else null // no attacker
     }
 
     private fun tryGetDefender(): ICombatant? {
@@ -243,9 +242,8 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
                 val canAttackDefenderCiv = attackerCiv.getDiplomacyManager(defenderTileCiv).canAttack()
                 canNuke = canNuke && canAttackDefenderCiv
             }
-            val defender = tryGetDefenderAtTile(tile, true)
+            val defender = tryGetDefenderAtTile(tile, true) ?: continue
 
-            if (defender == null) continue
             val defenderUnitCiv = defender.getCivInfo()
 
             if( defenderUnitCiv.knows(attackerCiv))
@@ -293,17 +291,6 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
         pack()
 
         setPosition(worldScreen.stage.width/2-width/2, 5f)
-    }
-
-    private fun openBugReportPopup() {
-        val battleBugPopup = Popup(worldScreen)
-        battleBugPopup.addGoodSizedLabel("You've encountered a bug that I've been looking for for a while!").row()
-        battleBugPopup.addGoodSizedLabel("If you could copy your game data (\"Copy saved game to clipboard\" - ").row()
-        battleBugPopup.addGoodSizedLabel("  paste into an email to yairm210@hotmail.com)").row()
-        battleBugPopup.addGoodSizedLabel("It would help me figure out what went wrong, since this isn't supposed to happen!").row()
-        battleBugPopup.addGoodSizedLabel("If you could tell me which unit was selected and which unit you tried to attack,").row()
-        battleBugPopup.addGoodSizedLabel("  that would be even better!").row()
-        battleBugPopup.open()
     }
 
     private fun getHealthBar(currentHealth: Int, maxHealth: Int, expectedDamage:Int): Table {
