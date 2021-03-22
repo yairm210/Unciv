@@ -49,7 +49,15 @@ class TileSetStrings {
     val overlay = "Overlay"
     val city = "City"
     val tag = "-"
-    fun getTile(baseTerrain: String) = getString(tilesLocation, baseTerrain)
+
+    /**
+     * Returns the path to a sprite with various variant additions
+     */
+    fun getTile(tileName: String, vararg tileVariantAdditions: String): String {
+        if (tileVariantAdditions.isNotEmpty()) return getString(tilesLocation, *tileVariantAdditions, tileName)
+        else return getString(tilesLocation, tileName)
+    }
+
     fun getBaseTerrainOverlay(baseTerrain: String) = getString(tileSetLocation, baseTerrain, overlay)
     fun getTerrainFeatureOverlay(terrainFeature: String) = getString(tileSetLocation, terrainFeature, overlay)
 

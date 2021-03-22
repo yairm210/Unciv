@@ -182,17 +182,17 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) 
 
         if (tileInfo.isCityCenter()) {
             val era = tileInfo.getOwner()!!.getEra()
-            val terrainAndCityWithEra = tileSetStrings.getCityTile(tileInfo.baseTerrain, era)
-            if (ImageGetter.imageExists(terrainAndCityWithEra))
-                return listOf(terrainAndCityWithEra)
+            val cityTerrainVariantWithEra = tileSetStrings.getCityTile(tileInfo.baseTerrain, era)
+            if (ImageGetter.imageExists(cityTerrainVariantWithEra))
+                return listOf(baseTerrainTileLocation, cityTerrainVariantWithEra)
 
             val cityWithEra = tileSetStrings.getCityTile(null, era)
             if (ImageGetter.imageExists(cityWithEra))
                 return listOf(baseTerrainTileLocation, cityWithEra)
 
-            val terrainAndCity = tileSetStrings.getCityTile(tileInfo.baseTerrain, null)
-            if (ImageGetter.imageExists(terrainAndCity))
-                return listOf(terrainAndCity)
+            val cityTerrainVariant = tileSetStrings.getCityTile(tileInfo.baseTerrain, null)
+            if (ImageGetter.imageExists(cityTerrainVariant))
+                return listOf(cityTerrainVariant)
 
             if (ImageGetter.imageExists(tileSetStrings.cityTile))
                 return listOf(tileSetStrings.cityTile)
@@ -209,10 +209,12 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) 
             getImageLocation(it, tileInfo.baseTerrain)
         }.toTypedArray()
 
-        //e.g. Academy/SpicePlantation
+        //e.g. Academy/SpicePlantation/SnowAcademy
         val improvementImageLocation =
-                if (shouldShowImprovement)
-                    getImageLocation(tileInfo.improvement!!, tileInfo.resource)
+                if (shouldShowImprovement && shouldShowResource)
+                    getImageLocation(tileInfo.improvement!!, tileInfo.baseTerrain, tileInfo.resource!!)
+                else if (shouldShowImprovement)
+                    getImageLocation(tileInfo.improvement!!, tileInfo.baseTerrain)
                 else
                     null
 
@@ -226,22 +228,23 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) 
         return listOfNotNull(baseTerrainTileLocation, resourceImageLocation, *featureImageLocations, improvementImageLocation)
     }
 
-    private fun getImageLocation(imageName: String, imageVariantAddition: String?): String? {
-        if (imageVariantAddition != null) {
-            val imageLocation = tileSetStrings.getTile(imageName)
-            val imageVariantLocation = tileSetStrings.getTile("$imageVariantAddition$imageName")
-            return when {
-                ImageGetter.imageExists(imageVariantLocation) -> imageVariantLocation
-                ImageGetter.imageExists(imageLocation) -> imageLocation
-                else -> null
-            }
-        } else {
-            val imageLocation = tileSetStrings.getTile(imageName)
-            return when {
-                ImageGetter.imageExists(imageLocation) -> imageLocation
-                else -> null
-            }
+    /**
+     * Checks and returns if a sprite exists which contains all imageVariantAdditions.
+     * If not and a sprite can be found without additions it will be returned instead.
+     * Returns null if no sprite can be found
+     */
+    private fun getImageLocation(imageName: String, vararg imageVariantAdditions: String): String? {
+        if (imageVariantAdditions.isNotEmpty()) {
+            val imageVariantLocation = tileSetStrings.getTile(imageName, *imageVariantAdditions)
+            if (ImageGetter.imageExists(imageVariantLocation))
+                return imageVariantLocation
         }
+
+        val imageLocation = tileSetStrings.getTile(imageName)
+        if (ImageGetter.imageExists(imageLocation))
+            return imageLocation
+        else
+            return null
     }
 
     // Used for both the underlying tile and unit overlays, perhaps for other things in the future
