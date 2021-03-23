@@ -38,7 +38,9 @@ class LoadGameScreen(previousScreen:CameraStageBaseScreen) : PickerScreen() {
         topTable.add(rightSideTable)
 
         rightSideButton.onClick {
-            ToastPopup("Loading...", this)
+            val loadingPopup = Popup( this)
+            loadingPopup.addGoodSizedLabel("Loading...")
+            loadingPopup.open()
             thread {
                 try {
                     // This is what can lead to ANRs - reading the file and setting the transients, that's why this is in another thread
@@ -46,6 +48,7 @@ class LoadGameScreen(previousScreen:CameraStageBaseScreen) : PickerScreen() {
                     Gdx.app.postRunnable { UncivGame.Current.loadGame(loadedGame) }
                 } catch (ex: Exception) {
                     Gdx.app.postRunnable {
+                        loadingPopup.close()
                         val cantLoadGamePopup = Popup(this)
                         cantLoadGamePopup.addGoodSizedLabel("It looks like your saved game can't be loaded!").row()
                         if (ex is UncivShowableException && ex.localizedMessage != null) {
