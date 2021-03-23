@@ -1,3 +1,16 @@
+## 3.13.11
+
+Resolved #3732 - Mark target tile while moving toward it
+
+Resolved #3734 - "Loading" popup when loading game remains until game is fully loaded
+
+Resolved #3735 - The civ launching - not receiving - the nuke is considered the civ that declared war
+
+Resolved #3721 - Fixed edge-case "images are temporarily applied from mods set in other places"
+
+Resolved #3722 - fixed resistance icon display in notifications
+
+Carriers cannot attack - By lishaoxia1985
 
 ## 3.13.10
 
@@ -6,7 +19,6 @@ Converted all color-coding of notifications to multi-icon notifications
 Resolved #3713 - Fixed misspelled "fresh water" in farm unique check
 
 Barbarians only heal by pillaging, simplified barbarian automation
-
 
 ## 3.13.9
 
