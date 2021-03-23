@@ -416,6 +416,12 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
             }
         }
 
+        if(unit.isMoving()) {
+            val destinationTileGroups = tileGroups[unit.getMovementDestination()]!!
+            for (tileGroup in destinationTileGroups)
+                tileGroup.showCircle(Color.WHITE, 0.7f)
+        }
+
         val attackableTiles: List<AttackableTile> = if (unit.type.isCivilian()) listOf()
         else {
             BattleHelper.getAttackableEnemies(unit, unit.movement.getDistanceToTiles())

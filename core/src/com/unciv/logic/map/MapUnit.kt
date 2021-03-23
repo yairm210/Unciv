@@ -353,6 +353,12 @@ class MapUnit {
         if (currentMovement < 0) currentMovement = 0f
     }
 
+    fun getMovementDestination():TileInfo{
+        val destination = action!!.replace("moveTo ", "").split(",").dropLastWhile { it.isEmpty() }
+        val destinationVector = Vector2(destination[0].toFloat(), destination[1].toFloat())
+        return currentTile.tileMap[destinationVector]
+    }
+
     fun doAction() {
         if (action == null) return
         if (currentMovement == 0f) return  // We've already done stuff this turn, and can't do any more stuff
@@ -360,16 +366,14 @@ class MapUnit {
         val enemyUnitsInWalkingDistance = movement.getDistanceToTiles().keys
                 .filter { it.militaryUnit != null && civInfo.isAtWarWith(it.militaryUnit!!.civInfo) }
         if (enemyUnitsInWalkingDistance.isNotEmpty()) {
-            if (action?.startsWith("moveTo") == true) // stop on enemy in sight
+            if (isMoving()) // stop on enemy in sight
                 action = null
             return  // Don't you dare move.
         }
 
         val currentTile = getTile()
         if (isMoving()) {
-            val destination = action!!.replace("moveTo ", "").split(",").dropLastWhile { it.isEmpty() }.toTypedArray()
-            val destinationVector = Vector2(destination[0].toFloat(), destination[1].toFloat())
-            val destinationTile = currentTile.tileMap[destinationVector]
+            val destinationTile = getMovementDestination()
             if (!movement.canReach(destinationTile)) { // That tile that we were moving towards is now unreachable -
                 // for instance we headed towards an unknown tile and it's apparently unreachable
                 action = null
@@ -378,7 +382,7 @@ class MapUnit {
             val gotTo = movement.headTowards(destinationTile)
             if (gotTo == currentTile) // We didn't move at all
                 return
-            if (gotTo.position == destinationVector) action = null
+            if (gotTo.position == destinationTile.position) action = null
             if (currentMovement > 0) doAction()
             return
         }
