@@ -227,7 +227,7 @@ class Ruleset {
                 lines += "${unit.name} upgrades to itself!"
             if (!unit.unitType.isCivilian() && unit.strength == 0)
                 lines += "${unit.name} is a military unit but has no assigned strength!"
-            if (unit.unitType.isRanged() && unit.rangedStrength == 0)
+            if (unit.unitType.isRanged() && unit.rangedStrength == 0 && "Cannot attack" !in unit.uniques)
                 lines += "${unit.name} is a ranged unit but has no assigned rangedStrength!"
         }
 
