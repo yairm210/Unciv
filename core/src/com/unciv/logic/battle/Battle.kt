@@ -384,7 +384,7 @@ object Battle {
                 if (civSuffered != attackingCiv
                         && civSuffered.knows(attackingCiv)
                         && civSuffered.getDiplomacyManager(attackingCiv).canDeclareWar()) {
-                    civSuffered.getDiplomacyManager(attackingCiv).declareWar()
+                    attackingCiv.getDiplomacyManager(civSuffered).declareWar()
                 }
             }
 
