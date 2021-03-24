@@ -244,6 +244,7 @@ object UnitActions {
                     val newunit = unit.civInfo.placeUnitNearTile(unitTile.position, upgradedUnit.name)!!
                     newunit.health = unit.health
                     newunit.promotions = unit.promotions
+                    newunit.instanceName = unit.instanceName
 
                     for (promotion in newunit.baseUnit.promotions)
                         if (promotion !in newunit.promotions.promotions)
