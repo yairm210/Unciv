@@ -29,23 +29,16 @@ object UnitActions {
         val unitTable = worldScreen.bottomUnitTable
         val actionList = ArrayList<UnitAction>()
 
-        if (unit.isMoving()) {
-            actionList += UnitAction(
-                    type = UnitActionType.StopMovement,
-                    action = { unit.action = null }
-            )
-        }
+        if (unit.isMoving()) actionList += UnitAction(UnitActionType.StopMovement) { unit.action = null }
 
         val workingOnImprovement = unit.hasUnique("Can build improvements on tiles")
                 && unit.currentTile.hasImprovementInProgress()
-        if (!unit.isFortified() && !unit.canFortify()
-                && unit.currentMovement > 0 && !workingOnImprovement) {
+        if (!unit.isFortified() && !unit.canFortify() && unit.currentMovement > 0 && !workingOnImprovement) {
             addSleepActions(actionList, unit, unitTable)
         }
 
-        if (unit.canFortify()) {
-            addFortifyActions(actionList, unit, unitTable)
-        } else if (unit.isFortified()) {
+        if (unit.canFortify()) addFortifyActions(actionList, unit, unitTable)
+        else if (unit.isFortified()) {
             actionList += UnitAction(
                     type = if (unit.action!!.endsWith(" until healed"))
                         UnitActionType.FortifyUntilHealed else
@@ -73,16 +66,14 @@ object UnitActions {
 
 
     private fun addDisbandAction(actionList: ArrayList<UnitAction>, unit: MapUnit, worldScreen: WorldScreen) {
-        actionList += UnitAction(
-                type = UnitActionType.DisbandUnit,
-                action = {
-                    if (!worldScreen.hasOpenPopups()) {
-                        val disbandText = if (unit.currentTile.getOwner() == unit.civInfo)
-                            "Disband this unit for [${unit.baseUnit.getDisbandGold(unit.civInfo)}] gold?".tr()
-                        else "Do you really want to disband this unit?".tr()
-                        YesNoPopup(disbandText, { unit.disband(); worldScreen.shouldUpdate = true }).open()
-                    }
-                }.takeIf { unit.currentMovement > 0 })
+        actionList += UnitAction(type = UnitActionType.DisbandUnit, action = {
+            if (!worldScreen.hasOpenPopups()) {
+                val disbandText = if (unit.currentTile.getOwner() == unit.civInfo)
+                    "Disband this unit for [${unit.baseUnit.getDisbandGold(unit.civInfo)}] gold?".tr()
+                else "Do you really want to disband this unit?".tr()
+                YesNoPopup(disbandText, { unit.disband(); worldScreen.shouldUpdate = true }).open()
+            }
+        }.takeIf { unit.currentMovement > 0 })
     }
 
     private fun addCreateWaterImprovements(unit: MapUnit, actionList: ArrayList<UnitAction>) {
@@ -99,9 +90,7 @@ object UnitActions {
                     && tile.getTileResource().improvement == improvement
                     && unit.civInfo.tech.isResearched(unit.civInfo.gameInfo.ruleSet.tileImprovements[improvement]!!.techRequired!!)
             )
-                return UnitAction(
-                        type = UnitActionType.Create,
-                        title = "Create [$improvement]",
+                return UnitAction(UnitActionType.Create, "Create [$improvement]",
                         action = {
                             tile.improvement = improvement
                             unit.destroy()
@@ -117,8 +106,7 @@ object UnitActions {
                 && tile.improvementInProgress != "Road"
                 && tile.isLand
                 && (improvement.techRequired == null || unit.civInfo.tech.isResearched(improvement.techRequired!!)))
-            actionList += UnitAction(
-                    type = UnitActionType.ConstructRoad,
+            actionList += UnitAction(UnitActionType.ConstructRoad,
                     action = {
                         tile.improvementInProgress = "Road"
                         tile.turnsToImprovement = improvement.getTurnsToBuild(unit.civInfo)
@@ -145,8 +133,7 @@ object UnitActions {
     private fun addPromoteAction(unit: MapUnit, actionList: ArrayList<UnitAction>) {
         if (unit.type.isCivilian() || !unit.promotions.canBePromoted()) return
         // promotion does not consume movement points, so we can do it always
-        actionList += UnitAction(
-                type = UnitActionType.Promote,
+        actionList += UnitAction(UnitActionType.Promote,
                 uncivSound = UncivSound.Promote,
                 action = {
                     UncivGame.Current.setScreen(PromotionPickerScreen(unit))
@@ -156,8 +143,7 @@ object UnitActions {
     private fun addSetupAction(unit: MapUnit, actionList: ArrayList<UnitAction>) {
         if (!unit.hasUnique("Must set up to ranged attack") || unit.isEmbarked()) return
         val isSetUp = unit.action == "Set Up"
-        actionList += UnitAction(
-                type = UnitActionType.SetUp,
+        actionList += UnitAction(UnitActionType.SetUp,
                 isCurrentAction = isSetUp,
                 uncivSound = UncivSound.Setup,
                 action = {
@@ -183,8 +169,7 @@ object UnitActions {
         val tile = unit.currentTile
         if (unit.type.isCivilian() || tile.improvement == null) return null
 
-        return UnitAction(
-                type = UnitActionType.Pillage,
+        return UnitAction(UnitActionType.Pillage,
                 action = {
                     // http://well-of-souls.com/civ/civ5_improvements.html says that naval improvements are destroyed upon pilllage
                     //    and I can't find any other sources so I'll go with that
@@ -200,25 +185,17 @@ object UnitActions {
                     if (!freePillage) unit.useMovementPoints(1f)
 
                     unit.healBy(25)
-
                 }.takeIf { unit.currentMovement > 0 && canPillage(unit, tile) })
     }
 
     private fun addExplorationActions(unit: MapUnit, actionList: ArrayList<UnitAction>) {
         if (unit.type.isAirUnit()) return
         if (unit.action != Constants.unitActionExplore) {
-            actionList += UnitAction(
-                    type = UnitActionType.Explore,
-                    action = {
-                        unit.action = Constants.unitActionExplore
-                        if (unit.currentMovement > 0) UnitAutomation.automatedExplore(unit)
-                    })
-        } else {
-            actionList += UnitAction(
-                    type = UnitActionType.StopExploration,
-                    action = { unit.action = null }
-            )
-        }
+            actionList += UnitAction(UnitActionType.Explore) {
+                unit.action = Constants.unitActionExplore
+                if (unit.currentMovement > 0) UnitAutomation.automatedExplore(unit)
+            }
+        } else actionList += UnitAction(UnitActionType.StopExploration) { unit.action = null }
     }
 
     private fun addUnitUpgradeAction(unit: MapUnit, actionList: ArrayList<UnitAction>) {
@@ -233,8 +210,7 @@ object UnitActions {
         val goldCostOfUpgrade = unit.getCostOfUpgrade()
         val upgradedUnit = unit.getUnitToUpgradeTo()
 
-        return UnitAction(
-                type = UnitActionType.Upgrade,
+        return UnitAction(UnitActionType.Upgrade,
                 title = "Upgrade to [${upgradedUnit.name}] ([$goldCostOfUpgrade] gold)",
                 uncivSound = UncivSound.Upgrade,
                 action = {
@@ -264,13 +240,9 @@ object UnitActions {
 
         // Allow automate/unautomate when embarked, but not building improvements - see #1963
         if (Constants.unitActionAutomation == unit.action) {
-            actionList += UnitAction(
-                    type = UnitActionType.StopAutomation,
-                    action = { unit.action = null }
-            )
+            actionList += UnitAction(UnitActionType.StopAutomation) { unit.action = null }
         } else {
-            actionList += UnitAction(
-                    type = UnitActionType.Automate,
+            actionList += UnitAction(UnitActionType.Automate,
                     action = {
                         unit.action = Constants.unitActionAutomation
                         WorkerAutomation(unit).automateWorkerAction()
@@ -281,10 +253,9 @@ object UnitActions {
 
         val canConstruct = unit.currentMovement > 0
                 && !tile.isCityCenter()
-                && unit.civInfo.gameInfo.ruleSet.tileImprovements.values
-                .any { tile.canBuildImprovement(it, unit.civInfo) }
-        actionList += UnitAction(
-                type = UnitActionType.ConstructImprovement,
+                && unit.civInfo.gameInfo.ruleSet.tileImprovements.values.any { tile.canBuildImprovement(it, unit.civInfo) }
+
+        actionList += UnitAction(UnitActionType.ConstructImprovement,
                 isCurrentAction = unit.currentTile.hasImprovementInProgress(),
                 action = {
                     worldScreen.game.setScreen(ImprovementPickerScreen(tile) { unitTable.selectUnit() })
@@ -295,8 +266,7 @@ object UnitActions {
 
         if (unit.currentMovement > 0) for (unique in unit.getUniques()) when (unique.placeholderText) {
             "Can hurry technology research" -> {
-                actionList += UnitAction(
-                        type = UnitActionType.HurryResearch,
+                actionList += UnitAction(UnitActionType.HurryResearch,
                         uncivSound = UncivSound.Chimes,
                         action = {
                             unit.civInfo.tech.addScience(unit.civInfo.tech.getScienceFromGreatScientist())
@@ -306,8 +276,7 @@ object UnitActions {
             }
             "Can start an []-turn golden age" -> {
                 val turnsToGoldenAge = unique.params[0].toInt()
-                actionList += UnitAction(
-                        type = UnitActionType.StartGoldenAge,
+                actionList += UnitAction(UnitActionType.StartGoldenAge,
                         uncivSound = UncivSound.Chimes,
                         action = {
                             unit.civInfo.goldenAges.enterGoldenAge(turnsToGoldenAge)
@@ -322,8 +291,7 @@ object UnitActions {
                     if (currentConstruction !is Building) false
                     else currentConstruction.isWonder || currentConstruction.isNationalWonder
                 }
-                actionList += UnitAction(
-                        type = UnitActionType.HurryWonder,
+                actionList += UnitAction(UnitActionType.HurryWonder,
                         uncivSound = UncivSound.Chimes,
                         action = {
                             tile.getCity()!!.cityConstructions.apply {
@@ -338,8 +306,7 @@ object UnitActions {
                 val canConductTradeMission = tile.owningCity?.civInfo?.isCityState() == true
                         && tile.owningCity?.civInfo?.isAtWarWith(unit.civInfo) == false
                 val influenceEarned = unique.params[0].toInt()
-                actionList += UnitAction(
-                        type = UnitActionType.ConductTradeMission,
+                actionList += UnitAction(UnitActionType.ConductTradeMission,
                         uncivSound = UncivSound.Chimes,
                         action = {
                             // http://civilization.wikia.com/wiki/Great_Merchant_(Civ5)
@@ -364,13 +331,12 @@ object UnitActions {
             val improvementName = unique.params[0]
             val improvement = tile.ruleset.tileImprovements[improvementName]
             if (improvement == null) continue
-            finalActions += UnitAction(
-                    type = UnitActionType.Create,
+            finalActions += UnitAction(UnitActionType.Create,
                     title = "Create [$improvementName]",
                     uncivSound = UncivSound.Chimes,
                     action = {
                         val unitTile = unit.getTile()
-                        for (terrainFeature in tile.terrainFeatures.filter{ unitTile.ruleset.tileImprovements.containsKey("Remove $it") })
+                        for (terrainFeature in tile.terrainFeatures.filter { unitTile.ruleset.tileImprovements.containsKey("Remove $it") })
                             unitTile.terrainFeatures.remove(terrainFeature)// remove forest/jungle/marsh
                         unitTile.improvement = improvementName
                         unitTile.improvementInProgress = null
@@ -432,8 +398,7 @@ object UnitActions {
 
     private fun addFortifyActions(actionList: ArrayList<UnitAction>, unit: MapUnit, unitTable: UnitTable) {
 
-        val action = UnitAction(
-                type = UnitActionType.Fortify,
+        val action = UnitAction(UnitActionType.Fortify,
                 uncivSound = UncivSound.Fortify,
                 action = {
                     unit.fortify()
@@ -441,8 +406,7 @@ object UnitActions {
                 }.takeIf { unit.currentMovement > 0 })
 
         if (unit.health < 100) {
-            val actionForWounded = action.copy(
-                    type = UnitActionType.FortifyUntilHealed,
+            val actionForWounded = action.copy(UnitActionType.FortifyUntilHealed,
                     title = UnitActionType.FortifyUntilHealed.value,
                     action = {
                         unit.fortifyUntilHealed()
@@ -455,11 +419,9 @@ object UnitActions {
     }
 
     private fun addSleepActions(actionList: ArrayList<UnitAction>, unit: MapUnit, unitTable: UnitTable) {
-
         val isSleeping = unit.isSleeping()
 
-        val action = UnitAction(
-                type = UnitActionType.Sleep,
+        val action = UnitAction(UnitActionType.Sleep,
                 isCurrentAction = isSleeping,
                 action = {
                     unit.action = Constants.unitActionSleep
@@ -467,8 +429,7 @@ object UnitActions {
                 }.takeIf { !isSleeping })
 
         if (unit.health < 100 && !isSleeping) {
-            val actionForWounded = action.copy(
-                    type = UnitActionType.SleepUntilHealed,
+            val actionForWounded = action.copy(UnitActionType.SleepUntilHealed,
                     title = UnitActionType.SleepUntilHealed.value,
                     action = {
                         unit.action = Constants.unitActionSleepUntilHealed
