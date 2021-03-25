@@ -83,19 +83,18 @@ object UnitActions {
 
     fun getWaterImprovementAction(unit: MapUnit): UnitAction? {
         val tile = unit.currentTile
-        for (improvement in listOf("Fishing Boats", "Oil well")) {
-            if (unit.hasUnique("May create improvements on water resources") && tile.resource != null
-                    && tile.isWater // because fishing boats can enter cities, and if there's oil in the city... ;)
-                    && tile.improvement == null
-                    && tile.getTileResource().improvement == improvement
-                    && unit.civInfo.tech.isResearched(unit.civInfo.gameInfo.ruleSet.tileImprovements[improvement]!!.techRequired!!)
-            )
-                return UnitAction(UnitActionType.Create, "Create [$improvement]",
-                        action = {
-                            tile.improvement = improvement
-                            unit.destroy()
-                        }.takeIf { unit.currentMovement > 0 })
-        }
+        if (!tile.isWater || !unit.hasUnique("May create improvements on water resources") || tile.resource == null) return null
+
+        val improvement = tile.getTileResource().improvement
+
+        if (tile.improvement == null
+                && unit.civInfo.tech.isResearched(tile.ruleset.tileImprovements[improvement]!!.techRequired!!))
+            return UnitAction(UnitActionType.Create, "Create [$improvement]",
+                    action = {
+                        tile.improvement = improvement
+                        unit.destroy()
+                    }.takeIf { unit.currentMovement > 0 })
+
         return null
     }
 

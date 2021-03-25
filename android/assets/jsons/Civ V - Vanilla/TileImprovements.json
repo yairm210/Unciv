@@ -50,6 +50,7 @@
 	},
 	{
 		"name": "Oil well",
+		"terrainsCanBeBuiltOn": ["Coast"],
 		"turnsToBuild": 9,
 		"techRequired": "Biology"
 	},
