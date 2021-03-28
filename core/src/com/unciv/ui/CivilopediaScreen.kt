@@ -45,6 +45,8 @@ class CivilopediaScreen(ruleset: Ruleset) : CameraStageBaseScreen() {
             entryButton.add(entry.name.toLabel())
             entryButton.onClick {
                 description.setText(entry.description)
+                entrySelectTable.children.forEach { it.color = Color.WHITE }
+                entryButton.color = Color.BLUE
             }
             entrySelectTable.add(entryButton).left().row()
         }
