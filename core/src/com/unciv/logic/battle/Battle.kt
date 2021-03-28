@@ -14,6 +14,7 @@ import com.unciv.logic.map.TileInfo
 import com.unciv.models.AttackableTile
 import com.unciv.models.ruleset.Unique
 import com.unciv.models.ruleset.unit.UnitType
+import com.unciv.ui.utils.ImageGetter
 import java.util.*
 import kotlin.math.max
 
@@ -174,7 +175,10 @@ object Battle {
                         else " [" + defender.getName() + "]"
                     else " our [" + defender.getName() + "]"
             val notificationString = attackerString + whatHappenedString + defenderString
-            defender.getCivInfo().addNotification(notificationString, attackedTile.position, attacker.getName(), NotificationIcon.War, defender.getName())
+            val cityIcon = "ImprovementIcons/Citadel"
+            val attackerIcon = if (attacker is CityCombatant) cityIcon else attacker.getName()
+            val defenderIcon = if (defender is CityCombatant) cityIcon else defender.getName()
+            defender.getCivInfo().addNotification(notificationString, attackedTile.position, attackerIcon, NotificationIcon.War, defenderIcon)
         }
     }
 

@@ -20,6 +20,7 @@ class NotificationsScroll(internal val worldScreen: WorldScreen) : ScrollPane(nu
     init {
         actor = notificationsTable.right()
         touchable = Touchable.childrenOnly
+        setScale(.5f)
     }
 
     internal fun update(notifications: MutableList<Notification>) {
@@ -49,7 +50,7 @@ class NotificationsScroll(internal val worldScreen: WorldScreen) : ScrollPane(nu
             }
             else if(notification.color!=null) listItem.add(ImageGetter.getCircle()
                     .apply { color = notification.color }).size(iconSize).padRight(5f)
-            listItem.background = ImageGetter.getRoundedEdgeTableBackground().apply { setScale(0.5f) }
+            listItem.background = ImageGetter.getRoundedEdgeTableBackground()
             listItem.add(label)
 
             // using a large click area with no gap in between each message item.
@@ -57,9 +58,7 @@ class NotificationsScroll(internal val worldScreen: WorldScreen) : ScrollPane(nu
             val clickArea = Table().apply {
                 add(listItem).pad(3f)
                 touchable = Touchable.enabled
-                onClick {
-                    notification.action?.execute(worldScreen)
-                }
+                onClick { notification.action?.execute(worldScreen) }
             }
 
             notificationsTable.add(clickArea).right().row()

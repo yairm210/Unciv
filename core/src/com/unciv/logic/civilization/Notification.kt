@@ -15,7 +15,7 @@ object NotificationIcon {
     val Trade = "StatIcons/Acquire"
     val Science = "StatIcons/Science"
     val Gold = "StatIcons/Gold"
-    val Death = "OtherIcons/DisbandUnit"
+    val Dehas ath = "OtherIcons/DisbandUnit"
     val Diplomacy = "OtherIcons/Diplomacy"
 }
 
