@@ -183,7 +183,7 @@ class TechManager {
         return (scienceFromResearchAgreements / 3 * researchAgreementModifier).toInt()
     }
 
-    fun nextTurn(scienceForNewTurn: Int) {
+    fun endTurn(scienceForNewTurn: Int) {
         addCurrentScienceToScienceOfLast8Turns()
         if (currentTechnologyName() == null) return
 

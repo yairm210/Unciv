@@ -1,6 +1,5 @@
 package com.unciv.logic.civilization
 
-import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
 import com.unciv.UncivGame
@@ -76,6 +75,7 @@ class CivilizationInfo {
     var tech = TechManager()
     var policies = PolicyManager()
     var questManager = QuestManager()
+    var religionManager = ReligionManager()
     var goldenAges = GoldenAgeManager()
     var greatPeople = GreatPersonManager()
     var victoryManager = VictoryManager()
@@ -111,6 +111,7 @@ class CivilizationInfo {
         toReturn.civName = civName
         toReturn.tech = tech.clone()
         toReturn.policies = policies.clone()
+        toReturn.religionManager = religionManager.clone()
         toReturn.questManager = questManager.clone()
         toReturn.goldenAges = goldenAges.clone()
         toReturn.greatPeople = greatPeople.clone()
@@ -235,7 +236,8 @@ class CivilizationInfo {
                             .filter { it.params.isEmpty() || it.params.last() != "in this city" }
                 } +
                 policies.policyUniques.getUniques(uniqueTemplate) +
-                tech.getTechUniques().filter { it.placeholderText == uniqueTemplate }
+                tech.getTechUniques().filter { it.placeholderText == uniqueTemplate } +
+                religionManager.getUniques().filter { it.placeholderText == uniqueTemplate }
     }
 
     //region Units
@@ -434,8 +436,11 @@ class CivilizationInfo {
         if (citiesCreated == 0 && cities.any())
             citiesCreated = cities.filter { it.name in nation.cities }.count()
 
+        religionManager.civInfo = this // needs to be before tech, since tech setTransients looks at all uniques
+
         tech.civInfo = this
         tech.setTransients()
+
 
         for (diplomacyManager in diplomacy.values) {
             diplomacyManager.civInfo = this
@@ -517,7 +522,9 @@ class CivilizationInfo {
         gold += nextTurnStats.gold.toInt()
 
         if (cities.isNotEmpty() && gameInfo.ruleSet.technologies.isNotEmpty())
-            tech.nextTurn(nextTurnStats.science.toInt())
+            tech.endTurn(nextTurnStats.science.toInt())
+
+        religionManager.endTurn(nextTurnStats.faith.toInt())
 
         if (isMajorCiv()) greatPeople.addGreatPersonPoints(getGreatPersonPointsForNextTurn()) // City-states don't get great people!
 
