@@ -260,7 +260,7 @@ object ImageGetter {
     fun getTriangle() = getImage("OtherIcons/Triangle")
 
     fun getBackground(color: Color): Drawable {
-        val drawable = getDrawable("OtherIcons/TableBackground")
+        val drawable = getDrawable("")
         drawable.minHeight = 0f
         drawable.minWidth = 0f
         return drawable.tint(color)
