@@ -9,12 +9,12 @@ import com.unciv.ui.tilegroups.TileGroup
 import kotlin.math.max
 import kotlin.math.min
 
-class TileGroupMap<T: TileGroup>(val tileGroups: Collection<T>, val padding: Float, worldWrap: Boolean = false, tileGroupsToUnwrap: Collection<T>? = null): Group(){
+class TileGroupMap<T: TileGroup>(tileGroups: Collection<T>, private val leftAndRightPadding: Float, private val topAndBottomPadding: Float, worldWrap: Boolean = false, tileGroupsToUnwrap: Collection<T>? = null): Group(){
     var topX = -Float.MAX_VALUE
     var topY = -Float.MAX_VALUE
     var bottomX = Float.MAX_VALUE
     var bottomY = Float.MAX_VALUE
-    val groupSize = 50
+    private val groupSize = 50
     private val mirrorTileGroups = HashMap<TileInfo, Pair<T, T>>()
 
     init{
@@ -54,7 +54,7 @@ class TileGroupMap<T: TileGroup>(val tileGroups: Collection<T>, val padding: Flo
         }
 
         for (group in tileGroups) {
-            group.moveBy(-bottomX + padding, -bottomY + padding * 0.5f)
+            group.moveBy(-bottomX + leftAndRightPadding, -bottomY + topAndBottomPadding)
         }
 
         if (worldWrap) {
@@ -63,11 +63,11 @@ class TileGroupMap<T: TileGroup>(val tileGroups: Collection<T>, val padding: Flo
 
                 mirrorTiles.first.setPosition(positionalVector.x * 0.8f * groupSize.toFloat(),
                         positionalVector.y * 0.8f * groupSize.toFloat())
-                mirrorTiles.first.moveBy(-bottomX + padding - bottomX * 2, -bottomY + padding * 0.5f)
+                mirrorTiles.first.moveBy(-bottomX + leftAndRightPadding - bottomX * 2, -bottomY + topAndBottomPadding)
 
                 mirrorTiles.second.setPosition(positionalVector.x * 0.8f * groupSize.toFloat(),
                         positionalVector.y * 0.8f * groupSize.toFloat())
-                mirrorTiles.second.moveBy(-bottomX + padding + bottomX * 2, -bottomY + padding * 0.5f)
+                mirrorTiles.second.moveBy(-bottomX + leftAndRightPadding + bottomX * 2, -bottomY + topAndBottomPadding)
             }
         }
 
@@ -120,7 +120,7 @@ class TileGroupMap<T: TileGroup>(val tileGroups: Collection<T>, val padding: Flo
 
         // there are tiles "below the zero",
         // so we zero out the starting position of the whole board so they will be displayed as well
-        setSize(topX - bottomX + padding * 2 - groupSize, topY - bottomY + padding * 2 * 0.5f)
+        setSize(topX - bottomX + leftAndRightPadding * 2, topY - bottomY + topAndBottomPadding * 2)
     }
 
     /**
@@ -128,7 +128,7 @@ class TileGroupMap<T: TileGroup>(val tileGroups: Collection<T>, val padding: Flo
      */
     fun getPositionalVector(stageCoords: Vector2): Vector2 {
         val trueGroupSize = 0.8f * groupSize.toFloat()
-        return Vector2(bottomX - padding, bottomY - padding * 0.5f)
+        return Vector2(bottomX - leftAndRightPadding, bottomY - topAndBottomPadding)
                 .add(stageCoords)
                 .sub(groupSize.toFloat() / 2f, groupSize.toFloat() / 2f)
                 .scl(1f / trueGroupSize)
