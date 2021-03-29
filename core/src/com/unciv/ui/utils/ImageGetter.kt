@@ -32,11 +32,19 @@ object ImageGetter {
     // So, we now use TexturePacker in the DesktopLauncher class to pack all the different images into single images,
     // and the atlas is what tells us what was packed where.
     lateinit var atlas: TextureAtlas
+    val atlases = HashMap<String, TextureAtlas>()
     var ruleset = Ruleset()
 
     // We then shove all the drawables into a hashmap, because the atlas specifically tells us
     //   that the search on it is inefficient
-    private val textureRegionDrawables = HashMap<String, TextureRegionDrawable>()
+    internal val textureRegionDrawables = HashMap<String, TextureRegionDrawable>()
+
+    fun resetAtlases(){
+        atlases.values.forEach { it.dispose() }
+        atlases.clear()
+        atlas = TextureAtlas("game.atlas")
+        atlases["game"] = atlas
+    }
 
     /** Required every time the ruleset changes, in order to load mod-specific images */
     fun setNewRuleset(ruleset: Ruleset) {
@@ -49,27 +57,22 @@ object ImageGetter {
         }
 
         for (singleImagesFolder in sequenceOf("BuildingIcons", "FlagIcons", "UnitIcons")) {
-            val tempAtlas = TextureAtlas("$singleImagesFolder.atlas")
+            if (!atlases.containsKey(singleImagesFolder)) atlases[singleImagesFolder] = TextureAtlas("$singleImagesFolder.atlas")
+            val tempAtlas = atlases[singleImagesFolder]!!
             for (region in tempAtlas.regions) {
                 val drawable = TextureRegionDrawable(region)
                 textureRegionDrawables["$singleImagesFolder/" + region.name] = drawable
             }
         }
 
-        for (folder in Gdx.files.internal("SingleImages").list())
-            for (image in folder.list()) {
-                val texture = Texture(image)
-                // Since these aren't part of the packed texture we need to set this manually for each one
-                // Unfortunately since it's not power-of-2
-                texture.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear)
-                textureRegionDrawables[folder.name() + "/" + image.nameWithoutExtension()] = TextureRegionDrawable(texture)
-            }
-
         // These are from the mods
         for (mod in UncivGame.Current.settings.visualMods + ruleset.mods) {
             val modAtlasFile = Gdx.files.local("mods/$mod/game.atlas")
             if (!modAtlasFile.exists()) continue
-            val modAtlas = TextureAtlas(modAtlasFile)
+
+            if (!atlases.containsKey(mod)) atlases[mod] = TextureAtlas(modAtlasFile)
+            val modAtlas = atlases[mod]!!
+
             for (region in modAtlas.regions) {
                 val drawable = TextureRegionDrawable(region)
                 textureRegionDrawables[region.name] = drawable

@@ -297,8 +297,8 @@ class OptionsPopup(val previousScreen:CameraStageBaseScreen) : Popup(previousScr
 
         val tileSetSelectBox = SelectBox<String>(skin)
         val tileSetArray = Array<String>()
-        val tileSets = ImageGetter.atlas.regions.filter { it.name.startsWith("TileSets") }
-                .map { it.name.split("/")[1] }.distinct()
+        val tileSets = ImageGetter.textureRegionDrawables.keys.asSequence().filter { it.startsWith("TileSets") }
+                .map { it.split("/")[1] }.distinct()
         for (tileset in tileSets) tileSetArray.add(tileset)
         tileSetSelectBox.items = tileSetArray
         tileSetSelectBox.selected = settings.tileSet

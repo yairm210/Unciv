@@ -84,7 +84,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
          * - Skin (hence CameraStageBaseScreen.setSkin())
          * - Font (hence Fonts.resetFont() inside setSkin())
          */
-        ImageGetter.atlas = TextureAtlas("game.atlas")
+        ImageGetter.resetAtlases()
         settings = GameSaver.getGeneralSettings() // needed for the screen
         ImageGetter.setNewRuleset(ImageGetter.ruleset)  // This needs to come after the settings, since we may have default visual mods
         CameraStageBaseScreen.setSkin() // needs to come AFTER the Texture reset, since the buttons depend on it
