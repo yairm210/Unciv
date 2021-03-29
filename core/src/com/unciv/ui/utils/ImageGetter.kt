@@ -152,9 +152,11 @@ object ImageGetter {
     }
 
     fun getRoundedEdgeTableBackground(tintColor: Color? = null): NinePatchDrawable {
-        val drawable = NinePatchDrawable(NinePatch(getDrawable("OtherIcons/buttonBackground").region, 25, 25, 0, 0)).apply {
-            setPadding(5f, 15f, 5f, 15f)
-        }
+        val region = getDrawable("OtherIcons/buttonBackground").region
+        region.texture.setFilter(Texture.TextureFilter.MipMapLinearNearest, Texture.TextureFilter.Linear)
+        val drawable = NinePatchDrawable(NinePatch(region, 25, 25, 0, 0))
+        drawable.setPadding(5f, 15f, 5f, 15f)
+
         if (tintColor == null) return drawable
         return drawable.tint(tintColor)
     }
