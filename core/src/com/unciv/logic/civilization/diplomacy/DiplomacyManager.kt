@@ -481,6 +481,7 @@ class DiplomacyManager() {
         trades.clear()
         updateHasOpenBorders()
 
+        removeModifier(DiplomaticModifiers.YearsOfPeace)
         setFlag(DiplomacyFlags.DeclinedPeace, 10)/// AI won't propose peace for 10 turns
         setFlag(DiplomacyFlags.DeclaredWar, 10) // AI won't agree to trade for 10 turns
         removeFlag(DiplomacyFlags.BorderConflict)
