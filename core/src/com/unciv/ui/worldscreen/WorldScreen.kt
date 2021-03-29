@@ -70,7 +70,6 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Cam
 
 
     init {
-        ImageGetter.setNewRuleset(gameInfo.ruleSet) // so that even if the multiplayerpoller pulls us back into a game after we changed rulesets, the images will be utd
         topBar.setPosition(0f, stage.height - topBar.height)
         topBar.width = stage.width
 
@@ -125,8 +124,6 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Cam
 
         stage.addActor(unitActionsTable)
 
-        // still a zombie: createNextTurnButton() // needs civ table to be positioned
-
         val tileToCenterOn: Vector2 =
                 when {
                     viewingCiv.cities.isNotEmpty() -> viewingCiv.getCapital().location
@@ -151,7 +148,8 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Cam
             // isDaemon = true, in order to not block the app closing
             // DO NOT use Timer() since this seems to (maybe?) translate to com.badlogic.gdx.utils.Timer? Not sure about this.
             multiPlayerRefresher = timer("multiPlayerRefresh", true, period = 10000) {
-                loadLatestMultiplayerState()
+                if (game.screen != this@WorldScreen) multiPlayerRefresher?.cancel()
+                else loadLatestMultiplayerState()
             }
         }
 
@@ -231,7 +229,6 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Cam
     }
 
     private fun loadLatestMultiplayerState() {
-
         // Since we're on a background thread, all the UI calls in this func need to run from the
         // main thread which has a GL context
         val loadingGamePopup = Popup(this)
