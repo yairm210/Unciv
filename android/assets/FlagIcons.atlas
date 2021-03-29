@@ -1,8 +1,8 @@
 
 FlagIcons.png
-size: 2048,512
+size: 2048, 512
 format: RGBA8888
-filter: MipMapLinearLinear,MipMapLinearLinear
+filter: MipMapLinearLinear, MipMapLinearLinear
 repeat: none
 Brazilian_Portuguese
   rotate: false
@@ -11,184 +11,191 @@ Brazilian_Portuguese
   orig: 128, 128
   offset: 0, 0
   index: -1
-Czech
+Bulgarian
   rotate: false
   xy: 2, 132
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
-Dutch
+Czech
   rotate: false
   xy: 132, 262
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
-English
+Dutch
   rotate: false
   xy: 2, 2
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
-Finnish
+English
   rotate: false
   xy: 132, 132
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
-French
+Finnish
   rotate: false
   xy: 262, 262
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
-German
+French
   rotate: false
   xy: 132, 2
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
-Hungarian
+German
   rotate: false
   xy: 262, 132
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
-Indonesian
+Hungarian
   rotate: false
   xy: 392, 262
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
-Italian
+Indonesian
   rotate: false
   xy: 262, 2
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
-Japanese
+Italian
   rotate: false
   xy: 392, 132
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
-Korean
+Japanese
   rotate: false
   xy: 522, 262
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
-Lithuanian
+Korean
   rotate: false
   xy: 392, 2
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
-Malay
+Lithuanian
   rotate: false
   xy: 522, 132
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
+Malay
+  rotate: false
+  xy: 652, 262
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: -1
 Persian_(Pinglish-DIN)
-  rotate: false
-  xy: 652, 262
-  size: 128, 128
-  orig: 128, 128
-  offset: 0, 0
-  index: -1
-Persian_(Pinglish-UN)
-  rotate: false
-  xy: 652, 262
-  size: 128, 128
-  orig: 128, 128
-  offset: 0, 0
-  index: -1
-Polish
   rotate: false
   xy: 522, 2
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
-Portuguese
+Persian_(Pinglish-UN)
+  rotate: false
+  xy: 522, 2
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: -1
+Polish
   rotate: false
   xy: 652, 132
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
-Romanian
+Portuguese
   rotate: false
   xy: 782, 262
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
-Russian
+Romanian
   rotate: false
   xy: 652, 2
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
-Simplified_Chinese
+Russian
   rotate: false
   xy: 782, 132
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
-Spanish
+Simplified_Chinese
   rotate: false
   xy: 912, 262
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
-Thai
+Spanish
   rotate: false
   xy: 782, 2
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
-Traditional_Chinese
+Thai
   rotate: false
   xy: 912, 132
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
-Turkish
+Traditional_Chinese
   rotate: false
   xy: 1042, 262
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
-Ukrainian
+Turkish
   rotate: false
   xy: 912, 2
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
-Vietnamese
+Ukrainian
   rotate: false
   xy: 1042, 132
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: -1
+Vietnamese
+  rotate: false
+  xy: 1172, 262
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
