@@ -7,12 +7,9 @@ import com.badlogic.gdx.scenes.scene2d.InputListener
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.UncivGame
-import com.unciv.logic.HexMath
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.city.IConstruction
 import com.unciv.logic.map.TileInfo
-import com.unciv.models.ruleset.Building
-import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.ui.map.TileGroupMap
 import com.unciv.ui.tilegroups.TileSetStrings
 import com.unciv.ui.utils.*
@@ -54,7 +51,7 @@ class CityScreen(internal val city: CityInfo): CameraStageBaseScreen() {
     private var cityPickerTable = CityScreenCityPickerTable(this)
 
     /** Button for exiting the city - sits on BOTTOM CENTER */
-    val exitCityButton = "Exit city".toTextButton().apply {
+    private val exitCityButton = "Exit city".toTextButton().apply {
         labelCell.pad(10f)
         onClick { exit() }
     }
@@ -227,7 +224,7 @@ class CityScreen(internal val city: CityInfo): CameraStageBaseScreen() {
             }
         }
 
-        val tileMapGroup = TileGroupMap(tileGroups, stage.width / 2, tileGroupsToUnwrap = tilesToUnwrap)
+        val tileMapGroup = TileGroupMap(tileGroups, stage.width / 2, stage.height / 2, tileGroupsToUnwrap = tilesToUnwrap)
         val scrollPane = ScrollPane(tileMapGroup)
         scrollPane.setSize(stage.width, stage.height)
         scrollPane.setOrigin(stage.width / 2, stage.height / 2)

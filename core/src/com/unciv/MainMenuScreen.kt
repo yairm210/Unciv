@@ -4,7 +4,6 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
-import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.logic.GameInfo
 import com.unciv.logic.GameSaver
@@ -59,17 +58,15 @@ class MainMenuScreen: CameraStageBaseScreen() {
                         Actions.fadeOut(0f),
                         Actions.run {
                             mapHolder.apply {
-                                addTiles(30f)
+                                addTiles(this@MainMenuScreen.stage.width, this@MainMenuScreen.stage.height)
                                 touchable = Touchable.disabled
-                                setScale(1f)
-                                center(this@MainMenuScreen.stage)
-                                layout()
+                                setScale(0.5f)
                             }
-                            backgroundTable.add(mapHolder).size(stage.width, stage.height)
+                            backgroundTable.addActor(mapHolder)
+                            mapHolder.center(backgroundTable)
                         },
                         Actions.fadeIn(0.3f)
                 ))
-
             }
         }
 
@@ -120,11 +117,8 @@ class MainMenuScreen: CameraStageBaseScreen() {
         table.add(column2)
         table.pack()
 
-        val scroll = ScrollPane(table)
-        scroll.setSize(table.width, stage.height * 0.98f)
-        scroll.center(stage)
-        scroll.setOverscroll(false, false)
-        stage.addActor(scroll)
+        stage.addActor(table)
+        table.center(stage)
 
         onBackButtonClicked {
             if(hasOpenPopups()) {
@@ -196,7 +190,7 @@ class MainMenuScreen: CameraStageBaseScreen() {
                 // This can help for situations when the autosave is corrupted
                 try {
                     val autosaves = GameSaver.getSaves().filter { it.name() != autosave && it.name().startsWith(autosave) }
-                    savedGame = GameSaver.loadGameFromFile(autosaves.maxBy { it.lastModified() }!!)
+                    savedGame = GameSaver.loadGameFromFile(autosaves.maxByOrNull { it.lastModified() }!!)
                 } catch (ex: Exception) {
                     Gdx.app.postRunnable {
                         loadingPopup.close()
@@ -224,4 +218,9 @@ class MainMenuScreen: CameraStageBaseScreen() {
         game.loadGame(newGame)
     }
 
+    override fun resize(width: Int, height: Int) {
+        if (stage.viewport.screenWidth != width || stage.viewport.screenHeight != height) {
+            game.setScreen(MainMenuScreen())
+        }
+    }
 }

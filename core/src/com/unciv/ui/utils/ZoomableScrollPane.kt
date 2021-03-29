@@ -1,11 +1,9 @@
 package com.unciv.ui.utils
 
-import com.badlogic.gdx.scenes.scene2d.Event
 import com.badlogic.gdx.scenes.scene2d.InputEvent
 import com.badlogic.gdx.scenes.scene2d.InputListener
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.utils.ActorGestureListener
-import kotlin.math.abs
 import kotlin.math.sqrt
 
 

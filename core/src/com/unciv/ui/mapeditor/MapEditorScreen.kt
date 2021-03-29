@@ -31,12 +31,12 @@ class MapEditorScreen(): CameraStageBaseScreen() {
         initialize()
     }
 
-    fun initialize() {
+    private fun initialize() {
         ImageGetter.setNewRuleset(ruleset)
         tileMap.setTransients(ruleset,false)
 
         mapHolder = EditorMapHolder(this, tileMap)
-        mapHolder.addTiles(stage.width)
+        mapHolder.addTiles(stage.width, stage.height)
         stage.addActor(mapHolder)
         stage.scrollFocus = mapHolder
 

@@ -35,14 +35,14 @@ import kotlin.concurrent.thread
 
 class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap: TileMap): ZoomableScrollPane() {
     internal var selectedTile: TileInfo? = null
-    val tileGroups = HashMap<TileInfo, List<WorldTileGroup>>()
+    private val tileGroups = HashMap<TileInfo, List<WorldTileGroup>>()
 
     //allWorldTileGroups exists to easily access all WordTileGroups
     //since tileGroup is a HashMap of Lists and getting all WordTileGroups
     //would need a double for loop
-    val allWorldTileGroups = ArrayList<WorldTileGroup>()
+    private val allWorldTileGroups = ArrayList<WorldTileGroup>()
 
-    val unitActionOverlays: ArrayList<Actor> = ArrayList()
+    private val unitActionOverlays: ArrayList<Actor> = ArrayList()
 
     init {
         if (Gdx.app.type == Application.ApplicationType.Desktop) this.setFlingTime(0f)
@@ -55,7 +55,7 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
     internal fun addTiles() {
         val tileSetStrings = TileSetStrings()
         val daTileGroups = tileMap.values.map { WorldTileGroup(worldScreen, it, tileSetStrings) }
-        val tileGroupMap = TileGroupMap(daTileGroups, worldScreen.stage.width, continousScrollingX)
+        val tileGroupMap = TileGroupMap(daTileGroups, worldScreen.stage.width, worldScreen.stage.height, continousScrollingX)
         val mirrorTileGroups = tileGroupMap.getMirrorTiles()
 
         for (tileGroup in daTileGroups) {

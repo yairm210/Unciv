@@ -12,21 +12,21 @@ import com.unciv.ui.utils.ZoomableScrollPane
 import com.unciv.ui.utils.center
 import com.unciv.ui.utils.onClick
 
-class EditorMapHolder(internal val mapEditorScreen: MapEditorScreen, internal val tileMap: TileMap): ZoomableScrollPane() {
+class EditorMapHolder(private val mapEditorScreen: MapEditorScreen, internal val tileMap: TileMap): ZoomableScrollPane() {
     val tileGroups = HashMap<TileInfo, List<TileGroup>>()
     lateinit var tileGroupMap: TileGroupMap<TileGroup>
-    val allTileGroups = ArrayList<TileGroup>()
+    private val allTileGroups = ArrayList<TileGroup>()
 
     init {
         continousScrollingX = tileMap.mapParameters.worldWrap
     }
 
-    internal fun addTiles(padding:Float) {
+    internal fun addTiles(leftAndRightPadding: Float, topAndBottomPadding: Float) {
 
         val tileSetStrings = TileSetStrings()
         val daTileGroups = tileMap.values.map { TileGroup(it, tileSetStrings) }
 
-        tileGroupMap = TileGroupMap(daTileGroups, padding, continousScrollingX)
+        tileGroupMap = TileGroupMap(daTileGroups, leftAndRightPadding, topAndBottomPadding, continousScrollingX)
         actor = tileGroupMap
         val mirrorTileGroups = tileGroupMap.getMirrorTiles()
 
@@ -63,8 +63,7 @@ class EditorMapHolder(internal val mapEditorScreen: MapEditorScreen, internal va
                     mapEditorScreen.tileEditorOptions.updateTileWhenClicked(tileInfo)
 
                     tileInfo.setTerrainTransients()
-                    for (tileGroup in tileGroups[tileInfo]!!)
-                        tileGroup.update()
+                    tileGroups[tileInfo]!!.forEach { it.update() }
                 }
             }
         }
@@ -95,9 +94,6 @@ class EditorMapHolder(internal val mapEditorScreen: MapEditorScreen, internal va
         val hexPosition = HexMath.world2HexCoords(positionalCoords)
         val rounded = HexMath.roundHexCoords(hexPosition)
 
-        if (tileMap.contains(rounded))
-            return tileMap[rounded]
-        else
-            return null
+        return if (rounded in tileMap) tileMap[rounded] else null
     }
 }
