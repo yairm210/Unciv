@@ -178,11 +178,11 @@ object Github {
     }
 
 
-    fun tryGetGithubReposWithTopic(): ArrayList<Repo> {
+    fun tryGetGithubReposWithTopic(amountPerPage:Int, page:Int): RepoSearch? {
         // Default per-page is 30 - when we get to above 100 mods, we'll need to start search-queries
-        val inputStream = download("https://api.github.com/search/repositories?q=topic:unciv-mod&per_page=100")
-        if (inputStream == null) return ArrayList()
-        return GameSaver.json().fromJson(RepoSearch::class.java, inputStream.bufferedReader().readText()).items
+        val inputStream = download("https://api.github.com/search/repositories?q=topic:unciv-mod&per_page=$amountPerPage&page=$page")
+        if (inputStream == null) return null
+        return GameSaver.json().fromJson(RepoSearch::class.java, inputStream.bufferedReader().readText())
     }
 
     class RepoSearch {

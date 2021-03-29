@@ -19,6 +19,8 @@ class ModManagementScreen: PickerScreen() {
     val downloadTable = Table().apply { defaults().pad(10f) }
     val modActionTable = Table().apply { defaults().pad(10f) }
 
+    val amountPerPage = 30
+
     init {
         setDefaultCloseAction(MainMenuScreen())
         refreshModTable()
@@ -33,10 +35,18 @@ class ModManagementScreen: PickerScreen() {
 
         downloadTable.add(getDownloadButton()).row()
 
+        tryDownloadPage(1)
+
+        topTable.add(ScrollPane(downloadTable)).height(scrollPane.height*0.8f)//.size(downloadTable.width, topTable.height)
+
+        topTable.add(modActionTable)
+    }
+
+    fun tryDownloadPage(pageNum:Int) {
         thread {
-            val repoList: ArrayList<Github.Repo>
+            val repoSearch: Github.RepoSearch
             try {
-                repoList = Github.tryGetGithubReposWithTopic()
+                repoSearch = Github.tryGetGithubReposWithTopic(amountPerPage, pageNum)!!
             } catch (ex: Exception) {
                 Gdx.app.postRunnable {
                     ToastPopup("Could not download mod list", this)
@@ -45,7 +55,7 @@ class ModManagementScreen: PickerScreen() {
             }
 
             Gdx.app.postRunnable {
-                for (repo in repoList) {
+                for (repo in repoSearch.items) {
                     if (repo.default_branch != "master") continue
                     repo.name = repo.name.replace('-', ' ')
                     val downloadButton = repo.name.toTextButton()
@@ -64,14 +74,18 @@ class ModManagementScreen: PickerScreen() {
                     }
                     downloadTable.add(downloadButton).row()
                 }
+                if (repoSearch.items.size == amountPerPage) {
+                    val nextPageButton = "Next page".toTextButton()
+                    nextPageButton.onClick {
+                        nextPageButton.remove()
+                        tryDownloadPage(pageNum+1)
+                    }
+                    downloadTable.add(nextPageButton).row()
+                }
                 downloadTable.pack()
                 (downloadTable.parent as ScrollPane).actor = downloadTable
             }
         }
-
-        topTable.add(ScrollPane(downloadTable)).height(scrollPane.height*0.8f)//.size(downloadTable.width, topTable.height)
-
-        topTable.add(modActionTable)
     }
 
     fun getDownloadButton(): TextButton {
