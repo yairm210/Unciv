@@ -33,9 +33,7 @@ open class ActionlessGroup(val checkHit:Boolean=false):Group() {
     }
 }
 
-open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) : ActionlessGroup(true) {
-    val groupSize = 54f
-
+open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings, private val groupSize: Float = 54f) : ActionlessGroup(true) {
     /*
     Layers:
     Base image (+ overlay)
