@@ -312,6 +312,7 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Cam
         techPolicyAndVictoryHolder.setPosition(10f, topBar.y - techPolicyAndVictoryHolder.height - 5f)
         updateDiplomacyButton(viewingCiv)
 
+        isPlayersTurn = viewingCiv == gameInfo.currentPlayerCiv
 
         if (!hasOpenPopups() && isPlayersTurn) {
             when {
