@@ -58,9 +58,8 @@ class MainMenuScreen: CameraStageBaseScreen() {
                         Actions.fadeOut(0f),
                         Actions.run {
                             mapHolder.apply {
-                                addTiles(this@MainMenuScreen.stage.width/3, this@MainMenuScreen.stage.height/3)
+                                addTiles(this@MainMenuScreen.stage.width, this@MainMenuScreen.stage.height)
                                 touchable = Touchable.disabled
-                                setScale(0.5f)
                             }
                             backgroundTable.addActor(mapHolder)
                             mapHolder.center(backgroundTable)
