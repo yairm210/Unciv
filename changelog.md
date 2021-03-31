@@ -1,3 +1,31 @@
+## 3.13.12
+
+Added Bulgarian, by antonpetrov145!
+
+HUGE memory savings (120MB -> 75MB) By saving atlases between ruleset resets!
+
+Start of work on Religion!
+
+Resolved #3740 - units retain individual names when upgrading
+
+Fixed can't press nextTurn in multiplayer game - By GGGuenni
+
+'Years of peace' modifier reset when war is declared
+
+Added mod pagination - even when we exceed 100 mods, we'll be able to download them all
+
+Button for current civilopedia entry is now marked
+
+Modded "Remove" commands to nonexistant features no longer crashes the game
+
+AI no longer tries to attack with carriers, crashing the game.
+
+National wonder does not require building to be built in puppeted cities
+
+City attack notifications show icon
+
+Custom improvements for water resources now moddable
+
 ## 3.13.11
 
 Resolved #3732 - Mark target tile while moving toward it
