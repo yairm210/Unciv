@@ -443,9 +443,9 @@ open class TileInfo {
 
         return when (tileMap.getNeighborTileClockPosition(this, otherTile)) {
             2 -> otherTile.hasBottomLeftRiver // we're to the bottom-left of it
-            4 -> hasBottomRightRiver // we're to the top-right of it
+            4 -> hasBottomRightRiver // we're to the top-left of it
             6 -> hasBottomRiver // we're directly above it
-            8 -> hasBottomLeftRiver // we're to the top-left of it
+            8 -> hasBottomLeftRiver // we're to the top-right of it
             10 -> otherTile.hasBottomRightRiver // we're to the bottom-right of it
             12 -> otherTile.hasBottomRiver // we're directly below it
             else -> throw Exception("Should never call this function on a non-neighbor!")
