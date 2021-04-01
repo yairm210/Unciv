@@ -581,7 +581,15 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) 
             else ImageGetter.getImage(tileSetStrings.railroad)
             roadImage.image = image
 
-            val relativeHexPosition = tileInfo.position.cpy().sub(neighbor.position)
+            val relativeHexPosition = when (tileInfo.tileMap.getNeighborTileClockPosition(neighbor, tileInfo)){
+                2 -> Vector2(0f,1f)
+                4 -> Vector2(-1f,0f)
+                6 -> Vector2(-1f,-1f)
+                8 -> Vector2(0f,-1f)
+                10 -> Vector2(1f,0f)
+                12 -> Vector2(1f,1f)
+                else -> Vector2.Zero
+            }
             val relativeWorldPosition = HexMath.hex2WorldCoords(relativeHexPosition)
 
             // This is some crazy voodoo magic so I'll explain.
