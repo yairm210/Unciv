@@ -47,8 +47,6 @@ Copy it to a `/maps` folder in your *mod*, and you're done!
 
 In order to make your mod downloadable by anyone, you need to create a Github repository (instructions [here](https://docs.github.com/en/github/getting-started-with-github/create-a-repo))
 
-**When creating the repository, it's important that the main branch is called "master", not "main"**
-
 The Images and jsons folders need to be in the root directory of the repo - see [here](https://github.com/yairm210/Unciv-IV-mod) for example.
 
 You can then manually download the mod from within the Mod Manager in Unciv:
