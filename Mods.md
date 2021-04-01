@@ -86,6 +86,16 @@ If the option "Show all Play folders" does not have a check next to it click it.
 
 When loading a mod, it needs to be in its own folder in `/mods` - this is how you will work when you're editing your mod.
 
+## Religion
+
+Religion is a work in progress, and doesn't exist in the base game, but can be added into mods by adding a Beliefs.json file in the json files.
+
+Currently the only implemented mechanic is gathering faith and getting a Pantheon belief.
+
+Of course, you'll need to add some way for civs to gain faith in order for the Pantheon choice!
+
+[Here](https://github.com/yairm210/unciv-religion-mod-example) is an example of a mod that adds several Pantheon beliefs, and adds the Shrine building to allow Faith accumulation.
+
 ## Other
 
 Existing mods can be found [here](https://github.com/topics/unciv-mod)!
