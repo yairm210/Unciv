@@ -56,7 +56,6 @@ class ModManagementScreen: PickerScreen() {
 
             Gdx.app.postRunnable {
                 for (repo in repoSearch.items) {
-                    if (repo.default_branch != "master") continue
                     repo.name = repo.name.replace('-', ' ')
                     val downloadButton = repo.name.toTextButton()
                     downloadButton.onClick {
@@ -67,7 +66,7 @@ class ModManagementScreen: PickerScreen() {
                         rightSideButton.onClick {
                             rightSideButton.setText("Downloading...".tr())
                             rightSideButton.disable()
-                            downloadMod(repo.svn_url) {
+                            downloadMod(repo.svn_url, repo.default_branch) {
                                 rightSideButton.setText("Downloaded!".tr())
                             }
                         }
@@ -98,7 +97,7 @@ class ModManagementScreen: PickerScreen() {
             actualDownloadButton.onClick {
                 actualDownloadButton.setText("Downloading...".tr())
                 actualDownloadButton.disable()
-                downloadMod(textArea.text) { popup.close() }
+                downloadMod(textArea.text, "master") { popup.close() }
             }
             popup.add(actualDownloadButton).row()
             popup.addCloseButton()
@@ -107,10 +106,10 @@ class ModManagementScreen: PickerScreen() {
         return downloadButton
     }
 
-    fun downloadMod(gitRepoUrl:String, postAction:()->Unit={}){
+    fun downloadMod(gitRepoUrl:String, defaultBranch:String, postAction:()->Unit={}){
         thread { // to avoid ANRs - we've learnt our lesson from previous download-related actions
             try {
-                Github.downloadAndExtract("$gitRepoUrl/archive/master.zip",
+                Github.downloadAndExtract(gitRepoUrl, defaultBranch,
                         Gdx.files.local("mods"))
                 Gdx.app.postRunnable {
                     ToastPopup("Downloaded!", this)

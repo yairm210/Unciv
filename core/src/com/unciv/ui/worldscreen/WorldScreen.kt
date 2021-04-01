@@ -10,6 +10,7 @@ import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.scenes.scene2d.actions.RepeatAction
 import com.badlogic.gdx.scenes.scene2d.ui.Button
+import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.utils.Align
@@ -605,6 +606,7 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Cam
             viewingCiv.religionManager.canFoundPantheon() ->
                 NextTurnAction("Found Pantheon", Color.WHITE) {
                     val pantheonPopup = Popup(this)
+                    val beliefsTable = Table().apply { defaults().pad(10f) }
                     for (belief in gameInfo.ruleSet.beliefs.values) {
                         if (belief.type != "Pantheon" || gameInfo.civilizations.any { it.religionManager.pantheonBelief == belief.name }) continue
                         val beliefTable = Table().apply { touchable = Touchable.enabled; background = ImageGetter.getBackground(ImageGetter.getBlue()) }
@@ -612,8 +614,9 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Cam
                         beliefTable.add(belief.name.toLabel(fontSize = 24)).row()
                         beliefTable.add(belief.uniques.joinToString().toLabel())
                         beliefTable.onClick { viewingCiv.religionManager.choosePantheonBelief(belief); pantheonPopup.close(); shouldUpdate = true }
-                        pantheonPopup.add(beliefTable).row()
+                        beliefsTable.add(beliefTable).fillX().row()
                     }
+                    pantheonPopup.add(ScrollPane(beliefsTable)).maxHeight(stage.height*.8f)
                     pantheonPopup.open()
                 }
 

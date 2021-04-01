@@ -220,6 +220,7 @@ class Ruleset {
         if (buildings.isNotEmpty()) stringList.add(buildings.size.toString() + " Buildings")
         if (tileResources.isNotEmpty()) stringList.add(tileResources.size.toString() + " Resources")
         if (tileImprovements.isNotEmpty()) stringList.add(tileImprovements.size.toString() + " Improvements")
+        if (beliefs.isNotEmpty()) stringList.add(beliefs.size.toString() + " Beliefs")
         return stringList.joinToString()
     }
 

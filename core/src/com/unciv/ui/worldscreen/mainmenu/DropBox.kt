@@ -156,8 +156,9 @@ object Github {
     }
 
     // This took a long time to get just right, so if you're changing this, TEST IT THOROUGHLY on both Desktop and Phone
-    fun downloadAndExtract(url:String, folderFileHandle:FileHandle) {
-        val inputStream = download(url)
+    fun downloadAndExtract(gitRepoUrl:String, defaultBranch:String, folderFileHandle:FileHandle) {
+        val zipUrl = "$gitRepoUrl/archive/$defaultBranch.zip"
+        val inputStream = download(zipUrl)
         if (inputStream == null) return
 
         val tempZipFileHandle = folderFileHandle.child("tempZip.zip")
@@ -166,7 +167,7 @@ object Github {
         Zip.extractFolder(tempZipFileHandle, unzipDestination)
         val innerFolder = unzipDestination.list().first() // tempZip/<repoName>-master/
 
-        val finalDestinationName = innerFolder.name().replace("-master","").replace('-',' ')
+        val finalDestinationName = innerFolder.name().replace("-$defaultBranch","").replace('-',' ')
         val finalDestination = folderFileHandle.child(finalDestinationName)
         finalDestination.mkdirs() // If we don't create this as a directory, it will think this is a file and nothing will work.
         for(innerFileOrFolder in innerFolder.list()){
