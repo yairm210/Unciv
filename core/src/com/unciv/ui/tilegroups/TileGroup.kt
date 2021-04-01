@@ -341,20 +341,29 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) 
 
         for (image in tileBaseImages) image.remove()
         tileBaseImages.clear()
-        for (location in tileBaseImageLocations.reversed()) { // reversed because we send each one to back
+        for (baseLocation in tileBaseImageLocations.reversed()) { // reversed because we send each one to back
             // Here we check what actual tiles exist, and pick one - not at random, but based on the tile location,
             // so it stays consistent throughout the game
-            if (!ImageGetter.imageExists(location)) continue
+            if (!ImageGetter.imageExists(baseLocation)) continue
+
+            var locationToCheck = baseLocation
+            if(tileInfo.owningCity!=null) {
+                val ownersEra = tileInfo.getOwner()!!.getEra()
+                val eraSpecificLocation = "$locationToCheck-$ownersEra"
+                if (ImageGetter.imageExists(eraSpecificLocation))
+                    locationToCheck = eraSpecificLocation
+            }
+
             val existingImages = ArrayList<String>()
-            existingImages.add(location)
+            existingImages.add(locationToCheck)
             var i = 2
             while (true) {
-                val tileVariant = location + i
+                val tileVariant = locationToCheck + i
                 if (ImageGetter.imageExists(tileVariant)) existingImages.add(tileVariant)
                 else break
                 i += 1
             }
-            val finalLocation = existingImages.random(Random(tileInfo.position.hashCode() + location.hashCode()))
+            val finalLocation = existingImages.random(Random(tileInfo.position.hashCode() + locationToCheck.hashCode()))
 
             val image = ImageGetter.getImage(finalLocation)
             tileBaseImages.add(image)
