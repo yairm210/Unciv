@@ -207,9 +207,8 @@ class Ruleset {
         }
     }
 
-    fun getEras(): List<String> {
-        return technologies.values.map { it.column!!.era }.distinct()
-    }
+    fun getEras(): List<String> = technologies.values.map { it.column!!.era }.distinct()
+    fun hasReligion() = beliefs.any()
 
     fun getEraNumber(era: String) = getEras().indexOf(era)
     fun getSummary(): String {
