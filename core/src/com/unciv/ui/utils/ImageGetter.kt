@@ -7,7 +7,6 @@ import com.badlogic.gdx.graphics.g2d.NinePatch
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
 import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.scenes.scene2d.Actor
-import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable
@@ -32,7 +31,7 @@ object ImageGetter {
     // So, we now use TexturePacker in the DesktopLauncher class to pack all the different images into single images,
     // and the atlas is what tells us what was packed where.
     lateinit var atlas: TextureAtlas
-    val atlases = HashMap<String, TextureAtlas>()
+    private val atlases = HashMap<String, TextureAtlas>()
     var ruleset = Ruleset()
 
     // We then shove all the drawables into a hashmap, because the atlas specifically tells us
@@ -227,7 +226,7 @@ object ImageGetter {
         return getStatIcon(construction)
     }
 
-    fun getPromotionIcon(promotionName: String): Actor {
+    fun getPromotionIcon(promotionName: String, size: Float = 30f): Actor {
         val level = when {
             promotionName.endsWith(" I") -> 1
             promotionName.endsWith(" II") -> 2
@@ -238,21 +237,18 @@ object ImageGetter {
         val basePromotionName = if (level == 0) promotionName
         else promotionName.substring(0, promotionName.length - level - 1)
 
-        if (imageExists("UnitPromotionIcons/$basePromotionName")) {
-            val icon = getImage("UnitPromotionIcons/$basePromotionName")
-            icon.color = colorFromRGB(255, 226, 0)
-            val circle = icon.surroundWithCircle(30f)
-            circle.circle.color = colorFromRGB(0, 12, 49)
-            if (level != 0) {
-                val starTable = Table().apply { defaults().pad(2f) }
-                for (i in 1..level) starTable.add(getImage("OtherIcons/Star")).size(8f)
-                starTable.centerX(circle)
-                starTable.y = 5f
-                circle.addActor(starTable)
-            }
-            return circle
+        val circle = getImage("UnitPromotionIcons/$basePromotionName")
+                .apply { color= colorFromRGB(255, 226, 0) }
+                .surroundWithCircle(size)
+                .apply { circle.color = colorFromRGB(0, 12, 49) }
+        if (level != 0) {
+            val starTable = Table().apply { defaults().pad(2f) }
+            for (i in 1..level) starTable.add(getImage("OtherIcons/Star")).size(size / 3f)
+            starTable.centerX(circle)
+            starTable.y = size / 6f
+            circle.addActor(starTable)
         }
-        return getImage("UnitPromotionIcons/" + promotionName.replace(' ', '_') + "_(Civ5)")
+        return circle
     }
 
     fun getBlue() = Color(0x004085bf)
