@@ -40,6 +40,7 @@ class GameSettings {
     var visualMods = HashSet<String>()
 
     var showExperimentalWorldWrap = false
+    var showExperimentalTileLayering = false
 
     init {
         // 26 = Android Oreo. Versions below may display permanent icon in notification bar.

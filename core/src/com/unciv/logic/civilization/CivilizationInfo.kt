@@ -585,6 +585,7 @@ class CivilizationInfo {
     fun addCity(location: Vector2) {
         val newCity = CityInfo(this, location)
         newCity.cityConstructions.chooseNextConstruction()
+
     }
 
 

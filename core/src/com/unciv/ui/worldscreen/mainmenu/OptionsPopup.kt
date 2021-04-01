@@ -132,6 +132,10 @@ class OptionsPopup(val previousScreen:CameraStageBaseScreen) : Popup(previousScr
                 settings.showExperimentalWorldWrap)
         { settings.showExperimentalWorldWrap = it }
 
+        addYesNoRow("Show experimental tile layering\nHIGHLY EXPERIMENTAL - YOU HAVE BEEN WARNED!",
+                settings.showExperimentalTileLayering)
+        { settings.showExperimentalTileLayering = it }
+
         addSoundEffectsVolumeSlider()
         addMusicVolumeSlider()
         addTranslationGeneration()

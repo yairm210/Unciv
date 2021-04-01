@@ -211,5 +211,6 @@
 	
 	{ "name": "Ancient ruins" },
 	{ "name": "City ruins" },
+	{ "name": "City center" },
 	{ "name": "Barbarian encampment" }
 ]

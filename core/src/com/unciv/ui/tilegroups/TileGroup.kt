@@ -169,6 +169,38 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) 
         crosshairImage.isVisible = true
     }
 
+    fun getTileBaseImageLocationsNew(viewingCiv: CivilizationInfo?): List<String> {
+        if (viewingCiv == null && !showEntireMap) return listOf(tileSetStrings.hexagon)
+
+        val shouldShowImprovement = tileInfo.improvement != null && UncivGame.Current.settings.showPixelImprovements
+        val shouldShowResource = UncivGame.Current.settings.showPixelImprovements
+                && tileInfo.resource != null &&
+                (showEntireMap || viewingCiv == null || tileInfo.hasViewableResource(viewingCiv))
+
+        var resourceAndImprovementSequence = sequenceOf<String?>()
+        if (shouldShowResource) resourceAndImprovementSequence += sequenceOf(tileInfo.resource)
+        if (shouldShowImprovement) resourceAndImprovementSequence += sequenceOf(tileInfo.improvement)
+        resourceAndImprovementSequence = resourceAndImprovementSequence.filterNotNull()
+
+        val allTogether = (sequenceOf(tileInfo.baseTerrain) + tileInfo.terrainFeatures.asSequence() + resourceAndImprovementSequence)
+                .filterNotNull().joinToString("+").let { tileSetStrings.getTile(it) }
+
+        if (ImageGetter.imageExists(allTogether)) return listOf(allTogether)
+        else return getTerrainImageLocations() + getImprovementAndResourceImages(resourceAndImprovementSequence)
+    }
+
+    fun getTerrainImageLocations(): List<String> {
+        val terrainSequence = sequenceOf(tileInfo.baseTerrain) + tileInfo.terrainFeatures.asSequence()
+        val allTerrains = terrainSequence.joinToString("+").let { tileSetStrings.getTile(it) }
+        if (ImageGetter.imageExists(allTerrains)) return listOf(allTerrains)
+        else return terrainSequence.toList()
+    }
+
+    fun getImprovementAndResourceImages(resourceAndImprovementSequence: Sequence<String>): List<String> {
+        val altogether = resourceAndImprovementSequence.joinToString("+").let { tileSetStrings.getTile(it) }
+        if (ImageGetter.imageExists(altogether)) return listOf(altogether)
+        else return resourceAndImprovementSequence.toList()
+    }
 
     fun getTileBaseImageLocations(viewingCiv: CivilizationInfo?): List<String> {
         if (viewingCiv == null && !showEntireMap) return listOf(tileSetStrings.hexagon)
@@ -298,9 +330,10 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) 
     }
 
     private fun updateTileImage(viewingCiv: CivilizationInfo?) {
-        val tileBaseImageLocations = getTileBaseImageLocations(viewingCiv)
+        val tileBaseImageLocations = if (UncivGame.Current.settings.showExperimentalTileLayering) getTileBaseImageLocationsNew(viewingCiv)
+        else getTileBaseImageLocations(viewingCiv)
 
-        if(tileBaseImageLocations.size == tileImageIdentifiers.size) {
+        if (tileBaseImageLocations.size == tileImageIdentifiers.size) {
             if (tileBaseImageLocations.withIndex().all { (i, imageLocation) -> tileImageIdentifiers[i] == imageLocation })
                 return // All image identifiers are the same as the current ones, no need to change anything
         }
@@ -311,6 +344,7 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) 
         for (location in tileBaseImageLocations.reversed()) { // reversed because we send each one to back
             // Here we check what actual tiles exist, and pick one - not at random, but based on the tile location,
             // so it stays consistent throughout the game
+            if (!ImageGetter.imageExists(location)) continue
             val existingImages = ArrayList<String>()
             existingImages.add(location)
             var i = 2
