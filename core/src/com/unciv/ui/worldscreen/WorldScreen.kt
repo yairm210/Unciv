@@ -138,6 +138,13 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Cam
             mapHolder.setCenterPosition(tileToCenterOn, true, true)
 
 
+        tutorialController.allTutorialsShowedCallback = { shouldUpdate = true }
+
+        onBackButtonClicked { backButtonAndESCHandler() }
+
+        addKeyboardListener() // for map panning by W,S,A,D
+
+
         if (gameInfo.gameParameters.isOnlineMultiplayer && !gameInfo.isUpToDate)
             isPlayersTurn = false // until we're up to date, don't let the player do anything
 
@@ -148,16 +155,9 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Cam
             // isDaemon = true, in order to not block the app closing
             // DO NOT use Timer() since this seems to (maybe?) translate to com.badlogic.gdx.utils.Timer? Not sure about this.
             multiPlayerRefresher = timer("multiPlayerRefresh", true, period = 10000) {
-                if (game.screen != this@WorldScreen) multiPlayerRefresher?.cancel()
-                else loadLatestMultiplayerState()
+                loadLatestMultiplayerState()
             }
         }
-
-        tutorialController.allTutorialsShowedCallback = { shouldUpdate = true }
-
-        onBackButtonClicked { backButtonAndESCHandler() }
-
-        addKeyboardListener() // for map panning by W,S,A,D
 
         // don't run update() directly, because the UncivGame.worldScreen should be set so that the city buttons and tile groups
         //  know what the viewing civ is.
@@ -241,8 +241,11 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Cam
             val latestGame = OnlineMultiplayer().tryDownloadGame(gameInfo.gameId)
 
             // if we find it still isn't player's turn...nothing changed
-            if (gameInfo.isUpToDate && gameInfo.currentPlayer == latestGame.currentPlayer) {
+            if (gameInfo.currentPlayer == latestGame.currentPlayer) {
                 Gdx.app.postRunnable { loadingGamePopup.close() }
+                // edge case - if there's only one player in a multiplayer game, we still check online, but it could be that we were correct and it is our turn
+                isPlayersTurn = latestGame.currentPlayer == viewingCiv.civName
+                shouldUpdate = true
                 return
             } else { //else we found it is the player's turn again, turn off polling and load turn
                 stopMultiPlayerRefresher()
@@ -312,8 +315,6 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Cam
         techPolicyAndVictoryHolder.setPosition(10f, topBar.y - techPolicyAndVictoryHolder.height - 5f)
         updateDiplomacyButton(viewingCiv)
 
-        isPlayersTurn = viewingCiv == gameInfo.currentPlayerCiv
-
         if (!hasOpenPopups() && isPlayersTurn) {
             when {
                 !gameInfo.oneMoreTurnMode && (viewingCiv.isDefeated() || gameInfo.civilizations.any { it.victoryManager.hasWon() }) ->
@@ -381,16 +382,11 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Cam
         displayTutorial(Tutorial.Introduction)
 
         displayTutorial(Tutorial.EnemyCityNeedsConqueringWithMeleeUnit) {
-            // diplomacy is a HashMap, cities a List - so sequences should help
-            // .flatMap { it.getUnits().asSequence() }  is not a good idea because getUnits constructs an ArrayList dynamically
             viewingCiv.diplomacy.values.asSequence()
                     .filter { it.diplomaticStatus == DiplomaticStatus.War }
-                    .map { it.otherCiv() }
-                    // we're now lazily enumerating over CivilizationInfo's we're at war with
-                    .flatMap { it.cities.asSequence() }
-                    // ... all *their* cities
-                    .filter { it.health == 1 }
-                    // ... those ripe for conquering
+                    .map { it.otherCiv() } // we're now lazily enumerating over CivilizationInfo's we're at war with
+                    .flatMap { it.cities.asSequence() } // ... all *their* cities
+                    .filter { it.health == 1 } // ... those ripe for conquering
                     .flatMap { it.getCenterTile().getTilesInDistance(2).asSequence() }
                     // ... all tiles around those in range of an average melee unit
                     // -> and now we look for a unit that could do the conquering because it's ours
