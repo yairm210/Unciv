@@ -97,7 +97,7 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) 
     val unitLayerGroup = UnitLayerGroupClass().apply { isTransform = false; setSize(groupSize, groupSize);touchable = Touchable.disabled }
     val unitImageLayerGroup = UnitImageLayerGroupClass().apply { isTransform = false; setSize(groupSize, groupSize);touchable = Touchable.disabled }
 
-    val cityButtonLayerGroup = Group().apply { isTransform = false; setSize(groupSize, groupSize);
+    val cityButtonLayerGroup = Group().apply { isTransform = false; setSize(groupSize, groupSize)
         touchable = Touchable.childrenOnly; setOrigin(Align.center) }
 
     val circleCrosshairFogLayerGroup = ActionlessGroup().apply { isTransform = false; setSize(groupSize, groupSize) }
@@ -173,6 +173,10 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) 
         if (viewingCiv == null && !showEntireMap) return listOf(tileSetStrings.hexagon)
 
         val shouldShowImprovement = tileInfo.improvement != null && UncivGame.Current.settings.showPixelImprovements
+
+        if (tileInfo.resource != null)
+            println()
+
         val shouldShowResource = UncivGame.Current.settings.showPixelImprovements
                 && tileInfo.resource != null &&
                 (showEntireMap || viewingCiv == null || tileInfo.hasViewableResource(viewingCiv))
@@ -182,24 +186,23 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) 
         if (shouldShowImprovement) resourceAndImprovementSequence += sequenceOf(tileInfo.improvement)
         resourceAndImprovementSequence = resourceAndImprovementSequence.filterNotNull()
 
-        val allTogether = (sequenceOf(tileInfo.baseTerrain) + tileInfo.terrainFeatures.asSequence() + resourceAndImprovementSequence)
-                .filterNotNull().joinToString("+").let { tileSetStrings.getTile(it) }
+        val terrainImages = (sequenceOf(tileInfo.baseTerrain) + tileInfo.terrainFeatures.asSequence() + sequenceOf(tileInfo.naturalWonder)).filterNotNull()
+        val allTogether = (terrainImages + resourceAndImprovementSequence).joinToString("+").let { tileSetStrings.getTile(it) }
 
         if (ImageGetter.imageExists(allTogether)) return listOf(allTogether)
-        else return getTerrainImageLocations() + getImprovementAndResourceImages(resourceAndImprovementSequence)
+        else return getTerrainImageLocations(terrainImages) + getImprovementAndResourceImages(resourceAndImprovementSequence)
     }
 
-    fun getTerrainImageLocations(): List<String> {
-        val terrainSequence = sequenceOf(tileInfo.baseTerrain) + tileInfo.terrainFeatures.asSequence()
+    fun getTerrainImageLocations(terrainSequence: Sequence<String>): List<String> {
         val allTerrains = terrainSequence.joinToString("+").let { tileSetStrings.getTile(it) }
         if (ImageGetter.imageExists(allTerrains)) return listOf(allTerrains)
-        else return terrainSequence.toList()
+        else return terrainSequence.map { tileSetStrings.getTile(it) }.toList()
     }
 
     fun getImprovementAndResourceImages(resourceAndImprovementSequence: Sequence<String>): List<String> {
         val altogether = resourceAndImprovementSequence.joinToString("+").let { tileSetStrings.getTile(it) }
         if (ImageGetter.imageExists(altogether)) return listOf(altogether)
-        else return resourceAndImprovementSequence.toList()
+        else return resourceAndImprovementSequence.map { tileSetStrings.getTile(it) }.toList()
     }
 
     fun getTileBaseImageLocations(viewingCiv: CivilizationInfo?): List<String> {
@@ -786,9 +789,7 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) 
         circleImage.color = color.cpy().apply { a = alpha }
     }
 
-    fun hideCircle() {
-        circleImage.isVisible = false
-    }
+    fun hideCircle() { circleImage.isVisible = false }
 
     /** This exists so we can easily find the TileGroup draw method in the android profiling, otherwise it's just a mass of Group.draw->drawChildren->Group.draw etc. */
     override fun draw(batch: Batch?, parentAlpha: Float) { super.draw(batch, parentAlpha) }

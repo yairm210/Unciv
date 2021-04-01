@@ -157,6 +157,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Moai](https://thenounproject.com/search/?q=moai&i=2878111) By Template
 * [Fort](https://thenounproject.com/term/fort/1697645/) By Adrien Coquet
 * [Citadel](https://thenounproject.com/term/fort/1697646/) By Adrien Coquet
+* [Village](https://thenounproject.com/search/?q=city+center&i=476338) by Andrey Vasiliev
 
 ## Buildings
 
