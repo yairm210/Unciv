@@ -79,7 +79,7 @@ open class CameraStageBaseScreen : Screen {
 
     override fun hide() {}
 
-    override fun dispose() {}
+    override fun dispose() { stage.dispose() }
 
     fun displayTutorial(tutorial: Tutorial, test: (() -> Boolean)? = null) {
         if (!game.settings.showTutorials) return
