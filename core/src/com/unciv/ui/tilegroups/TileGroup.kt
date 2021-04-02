@@ -172,9 +172,6 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings, 
 
         val shouldShowImprovement = tileInfo.improvement != null && UncivGame.Current.settings.showPixelImprovements
 
-        if (tileInfo.resource != null)
-            println()
-
         val shouldShowResource = UncivGame.Current.settings.showPixelImprovements
                 && tileInfo.resource != null &&
                 (showEntireMap || viewingCiv == null || tileInfo.hasViewableResource(viewingCiv))
@@ -198,6 +195,8 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings, 
     }
 
     fun getImprovementAndResourceImages(resourceAndImprovementSequence: Sequence<String>): List<String> {
+        if(tileInfo.resource=="Silk")
+            println()
         val altogether = resourceAndImprovementSequence.joinToString("+").let { tileSetStrings.getTile(it) }
         if (ImageGetter.imageExists(altogether)) return listOf(altogether)
         else return resourceAndImprovementSequence.map { tileSetStrings.getTile(it) }.toList()
@@ -350,7 +349,7 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings, 
             var locationToCheck = baseLocation
             if(tileInfo.owningCity!=null) {
                 val ownersEra = tileInfo.getOwner()!!.getEra()
-                val eraSpecificLocation = "$locationToCheck-$ownersEra"
+                val eraSpecificLocation = tileSetStrings.getString(locationToCheck, tileSetStrings.tag, ownersEra)
                 if (ImageGetter.imageExists(eraSpecificLocation))
                     locationToCheck = eraSpecificLocation
             }
