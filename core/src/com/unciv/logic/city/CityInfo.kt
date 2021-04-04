@@ -12,10 +12,9 @@ import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.StatMap
 import com.unciv.models.stats.Stats
-import com.unciv.models.translations.equalsPlaceholderText
-import com.unciv.models.translations.getPlaceholderParameters
 import java.util.*
 import kotlin.collections.HashSet
+import kotlin.math.ceil
 import kotlin.math.min
 import kotlin.math.roundToInt
 
@@ -277,9 +276,9 @@ class CityInfo {
             for (unique in civInfo.getMatchingUniques("[] is earned []% faster")) {
                 val unit = civInfo.gameInfo.ruleSet.units[unique.params[0]]
                 if (unit == null) continue
-                val greatUnitUnique = unit.uniques.firstOrNull { it.equalsPlaceholderText("Great Person - []") }
+                val greatUnitUnique = unit.uniqueObjects.firstOrNull { it.placeholderText == "Great Person - []" }
                 if (greatUnitUnique == null) continue
-                val statName = greatUnitUnique.getPlaceholderParameters()[0]
+                val statName = greatUnitUnique.params[0]
                 val stat = Stat.values().firstOrNull { it.name == statName }
                 // this is not very efficient, and if it causes problems we can try and think of a way of improving it
                 if (stat != null) entry.value.add(stat, entry.value.get(stat) * unique.params[1].toFloat() / 100)
