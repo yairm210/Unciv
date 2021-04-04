@@ -1,3 +1,19 @@
+## 3.13.13
+
+Resolved #3753 - Fallout is no longer added multiple times
+
+ALL tile images now support era-specific images! But only if the base tile exists as well.
+
+Added new experimental tile layering, including new tileset - see #3716
+
+Can now handle mods with any default branch name!
+
+Added Faith icon and display for games with Religion
+
+Redraw CivilopediaScreen - By lishaoxia1985
+
+Fixed roads not getting wrapped correctly - By GGGuenni
+
 ## 3.13.12
 
 Added Bulgarian, by antonpetrov145!
