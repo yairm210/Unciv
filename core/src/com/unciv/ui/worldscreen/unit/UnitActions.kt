@@ -87,7 +87,7 @@ object UnitActions {
 
         val improvement = tile.getTileResource().improvement
 
-        if (tile.improvement == null
+        if (tile.improvement == null && tile.ruleset.tileImprovements.containsKey(improvement)
                 && unit.civInfo.tech.isResearched(tile.ruleset.tileImprovements[improvement]!!.techRequired!!))
             return UnitAction(UnitActionType.Create, "Create [$improvement]",
                     action = {
