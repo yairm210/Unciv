@@ -120,9 +120,11 @@ class TileGroupMap<T: TileGroup>(tileGroups: Collection<T>, private val leftAndR
 
         // there are tiles "below the zero",
         // so we zero out the starting position of the whole board so they will be displayed as well
-        // The width has to be lowered by groupSize because wrapped maps are missing a tile on the right.
+        // Map's width is reduced by groupSize if it is wrapped, because wrapped map will miss a tile on the right.
         // This ensures that wrapped maps have a smooth transition.
-        setSize(topX - bottomX + leftAndRightPadding * 2 - groupSize, topY - bottomY + topAndBottomPadding * 2)
+        // If map is not wrapped, Map's width doesn't need to be reduce by groupSize
+        if (worldWrap) setSize(topX - bottomX + leftAndRightPadding * 2 - groupSize, topY - bottomY + topAndBottomPadding * 2)
+        else setSize(topX - bottomX + leftAndRightPadding * 2, topY - bottomY + topAndBottomPadding * 2)
     }
 
     /**

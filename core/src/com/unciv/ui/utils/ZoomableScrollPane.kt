@@ -11,10 +11,6 @@ open class ZoomableScrollPane: ScrollPane(null) {
     var continousScrollingX = false
 
     init{
-        // Remove the existing inputListener
-        // which defines that mouse scroll = vertical movement
-        val zoomListener = listeners.last { it is InputListener && it !in captureListeners }
-        removeListener(zoomListener)
         addZoomListeners()
     }
 
@@ -24,7 +20,10 @@ open class ZoomableScrollPane: ScrollPane(null) {
     }
 
     private fun addZoomListeners() {
-
+        // At first, Remove the existing inputListener
+        // which defines that mouse scroll = vertical movement
+        val zoomListener = listeners.last { it is InputListener && it !in captureListeners }
+        removeListener(zoomListener)
         addListener(object : InputListener() {
             override fun scrolled(event: InputEvent?, x: Float, y: Float, amountX: Float, amountY: Float): Boolean {
                 if (amountX > 0 || amountY > 0) zoom(scaleX * 0.8f)
