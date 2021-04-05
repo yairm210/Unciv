@@ -26,10 +26,10 @@ import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 
 class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
 
-    val leftSideTable = Table().apply { defaults().pad(10f) }
-    val rightSideTable = Table()
+    private val leftSideTable = Table().apply { defaults().pad(10f) }
+    private val rightSideTable = Table()
 
-    fun isNotPlayersTurn() = !UncivGame.Current.worldScreen.isPlayersTurn
+    private fun isNotPlayersTurn() = !UncivGame.Current.worldScreen.isPlayersTurn
 
     init {
         onBackButtonClicked { UncivGame.Current.setWorldScreen() }
@@ -285,7 +285,7 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
             if (viewingCiv.canSignResearchAgreementsWith(otherCiv)) {
                 val researchAgreementButton = "Research Agreement".toTextButton()
 
-                val requiredGold = viewingCiv.getResearchAgreementCost(otherCiv)
+                val requiredGold = viewingCiv.getResearchAgreementCost()
                 researchAgreementButton.onClick {
                     val tradeTable = setTrade(otherCiv)
                     val researchAgreement = TradeOffer(Constants.researchAgreement, TradeType.Treaty, requiredGold)
@@ -390,7 +390,7 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
         return demandsTable
     }
 
-    fun getRelationshipTable(otherCivDiplomacyManager: DiplomacyManager): Table {
+    private fun getRelationshipTable(otherCivDiplomacyManager: DiplomacyManager): Table {
         val relationshipTable = Table()
 
         val opinionOfUs = if (otherCivDiplomacyManager.civInfo.isCityState()) otherCivDiplomacyManager.influence.toInt()
