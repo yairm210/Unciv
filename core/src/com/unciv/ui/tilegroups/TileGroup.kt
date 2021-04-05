@@ -347,7 +347,7 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings, 
             if (!ImageGetter.imageExists(baseLocation)) continue
 
             var locationToCheck = baseLocation
-            if(tileInfo.owningCity!=null) {
+            if (tileInfo.owningCity != null) {
                 val ownersEra = tileInfo.getOwner()!!.getEra()
                 val eraSpecificLocation = tileSetStrings.getString(locationToCheck, tileSetStrings.tag, ownersEra)
                 if (ImageGetter.imageExists(eraSpecificLocation))
@@ -370,6 +370,13 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings, 
             baseLayerGroup.addActor(image)
             setHexagonImageSize(image)
             image.toBack()
+        }
+
+        if (tileBaseImages.isEmpty()) { // Absolutely nothing! This is for the 'default' tileset
+            val image = ImageGetter.getImage(tileSetStrings.hexagon)
+            tileBaseImages.add(image)
+            baseLayerGroup.addActor(image)
+            setHexagonImageSize(image)
         }
     }
 
