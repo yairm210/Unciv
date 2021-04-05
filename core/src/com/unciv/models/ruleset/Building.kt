@@ -287,6 +287,7 @@ class Building : NamedStats(), IConstruction {
         }
 
         for (unique in uniqueObjects) when (unique.placeholderText) {
+            "Enables nuclear weapon" -> if(!construction.cityInfo.civInfo.gameInfo.gameParameters.nuclearWeaponsEnabled) return "Disabled by setting"
             "Must be on []" -> if (!cityCenter.matchesUniqueFilter(unique.params[0], civInfo)) return unique.text
             "Must not be on []" -> if (cityCenter.matchesUniqueFilter(unique.params[0], civInfo)) return unique.text
             "Must be next to []" -> if (!(unique.params[0] == "Fresh water" && cityCenter.isAdjacentToRiver()) // Fresh water is special, in that rivers are not tiles themselves but also fit the filter.
