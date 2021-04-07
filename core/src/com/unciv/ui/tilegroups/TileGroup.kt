@@ -182,10 +182,14 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings, 
         resourceAndImprovementSequence = resourceAndImprovementSequence.filterNotNull()
 
         val terrainImages = (sequenceOf(tileInfo.baseTerrain) + tileInfo.terrainFeatures.asSequence() + sequenceOf(tileInfo.naturalWonder)).filterNotNull()
-        val allTogether = (terrainImages + resourceAndImprovementSequence).joinToString("+").let { tileSetStrings.getTile(it) }
+        val allTogether = (terrainImages + resourceAndImprovementSequence).joinToString("+")
+        val allTogetherLocation = tileSetStrings.getTile(allTogether)
 
-        if (ImageGetter.imageExists(allTogether)) return listOf(allTogether)
-        else return getTerrainImageLocations(terrainImages) + getImprovementAndResourceImages(resourceAndImprovementSequence)
+        return when {
+            tileSetStrings.tileSetConfig.ruleVariants[allTogether] != null -> tileSetStrings.tileSetConfig.ruleVariants[allTogether]!!.map { tileSetStrings.getTile(it) }
+            ImageGetter.imageExists(allTogetherLocation) -> listOf(allTogetherLocation)
+            else -> getTerrainImageLocations(terrainImages) + getImprovementAndResourceImages(resourceAndImprovementSequence)
+        }
     }
 
     fun getTerrainImageLocations(terrainSequence: Sequence<String>): List<String> {

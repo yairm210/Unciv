@@ -1,11 +1,15 @@
 package com.unciv.ui.tilegroups
 
+import com.badlogic.gdx.Gdx
+import com.unciv.JsonParser
 import com.unciv.UncivGame
+import com.unciv.models.ruleset.tile.TilesetConfig
 
 class TileSetStrings {
     // this is so that when we have 100s of TileGroups, they won't all individually come up with all these strings themselves,
     // it gets pretty memory-intensive (10s of MBs which is a lot for lower-end phones)
     val tileSetLocation = "TileSets/" + UncivGame.Current.settings.tileSet + "/"
+    val tileSetConfig = getTileSetConfiguration()
 
     val hexagon = tileSetLocation + "Hexagon"
     val crosshatchHexagon = tileSetLocation + "CrosshatchHexagon"
@@ -58,5 +62,14 @@ class TileSetStrings {
         if (era != null) return getString(tilesLocation, city, tag, era)
         if (baseTerrain != null) return getString(tilesLocation, baseTerrain, "+", city)
         else return cityTile
+    }
+
+    private fun getTileSetConfiguration() : TilesetConfig{
+        val configFile = Gdx.files.internal("jsons/TileSets/" + UncivGame.Current.settings.tileSet + "Config.json/")
+        return if (configFile.exists()) {
+            JsonParser().getFromJson(TilesetConfig::class.java, configFile)
+        } else {
+            return TilesetConfig()
+        }
     }
 }

@@ -1,0 +1,8 @@
+{
+    "useColorAsBaseTerrain": "false",
+    "ruleVariants": {
+        "Grassland+Hills+Jungle+Oil": ["Grassland","Hills","Oil","JungleForHills"],
+        "Plains+Jungle+Aluminum": ["Plains","Aluminum","JungleForPlains"],
+        "Grassland+Forest+Aluminum": ["Grassland","Aluminum","ForestForGrassland"]
+    }
+}
