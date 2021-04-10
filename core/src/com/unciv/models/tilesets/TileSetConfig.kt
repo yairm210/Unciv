@@ -1,10 +1,10 @@
 package com.unciv.models.tilesets
 
-class TilesetConfig {
+class TileSetConfig {
     var useColorAsBaseTerrain = true
     var ruleVariants: HashMap<String, Array<String>> = HashMap()
 
-    fun updateConfig(other: TilesetConfig){
+    fun updateConfig(other: TileSetConfig){
         useColorAsBaseTerrain = other.useColorAsBaseTerrain
         for ((tileSetString, renderOrder) in other.ruleVariants){
             ruleVariants[tileSetString] = renderOrder

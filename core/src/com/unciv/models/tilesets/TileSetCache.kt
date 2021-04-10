@@ -4,7 +4,7 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.files.FileHandle
 import com.unciv.JsonParser
 
-object TileSetCache : HashMap<String, TilesetConfig>(){
+object TileSetCache : HashMap<String, TileSetConfig>(){
     fun loadTileSetConfigs(consoleMode: Boolean = false, printOutput: Boolean = false){
         clear()
         var tileSetName = ""
@@ -14,9 +14,9 @@ object TileSetCache : HashMap<String, TilesetConfig>(){
             tileSetName = configFile.nameWithoutExtension().removeSuffix("Config")
             try {
                 if (this[tileSetName] == null)
-                    this[tileSetName] = JsonParser().getFromJson(TilesetConfig::class.java, configFile)
+                    this[tileSetName] = JsonParser().getFromJson(TileSetConfig::class.java, configFile)
                 else
-                    this[tileSetName]!!.updateConfig(JsonParser().getFromJson(TilesetConfig::class.java, configFile))
+                    this[tileSetName]!!.updateConfig(JsonParser().getFromJson(TileSetConfig::class.java, configFile))
                 if (printOutput) {
                     println("TileSetConfig loaded successfully: ${configFile.name()}")
                     println()
@@ -42,9 +42,9 @@ object TileSetCache : HashMap<String, TilesetConfig>(){
                 for (configFile in modFolder.child("jsons/TileSets").list()){
                     tileSetName = configFile.nameWithoutExtension().removeSuffix("Config")
                     if (this[tileSetName] == null)
-                        this[tileSetName] = JsonParser().getFromJson(TilesetConfig::class.java, configFile)
+                        this[tileSetName] = JsonParser().getFromJson(TileSetConfig::class.java, configFile)
                     else
-                        this[tileSetName]!!.updateConfig(JsonParser().getFromJson(TilesetConfig::class.java, configFile))
+                        this[tileSetName]!!.updateConfig(JsonParser().getFromJson(TileSetConfig::class.java, configFile))
                     if (printOutput) {
                         println("TileSetConfig loaded successfully: ${configFile.path()}")
                         println()

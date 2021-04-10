@@ -1,8 +1,12 @@
 {
     "useColorAsBaseTerrain": "false",
     "ruleVariants": {
-        "Grassland+Hills+Jungle+Oil": ["Grassland","Hills","Oil","JungleForHills"],
-        "Plains+Jungle+Aluminum": ["Plains","Aluminum","JungleForPlains"],
-        "Grassland+Forest+Aluminum": ["Grassland","Aluminum","ForestForGrassland"]
+        "Mountain+Barringer Crater": ["Barringer Crater"],
+        "Mountain+Cerro de Potosi": ["Cerro de Potosi"],
+        "Mountain+Grand Mesa": ["Grand Mesa"],
+        "Mountain+Krakatoa": ["Krakatoa"],
+        "Mountain+Mount Fuji": ["Mount Fuji"],
+        "Mountain+Old Faithful": ["Old Faithful"],
+        "Mountain+Rock of Gibraltar": ["Rock of Gibraltar"]
     }
 }

@@ -199,8 +199,6 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings, 
     }
 
     fun getImprovementAndResourceImages(resourceAndImprovementSequence: Sequence<String>): List<String> {
-        if(tileInfo.resource=="Silk")
-            println()
         val altogether = resourceAndImprovementSequence.joinToString("+").let { tileSetStrings.getTile(it) }
         if (ImageGetter.imageExists(altogether)) return listOf(altogether)
         else return resourceAndImprovementSequence.map { tileSetStrings.getTile(it) }.toList()
