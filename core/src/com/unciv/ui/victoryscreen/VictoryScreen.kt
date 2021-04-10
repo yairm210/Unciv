@@ -251,7 +251,7 @@ class VictoryScreen(val worldScreen: WorldScreen) : PickerScreen() {
             column.addSeparator()
 
             for (civ in majorCivs.sortedByDescending { it.getStatForRanking(category) }) {
-                column.add(EmpireOverviewScreen.getCivGroup(civ, " : " + civ.getStatForRanking(category).toString(), playerCivInfo)).fillX().row()
+                column.add(EmpireOverviewScreen.getCivGroup(civ, ": " + civ.getStatForRanking(category).toString(), playerCivInfo)).fillX().row()
             }
 
             civRankingsTable.add(column)
