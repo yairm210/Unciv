@@ -13,6 +13,7 @@ import com.unciv.logic.GameSaver
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.models.metadata.GameSettings
 import com.unciv.models.ruleset.RulesetCache
+import com.unciv.models.tilesets.TileSetCache
 import com.unciv.models.translations.Translations
 import com.unciv.ui.LanguagePickerScreen
 import com.unciv.ui.utils.*
@@ -97,6 +98,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
             RulesetCache.loadRulesets(printOutput = true)
             translations.tryReadTranslationForCurrentLanguage()
             translations.loadPercentageCompleteOfLanguages()
+            TileSetCache.loadTileSetConfigs(printOutput = true)
 
             if (settings.userId.isEmpty()) { // assign permanent user id
                 settings.userId = UUID.randomUUID().toString()
