@@ -43,4 +43,4 @@ fi
 
 mkdir -p "$CONFIG_DIR"
 cd "$CONFIG_DIR" || fail "Could not 'cd' to '$CONFIG_DIR'"
-java -jar /usr/share/Unciv/Unciv.jar
+java --add-opens=java.base/java.lang=ALL-UNNAMED -jar /usr/share/Unciv/Unciv.jar
