@@ -70,8 +70,7 @@ class SaveAndLoadMapScreen(mapToSave: TileMap?, save:Boolean = false) : PickerSc
             }
         }
 
-        topTable.add(ScrollPane(mapsTable)).height(stage.height * 2 / 3)
-                .maxWidth(stage.width / 2)
+        topTable.add(ScrollPane(mapsTable)).maxWidth(stage.width / 2)
 
         val rightSideTable = Table().apply { defaults().pad(10f) }
 

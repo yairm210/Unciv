@@ -39,13 +39,13 @@ class ModManagementScreen: PickerScreen() {
         topTable.row()
 
 
-        topTable.add(ScrollPane(modTable)).height(scrollPane.height * 0.8f).pad(10f)
+        topTable.add(ScrollPane(modTable)).pad(10f)
 
         downloadTable.add(getDownloadButton()).row()
 
         tryDownloadPage(1)
 
-        topTable.add(ScrollPane(downloadTable)).height(scrollPane.height * 0.8f)//.size(downloadTable.width, topTable.height)
+        topTable.add(ScrollPane(downloadTable))
 
         topTable.add(modActionTable)
     }
