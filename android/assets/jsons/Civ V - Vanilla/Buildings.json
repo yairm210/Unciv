@@ -25,7 +25,7 @@
 		"hurryCostModifier": 25,
 		"uniques": ["[+1 Food] from [Deer] tiles in this city",
 			"[+1 Food] from [Bananas] tiles in this city",
-			"[+1 Food] from [Wheat] tiles in this city"]
+			"[+1 Food] from [Wheat] tiles in this city"],
 		"requiredTech": "Pottery"
 	},
 	{
@@ -215,7 +215,7 @@
 		"uniques": ["+[15]% Production when constructing [Mounted] units [in this city]", 
 			"[+1 Production] from [Cattle] tiles in this city",
 			"[+1 Production] from [Horses] tiles in this city",
-			"[+1 Production] from [Sheep] tiles in this city"]
+			"[+1 Production] from [Sheep] tiles in this city"],
 		"requiredTech": "Horseback Riding"
 	},
 	{
@@ -341,7 +341,7 @@
 	{
 		"name": "Mint",
 		"maintenance": 0,
-		"requiredNearbyImprovedResources": ["Gold Ore", "Silver"]
+		"requiredNearbyImprovedResources": ["Gold Ore", "Silver"],
 		"hurryCostModifier": 25,
 		"uniques": ["[+2 Gold] from [Gold Ore] tiles in this city", "[+2 Gold] from [Silver] tiles in this city"],
 		"requiredTech": "Currency"
@@ -714,7 +714,7 @@
 		"maintenance": 3,
 		"requiredBuilding": "Harbor",
 		"uniques": ["[+1 Production, +1 Gold] from [Water resource] tiles in this city",
-			"Must be next to [Coast]", "+[15]% Production when constructing [Water] units [in this city]"]
+			"Must be next to [Coast]", "+[15]% Production when constructing [Water] units [in this city]"],
 		"requiredTech": "Navigation"
 	},
 	{
