@@ -74,7 +74,7 @@ open class TileInfo {
     var roadStatus = RoadStatus.None
     var turnsToImprovement: Int = 0
 
-    fun isHill() = baseTerrain == Constants.hill
+    fun isHill() = baseTerrain == Constants.hill || terrainFeatures.contains(Constants.hill)
 
     var hasBottomRightRiver = false
     var hasBottomRiver = false
