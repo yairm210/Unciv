@@ -2069,7 +2069,7 @@ TileSets/FantasyHex/Tiles/Barringer Crater
   orig: 32, 28
   offset: 0, 0
   index: -1
-TileSets/FantasyHex-New/Tiles/Mountain+Barringer Crater
+TileSets/FantasyHex-New/Tiles/Barringer Crater
   rotate: false
   xy: 2013, 1592
   size: 32, 28
@@ -2181,7 +2181,7 @@ TileSets/FantasyHex/Tiles/Cerro de Potosi
   orig: 32, 28
   offset: 0, 0
   index: -1
-TileSets/FantasyHex-New/Tiles/Mountain+Cerro de Potosi
+TileSets/FantasyHex-New/Tiles/Cerro de Potosi
   rotate: false
   xy: 1584, 542
   size: 32, 28
@@ -3343,7 +3343,7 @@ TileSets/FantasyHex/Tiles/Krakatoa
   orig: 32, 30
   offset: 0, 0
   index: -1
-TileSets/FantasyHex-New/Tiles/Mountain+Krakatoa
+TileSets/FantasyHex-New/Tiles/Krakatoa
   rotate: false
   xy: 1704, 745
   size: 32, 30
@@ -3441,7 +3441,7 @@ TileSets/FantasyHex/Tiles/Mount Fuji
   orig: 32, 30
   offset: 0, 0
   index: -1
-TileSets/FantasyHex-New/Tiles/Mountain+Mount Fuji
+TileSets/FantasyHex-New/Tiles/Mount Fuji
   rotate: false
   xy: 1806, 837
   size: 32, 30

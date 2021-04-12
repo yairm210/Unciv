@@ -5,6 +5,7 @@ import com.badlogic.gdx.Input
 import com.badlogic.gdx.Screen
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.GL20
+import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.g2d.BitmapFont
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
@@ -32,9 +33,10 @@ open class CameraStageBaseScreen : Screen {
 
     // An initialized val always turned out to illegally be null...
     // Remember to always set LOWER CASE chars as the keys!
-    var keyPressDispatcher: HashMap<Char, (() -> Unit)> = hashMapOf()
+    var keyPressDispatcher: HashMap<Char, (() -> Unit)>
 
     init {
+        keyPressDispatcher = hashMapOf()
         val resolutions: List<Float> = game.settings.resolution.split("x").map { it.toInt().toFloat() }
         val width = resolutions[0]
         val height = resolutions[1]
@@ -79,7 +81,7 @@ open class CameraStageBaseScreen : Screen {
 
     override fun hide() {}
 
-    override fun dispose() { stage.dispose() }
+    override fun dispose() {}
 
     fun displayTutorial(tutorial: Tutorial, test: (() -> Boolean)? = null) {
         if (!game.settings.showTutorials) return
@@ -108,6 +110,7 @@ open class CameraStageBaseScreen : Screen {
             skin.get(SelectBox.SelectBoxStyle::class.java).listStyle.font = Fonts.font.apply { data.setScale(20 / ORIGINAL_FONT_SIZE) }
             skin
         }
+        internal var batch: Batch = SpriteBatch()
     }
 
     /** It returns the assigned [InputListener] */
@@ -207,7 +210,8 @@ fun Table.addSeparator(): Cell<Image> {
 
 fun Table.addSeparatorVertical(): Cell<Image> {
     val image = ImageGetter.getWhiteDot()
-    return add(image).width(2f).fillY()
+    val cell = add(image).width(2f).fillY()
+    return cell
 }
 
 fun <T : Actor> Table.addCell(actor: T): Table {

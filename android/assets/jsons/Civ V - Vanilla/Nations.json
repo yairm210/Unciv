@@ -218,7 +218,7 @@
 		"cities": ["Rome","Antium","Cumae","Neapolis","Ravenna","Arretium","Mediolanum","Arpinum","Circei","Setia",
 			"Satricum","Ardea","Ostia","Velitrae","Viroconium","Tarentum","Brundisium","Caesaraugusta","Caesarea","Palmyra",
 			"Signia","Aquileia","Clusium","Sutrium","Cremona","Placentia","Hispalis","Artaxata","Aurelianorum","Nicopolis",
-			  "Agrippina","Verona","Corfinium","Treverii","Sirmium","Augustadorum","Curia","Interrama","Adria",]
+			  "Agrippina","Verona","Corfinium","Treverii","Sirmium","Augustadorum","Curia","Interrama","Adria"]
 	},
 	{
 		"name": "Arabia",
@@ -597,7 +597,7 @@
 		"outerColor": [139,32,23],
 		"innerColor": [134,238,214],
 		"uniqueName": "Sacrificial Captives",
-		"uniques": ["Earn [100]% of [military] opponent's [Strength] as [Culture] for kills"],
+		"uniques": ["Earn [100]% of [Military] opponent's [Strength] as [Culture] for kills"],
 		"cities": ["Tenochtitlan","Teotihuacan","Tlatelolco","Texcoco","Tlaxcala","Calixtlahuaca","Xochicalco","Tlacopan",
 			"Atzcapotzalco","Tzintzuntzan","Malinalco","Tula","Tamuin","Teayo","Cempoala","Chalco","Tlalmanalco",
 			"Ixtapaluca","Huexotla","Tepexpan","Tepetlaoxtoc","Chiconautla","Zitlaltepec","Coyotepec","Tequixquiac",
@@ -1049,9 +1049,8 @@
 	{
 		"name": "Barbarians",
 		"outerColor": [0,0,0],
-		"innerColor": [182,0,0]
-		"uniques": ["Can only heal by pillaging"],
-
+		"innerColor": [182,0,0],
+		"uniques": ["Can only heal by pillaging"]
 	}
 
 ]

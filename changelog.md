@@ -1,3 +1,13 @@
+## 3.14.0
+
+World wrap is publicly released!
+
+Added empty hexagon when none of the images exist - this fixes the default tileset for the new rendering method
+
+Manhattan project is not disabled for no-nuclear-weapon games
+
+Behind-the-scenes work on Religion
+
 ## 3.13.13
 
 Resolved #3753 - Fallout is no longer added multiple times

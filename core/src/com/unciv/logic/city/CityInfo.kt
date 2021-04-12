@@ -162,7 +162,12 @@ class CityInfo {
     fun isWorked(tileInfo: TileInfo) = workedTiles.contains(tileInfo.position)
 
     fun isCapital(): Boolean = cityConstructions.builtBuildings.contains(capitalCityIndicator())
-    fun capitalCityIndicator(): String = getRuleset().buildings.values.first { it.uniques.contains("Indicates the capital city") }.name
+    fun capitalCityIndicator(): String {
+        val indicatorBuildings = getRuleset().buildings.values.asSequence().filter { it.uniques.contains("Indicates the capital city") }
+        val civSpecificBuilding = indicatorBuildings.firstOrNull { it.uniqueTo == civInfo.civName }
+        if (civSpecificBuilding != null) return civSpecificBuilding.name
+        else return indicatorBuildings.first().name
+    }
 
     fun isConnectedToCapital(connectionTypePredicate: (Set<String>) -> Boolean = { true }): Boolean {
         val mediumTypes = civInfo.citiesConnectedToCapitalToMediums[this] ?: return false
@@ -394,8 +399,7 @@ class CityInfo {
         getCenterTile().improvement = "City ruins"
 
         if (isCapital() && civInfo.cities.isNotEmpty()) { // Move the capital if destroyed (by a nuke or by razing)
-            val capitalCityBuilding = getRuleset().buildings.values.first { it.uniques.contains("Indicates the capital city") }
-            civInfo.cities.first().cityConstructions.addBuilding(capitalCityBuilding.name)
+            civInfo.cities.first().cityConstructions.addBuilding(capitalCityIndicator())
         }
     }
 
