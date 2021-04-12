@@ -394,10 +394,10 @@ class CivilizationInfo {
     fun getStatForRanking(category: RankingType): Int {
         return when (category) {
             RankingType.Population -> cities.sumBy { it.population.population }
-            RankingType.CropYield -> statsForNextTurn.food.roundToInt()
+            RankingType.Crop_Yield -> statsForNextTurn.food.roundToInt()
             RankingType.Production -> statsForNextTurn.production.roundToInt()
             RankingType.Gold -> gold
-            RankingType.Land -> cities.sumBy { it.tiles.size }
+            RankingType.Territory -> cities.sumBy { it.tiles.size }
             RankingType.Force -> units.sumBy { it.baseUnit.strength }
             RankingType.Happiness -> getHappiness()
             RankingType.Technologies -> tech.researchedTechnologies.size
