@@ -1,0 +1,40 @@
+{
+    "useColorAsBaseTerrain": "false",
+    "ruleVariants": {
+        "Hill": ["Grassland","Hill"],
+        "Hill+Ancient ruins": ["Grassland","Hill","Ancient ruins"],
+
+        "Hill+Sheep": ["Grassland","Hill","Sheep"],
+        "Hill+Sheep+Pasture": ["Grassland","Hill","Sheep+Pasture"],
+        "Hill+Horses": ["Grassland","Hill","Horses"],
+        "Hill+Horses+Pasture": ["Grassland","Hill","Horses+Pasture"],
+        "Hill+Deer": ["Grassland","Hill","Deer"],
+        "Hill+Deer+Camp": ["Grassland","Hill","Deer+Camp"],
+
+        "Hill+Iron": ["Grassland","Hill","Iron"],
+        "Hill+Iron+Mine": ["Grassland","Hill","Iron","Mine"],
+        "Hill+Aluminum": ["Grassland","Hill","Aluminum"],
+        "Hill+Aluminum+Mine": ["Grassland","Hill","Aluminum","Mine"],
+        "Hill+Uranium": ["Grassland","Hill","Uranium"],
+        "Hill+Uranium+Mine": ["Grassland","Hill","Uranium","Mine"],
+        "Hill+Coal": ["Grassland","Hill","Coal"],
+        "Hill+Coal+Mine": ["Grassland","Hill","Coal","Mine"],
+        
+        "Hill+Silver": ["Grassland","Hill","Silver"],
+        "Hill+Silver+Mine": ["Grassland","Hill","Silver","Mine"],
+        "Hill+Gold": ["Grassland","Hill","Gold"],
+        "Hill+Gold+Mine": ["Grassland","Hill","Gold","Mine"],
+        "Hill+Marble": ["Grassland","Hill","Marble"],
+        "Hill+Marble+Quarry": ["Grassland","Hill","Quarry+Marble"],
+        "Hill+Gems": ["Grassland","Hill","Gems"],
+        "Hill+Gems+Mine": ["Grassland","Hill","Gems","Mine"],
+        "Hill+Dyes": ["Grassland","Hill","Dyes"],
+        "Hill+Dyes+Plantation": ["Grassland","Hill","Dyes+Plantation"],
+        "Hill+Spices": ["Grassland","Hill","Spices"],
+        "Hill+Spices+Plantation": ["Grassland","Hill","Spices+Plantation"],
+        "Hill+Silk": ["Grassland","Hill","Silk"],
+        "Hill+Silk+Plantation": ["Grassland","Hill","Silk+Plantation"],
+        "Hill+Furs": ["Grassland","Hill","Furs"],
+        "Hill+Furs+Camp": ["Grassland","Hill","Furs+Camp"]
+    }
+}
