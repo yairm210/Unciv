@@ -96,7 +96,7 @@ object Battle {
     private fun tryEarnFromKilling(civUnit: ICombatant, defeatedUnit: MapUnitCombatant) {
         val unitStr = max(defeatedUnit.unit.baseUnit.strength, defeatedUnit.unit.baseUnit.rangedStrength)
         val unitCost = defeatedUnit.unit.baseUnit.cost
-        val bonusUniquePlaceholderText = "Earn []% of [] opponent's [] as [] for kills"
+        val bonusUniquePlaceholderText = "Earn []% of killed [] unit's [] as []"
 
         var goldReward = 0
         var cultureReward = 0
