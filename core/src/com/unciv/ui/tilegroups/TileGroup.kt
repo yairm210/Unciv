@@ -182,10 +182,14 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings, 
         resourceAndImprovementSequence = resourceAndImprovementSequence.filterNotNull()
 
         val terrainImages = (sequenceOf(tileInfo.baseTerrain) + tileInfo.terrainFeatures.asSequence()).filterNotNull()
-        val allTogether = (terrainImages + resourceAndImprovementSequence).joinToString("+").let { tileSetStrings.getTile(it) }
+        val allTogether = (terrainImages + resourceAndImprovementSequence).joinToString("+")
+        val allTogetherLocation = tileSetStrings.getTile(allTogether)
 
-        if (ImageGetter.imageExists(allTogether)) return listOf(allTogether)
-        else return getTerrainImageLocations(terrainImages) + getImprovementAndResourceImages(resourceAndImprovementSequence)
+        return when {
+            tileSetStrings.tileSetConfig.ruleVariants[allTogether] != null -> tileSetStrings.tileSetConfig.ruleVariants[allTogether]!!.map { tileSetStrings.getTile(it) }
+            ImageGetter.imageExists(allTogetherLocation) -> listOf(allTogetherLocation)
+            else -> getTerrainImageLocations(terrainImages) + getImprovementAndResourceImages(resourceAndImprovementSequence)
+        }
     }
 
     fun getTerrainImageLocations(terrainSequence: Sequence<String>): List<String> {
@@ -195,8 +199,6 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings, 
     }
 
     fun getImprovementAndResourceImages(resourceAndImprovementSequence: Sequence<String>): List<String> {
-        if(tileInfo.resource=="Silk")
-            println()
         val altogether = resourceAndImprovementSequence.joinToString("+").let { tileSetStrings.getTile(it) }
         if (ImageGetter.imageExists(altogether)) return listOf(altogether)
         else return resourceAndImprovementSequence.map { tileSetStrings.getTile(it) }.toList()
