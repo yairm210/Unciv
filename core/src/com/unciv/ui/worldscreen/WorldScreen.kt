@@ -513,7 +513,7 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Cam
                             cantUploadNewGamePopup.open()
                         }
                         isPlayersTurn = true // Since we couldn't push the new game clone, then it's like we never clicked the "next turn" button
-                        shouldUpdate = false
+                        shouldUpdate = true
                         return@thread
                     }
                 }
