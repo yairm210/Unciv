@@ -242,7 +242,13 @@ class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParame
                 val currentTurnPlayer = game.getCivilization(game.currentPlayer)
 
                 //Save game so MultiplayerScreen gets updated
-                GameSaver.saveGame(game, gameNames[arrayIndex], true)
+                /*
+                I received multiple reports regarding broken save games.
+                All of them where missing a few thousand chars at the end of the save game.
+                I assume this happened because the TurnCheckerWorker gets canceled by the AndroidLauncher
+                while saves are getting saved right here.
+                 */
+                //GameSaver.saveGame(game, gameNames[arrayIndex], true)
 
                 if (currentTurnPlayer.playerId == inputData.getString(USER_ID)!!) {
                     foundGame = true
