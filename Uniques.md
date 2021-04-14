@@ -68,6 +68,8 @@ tilefilters allow us to specify tiles according to a number of different aspects
 - "Water", "Land"
 - "River" (as in all 'river on tile' contexts, it means 'adjacent to a river on at least on side')
 - Natural wonder
+- "Friendly Land" - land belonging to you, or other civs with open borders to you
+- "Foreign Land" - any land that isn't friendly land
 
 So for instance, the unique "[stats] from [tileFilter] tiles in this city" can match several cases:
 - "[+2 Food] from [Lakes] tiles in this city"
