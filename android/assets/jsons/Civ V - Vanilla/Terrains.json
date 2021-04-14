@@ -146,7 +146,8 @@
 		"food": 2,
 		"movementCost": 1,
 		"defenceBonus": -0.1,
-		"occursOn": ["Desert", "Open terrain"]
+		"occursOn": ["Desert"]
+		"uniques":["Open terrain"]
 	},
 	{
 		"name": "Ice",
