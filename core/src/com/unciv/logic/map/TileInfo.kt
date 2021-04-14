@@ -385,6 +385,8 @@ open class TileInfo {
                 || filter == "Water" && isWater
                 || filter == "Land" && isLand
                 || filter == naturalWonder
+                || filter == "Foreign Land" && civInfo!=null && !isFriendlyTerritory(civInfo)
+                || filter == "Friendly Land" && civInfo!=null && isFriendlyTerritory(civInfo)
     }
 
     fun hasImprovementInProgress() = improvementInProgress != null

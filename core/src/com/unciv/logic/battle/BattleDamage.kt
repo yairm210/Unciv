@@ -201,13 +201,11 @@ object BattleDamage {
     private fun getTileSpecificModifiers(unit: MapUnitCombatant, tile: TileInfo): Counter<String> {
         val modifiers = Counter<String>()
 
-
         for (unique in unit.unit.getMatchingUniques("+[]% combat bonus in []")
+                + unit.unit.getMatchingUniques("+[]% Strength in []")
                 + unit.getCivInfo().getMatchingUniques("+[]% combat bonus for units fighting in []")) {
             val filter = unique.params[1]
-            if (filter == tile.getLastTerrain().name
-                    || filter == "Foreign Land" && !tile.isFriendlyTerritory(unit.getCivInfo())
-                    || filter == "Friendly Land" && tile.isFriendlyTerritory(unit.getCivInfo()))
+            if (tile.matchesUniqueFilter(filter, unit.getCivInfo()))
                 modifiers.add(filter, unique.params[0].toInt())
         }
 
