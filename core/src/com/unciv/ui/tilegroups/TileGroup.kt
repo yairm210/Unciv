@@ -169,7 +169,7 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings, 
 
     fun getTileBaseImageLocationsNew(viewingCiv: CivilizationInfo?): List<String> {
         if (viewingCiv == null && !showEntireMap) return listOf(tileSetStrings.hexagon)
-        if (tileInfo.naturalWonder != null) return listOf(tileInfo.naturalWonder!!)
+        if (tileInfo.naturalWonder != null) return listOf(tileSetStrings.getTile(tileInfo.naturalWonder!!))
 
         val shouldShowImprovement = tileInfo.improvement != null && UncivGame.Current.settings.showPixelImprovements
 
