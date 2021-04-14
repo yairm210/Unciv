@@ -201,13 +201,11 @@ object BattleDamage {
     private fun getTileSpecificModifiers(unit: MapUnitCombatant, tile: TileInfo): Counter<String> {
         val modifiers = Counter<String>()
 
-
-        for (unique in unit.unit.getMatchingUniques("+[]% combat bonus in []")
+        for (unique in unit.unit.getMatchingUniques("+[]% combat bonus in []") // deprecated as of 3.14.1 - changed to "+[]% Strength in []"
+                + unit.unit.getMatchingUniques("+[]% Strength in []")
                 + unit.getCivInfo().getMatchingUniques("+[]% combat bonus for units fighting in []")) {
             val filter = unique.params[1]
-            if (filter == tile.getLastTerrain().name
-                    || filter == "Foreign Land" && !tile.isFriendlyTerritory(unit.getCivInfo())
-                    || filter == "Friendly Land" && tile.isFriendlyTerritory(unit.getCivInfo()))
+            if (tile.matchesUniqueFilter(filter, unit.getCivInfo()))
                 modifiers.add(filter, unique.params[0].toInt())
         }
 
@@ -222,10 +220,10 @@ object BattleDamage {
             modifiers["Haka War Dance"] = -10
 
 
+        // Deprecated as of 3.14.1 - changed to "+[15]% Strength in [Rough terrain]"
         val isRoughTerrain = tile.isRoughTerrain()
         for (BDM in getBattleDamageModifiersOfUnit(unit.unit)) {
             val text = BDM.getText()
-            // this will change when we change over everything to ints
             if (BDM.vs == "units in open terrain" && !isRoughTerrain) modifiers.add(text, (BDM.modificationAmount).toInt())
             if (BDM.vs == "units in rough terrain" && isRoughTerrain) modifiers.add(text, (BDM.modificationAmount).toInt())
         }

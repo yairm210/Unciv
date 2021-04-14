@@ -318,6 +318,16 @@ class Ruleset {
             for (prereq in tech.prerequisites) {
                 if (!technologies.containsKey(prereq))
                     lines += "${tech.name} requires tech $prereq which does not exist!"
+
+                fun getPrereqTree(technologyName: String): Sequence<String> {
+                    val technology = technologies[technologyName]
+                    if (technology == null) return sequenceOf()
+                    return technology.prerequisites.asSequence() + technology.prerequisites.flatMap { getPrereqTree(it) }
+                }
+
+                val allOtherPrereqs = tech.prerequisites.asSequence().filterNot { it == prereq }.flatMap { getPrereqTree(it) }
+                if (allOtherPrereqs.contains(prereq))
+                    println("No need to add $prereq as a prerequisite of ${tech.name} - it is already implicit from the other prerequisites!")
             }
         }
         return lines.joinToString("\n")

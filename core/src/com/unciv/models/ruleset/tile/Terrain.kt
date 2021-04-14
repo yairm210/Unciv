@@ -35,6 +35,8 @@ class Terrain : NamedStats() {
     var movementCost = 1
     var defenceBonus:Float = 0f
     var impassable = false
+    
+    @Deprecated("As of 3.14.1")
     var rough = false
 
 

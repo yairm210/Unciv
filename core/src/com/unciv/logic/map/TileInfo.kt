@@ -379,12 +379,14 @@ open class TileInfo {
                 || filter == "River" && isAdjacentToRiver()
                 || terrainFeatures.contains(filter)
                 || baseTerrainObject.uniques.contains(filter)
-                || getTerrainFeatures().any { it.uniques.contains(filter) }
+                || terrainFeatures.isNotEmpty() && getTerrainFeatures().last().uniques.contains(filter)
                 || improvement == filter
                 || civInfo != null && hasViewableResource(civInfo) && resource == filter
                 || filter == "Water" && isWater
                 || filter == "Land" && isLand
                 || filter == naturalWonder
+                || filter == "Foreign Land" && civInfo!=null && !isFriendlyTerritory(civInfo)
+                || filter == "Friendly Land" && civInfo!=null && isFriendlyTerritory(civInfo)
     }
 
     fun hasImprovementInProgress() = improvementInProgress != null
@@ -436,6 +438,7 @@ open class TileInfo {
     }
 
     fun isRoughTerrain() = getBaseTerrain().rough || getTerrainFeatures().any { it.rough }
+            || getBaseTerrain().uniques.contains("Rough") || getTerrainFeatures().any { it.uniques.contains("Rough") }
 
     override fun toString(): String { // for debugging, it helps to see what you're doing
         return toString(null)
