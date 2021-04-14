@@ -352,10 +352,7 @@ object UnitActions {
                         unit.destroy()
                     }.takeIf {
                         unit.currentMovement > 0f && tile.canBuildImprovement(improvement, unit.civInfo)
-                                && !tile.isImpassible() && // Not 100% sure that this check is necessary...
-                                // citadel can be built only next to or within own borders
-                                (improvementName != Constants.citadel ||
-                                        tile.neighbors.any { it.getOwner() == unit.civInfo })
+                                && !tile.isImpassible() // Not 100% sure that this check is necessary...
                     })
         }
         return finalActions
