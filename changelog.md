@@ -1,3 +1,23 @@
+## 3.14.1
+
+Natural wonders are standalone tiles in new layering
+
+Modding:
+
+- Rough terrain specified through uniques
+- Added check to remove clutter in tech trees
+- Added building-maintenance-decreasing unique
+- Can handle unique capital indicators in mods
+- Added "Friendly Land" and "Foreign Land" as tile filter options
+
+By SomeTroglodyte:
+- Fix Citadel not buildable where it should be 
+
+By GGGuenni:
+- Fixed Multiplayer bugs 
+- Preparation for hill as terrain feature
+- Added TileSetConfigs 
+
 ## 3.14.0
 
 World wrap is publicly released!
