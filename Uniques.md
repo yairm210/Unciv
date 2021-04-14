@@ -245,6 +245,8 @@ cityFilters allow us to choose the range of cities affected by this unique:
 
 "Earn [amount]% of killed [unitFilter] unit's [param1] as [param2]" - param1 accepts "Cost" or "Strength", param2 accepts "Gold" or "Culture". For example, "Earn [100]% of killed [Military] unit's [Strength] as [Culture]", "Earn [10]% of killed [Military] unit's [Cost] as [Gold]"
 
+"-[amount]% building maintenance costs [cityFilter]"
+
 ## Buildings-only
 
 "Doubles Gold given to enemy if city is captured"
