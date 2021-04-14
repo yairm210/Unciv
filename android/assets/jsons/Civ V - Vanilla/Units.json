@@ -223,7 +223,7 @@
 		"requiredTech": "Bronze Working",
 		"obsoleteTech": "Civil Service",
 		"upgradesTo": "Pikeman",
-		"uniques": ["Bonus vs Mounted 50%"],
+		"uniques": ["+[50]% Strength vs [Mounted]"],
 		"attackSound": "metalhit"
 	},
 	{
@@ -237,7 +237,7 @@
 		"requiredTech": "Bronze Working",
 		"obsoleteTech": "Civil Service",
 		"upgradesTo": "Pikeman",
-		"uniques": ["Bonus vs Mounted 50%"],
+		"uniques": ["+[50]% Strength vs [Mounted]"],
 		"attackSound": "metalhit"
 	},
 	{
@@ -251,7 +251,7 @@
 		"requiredTech": "Bronze Working",
 		"obsoleteTech": "Civil Service",
 		"upgradesTo": "Pikeman",
-		"uniques": ["Bonus vs Mounted 50%","+10 HP when healing"],
+		"uniques": ["+[50]% Strength vs [Mounted]","+10 HP when healing"],
 		"attackSound": "metalhit"
 	},
 	/*
@@ -264,7 +264,7 @@
 		"requiredTech": "Bronze Working",
 		"obsoleteTech": "Civil Service",
 		"upgradesTo": "Pikeman",
-		"uniques": ["Bonus vs Mounted 50%"],
+		"uniques": ["+[50]% Strength vs [Mounted]"],
 		"attackSound": "metalhit"
 		// Barbarian unique Spearman. Has same icon and name but slightly different 3d texture
 		// 10 strength in expansions
@@ -282,7 +282,7 @@
 		"requiredTech": "Mathematics",
 		"obsoleteTech": "Physics",
 		"upgradesTo": "Trebuchet",
-		"uniques": ["Bonus vs City 200%", "No defensive terrain bonus",
+		"uniques": ["+[200]% Strength vs [City]", "No defensive terrain bonus",
 			"Must set up to ranged attack", "Limited Visibility"],
 		"hurryCostModifier": 20,
 		"attackSound": "throw"
@@ -299,7 +299,7 @@
 		"requiredTech": "Mathematics",
 		"obsoleteTech": "Physics",
 		"upgradesTo": "Trebuchet",
-		"uniques": ["Bonus vs City 200%", "No defensive terrain bonus",
+		"uniques": ["+[200]% Strength vs [City]", "No defensive terrain bonus",
 			"Must set up to ranged attack", "Limited Visibility"],
 		"hurryCostModifier": 20,
 		"attackSound": "throw"
@@ -467,7 +467,7 @@
 		"requiredTech": "Physics",
 		"obsoleteTech": "Chemistry",
 		"upgradesTo": "Cannon",
-		"uniques": ["Bonus vs City 200%","No defensive terrain bonus","Must set up to ranged attack","Limited Visibility"],
+		"uniques": ["+[200]% Strength vs [City]","No defensive terrain bonus","Must set up to ranged attack","Limited Visibility"],
 		"attackSound": "throw"
 	},
 	{
@@ -537,7 +537,7 @@
 		"strength": 16,
 		"cost": 90,
 		"requiredTech": "Civil Service",
-		"uniques": ["Bonus vs Mounted 50%"],
+		"uniques": ["+[50]% Strength vs [Mounted]"],
 		"upgradesTo": "Musketman",
 		"obsoleteTech": "Gunpowder",
 		"attackSound": "metalhit"
@@ -552,7 +552,7 @@
 		"strength": 16,
 		"cost": 45,
 		"requiredTech": "Civil Service",
-		"uniques": ["Bonus vs Mounted 50%", "Can move immediately once bought" ],
+		"uniques": ["+[50]% Strength vs [Mounted]", "Can move immediately once bought" ],
 		"upgradesTo": "Musketman",
 		"obsoleteTech": "Gunpowder",
 		"attackSound": "metalhit"
@@ -630,7 +630,7 @@
 		"requiredTech": "Chivalry",
 		"obsoleteTech": "Military Science",
 		"upgradesTo": "Cavalry",
-		"uniques": ["Can move after attacking","No defensive terrain bonus","Bonus vs Mounted 50%","Penalty vs City 33%"],
+		"uniques": ["Can move after attacking","No defensive terrain bonus","+[50]% Strength vs [Mounted]","Penalty vs City 33%"],
 		"attackSound": "shot"
 	},
 	{
@@ -707,7 +707,7 @@
 		"requiredTech": "Chemistry",
 		"upgradesTo": "Artillery",
 		"obsoleteTech": "Dynamite",
-		"uniques": ["Bonus vs City 200%","No defensive terrain bonus","Must set up to ranged attack","Limited Visibility"]
+		"uniques": ["+[200]% Strength vs [City]","No defensive terrain bonus","Must set up to ranged attack","Limited Visibility"]
 	},
 	{
 		"name": "Musketman",
@@ -773,7 +773,7 @@
 		"requiredTech": "Gunpowder",
 		"upgradesTo": "Rifleman",
 		"obsoleteTech": "Rifling",
-		"uniques": ["Bonus vs Mounted 50%"],
+		"uniques": ["+[50]% Strength vs [Mounted]"],
 		"attackSound": "shot"
 	},
 	{
@@ -886,7 +886,7 @@
 		"requiredResource": "Oil",
 		"upgradesTo": "Fighter",
 		"obsoleteTech": "Radar",
-		"uniques": ["[50]% chance to intercept air attacks","Bonus vs Bomber 150%",
+		"uniques": ["[50]% chance to intercept air attacks","+[50]% Strength vs [Bomber]",
 			"6 tiles in every direction always visible"],
 		"attackSound": "shot"
 		// will be introduced in G&K expansion
@@ -945,7 +945,8 @@
 		"obsoleteTech": "Combustion",
 		"requiredResource": "Horses",
 		"upgradesTo": "Landship",
-		"uniques": ["Can move after attacking","No defensive terrain bonus","Penalty vs City 33%","Bonus vs wounded units 33%" ],
+		"uniques": ["Can move after attacking","No defensive terrain bonus",
+			"Penalty vs City 33%", "+[50]% Strength vs [wounded units]"],
 		"attackSound": "horse"
 	},
 	{
@@ -958,7 +959,7 @@
 		"cost": 320,
 		"requiredTech": "Dynamite",
 		"upgradesTo": "Rocket Artillery",
-		"uniques": ["Bonus vs City 200%","No defensive terrain bonus",
+		"uniques": ["+[200]% Strength vs [City]","No defensive terrain bonus",
 			"Must set up to ranged attack","Limited Visibility","Ranged attacks may be performed over obstacles"]
 	},
 	{
@@ -971,7 +972,7 @@
 		"requiredResource": "Coal",
 		"upgradesTo": "Destroyer",
 		"obsoleteTech": "Combustion",
-		"uniques": ["Bonus vs City 33%","Double movement in coast"]
+		"uniques": ["+[33]% Strength vs [City]","Double movement in coast"]
 	},
 	
 	// Modern era
@@ -988,7 +989,7 @@
 		"requiredTech": "Radar",
 		"requiredResource": "Oil",
 		//"upgradesTo": "Jet Fighter",
-		"uniques": ["[100]% chance to intercept air attacks","Bonus vs Bomber 150%",
+		"uniques": ["[100]% chance to intercept air attacks", "+[150]% Strength vs [Bomber]",
 			"6 tiles in every direction always visible"],
 		"attackSound": "shot"
 	},
@@ -1005,7 +1006,7 @@
 		"cost": 375,
 		"requiredTech": "Radar",
 		//"upgradesTo": "Jet Fighter",
-		"uniques": ["[100]% chance to intercept air attacks","Bonus vs Bomber 150%","Bonus vs Fighter 33%",
+		"uniques": ["[100]% chance to intercept air attacks","+[150]% Strength vs [Bomber]","+[33]% Strength vs [Fighter]",
 			"6 tiles in every direction always visible"],
 		"attackSound": "shot"
 	},
@@ -1101,7 +1102,7 @@
 		"cost": 375,
 		"requiredTech": "Combustion",
 		"uniques": ["Can attack submarines", "[40]% chance to intercept air attacks",
-			"May withdraw before melee ([80]%)", "Bonus vs WaterSubmarine 100%"]
+			"May withdraw before melee ([80]%)", "+[100]% Strength vs [WaterSubmarine]"]
 	},
 	{
 		"name": "Battleship",
@@ -1198,7 +1199,7 @@
 		"cost": 375,
 		"requiredTech": "Ballistics",
 		//"upgradesTo": "Mobile SAM",
-		"uniques": ["[100]% chance to intercept air attacks","Bonus vs air units 150%"],
+		"uniques": ["[100]% chance to intercept air attacks","+[150]% Strength vs [air units]"],
 		"attackSound": "machinegun"
 	},
 	{
@@ -1233,7 +1234,7 @@
 		"cost": 300,
 		"requiredTech": "Combined Arms",
 		"upgradesTo": "Helicopter Gunship",
-		"uniques": ["Bonus vs Armor 100%"]
+		"uniques": ["+[100]% Strength vs [Armor]"]
 	},
 	
 	{
@@ -1246,7 +1247,7 @@
 		"cost": 425,
 		"requiredTech": "Computers",
 		"requiredResource": "Aluminum",
-		"uniques": ["Bonus vs Armor 100%", "No defensive terrain bonus", "Can move after attacking", "All tiles cost 1 movement",
+		"uniques": ["+[100]% Strength vs [Armor]", "No defensive terrain bonus", "Can move after attacking", "All tiles cost 1 movement",
 			"Can pass through impassable tiles", "Unable to capture cities"],
 		"attackSound": "shot"
 	},
@@ -1260,7 +1261,7 @@
 		"cost": 425,
 		"requiredTech": "Rocketry",
 		"requiredResource": "Aluminum",
-		"uniques": ["Bonus vs City 200%","No defensive terrain bonus",
+		"uniques": ["+[200]% Strength vs [City]","No defensive terrain bonus",
 			"Limited Visibility","Ranged attacks may be performed over obstacles"]
 	},
 	{
@@ -1293,7 +1294,7 @@
 		"strength": 40,
 		"cost": 425,
 		"requiredTech": "Computers",
-		"uniques": ["[100]% chance to intercept air attacks","Bonus vs air units 150%"],
+		"uniques": ["[100]% chance to intercept air attacks","+[150]% Strength vs [air units]"],
 		"attackSound": "shot"
 		// 65 strength, 3 movement, requiredTech "Rocketry" in expansions
 	},
@@ -1309,7 +1310,7 @@
 		"requiredTech": "Lasers",
 		"requiredResource": "Aluminium",
 		"uniques": ["[100]% chance to intercept air attacks",
-			"Bonus vs Bomber 150%",
+			"+[150]% Strength vs [Bomber]",
 			"6 tiles in every direction always visible"]
 		"attackSound": "shot"
 	},
