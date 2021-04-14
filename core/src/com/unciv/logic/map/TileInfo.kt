@@ -438,6 +438,7 @@ open class TileInfo {
     }
 
     fun isRoughTerrain() = getBaseTerrain().rough || getTerrainFeatures().any { it.rough }
+            || getBaseTerrain().uniques.contains("Rough") || getTerrainFeatures().any { it.uniques.contains("Rough") }
 
     override fun toString(): String { // for debugging, it helps to see what you're doing
         return toString(null)

@@ -68,7 +68,7 @@
 		"overrideStats": true,
 		"defenceBonus": 0.25,
 		"RGB": [105,125,72],
-		"rough": true
+		"uniques": ["Rough terrain"]
 	},
 	{
 		"name": "Mountain",
@@ -96,8 +96,7 @@
 		"unbuildable": true,
 		"defenceBonus": 0.25,
 		"occursOn": ["Tundra","Plains","Grassland","Hill"],
-		"rough": true,
-		"uniques": ["Provides a one-time Production bonus to the closest city when cut down"]
+		"uniques": ["Provides a one-time Production bonus to the closest city when cut down", "Rough terrain"]
 	},
 	{
 		"name": "Jungle",
@@ -108,7 +107,7 @@
 		"unbuildable": true,
 		"defenceBonus": 0.25,
 		"occursOn": ["Plains","Grassland"],
-		"rough": true
+		"uniques": ["Rough terrain"]
 	},
 	{
 		"name": "Marsh",
