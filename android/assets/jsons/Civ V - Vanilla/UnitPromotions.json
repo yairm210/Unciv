@@ -9,44 +9,44 @@
 	// Ranged+Siege
 	{
 		"name": "Accuracy I",
-		"effect": "Bonus vs units in open terrain 15%",
+		"effect": "+[15]% Strength in [Open terrain]",
 		"unitTypes": ["Siege","Ranged"]
 	},
 	{
 		"name": "Accuracy II",
 		"prerequisites": ["Accuracy I"],
-		"effect": "Bonus vs units in open terrain 15%",
+		"effect": "+[15]% Strength in [Open terrain]",
 		"unitTypes": ["Siege","Ranged"]
 	},
 	{
 		"name": "Accuracy III",
 		"prerequisites": ["Accuracy II"],
-		"effect": "Bonus vs units in open terrain 15%",
+		"effect": "+[15]% Strength in [Open terrain]",
 		"unitTypes": ["Siege","Ranged"]
 	},
 
 	{
 		"name": "Barrage I",
-		"effect": "Bonus vs units in rough terrain 15%",
+		"effect": "+[15]% Strength in [Rough terrain]",
 		"unitTypes": ["Siege","Ranged"]
 	},
 	{
 		"name": "Barrage II",
 		"prerequisites": ["Barrage I"],
-		"effect": "Bonus vs units in rough terrain 15%",
+		"effect": "+[15]% Strength in [Rough terrain]",
 		"unitTypes": ["Siege","Ranged"]
 	},
 	{
 		"name": "Barrage III",
 		"prerequisites": ["Barrage II"],
-		"effect": "Bonus vs units in rough terrain 15%",
+		"effect": "+[15]% Strength in [Rough terrain]",
 		"unitTypes": ["Siege","Ranged"]
 	},
 
 	{
 		"name": "Volley",
 		"prerequisites": ["Accuracy I","Barrage I"],
-		"effect": "Bonus vs City 50%",
+		"effect": "+[50]% Strength vs [City]",
 		"unitTypes": ["Ranged","Siege"]
 	},
 	{
@@ -65,61 +65,61 @@
 	// Melee, Mounted+Armor
 	{
 		"name": "Shock I",
-		"effect": "Bonus vs units in open terrain 15%",
+		"effect": "+[15]% Strength in [Open terrain]",
 		"unitTypes": ["Melee","Mounted","Armor"]
 	},
 	{
 		"name": "Shock II",
 		"prerequisites": ["Shock I"],
-		"effect": "Bonus vs units in open terrain 15%",
+		"effect": "+[15]% Strength in [Open terrain]",
 		"unitTypes": ["Melee","Mounted","Armor"]
 	},
 	{
 		"name": "Shock III",
 		"prerequisites": ["Shock II"],
-		"effect": "Bonus vs units in open terrain 15%",
+		"effect": "+[15]% Strength in [Open terrain]",
 		"unitTypes": ["Melee","Mounted","Armor"]
 	},
 
 	{
 		"name": "Drill I",
-		"effect": "Bonus vs units in rough terrain 15%",
+		"effect": "+[15]% Strength in [Rough terrain]",
 		"unitTypes": ["Melee","Mounted","Armor"]
 	},
 	{
 		"name": "Drill II",
 		"prerequisites": ["Drill I"],
-		"effect": "Bonus vs units in rough terrain 15%",
+		"effect": "+[15]% Strength in [Rough terrain]",
 		"unitTypes": ["Melee","Mounted","Armor"]
 	},
 	{
 		"name": "Drill III",
 		"prerequisites": ["Drill II"],
-		"effect": "Bonus vs units in rough terrain 15%",
+		"effect": "+[15]% Strength in [Rough terrain]",
 		"unitTypes": ["Melee","Mounted","Armor"]
 	},
 	{
 		"name": "Charge",
 		"prerequisites": ["Shock II","Drill II"],
-		"effect": "Bonus vs wounded units 33%",
+		"effect": "+[33]% Strength vs [wounded units]",
 		"unitTypes": ["Mounted","Armor"]
 	},
 	{
 		"name": "Besiege", // Not called "Siege" in order to not conflict with siege type units for translations
 		"prerequisites": ["Shock II","Drill II"],
-		"effect": "Bonus vs City 50%",
+		"effect": "+[50]% Strength vs [City]",
 		"unitTypes": ["Melee"]
 	},
 	{
 		"name": "Formation I",
 		"prerequisites": ["Shock II","Drill II"],
-		"effect": "Bonus vs Mounted 33%",
+		"effect": "+[33]% Strength vs [Mounted]",
 		"unitTypes": ["Melee","Mounted"]
 	},
 	{
 		"name": "Formation II",
 		"prerequisites": ["Formation I"],
-		"effect": "Bonus vs Mounted 33%",
+		"effect": "+[33]% Strength vs [Mounted]",
 		"unitTypes": ["Melee","Mounted"]
 	},
 	
@@ -171,37 +171,37 @@
 	// Water melee
 	{
 		"name": "Boarding Party I",
-		"effect": "Bonus vs water units 15%",
+		"effect": "+[33]% Strength vs [Water units]",
 		"unitTypes": ["WaterMelee"]
 	},
 	{
 		"name": "Boarding Party II",
 		"prerequisites": ["Boarding Party I"],
-		"effect": "Bonus vs water units 15%",
+		"effect": "+[33]% Strength vs [Water units]",
 		"unitTypes": ["WaterMelee"]
 	},
 	{
 		"name": "Boarding Party III",
 		"prerequisites": ["Boarding Party II"],
-		"effect": "Bonus vs water units 15%",
+		"effect": "+[33]% Strength vs [Water units]",
 		"unitTypes": ["WaterMelee"]
 	},
 	
 	{
 		"name": "Coastal Raider I",
-		"effect": "Bonus vs City 15%",
+		"effect": "+[15]% Strength vs [City]",
 		"unitTypes": ["WaterMelee"]
 	},
 	{
 		"name": "Coastal Raider II",
 		"prerequisites": ["Coastal Raider I"],
-		"effect": "Bonus vs City 15%",
+		"effect": "+[15]% Strength vs [City]",
 		"unitTypes": ["WaterMelee"]
 	},
 	{
 		"name": "Coastal Raider III",
 		"prerequisites": ["Coastal Raider II"],
-		"effect": "Bonus vs City 15%",
+		"effect": "+[15]% Strength vs [City]",
 		"unitTypes": ["WaterMelee"]
 	},
 	
@@ -263,19 +263,19 @@
 	// Bomber
 	{
 		"name": "Siege I",
-		"effect": "Bonus vs City 33%",
+		"effect": "+[33]% Strength vs [City]",
 		"unitTypes": ["Bomber"]
 	},
 	{
 		"name": "Siege II",
 		"prerequisites": ["Siege I"],
-		"effect": "Bonus vs City 33%",
+		"effect": "+[33]% Strength vs [City]",
 		"unitTypes": ["Bomber"]
 	},
 	{
 		"name": "Siege III",
 		"prerequisites": ["Siege II"],
-		"effect": "Bonus vs City 34%",
+		"effect": "+[34]% Strength vs [City]",
 		"unitTypes": ["Bomber"]
 	},
 	{
@@ -385,13 +385,13 @@
 	
 	{
 		"name": "Ambush I",
-		"effect": "Bonus vs Armor 25%",
+		"effect": "+[25]% Strength vs [Armor]",
 		"unitTypes": ["Melee","Fighter","Bomber"]
 	},
 	{
 		"name": "Ambush II",
 		"prerequisites": ["Ambush I"],
-		"effect": "Bonus vs Armor 25%",
+		"effect": "+[25]% Strength vs [Armor]",
 		"unitTypes": ["Melee","Fighter","Bomber"]
 	},
 	
@@ -399,44 +399,44 @@
 	// Water ranged and air units
 	{
 		"name": "Bombardment I",
-		"effect": "Bonus vs land units 33%",
+		"effect": "+[33]% Strength vs [land units]",
 		"unitTypes": ["WaterRanged","Fighter","Bomber"]
 	},
 	{
 		"name": "Bombardment II",
 		"prerequisites": ["Bombardment I"],
-		"effect": "Bonus vs land units 33%",
+		"effect": "+[33]% Strength vs [land units]",
 		"unitTypes": ["WaterRanged","Fighter","Bomber"]
 	},
 	{
 		"name": "Bombardment III",
 		"prerequisites": ["Bombardment II"],
-		"effect": "Bonus vs land units 34%",
+		"effect": "+[34]% Strength vs [land units]",
 		"unitTypes": ["WaterRanged","Fighter","Bomber"]
 	},
 	
 	// Targeting I has different requirements for air and waterranged units, this was the cleanest way to do so
 	{
 		"name": "Targeting I",
-		"effect": "Bonus vs water units 15%",
+		"effect": "+[15]% Strength vs [water units]",
 		"unitTypes": ["WaterRanged"]
 	},
 	{
 		"name": "Targeting I (air)",
 		"prerequisites": ["Interception I","Dogfighting I", "Siege I","Bombardment I"],
-		"effect": "Bonus vs water units 15%",
+		"effect": "+[15]% Strength vs [water units]",
 		"unitTypes": ["Fighter","Bomber"]
 	},
 	{
 		"name": "Targeting II",
 		"prerequisites": ["Targeting I","Targeting I (air)"],
-		"effect": "Bonus vs water units 15%",
+		"effect": "+[15]% Strength vs [water units]",
 		"unitTypes": ["WaterRanged","Fighter","Bomber"]
 	},
 	{
 		"name": "Targeting III",
 		"prerequisites": ["Targeting II"],
-		"effect": "Bonus vs water units 15%",
+		"effect": "+[15]% Strength vs [water units]",
 		"unitTypes": ["WaterRanged"]
 	},
 	
