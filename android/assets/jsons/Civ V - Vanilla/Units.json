@@ -61,7 +61,7 @@
 		"strength": 8,
 		"cost": 40,
 		"obsoleteTech": "Metal Casting",
-		"uniques": ["+[33]% combat bonus in [Forest]", "+[33]% combat bonus in [Jungle]", "Heals [25] damage if it kills a unit"],
+		"uniques": ["+[33]% Strength in [Forest]", "+[33]% Strength in [Jungle]", "Heals [25] damage if it kills a unit"],
 		"promotions": ["Woodsman"],
 		"upgradesTo": "Swordsman",
 		"attackSound": "nonmetalhit"
@@ -361,7 +361,7 @@
 		"upgradesTo": "Longswordsman",
 		"obsoleteTech": "Gunpowder",
 		"hurryCostModifier": 20,
-		"uniques": ["+[33]% combat bonus in [Forest]", "+[33]% combat bonus in [Jungle]"],
+		"uniques": ["+[33]% Strength in [Forest]", "+[33]% Strength in [Jungle]"],
 		"attackSound": "metalhit"
 	},
 	/*
@@ -917,7 +917,7 @@
 		"requiredTech": "Rifling",
 		"obsoleteTech": "Replaceable Parts",
 		"upgradesTo": "Great War Infantry",
-		"uniques": ["+[25]% combat bonus in [Snow]", "+[25]% combat bonus in [Tundra]", "+[25]% combat bonus in [Hill]", "Double movement in Snow, Tundra and Hills"],
+		"uniques": ["+[25]% Strength in [Snow]", "+[25]% Strength in [Tundra]", "+[25]% Strength in [Hill]", "Double movement in Snow, Tundra and Hills"],
 		"attackSound": "shot"
 	},
 	{
@@ -1149,7 +1149,7 @@
 		"requiredTech": "Replaceable Parts",
 		"upgradesTo": "Infantry",
 		"obsoleteTech": "Plastics",
-		"uniques": ["+[20]% combat bonus in [Foreign Land]"],
+		"uniques": ["+[20]% Strength in [Foreign Land]"],
 		"attackSound": "shot"
 	},
 	/*

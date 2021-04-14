@@ -201,7 +201,7 @@ object BattleDamage {
     private fun getTileSpecificModifiers(unit: MapUnitCombatant, tile: TileInfo): Counter<String> {
         val modifiers = Counter<String>()
 
-        for (unique in unit.unit.getMatchingUniques("+[]% combat bonus in []")
+        for (unique in unit.unit.getMatchingUniques("+[]% combat bonus in []") // deprecated as of 3.14.1
                 + unit.unit.getMatchingUniques("+[]% Strength in []")
                 + unit.getCivInfo().getMatchingUniques("+[]% combat bonus for units fighting in []")) {
             val filter = unique.params[1]
