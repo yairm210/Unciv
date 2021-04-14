@@ -74,7 +74,7 @@ open class TileInfo {
     var roadStatus = RoadStatus.None
     var turnsToImprovement: Int = 0
 
-    fun isHill() = baseTerrain == Constants.hill
+    fun isHill() = baseTerrain == Constants.hill || terrainFeatures.contains(Constants.hill)
 
     var hasBottomRightRiver = false
     var hasBottomRiver = false
@@ -323,7 +323,11 @@ open class TileInfo {
         return when {
             improvement.uniqueTo != null && improvement.uniqueTo != civInfo.civName -> false
             improvement.techRequired != null && !civInfo.tech.isResearched(improvement.techRequired!!) -> false
-            getOwner() != civInfo && !improvement.hasUnique("Can be built outside your borders") -> false
+            getOwner() != civInfo && ! (
+                        improvement.hasUnique("Can be built outside your borders")
+                        // citadel can be built only next to or within own borders
+                        || improvement.hasUnique("Can be built just outside your borders") && neighbors.any { it.getOwner() == civInfo }
+                    ) -> false
             improvement.uniqueObjects.any {
                 it.placeholderText == "Obsolete with []" && civInfo.tech.isResearched(it.params[0])
             } -> return false

@@ -89,7 +89,7 @@
 	{
 		"name": "Honor",
 		"era": "Ancient era",
-		"uniques": ["+25% bonus vs Barbarians", "Earn [100]% of [Barbarian] opponent's [Strength] as [Culture] for kills",
+		"uniques": ["+25% bonus vs Barbarians", "Earn [100]% of killed [Barbarian] unit's [Strength] as [Culture]",
 			"Notified of new Barbarian encampments"],
 		"policies": [
 			{
@@ -127,7 +127,7 @@
 			},
 			{
 				"name": "Honor Complete",
-				"uniques": ["Earn [10]% of [military] opponent's [Cost] as [Gold] for kills"],
+				"uniques": ["Earn [10]% of killed [Military] unit's [Cost] as [Gold]"],
 			}
 		]
 	},{

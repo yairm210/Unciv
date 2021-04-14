@@ -242,10 +242,8 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Cam
             val latestGame = OnlineMultiplayer().tryDownloadGame(gameInfo.gameId)
 
             // if we find it still isn't player's turn...nothing changed
-            if (gameInfo.currentPlayer == latestGame.currentPlayer) {
+            if (viewingCiv.civName != latestGame.currentPlayer) {
                 Gdx.app.postRunnable { loadingGamePopup.close() }
-                // edge case - if there's only one player in a multiplayer game, we still check online, but it could be that we were correct and it is our turn
-                isPlayersTurn = latestGame.currentPlayer == viewingCiv.civName
                 shouldUpdate = true
                 return
             } else { //else we found it is the player's turn again, turn off polling and load turn

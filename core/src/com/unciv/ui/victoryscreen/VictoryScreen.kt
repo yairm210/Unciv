@@ -247,7 +247,7 @@ class VictoryScreen(val worldScreen: WorldScreen) : PickerScreen() {
 
         for (category in RankingType.values()) {
             val column = Table().apply { defaults().pad(5f) }
-            column.add(category.value.toLabel()).row()
+            column.add(category.name.replace('_',' ').toLabel()).row()
             column.addSeparator()
 
             for (civ in majorCivs.sortedByDescending { it.getStatForRanking(category) }) {

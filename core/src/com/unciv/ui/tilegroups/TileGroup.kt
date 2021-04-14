@@ -85,11 +85,11 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings, 
     val icons = TileGroupIcons(this)
 
     class UnitLayerGroupClass:Group(){
-        override fun draw(batch: Batch?, parentAlpha: Float) { super.draw(batch, parentAlpha) }
+        override fun draw(batch: Batch?, parentAlpha: Float) = super.draw(batch, parentAlpha)
     }
 
     class UnitImageLayerGroupClass:ActionlessGroup(){
-        override fun draw(batch: Batch?, parentAlpha: Float) { super.draw(batch, parentAlpha) }
+        override fun draw(batch: Batch?, parentAlpha: Float) = super.draw(batch, parentAlpha)
     }
     // We separate the units from the units' backgrounds, because all the background elements are in the same texture, and the units' aren't
     val unitLayerGroup = UnitLayerGroupClass().apply { isTransform = false; setSize(groupSize, groupSize);touchable = Touchable.disabled }
@@ -169,11 +169,11 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings, 
 
     fun getTileBaseImageLocationsNew(viewingCiv: CivilizationInfo?): List<String> {
         if (viewingCiv == null && !showEntireMap) return listOf(tileSetStrings.hexagon)
+        if (tileInfo.naturalWonder != null) return listOf(tileInfo.naturalWonder!!)
 
         val shouldShowImprovement = tileInfo.improvement != null && UncivGame.Current.settings.showPixelImprovements
 
-        val shouldShowResource = UncivGame.Current.settings.showPixelImprovements
-                && tileInfo.resource != null &&
+        val shouldShowResource = UncivGame.Current.settings.showPixelImprovements && tileInfo.resource != null &&
                 (showEntireMap || viewingCiv == null || tileInfo.hasViewableResource(viewingCiv))
 
         var resourceAndImprovementSequence = sequenceOf<String?>()
@@ -181,11 +181,15 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings, 
         if (shouldShowImprovement) resourceAndImprovementSequence += sequenceOf(tileInfo.improvement)
         resourceAndImprovementSequence = resourceAndImprovementSequence.filterNotNull()
 
-        val terrainImages = (sequenceOf(tileInfo.baseTerrain) + tileInfo.terrainFeatures.asSequence() + sequenceOf(tileInfo.naturalWonder)).filterNotNull()
-        val allTogether = (terrainImages + resourceAndImprovementSequence).joinToString("+").let { tileSetStrings.getTile(it) }
+        val terrainImages = (sequenceOf(tileInfo.baseTerrain) + tileInfo.terrainFeatures.asSequence()).filterNotNull()
+        val allTogether = (terrainImages + resourceAndImprovementSequence).joinToString("+")
+        val allTogetherLocation = tileSetStrings.getTile(allTogether)
 
-        if (ImageGetter.imageExists(allTogether)) return listOf(allTogether)
-        else return getTerrainImageLocations(terrainImages) + getImprovementAndResourceImages(resourceAndImprovementSequence)
+        return when {
+            tileSetStrings.tileSetConfig.ruleVariants[allTogether] != null -> tileSetStrings.tileSetConfig.ruleVariants[allTogether]!!.map { tileSetStrings.getTile(it) }
+            ImageGetter.imageExists(allTogetherLocation) -> listOf(allTogetherLocation)
+            else -> getTerrainImageLocations(terrainImages) + getImprovementAndResourceImages(resourceAndImprovementSequence)
+        }
     }
 
     fun getTerrainImageLocations(terrainSequence: Sequence<String>): List<String> {
@@ -195,8 +199,6 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings, 
     }
 
     fun getImprovementAndResourceImages(resourceAndImprovementSequence: Sequence<String>): List<String> {
-        if(tileInfo.resource=="Silk")
-            println()
         val altogether = resourceAndImprovementSequence.joinToString("+").let { tileSetStrings.getTile(it) }
         if (ImageGetter.imageExists(altogether)) return listOf(altogether)
         else return resourceAndImprovementSequence.map { tileSetStrings.getTile(it) }.toList()
