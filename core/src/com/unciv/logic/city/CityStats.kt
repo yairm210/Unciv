@@ -241,6 +241,9 @@ class CityStats {
         val stats = specialist.clone()
         for (unique in cityInfo.civInfo.getMatchingUniques("[] from every specialist"))
             stats.add(unique.stats)
+        for (unique in cityInfo.civInfo.getMatchingUniques("[] from every []"))
+            if (unique.params[1] == specialistName)
+                stats.add(unique.stats)
         return stats
     }
 
