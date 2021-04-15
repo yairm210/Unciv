@@ -122,6 +122,7 @@ cityFilters allow us to choose the range of cities affected by this unique:
 - tileFilter
 - Resource name
 - "Strategic resource", "Luxury resource", "Bonus resource", "Water resource"
+- Specific specialist name
 
 "[stats] per turn from cities before [techName]"
 
