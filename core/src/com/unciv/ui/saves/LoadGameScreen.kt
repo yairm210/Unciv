@@ -96,7 +96,9 @@ class LoadGameScreen(previousScreen:CameraStageBaseScreen) : PickerScreen() {
             loadFromCustomLocation.onClick {
                 GameSaver.loadGameFromCustomLocation { gameInfo, exception ->
                     if (gameInfo != null) {
-                        game.loadGame(gameInfo)
+                        Gdx.app.postRunnable {
+                            game.loadGame(gameInfo)
+                        }
                     } else if (exception !is CancellationException) {
                         errorLabel.setText("Could not load game from custom location!".tr())
                         exception?.printStackTrace()
