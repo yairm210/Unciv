@@ -9,7 +9,6 @@ import com.unciv.logic.trade.TradeOffersList
 import com.unciv.logic.trade.TradeType
 import com.unciv.logic.trade.TradeType.*
 import com.unciv.models.translations.tr
-import com.unciv.ui.cityscreen.ExpanderTab
 import com.unciv.ui.utils.CameraStageBaseScreen
 import com.unciv.ui.utils.disable
 import com.unciv.ui.utils.onClick
