@@ -100,7 +100,6 @@ object Battle {
 
         var goldReward = 0
         var cultureReward = 0
-        var scienceReward = 0
         val bonusUniques = ArrayList<Unique>()
 
         bonusUniques.addAll(civUnit.getCivInfo().getMatchingUniques(bonusUniquePlaceholderText))
@@ -124,13 +123,10 @@ object Battle {
                 goldReward += yieldAmount
             else if (yieldType == "Culture")
                 cultureReward += yieldAmount
-            else if (yieldType == "Science")
-                scienceReward += yieldAmount
         }
 
         civUnit.getCivInfo().policies.addCulture(cultureReward)
         civUnit.getCivInfo().gold += goldReward
-        civUnit.getCivInfo().tech.addScience(scienceReward)
     }
 
     private fun takeDamage(attacker: ICombatant, defender: ICombatant) {
