@@ -439,9 +439,9 @@ object UnitActions {
     }
 
     fun canPillage(unit: MapUnit, tile: TileInfo): Boolean {
-        if (tile.improvement == null || tile.improvement == Constants.barbarianEncampment
-                || tile.improvement == Constants.ancientRuins
-                || tile.improvement == "City ruins") return false
+        val tileImprovement = tile.getTileImprovement()
+        // City ruins, Ancient Ruins, Barbarian Camp, City Center marked in json
+        if (tileImprovement == null || tileImprovement.cannotBePillaged()) return false
         val tileOwner = tile.getOwner()
         // Can't pillage friendly tiles, just like you can't attack them - it's an 'act of war' thing
         return tileOwner == null || tileOwner == unit.civInfo || unit.civInfo.isAtWarWith(tileOwner)
