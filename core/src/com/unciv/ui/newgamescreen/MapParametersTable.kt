@@ -115,6 +115,8 @@ class MapParametersTable(val mapParameters: MapParameters, val isEmptyMapAllowed
             mapParameters.worldWrap = worldWrapCheckbox.isChecked
         }
         add(worldWrapCheckbox).colspan(2).row()
+        add("World wrap maps are very memory intensive - creating large world wrap maps on Android can lead to crashes!"
+                .toLabel(fontSize = 14).apply { wrap=true }).colspan(2).fillX().row()
     }
 
     private fun addAdvancedSettings() {
