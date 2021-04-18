@@ -38,21 +38,12 @@ class CityScreenTileTable(private val cityScreen: CityScreen): Table() {
 
         if (selectedTile.getOwner() == null && selectedTile.neighbors.any { it.getCity() == city }
                 && selectedTile in city.tilesInRange) {
-            val goldCostOfTile = city.expansion.getGoldCostOfTile(selectedTile)
+            addBuyTilesButton(setOf(selectedTile))
 
-            val buyTileButton = "Buy for [$goldCostOfTile] gold".toTextButton()
-            buyTileButton.onClick(UncivSound.Coin) {
-                val purchasePrompt = "Currently you have [${city.civInfo.gold}] gold.".tr() + "\n" +
-                        "Would you like to purchase [Tile] for [$goldCostOfTile] gold?".tr()
-                YesNoPopup(purchasePrompt, { city.expansion.buyTile(selectedTile);UncivGame.Current.setScreen(CityScreen(city)) }, cityScreen).open()
+            val buyRing = getBuyTileRingSet(selectedTile)
+            if (buyRing.size > 1) {
+                addBuyTilesButton(buyRing)
             }
-            val canPurchase = goldCostOfTile == 0 || city.civInfo.gold >= goldCostOfTile
-            if (!canPurchase && !city.civInfo.gameInfo.gameParameters.godMode
-                    || city.isPuppet
-                    || !cityScreen.canChangeState)
-                buyTileButton.disable()
-
-            innerTable.add(buyTileButton).row()
         }
 
         if (city.civInfo.cities.filterNot { it == city }.any { it.isWorked(selectedTile) })
@@ -95,4 +86,63 @@ class CityScreenTileTable(private val cityScreen: CityScreen): Table() {
         }
         return statsTable
     }
+
+    /**
+     * Create a buy tile(s) button
+     * @param[tileSet] Set with one or more tiles to buy
+     *      All tiles in set *must* have same distance from city center
+     */
+    private fun addBuyTilesButton(tileSet: Set<TileInfo>) {
+        val tileCount = tileSet.size
+        val goldCost = city.expansion.getGoldCostOfTile(tileSet.first(), tileCount)
+        val buyButton = (
+                if (tileCount==1) "Buy for [$goldCost] gold" else "Buy [$tileCount] tiles for [$goldCost] gold"
+            ).toTextButton()
+        val buyAction = {
+            tileSet.forEach { city.expansion.buyTile(it) }
+            UncivGame.Current.setScreen(CityScreen(city))
+        }
+        val purchasePrompt = "Currently you have [${city.civInfo.gold}] gold.".tr() + "\n" +
+            (if (tileCount==1)
+                "Would you like to purchase [Tile] for [$goldCost] gold?"
+                else "Would you like to purchase [$tileCount] tiles for [$goldCost] gold?"
+            ).tr()
+        buyButton.onClick(UncivSound.Coin) {
+            YesNoPopup(purchasePrompt, buyAction, cityScreen).open()
+        }
+
+        val canPurchase = goldCost == 0 || city.civInfo.gold >= goldCost
+        if (!canPurchase && !city.civInfo.gameInfo.gameParameters.godMode
+            || city.isPuppet
+            || !cityScreen.canChangeState)
+            buyButton.disable()
+
+        innerTable.add(buyButton).padTop(5f).row()
+    }
+
+    /**
+     * Simulates buying the passed tile and neighbours repeatedly until no further neighbour is buyable.
+     * So if two other tiles of the ring are not buyable, this picks just the reachable contiguous
+     * segment. This seemingly complicated approach ensures multi-buy can never reach tiles not
+     * reachable by repeated single buy, e.g. in a complex pattern including enemy-owned tiles.
+     * @param[tile] starting tile to determine ring/segment
+     * @return Set of tiles that can be bought successively in the same ring
+    */
+    private fun getBuyTileRingSet(tile: TileInfo) : Set<TileInfo> {
+        fun getBuyTileRingNext(tile: TileInfo, tileRing: MutableSet<TileInfo>): MutableSet<TileInfo> {
+            // recursion step. Inner loop will iterate over at most 2 tiles, and that only
+            // on first recursion. Max recursion depth = (full ring-3)/2+1 = 13: acceptable.
+            tileRing.remove(tile)
+            val nextSet = mutableSetOf(tile)
+            tile.neighbors.filter { it in tileRing }.forEach {
+                nextSet.addAll(getBuyTileRingNext(it, tileRing))
+            }
+            return nextSet
+        }
+        val distance = tile.aerialDistanceTo(city.getCenterTile())
+        val tileRing = city.getCenterTile().getTilesAtDistance(distance)
+            .filter { it.getOwner() == null }.toMutableSet()
+        return getBuyTileRingNext(tile, tileRing)
+    }
+
 }

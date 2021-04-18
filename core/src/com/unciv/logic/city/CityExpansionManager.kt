@@ -53,16 +53,33 @@ class CityExpansionManager {
         takeOwnership(tileInfo)
     }
 
-    fun getGoldCostOfTile(tileInfo: TileInfo): Int {
+    /**
+     * Calculates the cost to buy a specified tile
+     *      or a sequence of tiles at the same distance from city center
+     * @param[tileInfo] the first tile to buy
+     *      used only to determine distance from city center
+     * @param[count] the number of tiles to buy
+     * @return cost in gold units
+     */
+    fun getGoldCostOfTile(tileInfo: TileInfo, count: Int = 1): Int {
         val baseCost = 50
         val distanceFromCenter = tileInfo.aerialDistanceTo(cityInfo.getCenterTile())
-        var cost = baseCost * (distanceFromCenter - 1) + tilesClaimed() * 5.0
+        val distanceCost = baseCost * (distanceFromCenter - 1)
+        val claimed = tilesClaimed()
 
+        var factor = 1f
         for (unique in cityInfo.civInfo.getMatchingUniques("-[]% Gold cost of acquiring tiles []")) {
             if (cityInfo.matchesFilter(unique.params[1]))
-                cost *= (100 - unique.params[0].toFloat()) / 100
+                factor *= (100 - unique.params[0].toFloat()) / 100
         }
-        return cost.roundToInt()
+
+        var cost = 0
+        // Aggregating in a loop instead of exponential math to ensure
+        // rounding after unique rebate does not lead to one-off differences
+        for (i in claimed until claimed+count){
+            cost += ((distanceCost + i * 5.0) * factor).roundToInt()
+        }
+        return cost
     }
 
 
