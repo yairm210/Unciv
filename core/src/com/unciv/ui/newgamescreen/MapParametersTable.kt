@@ -32,7 +32,9 @@ class MapParametersTable(val mapParameters: MapParameters, val isEmptyMapAllowed
         addWorldSizeSelectBox()
         addNoRuinsCheckbox()
         addNoNaturalWondersCheckbox()
-        addWorldWrapCheckbox()
+        if (UncivGame.Current.settings.showExperimentalWorldWrap) {
+            addWorldWrapCheckbox()
+        }
         addAdvancedSettings()
     }
 
