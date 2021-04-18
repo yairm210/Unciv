@@ -86,12 +86,12 @@ unitFilters allow us to activate uniques for specific units, based on:
 
 - unit name
 - unit type
-- "Land" for land units
-- "Water" for water units
-- "Air" for air units
+- "Land", "Water", "Air"
 - "non-air" for non-air units
 - "Military" for military units
 - "All", as a catch all for all units.
+- "Embarked"
+- "Wounded"
 
 #### cityFilter
 
