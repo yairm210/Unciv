@@ -1,3 +1,13 @@
+## 3.14.2
+
+Put world wrap behind setting again and added warning for world wrap for Android - I'm seeing a lot of ANRs in recent versions, but it's not something that seems solvable.
+
+Fixed - 'Water units' now can be capitalized, as they should be.
+
+"[] from every []" can accomodate specialist names
+
+Fixed unitType parameters in changed unique
+
 ## 3.14.1
 
 Natural wonders are standalone tiles in new layering
