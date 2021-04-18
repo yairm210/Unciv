@@ -71,7 +71,7 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings, 
     protected var pixelCivilianUnitGroup = ActionlessGroup().apply { isTransform = false; setSize(groupSize, groupSize) }
 
     class MiscLayerGroupClass:ActionlessGroup(){
-        override fun draw(batch: Batch?, parentAlpha: Float) { super.draw(batch, parentAlpha) }
+        override fun draw(batch: Batch?, parentAlpha: Float) = super.draw(batch, parentAlpha)
     }
     val miscLayerGroup = MiscLayerGroupClass().apply { isTransform = false; setSize(groupSize, groupSize) }
 
