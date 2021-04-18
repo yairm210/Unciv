@@ -195,6 +195,9 @@ class MapUnit {
         } else {
             var visibilityRange = 2
             visibilityRange += getUniques().count { it.text == "+1 Visibility Range" }
+            for (unique in civInfo.getMatchingUniques("+[] Sight for all [] units"))
+                if (matchesFilter(unique.params[1]))
+                    visibilityRange += unique.params[0].toInt()
             if (hasUnique("+2 Visibility Range")) visibilityRange += 2 // This shouldn't be stackable
             if (hasUnique("Limited Visibility")) visibilityRange -= 1
             if (civInfo.hasUnique("+1 Sight for all land military units") && type.isMilitary() && type.isLandUnit())
