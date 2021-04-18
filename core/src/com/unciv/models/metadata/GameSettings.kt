@@ -39,6 +39,7 @@ class GameSettings {
     var isFreshlyCreated = false
     var visualMods = HashSet<String>()
 
+    var showExperimentalWorldWrap = false
     var showExperimentalTileLayering = false
 
     init {
