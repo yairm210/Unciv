@@ -26,7 +26,7 @@ import kotlin.math.abs
 import kotlin.math.roundToInt
 import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 
-class EmpireOverviewScreen(private var viewingPlayer:CivilizationInfo, defaultPage: String = "Cities") : CameraStageBaseScreen(){
+class EmpireOverviewScreen(private var viewingPlayer:CivilizationInfo, defaultPage: String = "") : CameraStageBaseScreen(){
     private val topTable = Table().apply { defaults().pad(10f) }
     private val centerTable = Table().apply { defaults().pad(5f) }
 
@@ -42,15 +42,24 @@ class EmpireOverviewScreen(private var viewingPlayer:CivilizationInfo, defaultPa
             centerTable.pack()
             for ((key, categoryButton) in categoryButtons.filterNot { it.value.touchable == Touchable.disabled })
                 categoryButton.color = if (key == name) Color.BLUE else Color.WHITE
+            game.settings.lastOverviewPage = name
         }
         setCategoryActions[name] = setCategoryAction
         categoryButtons[name] = button
         button.onClick(setCategoryAction)
         if (disabled) button.disable()
+        else keyPressDispatcher[name[0].toLowerCase()] = setCategoryAction
         topTable.add(button)
     }
 
     init {
+        val page =
+            if (defaultPage != "") {
+                game.settings.lastOverviewPage = defaultPage
+                defaultPage
+            }
+            else game.settings.lastOverviewPage
+
         onBackButtonClicked { game.setWorldScreen() }
 
         addCategory("Cities", CityOverviewTable(viewingPlayer, this))
@@ -69,7 +78,7 @@ class EmpireOverviewScreen(private var viewingPlayer:CivilizationInfo, defaultPa
 
         topTable.pack()
 
-        setCategoryActions[defaultPage]?.invoke()
+        setCategoryActions[page]?.invoke()
 
         val table = Table()
         table.add(topTable).row()
