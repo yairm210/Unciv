@@ -14,7 +14,7 @@ buildscript {
         mavenLocal()
         mavenCentral()
         maven { url = uri("https://oss.sonatype.org/content/repositories/snapshots/") }
-        jcenter()
+        gradlePluginPortal()
         maven{ url = uri("https://jitpack.io") } // for the anuken packr
     }
     dependencies {
@@ -42,7 +42,7 @@ allprojects {
         // maven{ url = uri("https://maven.aliyun.com/repository/gradle-plugin") }
         // maven{ url = uri("https://maven.aliyun.com/repository/public") }
         google()
-        jcenter()
+        gradlePluginPortal()
         mavenLocal()
         mavenCentral()
         maven { url = uri("https://oss.sonatype.org/content/repositories/snapshots/") }
@@ -77,7 +77,6 @@ project(":android") {
     dependencies {
         "implementation"(project(":core"))
         "implementation"("com.badlogicgames.gdx:gdx-backend-android:$gdxVersion")
-        natives("com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-armeabi")
         natives("com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-armeabi-v7a")
         natives("com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-arm64-v8a")
         natives("com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-x86")
