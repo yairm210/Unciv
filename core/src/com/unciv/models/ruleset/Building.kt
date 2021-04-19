@@ -102,7 +102,7 @@ class Building : NamedStats(), IConstruction {
                 val stats = unique.params[0]
                 if (!tileBonusHashmap.containsKey(stats)) tileBonusHashmap[stats] = ArrayList()
                 tileBonusHashmap[stats]!!.add(unique.params[1])
-            } else finalUniques += unique.text
+            } else if (unique.placeholderText != "Consumes [] []") finalUniques += unique.text
         for ((key, value) in tileBonusHashmap)
             finalUniques += "[stats] from [tileFilter] tiles in this city".fillPlaceholders(key, value.joinToString { it.tr() })
         return finalUniques
