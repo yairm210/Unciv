@@ -24,7 +24,9 @@ import com.unciv.models.UncivSound
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.unit.UnitType
 import com.unciv.models.translations.tr
+import com.unciv.ui.CivilopediaScreen
 import com.unciv.ui.cityscreen.CityScreen
+import com.unciv.ui.overviewscreen.EmpireOverviewScreen
 import com.unciv.ui.pickerscreens.GreatPersonPickerScreen
 import com.unciv.ui.pickerscreens.PolicyPickerScreen
 import com.unciv.ui.pickerscreens.TechButton
@@ -143,8 +145,8 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Cam
 
         onBackButtonClicked { backButtonAndESCHandler() }
 
-        addKeyboardListener() // for map panning by W,S,A,D
-
+        addKeyboardListener()   // for map panning by W,S,A,D - continuous
+        addKeyboardPresses()    // for single press keys triggering actions
 
         if (gameInfo.gameParameters.isOnlineMultiplayer && !gameInfo.isUpToDate)
             isPlayersTurn = false // until we're up to date, don't let the player do anything
@@ -173,8 +175,18 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Cam
     }
 
     private fun cleanupKeyDispatcher() {
-        val delKeys = keyPressDispatcher.keys.filter { it != ' ' && it != 'n' }
+        val delKeys = keyPressDispatcher.keys.filter { it !in " cnortuv\u1d83" }
         delKeys.forEach { keyPressDispatcher.remove(it) }
+    }
+    private fun addKeyboardPresses() {
+        // Space and N are assigned in createNextTurnButton
+        keyPressDispatcher['o'] = { openOverviewScreen() }
+        keyPressDispatcher['c'] = { openOverviewScreen("Cities") }
+        keyPressDispatcher['r'] = { openOverviewScreen("Resources") }
+        keyPressDispatcher['t'] = { openOverviewScreen("Trades") }
+        keyPressDispatcher['u'] = { openOverviewScreen("Units") }
+        keyPressDispatcher['v'] = { game.setScreen(VictoryScreen(this)) }
+        keyPressDispatcher['\u1d83'] = { game.setScreen(CivilopediaScreen(gameInfo.ruleSet)) }
     }
 
     private fun addKeyboardListener() {
@@ -458,6 +470,10 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Cam
         }
         return fogOfWarButton
 
+    }
+
+    fun openOverviewScreen(page: String = "") {
+        game.setScreen(EmpireOverviewScreen(selectedCiv, page))
     }
 
     private fun createNextTurnButton(): TextButton {

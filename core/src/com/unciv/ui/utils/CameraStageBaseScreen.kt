@@ -48,12 +48,20 @@ open class CameraStageBaseScreen : Screen {
                 object : InputListener() {
                     override fun keyTyped(event: InputEvent?, character: Char): Boolean {
 
-                        if (character.toLowerCase() !in keyPressDispatcher || hasOpenPopups())
+                        // enable using function keys w/o changing type of dispatcher by simply treating keyCode as char,
+                        // using a seldom unused codepoint range U+1D00 to U+1DFF which corresponds to
+                        // Phonetic Extensions, Phonetic Extensions Supplement and Combining Diacritical Marks Supplement.
+                        // So to map Input.Keys.F1 use keyPressDispatcher['\u1d83'],
+                        // Arrows: Left -> '\u1d15', Right -> '\u1d16', Up -> '\u1d13', Down -> '\u1d14'
+                        val index = if (character == '\u0000' && event != null && event.keyCode != 0)
+                            (event.keyCode + 0x1d00).toChar() else character.toLowerCase()
+
+                        if (index !in keyPressDispatcher || hasOpenPopups())
                             return super.keyTyped(event, character)
 
                         //try-catch mainly for debugging. Breakpoints in the vicinity can make the event fire twice in rapid succession, second time the context can be invalid
                         try {
-                            keyPressDispatcher[character.toLowerCase()]?.invoke()
+                            keyPressDispatcher[index]?.invoke()
                         } catch (ex: Exception) {}
                         return true
                     }
