@@ -180,7 +180,7 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Cam
     }
     private fun addKeyboardPresses() {
         // Space and N are assigned in createNextTurnButton
-        keyPressDispatcher['o'] = { openOverviewScreen() }
+        //keyPressDispatcher['o'] = { openOverviewScreen() }   -- will go to last-used overview page in future PR
         keyPressDispatcher['c'] = { openOverviewScreen("Cities") }
         keyPressDispatcher['r'] = { openOverviewScreen("Resources") }
         keyPressDispatcher['t'] = { openOverviewScreen("Trades") }
