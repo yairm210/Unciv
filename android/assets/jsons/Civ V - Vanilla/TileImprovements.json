@@ -209,8 +209,8 @@
 		"shortcutKey": "F"
 	},
 	
-	{ "name": "Ancient ruins" },
-	{ "name": "City ruins" },
-	{ "name": "City center" },
-	{ "name": "Barbarian encampment" }
+	{ "name": "Ancient ruins", "uniques": ["Unpillagable"] },
+	{ "name": "City ruins", "uniques": ["Unpillagable"] },
+	{ "name": "City center", "uniques": ["Unpillagable"] },
+	{ "name": "Barbarian encampment", "uniques": ["Unpillagable"] }
 ]
