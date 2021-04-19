@@ -769,7 +769,7 @@ class MapUnit {
         if ((filter == "Wounded" || filter == "wounded units") && health < 100) return true
         if (hasUnique(filter)) return true
         if ((filter == "Barbarians" || filter == "Barbarian") && civInfo.isBarbarian()) return true
-
+        if (filter == "Embarked" && isEmbarked()) return true
         return false
     }
 
