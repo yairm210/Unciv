@@ -362,14 +362,19 @@ object UnitActions {
         // This method should only be called for a citadel - therefore one of the neighbour tile
         // must belong to unit's civ, so minByOrNull will be never `null` (minBy is deprecated),
         // and the getCity !! assertion is guaranteed by the filter selector.
+
+        fun priority(tile: TileInfo): Int {
+            // helper calculates priority (lower is better): distance plus razing malus
+            val city = tile.getCity()!!
+            return city.getCenterTile().aerialDistanceTo(tile) +
+                    (if (city.isBeingRazed) 5 else 0)
+        }
         // In the rare case more than one city owns tiles neighboring the citadel
         // this will prioritize the nearest one not being razed
         val nearestCity = unit.currentTile.neighbors
             .filter { it.getOwner() == unit.civInfo }
-            .minByOrNull {
-                it.getCity()!!.getCenterTile().aerialDistanceTo(it) +
-                        (if (it.getCity()!!.isBeingRazed) 5 else 0)
-            }!!.getCity()!!
+            .minByOrNull { priority(it) }!!.getCity()!!
+
         // capture all tiles which do not belong to unit's civ and are not enemy cities
         // we use getTilesInDistance here, not neighbours to include the current tile as well
         val tilesToTakeOver = unit.currentTile.getTilesInDistance(1)
