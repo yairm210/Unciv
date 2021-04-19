@@ -209,8 +209,8 @@
 		"shortcutKey": "F"
 	},
 	
-	{ "name": "Ancient ruins", "uniques": ["Cannot be pillaged"] },
-	{ "name": "City ruins", "uniques": ["Cannot be pillaged"] },
-	{ "name": "City center", "uniques": ["Cannot be pillaged"] },
-	{ "name": "Barbarian encampment", "uniques": ["Cannot be pillaged"] }
+	{ "name": "Ancient ruins", "uniques": ["Unpillagable"] },
+	{ "name": "City ruins", "uniques": ["Unpillagable"] },
+	{ "name": "City center", "uniques": ["Unpillagable"] },
+	{ "name": "Barbarian encampment", "uniques": ["Unpillagable"] }
 ]

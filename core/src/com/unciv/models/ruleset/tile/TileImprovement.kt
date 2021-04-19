@@ -69,6 +69,6 @@ class TileImprovement : NamedStats() {
 
     fun hasUnique(unique: String) = uniques.contains(unique)
     fun isGreatImprovement() = hasUnique("Great Improvement")
-    fun cannotBePillaged() = hasUnique("Cannot be pillaged")
+    fun cannotBePillaged() = hasUnique("Unpillagable")
 }
 
