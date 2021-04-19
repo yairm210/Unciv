@@ -64,6 +64,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
 
 
     val translations = Translations()
+    var translationActiveMods = LinkedHashSet<String>()
 
     override fun create() {
         Gdx.input.setCatchKey(Input.Keys.BACK, true)

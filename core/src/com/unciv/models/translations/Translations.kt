@@ -223,7 +223,7 @@ val curlyBraceRegex = Regex("""\{([^}]*)\}""")
  */
 fun String.tr(): String {
     val activeMods = if (UncivGame.Current.isGameInfoInitialized())
-        UncivGame.Current.gameInfo.gameParameters.mods else null
+        UncivGame.Current.gameInfo.gameParameters.mods else UncivGame.Current.translationActiveMods
 
     // There might still be optimization potential here!
     if (contains("[")) { // Placeholders!
