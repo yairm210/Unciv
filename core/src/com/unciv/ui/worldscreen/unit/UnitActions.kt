@@ -359,8 +359,21 @@ object UnitActions {
     }
 
     private fun takeOverTilesAround(unit: MapUnit) {
-        // one of the neighbour tile must belong to unit's civ, so nearestCity will be never `null`
-        val nearestCity = unit.currentTile.neighbors.first { it.getOwner() == unit.civInfo }.getCity()
+        // This method should only be called for a citadel - therefore one of the neighbour tile
+        // must belong to unit's civ, so minByOrNull will be never `null`.
+
+        fun priority(tile: TileInfo): Int {
+            // helper calculates priority (lower is better): distance plus razing malus
+            val city = tile.getCity()!!       // !! assertion is guaranteed by the outer filter selector.
+            return city.getCenterTile().aerialDistanceTo(tile) +
+                    (if (city.isBeingRazed) 5 else 0)
+        }
+        // In the rare case more than one city owns tiles neighboring the citadel
+        // this will prioritize the nearest one not being razed
+        val nearestCity = unit.currentTile.neighbors
+            .filter { it.getOwner() == unit.civInfo }
+            .minByOrNull { priority(it) }!!.getCity()!!
+
         // capture all tiles which do not belong to unit's civ and are not enemy cities
         // we use getTilesInDistance here, not neighbours to include the current tile as well
         val tilesToTakeOver = unit.currentTile.getTilesInDistance(1)
@@ -376,7 +389,7 @@ object UnitActions {
                 otherCiv.getDiplomacyManager(unit.civInfo).addModifier(DiplomaticModifiers.StealingTerritory, -10f)
                 notifications.add(otherCiv)
             }
-            nearestCity!!.expansion.takeOwnership(tile)
+            nearestCity.expansion.takeOwnership(tile)
         }
         for (otherCiv in notifications)
             otherCiv.addNotification("[${unit.civInfo}] has stolen your territory!", unit.currentTile.position, unit.civInfo.civName, NotificationIcon.War)
