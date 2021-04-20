@@ -98,7 +98,8 @@ class EmpireOverviewScreen(private var viewingPlayer:CivilizationInfo, defaultPa
 
         fun update(){
             clear()
-            val relevantCivs = viewingPlayer.gameInfo.civilizations.filter { !it.isBarbarian() && (includeCityStates || !it.isCityState()) }
+            val relevantCivs = viewingPlayer.gameInfo.civilizations
+                    .filter { !it.isBarbarian() && (includeCityStates || !it.isCityState()) }
             val diplomacyGroup = DiplomacyGroup(viewingPlayer, diplomacyGroupHeight, includeCityStates)
             val playerKnowsAndUndefeatedCivs = relevantCivs.filter { diplomacyGroup.playerKnows(it) && !it.isDefeated() }
             val playerKnowsAndDefeatedCivs = relevantCivs.filter { diplomacyGroup.playerKnows(it) && it.isDefeated() }
@@ -130,20 +131,23 @@ class EmpireOverviewScreen(private var viewingPlayer:CivilizationInfo, defaultPa
             table.add(civInfo.civName.toLabel()).left()
             table.touchable = Touchable.enabled
             table.onClick {
+                if (civInfo.isDefeated() || viewingPlayer.isSpectator() || civInfo == viewingPlayer) return@onClick
                 UncivGame.Current.setScreen(DiplomacyScreen(viewingPlayer).apply { updateRightSide(civInfo) })
             }
             return table
         }
 
         private fun getCivTableScroll(relevantCivs: List<CivilizationInfo>, titleTable: Table,
-                                      playerKnowsAndUndefeatedCivs: List<CivilizationInfo>, playerKnowsAndDefeatedCivs: List<CivilizationInfo>): ScrollPane {
+                                      playerKnowsAndUndefeatedCivs: List<CivilizationInfo>,
+                                      playerKnowsAndDefeatedCivs: List<CivilizationInfo>): ScrollPane {
             val civTable = Table()
             civTable.defaults().pad(5f)
             civTable.background = ImageGetter.getBackground(Color.BLACK)
             civTable.add("[${relevantCivs.size}] Civilizations in the game".toLabel()).pad(5f).colspan(2).row()
             civTable.add(titleTable).colspan(2).row()
             civTable.addSeparator()
-            civTable.add("Known and alive ([${playerKnowsAndUndefeatedCivs.size - 1}])".toLabel()).pad(5f).colspan(2).row()
+            civTable.add("Known and alive ([${playerKnowsAndUndefeatedCivs.size - 1}])".toLabel())
+                    .pad(5f).colspan(2).row()
             if (playerKnowsAndUndefeatedCivs.size > 1) {
                 civTable.addSeparator()
                 playerKnowsAndUndefeatedCivs.filter { it != viewingPlayer }.forEach {
@@ -152,7 +156,8 @@ class EmpireOverviewScreen(private var viewingPlayer:CivilizationInfo, defaultPa
                 }
             }
             civTable.addSeparator()
-            civTable.add("Known and defeated ([${playerKnowsAndDefeatedCivs.size}])".toLabel()).pad(5f).colspan(2).row()
+            civTable.add("Known and defeated ([${playerKnowsAndDefeatedCivs.size}])".toLabel())
+                    .pad(5f).colspan(2).row()
             if (playerKnowsAndDefeatedCivs.isNotEmpty()) {
                 civTable.addSeparator()
                 playerKnowsAndDefeatedCivs.forEach {

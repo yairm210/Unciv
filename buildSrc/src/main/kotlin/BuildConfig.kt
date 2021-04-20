@@ -8,6 +8,4 @@ object BuildConfig {
 
     const val gdxVersion = "1.10.0"
     const val roboVMVersion = "2.3.1"
-    const val ashleyVersion = "1.7.0"
-    const val aiVersion = "1.8.0"
 }
