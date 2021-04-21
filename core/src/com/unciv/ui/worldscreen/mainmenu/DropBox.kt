@@ -159,10 +159,10 @@ object Github {
     }
 
     // This took a long time to get just right, so if you're changing this, TEST IT THOROUGHLY on both Desktop and Phone
-    fun downloadAndExtract(gitRepoUrl:String, defaultBranch:String, folderFileHandle:FileHandle) {
+    fun downloadAndExtract(gitRepoUrl:String, defaultBranch:String, folderFileHandle:FileHandle): FileHandle? {
         val zipUrl = "$gitRepoUrl/archive/$defaultBranch.zip"
         val inputStream = download(zipUrl)
-        if (inputStream == null) return
+        if (inputStream == null) return null
 
         val tempZipFileHandle = folderFileHandle.child("tempZip.zip")
         tempZipFileHandle.write(inputStream, false)
@@ -170,15 +170,17 @@ object Github {
         Zip.extractFolder(tempZipFileHandle, unzipDestination)
         val innerFolder = unzipDestination.list().first() // tempZip/<repoName>-master/
 
-        val finalDestinationName = innerFolder.name().replace("-$defaultBranch","").replace('-',' ')
+        val finalDestinationName = innerFolder.name().replace("-$defaultBranch", "").replace('-', ' ')
         val finalDestination = folderFileHandle.child(finalDestinationName)
         finalDestination.mkdirs() // If we don't create this as a directory, it will think this is a file and nothing will work.
-        for(innerFileOrFolder in innerFolder.list()){
+        for (innerFileOrFolder in innerFolder.list()) {
             innerFileOrFolder.moveTo(finalDestination)
         }
 
         tempZipFileHandle.delete()
         unzipDestination.deleteDirectory()
+
+        return finalDestination
     }
 
 
@@ -196,7 +198,6 @@ object Github {
     class Repo {
         var name = ""
         var description = ""
-        var svn_url = ""
         var stargazers_count = 0
         var default_branch = ""
         var html_url = ""

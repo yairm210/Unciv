@@ -33,6 +33,9 @@ class ModOptions {
     var nationsToRemove = HashSet<String>()
     var uniques = HashSet<String>()
     val maxXPfromBarbarians = 30
+
+    var lastUpdated = ""
+    var modUrl = ""
 }
 
 class Ruleset {

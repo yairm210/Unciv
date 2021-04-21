@@ -5,7 +5,10 @@ import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextArea
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
+import com.badlogic.gdx.utils.Json
+import com.unciv.JsonParser
 import com.unciv.MainMenuScreen
+import com.unciv.models.ruleset.ModOptions
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.translations.tr
@@ -60,7 +63,16 @@ class ModManagementScreen: PickerScreen() {
             Gdx.app.postRunnable {
                 for (repo in repoSearch.items) {
                     repo.name = repo.name.replace('-', ' ')
-                    val downloadButton = repo.name.toTextButton()
+                    var downloadButtonText = repo.name
+
+                    val existingMod = RulesetCache.values.firstOrNull { it.name == repo.name }
+                    if(existingMod!=null) {
+                        if (existingMod.modOptions.lastUpdated != "" && existingMod.modOptions.lastUpdated != repo.updated_at)
+                            downloadButtonText += " - Updated!"
+                    }
+
+                    val downloadButton = downloadButtonText.toTextButton()
+
                     downloadButton.onClick {
                         descriptionLabel.setText(repo.description + "\n" + "[${repo.stargazers_count}]✯".tr())
                         removeRightSideClickListeners()
@@ -69,18 +81,13 @@ class ModManagementScreen: PickerScreen() {
                         rightSideButton.onClick {
                             rightSideButton.setText("Downloading...".tr())
                             rightSideButton.disable()
-                            downloadMod(repo.svn_url, repo.default_branch) {
+                            downloadMod(repo) {
                                 rightSideButton.setText("Downloaded!".tr())
                             }
                         }
 
                         modActionTable.clear()
-                        modActionTable.add("Open Github page".toTextButton().onClick {
-                            Gdx.net.openURI(repo.html_url)
-                        }).row()
-                        val updateString = "Last updated at: "+ LocalDateTime.parse(repo.updated_at, DateTimeFormatter.ISO_DATE_TIME)
-                                .toLocalDate().toString()
-                        modActionTable.add(updateString.toLabel())
+                        addModInfoToActionTable(repo.html_url, repo.updated_at)
                     }
                     downloadTable.add(downloadButton).row()
                 }
@@ -98,6 +105,20 @@ class ModManagementScreen: PickerScreen() {
         }
     }
 
+    fun addModInfoToActionTable(repoUrl: String, updatedAt: String) {
+        if (repoUrl != "") {
+            modActionTable.add("Open Github page".toTextButton().onClick {
+                Gdx.net.openURI(repoUrl)
+            }).row()
+        }
+
+        if (updatedAt != "") {
+            val updateString = "Last updated at: " + LocalDateTime.parse(updatedAt, DateTimeFormatter.ISO_DATE_TIME)
+                    .toLocalDate().toString()
+            modActionTable.add(updateString.toLabel())
+        }
+    }
+
     fun getDownloadButton(): TextButton {
         val downloadButton = "Download mod from URL".toTextButton()
         downloadButton.onClick {
@@ -108,7 +129,7 @@ class ModManagementScreen: PickerScreen() {
             actualDownloadButton.onClick {
                 actualDownloadButton.setText("Downloading...".tr())
                 actualDownloadButton.disable()
-                downloadMod(textArea.text, "master") { popup.close() }
+                downloadMod(Github.Repo().apply { html_url=textArea.text; default_branch= "master"}) { popup.close() }
             }
             popup.add(actualDownloadButton).row()
             popup.addCloseButton()
@@ -117,22 +138,28 @@ class ModManagementScreen: PickerScreen() {
         return downloadButton
     }
 
-    fun downloadMod(gitRepoUrl:String, defaultBranch:String, postAction:()->Unit={}){
+    fun downloadMod(repo:Github.Repo, postAction:()->Unit={}) {
         thread { // to avoid ANRs - we've learnt our lesson from previous download-related actions
             try {
-                Github.downloadAndExtract(gitRepoUrl, defaultBranch,
+                val modFolder = Github.downloadAndExtract(repo.html_url, repo.default_branch,
                         Gdx.files.local("mods"))
+                if (modFolder == null) return@thread
+                // rewrite modOptions file
+                val modOptionsFile = modFolder.child("jsons/ModOptions.json")
+                val modOptions = if (modOptionsFile.exists()) JsonParser().getFromJson(ModOptions::class.java, modOptionsFile) else ModOptions()
+                modOptions.modUrl = repo.html_url
+                modOptions.lastUpdated = repo.updated_at
+                Json().toJson(modOptions, modOptionsFile)
                 Gdx.app.postRunnable {
                     ToastPopup("Downloaded!", this)
                     RulesetCache.loadRulesets()
                     refreshModTable()
                 }
-            } catch (ex:Exception){
+            } catch (ex: Exception) {
                 Gdx.app.postRunnable {
                     ToastPopup("Could not download mod", this)
                 }
-            }
-            finally {
+            } finally {
                 postAction()
             }
         }
@@ -155,6 +182,8 @@ class ModManagementScreen: PickerScreen() {
             refreshModActions(mod)
         })
         modActionTable.row()
+
+        addModInfoToActionTable(mod.modOptions.modUrl, mod.modOptions.lastUpdated)
     }
 
     fun refreshModTable(){
