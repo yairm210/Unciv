@@ -11,6 +11,9 @@ import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.translations.tr
 import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.mainmenu.Github
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+import java.util.*
 import kotlin.concurrent.thread
 
 class ModManagementScreen: PickerScreen() {
@@ -74,7 +77,10 @@ class ModManagementScreen: PickerScreen() {
                         modActionTable.clear()
                         modActionTable.add("Open Github page".toTextButton().onClick {
                             Gdx.net.openURI(repo.html_url)
-                        })
+                        }).row()
+                        val updateString = "Last updated at: "+ LocalDateTime.parse(repo.updated_at, DateTimeFormatter.ISO_DATE_TIME)
+                                .toLocalDate().toString()
+                        modActionTable.add(updateString.toLabel())
                     }
                     downloadTable.add(downloadButton).row()
                 }

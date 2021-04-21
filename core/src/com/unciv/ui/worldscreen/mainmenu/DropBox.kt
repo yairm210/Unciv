@@ -9,8 +9,11 @@ import java.io.*
 import java.net.HttpURLConnection
 import java.net.URL
 import java.nio.charset.Charset
+import java.time.DateTimeException
+import java.util.*
 import java.util.zip.ZipEntry
 import java.util.zip.ZipFile
+import kotlin.collections.ArrayList
 
 
 object DropBox {
@@ -197,6 +200,7 @@ object Github {
         var stargazers_count = 0
         var default_branch = ""
         var html_url = ""
+        var updated_at = ""
     }
 }
 
