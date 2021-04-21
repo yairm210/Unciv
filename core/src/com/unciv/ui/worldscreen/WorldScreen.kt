@@ -175,16 +175,15 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Cam
     }
 
     private fun cleanupKeyDispatcher() {
-        val delKeys = keyPressDispatcher.keys.filter { it !in " cnortuv\u1d83" }
+        val delKeys = keyPressDispatcher.keys.filter { it !in " env\u1d83" }
         delKeys.forEach { keyPressDispatcher.remove(it) }
     }
     private fun addKeyboardPresses() {
         // Space and N are assigned in createNextTurnButton
-        //keyPressDispatcher['o'] = { openOverviewScreen() }   -- will go to last-used overview page in future PR
-        keyPressDispatcher['c'] = { openOverviewScreen("Cities") }
-        keyPressDispatcher['r'] = { openOverviewScreen("Resources") }
-        keyPressDispatcher['t'] = { openOverviewScreen("Trades") }
-        keyPressDispatcher['u'] = { openOverviewScreen("Units") }
+        keyPressDispatcher['e'] = { game.setScreen(EmpireOverviewScreen(selectedCiv)) }
+        // as obvious keys that might correspond to overview pages are assigned to unit commands,
+        // the option to go directly to a specific overview page as follows is currently unused:
+        //keyPressDispatcher['\u1d83'] = { game.setScreen(EmpireOverviewScreen(selectedCiv,"Units")) }  // F5
         keyPressDispatcher['v'] = { game.setScreen(VictoryScreen(this)) }
         keyPressDispatcher['\u1d83'] = { game.setScreen(CivilopediaScreen(gameInfo.ruleSet)) }
     }
@@ -470,10 +469,6 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Cam
         }
         return fogOfWarButton
 
-    }
-
-    fun openOverviewScreen(page: String = "") {
-        game.setScreen(EmpireOverviewScreen(selectedCiv, page))
     }
 
     private fun createNextTurnButton(): TextButton {
