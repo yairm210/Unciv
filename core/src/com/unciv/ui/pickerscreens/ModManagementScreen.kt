@@ -37,18 +37,18 @@ class ModManagementScreen: PickerScreen() {
         topTable.row()
 
 
-        topTable.add(ScrollPane(modTable)).height(scrollPane.height*0.8f).pad(10f)
+        topTable.add(ScrollPane(modTable)).height(scrollPane.height * 0.8f).pad(10f)
 
         downloadTable.add(getDownloadButton()).row()
 
         tryDownloadPage(1)
 
-        topTable.add(ScrollPane(downloadTable)).height(scrollPane.height*0.8f)//.size(downloadTable.width, topTable.height)
+        topTable.add(ScrollPane(downloadTable)).height(scrollPane.height * 0.8f)//.size(downloadTable.width, topTable.height)
 
         topTable.add(modActionTable)
     }
 
-    fun tryDownloadPage(pageNum:Int) {
+    fun tryDownloadPage(pageNum: Int) {
         thread {
             val repoSearch: Github.RepoSearch
             try {
@@ -66,9 +66,9 @@ class ModManagementScreen: PickerScreen() {
                     var downloadButtonText = repo.name
 
                     val existingMod = RulesetCache.values.firstOrNull { it.name == repo.name }
-                    if(existingMod!=null) {
+                    if (existingMod != null) {
                         if (existingMod.modOptions.lastUpdated != "" && existingMod.modOptions.lastUpdated != repo.updated_at)
-                            downloadButtonText += " - Updated!"
+                            downloadButtonText += " - {Updated}"
                     }
 
                     val downloadButton = downloadButtonText.toTextButton()
@@ -95,7 +95,7 @@ class ModManagementScreen: PickerScreen() {
                     val nextPageButton = "Next page".toTextButton()
                     nextPageButton.onClick {
                         nextPageButton.remove()
-                        tryDownloadPage(pageNum+1)
+                        tryDownloadPage(pageNum + 1)
                     }
                     downloadTable.add(nextPageButton).row()
                 }
@@ -113,7 +113,7 @@ class ModManagementScreen: PickerScreen() {
         }
 
         if (updatedAt != "") {
-            val updateString = "Last updated at: " + LocalDateTime.parse(updatedAt, DateTimeFormatter.ISO_DATE_TIME)
+            val updateString = "{Updated}: " + LocalDateTime.parse(updatedAt, DateTimeFormatter.ISO_DATE_TIME)
                     .toLocalDate().toString()
             modActionTable.add(updateString.toLabel())
         }
@@ -123,13 +123,13 @@ class ModManagementScreen: PickerScreen() {
         val downloadButton = "Download mod from URL".toTextButton()
         downloadButton.onClick {
             val popup = Popup(this)
-            val textArea = TextArea("https://github.com/...",skin)
-            popup.add(textArea).width(stage.width/2).row()
+            val textArea = TextArea("https://github.com/...", skin)
+            popup.add(textArea).width(stage.width / 2).row()
             val actualDownloadButton = "Download".toTextButton()
             actualDownloadButton.onClick {
                 actualDownloadButton.setText("Downloading...".tr())
                 actualDownloadButton.disable()
-                downloadMod(Github.Repo().apply { html_url=textArea.text; default_branch= "master"}) { popup.close() }
+                downloadMod(Github.Repo().apply { html_url = textArea.text; default_branch = "master" }) { popup.close() }
             }
             popup.add(actualDownloadButton).row()
             popup.addCloseButton()
@@ -138,7 +138,7 @@ class ModManagementScreen: PickerScreen() {
         return downloadButton
     }
 
-    fun downloadMod(repo:Github.Repo, postAction:()->Unit={}) {
+    fun downloadMod(repo: Github.Repo, postAction: () -> Unit = {}) {
         thread { // to avoid ANRs - we've learnt our lesson from previous download-related actions
             try {
                 val modFolder = Github.downloadAndExtract(repo.html_url, repo.default_branch,
@@ -186,7 +186,7 @@ class ModManagementScreen: PickerScreen() {
         addModInfoToActionTable(mod.modOptions.modUrl, mod.modOptions.lastUpdated)
     }
 
-    fun refreshModTable(){
+    fun refreshModTable() {
         modTable.clear()
         val currentMods = RulesetCache.values.filter { it.name != "" }
         for (mod in currentMods) {
@@ -205,9 +205,9 @@ class ModManagementScreen: PickerScreen() {
         }
     }
 
-    fun deleteMod(mod: Ruleset){
+    fun deleteMod(mod: Ruleset) {
         val modFileHandle = Gdx.files.local("mods").child(mod.name)
-        if(modFileHandle.isDirectory) modFileHandle.deleteDirectory()
+        if (modFileHandle.isDirectory) modFileHandle.deleteDirectory()
         else modFileHandle.delete()
         RulesetCache.loadRulesets()
         refreshModTable()

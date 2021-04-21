@@ -378,7 +378,7 @@ object RulesetCache :HashMap<String,Ruleset>() {
 
     fun getBaseRuleset() = this[BaseRuleset.Civ_V_Vanilla.fullName]!!.clone() // safeguard, o no-one edits the base ruleset by mistake
 
-    fun getComplexRuleset(mods:LinkedHashSet<String>):Ruleset{
+    fun getComplexRuleset(mods: LinkedHashSet<String>): Ruleset {
         val newRuleset = Ruleset()
         val loadedMods = mods.filter { containsKey(it) }.map { this[it]!! }
         if (loadedMods.none { it.modOptions.isBaseRuleset })
