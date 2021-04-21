@@ -1,3 +1,23 @@
+## 3.14.3
+
+Added "Updated!" next to updated mods in mod management screen
+
+Added 'last updated time' and 'open Github page of mod' in mod management screen
+
+Can no longer enter diplomacy screen for self, defeated and spectator civs through diplomacy overview screen
+
+Resolved #3817 - don't display resource requirements from uniques twice
+
+By SomeTroglodyte:
+
+- Solves #3802 Mod translations don't appear in new game screen
+- Modify choice of city to own the tiles acquired by a citadel - v2
+- Make city center unpillagable using a unique
+
+Parameterize civ-wide sight bonus - By SpacedOutChicken
+
+Translation updates
+
 ## 3.14.2
 
 Put world wrap behind setting again and added warning for world wrap for Android - I'm seeing a lot of ANRs in recent versions, but it's not something that seems solvable.
