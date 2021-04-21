@@ -70,6 +70,11 @@ class ModManagementScreen: PickerScreen() {
                                 rightSideButton.setText("Downloaded!".tr())
                             }
                         }
+
+                        modActionTable.clear()
+                        modActionTable.add("Open Github page".toTextButton().onClick {
+                            Gdx.net.openURI(repo.html_url)
+                        })
                     }
                     downloadTable.add(downloadButton).row()
                 }
@@ -132,7 +137,8 @@ class ModManagementScreen: PickerScreen() {
         val visualMods = game.settings.visualMods
         if (!visualMods.contains(mod.name))
             modActionTable.add("Enable as permanent visual mod".toTextButton().onClick {
-                visualMods.add(mod.name); game.settings.save()
+                visualMods.add(mod.name)
+                game.settings.save()
                 ImageGetter.setNewRuleset(ImageGetter.ruleset)
                 refreshModActions(mod)
             })

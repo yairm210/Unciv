@@ -196,6 +196,7 @@ object Github {
         var svn_url = ""
         var stargazers_count = 0
         var default_branch = ""
+        var html_url = ""
     }
 }
 
