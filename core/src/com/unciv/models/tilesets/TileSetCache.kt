@@ -9,8 +9,11 @@ object TileSetCache : HashMap<String, TileSetConfig>(){
         clear()
         var tileSetName = ""
 
-        //load default TileSets
-        for (configFile in Gdx.files.local("jsons/TileSets").list()){
+        //load internal TileSets
+        val fileHandles = if (consoleMode) FileHandle("jsons/TileSets").list()
+        else Gdx.files.internal("jsons/TileSets").list()
+
+        for (configFile in fileHandles){
             tileSetName = configFile.nameWithoutExtension().removeSuffix("Config")
             try {
                 if (this[tileSetName] == null)
