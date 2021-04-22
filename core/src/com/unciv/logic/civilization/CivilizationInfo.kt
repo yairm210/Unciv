@@ -118,7 +118,7 @@ class CivilizationInfo {
         toReturn.victoryManager = victoryManager.clone()
         toReturn.allyCivName = allyCivName
         for (diplomacyManager in diplomacy.values.map { it.clone() })
-            toReturn.diplomacy.put(diplomacyManager.otherCivName, diplomacyManager)
+            toReturn.diplomacy[diplomacyManager.otherCivName] = diplomacyManager
         toReturn.cities = cities.map { it.clone() }
 
         // This is the only thing that is NOT switched out, which makes it a source of ConcurrentModification errors.
@@ -165,7 +165,7 @@ class CivilizationInfo {
     fun isAlive(): Boolean = !isDefeated()
     fun hasEverBeenFriendWith(otherCiv: CivilizationInfo): Boolean = getDiplomacyManager(otherCiv).everBeenFriends()
     fun hasMetCivTerritory(otherCiv: CivilizationInfo): Boolean = otherCiv.getCivTerritory().any { it in exploredTiles }
-    fun getCivTerritory() = cities.asSequence().flatMap { it.tiles.asSequence() }
+    private fun getCivTerritory() = cities.asSequence().flatMap { it.tiles.asSequence() }
 
     fun victoryType(): VictoryType {
         if (gameInfo.gameParameters.victoryTypes.size == 1)
@@ -267,7 +267,7 @@ class CivilizationInfo {
 
     fun getIdleUnits() = getCivUnits().filter { it.isIdle() }
 
-    fun getDueUnits() = getCivUnits().filter { it.due && it.isIdle() }
+    private fun getDueUnits() = getCivUnits().filter { it.due && it.isIdle() }
 
     fun shouldGoToDueUnit() = UncivGame.Current.settings.checkForDueUnits && getDueUnits().any()
 
@@ -334,8 +334,8 @@ class CivilizationInfo {
     /** Returns true if the civ was fully initialized and has no cities remaining */
     fun isDefeated(): Boolean {
         // Dirty hack: exploredTiles are empty only before starting units are placed
-        if (exploredTiles.isEmpty() || isBarbarian() || isSpectator()) return false
-        else return cities.isEmpty() // No cities
+        return if (exploredTiles.isEmpty() || isBarbarian() || isSpectator()) false
+        else cities.isEmpty() // No cities
                 && (citiesCreated > 0 || !getCivUnits().any { it.hasUnique(Constants.settlerUnique) })
     }
 
@@ -343,12 +343,11 @@ class CivilizationInfo {
         if (gameInfo.ruleSet.technologies.isEmpty()) return "None"
         if (tech.researchedTechnologies.isEmpty())
             return gameInfo.ruleSet.getEras().first()
-        val maxEraOfTech = tech.researchedTechnologies
+        return tech.researchedTechnologies
                 .asSequence()
                 .map { it.column!! }
                 .maxByOrNull { it.columnNumber }!!
                 .era
-        return maxEraOfTech
     }
 
     fun getEraNumber(): Int = gameInfo.ruleSet.getEraNumber(getEra())
@@ -383,7 +382,7 @@ class CivilizationInfo {
 
     fun canSignResearchAgreementsWith(otherCiv: CivilizationInfo): Boolean {
         val diplomacyManager = getDiplomacyManager(otherCiv)
-        val cost = getResearchAgreementCost(otherCiv)
+        val cost = getResearchAgreementCost()
         return canSignResearchAgreement() && otherCiv.canSignResearchAgreement()
                 && diplomacyManager.hasFlag(DiplomacyFlags.DeclarationOfFriendship)
                 && !diplomacyManager.hasFlag(DiplomacyFlags.ResearchAgreement)
@@ -619,7 +618,7 @@ class CivilizationInfo {
         updateStatsForNextTurn()
     }
 
-    fun getResearchAgreementCost(otherCiv: CivilizationInfo): Int {
+    fun getResearchAgreementCost(): Int {
         // https://forums.civfanatics.com/resources/research-agreements-bnw.25568/
         val basicGoldCostOfSignResearchAgreement = when (getEra()) {
             Constants.medievalEra, Constants.renaissanceEra -> 250
