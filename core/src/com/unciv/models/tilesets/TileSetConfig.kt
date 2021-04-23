@@ -10,6 +10,8 @@ class TileSetConfig {
 
     fun updateConfig(other: TileSetConfig){
         useColorAsBaseTerrain = other.useColorAsBaseTerrain
+        unexploredTileColor = other.unexploredTileColor
+        fogOfWarColor = other.fogOfWarColor
         for ((tileSetString, renderOrder) in other.ruleVariants){
             ruleVariants[tileSetString] = renderOrder
         }
