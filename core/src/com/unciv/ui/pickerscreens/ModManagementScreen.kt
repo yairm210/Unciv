@@ -14,6 +14,8 @@ import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.translations.tr
 import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.mainmenu.Github
+import java.text.DateFormat
+import java.text.SimpleDateFormat
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
@@ -113,8 +115,13 @@ class ModManagementScreen: PickerScreen() {
         }
 
         if (updatedAt != "") {
-            val updateString = "{Updated}: " + LocalDateTime.parse(updatedAt, DateTimeFormatter.ISO_DATE_TIME)
-                    .toLocalDate().toString()
+            // Everything under java.time is from Java 8 onwards, meaning older phones that use Java 7 won't be able to handle it :/
+            // So we're forced to use ancient Java 6 classes instead of the newer and nicer LocalDateTime.parse :(
+            // Direct solution from https://stackoverflow.com/questions/2201925/converting-iso-8601-compliant-string-to-java-util-date
+            val df2 = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.US) // example: 2021-04-11T14:43:33Z
+            val date = df2.parse(updatedAt)
+
+            val updateString = "{Updated}: " +DateFormat.getDateInstance(DateFormat.SHORT).format(date)
             modActionTable.add(updateString.toLabel())
         }
     }
