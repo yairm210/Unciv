@@ -4,15 +4,15 @@ Added "Updated!" next to updated mods in mod management screen
 
 Added 'last updated time' and 'open Github page of mod' in mod management screen
 
-Can no longer enter diplomacy screen for self, defeated and spectator civs through diplomacy overview screen
+Cannot enter diplomacy screen for self, defeated and spectator civs through diplomacy overview
 
 Resolved #3817 - don't display resource requirements from uniques twice
 
 By SomeTroglodyte:
 
-- Solves #3802 Mod translations don't appear in new game screen
-- Modify choice of city to own the tiles acquired by a citadel - v2
-- Make city center unpillagable using a unique
+- Mod translations now appear in new game screen
+- Citadel tiles don't attach to razing cities if possible
+- City center now unpillagable
 
 Parameterize civ-wide sight bonus - By SpacedOutChicken
 
