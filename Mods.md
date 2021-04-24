@@ -100,6 +100,4 @@ Existing mods can be found [here](https://github.com/topics/unciv-mod)!
 
 A list of uniques and how to use them can be found [here](uniques)!
 
-In order to add a tileset mod, all you need to do is add the images under Images/Tilesets/MyCoolTilesetExample and enable the mod as a permanent visual mod - the game will recognize the tileset, and allow you to pick it in the options menu.
-
 Some images don't exist at all in the base game, but can be added in mods. For example, [here](https://github.com/yairm210/Unciv-leader-portrait-mod-example) is an example of how to add leader portraits to mods, which can compliment the base game.
