@@ -413,7 +413,7 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings, 
         hideCircle()
         if (viewingCiv != null && !isExplored(viewingCiv)) {
             clearUnexploredTiles()
-            for(image in tileBaseImages) image.color = Color.DARK_GRAY
+            for(image in tileBaseImages) image.color = tileSetStrings.tileSetConfig.unexploredTileColor
             return
         }
 
@@ -661,11 +661,11 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings, 
 
     private fun updateTileColor(isViewable: Boolean) {
         var color =
-                if (ImageGetter.imageExists(tileSetStrings.getTile(tileInfo.baseTerrain)))
-                    Color.WHITE // no need to color it, it's already colored
-                else tileInfo.getBaseTerrain().getColor()
+                if (tileSetStrings.tileSetConfig.useColorAsBaseTerrain)
+                    tileInfo.getBaseTerrain().getColor()
+                else Color.WHITE // no need to color it, it's already colored
 
-        if (!isViewable) color =color.cpy().lerp(Color.BLACK, 0.6f)
+        if (!isViewable) color = color.cpy().lerp(tileSetStrings.tileSetConfig.fogOfWarColor, 0.6f)
         for(image in tileBaseImages) image.color = color
     }
 
