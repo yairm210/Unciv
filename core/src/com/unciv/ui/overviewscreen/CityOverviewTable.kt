@@ -5,6 +5,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.models.stats.Stat
 import com.unciv.models.translations.tr
 import com.unciv.ui.cityscreen.CityScreen
 import com.unciv.ui.utils.*
@@ -12,8 +13,12 @@ import kotlin.math.max
 import kotlin.math.roundToInt
 
 class CityOverviewTable(val viewingPlayer: CivilizationInfo, val overviewScreen: EmpireOverviewScreen): Table() {
+
+    val columnsNames = arrayListOf("Population", "Food", "Gold", "Science", "Production", "Culture", "Happiness")
+            .apply { if(viewingPlayer.gameInfo.ruleSet.hasReligion()) add("Faith") }
+
     init {
-        val iconSize = 50f//if you set this too low, there is a chance that the tables will be misaligned
+        val iconSize = 50f  //if you set this too low, there is a chance that the tables will be misaligned
         val padding = 5f
         var sortedBy = "City"
 
@@ -39,7 +44,6 @@ class CityOverviewTable(val viewingPlayer: CivilizationInfo, val overviewScreen:
         citySortIcon.onClick { sortOnClick("City") }
         cityInfoTableIcons.add(citySortIcon).align(Align.left)
 
-        val columnsNames = arrayListOf("Population", "Food", "Gold", "Science", "Production", "Culture", "Happiness")
         for (name in columnsNames) {
             val icon = ImageGetter.getStatIcon(name)
             icon.onClick { sortOnClick(name) }
@@ -51,7 +55,7 @@ class CityOverviewTable(val viewingPlayer: CivilizationInfo, val overviewScreen:
 
         val cityInfoScrollPane = AutoScrollPane(cityInfoTableDetails)
         cityInfoScrollPane.pack()
-        cityInfoScrollPane.setOverscroll(false, false)//I think it feels better with no overscroll
+        cityInfoScrollPane.setOverscroll(false, false) //I think it feels better with no overscroll
 
         val cityInfoTableTotal = Table(skin)
         cityInfoTableTotal.defaults().pad(padding).minWidth(iconSize)//we need the min width so we can align the different tables
@@ -59,11 +63,11 @@ class CityOverviewTable(val viewingPlayer: CivilizationInfo, val overviewScreen:
         cityInfoTableTotal.add("Total".toLabel())
         cityInfoTableTotal.add(viewingPlayer.cities.sumBy { it.population.population }.toString().toLabel())
         cityInfoTableTotal.add()//an intended empty space
-        cityInfoTableTotal.add(viewingPlayer.cities.sumBy { it.cityStats.currentCityStats.gold.toInt() }.toLabel())
-        cityInfoTableTotal.add(viewingPlayer.cities.sumBy { it.cityStats.currentCityStats.science.toInt() }.toLabel())
+        cityInfoTableTotal.add(viewingPlayer.cities.sumBy { getStatOfCity(it, Stat.Gold) }.toLabel())
+        cityInfoTableTotal.add(viewingPlayer.cities.sumBy { getStatOfCity(it, Stat.Science) }.toLabel())
         cityInfoTableTotal.add()//an intended empty space
-        cityInfoTableTotal.add(viewingPlayer.cities.sumBy { it.cityStats.currentCityStats.culture.toInt() }.toLabel())
-        cityInfoTableTotal.add(viewingPlayer.cities.sumBy { it.cityStats.currentCityStats.happiness.toInt() }.toLabel())
+        cityInfoTableTotal.add(viewingPlayer.cities.sumBy { getStatOfCity(it, Stat.Culture) }.toLabel())
+        cityInfoTableTotal.add(viewingPlayer.cities.sumBy { getStatOfCity(it, Stat.Happiness) }.toLabel())
 
         cityInfoTableTotal.pack()
 
@@ -83,17 +87,20 @@ class CityOverviewTable(val viewingPlayer: CivilizationInfo, val overviewScreen:
         add(table)
     }
 
+    private fun getStatOfCity(cityInfo: CityInfo, stat: Stat): Int {
+        if (stat == Stat.Happiness) return cityInfo.cityStats.happinessList.values.sum().roundToInt()
+        else return cityInfo.cityStats.currentCityStats.get(stat).roundToInt()
+    }
+
     private fun fillCitiesTable(citiesTable: Table, sortType: String, descending: Boolean) {
 
         val sorter = Comparator { city2, city1: CityInfo ->
-            when (sortType) {
-                "Population" -> city1.population.population - city2.population.population
-                "Food" -> city1.cityStats.currentCityStats.food.compareTo(city2.cityStats.currentCityStats.food)
-                "Gold" -> (city1.cityStats.currentCityStats.gold - city2.cityStats.currentCityStats.gold).toInt()
-                "Science" -> (city1.cityStats.currentCityStats.science - city2.cityStats.currentCityStats.science).toInt()
-                "Production" -> (city1.cityStats.currentCityStats.production - city2.cityStats.currentCityStats.production).toInt()
-                "Culture" -> (city1.cityStats.currentCityStats.culture - city2.cityStats.currentCityStats.culture).toInt()
-                "Happiness" -> (city1.cityStats.currentCityStats.happiness - city2.cityStats.currentCityStats.happiness).toInt()
+            when {
+                sortType == "Population" -> city1.population.population - city2.population.population
+                Stat.values().any { it.name == sortType } -> {
+                    val stat = Stat.valueOf(sortType)
+                    return@Comparator getStatOfCity(city1, stat) - getStatOfCity(city2, stat)
+                }
                 else -> city2.name.tr().compareTo(city1.name.tr())
             }
         }
@@ -111,12 +118,10 @@ class CityOverviewTable(val viewingPlayer: CivilizationInfo, val overviewScreen:
             citiesTable.add(button)
             citiesTable.add(city.cityConstructions.getCityProductionTextForCityButton().toLabel())
             citiesTable.add(city.population.population.toLabel()).align(Align.center)
-            citiesTable.add(city.cityStats.currentCityStats.food.roundToInt().toLabel()).align(Align.center)
-            citiesTable.add(city.cityStats.currentCityStats.gold.roundToInt().toLabel()).align(Align.center)
-            citiesTable.add(city.cityStats.currentCityStats.science.roundToInt().toLabel()).align(Align.center)
-            citiesTable.add(city.cityStats.currentCityStats.production.roundToInt().toLabel()).align(Align.center)
-            citiesTable.add(city.cityStats.currentCityStats.culture.roundToInt().toLabel()).align(Align.center)
-            citiesTable.add(city.cityStats.currentCityStats.happiness.roundToInt().toLabel()).align(Align.center)
+            for (column in columnsNames) {
+                if (!Stat.values().any { it.name == column }) continue
+                citiesTable.add(getStatOfCity(city, Stat.valueOf(column)).toLabel()).align(Align.center)
+            }
             citiesTable.row()
         }
         citiesTable.pack()
