@@ -1,6 +1,7 @@
 package com.unciv.ui.cityscreen
 
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextField
 import com.badlogic.gdx.utils.Align
@@ -19,6 +20,7 @@ class CityScreenCityPickerTable(private val cityScreen: CityScreen) : Table() {
             val image = ImageGetter.getImage("OtherIcons/BackArrow")
             image.color = civInfo.nation.getInnerColor()
             prevCityButton.add(image).size(25f).pad(10f)
+            prevCityButton.touchable = Touchable.enabled
             prevCityButton.onClick { cityScreen.page(-1) }
             add(prevCityButton).pad(10f)
         } else add()
@@ -73,6 +75,7 @@ class CityScreenCityPickerTable(private val cityScreen: CityScreen) : Table() {
             image.rotation = 180f
             image.color = civInfo.nation.getInnerColor()
             nextCityButton.add(image).size(25f).pad(10f)
+            nextCityButton.touchable = Touchable.enabled
             nextCityButton.onClick { cityScreen.page(1) }
             add(nextCityButton).pad(10f)
         } else add()
