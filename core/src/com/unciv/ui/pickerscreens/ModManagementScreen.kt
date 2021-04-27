@@ -1,10 +1,13 @@
 package com.unciv.ui.pickerscreens
 
 import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextArea
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
+import com.badlogic.gdx.utils.Align
 import com.badlogic.gdx.utils.Json
 import com.unciv.JsonParser
 import com.unciv.MainMenuScreen
@@ -16,9 +19,8 @@ import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.mainmenu.Github
 import java.text.DateFormat
 import java.text.SimpleDateFormat
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 import java.util.*
+import kotlin.collections.HashMap
 import kotlin.concurrent.thread
 
 class ModManagementScreen: PickerScreen() {
@@ -29,11 +31,15 @@ class ModManagementScreen: PickerScreen() {
 
     val amountPerPage = 30
 
+    var lastSelectedButton: TextButton? = null
+    val modDescriptions: HashMap<String, String> = hashMapOf()
+
     init {
         setDefaultCloseAction(MainMenuScreen())
         refreshModTable()
 
-        topTable.add("Current mods".toLabel())
+        topTable.add("Current mods".toLabel()).padRight(35f)
+            // 35 = 10 default pad + 25 to compensate for permanent visual mod decoration icon
         topTable.add("Downloadable mods".toLabel())
 //        topTable.add("Mod actions")
         topTable.row()
@@ -65,6 +71,12 @@ class ModManagementScreen: PickerScreen() {
             Gdx.app.postRunnable {
                 for (repo in repoSearch.items) {
                     repo.name = repo.name.replace('-', ' ')
+
+                    modDescriptions[repo.name] = repo.description + "\n" + "[${repo.stargazers_count}]✯".tr() +
+                            if (modDescriptions.contains(repo.name))
+                                "\n" + modDescriptions[repo.name]
+                            else ""
+
                     var downloadButtonText = repo.name
 
                     val existingMod = RulesetCache.values.firstOrNull { it.name == repo.name }
@@ -76,7 +88,10 @@ class ModManagementScreen: PickerScreen() {
                     val downloadButton = downloadButtonText.toTextButton()
 
                     downloadButton.onClick {
-                        descriptionLabel.setText(repo.description + "\n" + "[${repo.stargazers_count}]✯".tr())
+                        lastSelectedButton?.color = Color.WHITE
+                        downloadButton.color = Color.BLUE
+                        lastSelectedButton = downloadButton
+                        descriptionLabel.setText(modDescriptions[repo.name])
                         removeRightSideClickListeners()
                         rightSideButton.enable()
                         rightSideButton.setText("Download [${repo.name}]".tr())
@@ -172,22 +187,26 @@ class ModManagementScreen: PickerScreen() {
         }
     }
 
-    fun refreshModActions(mod: Ruleset) {
+    fun refreshModActions(mod: Ruleset, decorationImage: Actor) {
         modActionTable.clear()
         val visualMods = game.settings.visualMods
-        if (!visualMods.contains(mod.name))
+        if (!visualMods.contains(mod.name)) {
+            decorationImage.isVisible = false
             modActionTable.add("Enable as permanent visual mod".toTextButton().onClick {
                 visualMods.add(mod.name)
                 game.settings.save()
                 ImageGetter.setNewRuleset(ImageGetter.ruleset)
-                refreshModActions(mod)
+                refreshModActions(mod, decorationImage)
             })
-        else modActionTable.add("Disable as permanent visual mod".toTextButton().onClick {
-            visualMods.remove(mod.name)
-            game.settings.save()
-            ImageGetter.setNewRuleset(ImageGetter.ruleset)
-            refreshModActions(mod)
-        })
+        } else {
+            decorationImage.isVisible = true
+            modActionTable.add("Disable as permanent visual mod".toTextButton().onClick {
+                visualMods.remove(mod.name)
+                game.settings.save()
+                ImageGetter.setNewRuleset(ImageGetter.ruleset)
+                refreshModActions(mod, decorationImage)
+            })
+        }
         modActionTable.row()
 
         addModInfoToActionTable(mod.modOptions.modUrl, mod.modOptions.lastUpdated)
@@ -197,18 +216,30 @@ class ModManagementScreen: PickerScreen() {
         modTable.clear()
         val currentMods = RulesetCache.values.filter { it.name != "" }
         for (mod in currentMods) {
-            val button = mod.name.toTextButton().onClick {
-                refreshModActions(mod)
+            val summary = mod.getSummary()
+            modDescriptions[mod.name] = "Installed".tr() +
+                    (if (summary.isEmpty()) "" else ": $summary")
+            val decorationImage = ImageGetter.getPromotionIcon("Scouting", 25f)
+            val button = mod.name.toTextButton()
+            button.onClick {
+                lastSelectedButton?.color = Color.WHITE
+                button.color = Color.BLUE
+                lastSelectedButton = button
+                refreshModActions(mod, decorationImage)
                 rightSideButton.setText("Delete [${mod.name}]".tr())
                 rightSideButton.enable()
-                descriptionLabel.setText(mod.getSummary())
+                descriptionLabel.setText(modDescriptions[mod.name])
                 removeRightSideClickListeners()
                 rightSideButton.onClick {
                     YesNoPopup("Are you SURE you want to delete this mod?",
                             { deleteMod(mod) }, this).open()
                 }
             }
-            modTable.add(button).row()
+            val decoratedButton = Table()
+            decoratedButton.add(button)
+            decorationImage.isVisible = game.settings.visualMods.contains(mod.name)
+            decoratedButton.add(decorationImage).align(Align.topLeft)
+            modTable.add(decoratedButton).row()
         }
     }
 
