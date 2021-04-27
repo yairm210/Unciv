@@ -15,7 +15,7 @@ import kotlin.math.roundToInt
 class CityOverviewTable(val viewingPlayer: CivilizationInfo, val overviewScreen: EmpireOverviewScreen): Table() {
 
     val columnsNames = arrayListOf("Population", "Food", "Gold", "Science", "Production", "Culture", "Happiness")
-            .apply { if(viewingPlayer.gameInfo.ruleSet.hasReligion()) add("Faith") }
+            .apply { if (viewingPlayer.gameInfo.ruleSet.hasReligion()) add("Faith") }
 
     init {
         val iconSize = 50f  //if you set this too low, there is a chance that the tables will be misaligned
@@ -62,13 +62,11 @@ class CityOverviewTable(val viewingPlayer: CivilizationInfo, val overviewScreen:
 
         cityInfoTableTotal.add("Total".toLabel())
         cityInfoTableTotal.add(viewingPlayer.cities.sumBy { it.population.population }.toString().toLabel())
-        cityInfoTableTotal.add()//an intended empty space
-        cityInfoTableTotal.add(viewingPlayer.cities.sumBy { getStatOfCity(it, Stat.Gold) }.toLabel())
-        cityInfoTableTotal.add(viewingPlayer.cities.sumBy { getStatOfCity(it, Stat.Science) }.toLabel())
-        cityInfoTableTotal.add()//an intended empty space
-        cityInfoTableTotal.add(viewingPlayer.cities.sumBy { getStatOfCity(it, Stat.Culture) }.toLabel())
-        cityInfoTableTotal.add(viewingPlayer.cities.sumBy { getStatOfCity(it, Stat.Happiness) }.toLabel())
-
+        for (column in columnsNames.filter { it.isStat() }) {
+            val stat = Stat.valueOf(column)
+            if (stat == Stat.Food || stat == Stat.Production) cityInfoTableTotal.add()//an intended empty space
+            else cityInfoTableTotal.add(viewingPlayer.cities.sumBy { getStatOfCity(it, stat) }.toLabel())
+        }
         cityInfoTableTotal.pack()
 
         val table = Table(skin)
@@ -97,7 +95,7 @@ class CityOverviewTable(val viewingPlayer: CivilizationInfo, val overviewScreen:
         val sorter = Comparator { city2, city1: CityInfo ->
             when {
                 sortType == "Population" -> city1.population.population - city2.population.population
-                Stat.values().any { it.name == sortType } -> {
+                sortType.isStat() -> {
                     val stat = Stat.valueOf(sortType)
                     return@Comparator getStatOfCity(city1, stat) - getStatOfCity(city2, stat)
                 }
@@ -119,12 +117,14 @@ class CityOverviewTable(val viewingPlayer: CivilizationInfo, val overviewScreen:
             citiesTable.add(city.cityConstructions.getCityProductionTextForCityButton().toLabel())
             citiesTable.add(city.population.population.toLabel()).align(Align.center)
             for (column in columnsNames) {
-                if (!Stat.values().any { it.name == column }) continue
+                if (!column.isStat()) continue
                 citiesTable.add(getStatOfCity(city, Stat.valueOf(column)).toLabel()).align(Align.center)
             }
             citiesTable.row()
         }
         citiesTable.pack()
     }
+
+    private fun String.isStat() = Stat.values().any { it.name == this }
 
 }
