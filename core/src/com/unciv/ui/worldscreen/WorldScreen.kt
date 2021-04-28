@@ -173,7 +173,7 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Cam
     }
 
     private fun cleanupKeyDispatcher() {
-        val delKeys = keyPressDispatcher.keys.filter { it != ' ' && it != 'n' }
+        val delKeys = keyPressDispatcher.keys.filter { it.char != ' ' && it.char != 'n' }
         delKeys.forEach { keyPressDispatcher.remove(it) }
     }
 

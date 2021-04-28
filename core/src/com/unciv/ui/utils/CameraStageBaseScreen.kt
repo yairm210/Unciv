@@ -24,6 +24,50 @@ import java.util.HashMap
 import kotlin.concurrent.thread
 import kotlin.random.Random
 
+// Gdx Input.Keys.F1 _is_ of type Int
+data class KeyCharAndCode(val char: Char, val code: Int) {
+    // express keys with a Char value
+    constructor(char: Char): this(char.toLowerCase(), 0)
+    // express keys that only have a keyCode like F1
+    constructor(code: Int): this(Char.MIN_VALUE, code)
+    // helper for use in InputListener keyTyped()
+    constructor(event: InputEvent?, character: Char)
+            : this (
+                character.toLowerCase(),
+                if (character == Char.MIN_VALUE && event!=null) event.keyCode else 0
+            )
+}
+
+class KeyPressDispatcher {
+    private val keyMap: HashMap<KeyCharAndCode, (() -> Unit)> = hashMapOf()
+
+    // access by our data class
+    val keys: Set<KeyCharAndCode>
+        get() = keyMap.keys
+    operator fun get(key: KeyCharAndCode) = keyMap[key]
+    operator fun set(key: KeyCharAndCode, action: () -> Unit) {
+        keyMap[key] = action
+    }
+    operator fun contains(key: KeyCharAndCode) = keyMap.contains(key)
+    fun remove(key: KeyCharAndCode) = keyMap.remove(key)
+
+    // access by Char
+    operator fun get(char: Char) = keyMap[KeyCharAndCode(char)]
+    operator fun set(char: Char, action: () -> Unit) {
+        keyMap[KeyCharAndCode(char)] = action
+    }
+    operator fun contains(char: Char) = keyMap.contains(KeyCharAndCode(char))
+    fun remove(char: Char) = keyMap.remove(KeyCharAndCode(char))
+
+    // access by Int keyCodes
+    operator fun get(code: Int) = keyMap[KeyCharAndCode(code)]
+    operator fun set(code: Int, action: () -> Unit) {
+        keyMap[KeyCharAndCode(code)] = action
+    }
+    operator fun contains(code: Int) = keyMap.contains(KeyCharAndCode(code))
+    fun remove(code: Int) = keyMap.remove(KeyCharAndCode(code))
+}
+
 open class CameraStageBaseScreen : Screen {
 
     var game: UncivGame = UncivGame.Current
@@ -31,29 +75,26 @@ open class CameraStageBaseScreen : Screen {
 
     protected val tutorialController by lazy { TutorialController(this) }
 
-    // An initialized val always turned out to illegally be null...
-    // Remember to always set LOWER CASE chars as the keys!
-    var keyPressDispatcher: HashMap<Char, (() -> Unit)>
+    val keyPressDispatcher = KeyPressDispatcher()
 
     init {
-        keyPressDispatcher = hashMapOf()
         val resolutions: List<Float> = game.settings.resolution.split("x").map { it.toInt().toFloat() }
         val width = resolutions[0]
         val height = resolutions[1]
 
         stage = Stage(ExtendViewport(width, height), SpriteBatch())
 
-
         stage.addListener(
                 object : InputListener() {
                     override fun keyTyped(event: InputEvent?, character: Char): Boolean {
+                        val key = KeyCharAndCode(event, character)
 
-                        if (character.toLowerCase() !in keyPressDispatcher || hasOpenPopups())
+                        if (key !in keyPressDispatcher || hasOpenPopups())
                             return super.keyTyped(event, character)
 
                         //try-catch mainly for debugging. Breakpoints in the vicinity can make the event fire twice in rapid succession, second time the context can be invalid
                         try {
-                            keyPressDispatcher[character.toLowerCase()]?.invoke()
+                            keyPressDispatcher[key]?.invoke()
                         } catch (ex: Exception) {}
                         return true
                     }
