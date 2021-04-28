@@ -186,18 +186,16 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings, 
         if (tileInfo.terrainFeatures.isEmpty()) terrainImages += sequenceOf(null) // we need null to check against for templated ruleVariants
         else terrainImages += tileInfo.terrainFeatures.asSequence()
 
-        val templatedRuleVariant = tileSetStrings.tileSetConfig.getTemplatedRuleVariant(terrainImages, resourceAndImprovementSequence)
-        resourceAndImprovementSequence = resourceAndImprovementSequence.filterNotNull()
-        terrainImages = terrainImages.filterNotNull()
-
-        val allTogether = (terrainImages + resourceAndImprovementSequence).joinToString("+")
+        val allTogether = (terrainImages + resourceAndImprovementSequence).filterNotNull().joinToString("+")
         val allTogetherLocation = tileSetStrings.getTile(allTogether)
 
+        val tileSetConfig = tileSetStrings.tileSetConfig
+
         return when {
-            tileSetStrings.tileSetConfig.ruleVariants[allTogether] != null -> tileSetStrings.tileSetConfig.ruleVariants[allTogether]!!.map { tileSetStrings.getTile(it) }
+            tileSetConfig.ruleVariants[allTogether] != null -> tileSetConfig.ruleVariants[allTogether]!!.map { tileSetStrings.getTile(it) }
             ImageGetter.imageExists(allTogetherLocation) -> listOf(allTogetherLocation)
-            templatedRuleVariant != null -> templatedRuleVariant.map { tileSetStrings.getTile(it) }
-            else -> getTerrainImageLocations(terrainImages) + getImprovementAndResourceImages(resourceAndImprovementSequence)
+            tileSetConfig.generateRuleVariant(terrainImages, resourceAndImprovementSequence) -> tileSetConfig.ruleVariants[allTogether]!!.map { tileSetStrings.getTile(it) }
+            else -> getTerrainImageLocations(terrainImages.filterNotNull()) + getImprovementAndResourceImages(resourceAndImprovementSequence.filterNotNull())
         }
     }
 

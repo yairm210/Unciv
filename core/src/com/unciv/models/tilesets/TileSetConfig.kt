@@ -6,10 +6,10 @@ class TileSetConfig {
     var useColorAsBaseTerrain = true
     var unexploredTileColor: Color = Color.DARK_GRAY
     var fogOfWarColor: Color = Color.BLACK
-    var ruleVariants: HashMap<String, Array<String>> = HashMap()
+    var ruleVariants: HashMap<String, List<String>> = HashMap()
 
     @Transient
-    private val templatedRuleVariants: HashSet<Pair<TileComposition, Array<RuleContainer>>> = HashSet()
+    private val templatedRuleVariants: HashSet<Pair<TileComposition, List<RuleContainer>>> = HashSet()
     @Transient
     private val templateDictionary = HashMap<String, Sequence<String?>>()
 
@@ -41,11 +41,11 @@ class TileSetConfig {
     }
 
     /**
-     * Returns a list if a templated rule variant exists which matches the given sequences or else null.
+     * Returns true if a templated rule variant exists which matches the given sequences.
      * If a template is found the tile composition will be added to ruleVariants. The sequences must contain null
      * for each element which is not existing.
      */
-    fun getTemplatedRuleVariant(terrainSequence: Sequence<String?>, resAndImpSequence: Sequence<String?>): List<String>?{
+    fun generateRuleVariant(terrainSequence: Sequence<String?>, resAndImpSequence: Sequence<String?>): Boolean{
         for ((tileComposition, renderOrder) in templatedRuleVariants){
             templateDictionary.clear()
 
@@ -56,6 +56,7 @@ class TileSetConfig {
                     !addToTemplateDictionary(tileComposition.improvement, resAndImpSequence.last()))
                 continue
 
+            //generate map output for composition
             val finalRenderOrder = ArrayList<String>()
             for (element in renderOrder){
                 if (!element.isTemplate)
@@ -64,21 +65,20 @@ class TileSetConfig {
                     finalRenderOrder.addAll(templateDictionary[element.name]!!.filterNotNull())
             }
 
-            // This tile composition gets mapped to finalRenderOrder by a templated rule variant.
-            // We can add it to ruleVariants to save time next time we search for this composition.
-            ruleVariants[(terrainSequence + resAndImpSequence).filterNotNull().joinToString("+")] = finalRenderOrder.toTypedArray()
+            // We add it to ruleVariants to save time next time we search for this composition.
+            ruleVariants[(terrainSequence + resAndImpSequence).filterNotNull().joinToString("+")] = finalRenderOrder
 
-            return finalRenderOrder
+            return true
         }
 
-        return null
+        return false
     }
 
     private data class RuleContainer(val name: String, val isTemplate: Boolean)
 
-    private data class TileComposition(val baseTerrain: RuleContainer, val terrainFeatures: Array<RuleContainer>, val resource: RuleContainer, val improvement: RuleContainer)
+    private data class TileComposition(val baseTerrain: RuleContainer, val terrainFeatures: List<RuleContainer>, val resource: RuleContainer, val improvement: RuleContainer)
 
-    private fun addToTemplateDictionary(rules: Array<RuleContainer>, tileElements: Sequence<String?>): Boolean {
+    private fun addToTemplateDictionary(rules: List<RuleContainer>, tileElements: Sequence<String?>): Boolean {
         var startTemplateStrings = sequenceOf<String?>()
         var endTemplateStrings = sequenceOf<String?>()
         val iterator = tileElements.iterator()
@@ -126,21 +126,13 @@ class TileSetConfig {
         return false
     }
 
-    private fun toRuleContainer(input: Array<String>) =
-            input.map {
-                if (it.startsWith('!'))
-                    RuleContainer(it.drop(1), true)
-                else
-                    RuleContainer(it, false)
-            }.toTypedArray()
-
     private fun toRuleContainer(input: List<String>) =
             input.map {
                 if (it.startsWith('!'))
                     RuleContainer(it.drop(1), true)
                 else
                     RuleContainer(it, false)
-            }.toTypedArray()
+            }
 
     private fun toRuleContainer(input: String) =
             if (input.startsWith('!'))
