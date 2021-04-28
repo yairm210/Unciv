@@ -116,7 +116,7 @@ class CityConstructions {
             val construction = PerpetualConstruction.perpetualConstructionsMap[currentConstructionSnapshot]
             if (construction == null) {
                 val turnsLeft = turnsToConstruction(currentConstructionSnapshot)
-                result += ("\r\n" + "Cost".tr() + " " + getConstruction(currentConstructionFromQueue).getProductionCost(cityInfo.civInfo).toString()).tr()
+                //result += ("\r\n" + "Cost".tr() + " " + getConstruction(currentConstructionFromQueue).getProductionCost(cityInfo.civInfo).toString()).tr()
                 result += ConstructionInfoTable.turnOrTurns(turnsLeft)
             } else {
                 result += construction.getProductionTooltip(cityInfo)
