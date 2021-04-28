@@ -36,10 +36,16 @@ data class KeyCharAndCode(val char: Char, val code: Int) {
                 character.toLowerCase(),
                 if (character == Char.MIN_VALUE && event!=null) event.keyCode else 0
             )
+
+    override fun toString(): String {
+        // debug helper
+        return if (char == Char.MIN_VALUE) Input.Keys.toString(code) else "\"$char\""
+    }
 }
 
 class KeyPressDispatcher {
     private val keyMap: HashMap<KeyCharAndCode, (() -> Unit)> = hashMapOf()
+    private var checkpoint: Set<KeyCharAndCode> = setOf()
 
     // access by our data class
     val keys: Set<KeyCharAndCode>
@@ -66,6 +72,17 @@ class KeyPressDispatcher {
     }
     operator fun contains(code: Int) = keyMap.contains(KeyCharAndCode(code))
     fun remove(code: Int) = keyMap.remove(KeyCharAndCode(code))
+
+    fun clear() {
+        checkpoint = setOf()
+        keyMap.clear()
+    }
+    fun setCheckpoint() {
+        checkpoint = keyMap.keys.toSet()
+    }
+    fun revertToCheckPoint() {
+        keyMap.keys.minus(checkpoint).forEach { remove(it) }
+    }
 }
 
 open class CameraStageBaseScreen : Screen {
