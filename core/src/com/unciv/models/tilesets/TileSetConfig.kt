@@ -52,16 +52,16 @@ class TileSetConfig {
             //check if template matches
             if (!addToTemplateDictionary(tileComposition.baseTerrain, terrainSequence.first()) ||
                     !addToTemplateDictionary(tileComposition.terrainFeatures, terrainSequence.drop(1)) ||
-                    !addToTemplateDictionary(tileComposition.baseTerrain, resAndImpSequence.first()) ||
-                    !addToTemplateDictionary(tileComposition.baseTerrain, resAndImpSequence.last()))
+                    !addToTemplateDictionary(tileComposition.resource, resAndImpSequence.first()) ||
+                    !addToTemplateDictionary(tileComposition.improvement, resAndImpSequence.last()))
                 continue
 
             val finalRenderOrder = ArrayList<String>()
             for (element in renderOrder){
-                if (element.isTemplate && templateDictionary[element.name] != null)
+                if (!element.isTemplate)
+                    finalRenderOrder.add(element.name)
+                else if (templateDictionary[element.name] != null)
                     finalRenderOrder.addAll(templateDictionary[element.name]!!.filterNotNull())
-                else
-                    element.name
             }
 
             // This tile composition gets mapped to finalRenderOrder by a templated rule variant.
