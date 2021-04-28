@@ -1,12 +1,29 @@
+## 3.14.4
+
+Resolved #3524 - Happiness in city overview now calculated correctly
+
+Added Happiness (and Faith for Religion mods) to stats list - #3524
+
+Resolved #3837 - Harad -> Harald in Denmark greeting
+
+By SomeTroglodyte:
+
+- Keyboard navigation to switch panes within overview screen
+- Some visual improvements for the Mod Manager Screen
+- Bigger target on "next city" button
+- Fixed #3729 "Android crash on loading from custom location"
+
+By GGGuenni:
+- Added fogOfWarColor and unexploredTileColor
+- Fixed internal TileSetConfigs not getting loaded on android
+
 ## 3.14.3
 
-Added "Updated!" next to updated mods in mod management screen
+Added 'update time', 'open Github page', and marked updated mods, in mod management screen
 
-Added 'last updated time' and 'open Github page of mod' in mod management screen
+Cannot enter diplomacy screen for irrelevant civs through diplomacy overview
 
-Cannot enter diplomacy screen for self, defeated and spectator civs through diplomacy overview
-
-Resolved #3817 - don't display resource requirements from uniques twice
+Resolved #3817 - don't display resource requirements twice
 
 By SomeTroglodyte:
 
