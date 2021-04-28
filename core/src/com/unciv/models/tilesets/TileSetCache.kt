@@ -15,22 +15,7 @@ object TileSetCache : HashMap<String, TileSetConfig>(){
 
         for (configFile in fileHandles){
             tileSetName = configFile.nameWithoutExtension().removeSuffix("Config")
-            try {
-                if (this[tileSetName] == null)
-                    this[tileSetName] = JsonParser().getFromJson(TileSetConfig::class.java, configFile)
-                else
-                    this[tileSetName]!!.updateConfig(JsonParser().getFromJson(TileSetConfig::class.java, configFile))
-                if (printOutput) {
-                    println("TileSetConfig loaded successfully: ${configFile.name()}")
-                    println()
-                }
-            } catch (ex: Exception){
-                if (printOutput){
-                    println("Exception loading TileSetConfig '${configFile.path()}':")
-                    println("  ${ex.localizedMessage}")
-                    println("  (Source file ${ex.stackTrace[0].fileName} line ${ex.stackTrace[0].lineNumber})")
-                }
-            }
+            loadConfig(tileSetName, configFile, printOutput)
         }
 
         //load mod TileSets
@@ -41,24 +26,30 @@ object TileSetCache : HashMap<String, TileSetConfig>(){
             if (modFolder.name().startsWith('.')) continue
             if (!modFolder.isDirectory) continue
 
-            try {
-                for (configFile in modFolder.child("jsons/TileSets").list()){
-                    tileSetName = configFile.nameWithoutExtension().removeSuffix("Config")
-                    if (this[tileSetName] == null)
-                        this[tileSetName] = JsonParser().getFromJson(TileSetConfig::class.java, configFile)
-                    else
-                        this[tileSetName]!!.updateConfig(JsonParser().getFromJson(TileSetConfig::class.java, configFile))
-                    if (printOutput) {
-                        println("TileSetConfig loaded successfully: ${configFile.path()}")
-                        println()
-                    }
-                }
-            } catch (ex: Exception){
-                if (printOutput) {
-                    println("Exception loading TileSetConfig '${modFolder.name()}/jsons/TileSets/${tileSetName}':")
-                    println("  ${ex.localizedMessage}")
-                    println("  (Source file ${ex.stackTrace[0].fileName} line ${ex.stackTrace[0].lineNumber})")
-                }
+            for (configFile in modFolder.child("jsons/TileSets").list()){
+                tileSetName = configFile.nameWithoutExtension().removeSuffix("Config")
+                loadConfig(tileSetName, configFile, printOutput)
+            }
+        }
+    }
+
+    private fun loadConfig(tileSetName: String, configFile: FileHandle, printOutput: Boolean){
+        try {
+            if (this[tileSetName] == null)
+                this[tileSetName] = JsonParser().getFromJson(TileSetConfig::class.java, configFile)
+            else
+                this[tileSetName]!!.updateConfig(JsonParser().getFromJson(TileSetConfig::class.java, configFile))
+            this[tileSetName]!!.setTransients()
+
+            if (printOutput) {
+                println("TileSetConfig loaded successfully: ${configFile.name()}")
+                println()
+            }
+        } catch (ex: Exception){
+            if (printOutput){
+                println("Exception loading TileSetConfig '${configFile.path()}':")
+                println("  ${ex.localizedMessage}")
+                println("  (Source file ${ex.stackTrace[0].fileName} line ${ex.stackTrace[0].lineNumber})")
             }
         }
     }
