@@ -178,16 +178,25 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings, 
 
         var resourceAndImprovementSequence = sequenceOf<String?>()
         if (shouldShowResource) resourceAndImprovementSequence += sequenceOf(tileInfo.resource)
+        else resourceAndImprovementSequence += null // we need null to check against for templated ruleVariants
         if (shouldShowImprovement) resourceAndImprovementSequence += sequenceOf(tileInfo.improvement)
-        resourceAndImprovementSequence = resourceAndImprovementSequence.filterNotNull()
+        else resourceAndImprovementSequence += null // we need null to check against for templated ruleVariants
 
-        val terrainImages = (sequenceOf(tileInfo.baseTerrain) + tileInfo.terrainFeatures.asSequence()).filterNotNull()
+        var terrainImages: Sequence<String?> = sequenceOf(tileInfo.baseTerrain)
+        if (tileInfo.terrainFeatures.isEmpty()) terrainImages += sequenceOf(null) // we need null to check against for templated ruleVariants
+        else terrainImages += tileInfo.terrainFeatures.asSequence()
+
+        val templatedRuleVariant = tileSetStrings.tileSetConfig.getTemplatedRuleVariant(terrainImages, resourceAndImprovementSequence)
+        resourceAndImprovementSequence = resourceAndImprovementSequence.filterNotNull()
+        terrainImages = terrainImages.filterNotNull()
+
         val allTogether = (terrainImages + resourceAndImprovementSequence).joinToString("+")
         val allTogetherLocation = tileSetStrings.getTile(allTogether)
 
         return when {
             tileSetStrings.tileSetConfig.ruleVariants[allTogether] != null -> tileSetStrings.tileSetConfig.ruleVariants[allTogether]!!.map { tileSetStrings.getTile(it) }
             ImageGetter.imageExists(allTogetherLocation) -> listOf(allTogetherLocation)
+            templatedRuleVariant != null -> templatedRuleVariant.map { tileSetStrings.getTile(it) }
             else -> getTerrainImageLocations(terrainImages) + getImprovementAndResourceImages(resourceAndImprovementSequence)
         }
     }
