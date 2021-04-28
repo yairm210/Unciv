@@ -24,7 +24,21 @@ import java.util.HashMap
 import kotlin.concurrent.thread
 import kotlin.random.Random
 
-// Gdx Input.Keys.F1 _is_ of type Int
+/*
+ * For now, combination keys cannot easily be expressed.
+ * Pressing Ctrl-Letter will arrive one event for Input.Keys.CONTROL_LEFT and one for the ASCII control code point
+ *      so Ctrl-R can be handled using KeyCharAndCode('\u0012')
+ * Pressing Alt-Something likewise will fire once for Alt and once for the unmodified keys with no indication Alt is held
+ *      (Exception: international keyboard AltGr-combos)
+ * An update supporting easy declarations for any modifier combos would need to use Gdx.input.isKeyPressed()
+ * Gdx seems to omit support for a modifier mask (e.g. Ctrl-Alt-Shift) so we would need to reinvent this
+ */
+
+/**
+ * Represents a key for use in an InputListener keyTyped() handler
+ *
+ * Example: KeyCharAndCode('R'), KeyCharAndCode(Input.Keys.F1)
+ */
 data class KeyCharAndCode(val char: Char, val code: Int) {
     // express keys with a Char value
     constructor(char: Char): this(char.toLowerCase(), 0)
@@ -37,9 +51,14 @@ data class KeyCharAndCode(val char: Char, val code: Int) {
                 if (character == Char.MIN_VALUE && event!=null) event.keyCode else 0
             )
 
+    @ExperimentalStdlibApi
     override fun toString(): String {
         // debug helper
-        return if (char == Char.MIN_VALUE) Input.Keys.toString(code) else "\"$char\""
+        return when {
+            char == Char.MIN_VALUE -> Input.Keys.toString(code)
+            char < ' ' -> "Ctrl-" + Char(char.toInt()+64)
+            else -> "\"$char\""
+        }
     }
 }
 
