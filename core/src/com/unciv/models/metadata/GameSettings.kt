@@ -42,6 +42,8 @@ class GameSettings {
     var showExperimentalWorldWrap = false
     var showExperimentalTileLayering = false
 
+    var lastOverviewPage: String = "Cities"
+
     init {
         // 26 = Android Oreo. Versions below may display permanent icon in notification bar.
         if (Gdx.app?.type == Application.ApplicationType.Android && Gdx.app.version < 26) {
