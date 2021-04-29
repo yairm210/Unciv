@@ -82,7 +82,6 @@ class MainMenuScreen: CameraStageBaseScreen() {
 
         val newGameButton = getTableBlock("Start new game", "OtherIcons/New") {
             game.setScreen(NewGameScreen(this))
-            dispose()
         }
         column1.add(newGameButton).row()
 
