@@ -9,7 +9,6 @@ import com.unciv.models.ruleset.UniqueMap
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.tr
-import com.unciv.ui.cityscreen.ConstructionInfoTable
 import com.unciv.ui.utils.Fonts
 import com.unciv.ui.utils.withItem
 import com.unciv.ui.utils.withoutItem
@@ -113,22 +112,24 @@ class CityConstructions {
         var result = currentConstructionSnapshot.tr()
         if (currentConstructionSnapshot != "") {
             val construction = PerpetualConstruction.perpetualConstructionsMap[currentConstructionSnapshot]
-            if (construction == null) {
-//                val workDone = getWorkDone(currentConstructionSnapshot)
-//                val turnsLeft =
-//                result += ("\r\n" + "Cost".tr() + " " + getConstruction(currentConstructionFromQueue).getProductionCost(cityInfo.civInfo).toString()).tr()
-                result += ConstructionInfoTable.turnOrTurns(turnsToConstruction(currentConstructionSnapshot),
-                        getConstruction(currentConstructionFromQueue).getProductionCost(cityInfo.civInfo),
-                        getWorkDone(currentConstructionSnapshot))
-            } else {
-                result += construction.getProductionTooltip(cityInfo)
-            }
+            if (construction == null) result += getTurnsToConstructionString(currentConstructionSnapshot)
+            else result += construction.getProductionTooltip(cityInfo)
         }
         return result
     }
 
+
+    internal fun getTurnsToConstructionString(constructionName: String, useStoredProduction:Boolean = true): String {
+        val construction = getConstruction(constructionName)
+        val cost = construction.getProductionCost(cityInfo.civInfo)
+        val turnsToConstruction = turnsToConstruction(constructionName, useStoredProduction)
+        val currentProgress = getWorkDone(constructionName)
+        if (currentProgress == 0) return "\n$cost${Fonts.production} $turnsToConstruction${Fonts.turn}"
+        else return "\n$currentProgress/$cost${Fonts.production}\n$turnsToConstruction${Fonts.turn}"
+    }
+
     fun getProductionForTileInfo(): String {
-        /* this is because there were rare errors tht I assume were caused because
+        /* this is because there were rare errors that I assume were caused because
            currentConstruction changed on another thread */
         val currentConstructionSnapshot = currentConstructionFromQueue
         var result = currentConstructionSnapshot.tr()
@@ -455,4 +456,5 @@ class CityConstructions {
         this[idx1] = this[idx2]
         this[idx2] = tmp
     }
+
 }

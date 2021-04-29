@@ -15,7 +15,6 @@ import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
 import com.unciv.models.translations.tr
-import com.unciv.ui.cityscreen.ConstructionInfoTable.Companion.turnOrTurns
 import com.unciv.ui.utils.*
 import kotlin.concurrent.thread
 import com.unciv.ui.utils.AutoScrollPane as ScrollPane
@@ -122,31 +121,26 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
 
         for (unit in city.getRuleset().units.values.filter { it.shouldBeDisplayed(cityConstructions) }) {
             val useStoredProduction = !cityConstructions.isBeingConstructedOrEnqueued(unit.name)
-            val turnsToUnit = cityConstructions.turnsToConstruction(unit.name, useStoredProduction)
-            var buttonText = unit.name.tr() + turnOrTurns(turnsToUnit, unit.getProductionCost(city.civInfo), cityConstructions.getWorkDone(unit.name))
+            var buttonText = unit.name.tr() + cityConstructions.getTurnsToConstructionString(unit.name, useStoredProduction)
             for ((resource, amount) in unit.getResourceRequirements()) {
                 if (amount == 1) buttonText += "\n" + "Consumes 1 [$resource]".tr()
                 else buttonText += "\n" + "Consumes [$amount] [$resource]".tr()
             }
 
-            constructionButtonDTOList.add(ConstructionButtonDTO(unit,
-                    buttonText,
+            constructionButtonDTOList.add(ConstructionButtonDTO(unit, buttonText,
                     unit.getRejectionReason(cityConstructions)))
         }
 
 
         for (building in city.getRuleset().buildings.values.filter { it.shouldBeDisplayed(cityConstructions) }) {
-            val turnsToBuilding = cityConstructions.turnsToConstruction(building.name)
-            var buttonText = building.name.tr() + turnOrTurns(turnsToBuilding, building.getProductionCost(city.civInfo), cityConstructions.getWorkDone(building.name))
+            var buttonText = building.name.tr() + cityConstructions.getTurnsToConstructionString(building.name)
             for ((resource, amount) in building.getResourceRequirements()) {
                 if (amount == 1) buttonText += "\n" + "Consumes 1 [$resource]".tr()
                 else buttonText += "\n" + "Consumes [$amount] [$resource]".tr()
             }
 
-            constructionButtonDTOList.add(ConstructionButtonDTO(building,
-                    buttonText,
-                    building.getRejectionReason(cityConstructions)
-            ))
+            constructionButtonDTOList.add(ConstructionButtonDTO(building, buttonText,
+                    building.getRejectionReason(cityConstructions)))
         }
 
         for (specialConstruction in PerpetualConstruction.perpetualConstructionsMap.values
@@ -222,14 +216,12 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
             table.background = ImageGetter.getBackground(Color.GREEN.cpy().lerp(Color.BLACK, 0.5f))
 
         val isFirstConstructionOfItsKind = cityConstructions.isFirstConstructionOfItsKind(constructionQueueIndex, constructionName)
-        val turnsToComplete = cityConstructions.turnsToConstruction(constructionName, isFirstConstructionOfItsKind)
 
-        val construction = cityConstructions.getConstruction(constructionName)
         var text = constructionName.tr() +
                 if (constructionName in PerpetualConstruction.perpetualConstructionsMap) "\n∞"
-                else turnOrTurns(turnsToComplete, construction.getProductionCost(city.civInfo), cityConstructions.getWorkDone(constructionName))
+                else cityConstructions.getTurnsToConstructionString(constructionName)
 
-        val constructionResource = construction.getResourceRequirements()
+        val constructionResource = cityConstructions.getConstruction(constructionName).getResourceRequirements()
         for ((resource, amount) in constructionResource)
             if (amount == 1) text += "\n" + "Consumes 1 [$resource]".tr()
             else text += "\n" + "Consumes [$amount] [$resource]".tr()
