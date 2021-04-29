@@ -1,6 +1,9 @@
 package com.unciv.ui.overviewscreen
 
+import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.ui.Button
+import com.badlogic.gdx.scenes.scene2d.ui.Cell
+import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.logic.city.CityInfo
@@ -14,16 +17,22 @@ import kotlin.math.roundToInt
 
 class CityOverviewTable(val viewingPlayer: CivilizationInfo, val overviewScreen: EmpireOverviewScreen): Table() {
 
-    val columnsNames = arrayListOf("Population", "Food", "Gold", "Science", "Production", "Culture", "Happiness")
+    companion object {
+        const val iconSize = 50f  //if you set this too low, there is a chance that the tables will be misaligned
+        const val paddingVert = 5f      // vertical padding
+        const val paddingHorz = 8f      // horizontal padding
+    }
+
+    private val columnsNames = arrayListOf("Population", "Food", "Gold", "Science", "Production", "Culture", "Happiness")
             .apply { if (viewingPlayer.gameInfo.ruleSet.hasReligion()) add("Faith") }
 
     init {
-        val iconSize = 50f  //if you set this too low, there is a chance that the tables will be misaligned
-        val padding = 5f
+        val numHeaderCells = columnsNames.size + 2      // +1 City +1 Filler
         var sortedBy = "City"
 
-        val cityInfoTableDetails = Table()
-        cityInfoTableDetails.defaults().pad(padding).minWidth(iconSize).align(Align.left)//we need the min width so we can align the different tables
+        val cityInfoTableIcons = Table(skin)
+        val cityInfoTableDetails = Table(skin)
+        val cityInfoTableTotal = Table(skin)
 
         fun sortOnClick(iconName: String) {
             val descending = sortedBy == iconName
@@ -35,49 +44,63 @@ class CityOverviewTable(val viewingPlayer: CivilizationInfo, val overviewScreen:
             if (descending) sortedBy = ""
         }
 
-        val cityInfoTableIcons = Table(skin)
-        cityInfoTableIcons.defaults().pad(padding).align(Align.center)
-
-        cityInfoTableIcons.add("Cities".toLabel(fontSize = 24)).colspan(8).align(Align.center).row()
-
-        val citySortIcon = ImageGetter.getUnitIcon("Settler").surroundWithCircle(iconSize)
-        citySortIcon.onClick { sortOnClick("City") }
-        cityInfoTableIcons.add(citySortIcon).align(Align.left)
-
-        for (name in columnsNames) {
-            val icon = ImageGetter.getStatIcon(name)
-            icon.onClick { sortOnClick(name) }
+        fun addSortIcon(iconName: String, iconParam: Actor? = null) {
+            val icon = iconParam ?: ImageGetter.getStatIcon(iconName)
+            icon.onClick { sortOnClick(iconName) }
             cityInfoTableIcons.add(icon).size(iconSize)
+        }
+
+        // Prepare top third: cityInfoTableIcons
+        cityInfoTableIcons.defaults()
+            .pad(paddingVert, paddingHorz, paddingVert, paddingHorz)
+            .align(Align.center)
+        cityInfoTableIcons.add("Cities".toLabel(fontSize = 24)).colspan(numHeaderCells).align(Align.center).row()
+        val citySortIcon: IconCircleGroup = ImageGetter.getUnitIcon("Settler").surroundWithCircle(iconSize)
+        addSortIcon("City", citySortIcon)
+        val headerFillerCell = cityInfoTableIcons.add(Table())  // will push the first icon to left-align
+        for (name in columnsNames) {
+            addSortIcon(name)
         }
         cityInfoTableIcons.pack()
 
-        fillCitiesTable(cityInfoTableDetails, "City", false)
+        // Prepare middle third: cityInfoScrollPane (a ScrollPane containing cityInfoTableDetails)
+        cityInfoTableDetails.defaults()
+            .pad(paddingVert, paddingHorz, paddingVert, paddingHorz)
+            .minWidth(iconSize)     //we need the min width so we can align the different tables
+            .align(Align.left)
+
+        fillCitiesTable(cityInfoTableDetails, sortedBy, false)
 
         val cityInfoScrollPane = AutoScrollPane(cityInfoTableDetails)
         cityInfoScrollPane.pack()
         cityInfoScrollPane.setOverscroll(false, false) //I think it feels better with no overscroll
 
-        val cityInfoTableTotal = Table(skin)
-        cityInfoTableTotal.defaults().pad(padding).minWidth(iconSize)//we need the min width so we can align the different tables
+        // place the button for sorting by city name on top of the cities names
+        // by sizing the filler to: subtract width of other columns and one cell padding from overall width
+        val headingFillerWidth = max(0f, cityInfoTableDetails.width - (iconSize + 2*paddingHorz) * (numHeaderCells-1) - 2*paddingHorz)
+        headerFillerCell.width(headingFillerWidth)
+        cityInfoTableIcons.width = cityInfoTableDetails.width
+
+        // Prepare bottom third: cityInfoTableTotal
+        cityInfoTableTotal.defaults()
+            .pad(paddingVert, paddingHorz, paddingVert, paddingHorz)
+            .minWidth(iconSize) //we need the min width so we can align the different tables
 
         cityInfoTableTotal.add("Total".toLabel())
-        cityInfoTableTotal.add(viewingPlayer.cities.sumBy { it.population.population }.toString().toLabel())
+        cityInfoTableTotal.add(viewingPlayer.cities.sumBy { it.population.population }.toString().toLabel()).myAlign(Align.center)
         for (column in columnsNames.filter { it.isStat() }) {
             val stat = Stat.valueOf(column)
-            if (stat == Stat.Food || stat == Stat.Production) cityInfoTableTotal.add()//an intended empty space
-            else cityInfoTableTotal.add(viewingPlayer.cities.sumBy { getStatOfCity(it, stat) }.toLabel())
+            if (stat == Stat.Food || stat == Stat.Production) cityInfoTableTotal.add() //an intended empty space
+            else cityInfoTableTotal.add(viewingPlayer.cities.sumBy { getStatOfCity(it, stat) }.toLabel()).myAlign(Align.center)
         }
         cityInfoTableTotal.pack()
 
+        // Stack cityInfoTableIcons, cityInfoScrollPane, and cityInfoTableTotal vertically
         val table = Table(skin)
         //since the names of the cities are on the left, and the length of the names varies
         //we align every row to the right, coz we set the size of the other(number) cells to the image size
         //and thus, we can guarantee that the tables will be aligned
-        table.defaults().pad(padding).align(Align.right)
-
-        // place the button for sorting by city name on top of the cities names
-        citySortIcon.width = max(iconSize, cityInfoTableDetails.width - (iconSize + padding) * 8)
-
+        table.defaults().pad(paddingVert).align(Align.right)
         table.add(cityInfoTableIcons).row()
         table.add(cityInfoScrollPane).width(cityInfoTableDetails.width).row()
         table.add(cityInfoTableTotal)
@@ -97,7 +120,7 @@ class CityOverviewTable(val viewingPlayer: CivilizationInfo, val overviewScreen:
                 sortType == "Population" -> city1.population.population - city2.population.population
                 sortType.isStat() -> {
                     val stat = Stat.valueOf(sortType)
-                    return@Comparator getStatOfCity(city1, stat) - getStatOfCity(city2, stat)
+                    getStatOfCity(city1, stat) - getStatOfCity(city2, stat)
                 }
                 else -> city2.name.tr().compareTo(city1.name.tr())
             }
@@ -115,10 +138,10 @@ class CityOverviewTable(val viewingPlayer: CivilizationInfo, val overviewScreen:
             }
             citiesTable.add(button)
             citiesTable.add(city.cityConstructions.getCityProductionTextForCityButton().toLabel())
-            citiesTable.add(city.population.population.toLabel()).align(Align.center)
+            citiesTable.add(city.population.population.toLabel()).myAlign(Align.center)
             for (column in columnsNames) {
                 if (!column.isStat()) continue
-                citiesTable.add(getStatOfCity(city, Stat.valueOf(column)).toLabel()).align(Align.center)
+                citiesTable.add(getStatOfCity(city, Stat.valueOf(column)).toLabel()).myAlign(Align.center)
             }
             citiesTable.row()
         }
@@ -127,4 +150,9 @@ class CityOverviewTable(val viewingPlayer: CivilizationInfo, val overviewScreen:
 
     private fun String.isStat() = Stat.values().any { it.name == this }
 
+    // Helper to prettify converting Cell.align() to the Cell's actor's .align()
+    private fun Cell<Label>.myAlign(align: Int): Cell<Label> {
+        (this.actor as Label).setAlignment(align)
+        return this
+    }
 }
