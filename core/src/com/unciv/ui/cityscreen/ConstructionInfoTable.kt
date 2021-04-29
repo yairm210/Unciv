@@ -12,7 +12,6 @@ import com.unciv.ui.utils.Fonts
 import com.unciv.ui.utils.ImageGetter
 import com.unciv.ui.utils.surroundWithCircle
 import com.unciv.ui.utils.toLabel
-import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 
 class ConstructionInfoTable(val city: CityInfo): Table() {
     val selectedConstructionTable = Table()
@@ -54,8 +53,8 @@ class ConstructionInfoTable(val city: CityInfo): Table() {
         val specialConstruction = PerpetualConstruction.perpetualConstructionsMap[construction.name]
         if (specialConstruction == null) {
             val turnsToComplete = cityConstructions.turnsToConstruction(construction.name)
-            buildingText += ("\r\n" + "Cost".tr() + " " + construction.getProductionCost(city.civInfo).toString()).tr()
-            buildingText += turnOrTurns(turnsToComplete)
+//            buildingText += ("\r\n" + "Cost".tr() + " " + construction.getProductionCost(city.civInfo).toString()).tr()
+            buildingText += turnOrTurns(turnsToComplete, construction.getProductionCost(city.civInfo), cityConstructions.getWorkDone(construction.name))
         } else {
             buildingText += specialConstruction.getProductionTooltip(city)
         }
@@ -76,6 +75,9 @@ class ConstructionInfoTable(val city: CityInfo): Table() {
     }
 
     companion object {
-        internal fun turnOrTurns(turns: Int): String = "\r\n$turns${Fonts.turn}"
+        internal fun turnOrTurns(turns: Int, cost:Int, currentProgress:Int=0): String {
+            if (currentProgress == 0) return "\n$cost${Fonts.production} $turns${Fonts.turn}"
+            else return "\n$currentProgress/$cost${Fonts.production}\n$turns${Fonts.turn}"
+        }
     }
 }

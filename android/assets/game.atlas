@@ -4,14 +4,14 @@ size: 2048, 2048
 format: RGBA8888
 filter: MipMapLinearLinear, MipMapLinearLinear
 repeat: none
-EmojiIcons/Turn
+EmojiIcons/Production
   rotate: false
-  xy: 1890, 1214
+  xy: 1532, 706
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
-EmojiIcons/TurnOld
+EmojiIcons/Turn
   rotate: false
   xy: 1890, 1162
   size: 50, 50
@@ -797,77 +797,77 @@ PolicyIcons/Populism
   index: -1
 PolicyIcons/Professional Army
   rotate: false
-  xy: 1532, 706
+  xy: 1532, 654
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 PolicyIcons/Protectionism
   rotate: false
-  xy: 1532, 654
+  xy: 1584, 810
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 PolicyIcons/Reformation
   rotate: false
-  xy: 1584, 706
+  xy: 1584, 654
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 PolicyIcons/Representation
   rotate: false
-  xy: 1532, 602
+  xy: 1584, 602
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 PolicyIcons/Republic
   rotate: false
-  xy: 1584, 602
+  xy: 1940, 1318
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 PolicyIcons/Scientific Revolution
   rotate: false
-  xy: 1940, 1318
+  xy: 1992, 1318
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 PolicyIcons/Secularism
   rotate: false
-  xy: 1940, 1266
+  xy: 1992, 1266
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 PolicyIcons/Sovereignty
   rotate: false
-  xy: 1736, 960
+  xy: 1788, 960
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 PolicyIcons/Theocracy
   rotate: false
-  xy: 1838, 1166
+  xy: 1838, 1114
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 PolicyIcons/Total War
   rotate: false
-  xy: 1838, 1114
+  xy: 1634, 912
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 PolicyIcons/Trade Unions
   rotate: false
-  xy: 1634, 912
+  xy: 1890, 1214
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
@@ -1168,14 +1168,14 @@ StatIcons/Production
   index: -1
 StatIcons/Range
   rotate: false
-  xy: 1584, 810
+  xy: 1584, 758
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 StatIcons/RangedStrength
   rotate: false
-  xy: 1584, 758
+  xy: 1584, 706
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
@@ -1203,7 +1203,7 @@ StatIcons/Specialist
   index: -1
 StatIcons/Strength
   rotate: false
-  xy: 1788, 960
+  xy: 1838, 1218
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
@@ -6334,56 +6334,56 @@ UnitPromotionIcons/Morale
   index: -1
 UnitPromotionIcons/Rejuvenation
   rotate: false
-  xy: 1584, 654
+  xy: 1532, 602
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 UnitPromotionIcons/Scouting
   rotate: false
-  xy: 1992, 1318
+  xy: 1940, 1266
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 UnitPromotionIcons/Sentry
   rotate: false
-  xy: 1992, 1318
+  xy: 1940, 1266
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 UnitPromotionIcons/Shock
   rotate: false
-  xy: 1992, 1266
+  xy: 1736, 1012
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 UnitPromotionIcons/Slinger Withdraw
   rotate: false
-  xy: 1736, 1012
+  xy: 1788, 1012
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 UnitPromotionIcons/Sortie
   rotate: false
-  xy: 1788, 1012
+  xy: 1736, 960
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 UnitPromotionIcons/Targeting
   rotate: false
-  xy: 1838, 1218
+  xy: 1838, 1166
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 UnitPromotionIcons/Targeting I (air)
   rotate: false
-  xy: 1838, 1218
+  xy: 1838, 1166
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
