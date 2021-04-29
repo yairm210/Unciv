@@ -31,7 +31,7 @@ class LoadGameScreen(previousScreen:CameraStageBaseScreen) : PickerScreen() {
         setDefaultCloseAction(previousScreen)
 
         resetWindowState()
-        topTable.add(ScrollPane(saveTable)).height(stage.height * 2 / 3)
+        topTable.add(ScrollPane(saveTable))
 
         val rightSideTable = getRightSideTable()
 
@@ -174,7 +174,7 @@ class LoadGameScreen(previousScreen:CameraStageBaseScreen) : PickerScreen() {
 
         val savedAt = Date(save.lastModified())
         descriptionLabel.setText("Loading...".tr())
-        textToSet += "\n{Saved at}: ".tr() + SimpleDateFormat("yyyy-MM-dd HH:mm").format(savedAt)
+        textToSet += "\n{Saved at}: ".tr() + SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.US).format(savedAt)
         thread { // Even loading the game to get its metadata can take a long time on older phones
             try {
                 val game = GameSaver.loadGameFromFile(save)
