@@ -45,7 +45,6 @@ class NewMapScreen(val mapParameters: MapParameters = MapParameters()) : PickerS
 
         topTable.apply {
             add(ScrollPane(newMapScreenOptionsTable).apply { setOverscroll(false, false) })
-                    .height(topTable.parent.height)
             pack()
             setFillParent(true)
         }
