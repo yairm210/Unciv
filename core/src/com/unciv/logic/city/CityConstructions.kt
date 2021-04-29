@@ -456,5 +456,4 @@ class CityConstructions {
         this[idx1] = this[idx2]
         this[idx2] = tmp
     }
-
 }
