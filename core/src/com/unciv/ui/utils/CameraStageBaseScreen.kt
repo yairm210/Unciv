@@ -38,34 +38,22 @@ data class KeyCharAndCode(val char: Char, val code: Int) {
             )
 }
 
-class KeyPressDispatcher {
-    private val keyMap: HashMap<KeyCharAndCode, (() -> Unit)> = hashMapOf()
-
-    // access by our data class
-    val keys: Set<KeyCharAndCode>
-        get() = keyMap.keys
-    operator fun get(key: KeyCharAndCode) = keyMap[key]
-    operator fun set(key: KeyCharAndCode, action: () -> Unit) {
-        keyMap[key] = action
-    }
-    operator fun contains(key: KeyCharAndCode) = keyMap.contains(key)
-    fun remove(key: KeyCharAndCode) = keyMap.remove(key)
-
+class KeyPressDispatcher: HashMap<KeyCharAndCode, (() -> Unit)>() {
     // access by Char
-    operator fun get(char: Char) = keyMap[KeyCharAndCode(char)]
+    operator fun get(char: Char) = this[KeyCharAndCode(char)]
     operator fun set(char: Char, action: () -> Unit) {
-        keyMap[KeyCharAndCode(char)] = action
+        this[KeyCharAndCode(char)] = action
     }
-    operator fun contains(char: Char) = keyMap.contains(KeyCharAndCode(char))
-    fun remove(char: Char) = keyMap.remove(KeyCharAndCode(char))
+    operator fun contains(char: Char) = this.contains(KeyCharAndCode(char))
+    fun remove(char: Char) = this.remove(KeyCharAndCode(char))
 
     // access by Int keyCodes
-    operator fun get(code: Int) = keyMap[KeyCharAndCode(code)]
+    operator fun get(code: Int) = this[KeyCharAndCode(code)]
     operator fun set(code: Int, action: () -> Unit) {
-        keyMap[KeyCharAndCode(code)] = action
+        this[KeyCharAndCode(code)] = action
     }
-    operator fun contains(code: Int) = keyMap.contains(KeyCharAndCode(code))
-    fun remove(code: Int) = keyMap.remove(KeyCharAndCode(code))
+    operator fun contains(code: Int) = this.contains(KeyCharAndCode(code))
+    fun remove(code: Int) = this.remove(KeyCharAndCode(code))
 }
 
 open class CameraStageBaseScreen : Screen {
