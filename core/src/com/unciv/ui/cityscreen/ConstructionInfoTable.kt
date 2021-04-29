@@ -51,13 +51,10 @@ class ConstructionInfoTable(val city: CityInfo): Table() {
 
         var buildingText = construction.name.tr()
         val specialConstruction = PerpetualConstruction.perpetualConstructionsMap[construction.name]
-        if (specialConstruction == null) {
-            val turnsToComplete = cityConstructions.turnsToConstruction(construction.name)
-//            buildingText += ("\r\n" + "Cost".tr() + " " + construction.getProductionCost(city.civInfo).toString()).tr()
-            buildingText += turnOrTurns(turnsToComplete, construction.getProductionCost(city.civInfo), cityConstructions.getWorkDone(construction.name))
-        } else {
-            buildingText += specialConstruction.getProductionTooltip(city)
-        }
+
+        if (specialConstruction == null) buildingText += cityConstructions.getTurnsToConstructionString(construction.name)
+        else buildingText += specialConstruction.getProductionTooltip(city)
+
         selectedConstructionTable.add(buildingText.toLabel()).row()
 
 
@@ -71,13 +68,6 @@ class ConstructionInfoTable(val city: CityInfo): Table() {
         val descriptionLabel = description.toLabel()
         descriptionLabel.wrap = true
         selectedConstructionTable.add(descriptionLabel).colspan(2).width(stage.width / 4)
-
     }
 
-    companion object {
-        internal fun turnOrTurns(turns: Int, cost:Int, currentProgress:Int=0): String {
-            if (currentProgress == 0) return "\n$cost${Fonts.production} $turns${Fonts.turn}"
-            else return "\n$currentProgress/$cost${Fonts.production}\n$turns${Fonts.turn}"
-        }
-    }
 }
