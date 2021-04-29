@@ -27,7 +27,7 @@ class SaveGameScreen(val gameInfo: GameInfo) : PickerScreen() {
         gameNameTextField.textFieldFilter = TextField.TextFieldFilter { _, char -> char != '\\' && char != '/' }
         currentSaves.add("Current saves".toLabel()).row()
         updateShownSaves(false)
-        topTable.add(ScrollPane(currentSaves)).height(stage.height * 2 / 3)
+        topTable.add(ScrollPane(currentSaves))
 
         val newSave = Table()
         val defaultSaveName = gameInfo.currentPlayer + " -  " + gameInfo.turns + " turns"
