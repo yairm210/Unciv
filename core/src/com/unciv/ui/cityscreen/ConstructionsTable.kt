@@ -123,7 +123,7 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
         for (unit in city.getRuleset().units.values.filter { it.shouldBeDisplayed(cityConstructions) }) {
             val useStoredProduction = !cityConstructions.isBeingConstructedOrEnqueued(unit.name)
             val turnsToUnit = cityConstructions.turnsToConstruction(unit.name, useStoredProduction)
-            var buttonText = unit.name.tr() + turnOrTurns(turnsToUnit)
+            var buttonText = unit.name.tr() + turnOrTurns(turnsToUnit, unit.getProductionCost(city.civInfo), cityConstructions.getWorkDone(unit.name))
             for ((resource, amount) in unit.getResourceRequirements()) {
                 if (amount == 1) buttonText += "\n" + "Consumes 1 [$resource]".tr()
                 else buttonText += "\n" + "Consumes [$amount] [$resource]".tr()
@@ -137,7 +137,7 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
 
         for (building in city.getRuleset().buildings.values.filter { it.shouldBeDisplayed(cityConstructions) }) {
             val turnsToBuilding = cityConstructions.turnsToConstruction(building.name)
-            var buttonText = building.name.tr() + turnOrTurns(turnsToBuilding)
+            var buttonText = building.name.tr() + turnOrTurns(turnsToBuilding, building.getProductionCost(city.civInfo), cityConstructions.getWorkDone(building.name))
             for ((resource, amount) in building.getResourceRequirements()) {
                 if (amount == 1) buttonText += "\n" + "Consumes 1 [$resource]".tr()
                 else buttonText += "\n" + "Consumes [$amount] [$resource]".tr()
@@ -210,7 +210,7 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
         }
     }
 
-    private fun getQueueEntry(constructionQueueIndex: Int, name: String): Table {
+    private fun getQueueEntry(constructionQueueIndex: Int, constructionName: String): Table {
         val city = cityScreen.city
         val cityConstructions = city.cityConstructions
 
@@ -221,35 +221,37 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
         if (constructionQueueIndex == selectedQueueEntry)
             table.background = ImageGetter.getBackground(Color.GREEN.cpy().lerp(Color.BLACK, 0.5f))
 
-        val isFirstConstructionOfItsKind = cityConstructions.isFirstConstructionOfItsKind(constructionQueueIndex, name)
-        val turnsToComplete = cityConstructions.turnsToConstruction(name, isFirstConstructionOfItsKind)
-        var text = name.tr() +
-                if (name in PerpetualConstruction.perpetualConstructionsMap) "\n∞"
-                else turnOrTurns(turnsToComplete)
+        val isFirstConstructionOfItsKind = cityConstructions.isFirstConstructionOfItsKind(constructionQueueIndex, constructionName)
+        val turnsToComplete = cityConstructions.turnsToConstruction(constructionName, isFirstConstructionOfItsKind)
 
-        val constructionResource = cityConstructions.getConstruction(name).getResourceRequirements()
+        val construction = cityConstructions.getConstruction(constructionName)
+        var text = constructionName.tr() +
+                if (constructionName in PerpetualConstruction.perpetualConstructionsMap) "\n∞"
+                else turnOrTurns(turnsToComplete, construction.getProductionCost(city.civInfo), cityConstructions.getWorkDone(constructionName))
+
+        val constructionResource = construction.getResourceRequirements()
         for ((resource, amount) in constructionResource)
             if (amount == 1) text += "\n" + "Consumes 1 [$resource]".tr()
             else text += "\n" + "Consumes [$amount] [$resource]".tr()
 
 
         table.defaults().pad(2f).minWidth(40f)
-        if (isFirstConstructionOfItsKind) table.add(getProgressBar(name)).minWidth(5f)
+        if (isFirstConstructionOfItsKind) table.add(getProgressBar(constructionName)).minWidth(5f)
         else table.add().minWidth(5f)
-        table.add(ImageGetter.getConstructionImage(name).surroundWithCircle(40f)).padRight(10f)
+        table.add(ImageGetter.getConstructionImage(constructionName).surroundWithCircle(40f)).padRight(10f)
         table.add(text.toLabel()).expandX().fillX().left()
 
-        if (constructionQueueIndex > 0) table.add(getRaisePriorityButton(constructionQueueIndex, name, city)).right()
+        if (constructionQueueIndex > 0) table.add(getRaisePriorityButton(constructionQueueIndex, constructionName, city)).right()
         else table.add().right()
         if (constructionQueueIndex != cityConstructions.constructionQueue.lastIndex)
-            table.add(getLowerPriorityButton(constructionQueueIndex, name, city)).right()
+            table.add(getLowerPriorityButton(constructionQueueIndex, constructionName, city)).right()
         else table.add().right()
 
         table.add(getRemoveFromQueueButton(constructionQueueIndex, city)).right()
 
         table.touchable = Touchable.enabled
         table.onClick {
-            cityScreen.selectedConstruction = cityConstructions.getConstruction(name)
+            cityScreen.selectedConstruction = cityConstructions.getConstruction(constructionName)
             cityScreen.selectedTile = null
             selectedQueueEntry = constructionQueueIndex
             cityScreen.update()
