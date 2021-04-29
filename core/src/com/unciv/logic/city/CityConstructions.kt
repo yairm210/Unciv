@@ -1,6 +1,5 @@
 package com.unciv.logic.city
 
-import com.badlogic.gdx.graphics.Color
 import com.unciv.logic.automation.ConstructionAutomation
 import com.unciv.logic.civilization.AlertType
 import com.unciv.logic.civilization.NotificationIcon
@@ -115,9 +114,12 @@ class CityConstructions {
         if (currentConstructionSnapshot != "") {
             val construction = PerpetualConstruction.perpetualConstructionsMap[currentConstructionSnapshot]
             if (construction == null) {
-                val turnsLeft = turnsToConstruction(currentConstructionSnapshot)
-                result += ("\r\n" + "Cost".tr() + " " + getConstruction(currentConstructionFromQueue).getProductionCost(cityInfo.civInfo).toString()).tr()
-                result += ConstructionInfoTable.turnOrTurns(turnsLeft)
+//                val workDone = getWorkDone(currentConstructionSnapshot)
+//                val turnsLeft =
+//                result += ("\r\n" + "Cost".tr() + " " + getConstruction(currentConstructionFromQueue).getProductionCost(cityInfo.civInfo).toString()).tr()
+                result += ConstructionInfoTable.turnOrTurns(turnsToConstruction(currentConstructionSnapshot),
+                        getConstruction(currentConstructionFromQueue).getProductionCost(cityInfo.civInfo),
+                        getWorkDone(currentConstructionSnapshot))
             } else {
                 result += construction.getProductionTooltip(cityInfo)
             }
@@ -384,7 +386,7 @@ class CityConstructions {
         if (!buildableCultureBuildings.any())
             return null
 
-        val cultureBuildingToBuild = buildableCultureBuildings.minBy { it.cost }!!.name
+        val cultureBuildingToBuild = buildableCultureBuildings.minByOrNull { it.cost }!!.name
         constructionComplete(getConstruction(cultureBuildingToBuild))
 
         return cultureBuildingToBuild

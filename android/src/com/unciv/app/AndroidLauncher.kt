@@ -10,7 +10,7 @@ import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration
 import com.unciv.UncivGame
 import com.unciv.UncivGameParameters
 import com.unciv.logic.GameSaver
-import com.unciv.ui.utils.ORIGINAL_FONT_SIZE
+import com.unciv.ui.utils.Fonts
 import java.io.File
 
 open class AndroidLauncher : AndroidApplication() {
@@ -33,7 +33,7 @@ open class AndroidLauncher : AndroidApplication() {
         val androidParameters = UncivGameParameters(
                 version = BuildConfig.VERSION_NAME,
                 crashReportSender = CrashReportSenderAndroid(this),
-                fontImplementation = NativeFontAndroid(ORIGINAL_FONT_SIZE.toInt()),
+                fontImplementation = NativeFontAndroid(Fonts.ORIGINAL_FONT_SIZE.toInt()),
                 customSaveLocationHelper = customSaveLocationHelper
         )
         val game = UncivGame(androidParameters)
