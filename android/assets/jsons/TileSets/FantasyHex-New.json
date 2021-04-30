@@ -50,6 +50,21 @@
         "Hill+Silk+Plantation": ["Grassland","Hill","Silk+Plantation"],
         "Hill+Furs": ["Grassland","Hill","Furs"],
         "Hill+Furs+Ancient ruins": ["Grassland","Hill","Furs","Ancient ruins"],
-        "Hill+Furs+Camp": ["Grassland","Hill","Furs+Camp"]
+        "Hill+Furs+Camp": ["Grassland","Hill","Furs+Camp"],
+		
+        "Hill+Forest+Uranium": ["Grassland","Hill","Uranium","HillForest"],
+		
+		
+        "Grassland+Jungle+Oil": ["Grassland","Oil","GrasslandJungle"],
+        "Plains+Jungle+Oil": ["Plains","Oil","PlainsJungle"],
+		
+        "Grassland+Forest+Uranium": ["Grassland","Uranium","GrasslandForest"],
+        "Grassland+Forest+Furs": ["Grassland","Furs","GrasslandForest"],
+        "Grassland+Jungle+Ancient ruins": ["Grassland","Ancient ruins", "GrasslandJungle"],
+        "Grassland+Forest+Ancient ruins": ["Grassland","Ancient ruins", "GrasslandForest"],
+        "Grassland+Cattle+Ancient ruins": ["Grassland","Ancient ruins","Cattle"],
+        "Grassland+Sheep+Ancient ruins": ["Grassland","Ancient ruins","Sheep"],
+        "Hill+Sheep+Ancient ruins": ["Grassland","Hill","Ancient ruins","Sheep"],
+        "Plains+Forest+Deer": ["Plains","Deer","PlainsForest"]
     }
 }
