@@ -7,6 +7,7 @@ class TileSetConfig {
     var unexploredTileColor: Color = Color.DARK_GRAY
     var fogOfWarColor: Color = Color.BLACK
     var ruleVariants: HashMap<String, List<String>> = HashMap()
+    var templateIndicator: Char = '?'
 
     @Transient
     private val templatedRuleVariants: HashSet<Pair<TileComposition, List<RuleContainer>>> = HashSet()
@@ -26,7 +27,7 @@ class TileSetConfig {
         val ruleVariantsToRemove = ArrayList<String>()
 
         for ((tileCompositionString, renderOrder) in ruleVariants){
-            if (tileCompositionString.contains('!')){
+            if (tileCompositionString.contains(templateIndicator)){
                 ruleVariantsToRemove.add(tileCompositionString)
                 val splitTileCompString = tileCompositionString.split('+')
                 if (splitTileCompString.size < 5)
@@ -128,14 +129,14 @@ class TileSetConfig {
 
     private fun toRuleContainer(input: List<String>) =
             input.map {
-                if (it.startsWith('!'))
+                if (it.startsWith(templateIndicator))
                     RuleContainer(it.drop(1), true)
                 else
                     RuleContainer(it, false)
             }
 
     private fun toRuleContainer(input: String) =
-            if (input.startsWith('!'))
+            if (input.startsWith(templateIndicator))
                 RuleContainer(input.drop(1), true)
             else
                 RuleContainer(input, false)
