@@ -24,6 +24,7 @@ import com.unciv.models.UncivSound
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.unit.UnitType
 import com.unciv.models.translations.tr
+import com.unciv.ui.CivilopediaScreen
 import com.unciv.ui.cityscreen.CityScreen
 import com.unciv.ui.pickerscreens.GreatPersonPickerScreen
 import com.unciv.ui.pickerscreens.PolicyPickerScreen
@@ -144,6 +145,7 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Cam
         onBackButtonClicked { backButtonAndESCHandler() }
 
         addKeyboardListener() // for map panning by W,S,A,D
+        addKeyboardPresses()  // shortcut keys like F1
 
 
         if (gameInfo.gameParameters.isOnlineMultiplayer && !gameInfo.isUpToDate)
@@ -172,9 +174,10 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Cam
         }
     }
 
-    private fun cleanupKeyDispatcher() {
-        val delKeys = keyPressDispatcher.keys.filter { it != ' ' && it != 'n' }
-        delKeys.forEach { keyPressDispatcher.remove(it) }
+    private fun addKeyboardPresses() {
+        // Space and N are assigned in createNextTurnButton
+        keyPressDispatcher[Input.Keys.F1] = { game.setScreen(CivilopediaScreen(gameInfo.ruleSet)) }
+        keyPressDispatcher.setCheckpoint()
     }
 
     private fun addKeyboardListener() {
@@ -297,7 +300,7 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Cam
         if (fogOfWar) minimapWrapper.update(selectedCiv)
         else minimapWrapper.update(viewingCiv)
 
-        cleanupKeyDispatcher()
+        keyPressDispatcher.revertToCheckPoint()
         unitActionsTable.update(bottomUnitTable.selectedUnit)
         unitActionsTable.y = bottomUnitTable.height
 
