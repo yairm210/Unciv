@@ -13,6 +13,13 @@
   * [Stat uniques](#stat-uniques-1)
   * [Construction condition uniques](#construction-condition-uniques)
 - [Improvement uniques](#improvement-uniques)
+- [Unit uniques](#unit-uniques)
+  * [Civilian](#civilian)
+  * [Visibility](#visibility)
+  * [Movement](#movement)
+  * [Healing](#healing)
+  * [Combat bonuses](#combat-bonuses)
+  * [Other](#other)
 
 
 ## Overview
@@ -317,3 +324,111 @@ cityFilters allow us to choose the range of cities affected by this unique:
 "Cannot be built on bonus resource"
 
 "Tile provides yield without assigned population"
+
+## Unit uniques
+
+### Civilian
+
+"Can build improvements on tiles"
+
+"May create improvements on water resources"
+
+"Founds a new city"
+
+"Can undertake a trade mission with City-State, giving a large sum of gold and [amount] Influence"
+
+"Can start an 8-turn golden age"
+
+"Great Person - [stat]"
+
+"Can hurry technology research"
+
+"Can speed up construction of a wonder"
+
+"Can construct [improvement]" - destroys the unit upon construction
+
+"Unbuildable"
+
+### Visibility
+
+"+1 Visibility Range"
+
+"6 tiles in every direction always visible"
+
+"+1 Sight when embarked"
+
+"Limited Visibility"
+
+### Movement
+
+"Double movement in coast"
+
+"Ignores terrain cost"
+
+"Cannot enter ocean tiles until Astronomy"
+
+"Can move immediately once bought"
+
+"Can move after attacking"
+
+"Can enter ice tiles"
+
+"No movement cost to pillage"
+
+### Healing
+
+"+10 HP when healing"
+
+"Heals [amount] damage if it kills an Unit"
+
+"Heal adjacent units for an additional 15 HP per turn"
+
+### Combat bonuses
+
+"No defensive terrain bonus"
+
+"+[amount]% Strength when attacking"
+
+"+[amount]% Strength vs [Mounted]"
+
+"+[amount]% Strength in [tileFilter]"
+
+### Other
+
+"1 additional attack per turn"
+
+"+1 Range"
+
+"+2 Range"
+
+
+
+"Self-destructs when attacking" - for single use units, like missiles
+
+"[amount]% chance to intercept air attacks"
+
+"Penalty vs (unitName/unitType) 33%"
+
+"Bonus for units in 2 tile radius 15%"
+
+"Requires Manhattan Project"
+
+"Can construct roads"
+
+"Must set up to ranged attack"
+
+"Ranged attacks may be performed over obstacles"
+
+"May withdraw before melee ([amount]%)"
+
+"Amphibious"
+
+"Can attack submarines"
+
+"Can carry 2 aircraft"
+
+"Invisible to others"
+
+"Can only attack water"
+
+"Not displayed as an available construction without [resourceName/buildingName]"
