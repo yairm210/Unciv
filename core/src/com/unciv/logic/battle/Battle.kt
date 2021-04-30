@@ -32,7 +32,7 @@ object Battle {
             }
         }
 
-        if (attacker.getUnitType() == UnitType.Missile) {
+        if (attacker is MapUnitCombatant && attacker.unit.hasUnique("Nuclear weapon")) {
             return nuke(attacker, attackableTile.tileToAttack)
         }
         attack(attacker, getMapCombatantOfTile(attackableTile.tileToAttack)!!)
@@ -86,7 +86,7 @@ object Battle {
         }
 
         if (attacker is MapUnitCombatant) {
-            if (attacker.getUnitType() == UnitType.Missile)
+            if (attacker.unit.hasUnique("Self-destructs when attacking"))
                 attacker.unit.destroy()
             else if (attacker.unit.isMoving())
                 attacker.unit.action = null
