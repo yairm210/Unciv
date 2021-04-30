@@ -38,7 +38,7 @@ object ImageGetter {
     //   that the search on it is inefficient
     internal val textureRegionDrawables = HashMap<String, TextureRegionDrawable>()
 
-    fun resetAtlases(){
+    fun resetAtlases() {
         atlases.values.forEach { it.dispose() }
         atlases.clear()
         atlas = TextureAtlas("game.atlas")
@@ -238,7 +238,7 @@ object ImageGetter {
         else promotionName.substring(0, promotionName.length - level - 1)
 
         val circle = getImage("UnitPromotionIcons/$basePromotionName")
-                .apply { color= colorFromRGB(255, 226, 0) }
+                .apply { color = colorFromRGB(255, 226, 0) }
                 .surroundWithCircle(size)
                 .apply { circle.color = colorFromRGB(0, 12, 49) }
         if (level != 0) {
@@ -366,4 +366,7 @@ object ImageGetter {
         specialist.color = color
         return specialist
     }
+
+    fun getAvailableTilesets() = textureRegionDrawables.keys.asSequence().filter { it.startsWith("TileSets") }
+            .map { it.split("/")[1] }.distinct()
 }
