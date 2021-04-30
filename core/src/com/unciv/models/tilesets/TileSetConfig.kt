@@ -10,7 +10,7 @@ class TileSetConfig {
     var templateIndicator: Char = '?'
 
     @Transient
-    private val templatedRuleVariants: HashSet<Pair<TileComposition, List<String>>> = HashSet()
+    private val templatedRuleVariants: HashMap<TileComposition, List<String>> = HashMap()
     @Transient
     private val templateDictionary = HashMap<String, Sequence<String?>>()
 
@@ -32,7 +32,7 @@ class TileSetConfig {
                 val splitTileCompString = tileCompositionString.split('+')
                 if (splitTileCompString.size < 5)
                     continue // forcing the existence of a full composition makes handling templated rule variants easier
-                templatedRuleVariants.add(Pair(toTileComposition(splitTileCompString), renderOrder))
+                templatedRuleVariants[toTileComposition(splitTileCompString)] = renderOrder
             }
         }
 
@@ -46,15 +46,20 @@ class TileSetConfig {
      * If a template is found the tile composition will be added to ruleVariants. The sequences must contain null
      * for each element which is not existing.
      */
-    fun generateRuleVariant(terrainSequence: Sequence<String?>, resAndImpSequence: Sequence<String?>): Boolean{
+    fun generateRuleVariant(terrainSequence: Sequence<String?>, resAndImpSequence: Sequence<String?>): Boolean {
+        val baseTerrain = terrainSequence.first()
+        val terrainFeatures = terrainSequence.drop(1)
+        val resource = resAndImpSequence.first()
+        val improvement = resAndImpSequence.last()
+
         for ((tileComposition, renderOrder) in templatedRuleVariants){
             templateDictionary.clear()
 
             //check if template matches
-            if (!ruleMatches(tileComposition.baseTerrain, terrainSequence.first()) ||
-                    !ruleMatches(tileComposition.terrainFeatures, terrainSequence.drop(1)) ||
-                    !ruleMatches(tileComposition.resource, resAndImpSequence.first()) ||
-                    !ruleMatches(tileComposition.improvement, resAndImpSequence.last()))
+            if (!ruleMatches(tileComposition.baseTerrain, baseTerrain) ||
+                    !ruleMatches(tileComposition.terrainFeatures, terrainFeatures) ||
+                    !ruleMatches(tileComposition.resource, resource) ||
+                    !ruleMatches(tileComposition.improvement, improvement))
                 continue
 
             //generate map output for composition
@@ -74,8 +79,6 @@ class TileSetConfig {
 
         return false
     }
-
-    private data class TileComposition(val baseTerrain: String, val terrainFeatures: List<String>, val resource: String, val improvement: String)
 
     /**
      * ruleElements must contain exactly two template strings. One at the front and one at the back.
@@ -133,6 +136,8 @@ class TileSetConfig {
 
     private fun isTemplate(string: String) = string.startsWith(templateIndicator)
 
+
+    private data class TileComposition(val baseTerrain: String, val terrainFeatures: List<String>, val resource: String, val improvement: String)
     private fun toTileComposition(input: List<String>) =
             TileComposition(
                     input.first(),
