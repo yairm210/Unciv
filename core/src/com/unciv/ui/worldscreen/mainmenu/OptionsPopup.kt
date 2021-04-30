@@ -132,9 +132,6 @@ class OptionsPopup(val previousScreen:CameraStageBaseScreen) : Popup(previousScr
                 settings.showExperimentalWorldWrap)
         { settings.showExperimentalWorldWrap = it }
 
-        addYesNoRow("Show experimental tile layering\nHIGHLY EXPERIMENTAL - YOU HAVE BEEN WARNED!",
-                settings.showExperimentalTileLayering)
-        { settings.showExperimentalTileLayering = it }
 
         addSoundEffectsVolumeSlider()
         addMusicVolumeSlider()
@@ -301,8 +298,7 @@ class OptionsPopup(val previousScreen:CameraStageBaseScreen) : Popup(previousScr
 
         val tileSetSelectBox = SelectBox<String>(skin)
         val tileSetArray = Array<String>()
-        val tileSets = ImageGetter.textureRegionDrawables.keys.asSequence().filter { it.startsWith("TileSets") }
-                .map { it.split("/")[1] }.distinct()
+        val tileSets = ImageGetter.getAvailableTilesets()
         for (tileset in tileSets) tileSetArray.add(tileset)
         tileSetSelectBox.items = tileSetArray
         tileSetSelectBox.selected = settings.tileSet
