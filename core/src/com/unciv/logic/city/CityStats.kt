@@ -161,9 +161,6 @@ class CityStats {
         // This requires more... complex navigation of the local uniques to merge into "+[amount]% growth [cityFilter]"
         for (unique in cityInfo.civInfo.getMatchingUniques("+[]% growth in all cities"))
             bonus += unique.params[0].toFloat()
-        // Deprecated as of 3.12.13 -> moved to "+[amount]% growth [in capital]"
-        if (cityInfo.isCapital()) for (unique in cityInfo.civInfo.getMatchingUniques("+[]% growth in capital"))
-            bonus += unique.params[0].toFloat()
 
         // "+[amount]% growth [cityFilter]"
         for (unique in cityInfo.civInfo.getMatchingUniques("+[]% growth []"))
@@ -201,12 +198,7 @@ class CityStats {
 
         newHappinessList["Population"] = -unhappinessFromCitizens * unhappinessModifier
 
-        var happinessFromPolicies = 0f
-        // Deprecated as of 3.12.13 - replaced by "[+1 Happiness] [in all cities connected to capital]"
-        if (civInfo.hasUnique("+1 happiness for every city connected to capital")
-                && cityInfo.isConnectedToCapital())
-            happinessFromPolicies += 1f
-        happinessFromPolicies += getStatsFromUniques(civInfo.policies.policyUniques.getAllUniques()).happiness
+        var happinessFromPolicies = getStatsFromUniques(civInfo.policies.policyUniques.getAllUniques()).happiness
 
         newHappinessList["Policies"] = happinessFromPolicies
 
@@ -258,13 +250,6 @@ class CityStats {
         val stats = Stats()
 
         for (unique in uniques.toList()) { // Should help  mitigate getConstructionButtonDTOs concurrency problems.
-
-            // Deprecated by 3.12.13 - replaced by "[stats] [cityFilter]"
-            if (unique.placeholderText == "[] in capital" && cityInfo.isCapital()
-                    || unique.placeholderText == "[] in all cities"
-                    || unique.placeholderText == "[] in all cities with a garrison" && cityInfo.getCenterTile().militaryUnit != null)
-                stats.add(unique.stats)
-
             // "[stats] [cityFilter]"
             if (unique.placeholderText == "[] []" && cityInfo.matchesFilter(unique.params[1]))
                 stats.add(unique.stats)
@@ -273,18 +258,6 @@ class CityStats {
             if (unique.placeholderText=="[] per [] population []" && cityInfo.matchesFilter(unique.params[2])) {
                 val amountOfEffects = (cityInfo.population.population / unique.params[1].toInt()).toFloat()
                 stats.add(unique.stats.times(amountOfEffects))
-            }
-
-            // Deprecated by 3.12.13 - replaced by "[] per [] population [in all cities]"
-            if (unique.placeholderText == "[] per [] population in all cities") {
-                val amountOfEffects = (cityInfo.population.population / unique.params[1].toInt()).toFloat()
-                stats.add(unique.stats.times(amountOfEffects))
-            }
-
-            // Deprecated by 3.12.13 - replaced by "[+1 Gold, +1 Happiness] per [2] population [in capital]"
-            if (unique.text == "+1 gold and -1 unhappiness for every 2 citizens in capital" && cityInfo.isCapital()) {
-                stats.gold += (cityInfo.population.population / 2).toFloat()
-                stats.happiness += (cityInfo.population.population / 2).toFloat()
             }
         }
 
