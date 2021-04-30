@@ -10,7 +10,7 @@ class TileSetConfig {
     var templateIndicator: Char = '?'
 
     @Transient
-    private val templatedRuleVariants: HashSet<Pair<TileComposition, List<RuleContainer>>> = HashSet()
+    private val templatedRuleVariants: HashSet<Pair<TileComposition, List<String>>> = HashSet()
     @Transient
     private val templateDictionary = HashMap<String, Sequence<String?>>()
 
@@ -32,7 +32,7 @@ class TileSetConfig {
                 val splitTileCompString = tileCompositionString.split('+')
                 if (splitTileCompString.size < 5)
                     continue // forcing the existence of a full composition makes handling templated rule variants easier
-                templatedRuleVariants.add(Pair(toTileComposition(splitTileCompString), toRuleContainer(renderOrder)))
+                templatedRuleVariants.add(Pair(toTileComposition(splitTileCompString), renderOrder))
             }
         }
 
@@ -51,19 +51,19 @@ class TileSetConfig {
             templateDictionary.clear()
 
             //check if template matches
-            if (!addToTemplateDictionary(tileComposition.baseTerrain, terrainSequence.first()) ||
-                    !addToTemplateDictionary(tileComposition.terrainFeatures, terrainSequence.drop(1)) ||
-                    !addToTemplateDictionary(tileComposition.resource, resAndImpSequence.first()) ||
-                    !addToTemplateDictionary(tileComposition.improvement, resAndImpSequence.last()))
+            if (!ruleMatches(tileComposition.baseTerrain, terrainSequence.first()) ||
+                    !ruleMatches(tileComposition.terrainFeatures, terrainSequence.drop(1)) ||
+                    !ruleMatches(tileComposition.resource, resAndImpSequence.first()) ||
+                    !ruleMatches(tileComposition.improvement, resAndImpSequence.last()))
                 continue
 
             //generate map output for composition
             val finalRenderOrder = ArrayList<String>()
             for (element in renderOrder){
-                if (!element.isTemplate)
-                    finalRenderOrder.add(element.name)
-                else if (templateDictionary[element.name] != null)
-                    finalRenderOrder.addAll(templateDictionary[element.name]!!.filterNotNull())
+                if (isTemplate(element))
+                    finalRenderOrder.add(element)
+                else if (templateDictionary[element] != null)
+                    finalRenderOrder.addAll(templateDictionary[element]!!.filterNotNull())
             }
 
             // We add it to ruleVariants to save time next time we search for this composition.
@@ -75,22 +75,23 @@ class TileSetConfig {
         return false
     }
 
-    private data class RuleContainer(val name: String, val isTemplate: Boolean)
+    private data class TileComposition(val baseTerrain: String, val terrainFeatures: List<String>, val resource: String, val improvement: String)
 
-    private data class TileComposition(val baseTerrain: RuleContainer, val terrainFeatures: List<RuleContainer>, val resource: RuleContainer, val improvement: RuleContainer)
-
-    private fun addToTemplateDictionary(rules: List<RuleContainer>, tileElements: Sequence<String?>): Boolean {
+    /**
+     * ruleElements must contain exactly two template strings. One at the front and one at the back.
+     */
+    private fun ruleMatches(ruleElements: List<String>, tileElements: Sequence<String?>): Boolean {
         var startTemplateStrings = sequenceOf<String?>()
         var endTemplateStrings = sequenceOf<String?>()
         val iterator = tileElements.iterator()
         var nextMustMatch = false
 
         //We look at all rule elements which are no templates
-        nextRuleElement@for (ruleIndex in 1 .. rules.size - 2){
+        nextRuleElement@for (ruleIndex in 1 .. ruleElements.size - 2){
             //we check all tileElements until we find a match for this rule element
             while (iterator.hasNext()){
                 val next = iterator.next()
-                if (next != rules[ruleIndex].name) {
+                if (next != ruleElements[ruleIndex]) {
                     // we had a match before but this one is non -> return false
                     if (nextMustMatch)
                         return false
@@ -110,42 +111,33 @@ class TileSetConfig {
         while (iterator.hasNext())
             endTemplateStrings += iterator.next()
 
-        templateDictionary[rules.first().name] = startTemplateStrings
-        templateDictionary[rules.last().name] = endTemplateStrings
+        templateDictionary[ruleElements.first()] = startTemplateStrings
+        templateDictionary[ruleElements.last()] = endTemplateStrings
 
         return true
     }
 
-    private fun addToTemplateDictionary(rule: RuleContainer, tileElement: String?): Boolean {
-        if (rule.isTemplate){
-            templateDictionary[rule.name] = sequenceOf(tileElement)
+    /**
+     * Returns true if the given rule element was added to the template dictionary, if necessary.
+     */
+    private fun ruleMatches(ruleElement: String, tileElement: String?): Boolean {
+        if (isTemplate(ruleElement)){
+            templateDictionary[ruleElement] = sequenceOf(tileElement)
             return true
         }
-        if (rule.name == tileElement)
+        if (ruleElement == tileElement)
             return true
 
         return false
     }
 
-    private fun toRuleContainer(input: List<String>) =
-            input.map {
-                if (it.startsWith(templateIndicator))
-                    RuleContainer(it.drop(1), true)
-                else
-                    RuleContainer(it, false)
-            }
-
-    private fun toRuleContainer(input: String) =
-            if (input.startsWith(templateIndicator))
-                RuleContainer(input.drop(1), true)
-            else
-                RuleContainer(input, false)
+    private fun isTemplate(string: String) = string.startsWith(templateIndicator)
 
     private fun toTileComposition(input: List<String>) =
             TileComposition(
-                    toRuleContainer(input.first()),
-                    toRuleContainer(input.slice(1..input.size-3)),
-                    toRuleContainer(input[input.size-2]),
-                    toRuleContainer(input.last())
+                    input.first(),
+                    input.slice(1..input.size-3),
+                    input[input.size-2],
+                    input.last()
             )
 }
