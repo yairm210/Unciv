@@ -116,6 +116,7 @@ object GameSaver {
                     GameSettings().apply { isFreshlyCreated = true }
                 }
 
+
         return settings
     }
 

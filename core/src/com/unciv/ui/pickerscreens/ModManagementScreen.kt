@@ -38,20 +38,21 @@ class ModManagementScreen: PickerScreen() {
         setDefaultCloseAction(MainMenuScreen())
         refreshModTable()
 
-        topTable.add("Current mods".toLabel()).padRight(35f)
-            // 35 = 10 default pad + 25 to compensate for permanent visual mod decoration icon
+        topTable.add("Current mods".toLabel()).padRight(35f) // 35 = 10 default pad + 25 to compensate for permanent visual mod decoration icon
         topTable.add("Downloadable mods".toLabel())
 //        topTable.add("Mod actions")
         topTable.row()
 
 
-        topTable.add(ScrollPane(modTable)).height(scrollPane.height * 0.8f).pad(10f)
+        // All picker screens auto-wrap the top table in a scrollpane.
+        // Since we want the different parts to scroll separately, we disable the default scrollpane, which would scroll everything at once.
+        scrollPane.setScrollingDisabled(true, true)
+
+        topTable.add(ScrollPane(modTable)).pad(10f)
 
         downloadTable.add(getDownloadButton()).row()
-
         tryDownloadPage(1)
-
-        topTable.add(ScrollPane(downloadTable)).height(scrollPane.height * 0.8f)//.size(downloadTable.width, topTable.height)
+        topTable.add(ScrollPane(downloadTable))
 
         topTable.add(modActionTable)
     }

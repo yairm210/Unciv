@@ -57,10 +57,10 @@ class EditorMapHolder(private val mapEditorScreen: MapEditorScreen, internal val
             tileGroup.update()
             tileGroup.onClick {
 
-                val distance = mapEditorScreen.tileEditorOptions.brushSize - 1
+                val distance = mapEditorScreen.mapEditorOptionsTable.brushSize - 1
 
                 for (tileInfo in mapEditorScreen.tileMap.getTilesInDistance(tileGroup.tileInfo.position, distance)) {
-                    mapEditorScreen.tileEditorOptions.updateTileWhenClicked(tileInfo)
+                    mapEditorScreen.mapEditorOptionsTable.updateTileWhenClicked(tileInfo)
 
                     tileInfo.setTerrainTransients()
                     tileGroups[tileInfo]!!.forEach { it.update() }

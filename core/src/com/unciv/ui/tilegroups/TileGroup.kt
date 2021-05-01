@@ -332,8 +332,7 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings, 
     }
 
     private fun updateTileImage(viewingCiv: CivilizationInfo?) {
-        val tileBaseImageLocations = if (UncivGame.Current.settings.showExperimentalTileLayering) getTileBaseImageLocationsNew(viewingCiv)
-        else getTileBaseImageLocations(viewingCiv)
+        val tileBaseImageLocations = getTileBaseImageLocationsNew(viewingCiv)
 
         if (tileBaseImageLocations.size == tileImageIdentifiers.size) {
             if (tileBaseImageLocations.withIndex().all { (i, imageLocation) -> tileImageIdentifiers[i] == imageLocation })

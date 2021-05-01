@@ -201,10 +201,6 @@ class DiplomacyManager() {
             else -> 1f
         }
 
-        // Deprecated at 3.12.11 in favor of "City-State Influence degrades [50]% slower"
-        if (otherCiv().hasUnique("City-State Influence degrades at half rate"))
-            modifier *= .5f
-
         for (unique in otherCiv().getMatchingUniques("City-State Influence degrades []% slower"))
             modifier *= (100f - unique.params[0].toInt()) / 100
 

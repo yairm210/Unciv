@@ -22,6 +22,7 @@ interface NativeFontImplementation {
 
 // This class is loosely based on libgdx's FreeTypeBitmapFontData
 class NativeBitmapFontData(val fontImplementation: NativeFontImplementation) : BitmapFontData(), Disposable {
+
     val regions: Array<TextureRegion>
 
     private var dirty = false
@@ -82,12 +83,14 @@ class NativeBitmapFontData(val fontImplementation: NativeFontImplementation) : B
     }
 
     private fun getPixmapFromChar(ch: Char): Pixmap {
+        // Images must be 50*50px so they're rendered at the same height as the text - see Fonts.ORIGINAL_FONT_SIZE
         return when (ch) {
             Fonts.strength -> Fonts.extractPixmapFromTextureRegion(ImageGetter.getDrawable("StatIcons/Strength").region)
             Fonts.rangedStrength -> Fonts.extractPixmapFromTextureRegion(ImageGetter.getDrawable("StatIcons/RangedStrength").region)
             Fonts.range -> Fonts.extractPixmapFromTextureRegion(ImageGetter.getDrawable("StatIcons/Range").region)
             Fonts.movement -> Fonts.extractPixmapFromTextureRegion(ImageGetter.getDrawable("StatIcons/Movement").region)
             Fonts.turn -> Fonts.extractPixmapFromTextureRegion(ImageGetter.getDrawable("EmojiIcons/Turn").region)
+            Fonts.production -> Fonts.extractPixmapFromTextureRegion(ImageGetter.getDrawable("EmojiIcons/Production").region)
             else -> fontImplementation.getCharPixmap(ch)
         }
     }
@@ -104,9 +107,16 @@ class NativeBitmapFontData(val fontImplementation: NativeFontImplementation) : B
     override fun dispose() {
         packer.dispose()
     }
+
 }
 
 object Fonts {
+
+    /** All text is originally rendered in 50px (set in AndroidLauncher and DesktopLauncher), and thn scaled to fit the size of the text we need now.
+     * This has several advantages: It means we only render each character once (good for both runtime and RAM),
+     * AND it means that our 'custom' emojis only need to be once size (50px) and they'll be rescaled for what's needed. */
+    const val ORIGINAL_FONT_SIZE = 50f
+
     lateinit var font:BitmapFont
     fun resetFont() {
         val fontData = NativeBitmapFontData(UncivGame.Current.fontImplementation!!)
@@ -143,6 +153,5 @@ object Fonts {
     const val rangedStrength = '‡'
     const val movement = '➡'
     const val range = '…'
-
-//    const val production = '⚙'
+    const val production = '⚙'
 }

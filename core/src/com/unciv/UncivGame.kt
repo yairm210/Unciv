@@ -88,6 +88,10 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
         ImageGetter.resetAtlases()
         settings = GameSaver.getGeneralSettings() // needed for the screen
         ImageGetter.setNewRuleset(ImageGetter.ruleset)  // This needs to come after the settings, since we may have default visual mods
+        if(settings.tileSet !in ImageGetter.getAvailableTilesets()) { // If one of the tilesets is no longer available, default back
+            settings.tileSet = "FantasyHex"
+        }
+
         CameraStageBaseScreen.setSkin() // needs to come AFTER the Texture reset, since the buttons depend on it
 
         Gdx.graphics.isContinuousRendering = settings.continuousRendering
