@@ -13,7 +13,6 @@ import com.unciv.models.translations.TranslationFileWriter
 import com.unciv.models.translations.Translations
 import com.unciv.models.translations.tr
 import com.unciv.ui.utils.*
-import com.unciv.ui.worldscreen.MinimapHolder.MinimapToggleButtons
 import com.unciv.ui.worldscreen.WorldScreen
 import java.util.*
 import kotlin.concurrent.thread
@@ -65,17 +64,6 @@ class OptionsPopup(val previousScreen:CameraStageBaseScreen) : Popup(previousScr
         }
         innerTable2.add(button).row()
     }
-    private fun addYesNoRow(text: String, initialValue: Boolean, which: MinimapToggleButtons, action: ((Boolean) -> Unit)) {
-        innerTable2.add(text.toLabel())
-        val button = YesNoButton(initialValue, CameraStageBaseScreen.skin) {
-            if (previousScreen is WorldScreen)
-                previousScreen.minimapWrapper.setToggleButton(which, it)
-            else
-                action(it)
-            settings.save()
-        }
-        innerTable2.add(button).row()
-    }
 
     private fun reloadWorldAndOptions() {
         settings.save()
@@ -94,9 +82,9 @@ class OptionsPopup(val previousScreen:CameraStageBaseScreen) : Popup(previousScr
 
         addHeader("Display options")
 
-        addYesNoRow("Show worked tiles", settings.showWorkedTiles, MinimapToggleButtons.WORKED) { settings.showWorkedTiles = it }
-        addYesNoRow("Show resources and improvements", settings.showResourcesAndImprovements, MinimapToggleButtons.RESOURCES) { settings.showResourcesAndImprovements = it }
-        addYesNoRow("Show tile yields", settings.showTileYields, MinimapToggleButtons.YIELD) { settings.showTileYields = it } // JN
+        addYesNoRow("Show worked tiles", settings.showWorkedTiles, true) { settings.showWorkedTiles = it }
+        addYesNoRow("Show resources and improvements", settings.showResourcesAndImprovements, true) { settings.showResourcesAndImprovements = it }
+        addYesNoRow("Show tile yields", settings.showTileYields, true) { settings.showTileYields = it } // JN
         addYesNoRow("Show tutorials", settings.showTutorials, true) { settings.showTutorials = it }
         addYesNoRow("Show minimap", settings.showMinimap, true) { settings.showMinimap = it }
         addYesNoRow("Show pixel units", settings.showPixelUnits, true) { settings.showPixelUnits = it }

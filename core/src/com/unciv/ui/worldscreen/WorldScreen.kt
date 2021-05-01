@@ -51,7 +51,7 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Cam
     private var waitingForAutosave = false
 
     val mapHolder = WorldMapHolder(this, gameInfo.tileMap)
-    internal val minimapWrapper = MinimapHolder(mapHolder)
+    private val minimapWrapper = MinimapHolder(mapHolder)
 
     private val topBar = WorldScreenTopBar(this)
     val bottomUnitTable = UnitTable(this)
@@ -648,7 +648,8 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Cam
 
         val scrollPos = Vector2(mapHolder.scrollX, mapHolder.scrollY)
         val viewScale = Vector2(mapHolder.scaleX, mapHolder.scaleY)
-        minimapWrapper.minimap.updateScrollPosistion(scrollPos, viewScale)
+        minimapWrapper.minimap.updateScrollPosition(scrollPos, viewScale)
+        minimapWrapper.syncButtonStates()
 
         super.render(delta)
     }
