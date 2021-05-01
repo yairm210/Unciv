@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.math.MathUtils
 import com.badlogic.gdx.math.Vector2
+import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Image
@@ -17,6 +18,8 @@ import com.unciv.ui.utils.IconCircleGroup
 import com.unciv.ui.utils.ImageGetter
 import com.unciv.ui.utils.onClick
 import com.unciv.ui.utils.surroundWithCircle
+import java.util.*
+import kotlin.collections.HashMap
 import kotlin.math.max
 import kotlin.math.min
 
@@ -120,11 +123,63 @@ class Minimap(val mapHolder: WorldMapHolder) : Table(){
 class MinimapHolder(mapHolder: WorldMapHolder): Table() {
     val minimap = Minimap(mapHolder)
     val worldScreen = mapHolder.worldScreen
+    private data class ToggleButtonInfo(val actor: Actor, val getIt: ()->Boolean, val setIt: (Boolean)->Unit)
+    private val toggleButtonInfo: EnumMap<MinimapToggleButtons,ToggleButtonInfo> = EnumMap<MinimapToggleButtons,ToggleButtonInfo>(MinimapToggleButtons::class.java)
 
     init {
         add(getToggleIcons()).align(Align.bottom)
         add(getWrappedMinimap())
         pack()
+    }
+
+    enum class MinimapToggleButtons {
+        YIELD {
+            override val icon = "Food"
+        },
+        WORKED {
+            override val icon = "Population"
+        },
+        RESOURCES {
+            override val icon = "ResourceIcons/Cattle"
+        };
+        abstract val icon: String
+    }
+
+    // "Api" when external code wants to toggle something together with our buttons
+    fun getToggleButton(which: MinimapToggleButtons): Boolean {
+        val info = toggleButtonInfo[which] ?: return false
+        return info.getIt()
+    }
+    fun setToggleButton(which: MinimapToggleButtons, value: Boolean) {
+        val info = toggleButtonInfo[which] ?: return
+        info.setIt(value)
+        toggleButtonInfo[which]?.actor?.color?.a = if (value) 1f else 0.5f
+        worldScreen.shouldUpdate = true
+    }
+    fun syncToggleButton(which: MinimapToggleButtons) = setToggleButton(which,getToggleButton(which))
+    private fun flipToggleButton(which: MinimapToggleButtons) = setToggleButton(which,!getToggleButton(which))
+    private fun addToggleButton(table:Table, which: MinimapToggleButtons) {
+        val image = (
+                if ('/' in which.icon) {
+                    ImageGetter.getImage(which.icon)
+                        .surroundWithCircle(30f).apply { circle.color = Color.GREEN }
+                        .surroundWithCircle(40f, false)
+                } else {
+                    ImageGetter.getStatIcon(which.icon).surroundWithCircle(40f)
+                }
+            ).apply { circle.color = Color.BLACK }
+        toggleButtonInfo[which] = with(UncivGame.Current.settings) {
+            when (which) {
+                MinimapToggleButtons.YIELD -> ToggleButtonInfo(image, {showTileYields}, {showTileYields = it})
+                MinimapToggleButtons.WORKED -> ToggleButtonInfo(image, {showWorkedTiles}, {showWorkedTiles = it})
+                else -> ToggleButtonInfo(image, {showResourcesAndImprovements}, {showResourcesAndImprovements = it})
+            }
+        }
+        syncToggleButton(which)
+        image.onClick {
+            flipToggleButton(which)
+        }
+        table.add(image).row()
     }
 
     private fun getWrappedMinimap(): Table {
@@ -144,39 +199,9 @@ class MinimapHolder(mapHolder: WorldMapHolder): Table() {
 
     private fun getToggleIcons(): Table {
         val toggleIconTable = Table()
-        val settings = UncivGame.Current.settings
-
-        val yieldImage = ImageGetter.getStatIcon("Food").surroundWithCircle(40f)
-        yieldImage.circle.color = Color.BLACK
-        yieldImage.actor.color.a = if (settings.showTileYields) 1f else 0.5f
-        yieldImage.onClick {
-            settings.showTileYields = !settings.showTileYields
-            yieldImage.actor.color.a = if (settings.showTileYields) 1f else 0.5f
-            worldScreen.shouldUpdate = true
+        MinimapToggleButtons.values().forEach {
+            addToggleButton(toggleIconTable, it)
         }
-        toggleIconTable.add(yieldImage).row()
-
-        val populationImage = ImageGetter.getStatIcon("Population").surroundWithCircle(40f)
-        populationImage.circle.color = Color.BLACK
-        populationImage.actor.color.a = if (settings.showWorkedTiles) 1f else 0.5f
-        populationImage.onClick {
-            settings.showWorkedTiles = !settings.showWorkedTiles
-            populationImage.actor.color.a = if (settings.showWorkedTiles) 1f else 0.5f
-            worldScreen.shouldUpdate = true
-        }
-        toggleIconTable.add(populationImage).row()
-
-        val resourceImage = ImageGetter.getImage("ResourceIcons/Cattle")
-                .surroundWithCircle(30f).apply { circle.color = Color.GREEN }
-                .surroundWithCircle(40f, false).apply { circle.color = Color.BLACK }
-
-        resourceImage.actor.color.a = if (settings.showResourcesAndImprovements) 1f else 0.5f
-        resourceImage.onClick {
-            settings.showResourcesAndImprovements = !settings.showResourcesAndImprovements
-            resourceImage.actor.color.a = if (settings.showResourcesAndImprovements) 1f else 0.5f
-            worldScreen.shouldUpdate = true
-        }
-        toggleIconTable.add(resourceImage)
         toggleIconTable.pack()
         return toggleIconTable
     }
