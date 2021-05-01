@@ -21,6 +21,7 @@ class CityOverviewTable(val viewingPlayer: CivilizationInfo, val overviewScreen:
         const val iconSize = 50f  //if you set this too low, there is a chance that the tables will be misaligned
         const val paddingVert = 5f      // vertical padding
         const val paddingHorz = 8f      // horizontal padding
+        const val constructionLabelMinHeight = 40f
     }
 
     private val columnsNames = arrayListOf("Population", "Food", "Gold", "Science", "Production", "Culture", "Happiness")
@@ -131,13 +132,20 @@ class CityOverviewTable(val viewingPlayer: CivilizationInfo, val overviewScreen:
         if (descending)
             cityList = cityList.reversed()
 
+        val constructionCells: MutableList<Cell<Label>> = mutableListOf()
+        var maxHeight = constructionLabelMinHeight
         for (city in cityList) {
             val button = Button(city.name.toLabel(), CameraStageBaseScreen.skin)
             button.onClick {
                 overviewScreen.game.setScreen(CityScreen(city))
             }
             citiesTable.add(button)
-            citiesTable.add(city.cityConstructions.getCityProductionTextForCityButton().toLabel())
+
+            val cell = citiesTable.add(city.cityConstructions.getCityProductionTextForCityButton().toLabel())
+            cell.minHeight(constructionLabelMinHeight)
+            if (cell.prefHeight > maxHeight) maxHeight = cell.prefHeight
+            constructionCells.add(cell)
+
             citiesTable.add(city.population.population.toLabel()).myAlign(Align.center)
             for (column in columnsNames) {
                 if (!column.isStat()) continue
@@ -145,6 +153,12 @@ class CityOverviewTable(val viewingPlayer: CivilizationInfo, val overviewScreen:
             }
             citiesTable.row()
         }
+
+        // check if row heights diverge and if so fix it
+        if (maxHeight > constructionLabelMinHeight) {
+            constructionCells.forEach { it.minHeight(maxHeight) }
+        }
+
         citiesTable.pack()
     }
 
