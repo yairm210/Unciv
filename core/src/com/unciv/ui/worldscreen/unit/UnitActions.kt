@@ -360,14 +360,14 @@ object UnitActions {
 
     private fun takeOverTilesAround(unit: MapUnit) {
         // This method should only be called for a citadel - therefore one of the neighbour tile
-        // must belong to unit's civ, so minByOrNull will be never `null`.
+        // must belong to unit's civ, so minByOrNull will be never `null`. Thiss
 
-        fun priority(tile: TileInfo): Int {
-            // helper calculates priority (lower is better): distance plus razing malus
+        fun priority(tile: TileInfo): Int { // helper calculates priority (lower is better): distance plus razing malus
             val city = tile.getCity()!!       // !! assertion is guaranteed by the outer filter selector.
             return city.getCenterTile().aerialDistanceTo(tile) +
                     (if (city.isBeingRazed) 5 else 0)
         }
+
         // In the rare case more than one city owns tiles neighboring the citadel
         // this will prioritize the nearest one not being razed
         val nearestCity = unit.currentTile.neighbors
@@ -378,20 +378,20 @@ object UnitActions {
         // we use getTilesInDistance here, not neighbours to include the current tile as well
         val tilesToTakeOver = unit.currentTile.getTilesInDistance(1)
                 .filter { !it.isCityCenter() && it.getOwner() != unit.civInfo }
-        // make a set of civs to be notified (a set - in order to not repeat notification on each tile)
-        val notifications = mutableSetOf<CivilizationInfo>()
-        // take over the ownership
+
+        val civsToNotify = mutableSetOf<CivilizationInfo>()
         for (tile in tilesToTakeOver) {
             val otherCiv = tile.getOwner()
             if (otherCiv != null) {
                 // decrease relations for -10 pt/tile
                 if (!otherCiv.knows(unit.civInfo)) otherCiv.meetCivilization(unit.civInfo)
                 otherCiv.getDiplomacyManager(unit.civInfo).addModifier(DiplomaticModifiers.StealingTerritory, -10f)
-                notifications.add(otherCiv)
+                civsToNotify.add(otherCiv)
             }
             nearestCity.expansion.takeOwnership(tile)
         }
-        for (otherCiv in notifications)
+
+        for (otherCiv in civsToNotify)
             otherCiv.addNotification("[${unit.civInfo}] has stolen your territory!", unit.currentTile.position, unit.civInfo.civName, NotificationIcon.War)
     }
 

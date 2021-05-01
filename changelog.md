@@ -1,3 +1,21 @@
+## 3.14.5
+
+New tile layering is live for all users!
+
+Tile options in map editor screen no longer 'click' on tiles behind them
+
+Added construction production info to city screen
+
+Specify original owner when showing "Liberate city"
+
+Added "Self-destructs when attacking" unique
+
+By SomeTroglodyte:
+- City expansion notification points to acquired tile
+- Visual improvements for the City Overview 
+
+Fix screen bugs when you don't use splitpane in pickscreen  - By lishaoxia1985
+
 ## 3.14.4
 
 Resolved #3524 - Happiness in city overview now calculated correctly
