@@ -1,5 +1,6 @@
 package com.unciv.logic.city
 
+import com.badlogic.gdx.math.Vector2
 import com.unciv.logic.automation.Automation
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.map.TileInfo
@@ -95,14 +96,14 @@ class CityExpansionManager {
             takeOwnership(tile)
     }
 
-    private fun addNewTileWithCulture(): Boolean {
+    private fun addNewTileWithCulture(): Vector2? {
         val chosenTile = chooseNewTileToOwn()
         if (chosenTile != null) {
             cultureStored -= getCultureToNextTile()
             takeOwnership(chosenTile)
-            return true
+            return chosenTile.position
         }
-        return false
+        return null
     }
 
     fun relinquishOwnership(tileInfo: TileInfo) {
@@ -142,8 +143,11 @@ class CityExpansionManager {
 
     fun nextTurn(culture: Float) {
         cultureStored += culture.toInt()
-        if (cultureStored >= getCultureToNextTile() && addNewTileWithCulture())
-            cityInfo.civInfo.addNotification("[" + cityInfo.name + "] has expanded its borders!", cityInfo.location, NotificationIcon.Culture)
+        if (cultureStored >= getCultureToNextTile()) {
+            val location = addNewTileWithCulture()
+            if (location != null)
+                cityInfo.civInfo.addNotification("[" + cityInfo.name + "] has expanded its borders!", location, NotificationIcon.Culture)
+        }
     }
 
     fun setTransients() {
