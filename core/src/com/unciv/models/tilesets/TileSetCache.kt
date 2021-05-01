@@ -3,6 +3,7 @@ package com.unciv.models.tilesets
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.files.FileHandle
 import com.unciv.JsonParser
+import com.unciv.ui.utils.ImageGetter
 
 object TileSetCache : HashMap<String, TileSetConfig>(){
     fun loadTileSetConfigs(consoleMode: Boolean = false, printOutput: Boolean = false){
@@ -10,8 +11,8 @@ object TileSetCache : HashMap<String, TileSetConfig>(){
         var tileSetName = ""
 
         //load internal TileSets
-        val fileHandles = if (consoleMode) FileHandle("jsons/TileSets").list()
-        else Gdx.files.internal("jsons/TileSets").list()
+        val fileHandles: Sequence<FileHandle> = if (consoleMode) FileHandle("jsons/TileSets").list().asSequence()
+        else ImageGetter.getAvailableTilesets().map { Gdx.files.internal("jsons/TileSets/$it.json")}.filter { it.exists() }
 
         for (configFile in fileHandles){
             tileSetName = configFile.nameWithoutExtension().removeSuffix("Config")
