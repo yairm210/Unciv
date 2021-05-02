@@ -18,7 +18,9 @@ import kotlin.math.round
 
 class ImprovementPickerScreen(val tileInfo: TileInfo, val onAccept: ()->Unit) : PickerScreen() {
     private var selectedImprovement: TileImprovement? = null
-    val currentPlayerCiv = tileInfo.tileMap.gameInfo.getCurrentPlayerCivilization()
+    private val gameInfo = tileInfo.tileMap.gameInfo
+    private val ruleSet = gameInfo.ruleSet
+    private val currentPlayerCiv = gameInfo.getCurrentPlayerCivilization()
 
     fun accept(improvement: TileImprovement?) {
         if (improvement == null) return
@@ -47,10 +49,10 @@ class ImprovementPickerScreen(val tileInfo: TileInfo, val onAccept: ()->Unit) : 
         val regularImprovements = Table()
         regularImprovements.defaults().pad(5f)
 
-        for (improvement in tileInfo.tileMap.gameInfo.ruleSet.tileImprovements.values) {
-            // canBuildImprovement() would allow e.g. great improvements thus we need to exclude them - except cancel
+        for (improvement in ruleSet.tileImprovements.values) {
+            // turnsToBuild==0 are placeable by other units, not a worker, so canBuildImprovement() would allow them
             if (improvement.turnsToBuild == 0 && improvement.name != Constants.cancelImprovementOrder) continue
-            if (improvement.name == tileInfo.improvement) continue
+            if (improvement.name == tileInfo.improvement) continue      // also checked by canImprovementBeBuiltHere, but after more expensive tests
             if (!tileInfo.canBuildImprovement(improvement, currentPlayerCiv)) continue
 
             val improvementButtonTable = Table()
@@ -59,8 +61,23 @@ class ImprovementPickerScreen(val tileInfo: TileInfo, val onAccept: ()->Unit) : 
 
             improvementButtonTable.add(image).size(30f).pad(10f)
 
+            // allow multiple key mappings to technologically supersede each other
+            var shortcutKey = improvement.shortcutKey
+            if (shortcutKey != null) {
+                val techLevel = ruleSet.technologies[improvement.techRequired]?.column?.columnNumber ?: -1
+                val otherImprovements = ruleSet.tileImprovements.values
+                        // *other* improvements with same shortcutKey
+                    .filter { it.shortcutKey == improvement.shortcutKey && it != improvement }
+                        // civ can build it (checks tech researched)
+                    .filter { tileInfo.canBuildImprovement(it, currentPlayerCiv) }
+                        // is technologically more advanced
+                    .filter { (ruleSet.technologies[it.techRequired]?.column?.columnNumber ?: -1) > techLevel }
+                // another supersedes this - ignore key binding
+                if (otherImprovements.size > 0) shortcutKey = null
+            }
+
             var labelText = improvement.name.tr()
-            if (improvement.shortcutKey != null) labelText += " (${improvement.shortcutKey})"
+            if (shortcutKey != null) labelText += " ($shortcutKey)"
             val turnsToBuild = if (tileInfo.improvementInProgress == improvement.name) tileInfo.turnsToImprovement
             else improvement.getTurnsToBuild(currentPlayerCiv)
             if (turnsToBuild > 0) labelText += " - $turnsToBuild${Fonts.turn}"
@@ -76,7 +93,6 @@ class ImprovementPickerScreen(val tileInfo: TileInfo, val onAccept: ()->Unit) : 
             improvementButtonTable.onClick {
                 selectedImprovement = improvement
                 pick(improvement.name.tr())
-                val ruleSet = tileInfo.tileMap.gameInfo.ruleSet
                 descriptionLabel.setText(improvement.getDescription(ruleSet))
             }
 
@@ -84,8 +100,8 @@ class ImprovementPickerScreen(val tileInfo: TileInfo, val onAccept: ()->Unit) : 
                 "Pick now!".toLabel().onClick { accept(improvement) }
             else "Current construction".toLabel()
 
-            if (improvement.shortcutKey != null)
-                keyPressDispatcher[improvement.shortcutKey.toLowerCase()] = { accept(improvement) }
+            if (shortcutKey != null)
+                keyPressDispatcher[shortcutKey] = { accept(improvement) }
 
 
             val statIcons = getStatIconsTable(provideResource, removeImprovement)
