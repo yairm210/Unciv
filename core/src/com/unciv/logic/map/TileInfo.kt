@@ -352,6 +352,8 @@ open class TileInfo {
                     && improvement.name != "Remove Road" && improvement.name != "Remove Railroad"
                     && getTileImprovement().let { it != null && it.hasUnique("Irremovable") } -> false
 
+            // Decide cancelImprovementOrder earlier, otherwise next check breaks it
+            improvement.name == Constants.cancelImprovementOrder -> (this.improvementInProgress != null)
             // Tiles with no terrains, and no turns to build, are like great improvements - they're placeable
             improvement.terrainsCanBeBuiltOn.isEmpty() && improvement.turnsToBuild == 0 && isLand -> true
             improvement.terrainsCanBeBuiltOn.contains(topTerrain.name) -> true
@@ -364,7 +366,6 @@ open class TileInfo {
             improvement.name == "Railroad" && this.roadStatus != RoadStatus.Railroad && !isWater -> true
             improvement.name == "Remove Road" && this.roadStatus == RoadStatus.Road -> true
             improvement.name == "Remove Railroad" && this.roadStatus == RoadStatus.Railroad -> true
-            improvement.name == Constants.cancelImprovementOrder && this.improvementInProgress != null -> true
             topTerrain.unbuildable && (topTerrain.name !in improvement.resourceTerrainAllow) -> false
             // DO NOT reverse this &&. isAdjacentToFreshwater() is a lazy which calls a function, and reversing it breaks the tests.
             improvement.hasUnique("Can also be built on tiles adjacent to fresh water") && isAdjacentToFreshwater -> true
