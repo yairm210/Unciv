@@ -48,7 +48,6 @@ object BattleDamage {
                 if (enemy.matchesCategory(BDM.vs)) {
                     addToModifiers(BDM)
                 }
-
             }
 
             for (unique in combatant.unit.getMatchingUniques("+[]% Strength vs []")) {
@@ -172,8 +171,8 @@ object BattleDamage {
         modifiers.putAll(getTileSpecificModifiers(defender, tile))
 
         val tileDefenceBonus = tile.getDefensiveBonus()
-        if ((!defender.unit.hasUnique("No defensive terrain bonus") && tileDefenceBonus > 0)
-                || (!defender.unit.hasUnique("No defensive terrain penalty") && tileDefenceBonus < 0))
+        if (!defender.unit.hasUnique("No defensive terrain bonus") && tileDefenceBonus > 0
+                || !defender.unit.hasUnique("No defensive terrain penalty") && tileDefenceBonus < 0)
             modifiers["Tile"] = (tileDefenceBonus * 100).toInt()
 
         if (attacker.isRanged()) {
