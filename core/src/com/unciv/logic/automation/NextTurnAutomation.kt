@@ -536,6 +536,7 @@ object NextTurnAutomation {
                 otherCiv.popupAlerts.add(PopupAlert(AlertType.CitySettledNearOtherCivDespiteOurPromise, civInfo.civName))
                 diplomacyManager.setFlag(DiplomacyFlags.IgnoreThemSettlingNearUs, 100)
                 diplomacyManager.setModifier(DiplomaticModifiers.BetrayedPromiseToNotSettleCitiesNearUs, -20f)
+                diplomacyManager.removeFlag(DiplomacyFlags.AgreedToNotSettleNearUs)
             }
             else -> {
                 val threatLevel = Automation.threatAssessment(civInfo, otherCiv)
