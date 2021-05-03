@@ -1,5 +1,7 @@
 package com.unciv.ui.worldscreen
 
+import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.Input
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
@@ -143,9 +145,12 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
         return menuButton
     }
 
-    private fun getOverviewButton(): TextButton {
-        val overviewButton = "Overview".toTextButton()
-        overviewButton.labelCell.pad(10f)
+    private fun getOverviewButton(): Button {
+        val overviewButton = Button(CameraStageBaseScreen.skin)
+        overviewButton.add("Overview".toLabel()).pad(10f)
+        if (Gdx.app.input.isPeripheralAvailable(Input.Peripheral.HardwareKeyboard)) {
+            overviewButton.add(Label("(E)", CameraStageBaseScreen.skin).apply { color = Color.LIGHT_GRAY }).padLeft(0f)
+        }
         overviewButton.pack()
         overviewButton.onClick { worldScreen.game.setScreen(EmpireOverviewScreen(worldScreen.selectedCiv)) }
         overviewButton.centerY(this)
