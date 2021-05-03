@@ -6,11 +6,11 @@ class TileSetConfig {
     var useColorAsBaseTerrain = true
     var unexploredTileColor: Color = Color.DARK_GRAY
     var fogOfWarColor: Color = Color.BLACK
-    var ruleVariants: HashMap<String, List<String>> = HashMap()
-    var templateIndicator: Char = '?'
+    var ruleVariants: LinkedHashMap<String, List<String>> = LinkedHashMap() // Must be a LinkedHashMap to retain order on deserialization
+    private var templateIndicator: Char = '?'
 
     @Transient
-    private val templatedRuleVariants: HashMap<TileComposition, List<String>> = HashMap()
+    private val templatedRuleVariants: LinkedHashMap<TileComposition, List<String>> = LinkedHashMap()
     @Transient
     private val templateDictionary = HashMap<String, Sequence<String?>>()
 
@@ -18,9 +18,11 @@ class TileSetConfig {
         useColorAsBaseTerrain = other.useColorAsBaseTerrain
         unexploredTileColor = other.unexploredTileColor
         fogOfWarColor = other.fogOfWarColor
+        templateIndicator = other.templateIndicator
         for ((tileSetString, renderOrder) in other.ruleVariants){
             ruleVariants[tileSetString] = renderOrder
         }
+        setTransients()
     }
 
     fun setTransients(){
@@ -42,9 +44,10 @@ class TileSetConfig {
     }
 
     /**
-     * Returns true if a templated rule variant exists which matches the given sequences.
      * If a template is found the tile composition will be added to ruleVariants. The sequences must contain null
      * for each element which is not existing.
+     * @param[resAndImpSequence] should contain exactly two elements. Everything in between the first and the last will not be considered
+     * @return true if a templated rule variant exists which matches the given sequences.
      */
     fun generateRuleVariant(terrainSequence: Sequence<String?>, resAndImpSequence: Sequence<String?>): Boolean {
         val baseTerrain = terrainSequence.first()
@@ -65,7 +68,7 @@ class TileSetConfig {
             //generate map output for composition
             val finalRenderOrder = ArrayList<String>()
             for (element in renderOrder){
-                if (isTemplate(element))
+                if (!isTemplate(element))
                     finalRenderOrder.add(element)
                 else if (templateDictionary[element] != null)
                     finalRenderOrder.addAll(templateDictionary[element]!!.filterNotNull())
@@ -81,7 +84,8 @@ class TileSetConfig {
     }
 
     /**
-     * ruleElements must contain exactly two template strings. One at the front and one at the back.
+     * Checks if tileElements matches ruleElements and adds them to the template dictionary, if necessary.
+     * @param[ruleElements] must contain exactly two template strings(starting with template indicator). One at the front and one at the end.
      */
     private fun ruleMatches(ruleElements: List<String>, tileElements: Sequence<String?>): Boolean {
         var startTemplateStrings = sequenceOf<String?>()
@@ -121,17 +125,14 @@ class TileSetConfig {
     }
 
     /**
-     * Returns true if the given rule element was added to the template dictionary, if necessary.
+     * Checks if tileElement matches the ruleElement and adds it to the template dictionary, if necessary.
      */
     private fun ruleMatches(ruleElement: String, tileElement: String?): Boolean {
         if (isTemplate(ruleElement)){
             templateDictionary[ruleElement] = sequenceOf(tileElement)
             return true
         }
-        if (ruleElement == tileElement)
-            return true
-
-        return false
+        return ruleElement == tileElement
     }
 
     private fun isTemplate(string: String) = string.startsWith(templateIndicator)

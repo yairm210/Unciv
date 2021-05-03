@@ -176,15 +176,17 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings, 
         val shouldShowResource = UncivGame.Current.settings.showPixelImprovements && tileInfo.resource != null &&
                 (showEntireMap || viewingCiv == null || tileInfo.hasViewableResource(viewingCiv))
 
-        var resourceAndImprovementSequence = sequenceOf<String?>()
-        if (shouldShowResource) resourceAndImprovementSequence += sequenceOf(tileInfo.resource)
-        else resourceAndImprovementSequence += null // we need null to check against for templated ruleVariants
-        if (shouldShowImprovement) resourceAndImprovementSequence += sequenceOf(tileInfo.improvement)
-        else resourceAndImprovementSequence += null // we need null to check against for templated ruleVariants
+        val resourceAndImprovementSequence = when {
+            shouldShowResource && shouldShowImprovement -> sequenceOf(tileInfo.resource, tileInfo.improvement)
+            shouldShowResource -> sequenceOf(tileInfo.resource, null)
+            shouldShowImprovement -> sequenceOf(null, tileInfo.improvement)
+            else -> sequenceOf(null, null) // we need null to check against for templated ruleVariants
+        }
 
-        var terrainImages: Sequence<String?> = sequenceOf(tileInfo.baseTerrain)
-        if (tileInfo.terrainFeatures.isEmpty()) terrainImages += sequenceOf(null) // we need null to check against for templated ruleVariants
-        else terrainImages += tileInfo.terrainFeatures.asSequence()
+        val terrainImages = when {
+            tileInfo.terrainFeatures.isEmpty() -> sequenceOf(tileInfo.baseTerrain, null) // we need null to check against for templated ruleVariants
+            else -> sequenceOf(tileInfo.baseTerrain) + tileInfo.terrainFeatures
+        }
 
         val allTogether = (terrainImages + resourceAndImprovementSequence).filterNotNull().joinToString("+")
         val allTogetherLocation = tileSetStrings.getTile(allTogether)
