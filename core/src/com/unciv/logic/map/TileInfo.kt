@@ -659,7 +659,8 @@ open class TileInfo {
     }
 
     private fun convertHillToTerrainFeature(){
-        if (baseTerrain == Constants.hill){
+        if (baseTerrain == Constants.hill &&
+                ruleset.terrains[Constants.hill]?.type == TerrainType.TerrainFeature){
             baseTerrain = Constants.grassland
             //We have to add hill as first terrain feature
             val copy = terrainFeatures.toTypedArray()
