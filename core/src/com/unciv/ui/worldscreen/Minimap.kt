@@ -37,8 +37,8 @@ class Minimap(val mapHolder: WorldMapHolder) : Table(){
         var bottomY = 0f
 
         fun hexRow(vector2: Vector2) = vector2.x + vector2.y
-        val maxHexRow = mapHolder.tileMap.values.asSequence().map { hexRow(it.position) }.max()!!
-        val minHexRow = mapHolder.tileMap.values.asSequence().map { hexRow(it.position) }.min()!!
+        val maxHexRow = mapHolder.tileMap.values.asSequence().map { hexRow(it.position) }.maxOrNull()!!
+        val minHexRow = mapHolder.tileMap.values.asSequence().map { hexRow(it.position) }.minOrNull()!!
         val totalHexRows = maxHexRow - minHexRow
 
         for (tileInfo in mapHolder.tileMap.values) {
@@ -153,7 +153,7 @@ class MinimapHolder(mapHolder: WorldMapHolder): Table() {
     internal fun syncButtonStates() {
         MinimapToggleButtons.values().forEach { syncButtonState(it) }
     }
-    private fun toggleButtonState(button: MinimapToggleButtons) = setButtonState(button,!getButtonState(button))
+    fun toggleButtonState(button: MinimapToggleButtons) = setButtonState(button,!getButtonState(button))
 
     private fun addToggleButton(table:Table, button: MinimapToggleButtons) {
         val image =

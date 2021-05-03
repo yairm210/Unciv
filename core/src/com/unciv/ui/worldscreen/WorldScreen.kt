@@ -15,6 +15,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
+import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
 import com.unciv.logic.GameSaver
 import com.unciv.logic.civilization.CivilizationInfo
@@ -26,16 +27,21 @@ import com.unciv.models.ruleset.unit.UnitType
 import com.unciv.models.translations.tr
 import com.unciv.ui.CivilopediaScreen
 import com.unciv.ui.cityscreen.CityScreen
+import com.unciv.ui.overviewscreen.EmpireOverviewScreen
 import com.unciv.ui.pickerscreens.GreatPersonPickerScreen
 import com.unciv.ui.pickerscreens.PolicyPickerScreen
 import com.unciv.ui.pickerscreens.TechButton
 import com.unciv.ui.pickerscreens.TechPickerScreen
+import com.unciv.ui.saves.LoadGameScreen
+import com.unciv.ui.saves.SaveGameScreen
 import com.unciv.ui.trade.DiplomacyScreen
 import com.unciv.ui.utils.*
 import com.unciv.ui.victoryscreen.VictoryScreen
+import com.unciv.ui.worldscreen.MinimapHolder.MinimapToggleButtons
 import com.unciv.ui.worldscreen.bottombar.BattleTable
 import com.unciv.ui.worldscreen.bottombar.TileInfoTable
 import com.unciv.ui.worldscreen.mainmenu.OnlineMultiplayer
+import com.unciv.ui.worldscreen.mainmenu.OptionsPopup
 import com.unciv.ui.worldscreen.unit.UnitActionsTable
 import com.unciv.ui.worldscreen.unit.UnitTable
 import java.util.*
@@ -175,8 +181,68 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Cam
     }
 
     private fun addKeyboardPresses() {
+        val quickSave = {
+            val toast = ToastPopup("Quicksaving...", this)
+            thread(name = "SaveGame") {
+                GameSaver.saveGame(gameInfo, "QuickSave") {
+                    Gdx.app.postRunnable {
+                        toast.close()
+                        if (it != null)
+                            ToastPopup("Quicksave failed!", this)
+                        else {
+                            ToastPopup("Quicksave OK.", this)
+                            UncivGame.Current.setWorldScreen()
+                        }
+                    }
+                }
+            }
+            Unit
+        }
+        val quickLoad = {
+            val toast = ToastPopup("Quickloading...", this)
+            thread(name = "SaveGame") {
+                try {
+                    val loadedGame = GameSaver.loadGameByName("QuickSave")
+                    Gdx.app.postRunnable {
+                        toast.close()
+                        UncivGame.Current.loadGame(loadedGame)
+                        ToastPopup("Quickload OK.", this)
+                    }
+                } catch (ex: Exception) {
+                    Gdx.app.postRunnable {
+                        ToastPopup("Quickload failed!", this)
+                    }
+                }
+            }
+            Unit
+        }
         // Space and N are assigned in createNextTurnButton
         keyPressDispatcher[Input.Keys.F1] = { game.setScreen(CivilopediaScreen(gameInfo.ruleSet)) }
+        keyPressDispatcher['E'] = { game.setScreen(EmpireOverviewScreen(selectedCiv)) }     // Empire overview last used page
+        /*
+         * These try to be faithful to default Civ5 key bindings as found in several places online
+         * Some are a little arbitrary, e.g. Economic info, Military info
+         * Some are very much so as Unciv *is* Strategic View and the Notification log is always visible
+         */
+        keyPressDispatcher[Input.Keys.F2] = { game.setScreen(EmpireOverviewScreen(selectedCiv, "Trades")) }    // Economic info
+        keyPressDispatcher[Input.Keys.F3] = { game.setScreen(EmpireOverviewScreen(selectedCiv, "Units")) }    // Military info
+        keyPressDispatcher[Input.Keys.F4] = { game.setScreen(EmpireOverviewScreen(selectedCiv, "Diplomacy")) }    // Diplomacy info
+        keyPressDispatcher[Input.Keys.F5] = { game.setScreen(PolicyPickerScreen(this, selectedCiv))  }    // Social Policies Screen
+        keyPressDispatcher[Input.Keys.F6] = { game.setScreen(TechPickerScreen(viewingCiv)) }    // Tech Screen
+        keyPressDispatcher[Input.Keys.F7] = { game.setScreen(EmpireOverviewScreen(selectedCiv, "Cities")) }    // originally Notification Log
+        keyPressDispatcher[Input.Keys.F8] = { game.setScreen(VictoryScreen(this)) }    // Victory Progress
+        keyPressDispatcher[Input.Keys.F9] = { game.setScreen(EmpireOverviewScreen(selectedCiv, "Stats")) }    // Demographics
+        keyPressDispatcher[Input.Keys.F10] = { game.setScreen(EmpireOverviewScreen(selectedCiv, "Resources")) }    // originally Strategic View
+        keyPressDispatcher[Input.Keys.F11] = quickSave    // Quick Save
+        keyPressDispatcher[Input.Keys.F12] = quickLoad    // Quick Load
+        keyPressDispatcher[Input.Keys.HOME] = { mapHolder.setCenterPosition(gameInfo.currentPlayerCiv.getCapital().location) }    // Capital City View
+        keyPressDispatcher['\u0012'] = { minimapWrapper.toggleButtonState(MinimapToggleButtons.RESOURCES) }    //   Ctrl-R: Show Resources Icons
+        keyPressDispatcher['\u0019'] = { minimapWrapper.toggleButtonState(MinimapToggleButtons.YIELD) }    //   Ctrl-Y: Yield Icons
+        keyPressDispatcher['\u000F'] = { OptionsPopup(this).open() }    //   Ctrl-O: Game Options
+        keyPressDispatcher['\u0013'] = { game.setScreen(SaveGameScreen(gameInfo)) }    //   Ctrl-S: Save
+        keyPressDispatcher['\u000C'] = { game.setScreen(LoadGameScreen(this)) }    //   Ctrl-L: Load
+        keyPressDispatcher['+'] = { this.mapHolder.zoomIn() }    //   '+' Zoom - Input.Keys.NUMPAD_ADD would need dispatcher patch
+        keyPressDispatcher['-'] = { this.mapHolder.zoomOut() }    //   '-' Zoom
         keyPressDispatcher.setCheckpoint()
     }
 
