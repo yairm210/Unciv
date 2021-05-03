@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.math.MathUtils
 import com.badlogic.gdx.math.Vector2
+import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Image
@@ -17,13 +18,15 @@ import com.unciv.ui.utils.IconCircleGroup
 import com.unciv.ui.utils.ImageGetter
 import com.unciv.ui.utils.onClick
 import com.unciv.ui.utils.surroundWithCircle
+import java.util.*
+import kotlin.collections.HashMap
 import kotlin.math.max
 import kotlin.math.min
 
 class Minimap(val mapHolder: WorldMapHolder) : Table(){
     private val allTiles = Group()
     private val tileImages = HashMap<TileInfo, Image>()
-    private val scrollPosistionIndicator = ImageGetter.getImage("OtherIcons/Camera")
+    private val scrollPositionIndicator = ImageGetter.getImage("OtherIcons/Camera")
 
     init {
         isTransform = false // don't try to resize rotate etc - this table has a LOT of children so that's valuable render time!
@@ -68,26 +71,26 @@ class Minimap(val mapHolder: WorldMapHolder) : Table(){
         // so we zero out the starting position of the whole board so they will be displayed as well
         allTiles.setSize(topX - bottomX, topY - bottomY)
 
-        scrollPosistionIndicator.touchable = Touchable.disabled
-        allTiles.addActor(scrollPosistionIndicator)
+        scrollPositionIndicator.touchable = Touchable.disabled
+        allTiles.addActor(scrollPositionIndicator)
 
         add(allTiles)
         layout()
     }
 
-    fun updateScrollPosistion(scrollPos: Vector2, scale: Vector2){
+    fun updateScrollPosition(scrollPos: Vector2, scale: Vector2){
 
-        val scrollPosistionIndicatorBaseScale = Vector2(allTiles.width / mapHolder.maxX, allTiles.height / mapHolder.maxY)
+        val scrollPositionIndicatorBaseScale = Vector2(allTiles.width / mapHolder.maxX, allTiles.height / mapHolder.maxY)
 
-        scrollPosistionIndicator.scaleX = scrollPosistionIndicatorBaseScale.x * 10f * max(2f - scale.x, 0.25f)
-        scrollPosistionIndicator.scaleY = scrollPosistionIndicatorBaseScale.y * 10f * max(2f - scale.y, 0.25f)
+        scrollPositionIndicator.scaleX = scrollPositionIndicatorBaseScale.x * 10f * max(2f - scale.x, 0.25f)
+        scrollPositionIndicator.scaleY = scrollPositionIndicatorBaseScale.y * 10f * max(2f - scale.y, 0.25f)
 
-        val scrollPositionIndicatorOffset = Vector2(-50f * scrollPosistionIndicator.scaleX, 125f + (50f * (1-scrollPosistionIndicator.scaleY)))
+        val scrollPositionIndicatorOffset = Vector2(-50f * scrollPositionIndicator.scaleX, 125f + (50f * (1-scrollPositionIndicator.scaleY)))
 
         val scrollPosOnMinimap = Vector2((scrollPos.x / mapHolder.maxX) * allTiles.width, (scrollPos.y / mapHolder.maxY) * allTiles.height)
         scrollPosOnMinimap.x = MathUtils.clamp(scrollPosOnMinimap.x, -scrollPositionIndicatorOffset.x, allTiles.width + scrollPositionIndicatorOffset.x)
         scrollPosOnMinimap.y = MathUtils.clamp(scrollPosOnMinimap.y, -scrollPositionIndicatorOffset.x, scrollPositionIndicatorOffset.y)
-        scrollPosistionIndicator.setPosition(scrollPositionIndicatorOffset.x + scrollPosOnMinimap.x, scrollPositionIndicatorOffset.y - scrollPosOnMinimap.y)
+        scrollPositionIndicator.setPosition(scrollPositionIndicatorOffset.x + scrollPosOnMinimap.x, scrollPositionIndicatorOffset.y - scrollPosOnMinimap.y)
     }
 
     private class CivAndImage(val civInfo: CivilizationInfo, val image: IconCircleGroup)
@@ -120,11 +123,60 @@ class Minimap(val mapHolder: WorldMapHolder) : Table(){
 class MinimapHolder(mapHolder: WorldMapHolder): Table() {
     val minimap = Minimap(mapHolder)
     val worldScreen = mapHolder.worldScreen
+    private data class ToggleButtonInfo(val actor: Actor, val getSetting: ()->Boolean, val setSetting: (Boolean)->Unit)
+    private val toggleButtonInfo: EnumMap<MinimapToggleButtons,ToggleButtonInfo> = EnumMap<MinimapToggleButtons,ToggleButtonInfo>(MinimapToggleButtons::class.java)
 
     init {
         add(getToggleIcons()).align(Align.bottom)
         add(getWrappedMinimap())
         pack()
+    }
+
+    enum class MinimapToggleButtons(val icon: String) {
+        YIELD ("Food"),
+        WORKED ("Population"),
+        RESOURCES ("ResourceIcons/Cattle");
+    }
+
+    // "Api" when external code wants to toggle something together with our buttons
+    private fun getButtonState(button: MinimapToggleButtons): Boolean {
+        val info = toggleButtonInfo[button] ?: return false
+        return info.getSetting()
+    }
+    private fun setButtonState(button: MinimapToggleButtons, value: Boolean) {
+        val info = toggleButtonInfo[button] ?: return
+        info.setSetting(value)
+        info.actor.color.a = if (value) 1f else 0.5f
+        worldScreen.shouldUpdate = true
+    }
+    private fun syncButtonState(button: MinimapToggleButtons) = setButtonState(button,getButtonState(button))
+    internal fun syncButtonStates() {
+        MinimapToggleButtons.values().forEach { syncButtonState(it) }
+    }
+    private fun toggleButtonState(button: MinimapToggleButtons) = setButtonState(button,!getButtonState(button))
+
+    private fun addToggleButton(table:Table, button: MinimapToggleButtons) {
+        val image =
+                if ('/' in button.icon) {
+                    ImageGetter.getImage(button.icon)
+                        .surroundWithCircle(30f).apply { circle.color = Color.GREEN }
+                        .surroundWithCircle(40f, false)
+                } else {
+                    ImageGetter.getStatIcon(button.icon).surroundWithCircle(40f)
+                }
+        image.apply { circle.color = Color.BLACK }
+        toggleButtonInfo[button] = with(UncivGame.Current.settings) {
+            when (button) {
+                MinimapToggleButtons.YIELD -> ToggleButtonInfo(image, {showTileYields}, {showTileYields = it})
+                MinimapToggleButtons.WORKED -> ToggleButtonInfo(image, {showWorkedTiles}, {showWorkedTiles = it})
+                else -> ToggleButtonInfo(image, {showResourcesAndImprovements}, {showResourcesAndImprovements = it})
+            }
+        }
+        syncButtonState(button)
+        image.onClick {
+            toggleButtonState(button)
+        }
+        table.add(image).row()
     }
 
     private fun getWrappedMinimap(): Table {
@@ -144,39 +196,9 @@ class MinimapHolder(mapHolder: WorldMapHolder): Table() {
 
     private fun getToggleIcons(): Table {
         val toggleIconTable = Table()
-        val settings = UncivGame.Current.settings
-
-        val yieldImage = ImageGetter.getStatIcon("Food").surroundWithCircle(40f)
-        yieldImage.circle.color = Color.BLACK
-        yieldImage.actor.color.a = if (settings.showTileYields) 1f else 0.5f
-        yieldImage.onClick {
-            settings.showTileYields = !settings.showTileYields
-            yieldImage.actor.color.a = if (settings.showTileYields) 1f else 0.5f
-            worldScreen.shouldUpdate = true
+        MinimapToggleButtons.values().forEach {
+            addToggleButton(toggleIconTable, it)
         }
-        toggleIconTable.add(yieldImage).row()
-
-        val populationImage = ImageGetter.getStatIcon("Population").surroundWithCircle(40f)
-        populationImage.circle.color = Color.BLACK
-        populationImage.actor.color.a = if (settings.showWorkedTiles) 1f else 0.5f
-        populationImage.onClick {
-            settings.showWorkedTiles = !settings.showWorkedTiles
-            populationImage.actor.color.a = if (settings.showWorkedTiles) 1f else 0.5f
-            worldScreen.shouldUpdate = true
-        }
-        toggleIconTable.add(populationImage).row()
-
-        val resourceImage = ImageGetter.getImage("ResourceIcons/Cattle")
-                .surroundWithCircle(30f).apply { circle.color = Color.GREEN }
-                .surroundWithCircle(40f, false).apply { circle.color = Color.BLACK }
-
-        resourceImage.actor.color.a = if (settings.showResourcesAndImprovements) 1f else 0.5f
-        resourceImage.onClick {
-            settings.showResourcesAndImprovements = !settings.showResourcesAndImprovements
-            resourceImage.actor.color.a = if (settings.showResourcesAndImprovements) 1f else 0.5f
-            worldScreen.shouldUpdate = true
-        }
-        toggleIconTable.add(resourceImage)
         toggleIconTable.pack()
         return toggleIconTable
     }
