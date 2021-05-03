@@ -50,6 +50,7 @@
 	},
 	{
 		"name": "Oil well",
+		"terrainsCanBeBuiltOn": ["Coast"],
 		"turnsToBuild": 9,
 		"techRequired": "Biology"
 	},
@@ -182,7 +183,7 @@
 	},
 	{
 		"name": "Citadel",
-		"uniques": ["Gives a defensive bonus of [100]%", "Deal 30 damage to adjacent enemy units", "Great Improvement"]
+		"uniques": ["Gives a defensive bonus of [100]%", "Deal 30 damage to adjacent enemy units", "Great Improvement", "Can be built just outside your borders"]
 	},
 
 	//Civilization unique improvements
@@ -208,7 +209,8 @@
 		"shortcutKey": "F"
 	},
 	
-	{ "name": "Ancient ruins" },
-	{ "name": "City ruins" },
-	{ "name": "Barbarian encampment" }
+	{ "name": "Ancient ruins", "uniques": ["Unpillagable"] },
+	{ "name": "City ruins", "uniques": ["Unpillagable"] },
+	{ "name": "City center", "uniques": ["Unpillagable"] },
+	{ "name": "Barbarian encampment", "uniques": ["Unpillagable"] }
 ]

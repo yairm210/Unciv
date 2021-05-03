@@ -102,7 +102,7 @@ class Building : NamedStats(), IConstruction {
                 val stats = unique.params[0]
                 if (!tileBonusHashmap.containsKey(stats)) tileBonusHashmap[stats] = ArrayList()
                 tileBonusHashmap[stats]!!.add(unique.params[1])
-            } else finalUniques += unique.text
+            } else if (unique.placeholderText != "Consumes [] []") finalUniques += unique.text
         for ((key, value) in tileBonusHashmap)
             finalUniques += "[stats] from [tileFilter] tiles in this city".fillPlaceholders(key, value.joinToString { it.tr() })
         return finalUniques
@@ -287,6 +287,7 @@ class Building : NamedStats(), IConstruction {
         }
 
         for (unique in uniqueObjects) when (unique.placeholderText) {
+            "Enables nuclear weapon" -> if(!construction.cityInfo.civInfo.gameInfo.gameParameters.nuclearWeaponsEnabled) return "Disabled by setting"
             "Must be on []" -> if (!cityCenter.matchesUniqueFilter(unique.params[0], civInfo)) return unique.text
             "Must not be on []" -> if (cityCenter.matchesUniqueFilter(unique.params[0], civInfo)) return unique.text
             "Must be next to []" -> if (!(unique.params[0] == "Fresh water" && cityCenter.isAdjacentToRiver()) // Fresh water is special, in that rivers are not tiles themselves but also fit the filter.
@@ -364,7 +365,7 @@ class Building : NamedStats(), IConstruction {
             "Requires a [] in all cities" -> {
                 val filter = unique.params[0]
                 if (civInfo.gameInfo.ruleSet.buildings.containsKey(filter)
-                        && civInfo.cities.any { !it.cityConstructions.containsBuildingOrEquivalent(unique.params[0]) })
+                        && civInfo.cities.any { !it.isPuppet && !it.cityConstructions.containsBuildingOrEquivalent(unique.params[0]) })
                     return "Requires a [${civInfo.getEquivalentBuilding(unique.params[0])}] in all cities"  // replace with civ-specific building for user
             }
         }

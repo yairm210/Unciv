@@ -1,7 +1,5 @@
 package com.unciv.logic.civilization
 
-
-import com.badlogic.gdx.graphics.Color
 import com.unciv.logic.map.MapSize
 import com.unciv.logic.map.RoadStatus
 import com.unciv.models.ruleset.Unique
@@ -70,7 +68,7 @@ class TechManager {
 
     fun getNumberOfTechsResearched(): Int = techsResearched.size
 
-    fun getRuleset() = civInfo.gameInfo.ruleSet
+    private fun getRuleset() = civInfo.gameInfo.ruleSet
 
     fun costOfTech(techName: String): Int {
         var techCost = getRuleset().technologies[techName]!!.cost.toFloat()
@@ -156,7 +154,7 @@ class TechManager {
         return (scienceOfLast8Turns.sum() * civInfo.gameInfo.gameParameters.gameSpeed.modifier).toInt()
     }
 
-    fun addCurrentScienceToScienceOfLast8Turns() {
+    private fun addCurrentScienceToScienceOfLast8Turns() {
         // The Science the Great Scientist generates does not include Science from Policies, Trade routes and City-States.
         var allCitiesScience = 0f
         civInfo.cities.forEach { it ->
@@ -167,11 +165,11 @@ class TechManager {
         scienceOfLast8Turns[civInfo.gameInfo.turns % 8] = allCitiesScience.toInt()
     }
 
-    fun limitOverflowScience(overflowscience: Int): Int {
+    private fun limitOverflowScience(overflowScience: Int): Int {
         // http://www.civclub.net/bbs/forum.php?mod=viewthread&tid=123976
         // Apparently yes, we care about the absolute tech cost, not the actual calculated-for-this-player tech cost,
         //  so don't change to costOfTech()
-        return min(overflowscience, max(civInfo.statsForNextTurn.science.toInt() * 5,
+        return min(overflowScience, max(civInfo.statsForNextTurn.science.toInt() * 5,
                 getRuleset().technologies[currentTechnologyName()]!!.cost))
     }
 
@@ -183,7 +181,7 @@ class TechManager {
         return (scienceFromResearchAgreements / 3 * researchAgreementModifier).toInt()
     }
 
-    fun nextTurn(scienceForNewTurn: Int) {
+    fun endTurn(scienceForNewTurn: Int) {
         addCurrentScienceToScienceOfLast8Turns()
         if (currentTechnologyName() == null) return
 
@@ -241,23 +239,19 @@ class TechManager {
         }
         updateTransientBooleans()
 
-        civInfo.addNotification("Research of [$techName] has completed!", Color.BLUE, TechAction(techName))
+        civInfo.addNotification("Research of [$techName] has completed!", TechAction(techName), NotificationIcon.Science, techName )
         civInfo.popupAlerts.add(PopupAlert(AlertType.TechResearched, techName))
 
         val currentEra = civInfo.getEra()
         if (previousEra != currentEra) {
-            civInfo.addNotification("You have entered the [$currentEra]!", null, Color.GOLD)
+            civInfo.addNotification("You have entered the [$currentEra]!", NotificationIcon.Science)
             if (civInfo.isMajorCiv()) {
                 for (knownCiv in civInfo.getKnownCivs()) {
-                    knownCiv.addNotification(
-                            "[${civInfo.civName}] has entered the [$currentEra]!",
-                            null,
-                            Color.BLUE
-                    )
+                    knownCiv.addNotification("[${civInfo.civName}] has entered the [$currentEra]!", civInfo.civName, NotificationIcon.Science)
                 }
             }
             for (it in getRuleset().policyBranches.values.filter { it.era == currentEra }) {
-                civInfo.addNotification("[" + it.name + "] policy branch unlocked!", null, Color.PURPLE)
+                civInfo.addNotification("[" + it.name + "] policy branch unlocked!", NotificationIcon.Culture)
             }
         }
 
@@ -272,7 +266,7 @@ class TechManager {
                         .firstOrNull { it.isCityCenter() }
                 if (closestCityTile != null) {
                     val text = "[${revealedResource.name}] revealed near [${closestCityTile.getCity()!!.name}]"
-                    civInfo.addNotification(text, tileInfo.position, Color.BLUE)
+                    civInfo.addNotification(text, tileInfo.position, "ResourceIcons/"+revealedResource.name)
                     break
                 }
             }
@@ -284,11 +278,10 @@ class TechManager {
             val oldQueue = city.cityConstructions.constructionQueue.toList()  // copy, since we're changing the queue
             city.cityConstructions.constructionQueue.clear()
             for (constructionName in oldQueue) {
-                val newConstructionName = constructionName
                 if (constructionName in obsoleteUnits) {
                     val text = "[$constructionName] has been obsolete and will be removed from construction queue in [${city.name}]!"
-                    civInfo.addNotification(text, city.location, Color.BROWN)
-                } else city.cityConstructions.constructionQueue.add(newConstructionName)
+                    civInfo.addNotification(text, city.location, NotificationIcon.Construction)
+                } else city.cityConstructions.constructionQueue.add(constructionName)
             }
         }
 
@@ -304,7 +297,7 @@ class TechManager {
         updateTransientBooleans()
     }
 
-    fun updateTransientBooleans() {
+    private fun updateTransientBooleans() {
         wayfinding = civInfo.hasUnique("Can embark and move over Coasts and Oceans immediately")
         unitsCanEmbark = wayfinding || civInfo.hasUnique("Enables embarkation for land units")
 

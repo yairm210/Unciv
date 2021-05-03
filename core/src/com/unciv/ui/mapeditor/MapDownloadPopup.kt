@@ -80,7 +80,7 @@ class MapDownloadPopup(loadMapScreen: SaveAndLoadMapScreen): Popup(loadMapScreen
             MapSaver.saveMap(downloadableMap.name, mapObject)
 
             // creating a screen is a GL task
-            Gdx.app.postRunnable { UncivGame.Current.setScreen(MapEditorScreen(mapObject)) }
+            Gdx.app.postRunnable { screen.game.setScreen(MapEditorScreen(mapObject)) }
         } catch (ex: Exception) {
             print(ex)
 

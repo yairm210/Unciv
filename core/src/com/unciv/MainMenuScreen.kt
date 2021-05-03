@@ -4,7 +4,6 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
-import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.logic.GameInfo
 import com.unciv.logic.GameSaver
@@ -59,17 +58,14 @@ class MainMenuScreen: CameraStageBaseScreen() {
                         Actions.fadeOut(0f),
                         Actions.run {
                             mapHolder.apply {
-                                addTiles(30f)
+                                addTiles(this@MainMenuScreen.stage.width, this@MainMenuScreen.stage.height)
                                 touchable = Touchable.disabled
-                                setScale(1f)
-                                center(this@MainMenuScreen.stage)
-                                layout()
                             }
-                            backgroundTable.add(mapHolder).size(stage.width, stage.height)
+                            backgroundTable.addActor(mapHolder)
+                            mapHolder.center(backgroundTable)
                         },
                         Actions.fadeIn(0.3f)
                 ))
-
             }
         }
 
@@ -86,7 +82,6 @@ class MainMenuScreen: CameraStageBaseScreen() {
 
         val newGameButton = getTableBlock("Start new game", "OtherIcons/New") {
             game.setScreen(NewGameScreen(this))
-            dispose()
         }
         column1.add(newGameButton).row()
 
@@ -120,11 +115,8 @@ class MainMenuScreen: CameraStageBaseScreen() {
         table.add(column2)
         table.pack()
 
-        val scroll = ScrollPane(table)
-        scroll.setSize(table.width, stage.height * 0.98f)
-        scroll.center(stage)
-        scroll.setOverscroll(false, false)
-        stage.addActor(scroll)
+        stage.addActor(table)
+        table.center(stage)
 
         onBackButtonClicked {
             if(hasOpenPopups()) {
@@ -179,21 +171,29 @@ class MainMenuScreen: CameraStageBaseScreen() {
 
 
     private fun autoLoadGame() {
-        ToastPopup("Loading...", this)
+        val loadingPopup = Popup(this)
+        loadingPopup.addGoodSizedLabel("Loading...")
+        loadingPopup.open()
         thread { // Load game from file to class on separate thread to avoid ANR...
             var savedGame: GameInfo
             try {
                 savedGame = GameSaver.loadGameByName(autosave)
             } catch (outOfMemory: OutOfMemoryError) {
-                Gdx.app.postRunnable { ToastPopup("Not enough memory on phone to load game!", this) }
+                Gdx.app.postRunnable {
+                    loadingPopup.close()
+                    ToastPopup("Not enough memory on phone to load game!", this)
+                }
                 return@thread
             } catch (ex: Exception) { // silent fail if we can't read the autosave for any reason - try to load the last autosave by turn number first
                 // This can help for situations when the autosave is corrupted
                 try {
                     val autosaves = GameSaver.getSaves().filter { it.name() != autosave && it.name().startsWith(autosave) }
-                    savedGame = GameSaver.loadGameFromFile(autosaves.maxBy { it.lastModified() }!!)
+                    savedGame = GameSaver.loadGameFromFile(autosaves.maxByOrNull { it.lastModified() }!!)
                 } catch (ex: Exception) {
-                    Gdx.app.postRunnable { ToastPopup("Cannot resume game!", this) }
+                    Gdx.app.postRunnable {
+                        loadingPopup.close()
+                        ToastPopup("Cannot resume game!", this)
+                    }
                     return@thread
                 }
             }
@@ -203,6 +203,7 @@ class MainMenuScreen: CameraStageBaseScreen() {
                     game.loadGame(savedGame)
                     dispose()
                 } catch (outOfMemory: OutOfMemoryError) {
+                    loadingPopup.close()
                     ToastPopup("Not enough memory on phone to load game!", this)
                 }
 
@@ -215,4 +216,9 @@ class MainMenuScreen: CameraStageBaseScreen() {
         game.loadGame(newGame)
     }
 
+    override fun resize(width: Int, height: Int) {
+        if (stage.viewport.screenWidth != width || stage.viewport.screenHeight != height) {
+            game.setScreen(MainMenuScreen())
+        }
+    }
 }

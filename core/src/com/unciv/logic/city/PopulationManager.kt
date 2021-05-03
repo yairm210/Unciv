@@ -2,9 +2,9 @@ package com.unciv.logic.city
 
 import com.badlogic.gdx.graphics.Color
 import com.unciv.logic.automation.Automation
+import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.Counter
-import com.unciv.models.stats.Stats
 import com.unciv.ui.utils.withItem
 import com.unciv.ui.utils.withoutItem
 import kotlin.math.floor
@@ -52,7 +52,7 @@ class PopulationManager {
     fun nextTurn(food: Int) {
         foodStored += food
         if (food < 0)
-            cityInfo.civInfo.addNotification("[${cityInfo.name}] is starving!", cityInfo.location, Color.RED)
+            cityInfo.civInfo.addNotification("[${cityInfo.name}] is starving!", cityInfo.location, NotificationIcon.Growth, NotificationIcon.Death)
         if (foodStored < 0) {        // starvation!
             if (population > 1) population--
             foodStored = 0
@@ -65,7 +65,7 @@ class PopulationManager {
             foodStored += (getFoodToNextPopulation() * percentOfFoodCarriedOver / 100f).toInt()
             population++
             autoAssignPopulation()
-            cityInfo.civInfo.addNotification("[${cityInfo.name}] has grown!", cityInfo.location, Color.GREEN)
+            cityInfo.civInfo.addNotification("[${cityInfo.name}] has grown!", cityInfo.location, NotificationIcon.Growth)
         }
     }
 
@@ -80,15 +80,15 @@ class PopulationManager {
             //evaluate tiles
             val bestTile: TileInfo? = cityInfo.getTiles()
                     .filter { it.aerialDistanceTo(cityInfo.getCenterTile()) <= 3 }
-                    .filterNot { it.isWorked() || cityInfo.location == it.position }
-                    .maxBy { Automation.rankTileForCityWork(it, cityInfo, foodWeight) }
+                    .filterNot { it.providesYield() }
+                    .maxByOrNull { Automation.rankTileForCityWork(it, cityInfo, foodWeight) }
             val valueBestTile = if (bestTile == null) 0f
             else Automation.rankTileForCityWork(bestTile, cityInfo, foodWeight)
 
             val bestJob: String? = getMaxSpecialists()
                     .filter { specialistAllocations[it.key]!! < it.value }
                     .map { it.key }
-                    .maxBy { Automation.rankSpecialist(getStatsOfSpecialist(it), cityInfo) }
+                    .maxByOrNull { Automation.rankSpecialist(getStatsOfSpecialist(it), cityInfo) }
 
 
             var valueBestSpecialist = 0f
@@ -127,7 +127,7 @@ class PopulationManager {
             else {
                 cityInfo.workedTiles.asSequence()
                         .map { cityInfo.tileMap[it] }
-                        .minBy {
+                        .minByOrNull {
                             Automation.rankTileForCityWork(it, cityInfo)
                             +(if (it.isLocked()) 10 else 0)
                         }!!
@@ -137,7 +137,7 @@ class PopulationManager {
 
             //evaluate specialists
             val worstJob: String? = specialistAllocations.keys
-                    .minBy { Automation.rankSpecialist(getStatsOfSpecialist(it), cityInfo) }
+                    .minByOrNull { Automation.rankSpecialist(getStatsOfSpecialist(it), cityInfo) }
             var valueWorstSpecialist = 0f
             if (worstJob != null)
                 valueWorstSpecialist = Automation.rankSpecialist(getStatsOfSpecialist(worstJob), cityInfo)

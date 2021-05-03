@@ -45,9 +45,8 @@ class NewMapScreen(val mapParameters: MapParameters = MapParameters()) : PickerS
 
         topTable.apply {
             add(ScrollPane(newMapScreenOptionsTable).apply { setOverscroll(false, false) })
-                    .height(topTable.parent.height)
             pack()
-            setFillParent(true)
+//            setFillParent(true)
         }
 
         rightButtonSetEnabled(true)
@@ -63,7 +62,7 @@ class NewMapScreen(val mapParameters: MapParameters = MapParameters()) : PickerS
                     Gdx.app.postRunnable {
                         val mapEditorScreen = MapEditorScreen(generatedMap!!)
                         mapEditorScreen.ruleset = ruleset
-                        UncivGame.Current.setScreen(mapEditorScreen)
+                        game.setScreen(mapEditorScreen)
                     }
 
                 } catch (exception: Exception) {

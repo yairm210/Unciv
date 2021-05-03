@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.TextField
 import com.unciv.logic.GameInfo
 import com.unciv.logic.GameSaver
+import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.models.translations.tr
 import com.unciv.ui.pickerscreens.PickerScreen
@@ -99,7 +100,7 @@ class EditMultiplayerGameInfoScreen(game: GameInfo?, gameName: String, backScree
                     //Add notification so everyone knows what happened
                     //call for every civ cause AI players are skipped anyway
                     for (civ in gameInfo.civilizations) {
-                        civ.addNotification("[${playerCiv.civName}] resigned and is now controlled by AI", Color.RED)
+                        civ.addNotification("[${playerCiv.civName}] resigned and is now controlled by AI", playerCiv.civName)
                     }
 
                     //save game so multiplayer list stays up to date

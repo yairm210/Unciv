@@ -13,6 +13,7 @@ import com.unciv.logic.GameSaver
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.models.metadata.GameSettings
 import com.unciv.models.ruleset.RulesetCache
+import com.unciv.models.tilesets.TileSetCache
 import com.unciv.models.translations.Translations
 import com.unciv.ui.LanguagePickerScreen
 import com.unciv.ui.utils.*
@@ -84,10 +85,14 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
          * - Skin (hence CameraStageBaseScreen.setSkin())
          * - Font (hence Fonts.resetFont() inside setSkin())
          */
-        ImageGetter.atlas = TextureAtlas("game.atlas")
-        ImageGetter.setNewRuleset(ImageGetter.ruleset)
+        ImageGetter.resetAtlases()
+        settings = GameSaver.getGeneralSettings() // needed for the screen
+        ImageGetter.setNewRuleset(ImageGetter.ruleset)  // This needs to come after the settings, since we may have default visual mods
+        if(settings.tileSet !in ImageGetter.getAvailableTilesets()) { // If one of the tilesets is no longer available, default back
+            settings.tileSet = "FantasyHex"
+        }
+
         CameraStageBaseScreen.setSkin() // needs to come AFTER the Texture reset, since the buttons depend on it
-        settings = GameSaver.getGeneralSettings() // needed for the screen - this also needs the atlas to be configured
 
         Gdx.graphics.isContinuousRendering = settings.continuousRendering
         screen = LoadingScreen()
@@ -97,6 +102,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
             RulesetCache.loadRulesets(printOutput = true)
             translations.tryReadTranslationForCurrentLanguage()
             translations.loadPercentageCompleteOfLanguages()
+            TileSetCache.loadTileSetConfigs(printOutput = true)
 
             if (settings.userId.isEmpty()) { // assign permanent user id
                 settings.userId = UUID.randomUUID().toString()
@@ -133,9 +139,9 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
         ImageGetter.setNewRuleset(gameInfo.ruleSet)
         Gdx.input.inputProcessor = null // Since we will set the world screen when we're ready,
         if (gameInfo.civilizations.count { it.playerType == PlayerType.Human } > 1 && !gameInfo.gameParameters.isOnlineMultiplayer)
-            setScreen(PlayerReadyScreen(gameInfo.getPlayerToViewAs()))
+            setScreen(PlayerReadyScreen(gameInfo, gameInfo.getPlayerToViewAs()))
         else {
-            worldScreen = WorldScreen(gameInfo.getPlayerToViewAs())
+            worldScreen = WorldScreen(gameInfo, gameInfo.getPlayerToViewAs())
             setWorldScreen()
         }
     }
@@ -171,7 +177,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
     }
 
     override fun pause() {
-        if (this::gameInfo.isInitialized) GameSaver.autoSave(this.gameInfo)
+        if (isGameInfoInitialized()) GameSaver.autoSave(this.gameInfo)
         super.pause()
     }
 
@@ -187,7 +193,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
         val threadList = Array(numThreads) { _ -> Thread() }
         Thread.enumerate(threadList)
 
-        if (::gameInfo.isInitialized){
+        if (isGameInfoInitialized()){
             val autoSaveThread = threadList.firstOrNull { it.name == "Autosave" }
             if (autoSaveThread != null && autoSaveThread.isAlive) {
                 // auto save is already in progress (e.g. started by onPause() event)

@@ -24,6 +24,75 @@ import java.util.HashMap
 import kotlin.concurrent.thread
 import kotlin.random.Random
 
+/*
+ * For now, combination keys cannot easily be expressed.
+ * Pressing Ctrl-Letter will arrive one event for Input.Keys.CONTROL_LEFT and one for the ASCII control code point
+ *      so Ctrl-R can be handled using KeyCharAndCode('\u0012')
+ * Pressing Alt-Something likewise will fire once for Alt and once for the unmodified keys with no indication Alt is held
+ *      (Exception: international keyboard AltGr-combos)
+ * An update supporting easy declarations for any modifier combos would need to use Gdx.input.isKeyPressed()
+ * Gdx seems to omit support for a modifier mask (e.g. Ctrl-Alt-Shift) so we would need to reinvent this
+ */
+
+/**
+ * Represents a key for use in an InputListener keyTyped() handler
+ *
+ * Example: KeyCharAndCode('R'), KeyCharAndCode(Input.Keys.F1)
+ */
+data class KeyCharAndCode(val char: Char, val code: Int) {
+    // express keys with a Char value
+    constructor(char: Char): this(char.toLowerCase(), 0)
+    // express keys that only have a keyCode like F1
+    constructor(code: Int): this(Char.MIN_VALUE, code)
+    // helper for use in InputListener keyTyped()
+    constructor(event: InputEvent?, character: Char)
+            : this (
+                character.toLowerCase(),
+                if (character == Char.MIN_VALUE && event!=null) event.keyCode else 0
+            )
+
+    @ExperimentalStdlibApi
+    override fun toString(): String {
+        // debug helper
+        return when {
+            char == Char.MIN_VALUE -> Input.Keys.toString(code)
+            char < ' ' -> "Ctrl-" + Char(char.toInt()+64)
+            else -> "\"$char\""
+        }
+    }
+}
+
+class KeyPressDispatcher: HashMap<KeyCharAndCode, (() -> Unit)>() {
+    private var checkpoint: Set<KeyCharAndCode> = setOf()
+
+    // access by Char
+    operator fun get(char: Char) = this[KeyCharAndCode(char)]
+    operator fun set(char: Char, action: () -> Unit) {
+        this[KeyCharAndCode(char)] = action
+    }
+    operator fun contains(char: Char) = this.contains(KeyCharAndCode(char))
+    fun remove(char: Char) = this.remove(KeyCharAndCode(char))
+
+    // access by Int keyCodes
+    operator fun get(code: Int) = this[KeyCharAndCode(code)]
+    operator fun set(code: Int, action: () -> Unit) {
+        this[KeyCharAndCode(code)] = action
+    }
+    operator fun contains(code: Int) = this.contains(KeyCharAndCode(code))
+    fun remove(code: Int) = this.remove(KeyCharAndCode(code))
+
+    override fun clear() {
+        checkpoint = setOf()
+        super.clear()
+    }
+    fun setCheckpoint() {
+        checkpoint = keys.toSet()
+    }
+    fun revertToCheckPoint() {
+        keys.minus(checkpoint).forEach { remove(it) }
+    }
+}
+
 open class CameraStageBaseScreen : Screen {
 
     var game: UncivGame = UncivGame.Current
@@ -31,29 +100,26 @@ open class CameraStageBaseScreen : Screen {
 
     protected val tutorialController by lazy { TutorialController(this) }
 
-    // An initialized val always turned out to illegally be null...
-    // Remember to always set LOWER CASE chars as the keys!
-    var keyPressDispatcher: HashMap<Char, (() -> Unit)>
+    val keyPressDispatcher = KeyPressDispatcher()
 
     init {
-        keyPressDispatcher = hashMapOf()
         val resolutions: List<Float> = game.settings.resolution.split("x").map { it.toInt().toFloat() }
         val width = resolutions[0]
         val height = resolutions[1]
 
         stage = Stage(ExtendViewport(width, height), SpriteBatch())
 
-
         stage.addListener(
                 object : InputListener() {
                     override fun keyTyped(event: InputEvent?, character: Char): Boolean {
+                        val key = KeyCharAndCode(event, character)
 
-                        if (character.toLowerCase() !in keyPressDispatcher || hasOpenPopups())
+                        if (key !in keyPressDispatcher || hasOpenPopups())
                             return super.keyTyped(event, character)
 
                         //try-catch mainly for debugging. Breakpoints in the vicinity can make the event fire twice in rapid succession, second time the context can be invalid
                         try {
-                            keyPressDispatcher[character.toLowerCase()]?.invoke()
+                            keyPressDispatcher[key]?.invoke()
                         } catch (ex: Exception) {}
                         return true
                     }
@@ -100,14 +166,14 @@ open class CameraStageBaseScreen : Screen {
                 addRegions(TextureAtlas("skin/flat-earth-ui.atlas"))
                 load(Gdx.files.internal("skin/flat-earth-ui.json"))
             }
-            skin.get(TextButton.TextButtonStyle::class.java).font = Fonts.font.apply { data.setScale(20 / ORIGINAL_FONT_SIZE) }
-            skin.get(CheckBox.CheckBoxStyle::class.java).font = Fonts.font.apply { data.setScale(20 / ORIGINAL_FONT_SIZE) }
+            skin.get(TextButton.TextButtonStyle::class.java).font = Fonts.font.apply { data.setScale(20 / Fonts.ORIGINAL_FONT_SIZE) }
+            skin.get(CheckBox.CheckBoxStyle::class.java).font = Fonts.font.apply { data.setScale(20 / Fonts.ORIGINAL_FONT_SIZE) }
             skin.get(CheckBox.CheckBoxStyle::class.java).fontColor = Color.WHITE
-            skin.get(Label.LabelStyle::class.java).font = Fonts.font.apply { data.setScale(18 / ORIGINAL_FONT_SIZE) }
+            skin.get(Label.LabelStyle::class.java).font = Fonts.font.apply { data.setScale(18 / Fonts.ORIGINAL_FONT_SIZE) }
             skin.get(Label.LabelStyle::class.java).fontColor = Color.WHITE
-            skin.get(TextField.TextFieldStyle::class.java).font = Fonts.font.apply { data.setScale(18 / ORIGINAL_FONT_SIZE) }
-            skin.get(SelectBox.SelectBoxStyle::class.java).font = Fonts.font.apply { data.setScale(20 / ORIGINAL_FONT_SIZE) }
-            skin.get(SelectBox.SelectBoxStyle::class.java).listStyle.font = Fonts.font.apply { data.setScale(20 / ORIGINAL_FONT_SIZE) }
+            skin.get(TextField.TextFieldStyle::class.java).font = Fonts.font.apply { data.setScale(18 / Fonts.ORIGINAL_FONT_SIZE) }
+            skin.get(SelectBox.SelectBoxStyle::class.java).font = Fonts.font.apply { data.setScale(20 / Fonts.ORIGINAL_FONT_SIZE) }
+            skin.get(SelectBox.SelectBoxStyle::class.java).listStyle.font = Fonts.font.apply { data.setScale(20 / Fonts.ORIGINAL_FONT_SIZE) }
             skin
         }
         internal var batch: Batch = SpriteBatch()
@@ -262,10 +328,7 @@ fun String.toTextButton() = TextButton(this.tr(), CameraStageBaseScreen.skin)
 fun String.toLabel() = Label(this.tr(),CameraStageBaseScreen.skin)
 fun Int.toLabel() = this.toString().toLabel()
 
-/** All text is originally rendered in 50px, and thn scaled to fit the size of the text we need now.
- * This has several advantages: It means we only render each character once (good for both runtime and RAM),
- * AND it means that our 'custom' emojis only need to be once size (50px) and they'll be rescaled for what's needed. */
-const val ORIGINAL_FONT_SIZE = 50f
+
 
 // We don't want to use setFontSize and setFontColor because they set the font,
 //  which means we need to rebuild the font cache which means more memory allocation.
@@ -276,7 +339,7 @@ fun String.toLabel(fontColor:Color= Color.WHITE, fontSize:Int=18): Label {
         labelStyle.fontColor = fontColor
         if (fontSize != 18) labelStyle.font = Fonts.font
     }
-    return Label(this.tr(), labelStyle).apply { setFontScale(fontSize/ORIGINAL_FONT_SIZE) }
+    return Label(this.tr(), labelStyle).apply { setFontScale(fontSize/Fonts.ORIGINAL_FONT_SIZE) }
 }
 
 
@@ -286,7 +349,7 @@ fun Label.setFontSize(size:Int): Label {
     style = Label.LabelStyle(style)
     style.font = Fonts.font
     style = style // because we need it to call the SetStyle function. Yuk, I know.
-    return this.apply { setFontScale(size/ORIGINAL_FONT_SIZE) } // for chaining
+    return this.apply { setFontScale(size/Fonts.ORIGINAL_FONT_SIZE) } // for chaining
 }
 
 

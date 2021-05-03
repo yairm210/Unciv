@@ -14,13 +14,13 @@ buildscript {
         mavenLocal()
         mavenCentral()
         maven { url = uri("https://oss.sonatype.org/content/repositories/snapshots/") }
-        jcenter()
+        gradlePluginPortal()
         maven{ url = uri("https://jitpack.io") } // for the anuken packr
     }
     dependencies {
         classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${com.unciv.build.BuildConfig.kotlinVersion}")
         classpath("de.richsource.gradle.plugins:gwt-gradle-plugin:0.6")
-        classpath("com.android.tools.build:gradle:4.1.2")
+        classpath("com.android.tools.build:gradle:4.1.3")
         classpath("com.mobidevelop.robovm:robovm-gradle-plugin:2.3.1")
 
         // This is for wrapping the .jar file into a standalone executable
@@ -42,7 +42,7 @@ allprojects {
         // maven{ url = uri("https://maven.aliyun.com/repository/gradle-plugin") }
         // maven{ url = uri("https://maven.aliyun.com/repository/public") }
         google()
-        jcenter()
+        gradlePluginPortal()
         mavenLocal()
         mavenCentral()
         maven { url = uri("https://oss.sonatype.org/content/repositories/snapshots/") }
@@ -77,7 +77,6 @@ project(":android") {
     dependencies {
         "implementation"(project(":core"))
         "implementation"("com.badlogicgames.gdx:gdx-backend-android:$gdxVersion")
-        natives("com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-armeabi")
         natives("com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-armeabi-v7a")
         natives("com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-arm64-v8a")
         natives("com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-x86")

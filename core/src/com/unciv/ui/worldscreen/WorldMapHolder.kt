@@ -35,13 +35,14 @@ import kotlin.concurrent.thread
 
 class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap: TileMap): ZoomableScrollPane() {
     internal var selectedTile: TileInfo? = null
-    val tileGroups = HashMap<TileInfo, List<WorldTileGroup>>()
+    private val tileGroups = HashMap<TileInfo, List<WorldTileGroup>>()
+
     //allWorldTileGroups exists to easily access all WordTileGroups
     //since tileGroup is a HashMap of Lists and getting all WordTileGroups
     //would need a double for loop
-    val allWorldTileGroups = ArrayList<WorldTileGroup>()
+    private val allWorldTileGroups = ArrayList<WorldTileGroup>()
 
-    val unitActionOverlays: ArrayList<Actor> = ArrayList()
+    private val unitActionOverlays: ArrayList<Actor> = ArrayList()
 
     init {
         if (Gdx.app.type == Application.ApplicationType.Desktop) this.setFlingTime(0f)
@@ -54,11 +55,11 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
     internal fun addTiles() {
         val tileSetStrings = TileSetStrings()
         val daTileGroups = tileMap.values.map { WorldTileGroup(worldScreen, it, tileSetStrings) }
-        val tileGroupMap = TileGroupMap(daTileGroups, worldScreen.stage.width, continousScrollingX)
+        val tileGroupMap = TileGroupMap(daTileGroups, worldScreen.stage.width, worldScreen.stage.height, continousScrollingX)
         val mirrorTileGroups = tileGroupMap.getMirrorTiles()
 
         for (tileGroup in daTileGroups) {
-            if (continousScrollingX){
+            if (continousScrollingX) {
                 val mirrorTileGroupLeft = mirrorTileGroups[tileGroup.tileInfo]!!.first
                 val mirrorTileGroupRight = mirrorTileGroups[tileGroup.tileInfo]!!.second
 
@@ -229,7 +230,7 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
                     return@postRunnable
                 }
 
-                val turnsToGetThere = unitsWhoCanMoveThere.values.max()!!
+                val turnsToGetThere = unitsWhoCanMoveThere.values.maxOrNull()!!
 
                 if (UncivGame.Current.settings.singleTapMove && turnsToGetThere == 1) {
                     // single turn instant move
@@ -250,7 +251,7 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
     }
 
     private fun addTileOverlays(tileInfo: TileInfo, moveHereDto: MoveHereButtonDto? = null) {
-        for (group in tileGroups[tileInfo]!!){
+        for (group in tileGroups[tileInfo]!!) {
             val table = Table().apply { defaults().pad(10f) }
             if (moveHereDto != null && worldScreen.canChangeState)
                 table.add(getMoveHereButton(moveHereDto))
@@ -293,7 +294,7 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
         moveHereButton.addActor(numberCircle)
 
 
-        moveHereButton.addActor(dto.unitToTurnsToDestination.values.max()!!.toLabel().apply { center(numberCircle) })
+        moveHereButton.addActor(dto.unitToTurnsToDestination.values.maxOrNull()!!.toLabel().apply { center(numberCircle) })
         val firstUnit = dto.unitToTurnsToDestination.keys.first()
         val unitIcon = if (dto.unitToTurnsToDestination.size == 1) UnitGroup(firstUnit, size / 2)
         else dto.unitToTurnsToDestination.size.toString().toLabel(fontColor = firstUnit.civInfo.nation.getInnerColor()).apply { setAlignment(Align.center) }
@@ -384,10 +385,10 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
     }
 
     private fun updateTilegroupsForSelectedUnit(unit: MapUnit, playerViewableTilePositions: HashSet<Vector2>) {
-        val tileGroup = tileGroups[unit.getTile()]?: return
+        val tileGroup = tileGroups[unit.getTile()] ?: return
         // Entirely unclear when this happens, but this seems to happen since version 520 (3.12.9)
         // so maybe has to do with the construction list being asyc?
-        for (group in tileGroup){
+        for (group in tileGroup) {
             group.selectUnit(unit)
         }
 
@@ -399,7 +400,7 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
                     unit.movement.getDistanceToTiles().keys.asSequence()
 
         for (tile in tilesInMoveRange) {
-            for (tileToColor in tileGroups[tile]!!){
+            for (tileToColor in tileGroups[tile]!!) {
                 if (isAirUnit)
                     if (tile.aerialDistanceTo(unit.getTile()) <= unit.getRange()) {
                         // The tile is within attack range
@@ -415,6 +416,12 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
             }
         }
 
+        if(unit.isMoving()) {
+            val destinationTileGroups = tileGroups[unit.getMovementDestination()]!!
+            for (tileGroup in destinationTileGroups)
+                tileGroup.showCircle(Color.WHITE, 0.7f)
+        }
+
         val attackableTiles: List<AttackableTile> = if (unit.type.isCivilian()) listOf()
         else {
             BattleHelper.getAttackableEnemies(unit, unit.movement.getDistanceToTiles())
@@ -426,9 +433,9 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
         }
 
         for (attackableTile in attackableTiles) {
-            for (tileGroup in tileGroups[attackableTile.tileToAttack]!!){
-                tileGroup.showCircle(colorFromRGB(237, 41, 57))
-                tileGroup.showCrosshair(
+            for (tileGroupToAttack in tileGroups[attackableTile.tileToAttack]!!) {
+                tileGroupToAttack.showCircle(colorFromRGB(237, 41, 57))
+                tileGroupToAttack.showCrosshair(
                         // the targets which cannot be attacked without movements shown as orange-ish
                         if (attackableTile.tileToAttackFrom != unit.currentTile)
                             colorFromRGB(255, 75, 0)
@@ -524,7 +531,7 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
             }
     }
 
-    fun removeUnitActionOverlay(){
+    fun removeUnitActionOverlay() {
         for (overlay in unitActionOverlays)
             overlay.remove()
         unitActionOverlays.clear()

@@ -10,7 +10,7 @@ import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration
 import com.unciv.UncivGame
 import com.unciv.UncivGameParameters
 import com.unciv.logic.GameSaver
-import com.unciv.ui.utils.ORIGINAL_FONT_SIZE
+import com.unciv.ui.utils.Fonts
 import java.io.File
 
 open class AndroidLauncher : AndroidApplication() {
@@ -22,30 +22,30 @@ open class AndroidLauncher : AndroidApplication() {
         }
         MultiplayerTurnCheckWorker.createNotificationChannels(applicationContext)
 
-		// Only allow mods on KK+, to avoid READ_EXTERNAL_STORAGE permission earlier versions need
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-			copyMods()
+        // Only allow mods on KK+, to avoid READ_EXTERNAL_STORAGE permission earlier versions need
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            copyMods()
             val externalfilesDir = getExternalFilesDir(null)
-            if(externalfilesDir!=null) GameSaver.externalFilesDirForAndroid = externalfilesDir.path
-		}
+            if (externalfilesDir != null) GameSaver.externalFilesDirForAndroid = externalfilesDir.path
+        }
 
         val config = AndroidApplicationConfiguration().apply { useImmersiveMode = true; }
         val androidParameters = UncivGameParameters(
                 version = BuildConfig.VERSION_NAME,
                 crashReportSender = CrashReportSenderAndroid(this),
-                fontImplementation = NativeFontAndroid(ORIGINAL_FONT_SIZE.toInt()),
+                fontImplementation = NativeFontAndroid(Fonts.ORIGINAL_FONT_SIZE.toInt()),
                 customSaveLocationHelper = customSaveLocationHelper
         )
-        val game = UncivGame ( androidParameters )
+        val game = UncivGame(androidParameters)
         initialize(game, config)
     }
 
-	/**
-	 * Copies mods from external data directory (where users can access) to the private one (where
-	 * libGDX reads from). Note: deletes all files currently in the private mod directory and
-	 * replaces them with the ones in the external folder!)
-	 */
-	private fun copyMods() {
+    /**
+     * Copies mods from external data directory (where users can access) to the private one (where
+     * libGDX reads from). Note: deletes all files currently in the private mod directory and
+     * replaces them with the ones in the external folder!)
+     */
+    private fun copyMods() {
         // Mod directory in the internal app data (where Gdx.files.local looks)
         val internalModsDir = File("${filesDir.path}/mods")
 
@@ -74,8 +74,8 @@ open class AndroidLauncher : AndroidApplication() {
                 cancel(MultiplayerTurnCheckWorker.NOTIFICATION_ID_INFO)
                 cancel(MultiplayerTurnCheckWorker.NOTIFICATION_ID_SERVICE)
             }
+        } catch (ex: Exception) {
         }
-        catch (ex:Exception){}
         super.onResume()
     }
 

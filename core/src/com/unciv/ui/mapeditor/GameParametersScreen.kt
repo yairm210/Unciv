@@ -35,7 +35,7 @@ class GameParametersScreen(var mapEditorScreen: MapEditorScreen): IPreviousScree
             mapEditorScreen.gameSetupInfo = gameSetupInfo
             mapEditorScreen.ruleset.clear()
             mapEditorScreen.ruleset.add(ruleset)
-            mapEditorScreen.tileEditorOptions.update()
+            mapEditorScreen.mapEditorOptionsTable.update()
             // Remove resources that are not applicable to this ruleset
             for(tile in mapEditorScreen.tileMap.values) {
                 if (tile.resource != null && !ruleset.tileResources.containsKey(tile.resource!!))

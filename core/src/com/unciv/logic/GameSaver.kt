@@ -14,6 +14,7 @@ object GameSaver {
     private const val saveFilesFolder = "SaveFiles"
     private const val multiplayerFilesFolder = "MultiplayerGames"
     private const val settingsFileName = "GameSettings.json"
+
     @Volatile
     var customSaveLocationHelper: CustomSaveLocationHelper? = null
 
@@ -23,7 +24,7 @@ object GameSaver {
 
     fun json() = Json().apply { setIgnoreDeprecated(true); ignoreUnknownFields = true } // Json() is NOT THREAD SAFE so we need to create a new one for each function
 
-    fun getSubfolder(multiplayer: Boolean=false) = if(multiplayer) multiplayerFilesFolder else saveFilesFolder
+    fun getSubfolder(multiplayer: Boolean = false) = if (multiplayer) multiplayerFilesFolder else saveFilesFolder
 
     fun getSave(GameName: String, multiplayer: Boolean = false): FileHandle {
         val localfile = Gdx.files.local("${getSubfolder(multiplayer)}/$GameName")
@@ -90,7 +91,7 @@ object GameSaver {
         return json().fromJson(GameInfo::class.java, gameData)
     }
 
-    fun deleteSave(GameName: String, multiplayer: Boolean = false){
+    fun deleteSave(GameName: String, multiplayer: Boolean = false) {
         getSave(GameName, multiplayer).delete()
     }
 
@@ -115,11 +116,7 @@ object GameSaver {
                     GameSettings().apply { isFreshlyCreated = true }
                 }
 
-        val atlas = ImageGetter.atlas
-        val currentTileSets = atlas.regions.asSequence()
-                .filter { it.name.startsWith("TileSets") }
-                .map { it.name.split("/")[1] }.distinct()
-        if (settings.tileSet !in currentTileSets) settings.tileSet = "Default"
+
         return settings
     }
 
@@ -141,7 +138,7 @@ object GameSaver {
         }
     }
 
-    fun autoSaveSingleThreaded (gameInfo: GameInfo) {
+    fun autoSaveSingleThreaded(gameInfo: GameInfo) {
         // If the user has chosen a custom save location outside of the usual game directories,
         // they'll probably expect us to overwrite that instead. E.g. if the user is saving their
         // game to their Google Drive folder, they'll probably want that progress to be synced to
@@ -176,4 +173,3 @@ object GameSaver {
         return json().fromJson(GameInfo::class.java, gameFile).gameId
     }
 }
-

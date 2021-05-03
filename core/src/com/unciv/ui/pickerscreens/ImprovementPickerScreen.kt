@@ -18,7 +18,7 @@ import kotlin.math.round
 
 class ImprovementPickerScreen(val tileInfo: TileInfo, val onAccept: ()->Unit) : PickerScreen() {
     private var selectedImprovement: TileImprovement? = null
-    val currentPlayerCiv = game.gameInfo.getCurrentPlayerCivilization()
+    val currentPlayerCiv = tileInfo.tileMap.gameInfo.getCurrentPlayerCivilization()
 
     fun accept(improvement: TileImprovement?) {
         if (improvement == null) return

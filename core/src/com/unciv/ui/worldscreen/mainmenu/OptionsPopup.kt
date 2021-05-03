@@ -68,7 +68,7 @@ class OptionsPopup(val previousScreen:CameraStageBaseScreen) : Popup(previousScr
     private fun reloadWorldAndOptions() {
         settings.save()
         if (previousScreen is WorldScreen) {
-            previousScreen.game.worldScreen = WorldScreen(previousScreen.viewingCiv)
+            previousScreen.game.worldScreen = WorldScreen(previousScreen.gameInfo, previousScreen.viewingCiv)
             previousScreen.game.setWorldScreen()
         } else if (previousScreen is MainMenuScreen) {
             previousScreen.game.setScreen(MainMenuScreen())
@@ -128,9 +128,11 @@ class OptionsPopup(val previousScreen:CameraStageBaseScreen) : Popup(previousScr
 
         addHeader("Other options")
 
-        addYesNoRow("Show experimental world wrap for maps\nHIGHLY EXPERIMENTAL - YOU HAVE BEEN WARNED!",
+        addYesNoRow("Show experimental world wrap for maps\n"
+                +"HIGHLY EXPERIMENTAL - YOU HAVE BEEN WARNED!".tr(),
                 settings.showExperimentalWorldWrap)
         { settings.showExperimentalWorldWrap = it }
+
 
         addSoundEffectsVolumeSlider()
         addMusicVolumeSlider()
@@ -297,8 +299,7 @@ class OptionsPopup(val previousScreen:CameraStageBaseScreen) : Popup(previousScr
 
         val tileSetSelectBox = SelectBox<String>(skin)
         val tileSetArray = Array<String>()
-        val tileSets = ImageGetter.atlas.regions.filter { it.name.startsWith("TileSets") }
-                .map { it.name.split("/")[1] }.distinct()
+        val tileSets = ImageGetter.getAvailableTilesets()
         for (tileset in tileSets) tileSetArray.add(tileset)
         tileSetSelectBox.items = tileSetArray
         tileSetSelectBox.selected = settings.tileSet

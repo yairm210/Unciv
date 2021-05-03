@@ -295,15 +295,16 @@ class MultiplayerScreen(previousScreen: CameraStageBaseScreen) : PickerScreen() 
 
         //One thread for all downloads
         thread(name = "multiplayerGameDownload") {
-            for (entry in multiplayerGames) {
+            for ((fileHandle, gameInfo) in multiplayerGames) {
                 try {
-                    val game = OnlineMultiplayer().tryDownloadGame(entry.value.gameId)
-                    GameSaver.saveGame(game, entry.key.name(), true)
+                    val game = OnlineMultiplayer().tryDownloadGame(gameInfo.gameId)
+                    GameSaver.saveGame(game, fileHandle.name(), true)
+                    multiplayerGames[fileHandle] = game
                 } catch (ex: Exception) {
                     //skipping one is not fatal
                     //Trying to use as many prev. used strings as possible
                     Gdx.app.postRunnable {
-                        ToastPopup("Could not download game!" + " ${entry.key.name()}", this)
+                        ToastPopup("Could not download game!" + " ${fileHandle.name()}", this)
                     }
                     continue
                 }

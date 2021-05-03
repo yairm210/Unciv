@@ -37,8 +37,11 @@ class GameSettings {
     var orderTradeOffersByAmount = true
     var windowState = WindowState()
     var isFreshlyCreated = false
+    var visualMods = HashSet<String>()
 
-    var showExperimentalWorldWrap = false
+    var showExperimentalWorldWrap = false // We're keeping this as a config due to ANR problems on Android phones for people who don't know what they're doing :/
+
+    var lastOverviewPage: String = "Cities"
 
     init {
         // 26 = Android Oreo. Versions below may display permanent icon in notification bar.

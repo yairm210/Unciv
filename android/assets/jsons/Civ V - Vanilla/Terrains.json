@@ -22,7 +22,7 @@
 		"movementCost": 1,
 		"defenceBonus": -0.1,
 		"RGB": [97,171,58],
-		"uniques": ["Occurs at temperature between [-0.4] and [0.8] and humidity between [0.5] and [1]"]
+		"uniques": ["Occurs at temperature between [-0.4] and [0.8] and humidity between [0.5] and [1]", "Open terrain"]
 	},
 	{
 		"name": "Plains",
@@ -33,7 +33,7 @@
 		"defenceBonus": -0.1,
 		"RGB": [168,185,102],
 		"uniques": ["Occurs at temperature between [-0.4] and [0.8] and humidity between [0] and [0.5]",
-			"Occurs at temperature between [0.8] and [1] and humidity between [0.7] and [1]"]
+			"Occurs at temperature between [0.8] and [1] and humidity between [0.7] and [1]", "Open terrain"]
 	},
 	{
 		"name": "Tundra",
@@ -42,7 +42,7 @@
 		"movementCost": 1,
 		"defenceBonus": -0.1,
 		"RGB": [189,204,191],
-		"uniques": ["Occurs at temperature between [-1] and [-0.4] and humidity between [0.5] and [1]"]
+		"uniques": ["Occurs at temperature between [-1] and [-0.4] and humidity between [0.5] and [1]", "Open terrain"]
 	},
 	{
 		"name": "Desert",
@@ -50,7 +50,7 @@
 		"movementCost": 1,
 		"defenceBonus": -0.1,
 		"RGB": [ 230, 230, 113],
-		"uniques": ["Occurs at temperature between [0.8] and [1] and humidity between [0] and [0.7]"]
+		"uniques": ["Occurs at temperature between [0.8] and [1] and humidity between [0] and [0.7]", "Open terrain"]
 	},
 	{
 		"name": "Lakes",
@@ -72,7 +72,7 @@
 		"movementCost": 1,
 		"defenceBonus": -0.1,
 		"RGB": [231, 242, 249],
-		"uniques": ["Occurs at temperature between [-1] and [-0.4] and humidity between [0] and [0.5]"]
+		"uniques": ["Occurs at temperature between [-1] and [-0.4] and humidity between [0] and [0.5]", "Open terrain"]
 	},
 	
 	// Terrain features
@@ -85,7 +85,7 @@
 		"defenceBonus": 0.25,
 		"RGB": [105,125,72],
 		"occursOn": ["Tundra","Plains","Grassland","Desert","Snow"],
-		"rough": true
+		"uniques": ["Rough terrain"]
 	},
 	{
 		"name": "Forest",
@@ -97,8 +97,7 @@
 		"unbuildable": true,
 		"defenceBonus": 0.25,
 		"occursOn": ["Tundra","Plains","Grassland","Hill"],
-		"rough": true,
-		"uniques": ["Provides a one-time Production bonus to the closest city when cut down"]
+		"uniques": ["Provides a one-time Production bonus to the closest city when cut down", "Rough terrain"]
 	},
 	{
 		"name": "Jungle",
@@ -109,7 +108,7 @@
 		"unbuildable": true,
 		"defenceBonus": 0.25,
 		"occursOn": ["Plains","Grassland"],
-		"rough": true
+		"uniques": ["Rough terrain"]
 	},
 	{
 		"name": "Marsh",
@@ -149,6 +148,7 @@
 		"movementCost": 1,
 		"defenceBonus": -0.1,
 		"occursOn": ["Desert"]
+		"uniques":["Open terrain"]
 	},
 	{
 		"name": "Ice",

@@ -97,7 +97,8 @@ class UnitMovementAlgorithmsTests {
     @Test
     fun canNOTEnterIce() {
         tile.baseTerrain = Constants.ocean
-        tile.terrainFeature = Constants.ice
+        tile.terrainFeatures.clear()
+        tile.terrainFeatures.add(Constants.ice)
         tile.setTransients()
 
         for (type in UnitType.values()) {

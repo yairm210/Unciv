@@ -3,6 +3,7 @@ package com.unciv.ui.mapeditor
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
+import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Slider
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.Constants
@@ -20,7 +21,7 @@ import com.unciv.ui.tilegroups.TileGroup
 import com.unciv.ui.tilegroups.TileSetStrings
 import com.unciv.ui.utils.*
 
-class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(CameraStageBaseScreen.skin) {
+class MapEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(CameraStageBaseScreen.skin) {
     private val tileSetLocation = "TileSets/" + UncivGame.Current.settings.tileSet + "/"
 
     var tileAction: (TileInfo) -> Unit = {}
@@ -37,6 +38,7 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
 
     init {
         update()
+        touchable = Touchable.enabled
     }
 
     fun update() {
@@ -85,7 +87,7 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
         terrainFeaturesTable.add(getHex(getRedCross(50f, 0.6f)).apply {
             onClick {
                 tileAction = {
-                    it.terrainFeature = null
+                    it.terrainFeatures.clear()
                     it.naturalWonder = null
                     it.hasBottomRiver = false
                     it.hasBottomLeftRiver = false
@@ -325,7 +327,7 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
                     tileInfo.baseTerrain =
                             if (terrainObject.occursOn.isNotEmpty()) terrainObject.occursOn.first()
                             else "Grassland"
-                    tileInfo.terrainFeature = terrain
+                    tileInfo.terrainFeatures.add(terrain)
                 } else tileInfo.baseTerrain = terrain
 
                 tileInfo.resource = resource.name
@@ -346,7 +348,7 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
                     terrain.occursOn.isNotEmpty() -> terrain.occursOn.first()
                     else -> "Grassland"
                 }
-                tileInfo.terrainFeature = terrain.name
+                tileInfo.terrainFeatures.add(terrain.name)
             } else tileInfo.baseTerrain = terrain.name
             val group = makeTileGroup(tileInfo)
 
@@ -354,7 +356,10 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
                 tileAction = {
                     it.naturalWonder = null // If we're setting a base terrain it should remove the nat wonder
                     when (terrain.type) {
-                        TerrainType.TerrainFeature -> it.terrainFeature = terrain.name
+                        TerrainType.TerrainFeature -> {
+                            if (terrain.occursOn.contains(it.getLastTerrain().name))
+                                it.terrainFeatures.add(terrain.name)
+                        }
                         TerrainType.NaturalWonder -> it.naturalWonder = terrain.name
                         else -> it.baseTerrain = terrain.name
                     }
