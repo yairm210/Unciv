@@ -48,7 +48,8 @@ class ImprovementPickerScreen(val tileInfo: TileInfo, val onAccept: ()->Unit) : 
         regularImprovements.defaults().pad(5f)
 
         for (improvement in tileInfo.tileMap.gameInfo.ruleSet.tileImprovements.values) {
-            if (improvement.turnsToBuild == 0) continue
+            // canBuildImprovement() would allow e.g. great improvements thus we need to exclude them - except cancel
+            if (improvement.turnsToBuild == 0 && improvement.name != Constants.cancelImprovementOrder) continue
             if (improvement.name == tileInfo.improvement) continue
             if (!tileInfo.canBuildImprovement(improvement, currentPlayerCiv)) continue
 
