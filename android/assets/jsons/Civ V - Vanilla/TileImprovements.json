@@ -52,7 +52,8 @@
 		"name": "Oil well",
 		"terrainsCanBeBuiltOn": ["Coast"],
 		"turnsToBuild": 9,
-		"techRequired": "Biology"
+		"techRequired": "Biology",
+		"shortcutKey": "W"
 	},
 	{
 		"name": "Pasture",
@@ -106,7 +107,8 @@
 		"name": "Railroad",
 		"turnsToBuild": 4,
 		"techRequired": "Railroad",
-		"uniques": ["Can be built outside your borders", "Costs [2] gold per turn when in your territory"]
+		"uniques": ["Can be built outside your borders", "Costs [2] gold per turn when in your territory"],
+		"shortcutKey": "R"
 	},
 	
 	// Removals
@@ -156,7 +158,8 @@
 	},
 	{
 		"name": "Cancel improvement order",
-		"uniques": ["Can be built outside your borders"]
+		"uniques": ["Can be built outside your borders"],
+		"shortcutKey": "."
 	},
 	
 	// Great Person improvements
