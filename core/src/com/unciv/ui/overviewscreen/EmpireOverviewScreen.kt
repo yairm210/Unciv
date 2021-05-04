@@ -1,13 +1,12 @@
 package com.unciv.ui.overviewscreen
 
+import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.Input
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.Touchable
-import com.badlogic.gdx.scenes.scene2d.ui.Label
-import com.badlogic.gdx.scenes.scene2d.ui.Slider
-import com.badlogic.gdx.scenes.scene2d.ui.Table
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton
+import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.UncivGame
@@ -31,10 +30,25 @@ class EmpireOverviewScreen(private var viewingPlayer:CivilizationInfo, defaultPa
     private val centerTable = Table().apply { defaults().pad(5f) }
 
     private val setCategoryActions = HashMap<String, () -> Unit>()
-    private val categoryButtons = HashMap<String, TextButton>()
+    private val categoryButtons = HashMap<String, Button>()
+
+    private object ButtonDecorations {
+        data class IconAndKey (val icon: String, val key: Char = Char.MIN_VALUE)
+        val keyIconMap: HashMap<String,IconAndKey> = hashMapOf(
+            Pair("Cities", IconAndKey("OtherIcons/Cities", 'C')),
+            Pair("Stats", IconAndKey("StatIcons/Gold", 'S')),
+            Pair("Trades", IconAndKey("StatIcons/Acquire", 'T')),
+            Pair("Units", IconAndKey("OtherIcons/Shield", 'U')),
+            Pair("Diplomacy", IconAndKey("OtherIcons/DiplomacyW", 'D')),
+            Pair("Resources", IconAndKey("StatIcons/Happiness", 'R'))
+        )
+    }
 
     private fun addCategory(name:String, table:Table, disabled:Boolean=false) {
-        val button = name.toTextButton()
+        // Buttons now hold their old label plus optionally an indicator for the shortcut key.
+        // Implement this templated on UnitActionsTable.getUnitActionButton()
+        val iconAndKey = ButtonDecorations.keyIconMap[name] ?: return   // category without decoration entry disappears
+        val keyboardAvailable = Gdx.input.isPeripheralAvailable(Input.Peripheral.HardwareKeyboard)
         val setCategoryAction = {
             centerTable.clear()
             centerTable.add(ScrollPane(table).apply { setOverscroll(false, false) })
@@ -44,11 +58,20 @@ class EmpireOverviewScreen(private var viewingPlayer:CivilizationInfo, defaultPa
                 categoryButton.color = if (key == name) Color.BLUE else Color.WHITE
             game.settings.lastOverviewPage = name
         }
+        val button = Button(skin)
+        if (iconAndKey.icon != "") {
+            val image = ImageGetter.getImage(iconAndKey.icon)
+            button.add(image).size(20f).pad(5f)
+        }
+        button.add(name.toLabel(Color.WHITE)).pad(5f)
+        if (!disabled && keyboardAvailable && iconAndKey.key != Char.MIN_VALUE) {
+            button.add("(${iconAndKey.key})".toLabel(Color.WHITE))
+            keyPressDispatcher[iconAndKey.key] = setCategoryAction
+        }
         setCategoryActions[name] = setCategoryAction
         categoryButtons[name] = button
         button.onClick(setCategoryAction)
         if (disabled) button.disable()
-        else keyPressDispatcher[name[0].toLowerCase()] = setCategoryAction
         topTable.add(button)
     }
 
