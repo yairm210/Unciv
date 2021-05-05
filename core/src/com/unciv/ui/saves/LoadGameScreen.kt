@@ -21,7 +21,7 @@ import kotlin.concurrent.thread
 import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 
 class LoadGameScreen(previousScreen:CameraStageBaseScreen) : PickerScreen() {
-    lateinit var selectedSave:String
+    lateinit var selectedSave: String
     private val copySavedGameToClipboardButton = "Copy saved game to clipboard".toTextButton()
     private val saveTable = Table()
     private val deleteSaveButton = "Delete save".toTextButton()
@@ -31,14 +31,16 @@ class LoadGameScreen(previousScreen:CameraStageBaseScreen) : PickerScreen() {
         setDefaultCloseAction(previousScreen)
 
         resetWindowState()
-        topTable.add(ScrollPane(saveTable)).height(stage.height*2/3)
+        topTable.add(ScrollPane(saveTable))
 
         val rightSideTable = getRightSideTable()
 
         topTable.add(rightSideTable)
 
         rightSideButton.onClick {
-            ToastPopup("Loading...", this)
+            val loadingPopup = Popup( this)
+            loadingPopup.addGoodSizedLabel("Loading...")
+            loadingPopup.open()
             thread {
                 try {
                     // This is what can lead to ANRs - reading the file and setting the transients, that's why this is in another thread
@@ -46,6 +48,7 @@ class LoadGameScreen(previousScreen:CameraStageBaseScreen) : PickerScreen() {
                     Gdx.app.postRunnable { UncivGame.Current.loadGame(loadedGame) }
                 } catch (ex: Exception) {
                     Gdx.app.postRunnable {
+                        loadingPopup.close()
                         val cantLoadGamePopup = Popup(this)
                         cantLoadGamePopup.addGoodSizedLabel("It looks like your saved game can't be loaded!").row()
                         if (ex is UncivShowableException && ex.localizedMessage != null) {
@@ -81,7 +84,7 @@ class LoadGameScreen(previousScreen:CameraStageBaseScreen) : PickerScreen() {
                 UncivGame.Current.loadGame(loadedGame)
             } catch (ex: Exception) {
                 var text = "Could not load game from clipboard!".tr()
-                if (ex is UncivShowableException) text += "\n"+ex.message
+                if (ex is UncivShowableException) text += "\n" + ex.message
                 errorLabel.setText(text)
 
                 ex.printStackTrace()
@@ -93,7 +96,9 @@ class LoadGameScreen(previousScreen:CameraStageBaseScreen) : PickerScreen() {
             loadFromCustomLocation.onClick {
                 GameSaver.loadGameFromCustomLocation { gameInfo, exception ->
                     if (gameInfo != null) {
-                        game.loadGame(gameInfo)
+                        Gdx.app.postRunnable {
+                            game.loadGame(gameInfo)
+                        }
                     } else if (exception !is CancellationException) {
                         errorLabel.setText("Could not load game from custom location!".tr())
                         exception?.printStackTrace()
@@ -121,8 +126,8 @@ class LoadGameScreen(previousScreen:CameraStageBaseScreen) : PickerScreen() {
 
         showAutosavesCheckbox.isChecked = false
         showAutosavesCheckbox.onChange {
-                updateLoadableGames(showAutosavesCheckbox.isChecked)
-            }
+            updateLoadableGames(showAutosavesCheckbox.isChecked)
+        }
         rightSideTable.add(showAutosavesCheckbox).row()
         return rightSideTable
     }
@@ -136,11 +141,11 @@ class LoadGameScreen(previousScreen:CameraStageBaseScreen) : PickerScreen() {
         descriptionLabel.setText("")
     }
 
-    private fun updateLoadableGames(showAutosaves:Boolean) {
+    private fun updateLoadableGames(showAutosaves: Boolean) {
         saveTable.clear()
 
-        val loadImage =ImageGetter.getImage("OtherIcons/Load")
-        loadImage.setSize(50f,50f) // So the origin sets correctly
+        val loadImage = ImageGetter.getImage("OtherIcons/Load")
+        loadImage.setSize(50f, 50f) // So the origin sets correctly
         loadImage.setOrigin(Align.center)
         loadImage.addAction(Actions.rotateBy(360f, 2f))
         saveTable.add(loadImage).size(50f)
@@ -169,13 +174,15 @@ class LoadGameScreen(previousScreen:CameraStageBaseScreen) : PickerScreen() {
 
         val savedAt = Date(save.lastModified())
         descriptionLabel.setText("Loading...".tr())
-        textToSet += "\n{Saved at}: ".tr() + SimpleDateFormat("yyyy-MM-dd HH:mm").format(savedAt)
+        textToSet += "\n{Saved at}: ".tr() + SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.US).format(savedAt)
         thread { // Even loading the game to get its metadata can take a long time on older phones
             try {
                 val game = GameSaver.loadGameFromFile(save)
                 val playerCivNames = game.civilizations.filter { it.isPlayerCivilization() }.joinToString { it.civName.tr() }
                 textToSet += "\n" + playerCivNames +
                         ", " + game.difficulty.tr() + ", ${Fonts.turn}" + game.turns
+                if (game.gameParameters.mods.isNotEmpty())
+                    textToSet += "\n {Mods:} ".tr() + game.gameParameters.mods.joinToString()
             } catch (ex: Exception) {
                 textToSet += "\n{Could not load game}!".tr()
             }
@@ -191,4 +198,3 @@ class LoadGameScreen(previousScreen:CameraStageBaseScreen) : PickerScreen() {
     }
 
 }
-

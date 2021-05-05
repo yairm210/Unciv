@@ -6,6 +6,7 @@ import com.unciv.UncivGame
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.AlertType
 import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.PopupAlert
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.map.RoadStatus
@@ -13,6 +14,7 @@ import com.unciv.logic.map.TileInfo
 import com.unciv.models.AttackableTile
 import com.unciv.models.ruleset.Unique
 import com.unciv.models.ruleset.unit.UnitType
+import com.unciv.ui.utils.ImageGetter
 import java.util.*
 import kotlin.math.max
 
@@ -30,7 +32,7 @@ object Battle {
             }
         }
 
-        if (attacker.getUnitType() == UnitType.Missile) {
+        if (attacker is MapUnitCombatant && attacker.unit.hasUnique("Nuclear weapon")) {
             return nuke(attacker, attackableTile.tileToAttack)
         }
         attack(attacker, getMapCombatantOfTile(attackableTile.tileToAttack)!!)
@@ -84,7 +86,7 @@ object Battle {
         }
 
         if (attacker is MapUnitCombatant) {
-            if (attacker.getUnitType() == UnitType.Missile)
+            if (attacker.unit.hasUnique("Self-destructs when attacking"))
                 attacker.unit.destroy()
             else if (attacker.unit.isMoving())
                 attacker.unit.action = null
@@ -94,7 +96,7 @@ object Battle {
     private fun tryEarnFromKilling(civUnit: ICombatant, defeatedUnit: MapUnitCombatant) {
         val unitStr = max(defeatedUnit.unit.baseUnit.strength, defeatedUnit.unit.baseUnit.rangedStrength)
         val unitCost = defeatedUnit.unit.baseUnit.cost
-        val bonusUniquePlaceholderText = "Earn []% of [] opponent's [] as [] for kills"
+        val bonusUniquePlaceholderText = "Earn []% of killed [] unit's [] as []"
 
         var goldReward = 0
         var cultureReward = 0
@@ -173,7 +175,10 @@ object Battle {
                         else " [" + defender.getName() + "]"
                     else " our [" + defender.getName() + "]"
             val notificationString = attackerString + whatHappenedString + defenderString
-            defender.getCivInfo().addNotification(notificationString, attackedTile.position, Color.RED)
+            val cityIcon = "ImprovementIcons/Citadel"
+            val attackerIcon = if (attacker is CityCombatant) cityIcon else attacker.getName()
+            val defenderIcon = if (defender is CityCombatant) cityIcon else defender.getName()
+            defender.getCivInfo().addNotification(notificationString, attackedTile.position, attackerIcon, NotificationIcon.War, defenderIcon)
         }
     }
 
@@ -193,7 +198,7 @@ object Battle {
                 && Random().nextDouble() < 0.67) {
             attacker.getCivInfo().placeUnitNearTile(attackedTile.position, defender.getName())
             attacker.getCivInfo().gold += 25
-            attacker.getCivInfo().addNotification("A barbarian [${defender.getName()}] has joined us!", attackedTile.position, Color.RED)
+            attacker.getCivInfo().addNotification("A barbarian [${defender.getName()}] has joined us!", attackedTile.position, defender.getName())
         }
 
         // Similarly, Ottoman unique
@@ -258,8 +263,6 @@ object Battle {
             return
 
         var XPModifier = 1f
-        // deprecated as of 3.12.10, keeping this for now in to avoid breaking mods
-        if (thisCombatant.getCivInfo().hasUnique("Military units gain 50% more Experience from combat")) XPModifier += 0.5f
         for (unique in thisCombatant.getCivInfo().getMatchingUniques("[] units gain []% more Experience from combat")) {
             if (thisCombatant.unit.matchesFilter(unique.params[0]))
                 XPModifier += unique.params[1].toFloat() / 100
@@ -290,7 +293,7 @@ object Battle {
     private fun conquerCity(city: CityInfo, attacker: ICombatant) {
         val attackerCiv = attacker.getCivInfo()
 
-        attackerCiv.addNotification("We have conquered the city of [${city.name}]!", city.location, Color.RED)
+        attackerCiv.addNotification("We have conquered the city of [${city.name}]!", city.location, NotificationIcon.War)
 
         city.getCenterTile().apply {
             if (militaryUnit != null) militaryUnit!!.destroy()
@@ -336,7 +339,7 @@ object Battle {
 
         val capturedUnit = defender.unit
         capturedUnit.civInfo.addNotification("An enemy [" + attacker.getName() + "] has captured our [" + defender.getName() + "]",
-                defender.getTile().position, Color.RED)
+                defender.getTile().position, attacker.getName(), NotificationIcon.War, defender.getName())
 
         // Apparently in Civ V, captured settlers are converted to workers.
         if (capturedUnit.name == Constants.settler) {
@@ -385,7 +388,7 @@ object Battle {
                 if (civSuffered != attackingCiv
                         && civSuffered.knows(attackingCiv)
                         && civSuffered.getDiplomacyManager(attackingCiv).canDeclareWar()) {
-                    civSuffered.getDiplomacyManager(attackingCiv).declareWar()
+                    attackingCiv.getDiplomacyManager(civSuffered).declareWar()
                 }
             }
 
@@ -404,7 +407,8 @@ object Battle {
             tile.improvementInProgress = null
             tile.turnsToImprovement = 0
             tile.roadStatus = RoadStatus.None
-            if (tile.isLand && !tile.isImpassible()) tile.terrainFeature = "Fallout"
+            if (tile.isLand && !tile.isImpassible() && !tile.terrainFeatures.contains("Fallout"))
+                tile.terrainFeatures.add("Fallout")
         }
 
         for (civ in attacker.getCivInfo().getKnownCivs()) {
@@ -434,17 +438,17 @@ object Battle {
             if (attacker.isDefeated()) {
                 attacker.getCivInfo()
                         .addNotification("Our [$attackerName] was destroyed by an intercepting [$interceptorName]",
-                                Color.RED)
+                                attackerName, NotificationIcon.War, interceptorName)
                 defender.getCivInfo()
                         .addNotification("Our [$interceptorName] intercepted and destroyed an enemy [$attackerName]",
-                                interceptor.currentTile.position, Color.RED)
+                                interceptor.currentTile.position, interceptorName, NotificationIcon.War, attackerName)
             } else {
                 attacker.getCivInfo()
                         .addNotification("Our [$attackerName] was attacked by an intercepting [$interceptorName]",
-                                Color.RED)
+                                attackerName, NotificationIcon.War, interceptorName)
                 defender.getCivInfo()
                         .addNotification("Our [$interceptorName] intercepted and attacked an enemy [$attackerName]",
-                                interceptor.currentTile.position, Color.RED)
+                                interceptor.currentTile.position, interceptorName, NotificationIcon.War, attackerName)
             }
             return
         }
@@ -456,56 +460,53 @@ object Battle {
         // according to some strategy guide the slinger's withdraw ability is inherited on upgrade,
         // according to the Ironclad entry of the wiki the Caravel's is lost on upgrade.
         // therefore: Implement the flag as unique for the Caravel and Destroyer, as promotion for the Slinger.
-        // I want base chance for Slingers to be 133% (so they still get 76% against the Brute)
-        // but I want base chance for navals to be 50% (assuming their attacker will often be the same baseunit)
-        // the diverging base chance is coded into the effect string as (133%) for now, with 50% as default
         if (attacker !is MapUnitCombatant) return false         // allow simple access to unit property
         if (defender !is MapUnitCombatant) return false
         if (defender.unit.isEmbarked()) return false
-        // Calculate success chance: Base chance from json, then ratios of *base* strength and mobility
         // Promotions have no effect as per what I could find in available documentation
         val attackBaseUnit = attacker.unit.baseUnit
         val defendBaseUnit = defender.unit.baseUnit
-        val baseChance = withdrawUnique.params[0].toFloat()
-        val percentChance = (baseChance
-                * defendBaseUnit.strength / attackBaseUnit.strength
-                * defendBaseUnit.movement / attackBaseUnit.movement).toInt()
-        // Roll the dice - note the effect of the surroundings, namely how much room there is to evade to,
-        // isn't yet factored in. But it should, and that's factored in by allowing the dice to choose
-        // any geometrically fitting tile first and *then* fail when checking the tile for viability.
-        val dice = Random().nextInt(100)
-        if (dice > percentChance) return false
-        // Calculate candidate tiles, geometry only
         val fromTile = defender.getTile()
         val attTile = attacker.getTile()
-        //assert(fromTile in attTile.neighbors)                 // function should never be called with attacker not adjacent to defender
-        // the following yields almost always exactly three tiles in a half-moon shape (exception: edge of map)
-        val candidateTiles = fromTile.neighbors.filterNot { it == attTile || it in attTile.neighbors }
-        if (candidateTiles.none()) return false              // impossible on our map shapes? No - corner of a rectangular map
-        val toTile = candidateTiles.toList().random()
-        // Now make sure the move is allowed - if not, sorry, bad luck
-        if (!defender.unit.movement.canMoveTo(toTile)) {        // forbid impassable or blocked
-            val blocker = toTile.militaryUnit
-            if (blocker != null) {
-                val notificationString = "[" + defendBaseUnit.name + "] could not withdraw from a [" +
-                        attackBaseUnit.name + "] - blocked."
-                defender.getCivInfo().addNotification(notificationString, toTile.position, Color.RED)
-                attacker.getCivInfo().addNotification(notificationString, toTile.position, Color.GREEN)
-            }
-            return false
+        fun canNotWithdrawTo(tile: TileInfo): Boolean { // if the tile is what the defender can't withdraw to, this fun will return true
+           return !defender.unit.movement.canMoveTo(tile)
+                   || defendBaseUnit.unitType.isLandUnit() && !tile.isLand // forbid retreat from land to sea - embarked already excluded
+                   || tile.isCityCenter() && tile.getOwner() != defender.getCivInfo() // forbid retreat into the city which doesn't belong to the defender
         }
-        if (defendBaseUnit.unitType.isLandUnit() && !toTile.isLand) return false        // forbid retreat from land to sea - embarked already excluded
-        if (toTile.isCityCenter()) return false                                         // forbid retreat into city
+        // base chance for all units is set to 80%
+        val baseChance = withdrawUnique.params[0].toFloat()
+        /* Calculate success chance: Base chance from json, calculation method from https://www.bilibili.com/read/cv2216728
+        In general, except attacker's tile, 5 tiles neighbors the defender :
+        2 of which are also attacker's neighbors ( we call them 2-Tiles) and the other 3 aren't (we call them 3-Tiles).
+        Withdraw chance depends on 2 factors : attacker's movement and how many tiles in 3-Tiles the defender can't withdraw to.
+        If the defender can withdraw, at first we choose a tile as toTile from 3-Tiles the defender can withdraw to.
+        If 3-Tiles the defender can withdraw to is null, we choose this from 2-Tiles the defender can withdraw to.
+        If 2-Tiles the defender can withdraw to is also null, we return false.
+        */
+        val percentChance = baseChance - max(0, (attackBaseUnit.movement-2)) * 20 -
+                fromTile.neighbors.filterNot { it == attTile || it in attTile.neighbors }.count { canNotWithdrawTo(it) } * 20
+        // Get a random number in [0,100) : if the number <= percentChance, defender will withdraw from melee
+        if (Random().nextInt(100) > percentChance) return false
+        val firstCandidateTiles = fromTile.neighbors.filterNot { it == attTile || it in attTile.neighbors }
+                .filterNot { canNotWithdrawTo(it) }
+        val secondCandidateTiles = fromTile.neighbors.filter { it in attTile.neighbors }
+                .filterNot { canNotWithdrawTo(it) }
+        val toTile: TileInfo = when {
+            firstCandidateTiles.any() -> firstCandidateTiles.toList().random()
+            secondCandidateTiles.any() -> secondCandidateTiles.toList().random()
+            else -> return false
+        }
         // Withdraw success: Do it - move defender to toTile for no cost
         // NOT defender.unit.movement.moveToTile(toTile) - we want a free teleport
-        // no need for any stats recalculation as neither fromTile nor toTile can be a city
         defender.unit.removeFromTile()
         defender.unit.putInTile(toTile)
         // and count 1 attack for attacker but leave it in place
         reduceAttackerMovementPointsAndAttacks(attacker, defender)
-        val notificationString = "[" + defendBaseUnit.name + "] withdrew from a [" + attackBaseUnit.name + "]"
-        defender.getCivInfo().addNotification(notificationString, toTile.position, Color.GREEN)
-        attacker.getCivInfo().addNotification(notificationString, toTile.position, Color.RED)
+
+        val attackingUnit = attackBaseUnit.name; val defendingUnit = defendBaseUnit.name
+        val notificationString = "[$defendingUnit] withdrew from a [$attackingUnit]"
+        defender.getCivInfo().addNotification(notificationString, toTile.position, defendingUnit, NotificationIcon.War, attackingUnit)
+        attacker.getCivInfo().addNotification(notificationString, toTile.position, defendingUnit, NotificationIcon.War, attackingUnit)
         return true
     }
 

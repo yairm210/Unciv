@@ -89,12 +89,12 @@
 	{
 		"name": "Honor",
 		"era": "Ancient era",
-		"uniques": ["+25% bonus vs Barbarians", "Earn [100]% of [Barbarian] opponent's [Strength] as [Culture] for kills",
+		"uniques": ["+25% bonus vs Barbarians", "Earn [100]% of killed [Barbarian] unit's [Strength] as [Culture]",
 			"Notified of new Barbarian encampments"],
 		"policies": [
 			{
 				"name": "Warrior Code",
-				"uniques":["+[20]% Production when constructing [Melee] units"],
+				"uniques":["+[20]% Production when constructing [Melee] units [in all cities]"],
 				"row": 1,
 				"column": 2
 			},
@@ -127,7 +127,7 @@
 			},
 			{
 				"name": "Honor Complete",
-				"uniques": ["Earn [10]% of [military] opponent's [Cost] as [Gold] for kills"],
+				"uniques": ["Earn [10]% of killed [Military] unit's [Cost] as [Gold]"],
 			}
 		]
 	},{
@@ -419,7 +419,7 @@
 			},
 			{
 				"name": "Total War",
-				"uniques": ["+[15]% Production when constructing [Military] units", "New [Military] units start with [15] Experience"],
+				"uniques": ["+[15]% Production when constructing [Military] units [in all cities]", "New [Military] units start with [15] Experience"],
 				"requires": ["Police State","Fascism"],
 				"row": 3,
 				"column": 4

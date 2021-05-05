@@ -110,7 +110,7 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
             if(selectedUnits.size==1) { //single selected unit
                 separator.isVisible = true
                 val unit = selectedUnit!!
-                var nameLabelText = unit.name.tr()
+                var nameLabelText = unit.displayName().tr()
                 if (unit.health < 100) nameLabelText += " (" + unit.health + ")"
                 if (nameLabelText != unitNameLabel.text.toString()) {
                     unitNameLabel.setText(nameLabelText)

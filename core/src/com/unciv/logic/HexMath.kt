@@ -96,7 +96,10 @@ object HexMath {
     }
 
     fun evenQ2HexCoords(evenQCoord: Vector2): Vector2 {
-        return cubic2HexCoords(evenQ2CubicCoords(evenQCoord))
+        return if (evenQCoord == Vector2.Zero)
+            Vector2.Zero
+        else
+            cubic2HexCoords(evenQ2CubicCoords(evenQCoord))
     }
 
     fun roundCubicCoords(cubicCoords: Vector3): Vector3 {
@@ -122,7 +125,7 @@ object HexMath {
         return cubic2HexCoords(roundCubicCoords(hex2CubicCoords(hexCoord)))
     }
 
-    fun getVectorsAtDistance(origin: Vector2, distance: Int): List<Vector2> {
+    fun getVectorsAtDistance(origin: Vector2, distance: Int, maxDistance: Int, worldWrap: Boolean): List<Vector2> {
         val vectors = mutableListOf<Vector2>()
         if (distance == 0) {
             vectors += origin.cpy()
@@ -136,21 +139,23 @@ object HexMath {
         }
         for (i in 0 until distance) { // 8 to 10
             vectors += current.cpy()
-            vectors += origin.cpy().scl(2f).sub(current) // Get vector on other side of clock
+            if (!worldWrap || distance != maxDistance)
+                vectors += origin.cpy().scl(2f).sub(current) // Get vector on other side of clock
             current.add(1f, 1f)
         }
         for (i in 0 until distance) { // 10 to 12
             vectors += current.cpy()
-            vectors += origin.cpy().scl(2f).sub(current) // Get vector on other side of clock
+            if (!worldWrap || distance != maxDistance ||  i != 0)
+                vectors += origin.cpy().scl(2f).sub(current) // Get vector on other side of clock
             current.add(0f, 1f)
         }
         return vectors
     }
 
-    fun getVectorsInDistance(origin: Vector2, distance: Int): List<Vector2> {
+    fun getVectorsInDistance(origin: Vector2, distance: Int, worldWrap: Boolean): List<Vector2> {
         val hexesToReturn = mutableListOf<Vector2>()
         for (i in 0 .. distance) {
-            hexesToReturn += getVectorsAtDistance(origin, i)
+            hexesToReturn += getVectorsAtDistance(origin, i, distance, worldWrap)
         }
         return hexesToReturn
     }

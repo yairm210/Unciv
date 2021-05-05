@@ -44,29 +44,34 @@ class Technology {
 
         val enabledBuildings = getEnabledBuildings(viewingCiv)
 
-        val regularBuildings = enabledBuildings.filter { !it.isWonder && !it.isNationalWonder
-                && "Will not be displayed in Civilopedia" !in it.uniques }
+        val regularBuildings = enabledBuildings.filter {
+            !it.isWonder && !it.isNationalWonder
+                    && "Will not be displayed in Civilopedia" !in it.uniques
+        }
         if (regularBuildings.isNotEmpty()) {
             lineList += "{Buildings enabled}: "
             for (building in regularBuildings)
                 lineList += "* " + building.name.tr() + " (" + building.getShortDescription(ruleset) + ")"
         }
 
-        val wonders = enabledBuildings.filter { (it.isWonder || it.isNationalWonder)
-                && "Will not be displayed in Civilopedia" !in it.uniques }
+        val wonders = enabledBuildings.filter {
+            (it.isWonder || it.isNationalWonder)
+                    && "Will not be displayed in Civilopedia" !in it.uniques
+        }
         if (wonders.isNotEmpty()) {
             lineList += "{Wonders enabled}: "
             for (wonder in wonders)
                 lineList += " * " + wonder.name.tr() + " (" + wonder.getShortDescription(ruleset) + ")"
         }
 
-        for(building in getObsoletedBuildings(viewingCiv)
+        for (building in getObsoletedBuildings(viewingCiv)
                 .filter { "Will not be displayed in Civilopedia" !in it.uniques })
             lineList += "[${building.name}] obsoleted"
 
-        val revealedResource = ruleset.tileResources.values.filter { it.revealedBy == name }
-                .map { it.name }.firstOrNull() // can only be one
-        if (revealedResource != null) lineList += "Reveals [$revealedResource] on the map"
+
+        for (resource in ruleset.tileResources.values.asSequence().filter { it.revealedBy == name }
+                .map { it.name })
+            lineList += "Reveals [$resource] on the map"
 
         val tileImprovements = ruleset.tileImprovements.values.filter { it.techRequired == name }
         if (tileImprovements.isNotEmpty())

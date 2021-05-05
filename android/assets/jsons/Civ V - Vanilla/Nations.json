@@ -218,7 +218,7 @@
 		"cities": ["Rome","Antium","Cumae","Neapolis","Ravenna","Arretium","Mediolanum","Arpinum","Circei","Setia",
 			"Satricum","Ardea","Ostia","Velitrae","Viroconium","Tarentum","Brundisium","Caesaraugusta","Caesarea","Palmyra",
 			"Signia","Aquileia","Clusium","Sutrium","Cremona","Placentia","Hispalis","Artaxata","Aurelianorum","Nicopolis",
-			  "Agrippina","Verona","Corfinium","Treverii","Sirmium","Augustadorum","Curia","Interrama","Adria",]
+			  "Agrippina","Verona","Corfinium","Treverii","Sirmium","Augustadorum","Curia","Interrama","Adria"]
 	},
 	{
 		"name": "Arabia",
@@ -597,7 +597,7 @@
 		"outerColor": [139,32,23],
 		"innerColor": [134,238,214],
 		"uniqueName": "Sacrificial Captives",
-		"uniques": ["Earn [100]% of [military] opponent's [Strength] as [Culture] for kills"],
+		"uniques": ["Earn [100]% of killed [Military] unit's [Strength] as [Culture]"],
 		"cities": ["Tenochtitlan","Teotihuacan","Tlatelolco","Texcoco","Tlaxcala","Calixtlahuaca","Xochicalco","Tlacopan",
 			"Atzcapotzalco","Tzintzuntzan","Malinalco","Tula","Tamuin","Teayo","Cempoala","Chalco","Tlalmanalco",
 			"Ixtapaluca","Huexotla","Tepexpan","Tepetlaoxtoc","Chiconautla","Zitlaltepec","Coyotepec","Tequixquiac",
@@ -655,7 +655,7 @@
 		"declaringWar": "If I am to be honest, I tire of those pointless charades. Why don't we settle our disputes on the field of battle, like true men? Perhaps the skalds will sing of your valor... or mine!",
 		"attacked": "Ahahah! You seem to show some skills of a true Viking! Too bad that I'll probably kill you!",
 		"defeated": "Loki must have stood by you, for a common man alone could not have defeated me... Oh well! I will join the einherjar in Valhalla and feast, while you toil away here.",
-		"introduction": "Harad Bluetooth bids you welcome to his lands, a Viking unlike any the seas and lands have ever known! Hah, are you afraid?",
+		"introduction": "Harald Bluetooth bids you welcome to his lands, a Viking unlike any the seas and lands have ever known! Hah, are you afraid?",
 		"neutralHello": "Hail to you.",
 		"hateHello": "Oh, it's you.",
 		"tradeRequest": "This is a fine deal! Even a drunk beggar would agree!",
@@ -1049,7 +1049,8 @@
 	{
 		"name": "Barbarians",
 		"outerColor": [0,0,0],
-		"innerColor": [182,0,0]
+		"innerColor": [182,0,0],
+		"uniques": ["Can only heal by pillaging"]
 	}
 
 ]

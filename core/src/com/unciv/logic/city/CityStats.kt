@@ -1,6 +1,5 @@
 package com.unciv.logic.city
 
-import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.CityStateType
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
@@ -9,7 +8,6 @@ import com.unciv.models.Counter
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.Unique
 import com.unciv.models.ruleset.unit.BaseUnit
-import com.unciv.models.ruleset.unit.UnitType
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 
@@ -42,7 +40,8 @@ class CityStats {
     private fun getStatsFromTiles(): Stats {
         val stats = Stats()
         for (cell in cityInfo.tilesInRange
-                .filter { cityInfo.location == it.position || cityInfo.isWorked(it) })
+                .filter { cityInfo.location == it.position || cityInfo.isWorked(it) ||
+                        it.getTileImprovement()?.hasUnique("Tile provides yield without assigned population")==true && it.owningCity == cityInfo })
             stats.add(cell.getTileStats(cityInfo, cityInfo.civInfo))
         return stats
     }
@@ -162,9 +161,6 @@ class CityStats {
         // This requires more... complex navigation of the local uniques to merge into "+[amount]% growth [cityFilter]"
         for (unique in cityInfo.civInfo.getMatchingUniques("+[]% growth in all cities"))
             bonus += unique.params[0].toFloat()
-        // Deprecated as of 3.12.13 -> moved to "+[amount]% growth [in capital]"
-        if (cityInfo.isCapital()) for (unique in cityInfo.civInfo.getMatchingUniques("+[]% growth in capital"))
-            bonus += unique.params[0].toFloat()
 
         // "+[amount]% growth [cityFilter]"
         for (unique in cityInfo.civInfo.getMatchingUniques("+[]% growth []"))
@@ -202,12 +198,7 @@ class CityStats {
 
         newHappinessList["Population"] = -unhappinessFromCitizens * unhappinessModifier
 
-        var happinessFromPolicies = 0f
-        // Deprecated as of 3.12.13 - replaced by "[+1 Happiness] [in all cities connected to capital]"
-        if (civInfo.hasUnique("+1 happiness for every city connected to capital")
-                && cityInfo.isConnectedToCapital())
-            happinessFromPolicies += 1f
-        happinessFromPolicies += getStatsFromUniques(civInfo.policies.policyUniques.getAllUniques()).happiness
+        var happinessFromPolicies = getStatsFromUniques(civInfo.policies.policyUniques.getAllUniques()).happiness
 
         newHappinessList["Policies"] = happinessFromPolicies
 
@@ -242,6 +233,9 @@ class CityStats {
         val stats = specialist.clone()
         for (unique in cityInfo.civInfo.getMatchingUniques("[] from every specialist"))
             stats.add(unique.stats)
+        for (unique in cityInfo.civInfo.getMatchingUniques("[] from every []"))
+            if (unique.params[1] == specialistName)
+                stats.add(unique.stats)
         return stats
     }
 
@@ -256,13 +250,6 @@ class CityStats {
         val stats = Stats()
 
         for (unique in uniques.toList()) { // Should help  mitigate getConstructionButtonDTOs concurrency problems.
-
-            // Deprecated by 3.12.13 - replaced by "[stats] [cityFilter]"
-            if (unique.placeholderText == "[] in capital" && cityInfo.isCapital()
-                    || unique.placeholderText == "[] in all cities"
-                    || unique.placeholderText == "[] in all cities with a garrison" && cityInfo.getCenterTile().militaryUnit != null)
-                stats.add(unique.stats)
-
             // "[stats] [cityFilter]"
             if (unique.placeholderText == "[] []" && cityInfo.matchesFilter(unique.params[1]))
                 stats.add(unique.stats)
@@ -271,18 +258,6 @@ class CityStats {
             if (unique.placeholderText=="[] per [] population []" && cityInfo.matchesFilter(unique.params[2])) {
                 val amountOfEffects = (cityInfo.population.population / unique.params[1].toInt()).toFloat()
                 stats.add(unique.stats.times(amountOfEffects))
-            }
-
-            // Deprecated by 3.12.13 - replaced by "[] per [] population [in all cities]"
-            if (unique.placeholderText == "[] per [] population in all cities") {
-                val amountOfEffects = (cityInfo.population.population / unique.params[1].toInt()).toFloat()
-                stats.add(unique.stats.times(amountOfEffects))
-            }
-
-            // Deprecated by 3.12.13 - replaced by "[+1 Gold, +1 Happiness] per [2] population [in capital]"
-            if (unique.text == "+1 gold and -1 unhappiness for every 2 citizens in capital" && cityInfo.isCapital()) {
-                stats.gold += (cityInfo.population.population / 2).toFloat()
-                stats.happiness += (cityInfo.population.population / 2).toFloat()
             }
         }
 
@@ -304,11 +279,6 @@ class CityStats {
         val uniques = uniqueSequence.toList().asSequence()
           // Since this is sometimes run from a different thread (getConstructionButtonDTOs),
           // this helps mitigate concurrency problems.
-
-        // Deprecated as of 3.12.10 - changed to "+[50]% Production when constructing [Settler] units [in capital]"
-        if (currentConstruction.name == Constants.settler && cityInfo.isCapital()
-                && uniques.any { it.text == "Training of settlers increased +50% in capital" })
-            stats.production += 50f
 
         if (currentConstruction is Building && !currentConstruction.isWonder && !currentConstruction.isNationalWonder)
             for (unique in uniques.filter { it.placeholderText == "+[]% Production when constructing [] buildings" }) {
@@ -340,12 +310,6 @@ class CityStats {
                 stats.production += unique.params[0].toInt()
         }
 
-        // Deprecated as of 3.12.10 - changed to "+[amount]% Production when constructing [unitFilter] units [in all cities]"
-        for (unique in uniques.filter { it.placeholderText == "+[]% Production when constructing [] units" }) {
-            if (currentConstruction is BaseUnit && currentConstruction.matchesFilter(unique.params[1]))
-                stats.production += unique.params[0].toInt()
-        }
-
         // "+[amount]% Production when constructing [unitFilter] units [cityFilter]"
         for (unique in uniques.filter { it.placeholderText == "+[]% Production when constructing [] units []" }) {
             if (currentConstruction is BaseUnit && currentConstruction.matchesFilter(unique.params[1])
@@ -354,19 +318,8 @@ class CityStats {
         }
 
 
-        // Deprecated as of 3.12.10 - changed to "+[33]% [Culture] [in all cities with a world wonder]"
-        if (cityInfo.cityConstructions.getBuiltBuildings().any { it.isWonder }
-                && uniques.any { it.text == "+33% culture in all cities with a world wonder" })
-            stats.culture += 33f
-        // Deprecated as of 3.12.10 - changed to "+[25]% [Gold] [in capital]" (Commerce policy)
-        if (uniques.any { it.text == "+25% gold in capital" } && cityInfo.isCapital())
-            stats.gold += 25f
         if (cityInfo.civInfo.getHappiness() >= 0 && uniques.any { it.text == "+15% science while empire is happy" })
             stats.science += 15f
-
-        // Deprecated as of 3.12.10 - changed to "+[25]% [Culture] [in all cities]" (Sistine Chapel)
-        if (uniques.any { it.text == "Culture in all cities increased by 25%" })
-            stats.culture += 25f
 
         return stats
     }
@@ -438,7 +391,7 @@ class CityStats {
         updateCityHappiness()
         updateStatPercentBonusList(currentConstruction, citySpecificUniques)
 
-        updateFinalStatList(currentConstruction) // again, we don't edit the existing currentCityStats directly, in order to avoid concurrency exceptions
+        updateFinalStatList(currentConstruction, citySpecificUniques) // again, we don't edit the existing currentCityStats directly, in order to avoid concurrency exceptions
 
         val newCurrentCityStats = Stats()
         for (stat in finalStatList.values) newCurrentCityStats.add(stat)
@@ -447,7 +400,7 @@ class CityStats {
         cityInfo.civInfo.updateStatsForNextTurn()
     }
 
-    private fun updateFinalStatList(currentConstruction: IConstruction) {
+    private fun updateFinalStatList(currentConstruction: IConstruction, citySpecificUniques: Sequence<Unique>) {
         val newFinalStatList = LinkedHashMap<String, Stats>() // again, we don't edit the existing currentCityStats directly, in order to avoid concurrency exceptions
 
         for (entry in baseStatList)
@@ -511,12 +464,7 @@ class CityStats {
             totalFood = newFinalStatList.values.map { it.food }.sum() // recalculate again
         }
 
-
-        // Same here - will have a different UI display.
-        var buildingsMaintenance = cityInfo.cityConstructions.getMaintenanceCosts().toFloat() // this is AFTER the bonus calculation!
-        if (!cityInfo.civInfo.isPlayerCivilization()) {
-            buildingsMaintenance *= cityInfo.civInfo.gameInfo.getDifficulty().aiBuildingMaintenanceModifier
-        }
+        val buildingsMaintenance = getBuildingMaintenanceCosts(citySpecificUniques) // this is AFTER the bonus calculation!
         newFinalStatList["Maintenance"] = Stats().apply { gold -= buildingsMaintenance.toInt() }
 
 
@@ -532,6 +480,21 @@ class CityStats {
         if (newFinalStatList.values.map { it.production }.sum() < 1)  // Minimum production for things to progress
             newFinalStatList["Production"] = Stats().apply { production = 1F }
         finalStatList = newFinalStatList
+    }
+
+    private fun getBuildingMaintenanceCosts(citySpecificUniques: Sequence<Unique>): Float {
+        // Same here - will have a different UI display.
+        var buildingsMaintenance = cityInfo.cityConstructions.getMaintenanceCosts().toFloat() // this is AFTER the bonus calculation!
+        if (!cityInfo.civInfo.isPlayerCivilization()) {
+            buildingsMaintenance *= cityInfo.civInfo.gameInfo.getDifficulty().aiBuildingMaintenanceModifier
+        }
+
+        // e.g. "-[50]% Maintenance costs [in this city]"
+        val maintenanceUniqueTemplate = "-[]% building maintenance costs []"
+        val maintenanceUniques = citySpecificUniques.filter { it.placeholderText == maintenanceUniqueTemplate } +
+                cityInfo.civInfo.getMatchingUniques(maintenanceUniqueTemplate).filter { cityInfo.matchesFilter(it.params[1]) }
+        for (unique in maintenanceUniques) buildingsMaintenance *= (1f - unique.params[0].toFloat() / 100)
+        return buildingsMaintenance
     }
 
     private fun updateFoodEaten() {

@@ -9,15 +9,11 @@ import com.unciv.logic.city.PerpetualConstruction
 import com.unciv.logic.civilization.*
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
-import com.unciv.logic.trade.TradeOffer
-import com.unciv.logic.trade.TradeType
 import com.unciv.models.metadata.GameParameters
 import com.unciv.models.ruleset.Difficulty
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
-import com.unciv.models.ruleset.Specialist
 import java.util.*
-import kotlin.collections.ArrayList
 
 class UncivShowableException(missingMods: String) : Exception(missingMods)
 
@@ -171,11 +167,11 @@ class GameInfo {
         if (tiles.size < 3) {
             for (tile in tiles) {
                 val unitName = tile.militaryUnit!!.name
-                thisPlayer.addNotification("An enemy [$unitName] was spotted $inOrNear our territory", tile.position, Color.RED)
+                thisPlayer.addNotification("An enemy [$unitName] was spotted $inOrNear our territory", tile.position, NotificationIcon.War, unitName)
             }
         } else {
             val positions = tiles.map { it.position }
-            thisPlayer.addNotification("[${positions.size}] enemy units were spotted $inOrNear our territory", Color.RED, LocationAction(positions))
+            thisPlayer.addNotification("[${positions.size}] enemy units were spotted $inOrNear our territory", LocationAction(positions), NotificationIcon.War)
         }
     }
 
@@ -206,7 +202,7 @@ class GameInfo {
         val tilesWithin3ofExistingEncampment = existingEncampments.asSequence()
                 .flatMap { it.getTilesInDistance(3) }.toSet()
         val viableTiles = tileMap.values.filter {
-            it.isLand && it.terrainFeature == null
+            it.isLand && it.terrainFeatures.isEmpty()
                     && !it.isImpassible()
                     && it !in tilesWithin3ofExistingEncampment
                     && it !in allViewableTiles
@@ -251,7 +247,7 @@ class GameInfo {
             it.hasUnique("Notified of new Barbarian encampments")
                     && it.exploredTiles.contains(tile.position)
         }
-                .forEach { it.addNotification("A new barbarian encampment has spawned!", tile.position, Color.RED) }
+                .forEach { it.addNotification("A new barbarian encampment has spawned!", tile.position, NotificationIcon.War) }
     }
 
     // All cross-game data which needs to be altered (e.g. when removing or changing a name of a building/tech)
@@ -292,6 +288,7 @@ class GameInfo {
                 civInfo.policies.adoptedPolicies.remove("Facism")
                 civInfo.policies.adoptedPolicies.add("Fascism")
             }
+
         }
 
 
@@ -331,8 +328,8 @@ class GameInfo {
     // So we remove them so the game doesn't crash when it tries to access them.
     private fun removeMissingModReferences() {
         for (tile in tileMap.values) {
-            if (tile.terrainFeature!=null && !ruleSet.terrains.containsKey(tile.terrainFeature!!))
-                tile.terrainFeature = null
+            for (terrainFeature in tile.terrainFeatures.filter{ !ruleSet.terrains.containsKey(it) })
+                tile.terrainFeatures.remove(terrainFeature)
             if (tile.resource != null && !ruleSet.tileResources.containsKey(tile.resource!!))
                 tile.resource = null
             if (tile.improvement != null && !ruleSet.tileImprovements.containsKey(tile.improvement!!)
@@ -346,7 +343,6 @@ class GameInfo {
                     if (!ruleSet.unitPromotions.containsKey(promotion))
                         unit.promotions.promotions.remove(promotion)
             }
-
         }
 
         for (city in civilizations.asSequence().flatMap { it.cities.asSequence() }) {
@@ -367,6 +363,7 @@ class GameInfo {
                 if (isInvalidConstruction(construction))
                     city.cityConstructions.inProgressConstructions.remove(construction)
         }
+
         for (civinfo in civilizations) {
             for (tech in civinfo.tech.techsResearched.toList())
                 if (!ruleSet.technologies.containsKey(tech))

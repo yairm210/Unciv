@@ -7,7 +7,7 @@
 		"turnsToBuild": 7,
 		"techRequired": "Agriculture",
 		"uniques": ["Can also be built on tiles adjacent to fresh water", 
-			"[+1 Food] on [fresh water] tiles once [Civil Service] is discovered",
+			"[+1 Food] on [Fresh water] tiles once [Civil Service] is discovered",
 			"[+1 Food] on [non-fresh water] tiles once [Fertilizer] is discovered"],
 		"shortcutKey": "F"
 	},
@@ -50,8 +50,10 @@
 	},
 	{
 		"name": "Oil well",
+		"terrainsCanBeBuiltOn": ["Coast"],
 		"turnsToBuild": 9,
-		"techRequired": "Biology"
+		"techRequired": "Biology",
+		"shortcutKey": "W"
 	},
 	{
 		"name": "Pasture",
@@ -105,7 +107,8 @@
 		"name": "Railroad",
 		"turnsToBuild": 4,
 		"techRequired": "Railroad",
-		"uniques": ["Can be built outside your borders", "Costs [2] gold per turn when in your territory"]
+		"uniques": ["Can be built outside your borders", "Costs [2] gold per turn when in your territory"],
+		"shortcutKey": "R"
 	},
 	
 	// Removals
@@ -155,7 +158,8 @@
 	},
 	{
 		"name": "Cancel improvement order",
-		"uniques": ["Can be built outside your borders"]
+		"uniques": ["Can be built outside your borders"],
+		"shortcutKey": "."
 	},
 	
 	// Great Person improvements
@@ -182,7 +186,7 @@
 	},
 	{
 		"name": "Citadel",
-		"uniques": ["Gives a defensive bonus of [100]%", "Deal 30 damage to adjacent enemy units", "Great Improvement"]
+		"uniques": ["Gives a defensive bonus of [100]%", "Deal 30 damage to adjacent enemy units", "Great Improvement", "Can be built just outside your borders"]
 	},
 
 	//Civilization unique improvements
@@ -208,7 +212,8 @@
 		"shortcutKey": "F"
 	},
 	
-	{ "name": "Ancient ruins" },
-	{ "name": "City ruins" },
-	{ "name": "Barbarian encampment" }
+	{ "name": "Ancient ruins", "uniques": ["Unpillagable"] },
+	{ "name": "City ruins", "uniques": ["Unpillagable"] },
+	{ "name": "City center", "uniques": ["Unpillagable"] },
+	{ "name": "Barbarian encampment", "uniques": ["Unpillagable"] }
 ]

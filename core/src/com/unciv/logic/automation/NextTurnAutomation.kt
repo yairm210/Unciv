@@ -65,9 +65,9 @@ object NextTurnAutomation {
             civInfo.tradeRequests.remove(tradeRequest)
             if (TradeEvaluation().isTradeAcceptable(tradeLogic.currentTrade, civInfo, otherCiv)) {
                 tradeLogic.acceptTrade()
-                otherCiv.addNotification("[${civInfo.civName}] has accepted your trade request", Color.GOLD)
+                otherCiv.addNotification("[${civInfo.civName}] has accepted your trade request", NotificationIcon.Trade, civInfo.civName)
             } else {
-                otherCiv.addNotification("[${civInfo.civName}] has denied your trade request", Color.GOLD)
+                otherCiv.addNotification("[${civInfo.civName}] has denied your trade request", NotificationIcon.Trade, civInfo.civName)
             }
         }
         civInfo.tradeRequests.clear()
@@ -88,8 +88,8 @@ object NextTurnAutomation {
                 if (diploManager.relationshipLevel() > RelationshipLevel.Neutral
                         && !diploManager.otherCivDiplomacy().hasFlag(DiplomacyFlags.Denunceation)) {
                     diploManager.signDeclarationOfFriendship()
-                    requestingCiv.addNotification("We have signed a Declaration of Friendship with [${civInfo.civName}]!", Color.GOLD)
-                } else requestingCiv.addNotification("[${civInfo.civName}] has denied our Declaration of Friendship!", Color.GOLD)
+                    requestingCiv.addNotification("We have signed a Declaration of Friendship with [${civInfo.civName}]!", NotificationIcon.Diplomacy, civInfo.civName)
+                } else requestingCiv.addNotification("[${civInfo.civName}] has denied our Declaration of Friendship!", NotificationIcon.Diplomacy, civInfo.civName)
             }
         }
 
@@ -293,7 +293,7 @@ object NextTurnAutomation {
             // Default setting is 5, this will be changed according to different civ.
             if ((1..10).random() > 5) continue
             val tradeLogic = TradeLogic(civInfo, otherCiv)
-            val cost = civInfo.getResearchAgreementCost(otherCiv)
+            val cost = civInfo.getResearchAgreementCost()
             tradeLogic.currentTrade.ourOffers.add(TradeOffer(Constants.researchAgreement, TradeType.Treaty, cost))
             tradeLogic.currentTrade.theirOffers.add(TradeOffer(Constants.researchAgreement, TradeType.Treaty, cost))
 
@@ -536,6 +536,7 @@ object NextTurnAutomation {
                 otherCiv.popupAlerts.add(PopupAlert(AlertType.CitySettledNearOtherCivDespiteOurPromise, civInfo.civName))
                 diplomacyManager.setFlag(DiplomacyFlags.IgnoreThemSettlingNearUs, 100)
                 diplomacyManager.setModifier(DiplomaticModifiers.BetrayedPromiseToNotSettleCitiesNearUs, -20f)
+                diplomacyManager.removeFlag(DiplomacyFlags.AgreedToNotSettleNearUs)
             }
             else -> {
                 val threatLevel = Automation.threatAssessment(civInfo, otherCiv)

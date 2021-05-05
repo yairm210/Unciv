@@ -13,11 +13,13 @@ import kotlin.math.pow
 class MapLandmassGenerator(val randomness: MapGenerationRandomness) {
 
     fun generateLand(tileMap: TileMap, ruleset: Ruleset) {
+        // This is to accommodate land-only mods
         if (ruleset.terrains.values.none { it.type == TerrainType.Water }) {
             for (tile in tileMap.values)
-                tile.baseTerrain = Constants.grassland
+                tile.baseTerrain = ruleset.terrains.keys.first()
             return
         }
+
         when (tileMap.mapParameters.type) {
             MapType.pangaea -> createPangea(tileMap)
             MapType.continents -> createTwoContinents(tileMap)
@@ -89,9 +91,19 @@ class MapLandmassGenerator(val randomness: MapGenerationRandomness) {
     }
 
     private fun getTwoContinentsTransform(tileInfo: TileInfo, tileMap: TileMap): Double {
+        // The idea here is to create a water area separating the two land areas.
+        // So what we do it create a line of water in the middle - where longitude is close to 0.
         val randomScale = randomness.RNG.nextDouble()
-        val longitudeFactor = abs(tileInfo.longitude) / tileMap.maxLongitude
+        var longitudeFactor = abs(tileInfo.longitude) / tileMap.maxLongitude
 
+        // If this is a world wrap, we want it to be separated on both sides -
+        // so we make the actual strip of water thinner, but we put it both in the middle of the map and on the edges of the map
+        if (tileMap.mapParameters.worldWrap)
+            longitudeFactor = min(longitudeFactor,
+                (tileMap.maxLongitude - abs(tileInfo.longitude)) / tileMap.maxLongitude) * 1.5f
+
+        // there's nothing magical about this, it's just what we got from playing around with a lot of different options -
+        //   the numbers can be changed if you find that something else creates better looking continents
         return min(0.2, -1.0 + (5.0 * longitudeFactor.pow(0.6f) + randomScale) / 3.0)
     }
 
@@ -122,7 +134,7 @@ class MapLandmassGenerator(val randomness: MapGenerationRandomness) {
     private fun generateLandCellularAutomata(tileMap: TileMap) {
         val numSmooth = 4
 
-        //init
+        // init
         for (tile in tileMap.values) {
             val terrainType = getInitialTerrainCellularAutomata(tile, tileMap.mapParameters)
             if (terrainType == TerrainType.Land) tile.baseTerrain = Constants.grassland
@@ -136,7 +148,6 @@ class MapLandmassGenerator(val randomness: MapGenerationRandomness) {
 
         for (loop in 0..numSmooth) {
             for (tileInfo in tileMap.values) {
-                //if (HexMath.getDistance(Vector2.Zero, tileInfo.position) < mapRadius) {
                 val numberOfLandNeighbors = tileInfo.neighbors.count { it.baseTerrain == grassland }
                 if (tileInfo.baseTerrain == grassland) { // land tile
                     if (numberOfLandNeighbors < 3)
@@ -145,9 +156,6 @@ class MapLandmassGenerator(val randomness: MapGenerationRandomness) {
                     if (numberOfLandNeighbors > 3)
                         tileInfo.baseTerrain = grassland
                 }
-                /*} else {
-                    tileInfo.baseTerrain = ocean
-                }*/
             }
         }
     }

@@ -12,7 +12,7 @@ import com.unciv.ui.worldscreen.mainmenu.DropBox
 import kotlin.concurrent.thread
 import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 
-class MapDownloadPopup(loadMapScreen: LoadMapScreen): Popup(loadMapScreen) {
+class MapDownloadPopup(loadMapScreen: SaveAndLoadMapScreen): Popup(loadMapScreen) {
     private val contentTable = Table()
     private val header = Table()
     private val listOfMaps = mutableListOf<TextButton>()
@@ -80,7 +80,7 @@ class MapDownloadPopup(loadMapScreen: LoadMapScreen): Popup(loadMapScreen) {
             MapSaver.saveMap(downloadableMap.name, mapObject)
 
             // creating a screen is a GL task
-            Gdx.app.postRunnable { UncivGame.Current.setScreen(MapEditorScreen(mapObject)) }
+            Gdx.app.postRunnable { screen.game.setScreen(MapEditorScreen(mapObject)) }
         } catch (ex: Exception) {
             print(ex)
 

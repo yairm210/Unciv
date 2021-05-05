@@ -56,6 +56,7 @@ object UniqueTriggerActivation {
             "Empire enters golden age" ->
                 civInfo.goldenAges.enterGoldenAge()
             "Free Great Person" -> {
+                if (civInfo.isSpectator()) return
                 if (civInfo.isPlayerCivilization()) civInfo.greatPeople.freeGreatPeople++
                 else {
                     val greatPeople = civInfo.getGreatPeople()

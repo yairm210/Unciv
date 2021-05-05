@@ -1,10 +1,311 @@
-## 3.12.15
+## 3.14.5
+
+New tile layering is live for all users!
+
+Tile options in map editor screen no longer 'click' on tiles behind them
+
+Added construction production info to city screen
+
+Specify original owner when showing "Liberate city"
+
+Added "Self-destructs when attacking" unique
+
+By SomeTroglodyte:
+- City expansion notification points to acquired tile
+- Visual improvements for the City Overview 
+
+Fix screen bugs when you don't use splitpane in pickscreen  - By lishaoxia1985
+
+## 3.14.4
+
+Resolved #3524 - Happiness in city overview now calculated correctly
+
+Added Happiness (and Faith for Religion mods) to stats list - #3524
+
+Resolved #3837 - Harad -> Harald in Denmark greeting
+
+By SomeTroglodyte:
+
+- Keyboard navigation to switch panes within overview screen
+- Some visual improvements for the Mod Manager Screen
+- Bigger target on "next city" button
+- Fixed #3729 "Android crash on loading from custom location"
+
+By GGGuenni:
+- Added fogOfWarColor and unexploredTileColor
+- Fixed internal TileSetConfigs not getting loaded on android
+
+## 3.14.3
+
+Added 'update time', 'open Github page', and marked updated mods, in mod management screen
+
+Cannot enter diplomacy screen for irrelevant civs through diplomacy overview
+
+Resolved #3817 - don't display resource requirements twice
+
+By SomeTroglodyte:
+
+- Mod translations now appear in new game screen
+- Citadel tiles don't attach to razing cities if possible
+- City center now unpillagable
+
+Parameterize civ-wide sight bonus - By SpacedOutChicken
+
+Translation updates
+
+## 3.14.2
+
+Put world wrap behind setting again and added warning for world wrap for Android - I'm seeing a lot of ANRs in recent versions, but it's not something that seems solvable.
+
+Fixed - 'Water units' now can be capitalized, as they should be.
+
+"[] from every []" can accomodate specialist names
+
+Fixed unitType parameters in changed unique
+
+## 3.14.1
+
+Natural wonders are standalone tiles in new layering
+
+Modding:
+
+- Rough terrain specified through uniques
+- Added check to remove clutter in tech trees
+- Added building-maintenance-decreasing unique
+- Can handle unique capital indicators in mods
+- Added "Friendly Land" and "Foreign Land" as tile filter options
+
+By SomeTroglodyte:
+- Fix Citadel not buildable where it should be 
+
+By GGGuenni:
+- Fixed Multiplayer bugs 
+- Preparation for hill as terrain feature
+- Added TileSetConfigs 
+
+## 3.14.0
+
+World wrap is publicly released!
+
+Added empty hexagon when none of the images exist - this fixes the default tileset for the new rendering method
+
+Manhattan project is not disabled for no-nuclear-weapon games
+
+Behind-the-scenes work on Religion
+
+## 3.13.13
+
+Resolved #3753 - Fallout is no longer added multiple times
+
+ALL tile images now support era-specific images! But only if the base tile exists as well.
+
+Added new experimental tile layering, including new tileset - see #3716
+
+Can now handle mods with any default branch name!
+
+Added Faith icon and display for games with Religion
+
+Redraw CivilopediaScreen - By lishaoxia1985
+
+Fixed roads not getting wrapped correctly - By GGGuenni
+
+## 3.13.12
+
+Added Bulgarian, by antonpetrov145!
+
+HUGE memory savings (120MB -> 75MB) By saving atlases between ruleset resets!
+
+Start of work on Religion!
+
+Resolved #3740 - units retain individual names when upgrading
+
+Fixed can't press nextTurn in multiplayer game - By GGGuenni
+
+'Years of peace' modifier reset when war is declared
+
+Added mod pagination - even when we exceed 100 mods, we'll be able to download them all
+
+Button for current civilopedia entry is now marked
+
+Modded "Remove" commands to nonexistant features no longer crashes the game
+
+AI no longer tries to attack with carriers, crashing the game.
+
+National wonder does not require building to be built in puppeted cities
+
+City attack notifications show icon
+
+Custom improvements for water resources now moddable
+
+## 3.13.11
+
+Resolved #3732 - Mark target tile while moving toward it
+
+Resolved #3734 - "Loading" popup when loading game remains until game is fully loaded
+
+Resolved #3735 - The civ launching - not receiving - the nuke is considered the civ that declared war
+
+Resolved #3721 - Fixed edge-case "images are temporarily applied from mods set in other places"
+
+Resolved #3722 - fixed resistance icon display in notifications
+
+Carriers cannot attack - By lishaoxia1985
+
+## 3.13.10
+
+Converted all color-coding of notifications to multi-icon notifications
+
+Resolved #3713 - Fixed misspelled "fresh water" in farm unique check
+
+Barbarians only heal by pillaging, simplified barbarian automation
+
+## 3.13.9
+
+Added "permanent visual mods" option to mod management
+
+Resolved #3614 - tileFilter works with natural wonders
+
+More uniform Trade overview
+
+Resolved #3705 - loading game popup stays until the game is loaded
+
+Added "Provides yield without assigned population" uniques to tile improvements
+
+Can now add leader portrait images to mods
+
+Unit name is translated when unit has a unique name
+
+By GGGuenni:
+- More terrainFeature refactoring
+- Toast popup not screen blocking
+
+## 3.13.8
+
+Resolved #3401, #3598, #3643 - game can be instantly closed and reopened on Android
+
+Remove tile improvements not in the current ruleset on normalizeTile
+
+Resolved #3686 - world wrapped 'continents' map now separates continents properly
+
+Resolved #3691 - 'new map' from map editor copies existing map parameters
+
+Game no longer crashes due to incorrect building-improvement modding
+
+UI improvements  - By lishaoxia1985
+
+Fixed Military Caste policy  - By absolutebull
+
+## 3.13.7
+
+Fixed Great Barrier Reef spawn rules
+
+Resolved #3681 - translation fix, "in every city" -> "in all cities"
+
+Mods with no techs should work again
+
+Resolved #3663 - fixed settler automation bug
+
+Added titles to mod management screen
+
+Withdraw before melee is the same as original game - By lishaoxia1985
+
+Initial checks for 'multiple terrain feature support' by GGGuenni
+
+## 3.13.6
+
+Can convert maps between different rulesets!
+
+Resolved #3635 - can remove natural wonders and roads in map editor
+
+Fixed hurry cost modifiers, and unit gold costs scaling by game speed
+
+Resolved #3651 - "Free great person" unique compatible with techs and Spectator
+
+Resolved #3653 - Settler AI no longer aims for far tiles
+
+Tech info can display more than one revealed resource
+
+"Obsolete with [techName]" unique works with improvements
+
+## 3.13.5
+
+Experimental World Wrap - By GGGuenni!
+
+Resolved #3639 - City states that can't be connected by land no longer assign road connection quests
+
+Fix when Trade Gold = 0 it also shows in offer - By lishaoxia1985
+
+Translation updates
+
+## 3.13.4
+
+Merged save map functionality into load map screen - map saving is more streamlined!
+
+Resolved #3626 - Can rename multiplayer games
+
+Resolved #3622 - Can no longer try to send air units into unexplored tiles
+
+Strength bonus from capital is now part of the Palace bonuses to make it moddable
+
+Allow unit rename on promote - by David Howard
+
+Translations update
+
+## 3.13.3
+
+Map generation parameters are moddable, allowing players to create custom terrains for map generation!
+
+Custom mods with no water or grassland can now work!
+
+Changed "Gold" resource to be called "Gold Ore" and "Siege" promotion to "Besiege" to not conflict with the yield type for translations - #2458
+
+Maps incompatible with ruleset no longer popup errors when generating a new map
+
+All resource stats from buildings converted to building uniques
+
+Translation updates
+
+## 3.13.2
+
+Resolved #3601 - selected current tech no longer looks like unresearchable tech
+
+Resolved #3610 - city sorting in overview is now done by translated, not original, name
+
+Resolved #3586 - Added 'Destroy' translation for capturing cities in one-city challenge
+
+Cleaned up map editor
+
+tileFilter now works with resources for most uniques!
+
+Added mod check for 'provides free building' which does not exist
+
+Translation updates
+
+## 3.13.1
+
+Resolved #3600 - multiplayer game reloading and screen resize no longer reset map zoom and position
+
+Resolved #3495 - Added scrollbars to civilopedia and picker screens
+
+Map editor knows to remove resources that don't exist in mods
+
+Can now create as many tech rows as you wish in mods :)
+
+Display scroll position on minimap - By devbeutler
+
+Translation updates
+
+## 3.13.0
 
 Mod-specific maps are go! :D
+
+Movement algorithm updated - can no longer see whether you can move to unknown tiles
 
 Solved "AI doesn't declare war" bug
 
 Removed Scenario Maps entirely - was not a well thought-out concept and caused more confusion than actual fun.
+
+Better tech descriptions for increased improvement stats
 
 ## 3.12.14
 

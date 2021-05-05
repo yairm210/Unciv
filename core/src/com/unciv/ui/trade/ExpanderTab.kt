@@ -1,4 +1,4 @@
-package com.unciv.ui.cityscreen
+package com.unciv.ui.trade
 
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Skin

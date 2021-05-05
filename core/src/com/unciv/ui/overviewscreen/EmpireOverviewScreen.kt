@@ -1,13 +1,12 @@
 package com.unciv.ui.overviewscreen
 
+import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.Input
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.Touchable
-import com.badlogic.gdx.scenes.scene2d.ui.Label
-import com.badlogic.gdx.scenes.scene2d.ui.Slider
-import com.badlogic.gdx.scenes.scene2d.ui.Table
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton
+import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.UncivGame
@@ -26,23 +25,48 @@ import kotlin.math.abs
 import kotlin.math.roundToInt
 import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 
-class EmpireOverviewScreen(private var viewingPlayer:CivilizationInfo, defaultPage: String = "Cities") : CameraStageBaseScreen(){
+class EmpireOverviewScreen(private var viewingPlayer:CivilizationInfo, defaultPage: String = "") : CameraStageBaseScreen(){
     private val topTable = Table().apply { defaults().pad(10f) }
     private val centerTable = Table().apply { defaults().pad(5f) }
 
-    val setCategoryActions = HashMap<String, () -> Unit>()
-    val categoryButtons = HashMap<String, TextButton>()
+    private val setCategoryActions = HashMap<String, () -> Unit>()
+    private val categoryButtons = HashMap<String, Button>()
 
-    fun addCategory(name:String, table:Table, disabled:Boolean=false) {
-        val button = name.toTextButton()
+    private object ButtonDecorations {
+        data class IconAndKey (val icon: String, val key: Char = Char.MIN_VALUE)
+        val keyIconMap: HashMap<String,IconAndKey> = hashMapOf(
+            Pair("Cities", IconAndKey("OtherIcons/Cities", 'C')),
+            Pair("Stats", IconAndKey("StatIcons/Gold", 'S')),
+            Pair("Trades", IconAndKey("StatIcons/Acquire", 'T')),
+            Pair("Units", IconAndKey("OtherIcons/Shield", 'U')),
+            Pair("Diplomacy", IconAndKey("OtherIcons/DiplomacyW", 'D')),
+            Pair("Resources", IconAndKey("StatIcons/Happiness", 'R'))
+        )
+    }
+
+    private fun addCategory(name:String, table:Table, disabled:Boolean=false) {
+        // Buttons now hold their old label plus optionally an indicator for the shortcut key.
+        // Implement this templated on UnitActionsTable.getUnitActionButton()
+        val iconAndKey = ButtonDecorations.keyIconMap[name] ?: return   // category without decoration entry disappears
+        val keyboardAvailable = Gdx.input.isPeripheralAvailable(Input.Peripheral.HardwareKeyboard)
         val setCategoryAction = {
             centerTable.clear()
             centerTable.add(ScrollPane(table).apply { setOverscroll(false, false) })
                     .height(stage.height * 0.8f)
             centerTable.pack()
-            for ((key, categoryButton) in categoryButtons)
-                if (key == name) categoryButton.color = Color.BLUE
-                else categoryButton.color = Color.WHITE
+            for ((key, categoryButton) in categoryButtons.filterNot { it.value.touchable == Touchable.disabled })
+                categoryButton.color = if (key == name) Color.BLUE else Color.WHITE
+            game.settings.lastOverviewPage = name
+        }
+        val button = Button(skin)
+        if (iconAndKey.icon != "") {
+            val image = ImageGetter.getImage(iconAndKey.icon)
+            button.add(image).size(20f).pad(5f)
+        }
+        button.add(name.toLabel(Color.WHITE)).pad(5f)
+        if (!disabled && keyboardAvailable && iconAndKey.key != Char.MIN_VALUE) {
+            button.add("(${iconAndKey.key})".toLabel(Color.WHITE))
+            keyPressDispatcher[iconAndKey.key] = setCategoryAction
         }
         setCategoryActions[name] = setCategoryAction
         categoryButtons[name] = button
@@ -52,6 +76,13 @@ class EmpireOverviewScreen(private var viewingPlayer:CivilizationInfo, defaultPa
     }
 
     init {
+        val page =
+            if (defaultPage != "") {
+                game.settings.lastOverviewPage = defaultPage
+                defaultPage
+            }
+            else game.settings.lastOverviewPage
+
         onBackButtonClicked { game.setWorldScreen() }
 
         addCategory("Cities", CityOverviewTable(viewingPlayer, this))
@@ -70,7 +101,7 @@ class EmpireOverviewScreen(private var viewingPlayer:CivilizationInfo, defaultPa
 
         topTable.pack()
 
-        setCategoryActions[defaultPage]?.invoke()
+        setCategoryActions[page]?.invoke()
 
         val table = Table()
         table.add(topTable).row()
@@ -99,7 +130,8 @@ class EmpireOverviewScreen(private var viewingPlayer:CivilizationInfo, defaultPa
 
         fun update(){
             clear()
-            val relevantCivs = viewingPlayer.gameInfo.civilizations.filter { !it.isBarbarian() && (includeCityStates || !it.isCityState()) }
+            val relevantCivs = viewingPlayer.gameInfo.civilizations
+                    .filter { !it.isBarbarian() && (includeCityStates || !it.isCityState()) }
             val diplomacyGroup = DiplomacyGroup(viewingPlayer, diplomacyGroupHeight, includeCityStates)
             val playerKnowsAndUndefeatedCivs = relevantCivs.filter { diplomacyGroup.playerKnows(it) && !it.isDefeated() }
             val playerKnowsAndDefeatedCivs = relevantCivs.filter { diplomacyGroup.playerKnows(it) && it.isDefeated() }
@@ -131,20 +163,23 @@ class EmpireOverviewScreen(private var viewingPlayer:CivilizationInfo, defaultPa
             table.add(civInfo.civName.toLabel()).left()
             table.touchable = Touchable.enabled
             table.onClick {
+                if (civInfo.isDefeated() || viewingPlayer.isSpectator() || civInfo == viewingPlayer) return@onClick
                 UncivGame.Current.setScreen(DiplomacyScreen(viewingPlayer).apply { updateRightSide(civInfo) })
             }
             return table
         }
 
         private fun getCivTableScroll(relevantCivs: List<CivilizationInfo>, titleTable: Table,
-                                      playerKnowsAndUndefeatedCivs: List<CivilizationInfo>, playerKnowsAndDefeatedCivs: List<CivilizationInfo>): ScrollPane {
+                                      playerKnowsAndUndefeatedCivs: List<CivilizationInfo>,
+                                      playerKnowsAndDefeatedCivs: List<CivilizationInfo>): ScrollPane {
             val civTable = Table()
             civTable.defaults().pad(5f)
             civTable.background = ImageGetter.getBackground(Color.BLACK)
             civTable.add("[${relevantCivs.size}] Civilizations in the game".toLabel()).pad(5f).colspan(2).row()
             civTable.add(titleTable).colspan(2).row()
             civTable.addSeparator()
-            civTable.add("Known and alive ([${playerKnowsAndUndefeatedCivs.size - 1}])".toLabel()).pad(5f).colspan(2).row()
+            civTable.add("Known and alive ([${playerKnowsAndUndefeatedCivs.size - 1}])".toLabel())
+                    .pad(5f).colspan(2).row()
             if (playerKnowsAndUndefeatedCivs.size > 1) {
                 civTable.addSeparator()
                 playerKnowsAndUndefeatedCivs.filter { it != viewingPlayer }.forEach {
@@ -153,7 +188,8 @@ class EmpireOverviewScreen(private var viewingPlayer:CivilizationInfo, defaultPa
                 }
             }
             civTable.addSeparator()
-            civTable.add("Known and defeated ([${playerKnowsAndDefeatedCivs.size}])".toLabel()).pad(5f).colspan(2).row()
+            civTable.add("Known and defeated ([${playerKnowsAndDefeatedCivs.size}])".toLabel())
+                    .pad(5f).colspan(2).row()
             if (playerKnowsAndDefeatedCivs.isNotEmpty()) {
                 civTable.addSeparator()
                 playerKnowsAndDefeatedCivs.forEach {
@@ -167,29 +203,20 @@ class EmpireOverviewScreen(private var viewingPlayer:CivilizationInfo, defaultPa
         }
     }
 
-
-//
-//    private fun setStats() {
-//
-//        centerTable.clear()
-//        centerTable.add(ScrollPane())
-//        centerTable.pack()
-//    }
-
     private fun getTradesTable(): Table {
         val tradesTable = Table().apply { defaults().pad(10f) }
         val diplomacies = viewingPlayer.diplomacy.values.filter { it.trades.isNotEmpty() }
-                .sortedWith(Comparator { d0, d1 ->
-                    val d0offers = d0.trades.first().ourOffers
-                    val d1offers = d1.trades.first().ourOffers
-                    val d0max = if (d0offers.isEmpty()) 0 else d0offers.maxBy { it.duration }!!.duration
-                    val d1max = if (d1offers.isEmpty()) 0 else d1offers.maxBy { it.duration }!!.duration
+                .sortedWith { diplomacyManager1, diplomacyManager2 ->
+                    val d1OffersFromFirstTrade = diplomacyManager1.trades.first().ourOffers
+                    val d2OffersFromFirstTrade = diplomacyManager2.trades.first().ourOffers
+                    val d1MaxDuration = if (d1OffersFromFirstTrade.isEmpty()) 0 else d1OffersFromFirstTrade.maxByOrNull { it.duration }!!.duration
+                    val d2MaxDuration = if (d2OffersFromFirstTrade.isEmpty()) 0 else d2OffersFromFirstTrade.maxByOrNull { it.duration }!!.duration
                     when {
-                        d0max > d1max -> 1
-                        d0max == d1max -> 0
+                        d1MaxDuration > d2MaxDuration -> 1
+                        d1MaxDuration == d2MaxDuration -> 0
                         else -> -1
                     }
-                })
+                }
         for(diplomacy in diplomacies) {
             for (trade in diplomacy.trades)
                 tradesTable.add(createTradeTable(trade, diplomacy.otherCiv())).row()
@@ -200,8 +227,8 @@ class EmpireOverviewScreen(private var viewingPlayer:CivilizationInfo, defaultPa
 
     private fun createTradeTable(trade: Trade, otherCiv:CivilizationInfo): Table {
         val generalTable = Table(skin)
-        generalTable.add(createOffersTable(viewingPlayer,trade.ourOffers, trade.theirOffers.size)).fillY()
-        generalTable.add(createOffersTable(otherCiv, trade.theirOffers, trade.ourOffers.size)).fillY()
+        generalTable.add(createOffersTable(viewingPlayer,trade.ourOffers, trade.theirOffers.size)).minWidth(stage.width/4).fillY()
+        generalTable.add(createOffersTable(otherCiv, trade.theirOffers, trade.ourOffers.size)).minWidth(stage.width/4).fillY()
         return generalTable
     }
 
@@ -350,10 +377,10 @@ class EmpireOverviewScreen(private var viewingPlayer:CivilizationInfo, defaultPa
         table.row()
         table.addSeparator()
 
-        for (unit in viewingPlayer.getCivUnits().sortedWith(compareBy({ it.name }, { !it.due },
+        for (unit in viewingPlayer.getCivUnits().sortedWith(compareBy({ it.displayName() }, { !it.due },
                 { it.currentMovement < 0.1f }, { abs(it.currentTile.position.x) + abs(it.currentTile.position.y) }))) {
             val baseUnit = unit.baseUnit()
-            val button = unit.name.toTextButton()
+            val button = unit.displayName().toTextButton()
             button.onClick {
                 game.setWorldScreen()
                 game.worldScreen.mapHolder.setCenterPosition(unit.currentTile.position)

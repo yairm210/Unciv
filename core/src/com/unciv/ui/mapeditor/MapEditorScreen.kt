@@ -20,7 +20,7 @@ class MapEditorScreen(): CameraStageBaseScreen() {
     var gameSetupInfo = GameSetupInfo()
     lateinit var mapHolder: EditorMapHolder
 
-    lateinit var tileEditorOptions: TileEditorOptionsTable
+    lateinit var mapEditorOptionsTable: MapEditorOptionsTable
 
     private val showHideEditorOptionsButton = ">".toTextButton()
 
@@ -31,27 +31,27 @@ class MapEditorScreen(): CameraStageBaseScreen() {
         initialize()
     }
 
-    fun initialize() {
+    private fun initialize() {
         ImageGetter.setNewRuleset(ruleset)
         tileMap.setTransients(ruleset,false)
 
         mapHolder = EditorMapHolder(this, tileMap)
-        mapHolder.addTiles(stage.width)
+        mapHolder.addTiles(stage.width, stage.height)
         stage.addActor(mapHolder)
         stage.scrollFocus = mapHolder
 
-        tileEditorOptions = TileEditorOptionsTable(this)
-        stage.addActor(tileEditorOptions)
-        tileEditorOptions.setPosition(stage.width - tileEditorOptions.width, 0f)
+        mapEditorOptionsTable = MapEditorOptionsTable(this)
+        stage.addActor(mapEditorOptionsTable)
+        mapEditorOptionsTable.setPosition(stage.width - mapEditorOptionsTable.width, 0f)
 
         showHideEditorOptionsButton.labelCell.pad(10f)
         showHideEditorOptionsButton.pack()
         showHideEditorOptionsButton.onClick {
             if (showHideEditorOptionsButton.text.toString() == ">") {
-                tileEditorOptions.addAction(Actions.moveTo(stage.width, 0f, 0.5f))
+                mapEditorOptionsTable.addAction(Actions.moveTo(stage.width, 0f, 0.5f))
                 showHideEditorOptionsButton.setText("<")
             } else {
-                tileEditorOptions.addAction(Actions.moveTo(stage.width - tileEditorOptions.width, 0f, 0.5f))
+                mapEditorOptionsTable.addAction(Actions.moveTo(stage.width - mapEditorOptionsTable.width, 0f, 0.5f))
                 showHideEditorOptionsButton.setText(">")
             }
         }
@@ -97,20 +97,22 @@ class MapEditorScreen(): CameraStageBaseScreen() {
                 if (isPainting) {
 
                     for (tileInfo in lastDrawnTiles)
-                        mapHolder.tileGroups[tileInfo]!!.hideCircle()
+                        mapHolder.tileGroups[tileInfo]!!.forEach { it.hideCircle() }
                     lastDrawnTiles.clear()
 
                     val stageCoords = mapHolder.actor.stageToLocalCoordinates(Vector2(event!!.stageX, event.stageY))
                     val centerTileInfo = mapHolder.getClosestTileTo(stageCoords)
                     if (centerTileInfo != null) {
-                        val distance = tileEditorOptions.brushSize - 1
+                        val distance = mapEditorOptionsTable.brushSize - 1
 
                         for (tileInfo in tileMap.getTilesInDistance(centerTileInfo.position, distance)) {
-                            tileEditorOptions.updateTileWhenClicked(tileInfo)
+                            mapEditorOptionsTable.updateTileWhenClicked(tileInfo)
 
                             tileInfo.setTerrainTransients()
-                            mapHolder.tileGroups[tileInfo]!!.update()
-                            mapHolder.tileGroups[tileInfo]!!.showCircle(Color.WHITE)
+                            mapHolder.tileGroups[tileInfo]!!.forEach {
+                                it.update()
+                                it.showCircle(Color.WHITE)
+                            }
 
                             lastDrawnTiles.add(tileInfo)
                         }

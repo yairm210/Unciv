@@ -20,7 +20,7 @@ class CrashReportSenderAndroid(private val activity: Activity) : CrashReportSend
                                        "OS version: %s\n" +
                                        "Device model: %s\n" +
                                        "Mods: %s\n" +
-                                       "Game data: %s\n"
+                                       "Game data: \n%s\n"
     }
 
     override fun sendReport(report: CrashReport) {

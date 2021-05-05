@@ -18,9 +18,8 @@ import kotlin.concurrent.thread
 import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 
 /** New map generation screen */
-class NewMapScreen : PickerScreen() {
+class NewMapScreen(val mapParameters: MapParameters = MapParameters()) : PickerScreen() {
 
-    private val mapParameters = MapParameters()
     private val ruleset = RulesetCache.getBaseRuleset()
     private var generatedMap: TileMap? = null
 
@@ -38,8 +37,7 @@ class NewMapScreen : PickerScreen() {
                 ruleset.mods += mapParameters.mods
                 ruleset.modOptions = newRuleset.modOptions
 
-                ImageGetter.ruleset = ruleset
-                ImageGetter.reload()
+                ImageGetter.setNewRuleset(ruleset)
             })
             pack()
         }
@@ -47,9 +45,8 @@ class NewMapScreen : PickerScreen() {
 
         topTable.apply {
             add(ScrollPane(newMapScreenOptionsTable).apply { setOverscroll(false, false) })
-                    .height(topTable.parent.height)
             pack()
-            setFillParent(true)
+//            setFillParent(true)
         }
 
         rightButtonSetEnabled(true)
@@ -65,7 +62,7 @@ class NewMapScreen : PickerScreen() {
                     Gdx.app.postRunnable {
                         val mapEditorScreen = MapEditorScreen(generatedMap!!)
                         mapEditorScreen.ruleset = ruleset
-                        UncivGame.Current.setScreen(mapEditorScreen)
+                        game.setScreen(mapEditorScreen)
                     }
 
                 } catch (exception: Exception) {

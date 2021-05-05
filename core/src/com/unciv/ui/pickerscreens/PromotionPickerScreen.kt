@@ -40,7 +40,8 @@ class PromotionPickerScreen(val unit: MapUnit) : PickerScreen() {
         }
         val canBePromoted = unit.promotions.canBePromoted()
         val canChangeState = game.worldScreen.canChangeState
-        if (!canBePromoted || !canChangeState)
+        val canPromoteNow = canBePromoted && canChangeState
+        if (!canPromoteNow)
             rightSideButton.disable()
 
         val availablePromotionsGroup = Table()
@@ -52,6 +53,15 @@ class PromotionPickerScreen(val unit: MapUnit) : PickerScreen() {
                     || unit.promotions.promotions.contains(it.name) }
         val unitAvailablePromotions = unit.promotions.getAvailablePromotions()
 
+        if(canPromoteNow && unit.instanceName == null) {
+            val renameButton = "Choose name for [${unit.name}]".toTextButton()
+            renameButton.touchable = Touchable.enabled
+            renameButton.onClick {
+                RenameUnitPopup(unit, this).open()
+            }
+            availablePromotionsGroup.add(renameButton)
+            availablePromotionsGroup.row()
+        }
         for (promotion in promotionsForUnitType) {
             if(promotion.name=="Heal Instantly" && unit.health==100) continue
             val isPromotionAvailable = promotion in unitAvailablePromotions

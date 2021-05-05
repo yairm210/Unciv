@@ -20,7 +20,7 @@ class Promotion : INamed{
         val stringBuilder = StringBuilder()
 
         for (unique in uniques + effect) {
-            stringBuilder.appendln(Translations.translateBonusOrPenalty(unique))
+            stringBuilder.appendLine(Translations.translateBonusOrPenalty(unique))
         }
 
         if(prerequisites.isNotEmpty()) {
@@ -28,19 +28,19 @@ class Promotion : INamed{
             for (i in prerequisites.filter { promotionsForUnitType.any { promotion -> promotion.name == it } }) {
                 prerequisitesString.add(i.tr())
             }
-            stringBuilder.appendln("{Requires}: ".tr() + prerequisitesString.joinToString(" OR ".tr()))
+            stringBuilder.appendLine("{Requires}: ".tr() + prerequisitesString.joinToString(" OR ".tr()))
         }
         if(forCivilopedia){
             if (unitTypes.isNotEmpty()) {
                 val unitTypesString = unitTypes.joinToString(", ") { it.tr() }
-                stringBuilder.appendln("Available for [$unitTypesString]".tr())
+                stringBuilder.appendLine("Available for [$unitTypesString]".tr())
             }
 
             if (ruleSet!=null) {
                 val freeforUnits = ruleSet.units.filter { it.value.promotions.contains(name) }
                 if (freeforUnits.isNotEmpty()) {
                     val freeforString = freeforUnits.map { it.value.name }.joinToString(", ") { it.tr() }
-                    stringBuilder.appendln("Free for [$freeforString]".tr())
+                    stringBuilder.appendLine("Free for [$freeforString]".tr())
                 }
             }
         }

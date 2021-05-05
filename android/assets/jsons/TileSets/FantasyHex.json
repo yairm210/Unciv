@@ -1,0 +1,28 @@
+{
+    "useColorAsBaseTerrain": "false",
+    "ruleVariants": {
+        "Hill": ["Grassland","Hill"],
+		
+        "Hill+Forest+Uranium": ["Grassland","Hill","Uranium","HillForest"],
+		
+		
+        "Grassland+Jungle+Oil": ["Grassland","Oil","GrasslandJungle"],
+        "Plains+Jungle+Oil": ["Plains","Oil","PlainsJungle"],
+        "Plains+Jungle": ["Plains","PlainsJungle"],
+		
+        "Grassland+Forest+Uranium": ["Grassland","Uranium","GrasslandForest"],
+        "Plains+Forest+Furs": ["Grassland","Furs","GrasslandForest"],
+        "Grassland+Forest+Furs": ["Grassland","Furs","GrasslandForest"],
+        "Hill+Forest+Furs": ["Grassland","Hill","Furs","HillForest"],
+        "Hill+Forest+Deer": ["Grassland","Hill","Deer","HillForest"],
+		
+        "Hill+Furs+Ancient ruins": ["Grassland","Hill","Ancient ruins","Sheep"],
+        "Grassland+Jungle+Ancient ruins": ["Grassland","Ancient ruins", "GrasslandJungle"],
+        "Grassland+Forest+Ancient ruins": ["Grassland","Ancient ruins", "GrasslandForest"],
+        "Grassland+Cattle+Ancient ruins": ["Grassland","Ancient ruins","Cattle"],
+        "Grassland+Sheep+Ancient ruins": ["Grassland","Ancient ruins","Sheep"],
+		
+        "Hill+Sheep+Ancient ruins": ["Grassland","Hill","Ancient ruins","Sheep"],
+        "Plains+Forest+Deer": ["Plains","Deer","PlainsForest"]
+    }
+}

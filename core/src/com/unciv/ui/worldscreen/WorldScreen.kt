@@ -10,10 +10,12 @@ import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.scenes.scene2d.actions.RepeatAction
 import com.badlogic.gdx.scenes.scene2d.ui.Button
+import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
+import com.unciv.logic.GameInfo
 import com.unciv.logic.GameSaver
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
@@ -22,6 +24,7 @@ import com.unciv.models.UncivSound
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.unit.UnitType
 import com.unciv.models.translations.tr
+import com.unciv.ui.CivilopediaScreen
 import com.unciv.ui.cityscreen.CityScreen
 import com.unciv.ui.pickerscreens.GreatPersonPickerScreen
 import com.unciv.ui.pickerscreens.PolicyPickerScreen
@@ -39,12 +42,11 @@ import java.util.*
 import kotlin.concurrent.thread
 import kotlin.concurrent.timer
 
-class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
-    val gameInfo = game.gameInfo
+class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
 
     var isPlayersTurn = viewingCiv == gameInfo.currentPlayerCiv // todo this should be updated when passing turns
     var selectedCiv = viewingCiv // Selected civilization, used in spectator and replay mode, equals viewingCiv in ordinary games
-    var fogOfWar = true
+    private var fogOfWar = true
     val canChangeState = isPlayersTurn && !viewingCiv.isSpectator()
     private var waitingForAutosave = false
 
@@ -124,8 +126,6 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
 
         stage.addActor(unitActionsTable)
 
-        // still a zombie: createNextTurnButton() // needs civ table to be positioned
-
         val tileToCenterOn: Vector2 =
                 when {
                     viewingCiv.cities.isNotEmpty() -> viewingCiv.getCapital().location
@@ -138,6 +138,14 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
             mapHolder.setCenterPosition(tileToCenterOn, true, false)
         else
             mapHolder.setCenterPosition(tileToCenterOn, true, true)
+
+
+        tutorialController.allTutorialsShowedCallback = { shouldUpdate = true }
+
+        onBackButtonClicked { backButtonAndESCHandler() }
+
+        addKeyboardListener() // for map panning by W,S,A,D
+        addKeyboardPresses()  // shortcut keys like F1
 
 
         if (gameInfo.gameParameters.isOnlineMultiplayer && !gameInfo.isUpToDate)
@@ -154,12 +162,6 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
             }
         }
 
-        tutorialController.allTutorialsShowedCallback = { shouldUpdate = true }
-
-        onBackButtonClicked { backButtonAndESCHandler() }
-
-        addKeyboardListener() // for map panning by W,S,A,D
-
         // don't run update() directly, because the UncivGame.worldScreen should be set so that the city buttons and tile groups
         //  know what the viewing civ is.
         shouldUpdate = true
@@ -172,9 +174,10 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
         }
     }
 
-    private fun cleanupKeyDispatcher() {
-        val delKeys = keyPressDispatcher.keys.filter { it != ' ' && it != 'n' }
-        delKeys.forEach { keyPressDispatcher.remove(it) }
+    private fun addKeyboardPresses() {
+        // Space and N are assigned in createNextTurnButton
+        keyPressDispatcher[Input.Keys.F1] = { game.setScreen(CivilopediaScreen(gameInfo.ruleSet)) }
+        keyPressDispatcher.setCheckpoint()
     }
 
     private fun addKeyboardListener() {
@@ -230,7 +233,6 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
     }
 
     private fun loadLatestMultiplayerState() {
-
         // Since we're on a background thread, all the UI calls in this func need to run from the
         // main thread which has a GL context
         val loadingGamePopup = Popup(this)
@@ -243,13 +245,14 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
             val latestGame = OnlineMultiplayer().tryDownloadGame(gameInfo.gameId)
 
             // if we find it still isn't player's turn...nothing changed
-            if (gameInfo.isUpToDate && gameInfo.currentPlayer == latestGame.currentPlayer) {
+            if (viewingCiv.civName != latestGame.currentPlayer) {
                 Gdx.app.postRunnable { loadingGamePopup.close() }
+                shouldUpdate = true
                 return
             } else { //else we found it is the player's turn again, turn off polling and load turn
                 stopMultiPlayerRefresher()
                 latestGame.isUpToDate = true
-                Gdx.app.postRunnable { game.loadGame(latestGame) }
+                Gdx.app.postRunnable { createNewWorldScreen(latestGame) }
             }
 
         } catch (ex: Exception) {
@@ -297,7 +300,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
         if (fogOfWar) minimapWrapper.update(selectedCiv)
         else minimapWrapper.update(viewingCiv)
 
-        cleanupKeyDispatcher()
+        keyPressDispatcher.revertToCheckPoint()
         unitActionsTable.update(bottomUnitTable.selectedUnit)
         unitActionsTable.y = bottomUnitTable.height
 
@@ -313,7 +316,6 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
         techPolicyAndVictoryHolder.pack()
         techPolicyAndVictoryHolder.setPosition(10f, topBar.y - techPolicyAndVictoryHolder.height - 5f)
         updateDiplomacyButton(viewingCiv)
-
 
         if (!hasOpenPopups() && isPlayersTurn) {
             when {
@@ -382,16 +384,11 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
         displayTutorial(Tutorial.Introduction)
 
         displayTutorial(Tutorial.EnemyCityNeedsConqueringWithMeleeUnit) {
-            // diplomacy is a HashMap, cities a List - so sequences should help
-            // .flatMap { it.getUnits().asSequence() }  is not a good idea because getUnits constructs an ArrayList dynamically
             viewingCiv.diplomacy.values.asSequence()
                     .filter { it.diplomaticStatus == DiplomaticStatus.War }
-                    .map { it.otherCiv() }
-                    // we're now lazily enumerating over CivilizationInfo's we're at war with
-                    .flatMap { it.cities.asSequence() }
-                    // ... all *their* cities
-                    .filter { it.health == 1 }
-                    // ... those ripe for conquering
+                    .map { it.otherCiv() } // we're now lazily enumerating over CivilizationInfo's we're at war with
+                    .flatMap { it.cities.asSequence() } // ... all *their* cities
+                    .filter { it.health == 1 } // ... those ripe for conquering
                     .flatMap { it.getCenterTile().getTilesInDistance(2).asSequence() }
                     // ... all tiles around those in range of an average melee unit
                     // -> and now we look for a unit that could do the conquering because it's ours
@@ -446,11 +443,11 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
     }
 
     private fun updateSelectedCiv() {
-        if (bottomUnitTable.selectedUnit != null)
-            selectedCiv = bottomUnitTable.selectedUnit!!.civInfo
-        else if (bottomUnitTable.selectedCity != null)
-            selectedCiv = bottomUnitTable.selectedCity!!.civInfo
-        else viewingCiv
+        when {
+            bottomUnitTable.selectedUnit != null -> selectedCiv = bottomUnitTable.selectedUnit!!.civInfo
+            bottomUnitTable.selectedCity != null -> selectedCiv = bottomUnitTable.selectedCity!!.civInfo
+            else -> viewingCiv
+        }
     }
 
     private fun createFogOfWarButton(): TextButton {
@@ -477,6 +474,24 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
         keyPressDispatcher['n'] = nextTurnActionWrapped
 
         return nextTurnButton
+    }
+
+
+    fun createNewWorldScreen(gameInfo:GameInfo) {
+
+        game.gameInfo = gameInfo
+        val newWorldScreen = WorldScreen(gameInfo, gameInfo.getPlayerToViewAs())
+        newWorldScreen.mapHolder.scrollX = mapHolder.scrollX
+        newWorldScreen.mapHolder.scrollY = mapHolder.scrollY
+        newWorldScreen.mapHolder.scaleX = mapHolder.scaleX
+        newWorldScreen.mapHolder.scaleY = mapHolder.scaleY
+        newWorldScreen.mapHolder.updateVisualScroll()
+
+        newWorldScreen.selectedCiv = gameInfo.getCivilization(selectedCiv.civName)
+        newWorldScreen.fogOfWar = fogOfWar
+
+        game.worldScreen = newWorldScreen
+        game.setWorldScreen()
     }
 
     private fun nextTurn() {
@@ -518,26 +533,12 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
             // do this on main thread - it's the only one that has a GL context to create images from
             Gdx.app.postRunnable {
 
-                fun createNewWorldScreen() {
-                    val newWorldScreen = WorldScreen(gameInfoClone.getPlayerToViewAs())
-                    newWorldScreen.mapHolder.scrollX = mapHolder.scrollX
-                    newWorldScreen.mapHolder.scrollY = mapHolder.scrollY
-                    newWorldScreen.mapHolder.scaleX = mapHolder.scaleX
-                    newWorldScreen.mapHolder.scaleY = mapHolder.scaleY
-                    newWorldScreen.mapHolder.updateVisualScroll()
-
-                    newWorldScreen.selectedCiv = gameInfoClone.getCivilization(selectedCiv.civName)
-                    newWorldScreen.fogOfWar = fogOfWar
-
-                    game.worldScreen = newWorldScreen
-                    game.setWorldScreen()
-                }
 
                 if (gameInfoClone.currentPlayerCiv.civName != viewingCiv.civName
                         && !gameInfoClone.gameParameters.isOnlineMultiplayer)
-                    game.setScreen(PlayerReadyScreen(gameInfoClone.getCurrentPlayerCivilization()))
+                    game.setScreen(PlayerReadyScreen(gameInfoClone, gameInfoClone.getCurrentPlayerCivilization()))
                 else {
-                    createNewWorldScreen()
+                    createNewWorldScreen(gameInfoClone)
                 }
 
                 if (shouldAutoSave) {
@@ -603,6 +604,23 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
                     viewingCiv.policies.shouldOpenPolicyPicker = false
                 }
 
+            viewingCiv.religionManager.canFoundPantheon() ->
+                NextTurnAction("Found Pantheon", Color.WHITE) {
+                    val pantheonPopup = Popup(this)
+                    val beliefsTable = Table().apply { defaults().pad(10f) }
+                    for (belief in gameInfo.ruleSet.beliefs.values) {
+                        if (belief.type != "Pantheon" || gameInfo.civilizations.any { it.religionManager.pantheonBelief == belief.name }) continue
+                        val beliefTable = Table().apply { touchable = Touchable.enabled; background = ImageGetter.getBackground(ImageGetter.getBlue()) }
+                        beliefTable.pad(10f)
+                        beliefTable.add(belief.name.toLabel(fontSize = 24)).row()
+                        beliefTable.add(belief.uniques.joinToString().toLabel())
+                        beliefTable.onClick { viewingCiv.religionManager.choosePantheonBelief(belief); pantheonPopup.close(); shouldUpdate = true }
+                        beliefsTable.add(beliefTable).fillX().row()
+                    }
+                    pantheonPopup.add(ScrollPane(beliefsTable)).maxHeight(stage.height*.8f)
+                    pantheonPopup.open()
+                }
+
             else ->
                 NextTurnAction("${Fonts.turn}{Next turn}", Color.WHITE) {
                     game.settings.addCompletedTutorialTask("Pass a turn")
@@ -612,10 +630,8 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
     }
 
     override fun resize(width: Int, height: Int) {
-        if (stage.viewport.screenWidth != width || stage.viewport.screenHeight != height) {
-            game.worldScreen = WorldScreen(viewingCiv) // start over.
-            game.setWorldScreen()
-        }
+        if (stage.viewport.screenWidth != width || stage.viewport.screenHeight != height)
+            createNewWorldScreen(gameInfo) // start over
     }
 
 
@@ -629,6 +645,11 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
             showTutorialsOnNextTurn()
         }
 //        topBar.selectedCivLabel.setText(Gdx.graphics.framesPerSecond) // for framerate testing
+
+        val scrollPos = Vector2(mapHolder.scrollX, mapHolder.scrollY)
+        val viewScale = Vector2(mapHolder.scaleX, mapHolder.scaleY)
+        minimapWrapper.minimap.updateScrollPosition(scrollPos, viewScale)
+        minimapWrapper.syncButtonStates()
 
         super.render(delta)
     }

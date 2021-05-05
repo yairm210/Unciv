@@ -4,6 +4,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.CheckBox
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Array
+import com.unciv.UncivGame
 import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.metadata.GameSpeed
 import com.unciv.models.ruleset.RulesetCache
@@ -169,12 +170,12 @@ class GameOptionsTable(val previousScreen: IPreviousScreen, val updatePlayerPick
         ruleset.mods += gameParameters.mods
         ruleset.modOptions = newRuleset.modOptions
 
-        ImageGetter.ruleset = ruleset
-        ImageGetter.reload()
+        ImageGetter.setNewRuleset(ruleset)
     }
 
     fun Table.addModCheckboxes() {
         val table = ModCheckboxTable(gameParameters.mods, previousScreen as CameraStageBaseScreen) {
+            UncivGame.Current.translations.translationActiveMods = gameParameters.mods
             reloadRuleset()
             update()
 

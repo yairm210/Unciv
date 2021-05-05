@@ -12,7 +12,7 @@ import com.badlogic.gdx.tools.texturepacker.TexturePackerFileProcessor
 import com.unciv.UncivGame
 import com.unciv.UncivGameParameters
 import com.unciv.models.translations.tr
-import com.unciv.ui.utils.ORIGINAL_FONT_SIZE
+import com.unciv.ui.utils.Fonts
 import io.ktor.application.*
 import io.ktor.http.*
 import io.ktor.request.*
@@ -46,7 +46,7 @@ internal object DesktopLauncher {
         val desktopParameters = UncivGameParameters(
                 versionFromJar,
                 cancelDiscordEvent = { discordTimer?.cancel() },
-                fontImplementation = NativeFontDesktop(ORIGINAL_FONT_SIZE.toInt()),
+                fontImplementation = NativeFontDesktop(Fonts.ORIGINAL_FONT_SIZE.toInt()),
                 customSaveLocationHelper = CustomSaveLocationHelperDesktop()
         )
 

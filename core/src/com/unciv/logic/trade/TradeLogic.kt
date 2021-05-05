@@ -35,8 +35,8 @@ class TradeLogic(val ourCivilization:CivilizationInfo, val otherCivilization: Ci
             offers.add(TradeOffer(entry.resource.name, resourceTradeType, entry.amount))
         }
 
-        offers.add(TradeOffer("Gold".tr(), TradeType.Gold, civInfo.gold))
-        offers.add(TradeOffer("Gold per turn".tr(), TradeType.Gold_Per_Turn, civInfo.statsForNextTurn.gold.toInt()))
+        offers.add(TradeOffer("Gold", TradeType.Gold, civInfo.gold))
+        offers.add(TradeOffer("Gold per turn", TradeType.Gold_Per_Turn, civInfo.statsForNextTurn.gold.toInt()))
 
         if (!civInfo.isOneCityChallenger() && !otherCivilization.isOneCityChallenger()
                 && !civInfo.isCityState() && !otherCivilization.isCityState()) {

@@ -12,6 +12,7 @@ import com.unciv.models.stats.Stats
 import com.unciv.models.translations.tr
 import com.unciv.ui.utils.Fonts
 import kotlin.math.abs
+import kotlin.math.min
 
 open class TileInfo {
     @Transient
@@ -39,8 +40,10 @@ open class TileInfo {
     // This will be called often - farm can be built on Hill and tundra if adjacent to fresh water
     // and farms on adjacent to fresh water tiles will have +1 additional Food after researching Civil Service
     @delegate:Transient
-    val isAdjacentToFreshwater: Boolean by lazy { matchesUniqueFilter("River") || matchesUniqueFilter("Fresh water")
-            || neighbors.any { it.matchesUniqueFilter("Fresh water") } }
+    val isAdjacentToFreshwater: Boolean by lazy {
+        matchesUniqueFilter("River") || matchesUniqueFilter("Fresh water")
+                || neighbors.any { it.matchesUniqueFilter("Fresh water") }
+    }
 
     var militaryUnit: MapUnit? = null
     var civilianUnit: MapUnit? = null
@@ -48,7 +51,21 @@ open class TileInfo {
 
     var position: Vector2 = Vector2.Zero
     lateinit var baseTerrain: String
-    var terrainFeature: String? = null
+    val terrainFeatures: ArrayList<String> = ArrayList()
+
+    // Deprecation level can't be increased because of convertTerrainFeatureToArray
+    // Can't be flagged transient because it won't deserialize then
+    // but it should not serialize because it always has the default value on serialization and is flagged optional
+    // Can be removed together with convertTerrainFeatureToArray to drop support for save files from version 3.13.7 and below
+    @Deprecated(message = "Since 3.13.7 - replaced by terrainFeatures")
+    private var terrainFeature: String? = null
+    private fun convertTerrainFeatureToArray() {
+        if (terrainFeature != null) {
+            terrainFeatures.add(terrainFeature!!)
+            terrainFeature = null
+        }
+    }
+
     var naturalWonder: String? = null
     var resource: String? = null
     var improvement: String? = null
@@ -57,7 +74,7 @@ open class TileInfo {
     var roadStatus = RoadStatus.None
     var turnsToImprovement: Int = 0
 
-    fun isHill() = baseTerrain == Constants.hill
+    fun isHill() = terrainFeatures.contains(Constants.hill)
 
     var hasBottomRightRiver = false
     var hasBottomRiver = false
@@ -75,7 +92,9 @@ open class TileInfo {
         for (airUnit in airUnits) toReturn.airUnits.add(airUnit.clone())
         toReturn.position = position.cpy()
         toReturn.baseTerrain = baseTerrain
-        toReturn.terrainFeature = terrainFeature
+//        toReturn.terrainFeature = terrainFeature
+        convertTerrainFeatureToArray()
+        toReturn.terrainFeatures.addAll(terrainFeatures)
         toReturn.naturalWonder = naturalWonder
         toReturn.resource = resource
         toReturn.improvement = improvement
@@ -119,13 +138,14 @@ open class TileInfo {
     fun getCity(): CityInfo? = owningCity
 
     fun getLastTerrain(): Terrain = when {
-        terrainFeature != null -> getTerrainFeature()!!
+        terrainFeatures.isNotEmpty() -> getTerrainFeatures().last()
         naturalWonder != null -> getNaturalWonder()
         else -> getBaseTerrain()
     }
 
     fun getTileResource(): TileResource =
             if (resource == null) throw Exception("No resource exists for this tile!")
+            else if (!ruleset.tileResources.containsKey(resource!!)) throw Exception("Resource $resource does not exist in this ruleset!")
             else ruleset.tileResources[resource!!]!!
 
     fun getNaturalWonder(): Terrain =
@@ -149,7 +169,7 @@ open class TileInfo {
     fun getHeight(): Int {
         if (baseTerrain == Constants.mountain) return 4
         if (isHill()) return 2
-        if (terrainFeature == Constants.forest || terrainFeature == Constants.jungle) return 1
+        if (terrainFeatures.contains(Constants.forest) || terrainFeatures.contains(Constants.jungle)) return 1
         return 0
     }
 
@@ -171,8 +191,7 @@ open class TileInfo {
         }
     }
 
-    fun getTerrainFeature(): Terrain? =
-            if (terrainFeature == null) null else ruleset.terrains[terrainFeature!!]
+    fun getTerrainFeatures(): List<Terrain> = terrainFeatures.mapNotNull { ruleset.terrains[it] }
 
     fun getWorkingCity(): CityInfo? {
         val civInfo = getOwner()
@@ -181,6 +200,8 @@ open class TileInfo {
     }
 
     fun isWorked(): Boolean = getWorkingCity() != null
+    fun providesYield() = getCity() != null && (isCityCenter() || isWorked()
+            || getTileImprovement()?.hasUnique("Tile provides yield without assigned population")==true)
 
     fun isLocked(): Boolean {
         val workingCity = getWorkingCity()
@@ -192,9 +213,8 @@ open class TileInfo {
     fun getTileStats(city: CityInfo?, observingCiv: CivilizationInfo): Stats {
         var stats = getBaseTerrain().clone()
 
-        if (terrainFeature != null) {
-            val terrainFeatureBase = getTerrainFeature()
-            if (terrainFeatureBase!!.overrideStats)
+        for (terrainFeatureBase in getTerrainFeatures()) {
+            if (terrainFeatureBase.overrideStats)
                 stats = terrainFeatureBase.clone()
             else
                 stats.add(terrainFeatureBase)
@@ -206,12 +226,11 @@ open class TileInfo {
             for (unique in cityWideUniques + civWideUniques) {
                 val tileType = unique.params[1]
                 if (tileType == improvement) continue // This is added to the calculation in getImprovementStats. we don't want to add it twice
-                if (matchesUniqueFilter(tileType)
-                        || (resource == tileType && hasViewableResource(observingCiv))
-                        || (tileType == "Strategic resource" && hasViewableResource(observingCiv) && getTileResource().resourceType == ResourceType.Strategic)
-                        || (tileType == "Luxury resource" && hasViewableResource(observingCiv) && getTileResource().resourceType == ResourceType.Luxury)
-                        || (tileType == "Bonus resource" && hasViewableResource(observingCiv) && getTileResource().resourceType == ResourceType.Bonus)
-                        || (tileType == "Water resource" && isWater && hasViewableResource(observingCiv))
+                if (matchesUniqueFilter(tileType, observingCiv)
+                        || tileType == "Strategic resource" && hasViewableResource(observingCiv) && getTileResource().resourceType == ResourceType.Strategic
+                        || tileType == "Luxury resource" && hasViewableResource(observingCiv) && getTileResource().resourceType == ResourceType.Luxury
+                        || tileType == "Bonus resource" && hasViewableResource(observingCiv) && getTileResource().resourceType == ResourceType.Bonus
+                        || tileType == "Water resource" && isWater && hasViewableResource(observingCiv)
                 ) stats.add(unique.stats)
             }
         }
@@ -230,8 +249,9 @@ open class TileInfo {
             val resource = getTileResource()
             stats.add(getTileResource()) // resource base
             if (resource.building != null && city != null && city.cityConstructions.isBuilt(resource.building!!)) {
-                val resourceBuilding = tileMap.gameInfo.ruleSet.buildings[resource.building!!]!!
-                stats.add(resourceBuilding.resourceBonusStats!!) // resource-specific building (eg forge, stable) bonus
+                val resourceBuilding = tileMap.gameInfo.ruleSet.buildings[resource.building!!]
+                if (resourceBuilding != null && resourceBuilding.resourceBonusStats != null)
+                    stats.add(resourceBuilding.resourceBonusStats!!) // resource-specific building (eg forge, stable) bonus
             }
         }
 
@@ -272,9 +292,9 @@ open class TileInfo {
             }
             for (unique in cityWideUniques + civWideUniques + improvementUniques) {
                 if (improvement.name == unique.params[1]
-                        || (unique.params[1] == "Great Improvement" && improvement.isGreatImprovement())
-                        || (unique.params[1] == "fresh water" && isAdjacentToFreshwater)
-                        || (unique.params[1] == "non-fresh water" && !isAdjacentToFreshwater)
+                        || unique.params[1] == "Great Improvement" && improvement.isGreatImprovement()
+                        || unique.params[1] == "Fresh water" && isAdjacentToFreshwater
+                        || unique.params[1] == "non-fresh water" && !isAdjacentToFreshwater
                 )
                     stats.add(unique.stats)
             }
@@ -289,7 +309,7 @@ open class TileInfo {
                 val adjacent = unique.params[1]
                 val numberOfBonuses = neighbors.count {
                     it.improvement == adjacent
-                            || it.matchesUniqueFilter(adjacent)
+                            || it.matchesUniqueFilter(adjacent, observingCiv)
                             || it.roadStatus.name == adjacent
                 }
                 stats.add(unique.stats.times(numberOfBonuses.toFloat()))
@@ -303,7 +323,14 @@ open class TileInfo {
         return when {
             improvement.uniqueTo != null && improvement.uniqueTo != civInfo.civName -> false
             improvement.techRequired != null && !civInfo.tech.isResearched(improvement.techRequired!!) -> false
-            getOwner() != civInfo && !improvement.hasUnique("Can be built outside your borders") -> false
+            getOwner() != civInfo && ! (
+                        improvement.hasUnique("Can be built outside your borders")
+                        // citadel can be built only next to or within own borders
+                        || improvement.hasUnique("Can be built just outside your borders") && neighbors.any { it.getOwner() == civInfo }
+                    ) -> false
+            improvement.uniqueObjects.any {
+                it.placeholderText == "Obsolete with []" && civInfo.tech.isResearched(it.params[0])
+            } -> return false
             else -> canImprovementBeBuiltHere(improvement, hasViewableResource(civInfo))
         }
     }
@@ -323,10 +350,12 @@ open class TileInfo {
             // Road improvements can change on tiles withh irremovable improvements - nothing else can, though.
             improvement.name != RoadStatus.Railroad.name && improvement.name != RoadStatus.Railroad.name
                     && improvement.name != "Remove Road" && improvement.name != "Remove Railroad"
-                    && getTileImprovement().let { it!=null && it.hasUnique("Irremovable") } -> false
+                    && getTileImprovement().let { it != null && it.hasUnique("Irremovable") } -> false
 
+            // Decide cancelImprovementOrder earlier, otherwise next check breaks it
+            improvement.name == Constants.cancelImprovementOrder -> (this.improvementInProgress != null)
             // Tiles with no terrains, and no turns to build, are like great improvements - they're placeable
-            improvement.terrainsCanBeBuiltOn.isEmpty() && improvement.turnsToBuild==0 && isLand -> true
+            improvement.terrainsCanBeBuiltOn.isEmpty() && improvement.turnsToBuild == 0 && isLand -> true
             improvement.terrainsCanBeBuiltOn.contains(topTerrain.name) -> true
             improvement.uniqueObjects.filter { it.placeholderText == "Must be next to []" }.any {
                 val filter = it.params[0]
@@ -337,7 +366,6 @@ open class TileInfo {
             improvement.name == "Railroad" && this.roadStatus != RoadStatus.Railroad && !isWater -> true
             improvement.name == "Remove Road" && this.roadStatus == RoadStatus.Road -> true
             improvement.name == "Remove Railroad" && this.roadStatus == RoadStatus.Railroad -> true
-            improvement.name == Constants.cancelImprovementOrder && this.improvementInProgress != null -> true
             topTerrain.unbuildable && (topTerrain.name !in improvement.resourceTerrainAllow) -> false
             // DO NOT reverse this &&. isAdjacentToFreshwater() is a lazy which calls a function, and reversing it breaks the tests.
             improvement.hasUnique("Can also be built on tiles adjacent to fresh water") && isAdjacentToFreshwater -> true
@@ -346,17 +374,20 @@ open class TileInfo {
         }
     }
 
-    fun matchesUniqueFilter(filter: String): Boolean {
+    fun matchesUniqueFilter(filter: String, civInfo: CivilizationInfo? = null): Boolean {
         return filter == baseTerrain
                 || filter == Constants.hill && isHill()
                 || filter == "River" && isAdjacentToRiver()
-                || filter == terrainFeature
+                || terrainFeatures.contains(filter)
                 || baseTerrainObject.uniques.contains(filter)
-                || terrainFeature != null && getTerrainFeature()!!.uniques.contains(filter)
+                || terrainFeatures.isNotEmpty() && getTerrainFeatures().last().uniques.contains(filter)
                 || improvement == filter
-//                || resource == filter // TODO uncomment in next version
+                || civInfo != null && hasViewableResource(civInfo) && resource == filter
                 || filter == "Water" && isWater
                 || filter == "Land" && isLand
+                || filter == naturalWonder
+                || filter == "Foreign Land" && civInfo!=null && !isFriendlyTerritory(civInfo)
+                || filter == "Friendly Land" && civInfo!=null && isFriendlyTerritory(civInfo)
     }
 
     fun hasImprovementInProgress() = improvementInProgress != null
@@ -394,10 +425,21 @@ open class TileInfo {
     fun aerialDistanceTo(otherTile: TileInfo): Int {
         val xDelta = position.x - otherTile.position.x
         val yDelta = position.y - otherTile.position.y
-        return listOf(abs(xDelta), abs(yDelta), abs(xDelta - yDelta)).max()!!.toInt()
+        val distance = maxOf(abs(xDelta), abs(yDelta), abs(xDelta - yDelta))
+
+        var wrappedDistance = Float.MAX_VALUE
+        if (tileMap.mapParameters.worldWrap) {
+            val otherTileUnwrappedPos = tileMap.getUnWrappedPosition(otherTile.position)
+            val xDeltaWrapped = position.x - otherTileUnwrappedPos.x
+            val yDeltaWrapped = position.y - otherTileUnwrappedPos.y
+            wrappedDistance = maxOf(abs(xDeltaWrapped), abs(yDeltaWrapped), abs(xDeltaWrapped - yDeltaWrapped))
+        }
+
+        return min(distance, wrappedDistance).toInt()
     }
 
-    fun isRoughTerrain() = getBaseTerrain().rough || getTerrainFeature()?.rough == true
+    fun isRoughTerrain() = getBaseTerrain().rough || getTerrainFeatures().any { it.rough }
+            || getBaseTerrain().uniques.contains("Rough") || getTerrainFeatures().any { it.uniques.contains("Rough") }
 
     override fun toString(): String { // for debugging, it helps to see what you're doing
         return toString(null)
@@ -406,16 +448,15 @@ open class TileInfo {
     /** The two tiles have a river between them */
     fun isConnectedByRiver(otherTile: TileInfo): Boolean {
         if (otherTile == this) throw Exception("Should not be called to compare to self!")
-        val xDifference = this.position.x - otherTile.position.x
-        val yDifference = this.position.y - otherTile.position.y
 
-        return when {
-            yDifference < -1f || xDifference < -1f || yDifference > 1f || xDifference > 1f ->
-                throw Exception("Should never call this function on a non-neighbor!")
-            xDifference == 1f && yDifference == 1f -> hasBottomRiver // we're directly above it
-            xDifference == 1f -> hasBottomRightRiver // we're to the top-left of it
-            yDifference == 1f -> hasBottomLeftRiver // we're to the top-right of it
-            else -> otherTile.isConnectedByRiver(this) // we're below it, check the other tile
+        return when (tileMap.getNeighborTileClockPosition(this, otherTile)) {
+            2 -> otherTile.hasBottomLeftRiver // we're to the bottom-left of it
+            4 -> hasBottomRightRiver // we're to the top-left of it
+            6 -> hasBottomRiver // we're directly above it
+            8 -> hasBottomLeftRiver // we're to the top-right of it
+            10 -> otherTile.hasBottomRightRiver // we're to the bottom-right of it
+            12 -> otherTile.hasBottomRiver // we're directly below it
+            else -> throw Exception("Should never call this function on a non-neighbor!")
         }
     }
 
@@ -447,7 +488,7 @@ open class TileInfo {
                 lineList += city.cityConstructions.getProductionForTileInfo()
         }
         lineList += baseTerrain.tr()
-        if (terrainFeature != null) lineList += terrainFeature!!.tr()
+        for (terrainFeature in terrainFeatures) lineList += terrainFeature.tr()
         if (resource != null && (viewingCiv == null || hasViewableResource(viewingCiv))) lineList += resource!!.tr()
         if (naturalWonder != null) lineList += naturalWonder!!.tr()
         if (roadStatus !== RoadStatus.None && !isCityCenter()) lineList += roadStatus.name.tr()
@@ -478,7 +519,6 @@ open class TileInfo {
     }
 
 
-
     fun hasEnemyInvisibleUnit(viewingCiv: CivilizationInfo): Boolean {
         val unitsInTile = getUnits()
         if (unitsInTile.none()) return false
@@ -495,16 +535,18 @@ open class TileInfo {
 
     private fun forestOrJungleAreRoads(civInfo: CivilizationInfo) =
             civInfo.nation.forestsAndJunglesAreRoads
-                    && (terrainFeature == Constants.jungle || terrainFeature == Constants.forest)
+                    && (terrainFeatures.contains(Constants.jungle) || terrainFeatures.contains(Constants.forest))
                     && isFriendlyTerritory(civInfo)
 
-    fun getRulesetIncompatability(ruleset: Ruleset):String{
-        if (!ruleset.terrains.containsKey(baseTerrain)) return "Base terrain $baseTerrain does not exist in ruleset!"
-        if (terrainFeature != null && !ruleset.terrains.containsKey(terrainFeature)) return "Terrain feature $terrainFeature does not exist in ruleset!"
-        if (resource != null && !ruleset.tileResources.containsKey(resource)) return "Resource $resource does not exist in ruleset!"
+    fun getRulesetIncompatibility(ruleset: Ruleset): HashSet<String> {
+        val out = HashSet<String>()
+        if (!ruleset.terrains.containsKey(baseTerrain)) out.add("Base terrain $baseTerrain does not exist in ruleset!")
+        for (terrainFeature in terrainFeatures.filter { !ruleset.terrains.containsKey(it) })
+            out.add("Terrain feature $terrainFeature does not exist in ruleset!")
+        if (resource != null && !ruleset.tileResources.containsKey(resource)) out.add("Resource $resource does not exist in ruleset!")
         if (improvement != null && !improvement!!.startsWith("StartingLocation")
-                && !ruleset.tileImprovements.containsKey(improvement)) return "Improvement $improvement does not exist in ruleset!"
-        return ""
+                && !ruleset.tileImprovements.containsKey(improvement)) out.add("Improvement $improvement does not exist in ruleset!")
+        return out
     }
 
 
@@ -517,6 +559,8 @@ open class TileInfo {
     }
 
     fun setTerrainTransients() {
+        convertTerrainFeatureToArray()
+        convertHillToTerrainFeature()
         if (!ruleset.terrains.containsKey(baseTerrain))
             throw Exception()
         baseTerrainObject = ruleset.terrains[baseTerrain]!!
@@ -558,6 +602,75 @@ open class TileInfo {
     fun stopWorkingOnImprovement() {
         improvementInProgress = null
         turnsToImprovement = 0
+    }
+
+    fun normalizeToRuleset(ruleset: Ruleset) {
+        if (!ruleset.terrains.containsKey(naturalWonder)) naturalWonder = null
+        if (naturalWonder != null) {
+            val naturalWonder = ruleset.terrains[naturalWonder]!!
+            baseTerrain = naturalWonder.turnsInto!!
+            terrainFeatures.clear()
+            resource = null
+            improvement = null
+        }
+
+        for (terrainFeature in terrainFeatures.toList()) {
+            val terrainFeatureObject = ruleset.terrains[terrainFeature]
+            if (terrainFeatureObject == null) {
+                terrainFeatures.remove(terrainFeature)
+                continue
+            }
+
+            if (terrainFeatureObject.occursOn.isNotEmpty() && !terrainFeatureObject.occursOn.contains(baseTerrain))
+                terrainFeatures.remove(terrainFeature)
+        }
+
+
+        if (resource != null && !ruleset.tileResources.containsKey(resource)) resource = null
+        if (resource != null) {
+            val resourceObject = ruleset.tileResources[resource]!!
+            if (resourceObject.terrainsCanBeFoundOn.none { it == baseTerrain || terrainFeatures.contains(it) })
+                resource = null
+        }
+
+        // If we're checking this at gameInfo.setTransients, we can't check the top terrain
+        if (improvement != null && ::baseTerrainObject.isInitialized) normalizeTileImprovement(ruleset)
+        if (isWater || isImpassible())
+            roadStatus = RoadStatus.None
+    }
+
+
+    private fun normalizeTileImprovement(ruleset: Ruleset) {
+        if (improvement!!.startsWith("StartingLocation") == true) {
+            if (!isLand || getLastTerrain().impassable) improvement = null
+            return
+        }
+        val improvementObject = ruleset.tileImprovements[improvement]
+        if (improvementObject == null) {
+            improvement = null
+            return
+        }
+        improvement = null // Unset, and check if it can be reset. If so, do it, if not, invalid.
+        if (canImprovementBeBuiltHere(improvementObject)
+                // Allow building 'other' improvements like city ruins, barb encampments, Great Improvements etc
+                || (improvementObject.terrainsCanBeBuiltOn.isEmpty()
+                        && ruleset.tileResources.values.none { it.improvement == improvementObject.name }
+                        && !isImpassible() && isLand))
+            improvement = improvementObject.name
+    }
+
+    private fun convertHillToTerrainFeature(){
+        if (baseTerrain == Constants.hill &&
+                ruleset.terrains[Constants.hill]?.type == TerrainType.TerrainFeature) {
+            val mostCommonBaseTerrain = neighbors.filter { it.isLand && !it.isImpassible() }
+                    .groupBy { it.baseTerrain }.maxByOrNull { it.value.size }
+            baseTerrain = mostCommonBaseTerrain?.key ?: Constants.grassland
+            //We have to add hill as first terrain feature
+            val copy = terrainFeatures.toTypedArray()
+            terrainFeatures.clear()
+            terrainFeatures.add(Constants.hill)
+            terrainFeatures.addAll(copy)
+        }
     }
 
     //endregion

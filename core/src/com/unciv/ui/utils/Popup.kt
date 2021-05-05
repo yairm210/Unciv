@@ -15,7 +15,9 @@ import com.unciv.Constants
  * Base class for all Popups, i.e. Tables that get rendered in the middle of a screen and on top of everything else
  */
 open class Popup(val screen: CameraStageBaseScreen): Table(CameraStageBaseScreen.skin) {
-    val innerTable = Table(CameraStageBaseScreen.skin)
+    val innerTable = Table(CameraStageBaseScreen.skin) // This exists to differentiate the actual popup (the inner table)
+    // from the 'screen blocking' part of the popup (which covers the entire screen)
+
     init {
         background = ImageGetter.getBackground(Color.GRAY.cpy().apply { a=.5f })
         innerTable.background = ImageGetter.getBackground(ImageGetter.getBlue().lerp(Color.BLACK, 0.5f))

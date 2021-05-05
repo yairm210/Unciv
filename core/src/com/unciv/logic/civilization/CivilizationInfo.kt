@@ -1,6 +1,5 @@
 package com.unciv.logic.civilization
 
-import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
 import com.unciv.UncivGame
@@ -76,6 +75,7 @@ class CivilizationInfo {
     var tech = TechManager()
     var policies = PolicyManager()
     var questManager = QuestManager()
+    var religionManager = ReligionManager()
     var goldenAges = GoldenAgeManager()
     var greatPeople = GreatPersonManager()
     var victoryManager = VictoryManager()
@@ -111,13 +111,14 @@ class CivilizationInfo {
         toReturn.civName = civName
         toReturn.tech = tech.clone()
         toReturn.policies = policies.clone()
+        toReturn.religionManager = religionManager.clone()
         toReturn.questManager = questManager.clone()
         toReturn.goldenAges = goldenAges.clone()
         toReturn.greatPeople = greatPeople.clone()
         toReturn.victoryManager = victoryManager.clone()
         toReturn.allyCivName = allyCivName
         for (diplomacyManager in diplomacy.values.map { it.clone() })
-            toReturn.diplomacy.put(diplomacyManager.otherCivName, diplomacyManager)
+            toReturn.diplomacy[diplomacyManager.otherCivName] = diplomacyManager
         toReturn.cities = cities.map { it.clone() }
 
         // This is the only thing that is NOT switched out, which makes it a source of ConcurrentModification errors.
@@ -164,7 +165,7 @@ class CivilizationInfo {
     fun isAlive(): Boolean = !isDefeated()
     fun hasEverBeenFriendWith(otherCiv: CivilizationInfo): Boolean = getDiplomacyManager(otherCiv).everBeenFriends()
     fun hasMetCivTerritory(otherCiv: CivilizationInfo): Boolean = otherCiv.getCivTerritory().any { it in exploredTiles }
-    fun getCivTerritory() = cities.asSequence().flatMap { it.tiles.asSequence() }
+    private fun getCivTerritory() = cities.asSequence().flatMap { it.tiles.asSequence() }
 
     fun victoryType(): VictoryType {
         if (gameInfo.gameParameters.victoryTypes.size == 1)
@@ -235,7 +236,8 @@ class CivilizationInfo {
                             .filter { it.params.isEmpty() || it.params.last() != "in this city" }
                 } +
                 policies.policyUniques.getUniques(uniqueTemplate) +
-                tech.getTechUniques().filter { it.placeholderText == uniqueTemplate }
+                tech.getTechUniques().filter { it.placeholderText == uniqueTemplate } +
+                religionManager.getUniques().filter { it.placeholderText == uniqueTemplate }
     }
 
     //region Units
@@ -265,7 +267,7 @@ class CivilizationInfo {
 
     fun getIdleUnits() = getCivUnits().filter { it.isIdle() }
 
-    fun getDueUnits() = getCivUnits().filter { it.due && it.isIdle() }
+    private fun getDueUnits() = getCivUnits().filter { it.due && it.isIdle() }
 
     fun shouldGoToDueUnit() = UncivGame.Current.settings.checkForDueUnits && getDueUnits().any()
 
@@ -332,8 +334,8 @@ class CivilizationInfo {
     /** Returns true if the civ was fully initialized and has no cities remaining */
     fun isDefeated(): Boolean {
         // Dirty hack: exploredTiles are empty only before starting units are placed
-        if (exploredTiles.isEmpty() || isBarbarian() || isSpectator()) return false
-        else return cities.isEmpty() // No cities
+        return if (exploredTiles.isEmpty() || isBarbarian() || isSpectator()) false
+        else cities.isEmpty() // No cities
                 && (citiesCreated > 0 || !getCivUnits().any { it.hasUnique(Constants.settlerUnique) })
     }
 
@@ -341,12 +343,11 @@ class CivilizationInfo {
         if (gameInfo.ruleSet.technologies.isEmpty()) return "None"
         if (tech.researchedTechnologies.isEmpty())
             return gameInfo.ruleSet.getEras().first()
-        val maxEraOfTech = tech.researchedTechnologies
+        return tech.researchedTechnologies
                 .asSequence()
                 .map { it.column!! }
-                .maxBy { it.columnNumber }!!
+                .maxByOrNull { it.columnNumber }!!
                 .era
-        return maxEraOfTech
     }
 
     fun getEraNumber(): Int = gameInfo.ruleSet.getEraNumber(getEra())
@@ -381,7 +382,7 @@ class CivilizationInfo {
 
     fun canSignResearchAgreementsWith(otherCiv: CivilizationInfo): Boolean {
         val diplomacyManager = getDiplomacyManager(otherCiv)
-        val cost = getResearchAgreementCost(otherCiv)
+        val cost = getResearchAgreementCost()
         return canSignResearchAgreement() && otherCiv.canSignResearchAgreement()
                 && diplomacyManager.hasFlag(DiplomacyFlags.DeclarationOfFriendship)
                 && !diplomacyManager.hasFlag(DiplomacyFlags.ResearchAgreement)
@@ -392,10 +393,10 @@ class CivilizationInfo {
     fun getStatForRanking(category: RankingType): Int {
         return when (category) {
             RankingType.Population -> cities.sumBy { it.population.population }
-            RankingType.CropYield -> statsForNextTurn.food.roundToInt()
+            RankingType.Crop_Yield -> statsForNextTurn.food.roundToInt()
             RankingType.Production -> statsForNextTurn.production.roundToInt()
             RankingType.Gold -> gold
-            RankingType.Land -> cities.sumBy { it.tiles.size }
+            RankingType.Territory -> cities.sumBy { it.tiles.size }
             RankingType.Force -> units.sumBy { it.baseUnit.strength }
             RankingType.Happiness -> getHappiness()
             RankingType.Technologies -> tech.researchedTechnologies.size
@@ -434,8 +435,11 @@ class CivilizationInfo {
         if (citiesCreated == 0 && cities.any())
             citiesCreated = cities.filter { it.name in nation.cities }.count()
 
+        religionManager.civInfo = this // needs to be before tech, since tech setTransients looks at all uniques
+
         tech.civInfo = this
         tech.setTransients()
+
 
         for (diplomacyManager in diplomacy.values) {
             diplomacyManager.civInfo = this
@@ -484,7 +488,7 @@ class CivilizationInfo {
             if (offeringCiv.isDefeated() || !TradeEvaluation().isTradeValid(tradeRequest.trade, this, offeringCiv)) {
                 tradeRequests.remove(tradeRequest)
                 // Yes, this is the right direction. I checked.
-                offeringCiv.addNotification("Our proposed trade is no longer relevant!", Color.GOLD)
+                offeringCiv.addNotification("Our proposed trade is no longer relevant!", NotificationIcon.Trade)
             }
         }
         updateDetailedCivResources() // If you offered a trade last turn, this turn it will have been accepted/declined
@@ -508,8 +512,8 @@ class CivilizationInfo {
                     val unitToDisband = civMilitaryUnits.first()
                     unitToDisband.disband()
                     civMilitaryUnits -= unitToDisband
-                    val unitName = unitToDisband.name
-                    addNotification("Cannot provide unit upkeep for [$unitName] - unit has been disbanded!", null, Color.RED)
+                    val unitName = unitToDisband.displayName()
+                    addNotification("Cannot provide unit upkeep for [$unitName] - unit has been disbanded!", unitName, NotificationIcon.Death)
                 }
             }
         }
@@ -517,7 +521,9 @@ class CivilizationInfo {
         gold += nextTurnStats.gold.toInt()
 
         if (cities.isNotEmpty() && gameInfo.ruleSet.technologies.isNotEmpty())
-            tech.nextTurn(nextTurnStats.science.toInt())
+            tech.endTurn(nextTurnStats.science.toInt())
+
+        religionManager.endTurn(nextTurnStats.faith.toInt())
 
         if (isMajorCiv()) greatPeople.addGreatPersonPoints(getGreatPersonPointsForNextTurn()) // City-states don't get great people!
 
@@ -548,14 +554,17 @@ class CivilizationInfo {
         return (diplomacyManager.hasOpenBorders || diplomacyManager.diplomaticStatus == DiplomaticStatus.War)
     }
 
-    fun addNotification(text: String, location: Vector2?, color: Color) {
-        val locations = if (location != null) listOf(location) else emptyList()
-        addNotification(text, color, LocationAction(locations))
+
+    fun addNotification(text: String, location: Vector2, vararg notificationIcons: String) {
+        addNotification(text, LocationAction(listOf(location)), *notificationIcons)
     }
 
-    fun addNotification(text: String, color: Color, action: NotificationAction? = null) {
+    fun addNotification(text: String, vararg notificationIcons: String) = addNotification(text, null, *notificationIcons)
+
+    fun addNotification(text: String, action:NotificationAction?, vararg notificationIcons: String) {
         if (playerType == PlayerType.AI) return // no point in lengthening the saved game info if no one will read it
-        notifications.add(Notification(text, color, action))
+        val arrayList = ArrayList<String>().apply { addAll(notificationIcons) }
+        notifications.add(Notification(text, arrayList, action))
     }
 
     fun addUnit(unitName: String, city: CityInfo? = null) {
@@ -565,7 +574,7 @@ class CivilizationInfo {
         val unit = getEquivalentUnit(unitName)
         placeUnitNearTile(cityToAddTo.location, unit.name)
         if (unit.isGreatPerson())
-            addNotification("A [${unit.name}] has been born in [${cityToAddTo.name}]!", cityToAddTo.location, Color.GOLD)
+            addNotification("A [${unit.name}] has been born in [${cityToAddTo.name}]!", cityToAddTo.location, unit.name)
     }
 
     fun placeUnitNearTile(location: Vector2, unitName: String): MapUnit? {
@@ -575,6 +584,7 @@ class CivilizationInfo {
     fun addCity(location: Vector2) {
         val newCity = CityInfo(this, location)
         newCity.cityConstructions.chooseNextConstruction()
+
     }
 
 
@@ -582,7 +592,7 @@ class CivilizationInfo {
         val destructionText = if (isMajorCiv()) "The civilization of [$civName] has been destroyed!"
         else "The City-State of [$civName] has been destroyed!"
         for (civ in gameInfo.civilizations)
-            civ.addNotification(destructionText, null, Color.RED)
+            civ.addNotification(destructionText, civName, NotificationIcon.Death)
         getCivUnits().forEach { it.destroy() }
         tradeRequests.clear() // if we don't do this then there could be resources taken by "pending" trades forever
         for (diplomacyManager in diplomacy.values) {
@@ -608,7 +618,7 @@ class CivilizationInfo {
         updateStatsForNextTurn()
     }
 
-    fun getResearchAgreementCost(otherCiv: CivilizationInfo): Int {
+    fun getResearchAgreementCost(): Int {
         // https://forums.civfanatics.com/resources/research-agreements-bnw.25568/
         val basicGoldCostOfSignResearchAgreement = when (getEra()) {
             Constants.medievalEra, Constants.renaissanceEra -> 250
@@ -626,7 +636,7 @@ class CivilizationInfo {
                 .filter { !it.unitType.isCivilian() && it.unitType.isLandUnit() }
                 .toList().random()
         placeUnitNearTile(city.location, militaryUnit.name)
-        addNotification("[${otherCiv.civName}] gave us a [${militaryUnit.name}] as gift near [${city.name}]!", null, Color.GREEN)
+        addNotification("[${otherCiv.civName}] gave us a [${militaryUnit.name}] as gift near [${city.name}]!", city.location, otherCiv.civName, militaryUnit.name)
     }
 
     fun getAllyCiv() = allyCivName
@@ -636,7 +646,7 @@ class CivilizationInfo {
         if (!isCityState()) return
         val maxInfluence = diplomacy
                 .filter { !it.value.otherCiv().isCityState() && !it.value.otherCiv().isDefeated() }
-                .maxBy { it.value.influence }
+                .maxByOrNull { it.value.influence }
         if (maxInfluence != null && maxInfluence.value.influence >= 60) {
             newAllyName = maxInfluence.key
         }
@@ -651,13 +661,17 @@ class CivilizationInfo {
 
             if (newAllyName != "") {
                 val newAllyCiv = gameInfo.getCivilization(newAllyName)
-                newAllyCiv.addNotification("We have allied with [${civName}].", capitalLocation, Color.GREEN)
+                val text = "We have allied with [${civName}]."
+                if (capitalLocation != null) newAllyCiv.addNotification(text, capitalLocation, civName, NotificationIcon.Diplomacy)
+                else newAllyCiv.addNotification(text, civName, NotificationIcon.Diplomacy)
                 newAllyCiv.updateViewableTiles()
                 newAllyCiv.updateDetailedCivResources()
             }
             if (oldAllyName != "") {
                 val oldAllyCiv = gameInfo.getCivilization(oldAllyName)
-                oldAllyCiv.addNotification("We have lost alliance with [${civName}].", capitalLocation, Color.RED)
+                val text = "We have lost alliance with [${civName}]."
+                if (capitalLocation != null) oldAllyCiv.addNotification(text, capitalLocation, civName, NotificationIcon.Diplomacy)
+                else oldAllyCiv.addNotification(text, civName, NotificationIcon.Diplomacy)
                 oldAllyCiv.updateViewableTiles()
                 oldAllyCiv.updateDetailedCivResources()
             }

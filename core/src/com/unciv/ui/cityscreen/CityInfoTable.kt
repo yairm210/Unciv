@@ -9,7 +9,6 @@ import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.GreatPersonManager
 import com.unciv.models.ruleset.Building
 import com.unciv.models.stats.Stat
-import com.unciv.models.stats.StatMap
 import com.unciv.models.translations.tr
 import com.unciv.ui.utils.*
 import java.text.DecimalFormat

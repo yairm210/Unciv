@@ -36,6 +36,7 @@ class MapParameters {
     var size: MapSize = MapSize.Medium
     var noRuins = false
     var noNaturalWonders = false
+    var worldWrap = false
 
     /** This is used mainly for the map editor, so you can continue editing a map under the ame ruleset you started with */
     var mods = LinkedHashSet<String>()

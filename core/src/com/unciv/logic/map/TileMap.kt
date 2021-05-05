@@ -44,15 +44,16 @@ class TileMap {
     constructor()
 
     /** generates an hexagonal map of given radius */
-    constructor(radius: Int, ruleset: Ruleset) {
-        for (vector in HexMath.getVectorsInDistance(Vector2.Zero, radius))
+    constructor(radius: Int, ruleset: Ruleset, worldWrap: Boolean = false) {
+        for (vector in HexMath.getVectorsInDistance(Vector2.Zero, radius, worldWrap))
             tileList.add(TileInfo().apply { position = vector; baseTerrain = Constants.grassland })
         setTransients(ruleset)
     }
 
     /** generates a rectangular map of given width and height*/
-    constructor(width: Int, height: Int, ruleset: Ruleset) {
-        for (x in -width / 2..width / 2)
+    constructor(width: Int, height: Int, ruleset: Ruleset, worldWrap: Boolean = false) {
+        val halfway = if(worldWrap) width/2-1 else width/2
+        for (x in -width / 2 .. halfway)
             for (y in -height / 2..height / 2)
                 tileList.add(TileInfo().apply {
                     position = HexMath.evenQ2HexCoords(Vector2(x.toFloat(), y.toFloat()))
@@ -99,8 +100,6 @@ class TileMap {
                 sequenceOf(get(origin))
             else
                 sequence {
-                    fun getIfTileExistsOrNull(x: Int, y: Int) = if (contains(x, y)) get(x, y) else null
-
                     val centerX = origin.x.toInt()
                     val centerY = origin.y.toInt()
 
@@ -129,6 +128,30 @@ class TileMap {
                     }
                 }.filterNotNull()
 
+    private fun getIfTileExistsOrNull(x: Int, y: Int) : TileInfo? {
+        if (contains(x, y))
+            return get(x, y)
+
+        if (!mapParameters.worldWrap)
+            return null
+
+        var radius = mapParameters.size.radius
+        if (mapParameters.shape == MapShape.rectangular)
+            radius = HexMath.getEquivalentRectangularSize(radius).x.toInt() / 2
+
+        //tile is outside of the map
+        if (contains(x + radius, y - radius)) { //tile is on right side
+            //get tile wrapped around from right to left
+            return get(x + radius, y - radius)
+        } else if (contains(x - radius, y + radius)) { //tile is on left side
+            //get tile wrapped around from left to right
+            return get(x - radius, y + radius)
+        }
+
+        return null
+    }
+
+
     /** Tries to place the [unitName] into the [TileInfo] closest to the given the [position]
      * @param civInfo civilization to assign unit to
      * @return created [MapUnit] or null if no suitable location was found
@@ -141,7 +164,7 @@ class TileMap {
         val unit = gameInfo.ruleSet.units[unitName]!!.getMapUnit(gameInfo.ruleSet)
 
         fun getPassableNeighbours(tileInfo: TileInfo): Set<TileInfo> =
-                getTilesAtDistance(tileInfo.position, 1).filter { unit.movement.canPassThrough(it) }.toSet()
+                tileInfo.neighbors.filter { unit.movement.canPassThrough(it) }.toSet()
 
         // both the civ name and actual civ need to be in here in order to calculate the canMoveTo...Darn
         unit.assignOwner(civInfo, false)
@@ -292,5 +315,53 @@ class TileMap {
             tileInfo.setTerrainTransients()
             tileInfo.setUnitTransients(setUnitCivTransients)
         }
+    }
+
+    /**
+     * Returns the clockPosition of otherTile seen from tile's position
+     * Returns -1 if not neighbors
+     */
+    fun getNeighborTileClockPosition(tile: TileInfo, otherTile: TileInfo): Int{
+        var radius = mapParameters.size.radius
+        if (mapParameters.shape == MapShape.rectangular)
+            radius = HexMath.getEquivalentRectangularSize(radius).x.toInt() / 2
+
+        val xDifference = tile.position.x - otherTile.position.x
+        val yDifference = tile.position.y - otherTile.position.y
+        val xWrapDifferenceBottom = tile.position.x - (otherTile.position.x - radius)
+        val yWrapDifferenceBottom = tile.position.y - (otherTile.position.y - radius)
+        val xWrapDifferenceTop = tile.position.x - (otherTile.position.x + radius)
+        val yWrapDifferenceTop = tile.position.y - (otherTile.position.y + radius)
+
+        return when {
+            xDifference == 1f && yDifference == 1f -> 6 // otherTile is below
+            xDifference == -1f && yDifference == -1f -> 12 // otherTile is above
+            xDifference == 1f || xWrapDifferenceBottom == 1f -> 4 // otherTile is bottom-right
+            yDifference == 1f || yWrapDifferenceBottom == 1f -> 8 // otherTile is bottom-left
+            xDifference == -1f || xWrapDifferenceTop == -1f -> 10 // otherTile is top-left
+            yDifference == -1f || yWrapDifferenceTop == -1f -> 2 // otherTile is top-right
+            else -> -1
+        }
+    }
+
+    /**
+     * Returns the closest position to (0, 0) outside the map which can be wrapped
+     * to the position of the given vector
+     */
+    fun getUnWrappedPosition(position: Vector2) : Vector2 {
+        if (!contains(position))
+            return position //The position is outside the map so its unwrapped already
+
+        var radius = mapParameters.size.radius
+        if (mapParameters.shape == MapShape.rectangular)
+            radius = HexMath.getEquivalentRectangularSize(radius).x.toInt() / 2
+
+        val vectorUnwrappedLeft = Vector2(position.x + radius, position.y - radius)
+        val vectorUnwrappedRight = Vector2(position.x - radius, position.y + radius)
+
+        return if (vectorUnwrappedRight.len() < vectorUnwrappedLeft.len())
+            vectorUnwrappedRight
+        else
+            vectorUnwrappedLeft
     }
 }

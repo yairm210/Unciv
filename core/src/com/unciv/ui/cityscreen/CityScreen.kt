@@ -7,12 +7,9 @@ import com.badlogic.gdx.scenes.scene2d.InputListener
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.UncivGame
-import com.unciv.logic.HexMath
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.city.IConstruction
 import com.unciv.logic.map.TileInfo
-import com.unciv.models.ruleset.Building
-import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.ui.map.TileGroupMap
 import com.unciv.ui.tilegroups.TileSetStrings
 import com.unciv.ui.utils.*
@@ -54,7 +51,7 @@ class CityScreen(internal val city: CityInfo): CameraStageBaseScreen() {
     private var cityPickerTable = CityScreenCityPickerTable(this)
 
     /** Button for exiting the city - sits on BOTTOM CENTER */
-    val exitCityButton = "Exit city".toTextButton().apply {
+    private val exitCityButton = "Exit city".toTextButton().apply {
         labelCell.pad(10f)
         onClick { exit() }
     }
@@ -203,7 +200,7 @@ class CityScreen(internal val city: CityInfo): CameraStageBaseScreen() {
                 selectedTile = tileInfo
                 selectedConstruction = null
                 if (tileGroup.isWorkable && canChangeState) {
-                    if (!tileInfo.isWorked() && city.population.getFreePopulation() > 0) {
+                    if (!tileInfo.providesYield() && city.population.getFreePopulation() > 0) {
                         city.workedTiles.add(tileInfo.position)
                         game.settings.addCompletedTutorialTask("Reassign worked tiles")
                     } else if (tileInfo.isWorked() && !tileInfo.isLocked())
@@ -214,14 +211,20 @@ class CityScreen(internal val city: CityInfo): CameraStageBaseScreen() {
             }
 
             tileGroups.add(tileGroup)
-
-            val positionalVector = HexMath.hex2WorldCoords(tileInfo.position.cpy().sub(cityInfo.location))
-            val groupSize = 50
-            tileGroup.setPosition(stage.width / 2 + positionalVector.x * 0.8f * groupSize.toFloat(),
-                    stage.height / 2 + positionalVector.y * 0.8f * groupSize.toFloat())
         }
 
-        val tileMapGroup = TileGroupMap(tileGroups, stage.width / 2)
+        val tilesToUnwrap = ArrayList<CityTileGroup>()
+        for (tileGroup in tileGroups) {
+            val xDifference = city.getCenterTile().position.x - tileGroup.tileInfo.position.x
+            val yDifference = city.getCenterTile().position.y - tileGroup.tileInfo.position.y
+            //if difference is bigger than 5 the tileGroup we are looking for is on the other side of the map
+            if (xDifference > 5 || xDifference < -5 || yDifference > 5 || yDifference < -5) {
+                //so we want to unwrap its position
+                tilesToUnwrap.add(tileGroup)
+            }
+        }
+
+        val tileMapGroup = TileGroupMap(tileGroups, stage.width / 2, stage.height / 2, tileGroupsToUnwrap = tilesToUnwrap)
         val scrollPane = ScrollPane(tileMapGroup)
         scrollPane.setSize(stage.width, stage.height)
         scrollPane.setOrigin(stage.width / 2, stage.height / 2)
