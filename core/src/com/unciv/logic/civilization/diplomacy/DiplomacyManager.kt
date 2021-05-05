@@ -450,6 +450,9 @@ class DiplomacyManager() {
         revertToZero(DiplomaticModifiers.UnacceptableDemands, 1 / 4f)
         revertToZero(DiplomaticModifiers.LiberatedCity, 1 / 8f)
         revertToZero(DiplomaticModifiers.StealingTerritory, 1 / 4f)
+        revertToZero(DiplomaticModifiers.DenouncedOurAllies, 1 / 4f)
+        revertToZero(DiplomaticModifiers.DenouncedOurEnemies, 1 / 4f)
+        revertToZero(DiplomaticModifiers.Denunciation, 1 / 8f) // That's personal, it'll take a long time to fade
 
         setFriendshipBasedModifier()
 
