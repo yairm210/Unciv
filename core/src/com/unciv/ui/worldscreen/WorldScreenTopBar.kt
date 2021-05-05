@@ -149,7 +149,7 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
         val overviewButton = Button(CameraStageBaseScreen.skin)
         overviewButton.add("Overview".toLabel()).pad(10f)
         if (Gdx.app.input.isPeripheralAvailable(Input.Peripheral.HardwareKeyboard)) {
-            overviewButton.add(Label("(E)", CameraStageBaseScreen.skin).apply { color = Color.LIGHT_GRAY }).padLeft(0f)
+            overviewButton.add("(E)".toLabel(Color.WHITE))
         }
         overviewButton.pack()
         overviewButton.onClick { worldScreen.game.setScreen(EmpireOverviewScreen(worldScreen.selectedCiv)) }

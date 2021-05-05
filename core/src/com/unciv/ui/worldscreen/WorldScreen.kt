@@ -181,6 +181,8 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Cam
     }
 
     private fun addKeyboardPresses() {
+        // Note these helpers might need unification with similar code e.g. in:
+        // GameSaver.autoSave, SaveGameScreen.saveGame, LoadGameScreen.rightSideButton.onClick,...
         val quickSave = {
             val toast = ToastPopup("Quicksaving...", this)
             thread(name = "SaveGame") {
@@ -188,15 +190,14 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Cam
                     Gdx.app.postRunnable {
                         toast.close()
                         if (it != null)
-                            ToastPopup("Quicksave failed!", this)
+                            ToastPopup("Could not save game!", this)
                         else {
-                            ToastPopup("Quicksave OK.", this)
-                            UncivGame.Current.setWorldScreen()
+                            ToastPopup("Quicksave successful.", this)
                         }
                     }
                 }
             }
-            Unit
+            Unit    // change type of anonymous fun from ()->Thread to ()->Unit without unchecked cast
         }
         val quickLoad = {
             val toast = ToastPopup("Quickloading...", this)
@@ -206,16 +207,17 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Cam
                     Gdx.app.postRunnable {
                         toast.close()
                         UncivGame.Current.loadGame(loadedGame)
-                        ToastPopup("Quickload OK.", this)
+                        ToastPopup("Quickload successful.", this)
                     }
                 } catch (ex: Exception) {
                     Gdx.app.postRunnable {
-                        ToastPopup("Quickload failed!", this)
+                        ToastPopup("Could not load game!", this)
                     }
                 }
             }
-            Unit
+            Unit    // change type to ()->Unit
         }
+
         // Space and N are assigned in createNextTurnButton
         keyPressDispatcher[Input.Keys.F1] = { game.setScreen(CivilopediaScreen(gameInfo.ruleSet)) }
         keyPressDispatcher['E'] = { game.setScreen(EmpireOverviewScreen(selectedCiv)) }     // Empire overview last used page
