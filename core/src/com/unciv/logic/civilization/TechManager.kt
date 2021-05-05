@@ -307,7 +307,7 @@ class TechManager {
             val text =  if(positions.size==1)
                 "[$revealedName] revealed near [${chosenCity.name}]"
             else
-                "[${positions.size}] occurrences of [$revealedName] revealed, e.g. near [${chosenCity.name}]"
+                "[${positions.size}] sources of [$revealedName] revealed, e.g. near [${chosenCity.name}]"
 
             civInfo.addNotification(
                 text,
