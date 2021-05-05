@@ -40,6 +40,7 @@ class TileImprovementConstructionTests {
         for (improvement in ruleSet.tileImprovements.values) {
             val terrain = improvement.terrainsCanBeBuiltOn.firstOrNull() ?: continue
             tile.baseTerrain = terrain
+            tile.terrainFeatures.clear()
             tile.setTransients()
             if (improvement.uniqueTo != null) civInfo.civName = improvement.uniqueTo!!
             val canBeBuilt = tile.canBuildImprovement(improvement, civInfo)
