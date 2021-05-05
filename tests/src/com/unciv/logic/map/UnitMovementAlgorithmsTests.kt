@@ -44,6 +44,7 @@ class UnitMovementAlgorithmsTests {
     fun canPassThroughPassableTerrains() {
         for (terrain in ruleSet.terrains.values) {
             tile.baseTerrain = terrain.name
+            tile.terrainFeatures.clear()
             tile.setTransients()
 
             unit.baseUnit = BaseUnit().apply { unitType = UnitType.Melee }
