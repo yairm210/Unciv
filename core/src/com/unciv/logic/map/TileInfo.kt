@@ -661,8 +661,10 @@ open class TileInfo {
 
     private fun convertHillToTerrainFeature(){
         if (baseTerrain == Constants.hill &&
-                ruleset.terrains[Constants.hill]?.type == TerrainType.TerrainFeature){
-            baseTerrain = Constants.grassland
+                ruleset.terrains[Constants.hill]?.type == TerrainType.TerrainFeature) {
+            val mostCommonBaseTerrain = neighbors.filter { it.isLand && !it.isImpassible() }
+                    .groupBy { it.baseTerrain }.maxByOrNull { it.value.size }
+            baseTerrain = mostCommonBaseTerrain?.key ?: Constants.grassland
             //We have to add hill as first terrain feature
             val copy = terrainFeatures.toTypedArray()
             terrainFeatures.clear()
