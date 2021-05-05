@@ -21,7 +21,6 @@ class CityOverviewTable(val viewingPlayer: CivilizationInfo, val overviewScreen:
         const val iconSize = 50f  //if you set this too low, there is a chance that the tables will be misaligned
         const val paddingVert = 5f      // vertical padding
         const val paddingHorz = 8f      // horizontal padding
-        const val constructionLabelMinHeight = 40f
     }
 
     private val columnsNames = arrayListOf("Population", "Food", "Gold", "Science", "Production", "Culture", "Happiness")
@@ -115,6 +114,7 @@ class CityOverviewTable(val viewingPlayer: CivilizationInfo, val overviewScreen:
     }
 
     private fun fillCitiesTable(citiesTable: Table, sortType: String, descending: Boolean) {
+        if (viewingPlayer.cities.isEmpty()) return
 
         val sorter = Comparator { city2, city1: CityInfo ->
             when {
@@ -133,7 +133,6 @@ class CityOverviewTable(val viewingPlayer: CivilizationInfo, val overviewScreen:
             cityList = cityList.reversed()
 
         val constructionCells: MutableList<Cell<Label>> = mutableListOf()
-        var maxHeight = constructionLabelMinHeight
         for (city in cityList) {
             val button = Button(city.name.toLabel(), CameraStageBaseScreen.skin)
             button.onClick {
@@ -142,8 +141,6 @@ class CityOverviewTable(val viewingPlayer: CivilizationInfo, val overviewScreen:
             citiesTable.add(button)
 
             val cell = citiesTable.add(city.cityConstructions.getCityProductionTextForCityButton().toLabel())
-            cell.minHeight(constructionLabelMinHeight)
-            if (cell.prefHeight > maxHeight) maxHeight = cell.prefHeight
             constructionCells.add(cell)
 
             citiesTable.add(city.population.population.toLabel()).myAlign(Align.center)
@@ -154,10 +151,10 @@ class CityOverviewTable(val viewingPlayer: CivilizationInfo, val overviewScreen:
             citiesTable.row()
         }
 
-        // check if row heights diverge and if so fix it
-        if (maxHeight > constructionLabelMinHeight) {
-            constructionCells.forEach { it.minHeight(maxHeight) }
-        }
+        // row heights may diverge - fix it by setting minHeight to
+        // largest actual height (of the construction cell) - !! guarded by isEmpty test above
+        val largestLabelHeight = constructionCells.maxByOrNull{ it.prefHeight }!!.prefHeight
+        constructionCells.forEach{ it.minHeight(largestLabelHeight ) }
 
         citiesTable.pack()
     }
