@@ -648,8 +648,7 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Cam
 
         val scrollPos = Vector2(mapHolder.scrollX, mapHolder.scrollY)
         val viewScale = Vector2(mapHolder.scaleX, mapHolder.scaleY)
-        minimapWrapper.minimap.updateScrollPosition(scrollPos, viewScale)
-        minimapWrapper.syncButtonStates()
+        minimapWrapper.minimap.updateScrollPosistion(scrollPos, viewScale)
 
         super.render(delta)
     }
