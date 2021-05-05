@@ -92,7 +92,6 @@ open class TileInfo {
         for (airUnit in airUnits) toReturn.airUnits.add(airUnit.clone())
         toReturn.position = position.cpy()
         toReturn.baseTerrain = baseTerrain
-//        toReturn.terrainFeature = terrainFeature
         convertTerrainFeatureToArray()
         toReturn.terrainFeatures.addAll(terrainFeatures)
         toReturn.naturalWonder = naturalWonder

@@ -32,11 +32,18 @@ class TileImprovementConstructionTests {
         tile.owningCity = city
         tile.position = Vector2(1f, 1f) // so that it's not on the same position as the city
         city.civInfo = civInfo
+
+
+        // Needed for convertHillToTerrainFeature to not crash
+        val tileMap = TileMap()
+        tileMap.tileMatrix.add(ArrayList<TileInfo?>().apply { add(tile) })
+        tile.tileMap = tileMap
     }
 
 
     @Test
     fun allTerrainSpecificImprovementsCanBeBuilt() {
+
         for (improvement in ruleSet.tileImprovements.values) {
             val terrain = improvement.terrainsCanBeBuiltOn.firstOrNull() ?: continue
             tile.baseTerrain = terrain
