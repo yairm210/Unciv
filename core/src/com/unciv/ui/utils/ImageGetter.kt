@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.g2d.NinePatch
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
 import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.scenes.scene2d.Actor
+import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable
@@ -302,16 +303,24 @@ object ImageGetter {
         return getImage("TechIcons/$techName").apply { color = techIconColor.lerp(Color.BLACK, 0.6f) }
     }
 
-    fun getProgressBarVertical(width: Float, height: Float, percentComplete: Float, progressColor: Color, backgroundColor: Color): Table {
-        val advancementGroup = Table()
-        var completionHeight = height * percentComplete
-        if (completionHeight > height)
-            completionHeight = height
-        advancementGroup.add(getImage(whiteDotLocation).apply { color = backgroundColor })
-                .size(width, height - completionHeight).row()
-        advancementGroup.add(getImage(whiteDotLocation).apply { color = progressColor }).size(width, completionHeight)
-        advancementGroup.pack()
-        return advancementGroup
+    fun getProgressBarVertical(width: Float, height: Float, percentComplete: Float, progressColor: Color, backgroundColor: Color): Group {
+        return VerticalProgressBar(width, height)
+                .addColor(backgroundColor, 1f)
+                .addColor(progressColor, percentComplete)
+    }
+
+    class VerticalProgressBar(width: Float, height: Float):Group(){
+        init {
+            setSize(width, height)
+        }
+
+        fun addColor(color: Color, percentage: Float):VerticalProgressBar {
+            val bar = getWhiteDot()
+            bar.color = color
+            bar.setSize(width, height*percentage)
+            addActor(bar)
+            return this
+        }
     }
 
     fun getHealthBar(currentHealth: Float, maxHealth: Float, healthBarSize: Float): Table {

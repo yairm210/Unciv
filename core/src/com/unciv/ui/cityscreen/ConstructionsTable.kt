@@ -2,6 +2,7 @@ package com.unciv.ui.cityscreen
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
@@ -251,7 +252,7 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
         return table
     }
 
-    fun getProgressBar(constructionName: String): Table {
+    fun getProgressBar(constructionName: String): Group {
         val cityConstructions = cityScreen.city.cityConstructions
         val construction = cityConstructions.getConstruction(constructionName)
         if (construction is PerpetualConstruction) return Table()
