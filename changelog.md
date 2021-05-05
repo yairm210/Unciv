@@ -1,3 +1,18 @@
+## 3.14.6
+
+Hills are now changed to terrain features - by GGGuenni!
+
+Fixed denouncement effects on third-party civs, trade evaluation, and decay to diplomatic denunciation - kudos @Chek
+
+Resolved #3865 - Kudos @SomeTroglodyte
+
+Great general unique no longer restricted to civilian units
+
+By SomeTroglodyte:
+- Overview screen category decoration + key hint 
+- Fixed shortcuts for improvements
+- Option Screen choices visible on minimap toggle buttons immediately
+
 ## 3.14.5
 
 New tile layering is live for all users!
