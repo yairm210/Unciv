@@ -118,7 +118,7 @@
   ],
   Great_People: [
 	"Certain buildings, and specialists in cities, generate Great Person points per turn.\nThere are several types of Great People, and their points accumulate separately.\nThe number of points per turn and accumulated points can be viewed in the Overview screen.",
-	"Once enough points have been accumulaated, a Great Person of that type will be created!\nEach Great Person can construct a certain Great Improvement which gives large yields over time, or immediately consumed to provide a certain bonus now.",
+	"Once enough points have been accumulated, a Great Person of that type will be created!\nEach Great Person can construct a certain Great Improvement which gives large yields over time, or immediately consumed to provide a certain bonus now.",
 	"Great Improvements also provide any strategic resources that are under them, so you don't need to worry if resources are revealed underneath your improvements!"
   ],
   Removing_Terrain_Features: [
@@ -126,5 +126,11 @@
   ],
   Natural_Wonders: [
     "Natural Wonders, such as the Mt. Fuji, the Rock of Gibraltar and the Great Barrier Reef, are unique, impassable terrain features, masterpieces of mother Nature, which possess exceptional qualities that make them very different from the average terrain.\nThey benefit by giving you large sums of Culture, Science, Gold or Production if worked by your Cities, which is why you might need to bring them under your empire as soon as possible."
+  ],
+  "Keyboard": [
+    "If you have a keyboard, some shortcut keys become available. Unit command or improvement picker keys, for example, are shown directly in their corresponding buttons.",
+    "On the world screen the hotkeys are as follows:", "Space or 'N' - Next unit or turn\n'E' - Empire overview (last viewed page)\n'+', '-' - Zoom in / out\nHome - center on capital",
+    "F1 - Open Civilopedia\nF2 - Empire overview Trades\nF3 - Empire overview Units\nF4 - Empire overview Diplomacy\nF5 - Social policies\nF6 - Technologies\nF7 - Empire overview Cities\nF8 - Victory Progress\nF9 - Empire overview Stats\nF10 - Empire overview Resources\nF11 - Quicksave\nF12 - Quickload",
+    "Ctrl-R - Toggle tile resource display\nCtrl-Y - Toggle tile yield display\nCtrl-O - Game options\nCtrl-S - Save game\nCtrl-L - Load game"
   ]
 }
