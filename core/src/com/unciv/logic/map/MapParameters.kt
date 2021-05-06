@@ -1,11 +1,54 @@
 package com.unciv.logic.map
 
+import com.unciv.Constants
+import com.unciv.logic.HexMath.getEquivalentHexagonalRadius
+import com.unciv.logic.HexMath.getEquivalentRectangularSize
+
+
 enum class MapSize(val radius: Int) {
     Tiny(10),
     Small(15),
     Medium(20),
     Large(30),
     Huge(40)
+}
+
+class MapSizeNew {
+    var radius = 0
+    var width = 0
+    var height = 0
+    var name = ""
+
+    /** Needed for Json parsing */
+    constructor()
+
+    constructor(name: String) {
+        /** Hard coded values from getEquivalentRectangularSize() */
+        when (name) {
+            Constants.tiny -> { radius = 10; width = 23; height = 15 }
+            Constants.small -> { radius = 15; width = 33; height = 21 }
+            Constants.medium -> { radius = 20; width = 44; height = 29 }
+            Constants.large -> { radius = 30; width = 66; height = 43 }
+            Constants.huge -> { radius = 40; width = 87; height = 57 }
+        }
+    }
+    constructor(radius: Int) {
+        name = Constants.custom
+        this.radius = radius
+        val size = getEquivalentRectangularSize(radius)
+        this.width = size.x.toInt()
+        this.height = size.y.toInt()
+    }
+
+    constructor(width: Int, height: Int) {
+        name = Constants.custom
+        this.width = width
+        this.height = height
+        this.radius = getEquivalentHexagonalRadius(width, height)
+
+    }
+
+
 }
 
 object MapShape {
@@ -33,7 +76,9 @@ class MapParameters {
     var name = ""
     var type = MapType.pangaea
     var shape = MapShape.hexagonal
-    var size: MapSize = MapSize.Medium
+    @Deprecated("replaced by mapSize since 3.19.18")
+    var size = MapSize.Medium
+    var mapSize = MapSizeNew(Constants.medium)
     var noRuins = false
     var noNaturalWonders = false
     var worldWrap = false

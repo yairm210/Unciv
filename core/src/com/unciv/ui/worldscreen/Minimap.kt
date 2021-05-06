@@ -132,7 +132,6 @@ class MinimapHolder(mapHolder: WorldMapHolder): Table() {
         pack()
     }
 
-
     private fun getWrappedMinimap(): Table {
         val internalMinimapWrapper = Table()
         internalMinimapWrapper.add(minimap)

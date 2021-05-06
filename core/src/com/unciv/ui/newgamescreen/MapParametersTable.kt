@@ -1,8 +1,12 @@
 package com.unciv.ui.newgamescreen
 
+import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox
 import com.badlogic.gdx.scenes.scene2d.ui.Slider
 import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.badlogic.gdx.scenes.scene2d.ui.TextField
+import com.unciv.Constants
+import com.unciv.logic.map.*
 import com.unciv.UncivGame
 import com.unciv.logic.map.MapParameters
 import com.unciv.logic.map.MapShape
@@ -20,16 +24,21 @@ import com.unciv.ui.utils.*
 class MapParametersTable(val mapParameters: MapParameters, val isEmptyMapAllowed: Boolean = false):
     Table() {
     lateinit var mapTypeSelectBox: TranslatedSelectBox
+    lateinit var worldSizeSelectBox: TranslatedSelectBox
+    private var customWorldSizeTable = Table ()
+    private var hexagonalSizeTable = Table()
+    private var rectangularSizeTable = Table()
     lateinit var noRuinsCheckbox: CheckBox
     lateinit var noNaturalWondersCheckbox: CheckBox
     lateinit var worldWrapCheckbox: CheckBox
+
 
     init {
         skin = CameraStageBaseScreen.skin
         defaults().pad(5f)
         addMapShapeSelectBox()
         addMapTypeSelectBox()
-        addWorldSizeSelectBox()
+        addWorldSizeTable()
         addNoRuinsCheckbox()
         addNoNaturalWondersCheckbox()
         if (UncivGame.Current.settings.showExperimentalWorldWrap) {
@@ -47,6 +56,7 @@ class MapParametersTable(val mapParameters: MapParameters, val isEmptyMapAllowed
                 TranslatedSelectBox(mapShapes, mapParameters.shape, skin)
         mapShapeSelectBox.onChange {
                 mapParameters.shape = mapShapeSelectBox.selected.value
+                updateWorldSizeTable()
             }
 
         add ("{Map Shape}:".toLabel()).left()
@@ -78,20 +88,79 @@ class MapParametersTable(val mapParameters: MapParameters, val isEmptyMapAllowed
         add(mapTypeSelectBox).fillX().row()
     }
 
-
-    private fun addWorldSizeSelectBox() {
-        val worldSizeSelectBox = TranslatedSelectBox(
-            MapSize.values().map { it.name },
-            mapParameters.size.name,
-            skin
+    private fun addWorldSizeTable() {
+        val mapSizes = listOfNotNull(
+            Constants.tiny,
+            Constants.small,
+            Constants.medium,
+            Constants.large,
+            Constants.huge,
+            Constants.custom
         )
 
-        worldSizeSelectBox.onChange {
-                mapParameters.size = MapSize.valueOf(worldSizeSelectBox.selected.value)
-            }
+        worldSizeSelectBox = TranslatedSelectBox(mapSizes, mapParameters.mapSize.name, skin)
+        worldSizeSelectBox.onChange { updateWorldSizeTable() }
+
+        addHexagonalSizeTable()
+        addRectangularSizeTable()
 
         add("{World Size}:".toLabel()).left()
         add(worldSizeSelectBox).fillX().row()
+        add(customWorldSizeTable).colspan(2).grow().row()
+
+        updateWorldSizeTable()
+    }
+
+    private fun addHexagonalSizeTable() {
+        val defaultRadius = mapParameters.mapSize.radius.toString()
+        val customMapSizeRadius = TextField(defaultRadius, skin).apply {
+            textFieldFilter = TextField.TextFieldFilter.DigitsOnlyFilter()
+        }
+        customMapSizeRadius.onChange {
+            mapParameters.mapSize = MapSizeNew(customMapSizeRadius.text.toIntOrNull() ?: 0 )
+        }
+        hexagonalSizeTable.add("{Radius}:".toLabel()).grow().left()
+        hexagonalSizeTable.add(customMapSizeRadius).right().row()
+        hexagonalSizeTable.add("Anything above 40 may work very slowly on Android!".toLabel(Color.RED)
+                .apply { wrap=true }).width(prefWidth).colspan(hexagonalSizeTable.columns)
+    }
+
+    private fun addRectangularSizeTable() {
+        val defaultWidth = mapParameters.mapSize.width.toString()
+        val customMapWidth = TextField(defaultWidth, skin).apply {
+            textFieldFilter = TextField.TextFieldFilter.DigitsOnlyFilter()
+        }
+
+        val defaultHeight = mapParameters.mapSize.height.toString()
+        val customMapHeight = TextField(defaultHeight, skin).apply {
+            textFieldFilter = TextField.TextFieldFilter.DigitsOnlyFilter()
+        }
+
+        customMapWidth.onChange {
+            mapParameters.mapSize = MapSizeNew(customMapWidth.text.toIntOrNull() ?: 0, customMapHeight.text.toIntOrNull() ?: 0)
+        }
+        customMapHeight.onChange {
+            mapParameters.mapSize = MapSizeNew(customMapWidth.text.toIntOrNull() ?: 0, customMapHeight.text.toIntOrNull() ?: 0)
+        }
+
+        rectangularSizeTable.defaults().pad(5f)
+        rectangularSizeTable.add("{Width}:".toLabel()).grow().left()
+        rectangularSizeTable.add(customMapWidth).right().row()
+        rectangularSizeTable.add("{Height}:".toLabel()).grow().left()
+        rectangularSizeTable.add(customMapHeight).right().row()
+        rectangularSizeTable.add("Anything above 80 by 50 may work very slowly on Android!".toLabel(Color.RED)
+                .apply { wrap=true }).width(prefWidth).colspan(hexagonalSizeTable.columns)
+    }
+
+    private fun updateWorldSizeTable() {
+        customWorldSizeTable.clear()
+
+        if (mapParameters.shape == MapShape.hexagonal && worldSizeSelectBox.selected.value == Constants.custom)
+            customWorldSizeTable.add(hexagonalSizeTable).grow().row()
+        else if (mapParameters.shape == MapShape.rectangular && worldSizeSelectBox.selected.value == Constants.custom)
+            customWorldSizeTable.add(rectangularSizeTable).grow().row()
+        else
+            mapParameters.mapSize = MapSizeNew(worldSizeSelectBox.selected.value)
     }
 
     private fun addNoRuinsCheckbox() {
