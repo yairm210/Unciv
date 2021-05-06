@@ -228,7 +228,7 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Cam
         keyPressDispatcher[Input.Keys.F2] = { game.setScreen(EmpireOverviewScreen(selectedCiv, "Trades")) }    // Economic info
         keyPressDispatcher[Input.Keys.F3] = { game.setScreen(EmpireOverviewScreen(selectedCiv, "Units")) }    // Military info
         keyPressDispatcher[Input.Keys.F4] = { game.setScreen(EmpireOverviewScreen(selectedCiv, "Diplomacy")) }    // Diplomacy info
-        keyPressDispatcher[Input.Keys.F5] = { game.setScreen(PolicyPickerScreen(this, selectedCiv))  }    // Social Policies Screen
+        keyPressDispatcher[Input.Keys.F5] = { game.setScreen(PolicyPickerScreen(this, selectedCiv)) }    // Social Policies Screen
         keyPressDispatcher[Input.Keys.F6] = { game.setScreen(TechPickerScreen(viewingCiv)) }    // Tech Screen
         keyPressDispatcher[Input.Keys.F7] = { game.setScreen(EmpireOverviewScreen(selectedCiv, "Cities")) }    // originally Notification Log
         keyPressDispatcher[Input.Keys.F8] = { game.setScreen(VictoryScreen(this)) }    // Victory Progress
@@ -542,7 +542,7 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Cam
     }
 
 
-    fun createNewWorldScreen(gameInfo:GameInfo) {
+    fun createNewWorldScreen(gameInfo: GameInfo) {
 
         game.gameInfo = gameInfo
         val newWorldScreen = WorldScreen(gameInfo, gameInfo.getPlayerToViewAs())
@@ -682,7 +682,7 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Cam
                         beliefTable.onClick { viewingCiv.religionManager.choosePantheonBelief(belief); pantheonPopup.close(); shouldUpdate = true }
                         beliefsTable.add(beliefTable).fillX().row()
                     }
-                    pantheonPopup.add(ScrollPane(beliefsTable)).maxHeight(stage.height*.8f)
+                    pantheonPopup.add(ScrollPane(beliefsTable)).maxHeight(stage.height * .8f)
                     pantheonPopup.open()
                 }
 
