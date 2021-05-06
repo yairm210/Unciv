@@ -20,6 +20,7 @@
   * [Healing](#healing)
   * [Combat bonuses](#combat-bonuses)
   * [Other](#other)
+- [Terrain uniques](#terrain-uniques)
 
 
 ## Overview
