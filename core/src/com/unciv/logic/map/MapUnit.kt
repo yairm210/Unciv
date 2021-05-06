@@ -208,7 +208,9 @@ class MapUnit {
             if (isEmbarked() && civInfo.hasUnique("+1 Sight when embarked"))
                 visibilityRange += 1
             val tile = getTile()
-            if (tile.isHill() && type.isLandUnit()) visibilityRange += 1
+            for (unique in tile.getAllTerrains().flatMap { it.uniqueObjects })
+                if (unique.placeholderText == "[] Sight for [] units" && matchesFilter(unique.params[1]))
+                    visibilityRange += unique.params[0].toInt()
 
             viewableTiles = tile.getViewableTilesList(visibilityRange)
         }
