@@ -659,7 +659,7 @@ class DiplomacyManager() {
         getCommonKnownCivs().filter { it.isMajorCiv() }.forEach { thirdCiv ->
             thirdCiv.addNotification("[${civInfo.civName}] has denounced [$otherCivName]!", civInfo.civName, NotificationIcon.Diplomacy, otherCivName)
             val thirdCivRelationshipWithOtherCiv = thirdCiv.getDiplomacyManager(otherCiv()).relationshipLevel()
-            val thirdCivDiplomacyManager = civInfo.getDiplomacyManager(thirdCiv)
+            val thirdCivDiplomacyManager = thirdCiv.getDiplomacyManager(civInfo)
             when (thirdCivRelationshipWithOtherCiv) {
                 RelationshipLevel.Unforgivable -> thirdCivDiplomacyManager.addModifier(DiplomaticModifiers.DenouncedOurEnemies, 15f)
                 RelationshipLevel.Enemy -> thirdCivDiplomacyManager.addModifier(DiplomaticModifiers.DenouncedOurEnemies, 5f)
