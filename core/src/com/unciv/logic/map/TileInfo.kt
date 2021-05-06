@@ -163,6 +163,13 @@ open class TileInfo {
     // and the toSequence so that aggregations (like neighbors.flatMap{it.units} don't take up their own space
 
     fun getHeight(): Int {
+        if (ruleset.terrains.values.asSequence().flatMap { it.uniqueObjects }
+                        .any { it.placeholderText == "Has an elevation of [] for visibility calculations" })
+            return getAllTerrains().flatMap { it.uniqueObjects }
+                    .filter { it.placeholderText == "Has an elevation of [] for visibility calculations" }
+                    .map { it.params[0].toInt() }.sum()
+
+        // Old method - deprecated 3.14.7
         if (baseTerrain == Constants.mountain) return 4
         if (isHill()) return 2
         if (terrainFeatures.contains(Constants.forest) || terrainFeatures.contains(Constants.jungle)) return 1
@@ -382,12 +389,12 @@ open class TileInfo {
                 || filter == "River" && isAdjacentToRiver()
                 || terrainFeatures.contains(filter)
                 || baseTerrainObject.uniques.contains(filter)
-                || terrainFeatures.isNotEmpty() && getTerrainFeatures().last().uniques.contains(filter)
                 || improvement == filter
-                || civInfo != null && hasViewableResource(civInfo) && resource == filter
                 || filter == "Water" && isWater
                 || filter == "Land" && isLand
                 || filter == naturalWonder
+                || terrainFeatures.isNotEmpty() && getTerrainFeatures().last().uniques.contains(filter)
+                || civInfo != null && hasViewableResource(civInfo) && resource == filter
                 || filter == "Foreign Land" && civInfo!=null && !isFriendlyTerritory(civInfo)
                 || filter == "Friendly Land" && civInfo!=null && isFriendlyTerritory(civInfo)
     }
