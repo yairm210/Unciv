@@ -436,9 +436,10 @@ cityFilters allow us to choose the range of cities affected by this unique:
 
 # Terrain uniques
 
-"+[amount] Strength for cities built on this terrain"
+"[(+/-)amount] Strength for cities built on this terrain"
 
 "Occurs at temperature between [0.8] and [1] and humidity between [0] and [0.7]" - This allows modding freedom in map generation. Temperature is between -1 and 1, humidity is between 0 and 1. Since this is a large 2*1 rectangle, and every individual terrain also covers one or more rectangles, you may find it helpful to draw out on paper the temperature and humidity graph, and see where there are missing pieces that aren't covered.
 
 "Grants 500 Gold to the first civilization to discover it" - given to natural wonders
 
+"[(+/-)amount] Sight for [unitFilter] units"
