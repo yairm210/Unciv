@@ -13,8 +13,6 @@ import com.unciv.models.metadata.GameSpeed
 import com.unciv.models.metadata.Player
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.simulation.Simulation
-import com.unciv.ui.newgamescreen.GameSetupInfo
-import kotlin.system.exitProcess
 import com.unciv.models.tilesets.TileSetCache
 import com.unciv.ui.newgamescreen.GameSetupInfo
 

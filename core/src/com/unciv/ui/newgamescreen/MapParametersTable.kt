@@ -1,5 +1,6 @@
 package com.unciv.ui.newgamescreen
 
+import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox
 import com.badlogic.gdx.scenes.scene2d.ui.Slider
 import com.badlogic.gdx.scenes.scene2d.ui.Table
@@ -119,7 +120,9 @@ class MapParametersTable(val mapParameters: MapParameters, val isEmptyMapAllowed
             mapParameters.mapSize = MapSizeNew(customMapSizeRadius.text.toIntOrNull() ?: 0 )
         }
         hexagonalSizeTable.add("{Radius}:".toLabel()).grow().left()
-        hexagonalSizeTable.add(customMapSizeRadius).right()
+        hexagonalSizeTable.add(customMapSizeRadius).right().row()
+        hexagonalSizeTable.add("Anything above 40 may work very slowly on Android!".toLabel(Color.RED)
+                .apply { wrap=true }).width(prefWidth).colspan(hexagonalSizeTable.columns)
     }
 
     private fun addRectangularSizeTable() {
@@ -145,6 +148,8 @@ class MapParametersTable(val mapParameters: MapParameters, val isEmptyMapAllowed
         rectangularSizeTable.add(customMapWidth).right().row()
         rectangularSizeTable.add("{Height}:".toLabel()).grow().left()
         rectangularSizeTable.add(customMapHeight).right().row()
+        rectangularSizeTable.add("Anything above 80 by 50 may work very slowly on Android!".toLabel(Color.RED)
+                .apply { wrap=true }).width(prefWidth).colspan(hexagonalSizeTable.columns)
     }
 
     private fun updateWorldSizeTable() {

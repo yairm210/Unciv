@@ -26,11 +26,10 @@ class MapGenerator(val ruleset: Ruleset) {
         val map: TileMap
 
         if (mapParameters.shape == MapShape.rectangular) {
-            val size = HexMath.getEquivalentRectangularSize(mapRadius)
-            map = TileMap((mapSize.width, mapSize.height, ruleset, mapParameters.worldWrap)
+            val size = HexMath.getEquivalentRectangularSize(mapSize.radius)
+            map = TileMap(size.x.toInt(), size.y.toInt(), ruleset, mapParameters.worldWrap)
         }
-        else
-            map = TileMap(mapSize.radius, ruleset, mapParameters.worldWrap)
+        else map = TileMap(mapSize.radius, ruleset, mapParameters.worldWrap)
 
         map.mapParameters = mapParameters
         map.mapParameters.seed = seed

@@ -132,53 +132,6 @@ class MinimapHolder(mapHolder: WorldMapHolder): Table() {
         pack()
     }
 
-    enum class MinimapToggleButtons(val icon: String) {
-        YIELD ("Food"),
-        WORKED ("Population"),
-        RESOURCES ("ResourceIcons/Cattle");
-    }
-
-    // "Api" when external code wants to toggle something together with our buttons
-    private fun getButtonState(button: MinimapToggleButtons): Boolean {
-        val info = toggleButtonInfo[button] ?: return false
-        return info.getSetting()
-    }
-    private fun setButtonState(button: MinimapToggleButtons, value: Boolean) {
-        val info = toggleButtonInfo[button] ?: return
-        info.setSetting(value)
-        info.actor.color.a = if (value) 1f else 0.5f
-        worldScreen.shouldUpdate = true
-    }
-    private fun syncButtonState(button: MinimapToggleButtons) = setButtonState(button,getButtonState(button))
-    internal fun syncButtonStates() {
-        MinimapToggleButtons.values().forEach { syncButtonState(it) }
-    }
-    fun toggleButtonState(button: MinimapToggleButtons) = setButtonState(button,!getButtonState(button))
-
-    private fun addToggleButton(table:Table, button: MinimapToggleButtons) {
-        val image =
-                if ('/' in button.icon) {
-                    ImageGetter.getImage(button.icon)
-                        .surroundWithCircle(30f).apply { circle.color = Color.GREEN }
-                        .surroundWithCircle(40f, false)
-                } else {
-                    ImageGetter.getStatIcon(button.icon).surroundWithCircle(40f)
-                }
-        image.apply { circle.color = Color.BLACK }
-        toggleButtonInfo[button] = with(UncivGame.Current.settings) {
-            when (button) {
-                MinimapToggleButtons.YIELD -> ToggleButtonInfo(image, {showTileYields}, {showTileYields = it})
-                MinimapToggleButtons.WORKED -> ToggleButtonInfo(image, {showWorkedTiles}, {showWorkedTiles = it})
-                else -> ToggleButtonInfo(image, {showResourcesAndImprovements}, {showResourcesAndImprovements = it})
-            }
-        }
-        syncButtonState(button)
-        image.onClick {
-            toggleButtonState(button)
-        }
-        table.add(image).row()
-    }
-
     private fun getWrappedMinimap(): Table {
         val internalMinimapWrapper = Table()
         internalMinimapWrapper.add(minimap)

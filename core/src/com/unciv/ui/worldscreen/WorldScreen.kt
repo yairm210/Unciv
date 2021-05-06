@@ -37,7 +37,6 @@ import com.unciv.ui.saves.SaveGameScreen
 import com.unciv.ui.trade.DiplomacyScreen
 import com.unciv.ui.utils.*
 import com.unciv.ui.victoryscreen.VictoryScreen
-import com.unciv.ui.worldscreen.MinimapHolder.MinimapToggleButtons
 import com.unciv.ui.worldscreen.bottombar.BattleTable
 import com.unciv.ui.worldscreen.bottombar.TileInfoTable
 import com.unciv.ui.worldscreen.mainmenu.OnlineMultiplayer
@@ -238,8 +237,6 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Cam
         keyPressDispatcher[Input.Keys.F11] = quickSave    // Quick Save
         keyPressDispatcher[Input.Keys.F12] = quickLoad    // Quick Load
         keyPressDispatcher[Input.Keys.HOME] = { mapHolder.setCenterPosition(gameInfo.currentPlayerCiv.getCapital().location) }    // Capital City View
-        keyPressDispatcher['\u0012'] = { minimapWrapper.toggleButtonState(MinimapToggleButtons.RESOURCES) }    //   Ctrl-R: Show Resources Icons
-        keyPressDispatcher['\u0019'] = { minimapWrapper.toggleButtonState(MinimapToggleButtons.YIELD) }    //   Ctrl-Y: Yield Icons
         keyPressDispatcher['\u000F'] = { OptionsPopup(this).open() }    //   Ctrl-O: Game Options
         keyPressDispatcher['\u0013'] = { game.setScreen(SaveGameScreen(gameInfo)) }    //   Ctrl-S: Save
         keyPressDispatcher['\u000C'] = { game.setScreen(LoadGameScreen(this)) }    //   Ctrl-L: Load
