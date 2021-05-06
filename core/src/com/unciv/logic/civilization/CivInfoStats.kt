@@ -48,21 +48,14 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
         // we no longer use .flatMap, because there are a lot of tiles and keeping them all in a list
         // just to go over them once is a waste of memory - there are low-end phones who don't have much ram
 
-        val ignoredTileTypes = civInfo.getMatchingUniques("No Maintenance costs for improvements in []")
+        val ignoredTileTypes = civInfo.getMatchingUniques("No Maintenance costs for improvements in [] tiles")
                 .map { it.params[0] }.toHashSet() // needs to be .toHashSet()ed,
         // Because we go over every tile in every city and check if it's in this list, which can get real heavy.
-
-        // accounting for both the old way and the new way of doing no maintenance in hills
-        val ignoreHillTiles = civInfo.hasUnique("No Maintenance costs for improvements in Hills") || "Hills" in ignoredTileTypes
 
         for (city in civInfo.cities) {
             for (tile in city.getTiles()) {
                 if (tile.isCityCenter()) continue
-                if (ignoreHillTiles && tile.isHill()) continue
-
-                if (tile.terrainFeatures.any { it in ignoredTileTypes }  || tile.baseTerrain in ignoredTileTypes) {
-                    continue
-                }
+                if (ignoredTileTypes.any { tile.matchesUniqueFilter(it, civInfo) }) continue
 
                 val tileUpkeep =
                         when (tile.roadStatus) {
@@ -103,7 +96,7 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
                 val sciencePercentage = civInfo
                         .getMatchingUniques("Allied City-States provide Science equal to []% of what they produce for themselves")
                         .sumBy { it.params[0].toInt() }
-                statMap.add("City-States",Stats().apply { science = otherCiv.statsForNextTurn.science * (sciencePercentage/100f) })
+                statMap.add("City-States", Stats().apply { science = otherCiv.statsForNextTurn.science * (sciencePercentage / 100f) })
             }
         }
 
