@@ -4,27 +4,27 @@ import com.unciv.Constants
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
 
-class RiverGenerator(val randomness: MapGenerationRandomness){
+class RiverGenerator(val randomness: MapGenerationRandomness) {
 
-    fun spawnRivers(map: TileMap){
+    fun spawnRivers(map: TileMap) {
         val numberOfRivers = map.values.count { it.isLand } / 100
 
-        var optionalTiles = map.values
-                .filter { it.baseTerrain== Constants.mountain && it.aerialDistanceTo(getClosestWaterTile(it)) > 4 }.toMutableList()
-        if(optionalTiles.size < numberOfRivers)
+        var optionalTiles = map.values.asSequence()
+                .filter { it.baseTerrain == Constants.mountain && it.aerialDistanceTo(getClosestWaterTile(it)) > 4 }.toMutableList()
+        if (optionalTiles.size < numberOfRivers)
             optionalTiles.addAll(map.values.filter { it.isHill() && it.aerialDistanceTo(getClosestWaterTile(it)) > 4 })
-        if(optionalTiles.size < numberOfRivers)
+        if (optionalTiles.size < numberOfRivers)
             optionalTiles = map.values.filter { it.isLand && it.aerialDistanceTo(getClosestWaterTile(it)) > 4 }.toMutableList()
 
 
         val riverStarts = randomness.chooseSpreadOutLocations(numberOfRivers, optionalTiles, 10)
-        for(tile in riverStarts) spawnRiver(tile, map)
+        for (tile in riverStarts) spawnRiver(tile, map)
 
-        for(tile in map.values){
-            if(tile.isAdjacentToRiver()){
-                if(tile.baseTerrain == Constants.desert && tile.terrainFeatures.isEmpty()) tile.terrainFeatures.add(Constants.floodPlains)
-                else if(tile.baseTerrain== Constants.snow) tile.baseTerrain = Constants.tundra
-                else if(tile.baseTerrain== Constants.tundra) tile.baseTerrain = Constants.plains
+        for (tile in map.values) {
+            if (tile.isAdjacentToRiver()) {
+                if (tile.baseTerrain == Constants.desert && tile.terrainFeatures.isEmpty()) tile.terrainFeatures.add(Constants.floodPlains)
+                else if (tile.baseTerrain == Constants.snow) tile.baseTerrain = Constants.tundra
+                else if (tile.baseTerrain == Constants.tundra) tile.baseTerrain = Constants.plains
                 tile.setTerrainTransients()
             }
         }
@@ -32,9 +32,9 @@ class RiverGenerator(val randomness: MapGenerationRandomness){
 
     private fun getClosestWaterTile(tile: TileInfo): TileInfo {
         var distance = 1
-        while(true){
+        while (true) {
             val waterTiles = tile.getTilesAtDistance(distance).filter { it.isWater }
-            if(waterTiles.none()) {
+            if (waterTiles.none()) {
                 distance++
                 continue
             }
@@ -50,7 +50,7 @@ class RiverGenerator(val randomness: MapGenerationRandomness){
                 RiverCoordinate.BottomRightOrLeft.values().random(randomness.RNG))
 
 
-        while(getAdjacentTiles(riverCoordinate, map).none { it.isWater }) {
+        while (getAdjacentTiles(riverCoordinate, map).none { it.isWater }) {
             val possibleCoordinates = riverCoordinate.getAdjacentPositions()
                     .filter { map.contains(it.position) }
             if (possibleCoordinates.none()) return // end of the line
