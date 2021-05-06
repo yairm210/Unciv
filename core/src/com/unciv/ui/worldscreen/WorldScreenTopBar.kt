@@ -60,6 +60,7 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
     private fun getResourceTable(): Table {
         val resourceTable = Table()
         resourceTable.defaults().pad(5f)
+        turnsLabel.onClick { worldScreen.game.setScreen(VictoryScreen(worldScreen)) }
         resourceTable.add(turnsLabel).padRight(20f)
         val revealedStrategicResources = worldScreen.gameInfo.ruleSet.tileResources.values
                 .filter { it.resourceType == ResourceType.Strategic } // && currentPlayerCivInfo.tech.isResearched(it.revealedBy!!) }
@@ -194,7 +195,6 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
 
         val yearText = "[" + abs(year) + "] " + if (year < 0) "BC" else "AD"
         turnsLabel.setText(Fonts.turn + "" + civInfo.gameInfo.turns + " | " + yearText.tr())
-        turnsLabel.onClick { worldScreen.game.setScreen(VictoryScreen(worldScreen)) }
 
         val nextTurnStats = civInfo.statsForNextTurn
         val goldPerTurn = "(" + (if (nextTurnStats.gold > 0) "+" else "") + nextTurnStats.gold.roundToInt() + ")"

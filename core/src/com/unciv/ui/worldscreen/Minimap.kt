@@ -4,7 +4,6 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.math.MathUtils
 import com.badlogic.gdx.math.Vector2
-import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Image
@@ -18,15 +17,13 @@ import com.unciv.ui.utils.IconCircleGroup
 import com.unciv.ui.utils.ImageGetter
 import com.unciv.ui.utils.onClick
 import com.unciv.ui.utils.surroundWithCircle
-import java.util.*
-import kotlin.collections.HashMap
 import kotlin.math.max
 import kotlin.math.min
 
 class Minimap(val mapHolder: WorldMapHolder) : Table(){
     private val allTiles = Group()
     private val tileImages = HashMap<TileInfo, Image>()
-    private val scrollPositionIndicator = ImageGetter.getImage("OtherIcons/Camera")
+    private val scrollPosistionIndicator = ImageGetter.getImage("OtherIcons/Camera")
 
     init {
         isTransform = false // don't try to resize rotate etc - this table has a LOT of children so that's valuable render time!
@@ -71,26 +68,26 @@ class Minimap(val mapHolder: WorldMapHolder) : Table(){
         // so we zero out the starting position of the whole board so they will be displayed as well
         allTiles.setSize(topX - bottomX, topY - bottomY)
 
-        scrollPositionIndicator.touchable = Touchable.disabled
-        allTiles.addActor(scrollPositionIndicator)
+        scrollPosistionIndicator.touchable = Touchable.disabled
+        allTiles.addActor(scrollPosistionIndicator)
 
         add(allTiles)
         layout()
     }
 
-    fun updateScrollPosition(scrollPos: Vector2, scale: Vector2){
+    fun updateScrollPosistion(scrollPos: Vector2, scale: Vector2){
 
-        val scrollPositionIndicatorBaseScale = Vector2(allTiles.width / mapHolder.maxX, allTiles.height / mapHolder.maxY)
+        val scrollPosistionIndicatorBaseScale = Vector2(allTiles.width / mapHolder.maxX, allTiles.height / mapHolder.maxY)
 
-        scrollPositionIndicator.scaleX = scrollPositionIndicatorBaseScale.x * 10f * max(2f - scale.x, 0.25f)
-        scrollPositionIndicator.scaleY = scrollPositionIndicatorBaseScale.y * 10f * max(2f - scale.y, 0.25f)
+        scrollPosistionIndicator.scaleX = scrollPosistionIndicatorBaseScale.x * 10f * max(2f - scale.x, 0.25f)
+        scrollPosistionIndicator.scaleY = scrollPosistionIndicatorBaseScale.y * 10f * max(2f - scale.y, 0.25f)
 
-        val scrollPositionIndicatorOffset = Vector2(-50f * scrollPositionIndicator.scaleX, 125f + (50f * (1-scrollPositionIndicator.scaleY)))
+        val scrollPositionIndicatorOffset = Vector2(-50f * scrollPosistionIndicator.scaleX, 125f + (50f * (1-scrollPosistionIndicator.scaleY)))
 
         val scrollPosOnMinimap = Vector2((scrollPos.x / mapHolder.maxX) * allTiles.width, (scrollPos.y / mapHolder.maxY) * allTiles.height)
         scrollPosOnMinimap.x = MathUtils.clamp(scrollPosOnMinimap.x, -scrollPositionIndicatorOffset.x, allTiles.width + scrollPositionIndicatorOffset.x)
         scrollPosOnMinimap.y = MathUtils.clamp(scrollPosOnMinimap.y, -scrollPositionIndicatorOffset.x, scrollPositionIndicatorOffset.y)
-        scrollPositionIndicator.setPosition(scrollPositionIndicatorOffset.x + scrollPosOnMinimap.x, scrollPositionIndicatorOffset.y - scrollPosOnMinimap.y)
+        scrollPosistionIndicator.setPosition(scrollPositionIndicatorOffset.x + scrollPosOnMinimap.x, scrollPositionIndicatorOffset.y - scrollPosOnMinimap.y)
     }
 
     private class CivAndImage(val civInfo: CivilizationInfo, val image: IconCircleGroup)
@@ -123,8 +120,6 @@ class Minimap(val mapHolder: WorldMapHolder) : Table(){
 class MinimapHolder(mapHolder: WorldMapHolder): Table() {
     val minimap = Minimap(mapHolder)
     val worldScreen = mapHolder.worldScreen
-    private data class ToggleButtonInfo(val actor: Actor, val getSetting: ()->Boolean, val setSetting: (Boolean)->Unit)
-    private val toggleButtonInfo: EnumMap<MinimapToggleButtons,ToggleButtonInfo> = EnumMap<MinimapToggleButtons,ToggleButtonInfo>(MinimapToggleButtons::class.java)
 
     init {
         add(getToggleIcons()).align(Align.bottom)
@@ -196,9 +191,39 @@ class MinimapHolder(mapHolder: WorldMapHolder): Table() {
 
     private fun getToggleIcons(): Table {
         val toggleIconTable = Table()
-        MinimapToggleButtons.values().forEach {
-            addToggleButton(toggleIconTable, it)
+        val settings = UncivGame.Current.settings
+
+        val yieldImage = ImageGetter.getStatIcon("Food").surroundWithCircle(40f)
+        yieldImage.circle.color = Color.BLACK
+        yieldImage.actor.color.a = if (settings.showTileYields) 1f else 0.5f
+        yieldImage.onClick {
+            settings.showTileYields = !settings.showTileYields
+            yieldImage.actor.color.a = if (settings.showTileYields) 1f else 0.5f
+            worldScreen.shouldUpdate = true
         }
+        toggleIconTable.add(yieldImage).row()
+
+        val populationImage = ImageGetter.getStatIcon("Population").surroundWithCircle(40f)
+        populationImage.circle.color = Color.BLACK
+        populationImage.actor.color.a = if (settings.showWorkedTiles) 1f else 0.5f
+        populationImage.onClick {
+            settings.showWorkedTiles = !settings.showWorkedTiles
+            populationImage.actor.color.a = if (settings.showWorkedTiles) 1f else 0.5f
+            worldScreen.shouldUpdate = true
+        }
+        toggleIconTable.add(populationImage).row()
+
+        val resourceImage = ImageGetter.getImage("ResourceIcons/Cattle")
+                .surroundWithCircle(30f).apply { circle.color = Color.GREEN }
+                .surroundWithCircle(40f, false).apply { circle.color = Color.BLACK }
+
+        resourceImage.actor.color.a = if (settings.showResourcesAndImprovements) 1f else 0.5f
+        resourceImage.onClick {
+            settings.showResourcesAndImprovements = !settings.showResourcesAndImprovements
+            resourceImage.actor.color.a = if (settings.showResourcesAndImprovements) 1f else 0.5f
+            worldScreen.shouldUpdate = true
+        }
+        toggleIconTable.add(resourceImage)
         toggleIconTable.pack()
         return toggleIconTable
     }
