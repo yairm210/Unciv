@@ -21,16 +21,15 @@ class MapGenerator(val ruleset: Ruleset) {
     private var randomness = MapGenerationRandomness()
 
     fun generateMap(mapParameters: MapParameters, seed: Long = System.currentTimeMillis()): TileMap {
-        val mapRadius = mapParameters.size.radius
+        val mapSize = mapParameters.mapSize
         val mapType = mapParameters.type
         val map: TileMap
 
         if (mapParameters.shape == MapShape.rectangular) {
-            val size = HexMath.getEquivalentRectangularSize(mapRadius)
+            val size = HexMath.getEquivalentRectangularSize(mapSize.radius)
             map = TileMap(size.x.toInt(), size.y.toInt(), ruleset, mapParameters.worldWrap)
         }
-        else
-            map = TileMap(mapRadius, ruleset, mapParameters.worldWrap)
+        else map = TileMap(mapSize.radius, ruleset, mapParameters.worldWrap)
 
         map.mapParameters = mapParameters
         map.mapParameters.seed = seed
@@ -120,7 +119,7 @@ class MapGenerator(val ruleset: Ruleset) {
     }
 
     private fun spreadResources(tileMap: TileMap) {
-        val distance = tileMap.mapParameters.size.radius
+        val distance = tileMap.mapParameters.mapSize.radius
         for (tile in tileMap.values)
             tile.resource = null
 

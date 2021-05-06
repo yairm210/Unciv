@@ -108,7 +108,7 @@ class MapLandmassGenerator(val randomness: MapGenerationRandomness) {
     }
 
     private fun percentualDistanceToCenter(tileInfo: TileInfo, tileMap: TileMap): Double {
-        val mapRadius = tileMap.mapParameters.size.radius
+        val mapRadius = tileMap.mapParameters.mapSize.radius
         if (tileMap.mapParameters.shape == MapShape.hexagonal)
             return HexMath.getDistance(Vector2.Zero, tileInfo.position).toDouble() / mapRadius
         else {
@@ -132,6 +132,8 @@ class MapLandmassGenerator(val randomness: MapGenerationRandomness) {
 
     // region Cellular automata
     private fun generateLandCellularAutomata(tileMap: TileMap) {
+        val mapRadius = tileMap.mapParameters.mapSize.radius
+        val mapType = tileMap.mapParameters.type
         val numSmooth = 4
 
         // init
@@ -161,7 +163,7 @@ class MapLandmassGenerator(val randomness: MapGenerationRandomness) {
     }
 
     private fun getInitialTerrainCellularAutomata(tileInfo: TileInfo, mapParameters: MapParameters): TerrainType {
-        val mapRadius = mapParameters.size.radius
+        val mapRadius = mapParameters.mapSize.radius
 
         // default
         if (HexMath.getDistance(Vector2.Zero, tileInfo.position) > 0.9f * mapRadius) {

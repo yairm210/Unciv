@@ -1,11 +1,12 @@
 package com.unciv.app.desktop
 
+import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.UncivGameParameters
 import com.unciv.logic.GameStarter
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.map.MapParameters
-import com.unciv.logic.map.MapSize
+import com.unciv.logic.map.MapSizeNew
 import com.unciv.models.metadata.GameParameters
 import com.unciv.models.metadata.GameSettings
 import com.unciv.models.metadata.GameSpeed
@@ -54,7 +55,7 @@ internal object ConsoleLauncher {
 
     private fun getMapParameters(): MapParameters {
         return MapParameters().apply {
-            size = MapSize.Tiny
+            mapSize = MapSizeNew(Constants.tiny)
             noRuins = true
             noNaturalWonders = true
         }
