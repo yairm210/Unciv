@@ -39,7 +39,7 @@ class CityCombatant(val city: CityInfo) : ICombatant {
         strength += (city.population.population / 5) * 2 // Each 5 pop gives 2 defence
         val cityTile = city.getCenterTile()
         for (unique in cityTile.getAllTerrains().flatMap { it.uniqueObjects })
-            if (unique.placeholderText == "+[] Strength for cities built on this terrain")
+            if (unique.placeholderText == "[] Strength for cities built on this terrain")
                 strength += unique.params[0].toInt()
         // as tech progresses so does city strength
         val techCount = getCivInfo().gameInfo.ruleSet.technologies.count()
