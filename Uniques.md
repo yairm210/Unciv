@@ -8,6 +8,8 @@
 - [General uniques](#general-uniques)
   * [Stat uniques](#stat-uniques)
   * [One time effect](#one-time-effect)
+  * [Unit-affecting uniques](#unit-affecting-uniques)
+  * [City-state related uniques](#city-state-related-uniques)
   * [Other](#other)
 - [Buildings-only](#buildings-only)
   * [Stat uniques](#stat-uniques-1)
