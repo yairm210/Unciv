@@ -2,7 +2,7 @@ package com.unciv.logic.civilization
 
 import com.badlogic.gdx.graphics.Color
 
-class GoldenAgeManager{
+class GoldenAgeManager {
     @Transient
     lateinit var civInfo: CivilizationInfo
 
@@ -12,9 +12,9 @@ class GoldenAgeManager{
 
     fun clone(): GoldenAgeManager {
         val toReturn = GoldenAgeManager()
-        toReturn.numberOfGoldenAges=numberOfGoldenAges
-        toReturn.storedHappiness=storedHappiness
-        toReturn.turnsLeftForCurrentGoldenAge=turnsLeftForCurrentGoldenAge
+        toReturn.numberOfGoldenAges = numberOfGoldenAges
+        toReturn.storedHappiness = storedHappiness
+        toReturn.turnsLeftForCurrentGoldenAge = turnsLeftForCurrentGoldenAge
         return toReturn
     }
 
@@ -26,12 +26,12 @@ class GoldenAgeManager{
 
     fun enterGoldenAge(unmodifiedNumberOfTurns: Int = 10) {
         var turnsToGoldenAge = unmodifiedNumberOfTurns.toFloat()
-        for(unique in civInfo.getMatchingUniques("Golden Age length increased by []%"))
-            turnsToGoldenAge *= (unique.params[0].toFloat()/100 + 1)
+        for (unique in civInfo.getMatchingUniques("Golden Age length increased by []%"))
+            turnsToGoldenAge *= (unique.params[0].toFloat() / 100 + 1)
         turnsToGoldenAge *= civInfo.gameInfo.gameParameters.gameSpeed.modifier
         turnsLeftForCurrentGoldenAge += turnsToGoldenAge.toInt()
         civInfo.addNotification("You have entered a Golden Age!", "StatIcons/Happiness")
-        civInfo.popupAlerts.add(PopupAlert(AlertType.GoldenAge,""))
+        civInfo.popupAlerts.add(PopupAlert(AlertType.GoldenAge, ""))
     }
 
     fun endTurn(happiness: Int) {

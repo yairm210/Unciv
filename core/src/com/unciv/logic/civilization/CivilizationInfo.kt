@@ -87,8 +87,9 @@ class CivilizationInfo {
 
     /** for trades here, ourOffers is the current civ's offers, and theirOffers is what the requesting civ offers  */
     val tradeRequests = ArrayList<TradeRequest>()
+
     /** See DiplomacyManager.flagsCountdown to why not eEnum */
-    private var flagsCountdown = HashMap<String,Int>()
+    private var flagsCountdown = HashMap<String, Int>()
 
     // if we only use lists, and change the list each time the cities are changed,
     // we won't get concurrent modification exceptions.
@@ -561,7 +562,7 @@ class CivilizationInfo {
 
     fun addNotification(text: String, vararg notificationIcons: String) = addNotification(text, null, *notificationIcons)
 
-    fun addNotification(text: String, action:NotificationAction?, vararg notificationIcons: String) {
+    fun addNotification(text: String, action: NotificationAction?, vararg notificationIcons: String) {
         if (playerType == PlayerType.AI) return // no point in lengthening the saved game info if no one will read it
         val arrayList = ArrayList<String>().apply { addAll(notificationIcons) }
         notifications.add(Notification(text, arrayList, action))

@@ -1,10 +1,8 @@
 package com.unciv.logic.automation
 
-import com.badlogic.gdx.graphics.Color
 import com.unciv.Constants
 import com.unciv.logic.battle.*
 import com.unciv.logic.city.CityInfo
-import com.unciv.logic.civilization.GreatPersonManager
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
