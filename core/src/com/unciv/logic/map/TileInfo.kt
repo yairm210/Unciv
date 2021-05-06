@@ -74,7 +74,7 @@ open class TileInfo {
     var roadStatus = RoadStatus.None
     var turnsToImprovement: Int = 0
 
-    fun isHill() = terrainFeatures.contains(Constants.hill)
+    fun isHill() = baseTerrain == Constants.hill || terrainFeatures.contains(Constants.hill)
 
     var hasBottomRightRiver = false
     var hasBottomRiver = false
@@ -191,6 +191,8 @@ open class TileInfo {
     }
 
     fun getTerrainFeatures(): List<Terrain> = terrainFeatures.mapNotNull { ruleset.terrains[it] }
+    fun getAllTerrains(): Sequence<Terrain> = sequenceOf(baseTerrainObject) +
+            terrainFeatures.asSequence().mapNotNull { ruleset.terrains[it] }
 
     fun getWorkingCity(): CityInfo? {
         val civInfo = getOwner()
@@ -436,9 +438,6 @@ open class TileInfo {
 
         return min(distance, wrappedDistance).toInt()
     }
-
-    fun isRoughTerrain() = getBaseTerrain().rough || getTerrainFeatures().any { it.rough }
-            || getBaseTerrain().uniques.contains("Rough") || getTerrainFeatures().any { it.uniques.contains("Rough") }
 
     override fun toString(): String { // for debugging, it helps to see what you're doing
         return toString(null)
