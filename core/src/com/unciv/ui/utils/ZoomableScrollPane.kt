@@ -19,16 +19,22 @@ open class ZoomableScrollPane: ScrollPane(null) {
     }
 
     open fun zoom(zoomScale: Float) {
-        if (zoomScale < 0.5f || zoomScale > 2) return
+        if (zoomScale < 0.5f || zoomScale > 2f) return
         setScale(zoomScale)
+    }
+    fun zoomIn() {
+        zoom(scaleX / 0.8f)
+    }
+    fun zoomOut() {
+        zoom(scaleX * 0.8f)
     }
 
     private fun addZoomListeners() {
 
         addListener(object : InputListener() {
             override fun scrolled(event: InputEvent?, x: Float, y: Float, amountX: Float, amountY: Float): Boolean {
-                if (amountX > 0 || amountY > 0) zoom(scaleX * 0.8f)
-                else zoom(scaleX / 0.8f)
+                if (amountX > 0 || amountY > 0) zoomOut()
+                else zoomIn()
                 return false
             }
         })
