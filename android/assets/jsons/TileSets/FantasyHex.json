@@ -16,6 +16,12 @@
         "Hill+Forest+Furs": ["Grassland","Hill","Furs","HillForest"],
         "Hill+Forest+Deer": ["Grassland","Hill","Deer","HillForest"],
 		
+		"Grassland+Hill+Forest": ["Grassland","Hill","HillForest"],
+		"Plains+Hill+Forest": ["Plains","Hill","HillForest"],
+		"Tundra+Hill+Forest": ["Tundra","Hill","HillForest"],
+		"Desert+Hill+Forest": ["Desert","Hill","HillForest"],
+		"Snow+Hill+Forest": ["Snow","Hill","HillForest"],
+		
         "Hill+Furs+Ancient ruins": ["Grassland","Hill","Ancient ruins","Sheep"],
         "Grassland+Jungle+Ancient ruins": ["Grassland","Ancient ruins", "GrasslandJungle"],
         "Grassland+Forest+Ancient ruins": ["Grassland","Ancient ruins", "GrasslandForest"],
