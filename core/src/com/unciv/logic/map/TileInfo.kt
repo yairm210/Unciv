@@ -92,7 +92,6 @@ open class TileInfo {
         for (airUnit in airUnits) toReturn.airUnits.add(airUnit.clone())
         toReturn.position = position.cpy()
         toReturn.baseTerrain = baseTerrain
-//        toReturn.terrainFeature = terrainFeature
         convertTerrainFeatureToArray()
         toReturn.terrainFeatures.addAll(terrainFeatures)
         toReturn.naturalWonder = naturalWonder
@@ -115,9 +114,6 @@ open class TileInfo {
         if (improvementInProgress == null) return false
         return ruleset.tileImprovements[improvementInProgress!!]!!.isGreatImprovement()
     }
-
-    fun containsUnique(unique: String): Boolean =
-            isNaturalWonder() && getNaturalWonder().uniques.contains(unique)
     //region pure functions
 
     /** Returns military, civilian and air units in tile */
@@ -167,6 +163,13 @@ open class TileInfo {
     // and the toSequence so that aggregations (like neighbors.flatMap{it.units} don't take up their own space
 
     fun getHeight(): Int {
+        if (ruleset.terrains.values.asSequence().flatMap { it.uniqueObjects }
+                        .any { it.placeholderText == "Has an elevation of [] for visibility calculations" })
+            return getAllTerrains().flatMap { it.uniqueObjects }
+                    .filter { it.placeholderText == "Has an elevation of [] for visibility calculations" }
+                    .map { it.params[0].toInt() }.sum()
+
+        // Old method - deprecated 3.14.7
         if (baseTerrain == Constants.mountain) return 4
         if (isHill()) return 2
         if (terrainFeatures.contains(Constants.forest) || terrainFeatures.contains(Constants.jungle)) return 1
@@ -192,6 +195,12 @@ open class TileInfo {
     }
 
     fun getTerrainFeatures(): List<Terrain> = terrainFeatures.mapNotNull { ruleset.terrains[it] }
+    fun getAllTerrains(): Sequence<Terrain> = sequence {
+        yield(baseTerrainObject)
+        if (naturalWonder != null) yield(getNaturalWonder())
+        yieldAll(terrainFeatures.asSequence().mapNotNull { ruleset.terrains[it] })
+    }
+    fun hasUnique(unique:String) = getAllTerrains().any { it.uniques.contains(unique) }
 
     fun getWorkingCity(): CityInfo? {
         val civInfo = getOwner()
@@ -376,16 +385,15 @@ open class TileInfo {
 
     fun matchesUniqueFilter(filter: String, civInfo: CivilizationInfo? = null): Boolean {
         return filter == baseTerrain
-                || filter == Constants.hill && isHill()
                 || filter == "River" && isAdjacentToRiver()
                 || terrainFeatures.contains(filter)
                 || baseTerrainObject.uniques.contains(filter)
-                || terrainFeatures.isNotEmpty() && getTerrainFeatures().last().uniques.contains(filter)
                 || improvement == filter
-                || civInfo != null && hasViewableResource(civInfo) && resource == filter
                 || filter == "Water" && isWater
                 || filter == "Land" && isLand
                 || filter == naturalWonder
+                || terrainFeatures.isNotEmpty() && getTerrainFeatures().last().uniques.contains(filter)
+                || civInfo != null && hasViewableResource(civInfo) && resource == filter
                 || filter == "Foreign Land" && civInfo!=null && !isFriendlyTerritory(civInfo)
                 || filter == "Friendly Land" && civInfo!=null && isFriendlyTerritory(civInfo)
     }
@@ -437,9 +445,6 @@ open class TileInfo {
 
         return min(distance, wrappedDistance).toInt()
     }
-
-    fun isRoughTerrain() = getBaseTerrain().rough || getTerrainFeatures().any { it.rough }
-            || getBaseTerrain().uniques.contains("Rough") || getTerrainFeatures().any { it.uniques.contains("Rough") }
 
     override fun toString(): String { // for debugging, it helps to see what you're doing
         return toString(null)
@@ -560,6 +565,7 @@ open class TileInfo {
 
     fun setTerrainTransients() {
         convertTerrainFeatureToArray()
+        convertHillToTerrainFeature()
         if (!ruleset.terrains.containsKey(baseTerrain))
             throw Exception()
         baseTerrainObject = ruleset.terrains[baseTerrain]!!
@@ -656,6 +662,20 @@ open class TileInfo {
                         && ruleset.tileResources.values.none { it.improvement == improvementObject.name }
                         && !isImpassible() && isLand))
             improvement = improvementObject.name
+    }
+
+    private fun convertHillToTerrainFeature(){
+        if (baseTerrain == Constants.hill &&
+                ruleset.terrains[Constants.hill]?.type == TerrainType.TerrainFeature) {
+            val mostCommonBaseTerrain = neighbors.filter { it.isLand && !it.isImpassible() }
+                    .groupBy { it.baseTerrain }.maxByOrNull { it.value.size }
+            baseTerrain = mostCommonBaseTerrain?.key ?: Constants.grassland
+            //We have to add hill as first terrain feature
+            val copy = terrainFeatures.toTypedArray()
+            terrainFeatures.clear()
+            terrainFeatures.add(Constants.hill)
+            terrainFeatures.addAll(copy)
+        }
     }
 
     //endregion

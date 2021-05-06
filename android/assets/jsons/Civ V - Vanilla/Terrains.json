@@ -61,20 +61,11 @@
 		"uniques": ["Fresh water"]
 	},
 	{
-		"name": "Hill",
-		"type": "Land",
-		"production": 2,
-		"movementCost": 2,
-		"overrideStats": true,
-		"defenceBonus": 0.25,
-		"RGB": [105,125,72],
-		"uniques": ["Rough terrain"]
-	},
-	{
 		"name": "Mountain",
 		"type": "Land",
 		"impassable": true,
-		"RGB": [120, 120, 120]
+		"RGB": [120, 120, 120],
+		"uniques":["Has an elevation of [4] for visibility calculations"]
 	},
 	{
 		"name": "Snow",
@@ -87,6 +78,18 @@
 	
 	// Terrain features
 	{
+		"name": "Hill",
+		"type": "TerrainFeature",
+		"production": 2,
+		"movementCost": 2,
+		"overrideStats": true,
+		"defenceBonus": 0.25,
+		"RGB": [105,125,72],
+		"occursOn": ["Tundra","Plains","Grassland","Desert","Snow"],
+		"uniques": ["Rough terrain", "[+5] Strength for cities built on this terrain",
+			"[+1] Sight for [Land] units", "Has an elevation of [2] for visibility calculations"]
+	},
+	{
 		"name": "Forest",
 		"type": "TerrainFeature",
 		"production": 1,
@@ -96,7 +99,8 @@
 		"unbuildable": true,
 		"defenceBonus": 0.25,
 		"occursOn": ["Tundra","Plains","Grassland","Hill"],
-		"uniques": ["Provides a one-time Production bonus to the closest city when cut down", "Rough terrain"]
+		"uniques": ["Provides a one-time Production bonus to the closest city when cut down", "Rough terrain",
+			"Has an elevation of [1] for visibility calculations"]
 	},
 	{
 		"name": "Jungle",
@@ -107,7 +111,7 @@
 		"unbuildable": true,
 		"defenceBonus": 0.25,
 		"occursOn": ["Plains","Grassland"],
-		"uniques": ["Rough terrain"]
+		"uniques": ["Rough terrain", "Has an elevation of [1] for visibility calculations"]
 	},
 	{
 		"name": "Marsh",

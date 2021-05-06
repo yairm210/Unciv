@@ -360,15 +360,15 @@ class DiplomacyManager() {
 
         if (!civInfo.isDefeated()) { // don't display city state relationship notifications when the city state is currently defeated
             val civCapitalLocation = if (civInfo.cities.isNotEmpty()) civInfo.getCapital().location else null
-            if (getTurnsToRelationshipChange() == 1){
+            if (getTurnsToRelationshipChange() == 1) {
                 val text = "Your relationship with [${civInfo.civName}] is about to degrade"
-                if(civCapitalLocation!=null) otherCiv().addNotification(text, civCapitalLocation, civInfo.civName, NotificationIcon.Diplomacy)
+                if (civCapitalLocation != null) otherCiv().addNotification(text, civCapitalLocation, civInfo.civName, NotificationIcon.Diplomacy)
                 else otherCiv().addNotification(text, civInfo.civName, NotificationIcon.Diplomacy)
             }
 
-            if (initialRelationshipLevel >= RelationshipLevel.Friend && initialRelationshipLevel != relationshipLevel()){
+            if (initialRelationshipLevel >= RelationshipLevel.Friend && initialRelationshipLevel != relationshipLevel()) {
                 val text = "Your relationship with [${civInfo.civName}] degraded"
-                if(civCapitalLocation!=null) otherCiv().addNotification(text, civCapitalLocation, civInfo.civName, NotificationIcon.Diplomacy)
+                if (civCapitalLocation != null) otherCiv().addNotification(text, civCapitalLocation, civInfo.civName, NotificationIcon.Diplomacy)
                 else otherCiv().addNotification(text, civInfo.civName, NotificationIcon.Diplomacy)
             }
         }
@@ -450,6 +450,9 @@ class DiplomacyManager() {
         revertToZero(DiplomaticModifiers.UnacceptableDemands, 1 / 4f)
         revertToZero(DiplomaticModifiers.LiberatedCity, 1 / 8f)
         revertToZero(DiplomaticModifiers.StealingTerritory, 1 / 4f)
+        revertToZero(DiplomaticModifiers.DenouncedOurAllies, 1 / 4f)
+        revertToZero(DiplomaticModifiers.DenouncedOurEnemies, 1 / 4f)
+        revertToZero(DiplomaticModifiers.Denunciation, 1 / 8f) // That's personal, it'll take a long time to fade
 
         setFriendshipBasedModifier()
 
@@ -656,11 +659,12 @@ class DiplomacyManager() {
         getCommonKnownCivs().filter { it.isMajorCiv() }.forEach { thirdCiv ->
             thirdCiv.addNotification("[${civInfo.civName}] has denounced [$otherCivName]!", civInfo.civName, NotificationIcon.Diplomacy, otherCivName)
             val thirdCivRelationshipWithOtherCiv = thirdCiv.getDiplomacyManager(otherCiv()).relationshipLevel()
+            val thirdCivDiplomacyManager = thirdCiv.getDiplomacyManager(civInfo)
             when (thirdCivRelationshipWithOtherCiv) {
-                RelationshipLevel.Unforgivable -> addModifier(DiplomaticModifiers.DenouncedOurEnemies, 15f)
-                RelationshipLevel.Enemy -> addModifier(DiplomaticModifiers.DenouncedOurEnemies, 5f)
-                RelationshipLevel.Friend -> addModifier(DiplomaticModifiers.DenouncedOurAllies, -5f)
-                RelationshipLevel.Ally -> addModifier(DiplomaticModifiers.DenouncedOurAllies, -15f)
+                RelationshipLevel.Unforgivable -> thirdCivDiplomacyManager.addModifier(DiplomaticModifiers.DenouncedOurEnemies, 15f)
+                RelationshipLevel.Enemy -> thirdCivDiplomacyManager.addModifier(DiplomaticModifiers.DenouncedOurEnemies, 5f)
+                RelationshipLevel.Friend -> thirdCivDiplomacyManager.addModifier(DiplomaticModifiers.DenouncedOurAllies, -5f)
+                RelationshipLevel.Ally -> thirdCivDiplomacyManager.addModifier(DiplomaticModifiers.DenouncedOurAllies, -15f)
             }
         }
     }

@@ -114,6 +114,7 @@ class CityOverviewTable(val viewingPlayer: CivilizationInfo, val overviewScreen:
     }
 
     private fun fillCitiesTable(citiesTable: Table, sortType: String, descending: Boolean) {
+        if (viewingPlayer.cities.isEmpty()) return
 
         val sorter = Comparator { city2, city1: CityInfo ->
             when {
@@ -131,13 +132,17 @@ class CityOverviewTable(val viewingPlayer: CivilizationInfo, val overviewScreen:
         if (descending)
             cityList = cityList.reversed()
 
+        val constructionCells: MutableList<Cell<Label>> = mutableListOf()
         for (city in cityList) {
             val button = Button(city.name.toLabel(), CameraStageBaseScreen.skin)
             button.onClick {
                 overviewScreen.game.setScreen(CityScreen(city))
             }
             citiesTable.add(button)
-            citiesTable.add(city.cityConstructions.getCityProductionTextForCityButton().toLabel())
+
+            val cell = citiesTable.add(city.cityConstructions.getCityProductionTextForCityButton().toLabel())
+            constructionCells.add(cell)
+
             citiesTable.add(city.population.population.toLabel()).myAlign(Align.center)
             for (column in columnsNames) {
                 if (!column.isStat()) continue
@@ -145,6 +150,12 @@ class CityOverviewTable(val viewingPlayer: CivilizationInfo, val overviewScreen:
             }
             citiesTable.row()
         }
+
+        // row heights may diverge - fix it by setting minHeight to
+        // largest actual height (of the construction cell) - !! guarded by isEmpty test above
+        val largestLabelHeight = constructionCells.maxByOrNull{ it.prefHeight }!!.prefHeight
+        constructionCells.forEach{ it.minHeight(largestLabelHeight ) }
+
         citiesTable.pack()
     }
 

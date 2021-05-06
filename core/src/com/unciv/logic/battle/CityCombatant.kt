@@ -38,7 +38,9 @@ class CityCombatant(val city: CityInfo) : ICombatant {
         var strength = 8f
         strength += (city.population.population / 5) * 2 // Each 5 pop gives 2 defence
         val cityTile = city.getCenterTile()
-        if (cityTile.isHill()) strength += 5
+        for (unique in cityTile.getAllTerrains().flatMap { it.uniqueObjects })
+            if (unique.placeholderText == "[] Strength for cities built on this terrain")
+                strength += unique.params[0].toInt()
         // as tech progresses so does city strength
         val techCount = getCivInfo().gameInfo.ruleSet.technologies.count()
         val techsPercentKnown: Float = if (techCount > 0) city.civInfo.tech.techsResearched.count().toFloat() / techCount else 0.5f // for mods with no tech
