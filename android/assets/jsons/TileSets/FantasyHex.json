@@ -4,6 +4,7 @@
         "Hill": ["Grassland","Hill"],
 		
         "Hill+Forest+Uranium": ["Grassland","Hill","Uranium","HillForest"],
+        "Grassland+Hill+Forest+Uranium": ["Grassland","Hill","Uranium","HillForest"],
 		
 		
         "Grassland+Jungle+Oil": ["Grassland","Oil","GrasslandJungle"],
@@ -15,6 +16,9 @@
         "Grassland+Forest+Furs": ["Grassland","Furs","GrasslandForest"],
         "Hill+Forest+Furs": ["Grassland","Hill","Furs","HillForest"],
         "Hill+Forest+Deer": ["Grassland","Hill","Deer","HillForest"],
+		"Grassland+Hill+Forest+Furs": ["Grassland","Hill","Furs","HillForest"],
+        "Grassland+Hill+Forest+Deer": ["Grassland","Hill","Deer","HillForest"],
+        "Tundra+Hill+Forest+Deer": ["Tundra","Hill","Deer","HillForest"],
 		
 		"Grassland+Hill+Forest": ["Grassland","Hill","HillForest"],
 		"Plains+Hill+Forest": ["Plains","Hill","HillForest"],
@@ -22,13 +26,11 @@
 		"Desert+Hill+Forest": ["Desert","Hill","HillForest"],
 		"Snow+Hill+Forest": ["Snow","Hill","HillForest"],
 		
-        "Hill+Furs+Ancient ruins": ["Grassland","Hill","Ancient ruins","Sheep"],
         "Grassland+Jungle+Ancient ruins": ["Grassland","Ancient ruins", "GrasslandJungle"],
         "Grassland+Forest+Ancient ruins": ["Grassland","Ancient ruins", "GrasslandForest"],
         "Grassland+Cattle+Ancient ruins": ["Grassland","Ancient ruins","Cattle"],
         "Grassland+Sheep+Ancient ruins": ["Grassland","Ancient ruins","Sheep"],
 		
-        "Hill+Sheep+Ancient ruins": ["Grassland","Hill","Ancient ruins","Sheep"],
         "Plains+Forest+Deer": ["Plains","Deer","PlainsForest"]
     }
 }
