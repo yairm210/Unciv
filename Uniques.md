@@ -203,6 +203,8 @@ cityFilters allow us to choose the range of cities affected by this unique:
 
 "-[amount]% [unitFilter] unit maintenance costs"
 
+"No Maintenance costs for improvements in [tileFilter] tiles"
+
 "Unhappiness from population decreased by [amount]%" - Despite appearances, this is a global unique, affecting all cities.
 
 "+[amount]% Production when constructing [unitFilter] units", "+[amount]% Production when constructing [unitFilter] units [cityFilter]" - The city produces extra Production when a unit fitting the filter in under construction.
