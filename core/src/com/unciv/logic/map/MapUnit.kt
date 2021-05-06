@@ -357,7 +357,7 @@ class MapUnit {
         if (currentMovement < 0) currentMovement = 0f
     }
 
-    fun getMovementDestination():TileInfo{
+    fun getMovementDestination(): TileInfo {
         val destination = action!!.replace("moveTo ", "").split(",").dropLastWhile { it.isEmpty() }
         val destinationVector = Vector2(destination[0].toFloat(), destination[1].toFloat())
         return currentTile.tileMap[destinationVector]
@@ -418,7 +418,7 @@ class MapUnit {
                 else {
                     val removedFeatureName = tile.improvementInProgress!!.removePrefix("Remove ")
                     val removedFeatureObject = tile.ruleset.terrains[removedFeatureName]
-                    if (removedFeatureObject!=null && removedFeatureObject.uniques
+                    if (removedFeatureObject != null && removedFeatureObject.uniques
                                     .contains("Provides a one-time Production bonus to the closest city when cut down")) {
                         tryProvideProductionToClosestCity(removedFeatureName)
                     }

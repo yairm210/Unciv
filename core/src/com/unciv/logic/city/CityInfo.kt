@@ -486,7 +486,7 @@ class CityInfo {
     //endregion
 }
 
-class CityInfoReligionManager: Counter<String>(){
+class CityInfoReligionManager: Counter<String>() {
     @Transient
     lateinit var cityInfo: CityInfo
 
@@ -511,7 +511,7 @@ class CityInfoReligionManager: Counter<String>(){
         return toReturn
     }
 
-    fun getMajorityReligion():String? {
+    fun getMajorityReligion(): String? {
         val followersPerReligion = getNumberOfFollowers()
         if (followersPerReligion.isEmpty()) return null
         val religionWithMaxFollowers = followersPerReligion.maxByOrNull { it.value }!!
@@ -529,4 +529,3 @@ class CityInfoReligionManager: Counter<String>(){
         }
     }
 }
-

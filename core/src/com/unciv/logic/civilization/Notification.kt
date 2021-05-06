@@ -25,9 +25,10 @@ object NotificationIcon {
  */
 open class Notification() {
 
-    var text: String=""
+    var text: String = ""
+
     @Deprecated("As of 3.13.10 - replaced with icons")
-    var color: Color?=null
+    var color: Color? = null
     var icons: ArrayList<String> = ArrayList() // Must be ArrayList and not List so it can be deserialized
     var action: NotificationAction? = null
 
@@ -36,8 +37,6 @@ open class Notification() {
         this.icons = notificationIcons
         this.action = action
     }
-
-
 }
 
 /** defines what to do if the user clicks on a notification */
@@ -48,7 +47,7 @@ interface NotificationAction {
 /** cycle through tiles */
 data class LocationAction(var locations: ArrayList<Vector2> = ArrayList()) : NotificationAction {
 
-    constructor(locations: List<Vector2>): this(ArrayList(locations))
+    constructor(locations: List<Vector2>) : this(ArrayList(locations))
 
     override fun execute(worldScreen: WorldScreen) {
         if (locations.isNotEmpty()) {
@@ -57,7 +56,6 @@ data class LocationAction(var locations: ArrayList<Vector2> = ArrayList()) : Not
             worldScreen.mapHolder.setCenterPosition(locations[index], selectUnit = false)
         }
     }
-
 }
 
 /** show tech screen */
@@ -70,13 +68,11 @@ class TechAction(val techName: String = "") : NotificationAction {
 
 /** enter city */
 data class CityAction(val city: Vector2 = Vector2.Zero): NotificationAction {
-
     override fun execute(worldScreen: WorldScreen) {
         worldScreen.mapHolder.tileMap[city].getCity()?.let {
             worldScreen.game.setScreen(CityScreen(it))
         }
     }
-
 }
 
 data class DiplomacyAction(val otherCivName: String = ""): NotificationAction {
