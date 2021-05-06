@@ -1,0 +1,160 @@
+name: UncivBot
+
+on:
+  issue_comment:
+  workflow_dispatch:
+
+jobs:
+  summary:
+    if: github.event_name == 'issue_comment' && github.event.comment.body == 'summary'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/github-script@v3
+        with:
+          github-token: ${{secrets.GITHUB_TOKEN}}
+          script: |
+            var result = await github.repos.listCommits({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              per_page: 50 });
+            var commitSummary = "";
+            var ownerToCommits = {}
+            var reachedPreviousVersion = false
+            result.data.forEach(commit => {
+              if (reachedPreviousVersion) return
+              var author = commit.author.login
+              if (author=="uncivbot[bot]") return
+              var commitMessage = commit.commit.message.split("\n")[0];
+          
+              if (commitMessage.match(/^\d+\.\d+\.\d+$/)){ // match EXACT version, like 3.4.55  ^ is for start-of-line, $ for end-of-line
+                reachedPreviousVersion=true
+                console.log(commitMessage)
+                return
+              }
+              if (commitMessage.startsWith("Merge ") || commitMessage.startsWith("Update ")) return
+              commitMessage = commitMessage.replace(/\(\#\d+\)/,"") // match PR auto-text, like (#2345)
+              if (author != context.repo.owner){
+                if (ownerToCommits[author] == undefined) ownerToCommits[author]=[]
+                ownerToCommits[author].push(commitMessage)
+              }
+              else commitSummary += "\n\n" + commitMessage
+            });
+            Object.entries(ownerToCommits).forEach(entry => {
+              const [author, commits] = entry;
+              if (commits.length==1) commitSummary += "\n\n" + commits[0] + " - By "+author
+              else {
+                commitSummary += "\n\nBy "+author+":"
+                commits.forEach(commitMessage => { commitSummary += "\n- "+commitMessage })
+              }
+            })
+            github.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: commitSummary
+            })
+
+  merge_translations:
+    if: github.event_name == 'workflow_dispatch' || github.event.comment.body == 'merge translations'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/github-script@v3
+        with:
+          # SO, the story is that when using the default access token you CANNOT merge PRs from forks.
+          # _Badly_ documented in multiple places, including here: https://docs.github.com/en/actions/reference/authentication-in-a-workflow
+          # To get around this, we created a Personal Access Token,
+          #  put it as one of the secrets in the repo settings (https://github.com/yairm210/Unciv/settings/secrets/actions),
+          #  and use that instead.
+          github-token: ${{ secrets.ACTIONS_ACCESS_TOKEN }}
+          script: |
+            
+            const repo = {
+                  owner: context.repo.owner,
+                  repo: context.repo.repo }
+            
+            async function branchExists(branchName) {
+              try {
+                await github.git.getRef({...repo, ref: 'heads/' + branchName })
+                return true
+              } catch (err) {
+                return false
+              }
+            }
+
+            async function getDefaultBranch() {
+              var repoData = await github.repos.get(repo)
+              return repoData.data.default_branch
+            }
+            
+            var translations = "translations"
+
+            async function createTranslationBranchIfNeeded() {
+              if (await branchExists(translations)) return
+              var defaultBranch = await getDefaultBranch()
+              
+              var currentHead = await github.git.getRef({...repo, ref: 'heads/' + defaultBranch })
+              
+              var currentSha = currentHead.data.object.sha
+              console.log("Current sha: " + currentSha)
+              
+              await github.git.createRef({...repo,
+                ref: `refs/heads/`+translations,
+                sha: currentSha })
+              
+              await github.issues.createComment({...repo,
+                issue_number: context.issue.number,
+                body: 'Translations branch created' })
+            }
+            
+            async function mergeExistingTranslationsIntoBranch(){
+              var translationPrs = await github.pulls.list({ ...repo, state: "open" })
+              
+              // When we used a forEach loop here, only one merge would happen at each run,
+              //  because we essentially started multiple async tasks in parallel and they conflicted.
+              // Instead, we use X of Y as per https://stackoverflow.com/questions/37576685/using-async-await-with-a-foreach-loop
+              for (const pr of translationPrs.data) {
+                if (pr.labels.some(label => label.name == "mergeable translation"))
+                  await tryMergePr(pr)
+              }
+            }
+            
+            async function tryMergePr(pr){
+              if (pr.base.ref != translations)
+                await github.pulls.update({ ...repo,
+                  pull_number: pr.number,
+                  base: translations })
+              
+              try {
+                await github.pulls.merge({...repo,
+                  pull_number: pr.number,
+                  merge_method: "squash" })
+                console.log("Merged #"+pr.number+", "+pr.title)
+              } catch (err) {
+                console.log(err)
+              }
+                
+            }
+                        
+            
+            async function createTranslationPrIfNeeded() {
+              var translationPulls = await github.pulls.list({...repo,
+                  state: "open",
+                  head: context.repo.owner + ":" + translations });
+
+              if (translationPulls.data.length == 0) {
+                var defaultBranch = await getDefaultBranch(context);
+                await github.pulls.create({...repo,
+                  title: "Translations update",
+                  head: translations,
+                  base: defaultBranch });
+
+                await github.issues.createComment({...repo,
+                  issue_number: context.issue.number,
+                  body: 'Translations PR created' });
+              }
+            }
+                      
+            await createTranslationBranchIfNeeded()
+            await mergeExistingTranslationsIntoBranch()
+            await createTranslationPrIfNeeded()
+  

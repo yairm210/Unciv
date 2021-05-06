@@ -15,6 +15,8 @@ import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.simulation.Simulation
 import com.unciv.ui.newgamescreen.GameSetupInfo
 import kotlin.system.exitProcess
+import com.unciv.models.tilesets.TileSetCache
+import com.unciv.ui.newgamescreen.GameSetupInfo
 
 internal object ConsoleLauncher {
     @JvmStatic
@@ -24,7 +26,6 @@ internal object ConsoleLauncher {
         val consoleParameters = UncivGameParameters(
                 version,
                 null,
-                { exitProcess(0) },
                 null,
                 null,
                 true
@@ -38,6 +39,7 @@ internal object ConsoleLauncher {
         }
 
         RulesetCache.loadRulesets(true)
+        TileSetCache.loadTileSetConfigs(true)
 
         val gameParameters = getGameParameters("China", "Greece")
         val mapParameters = getMapParameters()

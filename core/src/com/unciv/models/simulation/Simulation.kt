@@ -110,7 +110,7 @@ class Simulation(val newGameInfo: GameInfo,
         var outString = ""
         for (civ in civilizations) {
             outString += "\n$civ:\n"
-            val wins = winRate[civ]!!.value!! * 100 / max(steps.size, 1)
+            val wins = winRate[civ]!!.value * 100 / max(steps.size, 1)
             outString += "$wins% total win rate \n"
             for (victory in VictoryType.values()) {
                 val winsVictory = winRateByVictory[civ]!![victory]!!.value * 100 / max(winRate[civ]!!.value, 1)

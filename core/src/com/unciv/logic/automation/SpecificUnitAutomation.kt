@@ -1,8 +1,8 @@
 ﻿package com.unciv.logic.automation
 
+import com.unciv.logic.battle.Battle
 import com.unciv.logic.battle.MapUnitCombatant
 import com.unciv.logic.civilization.CivilizationInfo
-import com.unciv.logic.civilization.GreatPersonManager
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.map.MapUnit
@@ -10,8 +10,6 @@ import com.unciv.logic.map.TileInfo
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.tile.TileResource
 import com.unciv.models.stats.Stats
-import com.unciv.models.translations.equalsPlaceholderText
-import com.unciv.models.translations.getPlaceholderParameters
 import com.unciv.ui.worldscreen.unit.UnitActions
 
 object SpecificUnitAutomation {
@@ -22,8 +20,10 @@ object SpecificUnitAutomation {
     fun automateWorkBoats(unit: MapUnit) {
         val closestReachableResource = unit.civInfo.cities.asSequence()
                 .flatMap { city -> city.getWorkableTiles() }
-                .filter { hasWorkableSeaResource(it, unit.civInfo)
-                        && (unit.currentTile == it || unit.movement.canMoveTo(it)) }
+                .filter {
+                    hasWorkableSeaResource(it, unit.civInfo)
+                            && (unit.currentTile == it || unit.movement.canMoveTo(it))
+                }
                 .sortedBy { it.aerialDistanceTo(unit.currentTile) }
                 .firstOrNull { unit.movement.canReach(it) }
 
@@ -51,12 +51,12 @@ object SpecificUnitAutomation {
                 }
 
         val maxAffectedTroopsTile = militaryUnitTilesInDistance
-                .maxBy {
-                        it.key.getTilesInDistance(2).count {tile ->
-                            val militaryUnit = tile.militaryUnit
-                            militaryUnit != null && militaryUnit.civInfo == unit.civInfo
-                        }
-                    }?.key
+                .maxByOrNull {
+                    it.key.getTilesInDistance(2).count { tile ->
+                        val militaryUnit = tile.militaryUnit
+                        militaryUnit != null && militaryUnit.civInfo == unit.civInfo
+                    }
+                }?.key
         if (maxAffectedTroopsTile != null) {
             unit.movement.headTowards(maxAffectedTroopsTile)
             return
@@ -66,13 +66,14 @@ object SpecificUnitAutomation {
         val enemyCities = unit.civInfo.getKnownCivs()
                 .filter { unit.civInfo.getDiplomacyManager(it).hasModifier(DiplomaticModifiers.StealingTerritory) }
                 .flatMap { it.cities }.asSequence()
-        // find the suitable tiles (or their neigbours)
+        // find the suitable tiles (or their neighbours)
         val tileToSteal = enemyCities.flatMap { it.getTiles() } // City tiles
-                .filter { it.neighbors.any { it.getOwner()!=unit.civInfo } } // Edge city tiles
+                .filter { it.neighbors.any { it.getOwner() != unit.civInfo } } // Edge city tiles
                 .flatMap { it.neighbors.asSequence() } // Neighbors of edge city tiles
-                .filter { it in unit.civInfo.viewableTiles // we can see them
-                        && it.neighbors.any { tile -> tile.getOwner() == unit.civInfo}// they are close to our borders
-                        }
+                .filter {
+                    it in unit.civInfo.viewableTiles // we can see them
+                            && it.neighbors.any { tile -> tile.getOwner() == unit.civInfo }// they are close to our borders
+                }
                 .sortedBy {
                     // get closest tiles
                     val distance = it.aerialDistanceTo(unit.currentTile)
@@ -80,8 +81,9 @@ object SpecificUnitAutomation {
                     val owner = it.getOwner()
                     if (owner != null)
                         distance - WorkerAutomation(unit).getPriority(it, owner)
-                    else distance }
-                .firstOrNull{ unit.movement.canReach(it) } // canReach is performance-heavy and always a last resort
+                    else distance
+                }
+                .firstOrNull { unit.movement.canReach(it) } // canReach is performance-heavy and always a last resort
         // if there is a good tile to steal - go there
         if (tileToSteal != null) {
             unit.movement.headTowards(tileToSteal)
@@ -92,14 +94,16 @@ object SpecificUnitAutomation {
 
         // try to build a citadel for defensive purposes
         if (WorkerAutomation(unit).evaluateFortPlacement(unit.currentTile, unit.civInfo, true)) {
-            UnitActions.getImprovementConstructionActions(unit,unit.currentTile).firstOrNull()?.action?.invoke()
+            UnitActions.getImprovementConstructionActions(unit, unit.currentTile).firstOrNull()?.action?.invoke()
             return
         }
 
         //if no unit to follow, take refuge in city or build citadel there.
-        val reachableTest : (TileInfo) -> Boolean = {it.civilianUnit == null &&
-                unit.movement.canMoveTo(it)
-                && unit.movement.canReach(it)}
+        val reachableTest: (TileInfo) -> Boolean = {
+            it.civilianUnit == null &&
+                    unit.movement.canMoveTo(it)
+                    && unit.movement.canReach(it)
+        }
         val cityToGarrison = unit.civInfo.cities.asSequence().map { it.getCenterTile() }
                 .sortedBy { it.aerialDistanceTo(unit.currentTile) }
                 .firstOrNull { reachableTest(it) }
@@ -107,12 +111,14 @@ object SpecificUnitAutomation {
         if (cityToGarrison != null) {
             // try to find a good place for citadel nearby
             val potentialTilesNearCity = cityToGarrison.getTilesInDistanceRange(3..4)
-            val tileForCitadel = potentialTilesNearCity.firstOrNull { reachableTest(it) &&
-                    WorkerAutomation(unit).evaluateFortPlacement(it, unit.civInfo, true) }
+            val tileForCitadel = potentialTilesNearCity.firstOrNull {
+                reachableTest(it) &&
+                        WorkerAutomation(unit).evaluateFortPlacement(it, unit.civInfo, true)
+            }
             if (tileForCitadel != null) {
                 unit.movement.headTowards(tileForCitadel)
                 if (unit.currentMovement > 0 && unit.currentTile == tileForCitadel)
-                    UnitActions.getImprovementConstructionActions(unit,unit.currentTile).firstOrNull()?.action?.invoke()
+                    UnitActions.getImprovementConstructionActions(unit, unit.currentTile).firstOrNull()?.action?.invoke()
             } else
                 unit.movement.headTowards(cityToGarrison)
             return
@@ -164,15 +170,23 @@ object SpecificUnitAutomation {
                     it.isLand && (tileOwner == null || tileOwner == unit.civInfo) // don't allow settler to settle inside other civ's territory
                             && (unit.currentTile == it || unit.movement.canMoveTo(it))
                             && it !in tilesNearCities
-                }
+                }.toList()
 
         val luxuryResourcesInCivArea = unit.civInfo.cities.asSequence()
                 .flatMap { it.getTiles().asSequence() }.filter { it.resource != null }
                 .map { it.getTileResource() }.filter { it.resourceType == ResourceType.Luxury }
                 .distinct()
-        val bestCityLocation: TileInfo? = possibleCityLocations
-                .sortedByDescending { rankTileAsCityCenter(it, nearbyTileRankings, luxuryResourcesInCivArea) }
-                .firstOrNull { unit.movement.canReach(it) }
+
+        val citiesByRanking = possibleCityLocations
+                .map { Pair(it, rankTileAsCityCenter(it, nearbyTileRankings, luxuryResourcesInCivArea)) }
+                .sortedByDescending { it.second }.toList()
+
+        // It's possible that we'll see a tile "over the sea" that's better than the tiles close by, but that's not a reason to abandon the close tiles!
+        // Also this lead to some routing problems, see https://github.com/yairm210/Unciv/issues/3653
+        val bestCityLocation: TileInfo? = citiesByRanking.firstOrNull {
+            val pathSize = unit.movement.getShortestPath(it.first).size
+            return@firstOrNull pathSize in 1..3
+        }?.first
 
         if (bestCityLocation == null) { // We got a badass over here, all tiles within 5 are taken? Screw it, random walk.
             if (UnitAutomation.tryExplore(unit)) return // try to find new areas
@@ -188,41 +202,43 @@ object SpecificUnitAutomation {
         }
 
         unit.movement.headTowards(bestCityLocation)
-        if (unit.getTile() == bestCityLocation)
+        if (unit.getTile() == bestCityLocation && unit.currentMovement > 0)
             foundCityAction.action.invoke()
     }
 
     fun automateImprovementPlacer(unit: MapUnit) {
-        if (unit.getTile().militaryUnit == null) return // Don't move until you're accompanied by a military unit
-
-        val improvementName = unit.getUniques().first { it.equalsPlaceholderText("Can construct []") }
-                .getPlaceholderParameters()[0]
+        val improvementName = unit.getMatchingUniques("Can construct []").first().params[0]
         val improvement = unit.civInfo.gameInfo.ruleSet.tileImprovements[improvementName]!!
-        val relatedStat = improvement.toHashMap().maxBy { it.value }!!.key
+        val relatedStat = improvement.toHashMap().maxByOrNull { it.value }!!.key
 
         val citiesByStatBoost = unit.civInfo.cities.sortedByDescending {
             val stats = Stats()
             for (bonus in it.cityStats.statPercentBonusList.values) stats.add(bonus)
             stats.toHashMap()[relatedStat]!!
         }
+
+
         for (city in citiesByStatBoost) {
+            val applicableTiles = city.getWorkableTiles().filter {
+                it.isLand && it.resource == null && !it.isCityCenter()
+                        && (unit.currentTile == it || unit.movement.canMoveTo(it))
+                        && !it.containsGreatImprovement()
+            }
+            if (applicableTiles.none()) continue
+
             val pathToCity = unit.movement.getShortestPath(city.getCenterTile())
 
             if (pathToCity.isEmpty()) continue
             if (pathToCity.size > 2) {
+                if (unit.getTile().militaryUnit == null) return // Don't move until you're accompanied by a military unit
                 unit.movement.headTowards(city.getCenterTile())
                 return
             }
 
             // if we got here, we're pretty close, start looking!
-            val chosenTile = city.getTiles()
-                    .filter {
-                        it.isLand && it.resource == null && !it.isCityCenter()
-                                && (unit.currentTile == it || unit.movement.canMoveTo(it))
-                                && !it.containsGreatImprovement()
-                    }.sortedByDescending { Automation.rankTile(it, unit.civInfo) }
-                    .firstOrNull { unit.movement.canReach(it) } // to another city
-            if (chosenTile == null) continue
+            val chosenTile = applicableTiles.sortedByDescending { Automation.rankTile(it, unit.civInfo) }
+                    .firstOrNull { unit.movement.canReach(it) }
+            if (chosenTile == null) continue // to another city
 
             unit.movement.headTowards(chosenTile)
             if (unit.currentTile == chosenTile)
@@ -246,7 +262,7 @@ object SpecificUnitAutomation {
 
         val citiesByNearbyAirUnits = pathsToCities.keys
                 .groupBy { key ->
-                    key.getTilesInDistance(unit.getRange()*2)
+                    key.getTilesInDistance(unit.getRange() * 2)
                             .count {
                                 val firstAirUnit = it.airUnits.firstOrNull()
                                 firstAirUnit != null && firstAirUnit.civInfo.isAtWarWith(unit.civInfo)
@@ -254,9 +270,9 @@ object SpecificUnitAutomation {
                 }
 
         if (citiesByNearbyAirUnits.keys.any { it != 0 }) {
-            val citiesWithMostNeedOfAirUnits = citiesByNearbyAirUnits.maxBy { it.key }!!.value
+            val citiesWithMostNeedOfAirUnits = citiesByNearbyAirUnits.maxByOrNull { it.key }!!.value
             //todo: maybe groupby size and choose highest priority within the same size turns
-            val chosenCity = citiesWithMostNeedOfAirUnits.minBy { pathsToCities.getValue(it).size }!! // city with min path = least turns to get there
+            val chosenCity = citiesWithMostNeedOfAirUnits.minByOrNull { pathsToCities.getValue(it).size }!! // city with min path = least turns to get there
             val firstStepInPath = pathsToCities.getValue(chosenCity).first()
             unit.movement.moveToTile(firstStepInPath)
             return
@@ -288,23 +304,31 @@ object SpecificUnitAutomation {
 
         //todo: this logic looks similar to some parts of automateFighter, maybe pull out common code
         //todo: maybe groupby size and choose highest priority within the same size turns
-        val closestCityThatCanAttackFrom = citiesThatCanAttackFrom.minBy { pathsToCities[it]!!.size }!!
+        val closestCityThatCanAttackFrom = citiesThatCanAttackFrom.minByOrNull { pathsToCities[it]!!.size }!!
         val firstStepInPath = pathsToCities[closestCityThatCanAttackFrom]!!.first()
         airUnit.movement.moveToTile(firstStepInPath)
     }
 
     // This really needs to be changed, to have better targetting for missiles
     fun automateMissile(unit: MapUnit) {
-        if (BattleHelper.tryAttackNearbyEnemy(unit)) return
 
-        val tilesInRange = unit.currentTile.getTilesInDistance(unit.getRange()*2)
+        val tilesInRange = unit.currentTile.getTilesInDistance(unit.getRange() * 2)
+
+        for (tile in tilesInRange) {
+            // For now AI will only use nukes against cities because in all honesty that's the best use for them.
+            if (tile.isCityCenter() && tile.getOwner()!!.isAtWarWith(unit.civInfo)) {
+                Battle.nuke(MapUnitCombatant(unit), tile)
+                return
+            }
+        }
+
 
         val immediatelyReachableCities = tilesInRange
                 .filter { unit.movement.canMoveTo(it) }
 
         for (city in immediatelyReachableCities) {
             if (city.getTilesInDistance(unit.getRange())
-                            .any { BattleHelper.containsAttackableEnemy(it, MapUnitCombatant(unit)) }) {
+                            .any { it.isCityCenter() && it.getOwner()!!.isAtWarWith(unit.civInfo) }) {
                 unit.movement.moveToTile(city)
                 return
             }
@@ -317,7 +341,7 @@ object SpecificUnitAutomation {
 
     private fun tryRelocateToCitiesWithEnemyNearBy(unit: MapUnit): Boolean {
         val immediatelyReachableCitiesAndCarriers = unit.currentTile
-                .getTilesInDistance(unit.getRange()*2).filter {  unit.movement.canMoveTo(it) }
+                .getTilesInDistance(unit.getRange() * 2).filter { unit.movement.canMoveTo(it) }
 
         for (city in immediatelyReachableCitiesAndCarriers) {
             if (city.getTilesInDistance(unit.getRange())
@@ -328,5 +352,4 @@ object SpecificUnitAutomation {
         }
         return false
     }
-
 }

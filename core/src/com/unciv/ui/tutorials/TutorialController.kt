@@ -20,7 +20,7 @@ class TutorialController(screen: CameraStageBaseScreen) {
     }
 
     fun removeTutorial(tutorialName: String) {
-        Tutorial.valueOf(tutorialName)?.let { removeTutorial(it) }
+        Tutorial.valueOf(tutorialName).let { removeTutorial(it) }
     }
     fun removeTutorial(tutorial: Tutorial) {
         isTutorialShowing = false

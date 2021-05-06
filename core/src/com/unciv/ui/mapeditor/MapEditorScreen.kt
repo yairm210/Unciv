@@ -5,90 +5,53 @@ import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.InputEvent
 import com.badlogic.gdx.scenes.scene2d.InputListener
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
-import com.badlogic.gdx.scenes.scene2d.ui.SelectBox
-import com.badlogic.gdx.scenes.scene2d.ui.Skin
-import com.badlogic.gdx.utils.Array
-import com.unciv.logic.MapSaver
-import com.unciv.logic.map.Scenario
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
+import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
-import com.unciv.models.translations.tr
 import com.unciv.ui.newgamescreen.GameSetupInfo
-import com.unciv.ui.newgamescreen.IPreviousScreen
 import com.unciv.ui.utils.*
 
 class MapEditorScreen(): CameraStageBaseScreen() {
     var mapName = ""
     var tileMap = TileMap()
-    var scenarioName = ""   // when loading map: mapName is taken as default for scenarioName
-    var scenario: Scenario? = null // main indicator whether scenario information is present
-    var ruleset = RulesetCache.getBaseRuleset()
+    var ruleset = Ruleset().apply { add(RulesetCache.getBaseRuleset()) }
 
     var gameSetupInfo = GameSetupInfo()
     lateinit var mapHolder: EditorMapHolder
 
-    lateinit var tileEditorOptions: TileEditorOptionsTable
+    lateinit var mapEditorOptionsTable: MapEditorOptionsTable
 
     private val showHideEditorOptionsButton = ">".toTextButton()
 
 
-    constructor(mapNameToLoad: String?) : this() {
-        var mapToLoad = mapNameToLoad
-        if (mapToLoad == null) {
-            val existingSaves = MapSaver.getMaps()
-            if (existingSaves.isNotEmpty())
-                mapToLoad = existingSaves.first()
-        }
-
-        if (mapToLoad != null) {
-            mapName = mapToLoad
-            scenarioName = mapToLoad
-            tileMap = MapSaver.loadMap(mapName)
-        }
-
-        initialize()
-    }
-
     constructor(map: TileMap) : this() {
         tileMap = map
+        ruleset = RulesetCache.getComplexRuleset(map.mapParameters.mods)
         initialize()
     }
 
-    constructor(scenario: Scenario, scenarioName: String = "") : this() {
-        tileMap = scenario.tileMap
-        mapName = scenarioName
-        this.scenario = scenario
-        this.scenarioName = scenarioName
-
-        gameSetupInfo.gameParameters = scenario.gameParameters
-
-        ruleset = RulesetCache.getComplexRuleset(scenario.gameParameters)
-        ImageGetter.ruleset = ruleset
-        ImageGetter.setTextureRegionDrawables()
-        initialize()
-    }
-
-    fun initialize() {
+    private fun initialize() {
+        ImageGetter.setNewRuleset(ruleset)
         tileMap.setTransients(ruleset,false)
 
         mapHolder = EditorMapHolder(this, tileMap)
-        mapHolder.addTiles(stage.width)
+        mapHolder.addTiles(stage.width, stage.height)
         stage.addActor(mapHolder)
         stage.scrollFocus = mapHolder
 
-        tileEditorOptions = TileEditorOptionsTable(this)
-        stage.addActor(tileEditorOptions)
-        tileEditorOptions.setPosition(stage.width - tileEditorOptions.width, 0f)
+        mapEditorOptionsTable = MapEditorOptionsTable(this)
+        stage.addActor(mapEditorOptionsTable)
+        mapEditorOptionsTable.setPosition(stage.width - mapEditorOptionsTable.width, 0f)
 
         showHideEditorOptionsButton.labelCell.pad(10f)
         showHideEditorOptionsButton.pack()
         showHideEditorOptionsButton.onClick {
             if (showHideEditorOptionsButton.text.toString() == ">") {
-                tileEditorOptions.addAction(Actions.moveTo(stage.width, 0f, 0.5f))
+                mapEditorOptionsTable.addAction(Actions.moveTo(stage.width, 0f, 0.5f))
                 showHideEditorOptionsButton.setText("<")
             } else {
-                tileEditorOptions.addAction(Actions.moveTo(stage.width - tileEditorOptions.width, 0f, 0.5f))
+                mapEditorOptionsTable.addAction(Actions.moveTo(stage.width - mapEditorOptionsTable.width, 0f, 0.5f))
                 showHideEditorOptionsButton.setText(">")
             }
         }
@@ -134,20 +97,22 @@ class MapEditorScreen(): CameraStageBaseScreen() {
                 if (isPainting) {
 
                     for (tileInfo in lastDrawnTiles)
-                        mapHolder.tileGroups[tileInfo]!!.hideCircle()
+                        mapHolder.tileGroups[tileInfo]!!.forEach { it.hideCircle() }
                     lastDrawnTiles.clear()
 
                     val stageCoords = mapHolder.actor.stageToLocalCoordinates(Vector2(event!!.stageX, event.stageY))
                     val centerTileInfo = mapHolder.getClosestTileTo(stageCoords)
                     if (centerTileInfo != null) {
-                        val distance = tileEditorOptions.brushSize - 1
+                        val distance = mapEditorOptionsTable.brushSize - 1
 
                         for (tileInfo in tileMap.getTilesInDistance(centerTileInfo.position, distance)) {
-                            tileEditorOptions.updateTileWhenClicked(tileInfo)
+                            mapEditorOptionsTable.updateTileWhenClicked(tileInfo)
 
-                            tileInfo.setTransients()
-                            mapHolder.tileGroups[tileInfo]!!.update()
-                            mapHolder.tileGroups[tileInfo]!!.showCircle(Color.WHITE)
+                            tileInfo.setTerrainTransients()
+                            mapHolder.tileGroups[tileInfo]!!.forEach {
+                                it.update()
+                                it.showCircle(Color.WHITE)
+                            }
 
                             lastDrawnTiles.add(tileInfo)
                         }
@@ -172,25 +137,6 @@ class MapEditorScreen(): CameraStageBaseScreen() {
         if (stage.viewport.screenWidth != width || stage.viewport.screenHeight != height) {
             game.setScreen(MapEditorScreen(mapHolder.tileMap))
         }
-    }
-
-    fun hasScenario(): Boolean {
-        return this.scenario != null
-    }
-}
-
-class TranslatedSelectBox(values : Collection<String>, default:String, skin: Skin) : SelectBox<TranslatedSelectBox.TranslatedString>(skin) {
-    class TranslatedString(val value: String) {
-        val translation = value.tr()
-        override fun toString() = translation
-    }
-
-    init {
-        val array = Array<TranslatedString>()
-        values.forEach { array.add(TranslatedString(it)) }
-        items = array
-        val defaultItem = array.firstOrNull { it.value == default }
-        selected = if (defaultItem != null) defaultItem else array.first()
     }
 }
 

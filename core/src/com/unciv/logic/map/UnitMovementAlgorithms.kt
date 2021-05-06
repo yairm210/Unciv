@@ -2,7 +2,7 @@ package com.unciv.logic.map
 
 import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
-import com.unciv.UniqueAbility
+import com.unciv.UncivGame
 import com.unciv.logic.civilization.CivilizationInfo
 
 class UnitMovementAlgorithms(val unit:MapUnit) {
@@ -10,9 +10,12 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
     // This function is called ALL THE TIME and should be as time-optimal as possible!
     fun getMovementCostBetweenAdjacentTiles(from: TileInfo, to: TileInfo, civInfo: CivilizationInfo): Float {
 
-        if ((from.isLand != to.isLand) && unit.type.isLandUnit() &&
-                (unit.civInfo.nation.unique != UniqueAbility.VIKING_FURY))
+        if (from.isLand != to.isLand && !unit.civInfo.nation.embarkDisembarkCosts1 && unit.type.isLandUnit())
             return 100f // this is embarkment or disembarkment, and will take the entire turn
+
+        // land units will still spend all movement points to embark even with this unique
+        if (unit.allTilesCosts1)
+            return 1f
 
         var extraCost = 0f
 
@@ -28,24 +31,25 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
 
         if (areConnectedByRoad && (!areConnectedByRiver || civInfo.tech.roadsConnectAcrossRivers))
         {
-            return if (unit.civInfo.tech.movementSpeedOnRoadsImproved) 1 / 3f + extraCost
-            else 1 / 2f + extraCost
+            if (unit.civInfo.tech.movementSpeedOnRoadsImproved) return 1 / 3f + extraCost
+            else return 1 / 2f + extraCost
         }
         if (unit.ignoresTerrainCost) return 1f + extraCost
         if (areConnectedByRiver) return 100f  // Rivers take the entire turn to cross
 
-        if (unit.doubleMovementInForestAndJungle && (to.terrainFeature == Constants.forest || to.terrainFeature == Constants.jungle))
+        if (unit.doubleMovementInForestAndJungle &&
+                (to.terrainFeatures.contains(Constants.forest) || to.terrainFeatures.contains(Constants.jungle)))
             return 1f + extraCost // usually forest and jungle take 2 movements, so here it is 1
-        if (civInfo.nation.greatAndeanRoad && to.baseTerrain == Constants.hill)
+        if (civInfo.nation.ignoreHillMovementCost && to.isHill())
             return 1f + extraCost // usually hills take 2 movements, so here it is 1
 
-        if (unit.roughTerrainPenalty && to.isRoughTerrain())
+        if (unit.roughTerrainPenalty && to.getAllTerrains().any { it.rough || it.uniques.contains("Rough terrain") })
             return 4f + extraCost
 
         if (unit.doubleMovementInCoast && to.baseTerrain == Constants.coast)
             return 1 / 2f + extraCost
 
-        if (unit.doubleMovementInSnowTundraAndHills && to.baseTerrain == Constants.hill)
+        if (unit.doubleMovementInSnowTundraAndHills && to.isHill())
             return 1f + extraCost // usually hills take 2
         if (unit.doubleMovementInSnowTundraAndHills && (to.baseTerrain == Constants.snow || to.baseTerrain == Constants.tundra))
             return 1 / 2f + extraCost
@@ -55,13 +59,15 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
 
     class ParentTileAndTotalDistance(val parentTile: TileInfo, val totalDistance: Float)
 
+    fun isUnknownTileWeShouldAssumeToBePassable(tileInfo: TileInfo) = !unit.civInfo.exploredTiles.contains(tileInfo.position)
+
     fun getDistanceToTilesWithinTurn(origin: Vector2, unitMovement: Float): PathsToTilesWithinTurn {
         val distanceToTiles = PathsToTilesWithinTurn()
         if (unitMovement == 0f) return distanceToTiles
 
         val currentUnitTile = unit.currentTile
         // This is for performance, because this is called all the time
-        val unitTile = if(origin==currentUnitTile.position) currentUnitTile else currentUnitTile.tileMap[origin]
+        val unitTile = if (origin == currentUnitTile.position) currentUnitTile else currentUnitTile.tileMap[origin]
         distanceToTiles[unitTile] = ParentTileAndTotalDistance(unitTile, 0f)
         var tilesToCheck = listOf(unitTile)
 
@@ -71,16 +77,18 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
                 for (neighbor in tileToCheck.neighbors) {
                     var totalDistanceToTile: Float
 
-                    if (!canPassThrough(neighbor))
-                        totalDistanceToTile = unitMovement // Can't go here.
-                    // The reason that we don't just "return" is so that when calculating how to reach an enemy,
-                    // You need to assume his tile is reachable, otherwise all movement algs on reaching enemy
-                    // cities and units goes kaput.
+                    if (unit.civInfo.exploredTiles.contains(neighbor.position)) {
+                        if (!canPassThrough(neighbor))
+                            totalDistanceToTile = unitMovement // Can't go here.
+                        // The reason that we don't just "return" is so that when calculating how to reach an enemy,
+                        // You need to assume his tile is reachable, otherwise all movement algs on reaching enemy
+                        // cities and units goes kaput.
 
-                    else {
-                        val distanceBetweenTiles = getMovementCostBetweenAdjacentTiles(tileToCheck, neighbor, unit.civInfo)
-                        totalDistanceToTile = distanceToTiles[tileToCheck]!!.totalDistance + distanceBetweenTiles
-                    }
+                        else {
+                            val distanceBetweenTiles = getMovementCostBetweenAdjacentTiles(tileToCheck, neighbor, unit.civInfo)
+                            totalDistanceToTile = distanceToTiles[tileToCheck]!!.totalDistance + distanceBetweenTiles
+                        }
+                    } else totalDistanceToTile = distanceToTiles[tileToCheck]!!.totalDistance + 1f // If we don't know then we just guess it to be 1.
 
                     if (!distanceToTiles.containsKey(neighbor) || distanceToTiles[neighbor]!!.totalDistance > totalDistanceToTile) { // this is the new best path
                         if (totalDistanceToTile < unitMovement)  // We can still keep moving from here!
@@ -100,6 +108,7 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
         return distanceToTiles
     }
 
+    /** Returns an empty list if there's no way to get there */
     fun getShortestPath(destination: TileInfo): List<TileInfo> {
         val currentTile = unit.getTile()
         if (currentTile.position == destination) return listOf(currentTile) // edge case that's needed, so that workers will know that they can reach their own tile. *sigh*
@@ -124,7 +133,8 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
                         distanceToDestination[tileToCheck] = distanceToTilesThisTurn[reachableTile]!!.totalDistance
                     else {
                         if (movementTreeParents.containsKey(reachableTile)) continue // We cannot be faster than anything existing...
-                        if (!canMoveTo(reachableTile)) continue // This is a tile that we can't actually enter - either an intermediary tile containing our unit, or an enemy unit/city
+                        if (!isUnknownTileWeShouldAssumeToBePassable(reachableTile) &&
+                                 !canMoveTo(reachableTile)) continue // This is a tile that we can't actually enter - either an intermediary tile containing our unit, or an enemy unit/city
                         movementTreeParents[reachableTile] = tileToCheck
                         newTilesToCheck.add(reachableTile)
                     }
@@ -193,7 +203,7 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
     fun headTowards(destination: TileInfo): TileInfo {
         val destinationTileThisTurn = getTileToMoveToThisTurn(destination)
         moveToTile(destinationTileThisTurn)
-        return destinationTileThisTurn
+        return unit.currentTile
     }
 
     /** This is performance-heavy - use as last resort, only after checking everything else! */
@@ -227,13 +237,8 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
             unit.putInTile(allowedTile)
     }
 
-
     fun moveToTile(destination: TileInfo) {
         if (destination == unit.getTile()) return // already here!
-
-        class CantEnterThisTileException(msg: String) : Exception(msg)
-        if (!canMoveTo(destination))
-            throw CantEnterThisTileException("$unit can't enter $destination")
 
         if (unit.type.isAirUnit()) { // they move differently from all other units
             unit.action = null
@@ -245,35 +250,36 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
         }
 
         val distanceToTiles = getDistanceToTiles()
+        val pathToDestination = distanceToTiles.getPathToTile(destination)
+        val movableTiles = pathToDestination.takeWhile { canPassThrough(it) }
+        val lastReachableTile = movableTiles.lastOrNull { canMoveTo(it) }
+        if (lastReachableTile == null) // no tiles can pass though/can move to
+            return
+        val pathToLastReachableTile = distanceToTiles.getPathToTile(lastReachableTile)
 
-        class YouCantGetThereFromHereException(msg: String) : Exception(msg)
-        if (!distanceToTiles.containsKey(destination))
-            throw YouCantGetThereFromHereException("$unit can't get from ${unit.currentTile.position} to ${destination.position}.")
-
-        if (destination.isCityCenter() && destination.getOwner() != unit.civInfo && !destination.getCity()!!.hasJustBeenConquered)
-            throw Exception("This is an enemy city, you can't go here!")
-
-        unit.currentMovement -= distanceToTiles[destination]!!.totalDistance
-        if (unit.currentMovement < 0.1) unit.currentMovement = 0f // silly floats which are "almost zero"
+        if (!unit.civInfo.gameInfo.gameParameters.godMode) {
+            unit.currentMovement -= distanceToTiles[lastReachableTile]!!.totalDistance
+            if (unit.currentMovement < 0.1) unit.currentMovement = 0f // silly floats which are "almost zero"
+        }
         if (unit.isFortified() || unit.action == Constants.unitActionSetUp || unit.isSleeping())
             unit.action = null // unfortify/setup after moving
 
         // If this unit is a carrier, keep record of its air payload whereabouts.
         val origin = unit.getTile()
         unit.removeFromTile()
-        unit.putInTile(destination)
+        unit.putInTile(lastReachableTile)
 
         // The .toList() here is because we have a sequence that's running on the units in the tile,
         // then if we move one of the units we'll get a ConcurrentModificationException, se we save them all to a list
         for (payload in origin.getUnits().filter { it.isTransported && unit.canTransport(it) }.toList()) {  // bring along the payloads
             payload.removeFromTile()
-            payload.putInTile(destination)
+            payload.putInTile(lastReachableTile)
             payload.isTransported = true // restore the flag to not leave the payload in the cit
         }
 
         // Unit maintenance changed
         if (unit.canGarrison()
-                && (origin.isCityCenter() || destination.isCityCenter())
+                && (origin.isCityCenter() || lastReachableTile.isCityCenter())
                 && unit.civInfo.hasUnique("Units in cities cost no Maintenance")
         ) unit.civInfo.updateStatsForNextTurn()
 
@@ -283,8 +289,7 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
         // If you're going to (or past) a ruin, and you activate the ruin bonus, and A UNIT spawns.
         // That unit could now be blocking your entrance to the destination, so the putInTile would fail! =0
         // Instead, we move you to the destination directly, and only afterwards activate the various tiles on the way.
-        val pathToFinalTile = distanceToTiles.getPathToTile(destination)
-        for (tile in pathToFinalTile) {
+        for (tile in pathToLastReachableTile) {
             unit.moveThroughTile(tile)
         }
 
@@ -302,7 +307,7 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
         if (!canPassThrough(tile))
             return false
 
-        if(tile.isCityCenter() && tile.getOwner()!=unit.civInfo) return false // even if they'll let us pass through, we can't enter their city
+        if (tile.isCityCenter() && tile.getOwner() != unit.civInfo) return false // even if they'll let us pass through, we can't enter their city
 
         if (unit.type.isCivilian())
             return tile.civilianUnit == null && (tile.militaryUnit == null || tile.militaryUnit!!.owner == unit.owner)
@@ -328,9 +333,10 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
     // so multiple callees of this function have been optimized,
     // because optimization on this function results in massive benefits!
     fun canPassThrough(tile: TileInfo): Boolean {
-        if (tile.isImpassible()){
-            // special exception - ice tiles are technically impassible, but somme units can move through them anyway
-            if (!(tile.terrainFeature == Constants.ice && unit.canEnterIceTiles))
+        if (tile.isImpassible()) {
+            // special exception - ice tiles are technically impassible, but some units can move through them anyway
+            // helicopters can pass through impassable tiles like mountains
+            if (!(tile.terrainFeatures.contains(Constants.ice) && unit.canEnterIceTiles) && !unit.canPassThroughImpassableTiles)
                 return false
         }
         if (tile.isLand
@@ -345,7 +351,7 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
             if (tile.isOcean && !unit.civInfo.tech.embarkedUnitsCanEnterOcean)
                 return false
         }
-        if (tile.isOcean && unit.civInfo.nation.unique != UniqueAbility.WAYFINDING) {
+        if (tile.isOcean && !unit.civInfo.tech.wayfinding) { // Apparently all Polynesian naval units can enter oceans
             if (unit.cannotEnterOceanTiles) return false
             if (unit.cannotEnterOceanTilesUntilAstronomy
                     && !unit.civInfo.tech.isResearched("Astronomy"))
@@ -353,14 +359,7 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
         }
         if (tile.naturalWonder != null) return false
 
-        val tileOwner = tile.getOwner()
-        if (tileOwner != null && tileOwner != unit.civInfo) { // comparing the CivInfo objects is cheaper than comparing strings
-            if (tile.isCityCenter() && unit.civInfo.isAtWarWith(tileOwner)
-                    && !tile.getCity()!!.hasJustBeenConquered) return false
-            if (!unit.civInfo.canEnterTiles(tileOwner)
-                    && !(unit.civInfo.isPlayerCivilization() && tileOwner.isCityState())) return false
-            // AIs won't enter city-state's border.
-        }
+        if (!tile.canCivEnter(unit.civInfo)) return false
 
         val firstUnit = tile.getFirstUnit()
         if (firstUnit != null && firstUnit.civInfo != unit.civInfo && unit.civInfo.isAtWarWith(firstUnit.civInfo))
@@ -368,6 +367,7 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
 
         return true
     }
+
 
     fun getDistanceToTiles(): PathsToTilesWithinTurn = getDistanceToTilesWithinTurn(unit.currentTile.position, unit.currentMovement)
 

@@ -8,13 +8,10 @@ import com.badlogic.gdx.utils.Align
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.MapUnit
-import com.unciv.ui.utils.ImageGetter
-import com.unciv.ui.utils.UnitGroup
-import com.unciv.ui.utils.center
-import com.unciv.ui.utils.toLabel
+import com.unciv.ui.utils.*
 
 /** Helper class for TileGroup, which was getting too full */
-class TileGroupIcons(val tileGroup: TileGroup){
+class TileGroupIcons(val tileGroup: TileGroup) {
 
     var improvementIcon: Actor? = null
     var populationIcon: Image? = null //reuse for acquire icon
@@ -22,9 +19,11 @@ class TileGroupIcons(val tileGroup: TileGroup){
     var civilianUnitIcon: UnitGroup? = null
     var militaryUnitIcon: UnitGroup? = null
 
-    fun update(showResourcesAndImprovements: Boolean, tileIsViewable: Boolean, showMilitaryUnit: Boolean, viewingCiv:CivilizationInfo?) {
+    fun update(showResourcesAndImprovements: Boolean, showTileYields: Boolean, tileIsViewable: Boolean, showMilitaryUnit: Boolean, viewingCiv: CivilizationInfo?) {
         updateResourceIcon(showResourcesAndImprovements)
         updateImprovementIcon(showResourcesAndImprovements)
+
+        if (viewingCiv != null) updateYieldIcon(showTileYields, viewingCiv)
 
         civilianUnitIcon = newUnitIcon(tileGroup.tileInfo.civilianUnit, civilianUnitIcon,
                 tileIsViewable, -20f, viewingCiv)
@@ -53,6 +52,7 @@ class TileGroupIcons(val tileGroup: TileGroup){
     fun newUnitIcon(unit: MapUnit?, oldUnitGroup: UnitGroup?, isViewable: Boolean, yFromCenter: Float, viewingCiv: CivilizationInfo?): UnitGroup? {
         var newImage: UnitGroup? = null
         // The unit can change within one update - for instance, when attacking, the attacker replaces the defender!
+        oldUnitGroup?.unitBaseImage?.remove()
         oldUnitGroup?.remove()
 
         if (unit != null && isViewable) { // Tile is visible
@@ -65,17 +65,26 @@ class TileGroupIcons(val tileGroup: TileGroup){
             newImage.center(tileGroup)
             newImage.y += yFromCenter
 
+            // We "steal" the unit image so that all backgrounds are rendered next to each other
+            // to save texture swapping and improve framerate
+            tileGroup.unitImageLayerGroup.addActor(newImage.unitBaseImage)
+            newImage.unitBaseImage.center(tileGroup)
+            newImage.unitBaseImage.y += yFromCenter
+
             // Display number of carried air units
             if (unit.getTile().airUnits.any { unit.isTransportTypeOf(it) } && !unit.getTile().isCityCenter()) {
                 val holder = Table()
                 val secondarycolor = unit.civInfo.nation.getInnerColor()
-                val airUnitTable = Table().apply { defaults().pad(5f) }
-                airUnitTable.background = ImageGetter.getRoundedEdgeTableBackground(unit.civInfo.nation.getOuterColor())
+                val airUnitTable = Table().apply { defaults().pad(3f) }
+                airUnitTable.background = ImageGetter.getBackground(unit.civInfo.nation.getOuterColor())
                 val aircraftImage = ImageGetter.getImage("OtherIcons/Aircraft")
                 aircraftImage.color = secondarycolor
-                airUnitTable.add(aircraftImage).size(15f)
-                airUnitTable.add(unit.getTile().airUnits.size.toString().toLabel(secondarycolor, 14))
-                holder.add(airUnitTable).row()
+                airUnitTable.add(aircraftImage).size(10f)
+                airUnitTable.add(unit.getTile().airUnits.size.toString().toLabel(secondarycolor, 10))
+                val surroundedWithCircle = airUnitTable.surroundWithCircle(20f,false, unit.civInfo.nation.getOuterColor())
+                surroundedWithCircle.circle.width *= 1.5f
+                surroundedWithCircle.circle.centerX(surroundedWithCircle)
+                holder.add(surroundedWithCircle).row()
                 holder.setOrigin(Align.center)
                 holder.center(tileGroup)
                 newImage.addActor(holder)
@@ -97,7 +106,7 @@ class TileGroupIcons(val tileGroup: TileGroup){
         if (tileGroup.tileInfo.improvement != null && showResourcesAndImprovements) {
             val newImprovementImage = ImageGetter.getImprovementIcon(tileGroup.tileInfo.improvement!!)
             tileGroup.miscLayerGroup.addActor(newImprovementImage)
-            newImprovementImage .run {
+            newImprovementImage.run {
                 setSize(20f, 20f)
                 center(tileGroup)
                 this.x -= 22 // left
@@ -109,6 +118,29 @@ class TileGroupIcons(val tileGroup: TileGroup){
             improvementIcon!!.color = Color.WHITE.cpy().apply { a = 0.7f }
         }
     }
+
+    // JN updating display of tile yields
+    private fun updateYieldIcon(showTileYields: Boolean, viewingCiv: CivilizationInfo) {
+
+        // Hiding yield icons (in order to update)
+        tileGroup.tileYieldGroup.isVisible = false
+
+
+        if (showTileYields) {
+            // Setting up YieldGroup Icon
+            tileGroup.tileYieldGroup.setStats(tileGroup.tileInfo.getTileStats(viewingCiv))
+            tileGroup.tileYieldGroup.setOrigin(Align.center)
+            tileGroup.tileYieldGroup.setScale(0.7f)
+            tileGroup.tileYieldGroup.toFront()
+            tileGroup.tileYieldGroup.centerX(tileGroup)
+            tileGroup.tileYieldGroup.y = tileGroup.height * 0.25f - tileGroup.tileYieldGroup.height / 2
+            tileGroup.tileYieldGroup.isVisible = true
+
+            // Adding YieldGroup to miscLayerGroup
+            tileGroup.miscLayerGroup.addActor(tileGroup.tileYieldGroup)
+        }
+    }
+
 
     fun updateResourceIcon(showResourcesAndImprovements: Boolean) {
         if (tileGroup.resource != tileGroup.tileInfo.resource) {

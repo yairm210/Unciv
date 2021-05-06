@@ -32,6 +32,10 @@ class Translations : LinkedHashMap<String, TranslationEntry>(){
 
     private var modsWithTranslations: HashMap<String, Translations> = hashMapOf() // key == mod name
 
+    // used by tr() whenever GameInfo not initialized (allowing new game screen to use mod translations)
+    var translationActiveMods = LinkedHashSet<String>()
+
+
     /**
      * Searches for the translation entry of a given [text] for a given [language].
      * This includes translations provided by mods from [activeMods]
@@ -71,7 +75,7 @@ class Translations : LinkedHashMap<String, TranslationEntry>(){
     }
 
 
-    private fun tryReadTranslationForLanguage(language: String) {
+    private fun tryReadTranslationForLanguage(language: String, printOutput: Boolean) {
         val translationStart = System.currentTimeMillis()
 
         val translationFileName = "jsons/translations/$language.properties"
@@ -99,7 +103,7 @@ class Translations : LinkedHashMap<String, TranslationEntry>(){
         createTranslations(language, languageTranslations)
 
         val translationFilesTime = System.currentTimeMillis() - translationStart
-        println("Loading translation file for $language - " + translationFilesTime + "ms")
+        if(printOutput) println("Loading translation file for $language - " + translationFilesTime + "ms")
     }
 
     private fun createTranslations(language: String,
@@ -107,7 +111,7 @@ class Translations : LinkedHashMap<String, TranslationEntry>(){
                                   targetTranslations: Translations = this) {
         for (translation in languageTranslations) {
             val hashKey = if (translation.key.contains('['))
-                translation.key.replace(squareBraceRegex, "[]")
+                translation.key.getPlaceholderText()
             else translation.key
             if (!containsKey(hashKey))
                 targetTranslations[hashKey] = TranslationEntry(translation.key)
@@ -120,13 +124,13 @@ class Translations : LinkedHashMap<String, TranslationEntry>(){
     }
 
     fun tryReadTranslationForCurrentLanguage(){
-        tryReadTranslationForLanguage(UncivGame.Current.settings.language)
+        tryReadTranslationForLanguage(UncivGame.Current.settings.language, false)
     }
 
     // This function is too strange for me, however, let's keep it "as is" for now. - JackRainy
     private fun getLanguagesWithTranslationFile(): List<String> {
 
-        val languages = ArrayList<String>()
+        val languages = HashSet<String>()
         // So apparently the Locales don't work for everyone, which is horrendous
         // So for those players, which seem to be Android-y, we try to see what files exist directly...yeah =/
         try{
@@ -146,13 +150,13 @@ class Translations : LinkedHashMap<String, TranslationEntry>(){
         languages.remove("template")
         languages.remove("completionPercentages")
         languages.remove("Thai") // Until we figure out what to do with it
+        languages.remove("Vietnamese") // Until we figure out what to do with it
 
-        return languages.distinct()
-                .filter { it!="Thai" &&
-                        Gdx.files.internal("jsons/translations/$it.properties").exists() }
+        return languages
+                .filter { Gdx.files.internal("jsons/translations/$it.properties").exists() }
     }
 
-    fun readAllLanguagesTranslation() {
+    fun readAllLanguagesTranslation(printOutput:Boolean=false) {
         // Apparently you can't iterate over the files in a directory when running out of a .jar...
         // https://www.badlogicgames.com/forum/viewtopic.php?f=11&t=27250
         // which means we need to list everything manually =/
@@ -160,11 +164,11 @@ class Translations : LinkedHashMap<String, TranslationEntry>(){
         val translationStart = System.currentTimeMillis()
 
         for (language in getLanguagesWithTranslationFile()) {
-            tryReadTranslationForLanguage(language)
+            tryReadTranslationForLanguage(language, printOutput)
         }
 
         val translationFilesTime = System.currentTimeMillis() - translationStart
-        println("Loading translation files - "+translationFilesTime+"ms")
+        if(printOutput) println("Loading translation files - "+translationFilesTime+"ms")
     }
 
     fun loadPercentageCompleteOfLanguages(){
@@ -222,8 +226,9 @@ val curlyBraceRegex = Regex("""\{([^}]*)\}""")
  *                  but with placeholder or sentence brackets removed.
  */
 fun String.tr(): String {
-    val activeMods = if (UncivGame.Current.isGameInfoInitialized())
-        UncivGame.Current.gameInfo.gameParameters.mods else null
+    val activeMods = with(UncivGame.Current) {
+        if (isGameInfoInitialized()) gameInfo.gameParameters.mods else translations.translationActiveMods
+    }
 
     // There might still be optimization potential here!
     if (contains("[")) { // Placeholders!
@@ -241,7 +246,7 @@ fun String.tr(): String {
          */
 
         // Convert "work on [building] has completed in [city]" to "work on [] has completed in []"
-        val translationStringWithSquareBracketsOnly = this.replace(squareBraceRegex, "[]")
+        val translationStringWithSquareBracketsOnly = this.getPlaceholderText()
         // That is now the key into the translation HashMap!
         val translationEntry = UncivGame.Current.translations
                 .get(translationStringWithSquareBracketsOnly, UncivGame.Current.settings.language, activeMods)
@@ -283,3 +288,15 @@ fun String.equalsPlaceholderText(str:String): Boolean {
 }
 
 fun String.getPlaceholderParameters() = squareBraceRegex.findAll(this).map { it.groups[1]!!.value }.toList()
+
+/** Substitutes placeholders with [strings], respecting order of appearance. */
+fun String.fillPlaceholders(vararg strings: String): String {
+    val keys = this.getPlaceholderParameters()
+    if (keys.size > strings.size)
+        throw Exception("String $this has a different number of placeholders ${keys.joinToString()} (${keys.size}) than the substitutive strings ${strings.joinToString()} (${strings.size})!")
+
+    var filledString = this
+    for (i in keys.indices)
+        filledString = filledString.replaceFirst(keys[i], strings[i])
+    return filledString
+}

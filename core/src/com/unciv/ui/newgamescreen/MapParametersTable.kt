@@ -6,6 +6,11 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextField
 import com.unciv.Constants
 import com.unciv.logic.map.*
+import com.unciv.UncivGame
+import com.unciv.logic.map.MapParameters
+import com.unciv.logic.map.MapShape
+import com.unciv.logic.map.MapSize
+import com.unciv.logic.map.MapType
 import com.unciv.models.translations.tr
 import com.unciv.ui.utils.*
 
@@ -24,6 +29,7 @@ class MapParametersTable(val mapParameters: MapParameters, val isEmptyMapAllowed
     private var rectangularSizeTable = Table()
     lateinit var noRuinsCheckbox: CheckBox
     lateinit var noNaturalWondersCheckbox: CheckBox
+    lateinit var worldWrapCheckbox: CheckBox
 
 
     init {
@@ -34,6 +40,9 @@ class MapParametersTable(val mapParameters: MapParameters, val isEmptyMapAllowed
         addWorldSizeTable()
         addNoRuinsCheckbox()
         addNoNaturalWondersCheckbox()
+        if (UncivGame.Current.settings.showExperimentalWorldWrap) {
+            addWorldWrapCheckbox()
+        }
         addAdvancedSettings()
     }
 
@@ -163,6 +172,17 @@ class MapParametersTable(val mapParameters: MapParameters, val isEmptyMapAllowed
             mapParameters.noNaturalWonders = noNaturalWondersCheckbox.isChecked
         }
         add(noNaturalWondersCheckbox).colspan(2).row()
+    }
+
+    private fun addWorldWrapCheckbox() {
+        worldWrapCheckbox = CheckBox("World Wrap".tr(), skin)
+        worldWrapCheckbox.isChecked = mapParameters.worldWrap
+        worldWrapCheckbox.onChange {
+            mapParameters.worldWrap = worldWrapCheckbox.isChecked
+        }
+        add(worldWrapCheckbox).colspan(2).row()
+        add("World wrap maps are very memory intensive - creating large world wrap maps on Android can lead to crashes!"
+                .toLabel(fontSize = 14).apply { wrap=true }).colspan(2).fillX().row()
     }
 
     private fun addAdvancedSettings() {

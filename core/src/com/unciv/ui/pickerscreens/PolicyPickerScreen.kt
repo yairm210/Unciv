@@ -25,27 +25,27 @@ class PolicyPickerScreen(val worldScreen: WorldScreen, civInfo: CivilizationInfo
 
         rightSideButton.setText("{Adopt policy}\r\n(".tr() + policies.storedCulture + "/" + policies.getCultureNeededForNextPolicy() + ")")
 
+        if (viewingCiv.gameInfo.ruleSet.policies.values.all { it.name in policies.adoptedPolicies })
+            rightSideButton.setText("All policies adopted".tr())
+
         setDefaultCloseAction()
         if (policies.freePolicies > 0) {
             rightSideButton.setText("Adopt free policy".tr())
-            closeButton.disable()
-        }
-        else onBackButtonClicked { UncivGame.Current.setWorldScreen() }
+            if (policies.canAdoptPolicy()) closeButton.disable()
+        } else onBackButtonClicked { UncivGame.Current.setWorldScreen() }
 
         rightSideButton.onClick(UncivSound.Policy) {
             viewingCiv.policies.adopt(pickedPolicy!!)
 
             // If we've moved to another screen in the meantime (great person pick, victory screen) ignore this
-            if(game.screen !is PolicyPickerScreen || !policies.canAdoptPolicy()){
+            if (game.screen !is PolicyPickerScreen || !policies.canAdoptPolicy()) {
                 game.setWorldScreen()
                 dispose()
-            }
-            else game.setScreen(PolicyPickerScreen(worldScreen))  // update policies
+            } else game.setScreen(PolicyPickerScreen(worldScreen))  // update policies
         }
-        if(!UncivGame.Current.worldScreen.canChangeState)
-            rightSideButton.disable()
-        
 
+        if (!UncivGame.Current.worldScreen.canChangeState)
+            rightSideButton.disable()
 
         topTable.row().pad(30f)
 
@@ -83,6 +83,7 @@ class PolicyPickerScreen(val worldScreen: WorldScreen, civInfo: CivilizationInfo
 
     private fun pickPolicy(policy: Policy) {
         if (!worldScreen.isPlayersTurn
+                || worldScreen.viewingCiv.isSpectator() // viewingCiv var points to selectedCiv in case of spectator
                 || viewingCiv.isDefeated()
                 || viewingCiv.policies.isAdopted(policy.name)
                 || policy.name.endsWith("Complete")
@@ -92,17 +93,21 @@ class PolicyPickerScreen(val worldScreen: WorldScreen, civInfo: CivilizationInfo
         } else {
             rightSideButton.enable()
         }
+        if (viewingCiv.gameInfo.gameParameters.godMode && pickedPolicy == policy
+                && viewingCiv.policies.isAdoptable(policy)) {
+            viewingCiv.policies.adopt(policy)
+            game.setScreen(PolicyPickerScreen(worldScreen))
+        }
         pickedPolicy = policy
         val policyText = mutableListOf<String>()
         policyText += policy.name
-//        policyText += policy.effect
         policyText += policy.uniques
 
         if (!policy.name.endsWith("Complete")) {
             if (policy.requires!!.isNotEmpty())
-                policyText += "{Requires} ".tr() + policy.requires!!.joinToString { it.tr() }
+                policyText += "Requires [" + policy.requires!!.joinToString { it.tr() } + "]"
             else
-                policyText += ("{Unlocked at} {" + policy.branch.era + "}").tr()
+                policyText += "{Unlocked at} {" + policy.branch.era + "}"
         }
         descriptionLabel.setText(policyText.joinToString("\r\n") { it.tr() })
     }
@@ -116,13 +121,10 @@ class PolicyPickerScreen(val worldScreen: WorldScreen, civInfo: CivilizationInfo
             policyButton = policy.name.toTextButton()
         }
 
-        if (viewingCiv.policies.isAdopted(policy.name)) { // existing
-            policyButton.color = Color.GREEN
-        } else if (!viewingCiv.policies.isAdoptable(policy))
-        // non-available
-        {
-            policyButton.color = Color.GRAY
-        }
+        if (viewingCiv.policies.isAdopted(policy.name)) policyButton.color = Color.GREEN // existing
+        else if (!viewingCiv.policies.isAdoptable(policy)) policyButton.color = Color.GRAY // non-available
+
+
         policyButton.onClick { pickPolicy(policy) }
         policyButton.pack()
         return policyButton

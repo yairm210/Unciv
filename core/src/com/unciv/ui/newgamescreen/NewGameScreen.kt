@@ -1,14 +1,14 @@
 package com.unciv.ui.newgamescreen
 
-import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox
 import com.badlogic.gdx.scenes.scene2d.ui.Skin
 import com.badlogic.gdx.utils.Array
-import com.unciv.UncivGame
 import com.unciv.logic.*
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.map.MapParameters
+import com.unciv.logic.map.MapType
 import com.unciv.models.metadata.GameParameters
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.translations.tr
@@ -16,10 +16,13 @@ import com.unciv.ui.pickerscreens.PickerScreen
 import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.mainmenu.OnlineMultiplayer
 import java.util.*
+import kotlin.collections.HashSet
 import kotlin.concurrent.thread
+import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 
 
 class GameSetupInfo(var gameId:String, var gameParameters: GameParameters, var mapParameters: MapParameters) {
+    var mapFile: FileHandle? = null
     constructor() : this("", GameParameters(), MapParameters())
     constructor(gameInfo: GameInfo) : this("", gameInfo.gameParameters.clone(), gameInfo.tileMap.mapParameters)
     constructor(gameParameters: GameParameters, mapParameters: MapParameters) : this("", gameParameters, mapParameters)
@@ -33,12 +36,13 @@ class GameSetupInfo(var gameId:String, var gameParameters: GameParameters, var m
     }
 }
 
-class NewGameScreen(previousScreen:CameraStageBaseScreen, _gameSetupInfo: GameSetupInfo?=null): IPreviousScreen, PickerScreen() {
-    override val gameSetupInfo =  _gameSetupInfo ?: GameSetupInfo()
-    override val ruleset = RulesetCache.getComplexRuleset(gameSetupInfo.gameParameters)
+class NewGameScreen(private val previousScreen: CameraStageBaseScreen, _gameSetupInfo: GameSetupInfo?=null): IPreviousScreen, PickerScreen() {
+    override val gameSetupInfo = _gameSetupInfo ?: GameSetupInfo()
+    override var ruleset = RulesetCache.getComplexRuleset(gameSetupInfo.gameParameters.mods) // needs to be set because the gameoptionstable etc. depend on this
     var newGameOptionsTable = GameOptionsTable(this) { desiredCiv: String -> playerPickerTable.update(desiredCiv) }
+
     // Has to be defined before the mapOptionsTable, since the mapOptionsTable refers to it on init
-    var playerPickerTable = PlayerPickerTable(this, gameSetupInfo.gameParameters)
+    private var playerPickerTable = PlayerPickerTable(this, gameSetupInfo.gameParameters)
     var mapOptionsTable = MapOptionsTable(this)
 
 
@@ -47,15 +51,17 @@ class NewGameScreen(previousScreen:CameraStageBaseScreen, _gameSetupInfo: GameSe
         scrollPane.setScrollingDisabled(true, true)
 
         topTable.add(ScrollPane(newGameOptionsTable).apply { setOverscroll(false, false) })
-                .maxHeight(topTable.parent.height).width(stage.width / 3).padTop(20f).top()
+                .width(stage.width / 3).padTop(20f).top()
         topTable.addSeparatorVertical()
         topTable.add(ScrollPane(mapOptionsTable).apply { setOverscroll(false, false) })
-                .maxHeight(topTable.parent.height).width(stage.width / 3).padTop(20f).top()
+                .width(stage.width / 3).padTop(20f).top()
         topTable.addSeparatorVertical()
-        topTable.add(playerPickerTable).maxHeight(topTable.parent.height).width(stage.width / 3).padTop(20f).top()
+        topTable.add(ScrollPane(playerPickerTable)
+                .apply { setOverscroll(false, false) }
+                .apply { setScrollingDisabled(true, false) })
+                .width(stage.width / 3).padTop(20f).top()
 
-        topTable.pack()
-        topTable.setFillParent(true)
+        updateRuleset()
 
         rightSideButton.enable()
         rightSideButton.setText("Start game!".tr())
@@ -83,6 +89,27 @@ class NewGameScreen(previousScreen:CameraStageBaseScreen, _gameSetupInfo: GameSe
             }
 
             Gdx.input.inputProcessor = null // remove input processing - nothing will be clicked!
+
+
+            if (mapOptionsTable.mapTypeSelectBox.selected.value == MapType.custom){
+                val map = MapSaver.loadMap(gameSetupInfo.mapFile!!)
+                val rulesetIncompatibilities = HashSet<String>()
+                for (set in map.values.map { it.getRulesetIncompatibility(ruleset) })
+                    rulesetIncompatibilities.addAll(set)
+                rulesetIncompatibilities.remove("")
+
+                if (rulesetIncompatibilities.isNotEmpty()) {
+                    val incompatibleMap = Popup(this)
+                    incompatibleMap.addGoodSizedLabel("Map is incompatible with the chosen ruleset!".tr()).row()
+                    for(incompat in rulesetIncompatibilities)
+                        incompatibleMap.addGoodSizedLabel(incompat).row()
+                    incompatibleMap.addCloseButton()
+                    incompatibleMap.open()
+                    game.setScreen(this) // to get the input back
+                    return@onClick
+                }
+            }
+
             rightSideButton.disable()
             rightSideButton.setText("Working...".tr())
 
@@ -96,28 +123,6 @@ class NewGameScreen(previousScreen:CameraStageBaseScreen, _gameSetupInfo: GameSe
     private fun newGameThread() {
         try {
             newGame = GameStarter.startNewGame(gameSetupInfo)
-            if (gameSetupInfo.gameParameters.isOnlineMultiplayer) {
-                newGame!!.isUpToDate = true // So we don't try to download it from dropbox the second after we upload it - the file is not yet ready for loading!
-                try {
-                    OnlineMultiplayer().tryUploadGame(newGame!!)
-                    GameSaver.autoSave(newGame!!) {}
-
-                    // Saved as Multiplayer game to show up in the session browser
-                    GameSaver.saveGame(newGame!!, newGame!!.gameId, true)
-                    // Save gameId to clipboard because you have to do it anyway.
-                    Gdx.app.clipboard.contents = newGame!!.gameId
-                    // Popup to notify the User that the gameID got copied to the clipboard
-                    Gdx.app.postRunnable { ResponsePopup("gameID copied to clipboard".tr(), UncivGame.Current.worldScreen, 2500) }
-                } catch (ex: Exception) {
-                    Gdx.app.postRunnable {
-                        val cantUploadNewGamePopup = Popup(this)
-                        cantUploadNewGamePopup.addGoodSizedLabel("Could not upload game!")
-                        cantUploadNewGamePopup.addCloseButton()
-                        cantUploadNewGamePopup.open()
-                    }
-                    newGame = null
-                }
-            }
         } catch (exception: Exception) {
             Gdx.app.postRunnable {
                 val cantMakeThatMapPopup = Popup(this)
@@ -130,13 +135,40 @@ class NewGameScreen(previousScreen:CameraStageBaseScreen, _gameSetupInfo: GameSe
                 rightSideButton.setText("Start game!".tr())
             }
         }
+
+        if (newGame != null && gameSetupInfo.gameParameters.isOnlineMultiplayer) {
+            newGame!!.isUpToDate = true // So we don't try to download it from dropbox the second after we upload it - the file is not yet ready for loading!
+            try {
+                OnlineMultiplayer().tryUploadGame(newGame!!)
+
+                // Save gameId to clipboard because you have to do it anyway.
+                Gdx.app.clipboard.contents = newGame!!.gameId
+                // Popup to notify the User that the gameID got copied to the clipboard
+                Gdx.app.postRunnable { ToastPopup("gameID copied to clipboard".tr(), game.worldScreen, 2500) }
+
+                GameSaver.autoSave(newGame!!) {}
+
+                // Saved as Multiplayer game to show up in the session browser
+                GameSaver.saveGame(newGame!!, newGame!!.gameId, true)
+            } catch (ex: Exception) {
+                Gdx.app.postRunnable {
+                    val cantUploadNewGamePopup = Popup(this)
+                    cantUploadNewGamePopup.addGoodSizedLabel("Could not upload game!")
+                    cantUploadNewGamePopup.addCloseButton()
+                    cantUploadNewGamePopup.open()
+                }
+                newGame = null
+            }
+        }
+
         Gdx.graphics.requestRendering()
     }
 
-//    fun setNewGameButtonEnabled(bool: Boolean) {
-//        if (bool) rightSideButton.enable()
-//        else rightSideButton.disable()
-//    }
+    fun updateRuleset() {
+        ruleset.clear()
+        ruleset.add(RulesetCache.getComplexRuleset(gameSetupInfo.gameParameters.mods))
+        ImageGetter.setNewRuleset(ruleset)
+    }
 
     fun lockTables() {
         playerPickerTable.locked = true
@@ -158,8 +190,17 @@ class NewGameScreen(previousScreen:CameraStageBaseScreen, _gameSetupInfo: GameSe
     var newGame: GameInfo? = null
 
     override fun render(delta: Float) {
-        if (newGame != null) game.loadGame(newGame!!)
+        if (newGame != null) {
+            game.loadGame(newGame!!)
+            previousScreen.dispose()
+        }
         super.render(delta)
+    }
+
+    override fun resize(width: Int, height: Int) {
+        if (stage.viewport.screenWidth != width || stage.viewport.screenHeight != height) {
+            game.setScreen(NewGameScreen(previousScreen, gameSetupInfo))
+        }
     }
 }
 

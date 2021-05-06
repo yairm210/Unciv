@@ -8,6 +8,8 @@ import kotlin.math.sqrt
 
 
 open class ZoomableScrollPane: ScrollPane(null) {
+    var continousScrollingX = false
+
     init{
         // Remove the existing inputListener
         // which defines that mouse scroll = vertical movement
@@ -17,16 +19,22 @@ open class ZoomableScrollPane: ScrollPane(null) {
     }
 
     open fun zoom(zoomScale: Float) {
-        if (zoomScale < 0.5f || zoomScale > 10) return
+        if (zoomScale < 0.5f || zoomScale > 2f) return
         setScale(zoomScale)
+    }
+    fun zoomIn() {
+        zoom(scaleX / 0.8f)
+    }
+    fun zoomOut() {
+        zoom(scaleX * 0.8f)
     }
 
     private fun addZoomListeners() {
 
         addListener(object : InputListener() {
-            override fun scrolled(event: InputEvent?, x: Float, y: Float, amount: Int): Boolean {
-                if(amount > 0) zoom(scaleX * 0.8f)
-                else zoom(scaleX / 0.8f)
+            override fun scrolled(event: InputEvent?, x: Float, y: Float, amountX: Float, amountY: Float): Boolean {
+                if (amountX > 0 || amountY > 0) zoomOut()
+                else zoomIn()
                 return false
             }
         })
@@ -44,5 +52,31 @@ open class ZoomableScrollPane: ScrollPane(null) {
                 zoom(scale)
             }
         })
+    }
+
+    override fun getFlickScrollListener(): ActorGestureListener {
+        //This is mostly just Java code from the ScrollPane class reimplemented as Kotlin code
+        //Had to change a few things to bypass private access modifiers
+        return object : ActorGestureListener() {
+            override fun pan(event: InputEvent, x: Float, y: Float, deltaX: Float, deltaY: Float) {
+                setScrollbarsVisible(true)
+                scrollX -= deltaX
+                scrollY += deltaY
+
+                //this is the new feature to fake an infinite scroll
+                when {
+                    continousScrollingX && scrollPercentX >= 1 && deltaX < 0 -> {
+                        scrollPercentX = 0f
+                    }
+                    continousScrollingX && scrollPercentX <= 0 && deltaX > 0-> {
+                        scrollPercentX = 1f
+                    }
+                }
+
+                //clamp() call is missing here but it doesn't seem to make any big difference in this case
+
+                if ((isScrollX && deltaX != 0f || isScrollY && deltaY != 0f)) cancelTouchFocus()
+            }
+        }
     }
 }

@@ -30,6 +30,7 @@ class UnitMovementAlgorithmsTests {
         RulesetCache.loadRulesets()
         ruleSet = RulesetCache.getBaseRuleset()
         tile.ruleset = ruleSet
+        tile.baseTerrain = Constants.grassland
         civInfo.tech.techsResearched.addAll(ruleSet.technologies.keys)
         civInfo.tech.embarkedUnitsCanEnterOcean = true
         civInfo.tech.unitsCanEmbark = true
@@ -38,12 +39,20 @@ class UnitMovementAlgorithmsTests {
             cities = arrayListOf("The Capital")
         }
         unit.civInfo = civInfo
+
+
+        // Needed for convertHillToTerrainFeature to not crash
+        val tileMap = TileMap()
+        tileMap.tileMatrix.add(ArrayList<TileInfo?>().apply { add(tile) })
+        tile.tileMap = tileMap
+        tile.setTransients()
     }
 
     @Test
     fun canPassThroughPassableTerrains() {
         for (terrain in ruleSet.terrains.values) {
             tile.baseTerrain = terrain.name
+            tile.terrainFeatures.clear()
             tile.setTransients()
 
             unit.baseUnit = BaseUnit().apply { unitType = UnitType.Melee }
@@ -54,27 +63,32 @@ class UnitMovementAlgorithmsTests {
 
     @Test
     fun unitCanEnterTheCity() {
+
         val map = TileMap()
-        tile.baseTerrain = Constants.hill
-        tile.tileMap = map
-        tile.setTransients()
+        val cityTile = tile.clone() // reset, so that the isCoastalTile won't be carried over from previous tests
+        cityTile.baseTerrain = Constants.grassland
+        cityTile.tileMap = map
+        cityTile.ruleset = ruleSet
+        cityTile.setTransients()
+        map.tileMatrix.add(arrayListOf(cityTile)) // needed for tile.setTransients()
 
         val otherTile = tile.clone()
         otherTile.baseTerrain = Constants.coast
         otherTile.position.y = 1f
-
-        map.tileMatrix.add(arrayListOf(tile, otherTile))
+        map.tileMatrix[0].add(otherTile)
 
         val city = CityInfo()
-        city.location = tile.position
+        city.location = cityTile.position
         city.civInfo = civInfo
-        tile.owningCity = city
+        cityTile.owningCity = city
 
         for (type in UnitType.values())
         {
             unit.owner = civInfo.civName
             unit.baseUnit = BaseUnit().apply { unitType = type }
-            Assert.assertTrue(type.name, unit.movement.canPassThrough(tile))
+            if(!unit.movement.canPassThrough(cityTile))
+                unit.movement.canPassThrough(cityTile)
+            Assert.assertTrue(type.name, unit.movement.canPassThrough(cityTile))
         }
     }
 
@@ -97,7 +111,8 @@ class UnitMovementAlgorithmsTests {
     @Test
     fun canNOTEnterIce() {
         tile.baseTerrain = Constants.ocean
-        tile.terrainFeature = Constants.ice
+        tile.terrainFeatures.clear()
+        tile.terrainFeatures.add(Constants.ice)
         tile.setTransients()
 
         for (type in UnitType.values()) {

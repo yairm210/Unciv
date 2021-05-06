@@ -13,6 +13,7 @@ import com.unciv.models.AttackableTile
 object BattleHelper {
 
     fun tryAttackNearbyEnemy(unit: MapUnit): Boolean {
+        if (unit.hasUnique("Cannot attack")) return false
         val attackableEnemies = getAttackableEnemies(unit, unit.movement.getDistanceToTiles())
                 // Only take enemies we can fight without dying
                 .filter {

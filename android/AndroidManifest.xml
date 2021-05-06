@@ -6,12 +6,17 @@
     <uses-sdk/>
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <!-- See https://developer.android.com/training/tv/start/start -->
+    <uses-feature android:name="android.software.leanback" android:required="false" />
+    <uses-feature android:name="android.hardware.touchscreen" android:required="false" />
 
     <application
         android:allowBackup="true"
         android:icon="@drawable/uncivicon2"
         android:label="@string/app_name"
         android:isGame="true"
+        android:appCategory="game"
+        android:banner="@drawable/banner"
         android:theme="@style/GdxTheme" >
         <activity
             android:name="com.unciv.app.AndroidLauncher"
@@ -24,6 +29,19 @@
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+
+
+        <activity
+            android:name="com.unciv.app.AndroidTvLauncher"
+            android:label="@string/app_name"
+            android:theme="@style/GdxTheme">
+
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
+            </intent-filter>
+
         </activity>
         <receiver android:name=".CopyToClipboardReceiver"  android:exported="false" />
     </application>

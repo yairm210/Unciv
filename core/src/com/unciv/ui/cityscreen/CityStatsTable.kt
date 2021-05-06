@@ -18,11 +18,11 @@ class CityStatsTable(val cityScreen: CityScreen): Table() {
 
     init {
         pad(2f)
-        background = ImageGetter.getBackground(colorFromRGB(194,180,131))
+        background = ImageGetter.getBackground(colorFromRGB(194, 180, 131))
 
         innerTable.pad(5f)
-        innerTable.defaults().pad(5f)
-        innerTable.background = ImageGetter.getBackground(Color.BLACK.cpy().apply { a=0.8f })
+        innerTable.defaults().pad(2f)
+        innerTable.background = ImageGetter.getBackground(Color.BLACK.cpy().apply { a = 0.8f })
 
         add(innerTable).fill()
     }
@@ -30,12 +30,12 @@ class CityStatsTable(val cityScreen: CityScreen): Table() {
     fun update() {
         innerTable.clear()
 
-        val ministatsTable = Table().pad(5f)
-        ministatsTable.defaults()
-        for(stat in cityInfo.cityStats.currentCityStats.toHashMap()) {
-            if(stat.key == Stat.Happiness || stat.key == Stat.Faith) continue
-            ministatsTable.add(ImageGetter.getStatIcon(stat.key.name)).size(20f).padRight(3f)
-            ministatsTable.add(round(stat.value).toInt().toString().toLabel()).padRight(13f)
+        val ministatsTable = Table()
+        for ((stat, amount) in cityInfo.cityStats.currentCityStats.toHashMap()) {
+            if (stat == Stat.Faith && !cityInfo.getRuleset().hasReligion()) continue
+            ministatsTable.add(ImageGetter.getStatIcon(stat.name)).size(20f).padRight(5f)
+            val valueToDisplay = if (stat == Stat.Happiness) cityInfo.cityStats.happinessList.values.sum() else amount
+            ministatsTable.add(round(valueToDisplay).toInt().toString().toLabel()).padRight(10f)
         }
         innerTable.add(ministatsTable)
 
@@ -48,8 +48,8 @@ class CityStatsTable(val cityScreen: CityScreen): Table() {
     }
 
     private fun addText() {
-        val unassignedPopString = "{Unassigned population}:".tr() +
-                " " + cityInfo.population.getFreePopulation().toString() + "/" + cityInfo.population.population
+        val unassignedPopString = "{Unassigned population}: ".tr() +
+                cityInfo.population.getFreePopulation().toString() + "/" + cityInfo.population.population
 
         var turnsToExpansionString =
                 if (cityInfo.cityStats.currentCityStats.culture > 0 && cityInfo.expansion.chooseNewTileToOwn() != null) {
@@ -57,21 +57,21 @@ class CityStatsTable(val cityScreen: CityScreen): Table() {
                     var turnsToExpansion = ceil(remainingCulture / cityInfo.cityStats.currentCityStats.culture).toInt()
                     if (turnsToExpansion < 1) turnsToExpansion = 1
                     "[$turnsToExpansion] turns to expansion".tr()
-                } else {
-                    "Stopped expansion".tr()
-                }
-        if (cityInfo.expansion.chooseNewTileToOwn()!=null)
-            turnsToExpansionString += " (" + cityInfo.expansion.cultureStored + "/" +
-                cityInfo.expansion.getCultureToNextTile() + ")"
+                } else "Stopped expansion".tr()
+        if (cityInfo.expansion.chooseNewTileToOwn() != null)
+            turnsToExpansionString +=
+                    " (${cityInfo.expansion.cultureStored}/${cityInfo.expansion.getCultureToNextTile()})"
 
         var turnsToPopString =
                 when {
-                    cityInfo.isGrowing() -> "[${cityInfo.getNumTurnsToNewPopulation()}] turns to new population".tr()
-                    cityInfo.isStarving() -> "[${cityInfo.getNumTurnsToStarvation()}] turns to lose population".tr()
-                    cityInfo.cityConstructions.currentConstructionFromQueue == Constants.settler -> "Food converts to production".tr()
-                    else -> "Stopped population growth".tr()
-                }
-        turnsToPopString += " (" + cityInfo.population.foodStored + "/" + cityInfo.population.getFoodToNextPopulation() + ")"
+                    cityInfo.isGrowing() -> "[${cityInfo.getNumTurnsToNewPopulation()}] turns to new population"
+                    cityInfo.isStarving() -> "[${cityInfo.getNumTurnsToStarvation()}] turns to lose population"
+                    cityInfo.getRuleset().units[cityInfo.cityConstructions.currentConstructionFromQueue]
+                            .let { it != null && it.uniques.contains("Excess Food converted to Production when under construction") }
+                    -> "Food converts to production"
+                    else -> "Stopped population growth"
+                }.tr()
+        turnsToPopString += " (${cityInfo.population.foodStored}/${cityInfo.population.getFoodToNextPopulation()})"
 
         innerTable.add(unassignedPopString.toLabel()).row()
         innerTable.add(turnsToExpansionString.toLabel()).row()

@@ -541,7 +541,6 @@
 				"name": "Computers",
 				"row": 8,
 				"prerequisites": ["Combined Arms","Radar"],
-				"uniques": ["+10% science and production in all cities"],
 				"quote": "'Computers are like Old Testament gods: lots of rules and no mercy.' - Joseph Campbell"
 			}
 		]
@@ -563,6 +562,7 @@
 				"name": "Satellites",
 				"row": 5,
 				"prerequisites": ["Nuclear Fission","Rocketry"],
+				"uniques": ["Reveals the entire map"], 
 				"quote": "'Now, somehow, in some new way, the sky seemed almost alien.' - Lyndon B. Johnson"
 			},
 			{
@@ -611,8 +611,8 @@
 			{
 				"name": "Future Tech",
 				"row": 5,
-				"prerequisites": ["Nanotechnology","Particle Physics","Satellites"],
-				"uniques": ["Who knows what the future holds?"],
+				"prerequisites": ["Nanotechnology","Particle Physics"],
+				"uniques": ["Who knows what the future holds?", "Can be continually researched"],
 				"quote": "'I think we agree, the past is over.' - George W. Bush"
 			}
 		]	

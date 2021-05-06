@@ -1,11 +1,9 @@
 package com.unciv.ui.mapeditor
 
 import com.unciv.UncivGame
-import com.unciv.logic.map.Scenario
-import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
+import com.unciv.models.translations.tr
 import com.unciv.ui.newgamescreen.GameOptionsTable
-import com.unciv.ui.newgamescreen.GameSetupInfo
 import com.unciv.ui.newgamescreen.PlayerPickerTable
 import com.unciv.ui.newgamescreen.IPreviousScreen
 import com.unciv.ui.pickerscreens.PickerScreen
@@ -19,7 +17,7 @@ import com.unciv.ui.utils.*
  */
 class GameParametersScreen(var mapEditorScreen: MapEditorScreen): IPreviousScreen, PickerScreen() {
     override var gameSetupInfo = mapEditorScreen.gameSetupInfo.clone()
-    override var ruleset = RulesetCache.getComplexRuleset(gameSetupInfo.gameParameters)
+    override var ruleset = RulesetCache.getComplexRuleset(gameSetupInfo.gameParameters.mods)
     var playerPickerTable = PlayerPickerTable(this, gameSetupInfo.gameParameters)
     var gameOptionsTable = GameOptionsTable(this) { desiredCiv: String -> playerPickerTable.update(desiredCiv) }
 
@@ -32,17 +30,23 @@ class GameParametersScreen(var mapEditorScreen: MapEditorScreen): IPreviousScree
                 .maxHeight(topTable.parent.height).width(stage.width / 2).padTop(20f).top()
         topTable.addSeparatorVertical()
         topTable.add(playerPickerTable).maxHeight(topTable.parent.height).width(stage.width / 2).padTop(20f).top()
-        rightSideButton.setText("OK")
+        rightSideButton.setText("OK".tr())
         rightSideButton.onClick {
             mapEditorScreen.gameSetupInfo = gameSetupInfo
-            mapEditorScreen.scenario = Scenario(mapEditorScreen.tileMap, mapEditorScreen.gameSetupInfo.gameParameters)
             mapEditorScreen.ruleset.clear()
             mapEditorScreen.ruleset.add(ruleset)
-            mapEditorScreen.tileEditorOptions.update()
+            mapEditorScreen.mapEditorOptionsTable.update()
+            // Remove resources that are not applicable to this ruleset
+            for(tile in mapEditorScreen.tileMap.values) {
+                if (tile.resource != null && !ruleset.tileResources.containsKey(tile.resource!!))
+                    tile.resource = null
+                if (tile.improvement != null && !ruleset.tileImprovements.containsKey(tile.improvement!!))
+                    tile.improvement = null
+            }
+
             mapEditorScreen.mapHolder.updateTileGroups()
             UncivGame.Current.setScreen(mapEditorScreen)
             dispose()
         }
     }
 }
-

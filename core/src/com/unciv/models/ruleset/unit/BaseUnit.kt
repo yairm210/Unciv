@@ -6,10 +6,12 @@ import com.unciv.logic.city.IConstruction
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.MapUnit
 import com.unciv.models.ruleset.Ruleset
+import com.unciv.models.ruleset.Unique
 import com.unciv.models.translations.Translations
 import com.unciv.models.translations.tr
 import com.unciv.models.stats.INamed
-import com.unciv.models.translations.getPlaceholderParameters
+import com.unciv.ui.utils.Fonts
+import kotlin.math.pow
 
 // This is BaseUnit because Unit is already a base Kotlin class and to avoid mixing the two up
 
@@ -21,61 +23,66 @@ class BaseUnit : INamed, IConstruction {
     var cost: Int = 0
     var hurryCostModifier: Int = 0
     var movement: Int = 0
-    var strength:Int = 0
-    var rangedStrength:Int = 0
-    var range:Int = 2
+    var strength: Int = 0
+    var rangedStrength: Int = 0
+    var range: Int = 2
     var interceptRange = 0
     lateinit var unitType: UnitType
-    var requiredTech:String? = null
-    var requiredResource:String? = null
-    var uniques =HashSet<String>()
-    var promotions =HashSet<String>()
-    var obsoleteTech:String?=null
-    var upgradesTo:String? = null
-    var replaces:String?=null
-    var uniqueTo:String?=null
-    var attackSound:String?=null
-
+    var requiredTech: String? = null
+    var requiredResource: String? = null
+    var uniques = HashSet<String>()
+    val uniqueObjects: List<Unique> by lazy { uniques.map { Unique(it) } }
+    var replacementTextForUniques = ""
+    var promotions = HashSet<String>()
+    var obsoleteTech: String? = null
+    var upgradesTo: String? = null
+    var replaces: String? = null
+    var uniqueTo: String? = null
+    var attackSound: String? = null
 
     fun getShortDescription(): String {
-        val infoList= mutableListOf<String>()
-        for(unique in uniques)
-            infoList+= Translations.translateBonusOrPenalty(unique)
-        for(promotion in promotions)
+        val infoList = mutableListOf<String>()
+        if (strength != 0) infoList += "$strength${Fonts.strength}"
+        if (rangedStrength != 0) infoList += "$rangedStrength${Fonts.rangedStrength}"
+        if (movement != 2) infoList += "$movement${Fonts.movement}"
+        for (promotion in promotions)
             infoList += promotion.tr()
-        if(strength!=0) infoList += "{Strength}: $strength".tr()
-        if(rangedStrength!=0) infoList += "{Ranged strength}: $rangedStrength".tr()
-        if(movement!=2) infoList+="{Movement}: $movement".tr()
+        if (replacementTextForUniques != "") infoList += replacementTextForUniques
+        else for (unique in uniques)
+            infoList += Translations.translateBonusOrPenalty(unique)
         return infoList.joinToString()
     }
 
-    fun getDescription(forPickerScreen:Boolean): String {
+    fun getDescription(forPickerScreen: Boolean): String {
         val sb = StringBuilder()
-        if(requiredResource!=null) sb.appendln("{Requires} {$requiredResource}".tr())
-        if(!forPickerScreen) {
-            if(uniqueTo!=null) sb.appendln("Unique to [$uniqueTo], replaces [$replaces]".tr())
-            else sb.appendln("{Cost}: $cost".tr())
-            if(requiredTech!=null) sb.appendln("Required tech: [$requiredTech]".tr())
-            if(upgradesTo!=null) sb.appendln("Upgrades to [$upgradesTo]".tr())
-            if(obsoleteTech!=null) sb.appendln("Obsolete with [$obsoleteTech]".tr())
+        for ((resource, amount) in getResourceRequirements()) {
+            if (amount == 1) sb.appendLine("Consumes 1 [$resource]".tr())
+            else sb.appendLine("Consumes [$amount]] [$resource]".tr())
         }
-        if(strength!=0){
-            sb.append("{Strength}: $strength".tr())
-            if(rangedStrength!=0)  sb.append(", {Ranged strength}: $rangedStrength".tr())
-            if(rangedStrength!=0)  sb.append(", {Range}: $range".tr())
-            sb.appendln()
+        if (!forPickerScreen) {
+            if (uniqueTo != null) sb.appendLine("Unique to [$uniqueTo], replaces [$replaces]".tr())
+            else sb.appendLine("{Cost}: $cost".tr())
+            if (requiredTech != null) sb.appendLine("Required tech: [$requiredTech]".tr())
+            if (upgradesTo != null) sb.appendLine("Upgrades to [$upgradesTo]".tr())
+            if (obsoleteTech != null) sb.appendLine("Obsolete with [$obsoleteTech]".tr())
         }
+        if (strength != 0) {
+            sb.append("$strength${Fonts.strength}, ")
+            if (rangedStrength != 0) sb.append("$rangedStrength${Fonts.rangedStrength}, ")
+            if (rangedStrength != 0) sb.append("$range${Fonts.range}, ")
+        }
+        sb.appendLine("$movement${Fonts.movement}")
 
-        for(unique in uniques)
-            sb.appendln(Translations.translateBonusOrPenalty(unique))
+        if (replacementTextForUniques != "") sb.appendLine(replacementTextForUniques)
+        else for (unique in uniques)
+            sb.appendLine(Translations.translateBonusOrPenalty(unique))
 
         if (promotions.isNotEmpty()) {
-            sb.append((if (promotions.size==1) "Free promotion:" else "Free promotions:").tr())
-            sb.appendln(promotions.joinToString(", ", " ") { it.tr() })
+            sb.append((if (promotions.size == 1) "Free promotion:" else "Free promotions:").tr())
+            sb.appendLine(promotions.joinToString(", ", " ") { it.tr() })
         }
 
-        sb.appendln("{Movement}: $movement".tr())
-        return sb.toString()
+        return sb.toString().trim()
     }
 
     fun getMapUnit(ruleset: Ruleset): MapUnit {
@@ -87,7 +94,7 @@ class BaseUnit : INamed, IConstruction {
         return unit
     }
 
-    override fun canBePurchased() = true
+    override fun canBePurchased() = "Cannot be purchased" !in uniques
 
     override fun getProductionCost(civInfo: CivilizationInfo): Int {
         var productionCost = cost.toFloat()
@@ -99,82 +106,153 @@ class BaseUnit : INamed, IConstruction {
         return productionCost.toInt()
     }
 
-    fun getBaseGoldCost() = Math.pow((30 * cost).toDouble(), 0.75) * (1 + hurryCostModifier / 100)
+    fun getBaseGoldCost(civInfo: CivilizationInfo): Double {
+        return (30.0 * cost).pow(0.75) * (1 + hurryCostModifier / 100f) * civInfo.gameInfo.gameParameters.gameSpeed.modifier
+    }
 
     override fun getGoldCost(civInfo: CivilizationInfo): Int {
-        var cost = getBaseGoldCost()
+        var cost = getBaseGoldCost(civInfo)
         if (civInfo.hasUnique("Gold cost of purchasing units -33%")) cost *= 0.66f
-        for(unique in civInfo.getMatchingUniques("Cost of purchasing items in cities reduced by []%"))
-            cost *= 1-(unique.getPlaceholderParameters()[0].toFloat())
+        for (unique in civInfo.getMatchingUniques("Cost of purchasing items in cities reduced by []%"))
+            cost *= 1 - (unique.params[0].toFloat() / 100)
         return (cost / 10).toInt() * 10 // rounded down o nearest ten
     }
 
-    fun getDisbandGold() = getBaseGoldCost().toInt()/20
+    fun getDisbandGold(civInfo: CivilizationInfo) = getBaseGoldCost(civInfo).toInt() / 20
 
     override fun shouldBeDisplayed(construction: CityConstructions): Boolean {
         val rejectionReason = getRejectionReason(construction)
-        return rejectionReason==""
+        return rejectionReason == ""
                 || rejectionReason.startsWith("Requires")
                 || rejectionReason.startsWith("Consumes")
     }
 
-    fun getRejectionReason(construction: CityConstructions): String {
-        if (unitType.isWaterUnit() && !construction.cityInfo.getCenterTile().isCoastalTile())
+    fun getRejectionReason(cityConstructions: CityConstructions): String {
+        if (unitType.isWaterUnit() && !cityConstructions.cityInfo.getCenterTile().isCoastalTile())
             return "Can only build water units in coastal cities"
-        val civRejectionReason = getRejectionReason(construction.cityInfo.civInfo)
+        val civInfo = cityConstructions.cityInfo.civInfo
+        for (unique in uniqueObjects.filter { it.placeholderText == "Not displayed as an available construction without []" }) {
+            val filter = unique.params[0]
+            if (filter in civInfo.gameInfo.ruleSet.tileResources && !civInfo.hasResource(filter)
+                    || filter in civInfo.gameInfo.ruleSet.buildings && !cityConstructions.containsBuildingOrEquivalent(filter))
+                return "Should not be displayed"
+        }
+        val civRejectionReason = getRejectionReason(civInfo)
         if (civRejectionReason != "") return civRejectionReason
+        for (unique in uniqueObjects.filter { it.placeholderText == "Requires at least [] population" })
+            if (unique.params[0].toInt() > cityConstructions.cityInfo.population.population)
+                return unique.text
         return ""
     }
 
     fun getRejectionReason(civInfo: CivilizationInfo): String {
         if (uniques.contains("Unbuildable")) return "Unbuildable"
-        if (requiredTech!=null && !civInfo.tech.isResearched(requiredTech!!)) return "$requiredTech not researched"
-        if (obsoleteTech!=null && civInfo.tech.isResearched(obsoleteTech!!)) return "Obsolete by $obsoleteTech"
-        if (uniqueTo!=null && uniqueTo!=civInfo.civName) return "Unique to $uniqueTo"
-        if (civInfo.gameInfo.ruleSet.units.values.any { it.uniqueTo==civInfo.civName && it.replaces==name }) return "Our unique unit replaces this"
+        if (requiredTech != null && !civInfo.tech.isResearched(requiredTech!!)) return "$requiredTech not researched"
+        if (obsoleteTech != null && civInfo.tech.isResearched(obsoleteTech!!)) return "Obsolete by $obsoleteTech"
+        if (uniqueTo != null && uniqueTo != civInfo.civName) return "Unique to $uniqueTo"
+        if (civInfo.gameInfo.ruleSet.units.values.any { it.uniqueTo == civInfo.civName && it.replaces == name })
+            return "Our unique unit replaces this"
         if (!civInfo.gameInfo.gameParameters.nuclearWeaponsEnabled
-                && uniques.contains("Requires Manhattan Project")) return "Disabled by setting"
-        if (uniques.contains("Requires Manhattan Project") && !civInfo.hasUnique("Enables nuclear weapon"))
-            return "Requires Manhattan Project"
-        if (requiredResource!=null && !civInfo.hasResource(requiredResource!!)) return "Consumes 1 [$requiredResource]"
-        if (name == Constants.settler && civInfo.isCityState()) return "No settler for city-states"
-        if (name == Constants.settler && civInfo.isOneCityChallenger()) return "No settler for players in One City Challenge"
+                && uniques.contains("Nuclear weapon")) return "Disabled by setting"
+
+        for (unique in uniqueObjects.filter { it.placeholderText == "Unlocked with []" })
+            if (civInfo.tech.researchedTechnologies.none { it.era() == unique.params[0] || it.name == unique.params[0] }
+                    && !civInfo.policies.isAdopted(unique.params[0]))
+                return unique.text
+
+        for (unique in uniqueObjects.filter { it.placeholderText == "Requires []" }) {
+            val filter = unique.params[0]
+            if (filter in civInfo.gameInfo.ruleSet.buildings) {
+                if (civInfo.cities.none { it.cityConstructions.containsBuildingOrEquivalent(filter) }) return unique.text // Wonder is not built
+            } else if (!civInfo.policies.adoptedPolicies.contains(filter)) return "Policy is not adopted"
+        }
+
+        for ((resource, amount) in getResourceRequirements())
+            if (civInfo.getCivResourcesByName()[resource]!! < amount) {
+                if (amount == 1) return "Consumes 1 [$resource]" // Again, to preserve existing translations
+                else return "Consumes [$amount] [$resource]"
+            }
+
+        if (uniques.contains(Constants.settlerUnique) && civInfo.isCityState()) return "No settler for city-states"
+        if (uniques.contains(Constants.settlerUnique) && civInfo.isOneCityChallenger()) return "No settler for players in One City Challenge"
         return ""
     }
 
-    fun isBuildable(civInfo: CivilizationInfo) = getRejectionReason(civInfo)==""
+    fun isBuildable(civInfo: CivilizationInfo) = getRejectionReason(civInfo) == ""
 
     override fun isBuildable(cityConstructions: CityConstructions): Boolean {
         return getRejectionReason(cityConstructions) == ""
     }
 
     override fun postBuildEvent(construction: CityConstructions, wasBought: Boolean): Boolean {
-        val unit = construction.cityInfo.civInfo.placeUnitNearTile(construction.cityInfo.location, name)
+        val civInfo = construction.cityInfo.civInfo
+        val unit = civInfo.placeUnitNearTile(construction.cityInfo.location, name)
         if (unit == null) return false // couldn't place the unit, so there's actually no unit =(
 
         //movement penalty
-        if (wasBought && !unit.hasUnique("Can move directly once bought"))
+        if (wasBought && !civInfo.gameInfo.gameParameters.godMode && !unit.hasUnique("Can move immediately once bought"))
             unit.currentMovement = 0f
 
         if (this.unitType.isCivilian()) return true // tiny optimization makes save files a few bytes smaller
 
         var XP = construction.getBuiltBuildings().sumBy { it.xpForNewUnits }
-        for (unique in construction.cityInfo.civInfo.getMatchingUniques("New military units start with [] Experience"))
-            XP += unique.getPlaceholderParameters()[0].toInt()
+
+
+        for (unique in construction.cityInfo.cityConstructions.builtBuildingUniqueMap
+                .getUniques("New [] units start with [] Experience in this city")
+                + civInfo.getMatchingUniques("New [] units start with [] Experience")) {
+            if (unit.matchesFilter(unique.params[0]))
+                XP += unique.params[1].toInt()
+        }
         unit.promotions.XP = XP
 
-        if (unit.type in listOf(UnitType.Melee,UnitType.Mounted,UnitType.Armor)
-            && construction.cityInfo.containsBuildingUnique("All newly-trained melee, mounted, and armored units in this city receive the Drill I promotion"))
-            unit.promotions.addPromotion("Drill I", isFree = true)
+        for (unique in construction.cityInfo.cityConstructions.builtBuildingUniqueMap
+                .getUniques("All newly-trained [] units in this city receive the [] promotion")) {
+            val filter = unique.params[0]
+            val promotion = unique.params[1]
+
+            if (unit.matchesFilter(filter) || (filter == "relevant" && civInfo.gameInfo.ruleSet.unitPromotions.values
+                            .any { unit.type.name in it.unitTypes && it.name == promotion }))
+                unit.promotions.addPromotion(promotion, isFree = true)
+        }
 
         return true
     }
 
-    override fun getResource(): String? = requiredResource
 
-    fun getDirectUpgradeUnit(civInfo: CivilizationInfo):BaseUnit{
+    fun getDirectUpgradeUnit(civInfo: CivilizationInfo): BaseUnit {
         return civInfo.getEquivalentUnit(upgradesTo!!)
     }
 
     override fun toString(): String = name
+
+    fun getReplacedUnit(ruleset: Ruleset): BaseUnit {
+        return if (replaces == null) this
+        else ruleset.units[replaces!!]!!
+    }
+
+    fun matchesFilter(filter: String): Boolean {
+        if (filter == unitType.name) return true
+        if (filter == name) return true
+        if (filter == "All") return true
+        if ((filter == "Land" || filter == "land units") && unitType.isLandUnit()) return true
+        // 'water units' obsolete as of 3.14.2
+        if ((filter == "Water" || filter == "water units" || filter == "Water units") && unitType.isWaterUnit()) return true
+        if ((filter == "Air" || filter == "air units") && unitType.isAirUnit()) return true
+        if (filter == "non-air" && !unitType.isAirUnit()) return true
+        // 'military' obsolete as of 3.14.1
+        if ((filter == "military" || filter == "Military" || filter == "military units") && unitType.isMilitary()) return true
+        return false
+    }
+
+    fun isGreatPerson() = uniqueObjects.any { it.placeholderText == "Great Person - []" }
+
+    override fun getResourceRequirements(): HashMap<String, Int> {
+        val resourceRequirements = HashMap<String, Int>()
+        if (requiredResource != null) resourceRequirements[requiredResource!!] = 1
+        for (unique in uniqueObjects)
+            if (unique.placeholderText == "Consumes [] []")
+                resourceRequirements[unique.params[1]] = unique.params[0].toInt()
+        return resourceRequirements
+    }
 }

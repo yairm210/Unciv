@@ -5,7 +5,6 @@ import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.utils.Array
 import com.unciv.JsonParser
 import com.unciv.logic.battle.BattleDamage
-import com.unciv.logic.map.MapUnit
 import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.ruleset.*
 import com.unciv.models.ruleset.tech.TechColumn
@@ -14,9 +13,9 @@ import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.tile.TileResource
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.ruleset.unit.Promotion
+import com.unciv.models.ruleset.unit.UnitType
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
-import com.unciv.ui.worldscreen.unit.UnitActions
 import java.lang.reflect.Field
 
 object TranslationFileWriter {
@@ -31,9 +30,9 @@ object TranslationFileWriter {
         writeLanguagePercentages(percentages)
 
         // try to do the same for the mods
-        for(modFolder in Gdx.files.local("mods").list().filter { it.isDirectory })
+        for (modFolder in Gdx.files.local("mods").list().filter { it.isDirectory })
             generateTranslationFiles(translations, modFolder)
-            // write percentages is not needed: for an individual mod it makes no sense
+        // write percentages is not needed: for an individual mod it makes no sense
 
     }
 
@@ -46,7 +45,7 @@ object TranslationFileWriter {
         val fileNameToGeneratedStrings = LinkedHashMap<String, MutableSet<String>>()
         val linesFromTemplates = mutableListOf<String>()
 
-        if(modFolder==null) { // base game
+        if (modFolder == null) { // base game
             val templateFile = getFileHandle(modFolder, templateFileLocation) // read the template
             if (templateFile.exists())
                 linesFromTemplates.addAll(templateFile.reader().readLines())
@@ -59,16 +58,15 @@ object TranslationFileWriter {
             }
 
             fileNameToGeneratedStrings["Tutorials"] = generateTutorialsStrings()
-        }
-        else fileNameToGeneratedStrings.putAll(generateStringsFromJSONs(modFolder))
+        } else fileNameToGeneratedStrings.putAll(generateStringsFromJSONs(modFolder))
 
         // Tutorials are a bit special
         if (modFolder == null)          // this is for base only, not mods
 
-        for (key in fileNameToGeneratedStrings.keys) {
-            linesFromTemplates.add("\n#################### Lines from $key ####################\n")
-            linesFromTemplates.addAll(fileNameToGeneratedStrings.getValue(key))
-        }
+            for (key in fileNameToGeneratedStrings.keys) {
+                linesFromTemplates.add("\n#################### Lines from $key ####################\n")
+                linesFromTemplates.addAll(fileNameToGeneratedStrings.getValue(key))
+            }
 
         var countOfTranslatableLines = 0
         val countOfTranslatedLines = HashMap<String, Int>()
@@ -82,28 +80,23 @@ object TranslationFileWriter {
             val existingTranslationKeys = HashSet<String>()
 
             for (line in linesFromTemplates) {
-                if(line.contains("G&K")) {
-                    val x = line.length
-                }
-
                 if (!line.contains(" = ")) {
                     // small hack to insert empty lines
                     if (line.startsWith(specialNewLineCode)) {
-                        if(!stringBuilder.endsWith("\r\n\r\n")) // don't double-add line breaks -
-                            // this stops lots of line breaks between removed translations in G&K
-                            stringBuilder.appendln()
-                    }
-                    else // copy as-is
-                        stringBuilder.appendln(line)
+                        if (!stringBuilder.endsWith("\r\n\r\n")) // don't double-add line breaks -
+                        // this stops lots of line breaks between removed translations in G&K
+                            stringBuilder.appendLine()
+                    } else // copy as-is
+                        stringBuilder.appendLine(line)
                     continue
                 }
 
                 val translationKey = line.split(" = ")[0].replace("\\n", "\n")
                 val hashMapKey = if (translationKey.contains('['))
-                            translationKey.replace(squareBraceRegex,"[]")
-                        else translationKey
+                    translationKey.replace(squareBraceRegex, "[]")
+                else translationKey
 
-                if(existingTranslationKeys.contains(hashMapKey)) continue // don't add it twice
+                if (existingTranslationKeys.contains(hashMapKey)) continue // don't add it twice
                 existingTranslationKeys.add(hashMapKey)
 
                 // count translatable lines only once (e.g. for English)
@@ -115,11 +108,11 @@ object TranslationFileWriter {
                 if (translationEntry != null && translationEntry.containsKey(language)) {
                     translationValue = translationEntry[language]!!
                     translationsOfThisLanguage++
-                } else stringBuilder.appendln(" # Requires translation!")
+                } else stringBuilder.appendLine(" # Requires translation!")
 
                 val lineToWrite = translationKey.replace("\n", "\\n") +
                         " = " + translationValue.replace("\n", "\\n")
-                stringBuilder.appendln(lineToWrite)
+                stringBuilder.appendLine(lineToWrite)
             }
 
             countOfTranslatedLines[language] = translationsOfThisLanguage
@@ -137,14 +130,13 @@ object TranslationFileWriter {
         return countOfTranslatedLines
     }
 
-    private fun writeLanguagePercentages(percentages: HashMap<String,Int>){
+    private fun writeLanguagePercentages(percentages: HashMap<String, Int>) {
         val stringBuilder = StringBuilder()
-        for(entry in percentages){
-            stringBuilder.appendln(entry.key+" = "+entry.value)
+        for (entry in percentages) {
+            stringBuilder.appendLine(entry.key + " = " + entry.value)
         }
-        Gdx.files.local(TranslationFileReader.percentagesFileLocation).writeString(stringBuilder.toString(),false)
+        Gdx.files.local(TranslationFileReader.percentagesFileLocation).writeString(stringBuilder.toString(), false)
     }
-
 
 
     private fun generateTutorialsStrings(): MutableSet<String> {
@@ -167,7 +159,8 @@ object TranslationFileWriter {
     // used for unit test only
     fun getGeneratedStringsSize(): Int {
         return generateStringsFromJSONs(Gdx.files.local("jsons/Civ V - Vanilla")).values.sumBy { // exclude empty lines
-            it.count{ line: String -> !line.startsWith(specialNewLineCode) } }
+            it.count { line: String -> !line.startsWith(specialNewLineCode) }
+        }
     }
 
     private fun generateStringsFromJSONs(jsonsFolder: FileHandle): LinkedHashMap<String, MutableSet<String>> {
@@ -198,23 +191,44 @@ object TranslationFileWriter {
 
                 val parameters = string.getPlaceholderParameters()
                 var stringToTranslate = string
-                if (parameters.any()){
-                    for(parameter in parameters) {
-                        val parameterName = when {
+
+                val existingParameterNames = HashSet<String>()
+                if (parameters.any()) {
+                    for (parameter in parameters) {
+                        var parameterName = when {
                             parameter.toIntOrNull() != null -> "amount"
                             Stat.values().any { it.name == parameter } -> "stat"
                             RulesetCache.getBaseRuleset().terrains.containsKey(parameter) -> "terrain"
                             RulesetCache.getBaseRuleset().units.containsKey(parameter) -> "unit"
                             RulesetCache.getBaseRuleset().tileImprovements.containsKey(parameter) -> "tileImprovement"
-                            RulesetCache.getBaseRuleset().buildings.containsKey(parameter) -> "building"
+                            RulesetCache.getBaseRuleset().tileResources.containsKey(parameter) -> "resource"
+                            RulesetCache.getBaseRuleset().technologies.containsKey(parameter) -> "tech"
+                            RulesetCache.getBaseRuleset().unitPromotions.containsKey(parameter) -> "promotion"
+                            RulesetCache.getBaseRuleset().buildings.containsKey(parameter)
+                                    || parameter == "Wonders" -> "building"
+
+                            UnitType.values().any { it.name == parameter } || parameter == "Military" -> "unitType"
                             Stats.isStats(parameter) -> "stats"
+                            parameter == "in this city"
+                                    || parameter == "in all cities"
+                                    || parameter == "in all coastal cities"
+                                    || parameter == "in capital"
+                                    || parameter == "in all cities with a world wonder"
+                                    || parameter == "in all cities connected to capital"
+                                    || parameter == "in all cities with a garrison"
+                            -> "cityFilter"
                             else -> "param"
                         }
+                        if (parameterName in existingParameterNames) {
+                            var i = 2
+                            while (parameterName + i in existingParameterNames) i++
+                            parameterName += i
+                        }
+                        existingParameterNames += parameterName
+
                         stringToTranslate = stringToTranslate.replace(parameter, parameterName)
                     }
-                }
-
-                else {
+                } else {
                     // substitute the regex for "Bonus/Penalty vs ..."
                     val match = Regex(BattleDamage.BONUS_VS_UNIT_TYPE).matchEntire(string)
                     if (match != null) stringToTranslate = "${match.groupValues[1]} vs [unitType]"
@@ -224,11 +238,13 @@ object TranslationFileWriter {
             }
 
             fun serializeElement(element: Any) {
-                val allFields = (element.javaClass.declaredFields + element.javaClass.fields).filter {
-                    it.type == String::class.java ||
-                            it.type == java.util.ArrayList::class.java ||
-                            it.type == java.util.HashSet::class.java
-                }
+                val allFields = (element.javaClass.declaredFields + element.javaClass.fields
+                        + element.javaClass.superclass.declaredFields) // This is so the main PolicyBranch, which inherits from Policy, will recognize its Uniques and have them translated
+                        .filter {
+                            it.type == String::class.java ||
+                                    it.type == java.util.ArrayList::class.java ||
+                                    it.type == java.util.HashSet::class.java
+                        }
                 for (field in allFields) {
                     field.isAccessible = true
                     val fieldValue = field.get(element)
@@ -253,7 +269,7 @@ object TranslationFileWriter {
         return generatedStrings
     }
 
-    val untranslatableFieldSet = setOf (
+    private val untranslatableFieldSet = setOf(
             "aiFreeTechs", "aiFreeUnits", "attackSound", "building",
             "cannotBeBuiltWith", "cultureBuildings", "improvement", "improvingTech",
             "obsoleteTech", "occursOn", "prerequisites", "promotions",
@@ -268,7 +284,7 @@ object TranslationFileWriter {
         // - the definition should cause the inclusion in our translatables list, not the reference.
         // This prevents duplication within the base game (e.g. Mines were duplicated by being output
         // by both TerrainResources and TerrainImprovements) and duplication of base game items into
-        return  fieldValue != null &&
+        return fieldValue != null &&
                 fieldValue != "" &&
                 field.name !in untranslatableFieldSet
     }
@@ -277,9 +293,10 @@ object TranslationFileWriter {
         return when (name) {
             "Buildings" -> emptyArray<Building>().javaClass
             "Difficulties" -> emptyArray<Difficulty>().javaClass
-            "GreatPeopleNames" -> this.javaClass // dummy value
             "Nations" -> emptyArray<Nation>().javaClass
             "Policies" -> emptyArray<PolicyBranch>().javaClass
+            "Quests" -> emptyArray<Quest>().javaClass
+            "Specialists" -> emptyArray<Specialist>().javaClass
             "Techs" -> emptyArray<TechColumn>().javaClass
             "Terrains" -> emptyArray<Terrain>().javaClass
             "TileImprovements" -> emptyArray<TileImprovement>().javaClass

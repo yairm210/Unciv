@@ -1,7 +1,6 @@
 package com.unciv.logic.civilization
 
 import com.badlogic.gdx.graphics.Color
-import com.unciv.UniqueAbility
 
 class GoldenAgeManager{
     @Transient
@@ -25,15 +24,13 @@ class GoldenAgeManager{
         return ((500 + numberOfGoldenAges * 250) * (1 + civInfo.cities.size / 100.0)).toInt() //https://forums.civfanatics.com/resources/complete-guide-to-happiness-vanilla.25584/
     }
 
-    fun enterGoldenAge() {
-        var turnsToGoldenAge = 10.0
-        for(unique in civInfo.getMatchingUniques("Golden Age length increases +50%"))
-            turnsToGoldenAge *= 1.5
-        if(civInfo.nation.unique == UniqueAbility.ACHAEMENID_LEGACY )
-            turnsToGoldenAge*=1.5
+    fun enterGoldenAge(unmodifiedNumberOfTurns: Int = 10) {
+        var turnsToGoldenAge = unmodifiedNumberOfTurns.toFloat()
+        for(unique in civInfo.getMatchingUniques("Golden Age length increased by []%"))
+            turnsToGoldenAge *= (unique.params[0].toFloat()/100 + 1)
         turnsToGoldenAge *= civInfo.gameInfo.gameParameters.gameSpeed.modifier
         turnsLeftForCurrentGoldenAge += turnsToGoldenAge.toInt()
-        civInfo.addNotification("You have entered a golden age!", null, Color.GOLD)
+        civInfo.addNotification("You have entered a Golden Age!", "StatIcons/Happiness")
         civInfo.popupAlerts.add(PopupAlert(AlertType.GoldenAge,""))
     }
 

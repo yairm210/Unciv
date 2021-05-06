@@ -1,5 +1,7 @@
 package com.unciv.ui.worldscreen.unit
 
+import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.Input
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Touchable
@@ -15,7 +17,7 @@ import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.WorldScreen
 import kotlin.concurrent.thread
 
-private data class UnitIconAndKey (val Icon: Actor, val key: Char = 0.toChar())
+private data class UnitIconAndKey(val Icon: Actor, var key: Char = 0.toChar())
 
 class UnitActionsTable(val worldScreen: WorldScreen) : Table() {
 
@@ -71,6 +73,11 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table() {
 
     private fun getUnitActionButton(unitAction: UnitAction): Button {
         val iconAndKey = getIconAndKeyForUnitAction(unitAction.title)
+
+        // If peripheral keyboard not detected, hotkeys will not be displayed
+        val keyboardAvailable = Gdx.input.isPeripheralAvailable(Input.Peripheral.HardwareKeyboard)
+        if (!keyboardAvailable){iconAndKey.key = 0.toChar()}
+
         val actionButton = Button(CameraStageBaseScreen.skin)
         actionButton.add(iconAndKey.Icon).size(20f).pad(5f)
         val fontColor = if (unitAction.isCurrentAction) Color.YELLOW else Color.WHITE

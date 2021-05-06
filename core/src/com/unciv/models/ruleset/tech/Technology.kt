@@ -4,6 +4,7 @@ import com.unciv.UncivGame
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.Ruleset
+import com.unciv.models.ruleset.Unique
 import com.unciv.models.translations.tr
 import com.unciv.models.ruleset.unit.BaseUnit
 import java.util.*
@@ -15,25 +16,26 @@ class Technology {
     var cost: Int = 0
     var prerequisites = HashSet<String>()
     var uniques = ArrayList<String>()
+    val uniqueObjects: List<Unique> by lazy { uniques.map { Unique(it) } }
 
     var column: TechColumn? = null // The column that this tech is in the tech tree
     var row: Int = 0
-    var quote=""
+    var quote = ""
 
     fun getDescription(ruleset: Ruleset): String {
         val lineList = ArrayList<String>() // more readable than StringBuilder, with same performance for our use-case
         for (unique in uniques) lineList += unique.tr()
 
-        val improvedImprovements = ruleset.tileImprovements.values
-                .filter { it.improvingTech == name }.groupBy { it.improvingTechStats.toString() }
-        for (improvement in improvedImprovements) {
-            val impimpString = improvement.value.joinToString { it.name.tr() } +
-                    " {provide" + (if (improvement.value.size == 1) "s" else "") + "} " + improvement.key
-            lineList += impimpString.tr()
-        }
+        for (improvement in ruleset.tileImprovements.values)
+            for (unique in improvement.uniqueObjects) {
+                if (unique.placeholderText == "[] once [] is discovered" && unique.params.last() == name)
+                    lineList += "[${unique.params[0]}] from every [${improvement.name}]"
+                else if (unique.placeholderText == "[] on [] tiles once [] is discovered" && unique.params.last() == name)
+                    lineList += "[${unique.params[0]}] from every [${improvement.name}] on [${unique.params[1]}] tiles"
+            }
 
         val viewingCiv = UncivGame.Current.worldScreen.viewingCiv
-        val enabledUnits = getEnabledUnits(viewingCiv)
+        val enabledUnits = getEnabledUnits(viewingCiv).filter { "Will not be displayed in Civilopedia" !in it.uniques }
         if (enabledUnits.isNotEmpty()) {
             lineList += "{Units enabled}: "
             for (unit in enabledUnits)
@@ -42,23 +44,34 @@ class Technology {
 
         val enabledBuildings = getEnabledBuildings(viewingCiv)
 
-        val regularBuildings = enabledBuildings.filter { !it.isWonder && !it.isNationalWonder }
+        val regularBuildings = enabledBuildings.filter {
+            !it.isWonder && !it.isNationalWonder
+                    && "Will not be displayed in Civilopedia" !in it.uniques
+        }
         if (regularBuildings.isNotEmpty()) {
             lineList += "{Buildings enabled}: "
             for (building in regularBuildings)
                 lineList += "* " + building.name.tr() + " (" + building.getShortDescription(ruleset) + ")"
         }
 
-        val wonders = enabledBuildings.filter { it.isWonder || it.isNationalWonder }
+        val wonders = enabledBuildings.filter {
+            (it.isWonder || it.isNationalWonder)
+                    && "Will not be displayed in Civilopedia" !in it.uniques
+        }
         if (wonders.isNotEmpty()) {
             lineList += "{Wonders enabled}: "
             for (wonder in wonders)
                 lineList += " * " + wonder.name.tr() + " (" + wonder.getShortDescription(ruleset) + ")"
         }
 
-        val revealedResource = ruleset.tileResources.values.filter { it.revealedBy == name }
-                .map { it.name }.firstOrNull() // can only be one
-        if (revealedResource != null) lineList += "Reveals [$revealedResource] on the map".tr()
+        for (building in getObsoletedBuildings(viewingCiv)
+                .filter { "Will not be displayed in Civilopedia" !in it.uniques })
+            lineList += "[${building.name}] obsoleted"
+
+
+        for (resource in ruleset.tileResources.values.asSequence().filter { it.revealedBy == name }
+                .map { it.name })
+            lineList += "Reveals [$resource] on the map"
 
         val tileImprovements = ruleset.tileImprovements.values.filter { it.techRequired == name }
         if (tileImprovements.isNotEmpty())
@@ -81,12 +94,18 @@ class Technology {
         return enabledBuildings
     }
 
-    fun getEnabledUnits(civInfo:CivilizationInfo): List<BaseUnit> {
+    fun getObsoletedBuildings(civInfo: CivilizationInfo): Sequence<Building> {
+        val obsoletedBuildings = civInfo.gameInfo.ruleSet.buildings.values.asSequence()
+                .filter { it.uniqueObjects.any { it.placeholderText=="Obsolete with []" && it.params[0]==name } }
+        return obsoletedBuildings.filter { civInfo.getEquivalentBuilding(it.name)==it }
+    }
+
+    fun getEnabledUnits(civInfo: CivilizationInfo): List<BaseUnit> {
         var enabledUnits = civInfo.gameInfo.ruleSet.units.values.filter {
             it.requiredTech == name &&
                     (it.uniqueTo == null || it.uniqueTo == civInfo.civName)
         }
-        val replacedUnits = civInfo.gameInfo.ruleSet.units.values.filter { it.uniqueTo==civInfo.civName }
+        val replacedUnits = civInfo.gameInfo.ruleSet.units.values.filter { it.uniqueTo == civInfo.civName }
                 .mapNotNull { it.replaces }
         enabledUnits = enabledUnits.filter { it.name !in replacedUnits }
 
@@ -96,9 +115,9 @@ class Technology {
         return enabledUnits
     }
 
-    override fun toString(): String {
-        return name
-    }
+    override fun toString() = name
 
     fun era(): String = column!!.era
+
+    fun isContinuallyResearchable() = uniques.contains("Can be continually researched")
 }
