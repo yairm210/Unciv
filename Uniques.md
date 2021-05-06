@@ -447,3 +447,5 @@ cityFilters allow us to choose the range of cities affected by this unique:
 "Grants 500 Gold to the first civilization to discover it" - given to natural wonders
 
 "[(+/-)amount] Sight for [unitFilter] units"
+
+"Has an elevation of [amount] for visibility calculations" - For example, in the base setting, mountains are 4, hills are 2, and jungles and forests are 1. Higher tiles hide the tiles behind them, and from higher tiles you can see over lower tiles.
