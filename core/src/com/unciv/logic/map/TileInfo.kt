@@ -114,9 +114,6 @@ open class TileInfo {
         if (improvementInProgress == null) return false
         return ruleset.tileImprovements[improvementInProgress!!]!!.isGreatImprovement()
     }
-
-    fun containsUnique(unique: String): Boolean =
-            isNaturalWonder() && getNaturalWonder().uniques.contains(unique)
     //region pure functions
 
     /** Returns military, civilian and air units in tile */
@@ -191,8 +188,12 @@ open class TileInfo {
     }
 
     fun getTerrainFeatures(): List<Terrain> = terrainFeatures.mapNotNull { ruleset.terrains[it] }
-    fun getAllTerrains(): Sequence<Terrain> = sequenceOf(baseTerrainObject) +
-            terrainFeatures.asSequence().mapNotNull { ruleset.terrains[it] }
+    fun getAllTerrains(): Sequence<Terrain> = sequence {
+        yield(baseTerrainObject)
+        if (naturalWonder != null) yield(getNaturalWonder())
+        yieldAll(terrainFeatures.asSequence().mapNotNull { ruleset.terrains[it] })
+    }
+    fun hasUnique(unique:String) = getAllTerrains().any { it.uniques.contains(unique) }
 
     fun getWorkingCity(): CityInfo? {
         val civInfo = getOwner()
