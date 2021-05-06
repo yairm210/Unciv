@@ -566,7 +566,8 @@ open class TileInfo {
 
     fun setTerrainTransients() {
         convertTerrainFeatureToArray()
-        convertHillToTerrainFeature()
+        // Uninitialized tilemap - when you're displaying a tile in the civilopedia or map editor
+        if (::tileMap.isInitialized) convertHillToTerrainFeature()
         if (!ruleset.terrains.containsKey(baseTerrain))
             throw Exception()
         baseTerrainObject = ruleset.terrains[baseTerrain]!!
