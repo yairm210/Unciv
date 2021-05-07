@@ -24,7 +24,7 @@ class CityInfo {
     lateinit var civInfo: CivilizationInfo
 
     @Transient
-    lateinit private var centerTileInfo: TileInfo  // cached for better performance
+    private lateinit var centerTileInfo: TileInfo  // cached for better performance
 
     @Transient
     val range = 2
@@ -123,9 +123,11 @@ class CityInfo {
         val cityName = nationCities[cityNameIndex]
 
         val cityNameRounds = civInfo.citiesCreated / nationCities.size
-        val cityNamePrefix = if (cityNameRounds == 0) ""
-        else if (cityNameRounds == 1) "New "
-        else "Neo "
+        val cityNamePrefix = when (cityNameRounds) {
+            0 -> ""
+            1 -> "New "
+            else -> "Neo "
+        }
 
         name = cityNamePrefix + cityName
     }
@@ -520,8 +522,12 @@ class CityInfoReligionManager: Counter<String>() {
     }
 
     fun getAffectedBySurroundingCities() {
-        val allCitiesWithin10Tiles = cityInfo.civInfo.gameInfo.civilizations.asSequence().flatMap { it.cities }
-                .filter { it != cityInfo && it.getCenterTile().aerialDistanceTo(cityInfo.getCenterTile()) <= 10 }
+        val allCitiesWithin10Tiles =
+            cityInfo.civInfo.gameInfo.civilizations.asSequence().flatMap { it.cities }
+                .filter {
+                    it != cityInfo && it.getCenterTile()
+                        .aerialDistanceTo(cityInfo.getCenterTile()) <= 10
+                }
         for (city in allCitiesWithin10Tiles) {
             val majorityReligionOfCity = city.religion.getMajorityReligion()
             if (majorityReligionOfCity == null) continue
