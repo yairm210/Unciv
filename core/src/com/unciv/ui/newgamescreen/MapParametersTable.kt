@@ -6,11 +6,10 @@ import com.badlogic.gdx.scenes.scene2d.ui.Slider
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextField
 import com.unciv.Constants
-import com.unciv.logic.map.*
 import com.unciv.UncivGame
 import com.unciv.logic.map.MapParameters
 import com.unciv.logic.map.MapShape
-import com.unciv.logic.map.MapSize
+import com.unciv.logic.map.MapSizeNew
 import com.unciv.logic.map.MapType
 import com.unciv.models.translations.tr
 import com.unciv.ui.utils.*

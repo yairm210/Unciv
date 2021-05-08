@@ -7,7 +7,6 @@ plugins {
 }
 
 android {
-    buildToolsVersion("29.0.2")
     compileSdkVersion(29)
     sourceSets {
         getByName("main").apply {
