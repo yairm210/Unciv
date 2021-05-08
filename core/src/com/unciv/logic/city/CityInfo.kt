@@ -203,10 +203,6 @@ class CityInfo {
                 val resource = getRuleset().tileResources[resourceName]!!
                 cityResources.add(resource, -amount, "Buildings")
             }
-            for (unique in building.uniqueObjects.filter { it.placeholderText == "Consumes [] []" }) {
-                val resource = getRuleset().tileResources[unique.params[1]]
-                if (resource != null) cityResources.add(resource, -unique.params[0].toInt(), "Buildings")
-            }
         }
         for (unique in cityConstructions.builtBuildingUniqueMap.getUniques("Provides [] []")) { // E.G "Provides [1] [Iron]"
             val resource = getRuleset().tileResources[unique.params[1]]
