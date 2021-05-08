@@ -24,7 +24,7 @@ class CityInfo {
     lateinit var civInfo: CivilizationInfo
 
     @Transient
-    lateinit private var centerTileInfo: TileInfo  // cached for better performance
+    private lateinit var centerTileInfo: TileInfo  // cached for better performance
 
     @Transient
     val range = 2
@@ -123,9 +123,11 @@ class CityInfo {
         val cityName = nationCities[cityNameIndex]
 
         val cityNameRounds = civInfo.citiesCreated / nationCities.size
-        val cityNamePrefix = if (cityNameRounds == 0) ""
-        else if (cityNameRounds == 1) "New "
-        else "Neo "
+        val cityNamePrefix = when (cityNameRounds) {
+            0 -> ""
+            1 -> "New "
+            else -> "Neo "
+        }
 
         name = cityNamePrefix + cityName
     }
@@ -200,10 +202,6 @@ class CityInfo {
             for ((resourceName, amount) in building.getResourceRequirements()) {
                 val resource = getRuleset().tileResources[resourceName]!!
                 cityResources.add(resource, -amount, "Buildings")
-            }
-            for (unique in building.uniqueObjects.filter { it.placeholderText == "Consumes [] []" }) {
-                val resource = getRuleset().tileResources[unique.params[1]]
-                if (resource != null) cityResources.add(resource, -unique.params[0].toInt(), "Buildings")
             }
         }
         for (unique in cityConstructions.builtBuildingUniqueMap.getUniques("Provides [] []")) { // E.G "Provides [1] [Iron]"
@@ -486,7 +484,7 @@ class CityInfo {
     //endregion
 }
 
-class CityInfoReligionManager: Counter<String>(){
+class CityInfoReligionManager: Counter<String>() {
     @Transient
     lateinit var cityInfo: CityInfo
 
@@ -511,7 +509,7 @@ class CityInfoReligionManager: Counter<String>(){
         return toReturn
     }
 
-    fun getMajorityReligion():String? {
+    fun getMajorityReligion(): String? {
         val followersPerReligion = getNumberOfFollowers()
         if (followersPerReligion.isEmpty()) return null
         val religionWithMaxFollowers = followersPerReligion.maxByOrNull { it.value }!!
@@ -520,8 +518,12 @@ class CityInfoReligionManager: Counter<String>(){
     }
 
     fun getAffectedBySurroundingCities() {
-        val allCitiesWithin10Tiles = cityInfo.civInfo.gameInfo.civilizations.asSequence().flatMap { it.cities }
-                .filter { it != cityInfo && it.getCenterTile().aerialDistanceTo(cityInfo.getCenterTile()) <= 10 }
+        val allCitiesWithin10Tiles =
+            cityInfo.civInfo.gameInfo.civilizations.asSequence().flatMap { it.cities }
+                .filter {
+                    it != cityInfo && it.getCenterTile()
+                        .aerialDistanceTo(cityInfo.getCenterTile()) <= 10
+                }
         for (city in allCitiesWithin10Tiles) {
             val majorityReligionOfCity = city.religion.getMajorityReligion()
             if (majorityReligionOfCity == null) continue
@@ -529,4 +531,3 @@ class CityInfoReligionManager: Counter<String>(){
         }
     }
 }
-

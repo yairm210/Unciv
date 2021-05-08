@@ -200,7 +200,8 @@ open class TileInfo {
         if (naturalWonder != null) yield(getNaturalWonder())
         yieldAll(terrainFeatures.asSequence().mapNotNull { ruleset.terrains[it] })
     }
-    fun hasUnique(unique:String) = getAllTerrains().any { it.uniques.contains(unique) }
+
+    fun hasUnique(unique: String) = getAllTerrains().any { it.uniques.contains(unique) }
 
     fun getWorkingCity(): CityInfo? {
         val civInfo = getOwner()
@@ -210,7 +211,7 @@ open class TileInfo {
 
     fun isWorked(): Boolean = getWorkingCity() != null
     fun providesYield() = getCity() != null && (isCityCenter() || isWorked()
-            || getTileImprovement()?.hasUnique("Tile provides yield without assigned population")==true)
+            || getTileImprovement()?.hasUnique("Tile provides yield without assigned population") == true)
 
     fun isLocked(): Boolean {
         val workingCity = getWorkingCity()
@@ -332,10 +333,10 @@ open class TileInfo {
         return when {
             improvement.uniqueTo != null && improvement.uniqueTo != civInfo.civName -> false
             improvement.techRequired != null && !civInfo.tech.isResearched(improvement.techRequired!!) -> false
-            getOwner() != civInfo && ! (
-                        improvement.hasUnique("Can be built outside your borders")
-                        // citadel can be built only next to or within own borders
-                        || improvement.hasUnique("Can be built just outside your borders") && neighbors.any { it.getOwner() == civInfo }
+            getOwner() != civInfo && !(
+                    improvement.hasUnique("Can be built outside your borders")
+                            // citadel can be built only next to or within own borders
+                            || improvement.hasUnique("Can be built just outside your borders") && neighbors.any { it.getOwner() == civInfo }
                     ) -> false
             improvement.uniqueObjects.any {
                 it.placeholderText == "Obsolete with []" && civInfo.tech.isResearched(it.params[0])
@@ -394,8 +395,8 @@ open class TileInfo {
                 || filter == naturalWonder
                 || terrainFeatures.isNotEmpty() && getTerrainFeatures().last().uniques.contains(filter)
                 || civInfo != null && hasViewableResource(civInfo) && resource == filter
-                || filter == "Foreign Land" && civInfo!=null && !isFriendlyTerritory(civInfo)
-                || filter == "Friendly Land" && civInfo!=null && isFriendlyTerritory(civInfo)
+                || filter == "Foreign Land" && civInfo != null && !isFriendlyTerritory(civInfo)
+                || filter == "Friendly Land" && civInfo != null && isFriendlyTerritory(civInfo)
     }
 
     fun hasImprovementInProgress() = improvementInProgress != null
@@ -565,7 +566,8 @@ open class TileInfo {
 
     fun setTerrainTransients() {
         convertTerrainFeatureToArray()
-        convertHillToTerrainFeature()
+        // Uninitialized tilemap - when you're displaying a tile in the civilopedia or map editor
+        if (::tileMap.isInitialized) convertHillToTerrainFeature()
         if (!ruleset.terrains.containsKey(baseTerrain))
             throw Exception()
         baseTerrainObject = ruleset.terrains[baseTerrain]!!
@@ -664,7 +666,7 @@ open class TileInfo {
             improvement = improvementObject.name
     }
 
-    private fun convertHillToTerrainFeature(){
+    private fun convertHillToTerrainFeature() {
         if (baseTerrain == Constants.hill &&
                 ruleset.terrains[Constants.hill]?.type == TerrainType.TerrainFeature) {
             val mostCommonBaseTerrain = neighbors.filter { it.isLand && !it.isImpassible() }

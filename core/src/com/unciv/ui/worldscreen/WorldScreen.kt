@@ -37,7 +37,6 @@ import com.unciv.ui.saves.SaveGameScreen
 import com.unciv.ui.trade.DiplomacyScreen
 import com.unciv.ui.utils.*
 import com.unciv.ui.victoryscreen.VictoryScreen
-import com.unciv.ui.worldscreen.MinimapHolder.MinimapToggleButtons
 import com.unciv.ui.worldscreen.bottombar.BattleTable
 import com.unciv.ui.worldscreen.bottombar.TileInfoTable
 import com.unciv.ui.worldscreen.mainmenu.OnlineMultiplayer
@@ -229,7 +228,7 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Cam
         keyPressDispatcher[Input.Keys.F2] = { game.setScreen(EmpireOverviewScreen(selectedCiv, "Trades")) }    // Economic info
         keyPressDispatcher[Input.Keys.F3] = { game.setScreen(EmpireOverviewScreen(selectedCiv, "Units")) }    // Military info
         keyPressDispatcher[Input.Keys.F4] = { game.setScreen(EmpireOverviewScreen(selectedCiv, "Diplomacy")) }    // Diplomacy info
-        keyPressDispatcher[Input.Keys.F5] = { game.setScreen(PolicyPickerScreen(this, selectedCiv))  }    // Social Policies Screen
+        keyPressDispatcher[Input.Keys.F5] = { game.setScreen(PolicyPickerScreen(this, selectedCiv)) }    // Social Policies Screen
         keyPressDispatcher[Input.Keys.F6] = { game.setScreen(TechPickerScreen(viewingCiv)) }    // Tech Screen
         keyPressDispatcher[Input.Keys.F7] = { game.setScreen(EmpireOverviewScreen(selectedCiv, "Cities")) }    // originally Notification Log
         keyPressDispatcher[Input.Keys.F8] = { game.setScreen(VictoryScreen(this)) }    // Victory Progress
@@ -238,8 +237,6 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Cam
         keyPressDispatcher[Input.Keys.F11] = quickSave    // Quick Save
         keyPressDispatcher[Input.Keys.F12] = quickLoad    // Quick Load
         keyPressDispatcher[Input.Keys.HOME] = { mapHolder.setCenterPosition(gameInfo.currentPlayerCiv.getCapital().location) }    // Capital City View
-        keyPressDispatcher['\u0012'] = { minimapWrapper.toggleButtonState(MinimapToggleButtons.RESOURCES) }    //   Ctrl-R: Show Resources Icons
-        keyPressDispatcher['\u0019'] = { minimapWrapper.toggleButtonState(MinimapToggleButtons.YIELD) }    //   Ctrl-Y: Yield Icons
         keyPressDispatcher['\u000F'] = { OptionsPopup(this).open() }    //   Ctrl-O: Game Options
         keyPressDispatcher['\u0013'] = { game.setScreen(SaveGameScreen(gameInfo)) }    //   Ctrl-S: Save
         keyPressDispatcher['\u000C'] = { game.setScreen(LoadGameScreen(this)) }    //   Ctrl-L: Load
@@ -545,7 +542,7 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Cam
     }
 
 
-    fun createNewWorldScreen(gameInfo:GameInfo) {
+    fun createNewWorldScreen(gameInfo: GameInfo) {
 
         game.gameInfo = gameInfo
         val newWorldScreen = WorldScreen(gameInfo, gameInfo.getPlayerToViewAs())
@@ -685,7 +682,7 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Cam
                         beliefTable.onClick { viewingCiv.religionManager.choosePantheonBelief(belief); pantheonPopup.close(); shouldUpdate = true }
                         beliefsTable.add(beliefTable).fillX().row()
                     }
-                    pantheonPopup.add(ScrollPane(beliefsTable)).maxHeight(stage.height*.8f)
+                    pantheonPopup.add(ScrollPane(beliefsTable)).maxHeight(stage.height * .8f)
                     pantheonPopup.open()
                 }
 
