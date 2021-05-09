@@ -23,7 +23,9 @@ import java.util.*
 import kotlin.collections.HashMap
 import kotlin.concurrent.thread
 
-class ModManagementScreen: PickerScreen() {
+// All picker screens auto-wrap the top table in a ScrollPane.
+// Since we want the different parts to scroll separately, we disable the default ScrollPane, which would scroll everything at once.
+class ModManagementScreen: PickerScreen(disableScroll = true) {
 
     val modTable = Table().apply { defaults().pad(10f) }
     val downloadTable = Table().apply { defaults().pad(10f) }
@@ -42,11 +44,6 @@ class ModManagementScreen: PickerScreen() {
         topTable.add("Downloadable mods".toLabel())
 //        topTable.add("Mod actions")
         topTable.row()
-
-
-        // All picker screens auto-wrap the top table in a scrollpane.
-        // Since we want the different parts to scroll separately, we disable the default scrollpane, which would scroll everything at once.
-        scrollPane.setScrollingDisabled(true, true)
 
         topTable.add(ScrollPane(modTable)).pad(10f)
 

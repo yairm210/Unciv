@@ -13,8 +13,8 @@ class MapEditorMenuPopup(var mapEditorScreen: MapEditorScreen): Popup(mapEditorS
 
     init {
         addButton("New map") { UncivGame.Current.setScreen(NewMapScreen(mapEditorScreen.tileMap.mapParameters)) }
-        addButton("Save map") { mapEditorScreen.game.setScreen(SaveAndLoadMapScreen(mapEditorScreen.tileMap, true)) }
-        addButton("Load map") { mapEditorScreen.game.setScreen(SaveAndLoadMapScreen(mapEditorScreen.tileMap)) }
+        addButton("Save map") { mapEditorScreen.game.setScreen(SaveAndLoadMapScreen(mapEditorScreen.tileMap, true, mapEditorScreen)); this.close() }
+        addButton("Load map") { mapEditorScreen.game.setScreen(SaveAndLoadMapScreen(mapEditorScreen.tileMap, false, mapEditorScreen)); this.close() }
         addButton("Exit map editor") { mapEditorScreen.game.setScreen(MainMenuScreen()); mapEditorScreen.dispose() }
         addButton("Change ruleset") { MapEditorRulesetPopup(mapEditorScreen).open(); close() }
         addButton(Constants.close) { close() }

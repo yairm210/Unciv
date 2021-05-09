@@ -1,3 +1,28 @@
+## 3.14.7
+
+Custom map size  - By alkorolyov
+
+Fixed Civilopedia crash
+
+Fixed double consumption of resources for "Comsumes [amount] [resource]" unique
+
+Resolved #3888 - added template lines for mod management screen
+
+Tradition works again
+
+Terrain height now defined by a unique
+
+Refixed denunciation effects - sorry Chek!
+
+Genericized "No Maintenance costs for improvements in [] tiles", tile city-strength bonus, and extra sight for unit types
+
+Show tech progress for next turn in tech button
+
+By SomeTroglodyte:
+- Resource revealed notification point to all reveals 
+- Worldscreen key bindings 
+- City overview force consistent row height
+
 ## 3.14.6
 
 Hills are now changed to terrain features - by GGGuenni!
