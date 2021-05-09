@@ -7,7 +7,7 @@ import com.unciv.UncivGame
 import com.unciv.models.translations.tr
 import com.unciv.ui.utils.*
 
-open class PickerScreen : CameraStageBaseScreen() {
+open class PickerScreen(val disableScroll: Boolean = false) : CameraStageBaseScreen() {
 
     internal var closeButton: TextButton = Constants.close.toTextButton()
     protected var descriptionLabel: Label
@@ -42,6 +42,7 @@ open class PickerScreen : CameraStageBaseScreen() {
         topTable = Table()
         scrollPane = ScrollPane(topTable)
 
+        scrollPane.setScrollingDisabled(disableScroll, disableScroll)
         scrollPane.setSize(stage.width, stage.height * screenSplit)
 
         splitPane = SplitPane(scrollPane, bottomTable, true, skin)

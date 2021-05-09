@@ -149,7 +149,7 @@ class MainMenuScreen: CameraStageBaseScreen() {
             add(newMapButton).row()
 
             val loadMapButton = screen.getTableBlock("Load map", "OtherIcons/Load") {
-                val loadMapScreen = SaveAndLoadMapScreen(null)
+                val loadMapScreen = SaveAndLoadMapScreen(null, false, screen)
                 loadMapScreen.closeButton.isVisible = true
                 loadMapScreen.closeButton.onClick {
                     screen.game.setScreen(MainMenuScreen())

@@ -36,7 +36,7 @@ class GameSetupInfo(var gameId:String, var gameParameters: GameParameters, var m
     }
 }
 
-class NewGameScreen(private val previousScreen: CameraStageBaseScreen, _gameSetupInfo: GameSetupInfo?=null): IPreviousScreen, PickerScreen() {
+class NewGameScreen(private val previousScreen: CameraStageBaseScreen, _gameSetupInfo: GameSetupInfo?=null): IPreviousScreen, PickerScreen(disableScroll = true) {
     override val gameSetupInfo = _gameSetupInfo ?: GameSetupInfo()
     override var ruleset = RulesetCache.getComplexRuleset(gameSetupInfo.gameParameters.mods) // needs to be set because the gameoptionstable etc. depend on this
     var newGameOptionsTable = GameOptionsTable(this) { desiredCiv: String -> playerPickerTable.update(desiredCiv) }
@@ -48,7 +48,6 @@ class NewGameScreen(private val previousScreen: CameraStageBaseScreen, _gameSetu
 
     init {
         setDefaultCloseAction(previousScreen)
-        scrollPane.setScrollingDisabled(true, true)
 
         topTable.add(ScrollPane(newGameOptionsTable).apply { setOverscroll(false, false) })
                 .width(stage.width / 3).padTop(20f).top()
