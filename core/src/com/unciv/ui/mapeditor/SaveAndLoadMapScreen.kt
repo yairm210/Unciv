@@ -19,7 +19,7 @@ import com.unciv.ui.utils.*
 import kotlin.concurrent.thread
 import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 
-class SaveAndLoadMapScreen(mapToSave: TileMap?, save:Boolean = false) : PickerScreen() {
+class SaveAndLoadMapScreen(mapToSave: TileMap?, save:Boolean = false) : PickerScreen(disableScroll = true) {
     var chosenMap: FileHandle? = null
     val deleteButton = "Delete map".toTextButton()
     val mapsTable = Table().apply { defaults().pad(10f) }
