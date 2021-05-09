@@ -73,6 +73,7 @@ class LoadGameScreen(previousScreen:CameraStageBaseScreen) : PickerScreen(disabl
 
     private fun getRightSideTable(): Table {
         val rightSideTable = Table()
+        rightSideTable.defaults().pad(10f)
 
         val errorLabel = "".toLabel(Color.RED)
         val loadFromClipboardButton = "Load copied data".toTextButton()
@@ -105,7 +106,7 @@ class LoadGameScreen(previousScreen:CameraStageBaseScreen) : PickerScreen(disabl
                     }
                 }
             }
-            rightSideTable.add(loadFromCustomLocation).pad(10f).row()
+            rightSideTable.add(loadFromCustomLocation).row()
         }
         rightSideTable.add(errorLabel).row()
 
