@@ -7,6 +7,7 @@ plugins {
 
 java {
     sourceCompatibility = JavaVersion.VERSION_1_6
+    targetCompatibility = JavaVersion.VERSION_1_7
 }
 
 tasks {

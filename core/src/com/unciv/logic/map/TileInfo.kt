@@ -74,7 +74,7 @@ open class TileInfo {
     var roadStatus = RoadStatus.None
     var turnsToImprovement: Int = 0
 
-    fun isHill() = terrainFeatures.contains(Constants.hill)
+    fun isHill() = baseTerrain == Constants.hill || terrainFeatures.contains(Constants.hill)
 
     var hasBottomRightRiver = false
     var hasBottomRiver = false
@@ -114,9 +114,6 @@ open class TileInfo {
         if (improvementInProgress == null) return false
         return ruleset.tileImprovements[improvementInProgress!!]!!.isGreatImprovement()
     }
-
-    fun containsUnique(unique: String): Boolean =
-            isNaturalWonder() && getNaturalWonder().uniques.contains(unique)
     //region pure functions
 
     /** Returns military, civilian and air units in tile */
@@ -166,6 +163,13 @@ open class TileInfo {
     // and the toSequence so that aggregations (like neighbors.flatMap{it.units} don't take up their own space
 
     fun getHeight(): Int {
+        if (ruleset.terrains.values.asSequence().flatMap { it.uniqueObjects }
+                        .any { it.placeholderText == "Has an elevation of [] for visibility calculations" })
+            return getAllTerrains().flatMap { it.uniqueObjects }
+                    .filter { it.placeholderText == "Has an elevation of [] for visibility calculations" }
+                    .map { it.params[0].toInt() }.sum()
+
+        // Old method - deprecated 3.14.7
         if (baseTerrain == Constants.mountain) return 4
         if (isHill()) return 2
         if (terrainFeatures.contains(Constants.forest) || terrainFeatures.contains(Constants.jungle)) return 1
@@ -191,6 +195,13 @@ open class TileInfo {
     }
 
     fun getTerrainFeatures(): List<Terrain> = terrainFeatures.mapNotNull { ruleset.terrains[it] }
+    fun getAllTerrains(): Sequence<Terrain> = sequence {
+        yield(baseTerrainObject)
+        if (naturalWonder != null) yield(getNaturalWonder())
+        yieldAll(terrainFeatures.asSequence().mapNotNull { ruleset.terrains[it] })
+    }
+
+    fun hasUnique(unique: String) = getAllTerrains().any { it.uniques.contains(unique) }
 
     fun getWorkingCity(): CityInfo? {
         val civInfo = getOwner()
@@ -200,7 +211,7 @@ open class TileInfo {
 
     fun isWorked(): Boolean = getWorkingCity() != null
     fun providesYield() = getCity() != null && (isCityCenter() || isWorked()
-            || getTileImprovement()?.hasUnique("Tile provides yield without assigned population")==true)
+            || getTileImprovement()?.hasUnique("Tile provides yield without assigned population") == true)
 
     fun isLocked(): Boolean {
         val workingCity = getWorkingCity()
@@ -322,10 +333,10 @@ open class TileInfo {
         return when {
             improvement.uniqueTo != null && improvement.uniqueTo != civInfo.civName -> false
             improvement.techRequired != null && !civInfo.tech.isResearched(improvement.techRequired!!) -> false
-            getOwner() != civInfo && ! (
-                        improvement.hasUnique("Can be built outside your borders")
-                        // citadel can be built only next to or within own borders
-                        || improvement.hasUnique("Can be built just outside your borders") && neighbors.any { it.getOwner() == civInfo }
+            getOwner() != civInfo && !(
+                    improvement.hasUnique("Can be built outside your borders")
+                            // citadel can be built only next to or within own borders
+                            || improvement.hasUnique("Can be built just outside your borders") && neighbors.any { it.getOwner() == civInfo }
                     ) -> false
             improvement.uniqueObjects.any {
                 it.placeholderText == "Obsolete with []" && civInfo.tech.isResearched(it.params[0])
@@ -375,18 +386,17 @@ open class TileInfo {
 
     fun matchesUniqueFilter(filter: String, civInfo: CivilizationInfo? = null): Boolean {
         return filter == baseTerrain
-                || filter == Constants.hill && isHill()
                 || filter == "River" && isAdjacentToRiver()
                 || terrainFeatures.contains(filter)
                 || baseTerrainObject.uniques.contains(filter)
-                || terrainFeatures.isNotEmpty() && getTerrainFeatures().last().uniques.contains(filter)
                 || improvement == filter
-                || civInfo != null && hasViewableResource(civInfo) && resource == filter
                 || filter == "Water" && isWater
                 || filter == "Land" && isLand
                 || filter == naturalWonder
-                || filter == "Foreign Land" && civInfo!=null && !isFriendlyTerritory(civInfo)
-                || filter == "Friendly Land" && civInfo!=null && isFriendlyTerritory(civInfo)
+                || terrainFeatures.isNotEmpty() && getTerrainFeatures().last().uniques.contains(filter)
+                || civInfo != null && hasViewableResource(civInfo) && resource == filter
+                || filter == "Foreign Land" && civInfo != null && !isFriendlyTerritory(civInfo)
+                || filter == "Friendly Land" && civInfo != null && isFriendlyTerritory(civInfo)
     }
 
     fun hasImprovementInProgress() = improvementInProgress != null
@@ -436,9 +446,6 @@ open class TileInfo {
 
         return min(distance, wrappedDistance).toInt()
     }
-
-    fun isRoughTerrain() = getBaseTerrain().rough || getTerrainFeatures().any { it.rough }
-            || getBaseTerrain().uniques.contains("Rough") || getTerrainFeatures().any { it.uniques.contains("Rough") }
 
     override fun toString(): String { // for debugging, it helps to see what you're doing
         return toString(null)
@@ -559,7 +566,8 @@ open class TileInfo {
 
     fun setTerrainTransients() {
         convertTerrainFeatureToArray()
-        convertHillToTerrainFeature()
+        // Uninitialized tilemap - when you're displaying a tile in the civilopedia or map editor
+        if (::tileMap.isInitialized) convertHillToTerrainFeature()
         if (!ruleset.terrains.containsKey(baseTerrain))
             throw Exception()
         baseTerrainObject = ruleset.terrains[baseTerrain]!!
@@ -658,7 +666,7 @@ open class TileInfo {
             improvement = improvementObject.name
     }
 
-    private fun convertHillToTerrainFeature(){
+    private fun convertHillToTerrainFeature() {
         if (baseTerrain == Constants.hill &&
                 ruleset.terrains[Constants.hill]?.type == TerrainType.TerrainFeature) {
             val mostCommonBaseTerrain = neighbors.filter { it.isLand && !it.isImpassible() }

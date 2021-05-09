@@ -208,7 +208,9 @@ class MapUnit {
             if (isEmbarked() && civInfo.hasUnique("+1 Sight when embarked"))
                 visibilityRange += 1
             val tile = getTile()
-            if (tile.isHill() && type.isLandUnit()) visibilityRange += 1
+            for (unique in tile.getAllTerrains().flatMap { it.uniqueObjects })
+                if (unique.placeholderText == "[] Sight for [] units" && matchesFilter(unique.params[1]))
+                    visibilityRange += unique.params[0].toInt()
 
             viewableTiles = tile.getViewableTilesList(visibilityRange)
         }
@@ -355,7 +357,7 @@ class MapUnit {
         if (currentMovement < 0) currentMovement = 0f
     }
 
-    fun getMovementDestination():TileInfo{
+    fun getMovementDestination(): TileInfo {
         val destination = action!!.replace("moveTo ", "").split(",").dropLastWhile { it.isEmpty() }
         val destinationVector = Vector2(destination[0].toFloat(), destination[1].toFloat())
         return currentTile.tileMap[destinationVector]
@@ -416,7 +418,7 @@ class MapUnit {
                 else {
                     val removedFeatureName = tile.improvementInProgress!!.removePrefix("Remove ")
                     val removedFeatureObject = tile.ruleset.terrains[removedFeatureName]
-                    if (removedFeatureObject!=null && removedFeatureObject.uniques
+                    if (removedFeatureObject != null && removedFeatureObject.uniques
                                     .contains("Provides a one-time Production bonus to the closest city when cut down")) {
                         tryProvideProductionToClosestCity(removedFeatureName)
                     }
@@ -557,7 +559,7 @@ class MapUnit {
 
         if (!hasUnique("All healing effects doubled") && type.isLandUnit() && type.isMilitary()) {
             val gainDoubleHealPromotion = tile.neighbors
-                    .any { it.containsUnique("Grants Rejuvenation (all healing effects doubled) to adjacent military land units for the rest of the game") }
+                    .any { it.hasUnique("Grants Rejuvenation (all healing effects doubled) to adjacent military land units for the rest of the game") }
             if (gainDoubleHealPromotion && civInfo.gameInfo.ruleSet.unitPromotions.containsKey("Rejuvenation"))
                 promotions.addPromotion("Rejuvenation", true)
         }

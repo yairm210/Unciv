@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.math.MathUtils
 import com.badlogic.gdx.math.Vector2
+import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Image
@@ -34,8 +35,8 @@ class Minimap(val mapHolder: WorldMapHolder) : Table(){
         var bottomY = 0f
 
         fun hexRow(vector2: Vector2) = vector2.x + vector2.y
-        val maxHexRow = mapHolder.tileMap.values.asSequence().map { hexRow(it.position) }.max()!!
-        val minHexRow = mapHolder.tileMap.values.asSequence().map { hexRow(it.position) }.min()!!
+        val maxHexRow = mapHolder.tileMap.values.asSequence().map { hexRow(it.position) }.maxOrNull()!!
+        val minHexRow = mapHolder.tileMap.values.asSequence().map { hexRow(it.position) }.minOrNull()!!
         val totalHexRows = maxHexRow - minHexRow
 
         for (tileInfo in mapHolder.tileMap.values) {
@@ -121,6 +122,10 @@ class MinimapHolder(mapHolder: WorldMapHolder): Table() {
     val minimap = Minimap(mapHolder)
     val worldScreen = mapHolder.worldScreen
 
+    var yieldImageButton: Actor? = null
+    var populationImageButton: Actor? = null
+    var resourceImageButton: Actor? = null
+
     init {
         add(getToggleIcons()).align(Align.bottom)
         add(getWrappedMinimap())
@@ -178,12 +183,22 @@ class MinimapHolder(mapHolder: WorldMapHolder): Table() {
         }
         toggleIconTable.add(resourceImage)
         toggleIconTable.pack()
+
+        yieldImageButton = yieldImage.actor
+        populationImageButton = populationImage.actor
+        resourceImageButton = resourceImage.actor
+
         return toggleIconTable
     }
 
     fun update(civInfo: CivilizationInfo) {
         isVisible = UncivGame.Current.settings.showMinimap
         minimap.update(civInfo)
+        with(UncivGame.Current.settings) {
+            yieldImageButton?.color?.a = if (showTileYields) 1f else 0.5f
+            populationImageButton?.color?.a = if (showWorkedTiles) 1f else 0.5f
+            resourceImageButton?.color?.a = if (showResourcesAndImprovements) 1f else 0.5f
+        }
     }
 
 

@@ -17,7 +17,7 @@ import kotlin.concurrent.thread
 import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 
 
-class SaveGameScreen(val gameInfo: GameInfo) : PickerScreen() {
+class SaveGameScreen(val gameInfo: GameInfo) : PickerScreen(disableScroll = true) {
     val gameNameTextField = TextField("", skin)
     val currentSaves = Table()
 
@@ -25,16 +25,17 @@ class SaveGameScreen(val gameInfo: GameInfo) : PickerScreen() {
         setDefaultCloseAction()
 
         gameNameTextField.textFieldFilter = TextField.TextFieldFilter { _, char -> char != '\\' && char != '/' }
-        currentSaves.add("Current saves".toLabel()).row()
+        topTable.add("Current saves".toLabel()).pad(10f).row()
         updateShownSaves(false)
         topTable.add(ScrollPane(currentSaves))
 
         val newSave = Table()
+        newSave.defaults().pad(5f, 10f, 5f, 10f)
         val defaultSaveName = gameInfo.currentPlayer + " -  " + gameInfo.turns + " turns"
         gameNameTextField.text = defaultSaveName
 
         newSave.add("Saved game name".toLabel()).row()
-        newSave.add(gameNameTextField).width(300f).pad(10f).row()
+        newSave.add(gameNameTextField).width(300f).row()
 
         val copyJsonButton = "Copy to clipboard".toTextButton()
         copyJsonButton.onClick {
@@ -63,8 +64,8 @@ class SaveGameScreen(val gameInfo: GameInfo) : PickerScreen() {
                     }
                 }
             }
-            newSave.add(saveToCustomLocation).pad(10f).row()
-            newSave.add(errorLabel).pad(0f, 10f, 10f, 10f).row()
+            newSave.add(saveToCustomLocation).row()
+            newSave.add(errorLabel).row()
         }
 
 

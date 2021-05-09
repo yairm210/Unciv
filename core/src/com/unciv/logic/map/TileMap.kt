@@ -52,8 +52,8 @@ class TileMap {
 
     /** generates a rectangular map of given width and height*/
     constructor(width: Int, height: Int, ruleset: Ruleset, worldWrap: Boolean = false) {
-        val halfway = if(worldWrap) width/2-1 else width/2
-        for (x in -width / 2 .. halfway)
+        val halfway = if (worldWrap) width / 2 - 1 else width / 2
+        for (x in -width / 2..halfway)
             for (y in -height / 2..height / 2)
                 tileList.add(TileInfo().apply {
                     position = HexMath.evenQ2HexCoords(Vector2(x.toFloat(), y.toFloat()))
@@ -128,7 +128,7 @@ class TileMap {
                     }
                 }.filterNotNull()
 
-    private fun getIfTileExistsOrNull(x: Int, y: Int) : TileInfo? {
+    private fun getIfTileExistsOrNull(x: Int, y: Int): TileInfo? {
         if (contains(x, y))
             return get(x, y)
 
@@ -321,7 +321,7 @@ class TileMap {
      * Returns the clockPosition of otherTile seen from tile's position
      * Returns -1 if not neighbors
      */
-    fun getNeighborTileClockPosition(tile: TileInfo, otherTile: TileInfo): Int{
+    fun getNeighborTileClockPosition(tile: TileInfo, otherTile: TileInfo): Int {
         var radius = mapParameters.size.radius
         if (mapParameters.shape == MapShape.rectangular)
             radius = HexMath.getEquivalentRectangularSize(radius).x.toInt() / 2
@@ -348,7 +348,7 @@ class TileMap {
      * Returns the closest position to (0, 0) outside the map which can be wrapped
      * to the position of the given vector
      */
-    fun getUnWrappedPosition(position: Vector2) : Vector2 {
+    fun getUnWrappedPosition(position: Vector2): Vector2 {
         if (!contains(position))
             return position //The position is outside the map so its unwrapped already
 
