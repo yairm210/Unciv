@@ -1,5 +1,7 @@
 package com.unciv.ui.worldscreen
 
+import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.Input
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
@@ -21,14 +23,15 @@ import kotlin.math.roundToInt
 
 class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
 
-    private var selectedCivLabel = worldScreen.selectedCiv.civName.toLabel()
+    var selectedCivLabel = worldScreen.selectedCiv.civName.toLabel()
     private var  selectedCivIconHolder = Container<Actor>()
 
     private val turnsLabel = "Turns: 0/400".toLabel()
-    private val goldLabel = "Gold:".toLabel(colorFromRGB(225, 217, 71))
-    private val scienceLabel = "Science:".toLabel(colorFromRGB(78, 140, 151))
-    private val happinessLabel = "Happiness:".toLabel()
-    private val cultureLabel = "Culture:".toLabel(colorFromRGB(210, 94, 210))
+    private val goldLabel = "0".toLabel(colorFromRGB(225, 217, 71))
+    private val scienceLabel = "0".toLabel(colorFromRGB(78, 140, 151))
+    private val happinessLabel = "0".toLabel()
+    private val cultureLabel = "0".toLabel(colorFromRGB(210, 94, 210))
+    private val faithLabel = "0".toLabel(colorFromRGB(210, 94, 210))
     private val resourceLabels = HashMap<String, Label>()
     private val resourceImages = HashMap<String, Actor>()
     private val happinessImage = Group()
@@ -57,6 +60,7 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
     private fun getResourceTable(): Table {
         val resourceTable = Table()
         resourceTable.defaults().pad(5f)
+        turnsLabel.onClick { worldScreen.game.setScreen(VictoryScreen(worldScreen)) }
         resourceTable.add(turnsLabel).padRight(20f)
         val revealedStrategicResources = worldScreen.gameInfo.ruleSet.tileResources.values
                 .filter { it.resourceType == ResourceType.Strategic } // && currentPlayerCivInfo.tech.isResearched(it.revealedBy!!) }
@@ -84,7 +88,7 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
 
         statsTable.add(goldLabel)
         val goldImage = ImageGetter.getStatIcon("Gold")
-        statsTable.add(goldImage).padRight(20f).size(20f)
+        statsTable.add(goldImage).padRight(20f).padBottom(6f).size(20f)
         val invokeStatsPage = {
                 worldScreen.game.setScreen(EmpireOverviewScreen(worldScreen.selectedCiv, "Stats"))
         }
@@ -93,29 +97,34 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
 
         statsTable.add(scienceLabel) //.apply { setAlignment(Align.center) }).align(Align.top)
         val scienceImage = ImageGetter.getStatIcon("Science")
-        statsTable.add(scienceImage).padRight(20f).size(20f)
+        statsTable.add(scienceImage).padRight(20f).padBottom(6f).size(20f)
         val invokeTechScreen = {
                 worldScreen.game.setScreen(TechPickerScreen(worldScreen.selectedCiv))
         }
         scienceLabel.onClick(invokeTechScreen)
         scienceImage.onClick(invokeTechScreen)
 
-        statsTable.add(happinessImage).size(20f)
-        statsTable.add(happinessLabel).padRight(20f)//.apply { setAlignment(Align.center) }).align(Align.top)
+        statsTable.add(happinessImage).padBottom(6f).size(20f)
+        statsTable.add(happinessLabel).padRight(20f)
         val invokeResourcesPage = {
                 worldScreen.game.setScreen(EmpireOverviewScreen(worldScreen.selectedCiv, "Resources"))
         }
         happinessImage.onClick(invokeResourcesPage)
         happinessLabel.onClick(invokeResourcesPage)
 
-        statsTable.add(cultureLabel)//.apply { setAlignment(Align.center) }).align(Align.top)
+        statsTable.add(cultureLabel)
         val cultureImage = ImageGetter.getStatIcon("Culture")
-        statsTable.add(cultureImage).size(20f)
+        statsTable.add(cultureImage).padBottom(6f).size(20f)
         val invokePoliciesPage = {
                 worldScreen.game.setScreen(PolicyPickerScreen(worldScreen, worldScreen.selectedCiv))
         }
         cultureLabel.onClick(invokePoliciesPage)
         cultureImage.onClick(invokePoliciesPage)
+
+        if(worldScreen.gameInfo.ruleSet.hasReligion()) {
+            statsTable.add(faithLabel).padLeft(20f)
+            statsTable.add(ImageGetter.getStatIcon("Faith")).padBottom(6f).size(20f)
+        }
 
         statsTable.pack()
         statsTable.width = worldScreen.stage.width - 20
@@ -137,9 +146,12 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
         return menuButton
     }
 
-    private fun getOverviewButton(): TextButton {
-        val overviewButton = "Overview".toTextButton()
-        overviewButton.labelCell.pad(10f)
+    private fun getOverviewButton(): Button {
+        val overviewButton = Button(CameraStageBaseScreen.skin)
+        overviewButton.add("Overview".toLabel()).pad(10f)
+        if (Gdx.app.input.isPeripheralAvailable(Input.Peripheral.HardwareKeyboard)) {
+            overviewButton.add("(E)".toLabel(Color.WHITE))
+        }
         overviewButton.pack()
         overviewButton.onClick { worldScreen.game.setScreen(EmpireOverviewScreen(worldScreen.selectedCiv)) }
         overviewButton.centerY(this)
@@ -182,8 +194,7 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
         val year = getYear(civInfo.gameInfo.gameParameters.gameSpeed, civInfo.gameInfo.turns).toInt()
 
         val yearText = "[" + abs(year) + "] " + if (year < 0) "BC" else "AD"
-        turnsLabel.setText("Turn".tr() + " " + civInfo.gameInfo.turns + " | " + yearText.tr())
-        turnsLabel.onClick { worldScreen.game.setScreen(VictoryScreen(worldScreen)) }
+        turnsLabel.setText(Fonts.turn + "" + civInfo.gameInfo.turns + " | " + yearText.tr())
 
         val nextTurnStats = civInfo.statsForNextTurn
         val goldPerTurn = "(" + (if (nextTurnStats.gold > 0) "+" else "") + nextTurnStats.gold.roundToInt() + ")"
@@ -204,6 +215,7 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
         }
 
         cultureLabel.setText(getCultureText(civInfo, nextTurnStats))
+        faithLabel.setText(civInfo.religionManager.storedFaith.toString() + "(+" + nextTurnStats.faith.roundToInt() + ")")
 
         updateSelectedCivTabel()
     }
@@ -219,7 +231,7 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
     }
 
     private fun getCultureText(civInfo: CivilizationInfo, nextTurnStats: Stats): String {
-        var cultureString = "+" + Math.round(nextTurnStats.culture)
+        var cultureString = "+" + nextTurnStats.culture.roundToInt()
         if (nextTurnStats.culture == 0f) return cultureString // when you start the game, you're not producing any culture
 
         val turnsToNextPolicy = (civInfo.policies.getCultureNeededForNextPolicy() - civInfo.policies.storedCulture) / nextTurnStats.culture

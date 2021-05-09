@@ -1,11 +1,14 @@
 package com.unciv.ui.tilegroups
 
 import com.unciv.UncivGame
+import com.unciv.models.tilesets.TileSetCache
+import com.unciv.models.tilesets.TileSetConfig
 
 class TileSetStrings {
     // this is so that when we have 100s of TileGroups, they won't all individually come up with all these strings themselves,
     // it gets pretty memory-intensive (10s of MBs which is a lot for lower-end phones)
     val tileSetLocation = "TileSets/" + UncivGame.Current.settings.tileSet + "/"
+    val tileSetConfig = TileSetCache[UncivGame.Current.settings.tileSet] ?: TileSetConfig()
 
     val hexagon = tileSetLocation + "Hexagon"
     val crosshatchHexagon = tileSetLocation + "CrosshatchHexagon"
@@ -54,7 +57,7 @@ class TileSetStrings {
     fun getTerrainFeatureOverlay(terrainFeature: String) = getString(tileSetLocation, terrainFeature, overlay)
 
     fun getCityTile(baseTerrain: String?, era: String?): String {
-        if (baseTerrain != null && era != null) getString(tilesLocation, baseTerrain, city, tag, era)
+        if (baseTerrain != null && era != null) return getString(tilesLocation, baseTerrain, city, tag, era)
         if (era != null) return getString(tilesLocation, city, tag, era)
         if (baseTerrain != null) return getString(tilesLocation, baseTerrain, "+", city)
         else return cityTile

@@ -3,6 +3,7 @@ package com.unciv.models.ruleset.tile
 import com.badlogic.gdx.graphics.Color
 import com.unciv.Constants
 import com.unciv.models.ruleset.Ruleset
+import com.unciv.models.ruleset.Unique
 import com.unciv.models.stats.NamedStats
 import com.unciv.models.translations.tr
 import com.unciv.ui.utils.colorFromRGB
@@ -13,20 +14,18 @@ class Terrain : NamedStats() {
 
     var overrideStats = false
 
-    /** If true, other terrain layers can come over this one. For mountains, lakes etc. this is false  */
-    var canHaveOverlay = true
-
     /** If true, nothing can be built here - not even resource improvements */
     var unbuildable = false
 
     /** For terrain features */
-    val occursOn: Collection<String>? = null
+    val occursOn = ArrayList<String>()
 
     /** Used by Natural Wonders: it is the baseTerrain on top of which the Natural Wonder is placed */
     val turnsInto: String? = null
 
     /** Uniques (currently used only for Natural Wonders) */
     val uniques = ArrayList<String>()
+    val uniqueObjects: List<Unique> by lazy { uniques.map { Unique(it) } }
 
     /** Natural Wonder weight: probability to be picked */
     var weight = 10
@@ -36,41 +35,43 @@ class Terrain : NamedStats() {
     var movementCost = 1
     var defenceBonus:Float = 0f
     var impassable = false
+    
+    @Deprecated("As of 3.14.1")
     var rough = false
 
 
     fun getColor(): Color { // Can't be a lazy initialize, because we play around with the resulting color with lerp()s and the like
         if (RGB == null) return Color.GOLD
-        return colorFromRGB(RGB!![0], RGB!![1], RGB!![2])
+        return colorFromRGB(RGB!!)
     }
 
 
     fun getDescription(ruleset: Ruleset): String {
         val sb = StringBuilder()
-        sb.appendln(this.clone().toString())
-        if (occursOn != null)
-            sb.appendln("Occurs on [${occursOn.joinToString(", ") { it.tr() }}]".tr())
+        sb.appendLine(this.clone().toString())
+        if (occursOn.isNotEmpty())
+            sb.appendLine("Occurs on [${occursOn.joinToString(", ") { it.tr() }}]".tr())
 
         if (turnsInto != null)
-            sb.appendln("Placed on [$turnsInto]".tr())
+            sb.appendLine("Placed on [$turnsInto]".tr())
 
         val resourcesFound = ruleset.tileResources.values.filter { it.terrainsCanBeFoundOn.contains(name) }
         if (resourcesFound.isNotEmpty())
-            sb.appendln("May contain [${resourcesFound.joinToString(", ") { it.name.tr() }}]".tr())
+            sb.appendLine("May contain [${resourcesFound.joinToString(", ") { it.name.tr() }}]".tr())
 
         if(uniques.isNotEmpty())
-            sb.appendln(uniques.joinToString { it.tr() })
+            sb.appendLine(uniques.joinToString { it.tr() })
 
         if (impassable)
-            sb.appendln(Constants.impassable.tr())
+            sb.appendLine(Constants.impassable.tr())
         else
-            sb.appendln("{Movement cost}: $movementCost".tr())
+            sb.appendLine("{Movement cost}: $movementCost".tr())
 
         if (defenceBonus != 0f)
-            sb.appendln("{Defence bonus}: ".tr() + (defenceBonus * 100).toInt() + "%")
+            sb.appendLine("{Defence bonus}: ".tr() + (defenceBonus * 100).toInt() + "%")
 
         if (rough)
-            sb.appendln("Rough Terrain".tr())
+            sb.appendLine("Rough Terrain".tr())
 
         return sb.toString()
     }

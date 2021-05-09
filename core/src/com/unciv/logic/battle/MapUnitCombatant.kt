@@ -14,6 +14,7 @@ class MapUnitCombatant(val unit: MapUnit) : ICombatant {
     override fun isDefeated(): Boolean = unit.health <= 0
     override fun isInvisible(): Boolean = unit.isInvisible()
     override fun canAttack(): Boolean = unit.canAttack()
+    override fun matchesCategory(category:String) = unit.matchesFilter(category)
 
     override fun takeDamage(damage: Int) {
         unit.health -= damage
@@ -21,14 +22,13 @@ class MapUnitCombatant(val unit: MapUnit) : ICombatant {
     }
 
     override fun getAttackingStrength(): Int {
-        if (isRanged()) return unit.baseUnit().rangedStrength
-        else return unit.baseUnit().strength
+        return if (isRanged()) unit.baseUnit().rangedStrength
+        else unit.baseUnit().strength
     }
 
     override fun getDefendingStrength(): Int {
-        if(unit.isEmbarked() && !unit.type.isCivilian())
-            return 5 * getCivInfo().getEraNumber()
-        return unit.baseUnit().strength
+        return if (unit.isEmbarked() && !unit.type.isCivilian()) 5 * getCivInfo().getEraNumber()
+        else unit.baseUnit().strength
     }
 
     override fun getUnitType(): UnitType {
@@ -38,4 +38,6 @@ class MapUnitCombatant(val unit: MapUnit) : ICombatant {
     override fun toString(): String {
         return unit.name+" of "+unit.civInfo.civName
     }
+
+
 }

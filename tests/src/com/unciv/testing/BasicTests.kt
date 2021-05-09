@@ -10,7 +10,6 @@ import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
-import com.unciv.models.translations.tr
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
@@ -40,7 +39,7 @@ class BasicTests {
 
     @Test
     fun gameIsNotRunWithDebugModes() {
-        val params = UncivGameParameters("", null, null)
+        val params = UncivGameParameters("", null)
         val game = UncivGame(params)
         Assert.assertTrue("This test will only pass if the game is not run with debug modes",
                 !game.superchargedForDebug
@@ -76,7 +75,14 @@ class BasicTests {
 
         UncivGame.Current = UncivGame("")
         UncivGame.Current.settings = GameSettings().apply { language = "Italian" }
-        val x = "+1 Gold, +2 Production".tr()
-        print(x)
     }
+
+    @Test
+    fun baseRulesetHasNoBugs() {
+        ruleset.modOptions.isBaseRuleset=true
+        val modCheck = ruleset.checkModLinks()
+        if(modCheck!="") println(modCheck)
+        Assert.assertTrue(modCheck == "")
+    }
+
 }

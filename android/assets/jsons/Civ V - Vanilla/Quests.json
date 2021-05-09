@@ -1,0 +1,105 @@
+[
+  {
+    "name": "Route",
+    "description": "Build a road to connect your capital to our city.",
+    "influence": 50
+  },
+  {
+    "name": "Clear Barbarian Camp",
+    "description": "We feel threatened by a Barbarian Camp near our city. Please take care of it.",
+    "type": "Global",
+    "influence": 50,
+    "minimumCivs": 1
+  },
+  {
+    "name": "Connect Resource",
+    "description": "In order to make our civilizations stronger, connect [tileResource] to your trade network."
+  },
+  {
+    "name": "Construct Wonder",
+    "description": "We recommend you to start building [wonder] to show the whole world your civilization strength."
+  },
+  {
+    "name": "Acquire Great Person",
+    "description": "Great People can change the course of a Civilization! You will be rewarded for acquiring a new [greatPerson]."
+  },/*
+  {
+    "name": "Conquer City State",
+    "description": "You will be rewarded for conquering the city state of [cityState]!",
+    "influence": 80
+  },*/
+  {
+    "name": "Find Player",
+    "description": "You have yet to discover where [civName] set up their cities. You will be rewarded for finding their territories.",
+    "influence": 35
+  },
+  {
+    "name": "Find Natural Wonder",
+    "description": "Send your best explorers on a quest to discover Natural Wonders. Nobody knows the location of [naturalWonder] yet."
+  }
+  /* G&K */
+  /*
+  {
+    "name": "Give Gold",
+    "description": "We are suffering great poverty, and unless we receive a sum of [250] Gold, it's only a matter of time before we collapse.",
+    "influence": 20,
+    "duration": 30
+  },
+  {
+    "name": "Pledge to Protect",
+    "description": "Our peoples deserve to be protected by the likes of you. By signing a Protection Pedging, you'll confirm the bond that ties us.",
+    "influence": 20,
+    "duration": 30
+  },
+  {
+    "name": "Contest Culture",
+    "description": "The civilization with the largest Culture growth will gain a reward.",
+    "type": "Global",
+    "duration": 30,
+    "minimumCivs": 3
+  },
+  {
+    "name": "Contest Faith",
+    "description": "The civilization with the largest Faith growth will gain a reward.",
+    "type": "Global",
+    "duration": 30,
+    "minimumCivs": 3
+  },
+  {
+    "name": "Contest Techs",
+    "description": "The civilization with the largest number of new Technologies researched will gain a reward.",
+    "type": "Global",
+    "duration": 30,
+    "minimumCivs": 3
+  },
+  {
+    "name": "Invest",
+    "description": "Our people are rejoycing thanks to a tourism boom. For a certain amount of time, any Gold donation will yeld double the Influence.",
+    "type": "Global",
+    "influence": 0,
+    "duration": 30,
+    "minimumCivs": 2
+  },
+  {
+    "name": "Bully City State",
+    "description": ""
+    "duration": 30
+  },
+  {
+    "name": "Denounce Civilization",
+    "description": "",
+    "duration": 30
+  },
+  {
+    "name": "Spread Religion",
+    "description": ""
+  },
+  */
+  /* BNW */
+  /*
+  {
+    "name": "Trade Route",
+    "description": ""
+  }
+  */
+]

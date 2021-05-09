@@ -24,6 +24,7 @@ object HexMath {
     fun getLatitude(vector: Vector2): Float {
         return vector.x + vector.y
     }
+
     fun getLongitude(vector: Vector2): Float {
         return vector.x - vector.y
     }
@@ -35,9 +36,19 @@ object HexMath {
             return Vector2.Zero
 
         val nTiles = getNumberOfTilesInHexagon(size)
-        val width = round(sqrt(nTiles.toFloat()/ratio))
+        val width = round(sqrt(nTiles.toFloat() / ratio))
         val height = round(width * ratio)
         return Vector2(width, height)
+    }
+
+    /** Returns a radius of a hexagonal map that have approximately the same number of
+     * tiles as a rectangular map of a given width/height
+     */
+    fun getEquivalentHexagonalRadius(width: Int, height: Int): Int {
+        val nTiles = width * height.toFloat()
+        if (nTiles < 1) return 0
+        val radius = ((sqrt(12*nTiles - 3) - 3) / 6).roundToInt()
+        return radius
     }
 
     fun getAdjacentVectors(origin: Vector2): ArrayList<Vector2> {
@@ -88,15 +99,19 @@ object HexMath {
     fun cubic2EvenQCoords(cubicCoord: Vector3): Vector2 {
         return Vector2(cubicCoord.x, cubicCoord.z + (cubicCoord.x + (cubicCoord.x.toInt() and 1)) / 2)
     }
+
     fun evenQ2CubicCoords(evenQCoord: Vector2): Vector3 {
         val x = evenQCoord.x
         val z = evenQCoord.y - (evenQCoord.x + (evenQCoord.x.toInt() and 1)) / 2
-        val y = -x-z
-        return Vector3(x,y,z)
+        val y = -x - z
+        return Vector3(x, y, z)
     }
 
     fun evenQ2HexCoords(evenQCoord: Vector2): Vector2 {
-        return cubic2HexCoords(evenQ2CubicCoords(evenQCoord))
+        return if (evenQCoord == Vector2.Zero)
+            Vector2.Zero
+        else
+            cubic2HexCoords(evenQ2CubicCoords(evenQCoord))
     }
 
     fun roundCubicCoords(cubicCoords: Vector3): Vector3 {
@@ -109,11 +124,11 @@ object HexMath {
         val deltaZ = abs(rz - cubicCoords.z)
 
         if (deltaX > deltaY && deltaX > deltaZ)
-            rx = -ry-rz
+            rx = -ry - rz
         else if (deltaY > deltaZ)
-            ry = -rx-rz
+            ry = -rx - rz
         else
-            rz = -rx-ry
+            rz = -rx - ry
 
         return Vector3(rx, ry, rz)
     }
@@ -122,7 +137,7 @@ object HexMath {
         return cubic2HexCoords(roundCubicCoords(hex2CubicCoords(hexCoord)))
     }
 
-    fun getVectorsAtDistance(origin: Vector2, distance: Int): List<Vector2> {
+    fun getVectorsAtDistance(origin: Vector2, distance: Int, maxDistance: Int, worldWrap: Boolean): List<Vector2> {
         val vectors = mutableListOf<Vector2>()
         if (distance == 0) {
             vectors += origin.cpy()
@@ -136,30 +151,32 @@ object HexMath {
         }
         for (i in 0 until distance) { // 8 to 10
             vectors += current.cpy()
-            vectors += origin.cpy().scl(2f).sub(current) // Get vector on other side of clock
+            if (!worldWrap || distance != maxDistance)
+                vectors += origin.cpy().scl(2f).sub(current) // Get vector on other side of clock
             current.add(1f, 1f)
         }
         for (i in 0 until distance) { // 10 to 12
             vectors += current.cpy()
-            vectors += origin.cpy().scl(2f).sub(current) // Get vector on other side of clock
+            if (!worldWrap || distance != maxDistance || i != 0)
+                vectors += origin.cpy().scl(2f).sub(current) // Get vector on other side of clock
             current.add(0f, 1f)
         }
         return vectors
     }
 
-    fun getVectorsInDistance(origin: Vector2, distance: Int): List<Vector2> {
+    fun getVectorsInDistance(origin: Vector2, distance: Int, worldWrap: Boolean): List<Vector2> {
         val hexesToReturn = mutableListOf<Vector2>()
-        for (i in 0 .. distance) {
-            hexesToReturn += getVectorsAtDistance(origin, i)
+        for (i in 0..distance) {
+            hexesToReturn += getVectorsAtDistance(origin, i, distance, worldWrap)
         }
         return hexesToReturn
     }
 
     fun getDistance(origin: Vector2, destination: Vector2): Int {
-        val relative_x = origin.x-destination.x
-        val relative_y = origin.y-destination.y
+        val relative_x = origin.x - destination.x
+        val relative_y = origin.y - destination.y
         if (relative_x * relative_y >= 0)
-            return max(abs(relative_x),abs(relative_y)).toInt()
+            return max(abs(relative_x), abs(relative_y)).toInt()
         else
             return (abs(relative_x) + abs(relative_y)).toInt()
     }

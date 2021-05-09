@@ -1,20 +1,20 @@
 package com.unciv.logic.city
 
-import com.badlogic.gdx.graphics.Color
-import com.unciv.Constants
 import com.unciv.logic.automation.ConstructionAutomation
 import com.unciv.logic.civilization.AlertType
+import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.PopupAlert
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.UniqueMap
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.tr
-import com.unciv.ui.cityscreen.ConstructionInfoTable
+import com.unciv.ui.utils.Fonts
 import com.unciv.ui.utils.withItem
 import com.unciv.ui.utils.withoutItem
 import java.util.*
 import kotlin.collections.ArrayList
+import kotlin.math.ceil
 import kotlin.math.roundToInt
 
 /**
@@ -26,19 +26,24 @@ import kotlin.math.roundToInt
  * @property constructionQueue a list of constructions names enqueued
  */
 class CityConstructions {
-    @Transient lateinit var cityInfo: CityInfo
-    @Transient private var builtBuildingObjects = ArrayList<Building>()
-    @Transient val builtBuildingUniqueMap = UniqueMap()
+    @Transient
+    lateinit var cityInfo: CityInfo
+
+    @Transient
+    private var builtBuildingObjects = ArrayList<Building>()
+
+    @Transient
+    val builtBuildingUniqueMap = UniqueMap()
 
     var builtBuildings = HashSet<String>()
     val inProgressConstructions = HashMap<String, Int>()
-    @Deprecated("As of 3.7.5, all constructions are in the queue")
-    var currentConstruction=""
     var currentConstructionFromQueue: String
         get() {
-            if(constructionQueue.isEmpty()) return "" else return constructionQueue.first()
+            if (constructionQueue.isEmpty()) return "" else return constructionQueue.first()
         }
-        set(value) { if(constructionQueue.isEmpty()) constructionQueue.add(value) else constructionQueue[0]=value }
+        set(value) {
+            if (constructionQueue.isEmpty()) constructionQueue.add(value) else constructionQueue[0] = value
+        }
     var currentConstructionIsUserSet = false
     var constructionQueue = mutableListOf<String>()
     val queueMaxSize = 10
@@ -48,7 +53,7 @@ class CityConstructions {
         val toReturn = CityConstructions()
         toReturn.builtBuildings.addAll(builtBuildings)
         toReturn.inProgressConstructions.putAll(inProgressConstructions)
-        toReturn.currentConstructionIsUserSet=currentConstructionIsUserSet
+        toReturn.currentConstructionIsUserSet = currentConstructionIsUserSet
         toReturn.constructionQueue.addAll(constructionQueue)
         return toReturn
     }
@@ -69,7 +74,12 @@ class CityConstructions {
         val stats = Stats()
         for (building in getBuiltBuildings())
             stats.add(building.getStats(cityInfo.civInfo))
-        stats.science += (builtBuildingUniqueMap.getAllUniques().count { it.text == "+1 Science Per 2 Population" } * cityInfo.population.population / 2).toFloat()
+
+        for (unique in builtBuildingUniqueMap.getAllUniques()) when (unique.placeholderText) {
+            "[] Per [] Population in this city" -> stats.add(unique.stats.times(cityInfo.population.population / unique.params[1].toFloat()))
+            "[] once [] is discovered" -> if (cityInfo.civInfo.tech.isResearched(unique.params[1])) stats.add(unique.stats)
+        }
+
         return stats
     }
 
@@ -102,26 +112,31 @@ class CityConstructions {
         var result = currentConstructionSnapshot.tr()
         if (currentConstructionSnapshot != "") {
             val construction = PerpetualConstruction.perpetualConstructionsMap[currentConstructionSnapshot]
-            if (construction == null) {
-                val turnsLeft = turnsToConstruction(currentConstructionSnapshot)
-                result += ("\r\n" + "Cost".tr() + " " + getConstruction(currentConstructionFromQueue).getProductionCost(cityInfo.civInfo).toString()).tr()
-                result += ConstructionInfoTable.turnOrTurns(turnsLeft)
-            } else {
-                result += construction.getProductionTooltip(cityInfo)
-            }
+            if (construction == null) result += getTurnsToConstructionString(currentConstructionSnapshot)
+            else result += construction.getProductionTooltip(cityInfo)
         }
         return result
     }
 
+
+    internal fun getTurnsToConstructionString(constructionName: String, useStoredProduction:Boolean = true): String {
+        val construction = getConstruction(constructionName)
+        val cost = construction.getProductionCost(cityInfo.civInfo)
+        val turnsToConstruction = turnsToConstruction(constructionName, useStoredProduction)
+        val currentProgress = getWorkDone(constructionName)
+        if (currentProgress == 0) return "\n$cost${Fonts.production} $turnsToConstruction${Fonts.turn}"
+        else return "\n$currentProgress/$cost${Fonts.production}\n$turnsToConstruction${Fonts.turn}"
+    }
+
     fun getProductionForTileInfo(): String {
-        /* this is because there were rare errors tht I assume were caused because
-           currentContruction changed on another thread */
+        /* this is because there were rare errors that I assume were caused because
+           currentConstruction changed on another thread */
         val currentConstructionSnapshot = currentConstructionFromQueue
         var result = currentConstructionSnapshot.tr()
-        if (currentConstructionSnapshot!=""
+        if (currentConstructionSnapshot != ""
                 && !PerpetualConstruction.perpetualConstructionsMap.containsKey(currentConstructionSnapshot)) {
             val turnsLeft = turnsToConstruction(currentConstructionSnapshot)
-            result += ConstructionInfoTable.turnOrTurns(turnsLeft)
+            result += " - $turnsLeft${Fonts.turn}"
         }
         return result
     }
@@ -159,14 +174,14 @@ class CityConstructions {
             }
         }
 
-        class NotBuildingOrUnitException(message:String):Exception(message)
+        class NotBuildingOrUnitException(message: String) : Exception(message)
         throw NotBuildingOrUnitException("$constructionName is not a building or a unit!")
     }
 
     internal fun getBuiltBuildings(): Sequence<Building> = builtBuildingObjects.asSequence()
 
     fun containsBuildingOrEquivalent(building: String): Boolean =
-            isBuilt(building) || getBuiltBuildings().any{it.replaces==building}
+            isBuilt(building) || getBuiltBuildings().any { it.replaces == building }
 
     fun getWorkDone(constructionName: String): Int {
         if (inProgressConstructions.containsKey(constructionName)) return inProgressConstructions[constructionName]!!
@@ -184,40 +199,42 @@ class CityConstructions {
 
     fun turnsToConstruction(constructionName: String, useStoredProduction: Boolean = true): Int {
         val workLeft = getRemainingWork(constructionName, useStoredProduction)
-        if(workLeft < 0) // we've done more work than actually necessary - possible if circumstances cause buildings to be cheaper later
+        if (workLeft < 0) // we've done more work than actually necessary - possible if circumstances cause buildings to be cheaper later
             return 1 // we'll finish this next turn
 
         val cityStatsForConstruction: Stats
         if (currentConstructionFromQueue == constructionName) cityStatsForConstruction = cityInfo.cityStats.currentCityStats
         else {
-            // The ol' Switcharoo - what would our stats be if that was our current construction?
-            // Since this is only ever used for UI purposes, I feel fine with having it be a bit inefficient
-            //   and recalculating the entire city stats
-            // We don't want to change our current construction queue - what if we have an empty queue, too many changes to check for -
-            //  So we ust clone it and see what would happen f that was our construction
-            val cityConstructionsClone = clone()
-            cityConstructionsClone.currentConstructionFromQueue = constructionName
-            cityConstructionsClone.cityInfo = cityInfo
-            cityConstructionsClone.setTransients()
-            cityInfo.cityConstructions = cityConstructionsClone
-            cityInfo.cityStats.update()
-            cityStatsForConstruction = cityInfo.cityStats.currentCityStats
-            // revert!
-            cityInfo.cityConstructions = this
-            cityInfo.cityStats.update()
+            /*
+            The ol' Switcharoo - what would our stats be if that was our current construction?
+            Since this is only ever used for UI purposes, I feel fine with having it be a bit inefficient
+            and recalculating the entire city stats
+            We don't want to change our current construction queue - what if we have an empty queue,
+             this can affect the city if we run it on another thread like in ConstructionsTable -
+            So we run the numbers for the other construction
+            ALSO apparently if we run on the actual cityStats from another thread,
+              we get all sorts of fun concurrency problems when accessing various parts of the cityStats.
+            SO, we create an entirely new CityStats and iterate there - problem solve!
+            */
+            val cityStats = CityStats()
+            cityStats.cityInfo = cityInfo
+            val construction = cityInfo.cityConstructions.getConstruction(constructionName)
+            cityStats.update(construction)
+            cityStatsForConstruction = cityStats.currentCityStats
         }
 
-        var production = cityStatsForConstruction.production.roundToInt()
-        if (constructionName == Constants.settler) production += cityStatsForConstruction.food.toInt()
+        val production = cityStatsForConstruction.production.roundToInt()
 
-        return Math.ceil((workLeft / production.toDouble())).toInt()
+        return ceil(workLeft / production.toDouble()).toInt()
     }
     //endregion
 
     //region state changing functions
-    fun setTransients(){
-        builtBuildingObjects = ArrayList(builtBuildings.map { cityInfo.getRuleset().buildings[it]
-                    ?: throw java.lang.Exception("Building $it is not found!")})
+    fun setTransients() {
+        builtBuildingObjects = ArrayList(builtBuildings.map {
+            cityInfo.getRuleset().buildings[it]
+                    ?: throw java.lang.Exception("Building $it is not found!")
+        })
         updateUniques()
     }
 
@@ -227,11 +244,11 @@ class CityConstructions {
         inProgressConstructions[currentConstructionFromQueue] = inProgressConstructions[currentConstructionFromQueue]!! + productionToAdd
     }
 
-    fun constructIfEnough(){
+    fun constructIfEnough() {
         validateConstructionQueue()
 
         val construction = getConstruction(currentConstructionFromQueue)
-        if(construction is PerpetualConstruction) chooseNextConstruction() // check every turn if we could be doing something better, because this doesn't end by itself
+        if (construction is PerpetualConstruction) chooseNextConstruction() // check every turn if we could be doing something better, because this doesn't end by itself
         else {
             val productionCost = construction.getProductionCost(cityInfo.civInfo)
             if (inProgressConstructions.containsKey(currentConstructionFromQueue)
@@ -245,7 +262,7 @@ class CityConstructions {
         validateConstructionQueue()
         validateInProgressConstructions()
 
-        if(getConstruction(currentConstructionFromQueue) !is PerpetualConstruction)
+        if (getConstruction(currentConstructionFromQueue) !is PerpetualConstruction)
             addProductionPoints(cityStats.production.roundToInt())
     }
 
@@ -285,41 +302,47 @@ class CityConstructions {
         construction.postBuildEvent(this)
         if (construction.name in inProgressConstructions)
             inProgressConstructions.remove(construction.name)
-        if(construction.name == currentConstructionFromQueue)
+        if (construction.name == currentConstructionFromQueue)
             removeCurrentConstruction()
 
         validateConstructionQueue() // if we've build e.g. the Great Lighthouse, then Lighthouse is no longer relevant in the queue
 
+        val buildingIcon = "BuildingIcons/${construction.name}"
         if (construction is Building && construction.isWonder) {
             cityInfo.civInfo.popupAlerts.add(PopupAlert(AlertType.WonderBuilt, construction.name))
             for (civ in cityInfo.civInfo.gameInfo.civilizations) {
                 if (civ.exploredTiles.contains(cityInfo.location))
-                    civ.addNotification("[${construction.name}] has been built in [${cityInfo.name}]", cityInfo.location, Color.BROWN)
+                    civ.addNotification("[${construction.name}] has been built in [${cityInfo.name}]",
+                            cityInfo.location, NotificationIcon.Construction, buildingIcon)
                 else
-                    civ.addNotification("[${construction.name}] has been built in a faraway land",null,Color.BROWN)
+                    civ.addNotification("[${construction.name}] has been built in a faraway land", buildingIcon)
             }
-        } else
-            cityInfo.civInfo.addNotification("[${construction.name}] has been built in [" + cityInfo.name + "]", cityInfo.location, Color.BROWN)
+        } else {
+            val icon = if (construction is Building) buildingIcon else construction.name // could be a unit, in which case take the unit name.
+            cityInfo.civInfo.addNotification("[${construction.name}] has been built in [" + cityInfo.name + "]",
+                    cityInfo.location, NotificationIcon.Construction, icon)
+        }
+
     }
 
-    fun addBuilding(buildingName:String){
+    fun addBuilding(buildingName: String) {
         val buildingObject = cityInfo.getRuleset().buildings[buildingName]!!
         builtBuildingObjects = builtBuildingObjects.withItem(buildingObject)
         builtBuildings.add(buildingName)
         updateUniques()
     }
 
-    fun removeBuilding(buildingName:String){
+    fun removeBuilding(buildingName: String) {
         val buildingObject = cityInfo.getRuleset().buildings[buildingName]!!
         builtBuildingObjects = builtBuildingObjects.withoutItem(buildingObject)
         builtBuildings.remove(buildingName)
         updateUniques()
     }
 
-    fun updateUniques(){
+    fun updateUniques() {
         builtBuildingUniqueMap.clear()
-        for(building in getBuiltBuildings())
-            for(unique in building.uniqueObjects)
+        for (building in getBuiltBuildings())
+            for (unique in building.uniqueObjects)
                 builtBuildingUniqueMap.addUnique(unique)
     }
 
@@ -364,19 +387,20 @@ class CityConstructions {
         if (!buildableCultureBuildings.any())
             return null
 
-        val cultureBuildingToBuild = buildableCultureBuildings.minBy { it.cost }!!.name
+        val cultureBuildingToBuild = buildableCultureBuildings.minByOrNull { it.cost }!!.name
         constructionComplete(getConstruction(cultureBuildingToBuild))
 
         return cultureBuildingToBuild
     }
 
-    private fun removeCurrentConstruction() = removeFromQueue(0,true)
+    private fun removeCurrentConstruction() = removeFromQueue(0, true)
 
     fun chooseNextConstruction() {
         validateConstructionQueue()
         if (constructionQueue.isNotEmpty()) {
-            currentConstructionIsUserSet = true
-            if (currentConstructionFromQueue != "") return
+            if (currentConstructionFromQueue != ""
+                    // If the USER set a perpetual construction, then keep it!
+                    && (getConstruction(currentConstructionFromQueue) !is PerpetualConstruction || currentConstructionIsUserSet)) return
         }
 
         ConstructionAutomation(this).chooseNextConstruction()
@@ -386,20 +410,35 @@ class CityConstructions {
         if (isQueueFull()) return
         if (currentConstructionFromQueue == "" || currentConstructionFromQueue == "Nothing") {
             currentConstructionFromQueue = constructionName
-            currentConstructionIsUserSet = true
+        } else if (getConstruction(constructionQueue.last()) is PerpetualConstruction) {
+            if (getConstruction(constructionName) is PerpetualConstruction) {  // perpetual constructions will replace each other
+                constructionQueue.removeAt(constructionQueue.size - 1)
+                constructionQueue.add(constructionName)
+            } else
+                constructionQueue.add(constructionQueue.size - 1, constructionName) // insert new construction before perpetual one
         } else
             constructionQueue.add(constructionName)
+        currentConstructionIsUserSet = true
     }
 
     /** If this was done automatically, we should automatically try to choose a new construction and treat it as such */
-    fun removeFromQueue(constructionQueueIndex: Int, automatic:Boolean) {
-        constructionQueue.removeAt(constructionQueueIndex)
-        if (constructionQueue.isEmpty()){
-            if(automatic) chooseNextConstruction()
+    fun removeFromQueue(constructionQueueIndex: Int, automatic: Boolean) {
+        val constructionName = constructionQueue.removeAt(constructionQueueIndex)
+        val construction = getConstruction(constructionName)
+        if (construction is Building) {
+            val improvement = construction.getImprovement(cityInfo.getRuleset())
+            if (improvement != null) {
+                val tileWithImprovement = cityInfo.getTiles().firstOrNull { it.improvementInProgress == improvement.name }
+                tileWithImprovement?.improvementInProgress = null
+                tileWithImprovement?.turnsToImprovement = 0
+            }
+        }
+
+        if (constructionQueue.isEmpty()) {
+            if (automatic) chooseNextConstruction()
             else constructionQueue.add("Nothing") // To prevent Construction Automation
             currentConstructionIsUserSet = false
-        }
-        else currentConstructionIsUserSet = true // we're just continuing the regular queue
+        } else currentConstructionIsUserSet = true // we're just continuing the regular queue
     }
 
     fun raisePriority(constructionQueueIndex: Int) {
@@ -408,7 +447,7 @@ class CityConstructions {
 
     // Lowering == Highering next element in queue
     fun lowerPriority(constructionQueueIndex: Int) {
-        raisePriority(constructionQueueIndex+1)
+        raisePriority(constructionQueueIndex + 1)
     }
 
     //endregion
@@ -417,4 +456,4 @@ class CityConstructions {
         this[idx1] = this[idx2]
         this[idx2] = tmp
     }
-} // for json parsing, we need to have a default constructor
+}

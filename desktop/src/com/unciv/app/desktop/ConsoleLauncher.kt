@@ -1,23 +1,20 @@
 package com.unciv.app.desktop
 
+import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.UncivGameParameters
 import com.unciv.logic.GameStarter
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.map.MapParameters
-import com.unciv.logic.map.MapSize
+import com.unciv.logic.map.MapSizeNew
 import com.unciv.models.metadata.GameParameters
 import com.unciv.models.metadata.GameSettings
 import com.unciv.models.metadata.GameSpeed
 import com.unciv.models.metadata.Player
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.simulation.Simulation
-import com.unciv.models.simulation.SimulationStep
-import com.unciv.models.simulation.formatDuration
+import com.unciv.models.tilesets.TileSetCache
 import com.unciv.ui.newgamescreen.GameSetupInfo
-import java.time.Duration
-import kotlin.concurrent.thread
-import kotlin.system.exitProcess
 
 internal object ConsoleLauncher {
     @JvmStatic
@@ -27,7 +24,6 @@ internal object ConsoleLauncher {
         val consoleParameters = UncivGameParameters(
                 version,
                 null,
-                { exitProcess(0) },
                 null,
                 null,
                 true
@@ -41,6 +37,7 @@ internal object ConsoleLauncher {
         }
 
         RulesetCache.loadRulesets(true)
+        TileSetCache.loadTileSetConfigs(true)
 
         val gameParameters = getGameParameters("China", "Greece")
         val mapParameters = getMapParameters()
@@ -58,7 +55,7 @@ internal object ConsoleLauncher {
 
     private fun getMapParameters(): MapParameters {
         return MapParameters().apply {
-            size = MapSize.Tiny
+            mapSize = MapSizeNew(Constants.tiny)
             noRuins = true
             noNaturalWonders = true
         }

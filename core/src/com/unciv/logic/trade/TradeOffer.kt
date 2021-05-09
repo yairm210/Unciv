@@ -4,6 +4,7 @@ import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.models.metadata.GameSpeed
 import com.unciv.models.translations.tr
+import com.unciv.ui.utils.Fonts
 
 data class TradeOffer(var name:String, var type: TradeType, var amount:Int=1, var duration:Int=-1) {
 
@@ -33,7 +34,7 @@ data class TradeOffer(var name:String, var type: TradeType, var amount:Int=1, va
             else -> name
         }.tr()
         if (type !in tradesToNotHaveNumbers || name=="Research Agreement") offerText += " ($amount)"
-        if (duration > 0) offerText += "\n" + duration + " {turns}".tr()
+        if (duration > 0) offerText += "\n" + duration + Fonts.turn
         return offerText
     }
 

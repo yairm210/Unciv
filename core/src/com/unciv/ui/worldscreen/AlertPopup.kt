@@ -1,26 +1,27 @@
 package com.unciv.ui.worldscreen
 
+import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.unciv.Constants
 import com.unciv.logic.civilization.AlertType
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.PopupAlert
-import com.unciv.models.translations.tr
+import com.unciv.models.translations.fillPlaceholders
 import com.unciv.ui.utils.*
 
-class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popup(worldScreen){
-    fun getCloseButton(text: String, action: (() -> Unit)?=null): TextButton {
+class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popup(worldScreen) {
+    fun getCloseButton(text: String, action: (() -> Unit)? = null): TextButton {
         val button = text.toTextButton()
         button.onClick {
-            if(action!=null) action()
-            worldScreen.shouldUpdate=true
+            if (action != null) action()
+            worldScreen.shouldUpdate = true
             close()
         }
         return button
     }
 
-    fun addLeaderName(civInfo : CivilizationInfo){
+    fun addLeaderName(civInfo: CivilizationInfo) {
         val otherCivLeaderName = civInfo.getLeaderDisplayName()
         add(otherCivLeaderName.toLabel())
         addSeparator()
@@ -28,7 +29,7 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
 
     init {
 
-        when(popupAlert.type){
+        when (popupAlert.type) {
             AlertType.WarDeclaration -> {
                 val civInfo = worldScreen.gameInfo.getCivilization(popupAlert.value)
                 addLeaderName(civInfo)
@@ -66,7 +67,7 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
                 if (city.foundingCiv != ""
                         && city.civInfo.civName != city.foundingCiv // can't liberate if the city actually belongs to those guys
                         && conqueringCiv.civName != city.foundingCiv) { // or belongs originally to us
-                    add("Liberate".toTextButton().onClick {
+                    add("Liberate (city returns to [originalOwner])".fillPlaceholders(city.foundingCiv).toTextButton().onClick {
                         city.liberateCity(conqueringCiv)
                         worldScreen.shouldUpdate = true
                         close()
@@ -75,8 +76,15 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
                     addSeparator()
                 }
 
-                if (!conqueringCiv.isOneCityChallenger()) {
-
+                if (conqueringCiv.isOneCityChallenger()) {
+                    add("Destroy".toTextButton().onClick {
+                        city.puppetCity(conqueringCiv)
+                        city.destroyCity()
+                        worldScreen.shouldUpdate = true
+                        close()
+                    }).row()
+                    addGoodSizedLabel("Destroying the city instantly razes the city to the ground.").row()
+                } else {
                     add("Annex".toTextButton().onClick {
                         city.puppetCity(conqueringCiv)
                         city.annexCity()
@@ -111,15 +119,6 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
                     }).row()
                     addGoodSizedLabel("Razing the city annexes it, and starts razing the city to the ground.").row()
                     addGoodSizedLabel("The population will gradually dwindle until the city is destroyed.").row()
-                } else {
-
-                    add("Destroy".toTextButton().onClick {
-                        city.puppetCity(conqueringCiv)
-                        city.destroyCity()
-                        worldScreen.shouldUpdate = true
-                        close()
-                    }).row()
-                    addGoodSizedLabel("Destroying the city instantly razes the city to the ground.").row()
                 }
             }
             AlertType.BorderConflict -> {
@@ -132,11 +131,11 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
                 add(responseTable)
             }
             AlertType.DemandToStopSettlingCitiesNear -> {
-                val otherciv= worldScreen.gameInfo.getCivilization(popupAlert.value)
+                val otherciv = worldScreen.gameInfo.getCivilization(popupAlert.value)
                 val playerDiploManager = worldScreen.viewingCiv.getDiplomacyManager(otherciv)
                 addLeaderName(otherciv)
                 addGoodSizedLabel("Please don't settle new cities near us.").row()
-                add(getCloseButton("Very well, we shall look for new lands to settle."){
+                add(getCloseButton("Very well, we shall look for new lands to settle.") {
                     playerDiploManager.agreeNotToSettleNear()
                 }).row()
                 add(getCloseButton("We shall do as we please.") {
@@ -144,7 +143,7 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
                 }).row()
             }
             AlertType.CitySettledNearOtherCivDespiteOurPromise -> {
-                val otherciv= worldScreen.gameInfo.getCivilization(popupAlert.value)
+                val otherciv = worldScreen.gameInfo.getCivilization(popupAlert.value)
                 addLeaderName(otherciv)
                 addGoodSizedLabel("We noticed your new city near our borders, despite your promise. This will have....implications.").row()
                 add(getCloseButton("Very well."))
@@ -154,10 +153,10 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
                 addGoodSizedLabel(wonder.name)
                 addSeparator()
                 val centerTable = Table()
-                centerTable.add(wonder.quote.toLabel().apply { setWrap(true) }).width(worldScreen.stage.width/3)
+                centerTable.add(wonder.quote.toLabel().apply { wrap = true }).width(worldScreen.stage.width / 3)
                 centerTable.add(ImageGetter.getConstructionImage(wonder.name).surroundWithCircle(100f)).pad(20f)
                 centerTable.add(wonder.getShortDescription(worldScreen.gameInfo.ruleSet)
-                        .toLabel().apply { setWrap(true) }).width(worldScreen.stage.width/3)
+                        .toLabel().apply { wrap = true }).width(worldScreen.stage.width / 3)
                 add(centerTable).row()
                 add(getCloseButton(Constants.close))
             }
@@ -167,9 +166,10 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
                 addGoodSizedLabel(tech.name)
                 addSeparator()
                 val centerTable = Table()
-                centerTable.add(tech.quote.toLabel().apply { setWrap(true) }).width(worldScreen.stage.width/3)
-                centerTable.add(ImageGetter.getTechIconGroup(tech.name,100f)).pad(20f)
-                centerTable.add(tech.getDescription(gameBasics).toLabel().apply { setWrap(true) }).width(worldScreen.stage.width/3)
+                centerTable.add(tech.quote.toLabel().apply { wrap = true }).width(worldScreen.stage.width / 3)
+                centerTable.add(ImageGetter.getTechIconGroup(tech.name, 100f)).pad(20f)
+                val descriptionScroll = ScrollPane(tech.getDescription(gameBasics).toLabel().apply { wrap = true })
+                centerTable.add(descriptionScroll).width(worldScreen.stage.width / 3).maxHeight(worldScreen.stage.height / 2)
                 add(centerTable).row()
                 add(getCloseButton(Constants.close))
             }
@@ -192,7 +192,7 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
         }
     }
 
-    override fun close(){
+    override fun close() {
         worldScreen.viewingCiv.popupAlerts.remove(popupAlert)
         super.close()
     }

@@ -1,6 +1,5 @@
 package com.unciv.ui.trade
 
-import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.trade.TradeLogic
@@ -8,7 +7,7 @@ import com.unciv.logic.trade.TradeRequest
 import com.unciv.models.translations.tr
 import com.unciv.ui.utils.*
 
-class TradeTable(val otherCivilization: CivilizationInfo, stage: Stage): Table(CameraStageBaseScreen.skin){
+class TradeTable(val otherCivilization: CivilizationInfo, stage: DiplomacyScreen): Table(CameraStageBaseScreen.skin){
     val currentPlayerCiv = otherCivilization.gameInfo.getCurrentPlayerCivilization()
     var tradeLogic = TradeLogic(currentPlayerCiv,otherCivilization)
     var offerColumnsTable = OfferColumnsTable(tradeLogic, stage) { onChange() }

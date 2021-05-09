@@ -2,6 +2,7 @@ package com.unciv.logic
 
 import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
+import com.unciv.logic.civilization.CityStatePersonality
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.*
 import com.unciv.logic.map.mapgenerator.MapGenerator
@@ -19,14 +20,16 @@ object GameStarter {
         val gameInfo = GameInfo()
 
         gameInfo.gameParameters = gameSetupInfo.gameParameters
-        val ruleset = RulesetCache.getComplexRuleset(gameInfo.gameParameters)
+        val ruleset = RulesetCache.getComplexRuleset(gameInfo.gameParameters.mods)
 
-        if (gameSetupInfo.mapParameters.type == MapType.scenarioMap)
-            gameInfo.tileMap = MapSaver.loadScenario(gameSetupInfo.mapParameters.name).tileMap
-        else if (gameSetupInfo.mapParameters.name != "")
-            gameInfo.tileMap = MapSaver.loadMap(gameSetupInfo.mapParameters.name)
-        else gameInfo.tileMap = MapGenerator(ruleset).generateMap(gameSetupInfo.mapParameters)
-        gameInfo.tileMap.mapParameters = gameSetupInfo.mapParameters
+        if (gameSetupInfo.mapParameters.name != "") {
+            gameInfo.tileMap = MapSaver.loadMap(gameSetupInfo.mapFile!!)
+            // Don't override the map parameters - this can include if we world wrap or not!
+        } else {
+            gameInfo.tileMap = MapGenerator(ruleset).generateMap(gameSetupInfo.mapParameters)
+            gameInfo.tileMap.mapParameters = gameSetupInfo.mapParameters
+        }
+
 
         gameInfo.tileMap.gameInfo = gameInfo // need to set this transient before placing units in the map
         addCivilizations(gameSetupInfo.gameParameters, gameInfo, ruleset) // this is before gameInfo.setTransients, so gameInfo doesn't yet have the gameBasics
@@ -50,8 +53,7 @@ object GameStarter {
         addCivTechs(gameInfo, ruleset, gameSetupInfo)
 
         // and only now do we add units for everyone, because otherwise both the gameInfo.setTransients() and the placeUnit will both add the unit to the civ's unit list!
-        if (gameSetupInfo.mapParameters.type != MapType.scenarioMap)
-            addCivStartingUnits(gameInfo)
+        addCivStartingUnits(gameInfo)
 
         // remove starting locations once we're done
         for (tile in gameInfo.tileMap.values) {
@@ -70,6 +72,16 @@ object GameStarter {
             if (!civInfo.isPlayerCivilization())
                 for (tech in gameInfo.getDifficulty().aiFreeTechs)
                     civInfo.tech.addTechnology(tech)
+
+            // generic start with technology unique
+            for (unique in civInfo.getMatchingUniques("Starts with []")) {
+                // get the parameter from the unique
+                val techName = unique.params[0]
+
+                // check if the technology is in the ruleset and not already researched
+                if (ruleset.technologies.containsKey(techName) && !civInfo.tech.isResearched(techName))
+                    civInfo.tech.addTechnology(techName)
+            }
 
             // add all techs to spectators
             if (civInfo.isSpectator())
@@ -93,7 +105,7 @@ object GameStarter {
         availableCivNames.removeAll(newGameParameters.players.map { it.chosenCiv })
         availableCivNames.remove(Constants.barbarians)
 
-        if(!newGameParameters.noBarbarians && ruleset.nations.containsKey(Constants.barbarians)) {
+        if (!newGameParameters.noBarbarians && ruleset.nations.containsKey(Constants.barbarians)) {
             val barbarianCivilization = CivilizationInfo(Constants.barbarians)
             gameInfo.civilizations.add(barbarianCivilization)
         }
@@ -123,8 +135,9 @@ object GameStarter {
 
         for (cityStateName in availableCityStatesNames.take(newGameParameters.numberOfCityStates)) {
             val civ = CivilizationInfo(cityStateName)
+            civ.cityStatePersonality = CityStatePersonality.values().random()
             gameInfo.civilizations.add(civ)
-            for(tech in ruleset.technologies.values.filter { it.uniques.contains("Starting tech") })
+            for (tech in ruleset.technologies.values.filter { it.uniques.contains("Starting tech") })
                 civ.tech.techsResearched.add(tech.name) // can't be .addTechnology because the civInfo isn't assigned yet
         }
     }
@@ -136,13 +149,13 @@ object GameStarter {
                 gameInfo.tileMap)
 
         // For later starting eras, or for civs like Polynesia with a different Warrior, we need different starting units
-        fun getWarriorEquivalent(civ: CivilizationInfo): String {
+        fun getWarriorEquivalent(civ: CivilizationInfo): String? {
             val availableMilitaryUnits = gameInfo.ruleSet.units.values.filter {
                 it.isBuildable(civ)
                         && it.unitType.isLandUnit()
                         && !it.unitType.isCivilian()
             }
-            return availableMilitaryUnits.maxBy { max(it.strength, it.rangedStrength) }!!.name
+            return availableMilitaryUnits.maxBy { max(it.strength, it.rangedStrength) }?.name
         }
         // no starting units for Barbarians and Spectators
         for (civ in gameInfo.civilizations.filter { !it.isBarbarian() && !it.isSpectator() }) {
@@ -154,14 +167,17 @@ object GameStarter {
             fun placeNearStartingPosition(unitName: String) {
                 civ.placeUnitNearTile(startingLocation.position, unitName)
             }
-            placeNearStartingPosition(Constants.settler)
-            placeNearStartingPosition(getWarriorEquivalent(civ))
 
-            if (!civ.isPlayerCivilization() && civ.isMajorCiv()) {
-                for (unit in gameInfo.getDifficulty().aiFreeUnits) {
-                    val unitToAdd = if (unit == "Warrior") getWarriorEquivalent(civ) else unit
-                    placeNearStartingPosition(unitToAdd)
-                }
+            val warriorEquivalent = getWarriorEquivalent(civ)
+            val startingUnits = when {
+                civ.isPlayerCivilization() -> gameInfo.getDifficulty().startingUnits
+                civ.isMajorCiv() -> gameInfo.getDifficulty().aiMajorCivStartingUnits
+                else -> gameInfo.getDifficulty().aiCityStateStartingUnits
+            }
+
+            for (unit in startingUnits) {
+                val unitToAdd = if (unit == "Warrior") warriorEquivalent else unit
+                if (unitToAdd != null) placeNearStartingPosition(unitToAdd)
             }
         }
     }
@@ -169,7 +185,7 @@ object GameStarter {
     private fun getStartingLocations(civs: List<CivilizationInfo>, tileMap: TileMap): HashMap<CivilizationInfo, TileInfo> {
         var landTiles = tileMap.values
                 // Games starting on snow might as well start over...
-                .filter { it.isLand && !it.isImpassible() && it.baseTerrain!=Constants.snow }
+                .filter { it.isLand && !it.isImpassible() && it.baseTerrain != Constants.snow }
 
         val landTilesInBigEnoughGroup = ArrayList<TileInfo>()
         while (landTiles.any()) {
@@ -210,9 +226,9 @@ object GameStarter {
                     for (startBias in civ.nation.startBias) {
                         if (startBias.startsWith("Avoid ")) {
                             val tileToAvoid = startBias.removePrefix("Avoid [").removeSuffix("]")
-                            preferredTiles = preferredTiles.filter { it.baseTerrain != tileToAvoid && it.terrainFeature != tileToAvoid }
+                            preferredTiles = preferredTiles.filter { !it.matchesUniqueFilter(tileToAvoid) }
                         } else if (startBias == Constants.coast) preferredTiles = preferredTiles.filter { it.isCoastalTile() }
-                        else preferredTiles = preferredTiles.filter { it.baseTerrain == startBias || it.terrainFeature == startBias }
+                        else preferredTiles = preferredTiles.filter { it.matchesUniqueFilter(startBias) }
                     }
 
                     startingLocation = if (preferredTiles.isNotEmpty()) preferredTiles.random() else freeTiles.random()

@@ -11,5 +11,4 @@ import java.util.HashMap
  *  @property values:   The translations
  *  @see      Translations
  */
-class TranslationEntry(val entry: String) : HashMap<String, String>() {
-}
+class TranslationEntry(val entry: String) : HashMap<String, String>()

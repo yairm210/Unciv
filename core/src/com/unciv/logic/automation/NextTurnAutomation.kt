@@ -10,14 +10,16 @@ import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.logic.map.BFS
 import com.unciv.logic.map.MapUnit
+import com.unciv.logic.map.TileInfo
 import com.unciv.logic.trade.*
+import com.unciv.models.ruleset.ModOptionsConstants
 import com.unciv.models.ruleset.VictoryType
 import com.unciv.models.ruleset.tech.Technology
+import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.translations.tr
-import java.lang.reflect.Modifier
 import kotlin.math.min
 
-object NextTurnAutomation{
+object NextTurnAutomation {
 
     /** Top-level AI turn tasklist */
     fun automateCivMoves(civInfo: CivilizationInfo) {
@@ -26,10 +28,12 @@ object NextTurnAutomation{
         respondToPopupAlerts(civInfo)
         respondToTradeRequests(civInfo)
 
-        if(civInfo.isMajorCiv()) {
-            declareWar(civInfo)
+        if (civInfo.isMajorCiv()) {
+            if (!civInfo.gameInfo.ruleSet.modOptions.uniques.contains(ModOptionsConstants.diplomaticRelationshipsCannotChange)) {
+                declareWar(civInfo)
+                offerPeaceTreaty(civInfo)
 //            offerDeclarationOfFriendship(civInfo)
-            offerPeaceTreaty(civInfo)
+            }
             offerResearchAgreement(civInfo)
             exchangeLuxuries(civInfo)
             issueRequests(civInfo)
@@ -49,7 +53,7 @@ object NextTurnAutomation{
     }
 
     private fun respondToTradeRequests(civInfo: CivilizationInfo) {
-        for(tradeRequest in civInfo.tradeRequests.toList()){
+        for (tradeRequest in civInfo.tradeRequests.toList()) {
             val otherCiv = civInfo.gameInfo.getCivilization(tradeRequest.requestingCiv)
             val tradeLogic = TradeLogic(civInfo, otherCiv)
             tradeLogic.currentTrade.set(tradeRequest.trade)
@@ -59,19 +63,18 @@ object NextTurnAutomation{
              * the same resource to ANOTHER civ in this turn. Complicated!
              */
             civInfo.tradeRequests.remove(tradeRequest)
-            if(TradeEvaluation().isTradeAcceptable(tradeLogic.currentTrade,civInfo,otherCiv)){
+            if (TradeEvaluation().isTradeAcceptable(tradeLogic.currentTrade, civInfo, otherCiv)) {
                 tradeLogic.acceptTrade()
-                otherCiv.addNotification("[${civInfo.civName}] has accepted your trade request", Color.GOLD)
-            }
-            else {
-                otherCiv.addNotification("[${civInfo.civName}] has denied your trade request", Color.GOLD)
+                otherCiv.addNotification("[${civInfo.civName}] has accepted your trade request", NotificationIcon.Trade, civInfo.civName)
+            } else {
+                otherCiv.addNotification("[${civInfo.civName}] has denied your trade request", NotificationIcon.Trade, civInfo.civName)
             }
         }
         civInfo.tradeRequests.clear()
     }
 
     private fun respondToPopupAlerts(civInfo: CivilizationInfo) {
-        for(popupAlert in civInfo.popupAlerts) {
+        for (popupAlert in civInfo.popupAlerts) {
             if (popupAlert.type == AlertType.DemandToStopSettlingCitiesNear) {  // we're called upon to make a decision
                 val demandingCiv = civInfo.gameInfo.getCivilization(popupAlert.value)
                 val diploManager = civInfo.getDiplomacyManager(demandingCiv)
@@ -85,15 +88,15 @@ object NextTurnAutomation{
                 if (diploManager.relationshipLevel() > RelationshipLevel.Neutral
                         && !diploManager.otherCivDiplomacy().hasFlag(DiplomacyFlags.Denunceation)) {
                     diploManager.signDeclarationOfFriendship()
-                    requestingCiv.addNotification("We have signed a Declaration of Friendship with [${civInfo.civName}]!", Color.GOLD)
-                } else requestingCiv.addNotification("[${civInfo.civName}] has denied our Declaration of Friendship!", Color.GOLD)
+                    requestingCiv.addNotification("We have signed a Declaration of Friendship with [${civInfo.civName}]!", NotificationIcon.Diplomacy, civInfo.civName)
+                } else requestingCiv.addNotification("[${civInfo.civName}] has denied our Declaration of Friendship!", NotificationIcon.Diplomacy, civInfo.civName)
             }
         }
 
         civInfo.popupAlerts.clear() // AIs don't care about popups.
     }
 
-    private fun tryGainInfluence(civInfo: CivilizationInfo, cityState:CivilizationInfo) {
+    private fun tryGainInfluence(civInfo: CivilizationInfo, cityState: CivilizationInfo) {
         if (civInfo.gold < 250) return // save up
         if (cityState.getDiplomacyManager(civInfo).influence < 20) {
             civInfo.giveGoldGift(cityState, 250)
@@ -108,7 +111,7 @@ object NextTurnAutomation{
     private fun useGold(civInfo: CivilizationInfo) {
         if (civInfo.victoryType() == VictoryType.Cultural) {
             for (cityState in civInfo.getKnownCivs()
-                    .filter { it.isCityState() && it.getCityStateType() == CityStateType.Cultured }) {
+                    .filter { it.isCityState() && it.cityStateType == CityStateType.Cultured }) {
                 val diploManager = cityState.getDiplomacyManager(civInfo)
                 if (diploManager.influence < 40) { // we want to gain influence with them
                     tryGainInfluence(civInfo, cityState)
@@ -119,7 +122,7 @@ object NextTurnAutomation{
 
         if (civInfo.getHappiness() < 5) {
             for (cityState in civInfo.getKnownCivs()
-                    .filter { it.isCityState() && it.getCityStateType() == CityStateType.Mercantile }) {
+                    .filter { it.isCityState() && it.cityStateType == CityStateType.Mercantile }) {
                 val diploManager = cityState.getDiplomacyManager(civInfo)
                 if (diploManager.influence < 40) { // we want to gain influence with them
                     tryGainInfluence(civInfo, cityState)
@@ -153,35 +156,31 @@ object NextTurnAutomation{
     private fun chooseTechToResearch(civInfo: CivilizationInfo) {
         if (civInfo.tech.techsToResearch.isEmpty()) {
             val researchableTechs = civInfo.gameInfo.ruleSet.technologies.values
-                    .filter { !civInfo.tech.isResearched(it.name) && civInfo.tech.canBeResearched(it.name) }
+                    .filter { civInfo.tech.canBeResearched(it.name) }
             val techsGroups = researchableTechs.groupBy { it.cost }
             val costs = techsGroups.keys.sorted()
 
-            val tech: Technology
-            if (researchableTechs.isEmpty()) { // no non-researched techs available, go for future tech
-                civInfo.tech.techsToResearch.add(Constants.futureTech)
-                return
-            }
+            if (researchableTechs.isEmpty()) return
 
-            val techsCheapest = techsGroups[costs[0]]!!
+            val cheapestTechs = techsGroups[costs[0]]!!
             //Do not consider advanced techs if only one tech left in cheapest groupe
-            if (techsCheapest.size == 1 || costs.size == 1) {
-                tech = techsCheapest.random()
+            val techToResearch: Technology
+            if (cheapestTechs.size == 1 || costs.size == 1) {
+                techToResearch = cheapestTechs.random()
             } else {
                 //Choose randomly between cheapest and second cheapest groupe
                 val techsAdvanced = techsGroups[costs[1]]!!
-                tech = (techsCheapest + techsAdvanced).random()
+                techToResearch = (cheapestTechs + techsAdvanced).random()
             }
 
-            civInfo.tech.techsToResearch.add(tech.name)
+            civInfo.tech.techsToResearch.add(techToResearch.name)
         }
     }
 
     private fun adoptPolicy(civInfo: CivilizationInfo) {
         while (civInfo.policies.canAdoptPolicy()) {
 
-            val adoptablePolicies = civInfo.gameInfo.ruleSet.policyBranches.values
-                    .flatMap { it.policies.union(listOf(it)) }
+            val adoptablePolicies = civInfo.gameInfo.ruleSet.policies.values
                     .filter { civInfo.policies.isAdoptable(it) }
 
             // This can happen if the player is crazy enough to have the game continue forever and he disabled cultural victory
@@ -194,7 +193,7 @@ object NextTurnAutomation{
                         VictoryType.Cultural -> listOf("Piety", "Freedom", "Tradition", "Rationalism", "Commerce")
                         VictoryType.Scientific -> listOf("Rationalism", "Commerce", "Liberty", "Freedom", "Piety")
                         VictoryType.Domination -> listOf("Autocracy", "Honor", "Liberty", "Rationalism", "Freedom")
-                        VictoryType.Neutral, VictoryType.Scenario -> listOf()
+                        VictoryType.Neutral -> listOf()
                     }
             val policiesByPreference = adoptablePolicies
                     .groupBy {
@@ -202,14 +201,14 @@ object NextTurnAutomation{
                             policyBranchPriority.indexOf(it.branch.name) else 10
                     }
 
-            val preferredPolicies = policiesByPreference.minBy { it.key }!!.value
+            val preferredPolicies = policiesByPreference.minByOrNull { it.key }!!.value
 
             val policyToAdopt = preferredPolicies.random()
             civInfo.policies.adopt(policyToAdopt)
         }
     }
 
-    private fun potentialLuxuryTrades(civInfo:CivilizationInfo, otherCivInfo:CivilizationInfo): ArrayList<Trade> {
+    private fun potentialLuxuryTrades(civInfo: CivilizationInfo, otherCivInfo: CivilizationInfo): ArrayList<Trade> {
         val tradeLogic = TradeLogic(civInfo, otherCivInfo)
         val ourTradableLuxuryResources = tradeLogic.ourAvailableOffers
                 .filter { it.type == TradeType.Luxury_Resource && it.amount > 1 }
@@ -245,8 +244,10 @@ object NextTurnAutomation{
         // We should A. add some sort of timer (20? 30 turns?) between luxury trade requests if they're denied - see DeclinedLuxExchange
         // B. have a way for the AI to keep track of the "pending offers" - see DiplomacyManager.resourcesFromTrade
 
-        for (otherCiv in knownCivs.filter { it.isMajorCiv() && !it.isAtWarWith(civInfo)
-                && !civInfo.getDiplomacyManager(it).hasFlag(DiplomacyFlags.DeclinedLuxExchange)}) {
+        for (otherCiv in knownCivs.filter {
+            it.isMajorCiv() && !it.isAtWarWith(civInfo)
+                    && !civInfo.getDiplomacyManager(it).hasFlag(DiplomacyFlags.DeclinedLuxExchange)
+        }) {
 
             val relationshipLevel = civInfo.getDiplomacyManager(otherCiv).relationshipLevel()
             if (relationshipLevel <= RelationshipLevel.Enemy)
@@ -263,11 +264,12 @@ object NextTurnAutomation{
     private fun offerDeclarationOfFriendship(civInfo: CivilizationInfo) {
         val civsThatWeCanDeclareFriendshipWith = civInfo.getKnownCivs()
                 .asSequence()
-                .filter { it.isMajorCiv() }
-                .filter { !it.isAtWarWith(civInfo) }
-                .filter { it.getDiplomacyManager(civInfo).relationshipLevel() > RelationshipLevel.Neutral }
-                .filter { !civInfo.getDiplomacyManager(it).hasFlag(DiplomacyFlags.DeclarationOfFriendship) }
-                .filter { !civInfo.getDiplomacyManager(it).hasFlag(DiplomacyFlags.Denunceation) }
+                .filter {
+                    it.isMajorCiv() && !it.isAtWarWith(civInfo)
+                            && it.getDiplomacyManager(civInfo).relationshipLevel() > RelationshipLevel.Neutral
+                            && !civInfo.getDiplomacyManager(it).hasFlag(DiplomacyFlags.DeclarationOfFriendship)
+                            && !civInfo.getDiplomacyManager(it).hasFlag(DiplomacyFlags.Denunceation)
+                }
                 .sortedByDescending { it.getDiplomacyManager(civInfo).relationshipLevel() }
         for (civ in civsThatWeCanDeclareFriendshipWith) {
             // Default setting is 5, this will be changed according to different civ.
@@ -281,55 +283,21 @@ object NextTurnAutomation{
 
         val canSignResearchAgreementCiv = civInfo.getKnownCivs()
                 .asSequence()
-                .filter { civInfo.canSignResearchAgreementsWith(it)
-                        && !civInfo.getDiplomacyManager(it).hasFlag(DiplomacyFlags.DeclinedResearchAgreement) }
+                .filter {
+                    civInfo.canSignResearchAgreementsWith(it)
+                            && !civInfo.getDiplomacyManager(it).hasFlag(DiplomacyFlags.DeclinedResearchAgreement)
+                }
                 .sortedByDescending { it.statsForNextTurn.science }
 
         for (otherCiv in canSignResearchAgreementCiv) {
             // Default setting is 5, this will be changed according to different civ.
             if ((1..10).random() > 5) continue
             val tradeLogic = TradeLogic(civInfo, otherCiv)
-            val cost = civInfo.getResearchAgreementCost(otherCiv)
+            val cost = civInfo.getResearchAgreementCost()
             tradeLogic.currentTrade.ourOffers.add(TradeOffer(Constants.researchAgreement, TradeType.Treaty, cost))
             tradeLogic.currentTrade.theirOffers.add(TradeOffer(Constants.researchAgreement, TradeType.Treaty, cost))
 
             otherCiv.tradeRequests.add(TradeRequest(civInfo.civName, tradeLogic.currentTrade.reverse()))
-        }
-    }
-
-    private fun offerPeaceTreaty(civInfo: CivilizationInfo) {
-        if (!civInfo.isAtWar() || civInfo.cities.isEmpty() || civInfo.diplomacy.isEmpty()) return
-
-        val ourCombatStrength = Automation.evaluteCombatStrength(civInfo)
-        val enemiesCiv = civInfo.diplomacy.filter { it.value.diplomaticStatus == DiplomaticStatus.War }
-                .map { it.value.otherCiv() }
-                .filterNot { it == civInfo || it.isBarbarian() || it.cities.isEmpty() }
-                .filter { !civInfo.getDiplomacyManager(it).hasFlag(DiplomacyFlags.DeclinedPeace) }
-
-        for (enemy in enemiesCiv) {
-            val enemiesStrength = Automation.evaluteCombatStrength(enemy)
-            if (civInfo.victoryType() != VictoryType.Cultural
-                    && enemiesStrength < ourCombatStrength * 2) {
-                continue //We're losing, but can still fight. Refuse peace.
-            }
-
-            // pay for peace
-            val tradeLogic = TradeLogic(civInfo, enemy)
-
-            tradeLogic.currentTrade.ourOffers.add(TradeOffer(Constants.peaceTreaty, TradeType.Treaty))
-            tradeLogic.currentTrade.theirOffers.add(TradeOffer(Constants.peaceTreaty, TradeType.Treaty))
-
-            if (civInfo.gold > 0) {
-                var moneyWeNeedToPay = -TradeEvaluation().evaluatePeaceCostForThem(civInfo, enemy)
-                if (moneyWeNeedToPay > civInfo.gold) { // we need to make up for this somehow...
-                    moneyWeNeedToPay = civInfo.gold
-                }
-                if (moneyWeNeedToPay > 0) {
-                    tradeLogic.currentTrade.ourOffers.add(TradeOffer("Gold".tr(), TradeType.Gold, moneyWeNeedToPay))
-                }
-            }
-
-            enemy.tradeRequests.add(TradeRequest(civInfo.civName, tradeLogic.currentTrade.reverse()))
         }
     }
 
@@ -360,21 +328,40 @@ object NextTurnAutomation{
 
         //evaluate war
         val enemyCivs = civInfo.getKnownCivs()
-                .filterNot { it == civInfo || it.cities.isEmpty() || !civInfo.getDiplomacyManager(it).canDeclareWar() }
+                .filterNot {
+                    it == civInfo || it.cities.isEmpty() || !civInfo.getDiplomacyManager(it).canDeclareWar()
+                            || it.cities.none { civInfo.exploredTiles.contains(it.location) }
+                }
+        // If the AI declares war on a civ without knowing the location of any cities, it'll just keep amassing an army and not sending it anywhere,
+        //   and end up at a massive disadvantage
+
         if (enemyCivs.isEmpty()) return
 
         val civWithBestMotivationToAttack = enemyCivs
                 .map { Pair(it, motivationToAttack(civInfo, it)) }
-                .maxBy { it.second }!!
+                .maxByOrNull { it.second }!!
 
         if (civWithBestMotivationToAttack.second >= 20)
             civInfo.getDiplomacyManager(civWithBestMotivationToAttack.first).declareWar()
     }
 
-    private fun motivationToAttack(civInfo:CivilizationInfo, otherCiv:CivilizationInfo): Int {
+    private fun motivationToAttack(civInfo: CivilizationInfo, otherCiv: CivilizationInfo): Int {
         val ourCombatStrength = Automation.evaluteCombatStrength(civInfo).toFloat()
         val theirCombatStrength = Automation.evaluteCombatStrength(otherCiv)
         if (theirCombatStrength > ourCombatStrength) return 0
+
+
+        fun isTileCanMoveThrough(tileInfo: TileInfo): Boolean {
+            val owner = tileInfo.getOwner()
+            return !tileInfo.isImpassible()
+                    && (owner == otherCiv || owner == null || civInfo.canEnterTiles(owner))
+        }
+
+        val reachableEnemyCitiesBfs = BFS(civInfo.getCapital().getCenterTile()) { isTileCanMoveThrough(it) }
+        reachableEnemyCitiesBfs.stepToEnd()
+        val reachableEnemyCities = otherCiv.cities.filter { reachableEnemyCitiesBfs.hasReachedTile(it.getCenterTile()) }
+        if (reachableEnemyCities.isEmpty()) return 0 // Can't even reach the enemy city, no point in war.
+
 
         val modifierMap = HashMap<String, Int>()
         val combatStrengthRatio = ourCombatStrength / theirCombatStrength
@@ -395,9 +382,7 @@ object NextTurnAutomation{
             modifierMap["Far away cities"] = -10
 
         val landPathBFS = BFS(ourCity.getCenterTile()) {
-            val owner = it.getOwner();
-            it.isLand && !it.isImpassible()
-                    && (owner == otherCiv || owner == null || civInfo.canEnterTiles(owner))
+            it.isLand && isTileCanMoveThrough(it)
         }
 
         landPathBFS.stepUntilDestination(theirCity.getCenterTile())
@@ -405,13 +390,13 @@ object NextTurnAutomation{
             modifierMap["No land path"] = -10
 
         val diplomacyManager = civInfo.getDiplomacyManager(otherCiv)
-        if(diplomacyManager.hasFlag(DiplomacyFlags.ResearchAgreement))
+        if (diplomacyManager.hasFlag(DiplomacyFlags.ResearchAgreement))
             modifierMap["Research Agreement"] = -5
 
-        if(diplomacyManager.hasFlag(DiplomacyFlags.DeclarationOfFriendship))
+        if (diplomacyManager.hasFlag(DiplomacyFlags.DeclarationOfFriendship))
             modifierMap["Declaration of Friendship"] = -10
 
-        val relationshipModifier = when(diplomacyManager.relationshipLevel()){
+        val relationshipModifier = when (diplomacyManager.relationshipLevel()) {
             RelationshipLevel.Unforgivable -> 10
             RelationshipLevel.Enemy -> 5
             RelationshipLevel.Ally -> -5 // this is so that ally + DoF is not too unbalanced -
@@ -420,14 +405,50 @@ object NextTurnAutomation{
         }
         modifierMap["Relationship"] = relationshipModifier
 
-        if(diplomacyManager.resourcesFromTrade().any { it.amount > 0 })
+        if (diplomacyManager.resourcesFromTrade().any { it.amount > 0 })
             modifierMap["Receiving trade resources"] = -5
 
-        if(theirCity.getTiles().none { it.neighbors.any { it.getOwner()==theirCity.civInfo && it.getCity() != theirCity } })
+        if (theirCity.getTiles().none { it.neighbors.any { it.getOwner() == theirCity.civInfo && it.getCity() != theirCity } })
             modifierMap["Isolated city"] = 15
 
         return modifierMap.values.sum()
     }
+
+
+    private fun offerPeaceTreaty(civInfo: CivilizationInfo) {
+        if (!civInfo.isAtWar() || civInfo.cities.isEmpty() || civInfo.diplomacy.isEmpty()) return
+
+        val enemiesCiv = civInfo.diplomacy.filter { it.value.diplomaticStatus == DiplomaticStatus.War }
+                .map { it.value.otherCiv() }
+                .filterNot { it == civInfo || it.isBarbarian() || it.cities.isEmpty() }
+                .filter { !civInfo.getDiplomacyManager(it).hasFlag(DiplomacyFlags.DeclinedPeace) }
+                // Don't allow AIs to offer peace to city states allied with their enemies
+                .filterNot { it.isCityState() && it.getAllyCiv() != "" && civInfo.isAtWarWith(civInfo.gameInfo.getCivilization(it.getAllyCiv())) }
+
+        for (enemy in enemiesCiv) {
+            val motivationToAttack = motivationToAttack(civInfo, enemy)
+            if (motivationToAttack >= 10) continue // We can still fight. Refuse peace.
+
+            // pay for peace
+            val tradeLogic = TradeLogic(civInfo, enemy)
+
+            tradeLogic.currentTrade.ourOffers.add(TradeOffer(Constants.peaceTreaty, TradeType.Treaty))
+            tradeLogic.currentTrade.theirOffers.add(TradeOffer(Constants.peaceTreaty, TradeType.Treaty))
+
+            if (civInfo.gold > 0) {
+                var moneyWeNeedToPay = -TradeEvaluation().evaluatePeaceCostForThem(civInfo, enemy)
+                if (moneyWeNeedToPay > civInfo.gold) { // we need to make up for this somehow...
+                    moneyWeNeedToPay = civInfo.gold
+                }
+                if (moneyWeNeedToPay > 0) {
+                    tradeLogic.currentTrade.ourOffers.add(TradeOffer("Gold".tr(), TradeType.Gold, moneyWeNeedToPay))
+                }
+            }
+
+            enemy.tradeRequests.add(TradeRequest(civInfo.civName, tradeLogic.currentTrade.reverse()))
+        }
+    }
+
 
     private fun automateUnits(civInfo: CivilizationInfo) {
         val rangedUnits = mutableListOf<MapUnit>()
@@ -445,8 +466,8 @@ object NextTurnAutomation{
             when {
                 unit.type.isRanged() -> rangedUnits.add(unit)
                 unit.type.isMelee() -> meleeUnits.add(unit)
-                unit.name == Constants.greatGeneral || unit.baseUnit.replaces == Constants.greatGeneral
-                    -> generals.add(unit) //generals move after military units
+                unit.hasUnique("Bonus for units in 2 tile radius 15%")
+                -> generals.add(unit) //generals move after military units
                 else -> civilianUnits.add(unit)
             }
         }
@@ -472,7 +493,7 @@ object NextTurnAutomation{
 
             city.cityConstructions.chooseNextConstruction()
             if (city.health < city.getMaxHealth())
-                Automation.trainMilitaryUnit(city) // override previous decision if city is under attack
+                Automation.tryTrainMilitaryUnit(city) // override previous decision if city is under attack
         }
     }
 
@@ -480,14 +501,20 @@ object NextTurnAutomation{
         if (civInfo.isCityState()) return
         if (civInfo.isAtWar()) return // don't train settlers when you could be training troops.
         if (civInfo.victoryType() == VictoryType.Cultural && civInfo.cities.size > 3) return
-        if (civInfo.cities.any()
-                && civInfo.getHappiness() > civInfo.cities.size + 5
-                && civInfo.getCivUnits().none { it.name == Constants.settler }
-                && civInfo.cities.none { it.cityConstructions.currentConstructionFromQueue == Constants.settler }) {
+        if (civInfo.cities.none() || civInfo.getHappiness() <= civInfo.cities.size + 5) return
 
-            val bestCity = civInfo.cities.maxBy { it.cityStats.currentCityStats.production }!!
+        val settlerUnits = civInfo.gameInfo.ruleSet.units.values
+                .filter { it.uniques.contains(Constants.settlerUnique) && it.isBuildable(civInfo) }
+        if (settlerUnits.isEmpty()) return
+        if (civInfo.getCivUnits().none { it.hasUnique(Constants.settlerUnique) }
+                && civInfo.cities.none {
+                    val currentConstruction = it.cityConstructions.getCurrentConstruction()
+                    currentConstruction is BaseUnit && currentConstruction.uniques.contains(Constants.settlerUnique)
+                }) {
+
+            val bestCity = civInfo.cities.maxByOrNull { it.cityStats.currentCityStats.production }!!
             if (bestCity.cityConstructions.builtBuildings.size > 1) // 2 buildings or more, otherwise focus on self first
-                bestCity.cityConstructions.currentConstructionFromQueue = Constants.settler
+                bestCity.cityConstructions.currentConstructionFromQueue = settlerUnits.minByOrNull { it.cost }!!.name
         }
     }
 
@@ -500,18 +527,20 @@ object NextTurnAutomation{
         }
     }
 
-    private fun onCitySettledNearBorders(civInfo: CivilizationInfo, otherCiv:CivilizationInfo){
+    private fun onCitySettledNearBorders(civInfo: CivilizationInfo, otherCiv: CivilizationInfo) {
         val diplomacyManager = civInfo.getDiplomacyManager(otherCiv)
         when {
-            diplomacyManager.hasFlag(DiplomacyFlags.IgnoreThemSettlingNearUs) -> {}
+            diplomacyManager.hasFlag(DiplomacyFlags.IgnoreThemSettlingNearUs) -> {
+            }
             diplomacyManager.hasFlag(DiplomacyFlags.AgreedToNotSettleNearUs) -> {
                 otherCiv.popupAlerts.add(PopupAlert(AlertType.CitySettledNearOtherCivDespiteOurPromise, civInfo.civName))
-                diplomacyManager.setFlag(DiplomacyFlags.IgnoreThemSettlingNearUs,100)
-                diplomacyManager.setModifier(DiplomaticModifiers.BetrayedPromiseToNotSettleCitiesNearUs,-20f)
+                diplomacyManager.setFlag(DiplomacyFlags.IgnoreThemSettlingNearUs, 100)
+                diplomacyManager.setModifier(DiplomaticModifiers.BetrayedPromiseToNotSettleCitiesNearUs, -20f)
+                diplomacyManager.removeFlag(DiplomacyFlags.AgreedToNotSettleNearUs)
             }
             else -> {
-                val threatLevel = Automation.threatAssessment(civInfo,otherCiv)
-                if(threatLevel<ThreatLevel.High) // don't piss them off for no reason please.
+                val threatLevel = Automation.threatAssessment(civInfo, otherCiv)
+                if (threatLevel < ThreatLevel.High) // don't piss them off for no reason please.
                     otherCiv.popupAlerts.add(PopupAlert(AlertType.DemandToStopSettlingCitiesNear, civInfo.civName))
             }
         }
@@ -519,18 +548,18 @@ object NextTurnAutomation{
     }
 
     fun getMinDistanceBetweenCities(civ1: CivilizationInfo, civ2: CivilizationInfo): Int {
-        return getClosestCities(civ1,civ2).aerialDistance
+        return getClosestCities(civ1, civ2).aerialDistance
     }
 
-    data class CityDistance(val city1:CityInfo, val city2:CityInfo, val aerialDistance: Int)
+    data class CityDistance(val city1: CityInfo, val city2: CityInfo, val aerialDistance: Int)
 
     fun getClosestCities(civ1: CivilizationInfo, civ2: CivilizationInfo): CityDistance {
         val cityDistances = arrayListOf<CityDistance>()
         for (civ1city in civ1.cities)
             for (civ2city in civ2.cities)
-                cityDistances.add(CityDistance(civ1city, civ2city,
-                        civ1city.getCenterTile().aerialDistanceTo(civ2city.getCenterTile())))
+                cityDistances += CityDistance(civ1city, civ2city,
+                        civ1city.getCenterTile().aerialDistanceTo(civ2city.getCenterTile()))
 
-        return cityDistances.minBy { it.aerialDistance }!!
+        return cityDistances.minByOrNull { it.aerialDistance }!!
     }
 }

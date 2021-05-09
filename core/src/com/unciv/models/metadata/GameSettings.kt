@@ -9,20 +9,23 @@ data class WindowState (val width:Int=0, val height:Int=0)
 class GameSettings {
     var showWorkedTiles: Boolean = false
     var showResourcesAndImprovements: Boolean = true
+    var showTileYields: Boolean = false
     var checkForDueUnits: Boolean = true
     var singleTapMove: Boolean = false
     var language: String = "English"
-    var resolution: String = "900x600"
+    var resolution: String = "900x600" // Auto-detecting resolution was a BAD IDEA since it needs to be based on DPI AND resolution.
     var tutorialsShown = HashSet<String>()
     var tutorialTasksCompleted = HashSet<String>()
     var hasCrashedRecently = false
     var soundEffectsVolume = 0.5f
     var musicVolume = 0.5f
     var turnsBetweenAutosaves = 1
-    var tileSet:String = "FantasyHex"
+    var tileSet: String = "FantasyHex"
     var showTutorials: Boolean = true
     var autoAssignCityProduction: Boolean = true
     var autoBuildingRoads: Boolean = true
+    var automatedWorkersReplaceImprovements = true
+
     var showMinimap: Boolean = true
     var showPixelUnits: Boolean = false
     var showPixelImprovements: Boolean = true
@@ -34,10 +37,11 @@ class GameSettings {
     var orderTradeOffersByAmount = true
     var windowState = WindowState()
     var isFreshlyCreated = false
-    var minimapSize = 20
-    var minimapSquare = false
-    var extendedMapEditor = false
-    var spectatorMode = false
+    var visualMods = HashSet<String>()
+
+    var showExperimentalWorldWrap = false // We're keeping this as a config due to ANR problems on Android phones for people who don't know what they're doing :/
+
+    var lastOverviewPage: String = "Cities"
 
     init {
         // 26 = Android Oreo. Versions below may display permanent icon in notification bar.
@@ -46,14 +50,14 @@ class GameSettings {
         }
     }
 
-    fun save(){
+    fun save() {
         if (!isFreshlyCreated && Gdx.app?.type == Application.ApplicationType.Desktop) {
-            windowState = WindowState( Gdx.graphics.width, Gdx.graphics.height)
+            windowState = WindowState(Gdx.graphics.width, Gdx.graphics.height)
         }
         GameSaver.setGeneralSettings(this)
     }
 
-    fun addCompletedTutorialTask(tutorialTask:String){
+    fun addCompletedTutorialTask(tutorialTask: String) {
         tutorialTasksCompleted.add(tutorialTask)
         save()
     }

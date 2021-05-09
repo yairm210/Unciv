@@ -4,14 +4,15 @@ import com.unciv.Constants
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
+import com.unciv.models.ruleset.ModOptionsConstants
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.translations.tr
 
-class TradeLogic(val ourCivilization:CivilizationInfo, val otherCivilization: CivilizationInfo){
+class TradeLogic(val ourCivilization:CivilizationInfo, val otherCivilization: CivilizationInfo) {
 
     /** Contains everything we could offer the other player, whether we've actually offered it or not */
-    val ourAvailableOffers = getAvailableOffers(ourCivilization,otherCivilization)
-    val theirAvailableOffers = getAvailableOffers(otherCivilization,ourCivilization)
+    val ourAvailableOffers = getAvailableOffers(ourCivilization, otherCivilization)
+    val theirAvailableOffers = getAvailableOffers(otherCivilization, ourCivilization)
     val currentTrade = Trade()
 
     fun getAvailableOffers(civInfo: CivilizationInfo, otherCivilization: CivilizationInfo): TradeOffersList {
@@ -20,22 +21,22 @@ class TradeLogic(val ourCivilization:CivilizationInfo, val otherCivilization: Ci
         if (civInfo.isAtWarWith(otherCivilization))
             offers.add(TradeOffer(Constants.peaceTreaty, TradeType.Treaty))
 
-        if(!otherCivilization.getDiplomacyManager(civInfo).hasOpenBorders
+        if (!otherCivilization.getDiplomacyManager(civInfo).hasOpenBorders
                 && !otherCivilization.isCityState()
-                && civInfo.tech.getTechUniques().contains("Enables Open Borders agreements")
-                && otherCivilization.tech.getTechUniques().contains("Enables Open Borders agreements")) {
+                && civInfo.hasUnique("Enables Open Borders agreements")
+                && otherCivilization.hasUnique("Enables Open Borders agreements")) {
             offers.add(TradeOffer(Constants.openBorders, TradeType.Agreement))
         }
 
-        for(entry in civInfo.getCivResources()
+        for (entry in civInfo.getCivResources()
                 .filterNot { it.resource.resourceType == ResourceType.Bonus }) {
-            val resourceTradeType = if(entry.resource.resourceType== ResourceType.Luxury) TradeType.Luxury_Resource
+            val resourceTradeType = if (entry.resource.resourceType == ResourceType.Luxury) TradeType.Luxury_Resource
             else TradeType.Strategic_Resource
             offers.add(TradeOffer(entry.resource.name, resourceTradeType, entry.amount))
         }
 
-        offers.add(TradeOffer("Gold".tr(), TradeType.Gold, civInfo.gold))
-        offers.add(TradeOffer("Gold per turn".tr(), TradeType.Gold_Per_Turn, civInfo.statsForNextTurn.gold.toInt()))
+        offers.add(TradeOffer("Gold", TradeType.Gold, civInfo.gold))
+        offers.add(TradeOffer("Gold per turn", TradeType.Gold_Per_Turn, civInfo.statsForNextTurn.gold.toInt()))
 
         if (!civInfo.isOneCityChallenger() && !otherCivilization.isOneCityChallenger()
                 && !civInfo.isCityState() && !otherCivilization.isCityState()) {
@@ -52,7 +53,8 @@ class TradeLogic(val ourCivilization:CivilizationInfo, val otherCivilization: Ci
             offers.add(TradeOffer(thirdCiv.civName, TradeType.Introduction))
         }
 
-        if (!civInfo.isCityState() && !otherCivilization.isCityState()) {
+        if (!civInfo.isCityState() && !otherCivilization.isCityState()
+                && !civInfo.gameInfo.ruleSet.modOptions.uniques.contains(ModOptionsConstants.diplomaticRelationshipsCannotChange)) {
             val civsWeBothKnow = otherCivsWeKnow
                     .filter { otherCivilization.diplomacy.containsKey(it.civName) }
             val civsWeArentAtWarWith = civsWeBothKnow
@@ -115,4 +117,3 @@ class TradeLogic(val ourCivilization:CivilizationInfo, val otherCivilization: Ci
         transferTrade(otherCivilization, ourCivilization, currentTrade.reverse())
     }
 }
-

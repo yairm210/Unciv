@@ -1,4 +1,5 @@
 import com.unciv.build.BuildConfig
+import org.gradle.api.tasks.testing.logging.TestLogEvent
 
 plugins {
     id("java")
@@ -6,11 +7,22 @@ plugins {
 
 java {
     sourceCompatibility = JavaVersion.VERSION_1_6
+    targetCompatibility = JavaVersion.VERSION_1_7
 }
 
 tasks {
     test {
         workingDir = file("../android/assets")
+        testLogging.lifecycle {
+            events(
+                    TestLogEvent.FAILED,
+                    TestLogEvent.STANDARD_ERROR,
+                    TestLogEvent.STANDARD_OUT
+            )
+
+            exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
+        }
+
     }
 
     compileJava {

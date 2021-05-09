@@ -47,28 +47,18 @@ com.badlogic.gdx.graphics.Color: {
 		b: 1
 		a: 1
 	}
-	window: {
-		r: 0.76862746
-		g: 0.4509804
-		b: 0
-		a: 1
-	}
 }
 com.badlogic.gdx.scenes.scene2d.ui.Skin$TintedDrawable: {
 	button-c: {
-		name: button
-		color: color
-	}
-	button-close-c: {
-		name: button-close
+		name: "Button"
 		color: color
 	}
 	button-pressed-c: {
-		name: button-pressed
+		name: "Button"
 		color: color
 	}
 	button-h: {
-		name: button
+		name: "Button"
 		color: highlight
 	}
 	checkbox-c: {
@@ -83,16 +73,8 @@ com.badlogic.gdx.scenes.scene2d.ui.Skin$TintedDrawable: {
 		name: list
 		color: color
 	}
-	radio-pressed-c: {
-		name: radio-pressed
-		color: color
-	}
 	scrollbar-c: {
 		name: scrollbar
-		color: color
-	}
-	scrollbar-android-c: {
-		name: scrollbar-android
 		color: color
 	}
 	select-box-c: {
@@ -124,35 +106,11 @@ com.badlogic.gdx.scenes.scene2d.ui.Skin$TintedDrawable: {
 		color: color
 	}
 	textfield-c: {
-		name: textfield
-		color: color
-	}
-	tooltip-c: {
-		name: tooltip
-		color: color
-	}
-	touchpad-c: {
-		name: touchpad
-		color: color
-	}
-	touchpad-knob-c: {
-		name: touchpad-knob
-		color: color
-	}
-	tree-minus-c: {
-		name: tree-minus
-		color: color
-	}
-	tree-plus-c: {
-		name: tree-plus
+		name: "Button"
 		color: color
 	}
 	color: {
 		name: white
-		color: color
-	}
-	window-c: {
-		name: window
 		color: color
 	}
 	selection: {
@@ -191,24 +149,8 @@ com.badlogic.gdx.scenes.scene2d.ui.Skin$TintedDrawable: {
 		name: white
 		color: black
 	}
-	button-close-p: {
-		name: button-close
-		color: pressed
-	}
-	button-close-h: {
-		name: button-close
-		color: highlight
-	}
-	button-close-s: {
-		name: button-close
-		color: selection
-	}
-	window-w: {
-		name: window
-		color: window
-	}
 	button-p: {
-		name: button
+		name: "Button"
 		color: pressed
 	}
 	slider-fancy-p: {
@@ -231,25 +173,12 @@ com.badlogic.gdx.scenes.scene2d.ui.Skin$TintedDrawable: {
 		name: checkbox-pressed
 		color: pressed
 	}
-	radio-pressed-h: {
-		name: radio-pressed
-		color: highlight
-	}
-	radio-pressed-p: {
-		name: radio-pressed
-		color: pressed
-	}
 }
 com.badlogic.gdx.scenes.scene2d.ui.Button$ButtonStyle: {
 	default: {
 		up: button-c
 		down: button-p
 		over: button-h
-	}
-	close: {
-		up: button-close-c
-		down: button-close-p
-		over: button-close-h
 	}
 }
 com.badlogic.gdx.scenes.scene2d.ui.CheckBox$CheckBoxStyle: {
@@ -261,64 +190,10 @@ com.badlogic.gdx.scenes.scene2d.ui.CheckBox$CheckBoxStyle: {
 		downFontColor: pressed
 		overFontColor: highlight
 	}
-	radio: {
-		checkboxOn: radio-pressed-c
-		checkboxOff: checkbox-c
-		font: button
-		fontColor: color
-	}
-}
-com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
-	default: {
-		up: button-c
-		down: button-p
-		over: button-h
-	}
-}
-com.badlogic.gdx.scenes.scene2d.ui.ImageTextButton$ImageTextButtonStyle: {
-	default: {
-		font: button
-		fontColor: white
-		downFontColor: white
-		overFontColor: gray
-		up: button-c
-		down: button-p
-		over: button-h
-	}
-	check: {
-		imageUp: checkbox-c
-		imageDown: checkbox-pressed-p
-		imageOver: checkbox-h
-		imageChecked: checkbox-pressed-c
-		imageCheckedOver: checkbox-pressed-h
-		font: button
-		fontColor: color
-		downFontColor: pressed
-		overFontColor: highlight
-	}
-	radio: {
-		imageUp: checkbox-c
-		imageDown: radio-pressed-p
-		imageOver: checkbox-h
-		imageChecked: radio-pressed-c
-		imageCheckedOver: radio-pressed-h
-		font: button
-		fontColor: color
-		downFontColor: pressed
-		overFontColor: highlight
-	}
 }
 com.badlogic.gdx.scenes.scene2d.ui.Label$LabelStyle: {
 	default: {
 		font: font
-		fontColor: color
-	}
-	button: {
-		font: button
-		fontColor: color
-	}
-	title: {
-		font: title
 		fontColor: color
 	}
 }
@@ -331,28 +206,10 @@ com.badlogic.gdx.scenes.scene2d.ui.List$ListStyle: {
 		background: list-c
 	}
 }
-com.badlogic.gdx.scenes.scene2d.ui.ProgressBar$ProgressBarStyle: {
-	default-horizontal: {
-		background: slider-horizontal-c
-		knobBefore: slider-horizontal-s
-	}
-	default-vertical: {
-		background: slider-vertical-c
-		knobBefore: slider-vertical-s
-	}
-	fancy: {
-		background: slider-fancy-p
-		knobBefore: slider-fancy-knob
-	}
-}
 com.badlogic.gdx.scenes.scene2d.ui.ScrollPane$ScrollPaneStyle: {
 	default: {
 		hScrollKnob: scrollbar-c
 		vScrollKnob: scrollbar-c
-	}
-	android: {
-		hScrollKnob: scrollbar-android-c
-		vScrollKnob: scrollbar-android-c
 	}
 }
 com.badlogic.gdx.scenes.scene2d.ui.SelectBox$SelectBoxStyle: {
@@ -415,31 +272,6 @@ com.badlogic.gdx.scenes.scene2d.ui.TextField$TextFieldStyle: {
 		background: textfield-c
 		cursor: white
 		selection: selection
-	}
-}
-com.badlogic.gdx.scenes.scene2d.ui.TextTooltip$TextTooltipStyle: {
-	default: {
-		label: default
-		background: tooltip-c
-	}
-}
-com.badlogic.gdx.scenes.scene2d.ui.Touchpad$TouchpadStyle: {
-	default: {
-		background: touchpad-c
-		knob: touchpad-knob-c
-	}
-}
-com.badlogic.gdx.scenes.scene2d.ui.Tree$TreeStyle: {
-	default: {
-		plus: tree-plus-c
-		minus: tree-minus-c
-	}
-}
-com.badlogic.gdx.scenes.scene2d.ui.Window$WindowStyle: {
-	default: {
-		background: window-w
-		titleFont: font
-		titleFontColor: white
 	}
 }
 }

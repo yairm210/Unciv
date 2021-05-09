@@ -18,9 +18,7 @@ class GreatPersonPickerScreen(val civInfo:CivilizationInfo) : PickerScreen() {
         closeButton.isVisible=false
         rightSideButton.setText("Choose a free great person".tr())
 
-        val greatPersonNames = GreatPersonManager().statToGreatPersonMapping.values
-                .union(listOf("Great General"))
-        val greatPersonUnits = greatPersonNames.map { civInfo.getEquivalentUnit(it) }
+        val greatPersonUnits = civInfo.getGreatPeople()
         for (unit in greatPersonUnits)
         {
             val button = Button(skin)
@@ -32,7 +30,7 @@ class GreatPersonPickerScreen(val civInfo:CivilizationInfo) : PickerScreen() {
                 theChosenOne = unit
                 val unitDescription=HashSet<String>()
                 unit.uniques.forEach { unitDescription.add(it.tr()) }
-                pick("Get ".tr() +unit.name.tr())
+                pick("Get [${unit.name}]".tr())
                 descriptionLabel.setText(unitDescription.joinToString())
             }
             topTable.add(button).pad(10f).row()
@@ -46,3 +44,4 @@ class GreatPersonPickerScreen(val civInfo:CivilizationInfo) : PickerScreen() {
 
     }
 }
+

@@ -119,7 +119,7 @@ object Perlin {
     private fun lerp(t: Double, a: Double, b: Double) = a + t * (b - a)
 
     private fun grad3(hash: Int, x: Double, y: Double, z: Double): Double {
-        val h = hash and 15;
+        val h = hash and 15
         return x * grad3[h][0] + y * grad3[h][1] + z * grad3[h][2]
     }
 }

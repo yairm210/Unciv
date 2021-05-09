@@ -10,8 +10,10 @@ import com.unciv.models.metadata.GameSpeed
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.VictoryType
 import com.unciv.models.translations.tr
-import com.unciv.ui.mapeditor.GameParametersScreen
-import com.unciv.ui.utils.*
+import com.unciv.ui.utils.CameraStageBaseScreen
+import com.unciv.ui.utils.ImageGetter
+import com.unciv.ui.utils.onChange
+import com.unciv.ui.utils.toLabel
 
 class GameOptionsTable(val previousScreen: IPreviousScreen, val updatePlayerPickerTable:(desiredCiv:String)->Unit)
     : Table(CameraStageBaseScreen.skin) {
@@ -47,8 +49,6 @@ class GameOptionsTable(val previousScreen: IPreviousScreen, val updatePlayerPick
         checkboxTable.addBarbariansCheckbox()
         checkboxTable.addOneCityChallengeCheckbox()
         checkboxTable.addNuclearWeaponsCheckbox()
-        if(UncivGame.Current.settings.extendedMapEditor)
-            checkboxTable.addGodmodeCheckbox()
         checkboxTable.addIsOnlineMultiplayerCheckbox()
         checkboxTable.addModCheckboxes()
         add(checkboxTable).colspan(2).row()
@@ -56,10 +56,10 @@ class GameOptionsTable(val previousScreen: IPreviousScreen, val updatePlayerPick
         pack()
     }
 
-    private fun Table.addCheckbox(text: String, initialState: Boolean, onChange: (newValue: Boolean) -> Unit) {
+    private fun Table.addCheckbox(text: String, initialState: Boolean, lockable: Boolean = true, onChange: (newValue: Boolean) -> Unit) {
         val checkbox = CheckBox(text.tr(), CameraStageBaseScreen.skin)
         checkbox.isChecked = initialState
-        checkbox.isDisabled = locked
+        checkbox.isDisabled = lockable && locked
         checkbox.onChange { onChange(checkbox.isChecked) }
         add(checkbox).colspan(2).left().row()
     }
@@ -76,15 +76,13 @@ class GameOptionsTable(val previousScreen: IPreviousScreen, val updatePlayerPick
             addCheckbox("Enable nuclear weapons", gameParameters.nuclearWeaponsEnabled)
             { gameParameters.nuclearWeaponsEnabled = it }
 
-    private fun Table.addGodmodeCheckbox() =
-            addCheckbox("Scenario Editor", gameParameters.godMode)
-            { gameParameters.godMode = it }
 
-
-    private fun Table.addIsOnlineMultiplayerCheckbox()  =
-        addCheckbox("Online Multiplayer", gameParameters.isOnlineMultiplayer)
-        { gameParameters.isOnlineMultiplayer = it
-            updatePlayerPickerTable("") }
+    private fun Table.addIsOnlineMultiplayerCheckbox() =
+            addCheckbox("Online Multiplayer", gameParameters.isOnlineMultiplayer)
+            {
+                gameParameters.isOnlineMultiplayer = it
+                updatePlayerPickerTable("")
+            }
 
     private fun addCityStatesSelectBox() {
         add("{Number of City-States}:".toLabel())
@@ -132,8 +130,8 @@ class GameOptionsTable(val previousScreen: IPreviousScreen, val updatePlayerPick
     }
 
     private fun Table.addEraSelectBox() {
-        if (ruleset.technologies.isEmpty()) return // scenario with no techs
-        val eras = ruleset.technologies.values.map { it.era() }.distinct()
+        if (ruleset.technologies.isEmpty()) return // mod with no techs
+        val eras = ruleset.technologies.values.filter { !it.uniques.contains("Starting tech") }.map { it.era() }.distinct()
         addSelectBox("{Starting Era}:", eras, gameParameters.startingEra)
         { gameParameters.startingEra = it }
     }
@@ -147,7 +145,6 @@ class GameOptionsTable(val previousScreen: IPreviousScreen, val updatePlayerPick
         val victoryConditionsTable = Table().apply { defaults().pad(5f) }
         for (victoryType in VictoryType.values()) {
             if (victoryType == VictoryType.Neutral) continue
-            if (previousScreen !is GameParametersScreen && victoryType == VictoryType.Scenario) continue // scenario victory is only available for scenarios
             val victoryCheckbox = CheckBox(victoryType.name.tr(), CameraStageBaseScreen.skin)
             victoryCheckbox.name = victoryType.name
             victoryCheckbox.isChecked = gameParameters.victoryTypes.contains(victoryType)
@@ -168,43 +165,32 @@ class GameOptionsTable(val previousScreen: IPreviousScreen, val updatePlayerPick
 
     fun reloadRuleset() {
         ruleset.clear()
-        val newRuleset = RulesetCache.getComplexRuleset(gameParameters)
+        val newRuleset = RulesetCache.getComplexRuleset(gameParameters.mods)
         ruleset.add(newRuleset)
         ruleset.mods += gameParameters.mods
         ruleset.modOptions = newRuleset.modOptions
 
-        ImageGetter.ruleset = ruleset
-        ImageGetter.setTextureRegionDrawables()
+        ImageGetter.setNewRuleset(ruleset)
     }
 
     fun Table.addModCheckboxes() {
-        val modRulesets = RulesetCache.values.filter { it.name != "" }
-        if (modRulesets.isEmpty()) return
+        val table = ModCheckboxTable(gameParameters.mods, previousScreen as CameraStageBaseScreen) {
+            UncivGame.Current.translations.translationActiveMods = gameParameters.mods
+            reloadRuleset()
+            update()
 
-        add("Mods:".toLabel(fontSize = 24)).padTop(16f).colspan(2).row()
-        val modCheckboxTable = Table().apply { defaults().pad(5f) }
-        for (mod in modRulesets) {
-            val checkBox = CheckBox(mod.name.tr(), CameraStageBaseScreen.skin)
-            checkBox.isDisabled = locked
-            if (mod.name in gameParameters.mods) checkBox.isChecked = true
-            checkBox.onChange {
-                if (checkBox.isChecked) gameParameters.mods.add(mod.name)
-                else gameParameters.mods.remove(mod.name)
-                reloadRuleset()
-                update()
-                var desiredCiv = ""
-                if (checkBox.isChecked) {
-                    val modNations = RulesetCache[mod.name]?.nations
-                    if (modNations != null && modNations.size > 0) {
-                        desiredCiv = modNations.keys.first()
-                    }
+            var desiredCiv = ""
+            if (gameParameters.mods.contains(it)) {
+                val modNations = RulesetCache[it]?.nations
+                if (modNations != null && modNations.size > 0) {
+                    desiredCiv = modNations.keys.first()
                 }
-                updatePlayerPickerTable(desiredCiv)
             }
-            modCheckboxTable.add(checkBox).row()
-        }
 
-        add(modCheckboxTable).colspan(2).row()
+            updatePlayerPickerTable(desiredCiv)
+        }
+        add(table).row()
     }
 
 }
+

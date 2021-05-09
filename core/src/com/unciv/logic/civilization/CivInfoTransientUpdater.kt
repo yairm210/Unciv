@@ -28,7 +28,7 @@ class CivInfoTransientUpdater(val civInfo: CivilizationInfo) {
         civInfo.exploredTiles.addAll(newlyExploredTiles)
 
 
-        val viewedCivs = HashMap<CivilizationInfo,TileInfo>()
+        val viewedCivs = HashMap<CivilizationInfo, TileInfo>()
         for (tile in civInfo.viewableTiles) {
             val tileOwner = tile.getOwner()
             if (tileOwner != null) viewedCivs[tileOwner] = tile
@@ -40,8 +40,8 @@ class CivInfoTransientUpdater(val civInfo: CivilizationInfo) {
                 val metCiv = entry.key
                 if (metCiv == civInfo || metCiv.isBarbarian() || civInfo.diplomacy.containsKey(metCiv.civName)) continue
                 civInfo.meetCivilization(metCiv)
-                civInfo.addNotification("We have encountered [" + metCiv.civName + "]!", entry.value.position, Color.GOLD)
-                metCiv.addNotification("We have encountered [" + civInfo.civName + "]!", entry.value.position, Color.GOLD)
+                civInfo.addNotification("We have encountered [" + metCiv.civName + "]!", entry.value.position, metCiv.civName, NotificationIcon.Diplomacy)
+                metCiv.addNotification("We have encountered [" + civInfo.civName + "]!", entry.value.position, civInfo.civName, NotificationIcon.Diplomacy)
             }
 
             discoverNaturalWonders()
@@ -66,7 +66,7 @@ class CivInfoTransientUpdater(val civInfo: CivilizationInfo) {
         newViewableTiles.addAll(ownedTiles)
         val neighboringUnownedTiles = ownedTiles.flatMap { it.neighbors.filter { it.getOwner() != civInfo } }
         newViewableTiles.addAll(neighboringUnownedTiles)
-        newViewableTiles.addAll(civInfo.getCivUnits().flatMap { it.viewableTiles.asSequence().filter { it.getOwner()!=civInfo } })
+        newViewableTiles.addAll(civInfo.getCivUnits().flatMap { it.viewableTiles.asSequence().filter { it.getOwner() != civInfo } })
 
         if (!civInfo.isCityState()) {
             for (otherCiv in civInfo.getKnownCivs()) {
@@ -91,12 +91,12 @@ class CivInfoTransientUpdater(val civInfo: CivilizationInfo) {
             if (civInfo.naturalWonders.contains(tile.naturalWonder))
                 continue
             civInfo.discoverNaturalWonder(tile.naturalWonder!!)
-            civInfo.addNotification("We have discovered [" + tile.naturalWonder + "]!", tile.position, Color.GOLD)
+            civInfo.addNotification("We have discovered [" + tile.naturalWonder + "]!", tile.position, "StatIcons/Happiness")
 
             var goldGained = 0
             val discoveredNaturalWonders = civInfo.gameInfo.civilizations.filter { it != civInfo && it.isMajorCiv() }
                     .flatMap { it.naturalWonders }
-            if (tile.containsUnique("Grants 500 Gold to the first civilization to discover it")
+            if (tile.hasUnique("Grants 500 Gold to the first civilization to discover it")
                     && !discoveredNaturalWonders.contains(tile.naturalWonder!!)) {
                 goldGained += 500
             }
@@ -109,7 +109,7 @@ class CivInfoTransientUpdater(val civInfo: CivilizationInfo) {
 
             if (goldGained > 0) {
                 civInfo.gold += goldGained
-                civInfo.addNotification("We have received [" + goldGained + "] Gold for discovering [" + tile.naturalWonder + "]", null, Color.GOLD)
+                civInfo.addNotification("We have received [" + goldGained + "] Gold for discovering [" + tile.naturalWonder + "]", NotificationIcon.Gold)
             }
 
         }
@@ -129,11 +129,11 @@ class CivInfoTransientUpdater(val civInfo: CivilizationInfo) {
         if (!initialSetup) { // In the initial setup we're loading an old game state, so it doesn't really count
             for (city in citiesReachedToMediums.keys)
                 if (city !in civInfo.citiesConnectedToCapitalToMediums && city.civInfo == civInfo && city != civInfo.getCapital())
-                    civInfo.addNotification("[${city.name}] has been connected to your capital!", city.location, Color.GOLD)
+                    civInfo.addNotification("[${city.name}] has been connected to your capital!", city.location, NotificationIcon.Gold)
 
             for (city in civInfo.citiesConnectedToCapitalToMediums.keys)
                 if (!citiesReachedToMediums.containsKey(city) && city.civInfo == civInfo)
-                    civInfo.addNotification("[${city.name}] has been disconnected from your capital!", city.location, Color.GOLD)
+                    civInfo.addNotification("[${city.name}] has been disconnected from your capital!", city.location, NotificationIcon.Gold)
         }
 
         civInfo.citiesConnectedToCapitalToMediums = citiesReachedToMediums
@@ -144,17 +144,22 @@ class CivInfoTransientUpdater(val civInfo: CivilizationInfo) {
         for (city in civInfo.cities) newDetailedCivResources.add(city.getCityResources())
 
         if (!civInfo.isCityState()) {
+            var resourceBonusPercentage = 1f
+            for (unique in civInfo.getMatchingUniques("Quantity of Resources gifted by City-States increased by []%"))
+                resourceBonusPercentage += unique.params[0].toFloat() / 100
             for (otherCiv in civInfo.getKnownCivs().filter { it.getAllyCiv() == civInfo.civName }) {
                 for (city in otherCiv.cities) {
-                    newDetailedCivResources.add(city.getCityResourcesForAlly())
+                    for (resourceSupply in city.getCityResources())
+                        newDetailedCivResources.add(resourceSupply.resource,
+                                (resourceSupply.amount * resourceBonusPercentage).toInt(), "City-States")
                 }
             }
         }
 
         for (dip in civInfo.diplomacy.values) newDetailedCivResources.add(dip.resourcesFromTrade())
-        for(resource in civInfo.getCivUnits().mapNotNull { it.baseUnit.requiredResource }
-                .map { civInfo.gameInfo.ruleSet.tileResources[it]!! })
-            newDetailedCivResources.add(resource,-1,"Units")
+        for (unit in civInfo.getCivUnits())
+            for ((resource, amount) in unit.baseUnit.getResourceRequirements())
+                newDetailedCivResources.add(civInfo.gameInfo.ruleSet.tileResources[resource]!!, -amount, "Units")
         civInfo.detailedCivResources = newDetailedCivResources
     }
 }

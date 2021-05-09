@@ -4,12 +4,10 @@ import java.util.*
 plugins {
     id("com.android.application")
     id("kotlin-android")
-    id("kotlin-android-extensions")
 }
 
 android {
-    buildToolsVersion("29.0.2")
-    compileSdkVersion(29)
+    compileSdkVersion(30)
     sourceSets {
         getByName("main").apply {
             manifest.srcFile("AndroidManifest.xml")
@@ -27,7 +25,7 @@ android {
     defaultConfig {
         applicationId = "com.unciv.app"
         minSdkVersion(14)
-        targetSdkVersion(29)
+        targetSdkVersion(30)
         versionCode = BuildConfig.appCodeNumber
         versionName = BuildConfig.appVersion
 
@@ -64,6 +62,10 @@ android {
     }
     lintOptions {
         disable("MissingTranslation")
+    }
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_1_7
+        targetCompatibility = JavaVersion.VERSION_1_7
     }
 }
 
@@ -127,8 +129,8 @@ tasks.register<JavaExec>("run") {
 }
 
 dependencies {
-    implementation("androidx.core:core:1.2.0")
-    implementation("androidx.work:work-runtime-ktx:2.3.2")
+    implementation("androidx.core:core-ktx:1.3.2")
+    implementation("androidx.work:work-runtime-ktx:2.6.0-alpha02")
 }
 
 // sets up the Android Eclipse project, using the old Ant based build.
