@@ -1,3 +1,21 @@
+## 3.14.8
+
+New line-of-sight rules, with new "Blocks line-of-sight from tiles at same elevation" unique!
+
+More FantasyHex combinations (both mine and GGGuenni's)
+
+Fixed terrace farm's 'fresh water' bonus - kudos @1.7.4
+
+By GGGuenni:
+- Fixed inconsistent map size 
+- Fixed Forest on Hill visibility
+
+By SomeTroglodyte:
+- Accelerate Load Game Screen Info 
+- Save game UI patch 
+
+Translations update 
+
 ## 3.14.7
 
 Custom map size  - By alkorolyov
