@@ -135,9 +135,9 @@ class TileMap {
         if (!mapParameters.worldWrap)
             return null
 
-        var radius = mapParameters.size.radius
+        var radius = mapParameters.mapSize.radius
         if (mapParameters.shape == MapShape.rectangular)
-            radius = HexMath.getEquivalentRectangularSize(radius).x.toInt() / 2
+            radius = mapParameters.mapSize.width / 2
 
         //tile is outside of the map
         if (contains(x + radius, y - radius)) { //tile is on right side
@@ -328,9 +328,9 @@ class TileMap {
      * Returns -1 if not neighbors
      */
     fun getNeighborTileClockPosition(tile: TileInfo, otherTile: TileInfo): Int {
-        var radius = mapParameters.size.radius
+        var radius = mapParameters.mapSize.radius
         if (mapParameters.shape == MapShape.rectangular)
-            radius = HexMath.getEquivalentRectangularSize(radius).x.toInt() / 2
+            radius = mapParameters.mapSize.width / 2
 
         val xDifference = tile.position.x - otherTile.position.x
         val yDifference = tile.position.y - otherTile.position.y
@@ -358,9 +358,9 @@ class TileMap {
         if (!contains(position))
             return position //The position is outside the map so its unwrapped already
 
-        var radius = mapParameters.size.radius
+        var radius = mapParameters.mapSize.radius
         if (mapParameters.shape == MapShape.rectangular)
-            radius = HexMath.getEquivalentRectangularSize(radius).x.toInt() / 2
+            radius = mapParameters.mapSize.width / 2
 
         val vectorUnwrappedLeft = Vector2(position.x + radius, position.y - radius)
         val vectorUnwrappedRight = Vector2(position.x - radius, position.y + radius)
