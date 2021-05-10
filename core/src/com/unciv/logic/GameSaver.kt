@@ -38,18 +38,12 @@ object GameSaver {
         return localSaves + Gdx.files.absolute(externalFilesDirForAndroid + "/${getSubfolder(multiplayer)}").list().asSequence()
     }
 
-    fun saveGame(game: GameInfo, GameName: String, multiplayer: Boolean = false, forcePrompt: Boolean = false, saveCompletionCallback: ((Exception?) -> Unit)? = null) {
-        val customSaveLocation = game.customSaveLocation
-        val customSaveLocationHelper = this.customSaveLocationHelper
-        if (customSaveLocation != null && customSaveLocationHelper != null) {
-            customSaveLocationHelper.saveGame(game, GameName, forcePrompt, saveCompletionCallback)
-        } else {
-            try {
-                json().toJson(game, getSave(GameName, multiplayer))
-                saveCompletionCallback?.invoke(null)
-            } catch (ex: Exception) {
-                saveCompletionCallback?.invoke(ex)
-            }
+    fun saveGame(game: GameInfo, GameName: String, multiplayer: Boolean = false, saveCompletionCallback: ((Exception?) -> Unit)? = null) {
+        try {
+            json().toJson(game, getSave(GameName, multiplayer))
+            saveCompletionCallback?.invoke(null)
+        } catch (ex: Exception) {
+            saveCompletionCallback?.invoke(ex)
         }
     }
 
@@ -134,13 +128,13 @@ object GameSaver {
         thread(name = "Autosave") {
             autoSaveSingleThreaded(gameInfoClone)
             // do this on main thread
-            Gdx.app.postRunnable {
-                postRunnable()
-            }
+            Gdx.app.postRunnable ( postRunnable )
         }
     }
 
     fun autoSaveSingleThreaded(gameInfo: GameInfo) {
+/*
+        ... out of order until further notice, see #3898
         // If the user has chosen a custom save location outside of the usual game directories,
         // they'll probably expect us to overwrite that instead. E.g. if the user is saving their
         // game to their Google Drive folder, they'll probably want that progress to be synced to
@@ -151,6 +145,8 @@ object GameSaver {
             saveGame(gameInfo, "", false)
             return
         }
+*/
+
         saveGame(gameInfo, "Autosave")
 
         // keep auto-saves for the last 10 turns for debugging purposes
