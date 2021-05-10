@@ -1,6 +1,5 @@
 package com.unciv.logic
 
-import com.badlogic.gdx.graphics.Color
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.automation.NextTurnAutomation
@@ -392,4 +391,15 @@ class GameInfo {
             cityConstructions.inProgressConstructions.remove(oldBuildingName)
         }
     }
+}
+
+// reduced variant only for load preview
+class GameInfoPreview {
+    var civilizations = mutableListOf<CivilizationInfoPreview>()
+    var difficulty = "Chieftain"
+    var gameParameters = GameParameters()
+    var turns = 0
+    var gameId = ""
+    var currentPlayer = ""
+    fun getCivilization(civName: String) = civilizations.first { it.civName == civName }
 }

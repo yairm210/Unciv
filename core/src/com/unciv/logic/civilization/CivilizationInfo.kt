@@ -681,3 +681,11 @@ class CivilizationInfo {
 
     //endregion
 }
+
+// reduced variant only for load preview
+class CivilizationInfoPreview {
+    var civName = ""
+    var playerType = PlayerType.AI
+    var playerId = ""
+    fun isPlayerCivilization() = playerType == PlayerType.Human
+}

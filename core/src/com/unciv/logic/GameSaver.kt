@@ -4,9 +4,7 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.utils.Json
 import com.unciv.UncivGame
-import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.metadata.GameSettings
-import com.unciv.ui.utils.ImageGetter
 import java.io.File
 import kotlin.concurrent.thread
 
@@ -66,6 +64,10 @@ object GameSaver {
         val game = json().fromJson(GameInfo::class.java, gameFile)
         game.setTransients()
         return game
+    }
+
+    fun loadGamePreviewFromFile(gameFile: FileHandle): GameInfoPreview {
+        return json().fromJson(GameInfoPreview::class.java, gameFile)
     }
 
     fun loadGameFromCustomLocation(loadCompletionCallback: (GameInfo?, Exception?) -> Unit) {
