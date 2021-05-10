@@ -24,6 +24,7 @@ class MapSizeNew {
 
     constructor(name: String) {
         /** Hard coded values from getEquivalentRectangularSize() */
+        this.name = name
         when (name) {
             Constants.tiny -> { radius = 10; width = 23; height = 15 }
             Constants.small -> { radius = 15; width = 33; height = 21 }
