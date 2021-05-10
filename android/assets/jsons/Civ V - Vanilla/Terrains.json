@@ -100,7 +100,7 @@
 		"defenceBonus": 0.25,
 		"occursOn": ["Tundra","Plains","Grassland","Hill"],
 		"uniques": ["Provides a one-time Production bonus to the closest city when cut down", "Rough terrain",
-			"Has an elevation of [1] for visibility calculations"]
+			"Blocks line-of-sight from tiles at same elevation"]
 	},
 	{
 		"name": "Jungle",
@@ -111,7 +111,7 @@
 		"unbuildable": true,
 		"defenceBonus": 0.25,
 		"occursOn": ["Plains","Grassland"],
-		"uniques": ["Rough terrain", "Has an elevation of [1] for visibility calculations"]
+		"uniques": ["Rough terrain", "Blocks line-of-sight from tiles at same elevation"]
 	},
 	{
 		"name": "Marsh",

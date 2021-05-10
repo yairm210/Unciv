@@ -226,32 +226,38 @@ class TileMap {
             // that is to say, the "viewableTiles.contains(it) check will return false for neighbors from the same distance
             val tilesToAddInDistanceI = ArrayList<TileInfo>()
 
-            for (tile in getTilesAtDistance(position, i)) { // for each tile in that layer,
-                val targetTileHeight = tile.getHeight()
+            for (cTile in getTilesAtDistance(position, i)) { // for each tile in that layer,
+                val cTileHeight = cTile.getHeight()
 
                 /*
             Okay so, if we're looking at a tile from a to c with b in the middle,
             we have several scenarios:
             1. a>b -  - I can see everything, b does not hide c
             2. a==b
-                2.1 a==b==0, all flat ground, no hiding
-                2.2 a>0, b>=c - b hides c from view (say I am in a forest/jungle and b is a forest/jungle, or hill)
-                2.3 a>0, c>b - c is tall enough I can see it over b!
+                2.1 c>b - c is tall enough I can see it over b!
+                2.2 b blocks view from same-elevation tiles - hides c
+                2.3 none of the above - I can see c
             3. a<b
                 3.1 b>=c - b hides c
                 3.2 b<c - c is tall enough I can see it over b!
 
-            This can all be summed up as "I can see c if a>b || c>b || b==0 "
+            This can all be summed up as "I can see c if a>b || c>b || (a==b && b !blocks same-elevation view)"
             */
 
-                val containsViewableNeighborThatCanSeeOver = tile.neighbors.any {
-                    val neighborHeight = it.getHeight()
-                    viewableTiles.contains(it) && (
-                            currentTileHeight > neighborHeight // a>b
-                                    || targetTileHeight > neighborHeight // c>b
-                                    || neighborHeight == 0) // b==0
+                val containsViewableNeighborThatCanSeeOver = cTile.neighbors.any {
+                        bNeighbor: TileInfo ->
+                    val bNeighborHeight = bNeighbor.getHeight()
+                    if(cTile.resource=="Marble"
+                        && bNeighbor.terrainFeatures.contains("Forest")
+                    )
+                        println()
+                    viewableTiles.contains(bNeighbor) && (
+                            currentTileHeight > bNeighborHeight // a>b
+                                    || cTileHeight > bNeighborHeight // c>b
+                                    || currentTileHeight == bNeighborHeight // a==b
+                                        && !bNeighbor.hasUnique("Blocks line-of-sight from tiles at same elevation"))
                 }
-                if (containsViewableNeighborThatCanSeeOver) tilesToAddInDistanceI.add(tile)
+                if (containsViewableNeighborThatCanSeeOver) tilesToAddInDistanceI.add(cTile)
             }
             viewableTiles.addAll(tilesToAddInDistanceI)
         }
