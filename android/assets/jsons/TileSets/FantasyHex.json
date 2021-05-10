@@ -90,5 +90,6 @@
         "Grassland+Forest+Ancient ruins": ["Grassland","Ancient ruins", "GrasslandForest"],
         "Grassland+Cattle+Ancient ruins": ["Grassland","Ancient ruins","Cattle"],
         "Grassland+Sheep+Ancient ruins": ["Grassland","Ancient ruins","Sheep"],
+        "Coast+Oil+Oil well": ["Coast","Offshore Platform"]
     }
 }
