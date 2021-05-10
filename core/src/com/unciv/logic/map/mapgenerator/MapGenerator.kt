@@ -169,7 +169,7 @@ class MapGenerator(val ruleset: Ruleset) {
                     .filter { it.terrainsCanBeFoundOn.contains(tile.getLastTerrain().name) }
                     .map { it.name }
             if (possibleResources.isEmpty()) continue
-            val resourceWithLeastAssignments = possibleResources.minBy { resourceToNumber[it]!! }!!
+            val resourceWithLeastAssignments = possibleResources.minByOrNull { resourceToNumber[it]!! }!!
             resourceToNumber.add(resourceWithLeastAssignments, 1)
             tile.resource = resourceWithLeastAssignments
         }

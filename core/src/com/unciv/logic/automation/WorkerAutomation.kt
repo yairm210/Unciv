@@ -3,6 +3,7 @@ package com.unciv.logic.automation
 import com.badlogic.gdx.graphics.Color
 import com.unciv.Constants
 import com.unciv.UncivGame
+import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.BFS
 import com.unciv.logic.map.MapUnit
@@ -289,11 +290,11 @@ class WorkerAutomation(val unit: MapUnit) {
         enemyCivsIsCloseEnough.forEach { enemyCities.addAll(it.cities.map { city -> city.getCenterTile() }) }
 
         // find closest enemy city
-        val closestEnemyCity = enemyCities.minBy { it.aerialDistanceTo(tile) }!!
+        val closestEnemyCity = enemyCities.minByOrNull { it.aerialDistanceTo(tile) }!!
         val distanceToEnemy = tile.aerialDistanceTo(closestEnemyCity)
 
         // find closest our city to defend from this enemy city
-        val closestOurCity = civInfo.cities.minBy { it.getCenterTile().aerialDistanceTo(tile) }!!.getCenterTile()
+        val closestOurCity = civInfo.cities.minByOrNull { it.getCenterTile().aerialDistanceTo(tile) }!!.getCenterTile()
         val distanceToOurCity = tile.aerialDistanceTo(closestOurCity)
 
         val distanceBetweenCities = closestEnemyCity.aerialDistanceTo(closestOurCity)

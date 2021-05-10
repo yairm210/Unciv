@@ -136,14 +136,17 @@ object BattleHelper {
 
         var enemyTileToAttack: AttackableTile? = null
         val capturableCity = cityTilesToAttack.firstOrNull { it.tileToAttack.getCity()!!.health == 1 }
-        val cityWithHealthLeft = cityTilesToAttack.filter { it.tileToAttack.getCity()!!.health != 1 } // don't want ranged units to attack defeated cities
-                .minBy { it.tileToAttack.getCity()!!.health }
+        val cityWithHealthLeft =
+            cityTilesToAttack.filter { it.tileToAttack.getCity()!!.health != 1 } // don't want ranged units to attack defeated cities
+                .minByOrNull { it.tileToAttack.getCity()!!.health }
 
         if (unit.type.isMelee() && capturableCity != null)
             enemyTileToAttack = capturableCity // enter it quickly, top priority!
 
         else if (nonCityTilesToAttack.isNotEmpty()) // second priority, units
-            enemyTileToAttack = nonCityTilesToAttack.minBy { Battle.getMapCombatantOfTile(it.tileToAttack)!!.getHealth() }
+            enemyTileToAttack = nonCityTilesToAttack.minByOrNull {
+                Battle.getMapCombatantOfTile(it.tileToAttack)!!.getHealth()
+            }
         else if (cityWithHealthLeft != null) enemyTileToAttack = cityWithHealthLeft // third priority, city
 
         return enemyTileToAttack

@@ -55,7 +55,10 @@ class RiverGenerator(val randomness: MapGenerationRandomness) {
                     .filter { map.contains(it.position) }
             if (possibleCoordinates.none()) return // end of the line
             val newCoordinate = possibleCoordinates
-                    .groupBy { getAdjacentTiles(it, map).map { it.aerialDistanceTo(endPosition) }.min()!! }
+                    .groupBy {
+                        getAdjacentTiles(it, map).map { it.aerialDistanceTo(endPosition) }
+                            .minOrNull()!!
+                    }
                     .minBy { it.key }!!
                     .component2().random(randomness.RNG)
 

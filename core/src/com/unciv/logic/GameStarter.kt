@@ -9,6 +9,7 @@ import com.unciv.logic.map.mapgenerator.MapGenerator
 import com.unciv.models.metadata.GameParameters
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
+import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.ui.newgamescreen.GameSetupInfo
 import java.util.*
 import kotlin.collections.ArrayList
@@ -155,7 +156,7 @@ object GameStarter {
                         && it.unitType.isLandUnit()
                         && !it.unitType.isCivilian()
             }
-            return availableMilitaryUnits.maxBy { max(it.strength, it.rangedStrength) }?.name
+            return availableMilitaryUnits.maxByOrNull { max(it.strength, it.rangedStrength) }?.name
         }
         // no starting units for Barbarians and Spectators
         for (civ in gameInfo.civilizations.filter { !it.isBarbarian() && !it.isSpectator() }) {

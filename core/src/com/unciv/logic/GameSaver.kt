@@ -161,7 +161,7 @@ object GameSaver {
             return getSaves().filter { it.name().startsWith("Autosave") }
         }
         while (getAutosaves().count() > 10) {
-            val saveToDelete = getAutosaves().minBy { it.lastModified() }!!
+            val saveToDelete = getAutosaves().minByOrNull { it: FileHandle -> it.lastModified() }!!
             deleteSave(saveToDelete.name())
         }
     }
