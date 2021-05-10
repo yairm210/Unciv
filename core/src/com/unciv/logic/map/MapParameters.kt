@@ -23,8 +23,8 @@ class MapSizeNew {
     constructor()
 
     constructor(name: String) {
-        /** Hard coded values from getEquivalentRectangularSize() */
         this.name = name
+        /** Hard coded values from getEquivalentRectangularSize() */
         when (name) {
             Constants.tiny -> { radius = 10; width = 23; height = 15 }
             Constants.small -> { radius = 15; width = 33; height = 21 }
@@ -33,6 +33,7 @@ class MapSizeNew {
             Constants.huge -> { radius = 40; width = 87; height = 57 }
         }
     }
+
     constructor(radius: Int) {
         name = Constants.custom
         this.radius = radius
@@ -48,8 +49,6 @@ class MapSizeNew {
         this.radius = getEquivalentHexagonalRadius(width, height)
 
     }
-
-
 }
 
 object MapShape {
