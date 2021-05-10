@@ -63,7 +63,6 @@ class TileMap {
     }
 
     fun clone(): TileMap {
-        println(mapParameters.mapSize.radius)
         val toReturn = TileMap()
         toReturn.tileList.addAll(tileList.map { it.clone() })
         toReturn.mapParameters = mapParameters
