@@ -1,6 +1,5 @@
 package com.unciv.logic.battle
 
-import com.unciv.Constants
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.TileInfo

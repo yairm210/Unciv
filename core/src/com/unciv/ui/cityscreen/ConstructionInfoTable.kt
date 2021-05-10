@@ -8,7 +8,6 @@ import com.unciv.logic.city.PerpetualConstruction
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.translations.tr
-import com.unciv.ui.utils.Fonts
 import com.unciv.ui.utils.ImageGetter
 import com.unciv.ui.utils.surroundWithCircle
 import com.unciv.ui.utils.toLabel

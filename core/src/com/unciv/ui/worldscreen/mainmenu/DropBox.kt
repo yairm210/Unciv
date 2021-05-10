@@ -3,17 +3,13 @@ package com.unciv.ui.worldscreen.mainmenu
 import com.badlogic.gdx.files.FileHandle
 import com.unciv.logic.GameInfo
 import com.unciv.logic.GameSaver
-import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.ui.saves.Gzip
 import java.io.*
 import java.net.HttpURLConnection
 import java.net.URL
 import java.nio.charset.Charset
-import java.time.DateTimeException
-import java.util.*
 import java.util.zip.ZipEntry
 import java.util.zip.ZipFile
-import kotlin.collections.ArrayList
 
 
 object DropBox {

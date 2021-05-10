@@ -1,6 +1,5 @@
 package com.unciv.logic.battle
 
-import com.badlogic.gdx.graphics.Color
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.city.CityInfo
@@ -14,7 +13,6 @@ import com.unciv.logic.map.TileInfo
 import com.unciv.models.AttackableTile
 import com.unciv.models.ruleset.Unique
 import com.unciv.models.ruleset.unit.UnitType
-import com.unciv.ui.utils.ImageGetter
 import java.util.*
 import kotlin.math.max
 

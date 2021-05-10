@@ -7,8 +7,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.scenes.scene2d.ui.TextField
 import com.badlogic.gdx.utils.Json
-import com.unciv.MainMenuScreen
-import com.unciv.UncivGame
 import com.unciv.logic.MapSaver
 import com.unciv.logic.map.MapType
 import com.unciv.logic.map.TileMap

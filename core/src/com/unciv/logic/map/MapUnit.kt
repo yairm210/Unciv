@@ -192,28 +192,32 @@ class MapUnit {
             viewableTiles = if (hasUnique("6 tiles in every direction always visible"))
                 getTile().getTilesInDistance(6).toList()  // it's that simple
             else listOf() // bomber units don't do recon
-        } else {
-            var visibilityRange = 2
-            visibilityRange += getUniques().count { it.text == "+1 Visibility Range" }
-            for (unique in civInfo.getMatchingUniques("+[] Sight for all [] units"))
-                if (matchesFilter(unique.params[1]))
-                    visibilityRange += unique.params[0].toInt()
-            if (hasUnique("+2 Visibility Range")) visibilityRange += 2 // This shouldn't be stackable
-            if (hasUnique("Limited Visibility")) visibilityRange -= 1
-            if (civInfo.hasUnique("+1 Sight for all land military units") && type.isMilitary() && type.isLandUnit())
-                visibilityRange += 1
-            if (type.isWaterUnit() && !type.isCivilian()
-                    && civInfo.hasUnique("All military naval units receive +1 movement and +1 sight"))
-                visibilityRange += 1
-            if (isEmbarked() && civInfo.hasUnique("+1 Sight when embarked"))
-                visibilityRange += 1
-            val tile = getTile()
-            for (unique in tile.getAllTerrains().flatMap { it.uniqueObjects })
-                if (unique.placeholderText == "[] Sight for [] units" && matchesFilter(unique.params[1]))
-                    visibilityRange += unique.params[0].toInt()
-
-            viewableTiles = tile.getViewableTilesList(visibilityRange)
+            civInfo.updateViewableTiles() // for the civ
+            return
         }
+
+        var visibilityRange = 2
+        visibilityRange += getUniques().count { it.text == "+1 Visibility Range" }
+        for (unique in civInfo.getMatchingUniques("+[] Sight for all [] units"))
+            if (matchesFilter(unique.params[1]))
+                visibilityRange += unique.params[0].toInt()
+        if (hasUnique("+2 Visibility Range")) visibilityRange += 2 // This shouldn't be stackable
+        if (hasUnique("Limited Visibility")) visibilityRange -= 1
+        if (civInfo.hasUnique("+1 Sight for all land military units") && type.isMilitary() && type.isLandUnit())
+            visibilityRange += 1
+        if (type.isWaterUnit() && !type.isCivilian()
+            && civInfo.hasUnique("All military naval units receive +1 movement and +1 sight")
+        )
+            visibilityRange += 1
+        if (isEmbarked() && civInfo.hasUnique("+1 Sight when embarked"))
+            visibilityRange += 1
+        val tile = getTile()
+        for (unique in tile.getAllTerrains().flatMap { it.uniqueObjects })
+            if (unique.placeholderText == "[] Sight for [] units" && matchesFilter(unique.params[1]))
+                visibilityRange += unique.params[0].toInt()
+
+        viewableTiles = tile.getViewableTilesList(visibilityRange)
+
         civInfo.updateViewableTiles() // for the civ
     }
 

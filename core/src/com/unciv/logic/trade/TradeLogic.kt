@@ -3,10 +3,8 @@ package com.unciv.logic.trade
 import com.unciv.Constants
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
-import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.models.ruleset.ModOptionsConstants
 import com.unciv.models.ruleset.tile.ResourceType
-import com.unciv.models.translations.tr
 
 class TradeLogic(val ourCivilization:CivilizationInfo, val otherCivilization: CivilizationInfo) {
 

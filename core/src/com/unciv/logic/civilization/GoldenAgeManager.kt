@@ -1,7 +1,5 @@
 package com.unciv.logic.civilization
 
-import com.badlogic.gdx.graphics.Color
-
 class GoldenAgeManager {
     @Transient
     lateinit var civInfo: CivilizationInfo

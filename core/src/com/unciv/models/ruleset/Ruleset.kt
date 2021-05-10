@@ -4,9 +4,7 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.files.FileHandle
 import com.unciv.JsonParser
 import com.unciv.logic.UncivShowableException
-import com.unciv.models.Counter
 import com.unciv.models.metadata.BaseRuleset
-import com.unciv.models.metadata.GameParameters
 import com.unciv.models.ruleset.tech.TechColumn
 import com.unciv.models.ruleset.tech.Technology
 import com.unciv.models.ruleset.tile.Terrain

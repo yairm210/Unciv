@@ -1,7 +1,5 @@
 package com.unciv.ui.worldscreen
 
-import com.unciv.ui.utils.AutoScrollPane as ScrollPane
-import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.Constants
 import com.unciv.logic.civilization.NotificationIcon
@@ -13,11 +11,11 @@ import com.unciv.logic.trade.TradeType
 import com.unciv.models.translations.tr
 import com.unciv.ui.trade.DiplomacyScreen
 import com.unciv.ui.utils.Popup
-import com.unciv.ui.utils.addSeparator
 import com.unciv.ui.utils.disable
 import com.unciv.ui.utils.toLabel
 import kotlin.math.max
 import kotlin.math.min
+import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 
 class TradePopup(worldScreen: WorldScreen): Popup(worldScreen){
     val viewingCiv = worldScreen.viewingCiv

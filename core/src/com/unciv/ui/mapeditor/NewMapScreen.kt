@@ -3,11 +3,9 @@ package com.unciv.ui.mapeditor
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.MainMenuScreen
-import com.unciv.UncivGame
-import com.unciv.logic.map.mapgenerator.MapGenerator
 import com.unciv.logic.map.MapParameters
 import com.unciv.logic.map.TileMap
-import com.unciv.models.metadata.GameParameters
+import com.unciv.logic.map.mapgenerator.MapGenerator
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.translations.tr
 import com.unciv.ui.newgamescreen.MapParametersTable
