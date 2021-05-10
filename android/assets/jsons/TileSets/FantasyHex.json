@@ -1,9 +1,11 @@
 {
     "useColorAsBaseTerrain": "false",
     "ruleVariants": {
+        //Legacy hill support
         "Hill": ["Grassland","Hill"],
-		
         "Hill+Forest+Uranium": ["Grassland","Hill","Uranium","Forest"],
+        "Hill+Forest+Furs": ["Grassland","Hill","Furs","HillForest"],
+        "Hill+Forest+Deer": ["Grassland","Hill","Deer","HillForest"],
 		
         //Special forest and jungle
         "Grassland+Forest": ["Grassland","GrasslandForest"],
@@ -84,8 +86,6 @@
         "Tundra+Hill+Forest+Uranium": ["Tundra","Hill","Uranium","TundraForest"],
         "Tundra+Hill+Forest+Furs": ["Tundra","Hill","Furs","TundraForest"],
         "Tundra+Hill+Forest+Deer": ["Tundra","Hill","Deer","TundraForest"],
-        "Hill+Forest+Furs": ["Grassland","Hill","Furs","HillForest"],
-        "Hill+Forest+Deer": ["Grassland","Hill","Deer","HillForest"],
 		
         "Grassland+Forest+Ancient ruins": ["Grassland","Ancient ruins", "GrasslandForest"],
         "Grassland+Cattle+Ancient ruins": ["Grassland","Ancient ruins","Cattle"],
