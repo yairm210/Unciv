@@ -34,7 +34,7 @@ class TradeTable(val otherCivilization: CivilizationInfo, stage: DiplomacyScreen
             offerColumnsTable.update()
         }
 
-        if(isTradeOffered()) offerButton.setText("Retract offer".tr()) // todo translation
+        if(isTradeOffered()) offerButton.setText("Retract offer".tr())
         else offerButton.setText("Offer trade".tr())
 
         offerButton.onClick {

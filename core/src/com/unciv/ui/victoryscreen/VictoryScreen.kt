@@ -56,7 +56,7 @@ class VictoryScreen(val worldScreen: WorldScreen) : PickerScreen() {
             someoneHasWon = true
             when (playerVictoryType) {
                 VictoryType.Cultural -> wonOrLost("You have won a cultural victory!")
-                VictoryType.Domination -> wonOrLost("You have won a domination victory!") // todo change translation
+                VictoryType.Domination -> wonOrLost("You have won a domination victory!")
                 VictoryType.Scientific -> wonOrLost("You have won a scientific victory!")
                 VictoryType.Neutral -> wonOrLost("You have won!")
             }

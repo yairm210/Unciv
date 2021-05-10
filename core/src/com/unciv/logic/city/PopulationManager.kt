@@ -71,9 +71,6 @@ class PopulationManager {
     private fun getStatsOfSpecialist(name: String) = cityInfo.cityStats.getStatsOfSpecialist(name)
 
 
-    // todo - change tile choice according to city!
-    // if small city, favor production above all, ignore gold!
-    // if larger city, food should be worth less!
     internal fun autoAssignPopulation(foodWeight: Float = 1f) {
         for (i in 1..getFreePopulation()) {
             //evaluate tiles

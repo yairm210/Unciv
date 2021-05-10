@@ -49,7 +49,7 @@ import kotlin.concurrent.timer
 
 class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
 
-    var isPlayersTurn = viewingCiv == gameInfo.currentPlayerCiv // todo this should be updated when passing turns
+    var isPlayersTurn = viewingCiv == gameInfo.currentPlayerCiv
     var selectedCiv = viewingCiv // Selected civilization, used in spectator and replay mode, equals viewingCiv in ordinary games
     private var fogOfWar = true
     val canChangeState = isPlayersTurn && !viewingCiv.isSpectator()
