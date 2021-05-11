@@ -2,13 +2,14 @@ package com.unciv.ui.worldscreen
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.Batch
-import com.badlogic.gdx.math.MathUtils
+import com.badlogic.gdx.math.Rectangle
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.badlogic.gdx.scenes.scene2d.utils.Drawable
 import com.badlogic.gdx.utils.Align
 import com.unciv.UncivGame
 import com.unciv.logic.HexMath
@@ -21,10 +22,10 @@ import com.unciv.ui.utils.surroundWithCircle
 import kotlin.math.max
 import kotlin.math.min
 
-class Minimap(val mapHolder: WorldMapHolder) : Table(){
+class Minimap(val mapHolder: WorldMapHolder, minimapSize: Int) : Table(){
     private val allTiles = Group()
     private val tileImages = HashMap<TileInfo, Image>()
-    private val scrollPosistionIndicator = ImageGetter.getImage("OtherIcons/Camera")
+    private val scrollPositionIndicator = ClippingImage(ImageGetter.getDrawable("OtherIcons/Camera"))
 
     init {
         isTransform = false // don't try to resize rotate etc - this table has a LOT of children so that's valuable render time!
@@ -38,14 +39,13 @@ class Minimap(val mapHolder: WorldMapHolder) : Table(){
         val maxHexRow = mapHolder.tileMap.values.asSequence().map { hexRow(it.position) }.maxOrNull()!!
         val minHexRow = mapHolder.tileMap.values.asSequence().map { hexRow(it.position) }.minOrNull()!!
         val totalHexRows = maxHexRow - minHexRow
+        val groupSize = (minimapSize + 1) * 200f / totalHexRows
 
         for (tileInfo in mapHolder.tileMap.values) {
             val hex = ImageGetter.getImage("OtherIcons/Hexagon")
 
             val positionalVector = HexMath.hex2WorldCoords(tileInfo.position)
 
-
-            val groupSize = 400f / totalHexRows
             hex.setSize(groupSize, groupSize)
             hex.setPosition(positionalVector.x * 0.5f * groupSize,
                     positionalVector.y * 0.5f * groupSize)
@@ -69,26 +69,37 @@ class Minimap(val mapHolder: WorldMapHolder) : Table(){
         // so we zero out the starting position of the whole board so they will be displayed as well
         allTiles.setSize(topX - bottomX, topY - bottomY)
 
-        scrollPosistionIndicator.touchable = Touchable.disabled
-        allTiles.addActor(scrollPosistionIndicator)
+        scrollPositionIndicator.touchable = Touchable.disabled
+        allTiles.addActor(scrollPositionIndicator)
 
         add(allTiles)
         layout()
     }
 
-    fun updateScrollPosistion(scrollPos: Vector2, scale: Vector2){
+    /**### Transform and set coordinates for the scrollPositionIndicator.
+     *
+     *  Relies on the [MiniMap]'s copy of the main [WorldMapHolder] as input.
+     *
+     *  Requires [scrollPositionIndicator] to be a [ClippingImage] to keep the displayed portion of the indicator within the bounds of the minimap.
+     */
+    fun updateScrollPosition() {
+        // Only mapHolder.scrollX/Y and mapHolder.scaleX/Y change. scrollX/Y will range from 0 to mapHolder.maxX/Y,
+        // with all extremes centering the corresponding map edge on screen. Y axis is 0 top, maxY bottom.
+        // Visible area relative to this coordinate system seems to be mapHolder.width/2 * mapHolder.height/2.
+        // Minimap coordinates are measured from the allTiles Group, which is a bounding box over the entire map, and (0,0) @ lower left.
 
-        val scrollPosistionIndicatorBaseScale = Vector2(allTiles.width / mapHolder.maxX, allTiles.height / mapHolder.maxY)
+        // Helpers for readability - each single use, but they should help explain the logic
+        operator fun Rectangle.times(other:Vector2) = Rectangle(x * other.x, y * other.y, width * other.x, height * other.y)
+        fun Vector2.centeredRectangle(size: Vector2) = Rectangle(x - size.x/2, y - size.y/2, size.x, size.y)
+        fun Rectangle.invertY(max: Float) = Rectangle(x, max - height - y, width, height)
+        fun Actor.setViewport(rect: Rectangle) { x = rect.x; y = rect.y; width = rect.width; height = rect.height }
 
-        scrollPosistionIndicator.scaleX = scrollPosistionIndicatorBaseScale.x * 10f * max(2f - scale.x, 0.25f)
-        scrollPosistionIndicator.scaleY = scrollPosistionIndicatorBaseScale.y * 10f * max(2f - scale.y, 0.25f)
-
-        val scrollPositionIndicatorOffset = Vector2(-50f * scrollPosistionIndicator.scaleX, 125f + (50f * (1-scrollPosistionIndicator.scaleY)))
-
-        val scrollPosOnMinimap = Vector2((scrollPos.x / mapHolder.maxX) * allTiles.width, (scrollPos.y / mapHolder.maxY) * allTiles.height)
-        scrollPosOnMinimap.x = MathUtils.clamp(scrollPosOnMinimap.x, -scrollPositionIndicatorOffset.x, allTiles.width + scrollPositionIndicatorOffset.x)
-        scrollPosOnMinimap.y = MathUtils.clamp(scrollPosOnMinimap.y, -scrollPositionIndicatorOffset.x, scrollPositionIndicatorOffset.y)
-        scrollPosistionIndicator.setPosition(scrollPositionIndicatorOffset.x + scrollPosOnMinimap.x, scrollPositionIndicatorOffset.y - scrollPosOnMinimap.y)
+        val worldToMiniFactor = Vector2(allTiles.width / mapHolder.maxX, allTiles.height / mapHolder.maxY)
+        val worldVisibleArea = Vector2(mapHolder.width / 2 / mapHolder.scaleX, mapHolder.height / 2 / mapHolder.scaleY)
+        val worldViewport = Vector2(mapHolder.scrollX, mapHolder.scrollY).centeredRectangle(worldVisibleArea)
+        val miniViewport = worldViewport.invertY(mapHolder.maxY) * worldToMiniFactor
+        // This _could_ place parts of the 'camera' icon outside the minimap if it were a standard Image, thus the ClippingImage helper class
+        scrollPositionIndicator.setViewport(miniViewport)
     }
 
     private class CivAndImage(val civInfo: CivilizationInfo, val image: IconCircleGroup)
@@ -118,18 +129,28 @@ class Minimap(val mapHolder: WorldMapHolder) : Table(){
     }
 }
 
-class MinimapHolder(mapHolder: WorldMapHolder): Table() {
-    val minimap = Minimap(mapHolder)
-    val worldScreen = mapHolder.worldScreen
+class MinimapHolder(val mapHolder: WorldMapHolder): Table() {
+    private val worldScreen = mapHolder.worldScreen
+    private var minimapSize = Int.MIN_VALUE
+    lateinit var minimap: Minimap
 
-    var yieldImageButton: Actor? = null
-    var populationImageButton: Actor? = null
-    var resourceImageButton: Actor? = null
+    private var yieldImageButton: Actor? = null
+    private var populationImageButton: Actor? = null
+    private var resourceImageButton: Actor? = null
 
     init {
+        rebuildIfSizeChanged()
+    }
+    private fun rebuildIfSizeChanged() {
+        val newMinimapSize = worldScreen.game.settings.minimapSize
+        if (newMinimapSize == minimapSize) return
+        minimapSize = newMinimapSize
+        this.clear()
+        minimap = Minimap(mapHolder, minimapSize)
         add(getToggleIcons()).align(Align.bottom)
         add(getWrappedMinimap())
         pack()
+        if (stage != null) x = stage.width - width
     }
 
     private fun getWrappedMinimap(): Table {
@@ -192,12 +213,15 @@ class MinimapHolder(mapHolder: WorldMapHolder): Table() {
     }
 
     fun update(civInfo: CivilizationInfo) {
+        rebuildIfSizeChanged()
         isVisible = UncivGame.Current.settings.showMinimap
-        minimap.update(civInfo)
-        with(UncivGame.Current.settings) {
-            yieldImageButton?.color?.a = if (showTileYields) 1f else 0.5f
-            populationImageButton?.color?.a = if (showWorkedTiles) 1f else 0.5f
-            resourceImageButton?.color?.a = if (showResourcesAndImprovements) 1f else 0.5f
+        if (isVisible) {
+            minimap.update(civInfo)
+            with(UncivGame.Current.settings) {
+                yieldImageButton?.color?.a = if (showTileYields) 1f else 0.5f
+                populationImageButton?.color?.a = if (showWorkedTiles) 1f else 0.5f
+                resourceImageButton?.color?.a = if (showResourcesAndImprovements) 1f else 0.5f
+            }
         }
     }
 
@@ -205,5 +229,17 @@ class MinimapHolder(mapHolder: WorldMapHolder): Table() {
     // For debugging purposes
     override fun draw(batch: Batch?, parentAlpha: Float) {
         super.draw(batch, parentAlpha)
+    }
+}
+
+private class ClippingImage(drawable: Drawable) : Image(drawable) {
+    // https://stackoverflow.com/questions/29448099/make-actor-clip-child-image
+    override fun draw(batch: Batch, parentAlpha: Float) {
+        batch.flush()
+        if (clipBegin(0f,0f, parent.width, parent.height)) {
+            super.draw(batch, parentAlpha)
+            batch.flush()
+            clipEnd()
+        }
     }
 }
