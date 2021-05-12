@@ -336,7 +336,8 @@ open class TileInfo {
             getOwner() != civInfo && !(
                     improvement.hasUnique("Can be built outside your borders")
                             // citadel can be built only next to or within own borders
-                            || improvement.hasUnique("Can be built just outside your borders") && neighbors.any { it.getOwner() == civInfo }
+                            || improvement.hasUnique("Can be built just outside your borders")
+                                && neighbors.any { it.getOwner() == civInfo } && !civInfo.cities.isEmpty()
                     ) -> false
             improvement.uniqueObjects.any {
                 it.placeholderText == "Obsolete with []" && civInfo.tech.isResearched(it.params[0])
