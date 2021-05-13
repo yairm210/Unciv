@@ -46,7 +46,7 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
 
     init {
         if (Gdx.app.type == Application.ApplicationType.Desktop) this.setFlingTime(0f)
-        continousScrollingX = tileMap.mapParameters.worldWrap
+        continuousScrollingX = tileMap.mapParameters.worldWrap
     }
 
     // Used to transfer data on the "move here" button that should be created, from the side thread to the main thread
@@ -55,11 +55,11 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
     internal fun addTiles() {
         val tileSetStrings = TileSetStrings()
         val daTileGroups = tileMap.values.map { WorldTileGroup(worldScreen, it, tileSetStrings) }
-        val tileGroupMap = TileGroupMap(daTileGroups, worldScreen.stage.width, worldScreen.stage.height, continousScrollingX)
+        val tileGroupMap = TileGroupMap(daTileGroups, worldScreen.stage.width, worldScreen.stage.height, continuousScrollingX)
         val mirrorTileGroups = tileGroupMap.getMirrorTiles()
 
         for (tileGroup in daTileGroups) {
-            if (continousScrollingX) {
+            if (continuousScrollingX) {
                 val mirrorTileGroupLeft = mirrorTileGroups[tileGroup.tileInfo]!!.first
                 val mirrorTileGroupRight = mirrorTileGroups[tileGroup.tileInfo]!!.second
 

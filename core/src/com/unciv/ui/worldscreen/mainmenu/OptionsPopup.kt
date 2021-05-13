@@ -4,7 +4,7 @@ import com.badlogic.gdx.Application
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.*
-import com.badlogic.gdx.utils.Array
+import com.badlogic.gdx.utils.Array as GdxArray
 import com.unciv.MainMenuScreen
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.models.UncivSound
@@ -16,6 +16,7 @@ import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.WorldScreen
 import java.util.*
 import kotlin.concurrent.thread
+import kotlin.math.min
 import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 
 class Language(val language:String, val percentComplete:Int){
@@ -26,9 +27,10 @@ class Language(val language:String, val percentComplete:Int){
 }
 
 class OptionsPopup(val previousScreen:CameraStageBaseScreen) : Popup(previousScreen) {
-    var selectedLanguage: String = "English"
+    private var selectedLanguage: String = "English"
     private val settings = previousScreen.game.settings
-    val innerTable2 = Table(CameraStageBaseScreen.skin)
+    private val innerTable2 = Table(CameraStageBaseScreen.skin)
+    private val resolutionArray = GdxArray(arrayOf("750x500", "900x600", "1050x700", "1200x800", "1500x1000"))
 
     init {
         settings.addCompletedTutorialTask("Open the options table")
@@ -86,7 +88,9 @@ class OptionsPopup(val previousScreen:CameraStageBaseScreen) : Popup(previousScr
         addYesNoRow("Show resources and improvements", settings.showResourcesAndImprovements, true) { settings.showResourcesAndImprovements = it }
         addYesNoRow("Show tile yields", settings.showTileYields, true) { settings.showTileYields = it } // JN
         addYesNoRow("Show tutorials", settings.showTutorials, true) { settings.showTutorials = it }
-        addYesNoRow("Show minimap", settings.showMinimap, true) { settings.showMinimap = it }
+        //addYesNoRow("Show minimap", settings.showMinimap, true) { settings.showMinimap = it }
+        addMinimapSizeSlider()
+
         addYesNoRow("Show pixel units", settings.showPixelUnits, true) { settings.showPixelUnits = it }
         addYesNoRow("Show pixel improvements", settings.showPixelImprovements, true) { settings.showPixelImprovements = it }
 
@@ -123,7 +127,7 @@ class OptionsPopup(val previousScreen:CameraStageBaseScreen) : Popup(previousScr
 
         addAutosaveTurnsSelectBox()
 
-        // at the moment tmainmhe notification service only exists on Android
+        // at the moment the notification service only exists on Android
         addNotificationOptions()
 
         addHeader("Other options")
@@ -142,6 +146,28 @@ class OptionsPopup(val previousScreen:CameraStageBaseScreen) : Popup(previousScr
 
         innerTable2.add("Version".toLabel()).pad(10f)
         innerTable2.add(previousScreen.game.version.toLabel()).pad(10f).row()
+    }
+
+    private fun addMinimapSizeSlider() {
+        innerTable2.add("Show minimap".tr())
+
+        val minimapSliderLimit = resolutionArray.indexOf(settings.resolution) + 1
+        val minimapSlider = Slider(0f, minimapSliderLimit.toFloat(), 1f, false, skin)
+        minimapSlider.value = if(settings.showMinimap) min(settings.minimapSize, minimapSliderLimit).toFloat() else 0f
+        minimapSlider.onChange {
+            val size = minimapSlider.value.toInt()
+            if (size == 0) {
+                settings.showMinimap = false
+            } else {
+                settings.showMinimap = true
+                settings.minimapSize = size
+            }
+            settings.save()
+            Sounds.play(UncivSound.Click)
+            if (previousScreen is WorldScreen)
+                previousScreen.shouldUpdate = true
+        }
+        innerTable2.add(minimapSlider).pad(10f).row()
     }
 
     private fun addSetUserId() {
@@ -282,8 +308,6 @@ class OptionsPopup(val previousScreen:CameraStageBaseScreen) : Popup(previousScr
         innerTable2.add("Resolution".toLabel())
 
         val resolutionSelectBox = SelectBox<String>(skin)
-        val resolutionArray = Array<String>()
-        resolutionArray.addAll("750x500", "900x600", "1050x700", "1200x800", "1500x1000")
         resolutionSelectBox.items = resolutionArray
         resolutionSelectBox.selected = settings.resolution
         innerTable2.add(resolutionSelectBox).minWidth(240f).pad(10f).row()
@@ -298,7 +322,7 @@ class OptionsPopup(val previousScreen:CameraStageBaseScreen) : Popup(previousScr
         innerTable2.add("Tileset".toLabel())
 
         val tileSetSelectBox = SelectBox<String>(skin)
-        val tileSetArray = Array<String>()
+        val tileSetArray = GdxArray<String>()
         val tileSets = ImageGetter.getAvailableTilesets()
         for (tileset in tileSets) tileSetArray.add(tileset)
         tileSetSelectBox.items = tileSetArray
@@ -315,7 +339,7 @@ class OptionsPopup(val previousScreen:CameraStageBaseScreen) : Popup(previousScr
         innerTable2.add("Turns between autosaves".toLabel())
 
         val autosaveTurnsSelectBox = SelectBox<Int>(skin)
-        val autosaveTurnsArray = Array<Int>()
+        val autosaveTurnsArray = GdxArray<Int>()
         autosaveTurnsArray.addAll(1, 2, 5, 10)
         autosaveTurnsSelectBox.items = autosaveTurnsArray
         autosaveTurnsSelectBox.selected = settings.turnsBetweenAutosaves
@@ -332,7 +356,7 @@ class OptionsPopup(val previousScreen:CameraStageBaseScreen) : Popup(previousScr
         innerTable2.add("Time between turn checks out-of-game (in minutes)".toLabel())
 
         val checkDelaySelectBox = SelectBox<Int>(skin)
-        val possibleDelaysArray = Array<Int>()
+        val possibleDelaysArray = GdxArray<Int>()
         possibleDelaysArray.addAll(1, 2, 5, 15)
         checkDelaySelectBox.items = possibleDelaysArray
         checkDelaySelectBox.selected = settings.multiplayerTurnCheckerDelayInMinutes
@@ -347,7 +371,7 @@ class OptionsPopup(val previousScreen:CameraStageBaseScreen) : Popup(previousScr
 
     private fun addLanguageSelectBox() {
         val languageSelectBox = SelectBox<Language>(skin)
-        val languageArray = Array<Language>()
+        val languageArray = GdxArray<Language>()
         previousScreen.game.translations.percentCompleteOfLanguages
                 .map { Language(it.key, if (it.key == "English") 100 else it.value) }
                 .sortedByDescending { it.percentComplete }
@@ -357,7 +381,7 @@ class OptionsPopup(val previousScreen:CameraStageBaseScreen) : Popup(previousScr
         innerTable2.add("Language".toLabel())
         languageSelectBox.items = languageArray
         val matchingLanguage = languageArray.firstOrNull { it.language == settings.language }
-        languageSelectBox.selected = if (matchingLanguage != null) matchingLanguage else languageArray.first()
+        languageSelectBox.selected = matchingLanguage ?: languageArray.first()
         innerTable2.add(languageSelectBox).minWidth(240f).pad(10f).row()
 
         languageSelectBox.onChange {

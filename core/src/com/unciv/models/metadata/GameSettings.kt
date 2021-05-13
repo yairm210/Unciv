@@ -27,6 +27,7 @@ class GameSettings {
     var automatedWorkersReplaceImprovements = true
 
     var showMinimap: Boolean = true
+    var minimapSize: Int = 1
     var showPixelUnits: Boolean = false
     var showPixelImprovements: Boolean = true
     var continuousRendering = false

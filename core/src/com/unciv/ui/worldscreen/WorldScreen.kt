@@ -711,9 +711,7 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Cam
         }
 //        topBar.selectedCivLabel.setText(Gdx.graphics.framesPerSecond) // for framerate testing
 
-        val scrollPos = Vector2(mapHolder.scrollX, mapHolder.scrollY)
-        val viewScale = Vector2(mapHolder.scaleX, mapHolder.scaleY)
-        minimapWrapper.minimap.updateScrollPosistion(scrollPos, viewScale)
+        minimapWrapper.minimap.updateScrollPosition()
 
         super.render(delta)
     }

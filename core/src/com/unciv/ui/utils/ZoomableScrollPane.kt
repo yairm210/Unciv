@@ -8,7 +8,7 @@ import kotlin.math.sqrt
 
 
 open class ZoomableScrollPane: ScrollPane(null) {
-    var continousScrollingX = false
+    var continuousScrollingX = false
 
     init{
         // Remove the existing inputListener
@@ -65,10 +65,10 @@ open class ZoomableScrollPane: ScrollPane(null) {
 
                 //this is the new feature to fake an infinite scroll
                 when {
-                    continousScrollingX && scrollPercentX >= 1 && deltaX < 0 -> {
+                    continuousScrollingX && scrollPercentX >= 1 && deltaX < 0 -> {
                         scrollPercentX = 0f
                     }
-                    continousScrollingX && scrollPercentX <= 0 && deltaX > 0-> {
+                    continuousScrollingX && scrollPercentX <= 0 && deltaX > 0-> {
                         scrollPercentX = 1f
                     }
                 }
