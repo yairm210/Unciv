@@ -41,6 +41,12 @@ class GameInfo {
     var currentPlayer = ""
     var gameId = UUID.randomUUID().toString() // random string
 
+    /**Keep track of a custom location this game was saved to _or_ loaded from
+     *
+     * Note this was used as silent autosave destination, but it was decided (#3898) to
+     * make the custom location feature a one-shot import/export kind of operation.
+     * The tracking is left in place, however [GameSaver.autoSaveSingleThreaded] no longer uses it
+     */
     @Volatile
     var customSaveLocation: String? = null
 
