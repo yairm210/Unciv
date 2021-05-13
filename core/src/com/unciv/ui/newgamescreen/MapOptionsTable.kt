@@ -7,7 +7,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Array
 import com.unciv.logic.MapSaver
 import com.unciv.logic.map.MapType
+import com.unciv.logic.map.TileMap
 import com.unciv.ui.utils.CameraStageBaseScreen
+import com.unciv.ui.utils.Popup
 import com.unciv.ui.utils.onChange
 import com.unciv.ui.utils.toLabel
 
@@ -89,9 +91,19 @@ class MapOptionsTable(val newGameScreen: NewGameScreen): Table() {
 
         mapFileSelectBox.onChange {
             val mapFile = mapFileSelectBox.selected.fileHandle
+            val map: TileMap
+            try {
+                map = MapSaver.loadMap(mapFile)
+            } catch (ex:Exception){
+                Popup(newGameScreen).apply {
+                    addGoodSizedLabel("Could not load map!")
+                    addCloseButton()
+                    open()
+                }
+                return@onChange
+            }
             mapParameters.name = mapFile.name()
             newGameScreen.gameSetupInfo.mapFile = mapFile
-            val map = MapSaver.loadMap(mapFile)
             newGameScreen.gameSetupInfo.gameParameters.mods = map.mapParameters.mods
             newGameScreen.updateRuleset()
             newGameScreen.updateTables()
