@@ -13,6 +13,7 @@ interface LimitOrientationsHelper {
      *          or SCREEN_ORIENTATION_UNSPECIFIED to load the setting
      */
     fun limitOrientations(newOrientation: Int)
+
     /** Pass a Boolean setting as used in [allowAndroidPortrait][GameSettings.allowAndroidPortrait] to the OS.
      *  @param allow `true`: allow all orientations (follows sensor as limited by OS settings)
      *          `false`: allow only landscape orientations (both if supported, otherwise default landscape only)

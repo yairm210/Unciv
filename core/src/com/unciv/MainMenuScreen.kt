@@ -27,7 +27,7 @@ import kotlin.concurrent.thread
 class MainMenuScreen: CameraStageBaseScreen() {
     private val autosave = "Autosave"
     private val backgroundTable = Table().apply { background=ImageGetter.getBackground(Color.WHITE) }
-    private val singleColumn: Boolean
+    private val singleColumn = isCrampedPortrait()
 
     private fun getTableBlock(text: String, icon: String, function: () -> Unit): Table {
         val table = Table().pad(15f, 30f, 15f, 30f)
@@ -41,9 +41,6 @@ class MainMenuScreen: CameraStageBaseScreen() {
     }
 
     init {
-        singleColumn = (stage.viewport.screenHeight > stage.viewport.screenWidth ) &&
-                game.settings.resolution.split("x").map { it.toInt() }.last() <= 700
-
         stage.addActor(backgroundTable)
         backgroundTable.center(stage)
 
@@ -109,8 +106,9 @@ class MainMenuScreen: CameraStageBaseScreen() {
         column2.add(modsTable).row()
 
 
-        val optionsTable = getTableBlock("Options", "OtherIcons/Options")
-            { OptionsPopup(this).open() }
+        val optionsTable = getTableBlock("Options", "OtherIcons/Options") {
+            this.openOptionsPopup()
+        }
         column2.add(optionsTable).row()
 
 

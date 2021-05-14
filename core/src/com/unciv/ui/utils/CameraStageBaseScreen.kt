@@ -15,11 +15,14 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable
 import com.badlogic.gdx.utils.viewport.ExtendViewport
+import com.unciv.MainMenuScreen
 import com.unciv.UncivGame
 import com.unciv.models.Tutorial
 import com.unciv.models.UncivSound
 import com.unciv.models.translations.tr
 import com.unciv.ui.tutorials.TutorialController
+import com.unciv.ui.worldscreen.WorldScreen
+import com.unciv.ui.worldscreen.mainmenu.OptionsPopup
 import java.util.HashMap
 import kotlin.concurrent.thread
 import kotlin.random.Random
@@ -194,6 +197,33 @@ open class CameraStageBaseScreen : Screen {
         return listener
     }
 
+    fun isPortrait() = stage.viewport.screenHeight > stage.viewport.screenWidth
+    fun isCrampedPortrait() = isPortrait() &&
+            game.settings.resolution.split("x").map { it.toInt() }.last() <= 700
+
+    fun openOptionsPopup() {
+        val limitOrientationsHelper = game.limitOrientationsHelper
+        if (limitOrientationsHelper == null || !game.settings.allowAndroidPortrait || !isCrampedPortrait()) {
+            OptionsPopup(this).open(force = true)
+            return
+        }
+        if (!(this is MainMenuScreen || this is WorldScreen)) {
+            throw IllegalArgumentException("openOptionsPopup called on wrong derivative class")
+        }
+        limitOrientationsHelper.allowPortrait(false)
+        thread(name="WaitForRotation") {
+            var waited = 0
+            while (true) {
+                val newScreen = (UncivGame.Current.screen as? CameraStageBaseScreen)
+                if (waited >= 10000 || newScreen!=null && !newScreen.isPortrait() ) {
+                    Gdx.app.postRunnable { OptionsPopup(newScreen ?: this).open(true) }
+                    break
+                }
+                Thread.sleep(200)
+                waited += 200
+            }
+        }
+    }
 }
 
 

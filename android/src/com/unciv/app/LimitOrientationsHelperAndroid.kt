@@ -27,11 +27,13 @@ class LimitOrientationsHelperAndroid(private val activity: Activity) : LimitOrie
     private class GameSettingsPreview(var allowAndroidPortrait: Boolean = false)
 
     override fun allowPortrait(allow: Boolean) {
-        activity.requestedOrientation = when {
+        val orientation = when {
             allow -> ActivityInfo.SCREEN_ORIENTATION_USER
             Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2 -> ActivityInfo.SCREEN_ORIENTATION_USER_LANDSCAPE
             else -> ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
         }
+        // Comparison ensures ActivityTaskManager.getService().setRequestedOrientation isn't called unless necessary
+        if (activity.requestedOrientation != orientation) activity.requestedOrientation = orientation
     }
 
     override fun limitOrientations(newOrientation: Int) {
@@ -57,7 +59,7 @@ class LimitOrientationsHelperAndroid(private val activity: Activity) : LimitOrie
             allowPortrait(setting.allowAndroidPortrait)
         } else {
             // Currently unused
-            activity.requestedOrientation = newOrientation
+            if (activity.requestedOrientation != newOrientation) activity.requestedOrientation = newOrientation
         }
     }
 }
