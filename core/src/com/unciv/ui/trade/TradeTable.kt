@@ -59,9 +59,7 @@ class TradeTable(val otherCivilization: CivilizationInfo, stage: DiplomacyScreen
     private fun onChange(){
         offerColumnsTable.update()
         retractOffer()
-        if(tradeLogic.currentTrade.theirOffers.size==0 && tradeLogic.currentTrade.ourOffers.size==0)
-            offerButton.disable()
-        else offerButton.enable()
+        offerButton.isEnabled = !(tradeLogic.currentTrade.theirOffers.size==0 && tradeLogic.currentTrade.ourOffers.size==0)
     }
 
 }
