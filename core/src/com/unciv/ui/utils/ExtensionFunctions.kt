@@ -185,3 +185,13 @@ fun <T> List<T>.randomWeighted(weights: List<Float>, random: Random = Random): T
     }
     return this.last()
 }
+
+fun String.toIntPlus(): Int {
+    return when {
+        this.isEmpty() -> 0
+        this == "+" -> return 0
+        this == "+1" -> return 1
+        this[0] == '+' -> Integer.parseInt(this.substring(1))
+        else -> Integer.parseInt(this)
+    }
+}

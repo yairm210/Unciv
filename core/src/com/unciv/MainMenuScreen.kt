@@ -1,5 +1,6 @@
 ﻿package com.unciv
 
+import com.badlogic.gdx.Application
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Touchable
@@ -42,6 +43,31 @@ class MainMenuScreen: CameraStageBaseScreen() {
     init {
         stage.addActor(backgroundTable)
         backgroundTable.center(stage)
+
+        // 21 = Build.VERSION_CODES.LOLLIPOP
+        if ( Gdx.app.type == Application.ApplicationType.Android && Gdx.app.version < 21) {
+            if ("kitkatWarn" !in game.settings.tutorialTasksCompleted) {
+                val kitkatWarn = Popup(this).apply {
+                    addGoodSizedLabel("You are running on Android KitKat or below!")
+                    addSeparator()
+                    add( """
+                        |{Due to platform limitations and bugs, the game might be playable well enough, but some features might not work}.
+                        |
+                        |{Known examples are}:
+                        |
+                        |{Mod manager can neither list nor download mods}.
+                        |{Custom save locations do not work}.
+                        """.trimMargin().toLabel()).row()
+                    //addCloseButton("Sorry!")
+                    addCloseButton() {
+                        game.settings.addCompletedTutorialTask("kitkatWarn")
+                    }
+                }
+                Gdx.app.postRunnable {
+                    kitkatWarn.open(true)
+                }
+            }
+        }
 
         // If we were in a mod, some of the resource images for the background map we're creating
         // will not exist unless we reset the ruleset and images

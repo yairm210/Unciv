@@ -13,6 +13,7 @@ import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.ruleset.unit.UnitType
 import java.text.DecimalFormat
 import kotlin.random.Random
+import com.unciv.ui.utils.toIntPlus
 
 /**
  * The immutable properties and mutable game state of an individual unit present on the map
@@ -214,7 +215,7 @@ class MapUnit {
         val tile = getTile()
         for (unique in tile.getAllTerrains().flatMap { it.uniqueObjects })
             if (unique.placeholderText == "[] Sight for [] units" && matchesFilter(unique.params[1]))
-                visibilityRange += unique.params[0].toInt()
+                visibilityRange += unique.params[0].toIntPlus()
 
         viewableTiles = tile.getViewableTilesList(visibilityRange)
 
