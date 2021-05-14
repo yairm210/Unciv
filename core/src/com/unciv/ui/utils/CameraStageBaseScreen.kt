@@ -104,10 +104,10 @@ open class CameraStageBaseScreen : Screen {
 
     init {
         val resolutions: List<Float> = game.settings.resolution.split("x").map { it.toInt().toFloat() }
-        val width = resolutions[0]
         val height = resolutions[1]
 
-        stage = Stage(ExtendViewport(width, height), SpriteBatch())
+        /** The ExtendViewport sets the _minimum_(!) world size - the actual world size will be larger, fitted to screen/window aspect ratio. */
+        stage = Stage(ExtendViewport(height, height), SpriteBatch())
 
         stage.addListener(
                 object : InputListener() {
