@@ -33,22 +33,7 @@ open class CameraStageBaseScreen : Screen {
 
         stage = Stage(ExtendViewport(width, height), SpriteBatch())
 
-        stage.addListener(
-                object : InputListener() {
-                    override fun keyTyped(event: InputEvent?, character: Char): Boolean {
-                        val key = KeyCharAndCode(event, character)
-
-                        if (key !in keyPressDispatcher || hasOpenPopups())
-                            return super.keyTyped(event, character)
-
-                        //try-catch mainly for debugging. Breakpoints in the vicinity can make the event fire twice in rapid succession, second time the context can be invalid
-                        try {
-                            keyPressDispatcher[key]?.invoke()
-                        } catch (ex: Exception) {}
-                        return true
-                    }
-                }
-        )
+        keyPressDispatcher.install(stage, this.javaClass.simpleName) { hasOpenPopups() }
     }
 
     override fun show() {}
@@ -71,7 +56,9 @@ open class CameraStageBaseScreen : Screen {
 
     override fun hide() {}
 
-    override fun dispose() {}
+    override fun dispose() {
+        keyPressDispatcher.uninstall()
+    }
 
     fun displayTutorial(tutorial: Tutorial, test: (() -> Boolean)? = null) {
         if (!game.settings.showTutorials) return
@@ -103,19 +90,9 @@ open class CameraStageBaseScreen : Screen {
         internal var batch: Batch = SpriteBatch()
     }
 
-    /** It returns the assigned [InputListener] */
-    fun onBackButtonClicked(action: () -> Unit): InputListener {
-        val listener = object : InputListener() {
-            override fun keyDown(event: InputEvent?, keycode: Int): Boolean {
-                if (keycode == Input.Keys.BACK || keycode == Input.Keys.ESCAPE) {
-                    action()
-                    return true
-                }
-                return false
-            }
-        }
-        stage.addListener(listener)
-        return listener
+    fun onBackButtonClicked(action: () -> Unit) {
+        keyPressDispatcher[Input.Keys.BACK] = action
+        keyPressDispatcher['\u001B'] = action
     }
 
 }
