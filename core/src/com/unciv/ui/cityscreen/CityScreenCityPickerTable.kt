@@ -7,6 +7,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextField
 import com.badlogic.gdx.utils.Align
 import com.unciv.ui.utils.*
 
+/** Widget for the City Screen -
+ *  the panel at bottom center showing the city name and offering arrows to cycle through the cities. */
 class CityScreenCityPickerTable(private val cityScreen: CityScreen) : Table() {
 
     fun update() {
@@ -16,7 +18,7 @@ class CityScreenCityPickerTable(private val cityScreen: CityScreen) : Table() {
         clear()
 
         if (civInfo.cities.size > 1) {
-            val prevCityButton = Table() // so we gt a wider clickable area than just the image itself
+            val prevCityButton = Table() // so we get a wider clickable area than just the image itself
             val image = ImageGetter.getImage("OtherIcons/BackArrow")
             image.color = civInfo.nation.getInnerColor()
             prevCityButton.add(image).size(25f).pad(10f)
@@ -26,6 +28,7 @@ class CityScreenCityPickerTable(private val cityScreen: CityScreen) : Table() {
         } else add()
 
         val cityNameTable = Table()
+
         if (city.isBeingRazed) {
             val fireImage = ImageGetter.getImage("OtherIcons/Fire")
             cityNameTable.add(fireImage).size(20f).padRight(5f)
@@ -41,7 +44,6 @@ class CityScreenCityPickerTable(private val cityScreen: CityScreen) : Table() {
             cityNameTable.add(starImage).size(20f).padRight(5f)
         }
 
-
         if (city.isInResistance()) {
             val resistanceImage = ImageGetter.getImage("StatIcons/Resistance")
             cityNameTable.add(resistanceImage).size(20f).padRight(5f)
@@ -53,11 +55,13 @@ class CityScreenCityPickerTable(private val cityScreen: CityScreen) : Table() {
             val textArea = TextField(city.name, CameraStageBaseScreen.skin)
             textArea.alignment = Align.center
             editCityNamePopup.add(textArea).colspan(2).row()
-            editCityNamePopup.addButton("Save") {
+            //editCityNamePopup.name = "CityNamePopup" // debug help
+            editCityNamePopup.addButtonInRow("Save", '\r') {
                 city.name = textArea.text
                 cityScreen.game.setScreen(CityScreen(city))
             }
-            editCityNamePopup.addCloseButton()
+            editCityNamePopup.addCloseButton("Cancel")
+            editCityNamePopup.keyboardFocus = textArea
             editCityNamePopup.open()
         }
 
@@ -65,9 +69,7 @@ class CityScreenCityPickerTable(private val cityScreen: CityScreen) : Table() {
 
         add(cityNameTable).width(stage.width / 4)
 
-
         if (civInfo.cities.size > 1) {
-
             val nextCityButton = Table() // so we gt a wider clickable area than just the image itself
             val image = ImageGetter.getImage("OtherIcons/BackArrow")
             image.setSize(25f, 25f)
@@ -79,6 +81,7 @@ class CityScreenCityPickerTable(private val cityScreen: CityScreen) : Table() {
             nextCityButton.onClick { cityScreen.page(1) }
             add(nextCityButton).pad(10f)
         } else add()
+
         pack()
     }
 

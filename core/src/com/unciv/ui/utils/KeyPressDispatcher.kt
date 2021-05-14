@@ -85,10 +85,20 @@ class KeyPressDispatcher: HashMap<KeyCharAndCode, (() -> Unit)>() {
     // access by KeyCharAndCode
     operator fun set(key: KeyCharAndCode, action: () -> Unit) {
         super.put(key, action)
+        // On Android the Enter key will fire with Ascii code `Linefeed`, on desktop as `Carriage Return`
+        if (key == KeyCharAndCode('\r'))
+            super.put(KeyCharAndCode('\n'), action)
+        // Likewise always match Back to ESC
+        if (key == KeyCharAndCode(Input.Keys.BACK))
+            super.put(KeyCharAndCode('\u001B'), action)
         checkInstall()
     }
     override fun remove(key: KeyCharAndCode): (() -> Unit)? {
         val result = super.remove(key)
+        if (key == KeyCharAndCode('\r'))
+            super.remove(KeyCharAndCode('\n'))
+        if (key == KeyCharAndCode(Input.Keys.BACK))
+            super.remove(KeyCharAndCode('\u001B'))
         checkInstall()
         return result
     }
