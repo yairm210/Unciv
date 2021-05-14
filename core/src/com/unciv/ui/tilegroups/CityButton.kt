@@ -366,9 +366,9 @@ class CityButton(val city: CityInfo, private val tileGroup: WorldTileGroup): Tab
             label.pack()
             group.addActor(label)
 
-            val constructionPercentage = cityConstructions.getWorkDone(cityCurrentConstruction.name) /
-                    cityCurrentConstruction.getProductionCost(cityConstructions.cityInfo.civInfo).toFloat()
-            if (constructionPercentage > 1) constructionPercentage = 1
+            val constructionPercentage = min(cityConstructions.getWorkDone(cityCurrentConstruction.name) /
+                    cityCurrentConstruction.getProductionCost(cityConstructions.cityInfo.civInfo).toFloat(),
+                    1f)
             val productionBar = ImageGetter.getProgressBarVertical(2f, groupHeight, constructionPercentage,
                     Color.BROWN.cpy().lerp(Color.WHITE, 0.5f), Color.BLACK)
             productionBar.x = 10f
