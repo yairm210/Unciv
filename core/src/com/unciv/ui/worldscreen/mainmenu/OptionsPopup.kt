@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.badlogic.gdx.utils.Array as GdxArray
 import com.unciv.MainMenuScreen
+import com.unciv.UncivGame
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.models.UncivSound
 import com.unciv.models.ruleset.RulesetCache
@@ -137,9 +138,16 @@ class OptionsPopup(val previousScreen:CameraStageBaseScreen) : Popup(previousScr
                 settings.showExperimentalWorldWrap)
         { settings.showExperimentalWorldWrap = it }
 
+        if (UncivGame.Current.limitOrientationsHelper != null) {
+            addYesNoRow("Enable portrait orientation", settings.allowAndroidPortrait) {
+                settings.allowAndroidPortrait = it
+                UncivGame.Current.limitOrientationsHelper!!.allowPortrait(it)
+            }
+        }
 
         addSoundEffectsVolumeSlider()
         addMusicVolumeSlider()
+
         addTranslationGeneration()
         addModPopup()
         addSetUserId()
