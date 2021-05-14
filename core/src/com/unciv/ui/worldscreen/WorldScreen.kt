@@ -237,7 +237,7 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Cam
         keyPressDispatcher[Input.Keys.F11] = quickSave    // Quick Save
         keyPressDispatcher[Input.Keys.F12] = quickLoad    // Quick Load
         keyPressDispatcher[Input.Keys.HOME] = { mapHolder.setCenterPosition(gameInfo.currentPlayerCiv.getCapital().location) }    // Capital City View
-        keyPressDispatcher['\u000F'] = { OptionsPopup(this).open() }    //   Ctrl-O: Game Options
+        keyPressDispatcher['\u000F'] = { this.openOptionsPopup() }    //   Ctrl-O: Game Options
         keyPressDispatcher['\u0013'] = { game.setScreen(SaveGameScreen(gameInfo)) }    //   Ctrl-S: Save
         keyPressDispatcher['\u000C'] = { game.setScreen(LoadGameScreen(this)) }    //   Ctrl-L: Load
         keyPressDispatcher['+'] = { this.mapHolder.zoomIn() }    //   '+' Zoom - Input.Keys.NUMPAD_ADD would need dispatcher patch

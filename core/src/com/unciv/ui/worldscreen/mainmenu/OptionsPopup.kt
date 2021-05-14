@@ -44,6 +44,7 @@ class OptionsPopup(val previousScreen:CameraStageBaseScreen) : Popup(previousScr
         add(scrollPane).maxHeight(screen.stage.height * 0.6f).row()
 
         addCloseButton {
+            previousScreen.game.limitOrientationsHelper?.allowPortrait(settings.allowAndroidPortrait)
             if (previousScreen is WorldScreen)
                 previousScreen.enableNextTurnButtonAfterOptions()
         }
@@ -72,10 +73,11 @@ class OptionsPopup(val previousScreen:CameraStageBaseScreen) : Popup(previousScr
         if (previousScreen is WorldScreen) {
             previousScreen.game.worldScreen = WorldScreen(previousScreen.gameInfo, previousScreen.viewingCiv)
             previousScreen.game.setWorldScreen()
+
         } else if (previousScreen is MainMenuScreen) {
             previousScreen.game.setScreen(MainMenuScreen())
         }
-        OptionsPopup(previousScreen.game.screen as CameraStageBaseScreen).open()
+        (previousScreen.game.screen as CameraStageBaseScreen).openOptionsPopup()
     }
 
     private fun rebuildInnerTable() {
@@ -137,9 +139,17 @@ class OptionsPopup(val previousScreen:CameraStageBaseScreen) : Popup(previousScr
                 settings.showExperimentalWorldWrap)
         { settings.showExperimentalWorldWrap = it }
 
+        if (previousScreen.game.limitOrientationsHelper != null) {
+            addYesNoRow("Enable portrait orientation", settings.allowAndroidPortrait) {
+                settings.allowAndroidPortrait = it
+                // Note the following might close the options screen indirectly and delayed
+                previousScreen.game.limitOrientationsHelper!!.allowPortrait(it)
+            }
+        }
 
         addSoundEffectsVolumeSlider()
         addMusicVolumeSlider()
+
         addTranslationGeneration()
         addModPopup()
         addSetUserId()
