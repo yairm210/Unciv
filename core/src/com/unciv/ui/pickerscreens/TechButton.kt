@@ -27,6 +27,7 @@ class TechButton(techName:String, private val techManager: TechManager, isWorldS
 
             val percentComplete = (techCost - remainingTech) / techCost.toFloat()
             val percentWillBeComplete = (techCost - (remainingTech-techThisTurn)) / techCost.toFloat()
+            if (percentWillBeComplete > 1) percentWillBeComplete = 1
             val progressBar = ImageGetter.VerticalProgressBar(2f, 50f)
                     .addColor(Color.WHITE, 1f)
                     .addColor(Color.BLUE.cpy().lerp(Color.WHITE, 0.3f), percentWillBeComplete)
