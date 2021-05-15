@@ -219,7 +219,7 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Cam
         }
 
         // Space and N are assigned in createNextTurnButton
-        keyPressDispatcher[Input.Keys.F1] = { game.setScreen(CivilopediaScreen(gameInfo.ruleSet, CivilopediaCategories.Unit, "Warrior")) }
+        keyPressDispatcher[Input.Keys.F1] = { game.setScreen(CivilopediaScreen(gameInfo.ruleSet)) }
         keyPressDispatcher['E'] = { game.setScreen(EmpireOverviewScreen(selectedCiv)) }     // Empire overview last used page
         /*
          * These try to be faithful to default Civ5 key bindings as found in several places online

@@ -87,7 +87,7 @@ class BaseUnit : INamed, IConstruction, CivilopediaText() {
     }
 
     override fun getCivilopediaTextHeader(): String {
-        return "+D32✯(Unit/$name)" + super.getCivilopediaTextHeader()
+        return "(Unit/$name)" + super.getCivilopediaTextHeader()
     }
     override fun replacesCivilopediaDescription() = true
     override fun hasCivilopediaTextLines() = true
