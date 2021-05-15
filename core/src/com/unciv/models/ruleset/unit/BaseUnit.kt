@@ -10,6 +10,7 @@ import com.unciv.models.ruleset.Unique
 import com.unciv.models.translations.Translations
 import com.unciv.models.translations.tr
 import com.unciv.models.stats.INamed
+import com.unciv.ui.civilopedia.CivilopediaText
 import com.unciv.ui.utils.Fonts
 import kotlin.math.pow
 
@@ -17,7 +18,7 @@ import kotlin.math.pow
 
 /** This is the basic info of the units, as specified in Units.json,
  in contrast to MapUnit, which is a specific unit of a certain type that appears on the map */
-class BaseUnit : INamed, IConstruction {
+class BaseUnit : INamed, IConstruction, CivilopediaText() {
 
     override lateinit var name: String
     var cost: Int = 0
@@ -57,7 +58,7 @@ class BaseUnit : INamed, IConstruction {
         val sb = StringBuilder()
         for ((resource, amount) in getResourceRequirements()) {
             if (amount == 1) sb.appendLine("Consumes 1 [$resource]".tr())
-            else sb.appendLine("Consumes [$amount]] [$resource]".tr())
+            else sb.appendLine("Consumes [$amount] [$resource]".tr())
         }
         if (!forPickerScreen) {
             if (uniqueTo != null) sb.appendLine("Unique to [$uniqueTo], replaces [$replaces]".tr())
@@ -83,6 +84,52 @@ class BaseUnit : INamed, IConstruction {
         }
 
         return sb.toString().trim()
+    }
+
+    override fun getCivilopediaTextHeader(): String {
+        return "+D32✯(Unit/$name)" + super.getCivilopediaTextHeader()
+    }
+    override fun replacesCivilopediaDescription() = true
+    override fun hasCivilopediaTextLines() = true
+    override fun getCivilopediaTextLines(): List<String> {
+        val infoList = mutableListOf<String>()
+
+        val stats = mutableListOf<String>()
+        if (strength != 0) stats += "$strength${Fonts.strength}"
+        if (rangedStrength != 0) {
+            stats += "$rangedStrength${Fonts.rangedStrength}"
+            stats += "$range${Fonts.range}"
+        }
+        if (movement != 0) stats += "$movement${Fonts.movement}"
+        stats += "{Cost}: $cost"
+        infoList += " " + stats.joinToString(", ")
+
+        if (replacementTextForUniques != "") infoList += " " + replacementTextForUniques
+        else for (unique in uniques)
+            infoList += " " + Translations.translateBonusOrPenalty(unique)
+
+        for ((resource, amount) in getResourceRequirements()) {
+            infoList += if (amount == 1) "[Resources/$resource]+EE3311 Consumes 1 [$resource]"
+                else "[Resources/$resource]+EE3311 Consumes [$amount] [$resource]"
+        }
+        if (uniqueTo != null) {
+            infoList += "[Nations/$uniqueTo] Unique to [$uniqueTo],"
+            infoList += "[Units/$replaces]     replaces [$replaces]"
+        }
+        if (requiredTech != null) infoList += "[Technologies/$requiredTech] Required tech: [$requiredTech]"
+        if (upgradesTo != null) infoList += "[Units/$upgradesTo] Upgrades to [$upgradesTo]"
+        if (obsoleteTech != null) infoList += "[Technologies/$obsoleteTech] Obsolete with [$obsoleteTech]"
+
+        promotions.withIndex().forEach {
+            infoList += "[Promotions/${it.value}] " +
+                when {
+                    promotions.size == 1 -> "{Free promotion:} {${it.value}}"
+                    it.index==0 -> "{Free promotions:} {${it.value}}"
+                    else -> "    {${it.value}}"
+                } + (if (promotions.size > 1 && it.index == promotions.size-1) "" else ",")
+        }
+
+        return infoList
     }
 
     fun getMapUnit(ruleset: Ruleset): MapUnit {

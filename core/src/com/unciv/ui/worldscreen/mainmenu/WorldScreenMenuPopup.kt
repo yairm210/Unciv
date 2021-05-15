@@ -6,7 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Cell
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.Constants
 import com.unciv.MainMenuScreen
-import com.unciv.ui.CivilopediaScreen
+import com.unciv.ui.civilopedia.CivilopediaScreen
 import com.unciv.ui.newgamescreen.GameSetupInfo
 import com.unciv.ui.newgamescreen.NewGameScreen
 import com.unciv.ui.saves.LoadGameScreen
