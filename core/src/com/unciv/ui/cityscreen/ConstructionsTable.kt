@@ -17,6 +17,7 @@ import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
 import com.unciv.models.translations.tr
 import com.unciv.ui.utils.*
+import java.lang.Float.min
 import kotlin.concurrent.thread
 import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 
@@ -258,8 +259,9 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
         if (construction is PerpetualConstruction) return Table()
         if (cityConstructions.getWorkDone(constructionName) == 0) return Table()
 
-        val constructionPercentage = cityConstructions.getWorkDone(constructionName) /
-                construction.getProductionCost(cityConstructions.cityInfo.civInfo).toFloat()
+        val constructionPercentage = min(cityConstructions.getWorkDone(constructionName) /
+                construction.getProductionCost(cityConstructions.cityInfo.civInfo).toFloat(),
+                1f)
         return ImageGetter.getProgressBarVertical(2f, 30f, constructionPercentage,
                 Color.BROWN.cpy().lerp(Color.WHITE, 0.5f), Color.WHITE)
     }
