@@ -257,6 +257,8 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Cam
 
                     override fun keyDown(event: InputEvent?, keycode: Int): Boolean {
                         if (keycode !in ALLOWED_KEYS) return false
+                        // Without the following keyPressDispatcher Ctrl-S (or WAD) would have a slight problem
+                        if (Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT) || Gdx.input.isKeyPressed(Input.Keys.CONTROL_RIGHT)) return false
 
                         pressedKeys.add(keycode)
                         if (infiniteAction == null) {
