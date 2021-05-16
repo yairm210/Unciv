@@ -328,7 +328,7 @@ class Ruleset {
 
                 val allOtherPrereqs = tech.prerequisites.asSequence().filterNot { it == prereq }.flatMap { getPrereqTree(it) }
                 if (allOtherPrereqs.contains(prereq))
-                    println("No need to add $prereq as a prerequisite of ${tech.name} - it is already implicit from the other prerequisites!")
+                    lines += "No need to add $prereq as a prerequisite of ${tech.name} - it is already implicit from the other prerequisites!"
             }
         }
         return lines.joinToString("\n")
