@@ -1,3 +1,18 @@
+## 3.14.9
+
+Caught exception when map fails to load
+
+By SomeTroglodyte:
+
+- Fix Ctrl-S going to save game screen will not stop scrolling the map
+- Options screen cleanup
+- Split off stuff from CameraStageBaseScreen that isn't the class itself
+- Minimap resizeable and scroll position indicator redone
+- Trim down custom save to export/import only
+- Fix crash when a mod allows a citadel >1 tile outside borders
+
+Technology and construction bars no longer extend past their maximum - By xlenstra
+
 ## 3.14.8
 
 New line-of-sight rules, with new "Blocks line-of-sight from tiles at same elevation" unique!
