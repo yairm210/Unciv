@@ -43,7 +43,7 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
         val attacker = tryGetAttacker()
         if(attacker==null || !worldScreen.canChangeState){ hide(); return }
 
-        if (attacker.getUnitType()==UnitType.Missile) {
+        if (attacker is MapUnitCombatant && attacker.unit.hasUnique("Nuclear weapon")) {
             val selectedTile = worldScreen.mapHolder.selectedTile
             if (selectedTile == null) { hide(); return } // no selected tile
             simulateNuke(attacker as MapUnitCombatant, selectedTile)
