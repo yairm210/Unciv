@@ -71,10 +71,9 @@ class PromotionPickerScreen(val unit: MapUnit) : PickerScreen() {
             selectPromotionButton.add(promotion.name.toLabel()).pad(10f).padRight(20f)
             selectPromotionButton.isEnabled = true
             selectPromotionButton.onClick {
-                (canBePromoted && isPromotionAvailable && !unitHasPromotion && canChangeState).let {
-                    selectedPromotion = if (it) promotion else null
-                    rightSideButton.isEnabled = it
-                }
+                val enable = canBePromoted && isPromotionAvailable && !unitHasPromotion && canChangeState
+                selectedPromotion = if (enable) promotion else null
+                rightSideButton.isEnabled = enable
                 rightSideButton.setText(promotion.name.tr())
 
                 descriptionLabel.setText(promotion.getDescription(promotionsForUnitType))
