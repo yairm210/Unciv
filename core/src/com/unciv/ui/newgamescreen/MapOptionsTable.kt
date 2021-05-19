@@ -17,7 +17,7 @@ class MapOptionsTable(val newGameScreen: NewGameScreen): Table() {
 
     val mapParameters = newGameScreen.gameSetupInfo.mapParameters
     private var mapTypeSpecificTable = Table()
-    private val generatedMapOptionsTable = MapParametersTable(mapParameters)
+    val generatedMapOptionsTable = MapParametersTable(mapParameters)
     private val savedMapOptionsTable = Table()
     lateinit var mapTypeSelectBox: TranslatedSelectBox
 

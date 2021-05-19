@@ -3,6 +3,7 @@ package com.unciv.ui.mapeditor
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.MainMenuScreen
+import com.unciv.UncivGame
 import com.unciv.logic.map.MapParameters
 import com.unciv.logic.map.TileMap
 import com.unciv.logic.map.mapgenerator.MapGenerator
@@ -20,14 +21,16 @@ class NewMapScreen(val mapParameters: MapParameters = MapParameters()) : PickerS
 
     private val ruleset = RulesetCache.getBaseRuleset()
     private var generatedMap: TileMap? = null
+    private val mapParametersTable: MapParametersTable
 
     init {
         setDefaultCloseAction(MainMenuScreen())
 
+        mapParametersTable = MapParametersTable(mapParameters, isEmptyMapAllowed = true)
         val newMapScreenOptionsTable = Table(skin).apply {
             pad(10f)
             add("Map Options".toLabel(fontSize = 24)).row()
-            add(MapParametersTable(mapParameters, isEmptyMapAllowed = true)).row()
+            add(mapParametersTable).row()
             add(ModCheckboxTable(mapParameters.mods, this@NewMapScreen) {
                 ruleset.clear()
                 val newRuleset = RulesetCache.getComplexRuleset(mapParameters.mods)
@@ -49,6 +52,18 @@ class NewMapScreen(val mapParameters: MapParameters = MapParameters()) : PickerS
 
         rightButtonSetEnabled(true)
         rightSideButton.onClick {
+            val message = mapParameters.mapSize.fixUndesiredSizes(mapParameters.worldWrap)
+            if (message != null) {
+                Gdx.app.postRunnable {
+                    ToastPopup( message, UncivGame.Current.screen as CameraStageBaseScreen, 4000 )
+                    with (mapParameters.mapSize) {
+                        mapParametersTable.customMapSizeRadius.text = radius.toString()
+                        mapParametersTable.customMapWidth.text = width.toString()
+                        mapParametersTable.customMapHeight.text = height.toString()
+                    }
+                }
+                return@onClick
+            }
             Gdx.input.inputProcessor = null // remove input processing - nothing will be clicked!
             rightButtonSetEnabled(false)
 
