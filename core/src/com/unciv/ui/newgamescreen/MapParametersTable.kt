@@ -7,10 +7,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextField
 import com.unciv.Constants
 import com.unciv.UncivGame
-import com.unciv.logic.map.MapParameters
-import com.unciv.logic.map.MapShape
-import com.unciv.logic.map.MapSizeNew
-import com.unciv.logic.map.MapType
+import com.unciv.logic.map.*
 import com.unciv.models.translations.tr
 import com.unciv.ui.utils.*
 
@@ -88,15 +85,7 @@ class MapParametersTable(val mapParameters: MapParameters, val isEmptyMapAllowed
     }
 
     private fun addWorldSizeTable() {
-        val mapSizes = listOfNotNull(
-            Constants.tiny,
-            Constants.small,
-            Constants.medium,
-            Constants.large,
-            Constants.huge,
-            Constants.custom
-        )
-
+        val mapSizes = MapSize.values().map { it.name } + listOf(Constants.custom)
         worldSizeSelectBox = TranslatedSelectBox(mapSizes, mapParameters.mapSize.name, skin)
         worldSizeSelectBox.onChange { updateWorldSizeTable() }
 

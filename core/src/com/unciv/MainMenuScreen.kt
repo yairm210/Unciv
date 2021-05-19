@@ -10,6 +10,7 @@ import com.unciv.logic.GameSaver
 import com.unciv.logic.GameStarter
 import com.unciv.logic.map.mapgenerator.MapGenerator
 import com.unciv.logic.map.MapParameters
+import com.unciv.logic.map.MapSize
 import com.unciv.logic.map.MapSizeNew
 import com.unciv.logic.map.MapType
 import com.unciv.models.ruleset.RulesetCache
@@ -50,7 +51,7 @@ class MainMenuScreen: CameraStageBaseScreen() {
 
         thread(name = "ShowMapBackground") {
             val newMap = MapGenerator(RulesetCache.getBaseRuleset())
-                    .generateMap(MapParameters().apply { mapSize = MapSizeNew(Constants.small); type = MapType.default })
+                    .generateMap(MapParameters().apply { mapSize = MapSizeNew(MapSize.Small); type = MapType.default })
             Gdx.app.postRunnable { // for GL context
                 ImageGetter.setNewRuleset(RulesetCache.getBaseRuleset())
                 val mapHolder = EditorMapHolder(MapEditorScreen(), newMap)
