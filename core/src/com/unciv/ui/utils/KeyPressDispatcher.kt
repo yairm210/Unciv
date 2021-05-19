@@ -118,9 +118,9 @@ class KeyPressDispatcher: HashMap<KeyCharAndCode, (() -> Unit)>() {
 
     /** install our [EventListener] on a stage with optional inhibitor
      * @param   stage The [Stage] to add the listener to
-     * @param   hasOpenPopups An optional lambda - when it returns true all keys are ignored
+     * @param   checkIgnoreKeys An optional lambda - when it returns true all keys are ignored
      */
-    fun install(stage: Stage, name: String? = null, hasOpenPopups: (() -> Boolean)? = null) {
+    fun install(stage: Stage, name: String? = null, checkIgnoreKeys: (() -> Boolean)? = null) {
         this.name = name
         if (installStage != null) uninstall()
         listener =
@@ -128,7 +128,8 @@ class KeyPressDispatcher: HashMap<KeyCharAndCode, (() -> Unit)>() {
                 override fun keyTyped(event: InputEvent?, character: Char): Boolean {
                     val key = KeyCharAndCode(event, character)
 
-                    if (!contains(key) || (hasOpenPopups?.invoke() == true))
+                    // see if we want to handle this key, and if not, let it propagate
+                    if (!contains(key) || (checkIgnoreKeys?.invoke() == true))
                         return super.keyTyped(event, character)
 
                     //try-catch mainly for debugging. Breakpoints in the vicinity can make the event fire twice in rapid succession, second time the context can be invalid
@@ -151,20 +152,20 @@ class KeyPressDispatcher: HashMap<KeyCharAndCode, (() -> Unit)>() {
 
     /** Implements lazy hooking of the listener into the stage.
      *
-     *  The listener will be added to the stage's listeners only when and as soon as [this] contains mappings.
+     *  The listener will be added to the stage's listeners only when - and as soon as -
+     *  [this][KeyPressDispatcher] contains mappings.
      *  When all mappings are removed or cleared the listener is removed from the stage.
      */
     private fun checkInstall(forceRemove: Boolean = false) {
-        if (listener != null && installStage != null) {
-            if (listenerInstalled && (isEmpty() || isPaused || forceRemove)) {
-                println(toString() + ": Removing listener" + (if(forceRemove) " for uninstall" else ""))
-                listenerInstalled = false
-                installStage!!.removeListener(listener)
-            } else if (!listenerInstalled && !(isEmpty() || isPaused)) {
-                println(toString() + ": Adding listener")
-                installStage!!.addListener(listener)
-                listenerInstalled = true
-            }
+        if (listener == null || installStage == null) return
+        if (listenerInstalled && (isEmpty() || isPaused || forceRemove)) {
+            println(toString() + ": Removing listener" + (if(forceRemove) " for uninstall" else ""))
+            listenerInstalled = false
+            installStage!!.removeListener(listener)
+        } else if (!listenerInstalled && !(isEmpty() || isPaused)) {
+            println(toString() + ": Adding listener")
+            installStage!!.addListener(listener)
+            listenerInstalled = true
         }
     }
 
