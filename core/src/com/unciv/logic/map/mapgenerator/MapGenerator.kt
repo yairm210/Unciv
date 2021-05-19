@@ -21,13 +21,11 @@ class MapGenerator(val ruleset: Ruleset) {
     fun generateMap(mapParameters: MapParameters, seed: Long = System.currentTimeMillis()): TileMap {
         val mapSize = mapParameters.mapSize
         val mapType = mapParameters.type
-        val map: TileMap
 
-        if (mapParameters.shape == MapShape.rectangular) {
-            val size = HexMath.getEquivalentRectangularSize(mapSize.radius)
-            map = TileMap(size.x.toInt(), size.y.toInt(), ruleset, mapParameters.worldWrap)
-        }
-        else map = TileMap(mapSize.radius, ruleset, mapParameters.worldWrap)
+        val map: TileMap = if (mapParameters.shape == MapShape.rectangular)
+            TileMap(mapSize.width, mapSize.height, ruleset, mapParameters.worldWrap)
+        else
+            TileMap(mapSize.radius, ruleset, mapParameters.worldWrap)
 
         map.mapParameters = mapParameters
         map.mapParameters.seed = seed
