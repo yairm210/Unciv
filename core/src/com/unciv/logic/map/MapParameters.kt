@@ -70,16 +70,12 @@ class MapSizeNew {
         val message = when {
             worldWrap && width < 32 ->    // otherwise horizontal scrolling will show edges, empirical
                 "World wrap requires a minimum width of 32 tiles"
-            width < 3 ->
-                "The provided width was too small"
-            height < 3 ->
-                "The provided height was too small"
-            radius < 2 ->
-                "The provided radius was too small"
+            width < 3 || height < 3 || radius < 2 ->
+                "The provided map dimensions were too small"
             radius > 500 ->
-                "The provided map dimensions are too big"
+                "The provided map dimensions were too big"
             height * 16 < width || width * 16 < height ->    // aspect ratio > 16:1
-                "The provided map dimensions have an unacceptable aspect ratio"
+                "The provided map dimensions had an unacceptable aspect ratio"
             else -> null
         } ?: return null
 
