@@ -11,7 +11,7 @@ import kotlin.concurrent.thread
 object GameSaver {
     private const val saveFilesFolder = "SaveFiles"
     private const val multiplayerFilesFolder = "MultiplayerGames"
-    private const val settingsFileName = "GameSettings.json"
+    const val settingsFileName = "GameSettings.json"
 
     @Volatile
     var customSaveLocationHelper: CustomSaveLocationHelper? = null

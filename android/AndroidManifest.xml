@@ -22,7 +22,6 @@
             android:name="com.unciv.app.AndroidLauncher"
             android:launchMode="singleTask"
             android:label="@string/app_name"
-            android:screenOrientation="userLandscape"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
             tools:ignore="LockedOrientationActivity">
             <intent-filter>

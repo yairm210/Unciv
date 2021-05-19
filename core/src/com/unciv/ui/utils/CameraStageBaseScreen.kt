@@ -13,9 +13,13 @@ import com.badlogic.gdx.scenes.scene2d.*
 import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable
 import com.badlogic.gdx.utils.viewport.ExtendViewport
+import com.unciv.MainMenuScreen
 import com.unciv.UncivGame
 import com.unciv.models.Tutorial
 import com.unciv.ui.tutorials.TutorialController
+import com.unciv.ui.worldscreen.WorldScreen
+import com.unciv.ui.worldscreen.mainmenu.OptionsPopup
+import kotlin.concurrent.thread
 
 open class CameraStageBaseScreen : Screen {
 
@@ -28,10 +32,10 @@ open class CameraStageBaseScreen : Screen {
 
     init {
         val resolutions: List<Float> = game.settings.resolution.split("x").map { it.toInt().toFloat() }
-        val width = resolutions[0]
         val height = resolutions[1]
 
-        stage = Stage(ExtendViewport(width, height), SpriteBatch())
+        /** The ExtendViewport sets the _minimum_(!) world size - the actual world size will be larger, fitted to screen/window aspect ratio. */
+        stage = Stage(ExtendViewport(height, height), SpriteBatch())
 
         stage.addListener(
                 object : InputListener() {
@@ -118,4 +122,31 @@ open class CameraStageBaseScreen : Screen {
         return listener
     }
 
+    fun isPortrait() = stage.viewport.screenHeight > stage.viewport.screenWidth
+    fun isCrampedPortrait() = isPortrait() &&
+            game.settings.resolution.split("x").map { it.toInt() }.last() <= 700
+
+    fun openOptionsPopup() {
+        val limitOrientationsHelper = game.limitOrientationsHelper
+        if (limitOrientationsHelper == null || !game.settings.allowAndroidPortrait || !isCrampedPortrait()) {
+            OptionsPopup(this).open(force = true)
+            return
+        }
+        if (!(this is MainMenuScreen || this is WorldScreen)) {
+            throw IllegalArgumentException("openOptionsPopup called on wrong derivative class")
+        }
+        limitOrientationsHelper.allowPortrait(false)
+        thread(name="WaitForRotation") {
+            var waited = 0
+            while (true) {
+                val newScreen = (UncivGame.Current.screen as? CameraStageBaseScreen)
+                if (waited >= 10000 || newScreen!=null && !newScreen.isPortrait() ) {
+                    Gdx.app.postRunnable { OptionsPopup(newScreen ?: this).open(true) }
+                    break
+                }
+                Thread.sleep(200)
+                waited += 200
+            }
+        }
+    }
 }

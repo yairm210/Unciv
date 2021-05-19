@@ -35,7 +35,7 @@ class WorldScreenMenuPopup(val worldScreen: WorldScreen) : Popup(worldScreen) {
         }
 
         addMenuButton("Victory status") { worldScreen.game.setScreen(VictoryScreen(worldScreen)) }
-        addMenuButton("Options") { OptionsPopup(worldScreen).open(force = true) }
+        addMenuButton("Options") { worldScreen.openOptionsPopup() }
         addMenuButton("Community") { WorldScreenCommunityPopup(worldScreen).open(force = true) }
 
         addSquareButton(Constants.close) {
