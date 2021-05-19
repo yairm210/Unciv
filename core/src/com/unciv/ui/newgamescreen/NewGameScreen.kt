@@ -39,12 +39,12 @@ class GameSetupInfo(var gameId:String, var gameParameters: GameParameters, var m
 
 class NewGameScreen(private val previousScreen: CameraStageBaseScreen, _gameSetupInfo: GameSetupInfo?=null): IPreviousScreen, PickerScreen(disableScroll = true) {
     override val gameSetupInfo = _gameSetupInfo ?: GameSetupInfo()
-    override var ruleset = RulesetCache.getComplexRuleset(gameSetupInfo.gameParameters.mods) // needs to be set because the gameoptionstable etc. depend on this
+    override var ruleset = RulesetCache.getComplexRuleset(gameSetupInfo.gameParameters.mods) // needs to be set because the GameOptionsTable etc. depend on this
     var newGameOptionsTable = GameOptionsTable(this) { desiredCiv: String -> playerPickerTable.update(desiredCiv) }
 
     // Has to be defined before the mapOptionsTable, since the mapOptionsTable refers to it on init
     private var playerPickerTable = PlayerPickerTable(this, gameSetupInfo.gameParameters)
-    var mapOptionsTable = MapOptionsTable(this)
+    private var mapOptionsTable = MapOptionsTable(this)
 
 
     init {
@@ -101,8 +101,8 @@ class NewGameScreen(private val previousScreen: CameraStageBaseScreen, _gameSetu
                 if (rulesetIncompatibilities.isNotEmpty()) {
                     val incompatibleMap = Popup(this)
                     incompatibleMap.addGoodSizedLabel("Map is incompatible with the chosen ruleset!".tr()).row()
-                    for(incompat in rulesetIncompatibilities)
-                        incompatibleMap.addGoodSizedLabel(incompat).row()
+                    for(incompatibility in rulesetIncompatibilities)
+                        incompatibleMap.addGoodSizedLabel(incompatibility).row()
                     incompatibleMap.addCloseButton()
                     incompatibleMap.open()
                     game.setScreen(this) // to get the input back

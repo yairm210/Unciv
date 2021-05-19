@@ -1,6 +1,5 @@
 package com.unciv.app.desktop
 
-import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.UncivGameParameters
 import com.unciv.logic.GameStarter
@@ -46,7 +45,7 @@ internal object ConsoleLauncher {
         val newGame = GameStarter.startNewGame(gameSetupInfo)
         UncivGame.Current.gameInfo = newGame
 
-        var simulation = Simulation(newGame,10,4)
+        val simulation = Simulation(newGame,10,4)
 
         simulation.start()
 

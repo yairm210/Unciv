@@ -1,6 +1,5 @@
 package com.unciv.logic.civilization
 
-import com.unciv.Constants
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.map.MapSize
 import com.unciv.logic.map.RoadStatus
@@ -25,7 +24,7 @@ class TechManager {
     @Transient
     private var researchedTechUniques = ArrayList<Unique>()
 
-    // MapUnit.canPassThrough is the most called function in the game, and having these extremey specific booleans is or way of improving the time cost
+    // MapUnit.canPassThrough is the most called function in the game, and having these extremely specific booleans is or way of improving the time cost
     @Transient
     var wayfinding = false
     @Transient
