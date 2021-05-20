@@ -18,6 +18,7 @@ The process has two major parts, one is "Getting your code in the main repositor
 
 When I'm ready to release a new version I:
 * Change the versionCode and versionName in the android build.gradle so that Google Play and F-droid can recognize that it's a different release
+* Run the [translation generation](https://github.com/yairm210/Unciv/wiki/Translating#translation-generation---for-developers)
 * Upload the new version to Google Play - we start at a 10% rollout, after a day with no major problems go to 30%, and after another day to 100%. If you were counting that means that most players will get the new version after 2+ days.
    * If there were problems, we halt the current rollout, fix the problems, and release a patch version, which starts at 10% again.
 * Add a tag to the commit of the version. When the [Github action](https://github.com/yairm210/Unciv/actions/workflows/buildAndDeploy.yml) sees that we've added a tag, it will run a build, and this time (because of the configuration we put in the [yml file](https://github.com/yairm210/Unciv/blob/master/.github/workflows/buildAndDeploy.yml) file), it will:
