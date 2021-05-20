@@ -55,7 +55,6 @@ class MapSizeNew {
         this.width = width
         this.height = height
         this.radius = getEquivalentHexagonalRadius(width, height)
-
     }
 
     /** Check custom dimensions, fix if too extreme
@@ -120,7 +119,7 @@ class MapParameters {
     var name = ""
     var type = MapType.pangaea
     var shape = MapShape.hexagonal
-    @Deprecated("replaced by mapSize since 3.19.18")
+    @Deprecated("replaced by mapSize since 3.14.7")
     var size = MapSize.Medium
     var mapSize = MapSizeNew(MapSize.Medium)
     var noRuins = false

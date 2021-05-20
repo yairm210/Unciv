@@ -230,8 +230,8 @@ class MapGenerator(val ruleset: Ruleset) {
                 continue
             }
 
-            val matchingTerrain = ruleset.terrains.values.firstOrNull {
-                it.uniqueObjects.any {
+            val matchingTerrain = ruleset.terrains.values.firstOrNull { terrain ->
+                terrain.uniqueObjects.any {
                     it.placeholderText == "Occurs at temperature between [] and [] and humidity between [] and []"
                             && it.params[0].toFloat() < temperature && temperature <= it.params[1].toFloat()
                             && it.params[2].toFloat() < humidity && humidity <= it.params[3].toFloat()
