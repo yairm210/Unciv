@@ -415,7 +415,9 @@ object Battle {
         }
 
         // Instead of postBattleAction() just destroy the missile, all other functions are not relevant
-        (attacker as MapUnitCombatant).unit.destroy()
+        if ((attacker as MapUnitCombatant).unit.hasUnique("Self-destructs when attacking")) {
+            (attacker as MapUnitCombatant).unit.destroy()
+        }
     }
 
     private fun tryInterceptAirAttack(attacker: MapUnitCombatant, defender: ICombatant) {
