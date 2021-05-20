@@ -259,9 +259,8 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
         if (construction is PerpetualConstruction) return Table()
         if (cityConstructions.getWorkDone(constructionName) == 0) return Table()
 
-        val constructionPercentage = min(cityConstructions.getWorkDone(constructionName) /
-                construction.getProductionCost(cityConstructions.cityInfo.civInfo).toFloat(),
-                1f)
+        val constructionPercentage = cityConstructions.getWorkDone(constructionName) /
+                construction.getProductionCost(cityConstructions.cityInfo.civInfo).toFloat()
         return ImageGetter.getProgressBarVertical(2f, 30f, constructionPercentage,
                 Color.BROWN.cpy().lerp(Color.WHITE, 0.5f), Color.WHITE)
     }

@@ -6,7 +6,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.logic.civilization.TechManager
 import com.unciv.ui.utils.*
-import kotlin.math.min
 
 class TechButton(techName:String, private val techManager: TechManager, isWorldScreen: Boolean = true) : Table(CameraStageBaseScreen.skin) {
     val text = "".toLabel().apply { setAlignment(Align.center) }
@@ -27,7 +26,7 @@ class TechButton(techName:String, private val techManager: TechManager, isWorldS
             val techThisTurn = techManager.civInfo.statsForNextTurn.science
 
             val percentComplete = (techCost - remainingTech) / techCost.toFloat()
-            val percentWillBeComplete = min((techCost - (remainingTech-techThisTurn)) / techCost.toFloat(), 1f)
+            val percentWillBeComplete = (techCost - (remainingTech-techThisTurn)) / techCost.toFloat()
             val progressBar = ImageGetter.VerticalProgressBar(2f, 50f)
                     .addColor(Color.WHITE, 1f)
                     .addColor(Color.BLUE.cpy().lerp(Color.WHITE, 0.3f), percentWillBeComplete)
