@@ -22,7 +22,7 @@ Like most open-source projects, Unciv is developed at Github, so if you don't ha
 
 When you ask to 'edit' a file in yairm210/Unciv, these stages happen *automatically* - but it's important to understand what's happening behind the scenes do you understand where the changes actually are!
 
-# Other notes
+## Other notes
 
 Make sure that you make the changes in the 'master' branch in your repo!
 
