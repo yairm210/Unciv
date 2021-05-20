@@ -14,6 +14,8 @@ import com.badlogic.gdx.utils.Align
 import com.unciv.UncivGame
 import com.unciv.logic.HexMath
 import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.map.MapShape
+import com.unciv.logic.map.MapSize
 import com.unciv.logic.map.TileInfo
 import com.unciv.ui.utils.IconCircleGroup
 import com.unciv.ui.utils.ImageGetter
@@ -35,11 +37,19 @@ class Minimap(val mapHolder: WorldMapHolder, minimapSize: Int) : Table(){
         var bottomX = 0f
         var bottomY = 0f
 
-        fun hexRow(vector2: Vector2) = vector2.x + vector2.y
-        val maxHexRow = mapHolder.tileMap.values.asSequence().map { hexRow(it.position) }.maxOrNull()!!
-        val minHexRow = mapHolder.tileMap.values.asSequence().map { hexRow(it.position) }.minOrNull()!!
-        val totalHexRows = maxHexRow - minHexRow
-        val groupSize = (minimapSize + 1) * 200f / totalHexRows
+//        fun hexRow(vector2: Vector2) = vector2.x + vector2.y
+//        val maxHexRow = mapHolder.tileMap.values.asSequence().map { hexRow(it.position) }.maxOrNull()!!
+//        val minHexRow = mapHolder.tileMap.values.asSequence().map { hexRow(it.position) }.minOrNull()!!
+//        val totalHexRows = maxHexRow - minHexRow
+//        val groupSize = (minimapSize + 1) * 200f / totalHexRows
+        // On hexagonal maps totalHexRows as calculated above is always 2 * radius.
+
+        // Support rectangular maps with extreme aspect ratios by scaling to the larger coordinate with a slight weighting to make the bounding box 4:3
+        val effectiveRadius = with(mapHolder.tileMap.mapParameters) {
+            if (shape != MapShape.rectangular) mapSize.radius
+            else max (mapSize.height, mapSize.width * 3 / 4) * MapSize.Huge.radius / MapSize.Huge.height
+        }
+        val groupSize = (minimapSize + 1) * 100f / effectiveRadius
 
         for (tileInfo in mapHolder.tileMap.values) {
             val hex = ImageGetter.getImage("OtherIcons/Hexagon")
@@ -78,7 +88,7 @@ class Minimap(val mapHolder: WorldMapHolder, minimapSize: Int) : Table(){
 
     /**### Transform and set coordinates for the scrollPositionIndicator.
      *
-     *  Relies on the [MiniMap]'s copy of the main [WorldMapHolder] as input.
+     *  Relies on the [MiniMap][MinimapHolder.minimap]'s copy of the main [WorldMapHolder] as input.
      *
      *  Requires [scrollPositionIndicator] to be a [ClippingImage] to keep the displayed portion of the indicator within the bounds of the minimap.
      */

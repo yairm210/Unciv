@@ -5,6 +5,7 @@ import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox
 import com.badlogic.gdx.scenes.scene2d.ui.Skin
 import com.badlogic.gdx.utils.Array
+import com.unciv.UncivGame
 import com.unciv.logic.*
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.map.MapParameters
@@ -38,12 +39,12 @@ class GameSetupInfo(var gameId:String, var gameParameters: GameParameters, var m
 
 class NewGameScreen(private val previousScreen: CameraStageBaseScreen, _gameSetupInfo: GameSetupInfo?=null): IPreviousScreen, PickerScreen(disableScroll = true) {
     override val gameSetupInfo = _gameSetupInfo ?: GameSetupInfo()
-    override var ruleset = RulesetCache.getComplexRuleset(gameSetupInfo.gameParameters.mods) // needs to be set because the gameoptionstable etc. depend on this
+    override var ruleset = RulesetCache.getComplexRuleset(gameSetupInfo.gameParameters.mods) // needs to be set because the GameOptionsTable etc. depend on this
     var newGameOptionsTable = GameOptionsTable(this) { desiredCiv: String -> playerPickerTable.update(desiredCiv) }
 
     // Has to be defined before the mapOptionsTable, since the mapOptionsTable refers to it on init
     private var playerPickerTable = PlayerPickerTable(this, gameSetupInfo.gameParameters)
-    var mapOptionsTable = MapOptionsTable(this)
+    private var mapOptionsTable = MapOptionsTable(this)
 
 
     init {
@@ -100,10 +101,26 @@ class NewGameScreen(private val previousScreen: CameraStageBaseScreen, _gameSetu
                 if (rulesetIncompatibilities.isNotEmpty()) {
                     val incompatibleMap = Popup(this)
                     incompatibleMap.addGoodSizedLabel("Map is incompatible with the chosen ruleset!".tr()).row()
-                    for(incompat in rulesetIncompatibilities)
-                        incompatibleMap.addGoodSizedLabel(incompat).row()
+                    for(incompatibility in rulesetIncompatibilities)
+                        incompatibleMap.addGoodSizedLabel(incompatibility).row()
                     incompatibleMap.addCloseButton()
                     incompatibleMap.open()
+                    game.setScreen(this) // to get the input back
+                    return@onClick
+                }
+            } else {
+                // Generated map - check for sensible dimensions and if exceeded correct them and notify user
+                val mapSize = gameSetupInfo.mapParameters.mapSize
+                val message = mapSize.fixUndesiredSizes(gameSetupInfo.mapParameters.worldWrap)
+                if (message != null) {
+                    Gdx.app.postRunnable {
+                        ToastPopup( message, UncivGame.Current.screen as CameraStageBaseScreen, 4000 )
+                        with (mapOptionsTable.generatedMapOptionsTable) {
+                            customMapSizeRadius.text = mapSize.radius.toString()
+                            customMapWidth.text = mapSize.width.toString()
+                            customMapHeight.text = mapSize.height.toString()
+                        }
+                    }
                     game.setScreen(this) // to get the input back
                     return@onClick
                 }
