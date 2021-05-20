@@ -2,7 +2,7 @@
 
 So, your code works! You've solved all the bugs and now you just need to get it out to everyone!
 
-So, how does THAT work????
+So, how does THAT work?
 
 The process has two major parts, one is "Getting your code in the main repository" and the other is "Deploying versions" - as a developer, you'll be taking an active part in the first process, but the second process is on me =)
 
@@ -20,10 +20,9 @@ When I'm ready to release a new version I:
 * Change the versionCode and versionName in the android build.gradle so that Google Play and F-droid can recognize that it's a different release
 * Upload the new version to Google Play - we start at a 10% rollout, after a day with no major problems go to 30%, and after another day to 100%. If you were counting that means that most players will get the new version after 2+ days.
    * If there were problems, we halt the current rollout, fix the problems, and release a patch version, which starts at 10% again.
-* Add a tag to the commit of the version. When [Travis](https://travis-ci.org/yairm210/UnCiv) sees that we've added a tag, it will run a build, and this time (because of the configuration we put in the [travis.yml](https://github.com/yairm210/Unciv/blob/master/.travis.yml) file), it will:
-   * Compile an unsigned APK for Android
-   * Pack a .jar file for every operating system with Java
-   * Use Linux and Windows JDKs to create standalone zips for 32 and 64 bit systems
+* Add a tag to the commit of the version. When the [Github action](https://github.com/yairm210/Unciv/actions/workflows/buildAndDeploy.yml) sees that we've added a tag, it will run a build, and this time (because of the configuration we put in the [yml file](https://github.com/yairm210/Unciv/blob/master/.github/workflows/buildAndDeploy.yml) file), it will:
+   * Pack a .jar file, which will work for every operating system with Java
+   * Use Linux and Windows JDKs to create standalone zips for 32 and 64 bit systems, because we can't rely on the fact that users will have a JRE
    * Download [Butler](https://itch.io/docs/butler/installing.html) and use it to [push](https://itch.io/docs/butler/pushing.html) the new versions to the [itch.io page](https://yairm210.itch.io/unciv)
    * Upload all of these files to a new release on Github, which will get added to the [Releases](https://github.com/yairm210/Unciv/releases) page
 * The F-Droid bot checks periodically if we added a new tag. When it recognizes that we did, it will update the [yaml file here](https://gitlab.com/fdroid/fdroiddata/blob/master/metadata/com.unciv.app.yml) (requires human acceptance)
