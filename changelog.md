@@ -1,3 +1,15 @@
+## 3.14.10
+
+Unified "progress bars can't go beyond 100%"
+
+By SomeTroglodyte:
+- Follow screen rotation even to Portrait on Android with Opt-in
+- Fix custom map sizes - saves match, size obeyed, limit UI
+
+Add guided missile which acts differently from nuclear missile. - By ninjatao
+
+Fix spaceship part production boosts - By avdstaaij
+
 ## 3.14.9
 
 Caught exception when map fails to load
