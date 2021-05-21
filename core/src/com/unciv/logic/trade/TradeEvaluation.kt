@@ -239,7 +239,8 @@ class TradeEvaluation {
     fun evaluatePeaceCostForThem(ourCivilization: CivilizationInfo, otherCivilization: CivilizationInfo): Int {
         val ourCombatStrength = Automation.evaluteCombatStrength(ourCivilization)
         val theirCombatStrength = Automation.evaluteCombatStrength(otherCivilization)
-        if (ourCombatStrength == theirCombatStrength) return 0
+        if (ourCombatStrength*1.5f > theirCombatStrength && theirCombatStrength * 1.5f > ourCombatStrength)
+            return 0 // we're roughly equal, there's no huge power imbalance
         if (ourCombatStrength == 0) return -1000
         if (theirCombatStrength == 0) return 1000 // Chumps got no cities or units
         if (ourCombatStrength > theirCombatStrength) {
