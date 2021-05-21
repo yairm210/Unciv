@@ -381,8 +381,8 @@ class EmpireOverviewScreen(private var viewingPlayer:CivilizationInfo, defaultPa
                 { it.currentMovement < 0.1f }, { abs(it.currentTile.position.x) + abs(it.currentTile.position.y) }))) {
             val baseUnit = unit.baseUnit()
 
-            val button = Button(CameraStageBaseScreen.skin)
-            button.add(ImageGetter.getUnitIcon(unit.name)).size(20f).padRight(5f)
+            val button = Button(skin)
+            button.add(UnitGroup(unit,20f)).padRight(5f)
             button.add(unit.displayName().toLabel())
             button.onClick {
                 game.setWorldScreen()
