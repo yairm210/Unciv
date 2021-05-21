@@ -354,7 +354,7 @@ class CityStats {
         newBaseStatList["Buildings"] = cityInfo.cityConstructions.getStats()
         newBaseStatList["Policies"] = getStatsFromUniques(civInfo.policies.policyUniques.getAllUniques())
         newBaseStatList["National ability"] = getStatsFromNationUnique()
-        newBaseStatList["Wonders"] = getStatsFromUniques(civInfo.cities.asSequence().flatMap { it.cityConstructions.builtBuildingUniqueMap.getAllUniques() })
+        newBaseStatList["Wonders"] = getStatsFromUniques(civInfo.getCivWideBuildingUniques())
         newBaseStatList["City-States"] = getStatsFromCityStates()
 
         baseStatList = newBaseStatList
