@@ -311,18 +311,19 @@ object SpecificUnitAutomation {
 
     // This really needs to be changed, to have better targetting for missiles
     fun automateMissile(unit: MapUnit) {
-
-        val tilesInRange = unit.currentTile.getTilesInDistance(unit.getRange() * 2)
-
-        for (tile in tilesInRange) {
-            // For now AI will only use nukes against cities because in all honesty that's the best use for them.
-            if (tile.isCityCenter() && tile.getOwner()!!.isAtWarWith(unit.civInfo)) {
-                Battle.nuke(MapUnitCombatant(unit), tile)
-                return
+        val tilesInRange = unit.currentTile.getTilesInDistance(unit.getRange())
+        if (unit.hasUnique("Nuclear weapon")) {
+            for (tile in tilesInRange) {
+                // For now AI will only use nukes against cities because in all honesty that's the best use for them.
+                if (tile.isCityCenter() && tile.getOwner()!!.isAtWarWith(unit.civInfo)) {
+                    Battle.nuke(MapUnitCombatant(unit), tile)
+                    return
+                }
             }
+        } else { //Guided Missile
+            if (BattleHelper.tryAttackNearbyEnemy(unit)) return
         }
-
-
+        
         val immediatelyReachableCities = tilesInRange
                 .filter { unit.movement.canMoveTo(it) }
 

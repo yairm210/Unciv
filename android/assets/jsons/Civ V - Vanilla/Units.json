@@ -1054,7 +1054,7 @@
 		// Plane rather than a missile - can be based in city or Carrier only. But cannot be intercepted because of a civ 5 bug that was never fixed.
 		// Single-use like missile
 		// No strength/rangedStrength tags in civ 5 xmls. Instead has NukeDamageLevel = 1 tag (Nuclear Missile has NukeDamageLevel = 2)
-	},
+	},	*/
 	{
 		"name": "Guided Missile",
 		"unitType": "Missile",
@@ -1063,11 +1063,9 @@
 		"rangedStrength": 60,
 		"range": 8,
 		"cost": 150,
-		"requiredTech": "Satellites"
-		// don't cost Maintenance, but count towards the limit of air units in city
-		// requiredTech "Advanced ballistics" in expansions
+		"requiredTech": "Rocketry",
+		"uniques": ["Self-destructs when attacking"]
 	},
-	*/
 	{
 		"name": "Nuclear Missile",
 		"unitType": "Missile",
@@ -1078,7 +1076,7 @@
 		"cost": 1000,
 		"requiredTech": "Rocketry",
 		"requiredResource": "Uranium",
-		"uniques": ["Nuclear weapon", "Requires [Manhattan Project]"]
+		"uniques": ["Self-destructs when attacking", "Nuclear weapon", "Requires [Manhattan Project]"]
 	},
 	{
 		"name": "Landship",

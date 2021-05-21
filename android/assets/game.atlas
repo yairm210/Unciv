@@ -160,14 +160,14 @@ ImprovementIcons/Quarry
   index: -1
 ImprovementIcons/Railroad
   rotate: false
-  xy: 1326, 1152
+  xy: 1224, 948
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 TileSets/Default/Railroad
   rotate: false
-  xy: 1326, 1152
+  xy: 1224, 948
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
@@ -1644,7 +1644,7 @@ TechIcons/Radio
   index: -1
 TechIcons/Railroad
   rotate: false
-  xy: 1224, 948
+  xy: 1326, 1152
   size: 100, 100
   orig: 100, 100
   offset: 0, 0

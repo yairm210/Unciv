@@ -10,6 +10,7 @@ import com.unciv.logic.GameSaver
 import com.unciv.logic.GameStarter
 import com.unciv.logic.map.mapgenerator.MapGenerator
 import com.unciv.logic.map.MapParameters
+import com.unciv.logic.map.MapSize
 import com.unciv.logic.map.MapSizeNew
 import com.unciv.logic.map.MapType
 import com.unciv.models.ruleset.RulesetCache
@@ -27,6 +28,7 @@ import kotlin.concurrent.thread
 class MainMenuScreen: CameraStageBaseScreen() {
     private val autosave = "Autosave"
     private val backgroundTable = Table().apply { background=ImageGetter.getBackground(Color.WHITE) }
+    private val singleColumn = isCrampedPortrait()
 
     private fun getTableBlock(text: String, icon: String, function: () -> Unit): Table {
         val table = Table().pad(15f, 30f, 15f, 30f)
@@ -50,7 +52,7 @@ class MainMenuScreen: CameraStageBaseScreen() {
 
         thread(name = "ShowMapBackground") {
             val newMap = MapGenerator(RulesetCache.getBaseRuleset())
-                    .generateMap(MapParameters().apply { mapSize = MapSizeNew(Constants.small); type = MapType.default })
+                    .generateMap(MapParameters().apply { mapSize = MapSizeNew(MapSize.Small); type = MapType.default })
             Gdx.app.postRunnable { // for GL context
                 ImageGetter.setNewRuleset(RulesetCache.getBaseRuleset())
                 val mapHolder = EditorMapHolder(MapEditorScreen(), newMap)
@@ -70,7 +72,8 @@ class MainMenuScreen: CameraStageBaseScreen() {
         }
 
         val column1 = Table().apply { defaults().pad(10f) }
-        val column2 = Table().apply { defaults().pad(10f) }
+        val column2 = if(singleColumn) column1 else Table().apply { defaults().pad(10f) }
+
         val autosaveGame = GameSaver.getSave(autosave, false)
         if (autosaveGame.exists()) {
             val resumeTable = getTableBlock("Resume","OtherIcons/Resume") { autoLoadGame() }
@@ -104,19 +107,21 @@ class MainMenuScreen: CameraStageBaseScreen() {
         column2.add(modsTable).row()
 
 
-
-        val optionsTable = getTableBlock("Options", "OtherIcons/Options")
-            { OptionsPopup(this).open() }
+        val optionsTable = getTableBlock("Options", "OtherIcons/Options") {
+            this.openOptionsPopup()
+        }
         column2.add(optionsTable).row()
 
 
         val table=Table().apply { defaults().pad(10f) }
         table.add(column1)
-        table.add(column2)
+        if (!singleColumn) table.add(column2)
         table.pack()
 
-        stage.addActor(table)
-        table.center(stage)
+        val scrollPane = AutoScrollPane(table)
+        scrollPane.setFillParent(true)
+        stage.addActor(scrollPane)
+        table.center(scrollPane)
 
         onBackButtonClicked {
             if(hasOpenPopups()) {

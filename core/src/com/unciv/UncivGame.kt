@@ -34,6 +34,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
     val fontImplementation = parameters.fontImplementation
     val consoleMode = parameters.consoleMode
     val customSaveLocationHelper = parameters.customSaveLocationHelper
+    val limitOrientationsHelper = parameters.limitOrientationsHelper
 
     lateinit var gameInfo: GameInfo
     fun isGameInfoInitialized() = this::gameInfo.isInitialized

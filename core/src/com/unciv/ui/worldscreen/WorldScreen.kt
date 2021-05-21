@@ -25,7 +25,7 @@ import com.unciv.models.UncivSound
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.unit.UnitType
 import com.unciv.models.translations.tr
-import com.unciv.ui.CivilopediaScreen
+import com.unciv.ui.civilopedia.CivilopediaScreen
 import com.unciv.ui.cityscreen.CityScreen
 import com.unciv.ui.overviewscreen.EmpireOverviewScreen
 import com.unciv.ui.pickerscreens.GreatPersonPickerScreen
@@ -40,19 +40,38 @@ import com.unciv.ui.victoryscreen.VictoryScreen
 import com.unciv.ui.worldscreen.bottombar.BattleTable
 import com.unciv.ui.worldscreen.bottombar.TileInfoTable
 import com.unciv.ui.worldscreen.mainmenu.OnlineMultiplayer
-import com.unciv.ui.worldscreen.mainmenu.OptionsPopup
 import com.unciv.ui.worldscreen.unit.UnitActionsTable
 import com.unciv.ui.worldscreen.unit.UnitTable
 import java.util.*
 import kotlin.concurrent.thread
 import kotlin.concurrent.timer
 
+/**
+ * Unciv's world screen
+ * @param gameInfo The game state the screen should represent
+ * @param viewingCiv The currently active [civilization][CivilizationInfo]
+ * @see [shouldUpdate]
+ * @see [isPlayersTurn]
+ * @see [selectedCiv]
+ * @see [canChangeState]
+ * @see [mapHolder]
+ * @see [bottomUnitTable]
+ * @see [enableNextTurnButtonAfterOptions]
+ * @property shouldUpdate When set, causes the screen to update in the next [render][CameraStageBaseScreen.render] event
+ * @property isPlayersTurn (readonly) Indicates it's the player's ([viewingCiv]) turn
+ * @property selectedCiv Selected civilization, used in spectator and replay mode, equals viewingCiv in ordinary games
+ * @property canChangeState (readonly) `true` when it's the player's turn unless he is a spectator
+ * @property mapHolder A [MinimapHolder] instance
+ * @property bottomUnitTable Bottom left widget holding information about a selected unit or city
+ */
 class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
 
     var isPlayersTurn = viewingCiv == gameInfo.currentPlayerCiv
-    var selectedCiv = viewingCiv // Selected civilization, used in spectator and replay mode, equals viewingCiv in ordinary games
+        private set     // only this class is allowed to make changes
+    var selectedCiv = viewingCiv
     private var fogOfWar = true
-    val canChangeState = isPlayersTurn && !viewingCiv.isSpectator()
+    val canChangeState
+        get() = isPlayersTurn && !viewingCiv.isSpectator()
     private var waitingForAutosave = false
 
     val mapHolder = WorldMapHolder(this, gameInfo.tileMap)
@@ -140,9 +159,9 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Cam
 
         // Don't select unit and change selectedCiv when centering as spectator
         if (viewingCiv.isSpectator())
-            mapHolder.setCenterPosition(tileToCenterOn, true, false)
+            mapHolder.setCenterPosition(tileToCenterOn, immediately = true, selectUnit = false)
         else
-            mapHolder.setCenterPosition(tileToCenterOn, true, true)
+            mapHolder.setCenterPosition(tileToCenterOn, immediately = true, selectUnit = true)
 
 
         tutorialController.allTutorialsShowedCallback = { shouldUpdate = true }
@@ -237,7 +256,7 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Cam
         keyPressDispatcher[Input.Keys.F11] = quickSave    // Quick Save
         keyPressDispatcher[Input.Keys.F12] = quickLoad    // Quick Load
         keyPressDispatcher[Input.Keys.HOME] = { mapHolder.setCenterPosition(gameInfo.currentPlayerCiv.getCapital().location) }    // Capital City View
-        keyPressDispatcher['\u000F'] = { OptionsPopup(this).open() }    //   Ctrl-O: Game Options
+        keyPressDispatcher['\u000F'] = { this.openOptionsPopup() }    //   Ctrl-O: Game Options
         keyPressDispatcher['\u0013'] = { game.setScreen(SaveGameScreen(gameInfo)) }    //   Ctrl-S: Save
         keyPressDispatcher['\u000C'] = { game.setScreen(LoadGameScreen(this)) }    //   Ctrl-L: Load
         keyPressDispatcher['+'] = { this.mapHolder.zoomIn() }    //   '+' Zoom - Input.Keys.NUMPAD_ADD would need dispatcher patch
@@ -257,6 +276,8 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Cam
 
                     override fun keyDown(event: InputEvent?, keycode: Int): Boolean {
                         if (keycode !in ALLOWED_KEYS) return false
+                        // Without the following keyPressDispatcher Ctrl-S would leave WASD map scrolling stuck
+                        if (Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT) || Gdx.input.isKeyPressed(Input.Keys.CONTROL_RIGHT)) return false
 
                         pressedKeys.add(keycode)
                         if (infiniteAction == null) {
@@ -542,7 +563,7 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Cam
     }
 
 
-    fun createNewWorldScreen(gameInfo: GameInfo) {
+    private fun createNewWorldScreen(gameInfo: GameInfo) {
 
         game.gameInfo = gameInfo
         val newWorldScreen = WorldScreen(gameInfo, gameInfo.getPlayerToViewAs())
@@ -594,7 +615,7 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Cam
 
             val shouldAutoSave = gameInfoClone.turns % game.settings.turnsBetweenAutosaves == 0
 
-            // create a new worldscreen to show the new stuff we've changed, and switch out the current screen.
+            // create a new WorldScreen to show the new stuff we've changed, and switch out the current screen.
             // do this on main thread - it's the only one that has a GL context to create images from
             Gdx.app.postRunnable {
 
@@ -633,6 +654,10 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Cam
         nextTurnButton.setPosition(stage.width - nextTurnButton.width - 10f, topBar.y - nextTurnButton.height - 10f)
     }
 
+    /**
+     * Used by [OptionsPopup][com.unciv.ui.worldscreen.mainmenu.OptionsPopup] 
+     * to re-enable the next turn button within its Close button action
+     */
     fun enableNextTurnButtonAfterOptions() {
         nextTurnButton.isEnabled = isPlayersTurn && !waitingForAutosave
     }
@@ -645,7 +670,7 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Cam
                 NextTurnAction("Next unit", Color.LIGHT_GRAY) {
                     val nextDueUnit = viewingCiv.getNextDueUnit()
                     if (nextDueUnit != null) {
-                        mapHolder.setCenterPosition(nextDueUnit.currentTile.position, false, false)
+                        mapHolder.setCenterPosition(nextDueUnit.currentTile.position, immediately = false, selectUnit = false)
                         bottomUnitTable.selectUnit(nextDueUnit)
                         shouldUpdate = true
                     }

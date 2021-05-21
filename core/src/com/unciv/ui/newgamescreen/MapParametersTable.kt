@@ -7,10 +7,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextField
 import com.unciv.Constants
 import com.unciv.UncivGame
-import com.unciv.logic.map.MapParameters
-import com.unciv.logic.map.MapShape
-import com.unciv.logic.map.MapSizeNew
-import com.unciv.logic.map.MapType
+import com.unciv.logic.map.*
 import com.unciv.models.translations.tr
 import com.unciv.ui.utils.*
 
@@ -30,6 +27,9 @@ class MapParametersTable(val mapParameters: MapParameters, val isEmptyMapAllowed
     lateinit var noRuinsCheckbox: CheckBox
     lateinit var noNaturalWondersCheckbox: CheckBox
     lateinit var worldWrapCheckbox: CheckBox
+    lateinit var customMapSizeRadius: TextField
+    lateinit var customMapWidth: TextField
+    lateinit var customMapHeight: TextField
 
 
     init {
@@ -88,15 +88,7 @@ class MapParametersTable(val mapParameters: MapParameters, val isEmptyMapAllowed
     }
 
     private fun addWorldSizeTable() {
-        val mapSizes = listOfNotNull(
-            Constants.tiny,
-            Constants.small,
-            Constants.medium,
-            Constants.large,
-            Constants.huge,
-            Constants.custom
-        )
-
+        val mapSizes = MapSize.values().map { it.name } + listOf(Constants.custom)
         worldSizeSelectBox = TranslatedSelectBox(mapSizes, mapParameters.mapSize.name, skin)
         worldSizeSelectBox.onChange { updateWorldSizeTable() }
 
@@ -112,7 +104,7 @@ class MapParametersTable(val mapParameters: MapParameters, val isEmptyMapAllowed
 
     private fun addHexagonalSizeTable() {
         val defaultRadius = mapParameters.mapSize.radius.toString()
-        val customMapSizeRadius = TextField(defaultRadius, skin).apply {
+        customMapSizeRadius = TextField(defaultRadius, skin).apply {
             textFieldFilter = TextField.TextFieldFilter.DigitsOnlyFilter()
         }
         customMapSizeRadius.onChange {
@@ -126,12 +118,12 @@ class MapParametersTable(val mapParameters: MapParameters, val isEmptyMapAllowed
 
     private fun addRectangularSizeTable() {
         val defaultWidth = mapParameters.mapSize.width.toString()
-        val customMapWidth = TextField(defaultWidth, skin).apply {
+        customMapWidth = TextField(defaultWidth, skin).apply {
             textFieldFilter = TextField.TextFieldFilter.DigitsOnlyFilter()
         }
 
         val defaultHeight = mapParameters.mapSize.height.toString()
-        val customMapHeight = TextField(defaultHeight, skin).apply {
+        customMapHeight = TextField(defaultHeight, skin).apply {
             textFieldFilter = TextField.TextFieldFilter.DigitsOnlyFilter()
         }
 

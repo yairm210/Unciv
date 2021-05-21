@@ -17,7 +17,7 @@ class MapOptionsTable(val newGameScreen: NewGameScreen): Table() {
 
     val mapParameters = newGameScreen.gameSetupInfo.mapParameters
     private var mapTypeSpecificTable = Table()
-    private val generatedMapOptionsTable = MapParametersTable(mapParameters)
+    val generatedMapOptionsTable = MapParametersTable(mapParameters)
     private val savedMapOptionsTable = Table()
     lateinit var mapTypeSelectBox: TranslatedSelectBox
 
@@ -115,6 +115,6 @@ class MapOptionsTable(val newGameScreen: NewGameScreen): Table() {
     // The SelectBox auto displays the text a object.toString(), which on the FileHandle itself includes the folder path.
     //  So we wrap it in another object with a custom toString()
     class FileHandleWrapper(val fileHandle: FileHandle) {
-        override fun toString() = fileHandle.name()
+        override fun toString(): String = fileHandle.name()
     }
 }

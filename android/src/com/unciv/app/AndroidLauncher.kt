@@ -1,6 +1,7 @@
 package com.unciv.app
 
 import android.content.Intent
+import android.content.pm.ActivityInfo
 import android.os.Build
 import android.os.Bundle
 import androidx.core.app.NotificationManagerCompat
@@ -29,12 +30,19 @@ open class AndroidLauncher : AndroidApplication() {
             if (externalfilesDir != null) GameSaver.externalFilesDirForAndroid = externalfilesDir.path
         }
 
-        val config = AndroidApplicationConfiguration().apply { useImmersiveMode = true; }
+        // Manage orientation lock
+        val limitOrientationsHelper = LimitOrientationsHelperAndroid(this)
+        limitOrientationsHelper.limitOrientations(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED)
+
+        val config = AndroidApplicationConfiguration().apply {
+            useImmersiveMode = true;
+        }
         val androidParameters = UncivGameParameters(
                 version = BuildConfig.VERSION_NAME,
                 crashReportSender = CrashReportSenderAndroid(this),
                 fontImplementation = NativeFontAndroid(Fonts.ORIGINAL_FONT_SIZE.toInt()),
-                customSaveLocationHelper = customSaveLocationHelper
+                customSaveLocationHelper = customSaveLocationHelper,
+                limitOrientationsHelper = limitOrientationsHelper
         )
         val game = UncivGame(androidParameters)
         initialize(game, config)

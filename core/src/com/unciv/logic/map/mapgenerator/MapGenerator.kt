@@ -21,13 +21,11 @@ class MapGenerator(val ruleset: Ruleset) {
     fun generateMap(mapParameters: MapParameters, seed: Long = System.currentTimeMillis()): TileMap {
         val mapSize = mapParameters.mapSize
         val mapType = mapParameters.type
-        val map: TileMap
 
-        if (mapParameters.shape == MapShape.rectangular) {
-            val size = HexMath.getEquivalentRectangularSize(mapSize.radius)
-            map = TileMap(size.x.toInt(), size.y.toInt(), ruleset, mapParameters.worldWrap)
-        }
-        else map = TileMap(mapSize.radius, ruleset, mapParameters.worldWrap)
+        val map: TileMap = if (mapParameters.shape == MapShape.rectangular)
+            TileMap(mapSize.width, mapSize.height, ruleset, mapParameters.worldWrap)
+        else
+            TileMap(mapSize.radius, ruleset, mapParameters.worldWrap)
 
         map.mapParameters = mapParameters
         map.mapParameters.seed = seed
@@ -110,7 +108,7 @@ class MapGenerator(val ruleset: Ruleset) {
         if (map.mapParameters.noRuins || !ruleset.tileImprovements.containsKey(Constants.ancientRuins))
             return
         val suitableTiles = map.values.filter { it.isLand && !it.isImpassible() }
-        val locations = randomness.chooseSpreadOutLocations(suitableTiles.size / 100,
+        val locations = randomness.chooseSpreadOutLocations(suitableTiles.size / 50,
                 suitableTiles, 10)
         for (tile in locations)
             tile.improvement = Constants.ancientRuins
@@ -232,8 +230,8 @@ class MapGenerator(val ruleset: Ruleset) {
                 continue
             }
 
-            val matchingTerrain = ruleset.terrains.values.firstOrNull {
-                it.uniqueObjects.any {
+            val matchingTerrain = ruleset.terrains.values.firstOrNull { terrain ->
+                terrain.uniqueObjects.any {
                     it.placeholderText == "Occurs at temperature between [] and [] and humidity between [] and []"
                             && it.params[0].toFloat() < temperature && temperature <= it.params[1].toFloat()
                             && it.params[2].toFloat() < humidity && humidity <= it.params[3].toFloat()

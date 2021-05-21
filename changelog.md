@@ -1,3 +1,30 @@
+## 3.14.10
+
+Unified "progress bars can't go beyond 100%"
+
+By SomeTroglodyte:
+- Follow screen rotation even to Portrait on Android with Opt-in
+- Fix custom map sizes - saves match, size obeyed, limit UI
+
+Add guided missile which acts differently from nuclear missile. - By ninjatao
+
+Fix spaceship part production boosts - By avdstaaij
+
+## 3.14.9
+
+Caught exception when map fails to load
+
+By SomeTroglodyte:
+
+- Fix Ctrl-S going to save game screen will not stop scrolling the map
+- Options screen cleanup
+- Split off stuff from CameraStageBaseScreen that isn't the class itself
+- Minimap resizeable and scroll position indicator redone
+- Trim down custom save to export/import only
+- Fix crash when a mod allows a citadel >1 tile outside borders
+
+Technology and construction bars no longer extend past their maximum - By xlenstra
+
 ## 3.14.8
 
 New line-of-sight rules, with new "Blocks line-of-sight from tiles at same elevation" unique!

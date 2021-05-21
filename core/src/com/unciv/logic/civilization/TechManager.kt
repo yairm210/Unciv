@@ -1,7 +1,7 @@
 package com.unciv.logic.civilization
 
-import com.unciv.Constants
 import com.unciv.logic.city.CityInfo
+import com.unciv.logic.map.MapSize
 import com.unciv.logic.map.RoadStatus
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.ruleset.Unique
@@ -24,7 +24,7 @@ class TechManager {
     @Transient
     private var researchedTechUniques = ArrayList<Unique>()
 
-    // MapUnit.canPassThrough is the most called function in the game, and having these extremey specific booleans is or way of improving the time cost
+    // MapUnit.canPassThrough is the most called function in the game, and having these extremely specific booleans is or way of improving the time cost
     @Transient
     var wayfinding = false
     @Transient
@@ -83,12 +83,14 @@ class TechManager {
                 .count { it.isMajorCiv() && !it.isDefeated() }
         // https://forums.civfanatics.com/threads/the-mechanics-of-overflow-inflation.517970/
         techCost /= 1 + techsResearchedKnownCivs / undefeatedCivs.toFloat() * 0.3f
-        // http://www.civclub.net/bbs/forum.php?mod=viewthread&tid=123976
-        val worldSizeModifier = when (civInfo.gameInfo.tileMap.mapParameters.mapSize.name) {
-            Constants.medium -> floatArrayOf(1.1f, 0.05f)
-            Constants.large -> floatArrayOf(1.2f, 0.03f)
-            Constants.huge -> floatArrayOf(1.3f, 0.02f)
-            else -> floatArrayOf(1f, 0.05f)
+        // http://web.archive.org/web/20201204043641/http://www.civclub.net/bbs/forum.php?mod=viewthread&tid=123976
+        val worldSizeModifier = with (civInfo.gameInfo.tileMap.mapParameters.mapSize) {
+            when {
+                radius >= MapSize.Medium.radius -> floatArrayOf(1.1f, 0.05f)
+                radius >= MapSize.Large.radius -> floatArrayOf(1.2f, 0.03f)
+                radius >= MapSize.Huge.radius -> floatArrayOf(1.3f, 0.02f)
+                else -> floatArrayOf(1f, 0.05f)
+            }
         }
         techCost *= worldSizeModifier[0]
         techCost *= 1 + (civInfo.cities.size - 1) * worldSizeModifier[1]
