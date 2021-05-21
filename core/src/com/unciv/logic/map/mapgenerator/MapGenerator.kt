@@ -108,7 +108,7 @@ class MapGenerator(val ruleset: Ruleset) {
         if (map.mapParameters.noRuins || !ruleset.tileImprovements.containsKey(Constants.ancientRuins))
             return
         val suitableTiles = map.values.filter { it.isLand && !it.isImpassible() }
-        val locations = randomness.chooseSpreadOutLocations(suitableTiles.size / 100,
+        val locations = randomness.chooseSpreadOutLocations(suitableTiles.size / 50,
                 suitableTiles, 10)
         for (tile in locations)
             tile.improvement = Constants.ancientRuins
