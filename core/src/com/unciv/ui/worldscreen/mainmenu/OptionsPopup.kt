@@ -4,7 +4,6 @@ import com.badlogic.gdx.Application
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.*
-import com.badlogic.gdx.utils.Array as GdxArray
 import com.unciv.MainMenuScreen
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.models.UncivSound
@@ -17,6 +16,7 @@ import com.unciv.ui.worldscreen.WorldScreen
 import java.util.*
 import kotlin.concurrent.thread
 import kotlin.math.min
+import com.badlogic.gdx.utils.Array as GdxArray
 import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 
 class Language(val language:String, val percentComplete:Int){
@@ -168,14 +168,15 @@ class OptionsPopup(val previousScreen:CameraStageBaseScreen) : Popup(previousScr
     private fun addMinimapSizeSlider() {
         optionsTable.add("Show minimap".tr())
 
-        val minimapSliderLimit = resolutionArray.indexOf(settings.resolution) + 1
-        val minimapSlider = Slider(0f, minimapSliderLimit.toFloat(), 1f, false, skin)
-        minimapSlider.value = if(settings.showMinimap) min(settings.minimapSize, minimapSliderLimit).toFloat() else 0f
+        val minimapSliderLimit = (resolutionArray.indexOf(settings.resolution) + 1) *5f
+        // each 1 point is effectively 10px per hexagon
+        val minimapSlider = Slider(0f, minimapSliderLimit, 1f, false, skin)
+        minimapSlider.value = if(settings.showMinimap) min(settings.minimapSize.toFloat(), minimapSliderLimit)
+        else 0f
         minimapSlider.onChange {
             val size = minimapSlider.value.toInt()
-            if (size == 0) {
-                settings.showMinimap = false
-            } else {
+            if (size == 0) settings.showMinimap = false
+            else {
                 settings.showMinimap = true
                 settings.minimapSize = size
             }

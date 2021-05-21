@@ -49,7 +49,7 @@ class Minimap(val mapHolder: WorldMapHolder, minimapSize: Int) : Table(){
             if (shape != MapShape.rectangular) mapSize.radius
             else max (mapSize.height, mapSize.width * 3 / 4) * MapSize.Huge.radius / MapSize.Huge.height
         }
-        val groupSize = (minimapSize + 1) * 100f / effectiveRadius
+        val groupSize = (minimapSize + 1) * 10f / effectiveRadius
 
         for (tileInfo in mapHolder.tileMap.values) {
             val hex = ImageGetter.getImage("OtherIcons/Hexagon")
