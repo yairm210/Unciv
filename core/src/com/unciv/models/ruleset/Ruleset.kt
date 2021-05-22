@@ -34,6 +34,8 @@ class ModOptions {
 
     var lastUpdated = ""
     var modUrl = ""
+    var author = ""
+    var modSize = 0
 }
 
 class Ruleset {
