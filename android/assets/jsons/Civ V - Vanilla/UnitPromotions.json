@@ -136,6 +136,13 @@
 		"unitTypes": ["Melee"]
 	},
 	{
+		"name": "Amphibious",
+		"prerequisites": ["Shock I", "Drill I"],
+		"effect": "Eliminates combat penalty for attacking over a river",
+		"uniques": ["Eliminates combat penalty for attacking from the sea"],
+		"unitTypes": ["Melee"]
+	},
+	{
 		"name": "Medic",
 		"prerequisites": ["Shock I", "Drill I", "Scouting II"],
 		"effect": "This unit and all others in adjacent tiles heal 5 additional HP per turn",
