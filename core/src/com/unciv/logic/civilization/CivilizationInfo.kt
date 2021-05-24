@@ -302,7 +302,8 @@ class CivilizationInfo {
 
     fun getEquivalentUnit(baseUnitName: String): BaseUnit {
         val baseUnit = gameInfo.ruleSet.units[baseUnitName]
-            ?: throw UncivShowableException("Unit $baseUnitName doesn't seem to exist!")
+        @Suppress("FoldInitializerAndIfToElvis")
+        if (baseUnit == null) throw UncivShowableException("Unit $baseUnitName doesn't seem to exist!")
         if (baseUnit.replaces != null) return getEquivalentUnit(baseUnit.replaces!!) // Equivalent of unique unit is the equivalent of the replaced unit
 
         for (unit in gameInfo.ruleSet.units.values)
@@ -577,10 +578,9 @@ class CivilizationInfo {
         if (!gameInfo.ruleSet.units.containsKey(unitName)) return
         val unit = getEquivalentUnit(unitName)
         // silently bail if no tile to place the unit is found
-        val placedUnit = placeUnitNearTile(cityToAddTo.location, unit.name) ?: return
-        if (unit.isGreatPerson()) {
-            val locations = LocationAction(listOf(placedUnit.getTile().position,cityToAddTo.location))
-            addNotification("A [${unit.name}] has been born in [${cityToAddTo.name}]!", locations, unit.name)
+        val placedUnit = placeUnitNearTile(cityToAddTo.location, unit.name)
+        if (placedUnit != null && unit.isGreatPerson()) {
+            addNotification("A [${unit.name}] has been born in [${cityToAddTo.name}]!", placedUnit.getTile().position, unit.name)
         }
     }
 
