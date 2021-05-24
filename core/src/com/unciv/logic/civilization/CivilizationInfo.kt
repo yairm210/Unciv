@@ -123,8 +123,8 @@ class CivilizationInfo {
         toReturn.cities = cities.map { it.clone() }
 
         // This is the only thing that is NOT switched out, which makes it a source of ConcurrentModification errors.
-        // Cloning it by-pointer is a horrific move, since the serialization would go over it ANYWAY and still led to concurrency prolems.
-        // Cloning it  by iterating on the tilemap values may seem ridiculous, but it's a perfectly thread-safe way to go about it, unlike the other solutions.
+        // Cloning it by-pointer is a horrific move, since the serialization would go over it ANYWAY and still lead to concurrency problems.
+        // Cloning it by iterating on the tilemap values may seem ridiculous, but it's a perfectly thread-safe way to go about it, unlike the other solutions.
         toReturn.exploredTiles.addAll(gameInfo.tileMap.values.asSequence().map { it.position }.filter { it in exploredTiles })
         toReturn.notifications.addAll(notifications)
         toReturn.citiesCreated = citiesCreated
@@ -169,11 +169,12 @@ class CivilizationInfo {
     private fun getCivTerritory() = cities.asSequence().flatMap { it.tiles.asSequence() }
 
     fun victoryType(): VictoryType {
-        if (gameInfo.gameParameters.victoryTypes.size == 1)
-            return gameInfo.gameParameters.victoryTypes.first() // That is the most relevant one
+        val victoryTypes = gameInfo.gameParameters.victoryTypes
+        if (victoryTypes.size == 1)
+            return victoryTypes.first() // That is the most relevant one
         val victoryType = nation.preferredVictoryType
-        if (gameInfo.gameParameters.victoryTypes.contains(victoryType)) return victoryType
-        else return VictoryType.Neutral
+        return if (victoryType in victoryTypes) victoryType
+               else VictoryType.Neutral
     }
 
     fun stats() = CivInfoStats(this)
@@ -223,7 +224,7 @@ class CivilizationInfo {
     fun hasResource(resourceName: String): Boolean = getCivResourcesByName()[resourceName]!! > 0
 
     fun getCivWideBuildingUniques(): Sequence<Unique> = cities.asSequence().flatMap {
-        it.cityConstructions.builtBuildingUniqueMap.getAllUniques()
+        city -> city.cityConstructions.builtBuildingUniqueMap.getAllUniques()
                 .filter { it.params.isEmpty() || it.params.last() != "in this city" }
     }
 
@@ -233,7 +234,7 @@ class CivilizationInfo {
     fun getMatchingUniques(uniqueTemplate: String): Sequence<Unique> {
         return nation.uniqueObjects.asSequence().filter { it.placeholderText == uniqueTemplate } +
                 cities.asSequence().flatMap {
-                    it.cityConstructions.builtBuildingUniqueMap.getUniques(uniqueTemplate).asSequence()
+                    city -> city.cityConstructions.builtBuildingUniqueMap.getUniques(uniqueTemplate).asSequence()
                             .filter { it.params.isEmpty() || it.params.last() != "in this city" }
                 } +
                 policies.policyUniques.getUniques(uniqueTemplate) +
@@ -251,7 +252,7 @@ class CivilizationInfo {
         units = newList
 
         if (updateCivInfo) {
-            // Not relevant when updating tileinfo transients, since some info of the civ itself isn't yet available,
+            // Not relevant when updating TileInfo transients, since some info of the civ itself isn't yet available,
             // and in any case it'll be updated once civ info transients are
             updateStatsForNextTurn() // unit upkeep
             updateDetailedCivResources()
@@ -301,7 +302,7 @@ class CivilizationInfo {
 
     fun getEquivalentUnit(baseUnitName: String): BaseUnit {
         val baseUnit = gameInfo.ruleSet.units[baseUnitName]
-        if (baseUnit == null) throw UncivShowableException("Unit $baseUnitName doesn't seem to exist!")
+            ?: throw UncivShowableException("Unit $baseUnitName doesn't seem to exist!")
         if (baseUnit.replaces != null) return getEquivalentUnit(baseUnit.replaces!!) // Equivalent of unique unit is the equivalent of the replaced unit
 
         for (unit in gameInfo.ruleSet.units.values)
@@ -364,13 +365,15 @@ class CivilizationInfo {
     fun isAtWar() = diplomacy.values.any { it.diplomaticStatus == DiplomaticStatus.War && !it.otherCiv().isDefeated() }
 
     fun getLeaderDisplayName(): String {
-        var leaderName = nation.getLeaderDisplayName().tr()
-        if (playerType == PlayerType.AI)
-            leaderName += " (" + "AI".tr() + ")"
-        else if (gameInfo.civilizations.count { it.playerType == PlayerType.Human } > 1)
-            leaderName += " (" + "Human".tr() + " - " + "Hotseat".tr() + ")"
-        else leaderName += " (" + "Human".tr() + " - " + "Multiplayer".tr() + ")"
-        return leaderName
+        return nation.getLeaderDisplayName().tr() +
+            when {
+                playerType == PlayerType.AI ->
+                    " (" + "AI".tr() + ")"
+                gameInfo.civilizations.count { it.playerType == PlayerType.Human } > 1 ->
+                    " (" + "Human".tr() + " - " + "Hotseat".tr() + ")"
+                else ->
+                    " (" + "Human".tr() + " - " + "Multiplayer".tr() + ")"
+            }
     }
 
     fun canSignResearchAgreement(): Boolean {
@@ -414,8 +417,8 @@ class CivilizationInfo {
     //region state-changing functions
 
     /** This is separate because the REGULAR setTransients updates the viewable ties,
-     *  and the updateVisibleTiles tries to meet civs...
-     *  And if they civs on't yet know who they are then they don;t know if they're barbarians =\
+     *  and updateVisibleTiles tries to meet civs...
+     *  And if the civs don't yet know who they are then they don't know if they're barbarians =\
      *  */
     fun setNationTransient() {
         nation = gameInfo.ruleSet.nations[civName]
@@ -573,9 +576,12 @@ class CivilizationInfo {
         val cityToAddTo = city ?: cities.random()
         if (!gameInfo.ruleSet.units.containsKey(unitName)) return
         val unit = getEquivalentUnit(unitName)
-        placeUnitNearTile(cityToAddTo.location, unit.name)
-        if (unit.isGreatPerson())
-            addNotification("A [${unit.name}] has been born in [${cityToAddTo.name}]!", cityToAddTo.location, unit.name)
+        // silently bail if no tile to place the unit is found
+        val placedUnit = placeUnitNearTile(cityToAddTo.location, unit.name) ?: return
+        if (unit.isGreatPerson()) {
+            val locations = LocationAction(listOf(placedUnit.getTile().position,cityToAddTo.location))
+            addNotification("A [${unit.name}] has been born in [${cityToAddTo.name}]!", locations, unit.name)
+        }
     }
 
     fun placeUnitNearTile(location: Vector2, unitName: String): MapUnit? {
@@ -636,8 +642,12 @@ class CivilizationInfo {
         val militaryUnit = city.cityConstructions.getConstructableUnits()
                 .filter { !it.unitType.isCivilian() && it.unitType.isLandUnit() }
                 .toList().random()
-        placeUnitNearTile(city.location, militaryUnit.name)
-        addNotification("[${otherCiv.civName}] gave us a [${militaryUnit.name}] as gift near [${city.name}]!", city.location, otherCiv.civName, militaryUnit.name)
+        // placing the unit may fail - in that case stay quiet
+        val placedUnit = placeUnitNearTile(city.location, militaryUnit.name) ?: return
+        // Point to the places mentioned in the message in that order
+        val placedLocation = placedUnit.getTile().position
+        val locations = LocationAction(listOf(getCapital().location, placedLocation, city.location))
+        addNotification("[${otherCiv.civName}] gave us a [${militaryUnit.name}] as gift near [${city.name}]!", locations, otherCiv.civName, militaryUnit.name)
     }
 
     fun getAllyCiv() = allyCivName
