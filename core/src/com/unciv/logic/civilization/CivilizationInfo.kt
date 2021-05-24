@@ -638,15 +638,16 @@ class CivilizationInfo {
     }
 
     fun giftMilitaryUnitTo(otherCiv: CivilizationInfo) {
-        val city = NextTurnAutomation.getClosestCities(this, otherCiv).city1
+        val cities = NextTurnAutomation.getClosestCities(this, otherCiv)
+        val city = cities.city1
         val militaryUnit = city.cityConstructions.getConstructableUnits()
                 .filter { !it.unitType.isCivilian() && it.unitType.isLandUnit() }
                 .toList().random()
         // placing the unit may fail - in that case stay quiet
         val placedUnit = placeUnitNearTile(city.location, militaryUnit.name) ?: return
-        // Point to the places mentioned in the message in that order
+        // Point to the places mentioned in the message _in that order_ (debatable)
         val placedLocation = placedUnit.getTile().position
-        val locations = LocationAction(listOf(getCapital().location, placedLocation, city.location))
+        val locations = LocationAction(listOf(placedLocation, cities.city1.location, city.location))
         addNotification("[${otherCiv.civName}] gave us a [${militaryUnit.name}] as gift near [${city.name}]!", locations, otherCiv.civName, militaryUnit.name)
     }
 
