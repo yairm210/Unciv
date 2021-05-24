@@ -26,7 +26,7 @@ import kotlin.concurrent.thread
  */
 // All picker screens auto-wrap the top table in a ScrollPane.
 // Since we want the different parts to scroll separately, we disable the default ScrollPane, which would scroll everything at once.
-class ModManagementScreen: PickerScreen(disableScroll = true) {
+class ModManagementScreen: PickerScreen() {
 
     private val modTable = Table().apply { defaults().pad(10f) }
     private val scrollInstalledMods = ScrollPane(modTable)
