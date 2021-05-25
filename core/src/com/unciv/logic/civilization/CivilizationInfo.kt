@@ -642,6 +642,30 @@ class CivilizationInfo {
 
     fun getAllyCiv() = allyCivName
 
+    fun getProtectorCivs() : List<CivilizationInfo> {
+        if(this.isMajorCiv()) return emptyList()
+        return diplomacy.values
+                .filter{!it.otherCiv().isDefeated() && it.diplomaticStatus == DiplomaticStatus.Protector}
+                .map{it->it.otherCiv()}
+    }
+
+    fun addProtectorCiv(otherCiv: CivilizationInfo) {
+        if(!this.isCityState() or !otherCiv.isMajorCiv() or otherCiv.isDefeated()) return
+        if(!knows(otherCiv) or isAtWarWith(otherCiv)) return //Exception
+
+        val diplomacy = getDiplomacyManager(otherCiv.civName)
+        diplomacy.diplomaticStatus = DiplomaticStatus.Protector
+    }
+
+    fun removeProtectorCiv(otherCiv: CivilizationInfo) {
+        if(!this.isCityState() or !otherCiv.isMajorCiv() or otherCiv.isDefeated()) return
+        if(!knows(otherCiv) or isAtWarWith(otherCiv)) return //Exception
+
+        val diplomacy = getDiplomacyManager(otherCiv.civName)
+        diplomacy.diplomaticStatus = DiplomaticStatus.Peace
+        diplomacy.influence -= 20
+    }
+
     fun updateAllyCivForCityState() {
         var newAllyName = ""
         if (!isCityState()) return
