@@ -647,7 +647,7 @@ class CivilizationInfo {
         val placedUnit = placeUnitNearTile(city.location, militaryUnit.name) ?: return
         // Point to the places mentioned in the message _in that order_ (debatable)
         val placedLocation = placedUnit.getTile().position
-        val locations = LocationAction(listOf(placedLocation, cities.city1.location, city.location))
+        val locations = LocationAction(listOf(placedLocation, cities.city2.location, city.location))
         addNotification("[${otherCiv.civName}] gave us a [${militaryUnit.name}] as gift near [${city.name}]!", locations, otherCiv.civName, militaryUnit.name)
     }
 
