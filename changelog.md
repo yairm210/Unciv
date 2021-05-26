@@ -1,3 +1,17 @@
+## 3.14.11
+
+AI much less motivated to attack city-states
+
+Better peace agreement evaluations, for when there is no great power imbalance between nations
+
+Minimap slider has better values to accommodate screen sizes
+
+Better "in this city" unique filtering
+
+Added unit icons in unit overview screen
+
+Changes to terrain combat bonuses - By ravignir
+
 ## 3.14.10
 
 Unified "progress bars can't go beyond 100%"
