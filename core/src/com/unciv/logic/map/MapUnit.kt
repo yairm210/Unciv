@@ -445,13 +445,11 @@ class MapUnit {
         if (closestCity == null) return
         val distance = closestCity.getCenterTile().aerialDistanceTo(tile)
         var productionPointsToAdd = if (distance == 1) 20 else 20 - (distance - 2) * 5
-        if (productionPointsToAdd > 0) {
-            if (tile.owningCity == null || tile.owningCity!!.civInfo != civInfo) productionPointsToAdd = productionPointsToAdd * 2 / 3
-            closestCity.cityConstructions.addProductionPoints(productionPointsToAdd)
-            civInfo.addNotification("Clearing a [$removedTerrainFeature] has created [$productionPointsToAdd] Production for [${closestCity.name}]",
-                    closestCity.location, NotificationIcon.Construction)
-        }
-
+        if (productionPointsToAdd <= 0) return
+        if (tile.owningCity == null || tile.owningCity!!.civInfo != civInfo) productionPointsToAdd = productionPointsToAdd * 2 / 3
+        closestCity.cityConstructions.addProductionPoints(productionPointsToAdd)
+        civInfo.addNotification("Clearing a [$removedTerrainFeature] has created [$productionPointsToAdd] Production for [${closestCity.name}]",
+                closestCity.location, NotificationIcon.Construction)
     }
 
     private fun heal() {

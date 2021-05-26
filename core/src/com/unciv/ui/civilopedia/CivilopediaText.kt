@@ -2,7 +2,6 @@ package com.unciv.ui.civilopedia
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.scenes.scene2d.Actor
-import com.badlogic.gdx.scenes.scene2d.ui.Skin
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.ui.utils.*
@@ -54,11 +53,10 @@ class FormattedLine (
 
     /**
      * Renders the formatted line as a scene2d [Actor] (currently always a [Table])
-     * @param skin  The [Skin] to use for contained actors.
      * @param labelWidth Total width to render into, needed to support wrap on Labels.
      */
-    fun render(skin: Skin, labelWidth: Float): Actor {
-        val table = Table(skin)
+    fun render(labelWidth: Float): Actor {
+        val table = Table(CameraStageBaseScreen.skin)
         if (textToDisplay.isNotEmpty()) {
             val label = textToDisplay.toLabel()
             label.wrap = labelWidth > 0f
@@ -79,25 +77,23 @@ object MarkupRenderer {
     /**
      *  Build a Gdx [Table] showing [formatted][FormattedLine] [content][lines].
      *
-     *  @param lines
-     *  @param skin
+     *  @param lines            The formatted content to render.
      *  @param labelWidth       Available width needed for wrapping labels and [centered][FormattedLine.centered] attribute.
      *  @param linkAction       Delegate to call for internal links. Leave null to suppress linking.
      */
     fun render(
         lines: Collection<FormattedLine>,
-        skin: Skin? = null,
         labelWidth: Float = 0f,
         linkAction: ((id: String) -> Unit)? = null
     ): Table {
-        val skinToUse = skin ?: CameraStageBaseScreen.skin
-        val table = Table(skinToUse).apply { defaults().pad(defaultPadding).align(Align.left) }
+        val skin = CameraStageBaseScreen.skin
+        val table = Table(skin).apply { defaults().pad(defaultPadding).align(Align.left) }
         for (line in lines) {
             if (line.isEmpty()) {
                 table.add().padTop(emptyLineHeight).row()
                 continue
             }
-            val actor = line.render(skinToUse, labelWidth)
+            val actor = line.render(labelWidth)
             if (line.linkType == FormattedLine.LinkType.Internal && linkAction != null)
                 actor.onClick {
                     linkAction(line.link)
