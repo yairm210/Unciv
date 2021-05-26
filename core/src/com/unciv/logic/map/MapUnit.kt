@@ -6,6 +6,7 @@ import com.unciv.UncivGame
 import com.unciv.logic.automation.UnitAutomation
 import com.unciv.logic.automation.WorkerAutomation
 import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.LocationAction
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.Unique
@@ -442,14 +443,17 @@ class MapUnit {
     private fun tryProvideProductionToClosestCity(removedTerrainFeature: String) {
         val tile = getTile()
         val closestCity = civInfo.cities.minByOrNull { it.getCenterTile().aerialDistanceTo(tile) }
+        @Suppress("FoldInitializerAndIfToElvis")
         if (closestCity == null) return
         val distance = closestCity.getCenterTile().aerialDistanceTo(tile)
         var productionPointsToAdd = if (distance == 1) 20 else 20 - (distance - 2) * 5
-        if (productionPointsToAdd <= 0) return
         if (tile.owningCity == null || tile.owningCity!!.civInfo != civInfo) productionPointsToAdd = productionPointsToAdd * 2 / 3
-        closestCity.cityConstructions.addProductionPoints(productionPointsToAdd)
-        civInfo.addNotification("Clearing a [$removedTerrainFeature] has created [$productionPointsToAdd] Production for [${closestCity.name}]",
-                closestCity.location, NotificationIcon.Construction)
+        if (productionPointsToAdd > 0) {
+            closestCity.cityConstructions.addProductionPoints(productionPointsToAdd)
+            val locations = LocationAction(listOf(tile.position, closestCity.location))
+            civInfo.addNotification("Clearing a [$removedTerrainFeature] has created [$productionPointsToAdd] Production for [${closestCity.name}]",
+                locations, NotificationIcon.Construction)
+        }
     }
 
     private fun heal() {
