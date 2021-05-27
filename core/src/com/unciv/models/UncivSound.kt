@@ -1,6 +1,9 @@
 package com.unciv.models
 
-enum class UncivSound(val value: String) {
+enum class UncivSound(
+    val value: String,
+    var custom: String? = null
+) {
     Click("click"),
     Fortify("fortify"),
     Promote("promote"),
@@ -12,5 +15,14 @@ enum class UncivSound(val value: String) {
     Policy("policy"),
     Paper("paper"),
     Whoosh("whoosh"),
-    Silent("")
+    Silent(""),
+    Custom("");
+    companion object {
+        fun getCustom(name: String?): UncivSound {
+            if (name == null || name.isEmpty()) return Click
+            val item = Custom
+            item.custom = name
+            return item
+        }
+    }
 }

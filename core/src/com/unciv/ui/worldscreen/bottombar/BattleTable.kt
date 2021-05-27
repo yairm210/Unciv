@@ -13,6 +13,7 @@ import com.unciv.logic.automation.UnitAutomation
 import com.unciv.logic.battle.*
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.AttackableTile
+import com.unciv.models.UncivSound
 import com.unciv.models.ruleset.unit.UnitType
 import com.unciv.models.translations.tr
 import com.unciv.ui.utils.*
@@ -46,7 +47,7 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
         if (attacker is MapUnitCombatant && attacker.unit.hasUnique("Nuclear weapon")) {
             val selectedTile = worldScreen.mapHolder.selectedTile
             if (selectedTile == null) { hide(); return } // no selected tile
-            simulateNuke(attacker as MapUnitCombatant, selectedTile)
+            simulateNuke(attacker, selectedTile)
         }
         else {
             val defender = tryGetDefender()
@@ -207,7 +208,12 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
         }
 
         else {
-            attackButton.onClick {
+            // This is more of a demo for now. To do it properly the ICombatant interface would
+            // define how to get an attack sound, and city bombard could actually provide one...
+            val sound = if (attacker is MapUnitCombatant)
+                            UncivSound.getCustom(attacker.unit.baseUnit.attackSound)
+                        else UncivSound.Click
+            attackButton.onClick(sound) {
                 Battle.moveAndAttack(attacker, attackableTile)
                 worldScreen.mapHolder.removeUnitActionOverlay() // the overlay was one of attacking
                 worldScreen.shouldUpdate = true
