@@ -42,10 +42,9 @@
 	// Resource-specific
 	{
 		"name": "Camp",
-		"resourceTerrainAllow": ["Forest"],
 		"turnsToBuild": 7,
 		"techRequired": "Trapping",
-		"uniques": ["[+1 Gold] once [Economics] is discovered"],
+		"uniques": ["Does not need removal of [Forest]","[+1 Gold] once [Economics] is discovered"],
 		"shortcutKey": "C"
 	},
 	{

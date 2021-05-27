@@ -356,6 +356,9 @@ open class TileInfo {
             isCityCenter() -> false
             "Cannot be built on bonus resource" in improvement.uniques && resource != null
                     && getTileResource().resourceType == ResourceType.Bonus -> false
+            improvement.uniqueObjects.filter { it.placeholderText == "Cannot be built on [] tiles" }.any {
+                    unique -> matchesUniqueFilter(unique.params[0])
+            } -> false
 
             // Road improvements can change on tiles with irremovable improvements - nothing else can, though.
             improvement.name != RoadStatus.Railroad.name && improvement.name != RoadStatus.Railroad.name
@@ -376,22 +379,35 @@ open class TileInfo {
             improvement.name == "Railroad" && this.roadStatus != RoadStatus.Railroad && !isWater -> true
             improvement.name == "Remove Road" && this.roadStatus == RoadStatus.Road -> true
             improvement.name == "Remove Railroad" && this.roadStatus == RoadStatus.Railroad -> true
-            topTerrain.unbuildable && (topTerrain.name !in improvement.resourceTerrainAllow) -> false
+            topTerrain.unbuildable && !improvement.isAllowedOnFeature(topTerrain.name) -> false
             // DO NOT reverse this &&. isAdjacentToFreshwater() is a lazy which calls a function, and reversing it breaks the tests.
             improvement.hasUnique("Can also be built on tiles adjacent to fresh water") && isAdjacentToFreshwater -> true
             "Can only be built on Coastal tiles" in improvement.uniques && isCoastalTile() -> true
+            improvement.uniqueObjects.filter { it.placeholderText == "Can only be built on [] tiles" }.any {
+                unique -> !matchesUniqueFilter(unique.params[0])
+            } -> false
             else -> resourceIsVisible && getTileResource().improvement == improvement.name
         }
     }
 
+    /**
+     * Implementation of _`tileFilter`_ 
+     * @see <a href="https://github.com/yairm210/Unciv/wiki/uniques#user-content-tilefilter">tileFilter</a>
+     */
     fun matchesUniqueFilter(filter: String, civInfo: CivilizationInfo? = null): Boolean {
-        return filter == baseTerrain
+        return filter == "All"
+                || '+' in filter && filter.split('+').all { matchesUniqueFilter(it, civInfo) }
+                || ',' in filter && filter.split(',').any { matchesUniqueFilter(it, civInfo) }
+                || filter == baseTerrain
                 || filter == "River" && isAdjacentToRiver()
                 || terrainFeatures.contains(filter)
                 || baseTerrainObject.uniques.contains(filter)
                 || improvement == filter
+                || resource == filter
+                || (resource != null && getTileResource().resourceType.name + " resource" == filter)
                 || filter == "Water" && isWater
                 || filter == "Land" && isLand
+                || filter == "Coastal" && isCoastalTile()
                 || filter == naturalWonder
                 || terrainFeatures.isNotEmpty() && getTerrainFeatures().last().uniques.contains(filter)
                 || civInfo != null && hasViewableResource(civInfo) && resource == filter
