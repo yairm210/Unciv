@@ -28,6 +28,7 @@ class CivilopediaScreen(
      * @param name From [Ruleset] object [INamed.name]
      * @param description Multiline text
      * @param image Icon for button
+     * @param flavour [CivilopediaText]
      * @param y Y coordinate for scrolling to
      * @param height Cell height
      */
@@ -35,10 +36,11 @@ class CivilopediaScreen(
         val name: String,
         val description: String,
         val image: Actor? = null,
+        val flavour: ICivilopediaText? = null,
         val y: Float = 0f,              // coordinates of button cell used to scroll to entry
         val height: Float = 0f
     ) {
-        fun withCoordinates(y: Float, height: Float) = CivilopediaEntry(name, description, image, y, height)
+        fun withCoordinates(y: Float, height: Float) = CivilopediaEntry(name, description, image, flavour, y, height)
     }
 
     private val categoryToEntries = LinkedHashMap<CivilopediaCategories, Collection<CivilopediaEntry>>()
@@ -48,6 +50,7 @@ class CivilopediaScreen(
     private val entrySelectTable = Table().apply { defaults().pad(6f).left() }
     private val entrySelectScroll: ScrollPane
     private val descriptionLabel = "".toLabel()
+    private val flavourTable = Table()
 
     private var currentCategory: CivilopediaCategories = CivilopediaCategories.Tutorial
     private var currentEntry: String = ""
@@ -84,6 +87,7 @@ class CivilopediaScreen(
         entrySelectTable.clear()
         entryIndex.clear()
         descriptionLabel.setText("")
+        flavourTable.clear()
 
         for (button in categoryToButtons.values) button.color = Color.WHITE
         if (category !in categoryToButtons) return        // defense against being passed a bad selector
@@ -134,7 +138,22 @@ class CivilopediaScreen(
     }
     private fun selectEntry(entry: CivilopediaEntry) {
         currentEntry = entry.name
-        descriptionLabel.setText(entry.description)
+        if(entry.flavour != null && entry.flavour.replacesCivilopediaDescription()) {
+            descriptionLabel.setText("")
+            descriptionLabel.isVisible = false
+        } else {
+            descriptionLabel.setText(entry.description)
+            descriptionLabel.isVisible = true
+        }
+        flavourTable.clear()
+        if (entry.flavour != null) {
+            flavourTable.isVisible = true
+            flavourTable.add(
+                entry.flavour.assembleCivilopediaText(ruleset)
+                    .renderCivilopediaText(stage.width * 0.5f) { selectLink(it) })
+        } else {
+            flavourTable.isVisible = false
+        }
         entrySelectTable.children.forEach {
             it.color = if (it.name == entry.name) Color.BLUE else Color.WHITE
         }
@@ -150,7 +169,8 @@ class CivilopediaScreen(
                     CivilopediaEntry(
                         it.name,
                         it.getDescription(false, null, ruleset),
-                        CivilopediaCategories.Building.getImage?.invoke(it.name, imageSize)
+                        CivilopediaCategories.Building.getImage?.invoke(it.name, imageSize),
+                        (it as? ICivilopediaText).takeUnless { ct -> ct==null || ct.isCivilopediaTextEmpty() }
                     )
                 }
         categoryToEntries[CivilopediaCategories.Wonder] = ruleset.buildings.values
@@ -159,7 +179,8 @@ class CivilopediaScreen(
                     CivilopediaEntry(
                         it.name,
                         it.getDescription(false, null, ruleset),
-                        CivilopediaCategories.Wonder.getImage?.invoke(it.name, imageSize)
+                        CivilopediaCategories.Wonder.getImage?.invoke(it.name, imageSize),
+                        (it as? ICivilopediaText).takeUnless { ct -> ct==null || ct.isCivilopediaTextEmpty() }
                     )
                 }
         categoryToEntries[CivilopediaCategories.Resource] = ruleset.tileResources.values
@@ -167,7 +188,8 @@ class CivilopediaScreen(
                     CivilopediaEntry(
                         it.name,
                         it.getDescription(ruleset),
-                        CivilopediaCategories.Resource.getImage?.invoke(it.name, imageSize)
+                        CivilopediaCategories.Resource.getImage?.invoke(it.name, imageSize),
+                        (it as? ICivilopediaText).takeUnless { ct -> ct==null || ct.isCivilopediaTextEmpty() }
                     )
                 }
         categoryToEntries[CivilopediaCategories.Terrain] = ruleset.terrains.values
@@ -175,7 +197,8 @@ class CivilopediaScreen(
                     CivilopediaEntry(
                         it.name,
                         it.getDescription(ruleset),
-                        CivilopediaCategories.Terrain.getImage?.invoke(it.name, imageSize)
+                        CivilopediaCategories.Terrain.getImage?.invoke(it.name, imageSize),
+                        (it as? ICivilopediaText).takeUnless { ct -> ct==null || ct.isCivilopediaTextEmpty() }
                     )
                 }
         categoryToEntries[CivilopediaCategories.Improvement] = ruleset.tileImprovements.values
@@ -183,7 +206,8 @@ class CivilopediaScreen(
                     CivilopediaEntry(
                         it.name,
                         it.getDescription(ruleset, false),
-                        CivilopediaCategories.Improvement.getImage?.invoke(it.name, imageSize)
+                        CivilopediaCategories.Improvement.getImage?.invoke(it.name, imageSize),
+                        (it as? ICivilopediaText).takeUnless { ct -> ct==null || ct.isCivilopediaTextEmpty() }
                     )
                 }
         categoryToEntries[CivilopediaCategories.Unit] = ruleset.units.values
@@ -192,7 +216,8 @@ class CivilopediaScreen(
                     CivilopediaEntry(
                         it.name,
                         it.getDescription(false),
-                        CivilopediaCategories.Unit.getImage?.invoke(it.name, imageSize)
+                        CivilopediaCategories.Unit.getImage?.invoke(it.name, imageSize),
+                        (it as? ICivilopediaText).takeUnless { ct -> ct==null || ct.isCivilopediaTextEmpty() }
                     )
                 }
         categoryToEntries[CivilopediaCategories.Nation] = ruleset.nations.values
@@ -201,7 +226,8 @@ class CivilopediaScreen(
                     CivilopediaEntry(
                         it.name,
                         it.getUniqueString(ruleset, false),
-                        CivilopediaCategories.Nation.getImage?.invoke(it.name, imageSize)
+                        CivilopediaCategories.Nation.getImage?.invoke(it.name, imageSize),
+                        (it as? ICivilopediaText).takeUnless { ct -> ct==null || ct.isCivilopediaTextEmpty() }
                     )
                 }
         categoryToEntries[CivilopediaCategories.Technology] = ruleset.technologies.values
@@ -209,7 +235,8 @@ class CivilopediaScreen(
                     CivilopediaEntry(
                         it.name,
                         it.getDescription(ruleset),
-                        CivilopediaCategories.Technology.getImage?.invoke(it.name, imageSize)
+                        CivilopediaCategories.Technology.getImage?.invoke(it.name, imageSize),
+                        (it as? ICivilopediaText).takeUnless { ct -> ct==null || ct.isCivilopediaTextEmpty() }
                     )
                 }
         categoryToEntries[CivilopediaCategories.Promotion] = ruleset.unitPromotions.values
@@ -217,7 +244,8 @@ class CivilopediaScreen(
                     CivilopediaEntry(
                         it.name,
                         it.getDescription(ruleset.unitPromotions.values, true, ruleset),
-                        CivilopediaCategories.Promotion.getImage?.invoke(it.name, imageSize)
+                        CivilopediaCategories.Promotion.getImage?.invoke(it.name, imageSize),
+                        (it as? ICivilopediaText).takeUnless { ct -> ct==null || ct.isCivilopediaTextEmpty() }
                     )
                 }
 
@@ -227,6 +255,7 @@ class CivilopediaScreen(
                         it.key.replace("_", " "),
                         it.value.joinToString("\n\n") { line -> line.tr() },
 //                        CivilopediaCategories.Tutorial.getImage?.invoke(it.name, imageSize)
+                        flavour = SimpleCivilopediaText(it.value.asSequence(), true)
                     )
                 }
 
@@ -279,6 +308,7 @@ class CivilopediaScreen(
         entrySelectTable.top()
         entrySelectScroll.setOverscroll(false, false)
         val descriptionTable = Table()
+        descriptionTable.add(flavourTable).row()
         descriptionLabel.wrap = true            // requires explicit cell width!
         descriptionTable.add(descriptionLabel).width(stage.width * 0.5f).padTop(10f).row()
         val entrySplitPane = SplitPane(entrySelectScroll, ScrollPane(descriptionTable), false, skin)
