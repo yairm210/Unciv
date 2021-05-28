@@ -18,7 +18,6 @@ import com.unciv.models.stats.Stat
 import com.unciv.models.translations.tr
 import com.unciv.ui.utils.*
 import kotlin.concurrent.thread
-import kotlin.math.min
 import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 
 class CityConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScreen.skin) {
