@@ -1,9 +1,9 @@
 
 ## 3.14.12
 
-Added city strength label to city button
-
 Added unit action icons on map units, so it'll be immediately obvious what each unit is doing
+
+Added city strength label to city button
 
 City-states get all civs known by at least half of major civs, not 'by any civ'
 
