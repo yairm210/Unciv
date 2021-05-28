@@ -27,7 +27,7 @@ class CityScreen(internal val city: CityInfo): CameraStageBaseScreen() {
     // Clockwise from the top-left
 
     /** Displays current production, production queue and available productions list - sits on LEFT */
-    private var constructionsTable = ConstructionsTable(this)
+    private var constructionsTable = CityConstructionsTable(this)
 
     /** Displays stats, buildings, specialists and stats drilldown - sits on TOP LEFT, can be toggled to */
     private var cityInfoTable = CityInfoTable(this)

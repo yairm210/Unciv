@@ -21,7 +21,7 @@ import kotlin.concurrent.thread
 import kotlin.math.min
 import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 
-class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScreen.skin) {
+class CityConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScreen.skin) {
     /* -1 = Nothing, >= 0 queue entry (0 = current construction) */
     private var selectedQueueEntry = -1 // None
 
