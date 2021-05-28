@@ -1,3 +1,18 @@
+
+## 3.14.12
+
+Added city strength label to city button
+
+Added unit action icons on map units, so it'll be immediately obvious what each unit is doing
+
+City-states get all civs known by at least half of major civs, not 'by any civ'
+
+Better camera square image
+
+By SomeTroglodyte:
+- Added key shortcuts to popups
+- Improved location notifications 
+
 ## 3.14.11
 
 AI much less motivated to attack city-states
