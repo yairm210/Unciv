@@ -3,10 +3,7 @@ package com.unciv.logic.battle
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.city.CityInfo
-import com.unciv.logic.civilization.AlertType
-import com.unciv.logic.civilization.CivilizationInfo
-import com.unciv.logic.civilization.NotificationIcon
-import com.unciv.logic.civilization.PopupAlert
+import com.unciv.logic.civilization.*
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.map.RoadStatus
 import com.unciv.logic.map.TileInfo
@@ -50,7 +47,8 @@ object Battle {
 
         // Withdraw from melee ability
         if (attacker is MapUnitCombatant && attacker.isMelee() && defender is MapUnitCombatant) {
-            val withdraw = defender.unit.getMatchingUniques("May withdraw before melee ([]%)").firstOrNull()
+            val withdraw = defender.unit.getMatchingUniques("May withdraw before melee ([]%)")
+                .maxByOrNull{ it.params[0] }  // If a mod allows multiple withdraw properties, ensure the best is used
             if (withdraw != null && doWithdrawFromMeleeAbility(attacker, defender, withdraw)) return
         }
 
@@ -58,7 +56,7 @@ object Battle {
 
         takeDamage(attacker, defender)
 
-        postBattleNotifications(attacker, defender, attackedTile)
+        postBattleNotifications(attacker, defender, attackedTile, attacker.getTile())
 
         postBattleNationUniques(defender, attackedTile, attacker)
 
@@ -154,8 +152,13 @@ object Battle {
     }
 
 
-    private fun postBattleNotifications(attacker: ICombatant, defender: ICombatant, attackedTile: TileInfo) {
-        if (attacker.getCivInfo() != defender.getCivInfo()) { // If what happened was that a civilian unit was captures, that's dealt with in the CaptureCilvilianUnit function
+    private fun postBattleNotifications(
+        attacker: ICombatant,
+        defender: ICombatant,
+        attackedTile: TileInfo,
+        attackerTile: TileInfo? = null
+    ) {
+        if (attacker.getCivInfo() != defender.getCivInfo()) { // If what happened was that a civilian unit was captures, that's dealt with in the captureCivilianUnit function
             val whatHappenedString =
                     if (attacker !is CityCombatant && attacker.isDefeated()) " was destroyed while attacking"
                     else " has " + (
@@ -176,7 +179,12 @@ object Battle {
             val cityIcon = "ImprovementIcons/Citadel"
             val attackerIcon = if (attacker is CityCombatant) cityIcon else attacker.getName()
             val defenderIcon = if (defender is CityCombatant) cityIcon else defender.getName()
-            defender.getCivInfo().addNotification(notificationString, attackedTile.position, attackerIcon, NotificationIcon.War, defenderIcon)
+            val locations = LocationAction (
+                if (attackerTile != null && attackerTile.position != attackedTile.position)
+                        listOf(attackedTile.position, attackerTile.position)
+                else listOf(attackedTile.position) 
+            )
+            defender.getCivInfo().addNotification(notificationString, locations, attackerIcon, NotificationIcon.War, defenderIcon)
         }
     }
 
@@ -260,16 +268,16 @@ object Battle {
                 && otherCombatant.getCivInfo().isBarbarian())
             return
 
-        var XPModifier = 1f
+        var xpModifier = 1f
         for (unique in thisCombatant.getCivInfo().getMatchingUniques("[] units gain []% more Experience from combat")) {
             if (thisCombatant.unit.matchesFilter(unique.params[0]))
-                XPModifier += unique.params[1].toFloat() / 100
+                xpModifier += unique.params[1].toFloat() / 100
         }
         for (unique in thisCombatant.unit.getMatchingUniques("[]% Bonus XP gain"))
-            XPModifier += unique.params[0].toFloat() / 100
+            xpModifier += unique.params[0].toFloat() / 100
 
-        val XPGained = (amount * XPModifier).toInt()
-        thisCombatant.unit.promotions.XP += XPGained
+        val xpGained = (amount * xpModifier).toInt()
+        thisCombatant.unit.promotions.XP += xpGained
 
 
         if (thisCombatant.getCivInfo().isMajorCiv()) {
@@ -283,7 +291,7 @@ object Battle {
                     greatGeneralPointsModifier += unique.params[1].toFloat() / 100
             }
 
-            val greatGeneralPointsGained = (XPGained * greatGeneralPointsModifier).toInt()
+            val greatGeneralPointsGained = (xpGained * greatGeneralPointsModifier).toInt()
             thisCombatant.getCivInfo().greatPeople.greatGeneralPoints += greatGeneralPointsGained
         }
     }
@@ -343,7 +351,7 @@ object Battle {
         if (capturedUnit.name == Constants.settler) {
             val tile = capturedUnit.getTile()
             capturedUnit.destroy()
-            // This is so that future checks which check if a unit has been caatured are caught give the right answer
+            // This is so that future checks which check if a unit has been captured are caught give the right answer
             //  For example, in postBattleMoveToAttackedTile
             capturedUnit.civInfo = attacker.getCivInfo()
             attacker.getCivInfo().placeUnitNearTile(tile.position, Constants.worker)
@@ -416,7 +424,7 @@ object Battle {
 
         // Instead of postBattleAction() just destroy the missile, all other functions are not relevant
         if ((attacker as MapUnitCombatant).unit.hasUnique("Self-destructs when attacking")) {
-            (attacker as MapUnitCombatant).unit.destroy()
+            attacker.unit.destroy()
         }
     }
 
@@ -434,21 +442,22 @@ object Battle {
 
             val attackerName = attacker.getName()
             val interceptorName = interceptor.name
+            val locations = LocationAction(listOf(interceptor.currentTile.position, attacker.unit.currentTile.position))
 
             if (attacker.isDefeated()) {
                 attacker.getCivInfo()
                         .addNotification("Our [$attackerName] was destroyed by an intercepting [$interceptorName]",
-                                attackerName, NotificationIcon.War, interceptorName)
+                            interceptor.currentTile.position, attackerName, NotificationIcon.War, interceptorName)
                 defender.getCivInfo()
                         .addNotification("Our [$interceptorName] intercepted and destroyed an enemy [$attackerName]",
-                                interceptor.currentTile.position, interceptorName, NotificationIcon.War, attackerName)
+                            locations, interceptorName, NotificationIcon.War, attackerName)
             } else {
                 attacker.getCivInfo()
                         .addNotification("Our [$attackerName] was attacked by an intercepting [$interceptorName]",
-                                attackerName, NotificationIcon.War, interceptorName)
+                            interceptor.currentTile.position, attackerName, NotificationIcon.War, interceptorName)
                 defender.getCivInfo()
                         .addNotification("Our [$interceptorName] intercepted and attacked an enemy [$attackerName]",
-                                interceptor.currentTile.position, interceptorName, NotificationIcon.War, attackerName)
+                            locations, interceptorName, NotificationIcon.War, attackerName)
             }
             return
         }
@@ -456,8 +465,8 @@ object Battle {
 
     private fun doWithdrawFromMeleeAbility(attacker: ICombatant, defender: ICombatant, withdrawUnique: Unique): Boolean {
         // Some notes...
-        // unit.getUniques() is a union of baseunit uniques and promotion effects.
-        // according to some strategy guide the slinger's withdraw ability is inherited on upgrade,
+        // unit.getUniques() is a union of BaseUnit uniques and Promotion effects.
+        // according to some strategy guide the Slinger's withdraw ability is inherited on upgrade,
         // according to the Ironclad entry of the wiki the Caravel's is lost on upgrade.
         // therefore: Implement the flag as unique for the Caravel and Destroyer, as promotion for the Slinger.
         if (attacker !is MapUnitCombatant) return false         // allow simple access to unit property
@@ -505,8 +514,9 @@ object Battle {
 
         val attackingUnit = attackBaseUnit.name; val defendingUnit = defendBaseUnit.name
         val notificationString = "[$defendingUnit] withdrew from a [$attackingUnit]"
-        defender.getCivInfo().addNotification(notificationString, toTile.position, defendingUnit, NotificationIcon.War, attackingUnit)
-        attacker.getCivInfo().addNotification(notificationString, toTile.position, defendingUnit, NotificationIcon.War, attackingUnit)
+        val locations = LocationAction(listOf(toTile.position, attacker.getTile().position))
+        defender.getCivInfo().addNotification(notificationString, locations, defendingUnit, NotificationIcon.War, attackingUnit)
+        attacker.getCivInfo().addNotification(notificationString, locations, defendingUnit, NotificationIcon.War, attackingUnit)
         return true
     }
 

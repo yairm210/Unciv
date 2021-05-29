@@ -10,6 +10,7 @@ import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tile.*
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.tr
+import com.unciv.ui.civilopedia.FormattedLine
 import com.unciv.ui.utils.Fonts
 import kotlin.math.abs
 import kotlin.math.min
@@ -144,7 +145,7 @@ open class TileInfo {
             else if (!ruleset.tileResources.containsKey(resource!!)) throw Exception("Resource $resource does not exist in this ruleset!")
             else ruleset.tileResources[resource!!]!!
 
-    fun getNaturalWonder(): Terrain =
+    private fun getNaturalWonder(): Terrain =
             if (naturalWonder == null) throw Exception("No natural wonder exists for this tile!")
             else ruleset.terrains[naturalWonder!!]!!
 
@@ -179,8 +180,7 @@ open class TileInfo {
     fun getBaseTerrain(): Terrain = baseTerrainObject
 
     fun getOwner(): CivilizationInfo? {
-        val containingCity = getCity()
-        if (containingCity == null) return null
+        val containingCity = getCity() ?: return null
         return containingCity.civInfo
     }
 
@@ -204,8 +204,7 @@ open class TileInfo {
     fun hasUnique(unique: String) = getAllTerrains().any { it.uniques.contains(unique) }
 
     fun getWorkingCity(): CityInfo? {
-        val civInfo = getOwner()
-        if (civInfo == null) return null
+        val civInfo = getOwner() ?: return null
         return civInfo.cities.firstOrNull { it.isWorked(this) }
     }
 
@@ -260,7 +259,7 @@ open class TileInfo {
             stats.add(getTileResource()) // resource base
             if (resource.building != null && city != null && city.cityConstructions.isBuilt(resource.building!!)) {
                 val resourceBuilding = tileMap.gameInfo.ruleSet.buildings[resource.building!!]
-                if (resourceBuilding != null && resourceBuilding.resourceBonusStats != null)
+                if (resourceBuilding?.resourceBonusStats != null)
                     stats.add(resourceBuilding.resourceBonusStats!!) // resource-specific building (eg forge, stable) bonus
             }
         }
@@ -337,7 +336,7 @@ open class TileInfo {
                     improvement.hasUnique("Can be built outside your borders")
                             // citadel can be built only next to or within own borders
                             || improvement.hasUnique("Can be built just outside your borders")
-                                && neighbors.any { it.getOwner() == civInfo } && !civInfo.cities.isEmpty()
+                                && neighbors.any { it.getOwner() == civInfo } && civInfo.cities.isNotEmpty()
                     ) -> false
             improvement.uniqueObjects.any {
                 it.placeholderText == "Obsolete with []" && civInfo.tech.isResearched(it.params[0])
@@ -346,10 +345,10 @@ open class TileInfo {
         }
     }
 
-    /** Without regards to what civinfo it is, a lot of the checks are just for the improvement on the tile.
+    /** Without regards to what CivInfo it is, a lot of the checks are just for the improvement on the tile.
      *  Doubles as a check for the map editor.
      */
-    fun canImprovementBeBuiltHere(improvement: TileImprovement, resourceIsVisible: Boolean = resource != null): Boolean {
+    private fun canImprovementBeBuiltHere(improvement: TileImprovement, resourceIsVisible: Boolean = resource != null): Boolean {
         val topTerrain = getLastTerrain()
 
         return when {
@@ -358,7 +357,7 @@ open class TileInfo {
             "Cannot be built on bonus resource" in improvement.uniques && resource != null
                     && getTileResource().resourceType == ResourceType.Bonus -> false
 
-            // Road improvements can change on tiles withh irremovable improvements - nothing else can, though.
+            // Road improvements can change on tiles with irremovable improvements - nothing else can, though.
             improvement.name != RoadStatus.Railroad.name && improvement.name != RoadStatus.Railroad.name
                     && improvement.name != "Remove Road" && improvement.name != "Remove Railroad"
                     && getTileImprovement().let { it != null && it.hasUnique("Irremovable") } -> false
@@ -371,7 +370,7 @@ open class TileInfo {
             improvement.uniqueObjects.filter { it.placeholderText == "Must be next to []" }.any {
                 val filter = it.params[0]
                 if (filter == "River") return@any !isAdjacentToRiver()
-                else return@any !neighbors.any { it.matchesUniqueFilter(filter) }
+                else return@any !neighbors.any { neighbor -> neighbor.matchesUniqueFilter(filter) }
             } -> false
             improvement.name == "Road" && roadStatus == RoadStatus.None && !isWater -> true
             improvement.name == "Railroad" && this.roadStatus != RoadStatus.Railroad && !isWater -> true
@@ -448,8 +447,20 @@ open class TileInfo {
         return min(distance, wrappedDistance).toInt()
     }
 
-    override fun toString(): String { // for debugging, it helps to see what you're doing
-        return toString(null)
+    /** Shows important properties of this tile for debugging _only_, it helps to see what you're doing */
+    override fun toString(): String {
+        val lineList = arrayListOf("TileInfo @($position)")
+        if (isCityCenter()) lineList += getCity()!!.name
+        lineList += baseTerrain
+        for (terrainFeature in terrainFeatures) lineList += terrainFeature
+        if (resource != null ) lineList += resource!!
+        if (naturalWonder != null) lineList += naturalWonder!!
+        if (roadStatus !== RoadStatus.None && !isCityCenter()) lineList += roadStatus.name
+        if (improvement != null) lineList += improvement!!
+        if (civilianUnit != null) lineList += civilianUnit!!.name + " - " + civilianUnit!!.civInfo.civName
+        if (militaryUnit != null) lineList += militaryUnit!!.name + " - " + militaryUnit!!.civInfo.civName
+        if (isImpassible()) lineList += Constants.impassable
+        return lineList.joinToString()
     }
 
     /** The two tiles have a river between them */
@@ -481,8 +492,8 @@ open class TileInfo {
         return true
     }
 
-    fun toString(viewingCiv: CivilizationInfo?): String {
-        val lineList = ArrayList<String>() // more readable than StringBuilder, with same performance for our use-case
+    fun toMarkup(viewingCiv: CivilizationInfo?): ArrayList<FormattedLine> {
+        val lineList = ArrayList<FormattedLine>() // more readable than StringBuilder, with same performance for our use-case
         val isViewableToPlayer = viewingCiv == null || UncivGame.Current.viewEntireMapForDebug
                 || viewingCiv.viewableTiles.contains(this)
 
@@ -490,41 +501,45 @@ open class TileInfo {
             val city = getCity()!!
             var cityString = city.name.tr()
             if (isViewableToPlayer) cityString += " (" + city.health + ")"
-            lineList += cityString
+            lineList += FormattedLine(cityString)
             if (UncivGame.Current.viewEntireMapForDebug || city.civInfo == viewingCiv)
-                lineList += city.cityConstructions.getProductionForTileInfo()
+                lineList += city.cityConstructions.getProductionMarkup(ruleset)
         }
-        lineList += baseTerrain.tr()
-        for (terrainFeature in terrainFeatures) lineList += terrainFeature.tr()
-        if (resource != null && (viewingCiv == null || hasViewableResource(viewingCiv))) lineList += resource!!.tr()
-        if (naturalWonder != null) lineList += naturalWonder!!.tr()
-        if (roadStatus !== RoadStatus.None && !isCityCenter()) lineList += roadStatus.name.tr()
-        if (improvement != null) lineList += improvement!!.tr()
+        lineList += FormattedLine(baseTerrain, link="Terrain/$baseTerrain")
+        for (terrainFeature in terrainFeatures)
+            lineList += FormattedLine(terrainFeature, link="Terrain/$terrainFeature")
+        if (resource != null && (viewingCiv == null || hasViewableResource(viewingCiv)))
+            lineList += FormattedLine(resource!!, link="Resource/$resource")
+        if (naturalWonder != null)
+            lineList += FormattedLine(naturalWonder!!, link="Terrain/$naturalWonder")
+        if (roadStatus !== RoadStatus.None && !isCityCenter())
+            lineList += FormattedLine(roadStatus.name, link="Improvement/${roadStatus.name}")
+        if (improvement != null)
+            lineList += FormattedLine(improvement!!, link="Improvement/$improvement")
         if (improvementInProgress != null && isViewableToPlayer) {
-            var line = "{$improvementInProgress}"
-            if (turnsToImprovement > 0) line += " - $turnsToImprovement${Fonts.turn}"
-            else line += " ({Under construction})"
-            lineList += line.tr()
+            val line = "{$improvementInProgress}" +
+                if (turnsToImprovement > 0) " - $turnsToImprovement${Fonts.turn}" else " ({Under construction})"
+            lineList += FormattedLine(line, link="Improvement/$improvementInProgress")
         }
         if (civilianUnit != null && isViewableToPlayer)
-            lineList += civilianUnit!!.name.tr() + " - " + civilianUnit!!.civInfo.civName.tr()
+            lineList += FormattedLine(civilianUnit!!.name.tr() + " - " + civilianUnit!!.civInfo.civName.tr(),
+                link="Unit/${civilianUnit!!.name}")
         if (militaryUnit != null && isViewableToPlayer) {
-            var milUnitString = militaryUnit!!.name.tr()
-            if (militaryUnit!!.health < 100) milUnitString += "(" + militaryUnit!!.health + ")"
-            milUnitString += " - " + militaryUnit!!.civInfo.civName.tr()
-            lineList += milUnitString
+            val milUnitString = militaryUnit!!.name.tr() +
+                (if (militaryUnit!!.health < 100) "(" + militaryUnit!!.health + ")" else "") +
+                " - " + militaryUnit!!.civInfo.civName.tr()
+            lineList += FormattedLine(milUnitString, link="Unit/${militaryUnit!!.name}")
         }
         val defenceBonus = getDefensiveBonus()
         if (defenceBonus != 0f) {
             var defencePercentString = (defenceBonus * 100).toInt().toString() + "%"
             if (!defencePercentString.startsWith("-")) defencePercentString = "+$defencePercentString"
-            lineList += "[$defencePercentString] to unit defence".tr()
+            lineList += FormattedLine("[$defencePercentString] to unit defence")
         }
-        if (isImpassible()) lineList += Constants.impassable.tr()
+        if (isImpassible()) lineList += FormattedLine(Constants.impassable)
 
-        return lineList.joinToString("\n")
+        return lineList
     }
-
 
     fun hasEnemyInvisibleUnit(viewingCiv: CivilizationInfo): Boolean {
         val unitsInTile = getUnits()
@@ -649,7 +664,7 @@ open class TileInfo {
 
 
     private fun normalizeTileImprovement(ruleset: Ruleset) {
-        if (improvement!!.startsWith("StartingLocation") == true) {
+        if (improvement!!.startsWith("StartingLocation")) {
             if (!isLand || getLastTerrain().impassable) improvement = null
             return
         }

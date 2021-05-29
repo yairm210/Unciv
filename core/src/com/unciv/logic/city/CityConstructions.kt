@@ -5,10 +5,13 @@ import com.unciv.logic.civilization.AlertType
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.PopupAlert
 import com.unciv.models.ruleset.Building
+import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.UniqueMap
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.tr
+import com.unciv.ui.civilopedia.CivilopediaCategories
+import com.unciv.ui.civilopedia.FormattedLine
 import com.unciv.ui.utils.Fonts
 import com.unciv.ui.utils.withItem
 import com.unciv.ui.utils.withoutItem
@@ -139,6 +142,28 @@ class CityConstructions {
             result += " - $turnsLeft${Fonts.turn}"
         }
         return result
+    }
+
+    fun getProductionMarkup(ruleset: Ruleset): FormattedLine {
+        val currentConstructionSnapshot = currentConstructionFromQueue
+        if (currentConstructionSnapshot.isEmpty()) return FormattedLine()
+        val category = when {
+            ruleset.buildings[currentConstructionSnapshot]
+                ?.let{ it.isWonder || it.isNationalWonder } == true ->
+                CivilopediaCategories.Wonder.name
+            currentConstructionSnapshot in ruleset.buildings ->
+                CivilopediaCategories.Building.name
+            currentConstructionSnapshot in ruleset.units ->
+                CivilopediaCategories.Unit.name
+            else -> ""
+        }
+        var label = currentConstructionSnapshot
+        if (!PerpetualConstruction.perpetualConstructionsMap.containsKey(currentConstructionSnapshot)) {
+            val turnsLeft = turnsToConstruction(currentConstructionSnapshot)
+            label += " - $turnsLeft${Fonts.turn}"
+        }
+        return if (category.isEmpty()) FormattedLine(label)
+            else FormattedLine(label, link="$category/$currentConstructionSnapshot")
     }
 
     fun getCurrentConstruction(): IConstruction = getConstruction(currentConstructionFromQueue)

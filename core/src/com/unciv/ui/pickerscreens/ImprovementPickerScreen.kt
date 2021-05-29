@@ -129,7 +129,7 @@ class ImprovementPickerScreen(val tileInfo: TileInfo, val onAccept: ()->Unit) : 
             improvementButton.add(improvementButtonTable).pad(5f).fillY()
             if (improvement.name == tileInfo.improvementInProgress) improvementButton.color = Color.GREEN
             regularImprovements.add(improvementButton)
-            regularImprovements.add(pickNow).padLeft(10f)
+            regularImprovements.add(pickNow).padLeft(10f).fillY()
             regularImprovements.row()
         }
 
