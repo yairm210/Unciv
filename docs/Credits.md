@@ -103,6 +103,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Manhattan Project](https://thenounproject.com/search/?q=Nuclear%20Bomb&i=2041074) By corpus delicti, GR
 * [Nuclear Missile](https://thenounproject.com/marialuisa.iborra/collection/missiles-bombs/?i=1022574) By Lluisa Iborra, ES
 * Icon for Carrier made by [JackRainy](https://github.com/JackRainy), based on [Aircraft Carrier](https://thenounproject.com/icolabs/collection/flat-icons-transport/?i=2332914) By IcoLabs, BR
+* [Water Gun](https://thenounproject.com/term/water-gun/2121571) by ProSymbols for Marine
 
 ### Great People
 
@@ -501,6 +502,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * Icon for Flight Deck is made by [JackRainy](https://github.com/JackRainy)
 * Icon for Armor Plating is made by [JackRainy](https://github.com/JackRainy)
 * [Slingshot](https://thenounproject.com/term/slingshot/9106/) by James Keuning for Slinger Withdraw
+* [Anchor](https://thenounproject.com/term/anchor/676586) by Gregor Cresnar for Amphibious
 
 ## Others 
 
