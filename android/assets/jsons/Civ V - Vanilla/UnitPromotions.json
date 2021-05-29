@@ -138,8 +138,7 @@
 	{
 		"name": "Amphibious",
 		"prerequisites": ["Shock I", "Drill I"],
-		"effect": "Eliminates combat penalty for attacking over a river",
-		"uniques": ["Eliminates combat penalty for attacking from the sea"],
+		"uniques": ["Eliminates combat penalty for attacking over a river", "Eliminates combat penalty for attacking from the sea"],
 		"unitTypes": ["Melee"]
 	},
 	{
