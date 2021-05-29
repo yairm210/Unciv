@@ -2,6 +2,7 @@ package com.unciv.logic.city
 
 import com.badlogic.gdx.math.Vector2
 import com.unciv.logic.automation.Automation
+import com.unciv.logic.civilization.LocationAction
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.map.TileInfo
 import com.unciv.ui.utils.withItem
@@ -74,7 +75,7 @@ class CityExpansionManager {
                         it.getOwner() == null
                                 && it.neighbors.any { tile -> tile.getCity() == cityInfo }
                     }
-            val chosenTile = tiles.maxBy { Automation.rankTile(it, cityInfo.civInfo) }
+            val chosenTile = tiles.maxByOrNull { Automation.rankTile(it, cityInfo.civInfo) }
             if (chosenTile != null)
                 return chosenTile
         }
@@ -134,7 +135,7 @@ class CityExpansionManager {
         cityInfo.civInfo.updateDetailedCivResources()
         cityInfo.cityStats.update()
 
-        for (unit in tileInfo.getUnits().toList()) // tolisted because we're modifying
+        for (unit in tileInfo.getUnits().toList()) // toListed because we're modifying
             if (!unit.civInfo.canEnterTiles(cityInfo.civInfo))
                 unit.movement.teleportToClosestMoveableTile()
 
@@ -145,8 +146,10 @@ class CityExpansionManager {
         cultureStored += culture.toInt()
         if (cultureStored >= getCultureToNextTile()) {
             val location = addNewTileWithCulture()
-            if (location != null)
-                cityInfo.civInfo.addNotification("[" + cityInfo.name + "] has expanded its borders!", location, NotificationIcon.Culture)
+            if (location != null) {
+                val locations = LocationAction(listOf(location, cityInfo.location))
+                cityInfo.civInfo.addNotification("[" + cityInfo.name + "] has expanded its borders!", locations, NotificationIcon.Culture)
+            }
         }
     }
 

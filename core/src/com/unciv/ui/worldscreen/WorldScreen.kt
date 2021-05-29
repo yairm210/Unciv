@@ -25,8 +25,8 @@ import com.unciv.models.UncivSound
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.unit.UnitType
 import com.unciv.models.translations.tr
-import com.unciv.ui.civilopedia.CivilopediaScreen
 import com.unciv.ui.cityscreen.CityScreen
+import com.unciv.ui.civilopedia.CivilopediaScreen
 import com.unciv.ui.overviewscreen.EmpireOverviewScreen
 import com.unciv.ui.pickerscreens.GreatPersonPickerScreen
 import com.unciv.ui.pickerscreens.PolicyPickerScreen
@@ -50,13 +50,6 @@ import kotlin.concurrent.timer
  * Unciv's world screen
  * @param gameInfo The game state the screen should represent
  * @param viewingCiv The currently active [civilization][CivilizationInfo]
- * @see [shouldUpdate]
- * @see [isPlayersTurn]
- * @see [selectedCiv]
- * @see [canChangeState]
- * @see [mapHolder]
- * @see [bottomUnitTable]
- * @see [enableNextTurnButtonAfterOptions]
  * @property shouldUpdate When set, causes the screen to update in the next [render][CameraStageBaseScreen.render] event
  * @property isPlayersTurn (readonly) Indicates it's the player's ([viewingCiv]) turn
  * @property selectedCiv Selected civilization, used in spectator and replay mode, equals viewingCiv in ordinary games

@@ -6,6 +6,7 @@ import com.unciv.UncivGame
 import com.unciv.logic.automation.UnitAutomation
 import com.unciv.logic.automation.WorkerAutomation
 import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.LocationAction
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.Unique
@@ -439,19 +440,21 @@ class MapUnit {
         tile.improvementInProgress = null
     }
 
+    
     private fun tryProvideProductionToClosestCity(removedTerrainFeature: String) {
         val tile = getTile()
         val closestCity = civInfo.cities.minByOrNull { it.getCenterTile().aerialDistanceTo(tile) }
+        @Suppress("FoldInitializerAndIfToElvis")
         if (closestCity == null) return
         val distance = closestCity.getCenterTile().aerialDistanceTo(tile)
         var productionPointsToAdd = if (distance == 1) 20 else 20 - (distance - 2) * 5
         if (tile.owningCity == null || tile.owningCity!!.civInfo != civInfo) productionPointsToAdd = productionPointsToAdd * 2 / 3
         if (productionPointsToAdd > 0) {
             closestCity.cityConstructions.addProductionPoints(productionPointsToAdd)
+            val locations = LocationAction(listOf(tile.position, closestCity.location))
             civInfo.addNotification("Clearing a [$removedTerrainFeature] has created [$productionPointsToAdd] Production for [${closestCity.name}]",
-                    closestCity.location, NotificationIcon.Construction)
+                locations, NotificationIcon.Construction)
         }
-
     }
 
     private fun heal() {
@@ -630,7 +633,8 @@ class MapUnit {
             val city = civInfo.cities.random(tileBasedRandom)
             city.population.population++
             city.population.autoAssignPopulation()
-            civInfo.addNotification("We have found survivors in the ruins - population added to [" + city.name + "]", tile.position, NotificationIcon.Growth)
+            val locations = LocationAction(listOf(tile.position, city.location))
+            civInfo.addNotification("We have found survivors in the ruins - population added to [" + city.name + "]", locations, NotificationIcon.Growth)
         }
         val researchableAncientEraTechs = tile.tileMap.gameInfo.ruleSet.technologies.values
                 .filter {
@@ -752,21 +756,24 @@ class MapUnit {
     }
 
     private fun getCitadelDamage() {
-        // Check for Citadel damage
-        val applyCitadelDamage = currentTile.neighbors
-                .filter { it.getOwner() != null && civInfo.isAtWarWith(it.getOwner()!!) }
-                .map { it.getTileImprovement() }
-                .filter { it != null && it.hasUnique("Deal 30 damage to adjacent enemy units") }
-                .any()
+        // Check for Citadel damage - note: 'Damage does not stack with other Citadels'
+        val citadelTile = currentTile.neighbors
+                .filter {
+                    it.getOwner() != null && civInfo.isAtWarWith(it.getOwner()!!) &&
+                    with (it.getTileImprovement()) {
+                        this != null && this.hasUnique("Deal 30 damage to adjacent enemy units")
+                    }
+                }
+                .firstOrNull()
 
-        if (applyCitadelDamage) {
+        if (citadelTile != null) {
             health -= 30
-
+            val locations = LocationAction(listOf(citadelTile.position,currentTile.position))
             if (health <= 0) {
-                civInfo.addNotification("An enemy [Citadel] has destroyed our [$name]", currentTile.position, name, NotificationIcon.Death)
-                // todo - add notification for attacking civ
+                civInfo.addNotification("An enemy [Citadel] has destroyed our [$name]", locations, name, NotificationIcon.Death)
+                citadelTile.getOwner()?.addNotification("Your [Citadel] has destroyed an enemy [$name]", locations, name, NotificationIcon.Death)
                 destroy()
-            } else civInfo.addNotification("An enemy [Citadel] has attacked our [$name]", currentTile.position, name)
+            } else civInfo.addNotification("An enemy [Citadel] has attacked our [$name]", locations, name, NotificationIcon.War)
         }
     }
 

@@ -141,13 +141,13 @@ object NextTurnAutomation {
     }
 
     private fun getFreeTechForCityStates(civInfo: CivilizationInfo) {
-        //City-States automatically get all invented techs
-        for (otherCiv in civInfo.getKnownCivs().filter { it.isMajorCiv() }) {
-            for (entry in otherCiv.tech.techsResearched
-                    .filterNot { civInfo.tech.isResearched(it) }
-                    .filter { civInfo.tech.canBeResearched(it) }) {
-                civInfo.tech.addTechnology(entry)
-            }
+        // City-States automatically get all techs that at least half of the major civs know
+        val researchableTechs = civInfo.gameInfo.ruleSet.technologies.keys
+            .filter { civInfo.tech.canBeResearched(it) }
+        for (tech in researchableTechs) {
+            val aliveMajorCivs = civInfo.gameInfo.getAliveMajorCivs()
+            if (aliveMajorCivs.count { it.tech.isResearched(tech) } >= aliveMajorCivs.count() / 2)
+                civInfo.tech.addTechnology(tech)
         }
         return
     }
