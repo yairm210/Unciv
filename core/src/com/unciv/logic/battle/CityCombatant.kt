@@ -3,6 +3,7 @@ package com.unciv.logic.battle
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.TileInfo
+import com.unciv.models.UncivSound
 import com.unciv.models.ruleset.unit.UnitType
 import kotlin.math.pow
 import kotlin.math.roundToInt
@@ -20,6 +21,7 @@ class CityCombatant(val city: CityInfo) : ICombatant {
     override fun isInvisible(): Boolean = false
     override fun canAttack(): Boolean = (!city.attackedThisTurn)
     override fun matchesCategory(category: String) = category == "City"
+    override fun getAttackSound() = UncivSound.Bombard
 
     override fun takeDamage(damage: Int) {
         city.health -= damage
