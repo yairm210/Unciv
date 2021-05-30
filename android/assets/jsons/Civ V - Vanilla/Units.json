@@ -1076,7 +1076,8 @@
 		"cost": 1000,
 		"requiredTech": "Rocketry",
 		"requiredResource": "Uranium",
-		"uniques": ["Self-destructs when attacking", "Nuclear weapon", "Requires [Manhattan Project]"]
+		"uniques": ["Self-destructs when attacking", "Nuclear weapon", "Requires [Manhattan Project]"],
+		"attackSound": "nuke"
 	},
 	{
 		"name": "Landship",

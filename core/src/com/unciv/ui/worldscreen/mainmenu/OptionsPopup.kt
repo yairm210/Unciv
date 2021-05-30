@@ -181,7 +181,7 @@ class OptionsPopup(val previousScreen:CameraStageBaseScreen) : Popup(previousScr
                 settings.minimapSize = size
             }
             settings.save()
-            Sounds.play(UncivSound.Click)
+            Sounds.play(UncivSound.Slider)
             if (previousScreen is WorldScreen)
                 previousScreen.shouldUpdate = true
         }
@@ -276,7 +276,7 @@ class OptionsPopup(val previousScreen:CameraStageBaseScreen) : Popup(previousScr
         soundEffectsVolumeSlider.onChange {
             settings.soundEffectsVolume = soundEffectsVolumeSlider.value
             settings.save()
-            Sounds.play(UncivSound.Click)
+            Sounds.play(UncivSound.Slider)
         }
         optionsTable.add(soundEffectsVolumeSlider).pad(5f).row()
     }
