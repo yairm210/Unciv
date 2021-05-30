@@ -51,6 +51,7 @@ object UnitActions {
         addPromoteAction(unit, actionList)
         addUnitUpgradeAction(unit, actionList)
         addPillageAction(unit, actionList, worldScreen)
+        addParadropAction(unit, actionList, worldScreen)
         addSetupAction(unit, actionList)
         addFoundCityAction(unit, actionList, tile)
         addWorkerActions(unit, actionList, tile, worldScreen, unitTable)
@@ -150,6 +151,26 @@ object UnitActions {
                     unit.action = Constants.unitActionSetUp
                     unit.useMovementPoints(1f)
                 }.takeIf { unit.currentMovement > 0 && !isSetUp })
+    }
+
+    private fun addParadropAction(unit: MapUnit, actionList: ArrayList<UnitAction>, worldScreen: WorldScreen) {
+        val paradropUniques = unit.getMatchingUniques("May Paradrop up to [] tiles from inside friendly territory")
+        if (!paradropUniques.any()) return
+        unit.paradropRange = paradropUniques.maxOfOrNull { it.params[0] }!!.toInt()
+
+        actionList += UnitAction(UnitActionType.Paradrop,
+                action = {
+                    if (unit.action != Constants.unitActionParadrop) {
+                        unit.action = Constants.unitActionParadrop
+                    } else {
+                        unit.action = null
+                    }
+                }.takeIf {
+                    unit.currentMovement == unit.getMaxMovement().toFloat() &&
+                    unit.currentTile.owningCity != null &&
+                    unit.currentTile.owningCity!!.civInfo == unit.civInfo
+                })
+
     }
 
     private fun addPillageAction(unit: MapUnit, actionList: ArrayList<UnitAction>, worldScreen: WorldScreen) {

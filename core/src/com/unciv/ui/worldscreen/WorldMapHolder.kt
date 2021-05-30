@@ -218,7 +218,11 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
                 val turnsToGetThere = if (unit.type.isAirUnit()) {
                     if (unit.movement.canReach(tileInfo)) 1
                     else 0
-                } else unit.movement.getShortestPath(tileInfo).size // this is what takes the most time, tbh
+                } else if (unit.action == Constants.unitActionParadrop) {
+                    if (unit.movement.canReach(tileInfo)) 1
+                    else 0
+                } else
+                    unit.movement.getShortestPath(tileInfo).size // this is what takes the most time, tbh
                 unitToTurnsToTile[unit] = turnsToGetThere
             }
 
@@ -393,9 +397,14 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
         }
 
         val isAirUnit = unit.type.isAirUnit()
+        val moveTileOverlayColor = if (unit.action == Constants.unitActionParadrop) Color.BLUE else Color.WHITE
         val tilesInMoveRange =
                 if (isAirUnit)
                     unit.getTile().getTilesInDistanceRange(IntRange(1, unit.getRange() * 2))
+                else if (unit.action == Constants.unitActionParadrop)
+                    // Can only move to land tiles within range that are visible and not impassible
+                    // Based on some testing done in the base game
+                    unit.getTile().getTilesInDistance(unit.paradropRange).filter {it.isLand && !it.isImpassible() && unit.civInfo.viewableTiles.contains(it)}
                 else
                     unit.movement.getDistanceToTiles().keys.asSequence()
 
@@ -411,7 +420,7 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
                     }
                 if (unit.movement.canMoveTo(tile) ||
                         unit.movement.isUnknownTileWeShouldAssumeToBePassable(tile) && !unit.type.isAirUnit())
-                    tileToColor.showCircle(Color.WHITE,
+                    tileToColor.showCircle(moveTileOverlayColor,
                             if (UncivGame.Current.settings.singleTapMove || isAirUnit) 0.7f else 0.3f)
             }
         }

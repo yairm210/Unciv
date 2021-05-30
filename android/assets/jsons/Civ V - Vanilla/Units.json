@@ -1152,7 +1152,6 @@
 		"uniques": ["+[20]% Strength in [Foreign Land]"],
 		"attackSound": "shot"
 	},
-	/*
 	{
 		"name": "Paratrooper",
 		"unitType": "Melee",
@@ -1160,11 +1159,10 @@
 		"strength": 40,
 		"cost": 375,
 		"requiredTech": "Radar",
-		"uniques": ["May Paradrop"],
+		"uniques": ["May Paradrop up to [5] tiles from inside friendly territory"],
 		"attackSound": "shot"
 		// 65 strength in expansions, upgradesTo "XCOM Squad", "No Movement Cost to Pillage" in BNW
 	},
-	*/
 	{
 		"name": "Infantry",
 		"unitType": "Melee",

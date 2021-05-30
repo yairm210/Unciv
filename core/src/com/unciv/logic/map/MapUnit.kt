@@ -71,6 +71,9 @@ class MapUnit {
     @Transient
     var cannotEnterOceanTilesUntilAstronomy = false
 
+    @Transient
+    var paradropRange = 0
+
     lateinit var owner: String
 
     /**
@@ -522,6 +525,9 @@ class MapUnit {
             if (action!!.endsWith(" until healed")) {
                 action = null // wake up when healed
             }
+
+        if (action == Constants.unitActionParadrop)
+            action = null
 
         getCitadelDamage()
         getTerrainDamage()
