@@ -284,7 +284,9 @@ class CityConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBase
 
         if (!cannotAddConstructionToQueue(construction, cityScreen.city, cityScreen.city.cityConstructions)) {
             val addToQueueButton = ImageGetter.getImage("OtherIcons/New").apply { color = Color.BLACK }.surroundWithCircle(40f)
-            addToQueueButton.onClick { addConstructionToQueue(construction, cityScreen.city.cityConstructions) }
+            addToQueueButton.onClick(getConstructionSound(construction)) {
+                addConstructionToQueue(construction, cityScreen.city.cityConstructions)
+            }
             pickConstructionButton.add(addToQueueButton)
         }
         pickConstructionButton.row()
@@ -338,7 +340,9 @@ class CityConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBase
                     || cannotAddConstructionToQueue(construction, city, cityConstructions)) {
                 button.disable()
             } else {
-                button.onClick { addConstructionToQueue(construction, cityConstructions) }
+                button.onClick(getConstructionSound(construction)) {
+                    addConstructionToQueue(construction, cityConstructions)
+                }
             }
         }
 
@@ -360,6 +364,15 @@ class CityConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBase
         cityScreen.game.settings.addCompletedTutorialTask("Pick construction")
     }
 
+    fun getConstructionSound(construction: IConstruction): UncivSound {
+        return when(construction) {
+            is Building -> UncivSound.Construction
+            is BaseUnit -> UncivSound.Promote
+            PerpetualConstruction.gold -> UncivSound.Coin
+            PerpetualConstruction.science -> UncivSound.Paper
+            else -> UncivSound.Click
+        }
+    }
 
     fun purchaseConstruction(construction: IConstruction) {
         val city = cityScreen.city
