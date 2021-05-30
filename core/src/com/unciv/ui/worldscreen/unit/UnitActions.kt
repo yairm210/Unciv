@@ -167,8 +167,8 @@ object UnitActions {
                     }
                 }.takeIf {
                     unit.currentMovement == unit.getMaxMovement().toFloat() &&
-                    unit.currentTile.owningCity != null &&
-                    unit.currentTile.owningCity!!.civInfo == unit.civInfo
+                    unit.currentTile.isFriendlyTerritory(unit.civInfo) &&
+                    !unit.isEmbarked()
                 })
 
     }
