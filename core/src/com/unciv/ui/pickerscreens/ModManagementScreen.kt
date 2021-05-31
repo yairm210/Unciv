@@ -37,7 +37,19 @@ class ModManagementScreen: PickerScreen(disableScroll = true) {
     val modDescriptions: HashMap<String, String> = hashMapOf()
 
     init {
-        setDefaultCloseAction(MainMenuScreen())
+        
+        //setDefaultCloseAction(screen) // this would initialize the new MainMenuScreen immediately
+        val closeAction = {
+            val tileSets = ImageGetter.getAvailableTilesets()
+            if (game.settings.tileSet !in tileSets) {
+                game.settings.tileSet = tileSets.first()
+            }
+            game.setScreen(MainMenuScreen())
+            dispose()
+        }
+        closeButton.onClick(closeAction)
+        onBackButtonClicked(closeAction)
+
         refreshModTable()
 
         topTable.add("Current mods".toLabel()).padRight(35f) // 35 = 10 default pad + 25 to compensate for permanent visual mod decoration icon
