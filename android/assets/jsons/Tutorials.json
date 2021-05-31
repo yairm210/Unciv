@@ -135,10 +135,7 @@
   ],
   "World_Screen": [
 "",
-"#The World Screen",
 "This is where you spend most of your time playing Unciv. See the world, control your units, access other screens from here.",
-"",
-"✯WorldScreenHelp",
 "",
 "①: The menu button - civilopedia, save, load, options...",
 "②: The player/nation whose turn it is - click for diplomacy overview.",
@@ -169,7 +166,7 @@
 "ⓖ: The number of gold coins in your treasury and income. Clicks lead to the Stats overview screen.",
 "ⓧ: In the center of all this - the world map! Here, the \"X\" marks a spot outside the map. Yes, unless the wrap option was used, Unciv worlds are flat. Don't worry, your ships won't fall off the edge.",
 "ⓨ: By the way, here's how an empire border looks like - it's in the national colours of the nation owning the territory.",
-"ⓩ: And this is the red targeting circle that led to the attack pane back under (13).",
+"ⓩ: And this is the red targeting circle that led to the attack pane back under ⑬.",
 "What you don't see: The phone/tablet's back button will pop the question whether you wish to leave Unciv and go back to Real Life. On desktop versions, you can use the ESC key.",
   ]
 }

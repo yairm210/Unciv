@@ -189,12 +189,9 @@ class SimpleCivilopediaText(lines: List<FormattedLine>, val isComplete: Boolean 
     override fun hasCivilopediaTextLines() = true
     override fun replacesCivilopediaDescription() = isComplete
     constructor(strings: Sequence<String>, isComplete: Boolean = false) : this(
-        strings.map { line -> when {
-            line.isEmpty() -> FormattedLine()
-            line[0]=='#' -> FormattedLine(line.substring(1), header=1)
-            line[0]=='✯' -> FormattedLine(extraImage=line.substring(1))
-            else -> FormattedLine(line)
-        }}.toList(), isComplete)
+        strings.map { FormattedLine(it) }.toList(), isComplete)
+    constructor(first: Sequence<FormattedLine>, strings: Sequence<String>, isComplete: Boolean = false) : this(
+        (first + strings.map { FormattedLine(it) }).toList(), isComplete)
 }
 
 /** Addon common to most ruleset game objects managing civilopedia display

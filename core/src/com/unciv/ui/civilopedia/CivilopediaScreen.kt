@@ -255,7 +255,9 @@ class CivilopediaScreen(
                         it.key.replace("_", " "),
                         it.value.joinToString("\n\n") { line -> line.tr() },
 //                        CivilopediaCategories.Tutorial.getImage?.invoke(it.name, imageSize)
-                        flavour = SimpleCivilopediaText(it.value.asSequence(), true)
+                        flavour = SimpleCivilopediaText(
+                            sequenceOf(FormattedLine(extraImage = it.key)),
+                            it.value.asSequence(), true)
                     )
                 }
 
