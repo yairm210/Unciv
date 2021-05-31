@@ -104,7 +104,18 @@ class ModManagementScreen: PickerScreen(disableScroll = true) {
 
 
     init {
-        setDefaultCloseAction(MainMenuScreen())
+        //setDefaultCloseAction(screen) // this would initialize the new MainMenuScreen immediately
+        val closeAction = {
+            val tileSets = ImageGetter.getAvailableTilesets()
+            if (game.settings.tileSet !in tileSets) {
+                game.settings.tileSet = tileSets.first()
+            }
+            game.setScreen(MainMenuScreen())
+            dispose()
+        }
+        closeButton.onClick(closeAction)
+        onBackButtonClicked(closeAction)
+
         refreshInstalledModTable()
 
         // Header row
