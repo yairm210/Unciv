@@ -450,18 +450,17 @@ open class TileInfo {
     /** Shows important properties of this tile for debugging _only_, it helps to see what you're doing */
     override fun toString(): String {
         val lineList = arrayListOf("TileInfo @$position")
-        if (this::baseTerrain.isInitialized) {
-            if (isCityCenter()) lineList += getCity()!!.name
-            lineList += baseTerrain
-            for (terrainFeature in terrainFeatures) lineList += terrainFeature
-            if (resource != null) lineList += resource!!
-            if (naturalWonder != null) lineList += naturalWonder!!
-            if (roadStatus !== RoadStatus.None && !isCityCenter()) lineList += roadStatus.name
-            if (improvement != null) lineList += improvement!!
-            if (civilianUnit != null) lineList += civilianUnit!!.name + " - " + civilianUnit!!.civInfo.civName
-            if (militaryUnit != null) lineList += militaryUnit!!.name + " - " + militaryUnit!!.civInfo.civName
-            if (this::baseTerrainObject.isInitialized && isImpassible()) lineList += Constants.impassable
-        } else lineList += "uninitialized"
+        if (!this::baseTerrain.isInitialized) return lineList[0] + ", uninitialized"
+        if (isCityCenter()) lineList += getCity()!!.name
+        lineList += baseTerrain
+        for (terrainFeature in terrainFeatures) lineList += terrainFeature
+        if (resource != null) lineList += resource!!
+        if (naturalWonder != null) lineList += naturalWonder!!
+        if (roadStatus !== RoadStatus.None && !isCityCenter()) lineList += roadStatus.name
+        if (improvement != null) lineList += improvement!!
+        if (civilianUnit != null) lineList += civilianUnit!!.name + " - " + civilianUnit!!.civInfo.civName
+        if (militaryUnit != null) lineList += militaryUnit!!.name + " - " + militaryUnit!!.civInfo.civName
+        if (this::baseTerrainObject.isInitialized && isImpassible()) lineList += Constants.impassable
         return lineList.joinToString()
     }
 
