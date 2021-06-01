@@ -165,37 +165,44 @@ Spanish
   orig: 128, 128
   offset: 0, 0
   index: -1
-Thai
+Swedish
   rotate: false
   xy: 912, 132
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
-Traditional_Chinese
+Thai
   rotate: false
   xy: 1042, 262
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
-Turkish
+Traditional_Chinese
   rotate: false
   xy: 912, 2
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
-Ukrainian
+Turkish
   rotate: false
   xy: 1042, 132
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
-Vietnamese
+Ukrainian
   rotate: false
   xy: 1172, 262
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: -1
+Vietnamese
+  rotate: false
+  xy: 1042, 2
   size: 128, 128
   orig: 128, 128
   offset: 0, 0

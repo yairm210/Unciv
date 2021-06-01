@@ -1,3 +1,18 @@
+## 3.14.13
+
+New Swedish translations!
+
+City construction queue: Subsequent units no longer displays construction progress towards first unit of its kind
+
+By SomeTroglodyte:
+- Sound upgrade - enabled custom unit attack sounds
+- Spruced up ModManagementScreen
+- Patch ModManager exit to allow deactivating a selected tileset 
+- Spruced up Civilopedia - phase 2 - external links 
+
+Declare & Revoke protection for city-states - By ninjatao
+
+Added Marine unit and Amphibious promotion - By xlenstra
 
 ## 3.14.12
 

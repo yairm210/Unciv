@@ -1185,7 +1185,7 @@
 		"requiredTech": "Pharmaceuticals",
 		"attackSound": "shot",
 		"promotions": ["Amphibious"],
-		"uniques": ["+1 sight when embarked", "Defense bonus when embarked"]
+		"uniques": ["[+1] Sight when [Embarked]", "Defense bonus when embarked"]
 	},
 	{
 		"name": "Machine Gun",
