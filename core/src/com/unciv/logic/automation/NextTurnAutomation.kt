@@ -360,12 +360,12 @@ object NextTurnAutomation {
     }
 
     private fun motivationToAttack(civInfo: CivilizationInfo, otherCiv: CivilizationInfo): Int {
-        val ourCombatStrength = Automation.evaluteCombatStrength(civInfo).toFloat()
-        var theirCombatStrength = Automation.evaluteCombatStrength(otherCiv)
+        val ourCombatStrength = Automation.evaluateCombatStrength(civInfo).toFloat()
+        var theirCombatStrength = Automation.evaluateCombatStrength(otherCiv)
 
         //for city-states, also consider there protectors
         if(otherCiv.isCityState() and otherCiv.getProtectorCivs().isNotEmpty()) {
-            theirCombatStrength += otherCiv.getProtectorCivs().sumOf{Automation.evaluteCombatStrength(it)}
+            theirCombatStrength += otherCiv.getProtectorCivs().sumOf{Automation.evaluateCombatStrength(it)}
         }
 
         if (theirCombatStrength > ourCombatStrength) return 0

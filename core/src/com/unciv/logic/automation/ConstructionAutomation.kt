@@ -21,7 +21,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
 
     val buildableNotWonders = cityConstructions.getBuildableBuildings()
             .filterNot { it.isWonder || it.isNationalWonder }
-    val buildableWonders = cityConstructions.getBuildableBuildings()
+    private val buildableWonders = cityConstructions.getBuildableBuildings()
             .filter { it.isWonder || it.isNationalWonder }
 
     val civUnits = civInfo.getCivUnits()
@@ -33,7 +33,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
     val isAtWar = civInfo.isAtWar()
     val preferredVictoryType = civInfo.victoryType()
 
-    val averageProduction = civInfo.cities.map { it.cityStats.currentCityStats.production }.average()
+    private val averageProduction = civInfo.cities.map { it.cityStats.currentCityStats.production }.average()
     val cityIsOverAverageProduction = cityInfo.cityStats.currentCityStats.production >= averageProduction
 
     val relativeCostEffectiveness = ArrayList<ConstructionChoice>()
@@ -205,7 +205,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
         if (!buildableWonders.any()) return
 
         val highestPriorityWonder = buildableWonders
-                .maxBy { getWonderPriority(it) }!!
+            .maxByOrNull { getWonderPriority(it) }!!
         val citiesBuildingWonders = civInfo.cities
                 .count { it.cityConstructions.isBuildingWonder() }
 

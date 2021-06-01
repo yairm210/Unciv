@@ -132,8 +132,6 @@ class MapLandmassGenerator(val randomness: MapGenerationRandomness) {
 
     // region Cellular automata
     private fun generateLandCellularAutomata(tileMap: TileMap) {
-        val mapRadius = tileMap.mapParameters.mapSize.radius
-        val mapType = tileMap.mapParameters.type
         val numSmooth = 4
 
         // init

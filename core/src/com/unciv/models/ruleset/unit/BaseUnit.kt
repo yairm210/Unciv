@@ -184,9 +184,9 @@ class BaseUnit : INamed, IConstruction {
         return getRejectionReason(cityConstructions) == ""
     }
 
-    override fun postBuildEvent(construction: CityConstructions, wasBought: Boolean): Boolean {
-        val civInfo = construction.cityInfo.civInfo
-        val unit = civInfo.placeUnitNearTile(construction.cityInfo.location, name)
+    override fun postBuildEvent(cityConstructions: CityConstructions, wasBought: Boolean): Boolean {
+        val civInfo = cityConstructions.cityInfo.civInfo
+        val unit = civInfo.placeUnitNearTile(cityConstructions.cityInfo.location, name)
         if (unit == null) return false // couldn't place the unit, so there's actually no unit =(
 
         //movement penalty
@@ -195,10 +195,10 @@ class BaseUnit : INamed, IConstruction {
 
         if (this.unitType.isCivilian()) return true // tiny optimization makes save files a few bytes smaller
 
-        var XP = construction.getBuiltBuildings().sumBy { it.xpForNewUnits }
+        var XP = cityConstructions.getBuiltBuildings().sumBy { it.xpForNewUnits }
 
 
-        for (unique in construction.cityInfo.cityConstructions.builtBuildingUniqueMap
+        for (unique in cityConstructions.cityInfo.cityConstructions.builtBuildingUniqueMap
                 .getUniques("New [] units start with [] Experience in this city")
                 + civInfo.getMatchingUniques("New [] units start with [] Experience")) {
             if (unit.matchesFilter(unique.params[0]))
@@ -206,7 +206,7 @@ class BaseUnit : INamed, IConstruction {
         }
         unit.promotions.XP = XP
 
-        for (unique in construction.cityInfo.cityConstructions.builtBuildingUniqueMap
+        for (unique in cityConstructions.cityInfo.cityConstructions.builtBuildingUniqueMap
                 .getUniques("All newly-trained [] units in this city receive the [] promotion")) {
             val filter = unique.params[0]
             val promotion = unique.params[1]

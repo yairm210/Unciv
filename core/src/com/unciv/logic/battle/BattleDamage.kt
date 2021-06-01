@@ -118,7 +118,6 @@ object BattleDamage {
 
     fun getAttackModifiers(
         attacker: ICombatant,
-        tileToAttackFrom: TileInfo?,
         defender: ICombatant
     ): Counter<String> {
         val modifiers = getGeneralModifiers(attacker, defender)
@@ -280,7 +279,7 @@ object BattleDamage {
         defender: ICombatant
     ): Float {
         val attackModifier =
-            modifiersToMultiplicationBonus(getAttackModifiers(attacker, tileToAttackFrom, defender))
+            modifiersToMultiplicationBonus(getAttackModifiers(attacker, defender))
         return attacker.getAttackingStrength() * attackModifier
     }
 

@@ -119,7 +119,7 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
         add(defender.getDefendingStrength().toString()+Fonts.strength).row()
 
         val attackerModifiers =
-                BattleDamage.getAttackModifiers(attacker,null,defender).map {
+                BattleDamage.getAttackModifiers(attacker, defender).map {
                     val description = if(it.key.startsWith("vs ")) ("vs ["+it.key.replace("vs ","")+"]").tr() else it.key.tr()
                     val percentage = (if(it.value>0)"+" else "")+ it.value +"%"
                     "$description: $percentage"
