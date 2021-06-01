@@ -220,7 +220,7 @@ class CityConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBase
 
         var text = constructionName.tr() +
                 if (constructionName in PerpetualConstruction.perpetualConstructionsMap) "\n∞"
-                else cityConstructions.getTurnsToConstructionString(constructionName)
+                else cityConstructions.getTurnsToConstructionString(constructionName, isFirstConstructionOfItsKind)
 
         val constructionResource = cityConstructions.getConstruction(constructionName).getResourceRequirements()
         for ((resource, amount) in constructionResource)

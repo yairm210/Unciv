@@ -123,7 +123,7 @@ class CityConstructions {
         val construction = getConstruction(constructionName)
         val cost = construction.getProductionCost(cityInfo.civInfo)
         val turnsToConstruction = turnsToConstruction(constructionName, useStoredProduction)
-        val currentProgress = getWorkDone(constructionName)
+        val currentProgress = if (useStoredProduction) getWorkDone(constructionName) else 0
         if (currentProgress == 0) return "\n$cost${Fonts.production} $turnsToConstruction${Fonts.turn}"
         else return "\n$currentProgress/$cost${Fonts.production}\n$turnsToConstruction${Fonts.turn}"
     }

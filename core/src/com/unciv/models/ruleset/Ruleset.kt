@@ -323,7 +323,7 @@ class Ruleset {
                 fun getPrereqTree(technologyName: String): Sequence<String> {
                     val technology = technologies[technologyName]
                     if (technology == null) return sequenceOf()
-                    return technology.prerequisites.asSequence() + technology.prerequisites.flatMap { getPrereqTree(it) }
+                    return technology.prerequisites.asSequence() + technology.prerequisites.asSequence().flatMap { getPrereqTree(it) }
                 }
 
                 val allOtherPrereqs = tech.prerequisites.asSequence().filterNot { it == prereq }.flatMap { getPrereqTree(it) }
