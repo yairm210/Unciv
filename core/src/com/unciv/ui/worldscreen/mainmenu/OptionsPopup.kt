@@ -249,11 +249,11 @@ class OptionsPopup(val previousScreen:CameraStageBaseScreen) : Popup(previousScr
             val lines = ArrayList<String>()
             for (mod in RulesetCache.values) {
                 val modLinks = mod.checkModLinks()
-                if (modLinks != "") {
+                if (modLinks.isNotOK) {
                     lines += ""
                     lines += mod.name
                     lines += ""
-                    lines += modLinks
+                    lines += modLinks.message
                     lines += ""
                 }
             }

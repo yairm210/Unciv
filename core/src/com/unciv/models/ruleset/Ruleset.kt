@@ -227,9 +227,37 @@ class Ruleset {
         return stringList.joinToString()
     }
 
-
-    fun checkModLinks(): String {
+    /** Severity level of Mod RuleSet check */
+    enum class CheckModLinksStatus {OK, Warning, Error}
+    /** Result of a Mod RuleSet check */
+    // essentially a named Pair with a few shortcuts
+    class CheckModLinksResult(val status: CheckModLinksStatus, val message: String) {
+        // Empty constructor just makes the Complex Mod Check on the new game screen shorter 
+        constructor(): this(CheckModLinksStatus.OK, "")
+        // Constructor that joins lines
+        constructor(status: CheckModLinksStatus, lines: ArrayList<String>):
+                this (status,
+                    lines.joinToString("\n"))
+        // Constructor that auto-determines severity
+        constructor(warningCount: Int, lines: ArrayList<String>):
+                this (
+                    when {
+                        lines.isEmpty() -> CheckModLinksStatus.OK
+                        lines.size == warningCount -> CheckModLinksStatus.Warning
+                        else -> CheckModLinksStatus.Error
+                    },
+                    lines)
+        // Allows $this in format strings 
+        override fun toString() = message
+        // Readability shortcuts
+        val isError
+            get() = status == CheckModLinksStatus.Error
+        val isNotOK
+            get() = status != CheckModLinksStatus.OK
+    }
+    fun checkModLinks(): CheckModLinksResult {
         val lines = ArrayList<String>()
+        var warningCount = 0
 
         // Checks for all mods
         for (unit in units.values) {
@@ -253,7 +281,7 @@ class Ruleset {
                 lines += "${building.name} must either have an explicit cost or reference an existing tech!"
         }
 
-        if (!modOptions.isBaseRuleset) return lines.joinToString("\n")
+        if (!modOptions.isBaseRuleset) return CheckModLinksResult(warningCount, lines)
 
 
         for (unit in units.values) {
@@ -336,13 +364,14 @@ class Ruleset {
                 }
 
                 if (tech.prerequisites.asSequence().filterNot { it == prereq }
-                        .any { getPrereqTree(it).contains(prereq) })
-                    println("No need to add $prereq as a prerequisite of ${tech.name} - it is already implicit from the other prerequisites!")
+                        .any { getPrereqTree(it).contains(prereq) }){
+                    lines += "No need to add $prereq as a prerequisite of ${tech.name} - it is already implicit from the other prerequisites!"
+                    warningCount++
+                }
             }
         }
 
-
-        return lines.joinToString("\n")
+        return CheckModLinksResult(warningCount, lines)
     }
 }
 
