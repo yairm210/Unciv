@@ -117,10 +117,7 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
 
         val protectors = otherCiv.getProtectorCivs()
         if (protectors.size > 0) {
-            var protectorString = "{Protected by}: ".tr()
-            for (protectorName in protectors.map{it.civName}) {
-                protectorString = protectorString + "{$protectorName} ".tr()
-            }
+            val protectorString = "{Protected by}: " + protectors.map{it.civName}.joinToString(", ")
             diplomacyTable.add(protectorString.toLabel()).row()
         }
 
