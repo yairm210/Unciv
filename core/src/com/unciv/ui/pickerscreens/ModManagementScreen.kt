@@ -10,6 +10,7 @@ import com.badlogic.gdx.utils.Align
 import com.badlogic.gdx.utils.Json
 import com.unciv.JsonParser
 import com.unciv.MainMenuScreen
+import com.unciv.logic.GameSaver
 import com.unciv.models.ruleset.ModOptions
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
@@ -63,10 +64,12 @@ class ModManagementScreen: PickerScreen(disableScroll = true) {
 
     // cleanup - background processing needs to be stopped on exit and memory freed
     private var runningSearchThread: Thread? = null
+    private var scanSaveGamesThread: Thread? = null
     private var stopBackgroundTasks = false
     override fun dispose() {
         // make sure the worker threads will not continue trying their time-intensive job
         runningSearchThread?.interrupt()
+        scanSaveGamesThread?.interrupt()
         stopBackgroundTasks = true
         super.dispose()
     }
@@ -76,26 +79,37 @@ class ModManagementScreen: PickerScreen(disableScroll = true) {
      * @param container the table containing the indicators (one per mod, narrow, arranges up to three indicators vertically)
      * @param visualImage   image indicating _enabled as permanent visual mod_
      * @param updatedImage  image indicating _online mod has been updated_
+     * @param usedImage     image indicating _mod used in local savegames_
      */
     private class ModStateImages (
             val container: Table,
             isVisual: Boolean = false,
             isUpdated: Boolean = false,
+			isUsed: Boolean = false,
+            isBaseRuleset: Boolean = false,
             val visualImage: Image = ImageGetter.getImage("UnitPromotionIcons/Scouting"),
-            val updatedImage: Image = ImageGetter.getImage("OtherIcons/Mods")
+            val updatedImage: Image = ImageGetter.getImage("OtherIcons/Mods"),
+            val usedImage: Image = ImageGetter.getImage("OtherIcons/Resume"),
+            val baseRulesImage: Image = ImageGetter.getImage("OtherIcons/Quickstart")
         ) {
         // mad but it's really initializing with the primary constructor parameter and not calling update()
         var isVisual: Boolean = isVisual 
             set(value) { if(field!=value) { field = value; update() } }
         var isUpdated: Boolean = isUpdated
             set(value) { if(field!=value) { field = value; update() } }
+        var isUsed: Boolean = isUsed
+            set(value) { if(field!=value) { field = value; update() } }
+        var isBaseRuleset: Boolean = isBaseRuleset
+            set(value) { if(field!=value) { field = value; update() } }
         private val spacer = Table().apply { width = 20f; height = 0f }
         fun update() {
             container.run {
                 clear()
                 if (isVisual) add(visualImage).row()
+                if (isBaseRuleset) add(baseRulesImage).row()
                 if (isUpdated) add(updatedImage).row()
-                if (!isVisual && !isUpdated) add(spacer)
+                if (isUsed) add(usedImage).row()
+                if (!isVisual && !isUpdated && !isUsed && !isBaseRuleset) add(spacer)
                 pack()
             }
         }
@@ -117,6 +131,7 @@ class ModManagementScreen: PickerScreen(disableScroll = true) {
         onBackButtonClicked(closeAction)
 
         refreshInstalledModTable()
+        updateInUseIndicators()
 
         // Header row
         topTable.add().expandX()                // empty cols left and right for separator
@@ -185,6 +200,7 @@ class ModManagementScreen: PickerScreen(disableScroll = true) {
                             "\n" + "[${repo.stargazers_count}]✯".tr()
 
                     var downloadButtonText = repo.name
+
                     val existingMod = RulesetCache.values.firstOrNull { it.name == repo.name }
                     if (existingMod != null) {
                         if (existingMod.modOptions.lastUpdated != "" && existingMod.modOptions.lastUpdated != repo.updated_at) {
@@ -197,6 +213,7 @@ class ModManagementScreen: PickerScreen(disableScroll = true) {
                             existingMod.modOptions.modSize = repo.size
                         }
                     }
+
                     val downloadButton = downloadButtonText.toTextButton()
                     downloadButton.onClick { onlineButtonAction(repo, downloadButton) }
 
@@ -440,6 +457,8 @@ class ModManagementScreen: PickerScreen(disableScroll = true) {
     /** Rebuild the left-hand column containing all installed mods */
     private fun refreshInstalledModTable() {
         modTable.clear()
+        // preserve accumulated info on used mods in case this is called before that worker finishes
+        val oldUsedMods = HashSet(modStateImages.filter { it.value.isUsed }.map { it.key })
         installedScrollIndex.clear()
 
         var currentY = -1f
@@ -454,7 +473,10 @@ class ModManagementScreen: PickerScreen(disableScroll = true) {
                 if (imageMgr != null) imageMgr.container 
                 else {
                     val table = Table().apply { defaults().size(20f).align(Align.topLeft) }
-                    imageMgr = ModStateImages(table, isVisual = mod.name in game.settings.visualMods)
+                    imageMgr = ModStateImages(table,
+                        isVisual = mod.name in game.settings.visualMods,
+                        isUsed = mod.name in oldUsedMods,
+                        isBaseRuleset = mod.modOptions.isBaseRuleset)
                     modStateImages[mod.name] = imageMgr
                     table
                 }
@@ -501,5 +523,25 @@ class ModManagementScreen: PickerScreen(disableScroll = true) {
         RulesetCache.loadRulesets()
         modStateImages.remove(mod.name)
         refreshInstalledModTable()
+    }
+
+    /** Background worker: Scans all savegames, looks up their mod requirements and flags those mods */
+    private fun updateInUseIndicators() {
+        scanSaveGamesThread = thread(name="ScanModsInUse") {
+            for (file in GameSaver.getSaves()) {
+                if (stopBackgroundTasks || Thread.currentThread() != scanSaveGamesThread) break
+                try {
+                    val game = GameSaver.loadGamePreviewFromFile(file)
+                    for (modName in game.gameParameters.mods) {
+                        Gdx.app.postRunnable {
+                            modStateImages[modName]?.isUsed = true
+                        }
+                    }
+                } catch (ex: Exception) {
+                    // ignore any games we cannot scan
+                }
+            }
+            scanSaveGamesThread = null
+        }
     }
 }
