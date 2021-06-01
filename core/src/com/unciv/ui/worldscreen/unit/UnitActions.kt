@@ -155,10 +155,10 @@ object UnitActions {
 
     private fun addParadropAction(unit: MapUnit, actionList: ArrayList<UnitAction>, worldScreen: WorldScreen) {
         val paradropUniques = unit.getMatchingUniques("May Paradrop up to [] tiles from inside friendly territory")
-        if (!paradropUniques.any()) return
+        if (!paradropUniques.any() || unit.isEmbarked()) return
         unit.paradropRange = paradropUniques.maxOfOrNull { it.params[0] }!!.toInt()
-
         actionList += UnitAction(UnitActionType.Paradrop,
+                isCurrentAction = unit.action == Constants.unitActionParadrop,
                 action = {
                     if (unit.action != Constants.unitActionParadrop) {
                         unit.action = Constants.unitActionParadrop

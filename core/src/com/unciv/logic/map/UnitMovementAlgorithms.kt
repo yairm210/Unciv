@@ -211,7 +211,7 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
         if (unit.type.isAirUnit())
             return unit.currentTile.aerialDistanceTo(destination) <= unit.getRange()*2
         if (unit.action == Constants.unitActionParadrop)
-            return getDistance(unit.currentTile.position, destination.position) <= unit.paradropRange
+            return getDistance(unit.currentTile.position, destination.position) <= unit.paradropRange && canParadropOn(destination) 
         return getShortestPath(destination).any()
     }
 
@@ -343,7 +343,14 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
         }
         return false
     }
-
+    
+    // Can a paratrooper land at this tile?
+    fun canParadropOn(destination: TileInfo): Boolean {
+        // Can only move to land tiles within range that are visible and not impassible
+        // Based on some testing done in the base game
+        if (!destination.isLand || destination.isImpassible() || !unit.civInfo.viewableTiles.contains(destination)) return false
+        return true
+    }
 
     // This is the most called function in the entire game,
     // so multiple callees of this function have been optimized,

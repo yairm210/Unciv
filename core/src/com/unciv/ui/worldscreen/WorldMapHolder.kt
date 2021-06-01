@@ -398,15 +398,14 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
 
         val isAirUnit = unit.type.isAirUnit()
         val moveTileOverlayColor = if (unit.action == Constants.unitActionParadrop) Color.BLUE else Color.WHITE
-        val tilesInMoveRange =
-                if (isAirUnit)
-                    unit.getTile().getTilesInDistanceRange(IntRange(1, unit.getRange() * 2))
-                else if (unit.action == Constants.unitActionParadrop)
-                    // Can only move to land tiles within range that are visible and not impassible
-                    // Based on some testing done in the base game
-                    unit.getTile().getTilesInDistance(unit.paradropRange).filter {it.isLand && !it.isImpassible() && unit.civInfo.viewableTiles.contains(it)}
-                else
-                    unit.movement.getDistanceToTiles().keys.asSequence()
+        val tilesInMoveRange = 
+            if (isAirUnit)
+                unit.getTile().getTilesInDistanceRange(IntRange(1, unit.getRange() * 2))
+            else if (unit.action == Constants.unitActionParadrop)
+                unit.getTile().getTilesInDistance(unit.paradropRange)
+                    .filter { unit.movement.canParadropOn(it) }
+            else
+                unit.movement.getDistanceToTiles().keys.asSequence()
 
         for (tile in tilesInMoveRange) {
             for (tileToColor in tileGroups[tile]!!) {
