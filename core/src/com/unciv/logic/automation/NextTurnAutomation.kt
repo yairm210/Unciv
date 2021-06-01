@@ -45,6 +45,7 @@ object NextTurnAutomation {
         chooseTechToResearch(civInfo)
         automateCityBombardment(civInfo)
         useGold(civInfo)
+        protectCityStates(civInfo)
         automateUnits(civInfo)
         reassignWorkedTiles(civInfo)
         trainSettler(civInfo)
@@ -136,6 +137,20 @@ object NextTurnAutomation {
             if (construction.canBePurchased()
                     && city.civInfo.gold / 3 >= construction.getGoldCost(civInfo)) {
                 city.cityConstructions.purchaseConstruction(construction.name, 0, true)
+            }
+        }
+    }
+
+    private fun protectCityStates(civInfo: CivilizationInfo) {
+        for (state in civInfo.getKnownCivs().filter{!it.isDefeated() && it.isCityState()}) {
+            val diplomacyManager = state.getDiplomacyManager(civInfo.civName)
+            if(diplomacyManager.relationshipLevel() >= RelationshipLevel.Friend
+                    && diplomacyManager.diplomaticStatus == DiplomaticStatus.Peace)
+            {
+                state.addProtectorCiv(civInfo)
+            } else if (diplomacyManager.relationshipLevel() < RelationshipLevel.Friend
+                    && diplomacyManager.diplomaticStatus == DiplomaticStatus.Protector) {
+                state.removeProtectorCiv(civInfo)
             }
         }
     }
@@ -346,9 +361,14 @@ object NextTurnAutomation {
 
     private fun motivationToAttack(civInfo: CivilizationInfo, otherCiv: CivilizationInfo): Int {
         val ourCombatStrength = Automation.evaluteCombatStrength(civInfo).toFloat()
-        val theirCombatStrength = Automation.evaluteCombatStrength(otherCiv)
-        if (theirCombatStrength > ourCombatStrength) return 0
+        var theirCombatStrength = Automation.evaluteCombatStrength(otherCiv)
 
+        //for city-states, also consider there protectors
+        if(otherCiv.isCityState() and otherCiv.getProtectorCivs().isNotEmpty()) {
+            theirCombatStrength += otherCiv.getProtectorCivs().sumOf{Automation.evaluteCombatStrength(it)}
+        }
+
+        if (theirCombatStrength > ourCombatStrength) return 0
 
         fun isTileCanMoveThrough(tileInfo: TileInfo): Boolean {
             val owner = tileInfo.getOwner()
@@ -410,7 +430,8 @@ object NextTurnAutomation {
         if (theirCity.getTiles().none { it.neighbors.any { it.getOwner() == theirCity.civInfo && it.getCity() != theirCity } })
             modifierMap["Isolated city"] = 15
 
-        if (otherCiv.isCityState()) modifierMap["City-state"] = -20
+        //Maybe not needed if city-state has potential protectors?
+        if (otherCiv.isCityState()) modifierMap["City-state"] = -10
 
         return modifierMap.values.sum()
     }

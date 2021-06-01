@@ -525,7 +525,7 @@
 		"upgradesTo": "Musketman",
 		"obsoleteTech": "Metallurgy",
 		"requiredResource": "Iron",
-		"uniques": ["Amphibious"],
+		"promotions": ["Amphibious"],
 		"hurryCostModifier": 20,
 		"attackSound": "metalhit"
 		//Danish unique unit. Can attack from the sea without any penalty, and moves faster.
@@ -1076,7 +1076,8 @@
 		"cost": 1000,
 		"requiredTech": "Rocketry",
 		"requiredResource": "Uranium",
-		"uniques": ["Self-destructs when attacking", "Nuclear weapon", "Requires [Manhattan Project]"]
+		"uniques": ["Self-destructs when attacking", "Nuclear weapon", "Requires [Manhattan Project]"],
+		"attackSound": "nuke"
 	},
 	{
 		"name": "Landship",
@@ -1174,6 +1175,17 @@
 		"upgradesTo": "Mechanized Infantry",
 		"obsoleteTech": "Mobile Tactics",
 		"attackSound": "shot"
+	},
+	{
+		"name": "Marine",
+		"unitType": "Melee",
+		"movement": 2,
+		"strength": 65,
+		"cost": 400,
+		"requiredTech": "Pharmaceuticals",
+		"attackSound": "shot",
+		"promotions": ["Amphibious"],
+		"uniques": ["+1 sight when embarked", "Defense bonus when embarked"]
 	},
 	{
 		"name": "Machine Gun",

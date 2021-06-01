@@ -527,7 +527,7 @@
 			},
 			{
 				"name": "Nuclear Fission",
-				"row": 3,
+				"row": 4,
 				"prerequisites": ["Atomic Theory","Radar"],
 				"quote": "'I am become Death, the destroyer of worlds.' - J. Robert Oppenheimer"
 			},

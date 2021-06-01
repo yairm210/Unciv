@@ -118,8 +118,9 @@ object BattleDamage {
                 modifiers.add("Attacker Bonus", unique.params[0].toInt())
             }
 
-            if (attacker.unit.isEmbarked() && !attacker.unit.hasUnique("Amphibious"))
+            if (attacker.unit.isEmbarked() && !attacker.unit.hasUnique("Eliminates combat penalty for attacking from the sea"))
                 modifiers["Landing"] = -50
+
 
             if (attacker.isMelee()) {
                 val numberOfAttackersSurroundingDefender = defender.getTile().neighbors.count {
@@ -130,7 +131,7 @@ object BattleDamage {
                 if (numberOfAttackersSurroundingDefender > 1)
                     modifiers["Flanking"] = 10 * (numberOfAttackersSurroundingDefender - 1) //https://www.carlsguides.com/strategy/civilization5/war/combatbonuses.php
                 if (attacker.getTile().aerialDistanceTo(defender.getTile()) == 1 && attacker.getTile().isConnectedByRiver(defender.getTile())
-                        && !attacker.unit.hasUnique("Amphibious")) {
+                        && !attacker.unit.hasUnique("Eliminates combat penalty for attacking over a river")) {
                     if (!attacker.getTile().hasConnection(attacker.getCivInfo()) // meaning, the tiles are not road-connected for this civ
                             || !defender.getTile().hasConnection(attacker.getCivInfo())
                             || !attacker.getCivInfo().tech.roadsConnectAcrossRivers) {

@@ -207,7 +207,7 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
         }
 
         else {
-            attackButton.onClick {
+            attackButton.onClick(attacker.getAttackSound()) {
                 Battle.moveAndAttack(attacker, attackableTile)
                 worldScreen.mapHolder.removeUnitActionOverlay() // the overlay was one of attacking
                 worldScreen.shouldUpdate = true
@@ -278,7 +278,7 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
             attackButton.label.color = Color.GRAY
         }
         else {
-            attackButton.onClick {
+            attackButton.onClick(attacker.getAttackSound()) {
                 Battle.nuke(attacker, targetTile)
                 worldScreen.mapHolder.removeUnitActionOverlay() // the overlay was one of attacking
                 worldScreen.shouldUpdate = true

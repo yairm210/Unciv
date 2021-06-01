@@ -182,6 +182,7 @@ class DiplomacyManager() {
         var restingPoint = 0f
         for (unique in otherCiv().getMatchingUniques("Resting point for Influence with City-States is increased by []"))
             restingPoint += unique.params[0].toInt()
+        if(diplomaticStatus == DiplomaticStatus.Protector) restingPoint += 5
         return restingPoint
     }
 
@@ -542,6 +543,16 @@ class DiplomacyManager() {
                 if (thirdCiv.isCityState() && thirdCiv.getAllyCiv() == otherCiv.civName
                         && thirdCiv.knows(civInfo)
                         && thirdCiv.getDiplomacyManager(civInfo).canDeclareWar()) {
+                    thirdCiv.getDiplomacyManager(civInfo).declareWar()
+                }
+            }
+        }
+
+        if (otherCiv.isCityState())
+        {
+            for (thirdCiv in otherCiv.getProtectorCivs()) {
+                if (thirdCiv.knows(civInfo)
+                    && thirdCiv.getDiplomacyManager(civInfo).canDeclareWar()) {
                     thirdCiv.getDiplomacyManager(civInfo).declareWar()
                 }
             }

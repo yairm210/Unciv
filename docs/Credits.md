@@ -103,6 +103,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Manhattan Project](https://thenounproject.com/search/?q=Nuclear%20Bomb&i=2041074) By corpus delicti, GR
 * [Nuclear Missile](https://thenounproject.com/marialuisa.iborra/collection/missiles-bombs/?i=1022574) By Lluisa Iborra, ES
 * Icon for Carrier made by [JackRainy](https://github.com/JackRainy), based on [Aircraft Carrier](https://thenounproject.com/icolabs/collection/flat-icons-transport/?i=2332914) By IcoLabs, BR
+* [Water Gun](https://thenounproject.com/term/water-gun/2121571) by ProSymbols for Marine
 
 ### Great People
 
@@ -501,6 +502,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * Icon for Flight Deck is made by [JackRainy](https://github.com/JackRainy)
 * Icon for Armor Plating is made by [JackRainy](https://github.com/JackRainy)
 * [Slingshot](https://thenounproject.com/term/slingshot/9106/) by James Keuning for Slinger Withdraw
+* [Anchor](https://thenounproject.com/term/anchor/676586) by Gregor Cresnar for Amphibious
 
 ## Others 
 
@@ -560,6 +562,11 @@ Sounds are from FreeSound.org and are either Creative Commons or Public Domain
 * [Horse Neigh 2](https://freesound.org/people/GoodListener/sounds/322450/) By GoodListener as 'horse' for cavalry attack sounds
 * [machine gun 001 - loop](https://freesound.org/people/pgi/sounds/212602/) By pgi as 'machinegun' for machine gun attack sound
 * [uzzi_full_single](https://freesound.org/people/Deganoth/sounds/348685/) By Deganoth as 'shot' for bullet attacks
+* [Grenade Launcher 2](https://soundbible.com/2140-Grenade-Launcher-2.html) By Daniel Simon as city bombard sound (CC Attribution 3.0 license)
+* [Woosh](https://soundbible.com/2068-Woosh.html) by Mark DiAngelo as 'slider' sound (CC Attribution 3.0 license)
+* [Tornado-Siren-II](https://soundbible.com/1937-Tornado-Siren-II.html) by Delilah as part of 'nuke' sound (CC Attribution 3.0 license)
+* [Explosion-Ultra-Bass](https://soundbible.com/1807-Explosion-Ultra-Bass.html) by Mark DiAngelo as part of 'nuke' sound (CC Attribution 3.0 license)
+* [Short Choir](https://freesound.org/people/Breviceps/sounds/444491/) by Breviceps as 'choir' for free great person pick
 
 
 # Music
