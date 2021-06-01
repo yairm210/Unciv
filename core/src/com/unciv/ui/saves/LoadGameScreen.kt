@@ -14,7 +14,7 @@ import com.unciv.logic.UncivShowableException
 import com.unciv.models.translations.tr
 import com.unciv.ui.pickerscreens.PickerScreen
 import com.unciv.ui.utils.*
-import java.text.SimpleDateFormat
+import com.unciv.ui.utils.UncivDateFormat.formatDate
 import java.util.*
 import java.util.concurrent.CancellationException
 import kotlin.concurrent.thread
@@ -180,8 +180,7 @@ class LoadGameScreen(previousScreen:CameraStageBaseScreen) : PickerScreen(disabl
 
 
         val savedAt = Date(save.lastModified())
-        var textToSet = save.name() +
-             "\n${"Saved at".tr()}: " + SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.US).format(savedAt)
+        var textToSet = save.name() + "\n${"Saved at".tr()}: " + savedAt.formatDate()
         thread { // Even loading the game to get its metadata can take a long time on older phones
             try {
                 val game = GameSaver.loadGamePreviewFromFile(save)

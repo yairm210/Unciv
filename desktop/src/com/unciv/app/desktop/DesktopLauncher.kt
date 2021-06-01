@@ -57,6 +57,8 @@ internal object DesktopLauncher {
         LwjglApplication(game, config)
     }
 
+    // Work in Progress?
+    @Suppress("unused")
     private fun startMultiplayerServer() {
 //        val games = HashMap<String, GameSetupInfo>()
         val files = HashMap<String, String>()
@@ -115,7 +117,7 @@ internal object DesktopLauncher {
         // https://github.com/yairm210/UnCiv/issues/1340
 
         /**
-         * These should be as big as possible in order to accommodate ALL the images together in one bug file.
+         * These should be as big as possible in order to accommodate ALL the images together in one big file.
          * Why? Because the rendering function of the main screen renders all the images consecutively, and every time it needs to switch between textures,
          * this causes a delay, leading to horrible lag if there are enough switches.
          * The cost of this specific solution is that the entire game.png needs be be kept in-memory constantly.
@@ -163,14 +165,14 @@ internal object DesktopLauncher {
     private fun packImagesIfOutdated(settings: TexturePacker.Settings, input: String, output: String, packFileName: String) {
         fun File.listTree(): Sequence<File> = when {
             this.isFile -> sequenceOf(this)
-            this.isDirectory -> this.listFiles().asSequence().flatMap { it.listTree() }
+            this.isDirectory -> this.listFiles()!!.asSequence().flatMap { it.listTree() }
             else -> sequenceOf()
         }
 
         val atlasFile = File("$output${File.separator}$packFileName.atlas")
         if (atlasFile.exists() && File("$output${File.separator}$packFileName.png").exists()) {
             val atlasModTime = atlasFile.lastModified()
-            if (!File(input).listTree().any { it.extension in listOf("png", "jpg", "jpeg") && it.lastModified() > atlasModTime }) return
+            if (File(input).listTree().none { it.extension in listOf("png", "jpg", "jpeg") && it.lastModified() > atlasModTime }) return
         }
 
         TexturePacker.process(settings, input, output, packFileName)
