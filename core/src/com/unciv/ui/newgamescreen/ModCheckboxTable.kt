@@ -2,6 +2,7 @@ package com.unciv.ui.newgamescreen
 
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox
 import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.unciv.models.ruleset.Ruleset.CheckModLinksResult
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.translations.tr
 import com.unciv.ui.utils.CameraStageBaseScreen
@@ -22,35 +23,37 @@ class ModCheckboxTable(val mods:LinkedHashSet<String>, val screen: CameraStageBa
             checkBox.onChange {
                 if (checkBox.isChecked) {
                     val modLinkErrors = mod.checkModLinks()
-                    if (modLinkErrors != "") {
+                    if (modLinkErrors.isNotOK) {
                         ToastPopup("The mod you selected is incorrectly defined!\n\n$modLinkErrors", screen)
-                        checkBox.isChecked = false
-                        return@onChange
+                        if (modLinkErrors.isError) {
+                            checkBox.isChecked = false
+                            return@onChange
+                        }
                     }
 
                     val previousMods = mods.toList()
 
                     if (mod.modOptions.isBaseRuleset)
-                        for (oldBaseRuleset in previousMods) // so we don't get concurrent modification excpetions
+                        for (oldBaseRuleset in previousMods) // so we don't get concurrent modification exceptions
                             if (modRulesets.firstOrNull { it.name == oldBaseRuleset }?.modOptions?.isBaseRuleset == true)
                                 mods.remove(oldBaseRuleset)
                     mods.add(mod.name)
 
                     var isCompatibleWithCurrentRuleset = true
-                    var complexModLinkErrors = ""
+                    var complexModLinkCheck = CheckModLinksResult()
                     try {
                         val newRuleset = RulesetCache.getComplexRuleset(mods)
                         newRuleset.modOptions.isBaseRuleset = true // This is so the checkModLinks finds all connections
-                        complexModLinkErrors = newRuleset.checkModLinks()
-                        if (complexModLinkErrors != "") isCompatibleWithCurrentRuleset = false
+                        complexModLinkCheck = newRuleset.checkModLinks()
+                        isCompatibleWithCurrentRuleset = !complexModLinkCheck.isError
                     } catch (x: Exception) {
                         // This happens if a building is dependent on a tech not in the base ruleset
-                        //  because newRuleset.updateBuildingCosts() in getComplexRulset() throws an error
+                        //  because newRuleset.updateBuildingCosts() in getComplexRuleset() throws an error
                         isCompatibleWithCurrentRuleset = false
                     }
 
                     if (!isCompatibleWithCurrentRuleset) {
-                        ToastPopup("The mod you selected is incompatible with the defined ruleset!\n\n$complexModLinkErrors", screen)
+                        ToastPopup("The mod you selected is incompatible with the defined ruleset!\n\n$complexModLinkCheck", screen)
                         checkBox.isChecked = false
                         mods.clear()
                         mods.addAll(previousMods)
