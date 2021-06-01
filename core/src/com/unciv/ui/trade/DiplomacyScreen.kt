@@ -11,6 +11,7 @@ import com.unciv.logic.civilization.*
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomacyManager
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers.*
+import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.logic.trade.TradeLogic
 import com.unciv.logic.trade.TradeOffer
@@ -114,6 +115,12 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
             diplomacyTable.add(allyString.toLabel()).row()
         }
 
+        val protectors = otherCiv.getProtectorCivs()
+        if (protectors.size > 0) {
+            val protectorString = "{Protected by}: " + protectors.map{it.civName}.joinToString(", ")
+            diplomacyTable.add(protectorString.toLabel()).row()
+        }
+
         val nextLevelString = when {
             otherCivDiplomacyManager.influence.toInt() < 30 -> "Reach 30 for friendship."
             ally == viewingCiv.civName -> ""
@@ -156,8 +163,32 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
         diplomacyTable.add(giftButton).row()
         if (viewingCiv.gold < giftAmount || isNotPlayersTurn()) giftButton.disable()
 
-        val diplomacyManager = viewingCiv.getDiplomacyManager(otherCiv)
+        if (otherCivDiplomacyManager.diplomaticStatus == DiplomaticStatus.Protector){
+            val RevokeProtectionButton = "Revoke Protection".toTextButton()
+            RevokeProtectionButton.onClick{
+                YesNoPopup("Revoke protection for [${otherCiv.civName}]?".tr(), {
+                    otherCiv.removeProtectorCiv(viewingCiv)
+                    updateLeftSideTable()
+                    updateRightSide(otherCiv)
+                }, this).open()
+            }
+            diplomacyTable.add(RevokeProtectionButton).row()
+        } else {
+            val ProtectionButton = "Pledge to protect".toTextButton()
+            ProtectionButton.onClick{
+                YesNoPopup("Declare Protection of [${otherCiv.civName}]?".tr(), {
+                    otherCiv.addProtectorCiv(viewingCiv)
+                    updateLeftSideTable()
+                    updateRightSide(otherCiv)
+                }, this).open()
+            }
+            if(viewingCiv.isAtWarWith(otherCiv)) {
+                ProtectionButton.disable()
+            }
+            diplomacyTable.add(ProtectionButton).row()
+        }
 
+        val diplomacyManager = viewingCiv.getDiplomacyManager(otherCiv)
         if (!viewingCiv.gameInfo.ruleSet.modOptions.uniques.contains(ModOptionsConstants.diplomaticRelationshipsCannotChange)) {
             if (viewingCiv.isAtWarWith(otherCiv)) {
                 val peaceButton = "Negotiate Peace".toTextButton()
