@@ -1,5 +1,6 @@
 package com.unciv.logic.civilization
 
+import com.unciv.Constants
 import com.unciv.models.Counter
 import com.unciv.models.ruleset.VictoryType
 
@@ -40,7 +41,13 @@ class VictoryManager {
 
     fun hasWonDominationVictory(): Boolean {
         return hasVictoryType(VictoryType.Domination)
-                && civInfo.gameInfo.civilizations.all { it == civInfo || it.isDefeated() || !it.isMajorCiv() }
+                && civInfo.gameInfo.civilizations.all { 
+                    it == civInfo || !it.isMajorCiv() ||
+                    (
+                        it.cities.none {it.isOriginalCapital} && 
+                        (it.citiesCreated > 0 || it.getCivUnits().none {it.hasUnique(Constants.settlerUnique)})
+                    ) 
+                }
     }
 
     fun hasWonVictoryType(): VictoryType? {

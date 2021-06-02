@@ -116,15 +116,15 @@ class VictoryScreen(val worldScreen: WorldScreen) : PickerScreen() {
         myVictoryStatusTable.defaults().pad(10f)
         if (scientificVictoryEnabled) myVictoryStatusTable.add("Science victory".toLabel())
         if (culturalVictoryEnabled) myVictoryStatusTable.add("Cultural victory".toLabel())
-        if (dominationVictoryEnabled) myVictoryStatusTable.add("Conquest victory".toLabel())
+        if (dominationVictoryEnabled) myVictoryStatusTable.add("Domination victory".toLabel())
         myVictoryStatusTable.row()
         if (scientificVictoryEnabled) myVictoryStatusTable.add(scienceVictoryColumn())
         if (culturalVictoryEnabled) myVictoryStatusTable.add(culturalVictoryColumn())
         if (dominationVictoryEnabled) myVictoryStatusTable.add(conquestVictoryColumn())
         myVictoryStatusTable.row()
-        if (scientificVictoryEnabled) myVictoryStatusTable.add("Complete all the spaceship parts\n to win!".toLabel())
-        if (culturalVictoryEnabled) myVictoryStatusTable.add("Complete 5 policy branches\n to win!".toLabel())
-        if (dominationVictoryEnabled) myVictoryStatusTable.add("Destroy all enemies\n to win!".toLabel())
+        if (scientificVictoryEnabled) myVictoryStatusTable.add("Complete all the spaceship parts\nto win!".toLabel())
+        if (culturalVictoryEnabled) myVictoryStatusTable.add("Complete 5 policy branches\nto win!".toLabel())
+        if (dominationVictoryEnabled) myVictoryStatusTable.add("Capture all enemy capitals\nto win!".toLabel())
 
         contentsTable.clear()
         contentsTable.add(myVictoryStatusTable)
@@ -163,7 +163,7 @@ class VictoryScreen(val worldScreen: WorldScreen) : PickerScreen() {
             val civName =
                     if (playerCivInfo.diplomacy.containsKey(civ.civName)) civ.civName
                     else "???"
-            table.add(getMilestone("Destroy [$civName]", civ.isDefeated())).row()
+            table.add(getMilestone("Capture [$civName]'s capital", playerCivInfo.cities.any {it.isOriginalCapital && it.foundingCiv == civ.civName})).row()
         }
         return table
     }
@@ -191,14 +191,19 @@ class VictoryScreen(val worldScreen: WorldScreen) : PickerScreen() {
     private fun getGlobalDominationVictoryColumn(majorCivs: List<CivilizationInfo>): Table {
         val dominationVictoryColumn = Table().apply { defaults().pad(10f) }
 
-        dominationVictoryColumn.add("Undefeated civs".toLabel()).row()
+        dominationVictoryColumn.add("Capitals owned".toLabel()).row()
         dominationVictoryColumn.addSeparator()
 
-        for (civ in majorCivs.filter { !it.isDefeated() })
-            dominationVictoryColumn.add(EmpireOverviewScreen.getCivGroup(civ, "", playerCivInfo)).fillX().row()
-
-        for (civ in majorCivs.filter { it.isDefeated() })
-            dominationVictoryColumn.add(EmpireOverviewScreen.getCivGroup(civ, "", playerCivInfo)).fillX().row()
+        for (civ in majorCivs) {
+            val capitalCount = civ.cities.count {city -> city.isOriginalCapital && majorCivs.any {it.civName == city.foundingCiv}}
+            dominationVictoryColumn.add(
+                EmpireOverviewScreen.getCivGroup(
+                    civ,
+                    " - $capitalCount",
+                    playerCivInfo
+                )
+            ).fillX().row()
+        }
 
         return dominationVictoryColumn
     }
