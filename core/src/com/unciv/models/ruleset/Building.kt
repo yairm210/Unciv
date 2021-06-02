@@ -400,6 +400,15 @@ class Building : NamedStats(), IConstruction {
                 && "Enables construction of Spaceship parts" in uniques)
             return "Can't construct spaceship parts if scientific victory is not enabled!"
 
+        for (unique in uniqueObjects.filter { it.placeholderText == "Hidden until []" }) {
+            if (civInfo.gameInfo.gameParameters.victoryTypes.contains(VictoryType.Cultural) 
+                && unique.params[0] == "5 social policy branches have been completed" 
+                && construction.cityInfo.civInfo.getCompletedPolicyBranchesCount() < 5
+            ) {
+                return unique.text
+            }
+        }
+        
         return ""
     }
 
@@ -415,7 +424,6 @@ class Building : NamedStats(), IConstruction {
         }
         cityConstructions.addBuilding(name)
 
-
         val improvement = getImprovement(civInfo.gameInfo.ruleSet)
         if (improvement != null) {
             val tileWithImprovement = cityConstructions.cityInfo.getTiles().firstOrNull { it.improvementInProgress == improvement.name }
@@ -425,7 +433,6 @@ class Building : NamedStats(), IConstruction {
                 tileWithImprovement.improvement = improvement.name
             }
         }
-
 
         if (providesFreeBuilding != null && !cityConstructions.containsBuildingOrEquivalent(providesFreeBuilding!!)) {
             var buildingToAdd = providesFreeBuilding!!

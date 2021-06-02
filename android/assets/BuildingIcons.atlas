@@ -711,44 +711,51 @@ University
   orig: 100, 100
   offset: 0, 0
   index: -1
-Walls
+Utopia Project
   rotate: false
   xy: 1124, 614
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Walls of Babylon
+Walls
   rotate: false
   xy: 1226, 716
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Wat
+Walls of Babylon
   rotate: false
   xy: 1328, 818
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Water Mill
+Wat
   rotate: false
   xy: 1430, 920
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Windmill
+Water Mill
   rotate: false
   xy: 614, 2
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Workshop
+Windmill
   rotate: false
   xy: 716, 104
+  size: 100, 100
+  orig: 100, 100
+  offset: 0, 0
+  index: -1
+Workshop
+  rotate: false
+  xy: 818, 206
   size: 100, 100
   orig: 100, 100
   offset: 0, 0

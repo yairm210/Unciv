@@ -1058,4 +1058,13 @@
 		"requiredTech": "Nanotechnology",
 		"uniques": ["Spaceship part", "Cannot be purchased"]
 	}
+	
+	// All Era's
+	
+	{
+		"name": "Utopia Project",
+		"cost": 1500,
+		"isNationalWonder": true,
+		"uniques": ["Hidden until [5 social policy branches have been completed]", "Triggers a global alert upon [build start]", "Wins the game when built"]
+	}
 ]

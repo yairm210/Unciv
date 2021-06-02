@@ -166,6 +166,7 @@ class CivilizationInfo {
     fun isAlive(): Boolean = !isDefeated()
     fun hasEverBeenFriendWith(otherCiv: CivilizationInfo): Boolean = getDiplomacyManager(otherCiv).everBeenFriends()
     fun hasMetCivTerritory(otherCiv: CivilizationInfo): Boolean = otherCiv.getCivTerritory().any { it in exploredTiles }
+    fun getCompletedPolicyBranchesCount(): Int = policies.adoptedPolicies.count { it.endsWith("Complete") }
     private fun getCivTerritory() = cities.asSequence().flatMap { it.tiles.asSequence() }
 
     fun victoryType(): VictoryType {
