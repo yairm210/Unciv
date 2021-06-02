@@ -5,7 +5,6 @@ import com.badlogic.gdx.scenes.scene2d.EventListener
 import com.badlogic.gdx.scenes.scene2d.InputEvent
 import com.badlogic.gdx.scenes.scene2d.InputListener
 import com.badlogic.gdx.scenes.scene2d.Stage
-import java.util.HashMap
 
 /*
  * For now, combination keys cannot easily be expressed.
@@ -40,6 +39,7 @@ data class KeyCharAndCode(val char: Char, val code: Int) {
         // debug helper
         return when {
             char == Char.MIN_VALUE -> Input.Keys.toString(code)
+            char == '\u001B' -> "ESC"
             char < ' ' -> "Ctrl-" + (char.toInt()+64).toChar()
             else -> "\"$char\""
         }
@@ -57,14 +57,14 @@ data class KeyCharAndCode(val char: Char, val code: Int) {
  *      keyPressDispatcher['+'] = { zoomIn() }
  *  ```
  *  Optionally use [setCheckpoint] and [revertToCheckPoint] to remember and restore one state.
+ *  
+ *  @param name Optional name of the container screen or popup for debugging
  */
-class KeyPressDispatcher: HashMap<KeyCharAndCode, (() -> Unit)>() {
+class KeyPressDispatcher(val name: String? = null) : HashMap<KeyCharAndCode, (() -> Unit)>() {
     private var checkpoint: Set<KeyCharAndCode> = setOf()       // set of keys marking a checkpoint
     private var listener: EventListener? = null     // holds listener code, captures its params in install() function
     private var listenerInstalled = false           // flag for lazy Stage.addListener()
     private var installStage: Stage? = null         // Keep stage passed by install() for lazy addListener and uninstall
-    var name: String? = null                        // optional debug label
-        private set
 
     // access by Char
     operator fun get(char: Char) = this[KeyCharAndCode(char)]
@@ -130,8 +130,7 @@ class KeyPressDispatcher: HashMap<KeyCharAndCode, (() -> Unit)>() {
      * @param   stage The [Stage] to add the listener to
      * @param   checkIgnoreKeys An optional lambda - when it returns true all keys are ignored
      */
-    fun install(stage: Stage, name: String? = null, checkIgnoreKeys: (() -> Boolean)? = null) {
-        this.name = name
+    fun install(stage: Stage, checkIgnoreKeys: (() -> Boolean)? = null) {
         if (installStage != null) uninstall()
         listener =
             object : InputListener() {
@@ -139,8 +138,12 @@ class KeyPressDispatcher: HashMap<KeyCharAndCode, (() -> Unit)>() {
                     val key = KeyCharAndCode(event, character)
 
                     // see if we want to handle this key, and if not, let it propagate
-                    if (!contains(key) || (checkIgnoreKeys?.invoke() == true))
+                    if (!contains(key) || (checkIgnoreKeys?.invoke() == true)) {
+                        // println(this@KeyPressDispatcher.toString() + ": ignore " + key.toString())
                         return super.keyTyped(event, character)
+                    }
+                    
+                    // println(this@KeyPressDispatcher.toString() + ": key " + key.toString())
 
                     //try-catch mainly for debugging. Breakpoints in the vicinity can make the event fire twice in rapid succession, second time the context can be invalid
                     try {
@@ -169,11 +172,11 @@ class KeyPressDispatcher: HashMap<KeyCharAndCode, (() -> Unit)>() {
     private fun checkInstall(forceRemove: Boolean = false) {
         if (listener == null || installStage == null) return
         if (listenerInstalled && (isEmpty() || isPaused || forceRemove)) {
-            println(toString() + ": Removing listener" + (if(forceRemove) " for uninstall" else ""))
+            // println(toString() + ": Removing listener" + (if(forceRemove) " for uninstall" else ""))
             listenerInstalled = false
             installStage!!.removeListener(listener)
         } else if (!listenerInstalled && !(isEmpty() || isPaused)) {
-            println(toString() + ": Adding listener")
+            // println(toString() + ": Adding listener")
             installStage!!.addListener(listener)
             listenerInstalled = true
         }

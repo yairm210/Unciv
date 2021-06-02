@@ -28,7 +28,7 @@ open class CameraStageBaseScreen : Screen {
 
     protected val tutorialController by lazy { TutorialController(this) }
 
-    val keyPressDispatcher = KeyPressDispatcher()
+    val keyPressDispatcher = KeyPressDispatcher(this.javaClass.simpleName)
 
     init {
         val resolutions: List<Float> = game.settings.resolution.split("x").map { it.toInt().toFloat() }
@@ -37,7 +37,7 @@ open class CameraStageBaseScreen : Screen {
         /** The ExtendViewport sets the _minimum_(!) world size - the actual world size will be larger, fitted to screen/window aspect ratio. */
         stage = Stage(ExtendViewport(height, height), SpriteBatch())
 
-        keyPressDispatcher.install(stage, this.javaClass.simpleName) { hasOpenPopups() }
+        keyPressDispatcher.install(stage) { hasOpenPopups() }
     }
 
     override fun show() {}
