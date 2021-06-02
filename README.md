@@ -75,7 +75,7 @@ Yes! Windows and Linux versions are available at [itch.io](https://yairm210.itch
 
 If you have Java 8, and are familiar with the command line, there are (considerably smaller) JARs in [Releases](https://github.com/yairm210/UnCiv/releases) which you can run with `java -jar Unciv.jar`. This is also (currently) the only way to run the game on MacOS.
 
-If you use Flatpaks, there's a Flatpak by @MayeulC and you can know more about it [here](https://github.com/flathub/io.github.yairm210.unciv). Flathub link is available in the [Downloads](#downloads) section.
+If you use Flatpaks, there's a Flatpak by [MayeulC](https://github.com/MayeulC) and you can know more about it [here](https://github.com/flathub/io.github.yairm210.unciv). Flathub link is available in the [Downloads](#downloads) section.
 
 If you want to build it from sratch for some reason, [we have instructions for that as well](https://github.com/yairm210/Unciv/wiki/Building-locally-without-Android-Studio)
 
