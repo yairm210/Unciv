@@ -3,6 +3,7 @@ package com.unciv.models.ruleset
 import com.unciv.logic.city.CityConstructions
 import com.unciv.logic.city.IConstruction
 import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.models.Counter
 import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.stats.NamedStats
@@ -409,12 +410,24 @@ class Building : NamedStats(), IConstruction {
     override fun postBuildEvent(cityConstructions: CityConstructions, wasBought: Boolean): Boolean {
         val civInfo = cityConstructions.cityInfo.civInfo
 
+        if ("Triggers a global alert upon completion" in uniques) {
+            val buildingIcon = "BuildingIcons/${name}"
+            for (otherCiv in civInfo.gameInfo.civilizations) {
+                // No need to notify ourself, since we get the building notification anyway
+                if (otherCiv == civInfo) continue
+                val completingCivDescription =
+                    if (otherCiv.knows(civInfo)) "[${civInfo.civName}]" else "An unknown civilization"
+                otherCiv.addNotification("$completingCivDescription has completed [${name}]!",
+                        NotificationIcon.Construction, buildingIcon)
+            }
+        }
+
         if ("Spaceship part" in uniques) {
             civInfo.victoryManager.currentsSpaceshipParts.add(name, 1)
             return true
         }
-        cityConstructions.addBuilding(name)
 
+        cityConstructions.addBuilding(name)
 
         val improvement = getImprovement(civInfo.gameInfo.ruleSet)
         if (improvement != null) {
