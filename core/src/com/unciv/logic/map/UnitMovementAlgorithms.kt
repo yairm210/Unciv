@@ -61,6 +61,10 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
 
     fun isUnknownTileWeShouldAssumeToBePassable(tileInfo: TileInfo) = !unit.civInfo.exploredTiles.contains(tileInfo.position)
 
+    /**
+     * Does not consider if tiles can actually be entered, use canMoveTo for that.
+     * If a tile can be reached within the turn, but it cannot be passed through, the total distance to it is set to unitMovement
+     */
     fun getDistanceToTilesWithinTurn(origin: Vector2, unitMovement: Float): PathsToTilesWithinTurn {
         val distanceToTiles = PathsToTilesWithinTurn()
         if (unitMovement == 0f) return distanceToTiles
@@ -108,7 +112,10 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
         return distanceToTiles
     }
 
-    /** Returns an empty list if there's no way to get there */
+    /**
+     * Does not consider if the destination tile can actually be entered, use canMoveTo for that.
+     * Returns an empty list if there's no way to get to the destination.
+     */
     fun getShortestPath(destination: TileInfo): List<TileInfo> {
         val currentTile = unit.getTile()
         if (currentTile.position == destination) return listOf(currentTile) // edge case that's needed, so that workers will know that they can reach their own tile. *sigh*
