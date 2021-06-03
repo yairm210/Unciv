@@ -62,7 +62,6 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
 
     var music: Music? = null
     val musicLocation = "music/thatched-villagers.mp3"
-    private var isSizeRestored = false
     var isInitialized = false
 
 
@@ -118,7 +117,6 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
 
 
                 thread(name="Music") { startMusic() }
-                restoreSize()
 
                 if (settings.isFreshlyCreated) {
                     setScreen(LanguagePickerScreen())
@@ -128,14 +126,6 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
         }
         crashController = CrashController.Impl(crashReportSender)
     }
-
-    fun restoreSize() {
-        if (!isSizeRestored && Gdx.app.type == Application.ApplicationType.Desktop && settings.windowState.height>39 && settings.windowState.width>39) {
-            isSizeRestored = true
-            Gdx.graphics.setWindowedMode(settings.windowState.width, settings.windowState.height)
-        }
-    }
-
 
     fun loadGame(gameInfo: GameInfo) {
         this.gameInfo = gameInfo

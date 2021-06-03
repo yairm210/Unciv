@@ -2,6 +2,7 @@ package com.unciv.logic.map
 
 import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
+import com.unciv.logic.HexMath.getDistance
 import com.unciv.logic.civilization.CivilizationInfo
 
 class UnitMovementAlgorithms(val unit:MapUnit) {
@@ -169,8 +170,8 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
         val currentTile = unit.getTile()
         if (currentTile == finalDestination) return currentTile
 
-        // head there directly
-        if (unit.type.isAirUnit()) return finalDestination
+        // If we can fly, head there directly
+        if (unit.type.isAirUnit() || unit.action == Constants.unitActionParadrop) return finalDestination
 
         val distanceToTiles = getDistanceToTiles()
 
@@ -209,6 +210,8 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
     fun canReach(destination: TileInfo): Boolean {
         if (unit.type.isAirUnit())
             return unit.currentTile.aerialDistanceTo(destination) <= unit.getRange()*2
+        if (unit.action == Constants.unitActionParadrop)
+            return getDistance(unit.currentTile.position, destination.position) <= unit.paradropRange && canParadropOn(destination) 
         return getShortestPath(destination).any()
     }
 
@@ -239,12 +242,26 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
     fun moveToTile(destination: TileInfo) {
         if (destination == unit.getTile()) return // already here!
 
-        if (unit.type.isAirUnit()) { // they move differently from all other units
+        if (unit.type.isAirUnit()) { // air units move differently from all other units
             unit.action = null
             unit.removeFromTile()
             unit.isTransported = false // it has left the carrier by own means
             unit.putInTile(destination)
             unit.currentMovement = 0f
+            return
+        } else if (unit.action == Constants.unitActionParadrop) { // paratrooping move differently
+            unit.action = null
+            unit.removeFromTile()
+            unit.putInTile(destination)
+            unit.currentMovement -= 1f
+            // Check if unit maintenance changed
+            // Is also done for other units, but because we skip everything else, we have to manually check it
+            // The reasong we skip everything, is that otherwise `getPathToTile()` throws an exception
+            // As we can not reach our destination in a single turn
+            if (unit.canGarrison()
+                && (unit.getTile().isCityCenter() || destination.isCityCenter())
+                && unit.civInfo.hasUnique("Units in cities cost no Maintenance")
+            ) unit.civInfo.updateStatsForNextTurn()
             return
         }
 
@@ -326,7 +343,14 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
         }
         return false
     }
-
+    
+    // Can a paratrooper land at this tile?
+    fun canParadropOn(destination: TileInfo): Boolean {
+        // Can only move to land tiles within range that are visible and not impassible
+        // Based on some testing done in the base game
+        if (!destination.isLand || destination.isImpassible() || !unit.civInfo.viewableTiles.contains(destination)) return false
+        return true
+    }
 
     // This is the most called function in the entire game,
     // so multiple callees of this function have been optimized,

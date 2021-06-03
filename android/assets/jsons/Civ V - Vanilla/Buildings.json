@@ -110,7 +110,7 @@
 		"isWonder": true,
 		"cost": 185,
 		"greatPersonPoints": {"production": 1},
-		"uniques": ["+[10]% growth in all cities", "+[15]% Production when constructing [Ranged] units [in all cities]"],
+		"uniques": ["+[10]% [Food] [in all cities]", "+[15]% Production when constructing [Ranged] units [in all cities]"],
 		"requiredTech": "Archery",
 		"quote": "'It is not so much for its beauty that the forest makes a claim upon men's hearts, as for that subtle something, that quality of air, that emanation from old trees, that so wonderfully changes and renews a weary spirit.'  - Robert Louis Stevenson"
 	},
@@ -937,7 +937,7 @@
 	{
 		"name": "Manhattan Project",
 		"isNationalWonder": true,
-		"uniques": ["Enables nuclear weapon"],
+		"uniques": ["Enables nuclear weapon", "Triggers a global alert upon completion"],
 		"requiredTech": "Nuclear Fission"
 	},
 	{
@@ -1014,13 +1014,13 @@
 		"name": "SS Booster",
 		"requiredResource": "Aluminum",
 		"requiredTech": "Robotics",
-		"uniques": ["Spaceship part", "Cannot be purchased"]
+		"uniques": ["Spaceship part", "Triggers a global alert upon completion", "Cannot be purchased"]
 	},
 	{
 		"name": "Apollo Program",
 		"cost": 1500,
 		"isNationalWonder": true,
-		"uniques": ["Enables construction of Spaceship parts"],
+		"uniques": ["Enables construction of Spaceship parts", "Triggers a global alert upon completion"],
 		"requiredTech": "Rocketry"
 	},
 	
@@ -1044,18 +1044,18 @@
 		"name": "SS Cockpit",
 		"requiredResource": "Aluminum",
 		"requiredTech": "Satellites",
-		"uniques": ["Spaceship part", "Cannot be purchased"]
+		"uniques": ["Spaceship part", "Triggers a global alert upon completion", "Cannot be purchased"]
 	},
 	{
 		"name": "SS Engine",
 		"requiredResource": "Aluminum",
 		"requiredTech": "Particle Physics",
-		"uniques": ["Spaceship part", "Cannot be purchased"]
+		"uniques": ["Spaceship part", "Triggers a global alert upon completion", "Cannot be purchased"]
 	},
 	{
 		"name": "SS Stasis Chamber",
 		"requiredResource": "Aluminum",
 		"requiredTech": "Nanotechnology",
-		"uniques": ["Spaceship part", "Cannot be purchased"]
+		"uniques": ["Spaceship part", "Triggers a global alert upon completion", "Cannot be purchased"]
 	}
 ]

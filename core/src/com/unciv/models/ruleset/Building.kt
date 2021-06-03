@@ -413,8 +413,8 @@ class Building : NamedStats(), IConstruction {
             civInfo.victoryManager.currentsSpaceshipParts.add(name, 1)
             return true
         }
-        cityConstructions.addBuilding(name)
 
+        cityConstructions.addBuilding(name)
 
         val improvement = getImprovement(civInfo.gameInfo.ruleSet)
         if (improvement != null) {

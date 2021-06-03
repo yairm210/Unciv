@@ -49,12 +49,13 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table() {
                 "Start Golden Age" -> return UnitIconAndKey(ImageGetter.getUnitIcon("Great Artist"), 'g')
                 "Hurry Wonder" -> return UnitIconAndKey(ImageGetter.getUnitIcon("Great Engineer"), 'g')
                 "Conduct Trade Mission" -> return UnitIconAndKey(ImageGetter.getUnitIcon("Great Merchant"), 'g')
+                "Construct road" -> return UnitIconAndKey(ImageGetter.getImprovementIcon("Road"), 'r')
+                "Paradrop" -> return UnitIconAndKey(ImageGetter.getUnitIcon("Paratrooper"), 'p')
                 "Set up" -> return UnitIconAndKey(ImageGetter.getUnitIcon("Catapult"), 't')
-                "Disband unit" -> return UnitIconAndKey(ImageGetter.getImage("OtherIcons/DisbandUnit"))
                 "Explore" -> return UnitIconAndKey(ImageGetter.getUnitIcon("Scout"), 'x')
                 "Stop exploration" -> return UnitIconAndKey(ImageGetter.getImage("OtherIcons/Stop"), 'x')
                 "Pillage" -> return UnitIconAndKey(ImageGetter.getImage("OtherIcons/Pillage"), 'p')
-                "Construct road" -> return UnitIconAndKey(ImageGetter.getImprovementIcon("Road"), 'r')
+                "Disband unit" -> return UnitIconAndKey(ImageGetter.getImage("OtherIcons/DisbandUnit"))
                 else -> return UnitIconAndKey(ImageGetter.getImage("OtherIcons/Star"))
             }
         }
