@@ -317,22 +317,31 @@ class Ruleset {
                     lines += "${terrain.name} occurs on terrain $baseTerrain which does not exist!"
         }
 
+        val prereqsHashMap = HashMap<String,HashSet<String>>()
         for (tech in technologies.values) {
             for (prereq in tech.prerequisites) {
                 if (!technologies.containsKey(prereq))
                     lines += "${tech.name} requires tech $prereq which does not exist!"
 
-                fun getPrereqTree(technologyName: String): Sequence<String> {
+                fun getPrereqTree(technologyName: String): Set<String> {
+                    if (prereqsHashMap.containsKey(technologyName)) return prereqsHashMap[technologyName]!!
                     val technology = technologies[technologyName]
-                    if (technology == null) return sequenceOf()
-                    return technology.prerequisites.asSequence() + technology.prerequisites.asSequence().flatMap { getPrereqTree(it) }
+                    if (technology == null) return emptySet()
+                    val techHashSet = HashSet<String>()
+                    techHashSet += technology.prerequisites
+                    for (prereq in technology.prerequisites)
+                        techHashSet += getPrereqTree(prereq)
+                    prereqsHashMap[technologyName] = techHashSet
+                    return techHashSet
                 }
 
-                val allOtherPrereqs = tech.prerequisites.asSequence().filterNot { it == prereq }.flatMap { getPrereqTree(it) }
-                if (allOtherPrereqs.contains(prereq))
-                    lines += "No need to add $prereq as a prerequisite of ${tech.name} - it is already implicit from the other prerequisites!"
+                if (tech.prerequisites.asSequence().filterNot { it == prereq }
+                        .any { getPrereqTree(it).contains(prereq) })
+                    println("No need to add $prereq as a prerequisite of ${tech.name} - it is already implicit from the other prerequisites!")
             }
         }
+
+
         return lines.joinToString("\n")
     }
 }
