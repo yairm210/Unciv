@@ -9,6 +9,7 @@ data class UnitAction(
 )
 
 enum class UnitActionType(val value: String) {
+    SwapUnits("Swap units"),
     Automate("Automate"),
     StopAutomation("Stop automation"),
     StopMovement("Stop movement"),
