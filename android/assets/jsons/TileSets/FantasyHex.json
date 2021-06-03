@@ -61,6 +61,7 @@
         "Plains+Forest+Uranium": ["Plains","Uranium","PlainsForest"],
         "Plains+Forest+Deer": ["Plains","Deer","PlainsForest"],
         "Plains+Forest+Furs": ["Plains","Furs","PlainsForest"],
+        "Plains+Wheat+Farm": ["Plains+Farm"],
         //Plains+Hill
         "Plains+Hill+Forest+Horses": ["Plains","Hill","Horses","Forest"],
         "Plains+Hill+Forest+Iron": ["Plains","Hill","Iron","Forest"],
@@ -86,6 +87,9 @@
         "Tundra+Hill+Forest+Uranium": ["Tundra","Hill","Uranium","TundraForest"],
         "Tundra+Hill+Forest+Furs": ["Tundra","Hill","Furs","TundraForest"],
         "Tundra+Hill+Forest+Deer": ["Tundra","Hill","Deer","TundraForest"],
+		
+        "Desert+Wheat+Farm": ["Desert+Farm"],
+        "Desert+Flood plains+Wheat+Farm": ["Desert+Flood plains+Farm"],
 		
         "Grassland+Forest+Ancient ruins": ["Grassland","Ancient ruins", "GrasslandForest"],
         "Grassland+Cattle+Ancient ruins": ["Grassland","Ancient ruins","Cattle"],
