@@ -6,10 +6,14 @@ import club.minnced.discord.rpc.DiscordRichPresence
 import com.badlogic.gdx.Files
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration
+import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.tools.texturepacker.TexturePacker
+import com.unciv.JsonParser
 import com.unciv.UncivGame
 import com.unciv.UncivGameParameters
+import com.unciv.logic.GameSaver
+import com.unciv.models.metadata.GameSettings
 import com.unciv.models.translations.tr
 import com.unciv.ui.utils.Fonts
 import io.ktor.application.*
@@ -39,6 +43,11 @@ internal object DesktopLauncher {
         config.addIcon("ExtraImages/Icon.png", Files.FileType.Internal)
         config.title = "Unciv"
         config.useHDPI = true
+        if (FileHandle(GameSaver.settingsFileName).exists()) {
+            val settings = JsonParser().getFromJson(GameSettings::class.java, FileHandle(GameSaver.settingsFileName))
+            config.width = settings.windowState.width
+            config.height = settings.windowState.height
+        }
 
         val versionFromJar = DesktopLauncher.javaClass.`package`.specificationVersion ?: "Desktop"
 
