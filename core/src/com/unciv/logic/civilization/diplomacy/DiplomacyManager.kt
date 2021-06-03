@@ -392,12 +392,13 @@ class DiplomacyManager() {
                         if (!otherCivDiplomacy().hasFlag(DiplomacyFlags.ResearchAgreement))
                             sciencefromResearchAgreement()
                     }
+                    // This is confusingly named - in fact, the civ that has the flag set is the MAJOR civ
                     DiplomacyFlags.ProvideMilitaryUnit.name -> {
-                        // Do not unset the flag
+                        // Do not unset the flag - they may return soon, and we'll continue from that point on
                         if (civInfo.cities.isEmpty() || otherCiv().cities.isEmpty())
                             continue@loop
                         else
-                            civInfo.giftMilitaryUnitTo(otherCiv())
+                            civInfo.gainMilitaryUnitFromCityState(otherCiv())
                     }
                     DiplomacyFlags.AgreedToNotSettleNearUs.name -> {
                         addModifier(DiplomaticModifiers.FulfilledPromiseToNotSettleCitiesNearUs, 10f)

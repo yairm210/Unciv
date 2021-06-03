@@ -637,11 +637,11 @@ class CivilizationInfo {
         return (basicGoldCostOfSignResearchAgreement * gameInfo.gameParameters.gameSpeed.modifier).toInt()
     }
 
-    fun giftMilitaryUnitTo(otherCiv: CivilizationInfo) {
+    fun gainMilitaryUnitFromCityState(otherCiv: CivilizationInfo) {
         val cities = NextTurnAutomation.getClosestCities(this, otherCiv)
         val city = cities.city1
         val militaryUnit = city.cityConstructions.getConstructableUnits()
-                .filter { !it.unitType.isCivilian() && it.unitType.isLandUnit() }
+                .filter { !it.unitType.isCivilian() && it.unitType.isLandUnit() && it.uniqueTo==null }
                 .toList().random()
         // placing the unit may fail - in that case stay quiet
         val placedUnit = placeUnitNearTile(city.location, militaryUnit.name) ?: return
