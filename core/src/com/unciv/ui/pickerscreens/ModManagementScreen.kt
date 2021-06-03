@@ -81,7 +81,7 @@ class ModManagementScreen: PickerScreen(disableScroll = true) {
             val container: Table,
             isVisual: Boolean = false,
             isUpdated: Boolean = false,
-            val visualImage: Image = ImageGetter.getImage("UnitPromotionIcons/Scouting"),
+            val visualImage: Image = ImageGetter.getImage("OtherIcons/Visual"),
             val updatedImage: Image = ImageGetter.getImage("OtherIcons/Mods")
         ) {
         // mad but it's really initializing with the primary constructor parameter and not calling update()

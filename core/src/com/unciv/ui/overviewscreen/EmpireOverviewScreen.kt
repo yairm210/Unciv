@@ -40,7 +40,8 @@ class EmpireOverviewScreen(private var viewingPlayer:CivilizationInfo, defaultPa
             Pair("Trades", IconAndKey("StatIcons/Acquire", 'T')),
             Pair("Units", IconAndKey("OtherIcons/Shield", 'U')),
             Pair("Diplomacy", IconAndKey("OtherIcons/DiplomacyW", 'D')),
-            Pair("Resources", IconAndKey("StatIcons/Happiness", 'R'))
+            Pair("Resources", IconAndKey("StatIcons/Happiness", 'R')),
+            Pair("Finder", IconAndKey("UnitPromotionIcons/Scouting", 'F')),
         )
     }
 
@@ -91,6 +92,7 @@ class EmpireOverviewScreen(private var viewingPlayer:CivilizationInfo, defaultPa
         addCategory("Units", getUnitTable())
         addCategory("Diplomacy", DiplomacyTable(viewingPlayer, stage.height * 0.8f))
         addCategory("Resources", getResourcesTable(), viewingPlayer.detailedCivResources.isEmpty())
+        addCategory("Finder", FinderOverviewTable(viewingPlayer, this))
 
         val closeButton = Constants.close.toTextButton().apply {
             setColor(0.75f, 0.1f, 0.1f, 1f)

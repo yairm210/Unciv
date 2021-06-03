@@ -242,6 +242,8 @@ class BaseUnit : INamed, IConstruction {
         if (filter == "non-air" && !unitType.isAirUnit()) return true
         // 'military' obsolete as of 3.14.1
         if ((filter == "military" || filter == "Military" || filter == "military units") && unitType.isMilitary()) return true
+        if ((filter == "Civilian") && unitType.isCivilian()) return true
+        if ((filter == "Great Person") && isGreatPerson()) return true
         return false
     }
 

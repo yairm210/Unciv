@@ -309,6 +309,7 @@ class GameInfo {
         for (civInfo in civilizations) civInfo.setNationTransient()
         for (civInfo in civilizations) civInfo.setTransients()
         for (civInfo in civilizations) civInfo.updateSightAndResources()
+        for (civInfo in civilizations) civInfo.removeNotifications(NotificationIcon.Eyes)
 
         for (civInfo in civilizations) {
             for (unit in civInfo.getCivUnits())

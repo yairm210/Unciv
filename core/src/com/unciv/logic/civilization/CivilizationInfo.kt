@@ -571,6 +571,11 @@ class CivilizationInfo {
         val arrayList = ArrayList<String>().apply { addAll(notificationIcons) }
         notifications.add(Notification(text, arrayList, action))
     }
+    
+    fun removeNotifications(notificationIcon: String) {
+        val elementsToRemove = notifications.filter { notificationIcon in it.icons }
+        notifications.removeAll(elementsToRemove)
+    }
 
     fun addUnit(unitName: String, city: CityInfo? = null) {
         if (cities.isEmpty()) return
@@ -656,8 +661,8 @@ class CivilizationInfo {
     fun getProtectorCivs() : List<CivilizationInfo> {
         if(this.isMajorCiv()) return emptyList()
         return diplomacy.values
-                .filter{!it.otherCiv().isDefeated() && it.diplomaticStatus == DiplomaticStatus.Protector}
-                .map{it->it.otherCiv()}
+                .filter{ !it.otherCiv().isDefeated() && it.diplomaticStatus == DiplomaticStatus.Protector }
+                .map{ it.otherCiv() }
     }
 
     fun addProtectorCiv(otherCiv: CivilizationInfo) {
