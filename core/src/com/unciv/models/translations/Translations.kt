@@ -266,7 +266,17 @@ fun String.tr(): String {
 
         var languageSpecificPlaceholder = translationEntry[UncivGame.Current.settings.language]!!
         for (i in termsInMessage.indices) {
-            languageSpecificPlaceholder = languageSpecificPlaceholder.replace(termsInTranslationPlaceholder[i], termsInMessage[i].tr())
+            val termFrom = termsInTranslationPlaceholder[i]
+            val termToOrig = termsInMessage[i] 
+            var termToXlt = termToOrig.tr()
+            if (termToOrig.length >= 3 && termToXlt == termToOrig) {
+                // allow the 'terms' to contain lists of the form a+b+c or a,b,c but not a, b, c
+                // (the form with commas+blanks is pre-translated elsewhere) 
+                // translate them individually unless there was a translation for the complete term
+                if (termToOrig.indexOf('+') > 0) termToXlt = termToOrig.split('+').joinToString(" + ") { it.tr() }
+                else if (termToOrig.indexOf(',') > 0 && ", " !in termToOrig) termToXlt = termToOrig.split(',').joinToString(", ") { it.tr() }
+            }
+            languageSpecificPlaceholder = languageSpecificPlaceholder.replace(termFrom, termToXlt)
         }
         return languageSpecificPlaceholder      // every component is already translated
     }
