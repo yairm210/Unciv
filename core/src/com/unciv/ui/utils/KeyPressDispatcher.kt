@@ -138,13 +138,9 @@ class KeyPressDispatcher(val name: String? = null) : HashMap<KeyCharAndCode, (()
                     val key = KeyCharAndCode(event, character)
 
                     // see if we want to handle this key, and if not, let it propagate
-                    if (!contains(key) || (checkIgnoreKeys?.invoke() == true)) {
-                        // println(this@KeyPressDispatcher.toString() + ": ignore " + key.toString())
+                    if (!contains(key) || (checkIgnoreKeys?.invoke() == true))
                         return super.keyTyped(event, character)
-                    }
                     
-                    // println(this@KeyPressDispatcher.toString() + ": key " + key.toString())
-
                     //try-catch mainly for debugging. Breakpoints in the vicinity can make the event fire twice in rapid succession, second time the context can be invalid
                     try {
                         this@KeyPressDispatcher[key]?.invoke()
@@ -172,11 +168,9 @@ class KeyPressDispatcher(val name: String? = null) : HashMap<KeyCharAndCode, (()
     private fun checkInstall(forceRemove: Boolean = false) {
         if (listener == null || installStage == null) return
         if (listenerInstalled && (isEmpty() || isPaused || forceRemove)) {
-            // println(toString() + ": Removing listener" + (if(forceRemove) " for uninstall" else ""))
             listenerInstalled = false
             installStage!!.removeListener(listener)
         } else if (!listenerInstalled && !(isEmpty() || isPaused)) {
-            // println(toString() + ": Adding listener")
             installStage!!.addListener(listener)
             listenerInstalled = true
         }
