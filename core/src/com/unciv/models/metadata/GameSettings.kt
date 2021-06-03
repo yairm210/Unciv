@@ -4,7 +4,7 @@ import com.badlogic.gdx.Application
 import com.badlogic.gdx.Gdx
 import com.unciv.logic.GameSaver
 
-data class WindowState (val width:Int=0, val height:Int=0)
+data class WindowState (val width: Int = 900, val height: Int = 600)
 
 class GameSettings {
     var showWorkedTiles: Boolean = false
