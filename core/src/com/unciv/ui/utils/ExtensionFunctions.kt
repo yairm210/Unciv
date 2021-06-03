@@ -36,7 +36,6 @@ fun Button.enable() {
  *  which is more appropriate to toggle On/Off buttons, while this one is good for 'click-to-do-something' buttons.
  */
 var Button.isEnabled: Boolean
-    //Todo: Use in PromotionPickerScreen, TradeTable, WorldScreen.updateNextTurnButton
     get() = touchable == Touchable.enabled
     set(value) = if (value) enable() else disable()
 
