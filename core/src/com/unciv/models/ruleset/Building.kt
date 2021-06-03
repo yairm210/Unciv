@@ -458,6 +458,7 @@ class Building : NamedStats(), IConstruction {
         if (get(stat) > 0) return true
         if (getStatPercentageBonuses(null).get(stat) > 0) return true
         if (resourceBonusStats != null && resourceBonusStats!!.get(stat) > 0) return true
+        if (uniqueObjects.any { it.placeholderText == "[] Per [] Population in this city" && it.stats.get(stat) > 0 }) return true
         return false
     }
 

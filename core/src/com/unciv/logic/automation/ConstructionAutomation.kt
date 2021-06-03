@@ -259,7 +259,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
     private fun addScienceBuildingChoice() {
         if (allTechsAreResearched) return
         val scienceBuilding = buildableNotWonders.asSequence()
-            .filter { it.isStatRelated(Stat.Science) || it.name == "Library" } // only stat related in unique
+            .filter { it.isStatRelated(Stat.Science) }
             .minByOrNull { it.cost }
         if (scienceBuilding != null) {
             var modifier = 1.1f
@@ -282,10 +282,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
         val hasWaterResource = cityInfo.tilesInRange
                 .any { it.isWater && it.resource!=null && it.position in cityInfo.tiles }
         val productionBuilding = buildableNotWonders.asSequence()
-            .filter { it.isStatRelated(Stat.Production)
-                    || (hasWaterResource && (it.uniques.contains("+1 production and gold from all sea resources worked by the city")
-                    || it.uniques.contains("+1 production from all sea resources worked by the city")) )
-            }
+            .filter { it.isStatRelated(Stat.Production) }
             .minByOrNull { it.cost }
         if (productionBuilding != null) {
             addChoice(relativeCostEffectiveness, productionBuilding.name, 1.5f)
@@ -294,7 +291,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
 
     private fun addFoodBuildingChoice() {
         val foodBuilding = buildableNotWonders.asSequence().filter { it.isStatRelated(Stat.Food)
-                || it.getBaseBuilding(civInfo.gameInfo.ruleSet).name == "Aqueduct" || it.getBaseBuilding(civInfo.gameInfo.ruleSet).name == "Medical Lab"}  // only stat related in unique
+                || it.uniqueObjects.any { it.placeholderText=="[]% of food is carried over after population increases" }}
             .minByOrNull { it.cost }
         if (foodBuilding != null) {
             var modifier = 1f
