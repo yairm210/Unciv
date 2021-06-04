@@ -25,8 +25,8 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
             .filter { it.isWonder || it.isNationalWonder }
 
     val civUnits = civInfo.getCivUnits()
-    val militaryUnits = civUnits.filter { !it.type.isCivilian()}.count()
-    val workers = civUnits.filter { it.hasUnique(Constants.workerUnique) }.count().toFloat()
+    val militaryUnits = civUnits.count { !it.type.isCivilian()}
+    val workers = civUnits.count { it.hasUnique(Constants.workerUnique) }.toFloat()
     val cities = civInfo.cities.size
     val allTechsAreResearched = civInfo.tech.getNumberOfTechsResearched() >= civInfo.gameInfo.ruleSet.technologies.size
 
