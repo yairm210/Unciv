@@ -72,7 +72,7 @@ open class Popup(val screen: CameraStageBaseScreen): Table(CameraStageBaseScreen
     }
 
     /* All additions to the popup are to the inner table - we shouldn't care that there's an inner table at all */
-    override fun <T : Actor?> add(actor: T): Cell<T> = innerTable.add(actor)
+    final override fun <T : Actor?> add(actor: T): Cell<T> = innerTable.add(actor)
     override fun row(): Cell<Actor> = innerTable.row()
     fun addSeparator() = innerTable.addSeparator()
 

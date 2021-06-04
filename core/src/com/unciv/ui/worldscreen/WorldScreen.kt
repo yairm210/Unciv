@@ -760,19 +760,6 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Cam
 
     private fun backButtonAndESCHandler() {
 
-        // Since Popups including the Main Menu and the Options screen have no own back button
-        // listener and no trivial way to set one, back/esc with one of them open ends up here.
-        // Also, the reaction of other popups like 'disband this unit' to back/esc feels nicer this way.
-        // After removeListener just in case this is slow (enumerating all stage actors)
-        if (hasOpenPopups()) {
-            val closedName = closeOneVisiblePopup() ?: return
-            if (closedName.startsWith(Constants.tutorialPopupNamePrefix)) {
-                closedName.removePrefix(Constants.tutorialPopupNamePrefix)
-                tutorialController.removeTutorial(closedName)
-            }
-            return
-        }
-
         // Deselect Unit
         if (bottomUnitTable.selectedUnit != null) {
             bottomUnitTable.selectUnit()
@@ -789,13 +776,8 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Cam
             return
         }
 
-        val promptWindow = Popup(this)
-        promptWindow.addGoodSizedLabel("Do you want to exit the game?".tr())
-        promptWindow.row()
-        promptWindow.addButton("Yes") { Gdx.app.exit() }
-        promptWindow.addButton("No") { promptWindow.close() }
-        // show the dialog
-        promptWindow.open(true)     // true = always on top
+        ExitGamePopup(this, true)
+
     }
 
 
