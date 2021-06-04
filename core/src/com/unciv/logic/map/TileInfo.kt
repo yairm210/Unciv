@@ -396,8 +396,6 @@ open class TileInfo {
      */
     fun matchesUniqueFilter(filter: String, civInfo: CivilizationInfo? = null): Boolean {
         return filter == "All"
-                || '+' in filter && filter.split('+').all { matchesUniqueFilter(it, civInfo) }
-                || ',' in filter && filter.split(',').any { matchesUniqueFilter(it, civInfo) }
                 || filter == baseTerrain
                 || filter == "River" && isAdjacentToRiver()
                 || terrainFeatures.contains(filter)

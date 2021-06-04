@@ -14,7 +14,7 @@ class TileImprovement : NamedStats() {
 
     // Used only for Camp - but avoid hardcoded comparison and *allow modding*
     // Terrain Features that need not be cleared if the improvement enables a resource
-    @Deprecated("As of 3.14.14")
+    @Deprecated("As of 3.14.15")
     var resourceTerrainAllow: Collection<String> = ArrayList()
 
     var techRequired: String? = null
