@@ -272,12 +272,15 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
         if (otherUnit.owner != unit.owner || !otherUnit.movement.canReachInCurrentTurn(ourPosition)) return false
         // Check if we could enter their tile if they wouldn't be there
         otherUnit.removeFromTile()
-        if (!canMoveTo(reachableTile)) return false
+        val weCanEnterTheirTile = canMoveTo(reachableTile)
         otherUnit.putInTile(reachableTile)
+        if (!weCanEnterTheirTile) return false
         // Check if they could enter our tile if we wouldn't be here
         unit.removeFromTile()
-        if (!otherUnit.movement.canMoveTo(ourPosition)) return false
+        val theyCanEnterOurTile = otherUnit.movement.canMoveTo(ourPosition)
         unit.putInTile(ourPosition)
+        if (!theyCanEnterOurTile) return false
+        // All clear!
         return true
     }
 
