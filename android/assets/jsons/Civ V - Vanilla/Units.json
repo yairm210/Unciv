@@ -1156,12 +1156,12 @@
 		"name": "Paratrooper",
 		"unitType": "Melee",
 		"movement": 2,
-		"strength": 40,
+		"strength": 65,
 		"cost": 375,
 		"requiredTech": "Radar",
 		"uniques": ["May Paradrop up to [5] tiles from inside friendly territory"],
 		"attackSound": "shot"
-		// 65 strength in expansions, upgradesTo "XCOM Squad", "No Movement Cost to Pillage" in BNW
+		// upgradesTo "XCOM Squad", "No Movement Cost to Pillage" in BNW
 	},
 	{
 		"name": "Infantry",
