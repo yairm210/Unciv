@@ -84,10 +84,11 @@ object MarkupRenderer {
     fun render(
         lines: Collection<FormattedLine>,
         labelWidth: Float = 0f,
+        padding: Float = defaultPadding,
         linkAction: ((id: String) -> Unit)? = null
     ): Table {
         val skin = CameraStageBaseScreen.skin
-        val table = Table(skin).apply { defaults().pad(defaultPadding).align(Align.left) }
+        val table = Table(skin).apply { defaults().pad(padding).align(Align.left) }
         for (line in lines) {
             if (line.isEmpty()) {
                 table.add().padTop(emptyLineHeight).row()
