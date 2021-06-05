@@ -297,9 +297,6 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
         }
         else {
             // Add "swap with" button
-            val unitToTurnsToTile = HashMap<MapUnit, Int>()
-            unitToTurnsToTile[selectedUnit] = 1
-            val moveHereButtonDto = MoveHereButtonDto(unitToTurnsToTile, tileInfo)
             addTileOverlays(tileInfo, getSwapWithButton(selectedUnit, tileInfo))
         }
         worldScreen.shouldUpdate = true
