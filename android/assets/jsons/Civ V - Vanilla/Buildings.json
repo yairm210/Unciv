@@ -937,7 +937,7 @@
 	{
 		"name": "Manhattan Project",
 		"isNationalWonder": true,
-		"uniques": ["Enables nuclear weapon", "Triggers a global alert upon completion"],
+		"uniques": ["Enables nuclear weapon", "Triggers a global alert upon [completion]"],
 		"requiredTech": "Nuclear Fission"
 	},
 	{
@@ -1014,13 +1014,13 @@
 		"name": "SS Booster",
 		"requiredResource": "Aluminum",
 		"requiredTech": "Robotics",
-		"uniques": ["Spaceship part", "Triggers a global alert upon completion", "Cannot be purchased"]
+		"uniques": ["Spaceship part", "Triggers a global alert upon [completion]", "Cannot be purchased"]
 	},
 	{
 		"name": "Apollo Program",
 		"cost": 1500,
 		"isNationalWonder": true,
-		"uniques": ["Enables construction of Spaceship parts", "Triggers a global alert upon completion"],
+		"uniques": ["Enables construction of Spaceship parts", "Triggers a global alert upon [completion]"],
 		"requiredTech": "Rocketry"
 	},
 	
@@ -1044,18 +1044,27 @@
 		"name": "SS Cockpit",
 		"requiredResource": "Aluminum",
 		"requiredTech": "Satellites",
-		"uniques": ["Spaceship part", "Triggers a global alert upon completion", "Cannot be purchased"]
+		"uniques": ["Spaceship part", "Triggers a global alert upon [completion]", "Cannot be purchased"]
 	},
 	{
 		"name": "SS Engine",
 		"requiredResource": "Aluminum",
 		"requiredTech": "Particle Physics",
-		"uniques": ["Spaceship part", "Triggers a global alert upon completion", "Cannot be purchased"]
+		"uniques": ["Spaceship part", "Triggers a global alert upon [completion]", "Cannot be purchased"]
 	},
 	{
 		"name": "SS Stasis Chamber",
 		"requiredResource": "Aluminum",
 		"requiredTech": "Nanotechnology",
-		"uniques": ["Spaceship part", "Triggers a global alert upon completion", "Cannot be purchased"]
+		"uniques": ["Spaceship part", "Triggers a global alert upon [completion]", "Cannot be purchased"]
+	}
+	
+	// All Era's
+	
+	{
+		"name": "Utopia Project",
+		"cost": 1500,
+		"isNationalWonder": true,
+		"uniques": ["Hidden until [5] [social policy branches have been completed]", "Triggers a global alert upon [build start]", "Wins the game when built"]
 	}
 ]

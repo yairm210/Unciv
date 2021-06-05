@@ -198,7 +198,7 @@ class BaseUnit : INamed, IConstruction {
         var XP = cityConstructions.getBuiltBuildings().sumBy { it.xpForNewUnits }
 
 
-        for (unique in cityConstructions.cityInfo.cityConstructions.builtBuildingUniqueMap
+        for (unique in cityConstructions.builtBuildingUniqueMap
                 .getUniques("New [] units start with [] Experience in this city")
                 + civInfo.getMatchingUniques("New [] units start with [] Experience")) {
             if (unit.matchesFilter(unique.params[0]))
@@ -206,7 +206,7 @@ class BaseUnit : INamed, IConstruction {
         }
         unit.promotions.XP = XP
 
-        for (unique in cityConstructions.cityInfo.cityConstructions.builtBuildingUniqueMap
+        for (unique in cityConstructions.builtBuildingUniqueMap
                 .getUniques("All newly-trained [] units in this city receive the [] promotion")) {
             val filter = unique.params[0]
             val promotion = unique.params[1]

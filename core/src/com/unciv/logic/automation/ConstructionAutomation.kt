@@ -12,6 +12,7 @@ import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.VictoryType
 import com.unciv.models.stats.Stat
 import kotlin.math.min
+import kotlin.math.roundToInt
 import kotlin.math.sqrt
 
 class ConstructionAutomation(val cityConstructions: CityConstructions){
@@ -155,8 +156,8 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
                 .filter { it.isStatRelated(Stat.Culture) }.minByOrNull { it.cost }
         if (cultureBuilding != null) {
             var modifier = 0.5f
-            if(cityInfo.cityStats.currentCityStats.culture==0f) // It won't grow if we don't help it
-                modifier=0.8f
+            if (cityInfo.cityStats.currentCityStats.culture == 0f) // It won't grow if we don't help it
+                modifier = 0.8f
             if (preferredVictoryType == VictoryType.Cultural) modifier = 1.6f
             addChoice(relativeCostEffectiveness, cultureBuilding.name, modifier)
         }
@@ -166,8 +167,6 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
         val spaceshipPart = buildableNotWonders.firstOrNull { it.uniques.contains("Spaceship part") }
         if (spaceshipPart != null) {
             var modifier = 1.5f
-            if (cityInfo.cityStats.currentCityStats.culture == 0f) // It won't grow if we don't help it
-                modifier = 0.8f
             if (preferredVictoryType == VictoryType.Scientific) modifier = 2f
             addChoice(relativeCostEffectiveness, spaceshipPart.name, modifier)
         }
@@ -187,6 +186,11 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
         if (preferredVictoryType == VictoryType.Cultural
                 && wonder.name in listOf("Sistine Chapel", "Eiffel Tower", "Cristo Redentor", "Neuschwanstein", "Sydney Opera House"))
             return 3f
+        // Only start building if we are the city that would complete it the soonest
+        if (wonder.name == "Utopia Project" && cityInfo == civInfo.cities.minByOrNull { 
+                it.cityConstructions.getRemainingWork(it.cityConstructions.getCurrentConstruction().name) / cityInfo.cityStats.currentCityStats.production.roundToInt() + wonder.cost / it.cityStats.currentCityStats.production 
+            }!!)
+            return 10f
         if (wonder.isStatRelated(Stat.Science)) {
             if (allTechsAreResearched) return .5f
             if (preferredVictoryType == VictoryType.Scientific) return 1.5f
