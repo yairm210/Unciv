@@ -49,8 +49,12 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
         continuousScrollingX = tileMap.mapParameters.worldWrap
     }
 
-    // Used to transfer data on the "move here" button that should be created, from the side thread to the main thread
-    class MoveHereButtonDto(val unitToTurnsToDestination: HashMap<MapUnit, Int>, val tileInfo: TileInfo)
+    // Interface for classes that contain the data required to draw a button
+    interface ButtonDto
+    // Contains the data required to draw a "move here" button
+    class MoveHereButtonDto(val unitToTurnsToDestination: HashMap<MapUnit, Int>, val tileInfo: TileInfo) : ButtonDto
+    // Contains the data required to draw a "swap with" button
+    class SwapWithButtonDto(val unit: MapUnit, val tileInfo: TileInfo) : ButtonDto
 
     internal fun addTiles() {
         val tileSetStrings = TileSetStrings()
@@ -278,11 +282,10 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
                 } else {
                     // add "move to" button if there is a path to tileInfo
                     val moveHereButtonDto = MoveHereButtonDto(unitsWhoCanMoveThere, tileInfo)
-                    addTileOverlays(tileInfo, getMoveHereButton(moveHereButtonDto))
+                    addTileOverlays(tileInfo, moveHereButtonDto)
                 }
                 worldScreen.shouldUpdate = true
             }
-
         }
     }
 
@@ -297,16 +300,23 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
         }
         else {
             // Add "swap with" button
-            addTileOverlays(tileInfo, getSwapWithButton(selectedUnit, tileInfo))
+            val swapWithButtonDto = SwapWithButtonDto(selectedUnit, tileInfo)
+            addTileOverlays(tileInfo, swapWithButtonDto)
         }
         worldScreen.shouldUpdate = true
     }
 
-    private fun addTileOverlays(tileInfo: TileInfo, tileButton: Group? = null) {
+    private fun addTileOverlays(tileInfo: TileInfo, buttonDto: ButtonDto? = null) {
         for (group in tileGroups[tileInfo]!!) {
             val table = Table().apply { defaults().pad(10f) }
-            if (tileButton != null && worldScreen.canChangeState)
-                table.add(tileButton)
+            if (buttonDto != null && worldScreen.canChangeState)
+                table.add(
+                    when (buttonDto) {
+                        is MoveHereButtonDto -> getMoveHereButton(buttonDto)
+                        is SwapWithButtonDto -> getSwapWithButton(buttonDto)
+                        else -> null
+                    }
+                )
 
             val unitList = ArrayList<MapUnit>()
             if (tileInfo.isCityCenter()
@@ -366,22 +376,22 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
         return moveHereButton
     }
 
-    private fun getSwapWithButton(unit: MapUnit, tileInfo: TileInfo): Group {
+    private fun getSwapWithButton(dto: SwapWithButtonDto): Group {
         val size = 60f
         val swapWithButton = Group().apply { width = size;height = size; }
         swapWithButton.addActor(ImageGetter.getCircle().apply { width = size; height = size })
         swapWithButton.addActor(ImageGetter.getImage("OtherIcons/Swap")
             .apply { color = Color.BLACK; width = size / 2; height = size / 2; center(swapWithButton) })
 
-        val unitIcon = UnitGroup(unit, size / 2)
+        val unitIcon = UnitGroup(dto.unit, size / 2)
         unitIcon.y = size - unitIcon.height
         swapWithButton.addActor(unitIcon)
 
         swapWithButton.onClick(UncivSound.Silent) {
             UncivGame.Current.settings.addCompletedTutorialTask("Move unit")
-            if (unit.type.isAirUnit())
+            if (dto.unit.type.isAirUnit())
                 UncivGame.Current.settings.addCompletedTutorialTask("Move an air unit")
-            swapMoveUnitToTargetTile(unit, tileInfo)
+            swapMoveUnitToTargetTile(dto.unit, dto.tileInfo)
         }
 
         return swapWithButton
