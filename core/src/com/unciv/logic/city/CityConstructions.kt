@@ -157,7 +157,7 @@ class CityConstructions {
                 CivilopediaCategories.Unit.name
             else -> ""
         }
-        var label = currentConstructionSnapshot
+        var label = "{$currentConstructionSnapshot}"
         if (!PerpetualConstruction.perpetualConstructionsMap.containsKey(currentConstructionSnapshot)) {
             val turnsLeft = turnsToConstruction(currentConstructionSnapshot)
             label += " - $turnsLeft${Fonts.turn}"
