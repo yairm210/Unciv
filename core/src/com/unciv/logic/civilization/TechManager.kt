@@ -1,5 +1,6 @@
 package com.unciv.logic.civilization
 
+import com.unciv.logic.civilization.LocationAction
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.map.MapSize
 import com.unciv.logic.map.RoadStatus
@@ -263,22 +264,46 @@ class TechManager {
         if (civInfo.playerType == PlayerType.Human) notifyRevealedResources(techName)
 
         val obsoleteUnits = getRuleset().units.values.filter { it.obsoleteTech == techName }.map { it.name }
+        val unitUpgrades = HashMap<String, ArrayList<CityInfo>>()
         for (city in civInfo.cities) {
             // Do not use replaceAll - that's a Java 8 feature and will fail on older phones!
             val oldQueue = city.cityConstructions.constructionQueue.toList()  // copy, since we're changing the queue
             city.cityConstructions.constructionQueue.clear()
             for (constructionName in oldQueue) {
                 if (constructionName in obsoleteUnits) {
+                    if (constructionName !in unitUpgrades.keys) {
+                        unitUpgrades[constructionName] = ArrayList<CityInfo>()
+                    }
+                    unitUpgrades[constructionName]?.add(city)
                     val construction = city.cityConstructions.getConstruction(constructionName)
                     if (construction is BaseUnit && construction.upgradesTo != null) {
-                        val text = "[${constructionName}] has been obsolete and production will be changed to [${construction.upgradesTo!!}] in [${city.name}]!"
-                        civInfo.addNotification(text, city.location, constructionName, NotificationIcon.Construction, construction.upgradesTo!!)
                         city.cityConstructions.constructionQueue.add(construction.upgradesTo!!)
-                    } else {
-                        val text = "[$constructionName] has been obsolete and will be removed from construction queue in [${city.name}]!"
-                        civInfo.addNotification(text, city.location, NotificationIcon.Construction)
                     }
                 } else city.cityConstructions.constructionQueue.add(constructionName)
+            }
+        }
+
+        // Add notifications for obsolete units/constructions
+        for ((unit, cities) in unitUpgrades) {
+            val construction = cities[0].cityConstructions.getConstruction(unit)
+            if (cities.size == 1) {
+                val city = cities[0]
+                if (construction is BaseUnit && construction.upgradesTo != null) {
+                    val text = "[${city.name}] changed production from [$unit] to [${construction.upgradesTo!!}]"
+                    civInfo.addNotification(text, city.location, unit, NotificationIcon.Construction, construction.upgradesTo!!)
+                } else {
+                    val text = "[$unit] has been obsolete and will be removed from construction queue in [${city.name}]!"
+                    civInfo.addNotification(text, city.location, NotificationIcon.Construction)
+                }
+            } else {
+                val locationAction = LocationAction(cities.map { it.location })
+                if (construction is BaseUnit && construction.upgradesTo != null) {
+                    val text = "[${cities.size}] cities changed production from [$unit] to [${construction.upgradesTo!!}]"
+                    civInfo.addNotification(text, locationAction, unit, NotificationIcon.Construction, construction.upgradesTo!!)
+                } else {
+                    val text = "[$unit] has been obsolete and will be removed from construction queue in [${cities.size}] cities!"
+                    civInfo.addNotification(text, locationAction, NotificationIcon.Construction)
+                }
             }
         }
 

@@ -329,7 +329,7 @@ class CityConstructions {
                     if (construction.isWonder && getWorkDone(constructionName) != 0) {
                         cityInfo.civInfo.gold += getWorkDone(constructionName)
                         val buildingIcon = "BuildingIcons/${constructionName}"
-                        cityInfo.civInfo.addNotification("Could not continue work on [${constructionName}], excess production converted to [${getWorkDone(constructionName)}] gold", NotificationIcon.Gold, buildingIcon)
+                        cityInfo.civInfo.addNotification("Excess production for [$constructionName] converted to [${getWorkDone(constructionName)}] gold", NotificationIcon.Gold, buildingIcon)
                     }
                 } else if (construction is BaseUnit) {
                     // Production put into upgradable units gets put into upgraded version
