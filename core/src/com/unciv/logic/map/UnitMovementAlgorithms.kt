@@ -323,6 +323,7 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
             unit.removeFromTile()
             unit.putInTile(destination)
             unit.currentMovement -= 1f
+            unit.attacksThisTurn += 1
             // Check if unit maintenance changed
             // Is also done for other units, but because we skip everything else, we have to manually check it
             // The reason we skip everything, is that otherwise `getPathToTile()` throws an exception

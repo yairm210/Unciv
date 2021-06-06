@@ -1,3 +1,20 @@
+## 3.14.14
+
+Fixed app resize crash in MacOS - By lishaoxia1985
+
+Added the paratrooper unit - By xlenstra
+
+Add global alerts for certain constructions  - By avdstaaij
+
+Temple of Artemis bonuses reflect civ5 behavior  - By ravignir
+
+Resolved #3967 - City-states can no longer 'gift' you your unique units
+
+Resolved #3926 - Wheat+Farm gets location-appropriate farm
+
+Keyboard shortcut order with multiple popups  - By SomeTroglodyte
+
+
 ## 3.14.13
 
 New Swedish translations!
