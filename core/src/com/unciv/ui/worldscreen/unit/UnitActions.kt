@@ -47,6 +47,7 @@ object UnitActions {
             )
         }
 
+        addSwapAction(unit, actionList, worldScreen)
         addExplorationActions(unit, actionList)
         addPromoteAction(unit, actionList)
         addUnitUpgradeAction(unit, actionList)
@@ -64,6 +65,27 @@ object UnitActions {
         return actionList
     }
 
+    private fun addSwapAction(unit: MapUnit, actionList: ArrayList<UnitAction>, worldScreen: WorldScreen) {
+        // Air units cannot swap
+        if (unit.type.isAirUnit()) return
+        // Disable unit swapping if multiple units are selected. It would make little sense.
+        // In principle, the unit swapping mode /will/ function with multiselect: it will simply
+        // only consider the first selected unit, and ignore the other selections. However, it does
+        // have the visual bug that the tile overlays for the eligible swap locations are drawn for
+        // /all/ selected units instead of only the first one. This could be fixed, but again,
+        // swapping makes little sense for multiselect anyway.
+        if (worldScreen.bottomUnitTable.selectedUnits.count() > 1) return
+        // Only show the swap action if there is at least one possible swap movement
+        if (unit.movement.getUnitSwappableTiles().none()) return
+        actionList += UnitAction(
+            type = UnitActionType.SwapUnits,
+            isCurrentAction = worldScreen.bottomUnitTable.selectedUnitIsSwapping,
+            action = {
+                worldScreen.bottomUnitTable.selectedUnitIsSwapping = !worldScreen.bottomUnitTable.selectedUnitIsSwapping
+                worldScreen.shouldUpdate = true
+            }
+        )
+    }
 
     private fun addDisbandAction(actionList: ArrayList<UnitAction>, unit: MapUnit, worldScreen: WorldScreen) {
         actionList += UnitAction(type = UnitActionType.DisbandUnit, action = {
