@@ -75,13 +75,15 @@ object UnitActions {
         // /all/ selected units instead of only the first one. This could be fixed, but again,
         // swapping makes little sense for multiselect anyway.
         if (worldScreen.bottomUnitTable.selectedUnits.count() > 1) return
+        // Only show the swap action if there is at least one possible swap movement
+        if (unit.movement.getUnitSwappableTiles().none()) return
         actionList += UnitAction(
             type = UnitActionType.SwapUnits,
             isCurrentAction = worldScreen.bottomUnitTable.selectedUnitIsSwapping,
             action = {
                 worldScreen.bottomUnitTable.selectedUnitIsSwapping = !worldScreen.bottomUnitTable.selectedUnitIsSwapping
                 worldScreen.shouldUpdate = true
-            }.takeIf { unit.currentMovement > 0 }
+            }
         )
     }
 
