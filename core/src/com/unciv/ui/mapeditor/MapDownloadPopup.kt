@@ -33,6 +33,7 @@ class MapDownloadPopup(loadMapScreen: SaveAndLoadMapScreen): Popup(loadMapScreen
         val listener = TextField.TextFieldListener{ textField: TextField, _: Char -> updateList(textField.text) }
         filter.setTextFieldListener(listener)
         header.add(filter).row()
+        keyboardFocus = filter
         header.addSeparator().row()
         pack()
     }
@@ -56,14 +57,18 @@ class MapDownloadPopup(loadMapScreen: SaveAndLoadMapScreen): Popup(loadMapScreen
                     }
                     scrollableMapTable.add(downloadMapButton).row()
                 }
-                contentTable.add(ScrollPane(scrollableMapTable)).height(screen.stage.height * 2 / 3).row()
-                pack()
-                close()
-                // the list is loaded and ready to be shown
-                removeActor(loadingLabel)
+                val scrollPane = ScrollPane(scrollableMapTable)
+                contentTable.add(scrollPane).height(screen.stage.height * 2 / 3).row()
+                // the list is loaded and ready to be shown - remove "Loading..."
+                innerTable.removeActor(loadingLabel)
                 // create the header with a filter tool
                 createHeader()
-                open()
+                pack()
+                center(screen.stage)
+                // Due to some jokers spamming very long names the content would end up way on the right
+                // scrollPane.scrollPercentX = 0.5f does _not_ work for this! That fun doesn't refer to the center. 
+                // This will bounce in with visual effect, if undesired call updateVisualScroll()
+                scrollPane.scrollX = scrollPane.maxX / 2 
             }
         } catch (ex: Exception) {
             Gdx.app.postRunnable { addGoodSizedLabel("Could not get list of maps!").row() }
