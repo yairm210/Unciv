@@ -563,12 +563,15 @@ open class TileInfo {
 
     fun getRulesetIncompatibility(ruleset: Ruleset): HashSet<String> {
         val out = HashSet<String>()
-        if (!ruleset.terrains.containsKey(baseTerrain)) out.add("Base terrain $baseTerrain does not exist in ruleset!")
+        if (!ruleset.terrains.containsKey(baseTerrain))
+            out.add("Base terrain [$baseTerrain] does not exist in ruleset!")
         for (terrainFeature in terrainFeatures.filter { !ruleset.terrains.containsKey(it) })
-            out.add("Terrain feature $terrainFeature does not exist in ruleset!")
-        if (resource != null && !ruleset.tileResources.containsKey(resource)) out.add("Resource $resource does not exist in ruleset!")
+            out.add("Terrain feature [$terrainFeature] does not exist in ruleset!")
+        if (resource != null && !ruleset.tileResources.containsKey(resource))
+            out.add("Resource [$resource] does not exist in ruleset!")
         if (improvement != null && !improvement!!.startsWith("StartingLocation")
-                && !ruleset.tileImprovements.containsKey(improvement)) out.add("Improvement $improvement does not exist in ruleset!")
+                && !ruleset.tileImprovements.containsKey(improvement))
+            out.add("Improvement [$improvement] does not exist in ruleset!")
         return out
     }
 
