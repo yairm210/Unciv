@@ -107,7 +107,7 @@ class CivInfoTransientUpdater(val civInfo: CivilizationInfo) {
             }
 
             if (goldGained > 0) {
-                civInfo.gold += goldGained
+                civInfo.addGold(goldGained)
                 civInfo.addNotification("We have received [" + goldGained + "] Gold for discovering [" + tile.naturalWonder + "]", NotificationIcon.Gold)
             }
 

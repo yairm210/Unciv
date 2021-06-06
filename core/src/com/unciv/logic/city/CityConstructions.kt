@@ -397,7 +397,7 @@ class CityConstructions {
             return false // nothing built - no pay
 
         if (!cityInfo.civInfo.gameInfo.gameParameters.godMode)
-            cityInfo.civInfo.gold -= getConstruction(constructionName).getGoldCost(cityInfo.civInfo)
+            cityInfo.civInfo.addGold(-getConstruction(constructionName).getGoldCost(cityInfo.civInfo))
 
         if (queuePosition in 0 until constructionQueue.size)
             removeFromQueue(queuePosition, automatic)
