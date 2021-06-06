@@ -1,6 +1,5 @@
 package com.unciv.ui.utils
 
-import com.badlogic.gdx.Input
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Touchable
@@ -137,7 +136,7 @@ open class Popup(val screen: CameraStageBaseScreen): Table(CameraStageBaseScreen
         action: (()->Unit)? = null
     ): Cell<TextButton> {
         val closeAction = { close(); if(action!=null) action()  }
-        keyPressDispatcher[Input.Keys.BACK] = closeAction
+        keyPressDispatcher[KeyCharAndCode.BACK] = closeAction
         return addButton(text, additionalKey, closeAction)
     }
 

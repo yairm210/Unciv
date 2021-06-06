@@ -1,6 +1,5 @@
 package com.unciv.ui.mapeditor
 
-import com.badlogic.gdx.Input
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.InputEvent
@@ -68,7 +67,7 @@ class MapEditorScreen(): CameraStageBaseScreen() {
         }
         val optionsMenuButton = "Menu".toTextButton()
         optionsMenuButton.onClick(openOptionsMenu)
-        keyPressDispatcher[Input.Keys.BACK] = openOptionsMenu
+        keyPressDispatcher[KeyCharAndCode.BACK] = openOptionsMenu
         optionsMenuButton.label.setFontSize(24)
         optionsMenuButton.labelCell.pad(20f)
         optionsMenuButton.pack()

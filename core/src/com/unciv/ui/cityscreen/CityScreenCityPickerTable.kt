@@ -56,7 +56,7 @@ class CityScreenCityPickerTable(private val cityScreen: CityScreen) : Table() {
             textArea.alignment = Align.center
             editCityNamePopup.add(textArea).colspan(2).row()
             //editCityNamePopup.name = "CityNamePopup" // debug help
-            editCityNamePopup.addButtonInRow("Save", '\r') {
+            editCityNamePopup.addButtonInRow("Save", KeyCharAndCode.RETURN) {
                 city.name = textArea.text
                 cityScreen.game.setScreen(CityScreen(city))
             }

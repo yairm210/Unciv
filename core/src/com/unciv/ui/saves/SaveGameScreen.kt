@@ -18,7 +18,7 @@ import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 
 
 class SaveGameScreen(val gameInfo: GameInfo) : PickerScreen(disableScroll = true) {
-    val gameNameTextField = TextField("", skin)
+    private val gameNameTextField = TextField("", skin)
     val currentSaves = Table()
 
     init {
@@ -30,7 +30,7 @@ class SaveGameScreen(val gameInfo: GameInfo) : PickerScreen(disableScroll = true
         topTable.add(ScrollPane(currentSaves))
 
         val newSave = Table()
-        newSave.defaults().pad(5f, 10f, 5f, 10f)
+        newSave.defaults().pad(5f, 10f)
         val defaultSaveName = gameInfo.currentPlayer + " -  " + gameInfo.turns + " turns"
         gameNameTextField.text = defaultSaveName
 
@@ -100,7 +100,7 @@ class SaveGameScreen(val gameInfo: GameInfo) : PickerScreen(disableScroll = true
         }
     }
 
-    fun updateShownSaves(showAutosaves: Boolean) {
+    private fun updateShownSaves(showAutosaves: Boolean) {
         currentSaves.clear()
         val saves = GameSaver.getSaves()
                 .sortedByDescending { it.lastModified() }
