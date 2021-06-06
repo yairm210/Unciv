@@ -279,6 +279,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Rocket](https://thenounproject.com/term/rocket/937173/) By BomSymbols for SS Cockpit
 * [Engine](https://thenounproject.com/term/engine/1877958/) By Andre for SS Engine
 * [Chamber](https://thenounproject.com/term/chamber/1242689/) By IYIKON for SS Stasis Chamber
+* [Illuminati](https://thenounproject.com/term/illuminati/1617812) by emilegraphics for the Utopia Project
 
 ## Social Policies
 
