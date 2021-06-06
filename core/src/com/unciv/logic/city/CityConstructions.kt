@@ -362,7 +362,7 @@ class CityConstructions {
 
     private fun constructionBegun(construction: IConstruction) {
         if (construction is Building) {
-            if (construction.uniqueObjects.any {it.placeholderText == "Triggers a global alert upon []" && it.params[0] == "build start"}) {
+            if (construction.uniqueObjects.any { it.placeholderText == "Triggers a global alert upon build start" }) {
                 for (otherCiv in cityInfo.civInfo.gameInfo.civilizations) {
                     var notificationString = "[${construction.name}] is being built "
                     notificationString +=
@@ -401,7 +401,7 @@ class CityConstructions {
             cityInfo.civInfo.addNotification("[${construction.name}] has been built in [" + cityInfo.name + "]",
                     cityInfo.location, NotificationIcon.Construction, icon)
         }
-        if (construction is Building && construction.uniqueObjects.any {it.placeholderText == "Triggers a global alert upon []]" && it.params[0] == "completion"} ) {
+        if (construction is Building && construction.uniqueObjects.any { it.placeholderText == "Triggers a global alert upon completion]" } ) {
             for (otherCiv in cityInfo.civInfo.gameInfo.civilizations) {
                 // No need to notify ourself, since we already got the building notification anyway
                 if (otherCiv == cityInfo.civInfo) continue
