@@ -249,14 +249,15 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
             unit.putInTile(destination)
             unit.currentMovement = 0f
             return
-        } else if (unit.action == Constants.unitActionParadrop) { // paratrooping move differently
+        } else if (unit.action == Constants.unitActionParadrop) { // paratroopers move differently
             unit.action = null
             unit.removeFromTile()
             unit.putInTile(destination)
             unit.currentMovement -= 1f
+            unit.attacksThisTurn += 1
             // Check if unit maintenance changed
             // Is also done for other units, but because we skip everything else, we have to manually check it
-            // The reasong we skip everything, is that otherwise `getPathToTile()` throws an exception
+            // The reason we skip everything, is that otherwise `getPathToTile()` throws an exception
             // As we can not reach our destination in a single turn
             if (unit.canGarrison()
                 && (unit.getTile().isCityCenter() || destination.isCityCenter())
