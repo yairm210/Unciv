@@ -6,6 +6,7 @@ import com.unciv.logic.map.RoadStatus
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.ruleset.Unique
 import com.unciv.models.ruleset.UniqueTriggerActivation
+import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.ruleset.tech.Technology
 import com.unciv.ui.utils.withItem
 import java.util.*
@@ -268,8 +269,15 @@ class TechManager {
             city.cityConstructions.constructionQueue.clear()
             for (constructionName in oldQueue) {
                 if (constructionName in obsoleteUnits) {
-                    val text = "[$constructionName] has been obsolete and will be removed from construction queue in [${city.name}]!"
-                    civInfo.addNotification(text, city.location, NotificationIcon.Construction)
+                    val construction = city.cityConstructions.getConstruction(constructionName)
+                    if (construction is BaseUnit && construction.upgradesTo != null) {
+                        val text = "[${constructionName}] has been obsolete and production will be changed to [${construction.upgradesTo!!}] in [${city.name}]!"
+                        civInfo.addNotification(text, city.location, constructionName, NotificationIcon.Construction, construction.upgradesTo!!)
+                        city.cityConstructions.constructionQueue.add(construction.upgradesTo!!)
+                    } else {
+                        val text = "[$constructionName] has been obsolete and will be removed from construction queue in [${city.name}]!"
+                        civInfo.addNotification(text, city.location, NotificationIcon.Construction)
+                    }
                 } else city.cityConstructions.constructionQueue.add(constructionName)
             }
         }

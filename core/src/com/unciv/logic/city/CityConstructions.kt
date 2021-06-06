@@ -311,8 +311,9 @@ class CityConstructions {
         // Should at least be called before each turn - if another civ completes a wonder after our previous turn, we should get the refund this turn
         val inProgressSnapshot = inProgressConstructions.keys.filter { it != currentConstructionFromQueue }
         for (constructionName in inProgressSnapshot) {
+            val construction = getConstruction(constructionName)
             val rejectionReason: String =
-                    when (val construction = getConstruction(constructionName)) {
+                    when (construction) {
                         is Building -> construction.getRejectionReason(this)
                         is BaseUnit -> construction.getRejectionReason(this)
                         else -> ""
@@ -323,8 +324,24 @@ class CityConstructions {
                     || rejectionReason.startsWith("Don't need to build any more")
                     || rejectionReason.startsWith("Obsolete")
             ) {
-              cityInfo.civInfo.gold += getWorkDone(constructionName)
-              inProgressConstructions.remove(constructionName)
+                if (construction is Building) {
+                    // Production put into wonders gets refunded
+                    if (construction.isWonder && getWorkDone(constructionName) != 0) {
+                        cityInfo.civInfo.gold += getWorkDone(constructionName)
+                        val buildingIcon = "BuildingIcons/${constructionName}"
+                        cityInfo.civInfo.addNotification("Could not continue work on [${constructionName}], excess production converted to [${getWorkDone(constructionName)}] gold", NotificationIcon.Gold, buildingIcon)
+                    }
+                } else if (construction is BaseUnit) {
+                    // Production put into upgradable units gets put into upgraded version
+                    if (rejectionReason.startsWith("Obsolete") && construction.upgradesTo != null) {
+                        if (!inProgressConstructions.contains(construction.upgradesTo)) {
+                            inProgressConstructions[construction.upgradesTo!!] = getWorkDone(constructionName)
+                        } else {
+                            inProgressConstructions[construction.upgradesTo!!] = inProgressConstructions[construction.upgradesTo!!]!! + getWorkDone(constructionName)
+                        }
+                    }
+                }
+                inProgressConstructions.remove(constructionName)
             }
         }
     }
