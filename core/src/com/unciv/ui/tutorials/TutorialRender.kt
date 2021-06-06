@@ -28,13 +28,11 @@ class TutorialRender(private val screen: CameraStageBaseScreen) {
 
             tutorialPopup.addGoodSizedLabel(texts[0]).row()
 
-            val button = Constants.close.toTextButton()
-            button.onClick {
+            tutorialPopup.addCloseButton(additionalKey = KeyCharAndCode(' ')) {
                 tutorialPopup.remove()
                 texts.removeIndex(0)
                 showDialog(tutorialName, texts, closeAction)
             }
-            tutorialPopup.add(button).pad(10f)
             tutorialPopup.open()
         }
     }

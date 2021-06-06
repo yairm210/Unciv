@@ -19,10 +19,7 @@ class TutorialController(screen: CameraStageBaseScreen) {
         showTutorialIfNeeded()
     }
 
-    fun removeTutorial(tutorialName: String) {
-        Tutorial.valueOf(tutorialName).let { removeTutorial(it) }
-    }
-    fun removeTutorial(tutorial: Tutorial) {
+    private fun removeTutorial(tutorial: Tutorial) {
         isTutorialShowing = false
         tutorialQueue.remove(tutorial)
         with(UncivGame.Current.settings) {
