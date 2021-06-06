@@ -235,7 +235,7 @@ object UnitActions {
                 title = "Upgrade to [${upgradedUnit.name}] ([$goldCostOfUpgrade] gold)",
                 uncivSound = UncivSound.Upgrade,
                 action = {
-                    unit.civInfo.gold -= goldCostOfUpgrade
+                    unit.civInfo.addGold(-goldCostOfUpgrade)
                     val unitTile = unit.getTile()
                     unit.destroy()
                     val newunit = unit.civInfo.placeUnitNearTile(unitTile.position, upgradedUnit.name)!!
@@ -334,7 +334,7 @@ object UnitActions {
                             var goldEarned = ((350 + 50 * unit.civInfo.getEraNumber()) * unit.civInfo.gameInfo.gameParameters.gameSpeed.modifier).toInt()
                             if (unit.civInfo.hasUnique("Double gold from Great Merchant trade missions"))
                                 goldEarned *= 2
-                            unit.civInfo.gold += goldEarned
+                            unit.civInfo.addGold(goldEarned)
                             tile.owningCity!!.civInfo.getDiplomacyManager(unit.civInfo).influence += influenceEarned
                             unit.civInfo.addNotification("Your trade mission to [${tile.owningCity!!.civInfo}] has earned you [${goldEarned}] gold and [$influenceEarned] influence!",
                                     tile.owningCity!!.civInfo.civName, NotificationIcon.Gold, NotificationIcon.Culture)
@@ -428,7 +428,7 @@ object UnitActions {
         val cityWithMausoleum = civInfo.cities.firstOrNull { it.containsBuildingUnique(uniqueText) }
                 ?: return
         val goldEarned = (100 * civInfo.gameInfo.gameParameters.gameSpeed.modifier).toInt()
-        civInfo.gold += goldEarned
+        civInfo.addGold(goldEarned)
 
         val mausoleum = cityWithMausoleum.cityConstructions.getBuiltBuildings().first { it.uniques.contains(uniqueText) }
         civInfo.addNotification("[${mausoleum.name}] has provided [$goldEarned] Gold!", cityWithMausoleum.location, NotificationIcon.Gold)

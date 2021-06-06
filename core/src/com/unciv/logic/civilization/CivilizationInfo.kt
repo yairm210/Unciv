@@ -523,7 +523,7 @@ class CivilizationInfo {
             }
         }
 
-        gold += nextTurnStats.gold.toInt()
+        addGold( nextTurnStats.gold.toInt() )
 
         if (cities.isNotEmpty() && gameInfo.ruleSet.technologies.isNotEmpty())
             tech.endTurn(nextTurnStats.science.toInt())
@@ -541,6 +541,14 @@ class CivilizationInfo {
         diplomacy.values.toList().forEach { it.nextTurn() } // we copy the diplomacy values so if it changes in-loop we won't crash
         updateAllyCivForCityState()
         updateHasActiveGreatWall()
+    }
+
+    fun addGold(delta: Int) {
+        gold = when {
+            delta > 0 && gold > Int.MAX_VALUE - delta -> Int.MAX_VALUE
+            delta < 0 && gold < Int.MIN_VALUE - delta -> Int.MIN_VALUE
+            else -> gold + delta
+        }
     }
 
     fun getGreatPersonPointsForNextTurn(): Stats {
@@ -619,7 +627,8 @@ class CivilizationInfo {
 
     fun giveGoldGift(cityState: CivilizationInfo, giftAmount: Int) {
         if (!cityState.isCityState()) throw Exception("You can only gain influence with City-States!")
-        gold -= giftAmount
+        addGold(-giftAmount)
+        cityState.addGold(giftAmount)
         cityState.getDiplomacyManager(this).influence += influenceGainedByGift(cityState, giftAmount)
         cityState.updateAllyCivForCityState()
         updateStatsForNextTurn()

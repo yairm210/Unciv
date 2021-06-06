@@ -51,7 +51,7 @@ class CityExpansionManager {
         class NotEnoughGoldToBuyTileException : Exception()
         if (cityInfo.civInfo.gold < goldCost && !cityInfo.civInfo.gameInfo.gameParameters.godMode)
             throw NotEnoughGoldToBuyTileException()
-        cityInfo.civInfo.gold -= goldCost
+        cityInfo.civInfo.addGold(-goldCost)
         takeOwnership(tileInfo)
     }
 

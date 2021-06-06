@@ -122,7 +122,7 @@ object Battle {
         }
 
         civUnit.getCivInfo().policies.addCulture(cultureReward)
-        civUnit.getCivInfo().gold += goldReward
+        civUnit.getCivInfo().addGold(goldReward)
     }
 
     private fun takeDamage(attacker: ICombatant, defender: ICombatant) {
@@ -203,7 +203,7 @@ object Battle {
                 && attacker.getCivInfo().hasUnique("67% chance to earn 25 Gold and recruit a Barbarian unit from a conquered encampment")
                 && Random().nextDouble() < 0.67) {
             attacker.getCivInfo().placeUnitNearTile(attackedTile.position, defender.getName())
-            attacker.getCivInfo().gold += 25
+            attacker.getCivInfo().addGold(25)
             attacker.getCivInfo().addNotification("A barbarian [${defender.getName()}] has joined us!", attackedTile.position, defender.getName())
         }
 
@@ -213,7 +213,7 @@ object Battle {
                 && attacker.getCivInfo().hasUnique("50% chance of capturing defeated Barbarian naval units and earning 25 Gold")
                 && Random().nextDouble() > 0.5) {
             attacker.getCivInfo().placeUnitNearTile(attackedTile.position, defender.getName())
-            attacker.getCivInfo().gold += 25
+            attacker.getCivInfo().addGold(25)
         }
     }
 

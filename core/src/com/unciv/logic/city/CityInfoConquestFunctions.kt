@@ -32,7 +32,7 @@ class CityInfoConquestFunctions(val city: CityInfo){
         // Gain gold for plundering city
         val goldPlundered = getGoldForCapturingCity(conqueringCiv)
         city.apply {
-            conqueringCiv.gold += goldPlundered
+            conqueringCiv.addGold(goldPlundered)
             conqueringCiv.addNotification("Received [$goldPlundered] Gold for capturing [$name]", getCenterTile().position, NotificationIcon.Gold)
 
             val oldCiv = civInfo

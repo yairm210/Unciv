@@ -427,7 +427,7 @@ class CityInfo {
 
     fun sellBuilding(buildingName: String) {
         cityConstructions.removeBuilding(buildingName)
-        civInfo.gold += getGoldForSellingBuilding(buildingName)
+        civInfo.addGold(getGoldForSellingBuilding(buildingName))
         hasSoldBuildingThisTurn = true
 
         population.unassignExtraPopulation() // If the building provided specialists, release them to other work

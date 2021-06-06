@@ -631,7 +631,7 @@ class MapUnit {
         if (civInfo.hasUnique("Receive triple Gold from Barbarian encampments and pillaging Cities"))
             goldGained *= 3f
 
-        civInfo.gold += goldGained.toInt()
+        civInfo.addGold(goldGained.toInt())
         civInfo.addNotification(
             "We have captured a barbarian encampment and recovered [${goldGained.toInt()}] gold!",
             tile.position,
@@ -660,7 +660,7 @@ class MapUnit {
 
         destroy()
         if (currentTile.getOwner() == civInfo)
-            civInfo.gold += baseUnit.getDisbandGold(civInfo)
+            civInfo.addGold(baseUnit.getDisbandGold(civInfo))
         if (civInfo.isDefeated()) civInfo.destroy()
     }
 
@@ -725,7 +725,7 @@ class MapUnit {
 
         actions.add {
             val amount = listOf(25, 60, 100).random(tileBasedRandom)
-            civInfo.gold += amount
+            civInfo.addGold(amount)
             civInfo.addNotification(
                 "We have found a stash of [$amount] gold in the ruins!",
                 tile.position,

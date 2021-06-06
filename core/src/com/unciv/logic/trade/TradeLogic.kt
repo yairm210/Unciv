@@ -79,8 +79,8 @@ class TradeLogic(val ourCivilization:CivilizationInfo, val otherCivilization: Ci
         fun transferTrade(to: CivilizationInfo, from: CivilizationInfo, trade: Trade) {
             for (offer in trade.theirOffers) {
                 if (offer.type == TradeType.Gold) {
-                    to.gold += offer.amount
-                    from.gold -= offer.amount
+                    to.addGold(offer.amount)
+                    from.addGold(-offer.amount)
                 }
                 if (offer.type == TradeType.Technology) {
                     to.tech.addTechnology(offer.name)
@@ -95,7 +95,7 @@ class TradeLogic(val ourCivilization:CivilizationInfo, val otherCivilization: Ci
                 if (offer.type == TradeType.Treaty) {
                     if (offer.name == Constants.peaceTreaty) to.getDiplomacyManager(from).makePeace()
                     if (offer.name == Constants.researchAgreement) {
-                        to.gold -= offer.amount
+                        to.addGold(-offer.amount)
                         to.getDiplomacyManager(from).setFlag(DiplomacyFlags.ResearchAgreement, offer.duration)
                     }
                 }
