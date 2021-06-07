@@ -23,9 +23,9 @@ class ModCheckboxTable(val mods:LinkedHashSet<String>, val screen: CameraStageBa
             checkBox.onChange {
                 if (checkBox.isChecked) {
                     val modLinkErrors = mod.checkModLinks()
-                    if (modLinkErrors.isNotOK) {
+                    if (modLinkErrors.isNotOK()) {
                         ToastPopup("The mod you selected is incorrectly defined!\n\n$modLinkErrors", screen)
-                        if (modLinkErrors.isError) {
+                        if (modLinkErrors.isError()) {
                             checkBox.isChecked = false
                             return@onChange
                         }
@@ -45,7 +45,7 @@ class ModCheckboxTable(val mods:LinkedHashSet<String>, val screen: CameraStageBa
                         val newRuleset = RulesetCache.getComplexRuleset(mods)
                         newRuleset.modOptions.isBaseRuleset = true // This is so the checkModLinks finds all connections
                         complexModLinkCheck = newRuleset.checkModLinks()
-                        isCompatibleWithCurrentRuleset = !complexModLinkCheck.isError
+                        isCompatibleWithCurrentRuleset = !complexModLinkCheck.isError()
                     } catch (x: Exception) {
                         // This happens if a building is dependent on a tech not in the base ruleset
                         //  because newRuleset.updateBuildingCosts() in getComplexRuleset() throws an error

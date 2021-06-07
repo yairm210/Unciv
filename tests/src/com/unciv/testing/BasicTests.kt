@@ -81,8 +81,8 @@ class BasicTests {
     fun baseRulesetHasNoBugs() {
         ruleset.modOptions.isBaseRuleset=true
         val modCheck = ruleset.checkModLinks()
-        if(modCheck.isNotOK) println(modCheck)
-        Assert.assertFalse(modCheck.isNotOK)
+        if(modCheck.isNotOK()) println(modCheck)
+        Assert.assertFalse(modCheck.isNotOK())
     }
 
 }

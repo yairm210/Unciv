@@ -250,10 +250,8 @@ class Ruleset {
         // Allows $this in format strings 
         override fun toString() = message
         // Readability shortcuts
-        val isError
-            get() = status == CheckModLinksStatus.Error
-        val isNotOK
-            get() = status != CheckModLinksStatus.OK
+        fun isError() = status == CheckModLinksStatus.Error
+        fun isNotOK() = status != CheckModLinksStatus.OK
     }
     fun checkModLinks(): CheckModLinksResult {
         val lines = ArrayList<String>()
