@@ -272,6 +272,9 @@ class CityConstructions {
     fun constructIfEnough() {
         validateConstructionQueue()
 
+        // Update InProgressConstructions for any available refunds
+        validateInProgressConstructions()
+
         val construction = getConstruction(currentConstructionFromQueue)
         if (construction is PerpetualConstruction) chooseNextConstruction() // check every turn if we could be doing something better, because this doesn't end by itself
         else {
@@ -296,20 +299,21 @@ class CityConstructions {
         val queueSnapshot = constructionQueue.toMutableList()
         constructionQueue.clear()
 
-        for (construction in queueSnapshot) {
-            if (getConstruction(construction).isBuildable(this))
-                constructionQueue.add(construction)
+        for (constructionName in queueSnapshot) {
+            if (getConstruction(constructionName).isBuildable(this))
+                constructionQueue.add(constructionName)
         }
     }
 
     private fun validateInProgressConstructions() {
         // remove obsolete stuff from in progress constructions - happens often and leaves clutter in memory and save files
-        // should have NO visible consequences - any accumulated points that may be reused later should stay (nukes when manhattan project city lost, nat wonder when conquered an empty city...)
-        // Needs only be called once in a while - endTurn is enough
+        // should have little visible consequences - any accumulated points that may be reused later should stay (nukes when manhattan project city lost, nat wonder when conquered an empty city...), all other points should be refunded
+        // Should at least be called before each turn - if another civ completes a wonder after our previous turn, we should get the refund this turn
         val inProgressSnapshot = inProgressConstructions.keys.filter { it != currentConstructionFromQueue }
         for (constructionName in inProgressSnapshot) {
+            val construction = getConstruction(constructionName)
             val rejectionReason: String =
-                    when (val construction = getConstruction(constructionName)) {
+                    when (construction) {
                         is Building -> construction.getRejectionReason(this)
                         is BaseUnit -> construction.getRejectionReason(this)
                         else -> ""
@@ -319,7 +323,27 @@ class CityConstructions {
                     || rejectionReason.startsWith("Cannot be built with")
                     || rejectionReason.startsWith("Don't need to build any more")
                     || rejectionReason.startsWith("Obsolete")
-            ) inProgressConstructions.remove(constructionName)
+            ) {
+                if (construction is Building) {
+                    // Production put into wonders gets refunded
+                    if (construction.isWonder && getWorkDone(constructionName) != 0) {
+                        cityInfo.civInfo.gold += getWorkDone(constructionName)
+                        val buildingIcon = "BuildingIcons/${constructionName}"
+                        cityInfo.civInfo.addNotification("Excess production for [$constructionName] converted to [${getWorkDone(constructionName)}] gold", NotificationIcon.Gold, buildingIcon)
+                    }
+                } else if (construction is BaseUnit) {
+                    // Production put into upgradable units gets put into upgraded version
+                    if (rejectionReason.startsWith("Obsolete") && construction.upgradesTo != null) {
+                        // I'd love to use the '+=' operator but since 'inProgressConstructions[...]' can be null, kotlin doesn't allow me to
+                        if (!inProgressConstructions.contains(construction.upgradesTo)) {
+                            inProgressConstructions[construction.upgradesTo!!] = getWorkDone(constructionName)
+                        } else {
+                            inProgressConstructions[construction.upgradesTo!!] = inProgressConstructions[construction.upgradesTo!!]!! + getWorkDone(constructionName)
+                        }
+                    }
+                }
+                inProgressConstructions.remove(constructionName)
+            }
         }
     }
 
