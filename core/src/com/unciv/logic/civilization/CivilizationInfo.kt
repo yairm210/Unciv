@@ -365,9 +365,16 @@ class CivilizationInfo {
 
     fun isAtWar() = diplomacy.values.any { it.diplomaticStatus == DiplomaticStatus.War && !it.otherCiv().isDefeated() }
 
+    /**
+     * Returns a civilization caption suitable for greetings including player type info:
+     * Like "Milan" if the nation is a city state, "Caesar of Rome" otherwise, with an added
+     * " (AI)", " (Human - Hotseat)", or " (Human - Multiplayer)" if the game is multiplayer.
+     */ 
     fun getLeaderDisplayName(): String {
         return nation.getLeaderDisplayName().tr() +
             when {
+                !gameInfo.gameParameters.isOnlineMultiplayer ->
+                    ""
                 playerType == PlayerType.AI ->
                     " (" + "AI".tr() + ")"
                 gameInfo.civilizations.count { it.playerType == PlayerType.Human } > 1 ->

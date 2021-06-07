@@ -49,7 +49,7 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
         closeButton.labelCell.pad(10f)
         closeButton.pack()
         closeButton.y = stage.height - closeButton.height - 10
-        closeButton.x = 10f
+        closeButton.x = (stage.width * 0.2f - closeButton.width) / 2   // center, leftSideTable.width not known yet
         stage.addActor(closeButton) // This must come after the split pane so it will be above, that the button will be clickable
     }
 
@@ -99,11 +99,7 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
         val diplomacyTable = Table()
         diplomacyTable.defaults().pad(10f)
 
-        val displayNameTable = Table()
-        displayNameTable.add(ImageGetter.getNationIndicator(otherCiv.nation, 24f))
-                .pad(0f, 0f, 5f, 10f)
-        displayNameTable.add(otherCiv.getLeaderDisplayName().toLabel(fontSize = 24))
-        diplomacyTable.add(displayNameTable).row()
+        diplomacyTable.add(LeaderIntroTable(otherCiv)).row()
 
         diplomacyTable.add("{Type}:  {${otherCiv.cityStateType}}".toLabel()).row()
         diplomacyTable.add("{Personality}:  {${otherCiv.cityStatePersonality}}".toLabel()).row()
@@ -248,19 +244,10 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
         val diplomacyTable = Table()
         diplomacyTable.defaults().pad(10f)
 
-        val displayNameTable = Table()
-        displayNameTable.add(ImageGetter.getNationIndicator(otherCiv.nation, 24f)).pad(0f, 0f, 5f, 5f)
-        displayNameTable.add(otherCiv.getLeaderDisplayName().toLabel(fontSize = 24)).row()
-        val helloText = if (otherCivDiplomacyManager.relationshipLevel() <= RelationshipLevel.Enemy) otherCiv.nation.hateHello
-        else otherCiv.nation.neutralHello
-        displayNameTable.add(helloText.toLabel()).colspan(2)
-
-        val leaderIntroTable = Table()
-        val leaderPortraitImage = "LeaderIcons/" + otherCiv.nation.leaderName
-        if (ImageGetter.imageExists(leaderPortraitImage))
-            leaderIntroTable.add(ImageGetter.getImage(leaderPortraitImage)).size(100f).padRight(10f)
-        leaderIntroTable.add(displayNameTable)
-
+        val helloText = if (otherCivDiplomacyManager.relationshipLevel() <= RelationshipLevel.Enemy)
+                            otherCiv.nation.hateHello
+                        else otherCiv.nation.neutralHello
+        val leaderIntroTable = LeaderIntroTable(otherCiv, helloText)
         diplomacyTable.add(leaderIntroTable).row()
         diplomacyTable.addSeparator()
 
@@ -471,12 +458,17 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
     private fun setRightSideFlavorText(otherCiv: CivilizationInfo, flavorText: String, response: String) {
         val diplomacyTable = Table()
         diplomacyTable.defaults().pad(10f)
-        diplomacyTable.add(otherCiv.getLeaderDisplayName().toLabel())
+        diplomacyTable.add(LeaderIntroTable(otherCiv))
         diplomacyTable.addSeparator()
         diplomacyTable.add(flavorText.toLabel()).row()
 
         val responseButton = response.toTextButton()
-        responseButton.onClick { updateRightSide(otherCiv) }
+        val action = {
+            keyPressDispatcher.remove(KeyCharAndCode.SPACE)     
+            updateRightSide(otherCiv) 
+        }
+        responseButton.onClick(action)
+        keyPressDispatcher[KeyCharAndCode.SPACE] = action
         diplomacyTable.add(responseButton)
 
         rightSideTable.clear()
