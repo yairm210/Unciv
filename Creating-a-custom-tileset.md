@@ -61,11 +61,3 @@ The ruleVariants are the most powerful part of the tileset config.
 With this, you can define, for a specific tile, which images and in which order these images should be used. 
 
 An example is given in the code above. For the tile "Grassland+Jungle+Dyes+Trading post" we then use the images "Grassland", "JungleForGrasslandBack", "Dyes+Trading post" and "JungleForGrasslandFront" in that order.
-
-We are currently working on templated rule variants to enable you to use more generic expressions like:
-
-```
-"(BaseTerrain)+(TerrainFeatures)+Jungle+(Resource)+(Improvement)": ["(BaseTerrain)", "(TerrainFeatures)", "JungleForGrasslandBack", "(Resource)", "(Improvement)", "JungleForGrasslandFront"]
-```
-
-These will significantly decrease the amount of work you have to put into creating a tileset config.
