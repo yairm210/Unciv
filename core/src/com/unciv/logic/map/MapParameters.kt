@@ -101,8 +101,8 @@ object MapShape {
 
 object MapType {
     const val pangaea = "Pangaea"
-    const val twoContinents = "Two Continents"
-    const val fourContinents = "Four Continents"
+    const val continents = "Continents"
+    const val fourCorners = "Four Corners"
     const val perlin = "Perlin"
     const val archipelago = "Archipelago"
 

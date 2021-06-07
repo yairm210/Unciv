@@ -21,8 +21,8 @@ class MapLandmassGenerator(val randomness: MapGenerationRandomness) {
 
         when (tileMap.mapParameters.type) {
             MapType.pangaea -> createPangea(tileMap)
-            MapType.twoContinents -> createTwoContinents(tileMap)
-            MapType.fourContinents -> createFourContinents(tileMap)
+            MapType.continents -> createTwoContinents(tileMap)
+            MapType.fourCorners -> createFourCorners(tileMap)
             MapType.perlin -> createPerlin(tileMap)
             MapType.archipelago -> createArchipelago(tileMap)
             MapType.default -> generateLandCellularAutomata(tileMap)
@@ -88,11 +88,11 @@ class MapLandmassGenerator(val randomness: MapGenerationRandomness) {
         }
     }
 
-    private fun createFourContinents(tileMap: TileMap) {
+    private fun createFourCorners(tileMap: TileMap) {
         val elevationSeed = randomness.RNG.nextInt().toDouble()
         for (tile in tileMap.values) {
             var elevation = randomness.getPerlinNoise(tile, elevationSeed)
-            elevation = (elevation + getFourContinentsTransform(tile, tileMap)) / 2.0
+            elevation = (elevation + getFourCornersTransform(tile, tileMap)) / 2.0
             spawnLandOrWater(tile, elevation, tileMap.mapParameters.waterThreshold.toDouble())
         }
     }
@@ -132,7 +132,7 @@ class MapLandmassGenerator(val randomness: MapGenerationRandomness) {
         return min(0.2, -1.0 + (5.0 * longitudeFactor.pow(0.6f) + randomScale) / 3.0)
     }
 
-    private fun getFourContinentsTransform(tileInfo: TileInfo, tileMap: TileMap): Double {
+    private fun getFourCornersTransform(tileInfo: TileInfo, tileMap: TileMap): Double {
         // The idea here is to create a water area separating the two four areas.
         // So what we do it create a line of water in the middle - where longitude is close to 0.
         val randomScale = randomness.RNG.nextDouble()
