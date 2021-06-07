@@ -116,8 +116,8 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
         }
 
         val protectors = otherCiv.getProtectorCivs()
-        if (protectors.size > 0) {
-            val protectorString = "{Protected by}: " + protectors.map{it.civName}.joinToString(", ")
+        if (protectors.isNotEmpty()) {
+            val protectorString = "{Protected by}: " + protectors.joinToString(", ") { it.civName }
             diplomacyTable.add(protectorString.toLabel()).row()
         }
 
@@ -164,28 +164,28 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
         if (viewingCiv.gold < giftAmount || isNotPlayersTurn()) giftButton.disable()
 
         if (otherCivDiplomacyManager.diplomaticStatus == DiplomaticStatus.Protector){
-            val RevokeProtectionButton = "Revoke Protection".toTextButton()
-            RevokeProtectionButton.onClick{
-                YesNoPopup("Revoke protection for [${otherCiv.civName}]?".tr(), {
+            val revokeProtectionButton = "Revoke Protection".toTextButton()
+            revokeProtectionButton.onClick {
+                YesNoPopup("Revoke protection for [${otherCiv.civName}]?", {
                     otherCiv.removeProtectorCiv(viewingCiv)
                     updateLeftSideTable()
                     updateRightSide(otherCiv)
                 }, this).open()
             }
-            diplomacyTable.add(RevokeProtectionButton).row()
+            diplomacyTable.add(revokeProtectionButton).row()
         } else {
-            val ProtectionButton = "Pledge to protect".toTextButton()
-            ProtectionButton.onClick{
-                YesNoPopup("Declare Protection of [${otherCiv.civName}]?".tr(), {
+            val protectionButton = "Pledge to protect".toTextButton()
+            protectionButton.onClick {
+                YesNoPopup("Declare Protection of [${otherCiv.civName}]?", {
                     otherCiv.addProtectorCiv(viewingCiv)
                     updateLeftSideTable()
                     updateRightSide(otherCiv)
                 }, this).open()
             }
             if(viewingCiv.isAtWarWith(otherCiv)) {
-                ProtectionButton.disable()
+                protectionButton.disable()
             }
-            diplomacyTable.add(ProtectionButton).row()
+            diplomacyTable.add(protectionButton).row()
         }
 
         val diplomacyManager = viewingCiv.getDiplomacyManager(otherCiv)
@@ -193,7 +193,7 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
             if (viewingCiv.isAtWarWith(otherCiv)) {
                 val peaceButton = "Negotiate Peace".toTextButton()
                 peaceButton.onClick {
-                    YesNoPopup("Peace with [${otherCiv.civName}]?".tr(), {
+                    YesNoPopup("Peace with [${otherCiv.civName}]?", {
                         val tradeLogic = TradeLogic(viewingCiv, otherCiv)
                         tradeLogic.currentTrade.ourOffers.add(TradeOffer(Constants.peaceTreaty, TradeType.Treaty))
                         tradeLogic.currentTrade.theirOffers.add(TradeOffer(Constants.peaceTreaty, TradeType.Treaty))
@@ -457,7 +457,7 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
             declareWarButton.setText(declareWarButton.text.toString() + " ($turnsToPeaceTreaty${Fonts.turn})")
         }
         declareWarButton.onClick {
-            YesNoPopup("Declare war on [${otherCiv.civName}]?".tr(), {
+            YesNoPopup("Declare war on [${otherCiv.civName}]?", {
                 diplomacyManager.declareWar()
                 setRightSideFlavorText(otherCiv, otherCiv.nation.attacked, "Very well.")
                 updateLeftSideTable()
@@ -466,6 +466,8 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
         return declareWarButton
     }
 
+    // response currently always gets "Very Well.", but that may expand in the future.
+    @Suppress("SameParameterValue")
     private fun setRightSideFlavorText(otherCiv: CivilizationInfo, flavorText: String, response: String) {
         val diplomacyTable = Table()
         diplomacyTable.defaults().pad(10f)

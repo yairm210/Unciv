@@ -39,10 +39,19 @@ data class KeyCharAndCode(val char: Char, val code: Int) {
         // debug helper
         return when {
             char == Char.MIN_VALUE -> Input.Keys.toString(code)
-            char == '\u001B' -> "ESC"
+            this == ESC -> "ESC"
             char < ' ' -> "Ctrl-" + (char.toInt()+64).toChar()
             else -> "\"$char\""
         }
+    }
+    
+    // Convenience shortcuts for frequently used constants
+    companion object {
+        val BACK = KeyCharAndCode(Input.Keys.BACK)
+        val ESC = KeyCharAndCode('\u001B')
+        val RETURN = KeyCharAndCode('\r')
+        val NEWLINE = KeyCharAndCode('\n')
+        val SPACE = KeyCharAndCode(' ')
     }
 }
 
@@ -86,19 +95,19 @@ class KeyPressDispatcher(val name: String? = null) : HashMap<KeyCharAndCode, (()
     operator fun set(key: KeyCharAndCode, action: () -> Unit) {
         super.put(key, action)
         // On Android the Enter key will fire with Ascii code `Linefeed`, on desktop as `Carriage Return`
-        if (key == KeyCharAndCode('\r'))
-            super.put(KeyCharAndCode('\n'), action)
+        if (key == KeyCharAndCode.RETURN)
+            super.put(KeyCharAndCode.NEWLINE, action)
         // Likewise always match Back to ESC
-        if (key == KeyCharAndCode(Input.Keys.BACK))
-            super.put(KeyCharAndCode('\u001B'), action)
+        if (key == KeyCharAndCode.BACK)
+            super.put(KeyCharAndCode.ESC, action)
         checkInstall()
     }
     override fun remove(key: KeyCharAndCode): (() -> Unit)? {
         val result = super.remove(key)
-        if (key == KeyCharAndCode('\r'))
-            super.remove(KeyCharAndCode('\n'))
-        if (key == KeyCharAndCode(Input.Keys.BACK))
-            super.remove(KeyCharAndCode('\u001B'))
+        if (key == KeyCharAndCode.RETURN)
+            super.remove(KeyCharAndCode.NEWLINE)
+        if (key == KeyCharAndCode.BACK)
+            super.remove(KeyCharAndCode.ESC)
         checkInstall()
         return result
     }

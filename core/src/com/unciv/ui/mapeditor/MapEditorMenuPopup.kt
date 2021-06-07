@@ -37,7 +37,7 @@ class MapEditorMenuPopup(var mapEditorScreen: MapEditorScreen): Popup(mapEditorS
 
             add(ScrollPane(checkboxTable)).maxHeight(mapEditorScreen.stage.height * 0.8f).colspan(2).row()
 
-            addButtonInRow("Save", '\r') {
+            addButtonInRow("Save", KeyCharAndCode.RETURN) {
                 val incompatibilities = HashSet<String>()
                 for (set in mapEditorScreen.tileMap.values.map { it.getRulesetIncompatibility(ruleset) })
                     incompatibilities.addAll(set)

@@ -7,12 +7,13 @@ import com.badlogic.gdx.utils.Align
 import com.unciv.logic.map.MapUnit
 import com.unciv.ui.utils.ImageGetter
 import com.unciv.ui.utils.onClick
+import com.unciv.ui.utils.pad
 import com.unciv.ui.worldscreen.WorldMapHolder
 
 class IdleUnitButton (
-        internal val unitTable: UnitTable,
-        val tileMapHolder: WorldMapHolder,
-        val previous:Boolean
+    internal val unitTable: UnitTable,
+    private val tileMapHolder: WorldMapHolder,
+    val previous:Boolean
 ) : Table() {
 
     val image = ImageGetter.getImage("OtherIcons/BackArrow")
@@ -26,7 +27,7 @@ class IdleUnitButton (
             image.setOrigin(Align.center)
             image.rotateBy(180f)
         }
-        add(image).size(imageSize).pad(10f,20f,10f,20f)
+        add(image).size(imageSize).pad(10f,20f)
         enable()
         onClick {
 
@@ -61,4 +62,3 @@ class IdleUnitButton (
         touchable=Touchable.disabled
     }
 }
-

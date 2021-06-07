@@ -42,6 +42,12 @@ class Nation : INamed {
     var uniqueText = ""
     var innerColor: List<Int>? = null
     var startBias = ArrayList<String>()
+    
+    /* Properties present in json but not yet implemented:
+    var adjective = ArrayList<String>()
+    var startIntroPart1 = ""
+    var startIntroPart2 = ""
+     */
 
     @Transient
     private lateinit var outerColorObject: Color
@@ -71,8 +77,8 @@ class Nation : INamed {
     fun setTransients() {
         outerColorObject = colorFromRGB(outerColor)
 
-        if (innerColor == null) innerColorObject = Color.BLACK
-        else innerColorObject = colorFromRGB(innerColor!!)
+        innerColorObject = if (innerColor == null) Color.BLACK
+                           else colorFromRGB(innerColor!!)
 
         forestsAndJunglesAreRoads = uniques.contains("All units move through Forest and Jungle Tiles in friendly territory as if they have roads. These tiles can be used to establish City Connections upon researching the Wheel.")
         ignoreHillMovementCost = uniques.contains("Units ignore terrain costs when moving into any tile with Hills")

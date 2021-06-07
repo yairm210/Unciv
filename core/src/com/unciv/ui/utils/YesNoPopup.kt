@@ -1,7 +1,6 @@
 package com.unciv.ui.utils
 
 import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.Input
 import com.unciv.UncivGame
 
 /** Variant of [Popup] pre-populated with one label, plus yes and no buttons
@@ -23,8 +22,8 @@ open class YesNoPopup (
         add(question.toLabel()).colspan(2).row()
         addButtonInRow("Yes", 'y', yes)
         addButtonInRow("No", 'n', no)
-        keyPressDispatcher['\r'] = yes
-        keyPressDispatcher[Input.Keys.BACK] = no
+        keyPressDispatcher[KeyCharAndCode.RETURN] = yes
+        keyPressDispatcher[KeyCharAndCode.BACK] = no
     }
 }
 

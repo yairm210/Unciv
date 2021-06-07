@@ -111,6 +111,11 @@ fun <T : Actor> Table.addCell(actor: T): Table {
     return this
 }
 
+/** Shortcut for [Cell].[pad][com.badlogic.gdx.scenes.scene2d.ui.Cell.pad] with top=bottom and left=right */
+fun <T : Actor> Cell<T>.pad(vertical: Float, horizontal: Float): Cell<T> {
+    return pad(vertical, horizontal, vertical, horizontal)
+}
+
 /** Gets a clone of an [ArrayList] with an additional item
  *
  * Solves concurrent modification problems - everyone who had a reference to the previous arrayList can keep using it because it hasn't changed

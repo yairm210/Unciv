@@ -665,8 +665,8 @@ class CivilizationInfo {
     fun getProtectorCivs() : List<CivilizationInfo> {
         if(this.isMajorCiv()) return emptyList()
         return diplomacy.values
-                .filter{!it.otherCiv().isDefeated() && it.diplomaticStatus == DiplomaticStatus.Protector}
-                .map{it->it.otherCiv()}
+                .filter{ !it.otherCiv().isDefeated() && it.diplomaticStatus == DiplomaticStatus.Protector }
+                .map{ it.otherCiv() }
     }
 
     fun addProtectorCiv(otherCiv: CivilizationInfo) {

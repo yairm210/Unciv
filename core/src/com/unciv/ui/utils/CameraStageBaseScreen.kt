@@ -1,7 +1,6 @@
 package com.unciv.ui.utils
 
 import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.Input
 import com.badlogic.gdx.Screen
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.GL20
@@ -95,8 +94,7 @@ open class CameraStageBaseScreen : Screen {
     }
 
     fun onBackButtonClicked(action: () -> Unit) {
-        keyPressDispatcher[Input.Keys.BACK] = action
-        keyPressDispatcher['\u001B'] = action
+        keyPressDispatcher[KeyCharAndCode.BACK] = action
     }
 
     fun isPortrait() = stage.viewport.screenHeight > stage.viewport.screenWidth
