@@ -334,6 +334,7 @@ class CityConstructions {
                 } else if (construction is BaseUnit) {
                     // Production put into upgradable units gets put into upgraded version
                     if (rejectionReason.startsWith("Obsolete") && construction.upgradesTo != null) {
+                        // I'd love to use the '+=' operator but since 'inProgressConstructions[...]' can be null, kotlin doesn't allow me to
                         if (!inProgressConstructions.contains(construction.upgradesTo)) {
                             inProgressConstructions[construction.upgradesTo!!] = getWorkDone(constructionName)
                         } else {

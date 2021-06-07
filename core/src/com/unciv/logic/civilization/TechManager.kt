@@ -292,7 +292,7 @@ class TechManager {
                     val text = "[${city.name}] changed production from [$unit] to [${construction.upgradesTo!!}]"
                     civInfo.addNotification(text, city.location, unit, NotificationIcon.Construction, construction.upgradesTo!!)
                 } else {
-                    val text = "[$unit] has been obsolete and will be removed from construction queue in [${city.name}]!"
+                    val text = "[$unit] has become obsolete and was removed from the queue in [${city.name}]!"
                     civInfo.addNotification(text, city.location, NotificationIcon.Construction)
                 }
             } else {
@@ -301,7 +301,7 @@ class TechManager {
                     val text = "[${cities.size}] cities changed production from [$unit] to [${construction.upgradesTo!!}]"
                     civInfo.addNotification(text, locationAction, unit, NotificationIcon.Construction, construction.upgradesTo!!)
                 } else {
-                    val text = "[$unit] has been obsolete and will be removed from construction queue in [${cities.size}] cities!"
+                    val text = "[$unit] has become osbolete and was removed from the queue in [${cities.size}] cities!"
                     civInfo.addNotification(text, locationAction, NotificationIcon.Construction)
                 }
             }
