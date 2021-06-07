@@ -1,3 +1,17 @@
+## 3.14.15
+
+Unit swapping - By avdstaaij
+
+Refund wasted production as gold  - By Thyrum
+
+By SomeTroglodyte:
+- More power to improvement uniques
+- Fix gold able to over- and underflow 
+- Map editor save / load / download keys 
+- TileInfoTable translation and padding 
+
+Paratrooper bugfixes - By xlenstra
+
 ## 3.14.14
 
 Fixed app resize crash in MacOS - By lishaoxia1985
