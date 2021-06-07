@@ -9,13 +9,13 @@ import com.unciv.models.ruleset.tile.TerrainType
 import kotlin.math.abs
 import kotlin.math.round
 
-class NaturalWonderGenerator(val ruleset: Ruleset) {
+class NaturalWonderGenerator(val ruleset: Ruleset, val randomness: MapGenerationRandomness) {
 
     /*
     https://gaming.stackexchange.com/questions/95095/do-natural-wonders-spawn-more-closely-to-city-states/96479
     https://www.reddit.com/r/civ/comments/1jae5j/information_on_the_occurrence_of_natural_wonders/
     */
-    fun spawnNaturalWonders(tileMap: TileMap, randomness: MapGenerationRandomness) {
+    fun spawnNaturalWonders(tileMap: TileMap) {
         if (tileMap.mapParameters.noNaturalWonders)
             return
         val mapRadius = tileMap.mapParameters.mapSize.radius
@@ -60,7 +60,7 @@ class NaturalWonderGenerator(val ruleset: Ruleset) {
 
     private fun trySpawnOnSuitableLocation(suitableLocations: List<TileInfo>, wonder: Terrain): TileInfo? {
         if (suitableLocations.isNotEmpty()) {
-            val location = suitableLocations.random()
+            val location = suitableLocations.random(randomness.RNG)
             clearTile(location)
             location.naturalWonder = wonder.name
             location.baseTerrain = wonder.turnsInto!!
