@@ -70,7 +70,9 @@ class CivilizationInfo {
 
     /** Used in online multiplayer for human players */
     var playerId = ""
+    /** The Civ's gold reserves. Public get, private set - please use [addGold] method to modify. */
     var gold = 0
+        private set
     var civName = ""
     var tech = TechManager()
     var policies = PolicyManager()
@@ -543,7 +545,11 @@ class CivilizationInfo {
         updateHasActiveGreatWall()
     }
 
+    /** Modify gold by a given amount making sure it does neither overflow nor underflow.
+     * @param delta the amount to add (can be negative) 
+     */
     fun addGold(delta: Int) {
+        // not using Long.coerceIn - this stays in 32 bits
         gold = when {
             delta > 0 && gold > Int.MAX_VALUE - delta -> Int.MAX_VALUE
             delta < 0 && gold < Int.MIN_VALUE - delta -> Int.MIN_VALUE
