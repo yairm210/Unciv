@@ -239,7 +239,7 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(CameraStageBaseS
     }
 
     private fun Table.addGreatPersonPointInfo(cityInfo: CityInfo) {
-        val greatPersonPoints = cityInfo.getGreatPersonMap()
+        val greatPersonPoints = cityInfo.getGreatPersonPointsForNextTurn()
         val statToGreatPerson = GreatPersonManager().statToGreatPersonMapping
         for (stat in Stat.values()) {
             if (!statToGreatPerson.containsKey(stat)) continue

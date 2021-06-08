@@ -377,15 +377,11 @@ object UnitAutomation {
     }
 
     fun tryBombardEnemy(city: CityInfo): Boolean {
-        return when {
-            city.attackedThisTurn -> false
-            else -> {
-                val enemy = chooseBombardTarget(city)
-                if (enemy == null) return false
-                Battle.attack(CityCombatant(city), enemy)
-                true
-            }
-        }
+        if (!city.canBombard()) return false
+        val enemy = chooseBombardTarget(city)
+        if (enemy == null) return false
+        Battle.attack(CityCombatant(city), enemy)
+        return true
     }
 
     private fun chooseBombardTarget(city: CityInfo): ICombatant? {

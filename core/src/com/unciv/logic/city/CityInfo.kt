@@ -157,7 +157,7 @@ class CityInfo {
         return toReturn
     }
 
-
+    fun canBombard() = !attackedThisTurn && !isInResistance()
     fun getCenterTile(): TileInfo = centerTileInfo
     fun getTiles(): Sequence<TileInfo> = tiles.asSequence().map { tileMap[it] }
     fun getWorkableTiles() = tilesInRange.asSequence().filter { it.getOwner() == civInfo }
@@ -242,7 +242,6 @@ class CityInfo {
     }
 
     fun isGrowing() = foodForNextTurn() > 0
-
     fun isStarving() = foodForNextTurn() < 0
 
     private fun foodForNextTurn() = cityStats.currentCityStats.food.roundToInt()
@@ -265,7 +264,7 @@ class CityInfo {
 
     fun containsBuildingUnique(unique: String) = cityConstructions.getBuiltBuildings().any { it.uniques.contains(unique) }
 
-    fun getGreatPersonMap(): StatMap {
+    fun getGreatPersonPointsForNextTurn(): StatMap {
         val stats = StatMap()
         for ((specialist, amount) in population.getNewSpecialists())
             if (getRuleset().specialists.containsKey(specialist)) // To solve problems in total remake mods
@@ -300,7 +299,7 @@ class CityInfo {
 
     fun getGreatPersonPoints(): Stats {
         val stats = Stats()
-        for (entry in getGreatPersonMap().values)
+        for (entry in getGreatPersonPointsForNextTurn().values)
             stats.add(entry)
         return stats
     }
@@ -437,8 +436,7 @@ class CityInfo {
     }
 
     /*
-     When someone settles a city within 6 tiles of another civ,
-        this makes the AI unhappy and it starts a rolling event.
+     When someone settles a city within 6 tiles of another civ, this makes the AI unhappy and it starts a rolling event.
      The SettledCitiesNearUs flag gets added to the AI so it knows this happened,
         and on its turn it asks the player to stop (with a DemandToStopSettlingCitiesNear alert type)
      If the player says "whatever, I'm not promising to stop", they get a -10 modifier which gradually disappears in 40 turns

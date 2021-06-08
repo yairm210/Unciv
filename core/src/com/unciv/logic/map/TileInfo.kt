@@ -394,7 +394,7 @@ open class TileInfo {
                 || baseTerrainObject.uniques.contains(filter)
                 || improvement == filter
                 || resource == filter
-                || (resource != null && getTileResource().resourceType.name + " resource" == filter)
+                || resource != null && getTileResource().resourceType.name + " resource" == filter
                 || filter == "Water" && isWater
                 || filter == "Land" && isLand
                 || filter == "Coastal" && isCoastalTile()

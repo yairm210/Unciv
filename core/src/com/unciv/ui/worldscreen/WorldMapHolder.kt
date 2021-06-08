@@ -166,7 +166,7 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
 
         if (newSelectedUnit == null || newSelectedUnit.type == UnitType.Civilian) {
             val unitsInTile = selectedTile!!.getUnits()
-            if (previousSelectedCity != null && !previousSelectedCity.attackedThisTurn
+            if (previousSelectedCity != null && previousSelectedCity.canBombard()
                     && selectedTile!!.getTilesInDistance(2).contains(previousSelectedCity.getCenterTile())
                     && unitsInTile.any()
                     && unitsInTile.first().civInfo.isAtWarWith(worldScreen.viewingCiv)) {
@@ -548,7 +548,7 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
     }
 
     private fun updateTilegroupsForSelectedCity(city: CityInfo, playerViewableTilePositions: HashSet<Vector2>) {
-        if (city.attackedThisTurn) return
+        if (!city.canBombard()) return
 
         val attackableTiles = UnitAutomation.getBombardTargets(city)
                 .filter { (UncivGame.Current.viewEntireMapForDebug || playerViewableTilePositions.contains(it.position)) }

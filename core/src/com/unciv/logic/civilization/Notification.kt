@@ -1,6 +1,5 @@
 package com.unciv.logic.civilization
 
-import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.math.Vector2
 import com.unciv.ui.cityscreen.CityScreen
 import com.unciv.ui.pickerscreens.TechPickerScreen
