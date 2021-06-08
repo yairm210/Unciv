@@ -49,6 +49,7 @@ class CityConstructions {
         }
     var currentConstructionIsUserSet = false
     var constructionQueue = mutableListOf<String>()
+    var productionOverflow = 0
     val queueMaxSize = 10
 
     //region pure functions
@@ -58,6 +59,7 @@ class CityConstructions {
         toReturn.inProgressConstructions.putAll(inProgressConstructions)
         toReturn.currentConstructionIsUserSet = currentConstructionIsUserSet
         toReturn.constructionQueue.addAll(constructionQueue)
+        toReturn.productionOverflow = productionOverflow
         return toReturn
     }
 
@@ -250,7 +252,7 @@ class CityConstructions {
 
         val production = cityStatsForConstruction.production.roundToInt()
 
-        return ceil(workLeft / production.toDouble()).toInt()
+        return ceil((workLeft-productionOverflow) / production.toDouble()).toInt()
     }
     //endregion
 
@@ -281,6 +283,12 @@ class CityConstructions {
             val productionCost = construction.getProductionCost(cityInfo.civInfo)
             if (inProgressConstructions.containsKey(currentConstructionFromQueue)
                     && inProgressConstructions[currentConstructionFromQueue]!! >= productionCost) {
+                productionOverflow = inProgressConstructions[currentConstructionFromQueue]!! - productionCost
+                // See the URL below for explanation for this cap
+                // https://forums.civfanatics.com/threads/hammer-overflow.419352/
+                val maxOverflow = maxOf(productionCost, cityInfo.cityStats.currentCityStats.production.roundToInt())
+                if (productionOverflow > maxOverflow)
+                    productionOverflow = maxOverflow
                 constructionComplete(construction)
             }
         }
@@ -290,8 +298,10 @@ class CityConstructions {
         validateConstructionQueue()
         validateInProgressConstructions()
 
-        if (getConstruction(currentConstructionFromQueue) !is PerpetualConstruction)
-            addProductionPoints(cityStats.production.roundToInt())
+        if (getConstruction(currentConstructionFromQueue) !is PerpetualConstruction) {
+            addProductionPoints(cityStats.production.roundToInt() + productionOverflow)
+            productionOverflow = 0
+        }
     }
 
 
