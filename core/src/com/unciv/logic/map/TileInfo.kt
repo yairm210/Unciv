@@ -253,16 +253,8 @@ open class TileInfo {
                 stats.add(wonder)
             }
         }
-
-        if (hasViewableResource(observingCiv)) {
-            val resource = getTileResource()
-            stats.add(getTileResource()) // resource base
-            if (resource.building != null && city != null && city.cityConstructions.isBuilt(resource.building!!)) {
-                val resourceBuilding = tileMap.gameInfo.ruleSet.buildings[resource.building!!]
-                if (resourceBuilding?.resourceBonusStats != null)
-                    stats.add(resourceBuilding.resourceBonusStats!!) // resource-specific building (eg forge, stable) bonus
-            }
-        }
+        // resource base
+        if (hasViewableResource(observingCiv)) stats.add(getTileResource())
 
         val improvement = getTileImprovement()
         if (improvement != null)

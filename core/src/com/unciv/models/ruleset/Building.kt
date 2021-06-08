@@ -64,12 +64,6 @@ class Building : NamedStats(), IConstruction {
     var replacementTextForUniques = ""
     val uniqueObjects: List<Unique> by lazy { uniques.map { Unique(it) } }
 
-    /**
-     * The bonus stats that a resource gets when this building is built
-     */
-    @Deprecated("Since 3.13.3 - replaced with '[stats] from [resource] tiles in this city'")
-    var resourceBonusStats: Stats? = null
-
     fun getShortDescription(ruleset: Ruleset): String { // should fit in one line
         val infoList = mutableListOf<String>()
         val str = getStats(null).toString()
@@ -77,11 +71,6 @@ class Building : NamedStats(), IConstruction {
         for (stat in getStatPercentageBonuses(null).toHashMap())
             if (stat.value != 0f) infoList += "+${stat.value.toInt()}% ${stat.key.name.tr()}"
 
-        val improvedResources = ruleset.tileResources.values.asSequence().filter { it.building == name }.map { it.name.tr() }
-        if (improvedResources.any()) {
-            // buildings that improve resources
-            infoList += improvedResources.joinToString() + " {provide} " + resourceBonusStats.toString()
-        }
         if (requiredNearbyImprovedResources != null)
             infoList += "Requires worked [" + requiredNearbyImprovedResources!!.joinToString("/") { it.tr() } + "] near city"
         if (uniques.isNotEmpty()) {
@@ -151,11 +140,6 @@ class Building : NamedStats(), IConstruction {
 
         for ((specialistName, amount) in newSpecialists())
             stringBuilder.appendLine("+$amount " + "[$specialistName] slots".tr())
-
-        if (resourceBonusStats != null) {
-            val resources = ruleset.tileResources.values.filter { name == it.building }.joinToString { it.name.tr() }
-            stringBuilder.appendLine("$resources {provide} $resourceBonusStats".tr())
-        }
 
         if (requiredNearbyImprovedResources != null)
             stringBuilder.appendLine(("Requires worked [" + requiredNearbyImprovedResources!!.joinToString("/") { it.tr() } + "] near city").tr())
@@ -457,7 +441,6 @@ class Building : NamedStats(), IConstruction {
     fun isStatRelated(stat: Stat): Boolean {
         if (get(stat) > 0) return true
         if (getStatPercentageBonuses(null).get(stat) > 0) return true
-        if (resourceBonusStats != null && resourceBonusStats!!.get(stat) > 0) return true
         if (uniqueObjects.any { it.placeholderText == "[] Per [] Population in this city" && it.stats.get(stat) > 0 }) return true
         return false
     }

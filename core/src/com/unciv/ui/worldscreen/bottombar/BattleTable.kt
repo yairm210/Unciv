@@ -46,13 +46,11 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
         if (attacker is MapUnitCombatant && attacker.unit.hasUnique("Nuclear weapon")) {
             val selectedTile = worldScreen.mapHolder.selectedTile
             if (selectedTile == null) { hide(); return } // no selected tile
-            simulateNuke(attacker as MapUnitCombatant, selectedTile)
+            simulateNuke(attacker, selectedTile)
         }
         else {
             val defender = tryGetDefender()
-            if (defender == null) {
-                hide(); return
-            }
+            if (defender == null) { hide(); return }
 
             simulateBattle(attacker, defender)
         }
