@@ -371,16 +371,32 @@ class CivilizationInfo {
      * " (AI)", " (Human - Hotseat)", or " (Human - Multiplayer)" if the game is multiplayer.
      */ 
     fun getLeaderDisplayName(): String {
+        /* Logic:
+            We don't need to know AI/Human if:
+                - It is a city state, recognizable via its nation icon?
+                - We're single player: !isOnlineMultiplayer && Human.count==1
+                - We're displaying the spectator
+            We want to know AI/Human if:
+                - We're online multiplayer
+                - We're hotseat multiplayer
+                - We're spectator????? -> those are counted as human / this doesn't know who's looking
+         */
+        val severalHumans = gameInfo.civilizations.count { it.playerType == PlayerType.Human } > 1
+        val online = gameInfo.gameParameters.isOnlineMultiplayer
         return nation.getLeaderDisplayName().tr() +
             when {
-                !gameInfo.gameParameters.isOnlineMultiplayer ->
-                    ""
+                nation.name == Constants.spectator ->
+                    ""                      // everybody knows the spectator is always human
+                !online && !severalHumans ->
+                    ""                      // offline single player will know everybody else is AI
+                isCityState() ->
+                    ""                      // City states are known to always be AI and are recognizable
                 playerType == PlayerType.AI ->
                     " (" + "AI".tr() + ")"
-                gameInfo.civilizations.count { it.playerType == PlayerType.Human } > 1 ->
-                    " (" + "Human".tr() + " - " + "Hotseat".tr() + ")"
-                else ->
+                online ->
                     " (" + "Human".tr() + " - " + "Multiplayer".tr() + ")"
+                else ->
+                    " (" + "Human".tr() + " - " + "Hotseat".tr() + ")"
             }
     }
 
