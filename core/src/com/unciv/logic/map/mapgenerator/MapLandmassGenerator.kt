@@ -9,9 +9,9 @@ import kotlin.math.abs
 import kotlin.math.min
 import kotlin.math.pow
 
-class MapLandmassGenerator(val randomness: MapGenerationRandomness) {
+class MapLandmassGenerator(val ruleset: Ruleset, val randomness: MapGenerationRandomness) {
 
-    fun generateLand(tileMap: TileMap, ruleset: Ruleset) {
+    fun generateLand(tileMap: TileMap) {
         // This is to accommodate land-only mods
         if (ruleset.terrains.values.none { it.type == TerrainType.Water }) {
             for (tile in tileMap.values)
