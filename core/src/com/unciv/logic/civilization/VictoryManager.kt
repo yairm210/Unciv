@@ -36,7 +36,7 @@ class VictoryManager {
     fun hasWonScientificVictory() = hasVictoryType(VictoryType.Scientific) && spaceshipPartsRemaining() == 0
 
     fun hasWonCulturalVictory() = hasVictoryType(VictoryType.Cultural)
-            && civInfo.cities.any{ it.cityConstructions.builtBuildingUniqueMap.getUniques("Wins the game when built").isNotEmpty() }
+            && civInfo.cities.any{ it.cityConstructions.builtBuildingUniqueMap.getUniques("Triggers a Cultural Victory upon completion").isNotEmpty() }
 
     fun hasWonDominationVictory(): Boolean {
         return hasVictoryType(VictoryType.Domination)

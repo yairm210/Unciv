@@ -187,8 +187,8 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
                 && wonder.name in listOf("Sistine Chapel", "Eiffel Tower", "Cristo Redentor", "Neuschwanstein", "Sydney Opera House"))
             return 3f
         // Only start building if we are the city that would complete it the soonest
-        if (wonder.uniques.contains("Wins the game when built") && cityInfo == civInfo.cities.minByOrNull { 
-                it.cityConstructions.getRemainingWork(it.cityConstructions.getCurrentConstruction().name) / it.cityStats.currentCityStats.production.roundToInt() + wonder.cost / it.cityStats.currentCityStats.production 
+        if (wonder.uniques.contains("Triggers a Cultural Victory upon completion") && cityInfo == civInfo.cities.minByOrNull {
+                cityInfo.cityConstructions.turnsToConstruction(it.cityConstructions.getCurrentConstruction().name) + cityInfo.cityConstructions.turnsToConstruction(wonder.name) 
             }!!)
             return 10f
         if (wonder.isStatRelated(Stat.Science)) {
