@@ -327,7 +327,7 @@ class CityConstructions {
                 if (construction is Building) {
                     // Production put into wonders gets refunded
                     if (construction.isWonder && getWorkDone(constructionName) != 0) {
-                        cityInfo.civInfo.gold += getWorkDone(constructionName)
+                        cityInfo.civInfo.addGold( getWorkDone(constructionName) )
                         val buildingIcon = "BuildingIcons/${constructionName}"
                         cityInfo.civInfo.addNotification("Excess production for [$constructionName] converted to [${getWorkDone(constructionName)}] gold", NotificationIcon.Gold, buildingIcon)
                     }

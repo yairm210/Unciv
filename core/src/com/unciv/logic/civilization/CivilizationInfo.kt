@@ -71,6 +71,7 @@ class CivilizationInfo {
     /** Used in online multiplayer for human players */
     var playerId = ""
     var gold = 0
+        private set
     var civName = ""
     var tech = TechManager()
     var policies = PolicyManager()
