@@ -50,128 +50,88 @@ com.badlogic.gdx.graphics.Color: {
 }
 com.badlogic.gdx.scenes.scene2d.ui.Skin$TintedDrawable: {
 	button-c: {
-		name: "Button"
+		name: "RoundedEdgeRectangle"
 		color: color
 	}
-	button-pressed-c: {
-		name: "Button"
-		color: color
+	button-p: {
+		name: "RoundedEdgeRectangle"
+		color: pressed
 	}
 	button-h: {
-		name: "Button"
+		name: "RoundedEdgeRectangle"
 		color: highlight
 	}
 	checkbox-c: {
-		name: checkbox
+		name: "Checkbox"
 		color: color
 	}
 	checkbox-pressed-c: {
-		name: checkbox-pressed
+		name: "Checkbox-pressed"
 		color: color
 	}
 	list-c: {
-		name: list
+		name: "RectangleWithOutline"
 		color: color
 	}
 	scrollbar-c: {
-		name: scrollbar
+		name: "Scrollbar"
 		color: color
 	}
 	select-box-c: {
-		name: select-box
+		name: "Select-box"
 		color: color
 	}
 	select-box-pressed-c: {
-		name: select-box-pressed
+		name: "Select-box-pressed"
 		color: color
 	}
-	slider-horizontal-c: {
-		name: slider-horizontal
-		color: color
+	select-box-h: {
+		name: "Select-box"
+		color: highlight
 	}
 	slider-knob-c: {
-		name: slider-knob
+		name: "Circle"
 		color: color
-	}
-	slider-vertical-c: {
-		name: slider-vertical
-		color: color
-	}
-	splitpane-horizontal-c: {
-		name: splitpane-horizontal
-		color: color
-	}
-	splitpane-vertical-c: {
-		name: splitpane-vertical
-		color: color
-	}
-	textfield-c: {
-		name: "Button"
-		color: color
-	}
-	color: {
-		name: white
-		color: color
-	}
-	selection: {
-		name: white
-		color: selection
 	}
 	slider-horizontal-s: {
-		name: slider-horizontal
+		name: "Rectangle"
 		color: selection
 	}
 	slider-vertical-s: {
-		name: slider-vertical
+		name: "Rectangle"
 		color: selection
 	}
-	select-box-pressed-h: {
-		name: select-box-pressed
-		color: highlight
-	}
-	select-box-h: {
-		name: select-box
-		color: highlight
-	}
 	slider-knob-h: {
-		name: slider-knob
+		name: "Circle"
 		color: highlight
 	}
 	slider-horizontal-p: {
-		name: slider-horizontal
+		name: "Rectangle"
 		color: pressed
 	}
 	slider-vertical-p: {
-		name: slider-vertical
+		name: "Rectangle"
 		color: pressed
 	}
-	black: {
-		name: white
-		color: black
+	splitpane-horizontal-c: {
+		name: "RectangleWithOutline"
+		color: color
 	}
-	button-p: {
-		name: "Button"
-		color: pressed
+	splitpane-vertical-c: {
+		name: "RectangleWithOutline"
+		color: color
 	}
-	slider-fancy-p: {
-		name: slider-fancy
-		color: pressed
+	textfield-c: {
+		name: "RoundedEdgeRectangle"
+		color: color
 	}
-	checkbox-h: {
-		name: checkbox
-		color: highlight
+	selection: {
+		name: "Rectangle"
+		color: selection
 	}
-	checkbox-pressed-h: {
-		name: checkbox-pressed
-		color: highlight
-	}
-	checkbox-p: {
-		name: checkbox
-		color: pressed
-	}
-	checkbox-pressed-p: {
-		name: checkbox-pressed
-		color: pressed
+	white: {
+		name: "Rectangle"
+		color: white
 	}
 }
 com.badlogic.gdx.scenes.scene2d.ui.Button$ButtonStyle: {
@@ -237,13 +197,6 @@ com.badlogic.gdx.scenes.scene2d.ui.Slider$SliderStyle: {
 		background: slider-vertical-p
 		knob: slider-knob-c
 		knobBefore: slider-vertical-s
-	}
-	fancy: {
-		knobOver: slider-knob-h
-		knobDown: slider-knob-h
-		background: slider-fancy-p
-		knob: slider-knob-c
-		knobBefore: slider-fancy-knob
 	}
 }
 com.badlogic.gdx.scenes.scene2d.ui.SplitPane$SplitPaneStyle: {

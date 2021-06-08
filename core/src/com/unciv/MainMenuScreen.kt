@@ -30,7 +30,7 @@ class MainMenuScreen: CameraStageBaseScreen() {
 
     private fun getTableBlock(text: String, icon: String, function: () -> Unit): Table {
         val table = Table().pad(15f, 30f, 15f, 30f)
-        table.background = ImageGetter.getRoundedEdgeTableBackground(ImageGetter.getBlue())
+        table.background = ImageGetter.getRoundedEdgeRectangle(ImageGetter.getBlue())
         table.add(ImageGetter.getImage(icon)).size(50f).padRight(30f)
         table.add(text.toLabel().setFontSize(30)).minWidth(200f)
         table.touchable = Touchable.enabled
