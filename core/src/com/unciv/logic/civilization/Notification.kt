@@ -27,8 +27,6 @@ open class Notification() {
 
     var text: String = ""
 
-    @Deprecated("As of 3.13.10 - replaced with icons")
-    var color: Color? = null
     var icons: ArrayList<String> = ArrayList() // Must be ArrayList and not List so it can be deserialized
     var action: NotificationAction? = null
 

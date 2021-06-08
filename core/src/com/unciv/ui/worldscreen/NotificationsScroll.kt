@@ -1,6 +1,5 @@
 package com.unciv.ui.worldscreen
 
-import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Touchable
@@ -10,6 +9,7 @@ import com.unciv.ui.utils.ImageGetter
 import com.unciv.ui.utils.onClick
 import com.unciv.ui.utils.toLabel
 import kotlin.math.min
+import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 
 class NotificationsScroll(internal val worldScreen: WorldScreen) : ScrollPane(null) {
 
@@ -48,8 +48,6 @@ class NotificationsScroll(internal val worldScreen: WorldScreen) : ScrollPane(nu
                     listItem.add(image).size(iconSize).padRight(5f)
                 }
             }
-            else if(notification.color!=null) listItem.add(ImageGetter.getCircle()
-                    .apply { color = notification.color }).size(iconSize).padRight(5f)
             listItem.background = ImageGetter.getRoundedEdgeTableBackground()
             listItem.add(label)
 
