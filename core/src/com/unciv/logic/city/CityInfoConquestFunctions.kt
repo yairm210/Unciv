@@ -36,7 +36,8 @@ class CityInfoConquestFunctions(val city: CityInfo){
             conqueringCiv.addNotification("Received [$goldPlundered] Gold for capturing [$name]", getCenterTile().position, NotificationIcon.Gold)
 
             val oldCiv = civInfo
-            val reconqueredOurCity = previousOwner == conqueringCiv.civName
+            val reconqueredCityWhileStillInResistance = previousOwner == conqueringCiv.civName && resistanceCounter != 0
+
 
             previousOwner = oldCiv.civName
             // must be before moving the city to the conquering civ,
@@ -49,7 +50,7 @@ class CityInfoConquestFunctions(val city: CityInfo){
             if (population.population > 1) population.population -= 1 + population.population / 4 // so from 2-4 population, remove 1, from 5-8, remove 2, etc.
             reassignPopulation()
 
-            if (reconqueredOurCity && resistanceCounter != 0) // we reconquered our city while it was still in resistance - we get it back with no resistance
+            if (reconqueredCityWhileStillInResistance || foundingCiv == conqueringCiv.civName)
                 resistanceCounter = 0
             else resistanceCounter = population.population  // I checked, and even if you puppet there's resistance for conquering
             isPuppet = true
