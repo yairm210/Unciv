@@ -226,7 +226,7 @@ class CityConstructions {
 
     fun turnsToConstruction(constructionName: String, useStoredProduction: Boolean = true): Int {
         val workLeft = getRemainingWork(constructionName, useStoredProduction)
-        if (workLeft < 0) // we've done more work than actually necessary - possible if circumstances cause buildings to be cheaper later
+        if (workLeft <= productionOverflow) // we might have done more work than actually necessary (if <0) - possible if circumstances cause buildings to be cheaper later
             return 1 // we'll finish this next turn
 
         val cityStatsForConstruction: Stats
