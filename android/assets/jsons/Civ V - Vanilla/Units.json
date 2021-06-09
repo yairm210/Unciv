@@ -1191,9 +1191,9 @@
 		"rangedStrength": 60,
 		"cost": 350,
 		"requiredTech": "Ballistics",
+		"upgradesTo": "Mechanized Infantry",
 		"attackSound": "machinegun"
-		// will be introduced in G&K expansion
-		// Upgrades to Bazooka in BNW, Mechanized Infantry in G&K
+		// Upgrades to Bazooka in BNW
 	},
 	{
 		"name": "Anti-Aircraft Gun",
