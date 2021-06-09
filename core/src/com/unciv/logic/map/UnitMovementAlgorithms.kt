@@ -13,6 +13,14 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
         if (from.isLand != to.isLand && !unit.civInfo.nation.embarkDisembarkCosts1 && unit.type.isLandUnit())
             return 100f // this is embarkment or disembarkment, and will take the entire turn
 
+        // Zone of Control: https://civilization.fandom.com/wiki/Zone_of_control_(Civ5)
+        // If next to a tile with an enemy military unit, moving to another tile next to that
+        // military unit costs all movement points, except when moving into or out of a city center.
+        // We only need to check the two shared neighbors of [from] and [to]: the way of getting
+        // these two tiles can perhaps be optimized.
+        if (!from.isCityCenter() && !to.isCityCenter() && from.neighbors.any{to.neighbors.contains(it) && it.militaryUnit != null && civInfo.isAtWarWith(it.militaryUnit!!.civInfo)})
+            return 100f
+
         // land units will still spend all movement points to embark even with this unique
         if (unit.allTilesCosts1)
             return 1f
