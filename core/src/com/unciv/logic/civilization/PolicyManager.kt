@@ -27,7 +27,7 @@ class PolicyManager {
     
     var cultureBuildingsAdded = HashMap<String, String>() // Maps cities to buildings
     var specificBuildingsAdded = HashMap<String, MutableSet<String>>() // Maps buildings to cities
-    var autocracyCompletedTurns = 0
+    var activeCombatBonuses = mutableSetOf<Pair<Float, Int>>()
 
     fun clone(): PolicyManager {
         val toReturn = PolicyManager()
@@ -38,7 +38,7 @@ class PolicyManager {
         toReturn.storedCulture = storedCulture
         toReturn.cultureBuildingsAdded.putAll(cultureBuildingsAdded)
         toReturn.specificBuildingsAdded.putAll(specificBuildingsAdded)
-        toReturn.autocracyCompletedTurns = autocracyCompletedTurns
+        toReturn.activeCombatBonuses = activeCombatBonuses.map {Pair(it.first, it.second)}.toMutableSet()
         return toReturn
     }
 
@@ -67,8 +67,13 @@ class PolicyManager {
 
     fun endTurn(culture: Int) {
         addCulture(culture)
-        if (autocracyCompletedTurns > 0)
-            autocracyCompletedTurns -= 1
+        for (boost in activeCombatBonuses) {
+            // We can't decrement in place, as pairs are immutable, so we have to remove either way
+            activeCombatBonuses.remove(boost)
+            if (boost.second > 0) {
+                activeCombatBonuses.add(Pair(boost.first, boost.second-1))
+            }
+        }
     }
 
     // from https://forums.civfanatics.com/threads/the-number-crunching-thread.389702/
@@ -201,4 +206,12 @@ class PolicyManager {
         }
         return freeBuildings
     }
+    
+    fun addTemporaryCombatBonus(combatBonus: Float, turnsCount: Int) {
+        activeCombatBonuses.add(Pair(combatBonus, turnsCount))
+    }
+    
+    fun getTemporaryCombatBonus(): Float {
+        return activeCombatBonuses.fold(0f) {sum, it -> sum + it.first}
+    } 
 }

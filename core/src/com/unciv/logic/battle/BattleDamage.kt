@@ -164,8 +164,8 @@ object BattleDamage {
                 }
             }
 
-            if (attacker.getCivInfo().policies.autocracyCompletedTurns > 0)
-                modifiers["Autocracy Complete"] = 20
+            if (attacker.getCivInfo().policies.activeCombatBonuses.any())
+                modifiers["Temporary Bonus"] = attacker.getCivInfo().policies.getTemporaryCombatBonus().toInt()
 
             if (defender is CityCombatant &&
                 attacker.getCivInfo()

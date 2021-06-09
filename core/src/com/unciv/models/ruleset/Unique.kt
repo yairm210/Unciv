@@ -85,7 +85,8 @@ object UniqueTriggerActivation {
             "[] Free Technologies" -> if (!civInfo.isSpectator()) civInfo.tech.freeTechs += unique.params[0].toInt() 
 
             "Quantity of strategic resources produced by the empire increased by 100%" -> civInfo.updateDetailedCivResources()
-            "+20% attack bonus to all Military Units for 30 turns" -> civInfo.policies.autocracyCompletedTurns = 30
+            "+[]% attack bonus to all Military Units for [] turns" -> 
+                civInfo.policies.addTemporaryCombatBonus(unique.params[0].toFloat(), unique.params[1].toInt())
 
             "Reveals the entire map" -> civInfo.exploredTiles.addAll(civInfo.gameInfo.tileMap.values.asSequence().map { it.position })
 

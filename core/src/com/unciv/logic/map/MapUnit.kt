@@ -150,7 +150,7 @@ class MapUnit {
         for (unique in civInfo.getMatchingUniques("+[] Movement for all [] units"))
             if (matchesFilter(unique.params[1]))
                 movement += unique.params[0].toInt()
-        for (unique in civInfo.getMatchingUniques("+[] movement for every []")) {
+        for (unique in civInfo.getMatchingUniques("+[] Movement for every []")) {
             if (name == unique.params[1]) 
                 movement += unique.params[0].toInt()
         }

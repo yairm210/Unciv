@@ -19,6 +19,7 @@ import com.unciv.models.ruleset.tile.ResourceSupplyList
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.tile.TileResource
 import com.unciv.models.ruleset.unit.BaseUnit
+import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.tr
 import com.unciv.ui.victoryscreen.RankingType
@@ -212,15 +213,15 @@ class CivilizationInfo {
     }
 
     fun getResourceModifier(resource: TileResource): Int {
-        var resourceModifier = 1
+        var resourceModifier = 1f
         for (unique in getMatchingUniques("Double quantity of [] produced"))
             if (unique.params[0] == resource.name)
-                resourceModifier *= 2
+                resourceModifier *= 2f
         if (resource.resourceType == ResourceType.Strategic) {
-            if (hasUnique("Quantity of strategic resources produced by the empire increased by 100%"))
-                resourceModifier *= 2
+            resourceModifier *= 1f + getMatchingUniques("Quantity of strategic resources produced by the empire +[]%")
+                .fold(0f) { sum, it -> sum + it.params[0].toFloat() / 100f }
         }
-        return resourceModifier
+        return resourceModifier.toInt()
     }
 
     fun hasResource(resourceName: String): Boolean = getCivResourcesByName()[resourceName]!! > 0
@@ -554,6 +555,15 @@ class CivilizationInfo {
             delta > 0 && gold > Int.MAX_VALUE - delta -> Int.MAX_VALUE
             delta < 0 && gold < Int.MIN_VALUE - delta -> Int.MIN_VALUE
             else -> gold + delta
+        }
+    }
+    
+    fun addStat(stat: Stat, amount: Int) {
+        when (stat) {
+            Stat.Culture -> policies.addCulture(amount)
+            Stat.Science -> tech.addScience(amount)
+            Stat.Gold -> addGold(amount)
+            else -> {}
         }
     }
 
