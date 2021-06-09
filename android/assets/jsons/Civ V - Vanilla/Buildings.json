@@ -881,16 +881,14 @@
 		"maintenance": 2,
 		"requiredTech": "Refrigeration"
 	},
-	/*
 	{
 		"name": "Military Base",
 		"cityStrength": 12,
+		"cityHealth": 25,
 		"hurryCostModifier": 25,
 		"requiredBuilding": "Arsenal",
-		"requiredTech": "Telegraph"
-		//+25 City Hit Points, requiredTech "Replaceable parts" in expansions
+		"requiredTech": "Replaceable Parts"
 	},
-	*/
 	{
 		"name": "Cristo Redentor",
 		"culture": 5,
