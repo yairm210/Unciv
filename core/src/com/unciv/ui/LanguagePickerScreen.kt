@@ -34,7 +34,7 @@ class LanguageTable(val language:String, val percentComplete: Int):Table(){
 
 }
 
-class LanguagePickerScreen : PickerScreen() {
+class LanguagePickerScreen : PickerScreen(){
     var chosenLanguage = "English"
 
     private val languageTables = ArrayList<LanguageTable>()

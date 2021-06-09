@@ -16,7 +16,7 @@ import com.unciv.ui.utils.*
  * updates [mapEditorScreen] and switches to it.
  * @param [mapEditorScreen] previous screen from map editor.
  */
-class GameParametersScreen(var mapEditorScreen: MapEditorScreen): IPreviousScreen, PickerScreen() {
+class GameParametersScreen(var mapEditorScreen: MapEditorScreen): IPreviousScreen, PickerScreen(disableScroll = true) {
     override var gameSetupInfo = mapEditorScreen.gameSetupInfo.clone()
     override var ruleset = RulesetCache.getComplexRuleset(gameSetupInfo.gameParameters.mods)
     var playerPickerTable = PlayerPickerTable(this, gameSetupInfo.gameParameters)

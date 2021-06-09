@@ -13,7 +13,7 @@ import com.unciv.ui.utils.onClick
 import com.unciv.ui.utils.toLabel
 import java.util.*
 
-class AddMultiplayerGameScreen(backScreen: MultiplayerScreen) : PickerScreen() {
+class AddMultiplayerGameScreen(backScreen: MultiplayerScreen) : PickerScreen(){
     init {
         val gameNameTextField = TextField("", skin)
         val gameIDTextField = TextField("", skin)
