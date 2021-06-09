@@ -14,7 +14,7 @@ import kotlin.concurrent.thread
 
 /** Subscreen of MultiplayerScreen to edit and delete saves
 * backScreen is used for getting back to the MultiplayerScreen so it doesn't have to be created over and over again */
-class EditMultiplayerGameInfoScreen(game: GameInfo?, gameName: String, backScreen: MultiplayerScreen): PickerScreen(){
+class EditMultiplayerGameInfoScreen(game: GameInfo?, gameName: String, backScreen: MultiplayerScreen): PickerScreen() {
     init {
         val textField = TextField(gameName, skin)
 

@@ -6,13 +6,12 @@ import com.unciv.UncivGame
 import com.unciv.ui.utils.*
 import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 
-open class PickerScreen(val disableScroll: Boolean = false) : CameraStageBaseScreen() {
+open class PickerScreen : CameraStageBaseScreen() {
 
     internal var closeButton: TextButton = Constants.close.toTextButton()
     protected var descriptionLabel: Label
-    protected var rightSideGroup = VerticalGroup()
+    private var rightSideGroup = VerticalGroup()
     protected var rightSideButton: TextButton
-    private var screenSplit = 0.85f
 
     /**
      * The table displaying the choices from which to pick (usually).
@@ -20,15 +19,15 @@ open class PickerScreen(val disableScroll: Boolean = false) : CameraStageBaseScr
      */
     protected var topTable: Table
     var bottomTable:Table = Table()
-    internal var splitPane: SplitPane
     protected var scrollPane: ScrollPane
 
     init {
+        val bottomTableHeight = 150f
         bottomTable.add(closeButton).pad(10f)
 
         descriptionLabel = "".toLabel()
         descriptionLabel.wrap = true
-        val labelScroll = ScrollPane(descriptionLabel,skin)
+        val labelScroll = ScrollPane(descriptionLabel)
         bottomTable.add(labelScroll).pad(5f).fill().expand()
 
         rightSideButton = "".toTextButton()
@@ -36,18 +35,16 @@ open class PickerScreen(val disableScroll: Boolean = false) : CameraStageBaseScr
         rightSideGroup.addActor(rightSideButton)
 
         bottomTable.add(rightSideGroup).pad(10f).right()
-        bottomTable.height = stage.height * (1 - screenSplit)
 
         topTable = Table()
         scrollPane = ScrollPane(topTable)
 
-        scrollPane.setScrollingDisabled(disableScroll, disableScroll)
-        scrollPane.setSize(stage.width, stage.height * screenSplit)
-
-        splitPane = SplitPane(scrollPane, bottomTable, true, skin)
-        splitPane.splitAmount = screenSplit
-        splitPane.setFillParent(true)
-        stage.addActor(splitPane)
+        val pickerScreenTable = Table()
+        pickerScreenTable.add(scrollPane).height(stage.height - bottomTableHeight - 2f).row()
+        pickerScreenTable.addSeparator()
+        pickerScreenTable.add(bottomTable).height(bottomTableHeight).fillX().expandX().row()
+        pickerScreenTable.setFillParent(true)
+        stage.addActor(pickerScreenTable)
     }
 
     fun setDefaultCloseAction(previousScreen: CameraStageBaseScreen?=null) {

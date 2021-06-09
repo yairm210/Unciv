@@ -17,7 +17,7 @@ import kotlin.concurrent.thread
 import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 
 
-class SaveGameScreen(val gameInfo: GameInfo) : PickerScreen(disableScroll = true) {
+class SaveGameScreen(val gameInfo: GameInfo) : PickerScreen() {
     private val gameNameTextField = TextField("", skin)
     val currentSaves = Table()
 
