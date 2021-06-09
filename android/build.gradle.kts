@@ -77,21 +77,11 @@ task("copyAndroidNatives") {
     val natives: Configuration by configurations
 
     doFirst {
-        file("libs/armeabi/").mkdirs()
-        file("libs/armeabi-v7a/").mkdirs()
-        file("libs/arm64-v8a/").mkdirs()
-        file("libs/x86_64/").mkdirs()
-        file("libs/x86/").mkdirs()
+        val rx = Regex(""".*natives-([^.]+)\.jar$""")
         natives.forEach { jar ->
-            val outputDir: File? = when {
-                jar.name.endsWith("natives-arm64-v8a.jar") -> file("libs/arm64-v8a")
-                jar.name.endsWith("natives-armeabi-v7a.jar") -> file("libs/armeabi-v7a")
-                jar.name.endsWith("natives-armeabi.jar") -> file("libs/armeabi")
-                jar.name.endsWith("natives-x86_64.jar") -> file("libs/x86_64")
-                jar.name.endsWith("natives-x86.jar") -> file("libs/x86")
-                else -> null
-            }
-            outputDir?.let {
+            if (rx.matches(jar.name)) {
+                val outputDir = file(rx.replace(jar.name) { "libs/" + it.groups[1]!!.value })
+                outputDir.mkdirs()
                 copy {
                     from(zipTree(jar))
                     into(outputDir)
@@ -103,7 +93,7 @@ task("copyAndroidNatives") {
 }
 
 tasks.whenTaskAdded {
-    if ("package" in name) {
+    if ("package" in name || "assemble" in name) {
         dependsOn("copyAndroidNatives")
     }
 }
