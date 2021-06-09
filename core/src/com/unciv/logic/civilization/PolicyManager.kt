@@ -25,8 +25,8 @@ class PolicyManager {
     var shouldOpenPolicyPicker = false
         get() = field && canAdoptPolicy()
     
-    var cultureBuildingsAdded = HashMap<String, String>()
-    var specificBuildingsAdded = HashMap<String, MutableSet<String>>()
+    var cultureBuildingsAdded = HashMap<String, String>() // Maps cities to buildings
+    var specificBuildingsAdded = HashMap<String, MutableSet<String>>() // Maps buildings to cities
     var autocracyCompletedTurns = 0
 
     fun clone(): PolicyManager {
@@ -180,7 +180,7 @@ class PolicyManager {
     
     private fun tryAddSpecificBuilding(building: String, cityCount: Int) {
         val citiesAlreadyGivenBuilding = specificBuildingsAdded[building]
-        if (citiesAlreadyGivenBuilding == null || citiesAlreadyGivenBuilding >= cityCount) return
+        if (citiesAlreadyGivenBuilding == null || citiesAlreadyGivenBuilding.size >= cityCount) return
         val candidateCities = civInfo.cities
             .sortedBy { it.turnAcquired }
             .subList(0, min(cityCount, civInfo.cities.size))
@@ -192,5 +192,13 @@ class PolicyManager {
             val addedBuilding = city.cityConstructions.addBuilding(building)
             citiesAlreadyGivenBuilding.add(city.id) 
         }
+    }
+    
+    fun getListOfFreeBuildings(cityId: String): MutableSet<String> {
+        val freeBuildings = cultureBuildingsAdded.filter { it.key == cityId }.values.toMutableSet()
+        for (building in specificBuildingsAdded.filter { it.value.contains(cityId) }) {
+            freeBuildings.add(building.key)
+        }
+        return freeBuildings
     }
 }
