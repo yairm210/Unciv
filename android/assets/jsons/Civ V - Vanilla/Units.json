@@ -1203,7 +1203,7 @@
 		"strength": 50,
 		"cost": 375,
 		"requiredTech": "Ballistics",
-		//"upgradesTo": "Mobile SAM",
+		"upgradesTo": "Mobile SAM",
 		"uniques": ["[100]% chance to intercept air attacks","+[150]% Strength vs [air units]"],
 		"attackSound": "machinegun"
 	},
@@ -1288,21 +1288,21 @@
 		//"upgradesTo": "Giant Death Robot",
 		"uniques": ["Can move after attacking","No defensive terrain bonus"]
 	},
-	
-	/* // THIS STUFF IS COMMENTED OUT!!!
+
 	// Information Era
+
 	{
 		"name": "Mobile SAM",
 		"unitType": "Melee",
-		"movement": 4,
+		"movement": 3,
 		"interceptRange": 2,
-		"strength": 40,
+		"strength": 65,
 		"cost": 425,
-		"requiredTech": "Computers",
+		"requiredTech": "Rocketry",
 		"uniques": ["[100]% chance to intercept air attacks","+[150]% Strength vs [air units]"],
 		"attackSound": "shot"
-		// 65 strength, 3 movement, requiredTech "Rocketry" in expansions
 	},
+	/* // THIS STUFF IS COMMENTED OUT!!!
 	{
 		"name": "Jet Fighter",
 		"unitType": "Fighter",
