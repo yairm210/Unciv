@@ -985,7 +985,7 @@
 		"cost": 375,
 		"requiredTech": "Radar",
 		"requiredResource": "Oil",
-		//"upgradesTo": "Jet Fighter",
+		"upgradesTo": "Jet Fighter",
 		"uniques": ["[100]% chance to intercept air attacks", "+[150]% Strength vs [Bomber]",
 			"6 tiles in every direction always visible"],
 		"attackSound": "shot"
@@ -1302,12 +1302,11 @@
 		"uniques": ["[100]% chance to intercept air attacks","+[150]% Strength vs [air units]"],
 		"attackSound": "shot"
 	},
-	/* // THIS STUFF IS COMMENTED OUT!!!
 	{
 		"name": "Jet Fighter",
 		"unitType": "Fighter",
-		"movement": 2,
-		"strength": 45,
+		"movement": 1,
+		"strength": 75,
 		"rangedStrength": 75,
 		"range": 10,
 		"interceptRange": 10,
@@ -1319,6 +1318,7 @@
 			"6 tiles in every direction always visible"]
 		"attackSound": "shot"
 	},
+	/* // THIS STUFF IS COMMENTED OUT!!!
 	{
 		"name": "Stealth Bomber",
 		"unitType": "Bomber",
