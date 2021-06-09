@@ -567,7 +567,6 @@
 		"upgradesTo": "Frigate",
 		"uniques": ["Cannot enter ocean tiles"],
 		"attackSound": "arrow"
-		// will be introduced in G&K expansion
 	},
 	{
 		"name": "Knight",
@@ -848,7 +847,6 @@
 		"upgradesTo": "Machine Gun",
 		"obsoleteTech": "Ballistics",
 		"attackSound": "machinegun"
-		// will be introduced in Gods & Kings expansion
 	},
 	{
 		"name": "Rifleman",
@@ -886,7 +884,6 @@
 		"uniques": ["[50]% chance to intercept air attacks","+[50]% Strength vs [Bomber]",
 			"6 tiles in every direction always visible"],
 		"attackSound": "shot"
-		// will be introduced in G&K expansion
 	},
 	{
 		"name": "Great War Bomber",
@@ -901,7 +898,6 @@
 		"upgradesTo": "Bomber",
 		"obsoleteTech": "Radar",
 		"attackSound": "shot"
-		// will be introduced in G&K expansion
 	},
 	{
 		"name": "Norwegian Ski Infantry",
@@ -1087,7 +1083,6 @@
 		"upgradesTo": "Tank",
 		"obsoleteTech": "Combined Arms",
 		"uniques": ["Can move after attacking","No defensive terrain bonus"]
-		// will be introduced in G&K expansion
 	},
 	{
 		"name": "Destroyer",
@@ -1133,7 +1128,6 @@
 		"upgradesTo": "Infantry",
 		"obsoleteTech": "Plastics",
 		"attackSound": "shot"
-		// will be introduced in G&K expansion
 	},
 	{
 		"name": "Foreign Legion",
