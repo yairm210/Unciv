@@ -174,13 +174,13 @@ object BattleDamage {
                 modifiers["Statue of Zeus"] = 15
         } else if (attacker is CityCombatant) {
             if (attacker.city.getCenterTile().militaryUnit != null) {
-                var OlichargyBonus = 0;
+                var olichargyBonus = 0;
                 for (unique in attacker.getCivInfo()
                     .getMatchingUniques("+[]% attacking strength for cities with garrisoned units")) {
-                    OlichargyBonus += unique.params[0].toInt()
+                    olichargyBonus += unique.params[0].toInt()
                 }
-                if (OlichargyBonus != 0)
-                    modifiers["Garrisoned unit"] = OlichargyBonus
+                if (olichargyBonus != 0)
+                    modifiers["Garrisoned unit"] = olichargyBonus
             }
         }
 

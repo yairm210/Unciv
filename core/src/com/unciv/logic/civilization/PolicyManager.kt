@@ -170,7 +170,7 @@ class PolicyManager {
     }
     
     private fun tryAddFreeBuildings() {
-        val matchingUniques = civInfo.getMatchingUniques("Immediately creates a free [] in each of your first [] cities for free")
+        val matchingUniques = civInfo.getMatchingUniques("Immediately creates a [] in each of your first [] cities for free")
         // If we have "create a free aqueduct in first 3 cities" and "create free aqueduct in first 4 cities", we do: "create free aqueduct in first 3+4=7 cities"
         val sortedUniques = matchingUniques.groupBy {it.params[0]}
         for (unique in sortedUniques) {

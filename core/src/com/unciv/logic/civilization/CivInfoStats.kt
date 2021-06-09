@@ -129,8 +129,8 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
         statMap["Base happiness"] = civInfo.getDifficulty().baseHappiness.toFloat()
 
         var happinessPerUniqueLuxury = 4f + civInfo.getDifficulty().extraHappinessPerLuxury
-        for (unique in civInfo.getMatchingUniques("+1 happiness from each type of luxury resource"))
-            happinessPerUniqueLuxury += 1
+        for (unique in civInfo.getMatchingUniques("+[] happiness from each type of luxury resource"))
+            happinessPerUniqueLuxury += unique.params[0].toInt()
         statMap["Luxury resources"] = civInfo.getCivResources().map { it.resource }
                 .count { it.resourceType === ResourceType.Luxury } * happinessPerUniqueLuxury
 

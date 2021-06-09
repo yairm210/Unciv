@@ -38,7 +38,7 @@
 			},
 			{
 				"name": "Tradition Complete",
-				"uniques": ["+[15]% growth [in all cities]","Immediately creates a free [aqueduct] in each of your first [4] cities for free"]
+				"uniques": ["+[15]% growth [in all cities]","Immediately creates a [Aqueduct] in each of your first [4] cities for free"]
 			}
 		]
 	},
@@ -121,9 +121,8 @@
 			},
 			{
 				"name": "Professional Army",
-				"uniques": ["Gold cost of upgrading military units reduced by 33%", "[+1 Happiness] from every [Walls]", 
-					"[+1 Happiness] from every [Castle]", 
-//					"[+1 Happiness] from every [Arsenal]", "[+1 Happiness] from every [Military Base]"
+				"uniques": ["Gold cost of upgrading military units reduced by [33]%", "[+1 Happiness] from every [Walls]", 
+					"[+1 Happiness] from every [Castle]", // "[+1 Happiness] from every [Arsenal]", "[+1 Happiness] from every [Military Base]"
 // 					Should be added when these buildings are implemented					
 				],
 				"requires": ["Military Caste"],
@@ -229,38 +228,41 @@
 		"era": "Medieval era",
 		"policies": [
 			{
+				"name": "Naval Tradition",
+				"uniques": ["All military naval units receive +[1] movement and +[1] sight",
+				// "A Great Admiral appears", "+[2] movemement for every [Gread Admiral]"
+				// Should be added when Great Admirals are implemented	
+				],
+				"row": 1,
+				"column": 2
+			},
+			{
 				"name": "Trade Unions",
 				"uniques": ["Maintenance on roads & railroads reduced by [33]%", "[+2 Gold] from each Trade Route"],
 				"row": 1,
+				"column": 4
+			},
+			{
+				"name": "Merchant Navy",
+				"uniques": ["[+3 Production] [in all coastal cities]"],
+				"requires": ["Naval Tradition"],
+				"row": 2,
 				"column": 2
 			},
 			{
 				"name": "Mercantilism",
-				"uniques": ["Cost of purchasing items in cities reduced by [25]%"],
-				"row": 1,
-				"column": 5
-			},
-			{
-				"name": "Entrepreneurship",
-				"uniques": ["[Great Merchant] is earned [25]% faster", "[+1 Science] from every [Mint]", "[+1 Science] from every [Market]",
-					"[+1 Science] from every [Bank]", "[+1 Science] from every [Stock Exchange]" ],
+				"uniques": ["Cost of purchasing items in cities reduced by [25]%", "[+1 Science] from every [Mint]", "[+1 Science] from every [Market]",
+					"[+1 Science] from every [Bank]", "[+1 Science] from every [Stock Exchange]"],
 				"requires": ["Trade Unions"],
 				"row": 2,
-				"column": 2
-			},
-			{
-				"name": "Patronage",
-				"uniques": ["Cost of purchasing [Culture] buildings reduced by [50]%"],
-				"requires": ["Mercantilism"],
-				"row": 2,
-				"column": 5
+				"column": 4
 			},
 			{
 				"name": "Protectionism",
-				"uniques": ["+1 happiness from each type of luxury resource"],
-				"requires": ["Entrepreneurship","Patronage"],
+				"uniques": ["+[2] happiness from each type of luxury resource"],
+				"requires": ["Mercantilism"],
 				"row": 3,
-				"column": 3
+				"column": 4
 			},
 			{
 				"name": "Commerce Complete",

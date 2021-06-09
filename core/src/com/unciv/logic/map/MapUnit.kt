@@ -13,6 +13,7 @@ import com.unciv.models.ruleset.Unique
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.ruleset.unit.UnitType
 import java.text.DecimalFormat
+import kotlin.math.roundToInt
 import kotlin.random.Random
 
 /**
@@ -141,15 +142,19 @@ class MapUnit {
         var movement = baseUnit.movement
         movement += getUniques().count { it.text == "+1 Movement" }
 
-        if (type.isWaterUnit() && !type.isCivilian()
-            && civInfo.hasUnique("All military naval units receive +1 movement and +1 sight")
-        )
-            movement += 1
-
+        if (type.isWaterUnit() && !type.isCivilian()) {
+            for (unique in civInfo.getMatchingUniques("All military naval units receive +[] movement and +[] sight")) {
+                movement += unique.params[0].toInt()
+            }
+        }
         for (unique in civInfo.getMatchingUniques("+[] Movement for all [] units"))
             if (matchesFilter(unique.params[1]))
                 movement += unique.params[0].toInt()
-
+        for (unique in civInfo.getMatchingUniques("+[] movement for every []")) {
+            if (name == unique.params[1]) 
+                movement += unique.params[0].toInt()
+        }
+        
         if (civInfo.goldenAges.isGoldenAge() &&
             civInfo.hasUnique("+1 Movement for all units during Golden Age")
         )
@@ -215,10 +220,10 @@ class MapUnit {
         if (hasUnique("Limited Visibility")) visibilityRange -= 1
         if (civInfo.hasUnique("+1 Sight for all land military units") && type.isMilitary() && type.isLandUnit())
             visibilityRange += 1
-        if (type.isWaterUnit() && !type.isCivilian()
-            && civInfo.hasUnique("All military naval units receive +1 movement and +1 sight")
-        )
-            visibilityRange += 1
+        if (type.isWaterUnit() && !type.isCivilian()) {
+            for (unique in civInfo.getMatchingUniques("All military naval units receive +[] movement and +[] sight"))
+                visibilityRange += unique.params[1].toInt()
+        }
 
         for (unique in civInfo.getMatchingUniques("[] Sight when []"))
             if (matchesFilter(unique.params[1]))
@@ -320,8 +325,8 @@ class MapUnit {
     fun getCostOfUpgrade(): Int {
         val unitToUpgradeTo = getUnitToUpgradeTo()
         var goldCostOfUpgrade = (unitToUpgradeTo.cost - baseUnit().cost) * 2 + 10
-        for (unique in civInfo.getMatchingUniques("Gold cost of upgrading military units reduced by 33%"))
-            goldCostOfUpgrade = (goldCostOfUpgrade * 0.66f).toInt()
+        for (unique in civInfo.getMatchingUniques("Gold cost of upgrading military units reduced by []]%"))
+            goldCostOfUpgrade = (goldCostOfUpgrade * (1 - unique.params[0].toFloat()).roundToInt())
         if (goldCostOfUpgrade < 0) return 0 // For instance, Landsknecht costs less than Spearman, so upgrading would cost negative gold
         return goldCostOfUpgrade
     }
