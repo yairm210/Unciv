@@ -75,12 +75,16 @@ object BattleDamage {
                 }
             }
 
-            if (civInfo.hasUnique("+15% combat strength for melee units which have another military unit in an adjacent tile")
-                && combatant.isMelee()
-                && combatant.getTile().neighbors.flatMap { it.getUnits() }
+            if (combatant.getTile().neighbors.flatMap { it.getUnits() }
                     .any { it.civInfo == civInfo && !it.type.isCivilian() && !it.type.isAirUnit() }
-            )
-                modifiers["Discipline"] = 15
+            ) {
+                var adjacentUnitBonus = 0;
+                for (unique in civInfo.getMatchingUniques("+[] combat strength for [] units which have another military unit in an adjacent tile")) {
+                    if ((combatant.isMelee() && unique.params[1] == "melee") || (combatant.isRanged() && unique.params[1] == "ranged"))
+                        adjacentUnitBonus += unique.params[0].toInt()
+                }
+                modifiers["Adjacent unit"] = adjacentUnitBonus
+            }
 
             val civResources = civInfo.getCivResourcesByName()
             for (resource in combatant.unit.baseUnit.getResourceRequirements().keys)
@@ -109,8 +113,11 @@ object BattleDamage {
         if (enemy.getCivInfo().isBarbarian()) {
             modifiers["Difficulty"] =
                 (civInfo.gameInfo.getDifficulty().barbarianBonus * 100).toInt()
-            if (civInfo.hasUnique("+25% bonus vs Barbarians"))
-                modifiers["vs Barbarians"] = 25
+            var barbarianBonus = 0;
+            for (unique in civInfo.getMatchingUniques("+[]% bonus vs Barbarians")) {
+                barbarianBonus += unique.params[0].toInt()
+            }
+            modifiers["vs Barbarians"] = barbarianBonus 
         }
 
         return modifiers
@@ -166,11 +173,15 @@ object BattleDamage {
             )
                 modifiers["Statue of Zeus"] = 15
         } else if (attacker is CityCombatant) {
-            if (attacker.getCivInfo()
-                    .hasUnique("+50% attacking strength for cities with garrisoned units")
-                && attacker.city.getCenterTile().militaryUnit != null
-            )
-                modifiers["Oligarchy"] = 50
+            if (attacker.city.getCenterTile().militaryUnit != null) {
+                var OlichargyBonus = 0;
+                for (unique in attacker.getCivInfo()
+                    .getMatchingUniques("+[]% attacking strength for cities with garrisoned units")) {
+                    OlichargyBonus += unique.params[0].toInt()
+                }
+                if (OlichargyBonus != 0)
+                    modifiers["Garrisoned unit"] = OlichargyBonus
+            }
         }
 
         return modifiers

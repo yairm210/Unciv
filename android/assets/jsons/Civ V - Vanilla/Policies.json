@@ -12,13 +12,13 @@
 			},
 			{
 				"name": "Legalism",
-				"uniques":["Immediately creates a cheapest available cultural building in each of your first 4 cities for free"],
+				"uniques":["Immediately creates the cheapest available cultural building in each of your first [4] cities for free"],
 				"row": 1,
 				"column": 3
 			},
 			{
 				"name": "Oligarchy",
-				"uniques": ["Units in cities cost no Maintenance", "+50% attacking strength for cities with garrisoned units"],
+				"uniques": ["Units in cities cost no Maintenance", "+[50]% attacking strength for cities with garrisoned units"],
 				"row": 1,
 				"column": 5
 			},
@@ -38,7 +38,7 @@
 			},
 			{
 				"name": "Tradition Complete",
-				"uniques": ["+[15]% growth [in all cities]","[+2 Food] [in all cities]"]
+				"uniques": ["+[15]% growth [in all cities]","Immediately creates a free [aqueduct] in each of your first [4] cities for free"]
 			}
 		]
 	},
@@ -48,21 +48,21 @@
 		"uniques": ["[+1 Culture] [in all cities]"],
 		"policies": [
 			{
-				"name": "Collective Rule",
-				"uniques": ["+[50]% Production when constructing [Settler] units [in capital]", "Free [Settler] appears"],
+				"name": "Republic",
+				"uniques": ["[+1 Production] [in all cities]", "+[5]% Production when constructing [Buildings]"],
 				"row": 1,
 				"column": 1
 			},
 			{
 				"name": "Citizenship",
-				"uniques": ["Tile improvement speed +25%", "Free [Worker] appears"],
+				"uniques": ["Tile improvement speed +[25]%", "Free [Worker] appears"],
 				"row": 1,
 				"column": 4
 			},
 			{
-				"name": "Republic",
-				"uniques": ["[+1 Production] [in all cities]", "+[5]% Production when constructing [Buildings]"],
-				"requires": ["Collective Rule"],
+				"name": "Collective Rule",
+				"uniques": ["+[50]% Production when constructing [Settler] units [in capital]", "Free [Settler] appears"],
+				"requires": ["Republic"],
 				"row": 2,
 				"column": 1
 			},
@@ -76,6 +76,7 @@
 			{
 				"name": "Meritocracy",
 				"uniques": ["[+1 Happiness] [in all cities connected to capital]", "Unhappiness from population decreased by [5]%"],
+				// Should only be unhpainness from population in non-occupied cities
 				"requires": ["Citizenship"],
 				"row": 2,
 				"column": 5
@@ -89,19 +90,19 @@
 	{
 		"name": "Honor",
 		"era": "Ancient era",
-		"uniques": ["+25% bonus vs Barbarians", "Earn [100]% of killed [Barbarian] unit's [Strength] as [Culture]",
+		"uniques": ["+[33]% bonus vs Barbarians", "Earn [100]% of killed [Barbarian] unit's [Strength] as [Culture]",
 			"Notified of new Barbarian encampments"],
 		"policies": [
 			{
 				"name": "Warrior Code",
-				"uniques":["+[20]% Production when constructing [Melee] units [in all cities]"],
+				"uniques":["+[15]% Production when constructing [Melee] units [in all cities]", "Free Great General appears"],
 				"row": 1,
 				"column": 2
 			},
 			{
 				"name": "Discipline",
-				"uniques":["+15% combat strength for melee units which have another military unit in an adjacent tile"],
-				"row": 1,
+				"uniques":["+[15]% combat strength for [melee] units which have another military unit in an adjacent tile"],
+				"row": 1, 
 				"column": 4
 			},
 			{
@@ -120,7 +121,11 @@
 			},
 			{
 				"name": "Professional Army",
-				"uniques": ["Gold cost of upgrading military units reduced by 33%"],
+				"uniques": ["Gold cost of upgrading military units reduced by 33%", "[+1 Happiness] from every [Walls]", 
+					"[+1 Happiness] from every [Castle]", 
+//					"[+1 Happiness] from every [Arsenal]", "[+1 Happiness] from every [Military Base]"
+// 					Should be added when these buildings are implemented					
+				],
 				"requires": ["Military Caste"],
 				"row": 3,
 				"column": 4
@@ -131,6 +136,7 @@
 			}
 		]
 	},{
+		// I have not updated these to Gods & Kings as faith was not implemented yet when I updated the rest.
 		"name": "Piety",
 		"era": "Classical era",
 		"uniques": ["+[15]% Production when constructing [Culture] buildings"],
