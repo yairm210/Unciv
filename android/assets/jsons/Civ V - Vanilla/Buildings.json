@@ -771,16 +771,14 @@
 		"requiredResource": "Coal",
 		"requiredTech": "Industrialization"
 	},
-	/*
 	{
 		"name": "Arsenal",
-		"cityStrength": 6,
+		"cityStrength": 9,
+		"cityHealth": 25,
 		"hurryCostModifier": 25,
 		"requiredBuilding": "Castle",
-		"requiredTech": "Rifling"
-		//+9 City Defense Strength, +25 City Hit Points, requiredTech "Metallurgy" in expansions
+		"requiredTech": "Metallurgy"
 	},
-	*/
 	{
 		"name": "Military Academy",
 		"xpForNewUnits": 15,

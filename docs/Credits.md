@@ -219,7 +219,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Hagia Sophia](https://thenounproject.com/term/hagia-sophia/1907752/) By Felipe Alvarado
 * [Factory](https://thenounproject.com/term/factory/1624235/) By Maxim Kulikov for Ironworks
 * [Notre Dame](https://thenounproject.com/term/notre-dame/1361725/) By Marco Livolsi
-* [Bullets](https://thenounproject.com/term/bullets/810156/) By Aldric Rodriguez for Armory 
+* [Shield and Swords](https://thenounproject.com/term/shield-and-swords/1477527/) By Alina Oleynik for Armory
 * [Machu Picchu](https://thenounproject.com/browse/?i=1678226/) By [Chanut is Industries](https://thenounproject.com/chanut-is)
 * [Garden](https://thenounproject.com/search/?q=garden&i=1478380) By Bharat 
 
@@ -240,6 +240,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Bank](https://thenounproject.com/term/bank/1882194/) By projecthayat
 * [Harbor](https://thenounproject.com/term/harbor/225583/) By Rflor for Seaport
 * [Mansion](https://www.flaticon.com/free-icon/mansion_509903#term=persian&page=1&position=19) by Freepik for Satrap's Court
+* [Bullets](https://thenounproject.com/term/bullets/810156/) By Aldric Rodriguez for Arsenal
 
 ### Industrial Era
 
