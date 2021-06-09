@@ -42,6 +42,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 
 * [Catapult](https://thenounproject.com/search/?q=Spear&i=1233840) By Jakub Ukrop
 * [Unloaded Crossbow](https://thenounproject.com/term/unloaded-crossbow/815992/) By Hamish as Ballista
+* [Bow and arrow](https://thenounproject.com/term/bow-and-arrow/3929618/) By Lars Meiertoberens for Composite Bowman
 * [Sword](https://thenounproject.com/search/?q=Sword&i=1215443) By Guilherme Furtado for Swordsman
 * [Mohawk](https://thenounproject.com/search/?q=mohawk&i=1426649) By Dairy Free Design for Mohawk Warrior
 * [Roman Helmet](https://thenounproject.com/search/?q=legion&i=440134) By parkjisun for Legion

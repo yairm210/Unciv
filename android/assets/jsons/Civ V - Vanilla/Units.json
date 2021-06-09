@@ -87,7 +87,7 @@
 		"cost": 40,
 		"requiredTech": "Archery",
 		"obsoleteTech": "Machinery",
-		"upgradesTo": "Crossbowman",
+		"upgradesTo": "Composite Bowman",
 		"attackSound": "arrow"
 	},
 	/*
@@ -304,7 +304,6 @@
 		"hurryCostModifier": 20,
 		"attackSound": "throw"
 	},
-	/*
 	{
 		"name": "Composite Bowman",
 		"unitType": "Ranged",
@@ -316,9 +315,7 @@
 		"obsoleteTech": "Machinery",
 		"upgradesTo": "Crossbowman",
 		"attackSound": "arrow"
-		// will be introduced in G&K expansion
 	},
-	*/
 	{
 		"name": "Swordsman",
 		"unitType": "Melee",
