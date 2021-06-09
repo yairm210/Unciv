@@ -12,6 +12,7 @@ enum class AlertType {
     CitySettledNearOtherCivDespiteOurPromise,
     GoldenAge,
     DeclarationOfFriendship,
+    StartIntro,
 }
 
 class PopupAlert {
