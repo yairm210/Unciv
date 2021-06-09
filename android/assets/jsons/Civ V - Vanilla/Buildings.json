@@ -346,8 +346,7 @@
 		"uniques": ["[+2 Gold] from [Gold Ore] tiles in this city", "[+2 Gold] from [Silver] tiles in this city"],
 		"requiredTech": "Currency"
 	},
-	/*
-	{ // Will be Introduced in Gods & Kings. Flood plains are not supposed to be affected by this wonder. Add stats to all desert tiles and then add negative stats to flood plains to undo the effect on them for now
+	{ // Flood plains are not supposed to be affected by this wonder. Add stats to all desert tiles and then add negative stats to flood plains to undo the effect on them for now
 		"name": "Petra",
 		"culture": 1,
 		"isWonder": true,
@@ -356,7 +355,6 @@
 		"requiredTech": "Currency",
 		"quote": "'...who drinks the water I shall give him, says the Lord, will have a spring inside him welling up for eternal life. Let them bring me to your holy mountain in the place where you dwell. Across the desert and through the mountain to the Canyon of the Crescent Moon...'  - Indiana Jones"
 	},
-	*/
 	{
 		"name": "Aqueduct",
 		"maintenance": 1,

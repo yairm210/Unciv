@@ -508,261 +508,268 @@ Pentagon
   orig: 100, 100
   offset: 0, 0
   index: -1
-Porcelain Tower
+Petra
   rotate: false
   xy: 920, 716
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Public School
+Porcelain Tower
   rotate: false
   xy: 1022, 818
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Research Lab
+Public School
   rotate: false
   xy: 1124, 920
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-SS Booster
+Research Lab
   rotate: false
   xy: 308, 2
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-SS Cockpit
+SS Booster
   rotate: false
   xy: 410, 104
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-SS Engine
+SS Cockpit
   rotate: false
   xy: 512, 206
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-SS Stasis Chamber
+SS Engine
   rotate: false
   xy: 614, 308
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Satrap's Court
+SS Stasis Chamber
   rotate: false
   xy: 716, 410
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Seaport
+Satrap's Court
   rotate: false
   xy: 818, 512
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Sistine Chapel
+Seaport
   rotate: false
   xy: 920, 614
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Solar Plant
+Sistine Chapel
   rotate: false
   xy: 1022, 716
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Spaceship Factory
+Solar Plant
   rotate: false
   xy: 1124, 818
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Stable
+Spaceship Factory
   rotate: false
   xy: 1226, 920
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Stadium
+Stable
   rotate: false
   xy: 410, 2
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Statue of Liberty
+Stadium
   rotate: false
   xy: 512, 104
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Statue of Zeus
+Statue of Liberty
   rotate: false
   xy: 614, 206
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Stock Exchange
+Statue of Zeus
   rotate: false
   xy: 716, 308
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Stone Works
+Stock Exchange
   rotate: false
   xy: 818, 410
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Stonehenge
+Stone Works
   rotate: false
   xy: 920, 512
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Sydney Opera House
+Stonehenge
   rotate: false
   xy: 1022, 614
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Taj Mahal
+Sydney Opera House
   rotate: false
   xy: 1124, 716
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Temple
+Taj Mahal
   rotate: false
   xy: 1226, 818
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Temple of Artemis
+Temple
   rotate: false
   xy: 1328, 920
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Terracotta Army
+Temple of Artemis
   rotate: false
   xy: 512, 2
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-The Great Library
+Terracotta Army
   rotate: false
   xy: 614, 104
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-The Great Lighthouse
+The Great Library
   rotate: false
   xy: 716, 206
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-The Louvre
+The Great Lighthouse
   rotate: false
   xy: 818, 308
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-The Oracle
+The Louvre
   rotate: false
   xy: 920, 410
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-The Pyramids
+The Oracle
   rotate: false
   xy: 1022, 512
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Theatre
+The Pyramids
   rotate: false
   xy: 1124, 614
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-University
+Theatre
   rotate: false
   xy: 1226, 716
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Walls
+University
   rotate: false
   xy: 1328, 818
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Walls of Babylon
+Walls
   rotate: false
   xy: 1430, 920
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Wat
+Walls of Babylon
   rotate: false
   xy: 614, 2
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Water Mill
+Wat
   rotate: false
   xy: 716, 104
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Windmill
+Water Mill
   rotate: false
   xy: 818, 206
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Workshop
+Windmill
   rotate: false
   xy: 920, 308
+  size: 100, 100
+  orig: 100, 100
+  offset: 0, 0
+  index: -1
+Workshop
+  rotate: false
+  xy: 1022, 410
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
