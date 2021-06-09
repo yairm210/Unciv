@@ -71,6 +71,8 @@ class CityConstructions {
 
     fun getBasicCultureBuildings() = cityInfo.getRuleset().buildings.values
             .asSequence().filter { it.culture > 0f && !it.isWonder && !it.isNationalWonder && it.replaces == null }
+    
+    fun getCultureBuildings() = getBasicCultureBuildings().map { cityInfo.civInfo.getEquivalentBuilding(it.name) }
 
     /**
      * @return [Stats] provided by all built buildings in city plus the bonus from Library
@@ -451,8 +453,7 @@ class CityConstructions {
     }
 
     fun addCultureBuilding(): String? {
-        val buildableCultureBuildings = getBasicCultureBuildings()
-                .map { cityInfo.civInfo.getEquivalentBuilding(it.name) }
+        val buildableCultureBuildings = getCultureBuildings()
                 .filter { it.isBuildable(this) || isBeingConstructedOrEnqueued(it.name) }
 
         if (!buildableCultureBuildings.any())

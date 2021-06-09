@@ -39,8 +39,17 @@ open class Stats() {
 
 
     fun add(stat: Stat, value: Float): Stats {
+        // This looks super inefficient to me, for changing a single stat we assign EVERY stat TWICE
+        // If we convert it to a hashmap every single time we do something, why don't we just use a hashmap?
         val hashMap = toHashMap()
         hashMap[stat] = hashMap[stat]!! + value
+        setStats(hashMap)
+        return this
+    }
+    
+    fun multiply(stat: Stat, value: Float): Stats {
+        val hashMap = toHashMap()
+        hashMap[stat] = hashMap[stat]!! * value
         setStats(hashMap)
         return this
     }

@@ -223,14 +223,22 @@ object BattleDamage {
             if (tile.matchesUniqueFilter(unique.params[1]))
                 modifiers["[${unique.params[1]}] defence"] = unique.params[0].toInt()
         }
-
-
+        
         if (defender.unit.isFortified())
             modifiers["Fortification"] = 20 * defender.unit.getFortificationTurns()
 
         return modifiers
     }
 
+    private fun getCityDefenceModifiers(attacker: ICombatant, defender: CityCombatant): Counter<String> {
+        val modifiers = Counter<String>()
+        
+        modifiers["Defensive Bonus"] = defender.city.civInfo.getMatchingUniques("+[]% Defensive strength for cities")
+            .fold(0f) { sum, it -> sum + it.params[0].toFloat() / 100f }.toInt() 
+        
+        return modifiers
+    }
+    
     private fun getTileSpecificModifiers(unit: MapUnitCombatant, tile: TileInfo): Counter<String> {
         val modifiers = Counter<String>()
 
@@ -302,6 +310,8 @@ object BattleDamage {
         var defenceModifier = 1f
         if (defender is MapUnitCombatant) defenceModifier =
             modifiersToMultiplicationBonus(getDefenceModifiers(attacker, defender))
+        if (defender is CityCombatant) defenceModifier =
+            modifiersToMultiplicationBonus(getCityDefenceModifiers(attacker, defender))
         return defender.getDefendingStrength() * defenceModifier
     }
 

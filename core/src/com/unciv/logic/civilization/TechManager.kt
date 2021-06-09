@@ -175,16 +175,21 @@ class TechManager {
         // http://www.civclub.net/bbs/forum.php?mod=viewthread&tid=123976
         // Apparently yes, we care about the absolute tech cost, not the actual calculated-for-this-player tech cost,
         //  so don't change to costOfTech()
+        // Actually, that link is only valid for BNW. If we make G&K, there is no limit to overflow
+        // Source: https://forums.civfanatics.com/resources/research-agreements-bnw.25568/
+        // Yes, this links to how RA work for BNW, but somewhere halfway down the page, it is mentioned
+        // that vanilla and G&K did not have this.
         return min(overflowScience, max(civInfo.statsForNextTurn.science.toInt() * 5,
                 getRuleset().technologies[currentTechnologyName()]!!.cost))
     }
 
     private fun scienceFromResearchAgreements(): Int {
-        // https://forums.civfanatics.com/resources/research-agreements-bnw.25568/
+        // This is for BNW: https://forums.civfanatics.com/resources/research-agreements-bnw.25568/
+        // This is implemented like it is for G&K: https://forums.civfanatics.com/resources/research-agreements-g-k.25653/
         var researchAgreementModifier = 0.5f
-        for (unique in civInfo.getMatchingUniques("Science gained from research agreements +50%"))
-            researchAgreementModifier += 0.25f
-        return (scienceFromResearchAgreements / 3 * researchAgreementModifier).toInt()
+        for (unique in civInfo.getMatchingUniques("Science gained from research agreements +[]]%"))
+            researchAgreementModifier += unique.params[0].toFloat() / 200f 
+        return (scienceFromResearchAgreements / 6 * researchAgreementModifier).toInt()
     }
 
     fun endTurn(scienceForNewTurn: Int) {

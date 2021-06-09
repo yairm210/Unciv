@@ -301,10 +301,6 @@ open class TileInfo {
             }
         }
 
-        if (containsGreatImprovement()
-                && observingCiv.hasUnique("Tile yield from Great Improvements +100%"))
-            stats.add(improvement) // again, for the double effect
-
         for (unique in improvement.uniqueObjects)
             if (unique.placeholderText == "[] for each adjacent []") {
                 val adjacent = unique.params[1]
@@ -315,6 +311,13 @@ open class TileInfo {
                 }
                 stats.add(unique.stats.times(numberOfBonuses.toFloat()))
             }
+
+        if (containsGreatImprovement()) {
+            val multiplier = observingCiv.getMatchingUniques("Tile yield from Great Improvements +[]%")
+                .fold(1f) {sum, it -> sum + it.params[0].toFloat() / 100f
+            }
+            stats.times(multiplier)
+        }
 
         return stats
     }

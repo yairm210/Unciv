@@ -244,10 +244,15 @@ class DiplomacyManager() {
     }
 
     fun sciencefromResearchAgreement() {
-        // https://forums.civfanatics.com/resources/research-agreements-bnw.25568/
-        val scienceFromResearchAgreement = min(totalOfScienceDuringRA, otherCivDiplomacy().totalOfScienceDuringRA)
-        civInfo.tech.scienceFromResearchAgreements += scienceFromResearchAgreement
-        otherCiv().tech.scienceFromResearchAgreements += scienceFromResearchAgreement
+        // This is for BNW: https://forums.civfanatics.com/resources/research-agreements-bnw.25568/
+        // This is implemented like it is for G&K: https://forums.civfanatics.com/resources/research-agreements-g-k.25653/
+        if (totalOfScienceDuringRA < otherCivDiplomacy().totalOfScienceDuringRA) {
+            civInfo.tech.scienceFromResearchAgreements += 2 * totalOfScienceDuringRA
+            otherCiv().tech.scienceFromResearchAgreements += totalOfScienceDuringRA + otherCivDiplomacy().totalOfScienceDuringRA
+        } else {
+            civInfo.tech.scienceFromResearchAgreements += totalOfScienceDuringRA + otherCivDiplomacy().totalOfScienceDuringRA
+            otherCiv().tech.scienceFromResearchAgreements += 2 * otherCivDiplomacy().totalOfScienceDuringRA
+        }
         totalOfScienceDuringRA = 0
         otherCivDiplomacy().totalOfScienceDuringRA = 0
     }
