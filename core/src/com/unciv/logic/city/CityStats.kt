@@ -303,6 +303,10 @@ class CityStats {
         for (unique in uniques.filter { it.placeholderText == "+[]% Production when constructing []" }) {
             if (constructionMatchesFilter(currentConstruction, unique.params[1]))
                 stats.production += unique.params[0].toInt()
+        }  
+        for (unique in uniques.filter { it.placeholderText == "+[]% Production when constructing a []" }) {
+            if (constructionMatchesFilter(currentConstruction, unique.params[1]))
+                stats.production += unique.params[0].toInt()
         }
 
         //  "+[amount]% Production when constructing [constructionFilter] [cityFilter]"
@@ -492,18 +496,18 @@ class CityStats {
         }
 
         // e.g. "-[50]% Maintenance costs [in this city]"
-        val maintenanceUniqueTemplate = "-[]% building maintenance costs []"
+        val maintenanceUniqueTemplate = "-[]% maintenance cost for buildings []"
         val maintenanceUniques = citySpecificUniques.filter { it.placeholderText == maintenanceUniqueTemplate } +
                 cityInfo.civInfo.getMatchingUniques(maintenanceUniqueTemplate).filter { cityInfo.matchesFilter(it.params[1]) }
         for (unique in maintenanceUniques) buildingsMaintenance *= (1f - unique.params[0].toFloat() / 100)
+                
         return buildingsMaintenance
     }
 
     private fun updateFoodEaten() {
         foodEaten = cityInfo.population.population.toFloat() * 2
         var specialistFoodReduction = cityInfo.civInfo.getMatchingUniques("-[]% food consumption by specialists")
-            .fold(1f) {sum, it -> sum + it.params[1].toFloat() / 100f
-        }
+            .fold(0f) { sum, it -> sum + it.params[0].toFloat() / 100f }
         if (specialistFoodReduction > 1f) specialistFoodReduction = 1f
         foodEaten -= (2 * cityInfo.population.getNumberOfSpecialists() * specialistFoodReduction).toInt()
     }

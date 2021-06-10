@@ -315,42 +315,6 @@
 			}
 		]
 	},
-	/*{
-		"name": "Order",
-		"era": "Industrial era",
-		"policies": [
-			{
-				"name": "Nationalism",
-				"row": 1,
-				"column": 1
-			},
-			{
-				"name": "United Front",
-				"row": 1,
-				"column": 3
-			},
-			{
-				"name": "Planned Economy",
-				"row": 2,
-				"column": 5
-			},
-			{
-				"name": "Socialism",
-				"requires": ["Planned Economy"],
-				"row": 2,
-				"column": 3
-			},
-			{
-				"name": "Communism",
-				"requires": ["Socialism"],
-				"row": 3,
-				"column": 3
-			},
-			{
-				"name": "Order Complete", Gold and Culture per city"
-			}
-		]
-	},*/
 	{
 		"name": "Freedom",
 		"era": "Renaissance era",
@@ -438,5 +402,49 @@
 				"uniques": ["+[25]% attack bonus to all Military Units for [50] turns"]
 			}
 		]
-	}
+	},
+	{
+    "name": "Order",
+    "era": "Industrial era",
+	"uniques": ["[+1 Happiness] [in all cities]"],
+    "policies": [
+        {
+            "name": "United Front",
+			"uniques": ["Militaristic City-States grant units in [50]% of the normal time when you are at war with a common foe"],
+			// Not yet implemented!
+            "row": 1,
+            "column": 1
+        },
+		{
+			"name": "Planned Economy",
+			"uniques": ["+[25]% [Science] from every [Factory]", "+[100]% Production when constructing a [Factory]"],
+			"row": 1,
+			"column": 3
+		},
+		{
+			"name": "Nationalism",
+			"uniques": ["+[15]% Strength while fighting in friendly territory"],
+			"row": 1,
+			"column": 5
+		},
+        {
+            "name": "Socialism",
+            "requires": ["Planned Economy"],
+			"uniques": ["-[15]% maintenance cost for buildings [in all cities]"],
+            "row": 2,
+            "column": 3
+        },
+        {
+            "name": "Communism",
+            "requires": ["Socialism"],
+			"uniques": ["[+1 Production] [in all cities]", "[+1 Production] from every [Mine] improvement", "[+1 Production] from every [Quarry] improvement"],
+            "row": 3,
+            "column": 3
+        },
+        {
+            "name": "Order Complete",
+			"uniques": ["[+2 Food, +2 Production, +2 Science, +2 Gold, +2 Culture] [in all cities]"]
+        }
+    ]
+}
 ]

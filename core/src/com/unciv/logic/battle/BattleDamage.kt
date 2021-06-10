@@ -107,6 +107,12 @@ object BattleDamage {
                     .isCityState() && civInfo.hasUnique("+30% Strength when fighting City-State units and cities")
             )
                 modifiers["vs [City-States]"] = 30
+            
+            if (combatant.getTile().isFriendlyTerritory(combatant.getCivInfo())) {
+                val friendlyTerritoryModifier = civInfo.getMatchingUniques("+[]% Strength while fighting in friendly territory")
+                    .fold(0) { sum, it -> sum + it.params[0].toInt() }
+                modifiers["Friendly Territory"] = friendlyTerritoryModifier
+            }
 
         }
 
