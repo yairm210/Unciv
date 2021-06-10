@@ -2,7 +2,7 @@
 FlagIcons.png
 size: 2048, 512
 format: RGBA8888
-filter: MipMapLinearLinear, MipMapLinearLinear
+filter: Nearest, Nearest
 repeat: none
 Brazilian_Portuguese
   rotate: false

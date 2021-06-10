@@ -14,7 +14,7 @@ class CityScreenCityPickerTable(private val cityScreen: CityScreen) : Table() {
     fun update() {
         val city = cityScreen.city
         val civInfo = city.civInfo
-        background = ImageGetter.getRoundedEdgeTableBackground(civInfo.nation.getOuterColor())
+        background = ImageGetter.getRoundedEdgeRectangle(civInfo.nation.getOuterColor())
         clear()
 
         if (civInfo.cities.size > 1) {

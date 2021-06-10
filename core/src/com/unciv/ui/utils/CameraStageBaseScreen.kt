@@ -7,8 +7,7 @@ import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.g2d.BitmapFont
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
-import com.badlogic.gdx.graphics.g2d.TextureAtlas
-import com.badlogic.gdx.scenes.scene2d.*
+import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable
 import com.badlogic.gdx.utils.viewport.ExtendViewport
@@ -76,9 +75,16 @@ open class CameraStageBaseScreen : Screen {
             Fonts.resetFont()
             skin = Skin().apply {
                 add("Nativefont", Fonts.font, BitmapFont::class.java)
-                add("Button", ImageGetter.getRoundedEdgeTableBackground(), Drawable::class.java)
-                addRegions(TextureAtlas("skin/flat-earth-ui.atlas"))
-                load(Gdx.files.internal("skin/flat-earth-ui.json"))
+                add("RoundedEdgeRectangle", ImageGetter.getRoundedEdgeRectangle(), Drawable::class.java)
+                add("Rectangle", ImageGetter.getDrawable(""), Drawable::class.java)
+                add("Circle", ImageGetter.getDrawable("OtherIcons/Circle").apply { setMinSize(20f, 20f) }, Drawable::class.java)
+                add("Scrollbar", ImageGetter.getDrawable("").apply { setMinSize(10f, 10f) }, Drawable::class.java)
+                add("RectangleWithOutline", ImageGetter.getRectangleWithOutline(), Drawable::class.java)
+                add("Select-box", ImageGetter.getSelectBox(), Drawable::class.java)
+                add("Select-box-pressed", ImageGetter.getSelectBoxPressed(), Drawable::class.java)
+                add("Checkbox", ImageGetter.getCheckBox(), Drawable::class.java)
+                add("Checkbox-pressed", ImageGetter.getCheckBoxPressed(), Drawable::class.java)
+                load(Gdx.files.internal("Skin.json"))
             }
             skin.get(TextButton.TextButtonStyle::class.java).font = Fonts.font.apply { data.setScale(20 / Fonts.ORIGINAL_FONT_SIZE) }
             skin.get(CheckBox.CheckBoxStyle::class.java).font = Fonts.font.apply { data.setScale(20 / Fonts.ORIGINAL_FONT_SIZE) }

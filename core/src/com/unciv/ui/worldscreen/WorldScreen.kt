@@ -511,7 +511,7 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Cam
             innerButton.text.setText(currentTech.tr() + "\r\n" + turnsToTech + Fonts.turn)
         } else if (viewingCiv.tech.canResearchTech() || viewingCiv.tech.researchedTechnologies.any()) {
             val buttonPic = Table()
-            buttonPic.background = ImageGetter.getRoundedEdgeTableBackground(colorFromRGB(7, 46, 43))
+            buttonPic.background = ImageGetter.getRoundedEdgeRectangle(colorFromRGB(7, 46, 43))
             buttonPic.defaults().pad(20f)
             val text = if (viewingCiv.tech.canResearchTech()) "{Pick a tech}!" else "Technologies"
             buttonPic.add(text.toLabel(Color.WHITE, 30))
