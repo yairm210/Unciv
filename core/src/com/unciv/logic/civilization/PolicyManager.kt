@@ -20,7 +20,6 @@ class PolicyManager {
 
     var freePolicies = 0
     var storedCulture = 0
-        set(value) = addCulture(value)
     internal val adoptedPolicies = HashSet<String>()
     var numberOfAdoptedPolicies = 0
     var shouldOpenPolicyPicker = false
@@ -210,7 +209,11 @@ class PolicyManager {
         maintenanceFreeBuildings[cityId]!!.add(building)
     }
     
-    fun getListOfFreeBuildings(cityId: String): MutableSet<String>? {
-        return maintenanceFreeBuildings[cityId]
+    fun getListOfFreeBuildings(cityId: String): MutableSet<String> {
+        println(maintenanceFreeBuildings[cityId])
+        println(cultureBuildingsAdded[cityId])
+        println(specificBuildingsAdded.filter{it.value.contains(cityId)})
+        if (cityId in maintenanceFreeBuildings.keys) return maintenanceFreeBuildings[cityId]!!
+        return mutableSetOf()
     }
 }

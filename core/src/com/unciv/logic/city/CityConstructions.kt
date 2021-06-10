@@ -92,17 +92,15 @@ class CityConstructions {
      * @return Maintenance cost of all built buildings
      */
     fun getMaintenanceCosts(): Int {
-        return getBuiltBuildings().sumBy { it.maintenance } - getMaintenanceReductionForFreeBuildings()
-    }
-    
-    /** Calculates the amount of maintenance reduced by buildings granted by policies */
-    fun getMaintenanceReductionForFreeBuildings(): Int {
-        var maintenanceReduction = 0
-        var freeBuildings = cityInfo.civInfo.policies.getListOfFreeBuildings(cityInfo.id)!!
-        for (building in freeBuildings) {
-            maintenanceReduction += cityInfo.getRuleset().buildings[building]!!.maintenance
+        var maintenanceCost = 0
+        // We cache this to increase performance
+        val freeBuildings = cityInfo.civInfo.policies.getListOfFreeBuildings(cityInfo.id)
+        for (building in getBuiltBuildings()) {
+            if (building.name !in freeBuildings) {
+                maintenanceCost += building.maintenance
+            }
         }
-        return maintenanceReduction
+        return maintenanceCost
     }
 
     /**
