@@ -368,15 +368,24 @@ class CivilizationInfo {
 
     fun isAtWar() = diplomacy.values.any { it.diplomaticStatus == DiplomaticStatus.War && !it.otherCiv().isDefeated() }
 
+    /**
+     * Returns a civilization caption suitable for greetings including player type info:
+     * Like "Milan" if the nation is a city state, "Caesar of Rome" otherwise, with an added
+     * " (AI)", " (Human - Hotseat)", or " (Human - Multiplayer)" if the game is multiplayer.
+     */ 
     fun getLeaderDisplayName(): String {
+        val severalHumans = gameInfo.civilizations.count { it.playerType == PlayerType.Human } > 1
+        val online = gameInfo.gameParameters.isOnlineMultiplayer
         return nation.getLeaderDisplayName().tr() +
             when {
+                !online && !severalHumans ->
+                    ""                      // offline single player will know everybody else is AI
                 playerType == PlayerType.AI ->
                     " (" + "AI".tr() + ")"
-                gameInfo.civilizations.count { it.playerType == PlayerType.Human } > 1 ->
-                    " (" + "Human".tr() + " - " + "Hotseat".tr() + ")"
-                else ->
+                online ->
                     " (" + "Human".tr() + " - " + "Multiplayer".tr() + ")"
+                else ->
+                    " (" + "Human".tr() + " - " + "Hotseat".tr() + ")"
             }
     }
 

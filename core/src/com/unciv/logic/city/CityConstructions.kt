@@ -226,7 +226,7 @@ class CityConstructions {
 
     fun turnsToConstruction(constructionName: String, useStoredProduction: Boolean = true): Int {
         val workLeft = getRemainingWork(constructionName, useStoredProduction)
-        if (workLeft < 0) // we've done more work than actually necessary - possible if circumstances cause buildings to be cheaper later
+        if (workLeft <= productionOverflow) // we might have done more work than actually necessary (if <0) - possible if circumstances cause buildings to be cheaper later
             return 0 // we'll finish this next turn
 
         val cityStatsForConstruction: Stats
@@ -368,12 +368,12 @@ class CityConstructions {
             if (otherCiv == cityInfo.civInfo) continue
             when {
                 (otherCiv.exploredTiles.contains(cityInfo.location) && otherCiv != cityInfo.civInfo) ->
-                    otherCiv.addNotification("The city of [${cityInfo.name}] has started constructing [${construction.name}]!", 
-                        cityInfo.location, NotificationIcon.Construction, buildingIcon) 
+                    otherCiv.addNotification("The city of [${cityInfo.name}] has started constructing [${construction.name}]!",
+                        cityInfo.location, NotificationIcon.Construction, buildingIcon)
                 (otherCiv.knows(cityInfo.civInfo)) ->
-                    otherCiv.addNotification("[${cityInfo.civInfo.civName}] has started constructing [${construction.name}]!", 
+                    otherCiv.addNotification("[${cityInfo.civInfo.civName}] has started constructing [${construction.name}]!",
                         NotificationIcon.Construction, buildingIcon)
-                else -> otherCiv.addNotification("An unknown civilization has started constructing [${construction.name}]!", 
+                else -> otherCiv.addNotification("An unknown civilization has started constructing [${construction.name}]!",
                     NotificationIcon.Construction, buildingIcon)
             }
         }
