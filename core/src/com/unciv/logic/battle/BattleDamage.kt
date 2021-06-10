@@ -81,13 +81,13 @@ object BattleDamage {
                 modifiers["vs [City-States]"] = 30
             
             // Deprecated since 3.14.17
-            if (civInfo.hasUnique("+15% combat strength for melee units which have another military unit in an adjacent tile")
-                && combatant.isMelee()
-                && combatant.getTile().neighbors.flatMap { it.getUnits() }
-                    .any { it.civInfo == civInfo && !it.type.isCivilian() && !it.type.isAirUnit() }
-            )
-                modifiers["Discipline"] = 15
-
+                if (civInfo.hasUnique("+15% combat strength for melee units which have another military unit in an adjacent tile")
+                    && combatant.isMelee()
+                    && combatant.getTile().neighbors.flatMap { it.getUnits() }
+                        .any { it.civInfo == civInfo && !it.type.isCivilian() && !it.type.isAirUnit() }
+                )
+                    modifiers["Discipline"] = 15
+            //
         }
 
         if (enemy.getCivInfo().isBarbarian()) {
@@ -212,12 +212,19 @@ object BattleDamage {
 
         for (unique in unit.unit.getMatchingUniques("+[]% Strength in []")
                 + unit.getCivInfo()
-            .getMatchingUniques("+[]% combat bonus for units fighting in []")) {
+            .getMatchingUniques("+[]% Strength for units fighting in []")) {
             val filter = unique.params[1]
             if (tile.matchesUniqueFilter(filter, unit.getCivInfo()))
                 modifiers.add(filter, unique.params[0].toInt())
         }
-
+        
+        // Deprecated since 3.15
+            for (unique in unit.getCivInfo().getMatchingUniques("+[]% combat bonus for units fighting in []")) {
+                val filter = unique.params[1]
+                if (tile.matchesUniqueFilter(filter, unit.getCivInfo()))
+                    modifiers.add(filter, unique.params[0].toInt())
+            }
+        //
 
         for (unique in unit.getCivInfo()
             .getMatchingUniques("+[]% Strength if within [] tiles of a []")) {

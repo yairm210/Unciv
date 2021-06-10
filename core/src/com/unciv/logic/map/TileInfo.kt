@@ -276,13 +276,19 @@ open class TileInfo {
     }
 
     fun getImprovementStats(improvement: TileImprovement, observingCiv: CivilizationInfo, city: CityInfo?): Stats {
-        val stats = improvement.clone()
+        val stats = improvement.clone() // clones the stats of the improvement, not the improvement itself
         if (hasViewableResource(observingCiv) && getTileResource().improvement == improvement.name)
             stats.add(getTileResource().improvementStats!!.clone()) // resource-specific improvement
 
         for (unique in improvement.uniqueObjects)
             if (unique.placeholderText == "[] once [] is discovered" && observingCiv.tech.isResearched(unique.params[1]))
                 stats.add(unique.stats)
+        
+        for (unique in observingCiv.getMatchingUniques("[] from every [] improvement")) {
+            if (improvement.name == unique.params[1]) {
+                stats.add(unique.stats)
+            }
+        }
 
         if (city != null) {
             val cityWideUniques = city.cityConstructions.builtBuildingUniqueMap.getUniques("[] from [] tiles in this city")
@@ -387,22 +393,26 @@ open class TileInfo {
      * @see <a href="https://github.com/yairm210/Unciv/wiki/uniques#user-content-tilefilter">tileFilter</a>
      */
     fun matchesUniqueFilter(filter: String, civInfo: CivilizationInfo? = null): Boolean {
-        return filter == "All"
-                || filter == baseTerrain
-                || filter == "River" && isAdjacentToRiver()
-                || terrainFeatures.contains(filter)
-                || baseTerrainObject.uniques.contains(filter)
-                || improvement == filter
-                || resource == filter
-                || resource != null && getTileResource().resourceType.name + " resource" == filter
-                || filter == "Water" && isWater
-                || filter == "Land" && isLand
-                || filter == "Coastal" && isCoastalTile()
-                || filter == naturalWonder
-                || terrainFeatures.isNotEmpty() && getTerrainFeatures().last().uniques.contains(filter)
-                || civInfo != null && hasViewableResource(civInfo) && resource == filter
-                || filter == "Foreign Land" && civInfo != null && !isFriendlyTerritory(civInfo)
-                || filter == "Friendly Land" && civInfo != null && isFriendlyTerritory(civInfo)
+        return when (filter) {
+            "All" -> true
+            "Water" -> isWater
+            "Land" -> isLand
+            "Coastal" -> isCoastalTile()
+            "River" -> isAdjacentToRiver()
+            improvement -> true
+            naturalWonder -> true
+            "Foreign Land" -> civInfo != null && !isFriendlyTerritory(civInfo)
+            "Friendly Land" -> civInfo != null && isFriendlyTerritory(civInfo)
+            "Great Improvements" -> containsGreatImprovement()
+            else -> {
+                if (terrainFeatures.contains(filter)) return true
+                if (baseTerrainObject.uniques.contains(filter)) return true
+                if (terrainFeatures.isNotEmpty() && getTerrainFeatures().last().uniques.contains(filter)) return true
+                if (resource != null && getTileResource().resourceType.name + " resource" == filter) return true
+                if (civInfo != null && hasViewableResource(civInfo) && resource == filter) return true
+                return false
+            }
+        }
     }
 
     fun hasImprovementInProgress() = improvementInProgress != null

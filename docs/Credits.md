@@ -352,7 +352,12 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Newspaper](https://thenounproject.com/term/newspaper/1207487/) By Trishul for Populism
 * [Riot Police](https://thenounproject.com/term/riot-police/43117/) By Dan Hetteix for Police State
 
-
+### Order
+* Adapted from [Plan](https://thenounproject.com/term/plan/2973572) by Cattaleeya Thongsriphong for Planned Economy
+* [Flag](https://thenounproject.com/term/flag/2712405) by Muhammad Tajudin for Nationalism
+* [Communism](https://thenounproject.com/term/communism/142765) By Valerio Poltrini for Socialism
+* [Hammer and Sickle](https://thenounproject.com/term/hammer-and-sickle/1367670 ) by Dmitry Baranovskiy for Communism
+* [United](https://thenounproject.com/term/united/3433531) by Izwar Muis for United Front
 
 ## Technologies
 
