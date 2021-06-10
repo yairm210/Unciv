@@ -258,8 +258,10 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
     private fun canUnitSwapToReachableTile(reachableTile: TileInfo): Boolean {
         // Air units cannot swap
         if (unit.type.isAirUnit()) return false
+
         // We can't swap with ourself
         if (reachableTile == unit.getTile()) return false
+
         // Check whether the tile contains a unit of the same type as us that we own and that can
         // also reach our tile in its current turn.
         val otherUnit = (
@@ -270,16 +272,31 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
         ) ?: return false
         val ourPosition = unit.getTile()
         if (otherUnit.owner != unit.owner || !otherUnit.movement.canReachInCurrentTurn(ourPosition)) return false
+
+        // This is a variant of unit.putInTile that doesn't check whether the unit can actually move
+        // to the the target tile (and doesn't consider air units). It is used to forcefully put a
+        // unit back in the tile where we took it from, because there was a bug at some point where
+        // units were - for some reason - not allowed to move to the tile they were standing on.
+        fun putDirectlyInTile(unit: MapUnit, tile: TileInfo) {
+            when {
+                unit.type.isCivilian() -> tile.civilianUnit = unit
+                else -> tile.militaryUnit = unit
+            }
+            unit.moveThroughTile(tile)
+        }
+
         // Check if we could enter their tile if they wouldn't be there
         otherUnit.removeFromTile()
         val weCanEnterTheirTile = canMoveTo(reachableTile)
-        otherUnit.putInTile(reachableTile)
+        putDirectlyInTile(otherUnit, reachableTile)
         if (!weCanEnterTheirTile) return false
+
         // Check if they could enter our tile if we wouldn't be here
         unit.removeFromTile()
         val theyCanEnterOurTile = otherUnit.movement.canMoveTo(ourPosition)
-        unit.putInTile(ourPosition)
+        putDirectlyInTile(unit, ourPosition)
         if (!theyCanEnterOurTile) return false
+
         // All clear!
         return true
     }
