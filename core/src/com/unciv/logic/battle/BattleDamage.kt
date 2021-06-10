@@ -170,7 +170,7 @@ object BattleDamage {
                 val garrisonBonus = attacker.getCivInfo().getMatchingUniques("+[]% attacking strength for cities with garrisoned units")
                     .map {it.params[0].toInt()}.sum()
                 if (garrisonBonus != 0)
-                    modifiers["Garrisoned unit"] = olichargyBonus
+                    modifiers["Garrisoned unit"] = garrisonBonus
             }
         }
 
