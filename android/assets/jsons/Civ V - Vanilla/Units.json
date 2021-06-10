@@ -1306,7 +1306,7 @@
 		"interceptRange": 10,
 		"cost": 425,
 		"requiredTech": "Lasers",
-		"requiredResource": "Aluminium",
+		"requiredResource": "Aluminum",
 		"uniques": ["[100]% chance to intercept air attacks",
 			"+[150]% Strength vs [Bomber]",
 			"6 tiles in every direction always visible"]
@@ -1322,7 +1322,7 @@
 		"range": 20,
 		"cost": 425,
 		"requiredTech": "Stealth",
-		"requiredResource": "Aluminium",
+		"requiredResource": "Aluminum",
 		"uniques": ["Evasion", "6 tiles in every direction always visible"]
 		"attackSound": "shot"
 		// cannot be based on carrier
