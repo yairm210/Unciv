@@ -1,3 +1,18 @@
+## 3.14.16
+
+Cities in resistance cannot bombard, as per Civ V - #663
+
+By SomeTroglodyte:
+- Hopefully fixed F-Droid missing libgdx.so problem 
+- Trade UI improvements - Leader portraits, keys, layout
+- Nations spellchecking 
+
+Implemented production overflow - By Thyrum
+
+By r3versi:
+- Map Generation Seedable 
+- Map Generation Fixes and Tweaks 
+
 ## 3.14.15
 
 Unit swapping - By avdstaaij
