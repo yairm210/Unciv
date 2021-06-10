@@ -12,13 +12,13 @@
 			},
 			{
 				"name": "Legalism",
-				"uniques":["Immediately creates a cheapest available cultural building in each of your first 4 cities for free"],
+				"uniques":["Immediately creates the cheapest available cultural building in each of your first [4] cities for free"],
 				"row": 1,
 				"column": 3
 			},
 			{
 				"name": "Oligarchy",
-				"uniques": ["Units in cities cost no Maintenance", "+50% attacking strength for cities with garrisoned units"],
+				"uniques": ["Units in cities cost no Maintenance", "+[50]% attacking strength for cities with garrisoned units"],
 				"row": 1,
 				"column": 5
 			},
@@ -38,7 +38,7 @@
 			},
 			{
 				"name": "Tradition Complete",
-				"uniques": ["+[15]% growth [in all cities]","[+2 Food] [in all cities]"]
+				"uniques": ["+[15]% growth [in all cities]","Immediately creates a [Aqueduct] in each of your first [4] cities for free"]
 			}
 		]
 	},
