@@ -221,6 +221,13 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
                     playerDiploManager.signDeclarationOfFriendship()
                 }).row()
             }
+            AlertType.StartIntro -> {
+                val civInfo = worldScreen.viewingCiv
+                addLeaderName(civInfo)
+                addGoodSizedLabel(civInfo.nation.startIntroPart1).row()
+                addGoodSizedLabel(civInfo.nation.startIntroPart2).row()
+                add(getCloseButton("Let's begin!"))
+            }
         }
     }
 
