@@ -43,6 +43,7 @@ class PolicyManager {
         toReturn.storedCulture = storedCulture
         toReturn.cultureBuildingsAdded.putAll(cultureBuildingsAdded)
         toReturn.specificBuildingsAdded.putAll(specificBuildingsAdded)
+        toReturn.maintenanceFreeBuildings.putAll(maintenanceFreeBuildings)
         toReturn.autocracyCompletedTurns = autocracyCompletedTurns
         return toReturn
     }
@@ -210,9 +211,6 @@ class PolicyManager {
     }
     
     fun getListOfFreeBuildings(cityId: String): MutableSet<String> {
-        println(maintenanceFreeBuildings[cityId])
-        println(cultureBuildingsAdded[cityId])
-        println(specificBuildingsAdded.filter{it.value.contains(cityId)})
         if (cityId in maintenanceFreeBuildings.keys) return maintenanceFreeBuildings[cityId]!!
         return mutableSetOf()
     }
