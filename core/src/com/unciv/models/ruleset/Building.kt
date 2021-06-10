@@ -352,6 +352,16 @@ class Building : NamedStats(), IConstruction {
                         && civInfo.cities.any { !it.isPuppet && !it.cityConstructions.containsBuildingOrEquivalent(unique.params[0]) })
                     return "Requires a [${civInfo.getEquivalentBuilding(unique.params[0])}] in all cities"  // replace with civ-specific building for user
             }
+            "Hidden until [] social policy branches have been completed" -> {
+                if (construction.cityInfo.civInfo.getCompletedPolicyBranchesCount() < unique.params[0].toInt()) {
+                    return "Should not be displayed"
+                }
+            }
+            "Hidden when cultural victory is disabled" -> {
+                if ( !civInfo.gameInfo.gameParameters.victoryTypes.contains(VictoryType.Cultural)) {
+                    return "Hidden when cultural victory is disabled"
+                }
+            }
         }
 
         if (requiredBuilding != null && !construction.containsBuildingOrEquivalent(requiredBuilding!!)) {
@@ -383,16 +393,7 @@ class Building : NamedStats(), IConstruction {
         if (!civInfo.gameInfo.gameParameters.victoryTypes.contains(VictoryType.Scientific)
                 && "Enables construction of Spaceship parts" in uniques)
             return "Can't construct spaceship parts if scientific victory is not enabled!"
-
-        for (unique in uniqueObjects.filter { it.placeholderText == "Hidden until [] []" }) {
-            if (civInfo.gameInfo.gameParameters.victoryTypes.contains(VictoryType.Cultural)
-                && unique.params[1] == "social policy branches have been completed"
-                && construction.cityInfo.civInfo.getCompletedPolicyBranchesCount() < unique.params[0].toInt()
-            ) {
-                return "Should not be displayed"
-            }
-        }
-
+        
         return ""
     }
 

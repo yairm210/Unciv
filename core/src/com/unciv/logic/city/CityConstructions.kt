@@ -363,14 +363,19 @@ class CityConstructions {
     private fun constructionBegun(construction: IConstruction) {
         if (construction !is Building) return;
         if (construction.uniqueObjects.none { it.placeholderText == "Triggers a global alert upon build start" }) return
+        val buildingIcon = "BuildingIcons/${construction.name}"
         for (otherCiv in cityInfo.civInfo.gameInfo.civilizations) {
-            val notificationString =
-                when {
-                    (otherCiv.exploredTiles.contains(cityInfo.location) && otherCiv != cityInfo.civInfo) -> "The city of [${cityInfo.name}] has started constructing [${construction.name}]!"
-                    (otherCiv.knows(cityInfo.civInfo)) -> "[${cityInfo.civInfo.civName}] has started constructing [${construction.name}]!"
-                    else -> "An unknown civilization has started constructing [${construction.name}]!"
-                }
-            otherCiv.addNotification(notificationString, NotificationIcon.Construction, "BuildingIcons/${construction.name}")
+            if (otherCiv == cityInfo.civInfo) continue
+            when {
+                (otherCiv.exploredTiles.contains(cityInfo.location) && otherCiv != cityInfo.civInfo) ->
+                    otherCiv.addNotification("The city of [${cityInfo.name}] has started constructing [${construction.name}]!", 
+                        cityInfo.location, NotificationIcon.Construction, buildingIcon) 
+                (otherCiv.knows(cityInfo.civInfo)) ->
+                    otherCiv.addNotification("[${cityInfo.civInfo.civName}] has started constructing [${construction.name}]!", 
+                        NotificationIcon.Construction, buildingIcon)
+                else -> otherCiv.addNotification("An unknown civilization has started constructing [${construction.name}]!", 
+                    NotificationIcon.Construction, buildingIcon)
+            }
         }
     }
 
