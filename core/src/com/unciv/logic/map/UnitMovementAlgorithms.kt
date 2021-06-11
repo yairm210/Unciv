@@ -113,7 +113,7 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
     }
 
     /**
-     * Does not consider if the destination tile can actually be entered, use canMoveTo for that.
+     * Does not consider if the [destination] tile can actually be entered, use [canMoveTo] for that.
      * Returns an empty list if there's no way to get to the destination.
      */
     fun getShortestPath(destination: TileInfo): List<TileInfo> {
@@ -152,7 +152,7 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
                 val path = mutableListOf(destination) // Traverse the tree upwards to get the list of tiles leading to the destination,
                 // Get the tile from which the distance to the final tile in least -
                 // this is so that when we finally get there, we'll have as many movement points as possible
-                var intermediateTile = distanceToDestination.minBy { it.value }!!.key
+                var intermediateTile = distanceToDestination.minByOrNull { it.value }!!.key
                 while (intermediateTile != currentTile) {
                     path.add(intermediateTile)
                     intermediateTile = movementTreeParents[intermediateTile]!!
