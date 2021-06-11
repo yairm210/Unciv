@@ -43,10 +43,11 @@ class Nation : INamed {
     var innerColor: List<Int>? = null
     var startBias = ArrayList<String>()
     
-    /* Properties present in json but not yet implemented:
-    var adjective = ArrayList<String>()
     var startIntroPart1 = ""
     var startIntroPart2 = ""
+
+    /* Properties present in json but not yet implemented:
+    var adjective = ArrayList<String>()
      */
 
     @Transient

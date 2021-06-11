@@ -147,15 +147,17 @@ internal object DesktopLauncher {
         settings.pot = true
         settings.fast = true
 
-        // This is so they don't look all pixelated
-        settings.filterMag = Texture.TextureFilter.MipMapLinearLinear
-        settings.filterMin = Texture.TextureFilter.MipMapLinearLinear
-
         if (File("../Images").exists()) { // So we don't run this from within a fat JAR
             packImagesIfOutdated(settings, "../Images", ".", "game")
             packImagesIfOutdated(settings, "../ImagesToPackSeparately/BuildingIcons", ".", "BuildingIcons")
             packImagesIfOutdated(settings, "../ImagesToPackSeparately/FlagIcons", ".", "FlagIcons")
             packImagesIfOutdated(settings, "../ImagesToPackSeparately/UnitIcons", ".", "UnitIcons")
+        }
+
+        if (File("../Skin").exists()) {
+            settings.filterMag = Texture.TextureFilter.Linear
+            settings.filterMin = Texture.TextureFilter.Linear
+            packImagesIfOutdated(settings, "../Skin", ".", "Skin")
         }
 
         // pack for mods as well
