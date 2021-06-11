@@ -75,8 +75,7 @@
 			},
 			{
 				"name": "Meritocracy",
-				"uniques": ["[+1 Happiness] [in all cities connected to capital]", "Unhappiness from population decreased by [5]%"],
-				// Should only be unhappiness from population in non-occupied cities
+				"uniques": ["[+1 Happiness] [in all cities connected to capital]", "Unhappiness from population decreased by [5]% [in all non-occupied cities]"],
 				"requires": ["Citizenship"],
 				"row": 2,
 				"column": 5

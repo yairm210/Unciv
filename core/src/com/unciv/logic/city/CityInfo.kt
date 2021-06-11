@@ -467,14 +467,15 @@ class CityInfo {
     }
 
     fun matchesFilter(filter: String): Boolean {
-        return when {
-            filter == "in this city" -> true
-            filter == "in all cities" -> true
-            filter == "in all coastal cities" && getCenterTile().isCoastalTile() -> true
-            filter == "in capital" && isCapital() -> true
-            filter == "in all cities with a world wonder" && cityConstructions.getBuiltBuildings().any { it.isWonder } -> true
-            filter == "in all cities connected to capital" -> isConnectedToCapital()
-            filter == "in all cities with a garrison" && getCenterTile().militaryUnit != null -> true
+        return when (filter) {
+            "in this city" -> true
+            "in all cities" -> true
+            "in all coastal cities" -> getCenterTile().isCoastalTile()
+            "in capital" -> isCapital()
+            "in all non-occupied cities" -> !cityStats.hasExtraAnnexUnhappiness()
+            "in all cities with a world wonder" -> cityConstructions.getBuiltBuildings().any { it.isWonder }
+            "in all cities connected to capital" -> isConnectedToCapital()
+            "in all cities with a garrison" -> getCenterTile().militaryUnit != null
             else -> false
         }
     }
