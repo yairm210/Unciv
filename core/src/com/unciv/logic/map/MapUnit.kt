@@ -197,15 +197,11 @@ class MapUnit {
         return getUniques().any { it.placeholderText == unique }
     }
 
-    fun updateVisibleTiles() {
-        if (type.isAirUnit()) {
-            viewableTiles = if (hasUnique("6 tiles in every direction always visible"))
-                getTile().getTilesInDistance(6).toList()  // it's that simple
-            else listOf() // bomber units don't do recon
-            civInfo.updateViewableTiles() // for the civ
-            return
-        }
-
+    /**
+     * Determines this (land or sea) unit's current maximum vision range from unit properties, civ uniques and terrain.
+     * @return Maximum distance of tiles this unit may possibly see
+     */
+    private fun getVisibilityRange(): Int {
         var visibilityRange = 2
         visibilityRange += getUniques().count { it.text == "+1 Visibility Range" }
         for (unique in civInfo.getMatchingUniques("+[] Sight for all [] units"))
@@ -223,13 +219,25 @@ class MapUnit {
         for (unique in civInfo.getMatchingUniques("[] Sight when []"))
             if (matchesFilter(unique.params[1]))
                 visibilityRange += unique.params[0].toInt()
-        val tile = getTile()
-        for (unique in tile.getAllTerrains().flatMap { it.uniqueObjects })
+        for (unique in getTile().getAllTerrains().flatMap { it.uniqueObjects })
             if (unique.placeholderText == "[] Sight for [] units" && matchesFilter(unique.params[1]))
                 visibilityRange += unique.params[0].toInt()
 
-        viewableTiles = tile.getViewableTilesList(visibilityRange)
+        return visibilityRange
+    }
 
+    /**
+     * Update this unit's cache of viewable tiles and its civ's as well.
+     */
+    fun updateVisibleTiles() {
+        if (type.isAirUnit()) {
+            viewableTiles = if (hasUnique("6 tiles in every direction always visible"))
+                getTile().getTilesInDistance(6).toList()  // it's that simple
+            else listOf() // bomber units don't do recon
+            civInfo.updateViewableTiles() // for the civ
+            return
+        }
+        viewableTiles = getTile().getViewableTilesList(getVisibilityRange())
         civInfo.updateViewableTiles() // for the civ
     }
 
@@ -570,9 +578,10 @@ class MapUnit {
         attacksThisTurn = 0
         due = true
 
-        // Wake sleeping units if there's an enemy nearby and civilian is not protected
+        // Wake sleeping units if there's an enemy in vision range:
+        // Military units always but civilians only if not protected.
         if (isSleeping() && (!type.isCivilian() || currentTile.militaryUnit == null) &&
-            currentTile.getTilesInDistance(2).any {
+            this.viewableTiles.any {
                 it.militaryUnit != null && it.militaryUnit!!.civInfo.isAtWarWith(civInfo)
             }
         )
