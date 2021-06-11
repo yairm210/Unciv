@@ -48,21 +48,21 @@
 		"uniques": ["[+1 Culture] [in all cities]"],
 		"policies": [
 			{
-				"name": "Collective Rule",
-				"uniques": ["+[50]% Production when constructing [Settler] units [in capital]", "Free [Settler] appears"],
+				"name": "Republic",
+				"uniques": ["[+1 Production] [in all cities]", "+[5]% Production when constructing [Buildings]"],
 				"row": 1,
 				"column": 1
 			},
 			{
 				"name": "Citizenship",
-				"uniques": ["Tile improvement speed +25%", "Free [Worker] appears"],
+				"uniques": ["Tile improvement build time -[25]%", "Free [Worker] appears"],
 				"row": 1,
 				"column": 4
 			},
 			{
-				"name": "Republic",
-				"uniques": ["[+1 Production] [in all cities]", "+[5]% Production when constructing [Buildings]"],
-				"requires": ["Collective Rule"],
+				"name": "Collective Rule",
+				"uniques": ["+[50]% Production when constructing [Settler] units [in capital]", "Free [Settler] appears"],
+				"requires": ["Republic"],
 				"row": 2,
 				"column": 1
 			},
@@ -76,6 +76,7 @@
 			{
 				"name": "Meritocracy",
 				"uniques": ["[+1 Happiness] [in all cities connected to capital]", "Unhappiness from population decreased by [5]%"],
+				// Should only be unhappiness from population in non-occupied cities
 				"requires": ["Citizenship"],
 				"row": 2,
 				"column": 5

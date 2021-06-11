@@ -28,11 +28,10 @@ class TileImprovement : NamedStats() {
 
     fun getTurnsToBuild(civInfo: CivilizationInfo): Int {
         var realTurnsToBuild = turnsToBuild.toFloat() * civInfo.gameInfo.gameParameters.gameSpeed.modifier
-        // todo UNIFY THESE
-        if (civInfo.hasUnique("Worker construction increased 25%"))
-            realTurnsToBuild *= 0.75f
-        if (civInfo.hasUnique("Tile improvement speed +25%"))
-            realTurnsToBuild *= 0.75f
+        for (unique in civInfo.getMatchingUniques("Tile improvement build time -[]%"))
+            realTurnsToBuild *= 1 - unique.params[0].toFloat() / 100f
+        // In some weird cases it was possible for something to take 0 turns, leading to it instead never finishing
+        if (realTurnsToBuild < 1) realTurnsToBuild = 1f
         return realTurnsToBuild.roundToInt()
     }
 
