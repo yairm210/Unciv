@@ -69,8 +69,8 @@ class MainMenuScreen: CameraStageBaseScreen() {
             }
         }
 
-        val column1 = Table().apply { defaults().pad(10f) }
-        val column2 = if(singleColumn) column1 else Table().apply { defaults().pad(10f) }
+        val column1 = Table().apply { defaults().pad(10f).fillX() }
+        val column2 = if(singleColumn) column1 else Table().apply { defaults().pad(10f).fillX() }
 
         val autosaveGame = GameSaver.getSave(autosave, false)
         if (autosaveGame.exists()) {
