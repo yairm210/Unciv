@@ -1,10 +1,6 @@
 package com.unciv.ui.worldscreen.mainmenu
 
 import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.scenes.scene2d.Touchable
-import com.badlogic.gdx.scenes.scene2d.ui.Cell
-import com.badlogic.gdx.scenes.scene2d.ui.Table
-import com.unciv.Constants
 import com.unciv.MainMenuScreen
 import com.unciv.ui.civilopedia.CivilopediaScreen
 import com.unciv.ui.newgamescreen.GameSetupInfo
@@ -12,9 +8,6 @@ import com.unciv.ui.newgamescreen.NewGameScreen
 import com.unciv.ui.saves.LoadGameScreen
 import com.unciv.ui.saves.SaveGameScreen
 import com.unciv.ui.utils.Popup
-import com.unciv.ui.utils.addSeparator
-import com.unciv.ui.utils.onClick
-import com.unciv.ui.utils.toLabel
 import com.unciv.ui.victoryscreen.VictoryScreen
 import com.unciv.ui.worldscreen.WorldScreen
 
@@ -27,7 +20,9 @@ class WorldScreenMenuPopup(val worldScreen: WorldScreen) : Popup(worldScreen) {
         addButton("Load game") { worldScreen.game.setScreen(LoadGameScreen(worldScreen)) }
 
         addButton("Start new game") {
-            val newGameScreen = NewGameScreen(worldScreen, GameSetupInfo(worldScreen.gameInfo))
+            val newGameSetupInfo = GameSetupInfo(worldScreen.gameInfo)
+            newGameSetupInfo.mapParameters.reseed()
+            val newGameScreen = NewGameScreen(worldScreen, newGameSetupInfo)
             worldScreen.game.setScreen(newGameScreen)
         }
 

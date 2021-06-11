@@ -100,7 +100,9 @@ class VictoryScreen(val worldScreen: WorldScreen) : PickerScreen() {
         rightSideButton.isVisible = true
         rightSideButton.enable()
         rightSideButton.onClick {
-            game.setScreen(NewGameScreen(this, GameSetupInfo(gameInfo)))
+            val newGameSetupInfo = GameSetupInfo(gameInfo)
+            newGameSetupInfo.mapParameters.reseed()
+            game.setScreen(NewGameScreen(this, newGameSetupInfo))
         }
 
         closeButton.setText("One more turn...!".tr())
