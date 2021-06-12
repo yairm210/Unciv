@@ -44,6 +44,8 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
 
     private val unitActionOverlays: ArrayList<Actor> = ArrayList()
 
+    private val unitMovementPaths: HashMap<MapUnit, ArrayList<TileInfo>> = HashMap()
+
     init {
         if (Gdx.app.type == Application.ApplicationType.Desktop) this.setFlingTime(0f)
         continuousScrollingX = tileMap.mapParameters.worldWrap
@@ -135,6 +137,7 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
     private fun onTileClicked(tileInfo: TileInfo) {
         removeUnitActionOverlay()
         selectedTile = tileInfo
+        unitMovementPaths.clear()
 
         val unitTable = worldScreen.bottomUnitTable
         val previousSelectedUnits = unitTable.selectedUnits.toList() // create copy
@@ -160,6 +163,7 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
             else {
                 // this can take a long time, because of the unit-to-tile calculation needed, so we put it in a different thread
                 addTileOverlaysWithUnitMovement(previousSelectedUnits, tileInfo)
+
             }
         } else addTileOverlays(tileInfo) // no unit movement but display the units in the tile etc.
 
@@ -251,14 +255,19 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
 
             val unitToTurnsToTile = HashMap<MapUnit, Int>()
             for (unit in selectedUnits) {
+                val shortestPath = ArrayList<TileInfo>()
                 val turnsToGetThere = if (unit.type.isAirUnit()) {
                     if (unit.movement.canReach(tileInfo)) 1
                     else 0
                 } else if (unit.action == Constants.unitActionParadrop) {
                     if (unit.movement.canReach(tileInfo)) 1
                     else 0
-                } else
-                    unit.movement.getShortestPath(tileInfo).size // this is what takes the most time, tbh
+                } else {
+                    // this is the most time-consuming call
+                    shortestPath.addAll(unit.movement.getShortestPath(tileInfo))
+                    shortestPath.size
+                }
+                unitMovementPaths[unit] = shortestPath
                 unitToTurnsToTile[unit] = turnsToGetThere
             }
 
@@ -515,6 +524,14 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
                         unit.movement.isUnknownTileWeShouldAssumeToBePassable(tile) && !unit.type.isAirUnit())
                     tileToColor.showCircle(moveTileOverlayColor,
                             if (UncivGame.Current.settings.singleTapMove || isAirUnit) 0.7f else 0.3f)
+            }
+        }
+
+        // Movement paths
+        if (unitMovementPaths.containsKey(unit)) {
+            for (tile in unitMovementPaths[unit]!!) {
+                for (tileToColor in tileGroups[tile]!!)
+                    tileToColor.showCircle(Color.SKY, 0.8f)
             }
         }
 
