@@ -114,10 +114,6 @@ object BattleDamage {
         if (enemy.getCivInfo().isBarbarian()) {
             modifiers["Difficulty"] =
                 (civInfo.gameInfo.getDifficulty().barbarianBonus * 100).toInt()
-            val barbarianBonus = civInfo.getMatchingUniques("+[]% bonus vs Barbarians")
-                .map { it.params[0].toInt() }.sum()
-            if (barbarianBonus > 0)
-                modifiers["vs Barbarians"] = barbarianBonus 
         }
 
         return modifiers

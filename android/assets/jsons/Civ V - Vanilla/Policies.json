@@ -89,7 +89,7 @@
 	{
 		"name": "Honor",
 		"era": "Ancient era",
-		"uniques": ["+[33]% bonus vs Barbarians", "Earn [100]% of killed [Barbarian] unit's [Strength] as [Culture]",
+		"uniques": ["+[33]% Strength vs [Barbarians]", "Earn [100]% of killed [Barbarian] unit's [Strength] as [Culture]",
 			"Notified of new Barbarian encampments"],
 		"policies": [
 			{
