@@ -158,13 +158,9 @@ class CityStats {
 
     fun getGrowthBonusFromPoliciesAndWonders(): Float {
         var bonus = 0f
-        // This requires more... complex navigation of the local uniques to merge into "+[amount]% growth [cityFilter]"
-        for (unique in cityInfo.civInfo.getMatchingUniques("+[]% growth in all cities"))
-            bonus += unique.params[0].toFloat()
-
         // "+[amount]% growth [cityFilter]"
         for (unique in cityInfo.civInfo.getMatchingUniques("+[]% growth []"))
-            if (cityInfo.matchesFilter(unique.params[0]))
+            if (cityInfo.matchesFilter(unique.params[1]))
                 bonus += unique.params[0].toFloat()
         return bonus / 100
     }
@@ -440,7 +436,7 @@ class CityStats {
         First we see how much food we generate. Then we apply production bonuses to it.
         Up till here, business as usual.
         Then, we deduct food eaten (from the total produced).
-        Now we have the excess food, whih has its own things. If we're unhappy, cut it by 1/4.
+        Now we have the excess food, which has its own things. If we're unhappy, cut it by 1/4.
         Some policies have bonuses for excess food only, not general food production.
          */
 
