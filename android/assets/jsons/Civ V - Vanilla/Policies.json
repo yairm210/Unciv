@@ -100,7 +100,7 @@
 			},
 			{
 				"name": "Discipline",
-				"uniques":["+[15]% combat strength for [Melee] units which have another [military] unit in an adjacent tile"],
+				"uniques":["+[15]% Strength for [Melee] units which have another [military] unit in an adjacent tile"],
 				"row": 1, 
 				"column": 4
 			},
@@ -120,7 +120,7 @@
 			},
 			{
 				"name": "Professional Army",
-				"uniques": ["Gold cost of upgrading military units reduced by [33]%", "[+1 Happiness] from every [Walls]", 
+				"uniques": ["Gold cost of upgrading [military] units reduced by [33]%", "[+1 Happiness] from every [Walls]", 
 					"[+1 Happiness] from every [Castle]", "[+1 Happiness] from every [Arsenal]", "[+1 Happiness] from every [Military Base]"
 				],
 				"requires": ["Military Caste"],
