@@ -86,7 +86,7 @@
 		"rangedStrength": 7,
 		"cost": 40,
 		"requiredTech": "Archery",
-		"obsoleteTech": "Machinery",
+		"obsoleteTech": "Construction",
 		"upgradesTo": "Composite Bowman",
 		"attackSound": "arrow"
 	},
@@ -1198,6 +1198,7 @@
 		"cost": 375,
 		"requiredTech": "Ballistics",
 		"upgradesTo": "Mobile SAM",
+		"obsoleteTech": "Rocketry",
 		"uniques": ["[100]% chance to intercept air attacks","+[150]% Strength vs [air units]"],
 		"attackSound": "machinegun"
 	},
