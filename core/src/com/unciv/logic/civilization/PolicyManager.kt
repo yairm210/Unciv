@@ -27,11 +27,10 @@ class PolicyManager {
 
     private var cultureBuildingsAdded = HashMap<String, String>() // Maps cities to buildings
     private var specificBuildingsAdded = HashMap<String, MutableSet<String>>() // Maps buildings to cities
-    private var maintenanceFreeBuildings = HashMap<String, MutableSet<String>>() // Maps cities to buildings
     var autocracyCompletedTurns = 0
     
-    @Deprecated("Deprecated since 3.14.16") // Replaced with cultureBuildingsAdded
-    var legalismState = cultureBuildingsAdded // Maps cities to buildings
+    @Deprecated("Deprecated since 3.14.17") // Replaced with cultureBuildingsAdded
+    var legalismState = HashMap<String, String>() // Maps cities to buildings
     // We make it a reference copy of the original variable. This way, it can still works in older versions
 
     fun clone(): PolicyManager {
@@ -43,8 +42,11 @@ class PolicyManager {
         toReturn.storedCulture = storedCulture
         toReturn.cultureBuildingsAdded.putAll(cultureBuildingsAdded)
         toReturn.specificBuildingsAdded.putAll(specificBuildingsAdded)
-        toReturn.maintenanceFreeBuildings.putAll(maintenanceFreeBuildings)
         toReturn.autocracyCompletedTurns = autocracyCompletedTurns
+        
+        // Deprecated since 3.14.17, left for backwards compatibility
+        toReturn.legalismState.putAll(cultureBuildingsAdded)
+        
         return toReturn
     }
 
@@ -53,6 +55,10 @@ class PolicyManager {
     fun setTransients() {
         for (policyName in adoptedPolicies)
             addPolicyToTransients(getPolicyByName(policyName))
+        // Deprecated since 3.14.17, left for backwards compatibility
+        if (cultureBuildingsAdded.isEmpty() && legalismState.isNotEmpty()) {
+            cultureBuildingsAdded.putAll(legalismState)
+        }
     }
 
     fun addPolicyToTransients(policy: Policy) {
@@ -171,10 +177,8 @@ class PolicyManager {
                 }
         for (city in candidateCities) {
             val builtBuilding = city.cityConstructions.addCultureBuilding()
-            if (builtBuilding != null) {
-                cultureBuildingsAdded[city.id] = builtBuilding!!
-                addMaintenanceFreeBuilding(city.id, builtBuilding)
-            }
+            if (builtBuilding != null) cultureBuildingsAdded[city.id] = builtBuilding!!
+            
         }
     }
     
@@ -200,18 +204,15 @@ class PolicyManager {
         
         for (city in candidateCities) {
             city.cityConstructions.getConstruction(building).postBuildEvent(city.cityConstructions, false)
-            addMaintenanceFreeBuilding(city.id, building)
             citiesAlreadyGivenBuilding.add(city.id) 
         }
     }
     
-    private fun addMaintenanceFreeBuilding(cityId: String, building: String) {
-        if (cityId !in maintenanceFreeBuildings.keys) maintenanceFreeBuildings[cityId] = mutableSetOf()
-        maintenanceFreeBuildings[cityId]!!.add(building)
-    }
-    
     fun getListOfFreeBuildings(cityId: String): MutableSet<String> {
-        if (cityId in maintenanceFreeBuildings.keys) return maintenanceFreeBuildings[cityId]!!
-        return mutableSetOf()
+        val freeBuildings = cultureBuildingsAdded.filter { it.key == cityId }.values.toMutableSet()
+        for (building in specificBuildingsAdded.filter { it.value.contains(cityId) }) {
+            freeBuildings.add(building.key)
+        }
+        return freeBuildings
     }
 }

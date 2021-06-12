@@ -441,7 +441,9 @@ class Building : NamedStats(), IConstruction {
     fun isStatRelated(stat: Stat): Boolean {
         if (get(stat) > 0) return true
         if (getStatPercentageBonuses(null).get(stat) > 0) return true
-        if (uniqueObjects.any { it.placeholderText == "[] Per [] Population []]" && it.stats.get(stat) > 0 }) return true
+        if (uniqueObjects.any { it.placeholderText == "[] per [] population []" && it.stats.get(stat) > 0 }) return true
+        // Deprecated since 3.14.17, left for modding compatibility
+        if (uniqueObjects.any { it.placeholderText == "[] Per [] Population in this city"}) return true
         return false
     }
 
