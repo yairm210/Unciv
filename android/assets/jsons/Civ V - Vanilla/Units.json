@@ -1310,7 +1310,7 @@
 		"requiredResource": "Aluminum",
 		"uniques": ["[100]% chance to intercept air attacks",
 			"+[150]% Strength vs [Bomber]",
-			"6 tiles in every direction always visible"]
+			"6 tiles in every direction always visible"],
 		"attackSound": "shot"
 	},
 	/* // THIS STUFF IS COMMENTED OUT!!!
@@ -1324,7 +1324,7 @@
 		"cost": 425,
 		"requiredTech": "Stealth",
 		"requiredResource": "Aluminum",
-		"uniques": ["Evasion", "6 tiles in every direction always visible"]
+		"uniques": ["Evasion", "6 tiles in every direction always visible"],
 		"attackSound": "shot"
 		// cannot be based on carrier
 	},
