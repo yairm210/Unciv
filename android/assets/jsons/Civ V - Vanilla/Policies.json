@@ -55,7 +55,7 @@
 			},
 			{
 				"name": "Citizenship",
-				"uniques": ["Tile improvement build time -[25]%", "Free [Worker] appears"],
+				"uniques": ["-[25]% tile improvement construction time", "Free [Worker] appears"],
 				"row": 1,
 				"column": 4
 			},

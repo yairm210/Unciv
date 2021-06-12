@@ -472,7 +472,7 @@ class CityInfo {
             "in all cities" -> true
             "in all coastal cities" -> getCenterTile().isCoastalTile()
             "in capital" -> isCapital()
-            "in all non-occupied cities" -> !cityStats.hasExtraAnnexUnhappiness()
+            "in all non-occupied cities" -> !cityStats.hasExtraAnnexUnhappiness() || isPuppet
             "in all cities with a world wonder" -> cityConstructions.getBuiltBuildings().any { it.isWonder }
             "in all cities connected to capital" -> isConnectedToCapital()
             "in all cities with a garrison" -> getCenterTile().militaryUnit != null
