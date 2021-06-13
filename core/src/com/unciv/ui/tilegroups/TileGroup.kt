@@ -573,16 +573,26 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings, 
                 borderImages[neighbor] = images
                 val sign = if (relativeWorldPosition.x < 0) -1 else 1
                 val angle = sign * (atan(sign * relativeWorldPosition.y / relativeWorldPosition.x) * 180 / PI - 90.0).toFloat()
+                
+                val innerBorderImage = ImageGetter.getImage("OtherIcons/Border-inner")
+                innerBorderImage.width = 38f
+                innerBorderImage.setOrigin(Align.center) // THEN the origin is correct,
+                innerBorderImage.rotateBy(angle) // and the rotation works.
+                innerBorderImage.center(this) // move to center of tile
+                innerBorderImage.moveBy(-relativeWorldPosition.x * 15f, -relativeWorldPosition.y * 15f)
+                innerBorderImage.color = civOuterColor
+                miscLayerGroup.addActor(innerBorderImage)
+                images.add(innerBorderImage)
 
-                val borderImage = ImageGetter.getImage("OtherIcons/Border")
-                borderImage.width = 38f
-                borderImage.setOrigin(Align.center) // THEN the origin is correct,
-                borderImage.rotateBy(angle) // and the rotation works.
-                borderImage.center(this) // move to center of tile
-                borderImage.moveBy(-relativeWorldPosition.x * 15f, -relativeWorldPosition.y * 15f)
-                borderImage.color = civInnerColor
-                miscLayerGroup.addActor(borderImage)
-                images.add(borderImage)
+                val outerBorderImage = ImageGetter.getImage("OtherIcons/Border-outer")
+                outerBorderImage.width = 38f
+                outerBorderImage.setOrigin(Align.center) // THEN the origin is correct,
+                outerBorderImage.rotateBy(angle) // and the rotation works.
+                outerBorderImage.center(this) // move to center of tile
+                outerBorderImage.moveBy(-relativeWorldPosition.x * 15f, -relativeWorldPosition.y * 15f)
+                outerBorderImage.color = civInnerColor
+                miscLayerGroup.addActor(outerBorderImage)
+                images.add(outerBorderImage)
             }
         }
     }
