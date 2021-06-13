@@ -13,20 +13,8 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
         if (from.isLand != to.isLand && !unit.civInfo.nation.embarkDisembarkCosts1 && unit.type.isLandUnit())
             return 100f // this is embarkment or disembarkment, and will take the entire turn
 
-        // Zone of Control: https://civilization.fandom.com/wiki/Zone_of_control_(Civ5)
-        // If next to a tile with an enemy military unit, moving to another tile next to that
-        // military unit costs all movement points, except when moving into or out of a city center.
-        // There is another exception: units that can move after attacking are not affected by zone
-        // of control if the movement is caused by killing a unit. This case is handled in the
-        // movement-after-attacking code by using the [considerZoneOfControl] parameter.
-        // We only need to check the two shared neighbors of [from] and [to]: the way of getting
-        // these two tiles can perhaps be optimized.
-        if (
-                considerZoneOfControl &&
-                !from.isCityCenter() &&
-                !to.isCityCenter() &&
-                from.neighbors.any{to.neighbors.contains(it) && it.militaryUnit != null && civInfo.isAtWarWith(it.militaryUnit!!.civInfo)}
-        )
+        // If the movement is affected by a Zone of Control, all movement points are expended
+        if (considerZoneOfControl && isMovementAffectedByZoneOfControl(from, to, civInfo))
             return 100f
 
         // land units will still spend all movement points to embark even with this unique
@@ -71,6 +59,38 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
             return 1 / 2f + extraCost
 
         return to.getLastTerrain().movementCost.toFloat() + extraCost // no road
+    }
+
+    /** Returns whether the movement between the adjacent tiles [from] and [to] is affected by Zone of Control */
+    private fun isMovementAffectedByZoneOfControl(from: TileInfo, to: TileInfo, civInfo: CivilizationInfo): Boolean {
+        // Sources:
+        // - https://civilization.fandom.com/wiki/Zone_of_control_(Civ5)
+        // - https://forums.civfanatics.com/resources/understanding-the-zone-of-control-vanilla.25582/
+        //
+        // Enemy military units exert a Zone of Control over the tiles surrounding them. Moving from
+        // one tile in the ZoC of an enemy unit to another tile in the same unit's ZoC expends all
+        // movement points. Land units only exert a ZoC against land units. Sea units exert a ZoC
+        // against both land and sea units. Cities exert a ZoC as well, and it also affects both
+        // land and sea units. Embarked land units do not exert a ZoC. Finally, units that can move
+        // after attacking are not affected by zone of control if the movement is caused by killing
+        // a unit. This last case is handled in the movement-after-attacking code instead of here.
+        //
+        // We only need to check the two shared neighbors of [from] and [to]: the way of getting
+        // these two tiles can perhaps be optimized.
+        return from.neighbors.any{
+            to.neighbors.contains(it) && (
+                (
+                    it.isCityCenter() &&
+                    civInfo.isAtWarWith(it.getOwner()!!)
+                )
+                ||
+                (
+                    it.militaryUnit != null &&
+                    civInfo.isAtWarWith(it.militaryUnit!!.civInfo) &&
+                    (it.militaryUnit!!.type.isWaterUnit() || (!it.militaryUnit!!.isEmbarked() && unit.type.isLandUnit()))
+                )
+            )
+        }
     }
 
     class ParentTileAndTotalDistance(val parentTile: TileInfo, val totalDistance: Float)
