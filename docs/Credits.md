@@ -322,10 +322,10 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 ### Commerce
 
 * [Trade](https://thenounproject.com/term/trade/686718/) By Gregor Cresnar for Trade Unions
-* [Pie Chart](https://thenounproject.com/term/pie-chart/1284359/) By Adrien Coquet  for Protectionism
+* [Pie Chart](https://thenounproject.com/term/pie-chart/1284359/) By Adrien Coquet for Protectionism
 * [Coins](https://thenounproject.com/term/coins/1915881/) By icon 54 for Mercantilism
-* [Painting](https://thenounproject.com/term/painting/387146/) By Mike Rowe for Patronage
-* [Gem](https://thenounproject.com/term/gem/754533/) By Oksana Latysheva for Entrepreneurship
+* [Sextant](https://thenounproject.com/term/sextant/313438 ) By lastspark for Sextant
+* [Merchant Navy Icon](https://www.pngkit.com/view/u2w7i1i1o0t4a9y3_png-file-merchant-navy-icon/) for Merchant Navy
 
 ### Rationalism
 
@@ -337,7 +337,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 
 ### Freedom
 
-* [social network](https://thenounproject.com/term/social-network/746002/) By Kirby Wu for Civil Society
+* [Social Network](https://thenounproject.com/term/social-network/746002/) By Kirby Wu for Civil Society
 * [Gender Equality](https://thenounproject.com/term/gender-equality/577561/) By corpus delicti for Universal Suffrage
 * [Feather](https://thenounproject.com/term/feather/1628/) By Eduardo Souza for Constitution
 * [Voting](https://thenounproject.com/term/voting/981735/) By Nikita Kozin for Democracy
