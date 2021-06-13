@@ -75,12 +75,17 @@ object BattleDamage {
                 }
             }
 
-            if (civInfo.hasUnique("+15% combat strength for melee units which have another military unit in an adjacent tile")
-                && combatant.isMelee()
-                && combatant.getTile().neighbors.flatMap { it.getUnits() }
-                    .any { it.civInfo == civInfo && !it.type.isCivilian() && !it.type.isAirUnit() }
-            )
-                modifiers["Discipline"] = 15
+            var adjacentUnitBonus = 0;
+            for (unique in civInfo.getMatchingUniques("+[]% Strength for [] units which have another [] unit in an adjacent tile")) {
+                if (combatant.matchesCategory(unique.params[1])
+                    && combatant.getTile().neighbors.flatMap { it.getUnits() }
+                    .any { it.civInfo == civInfo && it.matchesFilter(unique.params[2]) } 
+                ) {
+                    adjacentUnitBonus += unique.params[0].toInt()
+                }
+            }
+            if (adjacentUnitBonus != 0)
+                modifiers["Adjacent unit"] = adjacentUnitBonus
 
             val civResources = civInfo.getCivResourcesByName()
             for (resource in combatant.unit.baseUnit.getResourceRequirements().keys)
@@ -103,14 +108,24 @@ object BattleDamage {
                     .isCityState() && civInfo.hasUnique("+30% Strength when fighting City-State units and cities")
             )
                 modifiers["vs [City-States]"] = 30
+            
+            // Deprecated since 3.14.17
+            if (civInfo.hasUnique("+15% combat strength for melee units which have another military unit in an adjacent tile")
+                && combatant.isMelee()
+                && combatant.getTile().neighbors.flatMap { it.getUnits() }
+                    .any { it.civInfo == civInfo && !it.type.isCivilian() && !it.type.isAirUnit() }
+            )
+                modifiers["Discipline"] = 15
 
         }
 
         if (enemy.getCivInfo().isBarbarian()) {
             modifiers["Difficulty"] =
                 (civInfo.gameInfo.getDifficulty().barbarianBonus * 100).toInt()
-            if (civInfo.hasUnique("+25% bonus vs Barbarians"))
-                modifiers["vs Barbarians"] = 25
+            // Deprecated since 3.14.17
+            if (civInfo.hasUnique("+25% bonus vs Barbarians")) {
+                modifiers["vs Barbarians (deprecated)"] = 25
+            }
         }
 
         return modifiers
