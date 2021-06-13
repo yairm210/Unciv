@@ -195,6 +195,10 @@ class CityStats {
 
         for (unique in civInfo.getMatchingUniques("Unhappiness from population decreased by []%"))
             unhappinessFromCitizens *= (1 - unique.params[0].toFloat() / 100)
+        
+        for (unique in civInfo.getMatchingUniques("Unhappiness from population decreased by []% []"))
+            if (cityInfo.matchesFilter(unique.params[1]))
+                unhappinessFromCitizens *= (1 - unique.params[0].toFloat() / 100)
 
         newHappinessList["Population"] = -unhappinessFromCitizens * unhappinessModifier
 
@@ -222,7 +226,7 @@ class CityStats {
     }
 
 
-    private fun hasExtraAnnexUnhappiness(): Boolean {
+    fun hasExtraAnnexUnhappiness(): Boolean {
         if (cityInfo.civInfo.civName == cityInfo.foundingCiv || cityInfo.foundingCiv == "" || cityInfo.isPuppet) return false
         return !cityInfo.containsBuildingUnique("Remove extra unhappiness from annexed cities")
     }
