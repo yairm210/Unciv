@@ -89,6 +89,7 @@ class NativeBitmapFontData(val fontImplementation: NativeFontImplementation) : B
             Fonts.movement -> Fonts.extractPixmapFromTextureRegion(ImageGetter.getDrawable("StatIcons/Movement").region)
             Fonts.turn -> Fonts.extractPixmapFromTextureRegion(ImageGetter.getDrawable("EmojiIcons/Turn").region)
             Fonts.production -> Fonts.extractPixmapFromTextureRegion(ImageGetter.getDrawable("EmojiIcons/Production").region)
+            Fonts.gold -> Fonts.extractPixmapFromTextureRegion(ImageGetter.getDrawable("EmojiIcons/Gold").region)
             else -> fontImplementation.getCharPixmap(ch)
         }
     }
@@ -152,4 +153,5 @@ object Fonts {
     const val movement = '➡'            // U+27A1 'black rightwards arrow'
     const val range = '…'               // U+2026 'horizontal ellipsis'
     const val production = '⚙'          // U+2699 'gear'
+    const val gold = '¤'                // U+00A4 'currency sign'
 }
