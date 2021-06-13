@@ -513,7 +513,7 @@ class EmpireOverviewScreen(private var viewingPlayer:CivilizationInfo, defaultPa
                 labelText = "???"
             }
 
-            civGroup.background = ImageGetter.getRoundedEdgeTableBackground(backgroundColor)
+            civGroup.background = ImageGetter.getRoundedEdgeRectangle(backgroundColor)
             val label = labelText.toLabel(labelColor)
             label.setAlignment(Align.center)
 

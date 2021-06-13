@@ -24,8 +24,14 @@ class PolicyManager {
     var numberOfAdoptedPolicies = 0
     var shouldOpenPolicyPicker = false
         get() = field && canAdoptPolicy()
-    var legalismState = HashMap<String, String>()
+
+    private var cultureBuildingsAdded = HashMap<String, String>() // Maps cities to buildings
+    private var specificBuildingsAdded = HashMap<String, MutableSet<String>>() // Maps buildings to cities
     var autocracyCompletedTurns = 0
+    
+    @Deprecated("Deprecated since 3.14.17") // Replaced with cultureBuildingsAdded
+    var legalismState = HashMap<String, String>() // Maps cities to buildings
+    // We make it a reference copy of the original variable. This way, it can still works in older versions
 
     fun clone(): PolicyManager {
         val toReturn = PolicyManager()
@@ -34,8 +40,13 @@ class PolicyManager {
         toReturn.freePolicies = freePolicies
         toReturn.shouldOpenPolicyPicker = shouldOpenPolicyPicker
         toReturn.storedCulture = storedCulture
-        toReturn.legalismState.putAll(legalismState)
+        toReturn.cultureBuildingsAdded.putAll(cultureBuildingsAdded)
+        toReturn.specificBuildingsAdded.putAll(specificBuildingsAdded)
         toReturn.autocracyCompletedTurns = autocracyCompletedTurns
+        
+        // Deprecated since 3.14.17, left for backwards compatibility
+        toReturn.legalismState.putAll(cultureBuildingsAdded)
+        
         return toReturn
     }
 
@@ -44,6 +55,10 @@ class PolicyManager {
     fun setTransients() {
         for (policyName in adoptedPolicies)
             addPolicyToTransients(getPolicyByName(policyName))
+        // Deprecated since 3.14.17, left for backwards compatibility
+        if (cultureBuildingsAdded.isEmpty() && legalismState.isNotEmpty()) {
+            cultureBuildingsAdded.putAll(legalismState)
+        }
     }
 
     fun addPolicyToTransients(policy: Policy) {
@@ -52,7 +67,7 @@ class PolicyManager {
     }
 
     fun startTurn() {
-        tryAddLegalismBuildings()
+        tryToAddPolicyBuildings()
     }
 
     fun addCulture(culture: Int) {
@@ -133,7 +148,7 @@ class PolicyManager {
         for (unique in policy.uniqueObjects)
             UniqueTriggerActivation.triggerCivwideUnique(unique, civInfo)
 
-        tryAddLegalismBuildings()
+        tryToAddPolicyBuildings()
 
         // This ALSO has the side-effect of updating the CivInfo statForNextTurn so we don't need to call it explicitly
         for (cityInfo in civInfo.cities)
@@ -141,22 +156,63 @@ class PolicyManager {
 
         if (!canAdoptPolicy()) shouldOpenPolicyPicker = false
     }
+    
+    fun tryToAddPolicyBuildings() {
+        tryAddCultureBuildings()
+        tryAddFreeBuildings()
+    }
 
-    fun tryAddLegalismBuildings() {
-        if (!civInfo.hasUnique("Immediately creates a cheapest available cultural building in each of your first 4 cities for free"))
-            return
-        if (legalismState.size >= 4) return
+    private fun tryAddCultureBuildings() {
+        val cultureBuildingUniques = civInfo.getMatchingUniques("Immediately creates the cheapest available cultural building in each of your first [] cities for free")
+        val citiesToReceiveCultureBuilding = cultureBuildingUniques.sumOf { it.params[0].toInt() }
+        if (!cultureBuildingUniques.any()) return
+        if (cultureBuildingsAdded.size >= citiesToReceiveCultureBuilding) return
 
         val candidateCities = civInfo.cities
                 .sortedBy { it.turnAcquired }
-                .subList(0, min(4, civInfo.cities.size))
+                .subList(0, min(citiesToReceiveCultureBuilding, civInfo.cities.size))
                 .filter {
-                    it.id !in legalismState
+                    it.id !in cultureBuildingsAdded
                             && it.cityConstructions.hasBuildableCultureBuilding()
                 }
         for (city in candidateCities) {
             val builtBuilding = city.cityConstructions.addCultureBuilding()
-            if (builtBuilding != null) legalismState[city.id] = builtBuilding!!
+            if (builtBuilding != null) cultureBuildingsAdded[city.id] = builtBuilding!!
+            
         }
+    }
+    
+    private fun tryAddFreeBuildings() {
+        val matchingUniques = civInfo.getMatchingUniques("Immediately creates a [] in each of your first [] cities for free")
+        // If we have "create a free aqueduct in first 3 cities" and "create free aqueduct in first 4 cities", we do: "create free aqueduct in first 3+4=7 cities"
+        val sortedUniques = matchingUniques.groupBy {it.params[0]}
+        for (unique in sortedUniques) {
+            tryAddSpecificBuilding(unique.key, unique.value.sumBy {it.params[1].toInt()})
+        }
+    }
+    
+    private fun tryAddSpecificBuilding(building: String, cityCount: Int) {
+        if (specificBuildingsAdded[building] == null) specificBuildingsAdded[building] = mutableSetOf()
+        val citiesAlreadyGivenBuilding = specificBuildingsAdded[building]
+        if (citiesAlreadyGivenBuilding!!.size >= cityCount) return
+        val candidateCities = civInfo.cities
+            .sortedBy { it.turnAcquired }
+            .subList(0, min(cityCount, civInfo.cities.size))
+            .filter {
+                it.id !in citiesAlreadyGivenBuilding && !it.cityConstructions.containsBuildingOrEquivalent(building)
+            }
+        
+        for (city in candidateCities) {
+            city.cityConstructions.getConstruction(building).postBuildEvent(city.cityConstructions, false)
+            citiesAlreadyGivenBuilding.add(city.id) 
+        }
+    }
+    
+    fun getListOfFreeBuildings(cityId: String): MutableSet<String> {
+        val freeBuildings = cultureBuildingsAdded.filter { it.key == cityId }.values.toMutableSet()
+        for (building in specificBuildingsAdded.filter { it.value.contains(cityId) }) {
+            freeBuildings.add(building.key)
+        }
+        return freeBuildings
     }
 }

@@ -66,6 +66,12 @@ object ImageGetter {
             }
         }
 
+        if (!atlases.containsKey("Skin")) atlases["Skin"] = TextureAtlas("Skin.atlas")
+        for (region in atlases["Skin"]!!.regions) {
+            val drawable = TextureRegionDrawable(region)
+            textureRegionDrawables["Skin/" + region.name] = drawable
+        }
+
         // These are from the mods
         for (mod in UncivGame.Current.settings.visualMods + ruleset.mods) {
             val modAtlasFile = Gdx.files.local("mods/$mod/game.atlas")
@@ -152,8 +158,8 @@ object ImageGetter {
         else textureRegionDrawables[whiteDotLocation]!!
     }
 
-    fun getRoundedEdgeTableBackground(tintColor: Color? = null): NinePatchDrawable {
-        val region = getDrawable("OtherIcons/buttonBackground").region
+    fun getRoundedEdgeRectangle(tintColor: Color? = null): NinePatchDrawable {
+        val region = getDrawable("Skin/roundedEdgeRectangle").region
         val drawable = NinePatchDrawable(NinePatch(region, 25, 25, 0, 0))
         drawable.setPadding(5f, 15f, 5f, 15f)
 
@@ -161,6 +167,28 @@ object ImageGetter {
         return drawable.tint(tintColor)
     }
 
+    fun getRectangleWithOutline(): NinePatchDrawable {
+        val region = getDrawable("Skin/rectangleWithOutline").region
+        return NinePatchDrawable(NinePatch(region, 1, 1, 1, 1))
+    }
+
+    fun getSelectBox(): NinePatchDrawable {
+        val region = getDrawable("Skin/select-box").region
+        return NinePatchDrawable(NinePatch(region, 10, 25, 5, 5))
+    }
+
+    fun getSelectBoxPressed(): NinePatchDrawable {
+        val region = getDrawable("Skin/select-box-pressed").region
+        return NinePatchDrawable(NinePatch(region, 10, 25, 5, 5))
+    }
+
+    fun getCheckBox(): Drawable {
+        return getDrawable("Skin/checkbox")
+    }
+
+    fun getCheckBoxPressed(): Drawable {
+        return getDrawable("Skin/checkbox-pressed")
+    }
 
     fun imageExists(fileName: String) = textureRegionDrawables.containsKey(fileName)
     fun techIconExists(techName: String) = imageExists("TechIcons/$techName")

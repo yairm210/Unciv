@@ -52,7 +52,7 @@
 		"name": "Library",
 		"hurryCostModifier": 25,
 		"maintenance": 1,
-		"uniques": ["[+1 Science] Per [2] Population in this city"],
+		"uniques": ["[+1 Science] Per [2] Population [in this city]"],
 		"requiredTech": "Writing"
 	},
 	{
@@ -72,7 +72,7 @@
 		"uniqueTo": "China",
 		"hurryCostModifier": 25,
 		"gold": 2,
-		"uniques": ["[+1 Science] Per [2] Population in this city"],
+		"uniques": ["[+1 Science] Per [2] Population [in this city]"],
 		"requiredTech": "Writing"
 	},
 	{
@@ -136,7 +136,7 @@
 		"culture": 1,
 		"greatPersonPoints": {"production": 1},
 		"isWonder": true,
-		"uniques": ["Worker construction increased 25%","[2] free [Worker] units appear"],
+		"uniques": ["-[25]% tile improvement construction time","[2] free [Worker] units appear"],
 		"requiredTech": "Masonry",
 		"quote": "'O, let not the pains of death which come upon thee enter into my body. I am the god Tem, and I am the foremost part of the sky, and the power which protecteth me is that which is with all the gods forever.'  - The Book of the Dead, translated by Sir Ernest Alfred Wallis Budge"
 	},
@@ -752,7 +752,7 @@
 		"requiredBuilding": "University",
 		"maintenance": 3,
 		"hurryCostModifier": 0,
-		"uniques": ["[+1 Science] Per [2] Population in this city"],
+		"uniques": ["[+1 Science] Per [2] Population [in this city]"],
 		"requiredTech": "Scientific Theory"
 	},
 	{

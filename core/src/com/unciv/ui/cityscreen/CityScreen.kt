@@ -252,4 +252,9 @@ class CityScreen(internal val city: CityInfo): CameraStageBaseScreen() {
         game.setScreen(newCityScreen)
     }
 
+    override fun resize(width: Int, height: Int) {
+        if (stage.viewport.screenWidth != width || stage.viewport.screenHeight != height) {
+            game.setScreen(CityScreen(city))
+        }
+    }
 }

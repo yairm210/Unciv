@@ -8,11 +8,11 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.logic.GameInfo
 import com.unciv.logic.GameSaver
 import com.unciv.logic.GameStarter
-import com.unciv.logic.map.mapgenerator.MapGenerator
 import com.unciv.logic.map.MapParameters
 import com.unciv.logic.map.MapSize
 import com.unciv.logic.map.MapSizeNew
 import com.unciv.logic.map.MapType
+import com.unciv.logic.map.mapgenerator.MapGenerator
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.ui.MultiplayerScreen
 import com.unciv.ui.mapeditor.*
@@ -28,13 +28,30 @@ class MainMenuScreen: CameraStageBaseScreen() {
     private val backgroundTable = Table().apply { background=ImageGetter.getBackground(Color.WHITE) }
     private val singleColumn = isCrampedPortrait()
 
-    private fun getTableBlock(text: String, icon: String, function: () -> Unit): Table {
+    /** Create one **Main Menu Button** including onClick/key binding
+     *  @param text      The text to display on the button
+     *  @param icon      The path of the icon to display on the button
+     *  @param key       Optional key binding (limited to Char subset of [KeyCharAndCode], which is OK for the main menu)
+     *  @param function  Action to invoke when the button is activated
+     */
+    private fun getMenuButton(
+        text: String,
+        icon: String,
+        key: Char? = null,
+        function: () -> Unit
+    ): Table {
         val table = Table().pad(15f, 30f, 15f, 30f)
-        table.background = ImageGetter.getRoundedEdgeTableBackground(ImageGetter.getBlue())
+        table.background = ImageGetter.getRoundedEdgeRectangle(ImageGetter.getBlue())
         table.add(ImageGetter.getImage(icon)).size(50f).padRight(30f)
         table.add(text.toLabel().setFontSize(30)).minWidth(200f)
+
         table.touchable = Touchable.enabled
         table.onClick(function)
+
+        if (key != null) {
+            keyPressDispatcher[key] = function
+        }
+        
         table.pack()
         return table
     }
@@ -69,45 +86,44 @@ class MainMenuScreen: CameraStageBaseScreen() {
             }
         }
 
-        val column1 = Table().apply { defaults().pad(10f) }
-        val column2 = if(singleColumn) column1 else Table().apply { defaults().pad(10f) }
+        val column1 = Table().apply { defaults().pad(10f).fillX() }
+        val column2 = if(singleColumn) column1 else Table().apply { defaults().pad(10f).fillX() }
 
         val autosaveGame = GameSaver.getSave(autosave, false)
         if (autosaveGame.exists()) {
-            val resumeTable = getTableBlock("Resume","OtherIcons/Resume") { autoLoadGame() }
+            val resumeTable = getMenuButton("Resume","OtherIcons/Resume", 'r')
+                { autoLoadGame() }
             column1.add(resumeTable).row()
         }
 
-        val quickstartTable = getTableBlock("Quickstart", "OtherIcons/Quickstart") { quickstartNewGame() }
+        val quickstartTable = getMenuButton("Quickstart", "OtherIcons/Quickstart", 'q')
+            { quickstartNewGame() }
         column1.add(quickstartTable).row()
 
-        val newGameButton = getTableBlock("Start new game", "OtherIcons/New") {
-            game.setScreen(NewGameScreen(this))
-        }
+        val newGameButton = getMenuButton("Start new game", "OtherIcons/New", 'n')
+            { game.setScreen(NewGameScreen(this)) }
         column1.add(newGameButton).row()
 
         if (GameSaver.getSaves(false).any()) {
-            val loadGameTable = getTableBlock("Load game", "OtherIcons/Load")
+            val loadGameTable = getMenuButton("Load game", "OtherIcons/Load", 'l')
                 { game.setScreen(LoadGameScreen(this)) }
             column1.add(loadGameTable).row()
         }
 
-        val multiplayerTable = getTableBlock("Multiplayer", "OtherIcons/Multiplayer")
+        val multiplayerTable = getMenuButton("Multiplayer", "OtherIcons/Multiplayer", 'm')
             { game.setScreen(MultiplayerScreen(this)) }
         column2.add(multiplayerTable).row()
 
-        val mapEditorScreenTable = getTableBlock("Map editor", "OtherIcons/MapEditor")
+        val mapEditorScreenTable = getMenuButton("Map editor", "OtherIcons/MapEditor", 'e')
             { if(stage.actors.none { it is MapEditorMainScreenPopup }) MapEditorMainScreenPopup(this) }
         column2.add(mapEditorScreenTable).row()
 
-        val modsTable = getTableBlock("Mods", "OtherIcons/Mods")
+        val modsTable = getMenuButton("Mods", "OtherIcons/Mods", 'd')
             { game.setScreen(ModManagementScreen()) }
         column2.add(modsTable).row()
 
-
-        val optionsTable = getTableBlock("Options", "OtherIcons/Options") {
-            this.openOptionsPopup()
-        }
+        val optionsTable = getMenuButton("Options", "OtherIcons/Options", 'o')
+            { this.openOptionsPopup() }
         column2.add(optionsTable).row()
 
 
@@ -134,33 +150,39 @@ class MainMenuScreen: CameraStageBaseScreen() {
     /** Shows the [Popup] with the map editor initialization options */
     class MapEditorMainScreenPopup(screen: MainMenuScreen):Popup(screen){
         init{
+            // Using MainMenuScreen.getMenuButton - normally that would place key bindings into the
+            // screen's key dispatcher, but we need them in this Popup's dispatcher instead.
+            // So we bind the keys separately.
+
             defaults().pad(10f)
 
             val tableBackground = ImageGetter.getBackground(colorFromRGB(29, 102, 107))
 
-            val newMapButton = screen.getTableBlock("New map", "OtherIcons/New") {
-                screen.game.setScreen(NewMapScreen())
+            val newMapAction = {
+                val newMapScreen = NewMapScreen()
+                newMapScreen.setDefaultCloseAction(MainMenuScreen())
+                screen.game.setScreen(newMapScreen)
                 screen.dispose()
             }
+            val newMapButton = screen.getMenuButton("New map", "OtherIcons/New", function = newMapAction) 
             newMapButton.background = tableBackground
             add(newMapButton).row()
+            keyPressDispatcher['n'] = newMapAction 
 
-            val loadMapButton = screen.getTableBlock("Load map", "OtherIcons/Load") {
+            val loadMapAction = {
                 val loadMapScreen = SaveAndLoadMapScreen(null, false, screen)
-                loadMapScreen.closeButton.isVisible = true
-                loadMapScreen.closeButton.onClick {
-                    screen.game.setScreen(MainMenuScreen())
-                    loadMapScreen.dispose()
-                }
+                loadMapScreen.setDefaultCloseAction(MainMenuScreen())
                 screen.game.setScreen(loadMapScreen)
                 screen.dispose()
             }
-
+            val loadMapButton = screen.getMenuButton("Load map", "OtherIcons/Load", function = loadMapAction) 
             loadMapButton.background = tableBackground
             add(loadMapButton).row()
+            keyPressDispatcher['l'] = loadMapAction
 
-            add(screen.getTableBlock("Close", "OtherIcons/Close") { close() }
+            add(screen.getMenuButton("Close", "OtherIcons/Close") { close() }
                     .apply { background=tableBackground })
+            keyPressDispatcher[KeyCharAndCode.BACK] = { close() }
 
             open(force = true)
         }
