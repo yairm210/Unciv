@@ -78,7 +78,7 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
         // We only need to check the two shared neighbors of [from] and [to]: the way of getting
         // these two tiles can perhaps be optimized.
         return from.neighbors.any{
-            to.neighbors.contains(it) && (
+            (
                 (
                     it.isCityCenter() &&
                     civInfo.isAtWarWith(it.getOwner()!!)
@@ -90,6 +90,8 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
                     (it.militaryUnit!!.type.isWaterUnit() || (!it.militaryUnit!!.isEmbarked() && unit.type.isLandUnit()))
                 )
             )
+            &&
+            to.neighbors.contains(it)
         }
     }
 
