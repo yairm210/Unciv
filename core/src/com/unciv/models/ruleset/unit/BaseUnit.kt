@@ -7,9 +7,9 @@ import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.MapUnit
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.Unique
+import com.unciv.models.stats.INamed
 import com.unciv.models.translations.Translations
 import com.unciv.models.translations.tr
-import com.unciv.models.stats.INamed
 import com.unciv.ui.utils.Fonts
 import kotlin.math.pow
 
@@ -236,12 +236,10 @@ class BaseUnit : INamed, IConstruction {
         if (filter == name) return true
         if (filter == "All") return true
         if ((filter == "Land" || filter == "land units") && unitType.isLandUnit()) return true
-        // 'water units' obsolete as of 3.14.2
-        if ((filter == "Water" || filter == "water units" || filter == "Water units") && unitType.isWaterUnit()) return true
+        if ((filter == "Water" || filter == "water units") && unitType.isWaterUnit()) return true
         if ((filter == "Air" || filter == "air units") && unitType.isAirUnit()) return true
         if (filter == "non-air" && !unitType.isAirUnit()) return true
-        // 'military' obsolete as of 3.14.1
-        if ((filter == "military" || filter == "Military" || filter == "military units") && unitType.isMilitary()) return true
+        if ((filter == "Military" || filter == "military units") && unitType.isMilitary()) return true
         return false
     }
 

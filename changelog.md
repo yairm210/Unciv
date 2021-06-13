@@ -1,3 +1,18 @@
+## 3.15.0
+
+Updated Tradition, Honor and Liberty branches to G&K rules - By xlenstra
+
+Enabled various G&K buildings and units - by By avdstaaij
+
+Nation start intros - By SomeTroglodyte
+
+By r3versi:
+- New borders images
+- Display Movement Paths on map
+- Unified Menu Popups
+
+Better button images - By lishaoxia1985
+
 ## 3.14.16
 
 Cities in resistance cannot bombard, as per Civ V - #663
