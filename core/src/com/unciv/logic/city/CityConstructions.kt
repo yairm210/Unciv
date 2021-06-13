@@ -81,8 +81,12 @@ class CityConstructions {
             stats.add(building.getStats(cityInfo.civInfo))
 
         for (unique in builtBuildingUniqueMap.getAllUniques()) when (unique.placeholderText) {
-            "[] Per [] Population in this city" -> stats.add(unique.stats.times(cityInfo.population.population / unique.params[1].toFloat()))
+            "[] per [] population []" -> if (cityInfo.matchesFilter(unique.params[2])) 
+                stats.add(unique.stats.times(cityInfo.population.population / unique.params[1].toFloat()))
             "[] once [] is discovered" -> if (cityInfo.civInfo.tech.isResearched(unique.params[1])) stats.add(unique.stats)
+            // Deprecated since 3.14.17, left for modding compatibility
+            "[] Per [] Population in this city" ->
+                stats.add(unique.stats.times(cityInfo.population.population / unique.params[1].toFloat()))
         }
 
         return stats
@@ -92,13 +96,14 @@ class CityConstructions {
      * @return Maintenance cost of all built buildings
      */
     fun getMaintenanceCosts(): Int {
-        var maintenanceCost = getBuiltBuildings().sumBy { it.maintenance }
-        val policyManager = cityInfo.civInfo.policies
-        if (cityInfo.id in policyManager.legalismState) {
-            val buildingName = policyManager.legalismState[cityInfo.id]
-            maintenanceCost -= cityInfo.getRuleset().buildings[buildingName]!!.maintenance
+        var maintenanceCost = 0
+        // We cache this to increase performance
+        val freeBuildings = cityInfo.civInfo.policies.getListOfFreeBuildings(cityInfo.id)
+        for (building in getBuiltBuildings()) {
+            if (building.name !in freeBuildings) {
+                maintenanceCost += building.maintenance
+            }
         }
-
         return maintenanceCost
     }
 

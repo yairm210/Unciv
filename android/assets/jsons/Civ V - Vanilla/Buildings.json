@@ -52,7 +52,7 @@
 		"name": "Library",
 		"hurryCostModifier": 25,
 		"maintenance": 1,
-		"uniques": ["[+1 Science] Per [2] Population in this city"],
+		"uniques": ["[+1 Science] Per [2] Population [in this city]"],
 		"requiredTech": "Writing"
 	},
 	{
@@ -72,7 +72,7 @@
 		"uniqueTo": "China",
 		"hurryCostModifier": 25,
 		"gold": 2,
-		"uniques": ["[+1 Science] Per [2] Population in this city"],
+		"uniques": ["[+1 Science] Per [2] Population [in this city]"],
 		"requiredTech": "Writing"
 	},
 	{
@@ -752,7 +752,7 @@
 		"requiredBuilding": "University",
 		"maintenance": 3,
 		"hurryCostModifier": 0,
-		"uniques": ["[+1 Science] Per [2] Population in this city"],
+		"uniques": ["[+1 Science] Per [2] Population [in this city]"],
 		"requiredTech": "Scientific Theory"
 	},
 	{

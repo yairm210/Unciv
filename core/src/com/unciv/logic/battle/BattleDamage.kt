@@ -181,11 +181,12 @@ object BattleDamage {
             )
                 modifiers["Statue of Zeus"] = 15
         } else if (attacker is CityCombatant) {
-            if (attacker.getCivInfo()
-                    .hasUnique("+50% attacking strength for cities with garrisoned units")
-                && attacker.city.getCenterTile().militaryUnit != null
-            )
-                modifiers["Oligarchy"] = 50
+            if (attacker.city.getCenterTile().militaryUnit != null) {
+                val garrisonBonus = attacker.getCivInfo().getMatchingUniques("+[]% attacking strength for cities with garrisoned units")
+                    .sumBy { it.params[0].toInt() }
+                if (garrisonBonus != 0)
+                    modifiers["Garrisoned unit"] = garrisonBonus
+            }
         }
 
         return modifiers

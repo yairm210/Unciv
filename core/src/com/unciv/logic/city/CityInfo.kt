@@ -88,7 +88,7 @@ class CityInfo {
 
         if (civInfo.cities.size == 1) cityConstructions.addBuilding(capitalCityIndicator())
 
-        civInfo.policies.tryAddLegalismBuildings()
+        civInfo.policies.tryToAddPolicyBuildings()
 
         for (unique in civInfo.getMatchingUniques("Gain a free [] []")) {
             val freeBuildingName = unique.params[0]
