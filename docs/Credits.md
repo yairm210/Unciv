@@ -76,7 +76,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Lance](https://thenounproject.com/search/?q=Lance&i=440122) By parkjisun for Lancer
 * [Sword](https://thenounproject.com/search/?q=saber&i=1174742) By Daniela Baptista for Sipahi
 
-### Industrial
+### Industrial Era
 
 * [Rifle](https://thenounproject.com/search/?q=Rifle&i=604291) By Chameleon Design for Rifleman
 * [Horse](https://thenounproject.com/search/?q=Horse&i=1023745) By Bakunetso Kaito for Cavalry
@@ -84,7 +84,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Artillery](https://thenounproject.com/search/?q=Artillery&i=1165261) By Creative Mania
 * [Ship](https://thenounproject.com/term/ship/1594793/) By Aisyah for Ironclad
 
-### Modern, Atomic and Information
+### Modern, Atomic and Information Eras
 
 * [Helmet](https://thenounproject.com/term/helmet/25216/) By Daniel Turner for Great War Infantry
 * [Cap](https://thenounproject.com/search/?q=kepi&i=950267) By Creative Mania for Foreign Legion
@@ -257,7 +257,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 
 * [Stadium](https://thenounproject.com/term/stadium/13872/) By Karuna Lalvani
 * [Signal Tower](https://thenounproject.com/term/signal-tower/1547758/) By Nociconist for Broadcast Tower
-* [Base](https://thenounproject.com/term/base/3890712/) By Kevin for Military Base
+* [Hangar](https://thenounproject.com/search/?q=hangar&i=1705288) By Rflor for Military Base
 * [Eiffel Tower](https://thenounproject.com/term/eiffel-tower/1907757/) By Felipe Alvarado
 * [Statue of Liberty](https://thenounproject.com/search/?q=statue%20of%20liberty&i=1801199) By 1516
 * [Christ the redeemer](https://thenounproject.com/term/christ-the-redeemer/56112/) By Stefan Spieler for Cristo Redentor
