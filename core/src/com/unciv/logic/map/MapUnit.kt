@@ -596,13 +596,14 @@ class MapUnit {
     fun removeFromTile() = currentTile.removeUnit(this)
 
     fun moveThroughTile(tile: TileInfo) {
+        // addPromotion requires currentTile to be valid because it accesses ruleset through it
+        // getAncientRuinBonus, if it places a new unit, does too
+        currentTile = tile
+
         if (tile.improvement == Constants.ancientRuins && civInfo.isMajorCiv())
             getAncientRuinBonus(tile)
         if (tile.improvement == Constants.barbarianEncampment && !civInfo.isBarbarian())
             clearEncampment(tile)
-
-        // addPromotion requires currentTile to be valid because it accesses ruleset through it
-        currentTile = tile
 
         if (!hasUnique("All healing effects doubled") && type.isLandUnit() && type.isMilitary()) {
             val gainDoubleHealPromotion = tile.neighbors
@@ -676,6 +677,17 @@ class MapUnit {
         tile.improvement = null
         val tileBasedRandom = Random(tile.position.toString().hashCode())
         val actions: ArrayList<() -> Unit> = ArrayList()
+
+        fun goldBonus() {
+            val amount = listOf(25, 60, 100).random(tileBasedRandom)
+            civInfo.addGold(amount)
+            civInfo.addNotification(
+                "We have found a stash of [$amount] gold in the ruins!",
+                tile.position,
+                NotificationIcon.Gold
+            )
+        }
+
         if (civInfo.cities.isNotEmpty()) actions.add {
             val city = civInfo.cities.random(tileBasedRandom)
             city.population.population++
@@ -687,6 +699,7 @@ class MapUnit {
                 NotificationIcon.Growth
             )
         }
+
         val researchableAncientEraTechs = tile.tileMap.gameInfo.ruleSet.technologies.values
             .filter {
                 !civInfo.tech.isResearched(it.name)
@@ -705,14 +718,19 @@ class MapUnit {
                 )
             }
 
-
-        val possibleUnits = listOf(Constants.settler, Constants.worker, "Warrior")
-            .filter { civInfo.gameInfo.ruleSet.units.containsKey(it) }
+        val possibleUnits = (
+                //City-States and OCC don't get settler from ruins
+                listOf(Constants.settler).filterNot { civInfo.isCityState() || civInfo.isOneCityChallenger() }
+                + listOf(Constants.worker, "Warrior")
+            ).filter { civInfo.gameInfo.ruleSet.units.containsKey(it) }
         if (possibleUnits.isNotEmpty())
             actions.add {
                 val chosenUnit = possibleUnits.random(tileBasedRandom)
-                if (!(civInfo.isCityState() || civInfo.isOneCityChallenger()) || chosenUnit != Constants.settler) { //City-States and OCC don't get settler from ruins
-                    civInfo.placeUnitNearTile(tile.position, chosenUnit)
+                // placeUnitNearTile _can_ fail, and since this code can run behind a try with empty
+                // catch inside nested thread switches - petter play it safe
+                if (civInfo.placeUnitNearTile(tile.position, chosenUnit) == null) {
+                    goldBonus()
+                } else {
                     civInfo.addNotification(
                         "A [$chosenUnit] has joined us!",
                         tile.position,
@@ -731,15 +749,7 @@ class MapUnit {
                 )
             }
 
-        actions.add {
-            val amount = listOf(25, 60, 100).random(tileBasedRandom)
-            civInfo.addGold(amount)
-            civInfo.addNotification(
-                "We have found a stash of [$amount] gold in the ruins!",
-                tile.position,
-                NotificationIcon.Gold
-            )
-        }
+        actions.add { goldBonus() }
 
         actions.add {
             civInfo.policies.addCulture(20)
