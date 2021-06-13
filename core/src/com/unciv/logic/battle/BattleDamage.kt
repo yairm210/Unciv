@@ -1,6 +1,5 @@
 package com.unciv.logic.battle
 
-import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.Counter
 import com.unciv.models.ruleset.unit.UnitType
@@ -16,39 +15,11 @@ class BattleDamageModifier(val vs:String, val modificationAmount:Float){
 
 object BattleDamage {
 
-    const val BONUS_VS_UNIT_TYPE = """(Bonus|Penalty) vs (.*) (\d*)%"""
-
-    // This should be deprecated and converted to "+[]% Strength vs []", "-[]% Strength vs []"
-    private fun getBattleDamageModifiersOfUnit(unit: MapUnit): MutableList<BattleDamageModifier> {
-        val modifiers = mutableListOf<BattleDamageModifier>()
-        for (ability in unit.getUniques()) {
-            // This beut allows us to have generic unit uniques: "Bonus vs City 75%", "Penatly vs Mounted 25%" etc.
-            val regexResult = Regex(BONUS_VS_UNIT_TYPE).matchEntire(ability.text)
-            if (regexResult == null) continue
-            val vs = regexResult.groups[2]!!.value
-            val modificationAmount = regexResult.groups[3]!!.value.toFloat()
-            if (regexResult.groups[1]!!.value == "Bonus")
-                modifiers.add(BattleDamageModifier(vs, modificationAmount))
-            else
-                modifiers.add(BattleDamageModifier(vs, -modificationAmount))
-        }
-        return modifiers
-    }
-
-
     private fun getGeneralModifiers(combatant: ICombatant, enemy: ICombatant): Counter<String> {
         val modifiers = Counter<String>()
-        fun addToModifiers(BDM: BattleDamageModifier) =
-            modifiers.add(BDM.getText(), (BDM.modificationAmount).toInt())
 
         val civInfo = combatant.getCivInfo()
         if (combatant is MapUnitCombatant) {
-            for (BDM in getBattleDamageModifiersOfUnit(combatant.unit)) {
-                if (enemy.matchesCategory(BDM.vs)) {
-                    addToModifiers(BDM)
-                }
-            }
-
             for (unique in combatant.unit.getMatchingUniques("+[]% Strength vs []")) {
                 if (enemy.matchesCategory(unique.params[1]))
                     modifiers.add("vs [${unique.params[1]}]", unique.params[0].toInt())
@@ -75,7 +46,7 @@ object BattleDamage {
                 }
             }
 
-            var adjacentUnitBonus = 0;
+            var adjacentUnitBonus = 0
             for (unique in civInfo.getMatchingUniques("+[]% Strength for [] units which have another [] unit in an adjacent tile")) {
                 if (combatant.matchesCategory(unique.params[1])
                     && combatant.getTile().neighbors.flatMap { it.getUnits() }
