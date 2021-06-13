@@ -607,6 +607,11 @@ class CivilizationInfo {
         }
     }
 
+    /** Tries to place the a [unitName] unit into the [TileInfo] closest to the given the [position]
+     * @param location where to try to place the unit
+     * @param unitName name of the [BaseUnit] to create and place
+     * @return created [MapUnit] or null if no suitable location was found
+     * */
     fun placeUnitNearTile(location: Vector2, unitName: String): MapUnit? {
         return gameInfo.tileMap.placeUnitNearTile(location, unitName, this)
     }
