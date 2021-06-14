@@ -11,6 +11,7 @@ import com.unciv.ui.utils.*
 class MapEditorMenuPopup(var mapEditorScreen: MapEditorScreen): Popup(mapEditorScreen) {
 
     init {
+        defaults().fillX()
         addButton("New map", 'n') { UncivGame.Current.setScreen(NewMapScreen(mapEditorScreen.tileMap.mapParameters)) }
         addButton("Save map", 's') { mapEditorScreen.game.setScreen(SaveAndLoadMapScreen(mapEditorScreen.tileMap, true, mapEditorScreen)); this.close() }
         addButton("Load map", 'l') { mapEditorScreen.game.setScreen(SaveAndLoadMapScreen(mapEditorScreen.tileMap, false, mapEditorScreen)); this.close() }

@@ -382,6 +382,27 @@ OtherIcons/Banner
   orig: 100, 100
   offset: 0, 0
   index: -1
+OtherIcons/Border
+  rotate: false
+  xy: 1328, 2
+  size: 31, 15
+  orig: 31, 15
+  offset: 0, 0
+  index: -1
+OtherIcons/Border-inner
+  rotate: false
+  xy: 1361, 2
+  size: 31, 15
+  orig: 31, 15
+  offset: 0, 0
+  index: -1
+OtherIcons/Border-outer
+  rotate: false
+  xy: 806, 1303
+  size: 31, 15
+  orig: 31, 15
+  offset: 0, 0
+  index: -1
 OtherIcons/Camera
   rotate: false
   xy: 277, 913
