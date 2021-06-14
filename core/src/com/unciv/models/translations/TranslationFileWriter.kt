@@ -4,7 +4,6 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.utils.Array
 import com.unciv.JsonParser
-import com.unciv.logic.battle.BattleDamage
 import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.ruleset.*
 import com.unciv.models.ruleset.tech.TechColumn
@@ -228,10 +227,6 @@ object TranslationFileWriter {
 
                         stringToTranslate = stringToTranslate.replace(parameter, parameterName)
                     }
-                } else {
-                    // substitute the regex for "Bonus/Penalty vs ..."
-                    val match = Regex(BattleDamage.BONUS_VS_UNIT_TYPE).matchEntire(string)
-                    if (match != null) stringToTranslate = "${match.groupValues[1]} vs [unitType]"
                 }
                 resultStrings!!.add("$stringToTranslate = ")
                 return
