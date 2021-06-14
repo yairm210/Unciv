@@ -231,7 +231,10 @@ class CityConstructions {
 
     fun turnsToConstruction(constructionName: String, useStoredProduction: Boolean = true): Int {
         val workLeft = getRemainingWork(constructionName, useStoredProduction)
-        if (workLeft <= productionOverflow) // we might have done more work than actually necessary (if <0) - possible if circumstances cause buildings to be cheaper later
+        if (workLeft < 0) // This most often happens when a production is more than finished in a multiplayer game while its not your turn
+            return 0 // So we finish it at the start of the next turn. This could technically also happen when we lower production costs during our turn,
+        // but distinguishing those two cases is difficult, and the second one is much rarer than the first
+        if (workLeft <= productionOverflow) // if we already have stored up enough production to finish it directly
             return 1 // we'll finish this next turn
 
         val cityStatsForConstruction: Stats
@@ -304,6 +307,9 @@ class CityConstructions {
         validateInProgressConstructions()
 
         if (getConstruction(currentConstructionFromQueue) !is PerpetualConstruction) {
+            if (getWorkDone(currentConstructionFromQueue) == 0) {
+                constructionBegun(getConstruction(currentConstructionFromQueue))
+            }
             addProductionPoints(cityStats.production.roundToInt() + productionOverflow)
             productionOverflow = 0
         }
@@ -362,6 +368,25 @@ class CityConstructions {
         }
     }
 
+    private fun constructionBegun(construction: IConstruction) {
+        if (construction !is Building) return;
+        if (construction.uniqueObjects.none { it.placeholderText == "Triggers a global alert upon build start" }) return
+        val buildingIcon = "BuildingIcons/${construction.name}"
+        for (otherCiv in cityInfo.civInfo.gameInfo.civilizations) {
+            if (otherCiv == cityInfo.civInfo) continue
+            when {
+                (otherCiv.exploredTiles.contains(cityInfo.location) && otherCiv != cityInfo.civInfo) ->
+                    otherCiv.addNotification("The city of [${cityInfo.name}] has started constructing [${construction.name}]!",
+                        cityInfo.location, NotificationIcon.Construction, buildingIcon)
+                (otherCiv.knows(cityInfo.civInfo)) ->
+                    otherCiv.addNotification("[${cityInfo.civInfo.civName}] has started constructing [${construction.name}]!",
+                        NotificationIcon.Construction, buildingIcon)
+                else -> otherCiv.addNotification("An unknown civilization has started constructing [${construction.name}]!",
+                    NotificationIcon.Construction, buildingIcon)
+            }
+        }
+    }
+
     private fun constructionComplete(construction: IConstruction) {
         construction.postBuildEvent(this)
         if (construction.name in inProgressConstructions)
@@ -386,7 +411,7 @@ class CityConstructions {
             cityInfo.civInfo.addNotification("[${construction.name}] has been built in [" + cityInfo.name + "]",
                     cityInfo.location, NotificationIcon.Construction, icon)
         }
-        if (construction is Building && "Triggers a global alert upon completion" in construction.uniques) {
+        if (construction is Building && construction.uniqueObjects.any { it.placeholderText == "Triggers a global alert upon completion" } ) {
             for (otherCiv in cityInfo.civInfo.gameInfo.civilizations) {
                 // No need to notify ourself, since we already got the building notification anyway
                 if (otherCiv == cityInfo.civInfo) continue
