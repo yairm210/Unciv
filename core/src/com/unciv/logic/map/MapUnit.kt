@@ -140,12 +140,6 @@ class MapUnit {
 
         var movement = baseUnit.movement
         movement += getUniques().count { it.text == "+1 Movement" }
-
-        for (unique in civInfo.getMatchingUniques("+[] movement and +[] sight for all [] units")) {
-            if (matchesFilter(unique.params[0])) {
-                movement += unique.params[1].toInt()
-            }
-        }
         
         // Deprecated since 3.14.17
             if (type.isMilitary() && type.isWaterUnit() && civInfo.hasUnique("All military naval units receive +1 movement and +1 sight")) {
@@ -156,10 +150,6 @@ class MapUnit {
         for (unique in civInfo.getMatchingUniques("+[] Movement for all [] units"))
             if (matchesFilter(unique.params[1]))
                 movement += unique.params[0].toInt()
-        for (unique in civInfo.getMatchingUniques("+[] movement for every []")) {
-            if (name == unique.params[1])
-                movement += unique.params[0].toInt()
-        }
 
         if (civInfo.goldenAges.isGoldenAge() &&
             civInfo.hasUnique("+1 Movement for all units during Golden Age")
@@ -226,11 +216,6 @@ class MapUnit {
         if (hasUnique("Limited Visibility")) visibilityRange -= 1
         if (civInfo.hasUnique("+1 Sight for all land military units") && type.isMilitary() && type.isLandUnit())
             visibilityRange += 1
-        for (unique in civInfo.getMatchingUniques("+[] movement and +[] sight for all [] units")) {
-            if (matchesFilter(unique.params[0])) {
-                visibilityRange += unique.params[2].toInt()
-            }
-        }
         
         // Deprecated since 3.14.17
             if (type.isMilitary() && type.isWaterUnit() && civInfo.hasUnique("All military naval units receive +1 movement and +1 sight"))
@@ -907,13 +892,15 @@ class MapUnit {
     }
 
     fun matchesFilter(filter: String): Boolean {
-        if (baseUnit.matchesFilter(filter)) return true
-        if (hasUnique(filter)) return true
         return when (filter) {
             "Wounded", "wounded units" -> health < 100
             "Barbarians", "Barbarian" -> civInfo.isBarbarian()
             "Embarked" -> isEmbarked()
-            else -> false
+            else -> {
+                if (baseUnit.matchesFilter(filter)) return true
+                if (hasUnique(filter)) return true
+                return false
+            }
         }
     }
 
