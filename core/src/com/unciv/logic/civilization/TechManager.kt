@@ -182,8 +182,13 @@ class TechManager {
     private fun scienceFromResearchAgreements(): Int {
         // https://forums.civfanatics.com/resources/research-agreements-bnw.25568/
         var researchAgreementModifier = 0.5f
-        for (unique in civInfo.getMatchingUniques("Science gained from research agreements +50%"))
-            researchAgreementModifier += 0.25f
+        // Deprecated since 3.15.0
+            for (unique in civInfo.getMatchingUniques("Science gained from research agreements +50%"))
+                researchAgreementModifier += 0.25f
+        //
+        for (unique in civInfo.getMatchingUniques("Science gained from research agreements +[]%")) {
+            researchAgreementModifier += unique.params[0].toFloat() / 200f
+        }
         return (scienceFromResearchAgreements / 3 * researchAgreementModifier).toInt()
     }
 

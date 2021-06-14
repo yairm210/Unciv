@@ -317,9 +317,15 @@ class CityStats {
                 stats.production += unique.params[0].toInt()
         }
 
-
-        if (cityInfo.civInfo.getHappiness() >= 0 && uniques.any { it.text == "+15% science while empire is happy" })
-            stats.science += 15f
+        if (cityInfo.civInfo.getHappiness() >= 0) {
+            for (unique in uniques.filter { it.placeholderText == "+[]% [] while the empire is happy"})
+                stats.add(Stat.valueOf(unique.params[1]), unique.params[0].toFloat())
+            
+            // Deprecated since 3.15.0
+                for (unique in uniques.filter { it.placeholderText == "+15% science while the empire is happy"})
+                    stats.science += 15f
+            //
+        } 
 
         return stats
     }
