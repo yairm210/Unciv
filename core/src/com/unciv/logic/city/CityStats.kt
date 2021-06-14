@@ -174,15 +174,27 @@ class CityStats {
         if (!civInfo.isPlayerCivilization())
             unhappinessModifier *= civInfo.gameInfo.getDifficulty().aiUnhappinessModifier
 
-        var unhappinessFromCity = -3f     // -3 happiness per city
+        var unhappinessFromCity = -3f // -3 happiness per city
         if (civInfo.hasUnique("Unhappiness from number of Cities doubled"))
-            unhappinessFromCity *= 2f//doubled for the Indian
+            unhappinessFromCity *= 2f //doubled for the Indian
 
         newHappinessList["Cities"] = unhappinessFromCity * unhappinessModifier
 
         var unhappinessFromCitizens = cityInfo.population.population.toFloat()
-        if (civInfo.hasUnique("Specialists produce half normal unhappiness"))
-            unhappinessFromCitizens -= cityInfo.population.getNumberOfSpecialists() * 0.5f
+        var unhappinessFromSpecialists = cityInfo.population.getNumberOfSpecialists().toFloat()
+        
+        unhappinessFromCitizens -= unhappinessFromSpecialists
+        
+        
+        for (unique in civInfo.getMatchingUniques("Specialists only produce []% of normal unhappiness")) {
+            unhappinessFromSpecialists *= (1f - unique.params[0].toFloat() / 100f)
+        }
+        // Deprecated since 3.15
+            if (civInfo.hasUnique("Specialists produce half normal unhappiness"))
+                unhappinessFromSpecialists *= 0.5f
+        //
+        
+        unhappinessFromCitizens += unhappinessFromSpecialists
 
         if (cityInfo.isPuppet)
             unhappinessFromCitizens *= 1.5f
@@ -297,8 +309,7 @@ class CityStats {
         for (unique in uniques.filter { it.placeholderText == "+[]% [] []"})
             if (cityInfo.matchesFilter(unique.params[2]))
                 stats.add(Stat.valueOf(unique.params[1]), unique.params[0].toFloat())
-
-
+        
         for (unique in uniques.filter { it.placeholderText == "+[]% Production when constructing []" }) {
             if (constructionMatchesFilter(currentConstruction, unique.params[1]))
                 stats.production += unique.params[0].toInt()
@@ -499,8 +510,17 @@ class CityStats {
 
     private fun updateFoodEaten() {
         foodEaten = cityInfo.population.population.toFloat() * 2
-        if (cityInfo.civInfo.hasUnique("-50% food consumption by specialists"))
-            foodEaten -= cityInfo.population.getNumberOfSpecialists()
+        var foodEatenBySpecialists = 2f * cityInfo.population.getNumberOfSpecialists()
+        
+        foodEaten -= foodEatenBySpecialists
+        for (unique in cityInfo.civInfo.getMatchingUniques("-[]% food consumption by specialists")) 
+            foodEatenBySpecialists *= 1f - unique.params[0].toFloat() / 100f
+        
+        // Deprecated since 3.15
+            if (cityInfo.civInfo.hasUnique("Specialists produce half normal unhappiness"))
+                foodEatenBySpecialists *= 0.5f
+        //
+        
+        foodEaten += foodEatenBySpecialists
     }
-
 }
