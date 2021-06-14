@@ -779,12 +779,9 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings, 
         }
     }
 
-    fun showCircle(color: Color, alpha: Float = 0.3f, number: Int = -1) {
+    fun showCircle(color: Color, alpha: Float = 0.3f) {
         circleImage.isVisible = true
         circleImage.color = color.cpy().apply { a = alpha }
-
-        if (number >= 0)
-            miscLayerGroup.addActor(number.toLabel())
     }
 
     fun hideCircle() { circleImage.isVisible = false }
