@@ -177,19 +177,19 @@
 	// Water melee
 	{
 		"name": "Boarding Party I",
-		"effect": "+[33]% Strength vs [Water units]",
+		"effect": "+[33]% Strength vs [water units]",
 		"unitTypes": ["WaterMelee"]
 	},
 	{
 		"name": "Boarding Party II",
 		"prerequisites": ["Boarding Party I"],
-		"effect": "+[33]% Strength vs [Water units]",
+		"effect": "+[33]% Strength vs [water units]",
 		"unitTypes": ["WaterMelee"]
 	},
 	{
 		"name": "Boarding Party III",
 		"prerequisites": ["Boarding Party II"],
-		"effect": "+[33]% Strength vs [Water units]",
+		"effect": "+[33]% Strength vs [water units]",
 		"unitTypes": ["WaterMelee"]
 	},
 	
