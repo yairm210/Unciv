@@ -352,9 +352,28 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
         if (!otherCiv.isPlayerCivilization()) { // human players make their own choices
             diplomacyTable.add(getRelationshipTable(otherCivDiplomacyManager)).row()
             diplomacyTable.add(getDiplomacyModifiersTable(otherCivDiplomacyManager)).row()
+            val promisesTable = getPromisesTable(diplomacyManager, otherCivDiplomacyManager)
+            if (promisesTable != null) diplomacyTable.add(promisesTable).row()
         }
 
         return diplomacyTable
+    }
+
+    private fun getPromisesTable(diplomacyManager: DiplomacyManager, otherCivDiplomacyManager: DiplomacyManager): Table? {
+        val promisesTable = Table()
+
+        // Not for (flag in DiplomacyFlags.values()) - all other flags should result in DiplomaticModifiers or stay internal?
+        val flag = DiplomacyFlags.AgreedToNotSettleNearUs
+        if (otherCivDiplomacyManager.hasFlag(flag)) {
+            val text = "We promised not to settle near them ([${otherCivDiplomacyManager.getFlag(flag)}] turns remaining)"
+            promisesTable.add(text.toLabel(Color.LIGHT_GRAY)).row()
+        }
+        if (diplomacyManager.hasFlag(flag)) {
+            val text = "They promised not to settle near us ([${diplomacyManager.getFlag(flag)}] turns remaining)"
+            promisesTable.add(text.toLabel(Color.LIGHT_GRAY)).row()
+        }
+
+        return if (promisesTable.cells.isEmpty) null else promisesTable
     }
 
     private fun getDiplomacyModifiersTable(otherCivDiplomacyManager: DiplomacyManager): Table {

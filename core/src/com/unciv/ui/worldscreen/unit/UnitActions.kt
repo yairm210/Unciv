@@ -6,6 +6,7 @@ import com.unciv.logic.automation.UnitAutomation
 import com.unciv.logic.automation.WorkerAutomation
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.NotificationIcon
+import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.RoadStatus
@@ -17,6 +18,7 @@ import com.unciv.models.ruleset.Building
 import com.unciv.models.translations.tr
 import com.unciv.ui.pickerscreens.ImprovementPickerScreen
 import com.unciv.ui.pickerscreens.PromotionPickerScreen
+import com.unciv.ui.utils.Sounds
 import com.unciv.ui.utils.YesNoPopup
 import com.unciv.ui.utils.hasOpenPopups
 import com.unciv.ui.worldscreen.WorldScreen
@@ -143,14 +145,37 @@ object UnitActions {
         if (!unit.hasUnique("Founds a new city") || tile.isWater) return null
         return UnitAction(
                 type = UnitActionType.FoundCity,
-                uncivSound = UncivSound.Chimes,
+                uncivSound = UncivSound.Silent,
                 action = {
-                    UncivGame.Current.settings.addCompletedTutorialTask("Found city")
-                    unit.civInfo.addCity(tile.position)
-                    if (tile.ruleset.tileImprovements.containsKey("City center"))
-                        tile.improvement = "City center"
-                    unit.destroy()
-                }.takeIf { unit.currentMovement > 0 && !tile.getTilesInDistance(3).any { it.isCityCenter() } })
+                    // check if we would be breaking a promise
+                    val civInfo = unit.civInfo
+                    val brokenPromises = HashSet<String>()
+                    for (otherCiv in civInfo.getKnownCivs().filter { it.isMajorCiv() && !civInfo.isAtWarWith(it) }) {
+                        val diplomacyManager = otherCiv.getDiplomacyManager(civInfo)
+                        if (diplomacyManager.hasFlag(DiplomacyFlags.AgreedToNotSettleNearUs)) {
+                            val citiesWithin6Tiles = otherCiv.cities
+                                .filter { it.getCenterTile().aerialDistanceTo(tile) <= 6 }
+                                .filter { otherCiv.exploredTiles.contains(it.location) }
+                            if (citiesWithin6Tiles.isNotEmpty()) brokenPromises += otherCiv.getLeaderDisplayName()
+                        }
+                    }
+                    val action = {
+                        Sounds.play(UncivSound.Chimes)
+                        UncivGame.Current.settings.addCompletedTutorialTask("Found city")
+                        unit.civInfo.addCity(tile.position)
+                        if (tile.ruleset.tileImprovements.containsKey("City center"))
+                            tile.improvement = "City center"
+                        unit.destroy()
+                        UncivGame.Current.worldScreen.shouldUpdate = true
+                    }
+                    if (brokenPromises.isEmpty()) action()
+                    else {
+                        // ask if we would be breaking a promise
+                        val text = "Do you want to break your promise to [" + brokenPromises.joinToString(", ") + "]?"
+                        YesNoPopup(text, action, UncivGame.Current.worldScreen).open(force = true)
+                    }
+                }.takeIf { unit.currentMovement > 0 && !tile.getTilesInDistance(3).any { it.isCityCenter() } }
+        )
     }
 
     private fun addPromoteAction(unit: MapUnit, actionList: ArrayList<UnitAction>) {
