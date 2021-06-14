@@ -36,7 +36,7 @@ class CityStats {
     @Transient
     lateinit var cityInfo: CityInfo
 
-    //region pure fuctions
+    //region pure functions
     private fun getStatsFromTiles(): Stats {
         val stats = Stats()
         for (cell in cityInfo.tilesInRange
@@ -53,7 +53,7 @@ class CityStats {
             stats.gold = civInfo.getCapital().population.population * 0.15f + cityInfo.population.population * 1.1f - 1 // Calculated by http://civilization.wikia.com/wiki/Trade_route_(Civ5)
             for (unique in civInfo.getMatchingUniques("[] from each Trade Route"))
                 stats.add(unique.stats)
-            if (civInfo.hasUnique("Gold from all trade routes +25%")) stats.gold *= 1.25f // Machu Pichu speciality
+            if (civInfo.hasUnique("Gold from all trade routes +25%")) stats.gold *= 1.25f // Machu Picchu speciality
         }
         return stats
     }
@@ -81,7 +81,7 @@ class CityStats {
         if (railroadImprovement == null) return stats // for mods
         val techEnablingRailroad = railroadImprovement.techRequired!!
         // If we conquered enemy cities connected by railroad, but we don't yet have that tech,
-        // we shouldn't get bonuses, it's as if the tracks aare layed out but we can't operate them.
+        // we shouldn't get bonuses, it's as if the tracks are laid out but we can't operate them.
         if (cityInfo.civInfo.tech.isResearched(techEnablingRailroad)
                 && (cityInfo.isCapital() || isConnectedToCapital(RoadStatus.Railroad)))
             stats.production += 25f
@@ -91,11 +91,13 @@ class CityStats {
     private fun getStatPercentBonusesFromResources(construction: IConstruction): Stats {
         val stats = Stats()
 
-        if (construction is Building
-                && construction.isWonder
-                && cityInfo.civInfo.getCivResources()
-                        .any { it.amount > 0 && it.resource.unique == "+15% production towards Wonder construction" })
-            stats.production += 15f
+        if (construction is Building && construction.isWonder) {
+            val bonus = cityInfo.civInfo.getCivResources()
+                .filter { it.amount > 0 }
+                .maxOfOrNull { it.resource.getWonderProductionBonus() }
+            if (bonus != null)
+                stats.production += bonus
+        }
 
         return stats
     }
@@ -198,7 +200,7 @@ class CityStats {
 
         newHappinessList["Population"] = -unhappinessFromCitizens * unhappinessModifier
 
-        var happinessFromPolicies = getStatsFromUniques(civInfo.policies.policyUniques.getAllUniques()).happiness
+        val happinessFromPolicies = getStatsFromUniques(civInfo.policies.policyUniques.getAllUniques()).happiness
 
         newHappinessList["Policies"] = happinessFromPolicies
 
@@ -254,7 +256,7 @@ class CityStats {
             if (unique.placeholderText == "[] []" && cityInfo.matchesFilter(unique.params[1]))
                 stats.add(unique.stats)
 
-            // "[stats] per [amount] population [cityfilter]"
+            // "[stats] per [amount] population [cityFilter]"
             if (unique.placeholderText=="[] per [] population []" && cityInfo.matchesFilter(unique.params[2])) {
                 val amountOfEffects = (cityInfo.population.population / unique.params[1].toInt()).toFloat()
                 stats.add(unique.stats.times(amountOfEffects))
@@ -292,7 +294,7 @@ class CityStats {
         for (unique in uniques.filter { it.placeholderText == "+[]% [] in all cities"})
             stats.add(Stat.valueOf(unique.params[1]), unique.params[0].toFloat())
 
-        // Params: "+[amount]% [Stat] [cityFilter]", pretty crazy amirite
+        // Params: "+[amount]% [Stat] [cityFilter]", pretty crazy, right?
         // For instance "+[50]% [Production] [in all cities]
         for (unique in uniques.filter { it.placeholderText == "+[]% [] []"})
             if (cityInfo.matchesFilter(unique.params[2]))
@@ -341,7 +343,7 @@ class CityStats {
         if (cityInfo.civInfo.cities.count() < 2) return false// first city!
 
         // Railroad, or harbor from railroad
-        if (roadType == RoadStatus.Railroad) return cityInfo.isConnectedToCapital { it.any { it.contains("Railroad") } }
+        if (roadType == RoadStatus.Railroad) return cityInfo.isConnectedToCapital { mediumSet -> mediumSet.any { it.contains("Railroad") } }
         else return cityInfo.isConnectedToCapital()
     }
     //endregion
@@ -433,7 +435,7 @@ class CityStats {
         if (cityInfo.getRuleset().modOptions.uniques.contains("Can convert gold to science with sliders")) {
             val amountConverted = (newFinalStatList.values.sumByDouble { it.gold.toDouble() }
                     * cityInfo.civInfo.tech.goldPercentConvertedToScience).toInt().toFloat()
-            if (amountConverted > 0) // Don't want you converting negative gold to negative science yaknow
+            if (amountConverted > 0) // Don't want you converting negative gold to negative science
                 newFinalStatList["Gold -> Science"] = Stats().apply { science = amountConverted; gold = -amountConverted }
         }
         for (entry in newFinalStatList.values) {

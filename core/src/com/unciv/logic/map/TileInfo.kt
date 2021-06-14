@@ -661,8 +661,7 @@ open class TileInfo {
 
         if (resource != null && !ruleset.tileResources.containsKey(resource)) resource = null
         if (resource != null) {
-            val resourceObject = ruleset.tileResources[resource]!!
-            if (resourceObject.terrainsCanBeFoundOn.none { it == baseTerrain || terrainFeatures.contains(it) })
+            if (ruleset.tileResources[resource]!!.mustRemoveFromTile(this))
                 resource = null
         }
 

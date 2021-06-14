@@ -55,7 +55,7 @@ class Terrain : NamedStats() {
         if (turnsInto != null)
             sb.appendLine("Placed on [$turnsInto]".tr())
 
-        val resourcesFound = ruleset.tileResources.values.filter { it.terrainsCanBeFoundOn.contains(name) }
+        val resourcesFound = ruleset.tileResources.values.filter { it.isAllowedOnTerrain(name) }
         if (resourcesFound.isNotEmpty())
             sb.appendLine("May contain [${resourcesFound.joinToString(", ") { it.name.tr() }}]".tr())
 

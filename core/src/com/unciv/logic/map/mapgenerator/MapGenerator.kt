@@ -137,9 +137,7 @@ class MapGenerator(val ruleset: Ruleset) {
         for (resource in strategicResources) {
             // remove the tiles where previous resources have been placed
             val suitableTiles = candidateTiles
-                    .filterNot { it.baseTerrain == Constants.snow && it.isHill() }
-                    .filter { it.resource == null
-                            && resource.terrainsCanBeFoundOn.contains(it.getLastTerrain().name) }
+                    .filter { it.resource == null && resource.isAllowedOnTile(it) }
 
             val locations = randomness.chooseSpreadOutLocations(resourcesPerType, suitableTiles, distance)
 
@@ -155,8 +153,7 @@ class MapGenerator(val ruleset: Ruleset) {
         val resourcesOfType = ruleset.tileResources.values.filter { it.resourceType == resourceType }
 
         val suitableTiles = tileMap.values
-                .filterNot { it.baseTerrain == Constants.snow && it.isHill() }
-                .filter { it.resource == null && resourcesOfType.any { r -> r.terrainsCanBeFoundOn.contains(it.getLastTerrain().name) } }
+                .filter { it.resource == null && resourcesOfType.any { r -> r.isAllowedOnTile(it) } }
         val numberOfResources = tileMap.values.count { it.isLand && !it.isImpassible() } *
                 tileMap.mapParameters.resourceRichness
         val locations = randomness.chooseSpreadOutLocations(numberOfResources.toInt(), suitableTiles, distance)
@@ -165,7 +162,7 @@ class MapGenerator(val ruleset: Ruleset) {
 
         for (tile in locations) {
             val possibleResources = resourcesOfType
-                    .filter { it.terrainsCanBeFoundOn.contains(tile.getLastTerrain().name) }
+                    .filter { it.isAllowedOnTile(tile) }
                     .map { it.name }
             if (possibleResources.isEmpty()) continue
             val resourceWithLeastAssignments = possibleResources.minByOrNull { resourceToNumber[it]!! }!!

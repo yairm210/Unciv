@@ -313,7 +313,7 @@ class MapEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(CameraS
         })
 
         for (resource in ruleset.tileResources.values) {
-            if (resource.terrainsCanBeFoundOn.none { ruleset.terrains.containsKey(it) }) continue // This resource can't be placed
+            val terrain = resource.getSampleTerrain(ruleset) ?: continue // This resource can't be placed
             val resourceHex = getHex(ImageGetter.getResourceImage(resource.name, 40f))
             resourceHex.onClick {
                 tileAction = { it.resource = resource.name }
@@ -321,7 +321,6 @@ class MapEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(CameraS
                 // for the tile image
                 val tileInfo = TileInfo()
                 tileInfo.ruleset = mapEditorScreen.ruleset
-                val terrain = resource.terrainsCanBeFoundOn.first { ruleset.terrains.containsKey(it) }
                 val terrainObject = ruleset.terrains[terrain]!!
                 if (terrainObject.type == TerrainType.TerrainFeature) {
                     tileInfo.baseTerrain =

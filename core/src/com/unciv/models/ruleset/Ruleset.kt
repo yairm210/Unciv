@@ -320,13 +320,7 @@ class Ruleset {
         }
 
         for (resource in tileResources.values) {
-            if (resource.revealedBy != null && !technologies.containsKey(resource.revealedBy!!))
-                lines += "${resource.name} revealed by tech ${resource.revealedBy} which does not exist!"
-            if (resource.improvement != null && !tileImprovements.containsKey(resource.improvement!!))
-                lines += "${resource.name} improved by improvement ${resource.improvement} which does not exist!"
-            for (terrain in resource.terrainsCanBeFoundOn)
-                if (!terrains.containsKey(terrain))
-                    lines += "${resource.name} can be found on terrain $terrain which does not exist!"
+            warningCount += resource.checkModLinks(this, lines)
         }
 
         for (improvement in tileImprovements.values) {
