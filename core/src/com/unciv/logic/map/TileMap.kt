@@ -157,7 +157,9 @@ class TileMap {
     }
 
 
-    /** Tries to place the [unitName] into the [TileInfo] closest to the given the [position]
+    /** Tries to place the [unitName] into the [TileInfo] closest to the given [position]
+     * @param position where to try to place the unit (or close - max 10 tiles distance)
+     * @param unitName name of the [BaseUnit] to create and place
      * @param civInfo civilization to assign unit to
      * @return created [MapUnit] or null if no suitable location was found
      * */

@@ -202,6 +202,8 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
             try {
                 tileToMoveTo = selectedUnit.movement.getTileToMoveToThisTurn(targetTile)
             } catch (ex: Exception) {
+                println("Exception in getTileToMoveToThisTurn: ${ex.message}")
+                ex.printStackTrace()
                 return@thread
             } // can't move here
 
@@ -224,7 +226,9 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
                     if (selectedUnits.size > 1) { // We have more tiles to move
                         moveUnitToTargetTile(selectedUnits.subList(1, selectedUnits.size), targetTile)
                     } else removeUnitActionOverlay() //we're done here
-                } catch (e: Exception) {
+                } catch (ex: Exception) {
+                    println("Exception in moveUnitToTargetTile: ${ex.message}")
+                    ex.printStackTrace()
                 }
             }
         }
