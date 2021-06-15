@@ -1,7 +1,5 @@
 package com.unciv.ui.overviewscreen
 
-import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.Input
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
@@ -20,6 +18,8 @@ import com.unciv.models.translations.tr
 import com.unciv.ui.pickerscreens.PromotionPickerScreen
 import com.unciv.ui.trade.DiplomacyScreen
 import com.unciv.ui.utils.*
+import com.unciv.ui.utils.KeyPressDispatcher.Companion.keyboardAvailable
+import com.unciv.ui.utils.StaticTooltip.Companion.addStaticTip
 import java.text.DecimalFormat
 import kotlin.math.abs
 import kotlin.math.roundToInt
@@ -48,7 +48,6 @@ class EmpireOverviewScreen(private var viewingPlayer:CivilizationInfo, defaultPa
         // Buttons now hold their old label plus optionally an indicator for the shortcut key.
         // Implement this templated on UnitActionsTable.getUnitActionButton()
         val iconAndKey = ButtonDecorations.keyIconMap[name] ?: return   // category without decoration entry disappears
-        val keyboardAvailable = Gdx.input.isPeripheralAvailable(Input.Peripheral.HardwareKeyboard)
         val setCategoryAction = {
             centerTable.clear()
             centerTable.add(ScrollPane(table).apply { setOverscroll(false, false) })
@@ -65,7 +64,7 @@ class EmpireOverviewScreen(private var viewingPlayer:CivilizationInfo, defaultPa
         }
         button.add(name.toLabel(Color.WHITE)).pad(5f)
         if (!disabled && keyboardAvailable && iconAndKey.key != Char.MIN_VALUE) {
-            button.add("(${iconAndKey.key})".toLabel(Color.WHITE))
+            button.addStaticTip(iconAndKey.key)
             keyPressDispatcher[iconAndKey.key] = setCategoryAction
         }
         setCategoryActions[name] = setCategoryAction

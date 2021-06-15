@@ -21,6 +21,7 @@ import com.unciv.ui.newgamescreen.NewGameScreen
 import com.unciv.ui.pickerscreens.ModManagementScreen
 import com.unciv.ui.saves.LoadGameScreen
 import com.unciv.ui.utils.*
+import com.unciv.ui.utils.StaticTooltip.Companion.addStaticTip
 import kotlin.concurrent.thread
 
 class MainMenuScreen: CameraStageBaseScreen() {
@@ -38,6 +39,7 @@ class MainMenuScreen: CameraStageBaseScreen() {
         text: String,
         icon: String,
         key: Char? = null,
+        keyVisualOnly: Boolean = false,
         function: () -> Unit
     ): Table {
         val table = Table().pad(15f, 30f, 15f, 30f)
@@ -49,7 +51,9 @@ class MainMenuScreen: CameraStageBaseScreen() {
         table.onClick(function)
 
         if (key != null) {
-            keyPressDispatcher[key] = function
+            if (!keyVisualOnly)
+                keyPressDispatcher[key] = function
+            table.addStaticTip(key, 32f)
         }
         
         table.pack()
@@ -152,7 +156,8 @@ class MainMenuScreen: CameraStageBaseScreen() {
         init{
             // Using MainMenuScreen.getMenuButton - normally that would place key bindings into the
             // screen's key dispatcher, but we need them in this Popup's dispatcher instead.
-            // So we bind the keys separately.
+            // Thus the crutch with keyVisualOnly, we assign the key binding here but want
+            // The button to install the tooltip handler anyway.
 
             defaults().pad(10f)
 
@@ -164,7 +169,7 @@ class MainMenuScreen: CameraStageBaseScreen() {
                 screen.game.setScreen(newMapScreen)
                 screen.dispose()
             }
-            val newMapButton = screen.getMenuButton("New map", "OtherIcons/New", function = newMapAction) 
+            val newMapButton = screen.getMenuButton("New map", "OtherIcons/New", 'n', true, newMapAction) 
             newMapButton.background = tableBackground
             add(newMapButton).row()
             keyPressDispatcher['n'] = newMapAction 
@@ -175,7 +180,7 @@ class MainMenuScreen: CameraStageBaseScreen() {
                 screen.game.setScreen(loadMapScreen)
                 screen.dispose()
             }
-            val loadMapButton = screen.getMenuButton("Load map", "OtherIcons/Load", function = loadMapAction) 
+            val loadMapButton = screen.getMenuButton("Load map", "OtherIcons/Load", 'l', true, loadMapAction) 
             loadMapButton.background = tableBackground
             add(loadMapButton).row()
             keyPressDispatcher['l'] = loadMapAction
