@@ -45,7 +45,7 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
             cost *= civInfo.gameInfo.getDifficulty().aiUnitMaintenanceModifier
         
         for (unique in civInfo.getMatchingUniques("-[]% unit upkeep costs")) {
-            cost *= 1f - unique.params[0].toFloat()
+            cost *= 1f - unique.params[0].toFloat() / 100f
         }
         
         // Deprecated since 3.15

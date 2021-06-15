@@ -391,7 +391,7 @@
 	{
 		"name": "Autocracy",
 		"era": "Industrial era",
-		"uniques": ["-[33]% unit upkeep costs"],
+		"uniques": ["-33% unit upkeep costs"],
 		"policies": [
 			{
 				"name": "Populism",
