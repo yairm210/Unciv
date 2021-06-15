@@ -225,38 +225,40 @@
 		"era": "Medieval era",
 		"policies": [
 			{
+				"name": "Naval Tradition",
+				"uniques": ["+[1] Movement for all [military water] units", "+[1] Sight for all [military water] units",
+				 "Free [Great Admiral] appears", "+[2] Movement for all [Great Admiral] units"
+				],
+				"row": 1,
+				"column": 2
+			},
+			{
 				"name": "Trade Unions",
 				"uniques": ["Maintenance on roads & railroads reduced by [33]%", "[+2 Gold] from each Trade Route"],
 				"row": 1,
+				"column": 4
+			},
+			{
+				"name": "Merchant Navy",
+				"uniques": ["[+3 Production] [in all coastal cities]"],
+				"requires": ["Naval Tradition"],
+				"row": 2,
 				"column": 2
 			},
 			{
 				"name": "Mercantilism",
-				"uniques": ["Cost of purchasing items in cities reduced by [25]%"],
-				"row": 1,
-				"column": 5
-			},
-			{
-				"name": "Entrepreneurship",
-				"uniques": ["[Great Merchant] is earned [25]% faster", "[+1 Science] from every [Mint]", "[+1 Science] from every [Market]",
-					"[+1 Science] from every [Bank]", "[+1 Science] from every [Stock Exchange]" ],
+				"uniques": ["Cost of purchasing items in cities reduced by [25]%", "[+1 Science] from every [Mint]", "[+1 Science] from every [Market]",
+					"[+1 Science] from every [Bank]", "[+1 Science] from every [Stock Exchange]"],
 				"requires": ["Trade Unions"],
 				"row": 2,
-				"column": 2
-			},
-			{
-				"name": "Patronage",
-				"uniques": ["Cost of purchasing [Culture] buildings reduced by [50]%"],
-				"requires": ["Mercantilism"],
-				"row": 2,
-				"column": 5
+				"column": 4
 			},
 			{
 				"name": "Protectionism",
-				"uniques": ["+1 happiness from each type of luxury resource"],
-				"requires": ["Entrepreneurship","Patronage"],
+				"uniques": ["+[2] happiness from each type of luxury resource"],
+				"requires": ["Mercantilism"],
 				"row": 3,
-				"column": 3
+				"column": 4
 			},
 			{
 				"name": "Commerce Complete",

@@ -164,6 +164,7 @@ class CityInfo {
     fun isWorked(tileInfo: TileInfo) = workedTiles.contains(tileInfo.position)
 
     fun isCapital(): Boolean = cityConstructions.builtBuildings.contains(capitalCityIndicator())
+    fun isCoastal(): Boolean = centerTileInfo.isCoastalTile()
     fun capitalCityIndicator(): String {
         val indicatorBuildings = getRuleset().buildings.values.asSequence().filter { it.uniques.contains("Indicates the capital city") }
         val civSpecificBuilding = indicatorBuildings.firstOrNull { it.uniqueTo == civInfo.civName }
@@ -470,7 +471,7 @@ class CityInfo {
         return when (filter) {
             "in this city" -> true
             "in all cities" -> true
-            "in all coastal cities" -> getCenterTile().isCoastalTile()
+            "in all coastal cities" -> isCoastal()
             "in capital" -> isCapital()
             "in all non-occupied cities" -> !cityStats.hasExtraAnnexUnhappiness() || isPuppet
             "in all cities with a world wonder" -> cityConstructions.getBuiltBuildings().any { it.isWonder }
