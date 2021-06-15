@@ -348,7 +348,7 @@ class MapGenerationRandomness{
                         .sortedBy { it.value }.map { it.key }
                 val firstKeyWithTilesLeft = orderedKeys
                         .first { availableTiles.any { tile -> tile.baseTerrain== it} }
-                val chosenTile = availableTiles.filter { it.baseTerrain==firstKeyWithTilesLeft }.random()
+                val chosenTile = availableTiles.filter { it.baseTerrain==firstKeyWithTilesLeft }.random(RNG)
                 availableTiles = availableTiles.filter { it.aerialDistanceTo(chosenTile) > distanceBetweenResources }
                 chosenTiles.add(chosenTile)
                 baseTerrainsToChosenTiles[firstKeyWithTilesLeft] = baseTerrainsToChosenTiles[firstKeyWithTilesLeft]!!+1
