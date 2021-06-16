@@ -112,8 +112,9 @@ class BaseUnit : INamed, IConstruction {
 
     override fun getGoldCost(civInfo: CivilizationInfo): Int {
         var cost = getBaseGoldCost(civInfo)
-        for (unique in civInfo.getMatchingUniques("Gold cost of purchasing units -[]%")) {
-            cost *= 1f - unique.params[0].toFloat() / 100f
+        for (unique in civInfo.getMatchingUniques("Gold cost of purchasing [] units -[]%")) {
+            if (matchesFilter(unique.params[0]))
+                cost *= 1f - unique.params[1].toFloat() / 100f
         }
         
         // Deprecated since 3.15
