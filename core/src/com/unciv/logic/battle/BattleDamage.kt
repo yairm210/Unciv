@@ -20,18 +20,16 @@ object BattleDamage {
 
         val civInfo = combatant.getCivInfo()
         if (combatant is MapUnitCombatant) {
-            for (unique in combatant.unit.getMatchingUniques("+[]% Strength vs []")) {
+            for (unique in 
+                    combatant.unit.getMatchingUniques("+[]% Strength vs []") +
+                    civInfo.getMatchingUniques("+[]% Strength vs []")
+            ) {
                 if (enemy.matchesCategory(unique.params[1]))
                     modifiers.add("vs [${unique.params[1]}]", unique.params[0].toInt())
             }
             for (unique in combatant.unit.getMatchingUniques("-[]% Strength vs []")) {
                 if (enemy.matchesCategory(unique.params[1]))
                     modifiers.add("vs [${unique.params[1]}]", -unique.params[0].toInt())
-            }
-            for (unique in civInfo.getMatchingUniques("+[]% Strength vs []")) {
-                if (enemy.matchesCategory(unique.params[1])) {
-                    modifiers.add("vs [${unique.params[1]}]", unique.params[0].toInt())
-                }
             }
 
             for (unique in combatant.unit.getMatchingUniques("+[]% Combat Strength"))
@@ -99,9 +97,10 @@ object BattleDamage {
             modifiers["Difficulty"] =
                 (civInfo.gameInfo.getDifficulty().barbarianBonus * 100).toInt()
             // Deprecated since 3.14.17
-            if (civInfo.hasUnique("+25% bonus vs Barbarians")) {
-                modifiers["vs Barbarians (deprecated)"] = 25
-            }
+                if (civInfo.hasUnique("+25% bonus vs Barbarians")) {
+                    modifiers["vs Barbarians (deprecated)"] = 25
+                }
+            //
         }
 
         return modifiers
