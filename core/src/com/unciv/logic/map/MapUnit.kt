@@ -214,6 +214,7 @@ class MapUnit {
                 visibilityRange += unique.params[0].toInt()
         if (hasUnique("+2 Visibility Range")) visibilityRange += 2 // This shouldn't be stackable
         if (hasUnique("Limited Visibility")) visibilityRange -= 1
+        // Deprecated since 3.15.1
         if (civInfo.hasUnique("+1 Sight for all land military units") && type.isMilitary() && type.isLandUnit())
             visibilityRange += 1
         
