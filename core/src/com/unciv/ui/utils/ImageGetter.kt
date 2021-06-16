@@ -21,6 +21,7 @@ import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.stats.Stats
 import kotlin.math.atan2
+import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.sqrt
 
@@ -346,7 +347,7 @@ object ImageGetter {
         fun addColor(color: Color, percentage: Float): VerticalProgressBar {
             val bar = getWhiteDot()
             bar.color = color
-            bar.setSize(width, height * min(percentage, 1f))
+            bar.setSize(width, height *  max(min(percentage, 1f),0f)) //clamp between 0 and 1
             addActor(bar)
             return this
         }
