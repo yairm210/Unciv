@@ -50,7 +50,7 @@ String constants should be consts, use StringBuilders (or just ArrayLists of str
 
 One thing I did not expect to be such an issue is intermediate lists when sorting and mapping.
 
-But appparently, the memory allocation for these tasks is Serious Business.
+But apparently, the memory allocation for these tasks is Serious Business.
 
 So whenever possible, take your list and .asSequence() it before actiating list operations - this results in huge savings of both time and memory!
 
