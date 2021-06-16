@@ -283,12 +283,6 @@ open class TileInfo {
         for (unique in improvement.uniqueObjects)
             if (unique.placeholderText == "[] once [] is discovered" && observingCiv.tech.isResearched(unique.params[1]))
                 stats.add(unique.stats)
-        
-        for (unique in observingCiv.getMatchingUniques("[] from every [] improvement")) {
-            if (improvement.name == unique.params[1]) {
-                stats.add(unique.stats)
-            }
-        }
 
         if (city != null) {
             val cityWideUniques = city.cityConstructions.builtBuildingUniqueMap.getUniques("[] from [] tiles in this city")

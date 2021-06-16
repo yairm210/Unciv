@@ -431,7 +431,7 @@
         {
             "name": "Communism",
             "requires": ["Socialism"],
-			"uniques": ["[+1 Production] [in all cities]", "[+1 Production] from every [Mine] improvement", "[+1 Production] from every [Quarry] improvement"],
+			"uniques": ["[+1 Production] [in all cities]", "[+1 Production] from every [Mine]", "[+1 Production] from every [Quarry]"],
             "row": 3,
             "column": 3
         },

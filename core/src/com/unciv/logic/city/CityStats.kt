@@ -340,10 +340,6 @@ class CityStats {
         return false
     }
 
-    // WHY is this function in this class? It doesn't have to do anything with a city's stats,
-    // only whether or not it is connected to the capital? Shouldn't this just be in cityInfo????
-    // Yes, there are properties depending on whether or not this is the case, but it is in itself
-    // not a stat, so those properties should just call cityInfo.isConnectedToCapital() instead.
     fun isConnectedToCapital(roadType: RoadStatus): Boolean {
         if (cityInfo.civInfo.cities.count() < 2) return false// first city!
 
