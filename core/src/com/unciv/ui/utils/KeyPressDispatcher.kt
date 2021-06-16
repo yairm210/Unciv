@@ -1,5 +1,6 @@
 package com.unciv.ui.utils
 
+import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
 import com.badlogic.gdx.scenes.scene2d.EventListener
 import com.badlogic.gdx.scenes.scene2d.InputEvent
@@ -192,4 +193,8 @@ class KeyPressDispatcher(val name: String? = null) : HashMap<KeyCharAndCode, (()
             checkInstall()
         }
 
+    companion object {
+        /** Tests presence of a physical keyboard - static here as convenience shortcut only */
+        val keyboardAvailable = Gdx.input.isPeripheralAvailable(Input.Peripheral.HardwareKeyboard)
+    }
 }

@@ -1,3 +1,15 @@
+## 3.15.1
+
+By xlenstra:
+- Updated the culture victory so it now requires the Utopia Project to be built 
+- Updated Commerce and Commerce branches to G&K 
+
+By SomeTroglodyte:
+- Show promises not to settle
+- Shortcut tooltips indicators 
+
+Map RNG reproducibility fix - By r3versi
+
 ## 3.15.0
 
 Updated Tradition, Honor and Liberty branches to G&K rules - By xlenstra
