@@ -94,5 +94,14 @@ class TileImprovement : NamedStats() {
                 && it.params[0] == name
         }.any()
     }
+    
+    fun matchesFilter(filter: String): Boolean {
+        return when (filter) {
+            name -> true
+            "All" -> true
+            "Great Improvement" -> isGreatImprovement()
+            else -> false
+        }
+    }
 }
 

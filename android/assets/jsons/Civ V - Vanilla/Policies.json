@@ -384,7 +384,7 @@
 			},
 			{
 				"name": "Freedom Complete",
-				"uniques": ["Tile yield from [Great Improvements] +[100]%", "Golden Age length increased by [50]%"]
+				"uniques": ["+[100]% yield from [Great Improvements]", "Golden Age length increased by [50]%"]
 			}
 		]
 	},

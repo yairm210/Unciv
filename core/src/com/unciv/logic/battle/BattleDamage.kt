@@ -236,7 +236,7 @@ object BattleDamage {
         } else if (defender is CityCombatant) {
             
             modifiers["Defensive Bonus"] = defender.city.civInfo.getMatchingUniques("+[]% Defensive strength for cities")
-                .fold(0f) { sum, it -> sum + it.params[0].toFloat() / 100f }.toInt()
+                .map { it.params[0].toFloat() / 100f }.sum().toInt()
             
         }
 

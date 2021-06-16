@@ -286,18 +286,19 @@ open class TileInfo {
 
         if (city != null) {
             val cityWideUniques = city.cityConstructions.builtBuildingUniqueMap.getUniques("[] from [] tiles in this city")
-            val civWideUniques = city.civInfo.getMatchingUniques("[] from every []")
             val improvementUniques = improvement.uniqueObjects.filter {
                 it.placeholderText == "[] on [] tiles once [] is discovered"
                         && observingCiv.tech.isResearched(it.params[2])
             }
-            for (unique in cityWideUniques + civWideUniques + improvementUniques) {
-                if (improvement.name == unique.params[1]
-                        || unique.params[1] == "Great Improvement" && improvement.isGreatImprovement()
-                        || unique.params[1] == "Fresh water" && isAdjacentToFreshwater
-                        || unique.params[1] == "non-fresh water" && !isAdjacentToFreshwater
-                )
+            for (unique in cityWideUniques + improvementUniques) {
+                if (matchesUniqueFilter(unique.params[1]))
                     stats.add(unique.stats)
+            }
+
+            for (unique in city.civInfo.getMatchingUniques("[] from every []")) {
+                if (improvement.matchesFilter(unique.params[1])) {
+                    stats.add(unique.stats)
+                }
             }
         }
 
@@ -312,8 +313,8 @@ open class TileInfo {
                 stats.add(unique.stats.times(numberOfBonuses.toFloat()))
             }
         
-        for (unique in observingCiv.getMatchingUniques("Tile yield from [] +[]%")) 
-            if (matchesUniqueFilter(unique.params[0])) 
+        for (unique in observingCiv.getMatchingUniques("+[]% yield from []")) 
+            if (improvement.matchesFilter(unique.params[0])) 
                 stats.timesInPlace(1f + unique.params[1].toFloat() / 100f)
         
         // Deprecated since 3.15
@@ -398,11 +399,12 @@ open class TileInfo {
             "Land" -> isLand
             "Coastal" -> isCoastalTile()
             "River" -> isAdjacentToRiver()
+            "Fresh water" -> isAdjacentToFreshwater
+            "non-fresh water" -> !isAdjacentToFreshwater
             improvement -> true
             naturalWonder -> true
             "Foreign Land" -> civInfo != null && !isFriendlyTerritory(civInfo)
             "Friendly Land" -> civInfo != null && isFriendlyTerritory(civInfo)
-            "Great Improvements" -> containsGreatImprovement()
             else -> {
                 if (terrainFeatures.contains(filter)) return true
                 if (baseTerrainObject.uniques.contains(filter)) return true
