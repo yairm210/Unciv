@@ -12,12 +12,17 @@ data class TradeOffer(val name:String, val type:TradeType, var amount:Int = 1, v
     init {
         // Duration needs to be part of the variables defined in the primary constructor, 
         // so that it will be copied over with the automatically generated copy()
-        val gameSpeed = UncivGame.Current.gameInfo.gameParameters.gameSpeed
-        duration = when {
-                type.isImmediate -> -1     // -1 for offers that are immediate (e.g. gold transfer)
-                name == Constants.peaceTreaty -> 10
-                gameSpeed == GameSpeed.Quick -> 25
-                else -> (30 * gameSpeed.modifier).toInt()
+        
+        duration =
+            if (type.isImmediate) -1 // -1 for offers that are immediate (e.g. gold transfer)
+            else {
+                // Do *not* access UncivGame.Current.gameInfo in the default constructor!
+                val gameSpeed = UncivGame.Current.gameInfo.gameParameters.gameSpeed
+                when {
+                    name == Constants.peaceTreaty -> 10
+                    gameSpeed == GameSpeed.Quick -> 25
+                    else -> (30 * gameSpeed.modifier).toInt()
+                }
             }
     }
 
