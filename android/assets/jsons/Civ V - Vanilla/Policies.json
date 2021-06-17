@@ -226,7 +226,7 @@
 		"policies": [
 			{
 				"name": "Naval Tradition",
-				"uniques": ["+[1] Movement for all [military water] units", "+[1] Sight for all [military water] units",
+				"uniques": ["+[1] Movement for all [{Military} {Water}] units", "+[1] Sight for all [{Military} {Water}] units",
 				 "Free [Great Admiral] appears", "+[2] Movement for all [Great Admiral] units"
 				],
 				"row": 1,

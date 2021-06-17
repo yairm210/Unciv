@@ -892,6 +892,9 @@ class MapUnit {
     }
 
     fun matchesFilter(filter: String): Boolean {
+        if (filter.contains('{')) // multiple types at once - AND logic. Looks like:"{Military} {Land}"
+            return filter.removePrefix("{").removeSuffix("}").split("} {")
+                .all { matchesFilter(it) }
         return when (filter) {
             "Wounded", "wounded units" -> health < 100
             "Barbarians", "Barbarian" -> civInfo.isBarbarian()

@@ -242,7 +242,6 @@ class BaseUnit : INamed, IConstruction {
             "non-air" -> !unitType.isAirUnit()
             "Military", "military units" -> unitType.isMilitary()
             "military water" -> unitType.isMilitary() && unitType.isWaterUnit()
-            "military land" -> unitType.isMilitary() && unitType.isLandUnit()
             else -> false
         }
     }
