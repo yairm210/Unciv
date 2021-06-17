@@ -133,5 +133,4 @@ class StatsOverviewTable (
         greatPeopleTable.pack()
         return greatPeopleTable
     }
-
 }
