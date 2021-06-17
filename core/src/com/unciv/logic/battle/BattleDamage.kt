@@ -147,8 +147,11 @@ object BattleDamage {
                 }
             }
 
-            if (attacker.getCivInfo().policies.activeCombatBonuses.any())
-                modifiers["Temporary Bonus"] = attacker.getCivInfo().policies.getTemporaryCombatBonus().toInt()
+            for (unique in attacker.getCivInfo().getMatchingUniques("+[]% attack strength to all [] units for [] turns")) {
+                if (attacker.matchesCategory(unique.params[1])) {
+                    modifiers.add("Temporary Bonus", unique.params[0].toInt())
+                }
+            }
 
             if (defender is CityCombatant &&
                 attacker.getCivInfo()

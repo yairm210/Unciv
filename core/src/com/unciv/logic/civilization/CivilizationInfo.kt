@@ -93,6 +93,11 @@ class CivilizationInfo {
 
     /** See DiplomacyManager.flagsCountdown to why not eEnum */
     private var flagsCountdown = HashMap<String, Int>()
+    /** Arraylist instead of HashMap as there might be doubles 
+     * Pairs of Uniques and the amount of turns they are still active
+     * If the counter reaches 0 at the end of a turn, it is removed immediately
+     */
+    var temporaryUniques = ArrayList<Pair<Unique, Int>>()
 
     // if we only use lists, and change the list each time the cities are changed,
     // we won't get concurrent modification exceptions.
@@ -136,6 +141,7 @@ class CivilizationInfo {
         toReturn.naturalWonders.addAll(naturalWonders)
         toReturn.cityStatePersonality = cityStatePersonality
         toReturn.flagsCountdown.putAll(flagsCountdown)
+        toReturn.temporaryUniques.addAll(temporaryUniques)
         return toReturn
     }
 
@@ -249,7 +255,8 @@ class CivilizationInfo {
                 } +
                 policies.policyUniques.getUniques(uniqueTemplate) +
                 tech.getTechUniques().filter { it.placeholderText == uniqueTemplate } +
-                religionManager.getUniques().filter { it.placeholderText == uniqueTemplate }
+                religionManager.getUniques().filter { it.placeholderText == uniqueTemplate } +
+                temporaryUniques.filter { it.first.placeholderText == uniqueTemplate }.map { it.first }
     }
 
     //region Units
@@ -553,6 +560,12 @@ class CivilizationInfo {
 
         for (city in cities.toList()) { // a city can be removed while iterating (if it's being razed) so we need to iterate over a copy
             city.endTurn()
+        }
+        
+        // Update turn counter for temporary uniques
+        for (unique in temporaryUniques.toList()) {
+            temporaryUniques.remove(unique)
+            if (unique.second > 1) temporaryUniques.add(Pair(unique.first, unique.second - 1))
         }
 
         goldenAges.endTurn(getHappiness())

@@ -431,7 +431,7 @@
 			},
 			{
 				"name": "Autocracy Complete",
-				"uniques": ["+[25]% attack bonus to all Military Units for [50] turns"]
+				"uniques": ["+[25]% attack strength to all [Military] units for [50] turns"]
 			}
 		]
 	}

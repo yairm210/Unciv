@@ -30,7 +30,6 @@ class PolicyManager {
 
     @Deprecated("Deprecated since 3.15")
     var autocracyCompletedTurns = 0
-    var activeCombatBonuses = mutableSetOf<Pair<Float, Int>>()
 
     @Deprecated("Deprecated since 3.14.17") // Replaced with cultureBuildingsAdded
     var legalismState = HashMap<String, String>() // Maps cities to buildings
@@ -45,7 +44,6 @@ class PolicyManager {
         toReturn.storedCulture = storedCulture
         toReturn.cultureBuildingsAdded.putAll(cultureBuildingsAdded)
         toReturn.specificBuildingsAdded.putAll(specificBuildingsAdded)
-        toReturn.activeCombatBonuses = activeCombatBonuses.map { Pair(it.first, it.second) }.toMutableSet()
 
         // Deprecated since 3.15 left for backwards compatibility
             toReturn.legalismState.putAll(cultureBuildingsAdded)
@@ -93,13 +91,6 @@ class PolicyManager {
 
     fun endTurn(culture: Int) {
         addCulture(culture)
-        for (boost in activeCombatBonuses) {
-            // We can't decrement in place, as pairs are immutable, so we have to remove either way
-            activeCombatBonuses.remove(boost)
-            if (boost.second > 0) {
-                activeCombatBonuses.add(Pair(boost.first, boost.second-1))
-            }
-        }
     }
 
     // from https://forums.civfanatics.com/threads/the-number-crunching-thread.389702/
@@ -233,14 +224,5 @@ class PolicyManager {
             freeBuildings.add(building.key)
         }
         return freeBuildings
-    }
-
-    fun addTemporaryCombatBonus(combatBonus: Float, turnsCount: Int) {
-        // The boost starts being active right away, so we do indeed get a free turn of boost this way.
-        activeCombatBonuses.add(Pair(combatBonus, turnsCount))
-    }
-
-    fun getTemporaryCombatBonus(): Float {
-        return activeCombatBonuses.map { it.first }.sum()
     }
 }

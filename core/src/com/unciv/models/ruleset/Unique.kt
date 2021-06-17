@@ -86,10 +86,9 @@ object UniqueTriggerActivation {
 
             "Quantity of strategic resources produced by the empire increased by 100%" -> civInfo.updateDetailedCivResources()
             // Deprecated since 3.15
-                "+20% attack bonus to all Military Units for 30 turns" -> civInfo.policies.addTemporaryCombatBonus(20f, 30)
+                "+20% attack bonus to all Military Units for 30 turns" -> civInfo.temporaryUniques.add(Pair(unique, 30))
             //
-            "+[]% attack bonus to all Military Units for [] turns" -> 
-                civInfo.policies.addTemporaryCombatBonus(unique.params[0].toFloat(), unique.params[1].toInt())
+            "+[]% attack strength to all [] Units for [] turns" -> civInfo.temporaryUniques.add(Pair(unique, unique.params[2].toInt()))
 
             "Reveals the entire map" -> civInfo.exploredTiles.addAll(civInfo.gameInfo.tileMap.values.asSequence().map { it.position })
 
@@ -98,12 +97,13 @@ object UniqueTriggerActivation {
                 val promotion = unique.params[1]
                 for (unit in civInfo.getCivUnits())
                     if (unit.matchesFilter(filter)
-                            || civInfo.gameInfo.ruleSet.unitPromotions.values.any {
-                                it.name == promotion && unit.type.name in it.unitTypes
-                            })
+                        || civInfo.gameInfo.ruleSet.unitPromotions.values.any {
+                            it.name == promotion && unit.type.name in it.unitTypes
+                        }
+                    ) {
                         unit.promotions.addPromotion(promotion, isFree = true)
+                    }
             }
         }
     }
-
 }
