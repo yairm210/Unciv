@@ -182,9 +182,7 @@ class CityStats {
 
         var unhappinessFromCitizens = cityInfo.population.population.toFloat()
         var unhappinessFromSpecialists = cityInfo.population.getNumberOfSpecialists().toFloat()
-        
-        unhappinessFromCitizens -= unhappinessFromSpecialists
-        
+        val baseUnhappinessFromSpecialists = cityInfo.population.getNumberOfSpecialists().toFloat()
         
         for (unique in civInfo.getMatchingUniques("Specialists only produce []% of normal unhappiness")) {
             unhappinessFromSpecialists *= (1f - unique.params[0].toFloat() / 100f)
@@ -194,7 +192,7 @@ class CityStats {
                 unhappinessFromSpecialists *= 0.5f
         //
         
-        unhappinessFromCitizens += unhappinessFromSpecialists
+        unhappinessFromCitizens += - baseUnhappinessFromSpecialists + unhappinessFromSpecialists 
 
         if (cityInfo.isPuppet)
             unhappinessFromCitizens *= 1.5f
@@ -511,8 +509,8 @@ class CityStats {
     private fun updateFoodEaten() {
         foodEaten = cityInfo.population.population.toFloat() * 2
         var foodEatenBySpecialists = 2f * cityInfo.population.getNumberOfSpecialists()
+        val baseFoodEatenBySpecialists = 2f * cityInfo.population.getNumberOfSpecialists()
         
-        foodEaten -= foodEatenBySpecialists
         for (unique in cityInfo.civInfo.getMatchingUniques("-[]% food consumption by specialists")) 
             foodEatenBySpecialists *= 1f - unique.params[0].toFloat() / 100f
         
@@ -521,6 +519,6 @@ class CityStats {
                 foodEatenBySpecialists *= 0.5f
         //
         
-        foodEaten += foodEatenBySpecialists
+        foodEaten += -baseFoodEatenBySpecialists + foodEatenBySpecialists
     }
 }
