@@ -15,7 +15,6 @@ import com.unciv.ui.utils.*
 class DiplomacyOverviewTable (
     private val viewingPlayer: CivilizationInfo,
     private val overviewScreen: EmpireOverviewScreen
-    //private val diplomacyGroupHeight:Float
 ): Table() {
 
     private var includeCityStates = false
