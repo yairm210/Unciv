@@ -214,6 +214,7 @@ class MapUnit {
                 visibilityRange += unique.params[0].toInt()
         if (hasUnique("+2 Visibility Range")) visibilityRange += 2 // This shouldn't be stackable
         if (hasUnique("Limited Visibility")) visibilityRange -= 1
+        // Deprecated since 3.15.1
         if (civInfo.hasUnique("+1 Sight for all land military units") && type.isMilitary() && type.isLandUnit())
             visibilityRange += 1
         
@@ -221,11 +222,7 @@ class MapUnit {
             if (type.isMilitary() && type.isWaterUnit() && civInfo.hasUnique("All military naval units receive +1 movement and +1 sight"))
                 visibilityRange += 1
         //
-        
 
-        for (unique in civInfo.getMatchingUniques("[] Sight when []"))
-            if (matchesFilter(unique.params[1]))
-                visibilityRange += unique.params[0].toInt()
         val tile = getTile()
         for (unique in tile.getAllTerrains().flatMap { it.uniqueObjects })
             if (unique.placeholderText == "[] Sight for [] units" && matchesFilter(unique.params[1]))

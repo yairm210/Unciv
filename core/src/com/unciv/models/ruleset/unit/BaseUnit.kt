@@ -241,6 +241,7 @@ class BaseUnit : INamed, IConstruction {
             "Air", "air units" -> unitType.isAirUnit()
             "non-air" -> !unitType.isAirUnit()
             "Military", "military units" -> unitType.isMilitary()
+            // Deprecated as of 3.15.2
             "military water" -> unitType.isMilitary() && unitType.isWaterUnit()
             else -> false
         }
