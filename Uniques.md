@@ -102,6 +102,7 @@ unitFilters allow us to activate uniques for specific units, based on:
 - "All", as a catch all for all units.
 - "Embarked"
 - "Wounded"
+- Any combination of the above (will match only if all match). The format is "{filter1} {filter2}" and can match any number of filters. For example:"{Military} {Water}" units, "{Wounded} {Armor}" units, etc.
 
 #### cityFilter
 
