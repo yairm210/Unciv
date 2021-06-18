@@ -284,7 +284,12 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
         return true
     }
 
-
+    /**
+     * Displace a unit - choose a viable tile close by if possible and 'teleport' the unit there.
+     * This will not use movement points or check for a possible route.
+     * It is used e.g. if an enemy city expands its borders, or trades or diplomacy change a unit's
+     * allowed position.
+     */
     fun teleportToClosestMoveableTile() {
         var allowedTile: TileInfo? = null
         var distance = 0
@@ -304,8 +309,12 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
             }
         }
         unit.removeFromTile() // we "teleport" them away
-        if (allowedTile != null) // it's possible that there is no close tile, and all the guy's cities are full. Screw him then.
+        if (allowedTile != null) { // it's possible that there is no close tile, and all the guy's cities are full. Screw him then.
             unit.putInTile(allowedTile)
+            // Cancel sleep or fortification if forcibly displaced - for now, leave movement / auto / explore orders
+            if (unit.isSleeping() || unit.isFortified())
+                unit.action = null
+        }
     }
 
     fun moveToTile(destination: TileInfo) {
