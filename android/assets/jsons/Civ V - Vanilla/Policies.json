@@ -219,7 +219,7 @@
 				"requires": ["Scholasticism","Aesthetics"],
 				"uniques": ["Allied City-States will occasionally gift Great People"],
 				// The mechanics for this are wonky, but basically the following happens:
-				// Based on the game speed, a timer with some amount of turns is set (quick: 25, regular: 40, epic/marathon: ???) 
+				// Based on the game speed, a timer with some amount of turns is set, 40 on regular speed
 				// Every turn, 1 is subtracted from this timer, as long as you have at least 1 city state ally
 				// So no, the number of city-state allies does not matter for this. You have a global timer for all of them combined.
 				// If the timer reaches the amount of city-state allies you have (or 10, whichever is lower), it is reset.

@@ -753,14 +753,10 @@ class CivilizationInfo {
         addNotification( "[${givingCityState.civName}] gave us a [${giftedUnit.name}] as a gift!", locations, givingCityState.civName, giftedUnit.name)
     }
 
-    fun turnsForGreatPersonFromCityState(): Int {
-        return when (gameInfo.gameParameters.gameSpeed) {
-            GameSpeed.Quick -> 25
-            GameSpeed.Standard -> 40
-            GameSpeed.Epic -> 50 // This value is based on absolutely nothing, do check this sometime
-            GameSpeed.Marathon -> 60 // This value is based on absolutely nothing, do check this sometime
-        } + -2 + Random().nextInt(5) // And so are these two bounds
-    }
+    fun turnsForGreatPersonFromCityState(): Int = (40 + -2 + Random().nextInt(5)) * gameInfo.gameParameters.gameSpeed.modifier.toInt()
+        // There seems to be some randomness in the amount of turns between receiving each great person,
+        // but I have no idea what the actual lower and upper bound are, so this is just an approximation
+    
 
     fun getAllyCiv() = allyCivName
 
