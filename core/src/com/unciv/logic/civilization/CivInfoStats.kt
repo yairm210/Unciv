@@ -16,7 +16,11 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
 
     private fun getUnitMaintenance(): Int {
         val baseUnitCost = 0.5f
-        val freeUnits = 3
+        var freeUnits = 3
+        for (unique in civInfo.getMatchingUniques("[] units cost no maintenance")) {
+            freeUnits += unique.params[0].toInt()
+        }
+        
         var unitsToPayFor = civInfo.getCivUnits()
         if (civInfo.hasUnique("Units in cities cost no Maintenance"))
         // Only land military units can truly "garrison"

@@ -65,6 +65,10 @@ object Battle {
         if (defender.isDefeated() && defender is CityCombatant && attacker is MapUnitCombatant && attacker.isMelee() && !attacker.unit.hasUnique("Unable to capture cities"))
             conquerCity(defender.city, attacker)
 
+        // Exploring units surviving an attack should "wake up"
+        if (!defender.isDefeated() && defender is MapUnitCombatant && defender.unit.action == Constants.unitActionExplore)
+            defender.unit.action = null
+
         // we're a melee unit and we destroyed\captured an enemy unit
         postBattleMoveToAttackedTile(attacker, defender, attackedTile)
 

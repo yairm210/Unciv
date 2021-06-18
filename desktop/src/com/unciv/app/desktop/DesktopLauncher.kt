@@ -146,6 +146,12 @@ internal object DesktopLauncher {
         settings.combineSubdirectories = true
         settings.pot = true
         settings.fast = true
+        // Set some additional padding and enable duplicatePadding to prevent image edges from bleeding into each other due to mipmapping
+        settings.paddingX = 8
+        settings.paddingY = 8
+        settings.duplicatePadding = true
+        settings.filterMin = Texture.TextureFilter.MipMapLinearLinear
+        settings.filterMag = Texture.TextureFilter.MipMapLinearLinear // I'm pretty sure this doesn't make sense for magnification, but setting it to Linear gives strange results
 
         if (File("../Images").exists()) { // So we don't run this from within a fat JAR
             packImagesIfOutdated(settings, "../Images", ".", "game")
