@@ -16,7 +16,11 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
 
     private fun getUnitMaintenance(): Int {
         val baseUnitCost = 0.5f
-        val freeUnits = 3
+        var freeUnits = 3
+        for (unique in civInfo.getMatchingUniques("[] units cost no maintenance")) {
+            freeUnits += unique.params[0].toInt()
+        }
+        
         var unitsToPayFor = civInfo.getCivUnits()
         if (civInfo.hasUnique("Units in cities cost no Maintenance"))
         // Only land military units can truly "garrison"
@@ -39,7 +43,15 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
         cost = cost.pow(1 + gameProgress / 3) // Why 3? To spread 1 to 1.33
         if (!civInfo.isPlayerCivilization())
             cost *= civInfo.gameInfo.getDifficulty().aiUnitMaintenanceModifier
-        if (civInfo.hasUnique("-33% unit upkeep costs")) cost *= 0.66f
+        
+        for (unique in civInfo.getMatchingUniques("-[]% unit upkeep costs")) {
+            cost *= 1f - unique.params[0].toFloat() / 100f
+        }
+        
+        // Deprecated since 3.15
+            if (civInfo.hasUnique("-33% unit upkeep costs")) cost *= 0.67f
+        //
+        
         return cost.toInt()
     }
 

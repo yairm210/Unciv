@@ -64,6 +64,12 @@ open class Stats() {
         for (stat in Stat.values()) hashMap[stat] = number * hashMap[stat]!!
         return Stats(hashMap)
     }
+    
+    fun timesInPlace(number: Float) {
+        val hashMap = toHashMap()
+        for (stat in Stat.values()) hashMap[stat] = number * hashMap[stat]!!
+        setStats(hashMap)
+    }
 
     fun isEmpty() = equals(Stats())
 

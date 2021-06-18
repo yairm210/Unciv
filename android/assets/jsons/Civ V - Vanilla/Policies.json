@@ -360,33 +360,33 @@
 			},
 			{
 				"name": "Universal Suffrage",
-				"uniques": ["[+1 Production] per [5] population in all cities"],
+				"uniques": ["+[33]% Defensive Strength for cities"],
 				"row": 1,
 				"column": 3
 			},
 			{
 				"name": "Civil Society",
-				"uniques": ["-50% food consumption by specialists"],
+				"uniques": ["-[50]% food consumption by specialists"],
 				"row": 1,
 				"column": 5
 			},
 			{
 				"name": "Free Speech",
-				"uniques": ["[+1 Culture] per [2] population in all cities"],
+				"uniques": ["[8] units cost no maintenance"],
 				"requires": ["Constitution"],
 				"row": 2,
 				"column": 1
 			},
 			{
 				"name": "Democracy",
-				"uniques": ["Specialists produce half normal unhappiness"],
+				"uniques": ["Specialists only produce [50]% of normal unhappiness"],
 				"requires": ["Civil Society"],
 				"row": 2,
 				"column": 5
 			},
 			{
 				"name": "Freedom Complete",
-				"uniques": ["Tile yield from Great Improvements +100%", "Golden Age length increased by [50]%"]
+				"uniques": ["+[100]% yield from [Great Improvements]", "Golden Age length increased by [50]%"]
 			}
 		]
 	},
