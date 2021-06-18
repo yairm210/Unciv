@@ -291,8 +291,12 @@ open class TileInfo {
                         && observingCiv.tech.isResearched(it.params[2])
             }
             for (unique in cityWideUniques + improvementUniques) {
-                if (matchesUniqueFilter(unique.params[1]))
-                    stats.add(unique.stats)
+                if (matchesUniqueFilter(unique.params[1])
+                    // Freshwater and non-freshwater cannot be moved to matchesUniqueFilter since that creates an enless feedback.
+                    // If you're attempting that, check that it works!
+                    || unique.params[1] == "Fresh water" && isAdjacentToFreshwater
+                    || unique.params[1] == "non-fresh water" && !isAdjacentToFreshwater)
+                        stats.add(unique.stats)
             }
 
             for (unique in city.civInfo.getMatchingUniques("[] from every []")) {
@@ -399,8 +403,6 @@ open class TileInfo {
             "Land" -> isLand
             "Coastal" -> isCoastalTile()
             "River" -> isAdjacentToRiver()
-            "Fresh water" -> isAdjacentToFreshwater
-            "non-fresh water" -> !isAdjacentToFreshwater
             improvement -> true
             naturalWonder -> true
             "Foreign Land" -> civInfo != null && !isFriendlyTerritory(civInfo)
