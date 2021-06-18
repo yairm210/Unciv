@@ -128,7 +128,7 @@ class BaseUnit : INamed, IConstruction {
     }
 
     fun getRejectionReason(cityConstructions: CityConstructions): String {
-        if (unitType.isWaterUnit() && !cityConstructions.cityInfo.getCenterTile().isCoastalTile())
+        if (unitType.isWaterUnit() && !cityConstructions.cityInfo.isCoastal())
             return "Can only build water units in coastal cities"
         val civInfo = cityConstructions.cityInfo.civInfo
         for (unique in uniqueObjects.filter { it.placeholderText == "Not displayed as an available construction without []" }) {
@@ -232,15 +232,19 @@ class BaseUnit : INamed, IConstruction {
     }
 
     fun matchesFilter(filter: String): Boolean {
-        if (filter == unitType.name) return true
-        if (filter == name) return true
-        if (filter == "All") return true
-        if ((filter == "Land" || filter == "land units") && unitType.isLandUnit()) return true
-        if ((filter == "Water" || filter == "water units") && unitType.isWaterUnit()) return true
-        if ((filter == "Air" || filter == "air units") && unitType.isAirUnit()) return true
-        if (filter == "non-air" && !unitType.isAirUnit()) return true
-        if ((filter == "Military" || filter == "military units") && unitType.isMilitary()) return true
-        return false
+        return when (filter) {
+            unitType.name -> true
+            name -> true
+            "All" -> true
+            "Land", "land units" -> unitType.isLandUnit()
+            "Water", "water units", "Water units" -> unitType.isWaterUnit()
+            "Air", "air units" -> unitType.isAirUnit()
+            "non-air" -> !unitType.isAirUnit()
+            "Military", "military units" -> unitType.isMilitary()
+            // Deprecated as of 3.15.2
+            "military water" -> unitType.isMilitary() && unitType.isWaterUnit()
+            else -> false
+        }
     }
 
     fun isGreatPerson() = uniqueObjects.any { it.placeholderText == "Great Person - []" }

@@ -203,7 +203,8 @@
 		"greatPersonPoints": {"gold": 1},
 		"isWonder": true,
 		"providesFreeBuilding":  "Lighthouse",
-		"uniques": ["Must be next to [Coast]", "All military naval units receive +1 movement and +1 sight"],
+		"uniques": ["Must be next to [Coast]", "+[1] Movement for all [{Military} {Water}] units",
+			"+[1] Sight for all [{Military} {Water}] units"],
 		"requiredTech": "Optics",
 		"quote": "'They that go down to the sea in ships, that do business in great waters; these see the works of the Lord, and his wonders in the deep.' - The Bible, Psalms 107:23-24"
 	},

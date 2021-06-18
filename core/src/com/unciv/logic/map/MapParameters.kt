@@ -140,8 +140,12 @@ class MapParameters {
     var resourceRichness = 0.1f
     var waterThreshold = 0f
 
-    fun resetAdvancedSettings() {
+    fun reseed() {
         seed = System.currentTimeMillis()
+    }
+
+    fun resetAdvancedSettings() {
+        reseed()
         tilesPerBiomeArea = 6
         maxCoastExtension = 2
         elevationExponent = 0.7f

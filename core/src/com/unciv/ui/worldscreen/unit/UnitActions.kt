@@ -6,6 +6,8 @@ import com.unciv.logic.automation.UnitAutomation
 import com.unciv.logic.automation.WorkerAutomation
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.NotificationIcon
+import com.unciv.logic.civilization.PlayerType
+import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.RoadStatus
@@ -17,6 +19,7 @@ import com.unciv.models.ruleset.Building
 import com.unciv.models.translations.tr
 import com.unciv.ui.pickerscreens.ImprovementPickerScreen
 import com.unciv.ui.pickerscreens.PromotionPickerScreen
+import com.unciv.ui.utils.Sounds
 import com.unciv.ui.utils.YesNoPopup
 import com.unciv.ui.utils.hasOpenPopups
 import com.unciv.ui.worldscreen.WorldScreen
@@ -139,18 +142,68 @@ object UnitActions {
         if (getFoundCityAction != null) actionList += getFoundCityAction
     }
 
+    /** Produce a [UnitAction] for founding a city.
+     * @param unit The unit to do the founding.
+     * @param tile The tile to found a city on.
+     * @return null if impossible (the unit lacks the ability to found), 
+     * or else a [UnitAction] 'defining' the founding. 
+     * The [action][UnitAction.action] field will be null if the action cannot be done here and now   
+     * (no movement left, too close to another city).
+      */ 
     fun getFoundCityAction(unit: MapUnit, tile: TileInfo): UnitAction? {
         if (!unit.hasUnique("Founds a new city") || tile.isWater) return null
+
+        if (unit.currentMovement <= 0 || tile.getTilesInDistance(3).any { it.isCityCenter() })
+            return UnitAction(UnitActionType.FoundCity, uncivSound = UncivSound.Silent, action = null)
+
+        val foundAction = {
+            Sounds.play(UncivSound.Chimes)
+            UncivGame.Current.settings.addCompletedTutorialTask("Found city")
+            unit.civInfo.addCity(tile.position)
+            if (tile.ruleset.tileImprovements.containsKey("City center"))
+                tile.improvement = "City center"
+            unit.destroy()
+            UncivGame.Current.worldScreen.shouldUpdate = true
+        }
+        
+        if (unit.civInfo.playerType == PlayerType.AI)
+            return UnitAction(UnitActionType.FoundCity,  uncivSound = UncivSound.Silent, action = foundAction)
+
         return UnitAction(
                 type = UnitActionType.FoundCity,
-                uncivSound = UncivSound.Chimes,
+                uncivSound = UncivSound.Silent,
                 action = {
-                    UncivGame.Current.settings.addCompletedTutorialTask("Found city")
-                    unit.civInfo.addCity(tile.position)
-                    if (tile.ruleset.tileImprovements.containsKey("City center"))
-                        tile.improvement = "City center"
-                    unit.destroy()
-                }.takeIf { unit.currentMovement > 0 && !tile.getTilesInDistance(3).any { it.isCityCenter() } })
+                    // check if we would be breaking a promise
+                    val leaders = TestPromiseNotToSettle(unit.civInfo, tile)
+                    if (leaders == null)
+                        foundAction()
+                    else {
+                        // ask if we would be breaking a promise
+                        val text = "Do you want to break your promise to [$leaders]?"
+                        YesNoPopup(text, foundAction, UncivGame.Current.worldScreen).open(force = true)
+                    }
+                }
+            )
+    }
+
+    /**
+     * Checks whether a civ founding a city on a certain tile would break a promise.
+     * @param civInfo The civilization trying to found a city 
+     * @param tile The tile where the new city would go 
+     * @return null if no promises broken, else a String listing the leader(s) we would p* off.
+     */
+    private fun TestPromiseNotToSettle(civInfo: CivilizationInfo, tile: TileInfo): String? {
+        val brokenPromises = HashSet<String>()
+        for (otherCiv in civInfo.getKnownCivs().filter { it.isMajorCiv() && !civInfo.isAtWarWith(it) }) {
+            val diplomacyManager = otherCiv.getDiplomacyManager(civInfo)
+            if (diplomacyManager.hasFlag(DiplomacyFlags.AgreedToNotSettleNearUs)) {
+                val citiesWithin6Tiles = otherCiv.cities
+                    .filter { it.getCenterTile().aerialDistanceTo(tile) <= 6 }
+                    .filter { otherCiv.exploredTiles.contains(it.location) }
+                if (citiesWithin6Tiles.isNotEmpty()) brokenPromises += otherCiv.getLeaderDisplayName()
+            }
+        }
+        return if(brokenPromises.isEmpty()) null else brokenPromises.joinToString(", ")
     }
 
     private fun addPromoteAction(unit: MapUnit, actionList: ArrayList<UnitAction>) {

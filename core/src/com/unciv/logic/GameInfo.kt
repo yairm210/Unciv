@@ -369,7 +369,12 @@ class GameInfo {
                 if (!ruleSet.technologies.containsKey(tech))
                     civinfo.tech.techsResearched.remove(tech)
             for (policy in civinfo.policies.adoptedPolicies.toList())
-                if (!ruleSet.policies.containsKey(policy))
+                // So these two policies are deprecated since 3.14.17
+                // However, we still need to convert save files that have those to valid save files
+                // The easiest way to do this, is just to allow them here, and filter them out in
+                // the policyManager class.
+                // Yes, this is ugly, but it should be temporary, and it works.
+                if (!ruleSet.policies.containsKey(policy) && !(policy == "Entrepreneurship" || policy == "Patronage"))
                     civinfo.policies.adoptedPolicies.remove(policy)
         }
     }

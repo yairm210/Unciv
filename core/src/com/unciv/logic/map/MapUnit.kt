@@ -140,12 +140,13 @@ class MapUnit {
 
         var movement = baseUnit.movement
         movement += getUniques().count { it.text == "+1 Movement" }
-
-        if (type.isWaterUnit() && !type.isCivilian()
-            && civInfo.hasUnique("All military naval units receive +1 movement and +1 sight")
-        )
-            movement += 1
-
+        
+        // Deprecated since 3.14.17
+            if (type.isMilitary() && type.isWaterUnit() && civInfo.hasUnique("All military naval units receive +1 movement and +1 sight")) {
+                movement += 1
+            }
+        //
+        
         for (unique in civInfo.getMatchingUniques("+[] Movement for all [] units"))
             if (matchesFilter(unique.params[1]))
                 movement += unique.params[0].toInt()
@@ -209,16 +210,15 @@ class MapUnit {
                 visibilityRange += unique.params[0].toInt()
         if (hasUnique("+2 Visibility Range")) visibilityRange += 2 // This shouldn't be stackable
         if (hasUnique("Limited Visibility")) visibilityRange -= 1
+        // Deprecated since 3.15.1
         if (civInfo.hasUnique("+1 Sight for all land military units") && type.isMilitary() && type.isLandUnit())
             visibilityRange += 1
-        if (type.isWaterUnit() && !type.isCivilian()
-            && civInfo.hasUnique("All military naval units receive +1 movement and +1 sight")
-        )
-            visibilityRange += 1
+        
+        // Deprecated since 3.14.17
+            if (type.isMilitary() && type.isWaterUnit() && civInfo.hasUnique("All military naval units receive +1 movement and +1 sight"))
+                visibilityRange += 1
+        //
 
-        for (unique in civInfo.getMatchingUniques("[] Sight when []"))
-            if (matchesFilter(unique.params[1]))
-                visibilityRange += unique.params[0].toInt()
         for (unique in getTile().getAllTerrains().flatMap { it.uniqueObjects })
             if (unique.placeholderText == "[] Sight for [] units" && matchesFilter(unique.params[1]))
                 visibilityRange += unique.params[0].toInt()
@@ -898,12 +898,19 @@ class MapUnit {
     }
 
     fun matchesFilter(filter: String): Boolean {
-        if (baseUnit.matchesFilter(filter)) return true
-        if ((filter == "Wounded" || filter == "wounded units") && health < 100) return true
-        if (hasUnique(filter)) return true
-        if ((filter == "Barbarians" || filter == "Barbarian") && civInfo.isBarbarian()) return true
-        if (filter == "Embarked" && isEmbarked()) return true
-        return false
+        if (filter.contains('{')) // multiple types at once - AND logic. Looks like:"{Military} {Land}"
+            return filter.removePrefix("{").removeSuffix("}").split("} {")
+                .all { matchesFilter(it) }
+        return when (filter) {
+            "Wounded", "wounded units" -> health < 100
+            "Barbarians", "Barbarian" -> civInfo.isBarbarian()
+            "Embarked" -> isEmbarked()
+            else -> {
+                if (baseUnit.matchesFilter(filter)) return true
+                if (hasUnique(filter)) return true
+                return false
+            }
+        }
     }
 
     //endregion
