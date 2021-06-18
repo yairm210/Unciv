@@ -34,7 +34,7 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
 
         for (unique in civInfo.getMatchingUniques("-[]% [] unit maintenance costs")) {
             val numberOfUnitsWithDiscount = min(numberOfUnitsToPayFor, unitsToPayFor.count { it.matchesFilter(unique.params[1]) }.toFloat())
-            numberOfUnitsToPayFor -= numberOfUnitsWithDiscount * unique.params[0].toFloat() / 100
+            numberOfUnitsToPayFor -= numberOfUnitsWithDiscount * unique.params[0].toFloat() / 100f
         }
 
         val turnLimit = BASE_GAME_DURATION_TURNS * civInfo.gameInfo.gameParameters.gameSpeed.modifier
@@ -43,11 +43,11 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
         cost = cost.pow(1 + gameProgress / 3) // Why 3? To spread 1 to 1.33
         if (!civInfo.isPlayerCivilization())
             cost *= civInfo.gameInfo.getDifficulty().aiUnitMaintenanceModifier
-        
+
         for (unique in civInfo.getMatchingUniques("-[]% unit upkeep costs")) {
             cost *= 1f - unique.params[0].toFloat() / 100f
         }
-        
+
         // Deprecated since 3.15
             if (civInfo.hasUnique("-33% unit upkeep costs")) cost *= 0.67f
         //

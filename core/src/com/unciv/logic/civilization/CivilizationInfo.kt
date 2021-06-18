@@ -19,6 +19,7 @@ import com.unciv.models.ruleset.tile.ResourceSupplyList
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.tile.TileResource
 import com.unciv.models.ruleset.unit.BaseUnit
+import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.tr
 import com.unciv.ui.victoryscreen.RankingType
@@ -92,6 +93,11 @@ class CivilizationInfo {
 
     /** See DiplomacyManager.flagsCountdown to why not eEnum */
     private var flagsCountdown = HashMap<String, Int>()
+    /** Arraylist instead of HashMap as there might be doubles 
+     * Pairs of Uniques and the amount of turns they are still active
+     * If the counter reaches 0 at the end of a turn, it is removed immediately
+     */
+    var temporaryUniques = ArrayList<Pair<Unique, Int>>()
 
     // if we only use lists, and change the list each time the cities are changed,
     // we won't get concurrent modification exceptions.
@@ -135,6 +141,7 @@ class CivilizationInfo {
         toReturn.naturalWonders.addAll(naturalWonders)
         toReturn.cityStatePersonality = cityStatePersonality
         toReturn.flagsCountdown.putAll(flagsCountdown)
+        toReturn.temporaryUniques.addAll(temporaryUniques)
         return toReturn
     }
 
@@ -213,15 +220,21 @@ class CivilizationInfo {
     }
 
     fun getResourceModifier(resource: TileResource): Int {
-        var resourceModifier = 1
+        var resourceModifier = 1f
         for (unique in getMatchingUniques("Double quantity of [] produced"))
             if (unique.params[0] == resource.name)
-                resourceModifier *= 2
+                resourceModifier *= 2f
         if (resource.resourceType == ResourceType.Strategic) {
-            if (hasUnique("Quantity of strategic resources produced by the empire increased by 100%"))
-                resourceModifier *= 2
+            resourceModifier *= 1f + getMatchingUniques("Quantity of strategic resources produced by the empire +[]%")
+                .map { it.params[0].toFloat() / 100f }.sum()
+            
+            // Deprecated since 3.15
+                if (hasUnique("Quantity of strategic resources produced by the empire increased by 100%")) {
+                    resourceModifier *= 2f
+                }
+            //
         }
-        return resourceModifier
+        return resourceModifier.toInt()
     }
 
     fun hasResource(resourceName: String): Boolean = getCivResourcesByName()[resourceName]!! > 0
@@ -242,7 +255,8 @@ class CivilizationInfo {
                 } +
                 policies.policyUniques.getUniques(uniqueTemplate) +
                 tech.getTechUniques().filter { it.placeholderText == uniqueTemplate } +
-                religionManager.getUniques().filter { it.placeholderText == uniqueTemplate }
+                religionManager.getUniques().filter { it.placeholderText == uniqueTemplate } +
+                temporaryUniques.filter { it.first.placeholderText == uniqueTemplate }.map { it.first }
     }
 
     //region Units
@@ -547,6 +561,12 @@ class CivilizationInfo {
         for (city in cities.toList()) { // a city can be removed while iterating (if it's being razed) so we need to iterate over a copy
             city.endTurn()
         }
+        
+        // Update turn counter for temporary uniques
+        for (unique in temporaryUniques.toList()) {
+            temporaryUniques.remove(unique)
+            if (unique.second > 1) temporaryUniques.add(Pair(unique.first, unique.second - 1))
+        }
 
         goldenAges.endTurn(getHappiness())
         getCivUnits().forEach { it.endTurn() }
@@ -564,6 +584,18 @@ class CivilizationInfo {
             delta > 0 && gold > Int.MAX_VALUE - delta -> Int.MAX_VALUE
             delta < 0 && gold < Int.MIN_VALUE - delta -> Int.MIN_VALUE
             else -> gold + delta
+        }
+    }
+    
+    fun addStat(stat: Stat, amount: Int) {
+        when (stat) {
+            Stat.Culture -> policies.addCulture(amount)
+            Stat.Science -> tech.addScience(amount)
+            Stat.Gold -> addGold(amount)
+            Stat.Faith -> religionManager.storedFaith += amount
+            else -> {}
+            // Food and Production wouldn't make sense to be added nationwide
+            // Happiness cannot be added as it is recalculated again, use a unique instead
         }
     }
 

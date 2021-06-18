@@ -329,7 +329,7 @@ class MapUnit {
         val unitToUpgradeTo = getUnitToUpgradeTo()
         var goldCostOfUpgrade = (unitToUpgradeTo.cost - baseUnit().cost) * 2f + 10f
         for (unique in civInfo.getMatchingUniques("Gold cost of upgrading [] units reduced by []%")) {
-            if (matchesFilter(unique.params[0])) 
+            if (matchesFilter(unique.params[0]))
                 goldCostOfUpgrade *= (1 - unique.params[1].toFloat() / 100f)
         }
         // Deprecated since 3.14.17
@@ -337,7 +337,7 @@ class MapUnit {
                 goldCostOfUpgrade *= 0.67f
             }
         //
-        
+
         if (goldCostOfUpgrade < 0) return 0 // For instance, Landsknecht costs less than Spearman, so upgrading would cost negative gold
         return goldCostOfUpgrade.toInt()
     }

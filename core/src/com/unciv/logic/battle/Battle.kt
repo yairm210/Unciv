@@ -10,6 +10,7 @@ import com.unciv.logic.map.TileInfo
 import com.unciv.models.AttackableTile
 import com.unciv.models.ruleset.Unique
 import com.unciv.models.ruleset.unit.UnitType
+import com.unciv.models.stats.Stat
 import java.util.*
 import kotlin.math.max
 
@@ -317,6 +318,13 @@ object Battle {
             return
         }
 
+        for (unique in attackerCiv.getMatchingUniques("Upon capturing a city, receive [] times its [] production as [] immediately")) {
+            attackerCiv.addStat(
+                Stat.valueOf(unique.params[2]), 
+                unique.params[0].toInt() * city.cityStats.currentCityStats.get(Stat.valueOf(unique.params[1])).toInt()
+            )
+        }
+        
         if (attackerCiv.isPlayerCivilization()) {
             attackerCiv.popupAlerts.add(PopupAlert(AlertType.CityConquered, city.id))
             UncivGame.Current.settings.addCompletedTutorialTask("Conquer a city")
