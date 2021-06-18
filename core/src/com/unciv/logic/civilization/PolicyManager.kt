@@ -154,6 +154,17 @@ class PolicyManager {
                 adopt(branch.policies.last(), true) // add branch completion!
             }
         }
+        
+        if (policy.uniques.contains("Triggers a global alert")) {
+            for (civ in civInfo.gameInfo.civilizations) {
+                if (civ == civInfo) continue
+                if (civ.getKnownCivs().contains(civInfo)) {
+                    civ.addNotification("${civInfo.civName} has adopted the ${policy.name} policy")
+                } else {
+                    civ.addNotification("An unknown civilization has adopted the ${policy.name} policy")
+                }
+            }
+        }
 
         for (unique in policy.uniqueObjects)
             UniqueTriggerActivation.triggerCivwideUnique(unique, civInfo)

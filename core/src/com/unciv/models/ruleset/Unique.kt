@@ -1,6 +1,7 @@
 package com.unciv.models.ruleset
 
 import com.unciv.logic.city.CityInfo
+import com.unciv.logic.civilization.CivFlags
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.getPlaceholderParameters
@@ -99,6 +100,8 @@ object UniqueTriggerActivation {
                             })
                         unit.promotions.addPromotion(promotion, isFree = true)
             }
+            "Allied City-States will occasionally gift Great People" -> 
+                civInfo.addFlag(CivFlags.cityStateGreatPersonGift.name, civInfo.turnsForGreatPersonFromCityState() / 2)
         }
     }
 

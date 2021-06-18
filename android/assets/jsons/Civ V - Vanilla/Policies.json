@@ -177,8 +177,9 @@
 				"uniques": ["Culture cost of adopting new Policies reduced by [10]%"]
 			}
 		]
-	},/*{
-		"name": "Patronage",
+	},
+	{
+		"name": "Patronage Branch",
 		"era": "Classical era",
 		"uniques": ["City-State Influence degrades [25]% slower"],
 		"policies": [
@@ -196,14 +197,15 @@
 			},
 			{
 				"name": "Scholasticism",
-				"uniques":["Allied City-States provide Science equal to [25]% of what they produce for themselves"],
+				"uniques":["[Allied] City-States provide [Science] equal to [25]% of what they produce for themselves"],
 				"requires": ["Philantropy"],
 				"row": 2,
 				"column": 2
 			},
 			{
 				"name": "Cultural Diplomacy",
-				"uniques": ["Quantity of Resources gifted by City-States increased by [100]%"],
+				"uniques": ["Quantity of Resources gifted by City-States increased by [100]%",
+					"Happiness from Luxury Resources gifted by City-States increased by [50]%"],
 				"requires": ["Scholasticism"],
 				"row": 3,
 				"column": 2
@@ -211,14 +213,31 @@
 			{
 				"name": "Educated Elite",
 				"requires": ["Scholasticism","Aesthetics"],
+				"uniques": ["Allied City-States will occasionally gift Great People"],
+				// The mechanics for this are wonky, but basically the following happens:
+				// Based on the game speed, a timer with some amount of turns is set (quick: 25, regular: 40, epic/marathon: ???) 
+				// Every turn, 1 is subtracted from this timer, as long as you have at least 1 city state ally
+				// So no, the number of city-state allies does not matter for this. You have a global timer for all of them combined.
+				// If the timer reaches the amount of city-state allies you have (or 10, whichever is lower), it is reset, and you gain a random great person
+				// The very first time after acquiring this policy, the timer is set to half of its normal value
+				// This is the basics, and apart from this, there is some randomness in the exact turn count, but I don't know how much
+				
+				// There is suprisingly little information findable online about this policy, and the civ 5 source files are
+				// also quite though to search through
+				
+				// Note that the way this is implemented now, this unique does NOT stack
+				// I could paramatrize the [Allied], but eh.
 				"row": 3,
 				"column": 4
 			},
 			{
-				"name": "Patronage Complete"
+				"name": "Patronage Complete",
+				"uniques": ["Influence of all other civilizations with all city-states degrades [33]% faster", 
+					"Triggers a global alert"],
+				// This triggers a global alert in the G&K game also, based on my memory of playing it
 			}
 		]
-	},*/
+	},
 	{
 		"name": "Commerce",
 		"uniques": ["+[25]% [Gold] [in capital]"],

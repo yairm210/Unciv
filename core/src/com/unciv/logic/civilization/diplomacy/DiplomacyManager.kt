@@ -176,13 +176,25 @@ class DiplomacyManager() {
         }
         return 0
     }
+    
+    fun matchesCityStateRelationshipFilter(filter: String): Boolean {
+        val relationshipLevel = relationshipLevel()
+        return when (filter) {
+            "Allied" -> relationshipLevel == RelationshipLevel.Ally
+            "Friendly" -> relationshipLevel == RelationshipLevel.Friend
+            "Enemy" -> relationshipLevel == RelationshipLevel.Enemy
+            "Unforgiving" -> relationshipLevel == RelationshipLevel.Unforgivable
+            "Neutral" -> relationshipLevel == RelationshipLevel.Neutral
+            else -> false
+        }
+    }
 
     // To be run from City-State DiplomacyManager, which holds the influence. Resting point for every major civ can be different.
     fun getCityStateInfluenceRestingPoint(): Float {
         var restingPoint = 0f
         for (unique in otherCiv().getMatchingUniques("Resting point for Influence with City-States is increased by []"))
             restingPoint += unique.params[0].toInt()
-        if(diplomaticStatus == DiplomaticStatus.Protector) restingPoint += 5
+        if (diplomaticStatus == DiplomaticStatus.Protector) restingPoint += 5
         return restingPoint
     }
 
@@ -203,7 +215,13 @@ class DiplomacyManager() {
         }
 
         for (unique in otherCiv().getMatchingUniques("City-State Influence degrades []% slower"))
-            modifier *= (100f - unique.params[0].toInt()) / 100
+            modifier *= 1f - unique.params[0].toFloat() / 100f
+        
+        for (civ in civInfo.gameInfo.civilizations.filter { it.isMajorCiv() && it != otherCiv()}) {
+            for (unique in civ.getMatchingUniques("Influence of all other civilizations with all city-states degrades []% faster")) {
+                modifier *= 1f + unique.params[0].toFloat() / 100f
+            }
+        }
 
         return max(0f, decrement) * max(0f, modifier)
     }
@@ -243,7 +261,7 @@ class DiplomacyManager() {
         return goldPerTurnForUs
     }
 
-    fun sciencefromResearchAgreement() {
+    fun scienceFromResearchAgreement() {
         // https://forums.civfanatics.com/resources/research-agreements-bnw.25568/
         val scienceFromResearchAgreement = min(totalOfScienceDuringRA, otherCivDiplomacy().totalOfScienceDuringRA)
         civInfo.tech.scienceFromResearchAgreements += scienceFromResearchAgreement
@@ -288,7 +306,7 @@ class DiplomacyManager() {
     //endregion
 
     //region state-changing functions
-    fun removeUntenebleTrades() {
+    fun removeUntenableTrades() {
 
         for (trade in trades.toList()) {
 
@@ -329,7 +347,7 @@ class DiplomacyManager() {
 
     fun nextTurn() {
         nextTurnTrades()
-        removeUntenebleTrades()
+        removeUntenableTrades()
         updateHasOpenBorders()
         nextTurnDiplomaticModifiers()
         nextTurnFlags()
@@ -390,7 +408,7 @@ class DiplomacyManager() {
                 when (flag) {
                     DiplomacyFlags.ResearchAgreement.name -> {
                         if (!otherCivDiplomacy().hasFlag(DiplomacyFlags.ResearchAgreement))
-                            sciencefromResearchAgreement()
+                            scienceFromResearchAgreement()
                     }
                     // This is confusingly named - in fact, the civ that has the flag set is the MAJOR civ
                     DiplomacyFlags.ProvideMilitaryUnit.name -> {

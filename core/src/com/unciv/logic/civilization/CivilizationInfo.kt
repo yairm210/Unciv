@@ -14,6 +14,7 @@ import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.trade.TradeEvaluation
 import com.unciv.logic.trade.TradeRequest
+import com.unciv.models.metadata.GameSpeed
 import com.unciv.models.ruleset.*
 import com.unciv.models.ruleset.tile.ResourceSupplyList
 import com.unciv.models.ruleset.tile.ResourceType
@@ -26,6 +27,7 @@ import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 import kotlin.math.roundToInt
+import kotlin.math.min
 
 class CivilizationInfo {
 
@@ -496,6 +498,7 @@ class CivilizationInfo {
 
         updateViewableTiles() // adds explored tiles so that the units will be able to perform automated actions better
         transients().updateCitiesConnectedToCapital()
+        turnStartFlags()
         for (city in cities) city.startTurn()
 
         for (unit in getCivUnits()) unit.startTurn()
@@ -566,6 +569,32 @@ class CivilizationInfo {
             else -> gold + delta
         }
     }
+    
+    private fun turnStartFlags() {
+        // This function may be too abstracted for what it currently does (only managing a single flag)
+        // But eh, it works.
+        for (flag in flagsCountdown.keys.toList()) {
+            
+            if (flag == CivFlags.cityStateGreatPersonGift.name) {
+                val cityStateAllies = getKnownCivs().filter { it.isCityState() && it.getAllyCiv() == civName }.count()
+                
+                if (cityStateAllies >= 1) flagsCountdown[flag] = flagsCountdown[flag]!! - 1
+                
+                if (flagsCountdown[flag]!! < min(cityStateAllies, 10)) {
+                    gainGreatPersonFromCityState()
+                    flagsCountdown[flag] = turnsForGreatPersonFromCityState()
+                }
+                
+                continue
+            }
+                
+            if (flagsCountdown[flag]!! > 0)
+                flagsCountdown[flag] = flagsCountdown[flag]!! - 1
+        
+        }
+    }
+    
+    fun addFlag(flag: String, count: Int) { flagsCountdown[flag] = count }
 
     fun getGreatPersonPointsForNextTurn(): Stats {
         val stats = Stats()
@@ -680,6 +709,26 @@ class CivilizationInfo {
         val locations = LocationAction(listOf(placedLocation, cities.city2.location, city.location))
         addNotification("[${otherCiv.civName}] gave us a [${militaryUnit.name}] as gift near [${city.name}]!", locations, otherCiv.civName, militaryUnit.name)
     }
+    
+    /** Gain a random great person from a random city state */
+    private fun gainGreatPersonFromCityState() {
+        val givingCityState = getKnownCivs().filter { it.isCityState() && it.getAllyCiv() == civName}.random()
+        val giftedUnit = getGreatPeople().random()
+        val cities = NextTurnAutomation.getClosestCities(this, givingCityState)
+        val placedUnit = placeUnitNearTile(cities.city1.location, giftedUnit.name)
+        if (placedUnit == null) return
+        val locations = LocationAction(listOf(placedUnit.getTile().position, cities.city2.location))
+        addNotification( "[${givingCityState.civName}] gave us a [${giftedUnit.name}] as a gift!", locations, givingCityState.civName, giftedUnit.name)
+    }
+    
+    fun turnsForGreatPersonFromCityState(): Int {
+        return when (gameInfo.gameParameters.gameSpeed) {
+            GameSpeed.Quick -> 25
+            GameSpeed.Standard -> 40
+            GameSpeed.Epic -> 50 // This value is based on absolutely nothing, do check this sometime
+            GameSpeed.Marathon -> 60 // This value is based on absolutely nothing, do check this sometime
+        } + -2 + Random().nextInt(5) // And so are these two bounds
+    }
 
     fun getAllyCiv() = allyCivName
 
@@ -753,4 +802,8 @@ class CivilizationInfoPreview {
     var playerType = PlayerType.AI
     var playerId = ""
     fun isPlayerCivilization() = playerType == PlayerType.Human
+}
+
+enum class CivFlags {
+    cityStateGreatPersonGift
 }
