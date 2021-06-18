@@ -135,7 +135,7 @@
 	},{
 		"name": "Piety",
 		"era": "Classical era",
-		"uniques": ["+[15]% Production when constructing [Culture] buildings"],
+		"uniques": ["+[15]% Production when constructing [Culture] buildings", "Incompatible with [Rationalism]"],
 		"policies": [
 			{
 				"name": "Organized Religion",
@@ -179,7 +179,11 @@
 		]
 	},
 	{
-		"name": "Patronage Branch",
+		"name": "Patronage ",
+		// Yes, there is a space behind this word, and this is necessary
+		// This is, because at the time of writing there existed another policy called 'Patronage' that was recently deprecated
+		// It would, however, still be possible for save-files to contain this policy
+		// Therefore, we had to differentiate between these two, and this was the least intrusive way to do so
 		"era": "Classical era",
 		"uniques": ["City-State Influence degrades [25]% slower"],
 		"policies": [
@@ -290,7 +294,7 @@
 	{
 		"name": "Rationalism",
 		"era": "Renaissance era",
-		"uniques": ["+[15]% [Science] while the empire is happy"],
+		"uniques": ["+[15]% [Science] while the empire is happy", "Incompatible with [Piety]"],
 		"policies": [
 			{
 				"name": "Secularism",
