@@ -180,10 +180,12 @@
 	},
 	{
 		"name": "Patronage ",
-		// Yes, there is a space behind this word, and this is necessary
+		// Yes, there is a space behind this word, and yes, this is necessary
 		// This is, because at the time of writing there existed another policy called 'Patronage' that was recently deprecated
 		// It would, however, still be possible for save-files to contain this policy
 		// Therefore, we had to differentiate between these two, and this was the least intrusive way to do so
+		// NOTE: If you remove the space here, also remove the extra space between 'patronage' and 'complete' in the 'patronage  complete' policy.
+		// Otherwise, weird stuff will happen.
 		"era": "Classical era",
 		"uniques": ["City-State Influence degrades [25]% slower"],
 		"policies": [
@@ -237,7 +239,8 @@
 				"column": 4
 			},
 			{
-				"name": "Patronage Complete",
+				"name": "Patronage  Complete",
+				// This extra space is intentional, see above.
 				"uniques": ["Influence of all other civilizations with all city-states degrades [33]% faster", 
 					"Triggers a global alert"],
 				// This triggers a global alert in the G&K game also, based on my memory of playing it
