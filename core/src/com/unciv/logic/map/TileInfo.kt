@@ -317,7 +317,7 @@ open class TileInfo {
                 stats.add(unique.stats.times(numberOfBonuses.toFloat()))
             }
         
-        for (unique in observingCiv.getMatchingUniques("+[]% yield from []")) 
+        for (unique in observingCiv.getMatchingUniques("+[]% yield from every []"))
             if (improvement.matchesFilter(unique.params[0])) 
                 stats.timesInPlace(1f + unique.params[1].toFloat() / 100f)
         
