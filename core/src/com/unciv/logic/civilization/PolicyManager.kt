@@ -77,6 +77,7 @@ class PolicyManager {
         // Deprecated since 3.15.2, left for backwards compatibility
             if (autocracyCompletedTurns != 0) {
                 civInfo.temporaryUniques.add(Pair(Unique("+[25]% attack strength to all [Military] units for [50] turns"), autocracyCompletedTurns))
+                autocracyCompletedTurns = 0
             }
         //
     }
