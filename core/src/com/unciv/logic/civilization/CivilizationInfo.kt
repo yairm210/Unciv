@@ -670,8 +670,8 @@ class CivilizationInfo {
 
     fun influenceGainedByGift(cityState: CivilizationInfo, giftAmount: Int): Int {
         var influenceGained = giftAmount / 10f
-        for (unique in cityState.getMatchingUniques("Gifts of Gold to City-States generate []% more Influence"))
-            influenceGained *= (100f + unique.params[0].toInt()) / 100
+        for (unique in getMatchingUniques("Gifts of Gold to City-States generate []% more Influence"))
+            influenceGained *= 1f + unique.params[0].toFloat() / 100f
         return influenceGained.toInt()
     }
 

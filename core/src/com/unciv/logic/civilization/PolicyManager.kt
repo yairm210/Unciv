@@ -156,14 +156,7 @@ class PolicyManager {
         }
         
         if (policy.uniques.contains("Triggers a global alert")) {
-            for (civ in civInfo.gameInfo.civilizations) {
-                if (civ == civInfo) continue
-                if (civ.getKnownCivs().contains(civInfo)) {
-                    civ.addNotification("${civInfo.civName} has adopted the ${policy.name} policy")
-                } else {
-                    civ.addNotification("An unknown civilization has adopted the ${policy.name} policy")
-                }
-            }
+            triggerGlobalAlerts(policy)
         }
 
         for (unique in policy.uniqueObjects)
@@ -235,5 +228,22 @@ class PolicyManager {
             freeBuildings.add(building.key)
         }
         return freeBuildings
+    }
+    
+    private fun triggerGlobalAlerts(policy: Policy) {
+        var extraNotificationText = ""
+        // Not only is this an anti-pattern, it is the wrong anti-pattern :D
+        if (policy.name == "Patronage Branch Complete") {
+            extraNotificationText = "\nThis causes our influence with City-States to drop faster!"
+            // Preferably this should go in the JSON file, but I don't feel at ease editing such basic data types as the Policy class yet.
+        }
+        for (civ in civInfo.gameInfo.civilizations) {
+                if (civ == civInfo) continue
+            if (civ.getKnownCivs().contains(civInfo)) {
+                civ.addNotification("${civInfo.civName} has adopted the ${policy.name} policy$extraNotificationText", NotificationIcon.Culture)
+            } else {
+                civ.addNotification("An unknown civilization has adopted the ${policy.name} policy$extraNotificationText", NotificationIcon.Culture)
+            }
+        }
     }
 }
