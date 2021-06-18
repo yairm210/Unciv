@@ -6,42 +6,42 @@ filter: Linear, Linear
 repeat: none
 checkbox
   rotate: false
-  xy: 140, 26
+  xy: 160, 23
   size: 31, 31
   orig: 31, 31
   offset: 0, 0
   index: -1
 checkbox-pressed
   rotate: false
-  xy: 173, 26
+  xy: 199, 23
   size: 31, 31
   orig: 31, 31
   offset: 0, 0
   index: -1
 rectangleWithOutline
   rotate: false
-  xy: 2, 2
+  xy: 64, 13
   size: 3, 3
   orig: 3, 3
   offset: 0, 0
   index: -1
 roundedEdgeRectangle
   rotate: false
-  xy: 2, 7
+  xy: 4, 4
   size: 52, 50
   orig: 52, 50
   offset: 0, 0
   index: -1
 select-box
   rotate: false
-  xy: 56, 27
+  xy: 64, 24
   size: 40, 30
   orig: 40, 30
   offset: 0, 0
   index: -1
 select-box-pressed
   rotate: false
-  xy: 98, 27
+  xy: 112, 24
   size: 40, 30
   orig: 40, 30
   offset: 0, 0
