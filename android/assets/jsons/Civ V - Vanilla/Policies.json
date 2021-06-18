@@ -101,7 +101,7 @@
 			{
 				"name": "Discipline",
 				"uniques":["+[15]% Strength for [Melee] units which have another [Military] unit in an adjacent tile"],
-				"row": 1, 
+				"row": 1,
 				"column": 4
 			},
 			{
@@ -247,7 +247,7 @@
 		"policies": [
 			{
 				"name": "Naval Tradition",
-				"uniques": ["+[1] Movement for all [military water] units", "+[1] Sight for all [military water] units",
+				"uniques": ["+[1] Movement for all [{Military} {Water}] units", "+[1] Sight for all [{Military} {Water}] units",
 				 "Free [Great Admiral] appears", "+[2] Movement for all [Great Admiral] units"
 				],
 				"row": 1,
@@ -381,40 +381,40 @@
 			},
 			{
 				"name": "Universal Suffrage",
-				"uniques": ["[+1 Production] per [5] population in all cities"],
+				"uniques": ["+[33]% Defensive Strength for cities"],
 				"row": 1,
 				"column": 3
 			},
 			{
 				"name": "Civil Society",
-				"uniques": ["-50% food consumption by specialists"],
+				"uniques": ["-[50]% food consumption by specialists"],
 				"row": 1,
 				"column": 5
 			},
 			{
 				"name": "Free Speech",
-				"uniques": ["[+1 Culture] per [2] population in all cities"],
+				"uniques": ["[8] units cost no maintenance"],
 				"requires": ["Constitution"],
 				"row": 2,
 				"column": 1
 			},
 			{
 				"name": "Democracy",
-				"uniques": ["Specialists produce half normal unhappiness"],
+				"uniques": ["Specialists only produce [50]% of normal unhappiness"],
 				"requires": ["Civil Society"],
 				"row": 2,
 				"column": 5
 			},
 			{
 				"name": "Freedom Complete",
-				"uniques": ["Tile yield from Great Improvements +100%", "Golden Age length increased by [50]%"]
+				"uniques": ["+[100]% yield from every [Great Improvement]", "Golden Age length increased by [50]%"]
 			}
 		]
 	},
 	{
 		"name": "Autocracy",
 		"era": "Industrial era",
-		"uniques": ["-33% unit upkeep costs"],
+		"uniques": ["-[33]% unit upkeep costs", "Upon capturing a city, receive [10] times its [Culture] production as [Culture] immediately"],
 		"policies": [
 			{
 				"name": "Populism",
@@ -424,13 +424,13 @@
 			},
 			{
 				"name": "Militarism",
-				"uniques": ["Gold cost of purchasing units -33%"],
+				"uniques": ["Gold cost of purchasing [All] units -[33]%"],
 				"row": 1,
 				"column": 5
 			},
 			{
 				"name": "Fascism",
-				"uniques": ["Quantity of strategic resources produced by the empire increased by 100%"],
+				"uniques": ["Quantity of strategic resources produced by the empire +[100]%", "+[2] Movement for all [Great General] units"],
 				"requires": ["Populism","Militarism"],
 				"row": 2,
 				"column": 3
@@ -438,20 +438,21 @@
 			{
 				"name": "Police State",
 				"uniques": ["[+3 Happiness] from every [Courthouse]", "+[100]% Production when constructing [Courthouse]"],
+				// There are also some uniques regarding espoinage, which as of this writing is not yet implemented
 				"requires": ["Militarism"],
 				"row": 2,
 				"column": 5
 			},
 			{
 				"name": "Total War",
-				"uniques": ["+[15]% Production when constructing [Military] units [in all cities]", "New [Military] units start with [15] Experience"],
+				"uniques": ["+[25]% Production when constructing [Military] units [in all cities]", "New [Military] units start with [15] Experience"],
 				"requires": ["Police State","Fascism"],
 				"row": 3,
 				"column": 4
 			},
 			{
 				"name": "Autocracy Complete",
-				"uniques": ["+20% attack bonus to all Military Units for 30 turns"]
+				"uniques": ["+[25]% attack strength to all [Military] units for [50] turns"]
 			}
 		]
 	}

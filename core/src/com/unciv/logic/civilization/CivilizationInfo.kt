@@ -20,6 +20,7 @@ import com.unciv.models.ruleset.tile.ResourceSupplyList
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.tile.TileResource
 import com.unciv.models.ruleset.unit.BaseUnit
+import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.tr
 import com.unciv.ui.victoryscreen.RankingType
@@ -94,6 +95,11 @@ class CivilizationInfo {
 
     /** See DiplomacyManager.flagsCountdown to why not eEnum */
     private var flagsCountdown = HashMap<String, Int>()
+    /** Arraylist instead of HashMap as there might be doubles
+     * Pairs of Uniques and the amount of turns they are still active
+     * If the counter reaches 0 at the end of a turn, it is removed immediately
+     */
+    var temporaryUniques = ArrayList<Pair<Unique, Int>>()
 
     // if we only use lists, and change the list each time the cities are changed,
     // we won't get concurrent modification exceptions.
@@ -137,6 +143,7 @@ class CivilizationInfo {
         toReturn.naturalWonders.addAll(naturalWonders)
         toReturn.cityStatePersonality = cityStatePersonality
         toReturn.flagsCountdown.putAll(flagsCountdown)
+        toReturn.temporaryUniques.addAll(temporaryUniques)
         return toReturn
     }
 
@@ -215,15 +222,21 @@ class CivilizationInfo {
     }
 
     fun getResourceModifier(resource: TileResource): Int {
-        var resourceModifier = 1
+        var resourceModifier = 1f
         for (unique in getMatchingUniques("Double quantity of [] produced"))
             if (unique.params[0] == resource.name)
-                resourceModifier *= 2
+                resourceModifier *= 2f
         if (resource.resourceType == ResourceType.Strategic) {
-            if (hasUnique("Quantity of strategic resources produced by the empire increased by 100%"))
-                resourceModifier *= 2
+            resourceModifier *= 1f + getMatchingUniques("Quantity of strategic resources produced by the empire +[]%")
+                .map { it.params[0].toFloat() / 100f }.sum()
+
+            // Deprecated since 3.15
+                if (hasUnique("Quantity of strategic resources produced by the empire increased by 100%")) {
+                    resourceModifier *= 2f
+                }
+            //
         }
-        return resourceModifier
+        return resourceModifier.toInt()
     }
 
     fun hasResource(resourceName: String): Boolean = getCivResourcesByName()[resourceName]!! > 0
@@ -244,7 +257,8 @@ class CivilizationInfo {
                 } +
                 policies.policyUniques.getUniques(uniqueTemplate) +
                 tech.getTechUniques().filter { it.placeholderText == uniqueTemplate } +
-                religionManager.getUniques().filter { it.placeholderText == uniqueTemplate }
+                religionManager.getUniques().filter { it.placeholderText == uniqueTemplate } +
+                temporaryUniques.filter { it.first.placeholderText == uniqueTemplate }.map { it.first }
     }
 
     //region Units
@@ -374,7 +388,7 @@ class CivilizationInfo {
      * Returns a civilization caption suitable for greetings including player type info:
      * Like "Milan" if the nation is a city state, "Caesar of Rome" otherwise, with an added
      * " (AI)", " (Human - Hotseat)", or " (Human - Multiplayer)" if the game is multiplayer.
-     */ 
+     */
     fun getLeaderDisplayName(): String {
         val severalHumans = gameInfo.civilizations.count { it.playerType == PlayerType.Human } > 1
         val online = gameInfo.gameParameters.isOnlineMultiplayer
@@ -551,6 +565,12 @@ class CivilizationInfo {
             city.endTurn()
         }
 
+        // Update turn counter for temporary uniques
+        for (unique in temporaryUniques.toList()) {
+            temporaryUniques.remove(unique)
+            if (unique.second > 1) temporaryUniques.add(Pair(unique.first, unique.second - 1))
+        }
+
         goldenAges.endTurn(getHappiness())
         getCivUnits().forEach { it.endTurn() }
         diplomacy.values.toList().forEach { it.nextTurn() } // we copy the diplomacy values so if it changes in-loop we won't crash
@@ -558,8 +578,34 @@ class CivilizationInfo {
         updateHasActiveGreatWall()
     }
 
+    private fun turnStartFlags() {
+        // This function may be too abstracted for what it currently does (only managing a single flag)
+        // But eh, it works.
+        for (flag in flagsCountdown.keys.toList()) {
+
+            if (flag == CivFlags.cityStateGreatPersonGift.name) {
+                val cityStateAllies = getKnownCivs().filter { it.isCityState() && it.getAllyCiv() == civName }.count()
+
+                if (cityStateAllies >= 1) flagsCountdown[flag] = flagsCountdown[flag]!! - 1
+
+                if (flagsCountdown[flag]!! < min(cityStateAllies, 10)) {
+                    gainGreatPersonFromCityState()
+                    flagsCountdown[flag] = turnsForGreatPersonFromCityState()
+                }
+
+                continue
+            }
+
+            if (flagsCountdown[flag]!! > 0)
+                flagsCountdown[flag] = flagsCountdown[flag]!! - 1
+
+        }
+    }
+
+    fun addFlag(flag: String, count: Int) { flagsCountdown[flag] = count }
+
     /** Modify gold by a given amount making sure it does neither overflow nor underflow.
-     * @param delta the amount to add (can be negative) 
+     * @param delta the amount to add (can be negative)
      */
     fun addGold(delta: Int) {
         // not using Long.coerceIn - this stays in 32 bits
@@ -569,32 +615,18 @@ class CivilizationInfo {
             else -> gold + delta
         }
     }
-    
-    private fun turnStartFlags() {
-        // This function may be too abstracted for what it currently does (only managing a single flag)
-        // But eh, it works.
-        for (flag in flagsCountdown.keys.toList()) {
-            
-            if (flag == CivFlags.cityStateGreatPersonGift.name) {
-                val cityStateAllies = getKnownCivs().filter { it.isCityState() && it.getAllyCiv() == civName }.count()
-                
-                if (cityStateAllies >= 1) flagsCountdown[flag] = flagsCountdown[flag]!! - 1
-                
-                if (flagsCountdown[flag]!! < min(cityStateAllies, 10)) {
-                    gainGreatPersonFromCityState()
-                    flagsCountdown[flag] = turnsForGreatPersonFromCityState()
-                }
-                
-                continue
-            }
-                
-            if (flagsCountdown[flag]!! > 0)
-                flagsCountdown[flag] = flagsCountdown[flag]!! - 1
-        
+
+    fun addStat(stat: Stat, amount: Int) {
+        when (stat) {
+            Stat.Culture -> policies.addCulture(amount)
+            Stat.Science -> tech.addScience(amount)
+            Stat.Gold -> addGold(amount)
+            Stat.Faith -> religionManager.storedFaith += amount
+            else -> {}
+            // Food and Production wouldn't make sense to be added nationwide
+            // Happiness cannot be added as it is recalculated again, use a unique instead
         }
     }
-    
-    fun addFlag(flag: String, count: Int) { flagsCountdown[flag] = count }
 
     fun getGreatPersonPointsForNextTurn(): Stats {
         val stats = Stats()
@@ -709,7 +741,7 @@ class CivilizationInfo {
         val locations = LocationAction(listOf(placedLocation, cities.city2.location, city.location))
         addNotification("[${otherCiv.civName}] gave us a [${militaryUnit.name}] as gift near [${city.name}]!", locations, otherCiv.civName, militaryUnit.name)
     }
-    
+
     /** Gain a random great person from a random city state */
     private fun gainGreatPersonFromCityState() {
         val givingCityState = getKnownCivs().filter { it.isCityState() && it.getAllyCiv() == civName}.random()
@@ -720,7 +752,7 @@ class CivilizationInfo {
         val locations = LocationAction(listOf(placedUnit.getTile().position, cities.city2.location))
         addNotification( "[${givingCityState.civName}] gave us a [${giftedUnit.name}] as a gift!", locations, givingCityState.civName, giftedUnit.name)
     }
-    
+
     fun turnsForGreatPersonFromCityState(): Int {
         return when (gameInfo.gameParameters.gameSpeed) {
             GameSpeed.Quick -> 25

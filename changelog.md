@@ -1,3 +1,20 @@
+## 3.15.2
+
+By xlenstra:
+- Updated Autocracy and Freedom branches to G&K 
+- Fixed honor policy not adding bonus vs barbarians 
+- Fixed old worker speed improvement uniques no longer working 
+
+Wake up units when enemy sighted or displaced or attacked  - By SomeTroglodyte
+
+By avdstaaij:
+- Made atlas textures use mipmaps again 
+- Fixed units not teleporting out of sold city tiles 
+
+Resolved #4170 - updated deprecated Polynesian unique - By SpacedOutChicken
+
+Unitfilter now accepts multiple filters (see wiki/uniques for details)
+
 ## 3.15.1
 
 By xlenstra:

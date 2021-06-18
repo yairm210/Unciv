@@ -112,10 +112,18 @@ class BaseUnit : INamed, IConstruction {
 
     override fun getGoldCost(civInfo: CivilizationInfo): Int {
         var cost = getBaseGoldCost(civInfo)
-        if (civInfo.hasUnique("Gold cost of purchasing units -33%")) cost *= 0.66f
+        for (unique in civInfo.getMatchingUniques("Gold cost of purchasing [] units -[]%")) {
+            if (matchesFilter(unique.params[0]))
+                cost *= 1f - unique.params[1].toFloat() / 100f
+        }
+        
+        // Deprecated since 3.15
+            if (civInfo.hasUnique("Gold cost of purchasing units -33%")) cost *= 0.67f
+        //
+        
         for (unique in civInfo.getMatchingUniques("Cost of purchasing items in cities reduced by []%"))
-            cost *= 1 - (unique.params[0].toFloat() / 100)
-        return (cost / 10).toInt() * 10 // rounded down o nearest ten
+            cost *= 1f - (unique.params[0].toFloat() / 100f)
+        return (cost / 10).toInt() * 10 // rounded down to nearest ten
     }
 
     fun getDisbandGold(civInfo: CivilizationInfo) = getBaseGoldCost(civInfo).toInt() / 20
@@ -241,8 +249,8 @@ class BaseUnit : INamed, IConstruction {
             "Air", "air units" -> unitType.isAirUnit()
             "non-air" -> !unitType.isAirUnit()
             "Military", "military units" -> unitType.isMilitary()
+            // Deprecated as of 3.15.2
             "military water" -> unitType.isMilitary() && unitType.isWaterUnit()
-            "military land" -> unitType.isMilitary() && unitType.isLandUnit()
             else -> false
         }
     }

@@ -198,6 +198,37 @@ class MapUnit {
         return getUniques().any { it.placeholderText == unique }
     }
 
+    /**
+     * Determines this (land or sea) unit's current maximum vision range from unit properties, civ uniques and terrain.
+     * @return Maximum distance of tiles this unit may possibly see
+     */
+    private fun getVisibilityRange(): Int {
+        var visibilityRange = 2
+        visibilityRange += getUniques().count { it.text == "+1 Visibility Range" }
+        for (unique in civInfo.getMatchingUniques("+[] Sight for all [] units"))
+            if (matchesFilter(unique.params[1]))
+                visibilityRange += unique.params[0].toInt()
+        if (hasUnique("+2 Visibility Range")) visibilityRange += 2 // This shouldn't be stackable
+        if (hasUnique("Limited Visibility")) visibilityRange -= 1
+        // Deprecated since 3.15.1
+        if (civInfo.hasUnique("+1 Sight for all land military units") && type.isMilitary() && type.isLandUnit())
+            visibilityRange += 1
+        
+        // Deprecated since 3.14.17
+            if (type.isMilitary() && type.isWaterUnit() && civInfo.hasUnique("All military naval units receive +1 movement and +1 sight"))
+                visibilityRange += 1
+        //
+
+        for (unique in getTile().getAllTerrains().flatMap { it.uniqueObjects })
+            if (unique.placeholderText == "[] Sight for [] units" && matchesFilter(unique.params[1]))
+                visibilityRange += unique.params[0].toInt()
+
+        return visibilityRange
+    }
+
+    /**
+     * Update this unit's cache of viewable tiles and its civ's as well.
+     */
     fun updateVisibleTiles() {
         if (type.isAirUnit()) {
             viewableTiles = if (hasUnique("6 tiles in every direction always visible"))
@@ -206,33 +237,7 @@ class MapUnit {
             civInfo.updateViewableTiles() // for the civ
             return
         }
-
-        var visibilityRange = 2
-        visibilityRange += getUniques().count { it.text == "+1 Visibility Range" }
-        for (unique in civInfo.getMatchingUniques("+[] Sight for all [] units"))
-            if (matchesFilter(unique.params[1]))
-                visibilityRange += unique.params[0].toInt()
-        if (hasUnique("+2 Visibility Range")) visibilityRange += 2 // This shouldn't be stackable
-        if (hasUnique("Limited Visibility")) visibilityRange -= 1
-        if (civInfo.hasUnique("+1 Sight for all land military units") && type.isMilitary() && type.isLandUnit())
-            visibilityRange += 1
-        
-        // Deprecated since 3.14.17
-            if (type.isMilitary() && type.isWaterUnit() && civInfo.hasUnique("All military naval units receive +1 movement and +1 sight"))
-                visibilityRange += 1
-        //
-        
-
-        for (unique in civInfo.getMatchingUniques("[] Sight when []"))
-            if (matchesFilter(unique.params[1]))
-                visibilityRange += unique.params[0].toInt()
-        val tile = getTile()
-        for (unique in tile.getAllTerrains().flatMap { it.uniqueObjects })
-            if (unique.placeholderText == "[] Sight for [] units" && matchesFilter(unique.params[1]))
-                visibilityRange += unique.params[0].toInt()
-
-        viewableTiles = tile.getViewableTilesList(visibilityRange)
-
+        viewableTiles = getTile().getViewableTilesList(getVisibilityRange())
         civInfo.updateViewableTiles() // for the civ
     }
 
@@ -324,7 +329,7 @@ class MapUnit {
         val unitToUpgradeTo = getUnitToUpgradeTo()
         var goldCostOfUpgrade = (unitToUpgradeTo.cost - baseUnit().cost) * 2f + 10f
         for (unique in civInfo.getMatchingUniques("Gold cost of upgrading [] units reduced by []%")) {
-            if (matchesFilter(unique.params[0])) 
+            if (matchesFilter(unique.params[0]))
                 goldCostOfUpgrade *= (1 - unique.params[1].toFloat() / 100f)
         }
         // Deprecated since 3.14.17
@@ -332,7 +337,7 @@ class MapUnit {
                 goldCostOfUpgrade *= 0.67f
             }
         //
-        
+
         if (goldCostOfUpgrade < 0) return 0 // For instance, Landsknecht costs less than Spearman, so upgrading would cost negative gold
         return goldCostOfUpgrade.toInt()
     }
@@ -573,9 +578,10 @@ class MapUnit {
         attacksThisTurn = 0
         due = true
 
-        // Wake sleeping units if there's an enemy nearby and civilian is not protected
+        // Wake sleeping units if there's an enemy in vision range:
+        // Military units always but civilians only if not protected.
         if (isSleeping() && (!type.isCivilian() || currentTile.militaryUnit == null) &&
-            currentTile.getTilesInDistance(2).any {
+            this.viewableTiles.any {
                 it.militaryUnit != null && it.militaryUnit!!.civInfo.isAtWarWith(civInfo)
             }
         )
@@ -892,6 +898,9 @@ class MapUnit {
     }
 
     fun matchesFilter(filter: String): Boolean {
+        if (filter.contains('{')) // multiple types at once - AND logic. Looks like:"{Military} {Land}"
+            return filter.removePrefix("{").removeSuffix("}").split("} {")
+                .all { matchesFilter(it) }
         return when (filter) {
             "Wounded", "wounded units" -> health < 100
             "Barbarians", "Barbarian" -> civInfo.isBarbarian()
