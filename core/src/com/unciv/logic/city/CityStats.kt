@@ -174,15 +174,24 @@ class CityStats {
         if (!civInfo.isPlayerCivilization())
             unhappinessModifier *= civInfo.gameInfo.getDifficulty().aiUnhappinessModifier
 
-        var unhappinessFromCity = -3f     // -3 happiness per city
+        var unhappinessFromCity = -3f // -3 happiness per city
         if (civInfo.hasUnique("Unhappiness from number of Cities doubled"))
-            unhappinessFromCity *= 2f//doubled for the Indian
+            unhappinessFromCity *= 2f //doubled for the Indian
 
         newHappinessList["Cities"] = unhappinessFromCity * unhappinessModifier
 
         var unhappinessFromCitizens = cityInfo.population.population.toFloat()
-        if (civInfo.hasUnique("Specialists produce half normal unhappiness"))
-            unhappinessFromCitizens -= cityInfo.population.getNumberOfSpecialists() * 0.5f
+        var unhappinessFromSpecialists = cityInfo.population.getNumberOfSpecialists().toFloat()
+
+        for (unique in civInfo.getMatchingUniques("Specialists only produce []% of normal unhappiness")) {
+            unhappinessFromSpecialists *= (1f - unique.params[0].toFloat() / 100f)
+        }
+        // Deprecated since 3.15
+            if (civInfo.hasUnique("Specialists produce half normal unhappiness"))
+                unhappinessFromSpecialists *= 0.5f
+        //
+
+        unhappinessFromCitizens -= cityInfo.population.getNumberOfSpecialists().toFloat() - unhappinessFromSpecialists
 
         if (cityInfo.isPuppet)
             unhappinessFromCitizens *= 1.5f
@@ -297,7 +306,6 @@ class CityStats {
         for (unique in uniques.filter { it.placeholderText == "+[]% [] []"})
             if (cityInfo.matchesFilter(unique.params[2]))
                 stats.add(Stat.valueOf(unique.params[1]), unique.params[0].toFloat())
-
 
         for (unique in uniques.filter { it.placeholderText == "+[]% Production when constructing []" }) {
             if (constructionMatchesFilter(currentConstruction, unique.params[1]))
@@ -489,12 +497,12 @@ class CityStats {
             newFinalStatList["Production"] = Stats().apply { production = 1f }
         finalStatList = newFinalStatList
     }
-    
+
     private fun getCitySpecificUniques(): Sequence<Unique> {
         return cityInfo.cityConstructions.builtBuildingUniqueMap.getAllUniques()
         .filter { it.params.isNotEmpty() && it.params.last() == "in this city" }
     }
-    
+
     private fun getUniquesForThisCity(
         unique: String,
         // We might have to cached to avoid concurrency problems, so if we don't, just get it directly
@@ -515,20 +523,28 @@ class CityStats {
         for (unique in getUniquesForThisCity("-[]% maintenance cost for buildings []", citySpecificUniques)) {
             buildingsMaintenance *= (1f - unique.params[0].toFloat() / 100)
         }
-        
+
         // Deprecated since 3.15
             for (unique in getUniquesForThisCity("-[]% building maintenance costs []", citySpecificUniques)) {
                 buildingsMaintenance *= (1f - unique.params[0].toFloat() / 100)
             }
         //
-        
+
         return buildingsMaintenance
     }
 
     private fun updateFoodEaten() {
         foodEaten = cityInfo.population.population.toFloat() * 2
-        if (cityInfo.civInfo.hasUnique("-50% food consumption by specialists"))
-            foodEaten -= cityInfo.population.getNumberOfSpecialists()
-    }
+        var foodEatenBySpecialists = 2f * cityInfo.population.getNumberOfSpecialists()
 
+        for (unique in cityInfo.civInfo.getMatchingUniques("-[]% food consumption by specialists"))
+            foodEatenBySpecialists *= 1f - unique.params[0].toFloat() / 100f
+
+        // Deprecated since 3.15
+            if (cityInfo.civInfo.hasUnique("-50% food consumption by specialists"))
+                foodEatenBySpecialists *= 0.5f
+        //
+
+        foodEaten -= 2f * cityInfo.population.getNumberOfSpecialists() - foodEatenBySpecialists
+    }
 }

@@ -225,7 +225,7 @@ object TranslationFileWriter {
                         }
                         existingParameterNames += parameterName
 
-                        stringToTranslate = stringToTranslate.replace(parameter, parameterName)
+                        stringToTranslate = stringToTranslate.replaceFirst(parameter, parameterName)
                     }
                 }
                 resultStrings!!.add("$stringToTranslate = ")

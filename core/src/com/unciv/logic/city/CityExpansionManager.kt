@@ -107,6 +107,11 @@ class CityExpansionManager {
         return null
     }
 
+    /**
+     * Removes one tile from this city's owned tiles, unconditionally, and updates dependent
+     * things like worked tiles, locked tiles, and stats.
+     * @param tileInfo The tile to relinquish
+     */
     fun relinquishOwnership(tileInfo: TileInfo) {
         cityInfo.tiles = cityInfo.tiles.withoutItem(tileInfo.position)
         for (city in cityInfo.civInfo.cities) {
@@ -124,6 +129,14 @@ class CityExpansionManager {
         cityInfo.cityStats.update()
     }
 
+    /**
+     * Takes one tile into possession of this city, either unowned or owned by any other city.
+     *
+     * Also manages consequences like auto population reassign, stats, and displacing units
+     * that are no longer allowed on that tile.
+     *
+     * @param tileInfo The tile to take over
+     */
     fun takeOwnership(tileInfo: TileInfo) {
         if (tileInfo.isCityCenter()) throw Exception("What?!")
         if (tileInfo.getCity() != null)

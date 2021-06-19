@@ -286,24 +286,25 @@ open class TileInfo {
 
         if (city != null) {
             val cityWideUniques = city.cityConstructions.builtBuildingUniqueMap.getUniques("[] from [] tiles in this city")
-            val civWideUniques = city.civInfo.getMatchingUniques("[] from every []")
             val improvementUniques = improvement.uniqueObjects.filter {
                 it.placeholderText == "[] on [] tiles once [] is discovered"
                         && observingCiv.tech.isResearched(it.params[2])
             }
-            for (unique in cityWideUniques + civWideUniques + improvementUniques) {
-                if (improvement.name == unique.params[1]
-                        || unique.params[1] == "Great Improvement" && improvement.isGreatImprovement()
-                        || unique.params[1] == "Fresh water" && isAdjacentToFreshwater
-                        || unique.params[1] == "non-fresh water" && !isAdjacentToFreshwater
-                )
+            for (unique in cityWideUniques + improvementUniques) {
+                if (matchesUniqueFilter(unique.params[1])
+                    // Freshwater and non-freshwater cannot be moved to matchesUniqueFilter since that creates an enless feedback.
+                    // If you're attempting that, check that it works!
+                    || unique.params[1] == "Fresh water" && isAdjacentToFreshwater
+                    || unique.params[1] == "non-fresh water" && !isAdjacentToFreshwater)
+                        stats.add(unique.stats)
+            }
+
+            for (unique in city.civInfo.getMatchingUniques("[] from every []")) {
+                if (improvement.matchesFilter(unique.params[1])) {
                     stats.add(unique.stats)
+                }
             }
         }
-
-        if (containsGreatImprovement()
-                && observingCiv.hasUnique("Tile yield from Great Improvements +100%"))
-            stats.add(improvement) // again, for the double effect
 
         for (unique in improvement.uniqueObjects)
             if (unique.placeholderText == "[] for each adjacent []") {
@@ -315,6 +316,15 @@ open class TileInfo {
                 }
                 stats.add(unique.stats.times(numberOfBonuses.toFloat()))
             }
+
+        for (unique in observingCiv.getMatchingUniques("+[]% yield from every []"))
+            if (improvement.matchesFilter(unique.params[0]))
+                stats.timesInPlace(1f + unique.params[1].toFloat() / 100f)
+
+        // Deprecated since 3.15
+            if (containsGreatImprovement() && observingCiv.hasUnique("Tile yield from Great Improvements +100%"))
+                stats.timesInPlace(2f)
+        //
 
         return stats
     }
@@ -383,7 +393,7 @@ open class TileInfo {
     }
 
     /**
-     * Implementation of _`tileFilter`_ 
+     * Implementation of _`tileFilter`_
      * @see <a href="https://github.com/yairm210/Unciv/wiki/uniques#user-content-tilefilter">tileFilter</a>
      */
     fun matchesUniqueFilter(filter: String, civInfo: CivilizationInfo? = null): Boolean {
@@ -397,7 +407,6 @@ open class TileInfo {
             naturalWonder -> true
             "Foreign Land" -> civInfo != null && !isFriendlyTerritory(civInfo)
             "Friendly Land" -> civInfo != null && isFriendlyTerritory(civInfo)
-            "Great Improvements" -> containsGreatImprovement()
             else -> {
                 if (terrainFeatures.contains(filter)) return true
                 if (baseTerrainObject.uniques.contains(filter)) return true

@@ -10,6 +10,7 @@ import com.unciv.logic.map.TileInfo
 import com.unciv.models.AttackableTile
 import com.unciv.models.ruleset.Unique
 import com.unciv.models.ruleset.unit.UnitType
+import com.unciv.models.stats.Stat
 import java.util.*
 import kotlin.math.max
 
@@ -63,6 +64,10 @@ object Battle {
         // This needs to come BEFORE the move-to-tile, because if we haven't conquered it we can't move there =)
         if (defender.isDefeated() && defender is CityCombatant && attacker is MapUnitCombatant && attacker.isMelee() && !attacker.unit.hasUnique("Unable to capture cities"))
             conquerCity(defender.city, attacker)
+
+        // Exploring units surviving an attack should "wake up"
+        if (!defender.isDefeated() && defender is MapUnitCombatant && defender.unit.action == Constants.unitActionExplore)
+            defender.unit.action = null
 
         // we're a melee unit and we destroyed\captured an enemy unit
         postBattleMoveToAttackedTile(attacker, defender, attackedTile)
@@ -313,6 +318,13 @@ object Battle {
             return
         }
 
+        for (unique in attackerCiv.getMatchingUniques("Upon capturing a city, receive [] times its [] production as [] immediately")) {
+            attackerCiv.addStat(
+                Stat.valueOf(unique.params[2]), 
+                unique.params[0].toInt() * city.cityStats.currentCityStats.get(Stat.valueOf(unique.params[1])).toInt()
+            )
+        }
+        
         if (attackerCiv.isPlayerCivilization()) {
             attackerCiv.popupAlerts.add(PopupAlert(AlertType.CityConquered, city.id))
             UncivGame.Current.settings.addCompletedTutorialTask("Conquer a city")

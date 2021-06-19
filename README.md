@@ -60,12 +60,6 @@ There's a lot left to implement, so it's hard to give an estimation of when exac
 
 If not, then the feature won't be added until we've finished all the features from the original Civ - as mentioned, this will take a while!
 
-## Please add {Civilization}
-
-THE most common request, hands down. Everyone wants their favorite Civ in the game, I get that. But there are so many other things to work on - automations, AI, UI, graphics, bugs, and of course other features from the original game that are currently missing. Eventually we'll have them all, but the key word is "eventually".
-
-In the meantime, you can [mod it yourself](https://github.com/yairm210/Unciv/wiki/Mods)!
-
 ## Will you implement Civ VI?
 
 Considering how long it took to get this far, no.
