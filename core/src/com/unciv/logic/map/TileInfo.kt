@@ -318,8 +318,8 @@ open class TileInfo {
             }
         
         for (unique in observingCiv.getMatchingUniques("+[]% yield from every []"))
-            if (improvement.matchesFilter(unique.params[0])) 
-                stats.timesInPlace(1f + unique.params[1].toFloat() / 100f)
+            if (improvement.matchesFilter(unique.params[1])) 
+                stats.timesInPlace(1f + unique.params[0].toFloat() / 100f)
         
         // Deprecated since 3.15
             if (containsGreatImprovement() && observingCiv.hasUnique("Tile yield from Great Improvements +100%")) 
