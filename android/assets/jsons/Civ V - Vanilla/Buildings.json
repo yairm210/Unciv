@@ -750,6 +750,7 @@
 	{
 		"name": "Kremlin",
 		"culture": 3,
+		"cityStrength": 12,
 		"isWonder": true,
 		"uniques": ["Defensive buildings in all cities are 25% more effective"],
 		"requiredTech": "Metallurgy",
@@ -897,7 +898,7 @@
 		"culture": 1,
 		"isWonder": true,
 		"greatPersonPoints": {"production": 2},
-		"uniques": ["[+1 Production] from every specialist", "Free Social Policy"],
+		"uniques": ["[+1 Production] from every specialist"],
 		"requiredTech": "Replaceable Parts",
 		"quote": "'Give me your tired, your poor, your huddled masses yearning to breathe free, the wretched refuse of your teeming shore. Send these, the homeless, tempest-tossed to me, I lift my lamp beside the golden door!'  - Emma Lazarus"
 	},
