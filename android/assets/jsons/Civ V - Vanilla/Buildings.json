@@ -1,5 +1,7 @@
 [
 	// Ancient Era
+
+	// Always available
 	{
 		"name": "Palace",
 		"isNationalWonder": true,
@@ -18,6 +20,7 @@
 		"hurryCostModifier": 40,
 		"maintenance": 1
 	},
+	// Column 1
 	{
 		"name": "Granary", 
 		"food": 2,
@@ -28,6 +31,16 @@
 			"[+1 Food] from [Wheat] tiles in this city"],
 		"requiredTech": "Pottery"
 	},
+	{
+		"name": "Temple of Artemis",
+		"culture": 1,
+		"isWonder": true,
+		"greatPersonPoints": {"production": 1},
+		"uniques": ["+[10]% [Food] [in all cities]", "+[15]% Production when constructing [Ranged] units [in all cities]"],
+		"requiredTech": "Archery",
+		"quote": "'It is not so much for its beauty that the forest makes a claim upon men's hearts, as for that subtle something, that quality of air, that emanation from old trees, that so wonderfully changes and renews a weary spirit.'  - Robert Louis Stevenson"
+	},
+	// Column 2
 	{
 		"name": "Stone Works", 
 		"happiness": 1,
@@ -105,16 +118,6 @@
 		"requiredTech": "The Wheel"     
 	},
 	{
-		"name": "Temple of Artemis",
-		"culture": 1,
-		"isWonder": true,
-		"cost": 185,
-		"greatPersonPoints": {"production": 1},
-		"uniques": ["+[10]% [Food] [in all cities]", "+[15]% Production when constructing [Ranged] units [in all cities]"],
-		"requiredTech": "Archery",
-		"quote": "'It is not so much for its beauty that the forest makes a claim upon men's hearts, as for that subtle something, that quality of air, that emanation from old trees, that so wonderfully changes and renews a weary spirit.'  - Robert Louis Stevenson"
-	},
-	{
 		"name": "Walls",
 		"cityStrength": 5,
 		"cityHealth": 50,
@@ -188,9 +191,11 @@
 	},
 	
 	// Classical Era
-	
+
+	// Column 3
 	{
 		"name": "Lighthouse",
+		"cost": 75,
 		"hurryCostModifier": 25,
 		"maintenance": 1,
 		"uniques": ["Must be next to [Coast]", "[+1 Food] from [Ocean] tiles in this city",
@@ -199,10 +204,11 @@
 	},
 	{
 		"name": "The Great Lighthouse",
+		"cost": 185,
 		"culture": 1,
 		"greatPersonPoints": {"gold": 1},
 		"isWonder": true,
-		"providesFreeBuilding":  "Lighthouse",
+		"providesFreeBuilding": "Lighthouse",
 		"uniques": ["Must be next to [Coast]", "+[1] Movement for all [{Military} {Water}] units",
 			"+[1] Sight for all [{Military} {Water}] units"],
 		"requiredTech": "Optics",
@@ -260,6 +266,7 @@
 		"requiredTech": "Construction",
 		"quote": "'Regard your soldiers as your children, and they will follow you into the deepest valleys; look on them as your own beloved sons, and they will stand by you even unto death.'  - Sun Tzu"
 	},
+	// Column 4
 	{
 		"name": "Temple",
 		"culture": 3,
@@ -318,15 +325,6 @@
 		"requiredTech": "Currency"
 	},
 	{
-		"name": "National Treasury",
-		"cost": 125,
-		"gold": 8,
-		"culture": 1,
-		"isNationalWonder": true,
-		"uniques": ["Requires a [Market] in all cities", "Cost increases by [30] per owned city"],
-		"requiredTech": "Currency"
-	},
-	{
 		"name": "Bazaar",
 		"replaces": "Market",
 		"uniqueTo": "Arabia",
@@ -336,6 +334,15 @@
 		"percentStatBonus": {"gold": 25},
 		"uniques": ["Provides 1 extra copy of each improved luxury resource near this City",
 			"[+2 Gold] from [Oil] tiles in this city", "[+2 Gold] from [Oasis] tiles in this city"],
+		"requiredTech": "Currency"
+	},
+	{
+		"name": "National Treasury",
+		"cost": 125,
+		"gold": 8,
+		"culture": 1,
+		"isNationalWonder": true,
+		"uniques": ["Requires a [Market] in all cities", "Cost increases by [30] per owned city"],
 		"requiredTech": "Currency"
 	},
 	{
@@ -367,7 +374,7 @@
 		"culture": 3,
 		"greatPersonPoints": {"production": 1},
 		"isWonder": true,
-		"providesFreeBuilding":  "Walls",
+		"providesFreeBuilding": "Walls",
 		"uniques": ["Enemy land units must spend 1 extra movement point when inside your territory (obsolete upon Dynamite)"],
 		"requiredTech": "Engineering",
 		"quote": "'The art of war teaches us to rely not on the likelihood of the enemy's not attacking, but rather on the fact that we have made our position unassailable.'  - Sun Tzu"
@@ -383,10 +390,10 @@
 	},
 	
 	// Medieval Era
-	
+
+	// Column 5
 	{
 		"name": "Garden",
-		"cost": 120,
 		"uniques": ["+[25]% great person generation in this city", "Must be next to [Fresh water]"],
 		"hurryCostModifier": 25,
 		"maintenance": 1,
@@ -472,8 +479,10 @@
 			"+[15]% Production when constructing [Land] units [in this city]",
 			"[+1 Production] from [Iron] tiles in this city"]
 	},
+	// Column 6
 	{
 		"name": "Harbor",
+		"cost": 120,
 		"maintenance": 2,
 		"hurryCostModifier": 25,
 		"uniques": ["[+1 Production] from [Water resource] tiles in this city",
@@ -523,6 +532,7 @@
 	},
 	{
 		"name": "Mughal Fort",
+		"cost": 150,
 		"replaces": "Castle",
 		"uniqueTo": "India",
 		"cityStrength": 7,
@@ -581,7 +591,8 @@
 	},
 	
 	// Renaissance Era
-	
+
+	// Column 7
 	{
 		"name": "Observatory",
 		"maintenance": 0,
@@ -679,15 +690,7 @@
 		"requiredTech": "Gunpowder",
 		"quote": "'Bushido is realized in the presence of death. This means choosing death whenever there is a choice between life and death. There is no other reasoning.'  - Yamamoto Tsunetomo"
 	},
-	{
-		"name": "Museum",
-		"culture": 5,
-		"specialistSlots": {"Artist": 2},
-		"requiredBuilding": "Opera House",
-		"maintenance": 3,
-		"hurryCostModifier": 0,
-		"requiredTech": "Archaeology"
-	},
+	// Column 8
 	{
 		"name": "Hermitage",
 		"cost": 125,
@@ -696,15 +699,6 @@
 		"isNationalWonder": true,
 		"uniques": ["Requires a [Opera House] in all cities", "Cost increases by [30] per owned city"],
 		"requiredTech": "Archaeology"
-	}, 
-	{
-		"name": "The Louvre",
-		"culture": 1,
-		"happiness": 4,
-		"isWonder": true,
-		"uniques": ["[2] free [Great Artist] units appear"],
-		"requiredTech": "Archaeology",
-		"quote": "'Every genuine work of art has as much reason for being as the earth and the sun'  - Ralph Waldo Emerson"
 	},
 	{
 		"name": "Seaport",
@@ -745,7 +739,26 @@
 	},
 	
 	// Industrial Era
-	
+
+	// Column 9
+	{
+		"name": "Museum",
+		"culture": 5,
+		"specialistSlots": {"Artist": 2},
+		"requiredBuilding": "Opera House",
+		"maintenance": 3,
+		"hurryCostModifier": 0,
+		"requiredTech": "Archaeology"
+	},
+	{
+		"name": "The Louvre",
+		"culture": 1,
+		"happiness": 4,
+		"isWonder": true,
+		"uniques": ["[2] free [Great Artist] units appear"],
+		"requiredTech": "Archaeology",
+		"quote": "'Every genuine work of art has as much reason for being as the earth and the sun'  - Ralph Waldo Emerson"
+	},
 	{
 		"name": "Public School",
 		"science": 3,
@@ -758,6 +771,7 @@
 	},
 	{
 		"name": "Factory",
+		"cost": 360,
 		"production": 4,
 		"percentStatBonus": {"production": 10},
 		"specialistSlots": {"Engineer": 2},
@@ -766,6 +780,16 @@
 		"hurryCostModifier": 0,
 		"requiredResource": "Coal",
 		"requiredTech": "Industrialization"
+	},
+	{
+		"name": "Big Ben",
+		"culture": 1,
+		"gold": 4,
+		"greatPersonPoints": {"gold": 2},
+		"isWonder": true,
+		"uniques": ["Cost of purchasing items in cities reduced by [15]%"],
+		"requiredTech": "Industrialization",
+		"quote": "'To achieve great things, two things are needed: a plan, and not quite enough time.'  - Leonard Bernstein"
 	},
 	{
 		"name": "Arsenal",
@@ -793,6 +817,7 @@
 		"requiredTech": "Military Science",
 		"quote": "'Pale Death beats equally at the poor man's gate and at the palaces of kings.'  - Horace"
 	},
+	// Column 10
 	{
 		"name": "Hospital",
 		"food": 5,
@@ -810,20 +835,9 @@
 		"requiredBuilding": "Bank",
 		"requiredTech": "Electricity"
 	},
-	{
-		"name": "Big Ben",
-		"culture": 1,
-		"gold": 4,
-		"greatPersonPoints": {"gold": 2},
-		"isWonder": true,
-		"uniques": ["Cost of purchasing items in cities reduced by [15]%"],
-		"requiredTech": "Industrialization",
-		"quote": "'To achieve great things, two things are needed: a plan, and not quite enough time.'  - Leonard Bernstein"
-	},
 	/* This works and even has icon but AI cannot manage its Aluminum at this moment
 	{
 		"name": "Hydro Plant",
-		"cost": 360,
 		"requiredResource": "Aluminum",
 		"hurryCostModifier": 0,
 		"maintenance": 3,
@@ -833,7 +847,15 @@
 	*/
 	
 	// Modern Era
-	
+
+	// Column 11
+	{
+		"name": "Stadium",
+		"happiness": 4,
+		"requiredBuilding": "Theatre",
+		"maintenance": 2,
+		"requiredTech": "Refrigeration"
+	},
 	{
 		"name": "Broadcast Tower",
 		"culture": 3,
@@ -853,6 +875,14 @@
 		"quote": "'We live only to discover beauty, all else is a form of waiting'  - Kahlil Gibran"
 	},
 	{
+		"name": "Military Base",
+		"cityStrength": 12,
+		"cityHealth": 25,
+		"hurryCostModifier": 25,
+		"requiredBuilding": "Arsenal",
+		"requiredTech": "Replaceable Parts"
+	},
+	{
 		"name": "Statue of Liberty",
 		"culture": 1,
 		"isWonder": true,
@@ -862,40 +892,18 @@
 		"quote": "'Give me your tired, your poor, your huddled masses yearning to breathe free, the wretched refuse of your teeming shore. Send these, the homeless, tempest-tossed to me, I lift my lamp beside the golden door!'  - Emma Lazarus"
 	},
 	{
-		"name": "Research Lab",
-		"science": 4,		
-		"percentStatBonus": {"science": 50},
-		"specialistSlots": {"Scientist": 1},
-		"requiredBuilding": "Public School",
-		"maintenance": 3,
-		"requiredTech": "Plastics"
-	},
-	{
-		"name": "Stadium",
-		"happiness": 4,
-		"requiredBuilding": "Theatre",
-		"maintenance": 2,
-		"requiredTech": "Refrigeration"
-	},
-	{
-		"name": "Military Base",
-		"cityStrength": 12,
-		"cityHealth": 25,
-		"hurryCostModifier": 25,
-		"requiredBuilding": "Arsenal",
-		"requiredTech": "Replaceable Parts"
-	},
-	{
 		"name": "Cristo Redentor",
+		"cost": 1250,
 		"culture": 5,
 		"isWonder": true,
-		"greatPersonPoints": {"culture": 2},		
+		"greatPersonPoints": {"culture": 2},
 		"uniques": ["Culture cost of adopting new Policies reduced by [10]%"],
 		"requiredTech": "Flight",
 		"quote": "'Come to me, all who labor and are heavy burdened, and I will give you rest.'  - New Testament, Matthew 11:28"
 	},
 	{
 		"name": "Kremlin",
+		"cost": 625,
 		"culture": 3,
 		"cityStrength": 12,
 		"isWonder": true,
@@ -915,9 +923,20 @@
 		"requiredTech": "Railroad",
 		"quote": "'...the location is one of the most beautiful to be found, holy and unapproachable, a worthy temple for the divine friend who has brought salvation and true blessing to the world.'  - King Ludwig II of Bavaria"
 	},
-	
+	// Column 12
+	{
+		"name": "Research Lab",
+		"science": 4,
+		"percentStatBonus": {"science": 50},
+		"specialistSlots": {"Scientist": 1},
+		"requiredBuilding": "Public School",
+		"maintenance": 3,
+		"requiredTech": "Plastics"
+	},
+
 	// Information Era
-	
+
+	// Column 13
 	{
 		"name": "Medical Lab",
 		"requiredBuilding": "Hospital",
@@ -926,21 +945,15 @@
 		"uniques": ["[25]% of food is carried over after population increases"]
 	},
 	{
-		"name": "Manhattan Project",
-		"isNationalWonder": true,
-		"uniques": ["Enables nuclear weapon", "Triggers a global alert upon completion"],
-		"requiredTech": "Nuclear Fission"
+		"name": "Pentagon",
+		"isWonder": true,
+		"culture": 3,
+		"greatPersonPoints": {"production": 2},
+		"uniques": ["Gold cost of upgrading military units reduced by 33%"],
+		"requiredTech": "Combined Arms",
+		"quote": "'In preparing for battle I have always found that plans are useless, but planning is indispensable.'  - Dwight D. Eisenhower"
 	},
-	{
-		"name": "Nuclear Plant",
-		"production": 5,		
-		"percentStatBonus": {"production": 15},
-		"requiredBuilding": "Factory",
-		"maintenance": 3,
-		"cannotBeBuiltWith": "Solar Plant",
-		"requiredResource": "Uranium",
-		"requiredTech": "Nuclear Fission"
-	},
+	// Column 14
 	{
 		"name": "Solar Plant",
 		"production": 5,		
@@ -960,6 +973,34 @@
 		"requiredTech": "Ecology",
 		"quote": "'Those who lose dreaming are lost.'  - Australian Aboriginal saying"
 	},
+	{
+		"name": "Nuclear Plant",
+		"production": 5,
+		"percentStatBonus": {"production": 15},
+		"requiredBuilding": "Factory",
+		"maintenance": 3,
+		"cannotBeBuiltWith": "Solar Plant",
+		"requiredResource": "Uranium",
+		"requiredTech": "Nuclear Fission"
+	},
+	{
+		"name": "Manhattan Project",
+		"cost": 750,
+		"isNationalWonder": true,
+		"uniques": ["Enables nuclear weapon", "Triggers a global alert upon completion"],
+		"requiredTech": "Nuclear Fission"
+	},
+	{
+		"name": "Apollo Program",
+		"cost": 750,
+		"isNationalWonder": true,
+		"uniques": ["Enables construction of Spaceship parts", "Triggers a global alert upon completion"],
+		"requiredTech": "Rocketry"
+	},
+
+	// Future Era
+
+	// Column 15
 	/*
 	{
 		"name": "CN Tower",
@@ -970,24 +1011,24 @@
 		"uniques": ["+1 population in each city","+1 happiness in each city"]
 		"requiredTech": "Telecommunications" // todo doesn't exist yet!
 	},
-	{
-		"name": "United Nations",
-		"isWonder": true,
-		"culture": 1,
-		"greatPersonPoints": {"gold": 2},
-		"uniques": ["Triggers voting for the Diplomatic Victory"],
-		"quote": "'More than ever before in human history, we share a common destiny. We can master it only if we face it together. And that is why we have the United Nations.'  - Kofi Annan"
-		"requiredTech": "Globalization", // todo doesn't exist yet!
-	},
 	*/
 	{
-		"name": "Pentagon",
+		"name": "Hubble Space Telescope",
 		"isWonder": true,
-		"culture": 3,
-		"greatPersonPoints": {"production": 2},
-		"uniques": ["Gold cost of upgrading military units reduced by 33%"],
-		"requiredTech": "Combined Arms",
-		"quote": "'In preparing for battle I have always found that plans are useless, but planning is indispensable.'  - Dwight D. Eisenhower"
+		"greatPersonPoints": {"science": 1},
+		"providesFreeBuilding":  "Spaceship Factory",
+		// If spaceship parts are changed into units, the spaceship part unique should be changed to
+		// "+[25]% Production when constructing [Spaceship part] units [in this city]"
+		"uniques": ["[2] free [Great Scientist] units appear",
+			"+[25]% Production when constructing [Spaceship part] [in this city]"],
+		"requiredTech": "Satellites",
+		"quote": "'The wonder is, not that the field of stars is so vast, but that man has measured it.'  - Anatole France"
+	},
+	{
+		"name": "SS Cockpit",
+		"requiredResource": "Aluminum",
+		"requiredTech": "Satellites",
+		"uniques": ["Spaceship part", "Triggers a global alert upon completion", "Cannot be purchased"]
 	},
 	{
 		"name": "Spaceship Factory",
@@ -1006,35 +1047,18 @@
 		"requiredTech": "Robotics",
 		"uniques": ["Spaceship part", "Triggers a global alert upon completion", "Cannot be purchased"]
 	},
+	// Column 16
+	/*
 	{
-		"name": "Apollo Program",
-		"cost": 1500,
-		"isNationalWonder": true,
-		"uniques": ["Enables construction of Spaceship parts", "Triggers a global alert upon completion"],
-		"requiredTech": "Rocketry"
-	},
-	
-	// Future Era
-	
-	{
-		"name": "Hubble Space Telescope",
-		"cost": 1250,
+		"name": "United Nations",
 		"isWonder": true,
-		"greatPersonPoints": {"science": 1},		
-		"providesFreeBuilding":  "Spaceship Factory",
-		// If spaceship parts are changed into units, the spaceship part unique should be changed to
-		// "+[25]% Production when constructing [Spaceship part] units [in this city]"
-		"uniques": ["[2] free [Great Scientist] units appear",
-			"+[25]% Production when constructing [Spaceship part] [in this city]"],
-		"requiredTech": "Satellites",
-		"quote": "'The wonder is, not that the field of stars is so vast, but that man has measured it.'  - Anatole France"
+		"culture": 1,
+		"greatPersonPoints": {"gold": 2},
+		"uniques": ["Triggers voting for the Diplomatic Victory"],
+		"quote": "'More than ever before in human history, we share a common destiny. We can master it only if we face it together. And that is why we have the United Nations.'  - Kofi Annan"
+		"requiredTech": "Globalization", // todo doesn't exist yet!
 	},
-	{
-		"name": "SS Cockpit",
-		"requiredResource": "Aluminum",
-		"requiredTech": "Satellites",
-		"uniques": ["Spaceship part", "Triggers a global alert upon completion", "Cannot be purchased"]
-	},
+	*/
 	{
 		"name": "SS Engine",
 		"requiredResource": "Aluminum",
@@ -1046,9 +1070,9 @@
 		"requiredResource": "Aluminum",
 		"requiredTech": "Nanotechnology",
 		"uniques": ["Spaceship part", "Triggers a global alert upon completion", "Cannot be purchased"]
-	}
-	
-	// All Era's
+	},
+
+	// All Eras
 	
 	{
 		"name": "Utopia Project",

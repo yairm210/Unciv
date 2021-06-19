@@ -18,6 +18,7 @@
 		"era": "Ancient era",
 		"techCost": 35, 
 		"buildingCost": 60,
+		"wonderCost": 185,
 		"techs": [
 			{
 				"name": "Pottery",
@@ -136,8 +137,8 @@
 		"columnNumber": 4,
 		"era": "Classical era",
 		"techCost": 175, 
-		"buildingCost": 120,
-		"wonderCost": 300,
+		"buildingCost": 100,
+		"wonderCost": 250,
 		"techs": [
 			{
 				"name": "Philosophy",
@@ -170,8 +171,8 @@
 		"columnNumber": 5,
 		"era": "Medieval era",
 		"techCost": 275,
-		"buildingCost": 160,
-		"wonderCost": 400,
+		"buildingCost": 120,
+		"wonderCost": 300,
 		"techs": [
 			{
 				"name": "Theology",
@@ -205,8 +206,8 @@
 		"columnNumber": 6,
 		"era": "Medieval era",
 		"techCost": 485, 
-		"buildingCost": 200,
-		"wonderCost": 500,
+		"buildingCost": 160,
+		"wonderCost": 400,
 		"techs": [
 			{
 				"name": "Compass",
@@ -253,8 +254,8 @@
 		"columnNumber": 7,
 		"era": "Renaissance era",
 		"techCost": 780, 
-		"buildingCost": 250,
-		"wonderCost": 625,
+		"buildingCost": 200,
+		"wonderCost": 500,
 		"techs": [
 			{
 				"name": "Astronomy",
@@ -293,8 +294,8 @@
 		"columnNumber": 8,
 		"era": "Renaissance era",
 		"techCost": 1150, 
-		"buildingCost": 300,
-		"wonderCost": 750,
+		"buildingCost": 250,
+		"wonderCost": 625,
 		"techs": [
 			{
 				"name": "Navigation",
@@ -332,8 +333,8 @@
 		"columnNumber": 9,
 		"era": "Industrial era",
 		"techCost": 1600,
-		"buildingCost": 360,
-		"wonderCost": 920,
+		"buildingCost": 300,
+		"wonderCost": 750,
 		"techs": [
 			{
 				"name": "Archaeology",
@@ -377,8 +378,8 @@
 		"columnNumber": 10,
 		"era": "Industrial era",
 		"techCost": 2350,
-		"buildingCost": 500,
-		"wonderCost": 1060,
+		"buildingCost": 360,
+		"wonderCost": 900, // Note that this column doesn't actually have any wonders. This just continues the wonderCost = 2.5 * buildingCost pattern from the last few columns.
 		"techs": [
 			{
 				"name": "Biology",
@@ -412,7 +413,7 @@
 		"era": "Modern era",
 		"techCost": 3100,
 		"buildingCost": 500,
-		"wonderCost": 1250,
+		"wonderCost": 1060,
 		"techs": [
 			{
 				"name": "Refrigeration",
@@ -516,8 +517,8 @@
 		"columnNumber": 14,
 		"era": "Information era",
 		"techCost": 6400,
-		"buildingCost": 750,
-		"wonderCost": 2000,
+		"buildingCost": 500,
+		"wonderCost": 1250,
 		"techs": [
 			{
 				"name": "Ecology",
