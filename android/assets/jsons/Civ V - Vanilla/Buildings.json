@@ -550,7 +550,7 @@
 		"greatPersonPoints": {"production": 1},
 		"isWonder": true,
 		"uniques": ["-[25]% Culture cost of acquiring tiles [in all cities]","-[25]% Gold cost of acquiring tiles [in all cities]"],
-		"requiredTech": "Chivalry",
+		"requiredTech": "Education",
 		"quote": "'The temple is like no other building in the world. It has towers and decoration and all the refinements which the human genius can conceive of.'  - Antonio da Magdalena"
 	},
 	{
