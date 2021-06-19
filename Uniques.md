@@ -102,7 +102,7 @@ unitFilters allow us to activate uniques for specific units, based on:
 - "All", as a catch all for all units.
 - "Embarked"
 - "Wounded"
-- Any combination of the above (will match only if all match). The format is "{filter1} {filter2}" and can match any number of filters. For example:"{Military} {Water}" units, "{Wounded} {Armor}" units, etc.
+- Any combination of the above (will match only if all match). The format is "{filter1} {filter2}" and can match any number of filters. For example:"[{Military} {Water}]" units, "[{Wounded} {Armor}]" units, etc.
 
 #### cityFilter
 
@@ -115,6 +115,17 @@ cityFilters allow us to choose the range of cities affected by this unique:
 - "in all cities with a world wonder"
 - "in all cities connected to capital"
 - "in all cities with a garrison"
+
+### ConstructionFilter [Pending merge of #4158]
+
+ConstructionFilters allow us to activate uniques while constructing certain buildings or units.
+For units, the UnitFilter is called. For Buildings, the following options are implemented:
+
+- "All"
+- "Buildings", "Building"
+- "Wonders", "Wonders"
+- building name
+- an exact unique the building has (e.g.: "spaceship part")
 
 ## General uniques
 
@@ -141,6 +152,12 @@ cityFilters allow us to choose the range of cities affected by this unique:
 
 "[stats] per [amount] population [cityFilter]"
 
+"+[amount]% [stat] while the empire is happy"
+
+"Specialists only produce [amount]% of normal unhappiness"
+
+"-[amount]% food consumption by specialists"
+
 ### One time effect
 
 "[amount] free [unitName] units appear", "Free [unitName] appears" - Self explanatory. If given to a building, the units will appear next to the city the building was constructed in. If the specified unit can construct cities, the unique will not activate for One-City Challenge players.
@@ -151,7 +168,11 @@ cityFilters allow us to choose the range of cities affected by this unique:
 
 "Free Technology"
 
+"[amount] Free Technologies"
+
 "Free Social Policy"
+
+"[amount] Free Social Policies"
 
 "Empire enters golden age" - if already in a golden age, it is extended by the number of turns that a new golden age would have given.
 
@@ -163,12 +184,13 @@ cityFilters allow us to choose the range of cities affected by this unique:
 
 "+[amount] Movement for all [unitFilter] units"
 
-"+[amount]% combat bonus for units fighting in [landFilter]" - where landFilter is one of
+[Pending #4158]
+"+[amount]% Strength for units fighting in [landFilter]" - where landFilter is one of
 - Last terrain name (as in: Plains+Forest is considered Forest, not Plains)
 - "Friendly Land", for land under your control, or under friendly city-state / major civ with open borders
 - "Foreign Land", for all non-friendly land
 
-"+1 Sight for all land military units" - I don't like this either.
+"+[amount] Sight for all [unitFilter] units"
 
 "Units fight as though they were at full strength even when damaged"
 
@@ -192,13 +214,21 @@ cityFilters allow us to choose the range of cities affected by this unique:
 
 "Resting point for Influence with City-States is increased by [amount]"
 
-"Allied City-States provide Science equal to [amount]% of what they produce for themselves"
+"Allied City-States provide [] equal to []% of what they produce for themselves" [Pending #4186]
 
 "Quantity of Resources gifted by City-States increased by [amount]%"
+
+"Happiness from Luxury Resources gifted by City-States increased by [amount]%" [Pending #4158]
 
 "Food and Culture from Friendly City-States are increased by 50%"
 
 "City-State Influence recovers at twice the normal rate"
+
+"Militaristic City-States grant units [amount] times as fast when you are at war with a common nation" [Pending #4158]
+
+"Influence of all other civilizations with all city-states degrades []% faster" [Pending #4158]
+
+"Allied City-States will occasionally gift Great People" [Pending #4158]
 
 ### Other
 
@@ -210,18 +240,17 @@ cityFilters allow us to choose the range of cities affected by this unique:
 
 "Unhappiness from population decreased by [amount]%" - Despite appearances, this is a global unique, affecting all cities.
 
+"Unhappiness from population decreased by [amount]% [cityFilter]" - Same as above, but only for cities passing cityFilter
+
 "+[amount]% Production when constructing [unitFilter] units", "+[amount]% Production when constructing [unitFilter] units [cityFilter]" - The city produces extra Production when a unit fitting the filter in under construction.
 
-"+[amount]% Production when constructing [constructionType]", "+[amount]% Production when constructing [constructionType] [cityfilter]" - where constructionType can be one of the following:
-- Construction name (unit or building name)
-- "Buildings"
-- "Wonders"
-- Building unique
+"+[amount]% Production when constructing [buildingFilter]", "+[amount]% Production when constructing [buildingFilter] [cityfilter]", "+[amount]% Production when constructing a [buildingFilter]
 
 "Cost of purchasing [stat] buildings reduced by [amount]%" - Stat-related buildings are defined as one of the following:
 - Provides that stat directly (e.g. +1 Culture)
 - Provides a percentage bonus for that stat (e.g. +10% Production)
 - Provides that stat as a bonus for resources (e.g. +1 Food for Wheat)
+- Provides that stat per some amount of population (e.g. +1 Science for every 2 population [cityFilter])
 
 "Culture cost of adopting new Policies reduced by [amount]%"
 
@@ -235,7 +264,7 @@ cityFilters allow us to choose the range of cities affected by this unique:
 
 "Indicates the capital city" - Unciv requires a specific building to indicate the capital city, which is used for many things. In total overhaul mods, you can change the building that indicates this.
 
-"Worker construction increased 25%"
+"-[amount]% tile improvement construction time"
 
 "-[amount]% Culture cost of acquiring tiles [cityFilter]","-[amount]% Gold cost of acquiring tiles [cityFilter]"
 
@@ -247,7 +276,7 @@ cityFilters allow us to choose the range of cities affected by this unique:
 
 "[greatPersonName] is earned [amount]% faster"
 
-"Science gained from research agreements +50%"
+"Science gained from research agreements +[amount]%"
 
 "Cost of purchasing items in cities reduced by [amount]%" - 'Purchasing' refers to the gold cost of buying buildings or units, not the amount of production needed to construct.
 
@@ -261,13 +290,25 @@ cityFilters allow us to choose the range of cities affected by this unique:
 
 "Earn [amount]% of killed [unitFilter] unit's [param1] as [param2]" - param1 accepts "Cost" or "Strength", param2 accepts "Gold" or "Culture". For example, "Earn [100]% of killed [Military] unit's [Strength] as [Culture]", "Earn [10]% of killed [Military] unit's [Cost] as [Gold]"
 
-"-[amount]% building maintenance costs [cityFilter]"
+"-[amount]% maintenance cost for buildings [cityFilter]" [Pending #4158]
+
+"Immediately creates the cheapest available cultural building in each of your first [amount] cities for free"
+
+"Immediately creates a [buildingName] in each of your first [amount] cities for free"
+
+These last two uniques may seem like they only have a one-time effect. However, the 'free' also means that you don't pay any maintenance costs for these buildings. 
+
+"+[amount]% attacking strength for cities with garrisoned units"
+
+"+[amount]% defensive strength for cities"
+
+"+[amount] happiness from each type of luxury resource"
 
 ## Buildings-only
 
 "Doubles Gold given to enemy if city is captured"
 
-"[40]% of food is carried over after population increases"
+"[amount]% of food is carried over after population increases"
 
 "All newly-trained [unitFilter] units in this city receive the [promotionName] promotion"
 
@@ -395,9 +436,11 @@ cityFilters allow us to choose the range of cities affected by this unique:
 
 "+[amount]% Strength when attacking"
 
-"+[amount]% Strength vs [Mounted]"
+"+[amount]% Strength vs [unitFilter]"
 
 "+[amount]% Strength in [tileFilter]"
+
+"+[amount]% Strength for [unitFilter] units which have another [unitFilter] unit in an adjacent tile"
 
 ### Other
 
@@ -436,6 +479,8 @@ cityFilters allow us to choose the range of cities affected by this unique:
 "Invisible to others"
 
 "Can only attack water"
+
+"Gold cost of upgrading [unitFilter] units reduced by [amount]%"
 
 "Not displayed as an available construction without [resourceName/buildingName]"
 
