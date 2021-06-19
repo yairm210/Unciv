@@ -896,7 +896,6 @@
 		"name": "Kremlin",
 		"cost": 625,
 		"culture": 3,
-		"cityStrength": 12,
 		"isWonder": true,
 		"uniques": ["Defensive buildings in all cities are 25% more effective"],
 		"requiredTech": "Railroad",
