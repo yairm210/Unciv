@@ -693,15 +693,6 @@
 	},
 	// Column 8
 	{
-		"name": "Hermitage",
-		"cost": 125,
-		"percentStatBonus": {"culture": 50},
-		"culture": 5,
-		"isNationalWonder": true,
-		"uniques": ["Requires a [Opera House] in all cities", "Cost increases by [30] per owned city"],
-		"requiredTech": "Archaeology"
-	},
-	{
 		"name": "Seaport",
 		"hurryCostModifier": 25,
 		"maintenance": 3,
@@ -709,6 +700,15 @@
 		"uniques": ["[+1 Production, +1 Gold] from [Water resource] tiles in this city",
 			"Must be next to [Coast]", "+[15]% Production when constructing [Water] units [in this city]"],
 		"requiredTech": "Navigation"
+	},
+	{
+		"name": "Hermitage",
+		"cost": 125,
+		"percentStatBonus": {"culture": 50},
+		"culture": 5,
+		"isNationalWonder": true,
+		"uniques": ["Requires a [Opera House] in all cities", "Cost increases by [30] per owned city"],
+		"requiredTech": "Architecture"
 	},
 	{
 		"name": "Taj Mahal",
