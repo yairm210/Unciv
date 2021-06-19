@@ -237,9 +237,10 @@
 	{
 		"name": "Hanging Gardens",
 		"greatPersonPoints": {"culture": 1},
-		"food": 10,
+		"food": 6,
 		"culture": 1,
 		"isWonder": true,
+		"providesFreeBuilding": "Garden",
 		"requiredTech": "Mathematics",
 		"quote": "'I think that if ever a mortal heard the word of God it would be in a garden at the cool of the day.'  - F. Frankfort Moore"
 	},
