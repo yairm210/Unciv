@@ -42,7 +42,7 @@
 	},
 	// Column 2
 	{
-		"name": "Stone Works", 
+		"name": "Stone Works",
 		"happiness": 1,
 		"production": 1,
 		"requiredNearbyImprovedResources": ["Marble", "Stone"],
@@ -69,6 +69,15 @@
 		"requiredTech": "Writing"
 	},
 	{
+		"name": "Paper Maker",
+		"replaces": "Library",
+		"uniqueTo": "China",
+		"hurryCostModifier": 25,
+		"gold": 2,
+		"uniques": ["[+1 Science] per [2] population [in this city]"],
+		"requiredTech": "Writing"
+	},
+	{
 		"name": "The Great Library",
 		"science": 3,
 		"culture": 1,
@@ -80,16 +89,7 @@
 		"quote": "'Libraries are as the shrine where all the relics of the ancient saints, full of true virtue, and all that without delusion or imposture are preserved and reposed.' - Sir Francis Bacon"
 	},
 	{
-		"name": "Paper Maker",
-		"replaces": "Library",
-		"uniqueTo": "China",
-		"hurryCostModifier": 25,
-		"gold": 2,
-		"uniques": ["[+1 Science] per [2] population [in this city]"],
-		"requiredTech": "Writing"
-	},
-	{
-		"name": "Circus", 
+		"name": "Circus",
 		"requiredNearbyImprovedResources": ["Ivory","Horses"],
 		"happiness": 2,
 		"hurryCostModifier": 25,
@@ -108,7 +108,6 @@
 		"name": "Floating Gardens",
 		"replaces": "Water Mill",
 		"uniqueTo": "Aztecs",
-		"cost": 75,
 		"food": 2,
 		"production": 1,
 		"uniques": ["[+2 Food] from [Lakes] tiles in this city", "Must be next to [Fresh water]"],
@@ -144,21 +143,21 @@
 		"quote": "'O, let not the pains of death which come upon thee enter into my body. I am the god Tem, and I am the foremost part of the sky, and the power which protecteth me is that which is with all the gods forever.'  - The Book of the Dead, translated by Sir Ernest Alfred Wallis Budge"
 	},
 	{
+		"name": "Mausoleum of Halicarnassus",
+		"culture": 1,
+		"greatPersonPoints": {"gold": 1},
+		"isWonder": true,
+		"uniques": ["Provides a sum of gold each time you spend a Great Person",
+			"[+2 Gold] from [Marble] tiles in this city", "[+2 Gold] from [Stone] tiles in this city"],
+		"requiredTech": "Masonry",
+		"quote": "'The whole earth is the tomb of heroic men and their story is not given only on stone over their clay but abides everywhere without visible symbol woven into the stuff of other men's lives.' - Pericles"
+	},
+	{
 		"name": "Barracks",
 		"xpForNewUnits": 15,
 		"hurryCostModifier": 25,
 		"maintenance": 1,
 		"requiredTech": "Bronze Working"
-	},
-	{
-		"name": "Colossus",
-		"culture": 1,
-		"gold": 5,
-		"greatPersonPoints": {"gold": 1},
-		"isWonder": true,
-		"uniques": ["Must be next to [Coast]", "[+1 Gold] from [Water] tiles in this city"],
-		"requiredTech": "Iron Working",
-		"quote": "'Why man, he doth bestride the narrow world like a colossus, and we petty men walk under his huge legs, and peep about to find ourselves dishonorable graves.' - William Shakespeare, Julius Caesar"
 	},
 	{
 		"name": "Krepost",
@@ -180,14 +179,14 @@
 		// "Requires [Honor]" in BNW
 	},
 	{
-		"name": "Mausoleum of Halicarnassus",
+		"name": "Colossus",
 		"culture": 1,
+		"gold": 5,
 		"greatPersonPoints": {"gold": 1},
 		"isWonder": true,
-		"uniques": ["Provides a sum of gold each time you spend a Great Person",
-			"[+2 Gold] from [Marble] tiles in this city", "[+2 Gold] from [Stone] tiles in this city"],
-		"requiredTech": "Masonry",
-		"quote": "'The whole earth is the tomb of heroic men and their story is not given only on stone over their clay but abides everywhere without visible symbol woven into the stuff of other men's lives.' - Pericles"
+		"uniques": ["Must be next to [Coast]", "[+1 Gold] from [Water] tiles in this city"],
+		"requiredTech": "Iron Working",
+		"quote": "'Why man, he doth bestride the narrow world like a colossus, and we petty men walk under his huge legs, and peep about to find ourselves dishonorable graves.' - William Shakespeare, Julius Caesar"
 	},
 	
 	// Classical Era
@@ -235,6 +234,14 @@
 		"requiredTech": "Horseback Riding"
 	},
 	{
+		"name": "Courthouse",
+		"maintenance": 4,
+		"hurryCostModifier": 50,
+		"uniques": ["Remove extra unhappiness from annexed cities",
+			"Can only be built in annexed cities"],
+		"requiredTech": "Mathematics"
+	},
+	{
 		"name": "Hanging Gardens",
 		"greatPersonPoints": {"culture": 1},
 		"food": 6,
@@ -243,14 +250,6 @@
 		"providesFreeBuilding": "Garden",
 		"requiredTech": "Mathematics",
 		"quote": "'I think that if ever a mortal heard the word of God it would be in a garden at the cool of the day.'  - F. Frankfort Moore"
-	},
-	{
-		"name": "Courthouse",
-		"maintenance": 4,
-		"hurryCostModifier": 50,
-		"uniques": ["Remove extra unhappiness from annexed cities",
-			"Can only be built in annexed cities"],
-		"requiredTech": "Mathematics"
 	},
 	{
 		"name": "Colosseum", 
@@ -301,13 +300,14 @@
 		"requiredTech": "Philosophy"
 	},
 	{
-		"name": "The Oracle",
-		"culture": 3,
-		"greatPersonPoints": {"science": 1},
-		"isWonder": true,
-		"uniques": ["Free Social Policy"],
-		"requiredTech": "Philosophy",
-		"quote": "'The ancient Oracle said that I was the wisest of all the Greeks. It is because I alone, of all the Greeks, know that I know nothing'  - Socrates"
+		"name": "National College",
+		"cost": 125,
+		"science": 3,
+		"culture": 1,
+		"isNationalWonder": true,
+		"percentStatBonus": {"science": 50},
+		"uniques": ["Requires a [Library] in all cities", "Cost increases by [30] per owned city"],
+		"requiredTech": "Philosophy"
 	},
 	{
 		"name": "National Epic",
@@ -316,6 +316,15 @@
 		"isNationalWonder": true,
 		"uniques": ["Requires a [Monument] in all cities", "+[25]% great person generation in this city", "Cost increases by [30] per owned city"],
 		"requiredTech": "Philosophy"
+	},
+	{
+		"name": "The Oracle",
+		"culture": 3,
+		"greatPersonPoints": {"science": 1},
+		"isWonder": true,
+		"uniques": ["Free Social Policy"],
+		"requiredTech": "Philosophy",
+		"quote": "'The ancient Oracle said that I was the wisest of all the Greeks. It is because I alone, of all the Greeks, know that I know nothing'  - Socrates"
 	},
 	{
 		"name": "Market",
@@ -338,20 +347,20 @@
 		"requiredTech": "Currency"
 	},
 	{
+		"name": "Mint",
+		"maintenance": 0,
+		"requiredNearbyImprovedResources": ["Gold Ore", "Silver"],
+		"hurryCostModifier": 25,
+		"uniques": ["[+2 Gold] from [Gold Ore] tiles in this city", "[+2 Gold] from [Silver] tiles in this city"],
+		"requiredTech": "Currency"
+	},
+	{
 		"name": "National Treasury",
 		"cost": 125,
 		"gold": 8,
 		"culture": 1,
 		"isNationalWonder": true,
 		"uniques": ["Requires a [Market] in all cities", "Cost increases by [30] per owned city"],
-		"requiredTech": "Currency"
-	},
-	{
-		"name": "Mint",
-		"maintenance": 0,
-		"requiredNearbyImprovedResources": ["Gold Ore", "Silver"],
-		"hurryCostModifier": 25,
-		"uniques": ["[+2 Gold] from [Gold Ore] tiles in this city", "[+2 Gold] from [Silver] tiles in this city"],
 		"requiredTech": "Currency"
 	},
 	{ // Flood plains are not supposed to be affected by this wonder. Add stats to all desert tiles and then add negative stats to flood plains to undo the effect on them for now
@@ -416,16 +425,6 @@
 		"uniques": ["+[25]% great person generation in all cities"],
 		"requiredTech": "Theology",
 		"quote": "'For it soars to a height to match the sky, and as if surging up from among the other buildings it stands on high and looks down upon the remainder of the city, adorning it, because it is a part of it, but glorying in its own beauty'  - Procopius, De Aedificis"
-	},
-	{
-		"name": "National College",
-		"cost": 125,
-		"science": 3,
-		"culture": 1,
-		"isNationalWonder": true,
-		"percentStatBonus": {"science": 50},
-		"uniques": ["Requires a [Library] in all cities", "Cost increases by [30] per owned city"],
-		"requiredTech": "Philosophy"
 	},
 	{
 		"name": "Chichen Itza",
@@ -523,6 +522,15 @@
 		"requiredTech": "Education"
 	},
 	{
+		"name": "Angkor Wat",
+		"culture": 1,
+		"greatPersonPoints": {"production": 1},
+		"isWonder": true,
+		"uniques": ["-[25]% Culture cost of acquiring tiles [in all cities]","-[25]% Gold cost of acquiring tiles [in all cities]"],
+		"requiredTech": "Education",
+		"quote": "'The temple is like no other building in the world. It has towers and decoration and all the refinements which the human genius can conceive of.'  - Antonio da Magdalena"
+	},
+	{
 		"name": "Castle",
 		"cityStrength": 7,
 		"cityHealth": 25,
@@ -543,15 +551,6 @@
 		"requiredBuilding": "Walls",
 		"uniques": ["[+1 Gold] once [Flight] is discovered"],
 		"requiredTech": "Chivalry"
-	},
-	{
-		"name": "Angkor Wat",
-		"culture": 1,
-		"greatPersonPoints": {"production": 1},
-		"isWonder": true,
-		"uniques": ["-[25]% Culture cost of acquiring tiles [in all cities]","-[25]% Gold cost of acquiring tiles [in all cities]"],
-		"requiredTech": "Education",
-		"quote": "'The temple is like no other building in the world. It has towers and decoration and all the refinements which the human genius can conceive of.'  - Antonio da Magdalena"
 	},
 	{
 		"name": "Alhambra",
@@ -1012,6 +1011,12 @@
 	},
 	*/
 	{
+		"name": "SS Cockpit",
+		"requiredResource": "Aluminum",
+		"requiredTech": "Satellites",
+		"uniques": ["Spaceship part", "Triggers a global alert upon completion", "Cannot be purchased"]
+	},
+	{
 		"name": "Hubble Space Telescope",
 		"isWonder": true,
 		"greatPersonPoints": {"science": 1},
@@ -1024,9 +1029,9 @@
 		"quote": "'The wonder is, not that the field of stars is so vast, but that man has measured it.'  - Anatole France"
 	},
 	{
-		"name": "SS Cockpit",
+		"name": "SS Booster",
 		"requiredResource": "Aluminum",
-		"requiredTech": "Satellites",
+		"requiredTech": "Robotics",
 		"uniques": ["Spaceship part", "Triggers a global alert upon completion", "Cannot be purchased"]
 	},
 	{
@@ -1039,12 +1044,6 @@
 		// "+[50]% Production when constructing [Spaceship part] units [in this city]"
 		"uniques": ["+[50]% Production when constructing [Spaceship part] [in this city]"],
 		"requiredTech": "Robotics"
-	},
-	{
-		"name": "SS Booster",
-		"requiredResource": "Aluminum",
-		"requiredTech": "Robotics",
-		"uniques": ["Spaceship part", "Triggers a global alert upon completion", "Cannot be purchased"]
 	},
 	// Column 16
 	/*
