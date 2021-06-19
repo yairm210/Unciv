@@ -739,6 +739,15 @@
 		"requiredTech": "Economics"
 	},
 	{
+		"name": "Arsenal",
+		"cost": 300,
+		"cityStrength": 9,
+		"cityHealth": 25,
+		"hurryCostModifier": 25,
+		"requiredBuilding": "Castle",
+		"requiredTech": "Metallurgy"
+	},
+	{
 		"name": "Kremlin",
 		"culture": 3,
 		"isWonder": true,
@@ -799,14 +808,6 @@
 		"uniques": ["Cost of purchasing items in cities reduced by [15]%"],
 		"requiredTech": "Industrialization",
 		"quote": "'To achieve great things, two things are needed: a plan, and not quite enough time.'  - Leonard Bernstein"
-	},
-	{
-		"name": "Arsenal",
-		"cityStrength": 9,
-		"cityHealth": 25,
-		"hurryCostModifier": 25,
-		"requiredBuilding": "Castle",
-		"requiredTech": "Metallurgy"
 	},
 	{
 		"name": "Military Academy",
