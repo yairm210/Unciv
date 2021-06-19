@@ -178,16 +178,6 @@
 		"quote": "'He spoke, the son of Kronos, and nodded his head with the dark brows, and the immortally anointed hair of the great god swept from his divine head, and all Olympos was shaken' - The Iliad"
 		// "Requires [Honor]" in BNW
 	},
-	{
-		"name": "Colossus",
-		"culture": 1,
-		"gold": 5,
-		"greatPersonPoints": {"gold": 1},
-		"isWonder": true,
-		"uniques": ["Must be next to [Coast]", "[+1 Gold] from [Water] tiles in this city"],
-		"requiredTech": "Iron Working",
-		"quote": "'Why man, he doth bestride the narrow world like a colossus, and we petty men walk under his huge legs, and peep about to find ourselves dishonorable graves.' - William Shakespeare, Julius Caesar"
-	},
 	
 	// Classical Era
 
@@ -397,6 +387,17 @@
 		"uniques": ["Requires a [Barracks] in all cities", "All newly-trained [non-air] units in this city receive the [Morale] promotion",
 			"Cost increases by [30] per owned city"],
 		"requiredTech": "Iron Working"
+	},
+	{
+		"name": "Colossus",
+		"cost": 185,
+		"culture": 1,
+		"gold": 5,
+		"greatPersonPoints": {"gold": 1},
+		"isWonder": true,
+		"uniques": ["Must be next to [Coast]", "[+1 Gold] from [Water] tiles in this city"],
+		"requiredTech": "Iron Working",
+		"quote": "'Why man, he doth bestride the narrow world like a colossus, and we petty men walk under his huge legs, and peep about to find ourselves dishonorable graves.' - William Shakespeare, Julius Caesar"
 	},
 	
 	// Medieval Era
