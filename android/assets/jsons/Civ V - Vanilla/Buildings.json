@@ -677,7 +677,7 @@
 		"culture": 1,
 		"isWonder": true,
 		"greatPersonPoints": {"culture": 1},		
-		"uniques": ["Free Great Person"],
+		"uniques": ["+[25]% great person generation in all cities", "Free Great Person"],
 		"requiredTech": "Printing Press",
 		"quote": "'Don't clap too hard - it's a very old building.' - John Osbourne"
 	},
