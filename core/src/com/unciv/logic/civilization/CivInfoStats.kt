@@ -104,7 +104,7 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
             }
 
             if (otherCiv.isCityState())
-                for (unique in civInfo.getMatchingUniques("[] City-States provide [] equal to []% of what they produce for themselves")) {
+                for (unique in civInfo.getMatchingUniques("Allied City-States provide [] equal to []% of what they produce for themselves")) {
                     if (otherCiv.diplomacy[civInfo.civName]!!.matchesCityStateRelationshipFilter(unique.params[0]) && otherCiv.cities.isNotEmpty()) {
                         statMap.add(
                             "City-States", 
