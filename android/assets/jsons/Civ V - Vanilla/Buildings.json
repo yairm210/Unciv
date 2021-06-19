@@ -944,6 +944,13 @@
 		"uniques": ["[25]% of food is carried over after population increases"]
 	},
 	{
+		"name": "Manhattan Project",
+		"cost": 750,
+		"isNationalWonder": true,
+		"uniques": ["Enables nuclear weapon", "Triggers a global alert upon completion"],
+		"requiredTech": "Atomic Theory"
+	},
+	{
 		"name": "Pentagon",
 		"isWonder": true,
 		"culture": 3,
@@ -980,13 +987,6 @@
 		"maintenance": 3,
 		"cannotBeBuiltWith": "Solar Plant",
 		"requiredResource": "Uranium",
-		"requiredTech": "Nuclear Fission"
-	},
-	{
-		"name": "Manhattan Project",
-		"cost": 750,
-		"isNationalWonder": true,
-		"uniques": ["Enables nuclear weapon", "Triggers a global alert upon completion"],
 		"requiredTech": "Nuclear Fission"
 	},
 	{
