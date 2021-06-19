@@ -1,6 +1,7 @@
 package com.unciv.logic.civilization
 
 import com.unciv.models.ruleset.Policy
+import com.unciv.models.ruleset.Unique
 import com.unciv.models.ruleset.UniqueMap
 import com.unciv.models.ruleset.UniqueTriggerActivation
 import kotlin.math.min
@@ -56,11 +57,15 @@ class PolicyManager {
 
     fun setTransients() {
         // Reassign policies deprecated in 3.14.17, left for backwards compatibility
-            if (adoptedPolicies.contains("Patronage")) {
+            if (adoptedPolicies.contains("Patronage") && 
+                !civInfo.gameInfo.ruleSet.policies.contains("Patronage")
+            ) {
                 adoptedPolicies.add("Merchant Navy")
                 adoptedPolicies.remove("Patronage")
             }
-            if (adoptedPolicies.contains("Entrepreneurship")) {
+            if (adoptedPolicies.contains("Entrepreneurship") &&
+                !civInfo.gameInfo.ruleSet.policies.contains("Entrepreneurship")
+            ) {
                 adoptedPolicies.add("Naval Tradition")
                 adoptedPolicies.remove("Entrepreneurship")
             }
@@ -68,9 +73,17 @@ class PolicyManager {
         for (policyName in adoptedPolicies)
             addPolicyToTransients(getPolicyByName(policyName))
         // Deprecated since 3.14.17, left for backwards compatibility
-        if (cultureBuildingsAdded.isEmpty() && legalismState.isNotEmpty()) {
-            cultureBuildingsAdded.putAll(legalismState)
-        }
+            if (cultureBuildingsAdded.isEmpty() && legalismState.isNotEmpty()) {
+                cultureBuildingsAdded.putAll(legalismState)
+            }
+        //
+        
+        // Deprecated since 3.15.2, left for backwards compatibility
+            if (autocracyCompletedTurns != 0) {
+                civInfo.temporaryUniques.add(Pair(Unique("+[25]% attack strength to all [Military] units for [50] turns"), autocracyCompletedTurns))
+                autocracyCompletedTurns = 0
+            }
+        //
     }
 
     fun addPolicyToTransients(policy: Policy) {
