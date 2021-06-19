@@ -399,6 +399,7 @@ open class TileInfo {
     fun matchesUniqueFilter(filter: String, civInfo: CivilizationInfo? = null): Boolean {        
         return when (filter) {
             "All" -> true
+            baseTerrain -> true
             "Water" -> isWater
             "Land" -> isLand
             "Coastal" -> isCoastalTile()
