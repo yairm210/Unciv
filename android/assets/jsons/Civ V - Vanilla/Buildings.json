@@ -738,6 +738,14 @@
 		"uniques": ["Must not be on [Hill]", "+[10]% Production when constructing [Buildings] [in this city]"],
 		"requiredTech": "Economics"
 	},
+	{
+		"name": "Kremlin",
+		"culture": 3,
+		"isWonder": true,
+		"uniques": ["Defensive buildings in all cities are 25% more effective"],
+		"requiredTech": "Metallurgy",
+		"quote": "'The Law is a fortress on a hill that armies cannot take or floods wash away.'   –- The Prophet Muhammed"
+	},
 	
 	// Industrial Era
 
@@ -891,15 +899,6 @@
 		"uniques": ["[+1 Production] from every specialist", "Free Social Policy"],
 		"requiredTech": "Replaceable Parts",
 		"quote": "'Give me your tired, your poor, your huddled masses yearning to breathe free, the wretched refuse of your teeming shore. Send these, the homeless, tempest-tossed to me, I lift my lamp beside the golden door!'  - Emma Lazarus"
-	},
-	{
-		"name": "Kremlin",
-		"cost": 625,
-		"culture": 3,
-		"isWonder": true,
-		"uniques": ["Defensive buildings in all cities are 25% more effective"],
-		"requiredTech": "Railroad",
-		"quote": "'The Law is a fortress on a hill that armies cannot take or floods wash away.'   –- The Prophet Muhammed"
 	},
 	{
 		"name": "Neuschwanstein",
