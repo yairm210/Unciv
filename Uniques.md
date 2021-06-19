@@ -180,6 +180,8 @@ For units, the UnitFilter is called. For Buildings, the following options are im
 
 "Triggers victory"
 
+"Allied City-States will occasionally gift Great People" [Pending #4158]
+
 ### Unit-affecting uniques
 
 "+[amount] Movement for all [unitFilter] units"
@@ -227,8 +229,6 @@ For units, the UnitFilter is called. For Buildings, the following options are im
 "Militaristic City-States grant units [amount] times as fast when you are at war with a common nation" [Pending #4158]
 
 "Influence of all other civilizations with all city-states degrades []% faster" [Pending #4158]
-
-"Allied City-States will occasionally gift Great People" [Pending #4158]
 
 ### Other
 
