@@ -3,6 +3,7 @@ package com.unciv.logic.civilization
 import com.unciv.models.ruleset.Policy
 import com.unciv.models.ruleset.UniqueMap
 import com.unciv.models.ruleset.UniqueTriggerActivation
+import com.unciv.models.translations.tr
 import kotlin.math.min
 import kotlin.math.pow
 import kotlin.math.roundToInt
@@ -231,19 +232,24 @@ class PolicyManager {
     }
 
     private fun triggerGlobalAlerts(policy: Policy) {
-        var extraNotificationText = ""
-        // Not only is this an anti-pattern, it is the wrong anti-pattern :D
-        if (policy.name == "Patronage Branch Complete") {
-            extraNotificationText = "\nThis causes our influence with City-States to drop faster!"
-            // Preferably this should go in the JSON file, but I don't feel at ease editing such basic data types as the Policy class yet.
+        // Preferably this should go in the JSON file, but I don't feel at ease editing such basic data types as the Policy class yet.
+        var extraNotificationText = when (policy.name) {
+            // Yes, this extra space is intentional, see the policies.json file.
+            "Patronage  Complete" -> "This causes our influence with City-States to drop faster!"
+            else -> ""
+        }.tr()
+        if (extraNotificationText != "") {
+            extraNotificationText = "\n${extraNotificationText}"
         }
         for (civ in civInfo.gameInfo.civilizations) {
-                if (civ == civInfo) continue
-            if (civ.getKnownCivs().contains(civInfo)) {
-                civ.addNotification("${civInfo.civName} has adopted the ${policy.name} policy$extraNotificationText", NotificationIcon.Culture)
-            } else {
-                civ.addNotification("An unknown civilization has adopted the ${policy.name} policy$extraNotificationText", NotificationIcon.Culture)
-            }
+            if (civ == civInfo) continue
+            val defaultNotificationText = 
+                if (civ.getKnownCivs().contains(civInfo)) {
+                    "[${civInfo.civName}] has adopted the [${policy.name}] policy"
+                } else {
+                    "An unknown civilization has adopted the [${policy.name}] policy"
+                }.tr()
+            civ.addNotification("${defaultNotificationText}${extraNotificationText}", NotificationIcon.Culture)
         }
     }
 }
