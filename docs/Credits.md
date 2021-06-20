@@ -107,7 +107,8 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Nuclear Missile](https://thenounproject.com/marialuisa.iborra/collection/missiles-bombs/?i=1022574) By Lluisa Iborra, ES
 * Icon for Carrier made by [JackRainy](https://github.com/JackRainy), based on [Aircraft Carrier](https://thenounproject.com/icolabs/collection/flat-icons-transport/?i=2332914) By IcoLabs, BR
 * [Water Gun](https://thenounproject.com/term/water-gun/2121571) by ProSymbols for Marine
-* [Parachute](https://thenounproject.com/term/parachute/2025018) by Nociconist for Paratrooper*
+* [Parachute](https://thenounproject.com/term/parachute/2025018) by Nociconist for Paratrooper
+* [atomic bomb](https://thenounproject.com/search/?q=atomic+bomb&i=3712713) by AmruID for Atomic Bomb
 
 ### Great People
 
@@ -436,6 +437,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Ecology](https://thenounproject.com/term/ecology/1970666/) By ProSymbols
 * [Robotic Arm](https://thenounproject.com/term/robotic-arm/1970874/) By Karl Gilbert for Robotics
 * [Rocket](https://thenounproject.com/term/rocket/1743642/) By kareemov for Rocketry
+* [Rocket](https://thenounproject.com/term/rocket/3999811) Kusdarti for Advanced Ballistics
 
 ### Future
 * [Nanoparticles](https://thenounproject.com/term/nanoparticles/822286/) By Gyan Lakhwani for Nanotechnology

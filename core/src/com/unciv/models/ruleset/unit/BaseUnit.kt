@@ -9,6 +9,7 @@ import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.Unique
 import com.unciv.models.stats.INamed
 import com.unciv.models.translations.Translations
+import com.unciv.models.translations.getPlaceholderText
 import com.unciv.models.translations.tr
 import com.unciv.ui.utils.Fonts
 import kotlin.math.pow
@@ -160,8 +161,14 @@ class BaseUnit : INamed, IConstruction {
         if (uniqueTo != null && uniqueTo != civInfo.civName) return "Unique to $uniqueTo"
         if (civInfo.gameInfo.ruleSet.units.values.any { it.uniqueTo == civInfo.civName && it.replaces == name })
             return "Our unique unit replaces this"
-        if (!civInfo.gameInfo.gameParameters.nuclearWeaponsEnabled
-                && uniques.contains("Nuclear weapon")) return "Disabled by setting"
+        if (!civInfo.gameInfo.gameParameters.nuclearWeaponsEnabled && 
+            (
+                uniques.map{ it.getPlaceholderText()}.contains("Nuclear weapon of strength []") ||
+                // Deprecated since 3.15.3
+                    uniques.map{ it.getPlaceholderText()}.contains("Nuclear weapon")
+                //
+            )
+        ) return "Disabled by setting"
 
         for (unique in uniqueObjects.filter { it.placeholderText == "Unlocked with []" })
             if (civInfo.tech.researchedTechnologies.none { it.era() == unique.params[0] || it.name == unique.params[0] }
@@ -220,7 +227,7 @@ class BaseUnit : INamed, IConstruction {
             val promotion = unique.params[1]
 
             if (unit.matchesFilter(filter) || (filter == "relevant" && civInfo.gameInfo.ruleSet.unitPromotions.values
-                            .any { unit.type.name in it.unitTypes && it.name == promotion }))
+                    .any { unit.type.name in it.unitTypes && it.name == promotion }))
                 unit.promotions.addPromotion(promotion, isFree = true)
         }
 

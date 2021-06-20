@@ -528,7 +528,7 @@
 			},
 			{
 				"name": "Nuclear Fission",
-				"row": 4,
+				"row": 5,
 				"prerequisites": ["Atomic Theory","Radar"],
 				"quote": "'I am become Death, the destroyer of worlds.' - J. Robert Oppenheimer"
 			},
@@ -560,9 +560,15 @@
 				"quote": "'All men can see these tactics whereby I conquer, but what none can see is the strategy out of which victory is evolved.' - Sun Tzu"
 			},
 			{
-				"name": "Satellites",
-				"row": 5,
+				"name": "Advanced Ballistics",
+				"row": 4,
 				"prerequisites": ["Nuclear Fission","Rocketry"],
+				"quote": "Our scientific power has outrun our spiritual power, we have guided missiles and misguided men. – Martin Luther King Jr. "
+			},
+			{
+				"name": "Satellites",
+				"row": 6,
+				"prerequisites": ["Rocketry"],
 				"uniques": ["Reveals the entire map"], 
 				"quote": "'Now, somehow, in some new way, the sky seemed almost alien.' - Lyndon B. Johnson"
 			},
@@ -591,7 +597,7 @@
 			{
 				"name": "Particle Physics",
 				"row": 4,
-				"prerequisites": ["Mobile Tactics","Satellites"],
+				"prerequisites": ["Mobile Tactics","Satellites","Advanced Ballistics"],
 				"quote": "'Every particle of matter is attracted by or gravitates to every other particle of matter with a force inversely proportional to the squares of their distances.' - Isaac Newton"
 			},
 			{

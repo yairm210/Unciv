@@ -18,6 +18,7 @@ enum class UnitType{
 
     Fighter,
     Bomber,
+    AtomicBomber,
     Missile;
 
     fun isMelee() =
@@ -60,4 +61,5 @@ enum class UnitType{
                 this == Bomber
                 || this == Fighter
                 || this == Missile
+                || this == AtomicBomber
 }

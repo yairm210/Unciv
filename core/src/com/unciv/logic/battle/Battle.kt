@@ -5,12 +5,15 @@ import com.unciv.UncivGame
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.*
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
+import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
+import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.RoadStatus
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.AttackableTile
 import com.unciv.models.ruleset.Unique
 import com.unciv.models.ruleset.unit.UnitType
 import com.unciv.models.stats.Stat
+import com.unciv.models.translations.tr
 import java.util.*
 import kotlin.math.max
 
@@ -28,8 +31,15 @@ object Battle {
             }
         }
 
-        if (attacker is MapUnitCombatant && attacker.unit.hasUnique("Nuclear weapon")) {
-            return nuke(attacker, attackableTile.tileToAttack)
+        if (attacker is MapUnitCombatant && 
+            (
+                attacker.unit.hasUnique("Nuclear weapon of strength []") ||
+                // Deprecated since 3.15.3
+                    attacker.unit.hasUnique("Nuclear weapon")
+                //
+            )
+        ) {
+            return NUKE(attacker, attackableTile.tileToAttack)
         }
         attack(attacker, getMapCombatantOfTile(attackableTile.tileToAttack)!!)
     }
@@ -383,60 +393,150 @@ object Battle {
             attacker.popupAlerts.add(PopupAlert(AlertType.Defeated, attackedCiv.civName))
         }
     }
-
-    const val NUKE_RADIUS = 2
-
-    fun nuke(attacker: ICombatant, targetTile: TileInfo) {
+    
+    fun NUKE(attacker: MapUnitCombatant, targetTile: TileInfo) {
         val attackingCiv = attacker.getCivInfo()
-        for (tile in targetTile.getTilesInDistance(NUKE_RADIUS)) {
-            val city = tile.getCity()
-            if (city != null && city.location == tile.position) {
-                city.health = 1
-                if (city.population.population <= 5 && !city.isOriginalCapital) {
-                    city.destroyCity()
-                } else {
-                    city.population.population = max(city.population.population - 5, 1)
-                    city.population.unassignExtraPopulation()
-                    continue
-                }
-                destroyIfDefeated(city.civInfo, attackingCiv)
-            }
-
-            fun declareWar(civSuffered: CivilizationInfo) {
-                if (civSuffered != attackingCiv
-                        && civSuffered.knows(attackingCiv)
-                        && civSuffered.getDiplomacyManager(attackingCiv).canDeclareWar()) {
-                    attackingCiv.getDiplomacyManager(civSuffered).declareWar()
-                }
-            }
-
-            for (unit in tile.getUnits()) {
-                unit.destroy()
-                postBattleNotifications(attacker, MapUnitCombatant(unit), unit.currentTile)
-                declareWar(unit.civInfo)
-                destroyIfDefeated(unit.civInfo, attackingCiv)
-            }
-
-            // this tile belongs to some civilization who is not happy of nuking it
-            if (city != null)
-                declareWar(city.civInfo)
-
-            tile.improvement = null
-            tile.improvementInProgress = null
-            tile.turnsToImprovement = 0
-            tile.roadStatus = RoadStatus.None
-            if (tile.isLand && !tile.isImpassible() && !tile.terrainFeatures.contains("Fallout"))
-                tile.terrainFeatures.add("Fallout")
-        }
-
-        for (civ in attacker.getCivInfo().getKnownCivs()) {
-            civ.getDiplomacyManager(attackingCiv)
+        fun tryDeclareWar(civSuffered: CivilizationInfo) {
+            if (civSuffered != attackingCiv
+                && civSuffered.knows(attackingCiv)
+                && civSuffered.getDiplomacyManager(attackingCiv).diplomaticStatus != DiplomaticStatus.War
+            ) {
+                attackingCiv.getDiplomacyManager(civSuffered).declareWar()
+                civSuffered.getDiplomacyManager(attackingCiv)
                     .setModifier(DiplomaticModifiers.UsedNuclearWeapons, -50f)
+            }
+        }
+        
+        val blastRadius = 
+            if (!attacker.unit.hasUnique("Blast radius []")) 2
+            else attacker.unit.getMatchingUniques("Blast radius []").first().params[0].toInt()
+
+        val strength = when {
+            (attacker.unit.hasUnique("Nuclear weapon of strength []")) ->
+                attacker.unit.getMatchingUniques("Nuclear weapon of strength []").first().params[0].toInt()
+            // Deprecated since 3.15.3
+                (attacker.unit.hasUnique("Nuclear weapon")) -> 1
+            //
+            else -> return
+        }
+        
+        // Calculate the tiles that are hit
+        val hitTiles = targetTile.getTilesInDistance(blastRadius)
+        
+        // Declare war on the owners of all hit tiles
+        for (hitCiv in hitTiles.map { it.getOwner() }.distinct()) {
+            hitCiv!!.addNotification("A(n) [${attacker.getName()}] exploded in our territory!".tr(), targetTile.position, NotificationIcon.War)
+            tryDeclareWar(hitCiv)
         }
 
-        // Instead of postBattleAction() just destroy the missile, all other functions are not relevant
-        if ((attacker as MapUnitCombatant).unit.hasUnique("Self-destructs when attacking")) {
+        // Declare war on all hit units. They'll try to intercept the nuke before it drops
+        for (hitUnit in hitTiles.map { it.getUnits() }.flatten()) {
+            tryDeclareWar(hitUnit.civInfo)
+            if (attacker.getUnitType().isAirUnit() && !attacker.isDefeated()) {
+                tryInterceptAirAttack(attacker, MapUnitCombatant(hitUnit))
+            }
+        }
+        if (attacker.isDefeated()) return
+        
+        // Destroy units on the target tile
+        for (unit in targetTile.getUnits().filter { it != attacker.unit }) {
+            unit.destroy()
+            postBattleNotifications(attacker, MapUnitCombatant(unit), unit.getTile())
+            destroyIfDefeated(unit.civInfo, attacker.getCivInfo())
+        }
+        
+        for (tile in hitTiles) {
+            // Handle complicated effects
+            when (strength) {
+                1 -> nukeStrength1Effect(attacker, tile)
+                2 -> nukeStrength2Effect(attacker, tile)
+                else -> nukeStrength1Effect(attacker, tile)
+            }
+        }
+        
+        // Instead of postBattleAction() just destroy the unit, all other functions are not relevant
+        if (attacker.unit.hasUnique("Self-destructs when attacking")) {
             attacker.unit.destroy()
+        }
+    }
+    
+    private fun nukeStrength1Effect(attacker: MapUnitCombatant, tile: TileInfo) {
+        // https://forums.civfanatics.com/resources/unit-guide-modern-future-units-g-k.25628/
+        var damageModifierFromMissingResource = 1f
+        val civResources = attacker.getCivInfo().getCivResourcesByName()
+        for (resource in attacker.unit.baseUnit.getResourceRequirements().keys) {
+            if (civResources[resource]!! < 0 && !attacker.getCivInfo().isBarbarian())
+                damageModifierFromMissingResource *= 0.75f
+        }
+        // Decrease health & population of a hit city
+        val city = tile.getCity()
+        if (city != null && tile.position == city.location) {
+            city.population.population = (city.population.population * (0.3 + Random().nextFloat() * 0.4) * damageModifierFromMissingResource).toInt()
+            if (city.population.population < 1) city.population.population = 1
+            city.population.unassignExtraPopulation()
+            city.health -= (0.5 * city.getMaxHealth() * damageModifierFromMissingResource).toInt()
+            if (city.health < 1) city.health = 1
+            postBattleNotifications(attacker, CityCombatant(city), city.getCenterTile())
+        }
+        // Damage and/or destroy units on the tile
+        for (unit in tile.getUnits()) {
+            val hitUnit = MapUnitCombatant(unit)
+            if (hitUnit.unit.baseUnit.unitType.isCivilian() && Random().nextFloat() < 0.6) {
+                unit.destroy() // destroy the unit
+            } else {
+                hitUnit.takeDamage(((30 + Random().nextInt(60)) * damageModifierFromMissingResource).toInt())
+            }
+            postBattleNotifications(attacker, hitUnit, hitUnit.getTile())
+            destroyIfDefeated(hitUnit.getCivInfo(), attacker.getCivInfo())
+        }
+        // Remove improvements, add fallout
+        tile.improvement = null
+        tile.improvementInProgress = null
+        tile.turnsToImprovement = 0
+        tile.roadStatus = RoadStatus.None
+        if (tile.isLand && !tile.isImpassible() && !tile.terrainFeatures.contains("Fallout") &&
+                Random().nextFloat() < 0.5) {
+            tile.terrainFeatures.add("Fallout")            
+        }
+    }
+    
+    private fun nukeStrength2Effect(attacker: MapUnitCombatant, tile: TileInfo) {
+        //https://forums.civfanatics.com/threads/unit-guide-modern-future-units-g-k.429987/#2
+        var damageModifierFromMissingResource = 1f
+        val civResources = attacker.getCivInfo().getCivResourcesByName()
+        for (resource in attacker.unit.baseUnit.getResourceRequirements().keys) {
+            if (civResources[resource]!! < 0 && !attacker.getCivInfo().isBarbarian())
+                damageModifierFromMissingResource *= 0.75f
+        }
+        // Damage and/or destroy cities
+        val city = tile.getCity()
+        if (city != null && city.location == tile.position) {
+            if (city.population.population <= 5 && !city.isOriginalCapital) {
+                city.destroyCity()
+            } else {
+                city.population.population = (city.population.population * (0.6 + Random().nextFloat() * 0.2) * damageModifierFromMissingResource).toInt()
+                if (city.population.population < 1) city.population.population = 1
+                city.population.unassignExtraPopulation()
+                city.health -= (0.5 * city.getMaxHealth() * damageModifierFromMissingResource).toInt()
+                if (city.health < 1) city.health = 1
+            }
+            postBattleNotifications(attacker, CityCombatant(city), city.getCenterTile())
+            destroyIfDefeated(city.civInfo, attacker.getCivInfo())
+        }
+        // Destroy all units
+        for (unit in tile.getUnits()) {
+            unit.destroy()
+            postBattleNotifications(attacker, MapUnitCombatant(unit), unit.currentTile)
+            destroyIfDefeated(unit.civInfo, attacker.getCivInfo())
+        }
+        // Remove improvements
+        tile.improvement = null
+        tile.improvementInProgress = null
+        tile.turnsToImprovement = 0
+        tile.roadStatus = RoadStatus.None
+        if (tile.isLand && !tile.isImpassible() && !tile.terrainFeatures.contains("Fallout") &&
+            Random().nextFloat() < 0.5) {
+            tile.terrainFeatures.add("Fallout")
         }
     }
 

@@ -43,12 +43,18 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
         val attacker = tryGetAttacker()
         if(attacker==null || !worldScreen.canChangeState){ hide(); return }
 
-        if (attacker is MapUnitCombatant && attacker.unit.hasUnique("Nuclear weapon")) {
+        if (attacker is MapUnitCombatant && 
+            (
+                attacker.unit.hasUnique("Nuclear weapon of strength []") ||
+                // Deprecated since 3.15.3
+                    attacker.unit.hasUnique("Nuclear weapon")
+                //
+            )
+        ) {
             val selectedTile = worldScreen.mapHolder.selectedTile
             if (selectedTile == null) { hide(); return } // no selected tile
             simulateNuke(attacker, selectedTile)
-        }
-        else {
+        } else {
             val defender = tryGetDefender()
             if (defender == null) { hide(); return }
 
@@ -229,7 +235,10 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
         add(attackerNameWrapper)
         var canNuke = true
         val defenderNameWrapper = Table()
-        for (tile in targetTile.getTilesInDistance(Battle.NUKE_RADIUS)) {
+        val blastRadius =
+            if (!attacker.unit.hasUnique("Blast radius []")) 2
+            else attacker.unit.getMatchingUniques("Blast radius []").first().params[0].toInt()
+        for (tile in targetTile.getTilesInDistance(blastRadius)) {
 
             //To make sure we dont nuke civilisations we cant declare war with
             val attackerCiv = attacker.getCivInfo()
@@ -277,7 +286,7 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
         }
         else {
             attackButton.onClick(attacker.getAttackSound()) {
-                Battle.nuke(attacker, targetTile)
+                Battle.NUKE(attacker, targetTile)
                 worldScreen.mapHolder.removeUnitActionOverlay() // the overlay was one of attacking
                 worldScreen.shouldUpdate = true
             }
