@@ -745,7 +745,7 @@ class CivilizationInfo {
     /** Gain a random great person from a random city state */
     private fun gainGreatPersonFromCityState() {
         val givingCityState = getKnownCivs().filter { it.isCityState() && it.getAllyCiv() == civName}.random()
-        val giftedUnit = getGreatPeople().random()
+        val giftedUnit = givingCityState.getGreatPeople().random()
         val cities = NextTurnAutomation.getClosestCities(this, givingCityState)
         val placedUnit = placeUnitNearTile(cities.city1.location, giftedUnit.name)
         if (placedUnit == null) return
