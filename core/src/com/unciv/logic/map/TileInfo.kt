@@ -276,7 +276,7 @@ open class TileInfo {
     }
 
     fun getImprovementStats(improvement: TileImprovement, observingCiv: CivilizationInfo, city: CityInfo?): Stats {
-        val stats = improvement.clone()
+        val stats = improvement.clone() // clones the stats of the improvement, not the improvement itself
         if (hasViewableResource(observingCiv) && getTileResource().improvement == improvement.name)
             stats.add(getTileResource().improvementStats!!.clone()) // resource-specific improvement
 
@@ -316,16 +316,16 @@ open class TileInfo {
                 }
                 stats.add(unique.stats.times(numberOfBonuses.toFloat()))
             }
-        
+
         for (unique in observingCiv.getMatchingUniques("+[]% yield from every []"))
-            if (improvement.matchesFilter(unique.params[0])) 
-                stats.timesInPlace(1f + unique.params[1].toFloat() / 100f)
-        
+            if (improvement.matchesFilter(unique.params[1])) 
+                stats.timesInPlace(1f + unique.params[0].toFloat() / 100f)
+
         // Deprecated since 3.15
-            if (containsGreatImprovement() && observingCiv.hasUnique("Tile yield from Great Improvements +100%")) 
+            if (containsGreatImprovement() && observingCiv.hasUnique("Tile yield from Great Improvements +100%"))
                 stats.timesInPlace(2f)
         //
-        
+
         return stats
     }
 
@@ -393,12 +393,13 @@ open class TileInfo {
     }
 
     /**
-     * Implementation of _`tileFilter`_ 
+     * Implementation of _`tileFilter`_
      * @see <a href="https://github.com/yairm210/Unciv/wiki/uniques#user-content-tilefilter">tileFilter</a>
      */
-    fun matchesUniqueFilter(filter: String, civInfo: CivilizationInfo? = null): Boolean {        
+    fun matchesUniqueFilter(filter: String, civInfo: CivilizationInfo? = null): Boolean {
         return when (filter) {
             "All" -> true
+            baseTerrain -> true
             "Water" -> isWater
             "Land" -> isLand
             "Coastal" -> isCoastalTile()

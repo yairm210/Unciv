@@ -446,6 +446,19 @@ class Building : NamedStats(), IConstruction {
 
         return true
     }
+    
+    fun matchesFilter(filter: String): Boolean {
+        return when (filter) {
+            "All" -> true
+            name -> true
+            "Building", "Buildings" -> !(isWonder || isNationalWonder)
+            "Wonder", "Wonders" -> isWonder || isNationalWonder
+            else -> {
+                if (uniques.contains(filter)) return true
+                return false
+            }
+        }
+    }
 
     fun isStatRelated(stat: Stat): Boolean {
         if (get(stat) > 0) return true
