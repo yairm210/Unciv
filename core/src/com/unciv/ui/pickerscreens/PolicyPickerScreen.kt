@@ -46,13 +46,20 @@ class PolicyPickerScreen(val worldScreen: WorldScreen, civInfo: CivilizationInfo
         if (!UncivGame.Current.worldScreen.canChangeState)
             rightSideButton.disable()
 
-        topTable.row().pad(30f)
+        topTable.row().pad(10f)
 
-        for (branch in viewingCiv.gameInfo.ruleSet.policyBranches.values) {
-            if (branch.name == "Commerce") topTable.addSeparator()
+        val branches = viewingCiv.gameInfo.ruleSet.policyBranches
+        val rowChangeIndex = (branches.size + 1) / 2
+        var wrapper = Table()
+        for ( (index, branch) in branches.values.withIndex()) {
+            if (index == rowChangeIndex) {
+                topTable.add(wrapper)
+                topTable.addSeparator()
+                wrapper = Table()
+            }
             val branchGroup = Table()
             branchGroup.row().pad(20f)
-            branchGroup.add(getPolicyButton(branch, false)).row()
+            branchGroup.add(getPolicyButton(branch, false)).minWidth(160f).row()
 
             var currentRow = 1
             var currentColumn = 1
@@ -60,7 +67,7 @@ class PolicyPickerScreen(val worldScreen: WorldScreen, civInfo: CivilizationInfo
             for (policy in branch.policies) {
                 if (policy.name.endsWith("Complete")) continue
                 if (policy.row > currentRow) {
-                    branchTable.row()
+                    branchTable.row().pad(2.5f)
                     currentRow++
                     currentColumn = 1
                 }
@@ -73,10 +80,11 @@ class PolicyPickerScreen(val worldScreen: WorldScreen, civInfo: CivilizationInfo
             branchTable.pack()
             branchGroup.add(branchTable).height(150f).row()
 
-            branchGroup.add(getPolicyButton(branch.policies.last(), false)) // finisher
+            branchGroup.add(getPolicyButton(branch.policies.last(), false)).pad(15f,0f) // finisher
 
-            topTable.add(branchGroup)
+            wrapper.add(branchGroup).pad(0f, 10f)
         }
+        topTable.add(wrapper)
         topTable.pack()
     }
 

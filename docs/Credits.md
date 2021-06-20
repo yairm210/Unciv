@@ -325,7 +325,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Trade](https://thenounproject.com/term/trade/686718/) By Gregor Cresnar for Trade Unions
 * [Pie Chart](https://thenounproject.com/term/pie-chart/1284359/) By Adrien Coquet for Protectionism
 * [Coins](https://thenounproject.com/term/coins/1915881/) By icon 54 for Mercantilism
-* [Sextant](https://thenounproject.com/term/sextant/313438 ) By lastspark for Sextant
+* [Sextant](https://thenounproject.com/term/sextant/313438) By lastspark for Naval Tradition
 * [Merchant Navy Icon](https://www.pngkit.com/view/u2w7i1i1o0t4a9y3_png-file-merchant-navy-icon/) for Merchant Navy
 
 ### Rationalism
@@ -352,7 +352,12 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Newspaper](https://thenounproject.com/term/newspaper/1207487/) By Trishul for Populism
 * [Riot Police](https://thenounproject.com/term/riot-police/43117/) By Dan Hetteix for Police State
 
-
+### Order
+* Adapted from [Plan](https://thenounproject.com/term/plan/2973572) by Cattaleeya Thongsriphong for Planned Economy
+* [Flag](https://thenounproject.com/term/flag/2712405) by Muhammad Tajudin for Nationalism
+* [Communism](https://thenounproject.com/term/communism/142765) By Valerio Poltrini for Socialism
+* [Hammer and Sickle](https://thenounproject.com/term/hammer-and-sickle/1367670) by Dmitry Baranovskiy for Communism
+* [United](https://thenounproject.com/term/united/3433531) by Izwar Muis for United Front
 
 ## Technologies
 
