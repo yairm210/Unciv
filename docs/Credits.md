@@ -107,7 +107,8 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Nuclear Missile](https://thenounproject.com/marialuisa.iborra/collection/missiles-bombs/?i=1022574) By Lluisa Iborra, ES
 * Icon for Carrier made by [JackRainy](https://github.com/JackRainy), based on [Aircraft Carrier](https://thenounproject.com/icolabs/collection/flat-icons-transport/?i=2332914) By IcoLabs, BR
 * [Water Gun](https://thenounproject.com/term/water-gun/2121571) by ProSymbols for Marine
-* [Parachute](https://thenounproject.com/term/parachute/2025018) by Nociconist for Paratrooper*
+* [Parachute](https://thenounproject.com/term/parachute/2025018) by Nociconist for Paratrooper
+* [Robot](https://thenounproject.com/term/robot/1182459/) by Lluisa Iborra, ES for Giant Death Robot
 
 ### Great People
 
@@ -442,6 +443,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Satellite](https://thenounproject.com/term/satellite/1466641/) By Ben Davis for Satellites
 * [Electronics](https://thenounproject.com/search/?q=Electronics&i=1565843) By Cuby Design
 * [Atom](https://thenounproject.com/term/atom/1586852/) By Kelsey Armstrong for Particle Physics
+* [Thermonuclear fusion](https://thenounproject.com/search/?q=fusion&i=3292735) by Olena Panasovska, UA for Nuclear Fusion
 * [Information Technology](https://thenounproject.com/term/information-technology/1927668/) By Vectors Markeet for Future Tech
 
 ## Terrain

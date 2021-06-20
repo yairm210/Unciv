@@ -1324,7 +1324,7 @@
 		"cost": 425,
 		"requiredTech": "Lasers",
 		"requiredResource": "Aluminum",
-		//"upgradesTo": "Giant Death Robot",
+		"upgradesTo": "Giant Death Robot",
 		"uniques": ["Can move after attacking","No defensive terrain bonus"]
 	},
 	{
@@ -1343,17 +1343,17 @@
 			"6 tiles in every direction always visible"],
 		"attackSound": "shot"
 	},
-	/*
 	{
 		"name": "Giant Death Robot",
 		"unitType": "Armor",
 		"movement": 5,
 		"strength": 150,
-		"cost": 550,
+		"cost": 425,
 		"requiredTech": "Nuclear Fusion",
 		"requiredResource": "Uranium",
 		"uniques": ["Can move after attacking", "No defensive terrain bonus"]
 	},
+	/*
 	{
 		"name": "Stealth Bomber",
 		"unitType": "Bomber",
@@ -1368,6 +1368,7 @@
 		"attackSound": "shot"
 		// cannot be based on carrier
 	},
+	*/
 	
 	/* Great people */
 	

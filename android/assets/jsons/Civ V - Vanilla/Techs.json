@@ -594,6 +594,12 @@
 				"quote": "'Every particle of matter is attracted by or gravitates to every other particle of matter with a force inversely proportional to the squares of their distances.' - Isaac Newton"
 			},
 			{
+				"name": "Nuclear Fusion",
+				"row": 6,
+				"prerequisites": [/*"Advanced Ballistics" ,*/ "Satellites", "Robotics"],
+				"quote": "'The release of atomic energy has not created a new problem. It has readily made more urgent the necessity of solving an existing one.' - Albert Einstein"
+			},
+			{
 				"name": "Nanotechnology",
 				"row": 7,
 				"prerequisites": ["Robotics","Lasers"],
@@ -611,7 +617,7 @@
 			{
 				"name": "Future Tech",
 				"row": 5,
-				"prerequisites": ["Nanotechnology","Particle Physics"],
+				"prerequisites": ["Particle Physics", "Nuclear Fusion", "Nanotechnology"],
 				"uniques": ["Who knows what the future holds?", "Can be continually researched"],
 				"quote": "'I think we agree, the past is over.' - George W. Bush"
 			}
