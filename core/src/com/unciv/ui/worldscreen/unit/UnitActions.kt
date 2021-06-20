@@ -157,7 +157,6 @@ object UnitActions {
             return UnitAction(UnitActionType.FoundCity, uncivSound = UncivSound.Silent, action = null)
 
         val foundAction = {
-            Sounds.play(UncivSound.Chimes)
             UncivGame.Current.settings.addCompletedTutorialTask("Found city")
             unit.civInfo.addCity(tile.position)
             if (tile.ruleset.tileImprovements.containsKey("City center"))
@@ -171,7 +170,7 @@ object UnitActions {
 
         return UnitAction(
                 type = UnitActionType.FoundCity,
-                uncivSound = UncivSound.Silent,
+                uncivSound = UncivSound.Chimes,
                 action = {
                     // check if we would be breaking a promise
                     val leaders = TestPromiseNotToSettle(unit.civInfo, tile)
