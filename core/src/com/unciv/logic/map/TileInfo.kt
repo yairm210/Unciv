@@ -404,7 +404,6 @@ open class TileInfo {
             "Land" -> isLand
             "Coastal" -> isCoastalTile()
             "River" -> isAdjacentToRiver()
-            improvement -> true
             naturalWonder -> true
             "Foreign Land" -> civInfo != null && !isFriendlyTerritory(civInfo)
             "Friendly Land" -> civInfo != null && isFriendlyTerritory(civInfo)
