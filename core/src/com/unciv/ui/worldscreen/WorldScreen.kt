@@ -578,8 +578,8 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Cam
         shouldUpdate = true
 
 
+        val gameInfoClone = gameInfo.clone()
         thread(name = "NextTurn") { // on a separate thread so the user can explore their world while we're passing the turn
-            val gameInfoClone = gameInfo.clone()
             gameInfoClone.setTransients()
             try {
                 gameInfoClone.nextTurn()
