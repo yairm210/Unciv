@@ -1,3 +1,18 @@
+## 3.15.3
+
+By xlenstra:
+- Created Order branch with G&K policies 
+- Fixes bug where coastal buildings cannot be built even if the city is coastal 
+- Fixed Great Improvement bonus not working 
+- Stop AI from pillaging their own tiles. Fixes #4203 
+- Fixed autocracy complete bonus not continuing after updating to 3.15.2 
+
+Corrected many building production costs, tech requirements and wonder effects  - By avdstaaij
+
+Change improvement picker key indicators to tooltip - By SomeTroglodyte
+
+Resolved #4209 - AI city-founding no longer plays music
+
 ## 3.15.2
 
 By xlenstra:
