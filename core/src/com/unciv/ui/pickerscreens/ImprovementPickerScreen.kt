@@ -14,6 +14,7 @@ import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.tr
 import com.unciv.ui.utils.*
+import com.unciv.ui.utils.StaticTooltip.Companion.addStaticTip
 import kotlin.math.round
 
 class ImprovementPickerScreen(val tileInfo: TileInfo, val onAccept: ()->Unit) : PickerScreen() {
@@ -81,7 +82,6 @@ class ImprovementPickerScreen(val tileInfo: TileInfo, val onAccept: ()->Unit) : 
             }
 
             var labelText = improvement.name.tr()
-            if (shortcutKey != null) labelText += " ($shortcutKey)"
             val turnsToBuild = if (tileInfo.improvementInProgress == improvement.name) tileInfo.turnsToImprovement
             else improvement.getTurnsToBuild(currentPlayerCiv)
             if (turnsToBuild > 0) labelText += " - $turnsToBuild${Fonts.turn}"
@@ -104,10 +104,6 @@ class ImprovementPickerScreen(val tileInfo: TileInfo, val onAccept: ()->Unit) : 
                 "Pick now!".toLabel().onClick { accept(improvement) }
             else "Current construction".toLabel()
 
-            if (shortcutKey != null)
-                keyPressDispatcher[shortcutKey] = { accept(improvement) }
-
-
             val statIcons = getStatIconsTable(provideResource, removeImprovement)
 
             // get benefits of the new improvement
@@ -129,6 +125,12 @@ class ImprovementPickerScreen(val tileInfo: TileInfo, val onAccept: ()->Unit) : 
             improvementButton.add(improvementButtonTable).pad(5f).fillY()
             if (improvement.name == tileInfo.improvementInProgress) improvementButton.color = Color.GREEN
             regularImprovements.add(improvementButton)
+
+            if (shortcutKey != null) {
+                keyPressDispatcher[shortcutKey] = { accept(improvement) }
+                improvementButton.addStaticTip(shortcutKey)
+            }
+
             regularImprovements.add(pickNow).padLeft(10f).fillY()
             regularImprovements.row()
         }
