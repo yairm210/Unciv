@@ -201,6 +201,8 @@ open class TileInfo {
         yieldAll(terrainFeatures.asSequence().mapNotNull { ruleset.terrains[it] })
     }
 
+    fun isRoughTerrain() = getAllTerrains().any{ it.isRough() }
+
     fun hasUnique(unique: String) = getAllTerrains().any { it.uniques.contains(unique) }
 
     fun getWorkingCity(): CityInfo? {
@@ -410,8 +412,9 @@ open class TileInfo {
             "Friendly Land" -> civInfo != null && isFriendlyTerritory(civInfo)
             else -> {
                 if (terrainFeatures.contains(filter)) return true
-                if (baseTerrainObject.uniques.contains(filter)) return true
-                if (terrainFeatures.isNotEmpty() && getTerrainFeatures().last().uniques.contains(filter)) return true
+                if (filter == "Open terrain" && !isRoughTerrain()) return true
+                if (filter == "Rough terrain" && isRoughTerrain()) return true
+                if (hasUnique(filter)) return true
                 if (resource != null && getTileResource().resourceType.name + " resource" == filter) return true
                 if (civInfo != null && hasViewableResource(civInfo) && resource == filter) return true
                 return false
