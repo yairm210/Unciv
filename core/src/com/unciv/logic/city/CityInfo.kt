@@ -381,6 +381,9 @@ class CityInfo {
     }
 
     fun destroyCity() {
+        // Original capitals can't be destroyed
+        if (isOriginalCapital) return
+        
         for (airUnit in getCenterTile().airUnits.toList()) airUnit.destroy() //Destroy planes stationed in city
 
         // Edge case! What if a water unit is in a city, and you raze the city?

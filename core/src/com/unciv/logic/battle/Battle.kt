@@ -402,8 +402,6 @@ object Battle {
                 && civSuffered.getDiplomacyManager(attackingCiv).diplomaticStatus != DiplomaticStatus.War
             ) {
                 attackingCiv.getDiplomacyManager(civSuffered).declareWar()
-                civSuffered.getDiplomacyManager(attackingCiv)
-                    .setModifier(DiplomaticModifiers.UsedNuclearWeapons, -50f)
             }
         }
         
@@ -458,33 +456,50 @@ object Battle {
         if (attacker.unit.hasUnique("Self-destructs when attacking")) {
             attacker.unit.destroy()
         }
+        
+        // It's unclear whether using nukes results in a penalty with all civs, or only affected civs.
+        // For now I'll make it give a diplomatic penalty to all known civs, but some testing for this would be appreciated
+        for (civ in attackingCiv.getKnownCivs()) {
+            civ.getDiplomacyManager(attackingCiv).setModifier(DiplomaticModifiers.UsedNuclearWeapons, -50f)
+        }
     }
     
     private fun nukeStrength1Effect(attacker: MapUnitCombatant, tile: TileInfo) {
         // https://forums.civfanatics.com/resources/unit-guide-modern-future-units-g-k.25628/
+        // https://www.carlsguides.com/strategy/civilization5/units/aircraft-nukes.php
+        // Testing done by Ravignir
         var damageModifierFromMissingResource = 1f
         val civResources = attacker.getCivInfo().getCivResourcesByName()
         for (resource in attacker.unit.baseUnit.getResourceRequirements().keys) {
             if (civResources[resource]!! < 0 && !attacker.getCivInfo().isBarbarian())
-                damageModifierFromMissingResource *= 0.75f
+                damageModifierFromMissingResource *= 0.5f // I could not find a source for this number, but this felt about right
         }
         // Decrease health & population of a hit city
         val city = tile.getCity()
         if (city != null && tile.position == city.location) {
-            city.population.population = (city.population.population * (0.3 + Random().nextFloat() * 0.4) * damageModifierFromMissingResource).toInt()
-            if (city.population.population < 1) city.population.population = 1
-            city.population.unassignExtraPopulation()
-            city.health -= (0.5 * city.getMaxHealth() * damageModifierFromMissingResource).toInt()
-            if (city.health < 1) city.health = 1
+            var populationLoss = 1f;
+            for (unique in city.civInfo.getMatchingUniques("Population loss from nuclear attacks -[]%")) {
+                populationLoss *= 1 - unique.params[0].toFloat() / 100f 
+            }
+            if (city.population.population < 4 && populationLoss == 1f) {
+                city.destroyCity()
+            } else {
+                city.population.population =
+                    (city.population.population * (0.3 + Random().nextFloat() * 0.4) * populationLoss).toInt()
+                if (city.population.population < 1) city.population.population = 1
+                city.population.unassignExtraPopulation()
+                city.health -= ((0.5 + 0.25 * Random().nextFloat()) * city.health * damageModifierFromMissingResource).toInt()
+                if (city.health < 1) city.health = 1
+            }
             postBattleNotifications(attacker, CityCombatant(city), city.getCenterTile())
         }
         // Damage and/or destroy units on the tile
         for (unit in tile.getUnits()) {
             val hitUnit = MapUnitCombatant(unit)
-            if (hitUnit.unit.baseUnit.unitType.isCivilian() && Random().nextFloat() < 0.6) {
+            if (hitUnit.unit.baseUnit.unitType.isCivilian()) {
                 unit.destroy() // destroy the unit
             } else {
-                hitUnit.takeDamage(((30 + Random().nextInt(60)) * damageModifierFromMissingResource).toInt())
+                hitUnit.takeDamage(((40 + Random().nextInt(60)) * damageModifierFromMissingResource).toInt())
             }
             postBattleNotifications(attacker, hitUnit, hitUnit.getTile())
             destroyIfDefeated(hitUnit.getCivInfo(), attacker.getCivInfo())
@@ -494,27 +509,41 @@ object Battle {
         tile.improvementInProgress = null
         tile.turnsToImprovement = 0
         tile.roadStatus = RoadStatus.None
-        if (tile.isLand && !tile.isImpassible() && !tile.terrainFeatures.contains("Fallout") &&
-                Random().nextFloat() < 0.5) {
-            tile.terrainFeatures.add("Fallout")            
+        if (tile.isLand && !tile.isImpassible() && !tile.terrainFeatures.contains("Fallout")) {
+            if (tile.terrainFeatures.any { attacker.getCivInfo().gameInfo.ruleSet.terrains[it]!!.uniques.contains("Resistant to nukes") }) {
+                if (Random().nextFloat() < 0.25f) {
+                    tile.terrainFeatures.removeAll { attacker.getCivInfo().gameInfo.ruleSet.terrains[it]!!.uniques.contains("Can be destroyed by nukes") }
+                    tile.terrainFeatures.add("Fallout")
+                }
+            } else if (Random().nextFloat() < 0.5f) {
+                tile.terrainFeatures.removeAll { attacker.getCivInfo().gameInfo.ruleSet.terrains[it]!!.uniques.contains("Can be destroyed by nukes") }
+                tile.terrainFeatures.add("Fallout")
+            }
         }
     }
     
     private fun nukeStrength2Effect(attacker: MapUnitCombatant, tile: TileInfo) {
-        //https://forums.civfanatics.com/threads/unit-guide-modern-future-units-g-k.429987/#2
+        // https://forums.civfanatics.com/threads/unit-guide-modern-future-units-g-k.429987/#2
+        // https://www.carlsguides.com/strategy/civilization5/units/aircraft-nukes.php
+        // Testing done by Ravignir
         var damageModifierFromMissingResource = 1f
         val civResources = attacker.getCivInfo().getCivResourcesByName()
         for (resource in attacker.unit.baseUnit.getResourceRequirements().keys) {
             if (civResources[resource]!! < 0 && !attacker.getCivInfo().isBarbarian())
-                damageModifierFromMissingResource *= 0.75f
+                damageModifierFromMissingResource *= 0.5f // I could not find a source for this number, but this felt about right
         }
         // Damage and/or destroy cities
         val city = tile.getCity()
         if (city != null && city.location == tile.position) {
-            if (city.population.population <= 5 && !city.isOriginalCapital) {
+            var populationLoss = 1f;
+            for (unique in city.civInfo.getMatchingUniques("Population loss from nuclear attacks -[]%")) {
+                populationLoss *= 1 - unique.params[0].toFloat() / 100f
+            }
+            if (city.population.population < 5) {
                 city.destroyCity()
             } else {
-                city.population.population = (city.population.population * (0.6 + Random().nextFloat() * 0.2) * damageModifierFromMissingResource).toInt()
+                city.population.population = (city.population.population * (0.6 + Random().nextFloat() * 0.2) * populationLoss).toInt()
+                if (city.population.population < 5 && populationLoss == 1f) city.population.population = 5
                 if (city.population.population < 1) city.population.population = 1
                 city.population.unassignExtraPopulation()
                 city.health -= (0.5 * city.getMaxHealth() * damageModifierFromMissingResource).toInt()
