@@ -201,7 +201,10 @@ open class TileInfo {
         yieldAll(terrainFeatures.asSequence().mapNotNull { ruleset.terrains[it] })
     }
     fun getDominantTerrainType(): String? {
-        return terrainFeatures.maxByOrNull { ruleset.terrainTypes[it]!!.priority }
+        val terrainsToCheck = getAllTerrains()
+        val terrainTypes = terrainsToCheck.map { it.terrainType }
+        if (terrainTypes.none { it != null }) return null
+        return terrainTypes.maxByOrNull { ruleset.terrainTypes[it]!!.priority }
     }
 
     fun hasUnique(unique: String) = getAllTerrains().any { it.uniques.contains(unique) }
