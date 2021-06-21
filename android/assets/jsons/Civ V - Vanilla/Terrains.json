@@ -6,14 +6,16 @@
 		"food": 1,
 		"gold": 1,
 		"movementCost": 1,
-		"RGB": [45,108,145]
+		"RGB": [45,108,145],
+		"uniques": ["Open terrain"]
 	},
 	{
 		"name": "Coast",
 		"type": "Water",
 		"food": 1,
 		"movementCost": 1,
-		"RGB": [107,167,193]
+		"RGB": [107,167,193],
+		"uniques": ["Open terrain"]
 	},
 	{
 		"name": "Grassland",
