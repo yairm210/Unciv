@@ -258,7 +258,10 @@ class BaseUnit : INamed, IConstruction {
             "Military", "military units" -> unitType.isMilitary()
             // Deprecated as of 3.15.2
             "military water" -> unitType.isMilitary() && unitType.isWaterUnit()
-            else -> false
+            else -> {
+                if (uniques.contains(filter)) return true
+                return false
+            }
         }
     }
 

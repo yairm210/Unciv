@@ -380,6 +380,19 @@ class DiplomacyManager() {
             // No need to decrement negative countdown flags: they do not expire
             if (flagsCountdown[flag]!! > 0)
                 flagsCountdown[flag] = flagsCountdown[flag]!! - 1
+            
+            // If we have uniques that make city states grant military units faster when at war with a common enemy, add higher numbers to this flag
+            if (flag == DiplomacyFlags.ProvideMilitaryUnit.name && civInfo.isMajorCiv() && otherCiv().isCityState() && 
+                    civInfo.gameInfo.civilizations.filter { civInfo.isAtWarWith(it) && otherCiv().isAtWarWith(it) }.any()) {
+                for (unique in civInfo.getMatchingUniques("Militaristic City-States grant units [] times as fast when you are at war with a common nation")) {
+                    flagsCountdown[DiplomacyFlags.ProvideMilitaryUnit.name] =
+                        flagsCountdown[DiplomacyFlags.ProvideMilitaryUnit.name]!! - unique.params[0].toInt() + 1
+                    if (flagsCountdown[DiplomacyFlags.ProvideMilitaryUnit.name]!! <= 0) {
+                        flagsCountdown[DiplomacyFlags.ProvideMilitaryUnit.name] = 0
+                        break
+                    }
+                }
+            }
 
             // At the end of every turn
             if (flag == DiplomacyFlags.ResearchAgreement.name)
