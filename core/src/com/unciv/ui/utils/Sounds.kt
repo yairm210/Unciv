@@ -23,10 +23,13 @@ object Sounds {
     private var modListHash = Int.MIN_VALUE
     /** Ensure cache is not outdated _and_ build list of folders to look for sounds */
     private fun getFolders(): Sequence<String> {
-        if (!UncivGame.isCurrentInitialized() || !UncivGame.Current.isGameInfoInitialized()) // Allow sounds from main menu
+        if (!UncivGame.isCurrentInitialized())  // Sounds before main menu shouldn't happen
             return sequenceOf("")
+        val game = UncivGame.Current
         // Allow mod sounds - preferentially so they can override built-in sounds
-        val modList = UncivGame.Current.gameInfo.ruleSet.mods
+        val modList: MutableSet<String> = game.settings.visualMods
+        if (game.isGameInfoInitialized())  // Allow sounds from main menu
+            modList.addAll(game.gameInfo.ruleSet.mods)
         val newHash = modList.hashCode()
         if (modListHash == Int.MIN_VALUE || modListHash != newHash) {
             // Seems the mod list has changed - start over
@@ -52,8 +55,12 @@ object Sounds {
         val newSound =
             if (file == null || !file.exists()) null
             else Gdx.audio.newSound(file)
+        if (newSound == null)
+            println("Sound ${sound.value} not found.")
+        else
+            println("Sound ${sound.value} loaded from ${file!!.path()}.")
         // Store Sound for reuse or remember that the actual file is missing
-        soundMap[sound] = newSound
+            soundMap[sound] = newSound
         return newSound
     }
 
