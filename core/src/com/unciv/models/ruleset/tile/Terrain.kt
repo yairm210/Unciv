@@ -38,6 +38,8 @@ class Terrain : NamedStats() {
     
     @Deprecated("As of 3.14.1")
     var rough = false
+    
+    var terrainType: String? = null
 
 
     fun getColor(): Color { // Can't be a lazy initialize, because we play around with the resulting color with lerp()s and the like
@@ -60,7 +62,8 @@ class Terrain : NamedStats() {
             sb.appendLine("May contain [${resourcesFound.joinToString(", ") { it.name.tr() }}]".tr())
 
         if(uniques.isNotEmpty())
-            sb.appendLine(uniques.joinToString { it.tr() })
+            // "Open terrain" and "Rough terrain" uniques deprecated since 3.15.4
+            sb.appendLine(uniques.filter{ it != "Open terrain" && it != "Rough terrain"}.joinToString { it.tr() })
 
         if (impassable)
             sb.appendLine(Constants.impassable.tr())
@@ -70,9 +73,9 @@ class Terrain : NamedStats() {
         if (defenceBonus != 0f)
             sb.appendLine("{Defence bonus}: ".tr() + (defenceBonus * 100).toInt() + "%")
 
-        if (rough)
-            sb.appendLine("Rough Terrain".tr())
-
+        if (terrainType != null)
+            sb.appendLine(terrainType!!.tr())
+        
         return sb.toString()
     }
 }

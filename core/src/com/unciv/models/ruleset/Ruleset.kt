@@ -8,6 +8,7 @@ import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.ruleset.tech.TechColumn
 import com.unciv.models.ruleset.tech.Technology
 import com.unciv.models.ruleset.tile.Terrain
+import com.unciv.models.ruleset.tile.TerrainType2
 import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.tile.TileResource
 import com.unciv.models.ruleset.unit.BaseUnit
@@ -45,6 +46,7 @@ class Ruleset {
     var name = ""
     val buildings = LinkedHashMap<String, Building>()
     val terrains = LinkedHashMap<String, Terrain>()
+    val terrainTypes = LinkedHashMap<String, TerrainType2>()
     val tileResources = LinkedHashMap<String, TileResource>()
     val tileImprovements = LinkedHashMap<String, TileImprovement>()
     val technologies = LinkedHashMap<String, Technology>()
@@ -86,6 +88,7 @@ class Ruleset {
         technologies.putAll(ruleset.technologies)
         for (techToRemove in ruleset.modOptions.techsToRemove) technologies.remove(techToRemove)
         terrains.putAll(ruleset.terrains)
+        terrainTypes.putAll(ruleset.terrainTypes)
         tileImprovements.putAll(ruleset.tileImprovements)
         tileResources.putAll(ruleset.tileResources)
         unitPromotions.putAll(ruleset.unitPromotions)
@@ -106,6 +109,7 @@ class Ruleset {
         technologies.clear()
         buildings.clear()
         terrains.clear()
+        terrainTypes.clear()
         tileImprovements.clear()
         tileResources.clear()
         unitPromotions.clear()
@@ -143,6 +147,9 @@ class Ruleset {
         val terrainsFile = folderHandle.child("Terrains.json")
         if (terrainsFile.exists()) terrains += createHashmap(jsonParser.getFromJson(Array<Terrain>::class.java, terrainsFile))
 
+        val terrainTypesFile = folderHandle.child("TerrainTypes.json")
+        if (terrainTypesFile.exists()) terrainTypes += createHashmap(jsonParser.getFromJson(Array<TerrainType2>::class.java, terrainTypesFile))
+        
         val resourcesFile = folderHandle.child("TileResources.json")
         if (resourcesFile.exists()) tileResources += createHashmap(jsonParser.getFromJson(Array<TileResource>::class.java, resourcesFile))
 

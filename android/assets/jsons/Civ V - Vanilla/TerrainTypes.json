@@ -1,0 +1,10 @@
+[
+    {
+        "name": "Rough terrain",
+        "priority": 1
+    },
+    {
+        "name": "Open terrain",
+        "priority": 0
+    }
+]

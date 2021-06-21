@@ -200,6 +200,9 @@ open class TileInfo {
         if (naturalWonder != null) yield(getNaturalWonder())
         yieldAll(terrainFeatures.asSequence().mapNotNull { ruleset.terrains[it] })
     }
+    fun getDominantTerrainType(): String? {
+        return terrainFeatures.maxByOrNull { ruleset.terrainTypes[it]!!.priority }
+    }
 
     fun hasUnique(unique: String) = getAllTerrains().any { it.uniques.contains(unique) }
 
@@ -409,8 +412,7 @@ open class TileInfo {
             "Foreign Land" -> civInfo != null && !isFriendlyTerritory(civInfo)
             "Friendly Land" -> civInfo != null && isFriendlyTerritory(civInfo)
             else -> {
-                // This one should be on top, as it has to be checked before all other uniques
-                if (filter.endsWith(" terrain")) return getLastTerrain().uniques.contains(filter)
+                if (getDominantTerrainType() == filter) return true
                 if (terrainFeatures.contains(filter)) return true
                 if (baseTerrainObject.uniques.contains(filter)) return true
                 if (terrainFeatures.isNotEmpty() && getTerrainFeatures().last().uniques.contains(filter)) return true
