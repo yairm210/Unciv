@@ -408,12 +408,12 @@ open class TileInfo {
             "River" -> isAdjacentToRiver()
             improvement -> true
             naturalWonder -> true
+            "Open terrain" -> !isRoughTerrain()
+            "Rough terrain" -> isRoughTerrain()
             "Foreign Land" -> civInfo != null && !isFriendlyTerritory(civInfo)
             "Friendly Land" -> civInfo != null && isFriendlyTerritory(civInfo)
             else -> {
                 if (terrainFeatures.contains(filter)) return true
-                if (filter == "Open terrain" && !isRoughTerrain()) return true
-                if (filter == "Rough terrain" && isRoughTerrain()) return true
                 if (hasUnique(filter)) return true
                 if (resource != null && getTileResource().resourceType.name + " resource" == filter) return true
                 if (civInfo != null && hasViewableResource(civInfo) && resource == filter) return true
