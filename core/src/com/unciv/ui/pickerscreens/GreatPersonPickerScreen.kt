@@ -3,7 +3,6 @@ package com.unciv.ui.pickerscreens
 import com.badlogic.gdx.scenes.scene2d.ui.Button
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.CivilizationInfo
-import com.unciv.logic.civilization.GreatPersonManager
 import com.unciv.models.UncivSound
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.translations.tr

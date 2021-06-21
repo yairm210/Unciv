@@ -7,7 +7,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Array
 import com.unciv.logic.MapSaver
 import com.unciv.logic.map.MapType
+import com.unciv.logic.map.TileMap
 import com.unciv.ui.utils.CameraStageBaseScreen
+import com.unciv.ui.utils.Popup
 import com.unciv.ui.utils.onChange
 import com.unciv.ui.utils.toLabel
 
@@ -15,7 +17,7 @@ class MapOptionsTable(val newGameScreen: NewGameScreen): Table() {
 
     val mapParameters = newGameScreen.gameSetupInfo.mapParameters
     private var mapTypeSpecificTable = Table()
-    private val generatedMapOptionsTable = MapParametersTable(mapParameters)
+    val generatedMapOptionsTable = MapParametersTable(mapParameters)
     private val savedMapOptionsTable = Table()
     lateinit var mapTypeSelectBox: TranslatedSelectBox
 
@@ -89,9 +91,19 @@ class MapOptionsTable(val newGameScreen: NewGameScreen): Table() {
 
         mapFileSelectBox.onChange {
             val mapFile = mapFileSelectBox.selected.fileHandle
+            val map: TileMap
+            try {
+                map = MapSaver.loadMap(mapFile)
+            } catch (ex:Exception){
+                Popup(newGameScreen).apply {
+                    addGoodSizedLabel("Could not load map!")
+                    addCloseButton()
+                    open()
+                }
+                return@onChange
+            }
             mapParameters.name = mapFile.name()
             newGameScreen.gameSetupInfo.mapFile = mapFile
-            val map = MapSaver.loadMap(mapFile)
             newGameScreen.gameSetupInfo.gameParameters.mods = map.mapParameters.mods
             newGameScreen.updateRuleset()
             newGameScreen.updateTables()
@@ -103,6 +115,6 @@ class MapOptionsTable(val newGameScreen: NewGameScreen): Table() {
     // The SelectBox auto displays the text a object.toString(), which on the FileHandle itself includes the folder path.
     //  So we wrap it in another object with a custom toString()
     class FileHandleWrapper(val fileHandle: FileHandle) {
-        override fun toString() = fileHandle.name()
+        override fun toString(): String = fileHandle.name()
     }
 }

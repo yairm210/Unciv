@@ -99,7 +99,7 @@ class EditMultiplayerGameInfoScreen(game: GameInfo?, gameName: String, backScree
                     //Add notification so everyone knows what happened
                     //call for every civ cause AI players are skipped anyway
                     for (civ in gameInfo.civilizations) {
-                        civ.addNotification("[${playerCiv.civName}] resigned and is now controlled by AI", Color.RED)
+                        civ.addNotification("[${playerCiv.civName}] resigned and is now controlled by AI", playerCiv.civName)
                     }
 
                     //save game so multiplayer list stays up to date

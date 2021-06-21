@@ -42,12 +42,14 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 
 * [Catapult](https://thenounproject.com/search/?q=Spear&i=1233840) By Jakub Ukrop
 * [Unloaded Crossbow](https://thenounproject.com/term/unloaded-crossbow/815992/) By Hamish as Ballista
+* [Bow and arrow](https://thenounproject.com/term/bow-and-arrow/3929618/) By Lars Meiertoberens for Composite Bowman
 * [Sword](https://thenounproject.com/search/?q=Sword&i=1215443) By Guilherme Furtado for Swordsman
 * [Mohawk](https://thenounproject.com/search/?q=mohawk&i=1426649) By Dairy Free Design for Mohawk Warrior
 * [Roman Helmet](https://thenounproject.com/search/?q=legion&i=440134) By parkjisun for Legion
 * [Horse](https://thenounproject.com/search/?q=Horse&i=1373793) By AFY Studio for Horseman
 * [Horse Head](https://thenounproject.com/search/?q=Cavalry&i=374037) By Juan Pablo Bravo for Companion Cavalry
 * [Judge](https://thenounproject.com/search/?q=judge&i=1076388) By Krisztián Mátyás for Courthouse
+* [Petra](https://thenounproject.com/search/?q=petra&i=2855893) By Ranah Pixel Studio for Petra
 
 ### Medieval Era
 
@@ -74,7 +76,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Lance](https://thenounproject.com/search/?q=Lance&i=440122) By parkjisun for Lancer
 * [Sword](https://thenounproject.com/search/?q=saber&i=1174742) By Daniela Baptista for Sipahi
 
-### Industrial
+### Industrial Era
 
 * [Rifle](https://thenounproject.com/search/?q=Rifle&i=604291) By Chameleon Design for Rifleman
 * [Horse](https://thenounproject.com/search/?q=Horse&i=1023745) By Bakunetso Kaito for Cavalry
@@ -82,7 +84,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Artillery](https://thenounproject.com/search/?q=Artillery&i=1165261) By Creative Mania
 * [Ship](https://thenounproject.com/term/ship/1594793/) By Aisyah for Ironclad
 
-### Modern
+### Modern, Atomic and Information Eras
 
 * [Helmet](https://thenounproject.com/term/helmet/25216/) By Daniel Turner for Great War Infantry
 * [Cap](https://thenounproject.com/search/?q=kepi&i=950267) By Creative Mania for Foreign Legion
@@ -98,11 +100,14 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Tank](https://thenounproject.com/search/?q=tank&i=981914) By jeff
 * [Tank](https://thenounproject.com/manueldixken/collection/german-tanks/?i=960769) Manuel Dixken, DE for Panzer
 * [APC](https://thenounproject.com/search/?q=apc&i=9965) By Luke Anthony Firth for Mechanized Infantry
+* [Missile](https://thenounproject.com/term/missile/2311325/) By Eucalyp for Mobile SAM
 * [Military vehicle](https://thenounproject.com/search/?q=Army%20rocket&i=23115) By Luke Anthony Firth For Rocket Artillery
 * [Modern Armor](https://thenounproject.com/search/?q=tank&i=218) By Public Domain Nouns for Modern Armor
 * [Manhattan Project](https://thenounproject.com/search/?q=Nuclear%20Bomb&i=2041074) By corpus delicti, GR
 * [Nuclear Missile](https://thenounproject.com/marialuisa.iborra/collection/missiles-bombs/?i=1022574) By Lluisa Iborra, ES
 * Icon for Carrier made by [JackRainy](https://github.com/JackRainy), based on [Aircraft Carrier](https://thenounproject.com/icolabs/collection/flat-icons-transport/?i=2332914) By IcoLabs, BR
+* [Water Gun](https://thenounproject.com/term/water-gun/2121571) by ProSymbols for Marine
+* [Parachute](https://thenounproject.com/term/parachute/2025018) by Nociconist for Paratrooper*
 
 ### Great People
 
@@ -157,6 +162,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Moai](https://thenounproject.com/search/?q=moai&i=2878111) By Template
 * [Fort](https://thenounproject.com/term/fort/1697645/) By Adrien Coquet
 * [Citadel](https://thenounproject.com/term/fort/1697646/) By Adrien Coquet
+* [Village](https://thenounproject.com/search/?q=city+center&i=476338) by Andrey Vasiliev
 
 ## Buildings
 
@@ -216,7 +222,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Hagia Sophia](https://thenounproject.com/term/hagia-sophia/1907752/) By Felipe Alvarado
 * [Factory](https://thenounproject.com/term/factory/1624235/) By Maxim Kulikov for Ironworks
 * [Notre Dame](https://thenounproject.com/term/notre-dame/1361725/) By Marco Livolsi
-* [Bullets](https://thenounproject.com/term/bullets/810156/) By Aldric Rodriguez for Armory 
+* [Shield and Swords](https://thenounproject.com/term/shield-and-swords/1477527/) By Alina Oleynik for Armory
 * [Machu Picchu](https://thenounproject.com/browse/?i=1678226/) By [Chanut is Industries](https://thenounproject.com/chanut-is)
 * [Garden](https://thenounproject.com/search/?q=garden&i=1478380) By Bharat 
 
@@ -237,6 +243,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Bank](https://thenounproject.com/term/bank/1882194/) By projecthayat
 * [Harbor](https://thenounproject.com/term/harbor/225583/) By Rflor for Seaport
 * [Mansion](https://www.flaticon.com/free-icon/mansion_509903#term=persian&page=1&position=19) by Freepik for Satrap's Court
+* [Bullets](https://thenounproject.com/term/bullets/810156/) By Aldric Rodriguez for Arsenal
 
 ### Industrial Era
 
@@ -250,6 +257,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 
 * [Stadium](https://thenounproject.com/term/stadium/13872/) By Karuna Lalvani
 * [Signal Tower](https://thenounproject.com/term/signal-tower/1547758/) By Nociconist for Broadcast Tower
+* [Hangar](https://thenounproject.com/search/?q=hangar&i=1705288) By Rflor for Military Base
 * [Eiffel Tower](https://thenounproject.com/term/eiffel-tower/1907757/) By Felipe Alvarado
 * [Statue of Liberty](https://thenounproject.com/search/?q=statue%20of%20liberty&i=1801199) By 1516
 * [Christ the redeemer](https://thenounproject.com/term/christ-the-redeemer/56112/) By Stefan Spieler for Cristo Redentor
@@ -276,6 +284,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Rocket](https://thenounproject.com/term/rocket/937173/) By BomSymbols for SS Cockpit
 * [Engine](https://thenounproject.com/term/engine/1877958/) By Andre for SS Engine
 * [Chamber](https://thenounproject.com/term/chamber/1242689/) By IYIKON for SS Stasis Chamber
+* [Illuminati](https://thenounproject.com/term/illuminati/1617812) by emilegraphics for the Utopia Project
 
 ## Social Policies
 
@@ -314,10 +323,10 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 ### Commerce
 
 * [Trade](https://thenounproject.com/term/trade/686718/) By Gregor Cresnar for Trade Unions
-* [Pie Chart](https://thenounproject.com/term/pie-chart/1284359/) By Adrien Coquet  for Protectionism
+* [Pie Chart](https://thenounproject.com/term/pie-chart/1284359/) By Adrien Coquet for Protectionism
 * [Coins](https://thenounproject.com/term/coins/1915881/) By icon 54 for Mercantilism
-* [Painting](https://thenounproject.com/term/painting/387146/) By Mike Rowe for Patronage
-* [Gem](https://thenounproject.com/term/gem/754533/) By Oksana Latysheva for Entrepreneurship
+* [Sextant](https://thenounproject.com/term/sextant/313438) By lastspark for Naval Tradition
+* [Merchant Navy Icon](https://www.pngkit.com/view/u2w7i1i1o0t4a9y3_png-file-merchant-navy-icon/) for Merchant Navy
 
 ### Rationalism
 
@@ -329,7 +338,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 
 ### Freedom
 
-* [social network](https://thenounproject.com/term/social-network/746002/) By Kirby Wu for Civil Society
+* [Social Network](https://thenounproject.com/term/social-network/746002/) By Kirby Wu for Civil Society
 * [Gender Equality](https://thenounproject.com/term/gender-equality/577561/) By corpus delicti for Universal Suffrage
 * [Feather](https://thenounproject.com/term/feather/1628/) By Eduardo Souza for Constitution
 * [Voting](https://thenounproject.com/term/voting/981735/) By Nikita Kozin for Democracy
@@ -343,7 +352,12 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Newspaper](https://thenounproject.com/term/newspaper/1207487/) By Trishul for Populism
 * [Riot Police](https://thenounproject.com/term/riot-police/43117/) By Dan Hetteix for Police State
 
-
+### Order
+* Adapted from [Plan](https://thenounproject.com/term/plan/2973572) by Cattaleeya Thongsriphong for Planned Economy
+* [Flag](https://thenounproject.com/term/flag/2712405) by Muhammad Tajudin for Nationalism
+* [Communism](https://thenounproject.com/term/communism/142765) By Valerio Poltrini for Socialism
+* [Hammer and Sickle](https://thenounproject.com/term/hammer-and-sickle/1367670) by Dmitry Baranovskiy for Communism
+* [United](https://thenounproject.com/term/united/3433531) by Izwar Muis for United Front
 
 ## Technologies
 
@@ -500,11 +514,13 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * Icon for Flight Deck is made by [JackRainy](https://github.com/JackRainy)
 * Icon for Armor Plating is made by [JackRainy](https://github.com/JackRainy)
 * [Slingshot](https://thenounproject.com/term/slingshot/9106/) by James Keuning for Slinger Withdraw
+* [Anchor](https://thenounproject.com/term/anchor/676586) by Gregor Cresnar for Amphibious
 
 ## Others 
 
 * [Circle](https://thenounproject.com/term/circle/1841891/) By Aybige 
 * [Arrow](https://thenounproject.com/term/arrow/18123/) By Joe Mortell for movement
+* [Swap](https://thenounproject.com/search/?q=swap&i=1259600) By iconomania for swapping units
 * [Connection](https://thenounproject.com/search/?q=connection&i=1521886) By Travis Avery
 * [Skull](https://thenounproject.com/search/?q=Skull&i=1030702) By Vladimir Belochkin for disbanding units
 * [Crosshair](https://thenounproject.com/search/?q=crosshairs&i=916030) By Bakunetsu Kaito for selecting enemies to attack
@@ -525,6 +541,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [City](https://thenounproject.com/search/?q=city&i=1765370) By Muhajir ila Robbi in the Icon center
 * [Lock](https://thenounproject.com/search/?q=lock&i=3217613) by Vadim Solomakhin for locked tiles
 * [Hourglass](https://thenounproject.com/search/?q=hourglass&i=142268) by I Create Stuff for the 'Turn' icon
+* [Dove](https://thenounproject.com/search/?q=dove&i=1344084) by Sandra for Faith
 
 ## Main menu
 
@@ -558,6 +575,11 @@ Sounds are from FreeSound.org and are either Creative Commons or Public Domain
 * [Horse Neigh 2](https://freesound.org/people/GoodListener/sounds/322450/) By GoodListener as 'horse' for cavalry attack sounds
 * [machine gun 001 - loop](https://freesound.org/people/pgi/sounds/212602/) By pgi as 'machinegun' for machine gun attack sound
 * [uzzi_full_single](https://freesound.org/people/Deganoth/sounds/348685/) By Deganoth as 'shot' for bullet attacks
+* [Grenade Launcher 2](https://soundbible.com/2140-Grenade-Launcher-2.html) By Daniel Simon as city bombard sound (CC Attribution 3.0 license)
+* [Woosh](https://soundbible.com/2068-Woosh.html) by Mark DiAngelo as 'slider' sound (CC Attribution 3.0 license)
+* [Tornado-Siren-II](https://soundbible.com/1937-Tornado-Siren-II.html) by Delilah as part of 'nuke' sound (CC Attribution 3.0 license)
+* [Explosion-Ultra-Bass](https://soundbible.com/1807-Explosion-Ultra-Bass.html) by Mark DiAngelo as part of 'nuke' sound (CC Attribution 3.0 license)
+* [Short Choir](https://freesound.org/people/Breviceps/sounds/444491/) by Breviceps as 'choir' for free great person pick
 
 
 # Music

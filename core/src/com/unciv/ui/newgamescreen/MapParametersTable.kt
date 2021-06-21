@@ -1,13 +1,14 @@
 package com.unciv.ui.newgamescreen
 
+import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox
 import com.badlogic.gdx.scenes.scene2d.ui.Slider
 import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.badlogic.gdx.scenes.scene2d.ui.TextField
+import com.badlogic.gdx.scenes.scene2d.ui.TextField.TextFieldFilter.DigitsOnlyFilter
+import com.unciv.Constants
 import com.unciv.UncivGame
-import com.unciv.logic.map.MapParameters
-import com.unciv.logic.map.MapShape
-import com.unciv.logic.map.MapSize
-import com.unciv.logic.map.MapType
+import com.unciv.logic.map.*
 import com.unciv.models.translations.tr
 import com.unciv.ui.utils.*
 
@@ -20,34 +21,42 @@ import com.unciv.ui.utils.*
 class MapParametersTable(val mapParameters: MapParameters, val isEmptyMapAllowed: Boolean = false):
     Table() {
     lateinit var mapTypeSelectBox: TranslatedSelectBox
+    lateinit var worldSizeSelectBox: TranslatedSelectBox
+    private var customWorldSizeTable = Table ()
+    private var hexagonalSizeTable = Table()
+    private var rectangularSizeTable = Table()
     lateinit var noRuinsCheckbox: CheckBox
     lateinit var noNaturalWondersCheckbox: CheckBox
     lateinit var worldWrapCheckbox: CheckBox
+    lateinit var customMapSizeRadius: TextField
+    lateinit var customMapWidth: TextField
+    lateinit var customMapHeight: TextField
+
 
     init {
         skin = CameraStageBaseScreen.skin
         defaults().pad(5f)
         addMapShapeSelectBox()
         addMapTypeSelectBox()
-        addWorldSizeSelectBox()
+        addWorldSizeTable()
         addNoRuinsCheckbox()
         addNoNaturalWondersCheckbox()
-        if (UncivGame.Current.settings.showExperimentalWorldWrap) {
+        if (UncivGame.Current.settings.showExperimentalWorldWrap)
             addWorldWrapCheckbox()
-        }
         addAdvancedSettings()
     }
 
     private fun addMapShapeSelectBox() {
         val mapShapes = listOfNotNull(
-                MapShape.hexagonal,
-                MapShape.rectangular
+            MapShape.hexagonal,
+            MapShape.rectangular
         )
         val mapShapeSelectBox =
-                TranslatedSelectBox(mapShapes, mapParameters.shape, skin)
+            TranslatedSelectBox(mapShapes, mapParameters.shape, skin)
         mapShapeSelectBox.onChange {
-                mapParameters.shape = mapShapeSelectBox.selected.value
-            }
+            mapParameters.shape = mapShapeSelectBox.selected.value
+            updateWorldSizeTable()
+        }
 
         add ("{Map Shape}:".toLabel()).left()
         add(mapShapeSelectBox).fillX().row()
@@ -59,6 +68,7 @@ class MapParametersTable(val mapParameters: MapParameters, val isEmptyMapAllowed
             MapType.default,
             MapType.pangaea,
             MapType.continents,
+            MapType.fourCorners,
             MapType.perlin,
             MapType.archipelago,
             if (isEmptyMapAllowed) MapType.empty else null
@@ -67,38 +77,89 @@ class MapParametersTable(val mapParameters: MapParameters, val isEmptyMapAllowed
         mapTypeSelectBox = TranslatedSelectBox(mapTypes, mapParameters.type, skin)
 
         mapTypeSelectBox.onChange {
-                mapParameters.type = mapTypeSelectBox.selected.value
+            mapParameters.type = mapTypeSelectBox.selected.value
 
-                // If the map won't be generated, these options are irrelevant and are hidden
-                noRuinsCheckbox.isVisible = mapParameters.type != MapType.empty
-                noNaturalWondersCheckbox.isVisible = mapParameters.type != MapType.empty
-            }
+            // If the map won't be generated, these options are irrelevant and are hidden
+            noRuinsCheckbox.isVisible = mapParameters.type != MapType.empty
+            noNaturalWondersCheckbox.isVisible = mapParameters.type != MapType.empty
+        }
 
         add("{Map Generation Type}:".toLabel()).left()
         add(mapTypeSelectBox).fillX().row()
     }
 
+    private fun addWorldSizeTable() {
+        val mapSizes = MapSize.values().map { it.name } + listOf(Constants.custom)
+        worldSizeSelectBox = TranslatedSelectBox(mapSizes, mapParameters.mapSize.name, skin)
+        worldSizeSelectBox.onChange { updateWorldSizeTable() }
 
-    private fun addWorldSizeSelectBox() {
-        val worldSizeSelectBox = TranslatedSelectBox(
-            MapSize.values().map { it.name },
-            mapParameters.size.name,
-            skin
-        )
-
-        worldSizeSelectBox.onChange {
-                mapParameters.size = MapSize.valueOf(worldSizeSelectBox.selected.value)
-            }
+        addHexagonalSizeTable()
+        addRectangularSizeTable()
 
         add("{World Size}:".toLabel()).left()
         add(worldSizeSelectBox).fillX().row()
+        add(customWorldSizeTable).colspan(2).grow().row()
+
+        updateWorldSizeTable()
+    }
+
+    private fun addHexagonalSizeTable() {
+        val defaultRadius = mapParameters.mapSize.radius.toString()
+        customMapSizeRadius = TextField(defaultRadius, skin).apply {
+            textFieldFilter = DigitsOnlyFilter()
+        }
+        customMapSizeRadius.onChange {
+            mapParameters.mapSize = MapSizeNew(customMapSizeRadius.text.toIntOrNull() ?: 0 )
+        }
+        hexagonalSizeTable.add("{Radius}:".toLabel()).grow().left()
+        hexagonalSizeTable.add(customMapSizeRadius).right().row()
+        hexagonalSizeTable.add("Anything above 40 may work very slowly on Android!".toLabel(Color.RED)
+            .apply { wrap=true }).width(prefWidth).colspan(hexagonalSizeTable.columns)
+    }
+
+    private fun addRectangularSizeTable() {
+        val defaultWidth = mapParameters.mapSize.width.toString()
+        customMapWidth = TextField(defaultWidth, skin).apply {
+            textFieldFilter = DigitsOnlyFilter()
+        }
+
+        val defaultHeight = mapParameters.mapSize.height.toString()
+        customMapHeight = TextField(defaultHeight, skin).apply {
+            textFieldFilter = DigitsOnlyFilter()
+        }
+
+        customMapWidth.onChange {
+            mapParameters.mapSize = MapSizeNew(customMapWidth.text.toIntOrNull() ?: 0, customMapHeight.text.toIntOrNull() ?: 0)
+        }
+        customMapHeight.onChange {
+            mapParameters.mapSize = MapSizeNew(customMapWidth.text.toIntOrNull() ?: 0, customMapHeight.text.toIntOrNull() ?: 0)
+        }
+
+        rectangularSizeTable.defaults().pad(5f)
+        rectangularSizeTable.add("{Width}:".toLabel()).grow().left()
+        rectangularSizeTable.add(customMapWidth).right().row()
+        rectangularSizeTable.add("{Height}:".toLabel()).grow().left()
+        rectangularSizeTable.add(customMapHeight).right().row()
+        rectangularSizeTable.add("Anything above 80 by 50 may work very slowly on Android!".toLabel(Color.RED)
+            .apply { wrap = true }).width(prefWidth).colspan(hexagonalSizeTable.columns)
+    }
+
+    private fun updateWorldSizeTable() {
+        customWorldSizeTable.clear()
+
+        if (mapParameters.shape == MapShape.hexagonal && worldSizeSelectBox.selected.value == Constants.custom)
+            customWorldSizeTable.add(hexagonalSizeTable).grow().row()
+        else if (mapParameters.shape == MapShape.rectangular && worldSizeSelectBox.selected.value == Constants.custom)
+            customWorldSizeTable.add(rectangularSizeTable).grow().row()
+        else
+            mapParameters.mapSize = MapSizeNew(worldSizeSelectBox.selected.value)
     }
 
     private fun addNoRuinsCheckbox() {
         noRuinsCheckbox = CheckBox("No Ancient Ruins".tr(), skin)
         noRuinsCheckbox.isChecked = mapParameters.noRuins
         noRuinsCheckbox.onChange { mapParameters.noRuins = noRuinsCheckbox.isChecked }
-        add(noRuinsCheckbox).colspan(2).row()
+        add(noRuinsCheckbox).colspan(2).left().row()
     }
 
     private fun addNoNaturalWondersCheckbox() {
@@ -107,7 +168,7 @@ class MapParametersTable(val mapParameters: MapParameters, val isEmptyMapAllowed
         noNaturalWondersCheckbox.onChange {
             mapParameters.noNaturalWonders = noNaturalWondersCheckbox.isChecked
         }
-        add(noNaturalWondersCheckbox).colspan(2).row()
+        add(noNaturalWondersCheckbox).colspan(2).left().row()
     }
 
     private fun addWorldWrapCheckbox() {
@@ -116,7 +177,9 @@ class MapParametersTable(val mapParameters: MapParameters, val isEmptyMapAllowed
         worldWrapCheckbox.onChange {
             mapParameters.worldWrap = worldWrapCheckbox.isChecked
         }
-        add(worldWrapCheckbox).colspan(2).row()
+        add(worldWrapCheckbox).colspan(2).left().row()
+        add("World wrap maps are very memory intensive - creating large world wrap maps on Android can lead to crashes!"
+                .toLabel(fontSize = 14).apply { wrap=true }).colspan(2).fillX().row()
     }
 
     private fun addAdvancedSettings() {
@@ -146,11 +209,26 @@ class MapParametersTable(val mapParameters: MapParameters, val isEmptyMapAllowed
     private fun getAdvancedSettingsTable(): Table {
 
         val advancedSettingsTable = Table()
-                .apply {isVisible = false; defaults().pad(5f)}
+            .apply {isVisible = false; defaults().pad(5f)}
+
+        val seedTextField = TextField(mapParameters.seed.toString(), skin)
+        seedTextField.textFieldFilter = DigitsOnlyFilter()
+
+        // If the field is empty, fallback seed value to 0
+        seedTextField.onChange {
+            mapParameters.seed = try {
+                seedTextField.text.toLong()
+            } catch (e: Exception) {
+                0L
+            }
+        }
+
+        advancedSettingsTable.add("RNG Seed".toLabel()).left()
+        advancedSettingsTable.add(seedTextField).fillX().row()
 
         val sliders = HashMap<Slider, ()->Float>()
 
-        fun addSlider(text:String, getValue:()->Float, min:Float, max:Float, onChange: (value:Float)->Unit): Slider {
+        fun addSlider(text: String, getValue:()->Float, min:Float, max:Float, onChange: (value:Float)->Unit): Slider {
             val slider = Slider(min, max, (max - min) / 20, false, skin)
             slider.value = getValue()
             slider.onChange { onChange(slider.value) }
@@ -187,6 +265,7 @@ class MapParametersTable(val mapParameters: MapParameters, val isEmptyMapAllowed
         val resetToDefaultButton = "Reset to default".toTextButton()
         resetToDefaultButton.onClick {
             mapParameters.resetAdvancedSettings()
+            seedTextField.text = mapParameters.seed.toString()
             for(entry in sliders)
                 entry.key.value = entry.value()
         }

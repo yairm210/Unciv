@@ -4,9 +4,7 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.files.FileHandle
 import com.unciv.JsonParser
 import com.unciv.logic.UncivShowableException
-import com.unciv.models.Counter
 import com.unciv.models.metadata.BaseRuleset
-import com.unciv.models.metadata.GameParameters
 import com.unciv.models.ruleset.tech.TechColumn
 import com.unciv.models.ruleset.tech.Technology
 import com.unciv.models.ruleset.tile.Terrain
@@ -33,6 +31,11 @@ class ModOptions {
     var nationsToRemove = HashSet<String>()
     var uniques = HashSet<String>()
     val maxXPfromBarbarians = 30
+
+    var lastUpdated = ""
+    var modUrl = ""
+    var author = ""
+    var modSize = 0
 }
 
 class Ruleset {
@@ -52,6 +55,7 @@ class Ruleset {
     val specialists = LinkedHashMap<String, Specialist>()
     val policyBranches = LinkedHashMap<String, PolicyBranch>()
     val policies = LinkedHashMap<String, Policy>()
+    val beliefs = LinkedHashMap<String, Belief>()
     val difficulties = LinkedHashMap<String, Difficulty>()
     val mods = LinkedHashSet<String>()
     var modOptions = ModOptions()
@@ -76,6 +80,7 @@ class Ruleset {
         nations.putAll(ruleset.nations)
         policyBranches.putAll(ruleset.policyBranches)
         policies.putAll(ruleset.policies)
+        beliefs.putAll(ruleset.beliefs)
         quests.putAll(ruleset.quests)
         specialists.putAll(ruleset.specialists)
         technologies.putAll(ruleset.technologies)
@@ -96,6 +101,7 @@ class Ruleset {
         nations.clear()
         policyBranches.clear()
         policies.clear()
+        beliefs.clear()
         quests.clear()
         technologies.clear()
         buildings.clear()
@@ -116,8 +122,7 @@ class Ruleset {
         if (modOptionsFile.exists()) {
             try {
                 modOptions = jsonParser.getFromJson(ModOptions::class.java, modOptionsFile)
-            } catch (ex: Exception) {
-            }
+            } catch (ex: Exception) {}
         }
 
         val techFile = folderHandle.child("Techs.json")
@@ -172,6 +177,11 @@ class Ruleset {
             }
         }
 
+        val beliefsFile = folderHandle.child("Beliefs.json")
+        if (beliefsFile.exists())
+            beliefs += createHashmap(jsonParser.getFromJson(Array<Belief>::class.java, beliefsFile))
+
+
         val nationsFile = folderHandle.child("Nations.json")
         if (nationsFile.exists()) {
             nations += createHashmap(jsonParser.getFromJson(Array<Nation>::class.java, nationsFile))
@@ -200,9 +210,8 @@ class Ruleset {
         }
     }
 
-    fun getEras(): List<String> {
-        return technologies.values.map { it.column!!.era }.distinct()
-    }
+    fun getEras(): List<String> = technologies.values.map { it.column!!.era }.distinct()
+    fun hasReligion() = beliefs.any()
 
     fun getEraNumber(era: String) = getEras().indexOf(era)
     fun getSummary(): String {
@@ -214,12 +223,39 @@ class Ruleset {
         if (buildings.isNotEmpty()) stringList.add(buildings.size.toString() + " Buildings")
         if (tileResources.isNotEmpty()) stringList.add(tileResources.size.toString() + " Resources")
         if (tileImprovements.isNotEmpty()) stringList.add(tileImprovements.size.toString() + " Improvements")
+        if (beliefs.isNotEmpty()) stringList.add(beliefs.size.toString() + " Beliefs")
         return stringList.joinToString()
     }
 
-
-    fun checkModLinks(): String {
+    /** Severity level of Mod RuleSet check */
+    enum class CheckModLinksStatus {OK, Warning, Error}
+    /** Result of a Mod RuleSet check */
+    // essentially a named Pair with a few shortcuts
+    class CheckModLinksResult(val status: CheckModLinksStatus, val message: String) {
+        // Empty constructor just makes the Complex Mod Check on the new game screen shorter 
+        constructor(): this(CheckModLinksStatus.OK, "")
+        // Constructor that joins lines
+        constructor(status: CheckModLinksStatus, lines: ArrayList<String>):
+                this (status,
+                    lines.joinToString("\n"))
+        // Constructor that auto-determines severity
+        constructor(warningCount: Int, lines: ArrayList<String>):
+                this (
+                    when {
+                        lines.isEmpty() -> CheckModLinksStatus.OK
+                        lines.size == warningCount -> CheckModLinksStatus.Warning
+                        else -> CheckModLinksStatus.Error
+                    },
+                    lines)
+        // Allows $this in format strings 
+        override fun toString() = message
+        // Readability shortcuts
+        fun isError() = status == CheckModLinksStatus.Error
+        fun isNotOK() = status != CheckModLinksStatus.OK
+    }
+    fun checkModLinks(): CheckModLinksResult {
         val lines = ArrayList<String>()
+        var warningCount = 0
 
         // Checks for all mods
         for (unit in units.values) {
@@ -227,7 +263,7 @@ class Ruleset {
                 lines += "${unit.name} upgrades to itself!"
             if (!unit.unitType.isCivilian() && unit.strength == 0)
                 lines += "${unit.name} is a military unit but has no assigned strength!"
-            if (unit.unitType.isRanged() && unit.rangedStrength == 0)
+            if (unit.unitType.isRanged() && unit.rangedStrength == 0 && "Cannot attack" !in unit.uniques)
                 lines += "${unit.name} is a ranged unit but has no assigned rangedStrength!"
         }
 
@@ -243,7 +279,7 @@ class Ruleset {
                 lines += "${building.name} must either have an explicit cost or reference an existing tech!"
         }
 
-        if (!modOptions.isBaseRuleset) return lines.joinToString("\n")
+        if (!modOptions.isBaseRuleset) return CheckModLinksResult(warningCount, lines)
 
 
         for (unit in units.values) {
@@ -278,6 +314,9 @@ class Ruleset {
                 lines += "${building.name} requires ${building.requiredBuildingInAllCities} in all cities which does not exist!"
             if (building.providesFreeBuilding != null && !buildings.containsKey(building.providesFreeBuilding!!))
                 lines += "${building.name} provides a free ${building.providesFreeBuilding} which does not exist!"
+            for (unique in building.uniqueObjects)
+                if (unique.placeholderText == "Creates a [] improvement on a specific tile" && !tileImprovements.containsKey(unique.params[0]))
+                    lines += "${building.name} creates a ${unique.params[0]} improvement which does not exist!"
         }
 
         for (resource in tileResources.values) {
@@ -304,13 +343,33 @@ class Ruleset {
                     lines += "${terrain.name} occurs on terrain $baseTerrain which does not exist!"
         }
 
+        val prereqsHashMap = HashMap<String,HashSet<String>>()
         for (tech in technologies.values) {
             for (prereq in tech.prerequisites) {
                 if (!technologies.containsKey(prereq))
                     lines += "${tech.name} requires tech $prereq which does not exist!"
+
+                fun getPrereqTree(technologyName: String): Set<String> {
+                    if (prereqsHashMap.containsKey(technologyName)) return prereqsHashMap[technologyName]!!
+                    val technology = technologies[technologyName]
+                    if (technology == null) return emptySet()
+                    val techHashSet = HashSet<String>()
+                    techHashSet += technology.prerequisites
+                    for (prereq in technology.prerequisites)
+                        techHashSet += getPrereqTree(prereq)
+                    prereqsHashMap[technologyName] = techHashSet
+                    return techHashSet
+                }
+
+                if (tech.prerequisites.asSequence().filterNot { it == prereq }
+                        .any { getPrereqTree(it).contains(prereq) }){
+                    lines += "No need to add $prereq as a prerequisite of ${tech.name} - it is already implicit from the other prerequisites!"
+                    warningCount++
+                }
             }
         }
-        return lines.joinToString("\n")
+
+        return CheckModLinksResult(warningCount, lines)
     }
 }
 
@@ -355,7 +414,7 @@ object RulesetCache :HashMap<String,Ruleset>() {
 
     fun getBaseRuleset() = this[BaseRuleset.Civ_V_Vanilla.fullName]!!.clone() // safeguard, o no-one edits the base ruleset by mistake
 
-    fun getComplexRuleset(mods:LinkedHashSet<String>):Ruleset{
+    fun getComplexRuleset(mods: LinkedHashSet<String>): Ruleset {
         val newRuleset = Ruleset()
         val loadedMods = mods.filter { containsKey(it) }.map { this[it]!! }
         if (loadedMods.none { it.modOptions.isBaseRuleset })

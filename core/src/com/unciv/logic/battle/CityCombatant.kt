@@ -1,9 +1,9 @@
 package com.unciv.logic.battle
 
-import com.unciv.Constants
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.TileInfo
+import com.unciv.models.UncivSound
 import com.unciv.models.ruleset.unit.UnitType
 import kotlin.math.pow
 import kotlin.math.roundToInt
@@ -21,6 +21,7 @@ class CityCombatant(val city: CityInfo) : ICombatant {
     override fun isInvisible(): Boolean = false
     override fun canAttack(): Boolean = (!city.attackedThisTurn)
     override fun matchesCategory(category: String) = category == "City"
+    override fun getAttackSound() = UncivSound.Bombard
 
     override fun takeDamage(damage: Int) {
         city.health -= damage
@@ -38,7 +39,9 @@ class CityCombatant(val city: CityInfo) : ICombatant {
         var strength = 8f
         strength += (city.population.population / 5) * 2 // Each 5 pop gives 2 defence
         val cityTile = city.getCenterTile()
-        if (cityTile.isHill()) strength += 5
+        for (unique in cityTile.getAllTerrains().flatMap { it.uniqueObjects })
+            if (unique.placeholderText == "[] Strength for cities built on this terrain")
+                strength += unique.params[0].toInt()
         // as tech progresses so does city strength
         val techCount = getCivInfo().gameInfo.ruleSet.technologies.count()
         val techsPercentKnown: Float = if (techCount > 0) city.civInfo.tech.techsResearched.count().toFloat() / techCount else 0.5f // for mods with no tech

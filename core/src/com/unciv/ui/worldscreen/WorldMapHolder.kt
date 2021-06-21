@@ -35,30 +35,37 @@ import kotlin.concurrent.thread
 
 class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap: TileMap): ZoomableScrollPane() {
     internal var selectedTile: TileInfo? = null
-    val tileGroups = HashMap<TileInfo, List<WorldTileGroup>>()
+    private val tileGroups = HashMap<TileInfo, List<WorldTileGroup>>()
+
     //allWorldTileGroups exists to easily access all WordTileGroups
     //since tileGroup is a HashMap of Lists and getting all WordTileGroups
     //would need a double for loop
-    val allWorldTileGroups = ArrayList<WorldTileGroup>()
+    private val allWorldTileGroups = ArrayList<WorldTileGroup>()
 
-    val unitActionOverlays: ArrayList<Actor> = ArrayList()
+    private val unitActionOverlays: ArrayList<Actor> = ArrayList()
+
+    private val unitMovementPaths: HashMap<MapUnit, ArrayList<TileInfo>> = HashMap()
 
     init {
         if (Gdx.app.type == Application.ApplicationType.Desktop) this.setFlingTime(0f)
-        continousScrollingX = tileMap.mapParameters.worldWrap
+        continuousScrollingX = tileMap.mapParameters.worldWrap
     }
 
-    // Used to transfer data on the "move here" button that should be created, from the side thread to the main thread
-    class MoveHereButtonDto(val unitToTurnsToDestination: HashMap<MapUnit, Int>, val tileInfo: TileInfo)
+    // Interface for classes that contain the data required to draw a button
+    interface ButtonDto
+    // Contains the data required to draw a "move here" button
+    class MoveHereButtonDto(val unitToTurnsToDestination: HashMap<MapUnit, Int>, val tileInfo: TileInfo) : ButtonDto
+    // Contains the data required to draw a "swap with" button
+    class SwapWithButtonDto(val unit: MapUnit, val tileInfo: TileInfo) : ButtonDto
 
     internal fun addTiles() {
         val tileSetStrings = TileSetStrings()
         val daTileGroups = tileMap.values.map { WorldTileGroup(worldScreen, it, tileSetStrings) }
-        val tileGroupMap = TileGroupMap(daTileGroups, worldScreen.stage.width, continousScrollingX)
+        val tileGroupMap = TileGroupMap(daTileGroups, worldScreen.stage.width, worldScreen.stage.height, continuousScrollingX)
         val mirrorTileGroups = tileGroupMap.getMirrorTiles()
 
         for (tileGroup in daTileGroups) {
-            if (continousScrollingX){
+            if (continuousScrollingX) {
                 val mirrorTileGroupLeft = mirrorTileGroups[tileGroup.tileInfo]!!.first
                 val mirrorTileGroupRight = mirrorTileGroups[tileGroup.tileInfo]!!.second
 
@@ -91,6 +98,14 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
                     thread {
                         val tile = tileGroup.tileInfo
 
+                        if (worldScreen.bottomUnitTable.selectedUnitIsSwapping) {
+                            if (unit.movement.canUnitSwapTo(tile)) {
+                                swapMoveUnitToTargetTile(unit, tile)
+                            }
+                            // If we are in unit-swapping mode, we don't want to move or attack
+                            return@thread
+                        }
+
                         val attackableTile = BattleHelper.getAttackableEnemies(unit, unit.movement.getDistanceToTiles())
                                 .firstOrNull { it.tileToAttack == tileGroup.tileInfo }
                         if (unit.canAttack() && attackableTile != null) {
@@ -104,7 +119,6 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
                             moveUnitToTargetTile(listOf(unit), tile)
                             return@thread
                         }
-
                     }
                 }
             })
@@ -123,27 +137,40 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
     private fun onTileClicked(tileInfo: TileInfo) {
         removeUnitActionOverlay()
         selectedTile = tileInfo
+        unitMovementPaths.clear()
 
         val unitTable = worldScreen.bottomUnitTable
         val previousSelectedUnits = unitTable.selectedUnits.toList() // create copy
         val previousSelectedCity = unitTable.selectedCity
+        val previousSelectedUnitIsSwapping = unitTable.selectedUnitIsSwapping
         unitTable.tileSelected(tileInfo)
         val newSelectedUnit = unitTable.selectedUnit
 
         if (previousSelectedUnits.isNotEmpty() && previousSelectedUnits.any { it.getTile() != tileInfo }
                 && worldScreen.isPlayersTurn
-                && previousSelectedUnits.any {
-                    it.movement.canMoveTo(tileInfo) ||
-                            it.movement.isUnknownTileWeShouldAssumeToBePassable(tileInfo) && !it.type.isAirUnit()
-                }) {
-            // this can take a long time, because of the unit-to-tile calculation needed, so we put it in a different thread
-            addTileOverlaysWithUnitMovement(previousSelectedUnits, tileInfo)
+                && (
+                    if (previousSelectedUnitIsSwapping)
+                        previousSelectedUnits.first().movement.canUnitSwapTo(tileInfo)
+                    else
+                        previousSelectedUnits.any {
+                            it.movement.canMoveTo(tileInfo) ||
+                                    it.movement.isUnknownTileWeShouldAssumeToBePassable(tileInfo) && !it.type.isAirUnit()
+                        }
+                )) {
+            if (previousSelectedUnitIsSwapping) {
+                addTileOverlaysWithUnitSwapping(previousSelectedUnits.first(), tileInfo)
+            }
+            else {
+                // this can take a long time, because of the unit-to-tile calculation needed, so we put it in a different thread
+                addTileOverlaysWithUnitMovement(previousSelectedUnits, tileInfo)
+
+            }
         } else addTileOverlays(tileInfo) // no unit movement but display the units in the tile etc.
 
 
         if (newSelectedUnit == null || newSelectedUnit.type == UnitType.Civilian) {
             val unitsInTile = selectedTile!!.getUnits()
-            if (previousSelectedCity != null && !previousSelectedCity.attackedThisTurn
+            if (previousSelectedCity != null && previousSelectedCity.canBombard()
                     && selectedTile!!.getTilesInDistance(2).contains(previousSelectedCity.getCenterTile())
                     && unitsInTile.any()
                     && unitsInTile.first().civInfo.isAtWarWith(worldScreen.viewingCiv)) {
@@ -156,7 +183,7 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
     }
 
 
-    fun moveUnitToTargetTile(selectedUnits: List<MapUnit>, targetTile: TileInfo) {
+    private fun moveUnitToTargetTile(selectedUnits: List<MapUnit>, targetTile: TileInfo) {
         // this can take a long time, because of the unit-to-tile calculation needed, so we put it in a different thread
         // THIS PART IS REALLY ANNOYING
         // So lets say you have 2 units you want to move in the same direction, right
@@ -175,6 +202,8 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
             try {
                 tileToMoveTo = selectedUnit.movement.getTileToMoveToThisTurn(targetTile)
             } catch (ex: Exception) {
+                println("Exception in getTileToMoveToThisTurn: ${ex.message}")
+                ex.printStackTrace()
                 return@thread
             } // can't move here
 
@@ -197,12 +226,28 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
                     if (selectedUnits.size > 1) { // We have more tiles to move
                         moveUnitToTargetTile(selectedUnits.subList(1, selectedUnits.size), targetTile)
                     } else removeUnitActionOverlay() //we're done here
-                } catch (e: Exception) {
+                } catch (ex: Exception) {
+                    println("Exception in moveUnitToTargetTile: ${ex.message}")
+                    ex.printStackTrace()
                 }
             }
         }
     }
 
+    private fun swapMoveUnitToTargetTile(selectedUnit: MapUnit, targetTile: TileInfo) {
+        selectedUnit.movement.swapMoveToTile(targetTile)
+
+        if (selectedUnit.action == Constants.unitActionExplore || selectedUnit.isMoving())
+            selectedUnit.action = null // remove explore on manual swap-move
+
+        // Perhaps something like a swish-swoosh would be clearer
+        Sounds.play(UncivSound.Whoosh)
+
+        if (selectedUnit.currentMovement > 0) worldScreen.bottomUnitTable.selectUnit(selectedUnit)
+
+        worldScreen.shouldUpdate = true
+        removeUnitActionOverlay()
+    }
 
     private fun addTileOverlaysWithUnitMovement(selectedUnits: List<MapUnit>, tileInfo: TileInfo) {
         thread(name = "TurnsToGetThere") {
@@ -214,10 +259,19 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
 
             val unitToTurnsToTile = HashMap<MapUnit, Int>()
             for (unit in selectedUnits) {
+                val shortestPath = ArrayList<TileInfo>()
                 val turnsToGetThere = if (unit.type.isAirUnit()) {
                     if (unit.movement.canReach(tileInfo)) 1
                     else 0
-                } else unit.movement.getShortestPath(tileInfo).size // this is what takes the most time, tbh
+                } else if (unit.action == Constants.unitActionParadrop) {
+                    if (unit.movement.canReach(tileInfo)) 1
+                    else 0
+                } else {
+                    // this is the most time-consuming call
+                    shortestPath.addAll(unit.movement.getShortestPath(tileInfo))
+                    shortestPath.size
+                }
+                unitMovementPaths[unit] = shortestPath
                 unitToTurnsToTile[unit] = turnsToGetThere
             }
 
@@ -229,7 +283,7 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
                     return@postRunnable
                 }
 
-                val turnsToGetThere = unitsWhoCanMoveThere.values.max()!!
+                val turnsToGetThere = unitsWhoCanMoveThere.values.maxOrNull()!!
 
                 if (UncivGame.Current.settings.singleTapMove && turnsToGetThere == 1) {
                     // single turn instant move
@@ -245,15 +299,37 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
                 }
                 worldScreen.shouldUpdate = true
             }
-
         }
     }
 
-    private fun addTileOverlays(tileInfo: TileInfo, moveHereDto: MoveHereButtonDto? = null) {
-        for (group in tileGroups[tileInfo]!!){
+    private fun addTileOverlaysWithUnitSwapping(selectedUnit: MapUnit, tileInfo: TileInfo) {
+        if (!selectedUnit.movement.canUnitSwapTo(tileInfo)) { // give the regular tile overlays with no unit swapping
+            addTileOverlays(tileInfo)
+            worldScreen.shouldUpdate = true
+            return
+        }
+        if (UncivGame.Current.settings.singleTapMove) {
+            swapMoveUnitToTargetTile(selectedUnit, tileInfo)
+        }
+        else {
+            // Add "swap with" button
+            val swapWithButtonDto = SwapWithButtonDto(selectedUnit, tileInfo)
+            addTileOverlays(tileInfo, swapWithButtonDto)
+        }
+        worldScreen.shouldUpdate = true
+    }
+
+    private fun addTileOverlays(tileInfo: TileInfo, buttonDto: ButtonDto? = null) {
+        for (group in tileGroups[tileInfo]!!) {
             val table = Table().apply { defaults().pad(10f) }
-            if (moveHereDto != null && worldScreen.canChangeState)
-                table.add(getMoveHereButton(moveHereDto))
+            if (buttonDto != null && worldScreen.canChangeState)
+                table.add(
+                    when (buttonDto) {
+                        is MoveHereButtonDto -> getMoveHereButton(buttonDto)
+                        is SwapWithButtonDto -> getSwapWithButton(buttonDto)
+                        else -> null
+                    }
+                )
 
             val unitList = ArrayList<MapUnit>()
             if (tileInfo.isCityCenter()
@@ -292,8 +368,7 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
         val numberCircle = ImageGetter.getCircle().apply { width = size / 2; height = size / 2;color = Color.BLUE }
         moveHereButton.addActor(numberCircle)
 
-
-        moveHereButton.addActor(dto.unitToTurnsToDestination.values.max()!!.toLabel().apply { center(numberCircle) })
+        moveHereButton.addActor(dto.unitToTurnsToDestination.values.maxOrNull()!!.toLabel().apply { center(numberCircle) })
         val firstUnit = dto.unitToTurnsToDestination.keys.first()
         val unitIcon = if (dto.unitToTurnsToDestination.size == 1) UnitGroup(firstUnit, size / 2)
         else dto.unitToTurnsToDestination.size.toString().toLabel(fontColor = firstUnit.civInfo.nation.getInnerColor()).apply { setAlignment(Align.center) }
@@ -312,6 +387,27 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
             }
         }
         return moveHereButton
+    }
+
+    private fun getSwapWithButton(dto: SwapWithButtonDto): Group {
+        val size = 60f
+        val swapWithButton = Group().apply { width = size;height = size; }
+        swapWithButton.addActor(ImageGetter.getCircle().apply { width = size; height = size })
+        swapWithButton.addActor(ImageGetter.getImage("OtherIcons/Swap")
+            .apply { color = Color.BLACK; width = size / 2; height = size / 2; center(swapWithButton) })
+
+        val unitIcon = UnitGroup(dto.unit, size / 2)
+        unitIcon.y = size - unitIcon.height
+        swapWithButton.addActor(unitIcon)
+
+        swapWithButton.onClick(UncivSound.Silent) {
+            UncivGame.Current.settings.addCompletedTutorialTask("Move unit")
+            if (dto.unit.type.isAirUnit())
+                UncivGame.Current.settings.addCompletedTutorialTask("Move an air unit")
+            swapMoveUnitToTargetTile(dto.unit, dto.tileInfo)
+        }
+
+        return swapWithButton
     }
 
 
@@ -374,30 +470,52 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
             }
         }
 
-        for (group in tileGroups[selectedTile]!!) {
-            group.showCircle(Color.WHITE)
-        }
+        // Same as below - randomly, tileGroups doesn't seem to contain the selected tile, and this doesn't seem duplicatable
+        val worldTileGroupsForSelectedTile = tileGroups[selectedTile]
+        if (worldTileGroupsForSelectedTile != null)
+            for (group in worldTileGroupsForSelectedTile)
+                group.showCircle(Color.WHITE)
 
         zoom(scaleX) // zoom to current scale, to set the size of the city buttons after "next turn"
     }
 
     private fun updateTilegroupsForSelectedUnit(unit: MapUnit, playerViewableTilePositions: HashSet<Vector2>) {
-        val tileGroup = tileGroups[unit.getTile()]?: return
+        val tileGroup = tileGroups[unit.getTile()] ?: return
         // Entirely unclear when this happens, but this seems to happen since version 520 (3.12.9)
         // so maybe has to do with the construction list being asyc?
-        for (group in tileGroup){
+        for (group in tileGroup) {
             group.selectUnit(unit)
         }
 
+        // Fade out less relevant images if a military unit is selected
+        val fadeout = if (unit.type.isCivilian()) 1f
+        else 0.5f
+        for (tile in allWorldTileGroups) {
+            if (tile.icons.populationIcon != null) tile.icons.populationIcon!!.color.a = fadeout
+            if (tile.icons.improvementIcon != null && tile.tileInfo.improvement != Constants.barbarianEncampment
+                && tile.tileInfo.improvement != Constants.ancientRuins)
+                tile.icons.improvementIcon!!.color.a = fadeout
+            if (tile.resourceImage != null) tile.resourceImage!!.color.a = fadeout
+        }
+
+        if (worldScreen.bottomUnitTable.selectedUnitIsSwapping) {
+            val unitSwappableTiles = unit.movement.getUnitSwappableTiles()
+            val swapUnitsTileOverlayColor = Color.PURPLE
+            for (tile in unitSwappableTiles)  {
+                for (tileToColor in tileGroups[tile]!!) {
+                    tileToColor.showCircle(swapUnitsTileOverlayColor,
+                        if (UncivGame.Current.settings.singleTapMove) 0.7f else 0.3f)
+                }
+            }
+            return // We don't want to show normal movement or attack overlays in unit-swapping mode
+        }
+
         val isAirUnit = unit.type.isAirUnit()
-        val tilesInMoveRange =
-                if (isAirUnit)
-                    unit.getTile().getTilesInDistanceRange(IntRange(1, unit.getRange() * 2))
-                else
-                    unit.movement.getDistanceToTiles().keys.asSequence()
+        val moveTileOverlayColor = if (unit.action == Constants.unitActionParadrop) Color.BLUE else Color.WHITE
+        val tilesInMoveRange = unit.movement.getReachableTilesInCurrentTurn()
 
         for (tile in tilesInMoveRange) {
-            for (tileToColor in tileGroups[tile]!!){
+            for (tileToColor in tileGroups[tile]!!) {
                 if (isAirUnit)
                     if (tile.aerialDistanceTo(unit.getTile()) <= unit.getRange()) {
                         // The tile is within attack range
@@ -408,9 +526,23 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
                     }
                 if (unit.movement.canMoveTo(tile) ||
                         unit.movement.isUnknownTileWeShouldAssumeToBePassable(tile) && !unit.type.isAirUnit())
-                    tileToColor.showCircle(Color.WHITE,
+                    tileToColor.showCircle(moveTileOverlayColor,
                             if (UncivGame.Current.settings.singleTapMove || isAirUnit) 0.7f else 0.3f)
             }
+        }
+
+        // Movement paths
+        if (unitMovementPaths.containsKey(unit)) {
+            for (tile in unitMovementPaths[unit]!!) {
+                for (tileToColor in tileGroups[tile]!!)
+                    tileToColor.showCircle(Color.SKY, 0.8f)
+            }
+        }
+
+        if(unit.isMoving()) {
+            val destinationTileGroups = tileGroups[unit.getMovementDestination()]!!
+            for (tileGroup in destinationTileGroups)
+                tileGroup.showCircle(Color.WHITE, 0.7f)
         }
 
         val attackableTiles: List<AttackableTile> = if (unit.type.isCivilian()) listOf()
@@ -424,32 +556,20 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
         }
 
         for (attackableTile in attackableTiles) {
-            for (tileGroup in tileGroups[attackableTile.tileToAttack]!!){
-                tileGroup.showCircle(colorFromRGB(237, 41, 57))
-                tileGroup.showCrosshair(
+            for (tileGroupToAttack in tileGroups[attackableTile.tileToAttack]!!) {
+                tileGroupToAttack.showCircle(colorFromRGB(237, 41, 57))
+                tileGroupToAttack.showCrosshair(
                         // the targets which cannot be attacked without movements shown as orange-ish
                         if (attackableTile.tileToAttackFrom != unit.currentTile)
                             colorFromRGB(255, 75, 0)
                         else Color.RED
                 )
             }
-
-        }
-
-        // Fade out less relevant images if a military unit is selected
-        val fadeout = if (unit.type.isCivilian()) 1f
-        else 0.5f
-        for (tile in allWorldTileGroups) {
-            if (tile.icons.populationIcon != null) tile.icons.populationIcon!!.color.a = fadeout
-            if (tile.icons.improvementIcon != null && tile.tileInfo.improvement != Constants.barbarianEncampment
-                    && tile.tileInfo.improvement != Constants.ancientRuins)
-                tile.icons.improvementIcon!!.color.a = fadeout
-            if (tile.resourceImage != null) tile.resourceImage!!.color.a = fadeout
         }
     }
 
     private fun updateTilegroupsForSelectedCity(city: CityInfo, playerViewableTilePositions: HashSet<Vector2>) {
-        if (city.attackedThisTurn) return
+        if (!city.canBombard()) return
 
         val attackableTiles = UnitAutomation.getBombardTargets(city)
                 .filter { (UncivGame.Current.viewEntireMapForDebug || playerViewableTilePositions.contains(it.position)) }
@@ -462,8 +582,15 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
     }
 
     var blinkAction: Action? = null
-    fun setCenterPosition(vector: Vector2, immediately: Boolean = false, selectUnit: Boolean = true) {
-        val tileGroup = allWorldTileGroups.firstOrNull { it.tileInfo.position == vector } ?: return
+
+    /** Scrolls the world map to specified coordinates.
+     * @param vector Position to center on
+     * @param immediately Do so without animation
+     * @param selectUnit Select a unit at the destination
+     * @return `true` if scroll position was changed, `false` otherwise
+     */
+    fun setCenterPosition(vector: Vector2, immediately: Boolean = false, selectUnit: Boolean = true): Boolean {
+        val tileGroup = allWorldTileGroups.firstOrNull { it.tileInfo.position == vector } ?: return false
         selectedTile = tileGroup.tileInfo
         if (selectUnit)
             worldScreen.bottomUnitTable.tileSelected(selectedTile!!)
@@ -477,6 +604,8 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
 
         // Here it's the same, only the Y axis is inverted - when at 0 we're at the top, not bottom - so we invert it back.
         val finalScrollY = maxY - (tileGroup.y + tileGroup.width / 2 - height / 2)
+
+        if (finalScrollX == originalScrollX && finalScrollY == originalScrollY) return false
 
         if (immediately) {
             scrollX = finalScrollX
@@ -504,6 +633,7 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
         addAction(blinkAction) // Don't set it on the group because it's an actionlss group
 
         worldScreen.shouldUpdate = true
+        return true
     }
 
     override fun zoom(zoomScale: Float) {
@@ -522,7 +652,7 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
             }
     }
 
-    fun removeUnitActionOverlay(){
+    fun removeUnitActionOverlay() {
         for (overlay in unitActionOverlays)
             overlay.remove()
         unitActionOverlays.clear()

@@ -4,17 +4,16 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
-import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.logic.GameInfo
 import com.unciv.logic.GameSaver
 import com.unciv.logic.GameStarter
-import com.unciv.logic.map.mapgenerator.MapGenerator
 import com.unciv.logic.map.MapParameters
 import com.unciv.logic.map.MapSize
+import com.unciv.logic.map.MapSizeNew
 import com.unciv.logic.map.MapType
+import com.unciv.logic.map.mapgenerator.MapGenerator
 import com.unciv.models.ruleset.RulesetCache
-import com.unciv.models.translations.tr
 import com.unciv.ui.MultiplayerScreen
 import com.unciv.ui.mapeditor.*
 import com.unciv.ui.newgamescreen.GameSetupInfo
@@ -22,20 +21,41 @@ import com.unciv.ui.newgamescreen.NewGameScreen
 import com.unciv.ui.pickerscreens.ModManagementScreen
 import com.unciv.ui.saves.LoadGameScreen
 import com.unciv.ui.utils.*
-import com.unciv.ui.worldscreen.mainmenu.OptionsPopup
+import com.unciv.ui.utils.StaticTooltip.Companion.addStaticTip
 import kotlin.concurrent.thread
 
 class MainMenuScreen: CameraStageBaseScreen() {
     private val autosave = "Autosave"
     private val backgroundTable = Table().apply { background=ImageGetter.getBackground(Color.WHITE) }
+    private val singleColumn = isCrampedPortrait()
 
-    private fun getTableBlock(text: String, icon: String, function: () -> Unit): Table {
+    /** Create one **Main Menu Button** including onClick/key binding
+     *  @param text      The text to display on the button
+     *  @param icon      The path of the icon to display on the button
+     *  @param key       Optional key binding (limited to Char subset of [KeyCharAndCode], which is OK for the main menu)
+     *  @param function  Action to invoke when the button is activated
+     */
+    private fun getMenuButton(
+        text: String,
+        icon: String,
+        key: Char? = null,
+        keyVisualOnly: Boolean = false,
+        function: () -> Unit
+    ): Table {
         val table = Table().pad(15f, 30f, 15f, 30f)
-        table.background = ImageGetter.getRoundedEdgeTableBackground(ImageGetter.getBlue())
+        table.background = ImageGetter.getRoundedEdgeRectangle(ImageGetter.getBlue())
         table.add(ImageGetter.getImage(icon)).size(50f).padRight(30f)
         table.add(text.toLabel().setFontSize(30)).minWidth(200f)
+
         table.touchable = Touchable.enabled
         table.onClick(function)
+
+        if (key != null) {
+            if (!keyVisualOnly)
+                keyPressDispatcher[key] = function
+            table.addStaticTip(key, 32f)
+        }
+        
         table.pack()
         return table
     }
@@ -51,7 +71,7 @@ class MainMenuScreen: CameraStageBaseScreen() {
 
         thread(name = "ShowMapBackground") {
             val newMap = MapGenerator(RulesetCache.getBaseRuleset())
-                    .generateMap(MapParameters().apply { size = MapSize.Small; type = MapType.default })
+                    .generateMap(MapParameters().apply { mapSize = MapSizeNew(MapSize.Small); type = MapType.default })
             Gdx.app.postRunnable { // for GL context
                 ImageGetter.setNewRuleset(RulesetCache.getBaseRuleset())
                 val mapHolder = EditorMapHolder(MapEditorScreen(), newMap)
@@ -59,85 +79,74 @@ class MainMenuScreen: CameraStageBaseScreen() {
                         Actions.fadeOut(0f),
                         Actions.run {
                             mapHolder.apply {
-                                addTiles(30f)
+                                addTiles(this@MainMenuScreen.stage.width, this@MainMenuScreen.stage.height)
                                 touchable = Touchable.disabled
-                                setScale(1f)
-                                center(this@MainMenuScreen.stage)
-                                layout()
                             }
-                            backgroundTable.add(mapHolder).size(stage.width, stage.height)
+                            backgroundTable.addActor(mapHolder)
+                            mapHolder.center(backgroundTable)
                         },
                         Actions.fadeIn(0.3f)
                 ))
-
             }
         }
 
-        val column1 = Table().apply { defaults().pad(10f) }
-        val column2 = Table().apply { defaults().pad(10f) }
+        val column1 = Table().apply { defaults().pad(10f).fillX() }
+        val column2 = if(singleColumn) column1 else Table().apply { defaults().pad(10f).fillX() }
+
         val autosaveGame = GameSaver.getSave(autosave, false)
         if (autosaveGame.exists()) {
-            val resumeTable = getTableBlock("Resume","OtherIcons/Resume") { autoLoadGame() }
+            val resumeTable = getMenuButton("Resume","OtherIcons/Resume", 'r')
+                { autoLoadGame() }
             column1.add(resumeTable).row()
         }
 
-        val quickstartTable = getTableBlock("Quickstart", "OtherIcons/Quickstart") { quickstartNewGame() }
+        val quickstartTable = getMenuButton("Quickstart", "OtherIcons/Quickstart", 'q')
+            { quickstartNewGame() }
         column1.add(quickstartTable).row()
 
-        val newGameButton = getTableBlock("Start new game", "OtherIcons/New") {
-            game.setScreen(NewGameScreen(this))
-            dispose()
-        }
+        val newGameButton = getMenuButton("Start new game", "OtherIcons/New", 'n')
+            { game.setScreen(NewGameScreen(this)) }
         column1.add(newGameButton).row()
 
         if (GameSaver.getSaves(false).any()) {
-            val loadGameTable = getTableBlock("Load game", "OtherIcons/Load")
+            val loadGameTable = getMenuButton("Load game", "OtherIcons/Load", 'l')
                 { game.setScreen(LoadGameScreen(this)) }
             column1.add(loadGameTable).row()
         }
 
-        val multiplayerTable = getTableBlock("Multiplayer", "OtherIcons/Multiplayer")
+        val multiplayerTable = getMenuButton("Multiplayer", "OtherIcons/Multiplayer", 'm')
             { game.setScreen(MultiplayerScreen(this)) }
         column2.add(multiplayerTable).row()
 
-        val mapEditorScreenTable = getTableBlock("Map editor", "OtherIcons/MapEditor")
+        val mapEditorScreenTable = getMenuButton("Map editor", "OtherIcons/MapEditor", 'e')
             { if(stage.actors.none { it is MapEditorMainScreenPopup }) MapEditorMainScreenPopup(this) }
         column2.add(mapEditorScreenTable).row()
 
-        val modsTable = getTableBlock("Mods", "OtherIcons/Mods")
+        val modsTable = getMenuButton("Mods", "OtherIcons/Mods", 'd')
             { game.setScreen(ModManagementScreen()) }
         column2.add(modsTable).row()
 
-
-
-        val optionsTable = getTableBlock("Options", "OtherIcons/Options")
-            { OptionsPopup(this).open() }
+        val optionsTable = getMenuButton("Options", "OtherIcons/Options", 'o')
+            { this.openOptionsPopup() }
         column2.add(optionsTable).row()
 
 
         val table=Table().apply { defaults().pad(10f) }
         table.add(column1)
-        table.add(column2)
+        if (!singleColumn) table.add(column2)
         table.pack()
 
-        val scroll = ScrollPane(table)
-        scroll.setSize(table.width, stage.height * 0.98f)
-        scroll.center(stage)
-        scroll.setOverscroll(false, false)
-        stage.addActor(scroll)
+        val scrollPane = AutoScrollPane(table)
+        scrollPane.setFillParent(true)
+        stage.addActor(scrollPane)
+        table.center(scrollPane)
 
         onBackButtonClicked {
             if(hasOpenPopups()) {
                 closeAllPopups()
                 return@onBackButtonClicked
             }
-            val promptWindow = Popup(this)
-            promptWindow.addGoodSizedLabel("Do you want to exit the game?".tr())
-            promptWindow.row()
-            promptWindow.addButton("Yes") { Gdx.app.exit() }
-            promptWindow.addButton("No") { promptWindow.close() }
-            // show the dialog
-            promptWindow.open()     // true = always on top
+            ExitGamePopup(this)
         }
     }
 
@@ -145,33 +154,40 @@ class MainMenuScreen: CameraStageBaseScreen() {
     /** Shows the [Popup] with the map editor initialization options */
     class MapEditorMainScreenPopup(screen: MainMenuScreen):Popup(screen){
         init{
+            // Using MainMenuScreen.getMenuButton - normally that would place key bindings into the
+            // screen's key dispatcher, but we need them in this Popup's dispatcher instead.
+            // Thus the crutch with keyVisualOnly, we assign the key binding here but want
+            // The button to install the tooltip handler anyway.
+
             defaults().pad(10f)
 
             val tableBackground = ImageGetter.getBackground(colorFromRGB(29, 102, 107))
 
-            val newMapButton = screen.getTableBlock("New map", "OtherIcons/New") {
-                screen.game.setScreen(NewMapScreen())
+            val newMapAction = {
+                val newMapScreen = NewMapScreen()
+                newMapScreen.setDefaultCloseAction(MainMenuScreen())
+                screen.game.setScreen(newMapScreen)
                 screen.dispose()
             }
+            val newMapButton = screen.getMenuButton("New map", "OtherIcons/New", 'n', true, newMapAction) 
             newMapButton.background = tableBackground
             add(newMapButton).row()
+            keyPressDispatcher['n'] = newMapAction 
 
-            val loadMapButton = screen.getTableBlock("Load map", "OtherIcons/Load") {
-                val loadMapScreen = SaveAndLoadMapScreen(null)
-                loadMapScreen.closeButton.isVisible = true
-                loadMapScreen.closeButton.onClick {
-                    screen.game.setScreen(MainMenuScreen())
-                    loadMapScreen.dispose()
-                }
+            val loadMapAction = {
+                val loadMapScreen = SaveAndLoadMapScreen(null, false, screen)
+                loadMapScreen.setDefaultCloseAction(MainMenuScreen())
                 screen.game.setScreen(loadMapScreen)
                 screen.dispose()
             }
-
+            val loadMapButton = screen.getMenuButton("Load map", "OtherIcons/Load", 'l', true, loadMapAction) 
             loadMapButton.background = tableBackground
             add(loadMapButton).row()
+            keyPressDispatcher['l'] = loadMapAction
 
-            add(screen.getTableBlock("Close", "OtherIcons/Close") { close() }
+            add(screen.getMenuButton("Close", "OtherIcons/Close") { close() }
                     .apply { background=tableBackground })
+            keyPressDispatcher[KeyCharAndCode.BACK] = { close() }
 
             open(force = true)
         }
@@ -179,21 +195,29 @@ class MainMenuScreen: CameraStageBaseScreen() {
 
 
     private fun autoLoadGame() {
-        ToastPopup("Loading...", this)
+        val loadingPopup = Popup(this)
+        loadingPopup.addGoodSizedLabel("Loading...")
+        loadingPopup.open()
         thread { // Load game from file to class on separate thread to avoid ANR...
             var savedGame: GameInfo
             try {
                 savedGame = GameSaver.loadGameByName(autosave)
             } catch (outOfMemory: OutOfMemoryError) {
-                Gdx.app.postRunnable { ToastPopup("Not enough memory on phone to load game!", this) }
+                Gdx.app.postRunnable {
+                    loadingPopup.close()
+                    ToastPopup("Not enough memory on phone to load game!", this)
+                }
                 return@thread
             } catch (ex: Exception) { // silent fail if we can't read the autosave for any reason - try to load the last autosave by turn number first
                 // This can help for situations when the autosave is corrupted
                 try {
                     val autosaves = GameSaver.getSaves().filter { it.name() != autosave && it.name().startsWith(autosave) }
-                    savedGame = GameSaver.loadGameFromFile(autosaves.maxBy { it.lastModified() }!!)
+                    savedGame = GameSaver.loadGameFromFile(autosaves.maxByOrNull { it.lastModified() }!!)
                 } catch (ex: Exception) {
-                    Gdx.app.postRunnable { ToastPopup("Cannot resume game!", this) }
+                    Gdx.app.postRunnable {
+                        loadingPopup.close()
+                        ToastPopup("Cannot resume game!", this)
+                    }
                     return@thread
                 }
             }
@@ -203,6 +227,7 @@ class MainMenuScreen: CameraStageBaseScreen() {
                     game.loadGame(savedGame)
                     dispose()
                 } catch (outOfMemory: OutOfMemoryError) {
+                    loadingPopup.close()
                     ToastPopup("Not enough memory on phone to load game!", this)
                 }
 
@@ -215,4 +240,9 @@ class MainMenuScreen: CameraStageBaseScreen() {
         game.loadGame(newGame)
     }
 
+    override fun resize(width: Int, height: Int) {
+        if (stage.viewport.screenWidth != width || stage.viewport.screenHeight != height) {
+            game.setScreen(MainMenuScreen())
+        }
+    }
 }

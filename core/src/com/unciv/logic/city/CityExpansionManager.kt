@@ -1,7 +1,9 @@
 package com.unciv.logic.city
 
-import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.math.Vector2
 import com.unciv.logic.automation.Automation
+import com.unciv.logic.civilization.LocationAction
+import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.map.TileInfo
 import com.unciv.ui.utils.withItem
 import com.unciv.ui.utils.withoutItem
@@ -37,11 +39,7 @@ class CityExpansionManager {
             if (cityInfo.matchesFilter(unique.params[1]))
                 cultureToNextTile *= (100 - unique.params[0].toFloat()) / 100
         }
-        // Deprecated as of 3.12.10 - replaced with "-[]% Culture cost of acquiring tiles []", either [in capital] or [in this city] or [in all cities]
-        if (cityInfo.civInfo.hasUnique("Cost of acquiring new tiles reduced by 25%"))
-            cultureToNextTile *= 0.75 //Speciality of Angkor Wat
-        if (cityInfo.containsBuildingUnique("Culture and Gold costs of acquiring new tiles reduced by 25% in this city"))
-            cultureToNextTile *= 0.75 // Specialty of Krepost
+
         if (cityInfo.civInfo.hasUnique("Increased rate of border expansion")) cultureToNextTile *= 0.75
 
         return cultureToNextTile.roundToInt()
@@ -53,7 +51,7 @@ class CityExpansionManager {
         class NotEnoughGoldToBuyTileException : Exception()
         if (cityInfo.civInfo.gold < goldCost && !cityInfo.civInfo.gameInfo.gameParameters.godMode)
             throw NotEnoughGoldToBuyTileException()
-        cityInfo.civInfo.gold -= goldCost
+        cityInfo.civInfo.addGold(-goldCost)
         takeOwnership(tileInfo)
     }
 
@@ -66,13 +64,6 @@ class CityExpansionManager {
             if (cityInfo.matchesFilter(unique.params[1]))
                 cost *= (100 - unique.params[0].toFloat()) / 100
         }
-        // Deprecated as of 3.12.10 - replaced with "-[]% Gold cost of acquiring tiles []", either [in capital] or [in this city] or [in all cities]
-        if (cityInfo.civInfo.hasUnique("Cost of acquiring new tiles reduced by 25%"))
-            cost *= 0.75 //Speciality of Angkor Wat
-        if (cityInfo.containsBuildingUnique("Culture and Gold costs of acquiring new tiles reduced by 25% in this city"))
-            cost *= 0.75 // Specialty of Krepost
-        if (cityInfo.civInfo.hasUnique("-50% cost when purchasing tiles"))
-            cost /= 2
         return cost.roundToInt()
     }
 
@@ -84,7 +75,7 @@ class CityExpansionManager {
                         it.getOwner() == null
                                 && it.neighbors.any { tile -> tile.getCity() == cityInfo }
                     }
-            val chosenTile = tiles.maxBy { Automation.rankTile(it, cityInfo.civInfo) }
+            val chosenTile = tiles.maxByOrNull { Automation.rankTile(it, cityInfo.civInfo) }
             if (chosenTile != null)
                 return chosenTile
         }
@@ -106,16 +97,21 @@ class CityExpansionManager {
             takeOwnership(tile)
     }
 
-    private fun addNewTileWithCulture(): Boolean {
+    private fun addNewTileWithCulture(): Vector2? {
         val chosenTile = chooseNewTileToOwn()
         if (chosenTile != null) {
             cultureStored -= getCultureToNextTile()
             takeOwnership(chosenTile)
-            return true
+            return chosenTile.position
         }
-        return false
+        return null
     }
 
+    /**
+     * Removes one tile from this city's owned tiles, unconditionally, and updates dependent
+     * things like worked tiles, locked tiles, and stats.
+     * @param tileInfo The tile to relinquish
+     */
     fun relinquishOwnership(tileInfo: TileInfo) {
         cityInfo.tiles = cityInfo.tiles.withoutItem(tileInfo.position)
         for (city in cityInfo.civInfo.cities) {
@@ -133,6 +129,14 @@ class CityExpansionManager {
         cityInfo.cityStats.update()
     }
 
+    /**
+     * Takes one tile into possession of this city, either unowned or owned by any other city.
+     *
+     * Also manages consequences like auto population reassign, stats, and displacing units
+     * that are no longer allowed on that tile.
+     *
+     * @param tileInfo The tile to take over
+     */
     fun takeOwnership(tileInfo: TileInfo) {
         if (tileInfo.isCityCenter()) throw Exception("What?!")
         if (tileInfo.getCity() != null)
@@ -144,7 +148,7 @@ class CityExpansionManager {
         cityInfo.civInfo.updateDetailedCivResources()
         cityInfo.cityStats.update()
 
-        for (unit in tileInfo.getUnits().toList()) // tolisted because we're modifying
+        for (unit in tileInfo.getUnits().toList()) // toListed because we're modifying
             if (!unit.civInfo.canEnterTiles(cityInfo.civInfo))
                 unit.movement.teleportToClosestMoveableTile()
 
@@ -154,8 +158,11 @@ class CityExpansionManager {
     fun nextTurn(culture: Float) {
         cultureStored += culture.toInt()
         if (cultureStored >= getCultureToNextTile()) {
-            if (addNewTileWithCulture())
-                cityInfo.civInfo.addNotification("[" + cityInfo.name + "] has expanded its borders!", cityInfo.location, Color.PURPLE)
+            val location = addNewTileWithCulture()
+            if (location != null) {
+                val locations = LocationAction(listOf(location, cityInfo.location))
+                cityInfo.civInfo.addNotification("[" + cityInfo.name + "] has expanded its borders!", locations, NotificationIcon.Culture)
+            }
         }
     }
 

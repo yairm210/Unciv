@@ -16,7 +16,11 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
 
     private fun getUnitMaintenance(): Int {
         val baseUnitCost = 0.5f
-        val freeUnits = 3
+        var freeUnits = 3
+        for (unique in civInfo.getMatchingUniques("[] units cost no maintenance")) {
+            freeUnits += unique.params[0].toInt()
+        }
+        
         var unitsToPayFor = civInfo.getCivUnits()
         if (civInfo.hasUnique("Units in cities cost no Maintenance"))
         // Only land military units can truly "garrison"
@@ -30,7 +34,7 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
 
         for (unique in civInfo.getMatchingUniques("-[]% [] unit maintenance costs")) {
             val numberOfUnitsWithDiscount = min(numberOfUnitsToPayFor, unitsToPayFor.count { it.matchesFilter(unique.params[1]) }.toFloat())
-            numberOfUnitsToPayFor -= numberOfUnitsWithDiscount * unique.params[0].toFloat() / 100
+            numberOfUnitsToPayFor -= numberOfUnitsWithDiscount * unique.params[0].toFloat() / 100f
         }
 
         val turnLimit = BASE_GAME_DURATION_TURNS * civInfo.gameInfo.gameParameters.gameSpeed.modifier
@@ -39,7 +43,15 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
         cost = cost.pow(1 + gameProgress / 3) // Why 3? To spread 1 to 1.33
         if (!civInfo.isPlayerCivilization())
             cost *= civInfo.gameInfo.getDifficulty().aiUnitMaintenanceModifier
-        if (civInfo.hasUnique("-33% unit upkeep costs")) cost *= 0.66f
+
+        for (unique in civInfo.getMatchingUniques("-[]% unit upkeep costs")) {
+            cost *= 1f - unique.params[0].toFloat() / 100f
+        }
+
+        // Deprecated since 3.15
+            if (civInfo.hasUnique("-33% unit upkeep costs")) cost *= 0.67f
+        //
+        
         return cost.toInt()
     }
 
@@ -48,21 +60,14 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
         // we no longer use .flatMap, because there are a lot of tiles and keeping them all in a list
         // just to go over them once is a waste of memory - there are low-end phones who don't have much ram
 
-        val ignoredTileTypes = civInfo.getMatchingUniques("No Maintenance costs for improvements in []")
+        val ignoredTileTypes = civInfo.getMatchingUniques("No Maintenance costs for improvements in [] tiles")
                 .map { it.params[0] }.toHashSet() // needs to be .toHashSet()ed,
         // Because we go over every tile in every city and check if it's in this list, which can get real heavy.
-
-        // accounting for both the old way and the new way of doing no maintenance in hills
-        val ignoreHillTiles = civInfo.hasUnique("No Maintenance costs for improvements in Hills") || "Hills" in ignoredTileTypes
 
         for (city in civInfo.cities) {
             for (tile in city.getTiles()) {
                 if (tile.isCityCenter()) continue
-                if (ignoreHillTiles && tile.isHill()) continue
-
-                if (tile.terrainFeature in ignoredTileTypes || tile.baseTerrain in ignoredTileTypes) {
-                    continue
-                }
+                if (ignoredTileTypes.any { tile.matchesUniqueFilter(it, civInfo) }) continue
 
                 val tileUpkeep =
                         when (tile.roadStatus) {
@@ -103,7 +108,7 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
                 val sciencePercentage = civInfo
                         .getMatchingUniques("Allied City-States provide Science equal to []% of what they produce for themselves")
                         .sumBy { it.params[0].toInt() }
-                statMap.add("City-States",Stats().apply { science = otherCiv.statsForNextTurn.science * (sciencePercentage/100f) })
+                statMap.add("City-States", Stats().apply { science = otherCiv.statsForNextTurn.science * (sciencePercentage / 100f) })
             }
         }
 
@@ -135,10 +140,14 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
         val statMap = HashMap<String, Float>()
         statMap["Base happiness"] = civInfo.getDifficulty().baseHappiness.toFloat()
 
-        // TODO - happinessPerUnique should be difficulty-dependent, 5 on Settler and Chieftian and 4 on other difficulties (should be parameter, not in code)
         var happinessPerUniqueLuxury = 4f + civInfo.getDifficulty().extraHappinessPerLuxury
-        for (unique in civInfo.getMatchingUniques("+1 happiness from each type of luxury resource"))
-            happinessPerUniqueLuxury += 1
+        for (unique in civInfo.getMatchingUniques("+[] happiness from each type of luxury resource"))
+            happinessPerUniqueLuxury += unique.params[0].toInt()
+        // Deprecated since 3.14.17
+            for (unique in civInfo.getMatchingUniques("+1 happiness from each type of luxury resource"))
+                happinessPerUniqueLuxury += 1
+        //
+        
         statMap["Luxury resources"] = civInfo.getCivResources().map { it.resource }
                 .count { it.resourceType === ResourceType.Luxury } * happinessPerUniqueLuxury
 

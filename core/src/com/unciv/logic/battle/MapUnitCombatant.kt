@@ -3,6 +3,7 @@ package com.unciv.logic.battle
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
+import com.unciv.models.UncivSound
 import com.unciv.models.ruleset.unit.UnitType
 
 class MapUnitCombatant(val unit: MapUnit) : ICombatant {
@@ -15,6 +16,9 @@ class MapUnitCombatant(val unit: MapUnit) : ICombatant {
     override fun isInvisible(): Boolean = unit.isInvisible()
     override fun canAttack(): Boolean = unit.canAttack()
     override fun matchesCategory(category:String) = unit.matchesFilter(category)
+    override fun getAttackSound() = unit.baseUnit.attackSound.let { 
+        if (it==null) UncivSound.Click else UncivSound.custom(it)
+    }
 
     override fun takeDamage(damage: Int) {
         unit.health -= damage

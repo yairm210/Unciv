@@ -37,33 +37,29 @@ class GameSetupInfo(var gameId:String, var gameParameters: GameParameters, var m
     }
 }
 
-class NewGameScreen(previousScreen:CameraStageBaseScreen, _gameSetupInfo: GameSetupInfo?=null): IPreviousScreen, PickerScreen() {
+class NewGameScreen(private val previousScreen: CameraStageBaseScreen, _gameSetupInfo: GameSetupInfo?=null): IPreviousScreen, PickerScreen(disableScroll = true) {
     override val gameSetupInfo = _gameSetupInfo ?: GameSetupInfo()
-    override var ruleset = RulesetCache.getComplexRuleset(gameSetupInfo.gameParameters.mods) // needs to be set because the gameoptionstable etc. depend on this
+    override var ruleset = RulesetCache.getComplexRuleset(gameSetupInfo.gameParameters.mods) // needs to be set because the GameOptionsTable etc. depend on this
     var newGameOptionsTable = GameOptionsTable(this) { desiredCiv: String -> playerPickerTable.update(desiredCiv) }
 
     // Has to be defined before the mapOptionsTable, since the mapOptionsTable refers to it on init
-    var playerPickerTable = PlayerPickerTable(this, gameSetupInfo.gameParameters)
-    var mapOptionsTable = MapOptionsTable(this)
+    private var playerPickerTable = PlayerPickerTable(this, gameSetupInfo.gameParameters)
+    private var mapOptionsTable = MapOptionsTable(this)
 
 
     init {
         setDefaultCloseAction(previousScreen)
-        scrollPane.setScrollingDisabled(true, true)
 
-        topTable.add(ScrollPane(newGameOptionsTable, skin).apply { setOverscroll(false, false) })
-                .maxHeight(topTable.parent.height).width(stage.width / 3).padTop(20f).top()
+        topTable.add(ScrollPane(newGameOptionsTable).apply { setOverscroll(false, false) })
+                .width(stage.width / 3).padTop(20f).top()
         topTable.addSeparatorVertical()
-        topTable.add(ScrollPane(mapOptionsTable, skin).apply { setOverscroll(false, false) })
-                .maxHeight(topTable.parent.height).width(stage.width / 3).padTop(20f).top()
+        topTable.add(ScrollPane(mapOptionsTable).apply { setOverscroll(false, false) })
+                .width(stage.width / 3).padTop(20f).top()
         topTable.addSeparatorVertical()
-        topTable.add(ScrollPane(playerPickerTable, skin)
+        topTable.add(ScrollPane(playerPickerTable)
                 .apply { setOverscroll(false, false) }
                 .apply { setScrollingDisabled(true, false) })
-                .maxHeight(topTable.parent.height).width(stage.width / 3).padTop(20f).top()
-
-        topTable.pack()
-        topTable.setFillParent(true)
+                .width(stage.width / 3).padTop(20f).top()
 
         updateRuleset()
 
@@ -97,19 +93,34 @@ class NewGameScreen(previousScreen:CameraStageBaseScreen, _gameSetupInfo: GameSe
 
             if (mapOptionsTable.mapTypeSelectBox.selected.value == MapType.custom){
                 val map = MapSaver.loadMap(gameSetupInfo.mapFile!!)
-                val rulesetIncompatabilities = HashSet<String>()
-                for(tile in map.values) {
-                    val rulesetIncompat = tile.getRulesetIncompatability(ruleset)
-                    if (rulesetIncompat != "") rulesetIncompatabilities.add(rulesetIncompat)
-                }
+                val rulesetIncompatibilities = HashSet<String>()
+                for (set in map.values.map { it.getRulesetIncompatibility(ruleset) })
+                    rulesetIncompatibilities.addAll(set)
+                rulesetIncompatibilities.remove("")
 
-                if (rulesetIncompatabilities.isNotEmpty()) {
+                if (rulesetIncompatibilities.isNotEmpty()) {
                     val incompatibleMap = Popup(this)
                     incompatibleMap.addGoodSizedLabel("Map is incompatible with the chosen ruleset!".tr()).row()
-                    for(incompat in rulesetIncompatabilities)
-                        incompatibleMap.addGoodSizedLabel(incompat).row()
+                    for(incompatibility in rulesetIncompatibilities)
+                        incompatibleMap.addGoodSizedLabel(incompatibility).row()
                     incompatibleMap.addCloseButton()
                     incompatibleMap.open()
+                    game.setScreen(this) // to get the input back
+                    return@onClick
+                }
+            } else {
+                // Generated map - check for sensible dimensions and if exceeded correct them and notify user
+                val mapSize = gameSetupInfo.mapParameters.mapSize
+                val message = mapSize.fixUndesiredSizes(gameSetupInfo.mapParameters.worldWrap)
+                if (message != null) {
+                    Gdx.app.postRunnable {
+                        ToastPopup( message, UncivGame.Current.screen as CameraStageBaseScreen, 4000 )
+                        with (mapOptionsTable.generatedMapOptionsTable) {
+                            customMapSizeRadius.text = mapSize.radius.toString()
+                            customMapWidth.text = mapSize.width.toString()
+                            customMapHeight.text = mapSize.height.toString()
+                        }
+                    }
                     game.setScreen(this) // to get the input back
                     return@onClick
                 }
@@ -149,7 +160,7 @@ class NewGameScreen(previousScreen:CameraStageBaseScreen, _gameSetupInfo: GameSe
                 // Save gameId to clipboard because you have to do it anyway.
                 Gdx.app.clipboard.contents = newGame!!.gameId
                 // Popup to notify the User that the gameID got copied to the clipboard
-                Gdx.app.postRunnable { ToastPopup("gameID copied to clipboard".tr(), UncivGame.Current.worldScreen, 2500) }
+                Gdx.app.postRunnable { ToastPopup("gameID copied to clipboard".tr(), game.worldScreen, 2500) }
 
                 GameSaver.autoSave(newGame!!) {}
 
@@ -195,9 +206,17 @@ class NewGameScreen(previousScreen:CameraStageBaseScreen, _gameSetupInfo: GameSe
     var newGame: GameInfo? = null
 
     override fun render(delta: Float) {
-        if (newGame != null)
+        if (newGame != null) {
             game.loadGame(newGame!!)
+            previousScreen.dispose()
+        }
         super.render(delta)
+    }
+
+    override fun resize(width: Int, height: Int) {
+        if (stage.viewport.screenWidth != width || stage.viewport.screenHeight != height) {
+            game.setScreen(NewGameScreen(previousScreen, gameSetupInfo))
+        }
     }
 }
 

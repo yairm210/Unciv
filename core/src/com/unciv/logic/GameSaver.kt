@@ -4,16 +4,15 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.utils.Json
 import com.unciv.UncivGame
-import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.metadata.GameSettings
-import com.unciv.ui.utils.ImageGetter
 import java.io.File
 import kotlin.concurrent.thread
 
 object GameSaver {
     private const val saveFilesFolder = "SaveFiles"
     private const val multiplayerFilesFolder = "MultiplayerGames"
-    private const val settingsFileName = "GameSettings.json"
+    const val settingsFileName = "GameSettings.json"
+
     @Volatile
     var customSaveLocationHelper: CustomSaveLocationHelper? = null
 
@@ -23,7 +22,7 @@ object GameSaver {
 
     fun json() = Json().apply { setIgnoreDeprecated(true); ignoreUnknownFields = true } // Json() is NOT THREAD SAFE so we need to create a new one for each function
 
-    fun getSubfolder(multiplayer: Boolean=false) = if(multiplayer) multiplayerFilesFolder else saveFilesFolder
+    fun getSubfolder(multiplayer: Boolean = false) = if (multiplayer) multiplayerFilesFolder else saveFilesFolder
 
     fun getSave(GameName: String, multiplayer: Boolean = false): FileHandle {
         val localfile = Gdx.files.local("${getSubfolder(multiplayer)}/$GameName")
@@ -39,18 +38,12 @@ object GameSaver {
         return localSaves + Gdx.files.absolute(externalFilesDirForAndroid + "/${getSubfolder(multiplayer)}").list().asSequence()
     }
 
-    fun saveGame(game: GameInfo, GameName: String, multiplayer: Boolean = false, forcePrompt: Boolean = false, saveCompletionCallback: ((Exception?) -> Unit)? = null) {
-        val customSaveLocation = game.customSaveLocation
-        val customSaveLocationHelper = this.customSaveLocationHelper
-        if (customSaveLocation != null && customSaveLocationHelper != null) {
-            customSaveLocationHelper.saveGame(game, GameName, forcePrompt, saveCompletionCallback)
-        } else {
-            try {
-                json().toJson(game, getSave(GameName, multiplayer))
-                saveCompletionCallback?.invoke(null)
-            } catch (ex: Exception) {
-                saveCompletionCallback?.invoke(ex)
-            }
+    fun saveGame(game: GameInfo, GameName: String, multiplayer: Boolean = false, saveCompletionCallback: ((Exception?) -> Unit)? = null) {
+        try {
+            json().toJson(game, getSave(GameName, multiplayer))
+            saveCompletionCallback?.invoke(null)
+        } catch (ex: Exception) {
+            saveCompletionCallback?.invoke(ex)
         }
     }
 
@@ -65,6 +58,10 @@ object GameSaver {
         val game = json().fromJson(GameInfo::class.java, gameFile)
         game.setTransients()
         return game
+    }
+
+    fun loadGamePreviewFromFile(gameFile: FileHandle): GameInfoPreview {
+        return json().fromJson(GameInfoPreview::class.java, gameFile)
     }
 
     fun loadGameFromCustomLocation(loadCompletionCallback: (GameInfo?, Exception?) -> Unit) {
@@ -90,7 +87,7 @@ object GameSaver {
         return json().fromJson(GameInfo::class.java, gameData)
     }
 
-    fun deleteSave(GameName: String, multiplayer: Boolean = false){
+    fun deleteSave(GameName: String, multiplayer: Boolean = false) {
         getSave(GameName, multiplayer).delete()
     }
 
@@ -115,11 +112,7 @@ object GameSaver {
                     GameSettings().apply { isFreshlyCreated = true }
                 }
 
-        val atlas = ImageGetter.atlas
-        val currentTileSets = atlas.regions.asSequence()
-                .filter { it.name.startsWith("TileSets") }
-                .map { it.name.split("/")[1] }.distinct()
-        if (settings.tileSet !in currentTileSets) settings.tileSet = "Default"
+
         return settings
     }
 
@@ -135,13 +128,13 @@ object GameSaver {
         thread(name = "Autosave") {
             autoSaveSingleThreaded(gameInfoClone)
             // do this on main thread
-            Gdx.app.postRunnable {
-                postRunnable()
-            }
+            Gdx.app.postRunnable ( postRunnable )
         }
     }
 
-    fun autoSaveSingleThreaded (gameInfo: GameInfo) {
+    fun autoSaveSingleThreaded(gameInfo: GameInfo) {
+/*
+        ... out of order until further notice, see #3898
         // If the user has chosen a custom save location outside of the usual game directories,
         // they'll probably expect us to overwrite that instead. E.g. if the user is saving their
         // game to their Google Drive folder, they'll probably want that progress to be synced to
@@ -152,6 +145,8 @@ object GameSaver {
             saveGame(gameInfo, "", false)
             return
         }
+*/
+
         saveGame(gameInfo, "Autosave")
 
         // keep auto-saves for the last 10 turns for debugging purposes
@@ -162,7 +157,7 @@ object GameSaver {
             return getSaves().filter { it.name().startsWith("Autosave") }
         }
         while (getAutosaves().count() > 10) {
-            val saveToDelete = getAutosaves().minBy { it.lastModified() }!!
+            val saveToDelete = getAutosaves().minByOrNull { it: FileHandle -> it.lastModified() }!!
             deleteSave(saveToDelete.name())
         }
     }
@@ -176,4 +171,3 @@ object GameSaver {
         return json().fromJson(GameInfo::class.java, gameFile).gameId
     }
 }
-

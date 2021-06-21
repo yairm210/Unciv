@@ -57,6 +57,8 @@ object Constants {
     const val unitActionSleepUntilHealed = "Sleep until healed"
     const val unitActionAutomation = "Automate"
     const val unitActionExplore = "Explore"
+    const val unitActionParadrop = "Paradrop"
+
     const val futureTech = "Future Tech"
 
     const val cancelImprovementOrder = "Cancel improvement order"
@@ -76,4 +78,5 @@ object Constants {
     const val futureEra = "Future era"
     const val barbarians = "Barbarians"
     const val spectator = "Spectator"
+    const val custom = "Custom"
 }

@@ -50,19 +50,20 @@ class TradeEvaluation {
     }
 
     fun isTradeAcceptable(trade: Trade, evaluator: CivilizationInfo, tradePartner: CivilizationInfo): Boolean {
-        var sumOfTheirOffers = trade.theirOffers.asSequence()
+        val sumOfTheirOffers = trade.theirOffers.asSequence()
                 .filter { it.type != TradeType.Treaty } // since treaties should only be evaluated once for 2 sides
                 .map { evaluateBuyCost(it, evaluator, tradePartner) }.sum()
+
+        var sumOfOurOffers = trade.ourOffers.map { evaluateSellCost(it, evaluator, tradePartner) }.sum()
 
         // If we're making a peace treaty, don't try to up the bargain for people you don't like.
         // Leads to spartan behaviour where you demand more, the more you hate the enemy...unhelpful
         if (trade.ourOffers.none { it.name == Constants.peaceTreaty || it.name == Constants.researchAgreement }) {
             val relationshipLevel = evaluator.getDiplomacyManager(tradePartner).relationshipLevel()
-            if (relationshipLevel == RelationshipLevel.Enemy) sumOfTheirOffers = (sumOfTheirOffers * 1.5).toInt()
-            else if (relationshipLevel == RelationshipLevel.Unforgivable) sumOfTheirOffers *= 2
+            if (relationshipLevel == RelationshipLevel.Enemy) sumOfOurOffers = (sumOfOurOffers * 1.5).toInt()
+            else if (relationshipLevel == RelationshipLevel.Unforgivable) sumOfOurOffers *= 2
         }
 
-        val sumOfOurOffers = trade.ourOffers.map { evaluateSellCost(it, evaluator, tradePartner) }.sum()
         return sumOfOurOffers <= sumOfTheirOffers
     }
 
@@ -236,9 +237,10 @@ class TradeEvaluation {
     }
 
     fun evaluatePeaceCostForThem(ourCivilization: CivilizationInfo, otherCivilization: CivilizationInfo): Int {
-        val ourCombatStrength = Automation.evaluteCombatStrength(ourCivilization)
-        val theirCombatStrength = Automation.evaluteCombatStrength(otherCivilization)
-        if (ourCombatStrength == theirCombatStrength) return 0
+        val ourCombatStrength = Automation.evaluateCombatStrength(ourCivilization)
+        val theirCombatStrength = Automation.evaluateCombatStrength(otherCivilization)
+        if (ourCombatStrength*1.5f >= theirCombatStrength && theirCombatStrength * 1.5f >= ourCombatStrength)
+            return 0 // we're roughly equal, there's no huge power imbalance
         if (ourCombatStrength == 0) return -1000
         if (theirCombatStrength == 0) return 1000 // Chumps got no cities or units
         if (ourCombatStrength > theirCombatStrength) {

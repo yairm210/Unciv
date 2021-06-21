@@ -7,6 +7,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextField
 import com.badlogic.gdx.utils.Json
 import com.unciv.UncivGame
+import com.unciv.logic.GameInfo
 import com.unciv.logic.GameSaver
 import com.unciv.models.translations.tr
 import com.unciv.ui.pickerscreens.PickerScreen
@@ -16,28 +17,29 @@ import kotlin.concurrent.thread
 import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 
 
-class SaveGameScreen : PickerScreen() {
-    val gameNameTextField = TextField("", skin)
+class SaveGameScreen(val gameInfo: GameInfo) : PickerScreen(disableScroll = true) {
+    private val gameNameTextField = TextField("", skin)
     val currentSaves = Table()
 
     init {
         setDefaultCloseAction()
 
         gameNameTextField.textFieldFilter = TextField.TextFieldFilter { _, char -> char != '\\' && char != '/' }
-        currentSaves.add("Current saves".toLabel()).row()
+        topTable.add("Current saves".toLabel()).pad(10f).row()
         updateShownSaves(false)
-        topTable.add(ScrollPane(currentSaves)).height(stage.height * 2 / 3)
+        topTable.add(ScrollPane(currentSaves))
 
         val newSave = Table()
-        val defaultSaveName = game.gameInfo.currentPlayer + " -  " + game.gameInfo.turns + " turns"
+        newSave.defaults().pad(5f, 10f)
+        val defaultSaveName = gameInfo.currentPlayer + " -  " + gameInfo.turns + " turns"
         gameNameTextField.text = defaultSaveName
 
         newSave.add("Saved game name".toLabel()).row()
-        newSave.add(gameNameTextField).width(300f).pad(10f).row()
+        newSave.add(gameNameTextField).width(300f).row()
 
         val copyJsonButton = "Copy to clipboard".toTextButton()
         copyJsonButton.onClick {
-            val json = Json().toJson(game.gameInfo)
+            val json = Json().toJson(gameInfo)
             val base64Gzip = Gzip.zip(json)
             Gdx.app.clipboard.contents = base64Gzip
         }
@@ -51,9 +53,9 @@ class SaveGameScreen : PickerScreen() {
                 saveToCustomLocation.setText("Saving...".tr())
                 saveToCustomLocation.disable()
                 thread(name = "SaveGame") {
-                    GameSaver.saveGameToCustomLocation(UncivGame.Current.gameInfo, gameNameTextField.text) { e ->
+                    GameSaver.saveGameToCustomLocation(gameInfo, gameNameTextField.text) { e ->
                         if (e == null) {
-                            Gdx.app.postRunnable { UncivGame.Current.setWorldScreen() }
+                            Gdx.app.postRunnable { game.setWorldScreen() }
                         } else if (e !is CancellationException) {
                             errorLabel.setText("Could not save game to custom location".tr())
                             e.printStackTrace()
@@ -62,8 +64,8 @@ class SaveGameScreen : PickerScreen() {
                     }
                 }
             }
-            newSave.add(saveToCustomLocation).pad(10f).row()
-            newSave.add(errorLabel).pad(0f, 10f, 10f, 10f).row()
+            newSave.add(saveToCustomLocation).row()
+            newSave.add(errorLabel).row()
         }
 
 
@@ -89,7 +91,7 @@ class SaveGameScreen : PickerScreen() {
     private fun saveGame() {
         rightSideButton.setText("Saving...".tr())
         thread(name = "SaveGame") {
-            GameSaver.saveGame(UncivGame.Current.gameInfo, gameNameTextField.text) {
+            GameSaver.saveGame(gameInfo, gameNameTextField.text) {
                 Gdx.app.postRunnable {
                     if (it != null) ToastPopup("Could not save game!", this)
                     else UncivGame.Current.setWorldScreen()
@@ -98,7 +100,7 @@ class SaveGameScreen : PickerScreen() {
         }
     }
 
-    fun updateShownSaves(showAutosaves: Boolean) {
+    private fun updateShownSaves(showAutosaves: Boolean) {
         currentSaves.clear()
         val saves = GameSaver.getSaves()
                 .sortedByDescending { it.lastModified() }

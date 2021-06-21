@@ -1,6 +1,5 @@
 package com.unciv.logic.automation
 
-import com.badlogic.gdx.graphics.Color
 import com.unciv.Constants
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.*
@@ -46,6 +45,7 @@ object NextTurnAutomation {
         chooseTechToResearch(civInfo)
         automateCityBombardment(civInfo)
         useGold(civInfo)
+        protectCityStates(civInfo)
         automateUnits(civInfo)
         reassignWorkedTiles(civInfo)
         trainSettler(civInfo)
@@ -65,9 +65,9 @@ object NextTurnAutomation {
             civInfo.tradeRequests.remove(tradeRequest)
             if (TradeEvaluation().isTradeAcceptable(tradeLogic.currentTrade, civInfo, otherCiv)) {
                 tradeLogic.acceptTrade()
-                otherCiv.addNotification("[${civInfo.civName}] has accepted your trade request", Color.GOLD)
+                otherCiv.addNotification("[${civInfo.civName}] has accepted your trade request", NotificationIcon.Trade, civInfo.civName)
             } else {
-                otherCiv.addNotification("[${civInfo.civName}] has denied your trade request", Color.GOLD)
+                otherCiv.addNotification("[${civInfo.civName}] has denied your trade request", NotificationIcon.Trade, civInfo.civName)
             }
         }
         civInfo.tradeRequests.clear()
@@ -88,8 +88,8 @@ object NextTurnAutomation {
                 if (diploManager.relationshipLevel() > RelationshipLevel.Neutral
                         && !diploManager.otherCivDiplomacy().hasFlag(DiplomacyFlags.Denunceation)) {
                     diploManager.signDeclarationOfFriendship()
-                    requestingCiv.addNotification("We have signed a Declaration of Friendship with [${civInfo.civName}]!", Color.GOLD)
-                } else requestingCiv.addNotification("[${civInfo.civName}] has denied our Declaration of Friendship!", Color.GOLD)
+                    requestingCiv.addNotification("We have signed a Declaration of Friendship with [${civInfo.civName}]!", NotificationIcon.Diplomacy, civInfo.civName)
+                } else requestingCiv.addNotification("[${civInfo.civName}] has denied our Declaration of Friendship!", NotificationIcon.Diplomacy, civInfo.civName)
             }
         }
 
@@ -141,14 +141,28 @@ object NextTurnAutomation {
         }
     }
 
-    private fun getFreeTechForCityStates(civInfo: CivilizationInfo) {
-        //City-States automatically get all invented techs
-        for (otherCiv in civInfo.getKnownCivs().filter { it.isMajorCiv() }) {
-            for (entry in otherCiv.tech.techsResearched
-                    .filterNot { civInfo.tech.isResearched(it) }
-                    .filter { civInfo.tech.canBeResearched(it) }) {
-                civInfo.tech.addTechnology(entry)
+    private fun protectCityStates(civInfo: CivilizationInfo) {
+        for (state in civInfo.getKnownCivs().filter{!it.isDefeated() && it.isCityState()}) {
+            val diplomacyManager = state.getDiplomacyManager(civInfo.civName)
+            if(diplomacyManager.relationshipLevel() >= RelationshipLevel.Friend
+                    && diplomacyManager.diplomaticStatus == DiplomaticStatus.Peace)
+            {
+                state.addProtectorCiv(civInfo)
+            } else if (diplomacyManager.relationshipLevel() < RelationshipLevel.Friend
+                    && diplomacyManager.diplomaticStatus == DiplomaticStatus.Protector) {
+                state.removeProtectorCiv(civInfo)
             }
+        }
+    }
+
+    private fun getFreeTechForCityStates(civInfo: CivilizationInfo) {
+        // City-States automatically get all techs that at least half of the major civs know
+        val researchableTechs = civInfo.gameInfo.ruleSet.technologies.keys
+            .filter { civInfo.tech.canBeResearched(it) }
+        for (tech in researchableTechs) {
+            val aliveMajorCivs = civInfo.gameInfo.getAliveMajorCivs()
+            if (aliveMajorCivs.count { it.tech.isResearched(tech) } >= aliveMajorCivs.count() / 2)
+                civInfo.tech.addTechnology(tech)
         }
         return
     }
@@ -293,7 +307,7 @@ object NextTurnAutomation {
             // Default setting is 5, this will be changed according to different civ.
             if ((1..10).random() > 5) continue
             val tradeLogic = TradeLogic(civInfo, otherCiv)
-            val cost = civInfo.getResearchAgreementCost(otherCiv)
+            val cost = civInfo.getResearchAgreementCost()
             tradeLogic.currentTrade.ourOffers.add(TradeOffer(Constants.researchAgreement, TradeType.Treaty, cost))
             tradeLogic.currentTrade.theirOffers.add(TradeOffer(Constants.researchAgreement, TradeType.Treaty, cost))
 
@@ -346,10 +360,15 @@ object NextTurnAutomation {
     }
 
     private fun motivationToAttack(civInfo: CivilizationInfo, otherCiv: CivilizationInfo): Int {
-        val ourCombatStrength = Automation.evaluteCombatStrength(civInfo).toFloat()
-        val theirCombatStrength = Automation.evaluteCombatStrength(otherCiv)
-        if (theirCombatStrength > ourCombatStrength) return 0
+        val ourCombatStrength = Automation.evaluateCombatStrength(civInfo).toFloat()
+        var theirCombatStrength = Automation.evaluateCombatStrength(otherCiv)
 
+        //for city-states, also consider there protectors
+        if(otherCiv.isCityState() and otherCiv.getProtectorCivs().isNotEmpty()) {
+            theirCombatStrength += otherCiv.getProtectorCivs().sumOf{Automation.evaluateCombatStrength(it)}
+        }
+
+        if (theirCombatStrength > ourCombatStrength) return 0
 
         fun isTileCanMoveThrough(tileInfo: TileInfo): Boolean {
             val owner = tileInfo.getOwner()
@@ -410,6 +429,9 @@ object NextTurnAutomation {
 
         if (theirCity.getTiles().none { it.neighbors.any { it.getOwner() == theirCity.civInfo && it.getCity() != theirCity } })
             modifierMap["Isolated city"] = 15
+
+        //Maybe not needed if city-state has potential protectors?
+        if (otherCiv.isCityState()) modifierMap["City-state"] = -10
 
         return modifierMap.values.sum()
     }
@@ -536,6 +558,7 @@ object NextTurnAutomation {
                 otherCiv.popupAlerts.add(PopupAlert(AlertType.CitySettledNearOtherCivDespiteOurPromise, civInfo.civName))
                 diplomacyManager.setFlag(DiplomacyFlags.IgnoreThemSettlingNearUs, 100)
                 diplomacyManager.setModifier(DiplomaticModifiers.BetrayedPromiseToNotSettleCitiesNearUs, -20f)
+                diplomacyManager.removeFlag(DiplomacyFlags.AgreedToNotSettleNearUs)
             }
             else -> {
                 val threatLevel = Automation.threatAssessment(civInfo, otherCiv)

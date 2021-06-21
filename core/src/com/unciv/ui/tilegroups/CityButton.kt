@@ -10,6 +10,7 @@ import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
+import com.unciv.logic.battle.CityCombatant
 import com.unciv.logic.city.CityConstructions
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.city.PerpetualConstruction
@@ -39,7 +40,6 @@ class CityButton(val city: CityInfo, private val tileGroup: WorldTileGroup): Tab
         clear()
         setButtonActions()
         addAirUnitTable()
-
         if (showAdditionalInfoTags && city.health < city.getMaxHealth().toFloat()) {
             val healthBar = ImageGetter.getHealthBar(city.health.toFloat(), city.getMaxHealth().toFloat(), 100f)
             add(healthBar).row()
@@ -53,6 +53,8 @@ class CityButton(val city: CityInfo, private val tileGroup: WorldTileGroup): Tab
             val influenceBar = getInfluenceBar(diplomacyManager.influence, diplomacyManager.relationshipLevel())
             add(influenceBar).row()
         }
+
+
 
         pack()
         setOrigin(Align.center)
@@ -127,7 +129,7 @@ class CityButton(val city: CityInfo, private val tileGroup: WorldTileGroup): Tab
         if (!showAdditionalInfoTags || tileGroup.tileInfo.airUnits.isEmpty()) return
         val secondarycolor = city.civInfo.nation.getInnerColor()
         val airUnitTable = Table()
-        airUnitTable.background = ImageGetter.getRoundedEdgeTableBackground(city.civInfo.nation.getOuterColor()).apply { setMinSize(0f,0f) }
+        airUnitTable.background = ImageGetter.getRoundedEdgeRectangle(city.civInfo.nation.getOuterColor()).apply { setMinSize(0f,0f) }
         val aircraftImage = ImageGetter.getImage("OtherIcons/Aircraft")
         aircraftImage.color = secondarycolor
         airUnitTable.add(aircraftImage).size(15f)
@@ -183,7 +185,7 @@ class CityButton(val city: CityInfo, private val tileGroup: WorldTileGroup): Tab
         }
         val iconTable = IconTable()
         iconTable.touchable=Touchable.enabled
-        iconTable.background = ImageGetter.getRoundedEdgeTableBackground(city.civInfo.nation.getOuterColor())
+        iconTable.background = ImageGetter.getRoundedEdgeRectangle(city.civInfo.nation.getOuterColor())
 
         if (city.isInResistance()) {
             val resistanceImage = ImageGetter.getImage("StatIcons/Resistance")
@@ -228,6 +230,12 @@ class CityButton(val city: CityInfo, private val tileGroup: WorldTileGroup): Tab
         label.toBack() // this is so the label is rendered right before the population group,
         //  so we save the font texture and avoid another texture switch
 
+        // City strength is added NOT inside the table, but rather - top-center to it
+        val cityStrength = CityCombatant(city).getCityStrength()
+        val cityStrengthLabel = "${Fonts.strength}$cityStrength".toLabel(city.civInfo.nation.getInnerColor(), 10)
+        iconTable.addActor(cityStrengthLabel)        // We create this here to we can .toBack() it as well.
+        cityStrengthLabel.toBack()
+
         if (uncivGame.viewEntireMapForDebug || belongsToViewingCiv() || worldScreen.viewingCiv.isSpectator()) {
             val constructionGroup = getConstructionGroup(city.cityConstructions)
             iconTable.add(constructionGroup)
@@ -243,6 +251,10 @@ class CityButton(val city: CityInfo, private val tileGroup: WorldTileGroup): Tab
             nationIcon.color = secondaryColor
             iconTable.add(nationIcon).size(20f)
         }
+
+        iconTable.pack()
+        cityStrengthLabel.x = label.x // so it'll be aligned right above the city name
+        cityStrengthLabel.setY(iconTable.height, Align.top)
         return iconTable
     }
 

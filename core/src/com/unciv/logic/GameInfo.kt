@@ -1,23 +1,19 @@
 package com.unciv.logic
 
-import com.badlogic.gdx.graphics.Color
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.automation.NextTurnAutomation
 import com.unciv.logic.city.CityConstructions
 import com.unciv.logic.city.PerpetualConstruction
 import com.unciv.logic.civilization.*
+import com.unciv.logic.map.MapSizeNew
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
-import com.unciv.logic.trade.TradeOffer
-import com.unciv.logic.trade.TradeType
 import com.unciv.models.metadata.GameParameters
 import com.unciv.models.ruleset.Difficulty
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
-import com.unciv.models.ruleset.Specialist
 import java.util.*
-import kotlin.collections.ArrayList
 
 class UncivShowableException(missingMods: String) : Exception(missingMods)
 
@@ -45,6 +41,12 @@ class GameInfo {
     var currentPlayer = ""
     var gameId = UUID.randomUUID().toString() // random string
 
+    /**Keep track of a custom location this game was saved to _or_ loaded from
+     *
+     * Note this was used as silent autosave destination, but it was decided (#3898) to
+     * make the custom location feature a one-shot import/export kind of operation.
+     * The tracking is left in place, however [GameSaver.autoSaveSingleThreaded] no longer uses it
+     */
     @Volatile
     var customSaveLocation: String? = null
 
@@ -171,11 +173,11 @@ class GameInfo {
         if (tiles.size < 3) {
             for (tile in tiles) {
                 val unitName = tile.militaryUnit!!.name
-                thisPlayer.addNotification("An enemy [$unitName] was spotted $inOrNear our territory", tile.position, Color.RED)
+                thisPlayer.addNotification("An enemy [$unitName] was spotted $inOrNear our territory", tile.position, NotificationIcon.War, unitName)
             }
         } else {
             val positions = tiles.map { it.position }
-            thisPlayer.addNotification("[${positions.size}] enemy units were spotted $inOrNear our territory", Color.RED, LocationAction(positions))
+            thisPlayer.addNotification("[${positions.size}] enemy units were spotted $inOrNear our territory", LocationAction(positions), NotificationIcon.War)
         }
     }
 
@@ -251,7 +253,7 @@ class GameInfo {
             it.hasUnique("Notified of new Barbarian encampments")
                     && it.exploredTiles.contains(tile.position)
         }
-                .forEach { it.addNotification("A new barbarian encampment has spawned!", tile.position, Color.RED) }
+                .forEach { it.addNotification("A new barbarian encampment has spawned!", tile.position, NotificationIcon.War) }
     }
 
     // All cross-game data which needs to be altered (e.g. when removing or changing a name of a building/tech)
@@ -276,24 +278,18 @@ class GameInfo {
         if (currentPlayer == "") currentPlayer = civilizations.first { it.isPlayerCivilization() }.civName
         currentPlayerCiv = getCivilization(currentPlayer)
 
+        // as of version 3.9.18, added new custom map size
+        // empty mapSize name and non-custom map type means - it is old style map size,
+        // therefore we need to create new mapSize property
+        if (tileMap.mapParameters.mapSize.name == "" && tileMap.mapParameters.type != Constants.custom)
+            tileMap.mapParameters.mapSize = MapSizeNew(tileMap.mapParameters.size.name)
+
         // this is separated into 2 loops because when we activate updateVisibleTiles in civ.setTransients,
         //  we try to find new civs, and we check if civ is barbarian, which we can't know unless the gameInfo is already set.
         for (civInfo in civilizations) civInfo.gameInfo = this
 
         difficultyObject = ruleSet.difficulties[difficulty]!!
 
-        // We have to remove all deprecated buildings from all cities BEFORE we update a single one, or run setTransients on the civs,
-        // because updating leads to getting the building uniques from the civ info,
-        // which in turn leads to us trying to get info on all the building in all the cities...
-        // which can fail if there's an "unregistered" building anywhere
-        for (civInfo in civilizations) {
-            // As of 3.3.7, Facism -> Fascism
-            if (civInfo.policies.adoptedPolicies.contains("Facism")) {
-                civInfo.policies.adoptedPolicies.remove("Facism")
-                civInfo.policies.adoptedPolicies.add("Fascism")
-            }
-
-        }
 
 
         // This doesn't HAVE to go here, but why not.
@@ -332,8 +328,8 @@ class GameInfo {
     // So we remove them so the game doesn't crash when it tries to access them.
     private fun removeMissingModReferences() {
         for (tile in tileMap.values) {
-            if (tile.terrainFeature != null && !ruleSet.terrains.containsKey(tile.terrainFeature!!))
-                tile.terrainFeature = null
+            for (terrainFeature in tile.terrainFeatures.filter{ !ruleSet.terrains.containsKey(it) })
+                tile.terrainFeatures.remove(terrainFeature)
             if (tile.resource != null && !ruleSet.tileResources.containsKey(tile.resource!!))
                 tile.resource = null
             if (tile.improvement != null && !ruleSet.tileImprovements.containsKey(tile.improvement!!)
@@ -373,7 +369,12 @@ class GameInfo {
                 if (!ruleSet.technologies.containsKey(tech))
                     civinfo.tech.techsResearched.remove(tech)
             for (policy in civinfo.policies.adoptedPolicies.toList())
-                if (!ruleSet.policies.containsKey(policy))
+                // So these two policies are deprecated since 3.14.17
+                // However, we still need to convert save files that have those to valid save files
+                // The easiest way to do this, is just to allow them here, and filter them out in
+                // the policyManager class.
+                // Yes, this is ugly, but it should be temporary, and it works.
+                if (!ruleSet.policies.containsKey(policy) && !(policy == "Entrepreneurship" || policy == "Patronage"))
                     civinfo.policies.adoptedPolicies.remove(policy)
         }
     }
@@ -389,4 +390,15 @@ class GameInfo {
             cityConstructions.inProgressConstructions.remove(oldBuildingName)
         }
     }
+}
+
+// reduced variant only for load preview
+class GameInfoPreview {
+    var civilizations = mutableListOf<CivilizationInfoPreview>()
+    var difficulty = "Chieftain"
+    var gameParameters = GameParameters()
+    var turns = 0
+    var gameId = ""
+    var currentPlayer = ""
+    fun getCivilization(civName: String) = civilizations.first { it.civName == civName }
 }

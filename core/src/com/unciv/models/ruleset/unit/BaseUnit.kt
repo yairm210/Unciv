@@ -7,9 +7,9 @@ import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.MapUnit
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.Unique
+import com.unciv.models.stats.INamed
 import com.unciv.models.translations.Translations
 import com.unciv.models.translations.tr
-import com.unciv.models.stats.INamed
 import com.unciv.ui.utils.Fonts
 import kotlin.math.pow
 
@@ -112,10 +112,18 @@ class BaseUnit : INamed, IConstruction {
 
     override fun getGoldCost(civInfo: CivilizationInfo): Int {
         var cost = getBaseGoldCost(civInfo)
-        if (civInfo.hasUnique("Gold cost of purchasing units -33%")) cost *= 0.66f
+        for (unique in civInfo.getMatchingUniques("Gold cost of purchasing [] units -[]%")) {
+            if (matchesFilter(unique.params[0]))
+                cost *= 1f - unique.params[1].toFloat() / 100f
+        }
+        
+        // Deprecated since 3.15
+            if (civInfo.hasUnique("Gold cost of purchasing units -33%")) cost *= 0.67f
+        //
+        
         for (unique in civInfo.getMatchingUniques("Cost of purchasing items in cities reduced by []%"))
-            cost *= 1 - (unique.params[0].toFloat() / 100)
-        return (cost / 10).toInt() * 10 // rounded down o nearest ten
+            cost *= 1f - (unique.params[0].toFloat() / 100f)
+        return (cost / 10).toInt() * 10 // rounded down to nearest ten
     }
 
     fun getDisbandGold(civInfo: CivilizationInfo) = getBaseGoldCost(civInfo).toInt() / 20
@@ -128,7 +136,7 @@ class BaseUnit : INamed, IConstruction {
     }
 
     fun getRejectionReason(cityConstructions: CityConstructions): String {
-        if (unitType.isWaterUnit() && !cityConstructions.cityInfo.getCenterTile().isCoastalTile())
+        if (unitType.isWaterUnit() && !cityConstructions.cityInfo.isCoastal())
             return "Can only build water units in coastal cities"
         val civInfo = cityConstructions.cityInfo.civInfo
         for (unique in uniqueObjects.filter { it.placeholderText == "Not displayed as an available construction without []" }) {
@@ -184,9 +192,9 @@ class BaseUnit : INamed, IConstruction {
         return getRejectionReason(cityConstructions) == ""
     }
 
-    override fun postBuildEvent(construction: CityConstructions, wasBought: Boolean): Boolean {
-        val civInfo = construction.cityInfo.civInfo
-        val unit = civInfo.placeUnitNearTile(construction.cityInfo.location, name)
+    override fun postBuildEvent(cityConstructions: CityConstructions, wasBought: Boolean): Boolean {
+        val civInfo = cityConstructions.cityInfo.civInfo
+        val unit = civInfo.placeUnitNearTile(cityConstructions.cityInfo.location, name)
         if (unit == null) return false // couldn't place the unit, so there's actually no unit =(
 
         //movement penalty
@@ -195,10 +203,10 @@ class BaseUnit : INamed, IConstruction {
 
         if (this.unitType.isCivilian()) return true // tiny optimization makes save files a few bytes smaller
 
-        var XP = construction.getBuiltBuildings().sumBy { it.xpForNewUnits }
+        var XP = cityConstructions.getBuiltBuildings().sumBy { it.xpForNewUnits }
 
 
-        for (unique in construction.cityInfo.cityConstructions.builtBuildingUniqueMap
+        for (unique in cityConstructions.builtBuildingUniqueMap
                 .getUniques("New [] units start with [] Experience in this city")
                 + civInfo.getMatchingUniques("New [] units start with [] Experience")) {
             if (unit.matchesFilter(unique.params[0]))
@@ -206,7 +214,7 @@ class BaseUnit : INamed, IConstruction {
         }
         unit.promotions.XP = XP
 
-        for (unique in construction.cityInfo.cityConstructions.builtBuildingUniqueMap
+        for (unique in cityConstructions.builtBuildingUniqueMap
                 .getUniques("All newly-trained [] units in this city receive the [] promotion")) {
             val filter = unique.params[0]
             val promotion = unique.params[1]
@@ -232,15 +240,22 @@ class BaseUnit : INamed, IConstruction {
     }
 
     fun matchesFilter(filter: String): Boolean {
-        if (filter == unitType.name) return true
-        if (filter == name) return true
-        if (filter == "All") return true
-        if ((filter == "Land" || filter == "land units") && unitType.isLandUnit()) return true
-        if ((filter == "Water" || filter == "water units") && unitType.isWaterUnit()) return true
-        if ((filter == "Air" || filter == "air units") && unitType.isAirUnit()) return true
-        if (filter == "non-air" && !unitType.isAirUnit()) return true
-        if ((filter == "military" || filter == "Military" || filter == "military units") && unitType.isMilitary()) return true
-        return false
+        return when (filter) {
+            unitType.name -> true
+            name -> true
+            "All" -> true
+            "Land", "land units" -> unitType.isLandUnit()
+            "Water", "water units", "Water units" -> unitType.isWaterUnit()
+            "Air", "air units" -> unitType.isAirUnit()
+            "non-air" -> !unitType.isAirUnit()
+            "Military", "military units" -> unitType.isMilitary()
+            // Deprecated as of 3.15.2
+            "military water" -> unitType.isMilitary() && unitType.isWaterUnit()
+            else -> {
+                if (uniques.contains(filter)) return true
+                return false
+            }
+        }
     }
 
     fun isGreatPerson() = uniqueObjects.any { it.placeholderText == "Great Person - []" }

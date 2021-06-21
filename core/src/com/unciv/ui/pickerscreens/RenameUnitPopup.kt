@@ -2,8 +2,10 @@ package com.unciv.ui.pickerscreens
 
 import com.badlogic.gdx.scenes.scene2d.ui.TextField
 import com.unciv.logic.map.MapUnit
-import com.unciv.models.translations.tr
-import com.unciv.ui.utils.*
+import com.unciv.ui.utils.CameraStageBaseScreen
+import com.unciv.ui.utils.Popup
+import com.unciv.ui.utils.onClick
+import com.unciv.ui.utils.toTextButton
 
 class RenameUnitPopup(unit: MapUnit, screen: CameraStageBaseScreen): Popup(screen) {
 

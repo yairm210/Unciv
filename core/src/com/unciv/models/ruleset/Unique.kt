@@ -53,8 +53,8 @@ object UniqueTriggerActivation {
             }
             // spectators get all techs at start of game, and if (in a mod) a tech gives a free policy, the game stucks on the policy picker screen
             "Free Social Policy" -> if (!civInfo.isSpectator()) civInfo.policies.freePolicies++
-            "Empire enters golden age" ->
-                civInfo.goldenAges.enterGoldenAge()
+            "[] Free Social Policies" -> if (!civInfo.isSpectator()) civInfo.policies.freePolicies += unique.params[0].toInt()
+            "Empire enters golden age" -> civInfo.goldenAges.enterGoldenAge()
             "Free Great Person" -> {
                 if (civInfo.isSpectator()) return
                 if (civInfo.isPlayerCivilization()) civInfo.greatPeople.freeGreatPeople++
@@ -81,10 +81,14 @@ object UniqueTriggerActivation {
                     city.population.population += 1
                     city.population.autoAssignPopulation()
                 }
-            "Free Technology" -> civInfo.tech.freeTechs += 1
+            "Free Technology" -> if (!civInfo.isSpectator()) civInfo.tech.freeTechs += 1
+            "[] Free Technologies" -> if (!civInfo.isSpectator()) civInfo.tech.freeTechs += unique.params[0].toInt() 
 
             "Quantity of strategic resources produced by the empire increased by 100%" -> civInfo.updateDetailedCivResources()
-            "+20% attack bonus to all Military Units for 30 turns" -> civInfo.policies.autocracyCompletedTurns = 30
+            // Deprecated since 3.15
+                "+20% attack bonus to all Military Units for 30 turns" -> civInfo.temporaryUniques.add(Pair(unique, 30))
+            //
+            "+[]% attack strength to all [] Units for [] turns" -> civInfo.temporaryUniques.add(Pair(unique, unique.params[2].toInt()))
 
             "Reveals the entire map" -> civInfo.exploredTiles.addAll(civInfo.gameInfo.tileMap.values.asSequence().map { it.position })
 
@@ -93,12 +97,13 @@ object UniqueTriggerActivation {
                 val promotion = unique.params[1]
                 for (unit in civInfo.getCivUnits())
                     if (unit.matchesFilter(filter)
-                            || civInfo.gameInfo.ruleSet.unitPromotions.values.any {
-                                it.name == promotion && unit.type.name in it.unitTypes
-                            })
+                        || civInfo.gameInfo.ruleSet.unitPromotions.values.any {
+                            it.name == promotion && unit.type.name in it.unitTypes
+                        }
+                    ) {
                         unit.promotions.addPromotion(promotion, isFree = true)
+                    }
             }
         }
     }
-
 }

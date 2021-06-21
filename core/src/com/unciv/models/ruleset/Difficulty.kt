@@ -3,8 +3,6 @@ package com.unciv.models.ruleset
 import com.unciv.Constants
 import com.unciv.models.stats.INamed
 import com.unciv.models.translations.tr
-import java.util.*
-import kotlin.collections.ArrayList
 
 class Difficulty: INamed {
     override lateinit var name: String

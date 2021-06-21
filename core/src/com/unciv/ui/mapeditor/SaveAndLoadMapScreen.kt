@@ -7,8 +7,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.scenes.scene2d.ui.TextField
 import com.badlogic.gdx.utils.Json
-import com.unciv.MainMenuScreen
-import com.unciv.UncivGame
 import com.unciv.logic.MapSaver
 import com.unciv.logic.map.MapType
 import com.unciv.logic.map.TileMap
@@ -19,17 +17,19 @@ import com.unciv.ui.utils.*
 import kotlin.concurrent.thread
 import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 
-class SaveAndLoadMapScreen(mapToSave: TileMap?, save:Boolean = false) : PickerScreen() {
-    var chosenMap: FileHandle? = null
+class SaveAndLoadMapScreen(mapToSave: TileMap?, save:Boolean = false, previousScreen: CameraStageBaseScreen)
+        : PickerScreen(disableScroll = true) {
+    private var chosenMap: FileHandle? = null
     val deleteButton = "Delete map".toTextButton()
     val mapsTable = Table().apply { defaults().pad(10f) }
-    val mapNameTextField = TextField("", skin).apply { maxLength = 100 }
+    private val mapNameTextField = TextField("", skin).apply { maxLength = 100 }
 
     init {
+        val rightSideButtonAction: ()->Unit
         if (save) {
             rightSideButton.enable()
             rightSideButton.setText("Save map".tr())
-            rightSideButton.onClick {
+            rightSideButtonAction = {
                 mapToSave!!.mapParameters.name = mapNameTextField.text
                 mapToSave.mapParameters.type = MapType.custom
                 thread(name = "SaveMap") {
@@ -37,7 +37,7 @@ class SaveAndLoadMapScreen(mapToSave: TileMap?, save:Boolean = false) : PickerSc
                         MapSaver.saveMap(mapNameTextField.text, mapToSave)
                         Gdx.app.postRunnable {
                             Gdx.input.inputProcessor = null // This is to stop ANRs happening here, until the map editor screen sets up.
-                            UncivGame.Current.setScreen(MapEditorScreen(mapToSave))
+                            game.setScreen(MapEditorScreen(mapToSave))
                             dispose()
                         }
                     } catch (ex: Exception) {
@@ -53,7 +53,7 @@ class SaveAndLoadMapScreen(mapToSave: TileMap?, save:Boolean = false) : PickerSc
             }
         } else {
             rightSideButton.setText("Load map".tr())
-            rightSideButton.onClick {
+            rightSideButtonAction = {
                 thread {
                     Gdx.app.postRunnable {
                         val popup = Popup(this)
@@ -63,27 +63,33 @@ class SaveAndLoadMapScreen(mapToSave: TileMap?, save:Boolean = false) : PickerSc
                     val map = MapSaver.loadMap(chosenMap!!)
                     Gdx.app.postRunnable {
                         Gdx.input.inputProcessor = null // This is to stop ANRs happening here, until the map editor screen sets up.
-                        UncivGame.Current.setScreen(MapEditorScreen(map))
+                        game.setScreen(MapEditorScreen(map))
                         dispose()
                     }
                 }
             }
         }
+        rightSideButton.onClick(rightSideButtonAction)
+        keyPressDispatcher[KeyCharAndCode.RETURN] = rightSideButtonAction
 
-        topTable.add(ScrollPane(mapsTable)).height(stage.height * 2 / 3)
-                .maxWidth(stage.width / 2)
+        topTable.add(ScrollPane(mapsTable)).maxWidth(stage.width / 2)
 
         val rightSideTable = Table().apply { defaults().pad(10f) }
 
         if (save) {
             mapNameTextField.textFieldFilter = TextField.TextFieldFilter { _, char -> char != '\\' && char != '/' }
-            mapNameTextField.text = "My new map"
+            mapNameTextField.text = if (mapToSave == null || mapToSave.mapParameters.name.isEmpty()) "My new map"
+                else mapToSave.mapParameters.name
             rightSideTable.add(mapNameTextField).width(300f).pad(10f)
+            stage.keyboardFocus = mapNameTextField
+            mapNameTextField.selectAll()
         } else {
             val downloadMapButton = "Download map".toTextButton()
-            downloadMapButton.onClick {
+            val downloadAction = {
                 MapDownloadPopup(this).open()
             }
+            downloadMapButton.onClick(downloadAction)
+            keyPressDispatcher['\u0004'] = downloadAction   // Ctrl-D
             rightSideTable.add(downloadMapButton).row()
         }
 
@@ -91,39 +97,45 @@ class SaveAndLoadMapScreen(mapToSave: TileMap?, save:Boolean = false) : PickerSc
 
         if (save) {
             val copyMapAsTextButton = "Copy to clipboard".toTextButton()
-            copyMapAsTextButton.onClick {
+            val copyMapAsTextAction = {
                 val json = Json().toJson(mapToSave)
                 val base64Gzip = Gzip.zip(json)
                 Gdx.app.clipboard.contents = base64Gzip
             }
+            copyMapAsTextButton.onClick (copyMapAsTextAction)
+            keyPressDispatcher['\u0003'] = copyMapAsTextAction   // Ctrl-C
             rightSideTable.add(copyMapAsTextButton).row()
         } else {
             val loadFromClipboardButton = "Load copied data".toTextButton()
             val couldNotLoadMapLabel = "Could not load map!".toLabel(Color.RED).apply { isVisible = false }
-            loadFromClipboardButton.onClick {
+            val loadFromClipboardAction = {
                 try {
                     val clipboardContentsString = Gdx.app.clipboard.contents.trim()
                     val decoded = Gzip.unzip(clipboardContentsString)
                     val loadedMap = MapSaver.mapFromJson(decoded)
-                    UncivGame.Current.setScreen(MapEditorScreen(loadedMap))
+                    game.setScreen(MapEditorScreen(loadedMap))
                 } catch (ex: Exception) {
                     couldNotLoadMapLabel.isVisible = true
                 }
             }
+            loadFromClipboardButton.onClick(loadFromClipboardAction)
+            keyPressDispatcher['\u0016'] = loadFromClipboardAction   // Ctrl-V
             rightSideTable.add(loadFromClipboardButton).row()
             rightSideTable.add(couldNotLoadMapLabel).row()
         }
 
-        deleteButton.onClick {
+        val deleteAction = {
             YesNoPopup("Are you sure you want to delete this map?", {
                 chosenMap!!.delete()
-                UncivGame.Current.setScreen(SaveAndLoadMapScreen(mapToSave))
+                game.setScreen(SaveAndLoadMapScreen(mapToSave, save, previousScreen))
             }, this).open()
         }
+        deleteButton.onClick(deleteAction)
+        keyPressDispatcher['\u007f'] = deleteAction     // Input.Keys.DEL but ascii has precedence
         rightSideTable.add(deleteButton).row()
 
         topTable.add(rightSideTable)
-        setDefaultCloseAction(MainMenuScreen())
+        setDefaultCloseAction(previousScreen)
 
         update()
     }
@@ -134,22 +146,23 @@ class SaveAndLoadMapScreen(mapToSave: TileMap?, save:Boolean = false) : PickerSc
         deleteButton.color = Color.RED
 
         deleteButton.setText("Delete map".tr())
-//        rightSideButton.setText("Load map".tr())
 
         mapsTable.clear()
         for (map in MapSaver.getMaps()) {
-            val loadMapButton = TextButton(map.name(), skin)
-            loadMapButton.onClick {
+            val existingMapButton = TextButton(map.name(), skin)
+            existingMapButton.onClick {
                 for (cell in mapsTable.cells) cell.actor.color = Color.WHITE
-                loadMapButton.color = Color.BLUE
+                existingMapButton.color = Color.BLUE
 
                 rightSideButton.enable()
                 chosenMap = map
                 mapNameTextField.text = map.name()
+                mapNameTextField.setSelection(Int.MAX_VALUE,Int.MAX_VALUE)  // sets caret to end of text
+                
                 deleteButton.enable()
                 deleteButton.color = Color.RED
             }
-            mapsTable.add(loadMapButton).row()
+            mapsTable.add(existingMapButton).row()
         }
     }
 

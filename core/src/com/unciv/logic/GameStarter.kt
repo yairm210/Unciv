@@ -2,9 +2,10 @@ package com.unciv.logic
 
 import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
-import com.unciv.logic.civilization.CityStatePersonality
-import com.unciv.logic.civilization.CivilizationInfo
-import com.unciv.logic.map.*
+import com.unciv.logic.civilization.*
+import com.unciv.logic.map.BFS
+import com.unciv.logic.map.TileInfo
+import com.unciv.logic.map.TileMap
 import com.unciv.logic.map.mapgenerator.MapGenerator
 import com.unciv.models.metadata.GameParameters
 import com.unciv.models.ruleset.Ruleset
@@ -62,8 +63,20 @@ object GameStarter {
             // set max starting movement for units loaded from map
             for (unit in tile.getUnits()) unit.currentMovement = unit.getMaxMovement().toFloat()
         }
+        
+        // This triggers the one-time greeting from Nation.startIntroPart1/2
+        addPlayerIntros(gameInfo)
 
         return gameInfo
+    }
+
+    private fun addPlayerIntros(gameInfo: GameInfo) {
+        gameInfo.civilizations.filter {
+            // isNotEmpty should also exclude a spectator
+            it.playerType == PlayerType.Human && it.nation.startIntroPart1.isNotEmpty()
+        }.forEach {
+            it.popupAlerts.add(PopupAlert(AlertType.StartIntro, ""))
+        }
     }
 
     private fun addCivTechs(gameInfo: GameInfo, ruleset: Ruleset, gameSetupInfo: GameSetupInfo) {
@@ -155,7 +168,7 @@ object GameStarter {
                         && it.unitType.isLandUnit()
                         && !it.unitType.isCivilian()
             }
-            return availableMilitaryUnits.maxBy { max(it.strength, it.rangedStrength) }?.name
+            return availableMilitaryUnits.maxByOrNull { max(it.strength, it.rangedStrength) }?.name
         }
         // no starting units for Barbarians and Spectators
         for (civ in gameInfo.civilizations.filter { !it.isBarbarian() && !it.isSpectator() }) {

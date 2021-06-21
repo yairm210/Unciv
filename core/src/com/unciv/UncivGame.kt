@@ -12,6 +12,7 @@ import com.unciv.logic.GameSaver
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.models.metadata.GameSettings
 import com.unciv.models.ruleset.RulesetCache
+import com.unciv.models.tilesets.TileSetCache
 import com.unciv.models.translations.Translations
 import com.unciv.ui.LanguagePickerScreen
 import com.unciv.ui.utils.CameraStageBaseScreen
@@ -33,6 +34,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
     val fontImplementation = parameters.fontImplementation
     val consoleMode = parameters.consoleMode
     val customSaveLocationHelper = parameters.customSaveLocationHelper
+    val limitOrientationsHelper = parameters.limitOrientationsHelper
 
     lateinit var gameInfo: GameInfo
     fun isGameInfoInitialized() = this::gameInfo.isInitialized
@@ -60,7 +62,6 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
 
     var music: Music? = null
     val musicLocation = "music/thatched-villagers.mp3"
-    private var isSizeRestored = false
     var isInitialized = false
 
 
@@ -72,21 +73,38 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
             viewEntireMapForDebug = false
         }
         Current = this
-
-
         GameSaver.customSaveLocationHelper = customSaveLocationHelper
+
         // If this takes too long players, especially with older phones, get ANR problems.
         // Whatever needs graphics needs to be done on the main thread,
         // So it's basically a long set of deferred actions.
+
+        /** When we recreate the GL context for whatever reason (say - we moved to a split screen on Android),
+         * ALL objects that were related to the old context - need to be recreated.
+         * So far we have:
+         * - All textures (hence the texture atlas)
+         * - SpriteBatch (hence CameraStageBaseScreen uses a new SpriteBatch for each screen)
+         * - Skin (hence CameraStageBaseScreen.setSkin())
+         * - Font (hence Fonts.resetFont() inside setSkin())
+         */
+        ImageGetter.resetAtlases()
         settings = GameSaver.getGeneralSettings() // needed for the screen
-        screen = LoadingScreen()
+        ImageGetter.setNewRuleset(ImageGetter.ruleset)  // This needs to come after the settings, since we may have default visual mods
+        if(settings.tileSet !in ImageGetter.getAvailableTilesets()) { // If one of the tilesets is no longer available, default back
+            settings.tileSet = "FantasyHex"
+        }
+
+        CameraStageBaseScreen.setSkin() // needs to come AFTER the Texture reset, since the buttons depend on it
 
         Gdx.graphics.isContinuousRendering = settings.continuousRendering
+        screen = LoadingScreen()
+
 
         thread(name = "LoadJSON") {
             RulesetCache.loadRulesets(printOutput = true)
             translations.tryReadTranslationForCurrentLanguage()
             translations.loadPercentageCompleteOfLanguages()
+            TileSetCache.loadTileSetConfigs(printOutput = true)
 
             if (settings.userId.isEmpty()) { // assign permanent user id
                 settings.userId = UUID.randomUUID().toString()
@@ -96,8 +114,9 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
             // This stuff needs to run on the main thread because it needs the GL context
             Gdx.app.postRunnable {
                 ImageGetter.ruleset = RulesetCache.getBaseRuleset() // so that we can enter the map editor without having to load a game first
+
+
                 thread(name="Music") { startMusic() }
-                restoreSize()
 
                 if (settings.isFreshlyCreated) {
                     setScreen(LanguagePickerScreen())
@@ -108,22 +127,14 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
         crashController = CrashController.Impl(crashReportSender)
     }
 
-    fun restoreSize() {
-        if (!isSizeRestored && Gdx.app.type == Application.ApplicationType.Desktop && settings.windowState.height>39 && settings.windowState.width>39) {
-            isSizeRestored = true
-            Gdx.graphics.setWindowedMode(settings.windowState.width, settings.windowState.height)
-        }
-    }
-
-
     fun loadGame(gameInfo: GameInfo) {
         this.gameInfo = gameInfo
         ImageGetter.setNewRuleset(gameInfo.ruleSet)
         Gdx.input.inputProcessor = null // Since we will set the world screen when we're ready,
         if (gameInfo.civilizations.count { it.playerType == PlayerType.Human } > 1 && !gameInfo.gameParameters.isOnlineMultiplayer)
-            setScreen(PlayerReadyScreen(gameInfo.getPlayerToViewAs()))
+            setScreen(PlayerReadyScreen(gameInfo, gameInfo.getPlayerToViewAs()))
         else {
-            worldScreen = WorldScreen(gameInfo.getPlayerToViewAs())
+            worldScreen = WorldScreen(gameInfo, gameInfo.getPlayerToViewAs())
             setWorldScreen()
         }
     }
@@ -159,7 +170,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
     }
 
     override fun pause() {
-        if (this::gameInfo.isInitialized) GameSaver.autoSave(this.gameInfo)
+        if (isGameInfoInitialized()) GameSaver.autoSave(this.gameInfo)
         super.pause()
     }
 
@@ -175,7 +186,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
         val threadList = Array(numThreads) { _ -> Thread() }
         Thread.enumerate(threadList)
 
-        if (::gameInfo.isInitialized){
+        if (isGameInfoInitialized()){
             val autoSaveThread = threadList.firstOrNull { it.name == "Autosave" }
             if (autoSaveThread != null && autoSaveThread.isAlive) {
                 // auto save is already in progress (e.g. started by onPause() event)

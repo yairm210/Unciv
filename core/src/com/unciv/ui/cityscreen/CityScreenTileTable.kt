@@ -7,6 +7,8 @@ import com.unciv.logic.map.TileInfo
 import com.unciv.models.UncivSound
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.tr
+import com.unciv.ui.civilopedia.CivilopediaScreen
+import com.unciv.ui.civilopedia.MarkupRenderer
 import com.unciv.ui.utils.*
 import kotlin.math.roundToInt
 
@@ -32,7 +34,10 @@ class CityScreenTileTable(private val cityScreen: CityScreen): Table() {
         val stats = selectedTile.getTileStats(city, city.civInfo)
         innerTable.pad(5f)
 
-        innerTable.add(selectedTile.toString(city.civInfo).toLabel()).colspan(2)
+        innerTable.add( MarkupRenderer.render(selectedTile.toMarkup(city.civInfo)) {
+            // Sorry, this will leave the city screen
+            UncivGame.Current.setScreen(CivilopediaScreen(city.civInfo.gameInfo.ruleSet, link = it))
+        } )
         innerTable.row()
         innerTable.add(getTileStatsTable(stats)).row()
 
@@ -52,7 +57,7 @@ class CityScreenTileTable(private val cityScreen: CityScreen): Table() {
                     || !cityScreen.canChangeState)
                 buyTileButton.disable()
 
-            innerTable.add(buyTileButton).row()
+            innerTable.add(buyTileButton).padTop(5f).row()
         }
 
         if (city.civInfo.cities.filterNot { it == city }.any { it.isWorked(selectedTile) })
@@ -67,7 +72,7 @@ class CityScreenTileTable(private val cityScreen: CityScreen): Table() {
                     cityScreen.update()
                 }
                 if (!cityScreen.canChangeState) unlockButton.disable()
-                innerTable.add(unlockButton).row()
+                innerTable.add(unlockButton).padTop(5f).row()
             } else {
                 val lockButton = "Lock".toTextButton()
                 lockButton.onClick {
@@ -76,7 +81,7 @@ class CityScreenTileTable(private val cityScreen: CityScreen): Table() {
                     cityScreen.update()
                 }
                 if (!cityScreen.canChangeState) lockButton.disable()
-                innerTable.add(lockButton).row()
+                innerTable.add(lockButton).padTop(5f).row()
             }
         }
         if (selectedTile.isCityCenter() && selectedTile.getCity() != city && selectedTile.getCity()!!.civInfo == city.civInfo)

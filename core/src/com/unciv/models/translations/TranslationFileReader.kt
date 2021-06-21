@@ -3,7 +3,6 @@ package com.unciv.models.translations
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.files.FileHandle
 import java.nio.charset.Charset
-import java.util.logging.FileHandler
 import kotlin.collections.set
 
 object TranslationFileReader {

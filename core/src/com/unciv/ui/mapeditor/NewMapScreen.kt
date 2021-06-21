@@ -4,10 +4,9 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.MainMenuScreen
 import com.unciv.UncivGame
-import com.unciv.logic.map.mapgenerator.MapGenerator
 import com.unciv.logic.map.MapParameters
 import com.unciv.logic.map.TileMap
-import com.unciv.models.metadata.GameParameters
+import com.unciv.logic.map.mapgenerator.MapGenerator
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.translations.tr
 import com.unciv.ui.newgamescreen.MapParametersTable
@@ -18,19 +17,20 @@ import kotlin.concurrent.thread
 import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 
 /** New map generation screen */
-class NewMapScreen : PickerScreen() {
+class NewMapScreen(val mapParameters: MapParameters = MapParameters()) : PickerScreen() {
 
-    private val mapParameters = MapParameters()
     private val ruleset = RulesetCache.getBaseRuleset()
     private var generatedMap: TileMap? = null
+    private val mapParametersTable: MapParametersTable
 
     init {
         setDefaultCloseAction(MainMenuScreen())
 
+        mapParametersTable = MapParametersTable(mapParameters, isEmptyMapAllowed = true)
         val newMapScreenOptionsTable = Table(skin).apply {
             pad(10f)
             add("Map Options".toLabel(fontSize = 24)).row()
-            add(MapParametersTable(mapParameters, isEmptyMapAllowed = true)).row()
+            add(mapParametersTable).row()
             add(ModCheckboxTable(mapParameters.mods, this@NewMapScreen) {
                 ruleset.clear()
                 val newRuleset = RulesetCache.getComplexRuleset(mapParameters.mods)
@@ -46,13 +46,24 @@ class NewMapScreen : PickerScreen() {
 
         topTable.apply {
             add(ScrollPane(newMapScreenOptionsTable).apply { setOverscroll(false, false) })
-                    .height(topTable.parent.height)
             pack()
-            setFillParent(true)
+//            setFillParent(true)
         }
 
         rightButtonSetEnabled(true)
         rightSideButton.onClick {
+            val message = mapParameters.mapSize.fixUndesiredSizes(mapParameters.worldWrap)
+            if (message != null) {
+                Gdx.app.postRunnable {
+                    ToastPopup( message, UncivGame.Current.screen as CameraStageBaseScreen, 4000 )
+                    with (mapParameters.mapSize) {
+                        mapParametersTable.customMapSizeRadius.text = radius.toString()
+                        mapParametersTable.customMapWidth.text = width.toString()
+                        mapParametersTable.customMapHeight.text = height.toString()
+                    }
+                }
+                return@onClick
+            }
             Gdx.input.inputProcessor = null // remove input processing - nothing will be clicked!
             rightButtonSetEnabled(false)
 
@@ -64,7 +75,7 @@ class NewMapScreen : PickerScreen() {
                     Gdx.app.postRunnable {
                         val mapEditorScreen = MapEditorScreen(generatedMap!!)
                         mapEditorScreen.ruleset = ruleset
-                        UncivGame.Current.setScreen(mapEditorScreen)
+                        game.setScreen(mapEditorScreen)
                     }
 
                 } catch (exception: Exception) {

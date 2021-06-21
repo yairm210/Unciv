@@ -1,13 +1,13 @@
 package com.unciv.ui.victoryscreen
 
-enum class RankingType (val value: String) {
-        Population("Population"),
-        CropYield("Crop Yield"),
-        Production("Production"),
-        Gold("Gold"),
-        Land("Land"),
-        Force("Force"),
-        Happiness("Happiness"),
-        Technologies("Technologies"),
-        Culture("Culture")
+enum class RankingType {
+        Population,
+        Crop_Yield,
+        Production,
+        Gold,
+        Territory,
+        Force,
+        Happiness,
+        Technologies,
+        Culture
     }

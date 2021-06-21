@@ -13,6 +13,8 @@ import com.unciv.logic.city.CityInfo
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.translations.tr
+import com.unciv.ui.civilopedia.CivilopediaCategories
+import com.unciv.ui.civilopedia.CivilopediaScreen
 import com.unciv.ui.pickerscreens.PromotionPickerScreen
 import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.WorldScreen
@@ -30,12 +32,15 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
     /** This is in preparation for multi-select and multi-move  */
     val selectedUnits = ArrayList<MapUnit>()
 
+    // Whether the (first) selected unit is in unit-swapping mode
+    var selectedUnitIsSwapping = false
 
     /** Sending no unit clears the selected units entirely */
     fun selectUnit(unit:MapUnit?=null, append:Boolean=false) {
         if (!append) selectedUnits.clear()
         selectedCity = null
         if (unit != null) selectedUnits.add(unit)
+        selectedUnitIsSwapping = false
     }
 
     var selectedCity : CityInfo? = null
@@ -78,7 +83,9 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
             touchable = Touchable.enabled
             onClick {
                 selectedUnit?.currentTile?.position?.let {
-                    worldScreen.mapHolder.setCenterPosition(it, false, false)
+                    if ( !worldScreen.mapHolder.setCenterPosition(it, false, false) && selectedUnit != null ) {
+                        worldScreen.game.setScreen(CivilopediaScreen(worldScreen.gameInfo.ruleSet, CivilopediaCategories.Unit, selectedUnit!!.name))
+                    }
                 }
             }
         }).expand()
@@ -219,13 +226,16 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
         val previouslySelectedUnit = selectedUnit
         val previousNumberOfSelectedUnits = selectedUnits.size
 
+        // Do not select a different unit or city center if we click on it to swap our current unit to it
+        if (selectedUnitIsSwapping && selectedUnit != null && selectedUnit!!.movement.canUnitSwapTo(selectedTile)) return
+
         if (selectedTile.isCityCenter()
                 && (selectedTile.getOwner() == worldScreen.viewingCiv || worldScreen.viewingCiv.isSpectator())) {
             citySelected(selectedTile.getCity()!!)
         } else if (selectedTile.militaryUnit != null
                 && (selectedTile.militaryUnit!!.civInfo == worldScreen.viewingCiv || worldScreen.viewingCiv.isSpectator())
                 && selectedTile.militaryUnit!! !in selectedUnits
-                && (selectedTile.civilianUnit == null || selectedUnit != selectedTile.civilianUnit)) {
+                && (selectedTile.civilianUnit == null || selectedUnit != selectedTile.civilianUnit)) { // Only select the military unit there if we do not currently have the civilian unit selected
             selectUnit(selectedTile.militaryUnit!!, Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT))
         } else if (selectedTile.civilianUnit != null
                 && (selectedTile.civilianUnit!!.civInfo == worldScreen.viewingCiv || worldScreen.viewingCiv.isSpectator())

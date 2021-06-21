@@ -5,26 +5,35 @@ import com.unciv.UncivGame
 import com.unciv.models.metadata.GameSpeed
 import com.unciv.models.translations.tr
 import com.unciv.ui.utils.Fonts
+import com.unciv.logic.trade.TradeType.TradeTypeNumberType
 
-data class TradeOffer(var name:String, var type: TradeType, var amount:Int=1, var duration:Int=-1) {
+data class TradeOffer(val name:String, val type:TradeType, var amount:Int = 1, var duration: Int = -1) {
 
     init {
-        // Duration needs to be part of the variables defined at the top, so that it will be copied over with copy()
-        duration = when(type){
-            TradeType.Gold, TradeType.Technology, TradeType.Introduction, TradeType.WarDeclaration, TradeType.City -> -1 /** -1 for offers that are immediate (e.g. gold transfer) */
-            else -> when(UncivGame.Current.gameInfo.gameParameters.gameSpeed){
-                GameSpeed.Quick -> if (name==Constants.peaceTreaty) 10 else 25
-                else -> ((if (name==Constants.peaceTreaty) 10 else 30) * UncivGame.Current.gameInfo.gameParameters.gameSpeed.modifier).toInt()
+        // Duration needs to be part of the variables defined in the primary constructor, 
+        // so that it will be copied over with the automatically generated copy()
+        
+        duration =
+            if (type.isImmediate) -1 // -1 for offers that are immediate (e.g. gold transfer)
+            else {
+                // Do *not* access UncivGame.Current.gameInfo in the default constructor!
+                val gameSpeed = UncivGame.Current.gameInfo.gameParameters.gameSpeed
+                when {
+                    name == Constants.peaceTreaty -> 10
+                    gameSpeed == GameSpeed.Quick -> 25
+                    else -> (30 * gameSpeed.modifier).toInt()
+                }
             }
-        }
-    }
-    constructor() : this("", TradeType.Gold) // so that the json deserializer can work
-    fun equals(offer: TradeOffer): Boolean {
-        return offer.name==name
-                && offer.type==type
-                && offer.amount==amount
     }
 
+    constructor() : this("", TradeType.Gold) // so that the json deserializer can work
+
+    @Suppress("CovariantEquals")    // This is an overload, not an override of the built-in equals(Any?)
+    fun equals(offer: TradeOffer): Boolean {
+        return offer.name == name
+                && offer.type == type
+                && offer.amount == amount
+    }
 
     fun getOfferText(): String {
         var offerText = when(type){
@@ -33,14 +42,12 @@ data class TradeOffer(var name:String, var type: TradeType, var amount:Int=1, va
             TradeType.City -> UncivGame.Current.gameInfo.getCities().firstOrNull{ it.id == name }?.name ?: "Non-existent city"
             else -> name
         }.tr()
-        if (type !in tradesToNotHaveNumbers || name=="Research Agreement") offerText += " ($amount)"
+
+        if (type.numberType == TradeTypeNumberType.Simple || name == Constants.researchAgreement) offerText += " ($amount)"
+        else if (type.numberType == TradeTypeNumberType.Gold) offerText += " ($amount${Fonts.gold})"
+       
         if (duration > 0) offerText += "\n" + duration + Fonts.turn
+
         return offerText
     }
-
-    private companion object{
-        val tradesToNotHaveNumbers = listOf(TradeType.Technology, TradeType.City,
-            TradeType.Introduction, TradeType.Treaty, TradeType.WarDeclaration)
-    }
-
 }

@@ -1,6 +1,5 @@
 package com.unciv.logic.civilization
 
-import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
 import com.unciv.UncivGame
@@ -52,7 +51,7 @@ class QuestManager {
     /** Number of turns left before this city state can start a new individual quest */
     private var individualQuestCountdown: HashMap<String, Int> = HashMap()
 
-    /** Returns [true] if [civInfo] have active quests for [challenger] */
+    /** Returns true if [civInfo] have active quests for [challenger] */
     fun haveQuestsFor(challenger: CivilizationInfo): Boolean = assignedQuests.any { it.assignee == challenger.civName }
 
     fun clone(): QuestManager {
@@ -196,7 +195,7 @@ class QuestManager {
         if (quests.isEmpty())
             return
 
-        val topScore = quests.map { getScoreForQuest(it) }.max()!!
+        val topScore = quests.map { getScoreForQuest(it) }.maxOrNull()!!
 
         for (quest in quests) {
             if (getScoreForQuest(quest) >= topScore)
@@ -219,7 +218,7 @@ class QuestManager {
     }
 
     /** If quest is complete, it gives the influence reward to the player.
-     *  Returns [true] if the quest can be removed (is either complete, obsolete or expired) */
+     *  Returns true if the quest can be removed (is either complete, obsolete or expired) */
     private fun handleIndividualQuest(assignedQuest: AssignedQuest): Boolean {
         val assignee = civInfo.gameInfo.getCivilization(assignedQuest.assignee)
 
@@ -252,7 +251,7 @@ class QuestManager {
 
             when (quest.name) {
                 QuestName.ClearBarbarianCamp.value -> {
-                    val camp = getBarbarianEncampmentForQuest(assignee)!!
+                    val camp = getBarbarianEncampmentForQuest()!!
                     data1 = camp.position.x.toInt().toString()
                     data2 = camp.position.y.toInt().toString()
                 }
@@ -274,20 +273,21 @@ class QuestManager {
             newQuest.gameInfo = civInfo.gameInfo
 
             assignedQuests.add(newQuest)
-            assignee.addNotification("[${civInfo.civName}] assigned you a new quest: [${quest.name}].", Color.GOLD, DiplomacyAction(civInfo.civName))
+            assignee.addNotification("[${civInfo.civName}] assigned you a new quest: [${quest.name}].",
+                    DiplomacyAction(civInfo.civName), civInfo.civName, "OtherIcons/Quest")
 
             if (quest.isIndividual())
                 individualQuestCountdown[assignee.civName] = UNSET
         }
     }
 
-    /** Returns [true] if [civInfo] can assign a quest to [challenger] */
+    /** Returns true if [civInfo] can assign a quest to [challenger] */
     private fun canAssignAQuestTo(challenger: CivilizationInfo): Boolean {
         return !challenger.isDefeated() && challenger.isMajorCiv() &&
                 civInfo.knows(challenger) && !civInfo.isAtWarWith(challenger)
     }
 
-    /** Returns [true] if the [quest] can be assigned to [challenger] */
+    /** Returns true if the [quest] can be assigned to [challenger] */
     private fun isQuestValid(quest: Quest, challenger: CivilizationInfo): Boolean {
         if (!canAssignAQuestTo(challenger))
             return false
@@ -295,7 +295,7 @@ class QuestManager {
             return false
 
         return when (quest.name) {
-            QuestName.ClearBarbarianCamp.value -> getBarbarianEncampmentForQuest(challenger) != null
+            QuestName.ClearBarbarianCamp.value -> getBarbarianEncampmentForQuest() != null
             QuestName.Route.value -> {
                 if (challenger.cities.none() || !civInfo.hasEverBeenFriendWith(challenger)
                         || civInfo.isCapitalConnectedToCity(challenger.getCapital())) return false
@@ -313,7 +313,7 @@ class QuestManager {
         }
     }
 
-    /** Returns [true] if the [assignedQuest] is successfully completed */
+    /** Returns true if the [assignedQuest] is successfully completed */
     private fun isComplete(assignedQuest: AssignedQuest): Boolean {
         val assignee = civInfo.gameInfo.getCivilization(assignedQuest.assignee)
         return when (assignedQuest.questName) {
@@ -327,7 +327,7 @@ class QuestManager {
         }
     }
 
-    /** Returns [true] if the [assignedQuest] request cannot be fulfilled anymore */
+    /** Returns true if the [assignedQuest] request cannot be fulfilled anymore */
     private fun isObsolete(assignedQuest: AssignedQuest): Boolean {
         val assignee = civInfo.gameInfo.getCivilization(assignedQuest.assignee)
         return when (assignedQuest.questName) {
@@ -345,7 +345,8 @@ class QuestManager {
 
         civInfo.getDiplomacyManager(assignedQuest.assignee).influence += rewardInfluence
         if (rewardInfluence > 0)
-            assignee.addNotification("[${civInfo.civName}] rewarded you with [${rewardInfluence.toInt()}] influence for completing the [${assignedQuest.questName}] quest.", civInfo.getCapital().location, Color.GOLD)
+            assignee.addNotification("[${civInfo.civName}] rewarded you with [${rewardInfluence.toInt()}] influence for completing the [${assignedQuest.questName}] quest.",
+                    civInfo.getCapital().location, civInfo.civName, "OtherIcons/Quest")
     }
 
     /** Returns the score for the [assignedQuest] */
@@ -440,7 +441,7 @@ class QuestManager {
      * Returns a random [TileInfo] containing a Barbarian encampment within 8 tiles of [civInfo]
      * to be destroyed
      */
-    private fun getBarbarianEncampmentForQuest(challenger: CivilizationInfo): TileInfo? {
+    private fun getBarbarianEncampmentForQuest(): TileInfo? {
         val encampments = civInfo.getCapital().getCenterTile().getTilesInDistance(8)
                 .filter { it.improvement == Constants.barbarianEncampment }.toList()
 
@@ -491,7 +492,7 @@ class QuestManager {
     }
 
     /**
-     * Returns a random [NaturalWonder] not yet discovered by [challenger].
+     * Returns a random Natural Wonder not yet discovered by [challenger].
      */
     private fun getNaturalWonderToFindForQuest(challenger: CivilizationInfo): String? {
         val naturalWondersToFind = civInfo.gameInfo.tileMap.naturalWonders.subtract(challenger.naturalWonders)

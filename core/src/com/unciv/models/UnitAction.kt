@@ -9,18 +9,20 @@ data class UnitAction(
 )
 
 enum class UnitActionType(val value: String) {
+    SwapUnits("Swap units"),
     Automate("Automate"),
-    StopMovement("Stop movement"),
     StopAutomation("Stop automation"),
-    StopExploration("Stop exploration"),
+    StopMovement("Stop movement"),
     Sleep("Sleep"),
     SleepUntilHealed("Sleep until healed"),
     Fortify("Fortify"),
     FortifyUntilHealed("Fortify until healed"),
     Explore("Explore"),
+    StopExploration("Stop exploration"),
     Promote("Promote"),
     Upgrade("Upgrade"),
     Pillage("Pillage"),
+    Paradrop("Paradrop"),
     SetUp("Set up"),
     FoundCity("Found city"),
     ConstructImprovement("Construct improvement"),

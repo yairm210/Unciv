@@ -6,12 +6,14 @@ import com.unciv.logic.GameStarter
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.map.MapParameters
 import com.unciv.logic.map.MapSize
+import com.unciv.logic.map.MapSizeNew
 import com.unciv.models.metadata.GameParameters
 import com.unciv.models.metadata.GameSettings
 import com.unciv.models.metadata.GameSpeed
 import com.unciv.models.metadata.Player
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.simulation.Simulation
+import com.unciv.models.tilesets.TileSetCache
 import com.unciv.ui.newgamescreen.GameSetupInfo
 
 internal object ConsoleLauncher {
@@ -35,6 +37,7 @@ internal object ConsoleLauncher {
         }
 
         RulesetCache.loadRulesets(true)
+        TileSetCache.loadTileSetConfigs(true)
 
         val gameParameters = getGameParameters("China", "Greece")
         val mapParameters = getMapParameters()
@@ -42,7 +45,7 @@ internal object ConsoleLauncher {
         val newGame = GameStarter.startNewGame(gameSetupInfo)
         UncivGame.Current.gameInfo = newGame
 
-        var simulation = Simulation(newGame,10,4)
+        val simulation = Simulation(newGame,10,4)
 
         simulation.start()
 
@@ -52,7 +55,7 @@ internal object ConsoleLauncher {
 
     private fun getMapParameters(): MapParameters {
         return MapParameters().apply {
-            size = MapSize.Tiny
+            mapSize = MapSizeNew(MapSize.Tiny)
             noRuins = true
             noNaturalWonders = true
         }

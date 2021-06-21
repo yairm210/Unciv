@@ -12,13 +12,6 @@ class TileResource : NamedStats() {
     var terrainsCanBeFoundOn: List<String> = listOf()
     var improvement: String? = null
     var improvementStats: Stats? = null
-
-    /**
-     * The building that improves this resource, if any. E.G.: Granary for wheat, Stable for cattle.
-     *
-     */
-    @Deprecated("Since 3.13.3 - replaced with '[stats] from [resource] tiles in this city' unique in the building")
-    var building: String? = null
     var revealedBy: String? = null
     var unique: String? = null
 

@@ -8,11 +8,9 @@ import com.unciv.logic.city.PerpetualConstruction
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.translations.tr
-import com.unciv.ui.utils.Fonts
 import com.unciv.ui.utils.ImageGetter
 import com.unciv.ui.utils.surroundWithCircle
 import com.unciv.ui.utils.toLabel
-import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 
 class ConstructionInfoTable(val city: CityInfo): Table() {
     val selectedConstructionTable = Table()
@@ -52,13 +50,10 @@ class ConstructionInfoTable(val city: CityInfo): Table() {
 
         var buildingText = construction.name.tr()
         val specialConstruction = PerpetualConstruction.perpetualConstructionsMap[construction.name]
-        if (specialConstruction == null) {
-            val turnsToComplete = cityConstructions.turnsToConstruction(construction.name)
-            buildingText += ("\r\n" + "Cost".tr() + " " + construction.getProductionCost(city.civInfo).toString()).tr()
-            buildingText += turnOrTurns(turnsToComplete)
-        } else {
-            buildingText += specialConstruction.getProductionTooltip(city)
-        }
+
+        if (specialConstruction == null) buildingText += cityConstructions.getTurnsToConstructionString(construction.name)
+        else buildingText += specialConstruction.getProductionTooltip(city)
+
         selectedConstructionTable.add(buildingText.toLabel()).row()
 
 
@@ -72,10 +67,6 @@ class ConstructionInfoTable(val city: CityInfo): Table() {
         val descriptionLabel = description.toLabel()
         descriptionLabel.wrap = true
         selectedConstructionTable.add(descriptionLabel).colspan(2).width(stage.width / 4)
-
     }
 
-    companion object {
-        internal fun turnOrTurns(turns: Int): String = "\r\n$turns${Fonts.turn}"
-    }
 }

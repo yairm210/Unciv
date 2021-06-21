@@ -1,10 +1,8 @@
 package com.unciv.logic.automation
 
-import com.badlogic.gdx.graphics.Color
 import com.unciv.Constants
 import com.unciv.logic.battle.*
 import com.unciv.logic.city.CityInfo
-import com.unciv.logic.civilization.GreatPersonManager
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
@@ -30,8 +28,8 @@ object UnitAutomation {
                 unit.movement.getDistanceToTiles().keys.filter { isGoodTileToExplore(unit, it) }
         if (explorableTilesThisTurn.any()) {
             val bestTile = explorableTilesThisTurn
-                    .sortedByDescending { it.getHeight() }  // secondary sort is by 'how far can you see'
-                    .maxBy { it.aerialDistanceTo(unit.currentTile) }!! // primary sort is by 'how far can you go'
+                .sortedByDescending { it.getHeight() }  // secondary sort is by 'how far can you see'
+                .maxByOrNull { it: TileInfo -> it.aerialDistanceTo(unit.currentTile) }!! // primary sort is by 'how far can you go'
             unit.movement.headTowards(bestTile)
             return true
         }
@@ -209,8 +207,8 @@ object UnitAutomation {
             return true
         }
 
-        val bestTilesForHealing = tilesByHealingRate.maxBy { it.key }!!.value
-        val bestTileForHealing = bestTilesForHealing.maxBy { it.getDefensiveBonus() }!!
+        val bestTilesForHealing = tilesByHealingRate.maxByOrNull {  it.key }!!.value
+        val bestTileForHealing = bestTilesForHealing.maxByOrNull {  it.getDefensiveBonus() }!!
         val bestTileForHealingRank = unit.rankTileForHealing(bestTileForHealing)
 
         if (currentUnitTile != bestTileForHealing
@@ -225,11 +223,12 @@ object UnitAutomation {
         if (unit.type.isCivilian()) return false
         val unitDistanceToTiles = unit.movement.getDistanceToTiles()
         val tilesThatCanWalkToAndThenPillage = unitDistanceToTiles
-                .filter { it.value.totalDistance < unit.currentMovement }.keys
-                .filter { unit.movement.canMoveTo(it) && UnitActions.canPillage(unit, it) }
+            .filter { it.value.totalDistance < unit.currentMovement }.keys
+            .filter { unit.movement.canMoveTo(it) && UnitActions.canPillage(unit, it) }
+            .filter { it.getOwner() != unit.civInfo }
 
         if (tilesThatCanWalkToAndThenPillage.isEmpty()) return false
-        val tileToPillage = tilesThatCanWalkToAndThenPillage.maxBy { it.getDefensiveBonus() }!!
+        val tileToPillage = tilesThatCanWalkToAndThenPillage.maxByOrNull { it: TileInfo -> it.getDefensiveBonus() }!!
         if (unit.getTile() != tileToPillage)
             unit.movement.moveToTile(tileToPillage)
 
@@ -265,7 +264,7 @@ object UnitAutomation {
         if (unit.type.isRanged())
             closeEnemies = closeEnemies.filterNot { it.tileToAttack.isCityCenter() && it.tileToAttack.getCity()!!.health == 1 }
 
-        val closestEnemy = closeEnemies.minBy { it.tileToAttack.aerialDistanceTo(unit.getTile()) }
+        val closestEnemy = closeEnemies.minByOrNull { it.tileToAttack.aerialDistanceTo(unit.getTile()) }
 
         if (closestEnemy != null) {
             unit.movement.headTowards(closestEnemy.tileToAttackFrom)
@@ -323,7 +322,8 @@ object UnitAutomation {
                 .asSequence().map { it.getCenterTile() }
                 .sortedBy { cityCenterTile ->
                     // sort enemy cities by closeness to our cities, and only then choose the first reachable - checking canReach is comparatively very time-intensive!
-                    unit.civInfo.cities.asSequence().map { cityCenterTile.aerialDistanceTo(it.getCenterTile()) }.min()!!
+                    unit.civInfo.cities.asSequence()
+                        .map { cityCenterTile.aerialDistanceTo(it.getCenterTile()) }.minOrNull()!!
                 }
                 .firstOrNull { unit.movement.canReach(it) }
 
@@ -345,7 +345,7 @@ object UnitAutomation {
                                 it.key.aerialDistanceTo(closestReachableEnemyCity) <=
                                         unitRange && it.key !in tilesInBombardRange
                             }
-                            .minBy { it.value.totalDistance }?.key
+                        .minByOrNull { it.value.totalDistance }?.key
 
             // move into position far away enough that the bombard doesn't hurt
             if (tileToMoveTo != null) {
@@ -378,15 +378,11 @@ object UnitAutomation {
     }
 
     fun tryBombardEnemy(city: CityInfo): Boolean {
-        return when {
-            city.attackedThisTurn -> false
-            else -> {
-                val enemy = chooseBombardTarget(city)
-                if (enemy == null) return false
-                Battle.attack(CityCombatant(city), enemy)
-                true
-            }
-        }
+        if (!city.canBombard()) return false
+        val enemy = chooseBombardTarget(city)
+        if (enemy == null) return false
+        Battle.attack(CityCombatant(city), enemy)
+        return true
     }
 
     private fun chooseBombardTarget(city: CityInfo): ICombatant? {
@@ -401,7 +397,7 @@ object UnitAutomation {
                     .filter { it.getUnitType().isRanged() }
             if (rangedUnits.any()) targets = rangedUnits
         }
-        return targets.minBy { it.getHealth() }
+        return targets.minByOrNull { it: ICombatant -> it.getHealth() }
     }
 
     private fun tryTakeBackCapturedCity(unit: MapUnit): Boolean {
@@ -474,7 +470,7 @@ object UnitAutomation {
         if (tryGoToRuinAndEncampment(unit) && unit.currentMovement == 0f) return
         if (unit.health < 80 && tryHealUnit(unit)) return
         if (tryExplore(unit)) return
-        unit.civInfo.addNotification("[${unit.displayName()}] finished exploring.", unit.currentTile.position, Color.GRAY)
+        unit.civInfo.addNotification("[${unit.displayName()}] finished exploring.", unit.currentTile.position, unit.name, "OtherIcons/Sleep")
         unit.action = null
     }
 
@@ -487,7 +483,7 @@ object UnitAutomation {
             return
         }
         val tileFurthestFromEnemy = reachableTiles.keys.filter { unit.movement.canMoveTo(it) }
-                .maxBy { countDistanceToClosestEnemy(unit, it) }
+            .maxByOrNull { countDistanceToClosestEnemy(unit, it) }
         if (tileFurthestFromEnemy == null) return // can't move anywhere!
         unit.movement.moveToTile(tileFurthestFromEnemy)
     }

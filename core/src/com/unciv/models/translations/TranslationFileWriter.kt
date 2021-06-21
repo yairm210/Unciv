@@ -4,7 +4,6 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.utils.Array
 import com.unciv.JsonParser
-import com.unciv.logic.battle.BattleDamage
 import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.ruleset.*
 import com.unciv.models.ruleset.tech.TechColumn
@@ -207,7 +206,7 @@ object TranslationFileWriter {
                             RulesetCache.getBaseRuleset().buildings.containsKey(parameter)
                                     || parameter == "Wonders" -> "building"
 
-                            UnitType.values().any { it.name == parameter } || parameter=="Military" -> "unitType"
+                            UnitType.values().any { it.name == parameter } || parameter == "Military" -> "unitType"
                             Stats.isStats(parameter) -> "stats"
                             parameter == "in this city"
                                     || parameter == "in all cities"
@@ -215,6 +214,7 @@ object TranslationFileWriter {
                                     || parameter == "in capital"
                                     || parameter == "in all cities with a world wonder"
                                     || parameter == "in all cities connected to capital"
+                                    || parameter == "in all cities with a garrison"
                             -> "cityFilter"
                             else -> "param"
                         }
@@ -225,12 +225,8 @@ object TranslationFileWriter {
                         }
                         existingParameterNames += parameterName
 
-                        stringToTranslate = stringToTranslate.replace(parameter, parameterName)
+                        stringToTranslate = stringToTranslate.replaceFirst(parameter, parameterName)
                     }
-                } else {
-                    // substitute the regex for "Bonus/Penalty vs ..."
-                    val match = Regex(BattleDamage.BONUS_VS_UNIT_TYPE).matchEntire(string)
-                    if (match != null) stringToTranslate = "${match.groupValues[1]} vs [unitType]"
                 }
                 resultStrings!!.add("$stringToTranslate = ")
                 return

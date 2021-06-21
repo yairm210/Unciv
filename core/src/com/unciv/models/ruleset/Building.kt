@@ -64,24 +64,13 @@ class Building : NamedStats(), IConstruction {
     var replacementTextForUniques = ""
     val uniqueObjects: List<Unique> by lazy { uniques.map { Unique(it) } }
 
-    /**
-     * The bonus stats that a resource gets when this building is built
-     */
-    @Deprecated("Since 3.13.3 - replaced with '[stats] from [resource] tiles in this city'")
-    var resourceBonusStats: Stats? = null
-
     fun getShortDescription(ruleset: Ruleset): String { // should fit in one line
         val infoList = mutableListOf<String>()
         val str = getStats(null).toString()
         if (str.isNotEmpty()) infoList += str
         for (stat in getStatPercentageBonuses(null).toHashMap())
-            if (stat.value != 0f) infoList += "+${stat.value.toInt()}% ${stat.key.toString().tr()}"
+            if (stat.value != 0f) infoList += "+${stat.value.toInt()}% ${stat.key.name.tr()}"
 
-        val improvedResources = ruleset.tileResources.values.asSequence().filter { it.building == name }.map { it.name.tr() }
-        if (improvedResources.any()) {
-            // buildings that improve resources
-            infoList += improvedResources.joinToString() + " {provide} " + resourceBonusStats.toString()
-        }
         if (requiredNearbyImprovedResources != null)
             infoList += "Requires worked [" + requiredNearbyImprovedResources!!.joinToString("/") { it.tr() } + "] near city"
         if (uniques.isNotEmpty()) {
@@ -102,7 +91,7 @@ class Building : NamedStats(), IConstruction {
                 val stats = unique.params[0]
                 if (!tileBonusHashmap.containsKey(stats)) tileBonusHashmap[stats] = ArrayList()
                 tileBonusHashmap[stats]!!.add(unique.params[1])
-            } else finalUniques += unique.text
+            } else if (unique.placeholderText != "Consumes [] []") finalUniques += unique.text
         for ((key, value) in tileBonusHashmap)
             finalUniques += "[stats] from [tileFilter] tiles in this city".fillPlaceholders(key, value.joinToString { it.tr() })
         return finalUniques
@@ -151,11 +140,6 @@ class Building : NamedStats(), IConstruction {
 
         for ((specialistName, amount) in newSpecialists())
             stringBuilder.appendLine("+$amount " + "[$specialistName] slots".tr())
-
-        if (resourceBonusStats != null) {
-            val resources = ruleset.tileResources.values.filter { name == it.building }.joinToString { it.name.tr() }
-            stringBuilder.appendLine("$resources {provide} $resourceBonusStats".tr())
-        }
 
         if (requiredNearbyImprovedResources != null)
             stringBuilder.appendLine(("Requires worked [" + requiredNearbyImprovedResources!!.joinToString("/") { it.tr() } + "] near city").tr())
@@ -287,6 +271,7 @@ class Building : NamedStats(), IConstruction {
         }
 
         for (unique in uniqueObjects) when (unique.placeholderText) {
+            "Enables nuclear weapon" -> if(!construction.cityInfo.civInfo.gameInfo.gameParameters.nuclearWeaponsEnabled) return "Disabled by setting"
             "Must be on []" -> if (!cityCenter.matchesUniqueFilter(unique.params[0], civInfo)) return unique.text
             "Must not be on []" -> if (cityCenter.matchesUniqueFilter(unique.params[0], civInfo)) return unique.text
             "Must be next to []" -> if (!(unique.params[0] == "Fresh water" && cityCenter.isAdjacentToRiver()) // Fresh water is special, in that rivers are not tiles themselves but also fit the filter.
@@ -364,8 +349,18 @@ class Building : NamedStats(), IConstruction {
             "Requires a [] in all cities" -> {
                 val filter = unique.params[0]
                 if (civInfo.gameInfo.ruleSet.buildings.containsKey(filter)
-                        && civInfo.cities.any { !it.cityConstructions.containsBuildingOrEquivalent(unique.params[0]) })
+                        && civInfo.cities.any { !it.isPuppet && !it.cityConstructions.containsBuildingOrEquivalent(unique.params[0]) })
                     return "Requires a [${civInfo.getEquivalentBuilding(unique.params[0])}] in all cities"  // replace with civ-specific building for user
+            }
+            "Hidden until [] social policy branches have been completed" -> {
+                if (construction.cityInfo.civInfo.getCompletedPolicyBranchesCount() < unique.params[0].toInt()) {
+                    return "Should not be displayed"
+                }
+            }
+            "Hidden when cultural victory is disabled" -> {
+                if ( !civInfo.gameInfo.gameParameters.victoryTypes.contains(VictoryType.Cultural)) {
+                    return "Hidden when cultural victory is disabled"
+                }
             }
         }
 
@@ -398,7 +393,7 @@ class Building : NamedStats(), IConstruction {
         if (!civInfo.gameInfo.gameParameters.victoryTypes.contains(VictoryType.Scientific)
                 && "Enables construction of Spaceship parts" in uniques)
             return "Can't construct spaceship parts if scientific victory is not enabled!"
-
+        
         return ""
     }
 
@@ -412,8 +407,8 @@ class Building : NamedStats(), IConstruction {
             civInfo.victoryManager.currentsSpaceshipParts.add(name, 1)
             return true
         }
-        cityConstructions.addBuilding(name)
 
+        cityConstructions.addBuilding(name)
 
         val improvement = getImprovement(civInfo.gameInfo.ruleSet)
         if (improvement != null) {
@@ -424,7 +419,6 @@ class Building : NamedStats(), IConstruction {
                 tileWithImprovement.improvement = improvement.name
             }
         }
-
 
         if (providesFreeBuilding != null && !cityConstructions.containsBuildingOrEquivalent(providesFreeBuilding!!)) {
             var buildingToAdd = providesFreeBuilding!!
@@ -452,11 +446,26 @@ class Building : NamedStats(), IConstruction {
 
         return true
     }
+    
+    fun matchesFilter(filter: String): Boolean {
+        return when (filter) {
+            "All" -> true
+            name -> true
+            "Building", "Buildings" -> !(isWonder || isNationalWonder)
+            "Wonder", "Wonders" -> isWonder || isNationalWonder
+            else -> {
+                if (uniques.contains(filter)) return true
+                return false
+            }
+        }
+    }
 
     fun isStatRelated(stat: Stat): Boolean {
         if (get(stat) > 0) return true
         if (getStatPercentageBonuses(null).get(stat) > 0) return true
-        if (resourceBonusStats != null && resourceBonusStats!!.get(stat) > 0) return true
+        if (uniqueObjects.any { it.placeholderText == "[] per [] population []" && it.stats.get(stat) > 0 }) return true
+        // Deprecated since 3.14.17, left for modding compatibility
+        if (uniqueObjects.any { it.placeholderText == "[] Per [] Population in this city"}) return true
         return false
     }
 
@@ -469,7 +478,7 @@ class Building : NamedStats(), IConstruction {
         val improvementUnique = uniqueObjects
                 .firstOrNull { it.placeholderText == "Creates a [] improvement on a specific tile" }
         if (improvementUnique == null) return null
-        return ruleset.tileImprovements[improvementUnique.params[0]]!!
+        return ruleset.tileImprovements[improvementUnique.params[0]]
     }
 
     fun isSellable() = !isWonder && !isNationalWonder && !uniques.contains("Unsellable")

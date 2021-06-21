@@ -2,7 +2,7 @@ package com.unciv.models
 
 import java.util.*
 
-class Counter<K> : LinkedHashMap<K, Int>() {
+open class Counter<K> : LinkedHashMap<K, Int>() {
 
     override operator fun get(key: K): Int? { // don't return null if empty
         if (containsKey(key))

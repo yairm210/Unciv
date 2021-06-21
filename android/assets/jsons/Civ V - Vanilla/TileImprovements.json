@@ -42,16 +42,17 @@
 	// Resource-specific
 	{
 		"name": "Camp",
-		"resourceTerrainAllow": ["Forest"],
 		"turnsToBuild": 7,
 		"techRequired": "Trapping",
-		"uniques": ["[+1 Gold] once [Economics] is discovered"],
+		"uniques": ["Does not need removal of [Forest]","[+1 Gold] once [Economics] is discovered"],
 		"shortcutKey": "C"
 	},
 	{
 		"name": "Oil well",
+		"terrainsCanBeBuiltOn": ["Coast"],
 		"turnsToBuild": 9,
-		"techRequired": "Biology"
+		"techRequired": "Biology",
+		"shortcutKey": "W"
 	},
 	{
 		"name": "Pasture",
@@ -105,7 +106,8 @@
 		"name": "Railroad",
 		"turnsToBuild": 4,
 		"techRequired": "Railroad",
-		"uniques": ["Can be built outside your borders", "Costs [2] gold per turn when in your territory"]
+		"uniques": ["Can be built outside your borders", "Costs [2] gold per turn when in your territory"],
+		"shortcutKey": "R"
 	},
 	
 	// Removals
@@ -155,7 +157,8 @@
 	},
 	{
 		"name": "Cancel improvement order",
-		"uniques": ["Can be built outside your borders"]
+		"uniques": ["Can be built outside your borders"],
+		"shortcutKey": "."
 	},
 	
 	// Great Person improvements
@@ -182,7 +185,7 @@
 	},
 	{
 		"name": "Citadel",
-		"uniques": ["Gives a defensive bonus of [100]%", "Deal 30 damage to adjacent enemy units", "Great Improvement"]
+		"uniques": ["Gives a defensive bonus of [100]%", "Deal 30 damage to adjacent enemy units", "Great Improvement", "Can be built just outside your borders"]
 	},
 
 	//Civilization unique improvements
@@ -202,13 +205,14 @@
 		"food": 1,
 		"turnsToBuild": 7,
 		"uniques": ["[+1 Food] for each adjacent [Mountain]", "Cannot be built on bonus resource",
-			"[+1 Food] on [fresh water] tiles once [Civil Service] is discovered",
+			"[+1 Food] on [Fresh water] tiles once [Civil Service] is discovered",
 			"[+1 Food] on [non-fresh water] tiles once [Fertilizer] is discovered"],
 		"techRequired": "Construction",
 		"shortcutKey": "F"
 	},
 	
-	{ "name": "Ancient ruins" },
-	{ "name": "City ruins" },
-	{ "name": "Barbarian encampment" }
+	{ "name": "Ancient ruins", "uniques": ["Unpillagable"] },
+	{ "name": "City ruins", "uniques": ["Unpillagable"] },
+	{ "name": "City center", "uniques": ["Unpillagable"] },
+	{ "name": "Barbarian encampment", "uniques": ["Unpillagable"] }
 ]

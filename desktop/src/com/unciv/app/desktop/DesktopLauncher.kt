@@ -6,13 +6,16 @@ import club.minnced.discord.rpc.DiscordRichPresence
 import com.badlogic.gdx.Files
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration
+import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.tools.texturepacker.TexturePacker
-import com.badlogic.gdx.tools.texturepacker.TexturePackerFileProcessor
+import com.unciv.JsonParser
 import com.unciv.UncivGame
 import com.unciv.UncivGameParameters
+import com.unciv.logic.GameSaver
+import com.unciv.models.metadata.GameSettings
 import com.unciv.models.translations.tr
-import com.unciv.ui.utils.ORIGINAL_FONT_SIZE
+import com.unciv.ui.utils.Fonts
 import io.ktor.application.*
 import io.ktor.http.*
 import io.ktor.request.*
@@ -40,13 +43,18 @@ internal object DesktopLauncher {
         config.addIcon("ExtraImages/Icon.png", Files.FileType.Internal)
         config.title = "Unciv"
         config.useHDPI = true
+        if (FileHandle(GameSaver.settingsFileName).exists()) {
+            val settings = JsonParser().getFromJson(GameSettings::class.java, FileHandle(GameSaver.settingsFileName))
+            config.width = settings.windowState.width
+            config.height = settings.windowState.height
+        }
 
         val versionFromJar = DesktopLauncher.javaClass.`package`.specificationVersion ?: "Desktop"
 
         val desktopParameters = UncivGameParameters(
                 versionFromJar,
                 cancelDiscordEvent = { discordTimer?.cancel() },
-                fontImplementation = NativeFontDesktop(ORIGINAL_FONT_SIZE.toInt()),
+                fontImplementation = NativeFontDesktop(Fonts.ORIGINAL_FONT_SIZE.toInt()),
                 customSaveLocationHelper = CustomSaveLocationHelperDesktop()
         )
 
@@ -58,6 +66,8 @@ internal object DesktopLauncher {
         LwjglApplication(game, config)
     }
 
+    // Work in Progress?
+    @Suppress("unused")
     private fun startMultiplayerServer() {
 //        val games = HashMap<String, GameSetupInfo>()
         val files = HashMap<String, String>()
@@ -116,7 +126,7 @@ internal object DesktopLauncher {
         // https://github.com/yairm210/UnCiv/issues/1340
 
         /**
-         * These should be as big as possible in order to accommodate ALL the images together in one bug file.
+         * These should be as big as possible in order to accommodate ALL the images together in one big file.
          * Why? Because the rendering function of the main screen renders all the images consecutively, and every time it needs to switch between textures,
          * this causes a delay, leading to horrible lag if there are enough switches.
          * The cost of this specific solution is that the entire game.png needs be be kept in-memory constantly.
@@ -136,16 +146,24 @@ internal object DesktopLauncher {
         settings.combineSubdirectories = true
         settings.pot = true
         settings.fast = true
-
-        // This is so they don't look all pixelated
-        settings.filterMag = Texture.TextureFilter.MipMapLinearLinear
+        // Set some additional padding and enable duplicatePadding to prevent image edges from bleeding into each other due to mipmapping
+        settings.paddingX = 8
+        settings.paddingY = 8
+        settings.duplicatePadding = true
         settings.filterMin = Texture.TextureFilter.MipMapLinearLinear
+        settings.filterMag = Texture.TextureFilter.MipMapLinearLinear // I'm pretty sure this doesn't make sense for magnification, but setting it to Linear gives strange results
 
         if (File("../Images").exists()) { // So we don't run this from within a fat JAR
             packImagesIfOutdated(settings, "../Images", ".", "game")
             packImagesIfOutdated(settings, "../ImagesToPackSeparately/BuildingIcons", ".", "BuildingIcons")
             packImagesIfOutdated(settings, "../ImagesToPackSeparately/FlagIcons", ".", "FlagIcons")
             packImagesIfOutdated(settings, "../ImagesToPackSeparately/UnitIcons", ".", "UnitIcons")
+        }
+
+        if (File("../Skin").exists()) {
+            settings.filterMag = Texture.TextureFilter.Linear
+            settings.filterMin = Texture.TextureFilter.Linear
+            packImagesIfOutdated(settings, "../Skin", ".", "Skin")
         }
 
         // pack for mods as well
@@ -164,14 +182,14 @@ internal object DesktopLauncher {
     private fun packImagesIfOutdated(settings: TexturePacker.Settings, input: String, output: String, packFileName: String) {
         fun File.listTree(): Sequence<File> = when {
             this.isFile -> sequenceOf(this)
-            this.isDirectory -> this.listFiles().asSequence().flatMap { it.listTree() }
+            this.isDirectory -> this.listFiles()!!.asSequence().flatMap { it.listTree() }
             else -> sequenceOf()
         }
 
         val atlasFile = File("$output${File.separator}$packFileName.atlas")
         if (atlasFile.exists() && File("$output${File.separator}$packFileName.png").exists()) {
             val atlasModTime = atlasFile.lastModified()
-            if (!File(input).listTree().any { it.extension in listOf("png", "jpg", "jpeg") && it.lastModified() > atlasModTime }) return
+            if (File(input).listTree().none { it.extension in listOf("png", "jpg", "jpeg") && it.lastModified() > atlasModTime }) return
         }
 
         TexturePacker.process(settings, input, output, packFileName)

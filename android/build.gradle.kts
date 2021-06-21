@@ -4,12 +4,10 @@ import java.util.*
 plugins {
     id("com.android.application")
     id("kotlin-android")
-    id("kotlin-android-extensions")
 }
 
 android {
-    buildToolsVersion("29.0.2")
-    compileSdkVersion(29)
+    compileSdkVersion(30)
     sourceSets {
         getByName("main").apply {
             manifest.srcFile("AndroidManifest.xml")
@@ -27,7 +25,7 @@ android {
     defaultConfig {
         applicationId = "com.unciv.app"
         minSdkVersion(14)
-        targetSdkVersion(29)
+        targetSdkVersion(30)
         versionCode = BuildConfig.appCodeNumber
         versionName = BuildConfig.appVersion
 
@@ -65,6 +63,10 @@ android {
     lintOptions {
         disable("MissingTranslation")
     }
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_1_7
+        targetCompatibility = JavaVersion.VERSION_1_7
+    }
 }
 
 
@@ -75,21 +77,11 @@ task("copyAndroidNatives") {
     val natives: Configuration by configurations
 
     doFirst {
-        file("libs/armeabi/").mkdirs()
-        file("libs/armeabi-v7a/").mkdirs()
-        file("libs/arm64-v8a/").mkdirs()
-        file("libs/x86_64/").mkdirs()
-        file("libs/x86/").mkdirs()
+        val rx = Regex(""".*natives-([^.]+)\.jar$""")
         natives.forEach { jar ->
-            val outputDir: File? = when {
-                jar.name.endsWith("natives-arm64-v8a.jar") -> file("libs/arm64-v8a")
-                jar.name.endsWith("natives-armeabi-v7a.jar") -> file("libs/armeabi-v7a")
-                jar.name.endsWith("natives-armeabi.jar") -> file("libs/armeabi")
-                jar.name.endsWith("natives-x86_64.jar") -> file("libs/x86_64")
-                jar.name.endsWith("natives-x86.jar") -> file("libs/x86")
-                else -> null
-            }
-            outputDir?.let {
+            if (rx.matches(jar.name)) {
+                val outputDir = file(rx.replace(jar.name) { "libs/" + it.groups[1]!!.value })
+                outputDir.mkdirs()
                 copy {
                     from(zipTree(jar))
                     into(outputDir)
@@ -101,7 +93,7 @@ task("copyAndroidNatives") {
 }
 
 tasks.whenTaskAdded {
-    if ("package" in name) {
+    if ("package" in name || "assemble" in name) {
         dependsOn("copyAndroidNatives")
     }
 }
@@ -127,8 +119,8 @@ tasks.register<JavaExec>("run") {
 }
 
 dependencies {
-    implementation("androidx.core:core:1.2.0")
-    implementation("androidx.work:work-runtime-ktx:2.3.2")
+    implementation("androidx.core:core-ktx:1.3.2")
+    implementation("androidx.work:work-runtime-ktx:2.6.0-alpha02")
 }
 
 // sets up the Android Eclipse project, using the old Ant based build.

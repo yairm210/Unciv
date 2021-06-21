@@ -92,8 +92,10 @@ class TileGroupIcons(val tileGroup: TileGroup) {
 
             // Instead of fading out the entire unit with its background, we just fade out its central icon,
             // that way it remains much more visible on the map
-            if (!unit.isIdle() && unit.civInfo == viewingCiv)
+            if (!unit.isIdle() && unit.civInfo == viewingCiv) {
                 newImage.unitBaseImage.color.a = 0.5f
+                newImage.actionGroup?.color?.a = 0.5f
+            }
         }
         return newImage
     }

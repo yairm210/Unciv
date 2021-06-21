@@ -5,6 +5,7 @@ import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.InputEvent
 import com.badlogic.gdx.scenes.scene2d.InputListener
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
+import com.unciv.UncivGame
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
 import com.unciv.models.ruleset.Ruleset
@@ -20,7 +21,7 @@ class MapEditorScreen(): CameraStageBaseScreen() {
     var gameSetupInfo = GameSetupInfo()
     lateinit var mapHolder: EditorMapHolder
 
-    lateinit var tileEditorOptions: TileEditorOptionsTable
+    lateinit var mapEditorOptionsTable: MapEditorOptionsTable
 
     private val showHideEditorOptionsButton = ">".toTextButton()
 
@@ -31,27 +32,28 @@ class MapEditorScreen(): CameraStageBaseScreen() {
         initialize()
     }
 
-    fun initialize() {
+    private fun initialize() {
         ImageGetter.setNewRuleset(ruleset)
         tileMap.setTransients(ruleset,false)
+        UncivGame.Current.translations.translationActiveMods = ruleset.mods
 
         mapHolder = EditorMapHolder(this, tileMap)
-        mapHolder.addTiles(stage.width)
+        mapHolder.addTiles(stage.width, stage.height)
         stage.addActor(mapHolder)
         stage.scrollFocus = mapHolder
 
-        tileEditorOptions = TileEditorOptionsTable(this)
-        stage.addActor(tileEditorOptions)
-        tileEditorOptions.setPosition(stage.width - tileEditorOptions.width, 0f)
+        mapEditorOptionsTable = MapEditorOptionsTable(this)
+        stage.addActor(mapEditorOptionsTable)
+        mapEditorOptionsTable.setPosition(stage.width - mapEditorOptionsTable.width, 0f)
 
         showHideEditorOptionsButton.labelCell.pad(10f)
         showHideEditorOptionsButton.pack()
         showHideEditorOptionsButton.onClick {
             if (showHideEditorOptionsButton.text.toString() == ">") {
-                tileEditorOptions.addAction(Actions.moveTo(stage.width, 0f, 0.5f))
+                mapEditorOptionsTable.addAction(Actions.moveTo(stage.width, 0f, 0.5f))
                 showHideEditorOptionsButton.setText("<")
             } else {
-                tileEditorOptions.addAction(Actions.moveTo(stage.width - tileEditorOptions.width, 0f, 0.5f))
+                mapEditorOptionsTable.addAction(Actions.moveTo(stage.width - mapEditorOptionsTable.width, 0f, 0.5f))
                 showHideEditorOptionsButton.setText(">")
             }
         }
@@ -59,13 +61,13 @@ class MapEditorScreen(): CameraStageBaseScreen() {
                 stage.height - showHideEditorOptionsButton.height - 10f)
         stage.addActor(showHideEditorOptionsButton)
 
-
-        val optionsMenuButton = "Menu".toTextButton()
-        optionsMenuButton.onClick {
-            if (popups.any { it is MapEditorMenuPopup })
-                return@onClick // already open
-            MapEditorMenuPopup(this).open(force = true)
+        val openOptionsMenu = {
+            if (popups.none { it is MapEditorMenuPopup })
+                MapEditorMenuPopup(this).open(force = true)
         }
+        val optionsMenuButton = "Menu".toTextButton()
+        optionsMenuButton.onClick(openOptionsMenu)
+        keyPressDispatcher[KeyCharAndCode.BACK] = openOptionsMenu
         optionsMenuButton.label.setFontSize(24)
         optionsMenuButton.labelCell.pad(20f)
         optionsMenuButton.pack()
@@ -103,10 +105,10 @@ class MapEditorScreen(): CameraStageBaseScreen() {
                     val stageCoords = mapHolder.actor.stageToLocalCoordinates(Vector2(event!!.stageX, event.stageY))
                     val centerTileInfo = mapHolder.getClosestTileTo(stageCoords)
                     if (centerTileInfo != null) {
-                        val distance = tileEditorOptions.brushSize - 1
+                        val distance = mapEditorOptionsTable.brushSize - 1
 
                         for (tileInfo in tileMap.getTilesInDistance(centerTileInfo.position, distance)) {
-                            tileEditorOptions.updateTileWhenClicked(tileInfo)
+                            mapEditorOptionsTable.updateTileWhenClicked(tileInfo)
 
                             tileInfo.setTerrainTransients()
                             mapHolder.tileGroups[tileInfo]!!.forEach {

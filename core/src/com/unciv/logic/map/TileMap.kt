@@ -25,10 +25,10 @@ class TileMap {
     var bottomY = 0
 
     @delegate:Transient
-    val maxLatitude: Float by lazy { if (values.isEmpty()) 0f else values.map { abs(it.latitude) }.max()!! }
+    val maxLatitude: Float by lazy { if (values.isEmpty()) 0f else values.map { abs(it.latitude) }.maxOrNull()!! }
 
     @delegate:Transient
-    val maxLongitude: Float by lazy { if (values.isEmpty()) 0f else values.map { abs(it.longitude) }.max()!! }
+    val maxLongitude: Float by lazy { if (values.isEmpty()) 0f else values.map { abs(it.longitude) }.maxOrNull()!! }
 
     @delegate:Transient
     val naturalWonders: List<String> by lazy { tileList.asSequence().filter { it.isNaturalWonder() }.map { it.naturalWonder!! }.distinct().toList() }
@@ -52,13 +52,18 @@ class TileMap {
 
     /** generates a rectangular map of given width and height*/
     constructor(width: Int, height: Int, ruleset: Ruleset, worldWrap: Boolean = false) {
-        val halfway = if(worldWrap) width/2-1 else width/2
-        for (x in -width / 2 .. halfway)
-            for (y in -height / 2..height / 2)
+        // world-wrap maps must always have an even width, so round down
+        val wrapAdjustedWidth = if (worldWrap && width % 2 != 0 ) width -1 else width
+
+        // Even widths will have coordinates ranging -x..(x-1), not -x..x, which is always an odd-sized range
+        // e.g. w=4 -> -2..1, w=5 -> -2..2, w=6 -> -3..2, w=7 -> -3..3
+        for (x in -wrapAdjustedWidth / 2 .. (wrapAdjustedWidth-1) / 2)
+            for (y in -height / 2 .. (height-1) / 2)
                 tileList.add(TileInfo().apply {
                     position = HexMath.evenQ2HexCoords(Vector2(x.toFloat(), y.toFloat()))
                     baseTerrain = Constants.grassland
                 })
+
         setTransients(ruleset)
     }
 
@@ -128,16 +133,16 @@ class TileMap {
                     }
                 }.filterNotNull()
 
-    private fun getIfTileExistsOrNull(x: Int, y: Int) : TileInfo? {
+    private fun getIfTileExistsOrNull(x: Int, y: Int): TileInfo? {
         if (contains(x, y))
             return get(x, y)
 
         if (!mapParameters.worldWrap)
             return null
 
-        var radius = mapParameters.size.radius
+        var radius = mapParameters.mapSize.radius
         if (mapParameters.shape == MapShape.rectangular)
-            radius = HexMath.getEquivalentRectangularSize(radius).x.toInt() / 2
+            radius = mapParameters.mapSize.width / 2
 
         //tile is outside of the map
         if (contains(x + radius, y - radius)) { //tile is on right side
@@ -152,7 +157,9 @@ class TileMap {
     }
 
 
-    /** Tries to place the [unitName] into the [TileInfo] closest to the given the [position]
+    /** Tries to place the [unitName] into the [TileInfo] closest to the given [position]
+     * @param position where to try to place the unit (or close - max 10 tiles distance)
+     * @param unitName name of the [BaseUnit] to create and place
      * @param civInfo civilization to assign unit to
      * @return created [MapUnit] or null if no suitable location was found
      * */
@@ -226,32 +233,38 @@ class TileMap {
             // that is to say, the "viewableTiles.contains(it) check will return false for neighbors from the same distance
             val tilesToAddInDistanceI = ArrayList<TileInfo>()
 
-            for (tile in getTilesAtDistance(position, i)) { // for each tile in that layer,
-                val targetTileHeight = tile.getHeight()
+            for (cTile in getTilesAtDistance(position, i)) { // for each tile in that layer,
+                val cTileHeight = cTile.getHeight()
 
                 /*
             Okay so, if we're looking at a tile from a to c with b in the middle,
             we have several scenarios:
             1. a>b -  - I can see everything, b does not hide c
             2. a==b
-                2.1 a==b==0, all flat ground, no hiding
-                2.2 a>0, b>=c - b hides c from view (say I am in a forest/jungle and b is a forest/jungle, or hill)
-                2.3 a>0, c>b - c is tall enough I can see it over b!
+                2.1 c>b - c is tall enough I can see it over b!
+                2.2 b blocks view from same-elevation tiles - hides c
+                2.3 none of the above - I can see c
             3. a<b
                 3.1 b>=c - b hides c
                 3.2 b<c - c is tall enough I can see it over b!
 
-            This can all be summed up as "I can see c if a>b || c>b || b==0 "
+            This can all be summed up as "I can see c if a>b || c>b || (a==b && b !blocks same-elevation view)"
             */
 
-                val containsViewableNeighborThatCanSeeOver = tile.neighbors.any {
-                    val neighborHeight = it.getHeight()
-                    viewableTiles.contains(it) && (
-                            currentTileHeight > neighborHeight // a>b
-                                    || targetTileHeight > neighborHeight // c>b
-                                    || neighborHeight == 0) // b==0
+                val containsViewableNeighborThatCanSeeOver = cTile.neighbors.any {
+                        bNeighbor: TileInfo ->
+                    val bNeighborHeight = bNeighbor.getHeight()
+                    if(cTile.resource=="Marble"
+                        && bNeighbor.terrainFeatures.contains("Forest")
+                    )
+                        println()
+                    viewableTiles.contains(bNeighbor) && (
+                            currentTileHeight > bNeighborHeight // a>b
+                                    || cTileHeight > bNeighborHeight // c>b
+                                    || currentTileHeight == bNeighborHeight // a==b
+                                        && !bNeighbor.hasUnique("Blocks line-of-sight from tiles at same elevation"))
                 }
-                if (containsViewableNeighborThatCanSeeOver) tilesToAddInDistanceI.add(tile)
+                if (containsViewableNeighborThatCanSeeOver) tilesToAddInDistanceI.add(cTile)
             }
             viewableTiles.addAll(tilesToAddInDistanceI)
         }
@@ -321,10 +334,10 @@ class TileMap {
      * Returns the clockPosition of otherTile seen from tile's position
      * Returns -1 if not neighbors
      */
-    fun getNeighborTileClockPosition(tile: TileInfo, otherTile: TileInfo): Int{
-        var radius = mapParameters.size.radius
+    fun getNeighborTileClockPosition(tile: TileInfo, otherTile: TileInfo): Int {
+        var radius = mapParameters.mapSize.radius
         if (mapParameters.shape == MapShape.rectangular)
-            radius = HexMath.getEquivalentRectangularSize(radius).x.toInt() / 2
+            radius = mapParameters.mapSize.width / 2
 
         val xDifference = tile.position.x - otherTile.position.x
         val yDifference = tile.position.y - otherTile.position.y
@@ -348,13 +361,13 @@ class TileMap {
      * Returns the closest position to (0, 0) outside the map which can be wrapped
      * to the position of the given vector
      */
-    fun getUnWrappedPosition(position: Vector2) : Vector2 {
+    fun getUnWrappedPosition(position: Vector2): Vector2 {
         if (!contains(position))
             return position //The position is outside the map so its unwrapped already
 
-        var radius = mapParameters.size.radius
+        var radius = mapParameters.mapSize.radius
         if (mapParameters.shape == MapShape.rectangular)
-            radius = HexMath.getEquivalentRectangularSize(radius).x.toInt() / 2
+            radius = mapParameters.mapSize.width / 2
 
         val vectorUnwrappedLeft = Vector2(position.x + radius, position.y - radius)
         val vectorUnwrappedRight = Vector2(position.x - radius, position.y + radius)

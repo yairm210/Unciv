@@ -1,16 +1,14 @@
 package com.unciv.ui.utils
 
-import com.badlogic.gdx.scenes.scene2d.Event
 import com.badlogic.gdx.scenes.scene2d.InputEvent
 import com.badlogic.gdx.scenes.scene2d.InputListener
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.utils.ActorGestureListener
-import kotlin.math.abs
 import kotlin.math.sqrt
 
 
 open class ZoomableScrollPane: ScrollPane(null) {
-    var continousScrollingX = false
+    var continuousScrollingX = false
 
     init{
         // Remove the existing inputListener
@@ -21,16 +19,22 @@ open class ZoomableScrollPane: ScrollPane(null) {
     }
 
     open fun zoom(zoomScale: Float) {
-        if (zoomScale < 0.5f || zoomScale > 2) return
+        if (zoomScale < 0.5f || zoomScale > 2f) return
         setScale(zoomScale)
+    }
+    fun zoomIn() {
+        zoom(scaleX / 0.8f)
+    }
+    fun zoomOut() {
+        zoom(scaleX * 0.8f)
     }
 
     private fun addZoomListeners() {
 
         addListener(object : InputListener() {
             override fun scrolled(event: InputEvent?, x: Float, y: Float, amountX: Float, amountY: Float): Boolean {
-                if (amountX > 0 || amountY > 0) zoom(scaleX * 0.8f)
-                else zoom(scaleX / 0.8f)
+                if (amountX > 0 || amountY > 0) zoomOut()
+                else zoomIn()
                 return false
             }
         })
@@ -61,10 +65,10 @@ open class ZoomableScrollPane: ScrollPane(null) {
 
                 //this is the new feature to fake an infinite scroll
                 when {
-                    continousScrollingX && scrollPercentX >= 1 && deltaX < 0 -> {
+                    continuousScrollingX && scrollPercentX >= 1 && deltaX < 0 -> {
                         scrollPercentX = 0f
                     }
-                    continousScrollingX && scrollPercentX <= 0 && deltaX > 0-> {
+                    continuousScrollingX && scrollPercentX <= 0 && deltaX > 0-> {
                         scrollPercentX = 1f
                     }
                 }

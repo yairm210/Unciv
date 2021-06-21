@@ -23,7 +23,7 @@ class Terrain : NamedStats() {
     /** Used by Natural Wonders: it is the baseTerrain on top of which the Natural Wonder is placed */
     val turnsInto: String? = null
 
-    /** Uniques (currently used only for Natural Wonders) */
+    /** Uniques (Properties such as Temp/humidity, Fresh water, elevation, rough, defense, Natural Wonder specials) */
     val uniques = ArrayList<String>()
     val uniqueObjects: List<Unique> by lazy { uniques.map { Unique(it) } }
 
@@ -35,6 +35,8 @@ class Terrain : NamedStats() {
     var movementCost = 1
     var defenceBonus:Float = 0f
     var impassable = false
+    
+    @Deprecated("As of 3.14.1")
     var rough = false
 
 
