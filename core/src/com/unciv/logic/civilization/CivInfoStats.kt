@@ -67,7 +67,7 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
         for (city in civInfo.cities) {
             for (tile in city.getTiles()) {
                 if (tile.isCityCenter()) continue
-                if (ignoredTileTypes.any { tile.matchesUniqueFilter(it, civInfo) }) continue
+                if (ignoredTileTypes.any { tile.matchesFilter(it, civInfo) }) continue
 
                 val tileUpkeep =
                         when (tile.roadStatus) {

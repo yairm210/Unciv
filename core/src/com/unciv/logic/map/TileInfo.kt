@@ -42,8 +42,8 @@ open class TileInfo {
     // and farms on adjacent to fresh water tiles will have +1 additional Food after researching Civil Service
     @delegate:Transient
     val isAdjacentToFreshwater: Boolean by lazy {
-        matchesUniqueFilter("River") || matchesUniqueFilter("Fresh water")
-                || neighbors.any { it.matchesUniqueFilter("Fresh water") }
+        matchesTerrainFilter("River") || matchesTerrainFilter("Fresh water")
+                || neighbors.any { it.matchesTerrainFilter("Fresh water") }
     }
 
     var militaryUnit: MapUnit? = null
@@ -235,7 +235,7 @@ open class TileInfo {
             for (unique in cityWideUniques + civWideUniques) {
                 val tileType = unique.params[1]
                 if (tileType == improvement) continue // This is added to the calculation in getImprovementStats. we don't want to add it twice
-                if (matchesUniqueFilter(tileType, observingCiv)
+                if (matchesTerrainFilter(tileType, observingCiv)
                         || tileType == "Strategic resource" && hasViewableResource(observingCiv) && getTileResource().resourceType == ResourceType.Strategic
                         || tileType == "Luxury resource" && hasViewableResource(observingCiv) && getTileResource().resourceType == ResourceType.Luxury
                         || tileType == "Bonus resource" && hasViewableResource(observingCiv) && getTileResource().resourceType == ResourceType.Bonus
@@ -310,9 +310,8 @@ open class TileInfo {
             if (unique.placeholderText == "[] for each adjacent []") {
                 val adjacent = unique.params[1]
                 val numberOfBonuses = neighbors.count {
-                    it.improvement == adjacent
-                            || it.matchesUniqueFilter(adjacent, observingCiv)
-                            || it.roadStatus.name == adjacent
+                    it.matchesFilter(adjacent, observingCiv)
+                        || it.roadStatus.name == adjacent
                 }
                 stats.add(unique.stats.times(numberOfBonuses.toFloat()))
             }
@@ -359,7 +358,7 @@ open class TileInfo {
             "Cannot be built on bonus resource" in improvement.uniques && resource != null
                     && getTileResource().resourceType == ResourceType.Bonus -> false
             improvement.uniqueObjects.filter { it.placeholderText == "Cannot be built on [] tiles" }.any {
-                    unique -> matchesUniqueFilter(unique.params[0])
+                    unique -> matchesTerrainFilter(unique.params[0])
             } -> false
 
             // Road improvements can change on tiles with irremovable improvements - nothing else can, though.
@@ -375,7 +374,7 @@ open class TileInfo {
             improvement.uniqueObjects.filter { it.placeholderText == "Must be next to []" }.any {
                 val filter = it.params[0]
                 if (filter == "River") return@any !isAdjacentToRiver()
-                else return@any !neighbors.any { neighbor -> neighbor.matchesUniqueFilter(filter) }
+                else return@any !neighbors.any { neighbor -> neighbor.matchesFilter(filter) }
             } -> false
             improvement.name == "Road" && roadStatus == RoadStatus.None && !isWater -> true
             improvement.name == "Railroad" && this.roadStatus != RoadStatus.Railroad && !isWater -> true
@@ -386,7 +385,7 @@ open class TileInfo {
             improvement.hasUnique("Can also be built on tiles adjacent to fresh water") && isAdjacentToFreshwater -> true
             "Can only be built on Coastal tiles" in improvement.uniques && isCoastalTile() -> true
             improvement.uniqueObjects.filter { it.placeholderText == "Can only be built on [] tiles" }.any {
-                unique -> !matchesUniqueFilter(unique.params[0])
+                unique -> !matchesTerrainFilter(unique.params[0])
             } -> false
             else -> resourceIsVisible && getTileResource().improvement == improvement.name
         }
@@ -396,7 +395,13 @@ open class TileInfo {
      * Implementation of _`tileFilter`_
      * @see <a href="https://github.com/yairm210/Unciv/wiki/uniques#user-content-tilefilter">tileFilter</a>
      */
-    fun matchesUniqueFilter(filter: String, civInfo: CivilizationInfo? = null): Boolean {
+    fun matchesFilter(filter: String, civInfo: CivilizationInfo? = null): Boolean {
+        if (matchesTerrainFilter(filter, civInfo)) return true
+        if (improvement != null && ruleset.tileImprovements[improvement]!!.matchesFilter(filter)) return true
+        return false
+    }
+    
+    fun matchesTerrainFilter(filter: String, observingCiv: CivilizationInfo? = null): Boolean {
         return when (filter) {
             "All" -> true
             baseTerrain -> true
@@ -405,14 +410,14 @@ open class TileInfo {
             "Coastal" -> isCoastalTile()
             "River" -> isAdjacentToRiver()
             naturalWonder -> true
-            "Foreign Land" -> civInfo != null && !isFriendlyTerritory(civInfo)
-            "Friendly Land" -> civInfo != null && isFriendlyTerritory(civInfo)
+            "Foreign Land" -> observingCiv != null && !isFriendlyTerritory(observingCiv)
+            "Friendly Land" -> observingCiv != null && isFriendlyTerritory(observingCiv)
             else -> {
                 if (terrainFeatures.contains(filter)) return true
                 if (baseTerrainObject.uniques.contains(filter)) return true
                 if (terrainFeatures.isNotEmpty() && getTerrainFeatures().last().uniques.contains(filter)) return true
                 if (resource != null && getTileResource().resourceType.name + " resource" == filter) return true
-                if (civInfo != null && hasViewableResource(civInfo) && resource == filter) return true
+                if (observingCiv != null && hasViewableResource(observingCiv) && resource == filter) return true
                 return false
             }
         }
