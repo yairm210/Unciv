@@ -420,14 +420,14 @@ class ModManagementScreen: PickerScreen(disableScroll = true) {
         val isVisual = visualMods.contains(mod.name)
         modStateImages[mod.name]?.isVisual = isVisual
         if (!isVisual) {
-            modActionTable.add("Enable as permanent visual mod".toTextButton().onClick {
+            modActionTable.add("Enable as permanent audiovisual mod".toTextButton().onClick {
                 visualMods.add(mod.name)
                 game.settings.save()
                 ImageGetter.setNewRuleset(ImageGetter.ruleset)
                 refreshModActions(mod)
             })
         } else {
-            modActionTable.add("Disable as permanent visual mod".toTextButton().onClick {
+            modActionTable.add("Disable as permanent audiovisual mod".toTextButton().onClick {
                 visualMods.remove(mod.name)
                 game.settings.save()
                 ImageGetter.setNewRuleset(ImageGetter.ruleset)
