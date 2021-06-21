@@ -420,19 +420,25 @@ class ModManagementScreen: PickerScreen(disableScroll = true) {
         val isVisual = visualMods.contains(mod.name)
         modStateImages[mod.name]?.isVisual = isVisual
         if (!isVisual) {
-            modActionTable.add("Enable as permanent audiovisual mod".toTextButton().onClick {
+            val button = "Enable as permanent audiovisual mod".toTextButton()
+            button.label.wrap = true
+            modActionTable.add(button).width(stage.width/4)
+            button.onClick {
                 visualMods.add(mod.name)
                 game.settings.save()
                 ImageGetter.setNewRuleset(ImageGetter.ruleset)
                 refreshModActions(mod)
-            })
+            }
         } else {
-            modActionTable.add("Disable as permanent audiovisual mod".toTextButton().onClick {
+            val button = "Disable as permanent audiovisual mod".toTextButton()
+            button.label.wrap = true
+            modActionTable.add(button).width(stage.width/4)
+            button.onClick {
                 visualMods.remove(mod.name)
                 game.settings.save()
                 ImageGetter.setNewRuleset(ImageGetter.ruleset)
                 refreshModActions(mod)
-            })
+            }
         }
         modActionTable.row()
     }
@@ -501,5 +507,11 @@ class ModManagementScreen: PickerScreen(disableScroll = true) {
         RulesetCache.loadRulesets()
         modStateImages.remove(mod.name)
         refreshInstalledModTable()
+    }
+
+    override fun resize(width: Int, height: Int) {
+        if (stage.viewport.screenWidth != width || stage.viewport.screenHeight != height) {
+            game.setScreen(ModManagementScreen())
+        }
     }
 }
