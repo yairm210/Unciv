@@ -4,6 +4,8 @@ import com.unciv.models.ruleset.Policy
 import com.unciv.models.ruleset.Unique
 import com.unciv.models.ruleset.UniqueMap
 import com.unciv.models.ruleset.UniqueTriggerActivation
+import com.unciv.models.translations.equalsPlaceholderText
+import com.unciv.models.translations.getPlaceholderParameters
 import kotlin.math.min
 import kotlin.math.pow
 import kotlin.math.roundToInt
@@ -168,6 +170,14 @@ class PolicyManager {
             }
         }
 
+        for (unique in policy.uniques) {
+            if (unique == "Triggers a global alert") {
+                triggerGlobalAlerts(policy)
+            } else if (unique.equalsPlaceholderText("Triggers the following global alert: []")) {
+                triggerGlobalAlerts(policy, unique.getPlaceholderParameters()[0])
+            }
+        }
+
         for (unique in policy.uniqueObjects)
             UniqueTriggerActivation.triggerCivwideUnique(unique, civInfo)
 
@@ -237,5 +247,22 @@ class PolicyManager {
             freeBuildings.add(building.key)
         }
         return freeBuildings
+    }
+
+    private fun triggerGlobalAlerts(policy: Policy, extraNotificationText: String = "") {
+        var extraNotificationTextCopy = extraNotificationText
+        if (extraNotificationText != "") {
+            extraNotificationTextCopy = "\n${extraNotificationText}"
+        }
+        for (civ in civInfo.gameInfo.civilizations) {
+            if (civ == civInfo) continue
+            val defaultNotificationText = 
+                if (civ.getKnownCivs().contains(civInfo)) {
+                    "[${civInfo.civName}] has adopted the [${policy.name}] policy"
+                } else {
+                    "An unknown civilization has adopted the [${policy.name}] policy"
+                }
+            civ.addNotification("${defaultNotificationText}${extraNotificationTextCopy}", NotificationIcon.Culture)
+        }
     }
 }
