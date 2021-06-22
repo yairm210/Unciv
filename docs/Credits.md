@@ -321,6 +321,14 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Religion](https://thenounproject.com/term/religion/1307794/) By Ben Avery for Free Religion
 * [Flame](https://thenounproject.com/term/flame/633228/) By Ian Shoobridge for Mandate Of Heaven
 
+### Patronage
+
+* Adapted from [Gold](https://thenounproject.com/term/gold/842351) by Aneeque Ahmed for Philantropy
+* [Ornament](https://thenounproject.com/term/ornament/3945298) by Tommy Suhartomo for Aesthetics
+* [Book Gift](https://thenounproject.com/term/book-gift/671626) by Wolf Böse for Scholasticism
+* [agreement](https://thenounproject.com/term/agreement/1828960) by RomanP for Cultural Diplomacy
+* [professor](https://thenounproject.com/term/professor/232239) by Andrew Doane for Educated Elite
+
 ### Commerce
 
 * [Trade](https://thenounproject.com/term/trade/686718/) By Gregor Cresnar for Trade Unions
