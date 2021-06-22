@@ -51,7 +51,7 @@ Again, [translation file](/android/assets/jsons/Translations/Buildings.json) for
 
 ## Civ Unique
 
-Check out our [list of uniques](../uniques) to see all the cool special effects you can add to your civilization!
+Check out our [list of uniques](../wiki/uniques) to see all the cool special effects you can add to your civilization!
 
 ## Icon considerations
 
