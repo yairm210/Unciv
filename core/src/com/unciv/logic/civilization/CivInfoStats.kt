@@ -103,13 +103,26 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
                 statMap.add("City-States", cultureBonus)
             }
 
-
-            if (otherCiv.isCityState() && otherCiv.getDiplomacyManager(civInfo.civName).relationshipLevel() >= RelationshipLevel.Ally) {
-                val sciencePercentage = civInfo
-                        .getMatchingUniques("Allied City-States provide Science equal to []% of what they produce for themselves")
-                        .sumBy { it.params[0].toInt() }
-                statMap.add("City-States", Stats().apply { science = otherCiv.statsForNextTurn.science * (sciencePercentage / 100f) })
-            }
+            if (otherCiv.isCityState())
+                for (unique in civInfo.getMatchingUniques("Allied City-States provide [] equal to []% of what they produce for themselves")) {
+                    if (otherCiv.diplomacy[civInfo.civName]!!.matchesCityStateRelationshipFilter(unique.params[0]) && otherCiv.cities.isNotEmpty()) {
+                        statMap.add(
+                            "City-States", 
+                            Stats().add(
+                                Stat.valueOf(unique.params[1]), 
+                                otherCiv.statsForNextTurn.get(Stat.valueOf(unique.params[1])) * unique.params[2].toFloat() / 100f
+                            )
+                        )
+                    }
+                }
+            // Deprecated since 3.15.1
+                if (otherCiv.isCityState() && otherCiv.getDiplomacyManager(civInfo.civName).relationshipLevel() >= RelationshipLevel.Ally) {
+                    val sciencePercentage = civInfo
+                            .getMatchingUniques("Allied City-States provide Science equal to []% of what they produce for themselves")
+                            .sumBy { it.params[0].toInt() }
+                    statMap.add("City-States", Stats().apply { science = otherCiv.statsForNextTurn.science * (sciencePercentage / 100f) })
+                }
+            //
         }
 
         statMap["Transportation upkeep"] = Stats().apply { gold = -getTransportationUpkeep().toFloat() }
@@ -147,9 +160,19 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
             for (unique in civInfo.getMatchingUniques("+1 happiness from each type of luxury resource"))
                 happinessPerUniqueLuxury += 1
         //
-        
         statMap["Luxury resources"] = civInfo.getCivResources().map { it.resource }
                 .count { it.resourceType === ResourceType.Luxury } * happinessPerUniqueLuxury
+        
+        val happinessBonusForCityStateProvidedLuxuries = 
+            civInfo.getMatchingUniques("Happiness from Luxury Resources gifted by City-States increased by []%")
+                .map { it.params[0].toFloat() / 100f }.sum()
+        
+        val luxuriesProvidedByCityStates = 
+            civInfo.getKnownCivs().filter { it.isCityState() && it.getAllyCiv() == civInfo.civName }
+                .map { it.getCivResources().map { res -> res.resource } }.flatten().count { it.resourceType === ResourceType.Luxury }
+        
+        statMap["City-State Luxuries"] = happinessBonusForCityStateProvidedLuxuries * luxuriesProvidedByCityStates * happinessPerUniqueLuxury
+        
 
         for (city in civInfo.cities) {
             // There appears to be a concurrency problem? In concurrent thread in ConstructionsTable.getConstructionButtonDTOs
