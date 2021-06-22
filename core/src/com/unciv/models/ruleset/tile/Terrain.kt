@@ -36,22 +36,19 @@ class Terrain : NamedStats() {
     var defenceBonus:Float = 0f
     var impassable = false
 
-    /**
-     * Do not use this directly! Use isRough() instead.
-     * Modded tiles may use the deprecated "Rough terrain" unique instead of this value, which is handled by isRough().
-     */
+    /** Use isRough() instead */
+    @Deprecated("As of 3.14.1")
     var rough = false
 
     fun isRough(): Boolean {
-        // "Rough terrain" unique deprecated since 3.15.4
-        return rough || uniques.contains("Rough terrain")
+        // "rough" property deprecated since 3.14.1
+        return uniques.contains("Rough terrain") || rough
     }
 
     fun getColor(): Color { // Can't be a lazy initialize, because we play around with the resulting color with lerp()s and the like
         if (RGB == null) return Color.GOLD
         return colorFromRGB(RGB!!)
     }
-
 
     fun getDescription(ruleset: Ruleset): String {
         val sb = StringBuilder()
@@ -72,8 +69,7 @@ class Terrain : NamedStats() {
             sb.appendLine("Open terrain".tr())
 
         if(uniques.isNotEmpty())
-            // "Open terrain" and "Rough terrain" uniques deprecated since 3.15.4
-            sb.appendLine(uniques.filter{ it != "Open terrain" && it != "Rough terrain"}.joinToString { it.tr() })
+            sb.appendLine(uniques.filter{ it != "Rough terrain" }.joinToString{ it.tr() })
 
         if (impassable)
             sb.appendLine(Constants.impassable.tr())

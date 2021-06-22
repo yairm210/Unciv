@@ -62,7 +62,7 @@
 		"impassable": true,
 		"defenceBonus": 0.25,
 		"RGB": [120, 120, 120],
-		"uniques":["Has an elevation of [4] for visibility calculations"]
+		"uniques":["Rough terrain", "Has an elevation of [4] for visibility calculations"]
 	},
 	{
 		"name": "Snow",
@@ -76,20 +76,18 @@
 	{
 		"name": "Hill",
 		"type": "TerrainFeature",
-		"rough": true,
 		"production": 2,
 		"movementCost": 2,
 		"overrideStats": true,
 		"defenceBonus": 0.25,
 		"RGB": [105,125,72],
 		"occursOn": ["Tundra","Plains","Grassland","Desert","Snow"],
-		"uniques": ["[+5] Strength for cities built on this terrain",
+		"uniques": ["Rough terrain", "[+5] Strength for cities built on this terrain",
 			"[+1] Sight for [Land] units", "Has an elevation of [2] for visibility calculations"]
 	},
 	{
 		"name": "Forest",
 		"type": "TerrainFeature",
-		"rough": true,
 		"production": 1,
 		"food": 1,
 		"movementCost": 2,
@@ -97,20 +95,19 @@
 		"unbuildable": true,
 		"defenceBonus": 0.25,
 		"occursOn": ["Tundra","Plains","Grassland","Hill"],
-		"uniques": ["Provides a one-time Production bonus to the closest city when cut down",
+		"uniques": ["Rough terrain", "Provides a one-time Production bonus to the closest city when cut down",
 			"Blocks line-of-sight from tiles at same elevation"]
 	},
 	{
 		"name": "Jungle",
 		"type": "TerrainFeature",
-		"rough": true,
 		"food": 2,
 		"movementCost": 2,
 		"overrideStats": true,
 		"unbuildable": true,
 		"defenceBonus": 0.25,
 		"occursOn": ["Plains","Grassland"],
-		"uniques": ["Blocks line-of-sight from tiles at same elevation"]
+		"uniques": ["Rough terrain", "Blocks line-of-sight from tiles at same elevation"]
 	},
 	{
 		"name": "Marsh",
