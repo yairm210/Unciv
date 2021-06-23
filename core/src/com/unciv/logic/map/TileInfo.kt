@@ -414,13 +414,13 @@ open class TileInfo {
             naturalWonder -> true
             "Open terrain" -> !isRoughTerrain()
             "Rough terrain" -> isRoughTerrain()
-            "Foreign Land" -> civInfo != null && !isFriendlyTerritory(civInfo)
-            "Friendly Land" -> civInfo != null && isFriendlyTerritory(civInfo)
+            "Foreign Land" -> observingCiv != null && !isFriendlyTerritory(observingCiv)
+            "Friendly Land" -> observingCiv != null && isFriendlyTerritory(observingCiv)
+            resource -> observingCiv != null && hasViewableResource(observingCiv)
             else -> {
                 if (terrainFeatures.contains(filter)) return true
                 if (hasUnique(filter)) return true
                 if (resource != null && getTileResource().resourceType.name + " resource" == filter) return true
-                if (observingCiv != null && hasViewableResource(observingCiv) && resource == filter) return true
                 return false
             }
         }
