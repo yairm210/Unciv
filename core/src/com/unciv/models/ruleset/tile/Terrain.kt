@@ -35,16 +35,20 @@ class Terrain : NamedStats() {
     var movementCost = 1
     var defenceBonus:Float = 0f
     var impassable = false
-    
+
+    /** Use isRough() instead */
     @Deprecated("As of 3.14.1")
     var rough = false
 
+    fun isRough(): Boolean {
+        // "rough" property deprecated since 3.14.1
+        return uniques.contains("Rough terrain") || rough
+    }
 
     fun getColor(): Color { // Can't be a lazy initialize, because we play around with the resulting color with lerp()s and the like
         if (RGB == null) return Color.GOLD
         return colorFromRGB(RGB!!)
     }
-
 
     fun getDescription(ruleset: Ruleset): String {
         val sb = StringBuilder()
@@ -59,8 +63,13 @@ class Terrain : NamedStats() {
         if (resourcesFound.isNotEmpty())
             sb.appendLine("May contain [${resourcesFound.joinToString(", ") { it.name.tr() }}]".tr())
 
+        if (isRough())
+            sb.appendLine("Rough terrain".tr())
+        else
+            sb.appendLine("Open terrain".tr())
+
         if(uniques.isNotEmpty())
-            sb.appendLine(uniques.joinToString { it.tr() })
+            sb.appendLine(uniques.filter{ it != "Rough terrain" }.joinToString{ it.tr() })
 
         if (impassable)
             sb.appendLine(Constants.impassable.tr())
@@ -69,9 +78,6 @@ class Terrain : NamedStats() {
 
         if (defenceBonus != 0f)
             sb.appendLine("{Defence bonus}: ".tr() + (defenceBonus * 100).toInt() + "%")
-
-        if (rough)
-            sb.appendLine("Rough Terrain".tr())
 
         return sb.toString()
     }
