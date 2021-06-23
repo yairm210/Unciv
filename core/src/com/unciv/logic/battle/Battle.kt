@@ -103,8 +103,6 @@ object Battle {
         val unitCost = defeatedUnit.unit.baseUnit.cost
         val bonusUniquePlaceholderText = "Earn []% of killed [] unit's [] as []"
 
-        var goldReward = 0
-        var cultureReward = 0
         val bonusUniques = ArrayList<Unique>()
 
         bonusUniques.addAll(civUnit.getCivInfo().getMatchingUniques(bonusUniquePlaceholderText))
@@ -113,25 +111,22 @@ object Battle {
             bonusUniques.addAll(civUnit.unit.getMatchingUniques(bonusUniquePlaceholderText))
         }
 
-
         for (unique in bonusUniques) {
             if (!defeatedUnit.matchesCategory(unique.params[1])) continue
-
+            
             val yieldPercent = unique.params[0].toFloat() / 100
             val defeatedUnitYieldSourceType = unique.params[2]
-            val yieldType = unique.params[3]
-            val yieldTypeSourceAmount = if (defeatedUnitYieldSourceType == "Cost") unitCost else unitStr
+            val yieldTypeSourceAmount =
+                if (defeatedUnitYieldSourceType == "Cost") unitCost else unitStr
             val yieldAmount = (yieldTypeSourceAmount * yieldPercent).toInt()
 
-
-            if (yieldType == "Gold")
-                goldReward += yieldAmount
-            else if (yieldType == "Culture")
-                cultureReward += yieldAmount
+            try {
+                val stat = Stat.valueOf(unique.params[3])
+                civUnit.getCivInfo().addStat(stat, yieldAmount)
+            } catch (ex: Exception) {
+            } // parameter is not a stat
         }
 
-        civUnit.getCivInfo().policies.addCulture(cultureReward)
-        civUnit.getCivInfo().addGold(goldReward)
     }
 
     private fun takeDamage(attacker: ICombatant, defender: ICombatant) {
