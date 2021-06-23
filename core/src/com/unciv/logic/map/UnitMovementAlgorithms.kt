@@ -43,7 +43,7 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
         if (civInfo.nation.ignoreHillMovementCost && to.isHill())
             return 1f + extraCost // usually hills take 2 movements, so here it is 1
 
-        if (unit.roughTerrainPenalty && to.getAllTerrains().any { it.rough || it.uniques.contains("Rough terrain") })
+        if (unit.roughTerrainPenalty && to.isRoughTerrain())
             return 4f + extraCost
 
         if (unit.doubleMovementInCoast && to.baseTerrain == Constants.coast)
