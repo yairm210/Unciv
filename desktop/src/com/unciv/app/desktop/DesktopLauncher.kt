@@ -1,8 +1,5 @@
 package com.unciv.app.desktop
 
-import club.minnced.discord.rpc.DiscordEventHandlers
-import club.minnced.discord.rpc.DiscordRPC
-import club.minnced.discord.rpc.DiscordRichPresence
 import com.badlogic.gdx.Files
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration
@@ -60,8 +57,7 @@ internal object DesktopLauncher {
 
         val game = UncivGame(desktopParameters)
 
-        if (!RaspberryPiDetector.isRaspberryPi()) // No discord RPC for Raspberry Pi, see https://github.com/yairm210/Unciv/issues/1624
-            tryActivateDiscord(game)
+        tryActivateDiscord(game)
 
         LwjglApplication(game, config)
     }
@@ -197,10 +193,10 @@ internal object DesktopLauncher {
 
     private fun tryActivateDiscord(game: UncivGame) {
         try {
-            val handlers = DiscordEventHandlers()
-            DiscordRPC.INSTANCE.Discord_Initialize("647066573147996161", handlers, true, null)
+            val handlers = club.minnced.discord.rpc.DiscordEventHandlers()
+            club.minnced.discord.rpc.DiscordRPC.INSTANCE.Discord_Initialize("647066573147996161", handlers, true, null)
 
-            Runtime.getRuntime().addShutdownHook(Thread { DiscordRPC.INSTANCE.Discord_Shutdown() })
+            Runtime.getRuntime().addShutdownHook(Thread { club.minnced.discord.rpc.DiscordRPC.INSTANCE.Discord_Shutdown() })
 
             discordTimer = timer(name = "Discord", daemon = true, period = 1000) {
                 try {
@@ -215,11 +211,11 @@ internal object DesktopLauncher {
 
     private fun updateRpc(game: UncivGame) {
         if (!game.isInitialized) return
-        val presence = DiscordRichPresence()
+        val presence = club.minnced.discord.rpc.DiscordRichPresence()
         val currentPlayerCiv = game.gameInfo.getCurrentPlayerCivilization()
         presence.details = currentPlayerCiv.nation.getLeaderDisplayName().tr()
         presence.largeImageKey = "logo" // The actual image is uploaded to the discord app / applications webpage
         presence.largeImageText = "Turn".tr() + " " + currentPlayerCiv.gameInfo.turns
-        DiscordRPC.INSTANCE.Discord_UpdatePresence(presence)
+        club.minnced.discord.rpc.DiscordRPC.INSTANCE.Discord_UpdatePresence(presence)
     }
 }
