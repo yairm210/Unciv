@@ -116,7 +116,7 @@ cityFilters allow us to choose the range of cities affected by this unique:
 - "in all cities connected to capital"
 - "in all cities with a garrison"
 
-### ConstructionFilter [Pending merge of #4158]
+### ConstructionFilter
 
 ConstructionFilters allow us to activate uniques while constructing certain buildings or units.
 For units, the UnitFilter is called. For Buildings, the following options are implemented:
@@ -180,7 +180,7 @@ For units, the UnitFilter is called. For Buildings, the following options are im
 
 "Triggers victory"
 
-"Allied City-States will occasionally gift Great People" [Pending #4158]
+"Allied City-States will occasionally gift Great People"
 
 ### Unit-affecting uniques
 
@@ -215,11 +215,11 @@ For units, the UnitFilter is called. For Buildings, the following options are im
 
 "Resting point for Influence with City-States is increased by [amount]"
 
-"Allied City-States provide [] equal to []% of what they produce for themselves" [Pending #4186]
+"Allied City-States provide [] equal to []% of what they produce for themselves"
 
 "Quantity of Resources gifted by City-States increased by [amount]%"
 
-"Happiness from Luxury Resources gifted by City-States increased by [amount]%" [Pending #4158]
+"Happiness from Luxury Resources gifted by City-States increased by [amount]%"
 
 "Food and Culture from Friendly City-States are increased by 50%"
 
@@ -227,7 +227,7 @@ For units, the UnitFilter is called. For Buildings, the following options are im
 
 "Militaristic City-States grant units [amount] times as fast when you are at war with a common nation" [Pending #4158]
 
-"Influence of all other civilizations with all city-states degrades []% faster" [Pending #4158]
+"Influence of all other civilizations with all city-states degrades []% faster"
 
 ### Other
 
@@ -289,7 +289,7 @@ For units, the UnitFilter is called. For Buildings, the following options are im
 
 "Earn [amount]% of killed [unitFilter] unit's [param1] as [param2]" - param1 accepts "Cost" or "Strength", param2 accepts "Culture", "Science", "Gold" and "Faith". For example, "Earn [100]% of killed [Military] unit's [Strength] as [Culture]", "Earn [10]% of killed [Military] unit's [Cost] as [Gold]". This can also be applied directly to a unit (as a unique or as a promotion effect).
 
-"-[amount]% maintenance cost for buildings [cityFilter]" [Pending #4158]
+"-[amount]% maintenance cost for buildings [cityFilter]"
 
 "Immediately creates the cheapest available cultural building in each of your first [amount] cities for free"
 
