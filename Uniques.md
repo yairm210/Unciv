@@ -186,7 +186,6 @@ For units, the UnitFilter is called. For Buildings, the following options are im
 
 "+[amount] Movement for all [unitFilter] units"
 
-[Pending #4158]
 "+[amount]% Strength for units fighting in [landFilter]" - where landFilter is one of
 - Last terrain name (as in: Plains+Forest is considered Forest, not Plains)
 - "Friendly Land", for land under your control, or under friendly city-state / major civ with open borders
@@ -288,7 +287,7 @@ For units, the UnitFilter is called. For Buildings, the following options are im
 
 "Double quantity of [resourceName] produced"
 
-"Earn [amount]% of killed [unitFilter] unit's [param1] as [param2]" - param1 accepts "Cost" or "Strength", param2 accepts "Gold" or "Culture". For example, "Earn [100]% of killed [Military] unit's [Strength] as [Culture]", "Earn [10]% of killed [Military] unit's [Cost] as [Gold]"
+"Earn [amount]% of killed [unitFilter] unit's [param1] as [param2]" - param1 accepts "Cost" or "Strength", param2 accepts "Culture", "Science", "Gold" and "Faith". For example, "Earn [100]% of killed [Military] unit's [Strength] as [Culture]", "Earn [10]% of killed [Military] unit's [Cost] as [Gold]". This can also be applied directly to a unit (as a unique or as a promotion effect).
 
 "-[amount]% maintenance cost for buildings [cityFilter]" [Pending #4158]
 
