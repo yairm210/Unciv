@@ -127,6 +127,8 @@ class CityInfoConquestFunctions(val city: CityInfo){
             cityStats.update()
 
             // Move units out of the city when liberated
+            for (unit in getCenterTile().getUnits())
+                unit.movement.teleportToClosestMoveableTile()
             for (unit in getTiles().flatMap { it.getUnits() }.toList())
                 if (!unit.movement.canPassThrough(unit.currentTile))
                     unit.movement.teleportToClosestMoveableTile()
