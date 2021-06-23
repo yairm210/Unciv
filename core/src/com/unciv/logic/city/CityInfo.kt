@@ -386,18 +386,18 @@ class CityInfo {
         
         for (airUnit in getCenterTile().airUnits.toList()) airUnit.destroy() //Destroy planes stationed in city
 
+        // The relinquish ownership MUST come before removing the city,
+        // because it updates the city stats which assumes there is a capital, so if you remove the capital it crashes
+        getTiles().forEach { expansion.relinquishOwnership(it) }
+        civInfo.cities = civInfo.cities.toMutableList().apply { remove(this@CityInfo) }
+        getCenterTile().improvement = "City ruins"
+
         // Edge case! What if a water unit is in a city, and you raze the city?
         // Well, the water unit has to return to the water!
         for (unit in getCenterTile().getUnits()) {
             if (!unit.movement.canPassThrough(getCenterTile()))
                 unit.movement.teleportToClosestMoveableTile()
         }
-
-        // The relinquish ownership MUST come before removing the city,
-        // because it updates the city stats which assumes there is a capital, so if you remove the capital it crashes
-        getTiles().forEach { expansion.relinquishOwnership(it) }
-        civInfo.cities = civInfo.cities.toMutableList().apply { remove(this@CityInfo) }
-        getCenterTile().improvement = "City ruins"
 
         if (isCapital() && civInfo.cities.isNotEmpty()) { // Move the capital if destroyed (by a nuke or by razing)
             civInfo.cities.first().cityConstructions.addBuilding(capitalCityIndicator())

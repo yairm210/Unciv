@@ -14,6 +14,7 @@ import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.trade.TradeEvaluation
 import com.unciv.logic.trade.TradeRequest
+import com.unciv.models.metadata.GameSpeed
 import com.unciv.models.ruleset.*
 import com.unciv.models.ruleset.tile.ResourceSupplyList
 import com.unciv.models.ruleset.tile.ResourceType
@@ -27,6 +28,7 @@ import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 import kotlin.math.roundToInt
+import kotlin.math.min
 
 class CivilizationInfo {
 
@@ -93,7 +95,7 @@ class CivilizationInfo {
 
     /** See DiplomacyManager.flagsCountdown to why not eEnum */
     private var flagsCountdown = HashMap<String, Int>()
-    /** Arraylist instead of HashMap as there might be doubles 
+    /** Arraylist instead of HashMap as there might be doubles
      * Pairs of Uniques and the amount of turns they are still active
      * If the counter reaches 0 at the end of a turn, it is removed immediately
      */
@@ -227,7 +229,7 @@ class CivilizationInfo {
         if (resource.resourceType == ResourceType.Strategic) {
             resourceModifier *= 1f + getMatchingUniques("Quantity of strategic resources produced by the empire +[]%")
                 .map { it.params[0].toFloat() / 100f }.sum()
-            
+
             // Deprecated since 3.15
                 if (hasUnique("Quantity of strategic resources produced by the empire increased by 100%")) {
                     resourceModifier *= 2f
@@ -386,7 +388,7 @@ class CivilizationInfo {
      * Returns a civilization caption suitable for greetings including player type info:
      * Like "Milan" if the nation is a city state, "Caesar of Rome" otherwise, with an added
      * " (AI)", " (Human - Hotseat)", or " (Human - Multiplayer)" if the game is multiplayer.
-     */ 
+     */
     fun getLeaderDisplayName(): String {
         val severalHumans = gameInfo.civilizations.count { it.playerType == PlayerType.Human } > 1
         val online = gameInfo.gameParameters.isOnlineMultiplayer
@@ -510,6 +512,7 @@ class CivilizationInfo {
 
         updateViewableTiles() // adds explored tiles so that the units will be able to perform automated actions better
         transients().updateCitiesConnectedToCapital()
+        turnStartFlags()
         for (city in cities) city.startTurn()
 
         for (unit in getCivUnits()) unit.startTurn()
@@ -561,7 +564,7 @@ class CivilizationInfo {
         for (city in cities.toList()) { // a city can be removed while iterating (if it's being razed) so we need to iterate over a copy
             city.endTurn()
         }
-        
+
         // Update turn counter for temporary uniques
         for (unique in temporaryUniques.toList()) {
             temporaryUniques.remove(unique)
@@ -575,8 +578,34 @@ class CivilizationInfo {
         updateHasActiveGreatWall()
     }
 
+    private fun turnStartFlags() {
+        // This function may be too abstracted for what it currently does (only managing a single flag)
+        // But eh, it works.
+        for (flag in flagsCountdown.keys.toList()) {
+
+            if (flag == CivFlags.cityStateGreatPersonGift.name) {
+                val cityStateAllies = getKnownCivs().filter { it.isCityState() && it.getAllyCiv() == civName }.count()
+
+                if (cityStateAllies >= 1) flagsCountdown[flag] = flagsCountdown[flag]!! - 1
+
+                if (flagsCountdown[flag]!! < min(cityStateAllies, 10)) {
+                    gainGreatPersonFromCityState()
+                    flagsCountdown[flag] = turnsForGreatPersonFromCityState()
+                }
+
+                continue
+            }
+
+            if (flagsCountdown[flag]!! > 0)
+                flagsCountdown[flag] = flagsCountdown[flag]!! - 1
+
+        }
+    }
+
+    fun addFlag(flag: String, count: Int) { flagsCountdown[flag] = count }
+
     /** Modify gold by a given amount making sure it does neither overflow nor underflow.
-     * @param delta the amount to add (can be negative) 
+     * @param delta the amount to add (can be negative)
      */
     fun addGold(delta: Int) {
         // not using Long.coerceIn - this stays in 32 bits
@@ -586,7 +615,7 @@ class CivilizationInfo {
             else -> gold + delta
         }
     }
-    
+
     fun addStat(stat: Stat, amount: Int) {
         when (stat) {
             Stat.Culture -> policies.addCulture(amount)
@@ -673,8 +702,8 @@ class CivilizationInfo {
 
     fun influenceGainedByGift(cityState: CivilizationInfo, giftAmount: Int): Int {
         var influenceGained = giftAmount / 10f
-        for (unique in cityState.getMatchingUniques("Gifts of Gold to City-States generate []% more Influence"))
-            influenceGained *= (100f + unique.params[0].toInt()) / 100
+        for (unique in getMatchingUniques("Gifts of Gold to City-States generate []% more Influence"))
+            influenceGained *= 1f + unique.params[0].toFloat() / 100f
         return influenceGained.toInt()
     }
 
@@ -712,6 +741,22 @@ class CivilizationInfo {
         val locations = LocationAction(listOf(placedLocation, cities.city2.location, city.location))
         addNotification("[${otherCiv.civName}] gave us a [${militaryUnit.name}] as gift near [${city.name}]!", locations, otherCiv.civName, militaryUnit.name)
     }
+
+    /** Gain a random great person from a random city state */
+    private fun gainGreatPersonFromCityState() {
+        val givingCityState = getKnownCivs().filter { it.isCityState() && it.getAllyCiv() == civName}.random()
+        val giftedUnit = gameInfo.ruleSet.units.values.filter { it.isGreatPerson() }.random()
+        val cities = NextTurnAutomation.getClosestCities(this, givingCityState)
+        val placedUnit = placeUnitNearTile(cities.city1.location, giftedUnit.name)
+        if (placedUnit == null) return
+        val locations = LocationAction(listOf(placedUnit.getTile().position, cities.city2.location))
+        addNotification( "[${givingCityState.civName}] gave us a [${giftedUnit.name}] as a gift!", locations, givingCityState.civName, giftedUnit.name)
+    }
+
+    fun turnsForGreatPersonFromCityState(): Int = (40 + -2 + Random().nextInt(5)) * gameInfo.gameParameters.gameSpeed.modifier.toInt()
+        // There seems to be some randomness in the amount of turns between receiving each great person,
+        // but I have no idea what the actual lower and upper bound are, so this is just an approximation
+    
 
     fun getAllyCiv() = allyCivName
 
@@ -785,4 +830,8 @@ class CivilizationInfoPreview {
     var playerType = PlayerType.AI
     var playerId = ""
     fun isPlayerCivilization() = playerType == PlayerType.Human
+}
+
+enum class CivFlags {
+    cityStateGreatPersonGift
 }

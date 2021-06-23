@@ -83,14 +83,6 @@ class SaveAndLoadMapScreen(mapToSave: TileMap?, save:Boolean = false, previousSc
             rightSideTable.add(mapNameTextField).width(300f).pad(10f)
             stage.keyboardFocus = mapNameTextField
             mapNameTextField.selectAll()
-        } else {
-            val downloadMapButton = "Download map".toTextButton()
-            val downloadAction = {
-                MapDownloadPopup(this).open()
-            }
-            downloadMapButton.onClick(downloadAction)
-            keyPressDispatcher['\u0004'] = downloadAction   // Ctrl-D
-            rightSideTable.add(downloadMapButton).row()
         }
 
         rightSideTable.addSeparator()

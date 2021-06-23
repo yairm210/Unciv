@@ -9,6 +9,7 @@ import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration
 import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.tools.texturepacker.TexturePacker
+import com.sun.jna.Native
 import com.unciv.JsonParser
 import com.unciv.UncivGame
 import com.unciv.UncivGameParameters
@@ -197,6 +198,12 @@ internal object DesktopLauncher {
 
     private fun tryActivateDiscord(game: UncivGame) {
         try {
+            /*
+             We try to load the Discord library manuall before the instance initializes.
+             This is because if there's a crash when the instance initializes on a similar line,
+              it's not within the bounds of the try/catch and thus the app will crash.
+             */
+            Native.loadLibrary("discord-rpc", DiscordRPC::class.java)
             val handlers = DiscordEventHandlers()
             DiscordRPC.INSTANCE.Discord_Initialize("647066573147996161", handlers, true, null)
 

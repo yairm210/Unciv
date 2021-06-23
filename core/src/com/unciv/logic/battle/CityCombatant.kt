@@ -19,7 +19,7 @@ class CityCombatant(val city: CityInfo) : ICombatant {
     override fun getName(): String = city.name
     override fun isDefeated(): Boolean = city.health == 1
     override fun isInvisible(): Boolean = false
-    override fun canAttack(): Boolean = (!city.attackedThisTurn)
+    override fun canAttack(): Boolean = city.canBombard()
     override fun matchesCategory(category: String) = category == "City"
     override fun getAttackSound() = UncivSound.Bombard
 
