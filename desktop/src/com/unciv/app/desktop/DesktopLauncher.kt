@@ -1,11 +1,15 @@
 package com.unciv.app.desktop
 
+import club.minnced.discord.rpc.DiscordEventHandlers
+import club.minnced.discord.rpc.DiscordRPC
+import club.minnced.discord.rpc.DiscordRichPresence
 import com.badlogic.gdx.Files
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration
 import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.tools.texturepacker.TexturePacker
+import com.sun.jna.Native
 import com.unciv.JsonParser
 import com.unciv.UncivGame
 import com.unciv.UncivGameParameters
@@ -57,7 +61,8 @@ internal object DesktopLauncher {
 
         val game = UncivGame(desktopParameters)
 
-        tryActivateDiscord(game)
+        if (!RaspberryPiDetector.isRaspberryPi()) // No discord RPC for Raspberry Pi, see https://github.com/yairm210/Unciv/issues/1624
+            tryActivateDiscord(game)
 
         LwjglApplication(game, config)
     }
@@ -193,10 +198,16 @@ internal object DesktopLauncher {
 
     private fun tryActivateDiscord(game: UncivGame) {
         try {
-            val handlers = club.minnced.discord.rpc.DiscordEventHandlers()
-            club.minnced.discord.rpc.DiscordRPC.INSTANCE.Discord_Initialize("647066573147996161", handlers, true, null)
+            /*
+             We try to load the Discord library manuall before the instance initializes.
+             This is because if there's a crash when the instance initializes on a similar line,
+              it's not within the bounds of the try/catch and thus the app will crash.
+             */
+            Native.loadLibrary("discord-rpc", DiscordRPC::class.java)
+            val handlers = DiscordEventHandlers()
+            DiscordRPC.INSTANCE.Discord_Initialize("647066573147996161", handlers, true, null)
 
-            Runtime.getRuntime().addShutdownHook(Thread { club.minnced.discord.rpc.DiscordRPC.INSTANCE.Discord_Shutdown() })
+            Runtime.getRuntime().addShutdownHook(Thread { DiscordRPC.INSTANCE.Discord_Shutdown() })
 
             discordTimer = timer(name = "Discord", daemon = true, period = 1000) {
                 try {
@@ -211,11 +222,11 @@ internal object DesktopLauncher {
 
     private fun updateRpc(game: UncivGame) {
         if (!game.isInitialized) return
-        val presence = club.minnced.discord.rpc.DiscordRichPresence()
+        val presence = DiscordRichPresence()
         val currentPlayerCiv = game.gameInfo.getCurrentPlayerCivilization()
         presence.details = currentPlayerCiv.nation.getLeaderDisplayName().tr()
         presence.largeImageKey = "logo" // The actual image is uploaded to the discord app / applications webpage
         presence.largeImageText = "Turn".tr() + " " + currentPlayerCiv.gameInfo.turns
-        club.minnced.discord.rpc.DiscordRPC.INSTANCE.Discord_UpdatePresence(presence)
+        DiscordRPC.INSTANCE.Discord_UpdatePresence(presence)
     }
 }
