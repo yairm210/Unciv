@@ -361,7 +361,7 @@ class CityInfo {
         cityConstructions.endTurn(stats)
         expansion.nextTurn(stats.culture)
         if (isBeingRazed) {
-            population.population--
+            population.addPopulation(-1)
             if (population.population <= 0) { // there are strange cases where we get to -1
                 civInfo.addNotification("[$name] has been razed to the ground!", location, "OtherIcons/Fire")
                 destroyCity()

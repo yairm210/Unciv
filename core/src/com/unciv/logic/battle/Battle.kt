@@ -12,6 +12,7 @@ import com.unciv.models.ruleset.Unique
 import com.unciv.models.ruleset.unit.UnitType
 import com.unciv.models.stats.Stat
 import java.util.*
+import kotlin.math.min
 import kotlin.math.max
 
 /**
@@ -109,7 +110,7 @@ object Battle {
 
         for (unique in bonusUniques) {
             if (!defeatedUnit.matchesCategory(unique.params[1])) continue
-            
+
             val yieldPercent = unique.params[0].toFloat() / 100
             val defeatedUnitYieldSourceType = unique.params[2]
             val yieldTypeSourceAmount =
@@ -182,7 +183,7 @@ object Battle {
             val locations = LocationAction (
                 if (attackerTile != null && attackerTile.position != attackedTile.position)
                         listOf(attackedTile.position, attackerTile.position)
-                else listOf(attackedTile.position) 
+                else listOf(attackedTile.position)
             )
             defender.getCivInfo().addNotification(notificationString, locations, attackerIcon, NotificationIcon.War, defenderIcon)
         }
@@ -315,11 +316,11 @@ object Battle {
 
         for (unique in attackerCiv.getMatchingUniques("Upon capturing a city, receive [] times its [] production as [] immediately")) {
             attackerCiv.addStat(
-                Stat.valueOf(unique.params[2]), 
+                Stat.valueOf(unique.params[2]),
                 unique.params[0].toInt() * city.cityStats.currentCityStats.get(Stat.valueOf(unique.params[1])).toInt()
             )
         }
-        
+
         if (attackerCiv.isPlayerCivilization()) {
             attackerCiv.popupAlerts.add(PopupAlert(AlertType.CityConquered, city.id))
             UncivGame.Current.settings.addCompletedTutorialTask("Conquer a city")
@@ -390,8 +391,7 @@ object Battle {
                 if (city.population.population <= 5 && !city.isOriginalCapital) {
                     city.destroyCity()
                 } else {
-                    city.population.population = max(city.population.population - 5, 1)
-                    city.population.unassignExtraPopulation()
+                    city.population.setPopulation(max(city.population.population - 5, 1))
                     continue
                 }
                 destroyIfDefeated(city.civInfo, attackingCiv)
