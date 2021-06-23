@@ -1,15 +1,30 @@
+## 3.15.4
+
+Deprecated 'download map' in favor of mod-based map sharing
+
+By xlenstra:
+- Created Patronage policy branch 
+- Fixed a bug where excess food would not be converted to production for settlers 
+
+By avdstaaij:
+- Added Nuclear Fusion tech and Giant Death Robot 
+- Fixed open terrain bonus working in rough terrain 
+- Fixed captured units not tp-ing out of liberated cities 
+- Fixed naval units not tp-ing out of razed cities 
+
+Split off all individual OverviewScreen panes  - By SomeTroglodyte
+
 ## 3.15.3
 
 By xlenstra:
 - Created Order branch with G&K policies 
-- Fixes bug where coastal buildings cannot be built even if the city is coastal 
-- Fixed Great Improvement bonus not working 
+- Fixed bug where coastal buildings cannot be built
 - Stop AI from pillaging their own tiles. Fixes #4203 
-- Fixed autocracy complete bonus not continuing after updating to 3.15.2 
+- Fixed autocracy complete bonus not continuing after updating
 
 Corrected many building production costs, tech requirements and wonder effects  - By avdstaaij
 
-Change improvement picker key indicators to tooltip - By SomeTroglodyte
+Change improvement key indicators to tooltip - By SomeTroglodyte
 
 Resolved #4209 - AI city-founding no longer plays music
 
