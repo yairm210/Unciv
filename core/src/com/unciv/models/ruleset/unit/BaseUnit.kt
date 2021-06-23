@@ -248,6 +248,7 @@ class BaseUnit : INamed, IConstruction {
             "Land", "land units" -> unitType.isLandUnit()
             "Water", "water units", "Water units" -> unitType.isWaterUnit()
             "Air", "air units" -> unitType.isAirUnit()
+            "Missile" -> unitType.isMissile()
             "non-air" -> !unitType.isAirUnit()
             "Military", "military units" -> unitType.isMilitary()
             "Nuclear Weapon" -> isNuclearWeapon()
@@ -264,6 +265,8 @@ class BaseUnit : INamed, IConstruction {
     
     // "Nuclear Weapon" unique deprecated since 3.15.4
     fun isNuclearWeapon() = uniqueObjects.any { it.placeholderText == "Nuclear Weapon" || it.placeholderText == "Nuclear Weapon of strength []" }
+    
+    fun movesLikeAirUnits() = unitType.isAirUnit() || unitType.isMissile()
 
     override fun getResourceRequirements(): HashMap<String, Int> {
         val resourceRequirements = HashMap<String, Int>()

@@ -463,7 +463,7 @@ class CityInfo {
             val tile = getCenterTile()
             if (construction.unitType.isCivilian())
                 return tile.civilianUnit == null
-            if (construction.unitType.isAirUnit())
+            if (construction.unitType.isAirUnit() || construction.unitType.isMissile())
                 return tile.airUnits.filter { !it.isTransported }.size < 6
             else return tile.militaryUnit == null
         }
