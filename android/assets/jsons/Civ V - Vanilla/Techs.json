@@ -528,7 +528,7 @@
 			},
 			{
 				"name": "Nuclear Fission",
-				"row": 5,
+				"row": 4,
 				"prerequisites": ["Atomic Theory","Radar"],
 				"quote": "'I am become Death, the destroyer of worlds.' - J. Robert Oppenheimer"
 			},
@@ -561,7 +561,7 @@
 			},
 			{
 				"name": "Advanced Ballistics",
-				"row": 4,
+				"row": 5,
 				"prerequisites": ["Nuclear Fission","Rocketry"],
 				"quote": "Our scientific power has outrun our spiritual power, we have guided missiles and misguided men. – Martin Luther King Jr. "
 			},
@@ -597,13 +597,13 @@
 			{
 				"name": "Particle Physics",
 				"row": 4,
-				"prerequisites": ["Mobile Tactics","Satellites","Advanced Ballistics"],
+				"prerequisites": ["Mobile Tactics", "Advanced Ballistics"],
 				"quote": "'Every particle of matter is attracted by or gravitates to every other particle of matter with a force inversely proportional to the squares of their distances.' - Isaac Newton"
 			},
 			{
 				"name": "Nuclear Fusion",
 				"row": 6,
-				"prerequisites": [/*"Advanced Ballistics" ,*/ "Satellites", "Robotics"],
+				"prerequisites": ["Advanced Ballistics", "Satellites", "Robotics"],
 				"quote": "'The release of atomic energy has not created a new problem. It has readily made more urgent the necessity of solving an existing one.' - Albert Einstein"
 			},
 			{
