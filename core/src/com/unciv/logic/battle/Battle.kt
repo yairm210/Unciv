@@ -31,13 +31,7 @@ object Battle {
             }
         }
 
-        if (attacker is MapUnitCombatant && 
-            (
-                attacker.unit.hasUnique("Nuclear weapon of strength []") ||
-                // Deprecated since 3.15.3
-                    attacker.unit.hasUnique("Nuclear weapon")
-                //
-            )
+        if (attacker is MapUnitCombatant && attacker.unit.baseUnit.isNuclearWeapon()
         ) {
             return NUKE(attacker, attackableTile.tileToAttack)
         }
@@ -427,7 +421,7 @@ object Battle {
             tryDeclareWar(hitCiv)
         }
 
-        // Declare war on all hit units. They'll try to intercept the nuke before it drops
+        // Declare war on all potentially hit units. They'll try to intercept the nuke before it drops
         for (hitUnit in hitTiles.map { it.getUnits() }.flatten()) {
             tryDeclareWar(hitUnit.civInfo)
             if (attacker.getUnitType().isAirUnit() && !attacker.isDefeated()) {
@@ -437,10 +431,10 @@ object Battle {
         if (attacker.isDefeated()) return
         
         // Destroy units on the target tile
-        for (unit in targetTile.getUnits().filter { it != attacker.unit }) {
-            unit.destroy()
-            postBattleNotifications(attacker, MapUnitCombatant(unit), unit.getTile())
-            destroyIfDefeated(unit.civInfo, attacker.getCivInfo())
+        for (defender in targetTile.getUnits().filter { it != attacker.unit }) {
+            defender.destroy()
+            postBattleNotifications(attacker, MapUnitCombatant(defender), defender.getTile())
+            destroyIfDefeated(defender.civInfo, attacker.getCivInfo())
         }
         
         for (tile in hitTiles) {
@@ -474,18 +468,21 @@ object Battle {
             if (civResources[resource]!! < 0 && !attacker.getCivInfo().isBarbarian())
                 damageModifierFromMissingResource *= 0.5f // I could not find a source for this number, but this felt about right
         }
+        
         // Decrease health & population of a hit city
         val city = tile.getCity()
         if (city != null && tile.position == city.location) {
-            var populationLoss = 1f;
+            var populationLoss = city.population.population * (0.3 + Random().nextFloat() * 0.4)
+            var populationLossReduced = false
             for (unique in city.civInfo.getMatchingUniques("Population loss from nuclear attacks -[]%")) {
-                populationLoss *= 1 - unique.params[0].toFloat() / 100f 
+                populationLoss *= 1 - unique.params[0].toFloat() / 100f
+                populationLossReduced = true
             }
-            if (city.population.population < 4 && populationLoss == 1f) {
+            if (city.population.population < 5 && !populationLossReduced) {
+                city.population.population = 1 // For cities that cannot be destroyed, such as original capitals
                 city.destroyCity()
             } else {
-                city.population.population =
-                    (city.population.population * (0.3 + Random().nextFloat() * 0.4) * populationLoss).toInt()
+                city.population.population -= populationLoss.toInt()
                 if (city.population.population < 1) city.population.population = 1
                 city.population.unassignExtraPopulation()
                 city.health -= ((0.5 + 0.25 * Random().nextFloat()) * city.health * damageModifierFromMissingResource).toInt()
@@ -493,17 +490,19 @@ object Battle {
             }
             postBattleNotifications(attacker, CityCombatant(city), city.getCenterTile())
         }
+        
         // Damage and/or destroy units on the tile
         for (unit in tile.getUnits()) {
-            val hitUnit = MapUnitCombatant(unit)
-            if (hitUnit.unit.baseUnit.unitType.isCivilian()) {
+            val defender = MapUnitCombatant(unit)
+            if (defender.unit.baseUnit.unitType.isCivilian()) {
                 unit.destroy() // destroy the unit
             } else {
-                hitUnit.takeDamage(((40 + Random().nextInt(60)) * damageModifierFromMissingResource).toInt())
+                defender.takeDamage(((40 + Random().nextInt(60)) * damageModifierFromMissingResource).toInt())
             }
-            postBattleNotifications(attacker, hitUnit, hitUnit.getTile())
-            destroyIfDefeated(hitUnit.getCivInfo(), attacker.getCivInfo())
+            postBattleNotifications(attacker, defender, defender.getTile())
+            destroyIfDefeated(defender.getCivInfo(), attacker.getCivInfo())
         }
+        
         // Remove improvements, add fallout
         tile.improvement = null
         tile.improvementInProgress = null
@@ -532,18 +531,22 @@ object Battle {
             if (civResources[resource]!! < 0 && !attacker.getCivInfo().isBarbarian())
                 damageModifierFromMissingResource *= 0.5f // I could not find a source for this number, but this felt about right
         }
+        
         // Damage and/or destroy cities
         val city = tile.getCity()
         if (city != null && city.location == tile.position) {
-            var populationLoss = 1f;
-            for (unique in city.civInfo.getMatchingUniques("Population loss from nuclear attacks -[]%")) {
-                populationLoss *= 1 - unique.params[0].toFloat() / 100f
-            }
             if (city.population.population < 5) {
+                city.population.population = 1 // For cities that cannot be destroyed, such as original capitals
                 city.destroyCity()
             } else {
-                city.population.population = (city.population.population * (0.6 + Random().nextFloat() * 0.2) * populationLoss).toInt()
-                if (city.population.population < 5 && populationLoss == 1f) city.population.population = 5
+                var populationLoss = city.population.population * (0.6 + Random().nextFloat() * 0.2);
+                var populationLossReduced = false
+                for (unique in city.civInfo.getMatchingUniques("Population loss from nuclear attacks -[]%")) {
+                    populationLoss *= 1 - unique.params[0].toFloat() / 100f
+                    populationLossReduced = true
+                }
+                city.population.population -= populationLoss.toInt()
+                if (city.population.population < 5 && populationLossReduced) city.population.population = 5
                 if (city.population.population < 1) city.population.population = 1
                 city.population.unassignExtraPopulation()
                 city.health -= (0.5 * city.getMaxHealth() * damageModifierFromMissingResource).toInt()
@@ -552,20 +555,29 @@ object Battle {
             postBattleNotifications(attacker, CityCombatant(city), city.getCenterTile())
             destroyIfDefeated(city.civInfo, attacker.getCivInfo())
         }
-        // Destroy all units
-        for (unit in tile.getUnits()) {
-            unit.destroy()
-            postBattleNotifications(attacker, MapUnitCombatant(unit), unit.currentTile)
-            destroyIfDefeated(unit.civInfo, attacker.getCivInfo())
+        
+        // Destroy all hit units
+        for (defender in tile.getUnits()) {
+            defender.destroy()
+            postBattleNotifications(attacker, MapUnitCombatant(defender), defender.currentTile)
+            destroyIfDefeated(defender.civInfo, attacker.getCivInfo())
         }
+        
         // Remove improvements
         tile.improvement = null
         tile.improvementInProgress = null
         tile.turnsToImprovement = 0
         tile.roadStatus = RoadStatus.None
-        if (tile.isLand && !tile.isImpassible() && !tile.terrainFeatures.contains("Fallout") &&
-            Random().nextFloat() < 0.5) {
-            tile.terrainFeatures.add("Fallout")
+        if (tile.isLand && !tile.isImpassible() && !tile.terrainFeatures.contains("Fallout")) {
+            if (tile.terrainFeatures.any { attacker.getCivInfo().gameInfo.ruleSet.terrains[it]!!.uniques.contains("Resistant to nukes") }) {
+                if (Random().nextFloat() < 0.25f) {
+                    tile.terrainFeatures.removeAll { attacker.getCivInfo().gameInfo.ruleSet.terrains[it]!!.uniques.contains("Can be destroyed by nukes") }
+                    tile.terrainFeatures.add("Fallout")
+                }
+            } else if (Random().nextFloat() < 0.5f) {
+                tile.terrainFeatures.removeAll { attacker.getCivInfo().gameInfo.ruleSet.terrains[it]!!.uniques.contains("Can be destroyed by nukes") }
+                tile.terrainFeatures.add("Fallout")
+            }
         }
     }
 

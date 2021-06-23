@@ -39,25 +39,18 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
 
     fun update() {
         isVisible = true
+        if (!worldScreen.canChangeState) { hide(); return }
 
         val attacker = tryGetAttacker()
-        if(attacker==null || !worldScreen.canChangeState){ hide(); return }
+        if (attacker == null) { hide(); return }
 
-        if (attacker is MapUnitCombatant && 
-            (
-                attacker.unit.hasUnique("Nuclear weapon of strength []") ||
-                // Deprecated since 3.15.3
-                    attacker.unit.hasUnique("Nuclear weapon")
-                //
-            )
-        ) {
+        if (attacker is MapUnitCombatant && attacker.unit.baseUnit.isNuclearWeapon()) {
             val selectedTile = worldScreen.mapHolder.selectedTile
             if (selectedTile == null) { hide(); return } // no selected tile
             simulateNuke(attacker, selectedTile)
         } else {
             val defender = tryGetDefender()
             if (defender == null) { hide(); return }
-
             simulateBattle(attacker, defender)
         }
     }

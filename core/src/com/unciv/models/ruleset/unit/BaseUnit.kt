@@ -161,13 +161,7 @@ class BaseUnit : INamed, IConstruction {
         if (uniqueTo != null && uniqueTo != civInfo.civName) return "Unique to $uniqueTo"
         if (civInfo.gameInfo.ruleSet.units.values.any { it.uniqueTo == civInfo.civName && it.replaces == name })
             return "Our unique unit replaces this"
-        if (!civInfo.gameInfo.gameParameters.nuclearWeaponsEnabled && 
-            (
-                uniques.map{ it.getPlaceholderText()}.contains("Nuclear weapon of strength []") ||
-                // Deprecated since 3.15.3
-                    uniques.map{ it.getPlaceholderText()}.contains("Nuclear weapon")
-                //
-            )
+        if (!civInfo.gameInfo.gameParameters.nuclearWeaponsEnabled && isNuclearWeapon()
         ) return "Disabled by setting"
 
         for (unique in uniqueObjects.filter { it.placeholderText == "Unlocked with []" })
@@ -256,6 +250,7 @@ class BaseUnit : INamed, IConstruction {
             "Air", "air units" -> unitType.isAirUnit()
             "non-air" -> !unitType.isAirUnit()
             "Military", "military units" -> unitType.isMilitary()
+            "Nuclear Weapon" -> isNuclearWeapon()
             // Deprecated as of 3.15.2
             "military water" -> unitType.isMilitary() && unitType.isWaterUnit()
             else -> {
@@ -266,6 +261,9 @@ class BaseUnit : INamed, IConstruction {
     }
 
     fun isGreatPerson() = uniqueObjects.any { it.placeholderText == "Great Person - []" }
+    
+    // "Nuclear Weapon" unique deprecated since 3.15.4
+    fun isNuclearWeapon() = uniqueObjects.any { it.placeholderText == "Nuclear Weapon" || it.placeholderText == "Nuclear Weapon of strength []" }
 
     override fun getResourceRequirements(): HashMap<String, Int> {
         val resourceRequirements = HashMap<String, Int>()
