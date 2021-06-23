@@ -700,8 +700,7 @@ class MapUnit {
 
         if (civInfo.cities.isNotEmpty()) actions.add {
             val city = civInfo.cities.random(tileBasedRandom)
-            city.population.population++
-            city.population.autoAssignPopulation()
+            city.population.addPopulation(1)
             val locations = LocationAction(listOf(tile.position, city.location))
             civInfo.addNotification(
                 "We have found survivors in the ruins - population added to [" + city.name + "]",

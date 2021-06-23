@@ -15,6 +15,7 @@ import com.unciv.models.ruleset.unit.UnitType
 import com.unciv.models.stats.Stat
 import com.unciv.models.translations.tr
 import java.util.*
+import kotlin.math.min
 import kotlin.math.max
 
 /**
@@ -113,7 +114,7 @@ object Battle {
 
         for (unique in bonusUniques) {
             if (!defeatedUnit.matchesCategory(unique.params[1])) continue
-            
+
             val yieldPercent = unique.params[0].toFloat() / 100
             val defeatedUnitYieldSourceType = unique.params[2]
             val yieldTypeSourceAmount =
@@ -186,7 +187,7 @@ object Battle {
             val locations = LocationAction (
                 if (attackerTile != null && attackerTile.position != attackedTile.position)
                         listOf(attackedTile.position, attackerTile.position)
-                else listOf(attackedTile.position) 
+                else listOf(attackedTile.position)
             )
             defender.getCivInfo().addNotification(notificationString, locations, attackerIcon, NotificationIcon.War, defenderIcon)
         }
@@ -319,11 +320,11 @@ object Battle {
 
         for (unique in attackerCiv.getMatchingUniques("Upon capturing a city, receive [] times its [] production as [] immediately")) {
             attackerCiv.addStat(
-                Stat.valueOf(unique.params[2]), 
+                Stat.valueOf(unique.params[2]),
                 unique.params[0].toInt() * city.cityStats.currentCityStats.get(Stat.valueOf(unique.params[1])).toInt()
             )
         }
-        
+
         if (attackerCiv.isPlayerCivilization()) {
             attackerCiv.popupAlerts.add(PopupAlert(AlertType.CityConquered, city.id))
             UncivGame.Current.settings.addCompletedTutorialTask("Conquer a city")
@@ -382,7 +383,7 @@ object Battle {
             attacker.popupAlerts.add(PopupAlert(AlertType.Defeated, attackedCiv.civName))
         }
     }
-    
+
     fun NUKE(attacker: MapUnitCombatant, targetTile: TileInfo) {
         val attackingCiv = attacker.getCivInfo()
         fun tryDeclareWar(civSuffered: CivilizationInfo) {
@@ -393,8 +394,8 @@ object Battle {
                 attackingCiv.getDiplomacyManager(civSuffered).declareWar()
             }
         }
-        
-        val blastRadius = 
+
+        val blastRadius =
             if (!attacker.unit.hasUnique("Blast radius []")) 2
             else attacker.unit.getMatchingUniques("Blast radius []").first().params[0].toInt()
 
@@ -406,10 +407,10 @@ object Battle {
             //
             else -> return
         }
-        
+
         // Calculate the tiles that are hit
         val hitTiles = targetTile.getTilesInDistance(blastRadius)
-        
+
         // Declare war on the owners of all hit tiles
         for (hitCiv in hitTiles.map { it.getOwner() }.distinct()) {
             hitCiv!!.addNotification("A(n) [${attacker.getName()}] exploded in our territory!".tr(), targetTile.position, NotificationIcon.War)
@@ -424,14 +425,14 @@ object Battle {
             }
         }
         if (attacker.isDefeated()) return
-        
+
         // Destroy units on the target tile
         for (defender in targetTile.getUnits().filter { it != attacker.unit }) {
             defender.destroy()
             postBattleNotifications(attacker, MapUnitCombatant(defender), defender.getTile())
             destroyIfDefeated(defender.civInfo, attacker.getCivInfo())
         }
-        
+
         for (tile in hitTiles) {
             // Handle complicated effects
             when (strength) {
@@ -440,19 +441,19 @@ object Battle {
                 else -> nukeStrength1Effect(attacker, tile)
             }
         }
-        
+
         // Instead of postBattleAction() just destroy the unit, all other functions are not relevant
         if (attacker.unit.hasUnique("Self-destructs when attacking")) {
             attacker.unit.destroy()
         }
-        
+
         // It's unclear whether using nukes results in a penalty with all civs, or only affected civs.
         // For now I'll make it give a diplomatic penalty to all known civs, but some testing for this would be appreciated
         for (civ in attackingCiv.getKnownCivs()) {
             civ.getDiplomacyManager(attackingCiv).setModifier(DiplomaticModifiers.UsedNuclearWeapons, -50f)
         }
     }
-    
+
     private fun nukeStrength1Effect(attacker: MapUnitCombatant, tile: TileInfo) {
         // https://forums.civfanatics.com/resources/unit-guide-modern-future-units-g-k.25628/
         // https://www.carlsguides.com/strategy/civilization5/units/aircraft-nukes.php
@@ -463,7 +464,7 @@ object Battle {
             if (civResources[resource]!! < 0 && !attacker.getCivInfo().isBarbarian())
                 damageModifierFromMissingResource *= 0.5f // I could not find a source for this number, but this felt about right
         }
-        
+
         // Decrease health & population of a hit city
         val city = tile.getCity()
         if (city != null && tile.position == city.location) {
@@ -474,18 +475,18 @@ object Battle {
                 populationLossReduced = true
             }
             if (city.population.population < 5 && !populationLossReduced) {
-                city.population.population = 1 // For cities that cannot be destroyed, such as original capitals
+                city.population.setPopulation(1) // For cities that cannot be destroyed, such as original capitals
                 city.destroyCity()
             } else {
-                city.population.population -= populationLoss.toInt()
-                if (city.population.population < 1) city.population.population = 1
+                city.population.addPopulation(-populationLoss.toInt())
+                if (city.population.population < 1) city.population.setPopulation(1)
                 city.population.unassignExtraPopulation()
                 city.health -= ((0.5 + 0.25 * Random().nextFloat()) * city.health * damageModifierFromMissingResource).toInt()
                 if (city.health < 1) city.health = 1
             }
             postBattleNotifications(attacker, CityCombatant(city), city.getCenterTile())
         }
-        
+
         // Damage and/or destroy units on the tile
         for (unit in tile.getUnits()) {
             val defender = MapUnitCombatant(unit)
@@ -497,7 +498,7 @@ object Battle {
             postBattleNotifications(attacker, defender, defender.getTile())
             destroyIfDefeated(defender.getCivInfo(), attacker.getCivInfo())
         }
-        
+
         // Remove improvements, add fallout
         tile.improvement = null
         tile.improvementInProgress = null
@@ -515,7 +516,7 @@ object Battle {
             }
         }
     }
-    
+
     private fun nukeStrength2Effect(attacker: MapUnitCombatant, tile: TileInfo) {
         // https://forums.civfanatics.com/threads/unit-guide-modern-future-units-g-k.429987/#2
         // https://www.carlsguides.com/strategy/civilization5/units/aircraft-nukes.php
@@ -526,12 +527,12 @@ object Battle {
             if (civResources[resource]!! < 0 && !attacker.getCivInfo().isBarbarian())
                 damageModifierFromMissingResource *= 0.5f // I could not find a source for this number, but this felt about right
         }
-        
+
         // Damage and/or destroy cities
         val city = tile.getCity()
         if (city != null && city.location == tile.position) {
             if (city.population.population < 5) {
-                city.population.population = 1 // For cities that cannot be destroyed, such as original capitals
+                city.population.setPopulation(1) // For cities that cannot be destroyed, such as original capitals
                 city.destroyCity()
             } else {
                 var populationLoss = city.population.population * (0.6 + Random().nextFloat() * 0.2);
@@ -540,9 +541,9 @@ object Battle {
                     populationLoss *= 1 - unique.params[0].toFloat() / 100f
                     populationLossReduced = true
                 }
-                city.population.population -= populationLoss.toInt()
-                if (city.population.population < 5 && populationLossReduced) city.population.population = 5
-                if (city.population.population < 1) city.population.population = 1
+                city.population.addPopulation(-populationLoss.toInt())
+                if (city.population.population < 5 && populationLossReduced) city.population.setPopulation(5)
+                if (city.population.population < 1) city.population.setPopulation(1)
                 city.population.unassignExtraPopulation()
                 city.health -= (0.5 * city.getMaxHealth() * damageModifierFromMissingResource).toInt()
                 if (city.health < 1) city.health = 1
@@ -550,14 +551,14 @@ object Battle {
             postBattleNotifications(attacker, CityCombatant(city), city.getCenterTile())
             destroyIfDefeated(city.civInfo, attacker.getCivInfo())
         }
-        
+
         // Destroy all hit units
         for (defender in tile.getUnits()) {
             defender.destroy()
             postBattleNotifications(attacker, MapUnitCombatant(defender), defender.currentTile)
             destroyIfDefeated(defender.civInfo, attacker.getCivInfo())
         }
-        
+
         // Remove improvements
         tile.improvement = null
         tile.improvementInProgress = null

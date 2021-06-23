@@ -14,6 +14,7 @@ class PopulationManager {
     lateinit var cityInfo: CityInfo
 
     var population = 1
+        private set
     var foodStored = 0
 
     // In favor of this bad boy
@@ -70,6 +71,19 @@ class PopulationManager {
 
     private fun getStatsOfSpecialist(name: String) = cityInfo.cityStats.getStatsOfSpecialist(name)
 
+    internal fun addPopulation(count: Int) {
+        population += count
+        val freePopulation = getFreePopulation()
+        if (freePopulation < 0) {
+            unassignExtraPopulation()
+        } else {
+            autoAssignPopulation()
+        }
+    }
+    
+    internal fun setPopulation(count: Int) {
+        addPopulation(-population + count)
+    }
 
     internal fun autoAssignPopulation(foodWeight: Float = 1f) {
         for (i in 1..getFreePopulation()) {

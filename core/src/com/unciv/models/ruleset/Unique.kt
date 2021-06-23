@@ -79,8 +79,7 @@ object UniqueTriggerActivation {
             }
             "+1 population in each city" ->
                 for (city in civInfo.cities) {
-                    city.population.population += 1
-                    city.population.autoAssignPopulation()
+                    city.population.addPopulation(1)
                 }
             "Free Technology" -> if (!civInfo.isSpectator()) civInfo.tech.freeTechs += 1
             "[] Free Technologies" -> if (!civInfo.isSpectator()) civInfo.tech.freeTechs += unique.params[0].toInt() 
