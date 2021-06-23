@@ -201,6 +201,8 @@ open class TileInfo {
         yieldAll(terrainFeatures.asSequence().mapNotNull { ruleset.terrains[it] })
     }
 
+    fun isRoughTerrain() = getAllTerrains().any{ it.isRough() }
+
     fun hasUnique(unique: String) = getAllTerrains().any { it.uniques.contains(unique) }
 
     fun getWorkingCity(): CityInfo? {
@@ -317,7 +319,7 @@ open class TileInfo {
             }
 
         for (unique in observingCiv.getMatchingUniques("+[]% yield from every []"))
-            if (improvement.matchesFilter(unique.params[1])) 
+            if (improvement.matchesFilter(unique.params[1]))
                 stats.timesInPlace(1f + unique.params[0].toFloat() / 100f)
 
         // Deprecated since 3.15
@@ -400,7 +402,7 @@ open class TileInfo {
         if (improvement != null && ruleset.tileImprovements[improvement]!!.matchesFilter(filter)) return true
         return false
     }
-    
+
     fun matchesTerrainFilter(filter: String, observingCiv: CivilizationInfo? = null): Boolean {
         return when (filter) {
             "All" -> true
@@ -410,12 +412,13 @@ open class TileInfo {
             "Coastal" -> isCoastalTile()
             "River" -> isAdjacentToRiver()
             naturalWonder -> true
-            "Foreign Land" -> observingCiv != null && !isFriendlyTerritory(observingCiv)
-            "Friendly Land" -> observingCiv != null && isFriendlyTerritory(observingCiv)
+            "Open terrain" -> !isRoughTerrain()
+            "Rough terrain" -> isRoughTerrain()
+            "Foreign Land" -> civInfo != null && !isFriendlyTerritory(civInfo)
+            "Friendly Land" -> civInfo != null && isFriendlyTerritory(civInfo)
             else -> {
                 if (terrainFeatures.contains(filter)) return true
-                if (baseTerrainObject.uniques.contains(filter)) return true
-                if (terrainFeatures.isNotEmpty() && getTerrainFeatures().last().uniques.contains(filter)) return true
+                if (hasUnique(filter)) return true
                 if (resource != null && getTileResource().resourceType.name + " resource" == filter) return true
                 if (observingCiv != null && hasViewableResource(observingCiv) && resource == filter) return true
                 return false

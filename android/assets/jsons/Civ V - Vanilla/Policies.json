@@ -135,7 +135,7 @@
 	},{
 		"name": "Piety",
 		"era": "Classical era",
-		"uniques": ["+[15]% Production when constructing [Culture] buildings"],
+		"uniques": ["+[15]% Production when constructing [Culture] buildings", "Incompatible with [Rationalism]"],
 		"policies": [
 			{
 				"name": "Organized Religion",
@@ -177,8 +177,15 @@
 				"uniques": ["Culture cost of adopting new Policies reduced by [10]%"]
 			}
 		]
-	},/*{
-		"name": "Patronage",
+	},
+	{
+		"name": "Patronage ",
+		// Yes, there is a space behind this word, and yes, this is necessary
+		// This is, because at the time of writing there existed another policy called 'Patronage' that was recently deprecated
+		// It would, however, still be possible for save-files to contain this policy
+		// Therefore, we had to differentiate between these two, and this was the least intrusive way to do so
+		// NOTE: If you remove the space here, also remove the extra space between 'patronage' and 'complete' in the 'patronage  complete' policy.
+		// Otherwise, weird stuff will happen.
 		"era": "Classical era",
 		"uniques": ["City-State Influence degrades [25]% slower"],
 		"policies": [
@@ -196,14 +203,15 @@
 			},
 			{
 				"name": "Scholasticism",
-				"uniques":["Allied City-States provide Science equal to [25]% of what they produce for themselves"],
+				"uniques":["Allied City-States provide [Science] equal to [25]% of what they produce for themselves"],
 				"requires": ["Philantropy"],
 				"row": 2,
 				"column": 2
 			},
 			{
 				"name": "Cultural Diplomacy",
-				"uniques": ["Quantity of Resources gifted by City-States increased by [100]%"],
+				"uniques": ["Quantity of Resources gifted by City-States increased by [100]%",
+					"Happiness from Luxury Resources gifted by City-States increased by [50]%"],
 				"requires": ["Scholasticism"],
 				"row": 3,
 				"column": 2
@@ -211,14 +219,19 @@
 			{
 				"name": "Educated Elite",
 				"requires": ["Scholasticism","Aesthetics"],
+				"uniques": ["Allied City-States will occasionally gift Great People"],
 				"row": 3,
 				"column": 4
 			},
 			{
-				"name": "Patronage Complete"
-			}
+				"name": "Patronage  Complete",
+				// This extra space is intentional, see above.
+				"uniques": ["Influence of all other civilizations with all city-states degrades [33]% faster", 
+					"Triggers the following global alert: [Our influence with City-States has started dropping faster!]"]
+				// This triggers a global alert in the G&K game also, based on my memory of playing it
+			} 
 		]
-	},*/
+	},
 	{
 		"name": "Commerce",
 		"uniques": ["+[25]% [Gold] [in capital]"],
@@ -269,7 +282,7 @@
 	{
 		"name": "Rationalism",
 		"era": "Renaissance era",
-		"uniques": ["+[15]% [Science] while the empire is happy"],
+		"uniques": ["+[15]% [Science] while the empire is happy", "Incompatible with [Piety]"],
 		"policies": [
 			{
 				"name": "Secularism",
