@@ -49,7 +49,7 @@ object BattleHelper {
         // Silly floats, basically
 
         val unitMustBeSetUp = unit.hasUnique("Must set up to ranged attack")
-        val tilesToAttackFrom = if (unit.type.isAirUnit()) sequenceOf(unit.currentTile)
+        val tilesToAttackFrom = if (unit.baseUnit.movesLikeAirUnits()) sequenceOf(unit.currentTile)
         else
             unitDistanceToTiles.asSequence()
                     .filter {
@@ -63,7 +63,7 @@ object BattleHelper {
 
         for (reachableTile in tilesToAttackFrom) {  // tiles we'll still have energy after we reach there
             val tilesInAttackRange =
-                    if (unit.hasUnique("Ranged attacks may be performed over obstacles") || unit.type.isAirUnit())
+                    if (unit.hasUnique("Ranged attacks may be performed over obstacles") || unit.baseUnit.movesLikeAirUnits())
                         reachableTile.getTilesInDistance(rangeOfAttack)
                     else reachableTile.getViewableTilesList(rangeOfAttack)
                             .asSequence()

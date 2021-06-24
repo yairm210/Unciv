@@ -154,7 +154,7 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
                     else
                         previousSelectedUnits.any {
                             it.movement.canMoveTo(tileInfo) ||
-                                    it.movement.isUnknownTileWeShouldAssumeToBePassable(tileInfo) && !it.type.isAirUnit()
+                                    it.movement.isUnknownTileWeShouldAssumeToBePassable(tileInfo) && !it.baseUnit.movesLikeAirUnits()
                         }
                 )) {
             if (previousSelectedUnitIsSwapping) {
@@ -260,7 +260,7 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
             val unitToTurnsToTile = HashMap<MapUnit, Int>()
             for (unit in selectedUnits) {
                 val shortestPath = ArrayList<TileInfo>()
-                val turnsToGetThere = if (unit.type.isAirUnit()) {
+                val turnsToGetThere = if (unit.baseUnit.movesLikeAirUnits()) {
                     if (unit.movement.canReach(tileInfo)) 1
                     else 0
                 } else if (unit.action == Constants.unitActionParadrop) {
@@ -381,7 +381,7 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
         else {
             moveHereButton.onClick(UncivSound.Silent) {
                 UncivGame.Current.settings.addCompletedTutorialTask("Move unit")
-                if (unitsThatCanMove.any { it.type.isAirUnit() })
+                if (unitsThatCanMove.any { it.baseUnit.movesLikeAirUnits() })
                     UncivGame.Current.settings.addCompletedTutorialTask("Move an air unit")
                 moveUnitToTargetTile(unitsThatCanMove, dto.tileInfo)
             }
@@ -402,7 +402,7 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
 
         swapWithButton.onClick(UncivSound.Silent) {
             UncivGame.Current.settings.addCompletedTutorialTask("Move unit")
-            if (dto.unit.type.isAirUnit())
+            if (dto.unit.baseUnit.movesLikeAirUnits())
                 UncivGame.Current.settings.addCompletedTutorialTask("Move an air unit")
             swapMoveUnitToTargetTile(dto.unit, dto.tileInfo)
         }
@@ -510,7 +510,7 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
             return // We don't want to show normal movement or attack overlays in unit-swapping mode
         }
 
-        val isAirUnit = unit.type.isAirUnit()
+        val isAirUnit = unit.baseUnit.movesLikeAirUnits()
         val moveTileOverlayColor = if (unit.action == Constants.unitActionParadrop) Color.BLUE else Color.WHITE
         val tilesInMoveRange = unit.movement.getReachableTilesInCurrentTurn()
 
@@ -525,7 +525,7 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
                         tileToColor.showCircle(Color.BLUE, 0.3f)
                     }
                 if (unit.movement.canMoveTo(tile) ||
-                        unit.movement.isUnknownTileWeShouldAssumeToBePassable(tile) && !unit.type.isAirUnit())
+                        unit.movement.isUnknownTileWeShouldAssumeToBePassable(tile) && !unit.baseUnit.movesLikeAirUnits())
                     tileToColor.showCircle(moveTileOverlayColor,
                             if (UncivGame.Current.settings.singleTapMove || isAirUnit) 0.7f else 0.3f)
             }
