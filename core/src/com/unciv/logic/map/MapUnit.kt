@@ -819,8 +819,13 @@ class MapUnit {
     
     fun carryCapacity(unit: MapUnit): Int {
         var aircraftCapacity = getMatchingUniques("Can carry [] aircraft").sumBy { it.params[0].toInt() }
+        // Deprecated since 3.15.5
+            aircraftCapacity += getMatchingUniques("Can carry 2 air units").sumBy { 2 }
+        //
         if (aircraftCapacity > 0 && unit.type.isAirUnit()) {
-            aircraftCapacity += getMatchingUniques("Can carry [] extra air units").sumBy { it.params[0].toInt() }
+            aircraftCapacity += getMatchingUniques("Can carry [] extra aircraft").sumBy { it.params[0].toInt() }
+            // Deprecated since 3.15.5
+                aircraftCapacity += getMatchingUniques("Can carry 1 extra air units").sumBy { 1 }   
             return aircraftCapacity
         }
         var missileCapacity = getMatchingUniques("Can carry [] missiles").sumBy {it.params[0].toInt() }
