@@ -239,9 +239,9 @@ object GameStarter {
                     for (startBias in civ.nation.startBias) {
                         if (startBias.startsWith("Avoid ")) {
                             val tileToAvoid = startBias.removePrefix("Avoid [").removeSuffix("]")
-                            preferredTiles = preferredTiles.filter { !it.matchesUniqueFilter(tileToAvoid) }
+                            preferredTiles = preferredTiles.filter { !it.matchesTerrainFilter(tileToAvoid) }
                         } else if (startBias == Constants.coast) preferredTiles = preferredTiles.filter { it.isCoastalTile() }
-                        else preferredTiles = preferredTiles.filter { it.matchesUniqueFilter(startBias) }
+                        else preferredTiles = preferredTiles.filter { it.matchesTerrainFilter(startBias) }
                     }
 
                     startingLocation = if (preferredTiles.isNotEmpty()) preferredTiles.random() else freeTiles.random()
