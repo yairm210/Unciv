@@ -937,7 +937,7 @@
 		"rangedStrength": 60,
 		"cost": 325,
 		"requiredTech": "Refrigeration",
-		// "upgradesTo": "Nuclear Submarine",
+		"upgradesTo": "Nuclear Submarine",
 		"uniques": ["+[75]% Strength when attacking", "Invisible to others", "Can only attack water", "Can attack submarines", "Can enter ice tiles"]
 	},
 	{
@@ -1014,7 +1014,7 @@
 		"strength": 40,
 		"cost": 375,
 		"requiredTech": "Electronics",
-		"uniques": ["Cannot attack","Can carry 2 aircraft"]
+		"uniques": ["Cannot attack", "Can carry [2] aircraft"]
 	},
 	{
 		"name": "Battleship",
@@ -1026,7 +1026,8 @@
 		"cost": 375,
 		"requiredResource": "Oil",
 		"requiredTech": "Electronics",
-		"uniques": ["Ranged attacks may be performed over obstacles"]
+		"uniques": ["Ranged attacks may be performed over obstacles"],
+		// Does not actually upgrade to Missile Cruisers
 	},
 	{
 		"name": "Machine Gun",
@@ -1276,22 +1277,18 @@
 	},
 
 	// Information Era
-
-	/*
 	{
 		"name": "Nuclear Submarine",
 		"unitType": "WaterSubmarine",
 		"movement": 6,
-		"strength": 30,
+		"strength": 50,
 		"range": 3,
-		"rangedStrength": 70,
+		"rangedStrength": 85,
 		"cost": 425,
-		"requiredTech": "Computers",
-		"uniques": ["Bonus vs Attacker [75]%", "Invisible to others", "Can only attack water", "Can attack submarines", "Can enter ice tiles","+1 Visibility Range"]
-		// Can carry 2 Missiles
-		// 50 strength, 85 rangedStrength, requiredTech "Telecommunications" in expansions
+		"requiredTech": "Telecommunications",
+		"uniques": ["+[75]% Strength when attacking", "Invisible to others", "Can only attack water",
+			"Can attack submarines", "Can enter ice tiles", "+1 Visibility Range", "Can carry [2] missiles"]
 	},
-	*/
 	{
 		"name": "Mechanized Infantry",
 		"unitType": "Melee",
@@ -1300,23 +1297,20 @@
 		"cost": 375,
 		"requiredTech": "Mobile Tactics"
 	},
-	/*
 	{
 		"name": "Missile Cruiser",
 		"unitType": "WaterRanged",
 		"movement": 7,
-		"strength": 60,
-		"rangedStrength": 25,
+		"strength": 80,
+		"rangedStrength": 100,
 		"range": 3,
 		"interceptRange": 2,
 		"cost": 425,
 		"requiredTech": "Robotics",
 		"uniques": ["[100]% chance to intercept air attacks", "Can attack submarines",
-			"Ranged attacks may be performed over obstacles"]
-		// Can carry 3 missiles - Guided Missiles and Nuclear Missiles, Attack vs submarines 100
-		// 100 rangedStrength, 80 strength in expansions
+			"Ranged attacks may be performed over obstacles", "Can carry [3] missiles",
+			"+[100]% Strength vs [submarine units]"]
 	},
-	*/
 	{
 		"name": "Modern Armor",
 		"unitType": "Armor",

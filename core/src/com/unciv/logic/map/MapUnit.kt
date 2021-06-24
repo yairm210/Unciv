@@ -662,7 +662,7 @@ class MapUnit {
         // evacuation of transported units before disbanding, if possible. toListed because we're modifying the unit list.
         for (unit in currentTile.getUnits().filter { it.isTransported && isTransportTypeOf(it) }
             .toList()) {
-            // we disbanded a carrier in a city, it can still stay in the city
+            // if we disbanded a unit carrying other units in a city, the carried units can still stay in the city
             if (currentTile.isCityCenter() && unit.movement.canMoveTo(currentTile)) continue
             // if no "fuel" to escape, should be disbanded as well
             if (unit.currentMovement < 0.1)
@@ -808,27 +808,33 @@ class MapUnit {
     }
 
     fun isTransportTypeOf(mapUnit: MapUnit): Boolean {
-        val isAircraftCarrier = hasUnique("Can carry 2 aircraft")
-        val isMissileCarrier = hasUnique("Can carry 2 missiles")
-        if (!isMissileCarrier && !isAircraftCarrier)
-            return false
-        if (!mapUnit.type.isAirUnit()) return false
-        if (isMissileCarrier && mapUnit.type != UnitType.Missile)
-            return false
-        if (isAircraftCarrier && mapUnit.type == UnitType.Missile)
-            return false
-        return true
+        val isAircraftCarrier = hasUnique("Can carry [] aircraft")
+        val isMissileCarrier = hasUnique("Can carry [] missiles")
+        if (isMissileCarrier && mapUnit.type.isMissile())
+            return true
+        if (isAircraftCarrier && mapUnit.type.isAirUnit() && !mapUnit.type.isMissile())
+            return true
+        return false
+    }
+    
+    fun carryCapacity(unit: MapUnit): Int {
+        var aircraftCapacity = getMatchingUniques("Can carry [] aircraft").sumBy { it.params[0].toInt() }
+        if (aircraftCapacity > 0 && unit.type.isAirUnit()) {
+            aircraftCapacity += getMatchingUniques("Can carry [] extra air units").sumBy { it.params[0].toInt() }
+            return aircraftCapacity
+        }
+        var missileCapacity = getMatchingUniques("Can carry [] missiles").sumBy {it.params[0].toInt() }
+        if (missileCapacity > 0 && unit.type.isMissile()) {
+            missileCapacity += getMatchingUniques("Can carry [] extra missiles").sumBy { it.params[0].toInt() }
+            return missileCapacity
+        }
+        return 0
     }
 
-    fun canTransport(mapUnit: MapUnit): Boolean {
-        if (!isTransportTypeOf(mapUnit)) return false
-        if (owner != mapUnit.owner) return false
-
-        var unitCapacity = 2
-        unitCapacity += getUniques().count { it.text == "Can carry 1 extra air unit" }
-
-        if (currentTile.airUnits.count { it.isTransported } >= unitCapacity) return false
-
+    fun canTransport(unit: MapUnit): Boolean {
+        if (owner != unit.owner) return false
+        if (!isTransportTypeOf(unit)) return false
+        if (currentTile.airUnits.count { it.isTransported } >= carryCapacity(unit)) return false
         return true
     }
 
