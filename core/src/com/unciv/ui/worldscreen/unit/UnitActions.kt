@@ -32,8 +32,10 @@ object UnitActions {
 
         if (unit.isMoving()) actionList += UnitAction(UnitActionType.StopMovement) { unit.action = null }
 
-        val workingOnImprovement = unit.hasUnique(Constants.canBuildImprovements)
+        // Constants.workerUnique deprecated since 3.15.5
+        val workingOnImprovement = (unit.hasUnique(Constants.canBuildImprovements) || unit.hasUnique(Constants.workerUnique))
                 && unit.currentTile.hasImprovementInProgress()
+                && unit.canBuildImprovement(unit.currentTile.getTileImprovementInProgress()!!)
         if (!unit.isFortified() && !unit.canFortify() && unit.currentMovement > 0 && !workingOnImprovement) {
             addSleepActions(actionList, unit, unitTable)
         }
@@ -334,7 +336,8 @@ object UnitActions {
     }
 
     private fun addWorkerActions(unit: MapUnit, actionList: ArrayList<UnitAction>, tile: TileInfo, worldScreen: WorldScreen, unitTable: UnitTable) {
-        if (!unit.hasUnique(Constants.canBuildImprovements)) return
+        // Constants.workerUnique deprecated since 3.15.5
+        if (!unit.hasUnique(Constants.canBuildImprovements) && !unit.hasUnique(Constants.workerUnique)) return
 
         // Allow automate/unautomate when embarked, but not building improvements - see #1963
         if (Constants.unitActionAutomation == unit.action) {
@@ -445,6 +448,9 @@ object UnitActions {
                         city.cityStats.update()
                         city.civInfo.updateDetailedCivResources()
                     }
+                    // Why is this here? How do we now the unit is actually a great person?
+                    // What if in some mod some unit can construct a certain type of improvement using the "Can construct []" unique?
+                    // That unit does not need to be a great person at all, and yet it would trigger mausoleum of halicarnassus (?) here.
                     addGoldPerGreatPersonUsage(unit.civInfo)
                     unit.destroy()
                 }.takeIf {

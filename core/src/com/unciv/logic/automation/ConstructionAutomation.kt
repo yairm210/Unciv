@@ -27,7 +27,8 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
 
     val civUnits = civInfo.getCivUnits()
     val militaryUnits = civUnits.count { !it.type.isCivilian() }
-    val workers = civUnits.count { it.hasUnique(Constants.canBuildImprovements) && !it.type.isMilitary() }.toFloat()
+    // Constants.workerUnique deprecated since 3.15.5
+    val workers = civUnits.count { (it.hasUnique(Constants.canBuildImprovements) || it.hasUnique(Constants.workerUnique)) && !it.type.isMilitary() }.toFloat()
     val cities = civInfo.cities.size
     val allTechsAreResearched = civInfo.tech.getNumberOfTechsResearched() >= civInfo.gameInfo.ruleSet.technologies.size
 
@@ -138,15 +139,18 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
 
     private fun addWorkerChoice() {
         val workerEquivalents = civInfo.gameInfo.ruleSet.units.values
-                .filter { it.uniques.any {unique -> unique.equalsPlaceholderText(Constants.canBuildImprovements) } && it.isBuildable(cityConstructions) }
-        print(workerEquivalents)
-        print(workers)
+                .filter { it.uniques.any {
+                    // Constants.workerUnique deprecated since 3.15.5
+                        unique -> unique.equalsPlaceholderText(Constants.canBuildImprovements) || unique.equalsPlaceholderText(Constants.workerUnique) 
+                } && it.isBuildable(cityConstructions) }
         if (workerEquivalents.isEmpty()) return // for mods with no worker units
-        if (civInfo.getIdleUnits().any { it.action == Constants.unitActionAutomation && it.hasUnique(Constants.canBuildImprovements) })
+        // Constants.workerUnique deprecated since 3.15.5
+        if (civInfo.getIdleUnits().any { it.action == Constants.unitActionAutomation && (it.hasUnique(Constants.canBuildImprovements) || it.hasUnique(Constants.workerUnique)) })
             return // If we have automated workers who have no work to do then it's silly to construct new workers.
 
         val citiesCountedTowardsWorkers = min(5, cities) // above 5 cities, extra cities won't make us want more workers
-        if (workers < citiesCountedTowardsWorkers * 0.6f && civUnits.none { it.hasUnique(Constants.canBuildImprovements) && it.isIdle() }) {
+        // Constants.workerUnique deprecated since 3.15.5
+        if (workers < citiesCountedTowardsWorkers * 0.6f && civUnits.none { (it.hasUnique(Constants.canBuildImprovements) || it.hasUnique(Constants.workerUnique))&& it.isIdle() }) {
             var modifier = citiesCountedTowardsWorkers / (workers + 0.1f)
             if (!cityIsOverAverageProduction) modifier /= 5 // higher production cities will deal with this
             addChoice(relativeCostEffectiveness, workerEquivalents.minByOrNull { it.cost }!!.name, modifier)

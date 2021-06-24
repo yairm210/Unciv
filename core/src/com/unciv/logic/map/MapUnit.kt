@@ -258,11 +258,12 @@ class MapUnit {
 
     fun isIdle(): Boolean {
         if (currentMovement == 0f) return false
-        if (hasUnique(Constants.canBuildImprovements) 
+        // Constants.workerUnique deprecated since 3.15.5
+        if ((hasUnique(Constants.canBuildImprovements) || hasUnique(Constants.workerUnique)) 
             && getTile().improvementInProgress != null 
             && canBuildImprovement(getTile().getTileImprovementInProgress()!!)) 
                 return false
-        // unique "Can construct roads" deprecated since 3.15.4
+        // unique "Can construct roads" deprecated since 3.15.5
             if (hasUnique("Can construct roads") && currentTile.improvementInProgress == "Road") return false
         //
         if (isFortified()) return false
@@ -546,11 +547,13 @@ class MapUnit {
     fun endTurn() {
         doAction()
 
-        if (currentMovement > 0 && hasUnique(Constants.canBuildImprovements) 
+        if (currentMovement > 0 && 
+            // Constants.workerUnique deprecated since 3.15.5
+            (hasUnique(Constants.canBuildImprovements) || hasUnique(Constants.workerUnique)) 
             && getTile().improvementInProgress != null
             && canBuildImprovement(getTile().getTileImprovementInProgress()!!)
         ) workOnImprovement()
-        // unique "Can constrcut raods" deprecated since 3.15.4
+        // unique "Can construct roads" deprecated since 3.15.4
             if (currentMovement > 0 && hasUnique("Can construct roads")
                 && currentTile.improvementInProgress == "Road"
             ) workOnImprovement()
@@ -924,7 +927,9 @@ class MapUnit {
     }
 
     fun canBuildImprovement(improvement: TileImprovement, tile: TileInfo = currentTile): Boolean {
-        return getMatchingUniques(Constants.canBuildImprovements).any { improvement.matchesFilter(it.params[0]) || tile.matchesTerrainFilter(it.params[0]) }
+        // Constants.workerUnique deprecated since 3.15.5
+        val matchingUniques = getMatchingUniques(Constants.canBuildImprovements) + getMatchingUniques(Constants.workerUnique)
+        return matchingUniques.any { improvement.matchesFilter(it.params[0]) || tile.matchesTerrainFilter(it.params[0]) }
     }
 
     //endregion
