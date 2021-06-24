@@ -40,11 +40,13 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
         if (unit.doubleMovementInForestAndJungle &&
                 (to.terrainFeatures.contains(Constants.forest) || to.terrainFeatures.contains(Constants.jungle)))
             return 1f + extraCost // usually forest and jungle take 2 movements, so here it is 1
-        if (civInfo.nation.ignoreHillMovementCost && to.isHill())
-            return 1f + extraCost // usually hills take 2 movements, so here it is 1
 
         if (unit.roughTerrainPenalty && to.isRoughTerrain())
-            return 4f + extraCost
+            return 100f // units that have to sped all movement in rough terrain, have to spend all movement in rough terrain
+        // Placement of this 'if' based on testing, see #4232
+        
+        if (civInfo.nation.ignoreHillMovementCost && to.isHill())
+            return 1f + extraCost // usually hills take 2 movements, so here it is 1
 
         if (unit.doubleMovementInCoast && to.baseTerrain == Constants.coast)
             return 1 / 2f + extraCost
