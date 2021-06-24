@@ -12,7 +12,7 @@ import com.unciv.models.ruleset.unit.Promotion
 import com.unciv.models.translations.tr
 import com.unciv.ui.utils.*
 
-class PromotionPickerScreen(val unit: MapUnit, scrollY: Float = 0f) : PickerScreen() {
+class PromotionPickerScreen(val unit: MapUnit) : PickerScreen() {
     private var selectedPromotion: Promotion? = null
 
     private fun acceptPromotion(promotion: Promotion?) {
@@ -21,7 +21,7 @@ class PromotionPickerScreen(val unit: MapUnit, scrollY: Float = 0f) : PickerScre
 
         unit.promotions.addPromotion(promotion.name)
         if (unit.promotions.canBePromoted())
-            game.setScreen(PromotionPickerScreen(unit, scrollPane.scrollY))
+            game.setScreen(PromotionPickerScreen(unit).setScrollY(scrollPane.scrollY))
         else
             game.setWorldScreen()
         dispose()
@@ -95,16 +95,20 @@ class PromotionPickerScreen(val unit: MapUnit, scrollY: Float = 0f) : PickerScre
 
         }
         topTable.add(availablePromotionsGroup)
-        splitPane.pack()    // otherwise scrollPane.maxY == 0
-        scrollPane.scrollY = scrollY
-        scrollPane.updateVisualScroll()
 
         displayTutorial(Tutorial.Experience)
     }
 
+    fun setScrollY(scrollY: Float): PromotionPickerScreen {
+        splitPane.pack()    // otherwise scrollPane.maxY == 0
+        scrollPane.scrollY = scrollY
+        scrollPane.updateVisualScroll()
+        return this
+    }
+
     override fun resize(width: Int, height: Int) {
         if (stage.viewport.screenWidth != width || stage.viewport.screenHeight != height) {
-            game.setScreen(PromotionPickerScreen(unit, scrollPane.scrollY))
+            game.setScreen(PromotionPickerScreen(unit).setScrollY(scrollPane.scrollY))
         }
     }
 }
