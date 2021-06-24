@@ -210,7 +210,7 @@ class MapEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(CameraS
                 unit.updateUniques()
                 if (unit.movement.canMoveTo(it)) {
                     when {
-                        unit.type.isAirUnit() -> {
+                        unit.baseUnit.movesLikeAirUnits() -> {
                             it.airUnits.add(unit)
                             if (!it.isCityCenter()) unit.isTransported = true  // if not city - air unit enters carrier
                         }

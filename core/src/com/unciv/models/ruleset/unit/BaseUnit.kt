@@ -9,6 +9,7 @@ import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.Unique
 import com.unciv.models.stats.INamed
 import com.unciv.models.translations.Translations
+import com.unciv.models.translations.getPlaceholderText
 import com.unciv.models.translations.tr
 import com.unciv.ui.utils.Fonts
 import kotlin.math.pow
@@ -160,8 +161,8 @@ class BaseUnit : INamed, IConstruction {
         if (uniqueTo != null && uniqueTo != civInfo.civName) return "Unique to $uniqueTo"
         if (civInfo.gameInfo.ruleSet.units.values.any { it.uniqueTo == civInfo.civName && it.replaces == name })
             return "Our unique unit replaces this"
-        if (!civInfo.gameInfo.gameParameters.nuclearWeaponsEnabled
-                && uniques.contains("Nuclear weapon")) return "Disabled by setting"
+        if (!civInfo.gameInfo.gameParameters.nuclearWeaponsEnabled && isNuclearWeapon()
+        ) return "Disabled by setting"
 
         for (unique in uniqueObjects.filter { it.placeholderText == "Unlocked with []" })
             if (civInfo.tech.researchedTechnologies.none { it.era() == unique.params[0] || it.name == unique.params[0] }
@@ -220,7 +221,7 @@ class BaseUnit : INamed, IConstruction {
             val promotion = unique.params[1]
 
             if (unit.matchesFilter(filter) || (filter == "relevant" && civInfo.gameInfo.ruleSet.unitPromotions.values
-                            .any { unit.type.name in it.unitTypes && it.name == promotion }))
+                    .any { unit.type.name in it.unitTypes && it.name == promotion }))
                 unit.promotions.addPromotion(promotion, isFree = true)
         }
 
@@ -247,8 +248,10 @@ class BaseUnit : INamed, IConstruction {
             "Land", "land units" -> unitType.isLandUnit()
             "Water", "water units", "Water units" -> unitType.isWaterUnit()
             "Air", "air units" -> unitType.isAirUnit()
+            "Missile" -> unitType.isMissile()
             "non-air" -> !unitType.isAirUnit()
             "Military", "military units" -> unitType.isMilitary()
+            "Nuclear Weapon" -> isNuclearWeapon()
             // Deprecated as of 3.15.2
             "military water" -> unitType.isMilitary() && unitType.isWaterUnit()
             else -> {
@@ -259,6 +262,11 @@ class BaseUnit : INamed, IConstruction {
     }
 
     fun isGreatPerson() = uniqueObjects.any { it.placeholderText == "Great Person - []" }
+    
+    // "Nuclear Weapon" unique deprecated since 3.15.4
+    fun isNuclearWeapon() = uniqueObjects.any { it.placeholderText == "Nuclear Weapon" || it.placeholderText == "Nuclear Weapon of strength []" }
+    
+    fun movesLikeAirUnits() = unitType.isAirUnit() || unitType.isMissile()
 
     override fun getResourceRequirements(): HashMap<String, Int> {
         val resourceRequirements = HashMap<String, Int>()

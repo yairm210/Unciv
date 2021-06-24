@@ -129,9 +129,9 @@
 	},
 	{
 		"name": "Remove Fallout",
-		"turnsToBuild": 8,
+		"turnsToBuild": 2,
 		"terrainsCanBeBuiltOn": ["Fallout"],
-		"techRequired": "Atomic Theory",
+		// Has no tile improvements as it can always be built
 		"uniques": ["Can be built outside your borders"],
 		"shortcutKey": "X"
 	},

@@ -77,7 +77,7 @@ object Automation {
                         || (it.militaryUnit != null && it.militaryUnit!!.civInfo != city.civInfo)
             }) // there is absolutely no reason for you to make water units on this body of water.
             militaryUnits =
-                militaryUnits.filter { it.unitType.isLandUnit() || it.unitType.isAirUnit() }
+                militaryUnits.filter { !it.unitType.isWaterUnit() }
 
         val chosenUnit: BaseUnit
         if (!city.civInfo.isAtWar() && city.civInfo.cities.any { it.getCenterTile().militaryUnit == null }

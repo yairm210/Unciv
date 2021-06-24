@@ -270,7 +270,7 @@
 		// 10 strength in expansions
 	},
 	*/
-	
+
 	/* Classical Era */
 	{
 		"name": "Horseman",
@@ -409,7 +409,7 @@
 		// 14 strength in expansions
 	},
 	*/
-	
+
 	// Medieval Era
 	{
 		"name": "Pikeman",
@@ -663,7 +663,7 @@
 		"attackSound": "metalhit"
 		//Danish unique unit. Can attack from the sea without any penalty, and moves faster.
 	},
-	
+
 	// Rennaisance Era
 
 	{
@@ -831,9 +831,9 @@
 		"obsoleteTech": "Dynamite",
 		"uniques": ["+[200]% Strength vs [City]","No defensive terrain bonus","Must set up to ranged attack","Limited Visibility"]
 	},
-	
+
 	// Industrial Era
-	
+
 	{
 		"name": "Gatling Gun",
 		"unitType": "Ranged",
@@ -1195,7 +1195,6 @@
 		"upgradesTo": "Helicopter Gunship",
 		"uniques": ["+[100]% Strength vs [Armor]"]
 	},
-	/*
 	{
 		"name": "Atomic Bomb",
 		"unitType": "AtomicBomber",
@@ -1206,11 +1205,13 @@
 		"cost": 600,
 		"requiredTech": "Nuclear Fission",
 		"requiredResource": "Uranium",
-		"uniques": ["Nuclear weapon", "Requires [Manhattan Project]", "Self-destructs when attacking"]
-		// Plane rather than a missile - can be based in city or Carrier only. But cannot be intercepted because of a civ 5 bug that was never fixed.
-		// Single-use like missile
-		// No strength/rangedStrength tags in civ 5 xmls. Instead has NukeDamageLevel = 1 tag (Nuclear Missile has NukeDamageLevel = 2)
-	},	*/
+		"promotions" : ["Evasion"],
+		"uniques": ["Nuclear weapon of strength [1]", "Requires [Manhattan Project]", "Self-destructs when attacking",
+			"Blast radius [2]"],
+		"attackSound": "nuke"
+		// Plane rather than a missile - can be based in city or Carrier only.
+		// Can be intercepted, be must die for it not to take effect.
+	},
 	{
 		"name": "Rocket Artillery",
 		"unitType": "Siege",
@@ -1243,7 +1244,7 @@
 		"rangedStrength": 60,
 		"range": 8,
 		"cost": 150,
-		"requiredTech": "Rocketry",
+		"requiredTech": "Advanced Ballistics",
 		"uniques": ["Self-destructs when attacking"]
 	},
 	{
@@ -1254,9 +1255,9 @@
 		"rangedStrength": 300,
 		"range": 12,
 		"cost": 1000,
-		"requiredTech": "Rocketry",
-		"requiredResource": "Uranium",
-		"uniques": ["Self-destructs when attacking", "Nuclear weapon", "Requires [Manhattan Project]"],
+		"requiredTech": "Advanced Ballistics",
+		"uniques": ["Self-destructs when attacking", "Nuclear weapon of strength [2]", "Requires [Manhattan Project]",
+			"Blast radius [2]", "Consumes [2] [Uranium]"],
 		"attackSound": "nuke"
 	},
 	{
@@ -1369,9 +1370,9 @@
 		// cannot be based on carrier
 	},
 	*/
-	
+
 	/* Great people */
-	
+
 	{
 		"name": "Great Artist",
 		"unitType": "Civilian",
@@ -1423,7 +1424,7 @@
 		"unitType": "Civilian",
 		"movement": 2,
 		"cost": 500,
-		"requiredTech": "Robotics",
+		"requiredTech": "Advanced Ballistics",
 		"requiredResource": "Aluminum",
 		"uniques": ["Spaceship part", "Cannot be purchased", "Requires [Apollo Program]"]
 		// costs 750 in G&K, 1500 in BNW

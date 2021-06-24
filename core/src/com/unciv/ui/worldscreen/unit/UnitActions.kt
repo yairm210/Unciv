@@ -69,7 +69,7 @@ object UnitActions {
 
     private fun addSwapAction(unit: MapUnit, actionList: ArrayList<UnitAction>, worldScreen: WorldScreen) {
         // Air units cannot swap
-        if (unit.type.isAirUnit()) return
+        if (unit.type.isAirUnit() || unit.type.isMissile()) return
         // Disable unit swapping if multiple units are selected. It would make little sense.
         // In principle, the unit swapping mode /will/ function with multiselect: it will simply
         // only consider the first selected unit, and ignore the other selections. However, it does
@@ -283,7 +283,7 @@ object UnitActions {
     }
 
     private fun addExplorationActions(unit: MapUnit, actionList: ArrayList<UnitAction>) {
-        if (unit.type.isAirUnit()) return
+        if (unit.baseUnit.movesLikeAirUnits()) return
         if (unit.action != Constants.unitActionExplore) {
             actionList += UnitAction(UnitActionType.Explore) {
                 unit.action = Constants.unitActionExplore

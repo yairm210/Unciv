@@ -1,4 +1,4 @@
-[	
+[
 	// Base terrains
 	{
 		"name": "Ocean",
@@ -71,7 +71,7 @@
 		"RGB": [231, 242, 249],
 		"uniques": ["Occurs at temperature between [-1] and [-0.4] and humidity between [0] and [0.5]"]
 	},
-	
+
 	// Terrain features
 	{
 		"name": "Hill",
@@ -95,8 +95,8 @@
 		"unbuildable": true,
 		"defenceBonus": 0.25,
 		"occursOn": ["Tundra","Plains","Grassland","Hill"],
-		"uniques": ["Rough terrain", "Provides a one-time Production bonus to the closest city when cut down",
-			"Blocks line-of-sight from tiles at same elevation"]
+		"uniques": ["Provides a one-time Production bonus to the closest city when cut down", "Rough terrain",
+			"Blocks line-of-sight from tiles at same elevation", "Resistant to nukes", "Can be destroyed by nukes"]
 	},
 	{
 		"name": "Jungle",
@@ -107,7 +107,7 @@
 		"unbuildable": true,
 		"defenceBonus": 0.25,
 		"occursOn": ["Plains","Grassland"],
-		"uniques": ["Rough terrain", "Blocks line-of-sight from tiles at same elevation"]
+		"uniques": ["Rough terrain", "Blocks line-of-sight from tiles at same elevation", "Resistant to nukes", "Can be destroyed by nukes"]
 	},
 	{
 		"name": "Marsh",
@@ -164,7 +164,7 @@
 		"occursOn": ["Coast"],
 		"uniques": ["Rare feature"]
 	},
- 
+
 	// Natural Wonders
 	{
 		"name": "Great Barrier Reef",
@@ -277,7 +277,7 @@
 		"weight": 10
 	}
 	/*
-	{// Will be introduced in Brave New World. Despite being a lake, it cannot be sailed on and it blocks line of sight like a mountain. 
+	{// Will be introduced in Brave New World. Despite being a lake, it cannot be sailed on and it blocks line of sight like a mountain.
 		"name": "Lake Victoria",
 		"type": "NaturalWonder",
 		"food": 6,
@@ -289,4 +289,4 @@
 		"weight": 5
 	}
 	*/
-]	
+]
