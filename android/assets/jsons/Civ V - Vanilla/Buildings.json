@@ -1007,7 +1007,7 @@
 		"culture": 1,
 		"greatPersonPoints": {"gold": 1},
 		"providesFreeBuilding": "Broadcast Tower",
-		"uniques": ["+[1] population [in all cities]", "[+1 Happiness] [in all cities]"],
+		"uniques": ["[+1] population [in all cities]", "[+1 Happiness] [in all cities]"],
 		"requiredTech": "Telecommunications",
 		"quote": "'Nothing travels faster than light with the possible exception of bad news, which obeys its own special rules.' – Douglas Adams"
 	},

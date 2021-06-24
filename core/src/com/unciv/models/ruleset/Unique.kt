@@ -77,11 +77,13 @@ object UniqueTriggerActivation {
                     civInfo.addUnit(greatPerson.name, chosenCity)
                 }
             }
-            "+1 population in each city" ->
-                for (city in civInfo.cities) {
-                    city.population.addPopulation(1)
-                }
-            "+[] population []" ->
+            // Deprecated since 3.15.4
+                "+1 population in each city" ->
+                    for (city in civInfo.cities) {
+                        city.population.addPopulation(1)
+                    }
+            // 
+            "[] population []" ->
                 for (city in civInfo.cities) {
                     if (city.matchesFilter(unique.params[1])) {
                         city.population.addPopulation(unique.params[0].toInt())
