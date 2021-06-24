@@ -1078,6 +1078,9 @@
 		"uniques": ["Can attack submarines", "[40]% chance to intercept air attacks",
 			"May withdraw before melee ([80]%)", "+[100]% Strength vs [WaterSubmarine]"]
 	},
+	
+	// Atomic Era
+	
 	{
 		"name": "Marine",
 		"unitType": "Melee",
