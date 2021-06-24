@@ -478,7 +478,12 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Cam
 
         displayTutorial(Tutorial.InjuredUnits) { gameInfo.getCurrentPlayerCivilization().getCivUnits().any { it.health < 100 } }
 
-        displayTutorial(Tutorial.Workers) { gameInfo.getCurrentPlayerCivilization().getCivUnits().any { (it.hasUnique(Constants.canBuildImprovements) || it.hasUnique(Constants.workerUnique)) && !it.type.isMilitary() } }
+        displayTutorial(Tutorial.Workers) { 
+            gameInfo.getCurrentPlayerCivilization().getCivUnits().any { 
+                (it.hasUnique(Constants.canBuildImprovements) || it.hasUnique(Constants.workerUnique)) 
+                    && it.type.isCivilian() 
+            } 
+        }
     }
 
     private fun updateDiplomacyButton(civInfo: CivilizationInfo) {

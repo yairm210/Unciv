@@ -28,7 +28,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
     val civUnits = civInfo.getCivUnits()
     val militaryUnits = civUnits.count { !it.type.isCivilian() }
     // Constants.workerUnique deprecated since 3.15.5
-    val workers = civUnits.count { (it.hasUnique(Constants.canBuildImprovements) || it.hasUnique(Constants.workerUnique)) && !it.type.isMilitary() }.toFloat()
+    val workers = civUnits.count { (it.hasUnique(Constants.canBuildImprovements) || it.hasUnique(Constants.workerUnique)) && it.type.isCivilian() }.toFloat()
     val cities = civInfo.cities.size
     val allTechsAreResearched = civInfo.tech.getNumberOfTechsResearched() >= civInfo.gameInfo.ruleSet.technologies.size
 
@@ -150,7 +150,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
 
         val citiesCountedTowardsWorkers = min(5, cities) // above 5 cities, extra cities won't make us want more workers
         // Constants.workerUnique deprecated since 3.15.5
-        if (workers < citiesCountedTowardsWorkers * 0.6f && civUnits.none { (it.hasUnique(Constants.canBuildImprovements) || it.hasUnique(Constants.workerUnique))&& it.isIdle() }) {
+        if (workers < citiesCountedTowardsWorkers * 0.6f && civUnits.none { (it.hasUnique(Constants.canBuildImprovements) || it.hasUnique(Constants.workerUnique)) && it.isIdle() }) {
             var modifier = citiesCountedTowardsWorkers / (workers + 0.1f)
             if (!cityIsOverAverageProduction) modifier /= 5 // higher production cities will deal with this
             addChoice(relativeCostEffectiveness, workerEquivalents.minByOrNull { it.cost }!!.name, modifier)

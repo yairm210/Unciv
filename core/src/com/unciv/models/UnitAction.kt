@@ -26,7 +26,9 @@ enum class UnitActionType(val value: String) {
     SetUp("Set up"),
     FoundCity("Found city"),
     ConstructImprovement("Construct improvement"),
-    ConstructRoad("Construct road"),
+    // Deprecated since 3.15.4
+        ConstructRoad("Construct road"),
+    //
     Create("Create"),
     HurryResearch("Hurry Research"),
     StartGoldenAge("Start Golden Age"),
