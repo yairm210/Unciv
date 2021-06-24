@@ -182,6 +182,8 @@ For units, the UnitFilter is called. For Buildings, the following options are im
 
 "Allied City-States will occasionally gift Great People"
 
+"[amount] population [cityfilter]" - e.g.: [-2] population [in all cities]
+
 ### Unit-affecting uniques
 
 "+[amount] Movement for all [unitFilter] units"
@@ -483,6 +485,12 @@ These last two uniques may seem like they only have a one-time effect. However, 
 
 "Not displayed as an available construction without [resourceName/buildingName]"
 
+"Nuclear weapon of Strength [amount]" - Amount should be 1 or 2. 1 is effectively an atomic bomb, 2 is a nuclear missile in the base game
+
+"Blast radius [amount]" - Amount is the radius of the blast of a nuke
+
+"Cannot be intercepted"
+
 # Terrain uniques
 
 "[(+/-)amount] Strength for cities built on this terrain"
@@ -496,3 +504,7 @@ These last two uniques may seem like they only have a one-time effect. However, 
 "Has an elevation of [amount] for visibility calculations" - For example, in the base setting, mountains are 4, hills are 2, and jungles and forests are 1. Higher tiles hide the tiles behind them, and from higher tiles you can see over lower tiles.
 
 "Blocks line-of-sight from tiles at same elevation" - e.g. Forest and Jungle for Civ V rules
+
+"Resistant to nukes" - Tiles with features with this unique have only a 25% change to be filled with fallout instead of 50%
+
+"Can be destroyed by nukes" - Features with this unique will be removed when fallout is placed on this tile
