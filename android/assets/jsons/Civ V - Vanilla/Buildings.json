@@ -1039,7 +1039,7 @@
 	{
 		"name": "SS Booster",
 		"requiredResource": "Aluminum",
-		"requiredTech": "Robotics",
+		"requiredTech": "Advanced Ballistics",
 		"uniques": ["Spaceship part", "Triggers a global alert upon completion", "Cannot be purchased"]
 	},
 	{

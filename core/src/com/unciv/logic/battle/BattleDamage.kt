@@ -87,7 +87,7 @@ object BattleDamage {
                 if (civInfo.hasUnique("+15% combat strength for melee units which have another military unit in an adjacent tile")
                     && combatant.isMelee()
                     && combatant.getTile().neighbors.flatMap { it.getUnits() }
-                        .any { it.civInfo == civInfo && !it.type.isCivilian() && !it.type.isAirUnit() }
+                        .any { it.civInfo == civInfo && !it.type.isCivilian() && !it.type.isAirUnit() && !it.type.isMissile() }
                 )
                     modifiers["Discipline"] = 15
             //
@@ -205,7 +205,7 @@ object BattleDamage {
             }
 
             for (unique in defender.unit.getMatchingUniques("+[]% defence in [] tiles")) {
-                if (tile.matchesUniqueFilter(unique.params[1]))
+                if (tile.matchesFilter(unique.params[1]))
                     modifiers["[${unique.params[1]}] defence"] = unique.params[0].toInt()
             }
 
@@ -228,14 +228,14 @@ object BattleDamage {
                 + unit.getCivInfo()
             .getMatchingUniques("+[]% Strength for units fighting in []")) {
             val filter = unique.params[1]
-            if (tile.matchesUniqueFilter(filter, unit.getCivInfo()))
+            if (tile.matchesFilter(filter, unit.getCivInfo()))
                 modifiers.add(filter, unique.params[0].toInt())
         }
         
         // Deprecated since 3.15
             for (unique in unit.getCivInfo().getMatchingUniques("+[]% combat bonus for units fighting in []")) {
                 val filter = unique.params[1]
-                if (tile.matchesUniqueFilter(filter, unit.getCivInfo()))
+                if (tile.matchesFilter(filter, unit.getCivInfo()))
                     modifiers.add(filter, unique.params[0].toInt())
             }
         //
@@ -243,7 +243,7 @@ object BattleDamage {
         for (unique in unit.getCivInfo()
             .getMatchingUniques("+[]% Strength if within [] tiles of a []")) {
             if (tile.getTilesInDistance(unique.params[1].toInt())
-                    .any { it.matchesUniqueFilter(unique.params[2]) }
+                    .any { it.matchesFilter(unique.params[2]) }
             )
                 modifiers[unique.params[2]] = unique.params[0].toInt()
         }
@@ -272,6 +272,7 @@ object BattleDamage {
             || combatant.getCivInfo()
                 .hasUnique("Units fight as though they were at full strength even when damaged")
             && !combatant.getUnitType().isAirUnit()
+            && !combatant.getUnitType().isMissile()
         )
             1f
         else 1 - (100 - combatant.getHealth()) / 300f// Each 3 points of health reduces damage dealt by 1% like original game

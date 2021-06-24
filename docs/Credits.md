@@ -1,18 +1,18 @@
 # Icon Credits
 
-Flag Icons made by [Freepik](https://www.flaticon.com/authors/freepik) from [www.flaticon.com](https://www.flaticon.com) 
+Flag Icons made by [Freepik](https://www.flaticon.com/authors/freepik) from [www.flaticon.com](https://www.flaticon.com)
  and licensed by Creative Commons 3.0
 
 New Unciv logo made by u-ndefined on Discord
 
-Base tile icons for the "Fantasy Hex" tileset belong to CuddlyClover @ https://cuddlyclover.itch.io/fantasy-hex-tiles with a few additions by me 
+Base tile icons for the "Fantasy Hex" tileset belong to CuddlyClover @ https://cuddlyclover.itch.io/fantasy-hex-tiles with a few additions by me
 
 Trees for the jungle tiles in the "Fantasy Hex" are extracted from [Desert Strike for the Amiga](http://eab.abime.net/showthread.php?t=67078&styleid=4)
 
 Almost all the improvements and units made by The Bucketeer on Discord
- 
+
 Tile icons for the "ThorfMaps tileset belong to Thorfinn Tait and are licensed under a Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License. Based on work at www.thorfmaps.com.
- 
+
 Unless otherwise specified, all the following are from [the Noun Project](https://thenounproject.com) licenced under either Creative Commons or Public Domain
 
 
@@ -53,7 +53,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 
 ### Medieval Era
 
-* [Ship](https://thenounproject.com/term/ship/1998589/) By Vanisha for Galleass 
+* [Ship](https://thenounproject.com/term/ship/1998589/) By Vanisha for Galleass
 * [Crossbow](https://thenounproject.com/term/crossbow/965389/) By Creaticca Creative Agency for Crossbowman
 * [Longbow](https://thenounproject.com/search/?q=longbow&i=815991) By Hamish for Longbowman
 * [Trebuchet](https://thenounproject.com/search/?q=trebuchet&i=828475) By Ben Davis
@@ -94,7 +94,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Submarine](https://thenounproject.com/search/?q=submarine&i=589519) By Hea Poh Lin, MY
 * [xm8](https://thenounproject.com/term/xm8/172007/) By Xela Ub for Infantry
 * [machine-gun](https://thenounproject.com/search/?q=machine%20gun&i=591058) By Joana Pereira for Machine Gun
-* Icon for Anti-Aircraft made by Yair Morgenstern, based on a free design 
+* Icon for Anti-Aircraft made by Yair Morgenstern, based on a free design
 [on Vectorstock](https://www.vectorstock.com/royalty-free-vector/flat-icon-design-collection-anti-aircraft-gun-vector-16396060)
 * [Anti-Tank Gun](https://thenounproject.com/term/anti-tank-gun/1802450/) By Tom Fricker
 * [Tank](https://thenounproject.com/search/?q=tank&i=981914) By jeff
@@ -108,6 +108,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * Icon for Carrier made by [JackRainy](https://github.com/JackRainy), based on [Aircraft Carrier](https://thenounproject.com/icolabs/collection/flat-icons-transport/?i=2332914) By IcoLabs, BR
 * [Water Gun](https://thenounproject.com/term/water-gun/2121571) by ProSymbols for Marine
 * [Parachute](https://thenounproject.com/term/parachute/2025018) by Nociconist for Paratrooper
+* [atomic bomb](https://thenounproject.com/search/?q=atomic+bomb&i=3712713) by AmruID for Atomic Bomb
 * [Robot](https://thenounproject.com/term/robot/1182459/) by Lluisa Iborra, ES for Giant Death Robot
 
 ### Great People
@@ -142,7 +143,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Gem](https://thenounproject.com/term/gem/948920/) By Lluisa Iborra
 * [Joss Stick](https://thenounproject.com/search/?q=incense&i=583033) By Hea Poh Lin for Incense
 
-## Improvements 
+## Improvements
 
 * [Woodcutting axe](https://thenounproject.com/term/woodcutting-axe/1060560/) By Chanut is Industries for Lumber Mill
 * [Monument](https://thenounproject.com/term/monument/1175928/) By Setyo Ari Wibowo for Landmark
@@ -225,7 +226,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Notre Dame](https://thenounproject.com/term/notre-dame/1361725/) By Marco Livolsi
 * [Shield and Swords](https://thenounproject.com/term/shield-and-swords/1477527/) By Alina Oleynik for Armory
 * [Machu Picchu](https://thenounproject.com/browse/?i=1678226/) By [Chanut is Industries](https://thenounproject.com/chanut-is)
-* [Garden](https://thenounproject.com/search/?q=garden&i=1478380) By Bharat 
+* [Garden](https://thenounproject.com/search/?q=garden&i=1478380) By Bharat
 
 ### Renaissance Era
 
@@ -253,7 +254,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Stock exchange](https://thenounproject.com/term/stock-exchange/1210199/) By Pundimon
 * [Military](https://thenounproject.com/term/military/1857519/) By myiconfinder for Military Academy
 * [Factory](https://thenounproject.com/term/factory/545906/) By icon 54
- 
+
 ### Modern Era
 
 * [Stadium](https://thenounproject.com/term/stadium/13872/) By Karuna Lalvani
@@ -387,7 +388,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Mallet](https://thenounproject.com/term/mallet/1306669/) By Ben Avery for Bronze Working
 
 ### Classical
-* [Telescope](https://thenounproject.com/term/telescope/1932888/) for Optics 
+* [Telescope](https://thenounproject.com/term/telescope/1932888/) for Optics
 * [Horse Riding](https://thenounproject.com/term/horse-riding/583093/) By Hea Poh Lin for Horseback Riding
 * [Abacus](https://thenounproject.com/term/abacus/1943303/) By Yo! Baba for Mathematics
 * [Arch](https://thenounproject.com/term/arch/1174168/) By Andrejs Kirma for Construction
@@ -414,11 +415,11 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Sound waves](https://thenounproject.com/term/sound-waves/792661/) By Makarenko Andrey for Acoustics
 * [Banking](https://thenounproject.com/term/banking/763867/) By Delwar Hossein
 * [Printing Press](https://thenounproject.com/term/printing-press/11880/) By Mike Wirth
-* [Flintlock](https://thenounproject.com/term/flintlock/1122659/) By Madison Apple for Gunpowder 
+* [Flintlock](https://thenounproject.com/term/flintlock/1122659/) By Madison Apple for Gunpowder
 * [Fossil](https://thenounproject.com/term/fossil/168650/) By Raf Verbraeken for Archaeology
 * [Sextant](https://thenounproject.com/term/sextant/313438/) By lastspark for Navigation
 * [Architecture](https://thenounproject.com/term/architecture/795297/) By Andrew Doane
-* [Money Growth](https://thenounproject.com/search/?q=economic%20model&i=136159) By DesignNex for Economics 
+* [Money Growth](https://thenounproject.com/search/?q=economic%20model&i=136159) By DesignNex for Economics
 * [Metal Block](https://thenounproject.com/term/metal-bock/1518464/) By Creaticca Creative Agency for Metallurgy
 * [Chemistry](https://thenounproject.com/term/chemistry/175847/) By Creative Stall
 
@@ -449,10 +450,11 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Tactics](https://thenounproject.com/search/?q=tactics&i=2290123) By Grafix Point for Mobile Tactics
 * [Laser](https://thenounproject.com/search/?q=laser&i=232249) by Andrew Doane for Lasers
 * [Satellite Dish](https://thenounproject.com/search/?q=satellite%20dish&i=2054441) By Vectors Market for Radar
-* [Nuclear Reactor](https://thenounproject.com/term/nuclear-reactor/426463/) By Jeremie Sommet for Nuclear Fission 
+* [Nuclear Reactor](https://thenounproject.com/term/nuclear-reactor/426463/) By Jeremie Sommet for Nuclear Fission
 * [Ecology](https://thenounproject.com/term/ecology/1970666/) By ProSymbols
 * [Robotic Arm](https://thenounproject.com/term/robotic-arm/1970874/) By Karl Gilbert for Robotics
 * [Rocket](https://thenounproject.com/term/rocket/1743642/) By kareemov for Rocketry
+* [Rocket](https://thenounproject.com/term/rocket/3999811) Kusdarti for Advanced Ballistics
 
 ### Future
 * [Nanoparticles](https://thenounproject.com/term/nanoparticles/822286/) By Gyan Lakhwani for Nanotechnology
@@ -530,9 +532,9 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Slingshot](https://thenounproject.com/term/slingshot/9106/) by James Keuning for Slinger Withdraw
 * [Anchor](https://thenounproject.com/term/anchor/676586) by Gregor Cresnar for Amphibious
 
-## Others 
+## Others
 
-* [Circle](https://thenounproject.com/term/circle/1841891/) By Aybige 
+* [Circle](https://thenounproject.com/term/circle/1841891/) By Aybige
 * [Arrow](https://thenounproject.com/term/arrow/18123/) By Joe Mortell for movement
 * [Swap](https://thenounproject.com/search/?q=swap&i=1259600) By iconomania for swapping units
 * [Connection](https://thenounproject.com/search/?q=connection&i=1521886) By Travis Avery
@@ -540,7 +542,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Crosshair](https://thenounproject.com/search/?q=crosshairs&i=916030) By Bakunetsu Kaito for selecting enemies to attack
 * [City](https://thenounproject.com/search/?q=city&i=571332) By Felix Westphal
 * [Fire](https://thenounproject.com/search/?q=Fire&i=96564) By Lloyd Humphreys for "city being razed" icon
-* [Sleep](https://thenounproject.com/search/?q=sleep&i=1760085) By Saeful Muslim 
+* [Sleep](https://thenounproject.com/search/?q=sleep&i=1760085) By Saeful Muslim
 * [Banner](https://thenounproject.com/term/banner/866282/) By Emir Palavan for embarked units
 * [Arrow](https://thenounproject.com/term/arrow/18123/) By uzeir syarief for moving between idle units
 * [Replace](https://thenounproject.com/search/?q=replace&i=17858) By Mike Rowe for switching tiles between cities
@@ -565,7 +567,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Go back](https://thenounproject.com/search/?q=go%20back&i=1901947) by Salvia Santos for Resume
 * [Multiplayer](https://thenounproject.com/search/?q=multiplayer&i=1215652) by Roy Charles
 * [Options](https://thenounproject.com/search/?q=options&i=866090) By Thengakola
-* [Package](https://thenounproject.com/search/?q=package&i=1886048) by shashank singh 
+* [Package](https://thenounproject.com/search/?q=package&i=1886048) by shashank singh
 
 # Sound credits
 
