@@ -154,6 +154,7 @@ open class TileInfo {
     fun isImpassible() = getLastTerrain().impassable
 
     fun getTileImprovement(): TileImprovement? = if (improvement == null) null else ruleset.tileImprovements[improvement!!]
+    fun getTileImprovementInProgress(): TileImprovement? = if (improvementInProgress == null) null else ruleset.tileImprovements[improvementInProgress!!]
 
 
     // This is for performance - since we access the neighbors of a tile ALL THE TIME,

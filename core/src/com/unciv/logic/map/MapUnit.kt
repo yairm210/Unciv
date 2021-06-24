@@ -10,6 +10,7 @@ import com.unciv.logic.civilization.LocationAction
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.Unique
+import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.ruleset.unit.UnitType
 import java.text.DecimalFormat
@@ -257,8 +258,13 @@ class MapUnit {
 
     fun isIdle(): Boolean {
         if (currentMovement == 0f) return false
-        if (hasUnique(Constants.workerUnique) && getTile().improvementInProgress != null) return false
-        if (hasUnique("Can construct roads") && currentTile.improvementInProgress == "Road") return false
+        if (hasUnique(Constants.canBuildImprovements) 
+            && getTile().improvementInProgress != null 
+            && canBuildImprovement(getTile().getTileImprovementInProgress()!!)) 
+                return false
+        // unique "Can construct roads" deprecated since 3.15.4
+            if (hasUnique("Can construct roads") && currentTile.improvementInProgress == "Road") return false
+        //
         if (isFortified()) return false
         if (action == Constants.unitActionExplore || isSleeping()
             || action == Constants.unitActionAutomation || isMoving()
@@ -540,12 +546,15 @@ class MapUnit {
     fun endTurn() {
         doAction()
 
-        if (currentMovement > 0 && hasUnique(Constants.workerUnique)
+        if (currentMovement > 0 && hasUnique(Constants.canBuildImprovements) 
             && getTile().improvementInProgress != null
+            && canBuildImprovement(getTile().getTileImprovementInProgress()!!)
         ) workOnImprovement()
-        if (currentMovement > 0 && hasUnique("Can construct roads")
-            && currentTile.improvementInProgress == "Road"
-        ) workOnImprovement()
+        // unique "Can constrcut raods" deprecated since 3.15.4
+            if (currentMovement > 0 && hasUnique("Can construct roads")
+                && currentTile.improvementInProgress == "Road"
+            ) workOnImprovement()
+        //
         if (currentMovement == getMaxMovement().toFloat() && isFortified()) {
             val currentTurnsFortified = getFortificationTurns()
             if (currentTurnsFortified < 2)
@@ -912,6 +921,10 @@ class MapUnit {
                 return false
             }
         }
+    }
+
+    fun canBuildImprovement(improvement: TileImprovement, tile: TileInfo = currentTile): Boolean {
+        return getMatchingUniques(Constants.canBuildImprovements).any { improvement.matchesFilter(it.params[0]) || tile.matchesTerrainFilter(it.params[0]) }
     }
 
     //endregion

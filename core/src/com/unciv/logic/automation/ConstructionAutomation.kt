@@ -11,8 +11,8 @@ import com.unciv.logic.map.BFS
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.VictoryType
 import com.unciv.models.stats.Stat
+import com.unciv.models.translations.equalsPlaceholderText
 import kotlin.math.min
-import kotlin.math.roundToInt
 import kotlin.math.sqrt
 
 class ConstructionAutomation(val cityConstructions: CityConstructions){
@@ -26,8 +26,8 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
             .filter { it.isWonder || it.isNationalWonder }
 
     val civUnits = civInfo.getCivUnits()
-    val militaryUnits = civUnits.count { !it.type.isCivilian()}
-    val workers = civUnits.count { it.hasUnique(Constants.workerUnique) }.toFloat()
+    val militaryUnits = civUnits.count { !it.type.isCivilian() }
+    val workers = civUnits.count { it.hasUnique(Constants.canBuildImprovements) && !it.type.isMilitary() }.toFloat()
     val cities = civInfo.cities.size
     val allTechsAreResearched = civInfo.tech.getNumberOfTechsResearched() >= civInfo.gameInfo.ruleSet.technologies.size
 
@@ -68,7 +68,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
             addWorkBoatChoice()
             addMilitaryUnitChoice()
         }
-
+        
         val production = cityInfo.cityStats.currentCityStats.production
 
         val theChosenOne: String
@@ -138,13 +138,15 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
 
     private fun addWorkerChoice() {
         val workerEquivalents = civInfo.gameInfo.ruleSet.units.values
-                .filter { it.uniques.contains(Constants.workerUnique) && it.isBuildable(cityConstructions) }
+                .filter { it.uniques.any {unique -> unique.equalsPlaceholderText(Constants.canBuildImprovements) } && it.isBuildable(cityConstructions) }
+        print(workerEquivalents)
+        print(workers)
         if (workerEquivalents.isEmpty()) return // for mods with no worker units
-        if (civInfo.getIdleUnits().any { it.action == Constants.unitActionAutomation && it.hasUnique(Constants.workerUnique) })
+        if (civInfo.getIdleUnits().any { it.action == Constants.unitActionAutomation && it.hasUnique(Constants.canBuildImprovements) })
             return // If we have automated workers who have no work to do then it's silly to construct new workers.
 
         val citiesCountedTowardsWorkers = min(5, cities) // above 5 cities, extra cities won't make us want more workers
-        if (workers < citiesCountedTowardsWorkers * 0.6f && civUnits.none { it.hasUnique(Constants.workerUnique) && it.isIdle() }) {
+        if (workers < citiesCountedTowardsWorkers * 0.6f && civUnits.none { it.hasUnique(Constants.canBuildImprovements) && it.isIdle() }) {
             var modifier = citiesCountedTowardsWorkers / (workers + 0.1f)
             if (!cityIsOverAverageProduction) modifier /= 5 // higher production cities will deal with this
             addChoice(relativeCostEffectiveness, workerEquivalents.minByOrNull { it.cost }!!.name, modifier)

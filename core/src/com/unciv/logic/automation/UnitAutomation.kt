@@ -89,7 +89,7 @@ object UnitAutomation {
             if (unit.hasUnique(Constants.settlerUnique))
                 return SpecificUnitAutomation.automateSettlerActions(unit)
 
-            if (unit.hasUnique(Constants.workerUnique))
+            if (unit.hasUnique(Constants.canBuildImprovements))
                 return WorkerAutomation(unit).automateWorkerAction()
 
             if (unit.name == "Work Boats")

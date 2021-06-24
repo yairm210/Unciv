@@ -2,7 +2,7 @@ package com.unciv
 
 object Constants {
     const val worker = "Worker"
-    const val workerUnique = "Can build improvements on tiles"
+    const val canBuildImprovements = "Can build [] improvements on tiles"
     const val settler = "Settler"
     const val settlerUnique = "Founds a new city"
 

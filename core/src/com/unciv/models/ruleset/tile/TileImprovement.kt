@@ -99,7 +99,8 @@ class TileImprovement : NamedStats() {
         return when (filter) {
             name -> true
             "All" -> true
-            "Great Improvement" -> isGreatImprovement()
+            "All Road" -> name == "road" || name == "railroad"
+            "Great Improvement", "Great" -> isGreatImprovement()
             else -> false
         }
     }
