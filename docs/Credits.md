@@ -277,15 +277,18 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Spaceship](https://thenounproject.com/term/spaceship/1444621/) By Dinosoft Labs for Apollo Program
 * [Build](https://thenounproject.com/term/build/1156478/) By Michael G Brown for Spaceship Factory
 * [Nuclear Plant](https://thenounproject.com/term/nuclear-plant/1132340/) By Andrejs Kirma
-* [CN Tower Toronto](https://thenounproject.com/search/?q=cn%20tower&i=807678) By mikicon
 * [Pentagon](https://thenounproject.com/search/?q=the%20pentagon&i=1788323) By Maxim Kulikov
 
 ### Future Era
 * [Hubble Telescope](https://thenounproject.com/search/?q=hubble%20space&i=445502) By Scott Lewis for Hubble Space Telescope
+* [CN Tower Toronto](https://thenounproject.com/search/?q=cn%20tower&i=807678) By mikicon for CN tower
+* [War Shelter](https://www.flaticon.com/free-icon/war-shelter_978661) by [Frepik](www.freepik.com) for Bomb Shelter
 * [Missile](https://thenounproject.com/term/missile/799922/) By ProSymbols for SS Booster
 * [Rocket](https://thenounproject.com/term/rocket/937173/) By BomSymbols for SS Cockpit
 * [Engine](https://thenounproject.com/term/engine/1877958/) By Andre for SS Engine
 * [Chamber](https://thenounproject.com/term/chamber/1242689/) By IYIKON for SS Stasis Chamber
+
+### All Era's
 * [Illuminati](https://thenounproject.com/term/illuminati/1617812) by emilegraphics for the Utopia Project
 
 ## Social Policies
@@ -459,6 +462,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Electronics](https://thenounproject.com/search/?q=Electronics&i=1565843) By Cuby Design
 * [Atom](https://thenounproject.com/term/atom/1586852/) By Kelsey Armstrong for Particle Physics
 * [Thermonuclear fusion](https://thenounproject.com/search/?q=fusion&i=3292735) by Olena Panasovska, UA for Nuclear Fusion
+* [telecommunications](https://thenounproject.com/search/?q=telecommunications&i=3191260) by Wichai Wi for Telcommunications
 * [Information Technology](https://thenounproject.com/term/information-technology/1927668/) By Vectors Markeet for Future Tech
 
 ## Terrain

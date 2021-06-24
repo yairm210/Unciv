@@ -77,10 +77,17 @@ object UniqueTriggerActivation {
                     civInfo.addUnit(greatPerson.name, chosenCity)
                 }
             }
-            "+1 population in each city" ->
+            // Deprecated since 3.15.4
+                "+1 population in each city" ->
+                    for (city in civInfo.cities) {
+                        city.population.addPopulation(1)
+                    }
+            // 
+            "[] population []" ->
                 for (city in civInfo.cities) {
-                    city.population.population += 1
-                    city.population.autoAssignPopulation()
+                    if (city.matchesFilter(unique.params[1])) {
+                        city.population.addPopulation(unique.params[0].toInt())
+                    }
                 }
             "Free Technology" -> if (!civInfo.isSpectator()) civInfo.tech.freeTechs += 1
             "[] Free Technologies" -> if (!civInfo.isSpectator()) civInfo.tech.freeTechs += unique.params[0].toInt() 
