@@ -1029,17 +1029,23 @@
 	// Future Era
 
 	// Column 15
-	/*
 	{
 		"name": "CN Tower",
 		"isWonder": true,
 		"culture": 1,
-		"greatPersonPoints": {"production": 1}
-		"providesFreeBuilding": "Broadcast Tower"
-		"uniques": ["+1 population in each city","+1 happiness in each city"]
-		"requiredTech": "Telecommunications" // todo doesn't exist yet!
+		"greatPersonPoints": {"gold": 1},
+		"providesFreeBuilding": "Broadcast Tower",
+		"uniques": ["[+1] population [in all cities]", "[+1 Happiness] [in all cities]"],
+		"requiredTech": "Telecommunications",
+		"quote": "'Nothing travels faster than light with the possible exception of bad news, which obeys its own special rules.' – Douglas Adams"
 	},
-	*/
+	{
+		"name": "Bomb Shelter",
+		"cost": 300,
+		"maintenance": 1,
+		"requiredTech": "Telecommunications",
+		"uniques": ["Population loss from nuclear attacks -[75]%"]
+	},
 	{
 		"name": "SS Cockpit",
 		"requiredResource": "Aluminum",
@@ -1050,7 +1056,7 @@
 		"name": "Hubble Space Telescope",
 		"isWonder": true,
 		"greatPersonPoints": {"science": 1},
-		"providesFreeBuilding":  "Spaceship Factory",
+		"providesFreeBuilding": "Spaceship Factory",
 		// If spaceship parts are changed into units, the spaceship part unique should be changed to
 		// "+[25]% Production when constructing [Spaceship part] units [in this city]"
 		"uniques": ["[2] free [Great Scientist] units appear",

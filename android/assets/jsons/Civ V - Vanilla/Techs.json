@@ -11,12 +11,12 @@
 				"quote": "'Where tillage begins, other arts follow. The farmers therefore are the founders of human civilization.' - Daniel Webster",
 				"uniques": ["Starting tech"]
 			}
-		]	
+		]
 	},
 	{
 		"columnNumber": 1,
 		"era": "Ancient era",
-		"techCost": 35, 
+		"techCost": 35,
 		"buildingCost": 60,
 		"wonderCost": 185,
 		"techs": [
@@ -44,13 +44,13 @@
 				"prerequisites": ["Agriculture"],
 				"quote": "'The meek shall inherit the Earth, but not its mineral rights.' - J. Paul Getty"
 			}
-			
-		]	
+
+		]
 	},
 	{
 		"columnNumber": 2,
 		"era": "Ancient era",
-		"techCost": 55, 
+		"techCost": 55,
 		"buildingCost": 75,
 		"wonderCost": 185,
 		"techs": [
@@ -95,13 +95,13 @@
 				"row": 10,
 				"prerequisites": ["Mining"],
 				"quote": "'Here Hector entered, with a spear eleven cubits long in his hand; the bronze point gleamed in front of him, and was fastened to the shaft of the spear by a ring of gold.' - Homer"
-			}			
-		]	
+			}
+		]
 	},
 	{
 		"columnNumber": 3,
 		"era": "Classical era",
-		"techCost": 105, 
+		"techCost": 105,
 		"buildingCost": 100,
 		"wonderCost": 250,
 		"techs": [
@@ -131,12 +131,12 @@
 				"prerequisites": ["Masonry","The Wheel"],
 				"quote": "'Three things are to be looked to in a building: that it stands on the right spot; that it be securely founded; that it be successfully executed.' - Johann Wolfgang von Goethe"
 			}
-		]	
+		]
 	},
 	{
 		"columnNumber": 4,
 		"era": "Classical era",
-		"techCost": 175, 
+		"techCost": 175,
 		"buildingCost": 100,
 		"wonderCost": 250,
 		"techs": [
@@ -171,7 +171,7 @@
 				"prerequisites": ["Bronze Working"],
 				"quote": "'Do not wait to strike til the iron is hot, but make it hot by striking.' - William Butler Yeats"
 			}
-		]	
+		]
 	},
 	{
 		"columnNumber": 5,
@@ -211,7 +211,7 @@
 	{
 		"columnNumber": 6,
 		"era": "Medieval era",
-		"techCost": 485, 
+		"techCost": 485,
 		"buildingCost": 160,
 		"wonderCost": 400,
 		"techs": [
@@ -254,12 +254,12 @@
 				"prerequisites": ["Metal Casting"],
 				"quote": "'John Henry said to his Captain, / 'A man ain't nothin' but a man, / And before I'll let your steam drill beat me down, / I'll die with the hammer in my hand.'' - Anonymous: The Ballad of John Henry, the Steel-Drivin' Man"
 			}
-		]	
+		]
 	},
 	{
 		"columnNumber": 7,
 		"era": "Renaissance era",
-		"techCost": 780, 
+		"techCost": 780,
 		"buildingCost": 200,
 		"wonderCost": 500,
 		"techs": [
@@ -294,12 +294,12 @@
 				"prerequisites": ["Physics","Steel"],
 				"quote": "'The day when two army corps can annihilate each other in one second, all civilized nations, it is to be hoped, will recoil from war and discharge their troops.' - Alfred Nobel"
 			}
-		]	
+		]
 	},
 	{
 		"columnNumber": 8,
 		"era": "Renaissance era",
-		"techCost": 1150, 
+		"techCost": 1150,
 		"buildingCost": 250,
 		"wonderCost": 625,
 		"techs": [
@@ -333,7 +333,7 @@
 				"prerequisites": ["Gunpowder"],
 				"quote": "'Wherever we look, the work of the chemist has raised the level of our civilization and has increased the productive capacity of the nation.' - Calvin Coolidge"
 			}
-		]	
+		]
 	},
 	{
 		"columnNumber": 9,
@@ -378,7 +378,7 @@
 				"prerequisites": ["Chemistry"],
 				"quote": "'The nation that destroys its soil destroys itself.' - Franklin Delano Roosevelt"
 			}
-		]	
+		]
 	},
 	{
 		"columnNumber": 10,
@@ -412,7 +412,7 @@
 				"prerequisites": ["Fertilizer","Military Science"],
 				"quote": "'As soon as men decide that all means are permitted to fight an evil, then their good becomes indistinguishable from the evil that they set out to destroy.' - Christopher Dawson"
 			}
-		]	
+		]
 	},
 	{
 		"columnNumber": 11,
@@ -451,7 +451,7 @@
 				"prerequisites": ["Steam Power","Dynamite"],
 				"quote": "'The introduction of so powerful an agent as steam to a carriage on wheels will make a great change in the situation of man.' - Thomas Jefferson"
 			}
-		]	
+		]
 	},
 	{
 		"columnNumber": 12,
@@ -484,7 +484,7 @@
 				"prerequisites": ["Railroad"],
 				"quote": "'Any man who can drive safely while kissing a pretty girl is simply not giving the kiss the attention it deserves.' - Albert Einstein"
 			}
-		]	
+		]
 	},
 	{
 		"columnNumber": 13,
@@ -517,7 +517,7 @@
 				"prerequisites": ["Ballistics","Combustion"],
 				"quote": "'The root of the evil is not the construction of new, more dreadful weapons. It is the spirit of conquest.' - Ludwig von Mises"
 			}
-		]	
+		]
 	},
 	{
 		"columnNumber": 14,
@@ -560,6 +560,12 @@
 		"wonderCost": 1250,
 		"techs": [
 			{
+				"name": "Telecommunications",
+				"row": 2,
+				"prerequisites": ["Ecology"],
+				"quote": "'The more we elaborate our means of communication, the less we communicate.' – J.B. Priestly"
+			},
+			{
 				"name": "Mobile Tactics",
 				"row": 3,
 				"prerequisites": ["Ecology","Nuclear Fission"],
@@ -575,7 +581,7 @@
 				"name": "Satellites",
 				"row": 6,
 				"prerequisites": ["Rocketry"],
-				"uniques": ["Reveals the entire map"], 
+				"uniques": ["Reveals the entire map"],
 				"quote": "'Now, somehow, in some new way, the sky seemed almost alien.' - Lyndon B. Johnson"
 			},
 			{
@@ -590,9 +596,9 @@
 				"prerequisites": ["Computers"],
 				"quote": "'The night is far spent, the day is at hand: let us therefore cast off the works of darkness, and let us put on the armor of light.' - The Holy Bible: Romans, 13:12"
 			}
-		]	
+		]
 	},
-	
+
 	{
 		"columnNumber": 16,
 		"era": "Future era",
@@ -602,8 +608,8 @@
 		"techs": [
 			{
 				"name": "Particle Physics",
-				"row": 4,
-				"prerequisites": ["Mobile Tactics", "Advanced Ballistics"],
+				"row": 3,
+				"prerequisites": ["Telecommunications","Mobile Tactics","Advanced Ballistics"],
 				"quote": "'Every particle of matter is attracted by or gravitates to every other particle of matter with a force inversely proportional to the squares of their distances.' - Isaac Newton"
 			},
 			{
@@ -634,6 +640,6 @@
 				"uniques": ["Who knows what the future holds?", "Can be continually researched"],
 				"quote": "'I think we agree, the past is over.' - George W. Bush"
 			}
-		]	
+		]
 	}
 ]

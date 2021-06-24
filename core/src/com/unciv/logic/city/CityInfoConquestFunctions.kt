@@ -47,7 +47,7 @@ class CityInfoConquestFunctions(val city: CityInfo){
             moveToCiv(conqueringCiv)
             Battle.destroyIfDefeated(oldCiv, conqueringCiv)
 
-            if (population.population > 1) population.population -= 1 + population.population / 4 // so from 2-4 population, remove 1, from 5-8, remove 2, etc.
+            if (population.population > 1) population.addPopulation(-1 - population.population / 4) // so from 2-4 population, remove 1, from 5-8, remove 2, etc.
             reassignPopulation()
 
             if (reconqueredCityWhileStillInResistance || foundingCiv == conqueringCiv.civName)
