@@ -421,7 +421,7 @@ object UnitActions {
                 actionList += UnitAction(UnitActionType.HealWaterUnits,
                     uncivSound = UncivSound.Chimes,
                     action = {
-                        unit.civInfo.addNotification("Your great admiral has healed [${healedUnits.count()} units!",
+                        unit.civInfo.addNotification("Your Great Admiral has healed [${healedUnits.count()} units!",
                               LocationAction(healedUnits.map { it.getTile().position }.toList())
                         )
                         for (unit in healedUnits) {
