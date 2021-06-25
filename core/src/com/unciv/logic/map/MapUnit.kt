@@ -259,8 +259,7 @@ class MapUnit {
     fun isIdle(): Boolean {
         if (currentMovement == 0f) return false
         // Constants.workerUnique deprecated since 3.15.5
-        if ((hasUnique(Constants.canBuildImprovements) || hasUnique(Constants.workerUnique)) 
-            && getTile().improvementInProgress != null 
+        if (getTile().improvementInProgress != null 
             && canBuildImprovement(getTile().getTileImprovementInProgress()!!)) 
                 return false
         // unique "Can construct roads" deprecated since 3.15.5
@@ -549,8 +548,7 @@ class MapUnit {
 
         if (currentMovement > 0 && 
             // Constants.workerUnique deprecated since 3.15.5
-            (hasUnique(Constants.canBuildImprovements) || hasUnique(Constants.workerUnique)) 
-            && getTile().improvementInProgress != null
+            getTile().improvementInProgress != null
             && canBuildImprovement(getTile().getTileImprovementInProgress()!!)
         ) workOnImprovement()
         // unique "Can construct roads" deprecated since 3.15.4

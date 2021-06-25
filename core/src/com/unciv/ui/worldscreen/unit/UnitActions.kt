@@ -33,9 +33,7 @@ object UnitActions {
         if (unit.isMoving()) actionList += UnitAction(UnitActionType.StopMovement) { unit.action = null }
 
         // Constants.workerUnique deprecated since 3.15.5
-        val workingOnImprovement = (unit.hasUnique(Constants.canBuildImprovements) || unit.hasUnique(Constants.workerUnique))
-                && unit.currentTile.hasImprovementInProgress()
-                && unit.canBuildImprovement(unit.currentTile.getTileImprovementInProgress()!!)
+        val workingOnImprovement = unit.currentTile.hasImprovementInProgress() && unit.canBuildImprovement(unit.currentTile.getTileImprovementInProgress()!!)
         if (!unit.isFortified() && !unit.canFortify() && unit.currentMovement > 0 && !workingOnImprovement) {
             addSleepActions(actionList, unit, unitTable)
         }
