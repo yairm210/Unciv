@@ -808,32 +808,18 @@ class MapUnit {
     }
 
     fun isTransportTypeOf(mapUnit: MapUnit): Boolean {
-        val isAircraftCarrier = hasUnique("Can carry [] aircraft")
-        val isMissileCarrier = hasUnique("Can carry [] missiles")
-        if (isMissileCarrier && mapUnit.type.isMissile())
-            return true
-        if (isAircraftCarrier && mapUnit.type.isAirUnit() && !mapUnit.type.isMissile())
-            return true
-        return false
+        // Currently, only missiles and airplanes can be carried
+        if (!mapUnit.type.isMissile() && !mapUnit.type.isAirUnit()) return false
+        return getMatchingUniques("Can carry [] [] units").any { mapUnit.matchesFilter(it.params[1]) }
     }
     
     fun carryCapacity(unit: MapUnit): Int {
-        var aircraftCapacity = getMatchingUniques("Can carry [] aircraft").sumBy { it.params[0].toInt() }
+        var capacity = getMatchingUniques("Can carry [] [] units").filter { unit.matchesFilter(it.params[1]) }.sumBy { it.params[0].toInt() }
+        capacity += getMatchingUniques("Can carry [] extra [] units").filter { unit.matchesFilter(it.params[1]) }.sumBy { it.params[0].toInt() }
         // Deprecated since 3.15.5
-            aircraftCapacity += getMatchingUniques("Can carry 2 air units").sumBy { 2 }
-        //
-        if (aircraftCapacity > 0 && unit.type.isAirUnit()) {
-            aircraftCapacity += getMatchingUniques("Can carry [] extra aircraft").sumBy { it.params[0].toInt() }
-            // Deprecated since 3.15.5
-                aircraftCapacity += getMatchingUniques("Can carry 1 extra air units").sumBy { 1 }   
-            return aircraftCapacity
-        }
-        var missileCapacity = getMatchingUniques("Can carry [] missiles").sumBy {it.params[0].toInt() }
-        if (missileCapacity > 0 && unit.type.isMissile()) {
-            missileCapacity += getMatchingUniques("Can carry [] extra missiles").sumBy { it.params[0].toInt() }
-            return missileCapacity
-        }
-        return 0
+        capacity += getMatchingUniques("Can carry 2 air units").filter { unit.matchesFilter("Air") }.sumBy { 2 }
+        capacity += getMatchingUniques("Can carry 1 extra air units").filter { unit.matchesFilter("Air") }.sumBy { 1 }
+        return capacity
     }
 
     fun canTransport(unit: MapUnit): Boolean {

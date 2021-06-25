@@ -1014,7 +1014,7 @@
 		"strength": 40,
 		"cost": 375,
 		"requiredTech": "Electronics",
-		"uniques": ["Cannot attack", "Can carry [2] aircraft"]
+		"uniques": ["Cannot attack", "Can carry [2] [Air] units"]
 	},
 	{
 		"name": "Battleship",
@@ -1290,7 +1290,7 @@
 		"cost": 425,
 		"requiredTech": "Telecommunications",
 		"uniques": ["+[75]% Strength when attacking", "Invisible to others", "Can only attack water",
-			"Can attack submarines", "Can enter ice tiles", "+1 Visibility Range", "Can carry [2] missiles"]
+			"Can attack submarines", "Can enter ice tiles", "+1 Visibility Range", "Can carry [2] [Missile] units"]
 	},
 	{
 		"name": "Mechanized Infantry",
@@ -1311,7 +1311,7 @@
 		"cost": 425,
 		"requiredTech": "Robotics",
 		"uniques": ["[100]% chance to intercept air attacks", "Can attack submarines",
-			"Ranged attacks may be performed over obstacles", "Can carry [3] missiles",
+			"Ranged attacks may be performed over obstacles", "Can carry [3] [Missile] units",
 			"+[100]% Strength vs [submarine units]"]
 	},
 	{
