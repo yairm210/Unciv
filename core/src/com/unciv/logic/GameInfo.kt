@@ -349,8 +349,8 @@ class GameInfo {
             // Temple was replaced by Amphitheater in 3.15.5. For backwards compatibility, we
             // replace existing temples with amphitheaters. This replacement should be removed
             // when temples are reintroduced as faith buildings.
-            if (!ruleSet.buildings.containsKey("Temple"))
-                changeBuildingName(city.cityConstructions, "Temple", "Amphitheater")
+            changeBuildingNameIfNotInRuleset(city.cityConstructions, "Temple", "Amphitheater")
+
 
             for (building in city.cityConstructions.builtBuildings.toHashSet())
                 if (!ruleSet.buildings.containsKey(building))
@@ -385,7 +385,15 @@ class GameInfo {
         }
     }
 
-    private fun changeBuildingName(cityConstructions: CityConstructions, oldBuildingName: String, newBuildingName: String) {
+    /**
+     * Replaces all occurrences of [oldBuildingName] in [cityConstructions] with [newBuildingName]
+     * if the former is not contained in the ruleset.
+     * This function can be used for backwards compatibility with older save files when a building
+     * name is changed.
+     */
+    private fun changeBuildingNameIfNotInRuleset(cityConstructions: CityConstructions, oldBuildingName: String, newBuildingName: String) {
+        if (ruleSet.buildings.containsKey(oldBuildingName))
+            return
         // Replace in built buildings
         if (cityConstructions.builtBuildings.contains(oldBuildingName)) {
             cityConstructions.builtBuildings.remove(oldBuildingName)
