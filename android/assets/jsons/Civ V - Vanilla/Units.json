@@ -1401,8 +1401,9 @@
 	{
 		"name": "Great General",
 		"unitType": "Civilian",
-		"uniques": ["Can start an [8]-turn golden age", "Bonus for units in 2 tile radius 15%", "Can construct [Citadel]",
-			"Great Person - [War]", "Unbuildable"],
+		"uniques": ["Can start an [8]-turn golden age", "+[15]% Strength for [Land] units within 2 tiles", 
+			"Combat bonus for nearby units does not stack with bonus granted by other instances of this unit",
+			"Can construct [Citadel]", "Great Person - [War - Land]", "Unbuildable"],
 		"movement": 2
 	},
 	{
@@ -1410,9 +1411,18 @@
 		"unitType": "Civilian",
 		"uniqueTo": "Mongolia",
 		"replaces": "Great General",
-		"uniques": ["Can start an [8]-turn golden age","Bonus for units in 2 tile radius 15%",
-			"Heal adjacent units for an additional 15 HP per turn", "Can construct [Citadel]", "Great Person - [War]", "Unbuildable"],
+		"uniques": ["Can start an [8]-turn golden age","+[15]% Strength for [Land] units within 2 tiles", 
+			"Combat bonus for nearby units does not stack with bonus granted by other instances of this unit",
+			"Heal adjacent units for an additional 15 HP per turn", "Can construct [Citadel]", "Great Person - [War - Land]", "Unbuildable"],
 		"movement": 5
+	},
+	{
+		"name": "Great Admiral",
+		"unitType": "WaterCivilian",
+		"uniques": ["Instantly repair all adjacent naval units", "+[15]% Strength for [Water] units within 2 tiles", 
+			"Combat bonus for nearby units does not stack with bonus granted by other instances of this unit", 
+			"Great Person - [War - Water]", "Unbuildable"],
+		"movement": 2
 	}
 
 	/* Spaceship Parts */

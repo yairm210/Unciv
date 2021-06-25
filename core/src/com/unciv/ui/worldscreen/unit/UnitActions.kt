@@ -5,6 +5,7 @@ import com.unciv.UncivGame
 import com.unciv.logic.automation.UnitAutomation
 import com.unciv.logic.automation.WorkerAutomation
 import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.LocationAction
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
@@ -414,6 +415,22 @@ object UnitActions {
                             addGoldPerGreatPersonUsage(unit.civInfo)
                             unit.destroy()
                         }.takeIf { canConductTradeMission })
+            }
+            "Instantly repair all adjacent naval units" -> {
+                val healedUnits = tile.getTilesInDistance(1).flatMap { it.getUnits() }.filter { it.health != 100 }
+                actionList += UnitAction(UnitActionType.HealWaterUnits,
+                    uncivSound = UncivSound.Chimes,
+                    action = {
+                        unit.civInfo.addNotification("Your great admiral has healed [${healedUnits.count()} units!",
+                              LocationAction(healedUnits.map { it.getTile().position }.toList())
+                        )
+                        for (unit in healedUnits) {
+                            unit.healBy(100)
+                        }
+                        addGoldPerGreatPersonUsage(unit.civInfo)
+                        unit.destroy()
+                    }.takeIf { healedUnits.count() != 0 }
+                )
             }
         }
     }

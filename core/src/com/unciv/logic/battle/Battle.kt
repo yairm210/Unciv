@@ -6,7 +6,6 @@ import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.*
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
-import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.RoadStatus
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.AttackableTile
@@ -15,7 +14,6 @@ import com.unciv.models.ruleset.unit.UnitType
 import com.unciv.models.stats.Stat
 import com.unciv.models.translations.tr
 import java.util.*
-import kotlin.math.min
 import kotlin.math.max
 
 /**
@@ -286,18 +284,21 @@ object Battle {
 
 
         if (thisCombatant.getCivInfo().isMajorCiv()) {
-            var greatGeneralPointsModifier = 1f
+            var greatWarPersonPoints = 1f
             val unitUniques = thisCombatant.unit.getMatchingUniques("[] is earned []% faster")
             val civUniques = thisCombatant.getCivInfo().getMatchingUniques("[] is earned []% faster")
             for (unique in unitUniques + civUniques) {
                 val unitName = unique.params[0]
                 val unit = thisCombatant.getCivInfo().gameInfo.ruleSet.units[unitName]
-                if (unit != null && unit.uniques.contains("Great Person - [War]"))
-                    greatGeneralPointsModifier += unique.params[1].toFloat() / 100
+                if (unit != null && unit.uniqueObjects.any { it.placeholderText == "Great Person - []" && it.params[0].startsWith("War")} )
+                    greatWarPersonPoints += unique.params[1].toFloat() / 100
             }
-
-            val greatGeneralPointsGained = (xpGained * greatGeneralPointsModifier).toInt()
-            thisCombatant.getCivInfo().greatPeople.greatGeneralPoints += greatGeneralPointsGained
+            val greatWarPersonPointsGained = (xpGained * greatWarPersonPoints).toInt()
+            if (thisCombatant.matchesCategory("Water")) {
+                thisCombatant.getCivInfo().greatPeople.greatAdmiralPoints += greatWarPersonPointsGained
+            } else {
+                thisCombatant.getCivInfo().greatPeople.greatGeneralPoints += greatWarPersonPointsGained
+            }
         }
     }
 

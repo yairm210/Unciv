@@ -66,15 +66,45 @@ object BattleDamage {
                 if (civResources[resource]!! < 0 && !civInfo.isBarbarian())
                     modifiers["Missing resource"] = -25
 
-
-            val nearbyCivUnits = combatant.unit.getTile().getTilesInDistance(2)
-                .flatMap { it.getUnits() }.filter { it.civInfo == combatant.unit.civInfo }
-            if (nearbyCivUnits.any { it.hasUnique("Bonus for units in 2 tile radius 15%") }) {
-                val greatGeneralModifier =
-                    if (combatant.unit.civInfo.hasUnique("Great General provides double combat bonus")) 30 else 15
-                modifiers["Great General"] = greatGeneralModifier
+            // Deprecated since 3.15.5
+                val nearbyCivUnits = combatant.unit.getTile().getTilesInDistance(2)
+                    .flatMap { it.getUnits() }.filter { it.civInfo == combatant.unit.civInfo }
+                if (nearbyCivUnits.any { it.hasUnique("Bonus for units in 2 tile radius 15%") }) {
+                    val greatGeneralModifier =
+                        if (combatant.unit.civInfo.hasUnique("Great General provides double combat bonus")) 30 else 15
+                    modifiers["Great General"] = greatGeneralModifier
+                }
+            //
+            
+            // Calculate strength bonus from nearby great generals/great admirals or mod equivalents
+            val nearbyBonusUnits = combatant.unit.getTile().getTilesInDistance(2)
+                .flatMap { it.getUnits() }
+                .filter { it.civInfo == combatant.unit.civInfo && it.hasUnique("+[]% Strength for [] units within 2 tiles")}
+            
+            for (unit in nearbyBonusUnits) {
+                var totalApplicableBonus = 0
+                for (unique in unit.getMatchingUniques("+[]% Strength for [] units within 2 tiles")) 
+                    if (combatant.unit.matchesFilter(unique.params[1]))
+                        totalApplicableBonus += unique.params[0].toInt()
+                var bonusMultiplier = 1f
+                for (unique in combatant.unit.civInfo.getMatchingUniques("[] units provide []% their normal Strength bonus")) {
+                    if (unit.matchesFilter(unique.params[0]))
+                        bonusMultiplier += unique.params[1].toFloat() / 100f
+                }
+                // Deprecated since 3.15.5
+                    if (combatant.unit.civInfo.hasUnique("Great General provides double combat bonus"))
+                        bonusMultiplier += 1
+                //
+                totalApplicableBonus = (totalApplicableBonus * bonusMultiplier).toInt()
+                // Great Generals & Admirals in vanilla do not stack, i.e. 2 generals give the same boost as 1 general
+                // In mods this might differ, so we allow it to stack if this unique is omitted
+                if (!unit.hasUnique("Combat bonus for nearby units does not stack with bonus granted by other instances of this unit")) {
+                    modifiers.add(unit.name, totalApplicableBonus)
+                    continue
+                }
+                modifiers[unit.name] = totalApplicableBonus
             }
-
+            
             if (civInfo.goldenAges.isGoldenAge() && civInfo.hasUnique("+10% Strength for all units during Golden Age"))
                 modifiers["Golden Age"] = 10
 

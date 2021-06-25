@@ -50,7 +50,10 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table() {
                 "Start Golden Age" -> return UnitIconAndKey(ImageGetter.getUnitIcon("Great Artist"), 'g')
                 "Hurry Wonder" -> return UnitIconAndKey(ImageGetter.getUnitIcon("Great Engineer"), 'g')
                 "Conduct Trade Mission" -> return UnitIconAndKey(ImageGetter.getUnitIcon("Great Merchant"), 'g')
-                "Construct road" -> return UnitIconAndKey(ImageGetter.getImprovementIcon("Road"), 'r')
+                "Heal nearby Water Units" -> return UnitIconAndKey(ImageGetter.getImage("OtherIcons/Plus"), 'g')
+                // Deprecated since 3.15.5
+                    "Construct road" -> return UnitIconAndKey(ImageGetter.getImprovementIcon("Road"), 'r')
+                //
                 "Paradrop" -> return UnitIconAndKey(ImageGetter.getUnitIcon("Paratrooper"), 'p')
                 "Set up" -> return UnitIconAndKey(ImageGetter.getUnitIcon("Catapult"), 't')
                 "Explore" -> return UnitIconAndKey(ImageGetter.getUnitIcon("Scout"), 'x')

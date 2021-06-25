@@ -84,7 +84,7 @@
 		"outerColor": [9, 112, 84],
 		"innerColor": [255,255,255],
 		"uniqueName": "Art of War",
-		"uniques": ["Great General provides double combat bonus", "[Great General] is earned [50]% faster"],
+		"uniques": ["[Great General] units provide [+100]% their normal Strength bonus", "[Great General] is earned [50]% faster"],
 		"cities": ["Beijing","Shanghai","Guangzhou","Nanjing","Xian","Chengdu","Hangzhou","Tianjin","Macau","Shandong",
 			"Kaifeng","Ningbo","Baoding","Yangzhou","Harbin","Chongqing","Luoyang","Kunming","Taipei","Shenyang",
 			"Taiyuan","Tainan","Dalian","Lijiang","Wuxi","Suzhou","Maoming","Shaoguan","Yangjiang","Heyuan","Huangshi",

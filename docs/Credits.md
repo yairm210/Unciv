@@ -117,6 +117,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Gear](https://thenounproject.com/search/?q=Gear&i=17369) By Melvin Salas for Great Engineer
 * [Beaker](https://thenounproject.com/search/?q=Beaker&i=621510) By Delwar Hossain for Great Scientist
 * [General](https://thenounproject.com/search/?q=general&i=933566) By anbileru adaleru for Great General
+* [Anchor](https://www.flaticon.com/free-icon/anchor_877475) BY Freepik for Great Admiral
 
 ## Resources
 
@@ -558,6 +559,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Lock](https://thenounproject.com/search/?q=lock&i=3217613) by Vadim Solomakhin for locked tiles
 * [Hourglass](https://thenounproject.com/search/?q=hourglass&i=142268) by I Create Stuff for the 'Turn' icon
 * [Dove](https://thenounproject.com/search/?q=dove&i=1344084) by Sandra for Faith
+* [red cross](https://thenounproject.com/search/?q=red+cross&i=3676210) by Vladyslav Sobipan
 
 ## Main menu
 

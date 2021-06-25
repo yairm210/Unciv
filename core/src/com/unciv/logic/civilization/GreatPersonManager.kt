@@ -6,8 +6,10 @@ import com.unciv.models.stats.Stats
 class GreatPersonManager {
     var pointsForNextGreatPerson = 100
     var pointsForNextGreatGeneral = 30
+    var pointsForNextGreatAdmiral = 200 // https://www.carlsguides.com/strategy/civilization5/greatpeople/greatadmiral.php
     var greatPersonPoints = Stats()
     var greatGeneralPoints = 0
+    var greatAdmiralPoints = 0
     var freeGreatPeople = 0
 
     val statToGreatPersonMapping = HashMap<Stat, String>().apply {
@@ -20,10 +22,12 @@ class GreatPersonManager {
     fun clone(): GreatPersonManager {
         val toReturn = GreatPersonManager()
         toReturn.freeGreatPeople = freeGreatPeople
-        toReturn.greatPersonPoints = greatPersonPoints.clone()
         toReturn.pointsForNextGreatPerson = pointsForNextGreatPerson
+        toReturn.greatPersonPoints = greatPersonPoints.clone()
         toReturn.pointsForNextGreatGeneral = pointsForNextGreatGeneral
         toReturn.greatGeneralPoints = greatGeneralPoints
+        toReturn.pointsForNextGreatAdmiral = pointsForNextGreatAdmiral
+        toReturn.greatAdmiralPoints = greatAdmiralPoints
         return toReturn
     }
 
@@ -34,6 +38,12 @@ class GreatPersonManager {
             greatGeneralPoints -= pointsForNextGreatGeneral
             pointsForNextGreatGeneral += 50
             return "Great General"
+        }
+        
+        if (greatAdmiralPoints > pointsForNextGreatAdmiral) {
+            greatAdmiralPoints -= pointsForNextGreatAdmiral
+            pointsForNextGreatAdmiral += 50 // This number is completely random and based on no source whatsoever
+            return "Great Admiral"
         }
 
         val greatPersonPointsHashmap = greatPersonPoints.toHashMap()

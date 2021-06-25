@@ -130,6 +130,10 @@ class StatsOverviewTable (
         val pointsForNextGreatGeneral = viewingPlayer.greatPeople.pointsForNextGreatGeneral.toString()
         greatPeopleTable.add("Great General".tr())
         greatPeopleTable.add("$pointsForGreatGeneral/$pointsForNextGreatGeneral").row()
+        val pointsForGreatAdmiral = viewingPlayer.greatPeople.greatAdmiralPoints.toString()
+        val pointsForNextGreatAdmiral = viewingPlayer.greatPeople.pointsForNextGreatAdmiral.toString()
+        greatPeopleTable.add("Great Admiral".tr())
+        greatPeopleTable.add("$pointsForGreatAdmiral/$pointsForNextGreatAdmiral").row()
         greatPeopleTable.pack()
         return greatPeopleTable
     }
