@@ -25,7 +25,7 @@ class PolicyPickerScreen(val worldScreen: WorldScreen, civInfo: CivilizationInfo
         displayTutorial(Tutorial.CultureAndPolicies)
 
         if (viewingCiv.gameInfo.ruleSet.policies.values.none {
-                viewingCiv.policies.isAdoptable(it, testEra = false) 
+                viewingCiv.policies.isAdoptable(it, checkEra = false) 
         })
             rightSideButton.setText("All policies adopted".tr())
         else
@@ -102,6 +102,7 @@ class PolicyPickerScreen(val worldScreen: WorldScreen, civInfo: CivilizationInfo
             val hScroll = min(20f, scrollPane.maxX / 2)
             scrollPane.scrollX = hScroll
         }
+        scrollPane.updateVisualScroll()
     }
 
     private fun pickPolicy(policy: Policy) {
