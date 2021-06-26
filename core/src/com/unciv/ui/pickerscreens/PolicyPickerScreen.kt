@@ -8,9 +8,11 @@ import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.Tutorial
 import com.unciv.models.UncivSound
 import com.unciv.models.ruleset.Policy
+import com.unciv.models.ruleset.PolicyBranch
 import com.unciv.models.translations.tr
 import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.WorldScreen
+import kotlin.math.min
 
 
 class PolicyPickerScreen(val worldScreen: WorldScreen, civInfo: CivilizationInfo = worldScreen.viewingCiv)
@@ -22,12 +24,15 @@ class PolicyPickerScreen(val worldScreen: WorldScreen, civInfo: CivilizationInfo
         val policies = viewingCiv.policies
         displayTutorial(Tutorial.CultureAndPolicies)
 
-        rightSideButton.setText("{Adopt policy}\r\n(".tr() + policies.storedCulture + "/" + policies.getCultureNeededForNextPolicy() + ")")
-
-        if (viewingCiv.gameInfo.ruleSet.policies.values.all { it.name in policies.adoptedPolicies })
+        if (viewingCiv.gameInfo.ruleSet.policies.values.none {
+                viewingCiv.policies.isAdoptable(it, testEra = false) 
+        })
             rightSideButton.setText("All policies adopted".tr())
+        else
+            rightSideButton.setText("{Adopt policy}\n(".tr() + policies.storedCulture + "/" + policies.getCultureNeededForNextPolicy() + ")")
 
         setDefaultCloseAction()
+
         if (policies.freePolicies > 0) {
             rightSideButton.setText("Adopt free policy".tr())
             if (policies.canAdoptPolicy()) closeButton.disable()
@@ -43,49 +48,60 @@ class PolicyPickerScreen(val worldScreen: WorldScreen, civInfo: CivilizationInfo
             } else game.setScreen(PolicyPickerScreen(worldScreen))  // update policies
         }
 
-        if (!UncivGame.Current.worldScreen.canChangeState)
+        if (!worldScreen.canChangeState)
             rightSideButton.disable()
 
-        topTable.row().pad(10f)
+        topTable.row()
 
         val branches = viewingCiv.gameInfo.ruleSet.policyBranches
-        val rowChangeIndex = (branches.size + 1) / 2
+        var rowChangeCount = Int.MAX_VALUE
+        var rowChangeWidth = Float.MAX_VALUE
+
+        // estimate how many branch boxes fit using average size (including pad)
+        val numBranchesX = scrollPane.width / 242f
+        val numBranchesY = scrollPane.height / 305f
+        // plan a nice geometry
+        if (scrollPane.width < scrollPane.height) {
+            // Portrait - arrange more in the vertical direction
+            if (numBranchesX < 2.5f) rowChangeCount = 2    
+            else rowChangeWidth = scrollPane.width + 10f  // 10f to ignore 1 horizontal padding
+        } else {
+            // Landscape - arrange in as few rows as looks nice
+            if (numBranchesY > 1.5f) {
+                val numRows = if (numBranchesY < 2.9f) 2 else (numBranchesY + 0.1f).toInt()
+                    rowChangeCount = (branches.size + numRows - 1) / numRows
+            }
+        }
+
+        // Actually create and distribute the policy branches
         var wrapper = Table()
+        var wrapperWidth = 0f   // Either pack() each round or cumulate separately
         for ( (index, branch) in branches.values.withIndex()) {
-            if (index == rowChangeIndex) {
-                topTable.add(wrapper)
+            val branchGroup = getBranchGroup(branch)
+            wrapperWidth += branchGroup.width + 20f  // 20 is the horizontal padding in wrapper.add
+
+            if (index > 0 && index % rowChangeCount == 0 || wrapperWidth > rowChangeWidth) {
+                topTable.add(wrapper).pad(5f,10f)
                 topTable.addSeparator()
                 wrapper = Table()
+                wrapperWidth = branchGroup.width
             }
-            val branchGroup = Table()
-            branchGroup.row().pad(20f)
-            branchGroup.add(getPolicyButton(branch, false)).minWidth(160f).row()
 
-            var currentRow = 1
-            var currentColumn = 1
-            val branchTable = Table()
-            for (policy in branch.policies) {
-                if (policy.name.endsWith("Complete")) continue
-                if (policy.row > currentRow) {
-                    branchTable.row().pad(2.5f)
-                    currentRow++
-                    currentColumn = 1
-                }
-                if (policy.column > currentColumn) {
-                    branchTable.add().colspan(policy.column - currentColumn) // empty space
-                }
-                branchTable.add(getPolicyButton(policy, true)).colspan(2)
-                currentColumn = policy.column + 2
-            }
-            branchTable.pack()
-            branchGroup.add(branchTable).height(150f).row()
-
-            branchGroup.add(getPolicyButton(branch.policies.last(), false)).pad(15f,0f) // finisher
-
-            wrapper.add(branchGroup).pad(0f, 10f)
+            wrapper.add(branchGroup).pad(10f)
         }
-        topTable.add(wrapper)
-        topTable.pack()
+        topTable.add(wrapper).pad(5f,10f)
+
+        // If topTable is larger than available space, scroll in a little - up to top/left
+        // total padding, or up to where the axis is centered, whichever is smaller
+        splitPane.pack()    // packs topTable but also ensures scrollPane.maxXY is calculated
+        if (topTable.height > scrollPane.height) {
+            val vScroll = min(15f, scrollPane.maxY / 2)
+            scrollPane.scrollY = vScroll
+        }
+        if (topTable.width > scrollPane.width) {
+            val hScroll = min(20f, scrollPane.maxX / 2)
+            scrollPane.scrollX = hScroll
+        }
     }
 
     private fun pickPolicy(policy: Policy) {
@@ -116,7 +132,45 @@ class PolicyPickerScreen(val worldScreen: WorldScreen, civInfo: CivilizationInfo
             else
                 policyText += "{Unlocked at} {" + policy.branch.era + "}"
         }
-        descriptionLabel.setText(policyText.joinToString("\r\n") { it.tr() })
+        descriptionLabel.setText(policyText.joinToString("\n") { it.tr() })
+    }
+
+    /**
+     * Create a Widget for a complete policy branch including Starter and "complete" buttons.
+     * @param branch the policy branch to display
+     * @return a [Table], with outer padding _zero_
+     */
+    private fun getBranchGroup(branch: PolicyBranch): Table {
+        val branchGroup = Table()
+        branchGroup.row()
+        branchGroup.add(getPolicyButton(branch, false))
+            .minWidth(160f).padBottom(15f).row()
+
+        var currentRow = 1
+        var currentColumn = 1
+        val branchTable = Table()
+        for (policy in branch.policies) {
+            if (policy.name.endsWith("Complete")) continue
+            if (policy.row > currentRow) {
+                branchTable.row().pad(2.5f)
+                currentRow++
+                currentColumn = 1
+            }
+            if (policy.column > currentColumn) {
+                branchTable.add().colspan(policy.column - currentColumn) // empty space
+            }
+            branchTable.add(getPolicyButton(policy, true)).colspan(2)
+            currentColumn = policy.column + 2
+        }
+
+        branchGroup.add(branchTable).height(150f).row()
+        
+        // Add the finisher button.
+        branchGroup.add(getPolicyButton(branch.policies.last(), false)).padTop(15f)
+        
+        // Ensure dimensions are calculated
+        branchGroup.pack()
+        return branchGroup
     }
 
     private fun getPolicyButton(policy: Policy, image: Boolean): Button {
@@ -137,4 +191,9 @@ class PolicyPickerScreen(val worldScreen: WorldScreen, civInfo: CivilizationInfo
         return policyButton
     }
 
+    override fun resize(width: Int, height: Int) {
+        if (stage.viewport.screenWidth != width || stage.viewport.screenHeight != height) {
+            game.setScreen(PolicyPickerScreen(worldScreen,viewingCiv))
+        }
+    }
 }
