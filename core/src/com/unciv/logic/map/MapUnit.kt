@@ -834,6 +834,7 @@ class MapUnit {
     fun canTransport(mapUnit: MapUnit): Boolean {
         if (!isTransportTypeOf(mapUnit)) return false
         if (owner != mapUnit.owner) return false
+        if (mapUnit.getMatchingUniques("Cannot be carried by [] units").any{matchesFilter(it.params[0])}) return false
 
         var unitCapacity = 2
         unitCapacity += getUniques().count { it.text == "Can carry 1 extra air unit" }
