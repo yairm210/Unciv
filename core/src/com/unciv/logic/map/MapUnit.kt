@@ -14,6 +14,7 @@ import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.ruleset.unit.UnitType
 import java.text.DecimalFormat
+import kotlin.math.pow
 import kotlin.random.Random
 
 /**
@@ -845,6 +846,13 @@ class MapUnit {
     fun interceptDamagePercentBonus(): Int {
         return getUniques().filter { it.placeholderText == "Bonus when intercepting []%" }
             .sumBy { it.params[0].toInt() }
+    }
+
+    fun receivedInterceptDamageFactor(): Float {
+        return getMatchingUniques("Damage taken from interception reduced by []%")
+            .fold(1f) { product, it -> product * 1f - it.params[0].toFloat() / 100f }
+            // This unique is deprecated since 3.15.6
+            .times(0.5f.pow(getUniques().filter{it.text == "Reduces damage taken from interception by 50%"}.count()))
     }
 
     private fun getTerrainDamage() {

@@ -287,7 +287,7 @@
 	{
 		"name": "Evasion",
 		"prerequisites": ["Siege II", "Bombardment II"],
-		"effect": "Reduces damage taken from interception by 50%",
+		"effect": "Damage taken from interception reduced by [50]%",
 		"unitTypes": ["Bomber"]
 	},
 	
