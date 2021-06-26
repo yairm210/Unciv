@@ -77,6 +77,7 @@ class PolicyManager {
         // Deprecated since 3.14.17, left for backwards compatibility
             if (cultureBuildingsAdded.isEmpty() && legalismState.isNotEmpty()) {
                 cultureBuildingsAdded.putAll(legalismState)
+                legalismState.clear()
             }
         //
         
