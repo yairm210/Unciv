@@ -1360,7 +1360,7 @@
 		"cost": 425,
 		"requiredTech": "Stealth",
 		"requiredResource": "Aluminum",
-		"uniques": ["Cannot be intercepted", "Cannot be carried by [Carrier] units", "6 tiles in every direction always visible"],
+		"uniques": ["Damage taken from interception reduced by [100]%", "Cannot be carried by [Carrier] units", "6 tiles in every direction always visible"],
 		"attackSound": "shot"
 	},
 
