@@ -925,7 +925,8 @@ class MapUnit {
 
     fun canBuildImprovement(improvement: TileImprovement, tile: TileInfo = currentTile): Boolean {
         // Constants.workerUnique deprecated since 3.15.5
-        val matchingUniques = getMatchingUniques(Constants.canBuildImprovements) + getMatchingUniques(Constants.workerUnique)
+        if (hasUnique(Constants.workerUnique)) return true
+        val matchingUniques = getMatchingUniques(Constants.canBuildImprovements)
         return matchingUniques.any { improvement.matchesFilter(it.params[0]) || tile.matchesTerrainFilter(it.params[0]) }
     }
 
