@@ -250,19 +250,19 @@
 	},
 	{
 		"name": "Flight Deck I",
-		"effect": "Can carry 1 extra air unit",
+		"effect": "Can carry [1] extra [Air] units",
 		"unitTypes": ["WaterAircraftCarrier"]
 	},
 	{
 		"name": "Flight Deck II",
 		"prerequisites": ["Flight Deck I"],
-		"effect": "Can carry 1 extra air unit",
+		"effect": " Can carry [1] extra [Air] units",
 		"unitTypes": ["WaterAircraftCarrier"]
 	},
 	{
 		"name": "Flight Deck III",
 		"prerequisites": ["Flight Deck II"],
-		"effect": "Can carry 1 extra air unit",
+		"effect": "Can carry [1] extra [Air] units",
 		"unitTypes": ["WaterAircraftCarrier"]
 	},
 

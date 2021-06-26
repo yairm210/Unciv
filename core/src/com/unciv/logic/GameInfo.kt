@@ -346,6 +346,12 @@ class GameInfo {
         }
 
         for (city in civilizations.asSequence().flatMap { it.cities.asSequence() }) {
+            // Temple was replaced by Amphitheater in 3.15.6. For backwards compatibility, we
+            // replace existing temples with amphitheaters. This replacement should be removed
+            // when temples are reintroduced as faith buildings.
+            changeBuildingNameIfNotInRuleset(city.cityConstructions, "Temple", "Amphitheater")
+
+
             for (building in city.cityConstructions.builtBuildings.toHashSet())
                 if (!ruleSet.buildings.containsKey(building))
                     city.cityConstructions.builtBuildings.remove(building)
@@ -379,14 +385,29 @@ class GameInfo {
         }
     }
 
-    private fun changeBuildingName(cityConstructions: CityConstructions, oldBuildingName: String, newBuildingName: String) {
+    /**
+     * Replaces all occurrences of [oldBuildingName] in [cityConstructions] with [newBuildingName]
+     * if the former is not contained in the ruleset.
+     * This function can be used for backwards compatibility with older save files when a building
+     * name is changed.
+     */
+    private fun changeBuildingNameIfNotInRuleset(cityConstructions: CityConstructions, oldBuildingName: String, newBuildingName: String) {
+        if (ruleSet.buildings.containsKey(oldBuildingName))
+            return
+        // Replace in built buildings
         if (cityConstructions.builtBuildings.contains(oldBuildingName)) {
             cityConstructions.builtBuildings.remove(oldBuildingName)
             cityConstructions.builtBuildings.add(newBuildingName)
         }
-        cityConstructions.constructionQueue.replaceAll { if (it == oldBuildingName) newBuildingName else it }
+        // Replace in construction queue
+        if (!cityConstructions.builtBuildings.contains(newBuildingName) && !cityConstructions.constructionQueue.contains(newBuildingName))
+            cityConstructions.constructionQueue = cityConstructions.constructionQueue.map{ if (it == oldBuildingName) newBuildingName else it }.toMutableList()
+        else
+            cityConstructions.constructionQueue.remove(oldBuildingName)
+        // Replace in in-progress constructions
         if (cityConstructions.inProgressConstructions.containsKey(oldBuildingName)) {
-            cityConstructions.inProgressConstructions[newBuildingName] = cityConstructions.inProgressConstructions[oldBuildingName]!!
+            if (!cityConstructions.builtBuildings.contains(newBuildingName) && !cityConstructions.inProgressConstructions.containsKey(newBuildingName))
+                cityConstructions.inProgressConstructions[newBuildingName] = cityConstructions.inProgressConstructions[oldBuildingName]!!
             cityConstructions.inProgressConstructions.remove(oldBuildingName)
         }
     }

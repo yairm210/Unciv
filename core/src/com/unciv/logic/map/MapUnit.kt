@@ -673,7 +673,7 @@ class MapUnit {
         // evacuation of transported units before disbanding, if possible. toListed because we're modifying the unit list.
         for (unit in currentTile.getUnits().filter { it.isTransported && isTransportTypeOf(it) }
             .toList()) {
-            // we disbanded a carrier in a city, it can still stay in the city
+            // if we disbanded a unit carrying other units in a city, the carried units can still stay in the city
             if (currentTile.isCityCenter() && unit.movement.canMoveTo(currentTile)) continue
             // if no "fuel" to escape, should be disbanded as well
             if (unit.currentMovement < 0.1)
@@ -819,28 +819,25 @@ class MapUnit {
     }
 
     fun isTransportTypeOf(mapUnit: MapUnit): Boolean {
-        val isAircraftCarrier = hasUnique("Can carry 2 aircraft")
-        val isMissileCarrier = hasUnique("Can carry 2 missiles")
-        if (!isMissileCarrier && !isAircraftCarrier)
-            return false
-        if (!mapUnit.type.isAirUnit()) return false
-        if (isMissileCarrier && mapUnit.type != UnitType.Missile)
-            return false
-        if (isAircraftCarrier && mapUnit.type == UnitType.Missile)
-            return false
-        return true
+        // Currently, only missiles and airplanes can be carried
+        if (!mapUnit.type.isMissile() && !mapUnit.type.isAirUnit()) return false
+        return getMatchingUniques("Can carry [] [] units").any { mapUnit.matchesFilter(it.params[1]) }
+    }
+    
+    fun carryCapacity(unit: MapUnit): Int {
+        var capacity = getMatchingUniques("Can carry [] [] units").filter { unit.matchesFilter(it.params[1]) }.sumBy { it.params[0].toInt() }
+        capacity += getMatchingUniques("Can carry [] extra [] units").filter { unit.matchesFilter(it.params[1]) }.sumBy { it.params[0].toInt() }
+        // Deprecated since 3.15.5
+        capacity += getMatchingUniques("Can carry 2 air units").filter { unit.matchesFilter("Air") }.sumBy { 2 }
+        capacity += getMatchingUniques("Can carry 1 extra air units").filter { unit.matchesFilter("Air") }.sumBy { 1 }
+        return capacity
     }
 
-    fun canTransport(mapUnit: MapUnit): Boolean {
-        if (!isTransportTypeOf(mapUnit)) return false
-        if (owner != mapUnit.owner) return false
-        if (mapUnit.getMatchingUniques("Cannot be carried by [] units").any{matchesFilter(it.params[0])}) return false
-
-        var unitCapacity = 2
-        unitCapacity += getUniques().count { it.text == "Can carry 1 extra air unit" }
-
-        if (currentTile.airUnits.count { it.isTransported } >= unitCapacity) return false
-
+    fun canTransport(unit: MapUnit): Boolean {
+        if (owner != unit.owner) return false
+        if (!isTransportTypeOf(unit)) return false
+        if (unit.getMatchingUniques("Cannot be carried by [] units").any{matchesFilter(it.params[0])}) return false
+        if (currentTile.airUnits.count { it.isTransported } >= carryCapacity(unit)) return false
         return true
     }
 
@@ -934,7 +931,8 @@ class MapUnit {
 
     fun canBuildImprovement(improvement: TileImprovement, tile: TileInfo = currentTile): Boolean {
         // Constants.workerUnique deprecated since 3.15.5
-        val matchingUniques = getMatchingUniques(Constants.canBuildImprovements) + getMatchingUniques(Constants.workerUnique)
+        if (hasUnique(Constants.workerUnique)) return true
+        val matchingUniques = getMatchingUniques(Constants.canBuildImprovements)
         return matchingUniques.any { improvement.matchesFilter(it.params[0]) || tile.matchesTerrainFilter(it.params[0]) }
     }
 
