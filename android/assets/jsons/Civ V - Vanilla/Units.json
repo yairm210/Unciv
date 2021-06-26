@@ -1130,7 +1130,7 @@
 		"cost": 375,
 		"requiredTech": "Radar",
 		"requiredResource": "Oil",
-		//"upgradesTo": "Stealth Bomber",
+		"upgradesTo": "Stealth Bomber",
 		"attackSound": "shot"
 	},
 	{
@@ -1146,7 +1146,7 @@
 		"requiredTech": "Radar",
 		"requiredResource": "Oil",
 		"promotions": ["Evasion", "Siege I"],
-		//"upgradesTo": "Stealth Bomber",
+		"upgradesTo": "Stealth Bomber",
 		"attackSound": "shot"
 	},
 	{
@@ -1353,22 +1353,19 @@
 		"requiredResource": "Uranium",
 		"uniques": ["Can move after attacking", "No defensive terrain bonus"]
 	},
-	/*
 	{
 		"name": "Stealth Bomber",
 		"unitType": "Bomber",
 		"movement": 2,
 		"strength": 85,
-		"rangedStrength": 65,
+		"rangedStrength": 85,
 		"range": 20,
 		"cost": 425,
 		"requiredTech": "Stealth",
 		"requiredResource": "Aluminum",
-		"uniques": ["Evasion", "6 tiles in every direction always visible"],
+		"uniques": ["Cannot be intercepted", "Cannot be carried by [Carrier] units", "6 tiles in every direction always visible"],
 		"attackSound": "shot"
-		// cannot be based on carrier
 	},
-	*/
 
 	/* Great people */
 
