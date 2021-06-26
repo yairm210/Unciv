@@ -579,8 +579,9 @@ object Battle {
 
     private fun tryInterceptAirAttack(attacker: MapUnitCombatant, defender: ICombatant) {
         if (attacker.unit.hasUnique("Cannot be intercepted")) return
-        // Deprecated in 3.15.6
-        if (attacker.unit.hasUnique("Can not be intercepted")) return
+        // Deprecated since 3.15.6
+            if (attacker.unit.hasUnique("Can not be intercepted")) return
+        // End deprecation
         val attackedTile = defender.getTile()
         for (interceptor in defender.getCivInfo().getCivUnits().filter { it.canIntercept(attackedTile) }) {
             if (Random().nextFloat() > 100f / interceptor.interceptChance()) continue

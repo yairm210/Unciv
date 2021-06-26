@@ -847,10 +847,13 @@ class MapUnit {
     }
 
     fun receivedInterceptDamageFactor(): Float {
-        return getMatchingUniques("Damage taken from interception reduced by []%")
-            .fold(1f) { product, it -> product * 1f - it.params[0].toFloat() / 100f }
-            // This unique is deprecated since 3.15.6
-            .times(0.5f.pow(getUniques().filter{it.text == "Reduces damage taken from interception by 50%"}.count()))
+        var damageFactor = 1f
+        for (unique in getMatchingUniques("Damage taken from interception reduced by []%"))
+            damageFactor *= 1f - unique.params[0].toFloat() / 100f
+        // Deprecated since 3.15.6
+            damageFactor *= 0.5f.pow(getUniques().count{it.text == "Reduces damage taken from interception by 50%"})
+        // End deprecation
+        return damageFactor
     }
 
     private fun getTerrainDamage() {
