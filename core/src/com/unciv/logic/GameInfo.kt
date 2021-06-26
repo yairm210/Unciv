@@ -346,7 +346,7 @@ class GameInfo {
         }
 
         for (city in civilizations.asSequence().flatMap { it.cities.asSequence() }) {
-            // Temple was replaced by Amphitheater in 3.15.5. For backwards compatibility, we
+            // Temple was replaced by Amphitheater in 3.15.6. For backwards compatibility, we
             // replace existing temples with amphitheaters. This replacement should be removed
             // when temples are reintroduced as faith buildings.
             changeBuildingNameIfNotInRuleset(city.cityConstructions, "Temple", "Amphitheater")
