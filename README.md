@@ -60,6 +60,16 @@ There's a lot left to implement, so it's hard to give an estimation of when exac
 
 If not, then the feature won't be added until we've finished all the features from the original Civ - as mentioned, this will take a while!
 
+### Why not? This is its own game, why not add features that weren't in Civ V?
+
+Having a clear vision is important for actually getting things done. 
+
+Anyone can make a suggestion. Not all are good, viable, or simple. Not many can actually implement stuff.
+
+As an open source project, this stuff is done in our spare time, of which there isn't much.
+
+We need a clear-cut criteria to decide what to work on and what not to work on.
+
 ## Will you implement Civ VI?
 
 Considering how long it took to get this far, no.
@@ -81,13 +91,6 @@ I'm not planning on it.
 It means paying money to Apple, yet another release path,
  and since I don't have an IOS device it means I can't test it properly.
  
-## How come this isn't working on my Raspberry Pi?
-
-LibGDX doesn't work on Raspberry, and so neither does Unciv. 
-
-If you're really invested, I'd be thrilled if you could make it work - this seems to be possible, see 
-https://github.com/chrishumphreys/LIbGDX-Pi for his detailed instructions
-
 ## How can I learn to play? Where's the wiki?
 
 All the tutorial information is available in-game at menu > civilopedia > tutorials
