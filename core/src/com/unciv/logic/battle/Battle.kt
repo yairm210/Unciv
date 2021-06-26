@@ -587,7 +587,7 @@ object Battle {
 
             var damage = BattleDamage.calculateDamageToDefender(MapUnitCombatant(interceptor), null, attacker)
 
-            var damageFactor = 1f + interceptor.interceptDamagePercentBonus() / 100
+            var damageFactor = 1f + interceptor.interceptDamagePercentBonus().toFloat() / 100f
             damageFactor *= attacker.unit.receivedInterceptDamageFactor()
 
             damage = (damage.toFloat() * damageFactor).toInt()
