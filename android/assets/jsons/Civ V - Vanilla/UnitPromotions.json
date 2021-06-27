@@ -57,9 +57,9 @@
 	},
 	{
 		"name": "Indirect Fire",
-		"prerequisites": ["Accuracy III","Barrage III"],
+		"prerequisites": ["Accuracy III", "Barrage III", "Bombardment II", "Targeting II"],
 		"effect": "Ranged attacks may be performed over obstacles",
-		"unitTypes": ["Ranged","Siege"]
+		"unitTypes": ["Ranged","Siege","WaterRanged"]
 	},
 	
 	// Melee, Mounted+Armor
