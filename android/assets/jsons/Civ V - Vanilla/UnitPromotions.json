@@ -52,7 +52,7 @@
 	{
 		"name": "Extended Range",
 		"prerequisites": ["Accuracy III","Barrage III","Targeting II","Bombardment II", "Wolfpack II"],
-		"effect": "+1 Range",
+		"effect": "+[1] Range",
 		"unitTypes": ["Ranged","Siege","WaterRanged","WaterSubmarine"]
 	},
 	{
@@ -339,7 +339,7 @@
 	{
 		"name": "Operational Range",
 		"prerequisites": ["Interception I", /*"Dogfighting I",*/ "Siege I", "Bombardment I"],
-		"effect": "+2 Range",
+		"effect": "+[2] Range",
 		"unitTypes": ["Fighter","Bomber"]
 	},
 	{

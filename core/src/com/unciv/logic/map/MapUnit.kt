@@ -283,8 +283,11 @@ class MapUnit {
     fun getRange(): Int {
         if (type.isMelee()) return 1
         var range = baseUnit().range
-        if (hasUnique("+1 Range")) range++
-        if (hasUnique("+2 Range")) range += 2
+        // Deprecated since 3.15.6
+            if (hasUnique("+1 Range")) range++
+            if (hasUnique("+2 Range")) range += 2
+        //
+        range += getMatchingUniques("+[] Range").sumBy { it.params[0].toInt() }
         return range
     }
 
