@@ -284,7 +284,7 @@ fun String.getPlaceholderText() = this.replace(squareBraceRegex, "[]")
 
 fun String.equalsPlaceholderText(str:String): Boolean {
     if (first() != str.first()) return false // for quick negative return 95% of the time
-    return  this.getPlaceholderText() == str
+    return this.getPlaceholderText() == str
 }
 
 fun String.getPlaceholderParameters() = squareBraceRegex.findAll(this).map { it.groups[1]!!.value }.toList()
