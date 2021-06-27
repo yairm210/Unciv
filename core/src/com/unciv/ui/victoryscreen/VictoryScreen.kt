@@ -151,9 +151,13 @@ class VictoryScreen(val worldScreen: WorldScreen) : PickerScreen() {
         val t = Table()
         t.defaults().pad(5f)
         for (branch in playerCivInfo.gameInfo.ruleSet.policyBranches.values) {
+            if (!playerCivInfo.policies.isAdopted(branch.name) && !playerCivInfo.policies.isAdoptable(branch, checkEra = false)) continue
             val finisher = branch.policies.last().name
             t.add(getMilestone(finisher, playerCivInfo.policies.isAdopted(finisher))).row()
         }
+
+        t.add(getMilestone("Built Utopia Project",
+            playerCivInfo.hasUnique("Triggers a Cultural Victory upon completion"))).row()
         return t
     }
 
