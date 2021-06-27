@@ -273,11 +273,18 @@ class MapUnit {
         return true
     }
 
+    fun maxAttacksPerTurn(): Int {
+        var maxAttacksPerTurn = 1 + getMatchingUniques("[] additional attacks per turn").sumBy { it.params[0].toInt() }
+        // Deprecated since 3.15.6
+        if (hasUnique("+1 additional attack per turn"))
+            maxAttacksPerTurn++
+        //
+        return maxAttacksPerTurn
+    }
+    
     fun canAttack(): Boolean {
         if (currentMovement == 0f) return false
-        if (attacksThisTurn > 0 && !hasUnique("1 additional attack per turn")) return false
-        if (attacksThisTurn > 1) return false
-        return true
+        return attacksThisTurn < maxAttacksPerTurn()
     }
 
     fun getRange(): Int {

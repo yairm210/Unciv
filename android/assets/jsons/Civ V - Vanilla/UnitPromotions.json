@@ -112,7 +112,7 @@
 	},
 	{
 		"name": "Formation I",
-		"prerequisites": ["Shock II","Drill II"],
+		"prerequisites": ["Shock II","Drill II"], // G&K also has Accuracy II & Barrage II as possible prerequisites for this, but I couldn't find a source for the unittypes
 		"effect": "+[33]% Strength vs [Mounted]",
 		"unitTypes": ["Melee","Mounted"]
 	},
@@ -126,7 +126,7 @@
 	{
 		"name": "Blitz",
 		"prerequisites": ["Shock III","Drill III"],
-		"effect": "1 additional attack per turn",
+		"effect": "[1] additional attack per turn",
 		"unitTypes": ["Melee","Mounted","Armor"]
 	},
 	{
