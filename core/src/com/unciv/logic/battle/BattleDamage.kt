@@ -1,5 +1,6 @@
 package com.unciv.logic.battle
 
+import com.unciv.logic.HexMath
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.Counter
 import com.unciv.models.ruleset.unit.UnitType
@@ -8,10 +9,6 @@ import kotlin.collections.set
 import kotlin.math.max
 import kotlin.math.pow
 import kotlin.math.roundToInt
-
-class BattleDamageModifier(val vs:String, val modificationAmount:Float){
-    fun getText(): String = "vs $vs"
-}
 
 object BattleDamage {
 
@@ -77,18 +74,21 @@ object BattleDamage {
             //
             
             // Calculate strength bonus from nearby great generals/great admirals or mod equivalents
-            val nearbyBonusUnits = combatant.unit.getTile().getTilesInDistance(2)
+            val nearbyBonusUnits = combatant.unit.getTile().getTilesInDistance(combatant.getCivInfo().gameInfo.ruleSet.modOptions.maxGreatGeneralSearchDistance)
                 .flatMap { it.getUnits() }
-                .filter { it.civInfo == combatant.unit.civInfo && it.hasUnique("+[]% Strength for [] units within 2 tiles")}
+                .filter { it.civInfo == combatant.unit.civInfo && it.hasUnique("+[]% Strength for [] units within [] tiles")}
             
             for (unit in nearbyBonusUnits) {
                 var totalApplicableBonus = 0
-                for (unique in unit.getMatchingUniques("+[]% Strength for [] units within 2 tiles")) 
-                    if (combatant.unit.matchesFilter(unique.params[1]))
+                for (unique in unit.getMatchingUniques("+[]% Strength for [] units within [] tiles")) 
+                    if (combatant.unit.matchesFilter(unique.params[1]) && HexMath.getDistance(combatant.unit.getTile().position, unit.getTile().position) <= unique.params[2].toInt())
                         totalApplicableBonus += unique.params[0].toInt()
-                for (unique in unit.getMatchingUniques("+[]% Strength vs [] for [] units within 2 tiles"))
-                    if (combatant.unit.matchesFilter(unique.params[2]) && enemy.matchesCategory(unique.params[1]))
+                for (unique in unit.getMatchingUniques("+[]% Strength vs [] for [] units within [] tiles"))
+                    if (combatant.unit.matchesFilter(unique.params[2]) && enemy.matchesCategory(unique.params[1]) 
+                        && HexMath.getDistance(combatant.unit.getTile().position, unit.getTile().position) <= unique.params[3].toInt()
+                    )
                         totalApplicableBonus += unique.params[0].toInt()
+                if (totalApplicableBonus == 0) continue
                 var bonusMultiplier = 1f
                 for (unique in combatant.unit.civInfo.getMatchingUniques("[] units provide []% their normal Strength bonus")) {
                     if (unit.matchesFilter(unique.params[0]))

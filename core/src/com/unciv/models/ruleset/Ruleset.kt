@@ -36,6 +36,7 @@ class ModOptions {
     var modUrl = ""
     var author = ""
     var modSize = 0
+    val maxGreatGeneralSearchDistance = 2
 }
 
 class Ruleset {
