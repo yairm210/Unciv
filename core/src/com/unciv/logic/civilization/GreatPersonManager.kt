@@ -39,8 +39,8 @@ class GreatPersonManager {
     }
     
     fun setTransients(ruleset: Ruleset) {
-        greatGeneralEquivalents = ruleset.units.filter { it.value.uniques.contains("Great Person - [War - Land]")  && it.value.replaces == null}.keys.toList()
-        greatAdmiralEquivalents = ruleset.units.filter { it.value.uniques.contains("Great Person - [War - Water]") && it.value.replaces == null}.keys.toList()
+        greatGeneralEquivalents = ruleset.units.filter { it.value.uniques.contains("Great Person - [War - Land]")  && it.value.uniqueTo == null}.keys.toList()
+        greatAdmiralEquivalents = ruleset.units.filter { it.value.uniques.contains("Great Person - [War - Water]") && it.value.uniqueTo == null}.keys.toList()
     }
 
     fun getNewGreatPerson(): String? {
