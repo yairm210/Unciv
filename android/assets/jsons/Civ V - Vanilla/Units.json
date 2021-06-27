@@ -1412,7 +1412,7 @@
 	{
 		"name": "Great Admiral",
 		"unitType": "WaterCivilian",
-		"uniques": ["Instantly repair all adjacent naval units", "+[15]% Strength for [Water] units within 2 tiles", 
+		"uniques": ["Instantly fully repair [Water] units within [1] tiles", "+[15]% Strength for [Water] units within 2 tiles", 
 			"Combat bonus for nearby units does not stack with bonus granted by other instances of this unit", 
 			"Great Person - [War - Water]", "Unbuildable"],
 		"movement": 2

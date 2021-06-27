@@ -421,12 +421,15 @@ object UnitActions {
                         unit.destroy()
                     }.takeIf { canConductTradeMission })
             }
-            "Instantly repair all adjacent naval units" -> {
-                val healedUnits = tile.getTilesInDistance(1).flatMap { it.getUnits() }.filter { it.health != 100 }
+            "Instantly fully repair [] units within [] tiles" -> {
+                val healedUnits = 
+                    tile.getTilesInDistance(unique.params[1].toInt())
+                        .flatMap { it.getUnits() }
+                        .filter { it.health != 100 && it.matchesFilter(unique.params[0])}
                 actionList += UnitAction(UnitActionType.HealWaterUnits,
                     uncivSound = UncivSound.Chimes,
                     action = {
-                        unit.civInfo.addNotification("Your Great Admiral has healed [${healedUnits.count()} units!",
+                        unit.civInfo.addNotification("Your [${unit.name}] has healed [${healedUnits.count()} units!",
                               LocationAction(healedUnits.map { it.getTile().position }.toList())
                         )
                         for (unit in healedUnits) {
