@@ -86,6 +86,9 @@ object BattleDamage {
                 for (unique in unit.getMatchingUniques("+[]% Strength for [] units within 2 tiles")) 
                     if (combatant.unit.matchesFilter(unique.params[1]))
                         totalApplicableBonus += unique.params[0].toInt()
+                for (unique in unit.getMatchingUniques("+[]% Strength vs [] for [] units within 2 tiles"))
+                    if (combatant.unit.matchesFilter(unique.params[2]) && enemy.matchesCategory(unique.params[1]))
+                        totalApplicableBonus += unique.params[0].toInt()
                 var bonusMultiplier = 1f
                 for (unique in combatant.unit.civInfo.getMatchingUniques("[] units provide []% their normal Strength bonus")) {
                     if (unit.matchesFilter(unique.params[0]))
