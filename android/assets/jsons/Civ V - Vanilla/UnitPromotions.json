@@ -126,7 +126,7 @@
 	{
 		"name": "Blitz",
 		"prerequisites": ["Shock III","Drill III"],
-		"effect": "[1] additional attack per turn",
+		"effect": "[1] additional attacks per turn",
 		"unitTypes": ["Melee","Mounted","Armor"]
 	},
 	{
