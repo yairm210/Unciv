@@ -1,5 +1,6 @@
 package com.unciv.logic.civilization
 
+import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 
@@ -11,6 +12,12 @@ class GreatPersonManager {
     var greatGeneralPoints = 0
     var greatAdmiralPoints = 0
     var freeGreatPeople = 0
+    
+    @Transient
+    lateinit var greatGeneralEquivalents: List<String>
+    
+    @Transient
+    lateinit var greatAdmiralEquivalents: List<String>
 
     val statToGreatPersonMapping = HashMap<Stat, String>().apply {
         put(Stat.Science, "Great Scientist")
@@ -30,6 +37,11 @@ class GreatPersonManager {
         toReturn.greatAdmiralPoints = greatAdmiralPoints
         return toReturn
     }
+    
+    fun setTransients(ruleset: Ruleset) {
+        greatGeneralEquivalents = ruleset.units.filter { it.value.uniques.contains("Great Person - [War - Land]")  && it.value.replaces == null}.keys.toList()
+        greatAdmiralEquivalents = ruleset.units.filter { it.value.uniques.contains("Great Person - [War - Water]") && it.value.replaces == null}.keys.toList()
+    }
 
     fun getNewGreatPerson(): String? {
         val greatPerson: String? = null
@@ -37,13 +49,13 @@ class GreatPersonManager {
         if (greatGeneralPoints > pointsForNextGreatGeneral) {
             greatGeneralPoints -= pointsForNextGreatGeneral
             pointsForNextGreatGeneral += 50
-            return "Great General"
+            return greatGeneralEquivalents.random()
         }
         
         if (greatAdmiralPoints > pointsForNextGreatAdmiral) {
             greatAdmiralPoints -= pointsForNextGreatAdmiral
             pointsForNextGreatAdmiral += 50 // This number is completely random and based on no source whatsoever
-            return "Great Admiral"
+            return greatAdmiralEquivalents.random()
         }
 
         val greatPersonPointsHashmap = greatPersonPoints.toHashMap()

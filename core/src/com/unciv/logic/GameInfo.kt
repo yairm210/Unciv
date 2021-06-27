@@ -289,8 +289,7 @@ class GameInfo {
         for (civInfo in civilizations) civInfo.gameInfo = this
 
         difficultyObject = ruleSet.difficulties[difficulty]!!
-
-
+        
 
         // This doesn't HAVE to go here, but why not.
 

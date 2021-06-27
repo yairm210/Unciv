@@ -473,7 +473,8 @@ class CivilizationInfo {
         tech.civInfo = this
         tech.setTransients()
 
-
+        greatPeople.setTransients(gameInfo.ruleSet)
+        
         for (diplomacyManager in diplomacy.values) {
             diplomacyManager.civInfo = this
             diplomacyManager.updateHasOpenBorders()
