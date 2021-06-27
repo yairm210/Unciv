@@ -50,6 +50,8 @@ class GameOptionsTable(val previousScreen: IPreviousScreen, val updatePlayerPick
         checkboxTable.addOneCityChallengeCheckbox()
         checkboxTable.addNuclearWeaponsCheckbox()
         checkboxTable.addIsOnlineMultiplayerCheckbox()
+        if (UncivGame.Current.settings.showExperimentalRelgion)
+            checkboxTable.addReligionCheckbox()
         checkboxTable.addModCheckboxes()
         add(checkboxTable).colspan(2).row()
 
@@ -83,6 +85,10 @@ class GameOptionsTable(val previousScreen: IPreviousScreen, val updatePlayerPick
                 gameParameters.isOnlineMultiplayer = it
                 updatePlayerPickerTable("")
             }
+    
+    private fun Table.addReligionCheckbox() =
+            addCheckbox("Religion", gameParameters.religionEnabled)
+            { gameParameters.religionEnabled = it }
 
     private fun addCityStatesSelectBox() {
         add("{Number of City-States}:".toLabel())
