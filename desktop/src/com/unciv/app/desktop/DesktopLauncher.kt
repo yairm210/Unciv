@@ -215,7 +215,8 @@ internal object DesktopLauncher {
                 } catch (ex: Exception) {
                 }
             }
-        } catch (ex: Exception) {
+        } catch (ex: Throwable) {
+            // This needs to be a Throwable because if we can't find the discord_rpc library, we'll get a UnsatisfiedLinkError, which is NOT an exception.
             println("Could not initialize Discord")
         }
     }

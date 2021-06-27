@@ -10,9 +10,11 @@ import com.unciv.logic.civilization.LocationAction
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.Unique
+import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.ruleset.unit.UnitType
 import java.text.DecimalFormat
+import kotlin.math.pow
 import kotlin.random.Random
 
 /**
@@ -257,8 +259,13 @@ class MapUnit {
 
     fun isIdle(): Boolean {
         if (currentMovement == 0f) return false
-        if (hasUnique(Constants.workerUnique) && getTile().improvementInProgress != null) return false
-        if (hasUnique("Can construct roads") && currentTile.improvementInProgress == "Road") return false
+        // Constants.workerUnique deprecated since 3.15.5
+        if (getTile().improvementInProgress != null 
+            && canBuildImprovement(getTile().getTileImprovementInProgress()!!)) 
+                return false
+        // unique "Can construct roads" deprecated since 3.15.5
+            if (hasUnique("Can construct roads") && currentTile.improvementInProgress == "Road") return false
+        //
         if (isFortified()) return false
         if (action == Constants.unitActionExplore || isSleeping()
             || action == Constants.unitActionAutomation || isMoving()
@@ -540,12 +547,16 @@ class MapUnit {
     fun endTurn() {
         doAction()
 
-        if (currentMovement > 0 && hasUnique(Constants.workerUnique)
-            && getTile().improvementInProgress != null
+        if (currentMovement > 0 && 
+            // Constants.workerUnique deprecated since 3.15.5
+            getTile().improvementInProgress != null
+            && canBuildImprovement(getTile().getTileImprovementInProgress()!!)
         ) workOnImprovement()
-        if (currentMovement > 0 && hasUnique("Can construct roads")
-            && currentTile.improvementInProgress == "Road"
-        ) workOnImprovement()
+        // unique "Can construct roads" deprecated since 3.15.4
+            if (currentMovement > 0 && hasUnique("Can construct roads")
+                && currentTile.improvementInProgress == "Road"
+            ) workOnImprovement()
+        //
         if (currentMovement == getMaxMovement().toFloat() && isFortified()) {
             val currentTurnsFortified = getFortificationTurns()
             if (currentTurnsFortified < 2)
@@ -662,7 +673,7 @@ class MapUnit {
         // evacuation of transported units before disbanding, if possible. toListed because we're modifying the unit list.
         for (unit in currentTile.getUnits().filter { it.isTransported && isTransportTypeOf(it) }
             .toList()) {
-            // we disbanded a carrier in a city, it can still stay in the city
+            // if we disbanded a unit carrying other units in a city, the carried units can still stay in the city
             if (currentTile.isCityCenter() && unit.movement.canMoveTo(currentTile)) continue
             // if no "fuel" to escape, should be disbanded as well
             if (unit.currentMovement < 0.1)
@@ -808,33 +819,41 @@ class MapUnit {
     }
 
     fun isTransportTypeOf(mapUnit: MapUnit): Boolean {
-        val isAircraftCarrier = hasUnique("Can carry 2 aircraft")
-        val isMissileCarrier = hasUnique("Can carry 2 missiles")
-        if (!isMissileCarrier && !isAircraftCarrier)
-            return false
-        if (!mapUnit.type.isAirUnit()) return false
-        if (isMissileCarrier && mapUnit.type != UnitType.Missile)
-            return false
-        if (isAircraftCarrier && mapUnit.type == UnitType.Missile)
-            return false
-        return true
+        // Currently, only missiles and airplanes can be carried
+        if (!mapUnit.type.isMissile() && !mapUnit.type.isAirUnit()) return false
+        return getMatchingUniques("Can carry [] [] units").any { mapUnit.matchesFilter(it.params[1]) }
+    }
+    
+    fun carryCapacity(unit: MapUnit): Int {
+        var capacity = getMatchingUniques("Can carry [] [] units").filter { unit.matchesFilter(it.params[1]) }.sumBy { it.params[0].toInt() }
+        capacity += getMatchingUniques("Can carry [] extra [] units").filter { unit.matchesFilter(it.params[1]) }.sumBy { it.params[0].toInt() }
+        // Deprecated since 3.15.5
+        capacity += getMatchingUniques("Can carry 2 air units").filter { unit.matchesFilter("Air") }.sumBy { 2 }
+        capacity += getMatchingUniques("Can carry 1 extra air units").filter { unit.matchesFilter("Air") }.sumBy { 1 }
+        return capacity
     }
 
-    fun canTransport(mapUnit: MapUnit): Boolean {
-        if (!isTransportTypeOf(mapUnit)) return false
-        if (owner != mapUnit.owner) return false
-
-        var unitCapacity = 2
-        unitCapacity += getUniques().count { it.text == "Can carry 1 extra air unit" }
-
-        if (currentTile.airUnits.count { it.isTransported } >= unitCapacity) return false
-
+    fun canTransport(unit: MapUnit): Boolean {
+        if (owner != unit.owner) return false
+        if (!isTransportTypeOf(unit)) return false
+        if (unit.getMatchingUniques("Cannot be carried by [] units").any{matchesFilter(it.params[0])}) return false
+        if (currentTile.airUnits.count { it.isTransported } >= carryCapacity(unit)) return false
         return true
     }
 
     fun interceptDamagePercentBonus(): Int {
         return getUniques().filter { it.placeholderText == "Bonus when intercepting []%" }
             .sumBy { it.params[0].toInt() }
+    }
+
+    fun receivedInterceptDamageFactor(): Float {
+        var damageFactor = 1f
+        for (unique in getMatchingUniques("Damage taken from interception reduced by []%"))
+            damageFactor *= 1f - unique.params[0].toFloat() / 100f
+        // Deprecated since 3.15.6
+            damageFactor *= 0.5f.pow(getUniques().count{it.text == "Reduces damage taken from interception by 50%"})
+        // End deprecation
+        return damageFactor
     }
 
     private fun getTerrainDamage() {
@@ -911,6 +930,13 @@ class MapUnit {
                 return false
             }
         }
+    }
+
+    fun canBuildImprovement(improvement: TileImprovement, tile: TileInfo = currentTile): Boolean {
+        // Constants.workerUnique deprecated since 3.15.5
+        if (hasUnique(Constants.workerUnique)) return true
+        val matchingUniques = getMatchingUniques(Constants.canBuildImprovements)
+        return matchingUniques.any { improvement.matchesFilter(it.params[0]) || tile.matchesTerrainFilter(it.params[0]) }
     }
 
     //endregion

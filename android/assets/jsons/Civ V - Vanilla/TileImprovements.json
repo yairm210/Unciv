@@ -165,8 +165,7 @@
 	{
 		"name": "Academy",
 		"science": 8,
-		"uniques": ["Great Improvement", "[+2 Science] once [Scientific Theory] is discovered"]
-		// in Gods & Kings academy will also have "[+2 Science] once [Atomic Theory] is discovered"
+		"uniques": ["Great Improvement", "[+2 Science] once [Scientific Theory] is discovered", "[+2 Science] once [Atomic Theory] is discovered"]
 	},
 	{
 		"name": "Landmark",

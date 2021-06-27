@@ -111,7 +111,7 @@ We applaud your liberation of our conquered cities! = İşgal altındaki şehirl
 We applaud your liberation of conquered cities! = İşgal altındaki şehirleri özgürleştirmenizden ötürü size minnettarız!
 Years of peace have strengthened our relations. = Yıllarca süren barış ilişkilerimizi güçlendirdi.
 Our mutual military struggle brings us closer together. = Ortak askeri mücadelemiz bizi bir araya getiriyor.
-We have signed a public declaration of friendship = Herkese açık bir dostluk beyanı imzaladık
+We have signed a public declaration of friendship = Herkese açık bir dostluk bildirgesi imzaladık
 You have declared friendship with our enemies! = Düşmanlarımızla dostluk ilan ettiniz!
 You have declared friendship with our allies = Müttefiklerimizle arkadaşlık ilan ettiniz
 Our open borders have brought us closer together. = Açık sınırlarımız bizi bir araya getirdi.
@@ -208,19 +208,19 @@ Civilizations = Medeniyetler
 Map Type = Harita türü
 Map file = Harita dosyası
 Could not load map! = Harita yüklenemedi!
-Generated = Oluşturuldu
+Generated = Oluşturulmuş
 Existing = Mevcut
-Custom = Elle yapılmış
+Custom = Özel
 Map Generation Type = Harita oluşturma türü
 Default = Varsayılan
-Pangaea = Pangea
+Pangaea = Tekkıta
 Perlin = Perlin
 Continents = Kıtalar
 Four Corners = Dört Kısım
 Archipelago = Takımadalar
 Number of City-States = Şehir devletlerinin sayısı
 One City Challenge = Tek Şehir Meydan Okuması
-No Barbarians = Barbar yok
+No Barbarians = Barbarlar yok
 No Ancient Ruins = Antik kalıntı yok
 No Natural Wonders = Doğal Harika Yok
 Victory Conditions = Kazanma şartları
@@ -241,7 +241,7 @@ Resource richness = Kaynak zenginliği
 Vegetation richness = Bitki örtüsü
 Rare features richness = Nadir özellikler zenginliği
 Max Coast extension = Azami Kıyı uzantısı
-Biome areas extension = Biyom alanlarının genişletilmesi
+Biome areas extension = Biyom alanları büyüklüğü
 Water level = Su seviyesi
 Reset to default = Varsayılana sıfırla
 
@@ -284,8 +284,8 @@ Mods: = Modlar:
 Base ruleset mods: = Temel kuraldizimi modları:
 Extension mods: = Uzantı modları:
 
-World Wrap = Dünya Kaydırma
-World wrap maps are very memory intensive - creating large world wrap maps on Android can lead to crashes! = Dünyanın kaydırılabildiği haritalar yüksek bellek kullanımına sebep olur - Android'de dünya kaydırma özelliğini etkinleştirmek çökmelere neden olabilir.
+World Wrap = Yuvarlak dünya
+World wrap maps are very memory intensive - creating large world wrap maps on Android can lead to crashes! = Yuvarlak dünyaya sahip haritalar yüksek bellek kullanımına sebep olur - Android'de büyük haritalarda bu özelliğini etkinleştirmek çökmelere neden olabilir.
 Anything above 80 by 50 may work very slowly on Android! = 80'e 50'den daha büyük ölçekler Android'de çok yavaş çalışabilir!
 Anything above 40 may work very slowly on Android! = 40'ın üzerine çıkıldığında Android'de çok yavaş çalışabilir!
 
@@ -459,7 +459,7 @@ You and [name] are no longer allies! = Siz ve [name] artık müttefik değilsini
 [civName] has accepted your trade request = [civName] ticaret talebinizi kabul etti
 [civName] has denied your trade request = [civName] ticaret talebinizi reddetti
 [tradeOffer] from [otherCivName] has ended = [otherCivName] medeniyetinden gelen [tradeOffer] sona erdi
-[tradeOffer] to [otherCivName] has ended = [tradeOffer] talebimiz [otherCivName] ile sona erdi
+[tradeOffer] to [otherCivName] has ended = [otherCivName] uygarlığına giden [tradeoffer] teklifimiz sona erdi
 One of our trades with [nation] has ended = [nation] ile yaptığımız ticaretlerden biri sona erdi
 One of our trades with [nation] has been cut short = [nation] ile yaptığımız ticaretlerden biri kısa kesildi
 [nation] agreed to stop settling cities near us! = [nation] yakınımızdaki şehirlere yerleşmeyi durdurmayı kabul etti!
@@ -483,12 +483,9 @@ Clearing a [forest] has created [amount] Production for [cityName] = Bir [forest
 The resistance in [cityName] has ended! = [cityName] şehrindeki direniş sona erdi!
 Our [name] took [tileDamage] tile damage and was destroyed = Bizim [name], [tileDamage] karo hasarı aldı ve yok edildi
 Our [name] took [tileDamage] tile damage = Bizim [name], [tileDamage] karo hasarı aldı
- # Requires translation!
-[civName] has adopted the [policyName] policy = 
- # Requires translation!
-An unknown civilization has adopted the [policyName] policy = 
- # Requires translation!
-Our influence with City-States has started dropping faster! = 
+[civName] has adopted the [policyName] policy = [civName] [policyName] politikasını kabul etti
+An unknown civilization has adopted the [policyName] policy = Bilinmeyen bir uygarlık [policyName] politikasını kabul etti
+Our influence with City-States has started dropping faster! =  Şehir devletleri üzerine olan etkimiz daha hızlı düşmeye başladı!
 
 # World Screen UI
 
@@ -517,8 +514,8 @@ Construct improvement = İyileştirme inşa et
 Automate = Otomatikleştir
 Stop automation = Otomasyonu durdur
 Construct road = Yol yap
-Fortify = Güçlendirme
-Fortify until healed = İyileşene kadar tahkimat
+Fortify = Tahkimat yap
+Fortify until healed = İyileşene kadar tahkimat yap
 Fortification = Tahkimat
 Sleep = Uyu
 Sleep until healed = İyileşene kadar uyu
@@ -605,7 +602,7 @@ Growth bonus = Büyüme bonusu
 Unassigned population = Atanmamış nüfus
 [turnsToExpansion] turns to expansion = Genişlemeye [turnsToExpansion] tur
 Stopped expansion = Genişleme durdu
-[turnsToPopulation] turns to new population =  Yeni nüfusa [turnsToPopulation] tur
+[turnsToPopulation] turns to new population = Yeni nüfusa [turnsToPopulation] tur
 Food converts to production = Gıda üretime dönüştürür
 [turnsToStarvation] turns to lose population = Nüfusu kaybetmeye [turnsToStarvation] tur
 Stopped population growth = Nüfus artışı durdurdu
@@ -666,7 +663,7 @@ Hurry Research = Araştırma Hızlandırma
 Conduct Trade Mission = Ticaret Görevi Yürüt
 Your trade mission to [civName] has earned you [goldAmount] gold and [influenceAmount] influence! = [civName] medenietine ticaret göreviniz size [goldAmount] altın ve [influenceAmount] etkisi kazandırdı!
 Hurry Wonder = Harikayı Hızlandır
-Your citizens have been happy with your rule for so long that the empire enters a Golden Age! = Vatandaşlarınız, imparatorluğun Altın Çağ'a gireceği kadar uzun süredir yönetiminizden memnunlar!
+Your citizens have been happy with your rule for so long that the empire enters a Golden Age! = Vatandaşlarınız, imparatorluğu Altın Çağ'a taşıyacak kadar uzun süredir yönetiminizden memnun kalmışlar!
 You have entered the [newEra]! = [newEra]'a girdiniz!
 [civName] has entered the [eraName]! = [civName] [eraName]'a girdi! 
 [policyBranch] policy branch unlocked! = [policyBranch] politika şubesinin kilidi açıldı!
@@ -943,8 +940,8 @@ Unbuildable = İnşa edilemez
 # Promotions
 
 Pick promotion = Terfi seçin
- OR  =   VEYA
-units in open terrain = düzlük alandaki birimler
+ OR  =   VEYA 
+units in open terrain = açık alandaki birimler
 units in rough terrain = engebeli alandaki birimler
 wounded units = yaralı birimler
 Targeting II (air) = Hedefleme 2 (Hava)
@@ -978,7 +975,7 @@ Download = İndir
 Done! = Tamam!
 Delete [modName] = [modName] modunu sil
 Are you SURE you want to delete this mod? = Bu modu SİLMEK istediğinize emin misiniz?
-Updated = Son güncellenme
+Updated = Yeni Güncellenmiş
 Current mods = Mevcut modlar
 Downloadable mods = İndirilebilir modlar
 Next page = Sonraki sayfa
@@ -1002,7 +999,7 @@ Must be next to [terrain] = [terrain] yanında olmalı
 Must be on [terrain] = [terrain] üzerinde olmalı
 +[amount]% vs [unitType] = [unitType] düşmanlara karşı +%[amount] hasar
 +[amount] Movement for all [unitType] units = Bütün [unitType] birimleri için +[amount] Hareket
-+[amount]% Production when constructing [param] = [param] yapılırken +%[amount] Üretim
++[amount]% Production when constructing [param] = [param] üretilirken +%[amount] Üretim
 Can only be built on [tileFilter] tiles = Sadece [tileFilter] karolarında inşa edilebilir
 Cannot be built on [tileFilter] tiles = [tileFilter] karolarında inşa edilemez
 Does not need removal of [feature] = [feature]'ın Kaldırılmasına gerek duymaz
@@ -1026,7 +1023,7 @@ Monument = Anıt
 Granary = Tahıl Ambarı
 
 'It is not so much for its beauty that the forest makes a claim upon men's hearts, as for that subtle something, that quality of air, that emanation from old trees, that so wonderfully changes and renews a weary spirit.'  - Robert Louis Stevenson = "Ormanın, insanların kalpleri üzerinde hak iddia etmesi, o ince şey, o hava kalitesi, yaşlı ağaçlardan yayılan o kadar harika bir şekilde değişen ve yorgun bir ruhu yenileyen bir şey değil." - Robert Louis Stevenson
-+[amount]% [stat] [cityFilter] = + %[amount] [stat] [cityFilter] 
++[amount]% [stat] [cityFilter] = +%[amount] [stat] [cityFilter] 
 +[amount]% Production when constructing [unitType] units [cityFilter] = [unitType] birimleri [cityFilter] üretirken +%[amount] Üretim
 Temple of Artemis = Artemis Tapınağı
 
@@ -1077,7 +1074,7 @@ Statue of Zeus = Zeus Heykeli
 Lighthouse = Deniz feneri
 
 'They that go down to the sea in ships, that do business in great waters; these see the works of the Lord, and his wonders in the deep.' - The Bible, Psalms 107:23-24 = 'Gemilerle denize açılanlar, okyanuslarda iş yapanlar; RAB'bin işlerini, derinliklerde yaptığı harikaları görürler' - Kitabı Mukaddes, Mezmurlar 107:23-24
-+[amount] Sight for all [param] units =  Her [param] birlikler için +[amount] görüş
++[amount] Sight for all [param] units = Her [param] birlikler için +[amount] görüş
 The Great Lighthouse = Büyük Deniz Feneri
 
 Stable = Ahır
@@ -1233,7 +1230,7 @@ Porcelain Tower = Porselen Kule
 
 Windmill = Yeldeğirmeni
 
-Arsenal = Cephanelik
+Arsenal = Silah Deposu
 
 'The Law is a fortress on a hill that armies cannot take or floods wash away.'   –- The Prophet Muhammed = 'Kanun, orduların alamayacağı veya selin yıkayamayacağı bir tepe üzerindeki bir kaledir.' - Hz.Muhammed
 Defensive buildings in all cities are 25% more effective = Bütün şehirlerdeki savunma binaları 25% daha etkilidir
@@ -1362,7 +1359,7 @@ Greetings. = Selamlar.
 What do YOU want?! = NE istiyorsun?
 Ingenuity = Yaratıcılık
 Receive free [unit] when you discover [tech] = [tech] teknolojisini bulduğunuzda bedava [unit] birliği verir
-[unit] is earned [amount]% faster = [unit], %[amount] daha hızlı kazanıldı
+[unit] is earned [amount]% faster = [unit], %[amount] daha hızlı kazanılır
 May the blessings of heaven be upon you, O great Nebuchadnezzar, father of mighty and ancient Babylon! Young was the world when Sargon built Babylon some five thousand years ago, long did it grow and prosper, gaining its first empire the eighteenth century BC, under godlike Hammurabi, the giver of law. Although conquered by the Kassites and then by the Assyrians, Babylon endured, emerging phoenix-like from its ashes of destruction and regaining its independence despite its many enemies. Truly was Babylon the center of arts and learning in the ancient world. O Nebuchadnezzar, your empire endured but a short time after your death, falling to the mighty Persians, and then to the Greeks, until the great city was destroyed by 141 BC. = Ey antik ve ulu Babilin babası, büyük Nebuchadnezzar, cennetin kutsaması üzerine olsun!  Sargon 5000 Yıl evvel Babili kuralı, Dünya gençti, Babil, büyüdü, refaha ulaştı ve nihayetinde Hammurabi, hukukun babasının yönetimi altında ilk imparatorluğuna M.Ö. 18. yüzyılda erişti. İlk önce Kassitler ve ardından Asurlular tarafından işgal edilmesine rağmen Babil dayandı, ve anka kuşuymuşcasına düşmanlarına rağmen küllerinden yeniden doğdu ve yeniden bağımsızlığını kazandı. Antik dünyada Babil sanatın ve eğitimin ana merkeziydi. Ey Büyük Nebuchadnezzar, ölümünden kısa bir süre sonra İmparatorluğun Persler, ardındanda Yunanlarca işgal edildi, Ulu şehir M.Ö. 141'de yok edilene kadar.
 But is Babylon indeed gone forever, great Nebuchadnezzar? Your people look to you to bring the empire back to life once more. Will you accept the challenge? Will you build a civilization that will stand the test of time? = Ama Babil cidden yok mu oldu, büyük Nebuchadnezzar? Vatandaşların imparatorluğu bir kere daha hayata döndürmen için seni gözlüyor. Bu Meydan okumayı kabul edecek, Zamanın zorluklarına dayanabilecek bir uygarlık inşa edebilecek misin?
 Akkad = Akkad
@@ -2090,7 +2087,7 @@ Ruin! Ruin! Istanbul becomes Iram of the Pillars, remembered only by the melanch
 From the magnificence of Topkapi, the Ottoman nation greets you, stranger! I'm Suleiman, Kayser-I Rum, and I bestow upon you my welcome! = Yabancı! Osmanlı milleti, Topkapı'nın ihtişamından size selam gönderiyor. Ben Süleyman, Kayser-i Rum, size selamlarımı gönderiyorum.
 Let us do business! Would you be interested? = Biraz iş konuşalım! Acaba ilginizi çeker mi?
 Barbary Corsairs = Berber Korsanları
-50% chance of capturing defeated Barbarian naval units and earning 25 Gold = Barbar deniz birimleri mağlup edildiğinde %50 ihtimalle ele birimi ele geçirme ve 25 Altın kazanma şansı
+50% chance of capturing defeated Barbarian naval units and earning 25 Gold = Barbar deniz birimleri mağlup edildiğinde %50 ihtimalle barbar birimini ele geçirme ve 25 Altın kazanma şansı
 Blessings of God be upon you, oh Great Emperor Suleiman! Your power, wealth and generosity awe the world! Truly, are you called 'Magnificent!' Your empire began in Bithynia, a small country in Eastern Anatolia in 12th century. Taking advantage in the decline of the great Selkuj Sultanate of Rum, King Osman I of Bithynia expanded west into Anatolia. Over the next century, your subjects brought down the empire of Byzantium, taking its holdings in Turkey and then the Balkans. In the mid 15th century, the Ottomans captured ancient Constantinople, gaining control of the strategic link between Europe and the Middle East. Your people's empire would continue to expand for centuries governing much of North Africa, the Middle East and Eastern Europe at its height. = Allah'ın selamı üstüne olsun, Ey büyük Sultan Süleyman! Kudretin, Zenginliğin ve cömertliğin dünyayı şaşırtıyor! Elbet, sana Muhteşem derler. INCOMPLETE Your empire began in Bithynia, a small country in Eastern Anatolia in 12th century. Taking advantage in the decline of the great Selkuj Sultanate of Rum, King Osman I of Bithynia expanded west into Anatolia. Over the next century, your subjects brought down the empire of Byzantium, taking its holdings in Turkey and then the Balkans. In the mid 15th century, the Ottomans captured ancient Constantinople, gaining control of the strategic link between Europe and the Middle East. Your people's empire would continue to expand for centuries governing much of North Africa, the Middle East and Eastern Europe at its height.
 Mighty Sultan, heed the call of your people! Bring your empire back to the height of its power and glory and once again the world will look upon your greatness with awe and admiration! Will you accept the challenge, great emperor? Will you build an empire that will stand the test of time? = Büyük Padişah, halkının isteğini duy! İmparatorluğu gücünün ve şanının tepe noktasına tekrar yükselt ki dünya, İmparatorluğa tekrar huşu ve hayranlık ile baksın! Meydan okumayı kabul edecek misin, Büyük Padişah, Zamanın zorluklarına dayanacak bir İmparatorluk inşa edebilecek misin?
 Istanbul = İstanbul
@@ -2580,8 +2577,7 @@ Accept this agreement or suffer the consequences. =
 Welcome, friend. = Selamlar, dostum
  # Requires translation!
 Sacrificial Captives = 
- # Requires translation!
-Earn [amount]% of killed [unitType] unit's [param] as [stat] = 
+Earn [amount]% of killed [unitType] unit's [param] as [stat] = öldüdülen [unitType] birliğim [param] %[amount]'unu [stat] olarak elde edin
  # Requires translation!
 Welcome, O divine Montezuma! We grovel in awe at your magnificence! May the heaven shower all manner of good things upon you all the days of your life! You are the leader of the mighty Aztec people, wandering nomads from a lost home in the north who in the 12th century came to live in the mesa central in the heart of what would come to be called Mexico. Surrounded by many tribes fighting to control the rich land surrounding the sacred lakes of Texcoco, Xaltocan and Zampango, through cunning alliances and martial prowess, within a mere two hundred years, the Aztecs came to dominate the Central American basin, ruling a mighty empire stretching from sea to sea. But the empire fell at last under the assault of foreign devils - the accursed Spaniards! - wielding fiendish weapons the likes of which your faithful warriors had never seen. = 
  # Requires translation!
@@ -2907,7 +2903,7 @@ Republic = Cumhuriyet
 Citizenship = Vatandaşlık
 Collective Rule = Topluluk Yönetimi
 Representation = Temsil
-Each city founded increases culture cost of policies [amount]% less than normal = Kurulan her şehir sosyal politikaların kültür maliyetini normale kıyasla %[amount] azaltır
+Each city founded increases culture cost of policies [amount]% less than normal = Kurulan her şehir sosyal politikaların kültür maliyetini normale kıyasla %[amount] daha az azaltır
 Meritocracy = Liyakat
 Unhappiness from population decreased by [amount]% [param] = Her [param]'da nüfustan Mutsuzluk %[amount] azalıd
 Liberty Complete = Özgürlük Tamamlandı
@@ -2938,37 +2934,21 @@ Classical era = Klasik dönem
 Piety = Dindarlık
 +[amount]% Production when constructing [stat] buildings = [stat] binaları inşa edilirken +%[amount] üretim sağlar
 Incompatible with [param] = [param] ile uyumsuzdur
-
- # Requires translation!
-Philantropy = 
- # Requires translation!
-Gifts of Gold to City-States generate [amount]% more Influence = 
- # Requires translation!
-Aesthetics = 
- # Requires translation!
-Resting point for Influence with City-States is increased by [amount] = 
- # Requires translation!
-Scholasticism = 
- # Requires translation!
-Allied City-States provide [stat] equal to [amount]% of what they produce for themselves = 
- # Requires translation!
-Cultural Diplomacy = 
- # Requires translation!
-Quantity of Resources gifted by City-States increased by [amount]% = 
- # Requires translation!
-Happiness from Luxury Resources gifted by City-States increased by [amount]% = 
- # Requires translation!
-Educated Elite = 
- # Requires translation!
-Allied City-States will occasionally gift Great People = 
- # Requires translation!
-Patronage  Complete = 
- # Requires translation!
-Influence of all other civilizations with all city-states degrades [amount]% faster = 
- # Requires translation!
-Triggers the following global alert: [param] = 
- # Requires translation!
-Patronage  = 
+Philantropy = Hayırseverlik
+Gifts of Gold to City-States generate [amount]% more Influence =  Şehir Devletlerine hediye edilen Altınlar %[amount] daha fazla etki sağlar
+Aesthetics = Estetik
+Resting point for Influence with City-States is increased by [amount] = Şehir devletleriyle olan ilişkilerde durma noktası [amount] artar
+Scholasticism = Skolastizm
+Allied City-States provide [stat] equal to [amount]% of what they produce for themselves = İttifak olduğunuz Şehir Devletleri size kendi ürettiği [stat] kaynağının %[amount]'ünü size sağlar
+Cultural Diplomacy = Kültürel Diplomasi
+Quantity of Resources gifted by City-States increased by [amount]% = Şehir Devletlerinin hediye ettiği kaynaklar %[amount] artar
+Happiness from Luxury Resources gifted by City-States increased by [amount]% = Şehir Devletlerinin sağladığı Lüks Kaynakların sağladığı mutluluk %[amount] artar
+Educated Elite = Eğitimli Elitler
+Allied City-States will occasionally gift Great People = İttifak olduğunuz şehir devletleri arada Büyük Şahsiyetler hediye eder
+Patronage  Complete = Himaye Tamamlandı!
+Influence of all other civilizations with all city-states degrades [amount]% faster = Diğer uygarlıkların Şehir Devletleri ile olan ilişkileri %[amount] daha hızlı azalır
+Triggers the following global alert: [param] = Bu küresel uyarıyı tetikler: [param]
+Patronage  = Himaye
 
 Naval Tradition = Deniz Geleneği
 Trade Unions = Sendikalar
@@ -3246,10 +3226,8 @@ Lasers = Lazerler
 
 Particle Physics = Parçacık Fiziği 
 'Every particle of matter is attracted by or gravitates to every other particle of matter with a force inversely proportional to the squares of their distances.' - Isaac Newton = “Her madde parçacığı, mesafelerinin kareleri ile ters orantılı bir kuvvetle maddenin her parçacığı tarafından çekilir veya ona çekilir.”-Isaac Newton 
- # Requires translation!
-Nuclear Fusion = 
- # Requires translation!
-'The release of atomic energy has not created a new problem. It has readily made more urgent the necessity of solving an existing one.' - Albert Einstein = 
+Nuclear Fusion = Nükleer Füzyon
+'The release of atomic energy has not created a new problem. It has readily made more urgent the necessity of solving an existing one.' - Albert Einstein = 'Atom Enerjisinin yayılması yeni sorunlar yaratmadı. Atom Enerjisi halihazırda bulunan sorunları çözmeyi daha acil hale getirdi.'
 Nanotechnology = Nanoteknoloji 
 'The impact of nanotechnology is expected to exceed the impact that the electronics revolution has had on our lives.' - Richard Schwartz = "Nanoteknolojinin etkisinin, elektronik devriminin hayatlarımız üzerindeki etkisini aşması bekleniyor." - Richard Schwartz
 
@@ -3347,7 +3325,7 @@ Pasture = Otlak
 
 Plantation = Plantasyon
 
-Quarry = Taş ocağı 
+Quarry = Taş ocağı
 
 Fishing Boats = Balıkçı Tekneleri
 
@@ -3378,7 +3356,7 @@ Academy = Akademi
 
 Landmark = Başyapıt
 
-Manufactory = Büyük Fabrika 
+Manufactory = Büyük Fabrika
 
 Customs house = Gümrük Dairesi
 
@@ -3765,7 +3743,7 @@ Lancer = Mızraklı Süvari
 Sipahi = Sipahi 
 No movement cost to pillage = Yağma için hareket maliyeti yoktur
 
-Cannon = Top
+Cannon = Gülle
 
 Gatling Gun = Mitralyöz
 
@@ -3852,8 +3830,7 @@ Modern Armor = Modern Zırhlı
 
 Jet Fighter = Jet Savaşcısı
 
- # Requires translation!
-Giant Death Robot = 
+Giant Death Robot = Dev Ölüm Robotu
 
 Great Artist = Harika Sanatçı
 Great Person - [stat] = Büyük Şahsiyet - [stat]

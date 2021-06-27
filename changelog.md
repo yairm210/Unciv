@@ -1,3 +1,19 @@
+## 3.15.5
+
+Solved Discord RPC not crashing devices in which it is unsupported
+
+Resolved #4200 - Cities in resistance cannot bombard
+
+More generic "gain stat" for some uniques
+
+By xlenstra:
+- Generalized building of improvements 
+- Added Telecommunications tech
+- Added Advanced Ballistics Tech, Atomic Bomb Unit, Updated how nukes work 
+- Fixed rare bug where building improvements would increase tile base yield
+
+Promotion picker keeps vertical scroll pos on promote or resize  - By SomeTroglodyte
+
 ## 3.15.4
 
 Deprecated 'download map' in favor of mod-based map sharing

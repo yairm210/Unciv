@@ -8,6 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.UncivGame
+import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.RoadStatus
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.ruleset.tile.TileImprovement
@@ -17,7 +18,7 @@ import com.unciv.ui.utils.*
 import com.unciv.ui.utils.StaticTooltip.Companion.addStaticTip
 import kotlin.math.round
 
-class ImprovementPickerScreen(val tileInfo: TileInfo, val onAccept: ()->Unit) : PickerScreen() {
+class ImprovementPickerScreen(val tileInfo: TileInfo, unit: MapUnit, val onAccept: ()->Unit) : PickerScreen() {
     private var selectedImprovement: TileImprovement? = null
     private val gameInfo = tileInfo.tileMap.gameInfo
     private val ruleSet = gameInfo.ruleSet
@@ -56,8 +57,9 @@ class ImprovementPickerScreen(val tileInfo: TileInfo, val onAccept: ()->Unit) : 
         for (improvement in ruleSet.tileImprovements.values) {
             // canBuildImprovement() would allow e.g. great improvements thus we need to exclude them - except cancel
             if (improvement.turnsToBuild == 0 && improvement.name != Constants.cancelImprovementOrder) continue
-            if (improvement.name == tileInfo.improvement) continue      // also checked by canImprovementBeBuiltHere, but after more expensive tests
+            if (improvement.name == tileInfo.improvement) continue // also checked by canImprovementBeBuiltHere, but after more expensive tests
             if (!tileInfo.canBuildImprovement(improvement, currentPlayerCiv)) continue
+            if (!unit.canBuildImprovement(improvement)) continue
 
             val improvementButtonTable = Table()
 

@@ -142,9 +142,15 @@
 		"techs": [
 			{
 				"name": "Philosophy",
-				"row": 3,
+				"row": 2,
 				"prerequisites": ["Writing","Calendar"],
 				"quote": "'There is only one good, knowledge, and one evil, ignorance.' - Socrates"
+			},
+			{
+				"name": "Drama and Poetry",
+				"row": 3,
+				"prerequisites": ["Writing"],
+				"quote": "'What is drama but life with the dull bits cut out.' - Alfred Hitchcock"
 			},
 			{
 				"name": "Currency",
@@ -177,13 +183,13 @@
 			{
 				"name": "Theology",
 				"row": 2,
-				"prerequisites": ["Philosophy"],
+				"prerequisites": ["Philosophy", "Drama and Poetry"],
 				"quote": "'Three things are necessary for the salvation of man: to know what he ought to believe; to know what he ought to desire; and to know what he ought to do' - St. Thomas Aquinas"
 			},
 			{
 				"name": "Civil Service",
 				"row": 5,
-				"prerequisites": ["Currency","Horseback Riding","Philosophy"],
+				"prerequisites": ["Currency","Horseback Riding","Drama and Poetry"],
 				"uniques": ["Enables Open Borders agreements"],
 				"quote": "'The only thing that saves us from the bureaucracy is its inefficiency' - Eugene McCarthy"
 			},
@@ -482,7 +488,7 @@
 	},
 	{
 		"columnNumber": 13,
-		"era": "Information era",
+		"era": "Atomic era",
 		"techCost": 5100,
 		"buildingCost": 500,
 		"wonderCost": 1250,
@@ -515,7 +521,7 @@
 	},
 	{
 		"columnNumber": 14,
-		"era": "Information era",
+		"era": "Atomic era",
 		"techCost": 6400,
 		"buildingCost": 500,
 		"wonderCost": 1250,
@@ -548,7 +554,7 @@
 	},
 	{
 		"columnNumber": 15,
-		"era": "Future era",
+		"era": "Information era",
 		"techCost": 7700,
 		"buildingCost": 750,
 		"wonderCost": 1250,
@@ -595,7 +601,7 @@
 
 	{
 		"columnNumber": 16,
-		"era": "Future era",
+		"era": "Information era",
 		"techCost": 8800,
 		"buildingCost": 750,
 		"wonderCost": 1250,
@@ -615,8 +621,14 @@
 			{
 				"name": "Nanotechnology",
 				"row": 7,
-				"prerequisites": ["Robotics","Lasers"],
+				"prerequisites": ["Robotics"],
 				"quote": "'The impact of nanotechnology is expected to exceed the impact that the electronics revolution has had on our lives.' - Richard Schwartz"
+			},
+			{
+				"name": "Stealth",
+				"row": 8,
+				"prerequisites": ["Robotics", "Lasers"],
+				"quote": "'Be extremely subtle, even to the point of formlessness, be extremely mysterious, even to the point of soundlessness. Thereby you can be the director of the opponent' state.' – Sun Tzu"
 			}
 		]
 	},
@@ -630,7 +642,7 @@
 			{
 				"name": "Future Tech",
 				"row": 5,
-				"prerequisites": ["Particle Physics", "Nuclear Fusion", "Nanotechnology"],
+				"prerequisites": ["Particle Physics", "Nuclear Fusion", "Nanotechnology", "Stealth"],
 				"uniques": ["Who knows what the future holds?", "Can be continually researched"],
 				"quote": "'I think we agree, the past is over.' - George W. Bush"
 			}

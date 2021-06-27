@@ -84,32 +84,40 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Artillery](https://thenounproject.com/search/?q=Artillery&i=1165261) By Creative Mania
 * [Ship](https://thenounproject.com/term/ship/1594793/) By Aisyah for Ironclad
 
-### Modern, Atomic and Information Eras
+### Modern Era  
 
+* [Submarine](https://thenounproject.com/search/?q=submarine&i=589519) By Hea Poh Lin, MY
 * [Helmet](https://thenounproject.com/term/helmet/25216/) By Daniel Turner for Great War Infantry
 * [Cap](https://thenounproject.com/search/?q=kepi&i=950267) By Creative Mania for Foreign Legion
-* [Tank](https://thenounproject.com/term/tank/1287510/) By corpus delicti for Landship
-* [Warship](https://thenounproject.com/term/warship/1597474/) By zidney for Destroyer
-* [Battleship](https://thenounproject.com/search/?q=battleship&i=1986807) By Vitaliy Gorbachev, KZ for Battleship
-* [Submarine](https://thenounproject.com/search/?q=submarine&i=589519) By Hea Poh Lin, MY
 * [xm8](https://thenounproject.com/term/xm8/172007/) By Xela Ub for Infantry
+* Icon for Carrier made by [JackRainy](https://github.com/JackRainy), based on [Aircraft Carrier](https://thenounproject.com/icolabs/collection/flat-icons-transport/?i=2332914) By IcoLabs, BR
+* [Battleship](https://thenounproject.com/search/?q=battleship&i=1986807) By Vitaliy Gorbachev, KZ for Battleship
 * [machine-gun](https://thenounproject.com/search/?q=machine%20gun&i=591058) By Joana Pereira for Machine Gun
 * Icon for Anti-Aircraft made by Yair Morgenstern, based on a free design
 [on Vectorstock](https://www.vectorstock.com/royalty-free-vector/flat-icon-design-collection-anti-aircraft-gun-vector-16396060)
-* [Anti-Tank Gun](https://thenounproject.com/term/anti-tank-gun/1802450/) By Tom Fricker
-* [Tank](https://thenounproject.com/search/?q=tank&i=981914) By jeff
-* [Tank](https://thenounproject.com/manueldixken/collection/german-tanks/?i=960769) Manuel Dixken, DE for Panzer
-* [APC](https://thenounproject.com/search/?q=apc&i=9965) By Luke Anthony Firth for Mechanized Infantry
-* [Missile](https://thenounproject.com/term/missile/2311325/) By Eucalyp for Mobile SAM
-* [Military vehicle](https://thenounproject.com/search/?q=Army%20rocket&i=23115) By Luke Anthony Firth For Rocket Artillery
-* [Modern Armor](https://thenounproject.com/search/?q=tank&i=218) By Public Domain Nouns for Modern Armor
-* [Manhattan Project](https://thenounproject.com/search/?q=Nuclear%20Bomb&i=2041074) By corpus delicti, GR
-* [Nuclear Missile](https://thenounproject.com/marialuisa.iborra/collection/missiles-bombs/?i=1022574) By Lluisa Iborra, ES
-* Icon for Carrier made by [JackRainy](https://github.com/JackRainy), based on [Aircraft Carrier](https://thenounproject.com/icolabs/collection/flat-icons-transport/?i=2332914) By IcoLabs, BR
+* [Tank](https://thenounproject.com/term/tank/1287510/) By corpus delicti for Landship
+* [Warship](https://thenounproject.com/term/warship/1597474/) By zidney for Destroyer
+
+### Atomic Era
+
 * [Water Gun](https://thenounproject.com/term/water-gun/2121571) by ProSymbols for Marine
 * [Parachute](https://thenounproject.com/term/parachute/2025018) by Nociconist for Paratrooper
+* [Tank](https://thenounproject.com/search/?q=tank&i=981914) By jeff for Tank
+* [Tank](https://thenounproject.com/manueldixken/collection/german-tanks/?i=960769) Manuel Dixken, DE for Panzer
+* [Anti-Tank Gun](https://thenounproject.com/term/anti-tank-gun/1802450/) By Tom Fricker
 * [atomic bomb](https://thenounproject.com/search/?q=atomic+bomb&i=3712713) by AmruID for Atomic Bomb
+* [Military vehicle](https://thenounproject.com/search/?q=Army%20rocket&i=23115) By Luke Anthony Firth For Rocket Artillery
+* [Missile](https://thenounproject.com/term/missile/2311325/) By Eucalyp for Mobile SAM
+
+### Information Era
+
+* [Submarine](https://www.flaticon.com/free-icon/submarine_1534201) by Freepik adapted for Nuclear Submarine 
+* [APC](https://thenounproject.com/search/?q=apc&i=9965) By Luke Anthony Firth for Mechanized Infantry
+* [Battleship](https://thenounproject.com/search/?q=battleship&i=3441862) by Edi Prastyo for Missile Cruiser
+* [Modern Armor](https://thenounproject.com/search/?q=tank&i=218) By Public Domain Nouns for Modern Armor
+* [Nuclear Missile](https://thenounproject.com/marialuisa.iborra/collection/missiles-bombs/?i=1022574) By Lluisa Iborra, ES
 * [Robot](https://thenounproject.com/term/robot/1182459/) by Lluisa Iborra, ES for Giant Death Robot
+
 
 ### Great People
 
@@ -275,6 +283,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Water dam](https://thenounproject.com/term/water-dam/1002726/) By Symbolon for Hydro Plant
 * [Solar panel](https://thenounproject.com/term/solar-panel/1131/) By Modik for Solar Plant
 * [Opera House Sydney](https://thenounproject.com/term/opera-house-sydney/1626283/) By Pham Duy Phuong Hung for Sydney Opera House
+* [Manhattan Project](https://thenounproject.com/search/?q=Nuclear%20Bomb&i=2041074) By corpus delicti, GR
 * [Spaceship](https://thenounproject.com/term/spaceship/1444621/) By Dinosoft Labs for Apollo Program
 * [Build](https://thenounproject.com/term/build/1156478/) By Michael G Brown for Spaceship Factory
 * [Nuclear Plant](https://thenounproject.com/term/nuclear-plant/1132340/) By Andrejs Kirma
@@ -464,6 +473,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Atom](https://thenounproject.com/term/atom/1586852/) By Kelsey Armstrong for Particle Physics
 * [Thermonuclear fusion](https://thenounproject.com/search/?q=fusion&i=3292735) by Olena Panasovska, UA for Nuclear Fusion
 * [telecommunications](https://thenounproject.com/search/?q=telecommunications&i=3191260) by Wichai Wi for Telcommunications
+* [Radar](https://thenounproject.com/term/radar/1546196/) By CINDYFLA, ID for Stealth
 * [Information Technology](https://thenounproject.com/term/information-technology/1927668/) By Vectors Markeet for Future Tech
 
 ## Terrain
