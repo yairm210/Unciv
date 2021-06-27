@@ -14,6 +14,7 @@ import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.ruleset.unit.UnitType
 import java.text.DecimalFormat
+import kotlin.math.pow
 import kotlin.random.Random
 
 /**
@@ -835,6 +836,7 @@ class MapUnit {
     fun canTransport(unit: MapUnit): Boolean {
         if (owner != unit.owner) return false
         if (!isTransportTypeOf(unit)) return false
+        if (unit.getMatchingUniques("Cannot be carried by [] units").any{matchesFilter(it.params[0])}) return false
         if (currentTile.airUnits.count { it.isTransported } >= carryCapacity(unit)) return false
         return true
     }
@@ -842,6 +844,16 @@ class MapUnit {
     fun interceptDamagePercentBonus(): Int {
         return getUniques().filter { it.placeholderText == "Bonus when intercepting []%" }
             .sumBy { it.params[0].toInt() }
+    }
+
+    fun receivedInterceptDamageFactor(): Float {
+        var damageFactor = 1f
+        for (unique in getMatchingUniques("Damage taken from interception reduced by []%"))
+            damageFactor *= 1f - unique.params[0].toFloat() / 100f
+        // Deprecated since 3.15.6
+            damageFactor *= 0.5f.pow(getUniques().count{it.text == "Reduces damage taken from interception by 50%"})
+        // End deprecation
+        return damageFactor
     }
 
     private fun getTerrainDamage() {
