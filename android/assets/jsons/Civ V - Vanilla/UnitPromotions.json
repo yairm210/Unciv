@@ -52,7 +52,7 @@
 	{
 		"name": "Extended Range",
 		"prerequisites": ["Accuracy III","Barrage III","Targeting II","Bombardment II", "Wolfpack II"],
-		"effect": "+[1] Range",
+		"effect": "[+1] Range",
 		"unitTypes": ["Ranged","Siege","WaterRanged","WaterSubmarine"]
 	},
 	{
@@ -146,14 +146,14 @@
 	{
 		"name": "Medic",
 		"prerequisites": ["Shock I", "Drill I", "Scouting II"],
-		"uniques": ["+[5] HP when healing", "All adjacent units heal [5] additional HP when healing"],
+		"uniques": ["[+5] HP when healing", "All adjacent units heal [5] additional HP when healing"],
 		"unitTypes": ["Melee","Mounted","Scout"]
 	},
 	{
 		"name": "Medic II",
 		"prerequisites": ["Medic"],
-		"uniques": ["+[5] HP when healing", "All adjacent units heal [5] additional HP when healing",
-					"+[5] HP when healing in [Foreign Land] tiles"],
+		"uniques": ["[+5] HP when healing", "All adjacent units heal [5] additional HP when healing",
+					"[+5] HP when healing in [Foreign Land] tiles"],
 		"unitTypes": ["Melee","Mounted","Scout"]
 	},
 	
@@ -342,7 +342,7 @@
 	{
 		"name": "Operational Range",
 		"prerequisites": ["Interception I", /*"Dogfighting I",*/ "Siege I", "Bombardment I"],
-		"effect": "+[2] Range",
+		"effect": "[+2] Range",
 		"unitTypes": ["Fighter","Bomber"]
 	},
 	{

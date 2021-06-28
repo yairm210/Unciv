@@ -294,7 +294,7 @@ class MapUnit {
             if (hasUnique("+1 Range")) range++
             if (hasUnique("+2 Range")) range += 2
         //
-        range += getMatchingUniques("+[] Range").sumBy { it.params[0].toInt() }
+        range += getMatchingUniques("[] Range").sumBy { it.params[0].toInt() }
         return range
     }
 
@@ -523,7 +523,7 @@ class MapUnit {
         // Deprecated since 3.15.6
             if (hasUnique("+10 HP when healing")) amountToHealBy += 10
         //
-        amountToHealBy += getMatchingUniques("+[] HP when healing").sumBy { it.params[0].toInt() }
+        amountToHealBy += getMatchingUniques("[] HP when healing").sumBy { it.params[0].toInt() }
         
         val maxAdjacentHealingBonus = currentTile.getTilesInDistance(1)
             .flatMap { it.getUnits().asSequence() }.map { it.adjacentHealingBonus() }.maxOrNull()
@@ -560,7 +560,7 @@ class MapUnit {
                 healing += 5
         //
         if (healing > 0) {
-            for (unique in getMatchingUniques("+[] HP when healing in [] tiles")) {
+            for (unique in getMatchingUniques("[] HP when healing in [] tiles")) {
                 if (tileInfo.matchesFilter(unique.params[1])) {
                     healing += unique.params[0].toInt()
                 }
