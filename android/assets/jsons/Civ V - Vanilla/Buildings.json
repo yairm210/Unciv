@@ -36,7 +36,8 @@
 		"faith": 1,
 		"cost": 40,
 		"maintenance": 1,
-		"requiredTech": "Pottery"
+		"requiredTech": "Pottery",
+		"uniques": ["Hidden when religion is disabled"]
 	},
 	{
 		"name": "Temple of Artemis",

@@ -87,7 +87,7 @@ class GameOptionsTable(val previousScreen: IPreviousScreen, val updatePlayerPick
             }
     
     private fun Table.addReligionCheckbox() =
-            addCheckbox("Religion", gameParameters.religionEnabled)
+            addCheckbox("Enable Religion", gameParameters.religionEnabled)
             { gameParameters.religionEnabled = it }
 
     private fun addCityStatesSelectBox() {
