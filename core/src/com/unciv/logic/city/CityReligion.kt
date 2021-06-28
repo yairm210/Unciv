@@ -1,12 +1,24 @@
 package com.unciv.logic.city
 
 import com.unciv.models.Counter
+import com.unciv.models.ruleset.Unique
 import kotlin.math.roundToInt
 
 class CityInfoReligionManager: Counter<String>() {
     @Transient
     lateinit var cityInfo: CityInfo
 
+    fun getUniques(): List<Unique> {
+        val majorityReligion = getMajorityReligion()
+        if (majorityReligion == null) return listOf()
+        // This should later be changed when religions can have multiple beliefs
+        return cityInfo.civInfo.gameInfo.ruleSet.beliefs[majorityReligion]!!.uniqueObjects
+    }
+    
+    fun getMatchingUniques(unique: String): List<Unique> {
+        return getUniques().filter { it.placeholderText == unique }
+    }
+    
     fun getNumberOfFollowers(): Counter<String> {
         val totalInfluence = values.sum()
         val population = cityInfo.population.population

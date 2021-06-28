@@ -257,7 +257,6 @@ class CivilizationInfo {
                 } +
                 policies.policyUniques.getUniques(uniqueTemplate) +
                 tech.getTechUniques().filter { it.placeholderText == uniqueTemplate } +
-                religionManager.getUniques().filter { it.placeholderText == uniqueTemplate } +
                 temporaryUniques.filter { it.first.placeholderText == uniqueTemplate }.map { it.first }
     }
 

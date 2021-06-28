@@ -1,6 +1,7 @@
 package com.unciv.models.ruleset
 
 import com.unciv.logic.city.CityConstructions
+import com.unciv.logic.city.CityInfo
 import com.unciv.logic.city.IConstruction
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.Counter
@@ -97,8 +98,8 @@ class Building : NamedStats(), IConstruction {
         return finalUniques
     }
 
-    fun getDescription(forBuildingPickerScreen: Boolean, civInfo: CivilizationInfo?, ruleset: Ruleset): String {
-        val stats = getStats(civInfo)
+    fun getDescription(forBuildingPickerScreen: Boolean, cityInfo: CityInfo?, ruleset: Ruleset): String {
+        val stats = getStats(cityInfo)
         val stringBuilder = StringBuilder()
         if (uniqueTo != null) stringBuilder.appendLine("Unique to [$uniqueTo], replaces [$replaces]".tr())
         if (!forBuildingPickerScreen) stringBuilder.appendLine("{Cost}: $cost".tr())
@@ -123,7 +124,7 @@ class Building : NamedStats(), IConstruction {
         if (!stats.isEmpty())
             stringBuilder.appendLine(stats.toString())
 
-        val percentStats = getStatPercentageBonuses(civInfo)
+        val percentStats = getStatPercentageBonuses(cityInfo)
         if (percentStats.production != 0f) stringBuilder.append("+" + percentStats.production.toInt() + "% {Production}\n".tr())
         if (percentStats.gold != 0f) stringBuilder.append("+" + percentStats.gold.toInt() + "% {Gold}\n".tr())
         if (percentStats.science != 0f) stringBuilder.append("+" + percentStats.science.toInt() + "% {Science}\r\n".tr())
@@ -152,8 +153,9 @@ class Building : NamedStats(), IConstruction {
         return stringBuilder.toString().trim()
     }
 
-    fun getStats(civInfo: CivilizationInfo?): Stats {
+    fun getStats(city: CityInfo?): Stats {
         val stats = this.clone()
+        val civInfo = city?.civInfo
         if (civInfo != null) {
             val baseBuildingName = getBaseBuilding(civInfo.gameInfo.ruleSet).name
 
@@ -175,13 +177,22 @@ class Building : NamedStats(), IConstruction {
             else
                 for (unique in civInfo.getMatchingUniques("[] from every Wonder"))
                     stats.add(unique.stats)
-
+            
+            if (city != null) {
+                for (unique in city.religion.getMatchingUniques("[] from every []")) {
+                    if (matchesFilter(unique.params[1])) {
+                        stats.add(unique.stats)
+                    }
+                }
+            }
         }
+        println("${name} has stats ${stats}")
         return stats
     }
 
-    fun getStatPercentageBonuses(civInfo: CivilizationInfo?): Stats {
+    fun getStatPercentageBonuses(cityInfo: CityInfo?): Stats {
         val stats = if (percentStatBonus == null) Stats() else percentStatBonus!!.clone()
+        val civInfo = cityInfo?.civInfo
         if (civInfo == null) return stats // initial stats
 
         val baseBuildingName = getBaseBuilding(civInfo.gameInfo.ruleSet).name
@@ -454,6 +465,7 @@ class Building : NamedStats(), IConstruction {
             name -> true
             "Building", "Buildings" -> !(isWonder || isNationalWonder)
             "Wonder", "Wonders" -> isWonder || isNationalWonder
+            replaces -> true
             else -> {
                 if (uniques.contains(filter)) return true
                 return false

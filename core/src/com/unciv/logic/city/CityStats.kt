@@ -264,7 +264,7 @@ class CityStats {
                 stats.add(unique.stats)
 
             // "[stats] per [amount] population [cityfilter]"
-            if (unique.placeholderText=="[] per [] population []" && cityInfo.matchesFilter(unique.params[2])) {
+            if (unique.placeholderText == "[] per [] population []" && cityInfo.matchesFilter(unique.params[2])) {
                 val amountOfEffects = (cityInfo.population.population / unique.params[1].toInt()).toFloat()
                 stats.add(unique.stats.times(amountOfEffects))
             }
@@ -509,7 +509,8 @@ class CityStats {
         citySpecificUniques: Sequence<Unique> = getCitySpecificUniques()
     ): Sequence<Unique> {
         return citySpecificUniques.filter { it.placeholderText == unique } +
-                cityInfo.civInfo.getMatchingUniques(unique).filter { cityInfo.matchesFilter(it.params[1]) }
+                cityInfo.civInfo.getMatchingUniques(unique).filter { cityInfo.matchesFilter(it.params[1]) } +
+                cityInfo.religion.getMatchingUniques(unique)
     }
 
     private fun getBuildingMaintenanceCosts(citySpecificUniques: Sequence<Unique>): Float {

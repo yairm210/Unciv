@@ -235,7 +235,9 @@ open class TileInfo {
         if (city != null) {
             val cityWideUniques = city.cityConstructions.builtBuildingUniqueMap.getUniques("[] from [] tiles in this city")
             val civWideUniques = city.civInfo.getMatchingUniques("[] from every []")
-            for (unique in cityWideUniques + civWideUniques) {
+            val religionUniques = city.religion.getMatchingUniques( "[] from every []")
+            // Should be refactored to use city.getUniquesForThisCity(), probably
+            for (unique in cityWideUniques + civWideUniques + religionUniques) {
                 val tileType = unique.params[1]
                 if (tileType == improvement) continue // This is added to the calculation in getImprovementStats. we don't want to add it twice
                 if (matchesTerrainFilter(tileType, observingCiv)
@@ -303,6 +305,13 @@ open class TileInfo {
             }
 
             for (unique in city.civInfo.getMatchingUniques("[] from every []")) {
+                if (improvement.matchesFilter(unique.params[1])) {
+                    stats.add(unique.stats)
+                }
+            }
+            // This entire function should really be refactored, all of these almost similar unique checks are really ugly.
+            // But for that, we would probably first have to generalize _all_ uniques to use cityFilters, and that might take a while
+            for (unique in city.religion.getMatchingUniques("[] from every []")) {
                 if (improvement.matchesFilter(unique.params[1])) {
                     stats.add(unique.stats)
                 }
