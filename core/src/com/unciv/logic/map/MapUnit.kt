@@ -385,8 +385,11 @@ class MapUnit {
 
     private fun adjacentHealingBonus(): Int {
         var healingBonus = 0
-        if (hasUnique("This unit and all others in adjacent tiles heal 5 additional HP per turn")) healingBonus += 5
-        if (hasUnique("This unit and all others in adjacent tiles heal 5 additional HP. This unit heals 5 additional HP outside of friendly territory.")) healingBonus += 5
+        healingBonus += getMatchingUniques("All adjacent units heal [] additional HP when healing").sumBy { it.params[0].toInt() }
+        // Deprecated since 3.15.6
+            if (hasUnique("This unit and all others in adjacent tiles heal 5 additional HP per turn")) healingBonus += 5
+            if (hasUnique("This unit and all others in adjacent tiles heal 5 additional HP. This unit heals 5 additional HP outside of friendly territory.")) healingBonus += 5
+        //
         return healingBonus
     }
 
@@ -517,7 +520,11 @@ class MapUnit {
         var amountToHealBy = rankTileForHealing(getTile())
         if (amountToHealBy == 0) return
 
-        if (hasUnique("+10 HP when healing")) amountToHealBy += 10
+        // Deprecated since 3.15.6
+            if (hasUnique("+10 HP when healing")) amountToHealBy += 10
+        //
+        amountToHealBy += getMatchingUniques("+[] HP when healing").sumBy { it.params[0].toInt() }
+        
         val maxAdjacentHealingBonus = currentTile.getTilesInDistance(1)
             .flatMap { it.getUnits().asSequence() }.map { it.adjacentHealingBonus() }.maxOrNull()
         if (maxAdjacentHealingBonus != null)
@@ -545,11 +552,20 @@ class MapUnit {
             else -> 5 // Enemy territory
         }
 
-        if (hasUnique("This unit and all others in adjacent tiles heal 5 additional HP. This unit heals 5 additional HP outside of friendly territory.")
-            && !isFriendlyTerritory
-            && healing > 0
-        )// Additional healing from medic is only applied when the unit is able to heal
-            healing += 5
+        // Deprecated since 3.15.6
+            if (hasUnique("This unit and all others in adjacent tiles heal 5 additional HP. This unit heals 5 additional HP outside of friendly territory.")
+                && !isFriendlyTerritory
+                && healing > 0
+            )// Additional healing from medic is only applied when the unit is able to heal
+                healing += 5
+        //
+        if (healing > 0) {
+            for (unique in getMatchingUniques("+[] HP when healing in [] tiles")) {
+                if (tileInfo.matchesFilter(unique.params[1])) {
+                    healing += unique.params[0].toInt()
+                }
+            }
+        }
 
         return healing
     }

@@ -132,7 +132,9 @@
 	{
 		"name": "Woodsman",
 		"prerequisites": ["Shock III","Drill III"],
-		"effect": "Double movement rate through Forest and Jungle",
+		"effect": "Double movement rate through Forest and Jungle", 
+		// This could be generalized: ["-[50]% movement costs through [Forest] tiles", "-[50]% movement costs through [Jungle] tiles"],
+		// but with how getMovementCostBetweenAdjacentTiles() is optimized, that's difficult to implement. 
 		"unitTypes": ["Melee"]
 	},
 	{
@@ -144,13 +146,14 @@
 	{
 		"name": "Medic",
 		"prerequisites": ["Shock I", "Drill I", "Scouting II"],
-		"effect": "This unit and all others in adjacent tiles heal 5 additional HP per turn",
+		"uniques": ["+[5] HP when healing", "All adjacent units heal [5] additional HP when healing"],
 		"unitTypes": ["Melee","Mounted","Scout"]
 	},
 	{
 		"name": "Medic II",
 		"prerequisites": ["Medic"],
-		"effect": "This unit and all others in adjacent tiles heal 5 additional HP. This unit heals 5 additional HP outside of friendly territory.",
+		"uniques": ["+[5] HP when healing", "All adjacent units heal [5] additional HP when healing",
+					"+[5] HP when healing in [Foreign Land] tiles"],
 		"unitTypes": ["Melee","Mounted","Scout"]
 	},
 	
