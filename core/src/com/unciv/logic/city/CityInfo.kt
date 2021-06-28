@@ -372,7 +372,7 @@ class CityInfo {
             }
         } else population.nextTurn(foodForNextTurn())
 
-        if (getRuleset().hasReligion()) religion.getAffectedBySurroundingCities()
+        if (civInfo.gameInfo.hasRelgionEnabled()) religion.getAffectedBySurroundingCities()
 
         if (this in civInfo.cities) { // city was not destroyed
             health = min(health + 20, getMaxHealth())

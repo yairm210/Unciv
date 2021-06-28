@@ -47,6 +47,7 @@ class Technology {
         val regularBuildings = enabledBuildings.filter {
             !it.isWonder && !it.isNationalWonder
                     && "Will not be displayed in Civilopedia" !in it.uniques
+                    &&  !(!viewingCiv.gameInfo.hasRelgionEnabled() && it.uniques.contains("Hidden when religion is disabled"))
         }
         if (regularBuildings.isNotEmpty()) {
             lineList += "{Buildings enabled}: "
@@ -90,6 +91,9 @@ class Technology {
 
         if (!civInfo.gameInfo.gameParameters.nuclearWeaponsEnabled)
             enabledBuildings = enabledBuildings.filterNot { it.name == "Manhattan Project" }
+        
+        if (!civInfo.gameInfo.hasRelgionEnabled())
+            enabledBuildings = enabledBuildings.filterNot { it.uniques.contains("Hidden when religion is disabled") }
 
         return enabledBuildings
     }

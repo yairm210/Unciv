@@ -31,7 +31,7 @@ class CityStatsTable(val cityScreen: CityScreen): Table() {
 
         val ministatsTable = Table()
         for ((stat, amount) in cityInfo.cityStats.currentCityStats.toHashMap()) {
-            if (stat == Stat.Faith && !cityInfo.getRuleset().hasReligion()) continue
+            if (stat == Stat.Faith && !cityInfo.civInfo.gameInfo.hasRelgionEnabled()) continue
             ministatsTable.add(ImageGetter.getStatIcon(stat.name)).size(20f).padRight(5f)
             val valueToDisplay = if (stat == Stat.Happiness) cityInfo.cityStats.happinessList.values.sum() else amount
             ministatsTable.add(round(valueToDisplay).toInt().toString().toLabel()).padRight(10f)

@@ -24,7 +24,7 @@ class CityOverviewTable(private val viewingPlayer: CivilizationInfo, private val
     }
 
     private val columnsNames = arrayListOf("Population", "Food", "Gold", "Science", "Production", "Culture", "Happiness")
-            .apply { if (viewingPlayer.gameInfo.ruleSet.hasReligion()) add("Faith") }
+            .apply { if (viewingPlayer.gameInfo.hasRelgionEnabled()) add("Faith") }
 
     init {
         val numHeaderCells = columnsNames.size + 2      // +1 City +1 Filler
