@@ -411,6 +411,8 @@ class GameInfo {
             cityConstructions.inProgressConstructions.remove(oldBuildingName)
         }
     }
+    
+    fun hasRelgionEnabled() = gameParameters.religionEnabled || ruleSet.hasReligion() // Temporary function to check whether religion should be used for this game
 }
 
 // reduced variant only for load preview
