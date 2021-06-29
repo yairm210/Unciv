@@ -722,8 +722,8 @@ class CivilizationInfo {
             Constants.medievalEra, Constants.renaissanceEra -> 250
             Constants.industrialEra -> 300
             Constants.modernEra -> 350
-            Constants.informationEra, Constants.futureEra -> 400
-            else -> 0
+            Constants.atomicEra, Constants.informationEra, Constants.futureEra -> 400
+            else -> 300
         }
         return (basicGoldCostOfSignResearchAgreement * gameInfo.gameParameters.gameSpeed.modifier).toInt()
     }

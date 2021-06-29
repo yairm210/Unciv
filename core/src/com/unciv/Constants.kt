@@ -76,6 +76,7 @@ object Constants {
     const val medievalEra = "Medieval era"
     const val renaissanceEra = "Renaissance era"
     const val industrialEra = "Industrial era"
+    const val atomicEra = "Atomic era"
     const val modernEra = "Modern era"
     const val informationEra = "Information era"
     const val futureEra = "Future era"
