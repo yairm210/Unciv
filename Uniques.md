@@ -504,8 +504,6 @@ These last two uniques may seem like they only have a one-time effect. However, 
 
 "Self-destructs when attacking" - for single use units, like missiles
 
-"[amount]% chance to intercept air attacks"
-
 "Penalty vs (unitName/unitType) 33%"
 
 "Bonus for units in 2 tile radius 15%"
@@ -524,9 +522,11 @@ These last two uniques may seem like they only have a one-time effect. However, 
 
 "Can attack submarines"
 
-"Can carry [amount] [unitFilter] units" - only Air & Missile units can be carried
+"Can carry [amount] [unitFilter] units" - Currently, only Air & Missile units can be carried
 
-"Can carry [amount] extra [unitFilter] units" - only Air & Missile units can be carried
+"Can carry [amount] extra [unitFilter] units" - Currently, only Air & Missile units can be carried
+
+"Cannot be carried by [unitFilter] units" - Currently, only Air & Missile units can be carried, and only Carrier units can carry them
 
 "Invisible to others"
 
@@ -534,11 +534,15 @@ These last two uniques may seem like they only have a one-time effect. However, 
 
 "Not displayed as an available construction without [resourceName/buildingName]"
 
+"[amount]% chance to intercept air attacks"
+
+"Damage taken from interception reduced by [amount]%"
+
+"Cannot be intercepted"
+
 "Nuclear weapon of Strength [amount]" - Amount should be 1 or 2. 1 is effectively an atomic bomb, 2 is a nuclear missile in the base game
 
 "Blast radius [amount]" - Amount is the radius of the blast of a nuke
-
-"Cannot be intercepted"
 
 # Terrain uniques
 
@@ -561,7 +565,7 @@ These last two uniques may seem like they only have a one-time effect. However, 
 
 
 # Deprecated Uniques
-These uniques have been recently deprecated. While they are still supported, they should be fased out of mods, as we will remove support for them in the future.
+These uniques have been recently deprecated. While they are still supported, they should be phased out of mods, as we will remove support for them in the future. Deprecated uniques are usually replaced with a more generic version that can be used in their place. These replacements are noted here as well.
 
 "[stats] Per [amount] Population in this city" - Replaced with "[stats] per [amount] population [cityFilter]"
 
@@ -614,3 +618,7 @@ These uniques have been recently deprecated. While they are still supported, the
 "Can carry 2 aircraft" - Replaced with "Can carry [amount] [unitFilter] units"
 
 "Can carry 1 extra aircraft" - Replaced with "Can carry [amount] extra [unitFilter] units"
+
+"Reduces damage taken from interception by 50%" - Replaced with "Damage taken from interception reduced by [amount]%"
+
+"Can not be intercepted" - Replaced with "Cannot be intercepted"
