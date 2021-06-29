@@ -578,14 +578,20 @@ object Battle {
     }
 
     private fun tryInterceptAirAttack(attacker: MapUnitCombatant, defender: ICombatant) {
-        if (attacker.unit.hasUnique("Can not be intercepted")) return
+        if (attacker.unit.hasUnique("Cannot be intercepted")) return
+        // Deprecated since 3.15.6
+            if (attacker.unit.hasUnique("Can not be intercepted")) return
+        // End deprecation
         val attackedTile = defender.getTile()
         for (interceptor in defender.getCivInfo().getCivUnits().filter { it.canIntercept(attackedTile) }) {
             if (Random().nextFloat() > 100f / interceptor.interceptChance()) continue
 
             var damage = BattleDamage.calculateDamageToDefender(MapUnitCombatant(interceptor), null, attacker)
-            damage += damage * interceptor.interceptDamagePercentBonus() / 100
-            if (attacker.unit.hasUnique("Reduces damage taken from interception by 50%")) damage /= 2
+
+            var damageFactor = 1f + interceptor.interceptDamagePercentBonus().toFloat() / 100f
+            damageFactor *= attacker.unit.receivedInterceptDamageFactor()
+
+            damage = (damage.toFloat() * damageFactor).toInt()
 
             attacker.takeDamage(damage)
             interceptor.attacksThisTurn++

@@ -117,11 +117,11 @@ class BaseUnit : INamed, IConstruction {
             if (matchesFilter(unique.params[0]))
                 cost *= 1f - unique.params[1].toFloat() / 100f
         }
-        
+
         // Deprecated since 3.15
             if (civInfo.hasUnique("Gold cost of purchasing units -33%")) cost *= 0.67f
         //
-        
+
         for (unique in civInfo.getMatchingUniques("Cost of purchasing items in cities reduced by []%"))
             cost *= 1f - (unique.params[0].toFloat() / 100f)
         return (cost / 10).toInt() * 10 // rounded down to nearest ten
@@ -249,7 +249,8 @@ class BaseUnit : INamed, IConstruction {
             "Water", "water units", "Water units" -> unitType.isWaterUnit()
             "Air", "air units" -> unitType.isAirUnit()
             "Missile" -> unitType.isMissile()
-            "non-air" -> !unitType.isAirUnit()
+            "Submarine", "submarine units" -> unitType == UnitType.WaterSubmarine
+            "non-air" -> !unitType.isAirUnit() && !unitType.isMissile()
             "Military", "military units" -> unitType.isMilitary()
             "Nuclear Weapon" -> isNuclearWeapon()
             // Deprecated as of 3.15.2
@@ -262,10 +263,10 @@ class BaseUnit : INamed, IConstruction {
     }
 
     fun isGreatPerson() = uniqueObjects.any { it.placeholderText == "Great Person - []" }
-    
+
     // "Nuclear Weapon" unique deprecated since 3.15.4
     fun isNuclearWeapon() = uniqueObjects.any { it.placeholderText == "Nuclear Weapon" || it.placeholderText == "Nuclear Weapon of strength []" }
-    
+
     fun movesLikeAirUnits() = unitType.isAirUnit() || unitType.isMissile()
 
     override fun getResourceRequirements(): HashMap<String, Int> {

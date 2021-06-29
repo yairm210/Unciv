@@ -32,6 +32,14 @@
 		"requiredTech": "Pottery"
 	},
 	{
+		"name": "Shrine",
+		"faith": 1,
+		"cost": 40,
+		"maintenance": 1,
+		"requiredTech": "Pottery",
+		"uniques": ["Hidden when religion is disabled"]
+	},
+	{
 		"name": "Temple of Artemis",
 		"culture": 1,
 		"isWonder": true,
@@ -257,38 +265,18 @@
 		"quote": "'Regard your soldiers as your children, and they will follow you into the deepest valleys; look on them as your own beloved sons, and they will stand by you even unto death.'  - Sun Tzu"
 	},
 	// Column 4
+	/*
+	// Temple and its replacements are religious buildings in G&K
 	{
 		"name": "Temple",
-		"culture": 3,
-		"specialistSlots": {"Artist": 1},
-		"requiredBuilding": "Monument",
+		"faith": 2,
+		"requiredBuilding": "Shrine",
 		"maintenance": 2,
 		"hurryCostModifier": 25,
-		"requiredTech": "Philosophy"
+		"requiredTech": "Philosophy",
+		"uniques": ""
 	},
-	{
-		"name": "Burial Tomb",
-		"replaces": "Temple",
-		"uniqueTo": "Egypt",
-		"uniques": ["Doubles Gold given to enemy if city is captured"],
-		"culture": 2,
-		"happiness": 2,
-		"specialistSlots": {"Artist": 1},
-		"requiredBuilding": "Monument",
-		"hurryCostModifier": 25,
-		"requiredTech": "Philosophy"
-	},
-	{
-		"name": "Mud Pyramid Mosque",
-		"replaces": "Temple",
-		"uniqueTo": "Songhai",
-		"maintenance": 0,
-		"specialistSlots": {"Artist": 1},
-		"hurryCostModifier": 25,
-		"culture": 4,
-		"requiredBuilding": "Monument",
-		"requiredTech": "Philosophy"
-	},
+	*/
 	{
 		"name": "National College",
 		"cost": 125,
@@ -300,14 +288,6 @@
 		"requiredTech": "Philosophy"
 	},
 	{
-		"name": "National Epic",
-		"cost": 125,
-		"culture": 1,
-		"isNationalWonder": true,
-		"uniques": ["Requires a [Monument] in all cities", "+[25]% great person generation in this city", "Cost increases by [30] per owned city"],
-		"requiredTech": "Philosophy"
-	},
-	{
 		"name": "The Oracle",
 		"culture": 3,
 		"greatPersonPoints": {"science": 1},
@@ -315,6 +295,62 @@
 		"uniques": ["Free Social Policy"],
 		"requiredTech": "Philosophy",
 		"quote": "'The ancient Oracle said that I was the wisest of all the Greeks. It is because I alone, of all the Greeks, know that I know nothing'  - Socrates"
+	},
+	{
+		"name": "Amphitheater",
+		"culture": 3,
+		"specialistSlots": {"Artist": 1},
+		"requiredBuilding": "Monument",
+		"maintenance": 2,
+		"hurryCostModifier": 25,
+		"requiredTech": "Drama and Poetry"
+	},
+	{
+		"name": "Burial Tomb",
+		"replaces": "Amphitheater",
+		"uniqueTo": "Egypt",
+		"uniques": ["Doubles Gold given to enemy if city is captured"],
+		"culture": 2,
+		"happiness": 2,
+		"specialistSlots": {"Artist": 1},
+		"requiredBuilding": "Monument",
+		"hurryCostModifier": 25,
+		"requiredTech": "Drama and Poetry"
+		// In Vanilla, this replaces Temple and requires Philosophy and a Monument.
+		// In G&K, this still replaces Temple and requires Philosophy, but becomes a faith building
+		// (alongside Temple) and thus requires a Shrine instead of a Monument.
+		// Since faith is not yet implemented, but G&K's Drama and Poetry (which provides the
+		// Amphiteater, a building with the properties of the vanilla Temple) is, this building
+		// temporarily replaces Drama and Poetry and requires a Monument while having its Vanilla
+		// stats, so it's a mish-mash of vanilla and G&K. It should be changed when faith is
+		// implemented.
+	},
+	{
+		"name": "Mud Pyramid Mosque",
+		"replaces": "Amphitheater",
+		"uniqueTo": "Songhai",
+		"maintenance": 0,
+		"specialistSlots": {"Artist": 1},
+		"hurryCostModifier": 25,
+		"culture": 4,
+		"requiredBuilding": "Monument",
+		"requiredTech": "Drama and Poetry"
+		// In Vanilla, this replaces Temple and requires Philosophy and a Monument.
+		// In G&K, this still replaces Temple and requires Philosophy, but becomes a faith building
+		// (alongside Temple) and thus requires a Shrine instead of a Monument.
+		// Since faith is not yet implemented, but G&K's Drama and Poetry (which provides the
+		// Amphiteater, a building with the properties of the vanilla Temple) is, this building
+		// temporarily replaces Drama and Poetry and requires a Monument while having its Vanilla
+		// stats, so it's a mish-mash of vanilla and G&K. It should be changed when faith is
+		// implemented.
+	},
+	{
+		"name": "National Epic",
+		"cost": 125,
+		"culture": 1,
+		"isNationalWonder": true,
+		"uniques": ["Requires a [Monument] in all cities", "+[25]% great person generation in this city", "Cost increases by [30] per owned city"],
+		"requiredTech": "Drama and Poetry"
 	},
 	{
 		"name": "Market",
@@ -608,7 +644,7 @@
 		"culture": 4,
 		"specialistSlots": {"Artist": 1},
 		"hurryCostModifier": 10,
-		"requiredBuilding": "Temple",
+		"requiredBuilding": "Amphitheater",
 		"maintenance": 2,
 		"requiredTech": "Acoustics"
 	},
@@ -934,7 +970,7 @@
 		"quote": "'Come to me, all who labor and are heavy burdened, and I will give you rest.'  - New Testament, Matthew 11:28"
 	},
 
-	// Information Era
+	// Atomic Era
 
 	// Column 13
 	{
@@ -998,7 +1034,7 @@
 		"requiredTech": "Rocketry"
 	},
 
-	// Future Era
+	// Information Era
 
 	// Column 15
 	{
