@@ -17,7 +17,7 @@ import java.util.*
 import kotlin.collections.ArrayList
 
 
-class TechPickerScreen(internal val civInfo: CivilizationInfo, centerOnTech: Technology? = null) : PickerScreen() {
+class TechPickerScreen(internal val civInfo: CivilizationInfo, centerOnTech: Technology? = null, freeTechPick: Boolean = false) : PickerScreen() {
 
     private var techNameToButton = HashMap<String, TechButton>()
     private var isFreeTechPick: Boolean = false
@@ -46,13 +46,9 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo, centerOnTech: Tec
 
 
     private val turnsToTech = civInfo.gameInfo.ruleSet.technologies.values.associateBy({ it.name }, { civTech.turnsToTech(it.name) })
-
-    constructor(freeTechPick: Boolean, civInfo: CivilizationInfo) : this(civInfo) {
-        isFreeTechPick = freeTechPick
-    }
-
-
+    
     init {
+        isFreeTechPick = freeTechPick
         setDefaultCloseAction()
         onBackButtonClicked { UncivGame.Current.setWorldScreen() }
         scrollPane.setOverscroll(false, false)
