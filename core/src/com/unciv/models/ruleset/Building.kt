@@ -245,7 +245,7 @@ class Building : NamedStats(), IConstruction {
         return rejectionReason == ""
                 || rejectionReason.startsWith("Requires")
                 || rejectionReason.startsWith("Consumes")
-                || rejectionReason == "Wonder is being built elsewhere"
+                || rejectionReason.endsWith("Wonder is being built elsewhere")
     }
 
     fun getRejectionReason(construction: CityConstructions): String {
@@ -283,6 +283,7 @@ class Building : NamedStats(), IConstruction {
             "Can only be built in annexed cities" -> if (construction.cityInfo.isPuppet || construction.cityInfo.foundingCiv == ""
                     || construction.cityInfo.civInfo.civName == construction.cityInfo.foundingCiv) return unique.text
             "Obsolete with []" -> if (civInfo.tech.isResearched(unique.params[0])) return unique.text
+            "Hidden when religion is disabled" -> if (!civInfo.gameInfo.hasRelgionEnabled()) return unique.text
         }
 
         if (uniqueTo != null && uniqueTo != civInfo.civName) return "Unique to $uniqueTo"

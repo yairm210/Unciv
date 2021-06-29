@@ -119,7 +119,7 @@ open class Stats() {
         private val statRegex = Regex(statRegexPattern)
         private val entireStringRegexPattern = Regex("$statRegexPattern(, $statRegexPattern)*")
         fun isStats(string:String): Boolean {
-            if (string[0] != '+' && string[0] != '-') return false // very quick negative check before the heavy Regex
+            if (string.isEmpty() || string[0] !in "+-") return false // very quick negative check before the heavy Regex
             return entireStringRegexPattern.matches(string)
         }
         fun parse(string:String):Stats{
