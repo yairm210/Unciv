@@ -145,7 +145,7 @@
 	},
 	{
 		"name": "Medic",
-		"prerequisites": ["Shock I", "Drill I", "Scouting II"],
+		"prerequisites": ["Shock I", "Drill I", "Scouting II", "Survivalism II"],
 		"uniques": ["[+5] HP when healing", "All adjacent units heal [5] additional HP when healing"],
 		"unitTypes": ["Melee","Mounted","Scout"]
 	},
@@ -173,6 +173,22 @@
 		"name": "Scouting III",
 		"prerequisites": ["Scouting I"],
 		"effect": "[+1] Movement",
+		"unitTypes": ["Scout"]
+	},
+	
+	{
+		"name": "Survivalism I",
+		"uniques": ["[+5] HP when healing in [Foreign Land] tiles", "+[25]% Strength when defending"],
+		"unitTypes": ["Scout"]
+	},
+	{
+		"name": "Survivalism II",
+		"uniques": ["[+5] HP when healing in [Foreign Land] tiles", "+[25]% Strength when defending"],
+		"unitTypes": ["Scout"]
+	},
+	{
+		"name": "Survivalism III",
+		"uniques": ["Unit will heal every turn, even if it performs an action", "May withdraw before melee ([75]%)"], // This number is not based on any source
 		"unitTypes": ["Scout"]
 	},
 	
