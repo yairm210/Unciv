@@ -23,6 +23,7 @@
   * [Combat bonuses](#combat-bonuses)
   * [Other](#other)
 - [Terrain uniques](#terrain-uniques)
+- [Deprecated uniques](#deprecated-uniques)
 
 
 ## Overview
@@ -53,8 +54,8 @@ Parameters come in various types, and will be addressed as such inside the [squa
 
 - amount - This indicates a whole, (usually) positive number, like "2" or "13".
 - unitName, buildingName, improvementName etc - Rather self explanatory. Examples: "Warrior", "Library', and "Mine", accordingly.
-- stat - This is one of the 6 major stats in the game - "Gold", "Science", "Production", "Food", "Happiness" and "Culture". Note that the stat names need to be capitalized!
-- stats, tileFilter, unitFilter, cityFilter - these are more complex and are addressed individually
+- stat - This is one of the 7 major stats in the game - "Gold", "Science", "Production", "Food", "Happiness", "Culture" and "Faith". Note that the stat names need to be capitalized!
+- stats, tileFilter, unitFilter, cityFilter, constructionFilter - these are more complex and are addressed individually
 
 #### stats
 
@@ -65,15 +66,20 @@ For example: "+1 Science".
 
 These can be strung together with ", " between them, for example: "+2 Production, +3 Food".
 
+A full example would be, for the "[stats] from every [buildingName]" unique:
+
+"[+1 Culture, +1 Gold] from every [Baracks]"
+
 #### tileFilter
 
-tilefilters allow us to specify tiles according to a number of different aspects:
+TileFilters are split up into two parts: terrainFilters and improvementFilters. TerrainFilters only check if the tile itself has certain charactaristics, while the improvementFilters only checks the improvement on a tile. Using the tileFilter itself will check both of these.
+
+terrainFilters allow us to specify tiles according to a number of different aspects:
 
 - Base terrain
 - Terrain features
 - Base terrain uniques
 - Terrain feature uniques
-- Tile improvements
 - Resource
 - "Water", "Land"
 - "River" (as in all 'river on tile' contexts, it means 'adjacent to a river on at least on side')
@@ -90,19 +96,30 @@ Please note that using resources is most use cases, but not in combat ones.
 
 This is due to the fact that resources can be visible to some civs while invisible to others - so if you're attacking with a +10% combat bonus from Coal, while the enemy can't see coal, it could get weird.
 
+improvementFilters only check for the improvements on a tile. The following are implemented:
+- improvement name
+- "All"
+- "Great Improvements", "Great"
+- "All Road" - for Rodas & Railroads
+
 #### unitFilter
 
 unitFilters allow us to activate uniques for specific units, based on:
 
 - unit name
-- unit type
+- unit type - e.g. Melee, Ranged, WaterSubmarine, etc.
 - "Land", "Water", "Air"
-- "non-air" for non-air units
-- "Military" for military units
-- "All", as a catch all for all units.
+- "land units", "water units", "air units"
+- "non-air" for non-air non-missile units
+- "Military", "military units"
+- "All"
+- "Missile"
+- "Submarine", "submarine units"
+- "Nuclear Weapon"
 - "Embarked"
-- "Wounded"
-- Any combination of the above (will match only if all match). The format is "{filter1} {filter2}" and can match any number of filters. For example:"[{Military} {Water}]" units, "[{Wounded} {Armor}]" units, etc.
+- "Wounded", "wounded units"
+- "Barbarians", "Barbarian"
+- Any combination of the above (will match only if all match). The format is "{filter1} {filter2}" and can match any number of filters. For example: "[{Military} {Water}]" units, "[{Wounded} {Armor}]" units, etc.
 
 #### cityFilter
 
@@ -112,6 +129,7 @@ cityFilters allow us to choose the range of cities affected by this unique:
 - "in all cities"
 - "in all coastal cities"
 - "in capital"
+- "in all non-occupied cities" - all cities that are not puppets and don't have extra unhappiness from being recently conquered
 - "in all cities with a world wonder"
 - "in all cities connected to capital"
 - "in all cities with a garrison"
@@ -150,8 +168,6 @@ For units, the UnitFilter is called. For Buildings, the following options are im
 
 "[stats] from each Trade Route"
 
-"[stats] per [amount] population [cityFilter]"
-
 "+[amount]% [stat] while the empire is happy"
 
 "Specialists only produce [amount]% of normal unhappiness"
@@ -180,18 +196,21 @@ For units, the UnitFilter is called. For Buildings, the following options are im
 
 "Triggers victory"
 
-"Allied City-States will occasionally gift Great People"
+"Allied City-States will occasionally gift Great People" - This will start a timer for the player with this unique, which grants a free great person every 25-60 turns (based on game speed), as long as they are allied to at least one city-state. 
 
 "[amount] population [cityfilter]" - e.g.: [-2] population [in all cities]
+
+"Triggers a global alert" - Can only be used as a unique for a policy. All players receive the following notification: "[civilizationName] has adopted the [policyName] policy"
+
+"Triggers the following global alert: [param1]" - Can only be used as a unique for a policy. [param1] can be any sentence. All player receive the following notification: 
+"[civilizationName] has adopted the [policyName] policy 
+[param1]"
 
 ### Unit-affecting uniques
 
 "+[amount] Movement for all [unitFilter] units"
 
-"+[amount]% Strength for units fighting in [landFilter]" - where landFilter is one of
-- Last terrain name (as in: Plains+Forest is considered Forest, not Plains)
-- "Friendly Land", for land under your control, or under friendly city-state / major civ with open borders
-- "Foreign Land", for all non-friendly land
+"+[amount]% Strength for units fighting in [tileFilter]"
 
 "+[amount] Sight for all [unitFilter] units"
 
@@ -209,6 +228,14 @@ For units, the UnitFilter is called. For Buildings, the following options are im
 
 "[unitFilter] units gain the [promotionName] promotion"
 
+"[amount] units cost no maintenance"
+
+"-[amount]% unit upkeep costs"
+
+"Gold cost of purchasing [unitFilter] units -[amount]%"
+
+"+[amount]% attack strength to all [unitFilter] units for [amount] turns"
+
 ### City-state related uniques
 
 "City-State Influence degrades [amount]% slower"
@@ -217,7 +244,7 @@ For units, the UnitFilter is called. For Buildings, the following options are im
 
 "Resting point for Influence with City-States is increased by [amount]"
 
-"Allied City-States provide [] equal to []% of what they produce for themselves"
+"Allied City-States provide [stat] equal to [amount]% of what they produce for themselves"
 
 "Quantity of Resources gifted by City-States increased by [amount]%"
 
@@ -227,9 +254,9 @@ For units, the UnitFilter is called. For Buildings, the following options are im
 
 "City-State Influence recovers at twice the normal rate"
 
-"Militaristic City-States grant units [amount] times as fast when you are at war with a common nation" [Pending #4158]
+"Militaristic City-States grant units [amount] times as fast when you are at war with a common nation"
 
-"Influence of all other civilizations with all city-states degrades []% faster"
+"Influence of all other civilizations with all city-states degrades [amount]% faster"
 
 ### Other
 
@@ -283,7 +310,7 @@ For units, the UnitFilter is called. For Buildings, the following options are im
 
 "Maintenance on roads & railroads reduced by [amount]%"
 
-"Gold cost of upgrading military units reduced by 33%"
+"Gold cost of upgrading [unitFilter] units reduced by [amount]%"
 
 "Great General provides double combat bonus"
 
@@ -291,11 +318,13 @@ For units, the UnitFilter is called. For Buildings, the following options are im
 
 "Earn [amount]% of killed [unitFilter] unit's [param1] as [param2]" - param1 accepts "Cost" or "Strength", param2 accepts "Culture", "Science", "Gold" and "Faith". For example, "Earn [100]% of killed [Military] unit's [Strength] as [Culture]", "Earn [10]% of killed [Military] unit's [Cost] as [Gold]". This can also be applied directly to a unit (as a unique or as a promotion effect).
 
+"Upon capturing a city, receive [amount] times its [stat] production as [param1] immediately" - param1 accepts "Culture", "Science", "Gold" and "Faith".
+
 "-[amount]% maintenance cost for buildings [cityFilter]"
 
-"Immediately creates the cheapest available cultural building in each of your first [amount] cities for free"
+"Immediately creates the cheapest available cultural building in each of your first [amount] cities for free" - If more than one unique is found, the [amounts] off all uniques are added together to find the amound of cities that should receive a free culture building. No city will receive more than 1 culture building from multiple copies of this unique.
 
-"Immediately creates a [buildingName] in each of your first [amount] cities for free"
+"Immediately creates a [buildingName] in each of your first [amount] cities for free" - If more than one unique is found, the [amounts] off all uniques are added together to find the amound of cities that should receive a free [buildingName]. No city will receive more than 1 [buildingName] from multiple copies of this unique.
 
 These last two uniques may seem like they only have a one-time effect. However, the 'free' also means that you don't pay any maintenance costs for these buildings. 
 
@@ -304,6 +333,8 @@ These last two uniques may seem like they only have a one-time effect. However, 
 "+[amount]% defensive strength for cities"
 
 "+[amount] happiness from each type of luxury resource"
+
+"Quantity of Resources gifted by City-States increased by [amount]%"
 
 ## Buildings-only
 
@@ -327,9 +358,19 @@ These last two uniques may seem like they only have a one-time effect. However, 
 
 "Unsellable"
 
+"Triggers a global alert upon build start"
+
+"Triggers a global alert upon completion"
+
+"Triggers a Cultural Victory upon completion"
+
+"Hidden when cultural victory is disabled"
+
+"Population loss from nuclear attacks -[amount]%"
+
 ### Stat uniques
 
-"[stats] Per [amount] Population in this city" - provides the given stats for every [amount] of population. For instance, "[+2 Science] Per [2] Population in this city" would provide only 4 Science in a city with 5 population - since there are only 2 'sets' of 2 population in the city, each providing 2 Science.
+"[stats] per [amount] population [cityFilter]" - provides the given stats for every [amount] of population. For instance, "[+2 Science] Per [2] Population in this city" would provide only 4 Science in a city with 5 population - since there are only 2 'sets' of 2 population in the city, each providing 2 Science.
 
 "[stats] from [tileFilter] tiles in this city" - Adds the given stats to the yield of tiles matching the filter. The yield is still received by the tiles being worked - so even if you have 5 such tiles, but none of them are worked, the city will remain unaffected.
 
@@ -339,7 +380,7 @@ These last two uniques may seem like they only have a one-time effect. However, 
 
 "Consumes [amount] [resourceName]" - Acts like the requiredResource field, but can be added multiple times to the same building and with varying amounts. Buildings will require the resources to be constructed, and will continue to consume them as long as the building exists.
 
-"Must be on [tileFilter]", "Must not be on [tileFilter]" - limits the buildings that can be built in a city according the the tile type that the city center is built on.
+"Must be on [terrainFilter]", "Must not be on [terrainFilter]" - limits the buildings that can be built in a city according the the tile type that the city center is built on.
 
 "Must be next to [tileFilter]", "Must not be next to [tileFilter]" - Same. In addition to the regular tileFilter options, accepts "Fresh water" as an option, which includes river-adjacent tiles on top of lake-adjacent tiles (which is merely a consequence of Lakes having a 'Fresh water' uniques and tileFilter accepting Base Terrain uniques)
 
@@ -350,6 +391,10 @@ These last two uniques may seem like they only have a one-time effect. However, 
 "Can only be built in annexed cities"
 
 "Obsolete with [techName]" - Building cannot be built once the tech is researched
+
+"Hidden until [amount] social policy branches have been completed"
+
+"Hidden when religion is disabled" - Also hides the building from the tech tree. 
 
 ## Improvement uniques
 
@@ -377,7 +422,7 @@ These last two uniques may seem like they only have a one-time effect. However, 
 
 ### Civilian
 
-"Can build improvements on tiles"
+"Can build [improvementFilter] improvements on tiles"
 
 "May create improvements on water resources"
 
@@ -423,6 +468,8 @@ These last two uniques may seem like they only have a one-time effect. However, 
 
 "No movement cost to pillage"
 
+"May Paradrop up to [amount] tiles from inside friendly territory"
+
 ### Healing
 
 "+10 HP when healing"
@@ -443,6 +490,10 @@ These last two uniques may seem like they only have a one-time effect. However, 
 
 "+[amount]% Strength for [unitFilter] units which have another [unitFilter] unit in an adjacent tile"
 
+"Eliminates combat penalty for attacking over a river"
+
+"Eliminates combat penalty for attacking from the sea"
+
 ### Other
 
 "1 additional attack per turn"
@@ -450,8 +501,6 @@ These last two uniques may seem like they only have a one-time effect. However, 
 "+1 Range"
 
 "+2 Range"
-
-
 
 "Self-destructs when attacking" - for single use units, like missiles
 
@@ -475,13 +524,13 @@ These last two uniques may seem like they only have a one-time effect. However, 
 
 "Can attack submarines"
 
-"Can carry 2 aircraft"
+"Can carry [amount] [unitFilter] units" - only Air & Missile units can be carried
+
+"Can carry [amount] extra [unitFilter] units" - only Air & Missile units can be carried
 
 "Invisible to others"
 
 "Can only attack water"
-
-"Gold cost of upgrading [unitFilter] units reduced by [amount]%"
 
 "Not displayed as an available construction without [resourceName/buildingName]"
 
@@ -508,3 +557,60 @@ These last two uniques may seem like they only have a one-time effect. However, 
 "Resistant to nukes" - Tiles with features with this unique have only a 25% change to be filled with fallout instead of 50%
 
 "Can be destroyed by nukes" - Features with this unique will be removed when fallout is placed on this tile
+
+
+
+# Deprecated Uniques
+These uniques have been recently deprecated. While they are still supported, they should be fased out of mods, as we will remove support for them in the future.
+
+"[stats] Per [amount] Population in this city" - Replaced with "[stats] per [amount] population [cityFilter]"
+
+"Immediately creates a cheapest available cultural building in each of your first 4 cities for free" - Replaced with "Immediately creates the cheapest available cultural building in each of your first [amount] cities for free"
+
+"+50% attacking strength for cities with garrisoned units" - Replaced with "+[amount]% attacking strength for cities with garrisoned units"
+
+"Worker construction increased 25%" - Replaced with "-[amount]% tile improvement construction time"
+
+"Tile improvement speed +25%" - Replaced with "-[amount]% tile improvement construction time"
+
+"+25% bonus vs Barbarians" - Replaced with "+[amount]% Strength vs [unitFilter]"
+
+"+15% combat strength for melee units which have another military unit in an adjacent tile" - Replaced with "+[amount]% Strength for [unitFilter] units which have another [unitFilter] unit in an adjacent tile"
+
+"Gold cost of upgrading military units reduced by 33%" - Replaced with "Gold cost of upgrading [unitFilter] units reduced by [amount]%"
+
+"All military naval units receive +1 movement and +1 sight" - Replaced with "+[amount] Movement for all [unitFilter] units" and "+[amount] Sight for all [unitFilter] units"
+
+"+1 happiness from each type of luxury resource" - Replaced with "+[amount] happiness from each type of luxury resource"
+
+"+15% science while the empire is happy" - Replaced with "+[amount]% [stat] while the empire is happy"
+
+"Science gained from research agreements +50%" - Replaced with "Science gained from research agreements +[amount]%"
+
+"Specialists only produce half normal unhappiness" - Replaced with "Specialists only produce [amount]% of normal unhappiness"
+
+"-50% food consumption by specialists" - Replaced with "-[amount]% food consumption by specialists"
+
+"-33% unit upkeep costs" - Replaced with "-[amount]% unit upkeep costs"
+
+"Tile yield from Great Improvements +100%" - Replaced with "+[amount]% yield from [improvementFilter]"
+
+"Quantity of Resources gifted by City-States increased by 100%" - Replaced with "Quantity of Resources gifted by City-States increased by [amount]%"
+
+"Gold cost of purchasing units -33%" - Replaced with "Gold cost of purchasing [unitFilter] units -[amount]%"
+
+"+[amount]% Strength for units fighting in [tileFilter]"- Replaced with "+[amount]% Strength for units fighting in [tileFilter]"
+
+"-[]% building maintenance costs []" - Replaced with "-[]% maintenance cost for buildings []"
+
+"Allied City-States provide Science equal to [amount]% of what they produce for themselves" - Replaced with "Allied City-States provide [stat] equal to [amount]% of what they produce for themselves"
+
+"+1 population in each city" - Replaced with "[amount] population [cityFilter]"
+
+"Can build improvements on tiles" - Replaced with "Can build [improvementFilter] improvements on tiles"
+
+"Can construct roads" - Replaced with "Can build [improvementFilter] improvements on tiles"
+
+"Can carry 2 aircraft" - Replaced with "Can carry [amount] [unitFilter] units"
+
+"Can carry 1 extra aircraft" - Replaced with "Can carry [amount] extra [unitFilter] units"
