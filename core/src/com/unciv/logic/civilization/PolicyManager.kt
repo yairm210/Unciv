@@ -77,6 +77,7 @@ class PolicyManager {
         // Deprecated since 3.14.17, left for backwards compatibility
             if (cultureBuildingsAdded.isEmpty() && legalismState.isNotEmpty()) {
                 cultureBuildingsAdded.putAll(legalismState)
+                legalismState.clear()
             }
         //
         
@@ -129,11 +130,18 @@ class PolicyManager {
 
     fun isAdopted(policyName: String): Boolean = adoptedPolicies.contains(policyName)
 
-    fun isAdoptable(policy: Policy): Boolean {
+    /**
+     * Test whether a policy is adoptable according to the RuleSet (ignoring cost).
+     * Note: branch completion policies are automatic and therefore not adoptable in this test.
+     * @param policy The Policy to check
+     * @param checkEra Include era test (with false the function returns whether the policy is adoptable now or in the future)
+     * @return `true` if the policy can be adopted, `false` if some rule prevents it (including when it's already adopted) 
+     */
+    fun isAdoptable(policy: Policy, checkEra: Boolean = true): Boolean {
         if (isAdopted(policy.name)) return false
         if (policy.name.endsWith("Complete")) return false
         if (!getAdoptedPolicies().containsAll(policy.requires!!)) return false
-        if (civInfo.gameInfo.ruleSet.getEraNumber(policy.branch.era) > civInfo.getEraNumber()) return false
+        if (checkEra && civInfo.gameInfo.ruleSet.getEraNumber(policy.branch.era) > civInfo.getEraNumber()) return false
         if (policy.uniqueObjects.any { it.placeholderText == "Incompatible with []" && adoptedPolicies.contains(it.params[0]) }) return false
         return true
     }
