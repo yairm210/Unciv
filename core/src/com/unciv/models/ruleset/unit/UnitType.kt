@@ -9,6 +9,7 @@ enum class UnitType{
     Mounted,
     Armor,
     Siege,
+    MountedRanged,
 
     WaterCivilian,
     WaterMelee,
@@ -28,9 +29,14 @@ enum class UnitType{
                 || this == Scout
                 || this == WaterMelee
 
+    fun isMounted() =
+                this == Mounted
+                || this == MountedRanged
+        
     fun isRanged() =
                 this == Ranged
                 || this == Siege
+                || this == MountedRanged
                 || this == WaterRanged
                 || this == WaterSubmarine
                 || this == WaterAircraftCarrier
@@ -42,6 +48,7 @@ enum class UnitType{
                 this == Civilian
                 || this == Melee
                 || this == Mounted
+                || this == MountedRanged
                 || this == Armor
                 || this == Scout
                 || this == Ranged
