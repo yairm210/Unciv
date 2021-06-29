@@ -262,8 +262,17 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo, centerOnTech: Tec
         tempTechsToResearch.clear()
         tempTechsToResearch.addAll(pathToTech.map { it.name })
 
-        pick("Research [${tempTechsToResearch[0]}]".tr())
+        val label = "Research [${tempTechsToResearch[0]}]".tr()
+        val techProgression = getTechProgressLabel(tempTechsToResearch)
+        
+        pick("${label}\n${techProgression}")
         setButtonsInfo()
+    }
+    
+    private fun getTechProgressLabel(techs: List<String>): String {
+        val progress = techs.sumBy { tech -> civTech.scienceSpentOnTech(tech) }
+        val techCost = techs.sumBy { tech -> civInfo.gameInfo.ruleSet.technologies[tech]!!.cost }
+        return "(${progress}/${techCost})"
     }
 
     private fun centerOnTechnology(tech: Technology) {
@@ -275,10 +284,11 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo, centerOnTech: Tec
         }
     }
 
-
     private fun selectTechnologyForFreeTech(tech: Technology) {
         if (researchableTechs.contains(tech.name)) {
-            pick("Pick [${selectedTech!!.name}] as free tech".tr())
+            val label = "Pick [${tech.name}] as free tech".tr()
+            val techProgression = getTechProgressLabel(listOf(tech.name))
+            pick("${label}\n${techProgression}")
         } else {
             rightSideButton.setText("Pick a free tech".tr())
             rightSideButton.disable()
