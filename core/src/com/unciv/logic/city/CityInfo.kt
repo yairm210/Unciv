@@ -123,6 +123,19 @@ class CityInfo {
         val cityName = nationCities[cityNameIndex]
 
         val cityNameRounds = civInfo.citiesCreated / nationCities.size
+        if (cityNameRounds > 0 && civInfo.hasUnique("\"Borrows\" city names from other civilizations in the game")) {
+            val usedCityNames =
+                civInfo.gameInfo.civilizations.flatMap { it.cities.map { city -> city.name } }
+            // We select a random other civ in this game, and choose the last unused name in their list of city names.
+            name = civInfo.gameInfo.civilizations
+                .filter { it.isMajorCiv() && it != civInfo }
+                .random()
+                .nation.cities
+                .last { city -> usedCityNames
+                    .none { it == city }
+                }
+            return
+        }
         val cityNamePrefix = when (cityNameRounds) {
             0 -> ""
             1 -> "New "
@@ -361,8 +374,9 @@ class CityInfo {
         cityConstructions.endTurn(stats)
         expansion.nextTurn(stats.culture)
         if (isBeingRazed) {
-            population.addPopulation(-1)
-            if (population.population <= 0) { // there are strange cases where we get to -1
+            val removedPopulation = 1 * civInfo.getMatchingUniques("Cities are razed [] times as fast").sumBy { it.params[0].toInt() }
+            population.addPopulation(-1 * removedPopulation)
+            if (population.population <= 0) { 
                 civInfo.addNotification("[$name] has been razed to the ground!", location, "OtherIcons/Fire")
                 destroyCity()
             } else { //if not razed yet:
