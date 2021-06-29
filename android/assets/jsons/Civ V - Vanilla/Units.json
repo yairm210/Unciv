@@ -493,7 +493,7 @@
 		"requiredResource": "Horses",
 		"upgradesTo": "Cavalry",
 		"obsoleteTech": "Military Science",
-		"uniques": ["Can move after attacking","No defensive terrain bonus", "Founds a new city", "+2 Visibility Range", "Defense bonus when embarked"],
+		"uniques": ["Can move after attacking","No defensive terrain bonus", "Founds a new city", "[+2] Visibility Range", "Defense bonus when embarked"],
 		"attackSound": "horse"
 		//Conquistador should have no penalty attacking cities
 		//Ability to found new cities can only be used on a foreign continent that does not contain the Spanish capital.
@@ -674,7 +674,7 @@
 		"requiredTech": "Astronomy",
 		"upgradesTo": "Ironclad",
 		"obsoleteTech": "Combustion",
-		"uniques": ["+1 Visibility Range","May withdraw before melee ([80]%)"],
+		"uniques": ["[+1] Visibility Range", "May withdraw before melee ([80]%)"],
 		"hurryCostModifier": 30
 	},
 	{
@@ -781,7 +781,7 @@
 		"rangedStrength": 35,
 		"cost": 185,
 		"requiredResource": "Iron",
-		"uniques": ["+1 Visibility Range"],
+		"uniques": ["[+1] Visibility Range"],
 		"requiredTech": "Navigation",
 		"obsoleteTech": "Electronics",
 		"upgradesTo": "Battleship",
@@ -812,7 +812,7 @@
 		"requiredTech": "Metallurgy",
 		"requiredResource": "Horses",
 		"uniques": ["Can move after attacking","No defensive terrain bonus","Penalty vs City 33%",
-			"+1 Visibility Range", "No movement cost to pillage"],
+			"[+1] Visibility Range", "No movement cost to pillage"],
 		"promotions": ["Formation I"],
 		"upgradesTo": "Anti-Tank Gun",
 		"obsoleteTech": "Combined Arms",
@@ -1289,7 +1289,7 @@
 		"cost": 425,
 		"requiredTech": "Telecommunications",
 		"uniques": ["+[75]% Strength when attacking", "Invisible to others", "Can only attack water",
-			"Can attack submarines", "Can enter ice tiles", "+1 Visibility Range", "Can carry [2] [Missile] units"]
+			"Can attack submarines", "Can enter ice tiles", "[+1] Visibility Range", "Can carry [2] [Missile] units"]
 	},
 	{
 		"name": "Mechanized Infantry",

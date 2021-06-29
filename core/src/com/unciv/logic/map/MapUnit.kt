@@ -141,8 +141,11 @@ class MapUnit {
         if (isEmbarked()) return getEmbarkedMovement()
 
         var movement = baseUnit.movement
-        movement += getUniques().count { it.text == "+1 Movement" }
+        movement += getMatchingUniques("[] Movement").sumBy { it.params[0].toInt() }
         
+        // Deprecated since 3.15.6
+            movement += getUniques().count { it.text == "+1 Movement" }
+        //
         // Deprecated since 3.14.17
             if (type.isMilitary() && type.isWaterUnit() && civInfo.hasUnique("All military naval units receive +1 movement and +1 sight")) {
                 movement += 1
@@ -206,15 +209,21 @@ class MapUnit {
      */
     private fun getVisibilityRange(): Int {
         var visibilityRange = 2
-        visibilityRange += getUniques().count { it.text == "+1 Visibility Range" }
         for (unique in civInfo.getMatchingUniques("+[] Sight for all [] units"))
             if (matchesFilter(unique.params[1]))
                 visibilityRange += unique.params[0].toInt()
-        if (hasUnique("+2 Visibility Range")) visibilityRange += 2 // This shouldn't be stackable
+        visibilityRange += getMatchingUniques("[] Visibility Range").sumBy { it.params[0].toInt() }
+        
         if (hasUnique("Limited Visibility")) visibilityRange -= 1
+        
+        // Deprecated since 3.15.6
+            visibilityRange += getUniques().count { it.text == "+1 Visibility Range" }
+            if (hasUnique("+2 Visibility Range")) visibilityRange += 2 // This shouldn't be stackable
+        //
         // Deprecated since 3.15.1
-        if (civInfo.hasUnique("+1 Sight for all land military units") && type.isMilitary() && type.isLandUnit())
-            visibilityRange += 1
+            if (civInfo.hasUnique("+1 Sight for all land military units") && type.isMilitary() && type.isLandUnit())
+                visibilityRange += 1
+        //
         
         // Deprecated since 3.14.17
             if (type.isMilitary() && type.isWaterUnit() && civInfo.hasUnique("All military naval units receive +1 movement and +1 sight"))

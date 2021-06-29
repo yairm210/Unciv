@@ -160,19 +160,19 @@
 	// Scout
 	{
 		"name": "Scouting I",
-		"effect": "+1 Visibility Range",
+		"effect": "[+1] Visibility Range",
 		"unitTypes": ["Scout"]
 	},
 	{
 		"name": "Scouting II",
-		"prerequisites": ["Scouting I"],
-		"effect": "+1 Movement",
+		"prerequisites": ["Scouting II"],
+		"effect": "[+1] Visibility Range",
 		"unitTypes": ["Scout"]
 	},
 	{
 		"name": "Scouting III",
-		"prerequisites": ["Scouting II"],
-		"effect": "+1 Visibility Range",
+		"prerequisites": ["Scouting I"],
+		"effect": "[+1] Movement",
 		"unitTypes": ["Scout"]
 	},
 	
@@ -375,13 +375,13 @@
 		"name": "Mobility",
 		"prerequisites": ["Shock II","Drill II","Targeting I",
 			"Bombardment I","Boarding Party I", "Coastal Raider I", "Wolfpack I"],
-		"effect": "+1 Movement",
+		"effect": "+[1] Movement",
 		"unitTypes": ["Mounted","WaterMelee","WaterRanged","Armor","WaterSubmarine"]
 	},
 	{
 		"name": "Sentry",
 		"prerequisites": ["Accuracy I","Barrage I","Shock II","Drill II","Bombardment I","Targeting I","Boarding Party I","Coastal Raider I"],
-		"effect": "+1 Visibility Range",
+		"effect": "[+1] Visibility Range",
 		"unitTypes": ["Melee","Mounted","WaterRanged","Armor","WaterMelee"]
 	},
 	{
