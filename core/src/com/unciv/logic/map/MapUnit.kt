@@ -394,7 +394,7 @@ class MapUnit {
 
     private fun adjacentHealingBonus(): Int {
         var healingBonus = 0
-        healingBonus += getMatchingUniques("All adjacent units heal [] additional HP when healing").sumBy { it.params[0].toInt() }
+        healingBonus += getMatchingUniques("All adjacent units heal [] HP when healing").sumBy { it.params[0].toInt() }
         // Deprecated since 3.15.6
             if (hasUnique("This unit and all others in adjacent tiles heal 5 additional HP per turn")) healingBonus += 5
             if (hasUnique("This unit and all others in adjacent tiles heal 5 additional HP. This unit heals 5 additional HP outside of friendly territory.")) healingBonus += 5
