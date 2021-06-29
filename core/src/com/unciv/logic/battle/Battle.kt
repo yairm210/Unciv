@@ -13,7 +13,6 @@ import com.unciv.models.ruleset.Unique
 import com.unciv.models.ruleset.unit.UnitType
 import com.unciv.models.stats.Stat
 import java.util.*
-import kotlin.math.min
 import kotlin.math.max
 
 /**
@@ -139,11 +138,7 @@ object Battle {
         if (defender is MapUnitCombatant && !defender.getUnitType().isMilitary()) return
         if (attacker.unit.getMatchingUniques("May capture killed [] units").none { defender.matchesCategory(it.params[0]) }) return
         
-        var defendingStrength = 0
-        if (defender is CityCombatant) defendingStrength = defender.getCityStrength()
-        if (defender is MapUnitCombatant) defendingStrength = defender.unit.baseUnit.strength
-        
-        var captureChance = 10 + attacker.unit.baseUnit.strength.toFloat() / defendingStrength.toFloat() * 40
+        var captureChance = 10 + attacker.getAttackingStrength().toFloat() / defender.getDefendingStrength().toFloat() * 40
         if (captureChance > 80) captureChance = 80f
         if (100 * Random().nextFloat() > captureChance) return
         
@@ -159,13 +154,12 @@ object Battle {
         var potentialDamageToDefender = BattleDamage.calculateDamageToDefender(attacker, attacker.getTile(), defender)
         var potentialDamageToAttacker = BattleDamage.calculateDamageToAttacker(attacker, attacker.getTile(), defender)
         
-        var damageDoneToAttacker = 0
-        var damageDoneToDefender = 0
+        var damageToAttacker = potentialDamageToAttacker
+        var damageToDefender = potentialDamageToDefender
 
         if (defender.getUnitType().isCivilian() && attacker.isMelee()) {
             captureCivilianUnit(attacker, defender as MapUnitCombatant)
         } else if (attacker.isRanged()) {
-            damageDoneToDefender = min(potentialDamageToDefender, defender.getHealth())
             defender.takeDamage(potentialDamageToDefender) // straight up
         } else {
             //melee attack is complicated, because either side may defeat the other midway
@@ -174,23 +168,24 @@ object Battle {
             while (potentialDamageToDefender + potentialDamageToAttacker > 0) {
                 if (Random().nextInt(potentialDamageToDefender + potentialDamageToAttacker) < potentialDamageToDefender) {
                     potentialDamageToDefender--
-                    damageDoneToDefender++
                     defender.takeDamage(1)
                     if (defender.isDefeated()) break
                 } else {
                     potentialDamageToAttacker--
-                    damageDoneToAttacker++
                     attacker.takeDamage(1)
                     if (attacker.isDefeated()) break
                 }
             }
         }
         
+        damageToAttacker -= potentialDamageToAttacker // We first set this to the maximal damage to be done, and now we
+        damageToDefender -= potentialDamageToDefender // subtract the amount of damage remaining. This yields the damage done
+        
         if (attacker is MapUnitCombatant) {
             for (unique in attacker.unit.getMatchingUniques("Earn []% of the damage done to [] units as []"))
                 if (defender.matchesCategory(unique.params[1])) {
                     val resourcesPlundered =
-                        (unique.params[0].toFloat() / 100f * damageDoneToDefender).toInt()
+                        (unique.params[0].toFloat() / 100f * damageToDefender).toInt()
                     attacker.getCivInfo().addStat(Stat.valueOf(unique.params[2]), resourcesPlundered)
                     attacker.getCivInfo()
                         .addNotification(
