@@ -13,7 +13,6 @@ import com.unciv.models.AttackableTile
 import com.unciv.models.ruleset.Unique
 import com.unciv.models.ruleset.unit.UnitType
 import com.unciv.models.stats.Stat
-import com.unciv.models.translations.tr
 import java.util.*
 import kotlin.math.min
 import kotlin.math.max
@@ -73,21 +72,17 @@ object Battle {
         // Exploring units surviving an attack should "wake up"
         if (!defender.isDefeated() && defender is MapUnitCombatant && defender.unit.action == Constants.unitActionExplore)
             defender.unit.action = null
-
-        // we're a melee unit and we destroyed\captured an enemy unit
-        postBattleMoveToAttackedTile(attacker, defender, attackedTile)
-
-        reduceAttackerMovementPointsAndAttacks(attacker, defender)
-
-        if (!isAlreadyDefeatedCity) postBattleAddXp(attacker, defender)
-
+        
         // Add culture when defeating a barbarian when Honor policy is adopted, gold from enemy killed when honor is complete
         // or any enemy military unit with Sacrificial captives unique (can be either attacker or defender!)
+        // or check if unit is captured by the attacker (prize ships unique)
         if (defender.isDefeated() && defender is MapUnitCombatant && !defender.getUnitType().isCivilian()) {
             tryEarnFromKilling(attacker, defender)
+            tryCaptureUnit(attacker, defender)
             tryHealAfterKilling(attacker)
         } else if (attacker.isDefeated() && attacker is MapUnitCombatant && !attacker.getUnitType().isCivilian()) {
             tryEarnFromKilling(defender, attacker)
+            tryCaptureUnit(defender, attacker)
             tryHealAfterKilling(defender)
         }
 
@@ -97,6 +92,14 @@ object Battle {
             else if (attacker.unit.isMoving())
                 attacker.unit.action = null
         }
+
+        // we're a melee unit and we destroyed\captured an enemy unit
+        // Should be called after tryCaptureUnit(), as that might spawn a unit on the tile we go to
+        postBattleMoveToAttackedTile(attacker, defender, attackedTile)
+
+        reduceAttackerMovementPointsAndAttacks(attacker, defender)
+
+        if (!isAlreadyDefeatedCity) postBattleAddXp(attacker, defender)
     }
 
     private fun tryEarnFromKilling(civUnit: ICombatant, defeatedUnit: MapUnitCombatant) {
@@ -127,7 +130,30 @@ object Battle {
             } catch (ex: Exception) {
             } // parameter is not a stat
         }
-
+    }
+    
+    private fun tryCaptureUnit(attacker: ICombatant, defender: ICombatant) {
+        // https://forums.civfanatics.com/threads/prize-ships-for-land-units.650196/
+        // https://civilization.fandom.com/wiki/Module:Data/Civ5/GK/Defines
+        if (!defender.isDefeated()) return
+        if (attacker !is MapUnitCombatant) return
+        if (defender is MapUnitCombatant && !defender.getUnitType().isMilitary()) return
+        if (attacker.unit.getMatchingUniques("May capture killed [] units").none { defender.matchesCategory(it.params[0]) }) return
+        
+        var defendingStrength = 0
+        if (defender is CityCombatant) defendingStrength = defender.getCityStrength()
+        if (defender is MapUnitCombatant) defendingStrength = defender.unit.baseUnit.strength
+        
+        var captureChance = 10 + attacker.unit.baseUnit.strength.toFloat() / defendingStrength.toFloat() * 40
+        if (captureChance > 80) captureChance = 80f
+        if (100 * Random().nextFloat() > captureChance) return
+        
+        val newUnit = attacker.getCivInfo().placeUnitNearTile(defender.getTile().position, defender.getName())
+        if (newUnit == null) return // silently fail
+        attacker.getCivInfo().addNotification("Your [${attacker.getName()}] captured an enemy [${defender.getName()}]", newUnit.getTile().position, NotificationIcon.War)
+        
+        newUnit.currentMovement = 0f
+        newUnit.health = 50
     }
 
     private fun takeDamage(attacker: ICombatant, defender: ICombatant) {
@@ -413,7 +439,7 @@ object Battle {
         
         // Declare war on the owners of all hit tiles
         for (hitCiv in hitTiles.map { it.getOwner() }.distinct()) {
-            hitCiv!!.addNotification("A(n) [${attacker.getName()}] exploded in our territory!".tr(), targetTile.position, NotificationIcon.War)
+            hitCiv!!.addNotification("A(n) [${attacker.getName()}] exploded in our territory!", targetTile.position, NotificationIcon.War)
             tryDeclareWar(hitCiv)
         }
 

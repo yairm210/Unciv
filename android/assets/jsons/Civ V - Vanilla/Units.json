@@ -767,6 +767,7 @@
 		"requiredTech": "Navigation",
 		"upgradesTo": "Destroyer",
 		"promotions": ["Coastal Raider I"],
+		"uniques": ["May capture killed [Water] units"]
 	},
 	{
 		"name": "Frigate",
