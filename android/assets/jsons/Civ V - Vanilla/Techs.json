@@ -575,7 +575,7 @@
 				"name": "Advanced Ballistics",
 				"row": 5,
 				"prerequisites": ["Nuclear Fission","Rocketry"],
-				"quote": "Our scientific power has outrun our spiritual power, we have guided missiles and misguided men. – Martin Luther King Jr. "
+				"quote": "'Our scientific power has outrun our spiritual power, we have guided missiles and misguided men.' – Martin Luther King Jr. "
 			},
 			{
 				"name": "Satellites",
