@@ -195,19 +195,19 @@
 	
 	{
 		"name": "Coastal Raider I",
-		"effect": "+[15]% Strength vs [City]",
+		"uniques": ["+[20]% Strength vs [City]", "Earn [33]% of the damage done to [City] units as [Gold]"],
 		"unitTypes": ["WaterMelee"]
 	},
 	{
 		"name": "Coastal Raider II",
 		"prerequisites": ["Coastal Raider I"],
-		"effect": "+[15]% Strength vs [City]",
+		"uniques": ["+[20]% Strength vs [City]", "Earn [33]% of the damage done to [City] units as [Gold]"],
 		"unitTypes": ["WaterMelee"]
 	},
 	{
 		"name": "Coastal Raider III",
 		"prerequisites": ["Coastal Raider II"],
-		"effect": "+[15]% Strength vs [City]",
+		"uniques": ["+[20]% Strength vs [City]", "Earn [33]% of the damage done to [City] units as [Gold]"],
 		"unitTypes": ["WaterMelee"]
 	},
 	

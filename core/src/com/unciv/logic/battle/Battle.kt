@@ -6,7 +6,6 @@ import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.*
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
-import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.RoadStatus
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.AttackableTile
@@ -157,29 +156,56 @@ object Battle {
     }
 
     private fun takeDamage(attacker: ICombatant, defender: ICombatant) {
-        var damageToDefender = BattleDamage.calculateDamageToDefender(attacker, attacker.getTile(), defender)
-        var damageToAttacker = BattleDamage.calculateDamageToAttacker(attacker, attacker.getTile(), defender)
+        var potentialDamageToDefender = BattleDamage.calculateDamageToDefender(attacker, attacker.getTile(), defender)
+        var potentialDamageToAttacker = BattleDamage.calculateDamageToAttacker(attacker, attacker.getTile(), defender)
+        
+        var damageDoneToAttacker = 0
+        var damageDoneToDefender = 0
 
         if (defender.getUnitType().isCivilian() && attacker.isMelee()) {
             captureCivilianUnit(attacker, defender as MapUnitCombatant)
         } else if (attacker.isRanged()) {
-            defender.takeDamage(damageToDefender) // straight up
+            damageDoneToDefender = min(potentialDamageToDefender, defender.getHealth())
+            defender.takeDamage(potentialDamageToDefender) // straight up
         } else {
             //melee attack is complicated, because either side may defeat the other midway
             //so...for each round, we randomize who gets the attack in. Seems to be a good way to work for now.
 
-            while (damageToDefender + damageToAttacker > 0) {
-                if (Random().nextInt(damageToDefender + damageToAttacker) < damageToDefender) {
-                    damageToDefender--
+            while (potentialDamageToDefender + potentialDamageToAttacker > 0) {
+                if (Random().nextInt(potentialDamageToDefender + potentialDamageToAttacker) < potentialDamageToDefender) {
+                    potentialDamageToDefender--
+                    damageDoneToDefender++
                     defender.takeDamage(1)
                     if (defender.isDefeated()) break
                 } else {
-                    damageToAttacker--
+                    potentialDamageToAttacker--
+                    damageDoneToAttacker++
                     attacker.takeDamage(1)
                     if (attacker.isDefeated()) break
                 }
             }
         }
+        
+        if (attacker is MapUnitCombatant) {
+            for (unique in attacker.unit.getMatchingUniques("Earn []% of the damage done to [] units as []"))
+                if (defender.matchesCategory(unique.params[1])) {
+                    val resourcesPlundered =
+                        (unique.params[0].toFloat() / 100f * damageDoneToDefender).toInt()
+                    attacker.getCivInfo().addStat(Stat.valueOf(unique.params[2]), resourcesPlundered)
+                    attacker.getCivInfo()
+                        .addNotification(
+                            "Your [${attacker.getName()}] plundered [${resourcesPlundered}] [${unique.params[2]}] from [${defender.getName()}]",
+                            defender.getTile().position,
+                            NotificationIcon.War
+                        )
+                }
+        }
+        if (defender is MapUnitCombatant) {
+            for (unique in defender.unit.getMatchingUniques("Earn []% of the damage done to [] units as []"))
+                if (attacker.matchesCategory(unique.params[1]))
+                    defender.getCivInfo().addStat(Stat.valueOf(unique.params[2]), (unique.params[0].toFloat() / 100f * damageDoneToAttacker).toInt())
+        }
+        
     }
 
 
