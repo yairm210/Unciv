@@ -16,42 +16,66 @@ import java.io.File
  * app lifetime.
  */
 object Sounds {
+    private enum class SupportedExtensions { mp3, ogg, wav }    // Gdx won't do aac/m4a
+    
     private val soundMap = HashMap<UncivSound, Sound?>()
     
     private val separator = File.separator      // just a shorthand for readability
     
     private var modListHash = Int.MIN_VALUE
-    /** Ensure cache is not outdated _and_ build list of folders to look for sounds */
+
+    /** Ensure cache is not outdated */
+    private fun checkCache() {
+        if (!UncivGame.isCurrentInitialized()) return
+        val game = UncivGame.Current
+
+        // Get a hash covering all mods - quickly, so don't map cast or copy the Set types
+        val hash1 = if (game.isGameInfoInitialized()) game.gameInfo.ruleSet.mods.hashCode() else 0
+        val newHash = hash1.xor(game.settings.visualMods.hashCode())
+        // If hash the same, leave the cache as is
+        if (modListHash != Int.MIN_VALUE && modListHash == newHash) return
+
+        // Seems the mod list has changed - clear the cache
+        for (sound in soundMap.values) sound?.dispose()
+        soundMap.clear()
+        modListHash = newHash
+    }
+
+    /** Build list of folders to look for sounds */
     private fun getFolders(): Sequence<String> {
-        if (!UncivGame.isCurrentInitialized() || !UncivGame.Current.isGameInfoInitialized()) // Allow sounds from main menu
+        if (!UncivGame.isCurrentInitialized())
+            // Sounds before main menu shouldn't happen, but just in case return a default ""
+            // which translates to the built-in assets/sounds folder
             return sequenceOf("")
+        val game = UncivGame.Current
+
         // Allow mod sounds - preferentially so they can override built-in sounds
-        val modList = UncivGame.Current.gameInfo.ruleSet.mods
-        val newHash = modList.hashCode()
-        if (modListHash == Int.MIN_VALUE || modListHash != newHash) {
-            // Seems the mod list has changed - start over
-            for (sound in soundMap.values) sound?.dispose()
-            soundMap.clear()
-            modListHash = newHash
-        }
-        // Should we also look in UncivGame.Current.settings.visualMods?
+        // audiovisual mods first, these are already available when game.gameInfo is not 
+        val modList: MutableSet<String> = game.settings.visualMods
+        if (game.isGameInfoInitialized())
+            modList.addAll(game.gameInfo.ruleSet.mods)  // Sounds from game mods
+
         return modList.asSequence()
             .map { "mods$separator$it$separator" } +
-            sequenceOf("")
+            sequenceOf("")  // represents builtin sounds folder
     } 
 
     fun get(sound: UncivSound): Sound? {
+        checkCache()
         if (sound in soundMap) return soundMap[sound]
         val fileName = sound.value
         var file: FileHandle? = null
-        for (modFolder in getFolders()) {
-            val path = "${modFolder}sounds$separator$fileName.mp3"
+        for ( (modFolder, extension) in getFolders().flatMap { 
+            folder -> SupportedExtensions.values().asSequence().map { folder to it } 
+        } ) {
+            val path = "${modFolder}sounds$separator$fileName.${extension.name}"
             file = Gdx.files.internal(path)
             if (file.exists()) break
         }
         val newSound =
             if (file == null || !file.exists()) null
             else Gdx.audio.newSound(file)
+
         // Store Sound for reuse or remember that the actual file is missing
         soundMap[sound] = newSound
         return newSound
