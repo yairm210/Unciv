@@ -606,7 +606,7 @@ Sounds are from FreeSound.org and are either Creative Commons or Public Domain
 * [Tornado-Siren-II](https://soundbible.com/1937-Tornado-Siren-II.html) by Delilah as part of 'nuke' sound (CC Attribution 3.0 license)
 * [Explosion-Ultra-Bass](https://soundbible.com/1807-Explosion-Ultra-Bass.html) by Mark DiAngelo as part of 'nuke' sound (CC Attribution 3.0 license)
 * [Short Choir](https://freesound.org/people/Breviceps/sounds/444491/) by Breviceps as 'choir' for free great person pick
-* [Laser of Doom](https://freesound.org/people/michalwa2003/sounds/419591/) by michalwa2003 for Giant Death Robot Attack (CC Attribution 3.0 license)
+* [Death Robot! Robotic scream](https://freesound.org/people/vultraz168/sounds/334660/) by vultraz168 for Giant Death Robot Attack (CC0 1.0 Universal license)
 
 # Music
 The following music is from https://filmmusic.io
