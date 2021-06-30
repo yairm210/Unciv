@@ -198,7 +198,7 @@ object Battle {
         if (defender is MapUnitCombatant) {
             for (unique in defender.unit.getMatchingUniques("Earn []% of the damage done to [] units as []"))
                 if (attacker.matchesCategory(unique.params[1]))
-                    defender.getCivInfo().addStat(Stat.valueOf(unique.params[2]), (unique.params[0].toFloat() / 100f * damageDoneToAttacker).toInt())
+                    defender.getCivInfo().addStat(Stat.valueOf(unique.params[2]), (unique.params[0].toFloat() / 100f * damageToAttacker).toInt())
         }
         
     }
