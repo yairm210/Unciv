@@ -6,8 +6,6 @@ import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.map.RoadStatus
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
-import com.unciv.models.Counter
-import com.unciv.models.ruleset.Unique
 import com.unciv.models.ruleset.tile.ResourceSupplyList
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.unit.BaseUnit
@@ -373,7 +371,7 @@ class CityInfo {
             }
         } else population.nextTurn(foodForNextTurn())
 
-        if (civInfo.gameInfo.hasRelgionEnabled()) religion.getAffectedBySurroundingCities()
+        if (civInfo.gameInfo.hasReligionEnabled()) religion.getAffectedBySurroundingCities()
 
         if (this in civInfo.cities) { // city was not destroyed
             health = min(health + 20, getMaxHealth())

@@ -41,7 +41,9 @@ class ModOptions {
 class Ruleset {
 
     private val jsonParser = JsonParser()
-
+    
+    var modWithReligionLoaded = false
+    
     var name = ""
     val buildings = LinkedHashMap<String, Building>()
     val terrains = LinkedHashMap<String, Terrain>()
@@ -93,6 +95,7 @@ class Ruleset {
         for (unitToRemove in ruleset.modOptions.unitsToRemove) units.remove(unitToRemove)
         for (nationToRemove in ruleset.modOptions.nationsToRemove) nations.remove(nationToRemove)
         mods += ruleset.mods
+        modWithReligionLoaded = modWithReligionLoaded || ruleset.modWithReligionLoaded
     }
 
     fun clear() {
@@ -112,6 +115,7 @@ class Ruleset {
         specialists.clear()
         units.clear()
         mods.clear()
+        modWithReligionLoaded = false
     }
 
 
@@ -123,7 +127,7 @@ class Ruleset {
             try {
                 modOptions = jsonParser.getFromJson(ModOptions::class.java, modOptionsFile)
             } catch (ex: Exception) {}
-        }
+        } 
 
         val techFile = folderHandle.child("Techs.json")
         if (techFile.exists()) {
@@ -211,7 +215,7 @@ class Ruleset {
     }
 
     fun getEras(): List<String> = technologies.values.map { it.column!!.era }.distinct()
-    fun hasReligion() = beliefs.any() 
+    fun hasReligion() = beliefs.any() && modWithReligionLoaded 
 
     fun getEraNumber(era: String) = getEras().indexOf(era)
     fun getSummary(): String {
@@ -424,6 +428,9 @@ object RulesetCache :HashMap<String,Ruleset>() {
             newRuleset.mods += mod.name
             if (mod.modOptions.isBaseRuleset) {
                 newRuleset.modOptions = mod.modOptions
+            }
+            if (mod.beliefs.any()) {
+                newRuleset.modWithReligionLoaded = true
             }
         }
         newRuleset.updateBuildingCosts() // only after we've added all the mods can we calculate the building costs
