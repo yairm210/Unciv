@@ -124,7 +124,7 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
         cultureLabel.onClick(invokePoliciesPage)
         cultureImage.onClick(invokePoliciesPage)
 
-        if(worldScreen.gameInfo.hasRelgionEnabled()) {
+        if(worldScreen.gameInfo.hasReligionEnabled()) {
             statsTable.add(faithLabel).padLeft(20f)
             statsTable.add(ImageGetter.getStatIcon("Faith")).padBottom(6f).size(20f)
         }

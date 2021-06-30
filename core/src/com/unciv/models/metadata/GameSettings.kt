@@ -41,7 +41,7 @@ class GameSettings {
     var visualMods = HashSet<String>()
 
     var showExperimentalWorldWrap = false // We're keeping this as a config due to ANR problems on Android phones for people who don't know what they're doing :/
-    var showExperimentalRelgion = false
+    var showExperimentalReligion = false
 
     var lastOverviewPage: String = "Cities"
 
