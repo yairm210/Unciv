@@ -247,7 +247,6 @@ class BaseUnit : INamed, IConstruction {
             "All" -> true
             
             "Melee" -> unitType.isMelee()
-            "Mounted" -> unitType.isMounted()
             "Ranged" -> unitType.isRanged()
             "Land", "land units" -> unitType.isLandUnit()
             "Civilian" -> unitType.isCivilian()

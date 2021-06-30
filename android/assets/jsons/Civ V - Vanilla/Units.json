@@ -172,7 +172,7 @@
 	*/
 	{
 		"name": "Chariot Archer",
-		"unitType": "MountedRanged",
+		"unitType": "Ranged",
 		"movement": 4,
 		"strength": 6,
 		"rangedStrength": 10,
@@ -186,7 +186,7 @@
 	},
 	{
 		"name": "War Chariot",
-		"unitType": "MountedRanged",
+		"unitType": "Ranged",
 		"uniqueTo": "Egypt",
 		"replaces": "Chariot Archer",
 		"movement": 5,
@@ -201,7 +201,7 @@
 	},
 	{
 		"name": "Horse Archer",
-		"unitType": "MountedRanged",
+		"unitType": "Ranged",
 		"uniqueTo": "Huns",
 		"replaces": "Chariot Archer",
 		"movement": 4,
@@ -217,7 +217,7 @@
 	},
 	{
 		"name": "War Elephant",
-		"unitType": "MountedRanged",
+		"unitType": "Ranged",
 		"uniqueTo": "India",
 		"replaces": "Chariot Archer",
 		"movement": 3,
