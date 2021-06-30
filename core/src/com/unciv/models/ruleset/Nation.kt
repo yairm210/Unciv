@@ -165,11 +165,11 @@ class Nation : INamed {
                     if (!unit.getResourceRequirements().containsKey(resource))
                         textList += "  " + "[$resource] not required".tr()
                 for (unique in unit.uniques.filterNot { it in originalUnit.uniques })
-                    textList += "  " + Translations.translateBonusOrPenalty(unique)
+                    textList += "  " + unique.tr()
                 for (unique in originalUnit.uniques.filterNot { it in unit.uniques })
-                    textList += "  " + "Lost ability".tr() + "(" + "vs [${originalUnit.name}]".tr() + "): " + Translations.translateBonusOrPenalty(unique)
+                    textList += "  " + "Lost ability".tr() + "(" + "vs [${originalUnit.name}]".tr() + "): " + unique.tr()
                 for (promotion in unit.promotions.filter { it !in originalUnit.promotions })
-                    textList += "  " + promotion.tr() + " (" + Translations.translateBonusOrPenalty(ruleset.unitPromotions[promotion]!!.effect) + ")"
+                    textList += "  " + promotion.tr() + " (" + ruleset.unitPromotions[promotion]!!.effect.tr() + ")"
             } else if (unit.replaces != null) {
                 textList += unit.name.tr() + " - " + "Replaces [${unit.replaces}], which is not found in the ruleset!".tr()
             } else {

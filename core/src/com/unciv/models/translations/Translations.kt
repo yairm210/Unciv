@@ -179,22 +179,6 @@ class Translations : LinkedHashMap<String, TranslationEntry>(){
         val translationFilesTime = System.currentTimeMillis() - startTime
         println("Loading percent complete of languages - "+translationFilesTime+"ms")
     }
-
-    companion object {
-        // Regex compilation is expensive, best to save it
-        val bonusOrPenaltyRegex = Regex("""(Bonus|Penalty) vs (.*) (\d*)%""")
-        fun translateBonusOrPenalty(unique: String): String {
-            val regexResult = bonusOrPenaltyRegex.matchEntire(unique)
-            if (regexResult == null) return unique.tr()
-            else {
-                var separatorCharacter = " "
-                if (UncivGame.Current.settings.language == "Simplified_Chinese") separatorCharacter = ""
-                val start = regexResult.groups[1]!!.value + " vs [" + regexResult.groups[2]!!.value + "]"
-                val translatedUnique = start.tr() + separatorCharacter + regexResult.groups[3]!!.value + "%"
-                return translatedUnique
-            }
-        }
-    }
 }
 
 

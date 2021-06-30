@@ -8,8 +8,6 @@ import com.unciv.logic.map.MapUnit
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.Unique
 import com.unciv.models.stats.INamed
-import com.unciv.models.translations.Translations
-import com.unciv.models.translations.getPlaceholderText
 import com.unciv.models.translations.tr
 import com.unciv.ui.utils.Fonts
 import kotlin.math.pow
@@ -50,7 +48,7 @@ class BaseUnit : INamed, IConstruction {
             infoList += promotion.tr()
         if (replacementTextForUniques != "") infoList += replacementTextForUniques
         else for (unique in uniques)
-            infoList += Translations.translateBonusOrPenalty(unique)
+            infoList += unique.tr()
         return infoList.joinToString()
     }
 
@@ -76,7 +74,7 @@ class BaseUnit : INamed, IConstruction {
 
         if (replacementTextForUniques != "") sb.appendLine(replacementTextForUniques)
         else for (unique in uniques)
-            sb.appendLine(Translations.translateBonusOrPenalty(unique))
+            sb.appendLine(unique.tr())
 
         if (promotions.isNotEmpty()) {
             sb.append((if (promotions.size == 1) "Free promotion:" else "Free promotions:").tr())
