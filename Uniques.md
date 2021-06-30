@@ -218,6 +218,8 @@ For units, the UnitFilter is called. For Buildings, the following options are im
 
 "+[amount]% Strength if within [amount] tiles of a [tileFilter]" - for example, "+[10]% Strength if within [2] tiles of a [Moai]"
 
+"[amount] Movement" - ex.: "[+1] Movement"
+
 "+1 Movement for all embarked units"
 
 "Units pay only 1 movement point to embark and disembark"
@@ -444,7 +446,7 @@ These last two uniques may seem like they only have a one-time effect. However, 
 
 ### Visibility
 
-"+1 Visibility Range"
+"[amount] Visibility Range"
 
 "6 tiles in every direction always visible"
 
@@ -472,7 +474,13 @@ These last two uniques may seem like they only have a one-time effect. However, 
 
 ### Healing
 
-"+10 HP when healing"
+"Heal this unit by [amount] HP" - Only for promotions
+
+"[amount] HP when healing"
+
+"All adjacent units heal [amount] extra HP when healing"
+
+"[amount] HP when healing in [tileFilter] tiles"
 
 "Heals [amount] damage if it kills an Unit"
 
@@ -496,11 +504,11 @@ These last two uniques may seem like they only have a one-time effect. However, 
 
 ### Other
 
-"1 additional attack per turn"
+"[amount] additional attacks per turn"
 
-"+1 Range"
+"[amount] Range" - ex.: "[+1] Range"
 
-"+2 Range"
+"Doing so will consume this opportunity to choose a Promotion" - Used for promotions. Adding this will give immediate effects of the promotion, but not the permanent effects. The promotion can also be chosen again later.
 
 "Self-destructs when attacking" - for single use units, like missiles
 
@@ -624,3 +632,19 @@ These uniques have been recently deprecated. While they are still supported, the
 "Reduces damage taken from interception by 50%" - Replaced with "Damage taken from interception reduced by [amount]%"
 
 "Can not be intercepted" - Replaced with "Cannot be intercepted"
+
+"Heal this Unit by 50 HP; Doing so will consume this opportunity to choose a Promotion" - Replaced with "Heal this Unit by [amount] HP" and "Doing so will consume this opportunity to choose a Promotion"
+
+"+1 Range" - Replaced with "[amount] Range"
+
+"+2 Range" - Replaced with "[amount] Range"
+
+"1 additional attack per turn" - Replaced with "[amount] additional attacks per turn"
+
+"This unit and all others in adjacent tiles heal 5 additional HP. This unit heals 5 additional HP outside of friendly territory." - Replaced with "[amount] HP when healing" and "All adjacent units heal [amount] extra HP when healing" and "[amount] HP when healing in [tileFilter] tiles"
+
+"+1 Visibility Range" - Replaced with "[amount] Visibility Range"
+
+"+2 Visibility Range" - Replaced with "[amount] Visibility Range"
+
+"+1 Movement" - Replaced with "[amount] Movement"
