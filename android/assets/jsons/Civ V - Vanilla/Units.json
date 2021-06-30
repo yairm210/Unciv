@@ -202,7 +202,7 @@
 	{
 		"name": "Horse Archer",
 		"unitType": "Ranged",
-		"uniqueTo": "Huns",
+		"uniqueTo": "The Huns",
 		"replaces": "Chariot Archer",
 		"movement": 4,
 		"strength": 7,

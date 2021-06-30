@@ -124,28 +124,7 @@ class CityInfo {
 
         val cityNameRounds = civInfo.citiesCreated / nationCities.size
         if (cityNameRounds > 0 && civInfo.hasUnique("\"Borrows\" city names from other civilizations in the game")) {
-            val usedCityNames =
-                civInfo.gameInfo.civilizations.flatMap { it.cities.map { city -> city.name } }
-            // We select a random other civ in this game, and choose the last unused name in their list of city names.
-            val newName = civInfo.gameInfo.civilizations
-                .filter { it.isMajorCiv() && it != civInfo }
-                .random()
-                .nation.cities
-                .lastOrNull { city -> city !in usedCityNames }
-            if (newName != null) {
-                name = newName
-                return
-            }
-            name = getRuleset()
-                .nations
-                .filter { it !in civInfo.gameInfo.civilizations.map { it.nation.name } }
-                .values
-                .random()
-                .cities
-                .filter { it !in usedCityNames }
-                .random() 
-                // Technically, this could throw a NoSuchElementException. However, for that to happen, 
-                // EVERY SINGLE CITY NAME in the ENTIRE nation.json has to be in use, which is virtually impossible.
+            name = borrowCityName()
         }
         val cityNamePrefix = when (cityNameRounds) {
             0 -> ""
@@ -154,6 +133,39 @@ class CityInfo {
         }
 
         name = cityNamePrefix + cityName
+    }
+    
+    private fun borrowCityName(): String {
+        val usedCityNames =
+            civInfo.gameInfo.civilizations.flatMap { it.cities.map { city -> city.name } }
+        // We take the last unused city name for each other civ in this game, skipping civs whose
+        // names are exhausted, and choose a random one from that pool if it's not empty.
+        var newNames = civInfo.gameInfo.civilizations
+            .filter { it.isMajorCiv() && it != civInfo }
+            .mapNotNull { it.nation.cities
+                .lastOrNull { city -> city !in usedCityNames } 
+            }
+        if (newNames.isNotEmpty()) {
+            return newNames.random()
+        }
+        
+        // As per fandom wiki, once the names from the other nations in the game are exhausted,
+        // names are taken from the rest of the nations in the ruleset
+        newNames = getRuleset()
+            .nations
+            .filter { it.key !in civInfo.gameInfo.civilizations.map { civ -> civ.nation.name } }
+            .values
+            .map {
+                it.cities
+                .filter { city -> city !in usedCityNames }
+            }.flatten()
+        if (newNames.isNotEmpty()) {
+            return newNames.random()
+        }
+        // If for some reason we have used every single city name in the game,
+        // (are we using some sort of baserule mod without city names?)
+        // just return something so we at least have a name
+        return "The City without a Name"
     }
 
 
