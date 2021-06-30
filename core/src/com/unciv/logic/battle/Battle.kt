@@ -154,9 +154,9 @@ object Battle {
         var potentialDamageToDefender = BattleDamage.calculateDamageToDefender(attacker, attacker.getTile(), defender)
         var potentialDamageToAttacker = BattleDamage.calculateDamageToAttacker(attacker, attacker.getTile(), defender)
         
-        var damageToAttacker = potentialDamageToAttacker
-        var damageToDefender = potentialDamageToDefender
-
+        var damageToAttacker = attacker.getHealth() // These variables names don't make any sense as of yet ...
+        var damageToDefender = defender.getHealth()
+        
         if (defender.getUnitType().isCivilian() && attacker.isMelee()) {
             captureCivilianUnit(attacker, defender as MapUnitCombatant)
         } else if (attacker.isRanged()) {
@@ -178,8 +178,8 @@ object Battle {
             }
         }
         
-        damageToAttacker -= potentialDamageToAttacker // We first set this to the maximal damage to be done, and now we
-        damageToDefender -= potentialDamageToDefender // subtract the amount of damage remaining. This yields the damage done
+        damageToAttacker -= attacker.getHealth() // ... but from here on they are accurate
+        damageToDefender -= defender.getHealth()
         
         if (attacker is MapUnitCombatant) {
             for (unique in attacker.unit.getMatchingUniques("Earn []% of the damage done to [] units as []"))
