@@ -6,7 +6,6 @@ import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.*
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
-import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.RoadStatus
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.AttackableTile
@@ -15,7 +14,6 @@ import com.unciv.models.ruleset.unit.UnitType
 import com.unciv.models.stats.Stat
 import com.unciv.models.translations.tr
 import java.util.*
-import kotlin.math.min
 import kotlin.math.max
 
 /**
@@ -250,8 +248,7 @@ object Battle {
     private fun reduceAttackerMovementPointsAndAttacks(attacker: ICombatant, defender: ICombatant) {
         if (attacker is MapUnitCombatant) {
             val unit = attacker.unit
-            if (unit.hasUnique("Can move after attacking")
-                    || (unit.hasUnique("1 additional attack per turn") && unit.attacksThisTurn == 0)) {
+            if (unit.hasUnique("Can move after attacking") || unit.maxAttacksPerTurn() > unit.attacksThisTurn) {
                 // if it was a melee attack and we won, then the unit ALREADY got movement points deducted,
                 // for the movement to the enemy's tile!
                 // and if it's an air unit, it only has 1 movement anyway, so...

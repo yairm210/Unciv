@@ -1,3 +1,23 @@
+## 3.15.6
+
+Faster 'false' results for isStats, as proposed by @SomeTroglodyte  in #4259
+
+By SomeTroglodyte:
+- Hide notifications for incompatible policy branches
+- Nicer distribution of policy picker branches 
+- Fix "National Wonder is being built elsewhere" not displayed 
+- Respect visualMods for Sound - CheckBox, formats, modchange detect
+
+By xlenstra:
+- Added Shrine, option for enabling religion 
+- Added Nuclear Submarines & Missile Cruisers, capable of transporting missiles 
+- Fixed crash when selecting worker 
+- Fixed bug where on quick game speed, educated elite would yield a great person every turn
+
+By avdstaaij:
+- Added Stealth tech and Stealth Bombers 
+- Added Drama and Poetry tech and replaced Temples with Amphitheaters 
+
 ## 3.15.5
 
 Solved Discord RPC not crashing devices in which it is unsupported

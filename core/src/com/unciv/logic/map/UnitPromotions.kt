@@ -26,8 +26,12 @@ class UnitPromotions{
             numberOfPromotions++
         }
 
-        if(promotionName=="Heal Instantly") unit.healBy(50)
-        else promotions.add(promotionName)
+        val promotion = unit.civInfo.gameInfo.ruleSet.unitPromotions[promotionName]!!
+        doDirectPromotionEffects(promotion)
+        
+        // This usage of a promotion name as its identifier is deprecated since 3.15.6
+        if (promotionName != "Heal Instantly" && promotion.uniqueObjects.none { it.placeholderText == "Doing so will consume this opportunity to choose a Promotion" }) 
+            promotions.add(promotionName)
 
         unit.updateUniques()
 
@@ -35,6 +39,11 @@ class UnitPromotions{
         // upon creation, BEFORE they are assigned to a tile, so the updateVisibleTiles() would crash.
         // So, if the addPromotion was triggered from there, simply don't update
         unit.updateVisibleTiles()  // some promotions/uniques give the unit bonus sight
+    }
+    
+    fun doDirectPromotionEffects(promotion: Promotion) {
+        for (unique in promotion.uniqueObjects.filter { it.placeholderText == "Heal this unit by [] HP"})
+            unit.healBy(unique.params[0].toInt())
     }
 
     fun getAvailablePromotions(): List<Promotion> {
