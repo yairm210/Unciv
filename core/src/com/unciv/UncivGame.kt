@@ -15,10 +15,7 @@ import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.tilesets.TileSetCache
 import com.unciv.models.translations.Translations
 import com.unciv.ui.LanguagePickerScreen
-import com.unciv.ui.utils.CameraStageBaseScreen
-import com.unciv.ui.utils.CrashController
-import com.unciv.ui.utils.ImageGetter
-import com.unciv.ui.utils.center
+import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.PlayerReadyScreen
 import com.unciv.ui.worldscreen.WorldScreen
 import java.util.*
@@ -180,8 +177,9 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
 
     override fun dispose() {
         cancelDiscordEvent?.invoke()
+        Sounds.clearCache()
 
-        // Log still running threads (should be only this one and "DestroyJavaVM")
+        // Log still running threads (on desktop that should be only this one and "DestroyJavaVM")
         val numThreads = Thread.activeCount()
         val threadList = Array(numThreads) { _ -> Thread() }
         Thread.enumerate(threadList)
