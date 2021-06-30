@@ -159,7 +159,8 @@ class Building : NamedStats(), IConstruction {
         if (civInfo != null) {
             val baseBuildingName = getBaseBuilding(civInfo.gameInfo.ruleSet).name
 
-            for (unique in civInfo.getMatchingUniques("[] from every []")) {
+            // We don't have to check whether 'city' is null, as if it was, cityInfo would also be null, and we wouldn't be here.
+            for (unique in civInfo.getMatchingUniques("[] from every []") + city.religion.getMatchingUniques("[] from every []")) {
                 if (unique.params[1] != baseBuildingName) continue
                 stats.add(unique.stats)
             }
@@ -177,16 +178,7 @@ class Building : NamedStats(), IConstruction {
             else
                 for (unique in civInfo.getMatchingUniques("[] from every Wonder"))
                     stats.add(unique.stats)
-            
-            if (city != null) {
-                for (unique in city.religion.getMatchingUniques("[] from every []")) {
-                    if (matchesFilter(unique.params[1])) {
-                        stats.add(unique.stats)
-                    }
-                }
-            }
         }
-        println("${name} has stats ${stats}")
         return stats
     }
 

@@ -297,21 +297,14 @@ open class TileInfo {
             }
             for (unique in cityWideUniques + improvementUniques) {
                 if (improvement.matchesFilter(unique.params[1])
-                    // Freshwater and non-freshwater cannot be moved to matchesUniqueFilter since that creates an enless feedback.
+                    // Freshwater and non-freshwater cannot be moved to matchesUniqueFilter since that creates an endless feedback.
                     // If you're attempting that, check that it works!
                     || unique.params[1] == "Fresh water" && isAdjacentToFreshwater
                     || unique.params[1] == "non-fresh water" && !isAdjacentToFreshwater)
                         stats.add(unique.stats)
             }
 
-            for (unique in city.civInfo.getMatchingUniques("[] from every []")) {
-                if (improvement.matchesFilter(unique.params[1])) {
-                    stats.add(unique.stats)
-                }
-            }
-            // This entire function should really be refactored, all of these almost similar unique checks are really ugly.
-            // But for that, we would probably first have to generalize _all_ uniques to use cityFilters, and that might take a while
-            for (unique in city.religion.getMatchingUniques("[] from every []")) {
+            for (unique in city.civInfo.getMatchingUniques("[] from every []") + city.religion.getMatchingUniques("[] from every []")) {
                 if (improvement.matchesFilter(unique.params[1])) {
                     stats.add(unique.stats)
                 }

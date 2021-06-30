@@ -691,19 +691,6 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Cam
 
             viewingCiv.religionManager.canFoundPantheon() ->
                 NextTurnAction("Found Pantheon", Color.WHITE) {
-//                    val pantheonPopup = Popup(this)
-//                    val beliefsTable = Table().apply { defaults().pad(10f) }
-//                    for (belief in gameInfo.ruleSet.beliefs.values) {
-//                        if (belief.type != "Pantheon" || gameInfo.civilizations.any { it.religionManager.pantheonBelief == belief.name }) continue
-//                        val beliefTable = Table().apply { touchable = Touchable.enabled; background = ImageGetter.getBackground(ImageGetter.getBlue()) }
-//                        beliefTable.pad(10f)
-//                        beliefTable.add(belief.name.toLabel(fontSize = 24)).row()
-//                        beliefTable.add(belief.uniques.joinToString().toLabel())
-//                        beliefTable.onClick { viewingCiv.religionManager.choosePantheonBelief(belief); pantheonPopup.close(); shouldUpdate = true }
-//                        beliefsTable.add(beliefTable).fillX().row()
-//                    }
-//                    pantheonPopup.add(ScrollPane(beliefsTable)).maxHeight(stage.height * .8f)
-//                    pantheonPopup.open() 
                     game.setScreen(PantheonPickerScreen(viewingCiv, gameInfo))
                 }
 
