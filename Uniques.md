@@ -609,6 +609,8 @@ These uniques have been recently deprecated. While they are still supported, the
 
 "Allied City-States provide Science equal to [amount]% of what they produce for themselves" - Replaced with "Allied City-States provide [stat] equal to [amount]% of what they produce for themselves"
 
+"Nuclear weapon" - Replaced with "Nuclear Weapon of Strength [amount]" - [amount] should be 1 (atomic bomb) or 2 (nuclear missile)
+
 "+1 population in each city" - Replaced with "[amount] population [cityFilter]"
 
 "Can build improvements on tiles" - Replaced with "Can build [improvementFilter] improvements on tiles"
