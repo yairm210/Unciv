@@ -127,14 +127,25 @@ class CityInfo {
             val usedCityNames =
                 civInfo.gameInfo.civilizations.flatMap { it.cities.map { city -> city.name } }
             // We select a random other civ in this game, and choose the last unused name in their list of city names.
-            name = civInfo.gameInfo.civilizations
+            val newName = civInfo.gameInfo.civilizations
                 .filter { it.isMajorCiv() && it != civInfo }
                 .random()
                 .nation.cities
-                .last { city -> usedCityNames
-                    .none { it == city }
-                }
-            return
+                .lastOrNull { city -> city !in usedCityNames }
+            if (newName != null) {
+                name = newName
+                return
+            }
+            name = getRuleset()
+                .nations
+                .filter { it !in civInfo.gameInfo.civilizations.map { it.nation.name } }
+                .values
+                .random()
+                .cities
+                .filter { it !in usedCityNames }
+                .random() 
+                // Technically, this could throw a NoSuchElementException. However, for that to happen, 
+                // EVERY SINGLE CITY NAME in the ENTIRE nation.json has to be in use, which is virtually impossible.
         }
         val cityNamePrefix = when (cityNameRounds) {
             0 -> ""
@@ -374,7 +385,7 @@ class CityInfo {
         cityConstructions.endTurn(stats)
         expansion.nextTurn(stats.culture)
         if (isBeingRazed) {
-            val removedPopulation = 1 * civInfo.getMatchingUniques("Cities are razed [] times as fast").sumBy { it.params[0].toInt() }
+            val removedPopulation = 1 + civInfo.getMatchingUniques("Cities are razed [] times as fast").sumBy { it.params[0].toInt() }
             population.addPopulation(-1 * removedPopulation)
             if (population.population <= 0) { 
                 civInfo.addNotification("[$name] has been razed to the ground!", location, "OtherIcons/Fire")
