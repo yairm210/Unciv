@@ -32,7 +32,7 @@
         "startingCulture": 200,
         "settlerPopulation": 1,
         "settlerBuildings": ["Shrine","Monument"],
-        "obsoleteWonders": ["Temple of Artemis", "Stonehenge", "Great Library", "Mausoleum of Halicarnassus", "Pyramids", "Statue of Zeus"]
+        "startingObsoleteWonders": ["Temple of Artemis", "Stonehenge", "The Great Library", "Mausoleum of Halicarnassus", "The Pyramids", "Statue of Zeus"]
     },
     {
         "name": "Renaissance era",
@@ -45,7 +45,7 @@
         "startingCulture": 300,
         "settlerPopulation": 2,
         "settlerBuildings": ["Shrine","Monument","Granary","Lighthouse"],
-        "obsoleteWonders": ["Temple of Artemis", "Stonehenge", "Great Library", "Mausoleum of Halicarnassus", "Pyramids", "Statue of Zeus", 
+        "startingObsoleteWonders": ["Temple of Artemis", "Stonehenge", "The Great Library", "Mausoleum of Halicarnassus", "The Pyramids", "Statue of Zeus", 
             "The Great Lighthouse", "Hanging Gardens", "Terracotta Army", "The Oracle", "Petra", "Great Wall", "Colossus"]
     },
     {
@@ -54,12 +54,12 @@
         "staringSettlerCount": 3,
         "startingWorkerCount": 2,
         "startingMilitaryUnitCount": 5,
-        "startingMilitaryUnit": "Rifleman",
+        "startingMilitaryUnit": "Musketman",
         "startingGold": 100,
         "startingCulture": 400,
         "settlerPopulation": 3,
         "settlerBuildings": ["Monument","Granary","Lighthouse","Market","Workshop","Amphitheater","Barracks","Library","Colosseum"],
-        "obsoleteWonders": ["Temple of Artemis", "Stonehenge", "Great Library", "Mausoleum of Halicarnassus", "Pyramids", "Statue of Zeus", 
+        "startingObsoleteWonders": ["Temple of Artemis", "Stonehenge", "The Great Library", "Mausoleum of Halicarnassus", "The Pyramids", "Statue of Zeus",
             "The Great Lighthouse", "Hanging Gardens", "Terracotta Army", "The Oracle", "Petra", "Great Wall", "Colossus",
             "Hagia Sophia", "Chichen Itza", "Machu Picchu", "Angkor Wat", "Alhambra", "Notre Dame"]
     },
@@ -74,7 +74,7 @@
         "startingCulture": 500,
         "settlerPopulation": 3,
         "settlerBuildings": ["Monument","Granary","Lighthouse","Market","Workshop","Amphitheater","Barracks","Library","Colosseum"],
-        "obsoleteWonders": ["Temple of Artemis", "Stonehenge", "Great Library", "Mausoleum of Halicarnassus", "Pyramids", "Statue of Zeus",
+        "startingObsoleteWonders": ["Temple of Artemis", "Stonehenge", "The Great Library", "Mausoleum of Halicarnassus", "The Pyramids", "Statue of Zeus",
             "The Great Lighthouse", "Hanging Gardens", "Terracotta Army", "The Oracle", "Petra", "Great Wall", "Colossus",
             "Hagia Sophia", "Chichen Itza", "Machu Picchu", "Angkor Wat", "Alhambra", "Notre Dame", 
             "Sistine Chapel", "Forbidden Palace", "Leaning Tower of Pisa", "Himeji Castle", "Taj Mahal", "Porcelain Tower", "Kremlin"]
@@ -90,7 +90,7 @@
         "startingCulture": 500,
         "settlerPopulation": 4,
         "settlerBuildings": ["Monument","Granary","Lighthouse","Market","Workshop","Amphitheater","Barracks","Library","Colosseum"],
-        "obsoleteWonders": ["Temple of Artemis", "Stonehenge", "Great Library", "Mausoleum of Halicarnassus", "Pyramids", "Statue of Zeus",
+        "startingObsoleteWonders": ["Temple of Artemis", "Stonehenge", "The Great Library", "Mausoleum of Halicarnassus", "The Pyramids", "Statue of Zeus",
             "The Great Lighthouse", "Hanging Gardens", "Terracotta Army", "The Oracle", "Petra", "Great Wall", "Colossus",
             "Hagia Sophia", "Chichen Itza", "Machu Picchu", "Angkor Wat", "Alhambra", "Notre Dame", 
             "Sistine Chapel", "Forbidden Palace", "Leaning Tower of Pisa", "Himeji Castle", "Taj Mahal", "Porcelain Tower", "Kremlin",
@@ -107,7 +107,7 @@
         "startingCulture": 600,
         "settlerPopulation": 5,
         "settlerBuildings": ["Monument","Granary","Lighthouse","Market","Workshop","Amphitheater","Barracks","Library","Colosseum","Theatre","Bank"],
-        "obsoleteWonders": ["Temple of Artemis", "Stonehenge", "Great Library", "Mausoleum of Halicarnassus", "Pyramids", "Statue of Zeus",
+        "startingObsoleteWonders": ["Temple of Artemis", "Stonehenge", "The Great Library", "Mausoleum of Halicarnassus", "The Pyramids", "Statue of Zeus",
             "The Great Lighthouse", "Hanging Gardens", "Terracotta Army", "The Oracle", "Petra", "Great Wall", "Colossus",
             "Hagia Sophia", "Chichen Itza", "Machu Picchu", "Angkor Wat", "Alhambra", "Notre Dame", 
             "Sistine Chapel", "Forbidden Palace", "Leaning Tower of Pisa", "Himeji Castle", "Taj Mahal", "Porcelain Tower", "Kremlin",
@@ -130,7 +130,7 @@
         "startingCulture": 600,
         "settlerPopulation": 5,
         "settlerBuildings": ["Monument","Granary","Lighthouse","Market","Workshop","Amphitheater","Barracks","Library","Colosseum","Theatre","Bank"],
-        "obsoleteWonders": ["Temple of Artemis", "Stonehenge", "Great Library", "Mausoleum of Halicarnassus", "Pyramids", "Statue of Zeus",
+        "startingObsoleteWonders": ["Temple of Artemis", "Stonehenge", "The Great Library", "Mausoleum of Halicarnassus", "The Pyramids", "Statue of Zeus",
             "The Great Lighthouse", "Hanging Gardens", "Terracotta Army", "The Oracle", "Petra", "Great Wall", "Colossus",
             "Hagia Sophia", "Chichen Itza", "Machu Picchu", "Angkor Wat", "Alhambra", "Notre Dame", 
             "Sistine Chapel", "Forbidden Palace", "Leaning Tower of Pisa", "Himeji Castle", "Taj Mahal", "Porcelain Tower", "Kremlin",

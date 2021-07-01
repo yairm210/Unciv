@@ -15,7 +15,7 @@ class Era : INamed {
     var startingCulture = 0
     var settlerPopulation = 1
     var settlerBuildings = ArrayList<String>()
-    var obsoleteWonders = ArrayList<String>()
+    var startingObsoleteWonders = ArrayList<String>()
     
     fun getStartingUnits(): List<String> {
         val startingUnits = mutableListOf<String>()
