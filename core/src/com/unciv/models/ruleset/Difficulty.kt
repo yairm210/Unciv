@@ -14,7 +14,7 @@ class Difficulty: INamed {
     var policyCostModifier:Float = 1f
     var unhappinessModifier:Float = 1f
     var barbarianBonus:Float = 0f
-    var startingUnits = ArrayList<String>()
+    var startingUnits = ArrayList<String>() // I would like to rename these to 'bonus starting units' now that they also exist in Eras.json, but something something mod compatibility
 
     var aiCityGrowthModifier:Float = 1f
     var aiUnitCostModifier:Float = 1f
@@ -33,7 +33,7 @@ class Difficulty: INamed {
         // For compatibility with old mods that use deprecated var aiFreeUnits and do not have startingUnits, aiCityStateStartingUnits, aiMajorCivStartingUnits
         if (startingUnits.isEmpty()) {
             startingUnits.add(Constants.settler)
-            startingUnits.add("Warrior")
+            startingUnits.add("EraStartingUnit")
             aiCityStateStartingUnits.addAll(startingUnits)
             aiMajorCivStartingUnits.addAll(startingUnits)
         }

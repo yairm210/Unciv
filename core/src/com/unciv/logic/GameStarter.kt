@@ -8,10 +8,12 @@ import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
 import com.unciv.logic.map.mapgenerator.MapGenerator
 import com.unciv.models.metadata.GameParameters
+import com.unciv.models.ruleset.Era
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.ui.newgamescreen.GameSetupInfo
 import java.util.*
+import kotlin.NoSuchElementException
 import kotlin.collections.ArrayList
 import kotlin.math.max
 
@@ -21,6 +23,7 @@ object GameStarter {
         val gameInfo = GameInfo()
 
         gameInfo.gameParameters = gameSetupInfo.gameParameters
+        println(gameInfo.gameParameters.startingEra)
         val ruleset = RulesetCache.getComplexRuleset(gameInfo.gameParameters.mods)
 
         if (gameSetupInfo.mapParameters.name != "") {
@@ -160,16 +163,8 @@ object GameStarter {
         val startingLocations = getStartingLocations(
                 gameInfo.civilizations.filter { !it.isBarbarian() },
                 gameInfo.tileMap)
-
-        // For later starting eras, or for civs like Polynesia with a different Warrior, we need different starting units
-        fun getWarriorEquivalent(civ: CivilizationInfo): String? {
-            val availableMilitaryUnits = gameInfo.ruleSet.units.values.filter {
-                it.isBuildable(civ)
-                        && it.unitType.isLandUnit()
-                        && !it.unitType.isCivilian()
-            }
-            return availableMilitaryUnits.maxByOrNull { max(it.strength, it.rangedStrength) }?.name
-        }
+        
+        
         // no starting units for Barbarians and Spectators
         for (civ in gameInfo.civilizations.filter { !it.isBarbarian() && !it.isSpectator() }) {
             val startingLocation = startingLocations[civ]!!
@@ -180,16 +175,60 @@ object GameStarter {
             fun placeNearStartingPosition(unitName: String) {
                 civ.placeUnitNearTile(startingLocation.position, unitName)
             }
+            
 
-            val warriorEquivalent = getWarriorEquivalent(civ)
-            val startingUnits = when {
+            // Determine starting units based on starting era
+            val ruleSet = gameInfo.ruleSet
+            val startingEra = gameInfo.gameParameters.startingEra
+            var startingUnits: MutableList<String>
+            var eraUnitReplacement: String
+            
+            println("Before if")
+            
+            if (startingEra in ruleSet.eras.keys) {
+                println("Inside if")
+                startingUnits = ruleSet.eras[startingEra]!!.getStartingUnits().toMutableList()
+                eraUnitReplacement = ruleSet.eras[startingEra]!!.startingMilitaryUnit
+            } else {
+                println("inside else")
+                startingUnits = Era().getStartingUnits().toMutableList()
+                eraUnitReplacement = Era().startingMilitaryUnit
+            }
+            
+            println("Reached the changed function")
+            // Add extra units granted by difficulty
+            startingUnits.addAll(when {
                 civ.isPlayerCivilization() -> gameInfo.getDifficulty().startingUnits
                 civ.isMajorCiv() -> gameInfo.getDifficulty().aiMajorCivStartingUnits
                 else -> gameInfo.getDifficulty().aiCityStateStartingUnits
+            })
+
+            fun getEquivalentUnit(civ: CivilizationInfo, unitParam: String): String? {
+                var unit = unitParam // We want to change it and this is the easiest way to do so
+                if (unit == Constants.eraSpecificUnit) unit = eraUnitReplacement
+                if (unit == "Settler" && "Settler" !in ruleSet.units) {
+                    val settlerLikeUnits = ruleSet.units.filter {
+                        it.value.uniqueObjects.any { it.placeholderText == Constants.settlerUnique }
+                                && it.value.isBuildable(civ)
+                                && it.value.unitType.isCivilian()
+                    }
+                    if (settlerLikeUnits.isEmpty()) return null // No settlers in this mod
+                    return civ.getEquivalentUnit(settlerLikeUnits.keys.random()).name
+                }
+                if (unit == "Worker" && "Worker" !in ruleSet.units) {
+                    val workerLikeUnits = ruleSet.units.filter {
+                        it.value.uniqueObjects.any { it.placeholderText == Constants.canBuildImprovements }
+                                && it.value.isBuildable(civ)
+                                && it.value.unitType.isCivilian()
+                    }
+                    if (workerLikeUnits.isEmpty()) return null // No workers in this mod
+                    return civ.getEquivalentUnit(workerLikeUnits.keys.random()).name
+                }
+                return civ.getEquivalentUnit(unit).name
             }
 
             for (unit in startingUnits) {
-                val unitToAdd = if (unit == "Warrior") warriorEquivalent else unit
+                val unitToAdd = getEquivalentUnit(civ, unit)
                 if (unitToAdd != null) placeNearStartingPosition(unitToAdd)
             }
         }
