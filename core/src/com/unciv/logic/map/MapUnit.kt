@@ -527,7 +527,7 @@ class MapUnit {
         if (civInfo.hasUnique("Can only heal by pillaging")) return
 
         var amountToHealBy = rankTileForHealing(getTile())
-        if (amountToHealBy == 0) return
+        if (amountToHealBy == 0 && !(hasUnique("May heal outside of friendly territory") && !getTile().isFriendlyTerritory(civInfo))) return
 
         // Deprecated since 3.15.6
             if (hasUnique("+10 HP when healing")) amountToHealBy += 10
