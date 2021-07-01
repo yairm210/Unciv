@@ -78,7 +78,7 @@ class CityConstructions {
     fun getStats(): Stats {
         val stats = Stats()
         for (building in getBuiltBuildings())
-            stats.add(building.getStats(cityInfo.civInfo))
+            stats.add(building.getStats(cityInfo))
 
         for (unique in builtBuildingUniqueMap.getAllUniques()) when (unique.placeholderText) {
             "[] per [] population []" -> if (cityInfo.matchesFilter(unique.params[2])) 
@@ -113,7 +113,7 @@ class CityConstructions {
     fun getStatPercentBonuses(): Stats {
         val stats = Stats()
         for (building in getBuiltBuildings())
-            stats.add(building.getStatPercentageBonuses(cityInfo.civInfo))
+            stats.add(building.getStatPercentageBonuses(cityInfo))
         return stats
     }
 
