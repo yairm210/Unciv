@@ -229,6 +229,25 @@
 		"unitTypes": ["WaterMelee"]
 	},
 	
+	// Water Ranged
+	{
+		"name": "Targeting I",
+		"effect": "+[15]% Strength vs [water units]",
+		"unitTypes": ["WaterRanged"]
+	},
+	{
+		"name": "Targeting II",
+		"prerequisites": ["Targeting I"],
+		"effect": "+[15]% Strength vs [water units]",
+		"unitTypes": ["WaterRanged"]
+	},
+	{
+		"name": "Targeting III",
+		"prerequisites": ["Targeting II"],
+		"effect": "+[15]% Strength vs [water units]",
+		"unitTypes": ["WaterRanged"]
+	},
+	
 	// Submarine
 	{
 		"name": "Wolfpack I",
@@ -346,6 +365,19 @@
 		"unitTypes": ["Fighter"]
 	}
 	*/
+
+	{
+		"name": "Air Targeting I",
+		"prerequisites": ["Interception I","Dogfighting I", "Siege I","Bombardment I"],
+		"effect": "+[33]% Strength vs [water units]",
+		"unitTypes": ["Fighter","Bomber"]
+	},
+	{
+		"name": "Air Targeting II",
+		"prerequisites": ["Air Targeting I"],
+		"effect": "+[33]% Strength vs [water units]",
+		"unitTypes": ["Fighter","Bomber"]
+	},
 	
 	{
 		"name": "Sortie",
@@ -437,31 +469,6 @@
 		"prerequisites": ["Bombardment II"],
 		"effect": "+[34]% Strength vs [land units]",
 		"unitTypes": ["WaterRanged","Fighter","Bomber"]
-	},
-	
-	// Targeting I has different requirements for air and waterranged units, this was the cleanest way to do so
-	{
-		"name": "Targeting I",
-		"effect": "+[15]% Strength vs [water units]",
-		"unitTypes": ["WaterRanged"]
-	},
-	{
-		"name": "Targeting I (air)",
-		"prerequisites": ["Interception I","Dogfighting I", "Siege I","Bombardment I"],
-		"effect": "+[15]% Strength vs [water units]",
-		"unitTypes": ["Fighter","Bomber"]
-	},
-	{
-		"name": "Targeting II",
-		"prerequisites": ["Targeting I","Targeting I (air)"],
-		"effect": "+[15]% Strength vs [water units]",
-		"unitTypes": ["WaterRanged","Fighter","Bomber"]
-	},
-	{
-		"name": "Targeting III",
-		"prerequisites": ["Targeting II"],
-		"effect": "+[15]% Strength vs [water units]",
-		"unitTypes": ["WaterRanged"]
 	},
 	
 	// Uniques
