@@ -842,9 +842,11 @@ class MapUnit {
     }
 
     fun canIntercept(attackedTile: TileInfo): Boolean {
-        if (attacksThisTurn > 1) return false
         if (interceptChance() == 0) return false
-        if (attacksThisTurn > 0 && !hasUnique("1 extra Interception may be made per turn")) return false
+        val maxAttacksPerTurn = 1 + 
+            getMatchingUniques("[] extra interceptions may be made per turn").sumBy { it.params[0].toInt() } + 
+            getMatchingUniques("1 extra interception may be made per turn").sumBy { 1 } 
+        if (attacksThisTurn >= maxAttacksPerTurn) return false
         if (currentTile.aerialDistanceTo(attackedTile) > baseUnit.interceptRange) return false
         return true
     }
