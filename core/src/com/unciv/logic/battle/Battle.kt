@@ -409,8 +409,8 @@ object Battle {
         val hitTiles = targetTile.getTilesInDistance(blastRadius)
         
         // Declare war on the owners of all hit tiles
-        for (hitCiv in hitTiles.map { it.getOwner() }.distinct()) {
-            hitCiv!!.addNotification("A(n) [${attacker.getName()}] exploded in our territory!".tr(), targetTile.position, NotificationIcon.War)
+        for (hitCiv in hitTiles.mapNotNull { it.getOwner() }.distinct()) {
+            hitCiv.addNotification("A(n) [${attacker.getName()}] exploded in our territory!".tr(), targetTile.position, NotificationIcon.War)
             tryDeclareWar(hitCiv)
         }
 
