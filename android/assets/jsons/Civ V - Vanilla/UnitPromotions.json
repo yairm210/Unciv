@@ -370,13 +370,13 @@
 	// Mixed
 	{
 		"name": "Cover I",
-		"effect": "[+25]% Strength when defending vs [Ranged]",
+		"effect": "[+33]% Strength when defending vs [Ranged]",
 		"unitTypes": ["Melee","Ranged","Siege"]
 	},
 	{
 		"name": "Cover II",
 		"prerequisites": ["Cover I"],
-		"effect": "[+25]% Strength when defending vs [Ranged]",
+		"effect": "[+33]% Strength when defending vs [Ranged]",
 		"unitTypes": ["Melee","Ranged","Siege"]
 	},
 	
