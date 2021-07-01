@@ -50,7 +50,7 @@ class GameOptionsTable(val previousScreen: IPreviousScreen, val updatePlayerPick
         checkboxTable.addOneCityChallengeCheckbox()
         checkboxTable.addNuclearWeaponsCheckbox()
         checkboxTable.addIsOnlineMultiplayerCheckbox()
-        if (UncivGame.Current.settings.showExperimentalRelgion)
+        if (UncivGame.Current.settings.showExperimentalReligion)
             checkboxTable.addReligionCheckbox()
         checkboxTable.addModCheckboxes()
         add(checkboxTable).colspan(2).row()

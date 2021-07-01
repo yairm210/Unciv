@@ -23,6 +23,7 @@ class PantheonPickerScreen(choosingCiv: CivilizationInfo, gameInfo: GameInfo) : 
         
         topTable.apply { defaults().pad(10f) }
         for (belief in gameInfo.ruleSet.beliefs.values) {
+            if (!choosingCiv.religionManager.isPickablePantheonBelief(belief)) continue
             val beliefTable = Table().apply { touchable = Touchable.enabled; 
                 background =
                     // Ideally I want to this to be the darker blue we use for pressed buttons, but I suck at UI so I'll leave it like this.

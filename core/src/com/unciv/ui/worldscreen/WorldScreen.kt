@@ -475,11 +475,11 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Cam
 
         displayTutorial(Tutorial.InjuredUnits) { gameInfo.getCurrentPlayerCivilization().getCivUnits().any { it.health < 100 } }
 
-        displayTutorial(Tutorial.Workers) { 
-            gameInfo.getCurrentPlayerCivilization().getCivUnits().any { 
-                (it.hasUnique(Constants.canBuildImprovements) || it.hasUnique(Constants.workerUnique)) 
-                    && it.type.isCivilian() 
-            } 
+        displayTutorial(Tutorial.Workers) {
+            gameInfo.getCurrentPlayerCivilization().getCivUnits().any {
+                (it.hasUnique(Constants.canBuildImprovements) || it.hasUnique(Constants.workerUnique))
+                    && it.type.isCivilian()
+            }
         }
     }
 
@@ -650,7 +650,7 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Cam
     }
 
     /**
-     * Used by [OptionsPopup][com.unciv.ui.worldscreen.mainmenu.OptionsPopup] 
+     * Used by [OptionsPopup][com.unciv.ui.worldscreen.mainmenu.OptionsPopup]
      * to re-enable the next turn button within its Close button action
      */
     fun enableNextTurnButtonAfterOptions() {
@@ -680,7 +680,7 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Cam
 
             viewingCiv.shouldOpenTechPicker() ->
                 NextTurnAction("Pick a tech", Color.SKY) {
-                    game.setScreen(TechPickerScreen(viewingCiv.tech.freeTechs != 0, viewingCiv))
+                    game.setScreen(TechPickerScreen(viewingCiv, null, viewingCiv.tech.freeTechs != 0))
                 }
 
             viewingCiv.policies.shouldOpenPolicyPicker || (viewingCiv.policies.freePolicies > 0 && viewingCiv.policies.canAdoptPolicy()) ->

@@ -6,7 +6,6 @@ import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.*
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
-import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.RoadStatus
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.AttackableTile
@@ -15,7 +14,6 @@ import com.unciv.models.ruleset.unit.UnitType
 import com.unciv.models.stats.Stat
 import com.unciv.models.translations.tr
 import java.util.*
-import kotlin.math.min
 import kotlin.math.max
 
 /**
@@ -250,15 +248,14 @@ object Battle {
     private fun reduceAttackerMovementPointsAndAttacks(attacker: ICombatant, defender: ICombatant) {
         if (attacker is MapUnitCombatant) {
             val unit = attacker.unit
-            if (unit.hasUnique("Can move after attacking")
-                    || (unit.hasUnique("1 additional attack per turn") && unit.attacksThisTurn == 0)) {
+            unit.attacksThisTurn += 1
+            if (unit.hasUnique("Can move after attacking") || unit.maxAttacksPerTurn() > unit.attacksThisTurn) {
                 // if it was a melee attack and we won, then the unit ALREADY got movement points deducted,
                 // for the movement to the enemy's tile!
                 // and if it's an air unit, it only has 1 movement anyway, so...
                 if (!attacker.unit.baseUnit.movesLikeAirUnits() && !(attacker.getUnitType().isMelee() && defender.isDefeated()))
                     unit.useMovementPoints(1f)
             } else unit.currentMovement = 0f
-            unit.attacksThisTurn += 1
             if (unit.isFortified() || unit.isSleeping())
                 attacker.unit.action = null // but not, for instance, if it's Set Up - then it should definitely keep the action!
         } else if (attacker is CityCombatant) {
@@ -392,6 +389,7 @@ object Battle {
                 && civSuffered.getDiplomacyManager(attackingCiv).diplomaticStatus != DiplomaticStatus.War
             ) {
                 attackingCiv.getDiplomacyManager(civSuffered).declareWar()
+                attackingCiv.addNotification("After being hit by our [${attacker.getName()}], [${civSuffered}] has declared war on us!", targetTile.position, NotificationIcon.War)
             }
         }
         
@@ -400,8 +398,8 @@ object Battle {
             else attacker.unit.getMatchingUniques("Blast radius []").first().params[0].toInt()
 
         val strength = when {
-            (attacker.unit.hasUnique("Nuclear weapon of strength []")) ->
-                attacker.unit.getMatchingUniques("Nuclear weapon of strength []").first().params[0].toInt()
+            (attacker.unit.hasUnique("Nuclear weapon of Strength []")) ->
+                attacker.unit.getMatchingUniques("Nuclear weapon of Strength []").first().params[0].toInt()
             // Deprecated since 3.15.3
                 (attacker.unit.hasUnique("Nuclear weapon")) -> 1
             //
@@ -412,8 +410,8 @@ object Battle {
         val hitTiles = targetTile.getTilesInDistance(blastRadius)
         
         // Declare war on the owners of all hit tiles
-        for (hitCiv in hitTiles.map { it.getOwner() }.distinct()) {
-            hitCiv!!.addNotification("A(n) [${attacker.getName()}] exploded in our territory!".tr(), targetTile.position, NotificationIcon.War)
+        for (hitCiv in hitTiles.mapNotNull { it.getOwner() }.distinct()) {
+            hitCiv.addNotification("A(n) [${attacker.getName()}] exploded in our territory!".tr(), targetTile.position, NotificationIcon.War)
             tryDeclareWar(hitCiv)
         }
 

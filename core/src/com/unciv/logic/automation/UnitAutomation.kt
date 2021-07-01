@@ -298,7 +298,7 @@ object UnitAutomation {
         val reachableTileNearSiegedCity = siegedCities
                 .flatMap { it.getCenterTile().getTilesAtDistance(2) }
                 .sortedBy { it.aerialDistanceTo(unit.currentTile) }
-                .firstOrNull { unit.movement.canReach(it) }
+                .firstOrNull { unit.movement.canMoveTo(it) && unit.movement.canReach(it) }
 
         if (reachableTileNearSiegedCity != null) {
             unit.movement.headTowards(reachableTileNearSiegedCity)

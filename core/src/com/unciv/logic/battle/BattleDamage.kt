@@ -27,7 +27,9 @@ object BattleDamage {
                 if (enemy.matchesCategory(unique.params[1]))
                     modifiers.add("vs [${unique.params[1]}]", unique.params[0].toInt())
             }
-            for (unique in combatant.unit.getMatchingUniques("-[]% Strength vs []")) {
+            for (unique in combatant.unit.getMatchingUniques("-[]% Strength vs []")+
+                    civInfo.getMatchingUniques("-[]% Strength vs []")
+            ) {
                 if (enemy.matchesCategory(unique.params[1]))
                     modifiers.add("vs [${unique.params[1]}]", -unique.params[0].toInt())
             }
