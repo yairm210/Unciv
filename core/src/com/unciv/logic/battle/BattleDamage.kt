@@ -51,17 +51,19 @@ object BattleDamage {
                 }
             }
 
-            var adjacentUnitBonus = 0
+            val adjacentUnits = combatant.getTile().neighbors.flatMap { it.getUnits() }
+            
             for (unique in civInfo.getMatchingUniques("+[]% Strength for [] units which have another [] unit in an adjacent tile")) {
                 if (combatant.matchesCategory(unique.params[1])
-                    && combatant.getTile().neighbors.flatMap { it.getUnits() }
-                    .any { it.civInfo == civInfo && it.matchesFilter(unique.params[2]) } 
+                    && adjacentUnits.any { it.civInfo == civInfo && it.matchesFilter(unique.params[2]) } 
                 ) {
-                    adjacentUnitBonus += unique.params[0].toInt()
+                    modifiers.add("Adjacent units", unique.params[0].toInt())
                 }
             }
-            if (adjacentUnitBonus != 0)
-                modifiers["Adjacent unit"] = adjacentUnitBonus
+            
+            for (unique in adjacentUnits.flatMap { it.getMatchingUniques("[]% Strength for [] units in adjacent tiles you are at war with") })
+                if (combatant.matchesCategory(unique.params[1]))
+                    modifiers.add("Adjacent enemy units", unique.params[0].toInt())
 
             val civResources = civInfo.getCivResourcesByName()
             for (resource in combatant.unit.baseUnit.getResourceRequirements().keys)
@@ -256,17 +258,16 @@ object BattleDamage {
             )
                 modifiers[unique.params[2]] = unique.params[0].toInt()
         }
-
-        if (tile.neighbors.flatMap { it.getUnits() }
-                .any {
-                    it.hasUnique("-10% combat strength for adjacent enemy units") && it.civInfo.isAtWarWith(
-                        unit.getCivInfo()
-                    )
-                })
-            modifiers["Haka War Dance"] = -10
-
-
-
+    
+        // Deprecated since 3.15.7
+            if (tile.neighbors.flatMap { it.getUnits() }
+                    .any {
+                        it.hasUnique("-10% combat strength for adjacent enemy units") && it.civInfo.isAtWarWith(
+                            unit.getCivInfo()
+                        )
+                    })
+                modifiers["Haka War Dance"] = -10
+        //
         return modifiers
     }
 
