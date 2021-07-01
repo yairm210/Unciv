@@ -248,6 +248,7 @@ object Battle {
     private fun reduceAttackerMovementPointsAndAttacks(attacker: ICombatant, defender: ICombatant) {
         if (attacker is MapUnitCombatant) {
             val unit = attacker.unit
+            unit.attacksThisTurn += 1
             if (unit.hasUnique("Can move after attacking") || unit.maxAttacksPerTurn() > unit.attacksThisTurn) {
                 // if it was a melee attack and we won, then the unit ALREADY got movement points deducted,
                 // for the movement to the enemy's tile!
@@ -255,7 +256,6 @@ object Battle {
                 if (!attacker.unit.baseUnit.movesLikeAirUnits() && !(attacker.getUnitType().isMelee() && defender.isDefeated()))
                     unit.useMovementPoints(1f)
             } else unit.currentMovement = 0f
-            unit.attacksThisTurn += 1
             if (unit.isFortified() || unit.isSleeping())
                 attacker.unit.action = null // but not, for instance, if it's Set Up - then it should definitely keep the action!
         } else if (attacker is CityCombatant) {
