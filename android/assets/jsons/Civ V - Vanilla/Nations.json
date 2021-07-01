@@ -670,6 +670,27 @@
 			"Fredrikstad","Kolding","Horsens","Tromsoe","Vejle","Koge","Sandnes","Holstebro","Slagelse","Drammen",
 			"Hillerod","Sonderborg","Skien","Svendborg","Holbaek","Hjorring","Fladstrand","Haderslev","Ringsted","Skrive"]
 	},
+	{
+		"name": "The Huns",
+		"leaderName": "Attila the Hun",
+		"adjective": ["Hunnic"],
+		"startBias": ["Avoid [Jungle]", "Avoid [Forest]"],
+		"preferredVictorType": "Domination",
+		
+		"startIntroPart1": "Your men stand proudly to greet you, Great Attila, grand warrior and ruler of the Hunnic empire. Together with your brother Bleda you expanded the boundaries of your empire, becoming the most powerful and frightening force of the 5th century. You bowed the Eastern Roman Emperors to your will and took kingdom after kingdom along the Danube and Nisava Rivers. As the sovereign ruler of the Huns, you marched your army across Europe into Gaul, planning to extend your already impressive lands all the way to the Atlantic Ocean. Your untimely death led to the quick disintegration and downfall of your empire, but your name and deeds have created an everlasting legacy for your people. ",
+		"startIntroPart2": "Fearsome General, your people call for the recreation of a new Hunnic Empire, one which will make the exploits and histories of the former seem like the faded dreaming of a dying sun. Will you answer their call to regain your rightful prominence and glory? Will you mount your steadfast steed and lead your armies to victory? Will you build a civilization that stands the test of time? ",
+		"declaringWar": "I grow tired of this throne. I think I should like to have yours instead.",
+		"attacked": "Now what is this?! You ask me to add your riches to my great avails. The invitation is accepted.",
+		"introduction": "You are in the presence of Attila, scourge of Rome. Do not let hubris be your downfall as well.",
+		"neutralHello": "Good day to you.",
+		"hateHello": "What do you want?",
+		"tradeRequest": "This is better than you deserve, but let it not be said that I am an unfair man.",
+		"outerColor": [180, 178, 164],
+		"innerColor": [70, 0, 4],
+		"uniqueName": "Scourge of God",
+		"uniques": ["[+1 Production] from every [Pasture]", "Cities are razed [2] times as fast", "Starts with [Animal Husbandry]", "\"Borrows\" city names from other civilizations in the game"],
+		"cities": ["Atilla's Court"]
+	},
 /*
 	{        
 	    "name": "Sweden",

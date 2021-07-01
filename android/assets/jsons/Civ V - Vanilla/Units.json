@@ -200,6 +200,22 @@
 		"attackSound": "arrow"
 	},
 	{
+		"name": "Horse Archer",
+		"unitType": "Ranged",
+		"uniqueTo": "The Huns",
+		"replaces": "Chariot Archer",
+		"movement": 4,
+		"strength": 7,
+		"rangedStrength": 10,
+		"cost": 56,
+		"requiredTech": "The Wheel",
+		"upgradesTo": "Knight",
+		"obsoleteTech": "Chivalry",
+		"uniques": ["No defensive terrain bonus"],
+		"promotions": ["Accuracy I"],
+		"attackSound": "arrow"
+	},
+	{
 		"name": "War Elephant",
 		"unitType": "Ranged",
 		"uniqueTo": "India",
@@ -254,6 +270,22 @@
 		"uniques": ["+[50]% Strength vs [Mounted]","+[10] HP when healing"],
 		"attackSound": "metalhit"
 	},
+	{
+		"name": "Battering Ram",
+		"replaces": "Spearman",
+		"uniqueTo": "Huns",
+		"unitType": "Melee",
+		"movement": 2,
+		"strength": 10,
+		"cost": 75,
+		"requiredTech": "Bronze Working",
+		"obsoleteTech": "Physics",
+		"upgradesTo": "Trebuchet",
+		"uniques": ["+[300]% Strength vs [City]", "No defensive terrain bonus", "+[-33]% Strength when defending",
+		"-[1] Visibility Range", "Can only attack [City] units"],
+		"promotions":  ["Cover I"],
+		"attackSound": "throw"
+	}
 	/*
 	{
 		"name": "Spearman",
@@ -937,7 +969,7 @@
 		"cost": 325,
 		"requiredTech": "Refrigeration",
 		"upgradesTo": "Nuclear Submarine",
-		"uniques": ["+[75]% Strength when attacking", "Invisible to others", "Can only attack water", "Can attack submarines", "Can enter ice tiles"]
+		"uniques": ["+[75]% Strength when attacking", "Invisible to others", "Can only attack [Water] units", "Can attack submarines", "Can enter ice tiles"]
 	},
 	{
 		"name": "Great War Infantry",
@@ -1288,7 +1320,7 @@
 		"rangedStrength": 85,
 		"cost": 425,
 		"requiredTech": "Telecommunications",
-		"uniques": ["+[75]% Strength when attacking", "Invisible to others", "Can only attack water",
+		"uniques": ["+[75]% Strength when attacking", "Invisible to others", "Can only attack [Water] units",
 			"Can attack submarines", "Can enter ice tiles", "[+1] Visibility Range", "Can carry [2] [Missile] units"]
 	},
 	{

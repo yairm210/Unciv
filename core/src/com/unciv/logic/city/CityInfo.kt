@@ -122,6 +122,9 @@ class CityInfo {
         val cityName = nationCities[cityNameIndex]
 
         val cityNameRounds = civInfo.citiesCreated / nationCities.size
+        if (cityNameRounds > 0 && civInfo.hasUnique("\"Borrows\" city names from other civilizations in the game")) {
+            name = borrowCityName()
+        }
         val cityNamePrefix = when (cityNameRounds) {
             0 -> ""
             1 -> "New "
@@ -129,6 +132,39 @@ class CityInfo {
         }
 
         name = cityNamePrefix + cityName
+    }
+    
+    private fun borrowCityName(): String {
+        val usedCityNames =
+            civInfo.gameInfo.civilizations.flatMap { it.cities.map { city -> city.name } }
+        // We take the last unused city name for each other civ in this game, skipping civs whose
+        // names are exhausted, and choose a random one from that pool if it's not empty.
+        var newNames = civInfo.gameInfo.civilizations
+            .filter { it.isMajorCiv() && it != civInfo }
+            .mapNotNull { it.nation.cities
+                .lastOrNull { city -> city !in usedCityNames } 
+            }
+        if (newNames.isNotEmpty()) {
+            return newNames.random()
+        }
+        
+        // As per fandom wiki, once the names from the other nations in the game are exhausted,
+        // names are taken from the rest of the nations in the ruleset
+        newNames = getRuleset()
+            .nations
+            .filter { it.key !in civInfo.gameInfo.civilizations.map { civ -> civ.nation.name } }
+            .values
+            .map {
+                it.cities
+                .filter { city -> city !in usedCityNames }
+            }.flatten()
+        if (newNames.isNotEmpty()) {
+            return newNames.random()
+        }
+        // If for some reason we have used every single city name in the game,
+        // (are we using some sort of baserule mod without city names?)
+        // just return something so we at least have a name
+        return "The City without a Name"
     }
 
 
@@ -360,8 +396,9 @@ class CityInfo {
         cityConstructions.endTurn(stats)
         expansion.nextTurn(stats.culture)
         if (isBeingRazed) {
-            population.addPopulation(-1)
-            if (population.population <= 0) { // there are strange cases where we get to -1
+            val removedPopulation = 1 + civInfo.getMatchingUniques("Cities are razed [] times as fast").sumBy { it.params[0].toInt() }
+            population.addPopulation(-1 * removedPopulation)
+            if (population.population <= 0) { 
                 civInfo.addNotification("[$name] has been razed to the ground!", location, "OtherIcons/Fire")
                 destroyCity()
             } else { //if not razed yet:
