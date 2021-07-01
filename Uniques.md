@@ -575,8 +575,6 @@ These last two uniques may seem like they only have a one-time effect. However, 
 # Deprecated Uniques
 These uniques have been recently deprecated. While they are still supported, they should be phased out of mods, as we will remove support for them in the future. Deprecated uniques are usually replaced with a more generic version that can be used in their place. These replacements are noted here as well.
 
-"[stats] Per [amount] Population in this city" - Replaced with "[stats] per [amount] population [cityFilter]"
-
 "Immediately creates a cheapest available cultural building in each of your first 4 cities for free" - Replaced with "Immediately creates the cheapest available cultural building in each of your first [amount] cities for free"
 
 "+50% attacking strength for cities with garrisoned units" - Replaced with "+[amount]% attacking strength for cities with garrisoned units"
@@ -585,13 +583,9 @@ These uniques have been recently deprecated. While they are still supported, the
 
 "Tile improvement speed +25%" - Replaced with "-[amount]% tile improvement construction time"
 
-"+25% bonus vs Barbarians" - Replaced with "+[amount]% Strength vs [unitFilter]"
-
 "+15% combat strength for melee units which have another military unit in an adjacent tile" - Replaced with "+[amount]% Strength for [unitFilter] units which have another [unitFilter] unit in an adjacent tile"
 
 "Gold cost of upgrading military units reduced by 33%" - Replaced with "Gold cost of upgrading [unitFilter] units reduced by [amount]%"
-
-"All military naval units receive +1 movement and +1 sight" - Replaced with "+[amount] Movement for all [unitFilter] units" and "+[amount] Sight for all [unitFilter] units"
 
 "+1 happiness from each type of luxury resource" - Replaced with "+[amount] happiness from each type of luxury resource"
 
