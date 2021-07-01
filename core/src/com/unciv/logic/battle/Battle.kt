@@ -397,8 +397,8 @@ object Battle {
             else attacker.unit.getMatchingUniques("Blast radius []").first().params[0].toInt()
 
         val strength = when {
-            (attacker.unit.hasUnique("Nuclear weapon of strength []")) ->
-                attacker.unit.getMatchingUniques("Nuclear weapon of strength []").first().params[0].toInt()
+            (attacker.unit.hasUnique("Nuclear weapon of Strength []")) ->
+                attacker.unit.getMatchingUniques("Nuclear weapon of Strength []").first().params[0].toInt()
             // Deprecated since 3.15.3
                 (attacker.unit.hasUnique("Nuclear weapon")) -> 1
             //
