@@ -409,13 +409,13 @@
 	
 	{
 		"name": "Ambush I",
-		"effect": "+[25]% Strength vs [Armor]",
+		"effect": "+[33]% Strength vs [Armor]",
 		"unitTypes": ["Melee","Fighter","Bomber"]
 	},
 	{
 		"name": "Ambush II",
 		"prerequisites": ["Ambush I"],
-		"effect": "+[25]% Strength vs [Armor]",
+		"effect": "+[33]% Strength vs [Armor]",
 		"unitTypes": ["Melee","Fighter","Bomber"]
 	},
 	
