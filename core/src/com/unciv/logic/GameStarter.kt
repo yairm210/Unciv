@@ -55,6 +55,8 @@ object GameStarter {
         gameInfo.setTransients() // needs to be before placeBarbarianUnit because it depends on the tilemap having its gameinfo set
 
         addCivTechs(gameInfo, ruleset, gameSetupInfo)
+        
+        addCivStats(gameInfo)
 
         // and only now do we add units for everyone, because otherwise both the gameInfo.setTransients() and the placeUnit will both add the unit to the civ's unit list!
         addCivStartingUnits(gameInfo)
@@ -111,6 +113,21 @@ object GameStarter {
                     civInfo.tech.addTechnology(tech.name)
 
             civInfo.popupAlerts.clear() // Since adding technologies generates popups...
+        }
+    }
+
+    private fun addCivStats(gameInfo: GameInfo) {
+        val ruleSet = gameInfo.ruleSet
+        val startingEra = gameInfo.gameParameters.startingEra
+        val era =
+        if (startingEra in ruleSet.eras.keys) {
+            ruleSet.eras[startingEra]!!
+        } else {
+            Era()
+        }
+        for (civInfo in gameInfo.civilizations.filter { !it.isBarbarian() }) {
+            civInfo.addGold((era.startingGold * gameInfo.gameParameters.gameSpeed.modifier).toInt())
+            civInfo.policies.addCulture((era.startingCulture * gameInfo.gameParameters.gameSpeed.modifier).toInt())
         }
     }
 

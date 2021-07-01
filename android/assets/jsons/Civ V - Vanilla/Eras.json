@@ -69,7 +69,7 @@
         "staringSettlerCount": 3,
         "startingWorkerCount": 2,
         "startingMilitaryUnitCount": 5,
-        "startingMilitaryUnit": "Infantry",
+        "startingMilitaryUnit": "Rifleman",
         "startingGold": 200,
         "startingCulture": 500,
         "settlerPopulation": 3,
