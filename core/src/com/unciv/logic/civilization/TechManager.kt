@@ -50,8 +50,9 @@ class TechManager {
 
     /** When moving towards a certain tech, the user doesn't have to manually pick every one. */
     var techsToResearch = ArrayList<String>()
-    private var techsInProgress = HashMap<String, Int>()
     var overflowScience = 0
+    private var techsInProgress = HashMap<String, Int>()
+    fun scienceSpentOnTech(tech: String): Int = if (tech in techsInProgress) techsInProgress[tech]!! else 0
 
     /** In civ IV, you can auto-convert a certain percentage of gold in cities to science */
     var goldPercentConvertedToScience = 0.6f

@@ -2,7 +2,7 @@
 
 	{
 		"name": "Heal Instantly",
-		"effect": "Heal this Unit by 50 HP; Doing so will consume this opportunity to choose a Promotion",
+		"uniques": ["Heal this Unit by [50] HP", "Doing so will consume this opportunity to choose a Promotion"],
 		"unitTypes": ["Melee","Mounted","Scout","Siege","Ranged","Armor","WaterMelee","WaterRanged","WaterSubmarine"]
 	},
 	
@@ -52,14 +52,14 @@
 	{
 		"name": "Extended Range",
 		"prerequisites": ["Accuracy III","Barrage III","Targeting II","Bombardment II", "Wolfpack II"],
-		"effect": "+1 Range",
+		"effect": "[+1] Range",
 		"unitTypes": ["Ranged","Siege","WaterRanged","WaterSubmarine"]
 	},
 	{
 		"name": "Indirect Fire",
-		"prerequisites": ["Accuracy III","Barrage III"],
+		"prerequisites": ["Accuracy III", "Barrage III", "Bombardment II", "Targeting II"],
 		"effect": "Ranged attacks may be performed over obstacles",
-		"unitTypes": ["Ranged","Siege"]
+		"unitTypes": ["Ranged","Siege","WaterRanged"]
 	},
 	
 	// Melee, Mounted+Armor
@@ -112,7 +112,7 @@
 	},
 	{
 		"name": "Formation I",
-		"prerequisites": ["Shock II","Drill II"],
+		"prerequisites": ["Shock II","Drill II"], // G&K also has Accuracy II & Barrage II as possible prerequisites for this, but I couldn't find a source for the unittypes
 		"effect": "+[33]% Strength vs [Mounted]",
 		"unitTypes": ["Melee","Mounted"]
 	},
@@ -126,13 +126,15 @@
 	{
 		"name": "Blitz",
 		"prerequisites": ["Shock III","Drill III"],
-		"effect": "1 additional attack per turn",
+		"effect": "[1] additional attacks per turn",
 		"unitTypes": ["Melee","Mounted","Armor"]
 	},
 	{
 		"name": "Woodsman",
 		"prerequisites": ["Shock III","Drill III"],
-		"effect": "Double movement rate through Forest and Jungle",
+		"effect": "Double movement rate through Forest and Jungle", 
+		// This could be generalized: ["-[50]% movement costs through [Forest] tiles", "-[50]% movement costs through [Jungle] tiles"],
+		// but with how getMovementCostBetweenAdjacentTiles() is optimized, that's difficult to implement. 
 		"unitTypes": ["Melee"]
 	},
 	{
@@ -143,33 +145,49 @@
 	},
 	{
 		"name": "Medic",
-		"prerequisites": ["Shock I", "Drill I", "Scouting II"],
-		"effect": "This unit and all others in adjacent tiles heal 5 additional HP per turn",
+		"prerequisites": ["Shock I", "Drill I", "Scouting II", "Survivalism II"],
+		"uniques": ["[+5] HP when healing", "All adjacent units heal [5] HP when healing"],
 		"unitTypes": ["Melee","Mounted","Scout"]
 	},
 	{
 		"name": "Medic II",
 		"prerequisites": ["Medic"],
-		"effect": "This unit and all others in adjacent tiles heal 5 additional HP. This unit heals 5 additional HP outside of friendly territory.",
+		"uniques": ["[+5] HP when healing", "All adjacent units heal [5] HP when healing",
+					"[+5] HP when healing in [Foreign Land] tiles"],
 		"unitTypes": ["Melee","Mounted","Scout"]
 	},
 	
 	// Scout
 	{
 		"name": "Scouting I",
-		"effect": "+1 Visibility Range",
+		"effect": "[+1] Visibility Range",
 		"unitTypes": ["Scout"]
 	},
 	{
 		"name": "Scouting II",
-		"prerequisites": ["Scouting I"],
-		"effect": "+1 Movement",
+		"prerequisites": ["Scouting II"],
+		"effect": "[+1] Visibility Range",
 		"unitTypes": ["Scout"]
 	},
 	{
 		"name": "Scouting III",
-		"prerequisites": ["Scouting II"],
-		"effect": "+1 Visibility Range",
+		"prerequisites": ["Scouting I"],
+		"effect": "[+1] Movement",
+		"unitTypes": ["Scout"]
+	},
+	{
+		"name": "Survivalism I",
+		"uniques": ["[+5] HP when healing in [Foreign Land] tiles", "+[25]% Strength when defending"],
+		"unitTypes": ["Scout"]
+	},
+	{
+		"name": "Survivalism II",
+		"uniques": ["[+5] HP when healing in [Foreign Land] tiles", "+[25]% Strength when defending"],
+		"unitTypes": ["Scout"]
+	},
+	{
+		"name": "Survivalism III",
+		"uniques": ["Unit will heal every turn, even if it performs an action", "May withdraw before melee ([75]%)"], // This number is not based on any source
 		"unitTypes": ["Scout"]
 	},
 	
@@ -177,19 +195,19 @@
 	// Water melee
 	{
 		"name": "Boarding Party I",
-		"effect": "+[33]% Strength vs [water units]",
+		"effect": "+[15]% Strength vs [water units]",
 		"unitTypes": ["WaterMelee"]
 	},
 	{
 		"name": "Boarding Party II",
 		"prerequisites": ["Boarding Party I"],
-		"effect": "+[33]% Strength vs [water units]",
+		"effect": "+[15]% Strength vs [water units]",
 		"unitTypes": ["WaterMelee"]
 	},
 	{
 		"name": "Boarding Party III",
 		"prerequisites": ["Boarding Party II"],
-		"effect": "+[33]% Strength vs [water units]",
+		"effect": "+[15]% Strength vs [water units]",
 		"unitTypes": ["WaterMelee"]
 	},
 	
@@ -339,7 +357,7 @@
 	{
 		"name": "Operational Range",
 		"prerequisites": ["Interception I", /*"Dogfighting I",*/ "Siege I", "Bombardment I"],
-		"effect": "+2 Range",
+		"effect": "[+2] Range",
 		"unitTypes": ["Fighter","Bomber"]
 	},
 	{
@@ -372,13 +390,13 @@
 		"name": "Mobility",
 		"prerequisites": ["Shock II","Drill II","Targeting I",
 			"Bombardment I","Boarding Party I", "Coastal Raider I", "Wolfpack I"],
-		"effect": "+1 Movement",
+		"effect": "+[1] Movement",
 		"unitTypes": ["Mounted","WaterMelee","WaterRanged","Armor","WaterSubmarine"]
 	},
 	{
 		"name": "Sentry",
 		"prerequisites": ["Accuracy I","Barrage I","Shock II","Drill II","Bombardment I","Targeting I","Boarding Party I","Coastal Raider I"],
-		"effect": "+1 Visibility Range",
+		"effect": "[+1] Visibility Range",
 		"unitTypes": ["Melee","Mounted","WaterRanged","Armor","WaterMelee"]
 	},
 	{
