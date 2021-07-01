@@ -196,11 +196,18 @@ object BattleDamage {
             )
                 modifiers["Tile"] = (tileDefenceBonus * 100).toInt()
 
-            if (attacker.isRanged()) {
-                val defenceVsRanged = 25 * defender.unit.getUniques()
-                    .count { it.text == "+25% Defence against ranged attacks" }
-                if (defenceVsRanged > 0) modifiers["defence vs ranged"] = defenceVsRanged
+            for (unique in defender.unit.getMatchingUniques("[]% Strength when defending vs []")) {
+                if (attacker.matchesCategory(unique.params[1]))
+                    modifiers.add("defence vs [${unique.params[1]}] ", unique.params[0].toInt())
             }
+            
+            // Deprecated since 3.15.7
+                if (attacker.isRanged()) {
+                    val defenceVsRanged = 25 * defender.unit.getUniques()
+                        .count { it.text == "+25% Defence against ranged attacks" }
+                    if (defenceVsRanged > 0) modifiers.add("defence vs ranged", defenceVsRanged)
+                }
+            //
 
             for (unique in defender.unit.getMatchingUniques("+[]% Strength when defending")) {
                 modifiers.add("Defender Bonus", unique.params[0].toInt())
@@ -208,7 +215,7 @@ object BattleDamage {
 
             for (unique in defender.unit.getMatchingUniques("+[]% defence in [] tiles")) {
                 if (tile.matchesFilter(unique.params[1]))
-                    modifiers["[${unique.params[1]}] defence"] = unique.params[0].toInt()
+                    modifiers.add("[${unique.params[1]}] defence", unique.params[0].toInt())
             }
 
             if (defender.unit.isFortified())
