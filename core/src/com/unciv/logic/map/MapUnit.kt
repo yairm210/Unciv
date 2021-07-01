@@ -848,7 +848,9 @@ class MapUnit {
         if (interceptChance() == 0) return false
         val maxAttacksPerTurn = 1 + 
             getMatchingUniques("[] extra interceptions may be made per turn").sumBy { it.params[0].toInt() } + 
-            getMatchingUniques("1 extra interception may be made per turn").sumBy { 1 } 
+            // Deprecated since 3.15.7
+                getMatchingUniques("1 extra interception may be made per turn").sumBy { 1 }
+            //
         if (attacksThisTurn >= maxAttacksPerTurn) return false
         if (currentTile.aerialDistanceTo(attackedTile) > baseUnit.interceptRange) return false
         return true
@@ -882,7 +884,8 @@ class MapUnit {
     }
 
     fun interceptDamagePercentBonus(): Int {
-        return getUniques().filter { it.placeholderText == "Bonus when intercepting []%" }
+        // "Bonus when intercepting []%" deprecated since 3.15.7
+        return getUniques().filter { it.placeholderText == "Bonus when intercepting []%" || it.placeholderText == "[]% Damage when intercepting"}
             .sumBy { it.params[0].toInt() }
     }
 
