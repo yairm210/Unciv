@@ -48,6 +48,7 @@ class Ruleset {
     val tileResources = LinkedHashMap<String, TileResource>()
     val tileImprovements = LinkedHashMap<String, TileImprovement>()
     val technologies = LinkedHashMap<String, Technology>()
+    val eras = LinkedHashMap<String, Era>()
     val units = LinkedHashMap<String, BaseUnit>()
     val unitPromotions = LinkedHashMap<String, Promotion>()
     val nations = LinkedHashMap<String, Nation>()
@@ -77,6 +78,7 @@ class Ruleset {
         buildings.putAll(ruleset.buildings)
         for (buildingToRemove in ruleset.modOptions.buildingsToRemove) buildings.remove(buildingToRemove)
         difficulties.putAll(ruleset.difficulties)
+        eras.putAll(ruleset.eras)
         nations.putAll(ruleset.nations)
         policyBranches.putAll(ruleset.policyBranches)
         policies.putAll(ruleset.policies)
@@ -96,22 +98,22 @@ class Ruleset {
     }
 
     fun clear() {
+        beliefs.clear()
         buildings.clear()
         difficulties.clear()
-        nations.clear()
+        eras.clear()
         policyBranches.clear()
+        specialists.clear()
+        mods.clear()
+        nations.clear()
         policies.clear()
-        beliefs.clear()
         quests.clear()
         technologies.clear()
-        buildings.clear()
         terrains.clear()
         tileImprovements.clear()
         tileResources.clear()
         unitPromotions.clear()
-        specialists.clear()
         units.clear()
-        mods.clear()
     }
 
 
@@ -149,6 +151,8 @@ class Ruleset {
         val improvementsFile = folderHandle.child("TileImprovements.json")
         if (improvementsFile.exists()) tileImprovements += createHashmap(jsonParser.getFromJson(Array<TileImprovement>::class.java, improvementsFile))
 
+        val erasFile = folderHandle.child("Eras.json")
+        if (erasFile.exists()) eras += createHashmap(jsonParser.getFromJson(Array<Era>::class.java, erasFile))
         val unitsFile = folderHandle.child("Units.json")
         if (unitsFile.exists()) units += createHashmap(jsonParser.getFromJson(Array<BaseUnit>::class.java, unitsFile))
 
