@@ -560,15 +560,18 @@ class MapUnit {
             isFriendlyTerritory -> 15 // Allied territory
             else -> 5 // Enemy territory
         }
+        
+        val mayHeal = healing > 0 || (tileInfo.isWater && hasUnique("May heal outside of friendly territory"))
 
         // Deprecated since 3.15.6
             if (hasUnique("This unit and all others in adjacent tiles heal 5 additional HP. This unit heals 5 additional HP outside of friendly territory.")
                 && !isFriendlyTerritory
-                && healing > 0
+                && mayHeal
             )// Additional healing from medic is only applied when the unit is able to heal
                 healing += 5
         //
-        if (healing > 0) {
+        
+        if (mayHeal) {
             for (unique in getMatchingUniques("[] HP when healing in [] tiles")) {
                 if (tileInfo.matchesFilter(unique.params[1])) {
                     healing += unique.params[0].toInt()

@@ -293,7 +293,7 @@
 	{
 		"name": "Flight Deck II",
 		"prerequisites": ["Flight Deck I"],
-		"effect": " Can carry [1] extra [Air] units",
+		"effect": "Can carry [1] extra [Air] units",
 		"unitTypes": ["WaterAircraftCarrier"]
 	},
 	{
@@ -301,6 +301,13 @@
 		"prerequisites": ["Flight Deck II"],
 		"effect": "Can carry [1] extra [Air] units",
 		"unitTypes": ["WaterAircraftCarrier"]
+	},
+	
+	// Mixed Water
+	{
+		"name" : "Supply",
+		"prerequisites": ["Bombardment III", "Targeting III", "Boarding Party III", "Coastal Raider III"],
+		"uniques": ["May heal outside of friendly territory", "[+15] HP when healing in [Foreign Land] tiles"],
 	},
 
 	// Bomber
