@@ -98,11 +98,6 @@ object BattleDamage {
         if (enemy.getCivInfo().isBarbarian()) {
             modifiers["Difficulty"] =
                 (civInfo.gameInfo.getDifficulty().barbarianBonus * 100).toInt()
-            // Deprecated since 3.14.17
-                if (civInfo.hasUnique("+25% bonus vs Barbarians")) {
-                    modifiers["vs Barbarians (deprecated)"] = 25
-                }
-            //
         }
 
         return modifiers

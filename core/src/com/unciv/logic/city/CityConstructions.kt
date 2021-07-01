@@ -84,9 +84,6 @@ class CityConstructions {
             "[] per [] population []" -> if (cityInfo.matchesFilter(unique.params[2])) 
                 stats.add(unique.stats.times(cityInfo.population.population / unique.params[1].toFloat()))
             "[] once [] is discovered" -> if (cityInfo.civInfo.tech.isResearched(unique.params[1])) stats.add(unique.stats)
-            // Deprecated since 3.14.17, left for modding compatibility
-            "[] Per [] Population in this city" ->
-                stats.add(unique.stats.times(cityInfo.population.population / unique.params[1].toFloat()))
         }
 
         return stats

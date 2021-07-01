@@ -146,11 +146,6 @@ class MapUnit {
         // Deprecated since 3.15.6
             movement += getUniques().count { it.text == "+1 Movement" }
         //
-        // Deprecated since 3.14.17
-            if (type.isMilitary() && type.isWaterUnit() && civInfo.hasUnique("All military naval units receive +1 movement and +1 sight")) {
-                movement += 1
-            }
-        //
         
         for (unique in civInfo.getMatchingUniques("+[] Movement for all [] units"))
             if (matchesFilter(unique.params[1]))
@@ -224,11 +219,7 @@ class MapUnit {
             if (civInfo.hasUnique("+1 Sight for all land military units") && type.isMilitary() && type.isLandUnit())
                 visibilityRange += 1
         //
-        
-        // Deprecated since 3.14.17
-            if (type.isMilitary() && type.isWaterUnit() && civInfo.hasUnique("All military naval units receive +1 movement and +1 sight"))
-                visibilityRange += 1
-        //
+
 
         for (unique in getTile().getAllTerrains().flatMap { it.uniqueObjects })
             if (unique.placeholderText == "[] Sight for [] units" && matchesFilter(unique.params[1]))
