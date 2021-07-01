@@ -263,7 +263,7 @@ class BaseUnit : INamed, IConstruction {
     fun isGreatPerson() = uniqueObjects.any { it.placeholderText == "Great Person - []" }
 
     // "Nuclear Weapon" unique deprecated since 3.15.4
-    fun isNuclearWeapon() = uniqueObjects.any { it.placeholderText == "Nuclear Weapon" || it.placeholderText == "Nuclear Weapon of strength []" }
+    fun isNuclearWeapon() = uniqueObjects.any { it.placeholderText == "Nuclear Weapon" || it.placeholderText == "Nuclear weapon of Strength []" }
 
     fun movesLikeAirUnits() = unitType.isAirUnit() || unitType.isMissile()
 

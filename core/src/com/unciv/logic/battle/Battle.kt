@@ -389,6 +389,7 @@ object Battle {
                 && civSuffered.getDiplomacyManager(attackingCiv).diplomaticStatus != DiplomaticStatus.War
             ) {
                 attackingCiv.getDiplomacyManager(civSuffered).declareWar()
+                attackingCiv.addNotification("After being hit by our [${attacker.getName()}], [${civSuffered}] has declared war on us!", targetTile.position, NotificationIcon.War)
             }
         }
         
@@ -397,8 +398,8 @@ object Battle {
             else attacker.unit.getMatchingUniques("Blast radius []").first().params[0].toInt()
 
         val strength = when {
-            (attacker.unit.hasUnique("Nuclear weapon of strength []")) ->
-                attacker.unit.getMatchingUniques("Nuclear weapon of strength []").first().params[0].toInt()
+            (attacker.unit.hasUnique("Nuclear weapon of Strength []")) ->
+                attacker.unit.getMatchingUniques("Nuclear weapon of Strength []").first().params[0].toInt()
             // Deprecated since 3.15.3
                 (attacker.unit.hasUnique("Nuclear weapon")) -> 1
             //
@@ -409,8 +410,8 @@ object Battle {
         val hitTiles = targetTile.getTilesInDistance(blastRadius)
         
         // Declare war on the owners of all hit tiles
-        for (hitCiv in hitTiles.map { it.getOwner() }.distinct()) {
-            hitCiv!!.addNotification("A(n) [${attacker.getName()}] exploded in our territory!".tr(), targetTile.position, NotificationIcon.War)
+        for (hitCiv in hitTiles.mapNotNull { it.getOwner() }.distinct()) {
+            hitCiv.addNotification("A(n) [${attacker.getName()}] exploded in our territory!".tr(), targetTile.position, NotificationIcon.War)
             tryDeclareWar(hitCiv)
         }
 
