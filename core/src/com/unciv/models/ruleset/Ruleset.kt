@@ -375,7 +375,8 @@ class Ruleset {
                     warningCount++
                 }
             }
-            if (tech.era() !in eras)
+            // eras.isNotEmpty() is only for mod compatibility, it should be removed at some point.
+            if (eras.isNotEmpty() && tech.era() !in eras)
                 lines += "Unknown era ${tech.era()} referenced in column of tech ${tech.name}"
         }
 

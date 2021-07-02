@@ -755,15 +755,15 @@ class MapUnit {
             )
         }
 
-        val researchableAncientEraTechs = tile.tileMap.gameInfo.ruleSet.technologies.values
+        val researchableFirstEraTechs = tile.tileMap.gameInfo.ruleSet.technologies.values
             .filter {
                 !civInfo.tech.isResearched(it.name)
                         && civInfo.tech.canBeResearched(it.name)
-                        && it.era() == Constants.ancientEra
+                        && civInfo.gameInfo.ruleSet.getEraNumber(it.era()) == 1
             }
-        if (researchableAncientEraTechs.isNotEmpty())
+        if (researchableFirstEraTechs.isNotEmpty())
             actions.add {
-                val tech = researchableAncientEraTechs.random(tileBasedRandom).name
+                val tech = researchableFirstEraTechs.random(tileBasedRandom).name
                 civInfo.tech.addTechnology(tech)
                 civInfo.addNotification(
                     "We have discovered the lost technology of [$tech] in the ruins!",
