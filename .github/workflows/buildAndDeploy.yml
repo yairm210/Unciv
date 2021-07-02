@@ -76,11 +76,11 @@ jobs:
         run: |
           ## To test this in Windows PS:  cat .\changelog.md | wsl grep -Pzo --color '\\#{2}.3.15.7[^\\#]*?\\#{2}'
           grep -P '\#{2}.3.15.7[^a]' changelog.md  # grep to get only our release
-          echo "$r"
-          r="${r//'%'/'%25'}"                               # Multiline escape sequences for %
-          r="${r//$'\n'/'%0A'}"                             # Multiline escape sequences for '\n'
-          r="${r//$'\r'/'%0D'}"                             # Multiline escape sequences for '\r'
-          echo "::set-output name=RELEASE_BODY::$r"         # <--- Set environment variable
+          #echo "$r"
+          #r="${r//'%'/'%25'}"                               # Multiline escape sequences for %
+          #r="${r//$'\n'/'%0A'}"                             # Multiline escape sequences for '\n'
+          #r="${r//$'\r'/'%0D'}"                             # Multiline escape sequences for '\r'
+          #echo "::set-output name=RELEASE_BODY::$r"         # <--- Set environment variable
 
 
 
