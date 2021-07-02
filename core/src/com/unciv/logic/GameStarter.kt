@@ -199,6 +199,26 @@ object GameStarter {
             var startingUnits: MutableList<String>
             var eraUnitReplacement: String
             
+            if (ruleSet.eras.isEmpty()) { // We are using an older mod, so we only look at the difficulty file
+                startingUnits = (when {
+                    civ.isPlayerCivilization() -> gameInfo.getDifficulty().startingUnits
+                    civ.isMajorCiv() -> gameInfo.getDifficulty().aiMajorCivStartingUnits
+                    else -> gameInfo.getDifficulty().aiCityStateStartingUnits
+                }).toMutableList()
+
+                val warriorEquivalent = ruleSet.units
+                    .filter { it.value.unitType.isLandUnit() && it.value.unitType.isMilitary() && it.value.isBuildable(civ) }
+                    .maxByOrNull {max(it.value.strength, it.value.rangedStrength)}
+                    ?.key
+                
+                for (unit in startingUnits) {
+                    val unitToAdd = if (unit == "Warrior") warriorEquivalent else unit 
+                    if (unitToAdd != null) placeNearStartingPosition(unitToAdd)
+                }
+                
+                continue
+            }
+            
             
             if (startingEra in ruleSet.eras.keys) {
                 startingUnits = ruleSet.eras[startingEra]!!.getStartingUnits().toMutableList()
@@ -210,9 +230,9 @@ object GameStarter {
             
             // Add extra units granted by difficulty
             startingUnits.addAll(when {
-                civ.isPlayerCivilization() -> gameInfo.getDifficulty().startingUnits
-                civ.isMajorCiv() -> gameInfo.getDifficulty().aiMajorCivStartingUnits
-                else -> gameInfo.getDifficulty().aiCityStateStartingUnits
+                civ.isPlayerCivilization() -> gameInfo.getDifficulty().playerBonusStartingUnits
+                civ.isMajorCiv() -> gameInfo.getDifficulty().aiMajorCivBonusStartingUnits
+                else -> gameInfo.getDifficulty().aiCityStateBonusStartingUnits
             })
 
             fun getEquivalentUnit(civ: CivilizationInfo, unitParam: String): String? {
