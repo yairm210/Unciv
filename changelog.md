@@ -1,3 +1,7 @@
+## 3.15.7-announcementTest
+
+I'm checking if this information gets to the Github release and the Discord announcements
+
 ## 3.15.7
 
 Resolved 'getting stuck when there are no more pickable Pantheon beliefs'
