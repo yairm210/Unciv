@@ -128,9 +128,7 @@ class ModManagementScreen: PickerScreen(disableScroll = true) {
         topTable.row()
 
         // horizontal separator looking like the SplitPane handle
-        val separator = Table(skin)
-        separator.background = skin.get("default-vertical", SplitPane.SplitPaneStyle::class.java).handle
-        topTable.add(separator).minHeight(3f).fillX().colspan(5).row()
+        topTable.addSeparator(Color.CLEAR, 5, 3f)
 
         // main row containing the three 'blocks' installed, online and information
         topTable.add()      // skip empty first column
@@ -420,11 +418,9 @@ class ModManagementScreen: PickerScreen(disableScroll = true) {
         val isVisual = visualMods.contains(mod.name)
         modStateImages[mod.name]?.isVisual = isVisual
 
-        val visualCheckBox = CheckBox("Permanent audiovisual mod", skin)
-        visualCheckBox.isChecked = isVisual
-        modActionTable.add(visualCheckBox)
-        visualCheckBox.onChange {
-            if (visualCheckBox.isChecked)
+        val visualCheckBox = "Permanent audiovisual mod".toCheckBox(isVisual) {
+            checked ->
+            if (checked)
                 visualMods.add(mod.name)
             else
                 visualMods.remove(mod.name)
@@ -432,7 +428,7 @@ class ModManagementScreen: PickerScreen(disableScroll = true) {
             ImageGetter.setNewRuleset(ImageGetter.ruleset)
             refreshModActions(mod)
         }
-        modActionTable.row()
+        modActionTable.add(visualCheckBox).row()
     }
 
     /** Rebuild the left-hand column containing all installed mods */
