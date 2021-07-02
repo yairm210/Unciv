@@ -75,13 +75,7 @@ jobs:
         run: |
           ## To test this in Windows PS:  cat .\changelog.md | wsl grep -Pzo --color '\\#{2}.3.15.7[^\\#]*?\\#{2}' | wsl head -n -2
           r=$(grep -Pzo '\#{2}.${{steps.tag.outputs.tag}}[^\#]*\#' changelog.md)  # grep to get only our release
-          echo "$r"
-          echo "--- after head ---"
-          r=$(echo "$r" | head -n -2)
-          echo "$r"
-          #r="${r//'%'/'%25'}"                               # Multiline escape sequences for %
-          #r="${r//$'\n'/'%0A'}"                             # Multiline escape sequences for '\n'
-          #r="${r//$'\r'/'%0D'}"                             # Multiline escape sequences for '\r'
+          r=$(echo "$r" | head -n -2) 
           
           ## See https://trstringer.com/github-actions-multiline-strings/
           
@@ -91,17 +85,16 @@ jobs:
           echo "$r" >> $GITHUB_ENV
           echo "EOF" >> $GITHUB_ENV
           
-          echo "--- reading from where we wrote ---"
-          echo "${{ env.RELEASE_BODY }}"
-          
       - name: Post announcement on Discord
         continue-on-error: true
         if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
         env:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
         uses: Ilshidur/action-discord@0.3.2
-        with:
-          args: "${{ env.RELEASE_BODY }}"
+        with: 
+          args: | # See https://discordjs.guide/miscellaneous/parsing-mention-arguments.html#how-discord-mentions-work
+            <@663705024265715743>
+            ${{ env.RELEASE_BODY }}
 
 
       - name: Upload binaries to release
