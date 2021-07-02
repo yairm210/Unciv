@@ -849,7 +849,7 @@ class MapUnit {
         val maxAttacksPerTurn = 1 + 
             getMatchingUniques("[] extra interceptions may be made per turn").sumBy { it.params[0].toInt() } + 
             // Deprecated since 3.15.7
-                getMatchingUniques("1 extra interception may be made per turn").sumBy { 1 }
+                getMatchingUniques("1 extra interception may be made per turn").count()
             //
         if (attacksThisTurn >= maxAttacksPerTurn) return false
         if (currentTile.aerialDistanceTo(attackedTile) > baseUnit.interceptRange) return false

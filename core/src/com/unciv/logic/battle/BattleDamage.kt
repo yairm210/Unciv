@@ -61,8 +61,8 @@ object BattleDamage {
                 }
             }
             
-            for (unique in adjacentUnits.flatMap { it.getMatchingUniques("[]% Strength for [] units in adjacent tiles you are at war with") })
-                if (combatant.matchesCategory(unique.params[1]))
+            for (unique in adjacentUnits.flatMap { it.getMatchingUniques("[]% Strength for enemy [] units in adjacent [] tiles") })
+                if (combatant.matchesCategory(unique.params[1]) && combatant.getTile().matchesFilter(unique.params[2]))
                     modifiers.add("Adjacent enemy units", unique.params[0].toInt())
 
             val civResources = civInfo.getCivResourcesByName()
