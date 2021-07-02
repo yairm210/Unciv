@@ -82,9 +82,17 @@ jobs:
           #r="${r//'%'/'%25'}"                               # Multiline escape sequences for %
           #r="${r//$'\n'/'%0A'}"                             # Multiline escape sequences for '\n'
           #r="${r//$'\r'/'%0D'}"                             # Multiline escape sequences for '\r'
-          echo "::set-output name=RELEASE_BODY::$r"         # <--- Set environment variable
-          echo "--- reading from output ---"
-          echo "${{ steps.read_release.outputs.RELEASE_BODY }}"
+          
+          ## See https://trstringer.com/github-actions-multiline-strings/
+          
+          echo "--- Set variable manually in github env ---"
+
+          echo "RELEASE_BODY<<EOF" >> $GITHUB_ENV
+          echo "$r" >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
+          
+          echo "--- reading from where we wrote ---"
+          echo "${{ env.RELEASE_BODY }}"
           
       - name: Post announcement on Discord
         continue-on-error: true
@@ -93,7 +101,7 @@ jobs:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
         uses: Ilshidur/action-discord@0.3.2
         with:
-          args: "'${{ steps.read_release.outputs.RELEASE_BODY }}'"
+          args: "${{ env.RELEASE_BODY }}"
 
 
       - name: Upload binaries to release
@@ -106,6 +114,6 @@ jobs:
           overwrite: true
           file_glob: true
             # <--- Use environment variables that was created earlier - see https://github.com/svenstaro/upload-release-action
-            # Double-quotes so it will take the multiline, https://stackoverflow.com/questions/49457787
+            # Single-quotes do not solve the multiline problem.
           body: |
-            '${{ steps.read_release.outputs.RELEASE_BODY }}'
+            ${{ env.RELEASE_BODY }}
