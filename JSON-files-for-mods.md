@@ -24,7 +24,7 @@ This file contains two technology objects, one for Agriculture and one for Minin
 ### techs.json
 
 Technologies can have the following attributes:
-- name: Strong - The name of the technology
+- name: String - The name of the technology
 - cost: Integer - The amount of science required to research this tech
 - prerequisites: List of strings - A list of the names of techs that are prerequisites of this tech. Only direct prerequisites are necessary.
 
