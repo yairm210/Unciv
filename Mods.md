@@ -21,7 +21,7 @@ Creating and editing mods from your phone is NOT RECOMMENDED - it's *much easier
 Mods are located in a `/mods` directory, on Desktop that should be next to your .jar file.
 
 Mods have 2 subfolders:
-- jsons - here you should put files that alter the data of game objects, the order of the files is as in [the base json files](https://github.com/yairm210/Unciv/tree/master/android/assets/jsons)
+- jsons - here you should put files that alter the data of game objects, the order of the files is as in [the base json files](https://github.com/yairm210/Unciv/tree/master/android/assets/jsons). More information on these can be found [here](../JSON-files-for-mods)
 - Images - here you should put game images, as in [the base image files](https://github.com/yairm210/Unciv/tree/master/android/Images)
 These images are built (at runtime) into a single image with an 'altas', so if you see "game.atlas" and "game.png" files being generated, now you know what for.
 
