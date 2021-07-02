@@ -69,6 +69,7 @@ jobs:
           mv desktop/build/libs/Unciv.jar deploy/Unciv.jar
 
       - name: Read release.md and use it as a body of new release
+        continue-on-error: true
         if: github.event_name == 'push' && contains(github.ref, 'refs/tags/') 
         id: read_release
         shell: bash
@@ -80,7 +81,15 @@ jobs:
           #r="${r//$'\n'/'%0A'}"                             # Multiline escape sequences for '\n'
           #r="${r//$'\r'/'%0D'}"                             # Multiline escape sequences for '\r'
           echo "::set-output name=RELEASE_BODY::$r"         # <--- Set environment variable
-
+          
+      - name: Post announcement on Discord
+        continue-on-error: true
+        if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+        uses: Ilshidur/action-discord@0.3.2
+        with:
+          args: '${{ steps.read_release.outputs.RELEASE_BODY }}'
 
 
       - name: Upload binaries to release
