@@ -274,7 +274,7 @@
 	{
 		"name": "Flight Deck II",
 		"prerequisites": ["Flight Deck I"],
-		"effect": " Can carry [1] extra [Air] units",
+		"effect": "Can carry [1] extra [Air] units",
 		"unitTypes": ["WaterAircraftCarrier"]
 	},
 	{

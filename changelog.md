@@ -1,3 +1,19 @@
+## 3.15.7
+
+Resolved 'getting stuck when there are no more pickable Pantheon beliefs'
+
+Removed final vestiges of old Bonus/Penalty effects.
+
+By xlenstra:
+- Fixed bug where all units could move after attacking 
+- Fix a few bugs related to nukes 
+- Research Tech Button shows progress; Small bug fix 
+- Updated promotions - make more generalizable, update to G&K 
+
+By SomeTroglodyte:
+- Translate nested placeholders for English
+- Fixed sound problems on Android
+
 ## 3.15.6
 
 Faster 'false' results for isStats, as proposed by @SomeTroglodyte  in #4259

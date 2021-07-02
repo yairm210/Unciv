@@ -243,13 +243,18 @@ class BaseUnit : INamed, IConstruction {
             unitType.name -> true
             name -> true
             "All" -> true
+            
+            "Melee" -> unitType.isMelee()
+            "Ranged" -> unitType.isRanged()
             "Land", "land units" -> unitType.isLandUnit()
+            "Civilian" -> unitType.isCivilian()
+            "Military", "military units" -> unitType.isMilitary()
             "Water", "water units", "Water units" -> unitType.isWaterUnit()
             "Air", "air units" -> unitType.isAirUnit()
-            "Missile" -> unitType.isMissile()
-            "Submarine", "submarine units" -> unitType == UnitType.WaterSubmarine
             "non-air" -> !unitType.isAirUnit() && !unitType.isMissile()
-            "Military", "military units" -> unitType.isMilitary()
+            "Missile" -> unitType.isMissile()
+            
+            "Submarine", "submarine units" -> unitType == UnitType.WaterSubmarine
             "Nuclear Weapon" -> isNuclearWeapon()
             // Deprecated as of 3.15.2
             "military water" -> unitType.isMilitary() && unitType.isWaterUnit()
@@ -263,7 +268,7 @@ class BaseUnit : INamed, IConstruction {
     fun isGreatPerson() = uniqueObjects.any { it.placeholderText == "Great Person - []" }
 
     // "Nuclear Weapon" unique deprecated since 3.15.4
-    fun isNuclearWeapon() = uniqueObjects.any { it.placeholderText == "Nuclear Weapon" || it.placeholderText == "Nuclear Weapon of strength []" }
+    fun isNuclearWeapon() = uniqueObjects.any { it.placeholderText == "Nuclear Weapon" || it.placeholderText == "Nuclear weapon of Strength []" }
 
     fun movesLikeAirUnits() = unitType.isAirUnit() || unitType.isMissile()
 

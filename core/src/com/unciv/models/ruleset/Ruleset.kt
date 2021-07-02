@@ -42,6 +42,8 @@ class Ruleset {
 
     private val jsonParser = JsonParser()
 
+    var modWithReligionLoaded = false
+
     var name = ""
     val buildings = LinkedHashMap<String, Building>()
     val terrains = LinkedHashMap<String, Terrain>()
@@ -95,6 +97,7 @@ class Ruleset {
         for (unitToRemove in ruleset.modOptions.unitsToRemove) units.remove(unitToRemove)
         for (nationToRemove in ruleset.modOptions.nationsToRemove) nations.remove(nationToRemove)
         mods += ruleset.mods
+        modWithReligionLoaded = modWithReligionLoaded || ruleset.modWithReligionLoaded
     }
 
     fun clear() {
@@ -114,6 +117,7 @@ class Ruleset {
         tileResources.clear()
         unitPromotions.clear()
         units.clear()
+        modWithReligionLoaded = false
     }
 
 
@@ -215,7 +219,7 @@ class Ruleset {
     }
 
     fun getEras(): List<String> = technologies.values.map { it.column!!.era }.distinct()
-    fun hasReligion() = beliefs.any() 
+    fun hasReligion() = beliefs.any() && modWithReligionLoaded
 
     fun getEraNumber(era: String) = getEras().indexOf(era)
     fun getSummary(): String {
@@ -236,7 +240,7 @@ class Ruleset {
     /** Result of a Mod RuleSet check */
     // essentially a named Pair with a few shortcuts
     class CheckModLinksResult(val status: CheckModLinksStatus, val message: String) {
-        // Empty constructor just makes the Complex Mod Check on the new game screen shorter 
+        // Empty constructor just makes the Complex Mod Check on the new game screen shorter
         constructor(): this(CheckModLinksStatus.OK, "")
         // Constructor that joins lines
         constructor(status: CheckModLinksStatus, lines: ArrayList<String>):
@@ -251,7 +255,7 @@ class Ruleset {
                         else -> CheckModLinksStatus.Error
                     },
                     lines)
-        // Allows $this in format strings 
+        // Allows $this in format strings
         override fun toString() = message
         // Readability shortcuts
         fun isError() = status == CheckModLinksStatus.Error
@@ -374,8 +378,8 @@ class Ruleset {
             if (tech.era() !in eras)
                 lines += "Unknown era ${tech.era()} referenced in column of tech ${tech.name}"
         }
-        
-        for (era in eras) { 
+
+        for (era in eras) {
             for (wonder in era.value.startingObsoleteWonders)
                 if (wonder !in buildings)
                     lines += "Nonexistent wonder ${wonder} obsoleted when starting in ${era.key}!"
@@ -389,7 +393,7 @@ class Ruleset {
             if (era.value.settlerPopulation <= 0)
                 lines += "Population in cities from settlers must be strictly positive! Found value ${era.value.settlerPopulation} for era ${era.key}"
         }
-        
+
 
         return CheckModLinksResult(warningCount, lines)
     }
@@ -446,6 +450,9 @@ object RulesetCache :HashMap<String,Ruleset>() {
             newRuleset.mods += mod.name
             if (mod.modOptions.isBaseRuleset) {
                 newRuleset.modOptions = mod.modOptions
+            }
+            if (mod.beliefs.any()) {
+                newRuleset.modWithReligionLoaded = true
             }
         }
         newRuleset.updateBuildingCosts() // only after we've added all the mods can we calculate the building costs

@@ -80,8 +80,11 @@ object BattleHelper {
                 if (tile.isWater) return false // can't attack water units while embarked, only land
                 if (combatant.isRanged()) return false
             }
-            if (combatant.unit.hasUnique("Can only attack water")) {
-                if (tile.isLand) return false
+            
+            // "Can only attack water" unique deprecated since 3.15.7
+                if (combatant.unit.hasUnique("Can only attack water")) {
+                    if (tile.isLand) return false
+            //
 
                 // trying to attack lake-to-coast or vice versa
                 if ((tile.baseTerrain == Constants.lakes) != (combatant.getTile().baseTerrain == Constants.lakes))
@@ -92,6 +95,11 @@ object BattleHelper {
         val tileCombatant = Battle.getMapCombatantOfTile(tile) ?: return false
         if (tileCombatant.getCivInfo() == combatant.getCivInfo()) return false
         if (!combatant.getCivInfo().isAtWarWith(tileCombatant.getCivInfo())) return false
+
+        if (combatant is MapUnitCombatant && 
+            combatant.unit.hasUnique("Can only attack [] units") &&
+            combatant.unit.getMatchingUniques("Can only attack [] units").none { tileCombatant.matchesCategory(it.params[0]) })
+                return false
 
         //only submarine and destroyer can attack submarine
         //garrisoned submarine can be attacked by anyone, or the city will be in invincible

@@ -1,0 +1,71 @@
+
+[
+    {
+        "name": "Ancestor Worship",
+        "type": "Pantheon",
+        "uniques": ["[+1 Culture] from every [Shrine]"]
+    },
+    // Missing: Dance of the aurora
+    {
+        "name": "Desert Folklore",
+        "type": "Pantheon",
+        "uniques": ["[+1 Faith] from every [Desert]"]
+    },
+    // Missing: Faith Healers
+    {
+        "name": "Fertility Rates",
+        "type": "Pantheon",
+        "uniques": ["+[10]% Growth [in this city]"] 
+        // Preferably I would not have a cityFilter here, but doing so requires no additional implementation 
+    },
+    // Missing: God of Craftsman
+    {
+        "name": "God of the Open Sky",
+        "type": "Pantheon",
+        "uniques": ["[+1 Culture] from every [Pasture]"]
+    },
+    {
+        "name": "God of the Sea",
+        "type": "Pantheon",
+        "uniques": ["[+1 Production] from every [Fishing Boats]"]
+    },
+    // Missing: God of War
+    {
+        "name": "Goddess of Festivals",
+        "type": "Pantheon",
+        "uniques": ["[+1 Culture, +1 Faith] from every [Wine]", "[+1 Culture, +1 Faith] from every [Incense]"]
+    },
+    // Missing: Goddess of Love
+    // Missing: Godess of Protection
+    {
+        "name": "Goddess of the Hunt",
+        "type": "Pantheon",
+        "uniques": ["[+1 Food] from every [Camp]"]
+    },
+    // Missing: Messenger of the Gods
+    // Missing: Monument to the Gods
+    // Missing: One with Nature
+    {
+        "name": "Oral Tradition",
+        "type": "Pantheon",
+        "uniques": ["[+1 Culture] from every [Plantation]"]
+    },
+    {
+        "name": "Religious Idols",
+        "type": "Pantheon",
+        "uniques": ["[+1 Culture, +1 Faith] from every [Gold]", "[+1 Culture, +1 Faith] from every [Silver]"]
+    },
+    // Missing: Religious Settlements
+    {
+        "name": "Sacred Path",
+        "type": "Pantheon",
+        "uniques": ["[+1 Culture] from every [Jungle]"]
+    },
+    // Missing: Sacred Waters
+    {
+        "name": "Stone Circles",
+        "type": "Pantheon",
+        "uniques": ["[+2 Faith] from every [Quarry]"]
+    },
+
+]

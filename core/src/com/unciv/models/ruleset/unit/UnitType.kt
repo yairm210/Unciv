@@ -27,7 +27,7 @@ enum class UnitType{
                 || this == Armor
                 || this == Scout
                 || this == WaterMelee
-
+        
     fun isRanged() =
                 this == Ranged
                 || this == Siege
