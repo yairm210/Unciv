@@ -22,8 +22,9 @@ import com.unciv.ui.worldscreen.WorldScreen
 class UnitTable(val worldScreen: WorldScreen) : Table(){
     private val prevIdleUnitButton = IdleUnitButton(this,worldScreen.mapHolder,true)
     private val nextIdleUnitButton = IdleUnitButton(this,worldScreen.mapHolder,false)
-    private val unitIconHolder=Table()
+    private val unitIconHolder = Table()
     private val unitNameLabel = "".toLabel()
+    private val unitIconNameGroup = Table()
     private val promotionsTable = Table()
     private val unitDescriptionTable = Table(CameraStageBaseScreen.skin)
 
@@ -71,8 +72,10 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
         add(Table().apply {
             val moveBetweenUnitsTable = Table().apply {
                 add(prevIdleUnitButton)
-                add(unitIconHolder)
-                add(unitNameLabel).pad(5f)
+                unitIconNameGroup.add(unitIconHolder)
+                unitIconNameGroup.add(unitNameLabel).pad(5f)
+                unitIconNameGroup.touchable = Touchable.enabled
+                add(unitIconNameGroup)
                 add(nextIdleUnitButton)
             }
             add(moveBetweenUnitsTable).colspan(2).fill().row()
@@ -82,19 +85,18 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
             add(unitDescriptionTable)
             touchable = Touchable.enabled
             onClick {
-                selectedUnit?.currentTile?.position?.let {
-                    if ( !worldScreen.mapHolder.setCenterPosition(it, false, false) && selectedUnit != null ) {
-                        worldScreen.game.setScreen(CivilopediaScreen(worldScreen.gameInfo.ruleSet, CivilopediaCategories.Unit, selectedUnit!!.name))
-                    }
-                }
+                val position = selectedUnit?.currentTile?.position
+                    ?: selectedCity?.location
+                if (position != null)
+                    worldScreen.mapHolder.setCenterPosition(position, false, false)
             }
         }).expand()
 
     }
 
     fun update() {
-        if(selectedUnit!=null) {
-            isVisible=true
+        if (selectedUnit != null) {
+            isVisible = true
             if (selectedUnit!!.civInfo != worldScreen.viewingCiv && !worldScreen.viewingCiv.isSpectator()) { // The unit that was selected, was captured. It exists but is no longer ours.
                 selectUnit()
                 selectedUnitHasChanged = true
@@ -104,17 +106,16 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
             }
         }
 
-        if(prevIdleUnitButton.hasIdleUnits()) { // more efficient to do this check once for both
+        if (prevIdleUnitButton.hasIdleUnits()) { // more efficient to do this check once for both
             prevIdleUnitButton.enable()
             nextIdleUnitButton.enable()
-        }
-        else{
+        } else {
             prevIdleUnitButton.disable()
             nextIdleUnitButton.disable()
         }
 
-        if(selectedUnit!=null) { // set texts - this is valid even when it's the same unit, because movement points and health change
-            if(selectedUnits.size==1) { //single selected unit
+        if (selectedUnit != null) { // set texts - this is valid even when it's the same unit, because movement points and health change
+            if (selectedUnits.size == 1) { //single selected unit
                 separator.isVisible = true
                 val unit = selectedUnit!!
                 var nameLabelText = unit.displayName().tr()
@@ -122,6 +123,10 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
                 if (nameLabelText != unitNameLabel.text.toString()) {
                     unitNameLabel.setText(nameLabelText)
                     selectedUnitHasChanged = true // We need to reload the health bar of the unit in the icon - happens e.g. when picking the Heal Instantly promotion
+                }
+                unitIconNameGroup.clearListeners()
+                unitIconNameGroup.onClick {
+                    worldScreen.game.setScreen(CivilopediaScreen(worldScreen.gameInfo.ruleSet, CivilopediaCategories.Unit, unit.name))
                 }
 
                 unitDescriptionTable.clear()
@@ -157,8 +162,7 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
 
                 if (unit.promotions.promotions.size != promotionsTable.children.size) // The unit has been promoted! Reload promotions!
                     selectedUnitHasChanged = true
-            }
-            else { // multiple selected units
+            } else { // multiple selected units
                 unitNameLabel.setText("")
                 unitDescriptionTable.clear()
             }
@@ -179,20 +183,20 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
             unitDescriptionTable.add(CityCombatant(city).getAttackingStrength().toString()).row()
 
             selectedUnitHasChanged = true
-        }
-        else {
+        } else {
             isVisible = false
         }
 
-        if(!selectedUnitHasChanged) return
+        if (!selectedUnitHasChanged) return
 
         unitIconHolder.clear()
         promotionsTable.clear()
         unitDescriptionTable.clearListeners()
 
-        if(selectedUnit!=null) {
-            if(selectedUnits.size==1) { // single selected unit
+        if (selectedUnit != null) {
+            if (selectedUnits.size == 1) { // single selected unit
                 unitIconHolder.add(UnitGroup(selectedUnit!!, 30f)).pad(5f)
+
                 for (promotion in selectedUnit!!.promotions.promotions.sorted())
                     promotionsTable.add(ImageGetter.getPromotionIcon(promotion))
 
@@ -201,8 +205,7 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
                     if (selectedUnit == null || selectedUnit!!.promotions.promotions.isEmpty()) return@onClick
                     UncivGame.Current.setScreen(PromotionPickerScreen(selectedUnit!!))
                 }
-            }
-            else { // multiple selected units
+            } else { // multiple selected units
                 for (unit in selectedUnits)
                     unitIconHolder.add(UnitGroup(unit, 30f)).pad(5f)
             }
