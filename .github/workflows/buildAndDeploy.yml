@@ -69,7 +69,6 @@ jobs:
           mv desktop/build/libs/Unciv.jar deploy/Unciv.jar
 
       - name: Read release.md and use it as a body of new release
-        if: github.event_name == 'push' && contains(github.ref, 'refs/tags/') 
         id: read_release
         shell: bash
         run: |
