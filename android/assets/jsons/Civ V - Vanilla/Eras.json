@@ -1,10 +1,11 @@
 [
     // Source: the fandom, so take these with a grain of salt
+    // I also did some testing in the official version, but by far not all
     
     {
         "name": "Ancient era",
         "researchAgreementCost": 150,
-        "staringSettlerCount": 1, // These values should not include the values given in Difficulties.json
+        "startingSettlerCount": 1, // These values should not include the values given in Difficulties.json
         "startingWorkerCount": 0,
         "startingMilitaryUnitCount": 1,
         "startingMilitaryUnit": "Warrior",
@@ -13,7 +14,7 @@
     {
         "name": "Classical era",
         "researchAgreementCost": 150,
-        "staringSettlerCount": 1,
+        "startingSettlerCount": 1,
         "startingWorkerCount": 0,
         "startingMilitaryUnitCount": 2,
         "startingMilitaryUnit": "Spearman",
@@ -24,7 +25,7 @@
     {
         "name": "Medieval era",
         "researchAgreementCost": 250,
-        "staringSettlerCount": 2,
+        "startingSettlerCount": 2,
         "startingWorkerCount": 1,
         "startingMilitaryUnitCount": 3,
         "startingMilitaryUnit": "Spearman",
@@ -37,7 +38,7 @@
     {
         "name": "Renaissance era",
         "researchAgreementCost": 250,
-        "staringSettlerCount": 2,
+        "startingSettlerCount": 2,
         "startingWorkerCount": 1,
         "startingMilitaryUnitCount": 3,
         "startingMilitaryUnit": "Pikeman",
@@ -51,7 +52,7 @@
     {
         "name": "Industrial era",
         "researchAgreementCost": 300,
-        "staringSettlerCount": 3,
+        "startingSettlerCount": 3,
         "startingWorkerCount": 2,
         "startingMilitaryUnitCount": 5,
         "startingMilitaryUnit": "Musketman",
@@ -66,7 +67,7 @@
     {
         "name": "Modern era",
         "researchAgreementCost": 350,
-        "staringSettlerCount": 3,
+        "startingSettlerCount": 3,
         "startingWorkerCount": 2,
         "startingMilitaryUnitCount": 5,
         "startingMilitaryUnit": "Rifleman",
@@ -82,7 +83,7 @@
     {
         "name": "Atomic era",
         "researchAgreementCost": 400,
-        "staringSettlerCount": 3,
+        "startingSettlerCount": 3,
         "startingWorkerCount": 2,
         "startingMilitaryUnitCount": 5,
         "startingMilitaryUnit": "Infantry",
@@ -99,7 +100,7 @@
     {
         "name": "Information era",
         "researchAgreementCost": 400,
-        "staringSettlerCount": 3,
+        "startingSettlerCount": 3,
         "startingWorkerCount": 3,
         "startingMilitaryUnitCount": 5,
         "startingMilitaryUnit": "Marine",
@@ -122,7 +123,7 @@
       // The stats are just copy-pasted from the information era.
         "name": "Future era",
         "researchAgreementCost": 400,
-        "staringSettlerCount": 3,
+        "startingSettlerCount": 3,
         "startingWorkerCount": 3,
         "startingMilitaryUnitCount": 5,
         "startingMilitaryUnit": "Marine",

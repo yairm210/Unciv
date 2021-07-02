@@ -371,7 +371,25 @@ class Ruleset {
                     warningCount++
                 }
             }
+            if (tech.era() !in eras)
+                lines += "Unknown era ${tech.era()} referenced in column of tech ${tech.name}"
         }
+        
+        for (era in eras) { 
+            for (wonder in era.value.startingObsoleteWonders)
+                if (wonder !in buildings)
+                    lines += "Nonexistent wonder ${wonder} obsoleted when starting in ${era.key}!"
+            for (building in era.value.settlerBuildings)
+                if (building !in buildings)
+                    lines += "Nonexistent building ${building} built by settlers when starting in ${era.key}"
+            if (era.value.startingMilitaryUnit !in units)
+                lines += "Nonexistent unit ${era.value.startingMilitaryUnit} marked as starting unit when starting in ${era.key}"
+            if (era.value.researchAgreementCost < 0 || era.value.startingSettlerCount < 0 || era.value.startingWorkerCount < 0 || era.value.startingMilitaryUnitCount < 0 || era.value.startingGold < 0 || era.value.startingCulture < 0)
+                lines += "Unexpected negative number found while parsing era ${era.key}"
+            if (era.value.settlerPopulation <= 0)
+                lines += "Population in cities from settlers must be strictly positive! Found value ${era.value.settlerPopulation} for era ${era.key}"
+        }
+        
 
         return CheckModLinksResult(warningCount, lines)
     }
