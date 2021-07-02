@@ -518,7 +518,7 @@ class MapUnit {
         if (civInfo.hasUnique("Can only heal by pillaging")) return
 
         var amountToHealBy = rankTileForHealing(getTile())
-        if (amountToHealBy == 0) return
+        if (amountToHealBy == 0 && !(hasUnique("May heal outside of friendly territory") && !getTile().isFriendlyTerritory(civInfo))) return
 
         // Deprecated since 3.15.6
             if (hasUnique("+10 HP when healing")) amountToHealBy += 10
@@ -551,15 +551,18 @@ class MapUnit {
             isFriendlyTerritory -> 15 // Allied territory
             else -> 5 // Enemy territory
         }
+        
+        val mayHeal = healing > 0 || (tileInfo.isWater && hasUnique("May heal outside of friendly territory"))
 
         // Deprecated since 3.15.6
             if (hasUnique("This unit and all others in adjacent tiles heal 5 additional HP. This unit heals 5 additional HP outside of friendly territory.")
                 && !isFriendlyTerritory
-                && healing > 0
+                && mayHeal
             )// Additional healing from medic is only applied when the unit is able to heal
                 healing += 5
         //
-        if (healing > 0) {
+        
+        if (mayHeal) {
             for (unique in getMatchingUniques("[] HP when healing in [] tiles")) {
                 if (tileInfo.matchesFilter(unique.params[1])) {
                     healing += unique.params[0].toInt()
@@ -833,9 +836,13 @@ class MapUnit {
     }
 
     fun canIntercept(attackedTile: TileInfo): Boolean {
-        if (attacksThisTurn > 1) return false
         if (interceptChance() == 0) return false
-        if (attacksThisTurn > 0 && !hasUnique("1 extra Interception may be made per turn")) return false
+        val maxAttacksPerTurn = 1 + 
+            getMatchingUniques("[] extra interceptions may be made per turn").sumBy { it.params[0].toInt() } + 
+            // Deprecated since 3.15.7
+                getMatchingUniques("1 extra interception may be made per turn").count()
+            //
+        if (attacksThisTurn >= maxAttacksPerTurn) return false
         if (currentTile.aerialDistanceTo(attackedTile) > baseUnit.interceptRange) return false
         return true
     }
@@ -868,7 +875,8 @@ class MapUnit {
     }
 
     fun interceptDamagePercentBonus(): Int {
-        return getUniques().filter { it.placeholderText == "Bonus when intercepting []%" }
+        // "Bonus when intercepting []%" deprecated since 3.15.7
+        return getUniques().filter { it.placeholderText == "Bonus when intercepting []%" || it.placeholderText == "[]% Damage when intercepting"}
             .sumBy { it.params[0].toInt() }
     }
 
