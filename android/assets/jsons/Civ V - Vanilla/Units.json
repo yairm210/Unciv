@@ -151,7 +151,7 @@
 		"strength": 10,
 		"cost": 45,
 		"requiredTech": "Sailing",
-		"uniques": ["Cannot enter ocean tiles",],
+		"uniques": ["Cannot enter ocean tiles"],
 		"upgradesTo": "Caravel",
 		"obsoleteTech": "Astronomy",
 		"attackSound": "nonmetalhit"
@@ -791,6 +791,17 @@
 		"attackSound": "shot"
 	},
 	{
+		"name": "Privateer",
+		"unitType": "WaterMelee",
+		"movement": 5,
+		"strength": 25,
+		"cost": 150,
+		"requiredTech": "Navigation",
+		"upgradesTo": "Destroyer",
+		"promotions": ["Coastal Raider I"],
+		"uniques": ["May capture killed [Water] units"]
+	},
+	{
 		"name": "Frigate",
 		"unitType": "WaterRanged",
 		"movement": 5,
@@ -1057,7 +1068,7 @@
 		"cost": 375,
 		"requiredResource": "Oil",
 		"requiredTech": "Electronics",
-		"uniques": ["Ranged attacks may be performed over obstacles"],
+		"uniques": ["Ranged attacks may be performed over obstacles"]
 		// Does not actually upgrade to Missile Cruisers
 	},
 	{

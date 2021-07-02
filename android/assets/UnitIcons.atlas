@@ -564,170 +564,177 @@ Pikeman
   orig: 100, 100
   offset: 0, 0
   index: -1
-Rifleman
+Privateer
   rotate: false
   xy: 1300, 868
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Rocket Artillery
+Rifleman
   rotate: false
   xy: 544, 4
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Samurai
+Rocket Artillery
   rotate: false
   xy: 652, 112
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Scout
+Samurai
   rotate: false
   xy: 760, 226
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Settler
+Scout
   rotate: false
   xy: 868, 328
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Ship of the Line
+Settler
   rotate: false
   xy: 976, 436
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Sipahi
+Ship of the Line
   rotate: false
   xy: 1084, 544
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Slinger
+Sipahi
   rotate: false
   xy: 1192, 653
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Spearman
+Slinger
   rotate: false
   xy: 1300, 760
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Stealth Bomber
+Spearman
   rotate: false
   xy: 1408, 868
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Submarine
+Stealth Bomber
   rotate: false
   xy: 652, 4
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Swordsman
+Submarine
   rotate: false
   xy: 760, 118
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Tank
+Swordsman
   rotate: false
   xy: 868, 220
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Tercio
+Tank
   rotate: false
   xy: 976, 328
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Trebuchet
+Tercio
   rotate: false
   xy: 1084, 436
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Triplane
+Trebuchet
   rotate: false
   xy: 1192, 545
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
+Triplane
+  rotate: false
+  xy: 1300, 652
+  size: 100, 100
+  orig: 100, 100
+  offset: 0, 0
+  index: -1
 Trireme
   rotate: false
-  xy: 1300, 651
+  xy: 1408, 759
   size: 100, 101
   orig: 100, 101
   offset: 0, 0
   index: -1
 Turtle Ship
   rotate: false
-  xy: 1408, 760
+  xy: 1516, 868
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 War Chariot
   rotate: false
-  xy: 1516, 868
+  xy: 760, 10
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 War Elephant
   rotate: false
-  xy: 760, 10
+  xy: 868, 112
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 Warrior
   rotate: false
-  xy: 868, 112
+  xy: 976, 220
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 Work Boats
   rotate: false
-  xy: 976, 220
+  xy: 1084, 328
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 Worker
   rotate: false
-  xy: 1084, 328
+  xy: 1192, 437
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 Zero
   rotate: false
-  xy: 1192, 437
+  xy: 1300, 544
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
