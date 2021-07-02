@@ -93,7 +93,7 @@ jobs:
         uses: Ilshidur/action-discord@0.3.2
         with: 
           args: | # See https://discordjs.guide/miscellaneous/parsing-mention-arguments.html#how-discord-mentions-work
-            <@663705024265715743>
+            <@&663705024265715743>
             ${{ env.RELEASE_BODY }}
 
 
