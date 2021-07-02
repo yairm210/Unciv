@@ -1,6 +1,8 @@
 package com.unciv.models.ruleset
 
+import com.badlogic.gdx.graphics.Color
 import com.unciv.models.stats.INamed
+import com.unciv.ui.utils.colorFromRGB
 
 class Era : INamed {
     override var name: String = ""
@@ -16,6 +18,7 @@ class Era : INamed {
     var settlerPopulation = 1
     var settlerBuildings = ArrayList<String>()
     var startingObsoleteWonders = ArrayList<String>()
+    var iconRGB: List<Int>? = null
     
     fun getStartingUnits(): List<String> {
         val startingUnits = mutableListOf<String>()
@@ -24,5 +27,10 @@ class Era : INamed {
         repeat(startingMilitaryUnitCount) {startingUnits.add(startingMilitaryUnit)}
         println("$name: $startingUnits")
         return startingUnits
+    }
+    
+    fun getColor(): Color {
+        if (iconRGB == null) return Color.WHITE.cpy()
+        return colorFromRGB(iconRGB!![0], iconRGB!![1], iconRGB!![2])
     }
 }
