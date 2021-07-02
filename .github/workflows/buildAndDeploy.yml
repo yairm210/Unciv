@@ -75,7 +75,7 @@ jobs:
         shell: bash
         run: |
           ## To test this in Windows PS:  cat .\changelog.md | wsl grep -Pzo --color '\\#{2}.3.15.7[^\\#]*?\\#{2}'
-          grep -Ezo '\#{2}.3.15.7.*?\#' changelog.md  # grep to get only our release
+          grep -Pzo '\#{2}.3.15.7[^\#]*\#' changelog.md  # grep to get only our release
           #echo "$r"
           #r="${r//'%'/'%25'}"                               # Multiline escape sequences for %
           #r="${r//$'\n'/'%0A'}"                             # Multiline escape sequences for '\n'
