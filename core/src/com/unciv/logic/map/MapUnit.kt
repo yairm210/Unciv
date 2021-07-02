@@ -749,15 +749,15 @@ class MapUnit {
             )
         }
 
-        val researchableAncientEraTechs = tile.tileMap.gameInfo.ruleSet.technologies.values
+        val researchableFirstEraTechs = tile.tileMap.gameInfo.ruleSet.technologies.values
             .filter {
                 !civInfo.tech.isResearched(it.name)
                         && civInfo.tech.canBeResearched(it.name)
-                        && it.era() == Constants.ancientEra
+                        && civInfo.gameInfo.ruleSet.getEraNumber(it.era()) == 1
             }
-        if (researchableAncientEraTechs.isNotEmpty())
+        if (researchableFirstEraTechs.isNotEmpty())
             actions.add {
-                val tech = researchableAncientEraTechs.random(tileBasedRandom).name
+                val tech = researchableFirstEraTechs.random(tileBasedRandom).name
                 civInfo.tech.addTechnology(tech)
                 civInfo.addNotification(
                     "We have discovered the lost technology of [$tech] in the ruins!",
@@ -767,10 +767,13 @@ class MapUnit {
                 )
             }
 
+        val militaryUnit = 
+            if (civInfo.gameInfo.gameParameters.startingEra !in civInfo.gameInfo.ruleSet.eras) "Warrior" 
+            else civInfo.gameInfo.ruleSet.eras[civInfo.gameInfo.gameParameters.startingEra]!!.startingMilitaryUnit
         val possibleUnits = (
                 //City-States and OCC don't get settler from ruins
                 listOf(Constants.settler).filterNot { civInfo.isCityState() || civInfo.isOneCityChallenger() }
-                + listOf(Constants.worker, "Warrior")
+                + listOf(Constants.worker, militaryUnit)
             ).filter { civInfo.gameInfo.ruleSet.units.containsKey(it) }
         if (possibleUnits.isNotEmpty())
             actions.add {

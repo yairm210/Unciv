@@ -8,6 +8,7 @@ object Constants {
     //
     const val settler = "Settler"
     const val settlerUnique = "Founds a new city"
+    const val eraSpecificUnit = "Era Starting Unit"
 
     const val impassable = "Impassable"
     const val ocean = "Ocean"
@@ -71,14 +72,6 @@ object Constants {
     const val disabled = "disabled"
     const val enabled = "enabled"
 
-    const val ancientEra = "Ancient era"
-    const val classicalEra = "Classical era"
-    const val medievalEra = "Medieval era"
-    const val renaissanceEra = "Renaissance era"
-    const val industrialEra = "Industrial era"
-    const val modernEra = "Modern era"
-    const val informationEra = "Information era"
-    const val futureEra = "Future era"
     const val barbarians = "Barbarians"
     const val spectator = "Spectator"
     const val custom = "Custom"

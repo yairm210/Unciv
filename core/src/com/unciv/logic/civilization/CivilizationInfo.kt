@@ -717,14 +717,8 @@ class CivilizationInfo {
 
     fun getResearchAgreementCost(): Int {
         // https://forums.civfanatics.com/resources/research-agreements-bnw.25568/
-        val basicGoldCostOfSignResearchAgreement = when (getEra()) {
-            Constants.medievalEra, Constants.renaissanceEra -> 250
-            Constants.industrialEra -> 300
-            Constants.modernEra -> 350
-            Constants.informationEra, Constants.futureEra -> 400
-            else -> 0
-        }
-        return (basicGoldCostOfSignResearchAgreement * gameInfo.gameParameters.gameSpeed.modifier).toInt()
+        val era = if (getEra() in gameInfo.ruleSet.eras) gameInfo.ruleSet.eras[getEra()]!! else Era()
+        return (era.researchAgreementCost * gameInfo.gameParameters.gameSpeed.modifier).toInt()
     }
 
     fun gainMilitaryUnitFromCityState(otherCiv: CivilizationInfo) {

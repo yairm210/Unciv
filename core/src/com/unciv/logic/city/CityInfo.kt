@@ -96,6 +96,18 @@ class CityInfo {
                     cityConstructions.addBuilding(freeBuildingName)
             }
         }
+        
+        // Add buildings and pop we get from starting in this era
+        val ruleset = civInfo.gameInfo.ruleSet
+        val startingEra = civInfo.gameInfo.gameParameters.startingEra
+        if (startingEra in ruleset.eras) {
+            population.setPopulation(ruleset.eras[startingEra]!!.settlerPopulation)
+            for (building in ruleset.eras[startingEra]!!.settlerBuildings) {
+                if (ruleset.buildings[building]!!.isBuildable(cityConstructions)) {
+                    cityConstructions.addBuilding(building)
+                }
+            }
+        }
 
         expansion.reset()
 
