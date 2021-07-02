@@ -68,6 +68,20 @@ jobs:
           ./gradlew desktop:zipLinuxFilesForJar;
           mv desktop/build/libs/Unciv.jar deploy/Unciv.jar
 
+      - name: Read release.md and use it as a body of new release
+        if: github.event_name == 'push' && contains(github.ref, 'refs/tags/') 
+        id: read_release
+        shell: bash
+        run: |
+          r=$(cat path/to/release.md)                       # <--- Read release.md (Provide correct path as per your repo)
+          r=$(grep -Pzo --color '\\#{2}.3.15.7\([^\\#]*?\\#{2}\)')  # grep to get only our release
+          echo "$r"
+          r="${r//'%'/'%25'}"                               # Multiline escape sequences for %
+          r="${r//$'\n'/'%0A'}"                             # Multiline escape sequences for '\n'
+          r="${r//$'\r'/'%0D'}"                             # Multiline escape sequences for '\r'
+          echo "::set-output name=RELEASE_BODY::$r"         # <--- Set environment variable
+
+
 
       - name: Upload binaries to release
         if: github.event_name == 'push' && contains(github.ref, 'refs/tags/') 
