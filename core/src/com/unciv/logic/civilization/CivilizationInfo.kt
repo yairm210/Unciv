@@ -718,7 +718,6 @@ class CivilizationInfo {
     fun getResearchAgreementCost(): Int {
         // https://forums.civfanatics.com/resources/research-agreements-bnw.25568/
         val era = if (getEra() in gameInfo.ruleSet.eras) gameInfo.ruleSet.eras[getEra()]!! else Era()
-        println(getEra() + gameInfo.ruleSet.eras.keys)
         return (era.researchAgreementCost * gameInfo.gameParameters.gameSpeed.modifier).toInt()
     }
 

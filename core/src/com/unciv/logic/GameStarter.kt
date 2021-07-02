@@ -23,7 +23,6 @@ object GameStarter {
         val gameInfo = GameInfo()
 
         gameInfo.gameParameters = gameSetupInfo.gameParameters
-        println(gameInfo.gameParameters.startingEra)
         val ruleset = RulesetCache.getComplexRuleset(gameInfo.gameParameters.mods)
 
         if (gameSetupInfo.mapParameters.name != "") {
@@ -200,19 +199,15 @@ object GameStarter {
             var startingUnits: MutableList<String>
             var eraUnitReplacement: String
             
-            println("Before if")
             
             if (startingEra in ruleSet.eras.keys) {
-                println("Inside if")
                 startingUnits = ruleSet.eras[startingEra]!!.getStartingUnits().toMutableList()
                 eraUnitReplacement = ruleSet.eras[startingEra]!!.startingMilitaryUnit
             } else {
-                println("inside else")
                 startingUnits = Era().getStartingUnits().toMutableList()
                 eraUnitReplacement = Era().startingMilitaryUnit
             }
             
-            println("Reached the changed function")
             // Add extra units granted by difficulty
             startingUnits.addAll(when {
                 civ.isPlayerCivilization() -> gameInfo.getDifficulty().startingUnits

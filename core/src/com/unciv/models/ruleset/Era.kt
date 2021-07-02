@@ -25,7 +25,6 @@ class Era : INamed {
         repeat(startingSettlerCount) {startingUnits.add(startingSettlerUnit)}
         repeat(startingWorkerCount) {startingUnits.add(startingWorkerUnit)}
         repeat(startingMilitaryUnitCount) {startingUnits.add(startingMilitaryUnit)}
-        println("$name: $startingUnits")
         return startingUnits
     }
     
