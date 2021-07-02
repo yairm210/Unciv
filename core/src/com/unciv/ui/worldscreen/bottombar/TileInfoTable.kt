@@ -22,7 +22,7 @@ class TileInfoTable(private val viewingCiv :CivilizationInfo) : Table(CameraStag
 
         if (tile != null && (UncivGame.Current.viewEntireMapForDebug || viewingCiv.exploredTiles.contains(tile.position)) ) {
             add(getStatsTable(tile))
-            add( MarkupRenderer.render(tile.toMarkup(viewingCiv), padding = 0f) {
+            add( MarkupRenderer.render(tile.toMarkup(viewingCiv), padding = 0f, noLinkImages = true) {
                 UncivGame.Current.setScreen(CivilopediaScreen(viewingCiv.gameInfo.ruleSet, link = it))
             } ).pad(5f)
             // For debug only!
