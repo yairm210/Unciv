@@ -181,37 +181,27 @@ object Battle {
         damageToAttacker -= attacker.getHealth() // ... but from here on they are accurate
         damageToDefender -= defender.getHealth()
 
-        if (attacker is MapUnitCombatant) {
-            for (unique in attacker.unit.getMatchingUniques("Earn []% of the damage done to [] units as []"))
-                if (defender.matchesCategory(unique.params[1])) {
-                    val resourcesPlundered =
-                        (unique.params[0].toFloat() / 100f * damageToDefender).toInt()
-                    attacker.getCivInfo().addStat(Stat.valueOf(unique.params[2]), resourcesPlundered)
-                    attacker.getCivInfo()
-                        .addNotification(
-                            "Your [${attacker.getName()}] plundered [${resourcesPlundered}] [${unique.params[2]}] from [${defender.getName()}]",
-                            defender.getTile().position,
-                            NotificationIcon.War
-                        )
-                }
-        }
-        if (defender is MapUnitCombatant) {
-            for (unique in defender.unit.getMatchingUniques("Earn []% of the damage done to [] units as []"))
-                if (attacker.matchesCategory(unique.params[1])) {
-                    val resourcesPlundered =
-                        (unique.params[0].toFloat() / 100f * damageToDefender).toInt()
-                    defender.getCivInfo().addStat(Stat.valueOf(unique.params[2]), resourcesPlundered)
-                    defender.getCivInfo()
-                        .addNotification(
-                            "Your [${defender.getName()}] plundered [${resourcesPlundered}] [${unique.params[2]}] from [${attacker.getName()}]",
-                            attacker.getTile().position,
-                            NotificationIcon.War
-                        )
-                }
-        }
-
+        plunderFromDamage(attacker, defender, damageToDefender)
+        plunderFromDamage(defender, attacker, damageToAttacker)
     }
 
+    private fun plunderFromDamage(plunderingUnit: ICombatant, plunderedUnit: ICombatant, damageDealt: Int) {
+        if (plunderingUnit is MapUnitCombatant) {
+            for (unique in plunderingUnit.unit.getMatchingUniques("Earn []% of the damage done to [] units as []")) {
+                if (plunderedUnit.matchesCategory(unique.params[1])) {
+                    val resourcesPlundered =
+                        (unique.params[0].toFloat() / 100f * damageDealt).toInt()
+                    plunderingUnit.getCivInfo().addStat(Stat.valueOf(unique.params[2]), resourcesPlundered)
+                    plunderingUnit.getCivInfo()
+                        .addNotification(
+                            "Your [${plunderingUnit.getName()}] plundered [${resourcesPlundered}] [${unique.params[2]}] from [${plunderedUnit.getName()}]",
+                            plunderedUnit.getTile().position,
+                            NotificationIcon.War
+                        )
+                }
+            }
+        }
+    }
 
     private fun postBattleNotifications(
         attacker: ICombatant,
