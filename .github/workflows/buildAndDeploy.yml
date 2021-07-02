@@ -36,11 +36,9 @@ jobs:
 
       # Runs a set of commands using the runners shell
       - name: check
-        if: false
         run: ./gradlew check
 
       - name: test
-        if: false
         run: ./gradlew tests:test
       
       
@@ -71,11 +69,12 @@ jobs:
           mv desktop/build/libs/Unciv.jar deploy/Unciv.jar
 
       - name: Read release.md and use it as a body of new release
+        if: github.event_name == 'push' && contains(github.ref, 'refs/tags/') 
         id: read_release
         shell: bash
         run: |
           ## To test this in Windows PS:  cat .\changelog.md | wsl grep -Pzo --color '\\#{2}.3.15.7[^\\#]*?\\#{2}'
-          r=$(grep -Pzo '\#{2}.3.15.7[^\#]*\#' changelog.md)  # grep to get only our release
+          r=$(grep -Pzo '\#{2}.${{steps.tag.outputs.tag}}[^\#]*\#' changelog.md)  # grep to get only our release
           #echo "$r"
           #r="${r//'%'/'%25'}"                               # Multiline escape sequences for %
           #r="${r//$'\n'/'%0A'}"                             # Multiline escape sequences for '\n'
@@ -93,3 +92,5 @@ jobs:
           tag: ${{ github.ref }}
           overwrite: true
           file_glob: true
+          body: |
+            ${{ steps.read_release.outputs.RELEASE_BODY }}  # <--- Use environment variables that was created earlier - see https://github.com/svenstaro/upload-release-action
