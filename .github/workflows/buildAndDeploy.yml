@@ -75,7 +75,7 @@ jobs:
         shell: bash
         run: |
           r=$(cat changelog.md)
-          r=$(grep -zo '\#{2}.' $r)  # grep to get only our release
+          r=$(grep '\#{2}.' $r)  # grep to get only our release
           echo "$r"
           r="${r//'%'/'%25'}"                               # Multiline escape sequences for %
           r="${r//$'\n'/'%0A'}"                             # Multiline escape sequences for '\n'
