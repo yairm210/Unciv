@@ -490,11 +490,17 @@ These last two uniques may seem like they only have a one-time effect. However, 
 
 "Heal adjacent units for an additional 15 HP per turn"
 
+"May heal outside of friendly territory" - For water units mostly
+
 ### Combat bonuses
 
 "No defensive terrain bonus"
 
 "+[amount]% Strength when attacking"
+
+"+[amount]% Strength when defending"
+
+"[amount]% Strength when defending vs [unitFilter]"
 
 "+[amount]% Strength vs [unitFilter]"
 
@@ -505,6 +511,8 @@ These last two uniques may seem like they only have a one-time effect. However, 
 "Eliminates combat penalty for attacking over a river"
 
 "Eliminates combat penalty for attacking from the sea"
+
+"[amount]% Strength for enemy [unitFilter] units in adjacent [tileFilter] tiles"
 
 ### Other
 
@@ -547,6 +555,10 @@ These last two uniques may seem like they only have a one-time effect. However, 
 "Not displayed as an available construction without [resourceName/buildingName]"
 
 "[amount]% chance to intercept air attacks"
+
+"[amount] extra interceptions may be made per turn"
+
+"[amount]% Damage when intercepting" - for intercepting units, not for the intercepted unit
 
 "Damage taken from interception reduced by [amount]%"
 
@@ -652,3 +664,11 @@ These uniques have been recently deprecated. While they are still supported, the
 "+1 Movement" - Replaced with "[amount] Movement"
 
 "Can only attack water" - Replaced with "Can only attack [unitFilter] units"
+
+"+25% Defence against ranged attacks" - Replaced with "[amount]% Strength when defending vs [unitFilter]"
+
+"-10% combat strength for adjacent enemy units" - Replaced with "[amount]% Strength for enemy [unitFilter] units in adjacent [tileFilter] tiles"
+
+"1 extra interception may be made per turn" - Replaced with "[amount] extra interceptions may be made per turn"
+
+"Bonus when intercepting []%" - Replaced with "[]% Damage when intercepting"
