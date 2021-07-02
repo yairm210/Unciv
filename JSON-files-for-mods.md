@@ -29,7 +29,7 @@ Units have the following attributes:
 | attribute | Type | optional or not | notes |
 | --------- | ---- | -------- | ----- |
 | name | String | required | The name of the units (required) |
-| unitType | String | required | The type of the unit: Civilian, Melee, Ranged, Scout, Mounted, Armor, Siege, WaterCivilian, WaterMelee, <br />WaterRanged, WaterSubmarine, WaterAircraftCarrier, Fighter, Bomber, AtomicBomber, or Missile. <br />This decides many of the properties of the unit. |
+| unitType | String | required | The type of the unit: Civilian, Melee, Ranged, Scout, Mounted, Armor, Siege, WaterCivilian, WaterMelee, WaterRanged, WaterSubmarine, WaterAircraftCarrier, Fighter, Bomber, AtomicBomber, or Missile. This decides many of the properties of the unit. |
 | cost | Integer (≥0) | defaults to 0 | The amount of production required to build this unit |
 | movement | Integer (≥0) | defaults to 0 | The amount of movement points the unit has by default |
 | strength | Integer (≥0) | defaults to 0 | The melee attack and defensive strength of the unit |
@@ -42,8 +42,8 @@ Units have the following attributes:
 | upgradesTo | String | defaults to none | Unit that this unit can upgrade to when it is available. Should be in Units.json |
 | replaces | String | defaults to none | If this unit is unique to a nation, this is the unit it replaces. Should be in Units.json |
 | uniqueTo | String | defaults to none | The nation that this unit is unique to. Should be in Nations.json |
-| hurryCostModifier | Integer | defaults to 0 | If this unit is bought for gold/faith, it is increased in price by this amount in comparison to the cost <br />calculated only fromhow much production it requires to be built |
-| promotions | List of Strings | defaults to none | A list of all the promotions the unit automatically receives upon being built. Each promotion <br />should be in UnitPromotions.json |
+| hurryCostModifier | Integer | defaults to 0 | If this unit is bought for gold/faith, it is increased in price by this amount in comparison to the cost calculated only fromhow much production it requires to be built |
+| promotions | List of Strings | defaults to none | A list of all the promotions the unit automatically receives upon being built. Each promotion should be in UnitPromotions.json |
 | uniques | List of Strings | defaults to none | A list of the unique abilities this unit has. A list of almost all uniques can be found [here](../Uniques#unit-uniques) |
 | replacementTextForUniques | String | defaults to none | If provided, this will be displayed instead of the list of uniques. Can be used for better formatting. |
 | attackSound | String | defaults to none | The sound that is to be played when this unit attacks. For possible values, see [sounds](#Sounds)
