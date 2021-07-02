@@ -338,6 +338,10 @@ These last two uniques may seem like they only have a one-time effect. However, 
 
 "Quantity of Resources gifted by City-States increased by [amount]%"
 
+"\"Borrows\" city names from other civilizations in the game" - Civs with this unique will start using city names of other civs in the game once they have run out of city names instead of doing the "new [cityName]" thing.
+
+"Cities are razed [] times as fast"
+
 ## Buildings-only
 
 "Doubles Gold given to enemy if city is captured"
@@ -538,7 +542,7 @@ These last two uniques may seem like they only have a one-time effect. However, 
 
 "Invisible to others"
 
-"Can only attack water"
+"Can only attack [] units"
 
 "Not displayed as an available construction without [resourceName/buildingName]"
 
@@ -551,6 +555,10 @@ These last two uniques may seem like they only have a one-time effect. However, 
 "Nuclear weapon of Strength [amount]" - Amount should be 1 or 2. 1 is effectively an atomic bomb, 2 is a nuclear missile in the base game
 
 "Blast radius [amount]" - Amount is the radius of the blast of a nuke
+
+"May capture killed [unitFilter] units"
+
+"Earn [amount]% of the damage done to [unitFilter] units as [stat]" - stat must be Gold, Culture, Science or Faith. If a unit would do more damage than the defender has health, the damage will instead be the health the defender had left before attacking.
 
 # Terrain uniques
 
@@ -642,3 +650,5 @@ These uniques have been recently deprecated. While they are still supported, the
 "+2 Visibility Range" - Replaced with "[amount] Visibility Range"
 
 "+1 Movement" - Replaced with "[amount] Movement"
+
+"Can only attack water" - Replaced with "Can only attack [unitFilter] units"
