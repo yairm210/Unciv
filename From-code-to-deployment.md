@@ -17,7 +17,7 @@ The process has two major parts, one is "Getting your code in the main repositor
 ## Deploying versions
 
 When I'm ready to release a new version I:
-* Change the versionCode and versionName in the android build.gradle so that Google Play and F-droid can recognize that it's a different release
+* Change the versionCode and versionName in the Android build.gradle so that Google Play and F-droid can recognize that it's a different release
 * Run the [translation generation](https://github.com/yairm210/Unciv/wiki/Translating#translation-generation---for-developers)
 * Upload the new version to Google Play - we start at a 10% rollout, after a day with no major problems go to 30%, and after another day to 100%. If you were counting that means that most players will get the new version after 2+ days.
    * If there were problems, we halt the current rollout, fix the problems, and release a patch version, which starts at 10% again.
@@ -25,6 +25,7 @@ When I'm ready to release a new version I:
    * Pack a .jar file, which will work for every operating system with Java
    * Use Linux and Windows JDKs to create standalone zips for 32 and 64 bit systems, because we can't rely on the fact that users will have a JRE
    * Download [Butler](https://itch.io/docs/butler/installing.html) and use it to [push](https://itch.io/docs/butler/pushing.html) the new versions to the [itch.io page](https://yairm210.itch.io/unciv)
-   * Upload all of these files to a new release on Github, which will get added to the [Releases](https://github.com/yairm210/Unciv/releases) page
-* The F-Droid bot checks periodically if we added a new tag. When it recognizes that we did, it will update the [yaml file here](https://gitlab.com/fdroid/fdroiddata/blob/master/metadata/com.unciv.app.yml) (requires human acceptance)
+   * Upload all of these files to a new release on Github, together with the release notes for the version (read from the changelod.md file), which will get added to the [Releases](https://github.com/yairm210/Unciv/releases) page
+   * Send an announcement on the Discord server of the version release and release notes via webhook
+* The F-Droid bot checks periodically if we added a new tag. When it recognizes that we did, it will update the [yaml file here](https://gitlab.com/fdroid/fdroiddata/blob/master/metadata/com.unciv.app.yml)
    * When the bot next runs and sees that there's a version it doesn't have a release for, it will attempt to build the new release. The log of the build will be added [here](https://f-droid.org/wiki/page/com.unciv.app/lastbuild) (redirects to the latest build), and the new release will eventually be available [here](https://f-droid.org/en/packages/com.unciv.app/)
