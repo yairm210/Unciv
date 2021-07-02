@@ -197,8 +197,17 @@ object Battle {
         }
         if (defender is MapUnitCombatant) {
             for (unique in defender.unit.getMatchingUniques("Earn []% of the damage done to [] units as []"))
-                if (attacker.matchesCategory(unique.params[1]))
-                    defender.getCivInfo().addStat(Stat.valueOf(unique.params[2]), (unique.params[0].toFloat() / 100f * damageToAttacker).toInt())
+                if (attacker.matchesCategory(unique.params[1])) {
+                    val resourcesPlundered =
+                        (unique.params[0].toFloat() / 100f * damageToDefender).toInt()
+                    defender.getCivInfo().addStat(Stat.valueOf(unique.params[2]), resourcesPlundered)
+                    defender.getCivInfo()
+                        .addNotification(
+                            "Your [${defender.getName()}] plundered [${resourcesPlundered}] [${unique.params[2]}] from [${attacker.getName()}]",
+                            attacker.getTile().position,
+                            NotificationIcon.War
+                        )
+                }
         }
 
     }
