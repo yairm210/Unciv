@@ -773,10 +773,13 @@ class MapUnit {
                 )
             }
 
+        val militaryUnit = 
+            if (civInfo.gameInfo.gameParameters.startingEra !in civInfo.gameInfo.ruleSet.eras) "Warrior" 
+            else civInfo.gameInfo.ruleSet.eras[civInfo.gameInfo.gameParameters.startingEra]!!.startingMilitaryUnit
         val possibleUnits = (
                 //City-States and OCC don't get settler from ruins
                 listOf(Constants.settler).filterNot { civInfo.isCityState() || civInfo.isOneCityChallenger() }
-                + listOf(Constants.worker, "Warrior")
+                + listOf(Constants.worker, militaryUnit)
             ).filter { civInfo.gameInfo.ruleSet.units.containsKey(it) }
         if (possibleUnits.isNotEmpty())
             actions.add {
