@@ -42,7 +42,7 @@ Units have the following attributes:
 | upgradesTo | String | defaults to none | Unit that this unit can upgrade to when it is available. Should be in Units.json |
 | replaces | String | defaults to none | If this unit is unique to a nation, this is the unit it replaces. Should be in Units.json |
 | uniqueTo | String | defaults to none | The nation that this unit is unique to. Should be in Nations.json |
-| hurryCostModifier | Integer | defaults to 0 | If this unit is bought for gold/faith, it is increased in price by this amount in comparison to the cost calculated only fromhow much production it requires to be built |
+| hurryCostModifier | Integer | defaults to 0 | If this unit is bought for gold/faith, it's price is increased by so much percent |
 | promotions | List of Strings | defaults to none | A list of all the promotions the unit automatically receives upon being built. Each promotion should be in UnitPromotions.json |
 | uniques | List of Strings | defaults to none | A list of the unique abilities this unit has. A list of almost all uniques can be found [here](../Uniques#unit-uniques) |
 | replacementTextForUniques | String | defaults to none | If provided, this will be displayed instead of the list of uniques. Can be used for better formatting. |
