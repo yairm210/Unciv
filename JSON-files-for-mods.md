@@ -21,6 +21,8 @@ Almost all JSON files start with a "[" and end with a "]". In between these are 
 ```
 This file contains two unit objects, one for a warrior and one for a spearman. These objects have different attributes, in this case "name" and "cost". All these attributes have a certain type, a string (text) for its name, an integer for its cost or a list for its promotions.
 
+# Information on JSON files used in the game
+
 ## Eras.json
 [Link to original](https://github.com/yairm210/Unciv/blob/master/android/assets/jsons/Civ%20V%20-%20Vanilla/Eras.json)
 
