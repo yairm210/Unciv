@@ -428,16 +428,17 @@ object UnitActions {
         if (!unit.hasUnique("Can spread religion [] times")) return
         if (unit.religion == null) return
         val maxReligionSpreads = unit.maxReligionSpreads()
-        if (maxReligionSpreads <= unit.religionSpreadsUsed) return
+        if (!unit.abilityUsedCount.containsKey("Religion Spread")) return // This should be impossible anways, but just in case
+        if (maxReligionSpreads <= unit.abilityUsedCount["Religion Spread"]!!) return
         val city = tile.getCity()
         actionList += UnitAction(UnitActionType.SpreadReligion,
             title = "Spread [${unit.religion!!}]",
             uncivSound = UncivSound.Choir,
             action = {
-                unit.religionSpreadsUsed += 1
+                unit.abilityUsedCount["Religion Spread"] = unit.abilityUsedCount["Religion Spread"]!! + 1
                 city!!.religion[unit.religion!!] = 100
                 unit.currentMovement = 0f
-                if (unit.religionSpreadsUsed == maxReligionSpreads) {
+                if (unit.abilityUsedCount["Religion Spread"] == maxReligionSpreads) {
                     addGoldPerGreatPersonUsage(unit.civInfo)
                     unit.destroy()
                 }
@@ -448,7 +449,7 @@ object UnitActions {
     fun getImprovementConstructionActions(unit: MapUnit, tile: TileInfo): ArrayList<UnitAction> {
         val finalActions = ArrayList<UnitAction>()
         var uniquesToCheck = unit.getMatchingUniques("Can construct []")
-        if (unit.religionSpreadsUsed == 0 && unit.maxReligionSpreads() > 0)
+        if (unit.abilityUsedCount.containsKey("Religion Spread") && unit.abilityUsedCount["Religion Spread"]!! == 0 && unit.maxReligionSpreads() > 0)
             uniquesToCheck += unit.getMatchingUniques("Can construct [] if it hasn't spread religion yet")
         for (unique in uniquesToCheck) {
             val improvementName = unique.params[0]

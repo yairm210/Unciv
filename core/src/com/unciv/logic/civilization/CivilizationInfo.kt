@@ -657,18 +657,18 @@ class CivilizationInfo {
         notifications.add(Notification(text, arrayList, action))
     }
 
-    fun addUnit(unitName: String, city: CityInfo? = null) {
-        if (cities.isEmpty()) return
+    fun addUnit(unitName: String, city: CityInfo? = null): MapUnit? {
+        if (cities.isEmpty()) return null
         val cityToAddTo = city ?: cities.random()
-        if (!gameInfo.ruleSet.units.containsKey(unitName)) return
+        if (!gameInfo.ruleSet.units.containsKey(unitName)) return null
         val unit = getEquivalentUnit(unitName)
         val placedUnit = placeUnitNearTile(cityToAddTo.location, unit.name)
         // silently bail if no tile to place the unit is found
-        if (placedUnit == null) return
-        placedUnit.religion = cityToAddTo.religion.getMajorityReligion()
+        if (placedUnit == null) return null
         if (unit.isGreatPerson()) {
             addNotification("A [${unit.name}] has been born in [${cityToAddTo.name}]!", placedUnit.getTile().position, unit.name)
         }
+        return placedUnit
     }
 
     /** Tries to place the a [unitName] unit into the [TileInfo] closest to the given the [position]
