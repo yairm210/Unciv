@@ -29,7 +29,7 @@ This file should contain all the era's you use in your mod. Due to this file bei
 Each era can have the following attributes:
 | attribute | Type | optional or not | notes |
 | --------- | ---- | --------------- | ----- |
-| name | String | Required | Name of the era |
+| name | String | required | Name of the era |
 | researchAgreementCost | Integer (≥0) | defaults to 300 | Cost of research agreements were the most technologically advanced civ is in this era |
 | iconRGB | List of 3 Integers | defaults to none | RGB color that icons for technologies of this era should have in the Tech screen |
 | startingSettlerCount | Integer (≥0) | defaults to 1 | Amount of settler units that should be spawned when starting a game in this era |
