@@ -310,6 +310,7 @@
 		"name" : "Supply",
 		"prerequisites": ["Bombardment III", "Targeting III", "Boarding Party III", "Coastal Raider III"],
 		"uniques": ["May heal outside of friendly territory", "[+15] HP when healing in [Foreign Land] tiles"],
+		"unitTypes": ["WaterMelee", "WaterRanged"]
 	},
 
 	// Bomber
