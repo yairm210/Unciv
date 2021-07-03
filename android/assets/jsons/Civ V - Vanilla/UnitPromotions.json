@@ -165,13 +165,13 @@
 	},
 	{
 		"name": "Scouting II",
-		"prerequisites": ["Scouting II"],
+		"prerequisites": ["Scouting I"],
 		"effect": "[+1] Visibility Range",
 		"unitTypes": ["Scout"]
 	},
 	{
 		"name": "Scouting III",
-		"prerequisites": ["Scouting I"],
+		"prerequisites": ["Scouting II"],
 		"effect": "[+1] Movement",
 		"unitTypes": ["Scout"]
 	},
