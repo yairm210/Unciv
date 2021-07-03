@@ -141,12 +141,10 @@ class MapUnit {
         if (isEmbarked()) return getEmbarkedMovement()
 
         var movement = baseUnit.movement
-        movement += getUniques().count { it.text == "+1 Movement" }
+        movement += getMatchingUniques("[] Movement").sumBy { it.params[0].toInt() }
         
-        // Deprecated since 3.14.17
-            if (type.isMilitary() && type.isWaterUnit() && civInfo.hasUnique("All military naval units receive +1 movement and +1 sight")) {
-                movement += 1
-            }
+        // Deprecated since 3.15.6
+            movement += getUniques().count { it.text == "+1 Movement" }
         //
         
         for (unique in civInfo.getMatchingUniques("+[] Movement for all [] units"))
@@ -206,20 +204,22 @@ class MapUnit {
      */
     private fun getVisibilityRange(): Int {
         var visibilityRange = 2
-        visibilityRange += getUniques().count { it.text == "+1 Visibility Range" }
         for (unique in civInfo.getMatchingUniques("+[] Sight for all [] units"))
             if (matchesFilter(unique.params[1]))
                 visibilityRange += unique.params[0].toInt()
-        if (hasUnique("+2 Visibility Range")) visibilityRange += 2 // This shouldn't be stackable
-        if (hasUnique("Limited Visibility")) visibilityRange -= 1
-        // Deprecated since 3.15.1
-        if (civInfo.hasUnique("+1 Sight for all land military units") && type.isMilitary() && type.isLandUnit())
-            visibilityRange += 1
+        visibilityRange += getMatchingUniques("[] Visibility Range").sumBy { it.params[0].toInt() }
         
-        // Deprecated since 3.14.17
-            if (type.isMilitary() && type.isWaterUnit() && civInfo.hasUnique("All military naval units receive +1 movement and +1 sight"))
+        if (hasUnique("Limited Visibility")) visibilityRange -= 1
+        
+        // Deprecated since 3.15.6
+            visibilityRange += getUniques().count { it.text == "+1 Visibility Range" }
+            if (hasUnique("+2 Visibility Range")) visibilityRange += 2 // This shouldn't be stackable
+        //
+        // Deprecated since 3.15.1
+            if (civInfo.hasUnique("+1 Sight for all land military units") && type.isMilitary() && type.isLandUnit())
                 visibilityRange += 1
         //
+
 
         for (unique in getTile().getAllTerrains().flatMap { it.uniqueObjects })
             if (unique.placeholderText == "[] Sight for [] units" && matchesFilter(unique.params[1]))
@@ -273,18 +273,28 @@ class MapUnit {
         return true
     }
 
+    fun maxAttacksPerTurn(): Int {
+        var maxAttacksPerTurn = 1 + getMatchingUniques("[] additional attacks per turn").sumBy { it.params[0].toInt() }
+        // Deprecated since 3.15.6
+        if (hasUnique("1 additional attack per turn"))
+            maxAttacksPerTurn++
+        //
+        return maxAttacksPerTurn
+    }
+    
     fun canAttack(): Boolean {
         if (currentMovement == 0f) return false
-        if (attacksThisTurn > 0 && !hasUnique("1 additional attack per turn")) return false
-        if (attacksThisTurn > 1) return false
-        return true
+        return attacksThisTurn < maxAttacksPerTurn()
     }
 
     fun getRange(): Int {
         if (type.isMelee()) return 1
         var range = baseUnit().range
-        if (hasUnique("+1 Range")) range++
-        if (hasUnique("+2 Range")) range += 2
+        // Deprecated since 3.15.6
+            if (hasUnique("+1 Range")) range++
+            if (hasUnique("+2 Range")) range += 2
+        //
+        range += getMatchingUniques("[] Range").sumBy { it.params[0].toInt() }
         return range
     }
 
@@ -375,8 +385,11 @@ class MapUnit {
 
     private fun adjacentHealingBonus(): Int {
         var healingBonus = 0
-        if (hasUnique("This unit and all others in adjacent tiles heal 5 additional HP per turn")) healingBonus += 5
-        if (hasUnique("This unit and all others in adjacent tiles heal 5 additional HP. This unit heals 5 additional HP outside of friendly territory.")) healingBonus += 5
+        healingBonus += getMatchingUniques("All adjacent units heal [] HP when healing").sumBy { it.params[0].toInt() }
+        // Deprecated since 3.15.6
+            if (hasUnique("This unit and all others in adjacent tiles heal 5 additional HP per turn")) healingBonus += 5
+            if (hasUnique("This unit and all others in adjacent tiles heal 5 additional HP. This unit heals 5 additional HP outside of friendly territory.")) healingBonus += 5
+        //
         return healingBonus
     }
 
@@ -505,9 +518,13 @@ class MapUnit {
         if (civInfo.hasUnique("Can only heal by pillaging")) return
 
         var amountToHealBy = rankTileForHealing(getTile())
-        if (amountToHealBy == 0) return
+        if (amountToHealBy == 0 && !(hasUnique("May heal outside of friendly territory") && !getTile().isFriendlyTerritory(civInfo))) return
 
-        if (hasUnique("+10 HP when healing")) amountToHealBy += 10
+        // Deprecated since 3.15.6
+            if (hasUnique("+10 HP when healing")) amountToHealBy += 10
+        //
+        amountToHealBy += getMatchingUniques("[] HP when healing").sumBy { it.params[0].toInt() }
+        
         val maxAdjacentHealingBonus = currentTile.getTilesInDistance(1)
             .flatMap { it.getUnits().asSequence() }.map { it.adjacentHealingBonus() }.maxOrNull()
         if (maxAdjacentHealingBonus != null)
@@ -534,12 +551,24 @@ class MapUnit {
             isFriendlyTerritory -> 15 // Allied territory
             else -> 5 // Enemy territory
         }
+        
+        val mayHeal = healing > 0 || (tileInfo.isWater && hasUnique("May heal outside of friendly territory"))
 
-        if (hasUnique("This unit and all others in adjacent tiles heal 5 additional HP. This unit heals 5 additional HP outside of friendly territory.")
-            && !isFriendlyTerritory
-            && healing > 0
-        )// Additional healing from medic is only applied when the unit is able to heal
-            healing += 5
+        // Deprecated since 3.15.6
+            if (hasUnique("This unit and all others in adjacent tiles heal 5 additional HP. This unit heals 5 additional HP outside of friendly territory.")
+                && !isFriendlyTerritory
+                && mayHeal
+            )// Additional healing from medic is only applied when the unit is able to heal
+                healing += 5
+        //
+        
+        if (mayHeal) {
+            for (unique in getMatchingUniques("[] HP when healing in [] tiles")) {
+                if (tileInfo.matchesFilter(unique.params[1])) {
+                    healing += unique.params[0].toInt()
+                }
+            }
+        }
 
         return healing
     }
@@ -720,15 +749,15 @@ class MapUnit {
             )
         }
 
-        val researchableAncientEraTechs = tile.tileMap.gameInfo.ruleSet.technologies.values
+        val researchableFirstEraTechs = tile.tileMap.gameInfo.ruleSet.technologies.values
             .filter {
                 !civInfo.tech.isResearched(it.name)
                         && civInfo.tech.canBeResearched(it.name)
-                        && it.era() == Constants.ancientEra
+                        && civInfo.gameInfo.ruleSet.getEraNumber(it.era()) == 1
             }
-        if (researchableAncientEraTechs.isNotEmpty())
+        if (researchableFirstEraTechs.isNotEmpty())
             actions.add {
-                val tech = researchableAncientEraTechs.random(tileBasedRandom).name
+                val tech = researchableFirstEraTechs.random(tileBasedRandom).name
                 civInfo.tech.addTechnology(tech)
                 civInfo.addNotification(
                     "We have discovered the lost technology of [$tech] in the ruins!",
@@ -738,10 +767,13 @@ class MapUnit {
                 )
             }
 
+        val militaryUnit = 
+            if (civInfo.gameInfo.gameParameters.startingEra !in civInfo.gameInfo.ruleSet.eras) "Warrior" 
+            else civInfo.gameInfo.ruleSet.eras[civInfo.gameInfo.gameParameters.startingEra]!!.startingMilitaryUnit
         val possibleUnits = (
                 //City-States and OCC don't get settler from ruins
                 listOf(Constants.settler).filterNot { civInfo.isCityState() || civInfo.isOneCityChallenger() }
-                + listOf(Constants.worker, "Warrior")
+                + listOf(Constants.worker, militaryUnit)
             ).filter { civInfo.gameInfo.ruleSet.units.containsKey(it) }
         if (possibleUnits.isNotEmpty())
             actions.add {
@@ -807,9 +839,13 @@ class MapUnit {
     }
 
     fun canIntercept(attackedTile: TileInfo): Boolean {
-        if (attacksThisTurn > 1) return false
         if (interceptChance() == 0) return false
-        if (attacksThisTurn > 0 && !hasUnique("1 extra Interception may be made per turn")) return false
+        val maxAttacksPerTurn = 1 + 
+            getMatchingUniques("[] extra interceptions may be made per turn").sumBy { it.params[0].toInt() } + 
+            // Deprecated since 3.15.7
+                getMatchingUniques("1 extra interception may be made per turn").count()
+            //
+        if (attacksThisTurn >= maxAttacksPerTurn) return false
         if (currentTile.aerialDistanceTo(attackedTile) > baseUnit.interceptRange) return false
         return true
     }
@@ -828,8 +864,8 @@ class MapUnit {
         var capacity = getMatchingUniques("Can carry [] [] units").filter { unit.matchesFilter(it.params[1]) }.sumBy { it.params[0].toInt() }
         capacity += getMatchingUniques("Can carry [] extra [] units").filter { unit.matchesFilter(it.params[1]) }.sumBy { it.params[0].toInt() }
         // Deprecated since 3.15.5
-        capacity += getMatchingUniques("Can carry 2 air units").filter { unit.matchesFilter("Air") }.sumBy { 2 }
-        capacity += getMatchingUniques("Can carry 1 extra air units").filter { unit.matchesFilter("Air") }.sumBy { 1 }
+        capacity += getMatchingUniques("Can carry 2 aircraft").filter { unit.matchesFilter("Air") }.sumBy { 2 }
+        capacity += getMatchingUniques("Can carry 1 extra aircraft").filter { unit.matchesFilter("Air") }.sumBy { 1 }
         return capacity
     }
 
@@ -842,7 +878,8 @@ class MapUnit {
     }
 
     fun interceptDamagePercentBonus(): Int {
-        return getUniques().filter { it.placeholderText == "Bonus when intercepting []%" }
+        // "Bonus when intercepting []%" deprecated since 3.15.7
+        return getUniques().filter { it.placeholderText == "Bonus when intercepting []%" || it.placeholderText == "[]% Damage when intercepting"}
             .sumBy { it.params[0].toInt() }
     }
 

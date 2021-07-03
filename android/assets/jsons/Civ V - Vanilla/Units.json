@@ -151,7 +151,7 @@
 		"strength": 10,
 		"cost": 45,
 		"requiredTech": "Sailing",
-		"uniques": ["Cannot enter ocean tiles",],
+		"uniques": ["Cannot enter ocean tiles"],
 		"upgradesTo": "Caravel",
 		"obsoleteTech": "Astronomy",
 		"attackSound": "nonmetalhit"
@@ -197,6 +197,22 @@
 		"upgradesTo": "Knight",
 		"obsoleteTech": "Chivalry",
 		"uniques": ["No defensive terrain bonus", "Rough terrain penalty"],
+		"attackSound": "arrow"
+	},
+	{
+		"name": "Horse Archer",
+		"unitType": "Ranged",
+		"uniqueTo": "The Huns",
+		"replaces": "Chariot Archer",
+		"movement": 4,
+		"strength": 7,
+		"rangedStrength": 10,
+		"cost": 56,
+		"requiredTech": "The Wheel",
+		"upgradesTo": "Knight",
+		"obsoleteTech": "Chivalry",
+		"uniques": ["No defensive terrain bonus"],
+		"promotions": ["Accuracy I"],
 		"attackSound": "arrow"
 	},
 	{
@@ -251,9 +267,25 @@
 		"requiredTech": "Bronze Working",
 		"obsoleteTech": "Civil Service",
 		"upgradesTo": "Pikeman",
-		"uniques": ["+[50]% Strength vs [Mounted]","+10 HP when healing"],
+		"uniques": ["+[50]% Strength vs [Mounted]","+[10] HP when healing"],
 		"attackSound": "metalhit"
 	},
+	{
+		"name": "Battering Ram",
+		"replaces": "Spearman",
+		"uniqueTo": "Huns",
+		"unitType": "Melee",
+		"movement": 2,
+		"strength": 10,
+		"cost": 75,
+		"requiredTech": "Bronze Working",
+		"obsoleteTech": "Physics",
+		"upgradesTo": "Trebuchet",
+		"uniques": ["+[300]% Strength vs [City]", "No defensive terrain bonus", "+[-33]% Strength when defending",
+		"-[1] Visibility Range", "Can only attack [City] units"],
+		"promotions":  ["Cover I"],
+		"attackSound": "throw"
+	}
 	/*
 	{
 		"name": "Spearman",
@@ -282,7 +314,7 @@
 		"requiredResource": "Horses",
 		"upgradesTo": "Knight",
 		"obsoleteTech": "Metallurgy",
-		"uniques": ["Can move after attacking","No defensive terrain bonus","Penalty vs City 33%" ],
+		"uniques": ["Can move after attacking","No defensive terrain bonus","-[33]% Strength vs [City]" ],
 		"hurryCostModifier": 20,
 		"attackSound": "horse"
 	},
@@ -299,7 +331,7 @@
 		"obsoleteTech": "Metallurgy",
 		"promotions": ["Great Generals I"],
 		"requiredResource": "Horses",
-		"uniques": ["Can move after attacking", "No defensive terrain bonus", "Penalty vs City 33%"],
+		"uniques": ["Can move after attacking", "No defensive terrain bonus", "-[33]% Strength vs [City]"],
 		"hurryCostModifier": 20,
 		"attackSound": "horse"
 	},
@@ -461,7 +493,7 @@
 		"obsoleteTech": "Military Science",
 		"upgradesTo": "Cavalry",
 		"requiredResource": "Horses",
-		"uniques": ["Can move after attacking","No defensive terrain bonus","Penalty vs City 33%" ],
+		"uniques": ["Can move after attacking","No defensive terrain bonus","-[33]% Strength vs [City]" ],
 		"attackSound": "horse"
 	},
 	{
@@ -493,7 +525,7 @@
 		"requiredResource": "Horses",
 		"upgradesTo": "Cavalry",
 		"obsoleteTech": "Military Science",
-		"uniques": ["Can move after attacking","No defensive terrain bonus", "Founds a new city", "+2 Visibility Range", "Defense bonus when embarked"],
+		"uniques": ["Can move after attacking","No defensive terrain bonus", "Founds a new city", "[+2] Visibility Range", "Defense bonus when embarked"],
 		"attackSound": "horse"
 		//Conquistador should have no penalty attacking cities
 		//Ability to found new cities can only be used on a foreign continent that does not contain the Spanish capital.
@@ -509,7 +541,7 @@
 		"requiredTech": "Chivalry",
 		"obsoleteTech": "Military Science",
 		"upgradesTo": "Cavalry",
-		"uniques": ["Can move after attacking","No defensive terrain bonus","+[50]% Strength vs [Mounted]","Penalty vs City 33%"],
+		"uniques": ["Can move after attacking","No defensive terrain bonus","+[50]% Strength vs [Mounted]","-[33]% Strength vs [City]"],
 		"attackSound": "shot"
 	},
 	{
@@ -674,7 +706,7 @@
 		"requiredTech": "Astronomy",
 		"upgradesTo": "Ironclad",
 		"obsoleteTech": "Combustion",
-		"uniques": ["+1 Visibility Range","May withdraw before melee ([80]%)"],
+		"uniques": ["[+1] Visibility Range", "May withdraw before melee ([80]%)"],
 		"hurryCostModifier": 30
 	},
 	{
@@ -759,6 +791,17 @@
 		"attackSound": "shot"
 	},
 	{
+		"name": "Privateer",
+		"unitType": "WaterMelee",
+		"movement": 5,
+		"strength": 25,
+		"cost": 150,
+		"requiredTech": "Navigation",
+		"upgradesTo": "Destroyer",
+		"promotions": ["Coastal Raider I"],
+		"uniques": ["May capture killed [Water] units"]
+	},
+	{
 		"name": "Frigate",
 		"unitType": "WaterRanged",
 		"movement": 5,
@@ -781,7 +824,7 @@
 		"rangedStrength": 35,
 		"cost": 185,
 		"requiredResource": "Iron",
-		"uniques": ["+1 Visibility Range"],
+		"uniques": ["[+1] Visibility Range"],
 		"requiredTech": "Navigation",
 		"obsoleteTech": "Electronics",
 		"upgradesTo": "Battleship",
@@ -795,7 +838,7 @@
 		"cost": 185,
 		"requiredTech": "Metallurgy",
 		"requiredResource": "Horses",
-		"uniques": ["Can move after attacking","No defensive terrain bonus","Penalty vs City 33%"],
+		"uniques": ["Can move after attacking","No defensive terrain bonus","-[33]% Strength vs [City]"],
 		"promotions": ["Formation I"],
 		"upgradesTo": "Anti-Tank Gun",
 		"obsoleteTech": "Combined Arms",
@@ -811,8 +854,8 @@
 		"cost": 185,
 		"requiredTech": "Metallurgy",
 		"requiredResource": "Horses",
-		"uniques": ["Can move after attacking","No defensive terrain bonus","Penalty vs City 33%",
-			"+1 Visibility Range", "No movement cost to pillage"],
+		"uniques": ["Can move after attacking","No defensive terrain bonus","-[33]% Strength vs [City]",
+			"[+1] Visibility Range", "No movement cost to pillage"],
 		"promotions": ["Formation I"],
 		"upgradesTo": "Anti-Tank Gun",
 		"obsoleteTech": "Combined Arms",
@@ -881,7 +924,7 @@
 		"obsoleteTech": "Combustion",
 		"requiredResource": "Horses",
 		"upgradesTo": "Landship",
-		"uniques": ["Can move after attacking","No defensive terrain bonus","Penalty vs City 33%" ],
+		"uniques": ["Can move after attacking","No defensive terrain bonus","-[33]% Strength vs [City]" ],
 		"attackSound": "horse"
 	},
 	{
@@ -897,7 +940,7 @@
 		"requiredResource": "Horses",
 		"upgradesTo": "Landship",
 		"uniques": ["Can move after attacking","No defensive terrain bonus",
-			"Penalty vs City 33%", "+[50]% Strength vs [wounded units]"],
+			"-[33]% Strength vs [City]", "+[50]% Strength vs [wounded units]"],
 		"attackSound": "horse"
 	},
 	{
@@ -937,7 +980,7 @@
 		"cost": 325,
 		"requiredTech": "Refrigeration",
 		"upgradesTo": "Nuclear Submarine",
-		"uniques": ["+[75]% Strength when attacking", "Invisible to others", "Can only attack water", "Can attack submarines", "Can enter ice tiles"]
+		"uniques": ["+[75]% Strength when attacking", "Invisible to others", "Can only attack [Water] units", "Can attack submarines", "Can enter ice tiles"]
 	},
 	{
 		"name": "Great War Infantry",
@@ -1025,7 +1068,7 @@
 		"cost": 375,
 		"requiredResource": "Oil",
 		"requiredTech": "Electronics",
-		"uniques": ["Ranged attacks may be performed over obstacles"],
+		"uniques": ["Ranged attacks may be performed over obstacles"]
 		// Does not actually upgrade to Missile Cruisers
 	},
 	{
@@ -1209,7 +1252,7 @@
 		"requiredTech": "Nuclear Fission",
 		"requiredResource": "Uranium",
 		"promotions" : ["Evasion"],
-		"uniques": ["Nuclear weapon of strength [1]", "Requires [Manhattan Project]", "Self-destructs when attacking",
+		"uniques": ["Nuclear weapon of Strength [1]", "Requires [Manhattan Project]", "Self-destructs when attacking",
 			"Blast radius [2]"],
 		"attackSound": "nuke"
 		// Plane rather than a missile - can be based in city or Carrier only.
@@ -1259,7 +1302,7 @@
 		"range": 12,
 		"cost": 1000,
 		"requiredTech": "Advanced Ballistics",
-		"uniques": ["Self-destructs when attacking", "Nuclear weapon of strength [2]", "Requires [Manhattan Project]",
+		"uniques": ["Self-destructs when attacking", "Nuclear weapon of Strength [2]", "Requires [Manhattan Project]",
 			"Blast radius [2]", "Consumes [2] [Uranium]"],
 		"attackSound": "nuke"
 	},
@@ -1288,8 +1331,8 @@
 		"rangedStrength": 85,
 		"cost": 425,
 		"requiredTech": "Telecommunications",
-		"uniques": ["+[75]% Strength when attacking", "Invisible to others", "Can only attack water",
-			"Can attack submarines", "Can enter ice tiles", "+1 Visibility Range", "Can carry [2] [Missile] units"]
+		"uniques": ["+[75]% Strength when attacking", "Invisible to others", "Can only attack [Water] units",
+			"Can attack submarines", "Can enter ice tiles", "[+1] Visibility Range", "Can carry [2] [Missile] units"]
 	},
 	{
 		"name": "Mechanized Infantry",
@@ -1348,7 +1391,8 @@
 		"cost": 425,
 		"requiredTech": "Nuclear Fusion",
 		"requiredResource": "Uranium",
-		"uniques": ["Can move after attacking", "No defensive terrain bonus"]
+		"uniques": ["Can move after attacking", "No defensive terrain bonus"],
+		"attackSound": "gdrAttack"
 	},
 	{
 		"name": "Stealth Bomber",

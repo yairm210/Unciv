@@ -24,7 +24,9 @@ object BattleDamage {
                 if (enemy.matchesCategory(unique.params[1]))
                     modifiers.add("vs [${unique.params[1]}]", unique.params[0].toInt())
             }
-            for (unique in combatant.unit.getMatchingUniques("-[]% Strength vs []")) {
+            for (unique in combatant.unit.getMatchingUniques("-[]% Strength vs []")+
+                    civInfo.getMatchingUniques("-[]% Strength vs []")
+            ) {
                 if (enemy.matchesCategory(unique.params[1]))
                     modifiers.add("vs [${unique.params[1]}]", -unique.params[0].toInt())
             }
@@ -46,17 +48,19 @@ object BattleDamage {
                 }
             }
 
-            var adjacentUnitBonus = 0
+            val adjacentUnits = combatant.getTile().neighbors.flatMap { it.getUnits() }
+            
             for (unique in civInfo.getMatchingUniques("+[]% Strength for [] units which have another [] unit in an adjacent tile")) {
                 if (combatant.matchesCategory(unique.params[1])
-                    && combatant.getTile().neighbors.flatMap { it.getUnits() }
-                    .any { it.civInfo == civInfo && it.matchesFilter(unique.params[2]) } 
+                    && adjacentUnits.any { it.civInfo == civInfo && it.matchesFilter(unique.params[2]) } 
                 ) {
-                    adjacentUnitBonus += unique.params[0].toInt()
+                    modifiers.add("Adjacent units", unique.params[0].toInt())
                 }
             }
-            if (adjacentUnitBonus != 0)
-                modifiers["Adjacent unit"] = adjacentUnitBonus
+            
+            for (unique in adjacentUnits.flatMap { it.getMatchingUniques("[]% Strength for enemy [] units in adjacent [] tiles") })
+                if (combatant.matchesCategory(unique.params[1]) && combatant.getTile().matchesFilter(unique.params[2]))
+                    modifiers.add("Adjacent enemy units", unique.params[0].toInt())
 
             val civResources = civInfo.getCivResourcesByName()
             for (resource in combatant.unit.baseUnit.getResourceRequirements().keys)
@@ -129,11 +133,6 @@ object BattleDamage {
         if (enemy.getCivInfo().isBarbarian()) {
             modifiers["Difficulty"] =
                 (civInfo.gameInfo.getDifficulty().barbarianBonus * 100).toInt()
-            // Deprecated since 3.14.17
-                if (civInfo.hasUnique("+25% bonus vs Barbarians")) {
-                    modifiers["vs Barbarians (deprecated)"] = 25
-                }
-            //
         }
 
         return modifiers
@@ -227,11 +226,18 @@ object BattleDamage {
             )
                 modifiers["Tile"] = (tileDefenceBonus * 100).toInt()
 
-            if (attacker.isRanged()) {
-                val defenceVsRanged = 25 * defender.unit.getUniques()
-                    .count { it.text == "+25% Defence against ranged attacks" }
-                if (defenceVsRanged > 0) modifiers["defence vs ranged"] = defenceVsRanged
+            for (unique in defender.unit.getMatchingUniques("[]% Strength when defending vs []")) {
+                if (attacker.matchesCategory(unique.params[1]))
+                    modifiers.add("defence vs [${unique.params[1]}] ", unique.params[0].toInt())
             }
+            
+            // Deprecated since 3.15.7
+                if (attacker.isRanged()) {
+                    val defenceVsRanged = 25 * defender.unit.getUniques()
+                        .count { it.text == "+25% Defence against ranged attacks" }
+                    if (defenceVsRanged > 0) modifiers.add("defence vs ranged", defenceVsRanged)
+                }
+            //
 
             for (unique in defender.unit.getMatchingUniques("+[]% Strength when defending")) {
                 modifiers.add("Defender Bonus", unique.params[0].toInt())
@@ -239,7 +245,7 @@ object BattleDamage {
 
             for (unique in defender.unit.getMatchingUniques("+[]% defence in [] tiles")) {
                 if (tile.matchesFilter(unique.params[1]))
-                    modifiers["[${unique.params[1]}] defence"] = unique.params[0].toInt()
+                    modifiers.add("[${unique.params[1]}] defence", unique.params[0].toInt())
             }
 
             if (defender.unit.isFortified())
@@ -280,17 +286,16 @@ object BattleDamage {
             )
                 modifiers[unique.params[2]] = unique.params[0].toInt()
         }
-
-        if (tile.neighbors.flatMap { it.getUnits() }
-                .any {
-                    it.hasUnique("-10% combat strength for adjacent enemy units") && it.civInfo.isAtWarWith(
-                        unit.getCivInfo()
-                    )
-                })
-            modifiers["Haka War Dance"] = -10
-
-
-
+    
+        // Deprecated since 3.15.7
+            if (tile.neighbors.flatMap { it.getUnits() }
+                    .any {
+                        it.hasUnique("-10% combat strength for adjacent enemy units") && it.civInfo.isAtWarWith(
+                            unit.getCivInfo()
+                        )
+                    })
+                modifiers["Haka War Dance"] = -10
+        //
         return modifiers
     }
 

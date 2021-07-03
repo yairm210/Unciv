@@ -257,7 +257,6 @@ class CivilizationInfo {
                 } +
                 policies.policyUniques.getUniques(uniqueTemplate) +
                 tech.getTechUniques().filter { it.placeholderText == uniqueTemplate } +
-                religionManager.getUniques().filter { it.placeholderText == uniqueTemplate } +
                 temporaryUniques.filter { it.first.placeholderText == uniqueTemplate }.map { it.first }
     }
 
@@ -719,14 +718,8 @@ class CivilizationInfo {
 
     fun getResearchAgreementCost(): Int {
         // https://forums.civfanatics.com/resources/research-agreements-bnw.25568/
-        val basicGoldCostOfSignResearchAgreement = when (getEra()) {
-            Constants.medievalEra, Constants.renaissanceEra -> 250
-            Constants.industrialEra -> 300
-            Constants.modernEra -> 350
-            Constants.informationEra, Constants.futureEra -> 400
-            else -> 0
-        }
-        return (basicGoldCostOfSignResearchAgreement * gameInfo.gameParameters.gameSpeed.modifier).toInt()
+        val era = if (getEra() in gameInfo.ruleSet.eras) gameInfo.ruleSet.eras[getEra()]!! else Era()
+        return (era.researchAgreementCost * gameInfo.gameParameters.gameSpeed.modifier).toInt()
     }
 
     fun gainMilitaryUnitFromCityState(otherCiv: CivilizationInfo) {
@@ -754,7 +747,7 @@ class CivilizationInfo {
         addNotification( "[${givingCityState.civName}] gave us a [${giftedUnit.name}] as a gift!", locations, givingCityState.civName, giftedUnit.name)
     }
 
-    fun turnsForGreatPersonFromCityState(): Int = (40 + -2 + Random().nextInt(5)) * gameInfo.gameParameters.gameSpeed.modifier.toInt()
+    fun turnsForGreatPersonFromCityState(): Int = ((40 + -2 + Random().nextInt(5)) * gameInfo.gameParameters.gameSpeed.modifier).toInt()
         // There seems to be some randomness in the amount of turns between receiving each great person,
         // but I have no idea what the actual lower and upper bound are, so this is just an approximation
     

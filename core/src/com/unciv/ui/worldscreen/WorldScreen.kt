@@ -28,10 +28,7 @@ import com.unciv.models.translations.tr
 import com.unciv.ui.cityscreen.CityScreen
 import com.unciv.ui.civilopedia.CivilopediaScreen
 import com.unciv.ui.overviewscreen.EmpireOverviewScreen
-import com.unciv.ui.pickerscreens.GreatPersonPickerScreen
-import com.unciv.ui.pickerscreens.PolicyPickerScreen
-import com.unciv.ui.pickerscreens.TechButton
-import com.unciv.ui.pickerscreens.TechPickerScreen
+import com.unciv.ui.pickerscreens.*
 import com.unciv.ui.saves.LoadGameScreen
 import com.unciv.ui.saves.SaveGameScreen
 import com.unciv.ui.trade.DiplomacyScreen
@@ -478,11 +475,11 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Cam
 
         displayTutorial(Tutorial.InjuredUnits) { gameInfo.getCurrentPlayerCivilization().getCivUnits().any { it.health < 100 } }
 
-        displayTutorial(Tutorial.Workers) { 
-            gameInfo.getCurrentPlayerCivilization().getCivUnits().any { 
-                (it.hasUnique(Constants.canBuildImprovements) || it.hasUnique(Constants.workerUnique)) 
-                    && it.type.isCivilian() 
-            } 
+        displayTutorial(Tutorial.Workers) {
+            gameInfo.getCurrentPlayerCivilization().getCivUnits().any {
+                (it.hasUnique(Constants.canBuildImprovements) || it.hasUnique(Constants.workerUnique))
+                    && it.type.isCivilian()
+            }
         }
     }
 
@@ -653,7 +650,7 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Cam
     }
 
     /**
-     * Used by [OptionsPopup][com.unciv.ui.worldscreen.mainmenu.OptionsPopup] 
+     * Used by [OptionsPopup][com.unciv.ui.worldscreen.mainmenu.OptionsPopup]
      * to re-enable the next turn button within its Close button action
      */
     fun enableNextTurnButtonAfterOptions() {
@@ -683,7 +680,7 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Cam
 
             viewingCiv.shouldOpenTechPicker() ->
                 NextTurnAction("Pick a tech", Color.SKY) {
-                    game.setScreen(TechPickerScreen(viewingCiv.tech.freeTechs != 0, viewingCiv))
+                    game.setScreen(TechPickerScreen(viewingCiv, null, viewingCiv.tech.freeTechs != 0))
                 }
 
             viewingCiv.policies.shouldOpenPolicyPicker || (viewingCiv.policies.freePolicies > 0 && viewingCiv.policies.canAdoptPolicy()) ->
@@ -694,19 +691,7 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Cam
 
             viewingCiv.religionManager.canFoundPantheon() ->
                 NextTurnAction("Found Pantheon", Color.WHITE) {
-                    val pantheonPopup = Popup(this)
-                    val beliefsTable = Table().apply { defaults().pad(10f) }
-                    for (belief in gameInfo.ruleSet.beliefs.values) {
-                        if (belief.type != "Pantheon" || gameInfo.civilizations.any { it.religionManager.pantheonBelief == belief.name }) continue
-                        val beliefTable = Table().apply { touchable = Touchable.enabled; background = ImageGetter.getBackground(ImageGetter.getBlue()) }
-                        beliefTable.pad(10f)
-                        beliefTable.add(belief.name.toLabel(fontSize = 24)).row()
-                        beliefTable.add(belief.uniques.joinToString().toLabel())
-                        beliefTable.onClick { viewingCiv.religionManager.choosePantheonBelief(belief); pantheonPopup.close(); shouldUpdate = true }
-                        beliefsTable.add(beliefTable).fillX().row()
-                    }
-                    pantheonPopup.add(ScrollPane(beliefsTable)).maxHeight(stage.height * .8f)
-                    pantheonPopup.open()
+                    game.setScreen(PantheonPickerScreen(viewingCiv, gameInfo))
                 }
 
             else ->

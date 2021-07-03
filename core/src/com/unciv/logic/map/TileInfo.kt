@@ -165,17 +165,9 @@ open class TileInfo {
     // and the toSequence so that aggregations (like neighbors.flatMap{it.units} don't take up their own space
 
     fun getHeight(): Int {
-        if (ruleset.terrains.values.asSequence().flatMap { it.uniqueObjects }
-                        .any { it.placeholderText == "Has an elevation of [] for visibility calculations" })
-            return getAllTerrains().flatMap { it.uniqueObjects }
-                    .filter { it.placeholderText == "Has an elevation of [] for visibility calculations" }
-                    .map { it.params[0].toInt() }.sum()
-
-        // Old method - deprecated 3.14.7
-        if (baseTerrain == Constants.mountain) return 4
-        if (isHill()) return 2
-        if (terrainFeatures.contains(Constants.forest) || terrainFeatures.contains(Constants.jungle)) return 1
-        return 0
+        return getAllTerrains().flatMap { it.uniqueObjects }
+            .filter { it.placeholderText == "Has an elevation of [] for visibility calculations" }
+            .map { it.params[0].toInt() }.sum()
     }
 
     fun getBaseTerrain(): Terrain = baseTerrainObject
@@ -235,7 +227,9 @@ open class TileInfo {
         if (city != null) {
             val cityWideUniques = city.cityConstructions.builtBuildingUniqueMap.getUniques("[] from [] tiles in this city")
             val civWideUniques = city.civInfo.getMatchingUniques("[] from every []")
-            for (unique in cityWideUniques + civWideUniques) {
+            val religionUniques = city.religion.getMatchingUniques( "[] from every []")
+            // Should be refactored to use city.getUniquesForThisCity(), probably
+            for (unique in cityWideUniques + civWideUniques + religionUniques) {
                 val tileType = unique.params[1]
                 if (tileType == improvement) continue // This is added to the calculation in getImprovementStats. we don't want to add it twice
                 if (matchesTerrainFilter(tileType, observingCiv)
@@ -295,14 +289,14 @@ open class TileInfo {
             }
             for (unique in cityWideUniques + improvementUniques) {
                 if (improvement.matchesFilter(unique.params[1])
-                    // Freshwater and non-freshwater cannot be moved to matchesUniqueFilter since that creates an enless feedback.
+                    // Freshwater and non-freshwater cannot be moved to matchesUniqueFilter since that creates an endless feedback.
                     // If you're attempting that, check that it works!
                     || unique.params[1] == "Fresh water" && isAdjacentToFreshwater
                     || unique.params[1] == "non-fresh water" && !isAdjacentToFreshwater)
                         stats.add(unique.stats)
             }
 
-            for (unique in city.civInfo.getMatchingUniques("[] from every []")) {
+            for (unique in city.civInfo.getMatchingUniques("[] from every []") + city.religion.getMatchingUniques("[] from every []")) {
                 if (improvement.matchesFilter(unique.params[1])) {
                     stats.add(unique.stats)
                 }
@@ -415,8 +409,8 @@ open class TileInfo {
             naturalWonder -> true
             "Open terrain" -> !isRoughTerrain()
             "Rough terrain" -> isRoughTerrain()
-            "Foreign Land" -> observingCiv != null && !isFriendlyTerritory(observingCiv)
-            "Friendly Land" -> observingCiv != null && isFriendlyTerritory(observingCiv)
+            "Foreign Land", "Foreign" -> observingCiv != null && !isFriendlyTerritory(observingCiv)
+            "Friendly Land", "Friendly" -> observingCiv != null && isFriendlyTerritory(observingCiv)
             resource -> observingCiv != null && hasViewableResource(observingCiv)
             else -> {
                 if (terrainFeatures.contains(filter)) return true

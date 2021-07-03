@@ -32,6 +32,14 @@
 		"requiredTech": "Pottery"
 	},
 	{
+		"name": "Shrine",
+		"faith": 1,
+		"cost": 40,
+		"maintenance": 1,
+		"requiredTech": "Pottery",
+		"uniques": ["Hidden when religion is disabled"]
+	},
+	{
 		"name": "Temple of Artemis",
 		"culture": 1,
 		"isWonder": true,
@@ -782,7 +790,7 @@
 		"isWonder": true,
 		"uniques": ["Defensive buildings in all cities are 25% more effective"],
 		"requiredTech": "Metallurgy",
-		"quote": "'The Law is a fortress on a hill that armies cannot take or floods wash away.'   –- The Prophet Muhammed"
+		"quote": "'The Law is a fortress on a hill that armies cannot take or floods wash away.'  - The Prophet Muhammed"
 	},
 	
 	// Industrial Era
@@ -1037,7 +1045,7 @@
 		"providesFreeBuilding": "Broadcast Tower",
 		"uniques": ["[+1] population [in all cities]", "[+1 Happiness] [in all cities]"],
 		"requiredTech": "Telecommunications",
-		"quote": "'Nothing travels faster than light with the possible exception of bad news, which obeys its own special rules.' – Douglas Adams"
+		"quote": "'Nothing travels faster than light with the possible exception of bad news, which obeys its own special rules.' - Douglas Adams"
 	},
 	{
 		"name": "Bomb Shelter",

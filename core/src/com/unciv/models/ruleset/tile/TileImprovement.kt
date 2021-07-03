@@ -5,26 +5,23 @@ import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.Unique
 import com.unciv.models.stats.NamedStats
 import com.unciv.models.translations.tr
+import com.unciv.ui.civilopedia.FormattedLine
+import com.unciv.ui.civilopedia.ICivilopediaText
 import java.util.*
 import kotlin.math.roundToInt
 
-class TileImprovement : NamedStats() {
+class TileImprovement : NamedStats(), ICivilopediaText {
 
     var terrainsCanBeBuiltOn: Collection<String> = ArrayList()
-
-    // Used only for Camp - but avoid hardcoded comparison and *allow modding*
-    // Terrain Features that need not be cleared if the improvement enables a resource
-    @Deprecated("As of 3.14.15")
-    var resourceTerrainAllow: Collection<String> = ArrayList()
-
     var techRequired: String? = null
-
     var uniqueTo:String? = null
     var uniques = ArrayList<String>()
     val uniqueObjects:List<Unique> by lazy { uniques.map { Unique(it) } }
     val shortcutKey: Char? = null
-
     val turnsToBuild: Int = 0 // This is the base cost.
+
+    override var civilopediaText = listOf<FormattedLine>()
+
 
     fun getTurnsToBuild(civInfo: CivilizationInfo): Int {
         var realTurnsToBuild = turnsToBuild.toFloat() * civInfo.gameInfo.gameParameters.gameSpeed.modifier
@@ -78,9 +75,7 @@ class TileImprovement : NamedStats() {
 
     /**
      * Check: Is this improvement allowed on a [given][name] terrain feature?
-     * 
-     * Uses both _legacy_ [resourceTerrainAllow] and unique "Does not need removal of []"
-     * 
+     *
      * Background: This not used for e.g. a lumbermill - it derives the right to be placed on forest
      * from [terrainsCanBeBuiltOn]. Other improvements may be candidates without fulfilling the
      * [terrainsCanBeBuiltOn] check - e.g. they are listed by a resource as 'their' improvement.
@@ -89,7 +84,6 @@ class TileImprovement : NamedStats() {
      * a terrain feature, thus the unique name.
      */
     fun isAllowedOnFeature(name: String): Boolean {
-        if (name in resourceTerrainAllow) return true
         return uniqueObjects.filter { it.placeholderText == "Does not need removal of []"
                 && it.params[0] == name
         }.any()

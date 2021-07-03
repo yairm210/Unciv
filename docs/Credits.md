@@ -32,8 +32,10 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Greek Trireme](https://thenounproject.com/search/?q=ancient%20boat&i=1626303) By Zachary McCune for Trireme
 * [Chariot](https://thenounproject.com/search/?q=Chariot&i=1189930) By Andrew Doane for Chariot Archer
 * [Elephant](https://thenounproject.com/Luis/uploads/?i=14048) By Luis Prado for War Elephant
+* [Centaur](https://thenounproject.com/search/?q=horse+archer&i=1791296) by Michael Wohlwend for Horse Archer 
 * [Spear](https://thenounproject.com/search/?q=Spear&i=11432) By Stephen Copinger for Spearman
 * [Greek shield](https://thenounproject.com/search/?q=hoplite&i=440135) for Hoplite
+* [Transparent Medieval Battering Ram Png Logo](https://www.pngimages.pics/275495/transparent-medieval-battering-ram-png.php) for Battering Ram
 * [Spiked club](https://thenounproject.com/search/?q=club%20weapon&creator=1933477&i=831794) for Brute
 * [Hoplite](https://www.flaticon.com/free-icon/hoplite_659126#term=hoplite&page=1&position=20) by Eucalyp for Immortal
 * [Slingshot](https://thenounproject.com/term/slingshot/9106/) by James Keuning for Slinger
@@ -72,6 +74,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Black powder musket](https://thenounproject.com/term/black-powder-musket/1202078/) By Jarem Fyre for Minuteman
 * [Rapier](https://thenounproject.com/search/?q=musketeer&i=819822) By Hamish for Musketeer
 * [Ship](https://thenounproject.com/term/ship/1293899/) By Orin Zuu for Frigate
+* [Pirate](https://thenounproject.com/search/?q=pirate&i=2349496) by Berkah Icon for Privateer
 * [Ship](https://thenounproject.com/search/?q=ship&i=800131) By Mungang Kim for Ship of the Line
 * [Lance](https://thenounproject.com/search/?q=Lance&i=440122) By parkjisun for Lancer
 * [Sword](https://thenounproject.com/search/?q=saber&i=1174742) By Daniela Baptista for Sipahi
@@ -510,6 +513,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Spiral](https://www.shutterstock.com/image-vector/maori-symbol-spiral-shape-based-on-1145645057?id=1145645057) by bc21 for Polynesia
 * [Dharmachakra](https://thenounproject.com/search/?q=dharmachakra&i=740796) by Parkjisun for Siam
 * [Sun](https://thenounproject.com/search/?q=inca&i=910770) by Made x Made for Inca
+* [Sun symbol black](https://en.wikiquote.org/wiki/File:Sun_symbol_black.svg) by Eddo for the Huns
 
 
 ## Promotions
@@ -542,6 +546,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * Icon for Armor Plating is made by [JackRainy](https://github.com/JackRainy)
 * [Slingshot](https://thenounproject.com/term/slingshot/9106/) by James Keuning for Slinger Withdraw
 * [Anchor](https://thenounproject.com/term/anchor/676586) by Gregor Cresnar for Amphibious
+* [survival knife](https://thenounproject.com/search/?q=survival&i=2663392) by b faris for Survivalism
 
 ## Others
 
@@ -608,7 +613,7 @@ Sounds are from FreeSound.org and are either Creative Commons or Public Domain
 * [Tornado-Siren-II](https://soundbible.com/1937-Tornado-Siren-II.html) by Delilah as part of 'nuke' sound (CC Attribution 3.0 license)
 * [Explosion-Ultra-Bass](https://soundbible.com/1807-Explosion-Ultra-Bass.html) by Mark DiAngelo as part of 'nuke' sound (CC Attribution 3.0 license)
 * [Short Choir](https://freesound.org/people/Breviceps/sounds/444491/) by Breviceps as 'choir' for free great person pick
-
+* [Death Robot! Robotic scream](https://freesound.org/people/vultraz168/sounds/334660/) by vultraz168 for Giant Death Robot Attack (CC0 1.0 Universal license)
 
 # Music
 The following music is from https://filmmusic.io

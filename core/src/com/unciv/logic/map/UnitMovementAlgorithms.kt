@@ -215,7 +215,8 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
         return unit.currentTile
     }
 
-    /** This is performance-heavy - use as last resort, only after checking everything else! */
+    /** This is performance-heavy - use as last resort, only after checking everything else!
+     * Also note that REACHABLE tiles are not necessarily tiles that the unit CAN ENTER */
     fun canReach(destination: TileInfo): Boolean {
         if (unit.type.isAirUnit() || unit.type.isMissile() || unit.action == Constants.unitActionParadrop)
             return canReachInCurrentTurn(destination)

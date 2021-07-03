@@ -563,7 +563,7 @@
 				"name": "Telecommunications",
 				"row": 2,
 				"prerequisites": ["Ecology"],
-				"quote": "'The more we elaborate our means of communication, the less we communicate.' – J.B. Priestly"
+				"quote": "'The more we elaborate our means of communication, the less we communicate.' - J.B. Priestly"
 			},
 			{
 				"name": "Mobile Tactics",
@@ -575,7 +575,7 @@
 				"name": "Advanced Ballistics",
 				"row": 5,
 				"prerequisites": ["Nuclear Fission","Rocketry"],
-				"quote": "Our scientific power has outrun our spiritual power, we have guided missiles and misguided men. – Martin Luther King Jr. "
+				"quote": "'Our scientific power has outrun our spiritual power, we have guided missiles and misguided men.' – Martin Luther King Jr."
 			},
 			{
 				"name": "Satellites",
@@ -628,7 +628,7 @@
 				"name": "Stealth",
 				"row": 8,
 				"prerequisites": ["Robotics", "Lasers"],
-				"quote": "'Be extremely subtle, even to the point of formlessness, be extremely mysterious, even to the point of soundlessness. Thereby you can be the director of the opponent' state.' – Sun Tzu"
+				"quote": "'Be extremely subtle, even to the point of formlessness, be extremely mysterious, even to the point of soundlessness. Thereby you can be the director of the opponent's fate.' - Sun Tzu"
 			}
 		]
 	},

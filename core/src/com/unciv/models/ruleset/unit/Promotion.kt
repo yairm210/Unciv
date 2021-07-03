@@ -3,7 +3,6 @@ package com.unciv.models.ruleset.unit
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.Unique
 import com.unciv.models.stats.INamed
-import com.unciv.models.translations.Translations
 import com.unciv.models.translations.tr
 
 class Promotion : INamed{
@@ -20,7 +19,7 @@ class Promotion : INamed{
         val stringBuilder = StringBuilder()
 
         for (unique in uniques + effect) {
-            stringBuilder.appendLine(Translations.translateBonusOrPenalty(unique))
+            stringBuilder.appendLine(unique.tr())
         }
 
         if(prerequisites.isNotEmpty()) {

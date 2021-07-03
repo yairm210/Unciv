@@ -134,10 +134,16 @@ class OptionsPopup(val previousScreen:CameraStageBaseScreen) : Popup(previousScr
 
         addHeader("Other options")
 
-        addYesNoRow("Show experimental world wrap for maps\n"
-                +"HIGHLY EXPERIMENTAL - YOU HAVE BEEN WARNED!".tr(),
-                settings.showExperimentalWorldWrap)
-        { settings.showExperimentalWorldWrap = it }
+
+        addYesNoRow("{Show experimental world wrap for maps}\n{HIGHLY EXPERIMENTAL - YOU HAVE BEEN WARNED!}".tr(),
+                settings.showExperimentalWorldWrap) {
+            settings.showExperimentalWorldWrap = it
+        }
+        addYesNoRow("{Enable experimental religion in start games}\n{HIHGLY EXPERIMENTAL - UPDATES WILL BREAK SAVES!}".tr(),
+                settings.showExperimentalReligion) {
+            settings.showExperimentalReligion = it
+        }
+
 
         if (previousScreen.game.limitOrientationsHelper != null) {
             addYesNoRow("Enable portrait orientation", settings.allowAndroidPortrait) {

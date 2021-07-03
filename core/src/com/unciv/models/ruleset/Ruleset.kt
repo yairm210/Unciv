@@ -43,12 +43,15 @@ class Ruleset {
 
     private val jsonParser = JsonParser()
 
+    var modWithReligionLoaded = false
+
     var name = ""
     val buildings = LinkedHashMap<String, Building>()
     val terrains = LinkedHashMap<String, Terrain>()
     val tileResources = LinkedHashMap<String, TileResource>()
     val tileImprovements = LinkedHashMap<String, TileImprovement>()
     val technologies = LinkedHashMap<String, Technology>()
+    val eras = LinkedHashMap<String, Era>()
     val units = LinkedHashMap<String, BaseUnit>()
     val unitPromotions = LinkedHashMap<String, Promotion>()
     val nations = LinkedHashMap<String, Nation>()
@@ -78,6 +81,7 @@ class Ruleset {
         buildings.putAll(ruleset.buildings)
         for (buildingToRemove in ruleset.modOptions.buildingsToRemove) buildings.remove(buildingToRemove)
         difficulties.putAll(ruleset.difficulties)
+        eras.putAll(ruleset.eras)
         nations.putAll(ruleset.nations)
         policyBranches.putAll(ruleset.policyBranches)
         policies.putAll(ruleset.policies)
@@ -94,25 +98,27 @@ class Ruleset {
         for (unitToRemove in ruleset.modOptions.unitsToRemove) units.remove(unitToRemove)
         for (nationToRemove in ruleset.modOptions.nationsToRemove) nations.remove(nationToRemove)
         mods += ruleset.mods
+        modWithReligionLoaded = modWithReligionLoaded || ruleset.modWithReligionLoaded
     }
 
     fun clear() {
+        beliefs.clear()
         buildings.clear()
         difficulties.clear()
-        nations.clear()
+        eras.clear()
         policyBranches.clear()
+        specialists.clear()
+        mods.clear()
+        nations.clear()
         policies.clear()
-        beliefs.clear()
         quests.clear()
         technologies.clear()
-        buildings.clear()
         terrains.clear()
         tileImprovements.clear()
         tileResources.clear()
         unitPromotions.clear()
-        specialists.clear()
         units.clear()
-        mods.clear()
+        modWithReligionLoaded = false
     }
 
 
@@ -150,6 +156,8 @@ class Ruleset {
         val improvementsFile = folderHandle.child("TileImprovements.json")
         if (improvementsFile.exists()) tileImprovements += createHashmap(jsonParser.getFromJson(Array<TileImprovement>::class.java, improvementsFile))
 
+        val erasFile = folderHandle.child("Eras.json")
+        if (erasFile.exists()) eras += createHashmap(jsonParser.getFromJson(Array<Era>::class.java, erasFile))
         val unitsFile = folderHandle.child("Units.json")
         if (unitsFile.exists()) units += createHashmap(jsonParser.getFromJson(Array<BaseUnit>::class.java, unitsFile))
 
@@ -212,7 +220,7 @@ class Ruleset {
     }
 
     fun getEras(): List<String> = technologies.values.map { it.column!!.era }.distinct()
-    fun hasReligion() = beliefs.any()
+    fun hasReligion() = beliefs.any() && modWithReligionLoaded
 
     fun getEraNumber(era: String) = getEras().indexOf(era)
     fun getSummary(): String {
@@ -233,7 +241,7 @@ class Ruleset {
     /** Result of a Mod RuleSet check */
     // essentially a named Pair with a few shortcuts
     class CheckModLinksResult(val status: CheckModLinksStatus, val message: String) {
-        // Empty constructor just makes the Complex Mod Check on the new game screen shorter 
+        // Empty constructor just makes the Complex Mod Check on the new game screen shorter
         constructor(): this(CheckModLinksStatus.OK, "")
         // Constructor that joins lines
         constructor(status: CheckModLinksStatus, lines: ArrayList<String>):
@@ -248,7 +256,7 @@ class Ruleset {
                         else -> CheckModLinksStatus.Error
                     },
                     lines)
-        // Allows $this in format strings 
+        // Allows $this in format strings
         override fun toString() = message
         // Readability shortcuts
         fun isError() = status == CheckModLinksStatus.Error
@@ -368,7 +376,26 @@ class Ruleset {
                     warningCount++
                 }
             }
+            // eras.isNotEmpty() is only for mod compatibility, it should be removed at some point.
+            if (eras.isNotEmpty() && tech.era() !in eras)
+                lines += "Unknown era ${tech.era()} referenced in column of tech ${tech.name}"
         }
+
+        for (era in eras) {
+            for (wonder in era.value.startingObsoleteWonders)
+                if (wonder !in buildings)
+                    lines += "Nonexistent wonder ${wonder} obsoleted when starting in ${era.key}!"
+            for (building in era.value.settlerBuildings)
+                if (building !in buildings)
+                    lines += "Nonexistent building ${building} built by settlers when starting in ${era.key}"
+            if (era.value.startingMilitaryUnit !in units)
+                lines += "Nonexistent unit ${era.value.startingMilitaryUnit} marked as starting unit when starting in ${era.key}"
+            if (era.value.researchAgreementCost < 0 || era.value.startingSettlerCount < 0 || era.value.startingWorkerCount < 0 || era.value.startingMilitaryUnitCount < 0 || era.value.startingGold < 0 || era.value.startingCulture < 0)
+                lines += "Unexpected negative number found while parsing era ${era.key}"
+            if (era.value.settlerPopulation <= 0)
+                lines += "Population in cities from settlers must be strictly positive! Found value ${era.value.settlerPopulation} for era ${era.key}"
+        }
+
 
         return CheckModLinksResult(warningCount, lines)
     }
@@ -425,6 +452,9 @@ object RulesetCache :HashMap<String,Ruleset>() {
             newRuleset.mods += mod.name
             if (mod.modOptions.isBaseRuleset) {
                 newRuleset.modOptions = mod.modOptions
+            }
+            if (mod.beliefs.any()) {
+                newRuleset.modWithReligionLoaded = true
             }
         }
         newRuleset.updateBuildingCosts() // only after we've added all the mods can we calculate the building costs

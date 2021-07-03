@@ -36,14 +36,7 @@ class Terrain : NamedStats() {
     var defenceBonus:Float = 0f
     var impassable = false
 
-    /** Use isRough() instead */
-    @Deprecated("As of 3.14.1")
-    var rough = false
-
-    fun isRough(): Boolean {
-        // "rough" property deprecated since 3.14.1
-        return uniques.contains("Rough terrain") || rough
-    }
+    fun isRough(): Boolean = uniques.contains("Rough terrain")
 
     fun getColor(): Color { // Can't be a lazy initialize, because we play around with the resulting color with lerp()s and the like
         if (RGB == null) return Color.GOLD

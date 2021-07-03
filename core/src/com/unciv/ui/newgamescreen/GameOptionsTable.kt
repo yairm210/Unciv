@@ -50,6 +50,8 @@ class GameOptionsTable(val previousScreen: IPreviousScreen, val updatePlayerPick
         checkboxTable.addOneCityChallengeCheckbox()
         checkboxTable.addNuclearWeaponsCheckbox()
         checkboxTable.addIsOnlineMultiplayerCheckbox()
+        if (UncivGame.Current.settings.showExperimentalReligion)
+            checkboxTable.addReligionCheckbox()
         checkboxTable.addModCheckboxes()
         add(checkboxTable).colspan(2).row()
 
@@ -83,6 +85,10 @@ class GameOptionsTable(val previousScreen: IPreviousScreen, val updatePlayerPick
                 gameParameters.isOnlineMultiplayer = it
                 updatePlayerPickerTable("")
             }
+    
+    private fun Table.addReligionCheckbox() =
+            addCheckbox("Enable Religion", gameParameters.religionEnabled)
+            { gameParameters.religionEnabled = it }
 
     private fun addCityStatesSelectBox() {
         add("{Number of City-States}:".toLabel())
@@ -131,6 +137,7 @@ class GameOptionsTable(val previousScreen: IPreviousScreen, val updatePlayerPick
 
     private fun Table.addEraSelectBox() {
         if (ruleset.technologies.isEmpty()) return // mod with no techs
+        // Should eventually be changed to use eras.json, but we'll keep it like this for now for mod compatibility
         val eras = ruleset.technologies.values.filter { !it.uniques.contains("Starting tech") }.map { it.era() }.distinct()
         addSelectBox("{Starting Era}:", eras, gameParameters.startingEra)
         { gameParameters.startingEra = it }

@@ -120,8 +120,6 @@ class MapParameters {
     var name = ""
     var type = MapType.pangaea
     var shape = MapShape.hexagonal
-    @Deprecated("replaced by mapSize since 3.14.7")
-    var size = MapSize.Medium
     var mapSize = MapSizeNew(MapSize.Medium)
     var noRuins = false
     var noNaturalWonders = false
