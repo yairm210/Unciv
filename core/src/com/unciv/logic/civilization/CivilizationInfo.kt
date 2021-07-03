@@ -507,6 +507,7 @@ class CivilizationInfo {
         if (cities.isNotEmpty()) { //if no city available, addGreatPerson will throw exception
             val greatPerson = greatPeople.getNewGreatPerson()
             if (greatPerson != null && gameInfo.ruleSet.units.containsKey(greatPerson)) addUnit(greatPerson)
+            religionManager.startTurn()
         }
 
         updateViewableTiles() // adds explored tiles so that the units will be able to perform automated actions better
