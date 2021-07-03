@@ -276,7 +276,7 @@ class MapUnit {
     fun maxAttacksPerTurn(): Int {
         var maxAttacksPerTurn = 1 + getMatchingUniques("[] additional attacks per turn").sumBy { it.params[0].toInt() }
         // Deprecated since 3.15.6
-        if (hasUnique("+1 additional attack per turn"))
+        if (hasUnique("1 additional attack per turn"))
             maxAttacksPerTurn++
         //
         return maxAttacksPerTurn
