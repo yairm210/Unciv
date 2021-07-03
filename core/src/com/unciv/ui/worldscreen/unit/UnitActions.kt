@@ -431,7 +431,7 @@ object UnitActions {
         if (maxReligionSpreads <= unit.religionSpreadsUsed) return
         val city = tile.getCity()
         actionList += UnitAction(UnitActionType.SpreadReligion,
-            title = "Spread ${unit.religion!!}",
+            title = "Spread [${unit.religion!!}]",
             uncivSound = UncivSound.Choir,
             action = {
                 unit.religionSpreadsUsed += 1
