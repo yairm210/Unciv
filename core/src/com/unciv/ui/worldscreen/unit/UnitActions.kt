@@ -425,12 +425,9 @@ object UnitActions {
     }
     
     private fun addSpreadReligionActions(unit: MapUnit, actionList: ArrayList<UnitAction>, tile: TileInfo) {
-        println(unit.hasUnique("Can spread religion [] times"))
         if (!unit.hasUnique("Can spread religion [] times")) return
-        println(unit.religion)
         if (unit.religion == null) return
         val maxReligionSpreads = unit.maxReligionSpreads()
-        println(maxReligionSpreads.toString() + ", " + unit.religionSpreadsUsed)
         if (maxReligionSpreads <= unit.religionSpreadsUsed) return
         val city = tile.getCity()
         actionList += UnitAction(UnitActionType.SpreadReligion,
@@ -440,13 +437,20 @@ object UnitActions {
                 unit.religionSpreadsUsed += 1
                 city!!.religion[unit.religion!!] = 100
                 unit.currentMovement = 0f
+                if (unit.religionSpreadsUsed == maxReligionSpreads) {
+                    addGoldPerGreatPersonUsage(unit.civInfo)
+                    unit.destroy()
+                }
             }.takeIf { unit.currentMovement > 0 && city != null && city.civInfo == unit.civInfo } // For now you can only convert your own cities
         )
     }
     
     fun getImprovementConstructionActions(unit: MapUnit, tile: TileInfo): ArrayList<UnitAction> {
         val finalActions = ArrayList<UnitAction>()
-        for (unique in unit.getMatchingUniques("Can construct []")) {
+        var uniquesToCheck = unit.getMatchingUniques("Can construct []")
+        if (unit.religionSpreadsUsed == 0 && unit.maxReligionSpreads() > 0)
+            uniquesToCheck += unit.getMatchingUniques("Can construct [] if it hasn't spread religion yet")
+        for (unique in uniquesToCheck) {
             val improvementName = unique.params[0]
             val improvement = tile.ruleset.tileImprovements[improvementName]
             if (improvement == null) continue

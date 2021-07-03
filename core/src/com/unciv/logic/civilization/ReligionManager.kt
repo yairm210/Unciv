@@ -24,7 +24,6 @@ class ReligionManager {
     fun startTurn() {
         if (canGenerateProphet() && storedFaith > faithForNextGreatProphet()) {
             val prophetSpawnChange = (5f + storedFaith - faithForNextGreatProphet()) / 100f
-            println(prophetSpawnChange)
             if (Random.nextFloat() < prophetSpawnChange) {
                 civInfo.addUnit("Great Prophet")
                 storedFaith = 0 
