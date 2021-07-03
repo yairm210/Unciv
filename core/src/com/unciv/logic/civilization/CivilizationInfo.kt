@@ -662,9 +662,11 @@ class CivilizationInfo {
         val cityToAddTo = city ?: cities.random()
         if (!gameInfo.ruleSet.units.containsKey(unitName)) return
         val unit = getEquivalentUnit(unitName)
-        // silently bail if no tile to place the unit is found
         val placedUnit = placeUnitNearTile(cityToAddTo.location, unit.name)
-        if (placedUnit != null && unit.isGreatPerson()) {
+        // silently bail if no tile to place the unit is found
+        if (placedUnit == null) return
+        placedUnit.religion = cityToAddTo.religion.getMajorityReligion()
+        if (unit.isGreatPerson()) {
             addNotification("A [${unit.name}] has been born in [${cityToAddTo.name}]!", placedUnit.getTile().position, unit.name)
         }
     }

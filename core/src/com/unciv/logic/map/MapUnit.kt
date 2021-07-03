@@ -105,6 +105,9 @@ class MapUnit {
     var promotions = UnitPromotions()
     var due: Boolean = true
     var isTransported: Boolean = false
+    
+    var religionSpreadsUsed: Int = 0
+    var religion: String? = null
 
     companion object {
         private const val ANCIENT_RUIN_MAP_REVEAL_OFFSET = 4
@@ -126,6 +129,8 @@ class MapUnit {
         toReturn.attacksThisTurn = attacksThisTurn
         toReturn.promotions = promotions.clone()
         toReturn.isTransported = isTransported
+        toReturn.religionSpreadsUsed = religionSpreadsUsed
+        toReturn.religion = religion
         return toReturn
     }
 
@@ -975,6 +980,15 @@ class MapUnit {
         val matchingUniques = getMatchingUniques(Constants.canBuildImprovements)
         return matchingUniques.any { improvement.matchesFilter(it.params[0]) || tile.matchesTerrainFilter(it.params[0]) }
     }
+    
+    fun maxReligionSpreads(): Int {
+        return getMatchingUniques("Can spread religion [] times").sumBy { it.params[0].toInt() }
+    }
 
+    fun getReligionString(): String {
+        val maxSpreads = maxReligionSpreads()
+        return "${maxSpreads - religionSpreadsUsed}/${maxSpreads}"
+    }
+    
     //endregion
 }

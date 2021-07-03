@@ -63,6 +63,7 @@ object UnitActions {
         //
         addCreateWaterImprovements(unit, actionList)
         addGreatPersonActions(unit, actionList, tile)
+        addSpreadReligionActions(unit, actionList, tile)
         actionList += getImprovementConstructionActions(unit, tile)
         addDisbandAction(actionList, unit, worldScreen)
 
@@ -421,6 +422,26 @@ object UnitActions {
                     }.takeIf { canConductTradeMission })
             }
         }
+    }
+    
+    private fun addSpreadReligionActions(unit: MapUnit, actionList: ArrayList<UnitAction>, tile: TileInfo) {
+        println(unit.hasUnique("Can spread religion [] times"))
+        if (!unit.hasUnique("Can spread religion [] times")) return
+        println(unit.religion)
+        if (unit.religion == null) return
+        val maxReligionSpreads = unit.maxReligionSpreads()
+        println(maxReligionSpreads.toString() + ", " + unit.religionSpreadsUsed)
+        if (maxReligionSpreads <= unit.religionSpreadsUsed) return
+        val city = tile.getCity()
+        actionList += UnitAction(UnitActionType.SpreadReligion,
+            title = "Spread ${unit.religion!!}",
+            uncivSound = UncivSound.Choir,
+            action = {
+                unit.religionSpreadsUsed += 1
+                city!!.religion[unit.religion!!] = 100
+                unit.currentMovement = 0f
+            }.takeIf { unit.currentMovement > 0 && city != null && city.civInfo == unit.civInfo } // For now you can only convert your own cities
+        )
     }
     
     fun getImprovementConstructionActions(unit: MapUnit, tile: TileInfo): ArrayList<UnitAction> {

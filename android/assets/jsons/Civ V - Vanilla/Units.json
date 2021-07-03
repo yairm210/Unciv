@@ -1438,7 +1438,7 @@
 	{
 		"name": "Great Prophet",
 		"unitType": "Civilian",
-		"uniques": ["Can construct [Holy site]", "Great Person - [Faith]", "Unbuildable"],
+		"uniques": ["Can construct [Holy site]", "Can spread religion [4] times","Great Person - [Faith]", "Unbuildable"],
 		"movement": 2
 	},
 	{
