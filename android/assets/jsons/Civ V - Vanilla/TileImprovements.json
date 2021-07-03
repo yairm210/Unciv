@@ -190,6 +190,11 @@
 		"uniques": ["Great Improvement", "[+1 Gold] once [Economics] is discovered"]
 	},
 	{
+		"name": "Holy site",
+		"faith": 6,
+		"uniques": ["Great Improvement"]
+	},
+	{
 		"name": "Citadel",
 		"uniques": ["Gives a defensive bonus of [100]%", "Deal 30 damage to adjacent enemy units", "Great Improvement", "Can be built just outside your borders"],
         "civilopediaText": [{text:"Constructing it will take over the tiles around it and assign them to your closest city"}]
