@@ -182,6 +182,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 ### Ancient Era
 
 * [Storehouse](https://thenounproject.com/term/storehouse/966786/) By Pedro Santos for Granary
+* [Shinto Gate](https://thenounproject.com/search/?q=shrine&i=253325) by Alexander Skowalsky for Shrine
 * [Great Wall Of China](https://thenounproject.com/term/great-wall-of-china/146039/) By Arthur Shlain for Walls
 * [Markadan Tower](https://thenounproject.com/search/?q=fortification&i=2107694) by Vectors Market for Walls of Babylon
 * [Block](https://thenounproject.com/term/block/1711553/) By Monjin Friends for Stone Works
