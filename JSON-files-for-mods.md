@@ -15,11 +15,11 @@ Almost all JSON files start with a "[" and end with a "]". In between these are 
     {
         "name": "Spearman",
         "cost": 24,
-        "promotions": ["Shock I"]
+        "promotions": ["Shock I", "Drill I"]
     }
 ]
 ```
-This file contains two unit objects, one for a warrior and one for a spearman. These objects have different attributes, in this case "name" and "cost". All these attributes have a certain type, a string (text) for its name, an integer for its cost or a list for its promotions.
+This file contains two unit objects, one for a warrior and one for a spearman. These objects have different attributes, in this case "name", "cost" and "promotions". All these attributes have a certain type, a String (text) for "name", an Integer for "cost" and a List of Strings for "promotions".
 
 # Information on JSON files used in the game
 
