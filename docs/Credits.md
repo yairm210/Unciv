@@ -545,6 +545,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * Icon for Armor Plating is made by [JackRainy](https://github.com/JackRainy)
 * [Slingshot](https://thenounproject.com/term/slingshot/9106/) by James Keuning for Slinger Withdraw
 * [Anchor](https://thenounproject.com/term/anchor/676586) by Gregor Cresnar for Amphibious
+* [survival knife](https://thenounproject.com/search/?q=survival&i=2663392) by b faris for Survivalism
 
 ## Others
 
