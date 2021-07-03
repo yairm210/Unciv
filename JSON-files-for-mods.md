@@ -21,11 +21,38 @@ Almost all JSON files start with a "[" and end with a "]". In between these are 
 ```
 This file contains two unit objects, one for a warrior and one for a spearman. These objects have different attributes, in this case "name" and "cost". All these attributes have a certain type, a string (text) for its name, an integer for its cost or a list for its promotions.
 
+## Eras.json
+[Link to original](https://github.com/yairm210/Unciv/blob/master/android/assets/jsons/Civ%20V%20-%20Vanilla/Eras.json)
+
+This file should contain all the era's you use in your mod. Due to this file being recently added, it is not required, yet it will be in the future.
+
+Each era can have the following attributes:
+| attribute | Type | optional or not | notes |
+| --------- | ---- | --------------- | ----- |
+| name | String | Required | Name of the era |
+| researchAgreementCost | Integer (≥0) | defaults to 300 | Cost of research agreements were the most technologically advanced civ is in this era |
+| iconRGB | List of 3 Integers | defaults to none | RGB color that icons for technologies of this era should have in the Tech screen |
+| startingSettlerCount | Integer (≥0) | defaults to 1 | Amount of settler units that should be spawned when starting a game in this era |
+| startingSettlerUnit | String | defaults to "Settler" | Name of the unit that should be used for the previous field |
+| startingWokerCount | Integer (≥0) | defaults to 0 | Amount of worker units that should be spawned when starting a game in this era |
+| startingWorkerUnit | String | defaults to "Worker" | Name of the unit that should be used for the previous field |
+| startingMilitaryUnitCount | Integer (≥0) | defaults to 1 | Amount of military units that should be spawned when starting a game in this era |
+| startingMilitaryUnit | String | defaults to "Warrior" | Name of the unit that should be used for the previous field |
+| startingGold | Integer (≥0) | defaults to 0 | Amount of gold each civ should receive when starting a game in this era |
+| startingCulture | Integer (≥0) | defaults to 0 | Amount of culture each civ should receive when starting a game in this era |
+| settlerPopulation | Integer (>0) | defaults to 1 | Default amount of population each city should have when settled when starting a game in this era |
+| settlerBuildings | List of Strings | defaults to none | Buildings that should automatically be built whenever a city is settled when starting a game in this era |
+| startingObsoleteWonders | List of Strings | defaults to none | Wonders (and technically buildings) that should be impossible to built when starting a game in this era. Used in the base game to remove all wonders older than 2 era's |
+
+
+
 
 ## Units.json
 [Link to original](https://github.com/yairm210/Unciv/blob/master/android/assets/jsons/Civ%20V%20-%20Vanilla/Units.json)
 
-Units have the following attributes:
+This file should contain a list of all the units, both military and civilian, that you want to use in your mod.
+
+Each unit can have the following attributes:
 | attribute | Type | optional or not | notes |
 | --------- | ---- | -------- | ----- |
 | name | String | required | The name of the units (required) |
