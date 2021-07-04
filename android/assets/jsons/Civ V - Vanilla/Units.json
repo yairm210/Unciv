@@ -276,7 +276,7 @@
 	{
 		"name": "Battering Ram",
 		"replaces": "Spearman",
-		"uniqueTo": "Huns",
+		"uniqueTo": "The Huns",
 		"unitType": "Melee",
 		"movement": 2,
 		"strength": 10,
