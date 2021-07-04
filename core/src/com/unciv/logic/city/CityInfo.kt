@@ -101,7 +101,6 @@ class CityInfo {
         val ruleset = civInfo.gameInfo.ruleSet
         val startingEra = civInfo.gameInfo.gameParameters.startingEra
         if (startingEra in ruleset.eras) {
-            population.setPopulation(ruleset.eras[startingEra]!!.settlerPopulation)
             for (building in ruleset.eras[startingEra]!!.settlerBuildings) {
                 if (ruleset.buildings[building]!!.isBuildable(cityConstructions)) {
                     cityConstructions.addBuilding(building)
@@ -122,6 +121,8 @@ class CityInfo {
         tile.improvementInProgress = null
 
         workedTiles = hashSetOf() //reassign 1st working tile
+        if (startingEra in ruleset.eras)
+            population.setPopulation(ruleset.eras[startingEra]!!.settlerPopulation)
         population.autoAssignPopulation()
         cityStats.update()
 
