@@ -58,7 +58,7 @@ This file should contain all the buildings and wonders you want to use in your m
 Each building can have the following attributes:
 | attribute | Type | Optional or not | notes |
 | --------- | ---- | --------------- | ----- |
-| name | String<img width=100/> | required<img width=100/> | Name of the building |
+| name | String | required | Name of the building |
 | cost | Integer (≥0) | defaults to 0 | Amount of production required to build the building |
 | food | Integer | defaults to 0 | Food produced by the building |
 | production | Integer | defaults to 0 | Production produced by the building |
