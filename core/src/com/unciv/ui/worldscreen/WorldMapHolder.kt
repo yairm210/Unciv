@@ -240,8 +240,8 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
         if (selectedUnit.action == Constants.unitActionExplore || selectedUnit.isMoving())
             selectedUnit.action = null // remove explore on manual swap-move
 
-        // Perhaps something like a swish-swoosh would be clearer
-        Sounds.play(UncivSound.Whoosh)
+        // Play something like a swish-swoosh
+        Sounds.play(UncivSound.Swap)
 
         if (selectedUnit.currentMovement > 0) worldScreen.bottomUnitTable.selectUnit(selectedUnit)
 

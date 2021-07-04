@@ -15,6 +15,7 @@ private enum class UncivSoundConstants (val value: String) {
     Bombard("bombard"),
     Slider("slider"),
     Construction("construction"),
+    Swap("swap"),
     Silent(""),
     Custom("")
 }
@@ -54,6 +55,7 @@ class UncivSound private constructor (
         val Bombard = UncivSound(UncivSoundConstants.Bombard)
         val Slider = UncivSound(UncivSoundConstants.Slider)
         val Construction = UncivSound(UncivSoundConstants.Construction)
+        val Swap = UncivSound(UncivSoundConstants.Swap)
         val Silent = UncivSound(UncivSoundConstants.Silent)
         /** Creates an UncivSound instance for a custom sound.
          * @param filename The base filename without extension.

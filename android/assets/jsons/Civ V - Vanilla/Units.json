@@ -228,7 +228,7 @@
 		"upgradesTo": "Knight",
 		"obsoleteTech": "Chivalry",
 		"uniques": ["No defensive terrain bonus"],
-		"attackSound": "horse"
+		"attackSound": "elephant"
 	},
 	{
 		"name": "Spearman",
@@ -542,7 +542,7 @@
 		"obsoleteTech": "Military Science",
 		"upgradesTo": "Cavalry",
 		"uniques": ["Can move after attacking","No defensive terrain bonus","+[50]% Strength vs [Mounted]","-[33]% Strength vs [City]"],
-		"attackSound": "shot"
+		"attackSound": "elephant"
 	},
 	{
 		"name": "Mandekalu Cavalry",
@@ -707,7 +707,8 @@
 		"upgradesTo": "Ironclad",
 		"obsoleteTech": "Combustion",
 		"uniques": ["[+1] Visibility Range", "May withdraw before melee ([80]%)"],
-		"hurryCostModifier": 30
+		"hurryCostModifier": 30,
+		"attackSound": "cannon"
 	},
 	{
 		"name": "Turtle Ship",
@@ -721,7 +722,8 @@
 		"upgradesTo": "Ironclad",
 		"obsoleteTech": "Combustion",
 		"uniques": ["Cannot enter ocean tiles"],
-		"hurryCostModifier": 30
+		"hurryCostModifier": 30,
+		"attackSound": "cannon"
 	},
 	{
 		"name": "Musketman",
@@ -799,7 +801,8 @@
 		"requiredTech": "Navigation",
 		"upgradesTo": "Destroyer",
 		"promotions": ["Coastal Raider I"],
-		"uniques": ["May capture killed [Water] units"]
+		"uniques": ["May capture killed [Water] units"],
+		"attackSound": "cannon"
 	},
 	{
 		"name": "Frigate",
@@ -812,7 +815,8 @@
 		"requiredTech": "Navigation",
 		"obsoleteTech": "Electronics",
 		"upgradesTo": "Battleship",
-		"hurryCostModifier": 20
+		"hurryCostModifier": 20,
+		"attackSound": "cannon"
 	},
 	{
 		"name": "Ship of the Line",
@@ -828,7 +832,8 @@
 		"requiredTech": "Navigation",
 		"obsoleteTech": "Electronics",
 		"upgradesTo": "Battleship",
-		"hurryCostModifier": 20
+		"hurryCostModifier": 20,
+		"attackSound": "cannon"
 	},
 	{
 		"name": "Lancer",
@@ -871,7 +876,8 @@
 		"requiredTech": "Chemistry",
 		"upgradesTo": "Artillery",
 		"obsoleteTech": "Dynamite",
-		"uniques": ["+[200]% Strength vs [City]","No defensive terrain bonus","Must set up to ranged attack","Limited Visibility"]
+		"uniques": ["+[200]% Strength vs [City]","No defensive terrain bonus","Must set up to ranged attack","Limited Visibility"],
+		"attackSound": "cannon"
 	},
 
 	// Industrial Era
@@ -953,7 +959,8 @@
 		"requiredResource": "Coal",
 		"upgradesTo": "Destroyer",
 		"obsoleteTech": "Combustion",
-		"uniques": ["+[33]% Strength vs [City]","Double movement in coast"]
+		"uniques": ["+[33]% Strength vs [City]","Double movement in coast"],
+		"attackSound": "shipguns"
 	},
 	{
 		"name": "Artillery",
@@ -966,7 +973,8 @@
 		"requiredTech": "Dynamite",
 		"upgradesTo": "Rocket Artillery",
 		"uniques": ["+[200]% Strength vs [City]","No defensive terrain bonus",
-			"Must set up to ranged attack","Limited Visibility","Ranged attacks may be performed over obstacles"]
+			"Must set up to ranged attack","Limited Visibility","Ranged attacks may be performed over obstacles"],
+		"attackSound": "artillery"
 	},
 
 	// Modern era
@@ -980,7 +988,8 @@
 		"cost": 325,
 		"requiredTech": "Refrigeration",
 		"upgradesTo": "Nuclear Submarine",
-		"uniques": ["+[75]% Strength when attacking", "Invisible to others", "Can only attack [Water] units", "Can attack submarines", "Can enter ice tiles"]
+		"uniques": ["+[75]% Strength when attacking", "Invisible to others", "Can only attack [Water] units", "Can attack submarines", "Can enter ice tiles"],
+		"attackSound": "torpedo"
 	},
 	{
 		"name": "Great War Infantry",
@@ -1022,7 +1031,7 @@
 		"obsoleteTech": "Radar",
 		"uniques": ["[50]% chance to intercept air attacks","+[50]% Strength vs [Bomber]",
 			"6 tiles in every direction always visible"],
-		"attackSound": "shot"
+		"attackSound": "machinegun"
 	},
 	{
 		"name": "Great War Bomber",
@@ -1036,7 +1045,7 @@
 		"requiredResource": "Oil",
 		"upgradesTo": "Bomber",
 		"obsoleteTech": "Radar",
-		"attackSound": "shot"
+		"attackSound": "bombing"
 	},
 	{
 		"name": "Infantry",
@@ -1068,7 +1077,8 @@
 		"cost": 375,
 		"requiredResource": "Oil",
 		"requiredTech": "Electronics",
-		"uniques": ["Ranged attacks may be performed over obstacles"]
+		"uniques": ["Ranged attacks may be performed over obstacles"],
+		"attackSound": "shipguns"
 		// Does not actually upgrade to Missile Cruisers
 	},
 	{
@@ -1107,7 +1117,8 @@
 		"requiredResource": "Oil",
 		"upgradesTo": "Tank",
 		"obsoleteTech": "Combined Arms",
-		"uniques": ["Can move after attacking","No defensive terrain bonus"]
+		"uniques": ["Can move after attacking","No defensive terrain bonus"],
+		"attackSound": "tankshot"
 	},
 	{
 		"name": "Destroyer",
@@ -1118,7 +1129,8 @@
 		"cost": 375,
 		"requiredTech": "Combustion",
 		"uniques": ["Can attack submarines", "[40]% chance to intercept air attacks",
-			"May withdraw before melee ([80]%)", "+[100]% Strength vs [WaterSubmarine]"]
+			"May withdraw before melee ([80]%)", "+[100]% Strength vs [WaterSubmarine]"],
+		"attackSound": "shipguns"
 	},
 	
 	// Atomic Era
@@ -1130,9 +1142,9 @@
 		"strength": 65,
 		"cost": 400,
 		"requiredTech": "Pharmaceuticals",
-		"attackSound": "shot",
 		"promotions": ["Amphibious"],
-		"uniques": ["[+1] Sight for all [Embarked] units", "Defense bonus when embarked"]
+		"uniques": ["[+1] Sight for all [Embarked] units", "Defense bonus when embarked"],
+		"attackSound": "shot"
 	},
 	{
 		"name": "Fighter",
@@ -1148,7 +1160,7 @@
 		"upgradesTo": "Jet Fighter",
 		"uniques": ["[100]% chance to intercept air attacks", "+[150]% Strength vs [Bomber]",
 			"6 tiles in every direction always visible"],
-		"attackSound": "shot"
+		"attackSound": "machinegun"
 	},
 	{
 		"name": "Zero",
@@ -1165,7 +1177,7 @@
 		"upgradesTo": "Jet Fighter",
 		"uniques": ["[100]% chance to intercept air attacks","+[150]% Strength vs [Bomber]","+[33]% Strength vs [Fighter]",
 			"6 tiles in every direction always visible"],
-		"attackSound": "shot"
+		"attackSound": "machinegun"
 	},
 	{
 		"name": "Bomber",
@@ -1178,7 +1190,7 @@
 		"requiredTech": "Radar",
 		"requiredResource": "Oil",
 		"upgradesTo": "Stealth Bomber",
-		"attackSound": "shot"
+		"attackSound": "bombing"
 	},
 	{
 		"name": "B17",
@@ -1194,7 +1206,7 @@
 		"requiredResource": "Oil",
 		"promotions": ["Evasion", "Siege I"],
 		"upgradesTo": "Stealth Bomber",
-		"attackSound": "shot"
+		"attackSound": "bombing"
 	},
 	{
 		"name": "Paratrooper",
@@ -1216,7 +1228,8 @@
 		"requiredTech": "Combined Arms",
 		"requiredResource": "Oil",
 		"upgradesTo": "Modern Armor",
-		"uniques": ["Can move after attacking","No defensive terrain bonus"]
+		"uniques": ["Can move after attacking","No defensive terrain bonus"],
+		"attackSound": "tankshot"
 	},
 	{
 		"name": "Panzer",
@@ -1228,7 +1241,8 @@
 		"cost": 375,
 		"requiredTech": "Combined Arms",
 		"requiredResource": "Oil",
-		"uniques": ["Can move after attacking","No defensive terrain bonus"]
+		"uniques": ["Can move after attacking","No defensive terrain bonus"],
+		"attackSound": "tankshot"
 		//German unique unit, stronger than Tank
 	},
 	{
@@ -1239,7 +1253,8 @@
 		"cost": 300,
 		"requiredTech": "Combined Arms",
 		"upgradesTo": "Helicopter Gunship",
-		"uniques": ["+[100]% Strength vs [Armor]"]
+		"uniques": ["+[100]% Strength vs [Armor]"],
+		"attackSound": "machinegun"
 	},
 	{
 		"name": "Atomic Bomb",
@@ -1269,7 +1284,8 @@
 		"requiredTech": "Rocketry",
 		"requiredResource": "Aluminum",
 		"uniques": ["+[200]% Strength vs [City]","No defensive terrain bonus",
-			"Limited Visibility","Ranged attacks may be performed over obstacles"]
+			"Limited Visibility","Ranged attacks may be performed over obstacles"],
+		"attackSound": "artillery"
 	},
 	{
 		"name": "Mobile SAM",
@@ -1280,7 +1296,7 @@
 		"cost": 425,
 		"requiredTech": "Rocketry",
 		"uniques": ["[100]% chance to intercept air attacks","+[150]% Strength vs [air units]"],
-		"attackSound": "shot"
+		"attackSound": "missile"
 	},
 	{
 		"name": "Guided Missile",
@@ -1291,7 +1307,8 @@
 		"range": 8,
 		"cost": 150,
 		"requiredTech": "Advanced Ballistics",
-		"uniques": ["Self-destructs when attacking"]
+		"uniques": ["Self-destructs when attacking"],
+		"attackSound": "missile"
 	},
 	{
 		"name": "Nuclear Missile",
@@ -1318,7 +1335,7 @@
 		"requiredResource": "Aluminum",
 		"uniques": ["+[100]% Strength vs [Armor]", "No defensive terrain bonus", "Can move after attacking", "All tiles cost 1 movement",
 			"Can pass through impassable tiles", "Unable to capture cities"],
-		"attackSound": "shot"
+		"attackSound": "machinegun"
 	},
 
 	// Information Era
@@ -1332,7 +1349,8 @@
 		"cost": 425,
 		"requiredTech": "Telecommunications",
 		"uniques": ["+[75]% Strength when attacking", "Invisible to others", "Can only attack [Water] units",
-			"Can attack submarines", "Can enter ice tiles", "[+1] Visibility Range", "Can carry [2] [Missile] units"]
+			"Can attack submarines", "Can enter ice tiles", "[+1] Visibility Range", "Can carry [2] [Missile] units"],
+		"attackSound": "torpedo"
 	},
 	{
 		"name": "Mechanized Infantry",
@@ -1340,7 +1358,8 @@
 		"movement": 3,
 		"strength": 90,
 		"cost": 375,
-		"requiredTech": "Mobile Tactics"
+		"requiredTech": "Mobile Tactics",
+		"attackSound": "tankshot"
 	},
 	{
 		"name": "Missile Cruiser",
@@ -1354,7 +1373,8 @@
 		"requiredTech": "Robotics",
 		"uniques": ["[100]% chance to intercept air attacks", "Can attack submarines",
 			"Ranged attacks may be performed over obstacles", "Can carry [3] [Missile] units",
-			"+[100]% Strength vs [submarine units]"]
+			"+[100]% Strength vs [submarine units]"],
+		"attackSound": "shipguns"
 	},
 	{
 		"name": "Modern Armor",
@@ -1365,7 +1385,8 @@
 		"requiredTech": "Lasers",
 		"requiredResource": "Aluminum",
 		"upgradesTo": "Giant Death Robot",
-		"uniques": ["Can move after attacking","No defensive terrain bonus"]
+		"uniques": ["Can move after attacking","No defensive terrain bonus"],
+		"attackSound": "tankshot"
 	},
 	{
 		"name": "Jet Fighter",
@@ -1381,7 +1402,7 @@
 		"uniques": ["[100]% chance to intercept air attacks",
 			"+[150]% Strength vs [Bomber]",
 			"6 tiles in every direction always visible"],
-		"attackSound": "shot"
+		"attackSound": "jetgun"
 	},
 	{
 		"name": "Giant Death Robot",
@@ -1405,7 +1426,7 @@
 		"requiredTech": "Stealth",
 		"requiredResource": "Aluminum",
 		"uniques": ["Damage taken from interception reduced by [100]%", "Cannot be carried by [Carrier] units", "6 tiles in every direction always visible"],
-		"attackSound": "shot"
+		"attackSound": "bombing"
 	},
 
 	/* Great people */
