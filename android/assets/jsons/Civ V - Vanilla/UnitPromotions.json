@@ -432,7 +432,7 @@
 		"name": "Mobility",
 		"prerequisites": ["Shock II","Drill II","Targeting I",
 			"Bombardment I","Boarding Party I", "Coastal Raider I", "Wolfpack I"],
-		"effect": "+[1] Movement",
+		"effect": "[+1] Movement",
 		"unitTypes": ["Mounted","WaterMelee","WaterRanged","Armor","WaterSubmarine"]
 	},
 	{
