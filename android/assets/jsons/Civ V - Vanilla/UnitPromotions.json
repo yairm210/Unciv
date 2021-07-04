@@ -2,7 +2,7 @@
 
 	{
 		"name": "Heal Instantly",
-		"uniques": ["Heal this Unit by [50] HP", "Doing so will consume this opportunity to choose a Promotion"],
+		"uniques": ["Heal this unit by [50] HP", "Doing so will consume this opportunity to choose a Promotion"],
 		"unitTypes": ["Melee","Mounted","Scout","Siege","Ranged","Armor","WaterMelee","WaterRanged","WaterSubmarine"]
 	},
 	
@@ -165,13 +165,13 @@
 	},
 	{
 		"name": "Scouting II",
-		"prerequisites": ["Scouting II"],
+		"prerequisites": ["Scouting I"],
 		"effect": "[+1] Visibility Range",
 		"unitTypes": ["Scout"]
 	},
 	{
 		"name": "Scouting III",
-		"prerequisites": ["Scouting I"],
+		"prerequisites": ["Scouting II"],
 		"effect": "[+1] Movement",
 		"unitTypes": ["Scout"]
 	},
@@ -182,11 +182,13 @@
 	},
 	{
 		"name": "Survivalism II",
+		"prerequisites": ["Survivalism I"],
 		"uniques": ["[+5] HP when healing in [Foreign Land] tiles", "+[25]% Strength when defending"],
 		"unitTypes": ["Scout"]
 	},
 	{
 		"name": "Survivalism III",
+		"prerequisites": ["Survivalism II"],
 		"uniques": ["Unit will heal every turn, even if it performs an action", "May withdraw before melee ([75]%)"], // This number is not based on any source
 		"unitTypes": ["Scout"]
 	},
@@ -308,6 +310,7 @@
 		"name" : "Supply",
 		"prerequisites": ["Bombardment III", "Targeting III", "Boarding Party III", "Coastal Raider III"],
 		"uniques": ["May heal outside of friendly territory", "[+15] HP when healing in [Foreign Land] tiles"],
+		"unitTypes": ["WaterMelee", "WaterRanged"]
 	},
 
 	// Bomber
@@ -429,7 +432,7 @@
 		"name": "Mobility",
 		"prerequisites": ["Shock II","Drill II","Targeting I",
 			"Bombardment I","Boarding Party I", "Coastal Raider I", "Wolfpack I"],
-		"effect": "+[1] Movement",
+		"effect": "[+1] Movement",
 		"unitTypes": ["Mounted","WaterMelee","WaterRanged","Armor","WaterSubmarine"]
 	},
 	{

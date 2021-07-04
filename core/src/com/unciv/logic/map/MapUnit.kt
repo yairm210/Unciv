@@ -276,7 +276,7 @@ class MapUnit {
     fun maxAttacksPerTurn(): Int {
         var maxAttacksPerTurn = 1 + getMatchingUniques("[] additional attacks per turn").sumBy { it.params[0].toInt() }
         // Deprecated since 3.15.6
-        if (hasUnique("+1 additional attack per turn"))
+        if (hasUnique("1 additional attack per turn"))
             maxAttacksPerTurn++
         //
         return maxAttacksPerTurn
@@ -564,7 +564,7 @@ class MapUnit {
         
         if (mayHeal) {
             for (unique in getMatchingUniques("[] HP when healing in [] tiles")) {
-                if (tileInfo.matchesFilter(unique.params[1])) {
+                if (tileInfo.matchesFilter(unique.params[1], civInfo)) {
                     healing += unique.params[0].toInt()
                 }
             }
@@ -864,8 +864,8 @@ class MapUnit {
         var capacity = getMatchingUniques("Can carry [] [] units").filter { unit.matchesFilter(it.params[1]) }.sumBy { it.params[0].toInt() }
         capacity += getMatchingUniques("Can carry [] extra [] units").filter { unit.matchesFilter(it.params[1]) }.sumBy { it.params[0].toInt() }
         // Deprecated since 3.15.5
-        capacity += getMatchingUniques("Can carry 2 air units").filter { unit.matchesFilter("Air") }.sumBy { 2 }
-        capacity += getMatchingUniques("Can carry 1 extra air units").filter { unit.matchesFilter("Air") }.sumBy { 1 }
+        capacity += getMatchingUniques("Can carry 2 aircraft").filter { unit.matchesFilter("Air") }.sumBy { 2 }
+        capacity += getMatchingUniques("Can carry 1 extra aircraft").filter { unit.matchesFilter("Air") }.sumBy { 1 }
         return capacity
     }
 

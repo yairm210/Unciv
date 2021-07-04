@@ -12,6 +12,7 @@ import com.unciv.models.AttackableTile
 import com.unciv.models.ruleset.Unique
 import com.unciv.models.ruleset.unit.UnitType
 import com.unciv.models.stats.Stat
+import com.unciv.models.stats.Stats
 import java.util.*
 import kotlin.math.max
 
@@ -186,20 +187,30 @@ object Battle {
     }
 
     private fun plunderFromDamage(plunderingUnit: ICombatant, plunderedUnit: ICombatant, damageDealt: Int) {
-        if (plunderingUnit is MapUnitCombatant) {
-            for (unique in plunderingUnit.unit.getMatchingUniques("Earn []% of the damage done to [] units as []")) {
-                if (plunderedUnit.matchesCategory(unique.params[1])) {
-                    val resourcesPlundered =
-                        (unique.params[0].toFloat() / 100f * damageDealt).toInt()
-                    plunderingUnit.getCivInfo().addStat(Stat.valueOf(unique.params[2]), resourcesPlundered)
-                    plunderingUnit.getCivInfo()
-                        .addNotification(
-                            "Your [${plunderingUnit.getName()}] plundered [${resourcesPlundered}] [${unique.params[2]}] from [${plunderedUnit.getName()}]",
-                            plunderedUnit.getTile().position,
-                            NotificationIcon.War
-                        )
-                }
+        val plunderedGoods = Stats()
+        if (plunderingUnit !is MapUnitCombatant) return
+        
+        for (unique in plunderingUnit.unit.getMatchingUniques("Earn []% of the damage done to [] units as []")) {
+            if (plunderedUnit.matchesCategory(unique.params[1])) {
+                val resourcesPlundered =
+                    unique.params[0].toFloat() / 100f * damageDealt
+                plunderedGoods.add(Stat.valueOf(unique.params[2]), resourcesPlundered)
             }
+        }
+        
+        val plunderableStats = listOf("Gold", "Science", "Culture", "Faith").map { Stat.valueOf(it) }
+        for (stat in plunderableStats) {
+            val resourcesPlundered = plunderedGoods.get(stat)
+            if (resourcesPlundered == 0f) continue
+            plunderingUnit.getCivInfo().addStat(stat, resourcesPlundered.toInt())
+            plunderingUnit.getCivInfo()
+                .addNotification(
+                    "Your [${plunderingUnit.getName()}] plundered [${resourcesPlundered}] [${stat.name}] from [${plunderedUnit.getName()}]",
+                        plunderedUnit.getTile().position,
+                        NotificationIcon.War
+                )
+            
+            
         }
     }
 
@@ -473,7 +484,8 @@ object Battle {
         if (attacker.isDefeated()) return
 
         // Destroy units on the target tile
-        for (defender in targetTile.getUnits().filter { it != attacker.unit }) {
+        // Needs the toList() because if we're destroying the units, they're no longer part of the sequence
+        for (defender in targetTile.getUnits().filter { it != attacker.unit }.toList()) {
             defender.destroy()
             postBattleNotifications(attacker, MapUnitCombatant(defender), defender.getTile())
             destroyIfDefeated(defender.civInfo, attacker.getCivInfo())
