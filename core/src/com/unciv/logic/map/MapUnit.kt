@@ -572,7 +572,7 @@ class MapUnit {
         
         if (mayHeal) {
             for (unique in getMatchingUniques("[] HP when healing in [] tiles")) {
-                if (tileInfo.matchesFilter(unique.params[1])) {
+                if (tileInfo.matchesFilter(unique.params[1], civInfo)) {
                     healing += unique.params[0].toInt()
                 }
             }
