@@ -208,14 +208,11 @@ fun String.toLabel(fontColor: Color = Color.WHITE, fontSize:Int=18): Label {
 
 /**
  * Translate a [String] and make a [CheckBox] widget from it.
- * @receiver The text to use as [CheckBox] label
- * @param initialState The initial checked state
  * @param changeAction A callback to call on change with a boolean lambda parameter containing the current [isChecked][CheckBox.isChecked]
- * @return the initialized [CheckBox]
  */
-fun String.toCheckBox(initialState: Boolean = false, changeAction: ((Boolean)->Unit)? = null)
+fun String.toCheckBox(startsOutChecked: Boolean = false, changeAction: ((Boolean)->Unit)? = null)
     = CheckBox(this.tr(), CameraStageBaseScreen.skin).apply { 
-        isChecked = initialState
+        isChecked = startsOutChecked
         if (changeAction != null) onChange { 
             changeAction(isChecked)
         }
