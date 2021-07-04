@@ -93,23 +93,18 @@ fun Actor.addBorder(size:Float, color: Color, expandCell:Boolean = false): Table
     return table
 }
 
-/** get widget with background for a new separator */
-private fun getSeparatorTable(color: Color): Container<Actor> {
-    return Container<Actor>().apply {
-        background = when {
-            color.a != 0f -> ImageGetter.getBackground(color)
-            else -> CameraStageBaseScreen.skin.get("default-vertical", SplitPane.SplitPaneStyle::class.java).handle
-        }
-    }
-}
+/** get background Image for a new separator */
+private fun getSeparatorImage(color: Color) = ImageGetter.getDot(
+    if (color.a != 0f) color else CameraStageBaseScreen.skin.get("color", Color::class.java) //0x334d80
+)
 
 /**
  * Create a horizontal separator as an empty Container with a colored background.
  * @param colSpan Optionally override [colspan][Cell.colspan] which defaults to the current column count.
  */
-fun Table.addSeparator(color: Color = Color.WHITE, colSpan: Int = 0, height: Float = 2f): Cell<Container<Actor>> {
+fun Table.addSeparator(color: Color = Color.WHITE, colSpan: Int = 0, height: Float = 2f): Cell<Image> {
     if (!cells.isEmpty && !cells.last().isEndRow) row()
-    val separator = getSeparatorTable(color)
+    val separator = getSeparatorImage(color)
     val cell = add(separator)
         .colspan(if (colSpan == 0) columns else colSpan)
         .minHeight(height).fillX()
@@ -122,8 +117,8 @@ fun Table.addSeparator(color: Color = Color.WHITE, colSpan: Int = 0, height: Flo
  * 
  * Note: Unlike the horizontal [addSeparator] this cannot automatically span several rows. Repeat the separator if needed.
  */
-fun Table.addSeparatorVertical(color: Color = Color.WHITE, width: Float = 2f): Cell<Container<Actor>> {
-    return add(getSeparatorTable(color)).width(width).fillY()
+fun Table.addSeparatorVertical(color: Color = Color.WHITE, width: Float = 2f): Cell<Image> {
+    return add(getSeparatorImage(color)).width(width).fillY()
 }
 
 /** Alternative to [Table].[add][Table] that returns the Table instead of the new Cell to allow a different way of chaining */
