@@ -160,6 +160,9 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
             for (unique in civInfo.getMatchingUniques("+1 happiness from each type of luxury resource"))
                 happinessPerUniqueLuxury += 1
         //
+        
+        val ownedLuxuries = civInfo.getCivResources().map { it.resource }.filter { it.resourceType == ResourceType.Luxury }
+        
         statMap["Luxury resources"] = civInfo.getCivResources().map { it.resource }
                 .count { it.resourceType === ResourceType.Luxury } * happinessPerUniqueLuxury
         
@@ -169,10 +172,17 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
         
         val luxuriesProvidedByCityStates = 
             civInfo.getKnownCivs().filter { it.isCityState() && it.getAllyCiv() == civInfo.civName }
-                .map { it.getCivResources().map { res -> res.resource } }.flatten().count { it.resourceType === ResourceType.Luxury }
+                .map { it.getCivResources().map { res -> res.resource } }.flatten().distinct().count { it.resourceType === ResourceType.Luxury }
         
         statMap["City-State Luxuries"] = happinessBonusForCityStateProvidedLuxuries * luxuriesProvidedByCityStates * happinessPerUniqueLuxury
+
+        val luxuriesAllOfWhichAreTradedAway = civInfo.detailedCivResources
+            .filter { it.amount < 0 && it.resource.resourceType == ResourceType.Luxury && (it.origin == "Trade" || it.origin == "Trade request")}
+            .map { it.resource }
+            .filter { !ownedLuxuries.contains(it) }
         
+        statMap["Traded Luxuries"] = luxuriesAllOfWhichAreTradedAway.count() * happinessPerUniqueLuxury *
+                civInfo.getMatchingUniques("Retain []% of the happiness from a luxury after the last copy has been traded away").sumBy { it.params[0].toInt() } / 100f
 
         for (city in civInfo.cities) {
             // There appears to be a concurrency problem? In concurrent thread in ConstructionsTable.getConstructionButtonDTOs
