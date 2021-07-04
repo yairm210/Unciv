@@ -13,16 +13,15 @@ import com.unciv.ui.utils.onClick
 import com.unciv.ui.utils.toLabel
 
 /**
- * A widget with a header that when clicked shows/hides a sub-Table
+ * A widget with a header that when clicked shows/hides a sub-Table.
  * 
- * Add content to be shown/hidden to [innerTable]!
- * 
- * @param title The header text, automatically translated
- * @param initialOpen Should it start out opened? Defaults to `true`.
+ * @param title The header text, automatically translated.
+ * @param defaultPad Padding between content and wrapper. Header padding is currently not modifiable.
+ * @param initContent Optional lambda with [innerTable] as parameter, to help initialize content.
  */
 class ExpanderTab(
     title: String,
-    initialOpen: Boolean = true,
+    startsOutOpened: Boolean = true,
     defaultPad: Float = 10f,
     initContent: ((Table) -> Unit)? = null
 ): Table(CameraStageBaseScreen.skin) {
@@ -42,8 +41,8 @@ class ExpanderTab(
     /** The container where the client should add the content to toggle */
     val innerTable = Table()
 
-    /** Indicates whether the contents are currently shown */
-    var isOpen = initialOpen
+    /** Indicates whether the contents are currently shown, changing this will animate the widget */
+    var isOpen = startsOutOpened
         private set(value) {
             if (value == field) return
             field = value
@@ -88,12 +87,7 @@ class ExpanderTab(
         addAction(action)
     }
 
-    fun close() {
-        isOpen = false
-    }
-    fun open() {
-        isOpen = true
-    }
+    /** Toggle [isOpen], animated */
     fun toggle() {
         isOpen = !isOpen
     }
