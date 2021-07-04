@@ -105,11 +105,7 @@ private fun getSeparatorTable(color: Color): Container<Actor> {
 
 /**
  * Create a horizontal separator as an empty Container with a colored background.
- * @receiver A Gdx [Table] to add this separator to
- * @param color The color to use
- * @param colSpan Number of columns to span (omit to use the current column count)
- * @param height Height of the separator
- * @return The Cell that has been added to the receiver Table
+ * @param colSpan Optionally override [colspan][Cell.colspan] which defaults to the current column count.
  */
 fun Table.addSeparator(color: Color = Color.WHITE, colSpan: Int = 0, height: Float = 2f): Cell<Container<Actor>> {
     if (!cells.isEmpty && !cells.last().isEndRow) row()
@@ -125,10 +121,6 @@ fun Table.addSeparator(color: Color = Color.WHITE, colSpan: Int = 0, height: Flo
  * Create a vertical separator as an empty Container with a colored background.
  * 
  * Note: Unlike the horizontal [addSeparator] this cannot automatically span several rows. Repeat the separator if needed.
- * @receiver A Gdx [Table] to add this separator to
- * @param color The color to use
- * @param width Width of the separator
- * @return The Cell that has been added to the receiver Table
  */
 fun Table.addSeparatorVertical(color: Color = Color.WHITE, width: Float = 2f): Cell<Container<Actor>> {
     return add(getSeparatorTable(color)).width(width).fillY()
@@ -208,7 +200,7 @@ fun String.toLabel(fontColor: Color = Color.WHITE, fontSize:Int=18): Label {
 
 /**
  * Translate a [String] and make a [CheckBox] widget from it.
- * @param changeAction A callback to call on change with a boolean lambda parameter containing the current [isChecked][CheckBox.isChecked]
+ * @param changeAction A callback to call on change, with a boolean lambda parameter containing the current [isChecked][CheckBox.isChecked].
  */
 fun String.toCheckBox(startsOutChecked: Boolean = false, changeAction: ((Boolean)->Unit)? = null)
     = CheckBox(this.tr(), CameraStageBaseScreen.skin).apply { 
