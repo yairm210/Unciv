@@ -2,7 +2,7 @@
 
 	{
 		"name": "Heal Instantly",
-		"uniques": ["Heal this Unit by [50] HP", "Doing so will consume this opportunity to choose a Promotion"],
+		"uniques": ["Heal this unit by [50] HP", "Doing so will consume this opportunity to choose a Promotion"],
 		"unitTypes": ["Melee","Mounted","Scout","Siege","Ranged","Armor","WaterMelee","WaterRanged","WaterSubmarine"]
 	},
 	
@@ -432,7 +432,7 @@
 		"name": "Mobility",
 		"prerequisites": ["Shock II","Drill II","Targeting I",
 			"Bombardment I","Boarding Party I", "Coastal Raider I", "Wolfpack I"],
-		"effect": "+[1] Movement",
+		"effect": "[+1] Movement",
 		"unitTypes": ["Mounted","WaterMelee","WaterRanged","Armor","WaterSubmarine"]
 	},
 	{
