@@ -188,27 +188,29 @@ object Battle {
 
     private fun plunderFromDamage(plunderingUnit: ICombatant, plunderedUnit: ICombatant, damageDealt: Int) {
         val plunderedGoods = Stats()
-        if (plunderingUnit is MapUnitCombatant) {
-            for (unique in plunderingUnit.unit.getMatchingUniques("Earn []% of the damage done to [] units as []")) {
-                if (plunderedUnit.matchesCategory(unique.params[1])) {
-                    val resourcesPlundered =
-                        unique.params[0].toFloat() / 100f * damageDealt
-                    plunderedGoods.add(Stat.valueOf(unique.params[2]), resourcesPlundered)
-                }
+        if (plunderingUnit !is MapUnitCombatant) return
+        
+        for (unique in plunderingUnit.unit.getMatchingUniques("Earn []% of the damage done to [] units as []")) {
+            if (plunderedUnit.matchesCategory(unique.params[1])) {
+                val resourcesPlundered =
+                    unique.params[0].toFloat() / 100f * damageDealt
+                plunderedGoods.add(Stat.valueOf(unique.params[2]), resourcesPlundered)
             }
         }
+        
         val plunderableStats = listOf("Gold", "Science", "Culture", "Faith").map { Stat.valueOf(it) }
         for (stat in plunderableStats) {
             val resourcesPlundered = plunderedGoods.get(stat)
-            if (resourcesPlundered != 0f) {
-                plunderingUnit.getCivInfo().addStat(stat, resourcesPlundered.toInt())
-                plunderingUnit.getCivInfo()
-                    .addNotification(
-                        "Your [${plunderingUnit.getName()}] plundered [${resourcesPlundered}] [${stat.name}] from [${plunderedUnit.getName()}]",
-                            plunderedUnit.getTile().position,
-                            NotificationIcon.War
-                    )
-            }
+            if (resourcesPlundered == 0f) continue
+            plunderingUnit.getCivInfo().addStat(stat, resourcesPlundered.toInt())
+            plunderingUnit.getCivInfo()
+                .addNotification(
+                    "Your [${plunderingUnit.getName()}] plundered [${resourcesPlundered}] [${stat.name}] from [${plunderedUnit.getName()}]",
+                        plunderedUnit.getTile().position,
+                        NotificationIcon.War
+                )
+            
+            
         }
     }
 
