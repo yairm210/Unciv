@@ -22,51 +22,44 @@ import kotlin.math.max
  */
 
 
+// Kdoc not using the @property syntax because Android Studio 4.2.2 renders those _twice_
 /** Represents a decorated text line with optional linking capability.
- *  A line can have up to three icons: link, object, star in that order.
+ *  A line can have [text] with optional [size], [color], [indent] or as [header];
+ *  and up to three icons: [link], [object][icon], [star][starred] in that order.
  *  Special cases:
- *  - Standalone image from atlas or from ExtraImages
+ *  - Standalone [image][extraImage] from atlas or from ExtraImages
  *  - A separator line ([separator])
  *  - Automatic external links (no [text] but [link] begins with a URL protocol)
- * 
- * @param text          Text to display.
- * @param link          Create link: Line gets a 'Link' icon and is linked to either 
- *                      an Unciv object (format `category/entryname`) or an external URL.
- * @param icon          Display an Unciv object's icon inline but do not link (format `category/entryname`).
- * @param extraImage    Display an Image instead of text. Can be a path as understood by
- *                      [ImageGetter.getImage] or the name of a png or jpg in ExtraImages.
- * @param imageSize     Width of the [extraImage], height is calculated preserving aspect ratio. Defaults to available width.
- * @param size          Text size, defaults to 18f. Use [size] or [header] but not both.
- * @param header        Header level. 1 means double text size and decreases from there.
- * @param indent        Indentation - 0 = text will follow icons with a little padding,
- *                      1 = aligned to a little more than 3 icons, each step above that adds 30f.
- * @param padding       Defines vertical padding between rows, defaults to 5f.
- * @param color         Sets text color, accepts Java names or 6/3-digit web colors (e.g. #FFA040).
- * @param separator     Renders a separator line instead of text. Can be combined only with color and size (the latter being line width, defaulting to 2)
- * @param italic        Renders text in italic font style (not implemented)
- * @param bold          Renders text in bold font style (not implemented)
- * @param strike        Renders text in strikethrough font style (not implemented)
- * @param shadow        Renders text with a dark shadow (not implemented)
- * @param starred       Decorates text with a star icon - if set, it receives the [color] instead of the text.
- * @param centered      Centers the line (and turns off wrap)
  */
 class FormattedLine (
+    /** Text to display. */
     val text: String = "",
+    /** Create link: Line gets a 'Link' icon and is linked to either
+     *  an Unciv object (format `category/entryname`) or an external URL. */
     val link: String = "",
+    /** Display an Unciv object's icon inline but do not link (format `category/entryname`). */
     val icon: String = "",
+    /** Display an Image instead of text, [sized][imageSize]. Can be a path as understood by
+     *  [ImageGetter.getImage] or the name of a png or jpg in ExtraImages. */
     val extraImage: String = "",
+    /** Width of the [extraImage], height is calculated preserving aspect ratio. Defaults to available width. */
     val imageSize: Float = Float.NaN,
+    /** Text size, defaults to 18. Use [size] or [header] but not both. */
     val size: Int = Int.MIN_VALUE,
+    /** Header level. 1 means double text size and decreases from there. */
     val header: Int = 0,
+    /** Indentation: 0 = text will follow icons with a little padding,
+     *  1 = aligned to a little more than 3 icons, each step above that adds 30f. */
     val indent: Int = 0,
+    /** Defines vertical padding between rows, defaults to 5f. */
     val padding: Float = Float.NaN,
+    /** Sets text color, accepts Java names or 6/3-digit web colors (e.g. #FFA040). */
     val color: String = "",
+    /** Renders a separator line instead of text. Can be combined only with [color] and [size] (line width, default 2) */
     val separator: Boolean = false,
-    val italic: Boolean = false,        // Not implemented - would need separate font
-    val bold: Boolean = false,          // Not implemented - see 'MSDF'?
-    val strike: Boolean = false,        // Not implemented - could do a simple line
-    val shadow: Boolean = false,        // Not implemented - see 'MSDF'.
+    /** Decorates text with a star icon - if set, it receives the [color] instead of the text. */
     val starred: Boolean = false,
+    /** Centers the line (and turns off wrap) */
     val centered: Boolean = false
 ) {
     // Note: This gets directly deserialized by Json - please keep all attributes meant to be read
@@ -92,11 +85,11 @@ class FormattedLine (
     }
 
     /** Translates [centered] into [libGdx][Gdx] [Align] value */
-    val align
-        get() = if (centered) Align.center else Align.left
+    val align: Int by lazy {if (centered) Align.center else Align.left}
 
-    private val iconToDisplay
-        get() = if(icon.isNotEmpty()) icon else if(linkType==LinkType.Internal) link else ""
+    private val iconToDisplay: String by lazy {
+        if (icon.isNotEmpty()) icon else if (linkType == LinkType.Internal) link else ""
+    }
     private val textToDisplay: String by lazy {
         if (text.isEmpty() && linkType == LinkType.External) link else text
     }
@@ -115,10 +108,6 @@ class FormattedLine (
     fun unsupportedReason(): String? {
         val reasons = sequence {
             if (text.isNotEmpty() && separator) yield("separator and text are incompatible")
-            if (italic) yield("italic is not yet implemented")
-            if (bold) yield("bold is not yet implemented")
-            if (strike) yield("strike is not yet implemented")
-            if (shadow) yield("shadow is not yet implemented")
             if (extraImage.isNotEmpty() && link.isNotEmpty()) yield("extraImage and other options except imageSize are incompatible")
             if (header != 0 && size != Int.MIN_VALUE) yield("use either size or header but not both")
             // ...
@@ -126,23 +115,23 @@ class FormattedLine (
         return reasons.joinToString { "\n" }.takeIf { it.isNotEmpty() }
     }
 
-    /** Constants used by [FormattedLine]
-     * @property defaultSize    Mirrors default text size as defined elsewhere
-     * @property defaultColor   Default color for text _and_ icons
-     * @property headerSizes    Array of text sizes to translate the [header] attribute
-     * @property minIconSize    Default inline icon size
-     * @property indentPad      Padding distance per [indent] level
-     * @property starImage      Internal path to the Star image
-     * @property linkImage      Internal path to the Link image
-     */
+    /** Constants used by [FormattedLine] */
     companion object {
+        /** Mirrors default [text] size as used by [toLabel] */
         const val defaultSize = 18
+        /** Array of text sizes to translate the [header] attribute */
         val headerSizes = arrayOf(defaultSize,36,32,27,24,21,15,12,9)    // pretty arbitrary, yes
+        /** Default color for [text] _and_ icons */
         val defaultColor: Color = Color.WHITE
+        /** Internal path to the [Link][link] image */
         const val linkImage = "OtherIcons/Link"
+        /** Internal path to the [Star][starred] image */
         const val starImage = "OtherIcons/Star"
+        /** Default inline icon size */
         const val minIconSize = 30f
+        /** Padding added to the right of each icon */
         const val iconPad = 5f
+        /** Padding distance per [indent] level */
         const val indentPad = 30f
     }
 
@@ -151,7 +140,7 @@ class FormattedLine (
 
     /** Extension: determines if a section of a [String] is composed entirely of hex digits
      * @param start starting index
-     * @param length length of section - if =0 [isHex]=true but if receiver too short [isHex]=false
+     * @param length length of section (if == 0 [isHex] returns `true`, if receiver too short [isHex] returns `false`)
      */
     private fun String.isHex(start: Int, length: Int) =
         when {
@@ -175,7 +164,7 @@ class FormattedLine (
     /**
      * Renders the formatted line as a scene2d [Actor] (currently always a [Table])
      * @param labelWidth Total width to render into, needed to support wrap on Labels.
-     * @param noLinkImages Omit 'Link' images - no visual indicator that a line may be linked. 
+     * @param noLinkImages Omit visual indicator that a line is linked. 
      */
     fun render(labelWidth: Float, noLinkImages: Boolean = false): Actor {
         if (extraImage.isNotEmpty()) {
@@ -213,25 +202,8 @@ class FormattedLine (
             table.add( ImageGetter.getImage(linkImage) ).size(iconSize).padRight(iconPad)
             iconCount++
         }
-        if (iconToDisplay.isNotEmpty() && !noLinkImages) {
-            val parts = iconToDisplay.split('/', limit = 2)
-            if (parts.size == 2) {
-                val category = CivilopediaCategories.fromLink(parts[0])
-                if (category != null) {
-                    if (category.getImage != null) {
-                        // That Enum custom property is a nullable reference to a lambda which
-                        // in turn is allowed to return null. Sorry, but without `!!` the code
-                        // won't compile and with we would get the incorrect warning.
-                        @Suppress("UNNECESSARY_NOT_NULL_ASSERTION") 
-                        val image = category.getImage!!(parts[1], iconSize)
-                        if (image != null) {
-                            table.add(image).size(iconSize).padRight(iconPad)
-                            iconCount++
-                        }
-                    }
-                }
-            }
-        }
+        if (!noLinkImages)
+            iconCount += renderIcon(table, iconToDisplay, iconSize)
         if (starred) {
             val image = ImageGetter.getImage(starImage)
             image.color = displayColor
@@ -260,6 +232,28 @@ class FormattedLine (
         return table
     }
 
+    /** Place a RuleSet object icon.
+     * @return 1 if successful for easy counting
+     */
+    private fun renderIcon(table: Table, iconToDisplay: String, iconSize: Float): Int {
+        // prerequisites: iconToDisplay has form "category/name", category can be mapped to
+        // a `CivilopediaCategories`, and that knows how to get an Image.
+        if (iconToDisplay.isEmpty()) return 0
+        val parts = iconToDisplay.split('/', limit = 2)
+        if (parts.size != 2) return 0
+        val category = CivilopediaCategories.fromLink(parts[0]) ?: return 0
+        if (category.getImage == null) return 0
+
+        // That Enum custom property is a nullable reference to a lambda which
+        // in turn is allowed to return null. Sorry, but without `!!` the code
+        // won't compile and with we would get the incorrect warning.
+        @Suppress("UNNECESSARY_NOT_NULL_ASSERTION")
+        val image = category.getImage!!(parts[1], iconSize) ?: return 0
+
+        table.add(image).size(iconSize).padRight(iconPad)
+        return 1
+    }
+
     // Debug visualization only
     override fun toString(): String {
         return when {
@@ -275,15 +269,18 @@ class FormattedLine (
 
 /** Makes [renderer][render] available outside [ICivilopediaText] */
 object MarkupRenderer {
+    /** Height of empty line (`FormattedLine()`) - about half a normal text line, independent of font size */
     private const val emptyLineHeight = 10f
+    /** Default cell padding of non-empty lines */
     private const val defaultPadding = 2.5f
+    /** Padding above a [separator][FormattedLine.separator] line */
     private const val separatorTopPadding = 5f
+    /** Padding below a [separator][FormattedLine.separator] line */
     private const val separatorBottomPadding = 15f
 
     /**
      *  Build a Gdx [Table] showing [formatted][FormattedLine] [content][lines].
      *
-     *  @param lines            The formatted content to render.
      *  @param labelWidth       Available width needed for wrapping labels and [centered][FormattedLine.centered] attribute.
      *  @param padding          Default cell padding (default 2.5f) to control line spacing
      *  @param noLinkImages     Flag to omit link images (but not linking itself)
