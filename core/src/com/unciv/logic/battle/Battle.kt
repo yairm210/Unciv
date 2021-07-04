@@ -473,7 +473,8 @@ object Battle {
         if (attacker.isDefeated()) return
 
         // Destroy units on the target tile
-        for (defender in targetTile.getUnits().filter { it != attacker.unit }) {
+        // Needs the toList() because if we're destroying the units, they're no longer part of the sequence
+        for (defender in targetTile.getUnits().filter { it != attacker.unit }.toList()) {
             defender.destroy()
             postBattleNotifications(attacker, MapUnitCombatant(defender), defender.getTile())
             destroyIfDefeated(defender.civInfo, attacker.getCivInfo())
