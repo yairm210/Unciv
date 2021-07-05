@@ -105,6 +105,7 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
 
             if (otherCiv.isCityState())
                 for (unique in civInfo.getMatchingUniques("Allied City-States provide [] equal to []% of what they produce for themselves")) {
+                    if (otherCiv.getDiplomacyManager(civInfo.civName).relationshipLevel() != RelationshipLevel.Ally) continue
                     statMap.add(
                         "City-States",
                         Stats().add(
