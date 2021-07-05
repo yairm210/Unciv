@@ -174,7 +174,7 @@ class Nation : INamed {
                 textList += unit.name.tr() + " - " + "Replaces [${unit.replaces}], which is not found in the ruleset!".tr()
             } else {
                 textList += unit.name.tr()
-                textList += "  " + unit.getDescription(true).split("\n").joinToString("\n  ")
+                textList += "  " + unit.getDescription().split("\n").joinToString("\n  ")
             }
 
             textList += ""
