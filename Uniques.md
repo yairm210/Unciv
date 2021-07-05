@@ -342,6 +342,8 @@ These last two uniques may seem like they only have a one-time effect. However, 
 
 "Cities are razed [] times as fast"
 
+"Retain [amount]% of the happiness from a luxury after the last copy has been traded away"
+
 ## Buildings-only
 
 "Doubles Gold given to enemy if city is captured"
