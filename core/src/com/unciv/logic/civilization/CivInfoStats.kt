@@ -105,15 +105,13 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
 
             if (otherCiv.isCityState())
                 for (unique in civInfo.getMatchingUniques("Allied City-States provide [] equal to []% of what they produce for themselves")) {
-                    if (otherCiv.diplomacy[civInfo.civName]!!.matchesCityStateRelationshipFilter(unique.params[0]) && otherCiv.cities.isNotEmpty()) {
-                        statMap.add(
-                            "City-States", 
-                            Stats().add(
-                                Stat.valueOf(unique.params[1]), 
-                                otherCiv.statsForNextTurn.get(Stat.valueOf(unique.params[1])) * unique.params[2].toFloat() / 100f
-                            )
+                    statMap.add(
+                        "City-States",
+                        Stats().add(
+                            Stat.valueOf(unique.params[0]),
+                            otherCiv.statsForNextTurn.get(Stat.valueOf(unique.params[0])) * unique.params[1].toFloat() / 100f
                         )
-                    }
+                    )
                 }
             // Deprecated since 3.15.1
                 if (otherCiv.isCityState() && otherCiv.getDiplomacyManager(civInfo.civName).relationshipLevel() >= RelationshipLevel.Ally) {
