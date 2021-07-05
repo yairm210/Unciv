@@ -662,7 +662,7 @@
 		"outerColor": [51,25,0],
 		"innerColor": [255,255,102],
 		"uniqueName": "Viking Fury",
-		"uniques": ["+1 Movement for all embarked units", "Units pay only 1 movement point to embark and disembark",
+		"uniques": ["+1 Movement for all embarked units", "Units pay only 1 movement point to disembark",
 			"Melee units pay no movement cost to pillage"], 
 		"cities": ["Copenhagen","Aarhus","Kaupang","Ribe","Viborg","Tunsbers","Roskilde","Hedeby","Oslo","Jelling","Truso",
 			"Bergen","Faeroerne","Reykjavik","Trondheim","Godthab","Helluland","Lillehammer","Markland","Elsinore",
