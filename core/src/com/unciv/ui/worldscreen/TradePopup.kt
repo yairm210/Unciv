@@ -21,7 +21,6 @@ import com.unciv.ui.utils.AutoScrollPane as ScrollPane
     different Notification wording for peace treaties?
     Let Notification jump to Diplomacy.trade with empty offers (accepted)
         or a clone of the rejected offer (denied) ...?
-    Unify separator implementations (here, Table.addSeparator, ModManagementScreen)
 */
 
 /**
@@ -72,9 +71,7 @@ class TradePopup(worldScreen: WorldScreen): Popup(worldScreen){
         val scrollHeight = min(tradeOffersTable.height, worldScreen.stage.height/2)
         add(ScrollPane(tradeOffersTable)).height(scrollHeight).row()
 
-        val separator = Table()
-        separator.background = ImageGetter.getBackground(Color.DARK_GRAY)
-        add(separator).minHeight(1f).fillX().row()
+        addSeparator(Color.DARK_GRAY, height = 1f)
 
         addGoodSizedLabel(nation.tradeRequest).pad(15f).row()
 

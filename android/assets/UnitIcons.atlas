@@ -606,142 +606,149 @@ Scout
   orig: 100, 100
   offset: 0, 0
   index: -1
-Settler
+Sea Beggar
   rotate: false
   xy: 868, 215
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Ship of the Line
+Settler
   rotate: false
   xy: 976, 322
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Sipahi
+Ship of the Line
   rotate: false
   xy: 1084, 430
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Slinger
+Sipahi
   rotate: false
   xy: 1192, 538
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Spearman
+Slinger
   rotate: false
   xy: 1300, 646
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Stealth Bomber
+Spearman
   rotate: false
   xy: 1408, 754
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Submarine
+Stealth Bomber
   rotate: false
   xy: 1516, 862
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Swordsman
+Submarine
   rotate: false
   xy: 868, 107
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Tank
+Swordsman
   rotate: false
   xy: 976, 214
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Tercio
+Tank
   rotate: false
   xy: 1084, 322
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Trebuchet
+Tercio
   rotate: false
   xy: 1192, 430
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Triplane
+Trebuchet
   rotate: false
   xy: 1300, 538
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
+Triplane
+  rotate: false
+  xy: 1408, 646
+  size: 100, 100
+  orig: 100, 100
+  offset: 0, 0
+  index: -1
 Trireme
   rotate: false
-  xy: 1408, 645
+  xy: 1516, 753
   size: 100, 101
   orig: 100, 101
   offset: 0, 0
   index: -1
 Turtle Ship
   rotate: false
-  xy: 1516, 754
+  xy: 1624, 862
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 War Chariot
   rotate: false
-  xy: 1624, 862
+  xy: 1084, 214
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 War Elephant
   rotate: false
-  xy: 1084, 214
+  xy: 1192, 322
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 Warrior
   rotate: false
-  xy: 1192, 322
+  xy: 1300, 430
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 Work Boats
   rotate: false
-  xy: 1300, 430
+  xy: 1408, 538
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 Worker
   rotate: false
-  xy: 1408, 537
+  xy: 1516, 645
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 Zero
   rotate: false
-  xy: 1516, 646
+  xy: 1624, 754
   size: 100, 100
   orig: 100, 100
   offset: 0, 0

@@ -232,12 +232,8 @@ open class TileInfo {
             for (unique in cityWideUniques + civWideUniques + religionUniques) {
                 val tileType = unique.params[1]
                 if (tileType == improvement) continue // This is added to the calculation in getImprovementStats. we don't want to add it twice
-                if (matchesTerrainFilter(tileType, observingCiv)
-                        || tileType == "Strategic resource" && hasViewableResource(observingCiv) && getTileResource().resourceType == ResourceType.Strategic
-                        || tileType == "Luxury resource" && hasViewableResource(observingCiv) && getTileResource().resourceType == ResourceType.Luxury
-                        || tileType == "Bonus resource" && hasViewableResource(observingCiv) && getTileResource().resourceType == ResourceType.Bonus
-                        || tileType == "Water resource" && isWater && hasViewableResource(observingCiv)
-                ) stats.add(unique.stats)
+                if (matchesTerrainFilter(tileType, observingCiv)) 
+                    stats.add(unique.stats)
             }
         }
 
@@ -412,10 +408,14 @@ open class TileInfo {
             "Foreign Land", "Foreign" -> observingCiv != null && !isFriendlyTerritory(observingCiv)
             "Friendly Land", "Friendly" -> observingCiv != null && isFriendlyTerritory(observingCiv)
             resource -> observingCiv != null && hasViewableResource(observingCiv)
+            "Water resource" -> isWater && observingCiv != null && hasViewableResource(observingCiv)
             else -> {
                 if (terrainFeatures.contains(filter)) return true
                 if (hasUnique(filter)) return true
-                if (resource != null && getTileResource().resourceType.name + " resource" == filter) return true
+                // Checks 'luxury resource', 'strategic resource' and 'bonus resource' - only those that are visible of course
+                if (observingCiv != null && hasViewableResource(observingCiv) 
+                    && getTileResource().resourceType.name + " resource" == filter) 
+                        return true
                 return false
             }
         }

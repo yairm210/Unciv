@@ -82,7 +82,7 @@ fun Actor.surroundWithCircle(size: Float, resizeActor: Boolean = true, color: Co
     return IconCircleGroup(size, this, resizeActor, color)
 }
 
-fun Actor.addBorder(size:Float, color: Color, expandCell:Boolean=false): Table {
+fun Actor.addBorder(size:Float, color: Color, expandCell:Boolean = false): Table {
     val table = Table()
     table.pad(size)
     table.background = ImageGetter.getBackground(color)
@@ -93,19 +93,35 @@ fun Actor.addBorder(size:Float, color: Color, expandCell:Boolean=false): Table {
     return table
 }
 
-fun Table.addSeparator(): Cell<Image> {
-    row()
-    val image = ImageGetter.getWhiteDot()
-    val cell = add(image).colspan(columns).height(2f).fill()
+/** get background Image for a new separator */
+private fun getSeparatorImage(color: Color) = ImageGetter.getDot(
+    if (color.a != 0f) color else CameraStageBaseScreen.skin.get("color", Color::class.java) //0x334d80
+)
+
+/**
+ * Create a horizontal separator as an empty Container with a colored background.
+ * @param colSpan Optionally override [colspan][Cell.colspan] which defaults to the current column count.
+ */
+fun Table.addSeparator(color: Color = Color.WHITE, colSpan: Int = 0, height: Float = 2f): Cell<Image> {
+    if (!cells.isEmpty && !cells.last().isEndRow) row()
+    val separator = getSeparatorImage(color)
+    val cell = add(separator)
+        .colspan(if (colSpan == 0) columns else colSpan)
+        .minHeight(height).fillX()
     row()
     return cell
 }
 
-fun Table.addSeparatorVertical(): Cell<Image> {
-    val image = ImageGetter.getWhiteDot()
-    return add(image).width(2f).fillY()
+/**
+ * Create a vertical separator as an empty Container with a colored background.
+ * 
+ * Note: Unlike the horizontal [addSeparator] this cannot automatically span several rows. Repeat the separator if needed.
+ */
+fun Table.addSeparatorVertical(color: Color = Color.WHITE, width: Float = 2f): Cell<Image> {
+    return add(getSeparatorImage(color)).width(width).fillY()
 }
 
+/** Alternative to [Table].[add][Table] that returns the Table instead of the new Cell to allow a different way of chaining */
 fun <T : Actor> Table.addCell(actor: T): Table {
     add(actor)
     return this
@@ -177,13 +193,34 @@ fun String.toLabel(fontColor: Color = Color.WHITE, fontSize:Int=18): Label {
     return Label(this.tr(), labelStyle).apply { setFontScale(fontSize/Fonts.ORIGINAL_FONT_SIZE) }
 }
 
-fun Label.setFontColor(color: Color): Label { style= Label.LabelStyle(style).apply { fontColor=color }; return this }
+/**
+ * Translate a [String] and make a [CheckBox] widget from it.
+ * @param changeAction A callback to call on change, with a boolean lambda parameter containing the current [isChecked][CheckBox.isChecked].
+ */
+fun String.toCheckBox(startsOutChecked: Boolean = false, changeAction: ((Boolean)->Unit)? = null)
+    = CheckBox(this.tr(), CameraStageBaseScreen.skin).apply { 
+        isChecked = startsOutChecked
+        if (changeAction != null) onChange { 
+            changeAction(isChecked)
+        }
+        // Add a little distance between the icon and the text. 0 looks glued together,
+        // 5 is about half an uppercase letter, and 1 about the width of the vertical line in "P".  
+        imageCell.padRight(1f)
+    }
 
+/** Sets the [font color][Label.LabelStyle.fontColor] on a [Label] and returns it to allow chaining */
+fun Label.setFontColor(color: Color): Label {
+    style = Label.LabelStyle(style).apply { fontColor=color }
+    return this
+}
+
+/** Sets the font size on a [Label] and returns it to allow chaining */
 fun Label.setFontSize(size:Int): Label {
     style = Label.LabelStyle(style)
     style.font = Fonts.font
-    style = style // because we need it to call the SetStyle function. Yuk, I know.
-    return this.apply { setFontScale(size/ Fonts.ORIGINAL_FONT_SIZE) } // for chaining
+    @Suppress("UsePropertyAccessSyntax") setStyle(style)
+    setFontScale(size/ Fonts.ORIGINAL_FONT_SIZE)
+    return this
 }
 
 /** Get one random element of a given List.

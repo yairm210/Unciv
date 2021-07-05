@@ -217,6 +217,16 @@
 		"techRequired": "Construction",
 		"shortcutKey": "F"
 	},
+	{
+		"name": "Polder",
+		"uniqueTo": "The Netherlands",
+		"food": 3,
+		"terrainsCanBeBuiltOn": ["Marsh", "Flood plains"],
+		"turnsToBuild": 7,
+		"uniques": ["[+1 Production, +2 Gold] once [Economics] is discovered"],
+		"techRequired": "Guilds",
+		"shortcutKey": "F"
+	},
 	
 	{ "name": "Ancient ruins", "uniques": ["Unpillagable"],
         "civilopediaText": [{text:"Ancient ruins provide a one-time random bonus when explored"}] },

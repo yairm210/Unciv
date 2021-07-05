@@ -1,3 +1,14 @@
+## 3.15.8
+
+By xlenstra:
+- Made eras more moddable
+- Updated and generalized more promotions 
+- Added Privateer unit; updated Coastal Raider promotion 
+
+By SomeTroglodyte:
+- Fix mod custom maps unavailable when no local ones exist 
+- Spruced up Civilopedia - phase 3 - Interface, flavour text, new Tutorial 
+
 ## 3.15.7-announcementTest
 
 I'm checking if this information gets to the Github release and the Discord announcements
