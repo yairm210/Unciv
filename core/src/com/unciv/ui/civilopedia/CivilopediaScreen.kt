@@ -93,7 +93,7 @@ class CivilopediaScreen(
         if (category !in categoryToButtons) return        // defense against being passed a bad selector
         categoryToButtons[category]!!.color = Color.BLUE
 
-        if (category !in categoryToEntries) return        // defense, allowing buggy panes to remain emtpy while others work
+        if (category !in categoryToEntries) return        // defense, allowing buggy panes to remain empty while others work
         var entries = categoryToEntries[category]!!
         if (category != CivilopediaCategories.Difficulty) // this is the only case where we need them in order
             entries = entries.sortedBy { it.name.tr() }   // Alphabetical order of localized names

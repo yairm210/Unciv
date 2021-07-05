@@ -301,10 +301,8 @@ object MarkupRenderer {
                 continue
             }
             if (line.separator) {
-                //todo: Once the new addSeparator is in, pass line.color and line.size to it
-                //table.addSeparator(line.displayColor, 1, if (line.size == Int.MIN_VALUE) 2f else line.size.toFloat())
-                //    .pad(separatorTopPadding, 0f, separatorBottomPadding, 0f)
-                table.addSeparator().pad(separatorTopPadding, 0f, separatorBottomPadding, 0f)
+                table.addSeparator(line.displayColor, 1, if (line.size == Int.MIN_VALUE) 2f else line.size.toFloat())
+                    .pad(separatorTopPadding, 0f, separatorBottomPadding, 0f)
                 continue
             }
             val actor = line.render(labelWidth, noLinkImages)
