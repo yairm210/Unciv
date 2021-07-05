@@ -75,6 +75,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Rapier](https://thenounproject.com/search/?q=musketeer&i=819822) By Hamish for Musketeer
 * [Ship](https://thenounproject.com/term/ship/1293899/) By Orin Zuu for Frigate
 * [Pirate](https://thenounproject.com/search/?q=pirate&i=2349496) by Berkah Icon for Privateer
+* [Pirate](https://thenounproject.com/search/?q=frigate&i=3447522) by Smalllike for Sea Beggar*
 * [Ship](https://thenounproject.com/search/?q=ship&i=800131) By Mungang Kim for Ship of the Line
 * [Lance](https://thenounproject.com/search/?q=Lance&i=440122) By parkjisun for Lancer
 * [Sword](https://thenounproject.com/search/?q=saber&i=1174742) By Daniela Baptista for Sipahi
@@ -512,7 +513,8 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Spiral](https://www.shutterstock.com/image-vector/maori-symbol-spiral-shape-based-on-1145645057?id=1145645057) by bc21 for Polynesia
 * [Dharmachakra](https://thenounproject.com/search/?q=dharmachakra&i=740796) by Parkjisun for Siam
 * [Sun](https://thenounproject.com/search/?q=inca&i=910770) by Made x Made for Inca
-* [Sun symbol black](https://en.wikiquote.org/wiki/File:Sun_symbol_black.svg) by Eddo for the Huns
+* [Sun symbol black](https://en.wikiquote.org/wiki/File:Sun_symbol_black.svg) by Eddo for The Huns
+* [Lion](https://thenounproject.com/search/?q=lion&i=76154) by Nikki Rodriguez for The Netherlands
 
 
 ## Promotions

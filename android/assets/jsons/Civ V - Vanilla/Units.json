@@ -802,6 +802,19 @@
 		"uniques": ["May capture killed [Water] units"]
 	},
 	{
+		"name": "Sea Beggar",
+		"unitType": "WaterMelee",
+		"replaces": "Privateer",
+		"uniqueTo": "The Netherlands",
+		"movement": 5,
+		"strength": 25,
+		"cost": 150,
+		"requiredTech": "Navigation",
+		"upgradesTo": "Destroyer",
+		"promotions": ["Coastal Raider I", "Coastal Raider II", "Supply"],
+		"uniques": ["May capture killed [Water] units"]
+	},
+	{
 		"name": "Frigate",
 		"unitType": "WaterRanged",
 		"movement": 5,
