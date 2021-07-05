@@ -546,7 +546,7 @@ object Battle {
         }
 
         // Damage and/or destroy units on the tile
-        for (unit in tile.getUnits()) {
+        for (unit in tile.getUnits().toList()) { // tolist so if it's destroyed there's no concurrent modification
             val defender = MapUnitCombatant(unit)
             if (defender.unit.baseUnit.unitType.isCivilian()) {
                 unit.destroy() // destroy the unit
@@ -611,7 +611,7 @@ object Battle {
         }
 
         // Destroy all hit units
-        for (defender in tile.getUnits()) {
+        for (defender in tile.getUnits().toList()) { // toList to avoid concurent modification exceptions
             defender.destroy()
             postBattleNotifications(attacker, MapUnitCombatant(defender), defender.currentTile)
             destroyIfDefeated(defender.civInfo, attacker.getCivInfo())
