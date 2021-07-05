@@ -249,7 +249,7 @@ class BaseUnit : INamed, IConstruction {
             "Land", "land units" -> unitType.isLandUnit()
             "Civilian" -> unitType.isCivilian()
             "Military", "military units" -> unitType.isMilitary()
-            "Water", "water units", "Water units" -> unitType.isWaterUnit()
+            "Water", "water units" -> unitType.isWaterUnit()
             "Air", "air units" -> unitType.isAirUnit()
             "non-air" -> !unitType.isAirUnit() && !unitType.isMissile()
             "Missile" -> unitType.isMissile()
