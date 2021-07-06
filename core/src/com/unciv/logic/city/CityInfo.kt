@@ -339,7 +339,7 @@ class CityInfo {
                 if (stat != null) entry.value.add(stat, entry.value.get(stat) * unique.params[1].toFloat() / 100)
             }
             
-            for (unique in getMatchingUniques("+[]% great person generation []")) {
+            for (unique in getMatchingUniques("[]% great person generation []")) {
                 if (!matchesFilter(unique.params[1])) continue
                 stats[entry.key]!!.timesInPlace(1 + unique.params[0].toFloat() / 100f)
             }
