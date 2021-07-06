@@ -26,9 +26,9 @@
 		"food": 2,
 		"maintenance": 1,
 		"hurryCostModifier": 25,
-		"uniques": ["[+1 Food] from [Deer] tiles in this city",
-			"[+1 Food] from [Bananas] tiles in this city",
-			"[+1 Food] from [Wheat] tiles in this city"],
+		"uniques": ["[+1 Food] from [Deer] tiles [in this city]",
+			"[+1 Food] from [Bananas] tiles [in this city]",
+			"[+1 Food] from [Wheat] tiles [in this city]"],
 		"requiredTech": "Pottery"
 	},
 	{
@@ -57,8 +57,8 @@
 		"maintenance": 1,
 		"hurryCostModifier": 0,
 		"uniques": ["Must not be on [Plains]",
-			"[+1 Production] from [Stone] tiles in this city",
-			"[+1 Production] from [Marble] tiles in this city"],
+			"[+1 Production] from [Stone] tiles [in this city]",
+			"[+1 Production] from [Marble] tiles [in this city]"],
 		"requiredTech": "Calendar"
 	},
 	{
@@ -118,7 +118,7 @@
 		"uniqueTo": "Aztecs",
 		"food": 2,
 		"production": 1,
-		"uniques": ["[+2 Food] from [Lakes] tiles in this city", "Must be next to [Fresh water]"],
+		"uniques": ["[+2 Food] from [Lakes] tiles [in this city]", "Must be next to [Fresh water]"],
 		"hurryCostModifier": 25,
 		"maintenance": 1,
 		"percentStatBonus": {"food": 15},
@@ -156,7 +156,7 @@
 		"greatPersonPoints": {"gold": 1},
 		"isWonder": true,
 		"uniques": ["Provides a sum of gold each time you spend a Great Person",
-			"[+2 Gold] from [Marble] tiles in this city", "[+2 Gold] from [Stone] tiles in this city"],
+			"[+2 Gold] from [Marble] tiles [in this city]", "[+2 Gold] from [Stone] tiles [in this city]"],
 		"requiredTech": "Masonry",
 		"quote": "'The whole earth is the tomb of heroic men and their story is not given only on stone over their clay but abides everywhere without visible symbol woven into the stuff of other men's lives.' - Pericles"
 	},
@@ -195,8 +195,8 @@
 		"cost": 75,
 		"hurryCostModifier": 25,
 		"maintenance": 1,
-		"uniques": ["Must be next to [Coast]", "[+1 Food] from [Ocean] tiles in this city",
-			"[+1 Food] from [Coast] tiles in this city", "[+1 Food] from [Fish] tiles in this city" ],
+		"uniques": ["Must be next to [Coast]", "[+1 Food] from [Ocean] tiles [in this city]",
+			"[+1 Food] from [Coast] tiles [in this city]", "[+1 Food] from [Fish] tiles [in this city]" ],
 		"requiredTech": "Optics"
 	},
 	{
@@ -217,9 +217,9 @@
 		"requiredNearbyImprovedResources": ["Horses","Sheep","Cattle"],
 		"hurryCostModifier": 25,
 		"uniques": ["+[15]% Production when constructing [Mounted] units [in this city]", 
-			"[+1 Production] from [Cattle] tiles in this city",
-			"[+1 Production] from [Horses] tiles in this city",
-			"[+1 Production] from [Sheep] tiles in this city"],
+			"[+1 Production] from [Cattle] tiles [in this city]",
+			"[+1 Production] from [Horses] tiles [in this city]",
+			"[+1 Production] from [Sheep] tiles [in this city]"],
 		"requiredTech": "Horseback Riding"
 	},
 	{
@@ -349,7 +349,7 @@
 		"cost": 125,
 		"culture": 1,
 		"isNationalWonder": true,
-		"uniques": ["Requires a [Monument] in all cities", "+[25]% great person generation in this city", "Cost increases by [30] per owned city"],
+		"uniques": ["Requires a [Monument] in all cities", "+[25]% great person generation [in this city]", "Cost increases by [30] per owned city"],
 		"requiredTech": "Drama and Poetry"
 	},
 	{
@@ -369,7 +369,7 @@
 		"hurryCostModifier": 25,
 		"percentStatBonus": {"gold": 25},
 		"uniques": ["Provides 1 extra copy of each improved luxury resource near this City",
-			"[+2 Gold] from [Oil] tiles in this city", "[+2 Gold] from [Oasis] tiles in this city"],
+			"[+2 Gold] from [Oil] tiles [in this city]", "[+2 Gold] from [Oasis] tiles [in this city]"],
 		"requiredTech": "Currency"
 	},
 	{
@@ -377,7 +377,7 @@
 		"maintenance": 0,
 		"requiredNearbyImprovedResources": ["Gold Ore", "Silver"],
 		"hurryCostModifier": 25,
-		"uniques": ["[+2 Gold] from [Gold Ore] tiles in this city", "[+2 Gold] from [Silver] tiles in this city"],
+		"uniques": ["[+2 Gold] from [Gold Ore] tiles [in this city]", "[+2 Gold] from [Silver] tiles [in this city]"],
 		"requiredTech": "Currency"
 	},
 	{ // Flood plains are not supposed to be affected by this wonder. Add stats to all desert tiles and then add negative stats to flood plains to undo the effect on them for now
@@ -385,7 +385,7 @@
 		"culture": 1,
 		"isWonder": true,
 		"greatPersonPoints": {"production": 1},
-		"uniques": ["Must be next to [Desert]", "[+1 Food, +1 Production] from [Desert] tiles in this city", "[-1 Food, -1 Production] from [Flood plains] tiles in this city", "[+6 Culture] once [Archaeology] is discovered"],
+		"uniques": ["Must be next to [Desert]", "[+1 Food, +1 Production] from [Desert] tiles [in this city]", "[-1 Food, -1 Production] from [Flood plains] tiles [in this city]", "[+6 Culture] once [Archaeology] is discovered"],
 		"requiredTech": "Currency",
 		"quote": "'...who drinks the water I shall give him, says the Lord, will have a spring inside him welling up for eternal life. Let them bring me to your holy mountain in the place where you dwell. Across the desert and through the mountain to the Canyon of the Crescent Moon...'  - Indiana Jones"
 	},
@@ -411,7 +411,7 @@
 		"cost": 125,
 		"culture": 1,
 		"isNationalWonder": true,
-		"uniques": ["Requires a [Barracks] in all cities", "All newly-trained [non-air] units in this city receive the [Morale] promotion",
+		"uniques": ["Requires a [Barracks] in all cities", "All newly-trained [non-air] units [in this city] receive the [Morale] promotion",
 			"Cost increases by [30] per owned city"],
 		"requiredTech": "Iron Working"
 	},
@@ -422,7 +422,7 @@
 		"gold": 5,
 		"greatPersonPoints": {"gold": 1},
 		"isWonder": true,
-		"uniques": ["Must be next to [Coast]", "[+1 Gold] from [Water] tiles in this city"],
+		"uniques": ["Must be next to [Coast]", "[+1 Gold] from [Water] tiles [in this city]"],
 		"requiredTech": "Iron Working",
 		"quote": "'Why man, he doth bestride the narrow world like a colossus, and we petty men walk under his huge legs, and peep about to find ourselves dishonorable graves.' - William Shakespeare, Julius Caesar"
 	},
@@ -432,7 +432,7 @@
 	// Column 5
 	{
 		"name": "Garden",
-		"uniques": ["+[25]% great person generation in this city", "Must be next to [Fresh water]"],
+		"uniques": ["+[25]% great person generation [in this city]", "Must be next to [Fresh water]"],
 		"hurryCostModifier": 25,
 		"maintenance": 1,
 		"requiredTech": "Theology"
@@ -441,7 +441,7 @@
 		"name": "Monastery",
 		"maintenance": 0,
 		"requiredNearbyImprovedResources": ["Wine","Incense"],
-		"uniques": ["[+2 Culture] from [Wine] tiles in this city", "[+2 Culture] from [Incense] tiles in this city"],
+		"uniques": ["[+2 Culture] from [Wine] tiles [in this city]", "[+2 Culture] from [Incense] tiles [in this city]"],
 		"hurryCostModifier": 25,
 		"requiredTech": "Theology"
 	},
@@ -450,7 +450,7 @@
 		"culture": 1,
 		"greatPersonPoints": {"culture": 1},
 		"isWonder": true,
-		"uniques": ["+[25]% great person generation in all cities"],
+		"uniques": ["+[25]% great person generation [in all cities]"],
 		"requiredTech": "Theology",
 		"quote": "'For it soars to a height to match the sky, and as if surging up from among the other buildings it stands on high and looks down upon the remainder of the city, adorning it, because it is a part of it, but glorying in its own beauty'  - Procopius, De Aedificis"
 	},
@@ -501,7 +501,7 @@
 		"production": 2,
 		"specialistSlots": {"Engineer": 1},
 		"hurryCostModifier": 25,
-		"uniques": ["[+1 Production] from [Forest] tiles in this city"],
+		"uniques": ["[+1 Production] from [Forest] tiles [in this city]"],
 		"requiredTech": "Metal Casting"
 	},
 	{
@@ -514,7 +514,7 @@
 		// "+[15]% Production when constructing [Spaceship part] units [in this city]"
 		"uniques": ["+[15]% Production when constructing [Spaceship part] [in this city]",
 			"+[15]% Production when constructing [Land] units [in this city]",
-			"[+1 Production] from [Iron] tiles in this city"]
+			"[+1 Production] from [Iron] tiles [in this city]"]
 	},
 	// Column 6
 	{
@@ -522,7 +522,7 @@
 		"cost": 120,
 		"maintenance": 2,
 		"hurryCostModifier": 25,
-		"uniques": ["[+1 Production] from [Water resource] tiles in this city",
+		"uniques": ["[+1 Production] from [Water resource] tiles [in this city]",
 			"Connects trade routes over water","Must be next to [Coast]"],
 		"requiredTech": "Compass"
 	},
@@ -533,7 +533,7 @@
 		"percentStatBonus": {"science": 33},
 		"specialistSlots": {"Scientist": 2},
 		"requiredBuilding": "Library",
-		"uniques": ["[+2 Science] from [Jungle] tiles in this city"],
+		"uniques": ["[+2 Science] from [Jungle] tiles [in this city]"],
 		"requiredTech": "Education"
 	},
 	{
@@ -546,7 +546,7 @@
 		"specialistSlots": {"Scientist": 2},
 		"culture": 3,
 		"requiredBuilding": "Library",
-		"uniques": ["[+2 Science] from [Jungle] tiles in this city"],
+		"uniques": ["[+2 Science] from [Jungle] tiles [in this city]"],
 		"requiredTech": "Education"
 	},
 	{
@@ -596,7 +596,7 @@
 		"isWonder": true,
 		"providesFreeBuilding": "Castle",
 		"percentStatBonus": {"culture": 20},
-		"uniques": ["All newly-trained [relevant] units in this city receive the [Drill I] promotion"],
+		"uniques": ["All newly-trained [relevant] units [in this city] receive the [Drill I] promotion"],
 		"requiredTech": "Chivalry",
 		"quote": "'Justice is an unassailable fortress, built on the brow of a mountain which cannot be overthrown by the violence of torrents, nor demolished by the force of armies.'  - Joseph Addison"
 	},
@@ -713,7 +713,7 @@
 		"culture": 1,
 		"isWonder": true,
 		"greatPersonPoints": {"culture": 1},		
-		"uniques": ["+[25]% great person generation in all cities", "Free Great Person"],
+		"uniques": ["+[25]% great person generation [in all cities]", "Free Great Person"],
 		"requiredTech": "Printing Press",
 		"quote": "'Don't clap too hard - it's a very old building.' - John Osbourne"
 	},
@@ -733,7 +733,7 @@
 		"hurryCostModifier": 25,
 		"maintenance": 3,
 		"requiredBuilding": "Harbor",
-		"uniques": ["[+1 Production, +1 Gold] from [Water resource] tiles in this city",
+		"uniques": ["[+1 Production, +1 Gold] from [Water resource] tiles [in this city]",
 			"Must be next to [Coast]", "+[15]% Production when constructing [Water] units [in this city]"],
 		"requiredTech": "Navigation"
 	},
@@ -888,7 +888,7 @@
 		"requiredResource": "Aluminum",
 		"hurryCostModifier": 0,
 		"maintenance": 3,
-		"uniques": ["Must be on [River]","[+1 Production] from [River] tiles in this city"],
+		"uniques": ["Must be on [River]","[+1 Production] from [River] tiles [in this city]"],
 		"requiredTech": "Electricity"
 	},
 	*/

@@ -205,22 +205,37 @@ class BaseUnit : INamed, IConstruction {
         var XP = cityConstructions.getBuiltBuildings().sumBy { it.xpForNewUnits }
 
 
-        for (unique in cityConstructions.builtBuildingUniqueMap
-                .getUniques("New [] units start with [] Experience in this city")
-                + civInfo.getMatchingUniques("New [] units start with [] Experience")) {
+        for (unique in 
+            cityConstructions.cityInfo.getMatchingUniques("New [] units start with [] Experience") +
+            cityConstructions.cityInfo.getMatchingUniques("New [] units start with [] Experience []")
+                .filter { cityConstructions.cityInfo.matchesFilter(it.params[2]) }
+        ) {
             if (unit.matchesFilter(unique.params[0]))
                 XP += unique.params[1].toInt()
         }
         unit.promotions.XP = XP
 
-        for (unique in cityConstructions.builtBuildingUniqueMap
-                .getUniques("All newly-trained [] units in this city receive the [] promotion")) {
+        for (unique in 
+            cityConstructions.cityInfo.getMatchingUniques("All newly-trained [] units [] receive the [] promotion")
+                .filter { cityConstructions.cityInfo.matchesFilter(it.params[1]) } +
+            // Deprecated since 3.15.9
+                cityConstructions.cityInfo.getLocalMatchingUniques("All newly-trained [] units in this city receive the [] promotion")
+            //
+        ) {
             val filter = unique.params[0]
-            val promotion = unique.params[1]
+            val promotion = unique.params.last()
 
-            if (unit.matchesFilter(filter) || (filter == "relevant" && civInfo.gameInfo.ruleSet.unitPromotions.values
-                    .any { unit.type.name in it.unitTypes && it.name == promotion }))
+            if (unit.matchesFilter(filter) || 
+                (
+                    filter == "relevant" && 
+                        civInfo.gameInfo.ruleSet.unitPromotions.values
+                        .any {
+                            it.name == promotion && unit.type.name in it.unitTypes 
+                        }
+                )
+            ) {
                 unit.promotions.addPromotion(promotion, isFree = true)
+            }
         }
 
         return true

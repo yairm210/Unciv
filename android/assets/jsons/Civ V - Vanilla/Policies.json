@@ -327,7 +327,7 @@
 	{
 		"name": "Freedom",
 		"era": "Renaissance era",
-		"uniques": ["+[25]% great person generation in all cities", "Incompatible with [Autocracy]", "Incompatible with [Order]"],
+		"uniques": ["+[25]% great person generation [in all cities]", "Incompatible with [Autocracy]", "Incompatible with [Order]"],
 		"policies": [
 			{
 				"name": "Constitution",
