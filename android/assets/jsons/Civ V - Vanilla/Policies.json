@@ -139,7 +139,7 @@
 		"policies": [
 			{
 				"name": "Organized Religion",
-				"uniques": ["[+1 Happiness] from every [Monument]","[+1 Happiness] from every [Temple]",
+				"uniques": ["[+1 Happiness] from every [Monument]","[+1 Happiness] from every [Amphitheater]",
 					"[+1 Happiness] from every [Monastery]"],
 				"row": 1,
 				"column": 2
@@ -152,7 +152,7 @@
 			},
 			{
 				"name": "Theocracy",
-				"uniques": ["+[10]% [Gold] from every [Temple]"],
+				"uniques": ["+[10]% [Gold] from every [Amphitheater]"],
 				"requires": ["Organized Religion"],
 				"row": 2,
 				"column": 1
