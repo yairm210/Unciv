@@ -102,7 +102,9 @@ class CityConstructions {
         // way a given. In reality, there should be functions getBuildingStats and getWonderStats,
         // to solve this, with getStats merely adding these two together. Implementing this is on
         // my ToDoList, but this PR is already large enough as it is.
-        for (unique in cityInfo.getLocalMatchingUniques("[] per [] population []", true)) {
+        for (unique in cityInfo.getLocalMatchingUniques("[] per [] population []")
+                .filter { cityInfo.matchesFilter(it.params[2])}
+        ) {
             stats.add(unique.stats.times(cityInfo.population.population / unique.params[1].toFloat()))
         }
         
