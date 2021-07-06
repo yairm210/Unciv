@@ -409,7 +409,7 @@ class CityInfo {
         cityConstructions.endTurn(stats)
         expansion.nextTurn(stats.culture)
         if (isBeingRazed) {
-            val removedPopulation = 1 + civInfo.getMatchingUniques("Cities are razed [] times as fast").sumBy { it.params[0].toInt() }
+            val removedPopulation = 1 + civInfo.getMatchingUniques("Cities are razed [] times as fast").sumBy { it.params[0].toInt() - 1 }
             population.addPopulation(-1 * removedPopulation)
             if (population.population <= 0) { 
                 civInfo.addNotification("[$name] has been razed to the ground!", location, "OtherIcons/Fire")

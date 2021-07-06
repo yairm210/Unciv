@@ -73,6 +73,7 @@ class PopulationManager {
 
     internal fun addPopulation(count: Int) {
         population += count
+        if (population < 0) population = 0
         val freePopulation = getFreePopulation()
         if (freePopulation < 0) {
             unassignExtraPopulation()
