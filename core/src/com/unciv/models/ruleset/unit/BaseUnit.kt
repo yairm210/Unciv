@@ -208,7 +208,10 @@ class BaseUnit : INamed, IConstruction {
         for (unique in 
             cityConstructions.cityInfo.getMatchingUniques("New [] units start with [] Experience") +
             cityConstructions.cityInfo.getMatchingUniques("New [] units start with [] Experience []")
-                .filter { cityConstructions.cityInfo.matchesFilter(it.params[2]) }
+                .filter { cityConstructions.cityInfo.matchesFilter(it.params[2]) } +
+            // Deprecated since 3.15.9
+                cityConstructions.cityInfo.getLocalMatchingUniques("New [] units start with [] Experience in this city")
+            //
         ) {
             if (unit.matchesFilter(unique.params[0]))
                 XP += unique.params[1].toInt()

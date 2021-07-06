@@ -453,7 +453,7 @@ class Building : NamedStats(), IConstruction {
         return true
     }
     
-    fun matchesFilter(filter: String, civInfo: CivilizationInfo? = null): Boolean {
+    fun matchesFilter(filter: String): Boolean {
         return when (filter) {
             "All" -> true
             name -> true

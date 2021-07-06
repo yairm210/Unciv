@@ -510,7 +510,6 @@ class CityStats {
 
         // e.g. "-[50]% maintenance costs for buildings [in this city]"
         for (unique in cityInfo.getMatchingUniques("-[]% maintenance cost for buildings []", citySpecificUniques)) {
-            println(unique.text)
             buildingsMaintenance *= (1f - unique.params[0].toFloat() / 100)
         }
 
