@@ -317,13 +317,14 @@ class ModManagementScreen: PickerScreen(disableScroll = true) {
         val downloadButton = "Download mod from URL".toTextButton()
         downloadButton.onClick {
             val popup = Popup(this)
+            popup.addGoodSizedLabel("Please enter the mod repository -or- archive zip url:").row()
             val textArea = TextArea("https://github.com/...", skin)
             popup.add(textArea).width(stage.width / 2).row()
             val actualDownloadButton = "Download".toTextButton()
             actualDownloadButton.onClick {
                 actualDownloadButton.setText("Downloading...".tr())
                 actualDownloadButton.disable()
-                downloadMod(Github.Repo().apply { html_url = textArea.text; default_branch = "master" }) { popup.close() }
+                downloadMod(Github.Repo().parseUrl(textArea.text)) { popup.close() }
             }
             popup.add(actualDownloadButton).row()
             popup.addCloseButton()
@@ -354,13 +355,13 @@ class ModManagementScreen: PickerScreen(disableScroll = true) {
         addModInfoToActionTable(repo)
     }
 
-    /** Download and install a mod in the background, called from the right-bottom button */
+    /** Download and install a mod in the background, called both from the right-bottom button and the URL entry popup */
     private fun downloadMod(repo: Github.Repo, postAction: () -> Unit = {}) {
         thread(name="DownloadMod") { // to avoid ANRs - we've learnt our lesson from previous download-related actions
             try {
                 val modFolder = Github.downloadAndExtract(repo.html_url, repo.default_branch,
                     Gdx.files.local("mods"))
-                    ?: return@thread
+                    ?: throw Exception()    // downloadAndExtract returns null for 404 errors and the like -> display something!
                 rewriteModOptions(repo, modFolder)
                 Gdx.app.postRunnable {
                     ToastPopup("Downloaded!", this)

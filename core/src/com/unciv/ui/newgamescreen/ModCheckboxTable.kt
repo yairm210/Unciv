@@ -2,6 +2,7 @@ package com.unciv.ui.newgamescreen
 
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox
 import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.Ruleset.CheckModLinksResult
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.translations.tr
@@ -39,21 +40,19 @@ class ModCheckboxTable(val mods:LinkedHashSet<String>, val screen: CameraStageBa
                                 mods.remove(oldBaseRuleset)
                     mods.add(mod.name)
 
-                    var isCompatibleWithCurrentRuleset = true
                     var complexModLinkCheck = CheckModLinksResult()
                     try {
                         val newRuleset = RulesetCache.getComplexRuleset(mods)
                         newRuleset.modOptions.isBaseRuleset = true // This is so the checkModLinks finds all connections
                         complexModLinkCheck = newRuleset.checkModLinks()
-                        isCompatibleWithCurrentRuleset = !complexModLinkCheck.isError()
-                    } catch (x: Exception) {
+                    } catch (ex: Exception) {
                         // This happens if a building is dependent on a tech not in the base ruleset
                         //  because newRuleset.updateBuildingCosts() in getComplexRuleset() throws an error
-                        isCompatibleWithCurrentRuleset = false
+                        complexModLinkCheck = CheckModLinksResult(Ruleset.CheckModLinksStatus.Error, ex.localizedMessage)
                     }
 
-                    if (!isCompatibleWithCurrentRuleset) {
-                        ToastPopup("The mod you selected is incompatible with the defined ruleset!\n\n$complexModLinkCheck", screen)
+                    if (complexModLinkCheck.isError()) {
+                        ToastPopup("{The mod you selected is incompatible with the defined ruleset!}\n\n{$complexModLinkCheck}", screen)
                         checkBox.isChecked = false
                         mods.clear()
                         mods.addAll(previousMods)
