@@ -35,7 +35,7 @@ class CityExpansionManager {
     // The second seems to be more based, so I'll go with that
     fun getCultureToNextTile(): Int {
         var cultureToNextTile = 6 * (max(0, tilesClaimed()) + 1.4813).pow(1.3)
-        for (unique in cityInfo.civInfo.getMatchingUniques("-[]% cost of acquiring tiles []")) {
+        for (unique in cityInfo.civInfo.getMatchingUniques("-[]% Culture cost of acquiring tiles []")) {
             if (cityInfo.matchesFilter(unique.params[1]))
                 cultureToNextTile *= (100 - unique.params[0].toFloat()) / 100
         }
