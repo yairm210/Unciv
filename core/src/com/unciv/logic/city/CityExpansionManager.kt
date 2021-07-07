@@ -35,12 +35,17 @@ class CityExpansionManager {
     // The second seems to be more based, so I'll go with that
     fun getCultureToNextTile(): Int {
         var cultureToNextTile = 6 * (max(0, tilesClaimed()) + 1.4813).pow(1.3)
-        for (unique in cityInfo.civInfo.getMatchingUniques("-[]% Culture cost of acquiring tiles []")) {
+        for (unique in cityInfo.civInfo.getMatchingUniques("-[]% cost of acquiring tiles []")) {
             if (cityInfo.matchesFilter(unique.params[1]))
                 cultureToNextTile *= (100 - unique.params[0].toFloat()) / 100
         }
-
-        if (cityInfo.civInfo.hasUnique("Increased rate of border expansion")) cultureToNextTile *= 0.75
+        
+        for (unique in cityInfo.getMatchingUniques("[]% cost of natural border growth")) 
+            cultureToNextTile *= 1 + unique.params[0].toFloat() / 100f
+        
+        // Unique deprecated since 3.15.10 (seems unused, and should be replaced by the unique above)
+            if (cityInfo.civInfo.hasUnique("Increased rate of border expansion")) cultureToNextTile *= 0.75
+        //
 
         return cultureToNextTile.roundToInt()
     }

@@ -223,6 +223,8 @@ class CityStats {
 
         newHappinessList["Wonders"] = getStatsFromUniques(civInfo.getCivWideBuildingUniques()).happiness
 
+        newHappinessList["Religion"] = getStatsFromUniques(cityInfo.religion.getUniques()).happiness
+        
         newHappinessList["Tile yields"] = getStatsFromTiles().happiness
 
         // we don't want to modify the existing happiness list because that leads
@@ -268,6 +270,14 @@ class CityStats {
                 val amountOfEffects = (cityInfo.population.population / unique.params[1].toInt()).toFloat()
                 stats.add(unique.stats.times(amountOfEffects))
             }
+            
+            // "[stats] in cities with [amount] or more population
+            if (unique.placeholderText == "[] in cities with [] or more population" && cityInfo.population.population >= unique.params[1].toInt())
+                stats.add(unique.stats)
+            
+            // "[stats] from cities on [tileFilter] tiles"
+            if (unique.placeholderText == "[] from cities on [] tiles" && cityInfo.getCenterTile().matchesTerrainFilter(unique.params[1]))
+                {stats.add(unique.stats); println(unique.text)}
         }
 
         return stats
