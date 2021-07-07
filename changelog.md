@@ -1,3 +1,22 @@
+## 3.15.9
+
+By SomeTroglodyte:
+- Better mod download and error display 
+- Spruced up Civilopedia - phase 4 - Visual candy, Units 
+- 'Swap units' sound and more attack sounds 
+- Unified separators, CheckBox helper 
+- ExpanderTab UI update
+
+By xlenstra:
+- Fixed crash when a city had negative population due to faster razing 
+- Fixed bug where logistics _still_ did not work 
+- Fixed bug where city-states would not share their science income even if the player had the right policy 
+- Added the nation of the Netherlands 
+
+Fixed Denmark's unique
+
+More concurrency problem fixes in nuke effects
+
 ## 3.15.8
 
 By xlenstra:
