@@ -16,6 +16,7 @@ class ReligionManager {
     fun canFoundPantheon(): Boolean {
         if (pantheonBelief != null) return false
         if (!civInfo.gameInfo.hasReligionEnabled()) return false
+        if (!civInfo.isMajorCiv()) return false
         if (civInfo.gameInfo.ruleSet.beliefs.values.none { isPickablePantheonBelief(it) })
             return false
         return storedFaith >= faithForPantheon()
