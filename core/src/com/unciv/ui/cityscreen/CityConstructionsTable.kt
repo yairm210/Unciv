@@ -171,6 +171,7 @@ class CityConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBase
             // Since this can be a heavy operation and leads to many ANRs on older phones we put the metadata-gathering in another thread.
             val constructionButtonDTOList = getConstructionButtonDTOs()
             Gdx.app.postRunnable {
+                cityScreen.saveExpanderTabs(availableConstructionsTable.children)
                 availableConstructionsTable.clear()
                 var maxWidth = constructionsQueueTable.width
                 for (dto in constructionButtonDTOList) {

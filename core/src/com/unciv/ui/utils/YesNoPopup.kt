@@ -31,7 +31,7 @@ open class YesNoPopup (
 class ExitGamePopup(screen: CameraStageBaseScreen, force: Boolean = false)
     : YesNoPopup (
         question = "Do you want to exit the game?",
-        action = { Gdx.app.exit() },
+        action = { screen.dispose(); Gdx.app.exit() },
         screen = screen
     ) {
     init {

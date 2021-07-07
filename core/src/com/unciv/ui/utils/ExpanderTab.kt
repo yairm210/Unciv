@@ -13,19 +13,23 @@ import com.unciv.UncivGame
  * A widget with a header that when clicked shows/hides a sub-Table.
  * 
  * @param title The header text, automatically translated.
- * @param fontSize Size applied to header text (only)
- * @param icon Optional icon - please use [Image][com.badlogic.gdx.scenes.scene2d.ui.Image] or [IconCircleGroup]
+ * @param fontSize Size applied to header text (only).
+ * @param icon Optional icon - please use [Image][com.badlogic.gdx.scenes.scene2d.ui.Image] or [IconCircleGroup].
  * @param defaultPad Padding between content and wrapper. Header padding is currently not modifiable.
- * @param expanderWidth If set initializes header width
+ * @param expanderWidth If set initializes header width, otherwise the content width after initContent() is set as header width.
+ * @param persistPrefix Additional prefix for the persistence category key (top level into
+ *                  [uiSettings.expanderTabStates][com.unciv.ui.utils.UISettings.expanderTabStates]).
+ *                  If `null` this ExpanderTab is not persisted.
  * @param initContent Optional lambda with [innerTable] as parameter, to help initialize content.
  */
 class ExpanderTab(
-    title: String,
+    private val title: String,
     fontSize: Int = 24,
     icon: Actor? = null,
     startsOutOpened: Boolean = true,
     defaultPad: Float = 10f,
     expanderWidth: Float = 0f,
+    persistPrefix: String? = "",
     initContent: ((Table) -> Unit)? = null
 ): Table(CameraStageBaseScreen.skin) {
     private companion object {
@@ -40,11 +44,25 @@ class ExpanderTab(
     private val headerIcon = ImageGetter.getImage(arrowImage)
     private val contentWrapper = Table()  // Wrapper for innerTable, this is what will be shown/hidden
 
+    // key under which to persist this ExpanderTab's state, null if persistPrefix is null.
+    // Taken from call stack and looks like "CityInfoTable.addCategory"
+    // Exists to distinguish e.g. "Wonder" expander in Constructions from "Wonder" expander in City Info
+    // methodName included to be safe in case of nested expanders
+    // - "Wonder" category containing a modded wonder named "Wonder" can still be distinguished
+    private val persistenceContainer: String? =
+        if (persistPrefix == null) null else
+            Exception().stackTrace.firstOrNull {
+                it.className.startsWith("com.unciv.ui.") && !it.className.endsWith(".ExpanderTab")
+            }?.let {
+                persistPrefix + (if (persistPrefix.isEmpty()) "" else ".") +
+                it.className.split('.').last()+ "." + it.methodName
+            }
+
     /** The container where the client should add the content to toggle */
     val innerTable = Table()
 
     /** Indicates whether the contents are currently shown, changing this will animate the widget */
-    var isOpen = startsOutOpened
+    var isOpen = getPersistedStartsOpened(startsOutOpened)
         private set(value) {
             if (value == field) return
             field = value
@@ -80,6 +98,12 @@ class ExpanderTab(
         update(noAnimation = true)
     }
 
+    private fun getPersistedStartsOpened(startsOutOpened: Boolean): Boolean {
+        if (persistenceContainer == null) return startsOutOpened
+        val states = UncivGame.Current.uiSettings.expanderTabStates[persistenceContainer] ?: return startsOutOpened
+        return title !in states
+    } 
+
     private fun update(noAnimation: Boolean = false) {
         if (noAnimation || !UncivGame.Current.settings.continuousRendering) {
             contentWrapper.clear()
@@ -103,5 +127,17 @@ class ExpanderTab(
     /** Toggle [isOpen], animated */
     fun toggle() {
         isOpen = !isOpen
+    }
+
+    /** store open/closed state to persistence storage */
+    fun saveState() {
+        if (persistenceContainer == null) return
+        val states = UncivGame.Current.uiSettings.expanderTabStates[persistenceContainer] ?: run {
+            val newSet = UISettings.ExpanderStateSet()
+            UncivGame.Current.uiSettings.expanderTabStates[persistenceContainer!!] = newSet
+            newSet
+        }
+        if (isOpen == (title !in states)) return
+        if (isOpen) states.remove(title) else states.add(title)
     }
 }

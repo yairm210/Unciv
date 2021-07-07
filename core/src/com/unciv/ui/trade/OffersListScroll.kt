@@ -13,7 +13,7 @@ import com.unciv.ui.utils.*
 import kotlin.math.min
 import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 
-class OffersListScroll(val onOfferClicked: (TradeOffer) -> Unit) : ScrollPane(null) {
+class OffersListScroll(private val persistPrefix: String, val onOfferClicked: (TradeOffer) -> Unit) : ScrollPane(null) {
     val table = Table(CameraStageBaseScreen.skin).apply { defaults().pad(5f) }
 
 
@@ -25,11 +25,12 @@ class OffersListScroll(val onOfferClicked: (TradeOffer) -> Unit) : ScrollPane(nu
      */
     fun update(offersToDisplay:TradeOffersList, otherOffers: TradeOffersList) {
         table.clear()
+        expanderTabs.forEach { it.value.saveState() }
         expanderTabs.clear()
 
         for (offerType in values()) {
             val labelName = when(offerType){
-                Gold, Gold_Per_Turn, Treaty,Agreement,Introduction -> ""
+                Gold, Gold_Per_Turn, Treaty, Agreement, Introduction -> ""
                 Luxury_Resource -> "Luxury resources"
                 Strategic_Resource -> "Strategic resources"
                 Technology -> "Technologies"
@@ -38,7 +39,7 @@ class OffersListScroll(val onOfferClicked: (TradeOffer) -> Unit) : ScrollPane(nu
             }
             val offersOfType = offersToDisplay.filter { it.type == offerType }
             if (labelName.isNotEmpty() && offersOfType.any()) {
-                expanderTabs[offerType] = ExpanderTab(labelName) {
+                expanderTabs[offerType] = ExpanderTab(labelName, persistPrefix = persistPrefix) {
                     it.defaults().pad(5f)
                 }
             }

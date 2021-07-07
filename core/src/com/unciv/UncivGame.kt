@@ -25,6 +25,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
     // we need this secondary constructor because Java code for iOS can't handle Kotlin lambda parameters
     constructor(version: String) : this(UncivGameParameters(version, null))
 
+    val uiSettings = UISettings()
     val version = parameters.version
     private val crashReportSender = parameters.crashReportSender
     val cancelDiscordEvent = parameters.cancelDiscordEvent
@@ -98,6 +99,8 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
 
 
         thread(name = "LoadJSON") {
+            uiSettings.load()
+
             RulesetCache.loadRulesets(printOutput = true)
             translations.tryReadTranslationForCurrentLanguage()
             translations.loadPercentageCompleteOfLanguages()
@@ -184,7 +187,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
         val threadList = Array(numThreads) { _ -> Thread() }
         Thread.enumerate(threadList)
 
-        if (isGameInfoInitialized()){
+        if (isGameInfoInitialized()) {
             val autoSaveThread = threadList.firstOrNull { it.name == "Autosave" }
             if (autoSaveThread != null && autoSaveThread.isAlive) {
                 // auto save is already in progress (e.g. started by onPause() event)
@@ -194,6 +197,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
                 GameSaver.autoSaveSingleThreaded(gameInfo)      // NO new thread
             settings.save()
         }
+        uiSettings.save()
 
         threadList.filter { it !== Thread.currentThread() && it.name != "DestroyJavaVM"}.forEach {
             println ("    Thread ${it.name} still running in UncivGame.dispose().")

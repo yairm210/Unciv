@@ -41,6 +41,7 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(CameraStageBaseS
     internal fun update() {
         val cityInfo = cityScreen.city
 
+        cityScreen.saveExpanderTabs(innerTable.children)
         innerTable.clear()
 
         innerTable.apply {
@@ -94,7 +95,6 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(CameraStageBaseS
                     || !UncivGame.Current.worldScreen.isPlayersTurn || !cityScreen.canChangeState)
                     sellBuildingButton.disable()
             }
-            it.addSeparator()
         }
         destinationTable.add(buildingNameAndIconTable).pad(5f).fillX().row()
     }
@@ -104,7 +104,7 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(CameraStageBaseS
         val specialistBuildings = mutableListOf<Building>()
         val otherBuildings = mutableListOf<Building>()
 
-        for (building in cityInfo.cityConstructions.getBuiltBuildings()) {
+        for (building in cityInfo.cityConstructions.getBuiltBuildings().sortedBy { it.name.tr() }) {
             when {
                 building.isWonder || building.isNationalWonder -> wonders.add(building)
                 !building.newSpecialists().isEmpty() -> specialistBuildings.add(building)

@@ -44,7 +44,7 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
 
 
         val closeButton = Constants.close.toTextButton()
-        closeButton.onClick { UncivGame.Current.setWorldScreen() }
+        closeButton.onClick { this.dispose(); UncivGame.Current.setWorldScreen() }
         closeButton.label.setFontSize(24)
         closeButton.labelCell.pad(10f)
         closeButton.pack()

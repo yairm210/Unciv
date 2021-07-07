@@ -77,13 +77,8 @@ class CityScreen(internal val city: CityInfo): CameraStageBaseScreen() {
     }
 
     internal fun update() {
-        if (showConstructionsTable) {
-            constructionsTable.isVisible = true
-            cityInfoTable.isVisible = false
-        } else {
-            constructionsTable.isVisible = false
-            cityInfoTable.isVisible = true
-        }
+        constructionsTable.isVisible = showConstructionsTable
+        cityInfoTable.isVisible = !showConstructionsTable
 
         city.cityStats.update()
 
@@ -238,6 +233,7 @@ class CityScreen(internal val city: CityInfo): CameraStageBaseScreen() {
         game.setWorldScreen()
         game.worldScreen.mapHolder.setCenterPosition(city.location)
         game.worldScreen.bottomUnitTable.selectUnit()
+        dispose()
     }
 
     fun page(delta: Int) {
@@ -246,14 +242,17 @@ class CityScreen(internal val city: CityInfo): CameraStageBaseScreen() {
         if (numCities == 0) return
         val indexOfCity = civInfo.cities.indexOf(city)
         val indexOfNextCity = (indexOfCity + delta + numCities) % numCities
+        saveExpanderTabs()   // save state _before_ instantiating a new screen
         val newCityScreen = CityScreen(civInfo.cities[indexOfNextCity])
         newCityScreen.showConstructionsTable = showConstructionsTable // stay on stats drilldown between cities
         newCityScreen.update()
         game.setScreen(newCityScreen)
+        dispose()
     }
 
     override fun resize(width: Int, height: Int) {
         if (stage.viewport.screenWidth != width || stage.viewport.screenHeight != height) {
+            dispose()
             game.setScreen(CityScreen(city))
         }
     }
