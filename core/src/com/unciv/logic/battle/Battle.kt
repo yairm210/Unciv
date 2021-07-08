@@ -380,6 +380,11 @@ object Battle {
                 unique.params[0].toInt() * city.cityStats.currentCityStats.get(Stat.valueOf(unique.params[1])).toInt()
             )
         }
+        
+        if (attackerCiv.isOneCityChallenger()) {
+            city.destroyCity(true)
+            return
+        }
 
         if (attackerCiv.isPlayerCivilization()) {
             attackerCiv.popupAlerts.add(PopupAlert(AlertType.CityConquered, city.id))
