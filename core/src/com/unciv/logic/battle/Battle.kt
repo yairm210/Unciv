@@ -558,7 +558,9 @@ object Battle {
         }
 
         // Remove improvements, add fallout
-        tile.improvement = null
+        if (tile.improvement != null && !attacker.getCivInfo().gameInfo.ruleSet.tileImprovements[tile.improvement]!!.hasUnique("Indestructible")) {
+            tile.improvement = null
+        }
         tile.improvementInProgress = null
         tile.turnsToImprovement = 0
         tile.roadStatus = RoadStatus.None
@@ -618,7 +620,9 @@ object Battle {
         }
 
         // Remove improvements
-        tile.improvement = null
+        if (tile.improvement != null && !attacker.getCivInfo().gameInfo.ruleSet.tileImprovements[tile.improvement]!!.hasUnique("Indestructible")) {
+            tile.improvement = null
+        }
         tile.improvementInProgress = null
         tile.turnsToImprovement = 0
         tile.roadStatus = RoadStatus.None
