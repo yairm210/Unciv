@@ -227,8 +227,6 @@ object TranslationFileWriter {
                                     || parameter == "Nuclear Weapon"
                                     || parameter == "Submarine"
                                 // These are up for debate
-                                    || parameter == "Land" // This one especially, is it can also apply to improvements
-                                    || parameter == "Water"
                                     || parameter == "Air"
                                     || parameter == "land units"
                                     || parameter == "water units"
