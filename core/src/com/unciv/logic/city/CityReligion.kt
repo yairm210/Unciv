@@ -8,14 +8,14 @@ class CityInfoReligionManager: Counter<String>() {
     @Transient
     lateinit var cityInfo: CityInfo
 
-    fun getUniques(): List<Unique> {
+    fun getUniques(): Sequence<Unique> {
         val majorityReligion = getMajorityReligion()
-        if (majorityReligion == null) return listOf()
+        if (majorityReligion == null) return sequenceOf()
         // This should later be changed when religions can have multiple beliefs
-        return cityInfo.civInfo.gameInfo.ruleSet.beliefs[majorityReligion]!!.uniqueObjects
+        return cityInfo.civInfo.gameInfo.ruleSet.beliefs[majorityReligion]!!.uniqueObjects.asSequence()
     }
     
-    fun getMatchingUniques(unique: String): List<Unique> {
+    fun getMatchingUniques(unique: String): Sequence<Unique> {
         return getUniques().filter { it.placeholderText == unique }
     }
     

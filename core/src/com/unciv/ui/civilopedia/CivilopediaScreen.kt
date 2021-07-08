@@ -93,7 +93,7 @@ class CivilopediaScreen(
         if (category !in categoryToButtons) return        // defense against being passed a bad selector
         categoryToButtons[category]!!.color = Color.BLUE
 
-        if (category !in categoryToEntries) return        // defense, allowing buggy panes to remain emtpy while others work
+        if (category !in categoryToEntries) return        // defense, allowing buggy panes to remain empty while others work
         var entries = categoryToEntries[category]!!
         if (category != CivilopediaCategories.Difficulty) // this is the only case where we need them in order
             entries = entries.sortedBy { it.name.tr() }   // Alphabetical order of localized names
@@ -215,7 +215,7 @@ class CivilopediaScreen(
                 .map {
                     CivilopediaEntry(
                         it.name,
-                        it.getDescription(false),
+                        "",
                         CivilopediaCategories.Unit.getImage?.invoke(it.name, imageSize),
                         (it as? ICivilopediaText).takeUnless { ct -> ct==null || ct.isCivilopediaTextEmpty() }
                     )
@@ -253,7 +253,7 @@ class CivilopediaScreen(
                 .map {
                     CivilopediaEntry(
                         it.key.replace("_", " "),
-                        it.value.joinToString("\n\n") { line -> line.tr() },
+                        "",
 //                        CivilopediaCategories.Tutorial.getImage?.invoke(it.name, imageSize)
                         flavour = SimpleCivilopediaText(
                             sequenceOf(FormattedLine(extraImage = it.key)),
@@ -317,6 +317,7 @@ class CivilopediaScreen(
         entrySplitPane.splitAmount = 0.3f
         entryTable.addActor(entrySplitPane)
         entrySplitPane.setFillParent(true)
+        entrySplitPane.pack()  // ensure selectEntry has correct entrySelectScroll.height and maxY
 
         if (link.isEmpty() || '/' !in link)
             selectCategory(category)

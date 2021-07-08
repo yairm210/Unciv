@@ -445,7 +445,7 @@
 		"name": "Logistics",
 		"prerequisites": ["Accuracy III","Barrage III","Targeting III", "Wolfpack III",
 			"Bombardment III", "Coastal Raider III","Boarding Party III","Siege III"],
-		"effect": "[1] additional attack per turn",
+		"effect": "[1] additional attacks per turn",
 		"unitTypes": ["Ranged","Siege","WaterMelee","WaterRanged","WaterSubmarine","Fighter","Bomber"]
 	},
 	

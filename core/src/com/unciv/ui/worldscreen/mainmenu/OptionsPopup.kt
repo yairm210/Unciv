@@ -139,7 +139,7 @@ class OptionsPopup(val previousScreen:CameraStageBaseScreen) : Popup(previousScr
                 settings.showExperimentalWorldWrap) {
             settings.showExperimentalWorldWrap = it
         }
-        addYesNoRow("{Enable experimental religion in start games}\n{HIHGLY EXPERIMENTAL - UPDATES WILL BREAK SAVES!}".tr(),
+        addYesNoRow("{Enable experimental religion in start games}\n{HIGHLY EXPERIMENTAL - UPDATES WILL BREAK SAVES!}".tr(),
                 settings.showExperimentalReligion) {
             settings.showExperimentalReligion = it
         }

@@ -3,8 +3,8 @@ package com.unciv.ui.worldscreen.unit
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Touchable
-import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup
 import com.unciv.UncivGame
@@ -50,7 +50,7 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
     // This is so that not on every update(), we will update the unit table.
     // Most of the time it's the same unit with the same stats so why waste precious time?
     var selectedUnitHasChanged = false
-    val separator: Image
+    val separator: Actor
 
     init {
         pad(5f)
@@ -80,7 +80,7 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
             }
             add(moveBetweenUnitsTable).colspan(2).fill().row()
 
-            separator= addSeparator().actor!!
+            separator = addSeparator().actor!!
             add(promotionsTable).colspan(2).row()
             add(unitDescriptionTable)
             touchable = Touchable.enabled
@@ -174,7 +174,7 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
         }
 
         else if (selectedCity != null) {
-            separator.isVisible=true
+            separator.isVisible = true
             val city = selectedCity!!
             var nameLabelText = city.name.tr()
             if(city.health<city.getMaxHealth()) nameLabelText+=" ("+city.health+")"

@@ -4,7 +4,6 @@ import com.badlogic.gdx.graphics.Color
 import com.unciv.Constants
 import com.unciv.logic.civilization.CityStateType
 import com.unciv.models.stats.INamed
-import com.unciv.models.translations.Translations
 import com.unciv.models.translations.tr
 import com.unciv.ui.utils.Fonts
 import com.unciv.ui.utils.colorFromRGB
@@ -73,7 +72,7 @@ class Nation : INamed {
     var ignoreHillMovementCost = false
 
     @Transient
-    var embarkDisembarkCosts1 = false
+    var disembarkCosts1 = false
 
     fun setTransients() {
         outerColorObject = colorFromRGB(outerColor)
@@ -83,7 +82,7 @@ class Nation : INamed {
 
         forestsAndJunglesAreRoads = uniques.contains("All units move through Forest and Jungle Tiles in friendly territory as if they have roads. These tiles can be used to establish City Connections upon researching the Wheel.")
         ignoreHillMovementCost = uniques.contains("Units ignore terrain costs when moving into any tile with Hills")
-        embarkDisembarkCosts1 = uniques.contains("Units pay only 1 movement point to embark and disembark")
+        disembarkCosts1 = uniques.contains("Units pay only 1 movement point to disembark")
     }
 
     lateinit var cities: ArrayList<String>
@@ -174,7 +173,7 @@ class Nation : INamed {
                 textList += unit.name.tr() + " - " + "Replaces [${unit.replaces}], which is not found in the ruleset!".tr()
             } else {
                 textList += unit.name.tr()
-                textList += "  " + unit.getDescription(true).split("\n").joinToString("\n  ")
+                textList += "  " + unit.getDescription().split("\n").joinToString("\n  ")
             }
 
             textList += ""

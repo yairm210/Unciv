@@ -54,74 +54,49 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(CameraStageBaseS
     }
 
     private fun Table.addCategory(str: String, showHideTable: Table) {
-        val width = cityScreen.stage.width / 4
-        val showHideTableWrapper = Table()
-                .add(showHideTable)
-                .minWidth(width)
-                .table
-
-        val titleTable = Table()
-                .background(ImageGetter.getBackground(ImageGetter.getBlue()))
-                .pad(4f)
-                .addCell(str.toLabel(fontSize = 24))
-                .onClick {
-                    if (showHideTableWrapper.hasChildren()) {
-                        showHideTableWrapper.clear()
-                    } else {
-                        showHideTableWrapper.add(showHideTable).minWidth(width)
-                    }
-                }
+        val categoryWidth = cityScreen.stage.width / 4
+        val expander = ExpanderTab(str) {
+            it.add(showHideTable).minWidth(categoryWidth)
+        }
         addSeparator()
-
-        add(titleTable).minWidth(width).row()
-        add(showHideTableWrapper).row()
+        add(expander).minWidth(categoryWidth).expandX().fillX().row()
     }
 
-    private fun addBuildingInfo(building: Building, wondersTable: Table) {
-        val wonderNameAndIconTable = Table()
-        wonderNameAndIconTable.touchable = Touchable.enabled
-        wonderNameAndIconTable.add(ImageGetter.getConstructionImage(building.name).surroundWithCircle(30f))
-        wonderNameAndIconTable.add(building.name.toLabel()).pad(5f)
-        wondersTable.add(wonderNameAndIconTable).pad(5f).fillX().row()
+    private fun addBuildingInfo(building: Building, destinationTable: Table) {
+        val icon = ImageGetter.getConstructionImage(building.name).surroundWithCircle(30f)
+        val buildingNameAndIconTable = ExpanderTab(building.name, 18, icon, false, 5f) {
+            //todo: getDescription signature changes with civilopedia phase 5
+            val detailsString = building.getDescription(true,
+                cityScreen.city, cityScreen.city.civInfo.gameInfo.ruleSet)
+            it.add(detailsString.toLabel().apply { wrap = true })
+                .width(cityScreen.stage.width / 4 - 2 * pad).row() // when you set wrap, then you need to manually set the size of the label
+            if (building.isSellable()) {
+                val sellAmount = cityScreen.city.getGoldForSellingBuilding(building.name)
+                val sellBuildingButton = "Sell for [$sellAmount] gold".toTextButton()
+                it.add(sellBuildingButton).pad(5f).row()
 
-        val wonderDetailsTable = Table()
-        wondersTable.add(wonderDetailsTable).pad(5f).align(Align.left).row()
+                sellBuildingButton.onClick {
+                    sellBuildingButton.disable()
+                    cityScreen.closeAllPopups()
 
-        wonderNameAndIconTable.onClick {
-            if (wonderDetailsTable.hasChildren())
-                wonderDetailsTable.clear()
-            else {
-                val detailsString = building.getDescription(true,
-                        cityScreen.city, cityScreen.city.civInfo.gameInfo.ruleSet)
-                wonderDetailsTable.add(detailsString.toLabel().apply { wrap = true })
-                        .width(cityScreen.stage.width / 4 - 2 * pad).row() // when you set wrap, then you need to manually set the size of the label
-                if (building.isSellable()) {
-                    val sellAmount = cityScreen.city.getGoldForSellingBuilding(building.name)
-                    val sellBuildingButton = "Sell for [$sellAmount] gold".toTextButton()
-                    wonderDetailsTable.add(sellBuildingButton).pad(5f).row()
-
-                    sellBuildingButton.onClick {
-                        sellBuildingButton.disable()
-                        cityScreen.closeAllPopups()
-
-                        YesNoPopup("Are you sure you want to sell this [${building.name}]?".tr(),
-                                {
-                                    cityScreen.city.sellBuilding(building.name)
-                                    cityScreen.city.cityStats.update()
-                                    cityScreen.update()
-                                }, cityScreen,
-                                {
-                                    cityScreen.update()
-                                }).open()
-                    }
-                    if (cityScreen.city.hasSoldBuildingThisTurn && !cityScreen.city.civInfo.gameInfo.gameParameters.godMode
-                            || cityScreen.city.isPuppet
-                            || !UncivGame.Current.worldScreen.isPlayersTurn || !cityScreen.canChangeState)
-                        sellBuildingButton.disable()
+                    YesNoPopup("Are you sure you want to sell this [${building.name}]?".tr(),
+                        {
+                            cityScreen.city.sellBuilding(building.name)
+                            cityScreen.city.cityStats.update()
+                            cityScreen.update()
+                        }, cityScreen,
+                        {
+                            cityScreen.update()
+                        }).open()
                 }
-                wonderDetailsTable.addSeparator()
+                if (cityScreen.city.hasSoldBuildingThisTurn && !cityScreen.city.civInfo.gameInfo.gameParameters.godMode
+                    || cityScreen.city.isPuppet
+                    || !UncivGame.Current.worldScreen.isPlayersTurn || !cityScreen.canChangeState)
+                    sellBuildingButton.disable()
             }
+            it.addSeparator()
         }
+        destinationTable.add(buildingNameAndIconTable).pad(5f).fillX().row()
     }
 
     private fun Table.addBuildingsInfo(cityInfo: CityInfo) {
@@ -153,7 +128,7 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(CameraStageBaseS
                 specialistIcons.row().size(20f).pad(5f)
                 for ((specialistName, amount) in building.newSpecialists()) {
                     val specialist = cityInfo.getRuleset().specialists[specialistName]
-                    if (specialist == null) continue // probably a mod that doesn't have the specialist defined yet
+                        ?: continue // probably a mod that doesn't have the specialist defined yet
                     for (i in 0 until amount)
                         specialistIcons.add(ImageGetter.getSpecialistIcon(specialist.colorObject)).size(20f)
                 }
@@ -194,11 +169,11 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(CameraStageBaseS
                 val specificStatValue = entry.value
                 sumOfAllBaseValues += specificStatValue
                 statValuesTable.add(entry.key.toLabel())
-                statValuesTable.add(DecimalFormat("0.#").format(specificStatValue).toLabel()).row()
+                statValuesTable.add(specificStatValue.toOneDecimalLabel()).row()
             }
             statValuesTable.addSeparator()
             statValuesTable.add("Total".toLabel())
-            statValuesTable.add(DecimalFormat("0.#").format(sumOfAllBaseValues).toLabel()).row()
+            statValuesTable.add(sumOfAllBaseValues.toOneDecimalLabel()).row()
 
             val relevantBonuses = cityStats.statPercentBonusList.filter { it.value.get(stat) != 0f }
             if (relevantBonuses.isNotEmpty()) {
@@ -208,15 +183,11 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(CameraStageBaseS
                     val specificStatValue = entry.value.get(stat)
                     sumOfBonuses += specificStatValue
                     statValuesTable.add(entry.key.toLabel())
-                    val decimal = DecimalFormat("0.#").format(specificStatValue)
-                    if (specificStatValue > 0) statValuesTable.add("+$decimal%".toLabel()).row()
-                    else statValuesTable.add("$decimal%".toLabel()).row() // negative bonus
+                    statValuesTable.add(specificStatValue.toPercentLabel()).row() // negative bonus
                 }
                 statValuesTable.addSeparator()
                 statValuesTable.add("Total".toLabel())
-                val decimal = DecimalFormat("0.#").format(sumOfBonuses)
-                if (sumOfBonuses > 0) statValuesTable.add("+$decimal%".toLabel()).row()
-                else statValuesTable.add("$decimal%".toLabel()).row() // negative bonus
+                statValuesTable.add(sumOfBonuses.toPercentLabel()).row() // negative bonus
             }
 
             if (stat != Stat.Happiness) {
@@ -227,11 +198,11 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(CameraStageBaseS
                     finalTotal += specificStatValue
                     if (specificStatValue == 0f) continue
                     statValuesTable.add(entry.key.toLabel())
-                    statValuesTable.add(DecimalFormat("0.#").format(specificStatValue).toLabel()).row()
+                    statValuesTable.add(specificStatValue.toOneDecimalLabel()).row()
                 }
                 statValuesTable.addSeparator()
                 statValuesTable.add("Total".toLabel())
-                statValuesTable.add(DecimalFormat("0.#").format(finalTotal).toLabel()).row()
+                statValuesTable.add(finalTotal.toOneDecimalLabel()).row()
             }
 
             statValuesTable.padBottom(4f)
@@ -252,13 +223,18 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(CameraStageBaseS
                 val value = entry.value.toHashMap()[stat]!!
                 if (value == 0f) continue
                 greatPersonTable.add(entry.key.toLabel()).padRight(10f)
-                greatPersonTable.add(DecimalFormat("0.#").format(value).toLabel()).row()
+                greatPersonTable.add(value.toOneDecimalLabel()).row()
             }
         }
     }
 
     companion object {
         private const val FONT_SIZE_STAT_INFO_HEADER = 22
+        
+        private fun Float.toPercentLabel() =
+            "${if (this>0f) "+" else ""}${DecimalFormat("0.#").format(this)}%".toLabel()
+        private fun Float.toOneDecimalLabel() =
+            DecimalFormat("0.#").format(this).toLabel()
     }
 
 }

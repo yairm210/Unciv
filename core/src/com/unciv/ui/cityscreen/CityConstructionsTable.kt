@@ -18,6 +18,7 @@ import com.unciv.models.stats.Stat
 import com.unciv.models.translations.tr
 import com.unciv.ui.utils.*
 import kotlin.concurrent.thread
+import kotlin.math.max
 import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 
 class CityConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScreen.skin) {
@@ -53,6 +54,7 @@ class CityConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBase
 
         add(showCityInfoTableButton).left().padLeft(pad).padBottom(pad).row()
         add(constructionsQueueScrollPane).left().padBottom(pad).row()
+        add().expandY().row()  // allow the bottom() below to open up the unneeded space 
         add(buttons).left().bottom().padBottom(pad).row()
         add(availableConstructionsScrollPane).left().bottom().row()
     }
@@ -81,7 +83,7 @@ class CityConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBase
         val queue = cityConstructions.constructionQueue
 
         constructionsQueueTable.defaults().pad(0f)
-        constructionsQueueTable.add(getHeader("Current construction".tr())).fillX()
+        constructionsQueueTable.add(getHeader("Current construction")).fillX()
 
         constructionsQueueTable.addSeparator()
 
@@ -92,21 +94,20 @@ class CityConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBase
             constructionsQueueTable.add("Pick a construction".toLabel()).pad(2f).row()
 
         constructionsQueueTable.addSeparator()
-        constructionsQueueTable.add(getHeader("Construction queue".tr())).fillX()
-        constructionsQueueTable.addSeparator()
 
-
-        if (queue.isNotEmpty()) {
+        if (queue.size > 1) {
+            constructionsQueueTable.add(getHeader("Construction queue")).fillX()
+            constructionsQueueTable.addSeparator()
             queue.forEachIndexed { i, constructionName ->
-                if (i != 0)  // This is already displayed as "Current construction"
+                // The first entry is already displayed as "Current construction"
+                if (i != 0) {
                     constructionsQueueTable.add(getQueueEntry(i, constructionName))
-                            .expandX().fillX().row()
-                if (i != queue.size - 1)
-                    constructionsQueueTable.addSeparator()
+                        .expandX().fillX().row()
+                    if (i != queue.size - 1)
+                        constructionsQueueTable.addSeparator()
+                }
             }
-        } else
-            constructionsQueueTable.add("Queue empty".toLabel()).pad(2f).row()
-
+        }
 
         constructionsQueueScrollPane.layout()
         constructionsQueueScrollPane.scrollY = queueScrollY
@@ -171,6 +172,7 @@ class CityConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBase
             val constructionButtonDTOList = getConstructionButtonDTOs()
             Gdx.app.postRunnable {
                 availableConstructionsTable.clear()
+                var maxWidth = constructionsQueueTable.width
                 for (dto in constructionButtonDTOList) {
                     val constructionButton = getConstructionButton(dto)
                     when (dto.construction) {
@@ -184,14 +186,15 @@ class CityConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBase
                         }
                         is PerpetualConstruction -> specialConstructions.add(constructionButton)
                     }
+                    if (constructionButton.needsLayout()) constructionButton.pack()
+                    maxWidth = max(maxWidth, constructionButton.width)
                 }
 
-                availableConstructionsTable.addCategory("Units", units, constructionsQueueTable.width)
-                availableConstructionsTable.addCategory("Wonders", buildableWonders, constructionsQueueTable.width)
-                availableConstructionsTable.addCategory("National Wonders", buildableNationalWonders, constructionsQueueTable.width)
-                availableConstructionsTable.addCategory("Buildings", buildableBuildings, constructionsQueueTable.width)
-                availableConstructionsTable.addCategory("Other", specialConstructions, constructionsQueueTable.width)
-
+                availableConstructionsTable.addCategory("Units", units, maxWidth)
+                availableConstructionsTable.addCategory("Wonders", buildableWonders, maxWidth)
+                availableConstructionsTable.addCategory("National Wonders", buildableNationalWonders, maxWidth)
+                availableConstructionsTable.addCategory("Buildings", buildableBuildings, maxWidth)
+                availableConstructionsTable.addCategory("Other", specialConstructions, maxWidth)
 
                 availableConstructionsScrollPane.layout()
                 availableConstructionsScrollPane.scrollY = constrScrollY
@@ -489,13 +492,13 @@ class CityConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBase
     private fun Table.addCategory(title: String, list: ArrayList<Table>, prefWidth: Float) {
         if (list.isEmpty()) return
 
-        addSeparator()
-        add(getHeader(title)).prefWidth(prefWidth).fill().row()
-        addSeparator()
-
-        for (table in list) {
-            add(table).fill().left().row()
-            if (table != list.last()) addSeparator()
+        if (rows > 0) addSeparator()
+        val expander = ExpanderTab(title, defaultPad = 0f, expanderWidth = prefWidth) {
+            for (table in list) {
+                it.addSeparator(colSpan = 1)
+                it.add(table).left().row()
+            }
         }
+        add(expander).prefWidth(prefWidth).growX().row()
     }
 }
