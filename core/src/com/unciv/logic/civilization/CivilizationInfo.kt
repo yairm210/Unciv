@@ -340,6 +340,26 @@ class CivilizationInfo {
 
         if (isCurrentPlayer() || otherCiv.isCurrentPlayer())
             UncivGame.Current.settings.addCompletedTutorialTask("Meet another civilization")
+        
+        // If exactly one of the civilizations is a city state, we gain gold for meeting them 
+        if (!(isCityState() || otherCiv.isCityState()) || isCityState() && otherCiv.isCityState()) return
+        
+        val cityState = if (isCityState()) this else otherCiv
+        val majorCiv = if (isCityState()) otherCiv else this
+        
+        val cityStateLocation = if (cityState.cities.isEmpty()) null else cityState.getCapital().location
+        
+        var goldAmount = 15
+        var meetString = "[${cityState.civName}] has given us 15 gold as a token of goodwill for meeting us"
+        if (cityState.diplomacy.filter { it.value.otherCiv().isMajorCiv() }.count() == 1) {
+            meetString = "[${cityState.civName}] has given us 30 gold as we are the first major civ to meet them"
+            goldAmount = 30
+        }
+        if (cityStateLocation != null)
+            majorCiv.addNotification(meetString, cityStateLocation, NotificationIcon.Gold)
+        else
+            majorCiv.addNotification(meetString, NotificationIcon.Gold)
+        majorCiv.addGold(goldAmount)
     }
 
     fun discoverNaturalWonder(naturalWonderName: String) {
@@ -696,7 +716,16 @@ class CivilizationInfo {
                 diplomacyManager.otherCiv().tradeRequests.remove(tradeRequest) // it  would be really weird to get a trade request from a dead civ
         }
     }
+    
+    fun getResearchAgreementCost(): Int {
+        // https://forums.civfanatics.com/resources/research-agreements-bnw.25568/
+        val era = if (getEra() in gameInfo.ruleSet.eras) gameInfo.ruleSet.eras[getEra()]!! else Era()
+        return (era.researchAgreementCost * gameInfo.gameParameters.gameSpeed.modifier).toInt()
+    }
+    
+    //////////////////////// Functions specific to City State civilizations ////////////////////////
 
+    
     fun influenceGainedByGift(cityState: CivilizationInfo, giftAmount: Int): Int {
         var influenceGained = giftAmount / 10f
         for (unique in getMatchingUniques("Gifts of Gold to City-States generate []% more Influence"))
@@ -711,12 +740,6 @@ class CivilizationInfo {
         cityState.getDiplomacyManager(this).influence += influenceGainedByGift(cityState, giftAmount)
         cityState.updateAllyCivForCityState()
         updateStatsForNextTurn()
-    }
-
-    fun getResearchAgreementCost(): Int {
-        // https://forums.civfanatics.com/resources/research-agreements-bnw.25568/
-        val era = if (getEra() in gameInfo.ruleSet.eras) gameInfo.ruleSet.eras[getEra()]!! else Era()
-        return (era.researchAgreementCost * gameInfo.gameParameters.gameSpeed.modifier).toInt()
     }
 
     fun gainMilitaryUnitFromCityState(otherCiv: CivilizationInfo) {
