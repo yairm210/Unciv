@@ -373,22 +373,24 @@ class CityStats {
         newBaseStatList["National ability"] = getStatsFromNationUnique()
         newBaseStatList["Wonders"] = getStatsFromUniques(civInfo.getCivWideBuildingUniques())
         newBaseStatList["City-States"] = getStatsFromCityStates()
+        newBaseStatList["Religion"] = getStatsFromUniques(cityInfo.religion.getUniques())
 
         baseStatList = newBaseStatList
     }
 
 
-    private fun updateStatPercentBonusList(currentConstruction: IConstruction, citySpecificUniques: Sequence<Unique>) {
+    private fun updateStatPercentBonusList(currentConstruction: IConstruction, localBuildingUniques: Sequence<Unique>) {
         val newStatPercentBonusList = LinkedHashMap<String, Stats>()
         newStatPercentBonusList["Golden Age"] = getStatPercentBonusesFromGoldenAge(cityInfo.civInfo.goldenAges.isGoldenAge())
         newStatPercentBonusList["Policies"] = getStatPercentBonusesFromUniques(currentConstruction, cityInfo.civInfo.policies.policyUniques.getAllUniques())
-        newStatPercentBonusList["Buildings"] = getStatPercentBonusesFromUniques(currentConstruction, citySpecificUniques)
+        newStatPercentBonusList["Buildings"] = getStatPercentBonusesFromUniques(currentConstruction, localBuildingUniques)
                 .plus(cityInfo.cityConstructions.getStatPercentBonuses()) // This function is to be deprecated but it'll take a while.
         newStatPercentBonusList["Wonders"] = getStatPercentBonusesFromUniques(currentConstruction, cityInfo.civInfo.getCivWideBuildingUniques())
         newStatPercentBonusList["Railroad"] = getStatPercentBonusesFromRailroad()
         newStatPercentBonusList["Resources"] = getStatPercentBonusesFromResources(currentConstruction)
         newStatPercentBonusList["National ability"] = getStatPercentBonusesFromNationUnique(currentConstruction)
         newStatPercentBonusList["Puppet City"] = getStatPercentBonusesFromPuppetCity()
+        newStatPercentBonusList["Religion"] = getStatPercentBonusesFromUniques(currentConstruction, cityInfo.religion.getUniques())
 
         if (UncivGame.Current.superchargedForDebug) {
             val stats = Stats()
@@ -402,12 +404,13 @@ class CityStats {
     fun update(currentConstruction: IConstruction = cityInfo.cityConstructions.getCurrentConstruction()) {
         // We calculate this here for concurrency reasons
         // If something needs this, we pass this through as a parameter
-        val citySpecificUniques = getCitySpecificUniques()
+        val localBuildingUniques = cityInfo.cityConstructions.builtBuildingUniqueMap.getAllUniques()
+        val citySpecificUniques = cityInfo.getAllLocalUniques()
 
         // We need to compute Tile yields before happiness
         updateBaseStatList()
         updateCityHappiness()
-        updateStatPercentBonusList(currentConstruction, citySpecificUniques)
+        updateStatPercentBonusList(currentConstruction, localBuildingUniques)
 
         updateFinalStatList(currentConstruction, citySpecificUniques) // again, we don't edit the existing currentCityStats directly, in order to avoid concurrency exceptions
 
@@ -498,21 +501,6 @@ class CityStats {
         finalStatList = newFinalStatList
     }
 
-    private fun getCitySpecificUniques(): Sequence<Unique> {
-        return cityInfo.cityConstructions.builtBuildingUniqueMap.getAllUniques()
-        .filter { it.params.isNotEmpty() && it.params.last() == "in this city" }
-    }
-
-    private fun getUniquesForThisCity(
-        unique: String,
-        // We might have to cached to avoid concurrency problems, so if we don't, just get it directly
-        citySpecificUniques: Sequence<Unique> = getCitySpecificUniques()
-    ): Sequence<Unique> {
-        return citySpecificUniques.filter { it.placeholderText == unique } +
-                cityInfo.civInfo.getMatchingUniques(unique).filter { cityInfo.matchesFilter(it.params[1]) } +
-                cityInfo.religion.getMatchingUniques(unique)
-    }
-
     private fun getBuildingMaintenanceCosts(citySpecificUniques: Sequence<Unique>): Float {
         // Same here - will have a different UI display.
         var buildingsMaintenance = cityInfo.cityConstructions.getMaintenanceCosts().toFloat() // this is AFTER the bonus calculation!
@@ -521,12 +509,12 @@ class CityStats {
         }
 
         // e.g. "-[50]% maintenance costs for buildings [in this city]"
-        for (unique in getUniquesForThisCity("-[]% maintenance cost for buildings []", citySpecificUniques)) {
+        for (unique in cityInfo.getMatchingUniques("-[]% maintenance cost for buildings []", citySpecificUniques)) {
             buildingsMaintenance *= (1f - unique.params[0].toFloat() / 100)
         }
 
         // Deprecated since 3.15
-            for (unique in getUniquesForThisCity("-[]% building maintenance costs []", citySpecificUniques)) {
+            for (unique in cityInfo.getMatchingUniques("-[]% building maintenance costs []", citySpecificUniques)) {
                 buildingsMaintenance *= (1f - unique.params[0].toFloat() / 100)
             }
         //
