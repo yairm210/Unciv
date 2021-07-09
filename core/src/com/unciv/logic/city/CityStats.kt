@@ -275,8 +275,8 @@ class CityStats {
             if (unique.placeholderText == "[] in cities with [] or more population" && cityInfo.population.population >= unique.params[1].toInt())
                 stats.add(unique.stats)
             
-            // "[stats] from cities on [tileFilter] tiles"
-            if (unique.placeholderText == "[] from cities on [] tiles" && cityInfo.getCenterTile().matchesTerrainFilter(unique.params[1]))
+            // "[stats] in cities on [tileFilter] tiles"
+            if (unique.placeholderText == "[] in cities on [] tiles" && cityInfo.getCenterTile().matchesTerrainFilter(unique.params[1]))
                 {stats.add(unique.stats); println(unique.text)}
         }
 
