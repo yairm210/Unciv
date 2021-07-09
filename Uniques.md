@@ -87,10 +87,10 @@ terrainFilters allow us to specify tiles according to a number of different aspe
 - "Friendly Land" - land belonging to you, or other civs with open borders to you
 - "Foreign Land" - any land that isn't friendly land
 
-So for instance, the unique "[stats] from [tileFilter] tiles in this city" can match several cases:
-- "[+2 Food] from [Lakes] tiles in this city"
-- "[+1 Gold] from [Water] tiles in this city"
-- "[+1 Production] from [Forest] tiles in this city"
+So for instance, the unique "[stats] from [tileFilter] tiles [cityFilter]" can match several cases:
+- "[+2 Food] from [Lakes] tiles [in this city]"
+- "[+1 Gold] from [Water] tiles [in all cities]"
+- "[+1 Production] from [Forest] tiles [in all coastal cities]"
 
 Please note that using resources is most use cases, but not in combat ones.
 
@@ -350,9 +350,9 @@ These last two uniques may seem like they only have a one-time effect. However, 
 
 "[amount]% of food is carried over after population increases"
 
-"All newly-trained [unitFilter] units in this city receive the [promotionName] promotion"
+"All newly-trained [unitFilter] units [cityFilter] receive the [promotionName] promotion"
 
-"+[amount]% great person generation in this city"
+"[amount]% great person generation [cityFilter]"
 
 "Provides 1 extra copy of each improved luxury resource near this City"
 
@@ -376,11 +376,13 @@ These last two uniques may seem like they only have a one-time effect. However, 
 
 "Population loss from nuclear attacks -[amount]%"
 
+"New [unitFilter] units start with [amount] Experience [cityFilter]"
+
 ### Stat uniques
 
 "[stats] per [amount] population [cityFilter]" - provides the given stats for every [amount] of population. For instance, "[+2 Science] Per [2] Population in this city" would provide only 4 Science in a city with 5 population - since there are only 2 'sets' of 2 population in the city, each providing 2 Science.
 
-"[stats] from [tileFilter] tiles in this city" - Adds the given stats to the yield of tiles matching the filter. The yield is still received by the tiles being worked - so even if you have 5 such tiles, but none of them are worked, the city will remain unaffected.
+"[stats] from [tileFilter] tiles [cityFilter]" - Adds the given stats to the yield of tiles matching the filter. The yield is still received by the tiles being worked - so even if you have 5 such tiles, but none of them are worked, the city will remain unaffected.
 
 "[stats] once [techName] is discovered"
 
@@ -674,3 +676,13 @@ These uniques have been recently deprecated. While they are still supported, the
 "1 extra interception may be made per turn" - Replaced with "[amount] extra interceptions may be made per turn"
 
 "Bonus when intercepting []%" - Replaced with "[]% Damage when intercepting"
+
+"[stats] from [tileFilter] tiles in this city" - Replaced with "[stats] from [tileFilter] tiles [cityFilter]"
+
+"+[amount]% great person generation in this city" - Replaced with "[amount]% great person generation [cityFilter]"
+
+"+[amount]% great person generation in all cities" - Replaced with "[amount]% great person generation [cityFilter]"
+
+"All newly-trained [unitFilter] units in this city receive the [promotionName] promotion" - Replaced with "All newly-trained [unitFilter] units [cityFilter] receive the [promotionName] promotion"
+
+"New [unitFilter] units start with [amount] Experience in this city" - Replaced with "New [unitFilter] units start with [amount] Experience [cityFilter]"
