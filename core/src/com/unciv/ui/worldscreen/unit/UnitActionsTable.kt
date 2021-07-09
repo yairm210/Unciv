@@ -35,6 +35,10 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table() {
                 val improvementName = unitAction.getPlaceholderParameters()[0]
                 return UnitIconAndKey(ImageGetter.getImprovementIcon(improvementName), 'i')
             }
+            unitAction.equalsPlaceholderText("Spread []") -> {
+                // This should later include icons for the different religions. For now, just use the great prophet icon
+                return UnitIconAndKey(ImageGetter.getUnitIcon("Great Prophet"), 'g')
+            }
             unitAction.startsWith("Sleep") -> return UnitIconAndKey(ImageGetter.getImage("OtherIcons/Sleep"), 'f')
             unitAction.startsWith("Fortify") -> return UnitIconAndKey(ImageGetter.getImage("OtherIcons/Shield").apply { color = Color.BLACK }, 'f')
             else -> when (unitAction) {

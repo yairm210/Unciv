@@ -505,6 +505,7 @@ class CivilizationInfo {
         if (cities.isNotEmpty()) { //if no city available, addGreatPerson will throw exception
             val greatPerson = greatPeople.getNewGreatPerson()
             if (greatPerson != null && gameInfo.ruleSet.units.containsKey(greatPerson)) addUnit(greatPerson)
+            religionManager.startTurn()
         }
 
         updateViewableTiles() // adds explored tiles so that the units will be able to perform automated actions better
@@ -654,16 +655,18 @@ class CivilizationInfo {
         notifications.add(Notification(text, arrayList, action))
     }
 
-    fun addUnit(unitName: String, city: CityInfo? = null) {
-        if (cities.isEmpty()) return
+    fun addUnit(unitName: String, city: CityInfo? = null): MapUnit? {
+        if (cities.isEmpty()) return null
         val cityToAddTo = city ?: cities.random()
-        if (!gameInfo.ruleSet.units.containsKey(unitName)) return
+        if (!gameInfo.ruleSet.units.containsKey(unitName)) return null
         val unit = getEquivalentUnit(unitName)
-        // silently bail if no tile to place the unit is found
         val placedUnit = placeUnitNearTile(cityToAddTo.location, unit.name)
-        if (placedUnit != null && unit.isGreatPerson()) {
+        // silently bail if no tile to place the unit is found
+        if (placedUnit == null) return null
+        if (unit.isGreatPerson()) {
             addNotification("A [${unit.name}] has been born in [${cityToAddTo.name}]!", placedUnit.getTile().position, unit.name)
         }
+        return placedUnit
     }
 
     /** Tries to place the a [unitName] unit into the [TileInfo] closest to the given the [position]
