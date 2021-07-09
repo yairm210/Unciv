@@ -168,7 +168,7 @@ For units, the UnitFilter is called. For Buildings, the following options are im
 
 "[stats] from each Trade Route"
 
-"+[amount]% [stat] while the empire is happy"
+"[amount]% [stat] while the empire is happy"
 
 "Specialists only produce [amount]% of normal unhappiness"
 
@@ -294,7 +294,7 @@ For units, the UnitFilter is called. For Buildings, the following options are im
 
 "Indicates the capital city" - Unciv requires a specific building to indicate the capital city, which is used for many things. In total overhaul mods, you can change the building that indicates this.
 
-"-[amount]% tile improvement construction time"
+"[amount]% tile improvement construction time"
 
 "-[amount]% Culture cost of acquiring tiles [cityFilter]","-[amount]% Gold cost of acquiring tiles [cityFilter]"
 
@@ -306,7 +306,7 @@ For units, the UnitFilter is called. For Buildings, the following options are im
 
 "[greatPersonName] is earned [amount]% faster"
 
-"Science gained from research agreements +[amount]%"
+"Science gained from research agreements [amount]%"
 
 "Cost of purchasing items in cities reduced by [amount]%" - 'Purchasing' refers to the gold cost of buying buildings or units, not the amount of production needed to construct.
 
@@ -601,9 +601,9 @@ These uniques have been recently deprecated. While they are still supported, the
 
 "+50% attacking strength for cities with garrisoned units" - Replaced with "+[amount]% attacking strength for cities with garrisoned units"
 
-"Worker construction increased 25%" - Replaced with "-[amount]% tile improvement construction time"
+"Worker construction increased 25%" - Replaced with "[-amount]% tile improvement construction time"
 
-"Tile improvement speed +25%" - Replaced with "-[amount]% tile improvement construction time"
+"Tile improvement speed +25%" - Replaced with "[-amount]% tile improvement construction time"
 
 "+15% combat strength for melee units which have another military unit in an adjacent tile" - Replaced with "+[amount]% Strength for [unitFilter] units which have another [unitFilter] unit in an adjacent tile"
 
@@ -611,9 +611,9 @@ These uniques have been recently deprecated. While they are still supported, the
 
 "+1 happiness from each type of luxury resource" - Replaced with "+[amount] happiness from each type of luxury resource"
 
-"+15% science while the empire is happy" - Replaced with "+[amount]% [stat] while the empire is happy"
+"+15% science while the empire is happy" - Replaced with "[amount]% [stat] while the empire is happy"
 
-"Science gained from research agreements +50%" - Replaced with "Science gained from research agreements +[amount]%"
+"Science gained from research agreements +50%" - Replaced with "Science gained from research agreements [+amount]%"
 
 "Specialists only produce half normal unhappiness" - Replaced with "Specialists only produce [amount]% of normal unhappiness"
 
@@ -629,7 +629,7 @@ These uniques have been recently deprecated. While they are still supported, the
 
 "+[amount]% Strength for units fighting in [tileFilter]"- Replaced with "+[amount]% Strength for units fighting in [tileFilter]"
 
-"-[]% building maintenance costs []" - Replaced with "-[]% maintenance cost for buildings []"
+"-[amount]% building maintenance costs []" - Replaced with "[-amount]% maintenance cost for buildings []"
 
 "Allied City-States provide Science equal to [amount]% of what they produce for themselves" - Replaced with "Allied City-States provide [stat] equal to [amount]% of what they produce for themselves"
 
