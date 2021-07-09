@@ -1473,6 +1473,12 @@
 		"movement": 2
 	},
 	{
+		"name": "Great Prophet",
+		"unitType": "Civilian",
+		"uniques": ["Can construct [Holy site] if it hasn't spread religion yet", "Can spread religion [4] times","Great Person - [Faith]", "Unbuildable"],
+		"movement": 2
+	},
+	{
 		"name": "Great General",
 		"unitType": "Civilian",
 		"uniques": ["Can start an [8]-turn golden age", "Bonus for units in 2 tile radius 15%", "Can construct [Citadel]",

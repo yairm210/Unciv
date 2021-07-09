@@ -42,6 +42,10 @@ class CityStatsTable(val cityScreen: CityScreen): Table() {
         addText()
         innerTable.addSeparator()
         innerTable.add(SpecialistAllocationTable(cityScreen).apply { update() })
+        if (cityInfo.civInfo.gameInfo.hasReligionEnabled()) {
+            innerTable.addSeparator()
+            addReligionInfo()
+        }
 
         pack()
     }
@@ -77,5 +81,12 @@ class CityStatsTable(val cityScreen: CityScreen): Table() {
         innerTable.add(turnsToPopString.toLabel()).row()
         if (cityInfo.isInResistance())
             innerTable.add("In resistance for another [${cityInfo.resistanceCounter}] turns".toLabel()).row()
+    }
+
+    private fun addReligionInfo() {
+        // This will later become large enough to be its own class, but for now it is small enough to fit inside a single function
+        val majorityReligion = cityInfo.religion.getMajorityReligion()
+        val label = majorityReligion ?: "None"
+        innerTable.add("Majority Religion: $label".toLabel())
     }
 }

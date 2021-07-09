@@ -13,6 +13,7 @@ import com.unciv.models.ruleset.Unique
 import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.ruleset.unit.UnitType
+import com.unciv.models.translations.getPlaceholderParameters
 import java.text.DecimalFormat
 import kotlin.math.pow
 import kotlin.random.Random
@@ -92,8 +93,10 @@ class MapUnit {
      * Name which should be displayed in UI
      */
     fun displayName(): String {
-        return if (instanceName == null) name
-        else "$instanceName ({$name})"
+        val name = if (instanceName == null) name
+                   else "$instanceName (${name})"
+        return if (religion != null && maxReligionSpreads() > 0) "$name ($religion)"
+               else name
     }
 
     var currentMovement: Float = 0f
@@ -105,6 +108,9 @@ class MapUnit {
     var promotions = UnitPromotions()
     var due: Boolean = true
     var isTransported: Boolean = false
+    
+    var abilityUsedCount: HashMap<String, Int> = hashMapOf()
+    var religion: String? = null
 
     companion object {
         private const val ANCIENT_RUIN_MAP_REVEAL_OFFSET = 4
@@ -126,6 +132,8 @@ class MapUnit {
         toReturn.attacksThisTurn = attacksThisTurn
         toReturn.promotions = promotions.clone()
         toReturn.isTransported = isTransported
+        toReturn.abilityUsedCount.putAll(abilityUsedCount)
+        toReturn.religion = religion
         return toReturn
     }
 
@@ -975,6 +983,16 @@ class MapUnit {
         val matchingUniques = getMatchingUniques(Constants.canBuildImprovements)
         return matchingUniques.any { improvement.matchesFilter(it.params[0]) || tile.matchesTerrainFilter(it.params[0]) }
     }
-
+    
+    fun maxReligionSpreads(): Int {
+        return getMatchingUniques("Can spread religion [] times").sumBy { it.params[0].toInt() }
+    }
+    
+    fun getReligionString(): String {
+        val maxSpreads = maxReligionSpreads()
+        if (abilityUsedCount["Religion Spread"] == null) return "" // That is, either the key doesn't exist, or it does exist and the value is null.
+        return "${maxSpreads - abilityUsedCount["Religion Spread"]!!}/${maxSpreads}"
+    }
+    
     //endregion
 }
