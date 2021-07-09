@@ -1287,7 +1287,7 @@
 			"Blast radius [2]"],
 		"attackSound": "nuke"
 		// Plane rather than a missile - can be based in city or Carrier only.
-		// Can be intercepted, be must die for it not to take effect.
+		// Can be intercepted, but must die for it not to take effect.
 	},
 	{
 		"name": "Rocket Artillery",

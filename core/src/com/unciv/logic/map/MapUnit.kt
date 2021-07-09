@@ -13,7 +13,6 @@ import com.unciv.models.ruleset.Unique
 import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.ruleset.unit.UnitType
-import com.unciv.models.translations.getPlaceholderParameters
 import java.text.DecimalFormat
 import kotlin.math.pow
 import kotlin.random.Random
@@ -675,7 +674,8 @@ class MapUnit {
 
     fun putInTile(tile: TileInfo) {
         when {
-            !movement.canMoveTo(tile) -> throw Exception("I can't go there!")
+            !movement.canMoveTo(tile) ->
+                throw Exception("I can't go there!")
             type.isAirUnit() || type.isMissile() -> tile.airUnits.add(this)
             type.isCivilian() -> tile.civilianUnit = this
             else -> tile.militaryUnit = this
