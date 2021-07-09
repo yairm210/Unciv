@@ -428,6 +428,8 @@ These last two uniques may seem like they only have a one-time effect. However, 
 
 "Tile provides yield without assigned population"
 
+"Indestructable" - Cannot be removed by nukes (might be used more later, for now only this)
+
 ## Unit uniques
 
 ### Civilian
