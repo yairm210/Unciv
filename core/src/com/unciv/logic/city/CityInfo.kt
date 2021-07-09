@@ -104,7 +104,7 @@ class CityInfo {
         if (startingEra in ruleset.eras) {
             for (building in ruleset.eras[startingEra]!!.settlerBuildings) {
                 if (ruleset.buildings[building]!!.isBuildable(cityConstructions)) {
-                    cityConstructions.addBuilding(building)
+                    cityConstructions.addBuilding(civInfo.getEquivalentBuilding(building).name)
                 }
             }
         }
