@@ -29,6 +29,7 @@ import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 import kotlin.math.roundToInt
 import kotlin.math.min
+import kotlin.math.pow
 
 class CivilizationInfo {
 
@@ -726,10 +727,22 @@ class CivilizationInfo {
     //////////////////////// Functions specific to City State civilizations ////////////////////////
 
     
-    fun influenceGainedByGift(cityState: CivilizationInfo, giftAmount: Int): Int {
-        var influenceGained = giftAmount / 10f
+    fun influenceGainedByGift(giftAmount: Int): Int {
+        // https://github.com/Gedemon/Civ5-DLL/blob/aa29e80751f541ae04858b6d2a2c7dcca454201e/CvGameCoreDLL_Expansion1/CvMinorCivAI.cpp
+        // line 8681 and below
+        var influenceGained = giftAmount.toFloat().pow(1.01f) / 9.8f
+        val gameProgressApproximate = min(gameInfo.turns / (400f * gameInfo.gameParameters.gameSpeed.modifier), 1f)
+        influenceGained *= 1 - (2/3) * gameProgressApproximate
+        influenceGained *= when (gameInfo.gameParameters.gameSpeed) {
+            GameSpeed.Quick -> 1.25f
+            GameSpeed.Standard -> 1f
+            GameSpeed.Epic -> 0.75f
+            GameSpeed.Marathon -> 0.67f
+        }
         for (unique in getMatchingUniques("Gifts of Gold to City-States generate []% more Influence"))
             influenceGained *= 1f + unique.params[0].toFloat() / 100f
+        influenceGained -= influenceGained % 5
+        if (influenceGained < 5f) influenceGained = 5f
         return influenceGained.toInt()
     }
 
@@ -737,7 +750,7 @@ class CivilizationInfo {
         if (!cityState.isCityState()) throw Exception("You can only gain influence with City-States!")
         addGold(-giftAmount)
         cityState.addGold(giftAmount)
-        cityState.getDiplomacyManager(this).influence += influenceGainedByGift(cityState, giftAmount)
+        cityState.getDiplomacyManager(this).influence += influenceGainedByGift(giftAmount)
         cityState.updateAllyCivForCityState()
         updateStatsForNextTurn()
     }
