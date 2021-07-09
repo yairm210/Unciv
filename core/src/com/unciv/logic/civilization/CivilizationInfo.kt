@@ -329,38 +329,40 @@ class CivilizationInfo {
         return baseUnit
     }
 
-    fun meetCivilization(otherCiv: CivilizationInfo) {
+    fun makeCivilizationsMeet(otherCiv: CivilizationInfo) {
+        meetCiv(otherCiv)
+        otherCiv.meetCiv(this)
+    }
+    
+    private fun meetCiv(otherCiv: CivilizationInfo) {
         diplomacy[otherCiv.civName] = DiplomacyManager(this, otherCiv.civName)
-                .apply { diplomaticStatus = DiplomaticStatus.Peace }
+            .apply { diplomaticStatus = DiplomaticStatus.Peace }
 
         otherCiv.popupAlerts.add(PopupAlert(AlertType.FirstContact, civName))
 
-        otherCiv.diplomacy[civName] = DiplomacyManager(otherCiv, civName)
-                .apply { diplomaticStatus = DiplomaticStatus.Peace }
-        popupAlerts.add(PopupAlert(AlertType.FirstContact, otherCiv.civName))
-
-        if (isCurrentPlayer() || otherCiv.isCurrentPlayer())
+        if (isCurrentPlayer())
             UncivGame.Current.settings.addCompletedTutorialTask("Meet another civilization")
         
-        // If exactly one of the civilizations is a city state, we gain gold for meeting them 
-        if (!(isCityState() || otherCiv.isCityState()) || isCityState() && otherCiv.isCityState()) return
-        
-        val cityState = if (isCityState()) this else otherCiv
-        val majorCiv = if (isCityState()) otherCiv else this
-        
-        val cityStateLocation = if (cityState.cities.isEmpty()) null else cityState.getCapital().location
-        
-        var goldAmount = 15
-        var meetString = "[${cityState.civName}] has given us 15 gold as a token of goodwill for meeting us"
-        if (cityState.diplomacy.filter { it.value.otherCiv().isMajorCiv() }.count() == 1) {
-            meetString = "[${cityState.civName}] has given us 30 gold as we are the first major civ to meet them"
-            goldAmount = 30
+        if (!(isCityState() && otherCiv.isMajorCiv())) return
+
+        val cityStateLocation = if (cities.isEmpty()) null else getCapital().location
+
+        val giftAmount = Stats().add(Stat.Gold, 15f)
+        // Later, religious city-states will also gift gold, making this the better implementation
+        // For now, it might be overkill though.
+        var meetString = "[${civName}] has given us [${giftAmount}] as a token of goodwill for meeting us"
+        if (diplomacy.filter { it.value.otherCiv().isMajorCiv() }.count() == 1) {
+            giftAmount.timesInPlace(2f)
+            meetString = "[${civName}] has given us [${giftAmount}] as we are the first major civ to meet them"
         }
         if (cityStateLocation != null)
-            majorCiv.addNotification(meetString, cityStateLocation, NotificationIcon.Gold)
+            otherCiv.addNotification(meetString, cityStateLocation, NotificationIcon.Gold)
         else
-            majorCiv.addNotification(meetString, NotificationIcon.Gold)
-        majorCiv.addGold(goldAmount)
+            otherCiv.addNotification(meetString, NotificationIcon.Gold)
+        for (stat in giftAmount.toHashMap().filter { it.value != 0f })
+            otherCiv.addStat(stat.key, stat.value.toInt())
+            
+            
     }
 
     fun discoverNaturalWonder(naturalWonderName: String) {

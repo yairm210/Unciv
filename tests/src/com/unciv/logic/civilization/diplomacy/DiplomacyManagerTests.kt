@@ -23,7 +23,7 @@ class DiplomacyManagerTests {
 
     private fun meetByName(civilization: String, civilizationToMeet: String) {
         civilizations.getValue(civilization)
-            .meetCivilization(civilizations.getValue(civilizationToMeet))
+            .makeCivilizationsMeet(civilizations.getValue(civilizationToMeet))
     }
 
     @Before
