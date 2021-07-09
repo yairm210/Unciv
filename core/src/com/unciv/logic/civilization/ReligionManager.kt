@@ -1,5 +1,7 @@
 package com.unciv.logic.civilization
 
+import com.unciv.logic.map.MapUnit
+import com.unciv.models.Religion
 import com.unciv.models.ruleset.Belief
 import kotlin.random.Random
 
@@ -9,13 +11,13 @@ class ReligionManager {
 
     var storedFaith = 0
 
-    var pantheonBelief: String? = null
+    var religion: Religion? = null
     
     var greatProphetsEarned = 0
 
     fun clone(): ReligionManager {
         val clone = ReligionManager()
-        clone.pantheonBelief = pantheonBelief
+        clone.religion = religion
         clone.storedFaith = storedFaith
         return clone
     }
@@ -24,10 +26,10 @@ class ReligionManager {
         if (canGenerateProphet()) {
             val prophetSpawnChange = (5f + storedFaith - faithForNextGreatProphet()) / 100f
             if (Random(civInfo.gameInfo.turns).nextFloat() < prophetSpawnChange) {
-                val birthCity = civInfo.cities.filter { it.religion.getMajorityReligion() == pantheonBelief }.random()
+                val birthCity = civInfo.cities.filter { it.religion.getMajorityReligion() == religion!!.name }.random()
                 val prophet = civInfo.addUnit("Great Prophet", birthCity)
                 if (prophet == null) return
-                prophet.religion = pantheonBelief
+                prophet.religion = religion!!.name
                 prophet.abilityUsedCount["Religion Spread"] = 0
                 storedFaith -= faithForNextGreatProphet()
             }
@@ -38,10 +40,10 @@ class ReligionManager {
         storedFaith += faithFromNewTurn
     }
     
-    private fun faithForPantheon() = 10 + civInfo.gameInfo.civilizations.count { it.isMajorCiv() && it.religionManager.pantheonBelief != null } * 5
+    private fun faithForPantheon() = 10 + civInfo.gameInfo.civilizations.count { it.isMajorCiv() && it.religionManager.religion != null } * 5
 
     fun canFoundPantheon(): Boolean {
-        if (pantheonBelief != null) return false
+        if (religion != null) return false
         if (!civInfo.gameInfo.hasReligionEnabled()) return false
         if (civInfo.gameInfo.ruleSet.beliefs.values.none { isPickablePantheonBelief(it) })
             return false
@@ -50,14 +52,16 @@ class ReligionManager {
 
     fun isPickablePantheonBelief(belief: Belief): Boolean {
         if (belief.type != "Pantheon") return false
-        if (civInfo.gameInfo.civilizations.any { it.religionManager.pantheonBelief == belief.name })
+        if (civInfo.gameInfo.civilizations.any { it.religionManager.religion != null && it.religionManager.religion!!.pantheonBeliefs.contains(belief.name)})
             return false
         return true
     }
 
-    fun choosePantheonBelief(belief: Belief){
+    fun choosePantheonBelief(belief: Belief) {
         storedFaith -= faithForPantheon()
-        pantheonBelief = belief.name
+        religion = Religion(belief.name, civInfo)
+        religion!!.pantheonBeliefs.add(belief.name)
+        civInfo.gameInfo.religions[belief.name] = religion!!
         // This should later be changed when religions can have multiple beliefs
         civInfo.getCapital().religion[belief.name] = 100 // Capital is religious, other cities are not
     }
@@ -67,7 +71,7 @@ class ReligionManager {
     fun faithForNextGreatProphet() = ((200 + 100 * greatProphetsEarned * (greatProphetsEarned + 1)/2) * civInfo.gameInfo.gameParameters.gameSpeed.modifier).toInt()
     
     fun canGenerateProphet(): Boolean {
-        if (pantheonBelief == null) return false // First get a pantheon, then we'll talk about a real religion
+        if (religion == null || !religion!!.hasPantheon()) return false // First get a pantheon, then we'll talk about a real religion
         if (storedFaith < faithForNextGreatProphet()) return false
         // In the base game, great prophets shouldn't generate anymore starting from the industrial era
         // This is difficult to implement in the current codebase, probably requires an additional variable in eras.json
