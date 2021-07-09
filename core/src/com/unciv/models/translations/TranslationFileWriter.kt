@@ -109,6 +109,24 @@ object TranslationFileWriter {
                     translationsOfThisLanguage++
                 } else stringBuilder.appendLine(" # Requires translation!")
 
+                // THE PROBLEM
+                // When we come to change params written in the TranslationFileWriter,
+                //  this messes up the param name matching in existing translations.
+                // Tests fail and much manual work was required.
+                // SO, as a fix, for each translation where a single param is different than in the source line,
+                // we try to autocorrect it.
+                if (translationValue.contains('[')) {
+                    val paramsOfKey = translationKey.getPlaceholderParameters()
+                    val paramsOfValue = translationValue.getPlaceholderParameters()
+                    val paramsOfKeyNotInValue = paramsOfKey.filterNot { it in paramsOfValue }
+                    val paramsOfValueNotInKey = paramsOfValue.filterNot { it in paramsOfKey }
+                    if (paramsOfKeyNotInValue.size == 1 && paramsOfValueNotInKey.size == 1)
+                        translationValue = translationValue.replace(
+                            "[" + paramsOfValueNotInKey.first() + "]",
+                            "[" + paramsOfKeyNotInValue.first() + "]"
+                        )
+                }
+
                 val lineToWrite = translationKey.replace("\n", "\\n") +
                         " = " + translationValue.replace("\n", "\\n")
                 stringBuilder.appendLine(lineToWrite)
@@ -204,7 +222,7 @@ object TranslationFileWriter {
                                     || parameter == "non-fresh water"
                                     || parameter == "Open Terrain"
                                     || parameter == "Rough Terrain"
-                            -> "terrain"
+                            -> "tileFilter"
                             RulesetCache.getBaseRuleset().units.containsKey(parameter) -> "unit"
                             RulesetCache.getBaseRuleset().tileImprovements.containsKey(parameter)
                                     || parameter == "Great Improvement"
