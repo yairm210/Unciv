@@ -441,7 +441,7 @@ class CityStats {
         for (entry in newFinalStatList.values) {
             entry.gold *= 1 + statPercentBonusesSum.gold / 100
             entry.culture *= 1 + statPercentBonusesSum.culture / 100
-            if (!isUnhappy) entry.food *= 1 + statPercentBonusesSum.food / 100 // Regular food bonus revoked when unhappy per https://forums.civfanatics.com/resources/complete-guide-to-happiness-vanilla.25584/
+            entry.food *= 1 + statPercentBonusesSum.food / 100 
         }
 
         // AFTER we've gotten all the gold stats figured out, only THEN do we plonk that gold into Science
@@ -479,9 +479,9 @@ class CityStats {
         totalFood = newFinalStatList.values.map { it.food }.sum() // recalculate because of previous change
 
         // Since growth bonuses are special, (applied afterwards) they will be displayed separately in the user interface as well.
-        if (totalFood > 0) {
+        if (totalFood > 0 && !isUnhappy) { // Percentage Growth bonus revoked when unhappy per https://forums.civfanatics.com/resources/complete-guide-to-happiness-vanilla.25584/
             val foodFromGrowthBonuses = getGrowthBonusFromPoliciesAndWonders() * totalFood
-            newFinalStatList["Policies"]!!.food += foodFromGrowthBonuses
+            newFinalStatList["Policies"]!!.food += foodFromGrowthBonuses // Why Policies? Wonders can also provide this?
             totalFood = newFinalStatList.values.map { it.food }.sum() // recalculate again
         }
 
