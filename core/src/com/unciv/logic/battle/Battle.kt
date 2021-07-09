@@ -558,7 +558,7 @@ object Battle {
         }
 
         // Remove improvements, add fallout
-        if (tile.improvement != null && !attacker.getCivInfo().gameInfo.ruleSet.tileImprovements[tile.improvement]!!.hasUnique("Indestructible")) {
+        if (tile.improvement != null && !attacker.getTile().getTileImprovement()!!.hasUnique("Indestructible")) {
             tile.improvement = null
         }
         tile.improvementInProgress = null
