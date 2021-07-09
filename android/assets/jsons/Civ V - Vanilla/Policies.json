@@ -55,7 +55,7 @@
 			},
 			{
 				"name": "Citizenship",
-				"uniques": ["-[25]% tile improvement construction time", "Free [Worker] appears"],
+				"uniques": ["[-25]% tile improvement construction time", "Free [Worker] appears"],
 				"row": 1,
 				"column": 4
 			},
@@ -282,7 +282,7 @@
 	{
 		"name": "Rationalism",
 		"era": "Renaissance era",
-		"uniques": ["+[15]% [Science] while the empire is happy", "Incompatible with [Piety]"],
+		"uniques": ["[15]% [Science] while the empire is happy", "Incompatible with [Piety]"],
 		"policies": [
 			{
 				"name": "Secularism",
@@ -313,7 +313,7 @@
 			},
 			{
 				"name": "Scientific Revolution",
-				"uniques": ["Science gained from research agreements +[50]%"],
+				"uniques": ["Science gained from research agreements [+50]%"],
 				"requires": ["Free Thought"],
 				"row": 3,
 				"column": 1

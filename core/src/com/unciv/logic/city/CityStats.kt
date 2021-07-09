@@ -330,7 +330,7 @@ class CityStats {
         }
 
         if (cityInfo.civInfo.getHappiness() >= 0) {
-            for (unique in uniques.filter { it.placeholderText == "+[]% [] while the empire is happy"})
+            for (unique in uniques.filter { it.placeholderText == "[]% [] while the empire is happy"})
                 stats.add(Stat.valueOf(unique.params[1]), unique.params[0].toFloat())
 
             // Deprecated since 3.15.0
