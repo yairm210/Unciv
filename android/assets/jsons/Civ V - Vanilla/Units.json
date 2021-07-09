@@ -284,7 +284,7 @@
 		"requiredTech": "Bronze Working",
 		"obsoleteTech": "Physics",
 		"upgradesTo": "Trebuchet",
-		"uniques": ["+[300]% Strength vs [City]", "No defensive terrain bonus", "+[-33]% Strength when defending",
+		"uniques": ["+[300]% Strength vs [City]", "No defensive terrain bonus", "-[33]% Strength when defending",
 		"-[1] Visibility Range", "Can only attack [City] units"],
 		"promotions":  ["Cover I"],
 		"attackSound": "throw"
