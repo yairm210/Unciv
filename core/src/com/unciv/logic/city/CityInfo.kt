@@ -440,9 +440,11 @@ class CityInfo {
         }
     }
 
-    fun destroyCity() {
-        // Original capitals can't be destroyed
-        if (isOriginalCapital) return
+    fun destroyCity(overrideSafeties: Boolean = false) {
+        // Original capitals can't be destroyed.
+        // Unless they are captured by a one-city-challenger for some reason.
+        // This was tested in the original.
+        if (isOriginalCapital && !overrideSafeties) return
         
         for (airUnit in getCenterTile().airUnits.toList()) airUnit.destroy() //Destroy planes stationed in city
 

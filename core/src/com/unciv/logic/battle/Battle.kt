@@ -369,16 +369,16 @@ object Battle {
         }
         city.hasJustBeenConquered = true
 
-        if (attackerCiv.isBarbarian()) {
-            city.destroyCity()
-            return
-        }
-
         for (unique in attackerCiv.getMatchingUniques("Upon capturing a city, receive [] times its [] production as [] immediately")) {
             attackerCiv.addStat(
                 Stat.valueOf(unique.params[2]),
                 unique.params[0].toInt() * city.cityStats.currentCityStats.get(Stat.valueOf(unique.params[1])).toInt()
             )
+        }
+
+        if (attackerCiv.isBarbarian() || attackerCiv.isOneCityChallenger()) {
+            city.destroyCity(true)
+            return
         }
 
         if (attackerCiv.isPlayerCivilization()) {
