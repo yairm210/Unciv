@@ -1004,7 +1004,8 @@
 		"cost": 325,
 		"requiredTech": "Refrigeration",
 		"upgradesTo": "Nuclear Submarine",
-		"uniques": ["+[75]% Strength when attacking", "Invisible to others", "Can only attack [Water] units", "Can attack submarines", "Can enter ice tiles"],
+		"uniques": ["+[75]% Strength when attacking", "Invisible to others", "Can only attack [Water] units", 
+			"Can only attack [Embarked] units", "Can attack submarines", "Can enter ice tiles"],
 		"attackSound": "torpedo"
 	},
 	{
@@ -1365,7 +1366,8 @@
 		"cost": 425,
 		"requiredTech": "Telecommunications",
 		"uniques": ["+[75]% Strength when attacking", "Invisible to others", "Can only attack [Water] units",
-			"Can attack submarines", "Can enter ice tiles", "[+1] Visibility Range", "Can carry [2] [Missile] units"],
+			"Can only attack [Embarked] units", "Can attack submarines", "Can enter ice tiles", 
+			"[+1] Visibility Range", "Can carry [2] [Missile] units"],
 		"attackSound": "torpedo"
 	},
 	{
