@@ -558,7 +558,7 @@ object Battle {
         }
 
         // Remove improvements, add fallout
-        if (tile.improvement != null && !attacker.getTile().getTileImprovement()!!.hasUnique("Indestructible")) {
+        if (tile.improvement != null && !tile.getTileImprovement()!!.hasUnique("Indestructible")) {
             tile.improvement = null
         }
         tile.improvementInProgress = null
@@ -620,7 +620,7 @@ object Battle {
         }
 
         // Remove improvements
-        if (tile.improvement != null && !attacker.getTile().getTileImprovement()!!.hasUnique("Indestructible")) {
+        if (tile.improvement != null && !tile.getTileImprovement()!!.hasUnique("Indestructible")) {
             tile.improvement = null
         }
         tile.improvementInProgress = null
