@@ -518,7 +518,7 @@ object UnitActions {
             val otherCiv = tile.getOwner()
             if (otherCiv != null) {
                 // decrease relations for -10 pt/tile
-                if (!otherCiv.knows(unit.civInfo)) otherCiv.meetCivilization(unit.civInfo)
+                if (!otherCiv.knows(unit.civInfo)) otherCiv.makeCivilizationsMeet(unit.civInfo)
                 otherCiv.getDiplomacyManager(unit.civInfo).addModifier(DiplomaticModifiers.StealingTerritory, -10f)
                 civsToNotify.add(otherCiv)
             }
