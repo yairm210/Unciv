@@ -1004,7 +1004,7 @@
 		"cost": 325,
 		"requiredTech": "Refrigeration",
 		"upgradesTo": "Nuclear Submarine",
-		"uniques": ["+[75]% Strength when attacking", "Invisible to others", "Can only [Water] tiles", 
+		"uniques": ["+[75]% Strength when attacking", "Invisible to others", "Can only attack [Water] tiles", 
 			"Can attack submarines", "Can enter ice tiles"],
 		"attackSound": "torpedo"
 	},
