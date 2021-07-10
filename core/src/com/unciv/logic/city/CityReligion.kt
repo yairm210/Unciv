@@ -11,8 +11,7 @@ class CityInfoReligionManager: Counter<String>() {
     fun getUniques(): Sequence<Unique> {
         val majorityReligion = getMajorityReligion()
         if (majorityReligion == null) return sequenceOf()
-        // This should later be changed when religions can have multiple beliefs
-        return cityInfo.civInfo.gameInfo.ruleSet.beliefs[majorityReligion]!!.uniqueObjects.asSequence()
+        return cityInfo.civInfo.gameInfo.religions[majorityReligion]!!.getFollowerUniques()
     }
     
     fun getMatchingUniques(unique: String): Sequence<Unique> {
