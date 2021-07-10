@@ -157,7 +157,7 @@
 "⑱: Tile information for the selected hex - current or potential yield, terrain, effects, present units, city located there and such. Where appropriate, clicking a line opens the corresponding civilopedia entry.",
 "⑲: Notifications - what happened during the last 'next turn' phase. Some are clickable to show a relevant place on the map, some even show several when you click repeatedly.",
 "⑳: The Next Turn Button - unless there are things to do, in which case the label changes to 'next unit', 'pick policy' and so on.",
-"ⓐ: The overview button leads to the empire overview screen with various tabs (the last one viewed is remembered) holding vital information about the state of your civilization in world.",
+"ⓐ: The overview button leads to the empire overview screen with various tabs (the last one viewed is remembered) holding vital information about the state of your civilization in the world.",
 "ⓑ: The culture icon shows accumulated culture and culture needed for the next policy - in this case, the exclamation mark tells us a next policy can be enacted. Clicking is another way to the policies manager.",
 "ⓒ: Your known strategic resources are displayed here with the available (usage already deducted) number - click to go to the resources overview screen.",
 "ⓓ: Happiness/unhappiness balance and either golden age with turns left or accumulated happiness with amount needed for a golden age is shown next to the smiley. Clicking also leads to the resources overview screen as luxury resources are a way to improve happiness.",
