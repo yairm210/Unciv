@@ -2,6 +2,7 @@ package com.unciv.logic.civilization.diplomacy
 
 import com.unciv.logic.GameInfo
 import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.models.ruleset.Nation
 import com.unciv.testing.GdxTestRunner
 import io.mockk.every
 import io.mockk.mockk
@@ -28,6 +29,9 @@ class DiplomacyManagerTests {
 
     @Before
     fun setup() {
+        // Add nations to test civilizations, as we need them to know that they are major civs
+        civilizations.values.forEach { it.nation = Nation() }
+        
         // Setup the GameInfo mock
 
         every { mockGameInfo.getCivilization(capture(slot)) } answers { civilizations.getValue(slot.captured) }
