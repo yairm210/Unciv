@@ -335,6 +335,7 @@ class TechManager {
                         city -> CityTileAndDistance(city, tile, tile.aerialDistanceTo(city.getCenterTile()))
                     }
                 }
+                .filter { it.distance <= 5 && (it.tile.getOwner() == null || it.tile.getOwner() == civInfo) }
                 .sortedWith ( compareBy { it.distance } )
                 .distinctBy { it.tile }
 
