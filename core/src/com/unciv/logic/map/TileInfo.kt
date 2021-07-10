@@ -260,10 +260,10 @@ open class TileInfo {
             if (stats.production < 1) stats.production = 1f
         }
 
+        if (isAdjacentToRiver()) stats.gold++
+
         if (stats.gold != 0f && observingCiv.goldenAges.isGoldenAge())
             stats.gold++
-
-        if (isAdjacentToRiver()) stats.gold++
 
         if (stats.production < 0) stats.production = 0f
 
