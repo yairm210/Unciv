@@ -489,6 +489,7 @@ class CivilizationInfo {
             citiesCreated = cities.filter { it.name in nation.cities }.count()
 
         religionManager.civInfo = this // needs to be before tech, since tech setTransients looks at all uniques
+        religionManager.setTransients()
 
         tech.civInfo = this
         tech.setTransients()
