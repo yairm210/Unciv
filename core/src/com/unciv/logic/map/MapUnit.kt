@@ -560,20 +560,28 @@ class MapUnit {
         }
         
         val mayHeal = healing > 0 || (tileInfo.isWater && hasUnique("May heal outside of friendly territory"))
+        if (!mayHeal) return healing
 
         // Deprecated since 3.15.6
             if (hasUnique("This unit and all others in adjacent tiles heal 5 additional HP. This unit heals 5 additional HP outside of friendly territory.")
                 && !isFriendlyTerritory
-                && mayHeal
             )// Additional healing from medic is only applied when the unit is able to heal
                 healing += 5
         //
         
-        if (mayHeal) {
-            for (unique in getMatchingUniques("[] HP when healing in [] tiles")) {
-                if (tileInfo.matchesFilter(unique.params[1], civInfo)) {
-                    healing += unique.params[0].toInt()
-                }
+        for (unique in getMatchingUniques("[] HP when healing in [] tiles")) {
+            if (tileInfo.matchesFilter(unique.params[1], civInfo)) {
+                healing += unique.params[0].toInt()
+            }
+        }
+        
+        val healingCity = tileInfo.getTilesInDistance(1).firstOrNull {
+            it.isCityCenter() && it.getCity()!!.getMatchingUniques("[] Units adjacent to this city heal [] HP per turn when healing").any()
+        }?.getCity()
+        if (healingCity != null) {
+            for (unique in healingCity.getMatchingUniques("[] Units adjacent to this city heal [] HP per turn when healing")) {
+                if (!matchesFilter(unique.params[0])) continue
+                healing += unique.params[1].toInt()
             }
         }
 
