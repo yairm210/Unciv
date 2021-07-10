@@ -11,15 +11,37 @@ class ReligionManager {
 
     var storedFaith = 0
 
+    @Transient
     var religion: Religion? = null
+    // You might ask why this is the transient variable, and not the one in GameInfo.
+    // After all, filling a hashmap is much easier than later distributing its contents over multiple classes.
+    // I would agree that that is better. However, there is, of course, a problem.
+    // When founding a religion, the religion of your pantheon doesn't immediately disappear.
+    // It just stops growing. Your new religion will then have to spread out from your holy city
+    // and convert these cities. This means, that civilizations can have multiple active religions
+    // in some cases. We only save one of them in this class to reduce the amount of logic necessary.
+    // But the other one should still be _somehwere_. So our only option is to have the GameInfo
+    // contain the master list, and the ReligionManagers retrieve it from there every time the game loads.
     
-    var greatProphetsEarned = 0
+    private var greatProphetsEarned = 0
 
     fun clone(): ReligionManager {
         val clone = ReligionManager()
-        clone.religion = religion
         clone.storedFaith = storedFaith
         return clone
+    }
+    
+    fun setTransients() {
+        // Find our religion from the map of founded religions.
+        // First check if there is any major religion
+        religion = civInfo.gameInfo.religions.values.firstOrNull { 
+            it.foundingCiv.civName == civInfo.civName && it.isMajorReligion()
+        }
+        // If there isn't, check for just pantheons.
+        if (religion != null) return
+        religion = civInfo.gameInfo.religions.values.firstOrNull {
+            it.foundingCiv.civName == civInfo.civName
+        }
     }
 
     fun startTurn() {

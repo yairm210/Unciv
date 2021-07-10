@@ -10,6 +10,14 @@ class Religion(override var name: String, val foundingCiv: CivilizationInfo) : I
     var pantheonBeliefs: HashSet<String> = hashSetOf()
     var founderBeliefs: HashSet<String> = hashSetOf()
     var followerBeliefs: HashSet<String> = hashSetOf()
+
+    fun clone(): Religion {
+        val toReturn = Religion(name, foundingCiv)
+        toReturn.pantheonBeliefs.addAll(pantheonBeliefs)
+        toReturn.founderBeliefs.addAll(founderBeliefs)
+        toReturn.followerBeliefs.addAll(followerBeliefs)
+        return toReturn
+    }
     
     private fun getUniquesOfBeliefs(beliefs: HashSet<String>): Sequence<Unique> {
         val rulesetBeliefs = foundingCiv.gameInfo.ruleSet.beliefs
