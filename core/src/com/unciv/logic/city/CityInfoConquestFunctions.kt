@@ -84,7 +84,7 @@ class CityInfoConquestFunctions(val city: CityInfo){
         // How can you conquer a city but not know the civ you conquered it from?!
         // I don't know either, but some of our players have managed this, and crashed their game!
         if (!conqueringCiv.knows(oldCiv))
-            conqueringCiv.meetCivilization(oldCiv)
+            conqueringCiv.makeCivilizationsMeet(oldCiv)
 
         oldCiv.getDiplomacyManager(conqueringCiv)
                 .addModifier(DiplomaticModifiers.CapturedOurCities, -aggroGenerated)
@@ -145,7 +145,7 @@ class CityInfoConquestFunctions(val city: CityInfo){
 
         // In order to get "plus points" in Diplomacy, you have to establish diplomatic relations if you haven't yet
         if (!conqueringCiv.knows(foundingCiv))
-            conqueringCiv.meetCivilization(foundingCiv)
+            conqueringCiv.makeCivilizationsMeet(foundingCiv)
 
         if (foundingCiv.isMajorCiv()) {
             foundingCiv.getDiplomacyManager(conqueringCiv)

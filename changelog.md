@@ -1,3 +1,23 @@
+## 3.15.10
+
+Automated atomic bombs no longer cause crashes
+
+Fix for placeholder parameters changing names and becoming out of sync with existing translations.
+
+By xlenstra:
+- Add missing pantheons
+- City states give gold when met; updates to city state gold gifts 
+- Fixed many bugs
+- City Centers can no longer be removed by nukes 
+- Added a simplified version of great prophets, implemented a basic city religion UI 
+- Updated TranslationFileWriter to include the new values that filters can have 
+- Fixed a bug where one city challengers could capture enemy cities 
+- Refactored the way cities determine what uniques should apply when 
+
+Fixed spurious notifications of revealed resources too far away or in foreign territory  - By freddyhayward
+
+Quick salvage of some lost translations  - By SomeTroglodyte
+
 ## 3.15.9
 
 By SomeTroglodyte:

@@ -4,7 +4,6 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Screen
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.GL20
-import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.g2d.BitmapFont
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.scenes.scene2d.Stage
@@ -96,7 +95,6 @@ open class CameraStageBaseScreen : Screen {
             skin.get(SelectBox.SelectBoxStyle::class.java).listStyle.font = Fonts.font.apply { data.setScale(20 / Fonts.ORIGINAL_FONT_SIZE) }
             skin
         }
-        internal var batch: Batch = SpriteBatch()
     }
 
     fun onBackButtonClicked(action: () -> Unit) {

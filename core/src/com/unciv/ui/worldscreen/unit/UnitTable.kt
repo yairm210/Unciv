@@ -159,6 +159,11 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
                     unitDescriptionTable.add("XP")
                     unitDescriptionTable.add(unit.promotions.XP.toString() + "/" + unit.promotions.xpForNextPromotion())
                 }
+                
+                if (unit.maxReligionSpreads() > 0) {
+                    unitDescriptionTable.add(ImageGetter.getStatIcon("Faith")).size(20f)
+                    unitDescriptionTable.add(unit.getReligionString())
+                }
 
                 if (unit.promotions.promotions.size != promotionsTable.children.size) // The unit has been promoted! Reload promotions!
                     selectedUnitHasChanged = true

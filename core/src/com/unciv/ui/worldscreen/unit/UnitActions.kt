@@ -63,6 +63,7 @@ object UnitActions {
         //
         addCreateWaterImprovements(unit, actionList)
         addGreatPersonActions(unit, actionList, tile)
+        addSpreadReligionActions(unit, actionList, tile)
         actionList += getImprovementConstructionActions(unit, tile)
         addDisbandAction(actionList, unit, worldScreen)
 
@@ -423,9 +424,34 @@ object UnitActions {
         }
     }
     
+    private fun addSpreadReligionActions(unit: MapUnit, actionList: ArrayList<UnitAction>, tile: TileInfo) {
+        if (!unit.hasUnique("Can spread religion [] times")) return
+        if (unit.religion == null) return
+        val maxReligionSpreads = unit.maxReligionSpreads()
+        if (!unit.abilityUsedCount.containsKey("Religion Spread")) return // This should be impossible anways, but just in case
+        if (maxReligionSpreads <= unit.abilityUsedCount["Religion Spread"]!!) return
+        val city = tile.getCity()
+        actionList += UnitAction(UnitActionType.SpreadReligion,
+            title = "Spread [${unit.religion!!}]",
+            uncivSound = UncivSound.Choir,
+            action = {
+                unit.abilityUsedCount["Religion Spread"] = unit.abilityUsedCount["Religion Spread"]!! + 1
+                city!!.religion[unit.religion!!] = 100
+                unit.currentMovement = 0f
+                if (unit.abilityUsedCount["Religion Spread"] == maxReligionSpreads) {
+                    addGoldPerGreatPersonUsage(unit.civInfo)
+                    unit.destroy()
+                }
+            }.takeIf { unit.currentMovement > 0 && city != null && city.civInfo == unit.civInfo } // For now you can only convert your own cities
+        )
+    }
+    
     fun getImprovementConstructionActions(unit: MapUnit, tile: TileInfo): ArrayList<UnitAction> {
         val finalActions = ArrayList<UnitAction>()
-        for (unique in unit.getMatchingUniques("Can construct []")) {
+        var uniquesToCheck = unit.getMatchingUniques("Can construct []")
+        if (unit.abilityUsedCount.containsKey("Religion Spread") && unit.abilityUsedCount["Religion Spread"]!! == 0 && unit.maxReligionSpreads() > 0)
+            uniquesToCheck += unit.getMatchingUniques("Can construct [] if it hasn't spread religion yet")
+        for (unique in uniquesToCheck) {
             val improvementName = unique.params[0]
             val improvement = tile.ruleset.tileImprovements[improvementName]
             if (improvement == null) continue
@@ -492,7 +518,7 @@ object UnitActions {
             val otherCiv = tile.getOwner()
             if (otherCiv != null) {
                 // decrease relations for -10 pt/tile
-                if (!otherCiv.knows(unit.civInfo)) otherCiv.meetCivilization(unit.civInfo)
+                if (!otherCiv.knows(unit.civInfo)) otherCiv.makeCivilizationsMeet(unit.civInfo)
                 otherCiv.getDiplomacyManager(unit.civInfo).addModifier(DiplomaticModifiers.StealingTerritory, -10f)
                 civsToNotify.add(otherCiv)
             }

@@ -107,7 +107,7 @@ class TradeLogic(val ourCivilization:CivilizationInfo, val otherCivilization: Ci
                     }
                 }
                 if (offer.type == TradeType.Introduction)
-                    to.meetCivilization(to.gameInfo.getCivilization(offer.name))
+                    to.makeCivilizationsMeet(to.gameInfo.getCivilization(offer.name))
 
                 if (offer.type == TradeType.WarDeclaration) {
                     val nameOfCivToDeclareWarOn = offer.name
