@@ -26,7 +26,7 @@ class DiplomacyOverviewTable (
     fun update() {
         clear()
         val relevantCivs = viewingPlayer.gameInfo.civilizations
-            .filter { !it.isBarbarian() && (includeCityStates || !it.isCityState()) }
+            .filter { !it.isBarbarian() && !it.isSpectator() && (includeCityStates || !it.isCityState()) }
         val diplomacyGroup = DiplomacyGroup(viewingPlayer, overviewScreen.centerAreaHeight, includeCityStates)
         val playerKnowsAndUndefeatedCivs = relevantCivs.filter { diplomacyGroup.playerKnows(it) && !it.isDefeated() }
         val playerKnowsAndDefeatedCivs = relevantCivs.filter { diplomacyGroup.playerKnows(it) && it.isDefeated() }
