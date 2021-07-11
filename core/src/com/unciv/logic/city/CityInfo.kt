@@ -138,6 +138,7 @@ class CityInfo {
         val cityNameRounds = civInfo.citiesCreated / nationCities.size
         if (cityNameRounds > 0 && civInfo.hasUnique("\"Borrows\" city names from other civilizations in the game")) {
             name = borrowCityName()
+            return
         }
         val cityNamePrefix = when (cityNameRounds) {
             0 -> ""
