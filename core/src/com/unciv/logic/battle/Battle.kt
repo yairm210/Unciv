@@ -104,7 +104,7 @@ object Battle {
     private fun tryEarnFromKilling(civUnit: ICombatant, defeatedUnit: MapUnitCombatant) {
         val unitStr = max(defeatedUnit.unit.baseUnit.strength, defeatedUnit.unit.baseUnit.rangedStrength)
         val unitCost = defeatedUnit.unit.baseUnit.cost
-        val bonusUniquePlaceholderText = "Earn []% of killed [] unit's [] as []"
+        var bonusUniquePlaceholderText = "Earn []% of killed [] unit's [] as []"
 
         val bonusUniques = ArrayList<Unique>()
 
@@ -112,6 +112,15 @@ object Battle {
 
         if (civUnit is MapUnitCombatant) {
             bonusUniques.addAll(civUnit.unit.getMatchingUniques(bonusUniquePlaceholderText))
+        }
+        
+        bonusUniquePlaceholderText = "Earn []% of [] unit's [] as [] when killed within 4 tiles of a city following this religion"
+        val cityWithReligion =
+            civUnit.getTile().getTilesInDistance(4).firstOrNull {
+                it.isCityCenter() && it.getCity()!!.getMatchingUniques(bonusUniquePlaceholderText).any()
+            }?.getCity()
+        if (cityWithReligion != null) {
+            bonusUniques.addAll(cityWithReligion.getLocalMatchingUniques(bonusUniquePlaceholderText))
         }
 
         for (unique in bonusUniques) {
@@ -558,7 +567,7 @@ object Battle {
         }
 
         // Remove improvements, add fallout
-        if (tile.improvement != null && !attacker.getTile().getTileImprovement()!!.hasUnique("Indestructible")) {
+        if (tile.improvement != null && !tile.getTileImprovement()!!.hasUnique("Indestructible")) {
             tile.improvement = null
         }
         tile.improvementInProgress = null
@@ -620,7 +629,7 @@ object Battle {
         }
 
         // Remove improvements
-        if (tile.improvement != null && !attacker.getTile().getTileImprovement()!!.hasUnique("Indestructible")) {
+        if (tile.improvement != null && !tile.getTileImprovement()!!.hasUnique("Indestructible")) {
             tile.improvement = null
         }
         tile.improvementInProgress = null

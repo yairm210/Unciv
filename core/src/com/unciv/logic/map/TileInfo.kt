@@ -237,6 +237,14 @@ open class TileInfo {
                 if (matchesTerrainFilter(tileType, observingCiv)) 
                     stats.add(unique.stats)
             }
+            
+            for (unique in city.getMatchingUniques("[] from [] tiles without [] []")) 
+                if (
+                    matchesTerrainFilter(unique.params[1]) &&
+                    !matchesTerrainFilter(unique.params[2]) &&
+                    city.matchesFilter(unique.params[3])
+                )
+                    stats.add(unique.stats)
         }
 
         if (naturalWonder != null) {
@@ -260,10 +268,10 @@ open class TileInfo {
             if (stats.production < 1) stats.production = 1f
         }
 
+        if (isAdjacentToRiver()) stats.gold++
+
         if (stats.gold != 0f && observingCiv.goldenAges.isGoldenAge())
             stats.gold++
-
-        if (isAdjacentToRiver()) stats.gold++
 
         if (stats.production < 0) stats.production = 0f
 
@@ -415,6 +423,7 @@ open class TileInfo {
             "Friendly Land", "Friendly" -> observingCiv != null && isFriendlyTerritory(observingCiv)
             resource -> observingCiv != null && hasViewableResource(observingCiv)
             "Water resource" -> isWater && observingCiv != null && hasViewableResource(observingCiv)
+            "Natural Wonder" -> naturalWonder != null
             else -> {
                 if (terrainFeatures.contains(filter)) return true
                 if (hasUnique(filter)) return true

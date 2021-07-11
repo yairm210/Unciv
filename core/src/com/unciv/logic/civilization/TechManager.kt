@@ -1,6 +1,5 @@
 package com.unciv.logic.civilization
 
-import com.unciv.logic.civilization.LocationAction
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.map.MapSize
 import com.unciv.logic.map.RoadStatus
@@ -86,12 +85,12 @@ class TechManager {
                 .count { it.isMajorCiv() && !it.isDefeated() }
         // https://forums.civfanatics.com/threads/the-mechanics-of-overflow-inflation.517970/
         techCost /= 1 + techsResearchedKnownCivs / undefeatedCivs.toFloat() * 0.3f
-        // http://web.archive.org/web/20201204043641/http://www.civclub.net/bbs/forum.php?mod=viewthread&tid=123976
+        // http://www.civclub.net/bbs/forum.php?mod=viewthread&tid=123976
         val worldSizeModifier = with (civInfo.gameInfo.tileMap.mapParameters.mapSize) {
             when {
-                radius >= MapSize.Medium.radius -> floatArrayOf(1.1f, 0.05f)
-                radius >= MapSize.Large.radius -> floatArrayOf(1.2f, 0.03f)
                 radius >= MapSize.Huge.radius -> floatArrayOf(1.3f, 0.02f)
+                radius >= MapSize.Large.radius -> floatArrayOf(1.2f, 0.03f)
+                radius >= MapSize.Medium.radius -> floatArrayOf(1.1f, 0.05f)
                 else -> floatArrayOf(1f, 0.05f)
             }
         }
@@ -251,7 +250,7 @@ class TechManager {
         }
         updateTransientBooleans()
 
-        civInfo.addNotification("Research of [$techName] has completed!", TechAction(techName), NotificationIcon.Science, techName )
+        civInfo.addNotification("Research of [$techName] has completed!", TechAction(techName), NotificationIcon.Science, techName)
         civInfo.popupAlerts.add(PopupAlert(AlertType.TechResearched, techName))
 
         val currentEra = civInfo.getEra()
@@ -335,6 +334,7 @@ class TechManager {
                         city -> CityTileAndDistance(city, tile, tile.aerialDistanceTo(city.getCenterTile()))
                     }
                 }
+                .filter { it.distance <= 5 && (it.tile.getOwner() == null || it.tile.getOwner() == civInfo) }
                 .sortedWith ( compareBy { it.distance } )
                 .distinctBy { it.tile }
 
@@ -353,7 +353,7 @@ class TechManager {
             civInfo.addNotification(
                 text,
                 LocationAction(positions),
-                "ResourceIcons/" + revealedName
+                "ResourceIcons/$revealedName"
             )
         }
     }

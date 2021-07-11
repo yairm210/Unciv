@@ -29,6 +29,7 @@ import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 import kotlin.math.roundToInt
 import kotlin.math.min
+import kotlin.math.pow
 
 class CivilizationInfo {
 
@@ -328,18 +329,40 @@ class CivilizationInfo {
         return baseUnit
     }
 
-    fun meetCivilization(otherCiv: CivilizationInfo) {
+    fun makeCivilizationsMeet(otherCiv: CivilizationInfo) {
+        meetCiv(otherCiv)
+        otherCiv.meetCiv(this)
+    }
+    
+    private fun meetCiv(otherCiv: CivilizationInfo) {
         diplomacy[otherCiv.civName] = DiplomacyManager(this, otherCiv.civName)
-                .apply { diplomaticStatus = DiplomaticStatus.Peace }
+            .apply { diplomaticStatus = DiplomaticStatus.Peace }
 
         otherCiv.popupAlerts.add(PopupAlert(AlertType.FirstContact, civName))
 
-        otherCiv.diplomacy[civName] = DiplomacyManager(otherCiv, civName)
-                .apply { diplomaticStatus = DiplomaticStatus.Peace }
-        popupAlerts.add(PopupAlert(AlertType.FirstContact, otherCiv.civName))
-
-        if (isCurrentPlayer() || otherCiv.isCurrentPlayer())
+        if (isCurrentPlayer())
             UncivGame.Current.settings.addCompletedTutorialTask("Meet another civilization")
+        
+        if (!(isCityState() && otherCiv.isMajorCiv())) return
+
+        val cityStateLocation = if (cities.isEmpty()) null else getCapital().location
+
+        val giftAmount = Stats().add(Stat.Gold, 15f)
+        // Later, religious city-states will also gift gold, making this the better implementation
+        // For now, it might be overkill though.
+        var meetString = "[${civName}] has given us [${giftAmount}] as a token of goodwill for meeting us"
+        if (diplomacy.filter { it.value.otherCiv().isMajorCiv() }.count() == 1) {
+            giftAmount.timesInPlace(2f)
+            meetString = "[${civName}] has given us [${giftAmount}] as we are the first major civ to meet them"
+        }
+        if (cityStateLocation != null)
+            otherCiv.addNotification(meetString, cityStateLocation, NotificationIcon.Gold)
+        else
+            otherCiv.addNotification(meetString, NotificationIcon.Gold)
+        for (stat in giftAmount.toHashMap().filter { it.value != 0f })
+            otherCiv.addStat(stat.key, stat.value.toInt())
+            
+            
     }
 
     fun discoverNaturalWonder(naturalWonderName: String) {
@@ -466,6 +489,7 @@ class CivilizationInfo {
             citiesCreated = cities.filter { it.name in nation.cities }.count()
 
         religionManager.civInfo = this // needs to be before tech, since tech setTransients looks at all uniques
+        religionManager.setTransients()
 
         tech.civInfo = this
         tech.setTransients()
@@ -699,11 +723,32 @@ class CivilizationInfo {
                 diplomacyManager.otherCiv().tradeRequests.remove(tradeRequest) // it  would be really weird to get a trade request from a dead civ
         }
     }
+    
+    fun getResearchAgreementCost(): Int {
+        // https://forums.civfanatics.com/resources/research-agreements-bnw.25568/
+        val era = if (getEra() in gameInfo.ruleSet.eras) gameInfo.ruleSet.eras[getEra()]!! else Era()
+        return (era.researchAgreementCost * gameInfo.gameParameters.gameSpeed.modifier).toInt()
+    }
+    
+    //////////////////////// Functions specific to City State civilizations ////////////////////////
 
-    fun influenceGainedByGift(cityState: CivilizationInfo, giftAmount: Int): Int {
-        var influenceGained = giftAmount / 10f
+    
+    fun influenceGainedByGift(giftAmount: Int): Int {
+        // https://github.com/Gedemon/Civ5-DLL/blob/aa29e80751f541ae04858b6d2a2c7dcca454201e/CvGameCoreDLL_Expansion1/CvMinorCivAI.cpp
+        // line 8681 and below
+        var influenceGained = giftAmount.toFloat().pow(1.01f) / 9.8f
+        val gameProgressApproximate = min(gameInfo.turns / (400f * gameInfo.gameParameters.gameSpeed.modifier), 1f)
+        influenceGained *= 1 - (2/3) * gameProgressApproximate
+        influenceGained *= when (gameInfo.gameParameters.gameSpeed) {
+            GameSpeed.Quick -> 1.25f
+            GameSpeed.Standard -> 1f
+            GameSpeed.Epic -> 0.75f
+            GameSpeed.Marathon -> 0.67f
+        }
         for (unique in getMatchingUniques("Gifts of Gold to City-States generate []% more Influence"))
             influenceGained *= 1f + unique.params[0].toFloat() / 100f
+        influenceGained -= influenceGained % 5
+        if (influenceGained < 5f) influenceGained = 5f
         return influenceGained.toInt()
     }
 
@@ -711,15 +756,9 @@ class CivilizationInfo {
         if (!cityState.isCityState()) throw Exception("You can only gain influence with City-States!")
         addGold(-giftAmount)
         cityState.addGold(giftAmount)
-        cityState.getDiplomacyManager(this).influence += influenceGainedByGift(cityState, giftAmount)
+        cityState.getDiplomacyManager(this).influence += influenceGainedByGift(giftAmount)
         cityState.updateAllyCivForCityState()
         updateStatsForNextTurn()
-    }
-
-    fun getResearchAgreementCost(): Int {
-        // https://forums.civfanatics.com/resources/research-agreements-bnw.25568/
-        val era = if (getEra() in gameInfo.ruleSet.eras) gameInfo.ruleSet.eras[getEra()]!! else Era()
-        return (era.researchAgreementCost * gameInfo.gameParameters.gameSpeed.modifier).toInt()
     }
 
     fun gainMilitaryUnitFromCityState(otherCiv: CivilizationInfo) {

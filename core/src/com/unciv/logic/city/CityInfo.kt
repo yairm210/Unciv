@@ -104,7 +104,7 @@ class CityInfo {
         if (startingEra in ruleset.eras) {
             for (building in ruleset.eras[startingEra]!!.settlerBuildings) {
                 if (ruleset.buildings[building]!!.isBuildable(cityConstructions)) {
-                    cityConstructions.addBuilding(building)
+                    cityConstructions.addBuilding(civInfo.getEquivalentBuilding(building).name)
                 }
             }
         }
@@ -138,6 +138,7 @@ class CityInfo {
         val cityNameRounds = civInfo.citiesCreated / nationCities.size
         if (cityNameRounds > 0 && civInfo.hasUnique("\"Borrows\" city names from other civilizations in the game")) {
             name = borrowCityName()
+            return
         }
         val cityNamePrefix = when (cityNameRounds) {
             0 -> ""
