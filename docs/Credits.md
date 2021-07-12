@@ -178,6 +178,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Fort](https://thenounproject.com/term/fort/1697645/) By Adrien Coquet
 * [Citadel](https://thenounproject.com/term/fort/1697646/) By Adrien Coquet
 * [Village](https://thenounproject.com/search/?q=city+center&i=476338) by Andrey Vasiliev
+* [pumping station](https://thenounproject.com/search/?q=dike&i=555172) by Peter van Driel for Polder
 
 ## Buildings
 
