@@ -98,8 +98,14 @@ object BattleHelper {
 
         if (combatant is MapUnitCombatant && 
             combatant.unit.hasUnique("Can only attack [] units") &&
-            combatant.unit.getMatchingUniques("Can only attack [] units").none { tileCombatant.matchesCategory(it.params[0]) })
-                return false
+            combatant.unit.getMatchingUniques("Can only attack [] units").none { tileCombatant.matchesCategory(it.params[0]) }
+        )
+            return false
+        if (combatant is MapUnitCombatant &&
+            combatant.unit.hasUnique("Can only attack [] tiles") &&
+            combatant.unit.getMatchingUniques("Can only attack [] tiles").none { tile.matchesFilter(it.params[0]) }
+        )
+            return false
 
         //only submarine and destroyer can attack submarine
         //garrisoned submarine can be attacked by anyone, or the city will be in invincible
