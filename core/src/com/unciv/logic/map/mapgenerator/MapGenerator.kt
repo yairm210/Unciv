@@ -18,9 +18,14 @@ import kotlin.random.Random
 class MapGenerator(val ruleset: Ruleset) {
     private var randomness = MapGenerationRandomness()
 
-    fun generateMap(mapParameters: MapParameters, seed: Long = System.currentTimeMillis()): TileMap {
+    fun generateMap(mapParameters: MapParameters): TileMap {
         val mapSize = mapParameters.mapSize
         val mapType = mapParameters.type
+
+        if (mapParameters.seed == 0L)
+            mapParameters.seed = System.currentTimeMillis()
+
+        randomness.seedRNG(mapParameters.seed)
 
         val map: TileMap = if (mapParameters.shape == MapShape.rectangular)
             TileMap(mapSize.width, mapSize.height, ruleset, mapParameters.worldWrap)
@@ -28,7 +33,6 @@ class MapGenerator(val ruleset: Ruleset) {
             TileMap(mapSize.radius, ruleset, mapParameters.worldWrap)
 
         map.mapParameters = mapParameters
-        map.mapParameters.seed = seed
 
         if (mapType == MapType.empty) {
             for (tile in map.values) {
@@ -39,15 +43,14 @@ class MapGenerator(val ruleset: Ruleset) {
             return map
         }
 
-        seedRNG(seed)
-        MapLandmassGenerator(randomness).generateLand(map,ruleset)
+        MapLandmassGenerator(ruleset, randomness).generateLand(map)
         raiseMountainsAndHills(map)
         applyHumidityAndTemperature(map)
         spawnLakesAndCoasts(map)
         spawnVegetation(map)
         spawnRareFeatures(map)
         spawnIce(map)
-        NaturalWonderGenerator(ruleset).spawnNaturalWonders(map, randomness)
+        NaturalWonderGenerator(ruleset, randomness).spawnNaturalWonders(map)
         RiverGenerator(randomness).spawnRivers(map)
         spreadResources(map)
         spreadAncientRuins(map)
@@ -303,6 +306,10 @@ class MapGenerator(val ruleset: Ruleset) {
 class MapGenerationRandomness{
     var RNG = Random(42)
 
+    fun seedRNG(seed: Long = 42) {
+        RNG = Random(seed)
+    }
+
     /**
      * Generates a perlin noise channel combining multiple octaves
      *
@@ -341,7 +348,7 @@ class MapGenerationRandomness{
                         .sortedBy { it.value }.map { it.key }
                 val firstKeyWithTilesLeft = orderedKeys
                         .first { availableTiles.any { tile -> tile.baseTerrain== it} }
-                val chosenTile = availableTiles.filter { it.baseTerrain==firstKeyWithTilesLeft }.random()
+                val chosenTile = availableTiles.filter { it.baseTerrain==firstKeyWithTilesLeft }.random(RNG)
                 availableTiles = availableTiles.filter { it.aerialDistanceTo(chosenTile) > distanceBetweenResources }
                 chosenTiles.add(chosenTile)
                 baseTerrainsToChosenTiles[firstKeyWithTilesLeft] = baseTerrainsToChosenTiles[firstKeyWithTilesLeft]!!+1

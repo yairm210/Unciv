@@ -5,6 +5,7 @@ import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.InputEvent
 import com.badlogic.gdx.scenes.scene2d.InputListener
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
+import com.unciv.UncivGame
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
 import com.unciv.models.ruleset.Ruleset
@@ -34,6 +35,7 @@ class MapEditorScreen(): CameraStageBaseScreen() {
     private fun initialize() {
         ImageGetter.setNewRuleset(ruleset)
         tileMap.setTransients(ruleset,false)
+        UncivGame.Current.translations.translationActiveMods = ruleset.mods
 
         mapHolder = EditorMapHolder(this, tileMap)
         mapHolder.addTiles(stage.width, stage.height)
@@ -59,13 +61,13 @@ class MapEditorScreen(): CameraStageBaseScreen() {
                 stage.height - showHideEditorOptionsButton.height - 10f)
         stage.addActor(showHideEditorOptionsButton)
 
-
-        val optionsMenuButton = "Menu".toTextButton()
-        optionsMenuButton.onClick {
-            if (popups.any { it is MapEditorMenuPopup })
-                return@onClick // already open
-            MapEditorMenuPopup(this).open(force = true)
+        val openOptionsMenu = {
+            if (popups.none { it is MapEditorMenuPopup })
+                MapEditorMenuPopup(this).open(force = true)
         }
+        val optionsMenuButton = "Menu".toTextButton()
+        optionsMenuButton.onClick(openOptionsMenu)
+        keyPressDispatcher[KeyCharAndCode.BACK] = openOptionsMenu
         optionsMenuButton.label.setFontSize(24)
         optionsMenuButton.labelCell.pad(20f)
         optionsMenuButton.pack()

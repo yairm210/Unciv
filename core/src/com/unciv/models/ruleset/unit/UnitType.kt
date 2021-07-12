@@ -18,6 +18,7 @@ enum class UnitType{
 
     Fighter,
     Bomber,
+    AtomicBomber,
     Missile;
 
     fun isMelee() =
@@ -26,7 +27,7 @@ enum class UnitType{
                 || this == Armor
                 || this == Scout
                 || this == WaterMelee
-
+        
     fun isRanged() =
                 this == Ranged
                 || this == Siege
@@ -35,6 +36,7 @@ enum class UnitType{
                 || this == WaterAircraftCarrier
                 || this == City
                 || this.isAirUnit()
+                || this.isMissile()
 
     fun isLandUnit() =
                 this == Civilian
@@ -59,5 +61,8 @@ enum class UnitType{
     fun isAirUnit() =
                 this == Bomber
                 || this == Fighter
-                || this == Missile
+                || this == AtomicBomber
+    
+    fun isMissile() =
+                this == Missile
 }

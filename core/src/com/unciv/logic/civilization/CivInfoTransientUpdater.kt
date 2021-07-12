@@ -38,7 +38,7 @@ class CivInfoTransientUpdater(val civInfo: CivilizationInfo) {
             for (entry in viewedCivs) {
                 val metCiv = entry.key
                 if (metCiv == civInfo || metCiv.isBarbarian() || civInfo.diplomacy.containsKey(metCiv.civName)) continue
-                civInfo.meetCivilization(metCiv)
+                civInfo.makeCivilizationsMeet(metCiv)
                 civInfo.addNotification("We have encountered [" + metCiv.civName + "]!", entry.value.position, metCiv.civName, NotificationIcon.Diplomacy)
                 metCiv.addNotification("We have encountered [" + civInfo.civName + "]!", entry.value.position, civInfo.civName, NotificationIcon.Diplomacy)
             }
@@ -107,7 +107,7 @@ class CivInfoTransientUpdater(val civInfo: CivilizationInfo) {
             }
 
             if (goldGained > 0) {
-                civInfo.gold += goldGained
+                civInfo.addGold(goldGained)
                 civInfo.addNotification("We have received [" + goldGained + "] Gold for discovering [" + tile.naturalWonder + "]", NotificationIcon.Gold)
             }
 

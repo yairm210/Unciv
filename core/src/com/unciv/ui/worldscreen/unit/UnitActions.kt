@@ -6,6 +6,8 @@ import com.unciv.logic.automation.UnitAutomation
 import com.unciv.logic.automation.WorkerAutomation
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.NotificationIcon
+import com.unciv.logic.civilization.PlayerType
+import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.RoadStatus
@@ -30,8 +32,8 @@ object UnitActions {
 
         if (unit.isMoving()) actionList += UnitAction(UnitActionType.StopMovement) { unit.action = null }
 
-        val workingOnImprovement = unit.hasUnique("Can build improvements on tiles")
-                && unit.currentTile.hasImprovementInProgress()
+        // Constants.workerUnique deprecated since 3.15.5
+        val workingOnImprovement = unit.currentTile.hasImprovementInProgress() && unit.canBuildImprovement(unit.currentTile.getTileImprovementInProgress()!!)
         if (!unit.isFortified() && !unit.canFortify() && unit.currentMovement > 0 && !workingOnImprovement) {
             addSleepActions(actionList, unit, unitTable)
         }
@@ -47,22 +49,48 @@ object UnitActions {
             )
         }
 
+        addSwapAction(unit, actionList, worldScreen)
         addExplorationActions(unit, actionList)
         addPromoteAction(unit, actionList)
         addUnitUpgradeAction(unit, actionList)
         addPillageAction(unit, actionList, worldScreen)
+        addParadropAction(unit, actionList, worldScreen)
         addSetupAction(unit, actionList)
         addFoundCityAction(unit, actionList, tile)
         addWorkerActions(unit, actionList, tile, worldScreen, unitTable)
-        addConstructRoadsAction(unit, tile, actionList)
+        // Deprecated since 3.15.4
+            addConstructRoadsAction(unit, tile, actionList)
+        //
         addCreateWaterImprovements(unit, actionList)
         addGreatPersonActions(unit, actionList, tile)
+        addSpreadReligionActions(unit, actionList, tile)
         actionList += getImprovementConstructionActions(unit, tile)
         addDisbandAction(actionList, unit, worldScreen)
 
         return actionList
     }
 
+    private fun addSwapAction(unit: MapUnit, actionList: ArrayList<UnitAction>, worldScreen: WorldScreen) {
+        // Air units cannot swap
+        if (unit.type.isAirUnit() || unit.type.isMissile()) return
+        // Disable unit swapping if multiple units are selected. It would make little sense.
+        // In principle, the unit swapping mode /will/ function with multiselect: it will simply
+        // only consider the first selected unit, and ignore the other selections. However, it does
+        // have the visual bug that the tile overlays for the eligible swap locations are drawn for
+        // /all/ selected units instead of only the first one. This could be fixed, but again,
+        // swapping makes little sense for multiselect anyway.
+        if (worldScreen.bottomUnitTable.selectedUnits.count() > 1) return
+        // Only show the swap action if there is at least one possible swap movement
+        if (unit.movement.getUnitSwappableTiles().none()) return
+        actionList += UnitAction(
+            type = UnitActionType.SwapUnits,
+            isCurrentAction = worldScreen.bottomUnitTable.selectedUnitIsSwapping,
+            action = {
+                worldScreen.bottomUnitTable.selectedUnitIsSwapping = !worldScreen.bottomUnitTable.selectedUnitIsSwapping
+                worldScreen.shouldUpdate = true
+            }
+        )
+    }
 
     private fun addDisbandAction(actionList: ArrayList<UnitAction>, unit: MapUnit, worldScreen: WorldScreen) {
         actionList += UnitAction(type = UnitActionType.DisbandUnit, action = {
@@ -96,38 +124,89 @@ object UnitActions {
 
         return null
     }
-
-    private fun addConstructRoadsAction(unit: MapUnit, tile: TileInfo, actionList: ArrayList<UnitAction>) {
-        val improvement = RoadStatus.Road.improvement(unit.civInfo.gameInfo.ruleSet) ?: return
-        if (unit.hasUnique("Can construct roads")
-                && tile.roadStatus == RoadStatus.None
-                && tile.improvementInProgress != "Road"
-                && tile.isLand
-                && (improvement.techRequired == null || unit.civInfo.tech.isResearched(improvement.techRequired!!)))
-            actionList += UnitAction(UnitActionType.ConstructRoad,
-                    action = {
-                        tile.improvementInProgress = "Road"
-                        tile.turnsToImprovement = improvement.getTurnsToBuild(unit.civInfo)
-                    }.takeIf { unit.currentMovement > 0 })
-    }
+    
+    // This entire function is deprecated since 3.15.4, as the 'can construct roads' unique is deprecated
+        private fun addConstructRoadsAction(unit: MapUnit, tile: TileInfo, actionList: ArrayList<UnitAction>) {
+            val improvement = RoadStatus.Road.improvement(unit.civInfo.gameInfo.ruleSet) ?: return
+            if (unit.hasUnique("Can construct roads")
+                    && tile.roadStatus == RoadStatus.None
+                    && tile.improvementInProgress != "Road"
+                    && tile.isLand
+                    && (improvement.techRequired == null || unit.civInfo.tech.isResearched(improvement.techRequired!!)))
+                actionList += UnitAction(UnitActionType.ConstructRoad,
+                        action = {
+                            tile.improvementInProgress = "Road"
+                            tile.turnsToImprovement = improvement.getTurnsToBuild(unit.civInfo)
+                        }.takeIf { unit.currentMovement > 0 })
+        }
+    //
 
     private fun addFoundCityAction(unit: MapUnit, actionList: ArrayList<UnitAction>, tile: TileInfo) {
         val getFoundCityAction = getFoundCityAction(unit, tile)
         if (getFoundCityAction != null) actionList += getFoundCityAction
     }
 
+    /** Produce a [UnitAction] for founding a city.
+     * @param unit The unit to do the founding.
+     * @param tile The tile to found a city on.
+     * @return null if impossible (the unit lacks the ability to found), 
+     * or else a [UnitAction] 'defining' the founding. 
+     * The [action][UnitAction.action] field will be null if the action cannot be done here and now   
+     * (no movement left, too close to another city).
+      */ 
     fun getFoundCityAction(unit: MapUnit, tile: TileInfo): UnitAction? {
         if (!unit.hasUnique("Founds a new city") || tile.isWater) return null
+
+        if (unit.currentMovement <= 0 || tile.getTilesInDistance(3).any { it.isCityCenter() })
+            return UnitAction(UnitActionType.FoundCity, uncivSound = UncivSound.Silent, action = null)
+
+        val foundAction = {
+            UncivGame.Current.settings.addCompletedTutorialTask("Found city")
+            unit.civInfo.addCity(tile.position)
+            if (tile.ruleset.tileImprovements.containsKey("City center"))
+                tile.improvement = "City center"
+            unit.destroy()
+            UncivGame.Current.worldScreen.shouldUpdate = true
+        }
+        
+        if (unit.civInfo.playerType == PlayerType.AI)
+            return UnitAction(UnitActionType.FoundCity,  uncivSound = UncivSound.Silent, action = foundAction)
+
         return UnitAction(
                 type = UnitActionType.FoundCity,
                 uncivSound = UncivSound.Chimes,
                 action = {
-                    UncivGame.Current.settings.addCompletedTutorialTask("Found city")
-                    unit.civInfo.addCity(tile.position)
-                    if (tile.ruleset.tileImprovements.containsKey("City center"))
-                        tile.improvement = "City center"
-                    unit.destroy()
-                }.takeIf { unit.currentMovement > 0 && !tile.getTilesInDistance(3).any { it.isCityCenter() } })
+                    // check if we would be breaking a promise
+                    val leaders = TestPromiseNotToSettle(unit.civInfo, tile)
+                    if (leaders == null)
+                        foundAction()
+                    else {
+                        // ask if we would be breaking a promise
+                        val text = "Do you want to break your promise to [$leaders]?"
+                        YesNoPopup(text, foundAction, UncivGame.Current.worldScreen).open(force = true)
+                    }
+                }
+            )
+    }
+
+    /**
+     * Checks whether a civ founding a city on a certain tile would break a promise.
+     * @param civInfo The civilization trying to found a city 
+     * @param tile The tile where the new city would go 
+     * @return null if no promises broken, else a String listing the leader(s) we would p* off.
+     */
+    private fun TestPromiseNotToSettle(civInfo: CivilizationInfo, tile: TileInfo): String? {
+        val brokenPromises = HashSet<String>()
+        for (otherCiv in civInfo.getKnownCivs().filter { it.isMajorCiv() && !civInfo.isAtWarWith(it) }) {
+            val diplomacyManager = otherCiv.getDiplomacyManager(civInfo)
+            if (diplomacyManager.hasFlag(DiplomacyFlags.AgreedToNotSettleNearUs)) {
+                val citiesWithin6Tiles = otherCiv.cities
+                    .filter { it.getCenterTile().aerialDistanceTo(tile) <= 6 }
+                    .filter { otherCiv.exploredTiles.contains(it.location) }
+                if (citiesWithin6Tiles.isNotEmpty()) brokenPromises += otherCiv.getLeaderDisplayName()
+            }
+        }
+        return if(brokenPromises.isEmpty()) null else brokenPromises.joinToString(", ")
     }
 
     private fun addPromoteAction(unit: MapUnit, actionList: ArrayList<UnitAction>) {
@@ -150,6 +229,26 @@ object UnitActions {
                     unit.action = Constants.unitActionSetUp
                     unit.useMovementPoints(1f)
                 }.takeIf { unit.currentMovement > 0 && !isSetUp })
+    }
+
+    private fun addParadropAction(unit: MapUnit, actionList: ArrayList<UnitAction>, worldScreen: WorldScreen) {
+        val paradropUniques = unit.getMatchingUniques("May Paradrop up to [] tiles from inside friendly territory")
+        if (!paradropUniques.any() || unit.isEmbarked()) return
+        unit.paradropRange = paradropUniques.maxOfOrNull { it.params[0] }!!.toInt()
+        actionList += UnitAction(UnitActionType.Paradrop,
+                isCurrentAction = unit.action == Constants.unitActionParadrop,
+                action = {
+                    if (unit.action != Constants.unitActionParadrop) {
+                        unit.action = Constants.unitActionParadrop
+                    } else {
+                        unit.action = null
+                    }
+                }.takeIf {
+                    unit.currentMovement == unit.getMaxMovement().toFloat() &&
+                    unit.currentTile.isFriendlyTerritory(unit.civInfo) &&
+                    !unit.isEmbarked()
+                })
+
     }
 
     private fun addPillageAction(unit: MapUnit, actionList: ArrayList<UnitAction>, worldScreen: WorldScreen) {
@@ -189,7 +288,7 @@ object UnitActions {
     }
 
     private fun addExplorationActions(unit: MapUnit, actionList: ArrayList<UnitAction>) {
-        if (unit.type.isAirUnit()) return
+        if (unit.baseUnit.movesLikeAirUnits()) return
         if (unit.action != Constants.unitActionExplore) {
             actionList += UnitAction(UnitActionType.Explore) {
                 unit.action = Constants.unitActionExplore
@@ -214,7 +313,7 @@ object UnitActions {
                 title = "Upgrade to [${upgradedUnit.name}] ([$goldCostOfUpgrade] gold)",
                 uncivSound = UncivSound.Upgrade,
                 action = {
-                    unit.civInfo.gold -= goldCostOfUpgrade
+                    unit.civInfo.addGold(-goldCostOfUpgrade)
                     val unitTile = unit.getTile()
                     unit.destroy()
                     val newunit = unit.civInfo.placeUnitNearTile(unitTile.position, upgradedUnit.name)!!
@@ -236,7 +335,8 @@ object UnitActions {
     }
 
     private fun addWorkerActions(unit: MapUnit, actionList: ArrayList<UnitAction>, tile: TileInfo, worldScreen: WorldScreen, unitTable: UnitTable) {
-        if (!unit.hasUnique("Can build improvements on tiles")) return
+        // Constants.workerUnique deprecated since 3.15.5
+        if (!unit.hasUnique(Constants.canBuildImprovements) && !unit.hasUnique(Constants.workerUnique)) return
 
         // Allow automate/unautomate when embarked, but not building improvements - see #1963
         if (Constants.unitActionAutomation == unit.action) {
@@ -253,12 +353,12 @@ object UnitActions {
 
         val canConstruct = unit.currentMovement > 0
                 && !tile.isCityCenter()
-                && unit.civInfo.gameInfo.ruleSet.tileImprovements.values.any { tile.canBuildImprovement(it, unit.civInfo) }
-
+                && unit.civInfo.gameInfo.ruleSet.tileImprovements.values.any { tile.canBuildImprovement(it, unit.civInfo) && unit.canBuildImprovement(it) }
+        
         actionList += UnitAction(UnitActionType.ConstructImprovement,
                 isCurrentAction = unit.currentTile.hasImprovementInProgress(),
                 action = {
-                    worldScreen.game.setScreen(ImprovementPickerScreen(tile) { unitTable.selectUnit() })
+                    worldScreen.game.setScreen(ImprovementPickerScreen(tile, unit) { unitTable.selectUnit() })
                 }.takeIf { canConstruct })
     }
 
@@ -267,22 +367,22 @@ object UnitActions {
         if (unit.currentMovement > 0) for (unique in unit.getUniques()) when (unique.placeholderText) {
             "Can hurry technology research" -> {
                 actionList += UnitAction(UnitActionType.HurryResearch,
-                        uncivSound = UncivSound.Chimes,
-                        action = {
-                            unit.civInfo.tech.addScience(unit.civInfo.tech.getScienceFromGreatScientist())
-                            addGoldPerGreatPersonUsage(unit.civInfo)
-                            unit.destroy()
-                        }.takeIf { unit.civInfo.tech.currentTechnologyName() != null })
+                    uncivSound = UncivSound.Chimes,
+                    action = {
+                        unit.civInfo.tech.addScience(unit.civInfo.tech.getScienceFromGreatScientist())
+                        addGoldPerGreatPersonUsage(unit.civInfo)
+                        unit.destroy()
+                    }.takeIf { unit.civInfo.tech.currentTechnologyName() != null })
             }
             "Can start an []-turn golden age" -> {
                 val turnsToGoldenAge = unique.params[0].toInt()
                 actionList += UnitAction(UnitActionType.StartGoldenAge,
-                        uncivSound = UncivSound.Chimes,
-                        action = {
-                            unit.civInfo.goldenAges.enterGoldenAge(turnsToGoldenAge)
-                            addGoldPerGreatPersonUsage(unit.civInfo)
-                            unit.destroy()
-                        }.takeIf { unit.currentTile.getOwner() != null && unit.currentTile.getOwner() == unit.civInfo })
+                    uncivSound = UncivSound.Chimes,
+                    action = {
+                        unit.civInfo.goldenAges.enterGoldenAge(turnsToGoldenAge)
+                        addGoldPerGreatPersonUsage(unit.civInfo)
+                        unit.destroy()
+                    }.takeIf { unit.currentTile.getOwner() != null && unit.currentTile.getOwner() == unit.civInfo })
             }
             "Can speed up construction of a wonder" -> {
                 val canHurryWonder = if (!tile.isCityCenter()) false
@@ -292,68 +392,95 @@ object UnitActions {
                     else currentConstruction.isWonder || currentConstruction.isNationalWonder
                 }
                 actionList += UnitAction(UnitActionType.HurryWonder,
-                        uncivSound = UncivSound.Chimes,
-                        action = {
-                            tile.getCity()!!.cityConstructions.apply {
-                                addProductionPoints(300 + 30 * tile.getCity()!!.population.population) //http://civilization.wikia.com/wiki/Great_engineer_(Civ5)
-                                constructIfEnough()
-                            }
-                            addGoldPerGreatPersonUsage(unit.civInfo)
-                            unit.destroy()
-                        }.takeIf { canHurryWonder })
+                    uncivSound = UncivSound.Chimes,
+                    action = {
+                        tile.getCity()!!.cityConstructions.apply {
+                            addProductionPoints(300 + 30 * tile.getCity()!!.population.population) //http://civilization.wikia.com/wiki/Great_engineer_(Civ5)
+                            constructIfEnough()
+                        }
+                        addGoldPerGreatPersonUsage(unit.civInfo)
+                        unit.destroy()
+                    }.takeIf { canHurryWonder })
             }
             "Can undertake a trade mission with City-State, giving a large sum of gold and [] Influence" -> {
                 val canConductTradeMission = tile.owningCity?.civInfo?.isCityState() == true
                         && tile.owningCity?.civInfo?.isAtWarWith(unit.civInfo) == false
                 val influenceEarned = unique.params[0].toInt()
                 actionList += UnitAction(UnitActionType.ConductTradeMission,
-                        uncivSound = UncivSound.Chimes,
-                        action = {
-                            // http://civilization.wikia.com/wiki/Great_Merchant_(Civ5)
-                            var goldEarned = ((350 + 50 * unit.civInfo.getEraNumber()) * unit.civInfo.gameInfo.gameParameters.gameSpeed.modifier).toInt()
-                            if (unit.civInfo.hasUnique("Double gold from Great Merchant trade missions"))
-                                goldEarned *= 2
-                            unit.civInfo.gold += goldEarned
-                            tile.owningCity!!.civInfo.getDiplomacyManager(unit.civInfo).influence += influenceEarned
-                            unit.civInfo.addNotification("Your trade mission to [${tile.owningCity!!.civInfo}] has earned you [${goldEarned}] gold and [$influenceEarned] influence!",
-                                    tile.owningCity!!.civInfo.civName, NotificationIcon.Gold, NotificationIcon.Culture)
-                            addGoldPerGreatPersonUsage(unit.civInfo)
-                            unit.destroy()
-                        }.takeIf { canConductTradeMission })
+                    uncivSound = UncivSound.Chimes,
+                    action = {
+                        // http://civilization.wikia.com/wiki/Great_Merchant_(Civ5)
+                        var goldEarned = ((350 + 50 * unit.civInfo.getEraNumber()) * unit.civInfo.gameInfo.gameParameters.gameSpeed.modifier).toInt()
+                        if (unit.civInfo.hasUnique("Double gold from Great Merchant trade missions"))
+                            goldEarned *= 2
+                        unit.civInfo.addGold(goldEarned)
+                        tile.owningCity!!.civInfo.getDiplomacyManager(unit.civInfo).influence += influenceEarned
+                        unit.civInfo.addNotification("Your trade mission to [${tile.owningCity!!.civInfo}] has earned you [${goldEarned}] gold and [$influenceEarned] influence!",
+                            tile.owningCity!!.civInfo.civName, NotificationIcon.Gold, NotificationIcon.Culture)
+                        addGoldPerGreatPersonUsage(unit.civInfo)
+                        unit.destroy()
+                    }.takeIf { canConductTradeMission })
             }
         }
     }
-
-
+    
+    private fun addSpreadReligionActions(unit: MapUnit, actionList: ArrayList<UnitAction>, tile: TileInfo) {
+        if (!unit.hasUnique("Can spread religion [] times")) return
+        if (unit.religion == null) return
+        val maxReligionSpreads = unit.maxReligionSpreads()
+        if (!unit.abilityUsedCount.containsKey("Religion Spread")) return // This should be impossible anways, but just in case
+        if (maxReligionSpreads <= unit.abilityUsedCount["Religion Spread"]!!) return
+        val city = tile.getCity()
+        actionList += UnitAction(UnitActionType.SpreadReligion,
+            title = "Spread [${unit.religion!!}]",
+            uncivSound = UncivSound.Choir,
+            action = {
+                unit.abilityUsedCount["Religion Spread"] = unit.abilityUsedCount["Religion Spread"]!! + 1
+                city!!.religion[unit.religion!!] = 100
+                unit.currentMovement = 0f
+                if (unit.abilityUsedCount["Religion Spread"] == maxReligionSpreads) {
+                    addGoldPerGreatPersonUsage(unit.civInfo)
+                    unit.destroy()
+                }
+            }.takeIf { unit.currentMovement > 0 && city != null && city.civInfo == unit.civInfo } // For now you can only convert your own cities
+        )
+    }
+    
     fun getImprovementConstructionActions(unit: MapUnit, tile: TileInfo): ArrayList<UnitAction> {
         val finalActions = ArrayList<UnitAction>()
-        for (unique in unit.getMatchingUniques("Can construct []")) {
+        var uniquesToCheck = unit.getMatchingUniques("Can construct []")
+        if (unit.abilityUsedCount.containsKey("Religion Spread") && unit.abilityUsedCount["Religion Spread"]!! == 0 && unit.maxReligionSpreads() > 0)
+            uniquesToCheck += unit.getMatchingUniques("Can construct [] if it hasn't spread religion yet")
+        for (unique in uniquesToCheck) {
             val improvementName = unique.params[0]
             val improvement = tile.ruleset.tileImprovements[improvementName]
             if (improvement == null) continue
             finalActions += UnitAction(UnitActionType.Create,
-                    title = "Create [$improvementName]",
-                    uncivSound = UncivSound.Chimes,
-                    action = {
-                        val unitTile = unit.getTile()
-                        for (terrainFeature in tile.terrainFeatures.filter { unitTile.ruleset.tileImprovements.containsKey("Remove $it") })
-                            unitTile.terrainFeatures.remove(terrainFeature)// remove forest/jungle/marsh
-                        unitTile.improvement = improvementName
-                        unitTile.improvementInProgress = null
-                        unitTile.turnsToImprovement = 0
-                        if (improvementName == Constants.citadel)
-                            takeOverTilesAround(unit)
-                        val city = unitTile.getCity()
-                        if (city != null) {
-                            city.cityStats.update()
-                            city.civInfo.updateDetailedCivResources()
-                        }
-                        addGoldPerGreatPersonUsage(unit.civInfo)
-                        unit.destroy()
-                    }.takeIf {
-                        unit.currentMovement > 0f && tile.canBuildImprovement(improvement, unit.civInfo)
-                                && !tile.isImpassible() // Not 100% sure that this check is necessary...
-                    })
+                title = "Create [$improvementName]",
+                uncivSound = UncivSound.Chimes,
+                action = {
+                    val unitTile = unit.getTile()
+                    for (terrainFeature in tile.terrainFeatures.filter { unitTile.ruleset.tileImprovements.containsKey("Remove $it") })
+                        unitTile.terrainFeatures.remove(terrainFeature)// remove forest/jungle/marsh
+                    unitTile.improvement = improvementName
+                    unitTile.improvementInProgress = null
+                    unitTile.turnsToImprovement = 0
+                    if (improvementName == Constants.citadel)
+                        takeOverTilesAround(unit)
+                    val city = unitTile.getCity()
+                    if (city != null) {
+                        city.cityStats.update()
+                        city.civInfo.updateDetailedCivResources()
+                    }
+                    // Why is this here? How do we now the unit is actually a great person?
+                    // What if in some mod some unit can construct a certain type of improvement using the "Can construct []" unique?
+                    // That unit does not need to be a great person at all, and yet it would trigger mausoleum of halicarnassus (?) here.
+                    addGoldPerGreatPersonUsage(unit.civInfo)
+                    unit.destroy()
+                }.takeIf {
+                    unit.currentMovement > 0f && tile.canBuildImprovement(improvement, unit.civInfo)
+                            && !tile.isImpassible() // Not 100% sure that this check is necessary...
+                })
         }
         return finalActions
     }
@@ -391,7 +518,7 @@ object UnitActions {
             val otherCiv = tile.getOwner()
             if (otherCiv != null) {
                 // decrease relations for -10 pt/tile
-                if (!otherCiv.knows(unit.civInfo)) otherCiv.meetCivilization(unit.civInfo)
+                if (!otherCiv.knows(unit.civInfo)) otherCiv.makeCivilizationsMeet(unit.civInfo)
                 otherCiv.getDiplomacyManager(unit.civInfo).addModifier(DiplomaticModifiers.StealingTerritory, -10f)
                 civsToNotify.add(otherCiv)
             }
@@ -407,7 +534,7 @@ object UnitActions {
         val cityWithMausoleum = civInfo.cities.firstOrNull { it.containsBuildingUnique(uniqueText) }
                 ?: return
         val goldEarned = (100 * civInfo.gameInfo.gameParameters.gameSpeed.modifier).toInt()
-        civInfo.gold += goldEarned
+        civInfo.addGold(goldEarned)
 
         val mausoleum = cityWithMausoleum.cityConstructions.getBuiltBuildings().first { it.uniques.contains(uniqueText) }
         civInfo.addNotification("[${mausoleum.name}] has provided [$goldEarned] Gold!", cityWithMausoleum.location, NotificationIcon.Gold)

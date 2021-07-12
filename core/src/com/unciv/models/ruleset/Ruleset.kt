@@ -34,11 +34,15 @@ class ModOptions {
 
     var lastUpdated = ""
     var modUrl = ""
+    var author = ""
+    var modSize = 0
 }
 
 class Ruleset {
 
     private val jsonParser = JsonParser()
+
+    var modWithReligionLoaded = false
 
     var name = ""
     val buildings = LinkedHashMap<String, Building>()
@@ -46,6 +50,7 @@ class Ruleset {
     val tileResources = LinkedHashMap<String, TileResource>()
     val tileImprovements = LinkedHashMap<String, TileImprovement>()
     val technologies = LinkedHashMap<String, Technology>()
+    val eras = LinkedHashMap<String, Era>()
     val units = LinkedHashMap<String, BaseUnit>()
     val unitPromotions = LinkedHashMap<String, Promotion>()
     val nations = LinkedHashMap<String, Nation>()
@@ -75,6 +80,7 @@ class Ruleset {
         buildings.putAll(ruleset.buildings)
         for (buildingToRemove in ruleset.modOptions.buildingsToRemove) buildings.remove(buildingToRemove)
         difficulties.putAll(ruleset.difficulties)
+        eras.putAll(ruleset.eras)
         nations.putAll(ruleset.nations)
         policyBranches.putAll(ruleset.policyBranches)
         policies.putAll(ruleset.policies)
@@ -91,25 +97,27 @@ class Ruleset {
         for (unitToRemove in ruleset.modOptions.unitsToRemove) units.remove(unitToRemove)
         for (nationToRemove in ruleset.modOptions.nationsToRemove) nations.remove(nationToRemove)
         mods += ruleset.mods
+        modWithReligionLoaded = modWithReligionLoaded || ruleset.modWithReligionLoaded
     }
 
     fun clear() {
+        beliefs.clear()
         buildings.clear()
         difficulties.clear()
-        nations.clear()
+        eras.clear()
         policyBranches.clear()
+        specialists.clear()
+        mods.clear()
+        nations.clear()
         policies.clear()
-        beliefs.clear()
         quests.clear()
         technologies.clear()
-        buildings.clear()
         terrains.clear()
         tileImprovements.clear()
         tileResources.clear()
         unitPromotions.clear()
-        specialists.clear()
         units.clear()
-        mods.clear()
+        modWithReligionLoaded = false
     }
 
 
@@ -147,6 +155,8 @@ class Ruleset {
         val improvementsFile = folderHandle.child("TileImprovements.json")
         if (improvementsFile.exists()) tileImprovements += createHashmap(jsonParser.getFromJson(Array<TileImprovement>::class.java, improvementsFile))
 
+        val erasFile = folderHandle.child("Eras.json")
+        if (erasFile.exists()) eras += createHashmap(jsonParser.getFromJson(Array<Era>::class.java, erasFile))
         val unitsFile = folderHandle.child("Units.json")
         if (unitsFile.exists()) units += createHashmap(jsonParser.getFromJson(Array<BaseUnit>::class.java, unitsFile))
 
@@ -209,7 +219,7 @@ class Ruleset {
     }
 
     fun getEras(): List<String> = technologies.values.map { it.column!!.era }.distinct()
-    fun hasReligion() = beliefs.any()
+    fun hasReligion() = beliefs.any() && modWithReligionLoaded
 
     fun getEraNumber(era: String) = getEras().indexOf(era)
     fun getSummary(): String {
@@ -225,9 +235,35 @@ class Ruleset {
         return stringList.joinToString()
     }
 
-
-    fun checkModLinks(): String {
+    /** Severity level of Mod RuleSet check */
+    enum class CheckModLinksStatus {OK, Warning, Error}
+    /** Result of a Mod RuleSet check */
+    // essentially a named Pair with a few shortcuts
+    class CheckModLinksResult(val status: CheckModLinksStatus, val message: String) {
+        // Empty constructor just makes the Complex Mod Check on the new game screen shorter
+        constructor(): this(CheckModLinksStatus.OK, "")
+        // Constructor that joins lines
+        constructor(status: CheckModLinksStatus, lines: ArrayList<String>):
+                this (status,
+                    lines.joinToString("\n"))
+        // Constructor that auto-determines severity
+        constructor(warningCount: Int, lines: ArrayList<String>):
+                this (
+                    when {
+                        lines.isEmpty() -> CheckModLinksStatus.OK
+                        lines.size == warningCount -> CheckModLinksStatus.Warning
+                        else -> CheckModLinksStatus.Error
+                    },
+                    lines)
+        // Allows $this in format strings
+        override fun toString() = message
+        // Readability shortcuts
+        fun isError() = status == CheckModLinksStatus.Error
+        fun isNotOK() = status != CheckModLinksStatus.OK
+    }
+    fun checkModLinks(): CheckModLinksResult {
         val lines = ArrayList<String>()
+        var warningCount = 0
 
         // Checks for all mods
         for (unit in units.values) {
@@ -251,7 +287,7 @@ class Ruleset {
                 lines += "${building.name} must either have an explicit cost or reference an existing tech!"
         }
 
-        if (!modOptions.isBaseRuleset) return lines.joinToString("\n")
+        if (!modOptions.isBaseRuleset) return CheckModLinksResult(warningCount, lines)
 
 
         for (unit in units.values) {
@@ -315,23 +351,52 @@ class Ruleset {
                     lines += "${terrain.name} occurs on terrain $baseTerrain which does not exist!"
         }
 
+        val prereqsHashMap = HashMap<String,HashSet<String>>()
         for (tech in technologies.values) {
             for (prereq in tech.prerequisites) {
                 if (!technologies.containsKey(prereq))
                     lines += "${tech.name} requires tech $prereq which does not exist!"
 
-                fun getPrereqTree(technologyName: String): Sequence<String> {
+                fun getPrereqTree(technologyName: String): Set<String> {
+                    if (prereqsHashMap.containsKey(technologyName)) return prereqsHashMap[technologyName]!!
                     val technology = technologies[technologyName]
-                    if (technology == null) return sequenceOf()
-                    return technology.prerequisites.asSequence() + technology.prerequisites.flatMap { getPrereqTree(it) }
+                    if (technology == null) return emptySet()
+                    val techHashSet = HashSet<String>()
+                    techHashSet += technology.prerequisites
+                    for (prereq in technology.prerequisites)
+                        techHashSet += getPrereqTree(prereq)
+                    prereqsHashMap[technologyName] = techHashSet
+                    return techHashSet
                 }
 
-                val allOtherPrereqs = tech.prerequisites.asSequence().filterNot { it == prereq }.flatMap { getPrereqTree(it) }
-                if (allOtherPrereqs.contains(prereq))
+                if (tech.prerequisites.asSequence().filterNot { it == prereq }
+                        .any { getPrereqTree(it).contains(prereq) }){
                     lines += "No need to add $prereq as a prerequisite of ${tech.name} - it is already implicit from the other prerequisites!"
+                    warningCount++
+                }
             }
+            // eras.isNotEmpty() is only for mod compatibility, it should be removed at some point.
+            if (eras.isNotEmpty() && tech.era() !in eras)
+                lines += "Unknown era ${tech.era()} referenced in column of tech ${tech.name}"
         }
-        return lines.joinToString("\n")
+
+        for (era in eras) {
+            for (wonder in era.value.startingObsoleteWonders)
+                if (wonder !in buildings)
+                    lines += "Nonexistent wonder ${wonder} obsoleted when starting in ${era.key}!"
+            for (building in era.value.settlerBuildings)
+                if (building !in buildings)
+                    lines += "Nonexistent building ${building} built by settlers when starting in ${era.key}"
+            if (era.value.startingMilitaryUnit !in units)
+                lines += "Nonexistent unit ${era.value.startingMilitaryUnit} marked as starting unit when starting in ${era.key}"
+            if (era.value.researchAgreementCost < 0 || era.value.startingSettlerCount < 0 || era.value.startingWorkerCount < 0 || era.value.startingMilitaryUnitCount < 0 || era.value.startingGold < 0 || era.value.startingCulture < 0)
+                lines += "Unexpected negative number found while parsing era ${era.key}"
+            if (era.value.settlerPopulation <= 0)
+                lines += "Population in cities from settlers must be strictly positive! Found value ${era.value.settlerPopulation} for era ${era.key}"
+        }
+
+
+        return CheckModLinksResult(warningCount, lines)
     }
 }
 
@@ -386,6 +451,9 @@ object RulesetCache :HashMap<String,Ruleset>() {
             newRuleset.mods += mod.name
             if (mod.modOptions.isBaseRuleset) {
                 newRuleset.modOptions = mod.modOptions
+            }
+            if (mod.beliefs.any()) {
+                newRuleset.modWithReligionLoaded = true
             }
         }
         newRuleset.updateBuildingCosts() // only after we've added all the mods can we calculate the building costs

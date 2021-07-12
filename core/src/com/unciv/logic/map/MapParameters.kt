@@ -102,6 +102,7 @@ object MapShape {
 object MapType {
     const val pangaea = "Pangaea"
     const val continents = "Continents"
+    const val fourCorners = "Four Corners"
     const val perlin = "Perlin"
     const val archipelago = "Archipelago"
 
@@ -119,8 +120,6 @@ class MapParameters {
     var name = ""
     var type = MapType.pangaea
     var shape = MapShape.hexagonal
-    @Deprecated("replaced by mapSize since 3.14.7")
-    var size = MapSize.Medium
     var mapSize = MapSizeNew(MapSize.Medium)
     var noRuins = false
     var noNaturalWonders = false
@@ -129,7 +128,7 @@ class MapParameters {
     /** This is used mainly for the map editor, so you can continue editing a map under the ame ruleset you started with */
     var mods = LinkedHashSet<String>()
 
-    var seed: Long = 0
+    var seed: Long = System.currentTimeMillis()
     var tilesPerBiomeArea = 6
     var maxCoastExtension = 2
     var elevationExponent = 0.7f
@@ -139,7 +138,12 @@ class MapParameters {
     var resourceRichness = 0.1f
     var waterThreshold = 0f
 
+    fun reseed() {
+        seed = System.currentTimeMillis()
+    }
+
     fun resetAdvancedSettings() {
+        reseed()
         tilesPerBiomeArea = 6
         maxCoastExtension = 2
         elevationExponent = 0.7f

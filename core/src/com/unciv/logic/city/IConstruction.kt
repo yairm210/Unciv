@@ -10,7 +10,7 @@ interface IConstruction : INamed {
     fun getGoldCost(civInfo: CivilizationInfo): Int
     fun isBuildable(cityConstructions: CityConstructions): Boolean
     fun shouldBeDisplayed(cityConstructions: CityConstructions): Boolean
-    fun postBuildEvent(construction: CityConstructions, wasBought: Boolean = false): Boolean  // Yes I'm hilarious.
+    fun postBuildEvent(cityConstructions: CityConstructions, wasBought: Boolean = false): Boolean  // Yes I'm hilarious.
     fun getResourceRequirements(): HashMap<String,Int>
     fun canBePurchased(): Boolean
 }
@@ -59,7 +59,7 @@ open class PerpetualConstruction(override var name: String, val description: Str
     override fun isBuildable(cityConstructions: CityConstructions): Boolean =
             throw Exception("Impossible!")
 
-    override fun postBuildEvent(construction: CityConstructions, wasBought: Boolean) =
+    override fun postBuildEvent(cityConstructions: CityConstructions, wasBought: Boolean) =
             throw Exception("Impossible!")
 
     override fun getResourceRequirements(): HashMap<String, Int> = hashMapOf()

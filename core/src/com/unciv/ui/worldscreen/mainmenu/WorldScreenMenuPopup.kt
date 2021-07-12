@@ -1,10 +1,6 @@
 package com.unciv.ui.worldscreen.mainmenu
 
 import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.scenes.scene2d.Touchable
-import com.badlogic.gdx.scenes.scene2d.ui.Cell
-import com.badlogic.gdx.scenes.scene2d.ui.Table
-import com.unciv.Constants
 import com.unciv.MainMenuScreen
 import com.unciv.ui.civilopedia.CivilopediaScreen
 import com.unciv.ui.newgamescreen.GameSetupInfo
@@ -12,57 +8,37 @@ import com.unciv.ui.newgamescreen.NewGameScreen
 import com.unciv.ui.saves.LoadGameScreen
 import com.unciv.ui.saves.SaveGameScreen
 import com.unciv.ui.utils.Popup
-import com.unciv.ui.utils.addSeparator
-import com.unciv.ui.utils.onClick
-import com.unciv.ui.utils.toLabel
 import com.unciv.ui.victoryscreen.VictoryScreen
 import com.unciv.ui.worldscreen.WorldScreen
 
 class WorldScreenMenuPopup(val worldScreen: WorldScreen) : Popup(worldScreen) {
-
-    val buttonWidth = 200f
-    val buttonHeight = 30f
-
     init {
-        addMenuButton("Main menu") { worldScreen.game.setScreen(MainMenuScreen()) }
-        addMenuButton("Civilopedia") { worldScreen.game.setScreen(CivilopediaScreen(worldScreen.gameInfo.ruleSet)) }
-        addMenuButton("Save game") { worldScreen.game.setScreen(SaveGameScreen(worldScreen.gameInfo)) }
-        addMenuButton("Load game") { worldScreen.game.setScreen(LoadGameScreen(worldScreen)) }
+        defaults().fillX()
+        addButton("Main menu") { worldScreen.game.setScreen(MainMenuScreen()) }
+        addButton("Civilopedia") { worldScreen.game.setScreen(CivilopediaScreen(worldScreen.gameInfo.ruleSet)) }
+        addButton("Save game") { worldScreen.game.setScreen(SaveGameScreen(worldScreen.gameInfo)) }
+        addButton("Load game") { worldScreen.game.setScreen(LoadGameScreen(worldScreen)) }
 
-        addMenuButton("Start new game") {
-            val newGameScreen = NewGameScreen(worldScreen, GameSetupInfo(worldScreen.gameInfo))
+        addButton("Start new game") {
+            val newGameSetupInfo = GameSetupInfo(worldScreen.gameInfo)
+            newGameSetupInfo.mapParameters.reseed()
+            val newGameScreen = NewGameScreen(worldScreen, newGameSetupInfo)
             worldScreen.game.setScreen(newGameScreen)
         }
 
-        addMenuButton("Victory status") { worldScreen.game.setScreen(VictoryScreen(worldScreen)) }
-        addMenuButton("Options") { worldScreen.openOptionsPopup() }
-        addMenuButton("Community") { WorldScreenCommunityPopup(worldScreen).open(force = true) }
-
-        addSquareButton(Constants.close) {
+        addButton("Victory status") { worldScreen.game.setScreen(VictoryScreen(worldScreen)) }
+        addButton("Options") { worldScreen.openOptionsPopup() }
+        addButton("Community") {
             close()
-        }.size(buttonWidth, buttonHeight)
-    }
-
-    fun addMenuButton(text: String, action: () -> Unit) {
-        addSquareButton(text) {
-            action()
-            close()
-        }.size(buttonWidth, buttonHeight)
-        innerTable.addSeparator()
-    }
-
-
-    fun addSquareButton(text: String, action: () -> Unit): Cell<Table> {
-        val button = Table()
-        button.add(text.toLabel())
-        button.onClick(action)
-        button.touchable = Touchable.enabled
-        return add(button).apply { row() }
+            WorldScreenCommunityPopup(worldScreen).open(force = true) }
+        addCloseButton()
+        pack()
     }
 }
 
 class WorldScreenCommunityPopup(val worldScreen: WorldScreen) : Popup(worldScreen) {
     init {
+        defaults().fillX()
         addButton("Discord") {
             Gdx.net.openURI("https://discord.gg/bjrB4Xw")
             close()

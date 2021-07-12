@@ -11,13 +11,14 @@
 				"quote": "'Where tillage begins, other arts follow. The farmers therefore are the founders of human civilization.' - Daniel Webster",
 				"uniques": ["Starting tech"]
 			}
-		]	
+		]
 	},
 	{
 		"columnNumber": 1,
 		"era": "Ancient era",
-		"techCost": 35, 
+		"techCost": 35,
 		"buildingCost": 60,
+		"wonderCost": 185,
 		"techs": [
 			{
 				"name": "Pottery",
@@ -43,13 +44,13 @@
 				"prerequisites": ["Agriculture"],
 				"quote": "'The meek shall inherit the Earth, but not its mineral rights.' - J. Paul Getty"
 			}
-			
-		]	
+
+		]
 	},
 	{
 		"columnNumber": 2,
 		"era": "Ancient era",
-		"techCost": 55, 
+		"techCost": 55,
 		"buildingCost": 75,
 		"wonderCost": 185,
 		"techs": [
@@ -94,13 +95,13 @@
 				"row": 10,
 				"prerequisites": ["Mining"],
 				"quote": "'Here Hector entered, with a spear eleven cubits long in his hand; the bronze point gleamed in front of him, and was fastened to the shaft of the spear by a ring of gold.' - Homer"
-			}			
-		]	
+			}
+		]
 	},
 	{
 		"columnNumber": 3,
 		"era": "Classical era",
-		"techCost": 105, 
+		"techCost": 105,
 		"buildingCost": 100,
 		"wonderCost": 250,
 		"techs": [
@@ -130,20 +131,26 @@
 				"prerequisites": ["Masonry","The Wheel"],
 				"quote": "'Three things are to be looked to in a building: that it stands on the right spot; that it be securely founded; that it be successfully executed.' - Johann Wolfgang von Goethe"
 			}
-		]	
+		]
 	},
 	{
 		"columnNumber": 4,
 		"era": "Classical era",
-		"techCost": 175, 
-		"buildingCost": 120,
-		"wonderCost": 300,
+		"techCost": 175,
+		"buildingCost": 100,
+		"wonderCost": 250,
 		"techs": [
 			{
 				"name": "Philosophy",
-				"row": 3,
+				"row": 2,
 				"prerequisites": ["Writing","Calendar"],
 				"quote": "'There is only one good, knowledge, and one evil, ignorance.' - Socrates"
+			},
+			{
+				"name": "Drama and Poetry",
+				"row": 3,
+				"prerequisites": ["Writing"],
+				"quote": "'What is drama but life with the dull bits cut out.' - Alfred Hitchcock"
 			},
 			{
 				"name": "Currency",
@@ -164,25 +171,25 @@
 				"prerequisites": ["Bronze Working"],
 				"quote": "'Do not wait to strike til the iron is hot, but make it hot by striking.' - William Butler Yeats"
 			}
-		]	
+		]
 	},
 	{
 		"columnNumber": 5,
 		"era": "Medieval era",
 		"techCost": 275,
-		"buildingCost": 160,
-		"wonderCost": 400,
+		"buildingCost": 120,
+		"wonderCost": 300,
 		"techs": [
 			{
 				"name": "Theology",
 				"row": 2,
-				"prerequisites": ["Philosophy"],
+				"prerequisites": ["Philosophy", "Drama and Poetry"],
 				"quote": "'Three things are necessary for the salvation of man: to know what he ought to believe; to know what he ought to desire; and to know what he ought to do' - St. Thomas Aquinas"
 			},
 			{
 				"name": "Civil Service",
 				"row": 5,
-				"prerequisites": ["Currency","Horseback Riding","Philosophy"],
+				"prerequisites": ["Currency","Horseback Riding","Drama and Poetry"],
 				"uniques": ["Enables Open Borders agreements"],
 				"quote": "'The only thing that saves us from the bureaucracy is its inefficiency' - Eugene McCarthy"
 			},
@@ -204,9 +211,9 @@
 	{
 		"columnNumber": 6,
 		"era": "Medieval era",
-		"techCost": 485, 
-		"buildingCost": 200,
-		"wonderCost": 500,
+		"techCost": 485,
+		"buildingCost": 160,
+		"wonderCost": 400,
 		"techs": [
 			{
 				"name": "Compass",
@@ -247,14 +254,14 @@
 				"prerequisites": ["Metal Casting"],
 				"quote": "'John Henry said to his Captain, / 'A man ain't nothin' but a man, / And before I'll let your steam drill beat me down, / I'll die with the hammer in my hand.'' - Anonymous: The Ballad of John Henry, the Steel-Drivin' Man"
 			}
-		]	
+		]
 	},
 	{
 		"columnNumber": 7,
 		"era": "Renaissance era",
-		"techCost": 780, 
-		"buildingCost": 250,
-		"wonderCost": 625,
+		"techCost": 780,
+		"buildingCost": 200,
+		"wonderCost": 500,
 		"techs": [
 			{
 				"name": "Astronomy",
@@ -287,14 +294,14 @@
 				"prerequisites": ["Physics","Steel"],
 				"quote": "'The day when two army corps can annihilate each other in one second, all civilized nations, it is to be hoped, will recoil from war and discharge their troops.' - Alfred Nobel"
 			}
-		]	
+		]
 	},
 	{
 		"columnNumber": 8,
 		"era": "Renaissance era",
-		"techCost": 1150, 
-		"buildingCost": 300,
-		"wonderCost": 750,
+		"techCost": 1150,
+		"buildingCost": 250,
+		"wonderCost": 625,
 		"techs": [
 			{
 				"name": "Navigation",
@@ -326,14 +333,14 @@
 				"prerequisites": ["Gunpowder"],
 				"quote": "'Wherever we look, the work of the chemist has raised the level of our civilization and has increased the productive capacity of the nation.' - Calvin Coolidge"
 			}
-		]	
+		]
 	},
 	{
 		"columnNumber": 9,
 		"era": "Industrial era",
 		"techCost": 1600,
-		"buildingCost": 360,
-		"wonderCost": 920,
+		"buildingCost": 300,
+		"wonderCost": 750,
 		"techs": [
 			{
 				"name": "Archaeology",
@@ -371,14 +378,14 @@
 				"prerequisites": ["Chemistry"],
 				"quote": "'The nation that destroys its soil destroys itself.' - Franklin Delano Roosevelt"
 			}
-		]	
+		]
 	},
 	{
 		"columnNumber": 10,
 		"era": "Industrial era",
 		"techCost": 2350,
-		"buildingCost": 500,
-		"wonderCost": 1060,
+		"buildingCost": 360,
+		"wonderCost": 900, // Note that this column doesn't actually have any wonders. This just continues the wonderCost = 2.5 * buildingCost pattern from the last few columns.
 		"techs": [
 			{
 				"name": "Biology",
@@ -405,14 +412,14 @@
 				"prerequisites": ["Fertilizer","Military Science"],
 				"quote": "'As soon as men decide that all means are permitted to fight an evil, then their good becomes indistinguishable from the evil that they set out to destroy.' - Christopher Dawson"
 			}
-		]	
+		]
 	},
 	{
 		"columnNumber": 11,
 		"era": "Modern era",
 		"techCost": 3100,
 		"buildingCost": 500,
-		"wonderCost": 1250,
+		"wonderCost": 1060,
 		"techs": [
 			{
 				"name": "Refrigeration",
@@ -444,7 +451,7 @@
 				"prerequisites": ["Steam Power","Dynamite"],
 				"quote": "'The introduction of so powerful an agent as steam to a carriage on wheels will make a great change in the situation of man.' - Thomas Jefferson"
 			}
-		]	
+		]
 	},
 	{
 		"columnNumber": 12,
@@ -477,11 +484,11 @@
 				"prerequisites": ["Railroad"],
 				"quote": "'Any man who can drive safely while kissing a pretty girl is simply not giving the kiss the attention it deserves.' - Albert Einstein"
 			}
-		]	
+		]
 	},
 	{
 		"columnNumber": 13,
-		"era": "Information era",
+		"era": "Atomic era",
 		"techCost": 5100,
 		"buildingCost": 500,
 		"wonderCost": 1250,
@@ -510,14 +517,14 @@
 				"prerequisites": ["Ballistics","Combustion"],
 				"quote": "'The root of the evil is not the construction of new, more dreadful weapons. It is the spirit of conquest.' - Ludwig von Mises"
 			}
-		]	
+		]
 	},
 	{
 		"columnNumber": 14,
-		"era": "Information era",
+		"era": "Atomic era",
 		"techCost": 6400,
-		"buildingCost": 750,
-		"wonderCost": 2000,
+		"buildingCost": 500,
+		"wonderCost": 1250,
 		"techs": [
 			{
 				"name": "Ecology",
@@ -547,11 +554,17 @@
 	},
 	{
 		"columnNumber": 15,
-		"era": "Future era",
+		"era": "Information era",
 		"techCost": 7700,
 		"buildingCost": 750,
 		"wonderCost": 1250,
 		"techs": [
+			{
+				"name": "Telecommunications",
+				"row": 2,
+				"prerequisites": ["Ecology"],
+				"quote": "'The more we elaborate our means of communication, the less we communicate.' - J.B. Priestly"
+			},
 			{
 				"name": "Mobile Tactics",
 				"row": 3,
@@ -559,10 +572,16 @@
 				"quote": "'All men can see these tactics whereby I conquer, but what none can see is the strategy out of which victory is evolved.' - Sun Tzu"
 			},
 			{
-				"name": "Satellites",
+				"name": "Advanced Ballistics",
 				"row": 5,
 				"prerequisites": ["Nuclear Fission","Rocketry"],
-				"uniques": ["Reveals the entire map"], 
+				"quote": "'Our scientific power has outrun our spiritual power, we have guided missiles and misguided men.' – Martin Luther King Jr."
+			},
+			{
+				"name": "Satellites",
+				"row": 6,
+				"prerequisites": ["Rocketry"],
+				"uniques": ["Reveals the entire map"],
 				"quote": "'Now, somehow, in some new way, the sky seemed almost alien.' - Lyndon B. Johnson"
 			},
 			{
@@ -577,27 +596,39 @@
 				"prerequisites": ["Computers"],
 				"quote": "'The night is far spent, the day is at hand: let us therefore cast off the works of darkness, and let us put on the armor of light.' - The Holy Bible: Romans, 13:12"
 			}
-		]	
+		]
 	},
-	
+
 	{
 		"columnNumber": 16,
-		"era": "Future era",
+		"era": "Information era",
 		"techCost": 8800,
 		"buildingCost": 750,
 		"wonderCost": 1250,
 		"techs": [
 			{
 				"name": "Particle Physics",
-				"row": 4,
-				"prerequisites": ["Mobile Tactics","Satellites"],
+				"row": 3,
+				"prerequisites": ["Telecommunications","Mobile Tactics","Advanced Ballistics"],
 				"quote": "'Every particle of matter is attracted by or gravitates to every other particle of matter with a force inversely proportional to the squares of their distances.' - Isaac Newton"
+			},
+			{
+				"name": "Nuclear Fusion",
+				"row": 6,
+				"prerequisites": ["Advanced Ballistics", "Satellites", "Robotics"],
+				"quote": "'The release of atomic energy has not created a new problem. It has readily made more urgent the necessity of solving an existing one.' - Albert Einstein"
 			},
 			{
 				"name": "Nanotechnology",
 				"row": 7,
-				"prerequisites": ["Robotics","Lasers"],
+				"prerequisites": ["Robotics"],
 				"quote": "'The impact of nanotechnology is expected to exceed the impact that the electronics revolution has had on our lives.' - Richard Schwartz"
+			},
+			{
+				"name": "Stealth",
+				"row": 8,
+				"prerequisites": ["Robotics", "Lasers"],
+				"quote": "'Be extremely subtle, even to the point of formlessness, be extremely mysterious, even to the point of soundlessness. Thereby you can be the director of the opponent's fate.' - Sun Tzu"
 			}
 		]
 	},
@@ -611,10 +642,10 @@
 			{
 				"name": "Future Tech",
 				"row": 5,
-				"prerequisites": ["Nanotechnology","Particle Physics"],
+				"prerequisites": ["Particle Physics", "Nuclear Fusion", "Nanotechnology", "Stealth"],
 				"uniques": ["Who knows what the future holds?", "Can be continually researched"],
 				"quote": "'I think we agree, the past is over.' - George W. Bush"
 			}
-		]	
+		]
 	}
 ]

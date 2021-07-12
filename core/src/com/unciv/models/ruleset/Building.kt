@@ -1,6 +1,7 @@
 package com.unciv.models.ruleset
 
 import com.unciv.logic.city.CityConstructions
+import com.unciv.logic.city.CityInfo
 import com.unciv.logic.city.IConstruction
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.Counter
@@ -64,24 +65,13 @@ class Building : NamedStats(), IConstruction {
     var replacementTextForUniques = ""
     val uniqueObjects: List<Unique> by lazy { uniques.map { Unique(it) } }
 
-    /**
-     * The bonus stats that a resource gets when this building is built
-     */
-    @Deprecated("Since 3.13.3 - replaced with '[stats] from [resource] tiles in this city'")
-    var resourceBonusStats: Stats? = null
-
     fun getShortDescription(ruleset: Ruleset): String { // should fit in one line
         val infoList = mutableListOf<String>()
         val str = getStats(null).toString()
         if (str.isNotEmpty()) infoList += str
         for (stat in getStatPercentageBonuses(null).toHashMap())
-            if (stat.value != 0f) infoList += "+${stat.value.toInt()}% ${stat.key.toString().tr()}"
+            if (stat.value != 0f) infoList += "+${stat.value.toInt()}% ${stat.key.name.tr()}"
 
-        val improvedResources = ruleset.tileResources.values.asSequence().filter { it.building == name }.map { it.name.tr() }
-        if (improvedResources.any()) {
-            // buildings that improve resources
-            infoList += improvedResources.joinToString() + " {provide} " + resourceBonusStats.toString()
-        }
         if (requiredNearbyImprovedResources != null)
             infoList += "Requires worked [" + requiredNearbyImprovedResources!!.joinToString("/") { it.tr() } + "] near city"
         if (uniques.isNotEmpty()) {
@@ -98,7 +88,7 @@ class Building : NamedStats(), IConstruction {
         val tileBonusHashmap = HashMap<String, ArrayList<String>>()
         val finalUniques = ArrayList<String>()
         for (unique in uniqueObjects)
-            if (unique.placeholderText == "[] from [] tiles in this city") {
+            if (unique.placeholderText == "[] from [] tiles []" && unique.params[2] == "in this city") {
                 val stats = unique.params[0]
                 if (!tileBonusHashmap.containsKey(stats)) tileBonusHashmap[stats] = ArrayList()
                 tileBonusHashmap[stats]!!.add(unique.params[1])
@@ -108,8 +98,8 @@ class Building : NamedStats(), IConstruction {
         return finalUniques
     }
 
-    fun getDescription(forBuildingPickerScreen: Boolean, civInfo: CivilizationInfo?, ruleset: Ruleset): String {
-        val stats = getStats(civInfo)
+    fun getDescription(forBuildingPickerScreen: Boolean, cityInfo: CityInfo?, ruleset: Ruleset): String {
+        val stats = getStats(cityInfo)
         val stringBuilder = StringBuilder()
         if (uniqueTo != null) stringBuilder.appendLine("Unique to [$uniqueTo], replaces [$replaces]".tr())
         if (!forBuildingPickerScreen) stringBuilder.appendLine("{Cost}: $cost".tr())
@@ -134,7 +124,7 @@ class Building : NamedStats(), IConstruction {
         if (!stats.isEmpty())
             stringBuilder.appendLine(stats.toString())
 
-        val percentStats = getStatPercentageBonuses(civInfo)
+        val percentStats = getStatPercentageBonuses(cityInfo)
         if (percentStats.production != 0f) stringBuilder.append("+" + percentStats.production.toInt() + "% {Production}\n".tr())
         if (percentStats.gold != 0f) stringBuilder.append("+" + percentStats.gold.toInt() + "% {Gold}\n".tr())
         if (percentStats.science != 0f) stringBuilder.append("+" + percentStats.science.toInt() + "% {Science}\r\n".tr())
@@ -152,11 +142,6 @@ class Building : NamedStats(), IConstruction {
         for ((specialistName, amount) in newSpecialists())
             stringBuilder.appendLine("+$amount " + "[$specialistName] slots".tr())
 
-        if (resourceBonusStats != null) {
-            val resources = ruleset.tileResources.values.filter { name == it.building }.joinToString { it.name.tr() }
-            stringBuilder.appendLine("$resources {provide} $resourceBonusStats".tr())
-        }
-
         if (requiredNearbyImprovedResources != null)
             stringBuilder.appendLine(("Requires worked [" + requiredNearbyImprovedResources!!.joinToString("/") { it.tr() } + "] near city").tr())
 
@@ -168,36 +153,35 @@ class Building : NamedStats(), IConstruction {
         return stringBuilder.toString().trim()
     }
 
-    fun getStats(civInfo: CivilizationInfo?): Stats {
+    fun getStats(city: CityInfo?): Stats {
         val stats = this.clone()
-        if (civInfo != null) {
-            val baseBuildingName = getBaseBuilding(civInfo.gameInfo.ruleSet).name
+        if (city == null) return stats
+        val civInfo = city.civInfo
 
-            for (unique in civInfo.getMatchingUniques("[] from every []")) {
-                if (unique.params[1] != baseBuildingName) continue
-                stats.add(unique.stats)
-            }
-
-            for (unique in uniqueObjects)
-                if (unique.placeholderText == "[] with []" && civInfo.hasResource(unique.params[1])
-                        && Stats.isStats(unique.params[0]))
-                    stats.add(unique.stats)
-
-            if (!isWonder)
-                for (unique in civInfo.getMatchingUniques("[] from all [] buildings")) {
-                    if (isStatRelated(Stat.valueOf(unique.params[1])))
-                        stats.add(unique.stats)
-                }
-            else
-                for (unique in civInfo.getMatchingUniques("[] from every Wonder"))
-                    stats.add(unique.stats)
-
+        for (unique in city.getMatchingUniques("[] from every []")) {
+            if (!matchesFilter(unique.params[1])) continue
+            stats.add(unique.stats)
         }
+
+        for (unique in uniqueObjects)
+            if (unique.placeholderText == "[] with []" && civInfo.hasResource(unique.params[1])
+                    && Stats.isStats(unique.params[0]))
+                stats.add(unique.stats)
+
+        if (!isWonder)
+            for (unique in city.getMatchingUniques("[] from all [] buildings")) {
+                if (isStatRelated(Stat.valueOf(unique.params[1])))
+                    stats.add(unique.stats)
+            }
+        else
+            for (unique in city.getMatchingUniques("[] from every Wonder"))
+                stats.add(unique.stats)
         return stats
     }
 
-    fun getStatPercentageBonuses(civInfo: CivilizationInfo?): Stats {
+    fun getStatPercentageBonuses(cityInfo: CityInfo?): Stats {
         val stats = if (percentStatBonus == null) Stats() else percentStatBonus!!.clone()
+        val civInfo = cityInfo?.civInfo
         if (civInfo == null) return stats // initial stats
 
         val baseBuildingName = getBaseBuilding(civInfo.gameInfo.ruleSet).name
@@ -261,7 +245,7 @@ class Building : NamedStats(), IConstruction {
         return rejectionReason == ""
                 || rejectionReason.startsWith("Requires")
                 || rejectionReason.startsWith("Consumes")
-                || rejectionReason == "Wonder is being built elsewhere"
+                || rejectionReason.endsWith("Wonder is being built elsewhere")
     }
 
     fun getRejectionReason(construction: CityConstructions): String {
@@ -288,17 +272,18 @@ class Building : NamedStats(), IConstruction {
 
         for (unique in uniqueObjects) when (unique.placeholderText) {
             "Enables nuclear weapon" -> if(!construction.cityInfo.civInfo.gameInfo.gameParameters.nuclearWeaponsEnabled) return "Disabled by setting"
-            "Must be on []" -> if (!cityCenter.matchesUniqueFilter(unique.params[0], civInfo)) return unique.text
-            "Must not be on []" -> if (cityCenter.matchesUniqueFilter(unique.params[0], civInfo)) return unique.text
+            "Must be on []" -> if (!cityCenter.matchesTerrainFilter(unique.params[0], civInfo)) return unique.text
+            "Must not be on []" -> if (cityCenter.matchesTerrainFilter(unique.params[0], civInfo)) return unique.text
             "Must be next to []" -> if (!(unique.params[0] == "Fresh water" && cityCenter.isAdjacentToRiver()) // Fresh water is special, in that rivers are not tiles themselves but also fit the filter.
-                    && cityCenter.getTilesInDistance(1).none { it.matchesUniqueFilter(unique.params[0], civInfo) }) return unique.text
-            "Must not be next to []" -> if (cityCenter.getTilesInDistance(1).any { it.matchesUniqueFilter(unique.params[0], civInfo) }) return unique.text
+                    && cityCenter.getTilesInDistance(1).none { it.matchesFilter(unique.params[0], civInfo) }) return unique.text
+            "Must not be next to []" -> if (cityCenter.getTilesInDistance(1).any { it.matchesFilter(unique.params[0], civInfo) }) return unique.text
             "Must have an owned [] within [] tiles" -> if (cityCenter.getTilesInDistance(unique.params[1].toInt()).none {
-                        it.matchesUniqueFilter(unique.params[0], civInfo) && it.getOwner() == construction.cityInfo.civInfo
+                        it.matchesFilter(unique.params[0], civInfo) && it.getOwner() == construction.cityInfo.civInfo
                     }) return unique.text
             "Can only be built in annexed cities" -> if (construction.cityInfo.isPuppet || construction.cityInfo.foundingCiv == ""
                     || construction.cityInfo.civInfo.civName == construction.cityInfo.foundingCiv) return unique.text
             "Obsolete with []" -> if (civInfo.tech.isResearched(unique.params[0])) return unique.text
+            "Hidden when religion is disabled" -> if (!civInfo.gameInfo.hasReligionEnabled()) return unique.text
         }
 
         if (uniqueTo != null && uniqueTo != civInfo.civName) return "Unique to $uniqueTo"
@@ -321,6 +306,11 @@ class Building : NamedStats(), IConstruction {
 
             if (civInfo.isCityState())
                 return "No world wonders for city-states"
+            
+            val ruleSet = civInfo.gameInfo.ruleSet
+            val startingEra = civInfo.gameInfo.gameParameters.startingEra
+            if (startingEra in ruleSet.eras && name in ruleSet.eras[startingEra]!!.startingObsoleteWonders)
+                return "Wonder is disabled when starting in this era"
         }
 
 
@@ -368,6 +358,16 @@ class Building : NamedStats(), IConstruction {
                         && civInfo.cities.any { !it.isPuppet && !it.cityConstructions.containsBuildingOrEquivalent(unique.params[0]) })
                     return "Requires a [${civInfo.getEquivalentBuilding(unique.params[0])}] in all cities"  // replace with civ-specific building for user
             }
+            "Hidden until [] social policy branches have been completed" -> {
+                if (construction.cityInfo.civInfo.getCompletedPolicyBranchesCount() < unique.params[0].toInt()) {
+                    return "Should not be displayed"
+                }
+            }
+            "Hidden when cultural victory is disabled" -> {
+                if ( !civInfo.gameInfo.gameParameters.victoryTypes.contains(VictoryType.Cultural)) {
+                    return "Hidden when cultural victory is disabled"
+                }
+            }
         }
 
         if (requiredBuilding != null && !construction.containsBuildingOrEquivalent(requiredBuilding!!)) {
@@ -399,7 +399,7 @@ class Building : NamedStats(), IConstruction {
         if (!civInfo.gameInfo.gameParameters.victoryTypes.contains(VictoryType.Scientific)
                 && "Enables construction of Spaceship parts" in uniques)
             return "Can't construct spaceship parts if scientific victory is not enabled!"
-
+        
         return ""
     }
 
@@ -413,8 +413,8 @@ class Building : NamedStats(), IConstruction {
             civInfo.victoryManager.currentsSpaceshipParts.add(name, 1)
             return true
         }
-        cityConstructions.addBuilding(name)
 
+        cityConstructions.addBuilding(name)
 
         val improvement = getImprovement(civInfo.gameInfo.ruleSet)
         if (improvement != null) {
@@ -425,7 +425,6 @@ class Building : NamedStats(), IConstruction {
                 tileWithImprovement.improvement = improvement.name
             }
         }
-
 
         if (providesFreeBuilding != null && !cityConstructions.containsBuildingOrEquivalent(providesFreeBuilding!!)) {
             var buildingToAdd = providesFreeBuilding!!
@@ -453,11 +452,25 @@ class Building : NamedStats(), IConstruction {
 
         return true
     }
+    
+    fun matchesFilter(filter: String): Boolean {
+        return when (filter) {
+            "All" -> true
+            name -> true
+            "Building", "Buildings" -> !(isWonder || isNationalWonder)
+            "Wonder", "Wonders" -> isWonder || isNationalWonder
+            replaces -> true
+            else -> {
+                if (uniques.contains(filter)) return true
+                return false
+            }
+        }
+    }
 
     fun isStatRelated(stat: Stat): Boolean {
         if (get(stat) > 0) return true
         if (getStatPercentageBonuses(null).get(stat) > 0) return true
-        if (resourceBonusStats != null && resourceBonusStats!!.get(stat) > 0) return true
+        if (uniqueObjects.any { it.placeholderText == "[] per [] population []" && it.stats.get(stat) > 0 }) return true
         return false
     }
 

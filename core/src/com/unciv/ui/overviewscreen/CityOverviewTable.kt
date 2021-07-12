@@ -15,7 +15,7 @@ import com.unciv.ui.utils.*
 import kotlin.math.max
 import kotlin.math.roundToInt
 
-class CityOverviewTable(val viewingPlayer: CivilizationInfo, val overviewScreen: EmpireOverviewScreen): Table() {
+class CityOverviewTable(private val viewingPlayer: CivilizationInfo, private val overviewScreen: EmpireOverviewScreen): Table() {
 
     companion object {
         const val iconSize = 50f  //if you set this too low, there is a chance that the tables will be misaligned
@@ -24,7 +24,7 @@ class CityOverviewTable(val viewingPlayer: CivilizationInfo, val overviewScreen:
     }
 
     private val columnsNames = arrayListOf("Population", "Food", "Gold", "Science", "Production", "Culture", "Happiness")
-            .apply { if (viewingPlayer.gameInfo.ruleSet.hasReligion()) add("Faith") }
+            .apply { if (viewingPlayer.gameInfo.hasReligionEnabled()) add("Faith") }
 
     init {
         val numHeaderCells = columnsNames.size + 2      // +1 City +1 Filler
@@ -52,7 +52,7 @@ class CityOverviewTable(val viewingPlayer: CivilizationInfo, val overviewScreen:
 
         // Prepare top third: cityInfoTableIcons
         cityInfoTableIcons.defaults()
-            .pad(paddingVert, paddingHorz, paddingVert, paddingHorz)
+            .pad(paddingVert, paddingHorz)
             .align(Align.center)
         cityInfoTableIcons.add("Cities".toLabel(fontSize = 24)).colspan(numHeaderCells).align(Align.center).row()
         val citySortIcon: IconCircleGroup = ImageGetter.getUnitIcon("Settler").surroundWithCircle(iconSize)
@@ -65,7 +65,7 @@ class CityOverviewTable(val viewingPlayer: CivilizationInfo, val overviewScreen:
 
         // Prepare middle third: cityInfoScrollPane (a ScrollPane containing cityInfoTableDetails)
         cityInfoTableDetails.defaults()
-            .pad(paddingVert, paddingHorz, paddingVert, paddingHorz)
+            .pad(paddingVert, paddingHorz)
             .minWidth(iconSize)     //we need the min width so we can align the different tables
             .align(Align.left)
 
@@ -83,7 +83,7 @@ class CityOverviewTable(val viewingPlayer: CivilizationInfo, val overviewScreen:
 
         // Prepare bottom third: cityInfoTableTotal
         cityInfoTableTotal.defaults()
-            .pad(paddingVert, paddingHorz, paddingVert, paddingHorz)
+            .pad(paddingVert, paddingHorz)
             .minWidth(iconSize) //we need the min width so we can align the different tables
 
         cityInfoTableTotal.add("Total".toLabel())
@@ -109,8 +109,9 @@ class CityOverviewTable(val viewingPlayer: CivilizationInfo, val overviewScreen:
     }
 
     private fun getStatOfCity(cityInfo: CityInfo, stat: Stat): Int {
-        if (stat == Stat.Happiness) return cityInfo.cityStats.happinessList.values.sum().roundToInt()
-        else return cityInfo.cityStats.currentCityStats.get(stat).roundToInt()
+        return if (stat == Stat.Happiness)
+             cityInfo.cityStats.happinessList.values.sum().roundToInt()
+        else cityInfo.cityStats.currentCityStats.get(stat).roundToInt()
     }
 
     private fun fillCitiesTable(citiesTable: Table, sortType: String, descending: Boolean) {

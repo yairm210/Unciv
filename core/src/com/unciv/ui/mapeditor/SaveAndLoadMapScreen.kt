@@ -19,16 +19,17 @@ import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 
 class SaveAndLoadMapScreen(mapToSave: TileMap?, save:Boolean = false, previousScreen: CameraStageBaseScreen)
         : PickerScreen(disableScroll = true) {
-    var chosenMap: FileHandle? = null
+    private var chosenMap: FileHandle? = null
     val deleteButton = "Delete map".toTextButton()
     val mapsTable = Table().apply { defaults().pad(10f) }
-    val mapNameTextField = TextField("", skin).apply { maxLength = 100 }
+    private val mapNameTextField = TextField("", skin).apply { maxLength = 100 }
 
     init {
+        val rightSideButtonAction: ()->Unit
         if (save) {
             rightSideButton.enable()
             rightSideButton.setText("Save map".tr())
-            rightSideButton.onClick {
+            rightSideButtonAction = {
                 mapToSave!!.mapParameters.name = mapNameTextField.text
                 mapToSave.mapParameters.type = MapType.custom
                 thread(name = "SaveMap") {
@@ -52,7 +53,7 @@ class SaveAndLoadMapScreen(mapToSave: TileMap?, save:Boolean = false, previousSc
             }
         } else {
             rightSideButton.setText("Load map".tr())
-            rightSideButton.onClick {
+            rightSideButtonAction = {
                 thread {
                     Gdx.app.postRunnable {
                         val popup = Popup(this)
@@ -68,6 +69,8 @@ class SaveAndLoadMapScreen(mapToSave: TileMap?, save:Boolean = false, previousSc
                 }
             }
         }
+        rightSideButton.onClick(rightSideButtonAction)
+        keyPressDispatcher[KeyCharAndCode.RETURN] = rightSideButtonAction
 
         topTable.add(ScrollPane(mapsTable)).maxWidth(stage.width / 2)
 
@@ -75,30 +78,29 @@ class SaveAndLoadMapScreen(mapToSave: TileMap?, save:Boolean = false, previousSc
 
         if (save) {
             mapNameTextField.textFieldFilter = TextField.TextFieldFilter { _, char -> char != '\\' && char != '/' }
-            mapNameTextField.text = "My new map"
+            mapNameTextField.text = if (mapToSave == null || mapToSave.mapParameters.name.isEmpty()) "My new map"
+                else mapToSave.mapParameters.name
             rightSideTable.add(mapNameTextField).width(300f).pad(10f)
-        } else {
-            val downloadMapButton = "Download map".toTextButton()
-            downloadMapButton.onClick {
-                MapDownloadPopup(this).open()
-            }
-            rightSideTable.add(downloadMapButton).row()
+            stage.keyboardFocus = mapNameTextField
+            mapNameTextField.selectAll()
         }
 
         rightSideTable.addSeparator()
 
         if (save) {
             val copyMapAsTextButton = "Copy to clipboard".toTextButton()
-            copyMapAsTextButton.onClick {
+            val copyMapAsTextAction = {
                 val json = Json().toJson(mapToSave)
                 val base64Gzip = Gzip.zip(json)
                 Gdx.app.clipboard.contents = base64Gzip
             }
+            copyMapAsTextButton.onClick (copyMapAsTextAction)
+            keyPressDispatcher['\u0003'] = copyMapAsTextAction   // Ctrl-C
             rightSideTable.add(copyMapAsTextButton).row()
         } else {
             val loadFromClipboardButton = "Load copied data".toTextButton()
             val couldNotLoadMapLabel = "Could not load map!".toLabel(Color.RED).apply { isVisible = false }
-            loadFromClipboardButton.onClick {
+            val loadFromClipboardAction = {
                 try {
                     val clipboardContentsString = Gdx.app.clipboard.contents.trim()
                     val decoded = Gzip.unzip(clipboardContentsString)
@@ -108,16 +110,20 @@ class SaveAndLoadMapScreen(mapToSave: TileMap?, save:Boolean = false, previousSc
                     couldNotLoadMapLabel.isVisible = true
                 }
             }
+            loadFromClipboardButton.onClick(loadFromClipboardAction)
+            keyPressDispatcher['\u0016'] = loadFromClipboardAction   // Ctrl-V
             rightSideTable.add(loadFromClipboardButton).row()
             rightSideTable.add(couldNotLoadMapLabel).row()
         }
 
-        deleteButton.onClick {
+        val deleteAction = {
             YesNoPopup("Are you sure you want to delete this map?", {
                 chosenMap!!.delete()
                 game.setScreen(SaveAndLoadMapScreen(mapToSave, save, previousScreen))
             }, this).open()
         }
+        deleteButton.onClick(deleteAction)
+        keyPressDispatcher['\u007f'] = deleteAction     // Input.Keys.DEL but ascii has precedence
         rightSideTable.add(deleteButton).row()
 
         topTable.add(rightSideTable)
@@ -132,22 +138,23 @@ class SaveAndLoadMapScreen(mapToSave: TileMap?, save:Boolean = false, previousSc
         deleteButton.color = Color.RED
 
         deleteButton.setText("Delete map".tr())
-//        rightSideButton.setText("Load map".tr())
 
         mapsTable.clear()
         for (map in MapSaver.getMaps()) {
-            val loadMapButton = TextButton(map.name(), skin)
-            loadMapButton.onClick {
+            val existingMapButton = TextButton(map.name(), skin)
+            existingMapButton.onClick {
                 for (cell in mapsTable.cells) cell.actor.color = Color.WHITE
-                loadMapButton.color = Color.BLUE
+                existingMapButton.color = Color.BLUE
 
                 rightSideButton.enable()
                 chosenMap = map
                 mapNameTextField.text = map.name()
+                mapNameTextField.setSelection(Int.MAX_VALUE,Int.MAX_VALUE)  // sets caret to end of text
+                
                 deleteButton.enable()
                 deleteButton.color = Color.RED
             }
-            mapsTable.add(loadMapButton).row()
+            mapsTable.add(existingMapButton).row()
         }
     }
 

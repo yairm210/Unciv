@@ -179,22 +179,6 @@ class Translations : LinkedHashMap<String, TranslationEntry>(){
         val translationFilesTime = System.currentTimeMillis() - startTime
         println("Loading percent complete of languages - "+translationFilesTime+"ms")
     }
-
-    companion object {
-        // Regex compilation is expensive, best to save it
-        val bonusOrPenaltyRegex = Regex("""(Bonus|Penalty) vs (.*) (\d*)%""")
-        fun translateBonusOrPenalty(unique: String): String {
-            val regexResult = bonusOrPenaltyRegex.matchEntire(unique)
-            if (regexResult == null) return unique.tr()
-            else {
-                var separatorCharacter = " "
-                if (UncivGame.Current.settings.language == "Simplified_Chinese") separatorCharacter = ""
-                val start = regexResult.groups[1]!!.value + " vs [" + regexResult.groups[2]!!.value + "]"
-                val translatedUnique = start.tr() + separatorCharacter + regexResult.groups[3]!!.value + "%"
-                return translatedUnique
-            }
-        }
-    }
 }
 
 
@@ -231,7 +215,7 @@ fun String.tr(): String {
     }
 
     // There might still be optimization potential here!
-    if (contains("[")) { // Placeholders!
+    if (contains('[')) { // Placeholders!
         /**
          * I'm SURE there's an easier way to do this but I can't think of it =\
          * So what's all this then?
@@ -247,31 +231,36 @@ fun String.tr(): String {
 
         // Convert "work on [building] has completed in [city]" to "work on [] has completed in []"
         val translationStringWithSquareBracketsOnly = this.getPlaceholderText()
+        val language = UncivGame.Current.settings.language
         // That is now the key into the translation HashMap!
         val translationEntry = UncivGame.Current.translations
-                .get(translationStringWithSquareBracketsOnly, UncivGame.Current.settings.language, activeMods)
+                .get(translationStringWithSquareBracketsOnly, language, activeMods)
 
-        if (translationEntry == null ||
-                !translationEntry.containsKey(UncivGame.Current.settings.language)) {
+        var languageSpecificPlaceholder: String
+        val originalEntry: String
+        if (translationEntry == null || !translationEntry.containsKey(language)) {
             // Translation placeholder doesn't exist for this language, default to English
-            return this.replace(eitherSquareBraceRegex, "")
+            languageSpecificPlaceholder = this
+            originalEntry = this
+        } else {
+            languageSpecificPlaceholder = translationEntry[language]!!
+            originalEntry = translationEntry.entry
         }
 
         // Take the terms in the message, WITHOUT square brackets
         val termsInMessage = this.getPlaceholderParameters()
         // Take the term from the placeholder, INCLUDING the square brackets
-        val termsInTranslationPlaceholder = squareBraceRegex.findAll(translationEntry.entry).map { it.value }.toList()
+        val termsInTranslationPlaceholder = squareBraceRegex.findAll(originalEntry).map { it.value }.toList()
         if (termsInMessage.size != termsInTranslationPlaceholder.size)
             throw Exception("Message $this has a different number of terms than the placeholder $translationEntry!")
 
-        var languageSpecificPlaceholder = translationEntry[UncivGame.Current.settings.language]!!
         for (i in termsInMessage.indices) {
             languageSpecificPlaceholder = languageSpecificPlaceholder.replace(termsInTranslationPlaceholder[i], termsInMessage[i].tr())
         }
         return languageSpecificPlaceholder      // every component is already translated
     }
 
-    if (contains("{")) { // sentence
+    if (contains('{')) { // sentence
         return curlyBraceRegex.replace(this) { it.groups[1]!!.value.tr() }
     }
 
@@ -284,7 +273,7 @@ fun String.getPlaceholderText() = this.replace(squareBraceRegex, "[]")
 
 fun String.equalsPlaceholderText(str:String): Boolean {
     if (first() != str.first()) return false // for quick negative return 95% of the time
-    return  this.getPlaceholderText() == str
+    return this.getPlaceholderText() == str
 }
 
 fun String.getPlaceholderParameters() = squareBraceRegex.findAll(this).map { it.groups[1]!!.value }.toList()

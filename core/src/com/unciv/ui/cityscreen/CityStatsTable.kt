@@ -31,7 +31,7 @@ class CityStatsTable(val cityScreen: CityScreen): Table() {
 
         val ministatsTable = Table()
         for ((stat, amount) in cityInfo.cityStats.currentCityStats.toHashMap()) {
-            if (stat == Stat.Faith && !cityInfo.getRuleset().hasReligion()) continue
+            if (stat == Stat.Faith && !cityInfo.civInfo.gameInfo.hasReligionEnabled()) continue
             ministatsTable.add(ImageGetter.getStatIcon(stat.name)).size(20f).padRight(5f)
             val valueToDisplay = if (stat == Stat.Happiness) cityInfo.cityStats.happinessList.values.sum() else amount
             ministatsTable.add(round(valueToDisplay).toInt().toString().toLabel()).padRight(10f)
@@ -42,6 +42,10 @@ class CityStatsTable(val cityScreen: CityScreen): Table() {
         addText()
         innerTable.addSeparator()
         innerTable.add(SpecialistAllocationTable(cityScreen).apply { update() })
+        if (cityInfo.civInfo.gameInfo.hasReligionEnabled()) {
+            innerTable.addSeparator()
+            addReligionInfo()
+        }
 
         pack()
     }
@@ -77,5 +81,12 @@ class CityStatsTable(val cityScreen: CityScreen): Table() {
         innerTable.add(turnsToPopString.toLabel()).row()
         if (cityInfo.isInResistance())
             innerTable.add("In resistance for another [${cityInfo.resistanceCounter}] turns".toLabel()).row()
+    }
+
+    private fun addReligionInfo() {
+        // This will later become large enough to be its own class, but for now it is small enough to fit inside a single function
+        val majorityReligion = cityInfo.religion.getMajorityReligion()
+        val label = majorityReligion ?: "None"
+        innerTable.add("Majority Religion: $label".toLabel())
     }
 }

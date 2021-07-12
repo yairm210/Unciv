@@ -1,6 +1,6 @@
 # This is a basic workflow to help you get started with Actions
 
-name: Build and deploy
+name: Build and deploy 
 
 # Controls when the action will run. 
 on:
@@ -52,7 +52,6 @@ jobs:
         env:
           BUTLER_API_KEY: ${{ secrets.BUTLER_API_KEY }}
         run: |
-          echo this is a release!
           wget -O jdk-windows-64.zip https://github.com/ojdkbuild/ojdkbuild/releases/download/java-1.8.0-openjdk-1.8.0.232-1.b09/java-1.8.0-openjdk-1.8.0.232-1.b09.ojdkbuild.windows.x86_64.zip  > /dev/null;
           wget -O jdk-windows-32.zip https://github.com/ojdkbuild/ojdkbuild/releases/download/java-1.8.0-openjdk-1.8.0.252-2.b09-x86/java-1.8.0-openjdk-1.8.0.252-2.b09.ojdkbuild.windows.x86.zip > /dev/null;
           wget -O butler.zip https://broth.itch.ovh/butler/linux-amd64/LATEST/archive/default > /dev/null;
@@ -68,6 +67,35 @@ jobs:
           ./gradlew desktop:zipLinuxFilesForJar;
           mv desktop/build/libs/Unciv.jar deploy/Unciv.jar
 
+      - name: Read release.md and use it as a body of new release
+        continue-on-error: true
+        if: github.event_name == 'push' && contains(github.ref, 'refs/tags/') 
+        id: read_release
+        shell: bash
+        run: |
+          ## To test this in Windows PS:  cat .\changelog.md | wsl grep -Pzo --color '\\#{2}.3.15.7[^\\#]*?\\#{2}' | wsl head -n -2
+          r=$(grep -Pzo '\#{2}.${{steps.tag.outputs.tag}}[^\#]*\#' changelog.md)  # grep to get only our release
+          r=$(echo "$r" | head -n -2) 
+          
+          ## See https://trstringer.com/github-actions-multiline-strings/
+          
+          echo "--- Set variable manually in github env ---"
+
+          echo "RELEASE_BODY<<EOF" >> $GITHUB_ENV
+          echo "$r" >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
+          
+      - name: Post announcement on Discord
+        continue-on-error: true
+        if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+        uses: Ilshidur/action-discord@0.3.2
+        with: 
+          args: | # See https://discordjs.guide/miscellaneous/parsing-mention-arguments.html#how-discord-mentions-work
+            <@&663705024265715743>
+            ${{ env.RELEASE_BODY }}
+
 
       - name: Upload binaries to release
         if: github.event_name == 'push' && contains(github.ref, 'refs/tags/') 
@@ -78,3 +106,7 @@ jobs:
           tag: ${{ github.ref }}
           overwrite: true
           file_glob: true
+            # <--- Use environment variables that was created earlier - see https://github.com/svenstaro/upload-release-action
+            # Single-quotes do not solve the multiline problem.
+          body: |
+            ${{ env.RELEASE_BODY }}

@@ -39,21 +39,18 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
 
     fun update() {
         isVisible = true
+        if (!worldScreen.canChangeState) { hide(); return }
 
         val attacker = tryGetAttacker()
-        if(attacker==null || !worldScreen.canChangeState){ hide(); return }
+        if (attacker == null) { hide(); return }
 
-        if (attacker is MapUnitCombatant && attacker.unit.hasUnique("Nuclear weapon")) {
+        if (attacker is MapUnitCombatant && attacker.unit.baseUnit.isNuclearWeapon()) {
             val selectedTile = worldScreen.mapHolder.selectedTile
             if (selectedTile == null) { hide(); return } // no selected tile
-            simulateNuke(attacker as MapUnitCombatant, selectedTile)
-        }
-        else {
+            simulateNuke(attacker, selectedTile)
+        } else {
             val defender = tryGetDefender()
-            if (defender == null) {
-                hide(); return
-            }
-
+            if (defender == null) { hide(); return }
             simulateBattle(attacker, defender)
         }
     }
@@ -119,7 +116,7 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
         add(defender.getDefendingStrength().toString()+Fonts.strength).row()
 
         val attackerModifiers =
-                BattleDamage.getAttackModifiers(attacker,null,defender).map {
+                BattleDamage.getAttackModifiers(attacker, defender).map {
                     val description = if(it.key.startsWith("vs ")) ("vs ["+it.key.replace("vs ","")+"]").tr() else it.key.tr()
                     val percentage = (if(it.value>0)"+" else "")+ it.value +"%"
                     "$description: $percentage"
@@ -231,7 +228,10 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
         add(attackerNameWrapper)
         var canNuke = true
         val defenderNameWrapper = Table()
-        for (tile in targetTile.getTilesInDistance(Battle.NUKE_RADIUS)) {
+        val blastRadius =
+            if (!attacker.unit.hasUnique("Blast radius []")) 2
+            else attacker.unit.getMatchingUniques("Blast radius []").first().params[0].toInt()
+        for (tile in targetTile.getTilesInDistance(blastRadius)) {
 
             //To make sure we dont nuke civilisations we cant declare war with
             val attackerCiv = attacker.getCivInfo()
@@ -279,7 +279,7 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
         }
         else {
             attackButton.onClick(attacker.getAttackSound()) {
-                Battle.nuke(attacker, targetTile)
+                Battle.NUKE(attacker, targetTile)
                 worldScreen.mapHolder.removeUnitActionOverlay() // the overlay was one of attacking
                 worldScreen.shouldUpdate = true
             }

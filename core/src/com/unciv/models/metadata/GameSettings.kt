@@ -4,7 +4,7 @@ import com.badlogic.gdx.Application
 import com.badlogic.gdx.Gdx
 import com.unciv.logic.GameSaver
 
-data class WindowState (val width:Int=0, val height:Int=0)
+data class WindowState (val width: Int = 900, val height: Int = 600)
 
 class GameSettings {
     var showWorkedTiles: Boolean = false
@@ -41,6 +41,7 @@ class GameSettings {
     var visualMods = HashSet<String>()
 
     var showExperimentalWorldWrap = false // We're keeping this as a config due to ANR problems on Android phones for people who don't know what they're doing :/
+    var showExperimentalReligion = false
 
     var lastOverviewPage: String = "Cities"
 

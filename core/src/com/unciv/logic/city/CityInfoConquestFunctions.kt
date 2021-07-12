@@ -32,11 +32,12 @@ class CityInfoConquestFunctions(val city: CityInfo){
         // Gain gold for plundering city
         val goldPlundered = getGoldForCapturingCity(conqueringCiv)
         city.apply {
-            conqueringCiv.gold += goldPlundered
+            conqueringCiv.addGold(goldPlundered)
             conqueringCiv.addNotification("Received [$goldPlundered] Gold for capturing [$name]", getCenterTile().position, NotificationIcon.Gold)
 
             val oldCiv = civInfo
-            val reconqueredOurCity = previousOwner == conqueringCiv.civName
+            val reconqueredCityWhileStillInResistance = previousOwner == conqueringCiv.civName && resistanceCounter != 0
+
 
             previousOwner = oldCiv.civName
             // must be before moving the city to the conquering civ,
@@ -46,10 +47,10 @@ class CityInfoConquestFunctions(val city: CityInfo){
             moveToCiv(conqueringCiv)
             Battle.destroyIfDefeated(oldCiv, conqueringCiv)
 
-            if (population.population > 1) population.population -= 1 + population.population / 4 // so from 2-4 population, remove 1, from 5-8, remove 2, etc.
+            if (population.population > 1) population.addPopulation(-1 - population.population / 4) // so from 2-4 population, remove 1, from 5-8, remove 2, etc.
             reassignPopulation()
 
-            if (reconqueredOurCity && resistanceCounter != 0) // we reconquered our city while it was still in resistance - we get it back with no resistance
+            if (reconqueredCityWhileStillInResistance || foundingCiv == conqueringCiv.civName)
                 resistanceCounter = 0
             else resistanceCounter = population.population  // I checked, and even if you puppet there's resistance for conquering
             isPuppet = true
@@ -83,7 +84,7 @@ class CityInfoConquestFunctions(val city: CityInfo){
         // How can you conquer a city but not know the civ you conquered it from?!
         // I don't know either, but some of our players have managed this, and crashed their game!
         if (!conqueringCiv.knows(oldCiv))
-            conqueringCiv.meetCivilization(oldCiv)
+            conqueringCiv.makeCivilizationsMeet(oldCiv)
 
         oldCiv.getDiplomacyManager(conqueringCiv)
                 .addModifier(DiplomaticModifiers.CapturedOurCities, -aggroGenerated)
@@ -126,6 +127,8 @@ class CityInfoConquestFunctions(val city: CityInfo){
             cityStats.update()
 
             // Move units out of the city when liberated
+            for (unit in getCenterTile().getUnits())
+                unit.movement.teleportToClosestMoveableTile()
             for (unit in getTiles().flatMap { it.getUnits() }.toList())
                 if (!unit.movement.canPassThrough(unit.currentTile))
                     unit.movement.teleportToClosestMoveableTile()
@@ -142,7 +145,7 @@ class CityInfoConquestFunctions(val city: CityInfo){
 
         // In order to get "plus points" in Diplomacy, you have to establish diplomatic relations if you haven't yet
         if (!conqueringCiv.knows(foundingCiv))
-            conqueringCiv.meetCivilization(foundingCiv)
+            conqueringCiv.makeCivilizationsMeet(foundingCiv)
 
         if (foundingCiv.isMajorCiv()) {
             foundingCiv.getDiplomacyManager(conqueringCiv)

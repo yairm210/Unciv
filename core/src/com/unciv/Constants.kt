@@ -2,9 +2,13 @@ package com.unciv
 
 object Constants {
     const val worker = "Worker"
-    const val workerUnique = "Can build improvements on tiles"
+    const val canBuildImprovements = "Can build [] improvements on tiles"
+    // Deprecated as of 3.15.5
+        const val workerUnique = "Can build improvements on tiles"
+    //
     const val settler = "Settler"
     const val settlerUnique = "Founds a new city"
+    const val eraSpecificUnit = "Era Starting Unit"
 
     const val impassable = "Impassable"
     const val ocean = "Ocean"
@@ -57,6 +61,8 @@ object Constants {
     const val unitActionSleepUntilHealed = "Sleep until healed"
     const val unitActionAutomation = "Automate"
     const val unitActionExplore = "Explore"
+    const val unitActionParadrop = "Paradrop"
+
     const val futureTech = "Future Tech"
 
     const val cancelImprovementOrder = "Cancel improvement order"
@@ -66,14 +72,6 @@ object Constants {
     const val disabled = "disabled"
     const val enabled = "enabled"
 
-    const val ancientEra = "Ancient era"
-    const val classicalEra = "Classical era"
-    const val medievalEra = "Medieval era"
-    const val renaissanceEra = "Renaissance era"
-    const val industrialEra = "Industrial era"
-    const val modernEra = "Modern era"
-    const val informationEra = "Information era"
-    const val futureEra = "Future era"
     const val barbarians = "Barbarians"
     const val spectator = "Spectator"
     const val custom = "Custom"

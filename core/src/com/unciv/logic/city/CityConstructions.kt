@@ -49,6 +49,7 @@ class CityConstructions {
         }
     var currentConstructionIsUserSet = false
     var constructionQueue = mutableListOf<String>()
+    var productionOverflow = 0
     val queueMaxSize = 10
 
     //region pure functions
@@ -58,6 +59,7 @@ class CityConstructions {
         toReturn.inProgressConstructions.putAll(inProgressConstructions)
         toReturn.currentConstructionIsUserSet = currentConstructionIsUserSet
         toReturn.constructionQueue.addAll(constructionQueue)
+        toReturn.productionOverflow = productionOverflow
         return toReturn
     }
 
@@ -76,13 +78,41 @@ class CityConstructions {
     fun getStats(): Stats {
         val stats = Stats()
         for (building in getBuiltBuildings())
-            stats.add(building.getStats(cityInfo.civInfo))
-
-        for (unique in builtBuildingUniqueMap.getAllUniques()) when (unique.placeholderText) {
-            "[] Per [] Population in this city" -> stats.add(unique.stats.times(cityInfo.population.population / unique.params[1].toFloat()))
-            "[] once [] is discovered" -> if (cityInfo.civInfo.tech.isResearched(unique.params[1])) stats.add(unique.stats)
+            stats.add(building.getStats(cityInfo))
+        
+        // Why only the local matching uniques you ask? Well, the non-local uniques are evaluated in
+        // CityStats.getStatsFromUniques(uniques). This function gets a list of uniques and one of
+        // the placeholderTexts it filters for is "[] per [] population []". Why doesn't that function
+        // then not also handle the local (i.e. cityFilter == "in this city") versions?
+        // This is because of what it is used for. The only time time a unique with this placeholderText
+        // is actually contained in `uniques`, is when `getStatsFromUniques` is called for determining
+        // the stats a city receives from wonders. It is then called with `unique` being the list
+        // of all specifically non-local uniques of all cities.
+        // 
+        // This averts the problem, albeit it barely, and it might change in the future without 
+        // anyone noticing, which might lead to further bugs. So why can't these two unique checks
+        // just be merged then? Because of another problem.
+        //
+        // As noted earlier, `getStatsFromUniques` is called in that case to calculate the stats
+        // this city received from wonders, both local and non-local. This function, `getStats`,
+        // is only called to calculate the stats the city receives from local buildings.
+        // In the current codebase with the current JSON objects it just so happens to be that
+        // all non-local uniques with this placeholderText from other cities belong to wonders, 
+        // while the local uniques with this placeholderText are from buildings, but this is in no
+        // way a given. In reality, there should be functions getBuildingStats and getWonderStats,
+        // to solve this, with getStats merely adding these two together. Implementing this is on
+        // my ToDoList, but this PR is already large enough as it is.
+        for (unique in cityInfo.getLocalMatchingUniques("[] per [] population []")
+                .filter { cityInfo.matchesFilter(it.params[2])}
+        ) {
+            stats.add(unique.stats.times(cityInfo.population.population / unique.params[1].toFloat()))
         }
-
+        
+        for (unique in cityInfo.getLocalMatchingUniques("[] once [] is discovered")) {
+            if (cityInfo.civInfo.tech.isResearched(unique.params[1]))
+                stats.add(unique.stats)
+        }
+        
         return stats
     }
 
@@ -90,13 +120,14 @@ class CityConstructions {
      * @return Maintenance cost of all built buildings
      */
     fun getMaintenanceCosts(): Int {
-        var maintenanceCost = getBuiltBuildings().sumBy { it.maintenance }
-        val policyManager = cityInfo.civInfo.policies
-        if (cityInfo.id in policyManager.legalismState) {
-            val buildingName = policyManager.legalismState[cityInfo.id]
-            maintenanceCost -= cityInfo.getRuleset().buildings[buildingName]!!.maintenance
+        var maintenanceCost = 0
+        // We cache this to increase performance
+        val freeBuildings = cityInfo.civInfo.policies.getListOfFreeBuildings(cityInfo.id)
+        for (building in getBuiltBuildings()) {
+            if (building.name !in freeBuildings) {
+                maintenanceCost += building.maintenance
+            }
         }
-
         return maintenanceCost
     }
 
@@ -106,7 +137,7 @@ class CityConstructions {
     fun getStatPercentBonuses(): Stats {
         val stats = Stats()
         for (building in getBuiltBuildings())
-            stats.add(building.getStatPercentageBonuses(cityInfo.civInfo))
+            stats.add(building.getStatPercentageBonuses(cityInfo))
         return stats
     }
 
@@ -126,7 +157,7 @@ class CityConstructions {
         val construction = getConstruction(constructionName)
         val cost = construction.getProductionCost(cityInfo.civInfo)
         val turnsToConstruction = turnsToConstruction(constructionName, useStoredProduction)
-        val currentProgress = getWorkDone(constructionName)
+        val currentProgress = if (useStoredProduction) getWorkDone(constructionName) else 0
         if (currentProgress == 0) return "\n$cost${Fonts.production} $turnsToConstruction${Fonts.turn}"
         else return "\n$currentProgress/$cost${Fonts.production}\n$turnsToConstruction${Fonts.turn}"
     }
@@ -157,7 +188,7 @@ class CityConstructions {
                 CivilopediaCategories.Unit.name
             else -> ""
         }
-        var label = currentConstructionSnapshot
+        var label = "{$currentConstructionSnapshot}"
         if (!PerpetualConstruction.perpetualConstructionsMap.containsKey(currentConstructionSnapshot)) {
             val turnsLeft = turnsToConstruction(currentConstructionSnapshot)
             label += " - $turnsLeft${Fonts.turn}"
@@ -224,7 +255,10 @@ class CityConstructions {
 
     fun turnsToConstruction(constructionName: String, useStoredProduction: Boolean = true): Int {
         val workLeft = getRemainingWork(constructionName, useStoredProduction)
-        if (workLeft < 0) // we've done more work than actually necessary - possible if circumstances cause buildings to be cheaper later
+        if (workLeft < 0) // This most often happens when a production is more than finished in a multiplayer game while its not your turn
+            return 0 // So we finish it at the start of the next turn. This could technically also happen when we lower production costs during our turn,
+        // but distinguishing those two cases is difficult, and the second one is much rarer than the first
+        if (workLeft <= productionOverflow) // if we already have stored up enough production to finish it directly
             return 1 // we'll finish this next turn
 
         val cityStatsForConstruction: Stats
@@ -250,7 +284,7 @@ class CityConstructions {
 
         val production = cityStatsForConstruction.production.roundToInt()
 
-        return ceil(workLeft / production.toDouble()).toInt()
+        return ceil((workLeft-productionOverflow) / production.toDouble()).toInt()
     }
     //endregion
 
@@ -272,12 +306,21 @@ class CityConstructions {
     fun constructIfEnough() {
         validateConstructionQueue()
 
+        // Update InProgressConstructions for any available refunds
+        validateInProgressConstructions()
+
         val construction = getConstruction(currentConstructionFromQueue)
         if (construction is PerpetualConstruction) chooseNextConstruction() // check every turn if we could be doing something better, because this doesn't end by itself
         else {
             val productionCost = construction.getProductionCost(cityInfo.civInfo)
             if (inProgressConstructions.containsKey(currentConstructionFromQueue)
                     && inProgressConstructions[currentConstructionFromQueue]!! >= productionCost) {
+                productionOverflow = inProgressConstructions[currentConstructionFromQueue]!! - productionCost
+                // See the URL below for explanation for this cap
+                // https://forums.civfanatics.com/threads/hammer-overflow.419352/
+                val maxOverflow = maxOf(productionCost, cityInfo.cityStats.currentCityStats.production.roundToInt())
+                if (productionOverflow > maxOverflow)
+                    productionOverflow = maxOverflow
                 constructionComplete(construction)
             }
         }
@@ -287,8 +330,13 @@ class CityConstructions {
         validateConstructionQueue()
         validateInProgressConstructions()
 
-        if (getConstruction(currentConstructionFromQueue) !is PerpetualConstruction)
-            addProductionPoints(cityStats.production.roundToInt())
+        if (getConstruction(currentConstructionFromQueue) !is PerpetualConstruction) {
+            if (getWorkDone(currentConstructionFromQueue) == 0) {
+                constructionBegun(getConstruction(currentConstructionFromQueue))
+            }
+            addProductionPoints(cityStats.production.roundToInt() + productionOverflow)
+            productionOverflow = 0
+        }
     }
 
 
@@ -296,20 +344,21 @@ class CityConstructions {
         val queueSnapshot = constructionQueue.toMutableList()
         constructionQueue.clear()
 
-        for (construction in queueSnapshot) {
-            if (getConstruction(construction).isBuildable(this))
-                constructionQueue.add(construction)
+        for (constructionName in queueSnapshot) {
+            if (getConstruction(constructionName).isBuildable(this))
+                constructionQueue.add(constructionName)
         }
     }
 
     private fun validateInProgressConstructions() {
         // remove obsolete stuff from in progress constructions - happens often and leaves clutter in memory and save files
-        // should have NO visible consequences - any accumulated points that may be reused later should stay (nukes when manhattan project city lost, nat wonder when conquered an empty city...)
-        // Needs only be called once in a while - endTurn is enough
+        // should have little visible consequences - any accumulated points that may be reused later should stay (nukes when manhattan project city lost, nat wonder when conquered an empty city...), all other points should be refunded
+        // Should at least be called before each turn - if another civ completes a wonder after our previous turn, we should get the refund this turn
         val inProgressSnapshot = inProgressConstructions.keys.filter { it != currentConstructionFromQueue }
         for (constructionName in inProgressSnapshot) {
+            val construction = getConstruction(constructionName)
             val rejectionReason: String =
-                    when (val construction = getConstruction(constructionName)) {
+                    when (construction) {
                         is Building -> construction.getRejectionReason(this)
                         is BaseUnit -> construction.getRejectionReason(this)
                         else -> ""
@@ -319,7 +368,46 @@ class CityConstructions {
                     || rejectionReason.startsWith("Cannot be built with")
                     || rejectionReason.startsWith("Don't need to build any more")
                     || rejectionReason.startsWith("Obsolete")
-            ) inProgressConstructions.remove(constructionName)
+            ) {
+                if (construction is Building) {
+                    // Production put into wonders gets refunded
+                    if (construction.isWonder && getWorkDone(constructionName) != 0) {
+                        cityInfo.civInfo.addGold( getWorkDone(constructionName) )
+                        val buildingIcon = "BuildingIcons/${constructionName}"
+                        cityInfo.civInfo.addNotification("Excess production for [$constructionName] converted to [${getWorkDone(constructionName)}] gold", NotificationIcon.Gold, buildingIcon)
+                    }
+                } else if (construction is BaseUnit) {
+                    // Production put into upgradable units gets put into upgraded version
+                    if (rejectionReason.startsWith("Obsolete") && construction.upgradesTo != null) {
+                        // I'd love to use the '+=' operator but since 'inProgressConstructions[...]' can be null, kotlin doesn't allow me to
+                        if (!inProgressConstructions.contains(construction.upgradesTo)) {
+                            inProgressConstructions[construction.upgradesTo!!] = getWorkDone(constructionName)
+                        } else {
+                            inProgressConstructions[construction.upgradesTo!!] = inProgressConstructions[construction.upgradesTo!!]!! + getWorkDone(constructionName)
+                        }
+                    }
+                }
+                inProgressConstructions.remove(constructionName)
+            }
+        }
+    }
+
+    private fun constructionBegun(construction: IConstruction) {
+        if (construction !is Building) return;
+        if (construction.uniqueObjects.none { it.placeholderText == "Triggers a global alert upon build start" }) return
+        val buildingIcon = "BuildingIcons/${construction.name}"
+        for (otherCiv in cityInfo.civInfo.gameInfo.civilizations) {
+            if (otherCiv == cityInfo.civInfo) continue
+            when {
+                (otherCiv.exploredTiles.contains(cityInfo.location) && otherCiv != cityInfo.civInfo) ->
+                    otherCiv.addNotification("The city of [${cityInfo.name}] has started constructing [${construction.name}]!",
+                        cityInfo.location, NotificationIcon.Construction, buildingIcon)
+                (otherCiv.knows(cityInfo.civInfo)) ->
+                    otherCiv.addNotification("[${cityInfo.civInfo.civName}] has started constructing [${construction.name}]!",
+                        NotificationIcon.Construction, buildingIcon)
+                else -> otherCiv.addNotification("An unknown civilization has started constructing [${construction.name}]!",
+                    NotificationIcon.Construction, buildingIcon)
+            }
         }
     }
 
@@ -347,7 +435,16 @@ class CityConstructions {
             cityInfo.civInfo.addNotification("[${construction.name}] has been built in [" + cityInfo.name + "]",
                     cityInfo.location, NotificationIcon.Construction, icon)
         }
-
+        if (construction is Building && construction.uniqueObjects.any { it.placeholderText == "Triggers a global alert upon completion" } ) {
+            for (otherCiv in cityInfo.civInfo.gameInfo.civilizations) {
+                // No need to notify ourself, since we already got the building notification anyway
+                if (otherCiv == cityInfo.civInfo) continue
+                val completingCivDescription =
+                    if (otherCiv.knows(cityInfo.civInfo)) "[${cityInfo.civInfo.civName}]" else "An unknown civilization"
+                otherCiv.addNotification("$completingCivDescription has completed [${construction.name}]!",
+                    NotificationIcon.Construction, buildingIcon)
+            }
+        }
     }
 
     fun addBuilding(buildingName: String) {
@@ -388,7 +485,7 @@ class CityConstructions {
             return false // nothing built - no pay
 
         if (!cityInfo.civInfo.gameInfo.gameParameters.godMode)
-            cityInfo.civInfo.gold -= getConstruction(constructionName).getGoldCost(cityInfo.civInfo)
+            cityInfo.civInfo.addGold(-getConstruction(constructionName).getGoldCost(cityInfo.civInfo))
 
         if (queuePosition in 0 until constructionQueue.size)
             removeFromQueue(queuePosition, automatic)

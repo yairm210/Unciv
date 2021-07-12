@@ -1,6 +1,5 @@
 package com.unciv.ui.utils
 
-import com.badlogic.gdx.Input
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Touchable
@@ -21,7 +20,7 @@ open class Popup(val screen: CameraStageBaseScreen): Table(CameraStageBaseScreen
      * while the popup is active through the [hasOpenPopups][CameraStageBaseScreen.hasOpenPopups] mechanism.
      * @see [KeyPressDispatcher.install]
      */
-    val keyPressDispatcher = KeyPressDispatcher()
+    val keyPressDispatcher = KeyPressDispatcher(this.javaClass.simpleName)
 
     init {
         // Set actor name for debugging
@@ -44,20 +43,21 @@ open class Popup(val screen: CameraStageBaseScreen): Table(CameraStageBaseScreen
      * closed. Use [force] = true if you want to open this popup above the other one anyway.
      */
     fun open(force: Boolean = false) {
-        if (force || !screen.hasOpenPopups()) {
-            show()
-        }
-
         screen.stage.addActor(this)
         innerTable.pack()
         pack()
         center(screen.stage)
+        if (force || !screen.hasOpenPopups()) {
+            show()
+        }
     }
 
     /** Subroutine for [open] handles only visibility and [keyPressDispatcher] */
     private fun show() {
         this.isVisible = true
-        keyPressDispatcher.install(screen.stage, name)
+        val currentCount = screen.countOpenPopups()
+        // the lambda is for stacked key dispatcher precedence:
+        keyPressDispatcher.install(screen.stage) { screen.countOpenPopups() > currentCount }
     }
 
     /**
@@ -71,8 +71,9 @@ open class Popup(val screen: CameraStageBaseScreen): Table(CameraStageBaseScreen
     }
 
     /* All additions to the popup are to the inner table - we shouldn't care that there's an inner table at all */
-    override fun <T : Actor?> add(actor: T): Cell<T> = innerTable.add(actor)
+    final override fun <T : Actor?> add(actor: T): Cell<T> = innerTable.add(actor)
     override fun row(): Cell<Actor> = innerTable.row()
+    override fun defaults(): Cell<Actor> = innerTable.defaults()
     fun addSeparator() = innerTable.addSeparator()
 
     /**
@@ -136,7 +137,7 @@ open class Popup(val screen: CameraStageBaseScreen): Table(CameraStageBaseScreen
         action: (()->Unit)? = null
     ): Cell<TextButton> {
         val closeAction = { close(); if(action!=null) action()  }
-        keyPressDispatcher[Input.Keys.BACK] = closeAction
+        keyPressDispatcher[KeyCharAndCode.BACK] = closeAction
         return addButton(text, additionalKey, closeAction)
     }
 
@@ -159,6 +160,13 @@ open class Popup(val screen: CameraStageBaseScreen): Table(CameraStageBaseScreen
  * @return `true` if any were found.
  */
 fun CameraStageBaseScreen.hasOpenPopups(): Boolean = stage.actors.any { it is Popup && it.isVisible }
+
+/**
+ * Counts number of visible[Popup]s.
+ * 
+ * Used for key dispatcher precedence.
+ */
+fun CameraStageBaseScreen.countOpenPopups() = stage.actors.count { it is Popup && it.isVisible }
 
 /** Closes all [Popup]s. */
 fun CameraStageBaseScreen.closeAllPopups() = popups.forEach { it.close() }

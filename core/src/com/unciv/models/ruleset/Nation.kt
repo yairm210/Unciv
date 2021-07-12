@@ -4,7 +4,6 @@ import com.badlogic.gdx.graphics.Color
 import com.unciv.Constants
 import com.unciv.logic.civilization.CityStateType
 import com.unciv.models.stats.INamed
-import com.unciv.models.translations.Translations
 import com.unciv.models.translations.tr
 import com.unciv.ui.utils.Fonts
 import com.unciv.ui.utils.colorFromRGB
@@ -42,6 +41,13 @@ class Nation : INamed {
     var uniqueText = ""
     var innerColor: List<Int>? = null
     var startBias = ArrayList<String>()
+    
+    var startIntroPart1 = ""
+    var startIntroPart2 = ""
+
+    /* Properties present in json but not yet implemented:
+    var adjective = ArrayList<String>()
+     */
 
     @Transient
     private lateinit var outerColorObject: Color
@@ -66,17 +72,17 @@ class Nation : INamed {
     var ignoreHillMovementCost = false
 
     @Transient
-    var embarkDisembarkCosts1 = false
+    var disembarkCosts1 = false
 
     fun setTransients() {
         outerColorObject = colorFromRGB(outerColor)
 
-        if (innerColor == null) innerColorObject = Color.BLACK
-        else innerColorObject = colorFromRGB(innerColor!!)
+        innerColorObject = if (innerColor == null) Color.BLACK
+                           else colorFromRGB(innerColor!!)
 
         forestsAndJunglesAreRoads = uniques.contains("All units move through Forest and Jungle Tiles in friendly territory as if they have roads. These tiles can be used to establish City Connections upon researching the Wheel.")
         ignoreHillMovementCost = uniques.contains("Units ignore terrain costs when moving into any tile with Hills")
-        embarkDisembarkCosts1 = uniques.contains("Units pay only 1 movement point to embark and disembark")
+        disembarkCosts1 = uniques.contains("Units pay only 1 movement point to disembark")
     }
 
     lateinit var cities: ArrayList<String>
@@ -158,16 +164,16 @@ class Nation : INamed {
                     if (!unit.getResourceRequirements().containsKey(resource))
                         textList += "  " + "[$resource] not required".tr()
                 for (unique in unit.uniques.filterNot { it in originalUnit.uniques })
-                    textList += "  " + Translations.translateBonusOrPenalty(unique)
+                    textList += "  " + unique.tr()
                 for (unique in originalUnit.uniques.filterNot { it in unit.uniques })
-                    textList += "  " + "Lost ability".tr() + "(" + "vs [${originalUnit.name}]".tr() + "): " + Translations.translateBonusOrPenalty(unique)
+                    textList += "  " + "Lost ability".tr() + "(" + "vs [${originalUnit.name}]".tr() + "): " + unique.tr()
                 for (promotion in unit.promotions.filter { it !in originalUnit.promotions })
-                    textList += "  " + promotion.tr() + " (" + Translations.translateBonusOrPenalty(ruleset.unitPromotions[promotion]!!.effect) + ")"
+                    textList += "  " + promotion.tr() + " (" + ruleset.unitPromotions[promotion]!!.effect.tr() + ")"
             } else if (unit.replaces != null) {
                 textList += unit.name.tr() + " - " + "Replaces [${unit.replaces}], which is not found in the ruleset!".tr()
             } else {
                 textList += unit.name.tr()
-                textList += "  " + unit.getDescription(true).split("\n").joinToString("\n  ")
+                textList += "  " + unit.getDescription().split("\n").joinToString("\n  ")
             }
 
             textList += ""

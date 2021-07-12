@@ -1,6 +1,5 @@
 package com.unciv.logic.civilization
 
-import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.math.Vector2
 import com.unciv.ui.cityscreen.CityScreen
 import com.unciv.ui.pickerscreens.TechPickerScreen
@@ -27,8 +26,6 @@ open class Notification() {
 
     var text: String = ""
 
-    @Deprecated("As of 3.13.10 - replaced with icons")
-    var color: Color? = null
     var icons: ArrayList<String> = ArrayList() // Must be ArrayList and not List so it can be deserialized
     var action: NotificationAction? = null
 

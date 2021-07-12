@@ -89,10 +89,11 @@ object UnitAutomation {
             if (unit.hasUnique(Constants.settlerUnique))
                 return SpecificUnitAutomation.automateSettlerActions(unit)
 
-            if (unit.hasUnique(Constants.workerUnique))
+            // Constants.workerUnique deprecated since 3.15.5
+            if (unit.hasUnique(Constants.canBuildImprovements) || unit.hasUnique(Constants.workerUnique))
                 return WorkerAutomation(unit).automateWorkerAction()
 
-            if (unit.name == "Work Boats")
+            if (unit.name == "Work Boats") // This is really not modular
                 return SpecificUnitAutomation.automateWorkBoats(unit)
 
             if (unit.hasUnique("Bonus for units in 2 tile radius 15%"))
@@ -110,7 +111,7 @@ object UnitAutomation {
         if (unit.type == UnitType.Bomber)
             return SpecificUnitAutomation.automateBomber(unit)
 
-        if (unit.type == UnitType.Missile)
+        if (unit.type == UnitType.Missile || unit.type == UnitType.AtomicBomber)
             return SpecificUnitAutomation.automateMissile(unit)
 
 
@@ -223,8 +224,9 @@ object UnitAutomation {
         if (unit.type.isCivilian()) return false
         val unitDistanceToTiles = unit.movement.getDistanceToTiles()
         val tilesThatCanWalkToAndThenPillage = unitDistanceToTiles
-                .filter { it.value.totalDistance < unit.currentMovement }.keys
-                .filter { unit.movement.canMoveTo(it) && UnitActions.canPillage(unit, it) }
+            .filter { it.value.totalDistance < unit.currentMovement }.keys
+            .filter { unit.movement.canMoveTo(it) && UnitActions.canPillage(unit, it) }
+            .filter { it.getOwner() != unit.civInfo }
 
         if (tilesThatCanWalkToAndThenPillage.isEmpty()) return false
         val tileToPillage = tilesThatCanWalkToAndThenPillage.maxByOrNull { it: TileInfo -> it.getDefensiveBonus() }!!
@@ -296,7 +298,7 @@ object UnitAutomation {
         val reachableTileNearSiegedCity = siegedCities
                 .flatMap { it.getCenterTile().getTilesAtDistance(2) }
                 .sortedBy { it.aerialDistanceTo(unit.currentTile) }
-                .firstOrNull { unit.movement.canReach(it) }
+                .firstOrNull { unit.movement.canMoveTo(it) && unit.movement.canReach(it) }
 
         if (reachableTileNearSiegedCity != null) {
             unit.movement.headTowards(reachableTileNearSiegedCity)
@@ -377,15 +379,11 @@ object UnitAutomation {
     }
 
     fun tryBombardEnemy(city: CityInfo): Boolean {
-        return when {
-            city.attackedThisTurn -> false
-            else -> {
-                val enemy = chooseBombardTarget(city)
-                if (enemy == null) return false
-                Battle.attack(CityCombatant(city), enemy)
-                true
-            }
-        }
+        if (!city.canBombard()) return false
+        val enemy = chooseBombardTarget(city)
+        if (enemy == null) return false
+        Battle.attack(CityCombatant(city), enemy)
+        return true
     }
 
     private fun chooseBombardTarget(city: CityInfo): ICombatant? {

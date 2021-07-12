@@ -1,0 +1,122 @@
+
+[
+    {
+        "name": "Ancestor Worship",
+        "type": "Pantheon",
+        "uniques": ["[+1 Culture] from every [Shrine]"]
+    },
+    {
+        "name": "Dance of the Aurora",
+        "type": "Pantheon",
+        "uniques": ["[+1 Faith] from [Tundra] tiles without [Forest] [in this city]"]
+    },
+    {
+        "name": "Desert Folklore",
+        "type": "Pantheon",
+        "uniques": ["[+1 Faith] from every [Desert]"]
+    },
+    {
+        "name": "Faith Healers",
+        "type": "Pantheon",
+        "uniques": ["[All] Units adjacent to this city heal [+30] HP per turn when healing"]
+        // This should be worded better
+    },
+    {
+        "name": "Fertility Rates",
+        "type": "Pantheon",
+        "uniques": ["+[10]% Growth [in this city]"] 
+        // Preferably I would not have a cityFilter here, but doing so requires no additional implementation 
+    },
+    {
+        "name": "God of Craftsman",
+        "type": "Pantheon",
+        "uniques": ["[+1 Production] in cities with [3] or more population"]
+    },
+    {
+        "name": "God of the Open Sky",
+        "type": "Pantheon",
+        "uniques": ["[+1 Culture] from every [Pasture]"]
+    },
+    {
+        "name": "God of the Sea",
+        "type": "Pantheon",
+        "uniques": ["[+1 Production] from every [Fishing Boats]"]
+    },
+    {
+        "name": "God of War",
+        "type": "Pantheon",
+        "uniques": ["Earn [50]% of [Military] unit's [Strength] as [Faith] when killed within 4 tiles of a city following this religion"]
+    }
+    {
+        "name": "Goddess of Festivals",
+        "type": "Pantheon",
+        "uniques": ["[+1 Culture, +1 Faith] from every [Wine]", "[+1 Culture, +1 Faith] from every [Incense]"]
+    },
+    {
+        "name": "Goddess of Love",
+        "type": "Pantheon",
+        "uniques": ["[+1 Happiness] in cities with [6] or more population"]
+    },
+    {
+        "name": "Goddess of Protection",
+        "type": "Pantheon",
+        "uniques": ["[+30]% attacking Strength for cities"]
+    },
+    {
+        "name": "Goddess of the Hunt",
+        "type": "Pantheon",
+        "uniques": ["[+1 Food] from every [Camp]"]
+    },
+    {
+        "name": "Messenger of the Gods",
+        "type": "Pantheon",
+        "uniques": ["[+2 Science] from each Trade Route"]
+    },
+    {
+        "name": "Monument to the Gods",
+        "type": "Pantheon",
+        "uniques": ["+[15]% Production when constructing [Wonders]"]
+        // Should only be ancient/classical era wonders, but implementing that is another can of worms
+        // For that we really should need an era.matchesFilter() AND support for multiple values in 
+        // construction.matchesFilter(), so we could write something like:
+        //"uniques": ["[+15]% Production when constructing [{Ancient Era} {Wonders}]",
+        // "[+15]% Production when constructing [{Classical Era} {Wonders}]"]
+        // For now this feels like overkill, but I'll leave this here for the future
+    },
+    {
+        "name": "One with Nature",
+        "type": "Pantheon",
+        "uniques": ["[+4 Faith] from every [Natural Wonder]"]
+    },
+    {
+        "name": "Oral Tradition",
+        "type": "Pantheon",
+        "uniques": ["[+1 Culture] from every [Plantation]"]
+    },
+    {
+        "name": "Religious Idols",
+        "type": "Pantheon",
+        "uniques": ["[+1 Culture, +1 Faith] from every [Gold]", "[+1 Culture, +1 Faith] from every [Silver]"]
+    },
+    {
+        "name": "Religious Settlements",
+        "type": "Pantheon",
+        "uniques": ["[-15]% cost of natural border growth"]
+    },
+    {
+        "name": "Sacred Path",
+        "type": "Pantheon",
+        "uniques": ["[+1 Culture] from every [Jungle]"]
+    },
+    {
+        "name": "Sacred Waters",
+        "type": "Pantheon",
+        "uniques": ["[+1 Happiness] in cities on [River] tiles"]
+    },
+    {
+        "name": "Stone Circles",
+        "type": "Pantheon",
+        "uniques": ["[+2 Faith] from every [Quarry]"]
+    }
+
+]

@@ -7,9 +7,10 @@ import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.MapUnit
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.Unique
-import com.unciv.models.translations.Translations
 import com.unciv.models.translations.tr
 import com.unciv.models.stats.INamed
+import com.unciv.ui.civilopedia.CivilopediaText
+import com.unciv.ui.civilopedia.FormattedLine
 import com.unciv.ui.utils.Fonts
 import kotlin.math.pow
 
@@ -17,7 +18,7 @@ import kotlin.math.pow
 
 /** This is the basic info of the units, as specified in Units.json,
  in contrast to MapUnit, which is a specific unit of a certain type that appears on the map */
-class BaseUnit : INamed, IConstruction {
+class BaseUnit : INamed, IConstruction, CivilopediaText() {
 
     override lateinit var name: String
     var cost: Int = 0
@@ -49,40 +50,119 @@ class BaseUnit : INamed, IConstruction {
             infoList += promotion.tr()
         if (replacementTextForUniques != "") infoList += replacementTextForUniques
         else for (unique in uniques)
-            infoList += Translations.translateBonusOrPenalty(unique)
+            infoList += unique.tr()
         return infoList.joinToString()
     }
 
-    fun getDescription(forPickerScreen: Boolean): String {
-        val sb = StringBuilder()
+    /** Generate description as multi-line string for Nation description addUniqueUnitsText and CityScreen addSelectedConstructionTable */
+    fun getDescription(): String {
+        val lines = mutableListOf<String>()
         for ((resource, amount) in getResourceRequirements()) {
-            if (amount == 1) sb.appendLine("Consumes 1 [$resource]".tr())
-            else sb.appendLine("Consumes [$amount]] [$resource]".tr())
+            lines += if (amount == 1) "Consumes 1 [$resource]".tr()
+                     else "Consumes [$amount] [$resource]".tr()
         }
-        if (!forPickerScreen) {
-            if (uniqueTo != null) sb.appendLine("Unique to [$uniqueTo], replaces [$replaces]".tr())
-            else sb.appendLine("{Cost}: $cost".tr())
-            if (requiredTech != null) sb.appendLine("Required tech: [$requiredTech]".tr())
-            if (upgradesTo != null) sb.appendLine("Upgrades to [$upgradesTo]".tr())
-            if (obsoleteTech != null) sb.appendLine("Obsolete with [$obsoleteTech]".tr())
-        }
+        var strengthLine = ""
         if (strength != 0) {
-            sb.append("$strength${Fonts.strength}, ")
-            if (rangedStrength != 0) sb.append("$rangedStrength${Fonts.rangedStrength}, ")
-            if (rangedStrength != 0) sb.append("$range${Fonts.range}, ")
+            strengthLine += "$strength${Fonts.strength}, "
+            if (rangedStrength != 0)
+                strengthLine += "$rangedStrength${Fonts.rangedStrength}, $range${Fonts.range}, "
         }
-        sb.appendLine("$movement${Fonts.movement}")
+        lines += "$strengthLine$movement${Fonts.movement}"
 
-        if (replacementTextForUniques != "") sb.appendLine(replacementTextForUniques)
+        if (replacementTextForUniques != "") lines += replacementTextForUniques
         else for (unique in uniques)
-            sb.appendLine(Translations.translateBonusOrPenalty(unique))
+            lines += unique.tr()
 
         if (promotions.isNotEmpty()) {
-            sb.append((if (promotions.size == 1) "Free promotion:" else "Free promotions:").tr())
-            sb.appendLine(promotions.joinToString(", ", " ") { it.tr() })
+            val prefix = "Free promotion${if (promotions.size == 1) "" else "s"}:".tr() + " "
+            lines += promotions.joinToString(", ", prefix) { it.tr() }
         }
 
-        return sb.toString().trim()
+        return lines.joinToString("\n")
+    }
+
+    override fun getCivilopediaTextHeader() = FormattedLine(name, icon="Unit/$name", header=2)
+    override fun replacesCivilopediaDescription() = true
+    override fun hasCivilopediaTextLines() = true
+    override fun getCivilopediaTextLines(ruleset: Ruleset): List<FormattedLine> {
+        val textList = ArrayList<FormattedLine>()
+
+        val stats = ArrayList<String>()
+        if (strength != 0) stats += "$strength${Fonts.strength}"
+        if (rangedStrength != 0) {
+            stats += "$rangedStrength${Fonts.rangedStrength}"
+            stats += "$range${Fonts.range}"
+        }
+        if (movement != 0) stats += "$movement${Fonts.movement}"
+        if (cost != 0) stats += "{Cost}: $cost"
+        if (stats.isNotEmpty())
+            textList += FormattedLine(stats.joinToString(", "))
+
+        if (replacementTextForUniques != "") {
+            textList += FormattedLine()
+            textList += FormattedLine(replacementTextForUniques)
+        } else if (uniques.isNotEmpty()) {
+            textList += FormattedLine()
+            for (uniqueObject in uniqueObjects.sortedBy { it.text }) {
+                if (uniqueObject.placeholderText == "Can construct []") {
+                    val improvement = uniqueObject.params[0]
+                    textList += FormattedLine(uniqueObject.text, link="Improvement/$improvement")
+                } else {
+                    textList += FormattedLine(uniqueObject.text)
+                }
+            }
+        }
+
+        val resourceRequirements = getResourceRequirements()
+        if (resourceRequirements.isNotEmpty()) {
+            textList += FormattedLine()
+            for ((resource, amount) in resourceRequirements) {
+                textList += FormattedLine(
+                    if (amount == 1) "Consumes 1 [$resource]" else "Consumes [$amount] [$resource]",
+                    link="Resource/$resource", color="#F42")
+            }
+        }
+
+        if (uniqueTo != null) {
+            textList += FormattedLine()
+            textList += FormattedLine("Unique to [$uniqueTo],", link="Nation/$uniqueTo")
+            if (replaces != null)
+                textList += FormattedLine("replaces [$replaces]", link="Unit/$replaces", indent=1)
+        }
+
+        if (requiredTech != null || upgradesTo != null || obsoleteTech != null) textList += FormattedLine()
+        if (requiredTech != null) textList += FormattedLine("Required tech: [$requiredTech]", link="Technology/$requiredTech")
+        if (upgradesTo != null) textList += FormattedLine("Upgrades to [$upgradesTo]", link="Unit/$upgradesTo")
+        if (obsoleteTech != null) textList += FormattedLine("Obsolete with [$obsoleteTech]", link="Technology/$obsoleteTech")
+
+        if (promotions.isNotEmpty()) {
+            textList += FormattedLine()
+            promotions.withIndex().forEach {
+                textList += FormattedLine(
+                        when {
+                            promotions.size == 1 -> "{Free promotion:} "
+                            it.index == 0 -> "{Free promotions:} "
+                            else -> ""
+                        } + "{${it.value}}" +
+                        (if (promotions.size == 1 || it.index == promotions.size - 1) "" else ","),
+                        link="Promotions/${it.value}",
+                        indent=if(it.index==0) 0 else 1)
+            }
+        }
+
+        val seeAlso = ArrayList<FormattedLine>()
+        for ((other, unit) in ruleset.units) {
+            if (unit.replaces == name || uniques.contains("[$name]") ) {
+                seeAlso += FormattedLine(other, link="Unit/$other", indent=1)
+            }
+        }
+        if (seeAlso.isNotEmpty()) {
+            textList += FormattedLine()
+            textList += FormattedLine("{See also}:")
+            textList += seeAlso
+        }
+
+        return textList
     }
 
     fun getMapUnit(ruleset: Ruleset): MapUnit {
@@ -112,10 +192,18 @@ class BaseUnit : INamed, IConstruction {
 
     override fun getGoldCost(civInfo: CivilizationInfo): Int {
         var cost = getBaseGoldCost(civInfo)
-        if (civInfo.hasUnique("Gold cost of purchasing units -33%")) cost *= 0.66f
+        for (unique in civInfo.getMatchingUniques("Gold cost of purchasing [] units -[]%")) {
+            if (matchesFilter(unique.params[0]))
+                cost *= 1f - unique.params[1].toFloat() / 100f
+        }
+
+        // Deprecated since 3.15
+            if (civInfo.hasUnique("Gold cost of purchasing units -33%")) cost *= 0.67f
+        //
+
         for (unique in civInfo.getMatchingUniques("Cost of purchasing items in cities reduced by []%"))
-            cost *= 1 - (unique.params[0].toFloat() / 100)
-        return (cost / 10).toInt() * 10 // rounded down o nearest ten
+            cost *= 1f - (unique.params[0].toFloat() / 100f)
+        return (cost / 10).toInt() * 10 // rounded down to nearest ten
     }
 
     fun getDisbandGold(civInfo: CivilizationInfo) = getBaseGoldCost(civInfo).toInt() / 20
@@ -128,7 +216,7 @@ class BaseUnit : INamed, IConstruction {
     }
 
     fun getRejectionReason(cityConstructions: CityConstructions): String {
-        if (unitType.isWaterUnit() && !cityConstructions.cityInfo.getCenterTile().isCoastalTile())
+        if (unitType.isWaterUnit() && !cityConstructions.cityInfo.isCoastal())
             return "Can only build water units in coastal cities"
         val civInfo = cityConstructions.cityInfo.civInfo
         for (unique in uniqueObjects.filter { it.placeholderText == "Not displayed as an available construction without []" }) {
@@ -152,8 +240,8 @@ class BaseUnit : INamed, IConstruction {
         if (uniqueTo != null && uniqueTo != civInfo.civName) return "Unique to $uniqueTo"
         if (civInfo.gameInfo.ruleSet.units.values.any { it.uniqueTo == civInfo.civName && it.replaces == name })
             return "Our unique unit replaces this"
-        if (!civInfo.gameInfo.gameParameters.nuclearWeaponsEnabled
-                && uniques.contains("Nuclear weapon")) return "Disabled by setting"
+        if (!civInfo.gameInfo.gameParameters.nuclearWeaponsEnabled && isNuclearWeapon()
+        ) return "Disabled by setting"
 
         for (unique in uniqueObjects.filter { it.placeholderText == "Unlocked with []" })
             if (civInfo.tech.researchedTechnologies.none { it.era() == unique.params[0] || it.name == unique.params[0] }
@@ -184,9 +272,9 @@ class BaseUnit : INamed, IConstruction {
         return getRejectionReason(cityConstructions) == ""
     }
 
-    override fun postBuildEvent(construction: CityConstructions, wasBought: Boolean): Boolean {
-        val civInfo = construction.cityInfo.civInfo
-        val unit = civInfo.placeUnitNearTile(construction.cityInfo.location, name)
+    override fun postBuildEvent(cityConstructions: CityConstructions, wasBought: Boolean): Boolean {
+        val civInfo = cityConstructions.cityInfo.civInfo
+        val unit = civInfo.placeUnitNearTile(cityConstructions.cityInfo.location, name)
         if (unit == null) return false // couldn't place the unit, so there's actually no unit =(
 
         //movement penalty
@@ -195,25 +283,43 @@ class BaseUnit : INamed, IConstruction {
 
         if (this.unitType.isCivilian()) return true // tiny optimization makes save files a few bytes smaller
 
-        var XP = construction.getBuiltBuildings().sumBy { it.xpForNewUnits }
+        var XP = cityConstructions.getBuiltBuildings().sumBy { it.xpForNewUnits }
 
 
-        for (unique in construction.cityInfo.cityConstructions.builtBuildingUniqueMap
-                .getUniques("New [] units start with [] Experience in this city")
-                + civInfo.getMatchingUniques("New [] units start with [] Experience")) {
+        for (unique in 
+            cityConstructions.cityInfo.getMatchingUniques("New [] units start with [] Experience") +
+            cityConstructions.cityInfo.getMatchingUniques("New [] units start with [] Experience []")
+                .filter { cityConstructions.cityInfo.matchesFilter(it.params[2]) } +
+            // Deprecated since 3.15.9
+                cityConstructions.cityInfo.getLocalMatchingUniques("New [] units start with [] Experience in this city")
+            //
+        ) {
             if (unit.matchesFilter(unique.params[0]))
                 XP += unique.params[1].toInt()
         }
         unit.promotions.XP = XP
 
-        for (unique in construction.cityInfo.cityConstructions.builtBuildingUniqueMap
-                .getUniques("All newly-trained [] units in this city receive the [] promotion")) {
+        for (unique in 
+            cityConstructions.cityInfo.getMatchingUniques("All newly-trained [] units [] receive the [] promotion")
+                .filter { cityConstructions.cityInfo.matchesFilter(it.params[1]) } +
+            // Deprecated since 3.15.9
+                cityConstructions.cityInfo.getLocalMatchingUniques("All newly-trained [] units in this city receive the [] promotion")
+            //
+        ) {
             val filter = unique.params[0]
-            val promotion = unique.params[1]
+            val promotion = unique.params.last()
 
-            if (unit.matchesFilter(filter) || (filter == "relevant" && civInfo.gameInfo.ruleSet.unitPromotions.values
-                            .any { unit.type.name in it.unitTypes && it.name == promotion }))
+            if (unit.matchesFilter(filter) || 
+                (
+                    filter == "relevant" && 
+                        civInfo.gameInfo.ruleSet.unitPromotions.values
+                        .any {
+                            it.name == promotion && unit.type.name in it.unitTypes 
+                        }
+                )
+            ) {
                 unit.promotions.addPromotion(promotion, isFree = true)
+            }
         }
 
         return true
@@ -232,20 +338,38 @@ class BaseUnit : INamed, IConstruction {
     }
 
     fun matchesFilter(filter: String): Boolean {
-        if (filter == unitType.name) return true
-        if (filter == name) return true
-        if (filter == "All") return true
-        if ((filter == "Land" || filter == "land units") && unitType.isLandUnit()) return true
-        // 'water units' obsolete as of 3.14.2
-        if ((filter == "Water" || filter == "water units" || filter == "Water units") && unitType.isWaterUnit()) return true
-        if ((filter == "Air" || filter == "air units") && unitType.isAirUnit()) return true
-        if (filter == "non-air" && !unitType.isAirUnit()) return true
-        // 'military' obsolete as of 3.14.1
-        if ((filter == "military" || filter == "Military" || filter == "military units") && unitType.isMilitary()) return true
-        return false
+        return when (filter) {
+            unitType.name -> true
+            name -> true
+            "All" -> true
+            
+            "Melee" -> unitType.isMelee()
+            "Ranged" -> unitType.isRanged()
+            "Land", "land units" -> unitType.isLandUnit()
+            "Civilian" -> unitType.isCivilian()
+            "Military", "military units" -> unitType.isMilitary()
+            "Water", "water units" -> unitType.isWaterUnit()
+            "Air", "air units" -> unitType.isAirUnit()
+            "non-air" -> !unitType.isAirUnit() && !unitType.isMissile()
+            "Missile" -> unitType.isMissile()
+            
+            "Submarine", "submarine units" -> unitType == UnitType.WaterSubmarine
+            "Nuclear Weapon" -> isNuclearWeapon()
+            // Deprecated as of 3.15.2
+            "military water" -> unitType.isMilitary() && unitType.isWaterUnit()
+            else -> {
+                if (uniques.contains(filter)) return true
+                return false
+            }
+        }
     }
 
     fun isGreatPerson() = uniqueObjects.any { it.placeholderText == "Great Person - []" }
+
+    // "Nuclear Weapon" unique deprecated since 3.15.4
+    fun isNuclearWeapon() = uniqueObjects.any { it.placeholderText == "Nuclear Weapon" || it.placeholderText == "Nuclear weapon of Strength []" }
+
+    fun movesLikeAirUnits() = unitType.isAirUnit() || unitType.isMissile()
 
     override fun getResourceRequirements(): HashMap<String, Int> {
         val resourceRequirements = HashMap<String, Int>()

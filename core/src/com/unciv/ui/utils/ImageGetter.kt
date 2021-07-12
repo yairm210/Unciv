@@ -16,11 +16,13 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.UncivGame
+import com.unciv.models.ruleset.Era
 import com.unciv.models.ruleset.Nation
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.stats.Stats
 import kotlin.math.atan2
+import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.sqrt
 
@@ -64,6 +66,12 @@ object ImageGetter {
                 val drawable = TextureRegionDrawable(region)
                 textureRegionDrawables["$singleImagesFolder/" + region.name] = drawable
             }
+        }
+
+        if (!atlases.containsKey("Skin")) atlases["Skin"] = TextureAtlas("Skin.atlas")
+        for (region in atlases["Skin"]!!.regions) {
+            val drawable = TextureRegionDrawable(region)
+            textureRegionDrawables["Skin/" + region.name] = drawable
         }
 
         // These are from the mods
@@ -152,8 +160,8 @@ object ImageGetter {
         else textureRegionDrawables[whiteDotLocation]!!
     }
 
-    fun getRoundedEdgeTableBackground(tintColor: Color? = null): NinePatchDrawable {
-        val region = getDrawable("OtherIcons/buttonBackground").region
+    fun getRoundedEdgeRectangle(tintColor: Color? = null): NinePatchDrawable {
+        val region = getDrawable("Skin/roundedEdgeRectangle").region
         val drawable = NinePatchDrawable(NinePatch(region, 25, 25, 0, 0))
         drawable.setPadding(5f, 15f, 5f, 15f)
 
@@ -161,6 +169,28 @@ object ImageGetter {
         return drawable.tint(tintColor)
     }
 
+    fun getRectangleWithOutline(): NinePatchDrawable {
+        val region = getDrawable("Skin/rectangleWithOutline").region
+        return NinePatchDrawable(NinePatch(region, 1, 1, 1, 1))
+    }
+
+    fun getSelectBox(): NinePatchDrawable {
+        val region = getDrawable("Skin/select-box").region
+        return NinePatchDrawable(NinePatch(region, 10, 25, 5, 5))
+    }
+
+    fun getSelectBoxPressed(): NinePatchDrawable {
+        val region = getDrawable("Skin/select-box-pressed").region
+        return NinePatchDrawable(NinePatch(region, 10, 25, 5, 5))
+    }
+
+    fun getCheckBox(): Drawable {
+        return getDrawable("Skin/checkbox")
+    }
+
+    fun getCheckBoxPressed(): Drawable {
+        return getDrawable("Skin/checkbox-pressed")
+    }
 
     fun imageExists(fileName: String) = textureRegionDrawables.containsKey(fileName)
     fun techIconExists(techName: String) = imageExists("TechIcons/$techName")
@@ -295,17 +325,10 @@ object ImageGetter {
     fun getTechIconGroup(techName: String, circleSize: Float) = getTechIcon(techName).surroundWithCircle(circleSize)
 
     fun getTechIcon(techName: String): Image {
-        val techIconColor = when (ruleset.technologies[techName]!!.era()) {
-            Constants.ancientEra -> colorFromRGB(255, 87, 35)
-            Constants.classicalEra -> colorFromRGB(233, 31, 99)
-            Constants.medievalEra -> colorFromRGB(157, 39, 176)
-            Constants.renaissanceEra -> colorFromRGB(104, 58, 183)
-            Constants.industrialEra -> colorFromRGB(63, 81, 182)
-            Constants.modernEra -> colorFromRGB(33, 150, 243)
-            Constants.informationEra -> colorFromRGB(0, 150, 136)
-            Constants.futureEra -> colorFromRGB(76, 176, 81)
-            else -> Color.WHITE.cpy()
-        }
+        val era = ruleset.technologies[techName]!!.era()
+        val techIconColor = 
+            if (era !in ruleset.eras) Era().getColor()
+            else ruleset.eras[ruleset.technologies[techName]!!.era()]!!.getColor()
         return getImage("TechIcons/$techName").apply { color = techIconColor.lerp(Color.BLACK, 0.6f) }
     }
 
@@ -323,7 +346,7 @@ object ImageGetter {
         fun addColor(color: Color, percentage: Float): VerticalProgressBar {
             val bar = getWhiteDot()
             bar.color = color
-            bar.setSize(width, height * min(percentage, 1f))
+            bar.setSize(width, height *  max(min(percentage, 1f),0f)) //clamp between 0 and 1
             addActor(bar)
             return this
         }

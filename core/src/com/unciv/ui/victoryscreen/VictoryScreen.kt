@@ -100,7 +100,9 @@ class VictoryScreen(val worldScreen: WorldScreen) : PickerScreen() {
         rightSideButton.isVisible = true
         rightSideButton.enable()
         rightSideButton.onClick {
-            game.setScreen(NewGameScreen(this, GameSetupInfo(gameInfo)))
+            val newGameSetupInfo = GameSetupInfo(gameInfo)
+            newGameSetupInfo.mapParameters.reseed()
+            game.setScreen(NewGameScreen(this, newGameSetupInfo))
         }
 
         closeButton.setText("One more turn...!".tr())
@@ -123,7 +125,7 @@ class VictoryScreen(val worldScreen: WorldScreen) : PickerScreen() {
         if (dominationVictoryEnabled) myVictoryStatusTable.add(conquestVictoryColumn())
         myVictoryStatusTable.row()
         if (scientificVictoryEnabled) myVictoryStatusTable.add("Complete all the spaceship parts\n to win!".toLabel())
-        if (culturalVictoryEnabled) myVictoryStatusTable.add("Complete 5 policy branches\n to win!".toLabel())
+        if (culturalVictoryEnabled) myVictoryStatusTable.add("Complete 5 policy branches and build\n the Utopia Project to win!".toLabel())
         if (dominationVictoryEnabled) myVictoryStatusTable.add("Destroy all enemies\n to win!".toLabel())
 
         contentsTable.clear()

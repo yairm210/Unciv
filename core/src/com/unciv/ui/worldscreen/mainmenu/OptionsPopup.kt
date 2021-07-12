@@ -134,10 +134,16 @@ class OptionsPopup(val previousScreen:CameraStageBaseScreen) : Popup(previousScr
 
         addHeader("Other options")
 
-        addYesNoRow("Show experimental world wrap for maps\n"
-                +"HIGHLY EXPERIMENTAL - YOU HAVE BEEN WARNED!".tr(),
-                settings.showExperimentalWorldWrap)
-        { settings.showExperimentalWorldWrap = it }
+
+        addYesNoRow("{Show experimental world wrap for maps}\n{HIGHLY EXPERIMENTAL - YOU HAVE BEEN WARNED!}".tr(),
+                settings.showExperimentalWorldWrap) {
+            settings.showExperimentalWorldWrap = it
+        }
+        addYesNoRow("{Enable experimental religion in start games}\n{HIGHLY EXPERIMENTAL - UPDATES WILL BREAK SAVES!}".tr(),
+                settings.showExperimentalReligion) {
+            settings.showExperimentalReligion = it
+        }
+
 
         if (previousScreen.game.limitOrientationsHelper != null) {
             addYesNoRow("Enable portrait orientation", settings.allowAndroidPortrait) {
@@ -249,11 +255,11 @@ class OptionsPopup(val previousScreen:CameraStageBaseScreen) : Popup(previousScr
             val lines = ArrayList<String>()
             for (mod in RulesetCache.values) {
                 val modLinks = mod.checkModLinks()
-                if (modLinks != "") {
+                if (modLinks.isNotOK()) {
                     lines += ""
                     lines += mod.name
                     lines += ""
-                    lines += modLinks
+                    lines += modLinks.message
                     lines += ""
                 }
             }

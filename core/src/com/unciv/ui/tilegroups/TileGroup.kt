@@ -18,6 +18,7 @@ import com.unciv.ui.cityscreen.YieldGroup
 import com.unciv.ui.utils.ImageGetter
 import com.unciv.ui.utils.center
 import com.unciv.ui.utils.centerX
+import com.unciv.ui.utils.toLabel
 import kotlin.math.PI
 import kotlin.math.atan
 import kotlin.random.Random
@@ -572,40 +573,26 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings, 
                 borderImages[neighbor] = images
                 val sign = if (relativeWorldPosition.x < 0) -1 else 1
                 val angle = sign * (atan(sign * relativeWorldPosition.y / relativeWorldPosition.x) * 180 / PI - 90.0).toFloat()
+                
+                val innerBorderImage = ImageGetter.getImage("OtherIcons/Border-inner")
+                innerBorderImage.width = 38f
+                innerBorderImage.setOrigin(Align.center) // THEN the origin is correct,
+                innerBorderImage.rotateBy(angle) // and the rotation works.
+                innerBorderImage.center(this) // move to center of tile
+                innerBorderImage.moveBy(-relativeWorldPosition.x * 15f, -relativeWorldPosition.y * 15f)
+                innerBorderImage.color = civOuterColor
+                miscLayerGroup.addActor(innerBorderImage)
+                images.add(innerBorderImage)
 
-                val borderImage = ImageGetter.getWhiteDot()
-
-                borderImage.setSize(27f,2f) // The order is important. First we set the size,
-                borderImage.setOrigin(Align.center) // THEN the origin is correct,
-                borderImage.rotateBy(angle) // and the rotation works.
-                borderImage.center(this) // move to center of tile
-                borderImage.moveBy(-relativeWorldPosition.x * 0.75f * 25f, -relativeWorldPosition.y * 0.75f * 25f)
-                borderImage.color = civInnerColor
-                miscLayerGroup.addActor(borderImage)
-                images.add(borderImage)
-
-                for (i in -2..2) {
-                    val image = ImageGetter.getTriangle()
-                    image.setSize(5f, 5f)
-                    image.setOrigin(Align.center)
-                    image.rotateBy(angle)
-                    image.center(this)
-                    // in addTiles, we set the position of groups by relative world position *0.8*groupSize, filter groupSize = 50
-                    // Here, we want to have the borders start HALFWAY THERE and extend towards the tiles, so we give them a position of 0.8*25.
-                    // BUT, we don't actually want it all the way out there, because we want to display the borders of 2 different civs!
-                    // So we set it to 0.75
-                    image.moveBy(-relativeWorldPosition.x * 0.75f * 25f, -relativeWorldPosition.y * 0.75f * 25f)
-
-                    // And now, move it within the tileBaseImage side according to i.
-                    // Remember, if from the center of the hexagon to the middle of the side is an (a,b) vecctor,
-                    // Then within the side, which is of course perpendicular to the (a,b) vector,
-                    // we can move with multiples of (b,-a) which is perpendicular to (a,b)
-                    image.moveBy(relativeWorldPosition.y * i * 4, -relativeWorldPosition.x * i * 4)
-
-                    image.color = civOuterColor
-                    miscLayerGroup.addActor(image)
-                    images.add(image)
-                }
+                val outerBorderImage = ImageGetter.getImage("OtherIcons/Border-outer")
+                outerBorderImage.width = 38f
+                outerBorderImage.setOrigin(Align.center) // THEN the origin is correct,
+                outerBorderImage.rotateBy(angle) // and the rotation works.
+                outerBorderImage.center(this) // move to center of tile
+                outerBorderImage.moveBy(-relativeWorldPosition.x * 15f, -relativeWorldPosition.y * 15f)
+                outerBorderImage.color = civInnerColor
+                miscLayerGroup.addActor(outerBorderImage)
+                images.add(outerBorderImage)
             }
         }
     }

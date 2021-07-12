@@ -58,8 +58,8 @@ class ConstructionInfoTable(val city: CityInfo): Table() {
 
 
         val description: String = when (construction) {
-            is BaseUnit -> construction.getDescription(true)
-            is Building -> construction.getDescription(true, city.civInfo, city.civInfo.gameInfo.ruleSet)
+            is BaseUnit -> construction.getDescription()
+            is Building -> construction.getDescription(true, city, city.civInfo.gameInfo.ruleSet)
             is PerpetualConstruction -> construction.description.replace("[rate]", "[${construction.getConversionRate(city)}]").tr()
             else -> "" // Should never happen
         }

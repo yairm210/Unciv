@@ -14,6 +14,7 @@ class PopulationManager {
     lateinit var cityInfo: CityInfo
 
     var population = 1
+        private set
     var foodStored = 0
 
     // In favor of this bad boy
@@ -58,9 +59,11 @@ class PopulationManager {
         }
         if (foodStored >= getFoodToNextPopulation()) {  // growth!
             foodStored -= getFoodToNextPopulation()
-            val percentOfFoodCarriedOver = cityInfo.cityConstructions.builtBuildingUniqueMap
-                    .getUniques("[]% of food is carried over after population increases")
+            var percentOfFoodCarriedOver = cityInfo
+                    .getMatchingUniques("[]% of food is carried over after population increases")
                     .sumBy { it.params[0].toInt() }
+            // Try to avoid runaway food gain in mods, just in case mod makes don't notice it
+            if (percentOfFoodCarriedOver > 95) percentOfFoodCarriedOver = 95 
             foodStored += (getFoodToNextPopulation() * percentOfFoodCarriedOver / 100f).toInt()
             population++
             autoAssignPopulation()
@@ -70,6 +73,20 @@ class PopulationManager {
 
     private fun getStatsOfSpecialist(name: String) = cityInfo.cityStats.getStatsOfSpecialist(name)
 
+    internal fun addPopulation(count: Int) {
+        population += count
+        if (population < 0) population = 0
+        val freePopulation = getFreePopulation()
+        if (freePopulation < 0) {
+            unassignExtraPopulation()
+        } else {
+            autoAssignPopulation()
+        }
+    }
+    
+    internal fun setPopulation(count: Int) {
+        addPopulation(-population + count)
+    }
 
     internal fun autoAssignPopulation(foodWeight: Float = 1f) {
         for (i in 1..getFreePopulation()) {

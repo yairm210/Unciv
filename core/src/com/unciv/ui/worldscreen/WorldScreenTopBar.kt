@@ -1,7 +1,5 @@
 package com.unciv.ui.worldscreen
 
-import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.Input
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
@@ -15,16 +13,21 @@ import com.unciv.ui.overviewscreen.EmpireOverviewScreen
 import com.unciv.ui.pickerscreens.PolicyPickerScreen
 import com.unciv.ui.pickerscreens.TechPickerScreen
 import com.unciv.ui.utils.*
+import com.unciv.ui.utils.StaticTooltip.Companion.addStaticTip
 import com.unciv.ui.victoryscreen.VictoryScreen
 import com.unciv.ui.worldscreen.mainmenu.WorldScreenMenuPopup
 import kotlin.math.abs
 import kotlin.math.ceil
 import kotlin.math.roundToInt
 
+
+/**
+ * Table consisting of the menu button, current civ, some stats and the overview button for the top of [WorldScreen]
+ */
 class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
 
-    var selectedCivLabel = worldScreen.selectedCiv.civName.toLabel()
-    private var  selectedCivIconHolder = Container<Actor>()
+    private var selectedCivLabel = worldScreen.selectedCiv.civName.toLabel()
+    private var selectedCivIconHolder = Container<Actor>()
 
     private val turnsLabel = "Turns: 0/400".toLabel()
     private val goldLabel = "0".toLabel(colorFromRGB(225, 217, 71))
@@ -37,8 +40,8 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
     private val happinessImage = Group()
 
     // These are all to improve performance IE reduce update time (was 150 ms on my phone, which is a lot!)
-    private val malcontentColor = Color.valueOf("ef5350")
-    private val happinessColor = colorFromRGB(92, 194, 77)
+    private val malcontentColor = colorFromRGB(239,83,80) // Color.valueOf("ef5350")
+    private val happinessColor = colorFromRGB(92, 194, 77) // Color.valueOf("8cc24d")
     private val malcontentGroup = ImageGetter.getStatIcon("Malcontent")
     private val happinessGroup = ImageGetter.getStatIcon("Happiness")
 
@@ -121,7 +124,7 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
         cultureLabel.onClick(invokePoliciesPage)
         cultureImage.onClick(invokePoliciesPage)
 
-        if(worldScreen.gameInfo.ruleSet.hasReligion()) {
+        if(worldScreen.gameInfo.hasReligionEnabled()) {
             statsTable.add(faithLabel).padLeft(20f)
             statsTable.add(ImageGetter.getStatIcon("Faith")).padBottom(6f).size(20f)
         }
@@ -149,9 +152,7 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
     private fun getOverviewButton(): Button {
         val overviewButton = Button(CameraStageBaseScreen.skin)
         overviewButton.add("Overview".toLabel()).pad(10f)
-        if (Gdx.app.input.isPeripheralAvailable(Input.Peripheral.HardwareKeyboard)) {
-            overviewButton.add("(E)".toLabel(Color.WHITE))
-        }
+        overviewButton.addStaticTip('e')
         overviewButton.pack()
         overviewButton.onClick { worldScreen.game.setScreen(EmpireOverviewScreen(worldScreen.selectedCiv)) }
         overviewButton.centerY(this)
@@ -198,7 +199,7 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
 
         val nextTurnStats = civInfo.statsForNextTurn
         val goldPerTurn = "(" + (if (nextTurnStats.gold > 0) "+" else "") + nextTurnStats.gold.roundToInt() + ")"
-        goldLabel.setText(civInfo.gold.toFloat().roundToInt().toString() + goldPerTurn)
+        goldLabel.setText(civInfo.gold.toString() + goldPerTurn)
 
         scienceLabel.setText("+" + nextTurnStats.science.roundToInt())
 
@@ -217,10 +218,10 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
         cultureLabel.setText(getCultureText(civInfo, nextTurnStats))
         faithLabel.setText(civInfo.religionManager.storedFaith.toString() + "(+" + nextTurnStats.faith.roundToInt() + ")")
 
-        updateSelectedCivTabel()
+        updateSelectedCivTable()
     }
 
-    private fun updateSelectedCivTabel() {
+    private fun updateSelectedCivTable() {
         if (selectedCivLabel.text.toString() == worldScreen.selectedCiv.civName.tr()) return
 
         selectedCivLabel.setText(worldScreen.selectedCiv.civName.tr())
@@ -235,18 +236,19 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
         if (nextTurnStats.culture == 0f) return cultureString // when you start the game, you're not producing any culture
 
         val turnsToNextPolicy = (civInfo.policies.getCultureNeededForNextPolicy() - civInfo.policies.storedCulture) / nextTurnStats.culture
-        if (turnsToNextPolicy > 0) cultureString += " (" + ceil(turnsToNextPolicy).toInt() + ")"
-        else cultureString += " (!)"
+        cultureString += if (turnsToNextPolicy <= 0f) " (!)"
+            else " (" + ceil(turnsToNextPolicy).toInt() + ")"
         return cultureString
     }
 
     private fun getHappinessText(civInfo: CivilizationInfo): String {
         var happinessText = civInfo.getHappiness().toString()
-        if (civInfo.goldenAges.isGoldenAge())
-            happinessText += "    " + "GOLDEN AGE".tr() + "(${civInfo.goldenAges.turnsLeftForCurrentGoldenAge})"
-        else
-            happinessText += (" (" + civInfo.goldenAges.storedHappiness + "/"
-                    + civInfo.goldenAges.happinessRequiredForNextGoldenAge() + ")")
+        val goldenAges = civInfo.goldenAges
+        happinessText += 
+            if (goldenAges.isGoldenAge())
+                "    {GOLDEN AGE}(${goldenAges.turnsLeftForCurrentGoldenAge})".tr()
+            else
+                " (${goldenAges.storedHappiness}/${goldenAges.happinessRequiredForNextGoldenAge()})"
         return happinessText
     }
 

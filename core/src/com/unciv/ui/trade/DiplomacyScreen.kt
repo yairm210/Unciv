@@ -11,6 +11,7 @@ import com.unciv.logic.civilization.*
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomacyManager
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers.*
+import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.logic.trade.TradeLogic
 import com.unciv.logic.trade.TradeOffer
@@ -28,7 +29,7 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
 
     private val leftSideTable = Table().apply { defaults().pad(10f) }
     private val rightSideTable = Table()
-
+    
     private fun isNotPlayersTurn() = !UncivGame.Current.worldScreen.isPlayersTurn
 
     init {
@@ -48,7 +49,7 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
         closeButton.labelCell.pad(10f)
         closeButton.pack()
         closeButton.y = stage.height - closeButton.height - 10
-        closeButton.x = 10f
+        closeButton.x = (stage.width * 0.2f - closeButton.width) / 2   // center, leftSideTable.width not known yet
         stage.addActor(closeButton) // This must come after the split pane so it will be above, that the button will be clickable
     }
 
@@ -91,18 +92,13 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
         return tradeTable
     }
 
-
-    private fun getCityStateDiplomacyTable(otherCiv: CivilizationInfo): Table {
+    private fun getCityStateDiplomacyTableHeader(otherCiv: CivilizationInfo): Table {
         val otherCivDiplomacyManager = otherCiv.getDiplomacyManager(viewingCiv)
 
         val diplomacyTable = Table()
         diplomacyTable.defaults().pad(10f)
 
-        val displayNameTable = Table()
-        displayNameTable.add(ImageGetter.getNationIndicator(otherCiv.nation, 24f))
-                .pad(0f, 0f, 5f, 10f)
-        displayNameTable.add(otherCiv.getLeaderDisplayName().toLabel(fontSize = 24))
-        diplomacyTable.add(displayNameTable).row()
+        diplomacyTable.add(LeaderIntroTable(otherCiv)).row()
 
         diplomacyTable.add("{Type}:  {${otherCiv.cityStateType}}".toLabel()).row()
         diplomacyTable.add("{Personality}:  {${otherCiv.cityStatePersonality}}".toLabel()).row()
@@ -112,6 +108,12 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
             val allyString = "{Ally}: {$ally} {Influence}: ".tr() +
                     otherCiv.getDiplomacyManager(ally).influence.toString()
             diplomacyTable.add(allyString.toLabel()).row()
+        }
+
+        val protectors = otherCiv.getProtectorCivs()
+        if (protectors.isNotEmpty()) {
+            val protectorString = "{Protected by}: " + protectors.joinToString(", ") { it.civName }
+            diplomacyTable.add(protectorString.toLabel()).row()
         }
 
         val nextLevelString = when {
@@ -141,28 +143,57 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
             friendBonusLabelColor = Color.GRAY
 
         val friendBonusLabel = friendBonusText.toLabel(friendBonusLabelColor)
-                .apply { setAlignment(Align.center) }
+            .apply { setAlignment(Align.center) }
         diplomacyTable.add(friendBonusLabel).row()
+        
+        return diplomacyTable
+    }
+
+    private fun getCityStateDiplomacyTable(otherCiv: CivilizationInfo): Table {
+        val otherCivDiplomacyManager = otherCiv.getDiplomacyManager(viewingCiv)
+
+        val diplomacyTable = getCityStateDiplomacyTableHeader(otherCiv)
 
         diplomacyTable.addSeparator()
 
-        val giftAmount = 250
-        val influenceAmount = viewingCiv.influenceGainedByGift(otherCiv, giftAmount)
-        val giftButton = "Gift [$giftAmount] gold (+[$influenceAmount] influence)".toTextButton()
-        giftButton.onClick {
-            viewingCiv.giveGoldGift(otherCiv, giftAmount)
-            updateRightSide(otherCiv)
+        val giveGoldButton = "Give a Gift".toTextButton()
+        giveGoldButton.onClick {
+            rightSideTable.clear()
+            rightSideTable.add(ScrollPane(getGoldGiftTable(otherCiv)))
         }
-        diplomacyTable.add(giftButton).row()
-        if (viewingCiv.gold < giftAmount || isNotPlayersTurn()) giftButton.disable()
+        diplomacyTable.add(giveGoldButton).row()
+        
+        if (otherCivDiplomacyManager.diplomaticStatus == DiplomaticStatus.Protector){
+            val revokeProtectionButton = "Revoke Protection".toTextButton()
+            revokeProtectionButton.onClick {
+                YesNoPopup("Revoke protection for [${otherCiv.civName}]?", {
+                    otherCiv.removeProtectorCiv(viewingCiv)
+                    updateLeftSideTable()
+                    updateRightSide(otherCiv)
+                }, this).open()
+            }
+            diplomacyTable.add(revokeProtectionButton).row()
+        } else {
+            val protectionButton = "Pledge to protect".toTextButton()
+            protectionButton.onClick {
+                YesNoPopup("Declare Protection of [${otherCiv.civName}]?", {
+                    otherCiv.addProtectorCiv(viewingCiv)
+                    updateLeftSideTable()
+                    updateRightSide(otherCiv)
+                }, this).open()
+            }
+            if(viewingCiv.isAtWarWith(otherCiv)) {
+                protectionButton.disable()
+            }
+            diplomacyTable.add(protectionButton).row()
+        }
 
         val diplomacyManager = viewingCiv.getDiplomacyManager(otherCiv)
-
         if (!viewingCiv.gameInfo.ruleSet.modOptions.uniques.contains(ModOptionsConstants.diplomaticRelationshipsCannotChange)) {
             if (viewingCiv.isAtWarWith(otherCiv)) {
                 val peaceButton = "Negotiate Peace".toTextButton()
                 peaceButton.onClick {
-                    YesNoPopup("Peace with [${otherCiv.civName}]?".tr(), {
+                    YesNoPopup("Peace with [${otherCiv.civName}]?", {
                         val tradeLogic = TradeLogic(viewingCiv, otherCiv)
                         tradeLogic.currentTrade.ourOffers.add(TradeOffer(Constants.peaceTreaty, TradeType.Treaty))
                         tradeLogic.currentTrade.theirOffers.add(TradeOffer(Constants.peaceTreaty, TradeType.Treaty))
@@ -187,6 +218,30 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
             diplomacyTable.add(getQuestTable(assignedQuest)).row()
         }
 
+        return diplomacyTable
+    }
+    
+    private fun getGoldGiftTable(otherCiv: CivilizationInfo): Table {
+        val diplomacyTable = getCityStateDiplomacyTableHeader(otherCiv)
+        diplomacyTable.addSeparator()
+        
+        for (giftAmount in listOf(250, 500, 1000)) {
+            val influenceAmount = viewingCiv.influenceGainedByGift(giftAmount)
+            val giftButton = "Gift [$giftAmount] gold (+[$influenceAmount] influence)".toTextButton()
+            giftButton.onClick {
+                viewingCiv.giveGoldGift(otherCiv, giftAmount)
+                updateRightSide(otherCiv)
+            }
+            diplomacyTable.add(giftButton).row()
+            if (viewingCiv.gold < giftAmount || isNotPlayersTurn()) giftButton.disable()
+        }
+        
+        val backButton = "Back".toTextButton()
+        backButton.onClick {
+            rightSideTable.clear()
+            rightSideTable.add(ScrollPane(getCityStateDiplomacyTable(otherCiv)))
+        }
+        diplomacyTable.add(backButton)
         return diplomacyTable
     }
 
@@ -217,19 +272,10 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
         val diplomacyTable = Table()
         diplomacyTable.defaults().pad(10f)
 
-        val displayNameTable = Table()
-        displayNameTable.add(ImageGetter.getNationIndicator(otherCiv.nation, 24f)).pad(0f, 0f, 5f, 5f)
-        displayNameTable.add(otherCiv.getLeaderDisplayName().toLabel(fontSize = 24)).row()
-        val helloText = if (otherCivDiplomacyManager.relationshipLevel() <= RelationshipLevel.Enemy) otherCiv.nation.hateHello
-        else otherCiv.nation.neutralHello
-        displayNameTable.add(helloText.toLabel()).colspan(2)
-
-        val leaderIntroTable = Table()
-        val leaderPortraitImage = "LeaderIcons/" + otherCiv.nation.leaderName
-        if (ImageGetter.imageExists(leaderPortraitImage))
-            leaderIntroTable.add(ImageGetter.getImage(leaderPortraitImage)).size(100f).padRight(10f)
-        leaderIntroTable.add(displayNameTable)
-
+        val helloText = if (otherCivDiplomacyManager.relationshipLevel() <= RelationshipLevel.Enemy)
+                            otherCiv.nation.hateHello
+                        else otherCiv.nation.neutralHello
+        val leaderIntroTable = LeaderIntroTable(otherCiv, helloText)
         diplomacyTable.add(leaderIntroTable).row()
         diplomacyTable.addSeparator()
 
@@ -334,9 +380,28 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
         if (!otherCiv.isPlayerCivilization()) { // human players make their own choices
             diplomacyTable.add(getRelationshipTable(otherCivDiplomacyManager)).row()
             diplomacyTable.add(getDiplomacyModifiersTable(otherCivDiplomacyManager)).row()
+            val promisesTable = getPromisesTable(diplomacyManager, otherCivDiplomacyManager)
+            if (promisesTable != null) diplomacyTable.add(promisesTable).row()
         }
 
         return diplomacyTable
+    }
+
+    private fun getPromisesTable(diplomacyManager: DiplomacyManager, otherCivDiplomacyManager: DiplomacyManager): Table? {
+        val promisesTable = Table()
+
+        // Not for (flag in DiplomacyFlags.values()) - all other flags should result in DiplomaticModifiers or stay internal?
+        val flag = DiplomacyFlags.AgreedToNotSettleNearUs
+        if (otherCivDiplomacyManager.hasFlag(flag)) {
+            val text = "We promised not to settle near them ([${otherCivDiplomacyManager.getFlag(flag)}] turns remaining)"
+            promisesTable.add(text.toLabel(Color.LIGHT_GRAY)).row()
+        }
+        if (diplomacyManager.hasFlag(flag)) {
+            val text = "They promised not to settle near us ([${diplomacyManager.getFlag(flag)}] turns remaining)"
+            promisesTable.add(text.toLabel(Color.LIGHT_GRAY)).row()
+        }
+
+        return if (promisesTable.cells.isEmpty) null else promisesTable
     }
 
     private fun getDiplomacyModifiersTable(otherCivDiplomacyManager: DiplomacyManager): Table {
@@ -426,7 +491,7 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
             declareWarButton.setText(declareWarButton.text.toString() + " ($turnsToPeaceTreaty${Fonts.turn})")
         }
         declareWarButton.onClick {
-            YesNoPopup("Declare war on [${otherCiv.civName}]?".tr(), {
+            YesNoPopup("Declare war on [${otherCiv.civName}]?", {
                 diplomacyManager.declareWar()
                 setRightSideFlavorText(otherCiv, otherCiv.nation.attacked, "Very well.")
                 updateLeftSideTable()
@@ -435,15 +500,22 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
         return declareWarButton
     }
 
+    // response currently always gets "Very Well.", but that may expand in the future.
+    @Suppress("SameParameterValue")
     private fun setRightSideFlavorText(otherCiv: CivilizationInfo, flavorText: String, response: String) {
         val diplomacyTable = Table()
         diplomacyTable.defaults().pad(10f)
-        diplomacyTable.add(otherCiv.getLeaderDisplayName().toLabel())
+        diplomacyTable.add(LeaderIntroTable(otherCiv))
         diplomacyTable.addSeparator()
         diplomacyTable.add(flavorText.toLabel()).row()
 
         val responseButton = response.toTextButton()
-        responseButton.onClick { updateRightSide(otherCiv) }
+        val action = {
+            keyPressDispatcher.remove(KeyCharAndCode.SPACE)     
+            updateRightSide(otherCiv) 
+        }
+        responseButton.onClick(action)
+        keyPressDispatcher[KeyCharAndCode.SPACE] = action
         diplomacyTable.add(responseButton)
 
         rightSideTable.clear()

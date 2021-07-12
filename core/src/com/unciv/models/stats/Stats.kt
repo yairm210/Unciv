@@ -64,6 +64,12 @@ open class Stats() {
         for (stat in Stat.values()) hashMap[stat] = number * hashMap[stat]!!
         return Stats(hashMap)
     }
+    
+    fun timesInPlace(number: Float) {
+        val hashMap = toHashMap()
+        for (stat in Stat.values()) hashMap[stat] = number * hashMap[stat]!!
+        setStats(hashMap)
+    }
 
     fun isEmpty() = equals(Stats())
 
@@ -112,7 +118,10 @@ open class Stats() {
         private val statRegexPattern = "([+-])(\\d+) ($allStatNames)"
         private val statRegex = Regex(statRegexPattern)
         private val entireStringRegexPattern = Regex("$statRegexPattern(, $statRegexPattern)*")
-        fun isStats(string:String): Boolean = entireStringRegexPattern.matches(string)
+        fun isStats(string:String): Boolean {
+            if (string.isEmpty() || string[0] !in "+-") return false // very quick negative check before the heavy Regex
+            return entireStringRegexPattern.matches(string)
+        }
         fun parse(string:String):Stats{
             val toReturn = Stats()
             val statsWithBonuses = string.split(", ")

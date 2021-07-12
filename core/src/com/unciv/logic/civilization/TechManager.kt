@@ -6,6 +6,7 @@ import com.unciv.logic.map.RoadStatus
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.ruleset.Unique
 import com.unciv.models.ruleset.UniqueTriggerActivation
+import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.ruleset.tech.Technology
 import com.unciv.ui.utils.withItem
 import java.util.*
@@ -48,8 +49,9 @@ class TechManager {
 
     /** When moving towards a certain tech, the user doesn't have to manually pick every one. */
     var techsToResearch = ArrayList<String>()
-    private var techsInProgress = HashMap<String, Int>()
     var overflowScience = 0
+    private var techsInProgress = HashMap<String, Int>()
+    fun scienceSpentOnTech(tech: String): Int = if (tech in techsInProgress) techsInProgress[tech]!! else 0
 
     /** In civ IV, you can auto-convert a certain percentage of gold in cities to science */
     var goldPercentConvertedToScience = 0.6f
@@ -83,12 +85,12 @@ class TechManager {
                 .count { it.isMajorCiv() && !it.isDefeated() }
         // https://forums.civfanatics.com/threads/the-mechanics-of-overflow-inflation.517970/
         techCost /= 1 + techsResearchedKnownCivs / undefeatedCivs.toFloat() * 0.3f
-        // http://web.archive.org/web/20201204043641/http://www.civclub.net/bbs/forum.php?mod=viewthread&tid=123976
+        // http://www.civclub.net/bbs/forum.php?mod=viewthread&tid=123976
         val worldSizeModifier = with (civInfo.gameInfo.tileMap.mapParameters.mapSize) {
             when {
-                radius >= MapSize.Medium.radius -> floatArrayOf(1.1f, 0.05f)
-                radius >= MapSize.Large.radius -> floatArrayOf(1.2f, 0.03f)
                 radius >= MapSize.Huge.radius -> floatArrayOf(1.3f, 0.02f)
+                radius >= MapSize.Large.radius -> floatArrayOf(1.2f, 0.03f)
+                radius >= MapSize.Medium.radius -> floatArrayOf(1.1f, 0.05f)
                 else -> floatArrayOf(1f, 0.05f)
             }
         }
@@ -180,8 +182,13 @@ class TechManager {
     private fun scienceFromResearchAgreements(): Int {
         // https://forums.civfanatics.com/resources/research-agreements-bnw.25568/
         var researchAgreementModifier = 0.5f
-        for (unique in civInfo.getMatchingUniques("Science gained from research agreements +50%"))
-            researchAgreementModifier += 0.25f
+        // Deprecated since 3.15.0
+            for (unique in civInfo.getMatchingUniques("Science gained from research agreements +50%"))
+                researchAgreementModifier += 0.25f
+        //
+        for (unique in civInfo.getMatchingUniques("Science gained from research agreements +[]%")) {
+            researchAgreementModifier += unique.params[0].toFloat() / 200f
+        }
         return (scienceFromResearchAgreements / 3 * researchAgreementModifier).toInt()
     }
 
@@ -243,7 +250,7 @@ class TechManager {
         }
         updateTransientBooleans()
 
-        civInfo.addNotification("Research of [$techName] has completed!", TechAction(techName), NotificationIcon.Science, techName )
+        civInfo.addNotification("Research of [$techName] has completed!", TechAction(techName), NotificationIcon.Science, techName)
         civInfo.popupAlerts.add(PopupAlert(AlertType.TechResearched, techName))
 
         val currentEra = civInfo.getEra()
@@ -254,7 +261,7 @@ class TechManager {
                     knownCiv.addNotification("[${civInfo.civName}] has entered the [$currentEra]!", civInfo.civName, NotificationIcon.Science)
                 }
             }
-            for (it in getRuleset().policyBranches.values.filter { it.era == currentEra }) {
+            for (it in getRuleset().policyBranches.values.filter { it.era == currentEra && civInfo.policies.isAdoptable(it) }) {
                 civInfo.addNotification("[" + it.name + "] policy branch unlocked!", NotificationIcon.Culture)
             }
         }
@@ -262,15 +269,46 @@ class TechManager {
         if (civInfo.playerType == PlayerType.Human) notifyRevealedResources(techName)
 
         val obsoleteUnits = getRuleset().units.values.filter { it.obsoleteTech == techName }.map { it.name }
+        val unitUpgrades = HashMap<String, ArrayList<CityInfo>>()
         for (city in civInfo.cities) {
             // Do not use replaceAll - that's a Java 8 feature and will fail on older phones!
             val oldQueue = city.cityConstructions.constructionQueue.toList()  // copy, since we're changing the queue
             city.cityConstructions.constructionQueue.clear()
             for (constructionName in oldQueue) {
                 if (constructionName in obsoleteUnits) {
-                    val text = "[$constructionName] has been obsolete and will be removed from construction queue in [${city.name}]!"
-                    civInfo.addNotification(text, city.location, NotificationIcon.Construction)
+                    if (constructionName !in unitUpgrades.keys) {
+                        unitUpgrades[constructionName] = ArrayList<CityInfo>()
+                    }
+                    unitUpgrades[constructionName]?.add(city)
+                    val construction = city.cityConstructions.getConstruction(constructionName)
+                    if (construction is BaseUnit && construction.upgradesTo != null) {
+                        city.cityConstructions.constructionQueue.add(construction.upgradesTo!!)
+                    }
                 } else city.cityConstructions.constructionQueue.add(constructionName)
+            }
+        }
+
+        // Add notifications for obsolete units/constructions
+        for ((unit, cities) in unitUpgrades) {
+            val construction = cities[0].cityConstructions.getConstruction(unit)
+            if (cities.size == 1) {
+                val city = cities[0]
+                if (construction is BaseUnit && construction.upgradesTo != null) {
+                    val text = "[${city.name}] changed production from [$unit] to [${construction.upgradesTo!!}]"
+                    civInfo.addNotification(text, city.location, unit, NotificationIcon.Construction, construction.upgradesTo!!)
+                } else {
+                    val text = "[$unit] has become obsolete and was removed from the queue in [${city.name}]!"
+                    civInfo.addNotification(text, city.location, NotificationIcon.Construction)
+                }
+            } else {
+                val locationAction = LocationAction(cities.map { it.location })
+                if (construction is BaseUnit && construction.upgradesTo != null) {
+                    val text = "[${cities.size}] cities changed production from [$unit] to [${construction.upgradesTo!!}]"
+                    civInfo.addNotification(text, locationAction, unit, NotificationIcon.Construction, construction.upgradesTo!!)
+                } else {
+                    val text = "[$unit] has become osbolete and was removed from the queue in [${cities.size}] cities!"
+                    civInfo.addNotification(text, locationAction, NotificationIcon.Construction)
+                }
             }
         }
 
@@ -296,6 +334,7 @@ class TechManager {
                         city -> CityTileAndDistance(city, tile, tile.aerialDistanceTo(city.getCenterTile()))
                     }
                 }
+                .filter { it.distance <= 5 && (it.tile.getOwner() == null || it.tile.getOwner() == civInfo) }
                 .sortedWith ( compareBy { it.distance } )
                 .distinctBy { it.tile }
 
@@ -314,7 +353,7 @@ class TechManager {
             civInfo.addNotification(
                 text,
                 LocationAction(positions),
-                "ResourceIcons/" + revealedName
+                "ResourceIcons/$revealedName"
             )
         }
     }
