@@ -152,11 +152,19 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
                 val wonder = worldScreen.gameInfo.ruleSet.buildings[popupAlert.value]!!
                 addGoodSizedLabel(wonder.name)
                 addSeparator()
+                if(ImageGetter.wonderImageExists(wonder.name)) {
+                    add(ImageGetter.getWonderImage(wonder.name))
+                        .width(worldScreen.stage.width/2.5f)
+                        .height(worldScreen.stage.width/5)
+                        .row()
+                } else {
+                    add(ImageGetter.getConstructionImage(wonder.name).surroundWithCircle(100f)).pad(20f).row()
+                }
+
                 val centerTable = Table()
-                centerTable.add(wonder.quote.toLabel().apply { wrap = true }).width(worldScreen.stage.width / 3)
-                centerTable.add(ImageGetter.getConstructionImage(wonder.name).surroundWithCircle(100f)).pad(20f)
+                centerTable.add(wonder.quote.toLabel().apply { wrap = true }).width(worldScreen.stage.width / 3).pad(10f)
                 centerTable.add(wonder.getShortDescription(worldScreen.gameInfo.ruleSet)
-                        .toLabel().apply { wrap = true }).width(worldScreen.stage.width / 3)
+                        .toLabel().apply { wrap = true }).width(worldScreen.stage.width / 3).pad(10f)
                 add(centerTable).row()
                 add(getCloseButton(Constants.close))
             }
