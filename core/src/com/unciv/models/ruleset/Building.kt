@@ -4,6 +4,7 @@ import com.unciv.logic.city.CityConstructions
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.city.IConstruction
 import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.GreatPersonManager
 import com.unciv.models.Counter
 import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.stats.NamedStats
@@ -268,32 +269,20 @@ class Building : NamedStats(), IConstruction, ICivilopediaText {
         }
 
         if (!percentStats.isEmpty()) {
-            if (percentStats.production != 0f)
-                textList += FormattedLine(percentStats.production.formatSignedInt() + "% {Production}")
-            if (percentStats.gold != 0f)
-                textList += FormattedLine(percentStats.gold.formatSignedInt() + "% {Gold}")
-            if (percentStats.science != 0f)
-                textList += FormattedLine(percentStats.science.formatSignedInt() + "% {Science}")
-            if (percentStats.food != 0f)
-                textList += FormattedLine(percentStats.food.formatSignedInt() + "% {Food}")
-            if (percentStats.culture != 0f)
-                textList += FormattedLine(percentStats.culture.formatSignedInt() + "% {Culture}")
+            for ( (key, value) in percentStats.toHashMap()) {
+                if (value == 0f) continue
+                textList += FormattedLine(value.formatSignedInt() + "% {$key}")
+            }
         }
 
-        if (this.greatPersonPoints != null) {
-            val gpp = this.greatPersonPoints!!
-            if (gpp.production != 0f) textList +=
-                FormattedLine(gpp.production.formatSignedInt() + " " + "[Great Engineer] points".tr(),
-                    link="Unit/Great Engineer")
-            if (gpp.gold != 0f) textList +=
-                FormattedLine(gpp.gold.formatSignedInt() + " " + "[Great Merchant] points".tr(),
-                    link="Unit/Great Merchant")
-            if (gpp.science != 0f) textList +=
-                FormattedLine(gpp.science.formatSignedInt() + " " + "[Great Scientist] points".tr(), 
-                    link="Unit/Great Scientist")
-            if (gpp.culture != 0f) textList +=
-                FormattedLine(gpp.culture.formatSignedInt() + " " + "[Great Artist] points".tr(), 
-                    link="Unit/Great Artist")
+        if (greatPersonPoints != null) {
+            for ( (key, value) in greatPersonPoints!!.toHashMap()) {
+                if (value == 0f) continue
+                val gppName = GreatPersonManager.statToGreatPersonMapping[key]
+                    ?: continue
+                textList += FormattedLine(value.formatSignedInt() + " " + "[$gppName] points".tr(),
+                    link = "Unit/$gppName")
+            }
         }
 
         if (specialists.isNotEmpty()) {
@@ -303,13 +292,9 @@ class Building : NamedStats(), IConstruction, ICivilopediaText {
 
         if (requiredNearbyImprovedResources != null) {
             textList += FormattedLine()
-            requiredNearbyImprovedResources!!.withIndex().forEach {
-                textList += FormattedLine(
-                        (if (it.index == 0) "Requires worked" else "or") +
-                        " [" + it.value + "]" +
-                        (if (it.index == requiredNearbyImprovedResources!!.size-1) " near city" else ""),
-                    indent=if (it.index == 0) 0 else 1,
-                    link="Resource/${it.value}")
+            textList += FormattedLine("Requires a worked resource near the city:")
+            requiredNearbyImprovedResources!!.forEach {
+                textList += FormattedLine(it, indent = 1, link = "Resource/$it")
             }
         }
 
