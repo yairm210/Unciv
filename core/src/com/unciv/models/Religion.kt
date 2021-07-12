@@ -8,9 +8,12 @@ import com.unciv.models.stats.INamed
 /** Data object for Religions */
 class Religion() : INamed {
     
+    var iconName: String = "Pantheon"
+    
     var pantheonBeliefs: HashSet<String> = hashSetOf()
     var founderBeliefs: HashSet<String> = hashSetOf()
     var followerBeliefs: HashSet<String> = hashSetOf()
+    
     override lateinit var name: String
     lateinit var foundingCivName: String
     
