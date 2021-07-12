@@ -139,7 +139,7 @@ object BattleDamage {
                     if (!attacker.getTile()
                             .hasConnection(attacker.getCivInfo()) // meaning, the tiles are not road-connected for this civ
                         || !defender.getTile().hasConnection(attacker.getCivInfo())
-                        || !attacker.getCivInfo().tech.roadsConnectAcrossRivers
+                        || !attacker.getCivInfo().roadsConnectAcrossRivers
                     ) {
                         modifiers["Across river"] = -20
                     }

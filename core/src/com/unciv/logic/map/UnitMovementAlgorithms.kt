@@ -30,10 +30,10 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
         val areConnectedByRoad = from.hasConnection(civInfo) && to.hasConnection(civInfo)
         val areConnectedByRiver = from.isConnectedByRiver(to)
 
-        if (areConnectedByRoad && (!areConnectedByRiver || civInfo.tech.roadsConnectAcrossRivers))
+        if (areConnectedByRoad && (!areConnectedByRiver || civInfo.roadsConnectAcrossRivers))
         {
-            if (unit.civInfo.tech.movementSpeedOnRoadsImproved) return 1 / 3f + extraCost
-            else return 1 / 2f + extraCost
+            return if (unit.civInfo.movementSpeedOnRoadsImproved) 1 / 3f + extraCost
+            else 1 / 2f + extraCost
         }
         if (unit.ignoresTerrainCost) return 1f + extraCost
         if (areConnectedByRiver) return 100f  // Rivers take the entire turn to cross
@@ -476,11 +476,11 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
 
 
         if (tile.isWater && unit.type.isLandUnit()) {
-            if (!unit.civInfo.tech.unitsCanEmbark) return false
-            if (tile.isOcean && !unit.civInfo.tech.embarkedUnitsCanEnterOcean)
+            if (!unit.civInfo.unitsCanEmbark) return false
+            if (tile.isOcean && !unit.civInfo.embarkedUnitsCanEnterOcean)
                 return false
         }
-        if (tile.isOcean && !unit.civInfo.tech.wayfinding) { // Apparently all Polynesian naval units can enter oceans
+        if (tile.isOcean && !unit.civInfo.wayfinding) { // Apparently all Polynesian naval units can enter oceans
             if (unit.cannotEnterOceanTiles) return false
             if (unit.cannotEnterOceanTilesUntilAstronomy
                     && !unit.civInfo.tech.isResearched("Astronomy"))

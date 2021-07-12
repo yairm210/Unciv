@@ -213,7 +213,7 @@ class VictoryScreen(val worldScreen: WorldScreen) : PickerScreen() {
         data class civToBranchesCompleted(val civ: CivilizationInfo, val branchesCompleted: Int)
 
         val civsToBranchesCompleted =
-                majorCivs.map { civToBranchesCompleted(it, it.policies.adoptedPolicies.count { pol -> pol.endsWith("Complete") }) }
+                majorCivs.map { civToBranchesCompleted(it, it.getCompletedPolicyBranchesCount()) }
                         .sortedByDescending { it.branchesCompleted }
 
         for (entry in civsToBranchesCompleted) {

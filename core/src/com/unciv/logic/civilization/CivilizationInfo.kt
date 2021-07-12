@@ -70,6 +70,25 @@ class CivilizationInfo {
     @Transient
     var detailedCivResources = ResourceSupplyList()
 
+    // UnitMovementAlgorithms.canPassThrough is the most called function in the game,
+    // so defining these extremely specific booleans which are usually used in this function
+    // will improve the time cost
+    @Transient
+    var wayfinding = false
+
+    @Transient
+    var unitsCanEmbark = false
+
+    @Transient
+    var embarkedUnitsCanEnterOcean = false
+
+    // These booleans are used in UnitMovementAlgorithms.getMovementCostBetweenAdjacentTiles
+    @Transient
+    var movementSpeedOnRoadsImproved = false
+
+    @Transient
+    var roadsConnectAcrossRivers = false
+
     var playerType = PlayerType.AI
 
     /** Used in online multiplayer for human players */
@@ -852,6 +871,15 @@ class CivilizationInfo {
                 oldAllyCiv.updateDetailedCivResources()
             }
         }
+    }
+
+    fun updateTransientBooleans() {
+        wayfinding = hasUnique("Can embark and move over Coasts and Oceans immediately")
+        unitsCanEmbark = wayfinding || hasUnique("Enables embarkation for land units")
+
+        embarkedUnitsCanEnterOcean = wayfinding || hasUnique("Enables embarked units to enter ocean tiles")
+        movementSpeedOnRoadsImproved = hasUnique("Improves movement speed on roads")
+        roadsConnectAcrossRivers = hasUnique("Roads connect tiles across rivers")
     }
 
     //endregion

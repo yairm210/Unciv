@@ -25,20 +25,6 @@ class TechManager {
     @Transient
     private var researchedTechUniques = ArrayList<Unique>()
 
-    // MapUnit.canPassThrough is the most called function in the game, and having these extremely specific booleans is or way of improving the time cost
-    @Transient
-    var wayfinding = false
-    @Transient
-    var unitsCanEmbark = false
-    @Transient
-    var embarkedUnitsCanEnterOcean = false
-
-    // UnitMovementAlgorithms.getMovementCostBetweenAdjacentTiles is a close second =)
-    @Transient
-    var movementSpeedOnRoadsImproved = false
-    @Transient
-    var roadsConnectAcrossRivers = false
-
     var freeTechs = 0
 
     /** For calculating Great Scientist yields - see https://civilization.fandom.com/wiki/Great_Scientist_(Civ5)  */
@@ -248,7 +234,7 @@ class TechManager {
             researchedTechUniques = researchedTechUniques.withItem(unique)
             UniqueTriggerActivation.triggerCivwideUnique(unique, civInfo)
         }
-        updateTransientBooleans()
+        civInfo.updateTransientBooleans()
 
         civInfo.addNotification("Research of [$techName] has completed!", TechAction(techName), NotificationIcon.Science, techName)
         civInfo.popupAlerts.add(PopupAlert(AlertType.TechResearched, techName))
@@ -361,16 +347,7 @@ class TechManager {
     fun setTransients() {
         researchedTechnologies.addAll(techsResearched.map { getRuleset().technologies[it]!! })
         researchedTechUniques.addAll(researchedTechnologies.asSequence().flatMap { it.uniqueObjects.asSequence() })
-        updateTransientBooleans()
-    }
-
-    private fun updateTransientBooleans() {
-        wayfinding = civInfo.hasUnique("Can embark and move over Coasts and Oceans immediately")
-        unitsCanEmbark = wayfinding || civInfo.hasUnique("Enables embarkation for land units")
-
-        embarkedUnitsCanEnterOcean = wayfinding || civInfo.hasUnique("Enables embarked units to enter ocean tiles")
-        movementSpeedOnRoadsImproved = civInfo.hasUnique("Improves movement speed on roads")
-        roadsConnectAcrossRivers = civInfo.hasUnique("Roads connect tiles across rivers")
+        civInfo.updateTransientBooleans()
     }
 
     fun getBestRoadAvailable(): RoadStatus {

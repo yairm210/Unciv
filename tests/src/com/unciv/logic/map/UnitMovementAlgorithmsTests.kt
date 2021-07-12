@@ -32,8 +32,8 @@ class UnitMovementAlgorithmsTests {
         tile.ruleset = ruleSet
         tile.baseTerrain = Constants.grassland
         civInfo.tech.techsResearched.addAll(ruleSet.technologies.keys)
-        civInfo.tech.embarkedUnitsCanEnterOcean = true
-        civInfo.tech.unitsCanEmbark = true
+        civInfo.embarkedUnitsCanEnterOcean = true
+        civInfo.unitsCanEmbark = true
         civInfo.nation = Nation().apply {
             name = "My nation"
             cities = arrayListOf("The Capital")
@@ -144,7 +144,7 @@ class UnitMovementAlgorithmsTests {
     @Test
     fun canNOTEnterCoastUntilProperTechIsResearched() {
 
-        civInfo.tech.unitsCanEmbark = false
+        civInfo.unitsCanEmbark = false
 
         tile.baseTerrain = Constants.coast
         tile.setTransients()
@@ -160,7 +160,7 @@ class UnitMovementAlgorithmsTests {
     @Test
     fun canNOTEnterOceanUntilProperTechIsResearched() {
 
-        civInfo.tech.embarkedUnitsCanEnterOcean = false
+        civInfo.embarkedUnitsCanEnterOcean = false
 
         tile.baseTerrain = Constants.ocean
         tile.setTransients()
