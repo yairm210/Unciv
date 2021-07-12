@@ -59,9 +59,11 @@ class PopulationManager {
         }
         if (foodStored >= getFoodToNextPopulation()) {  // growth!
             foodStored -= getFoodToNextPopulation()
-            val percentOfFoodCarriedOver = cityInfo.cityConstructions.builtBuildingUniqueMap
-                    .getUniques("[]% of food is carried over after population increases")
+            var percentOfFoodCarriedOver = cityInfo
+                    .getMatchingUniques("[]% of food is carried over after population increases")
                     .sumBy { it.params[0].toInt() }
+            // Try to avoid runaway food gain in mods, just in case mod makes don't notice it
+            if (percentOfFoodCarriedOver > 95) percentOfFoodCarriedOver = 95 
             foodStored += (getFoodToNextPopulation() * percentOfFoodCarriedOver / 100f).toInt()
             population++
             autoAssignPopulation()
@@ -73,6 +75,7 @@ class PopulationManager {
 
     internal fun addPopulation(count: Int) {
         population += count
+        if (population < 0) population = 0
         val freePopulation = getFreePopulation()
         if (freePopulation < 0) {
             unassignExtraPopulation()

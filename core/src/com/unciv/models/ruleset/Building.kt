@@ -92,7 +92,7 @@ class Building : NamedStats(), IConstruction, ICivilopediaText {
         val tileBonusHashmap = HashMap<String, ArrayList<String>>()
         val finalUniques = ArrayList<String>()
         for (unique in uniqueObjects)
-            if (unique.placeholderText == "[] from [] tiles in this city") {
+            if (unique.placeholderText == "[] from [] tiles []" && unique.params[2] == "in this city") {
                 val stats = unique.params[0]
                 if (!tileBonusHashmap.containsKey(stats)) tileBonusHashmap[stats] = ArrayList()
                 tileBonusHashmap[stats]!!.add(unique.params[1])
@@ -152,30 +152,27 @@ class Building : NamedStats(), IConstruction, ICivilopediaText {
 
     fun getStats(city: CityInfo?): Stats {
         val stats = this.clone()
-        val civInfo = city?.civInfo
-        if (civInfo != null) {
-            val baseBuildingName = getBaseBuilding(civInfo.gameInfo.ruleSet).name
+        if (city == null) return stats
+        val civInfo = city.civInfo
 
-            // We don't have to check whether 'city' is null, as if it was, cityInfo would also be null, and we wouldn't be here.
-            for (unique in civInfo.getMatchingUniques("[] from every []") + city.religion.getMatchingUniques("[] from every []")) {
-                if (unique.params[1] != baseBuildingName) continue
-                stats.add(unique.stats)
-            }
-
-            for (unique in uniqueObjects)
-                if (unique.placeholderText == "[] with []" && civInfo.hasResource(unique.params[1])
-                        && Stats.isStats(unique.params[0]))
-                    stats.add(unique.stats)
-
-            if (!isWonder)
-                for (unique in civInfo.getMatchingUniques("[] from all [] buildings")) {
-                    if (isStatRelated(Stat.valueOf(unique.params[1])))
-                        stats.add(unique.stats)
-                }
-            else
-                for (unique in civInfo.getMatchingUniques("[] from every Wonder"))
-                    stats.add(unique.stats)
+        for (unique in city.getMatchingUniques("[] from every []")) {
+            if (!matchesFilter(unique.params[1])) continue
+            stats.add(unique.stats)
         }
+
+        for (unique in uniqueObjects)
+            if (unique.placeholderText == "[] with []" && civInfo.hasResource(unique.params[1])
+                    && Stats.isStats(unique.params[0]))
+                stats.add(unique.stats)
+
+        if (!isWonder)
+            for (unique in city.getMatchingUniques("[] from all [] buildings")) {
+                if (isStatRelated(Stat.valueOf(unique.params[1])))
+                    stats.add(unique.stats)
+            }
+        else
+            for (unique in city.getMatchingUniques("[] from every Wonder"))
+                stats.add(unique.stats)
         return stats
     }
 

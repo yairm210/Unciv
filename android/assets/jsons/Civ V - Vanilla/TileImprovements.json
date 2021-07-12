@@ -190,6 +190,11 @@
 		"uniques": ["Great Improvement", "[+1 Gold] once [Economics] is discovered"]
 	},
 	{
+		"name": "Holy site",
+		"faith": 6,
+		"uniques": ["Great Improvement"]
+	},
+	{
 		"name": "Citadel",
 		"uniques": ["Gives a defensive bonus of [100]%", "Deal 30 damage to adjacent enemy units", "Great Improvement", "Can be built just outside your borders"],
         "civilopediaText": [{text:"Constructing it will take over the tiles around it and assign them to your closest city"}]
@@ -232,7 +237,7 @@
         "civilopediaText": [{text:"Ancient ruins provide a one-time random bonus when explored"}] },
 	{ "name": "City ruins", "uniques": ["Unpillagable"],
         "civilopediaText": [{text:"A bleak reminder of the destruction wreaked by War"}] },
-	{ "name": "City center", "uniques": ["Unpillagable"],
+	{ "name": "City center", "uniques": ["Unpillagable", "Indestructible"],
         "civilopediaText": [{text:"Marks the center of a city"},{text:"Appearance changes with the technological era of the owning civilization"}] },
 	{ "name": "Barbarian encampment", "uniques": ["Unpillagable"],
         "civilopediaText": [{text:"Home to uncivilized barbarians, will spawn a hostile unit from time to time"}] }

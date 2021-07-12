@@ -25,8 +25,8 @@ class TileImprovement : NamedStats(), ICivilopediaText {
 
     fun getTurnsToBuild(civInfo: CivilizationInfo): Int {
         var realTurnsToBuild = turnsToBuild.toFloat() * civInfo.gameInfo.gameParameters.gameSpeed.modifier
-        for (unique in civInfo.getMatchingUniques("-[]% tile improvement construction time")) {
-            realTurnsToBuild *= 1 - unique.params[0].toFloat() / 100f
+        for (unique in civInfo.getMatchingUniques("[]% tile improvement construction time")) {
+            realTurnsToBuild *= 1 + unique.params[0].toFloat() / 100f
         }
         // Deprecated since 3.14.17
             if (civInfo.hasUnique("Worker construction increased 25%"))

@@ -29,7 +29,7 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
 
     private val leftSideTable = Table().apply { defaults().pad(10f) }
     private val rightSideTable = Table()
-
+    
     private fun isNotPlayersTurn() = !UncivGame.Current.worldScreen.isPlayersTurn
 
     init {
@@ -92,8 +92,7 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
         return tradeTable
     }
 
-
-    private fun getCityStateDiplomacyTable(otherCiv: CivilizationInfo): Table {
+    private fun getCityStateDiplomacyTableHeader(otherCiv: CivilizationInfo): Table {
         val otherCivDiplomacyManager = otherCiv.getDiplomacyManager(viewingCiv)
 
         val diplomacyTable = Table()
@@ -144,21 +143,26 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
             friendBonusLabelColor = Color.GRAY
 
         val friendBonusLabel = friendBonusText.toLabel(friendBonusLabelColor)
-                .apply { setAlignment(Align.center) }
+            .apply { setAlignment(Align.center) }
         diplomacyTable.add(friendBonusLabel).row()
+        
+        return diplomacyTable
+    }
+
+    private fun getCityStateDiplomacyTable(otherCiv: CivilizationInfo): Table {
+        val otherCivDiplomacyManager = otherCiv.getDiplomacyManager(viewingCiv)
+
+        val diplomacyTable = getCityStateDiplomacyTableHeader(otherCiv)
 
         diplomacyTable.addSeparator()
 
-        val giftAmount = 250
-        val influenceAmount = viewingCiv.influenceGainedByGift(otherCiv, giftAmount)
-        val giftButton = "Gift [$giftAmount] gold (+[$influenceAmount] influence)".toTextButton()
-        giftButton.onClick {
-            viewingCiv.giveGoldGift(otherCiv, giftAmount)
-            updateRightSide(otherCiv)
+        val giveGoldButton = "Give a Gift".toTextButton()
+        giveGoldButton.onClick {
+            rightSideTable.clear()
+            rightSideTable.add(ScrollPane(getGoldGiftTable(otherCiv)))
         }
-        diplomacyTable.add(giftButton).row()
-        if (viewingCiv.gold < giftAmount || isNotPlayersTurn()) giftButton.disable()
-
+        diplomacyTable.add(giveGoldButton).row()
+        
         if (otherCivDiplomacyManager.diplomaticStatus == DiplomaticStatus.Protector){
             val revokeProtectionButton = "Revoke Protection".toTextButton()
             revokeProtectionButton.onClick {
@@ -214,6 +218,30 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
             diplomacyTable.add(getQuestTable(assignedQuest)).row()
         }
 
+        return diplomacyTable
+    }
+    
+    private fun getGoldGiftTable(otherCiv: CivilizationInfo): Table {
+        val diplomacyTable = getCityStateDiplomacyTableHeader(otherCiv)
+        diplomacyTable.addSeparator()
+        
+        for (giftAmount in listOf(250, 500, 1000)) {
+            val influenceAmount = viewingCiv.influenceGainedByGift(giftAmount)
+            val giftButton = "Gift [$giftAmount] gold (+[$influenceAmount] influence)".toTextButton()
+            giftButton.onClick {
+                viewingCiv.giveGoldGift(otherCiv, giftAmount)
+                updateRightSide(otherCiv)
+            }
+            diplomacyTable.add(giftButton).row()
+            if (viewingCiv.gold < giftAmount || isNotPlayersTurn()) giftButton.disable()
+        }
+        
+        val backButton = "Back".toTextButton()
+        backButton.onClick {
+            rightSideTable.clear()
+            rightSideTable.add(ScrollPane(getCityStateDiplomacyTable(otherCiv)))
+        }
+        diplomacyTable.add(backButton)
         return diplomacyTable
     }
 

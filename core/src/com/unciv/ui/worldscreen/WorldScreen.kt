@@ -245,7 +245,11 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Cam
         keyPressDispatcher[Input.Keys.F10] = { game.setScreen(EmpireOverviewScreen(selectedCiv, "Resources")) }    // originally Strategic View
         keyPressDispatcher[Input.Keys.F11] = quickSave    // Quick Save
         keyPressDispatcher[Input.Keys.F12] = quickLoad    // Quick Load
-        keyPressDispatcher[Input.Keys.HOME] = { mapHolder.setCenterPosition(gameInfo.currentPlayerCiv.getCapital().location) }    // Capital City View
+        keyPressDispatcher[Input.Keys.HOME] = {    // Capital City View
+            val capital = gameInfo.currentPlayerCiv.getCapital()
+            if (!mapHolder.setCenterPosition(capital.location))
+                game.setScreen(CityScreen(capital))
+        }
         keyPressDispatcher['\u000F'] = { this.openOptionsPopup() }    //   Ctrl-O: Game Options
         keyPressDispatcher['\u0013'] = { game.setScreen(SaveGameScreen(gameInfo)) }    //   Ctrl-S: Save
         keyPressDispatcher['\u000C'] = { game.setScreen(LoadGameScreen(this)) }    //   Ctrl-L: Load

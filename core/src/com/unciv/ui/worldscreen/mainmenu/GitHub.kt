@@ -57,7 +57,7 @@ object Github {
         defaultBranch: String,
         folderFileHandle: FileHandle
     ): FileHandle? {
-        // Initiate download - the helper returns null when it fails 
+        // Initiate download - the helper returns null when it fails
         val zipUrl = "$gitRepoUrl/archive/$defaultBranch.zip"
         val inputStream = download(zipUrl) ?: return null
 
@@ -247,6 +247,38 @@ object Github {
         //var stargazers_url = ""
         //var homepage: String? = null      // might use instead of go to repo?
         //var has_wiki = false              // a wiki could mean proper documentation for the mod?
+
+        /**
+         * Initialize `this` with an url, extracting all possible fields from it.
+         *
+         * Allows basic repo url or complete 'zip' url from github's code->download zip menu
+         *
+         * @return `this` to allow chaining
+         */
+        fun parseUrl(url: String): Repo {
+            // Allow url formats
+            //  https://github.com/author/repoName
+            // or
+            //  https://github.com/author/repoName/archive/refs/heads/branchName.zip
+            // and extract author, repoName, branchName
+
+            html_url = url
+            default_branch = "master"
+            val matchZip = Regex("""^(.*/(.*)/(.*))/archive/(?:.*/)?([^.]+).zip$""").matchEntire(url)
+            if (matchZip != null && matchZip.groups.size > 3) {
+                html_url = matchZip.groups[1]!!.value
+                owner.login = matchZip.groups[2]!!.value
+                name = matchZip.groups[3]!!.value
+                default_branch = matchZip.groups[4]!!.value
+            } else {
+                val matchRepo = Regex("""^.*/(.*)/(.*)/?$""").matchEntire(url)
+                if (matchRepo != null && matchRepo.groups.size > 2) {
+                    owner.login = matchRepo.groups[1]!!.value
+                    name = matchRepo.groups[2]!!.value
+                }
+            }
+            return this
+        }
     }
 
     /** Part of [Repo] in Github API response */

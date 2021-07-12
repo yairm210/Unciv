@@ -92,8 +92,10 @@ class MapUnit {
      * Name which should be displayed in UI
      */
     fun displayName(): String {
-        return if (instanceName == null) name
-        else "$instanceName ({$name})"
+        val name = if (instanceName == null) name
+                   else "$instanceName (${name})"
+        return if (religion != null && maxReligionSpreads() > 0) "$name ($religion)"
+               else name
     }
 
     var currentMovement: Float = 0f
@@ -105,6 +107,9 @@ class MapUnit {
     var promotions = UnitPromotions()
     var due: Boolean = true
     var isTransported: Boolean = false
+    
+    var abilityUsedCount: HashMap<String, Int> = hashMapOf()
+    var religion: String? = null
 
     companion object {
         private const val ANCIENT_RUIN_MAP_REVEAL_OFFSET = 4
@@ -126,6 +131,8 @@ class MapUnit {
         toReturn.attacksThisTurn = attacksThisTurn
         toReturn.promotions = promotions.clone()
         toReturn.isTransported = isTransported
+        toReturn.abilityUsedCount.putAll(abilityUsedCount)
+        toReturn.religion = religion
         return toReturn
     }
 
@@ -553,20 +560,28 @@ class MapUnit {
         }
         
         val mayHeal = healing > 0 || (tileInfo.isWater && hasUnique("May heal outside of friendly territory"))
+        if (!mayHeal) return healing
 
         // Deprecated since 3.15.6
             if (hasUnique("This unit and all others in adjacent tiles heal 5 additional HP. This unit heals 5 additional HP outside of friendly territory.")
                 && !isFriendlyTerritory
-                && mayHeal
             )// Additional healing from medic is only applied when the unit is able to heal
                 healing += 5
         //
         
-        if (mayHeal) {
-            for (unique in getMatchingUniques("[] HP when healing in [] tiles")) {
-                if (tileInfo.matchesFilter(unique.params[1], civInfo)) {
-                    healing += unique.params[0].toInt()
-                }
+        for (unique in getMatchingUniques("[] HP when healing in [] tiles")) {
+            if (tileInfo.matchesFilter(unique.params[1], civInfo)) {
+                healing += unique.params[0].toInt()
+            }
+        }
+        
+        val healingCity = tileInfo.getTilesInDistance(1).firstOrNull {
+            it.isCityCenter() && it.getCity()!!.getMatchingUniques("[] Units adjacent to this city heal [] HP per turn when healing").any()
+        }?.getCity()
+        if (healingCity != null) {
+            for (unique in healingCity.getMatchingUniques("[] Units adjacent to this city heal [] HP per turn when healing")) {
+                if (!matchesFilter(unique.params[0])) continue
+                healing += unique.params[1].toInt()
             }
         }
 
@@ -667,7 +682,8 @@ class MapUnit {
 
     fun putInTile(tile: TileInfo) {
         when {
-            !movement.canMoveTo(tile) -> throw Exception("I can't go there!")
+            !movement.canMoveTo(tile) ->
+                throw Exception("I can't go there!")
             type.isAirUnit() || type.isMissile() -> tile.airUnits.add(this)
             type.isCivilian() -> tile.civilianUnit = this
             else -> tile.militaryUnit = this
@@ -975,6 +991,16 @@ class MapUnit {
         val matchingUniques = getMatchingUniques(Constants.canBuildImprovements)
         return matchingUniques.any { improvement.matchesFilter(it.params[0]) || tile.matchesTerrainFilter(it.params[0]) }
     }
-
+    
+    fun maxReligionSpreads(): Int {
+        return getMatchingUniques("Can spread religion [] times").sumBy { it.params[0].toInt() }
+    }
+    
+    fun getReligionString(): String {
+        val maxSpreads = maxReligionSpreads()
+        if (abilityUsedCount["Religion Spread"] == null) return "" // That is, either the key doesn't exist, or it does exist and the value is null.
+        return "${maxSpreads - abilityUsedCount["Religion Spread"]!!}/${maxSpreads}"
+    }
+    
     //endregion
 }

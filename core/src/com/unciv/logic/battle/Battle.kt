@@ -104,7 +104,7 @@ object Battle {
     private fun tryEarnFromKilling(civUnit: ICombatant, defeatedUnit: MapUnitCombatant) {
         val unitStr = max(defeatedUnit.unit.baseUnit.strength, defeatedUnit.unit.baseUnit.rangedStrength)
         val unitCost = defeatedUnit.unit.baseUnit.cost
-        val bonusUniquePlaceholderText = "Earn []% of killed [] unit's [] as []"
+        var bonusUniquePlaceholderText = "Earn []% of killed [] unit's [] as []"
 
         val bonusUniques = ArrayList<Unique>()
 
@@ -112,6 +112,15 @@ object Battle {
 
         if (civUnit is MapUnitCombatant) {
             bonusUniques.addAll(civUnit.unit.getMatchingUniques(bonusUniquePlaceholderText))
+        }
+        
+        bonusUniquePlaceholderText = "Earn []% of [] unit's [] as [] when killed within 4 tiles of a city following this religion"
+        val cityWithReligion =
+            civUnit.getTile().getTilesInDistance(4).firstOrNull {
+                it.isCityCenter() && it.getCity()!!.getMatchingUniques(bonusUniquePlaceholderText).any()
+            }?.getCity()
+        if (cityWithReligion != null) {
+            bonusUniques.addAll(cityWithReligion.getLocalMatchingUniques(bonusUniquePlaceholderText))
         }
 
         for (unique in bonusUniques) {
@@ -369,16 +378,16 @@ object Battle {
         }
         city.hasJustBeenConquered = true
 
-        if (attackerCiv.isBarbarian()) {
-            city.destroyCity()
-            return
-        }
-
         for (unique in attackerCiv.getMatchingUniques("Upon capturing a city, receive [] times its [] production as [] immediately")) {
             attackerCiv.addStat(
                 Stat.valueOf(unique.params[2]),
                 unique.params[0].toInt() * city.cityStats.currentCityStats.get(Stat.valueOf(unique.params[1])).toInt()
             )
+        }
+
+        if (attackerCiv.isBarbarian() || attackerCiv.isOneCityChallenger()) {
+            city.destroyCity(true)
+            return
         }
 
         if (attackerCiv.isPlayerCivilization()) {
@@ -558,7 +567,9 @@ object Battle {
         }
 
         // Remove improvements, add fallout
-        tile.improvement = null
+        if (tile.improvement != null && !tile.getTileImprovement()!!.hasUnique("Indestructible")) {
+            tile.improvement = null
+        }
         tile.improvementInProgress = null
         tile.turnsToImprovement = 0
         tile.roadStatus = RoadStatus.None
@@ -618,7 +629,9 @@ object Battle {
         }
 
         // Remove improvements
-        tile.improvement = null
+        if (tile.improvement != null && !tile.getTileImprovement()!!.hasUnique("Indestructible")) {
+            tile.improvement = null
+        }
         tile.improvementInProgress = null
         tile.turnsToImprovement = 0
         tile.roadStatus = RoadStatus.None

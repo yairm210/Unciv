@@ -9,10 +9,7 @@ import com.unciv.logic.trade.TradeOffersList
 import com.unciv.logic.trade.TradeType
 import com.unciv.logic.trade.TradeType.*
 import com.unciv.models.translations.tr
-import com.unciv.ui.utils.CameraStageBaseScreen
-import com.unciv.ui.utils.disable
-import com.unciv.ui.utils.onClick
-import com.unciv.ui.utils.toTextButton
+import com.unciv.ui.utils.*
 import kotlin.math.min
 import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 

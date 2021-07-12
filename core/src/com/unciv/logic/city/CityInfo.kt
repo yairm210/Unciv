@@ -6,6 +6,7 @@ import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.map.RoadStatus
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
+import com.unciv.models.ruleset.Unique
 import com.unciv.models.ruleset.tile.ResourceSupplyList
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.unit.BaseUnit
@@ -103,7 +104,7 @@ class CityInfo {
         if (startingEra in ruleset.eras) {
             for (building in ruleset.eras[startingEra]!!.settlerBuildings) {
                 if (ruleset.buildings[building]!!.isBuildable(cityConstructions)) {
-                    cityConstructions.addBuilding(building)
+                    cityConstructions.addBuilding(civInfo.getEquivalentBuilding(building).name)
                 }
             }
         }
@@ -137,6 +138,7 @@ class CityInfo {
         val cityNameRounds = civInfo.citiesCreated / nationCities.size
         if (cityNameRounds > 0 && civInfo.hasUnique("\"Borrows\" city names from other civilizations in the game")) {
             name = borrowCityName()
+            return
         }
         val cityNamePrefix = when (cityNameRounds) {
             0 -> ""
@@ -253,7 +255,7 @@ class CityInfo {
                 cityResources.add(resource, -amount, "Buildings")
             }
         }
-        for (unique in cityConstructions.builtBuildingUniqueMap.getUniques("Provides [] []")) { // E.G "Provides [1] [Iron]"
+        for (unique in getLocalMatchingUniques("Provides [] []")) { // E.G "Provides [1] [Iron]"
             val resource = getRuleset().tileResources[unique.params[1]]
             if (resource != null) {
                 cityResources.add(resource, unique.params[0].toInt() * civInfo.getResourceModifier(resource), "Tiles")
@@ -337,10 +339,20 @@ class CityInfo {
                 // this is not very efficient, and if it causes problems we can try and think of a way of improving it
                 if (stat != null) entry.value.add(stat, entry.value.get(stat) * unique.params[1].toFloat() / 100)
             }
-
-            for (unique in civInfo.getMatchingUniques("+[]% great person generation in all cities")
-                    + cityConstructions.builtBuildingUniqueMap.getUniques("+[]% great person generation in this city"))
-                stats[entry.key] = stats[entry.key]!!.times(1 + (unique.params[0].toFloat() / 100))
+            
+            for (unique in getMatchingUniques("[]% great person generation []")) {
+                if (!matchesFilter(unique.params[1])) continue
+                stats[entry.key]!!.timesInPlace(1 + unique.params[0].toFloat() / 100f)
+            }
+            
+            // Deprecated since 3.15.9
+                for (unique in getMatchingUniques("+[]% great person generation in this city") 
+                        + getMatchingUniques("+[]% great person generation in all cities")
+                ) {
+                    stats[entry.key]!!.timesInPlace(1 + unique.params[0].toFloat() / 100f)
+                }
+            //
+            
         }
 
         return stats
@@ -409,7 +421,7 @@ class CityInfo {
         cityConstructions.endTurn(stats)
         expansion.nextTurn(stats.culture)
         if (isBeingRazed) {
-            val removedPopulation = 1 + civInfo.getMatchingUniques("Cities are razed [] times as fast").sumBy { it.params[0].toInt() }
+            val removedPopulation = 1 + civInfo.getMatchingUniques("Cities are razed [] times as fast").sumBy { it.params[0].toInt() - 1 }
             population.addPopulation(-1 * removedPopulation)
             if (population.population <= 0) { 
                 civInfo.addNotification("[$name] has been razed to the ground!", location, "OtherIcons/Fire")
@@ -429,9 +441,11 @@ class CityInfo {
         }
     }
 
-    fun destroyCity() {
-        // Original capitals can't be destroyed
-        if (isOriginalCapital) return
+    fun destroyCity(overrideSafeties: Boolean = false) {
+        // Original capitals can't be destroyed.
+        // Unless they are captured by a one-city-challenger for some reason.
+        // This was tested in the original.
+        if (isOriginalCapital && !overrideSafeties) return
         
         for (airUnit in getCenterTile().airUnits.toList()) airUnit.destroy() //Destroy planes stationed in city
 
@@ -532,6 +546,54 @@ class CityInfo {
             else -> false
         }
     }
+    
+    // So everywhere in the codebase there were continuous calls to either 
+    // `cityConstructions.builtBuildingUniqueMap.getUniques()` or `cityConstructions.builtBuildingMap.getAllUniques()`,
+    // which was fine as long as those were the only uniques that cities could provide.
+    // However, with the introduction of religion, cities might also get uniques from the religion the city follows.
+    // Adding both calls to `builtBuildingsUniqueMap` and `Religion` every time is not really modular and also ugly, so something had to be done.
+    // Looking at all the use cases, the following functions were written to handle all findMatchingUniques() problems.
+    // Sadly, due to the large disparity between use cases, there needed to be lots of functions.
 
+
+    // Finds matching uniques provided from both local and non-local sources.
+    fun getMatchingUniques(
+        placeholderText: String,
+        // We might have this cached to avoid concurrency problems. If we don't, just get it directly
+        localUniques: Sequence<Unique> = getLocalMatchingUniques(placeholderText),
+    ): Sequence<Unique> {
+        // The localUniques might not be filtered when passed as a parameter, so we filter it anyway
+        // The time loss shouldn't be that large I don't think
+        return civInfo.getMatchingUniques(placeholderText, this) +
+               localUniques.filter { it.placeholderText == placeholderText }
+    }
+    
+    // Matching uniques provided by sources in the city itself
+    fun getLocalMatchingUniques(placeholderText: String): Sequence<Unique> {
+        return (
+            cityConstructions.builtBuildingUniqueMap.getUniques(placeholderText) +
+            religion.getMatchingUniques(placeholderText)
+        ).asSequence()
+    }
+
+    // Get all uniques that originate from this city
+    fun getAllLocalUniques(): Sequence<Unique> {
+        return cityConstructions.builtBuildingUniqueMap.getAllUniques() + religion.getUniques()
+    }
+    
+    // Get all matching uniques that don't apply to only this city
+    fun getMatchingUniquesWithNonLocalEffects(placeholderText: String): Sequence<Unique> {
+        return cityConstructions.builtBuildingUniqueMap.getUniques(placeholderText).asSequence()
+            .filter { it.params.none { param -> param == "in this city" } }
+        // Note that we don't query religion here, as those only have local effects (for now at least)
+    }
+    
+    // Get all uniques that don't apply to only this city
+    fun getAllUniquesWithNonLocalEffects(): Sequence<Unique> {
+        return cityConstructions.builtBuildingUniqueMap.getAllUniques()
+            .filter { it.params.none { param -> param == "in this city" } }
+        // Note that we don't query religion here, as those only have local effects (for now at least)
+    }
+    
     //endregion
 }

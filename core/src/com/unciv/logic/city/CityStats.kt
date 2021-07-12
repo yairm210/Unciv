@@ -223,6 +223,8 @@ class CityStats {
 
         newHappinessList["Wonders"] = getStatsFromUniques(civInfo.getCivWideBuildingUniques()).happiness
 
+        newHappinessList["Religion"] = getStatsFromUniques(cityInfo.religion.getUniques()).happiness
+        
         newHappinessList["Tile yields"] = getStatsFromTiles().happiness
 
         // we don't want to modify the existing happiness list because that leads
@@ -268,6 +270,14 @@ class CityStats {
                 val amountOfEffects = (cityInfo.population.population / unique.params[1].toInt()).toFloat()
                 stats.add(unique.stats.times(amountOfEffects))
             }
+            
+            // "[stats] in cities with [amount] or more population
+            if (unique.placeholderText == "[] in cities with [] or more population" && cityInfo.population.population >= unique.params[1].toInt())
+                stats.add(unique.stats)
+            
+            // "[stats] in cities on [tileFilter] tiles"
+            if (unique.placeholderText == "[] in cities on [] tiles" && cityInfo.getCenterTile().matchesTerrainFilter(unique.params[1]))
+                {stats.add(unique.stats); println(unique.text)}
         }
 
         return stats
@@ -330,7 +340,7 @@ class CityStats {
         }
 
         if (cityInfo.civInfo.getHappiness() >= 0) {
-            for (unique in uniques.filter { it.placeholderText == "+[]% [] while the empire is happy"})
+            for (unique in uniques.filter { it.placeholderText == "[]% [] while the empire is happy"})
                 stats.add(Stat.valueOf(unique.params[1]), unique.params[0].toFloat())
 
             // Deprecated since 3.15.0
@@ -373,22 +383,24 @@ class CityStats {
         newBaseStatList["National ability"] = getStatsFromNationUnique()
         newBaseStatList["Wonders"] = getStatsFromUniques(civInfo.getCivWideBuildingUniques())
         newBaseStatList["City-States"] = getStatsFromCityStates()
+        newBaseStatList["Religion"] = getStatsFromUniques(cityInfo.religion.getUniques())
 
         baseStatList = newBaseStatList
     }
 
 
-    private fun updateStatPercentBonusList(currentConstruction: IConstruction, citySpecificUniques: Sequence<Unique>) {
+    private fun updateStatPercentBonusList(currentConstruction: IConstruction, localBuildingUniques: Sequence<Unique>) {
         val newStatPercentBonusList = LinkedHashMap<String, Stats>()
         newStatPercentBonusList["Golden Age"] = getStatPercentBonusesFromGoldenAge(cityInfo.civInfo.goldenAges.isGoldenAge())
         newStatPercentBonusList["Policies"] = getStatPercentBonusesFromUniques(currentConstruction, cityInfo.civInfo.policies.policyUniques.getAllUniques())
-        newStatPercentBonusList["Buildings"] = getStatPercentBonusesFromUniques(currentConstruction, citySpecificUniques)
+        newStatPercentBonusList["Buildings"] = getStatPercentBonusesFromUniques(currentConstruction, localBuildingUniques)
                 .plus(cityInfo.cityConstructions.getStatPercentBonuses()) // This function is to be deprecated but it'll take a while.
         newStatPercentBonusList["Wonders"] = getStatPercentBonusesFromUniques(currentConstruction, cityInfo.civInfo.getCivWideBuildingUniques())
         newStatPercentBonusList["Railroad"] = getStatPercentBonusesFromRailroad()
         newStatPercentBonusList["Resources"] = getStatPercentBonusesFromResources(currentConstruction)
         newStatPercentBonusList["National ability"] = getStatPercentBonusesFromNationUnique(currentConstruction)
         newStatPercentBonusList["Puppet City"] = getStatPercentBonusesFromPuppetCity()
+        newStatPercentBonusList["Religion"] = getStatPercentBonusesFromUniques(currentConstruction, cityInfo.religion.getUniques())
 
         if (UncivGame.Current.superchargedForDebug) {
             val stats = Stats()
@@ -402,12 +414,13 @@ class CityStats {
     fun update(currentConstruction: IConstruction = cityInfo.cityConstructions.getCurrentConstruction()) {
         // We calculate this here for concurrency reasons
         // If something needs this, we pass this through as a parameter
-        val citySpecificUniques = getCitySpecificUniques()
+        val localBuildingUniques = cityInfo.cityConstructions.builtBuildingUniqueMap.getAllUniques()
+        val citySpecificUniques = cityInfo.getAllLocalUniques()
 
         // We need to compute Tile yields before happiness
         updateBaseStatList()
         updateCityHappiness()
-        updateStatPercentBonusList(currentConstruction, citySpecificUniques)
+        updateStatPercentBonusList(currentConstruction, localBuildingUniques)
 
         updateFinalStatList(currentConstruction, citySpecificUniques) // again, we don't edit the existing currentCityStats directly, in order to avoid concurrency exceptions
 
@@ -438,7 +451,7 @@ class CityStats {
         for (entry in newFinalStatList.values) {
             entry.gold *= 1 + statPercentBonusesSum.gold / 100
             entry.culture *= 1 + statPercentBonusesSum.culture / 100
-            if (!isUnhappy) entry.food *= 1 + statPercentBonusesSum.food / 100 // Regular food bonus revoked when unhappy per https://forums.civfanatics.com/resources/complete-guide-to-happiness-vanilla.25584/
+            entry.food *= 1 + statPercentBonusesSum.food / 100 
         }
 
         // AFTER we've gotten all the gold stats figured out, only THEN do we plonk that gold into Science
@@ -476,9 +489,9 @@ class CityStats {
         totalFood = newFinalStatList.values.map { it.food }.sum() // recalculate because of previous change
 
         // Since growth bonuses are special, (applied afterwards) they will be displayed separately in the user interface as well.
-        if (totalFood > 0) {
+        if (totalFood > 0 && !isUnhappy) { // Percentage Growth bonus revoked when unhappy per https://forums.civfanatics.com/resources/complete-guide-to-happiness-vanilla.25584/
             val foodFromGrowthBonuses = getGrowthBonusFromPoliciesAndWonders() * totalFood
-            newFinalStatList["Policies"]!!.food += foodFromGrowthBonuses
+            newFinalStatList["Policies"]!!.food += foodFromGrowthBonuses // Why Policies? Wonders can also provide this?
             totalFood = newFinalStatList.values.map { it.food }.sum() // recalculate again
         }
 
@@ -498,21 +511,6 @@ class CityStats {
         finalStatList = newFinalStatList
     }
 
-    private fun getCitySpecificUniques(): Sequence<Unique> {
-        return cityInfo.cityConstructions.builtBuildingUniqueMap.getAllUniques()
-        .filter { it.params.isNotEmpty() && it.params.last() == "in this city" }
-    }
-
-    private fun getUniquesForThisCity(
-        unique: String,
-        // We might have to cached to avoid concurrency problems, so if we don't, just get it directly
-        citySpecificUniques: Sequence<Unique> = getCitySpecificUniques()
-    ): Sequence<Unique> {
-        return citySpecificUniques.filter { it.placeholderText == unique } +
-                cityInfo.civInfo.getMatchingUniques(unique).filter { cityInfo.matchesFilter(it.params[1]) } +
-                cityInfo.religion.getMatchingUniques(unique)
-    }
-
     private fun getBuildingMaintenanceCosts(citySpecificUniques: Sequence<Unique>): Float {
         // Same here - will have a different UI display.
         var buildingsMaintenance = cityInfo.cityConstructions.getMaintenanceCosts().toFloat() // this is AFTER the bonus calculation!
@@ -521,12 +519,12 @@ class CityStats {
         }
 
         // e.g. "-[50]% maintenance costs for buildings [in this city]"
-        for (unique in getUniquesForThisCity("-[]% maintenance cost for buildings []", citySpecificUniques)) {
+        for (unique in cityInfo.getMatchingUniques("-[]% maintenance cost for buildings []", citySpecificUniques)) {
             buildingsMaintenance *= (1f - unique.params[0].toFloat() / 100)
         }
 
         // Deprecated since 3.15
-            for (unique in getUniquesForThisCity("-[]% building maintenance costs []", citySpecificUniques)) {
+            for (unique in cityInfo.getMatchingUniques("-[]% building maintenance costs []", citySpecificUniques)) {
                 buildingsMaintenance *= (1f - unique.params[0].toFloat() / 100)
             }
         //

@@ -37,6 +37,7 @@ object NextTurnAutomation {
             exchangeLuxuries(civInfo)
             issueRequests(civInfo)
             adoptPolicy(civInfo)
+            choosePantheon(civInfo)
         } else {
             getFreeTechForCityStates(civInfo)
             updateDiplomaticRelationshipForCityStates(civInfo)
@@ -204,9 +205,9 @@ object NextTurnAutomation {
             val preferredVictoryType = civInfo.victoryType()
             val policyBranchPriority =
                     when (preferredVictoryType) {
-                        VictoryType.Cultural -> listOf("Piety", "Freedom", "Tradition", "Rationalism", "Commerce")
-                        VictoryType.Scientific -> listOf("Rationalism", "Commerce", "Liberty", "Freedom", "Piety")
-                        VictoryType.Domination -> listOf("Autocracy", "Honor", "Liberty", "Rationalism", "Freedom")
+                        VictoryType.Cultural -> listOf("Piety", "Freedom", "Tradition", "Commerce", "Patronage")
+                        VictoryType.Scientific -> listOf("Rationalism", "Commerce", "Liberty", "Order", "Patronage")
+                        VictoryType.Domination -> listOf("Autocracy", "Honor", "Liberty", "Rationalism", "Commerce")
                         VictoryType.Neutral -> listOf()
                     }
             val policiesByPreference = adoptablePolicies
@@ -220,6 +221,24 @@ object NextTurnAutomation {
             val policyToAdopt = preferredPolicies.random()
             civInfo.policies.adopt(policyToAdopt)
         }
+    }
+    
+    private fun choosePantheon(civInfo: CivilizationInfo) {
+        if (!civInfo.religionManager.canFoundPantheon()) return
+        // So looking through the source code of the base game available online,
+        // the functions for choosing beliefs total in at around 400 lines.
+        // https://github.com/Gedemon/Civ5-DLL/blob/aa29e80751f541ae04858b6d2a2c7dcca454201e/CvGameCoreDLL_Expansion1/CvReligionClasses.cpp
+        // line 4426 through 4870.
+        // This is way to much work for now, so I'll just choose a random pantheon instead.
+        // Should probably be changed later, but it works for now.
+        // If this is omitted, the AI will never choose a religion,
+        // instead automatically choosing the same one as the player,
+        // which is not good.
+        val availablePantheons = civInfo.gameInfo.ruleSet.beliefs.values
+            .filter { civInfo.religionManager.isPickablePantheonBelief(it) }
+        if (availablePantheons.isEmpty()) return // panic!
+        val chosenPantheon = availablePantheons.random() // Why calculate stuff?
+        civInfo.religionManager.choosePantheonBelief(chosenPantheon)
     }
 
     private fun potentialLuxuryTrades(civInfo: CivilizationInfo, otherCivInfo: CivilizationInfo): ArrayList<Trade> {

@@ -30,6 +30,7 @@ enum class UnitActionType(val value: String) {
         ConstructRoad("Construct road"),
     //
     Create("Create"),
+    SpreadReligion("Spread Religion"),
     HurryResearch("Hurry Research"),
     StartGoldenAge("Start Golden Age"),
     HurryWonder("Hurry Wonder"),

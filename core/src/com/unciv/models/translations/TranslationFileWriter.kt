@@ -109,6 +109,24 @@ object TranslationFileWriter {
                     translationsOfThisLanguage++
                 } else stringBuilder.appendLine(" # Requires translation!")
 
+                // THE PROBLEM
+                // When we come to change params written in the TranslationFileWriter,
+                //  this messes up the param name matching in existing translations.
+                // Tests fail and much manual work was required.
+                // SO, as a fix, for each translation where a single param is different than in the source line,
+                // we try to autocorrect it.
+                if (translationValue.contains('[')) {
+                    val paramsOfKey = translationKey.getPlaceholderParameters()
+                    val paramsOfValue = translationValue.getPlaceholderParameters()
+                    val paramsOfKeyNotInValue = paramsOfKey.filterNot { it in paramsOfValue }
+                    val paramsOfValueNotInKey = paramsOfValue.filterNot { it in paramsOfKey }
+                    if (paramsOfKeyNotInValue.size == 1 && paramsOfValueNotInKey.size == 1)
+                        translationValue = translationValue.replace(
+                            "[" + paramsOfValueNotInKey.first() + "]",
+                            "[" + paramsOfKeyNotInValue.first() + "]"
+                        )
+                }
+
                 val lineToWrite = translationKey.replace("\n", "\\n") +
                         " = " + translationValue.replace("\n", "\\n")
                 stringBuilder.appendLine(lineToWrite)
@@ -197,21 +215,50 @@ object TranslationFileWriter {
                         var parameterName = when {
                             parameter.toIntOrNull() != null -> "amount"
                             Stat.values().any { it.name == parameter } -> "stat"
-                            RulesetCache.getBaseRuleset().terrains.containsKey(parameter) -> "terrain"
+                            RulesetCache.getBaseRuleset().terrains.containsKey(parameter) 
+                                    || parameter == "Friendly Land"
+                                    || parameter == "Foreign Land"
+                                    || parameter == "Fresh water"
+                                    || parameter == "non-fresh water"
+                                    || parameter == "Open Terrain"
+                                    || parameter == "Rough Terrain"
+                            -> "tileFilter"
                             RulesetCache.getBaseRuleset().units.containsKey(parameter) -> "unit"
-                            RulesetCache.getBaseRuleset().tileImprovements.containsKey(parameter) -> "tileImprovement"
+                            RulesetCache.getBaseRuleset().tileImprovements.containsKey(parameter)
+                                    || parameter == "Great Improvement"
+                            -> "tileImprovement"
                             RulesetCache.getBaseRuleset().tileResources.containsKey(parameter) -> "resource"
                             RulesetCache.getBaseRuleset().technologies.containsKey(parameter) -> "tech"
                             RulesetCache.getBaseRuleset().unitPromotions.containsKey(parameter) -> "promotion"
                             RulesetCache.getBaseRuleset().buildings.containsKey(parameter)
-                                    || parameter == "Wonders" -> "building"
+                                    || parameter == "Wonders" 
+                                    || parameter == "Wonder"
+                                    || parameter == "Buildings"
+                                    || parameter == "Building"
+                            -> "building"
 
-                            UnitType.values().any { it.name == parameter } || parameter == "Military" -> "unitType"
+                            UnitType.values().any { it.name == parameter } 
+                                    || parameter == "Military" 
+                                    || parameter == "Civilian"
+                                    || parameter == "non-air"
+                                    || parameter == "relevant"
+                                    || parameter == "Nuclear Weapon"
+                                    || parameter == "Submarine"
+                                // These are up for debate
+                                    || parameter == "Air"
+                                    || parameter == "land units"
+                                    || parameter == "water units"
+                                    || parameter == "air units"
+                                    || parameter == "military units"
+                                    || parameter == "submarine units"
+                                // Note: this can't handle combinations of parameters (e.g. [{Military} {Water}])
+                            -> "unitType"
                             Stats.isStats(parameter) -> "stats"
                             parameter == "in this city"
                                     || parameter == "in all cities"
                                     || parameter == "in all coastal cities"
                                     || parameter == "in capital"
+                                    || parameter == "in all non-occupied cities"
                                     || parameter == "in all cities with a world wonder"
                                     || parameter == "in all cities connected to capital"
                                     || parameter == "in all cities with a garrison"

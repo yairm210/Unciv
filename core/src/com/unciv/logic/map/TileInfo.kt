@@ -225,16 +225,26 @@ open class TileInfo {
         }
 
         if (city != null) {
-            val cityWideUniques = city.cityConstructions.builtBuildingUniqueMap.getUniques("[] from [] tiles in this city")
-            val civWideUniques = city.civInfo.getMatchingUniques("[] from every []")
-            val religionUniques = city.religion.getMatchingUniques( "[] from every []")
-            // Should be refactored to use city.getUniquesForThisCity(), probably
-            for (unique in cityWideUniques + civWideUniques + religionUniques) {
+            var tileUniques = city.getMatchingUniques("[] from [] tiles []")
+                .filter { city.matchesFilter(it.params[2]) }
+            // Deprecated since 3.15.9
+                tileUniques += city.getLocalMatchingUniques("[] from [] tiles in this city")
+            //
+            tileUniques += city.getMatchingUniques("[] from every []")
+            for (unique in tileUniques) {
                 val tileType = unique.params[1]
                 if (tileType == improvement) continue // This is added to the calculation in getImprovementStats. we don't want to add it twice
                 if (matchesTerrainFilter(tileType, observingCiv)) 
                     stats.add(unique.stats)
             }
+            
+            for (unique in city.getMatchingUniques("[] from [] tiles without [] []")) 
+                if (
+                    matchesTerrainFilter(unique.params[1]) &&
+                    !matchesTerrainFilter(unique.params[2]) &&
+                    city.matchesFilter(unique.params[3])
+                )
+                    stats.add(unique.stats)
         }
 
         if (naturalWonder != null) {
@@ -258,10 +268,10 @@ open class TileInfo {
             if (stats.production < 1) stats.production = 1f
         }
 
+        if (isAdjacentToRiver()) stats.gold++
+
         if (stats.gold != 0f && observingCiv.goldenAges.isGoldenAge())
             stats.gold++
-
-        if (isAdjacentToRiver()) stats.gold++
 
         if (stats.production < 0) stats.production = 0f
 
@@ -278,12 +288,16 @@ open class TileInfo {
                 stats.add(unique.stats)
 
         if (city != null) {
-            val cityWideUniques = city.cityConstructions.builtBuildingUniqueMap.getUniques("[] from [] tiles in this city")
+            var tileUniques = city.getMatchingUniques("[] from [] tiles []")
+                .filter { city.matchesFilter(it.params[2]) }
+            // Deprecated since 3.15.9
+                tileUniques += city.getLocalMatchingUniques("[] from [] tiles in this city")
+            //
             val improvementUniques = improvement.uniqueObjects.filter {
                 it.placeholderText == "[] on [] tiles once [] is discovered"
                         && observingCiv.tech.isResearched(it.params[2])
             }
-            for (unique in cityWideUniques + improvementUniques) {
+            for (unique in tileUniques + improvementUniques) {
                 if (improvement.matchesFilter(unique.params[1])
                     // Freshwater and non-freshwater cannot be moved to matchesUniqueFilter since that creates an endless feedback.
                     // If you're attempting that, check that it works!
@@ -292,7 +306,7 @@ open class TileInfo {
                         stats.add(unique.stats)
             }
 
-            for (unique in city.civInfo.getMatchingUniques("[] from every []") + city.religion.getMatchingUniques("[] from every []")) {
+            for (unique in city.getMatchingUniques("[] from every []")) {
                 if (improvement.matchesFilter(unique.params[1])) {
                     stats.add(unique.stats)
                 }
@@ -409,6 +423,7 @@ open class TileInfo {
             "Friendly Land", "Friendly" -> observingCiv != null && isFriendlyTerritory(observingCiv)
             resource -> observingCiv != null && hasViewableResource(observingCiv)
             "Water resource" -> isWater && observingCiv != null && hasViewableResource(observingCiv)
+            "Natural Wonder" -> naturalWonder != null
             else -> {
                 if (terrainFeatures.contains(filter)) return true
                 if (hasUnique(filter)) return true

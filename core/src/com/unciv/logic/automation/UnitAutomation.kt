@@ -111,7 +111,7 @@ object UnitAutomation {
         if (unit.type == UnitType.Bomber)
             return SpecificUnitAutomation.automateBomber(unit)
 
-        if (unit.type == UnitType.Missile)
+        if (unit.type == UnitType.Missile || unit.type == UnitType.AtomicBomber)
             return SpecificUnitAutomation.automateMissile(unit)
 
 

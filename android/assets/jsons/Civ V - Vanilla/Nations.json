@@ -326,7 +326,7 @@
 		"preferredVictoryType": "Scientific",
 		
 		"startIntroPart1": "Hail mighty Bismarck, first chancellor of Germany and her empire! Germany is an upstart nation, fashioned from the ruins of the Holy Roman Empire and finally unified in 1871, a little more than a century ago. The German people have proven themselves to be creative, industrious and ferocious warriors. Despite enduring great catastrophes in the first half of the 20th century, Germany remains a worldwide economic, artistic and technological leader.",
-		"startIntroPart2": "Great Prince Bismarck, the German people look up too you to lead them to greater days of glory. Their determination is strong, and now they turn to you, their beloved iron chancellor, to guide them once more. Will you rule and conquer through blood and iron, or foster the Germanic arts and industry? Can you build a civilization that will stand the test of time?",
+		"startIntroPart2": "Great Prince Bismarck, the German people look up to you to lead them to greater days of glory. Their determination is strong, and now they turn to you, their beloved iron chancellor, to guide them once more. Will you rule and conquer through blood and iron, or foster the Germanic arts and industry? Can you build a civilization that will stand the test of time?",
 		"declaringWar": "I cannot wait until ye grow even mightier. Therefore, prepare for war!",
 		"attacked": "Corrupted villain! We will bring you into the ground!",
 		"defeated": "Germany has been destroyed. I weep for the future generations.",
@@ -354,7 +354,7 @@
 		"startBias": ["Coast"],
 		"preferredVictoryType": "Domination",
 		
-		"startIntroPart1": "Blessings of God be upon you, oh Great Emperor Suleiman! Your power, wealth and generosity awe the world! Truly, are you called 'Magnificent!' Your empire began in Bithynia, a small country in Eastern Anatolia in 12th century. Taking advantage in the decline of the great Selkuj Sultanate of Rum, King Osman I of Bithynia expanded west into Anatolia. Over the next century, your subjects brought down the empire of Byzantium, taking its holdings in Turkey and then the Balkans. In the mid 15th century, the Ottomans captured ancient Constantinople, gaining control of the strategic link between Europe and the Middle East. Your people's empire would continue to expand for centuries governing much of North Africa, the Middle East and Eastern Europe at its height.",
+		"startIntroPart1": "Blessings of God be upon you, oh Great Emperor Suleiman! Your power, wealth and generosity awe the world! Truly, are you called 'Magnificent!' Your empire began in Bithynia, a small country in Eastern Anatolia in 12th century. Taking advantage in the decline of the great Seljuk Sultanate of Rum, King Osman I of Bithynia expanded west into Anatolia. Over the next century, your subjects brought down the empire of Byzantium, taking its holdings in Turkey and then the Balkans. In the mid 15th century, the Ottomans captured ancient Constantinople, gaining control of the strategic link between Europe and the Middle East. Your people's empire would continue to expand for centuries governing much of North Africa, the Middle East and Eastern Europe at its height.",
 		"startIntroPart2": "Mighty Sultan, heed the call of your people! Bring your empire back to the height of its power and glory and once again the world will look upon your greatness with awe and admiration! Will you accept the challenge, great emperor? Will you build an empire that will stand the test of time?",
 		"declaringWar": "Your continued insolence and failure to recognize and preeminence leads us to war.",
 		"attacked": "Good. The world shall witness the incontestable might of my armies and the glory of the Empire.",
@@ -534,7 +534,7 @@
 		"preferredVictoryType": "Domination",
 
 		"startIntroPart1": "May the blessings of God, who is greatest of all, be upon you Askia, leader of the Songhai people! For many years your kingdom was a vassal of the mighty West African state of Mali, until the middle of the 14th century, when King Sunni Ali Ber wrested independence from the Mali, conquering much territory and fighting off numerous foes who sought to destroy him. Ultimately, his conquest of the wealthy cities of Timbuktu and Jenne gave the growing Songhai empire the economic power to survive for some 100 years, until the empire was destroyed by foes with advanced technology - muskets against spearmen.",
-		"startIntroPart2": "King Askia, your people look yo you to lead them to glory. To make them powerful and wealthy, to keep them supplied with the weapons they need to defeat any foe. Can you save them from destruction, oh King? Can you build a civilization that will stand the test of time?",
+		"startIntroPart2": "King Askia, your people look to you to lead them to glory. To make them powerful and wealthy, to keep them supplied with the weapons they need to defeat any foe. Can you save them from destruction, oh King? Can you build a civilization that will stand the test of time?",
 		"declaringWar": "You are an abomination to heaven and earth, the chief of ignorant savages! You must be destroyed!",
 		"attacked": "Fool! You have doomed your people to fire and destruction!",
 		"defeated": "We have been consumed by the fires of hatred and rage. Enjoy your victory in this world - you shall pay a heavy price in the next!",
