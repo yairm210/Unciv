@@ -72,19 +72,18 @@ class CityExpansionManager {
         return cost.roundToInt()
     }
 
-
     fun chooseNewTileToOwn(): TileInfo? {
-        for (i in 2..5) {
-            val tiles = cityInfo.getCenterTile().getTilesInDistance(i)
-                    .filter {
-                        it.getOwner() == null
-                                && it.neighbors.any { tile -> tile.getCity() == cityInfo }
-                    }
-            val chosenTile = tiles.maxByOrNull { Automation.rankTile(it, cityInfo.civInfo) }
-            if (chosenTile != null)
-                return chosenTile
+        val choosableTiles = cityInfo.getCenterTile().getTilesInDistance(5)
+            .filter { it.getOwner() == null }
+        
+        // Technically, in the original a random tile with the lowest score was selected
+        // However, doing this requires either caching it, which is way more work,
+        // or selecting all possible tiles and only choosing one when the border expands.
+        // But since the order in which tiles are selected in distance is kinda random anyways,
+        // this is fine.
+        return choosableTiles.minByOrNull {
+            Automation.rankTileForExpansion(it, cityInfo)
         }
-        return null
     }
 
     //region state-changing functions
