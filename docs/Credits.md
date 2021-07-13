@@ -599,8 +599,7 @@ Sounds are from FreeSound.org and are either Creative Commons or Public Domain
 * [Level up](https://freesound.org/people/Marregheriti/sounds/266100/) By Marregheriti as 'upgrade' for upgrading units
 * [levelup](https://freesound.org/people/Seidhepriest/sounds/382915/) By Seidhepriest as 'chimes' for special actions (free tech, build city, hurry wonder etc.)
 * [Coin](https://freesound.org/people/TheDJoe93/sounds/97373/) By TheDJoe93 as 'coin' for purchasing tiles and constructions
-* [fast simple chop 1](https://freesound.org/people/dave.des/sounds/127196/) By dave.dev as 'whoosh' for moving units around
-* [Sudden Teleportation](https://freesound.org/people/michalwa2003/sounds/419375/) by michalwa2003 for units swapping places
+* [fast simple chop 1](https://freesound.org/people/dave.des/sounds/127196/) By dave.dev as 'whoosh' for moving units around, also in edited form to produce the 'swap units' sound.
 * [Military kick](https://freesound.org/people/Dodgy%20C/sounds/72070/) By Dodgy C as 'promote' for unit promotions
 * [Tank reload](https://freesound.org/people/KieranKeegan/sounds/418882/) By KieranKeegan as 'setup' for siege unit setup
 * [Scribble_short](https://freesound.org/people/waldram/sounds/257518/) By waldram as 'policy' for adopting policies
