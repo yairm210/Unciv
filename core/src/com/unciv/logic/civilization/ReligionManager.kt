@@ -150,7 +150,6 @@ class ReligionManager {
         newReligion.iconName = iconName
         if (religion != null) {
             newReligion.followerBeliefs.addAll(religion!!.followerBeliefs)
-            newReligion.founderBeliefs.addAll(religion!!.founderBeliefs)
         }
         newReligion.followerBeliefs.add(followerBelief)
         newReligion.founderBeliefs.add(founderBelief)
