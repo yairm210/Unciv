@@ -1908,6 +1908,20 @@ TileSets/Default/CityOverlay
   orig: 100, 100
   offset: 0, 0
   index: -1
+TileSets/Default/CrosshatchHexagon
+  rotate: false
+  xy: 4, 1151
+  size: 273, 236
+  orig: 273, 236
+  offset: 0, 0
+  index: -1
+TileSets/FantasyHex/CrosshatchHexagon
+  rotate: false
+  xy: 4, 1151
+  size: 273, 236
+  orig: 273, 236
+  offset: 0, 0
+  index: -1
 TileSets/Default/FalloutOverlay
   rotate: false
   xy: 1261, 1412
@@ -1927,6 +1941,20 @@ TileSets/Default/ForestOverlay
   xy: 1153, 1196
   size: 100, 100
   orig: 100, 100
+  offset: 0, 0
+  index: -1
+TileSets/Default/Hexagon
+  rotate: false
+  xy: 412, 1804
+  size: 277, 240
+  orig: 277, 240
+  offset: 0, 0
+  index: -1
+TileSets/FantasyHex/Hexagon
+  rotate: false
+  xy: 412, 1804
+  size: 277, 240
+  orig: 277, 240
   offset: 0, 0
   index: -1
 TileSets/Default/HillOverlay
@@ -1999,32 +2027,60 @@ ImprovementIcons/Railroad
   orig: 100, 100
   offset: 0, 0
   index: -1
-TileSets/FantasyHex/CrosshatchHexagon
+TileSets/Default/Tiles/River-Bottom
   rotate: false
-  xy: 4, 1151
-  size: 273, 236
-  orig: 273, 236
+  xy: 1816, 718
+  size: 32, 28
+  orig: 32, 28
   offset: 0, 0
   index: -1
-TileSets/Default/CrosshatchHexagon
+TileSets/FantasyHex/Tiles/River-Bottom
   rotate: false
-  xy: 4, 1151
-  size: 273, 236
-  orig: 273, 236
+  xy: 1816, 718
+  size: 32, 28
+  orig: 32, 28
   offset: 0, 0
   index: -1
-TileSets/FantasyHex/Hexagon
+TileSets/Default/Tiles/River-BottomLeft
   rotate: false
-  xy: 412, 1804
-  size: 277, 240
-  orig: 277, 240
+  xy: 1816, 682
+  size: 32, 28
+  orig: 32, 28
   offset: 0, 0
   index: -1
-TileSets/Default/Hexagon
+TileSets/FantasyHex/Tiles/River-BottomLeft
   rotate: false
-  xy: 412, 1804
-  size: 277, 240
-  orig: 277, 240
+  xy: 1816, 682
+  size: 32, 28
+  orig: 32, 28
+  offset: 0, 0
+  index: -1
+TileSets/Default/Tiles/River-BottomRight
+  rotate: false
+  xy: 1816, 646
+  size: 32, 28
+  orig: 32, 28
+  offset: 0, 0
+  index: -1
+TileSets/FantasyHex/Tiles/River-BottomRight
+  rotate: false
+  xy: 1816, 646
+  size: 32, 28
+  orig: 32, 28
+  offset: 0, 0
+  index: -1
+TileSets/Default/road
+  rotate: false
+  xy: 1529, 1847
+  size: 61, 11
+  orig: 61, 11
+  offset: 0, 0
+  index: -1
+TileSets/FantasyHex/road
+  rotate: false
+  xy: 1529, 1847
+  size: 61, 11
+  orig: 61, 11
   offset: 0, 0
   index: -1
 TileSets/FantasyHex/Railroad
@@ -2800,48 +2856,6 @@ TileSets/FantasyHex/Tiles/Quarry+Marble
 TileSets/FantasyHex/Tiles/Quarry+Stone
   rotate: false
   xy: 1816, 826
-  size: 32, 28
-  orig: 32, 28
-  offset: 0, 0
-  index: -1
-TileSets/FantasyHex/Tiles/River-Bottom
-  rotate: false
-  xy: 1816, 718
-  size: 32, 28
-  orig: 32, 28
-  offset: 0, 0
-  index: -1
-TileSets/Default/Tiles/River-Bottom
-  rotate: false
-  xy: 1816, 718
-  size: 32, 28
-  orig: 32, 28
-  offset: 0, 0
-  index: -1
-TileSets/FantasyHex/Tiles/River-BottomLeft
-  rotate: false
-  xy: 1816, 682
-  size: 32, 28
-  orig: 32, 28
-  offset: 0, 0
-  index: -1
-TileSets/Default/Tiles/River-BottomLeft
-  rotate: false
-  xy: 1816, 682
-  size: 32, 28
-  orig: 32, 28
-  offset: 0, 0
-  index: -1
-TileSets/FantasyHex/Tiles/River-BottomRight
-  rotate: false
-  xy: 1816, 646
-  size: 32, 28
-  orig: 32, 28
-  offset: 0, 0
-  index: -1
-TileSets/Default/Tiles/River-BottomRight
-  rotate: false
-  xy: 1816, 646
   size: 32, 28
   orig: 32, 28
   offset: 0, 0
@@ -3929,20 +3943,6 @@ TileSets/FantasyHex/Units/Worker
   xy: 1936, 676
   size: 32, 28
   orig: 32, 28
-  offset: 0, 0
-  index: -1
-TileSets/FantasyHex/road
-  rotate: false
-  xy: 1529, 1847
-  size: 61, 11
-  orig: 61, 11
-  offset: 0, 0
-  index: -1
-TileSets/Default/road
-  rotate: false
-  xy: 1529, 1847
-  size: 61, 11
-  orig: 61, 11
   offset: 0, 0
   index: -1
 UnitPromotionIcons/Accuracy
