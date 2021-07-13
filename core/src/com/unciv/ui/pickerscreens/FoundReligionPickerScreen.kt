@@ -19,11 +19,10 @@ class FoundReligionPickerScreen (
 
     // Roughly follows the layout of the original (although I suck at UI designing, so please improve this)
     private val topReligionIcons = Table() // Top of the layout, contains icons for religions
-    private val leftChosenBeliefs = Table() // Left middle part, contains buttons to select the types of beliefs to choose
+    private val leftChosenBeliefs: ScrollPane // Left middle part, contains buttons to select the types of beliefs to choose
     private val rightBeliefsToChoose: ScrollPane // Right middle part, contains the beliefs to choose
     
-    private val middlePanes: SplitPane
-    private val newPanes: SplitPane
+    private val middlePanes = Table()
  
     private var previouslySelectedIcon: Button? = null
     private var iconName: String? = null
@@ -35,24 +34,19 @@ class FoundReligionPickerScreen (
         closeButton.isVisible = true
         setDefaultCloseAction()
         
-        stage.clear()
-        
         setupReligionIcons()
                 
+        leftChosenBeliefs = ScrollPane(Table())
         rightBeliefsToChoose = ScrollPane(Table())
         
-        descriptionLabel.center(bottomTable)
+        middlePanes.add(leftChosenBeliefs)
+        middlePanes.addSeparatorVertical()
+        middlePanes.add(rightBeliefsToChoose)
         
-        middlePanes = SplitPane(leftChosenBeliefs, rightBeliefsToChoose, false, skin)
-        middlePanes.splitAmount = 0.5f
-        
-        newPanes = SplitPane(topReligionIcons, middlePanes, true, skin)
-        newPanes.splitAmount = 0.15f
-        
-        splitPane = SplitPane(newPanes, bottomTable, true, skin)
-        splitPane.splitAmount = screenSplit
-        splitPane.setFillParent(true)
-        stage.addActor(splitPane)
+        topTable.add(topReligionIcons).row()
+        // commented out, as the middle panes will always be empty for now, and this will create a random line otherwise
+        // topTable.addSeparator()
+        topTable.add(middlePanes)
         
         rightSideButton.label = "Choose a religion".toLabel()
         rightSideButton.onClick(UncivSound.Choir) {
@@ -71,7 +65,8 @@ class FoundReligionPickerScreen (
     private fun setupReligionIcons() {
         topReligionIcons.clear()
         
-        val descriptionLabel = "Choose an Icon and name for your Religion".toLabel()
+        // This should later be replaced with a user-modifiable text field, but not in this PR
+        val descriptionLabel = "Choose an Icon and name for your Religion".toLabel() 
         
         val iconsTable = Table()
         iconsTable.align(Align.center)
