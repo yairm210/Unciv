@@ -778,7 +778,9 @@ class CivilizationInfo {
     /** Gain a random great person from a random city state */
     private fun gainGreatPersonFromCityState() {
         val givingCityState = getKnownCivs().filter { it.isCityState() && it.getAllyCiv() == civName}.random()
-        val giftedUnit = gameInfo.ruleSet.units.values.filter { it.isGreatPerson() }.random()
+        var giftableUnits = gameInfo.ruleSet.units.values.filter { it.isGreatPerson() }
+        if (!gameInfo.hasReligionEnabled()) giftableUnits = giftableUnits.filterNot { it.uniques.contains("Great Person - [Faith]")}
+        val giftedUnit = giftableUnits.random()
         val cities = NextTurnAutomation.getClosestCities(this, givingCityState)
         val placedUnit = placeUnitNearTile(cities.city1.location, giftedUnit.name)
         if (placedUnit == null) return
