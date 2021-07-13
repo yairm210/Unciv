@@ -184,11 +184,27 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
                 val wonder = worldScreen.gameInfo.ruleSet.buildings[popupAlert.value]!!
                 addGoodSizedLabel(wonder.name)
                 addSeparator()
+                if(ImageGetter.wonderImageExists(wonder.name)) {    // Wonder Graphic exists
+                    if(worldScreen.stage.height * 3 > worldScreen.stage.width * 4) {    // Portrait
+                        add(ImageGetter.getWonderImage(wonder.name))
+                            .width(worldScreen.stage.width / 1.5f)
+                            .height(worldScreen.stage.width / 3)
+                            .row()
+                    }
+                    else {  // Landscape (or squareish)
+                        add(ImageGetter.getWonderImage(wonder.name))
+                            .width(worldScreen.stage.width / 2.5f)
+                            .height(worldScreen.stage.width / 5)
+                            .row()
+                    }
+                } else {    // Fallback
+                    add(ImageGetter.getConstructionImage(wonder.name).surroundWithCircle(100f)).pad(20f).row()
+                }
+
                 val centerTable = Table()
-                centerTable.add(wonder.quote.toLabel().apply { wrap = true }).width(worldScreen.stage.width / 3)
-                centerTable.add(ImageGetter.getConstructionImage(wonder.name).surroundWithCircle(100f)).pad(20f)
+                centerTable.add(wonder.quote.toLabel().apply { wrap = true }).width(worldScreen.stage.width / 3).pad(10f)
                 centerTable.add(wonder.getShortDescription(worldScreen.gameInfo.ruleSet)
-                        .toLabel().apply { wrap = true }).width(worldScreen.stage.width / 3)
+                        .toLabel().apply { wrap = true }).width(worldScreen.stage.width / 3).pad(10f)
                 add(centerTable).row()
                 add(getCloseButton(Constants.close))
             }

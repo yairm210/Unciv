@@ -204,6 +204,8 @@ object ImageGetter {
         return getImage("UnitIcons/$unitName").apply { this.color = color }
     }
 
+
+
     fun getNationIndicator(nation: Nation, size: Float): IconCircleGroup {
         val civIconName = if (nation.isCityState()) "CityState" else nation.name
         return if (nationIconExists(civIconName)) {
@@ -217,6 +219,9 @@ object ImageGetter {
 
     private fun nationIconExists(nation: String) = imageExists("NationIcons/$nation")
     fun getNationIcon(nation: String) = getImage("NationIcons/$nation")
+    
+    fun wonderImageExists(wonderName: String) = imageExists("WonderImages/$wonderName")
+    fun getWonderImage(wonderName: String) = getImage("WonderImages/$wonderName")
 
     val foodCircleColor = colorFromRGB(129, 199, 132)
     private val productionCircleColor = Color.BROWN.cpy().lerp(Color.WHITE, 0.5f)
