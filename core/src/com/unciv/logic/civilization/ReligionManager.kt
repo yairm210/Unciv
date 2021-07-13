@@ -89,6 +89,21 @@ class ReligionManager {
         civInfo.getCapital().religion[belief.name] = 100 // Capital is religious, other cities are not
         religionState = ReligionState.Pantheon
     }
+    
+    // https://www.reddit.com/r/civ/comments/2m82wu/can_anyone_detail_the_finer_points_of_great/
+    // Game files (globaldefines.xml)
+    private fun faithForNextGreatProphet() = (
+            (200 + 100 * greatProphetsEarned * (greatProphetsEarned + 1) / 2) *
+                    civInfo.gameInfo.gameParameters.gameSpeed.modifier
+            ).toInt()
+
+    private fun canGenerateProphet(): Boolean {
+        if (religion == null || religionState == ReligionState.None) return false // First get a pantheon, then we'll talk about a real religion
+        if (storedFaith < faithForNextGreatProphet()) return false
+        // In the base game, great prophets shouldn't generate anymore starting from the industrial era
+        // This is difficult to implement in the current codebase, probably requires an additional variable in eras.json
+        return true
+    }
 
     private fun generateProphet() {
         val prophetSpawnChange = (5f + storedFaith - faithForNextGreatProphet()) / 100f
@@ -98,12 +113,11 @@ class ReligionManager {
                 civInfo.cities.filter { it.religion.getMajorityReligion() == religion!!.name }
             val birthCity: CityInfo =
                 if (birthCities.isEmpty()) {
-                    if (religionState == ReligionState.Pantheon)  civInfo.getCapital()
+                    if (religionState == ReligionState.Pantheon) civInfo.getCapital()
                     else civInfo.cities.first { it.id == religion!!.holyCityId }
                 } else {
                     birthCities.random()
                 }
-
             val prophet = civInfo.addUnit("Great Prophet", birthCity)
             if (prophet == null) return
             prophet.religion = religion!!.name
@@ -157,21 +171,6 @@ class ReligionManager {
         holyCity.religion[name] = 100
 
         foundingCityId = null
-    }
-
-    // https://www.reddit.com/r/civ/comments/2m82wu/can_anyone_detail_the_finer_points_of_great/
-    // Game files (globaldefines.xml)
-    fun faithForNextGreatProphet() = (
-        (200 + 100 * greatProphetsEarned * (greatProphetsEarned + 1) / 2) *
-        civInfo.gameInfo.gameParameters.gameSpeed.modifier
-    ).toInt()
-
-    fun canGenerateProphet(): Boolean {
-        if (religion == null || religionState == ReligionState.None) return false // First get a pantheon, then we'll talk about a real religion
-        if (storedFaith < faithForNextGreatProphet()) return false
-        // In the base game, great prophets shouldn't generate anymore starting from the industrial era
-        // This is difficult to implement in the current codebase, probably requires an additional variable in eras.json
-        return false
     }
 }
 
