@@ -156,12 +156,13 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
 
         diplomacyTable.addSeparator()
 
-        val giveGoldButton = "Give a Gift".toTextButton()
-        giveGoldButton.onClick {
+        val giveGiftButton = "Give a Gift".toTextButton()
+        giveGiftButton.onClick {
             rightSideTable.clear()
             rightSideTable.add(ScrollPane(getGoldGiftTable(otherCiv)))
         }
-        diplomacyTable.add(giveGoldButton).row()
+        diplomacyTable.add(giveGiftButton).row()
+        if (isNotPlayersTurn()) giveGiftButton.disable()
         
         if (otherCivDiplomacyManager.diplomaticStatus == DiplomaticStatus.Protector){
             val revokeProtectionButton = "Revoke Protection".toTextButton()
@@ -173,6 +174,7 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
                 }, this).open()
             }
             diplomacyTable.add(revokeProtectionButton).row()
+            if (isNotPlayersTurn()) revokeProtectionButton.disable()
         } else {
             val protectionButton = "Pledge to protect".toTextButton()
             protectionButton.onClick {
@@ -186,6 +188,7 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
                 protectionButton.disable()
             }
             diplomacyTable.add(protectionButton).row()
+            if (isNotPlayersTurn()) protectionButton.disable()
         }
 
         val diplomacyManager = viewingCiv.getDiplomacyManager(otherCiv)
