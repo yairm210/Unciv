@@ -253,8 +253,8 @@ class CivilizationInfo {
                     city -> city.getMatchingUniquesWithNonLocalEffects(uniqueTemplate)
                 } +
                 policies.policyUniques.getUniques(uniqueTemplate) +
-                tech.getTechUniques().filter { it.placeholderText == uniqueTemplate } +
-                temporaryUniques.asSequence().filter { it.first.placeholderText == uniqueTemplate }.map { it.first }
+                tech.techUniques.getUniques(uniqueTemplate) +
+                temporaryUniques.filter { it.first.placeholderText == uniqueTemplate }.map { it.first }
     }
 
     //region Units
