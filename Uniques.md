@@ -348,7 +348,7 @@ These last two uniques may seem like they only have a one-time effect. However, 
 
 "Doubles Gold given to enemy if city is captured"
 
-"[amount]% of food is carried over after population increases"
+"[amount]% of food is carried over [cityFilter] after population increases"
 
 "All newly-trained [unitFilter] units [cityFilter] receive the [promotionName] promotion"
 
@@ -556,7 +556,9 @@ These last two uniques may seem like they only have a one-time effect. However, 
 
 "Invisible to others"
 
-"Can only attack [] units"
+"Can only attack [unitFilter] units"
+
+"Can only attack [tileFilter] tiles"
 
 "Not displayed as an available construction without [resourceName/buildingName]"
 
@@ -669,7 +671,7 @@ These uniques have been recently deprecated. While they are still supported, the
 
 "+1 Movement" - Replaced with "[amount] Movement"
 
-"Can only attack water" - Replaced with "Can only attack [unitFilter] units"
+"Can only attack water" - Replaced with "Can only attack [unitFilter] units" or "Can only attack [tileFilter] tiles", depending on use
 
 "+25% Defence against ranged attacks" - Replaced with "[amount]% Strength when defending vs [unitFilter]"
 
@@ -688,3 +690,5 @@ These uniques have been recently deprecated. While they are still supported, the
 "All newly-trained [unitFilter] units in this city receive the [promotionName] promotion" - Replaced with "All newly-trained [unitFilter] units [cityFilter] receive the [promotionName] promotion"
 
 "New [unitFilter] units start with [amount] Experience in this city" - Replaced with "New [unitFilter] units start with [amount] Experience [cityFilter]"
+
+"[amount]% of food is carried over after population increases" - Replaced with "[amount]% of food is carried over [cityFilter] after population increases"
