@@ -28,8 +28,8 @@ class ReligionManager {
 
     var religionState = ReligionState.None
         private set
-    
-    private var foundingCityId: String? = null 
+
+    private var foundingCityId: String? = null
     // Only used for keeping track of the city a prophet was used when founding a religion
 
     fun clone(): ReligionManager {
@@ -89,21 +89,21 @@ class ReligionManager {
         civInfo.getCapital().religion[belief.name] = 100 // Capital is religious, other cities are not
         religionState = ReligionState.Pantheon
     }
-    
+
     private fun generateProphet() {
         val prophetSpawnChange = (5f + storedFaith - faithForNextGreatProphet()) / 100f
-        
+
         if (Random(civInfo.gameInfo.turns).nextFloat() < prophetSpawnChange) {
             val birthCities =
                 civInfo.cities.filter { it.religion.getMajorityReligion() == religion!!.name }
-            val birthCity: CityInfo = 
+            val birthCity: CityInfo =
                 if (birthCities.isEmpty()) {
                     if (religionState == ReligionState.Pantheon)  civInfo.getCapital()
                     else civInfo.cities.first { it.id == religion!!.holyCityId }
-                } else { 
+                } else {
                     birthCities.random()
                 }
-            
+
             val prophet = civInfo.addUnit("Great Prophet", birthCity)
             if (prophet == null) return
             prophet.religion = religion!!.name
@@ -121,16 +121,16 @@ class ReligionManager {
             }
                 >= civInfo.gameInfo.civilizations.count { it.isMajorCiv() } / 2 + 1
             ) return false // Too bad, too many religions have already been founded.
-        
+
         return true
     }
-    
+
     fun mayUseGreatProphetNow(prophet: MapUnit): Boolean {
         if (!mayUseGreatProphetAtAll(prophet)) return false
         if (prophet.getTile().getCity() == null) return false
         return true
     }
-    
+
     fun useGreatProphet(prophet: MapUnit) {
         if (!mayUseGreatProphetNow(prophet)) return // How did you do this?
         religionState = ReligionState.FoundingReligion
@@ -150,12 +150,12 @@ class ReligionManager {
         newReligion.holyCityId = foundingCityId
         religion = newReligion
         civInfo.gameInfo.religions[name] = newReligion
-        
+
         religionState = ReligionState.Religion
         val holyCity = civInfo.cities.firstOrNull { it.id == newReligion.holyCityId }!!
         holyCity.religion.clear()
         holyCity.religion[name] = 100
-        
+
         foundingCityId = null
     }
 

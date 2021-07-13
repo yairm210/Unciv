@@ -7,27 +7,27 @@ import com.unciv.models.stats.INamed
 
 /** Data object for Religions */
 class Religion() : INamed {
-    
+
     override lateinit var name: String
     var iconName: String = "Pantheon"
     lateinit var foundingCivName: String
     var holyCityId: String? = null
-    
-    
+
+
     var pantheonBeliefs: HashSet<String> = hashSetOf()
     var founderBeliefs: HashSet<String> = hashSetOf()
     var followerBeliefs: HashSet<String> = hashSetOf()
-    
-    
+
+
     @Transient
     lateinit var gameInfo: GameInfo
-    
+
     constructor(name: String, gameInfo: GameInfo, foundingCivName: String) : this() {
         this.name = name
         this.foundingCivName = foundingCivName
         this.gameInfo = gameInfo
     }
-    
+
     fun clone(): Religion {
         val toReturn = Religion(name, gameInfo, foundingCivName)
         toReturn.iconName = iconName
@@ -37,11 +37,11 @@ class Religion() : INamed {
         toReturn.followerBeliefs.addAll(followerBeliefs)
         return toReturn
     }
-    
+
     fun setTransients(gameInfo: GameInfo) {
         this.gameInfo = gameInfo
     }
-    
+
     private fun getUniquesOfBeliefs(beliefs: HashSet<String>): Sequence<Unique> {
         val rulesetBeliefs = gameInfo.ruleSet.beliefs
         return beliefs.mapNotNull {
@@ -49,23 +49,23 @@ class Religion() : INamed {
             else rulesetBeliefs[it]!!.uniqueObjects
         }.flatten().asSequence()
     }
-    
+
     fun getFollowerUniques(): Sequence<Unique> {
-        return getUniquesOfBeliefs((followerBeliefs + pantheonBeliefs).toHashSet())   
+        return getUniquesOfBeliefs((followerBeliefs + pantheonBeliefs).toHashSet())
     }
-    
+
     fun getFounderUniques(): Sequence<Unique> {
         return getUniquesOfBeliefs(founderBeliefs)
     }
-    
+
     fun isPantheon(): Boolean {
         return hasPantheon() && !isMajorReligion()
     }
-    
+
     fun isMajorReligion(): Boolean {
         return founderBeliefs.isNotEmpty() && followerBeliefs.isNotEmpty()
     }
-    
+
     fun hasPantheon(): Boolean {
         return pantheonBeliefs.isNotEmpty()
     }

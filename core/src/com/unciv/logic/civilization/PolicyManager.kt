@@ -147,6 +147,8 @@ class PolicyManager {
     }
 
     fun canAdoptPolicy(): Boolean {
+        if (civInfo.cities.isEmpty()) return false
+
         if (freePolicies == 0 && storedCulture < getCultureNeededForNextPolicy())
             return false
 
