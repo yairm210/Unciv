@@ -124,12 +124,19 @@ class ReligionManager {
         if (religion == null) return false // First found a pantheon
         if (religion!!.isMajorReligion()) return false // Already created a major religion
         if (prophet.abilityUsedCount["Religion Spread"] != 0) return false // Already used its power for other things
-        if (civInfo.gameInfo.civilizations.count {
-                it.religionManager.religion != null && it.religionManager.religion!!.isMajorReligion()
-            }
-                >= civInfo.gameInfo.civilizations.count { it.isMajorCiv() } / 2 + 1
-            ) return false // Too bad, too many religions have already been founded.
-
+        
+        val foundedReligionsCount = civInfo.gameInfo.civilizations.count {
+            it.religionManager.religion != null && it.religionManager.religion!!.isMajorReligion()
+        }
+        
+        if (foundedReligionsCount >= civInfo.gameInfo.civilizations.count { it.isMajorCiv() } / 2 + 1) 
+            return false // Too bad, too many religions have already been founded.
+        
+        if (foundedReligionsCount >= civInfo.gameInfo.ruleSet.religions.count())
+            return false
+        // Mod maker did not provide enough religions for the amount of civs present
+        
+        
         return true
     }
 
