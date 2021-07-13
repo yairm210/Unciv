@@ -257,7 +257,6 @@ class CityButton(val city: CityInfo, private val tileGroup: WorldTileGroup): Tab
             val cityReligion = city.civInfo.gameInfo.religions[cityReligionName]!!
             val religionImage = ImageGetter.getReligionIcon(cityReligion.iconName)
             iconTable.add(religionImage).size(20f).padLeft(5f).fillY()
-            religionImage.toBack()
         }
 
         iconTable.pack()

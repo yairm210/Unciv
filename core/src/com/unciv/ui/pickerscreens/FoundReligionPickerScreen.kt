@@ -74,12 +74,13 @@ class FoundReligionPickerScreen (
         
         val iconsTable = Table()
         iconsTable.align(Align.center)
-        for (religionName in listOf("Christianity".tr(), "Islam".tr(), "Taoism".tr(), "Hinduism".tr(), "Buddhism".tr())) {
+        for (religionName in gameInfo.ruleSet.religions) {
             if (gameInfo.religions.keys.any { it == religionName }) continue
             val image = ImageGetter.getReligionIcon(religionName)
             image.setColor(0f,0f,0f,1f)
             val icon = image.surroundWithCircle(60f)
             val button = Button(icon, skin)
+            val translatedReligionName = religionName.tr()
             button.onClick {
                 if (previouslySelectedIcon != null) {
                     previouslySelectedIcon!!.enable()
@@ -88,8 +89,8 @@ class FoundReligionPickerScreen (
                 this.religionName = religionName
                 previouslySelectedIcon = button
                 button.disable()
-                descriptionLabel.setText(religionName)
-                rightSideButton.label = "Found [$religionName]".tr().toLabel()
+                descriptionLabel.setText(translatedReligionName)
+                rightSideButton.label = "Found [$translatedReligionName]".tr().toLabel()
                 checkAndEnableRightSideButton()
             }
             if (religionName == this.religionName) button.disable()

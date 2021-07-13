@@ -109,15 +109,9 @@ class ReligionManager {
         val prophetSpawnChange = (5f + storedFaith - faithForNextGreatProphet()) / 100f
 
         if (Random(civInfo.gameInfo.turns).nextFloat() < prophetSpawnChange) {
-            val birthCities =
-                civInfo.cities.filter { it.religion.getMajorityReligion() == religion!!.name }
-            val birthCity: CityInfo =
-                if (birthCities.isEmpty()) {
-                    if (religionState == ReligionState.Pantheon) civInfo.getCapital()
-                    else civInfo.cities.first { it.id == religion!!.holyCityId }
-                } else {
-                    birthCities.random()
-                }
+            val birthCity =
+                if (religionState == ReligionState.Pantheon) civInfo.getCapital()
+                else civInfo.cities.firstOrNull { it.id == religion!!.holyCityId }
             val prophet = civInfo.addUnit("Great Prophet", birthCity)
             if (prophet == null) return
             prophet.religion = religion!!.name
@@ -141,7 +135,7 @@ class ReligionManager {
 
     fun mayUseGreatProphetNow(prophet: MapUnit): Boolean {
         if (!mayUseGreatProphetAtAll(prophet)) return false
-        if (prophet.getTile().getCity() == null) return false
+        if (!prophet.getTile().isCityCenter()) return false
         return true
     }
 
