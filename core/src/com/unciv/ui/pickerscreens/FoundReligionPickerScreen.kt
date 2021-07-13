@@ -7,6 +7,7 @@ import com.unciv.logic.GameInfo
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.UncivSound
 import com.unciv.models.ruleset.Belief
+import com.unciv.models.translations.tr
 import com.unciv.ui.utils.*
 import kotlin.math.max
 
@@ -69,11 +70,11 @@ class FoundReligionPickerScreen (
     private fun setupReligionIcons() {
         topReligionIcons.clear()
         
-        val descriptionLabel = Label("Choose an Icon and name for your Religion", skin)
+        val descriptionLabel = Label("Choose an Icon and name for your Religion".tr(), skin)
         
         val iconsTable = Table()
         iconsTable.align(Align.center)
-        for (religionName in listOf("Christianity", "Islam", "Taoism", "Hinduism", "Buddhism")) {
+        for (religionName in listOf("Christianity".tr(), "Islam".tr(), "Taoism".tr(), "Hinduism".tr(), "Buddhism".tr())) {
             if (gameInfo.religions.keys.any { it == religionName }) continue
             val image = ImageGetter.getReligionIcon(religionName)
             image.setColor(0f,0f,0f,1f)
@@ -88,7 +89,7 @@ class FoundReligionPickerScreen (
                 previouslySelectedIcon = button
                 button.disable()
                 descriptionLabel.setText(religionName)
-                rightSideButton.label = "Found $religionName".toLabel()
+                rightSideButton.label = "Found [$religionName]".tr().toLabel()
                 checkAndEnableRightSideButton()
             }
             if (religionName == this.religionName) button.disable()
