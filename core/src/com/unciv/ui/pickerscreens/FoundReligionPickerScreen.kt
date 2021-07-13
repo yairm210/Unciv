@@ -1,5 +1,6 @@
 package com.unciv.ui.pickerscreens
 
+import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.badlogic.gdx.utils.Align
 import com.unciv.UncivGame
@@ -70,14 +71,14 @@ class FoundReligionPickerScreen (
     private fun setupReligionIcons() {
         topReligionIcons.clear()
         
-        val descriptionLabel = Label("Choose an Icon and name for your Religion".tr(), skin)
+        val descriptionLabel = "Choose an Icon and name for your Religion".toLabel()
         
         val iconsTable = Table()
         iconsTable.align(Align.center)
         for (religionName in gameInfo.ruleSet.religions) {
             if (gameInfo.religions.keys.any { it == religionName }) continue
             val image = ImageGetter.getReligionIcon(religionName)
-            image.setColor(0f,0f,0f,1f)
+            image.color = Color.BLACK
             val icon = image.surroundWithCircle(60f)
             val button = Button(icon, skin)
             val translatedReligionName = religionName.tr()
@@ -90,7 +91,7 @@ class FoundReligionPickerScreen (
                 previouslySelectedIcon = button
                 button.disable()
                 descriptionLabel.setText(translatedReligionName)
-                rightSideButton.label = "Found [$translatedReligionName]".tr().toLabel()
+                rightSideButton.label = "Found [$translatedReligionName]".toLabel()
                 checkAndEnableRightSideButton()
             }
             if (religionName == this.religionName) button.disable()

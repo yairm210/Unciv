@@ -14,7 +14,6 @@ class Religion() : INamed {
     var holyCityId: String? = null
 
 
-    var pantheonBeliefs: HashSet<String> = hashSetOf()
     var founderBeliefs: HashSet<String> = hashSetOf()
     var followerBeliefs: HashSet<String> = hashSetOf()
 
@@ -32,7 +31,6 @@ class Religion() : INamed {
         val toReturn = Religion(name, gameInfo, foundingCivName)
         toReturn.iconName = iconName
         toReturn.holyCityId = holyCityId
-        toReturn.pantheonBeliefs.addAll(pantheonBeliefs)
         toReturn.founderBeliefs.addAll(founderBeliefs)
         toReturn.followerBeliefs.addAll(followerBeliefs)
         return toReturn
@@ -51,7 +49,7 @@ class Religion() : INamed {
     }
 
     fun getFollowerUniques(): Sequence<Unique> {
-        return getUniquesOfBeliefs((followerBeliefs + pantheonBeliefs).toHashSet())
+        return getUniquesOfBeliefs(followerBeliefs)
     }
 
     fun getFounderUniques(): Sequence<Unique> {
@@ -63,10 +61,12 @@ class Religion() : INamed {
     }
 
     fun isMajorReligion(): Boolean {
-        return founderBeliefs.isNotEmpty() && followerBeliefs.isNotEmpty()
+        if ("" in followerBeliefs) return true // Temporary as a result of follower beliefs not yet being implemented
+        return founderBeliefs.isNotEmpty() && followerBeliefs.any { gameInfo.ruleSet.beliefs[it]!!.type == "Follower"}
     }
 
     fun hasPantheon(): Boolean {
-        return pantheonBeliefs.isNotEmpty()
+        // Temporary as a result of follower beliefs not yet being implemented
+        return followerBeliefs.any { it != "" && gameInfo.ruleSet.beliefs[it]!!.type == "Pantheon" }
     }
 }

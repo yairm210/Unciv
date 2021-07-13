@@ -75,7 +75,7 @@ class ReligionManager {
 
     fun isPickablePantheonBelief(belief: Belief): Boolean {
         if (belief.type != "Pantheon") return false
-        if (civInfo.gameInfo.civilizations.any { it.religionManager.religion != null && it.religionManager.religion!!.pantheonBeliefs.contains(belief.name)})
+        if (civInfo.gameInfo.civilizations.any { it.religionManager.religion != null && it.religionManager.religion!!.followerBeliefs.contains(belief.name)})
             return false
         return true
     }
@@ -83,7 +83,7 @@ class ReligionManager {
     fun choosePantheonBelief(belief: Belief) {
         storedFaith -= faithForPantheon()
         religion = Religion(belief.name, civInfo.gameInfo, civInfo.civName)
-        religion!!.pantheonBeliefs.add(belief.name)
+        religion!!.followerBeliefs.add(belief.name)
         civInfo.gameInfo.religions[belief.name] = religion!!
         // This should later be changed when religions can have multiple beliefs
         civInfo.getCapital().religion[belief.name] = 100 // Capital is religious, other cities are not
@@ -149,7 +149,6 @@ class ReligionManager {
         val newReligion = Religion(name, civInfo.gameInfo, civInfo.civName)
         newReligion.iconName = iconName
         if (religion != null) {
-            newReligion.pantheonBeliefs.addAll(religion!!.pantheonBeliefs)
             newReligion.followerBeliefs.addAll(religion!!.followerBeliefs)
             newReligion.founderBeliefs.addAll(religion!!.founderBeliefs)
         }
