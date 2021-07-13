@@ -47,7 +47,7 @@ Copy it to a `/maps` folder in your *mod*, and you're done!
 
 You can add wonder images to mods and they'll be displayed instead of the standard icon when a wonder is finished. The image needs to be a .png and 2:1 ratio so for example 200x100 px.
 
-Add the images to `/android/Images/WonderImages`. They need to be named according to the name field in `Buildings.json`, so for example "Temple of Artemis.png" or "Stonehenge.png"
+Add the images to `/Images/WonderImages/`. They need to be named according to the name field in `Buildings.json`, so for example "Temple of Artemis.png" or "Stonehenge.png"
 
 
 ## Getting your mod out there
