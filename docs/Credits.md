@@ -552,6 +552,14 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Anchor](https://thenounproject.com/term/anchor/676586) by Gregor Cresnar for Amphibious
 * [survival knife](https://thenounproject.com/search/?q=survival&i=2663392) by b faris for Survivalism
 
+## Religions
+* [Lightning Bolt](https://thenounproject.com/search/?q=lightning+bolt&i=154820) by sian huxtable for Pantheon
+* [Christianity](https://thenounproject.com/search/?q=christianity&i=181) by Public Domain Nouns for Christianity
+* [Islam](https://thenounproject.com/search/?q=Islam&i=2431350) by Muhammed Riza for Islam
+* [taoism](https://thenounproject.com/search/?q=Taoism&i=740812) by parkjisun for Taosim
+* [Buddhism](https://thenounproject.com/search/?q=buddhism&i=38764) by Julio Yanes for Buddhism
+* [Hinduism](https://thenounproject.com/search/?q=hinduism&i=20383) by Mugda Damle for Hinduism
+
 ## Others
 
 * [Circle](https://thenounproject.com/term/circle/1841891/) By Aybige

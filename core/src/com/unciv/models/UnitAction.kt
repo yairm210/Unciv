@@ -35,5 +35,6 @@ enum class UnitActionType(val value: String) {
     StartGoldenAge("Start Golden Age"),
     HurryWonder("Hurry Wonder"),
     ConductTradeMission("Conduct Trade Mission"),
+    FoundReligion("Found a Religion"),
     DisbandUnit("Disband unit")
 }
