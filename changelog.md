@@ -1,3 +1,18 @@
+## 3.15.12
+
+By xlenstra:
+- Founding Religions 
+- Updated the tile choosing algorithm for city expansion 
+- Disabled city state diplomacy buttons when it is not your turn 
+- Fixed bug where great prophets could be given when religion was disabled 
+- Fixed bug where effects of all aquaducts nationwide stacked in each city 
+
+Wonder build screens redux - By SimonCeder
+
+By SomeTroglodyte:
+- Better Slider UI
+- 'Swap units' sound replaced 
+
 ## 3.15.11
 
 Civs with no cities can no longer pick policies
