@@ -433,7 +433,7 @@ class CityInfo {
             }
         } else population.nextTurn(foodForNextTurn())
 
-        if (civInfo.gameInfo.hasReligionEnabled()) religion.getAffectedBySurroundingCities()
+        // if (civInfo.gameInfo.hasReligionEnabled()) religion.getAffectedBySurroundingCities()
 
         if (this in civInfo.cities) { // city was not destroyed
             health = min(health + 20, getMaxHealth())
@@ -442,10 +442,9 @@ class CityInfo {
     }
 
     fun destroyCity(overrideSafeties: Boolean = false) {
-        // Original capitals can't be destroyed.
-        // Unless they are captured by a one-city-challenger for some reason.
-        // This was tested in the original.
-        if (isOriginalCapital && !overrideSafeties) return
+        // Original capitals and holy cities cannot be destroyed,
+        // unless, of course, they are captured by a one-city-challenger.
+        if (!canBeDestroyed() && !overrideSafeties) return
         
         for (airUnit in getCenterTile().airUnits.toList()) airUnit.destroy() //Destroy planes stationed in city
 
@@ -594,6 +593,14 @@ class CityInfo {
             .filter { it.params.none { param -> param == "in this city" } }
         // Note that we don't query religion here, as those only have local effects (for now at least)
     }
+
+    fun isHolyCity(): Boolean {
+        return civInfo.gameInfo.religions.values.any { it.holyCityId == id } 
+    }
     
+    fun canBeDestroyed(): Boolean {
+        return !isCapital() && !isHolyCity()
+    }
+
     //endregion
 }

@@ -287,6 +287,10 @@ object ImageGetter {
         }
         return circle
     }
+    
+    fun getReligionIcon(iconName: String): Image {
+        return getImage("ReligionIcons/$iconName")
+    }
 
     fun getBlue() = Color(0x004085bf)
 
