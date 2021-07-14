@@ -148,10 +148,9 @@ object Automation {
 
         // Resources are good: less points
         if (tile.hasViewableResource(cityInfo.civInfo)) {
-            val tileResource = tile.getTileResource()
-            if (tileResource.resourceType == ResourceType.Bonus) {
-                if (distance <= 3) score += -105 + 1
-            } else score += -105
+            if (tile.getTileResource().resourceType != ResourceType.Bonus) score -= 105
+            else if (distance <= 3) score -= 104
+            
         } else {
             // Water tiles without resources aren't great
             if (tile.isWater) score += 25
@@ -160,19 +159,17 @@ object Automation {
         }
 
         // Improvements are good: less points
-        score += when (tile.improvement) {
-            // The moddibility of this is questionable
-            null, "Barbarian encampment", "Ancient ruins", "City ruins" -> 0
-            else -> -5
-        }
+        if (tile.improvement != null &&
+            tile.getImprovementStats(tile.getTileImprovement()!!, cityInfo.civInfo, cityInfo).toHashMap().values.sum() > 0f
+        ) score -= 5
 
-        // This is in the source code, no can do
-        if (tile.roadStatus != RoadStatus.None) score += 0
-
-        if (tile.naturalWonder != null) score += -105
+        // The original checks if the tile has a road, but adds a score of 0 if it does.
+        // Therefore, this check is removed here.
+        
+        if (tile.naturalWonder != null) score -= 105
 
         // Straight up take the sum of all yields
-        score += -1 * tile.getTileStats(null, cityInfo.civInfo).toHashMap().values.sum().toInt()
+        score -= tile.getTileStats(null, cityInfo.civInfo).toHashMap().values.sum().toInt()
 
         // Check if we get access to better tiles from this tile
         var adjacentNaturalWonder = false
@@ -183,13 +180,13 @@ object Automation {
                 (adjacentDistance < 3 ||
                     adjacentTile.getTileResource().resourceType != ResourceType.Bonus
                 )
-            ) score += -1
+            ) score -= 1
             if (adjacentTile.naturalWonder != null) {
                 if (adjacentDistance < 3) adjacentNaturalWonder = true
-                score += -1
+                score -= 1
             }
         }
-        if (adjacentNaturalWonder) score += -1
+        if (adjacentNaturalWonder) score -= 1
 
         // Tiles not adjacent to owned land are very hard to acquire
         if (tile.neighbors.none { it.getCity() != null && it.getCity()!!.id == cityInfo.id })
