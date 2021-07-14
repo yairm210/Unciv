@@ -3,6 +3,7 @@ package com.unciv.logic.automation
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.BFS
+import com.unciv.logic.map.RoadStatus
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.ruleset.VictoryType
 import com.unciv.models.ruleset.tile.ResourceType
@@ -116,6 +117,7 @@ object Automation {
         }
     }
 
+    // Ranks a tile for any purpose except the expansion algorithm of cities
     internal fun rankTile(tile: TileInfo?, civInfo: CivilizationInfo): Float {
         if (tile == null) return 0f
         val tileOwner = tile.getOwner()
@@ -129,6 +131,68 @@ object Automation {
             if (tile.improvement == null) rank += 1f // improvement potential - resources give lots when improved!
         }
         return rank
+    }
+    
+    // Ranks a tile for the expansion algorithm of cities
+    internal fun rankTileForExpansion(tile: TileInfo, cityInfo: CityInfo): Int {
+        // https://github.com/Gedemon/Civ5-DLL/blob/aa29e80751f541ae04858b6d2a2c7dcca454201e/CvGameCoreDLL_Expansion1/CvCity.cpp#L10301
+        // Apparently this is not the full calculation. The exact tiles are also
+        // dependent on which tiles are between the chosen tile and the city center
+        // Exact details are not implemented, but can be found in CvAStar.cpp:2119,
+        // function `InfluenceCost()`.
+        // Implementing these will require an additional variable for each terrainType
+        val distance = tile.aerialDistanceTo(cityInfo.getCenterTile())
+
+        // Higher score means tile is less likely to be picked
+        var score = distance * 100
+
+        // Resources are good: less points
+        if (tile.hasViewableResource(cityInfo.civInfo)) {
+            if (tile.getTileResource().resourceType != ResourceType.Bonus) score -= 105
+            else if (distance <= 3) score -= 104
+            
+        } else {
+            // Water tiles without resources aren't great
+            if (tile.isWater) score += 25
+            // Can't work it anyways
+            if (distance > 3) score += 100
+        }
+
+        // Improvements are good: less points
+        if (tile.improvement != null &&
+            tile.getImprovementStats(tile.getTileImprovement()!!, cityInfo.civInfo, cityInfo).toHashMap().values.sum() > 0f
+        ) score -= 5
+
+        // The original checks if the tile has a road, but adds a score of 0 if it does.
+        // Therefore, this check is removed here.
+        
+        if (tile.naturalWonder != null) score -= 105
+
+        // Straight up take the sum of all yields
+        score -= tile.getTileStats(null, cityInfo.civInfo).toHashMap().values.sum().toInt()
+
+        // Check if we get access to better tiles from this tile
+        var adjacentNaturalWonder = false
+
+        for (adjacentTile in tile.neighbors.filter { it.getOwner() == null }) {
+            val adjacentDistance = cityInfo.getCenterTile().aerialDistanceTo(adjacentTile)
+            if (adjacentTile.hasViewableResource(cityInfo.civInfo) &&
+                (adjacentDistance < 3 ||
+                    adjacentTile.getTileResource().resourceType != ResourceType.Bonus
+                )
+            ) score -= 1
+            if (adjacentTile.naturalWonder != null) {
+                if (adjacentDistance < 3) adjacentNaturalWonder = true
+                score -= 1
+            }
+        }
+        if (adjacentNaturalWonder) score -= 1
+
+        // Tiles not adjacent to owned land are very hard to acquire
+        if (tile.neighbors.none { it.getCity() != null && it.getCity()!!.id == cityInfo.id })
+            score += 1000
+        
+        return score
     }
 
     fun rankStatsValue(stats: Stats, civInfo: CivilizationInfo): Float {
