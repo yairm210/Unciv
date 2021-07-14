@@ -142,7 +142,7 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
                         close()
                     }
                     add("Raze".toTextButton().apply {
-                        if (city.isOriginalCapital) disable()
+                        if (!city.canBeDestroyed()) disable()
                         else {
                             onClick(function = razeAction)
                             keyPressDispatcher['r'] = razeAction
@@ -184,12 +184,20 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
                 val wonder = worldScreen.gameInfo.ruleSet.buildings[popupAlert.value]!!
                 addGoodSizedLabel(wonder.name)
                 addSeparator()
-                if(ImageGetter.wonderImageExists(wonder.name)) {
-                    add(ImageGetter.getWonderImage(wonder.name))
-                        .width(worldScreen.stage.width/2.5f)
-                        .height(worldScreen.stage.width/5)
-                        .row()
-                } else {
+                if(ImageGetter.wonderImageExists(wonder.name)) {    // Wonder Graphic exists
+                    if(worldScreen.stage.height * 3 > worldScreen.stage.width * 4) {    // Portrait
+                        add(ImageGetter.getWonderImage(wonder.name))
+                            .width(worldScreen.stage.width / 1.5f)
+                            .height(worldScreen.stage.width / 3)
+                            .row()
+                    }
+                    else {  // Landscape (or squareish)
+                        add(ImageGetter.getWonderImage(wonder.name))
+                            .width(worldScreen.stage.width / 2.5f)
+                            .height(worldScreen.stage.width / 5)
+                            .row()
+                    }
+                } else {    // Fallback
                     add(ImageGetter.getConstructionImage(wonder.name).surroundWithCircle(100f)).pad(20f).row()
                 }
 

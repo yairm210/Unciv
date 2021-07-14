@@ -395,7 +395,7 @@ object Battle {
             UncivGame.Current.settings.addCompletedTutorialTask("Conquer a city")
         } else {
             city.puppetCity(attackerCiv)
-            if (city.population.population < 4 && !city.isOriginalCapital) {
+            if (city.population.population < 4 && city.canBeDestroyed()) {
                 city.annexCity()
                 city.isBeingRazed = true
             }

@@ -19,6 +19,7 @@ import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
 import com.unciv.logic.GameSaver
 import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.ReligionState
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.models.Tutorial
 import com.unciv.models.UncivSound
@@ -696,6 +697,11 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Cam
             viewingCiv.religionManager.canFoundPantheon() ->
                 NextTurnAction("Found Pantheon", Color.WHITE) {
                     game.setScreen(PantheonPickerScreen(viewingCiv, gameInfo))
+                }
+            
+            viewingCiv.religionManager.religionState == ReligionState.FoundingReligion ->
+                NextTurnAction("Found Religion", Color.WHITE) {
+                    game.setScreen(FoundReligionPickerScreen(viewingCiv, gameInfo))
                 }
 
             else ->

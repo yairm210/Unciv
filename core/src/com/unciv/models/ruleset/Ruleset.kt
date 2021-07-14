@@ -45,21 +45,23 @@ class Ruleset {
     var modWithReligionLoaded = false
 
     var name = ""
+    val beliefs = LinkedHashMap<String, Belief>()
+    val religions = ArrayList<String>()
     val buildings = LinkedHashMap<String, Building>()
-    val terrains = LinkedHashMap<String, Terrain>()
-    val tileResources = LinkedHashMap<String, TileResource>()
-    val tileImprovements = LinkedHashMap<String, TileImprovement>()
-    val technologies = LinkedHashMap<String, Technology>()
+    val difficulties = LinkedHashMap<String, Difficulty>()
     val eras = LinkedHashMap<String, Era>()
-    val units = LinkedHashMap<String, BaseUnit>()
-    val unitPromotions = LinkedHashMap<String, Promotion>()
     val nations = LinkedHashMap<String, Nation>()
+    val policies = LinkedHashMap<String, Policy>()
+    val policyBranches = LinkedHashMap<String, PolicyBranch>()
     val quests = LinkedHashMap<String, Quest>()
     val specialists = LinkedHashMap<String, Specialist>()
-    val policyBranches = LinkedHashMap<String, PolicyBranch>()
-    val policies = LinkedHashMap<String, Policy>()
-    val beliefs = LinkedHashMap<String, Belief>()
-    val difficulties = LinkedHashMap<String, Difficulty>()
+    val technologies = LinkedHashMap<String, Technology>()
+    val terrains = LinkedHashMap<String, Terrain>()
+    val tileImprovements = LinkedHashMap<String, TileImprovement>()
+    val tileResources = LinkedHashMap<String, TileResource>()
+    val units = LinkedHashMap<String, BaseUnit>()
+    val unitPromotions = LinkedHashMap<String, Promotion>()
+    
     val mods = LinkedHashSet<String>()
     var modOptions = ModOptions()
 
@@ -82,10 +84,12 @@ class Ruleset {
         difficulties.putAll(ruleset.difficulties)
         eras.putAll(ruleset.eras)
         nations.putAll(ruleset.nations)
+        for (nationToRemove in ruleset.modOptions.nationsToRemove) nations.remove(nationToRemove)
         policyBranches.putAll(ruleset.policyBranches)
         policies.putAll(ruleset.policies)
         beliefs.putAll(ruleset.beliefs)
         quests.putAll(ruleset.quests)
+        religions.addAll(ruleset.religions)
         specialists.putAll(ruleset.specialists)
         technologies.putAll(ruleset.technologies)
         for (techToRemove in ruleset.modOptions.techsToRemove) technologies.remove(techToRemove)
@@ -95,7 +99,6 @@ class Ruleset {
         unitPromotions.putAll(ruleset.unitPromotions)
         units.putAll(ruleset.units)
         for (unitToRemove in ruleset.modOptions.unitsToRemove) units.remove(unitToRemove)
-        for (nationToRemove in ruleset.modOptions.nationsToRemove) nations.remove(nationToRemove)
         mods += ruleset.mods
         modWithReligionLoaded = modWithReligionLoaded || ruleset.modWithReligionLoaded
     }
@@ -110,6 +113,7 @@ class Ruleset {
         mods.clear()
         nations.clear()
         policies.clear()
+        religions.clear()
         quests.clear()
         technologies.clear()
         terrains.clear()
@@ -157,6 +161,7 @@ class Ruleset {
 
         val erasFile = folderHandle.child("Eras.json")
         if (erasFile.exists()) eras += createHashmap(jsonParser.getFromJson(Array<Era>::class.java, erasFile))
+        
         val unitsFile = folderHandle.child("Units.json")
         if (unitsFile.exists()) units += createHashmap(jsonParser.getFromJson(Array<BaseUnit>::class.java, unitsFile))
 
@@ -189,6 +194,9 @@ class Ruleset {
         if (beliefsFile.exists())
             beliefs += createHashmap(jsonParser.getFromJson(Array<Belief>::class.java, beliefsFile))
 
+        val religionsFile = folderHandle.child("Religions.json")
+        if (religionsFile.exists())
+            religions += jsonParser.getFromJson(Array<String>::class.java, religionsFile).toList()
 
         val nationsFile = folderHandle.child("Nations.json")
         if (nationsFile.exists()) {
