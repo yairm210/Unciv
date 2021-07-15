@@ -67,6 +67,7 @@ object UnitActions {
         addSpreadReligionActions(unit, actionList, tile)
         actionList += getImprovementConstructionActions(unit, tile)
         addDisbandAction(actionList, unit, worldScreen)
+        addGiftAction(unit, actionList, tile)
 
         return actionList
     }
@@ -610,5 +611,46 @@ object UnitActions {
         val tileOwner = tile.getOwner()
         // Can't pillage friendly tiles, just like you can't attack them - it's an 'act of war' thing
         return tileOwner == null || tileOwner == unit.civInfo || unit.civInfo.isAtWarWith(tileOwner)
+    }
+
+    private fun addGiftAction(unit: MapUnit, actionList: ArrayList<UnitAction>, tile: TileInfo) {
+        val getGiftAction = getGiftAction(unit, tile)
+        if (getGiftAction != null) actionList += getGiftAction
+    }
+
+    fun getGiftAction(unit: MapUnit, tile: TileInfo): UnitAction? {
+        val recipient = tile.getOwner()
+        // We need to be in another civs territory.
+        if (recipient == null || recipient.isCurrentPlayer()) return null
+
+        // City States only take miliary units (and GPs for certain civs)
+        if (recipient.isCityState()) {
+            if (unit.isGreatPerson()) return null    // Unless Sweden
+            else if (!unit.baseUnit().matchesFilter("Military")) return null
+        }
+        // If gifting to major civ they need to be friendly
+        else if (!tile.isFriendlyTerritory(unit.civInfo)) return null
+
+        if (unit.currentMovement <= 0)
+            return UnitAction(UnitActionType.GiftUnit, uncivSound = UncivSound.Silent, action = null)
+
+        val giftAction = {
+            if (recipient.isCityState()) {
+                if (unit.isGreatPerson())
+                    recipient.getDiplomacyManager(unit.civInfo).influence += 90
+                else
+                    recipient.getDiplomacyManager(unit.civInfo).influence += 5
+                recipient.updateAllyCivForCityState()
+            }
+            else recipient.getDiplomacyManager(unit.civInfo).addModifier(DiplomaticModifiers.GaveUsUnits, 5f)
+
+            unit.destroy() // TODO actually gift the unit instead
+            // UncivGame.Current.worldScreen.shouldUpdate = true
+        }
+
+        if (unit.civInfo.playerType == PlayerType.AI)
+            return UnitAction(UnitActionType.GiftUnit,  uncivSound = UncivSound.Silent, action = giftAction)
+
+        return UnitAction(UnitActionType.GiftUnit, uncivSound = UncivSound.Silent, action = giftAction)  // sound?
     }
 }
