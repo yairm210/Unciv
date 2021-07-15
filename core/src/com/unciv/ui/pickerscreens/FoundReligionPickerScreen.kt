@@ -16,8 +16,8 @@ class FoundReligionPickerScreen (
     private val choosingCiv: CivilizationInfo,
     private val gameInfo: GameInfo,
     followerBeliefsToChoose: Int = 1,
-    founderBeliefsToChoose: Int = 1
-): PickerScreen() {
+    founderBeliefsToChoose: Int = 1,
+): PickerScreen(disableScroll = true) {
 
     // Roughly follows the layout of the original (although I am not very good at UI designing, so please improve this)
     private val topReligionIcons = Table() // Top of the layout, contains icons for religions
@@ -46,7 +46,7 @@ class FoundReligionPickerScreen (
         
         topTable.add(topReligionIcons).row()
         // commented out, as the middle panes will always be empty for now, and this will create a random line otherwise
-         topTable.addSeparator()
+        topTable.addSeparator()
         topTable.add(middlePanes)
         
         rightSideButton.label = "Choose a religion".toLabel()
