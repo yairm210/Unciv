@@ -6,59 +6,63 @@ import com.badlogic.gdx.utils.Align
 import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
 import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.models.Religion
 import com.unciv.models.UncivSound
 import com.unciv.models.ruleset.Belief
 import com.unciv.models.translations.tr
 import com.unciv.ui.utils.*
-import kotlin.math.max
 
 class FoundReligionPickerScreen (
     private val choosingCiv: CivilizationInfo,
-    private val gameInfo: GameInfo
+    private val gameInfo: GameInfo,
+    followerBeliefsToChoose: Int = 1,
+    founderBeliefsToChoose: Int = 1
 ): PickerScreen() {
 
-    // Roughly follows the layout of the original (although I suck at UI designing, so please improve this)
+    // Roughly follows the layout of the original (although I am not very good at UI designing, so please improve this)
     private val topReligionIcons = Table() // Top of the layout, contains icons for religions
-    private val leftChosenBeliefs: ScrollPane // Left middle part, contains buttons to select the types of beliefs to choose
-    private val rightBeliefsToChoose: ScrollPane // Right middle part, contains the beliefs to choose
+    private val leftChosenBeliefs = Table() // Left middle part, contains buttons to select the types of beliefs to choose
+    private val rightBeliefsToChoose = Table() // Right middle part, contains the beliefs to choose
     
     private val middlePanes = Table()
  
     private var previouslySelectedIcon: Button? = null
     private var iconName: String? = null
     private var religionName: String? = null
-    private var chosenFounderBelief: Belief? = null
-    private var chosenFollowerBelief: Belief? = null
+    private val chosenFollowerBeliefs: MutableList<Belief?> = MutableList(followerBeliefsToChoose) { null }
+    private val chosenFounderBeliefs: MutableList<Belief?> = MutableList(founderBeliefsToChoose) { null }
 
     init {
         closeButton.isVisible = true
         setDefaultCloseAction()
         
         setupReligionIcons()
-                
-        leftChosenBeliefs = ScrollPane(Table())
-        rightBeliefsToChoose = ScrollPane(Table())
         
-        middlePanes.add(leftChosenBeliefs)
+        updateLeftTable()
+        
+        middlePanes.add(ScrollPane(leftChosenBeliefs))
         middlePanes.addSeparatorVertical()
-        middlePanes.add(rightBeliefsToChoose)
+        middlePanes.add(ScrollPane(rightBeliefsToChoose))
         
         topTable.add(topReligionIcons).row()
         // commented out, as the middle panes will always be empty for now, and this will create a random line otherwise
-        // topTable.addSeparator()
+         topTable.addSeparator()
         topTable.add(middlePanes)
         
         rightSideButton.label = "Choose a religion".toLabel()
         rightSideButton.onClick(UncivSound.Choir) {
-            choosingCiv.religionManager.foundReligion(iconName!!, religionName!!, "", "", /**chosenFollowerBelief!!.name, chosenFounderBelief!!.name*/)            
+            choosingCiv.religionManager.foundReligion(
+                iconName!!, religionName!!, "" /**chosenFollowerBeliefs.map {it!!.name} */, chosenFollowerBeliefs.map { it!!.name}
+            )            
             UncivGame.Current.setWorldScreen()
         }
     }
-    
+
     private fun checkAndEnableRightSideButton() {
         if (religionName == null) return
+        println(chosenFollowerBeliefs)
+        if (chosenFollowerBeliefs.any { it == null }) return
         // check if founder belief chosen
-        // check if follower belief chosen
         rightSideButton.enable()
     }
 
@@ -94,6 +98,79 @@ class FoundReligionPickerScreen (
         }
         iconsTable.row()
         topReligionIcons.add(iconsTable).padBottom(10f).row()
-        topReligionIcons.add(descriptionLabel).center()
+        topReligionIcons.add(descriptionLabel).center().padBottom(5f)
+    }
+
+    private fun updateLeftTable() {
+        leftChosenBeliefs.clear()
+        val currentReligion = choosingCiv.religionManager.religion ?: Religion("Unknown", gameInfo, choosingCiv.civName)
+        
+        for (pantheon in currentReligion.getPantheonBeliefs()) {
+            val beliefButton = convertBeliefToButton(pantheon)
+            leftChosenBeliefs.add(beliefButton).pad(10f).row()
+            beliefButton.disable()
+        }
+        
+        for (followerBelief in currentReligion.getFollowerBeliefs()) {
+            val beliefButton = convertBeliefToButton(followerBelief)
+            leftChosenBeliefs.add(beliefButton).pad(10f).row()
+            beliefButton.disable()
+        }
+        
+        for (newFollowerBelief in chosenFollowerBeliefs.withIndex()) {
+            val newFollowerBeliefButton =
+                if (newFollowerBelief.value == null) emptyBeliefButton("Follower")
+                else convertBeliefToButton(newFollowerBelief.value!!)
+                
+            leftChosenBeliefs.add(newFollowerBeliefButton).pad(10f).row()
+            newFollowerBeliefButton.onClick {
+                loadRightTable("Follower", newFollowerBelief.index)
+            }
+        }
+    }
+
+//    private fun setupRightTable() {
+//        val currentReligion = choosingCiv.religionManager.religion ?: Religion("Unknown", gameInfo, choosingCiv.civName)
+//
+//        for (pantheon in currentReligion.getPantheonBeliefs()) {
+//            val beliefButton = convertBeliefToButton(pantheon)
+//            rightBeliefsToChoose.add(beliefButton).pad(10f).row()
+//        }
+//    }
+    
+    private fun loadRightTable(beliefType: String, leftButtonIndex: Int) {
+        rightBeliefsToChoose.clear()
+        val availableBeliefs = gameInfo.ruleSet.beliefs.values
+            .filter { 
+                it.type == beliefType
+                && gameInfo.religions.values.none {
+                    religion -> religion.hasBelief(it.name)
+                }
+                && (!chosenFollowerBeliefs.contains(it) || chosenFollowerBeliefs[leftButtonIndex] == it)
+            }
+        for (belief in availableBeliefs) {
+            val beliefButton = convertBeliefToButton(belief)
+            beliefButton.onClick {
+                if (beliefType == "Follower") chosenFollowerBeliefs[leftButtonIndex] = belief
+                else if (beliefType == "Founder") chosenFounderBeliefs[leftButtonIndex] = belief
+                updateLeftTable()
+                checkAndEnableRightSideButton()
+            }
+            rightBeliefsToChoose.add(beliefButton).pad(10f).row()
+        }
+    }
+    
+    private fun convertBeliefToButton(belief: Belief): Button {
+        val contentsTable = Table()
+        contentsTable.add(belief.type.toLabel()).row()
+        contentsTable.add(belief.name.toLabel(fontSize = 24)).row()
+        contentsTable.add(belief.uniques.joinToString().toLabel())
+        return Button(contentsTable, skin)
+    }
+    
+    private fun emptyBeliefButton(beliefType: String): Button {
+        val contentsTable = Table()
+        contentsTable.add("Choose a [$beliefType] belief!".toLabel())
+        return Button(contentsTable, skin)
     }
 }

@@ -2,6 +2,7 @@ package com.unciv.models
 
 import com.unciv.logic.GameInfo
 import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.models.ruleset.Belief
 import com.unciv.models.ruleset.Unique
 import com.unciv.models.stats.INamed
 
@@ -12,7 +13,6 @@ class Religion() : INamed {
     var iconName: String = "Pantheon"
     lateinit var foundingCivName: String
     var holyCityId: String? = null
-
 
     var founderBeliefs: HashSet<String> = hashSetOf()
     var followerBeliefs: HashSet<String> = hashSetOf()
@@ -40,6 +40,24 @@ class Religion() : INamed {
         this.gameInfo = gameInfo
     }
 
+    fun getPantheonBeliefs(): Sequence<Belief> {
+        val rulesetBeleifs = gameInfo.ruleSet.beliefs
+        return followerBeliefs.mapNotNull {
+            if (it !in rulesetBeleifs) null
+            else rulesetBeleifs[it]!!
+        }.filter { it.type == "Pantheon" }
+            .asSequence()
+    }
+    
+    fun getFollowerBeliefs(): Sequence<Belief> {
+        val rulesetBeliefs = gameInfo.ruleSet.beliefs
+        return followerBeliefs.mapNotNull {
+            if (it !in rulesetBeliefs) null
+            else rulesetBeliefs[it]!!
+        }.filter { it.type == "Follower" }
+            .asSequence()
+    }
+    
     private fun getUniquesOfBeliefs(beliefs: HashSet<String>): Sequence<Unique> {
         val rulesetBeliefs = gameInfo.ruleSet.beliefs
         return beliefs.mapNotNull {
@@ -68,5 +86,9 @@ class Religion() : INamed {
     fun hasPantheon(): Boolean {
         // Temporary as a result of follower beliefs not yet being implemented
         return followerBeliefs.any { it != "" && gameInfo.ruleSet.beliefs[it]!!.type == "Pantheon" }
+    }
+    
+    fun hasBelief(belief: String): Boolean {
+        return followerBeliefs.contains(belief) || founderBeliefs.contains(belief)
     }
 }
