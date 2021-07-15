@@ -117,6 +117,27 @@
         "name": "Stone Circles",
         "type": "Pantheon",
         "uniques": ["[+2 Faith] from every [Quarry]"]
+    },
+///////////////////////////////////////// Follower beliefs /////////////////////////////////////////
+    
+    {
+        "name": "Divine inspiration",
+        "type": "Follower",
+        "uniques": ["[+2 Faith] from every wonder"]
+    },
+    {
+        "name": "Feed the World",
+        "type": "Follower",
+        "uniques": ["[+1 Food] from every [Shrine]", "[+1 Food] from every [Temple]"]
+    },
+    {
+        "name": "Peace Gardens",
+        "type": "Follower",
+        "uniques": ["[+2 Happiness] from every [Garden]"]
+    },
+    {
+        "name": "Religious Art",
+        "type": "Follower",
+        "uniques": ["[+8 Culture] from every [Hermitage]"]
     }
-
 ]
