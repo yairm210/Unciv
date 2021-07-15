@@ -75,7 +75,6 @@ class FoundReligionPickerScreen (
         val iconsTable = Table()
         iconsTable.align(Align.center)
         for (religionName in gameInfo.ruleSet.religions) {
-            if (gameInfo.religions.keys.any { it == religionName }) continue
             val image = ImageGetter.getReligionIcon(religionName)
             image.color = Color.BLACK
             val icon = image.surroundWithCircle(60f)
@@ -93,7 +92,7 @@ class FoundReligionPickerScreen (
                 rightSideButton.label = "Found [$translatedReligionName]".toLabel()
                 checkAndEnableRightSideButton()
             }
-            if (religionName == this.religionName) button.disable()
+            if (religionName == this.religionName || gameInfo.religions.keys.any { it == religionName }) button.disable()
             iconsTable.add(button).pad(5f)
         }
         iconsTable.row()
