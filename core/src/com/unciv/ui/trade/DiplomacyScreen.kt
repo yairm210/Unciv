@@ -56,7 +56,7 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
     private fun updateLeftSideTable() {
         leftSideTable.clear()
         for (civ in viewingCiv.gameInfo.civilizations
-                .filterNot { it.isDefeated() || it == viewingCiv || it.isBarbarian() || it.isSpectator() || viewingCiv.knows(it) }) {
+                .filterNot { it.isDefeated() || it == viewingCiv || it.isBarbarian() || it.isSpectator() || !viewingCiv.knows(it) }) {
 
             val civIndicator = ImageGetter.getNationIndicator(civ.nation, 100f)
 
