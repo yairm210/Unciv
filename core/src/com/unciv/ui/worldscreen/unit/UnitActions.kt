@@ -644,7 +644,7 @@ object UnitActions {
             }
             else recipient.getDiplomacyManager(unit.civInfo).addModifier(DiplomaticModifiers.GaveUsUnits, 5f)
 
-            unit.destroy() // TODO actually gift the unit instead
+            unit.gift(recipient)
             // UncivGame.Current.worldScreen.shouldUpdate = true
         }
 
