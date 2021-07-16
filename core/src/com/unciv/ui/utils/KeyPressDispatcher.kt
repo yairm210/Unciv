@@ -25,8 +25,10 @@ import com.badlogic.gdx.scenes.scene2d.Stage
  * Example: KeyCharAndCode('R'), KeyCharAndCode(Input.Keys.F1)
  */
 data class KeyCharAndCode(val char: Char, val code: Int) {
+    /** helper 'cloning constructor' to allow feeding both fields from a factory function */
+    private constructor(from: KeyCharAndCode): this(from.char, from.code)
     /** Map keys from a Char - will detect by keycode if one can be mapped, by character otherwise */
-    constructor(char: Char): this(mapCharPart(char), mapCodePart(char))
+    constructor(char: Char): this(mapChar(char))
     /** express keys that only have a keyCode like F1 */
     constructor(code: Int): this(Char.MIN_VALUE, code)
 
@@ -60,14 +62,10 @@ data class KeyCharAndCode(val char: Char, val code: Int) {
         /** mini-factory for KeyCharAndCode values to be compared by character, not by code */
         fun ascii(char: Char) = KeyCharAndCode(char.toLowerCase(), 0)
         
-        // Separate into two parts so it can be used in a constructor
-        private fun mapCharPart(char: Char): Char {
+        /** factory maps a Char to a keyCode if possible, returns a Char-based instance otherwise */
+        fun mapChar(char: Char): KeyCharAndCode {
             val code = Input.Keys.valueOf(char.toUpperCase().toString())
-            return if (code == -1) char else Char.MIN_VALUE
-        }
-        private fun mapCodePart(char: Char): Int {
-            val code = Input.Keys.valueOf(char.toUpperCase().toString())
-            return if (code == -1) 0 else code
+            return if (code == -1) KeyCharAndCode(char,0) else KeyCharAndCode(Char.MIN_VALUE, code)
         }
     }
 }
