@@ -490,10 +490,8 @@ object UnitActions {
                         city.cityStats.update()
                         city.civInfo.updateDetailedCivResources()
                     }
-                    // Why is this here? How do we now the unit is actually a great person?
-                    // What if in some mod some unit can construct a certain type of improvement using the "Can construct []" unique?
-                    // That unit does not need to be a great person at all, and yet it would trigger mausoleum of halicarnassus (?) here.
-                    addGoldPerGreatPersonUsage(unit.civInfo)
+                    if (unit.hasUnique("Great Person - []"))
+                        addGoldPerGreatPersonUsage(unit.civInfo)
                     unit.destroy()
                 }.takeIf {
                     unit.currentMovement > 0f && tile.canBuildImprovement(improvement, unit.civInfo)
