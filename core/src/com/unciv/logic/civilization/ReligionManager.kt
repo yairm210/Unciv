@@ -1,6 +1,5 @@
 package com.unciv.logic.civilization
 
-import com.unciv.logic.city.CityInfo
 import com.unciv.logic.map.MapUnit
 import com.unciv.models.Religion
 import com.unciv.models.ruleset.Belief
@@ -21,7 +20,7 @@ class ReligionManager {
     // It just stops growing. Your new religion will then have to spread out from your holy city
     // and convert these cities. This means, that civilizations can have multiple active religions
     // in some cases. We only save one of them in this class to reduce the amount of logic necessary.
-    // But the other one should still be _somehwere_. So our only option is to have the GameInfo
+    // But the other one should still be _somewhere_. So our only option is to have the GameInfo
     // contain the master list, and the ReligionManagers retrieve it from there every time the game loads.
 
     private var greatProphetsEarned = 0
