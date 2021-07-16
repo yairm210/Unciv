@@ -113,22 +113,20 @@ object UnitActions {
         val tile = unit.currentTile
         if (!tile.isWater || !unit.hasUnique("May create improvements on water resources") || tile.resource == null) return null
 
-        val improvement = tile.getTileResource().improvement
+        val improvementName = tile.getTileResource().improvement ?: return null
+        val improvement = tile.ruleset.tileImprovements[improvementName] ?: return null
+        if (!tile.canBuildImprovement(improvement, unit.civInfo)) return null
 
-        if (tile.improvement == null && tile.ruleset.tileImprovements.containsKey(improvement)
-                && tile.ruleset.tileImprovements[improvement]!!.techRequired.let { it == null || unit.civInfo.tech.isResearched(it) })
-            return UnitAction(UnitActionType.Create, "Create [$improvement]",
-                    action = {
-                        tile.improvement = improvement
-                        val city = tile.getCity()
-                        if (city != null) {
-                            city.cityStats.update()
-                            city.civInfo.updateDetailedCivResources()
-                        }
-                        unit.destroy()
-                    }.takeIf { unit.currentMovement > 0 })
-
-        return null
+        return UnitAction(UnitActionType.Create, "Create [$improvementName]",
+            action = {
+                tile.improvement = improvementName
+                val city = tile.getCity()
+                if (city != null) {
+                    city.cityStats.update()
+                    city.civInfo.updateDetailedCivResources()
+                }
+                unit.destroy()
+            }.takeIf { unit.currentMovement > 0 })
     }
     
     // This entire function is deprecated since 3.15.4, as the 'can construct roads' unique is deprecated
