@@ -120,6 +120,11 @@ object UnitActions {
             return UnitAction(UnitActionType.Create, "Create [$improvement]",
                     action = {
                         tile.improvement = improvement
+                        val city = tile.getCity()
+                        if (city != null) {
+                            city.cityStats.update()
+                            city.civInfo.updateDetailedCivResources()
+                        }
                         unit.destroy()
                     }.takeIf { unit.currentMovement > 0 })
 
