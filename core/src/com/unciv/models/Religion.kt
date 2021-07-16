@@ -1,7 +1,6 @@
 package com.unciv.models
 
 import com.unciv.logic.GameInfo
-import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.ruleset.Belief
 import com.unciv.models.ruleset.Unique
 import com.unciv.models.stats.INamed
@@ -39,31 +38,32 @@ class Religion() : INamed {
     fun setTransients(gameInfo: GameInfo) {
         this.gameInfo = gameInfo
     }
+    
+    private fun mapToExistingBeliefs(beliefs: HashSet<String>): List<Belief> {
+        val rulesetBeliefs = gameInfo.ruleSet.beliefs
+        return beliefs.mapNotNull {
+            if (it !in rulesetBeliefs) null
+            else rulesetBeliefs[it]!!
+        }
+    }
 
     fun getPantheonBeliefs(): Sequence<Belief> {
-        val rulesetBeleifs = gameInfo.ruleSet.beliefs
-        return followerBeliefs.mapNotNull {
-            if (it !in rulesetBeleifs) null
-            else rulesetBeleifs[it]!!
-        }.filter { it.type == "Pantheon" }
+        return mapToExistingBeliefs(followerBeliefs)
+            .filter { it.type == "Pantheon" }
             .asSequence()
     }
     
     fun getFollowerBeliefs(): Sequence<Belief> {
-        val rulesetBeliefs = gameInfo.ruleSet.beliefs
-        return followerBeliefs.mapNotNull {
-            if (it !in rulesetBeliefs) null
-            else rulesetBeliefs[it]!!
-        }.filter { it.type == "Follower" }
+        return mapToExistingBeliefs(followerBeliefs)
+            .filter { it.type == "Follower" }
             .asSequence()
     }
     
     private fun getUniquesOfBeliefs(beliefs: HashSet<String>): Sequence<Unique> {
-        val rulesetBeliefs = gameInfo.ruleSet.beliefs
-        return beliefs.mapNotNull {
-            if (it !in rulesetBeliefs) null
-            else rulesetBeliefs[it]!!.uniqueObjects
-        }.flatten().asSequence()
+        return mapToExistingBeliefs(beliefs)
+            .map { it.uniqueObjects }
+            .flatten()
+            .asSequence()
     }
 
     fun getFollowerUniques(): Sequence<Unique> {
@@ -74,7 +74,7 @@ class Religion() : INamed {
         return getUniquesOfBeliefs(founderBeliefs)
     }
 
-    fun isPantheon(): Boolean {
+    fun isPantheon(): Boolean { // Currently unused
         return hasPantheon() && !isMajorReligion()
     }
 
@@ -83,7 +83,7 @@ class Religion() : INamed {
         return founderBeliefs.isNotEmpty() && followerBeliefs.any { gameInfo.ruleSet.beliefs[it]!!.type == "Follower"}
     }
 
-    fun hasPantheon(): Boolean {
+    fun hasPantheon(): Boolean { // Currently unused
         // Temporary as a result of follower beliefs not yet being implemented
         return followerBeliefs.any { it != "" && gameInfo.ruleSet.beliefs[it]!!.type == "Pantheon" }
     }

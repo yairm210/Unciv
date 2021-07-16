@@ -104,14 +104,8 @@ class FoundReligionPickerScreen (
         leftChosenBeliefs.clear()
         val currentReligion = choosingCiv.religionManager.religion ?: Religion("Unknown", gameInfo, choosingCiv.civName)
         
-        for (pantheon in currentReligion.getPantheonBeliefs()) {
+        for (pantheon in currentReligion.getPantheonBeliefs() + currentReligion.getFollowerBeliefs()) {
             val beliefButton = convertBeliefToButton(pantheon)
-            leftChosenBeliefs.add(beliefButton).pad(10f).row()
-            beliefButton.disable()
-        }
-        
-        for (followerBelief in currentReligion.getFollowerBeliefs()) {
-            val beliefButton = convertBeliefToButton(followerBelief)
             leftChosenBeliefs.add(beliefButton).pad(10f).row()
             beliefButton.disable()
         }
@@ -127,15 +121,6 @@ class FoundReligionPickerScreen (
             }
         }
     }
-
-//    private fun setupRightTable() {
-//        val currentReligion = choosingCiv.religionManager.religion ?: Religion("Unknown", gameInfo, choosingCiv.civName)
-//
-//        for (pantheon in currentReligion.getPantheonBeliefs()) {
-//            val beliefButton = convertBeliefToButton(pantheon)
-//            rightBeliefsToChoose.add(beliefButton).pad(10f).row()
-//        }
-//    }
     
     private fun loadRightTable(beliefType: String, leftButtonIndex: Int) {
         rightBeliefsToChoose.clear()
