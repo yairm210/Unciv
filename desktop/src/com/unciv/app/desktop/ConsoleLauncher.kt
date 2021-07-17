@@ -44,6 +44,7 @@ internal object ConsoleLauncher {
         val gameSetupInfo = GameSetupInfo(gameParameters, mapParameters)
         val newGame = GameStarter.startNewGame(gameSetupInfo)
         UncivGame.Current.gameInfo = newGame
+        TileSetCache.assembleTileSetConfigs()
 
         val simulation = Simulation(newGame,10,4)
 
