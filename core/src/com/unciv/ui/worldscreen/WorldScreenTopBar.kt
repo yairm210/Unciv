@@ -13,7 +13,7 @@ import com.unciv.ui.overviewscreen.EmpireOverviewScreen
 import com.unciv.ui.pickerscreens.PolicyPickerScreen
 import com.unciv.ui.pickerscreens.TechPickerScreen
 import com.unciv.ui.utils.*
-import com.unciv.ui.utils.StaticTooltip.Companion.addStaticTip
+import com.unciv.ui.utils.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.victoryscreen.VictoryScreen
 import com.unciv.ui.worldscreen.mainmenu.WorldScreenMenuPopup
 import kotlin.math.abs
@@ -152,7 +152,7 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
     private fun getOverviewButton(): Button {
         val overviewButton = Button(CameraStageBaseScreen.skin)
         overviewButton.add("Overview".toLabel()).pad(10f)
-        overviewButton.addStaticTip('e')
+        overviewButton.addTooltip('e')
         overviewButton.pack()
         overviewButton.onClick { worldScreen.game.setScreen(EmpireOverviewScreen(worldScreen.selectedCiv)) }
         overviewButton.centerY(this)
