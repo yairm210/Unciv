@@ -205,7 +205,7 @@ class Building : NamedStats(), IConstruction, ICivilopediaText {
         val textList = ArrayList<FormattedLine>()
 
         if (isWonder || isNationalWonder) {
-            textList += FormattedLine( if (isWonder) "Wonder of the World" else "National Wonder", color="#CA4", header=3 )
+            textList += FormattedLine( if (isWonder) "Wonder" else "National Wonder", color="#CA4", header=3 )
         }
 
         if (uniqueTo != null) {
@@ -292,7 +292,7 @@ class Building : NamedStats(), IConstruction, ICivilopediaText {
 
         if (requiredNearbyImprovedResources != null) {
             textList += FormattedLine()
-            textList += FormattedLine("Requires a worked resource near the city:")
+            textList += FormattedLine("Requires at least one of the following resources worked near the city:")
             requiredNearbyImprovedResources!!.forEach {
                 textList += FormattedLine(it, indent = 1, link = "Resource/$it")
             }
