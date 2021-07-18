@@ -10,7 +10,7 @@ import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.translations.tr
 import com.unciv.ui.utils.*
 import com.unciv.ui.utils.KeyPressDispatcher.Companion.keyboardAvailable
-import com.unciv.ui.utils.StaticTooltip.Companion.addStaticTip
+import com.unciv.ui.utils.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 
 class EmpireOverviewScreen(private var viewingPlayer:CivilizationInfo, defaultPage: String = "") : CameraStageBaseScreen(){
@@ -59,7 +59,7 @@ class EmpireOverviewScreen(private var viewingPlayer:CivilizationInfo, defaultPa
         }
         button.add(name.toLabel(Color.WHITE)).pad(5f)
         if (!disabled && keyboardAvailable && iconAndKey.key != Char.MIN_VALUE) {
-            button.addStaticTip(iconAndKey.key)
+            button.addTooltip(iconAndKey.key)
             keyPressDispatcher[iconAndKey.key] = setCategoryAction
         }
         setCategoryActions[name] = setCategoryAction
