@@ -648,9 +648,6 @@ object UnitActions {
             // UncivGame.Current.worldScreen.shouldUpdate = true
         }
 
-        if (unit.civInfo.playerType == PlayerType.AI)
-            return UnitAction(UnitActionType.GiftUnit,  uncivSound = UncivSound.Silent, action = giftAction)
-
-        return UnitAction(UnitActionType.GiftUnit, uncivSound = UncivSound.Silent, action = giftAction)  // sound?
+        return UnitAction(UnitActionType.GiftUnit, uncivSound = UncivSound.Silent, action = giftAction)
     }
 }
