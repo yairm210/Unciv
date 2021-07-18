@@ -12,16 +12,14 @@ object TileSetCache : HashMap<String, TileSetConfig>() {
 
     /** Combine [TileSetConfig]s for chosen mods.
      * Vanilla always active, even with a base ruleset mod active.
-     * A mod with a mod name matching the currently chosen tileset is used if in permanent visual mods.
-     *    Note the mod name must exactly match the [TileSet] name with `" Tileset"` appended.
+     * Permanent visual mods always included as long as UncivGame.Current is initialized.
      * Other active mods can be passed in parameter [ruleSetMods], if that is `null` and a game is in
      * progress, that game's mods are used instead.
      */
     fun assembleTileSetConfigs(ruleSetMods: HashSet<String>? = null) {
         val mods = mutableSetOf("")
         if (UncivGame.isCurrentInitialized()) {
-            val settings = UncivGame.Current.settings
-            if (settings.tileSet + " Tileset" in settings.visualMods) mods.add(settings.tileSet + " Tileset")
+            mods.addAll(UncivGame.Current.settings.visualMods)
             if (ruleSetMods != null)
                 mods.addAll(ruleSetMods)
             else if (UncivGame.Current.isGameInfoInitialized())
