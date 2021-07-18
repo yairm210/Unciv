@@ -63,6 +63,7 @@ object UnitActions {
         //
         addCreateWaterImprovements(unit, actionList)
         addGreatPersonActions(unit, actionList, tile)
+        addFoundReligionAction(unit, actionList, tile)
         addSpreadReligionActions(unit, actionList, tile)
         actionList += getImprovementConstructionActions(unit, tile)
         addDisbandAction(actionList, unit, worldScreen)
@@ -372,7 +373,8 @@ object UnitActions {
                         unit.civInfo.tech.addScience(unit.civInfo.tech.getScienceFromGreatScientist())
                         addGoldPerGreatPersonUsage(unit.civInfo)
                         unit.destroy()
-                    }.takeIf { unit.civInfo.tech.currentTechnologyName() != null })
+                    }.takeIf { unit.civInfo.tech.currentTechnologyName() != null }
+                )
             }
             "Can start an []-turn golden age" -> {
                 val turnsToGoldenAge = unique.params[0].toInt()
@@ -382,7 +384,8 @@ object UnitActions {
                         unit.civInfo.goldenAges.enterGoldenAge(turnsToGoldenAge)
                         addGoldPerGreatPersonUsage(unit.civInfo)
                         unit.destroy()
-                    }.takeIf { unit.currentTile.getOwner() != null && unit.currentTile.getOwner() == unit.civInfo })
+                    }.takeIf { unit.currentTile.getOwner() != null && unit.currentTile.getOwner() == unit.civInfo }
+                )
             }
             "Can speed up construction of a wonder" -> {
                 val canHurryWonder = if (!tile.isCityCenter()) false
@@ -400,7 +403,8 @@ object UnitActions {
                         }
                         addGoldPerGreatPersonUsage(unit.civInfo)
                         unit.destroy()
-                    }.takeIf { canHurryWonder })
+                    }.takeIf { canHurryWonder }
+                )
             }
             "Can undertake a trade mission with City-State, giving a large sum of gold and [] Influence" -> {
                 val canConductTradeMission = tile.owningCity?.civInfo?.isCityState() == true
@@ -419,16 +423,30 @@ object UnitActions {
                             tile.owningCity!!.civInfo.civName, NotificationIcon.Gold, NotificationIcon.Culture)
                         addGoldPerGreatPersonUsage(unit.civInfo)
                         unit.destroy()
-                    }.takeIf { canConductTradeMission })
+                    }.takeIf { canConductTradeMission }
+                )
             }
         }
+    }
+    
+    private fun addFoundReligionAction(unit: MapUnit, actionList: ArrayList<UnitAction>, tile: TileInfo) {
+        if (!unit.hasUnique("May found a religion")) return // should later also include enhance religion
+        if (!unit.civInfo.religionManager.mayUseGreatProphetAtAll(unit)) return
+        actionList += UnitAction(UnitActionType.FoundReligion,
+            uncivSound = UncivSound.Choir,
+            action = {
+                addGoldPerGreatPersonUsage(unit.civInfo)
+                unit.civInfo.religionManager.useGreatProphet(unit)
+                unit.destroy()
+            }.takeIf { unit.civInfo.religionManager.mayUseGreatProphetNow(unit) }
+        )
     }
     
     private fun addSpreadReligionActions(unit: MapUnit, actionList: ArrayList<UnitAction>, tile: TileInfo) {
         if (!unit.hasUnique("Can spread religion [] times")) return
         if (unit.religion == null) return
         val maxReligionSpreads = unit.maxReligionSpreads()
-        if (!unit.abilityUsedCount.containsKey("Religion Spread")) return // This should be impossible anways, but just in case
+        if (!unit.abilityUsedCount.containsKey("Religion Spread")) return // This should be impossible anyways, but just in case
         if (maxReligionSpreads <= unit.abilityUsedCount["Religion Spread"]!!) return
         val city = tile.getCity()
         actionList += UnitAction(UnitActionType.SpreadReligion,

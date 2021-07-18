@@ -12,7 +12,7 @@ open class PickerScreen(val disableScroll: Boolean = false) : CameraStageBaseScr
     protected var descriptionLabel: Label
     protected var rightSideGroup = VerticalGroup()
     protected var rightSideButton: TextButton
-    private var screenSplit = 0.85f
+    protected var screenSplit = 0.85f
 
     /**
      * The table displaying the choices from which to pick (usually).

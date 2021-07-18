@@ -2,7 +2,6 @@ package com.unciv.ui.newgamescreen
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox
-import com.badlogic.gdx.scenes.scene2d.ui.Slider
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextField
 import com.badlogic.gdx.scenes.scene2d.ui.TextField.TextFieldFilter.DigitsOnlyFilter
@@ -226,12 +225,11 @@ class MapParametersTable(val mapParameters: MapParameters, val isEmptyMapAllowed
         advancedSettingsTable.add("RNG Seed".toLabel()).left()
         advancedSettingsTable.add(seedTextField).fillX().row()
 
-        val sliders = HashMap<Slider, ()->Float>()
+        val sliders = HashMap<UncivSlider, ()->Float>()
 
-        fun addSlider(text: String, getValue:()->Float, min:Float, max:Float, onChange: (value:Float)->Unit): Slider {
-            val slider = Slider(min, max, (max - min) / 20, false, skin)
+        fun addSlider(text: String, getValue:()->Float, min:Float, max:Float, onChange: (value:Float)->Unit): UncivSlider {
+            val slider = UncivSlider(min, max, (max - min) / 20, onChange = onChange)
             slider.value = getValue()
-            slider.onChange { onChange(slider.value) }
             advancedSettingsTable.add(text.toLabel()).left()
             advancedSettingsTable.add(slider).fillX().row()
             sliders[slider] = getValue
@@ -239,25 +237,25 @@ class MapParametersTable(val mapParameters: MapParameters, val isEmptyMapAllowed
         }
 
         addSlider("Map Height", {mapParameters.elevationExponent}, 0.6f,0.8f)
-        {mapParameters.elevationExponent=it}
+        { mapParameters.elevationExponent = it }
 
         addSlider("Temperature extremeness", {mapParameters.temperatureExtremeness}, 0.4f,0.8f)
-        { mapParameters.temperatureExtremeness = it}
+        { mapParameters.temperatureExtremeness = it }
 
         addSlider("Resource richness", {mapParameters.resourceRichness},0f,0.5f)
-        { mapParameters.resourceRichness=it }
+        { mapParameters.resourceRichness = it }
 
         addSlider("Vegetation richness", {mapParameters.vegetationRichness}, 0f, 1f)
-        { mapParameters.vegetationRichness=it }
+        { mapParameters.vegetationRichness = it }
 
         addSlider("Rare features richness", {mapParameters.rareFeaturesRichness}, 0f, 0.5f)
         { mapParameters.rareFeaturesRichness = it }
 
         addSlider("Max Coast extension", {mapParameters.maxCoastExtension.toFloat()}, 0f, 5f)
-        { mapParameters.maxCoastExtension =it.toInt() }.apply { stepSize=1f }
+        { mapParameters.maxCoastExtension = it.toInt() }.apply { stepSize = 1f }
 
         addSlider("Biome areas extension", {mapParameters.tilesPerBiomeArea.toFloat()}, 1f, 15f)
-        { mapParameters.tilesPerBiomeArea = it.toInt() }.apply { stepSize=1f }
+        { mapParameters.tilesPerBiomeArea = it.toInt() }.apply { stepSize = 1f }
 
         addSlider("Water level", {mapParameters.waterThreshold}, -0.1f, 0.1f)
         { mapParameters.waterThreshold = it }
@@ -266,7 +264,7 @@ class MapParametersTable(val mapParameters: MapParameters, val isEmptyMapAllowed
         resetToDefaultButton.onClick {
             mapParameters.resetAdvancedSettings()
             seedTextField.text = mapParameters.seed.toString()
-            for(entry in sliders)
+            for (entry in sliders)
                 entry.key.value = entry.value()
         }
         advancedSettingsTable.add(resetToDefaultButton).colspan(2).row()

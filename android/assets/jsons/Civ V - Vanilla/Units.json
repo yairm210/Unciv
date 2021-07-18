@@ -270,7 +270,7 @@
 		"requiredTech": "Bronze Working",
 		"obsoleteTech": "Civil Service",
 		"upgradesTo": "Pikeman",
-		"uniques": ["+[50]% Strength vs [Mounted]","+[10] HP when healing"],
+		"uniques": ["+[50]% Strength vs [Mounted]","[+10] HP when healing"],
 		"attackSound": "metalhit"
 	},
 	{
@@ -1004,7 +1004,8 @@
 		"cost": 325,
 		"requiredTech": "Refrigeration",
 		"upgradesTo": "Nuclear Submarine",
-		"uniques": ["+[75]% Strength when attacking", "Invisible to others", "Can only attack [Water] units", "Can attack submarines", "Can enter ice tiles"],
+		"uniques": ["+[75]% Strength when attacking", "Invisible to others", "Can only attack [Water] tiles", 
+			"Can attack submarines", "Can enter ice tiles"],
 		"attackSound": "torpedo"
 	},
 	{
@@ -1364,8 +1365,9 @@
 		"rangedStrength": 85,
 		"cost": 425,
 		"requiredTech": "Telecommunications",
-		"uniques": ["+[75]% Strength when attacking", "Invisible to others", "Can only attack [Water] units",
-			"Can attack submarines", "Can enter ice tiles", "[+1] Visibility Range", "Can carry [2] [Missile] units"],
+		"uniques": ["+[75]% Strength when attacking", "Invisible to others", 
+			"Can only attack [Water] tiles", "Can attack submarines", "Can enter ice tiles", 
+			"[+1] Visibility Range", "Can carry [2] [Missile] units"],
 		"attackSound": "torpedo"
 	},
 	{
@@ -1475,7 +1477,8 @@
 	{
 		"name": "Great Prophet",
 		"unitType": "Civilian",
-		"uniques": ["Can construct [Holy site] if it hasn't spread religion yet", "Can spread religion [4] times","Great Person - [Faith]", "Unbuildable"],
+		"uniques": ["Can construct [Holy site] if it hasn't spread religion yet", "Can spread religion [4] times",
+			"May found a religion", "Great Person - [Faith]", "Unbuildable"],
 		"movement": 2
 	},
 	{

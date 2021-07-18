@@ -395,7 +395,7 @@ object Battle {
             UncivGame.Current.settings.addCompletedTutorialTask("Conquer a city")
         } else {
             city.puppetCity(attackerCiv)
-            if (city.population.population < 4 && !city.isOriginalCapital) {
+            if (city.population.population < 4 && city.canBeDestroyed()) {
                 city.annexCity()
                 city.isBeingRazed = true
             }
@@ -468,9 +468,6 @@ object Battle {
         val strength = when {
             (attacker.unit.hasUnique("Nuclear weapon of Strength []")) ->
                 attacker.unit.getMatchingUniques("Nuclear weapon of Strength []").first().params[0].toInt()
-            // Deprecated since 3.15.3
-                (attacker.unit.hasUnique("Nuclear weapon")) -> 1
-            //
             else -> return
         }
 

@@ -285,8 +285,8 @@ class GameInfo {
         for (civInfo in civilizations) civInfo.gameInfo = this
 
         difficultyObject = ruleSet.difficulties[difficulty]!!
-
-
+        
+        for (religion in religions.values) religion.setTransients(this)
 
         // This doesn't HAVE to go here, but why not.
 
