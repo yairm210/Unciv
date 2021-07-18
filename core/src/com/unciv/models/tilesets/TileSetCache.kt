@@ -10,14 +10,22 @@ object TileSetCache : HashMap<String, TileSetConfig>() {
     private data class TileSetAndMod(val tileSet: String, val mod: String)
     private val allConfigs = HashMap<TileSetAndMod, TileSetConfig>()
 
-    fun assembleTileSetConfigs() {
-        val mods = mutableSetOf("")     // Vanilla always active, even with base ruleset mods selected
+    /** Combine [TileSetConfig]s for chosen mods.
+     * Vanilla always active, even with a base ruleset mod active.
+     * A mod with a mod name matching the currently chosen tileset is used if in permanent visual mods.
+     *    Note the mod name must exactly match the [TileSet] name with `" Tileset"` appended.
+     * Other active mods can be passed in parameter [ruleSetMods], if that is `null` and a game is in
+     * progress, that game's mods are used instead.
+     */
+    fun assembleTileSetConfigs(ruleSetMods: HashSet<String>? = null) {
+        val mods = mutableSetOf("")
         if (UncivGame.isCurrentInitialized()) {
             val settings = UncivGame.Current.settings
             if (settings.tileSet + " Tileset" in settings.visualMods) mods.add(settings.tileSet + " Tileset")
-            if (UncivGame.Current.isGameInfoInitialized()) {
+            if (ruleSetMods != null)
+                mods.addAll(ruleSetMods)
+            else if (UncivGame.Current.isGameInfoInitialized())
                 mods.addAll(UncivGame.Current.gameInfo.ruleSet.mods)
-            }
         }
         clear()
         allConfigs.filter { it.key.mod in mods }.forEach {
