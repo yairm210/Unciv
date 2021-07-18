@@ -487,7 +487,7 @@ class DiplomacyManager() {
         revertToZero(DiplomaticModifiers.DenouncedOurAllies, 1 / 4f)
         revertToZero(DiplomaticModifiers.DenouncedOurEnemies, 1 / 4f)
         revertToZero(DiplomaticModifiers.Denunciation, 1 / 8f) // That's personal, it'll take a long time to fade
-        revertToZero(DiplomaticModifiers.GaveUsUnits, 1 / 2f) // Giving units is pointless in civ V
+        revertToZero(DiplomaticModifiers.GaveUsUnits, 1 / 4f)
 
         setFriendshipBasedModifier()
 
