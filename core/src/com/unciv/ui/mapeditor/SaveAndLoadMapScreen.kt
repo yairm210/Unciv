@@ -95,7 +95,7 @@ class SaveAndLoadMapScreen(mapToSave: TileMap?, save:Boolean = false, previousSc
                 Gdx.app.clipboard.contents = base64Gzip
             }
             copyMapAsTextButton.onClick (copyMapAsTextAction)
-            keyPressDispatcher['\u0003'] = copyMapAsTextAction   // Ctrl-C
+            keyPressDispatcher[KeyCharAndCode.ctrl('C')] = copyMapAsTextAction
             rightSideTable.add(copyMapAsTextButton).row()
         } else {
             val loadFromClipboardButton = "Load copied data".toTextButton()
@@ -111,7 +111,7 @@ class SaveAndLoadMapScreen(mapToSave: TileMap?, save:Boolean = false, previousSc
                 }
             }
             loadFromClipboardButton.onClick(loadFromClipboardAction)
-            keyPressDispatcher['\u0016'] = loadFromClipboardAction   // Ctrl-V
+            keyPressDispatcher[KeyCharAndCode.ctrl('V')] = loadFromClipboardAction
             rightSideTable.add(loadFromClipboardButton).row()
             rightSideTable.add(couldNotLoadMapLabel).row()
         }
@@ -123,7 +123,7 @@ class SaveAndLoadMapScreen(mapToSave: TileMap?, save:Boolean = false, previousSc
             }, this).open()
         }
         deleteButton.onClick(deleteAction)
-        keyPressDispatcher['\u007f'] = deleteAction     // Input.Keys.DEL but ascii has precedence
+        keyPressDispatcher[KeyCharAndCode.DEL] = deleteAction
         rightSideTable.add(deleteButton).row()
 
         topTable.add(rightSideTable)
