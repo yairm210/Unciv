@@ -625,7 +625,15 @@ object UnitActions {
 
         // City States only take miliary units (and GPs for certain civs)
         if (recipient.isCityState()) {
-            if (unit.isGreatPerson()) return null    // Unless Sweden
+            if (unit.isGreatPerson()) {
+                // Do we have a unique ability to gift GPs?
+                var canGiftGPs = false
+                for (unique in unit.civInfo.getMatchingUniques("Gain [] [] with a [] gift to a City-State")) {
+                    if(unique.params[2] == "Great Person")
+                        canGiftGPs = true
+                }
+                if (!canGiftGPs) return null
+            }
             else if (!unit.baseUnit().matchesFilter("Military")) return null
         }
         // If gifting to major civ they need to be friendly
@@ -636,10 +644,16 @@ object UnitActions {
 
         val giftAction = {
             if (recipient.isCityState()) {
-                if (unit.isGreatPerson())
-                    recipient.getDiplomacyManager(unit.civInfo).influence += 90
-                else
-                    recipient.getDiplomacyManager(unit.civInfo).influence += 5
+                for (unique in unit.civInfo.getMatchingUniques("Gain [] [] with a [] gift to a City-State")) {
+                    if((unit.isGreatPerson() && unique.params[2] == "Great Person")
+                        || unit.matchesFilter(unique.params[2])) {
+                        // Slightly hardcoded as we assume that influence is what should be gained
+                        recipient.getDiplomacyManager(unit.civInfo).influence += unique.params[0].toInt() - 5
+                    }
+                }
+
+                recipient.getDiplomacyManager(unit.civInfo).influence += 5
+
                 recipient.updateAllyCivForCityState()
             }
             else recipient.getDiplomacyManager(unit.civInfo).addModifier(DiplomaticModifiers.GaveUsUnits, 5f)
