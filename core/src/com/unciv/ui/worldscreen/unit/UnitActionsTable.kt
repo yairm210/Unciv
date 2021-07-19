@@ -61,6 +61,7 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table() {
                 "Stop exploration" -> return UnitIconAndKey(ImageGetter.getImage("OtherIcons/Stop"), 'x')
                 "Pillage" -> return UnitIconAndKey(ImageGetter.getImage("OtherIcons/Pillage"), 'p')
                 "Disband unit" -> return UnitIconAndKey(ImageGetter.getImage("OtherIcons/DisbandUnit"))
+                "Gift unit" -> return UnitIconAndKey(ImageGetter.getImage("OtherIcons/Present"))
                 else -> return UnitIconAndKey(ImageGetter.getImage("OtherIcons/Star"))
             }
         }

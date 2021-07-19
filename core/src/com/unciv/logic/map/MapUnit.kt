@@ -658,6 +658,17 @@ class MapUnit {
             .forEach { unit -> unit.destroy() }
     }
 
+    fun gift(recipient: CivilizationInfo) {
+        civInfo.removeUnit(this)
+        civInfo.updateViewableTiles()
+        // all transported units should be destroyed as well
+        currentTile.getUnits().filter { it.isTransported && isTransportTypeOf(it) }
+            .toList() // because we're changing the list
+            .forEach { unit -> unit.destroy() }
+        assignOwner(recipient)
+        recipient.updateViewableTiles()
+    }
+
     fun removeFromTile() = currentTile.removeUnit(this)
 
     fun moveThroughTile(tile: TileInfo) {
