@@ -599,7 +599,7 @@ class CityInfo {
     }
     
     fun canBeDestroyed(): Boolean {
-        return !isCapital() && !isHolyCity()
+        return !isOriginalCapital && !isCapital() && !isHolyCity()
     }
 
     //endregion
