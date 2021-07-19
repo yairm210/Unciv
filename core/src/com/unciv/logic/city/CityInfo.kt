@@ -349,10 +349,10 @@ class CityInfo {
             var friendshipMultiplier = 0f
             for (otherciv in civInfo.getKnownCivs()) {
                 if (civInfo.getDiplomacyManager(otherciv).hasFlag(DiplomacyFlags.DeclarationOfFriendship)) {
-                    for(ourunique in civInfo.getMatchingUniques("When declaring [], both parties gain a +[]% boost to []"))
-                        friendshipMultiplier += ourunique.params[1].toFloat()
-                    for(theirunique in otherciv.getMatchingUniques("When declaring [], both parties gain a +[]% boost to []"))
-                        friendshipMultiplier += theirunique.params[1].toFloat()
+                    for(ourunique in civInfo.getMatchingUniques("When declaring friendship, both parties gain a []% boost to []"))
+                        friendshipMultiplier += ourunique.params[0].toFloat()
+                    for(theirunique in otherciv.getMatchingUniques("When declaring friendship, both parties gain a []% boost to []"))
+                        friendshipMultiplier += theirunique.params[0].toFloat()
                 }
             }
             if (friendshipMultiplier > 0f)

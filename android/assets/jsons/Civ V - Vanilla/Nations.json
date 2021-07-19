@@ -736,7 +736,7 @@
         "outerColor": [37,56,123],
 		"innerColor": [227,225,44],
 		"uniqueName": "Nobel Prize",
-		"uniques": ["Gain [90] [Influence] with a [Great Person] gift to a City-State", "When declaring [friendship], both parties gain a +[10]% boost to [great person generation]"],
+		"uniques": ["Gain [90] Influence with a [Great Person] gift to a City-State", "When declaring friendship, both parties gain a [10]% boost to [great person generation]"],
 		"cities": ["Stockholm","Uppsala","Gothenburg","Malmö","Linköping","Kalmar","Skara","Västerås","Jönköping",
 		"Visby","Falun","Norrköping","Gävle","Halmstad","Karlskrona","Hudiksvall","Örebro","Umeå","Karlstad",
 		"Helsingborg","Härnösand","Vadstena","Lund","Västervik","Enköping","Skövde","Eskilstuna","Luleå","Lidköping",

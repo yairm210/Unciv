@@ -628,8 +628,8 @@ object UnitActions {
             if (unit.isGreatPerson()) {
                 // Do we have a unique ability to gift GPs?
                 var canGiftGPs = false
-                for (unique in unit.civInfo.getMatchingUniques("Gain [] [] with a [] gift to a City-State")) {
-                    if(unique.params[2] == "Great Person")
+                for (unique in unit.civInfo.getMatchingUniques("Gain [] Influence with a [] gift to a City-State")) {
+                    if(unique.params[1] == "Great Person")
                         canGiftGPs = true
                 }
                 if (!canGiftGPs) return null
@@ -644,10 +644,9 @@ object UnitActions {
 
         val giftAction = {
             if (recipient.isCityState()) {
-                for (unique in unit.civInfo.getMatchingUniques("Gain [] [] with a [] gift to a City-State")) {
-                    if((unit.isGreatPerson() && unique.params[2] == "Great Person")
-                        || unit.matchesFilter(unique.params[2])) {
-                        // Slightly hardcoded as we assume that influence is what should be gained
+                for (unique in unit.civInfo.getMatchingUniques("Gain [] Influence with a [] gift to a City-State")) {
+                    if((unit.isGreatPerson() && unique.params[1] == "Great Person")
+                        || unit.matchesFilter(unique.params[1])) {
                         recipient.getDiplomacyManager(unit.civInfo).influence += unique.params[0].toInt() - 5
                     }
                 }
