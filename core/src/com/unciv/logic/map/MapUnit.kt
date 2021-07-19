@@ -635,7 +635,7 @@ class MapUnit {
         due = true
 
         // Hakkapeliitta movement boost
-        if(hasUnique("Bonus for units in 2 tile radius 15%")) {
+        if(getMatchingUniques("Great Person - []").any { it.params[0] == "War" }) {
             for(unit in getTile().getUnits()) {
                 if (unit.hasUnique("Transfer Movement to General")) {
                     // Get the max movement for the units, in case the unit boosting is actually slower
