@@ -11,6 +11,7 @@ import com.unciv.models.ruleset.VictoryType
 import com.unciv.models.stats.INamed
 import com.unciv.models.translations.tr
 import com.unciv.ui.utils.*
+import java.text.Collator
 import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 
 /** Screen displaying the Civilopedia
@@ -97,7 +98,9 @@ class CivilopediaScreen(
         if (category !in categoryToEntries) return        // defense, allowing buggy panes to remain empty while others work
         var entries = categoryToEntries[category]!!
         if (category != CivilopediaCategories.Difficulty) // this is the only case where we need them in order
-            entries = entries.sortedBy { it.name.tr() }   // Alphabetical order of localized names
+            // Alphabetical order of localized names, using system default locale
+            entries = entries.sortedWith(compareBy(Collator.getInstance(), { it.name.tr() }))
+
         var currentY = -1f
 
         for (entry in entries) {
