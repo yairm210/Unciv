@@ -5,6 +5,8 @@ import com.unciv.models.ruleset.Ruleset
 /**
  * You can use RoadStatus.name to identify [Road] and [Railroad]
  * in string-based identification, as done in [improvement].
+ * 
+ * Note: Order is important, [ordinal] _is_ compared - please interpret as "roadLevel".
  */
 enum class RoadStatus(
     val upkeep: Int = 0,
