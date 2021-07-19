@@ -212,7 +212,7 @@ class FormattedLine (
         }
         if (textToDisplay.isNotEmpty()) {
             val usedWidth = iconCount * (iconSize + iconPad)
-            val padIndent = when {
+            val indentWidth = when {
                 centered -> -usedWidth
                 indent == 0 && iconCount == 0 -> 0f
                 indent == 0 -> iconPad
@@ -224,10 +224,10 @@ class FormattedLine (
             label.setAlignment(align)
             if (labelWidth == 0f)
                 table.add(label)
-                    .padLeft(padIndent).align(align)
+                    .padLeft(indentWidth).align(align)
             else
-                table.add(label).width(labelWidth - usedWidth - padIndent)
-                    .padLeft(padIndent).align(align)
+                table.add(label).width(labelWidth - usedWidth - indentWidth)
+                    .padLeft(indentWidth).align(align)
         }
         return table
     }
