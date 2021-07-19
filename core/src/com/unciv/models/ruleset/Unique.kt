@@ -25,10 +25,10 @@ class UniqueMap:HashMap<String, ArrayList<Unique>>() {
         this[unique.placeholderText]!!.add(unique)
     }
 
-    fun getUniques(placeholderText: String): List<Unique> {
+    fun getUniques(placeholderText: String): Sequence<Unique> {
         val result = this[placeholderText]
-        if (result == null) return listOf()
-        else return result
+        if (result == null) return sequenceOf()
+        else return result.asSequence()
     }
 
     fun getAllUniques() = this.asSequence().flatMap { it.value.asSequence() }
