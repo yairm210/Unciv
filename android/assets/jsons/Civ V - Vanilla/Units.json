@@ -893,7 +893,7 @@
 		"requiredTech": "Metallurgy",
 		"requiredResource": "Horses",
 		"uniques": ["Can move after attacking","No defensive terrain bonus","-[33]% Strength vs [City]",
-			"Transfer Movement to General", "+[15]% Combat Bonus when stacked with Great General"],
+			"Transfer Movement to General", "[+15]% Strength when stacked with [Great General]"],
 		"promotions": ["Formation I"],
 		"upgradesTo": "Anti-Tank Gun",
 		"obsoleteTech": "Combined Arms",
