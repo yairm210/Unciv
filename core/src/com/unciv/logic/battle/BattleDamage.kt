@@ -79,7 +79,7 @@ object BattleDamage {
 
                 // Hakkapeliitta unique
                 for (unique in combatant.unit.getMatchingUniques("+[]% Combat Bonus when stacked with Great General")) {
-                    if (combatant.unit.getTile().getUnits().any { it.hasUnique("Bonus for units in 2 tile radius 15%") })
+                    if (combatant.unit.getTile().getUnits().any { it.getMatchingUniques("Great Person - []").any { it.params[0] == "War" } })
                         greatGeneralModifier += unique.params[0].toInt()
                 }
 
