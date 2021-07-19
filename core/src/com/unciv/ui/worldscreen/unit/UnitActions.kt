@@ -658,7 +658,10 @@ object UnitActions {
             }
             else recipient.getDiplomacyManager(unit.civInfo).addModifier(DiplomaticModifiers.GaveUsUnits, 5f)
 
-            unit.gift(recipient)
+            if(recipient.isCityState() && unit.isGreatPerson())
+                unit.destroy()  // City states dont get GPs
+            else
+                unit.gift(recipient)
             UncivGame.Current.worldScreen.shouldUpdate = true
         }
 
