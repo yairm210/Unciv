@@ -2,6 +2,7 @@ package com.unciv.models.ruleset.unit
 
 import com.unciv.Constants
 import com.unciv.logic.city.CityConstructions
+import com.unciv.logic.city.CityInfo
 import com.unciv.logic.city.IConstruction
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.MapUnit
