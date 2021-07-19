@@ -10,7 +10,6 @@ import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.map.MapUnit
-import com.unciv.logic.map.RoadStatus
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.UncivSound
 import com.unciv.models.UnitAction
@@ -58,9 +57,6 @@ object UnitActions {
         addSetupAction(unit, actionList)
         addFoundCityAction(unit, actionList, tile)
         addWorkerActions(unit, actionList, tile, worldScreen, unitTable)
-        // Deprecated since 3.15.4
-            addConstructRoadsAction(unit, tile, actionList)
-        //
         addCreateWaterImprovements(unit, actionList)
         addGreatPersonActions(unit, actionList, tile)
         addFoundReligionAction(unit, actionList, tile)
@@ -129,22 +125,7 @@ object UnitActions {
                 unit.destroy()
             }.takeIf { unit.currentMovement > 0 })
     }
-    
-    // This entire function is deprecated since 3.15.4, as the 'can construct roads' unique is deprecated
-        private fun addConstructRoadsAction(unit: MapUnit, tile: TileInfo, actionList: ArrayList<UnitAction>) {
-            val improvement = RoadStatus.Road.improvement(unit.civInfo.gameInfo.ruleSet) ?: return
-            if (unit.hasUnique("Can construct roads")
-                    && tile.roadStatus == RoadStatus.None
-                    && tile.improvementInProgress != "Road"
-                    && tile.isLand
-                    && (improvement.techRequired == null || unit.civInfo.tech.isResearched(improvement.techRequired!!)))
-                actionList += UnitAction(UnitActionType.ConstructRoad,
-                        action = {
-                            tile.improvementInProgress = "Road"
-                            tile.turnsToImprovement = improvement.getTurnsToBuild(unit.civInfo)
-                        }.takeIf { unit.currentMovement > 0 })
-        }
-    //
+
 
     private fun addFoundCityAction(unit: MapUnit, actionList: ArrayList<UnitAction>, tile: TileInfo) {
         val getFoundCityAction = getFoundCityAction(unit, tile)

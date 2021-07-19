@@ -231,11 +231,6 @@ class CivilizationInfo {
             resourceModifier *= 1f + getMatchingUniques("Quantity of strategic resources produced by the empire +[]%")
                 .map { it.params[0].toFloat() / 100f }.sum()
 
-            // Deprecated since 3.15
-                if (hasUnique("Quantity of strategic resources produced by the empire increased by 100%")) {
-                    resourceModifier *= 2f
-                }
-            //
         }
         return resourceModifier.toInt()
     }

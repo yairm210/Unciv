@@ -541,11 +541,6 @@ class CityStats {
         for (unique in cityInfo.civInfo.getMatchingUniques("-[]% food consumption by specialists"))
             foodEatenBySpecialists *= 1f - unique.params[0].toFloat() / 100f
 
-        // Deprecated since 3.15
-            if (cityInfo.civInfo.hasUnique("-50% food consumption by specialists"))
-                foodEatenBySpecialists *= 0.5f
-        //
-
         foodEaten -= 2f * cityInfo.population.getNumberOfSpecialists() - foodEatenBySpecialists
     }
 }

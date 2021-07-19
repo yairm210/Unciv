@@ -137,7 +137,7 @@ object BattleDamage {
                 }
             }
 
-            for (unique in attacker.getCivInfo().getMatchingUniques("+[]% attack strength to all [] units for [] turns")) {
+            for (unique in attacker.getCivInfo().getMatchingUniques("[]% attack strength to all [] units for [] turns")) {
                 if (attacker.matchesCategory(unique.params[1])) {
                     modifiers.add("Temporary Bonus", unique.params[0].toInt())
                 }
@@ -231,14 +231,6 @@ object BattleDamage {
             if (tile.matchesFilter(filter, unit.getCivInfo()))
                 modifiers.add(filter, unique.params[0].toInt())
         }
-        
-        // Deprecated since 3.15
-            for (unique in unit.getCivInfo().getMatchingUniques("+[]% combat bonus for units fighting in []")) {
-                val filter = unique.params[1]
-                if (tile.matchesFilter(filter, unit.getCivInfo()))
-                    modifiers.add(filter, unique.params[0].toInt())
-            }
-        //
 
         for (unique in unit.getCivInfo()
             .getMatchingUniques("+[]% Strength if within [] tiles of a []")) {
