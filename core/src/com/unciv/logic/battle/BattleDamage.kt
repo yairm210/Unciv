@@ -74,8 +74,15 @@ object BattleDamage {
             val nearbyCivUnits = combatant.unit.getTile().getTilesInDistance(2)
                 .flatMap { it.getUnits() }.filter { it.civInfo == combatant.unit.civInfo }
             if (nearbyCivUnits.any { it.hasUnique("Bonus for units in 2 tile radius 15%") }) {
-                val greatGeneralModifier =
+                var greatGeneralModifier =
                     if (combatant.unit.civInfo.hasUnique("Great General provides double combat bonus")) 30 else 15
+
+                // Hakkapeliitta unique
+                for (unique in combatant.unit.getMatchingUniques("+[]% Combat Bonus when stacked with Great General")) {
+                    if (combatant.unit.getTile().getUnits().any { it.hasUnique("Bonus for units in 2 tile radius 15%") })
+                        greatGeneralModifier += unique.params[0].toInt()
+                }
+
                 modifiers["Great General"] = greatGeneralModifier
             }
 
