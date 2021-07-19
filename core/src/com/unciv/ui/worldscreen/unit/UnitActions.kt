@@ -627,12 +627,8 @@ object UnitActions {
         if (recipient.isCityState()) {
             if (unit.isGreatPerson()) {
                 // Do we have a unique ability to gift GPs?
-                var canGiftGPs = false
-                for (unique in unit.civInfo.getMatchingUniques("Gain [] Influence with a [] gift to a City-State")) {
-                    if(unique.params[1] == "Great Person")
-                        canGiftGPs = true
-                }
-                if (!canGiftGPs) return null
+                if (unit.civInfo.getMatchingUniques("Gain [] Influence with a [] gift to a City-State").none {
+                    it.params[1] == "Great Person" } )  return null
             }
             else if (!unit.baseUnit().matchesFilter("Military")) return null
         }

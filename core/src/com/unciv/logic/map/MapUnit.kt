@@ -635,12 +635,16 @@ class MapUnit {
         due = true
 
         // Hakkapeliitta movement boost
-        if(getMatchingUniques("Great Person - []").any { it.params[0] == "War" }) {
-            for(unit in getTile().getUnits()) {
-                if (unit.hasUnique("Transfer Movement to General")) {
-                    // Get the max movement for the units, in case the unit boosting is actually slower
+        if (getTile().getUnits().count() > 1)
+        {
+            // For every double-stacked tile, check if our cohabitant can boost our speed
+            for (unit in getTile().getUnits())
+            {
+                if (unit == this)
+                    continue
+
+                if (unit.getMatchingUniques("Transfer Movement to []").any { matchesFilter(it.params[0]) } )
                     currentMovement = maxOf(getMaxMovement().toFloat(), unit.getMaxMovement().toFloat())
-                }
             }
         }
 

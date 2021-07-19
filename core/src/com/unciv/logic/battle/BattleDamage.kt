@@ -82,9 +82,7 @@ object BattleDamage {
                 // Hakkapeliitta unique
                 for (unique in combatant.unit.getMatchingUniques("[]% Strength when stacked with []")) {
                     var stackedUnitsBonus = 0
-                    if (unique.params[1] == "Great General" && combatant.unit.getTile().getUnits().any { it.getMatchingUniques("Great Person - []").any { it.params[0] == "War" } })
-                        stackedUnitsBonus += unique.params[0].toInt()
-                    else if (combatant.unit.getTile().getUnits().any { it.matchesFilter(unique.params[1]) } )
+                    if (combatant.unit.getTile().getUnits().any { it.matchesFilter(unique.params[1]) } )
                         stackedUnitsBonus += unique.params[0].toInt()
 
                     if (stackedUnitsBonus > 0)
