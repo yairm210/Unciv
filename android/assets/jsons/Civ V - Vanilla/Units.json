@@ -883,6 +883,23 @@
 		"attackSound": "horse"
 	},
 	{
+		"name": "Hakkapeliitta",
+		"unitType": "Mounted",
+		"replaces": "Lancer",
+		"uniqueTo": "Sweden",
+		"movement": 4,
+		"strength": 25,
+		"cost": 185,
+		"requiredTech": "Metallurgy",
+		"requiredResource": "Horses",
+		"uniques": ["Can move after attacking","No defensive terrain bonus","-[33]% Strength vs [City]",
+			"Transfer Movement to General", "+[15]% Combat Bonus when stacked with Great General"],
+		"promotions": ["Formation I"],
+		"upgradesTo": "Anti-Tank Gun",
+		"obsoleteTech": "Combined Arms",
+		"attackSound": "horse"
+	},
+	{
 		"name": "Cannon",
 		"unitType": "Siege",
 		"movement": 2,
@@ -934,6 +951,20 @@
 		"obsoleteTech": "Replaceable Parts",
 		"upgradesTo": "Great War Infantry",
 		"uniques": ["+[25]% Strength in [Snow]", "+[25]% Strength in [Tundra]", "+[25]% Strength in [Hill]", "Double movement in Snow, Tundra and Hills"],
+		"attackSound": "shot"
+	},
+	{
+		"name": "Carolean",
+		"unitType": "Melee",
+		"replaces": "Rifleman",
+		"uniqueTo": "Sweden",
+		"movement": 2,
+		"strength": 34,
+		"cost": 225,
+		"requiredTech": "Rifling",
+		"obsoleteTech": "Replaceable Parts",
+		"upgradesTo": "Great War Infantry",
+		"promotions": ["March"],
 		"attackSound": "shot"
 	},
 	{
