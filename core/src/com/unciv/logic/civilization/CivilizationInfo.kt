@@ -27,9 +27,9 @@ import com.unciv.ui.victoryscreen.RankingType
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
-import kotlin.math.roundToInt
 import kotlin.math.min
 import kotlin.math.pow
+import kotlin.math.roundToInt
 
 class CivilizationInfo {
 
@@ -251,7 +251,7 @@ class CivilizationInfo {
     // Does not return local uniques, only global ones.
     fun getMatchingUniques(uniqueTemplate: String, cityToIgnore: CityInfo? = null): Sequence<Unique> {
         return nation.uniqueObjects.asSequence().filter { it.placeholderText == uniqueTemplate } +
-                cities.filter { it != cityToIgnore}.flatMap {
+                cities.asSequence().filter { it != cityToIgnore}.flatMap {
                     city -> city.getMatchingUniquesWithNonLocalEffects(uniqueTemplate)
                 } +
                 policies.policyUniques.getUniques(uniqueTemplate) +
