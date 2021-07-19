@@ -6,8 +6,8 @@ import com.unciv.logic.map.RoadStatus
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.ruleset.Unique
 import com.unciv.models.ruleset.UniqueTriggerActivation
-import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.ruleset.tech.Technology
+import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.ui.utils.withItem
 import java.util.*
 import kotlin.collections.ArrayList
@@ -182,11 +182,7 @@ class TechManager {
     private fun scienceFromResearchAgreements(): Int {
         // https://forums.civfanatics.com/resources/research-agreements-bnw.25568/
         var researchAgreementModifier = 0.5f
-        // Deprecated since 3.15.0
-            for (unique in civInfo.getMatchingUniques("Science gained from research agreements +50%"))
-                researchAgreementModifier += 0.25f
-        //
-        for (unique in civInfo.getMatchingUniques("Science gained from research agreements +[]%")) {
+        for (unique in civInfo.getMatchingUniques("Science gained from research agreements []%")) {
             researchAgreementModifier += unique.params[0].toFloat() / 200f
         }
         return (scienceFromResearchAgreements / 3 * researchAgreementModifier).toInt()

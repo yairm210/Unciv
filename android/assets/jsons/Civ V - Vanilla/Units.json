@@ -270,7 +270,7 @@
 		"requiredTech": "Bronze Working",
 		"obsoleteTech": "Civil Service",
 		"upgradesTo": "Pikeman",
-		"uniques": ["+[50]% Strength vs [Mounted]","+[10] HP when healing"],
+		"uniques": ["+[50]% Strength vs [Mounted]","[+10] HP when healing"],
 		"attackSound": "metalhit"
 	},
 	{

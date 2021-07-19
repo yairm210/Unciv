@@ -56,7 +56,7 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
     private fun updateLeftSideTable() {
         leftSideTable.clear()
         for (civ in viewingCiv.gameInfo.civilizations
-                .filterNot { it.isDefeated() || it == viewingCiv || it.isBarbarian() || it.isSpectator() || viewingCiv.knows(it) }) {
+                .filterNot { it.isDefeated() || it == viewingCiv || it.isBarbarian() || it.isSpectator() || !viewingCiv.knows(it) }) {
 
             val civIndicator = ImageGetter.getNationIndicator(civ.nation, 100f)
 
@@ -430,6 +430,7 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
                 UnacceptableDemands -> "Your arrogant demands are in bad taste"
                 UsedNuclearWeapons -> "Your use of nuclear weapons is disgusting!"
                 StealingTerritory -> "You have stolen our lands!"
+                GaveUsUnits -> "You gave us units!"
             }
             text = text.tr() + " "
             if (modifier.value > 0) text += "+"

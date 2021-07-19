@@ -53,7 +53,7 @@ object BattleDamage {
 
             val adjacentUnits = combatant.getTile().neighbors.flatMap { it.getUnits() }
             
-            for (unique in civInfo.getMatchingUniques("+[]% Strength for [] units which have another [] unit in an adjacent tile")) {
+            for (unique in civInfo.getMatchingUniques("[]% Strength for [] units which have another [] unit in an adjacent tile")) {
                 if (combatant.matchesCategory(unique.params[1])
                     && adjacentUnits.any { it.civInfo == civInfo && it.matchesFilter(unique.params[2]) } 
                 ) {
@@ -86,15 +86,6 @@ object BattleDamage {
                     .isCityState() && civInfo.hasUnique("+30% Strength when fighting City-State units and cities")
             )
                 modifiers["vs [City-States]"] = 30
-            
-            // Deprecated since 3.14.17
-                if (civInfo.hasUnique("+15% combat strength for melee units which have another military unit in an adjacent tile")
-                    && combatant.isMelee()
-                    && combatant.getTile().neighbors.flatMap { it.getUnits() }
-                        .any { it.civInfo == civInfo && !it.type.isCivilian() && !it.type.isAirUnit() && !it.type.isMissile() }
-                )
-                    modifiers["Discipline"] = 15
-            //
         }
 
         if (enemy.getCivInfo().isBarbarian()) {
