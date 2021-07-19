@@ -634,6 +634,16 @@ class MapUnit {
         attacksThisTurn = 0
         due = true
 
+        // Hakkapeliitta movement boost
+        if(hasUnique("Bonus for units in 2 tile radius 15%")) {
+            for(unit in getTile().getUnits()) {
+                if (unit.hasUnique("Transfer Movement to General")) {
+                    // Get the max movement for the units, in case the unit boosting is actually slower
+                    currentMovement = maxOf(getMaxMovement().toFloat(), unit.getMaxMovement().toFloat())
+                }
+            }
+        }
+
         // Wake sleeping units if there's an enemy in vision range:
         // Military units always but civilians only if not protected.
         if (isSleeping() && (!type.isCivilian() || currentTile.militaryUnit == null) &&
