@@ -151,13 +151,13 @@ class ReligionManager {
         foundingCityId = prophet.getTile().getCity()!!.id
     }
 
-    fun foundReligion(iconName: String, name: String, founderBelief: String, followerBelief: String) {
+    fun foundReligion(iconName: String, name: String, founderBelief: String, followerBeliefs: List<String>) {
         val newReligion = Religion(name, civInfo.gameInfo, civInfo.civName)
         newReligion.iconName = iconName
         if (religion != null) {
             newReligion.followerBeliefs.addAll(religion!!.followerBeliefs)
         }
-        newReligion.followerBeliefs.add(followerBelief)
+        newReligion.followerBeliefs.addAll(followerBeliefs)
         newReligion.founderBeliefs.add(founderBelief)
         newReligion.holyCityId = foundingCityId
         religion = newReligion

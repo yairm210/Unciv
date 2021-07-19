@@ -67,6 +67,7 @@ object UnitActions {
         addSpreadReligionActions(unit, actionList, tile)
         actionList += getImprovementConstructionActions(unit, tile)
         addDisbandAction(actionList, unit, worldScreen)
+        addGiftAction(unit, actionList, tile)
 
         return actionList
     }
@@ -113,17 +114,20 @@ object UnitActions {
         val tile = unit.currentTile
         if (!tile.isWater || !unit.hasUnique("May create improvements on water resources") || tile.resource == null) return null
 
-        val improvement = tile.getTileResource().improvement
+        val improvementName = tile.getTileResource().improvement ?: return null
+        val improvement = tile.ruleset.tileImprovements[improvementName] ?: return null
+        if (!tile.canBuildImprovement(improvement, unit.civInfo)) return null
 
-        if (tile.improvement == null && tile.ruleset.tileImprovements.containsKey(improvement)
-                && tile.ruleset.tileImprovements[improvement]!!.techRequired.let { it == null || unit.civInfo.tech.isResearched(it) })
-            return UnitAction(UnitActionType.Create, "Create [$improvement]",
-                    action = {
-                        tile.improvement = improvement
-                        unit.destroy()
-                    }.takeIf { unit.currentMovement > 0 })
-
-        return null
+        return UnitAction(UnitActionType.Create, "Create [$improvementName]",
+            action = {
+                tile.improvement = improvementName
+                val city = tile.getCity()
+                if (city != null) {
+                    city.cityStats.update()
+                    city.civInfo.updateDetailedCivResources()
+                }
+                unit.destroy()
+            }.takeIf { unit.currentMovement > 0 })
     }
     
     // This entire function is deprecated since 3.15.4, as the 'can construct roads' unique is deprecated
@@ -490,10 +494,8 @@ object UnitActions {
                         city.cityStats.update()
                         city.civInfo.updateDetailedCivResources()
                     }
-                    // Why is this here? How do we now the unit is actually a great person?
-                    // What if in some mod some unit can construct a certain type of improvement using the "Can construct []" unique?
-                    // That unit does not need to be a great person at all, and yet it would trigger mausoleum of halicarnassus (?) here.
-                    addGoldPerGreatPersonUsage(unit.civInfo)
+                    if (unit.hasUnique("Great Person - []"))
+                        addGoldPerGreatPersonUsage(unit.civInfo)
                     unit.destroy()
                 }.takeIf {
                     unit.currentMovement > 0f && tile.canBuildImprovement(improvement, unit.civInfo)
@@ -610,5 +612,43 @@ object UnitActions {
         val tileOwner = tile.getOwner()
         // Can't pillage friendly tiles, just like you can't attack them - it's an 'act of war' thing
         return tileOwner == null || tileOwner == unit.civInfo || unit.civInfo.isAtWarWith(tileOwner)
+    }
+
+    private fun addGiftAction(unit: MapUnit, actionList: ArrayList<UnitAction>, tile: TileInfo) {
+        val getGiftAction = getGiftAction(unit, tile)
+        if (getGiftAction != null) actionList += getGiftAction
+    }
+
+    fun getGiftAction(unit: MapUnit, tile: TileInfo): UnitAction? {
+        val recipient = tile.getOwner()
+        // We need to be in another civs territory.
+        if (recipient == null || recipient.isCurrentPlayer()) return null
+
+        // City States only take miliary units (and GPs for certain civs)
+        if (recipient.isCityState()) {
+            if (unit.isGreatPerson()) return null    // Unless Sweden
+            else if (!unit.baseUnit().matchesFilter("Military")) return null
+        }
+        // If gifting to major civ they need to be friendly
+        else if (!tile.isFriendlyTerritory(unit.civInfo)) return null
+
+        if (unit.currentMovement <= 0)
+            return UnitAction(UnitActionType.GiftUnit, uncivSound = UncivSound.Silent, action = null)
+
+        val giftAction = {
+            if (recipient.isCityState()) {
+                if (unit.isGreatPerson())
+                    recipient.getDiplomacyManager(unit.civInfo).influence += 90
+                else
+                    recipient.getDiplomacyManager(unit.civInfo).influence += 5
+                recipient.updateAllyCivForCityState()
+            }
+            else recipient.getDiplomacyManager(unit.civInfo).addModifier(DiplomaticModifiers.GaveUsUnits, 5f)
+
+            unit.gift(recipient)
+            // UncivGame.Current.worldScreen.shouldUpdate = true
+        }
+
+        return UnitAction(UnitActionType.GiftUnit, uncivSound = UncivSound.Silent, action = giftAction)
     }
 }

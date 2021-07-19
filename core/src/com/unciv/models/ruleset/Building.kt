@@ -4,6 +4,7 @@ import com.unciv.logic.city.CityConstructions
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.city.IConstruction
 import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.GreatPersonManager
 import com.unciv.models.Counter
 import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.stats.NamedStats
@@ -11,13 +12,15 @@ import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.fillPlaceholders
 import com.unciv.models.translations.tr
+import com.unciv.ui.civilopedia.FormattedLine
+import com.unciv.ui.civilopedia.ICivilopediaText
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 import kotlin.math.pow
 
 
-class Building : NamedStats(), IConstruction {
+class Building : NamedStats(), IConstruction, ICivilopediaText {
 
     var requiredTech: String? = null
 
@@ -65,6 +68,8 @@ class Building : NamedStats(), IConstruction {
     var replacementTextForUniques = ""
     val uniqueObjects: List<Unique> by lazy { uniques.map { Unique(it) } }
 
+    override var civilopediaText = listOf<FormattedLine>()
+
     fun getShortDescription(ruleset: Ruleset): String { // should fit in one line
         val infoList = mutableListOf<String>()
         val str = getStats(null).toString()
@@ -98,19 +103,12 @@ class Building : NamedStats(), IConstruction {
         return finalUniques
     }
 
-    fun getDescription(forBuildingPickerScreen: Boolean, cityInfo: CityInfo?, ruleset: Ruleset): String {
+    fun getDescription(cityInfo: CityInfo?, ruleset: Ruleset): String {
         val stats = getStats(cityInfo)
         val stringBuilder = StringBuilder()
         if (uniqueTo != null) stringBuilder.appendLine("Unique to [$uniqueTo], replaces [$replaces]".tr())
-        if (!forBuildingPickerScreen) stringBuilder.appendLine("{Cost}: $cost".tr())
         if (isWonder) stringBuilder.appendLine("Wonder".tr())
         if (isNationalWonder) stringBuilder.appendLine("National Wonder".tr())
-        if (!forBuildingPickerScreen && requiredTech != null)
-            stringBuilder.appendLine("Required tech: [$requiredTech]".tr())
-        if (!forBuildingPickerScreen && requiredBuilding != null)
-            stringBuilder.appendLine("Requires [$requiredBuilding] to be built in the city".tr())
-        if (!forBuildingPickerScreen && requiredBuildingInAllCities != null)
-            stringBuilder.appendLine("Requires [$requiredBuildingInAllCities] to be built in all cities".tr())
         for ((resource, amount) in getResourceRequirements()) {
             if (amount == 1) stringBuilder.appendLine("Consumes 1 [$resource]".tr()) // For now, to keep the existing translations
             else stringBuilder.appendLine("Consumes [$amount] [$resource]".tr())
@@ -196,6 +194,131 @@ class Building : NamedStats(), IConstruction {
 
         return stats
     }
+
+    fun makeLink() = if (isWonder || isNationalWonder) "Wonder/$name" else "Building/$name"
+    override fun getCivilopediaTextHeader() = FormattedLine(name, header=2, icon=makeLink())
+    override fun hasCivilopediaTextLines() = true
+    override fun replacesCivilopediaDescription() = true
+    override fun getCivilopediaTextLines(ruleset: Ruleset): List<FormattedLine> {
+        fun Float.formatSignedInt() = (if (this > 0f) "+" else "") + this.toInt().toString()
+        
+        val textList = ArrayList<FormattedLine>()
+
+        if (isWonder || isNationalWonder) {
+            textList += FormattedLine( if (isWonder) "Wonder" else "National Wonder", color="#CA4", header=3 )
+        }
+
+        if (uniqueTo != null) {
+            textList += FormattedLine()
+            textList += FormattedLine("Unique to [$uniqueTo]", link="Nation/$uniqueTo")
+            if (replaces != null) {
+                val replacesBuilding = ruleset.buildings[replaces]
+                textList += FormattedLine("Replaces [$replaces]", link=replacesBuilding?.makeLink() ?: "", indent=1)
+            }
+        }
+
+        if (cost > 0) {
+            textList += FormattedLine()
+            textList += FormattedLine("{Cost}: $cost")
+        }
+
+        if (requiredTech != null || requiredBuilding != null || requiredBuildingInAllCities != null)
+            textList += FormattedLine()
+        if (requiredTech != null)
+            textList += FormattedLine("Required tech: [$requiredTech]",
+                link="Technology/$requiredTech")
+        if (requiredBuilding != null)
+            textList += FormattedLine("Requires [$requiredBuilding] to be built in the city",
+                link="Building/$requiredBuilding")
+        if (requiredBuildingInAllCities != null)
+            textList += FormattedLine("Requires [$requiredBuildingInAllCities] to be built in all cities",
+                link="Building/$requiredBuildingInAllCities")
+
+        val resourceRequirements = getResourceRequirements()
+        if (resourceRequirements.isNotEmpty()) {
+            textList += FormattedLine()
+            for ((resource, amount) in resourceRequirements) {
+                textList += FormattedLine(
+                    // the 1 variant should deprecate some time
+                    if (amount == 1) "Consumes 1 [$resource]" else "Consumes [$amount] [$resource]",
+                    link="Resources/$resource", color="#F42" )
+            }
+        }
+
+        if (providesFreeBuilding != null) {
+            textList += FormattedLine()
+            textList += FormattedLine("Provides a free [$providesFreeBuilding] in the city",
+                link="Building/$providesFreeBuilding")
+        }
+
+        val stats = this.clone()
+        val percentStats = getStatPercentageBonuses(null)
+        val specialists = newSpecialists()
+        if (uniques.isNotEmpty() || !stats.isEmpty() || !percentStats.isEmpty() || this.greatPersonPoints != null || specialists.isNotEmpty())
+            textList += FormattedLine()
+
+        if (uniques.isNotEmpty()) {
+            if (replacementTextForUniques.isNotEmpty())
+                textList += FormattedLine(replacementTextForUniques)
+            else
+                for (unique in getUniquesStrings()) textList += FormattedLine(unique)
+        }
+
+        if (!stats.isEmpty()) {
+            textList += FormattedLine(stats.toString())
+        }
+
+        if (!percentStats.isEmpty()) {
+            for ( (key, value) in percentStats.toHashMap()) {
+                if (value == 0f) continue
+                textList += FormattedLine(value.formatSignedInt() + "% {$key}")
+            }
+        }
+
+        if (greatPersonPoints != null) {
+            for ( (key, value) in greatPersonPoints!!.toHashMap()) {
+                if (value == 0f) continue
+                val gppName = GreatPersonManager.statToGreatPersonMapping[key]
+                    ?: continue
+                textList += FormattedLine(value.formatSignedInt() + " " + "[$gppName] points".tr(),
+                    link = "Unit/$gppName")
+            }
+        }
+
+        if (specialists.isNotEmpty()) {
+            for ((specialistName, amount) in specialists)
+                textList += FormattedLine("+$amount " + "[$specialistName] slots".tr())
+        }
+
+        if (requiredNearbyImprovedResources != null) {
+            textList += FormattedLine()
+            textList += FormattedLine("Requires at least one of the following resources worked near the city:")
+            requiredNearbyImprovedResources!!.forEach {
+                textList += FormattedLine(it, indent = 1, link = "Resource/$it")
+            }
+        }
+
+        if (cityStrength != 0 || cityHealth != 0 || xpForNewUnits != 0 || maintenance != 0) textList += FormattedLine()
+        if (cityStrength != 0) textList +=  FormattedLine("{City strength} +$cityStrength")
+        if (cityHealth != 0) textList +=  FormattedLine("{City health} +$cityHealth")
+        if (xpForNewUnits != 0) textList +=  FormattedLine("+$xpForNewUnits {XP for new units}")
+        if (maintenance != 0) textList +=  FormattedLine("{Maintenance cost}: $maintenance {Gold}")
+
+        val seeAlso = ArrayList<FormattedLine>()
+        for ((other, building) in ruleset.buildings) {
+            if (building.replaces == name || building.providesFreeBuilding == name || uniques.contains("[$name]") ) {
+                seeAlso += FormattedLine(other, link=building.makeLink(), indent=1)
+            }
+        }
+        if (seeAlso.isNotEmpty()) {
+            textList += FormattedLine()
+            textList += FormattedLine("{See also}:")
+            textList += seeAlso
+        }
+
+        return textList
+    }
+
 
     override fun canBePurchased(): Boolean {
         return !isWonder && !isNationalWonder && "Cannot be purchased" !in uniques
@@ -399,7 +522,7 @@ class Building : NamedStats(), IConstruction {
         if (!civInfo.gameInfo.gameParameters.victoryTypes.contains(VictoryType.Scientific)
                 && "Enables construction of Spaceship parts" in uniques)
             return "Can't construct spaceship parts if scientific victory is not enabled!"
-        
+
         return ""
     }
 
