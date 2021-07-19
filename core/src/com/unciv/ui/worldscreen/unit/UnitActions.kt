@@ -645,7 +645,7 @@ object UnitActions {
             else recipient.getDiplomacyManager(unit.civInfo).addModifier(DiplomaticModifiers.GaveUsUnits, 5f)
 
             unit.gift(recipient)
-            // UncivGame.Current.worldScreen.shouldUpdate = true
+            UncivGame.Current.worldScreen.shouldUpdate = true
         }
 
         return UnitAction(UnitActionType.GiftUnit, uncivSound = UncivSound.Silent, action = giftAction)
