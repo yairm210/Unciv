@@ -10,11 +10,13 @@ class GreatPersonManager {
     var greatGeneralPoints = 0
     var freeGreatPeople = 0
 
-    val statToGreatPersonMapping = HashMap<Stat, String>().apply {
-        put(Stat.Science, "Great Scientist")
-        put(Stat.Production, "Great Engineer")
-        put(Stat.Gold, "Great Merchant")
-        put(Stat.Culture, "Great Artist")
+    companion object {
+        val statToGreatPersonMapping = hashMapOf<Stat, String>(
+            Stat.Science to "Great Scientist",
+            Stat.Production to "Great Scientist",
+            Stat.Gold to "Great Scientist",
+            Stat.Culture to "Great Scientist",
+        )
     }
 
     fun clone(): GreatPersonManager {

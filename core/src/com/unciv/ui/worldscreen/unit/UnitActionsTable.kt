@@ -12,7 +12,7 @@ import com.unciv.models.translations.equalsPlaceholderText
 import com.unciv.models.translations.getPlaceholderParameters
 import com.unciv.ui.utils.*
 import com.unciv.ui.utils.KeyPressDispatcher.Companion.keyboardAvailable
-import com.unciv.ui.utils.StaticTooltip.Companion.addStaticTip
+import com.unciv.ui.utils.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.worldscreen.WorldScreen
 import kotlin.concurrent.thread
 
@@ -61,6 +61,7 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table() {
                 "Stop exploration" -> return UnitIconAndKey(ImageGetter.getImage("OtherIcons/Stop"), 'x')
                 "Pillage" -> return UnitIconAndKey(ImageGetter.getImage("OtherIcons/Pillage"), 'p')
                 "Disband unit" -> return UnitIconAndKey(ImageGetter.getImage("OtherIcons/DisbandUnit"))
+                "Gift unit" -> return UnitIconAndKey(ImageGetter.getImage("OtherIcons/Present"))
                 else -> return UnitIconAndKey(ImageGetter.getImage("OtherIcons/Star"))
             }
         }
@@ -86,7 +87,7 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table() {
         actionButton.add(iconAndKey.Icon).size(20f).pad(5f)
         val fontColor = if (unitAction.isCurrentAction) Color.YELLOW else Color.WHITE
         actionButton.add(unitAction.title.toLabel(fontColor)).pad(5f)
-        actionButton.addStaticTip(iconAndKey.key)
+        actionButton.addTooltip(iconAndKey.key)
         actionButton.pack()
         val action = {
             unitAction.action?.invoke()

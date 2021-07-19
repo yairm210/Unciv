@@ -430,6 +430,7 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
                 UnacceptableDemands -> "Your arrogant demands are in bad taste"
                 UsedNuclearWeapons -> "Your use of nuclear weapons is disgusting!"
                 StealingTerritory -> "You have stolen our lands!"
+                GaveUsUnits -> "You gave us units!"
             }
             text = text.tr() + " "
             if (modifier.value > 0) text += "+"
