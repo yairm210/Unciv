@@ -40,6 +40,7 @@ object UnitActions {
 
         addSleepActions(actionList, unit, false)
         addFortifyActions(actionList, unit, false)
+        
         addPromoteAction(unit, actionList)
         addUnitUpgradeAction(unit, actionList)
         addPillageAction(unit, actionList, worldScreen)

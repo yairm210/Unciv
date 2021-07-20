@@ -38,5 +38,5 @@ enum class UnitActionType(val value: String) {
     FoundReligion("Found a Religion"),
     DisbandUnit("Disband unit"),
     GiftUnit("Gift unit"),
-    ShowAdditionalActions("Show more actions"),
+    ShowAdditionalActions("Show more"),
 }
