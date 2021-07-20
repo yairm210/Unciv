@@ -607,7 +607,11 @@ object UnitActions {
 
         // City States only take miliary units (and GPs for certain civs)
         if (recipient.isCityState()) {
-            if (unit.isGreatPerson()) return null    // Unless Sweden
+            if (unit.isGreatPerson()) {
+                // Do we have a unique ability to gift GPs?
+                if (unit.civInfo.getMatchingUniques("Gain [] Influence with a [] gift to a City-State").none {
+                    it.params[1] == "Great Person" } )  return null
+            }
             else if (!unit.baseUnit().matchesFilter("Military")) return null
         }
         // If gifting to major civ they need to be friendly
@@ -618,16 +622,24 @@ object UnitActions {
 
         val giftAction = {
             if (recipient.isCityState()) {
-                if (unit.isGreatPerson())
-                    recipient.getDiplomacyManager(unit.civInfo).influence += 90
-                else
-                    recipient.getDiplomacyManager(unit.civInfo).influence += 5
+                for (unique in unit.civInfo.getMatchingUniques("Gain [] Influence with a [] gift to a City-State")) {
+                    if((unit.isGreatPerson() && unique.params[1] == "Great Person")
+                        || unit.matchesFilter(unique.params[1])) {
+                        recipient.getDiplomacyManager(unit.civInfo).influence += unique.params[0].toInt() - 5
+                    }
+                }
+
+                recipient.getDiplomacyManager(unit.civInfo).influence += 5
+
                 recipient.updateAllyCivForCityState()
             }
             else recipient.getDiplomacyManager(unit.civInfo).addModifier(DiplomaticModifiers.GaveUsUnits, 5f)
 
-            unit.gift(recipient)
-            // UncivGame.Current.worldScreen.shouldUpdate = true
+            if(recipient.isCityState() && unit.isGreatPerson())
+                unit.destroy()  // City states dont get GPs
+            else
+                unit.gift(recipient)
+            UncivGame.Current.worldScreen.shouldUpdate = true
         }
 
         return UnitAction(UnitActionType.GiftUnit, uncivSound = UncivSound.Silent, action = giftAction)
