@@ -102,6 +102,8 @@ class MapUnit {
     var health: Int = 100
 
     var action: String? = null // work, automation, fortifying, I dunno what.
+    @Transient
+    var showAdditionalActions: Boolean = false
 
     var attacksThisTurn = 0
     var promotions = UnitPromotions()
@@ -251,8 +253,12 @@ class MapUnit {
     }
 
     fun isFortified() = action?.startsWith("Fortify") == true
+    
+    fun isFortifyingUntilHealed() = isFortified() && action?.endsWith("until healed") == true
 
     fun isSleeping() = action?.startsWith("Sleep") == true
+    
+    fun isSleepingUntilHealed() = isSleeping() && action?.endsWith("until healed") == true
 
     fun isMoving() = action?.startsWith("moveTo") == true
 
@@ -1012,6 +1018,11 @@ class MapUnit {
         if (abilityUsedCount["Religion Spread"] == null) return "" // That is, either the key doesn't exist, or it does exist and the value is null.
         return "${maxSpreads - abilityUsedCount["Religion Spread"]!!}/${maxSpreads}"
     }
-    
+
+    fun actionsOnDeselect() {
+        showAdditionalActions = false
+        if (action == Constants.unitActionParadrop) action = null
+    }
+
     //endregion
 }

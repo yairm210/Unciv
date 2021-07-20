@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.ui.Button
 import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.map.MapUnit
@@ -44,6 +45,7 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table() {
                 "Sleep until healed" -> return UnitIconAndKey(ImageGetter.getImage("OtherIcons/Sleep"), 'h')
                 "Fortify" -> return UnitIconAndKey(ImageGetter.getImage("OtherIcons/Shield").apply { color = Color.BLACK }, 'f')
                 "Fortify until healed" -> return UnitIconAndKey(ImageGetter.getImage("OtherIcons/Shield").apply { color = Color.BLACK }, 'h')
+                // Move unit is not actually used anywhere
                 "Move unit" -> return UnitIconAndKey(ImageGetter.getStatIcon("Movement"))
                 "Stop movement" -> return UnitIconAndKey(ImageGetter.getStatIcon("Movement").apply { color = Color.RED }, '.')
                 "Swap units" -> return UnitIconAndKey(ImageGetter.getImage("OtherIcons/Swap"), 'y')
@@ -64,7 +66,13 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table() {
                 "Pillage" -> return UnitIconAndKey(ImageGetter.getImage("OtherIcons/Pillage"), 'p')
                 "Disband unit" -> return UnitIconAndKey(ImageGetter.getImage("OtherIcons/DisbandUnit"))
                 "Gift unit" -> return UnitIconAndKey(ImageGetter.getImage("OtherIcons/Present"))
-                else -> return UnitIconAndKey(ImageGetter.getImage("OtherIcons/Star"))
+                "Show More" -> return UnitIconAndKey(ImageGetter.getImage("OtherIcons/ArrowRight"), 'm')
+                "Go Back" -> return UnitIconAndKey(ImageGetter.getImage("OtherIcons/ArrowLeft"))
+                else -> {
+                    // If the unit has been fortifying for some turns
+                    if (unitAction.startsWith("Fortification")) return UnitIconAndKey(ImageGetter.getImage("OtherIcons/Shield"))
+                    return UnitIconAndKey(ImageGetter.getImage("OtherIcons/Star"))
+                }
             }
         }
     }
