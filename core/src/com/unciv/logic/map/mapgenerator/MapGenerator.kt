@@ -263,7 +263,7 @@ class MapGenerator(val ruleset: Ruleset) {
 
                 if (adjacentHills <= 1 && adjacentMountains == 0 && randomness.RNG.nextInt(until = 2) == 0) {
                     tile.terrainFeatures.add(Constants.lowering)
-                } else if (adjacentHills > 4 && adjacentMountains == 0 && randomness.RNG.nextInt(until = 2) == 0) {
+                } else if (adjacentHills > 3 && adjacentMountains == 0 && randomness.RNG.nextInt(until = 2) == 0) {
                     tile.terrainFeatures.add(Constants.lowering)
                 } else if (adjacentHills + adjacentMountains in 2..3 && randomness.RNG.nextInt(until = 2) == 0) {
                     tile.terrainFeatures.add(Constants.rising)
@@ -272,13 +272,13 @@ class MapGenerator(val ruleset: Ruleset) {
             }
 
             for (tile in tileMap.values.filter { !it.isWater && it.baseTerrain != Constants.mountain }) {
-                if (tile.terrainFeatures.remove(Constants.rising) && totalHills <= targetHills * 1.1f) {
+                if (tile.terrainFeatures.remove(Constants.rising) && (totalHills <= targetHills || i == 1) ) {
                     if (!tile.isHill()) {
                         tile.terrainFeatures.add(Constants.hill)
                         totalHills++
                     }
                 }
-                if (tile.terrainFeatures.remove(Constants.lowering) && totalHills >= targetHills * 0.9f) {
+                if (tile.terrainFeatures.remove(Constants.lowering) && (totalHills >= targetHills * 0.9f || i == 1)) {
                     if (tile.isHill()) {
                         tile.terrainFeatures.remove(Constants.hill)
                         totalHills--
