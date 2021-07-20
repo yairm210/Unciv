@@ -260,6 +260,8 @@ For units, the UnitFilter is called. For Buildings, the following options are im
 
 "Influence of all other civilizations with all city-states degrades [amount]% faster"
 
+"Gain [amount] Influence with a [unitFilter] gift to a City-State"
+
 ### Other
 
 "Unhappiness from number of Cities doubled"
@@ -343,6 +345,8 @@ These last two uniques may seem like they only have a one-time effect. However, 
 "Cities are razed [] times as fast"
 
 "Retain [amount]% of the happiness from a luxury after the last copy has been traded away"
+
+"When declaring friendship, both parties gain a [amount]% boost to great people generation"
 
 ## Buildings-only
 
@@ -482,6 +486,8 @@ These last two uniques may seem like they only have a one-time effect. However, 
 
 "May Paradrop up to [amount] tiles from inside friendly territory"
 
+"Transfer Movement to [unitFilter]"
+
 ### Healing
 
 "Heal this unit by [amount] HP" - Only for promotions
@@ -519,6 +525,8 @@ These last two uniques may seem like they only have a one-time effect. However, 
 "Eliminates combat penalty for attacking from the sea"
 
 "[amount]% Strength for enemy [unitFilter] units in adjacent [tileFilter] tiles"
+
+"[amount]% Strength when stacked with [unitFilter]"
 
 ### Other
 
