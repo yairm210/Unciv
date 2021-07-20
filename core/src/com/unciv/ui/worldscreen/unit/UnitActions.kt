@@ -674,7 +674,7 @@ object UnitActions {
 
     private fun addToggleActionsAction(unit: MapUnit, actionList: ArrayList<UnitAction>, unitTable: UnitTable) {
         actionList += UnitAction(UnitActionType.ShowAdditionalActions,
-            title = if (unit.showAdditionalActions) "Go Back" else "Show More",
+            title = if (unit.showAdditionalActions) "Back" else "Show more",
             action = {
                 unit.showAdditionalActions = !unit.showAdditionalActions
                 unitTable.update()

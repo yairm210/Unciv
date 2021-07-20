@@ -66,8 +66,8 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table() {
                 "Pillage" -> return UnitIconAndKey(ImageGetter.getImage("OtherIcons/Pillage"), 'p')
                 "Disband unit" -> return UnitIconAndKey(ImageGetter.getImage("OtherIcons/DisbandUnit"))
                 "Gift unit" -> return UnitIconAndKey(ImageGetter.getImage("OtherIcons/Present"))
-                "Show More" -> return UnitIconAndKey(ImageGetter.getImage("OtherIcons/ArrowRight"), 'm')
-                "Go Back" -> return UnitIconAndKey(ImageGetter.getImage("OtherIcons/ArrowLeft"))
+                "Show more" -> return UnitIconAndKey(ImageGetter.getImage("OtherIcons/ArrowRight"), 'm')
+                "Back" -> return UnitIconAndKey(ImageGetter.getImage("OtherIcons/ArrowLeft"))
                 else -> {
                     // If the unit has been fortifying for some turns
                     if (unitAction.startsWith("Fortification")) return UnitIconAndKey(ImageGetter.getImage("OtherIcons/Shield"))
