@@ -8,10 +8,7 @@ import com.unciv.models.Counter
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.tile.TerrainType
-import kotlin.math.abs
-import kotlin.math.max
-import kotlin.math.pow
-import kotlin.math.sign
+import kotlin.math.*
 import kotlin.random.Random
 
 
@@ -45,6 +42,19 @@ class MapGenerator(val ruleset: Ruleset) {
 
         MapLandmassGenerator(ruleset, randomness).generateLand(map)
         raiseMountainsAndHills(map)
+
+        println("mountains before")
+        println(map.values.count { it.baseTerrain == Constants.mountain } )
+        cellularMountainRanges(map)
+        println("mountains after")
+        println(map.values.count { it.baseTerrain == Constants.mountain } )
+
+        println("hills before")
+        println(map.values.count { it.isHill() } )
+        cellularHills(map)
+        println("hills after")
+        println(map.values.count { it.isHill() } )
+
         applyHumidityAndTemperature(map)
         spawnLakesAndCoasts(map)
         spawnVegetation(map)
@@ -191,6 +201,90 @@ class MapGenerator(val ruleset: Ruleset) {
                 elevation <= 1.0 -> tile.baseTerrain = Constants.mountain
             }
             tile.setTerrainTransients()
+        }
+    }
+
+    private fun cellularMountainRanges(tileMap: TileMap) {
+        val targetMountains = tileMap.values.count { !it.isWater } / 20
+        println("Target mountains")
+        println(targetMountains)
+
+        for (i in 1..5) {
+            var totalMountains = tileMap.values.count { it.baseTerrain == Constants.mountain }
+
+            for (tile in tileMap.values.filter { !it.isWater }) {
+                val adjacentMountains =
+                    tile.neighbors.count { it.baseTerrain == Constants.mountain }
+
+                if (adjacentMountains == 0 && tile.baseTerrain == Constants.mountain) {
+                    if (randomness.RNG.nextInt(until = 4) == 0)
+                        tile.terrainFeatures.add(Constants.lowering)
+                } else if (adjacentMountains == 1) {
+                    if (randomness.RNG.nextInt(until = 10) == 0)
+                        tile.terrainFeatures.add(Constants.rising)
+                } else if (adjacentMountains == 3) {
+                    if (randomness.RNG.nextInt(until = 2) == 0)
+                        tile.terrainFeatures.add(Constants.lowering)
+                } else if (adjacentMountains > 3) {
+                    tile.terrainFeatures.add(Constants.lowering)
+                }
+            }
+
+            for (tile in tileMap.values.filter { !it.isWater }) {
+                if (tile.terrainFeatures.remove(Constants.rising) && totalMountains < targetMountains) {
+                    tile.terrainFeatures.remove(Constants.hill)
+                    tile.baseTerrain = Constants.mountain
+                    totalMountains++
+                }
+                if (tile.terrainFeatures.remove(Constants.lowering)) {
+                    if (tile.baseTerrain == Constants.mountain)
+                        totalMountains--
+                    tile.baseTerrain = Constants.grassland
+                    if (!tile.terrainFeatures.contains(Constants.hill))
+                        tile.terrainFeatures.add(Constants.hill)
+                }
+            }
+        }
+    }
+
+    private fun cellularHills(tileMap: TileMap) {
+        val targetHills = tileMap.values.count { it.isHill() }
+        println("Target hills")
+        println(targetHills)
+
+        for (i in 1..5) {
+            var totalHills = tileMap.values.count { it.isHill() }
+
+            for (tile in tileMap.values.filter { !it.isWater && it.baseTerrain != Constants.mountain }) {
+                val adjacentMountains =
+                    tile.neighbors.count { it.baseTerrain == Constants.mountain }
+                val adjacentHills =
+                    tile.neighbors.count { it.isHill() }
+
+                if (adjacentHills <= 1 && adjacentMountains == 0 && randomness.RNG.nextInt(until = 2) == 0) {
+                    tile.terrainFeatures.add(Constants.lowering)
+                } else if (adjacentHills > 4 && adjacentMountains == 0 && randomness.RNG.nextInt(until = 2) == 0) {
+                    tile.terrainFeatures.add(Constants.lowering)
+                } else if (adjacentHills + adjacentMountains in 2..3 && randomness.RNG.nextInt(until = 2) == 0) {
+                    tile.terrainFeatures.add(Constants.rising)
+                }
+
+            }
+
+            for (tile in tileMap.values.filter { !it.isWater && it.baseTerrain != Constants.mountain }) {
+                if (tile.terrainFeatures.remove(Constants.rising) && totalHills <= targetHills * 1.1f) {
+                    if (!tile.isHill()) {
+                        tile.terrainFeatures.add(Constants.hill)
+                        totalHills++
+                    }
+                }
+                if (tile.terrainFeatures.remove(Constants.lowering) && totalHills >= targetHills * 0.9f) {
+                    if (tile.isHill()) {
+                        tile.terrainFeatures.remove(Constants.hill)
+                        totalHills--
+                    }
+                }
+            }
         }
     }
 
