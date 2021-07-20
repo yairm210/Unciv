@@ -29,7 +29,7 @@ class Building : NamedStats(), IConstruction, ICivilopediaText {
     private var percentStatBonus: Stats? = null
     var specialistSlots: Counter<String>? = null
     fun newSpecialists(): Counter<String> {
-        if (specialistSlots == null) return Counter<String>()
+        if (specialistSlots == null) return Counter()
         // Could have old specialist values of "gold", "science" etc - change them to the new specialist names
         val counter = Counter<String>()
         for ((entry, amount) in specialistSlots!!) {
@@ -90,18 +90,24 @@ class Building : NamedStats(), IConstruction, ICivilopediaText {
         return infoList.joinToString("; ") { it.tr() }
     }
 
-    fun getUniquesStrings(): ArrayList<String> {
+    private fun getUniquesStrings() = sequence {
         val tileBonusHashmap = HashMap<String, ArrayList<String>>()
-        val finalUniques = ArrayList<String>()
-        for (unique in uniqueObjects)
-            if (unique.placeholderText == "[] from [] tiles []" && unique.params[2] == "in this city") {
+        for (unique in uniqueObjects) when {
+            unique.placeholderText == "[] from [] tiles []" && unique.params[2] == "in this city" -> {
                 val stats = unique.params[0]
                 if (!tileBonusHashmap.containsKey(stats)) tileBonusHashmap[stats] = ArrayList()
                 tileBonusHashmap[stats]!!.add(unique.params[1])
-            } else if (unique.placeholderText != "Consumes [] []") finalUniques += unique.text
+            }
+            unique.placeholderText == "Consumes [] []" -> Unit    // skip these, 
+            else -> yield(unique.text)
+        }
         for ((key, value) in tileBonusHashmap)
-            finalUniques += "[stats] from [tileFilter] tiles in this city".fillPlaceholders(key, value.joinToString { it.tr() })
-        return finalUniques
+            yield( "[stats] from [tileFilter] tiles in this city"
+                .fillPlaceholders( key,
+                    // A single tileFilter will be properly translated later due to being within []
+                    // advantage to not translate prematurely: FormatLine.formatUnique will recognize it
+                    if (value.size == 1) value[0] else value.joinToString { it.tr() }
+                ))
     }
 
     fun getDescription(cityInfo: CityInfo?, ruleset: Ruleset): String {
@@ -118,7 +124,7 @@ class Building : NamedStats(), IConstruction, ICivilopediaText {
             stringBuilder.appendLine("Provides a free [$providesFreeBuilding] in the city".tr())
         if (uniques.isNotEmpty()) {
             if (replacementTextForUniques != "") stringBuilder.appendLine(replacementTextForUniques)
-            else stringBuilder.appendLine(getUniquesStrings().asSequence().map { it.tr() }.joinToString("\n"))
+            else stringBuilder.appendLine(getUniquesStrings().map { it.tr() }.joinToString("\n"))
         }
         if (!stats.isEmpty())
             stringBuilder.appendLine(stats.toString())
@@ -180,8 +186,7 @@ class Building : NamedStats(), IConstruction, ICivilopediaText {
 
     fun getStatPercentageBonuses(cityInfo: CityInfo?): Stats {
         val stats = if (percentStatBonus == null) Stats() else percentStatBonus!!.clone()
-        val civInfo = cityInfo?.civInfo
-        if (civInfo == null) return stats // initial stats
+        val civInfo = cityInfo?.civInfo ?: return stats  // initial stats
 
         val baseBuildingName = getBaseBuilding(civInfo.gameInfo.ruleSet).name
 
@@ -262,7 +267,8 @@ class Building : NamedStats(), IConstruction, ICivilopediaText {
             if (replacementTextForUniques.isNotEmpty())
                 textList += FormattedLine(replacementTextForUniques)
             else
-                for (unique in getUniquesStrings()) textList += FormattedLine(unique)
+                for (unique in getUniquesStrings())
+                    textList += FormattedLine(Unique(unique))
         }
 
         if (!stats.isEmpty()) {
@@ -504,8 +510,8 @@ class Building : NamedStats(), IConstruction, ICivilopediaText {
 
         for ((resource, amount) in getResourceRequirements())
             if (civInfo.getCivResourcesByName()[resource]!! < amount) {
-                if (amount == 1) return "Consumes 1 [$resource]" // Again, to preserve existing translations
-                else return "Consumes [$amount] [$resource]"
+                return if (amount == 1) "Consumes 1 [$resource]" // Again, to preserve existing translations
+                    else "Consumes [$amount] [$resource]"
             }
 
         if (requiredNearbyImprovedResources != null) {
@@ -599,14 +605,14 @@ class Building : NamedStats(), IConstruction, ICivilopediaText {
     }
 
     fun getBaseBuilding(ruleset: Ruleset): Building {
-        if (replaces == null) return this
-        else return ruleset.buildings[replaces!!]!!
+        return if (replaces == null) this
+            else ruleset.buildings[replaces!!]!!
     }
 
     fun getImprovement(ruleset: Ruleset): TileImprovement? {
         val improvementUnique = uniqueObjects
-                .firstOrNull { it.placeholderText == "Creates a [] improvement on a specific tile" }
-        if (improvementUnique == null) return null
+            .firstOrNull { it.placeholderText == "Creates a [] improvement on a specific tile" }
+            ?: return null
         return ruleset.tileImprovements[improvementUnique.params[0]]
     }
 

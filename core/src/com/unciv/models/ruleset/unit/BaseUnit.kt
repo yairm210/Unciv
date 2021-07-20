@@ -103,14 +103,8 @@ class BaseUnit : INamed, IConstruction, CivilopediaText() {
             textList += FormattedLine(replacementTextForUniques)
         } else if (uniques.isNotEmpty()) {
             textList += FormattedLine()
-            for (uniqueObject in uniqueObjects.sortedBy { it.text }) {
-                if (uniqueObject.placeholderText == "Can construct []") {
-                    val improvement = uniqueObject.params[0]
-                    textList += FormattedLine(uniqueObject.text, link="Improvement/$improvement")
-                } else {
-                    textList += FormattedLine(uniqueObject.text)
-                }
-            }
+            for (uniqueObject in uniqueObjects.sortedBy { it.text })
+                textList += FormattedLine(uniqueObject)
         }
 
         val resourceRequirements = getResourceRequirements()
