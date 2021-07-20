@@ -222,6 +222,7 @@ object TranslationFileWriter {
                                     || parameter == "non-fresh water"
                                     || parameter == "Open Terrain"
                                     || parameter == "Rough Terrain"
+                                    || parameter == "Natural Wonder"
                             -> "tileFilter"
                             RulesetCache.getBaseRuleset().units.containsKey(parameter) -> "unit"
                             RulesetCache.getBaseRuleset().tileImprovements.containsKey(parameter)
