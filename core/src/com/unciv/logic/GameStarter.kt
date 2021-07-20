@@ -11,6 +11,7 @@ import com.unciv.models.metadata.GameParameters
 import com.unciv.models.ruleset.Era
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
+import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.ui.newgamescreen.GameSetupInfo
 import java.util.*
 import kotlin.NoSuchElementException
@@ -205,10 +206,18 @@ object GameStarter {
         val settlerLikeUnits = ruleSet.units.filter {
             it.value.uniqueObjects.any { it.placeholderText == Constants.settlerUnique }
         }
-        
+
         // no starting units for Barbarians and Spectators
         for (civ in gameInfo.civilizations.filter { !it.isBarbarian() && !it.isSpectator() }) {
             val startingLocation = startingLocations[civ]!!
+
+            println(civ.civName + ": " + startingLocation.getTileStartScore().toString())
+            if(civ.isMajorCiv() && startingLocation.getTileStartScore() < 45) {
+                // An unusually bad spawning location
+                addConsolationPrize(gameInfo, startingLocation, 45 - startingLocation.getTileStartScore().toInt())
+                println(civ.civName + " after consolation prize: " + startingLocation.getTileStartScore().toString())
+            }
+
             for (tile in startingLocation.getTilesInDistance(3))
                 if (tile.improvement == Constants.ancientRuins)
                     tile.improvement = null // Remove ancient ruins in immediate vicinity
@@ -313,7 +322,9 @@ object GameStarter {
         val tilesWithStartingLocations = tileMap.values
                 .filter { it.improvement != null && it.improvement!!.startsWith("StartingLocation ") }
 
-        val civsOrderedByAvailableLocations = civs.sortedBy { civ ->
+
+        val civsOrderedByAvailableLocations = civs.shuffled()   // Order should be random since it determines who gets best start
+            .sortedBy { civ ->
             when {
                 tilesWithStartingLocations.any { it.improvement == "StartingLocation " + civ.civName } -> 1 // harshest requirements
                 civ.nation.startBias.contains("Tundra") -> 2    // Tundra starts are hard to find, so let's do them first
@@ -324,7 +335,7 @@ object GameStarter {
 
         for (minimumDistanceBetweenStartingLocations in tileMap.tileMatrix.size / 4 downTo 0) {
             val freeTiles = landTilesInBigEnoughGroup
-                    .filter { vectorIsAtLeastNTilesAwayFromEdge(it.position, minimumDistanceBetweenStartingLocations/2, tileMap) }
+                    .filter { vectorIsAtLeastNTilesAwayFromEdge(it.position, (minimumDistanceBetweenStartingLocations * 2) /3, tileMap) }
                     .toMutableList()
 
             val startingLocations = HashMap<CivilizationInfo, TileInfo>()
@@ -357,6 +368,30 @@ object GameStarter {
             return startingLocations
         }
         throw Exception("Didn't manage to get starting tiles even with distance of 1?")
+    }
+
+    private fun addConsolationPrize(gameInfo: GameInfo, spawn: TileInfo, points: Int) {
+        val relevantTiles = spawn.getTilesInDistanceRange(1..2).shuffled()
+        var addedPoints = 0
+        var addedBonuses = 0
+
+        for (tile in relevantTiles) {
+            if (addedPoints >= points || addedBonuses >= 4) // At some point enough is enough
+                break
+            if (tile.resource != null || tile.baseTerrain == Constants.snow)    // Snow is quite irredeemable
+                continue
+
+            val bonusToAdd = gameInfo.ruleSet.tileResources.values
+                .filter { it.terrainsCanBeFoundOn.contains(tile.getLastTerrain().name) && it.resourceType == ResourceType.Bonus }
+                .randomOrNull()
+
+            if (bonusToAdd != null) {
+                println("Added " + bonusToAdd.name)
+                tile.resource = bonusToAdd.name
+                addedPoints += (bonusToAdd.food + bonusToAdd.production + bonusToAdd.gold + 1).toInt()  // +1 because resources can be improved
+                addedBonuses++
+            }
+        }
     }
 
     private fun vectorIsAtLeastNTilesAwayFromEdge(vector: Vector2, n: Int, tileMap: TileMap): Boolean {

@@ -284,6 +284,8 @@ open class TileInfo {
             if (tile == this)
                 continue
             sum += tile.getTileStartYield()
+            if (tile in neighbors)
+                sum += tile.getTileStartYield()
         }
 
         if (isHill())
