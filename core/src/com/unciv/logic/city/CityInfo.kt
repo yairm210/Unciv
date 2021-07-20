@@ -344,7 +344,20 @@ class CityInfo {
                 if (!matchesFilter(unique.params[1])) continue
                 stats[entry.key]!!.timesInPlace(1 + unique.params[0].toFloat() / 100f)
             }
-            
+
+            // Sweden UP
+            var friendshipMultiplier = 0f
+            for (otherciv in civInfo.getKnownCivs()) {
+                if (civInfo.getDiplomacyManager(otherciv).hasFlag(DiplomacyFlags.DeclarationOfFriendship)) {
+                    for(ourunique in civInfo.getMatchingUniques("When declaring friendship, both parties gain a []% boost to great person generation"))
+                        friendshipMultiplier += ourunique.params[0].toFloat()
+                    for(theirunique in otherciv.getMatchingUniques("When declaring friendship, both parties gain a []% boost to great person generation"))
+                        friendshipMultiplier += theirunique.params[0].toFloat()
+                }
+            }
+            if (friendshipMultiplier > 0f)
+                stats[entry.key]!!.timesInPlace(1 + friendshipMultiplier / 100f)
+
             // Deprecated since 3.15.9
                 for (unique in getMatchingUniques("+[]% great person generation in this city") 
                         + getMatchingUniques("+[]% great person generation in all cities")
@@ -569,10 +582,8 @@ class CityInfo {
     
     // Matching uniques provided by sources in the city itself
     fun getLocalMatchingUniques(placeholderText: String): Sequence<Unique> {
-        return (
-            cityConstructions.builtBuildingUniqueMap.getUniques(placeholderText) +
-            religion.getMatchingUniques(placeholderText)
-        ).asSequence()
+        return cityConstructions.builtBuildingUniqueMap.getUniques(placeholderText) +
+                religion.getMatchingUniques(placeholderText)
     }
 
     // Get all uniques that originate from this city
@@ -582,7 +593,7 @@ class CityInfo {
     
     // Get all matching uniques that don't apply to only this city
     fun getMatchingUniquesWithNonLocalEffects(placeholderText: String): Sequence<Unique> {
-        return cityConstructions.builtBuildingUniqueMap.getUniques(placeholderText).asSequence()
+        return cityConstructions.builtBuildingUniqueMap.getUniques(placeholderText)
             .filter { it.params.none { param -> param == "in this city" } }
         // Note that we don't query religion here, as those only have local effects (for now at least)
     }

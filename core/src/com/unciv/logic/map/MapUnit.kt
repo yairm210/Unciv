@@ -219,11 +219,7 @@ class MapUnit {
         visibilityRange += getMatchingUniques("[] Visibility Range").sumBy { it.params[0].toInt() }
         
         if (hasUnique("Limited Visibility")) visibilityRange -= 1
-        
-        // Deprecated since 3.15.6
-            visibilityRange += getUniques().count { it.text == "+1 Visibility Range" }
-            if (hasUnique("+2 Visibility Range")) visibilityRange += 2 // This shouldn't be stackable
-        //
+
         // Deprecated since 3.15.1
             if (civInfo.hasUnique("+1 Sight for all land military units") && type.isMilitary() && type.isLandUnit())
                 visibilityRange += 1
@@ -364,11 +360,6 @@ class MapUnit {
             if (matchesFilter(unique.params[0]))
                 goldCostOfUpgrade *= (1 - unique.params[1].toFloat() / 100f)
         }
-        // Deprecated since 3.14.17
-            if (civInfo.hasUnique("Gold cost of upgrading military units reduced by 33%")) {
-                goldCostOfUpgrade *= 0.67f
-            }
-        //
 
         if (goldCostOfUpgrade < 0) return 0 // For instance, Landsknecht costs less than Spearman, so upgrading would cost negative gold
         return goldCostOfUpgrade.toInt()
@@ -399,13 +390,7 @@ class MapUnit {
     }
 
     private fun adjacentHealingBonus(): Int {
-        var healingBonus = 0
-        healingBonus += getMatchingUniques("All adjacent units heal [] HP when healing").sumBy { it.params[0].toInt() }
-        // Deprecated since 3.15.6
-            if (hasUnique("This unit and all others in adjacent tiles heal 5 additional HP per turn")) healingBonus += 5
-            if (hasUnique("This unit and all others in adjacent tiles heal 5 additional HP. This unit heals 5 additional HP outside of friendly territory.")) healingBonus += 5
-        //
-        return healingBonus
+        return getMatchingUniques("All adjacent units heal [] HP when healing").sumBy { it.params[0].toInt() }
     }
 
     fun canGarrison() = type.isMilitary() && type.isLandUnit()
@@ -535,9 +520,6 @@ class MapUnit {
         var amountToHealBy = rankTileForHealing(getTile())
         if (amountToHealBy == 0 && !(hasUnique("May heal outside of friendly territory") && !getTile().isFriendlyTerritory(civInfo))) return
 
-        // Deprecated since 3.15.6
-            if (hasUnique("+10 HP when healing")) amountToHealBy += 10
-        //
         amountToHealBy += getMatchingUniques("[] HP when healing").sumBy { it.params[0].toInt() }
         
         val maxAdjacentHealingBonus = currentTile.getTilesInDistance(1)
@@ -570,12 +552,6 @@ class MapUnit {
         val mayHeal = healing > 0 || (tileInfo.isWater && hasUnique("May heal outside of friendly territory"))
         if (!mayHeal) return healing
 
-        // Deprecated since 3.15.6
-            if (hasUnique("This unit and all others in adjacent tiles heal 5 additional HP. This unit heals 5 additional HP outside of friendly territory.")
-                && !isFriendlyTerritory
-            )// Additional healing from medic is only applied when the unit is able to heal
-                healing += 5
-        //
         
         for (unique in getMatchingUniques("[] HP when healing in [] tiles")) {
             if (tileInfo.matchesFilter(unique.params[1], civInfo)) {
@@ -604,11 +580,6 @@ class MapUnit {
             getTile().improvementInProgress != null
             && canBuildImprovement(getTile().getTileImprovementInProgress()!!)
         ) workOnImprovement()
-        // unique "Can construct roads" deprecated since 3.15.4
-            if (currentMovement > 0 && hasUnique("Can construct roads")
-                && currentTile.improvementInProgress == "Road"
-            ) workOnImprovement()
-        //
         if (currentMovement == getMaxMovement().toFloat() && isFortified()) {
             val currentTurnsFortified = getFortificationTurns()
             if (currentTurnsFortified < 2)
@@ -641,6 +612,20 @@ class MapUnit {
         currentMovement = getMaxMovement().toFloat()
         attacksThisTurn = 0
         due = true
+
+        // Hakkapeliitta movement boost
+        if (getTile().getUnits().count() > 1)
+        {
+            // For every double-stacked tile, check if our cohabitant can boost our speed
+            for (unit in getTile().getUnits())
+            {
+                if (unit == this)
+                    continue
+
+                if (unit.getMatchingUniques("Transfer Movement to []").any { matchesFilter(it.params[0]) } )
+                    currentMovement = maxOf(getMaxMovement().toFloat(), unit.getMaxMovement().toFloat())
+            }
+        }
 
         // Wake sleeping units if there's an enemy in vision range:
         // Military units always but civilians only if not protected.
@@ -922,9 +907,6 @@ class MapUnit {
         var damageFactor = 1f
         for (unique in getMatchingUniques("Damage taken from interception reduced by []%"))
             damageFactor *= 1f - unique.params[0].toFloat() / 100f
-        // Deprecated since 3.15.6
-            damageFactor *= 0.5f.pow(getUniques().count{it.text == "Reduces damage taken from interception by 50%"})
-        // End deprecation
         return damageFactor
     }
 

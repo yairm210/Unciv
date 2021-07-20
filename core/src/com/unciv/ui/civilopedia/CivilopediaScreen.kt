@@ -174,7 +174,7 @@ class CivilopediaScreen(
                 .filter { "Will not be displayed in Civilopedia" !in it.uniques
                         && !(hideReligionItems && "Hidden when religion is disabled" in it.uniques)
                         && !(noCulturalVictory && "Hidden when cultural victory is disabled" in it.uniques)
-                        && !(it.isWonder || it.isNationalWonder) }
+                        && !it.isAnyWonder() }
                 .map {
                     CivilopediaEntry(
                         it.name,
@@ -187,7 +187,7 @@ class CivilopediaScreen(
                 .filter { "Will not be displayed in Civilopedia" !in it.uniques
                         && !(hideReligionItems && "Hidden when religion is disabled" in it.uniques)
                         && !(noCulturalVictory && "Hidden when cultural victory is disabled" in it.uniques)
-                        && (it.isWonder || it.isNationalWonder) }
+                        && it.isAnyWonder() }
                 .map {
                     CivilopediaEntry(
                         it.name,

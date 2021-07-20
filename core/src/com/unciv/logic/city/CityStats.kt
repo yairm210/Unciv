@@ -306,7 +306,7 @@ class CityStats {
           // Since this is sometimes run from a different thread (getConstructionButtonDTOs),
           // this helps mitigate concurrency problems.
 
-        if (currentConstruction is Building && !currentConstruction.isWonder && !currentConstruction.isNationalWonder)
+        if (currentConstruction is Building && !currentConstruction.isAnyWonder())
             for (unique in uniques.filter { it.placeholderText == "+[]% Production when constructing [] buildings" }) {
                 val stat = Stat.valueOf(unique.params[1])
                 if (currentConstruction.isStatRelated(stat))
@@ -540,11 +540,6 @@ class CityStats {
 
         for (unique in cityInfo.civInfo.getMatchingUniques("-[]% food consumption by specialists"))
             foodEatenBySpecialists *= 1f - unique.params[0].toFloat() / 100f
-
-        // Deprecated since 3.15
-            if (cityInfo.civInfo.hasUnique("-50% food consumption by specialists"))
-                foodEatenBySpecialists *= 0.5f
-        //
 
         foodEaten -= 2f * cityInfo.population.getNumberOfSpecialists() - foodEatenBySpecialists
     }
