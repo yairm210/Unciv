@@ -146,6 +146,14 @@ object SpecificUnitAutomation {
     }
 
     fun automateSettlerActions(unit: MapUnit) {
+        if (unit.civInfo.isCityState()) {   // Special case, we want city states to settle in place on turn 1.
+            val foundCityAction = UnitActions.getFoundCityAction(unit, unit.getTile())
+            if(foundCityAction?.action != null) {
+                foundCityAction.action.invoke()
+                return
+            }
+        }
+
         if (unit.getTile().militaryUnit == null) return // Don't move until you're accompanied by a military unit
 
         val tilesNearCities = unit.civInfo.gameInfo.getCities().asSequence()
