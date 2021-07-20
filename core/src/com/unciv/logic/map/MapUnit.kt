@@ -605,6 +605,20 @@ class MapUnit {
         attacksThisTurn = 0
         due = true
 
+        // Hakkapeliitta movement boost
+        if (getTile().getUnits().count() > 1)
+        {
+            // For every double-stacked tile, check if our cohabitant can boost our speed
+            for (unit in getTile().getUnits())
+            {
+                if (unit == this)
+                    continue
+
+                if (unit.getMatchingUniques("Transfer Movement to []").any { matchesFilter(it.params[0]) } )
+                    currentMovement = maxOf(getMaxMovement().toFloat(), unit.getMaxMovement().toFloat())
+            }
+        }
+
         // Wake sleeping units if there's an enemy in vision range:
         // Military units always but civilians only if not protected.
         if (isSleeping() && (!type.isCivilian() || currentTile.militaryUnit == null) &&
