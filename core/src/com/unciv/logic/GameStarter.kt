@@ -180,7 +180,24 @@ object GameStarter {
         val startingEra = gameInfo.gameParameters.startingEra
         var startingUnits: MutableList<String>
         var eraUnitReplacement: String
-        
+
+        // First we get start locations for the major civs, on the second pass the city states (without predetermined starts) can squeeze in where they might
+        // I hear copying code is good
+        val cityStatesWithStartingLocations =
+            gameInfo.tileMap.values
+                .filter { it.improvement != null && it.improvement!!.startsWith("StartingLocation ") }
+                .map { it.improvement!!.replace("StartingLocation ", "") }
+        val bestCivs = gameInfo.civilizations.filter { !it.isBarbarian() && (!it.isCityState() || it.civName in cityStatesWithStartingLocations) }
+        val bestLocations = getStartingLocations(bestCivs, gameInfo.tileMap)
+        for (civ in bestCivs)
+        {
+            if (civ.isCityState())  // Already have explicit starting locations
+                continue
+
+            // Mark the cool start locations so we remember them for the second pass
+            bestLocations[civ]!!.improvement = "StartingLocation " + civ.civName
+        }
+
         val startingLocations = getStartingLocations(
                 gameInfo.civilizations.filter { !it.isBarbarian() },
                 gameInfo.tileMap)
@@ -299,24 +316,27 @@ object GameStarter {
         val civsOrderedByAvailableLocations = civs.sortedBy { civ ->
             when {
                 tilesWithStartingLocations.any { it.improvement == "StartingLocation " + civ.civName } -> 1 // harshest requirements
-                civ.nation.startBias.isNotEmpty() -> 2 // less harsh
-                else -> 3
+                civ.nation.startBias.contains("Tundra") -> 2    // Tundra starts are hard to find, so let's do them first
+                civ.nation.startBias.isNotEmpty() -> 3 // less harsh
+                else -> 4
             }  // no requirements
         }
 
-        for (minimumDistanceBetweenStartingLocations in tileMap.tileMatrix.size / 3 downTo 0) {
+        for (minimumDistanceBetweenStartingLocations in tileMap.tileMatrix.size / 4 downTo 0) {
             val freeTiles = landTilesInBigEnoughGroup
-                    .filter { vectorIsAtLeastNTilesAwayFromEdge(it.position, minimumDistanceBetweenStartingLocations, tileMap) }
+                    .filter { vectorIsAtLeastNTilesAwayFromEdge(it.position, minimumDistanceBetweenStartingLocations/2, tileMap) }
                     .toMutableList()
 
             val startingLocations = HashMap<CivilizationInfo, TileInfo>()
-
             for (civ in civsOrderedByAvailableLocations) {
                 var startingLocation: TileInfo
                 val presetStartingLocation = tilesWithStartingLocations.firstOrNull { it.improvement == "StartingLocation " + civ.civName }
                 if (presetStartingLocation != null) startingLocation = presetStartingLocation
                 else {
                     if (freeTiles.isEmpty()) break // we failed to get all the starting tiles with this minimum distance
+
+                    freeTiles.sortBy { it.getTileStartScore() }
+
                     var preferredTiles = freeTiles.toList()
 
                     for (startBias in civ.nation.startBias) {
@@ -327,7 +347,7 @@ object GameStarter {
                         else preferredTiles = preferredTiles.filter { it.matchesTerrainFilter(startBias) }
                     }
 
-                    startingLocation = if (preferredTiles.isNotEmpty()) preferredTiles.random() else freeTiles.random()
+                    startingLocation = if (preferredTiles.isNotEmpty()) preferredTiles.last() else freeTiles.last()
                 }
                 startingLocations[civ] = startingLocation
                 freeTiles.removeAll(tileMap.getTilesInDistance(startingLocation.position, minimumDistanceBetweenStartingLocations))
