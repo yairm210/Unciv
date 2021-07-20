@@ -390,10 +390,12 @@ open class TileInfo {
             topTerrain.unbuildable && !improvement.isAllowedOnFeature(topTerrain.name) -> false
             // DO NOT reverse this &&. isAdjacentToFreshwater() is a lazy which calls a function, and reversing it breaks the tests.
             improvement.hasUnique("Can also be built on tiles adjacent to fresh water") && isAdjacentToFreshwater -> true
-            "Can only be built on Coastal tiles" in improvement.uniques && isCoastalTile() -> true
-            improvement.uniqueObjects.filter { it.placeholderText == "Can only be built on [] tiles" }.any {
-                unique -> !matchesTerrainFilter(unique.params[0])
-            } -> false
+            // deprecated as of 3.15.13
+                "Can only be built on Coastal tiles" in improvement.uniques && isCoastalTile() -> true
+            //
+            improvement.uniqueObjects.filter { it.placeholderText == "Can only be built on [] tiles" }.all {
+                unique -> matchesTerrainFilter(unique.params[0])
+            } -> true
             else -> resourceIsVisible && getTileResource().improvement == improvement.name
         }
     }

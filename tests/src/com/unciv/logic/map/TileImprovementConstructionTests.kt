@@ -82,7 +82,7 @@ class TileImprovementConstructionTests {
         map.tileMatrix.add(arrayListOf(tile, otherTile))
 
         for (improvement in ruleSet.tileImprovements.values) {
-            if (!improvement.uniques.contains("Can only be built on Coastal tiles")) continue
+            if (!improvement.uniques.contains("Can only be built on [Coastal] tiles")) continue
             civInfo.civName = improvement.uniqueTo ?: "OtherCiv"
             val canBeBuilt = tile.canBuildImprovement(improvement, civInfo)
             Assert.assertTrue(improvement.name, canBeBuilt)
