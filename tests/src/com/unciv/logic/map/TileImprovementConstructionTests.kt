@@ -100,4 +100,19 @@ class TileImprovementConstructionTests {
             Assert.assertFalse(improvement.name, canBeBuilt)
         }
     }
+
+    @Test
+    fun terraceFarmCanNOTBeBuiltOnBonus() {
+        tile.baseTerrain = "Plains"
+        tile.terrainFeatures.add("Hill")
+        tile.resource = "Sheep"
+        tile.setTransients()
+        civInfo.civName = "Inca"
+
+        for (improvement in ruleSet.tileImprovements.values) {
+            if (!improvement.uniques.contains("Cannot be built on [Bonus resource] tiles")) continue
+            val canBeBuilt = tile.canBuildImprovement(improvement, civInfo)
+            Assert.assertFalse(improvement.name, canBeBuilt)
+        }
+    }
 }
