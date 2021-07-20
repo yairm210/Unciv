@@ -76,7 +76,17 @@ object BattleDamage {
             if (nearbyCivUnits.any { it.hasUnique("Bonus for units in 2 tile radius 15%") }) {
                 val greatGeneralModifier =
                     if (combatant.unit.civInfo.hasUnique("Great General provides double combat bonus")) 30 else 15
+
                 modifiers["Great General"] = greatGeneralModifier
+            }
+
+            for (unique in combatant.unit.getMatchingUniques("[]% Strength when stacked with []")) {
+                var stackedUnitsBonus = 0
+                if (combatant.unit.getTile().getUnits().any { it.matchesFilter(unique.params[1]) } )
+                    stackedUnitsBonus += unique.params[0].toInt()
+
+                if (stackedUnitsBonus > 0)
+                    modifiers["Stacked with [${unique.params[1]}]"] = stackedUnitsBonus
             }
 
             if (civInfo.goldenAges.isGoldenAge() && civInfo.hasUnique("+10% Strength for all units during Golden Age"))

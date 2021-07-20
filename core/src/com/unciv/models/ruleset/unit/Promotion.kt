@@ -11,7 +11,7 @@ class Promotion : INamed{
     var effect = ""
     var unitTypes = listOf<String>() // The json parser wouldn't agree to deserialize this as a list of UnitTypes. =(
 
-    var uniques = listOf<String>()
+    var uniques = ArrayList<String>()
     val uniqueObjects: List<Unique> by lazy { uniques.map { Unique(it) } + Unique(effect)  }
 
     fun getDescription(promotionsForUnitType: Collection<Promotion>, forCivilopedia:Boolean=false, ruleSet:Ruleset? = null):String {

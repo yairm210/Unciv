@@ -79,10 +79,12 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Ship](https://thenounproject.com/search/?q=ship&i=800131) By Mungang Kim for Ship of the Line
 * [Lance](https://thenounproject.com/search/?q=Lance&i=440122) By parkjisun for Lancer
 * [Sword](https://thenounproject.com/search/?q=saber&i=1174742) By Daniela Baptista for Sipahi
+* [Helmet](https://thenounproject.com/term/helmet/1514355/) by Robert Bjurshagen for Hakkapeliitta
 
 ### Industrial Era
 
 * [Rifle](https://thenounproject.com/search/?q=Rifle&i=604291) By Chameleon Design for Rifleman
+* [Bayonet](https://thenounproject.com/term/bayonet/3101681/) By food lover for Carolean
 * [Horse](https://thenounproject.com/search/?q=Horse&i=1023745) By Bakunetso Kaito for Cavalry
 * [horse racing](https://thenounproject.com/antimso/uploads/?i=2427932) By Sergio Morozov for Cossack
 * [Artillery](https://thenounproject.com/search/?q=Artillery&i=1165261) By Creative Mania
@@ -518,6 +520,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Sun](https://thenounproject.com/search/?q=inca&i=910770) by Made x Made for Inca
 * [Sun symbol black](https://en.wikiquote.org/wiki/File:Sun_symbol_black.svg) by Eddo for The Huns
 * [Lion](https://thenounproject.com/search/?q=lion&i=76154) by Nikki Rodriguez for The Netherlands
+* [Three Crowns](https://thenounproject.com/search/?q=three+crowns&i=1155972) by Daniel Falk for Sweden
 
 
 ## Promotions
