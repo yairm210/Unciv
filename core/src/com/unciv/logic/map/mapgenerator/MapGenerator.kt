@@ -42,19 +42,8 @@ class MapGenerator(val ruleset: Ruleset) {
 
         MapLandmassGenerator(ruleset, randomness).generateLand(map)
         raiseMountainsAndHills(map)
-
-        println("mountains before")
-        println(map.values.count { it.baseTerrain == Constants.mountain } )
         cellularMountainRanges(map)
-        println("mountains after")
-        println(map.values.count { it.baseTerrain == Constants.mountain } )
-
-        println("hills before")
-        println(map.values.count { it.isHill() } )
         cellularHills(map)
-        println("hills after")
-        println(map.values.count { it.isHill() } )
-
         applyHumidityAndTemperature(map)
         spawnLakesAndCoasts(map)
         spawnVegetation(map)
@@ -205,9 +194,7 @@ class MapGenerator(val ruleset: Ruleset) {
     }
 
     private fun cellularMountainRanges(tileMap: TileMap) {
-        val targetMountains = tileMap.values.count { !it.isWater } / 20
-        println("Target mountains")
-        println(targetMountains)
+        val targetMountains = tileMap.values.count { it.baseTerrain == Constants.mountain } * 2
 
         for (i in 1..5) {
             var totalMountains = tileMap.values.count { it.baseTerrain == Constants.mountain }
@@ -215,6 +202,8 @@ class MapGenerator(val ruleset: Ruleset) {
             for (tile in tileMap.values.filter { !it.isWater }) {
                 val adjacentMountains =
                     tile.neighbors.count { it.baseTerrain == Constants.mountain }
+                val adjacentImpassible =
+                    tile.neighbors.count { it.baseTerrain == Constants.mountain || it.baseTerrain == Constants.ocean }
 
                 if (adjacentMountains == 0 && tile.baseTerrain == Constants.mountain) {
                     if (randomness.RNG.nextInt(until = 4) == 0)
@@ -222,10 +211,10 @@ class MapGenerator(val ruleset: Ruleset) {
                 } else if (adjacentMountains == 1) {
                     if (randomness.RNG.nextInt(until = 10) == 0)
                         tile.terrainFeatures.add(Constants.rising)
-                } else if (adjacentMountains == 3) {
+                } else if (adjacentImpassible == 3) {
                     if (randomness.RNG.nextInt(until = 2) == 0)
                         tile.terrainFeatures.add(Constants.lowering)
-                } else if (adjacentMountains > 3) {
+                } else if (adjacentImpassible > 3) {
                     tile.terrainFeatures.add(Constants.lowering)
                 }
             }
@@ -236,12 +225,13 @@ class MapGenerator(val ruleset: Ruleset) {
                     tile.baseTerrain = Constants.mountain
                     totalMountains++
                 }
-                if (tile.terrainFeatures.remove(Constants.lowering)) {
-                    if (tile.baseTerrain == Constants.mountain)
+                if (tile.terrainFeatures.remove(Constants.lowering) && totalMountains > targetMountains * 0.5f) {
+                    if (tile.baseTerrain == Constants.mountain) {
+                        if (!tile.terrainFeatures.contains(Constants.hill))
+                            tile.terrainFeatures.add(Constants.hill)
                         totalMountains--
+                    }
                     tile.baseTerrain = Constants.grassland
-                    if (!tile.terrainFeatures.contains(Constants.hill))
-                        tile.terrainFeatures.add(Constants.hill)
                 }
             }
         }
@@ -249,8 +239,6 @@ class MapGenerator(val ruleset: Ruleset) {
 
     private fun cellularHills(tileMap: TileMap) {
         val targetHills = tileMap.values.count { it.isHill() }
-        println("Target hills")
-        println(targetHills)
 
         for (i in 1..5) {
             var totalHills = tileMap.values.count { it.isHill() }
