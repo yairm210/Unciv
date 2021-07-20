@@ -146,7 +146,7 @@ object SpecificUnitAutomation {
     }
 
     fun automateSettlerActions(unit: MapUnit) {
-        if (unit.civInfo.isCityState()) {   // Special case, we want city states to settle in place on turn 1.
+        if (unit.civInfo.gameInfo.turns == 0) {   // Special case, we want AI to settle in place on turn 1.
             val foundCityAction = UnitActions.getFoundCityAction(unit, unit.getTile())
             if(foundCityAction?.action != null) {
                 foundCityAction.action.invoke()
