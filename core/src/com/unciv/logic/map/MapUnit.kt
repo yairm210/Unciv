@@ -261,6 +261,8 @@ class MapUnit {
     fun isSleepingUntilHealed() = isSleeping() && action?.endsWith("until healed") == true
 
     fun isMoving() = action?.startsWith("moveTo") == true
+    
+    fun isAutomaticallyBuildingImprovements() = action != null && action == Constants.unitActionAutomation
 
     fun getFortificationTurns(): Int {
         if (!isFortified()) return 0

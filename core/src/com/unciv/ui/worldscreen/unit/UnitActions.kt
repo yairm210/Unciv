@@ -36,6 +36,8 @@ object UnitActions {
         val actionList = ArrayList<UnitAction>()
         
         if (unit.isMoving()) actionList += UnitAction(UnitActionType.StopMovement) { unit.action = null }
+        if (unit.isAutomaticallyBuildingImprovements())
+            actionList += UnitAction(UnitActionType.StopAutomation) { unit.action = null }
         
         addSleepActions(actionList, unit, false)
         addFortifyActions(actionList, unit, false)
@@ -45,7 +47,8 @@ object UnitActions {
         addParadropAction(unit, actionList, worldScreen)
         addSetupAction(unit, actionList)
         addFoundCityAction(unit, actionList, tile)
-        addWorkerActions(unit, actionList, tile, worldScreen, unitTable)
+        addBuildingImprovementsAction(unit, actionList, tile, worldScreen)
+        addAutomateBuildingImprovementsAction(unit, actionList)
         addCreateWaterImprovements(unit, actionList)
         addGreatPersonActions(unit, actionList, tile)
         addFoundReligionAction(unit, actionList, tile)
@@ -345,34 +348,36 @@ object UnitActions {
                             && unit.currentMovement == unit.getMaxMovement().toFloat()
                 })
     }
-
-    private fun addWorkerActions(unit: MapUnit, actionList: ArrayList<UnitAction>, tile: TileInfo, worldScreen: WorldScreen, unitTable: UnitTable) {
+    
+    private fun addBuildingImprovementsAction(unit: MapUnit, actionList: ArrayList<UnitAction>, tile: TileInfo, worldScreen: WorldScreen, unitTable: UnitTable) {
         // Constants.workerUnique deprecated since 3.15.5
         if (!unit.hasUnique(Constants.canBuildImprovements) && !unit.hasUnique(Constants.workerUnique)) return
-
-        // Allow automate/unautomate when embarked, but not building improvements - see #1963
-        if (Constants.unitActionAutomation == unit.action) {
-            actionList += UnitAction(UnitActionType.StopAutomation) { unit.action = null }
-        } else {
-            actionList += UnitAction(UnitActionType.Automate,
-                    action = {
-                        unit.action = Constants.unitActionAutomation
-                        WorkerAutomation(unit).automateWorkerAction()
-                    }.takeIf { unit.currentMovement > 0 })
-        }
-
         if (unit.isEmbarked()) return
 
         val canConstruct = unit.currentMovement > 0
                 && !tile.isCityCenter()
                 && unit.civInfo.gameInfo.ruleSet.tileImprovements.values.any { tile.canBuildImprovement(it, unit.civInfo) && unit.canBuildImprovement(it) }
-        
+
         actionList += UnitAction(UnitActionType.ConstructImprovement,
-                isCurrentAction = unit.currentTile.hasImprovementInProgress(),
-                action = {
-                    worldScreen.game.setScreen(ImprovementPickerScreen(tile, unit) { unitTable.selectUnit() })
-                }.takeIf { canConstruct })
+            isCurrentAction = unit.currentTile.hasImprovementInProgress(),
+            action = {
+                worldScreen.game.setScreen(ImprovementPickerScreen(tile, unit) { unitTable.selectUnit() })
+            }.takeIf { canConstruct }
+        )
     }
+    
+    private fun addAutomateBuildingImprovementsAction(unit: MapUnit, actionList: ArrayList<UnitAction>) {
+        // Constants.workerUnique deprecated since 3.15.5
+        if (!unit.hasUnique(Constants.canBuildImprovements) && !unit.hasUnique(Constants.workerUnique)) return
+        
+        actionList += UnitAction(UnitActionType.Automate,
+            action = {
+                unit.action = Constants.unitActionAutomation
+                WorkerAutomation(unit).automateWorkerAction()
+            }.takeIf { unit.currentMovement > 0 }
+        )
+    }
+    
 
     private fun addGreatPersonActions(unit: MapUnit, actionList: ArrayList<UnitAction>, tile: TileInfo) {
 
