@@ -103,7 +103,7 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(CameraStageBaseS
 
         for (building in cityInfo.cityConstructions.getBuiltBuildings()) {
             when {
-                building.isWonder || building.isNationalWonder -> wonders.add(building)
+                building.isAnyWonder() -> wonders.add(building)
                 !building.newSpecialists().isEmpty() -> specialistBuildings.add(building)
                 else -> otherBuildings.add(building)
             }

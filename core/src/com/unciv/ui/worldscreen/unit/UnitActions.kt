@@ -377,7 +377,7 @@ object UnitActions {
                 else {
                     val currentConstruction = tile.getCity()!!.cityConstructions.getCurrentConstruction()
                     if (currentConstruction !is Building) false
-                    else currentConstruction.isWonder || currentConstruction.isNationalWonder
+                    else currentConstruction.isAnyWonder()
                 }
                 actionList += UnitAction(UnitActionType.HurryWonder,
                     uncivSound = UncivSound.Chimes,

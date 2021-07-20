@@ -306,7 +306,7 @@ class CityStats {
           // Since this is sometimes run from a different thread (getConstructionButtonDTOs),
           // this helps mitigate concurrency problems.
 
-        if (currentConstruction is Building && !currentConstruction.isWonder && !currentConstruction.isNationalWonder)
+        if (currentConstruction is Building && !currentConstruction.isAnyWonder())
             for (unique in uniques.filter { it.placeholderText == "+[]% Production when constructing [] buildings" }) {
                 val stat = Stat.valueOf(unique.params[1])
                 if (currentConstruction.isStatRelated(stat))

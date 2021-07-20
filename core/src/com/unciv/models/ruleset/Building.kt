@@ -48,6 +48,7 @@ class Building : NamedStats(), IConstruction, ICivilopediaText {
     private var hurryCostModifier = 0
     var isWonder = false
     var isNationalWonder = false
+    fun isAnyWonder() = isWonder || isNationalWonder
     var requiredBuilding: String? = null
     var requiredBuildingInAllCities: String? = null
 
@@ -195,7 +196,7 @@ class Building : NamedStats(), IConstruction, ICivilopediaText {
         return stats
     }
 
-    fun makeLink() = if (isWonder || isNationalWonder) "Wonder/$name" else "Building/$name"
+    fun makeLink() = if (isAnyWonder()) "Wonder/$name" else "Building/$name"
     override fun getCivilopediaTextHeader() = FormattedLine(name, header=2, icon=makeLink())
     override fun hasCivilopediaTextLines() = true
     override fun replacesCivilopediaDescription() = true
@@ -204,7 +205,7 @@ class Building : NamedStats(), IConstruction, ICivilopediaText {
         
         val textList = ArrayList<FormattedLine>()
 
-        if (isWonder || isNationalWonder) {
+        if (isAnyWonder()) {
             textList += FormattedLine( if (isWonder) "Wonder" else "National Wonder", color="#CA4", header=3 )
         }
 
@@ -321,7 +322,7 @@ class Building : NamedStats(), IConstruction, ICivilopediaText {
 
 
     override fun canBePurchased(): Boolean {
-        return !isWonder && !isNationalWonder && "Cannot be purchased" !in uniques
+        return !isAnyWonder() && "Cannot be purchased" !in uniques
     }
 
 
@@ -580,8 +581,8 @@ class Building : NamedStats(), IConstruction, ICivilopediaText {
         return when (filter) {
             "All" -> true
             name -> true
-            "Building", "Buildings" -> !(isWonder || isNationalWonder)
-            "Wonder", "Wonders" -> isWonder || isNationalWonder
+            "Building", "Buildings" -> !isAnyWonder()
+            "Wonder", "Wonders" -> isAnyWonder()
             replaces -> true
             else -> {
                 if (uniques.contains(filter)) return true
@@ -609,7 +610,7 @@ class Building : NamedStats(), IConstruction, ICivilopediaText {
         return ruleset.tileImprovements[improvementUnique.params[0]]
     }
 
-    fun isSellable() = !isWonder && !isNationalWonder && !uniques.contains("Unsellable")
+    fun isSellable() = !isAnyWonder() && !uniques.contains("Unsellable")
 
     override fun getResourceRequirements(): HashMap<String, Int> {
         val resourceRequirements = HashMap<String, Int>()
