@@ -75,6 +75,13 @@ object CivilopediaImageGetters {
         if (terrain == null) null
         else terrainImage(terrain, ImageGetter.ruleset, size)
     }
+    val belief = { name: String, size: Float ->
+        // Kludge until we decide how exactly to show Religions
+        if (ImageGetter.imageExists("ReligionIcons/$name")) {
+            ImageGetter.getReligionIcon(name).surroundWithCircle(size, color = Color.BLACK)
+        }
+        else null
+    }
 }
 
 /** Enum used as keys for Civilopedia "pages" (categories).
@@ -100,6 +107,7 @@ enum class CivilopediaCategories (
     Policy ("Policies", true, CivilopediaImageGetters.policy ),
     Tutorial ("Tutorials", false, null ),
     Difficulty ("Difficulty levels", false, null ),
+    Belief("Religion and Belief", false, CivilopediaImageGetters.belief)
     ;
 
     companion object {

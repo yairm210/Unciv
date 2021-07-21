@@ -2,6 +2,7 @@ package com.unciv.models
 
 import com.unciv.logic.GameInfo
 import com.unciv.models.ruleset.Belief
+import com.unciv.models.ruleset.BeliefType
 import com.unciv.models.ruleset.Unique
 import com.unciv.models.stats.INamed
 
@@ -49,13 +50,13 @@ class Religion() : INamed {
 
     fun getPantheonBeliefs(): Sequence<Belief> {
         return mapToExistingBeliefs(followerBeliefs)
-            .filter { it.type == "Pantheon" }
+            .filter { it.type == BeliefType.Pantheon }
             .asSequence()
     }
     
     fun getFollowerBeliefs(): Sequence<Belief> {
         return mapToExistingBeliefs(followerBeliefs)
-            .filter { it.type == "Follower" }
+            .filter { it.type == BeliefType.Follower }
             .asSequence()
     }
     
@@ -80,12 +81,13 @@ class Religion() : INamed {
 
     fun isMajorReligion(): Boolean {
         if ("" in followerBeliefs) return true // Temporary as a result of follower beliefs not yet being implemented
-        return founderBeliefs.isNotEmpty() && followerBeliefs.any { gameInfo.ruleSet.beliefs[it]!!.type == "Follower"}
+        return founderBeliefs.isNotEmpty() && followerBeliefs
+            .any { gameInfo.ruleSet.beliefs[it]!!.type == BeliefType.Follower}
     }
 
     fun hasPantheon(): Boolean { // Currently unused
         // Temporary as a result of follower beliefs not yet being implemented
-        return followerBeliefs.any { it != "" && gameInfo.ruleSet.beliefs[it]!!.type == "Pantheon" }
+        return followerBeliefs.any { it != "" && gameInfo.ruleSet.beliefs[it]!!.type == BeliefType.Pantheon }
     }
     
     fun hasBelief(belief: String): Boolean {
