@@ -75,4 +75,7 @@ object Constants {
     const val barbarians = "Barbarians"
     const val spectator = "Spectator"
     const val custom = "Custom"
+
+    const val rising = "Rising"
+    const val lowering = "Lowering"
 }
