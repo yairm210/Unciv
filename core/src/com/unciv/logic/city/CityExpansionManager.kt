@@ -36,6 +36,10 @@ class CityExpansionManager {
     // The second seems to be more based, so I'll go with that
     fun getCultureToNextTile(): Int {
         var cultureToNextTile = 6 * (max(0, tilesClaimed()) + 1.4813).pow(1.3)
+
+        if (cityInfo.civInfo.isCityState())
+            cultureToNextTile *= 1.5f   // City states grow slower, perhaps 150% cost?
+
         for (unique in cityInfo.civInfo.getMatchingUniques("-[]% Culture cost of acquiring tiles []")) {
             if (cityInfo.matchesFilter(unique.params[1]))
                 cultureToNextTile *= (100 - unique.params[0].toFloat()) / 100
@@ -161,7 +165,7 @@ class CityExpansionManager {
     }
 
     fun nextTurn(culture: Float) {
-        cultureStored += if (cityInfo.civInfo.isCityState()) max(1, culture.toInt() / 4) else culture.toInt()   // City states expand slower
+        cultureStored += culture.toInt()
         if (cultureStored >= getCultureToNextTile()) {
             val location = addNewTileWithCulture()
             if (location != null) {
