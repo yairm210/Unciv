@@ -42,8 +42,6 @@ class MapGenerator(val ruleset: Ruleset) {
 
         MapLandmassGenerator(ruleset, randomness).generateLand(map)
         raiseMountainsAndHills(map)
-        cellularMountainRanges(map)
-        cellularHills(map)
         applyHumidityAndTemperature(map)
         spawnLakesAndCoasts(map)
         spawnVegetation(map)
@@ -178,6 +176,20 @@ class MapGenerator(val ruleset: Ruleset) {
      * [MapParameters.elevationExponent] favors high elevation
      */
     private fun raiseMountainsAndHills(tileMap: TileMap) {
+        val mountain = ruleset.terrains.values.filter { it.uniques.contains("Occurs in chains at high elevations") }.firstOrNull()?.name
+        val hill = ruleset.terrains.values.filter { it.uniques.contains("Occurs in groups around high elevations") }.firstOrNull()?.name
+        val flat = ruleset.terrains.values.filter { !it.impassable && it.type == TerrainType.Land && !it.uniques.contains("Rough Terrain") }.firstOrNull()?.name
+
+        if (flat == null) {
+            println("Ruleset seems to contain no flat terrain - can't generate heightmap")
+            return
+        }
+
+        if (mountain != null)
+            println("Mountainlike generation for " + mountain)
+        if (hill != null)
+            println("Hill-like generation for " + hill)
+
         val elevationSeed = randomness.RNG.nextInt().toDouble()
         tileMap.setTransients(ruleset)
         for (tile in tileMap.values.filter { !it.isWater }) {
@@ -185,27 +197,33 @@ class MapGenerator(val ruleset: Ruleset) {
                     elevation = abs(elevation).pow(1.0 - tileMap.mapParameters.elevationExponent.toDouble()) * elevation.sign
 
             when {
-                elevation <= 0.5 -> tile.baseTerrain = Constants.plains
-                elevation <= 0.7 -> tile.terrainFeatures.add(Constants.hill)
-                elevation <= 1.0 -> tile.baseTerrain = Constants.mountain
+                elevation <= 0.5 -> tile.baseTerrain = flat
+                elevation <= 0.7 && hill != null -> tile.terrainFeatures.add(hill)
+                elevation <= 0.7 && hill == null -> tile.baseTerrain = flat // otherwise would be hills become mountains
+                elevation <= 1.0 && mountain != null -> tile.baseTerrain = mountain
             }
             tile.setTerrainTransients()
         }
+
+        if (mountain != null)
+            cellularMountainRanges(tileMap, mountain, hill, flat)
+        if (hill != null)
+            cellularHills(tileMap, mountain, hill)
     }
 
-    private fun cellularMountainRanges(tileMap: TileMap) {
-        val targetMountains = tileMap.values.count { it.baseTerrain == Constants.mountain } * 2
+    private fun cellularMountainRanges(tileMap: TileMap, mountain: String, hill: String?, flat: String) {
+        val targetMountains = tileMap.values.count { it.baseTerrain == mountain } * 2
 
         for (i in 1..5) {
-            var totalMountains = tileMap.values.count { it.baseTerrain == Constants.mountain }
+            var totalMountains = tileMap.values.count { it.baseTerrain == mountain }
 
             for (tile in tileMap.values.filter { !it.isWater }) {
                 val adjacentMountains =
-                    tile.neighbors.count { it.baseTerrain == Constants.mountain }
+                    tile.neighbors.count { it.baseTerrain == mountain }
                 val adjacentImpassible =
-                    tile.neighbors.count { it.baseTerrain == Constants.mountain || it.baseTerrain == Constants.ocean }
+                    tile.neighbors.count { ruleset.terrains[it.baseTerrain]?.impassable == true }
 
-                if (adjacentMountains == 0 && tile.baseTerrain == Constants.mountain) {
+                if (adjacentMountains == 0 && tile.baseTerrain == mountain) {
                     if (randomness.RNG.nextInt(until = 4) == 0)
                         tile.terrainFeatures.add(Constants.lowering)
                 } else if (adjacentMountains == 1) {
@@ -221,33 +239,34 @@ class MapGenerator(val ruleset: Ruleset) {
 
             for (tile in tileMap.values.filter { !it.isWater }) {
                 if (tile.terrainFeatures.remove(Constants.rising) && totalMountains < targetMountains) {
-                    tile.terrainFeatures.remove(Constants.hill)
-                    tile.baseTerrain = Constants.mountain
+                    if (hill != null)
+                        tile.terrainFeatures.remove(hill)
+                    tile.baseTerrain = mountain
                     totalMountains++
                 }
                 if (tile.terrainFeatures.remove(Constants.lowering) && totalMountains > targetMountains * 0.5f) {
-                    if (tile.baseTerrain == Constants.mountain) {
-                        if (!tile.terrainFeatures.contains(Constants.hill))
-                            tile.terrainFeatures.add(Constants.hill)
+                    if (tile.baseTerrain == mountain) {
+                        if (hill != null && !tile.terrainFeatures.contains(hill))
+                            tile.terrainFeatures.add(hill)
                         totalMountains--
                     }
-                    tile.baseTerrain = Constants.grassland
+                    tile.baseTerrain = flat
                 }
             }
         }
     }
 
-    private fun cellularHills(tileMap: TileMap) {
-        val targetHills = tileMap.values.count { it.isHill() }
+    private fun cellularHills(tileMap: TileMap, mountain: String?, hill: String) {
+        val targetHills = tileMap.values.count { it.terrainFeatures.contains(hill) }
 
         for (i in 1..5) {
-            var totalHills = tileMap.values.count { it.isHill() }
+            var totalHills = tileMap.values.count { it.terrainFeatures.contains(hill) }
 
-            for (tile in tileMap.values.filter { !it.isWater && it.baseTerrain != Constants.mountain }) {
-                val adjacentMountains =
-                    tile.neighbors.count { it.baseTerrain == Constants.mountain }
+            for (tile in tileMap.values.filter { !it.isWater && (mountain == null || it.baseTerrain != mountain) }) {
+                val adjacentMountains = if (mountain == null) 0 else
+                    tile.neighbors.count { it.baseTerrain == mountain }
                 val adjacentHills =
-                    tile.neighbors.count { it.isHill() }
+                    tile.neighbors.count { it.terrainFeatures.contains(hill) }
 
                 if (adjacentHills <= 1 && adjacentMountains == 0 && randomness.RNG.nextInt(until = 2) == 0) {
                     tile.terrainFeatures.add(Constants.lowering)
@@ -259,16 +278,16 @@ class MapGenerator(val ruleset: Ruleset) {
 
             }
 
-            for (tile in tileMap.values.filter { !it.isWater && it.baseTerrain != Constants.mountain }) {
+            for (tile in tileMap.values.filter { !it.isWater && (mountain == null || it.baseTerrain != mountain) }) {
                 if (tile.terrainFeatures.remove(Constants.rising) && (totalHills <= targetHills || i == 1) ) {
-                    if (!tile.isHill()) {
-                        tile.terrainFeatures.add(Constants.hill)
+                    if (!tile.terrainFeatures.contains(hill)) {
+                        tile.terrainFeatures.add(hill)
                         totalHills++
                     }
                 }
                 if (tile.terrainFeatures.remove(Constants.lowering) && (totalHills >= targetHills * 0.9f || i == 1)) {
-                    if (tile.isHill()) {
-                        tile.terrainFeatures.remove(Constants.hill)
+                    if (tile.terrainFeatures.contains(hill)) {
+                        tile.terrainFeatures.remove(hill)
                         totalHills--
                     }
                 }
