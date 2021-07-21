@@ -452,20 +452,22 @@ class MapUnit {
         if (civInfo.isCurrentPlayer())
             UncivGame.Current.settings.addCompletedTutorialTask("Construct an improvement")
         when {
-            tile.improvementInProgress!!.startsWith("Remove") -> {
+            tile.improvementInProgress!!.startsWith("Remove ") -> {
+                val removedFeatureName = tile.improvementInProgress!!.removePrefix("Remove ")
                 val tileImprovement = tile.getTileImprovement()
                 if (tileImprovement != null
-                    && tile.terrainFeatures.any { tileImprovement.terrainsCanBeBuiltOn.contains(it) }
+                    && tile.terrainFeatures.any { 
+                        tileImprovement.terrainsCanBeBuiltOn.contains(it) && it == removedFeatureName 
+                    }
                     && !tileImprovement.terrainsCanBeBuiltOn.contains(tile.baseTerrain)
                 ) {
-                    tile.improvement =
-                        null // We removed a terrain (e.g. Forest) and the improvement (e.g. Lumber mill) requires it!
-                    if (tile.resource != null) civInfo.updateDetailedCivResources()        // unlikely, but maybe a mod makes a resource improvement dependent on a terrain feature
+                    // We removed a terrain (e.g. Forest) and the improvement (e.g. Lumber mill) requires it!
+                    tile.improvement = null 
+                    if (tile.resource != null) civInfo.updateDetailedCivResources() // unlikely, but maybe a mod makes a resource improvement dependent on a terrain feature
                 }
-                if (tile.improvementInProgress == "Remove Road" || tile.improvementInProgress == "Remove Railroad")
+                if (tile.improvementInProgress == "Remove Road" || tile.improvementInProgress == "Remove Railroad") {
                     tile.roadStatus = RoadStatus.None
-                else {
-                    val removedFeatureName = tile.improvementInProgress!!.removePrefix("Remove ")
+                } else {
                     val removedFeatureObject = tile.ruleset.terrains[removedFeatureName]
                     if (removedFeatureObject != null && removedFeatureObject.uniques
                             .contains("Provides a one-time Production bonus to the closest city when cut down")
