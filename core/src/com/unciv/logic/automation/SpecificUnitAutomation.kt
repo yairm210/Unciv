@@ -154,7 +154,8 @@ object SpecificUnitAutomation {
             }
         }
 
-        if (unit.getTile().militaryUnit == null) return // Don't move until you're accompanied by a military unit
+        if (unit.getTile().militaryUnit == null     // Don't move until you're accompanied by a military unit
+            && !unit.civInfo.isCityState()) return  // ..unless you're a city state that was unable to settle its city on turn 1
 
         val tilesNearCities = unit.civInfo.gameInfo.getCities().asSequence()
                 .flatMap {
