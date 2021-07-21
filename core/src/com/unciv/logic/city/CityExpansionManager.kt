@@ -8,6 +8,7 @@ import com.unciv.logic.map.TileInfo
 import com.unciv.ui.utils.withItem
 import com.unciv.ui.utils.withoutItem
 import kotlin.math.max
+import kotlin.math.min
 import kotlin.math.pow
 import kotlin.math.roundToInt
 
@@ -160,7 +161,7 @@ class CityExpansionManager {
     }
 
     fun nextTurn(culture: Float) {
-        cultureStored += culture.toInt()
+        cultureStored += if (cityInfo.civInfo.isCityState()) max(1, culture.toInt() / 4) else culture.toInt()   // City states expand slower
         if (cultureStored >= getCultureToNextTile()) {
             val location = addNewTileWithCulture()
             if (location != null) {
