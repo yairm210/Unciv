@@ -125,9 +125,9 @@ class BaseUnit : INamed, IConstruction, CivilopediaText() {
 
         if (uniqueTo != null) {
             textList += FormattedLine()
-            textList += FormattedLine("Unique to [$uniqueTo],", link="Nation/$uniqueTo")
+            textList += FormattedLine("Unique to [$uniqueTo]", link="Nation/$uniqueTo")
             if (replaces != null)
-                textList += FormattedLine("replaces [$replaces]", link="Unit/$replaces", indent=1)
+                textList += FormattedLine("Replaces [$replaces]", link="Unit/$replaces", indent=1)
         }
 
         if (requiredTech != null || upgradesTo != null || obsoleteTech != null) textList += FormattedLine()
