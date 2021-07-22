@@ -459,29 +459,32 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Plastic](https://thenounproject.com/term/plastic/478826/) By Yu luck
 * [Microphone](https://thenounproject.com/term/microphone/470266/) By Viktor Vorobyev for Mass Media
 * [Flight](https://thenounproject.com/term/flight/1014306/) By Genius Icons
-* [Train](https://thenounproject.com/term/train/651644/) By  Federico Panzano for Railroad
-* [Refridgerator](https://thenounproject.com/search/?q=refridgerator&i=1188873) By b farias, CL
+* [Train](https://thenounproject.com/term/train/651644/) By Federico Panzano for Railroad
+* [Fridge](https://thenounproject.com/search/?q=refridgerator&i=1188873) By b farias for Refrigeration
+
+### Atomic
+* [Pill](https://thenounproject.com/term/pill/780458/) By Alex Arseneau for Pharmaceuticals
+* [Satellite Dish](https://thenounproject.com/search/?q=satellite%20dish&i=2054441) By Vectors Market for Radar
+* [Ecology](https://thenounproject.com/term/ecology/1970666/) By ProSymbols
+* [Nuclear Reactor](https://thenounproject.com/term/nuclear-reactor/426463/) By Jeremie Sommet for Nuclear Fission
+* [Rocket](https://thenounproject.com/term/rocket/1743642/) By kareemov for Rocketry
+* [Computer](https://thenounproject.com/term/computer/1967529/) By Shastry for Computers
 
 ### Information
-* [Pill](https://thenounproject.com/term/pill/780458/) By Alex Arseneau for Pharmaceuticals
-* [Computer](https://thenounproject.com/term/computer/1967529/) By Shastry for Computers
+* [telecommunications](https://thenounproject.com/search/?q=telecommunications&i=3191260) by Wichai Wi for Telcommunications
 * [Tactics](https://thenounproject.com/search/?q=tactics&i=2290123) By Grafix Point for Mobile Tactics
-* [Laser](https://thenounproject.com/search/?q=laser&i=232249) by Andrew Doane for Lasers
-* [Satellite Dish](https://thenounproject.com/search/?q=satellite%20dish&i=2054441) By Vectors Market for Radar
-* [Nuclear Reactor](https://thenounproject.com/term/nuclear-reactor/426463/) By Jeremie Sommet for Nuclear Fission
-* [Ecology](https://thenounproject.com/term/ecology/1970666/) By ProSymbols
-* [Robotic Arm](https://thenounproject.com/term/robotic-arm/1970874/) By Karl Gilbert for Robotics
-* [Rocket](https://thenounproject.com/term/rocket/1743642/) By kareemov for Rocketry
 * [Rocket](https://thenounproject.com/term/rocket/3999811) Kusdarti for Advanced Ballistics
+* [Satellite](https://thenounproject.com/term/satellite/1466641/) By Ben Davis for Satellites
+* [Robotic Arm](https://thenounproject.com/term/robotic-arm/1970874/) By Karl Gilbert for Robotics
+* [Laser](https://thenounproject.com/search/?q=laser&i=232249) by Andrew Doane for Lasers
+* [global](https://thenounproject.com/search/?q=globalization&i=4073147) by Rank Sol for Globilization
+* [Atom](https://thenounproject.com/term/atom/1586852/) By Kelsey Armstrong for Particle Physics
+* [Nanoparticles](https://thenounproject.com/term/nanoparticles/822286/) By Gyan Lakhwani for Nanotechnology
+* [Thermonuclear fusion](https://thenounproject.com/search/?q=fusion&i=3292735) by Olena Panasovska, UA for Nuclear Fusion
+* [Electronics](https://thenounproject.com/search/?q=Electronics&i=1565843) By Cuby Design
+* [Radar](https://thenounproject.com/term/radar/1546196/) By CINDYFLA, ID for Stealth
 
 ### Future
-* [Nanoparticles](https://thenounproject.com/term/nanoparticles/822286/) By Gyan Lakhwani for Nanotechnology
-* [Satellite](https://thenounproject.com/term/satellite/1466641/) By Ben Davis for Satellites
-* [Electronics](https://thenounproject.com/search/?q=Electronics&i=1565843) By Cuby Design
-* [Atom](https://thenounproject.com/term/atom/1586852/) By Kelsey Armstrong for Particle Physics
-* [Thermonuclear fusion](https://thenounproject.com/search/?q=fusion&i=3292735) by Olena Panasovska, UA for Nuclear Fusion
-* [telecommunications](https://thenounproject.com/search/?q=telecommunications&i=3191260) by Wichai Wi for Telcommunications
-* [Radar](https://thenounproject.com/term/radar/1546196/) By CINDYFLA, ID for Stealth
 * [Information Technology](https://thenounproject.com/term/information-technology/1927668/) By Vectors Markeet for Future Tech
 
 ## Terrain
