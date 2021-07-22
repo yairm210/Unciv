@@ -290,11 +290,11 @@ object GameStarter {
 
             
             if (civ.isCityState()) {
+                // City states should spawn with one settler only irregardless of era and difficulty
                 val startingSettlers = startingUnits.filter { settlerLikeUnits.contains(it) }
-                if (startingSettlers.count() > 1) {
-                    startingUnits = startingUnits.filter { !settlerLikeUnits.contains(it) }.toMutableList()
-                    startingUnits.add(startingSettlers.random())
-                }
+
+                startingUnits.clear()
+                startingUnits.add( startingSettlers.random() )
             }
 
             for (unit in startingUnits) {

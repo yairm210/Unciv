@@ -338,6 +338,8 @@ class Building : NamedStats(), IConstruction, ICivilopediaText {
         for (unique in uniqueObjects.filter { it.placeholderText == "Cost increases by [] per owned city" })
             productionCost += civInfo.cities.count() * unique.params[0].toInt()
 
+        if (civInfo.isCityState())
+            productionCost *= 1.5f
         if (civInfo.isPlayerCivilization()) {
             if (!isWonder)
                 productionCost *= civInfo.getDifficulty().buildingCostModifier
