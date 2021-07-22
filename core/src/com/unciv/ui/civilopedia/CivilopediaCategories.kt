@@ -107,7 +107,7 @@ enum class CivilopediaCategories (
     Policy ("Policies", true, CivilopediaImageGetters.policy ),
     Tutorial ("Tutorials", false, null ),
     Difficulty ("Difficulty levels", false, null ),
-    Belief("Religion and Belief", false, CivilopediaImageGetters.belief)
+    Belief("Religions and Beliefs", false, CivilopediaImageGetters.belief)
     ;
 
     companion object {
