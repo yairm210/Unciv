@@ -36,5 +36,7 @@ enum class UnitActionType(val value: String) {
     HurryWonder("Hurry Wonder"),
     ConductTradeMission("Conduct Trade Mission"),
     FoundReligion("Found a Religion"),
-    DisbandUnit("Disband unit")
+    DisbandUnit("Disband unit"),
+    GiftUnit("Gift unit"),
+    ShowAdditionalActions("Show more"),
 }

@@ -1,7 +1,6 @@
 package com.unciv.ui.cityscreen
 
 import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.UncivGame
@@ -65,9 +64,7 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(CameraStageBaseS
     private fun addBuildingInfo(building: Building, destinationTable: Table) {
         val icon = ImageGetter.getConstructionImage(building.name).surroundWithCircle(30f)
         val buildingNameAndIconTable = ExpanderTab(building.name, 18, icon, false, 5f) {
-            //todo: getDescription signature changes with civilopedia phase 5
-            val detailsString = building.getDescription(true,
-                cityScreen.city, cityScreen.city.civInfo.gameInfo.ruleSet)
+            val detailsString = building.getDescription(cityScreen.city, cityScreen.city.getRuleset())
             it.add(detailsString.toLabel().apply { wrap = true })
                 .width(cityScreen.stage.width / 4 - 2 * pad).row() // when you set wrap, then you need to manually set the size of the label
             if (building.isSellable()) {
@@ -106,7 +103,7 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(CameraStageBaseS
 
         for (building in cityInfo.cityConstructions.getBuiltBuildings()) {
             when {
-                building.isWonder || building.isNationalWonder -> wonders.add(building)
+                building.isAnyWonder() -> wonders.add(building)
                 !building.newSpecialists().isEmpty() -> specialistBuildings.add(building)
                 else -> otherBuildings.add(building)
             }
@@ -211,7 +208,7 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(CameraStageBaseS
 
     private fun Table.addGreatPersonPointInfo(cityInfo: CityInfo) {
         val greatPersonPoints = cityInfo.getGreatPersonPointsForNextTurn()
-        val statToGreatPerson = GreatPersonManager().statToGreatPersonMapping
+        val statToGreatPerson = GreatPersonManager.statToGreatPersonMapping
         for (stat in Stat.values()) {
             if (!statToGreatPerson.containsKey(stat)) continue
             if (greatPersonPoints.all { it.value.get(stat) == 0f }) continue

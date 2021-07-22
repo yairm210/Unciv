@@ -28,7 +28,7 @@ class MapEditorMenuPopup(var mapEditorScreen: MapEditorScreen): Popup(mapEditorS
     }
 
     class MapEditorRulesetPopup(mapEditorScreen: MapEditorScreen) : Popup(mapEditorScreen) {
-        var ruleset = mapEditorScreen.ruleset.clone() // don't take the actual one, so w can decide to not make changes
+        var ruleset = mapEditorScreen.ruleset.clone() // don't take the actual one, so we can decide to not make changes
 
         init {
             val mods = mapEditorScreen.tileMap.mapParameters.mods

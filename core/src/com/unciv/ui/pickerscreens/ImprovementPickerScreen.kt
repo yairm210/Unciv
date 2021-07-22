@@ -15,7 +15,7 @@ import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.tr
 import com.unciv.ui.utils.*
-import com.unciv.ui.utils.StaticTooltip.Companion.addStaticTip
+import com.unciv.ui.utils.UncivTooltip.Companion.addTooltip
 import kotlin.math.round
 
 class ImprovementPickerScreen(val tileInfo: TileInfo, unit: MapUnit, val onAccept: ()->Unit) : PickerScreen() {
@@ -130,7 +130,7 @@ class ImprovementPickerScreen(val tileInfo: TileInfo, unit: MapUnit, val onAccep
 
             if (shortcutKey != null) {
                 keyPressDispatcher[shortcutKey] = { accept(improvement) }
-                improvementButton.addStaticTip(shortcutKey)
+                improvementButton.addTooltip(shortcutKey)
             }
 
             regularImprovements.add(pickNow).padLeft(10f).fillY()

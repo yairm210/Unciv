@@ -21,7 +21,7 @@ import com.unciv.ui.newgamescreen.NewGameScreen
 import com.unciv.ui.pickerscreens.ModManagementScreen
 import com.unciv.ui.saves.LoadGameScreen
 import com.unciv.ui.utils.*
-import com.unciv.ui.utils.StaticTooltip.Companion.addStaticTip
+import com.unciv.ui.utils.UncivTooltip.Companion.addTooltip
 import kotlin.concurrent.thread
 
 class MainMenuScreen: CameraStageBaseScreen() {
@@ -53,7 +53,7 @@ class MainMenuScreen: CameraStageBaseScreen() {
         if (key != null) {
             if (!keyVisualOnly)
                 keyPressDispatcher[key] = function
-            table.addStaticTip(key, 32f)
+            table.addTooltip(key, 32f)
         }
         
         table.pack()

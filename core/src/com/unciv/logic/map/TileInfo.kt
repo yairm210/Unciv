@@ -278,6 +278,41 @@ open class TileInfo {
         return stats
     }
 
+    fun getTileStartScore(): Float {
+        var sum = 0f
+        for (tile in getTilesInDistance(2)) {
+            if (tile == this)
+                continue
+            sum += tile.getTileStartYield()
+            if (tile in neighbors)
+                sum += tile.getTileStartYield()
+        }
+
+        if (isHill())
+            sum -= 2
+        if (isAdjacentToRiver())
+            sum += 2
+        if (neighbors.any { it.baseTerrain == Constants.mountain })
+            sum += 2
+
+        return sum
+    }
+
+    private fun getTileStartYield(): Float {
+        var stats = getBaseTerrain().clone()
+
+        for (terrainFeatureBase in getTerrainFeatures()) {
+            if (terrainFeatureBase.overrideStats)
+                stats = terrainFeatureBase.clone()
+            else
+                stats.add(terrainFeatureBase)
+        }
+        if (resource != null) stats.add(getTileResource())
+        if (stats.production < 0) stats.production = 0f
+
+        return stats.food + stats.production + stats.gold
+    }
+
     fun getImprovementStats(improvement: TileImprovement, observingCiv: CivilizationInfo, city: CityInfo?): Stats {
         val stats = improvement.clone() // clones the stats of the improvement, not the improvement itself
         if (hasViewableResource(observingCiv) && getTileResource().improvement == improvement.name)

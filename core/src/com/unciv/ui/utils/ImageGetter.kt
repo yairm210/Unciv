@@ -21,6 +21,7 @@ import com.unciv.models.ruleset.Nation
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.stats.Stats
+import com.unciv.models.tilesets.TileSetCache
 import kotlin.math.atan2
 import kotlin.math.max
 import kotlin.math.min
@@ -87,6 +88,8 @@ object ImageGetter {
                 textureRegionDrawables[region.name] = drawable
             }
         }
+
+        TileSetCache.assembleTileSetConfigs(ruleset.mods)
     }
 
 

@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.ui.Button
 import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.map.MapUnit
@@ -12,7 +13,7 @@ import com.unciv.models.translations.equalsPlaceholderText
 import com.unciv.models.translations.getPlaceholderParameters
 import com.unciv.ui.utils.*
 import com.unciv.ui.utils.KeyPressDispatcher.Companion.keyboardAvailable
-import com.unciv.ui.utils.StaticTooltip.Companion.addStaticTip
+import com.unciv.ui.utils.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.worldscreen.WorldScreen
 import kotlin.concurrent.thread
 
@@ -25,13 +26,13 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table() {
         when {
             unitAction.equalsPlaceholderText("Upgrade to [] ([] gold)") -> {
                 // Regexplaination: start with a [, take as many non-] chars as you can, until you reach a ].
-                // What you find between the first [ and the first ] that comes after it, will be group no. 1
+                // What you find between the first [ and the first ] that comes after it, will be group no. 0
                 val unitToUpgradeTo = unitAction.getPlaceholderParameters()[0]
                 return UnitIconAndKey(ImageGetter.getUnitIcon(unitToUpgradeTo), 'u')
             }
             unitAction.equalsPlaceholderText("Create []") -> {
                 // Regexplaination: start with a [, take as many non-] chars as you can, until you reach a ].
-                // What you find between the first [ and the first ] that comes after it, will be group no. 1
+                // What you find between the first [ and the first ] that comes after it, will be group no. 0
                 val improvementName = unitAction.getPlaceholderParameters()[0]
                 return UnitIconAndKey(ImageGetter.getImprovementIcon(improvementName), 'i')
             }
@@ -39,9 +40,12 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table() {
                 // This should later include icons for the different religions. For now, just use the great prophet icon
                 return UnitIconAndKey(ImageGetter.getUnitIcon("Great Prophet"), 'g')
             }
-            unitAction.startsWith("Sleep") -> return UnitIconAndKey(ImageGetter.getImage("OtherIcons/Sleep"), 'f')
-            unitAction.startsWith("Fortify") -> return UnitIconAndKey(ImageGetter.getImage("OtherIcons/Shield").apply { color = Color.BLACK }, 'f')
             else -> when (unitAction) {
+                "Sleep" -> return UnitIconAndKey(ImageGetter.getImage("OtherIcons/Sleep"), 'f')
+                "Sleep until healed" -> return UnitIconAndKey(ImageGetter.getImage("OtherIcons/Sleep"), 'h')
+                "Fortify" -> return UnitIconAndKey(ImageGetter.getImage("OtherIcons/Shield").apply { color = Color.BLACK }, 'f')
+                "Fortify until healed" -> return UnitIconAndKey(ImageGetter.getImage("OtherIcons/Shield").apply { color = Color.BLACK }, 'h')
+                // Move unit is not actually used anywhere
                 "Move unit" -> return UnitIconAndKey(ImageGetter.getStatIcon("Movement"))
                 "Stop movement" -> return UnitIconAndKey(ImageGetter.getStatIcon("Movement").apply { color = Color.RED }, '.')
                 "Swap units" -> return UnitIconAndKey(ImageGetter.getImage("OtherIcons/Swap"), 'y')
@@ -61,7 +65,14 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table() {
                 "Stop exploration" -> return UnitIconAndKey(ImageGetter.getImage("OtherIcons/Stop"), 'x')
                 "Pillage" -> return UnitIconAndKey(ImageGetter.getImage("OtherIcons/Pillage"), 'p')
                 "Disband unit" -> return UnitIconAndKey(ImageGetter.getImage("OtherIcons/DisbandUnit"))
-                else -> return UnitIconAndKey(ImageGetter.getImage("OtherIcons/Star"))
+                "Gift unit" -> return UnitIconAndKey(ImageGetter.getImage("OtherIcons/Present"))
+                "Show more" -> return UnitIconAndKey(ImageGetter.getImage("OtherIcons/ArrowRight"), 'm')
+                "Back" -> return UnitIconAndKey(ImageGetter.getImage("OtherIcons/ArrowLeft"))
+                else -> {
+                    // If the unit has been fortifying for some turns
+                    if (unitAction.startsWith("Fortification")) return UnitIconAndKey(ImageGetter.getImage("OtherIcons/Shield"))
+                    return UnitIconAndKey(ImageGetter.getImage("OtherIcons/Star"))
+                }
             }
         }
     }
@@ -86,7 +97,7 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table() {
         actionButton.add(iconAndKey.Icon).size(20f).pad(5f)
         val fontColor = if (unitAction.isCurrentAction) Color.YELLOW else Color.WHITE
         actionButton.add(unitAction.title.toLabel(fontColor)).pad(5f)
-        actionButton.addStaticTip(iconAndKey.key)
+        actionButton.addTooltip(iconAndKey.key)
         actionButton.pack()
         val action = {
             unitAction.action?.invoke()

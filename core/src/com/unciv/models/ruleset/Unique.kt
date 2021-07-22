@@ -25,10 +25,10 @@ class UniqueMap:HashMap<String, ArrayList<Unique>>() {
         this[unique.placeholderText]!!.add(unique)
     }
 
-    fun getUniques(placeholderText: String): List<Unique> {
+    fun getUniques(placeholderText: String): Sequence<Unique> {
         val result = this[placeholderText]
-        if (result == null) return listOf()
-        else return result
+        if (result == null) return sequenceOf()
+        else return result.asSequence()
     }
 
     fun getAllUniques() = this.asSequence().flatMap { it.value.asSequence() }
@@ -93,9 +93,6 @@ object UniqueTriggerActivation {
             "[] Free Technologies" -> if (!civInfo.isSpectator()) civInfo.tech.freeTechs += unique.params[0].toInt() 
 
             "Quantity of strategic resources produced by the empire increased by 100%" -> civInfo.updateDetailedCivResources()
-            // Deprecated since 3.15
-                "+20% attack bonus to all Military Units for 30 turns" -> civInfo.temporaryUniques.add(Pair(unique, 30))
-            //
             "+[]% attack strength to all [] Units for [] turns" -> civInfo.temporaryUniques.add(Pair(unique, unique.params[2].toInt()))
 
             "Reveals the entire map" -> civInfo.exploredTiles.addAll(civInfo.gameInfo.tileMap.values.asSequence().map { it.position })

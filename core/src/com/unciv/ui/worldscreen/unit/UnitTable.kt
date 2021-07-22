@@ -40,7 +40,10 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
     fun selectUnit(unit:MapUnit?=null, append:Boolean=false) {
         if (!append) selectedUnits.clear()
         selectedCity = null
-        if (unit != null) selectedUnits.add(unit)
+        if (unit != null) {
+            selectedUnits.add(unit)
+            unit.actionsOnDeselect()
+        }
         selectedUnitIsSwapping = false
     }
 

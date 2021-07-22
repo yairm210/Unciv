@@ -221,7 +221,7 @@ class Ruleset {
             if (building.cost == 0) {
                 val column = technologies[building.requiredTech]?.column
                         ?: throw UncivShowableException("Building (${building.name}) must either have an explicit cost or reference an existing tech")
-                building.cost = if (building.isWonder || building.isNationalWonder) column.wonderCost else column.buildingCost
+                building.cost = if (building.isAnyWonder()) column.wonderCost else column.buildingCost
             }
         }
     }

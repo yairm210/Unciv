@@ -8,6 +8,7 @@ import com.unciv.MainMenuScreen
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.models.UncivSound
 import com.unciv.models.ruleset.RulesetCache
+import com.unciv.models.tilesets.TileSetCache
 import com.unciv.models.translations.TranslationFileWriter
 import com.unciv.models.translations.Translations
 import com.unciv.models.translations.tr
@@ -363,6 +364,7 @@ class OptionsPopup(val previousScreen:CameraStageBaseScreen) : Popup(previousScr
 
         tileSetSelectBox.onChange {
             settings.tileSet = tileSetSelectBox.selected
+            TileSetCache.assembleTileSetConfigs()
             reloadWorldAndOptions()
         }
     }

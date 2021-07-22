@@ -1,3 +1,20 @@
+## 3.15.13
+
+By SomeTroglodyte:
+- Fix for missing Farm images
+- Better keyboard shortcuts
+- Rewritten Tooltip class 
+- Sort Civilopedia entries using locale 
+- Spruced up Civilopedia - phase 5 - buildings 
+
+By xlenstra:
+- Implemented Follower beliefs for religions 
+- Fixed unique of Persian immortal not working
+
+Unit gifting - By SimonCeder
+
+Added Polder image
+
 ## 3.15.12
 
 By xlenstra:
