@@ -287,7 +287,7 @@ class CivilopediaScreen(
                     )
                 }
 
-        if (UncivGame.Current.isGameInfoInitialized() && UncivGame.Current.gameInfo.hasReligionEnabled())
+        if (!hideReligionItems)
             categoryToEntries[CivilopediaCategories.Belief] = (
                 ruleset.beliefs.values.asSequence()
                 .map {
