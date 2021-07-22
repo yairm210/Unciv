@@ -15,7 +15,7 @@ class GameParameters { // Default values are the default new game
         add(Player().apply { playerType = PlayerType.Human })
         for (i in 1..3) add(Player())
     }
-    var numberOfCityStates = 8 // Civ V's default
+    var numberOfCityStates = 6
 
     var noBarbarians = false
     var oneCityChallenge = false
