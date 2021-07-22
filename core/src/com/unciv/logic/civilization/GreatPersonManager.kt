@@ -13,9 +13,9 @@ class GreatPersonManager {
     companion object {
         val statToGreatPersonMapping = hashMapOf<Stat, String>(
             Stat.Science to "Great Scientist",
-            Stat.Production to "Great Scientist",
-            Stat.Gold to "Great Scientist",
-            Stat.Culture to "Great Scientist",
+            Stat.Production to "Great Engineer",
+            Stat.Gold to "Great Merchant",
+            Stat.Culture to "Great Artist",
         )
     }
 

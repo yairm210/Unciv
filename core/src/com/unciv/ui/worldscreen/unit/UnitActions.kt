@@ -25,45 +25,59 @@ import com.unciv.ui.worldscreen.WorldScreen
 object UnitActions {
 
     fun getUnitActions(unit: MapUnit, worldScreen: WorldScreen): List<UnitAction> {
+        return if (unit.showAdditionalActions) getAdditionalActions(unit, worldScreen)
+        else getNormalActions(unit, worldScreen)
+    }
+
+    private fun getNormalActions(unit: MapUnit, worldScreen: WorldScreen): List<UnitAction> {
         val tile = unit.getTile()
         val unitTable = worldScreen.bottomUnitTable
         val actionList = ArrayList<UnitAction>()
 
         if (unit.isMoving()) actionList += UnitAction(UnitActionType.StopMovement) { unit.action = null }
+        if (unit.isAutomaticallyBuildingImprovements())
+            actionList += UnitAction(UnitActionType.StopAutomation) { unit.action = null }
 
-        // Constants.workerUnique deprecated since 3.15.5
-        val workingOnImprovement = unit.currentTile.hasImprovementInProgress() && unit.canBuildImprovement(unit.currentTile.getTileImprovementInProgress()!!)
-        if (!unit.isFortified() && !unit.canFortify() && unit.currentMovement > 0 && !workingOnImprovement) {
-            addSleepActions(actionList, unit, unitTable)
-        }
-
-        if (unit.canFortify()) addFortifyActions(actionList, unit, unitTable)
-        else if (unit.isFortified()) {
-            actionList += UnitAction(
-                    type = if (unit.action!!.endsWith(" until healed"))
-                        UnitActionType.FortifyUntilHealed else
-                        UnitActionType.Fortify,
-                    isCurrentAction = true,
-                    title = "${"Fortification".tr()} ${unit.getFortificationTurns() * 20}%"
-            )
-        }
-
-        addSwapAction(unit, actionList, worldScreen)
-        addExplorationActions(unit, actionList)
+        addSleepActions(actionList, unit, false)
+        addFortifyActions(actionList, unit, false)
+        
         addPromoteAction(unit, actionList)
         addUnitUpgradeAction(unit, actionList)
         addPillageAction(unit, actionList, worldScreen)
         addParadropAction(unit, actionList, worldScreen)
         addSetupAction(unit, actionList)
         addFoundCityAction(unit, actionList, tile)
-        addWorkerActions(unit, actionList, tile, worldScreen, unitTable)
+        addBuildingImprovementsAction(unit, actionList, tile, worldScreen, unitTable)
+        addAutomateBuildingImprovementsAction(unit, actionList)
         addCreateWaterImprovements(unit, actionList)
         addGreatPersonActions(unit, actionList, tile)
         addFoundReligionAction(unit, actionList, tile)
-        addSpreadReligionActions(unit, actionList, tile)
         actionList += getImprovementConstructionActions(unit, tile)
+        addSpreadReligionActions(unit, actionList, tile)
+
+
+
+        addToggleActionsAction(unit, actionList, unitTable)
+
+        return actionList
+    }
+
+    private fun getAdditionalActions(unit: MapUnit, worldScreen: WorldScreen): List<UnitAction> {
+        val tile = unit.getTile()
+        val unitTable = worldScreen.bottomUnitTable
+        val actionList = ArrayList<UnitAction>()
+
+        addSleepActions(actionList, unit, true)
+        addFortifyActions(actionList, unit, true)
+
+        addSwapAction(unit, actionList, worldScreen)
+        addExplorationActions(unit, actionList)
         addDisbandAction(actionList, unit, worldScreen)
         addGiftAction(unit, actionList, tile)
+
+
+
+        addToggleActionsAction(unit, actionList, unitTable)
 
         return actionList
     }
@@ -135,11 +149,11 @@ object UnitActions {
     /** Produce a [UnitAction] for founding a city.
      * @param unit The unit to do the founding.
      * @param tile The tile to found a city on.
-     * @return null if impossible (the unit lacks the ability to found), 
-     * or else a [UnitAction] 'defining' the founding. 
-     * The [action][UnitAction.action] field will be null if the action cannot be done here and now   
+     * @return null if impossible (the unit lacks the ability to found),
+     * or else a [UnitAction] 'defining' the founding.
+     * The [action][UnitAction.action] field will be null if the action cannot be done here and now
      * (no movement left, too close to another city).
-      */ 
+      */
     fun getFoundCityAction(unit: MapUnit, tile: TileInfo): UnitAction? {
         if (!unit.hasUnique("Founds a new city") || tile.isWater) return null
 
@@ -154,7 +168,7 @@ object UnitActions {
             unit.destroy()
             UncivGame.Current.worldScreen.shouldUpdate = true
         }
-        
+
         if (unit.civInfo.playerType == PlayerType.AI)
             return UnitAction(UnitActionType.FoundCity,  uncivSound = UncivSound.Silent, action = foundAction)
 
@@ -177,8 +191,8 @@ object UnitActions {
 
     /**
      * Checks whether a civ founding a city on a certain tile would break a promise.
-     * @param civInfo The civilization trying to found a city 
-     * @param tile The tile where the new city would go 
+     * @param civInfo The civilization trying to found a city
+     * @param tile The tile where the new city would go
      * @return null if no promises broken, else a String listing the leader(s) we would p* off.
      */
     private fun TestPromiseNotToSettle(civInfo: CivilizationInfo, tile: TileInfo): String? {
@@ -320,33 +334,35 @@ object UnitActions {
                 })
     }
 
-    private fun addWorkerActions(unit: MapUnit, actionList: ArrayList<UnitAction>, tile: TileInfo, worldScreen: WorldScreen, unitTable: UnitTable) {
+    private fun addBuildingImprovementsAction(unit: MapUnit, actionList: ArrayList<UnitAction>, tile: TileInfo, worldScreen: WorldScreen, unitTable: UnitTable) {
         // Constants.workerUnique deprecated since 3.15.5
         if (!unit.hasUnique(Constants.canBuildImprovements) && !unit.hasUnique(Constants.workerUnique)) return
-
-        // Allow automate/unautomate when embarked, but not building improvements - see #1963
-        if (Constants.unitActionAutomation == unit.action) {
-            actionList += UnitAction(UnitActionType.StopAutomation) { unit.action = null }
-        } else {
-            actionList += UnitAction(UnitActionType.Automate,
-                    action = {
-                        unit.action = Constants.unitActionAutomation
-                        WorkerAutomation(unit).automateWorkerAction()
-                    }.takeIf { unit.currentMovement > 0 })
-        }
-
         if (unit.isEmbarked()) return
 
         val canConstruct = unit.currentMovement > 0
                 && !tile.isCityCenter()
                 && unit.civInfo.gameInfo.ruleSet.tileImprovements.values.any { tile.canBuildImprovement(it, unit.civInfo) && unit.canBuildImprovement(it) }
-        
+
         actionList += UnitAction(UnitActionType.ConstructImprovement,
-                isCurrentAction = unit.currentTile.hasImprovementInProgress(),
-                action = {
-                    worldScreen.game.setScreen(ImprovementPickerScreen(tile, unit) { unitTable.selectUnit() })
-                }.takeIf { canConstruct })
+            isCurrentAction = unit.currentTile.hasImprovementInProgress(),
+            action = {
+                worldScreen.game.setScreen(ImprovementPickerScreen(tile, unit) { unitTable.selectUnit() })
+            }.takeIf { canConstruct }
+        )
     }
+
+    private fun addAutomateBuildingImprovementsAction(unit: MapUnit, actionList: ArrayList<UnitAction>) {
+        // Constants.workerUnique deprecated since 3.15.5
+        if (!unit.hasUnique(Constants.canBuildImprovements) && !unit.hasUnique(Constants.workerUnique)) return
+
+        actionList += UnitAction(UnitActionType.Automate,
+            action = {
+                unit.action = Constants.unitActionAutomation
+                WorkerAutomation(unit).automateWorkerAction()
+            }.takeIf { unit.currentMovement > 0 }
+        )
+    }
+
 
     private fun addGreatPersonActions(unit: MapUnit, actionList: ArrayList<UnitAction>, tile: TileInfo) {
 
@@ -413,7 +429,7 @@ object UnitActions {
             }
         }
     }
-    
+
     private fun addFoundReligionAction(unit: MapUnit, actionList: ArrayList<UnitAction>, tile: TileInfo) {
         if (!unit.hasUnique("May found a religion")) return // should later also include enhance religion
         if (!unit.civInfo.religionManager.mayUseGreatProphetAtAll(unit)) return
@@ -426,7 +442,7 @@ object UnitActions {
             }.takeIf { unit.civInfo.religionManager.mayUseGreatProphetNow(unit) }
         )
     }
-    
+
     private fun addSpreadReligionActions(unit: MapUnit, actionList: ArrayList<UnitAction>, tile: TileInfo) {
         if (!unit.hasUnique("Can spread religion [] times")) return
         if (unit.religion == null) return
@@ -448,7 +464,7 @@ object UnitActions {
             }.takeIf { unit.currentMovement > 0 && city != null && city.civInfo == unit.civInfo } // For now you can only convert your own cities
         )
     }
-    
+
     fun getImprovementConstructionActions(unit: MapUnit, tile: TileInfo): ArrayList<UnitAction> {
         val finalActions = ArrayList<UnitAction>()
         var uniquesToCheck = unit.getMatchingUniques("Can construct []")
@@ -504,7 +520,7 @@ object UnitActions {
 
         // In the rare case more than one city owns tiles neighboring the citadel
         // this will prioritize the nearest one not being razed
-        var nearestCity = unit.currentTile.neighbors
+        val nearestCity = unit.currentTile.neighbors
             .filter { it.getOwner() == unit.civInfo }
             .minByOrNull { priority(it) }?.getCity()
             ?: fallbackNearestCity(unit)
@@ -541,49 +557,60 @@ object UnitActions {
         civInfo.addNotification("[${mausoleum.name}] has provided [$goldEarned] Gold!", cityWithMausoleum.location, NotificationIcon.Gold)
     }
 
-    private fun addFortifyActions(actionList: ArrayList<UnitAction>, unit: MapUnit, unitTable: UnitTable) {
-
-        val action = UnitAction(UnitActionType.Fortify,
-                uncivSound = UncivSound.Fortify,
-                action = {
-                    unit.fortify()
-                    unitTable.selectUnit()
-                }.takeIf { unit.currentMovement > 0 })
-
-        if (unit.health < 100) {
-            val actionForWounded = action.copy(UnitActionType.FortifyUntilHealed,
-                    title = UnitActionType.FortifyUntilHealed.value,
-                    action = {
-                        unit.fortifyUntilHealed()
-                        unitTable.selectUnit()
-                    }.takeIf { unit.currentMovement > 0 })
-            actionList += actionForWounded
+    private fun addFortifyActions(actionList: ArrayList<UnitAction>, unit: MapUnit, showingAdditionalActions: Boolean) {
+        if (unit.isFortified() && !showingAdditionalActions) {
+            actionList += UnitAction(
+                type = if (unit.action!!.endsWith(" until healed"))
+                    UnitActionType.FortifyUntilHealed else
+                    UnitActionType.Fortify,
+                isCurrentAction = true,
+                title = "${"Fortification".tr()} ${unit.getFortificationTurns() * 20}%"
+            )
+            return
         }
 
-        actionList += action
+        if (!unit.canFortify()) return
+        if (unit.currentMovement == 0f) return
+
+        val isFortified = unit.isFortified()
+        val isDamaged = unit.health < 100
+
+        if (isDamaged && !showingAdditionalActions)
+            actionList += UnitAction(UnitActionType.FortifyUntilHealed,
+            title = UnitActionType.FortifyUntilHealed.value,
+            action = {
+                unit.fortifyUntilHealed()
+            }.takeIf { !unit.isFortifyingUntilHealed() }
+        )
+        else if (isDamaged || !showingAdditionalActions)
+            actionList += UnitAction(UnitActionType.Fortify,
+            uncivSound = UncivSound.Fortify,
+            action = {
+                unit.fortify()
+            }.takeIf { !isFortified }
+        )
     }
 
-    private fun addSleepActions(actionList: ArrayList<UnitAction>, unit: MapUnit, unitTable: UnitTable) {
+    private fun addSleepActions(actionList: ArrayList<UnitAction>, unit: MapUnit, showingAdditionalActions: Boolean) {
+        if (unit.isFortified() || unit.canFortify() || unit.currentMovement == 0f) return
+        // If this unit is working on an improvement, it cannot sleep
+        if ((unit.currentTile.hasImprovementInProgress() && unit.canBuildImprovement(unit.currentTile.getTileImprovementInProgress()!!))) return
         val isSleeping = unit.isSleeping()
+        val isDamaged = unit.health < 100
 
-        val action = UnitAction(UnitActionType.Sleep,
-                isCurrentAction = isSleeping,
+        if (isDamaged && !showingAdditionalActions) {
+            actionList += UnitAction(UnitActionType.SleepUntilHealed,
+                action = {
+                    unit.action = Constants.unitActionSleepUntilHealed
+                }.takeIf { !unit.isSleepingUntilHealed() }
+            )
+        } else if (isDamaged || !showingAdditionalActions) {
+            actionList += UnitAction(UnitActionType.Sleep,
                 action = {
                     unit.action = Constants.unitActionSleep
-                    unitTable.selectUnit()
-                }.takeIf { !isSleeping })
-
-        if (unit.health < 100 && !isSleeping) {
-            val actionForWounded = action.copy(UnitActionType.SleepUntilHealed,
-                    title = UnitActionType.SleepUntilHealed.value,
-                    action = {
-                        unit.action = Constants.unitActionSleepUntilHealed
-                        unitTable.selectUnit()
-                    })
-            actionList += actionForWounded
+                }.takeIf { !isSleeping }
+            )
         }
-
-        actionList += action
     }
 
     fun canPillage(unit: MapUnit, tile: TileInfo): Boolean {
@@ -644,4 +671,15 @@ object UnitActions {
 
         return UnitAction(UnitActionType.GiftUnit, uncivSound = UncivSound.Silent, action = giftAction)
     }
+
+    private fun addToggleActionsAction(unit: MapUnit, actionList: ArrayList<UnitAction>, unitTable: UnitTable) {
+        actionList += UnitAction(UnitActionType.ShowAdditionalActions,
+            title = if (unit.showAdditionalActions) "Back" else "Show more",
+            action = {
+                unit.showAdditionalActions = !unit.showAdditionalActions
+                unitTable.update()
+            }
+        )
+    }
+
 }

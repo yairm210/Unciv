@@ -265,8 +265,6 @@
 		"quote": "'Regard your soldiers as your children, and they will follow you into the deepest valleys; look on them as your own beloved sons, and they will stand by you even unto death.'  - Sun Tzu"
 	},
 	// Column 4
-	/*
-	// Temple and its replacements are religious buildings in G&K
 	{
 		"name": "Temple",
 		"faith": 2,
@@ -274,9 +272,8 @@
 		"maintenance": 2,
 		"hurryCostModifier": 25,
 		"requiredTech": "Philosophy",
-		"uniques": ""
+		"uniques": ["Hidden when religion is disabled"]
 	},
-	*/
 	{
 		"name": "National College",
 		"cost": 125,
@@ -324,6 +321,11 @@
 		// temporarily replaces Drama and Poetry and requires a Monument while having its Vanilla
 		// stats, so it's a mish-mash of vanilla and G&K. It should be changed when faith is
 		// implemented.
+
+		// Further edit: Temples are now implemented. However, due to Religion still being in 
+		// its alpha stages, these buildings are still the culture variant. When religion is finally
+		// fully released, this building should be replaced with amphitheatres in existing save files,
+		// and then later the G&K faith version can be added
 	},
 	{
 		"name": "Mud Pyramid Mosque",
@@ -343,6 +345,11 @@
 		// temporarily replaces Drama and Poetry and requires a Monument while having its Vanilla
 		// stats, so it's a mish-mash of vanilla and G&K. It should be changed when faith is
 		// implemented.
+
+		// Further edit: Temples are now implemented. However, due to Religion still being in 
+		// its alpha stages, these buildings are still the culture variant. When religion is finally
+		// fully released, this building should be replaced with amphitheatres in existing save files,
+		// and then later the G&K faith version can be added
 	},
 	{
 		"name": "National Epic",

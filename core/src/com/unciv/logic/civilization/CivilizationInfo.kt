@@ -779,6 +779,8 @@ class CivilizationInfo {
         val givingCityState = getKnownCivs().filter { it.isCityState() && it.getAllyCiv() == civName}.random()
         var giftableUnits = gameInfo.ruleSet.units.values.filter { it.isGreatPerson() }
         if (!gameInfo.hasReligionEnabled()) giftableUnits = giftableUnits.filterNot { it.uniques.contains("Great Person - [Faith]")}
+        if (giftableUnits.isEmpty()) // For badly defined mods that don't have great people but do have the policy that makes city states grant them
+            return
         val giftedUnit = giftableUnits.random()
         val cities = NextTurnAutomation.getClosestCities(this, givingCityState)
         val placedUnit = placeUnitNearTile(cities.city1.location, giftedUnit.name)

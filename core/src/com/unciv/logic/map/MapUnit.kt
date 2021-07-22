@@ -102,6 +102,8 @@ class MapUnit {
     var health: Int = 100
 
     var action: String? = null // work, automation, fortifying, I dunno what.
+    @Transient
+    var showAdditionalActions: Boolean = false
 
     var attacksThisTurn = 0
     var promotions = UnitPromotions()
@@ -247,10 +249,16 @@ class MapUnit {
     }
 
     fun isFortified() = action?.startsWith("Fortify") == true
+    
+    fun isFortifyingUntilHealed() = isFortified() && action?.endsWith("until healed") == true
 
     fun isSleeping() = action?.startsWith("Sleep") == true
+    
+    fun isSleepingUntilHealed() = isSleeping() && action?.endsWith("until healed") == true
 
     fun isMoving() = action?.startsWith("moveTo") == true
+    
+    fun isAutomaticallyBuildingImprovements() = action != null && action == Constants.unitActionAutomation
 
     fun getFortificationTurns(): Int {
         if (!isFortified()) return 0
@@ -452,20 +460,22 @@ class MapUnit {
         if (civInfo.isCurrentPlayer())
             UncivGame.Current.settings.addCompletedTutorialTask("Construct an improvement")
         when {
-            tile.improvementInProgress!!.startsWith("Remove") -> {
+            tile.improvementInProgress!!.startsWith("Remove ") -> {
+                val removedFeatureName = tile.improvementInProgress!!.removePrefix("Remove ")
                 val tileImprovement = tile.getTileImprovement()
                 if (tileImprovement != null
-                    && tile.terrainFeatures.any { tileImprovement.terrainsCanBeBuiltOn.contains(it) }
+                    && tile.terrainFeatures.any { 
+                        tileImprovement.terrainsCanBeBuiltOn.contains(it) && it == removedFeatureName 
+                    }
                     && !tileImprovement.terrainsCanBeBuiltOn.contains(tile.baseTerrain)
                 ) {
-                    tile.improvement =
-                        null // We removed a terrain (e.g. Forest) and the improvement (e.g. Lumber mill) requires it!
-                    if (tile.resource != null) civInfo.updateDetailedCivResources()        // unlikely, but maybe a mod makes a resource improvement dependent on a terrain feature
+                    // We removed a terrain (e.g. Forest) and the improvement (e.g. Lumber mill) requires it!
+                    tile.improvement = null 
+                    if (tile.resource != null) civInfo.updateDetailedCivResources() // unlikely, but maybe a mod makes a resource improvement dependent on a terrain feature
                 }
-                if (tile.improvementInProgress == "Remove Road" || tile.improvementInProgress == "Remove Railroad")
+                if (tile.improvementInProgress == "Remove Road" || tile.improvementInProgress == "Remove Railroad") {
                     tile.roadStatus = RoadStatus.None
-                else {
-                    val removedFeatureName = tile.improvementInProgress!!.removePrefix("Remove ")
+                } else {
                     val removedFeatureObject = tile.ruleset.terrains[removedFeatureName]
                     if (removedFeatureObject != null && removedFeatureObject.uniques
                             .contains("Provides a one-time Production bonus to the closest city when cut down")
@@ -994,6 +1004,11 @@ class MapUnit {
         if (abilityUsedCount["Religion Spread"] == null) return "" // That is, either the key doesn't exist, or it does exist and the value is null.
         return "${maxSpreads - abilityUsedCount["Religion Spread"]!!}/${maxSpreads}"
     }
-    
+
+    fun actionsOnDeselect() {
+        showAdditionalActions = false
+        if (action == Constants.unitActionParadrop) action = null
+    }
+
     //endregion
 }
