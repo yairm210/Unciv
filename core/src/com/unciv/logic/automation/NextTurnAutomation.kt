@@ -208,6 +208,7 @@ object NextTurnAutomation {
                         VictoryType.Cultural -> listOf("Piety", "Freedom", "Tradition", "Commerce", "Patronage")
                         VictoryType.Scientific -> listOf("Rationalism", "Commerce", "Liberty", "Order", "Patronage")
                         VictoryType.Domination -> listOf("Autocracy", "Honor", "Liberty", "Rationalism", "Commerce")
+                        VictoryType.Diplomatic -> listOf("Patronage", "Commerce", "Rationalism", "Freedom", "Tradition")
                         VictoryType.Neutral -> listOf()
                     }
             val policiesByPreference = adoptablePolicies

@@ -173,7 +173,12 @@ class CivilopediaScreen(
         categoryToEntries[CivilopediaCategories.Building] = ruleset.buildings.values
                 .filter { "Will not be displayed in Civilopedia" !in it.uniques
                         && !(hideReligionItems && "Hidden when religion is disabled" in it.uniques)
-                        && !(noCulturalVictory && "Hidden when cultural victory is disabled" in it.uniques)
+                        && !(it.uniqueObjects.filter { unique -> unique.placeholderText == "Hidden when [] Victory is disabled"}.any {
+                            unique -> !game.gameInfo.gameParameters.victoryTypes.contains(VictoryType.valueOf(unique.params[0] )) 
+                        })
+                        // Deprecated since 3.15.14
+                            && !(noCulturalVictory && "Hidden when cultural victory is disabled" in it.uniques)
+                        //
                         && !it.isAnyWonder() }
                 .map {
                     CivilopediaEntry(
@@ -186,7 +191,12 @@ class CivilopediaScreen(
         categoryToEntries[CivilopediaCategories.Wonder] = ruleset.buildings.values
                 .filter { "Will not be displayed in Civilopedia" !in it.uniques
                         && !(hideReligionItems && "Hidden when religion is disabled" in it.uniques)
-                        && !(noCulturalVictory && "Hidden when cultural victory is disabled" in it.uniques)
+                        && !(it.uniqueObjects.filter { unique -> unique.placeholderText == "Hidden when [] Victory is disabled"}.any {
+                            unique -> !game.gameInfo.gameParameters.victoryTypes.contains(VictoryType.valueOf(unique.params[0] ))
+                        })
+                        // Deprecated since 3.15.14
+                            && !(noCulturalVictory && "Hidden when cultural victory is disabled" in it.uniques)
+                        //
                         && it.isAnyWonder() }
                 .map {
                     CivilopediaEntry(

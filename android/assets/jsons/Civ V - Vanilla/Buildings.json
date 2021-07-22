@@ -1097,17 +1097,15 @@
 		"requiredTech": "Robotics"
 	},
 	// Column 16
-	/*
 	{
 		"name": "United Nations",
 		"isWonder": true,
 		"culture": 1,
 		"greatPersonPoints": {"gold": 2},
-		"uniques": ["Triggers voting for the Diplomatic Victory"],
-		"quote": "'More than ever before in human history, we share a common destiny. We can master it only if we face it together. And that is why we have the United Nations.'  - Kofi Annan"
-		"requiredTech": "Globalization", // todo doesn't exist yet!
+		"uniques": ["Triggers voting for the Diplomatic Victory", "Hidden when [Diplomatic] Victory is disabled"],
+		"quote": "'More than ever before in human history, we share a common destiny. We can master it only if we face it together. And that is why we have the United Nations.' - Kofi Annan"
+		"requiredTech": "Globalization", 
 	},
-	*/
 	{
 		"name": "SS Engine",
 		"requiredResource": "Aluminum",
@@ -1128,6 +1126,6 @@
 		"cost": 1500,
 		"isNationalWonder": true,
 		"uniques": ["Hidden until [5] social policy branches have been completed", "Triggers a global alert upon build start", 
-			"Triggers a Cultural Victory upon completion", "Hidden when cultural victory is disabled"]
+			"Triggers a Cultural Victory upon completion", "Hidden when [Cultural] Victory is disabled"]
 	}
 ]

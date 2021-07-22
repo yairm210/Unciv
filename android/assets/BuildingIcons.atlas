@@ -746,58 +746,65 @@ Theatre
   orig: 100, 100
   offset: 0, 0
   index: -1
-University
+United Nations
   rotate: false
   xy: 1516, 760
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Utopia Project
+University
   rotate: false
   xy: 1624, 868
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Walls
+Utopia Project
   rotate: false
   xy: 868, 4
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Walls of Babylon
+Walls
   rotate: false
   xy: 976, 112
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Wat
+Walls of Babylon
   rotate: false
   xy: 1084, 220
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Water Mill
+Wat
   rotate: false
   xy: 1192, 328
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Windmill
+Water Mill
   rotate: false
   xy: 1300, 436
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Workshop
+Windmill
   rotate: false
   xy: 1408, 544
+  size: 100, 100
+  orig: 100, 100
+  offset: 0, 0
+  index: -1
+Workshop
+  rotate: false
+  xy: 1516, 652
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
