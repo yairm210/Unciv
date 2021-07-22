@@ -14,6 +14,7 @@
 - [Buildings-only](#buildings-only)
   * [Stat uniques](#stat-uniques-1)
   * [Construction condition uniques](#construction-condition-uniques)
+- [Religion uniques](#religion-uniques)
 - [Improvement uniques](#improvement-uniques)
 - [Unit uniques](#unit-uniques)
   * [Civilian](#civilian)
@@ -173,6 +174,9 @@ For units, the UnitFilter is called. For Buildings, the following options are im
 "Specialists only produce [amount]% of normal unhappiness"
 
 "-[amount]% food consumption by specialists"
+
+"[stats] if this city has at least [amount] specialists"
+
 
 ### One time effect
 
@@ -410,6 +414,28 @@ These last two uniques may seem like they only have a one-time effect. However, 
 
 "Hidden when religion is disabled" - Also hides the building from the tech tree. 
 
+## Religion uniques
+
+### Follower uniques
+
+Follower uniques are uniques applied to each city following a religion which includes this unique. It is also possible for general uniques to be used for beliefs, the ones below are specifically for religions.
+
+"[signedAmount]% growth [cityFilter] when not at war"
+
+"[amount]% attacking Strength for cities"
+
+"[amount]% cost of natural border growth"
+
+"[stats] in cities with [amount] or more population"
+
+"[stats] from cities on [tileFilter] tiles"
+
+"[unitFilter] Units adjacent to this city heal [amount] HP per turn when healing"
+
+"[stats] from [tileFilter] tiles without [tileFilter] [cityFilter]"
+
+"Earn [amount]% of [unitFilter] unit's [param] as [stat] when killed within 4 tiles of a city following this religion"
+
 ## Improvement uniques
 
 "Obsolete with [techName]"
@@ -457,6 +483,8 @@ These last two uniques may seem like they only have a one-time effect. However, 
 "Can construct [improvement]" - destroys the unit upon construction
 
 "Unbuildable"
+
+"May found a religion"
 
 ### Visibility
 
