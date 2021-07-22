@@ -172,6 +172,8 @@ class BaseUnit : INamed, IConstruction, CivilopediaText() {
 
     override fun getProductionCost(civInfo: CivilizationInfo): Int {
         var productionCost = cost.toFloat()
+        if (civInfo.isCityState())
+            productionCost *= 1.5f
         if (civInfo.isPlayerCivilization())
             productionCost *= civInfo.getDifficulty().unitCostModifier
         else
