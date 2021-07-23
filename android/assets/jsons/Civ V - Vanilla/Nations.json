@@ -338,10 +338,10 @@
 		"innerColor": [60,60,60],
 		"uniqueName": "Furor Teutonicus",
 		"uniques": ["67% chance to earn 25 Gold and recruit a Barbarian unit from a conquered encampment", "-[25]% [Land] unit maintenance costs"],
-		"cities": ["Berlin","Hamburg","Munich","Cologne","Frankfurt","Essen","Dortmund","Stuttgart","Dusseldorf","Bremen",
+		"cities": ["Berlin","Hamburg","Munich","Cologne","Frankfurt","Essen","Dortmund","Stuttgart","Düsseldorf","Bremen",
 			"Hannover","Duisburg","Leipzig","Dresden","Bonn","Bochum","Bielefeld","Karlsruhe","Gelsenkirchen","Wiesbaden",
 			"Münster","Rostock","Chemnitz","Braunschweig","Halle","Mönchengladbach","Kiel","Wuppertal","Freiburg","Hagen",
-			"Erfurt","Kaiserslautern","Kassel","Oberhausen","Hamm","Saarbrucken","Krefeld","Pirmasens","Potsdam","Solingen",
+			"Erfurt","Kaiserslautern","Kassel","Oberhausen","Hamm","Saarbrücken","Krefeld","Pirmasens","Potsdam","Solingen",
 			"Osnabrück","Ludwigshafen","Leverkusen","Oldenburg","Neuss","Mülheim","Darmstadt","Herne","Würzburg",
 			"Recklinghausen","Göttingen","Wolfsburg","Koblenz","Hildesheim","Erlangen"]
 	},
@@ -367,9 +367,9 @@
 		"innerColor": [18,84,30],
 		"uniqueName": "Barbary Corsairs",
 		"uniques": ["-[66]% [Water] unit maintenance costs", "50% chance of capturing defeated Barbarian naval units and earning 25 Gold"],
-		"cities": ["Istanbul","Edirne","Ankara","Bursa","Konya","Samsun","Gaziantep","Diyabakir","Izmir","Kayseri","Malatya",
-			"Marsin","Antalya","Zonguldak","Denizli","Ordu","Mugia","Eskishehir","Inebolu","Sinop","Adana","Artuin",
-			"Bodrum","Eregli","Silifke","Sivas","Amasya","Marmaris","Trabzon","Erzurum","Urfa","Izmit","Afyonkarhisar",
+		"cities": ["Istanbul","Edirne","Ankara","Bursa","Konya","Samsun","Gaziantep","Diyarbakır","Izmir","Kayseri","Malatya",
+			"Mersin","Antalya","Zonguldak","Denizli","Ordu","Muğla","Eskişehir","Inebolu","Sinop","Adana","Artvin",
+			"Bodrum","Eregli","Silifke","Sivas","Amasya","Marmaris","Trabzon","Erzurum","Urfa","Izmit","Afyonkarahisar",
 			"Bitlis","Yalova"]
 	},
 	{
@@ -418,7 +418,7 @@
 		"innerColor": [246,205,137],
 		"uniqueName": "The Great Warpath",
 		"uniques": ["All units move through Forest and Jungle Tiles in friendly territory as if they have roads. These tiles can be used to establish City Connections upon researching the Wheel."],
-		"cities": ["Onoondaga","Osininka","Grand River","Akwesasme","Buffalo Creek","Brantford","Montreal","Genesse River",
+		"cities": ["Onondaga","Osininka","Grand River","Akwesasme","Buffalo Creek","Brantford","Montreal","Genesse River",
 			"Canandaigua Lake","Lake Simcoe","Salamanca","Gowanda","Cuba","Akron","Kanesatake","Ganienkeh","Cayuga Castle",
 			"Chondote","Canajoharie","Nedrow","Oneida Lake","Kanonwalohale","Green Bay","Southwold","Mohawk Valley",
 			"Schoharie","Bay of Quinte","Kanawale","Kanatsiokareke","Tyendinaga","Hahta"]
@@ -497,7 +497,7 @@
 		"uniques": ["Food and Culture from Friendly City-States are increased by 50%"],
 		"cities": ["Sukhothai","Si Satchanalai","Muang Saluang","Lampang","Phitsanulok","Kamphaeng Pet","Nakhom Chum","Vientiane",
 			"Nakhon Si Thammarat","Martaban","Nakhon Sawan","Chainat","Luang Prabang","Uttaradit","Chiang Thong","Phrae",
-			"Nan","Tak","Suphanburi","Hongsawadee","Thawaii","Ayutthuya","Taphan Hin","Uthai Thani","Lap Buri","Ratchasima",
+			"Nan","Tak","Suphanburi","Hongsawadee","Thawaii","Ayutthaya","Taphan Hin","Uthai Thani","Lap Buri","Ratchasima",
 			"Ban Phai","Loci","Khon Kaen","Surin"]
 	},
 	{
@@ -664,7 +664,7 @@
 		"uniqueName": "Viking Fury",
 		"uniques": ["+1 Movement for all embarked units", "Units pay only 1 movement point to disembark",
 			"Melee units pay no movement cost to pillage"], 
-		"cities": ["Copenhagen","Aarhus","Kaupang","Ribe","Viborg","Tunsbers","Roskilde","Hedeby","Oslo","Jelling","Truso",
+		"cities": ["Copenhagen","Aarhus","Kaupang","Ribe","Viborg","Tunsberg","Roskilde","Hedeby","Oslo","Jelling","Truso",
 			"Bergen","Faeroerne","Reykjavik","Trondheim","Godthab","Helluland","Lillehammer","Markland","Elsinore",
 			"Sarpsborg","Odense","Aalborg","Stavanger","Vorbasse","Schleswig","Kristiansand","Halogaland","Randers",
 			"Fredrikstad","Kolding","Horsens","Tromsoe","Vejle","Koge","Sandnes","Holstebro","Slagelse","Drammen",
@@ -714,13 +714,13 @@
 		"uniques": ["Retain [50]% of the happiness from a luxury after the last copy has been traded away"],
 		"cities": ["Amsterdam", "Rotterdam", "Utrecht", "Groningen", "Breda", "Nijmegen", "Den Haag", "Haarlem", "Arnhem", "Zutphen", "Maastricht", "Tilburg", "Eindhoven", "Dordrecht", "Leiden", "Hertogenbosch", "Almere", "Alkmaar", "Brielle", "Vlissingen", "Apeldoorn", "Enschede", "Amersfoort", "Zwolle", "Venlo", "Uden", "Grave", "Delft", "Gouda", "Nieuwstadt", "Weesp", "Coevorden", "Kerkrade"]
 	},
-/*
+
 	{        
 	    "name": "Sweden",
 		"leaderName": "Gustavus Adolphus",
 		"adjective": ["Swedish"],
 		"startBias": ["Tundra"],
-		"preferredVictoryType": "Diplomatic",
+		"preferredVictoryType": "Domination",
 		
 		"startIntroPart1": "All hail the transcendent King Gustavus Adolphus, founder of the Swedish Empire and her most distinguished military tactician. It was during your reign that Sweden emerged as one of the greatest powers in Europe, due in no small part to your wisdom, both on and off the battlefield. As king, you initiated a number of domestic reforms that ensured the economic stability and prosperity of your people. As the general who came to be known as the \"Lion of the North,\" your visionary designs in warfare gained the admiration of military commanders the world over. Thanks to your triumphs in the Thirty Years' War, you were assured a legacy as one of history's greatest generals.",
 		"startIntroPart2": "Oh noble King, the people long for your prudent leadership, hopeful that once again they will see your kingdom rise to glory. Will you devise daring new strategies, leading your armies to victory on the theater of war? Will you build a civilization that stands the test of time?",
@@ -733,15 +733,17 @@
 		"neutralHello": "Oh, welcome!",
 		"hateHello": "Oh, it is you.",
 		"tradeRequest": "My friend, it is my belief that this settlement can benefit both our peoples.",
-        "outerColor": [227,225,44],     // #e3e12c (warm yellow)
-		"innerColor": [37,56,123],     // #25387b (dark greyish blue) (was 194,97,255 #c261ff purple)
+        "outerColor": [37,56,123],
+		"innerColor": [227,225,44],
 		"uniqueName": "Nobel Prize",
-		"uniques": ["Gain [90] [Influence] with a [Great Person] gift to a City-State", "When declaring [friendship], both parties gain a +[10]% boost to [great person generation]"],
-        "cities": ["Stockholm","Malmö","Gothenburg","Visby","Uppsala","Umeå","Lund","Kiruna","Helsingborg",
-		"Örebro","Västerås","Linköping","Norrköping","Gävle","Karlskrona","Halmstad","Karlstad","Växjö",
-		"Sundsvall","Jönköping","Borås","Sigtuna","Birka","Strängnäs","Skara","Lödöse","Ystad","Paviken"]
+		"uniques": ["Gain [90] Influence with a [Great Person] gift to a City-State", "When declaring friendship, both parties gain a [10]% boost to great person generation"],
+		"cities": ["Stockholm","Uppsala","Gothenburg","Malmö","Linköping","Kalmar","Skara","Västerås","Jönköping",
+		"Visby","Falun","Norrköping","Gävle","Halmstad","Karlskrona","Hudiksvall","Örebro","Umeå","Karlstad",
+		"Helsingborg","Härnösand","Vadstena","Lund","Västervik","Enköping","Skövde","Eskilstuna","Luleå","Lidköping",
+		"Södertälje","Mariestad","Östersund","Borås","Sundsvall","Vimmerby","Köping","Mora","Arboga","Växjö","Gränna",
+		"Kiruna","Borgholm","Strängnäs","Sveg"]
 	},
-*/
+
 
 	
 	    

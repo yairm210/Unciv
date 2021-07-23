@@ -45,7 +45,7 @@ class Technology {
         val enabledBuildings = getEnabledBuildings(viewingCiv)
 
         val regularBuildings = enabledBuildings.filter {
-            !it.isWonder && !it.isNationalWonder
+            !it.isAnyWonder()
                     && "Will not be displayed in Civilopedia" !in it.uniques
                     &&  !(!viewingCiv.gameInfo.hasReligionEnabled() && it.uniques.contains("Hidden when religion is disabled"))
         }
@@ -56,7 +56,7 @@ class Technology {
         }
 
         val wonders = enabledBuildings.filter {
-            (it.isWonder || it.isNationalWonder)
+            it.isAnyWonder()
                     && "Will not be displayed in Civilopedia" !in it.uniques
         }
         if (wonders.isNotEmpty()) {

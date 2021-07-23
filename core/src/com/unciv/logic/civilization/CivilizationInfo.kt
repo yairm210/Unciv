@@ -14,6 +14,7 @@ import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.trade.TradeEvaluation
 import com.unciv.logic.trade.TradeRequest
+import com.unciv.models.Counter
 import com.unciv.models.metadata.GameSpeed
 import com.unciv.models.ruleset.*
 import com.unciv.models.ruleset.tile.ResourceSupplyList
@@ -27,9 +28,9 @@ import com.unciv.ui.victoryscreen.RankingType
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
-import kotlin.math.roundToInt
 import kotlin.math.min
 import kotlin.math.pow
+import kotlin.math.roundToInt
 
 class CivilizationInfo {
 
@@ -231,11 +232,6 @@ class CivilizationInfo {
             resourceModifier *= 1f + getMatchingUniques("Quantity of strategic resources produced by the empire +[]%")
                 .map { it.params[0].toFloat() / 100f }.sum()
 
-            // Deprecated since 3.15
-                if (hasUnique("Quantity of strategic resources produced by the empire increased by 100%")) {
-                    resourceModifier *= 2f
-                }
-            //
         }
         return resourceModifier.toInt()
     }
@@ -251,12 +247,12 @@ class CivilizationInfo {
     // Does not return local uniques, only global ones.
     fun getMatchingUniques(uniqueTemplate: String, cityToIgnore: CityInfo? = null): Sequence<Unique> {
         return nation.uniqueObjects.asSequence().filter { it.placeholderText == uniqueTemplate } +
-                cities.filter { it != cityToIgnore}.flatMap {
+                cities.asSequence().filter { it != cityToIgnore}.flatMap {
                     city -> city.getMatchingUniquesWithNonLocalEffects(uniqueTemplate)
                 } +
                 policies.policyUniques.getUniques(uniqueTemplate) +
                 tech.getTechUniques().filter { it.placeholderText == uniqueTemplate } +
-                temporaryUniques.filter { it.first.placeholderText == uniqueTemplate }.map { it.first }
+                temporaryUniques.asSequence().filter { it.first.placeholderText == uniqueTemplate }.map { it.first }
     }
 
     //region Units
@@ -654,10 +650,10 @@ class CivilizationInfo {
         }
     }
 
-    fun getGreatPersonPointsForNextTurn(): Stats {
-        val stats = Stats()
-        for (city in cities) stats.add(city.getGreatPersonPoints())
-        return stats
+    fun getGreatPersonPointsForNextTurn(): Counter<String> {
+        val greatPersonPoints = Counter<String>()
+        for (city in cities) greatPersonPoints.add(city.getGreatPersonPoints())
+        return greatPersonPoints
     }
 
     fun canEnterTiles(otherCiv: CivilizationInfo): Boolean {
@@ -697,7 +693,7 @@ class CivilizationInfo {
         return placedUnit
     }
 
-    /** Tries to place the a [unitName] unit into the [TileInfo] closest to the given the [position]
+    /** Tries to place the a [unitName] unit into the [TileInfo] closest to the given the [location]
      * @param location where to try to place the unit
      * @param unitName name of the [BaseUnit] to create and place
      * @return created [MapUnit] or null if no suitable location was found
@@ -784,6 +780,8 @@ class CivilizationInfo {
         val givingCityState = getKnownCivs().filter { it.isCityState() && it.getAllyCiv() == civName}.random()
         var giftableUnits = gameInfo.ruleSet.units.values.filter { it.isGreatPerson() }
         if (!gameInfo.hasReligionEnabled()) giftableUnits = giftableUnits.filterNot { it.uniques.contains("Great Person - [Faith]")}
+        if (giftableUnits.isEmpty()) // For badly defined mods that don't have great people but do have the policy that makes city states grant them
+            return
         val giftedUnit = giftableUnits.random()
         val cities = NextTurnAutomation.getClosestCities(this, givingCityState)
         val placedUnit = placeUnitNearTile(cities.city1.location, giftedUnit.name)

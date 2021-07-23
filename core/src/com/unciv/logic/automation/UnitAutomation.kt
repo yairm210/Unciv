@@ -19,6 +19,7 @@ object UnitAutomation {
                 && (tile.getOwner() == null || !tile.getOwner()!!.isCityState())
                 && tile.neighbors.any { it.position !in unit.civInfo.exploredTiles }
                 && unit.movement.canReach(tile)
+                && (!unit.civInfo.isCityState() || tile.neighbors.any { it.getOwner() == unit.civInfo }) // Don't want city-states exploring far outside their borders
     }
 
     internal fun tryExplore(unit: MapUnit): Boolean {

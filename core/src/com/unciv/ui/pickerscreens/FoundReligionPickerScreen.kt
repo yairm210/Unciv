@@ -9,6 +9,7 @@ import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.Religion
 import com.unciv.models.UncivSound
 import com.unciv.models.ruleset.Belief
+import com.unciv.models.ruleset.BeliefType
 import com.unciv.models.translations.tr
 import com.unciv.ui.utils.*
 
@@ -126,7 +127,7 @@ class FoundReligionPickerScreen (
         rightBeliefsToChoose.clear()
         val availableBeliefs = gameInfo.ruleSet.beliefs.values
             .filter { 
-                it.type == beliefType
+                it.type.name == beliefType
                 && gameInfo.religions.values.none {
                     religion -> religion.hasBelief(it.name)
                 }
@@ -135,8 +136,8 @@ class FoundReligionPickerScreen (
         for (belief in availableBeliefs) {
             val beliefButton = convertBeliefToButton(belief)
             beliefButton.onClick {
-                if (beliefType == "Follower") chosenFollowerBeliefs[leftButtonIndex] = belief
-                else if (beliefType == "Founder") chosenFounderBeliefs[leftButtonIndex] = belief
+                if (beliefType == BeliefType.Follower.name) chosenFollowerBeliefs[leftButtonIndex] = belief
+                else if (beliefType == BeliefType.Founder.name) chosenFounderBeliefs[leftButtonIndex] = belief
                 updateLeftTable()
                 checkAndEnableRightSideButton()
             }
@@ -146,7 +147,7 @@ class FoundReligionPickerScreen (
     
     private fun convertBeliefToButton(belief: Belief): Button {
         val contentsTable = Table()
-        contentsTable.add(belief.type.toLabel()).row()
+        contentsTable.add(belief.type.name.toLabel()).row()
         contentsTable.add(belief.name.toLabel(fontSize = 24)).row()
         contentsTable.add(belief.uniques.joinToString().toLabel())
         return Button(contentsTable, skin)

@@ -96,7 +96,7 @@
     {
         "name": "Religious Idols",
         "type": "Pantheon",
-        "uniques": ["[+1 Culture, +1 Faith] from every [Gold]", "[+1 Culture, +1 Faith] from every [Silver]"]
+        "uniques": ["[+1 Culture, +1 Faith] from every [Gold Ore]", "[+1 Culture, +1 Faith] from every [Silver]"]
     },
     {
         "name": "Religious Settlements",
