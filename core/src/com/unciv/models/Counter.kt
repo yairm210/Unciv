@@ -19,15 +19,17 @@ open class Counter<K> : LinkedHashMap<K, Int>() {
     }
 
     fun add(other: Counter<K>) {
-        for (key in other.keys) {
-            add(key, other[key]!!)
-        }
+        for (key in other.keys) add(key, other[key]!!)
     }
 
     fun remove(other: Counter<K>) {
-        for (key in other.keys) {
-            add(key, -other[key]!!)
-        }
+        for (key in other.keys) add(key, -other[key]!!)
+    }
+
+    fun times(amount:Int): Counter<K> {
+        val newCounter = Counter<K>()
+        for (key in keys) newCounter[key] = this[key]!! * amount
+        return newCounter
     }
 
     override fun clone(): Counter<K> {

@@ -105,7 +105,9 @@ class StatsOverviewTable (
     private fun getGreatPeopleTable(): Table {
         val greatPeopleTable = Table(CameraStageBaseScreen.skin)
 
-        val greatPersonPoints = viewingPlayer.greatPeople.greatPersonPoints.toHashMap()
+        val greatPersonPoints = GreatPersonManager
+            .greatPersonCounterToStats(viewingPlayer.greatPeople.greatPersonPointsCounter)
+            .toHashMap()
         val greatPersonPointsPerTurn = viewingPlayer.getGreatPersonPointsForNextTurn().toHashMap()
         val pointsToGreatPerson = viewingPlayer.greatPeople.pointsForNextGreatPerson
 
