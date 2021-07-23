@@ -14,6 +14,7 @@ import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.trade.TradeEvaluation
 import com.unciv.logic.trade.TradeRequest
+import com.unciv.models.Counter
 import com.unciv.models.metadata.GameSpeed
 import com.unciv.models.ruleset.*
 import com.unciv.models.ruleset.tile.ResourceSupplyList
@@ -649,10 +650,10 @@ class CivilizationInfo {
         }
     }
 
-    fun getGreatPersonPointsForNextTurn(): Stats {
-        val stats = Stats()
-        for (city in cities) stats.add(city.getGreatPersonPoints())
-        return stats
+    fun getGreatPersonPointsForNextTurn(): Counter<String> {
+        val greatPersonPoints = Counter<String>()
+        for (city in cities) greatPersonPoints.add(city.getGreatPersonPoints())
+        return greatPersonPoints
     }
 
     fun canEnterTiles(otherCiv: CivilizationInfo): Boolean {
@@ -692,7 +693,7 @@ class CivilizationInfo {
         return placedUnit
     }
 
-    /** Tries to place the a [unitName] unit into the [TileInfo] closest to the given the [position]
+    /** Tries to place the a [unitName] unit into the [TileInfo] closest to the given the [location]
      * @param location where to try to place the unit
      * @param unitName name of the [BaseUnit] to create and place
      * @return created [MapUnit] or null if no suitable location was found

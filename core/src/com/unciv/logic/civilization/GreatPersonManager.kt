@@ -69,8 +69,8 @@ class GreatPersonManager {
         return greatPerson
     }
 
-    fun addGreatPersonPoints(greatPersonPointsForTurn: Stats) {
-        greatPersonPointsCounter.add(statsToGreatPersonCounter(greatPersonPointsForTurn))
+    fun addGreatPersonPoints(greatPersonPointsForTurn: Counter<String>) {
+        greatPersonPointsCounter.add(greatPersonPointsForTurn)
     }
 
 

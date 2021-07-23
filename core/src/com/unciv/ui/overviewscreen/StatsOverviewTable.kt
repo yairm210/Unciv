@@ -108,7 +108,8 @@ class StatsOverviewTable (
         val greatPersonPoints = GreatPersonManager
             .greatPersonCounterToStats(viewingPlayer.greatPeople.greatPersonPointsCounter)
             .toHashMap()
-        val greatPersonPointsPerTurn = viewingPlayer.getGreatPersonPointsForNextTurn().toHashMap()
+        val greatPersonPointsPerTurn = GreatPersonManager
+            .greatPersonCounterToStats(viewingPlayer.getGreatPersonPointsForNextTurn()).toHashMap()
         val pointsToGreatPerson = viewingPlayer.greatPeople.pointsForNextGreatPerson
 
         greatPeopleTable.defaults().pad(5f)

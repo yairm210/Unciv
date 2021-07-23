@@ -2,10 +2,12 @@ package com.unciv.logic.city
 
 import com.badlogic.gdx.math.Vector2
 import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.GreatPersonManager
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.map.RoadStatus
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
+import com.unciv.models.Counter
 import com.unciv.models.ruleset.Unique
 import com.unciv.models.ruleset.tile.ResourceSupplyList
 import com.unciv.models.ruleset.tile.ResourceType
@@ -371,11 +373,11 @@ class CityInfo {
         return stats
     }
 
-    fun getGreatPersonPoints(): Stats {
+    fun getGreatPersonPoints(): Counter<String> {
         val stats = Stats()
         for (entry in getGreatPersonPointsForNextTurn().values)
             stats.add(entry)
-        return stats
+        return GreatPersonManager.statsToGreatPersonCounter(stats)
     }
 
     internal fun getMaxHealth() = 200 + cityConstructions.getBuiltBuildings().sumBy { it.cityHealth }
