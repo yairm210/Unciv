@@ -4,7 +4,6 @@ import com.unciv.logic.city.CityInfo
 import com.unciv.logic.map.MapSize
 import com.unciv.logic.map.RoadStatus
 import com.unciv.logic.map.TileInfo
-import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.Unique
 import com.unciv.models.ruleset.UniqueTriggerActivation
 import com.unciv.models.ruleset.tech.Technology
@@ -317,7 +316,7 @@ class TechManager {
                     val text = "[${cities.size}] cities changed production from [$unit] to [${construction.upgradesTo!!}]"
                     civInfo.addNotification(text, locationAction, unit, NotificationIcon.Construction, construction.upgradesTo!!)
                 } else {
-                    val text = "[$unit] has become osbolete and was removed from the queue in [${cities.size}] cities!"
+                    val text = "[$unit] has become obsolete and was removed from the queue in [${cities.size}] cities!"
                     civInfo.addNotification(text, locationAction, NotificationIcon.Construction)
                 }
             }

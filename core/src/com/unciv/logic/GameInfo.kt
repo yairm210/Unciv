@@ -248,7 +248,7 @@ class GameInfo {
 
     /**
      * [CivilizationInfo.addNotification][Add a notification] to every civilization that have
-     * adopted Honor policy and have explored the [tile] where the Barbarian Encampent has spawned.
+     * adopted Honor policy and have explored the [tile] where the Barbarian Encampment has spawned.
      */
     fun notifyCivsOfBarbarianEncampment(tile: TileInfo) {
         civilizations.filter {
@@ -399,6 +399,7 @@ class GameInfo {
      * This function can be used for backwards compatibility with older save files when a building
      * name is changed.
      */
+    @Suppress("unused")   // it's OK if there's no deprecation currently needing this
     private fun changeBuildingNameIfNotInRuleset(cityConstructions: CityConstructions, oldBuildingName: String, newBuildingName: String) {
         if (ruleSet.buildings.containsKey(oldBuildingName))
             return
