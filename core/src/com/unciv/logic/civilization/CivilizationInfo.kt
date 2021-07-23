@@ -144,6 +144,7 @@ class CivilizationInfo {
         toReturn.tradeRequests.addAll(tradeRequests)
         toReturn.naturalWonders.addAll(naturalWonders)
         toReturn.cityStatePersonality = cityStatePersonality
+        toReturn.cityStateResource = cityStateResource
         toReturn.flagsCountdown.putAll(flagsCountdown)
         toReturn.temporaryUniques.addAll(temporaryUniques)
         return toReturn
@@ -175,6 +176,7 @@ class CivilizationInfo {
     fun isCityState(): Boolean = nation.isCityState()
     val cityStateType: CityStateType get() = nation.cityStateType!!
     var cityStatePersonality: CityStatePersonality = CityStatePersonality.Neutral
+    var cityStateResource: TileResource? = null
     fun isMajorCiv() = nation.isMajorCiv()
     fun isAlive(): Boolean = !isDefeated()
     fun hasEverBeenFriendWith(otherCiv: CivilizationInfo): Boolean = getDiplomacyManager(otherCiv).everBeenFriends()
@@ -206,6 +208,8 @@ class CivilizationInfo {
         val newResourceSupplyList = ResourceSupplyList()
         for (resourceSupply in detailedCivResources)
             newResourceSupplyList.add(resourceSupply.resource, resourceSupply.amount, "All")
+        if (cityStateResource != null)
+            newResourceSupplyList.add(cityStateResource!!, 1, "All")
         return newResourceSupplyList
     }
 

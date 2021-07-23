@@ -22,10 +22,14 @@ class TileResource : NamedStats() {
         stringBuilder.appendLine(this.clone().toString())
         val terrainsCanBeBuiltOnString: ArrayList<String> = arrayListOf()
         terrainsCanBeBuiltOnString.addAll(terrainsCanBeFoundOn.map { it.tr() })
-        stringBuilder.appendLine("Can be found on ".tr() + terrainsCanBeBuiltOnString.joinToString(", "))
-        stringBuilder.appendln()
-        stringBuilder.appendLine("Improved by [$improvement]".tr())
-        stringBuilder.appendLine("{Bonus stats for improvement}: ".tr() + "$improvementStats".tr())
+
+        if (terrainsCanBeBuiltOnString.isNotEmpty()) {
+            stringBuilder.appendLine(
+                "Can be found on ".tr() + terrainsCanBeBuiltOnString.joinToString(", "))
+            stringBuilder.appendln()
+            stringBuilder.appendLine("Improved by [$improvement]".tr())
+            stringBuilder.appendLine("{Bonus stats for improvement}: ".tr() + "$improvementStats".tr())
+        }
 
         val buildingsThatConsumeThis = ruleset.buildings.values.filter { it.getResourceRequirements().containsKey(name) }
         if (buildingsThatConsumeThis.isNotEmpty())

@@ -12,6 +12,7 @@ import com.unciv.models.ruleset.Era
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.tile.ResourceType
+import com.unciv.models.ruleset.tile.TileResource
 import com.unciv.ui.newgamescreen.GameSetupInfo
 import java.util.*
 import kotlin.NoSuchElementException
@@ -167,9 +168,23 @@ object GameStarter {
         availableCityStatesNames.addAll(ruleset.nations.filter { it.value.isCityState() }.keys
                 .shuffled().sortedByDescending { it in cityStatesWithStartingLocations })
 
+        val unusedMercantileResources = ruleset.tileResources.values.filter { it.unique == "Can only be created by Mercantile City-States" }.toMutableList()
+
         for (cityStateName in availableCityStatesNames.take(newGameParameters.numberOfCityStates)) {
             val civ = CivilizationInfo(cityStateName)
             civ.cityStatePersonality = CityStatePersonality.values().random()
+            if (ruleset.nations[cityStateName]?.cityStateType == CityStateType.Mercantile) {
+                if (!ruleset.tileResources.values.any { it.unique == "Can only be created by Mercantile City-States" }) {
+                    civ.cityStateResource = null
+                } else if (unusedMercantileResources.isNotEmpty()) {
+                    // First pick an unused luxury if possible
+                    civ.cityStateResource = unusedMercantileResources.random()
+                    unusedMercantileResources.remove(civ.cityStateResource)
+                } else {
+                    // Then random
+                    civ.cityStateResource = ruleset.tileResources.values.filter { it.unique == "Can only be created by Mercantile City-States" }.random()
+                }
+            }
             gameInfo.civilizations.add(civ)
             for (tech in ruleset.technologies.values.filter { it.uniques.contains("Starting tech") })
                 civ.tech.techsResearched.add(tech.name) // can't be .addTechnology because the civInfo isn't assigned yet
