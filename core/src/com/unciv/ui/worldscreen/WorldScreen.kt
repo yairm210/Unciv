@@ -706,7 +706,7 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Cam
                     game.setScreen(FoundReligionPickerScreen(viewingCiv, gameInfo))
                 }
             viewingCiv.mayVoteForDiplomaticVictory() ->
-                NextTurnAction("Vote for Diplomatic\nVictory", Color.RED) {
+                NextTurnAction("Vote for World Leader", Color.RED) {
                     game.setScreen(DiplomaticVotePickerScreen(viewingCiv))
                 }
 
