@@ -323,10 +323,7 @@ class CityInfo {
         for ((specialistName, amount) in population.getNewSpecialists())
             if (getRuleset().specialists.containsKey(specialistName)) { // To solve problems in total remake mods
                 val specialist = getRuleset().specialists[specialistName]!!
-                specialistsCounter.add(
-                    GreatPersonManager.statsToGreatPersonCounter(specialist.greatPersonPoints)
-                        .times(amount)
-                )
+                specialistsCounter.add(specialist.greatPersonPoints.times(amount))
             }
         sourceToGPP["Specialists"] = specialistsCounter
 

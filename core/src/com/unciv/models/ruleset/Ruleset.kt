@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.files.FileHandle
 import com.unciv.JsonParser
 import com.unciv.logic.UncivShowableException
+import com.unciv.models.Counter
 import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.ruleset.tech.TechColumn
 import com.unciv.models.ruleset.tech.Technology
@@ -15,7 +16,6 @@ import com.unciv.models.ruleset.unit.Promotion
 import com.unciv.models.stats.INamed
 import com.unciv.models.stats.NamedStats
 import com.unciv.models.stats.Stat
-import com.unciv.models.stats.Stats
 import com.unciv.ui.utils.colorFromRGB
 import kotlin.collections.set
 
@@ -474,7 +474,7 @@ object RulesetCache :HashMap<String,Ruleset>() {
 class Specialist: NamedStats() {
     var color = ArrayList<Int>()
     val colorObject by lazy { colorFromRGB(color) }
-    var greatPersonPoints = Stats()
+    var greatPersonPoints = Counter<String>()
 
     companion object {
         internal fun specialistNameByStat(stat: Stat) = when (stat) {
