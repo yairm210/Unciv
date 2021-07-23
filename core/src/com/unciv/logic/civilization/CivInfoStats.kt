@@ -47,10 +47,6 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
         for (unique in civInfo.getMatchingUniques("-[]% unit upkeep costs")) {
             cost *= 1f - unique.params[0].toFloat() / 100f
         }
-
-        // Deprecated since 3.15
-            if (civInfo.hasUnique("-33% unit upkeep costs")) cost *= 0.67f
-        //
         
         return cost.toInt()
     }
@@ -108,14 +104,6 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
                         )
                     )
                 }
-            // Deprecated since 3.15.1
-                if (otherCiv.isCityState() && otherCiv.getDiplomacyManager(civInfo.civName).relationshipLevel() >= RelationshipLevel.Ally) {
-                    val sciencePercentage = civInfo
-                            .getMatchingUniques("Allied City-States provide Science equal to []% of what they produce for themselves")
-                            .sumBy { it.params[0].toInt() }
-                    statMap.add("City-States", Stats().apply { science = otherCiv.statsForNextTurn.science * (sciencePercentage / 100f) })
-                }
-            //
         }
 
         statMap["Transportation upkeep"] = Stats().apply { gold = -getTransportationUpkeep().toFloat() }

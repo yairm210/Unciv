@@ -21,9 +21,9 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
     val civInfo = cityInfo.civInfo
 
     val buildableNotWonders = cityConstructions.getBuildableBuildings()
-            .filterNot { it.isWonder || it.isNationalWonder }
+            .filterNot { it.isAnyWonder() }
     private val buildableWonders = cityConstructions.getBuildableBuildings()
-            .filter { it.isWonder || it.isNationalWonder }
+            .filter { it.isAnyWonder() }
 
     val civUnits = civInfo.getCivUnits()
     val militaryUnits = civUnits.count { !it.type.isCivilian() }

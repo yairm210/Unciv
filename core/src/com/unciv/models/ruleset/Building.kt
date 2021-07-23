@@ -4,7 +4,6 @@ import com.unciv.logic.city.CityConstructions
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.city.IConstruction
 import com.unciv.logic.civilization.CivilizationInfo
-import com.unciv.logic.civilization.GreatPersonManager
 import com.unciv.models.Counter
 import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.stats.NamedStats
@@ -29,7 +28,7 @@ class Building : NamedStats(), IConstruction, ICivilopediaText {
     private var percentStatBonus: Stats? = null
     var specialistSlots: Counter<String>? = null
     fun newSpecialists(): Counter<String> {
-        if (specialistSlots == null) return Counter<String>()
+        if (specialistSlots == null) return Counter()
         // Could have old specialist values of "gold", "science" etc - change them to the new specialist names
         val counter = Counter<String>()
         for ((entry, amount) in specialistSlots!!) {
@@ -42,12 +41,13 @@ class Building : NamedStats(), IConstruction, ICivilopediaText {
         return counter
     }
 
-    var greatPersonPoints: Stats? = null
+    var greatPersonPoints= Counter<String>()
 
     /** Extra cost percentage when purchasing */
     private var hurryCostModifier = 0
     var isWonder = false
     var isNationalWonder = false
+    fun isAnyWonder() = isWonder || isNationalWonder
     var requiredBuilding: String? = null
     var requiredBuildingInAllCities: String? = null
 
@@ -89,18 +89,24 @@ class Building : NamedStats(), IConstruction, ICivilopediaText {
         return infoList.joinToString("; ") { it.tr() }
     }
 
-    fun getUniquesStrings(): ArrayList<String> {
+    private fun getUniquesStrings() = sequence {
         val tileBonusHashmap = HashMap<String, ArrayList<String>>()
-        val finalUniques = ArrayList<String>()
-        for (unique in uniqueObjects)
-            if (unique.placeholderText == "[] from [] tiles []" && unique.params[2] == "in this city") {
+        for (unique in uniqueObjects) when {
+            unique.placeholderText == "[] from [] tiles []" && unique.params[2] == "in this city" -> {
                 val stats = unique.params[0]
                 if (!tileBonusHashmap.containsKey(stats)) tileBonusHashmap[stats] = ArrayList()
                 tileBonusHashmap[stats]!!.add(unique.params[1])
-            } else if (unique.placeholderText != "Consumes [] []") finalUniques += unique.text
+            }
+            unique.placeholderText == "Consumes [] []" -> Unit    // skip these, 
+            else -> yield(unique.text)
+        }
         for ((key, value) in tileBonusHashmap)
-            finalUniques += "[stats] from [tileFilter] tiles in this city".fillPlaceholders(key, value.joinToString { it.tr() })
-        return finalUniques
+            yield( "[stats] from [tileFilter] tiles in this city"
+                .fillPlaceholders( key,
+                    // A single tileFilter will be properly translated later due to being within []
+                    // advantage to not translate prematurely: FormatLine.formatUnique will recognize it
+                    if (value.size == 1) value[0] else value.joinToString { it.tr() }
+                ))
     }
 
     fun getDescription(cityInfo: CityInfo?, ruleset: Ruleset): String {
@@ -117,7 +123,7 @@ class Building : NamedStats(), IConstruction, ICivilopediaText {
             stringBuilder.appendLine("Provides a free [$providesFreeBuilding] in the city".tr())
         if (uniques.isNotEmpty()) {
             if (replacementTextForUniques != "") stringBuilder.appendLine(replacementTextForUniques)
-            else stringBuilder.appendLine(getUniquesStrings().asSequence().map { it.tr() }.joinToString("\n"))
+            else stringBuilder.appendLine(getUniquesStrings().map { it.tr() }.joinToString("\n"))
         }
         if (!stats.isEmpty())
             stringBuilder.appendLine(stats.toString())
@@ -129,13 +135,8 @@ class Building : NamedStats(), IConstruction, ICivilopediaText {
         if (percentStats.food != 0f) stringBuilder.append("+" + percentStats.food.toInt() + "% {Food}\n".tr())
         if (percentStats.culture != 0f) stringBuilder.append("+" + percentStats.culture.toInt() + "% {Culture}\r\n".tr())
 
-        if (this.greatPersonPoints != null) {
-            val gpp = this.greatPersonPoints!!
-            if (gpp.production != 0f) stringBuilder.appendLine("+" + gpp.production.toInt() + " " + "[Great Engineer] points".tr())
-            if (gpp.gold != 0f) stringBuilder.appendLine("+" + gpp.gold.toInt() + " " + "[Great Merchant] points".tr())
-            if (gpp.science != 0f) stringBuilder.appendLine("+" + gpp.science.toInt() + " " + "[Great Scientist] points".tr())
-            if (gpp.culture != 0f) stringBuilder.appendLine("+" + gpp.culture.toInt() + " " + "[Great Artist] points".tr())
-        }
+        for((greatPersonName, value) in greatPersonPoints)
+            stringBuilder.appendLine("+$value "+"[$greatPersonName] points".tr())
 
         for ((specialistName, amount) in newSpecialists())
             stringBuilder.appendLine("+$amount " + "[$specialistName] slots".tr())
@@ -179,8 +180,7 @@ class Building : NamedStats(), IConstruction, ICivilopediaText {
 
     fun getStatPercentageBonuses(cityInfo: CityInfo?): Stats {
         val stats = if (percentStatBonus == null) Stats() else percentStatBonus!!.clone()
-        val civInfo = cityInfo?.civInfo
-        if (civInfo == null) return stats // initial stats
+        val civInfo = cityInfo?.civInfo ?: return stats  // initial stats
 
         val baseBuildingName = getBaseBuilding(civInfo.gameInfo.ruleSet).name
 
@@ -195,7 +195,7 @@ class Building : NamedStats(), IConstruction, ICivilopediaText {
         return stats
     }
 
-    fun makeLink() = if (isWonder || isNationalWonder) "Wonder/$name" else "Building/$name"
+    fun makeLink() = if (isAnyWonder()) "Wonder/$name" else "Building/$name"
     override fun getCivilopediaTextHeader() = FormattedLine(name, header=2, icon=makeLink())
     override fun hasCivilopediaTextLines() = true
     override fun replacesCivilopediaDescription() = true
@@ -204,7 +204,7 @@ class Building : NamedStats(), IConstruction, ICivilopediaText {
         
         val textList = ArrayList<FormattedLine>()
 
-        if (isWonder || isNationalWonder) {
+        if (isAnyWonder()) {
             textList += FormattedLine( if (isWonder) "Wonder" else "National Wonder", color="#CA4", header=3 )
         }
 
@@ -254,14 +254,15 @@ class Building : NamedStats(), IConstruction, ICivilopediaText {
         val stats = this.clone()
         val percentStats = getStatPercentageBonuses(null)
         val specialists = newSpecialists()
-        if (uniques.isNotEmpty() || !stats.isEmpty() || !percentStats.isEmpty() || this.greatPersonPoints != null || specialists.isNotEmpty())
+        if (uniques.isNotEmpty() || !stats.isEmpty() || !percentStats.isEmpty() || this.greatPersonPoints.isNotEmpty() || specialists.isNotEmpty())
             textList += FormattedLine()
 
         if (uniques.isNotEmpty()) {
             if (replacementTextForUniques.isNotEmpty())
                 textList += FormattedLine(replacementTextForUniques)
             else
-                for (unique in getUniquesStrings()) textList += FormattedLine(unique)
+                for (unique in getUniquesStrings())
+                    textList += FormattedLine(Unique(unique))
         }
 
         if (!stats.isEmpty()) {
@@ -275,14 +276,11 @@ class Building : NamedStats(), IConstruction, ICivilopediaText {
             }
         }
 
-        if (greatPersonPoints != null) {
-            for ( (key, value) in greatPersonPoints!!.toHashMap()) {
-                if (value == 0f) continue
-                val gppName = GreatPersonManager.statToGreatPersonMapping[key]
-                    ?: continue
-                textList += FormattedLine(value.formatSignedInt() + " " + "[$gppName] points".tr(),
-                    link = "Unit/$gppName")
-            }
+        for((greatPersonName, value) in greatPersonPoints) {
+            textList += FormattedLine(
+                "+$value " + "[$greatPersonName] points".tr(),
+                link = "Unit/$greatPersonName"
+            )
         }
 
         if (specialists.isNotEmpty()) {
@@ -321,7 +319,7 @@ class Building : NamedStats(), IConstruction, ICivilopediaText {
 
 
     override fun canBePurchased(): Boolean {
-        return !isWonder && !isNationalWonder && "Cannot be purchased" !in uniques
+        return !isAnyWonder() && "Cannot be purchased" !in uniques
     }
 
 
@@ -331,6 +329,8 @@ class Building : NamedStats(), IConstruction, ICivilopediaText {
         for (unique in uniqueObjects.filter { it.placeholderText == "Cost increases by [] per owned city" })
             productionCost += civInfo.cities.count() * unique.params[0].toInt()
 
+        if (civInfo.isCityState())
+            productionCost *= 1.5f
         if (civInfo.isPlayerCivilization()) {
             if (!isWonder)
                 productionCost *= civInfo.getDifficulty().buildingCostModifier
@@ -503,8 +503,8 @@ class Building : NamedStats(), IConstruction, ICivilopediaText {
 
         for ((resource, amount) in getResourceRequirements())
             if (civInfo.getCivResourcesByName()[resource]!! < amount) {
-                if (amount == 1) return "Consumes 1 [$resource]" // Again, to preserve existing translations
-                else return "Consumes [$amount] [$resource]"
+                return if (amount == 1) "Consumes 1 [$resource]" // Again, to preserve existing translations
+                    else "Consumes [$amount] [$resource]"
             }
 
         if (requiredNearbyImprovedResources != null) {
@@ -580,8 +580,8 @@ class Building : NamedStats(), IConstruction, ICivilopediaText {
         return when (filter) {
             "All" -> true
             name -> true
-            "Building", "Buildings" -> !(isWonder || isNationalWonder)
-            "Wonder", "Wonders" -> isWonder || isNationalWonder
+            "Building", "Buildings" -> !isAnyWonder()
+            "Wonder", "Wonders" -> isAnyWonder()
             replaces -> true
             else -> {
                 if (uniques.contains(filter)) return true
@@ -598,18 +598,18 @@ class Building : NamedStats(), IConstruction, ICivilopediaText {
     }
 
     fun getBaseBuilding(ruleset: Ruleset): Building {
-        if (replaces == null) return this
-        else return ruleset.buildings[replaces!!]!!
+        return if (replaces == null) this
+            else ruleset.buildings[replaces!!]!!
     }
 
     fun getImprovement(ruleset: Ruleset): TileImprovement? {
         val improvementUnique = uniqueObjects
-                .firstOrNull { it.placeholderText == "Creates a [] improvement on a specific tile" }
-        if (improvementUnique == null) return null
+            .firstOrNull { it.placeholderText == "Creates a [] improvement on a specific tile" }
+            ?: return null
         return ruleset.tileImprovements[improvementUnique.params[0]]
     }
 
-    fun isSellable() = !isWonder && !isNationalWonder && !uniques.contains("Unsellable")
+    fun isSellable() = !isAnyWonder() && !uniques.contains("Unsellable")
 
     override fun getResourceRequirements(): HashMap<String, Int> {
         val resourceRequirements = HashMap<String, Int>()

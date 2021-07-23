@@ -11,6 +11,7 @@ import com.unciv.models.metadata.GameParameters
 import com.unciv.models.ruleset.Era
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
+import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.ui.newgamescreen.GameSetupInfo
 import java.util.*
 import kotlin.NoSuchElementException
@@ -180,7 +181,24 @@ object GameStarter {
         val startingEra = gameInfo.gameParameters.startingEra
         var startingUnits: MutableList<String>
         var eraUnitReplacement: String
-        
+
+        // First we get start locations for the major civs, on the second pass the city states (without predetermined starts) can squeeze in wherever
+        // I hear copying code is good
+        val cityStatesWithStartingLocations =
+            gameInfo.tileMap.values
+                .filter { it.improvement != null && it.improvement!!.startsWith("StartingLocation ") }
+                .map { it.improvement!!.replace("StartingLocation ", "") }
+        val bestCivs = gameInfo.civilizations.filter { !it.isBarbarian() && (!it.isCityState() || it.civName in cityStatesWithStartingLocations) }
+        val bestLocations = getStartingLocations(bestCivs, gameInfo.tileMap)
+        for (civ in bestCivs)
+        {
+            if (civ.isCityState())  // Already have explicit starting locations
+                continue
+
+            // Mark the best start locations so we remember them for the second pass
+            bestLocations[civ]!!.improvement = "StartingLocation " + civ.civName
+        }
+
         val startingLocations = getStartingLocations(
                 gameInfo.civilizations.filter { !it.isBarbarian() },
                 gameInfo.tileMap)
@@ -188,10 +206,18 @@ object GameStarter {
         val settlerLikeUnits = ruleSet.units.filter {
             it.value.uniqueObjects.any { it.placeholderText == Constants.settlerUnique }
         }
-        
+
         // no starting units for Barbarians and Spectators
         for (civ in gameInfo.civilizations.filter { !it.isBarbarian() && !it.isSpectator() }) {
             val startingLocation = startingLocations[civ]!!
+
+            if(civ.isMajorCiv() && startingLocation.getTileStartScore() < 45) {
+                // An unusually bad spawning location
+                addConsolationPrize(gameInfo, startingLocation, 45 - startingLocation.getTileStartScore().toInt())
+            }
+            if(civ.isCityState())
+                addCityStateLuxury(gameInfo, startingLocation)
+
             for (tile in startingLocation.getTilesInDistance(3))
                 if (tile.improvement == Constants.ancientRuins)
                     tile.improvement = null // Remove ancient ruins in immediate vicinity
@@ -264,11 +290,11 @@ object GameStarter {
 
             
             if (civ.isCityState()) {
+                // City states should spawn with one settler only irregardless of era and difficulty
                 val startingSettlers = startingUnits.filter { settlerLikeUnits.contains(it) }
-                if (startingSettlers.count() > 1) {
-                    startingUnits = startingUnits.filter { !settlerLikeUnits.contains(it) }.toMutableList()
-                    startingUnits.add(startingSettlers.random())
-                }
+
+                startingUnits.clear()
+                startingUnits.add( startingSettlers.random() )
             }
 
             for (unit in startingUnits) {
@@ -296,27 +322,36 @@ object GameStarter {
         val tilesWithStartingLocations = tileMap.values
                 .filter { it.improvement != null && it.improvement!!.startsWith("StartingLocation ") }
 
-        val civsOrderedByAvailableLocations = civs.sortedBy { civ ->
+
+        val civsOrderedByAvailableLocations = civs.shuffled()   // Order should be random since it determines who gets best start
+            .sortedBy { civ ->
             when {
                 tilesWithStartingLocations.any { it.improvement == "StartingLocation " + civ.civName } -> 1 // harshest requirements
-                civ.nation.startBias.isNotEmpty() -> 2 // less harsh
-                else -> 3
+                civ.nation.startBias.contains("Tundra") -> 2    // Tundra starts are hard to find, so let's do them first
+                civ.nation.startBias.isNotEmpty() -> 3 // less harsh
+                else -> 4
             }  // no requirements
         }
 
-        for (minimumDistanceBetweenStartingLocations in tileMap.tileMatrix.size / 3 downTo 0) {
+        for (minimumDistanceBetweenStartingLocations in tileMap.tileMatrix.size / 4 downTo 0) {
             val freeTiles = landTilesInBigEnoughGroup
-                    .filter { vectorIsAtLeastNTilesAwayFromEdge(it.position, minimumDistanceBetweenStartingLocations, tileMap) }
+                    .filter { vectorIsAtLeastNTilesAwayFromEdge(it.position, (minimumDistanceBetweenStartingLocations * 2) /3, tileMap) }
                     .toMutableList()
 
             val startingLocations = HashMap<CivilizationInfo, TileInfo>()
-
             for (civ in civsOrderedByAvailableLocations) {
                 var startingLocation: TileInfo
                 val presetStartingLocation = tilesWithStartingLocations.firstOrNull { it.improvement == "StartingLocation " + civ.civName }
+                var distanceToNext = minimumDistanceBetweenStartingLocations
+
                 if (presetStartingLocation != null) startingLocation = presetStartingLocation
                 else {
                     if (freeTiles.isEmpty()) break // we failed to get all the starting tiles with this minimum distance
+                    if (civ.isCityState())
+                        distanceToNext = minimumDistanceBetweenStartingLocations / 2 // We allow random city states to squeeze in tighter
+
+                    freeTiles.sortBy { it.getTileStartScore() }
+
                     var preferredTiles = freeTiles.toList()
 
                     for (startBias in civ.nation.startBias) {
@@ -327,16 +362,63 @@ object GameStarter {
                         else preferredTiles = preferredTiles.filter { it.matchesTerrainFilter(startBias) }
                     }
 
-                    startingLocation = if (preferredTiles.isNotEmpty()) preferredTiles.random() else freeTiles.random()
+                    startingLocation = if (preferredTiles.isNotEmpty()) preferredTiles.last() else freeTiles.last()
                 }
                 startingLocations[civ] = startingLocation
-                freeTiles.removeAll(tileMap.getTilesInDistance(startingLocation.position, minimumDistanceBetweenStartingLocations))
+                freeTiles.removeAll(tileMap.getTilesInDistance(startingLocation.position, distanceToNext))
             }
             if (startingLocations.size < civs.size) continue // let's try again with less minimum distance!
 
             return startingLocations
         }
         throw Exception("Didn't manage to get starting tiles even with distance of 1?")
+    }
+
+    private fun addConsolationPrize(gameInfo: GameInfo, spawn: TileInfo, points: Int) {
+        val relevantTiles = spawn.getTilesInDistanceRange(1..2).shuffled()
+        var addedPoints = 0
+        var addedBonuses = 0
+
+        for (tile in relevantTiles) {
+            if (addedPoints >= points || addedBonuses >= 4) // At some point enough is enough
+                break
+            if (tile.resource != null || tile.baseTerrain == Constants.snow)    // Snow is quite irredeemable
+                continue
+
+            val bonusToAdd = gameInfo.ruleSet.tileResources.values
+                .filter { it.terrainsCanBeFoundOn.contains(tile.getLastTerrain().name) && it.resourceType == ResourceType.Bonus }
+                .randomOrNull()
+
+            if (bonusToAdd != null) {
+                tile.resource = bonusToAdd.name
+                addedPoints += (bonusToAdd.food + bonusToAdd.production + bonusToAdd.gold + 1).toInt()  // +1 because resources can be improved
+                addedBonuses++
+            }
+        }
+    }
+
+    private fun addCityStateLuxury(gameInfo: GameInfo, spawn: TileInfo) {
+        // Every city state should have at least one luxury to trade
+        val relevantTiles = spawn.getTilesInDistance(2).shuffled()
+
+        for (tile in relevantTiles) {
+            if(tile.resource != null && tile.getTileResource().resourceType == ResourceType.Luxury)
+                return  // At least one luxury; all set
+        }
+
+        for (tile in relevantTiles) {
+            // Add a luxury to the first eligible tile
+            if (tile.resource != null)
+                continue
+
+            val luxuryToAdd = gameInfo.ruleSet.tileResources.values
+                .filter { it.terrainsCanBeFoundOn.contains(tile.getLastTerrain().name) && it.resourceType == ResourceType.Luxury }
+                .randomOrNull()
+            if (luxuryToAdd != null) {
+                tile.resource = luxuryToAdd.name
+                return
+            }
+        }
     }
 
     private fun vectorIsAtLeastNTilesAwayFromEdge(vector: Vector2, n: Int, tileMap: TileMap): Boolean {

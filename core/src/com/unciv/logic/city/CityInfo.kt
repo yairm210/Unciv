@@ -2,18 +2,18 @@ package com.unciv.logic.city
 
 import com.badlogic.gdx.math.Vector2
 import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.GreatPersonManager
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.map.RoadStatus
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
+import com.unciv.models.Counter
 import com.unciv.models.ruleset.Unique
 import com.unciv.models.ruleset.tile.ResourceSupplyList
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.unit.BaseUnit
-import com.unciv.models.stats.Stat
-import com.unciv.models.stats.StatMap
-import com.unciv.models.stats.Stats
 import java.util.*
+import kotlin.collections.HashMap
 import kotlin.collections.HashSet
 import kotlin.math.ceil
 import kotlin.math.min
@@ -258,7 +258,8 @@ class CityInfo {
         for (unique in getLocalMatchingUniques("Provides [] []")) { // E.G "Provides [1] [Iron]"
             val resource = getRuleset().tileResources[unique.params[1]]
             if (resource != null) {
-                cityResources.add(resource, unique.params[0].toInt() * civInfo.getResourceModifier(resource), "Tiles")
+                cityResources.add(resource, unique.params[0].toInt()
+                        * civInfo.getResourceModifier(resource), "Tiles")
             }
         }
 
@@ -315,54 +316,73 @@ class CityInfo {
 
     fun containsBuildingUnique(unique: String) = cityConstructions.getBuiltBuildings().any { it.uniques.contains(unique) }
 
-    fun getGreatPersonPointsForNextTurn(): StatMap {
-        val stats = StatMap()
-        for ((specialist, amount) in population.getNewSpecialists())
-            if (getRuleset().specialists.containsKey(specialist)) // To solve problems in total remake mods
-                stats.add("Specialists", getRuleset().specialists[specialist]!!.greatPersonPoints.times(amount))
+    fun getGreatPersonPointsForNextTurn(): HashMap<String, Counter<String>> {
+        val sourceToGPP = HashMap<String, Counter<String>>()
 
-        val buildingStats = Stats()
-        for (building in cityConstructions.getBuiltBuildings())
-            if (building.greatPersonPoints != null)
-                buildingStats.add(building.greatPersonPoints!!)
-        if (!buildingStats.isEmpty())
-            stats["Buildings"] = buildingStats
-
-        for (entry in stats) {
-            for (unique in civInfo.getMatchingUniques("[] is earned []% faster")) {
-                val unit = civInfo.gameInfo.ruleSet.units[unique.params[0]]
-                if (unit == null) continue
-                val greatUnitUnique = unit.uniqueObjects.firstOrNull { it.placeholderText == "Great Person - []" }
-                if (greatUnitUnique == null) continue
-                val statName = greatUnitUnique.params[0]
-                val stat = Stat.values().firstOrNull { it.name == statName }
-                // this is not very efficient, and if it causes problems we can try and think of a way of improving it
-                if (stat != null) entry.value.add(stat, entry.value.get(stat) * unique.params[1].toFloat() / 100)
+        val specialistsCounter = Counter<String>()
+        for ((specialistName, amount) in population.getNewSpecialists())
+            if (getRuleset().specialists.containsKey(specialistName)) { // To solve problems in total remake mods
+                val specialist = getRuleset().specialists[specialistName]!!
+                specialistsCounter.add(specialist.greatPersonPoints.times(amount))
             }
-            
+        sourceToGPP["Specialists"] = specialistsCounter
+
+        val buildingsCounter = Counter<String>()
+        for (building in cityConstructions.getBuiltBuildings())
+            buildingsCounter.add(building.greatPersonPoints)
+        sourceToGPP["Buildings"] = buildingsCounter
+
+        for ((source, gppCounter) in sourceToGPP) {
+            for (unique in civInfo.getMatchingUniques("[] is earned []% faster")) {
+                val unitName = unique.params[0]
+                if (!gppCounter.containsKey(unitName)) continue
+                gppCounter.add(unitName, gppCounter[unitName]!! * unique.params[1].toInt() / 100)
+            }
+
+            var allGppPercentageBonus = 0
             for (unique in getMatchingUniques("[]% great person generation []")) {
                 if (!matchesFilter(unique.params[1])) continue
-                stats[entry.key]!!.timesInPlace(1 + unique.params[0].toFloat() / 100f)
+                allGppPercentageBonus += unique.params[0].toInt()
             }
-            
-            // Deprecated since 3.15.9
-                for (unique in getMatchingUniques("+[]% great person generation in this city") 
-                        + getMatchingUniques("+[]% great person generation in all cities")
-                ) {
-                    stats[entry.key]!!.timesInPlace(1 + unique.params[0].toFloat() / 100f)
-                }
-            //
-            
+
+            // Sweden UP
+            for (otherciv in civInfo.getKnownCivs()) {
+                if (!civInfo.getDiplomacyManager(otherciv)
+                        .hasFlag(DiplomacyFlags.DeclarationOfFriendship)
+                ) continue
+
+                for (ourunique in civInfo.getMatchingUniques("When declaring friendship, both parties gain a []% boost to great person generation"))
+                    allGppPercentageBonus += ourunique.params[0].toInt()
+                for (theirunique in otherciv.getMatchingUniques("When declaring friendship, both parties gain a []% boost to great person generation"))
+                    allGppPercentageBonus += theirunique.params[0].toInt()
+            }
+
+            for (unitName in gppCounter.keys)
+                gppCounter.add(unitName, gppCounter[unitName]!! * allGppPercentageBonus / 100)
         }
 
-        return stats
+        // Since existing buildings and specialists have *stat names* rather than Great Person names
+        //  as the keys, convert every stat name to the appropriate Great Person name instead
+
+        for (counter in sourceToGPP.values)
+            for ((key, gppAmount) in counter.toMap()) { // since we're removing, copy to avoid concurrency problems
+                val relevantStatEntry = GreatPersonManager.statToGreatPersonMapping
+                    .entries.firstOrNull { it.key.name.equals(key, true) }
+                if (relevantStatEntry == null) continue
+
+                counter.add(relevantStatEntry.value, gppAmount)
+                counter.remove(key)
+            }
+
+
+        return sourceToGPP
     }
 
-    fun getGreatPersonPoints(): Stats {
-        val stats = Stats()
+    fun getGreatPersonPoints(): Counter<String> {
+        val gppCounter = Counter<String>()
         for (entry in getGreatPersonPointsForNextTurn().values)
-            stats.add(entry)
-        return stats
+            gppCounter.add(entry)
+        return gppCounter
     }
 
     internal fun getMaxHealth() = 200 + cityConstructions.getBuiltBuildings().sumBy { it.cityHealth }
@@ -569,10 +589,8 @@ class CityInfo {
     
     // Matching uniques provided by sources in the city itself
     fun getLocalMatchingUniques(placeholderText: String): Sequence<Unique> {
-        return (
-            cityConstructions.builtBuildingUniqueMap.getUniques(placeholderText) +
-            religion.getMatchingUniques(placeholderText)
-        ).asSequence()
+        return cityConstructions.builtBuildingUniqueMap.getUniques(placeholderText) +
+                religion.getMatchingUniques(placeholderText)
     }
 
     // Get all uniques that originate from this city
@@ -582,7 +600,7 @@ class CityInfo {
     
     // Get all matching uniques that don't apply to only this city
     fun getMatchingUniquesWithNonLocalEffects(placeholderText: String): Sequence<Unique> {
-        return cityConstructions.builtBuildingUniqueMap.getUniques(placeholderText).asSequence()
+        return cityConstructions.builtBuildingUniqueMap.getUniques(placeholderText)
             .filter { it.params.none { param -> param == "in this city" } }
         // Note that we don't query religion here, as those only have local effects (for now at least)
     }

@@ -146,7 +146,16 @@ object SpecificUnitAutomation {
     }
 
     fun automateSettlerActions(unit: MapUnit) {
-        if (unit.getTile().militaryUnit == null) return // Don't move until you're accompanied by a military unit
+        if (unit.civInfo.gameInfo.turns == 0) {   // Special case, we want AI to settle in place on turn 1.
+            val foundCityAction = UnitActions.getFoundCityAction(unit, unit.getTile())
+            if(foundCityAction?.action != null) {
+                foundCityAction.action.invoke()
+                return
+            }
+        }
+
+        if (unit.getTile().militaryUnit == null     // Don't move until you're accompanied by a military unit
+            && !unit.civInfo.isCityState()) return  // ..unless you're a city state that was unable to settle its city on turn 1
 
         val tilesNearCities = unit.civInfo.gameInfo.getCities().asSequence()
                 .flatMap {
