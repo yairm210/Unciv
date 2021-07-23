@@ -94,7 +94,7 @@ class CivilizationInfo {
     /** for trades here, ourOffers is the current civ's offers, and theirOffers is what the requesting civ offers  */
     val tradeRequests = ArrayList<TradeRequest>()
 
-    /** See DiplomacyManager.flagsCountdown to why not eEnum */
+    /** See DiplomacyManager.flagsCountdown for why this does not map Enums to ints */
     private var flagsCountdown = HashMap<String, Int>()
     /** Arraylist instead of HashMap as there might be doubles
      * Pairs of Uniques and the amount of turns they are still active
@@ -533,7 +533,7 @@ class CivilizationInfo {
 
         updateViewableTiles() // adds explored tiles so that the units will be able to perform automated actions better
         transients().updateCitiesConnectedToCapital()
-        turnStartFlags()
+        startTurnFlags()
         for (city in cities) city.startTurn()
 
         for (unit in getCivUnits()) unit.startTurn()
@@ -599,11 +599,8 @@ class CivilizationInfo {
         updateHasActiveGreatWall()
     }
 
-    private fun turnStartFlags() {
-        // This function may be too abstracted for what it currently does (only managing a single flag)
-        // But eh, it works.
+    private fun startTurnFlags() {
         for (flag in flagsCountdown.keys.toList()) {
-
             if (flag == CivFlags.cityStateGreatPersonGift.name) {
                 val cityStateAllies = getKnownCivs().filter { it.isCityState() && it.getAllyCiv() == civName }.count()
 
@@ -619,12 +616,45 @@ class CivilizationInfo {
 
             if (flagsCountdown[flag]!! > 0)
                 flagsCountdown[flag] = flagsCountdown[flag]!! - 1
-
+            
+            
+            if (flagsCountdown[flag]!! != 0) continue
+            
+            
+            when (flag) {
+                CivFlags.TurnsTillNextDiplomaticVote.name -> addFlag(CivFlags.ShowDiplomaticVotingResults.name, 1)
+                CivFlags.ShouldResetDiplomaticVotes.name -> {
+                    gameInfo.diplomaticVictoryVotesCast.clear()
+                    removeFlag(CivFlags.ShouldResetDiplomaticVotes.name)
+                    removeFlag(CivFlags.ShowDiplomaticVotingResults.name)
+                }
+                CivFlags.ShowDiplomaticVotingResults.name -> {
+                    // Handle result of diplomatic voting
+                    addFlag(CivFlags.ShouldResetDiplomaticVotes.name, 1)
+                }
+            }
         }
     }
 
     fun addFlag(flag: String, count: Int) { flagsCountdown[flag] = count }
+    fun removeFlag(flag: String) { flagsCountdown.remove(flag) }
 
+    fun getTurnsBetweenDiplomaticVotings() = (20 * gameInfo.gameParameters.gameSpeed.modifier).toInt() // Dunno the exact calculation, hidden in Lua files
+    
+    fun mayVoteForDiplomaticVictory() =
+        CivFlags.TurnsTillNextDiplomaticVote.name in flagsCountdown.keys 
+        && flagsCountdown[CivFlags.TurnsTillNextDiplomaticVote.name] == 0 
+        && civName !in gameInfo.diplomaticVictoryVotesCast.keys
+    
+    fun diplomaticVoteForCiv(chosenCivName: String) {
+        gameInfo.diplomaticVictoryVotesCast[civName] = chosenCivName!!
+        addFlag(CivFlags.TurnsTillNextDiplomaticVote.name, getTurnsBetweenDiplomaticVotings())
+    }
+    
+    fun shouldShowDiplomaticVotingResults() =
+         CivFlags.ShowDiplomaticVotingResults.name in flagsCountdown.keys
+         && flagsCountdown[CivFlags.ShowDiplomaticVotingResults.name] == 0
+    
     /** Modify gold by a given amount making sure it does neither overflow nor underflow.
      * @param delta the amount to add (can be negative)
      */
@@ -706,7 +736,6 @@ class CivilizationInfo {
         newCity.cityConstructions.chooseNextConstruction()
 
     }
-
 
     fun destroy() {
         val destructionText = if (isMajorCiv()) "The civilization of [$civName] has been destroyed!"
@@ -869,5 +898,8 @@ class CivilizationInfoPreview {
 }
 
 enum class CivFlags {
-    cityStateGreatPersonGift
+    cityStateGreatPersonGift, // This should be capitalized, but doing so would break existing save files
+    TurnsTillNextDiplomaticVote,
+    ShowDiplomaticVotingResults,
+    ShouldResetDiplomaticVotes,
 }

@@ -42,6 +42,9 @@ class GameInfo {
     var currentPlayer = ""
     var gameId = UUID.randomUUID().toString() // random string
 
+    // Maps a civ to the civ they voted for
+    var diplomaticVictoryVotesCast = HashMap<String, String>()
+
     /**Keep track of a custom location this game was saved to _or_ loaded from
      *
      * Note this was used as silent autosave destination, but it was decided (#3898) to
@@ -70,6 +73,7 @@ class GameInfo {
         toReturn.difficulty = difficulty
         toReturn.gameParameters = gameParameters
         toReturn.gameId = gameId
+        toReturn.diplomaticVictoryVotesCast.putAll(diplomaticVictoryVotesCast)
         toReturn.oneMoreTurnMode = oneMoreTurnMode
         toReturn.customSaveLocation = customSaveLocation
         return toReturn

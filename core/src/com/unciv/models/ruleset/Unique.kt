@@ -126,6 +126,9 @@ object UniqueTriggerActivation {
 
             // Note that the way this is implemented now, this unique does NOT stack
             // I could parametrize the [Allied], but eh.
+            "Triggers voting for the Diplomatic Victory" ->
+                for (civ in civInfo.gameInfo.civilizations)
+                    civ.addFlag(CivFlags.TurnsTillNextDiplomaticVote.name, civInfo.getTurnsBetweenDiplomaticVotings() / 2)
         }
     }
 }

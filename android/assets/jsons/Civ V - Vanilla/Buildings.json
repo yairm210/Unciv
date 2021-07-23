@@ -1102,9 +1102,9 @@
 		"isWonder": true,
 		"culture": 1,
 		"greatPersonPoints": {"gold": 2},
-		"uniques": ["Triggers voting for the Diplomatic Victory", "Hidden when [Diplomatic] Victory is disabled"],
+		"requiredTech": "Globalization",
+		"uniques": ["Triggers voting for the Diplomatic Victory", "Hidden when [Diplomatic] Victory is disabled", "Triggers a global alert upon completion"],
 		"quote": "'More than ever before in human history, we share a common destiny. We can master it only if we face it together. And that is why we have the United Nations.' - Kofi Annan"
-		"requiredTech": "Globalization", 
 	},
 	{
 		"name": "SS Engine",
