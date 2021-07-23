@@ -7,6 +7,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.models.ruleset.Ruleset
+import com.unciv.models.ruleset.Unique
 import com.unciv.models.ruleset.VictoryType
 import com.unciv.models.stats.INamed
 import com.unciv.models.translations.tr
@@ -172,17 +173,9 @@ class CivilopediaScreen(
         onBackButtonClicked { UncivGame.Current.setWorldScreen() }
 
         val hideReligionItems = !game.gameInfo.hasReligionEnabled()
-        val noCulturalVictory = VictoryType.Cultural !in game.gameInfo.gameParameters.victoryTypes
 
         categoryToEntries[CivilopediaCategories.Building] = ruleset.buildings.values
-                .filter { "Will not be displayed in Civilopedia" !in it.uniques
-                        && !(hideReligionItems && "Hidden when religion is disabled" in it.uniques)
-                        && !(it.uniqueObjects.filter { unique -> unique.placeholderText == "Hidden when [] Victory is disabled"}.any {
-                            unique -> !game.gameInfo.gameParameters.victoryTypes.contains(VictoryType.valueOf(unique.params[0] )) 
-                        })
-                        // Deprecated since 3.15.14
-                            && !(noCulturalVictory && "Hidden when cultural victory is disabled" in it.uniques)
-                        //
+                .filter { shouldBeDisplayed(it.uniqueObjects)
                         && !it.isAnyWonder() }
                 .map {
                     CivilopediaEntry(
@@ -193,14 +186,7 @@ class CivilopediaScreen(
                     )
                 }
         categoryToEntries[CivilopediaCategories.Wonder] = ruleset.buildings.values
-                .filter { "Will not be displayed in Civilopedia" !in it.uniques
-                        && !(hideReligionItems && "Hidden when religion is disabled" in it.uniques)
-                        && !(it.uniqueObjects.filter { unique -> unique.placeholderText == "Hidden when [] Victory is disabled"}.any {
-                            unique -> !game.gameInfo.gameParameters.victoryTypes.contains(VictoryType.valueOf(unique.params[0] ))
-                        })
-                        // Deprecated since 3.15.14
-                            && !(noCulturalVictory && "Hidden when cultural victory is disabled" in it.uniques)
-                        //
+                .filter { shouldBeDisplayed(it.uniqueObjects)
                         && it.isAnyWonder() }
                 .map {
                     CivilopediaEntry(
@@ -220,6 +206,7 @@ class CivilopediaScreen(
                     )
                 }
         categoryToEntries[CivilopediaCategories.Terrain] = ruleset.terrains.values
+                .filter { shouldBeDisplayed(it.uniqueObjects) }
                 .map {
                     CivilopediaEntry(
                         it.name,
@@ -229,6 +216,7 @@ class CivilopediaScreen(
                     )
                 }
         categoryToEntries[CivilopediaCategories.Improvement] = ruleset.tileImprovements.values
+                .filter { shouldBeDisplayed(it.uniqueObjects) }
                 .map {
                     CivilopediaEntry(
                         it.name,
@@ -238,7 +226,7 @@ class CivilopediaScreen(
                     )
                 }
         categoryToEntries[CivilopediaCategories.Unit] = ruleset.units.values
-                .filter { "Will not be displayed in Civilopedia" !in it.uniques }
+                .filter { shouldBeDisplayed(it.uniqueObjects) }
                 .map {
                     CivilopediaEntry(
                         it.name,
@@ -248,7 +236,7 @@ class CivilopediaScreen(
                     )
                 }
         categoryToEntries[CivilopediaCategories.Nation] = ruleset.nations.values
-                .filter { it.isMajorCiv() }
+                .filter { shouldBeDisplayed(it.uniqueObjects) && it.isMajorCiv() }
                 .map {
                     CivilopediaEntry(
                         it.name,
@@ -258,6 +246,7 @@ class CivilopediaScreen(
                     )
                 }
         categoryToEntries[CivilopediaCategories.Technology] = ruleset.technologies.values
+                .filter { shouldBeDisplayed(it.uniqueObjects) }
                 .map {
                     CivilopediaEntry(
                         it.name,
@@ -267,6 +256,7 @@ class CivilopediaScreen(
                     )
                 }
         categoryToEntries[CivilopediaCategories.Promotion] = ruleset.unitPromotions.values
+                .filter { shouldBeDisplayed(it.uniqueObjects) }
                 .map {
                     CivilopediaEntry(
                         it.name,
@@ -383,6 +373,21 @@ class CivilopediaScreen(
             lines += FormattedLine(it, icon="Belief/$it")
         }
         return SimpleCivilopediaText(lines, true)
+    }
+    
+    private fun shouldBeDisplayed(uniqueObjects: List<Unique>): Boolean {
+        val uniques = uniqueObjects.map { it.placeholderText }
+        val hideReligionItems = !game.gameInfo.hasReligionEnabled()
+        val noCulturalVictory = VictoryType.Cultural !in game.gameInfo.gameParameters.victoryTypes
+        
+        return "Will not be displayed in Civilopedia" !in uniques
+            && !(hideReligionItems && "Hidden when religion is disabled" in uniques)
+            && !(uniqueObjects.filter { unique -> unique.placeholderText == "Hidden when [] Victory is disabled"}.any {
+                unique -> !game.gameInfo.gameParameters.victoryTypes.contains(VictoryType.valueOf(unique.params[0] ))
+            })
+            // Deprecated since 3.15.14
+                && !(noCulturalVictory && "Hidden when cultural victory is disabled" in uniques)
+            //
     }
 
     override fun resize(width: Int, height: Int) {

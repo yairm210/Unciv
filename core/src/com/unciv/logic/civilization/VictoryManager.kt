@@ -50,6 +50,18 @@ class VictoryManager {
         ).toInt()
     }
     
+    fun hasEnoughVotesForDiplomaticVictory(): Boolean {
+        val results = calculateDiplomaticVotingResults(civInfo.gameInfo.diplomaticVictoryVotesCast)
+        val bestCiv = results.maxByOrNull { it.value }
+        if (bestCiv == null) return false
+
+        // If we don't have the highest score, we have not won anyway
+        if (bestCiv.key != civInfo.civName) return false
+        
+        // If there's a tie, we haven't won either
+        return (results.none { it != bestCiv && it.value == bestCiv.value }) 
+    }
+    
     private fun hasVictoryType(victoryType: VictoryType) = civInfo.gameInfo.gameParameters.victoryTypes.contains(victoryType)
 
     fun hasWonScientificVictory() = hasVictoryType(VictoryType.Scientific) && spaceshipPartsRemaining() == 0
@@ -62,7 +74,9 @@ class VictoryManager {
                 && civInfo.gameInfo.civilizations.all { it == civInfo || it.isDefeated() || !it.isMajorCiv() }
     }
     
-    fun hasWonDiplomaticVictory() = hasVictoryType(VictoryType.Diplomatic) && hasWonDiplomaticVictory
+    fun hasWonDiplomaticVictory() = hasVictoryType(VictoryType.Diplomatic) 
+            && civInfo.shouldCheckForDiplomaticVictory()
+            && hasEnoughVotesForDiplomaticVictory()
 
     fun hasWonVictoryType(): VictoryType? {
         if (!civInfo.isMajorCiv()) return null

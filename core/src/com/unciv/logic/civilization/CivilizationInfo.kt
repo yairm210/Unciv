@@ -636,14 +636,6 @@ class CivilizationInfo {
                         continue
                     
                     addFlag(CivFlags.ShouldResetDiplomaticVotes.name, 1)
-                    
-                    val results = victoryManager.calculateDiplomaticVotingResults(gameInfo.diplomaticVictoryVotesCast)
-                    val bestCiv = results.maxByOrNull { it.value }
-                    if (bestCiv == null) continue
-                    
-                    if (bestCiv.value < victoryManager.votesNeededForDiplomaticVictory()) continue
-                    
-                    gameInfo.civilizations.first { it.civName == bestCiv.key }.victoryManager.hasWonDiplomaticVictory = true
                 }
             }
         }
@@ -667,6 +659,10 @@ class CivilizationInfo {
     
     fun shouldShowDiplomaticVotingResults() =
          flagsCountdown[CivFlags.ShowDiplomaticVotingResults.name] == 0
+    
+    // Yes, this is the same function as above, but with a different use case so it has a different name.
+    fun shouldCheckForDiplomaticVictory() =
+        flagsCountdown[CivFlags.ShowDiplomaticVotingResults.name] == 0
     
     /** Modify gold by a given amount making sure it does neither overflow nor underflow.
      * @param delta the amount to add (can be negative)
