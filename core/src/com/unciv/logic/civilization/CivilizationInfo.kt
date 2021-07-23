@@ -617,9 +617,7 @@ class CivilizationInfo {
             if (flagsCountdown[flag]!! > 0)
                 flagsCountdown[flag] = flagsCountdown[flag]!! - 1
             
-            
             if (flagsCountdown[flag]!! != 0) continue
-            
             
             when (flag) {
                 CivFlags.TurnsTillNextDiplomaticVote.name -> addFlag(CivFlags.ShowDiplomaticVotingResults.name, 1)
@@ -629,8 +627,26 @@ class CivilizationInfo {
                     removeFlag(CivFlags.ShowDiplomaticVotingResults.name)
                 }
                 CivFlags.ShowDiplomaticVotingResults.name -> {
-                    // Handle result of diplomatic voting
                     addFlag(CivFlags.ShouldResetDiplomaticVotes.name, 1)
+                    
+                    if (gameInfo.civilizations.any { it.victoryManager.hasWon() } )
+                        // We have already done this calculation, so don't waste resources doing it again
+                        continue
+                    
+                    val results = victoryManager.calculateDiplomaticVotingResults(gameInfo.diplomaticVictoryVotesCast)
+                    val bestCiv = results.maxByOrNull { it.value }
+                    if (bestCiv == null) continue
+                    
+                    val civCount = gameInfo.civilizations.count { !it.isDefeated() }
+                    
+                    // CvGame.cpp::DoUpdateDiploVictory() in the source code of the original
+                    val votesNeededToWin =
+                        if (civCount > 28) 0.35 * civCount
+                        else (67 - 1.1 * civCount) / 100 * civCount
+                    
+                    if (bestCiv.value < votesNeededToWin) continue
+                    
+                    gameInfo.civilizations.first { it.civName == bestCiv.key }.victoryManager.hasWonDiplomaticVictory = true
                 }
             }
         }

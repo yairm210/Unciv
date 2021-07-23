@@ -9,6 +9,7 @@ class VictoryManager {
 
     var requiredSpaceshipParts = Counter<String>()
     var currentsSpaceshipParts = Counter<String>()
+    var hasWonDiplomaticVictory = false
 
     init {
         requiredSpaceshipParts.add("SS Booster", 3)
@@ -31,6 +32,14 @@ class VictoryManager {
 
     fun spaceshipPartsRemaining() = requiredSpaceshipParts.values.sum() - currentsSpaceshipParts.values.sum()
 
+    fun calculateDiplomaticVotingResults(votesCast: HashMap<String, String>): Counter<String> {
+        val results = Counter<String>()
+        for (castVote in votesCast) {
+            results.add(castVote.value, 1)
+        }
+        return results
+    }
+    
     private fun hasVictoryType(victoryType: VictoryType) = civInfo.gameInfo.gameParameters.victoryTypes.contains(victoryType)
 
     fun hasWonScientificVictory() = hasVictoryType(VictoryType.Scientific) && spaceshipPartsRemaining() == 0
@@ -42,12 +51,15 @@ class VictoryManager {
         return hasVictoryType(VictoryType.Domination)
                 && civInfo.gameInfo.civilizations.all { it == civInfo || it.isDefeated() || !it.isMajorCiv() }
     }
+    
+    fun hasWonDiplomaticVictory() = hasVictoryType(VictoryType.Diplomatic) && hasWonDiplomaticVictory
 
     fun hasWonVictoryType(): VictoryType? {
         if (!civInfo.isMajorCiv()) return null
         if (hasWonDominationVictory()) return VictoryType.Domination
         if (hasWonScientificVictory()) return VictoryType.Scientific
         if (hasWonCulturalVictory()) return VictoryType.Cultural
+        if (hasWonDiplomaticVictory()) return VictoryType.Diplomatic
         if (civInfo.hasUnique("Triggers victory")) return VictoryType.Neutral
         return null
     }

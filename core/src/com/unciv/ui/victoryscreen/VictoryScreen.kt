@@ -54,24 +54,30 @@ class VictoryScreen(val worldScreen: WorldScreen) : PickerScreen() {
         val playerVictoryType = playerCivInfo.victoryManager.hasWonVictoryType()
         if (playerVictoryType != null) {
             someoneHasWon = true
-            when (playerVictoryType) {
-                VictoryType.Cultural -> wonOrLost("You have won a cultural victory!")
-                VictoryType.Domination -> wonOrLost("You have won a domination victory!")
-                VictoryType.Scientific -> wonOrLost("You have won a scientific victory!")
-                VictoryType.Neutral -> wonOrLost("You have won!")
-            }
+            wonOrLost(
+                when (playerVictoryType) {
+                    VictoryType.Cultural -> "You have won a cultural victory!"
+                    VictoryType.Domination -> "You have won a domination victory!"
+                    VictoryType.Scientific -> "You have won a scientific victory!"
+                    VictoryType.Diplomatic -> "You have won a diplomatic victory!"
+                    VictoryType.Neutral -> "You have won!"
+                }
+            )
         }
         for (civ in gameInfo.civilizations.filter { it.isMajorCiv() && it != playerCivInfo }) {
             val civVictoryType = civ.victoryManager.hasWonVictoryType()
             if (civVictoryType != null) {
                 someoneHasWon = true
                 val winningCivName = civ.civName
-                when (civVictoryType) {
-                    VictoryType.Cultural -> wonOrLost("[$winningCivName] has won a cultural victory!")
-                    VictoryType.Domination -> wonOrLost("[$winningCivName] has won a domination victory!")
-                    VictoryType.Scientific -> wonOrLost("[$winningCivName] has  won a scientific victory!")
-                    VictoryType.Neutral -> wonOrLost("[$winningCivName] has won!")
-                }
+                wonOrLost(
+                    when (civVictoryType) {
+                        VictoryType.Cultural -> "[$winningCivName] has won a cultural victory!"
+                        VictoryType.Domination -> "[$winningCivName] has won a domination victory!"
+                        VictoryType.Scientific -> "[$winningCivName] has won a scientific victory!"
+                        VictoryType.Diplomatic -> "[$winningCivName] has won a diplomatic victory!"
+                        VictoryType.Neutral -> "[$winningCivName] has won!"
+                    }
+                )
             }
         }
 
@@ -90,6 +96,7 @@ class VictoryScreen(val worldScreen: WorldScreen) : PickerScreen() {
             "You have won a cultural victory!" -> "You have achieved victory through the awesome power of your Culture. Your civilization's greatness - the magnificence of its monuments and the power of its artists - have astounded the world! Poets will honor you as long as beauty brings gladness to a weary heart."
             "You have won a domination victory!" -> "The world has been convulsed by war. Many great and powerful civilizations have fallen, but you have survived - and emerged victorious! The world will long remember your glorious triumph!"
             "You have won a scientific victory!" -> "You have achieved victory through mastery of Science! You have conquered the mysteries of nature and led your people on a voyage to a brave new world! Your triumph will be remembered as long as the stars burn in the night sky!"
+            "You have won a diplomatic victory!" -> "You have triumphed over your foes through the art of diplomacy! Your cunning and wisdom have earned you great friends - and divided and sown confusion among your enemies! Forever will you be remembered as the leader who brought peace to this weary world!"
             "You have won!" -> "Your civilization stands above all others! The exploits of your people shall be remembered until the end of civilizaton itself!"
             else -> "You have been defeated. Your civilization has been overwhelmed by its many foes. But your people do not despair, for they know that one day you shall return - and lead them forward to victory!"
         }
