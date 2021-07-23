@@ -602,7 +602,8 @@ class CivilizationInfo {
 
     private fun startTurnFlags() {
         for (flag in flagsCountdown.keys.toList()) {
-            if (flag == CivFlags.cityStateGreatPersonGift.name) {
+            // the "ignoreCase = true" is to catch 'cityStateGreatPersonGift' instead of 'CityStateGreatPersonGift' being in old save files 
+            if (flag == CivFlags.CityStateGreatPersonGift.name || flag.equals(CivFlags.CityStateGreatPersonGift.name, ignoreCase = true)) {
                 val cityStateAllies = getKnownCivs().filter { it.isCityState() && it.getAllyCiv() == civName }.count()
 
                 if (cityStateAllies >= 1) flagsCountdown[flag] = flagsCountdown[flag]!! - 1
@@ -628,26 +629,19 @@ class CivilizationInfo {
                     removeFlag(CivFlags.ShowDiplomaticVotingResults.name)
                 }
                 CivFlags.ShowDiplomaticVotingResults.name -> {
-                    addFlag(CivFlags.ShouldResetDiplomaticVotes.name, 1)
                     
                     if (gameInfo.civilizations.any { it.victoryManager.hasWon() } )
                         // We have either already done this calculation, or it doesn't matter anymore, 
                         // so don't waste resources doing it
                         continue
                     
+                    addFlag(CivFlags.ShouldResetDiplomaticVotes.name, 1)
+                    
                     val results = victoryManager.calculateDiplomaticVotingResults(gameInfo.diplomaticVictoryVotesCast)
                     val bestCiv = results.maxByOrNull { it.value }
                     if (bestCiv == null) continue
                     
-                    val civCount = gameInfo.civilizations.count { !it.isDefeated() }
-                    
-                    // CvGame.cpp::DoUpdateDiploVictory() in the source code of the original
-                    val votesNeededToWin = (
-                        if (civCount > 28) 0.35 * civCount
-                        else (67 - 1.1 * civCount) / 100 * civCount
-                        ).toInt()
-                    
-                    if (bestCiv.value < votesNeededToWin) continue
+                    if (bestCiv.value < victoryManager.votesNeededForDiplomaticVictory()) continue
                     
                     gameInfo.civilizations.first { it.civName == bestCiv.key }.victoryManager.hasWonDiplomaticVictory = true
                 }
@@ -660,13 +654,10 @@ class CivilizationInfo {
 
     fun getTurnsBetweenDiplomaticVotings() = (15 * gameInfo.gameParameters.gameSpeed.modifier).toInt() // Dunno the exact calculation, hidden in Lua files
     
-    fun getTurnsTillNextDiplomaticVote() = 
-        if (CivFlags.TurnsTillNextDiplomaticVote.name !in flagsCountdown) null 
-        else flagsCountdown[CivFlags.TurnsTillNextDiplomaticVote.name]
+    fun getTurnsTillNextDiplomaticVote() = flagsCountdown[CivFlags.TurnsTillNextDiplomaticVote.name]
     
     fun mayVoteForDiplomaticVictory() =
-        CivFlags.TurnsTillNextDiplomaticVote.name in flagsCountdown.keys 
-        && flagsCountdown[CivFlags.TurnsTillNextDiplomaticVote.name] == 0 
+        getTurnsTillNextDiplomaticVote() == 0 
         && civName !in gameInfo.diplomaticVictoryVotesCast.keys
     
     fun diplomaticVoteForCiv(chosenCivName: String?) {
@@ -675,8 +666,7 @@ class CivilizationInfo {
     }
     
     fun shouldShowDiplomaticVotingResults() =
-         CivFlags.ShowDiplomaticVotingResults.name in flagsCountdown.keys
-         && flagsCountdown[CivFlags.ShowDiplomaticVotingResults.name] == 0
+         flagsCountdown[CivFlags.ShowDiplomaticVotingResults.name] == 0
     
     /** Modify gold by a given amount making sure it does neither overflow nor underflow.
      * @param delta the amount to add (can be negative)
@@ -921,7 +911,7 @@ class CivilizationInfoPreview {
 }
 
 enum class CivFlags {
-    cityStateGreatPersonGift, // This should be capitalized, but doing so would break existing save files
+    CityStateGreatPersonGift,
     TurnsTillNextDiplomaticVote,
     ShowDiplomaticVotingResults,
     ShouldResetDiplomaticVotes,

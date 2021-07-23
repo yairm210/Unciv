@@ -40,6 +40,16 @@ class VictoryManager {
         return results
     }
     
+    fun votesNeededForDiplomaticVictory(): Int {
+        val civCount = civInfo.gameInfo.civilizations.count { !it.isDefeated() }
+
+        // CvGame.cpp::DoUpdateDiploVictory() in the source code of the original
+        return (
+            if (civCount > 28) 0.35 * civCount
+            else (67 - 1.1 * civCount) / 100 * civCount
+        ).toInt()
+    }
+    
     private fun hasVictoryType(victoryType: VictoryType) = civInfo.gameInfo.gameParameters.victoryTypes.contains(victoryType)
 
     fun hasWonScientificVictory() = hasVictoryType(VictoryType.Scientific) && spaceshipPartsRemaining() == 0

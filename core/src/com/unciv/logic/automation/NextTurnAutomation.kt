@@ -577,8 +577,7 @@ object NextTurnAutomation {
             else knownMajorCivs.filter { civInfo.getDiplomacyManager(it).opinionOfOtherCiv() == highestOpinion}.random().civName
             
         } else {
-            if (civInfo.getAllyCiv() != null) civInfo.getAllyCiv()
-            else null
+            civInfo.getAllyCiv()
         }
         
         civInfo.diplomaticVoteForCiv(chosenCiv)

@@ -23,7 +23,8 @@ class GameParameters { // Default values are the default new game
     var nuclearWeaponsEnabled = true
     var religionEnabled = false
 
-    var victoryTypes: ArrayList<VictoryType> = arrayListOf(VictoryType.Cultural, VictoryType.Diplomatic, VictoryType.Domination, VictoryType.Scientific) // By default, all victory types
+    // By default, all victory types except Diplomacy as it is quite new
+    var victoryTypes: ArrayList<VictoryType> = arrayListOf(VictoryType.Cultural, VictoryType.Domination, VictoryType.Scientific)  
     var startingEra = "Ancient Era"
 
     var isOnlineMultiplayer = false
