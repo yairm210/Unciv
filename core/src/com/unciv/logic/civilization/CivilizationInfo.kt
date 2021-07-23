@@ -88,7 +88,7 @@ class CivilizationInfo {
     var diplomacy = HashMap<String, DiplomacyManager>()
     var notifications = ArrayList<Notification>()
     val popupAlerts = ArrayList<PopupAlert>()
-    private var allyCivName = ""
+    private var allyCivName: String? = null
     var naturalWonders = ArrayList<String>()
 
     /** for trades here, ourOffers is the current civ's offers, and theirOffers is what the requesting civ offers  */
@@ -630,7 +630,8 @@ class CivilizationInfo {
                     addFlag(CivFlags.ShouldResetDiplomaticVotes.name, 1)
                     
                     if (gameInfo.civilizations.any { it.victoryManager.hasWon() } )
-                        // We have already done this calculation, so don't waste resources doing it again
+                        // We have either already done this calculation, or it doesn't matter anymore, 
+                        // so don't waste resources doing it
                         continue
                     
                     val results = victoryManager.calculateDiplomaticVotingResults(gameInfo.diplomaticVictoryVotesCast)
@@ -640,9 +641,10 @@ class CivilizationInfo {
                     val civCount = gameInfo.civilizations.count { !it.isDefeated() }
                     
                     // CvGame.cpp::DoUpdateDiploVictory() in the source code of the original
-                    val votesNeededToWin =
+                    val votesNeededToWin = (
                         if (civCount > 28) 0.35 * civCount
                         else (67 - 1.1 * civCount) / 100 * civCount
+                        ).toInt()
                     
                     if (bestCiv.value < votesNeededToWin) continue
                     
@@ -662,8 +664,8 @@ class CivilizationInfo {
         && flagsCountdown[CivFlags.TurnsTillNextDiplomaticVote.name] == 0 
         && civName !in gameInfo.diplomaticVictoryVotesCast.keys
     
-    fun diplomaticVoteForCiv(chosenCivName: String) {
-        gameInfo.diplomaticVictoryVotesCast[civName] = chosenCivName!!
+    fun diplomaticVoteForCiv(chosenCivName: String?) {
+        if (chosenCivName != null) gameInfo.diplomaticVictoryVotesCast[civName] = chosenCivName
         addFlag(CivFlags.TurnsTillNextDiplomaticVote.name, getTurnsBetweenDiplomaticVotings())
     }
     
@@ -866,7 +868,7 @@ class CivilizationInfo {
     }
 
     fun updateAllyCivForCityState() {
-        var newAllyName = ""
+        var newAllyName: String? = null
         if (!isCityState()) return
         val maxInfluence = diplomacy
                 .filter { !it.value.otherCiv().isCityState() && !it.value.otherCiv().isDefeated() }
@@ -883,7 +885,7 @@ class CivilizationInfo {
             //  This means that it will NOT HAVE a capital at that time, so if we run getCapital we'll get a crash!
             val capitalLocation = if (cities.isNotEmpty()) getCapital().location else null
 
-            if (newAllyName != "") {
+            if (newAllyName != null) {
                 val newAllyCiv = gameInfo.getCivilization(newAllyName)
                 val text = "We have allied with [${civName}]."
                 if (capitalLocation != null) newAllyCiv.addNotification(text, capitalLocation, civName, NotificationIcon.Diplomacy)
@@ -891,7 +893,7 @@ class CivilizationInfo {
                 newAllyCiv.updateViewableTiles()
                 newAllyCiv.updateDetailedCivResources()
             }
-            if (oldAllyName != "") {
+            if (oldAllyName != null) {
                 val oldAllyCiv = gameInfo.getCivilization(oldAllyName)
                 val text = "We have lost alliance with [${civName}]."
                 if (capitalLocation != null) oldAllyCiv.addNotification(text, capitalLocation, civName, NotificationIcon.Diplomacy)

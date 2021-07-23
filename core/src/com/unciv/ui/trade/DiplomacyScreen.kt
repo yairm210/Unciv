@@ -103,7 +103,7 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
         diplomacyTable.add("{Personality}:  {${otherCiv.cityStatePersonality}}".toLabel()).row()
         otherCiv.updateAllyCivForCityState()
         val ally = otherCiv.getAllyCiv()
-        if (ally != "") {
+        if (ally != null) {
             val allyString = "{Ally}: {$ally} {Influence}: ".tr() +
                     otherCiv.getDiplomacyManager(ally).influence.toString()
             diplomacyTable.add(allyString.toLabel()).row()

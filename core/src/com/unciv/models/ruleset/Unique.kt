@@ -128,7 +128,8 @@ object UniqueTriggerActivation {
             // I could parametrize the [Allied], but eh.
             "Triggers voting for the Diplomatic Victory" ->
                 for (civ in civInfo.gameInfo.civilizations)
-                    civ.addFlag(CivFlags.TurnsTillNextDiplomaticVote.name, civInfo.getTurnsBetweenDiplomaticVotings() / 2)
+                    if (!civ.isBarbarian())
+                        civ.addFlag(CivFlags.TurnsTillNextDiplomaticVote.name, civInfo.getTurnsBetweenDiplomaticVotings() / 2)
         }
     }
 }
