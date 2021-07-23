@@ -16,6 +16,7 @@ import com.unciv.ui.newgamescreen.GameSetupInfo
 import java.util.*
 import kotlin.NoSuchElementException
 import kotlin.collections.ArrayList
+import kotlin.collections.HashMap
 import kotlin.math.max
 
 object GameStarter {
@@ -182,6 +183,11 @@ object GameStarter {
         var startingUnits: MutableList<String>
         var eraUnitReplacement: String
 
+        val spawnRatings = HashMap<TileInfo, Float>()
+        for (tile in gameInfo.tileMap.values) {
+            spawnRatings[tile] = tile.getTileStartScore()
+        }
+
         // First we get start locations for the major civs, on the second pass the city states (without predetermined starts) can squeeze in wherever
         // I hear copying code is good
         val cityStatesWithStartingLocations =
@@ -189,7 +195,7 @@ object GameStarter {
                 .filter { it.improvement != null && it.improvement!!.startsWith("StartingLocation ") }
                 .map { it.improvement!!.replace("StartingLocation ", "") }
         val bestCivs = gameInfo.civilizations.filter { !it.isBarbarian() && (!it.isCityState() || it.civName in cityStatesWithStartingLocations) }
-        val bestLocations = getStartingLocations(bestCivs, gameInfo.tileMap)
+        val bestLocations = getStartingLocations(bestCivs, gameInfo.tileMap, spawnRatings)
         for (civ in bestCivs)
         {
             if (civ.isCityState())  // Already have explicit starting locations
@@ -201,7 +207,7 @@ object GameStarter {
 
         val startingLocations = getStartingLocations(
                 gameInfo.civilizations.filter { !it.isBarbarian() },
-                gameInfo.tileMap)
+                gameInfo.tileMap, spawnRatings)
 
         val settlerLikeUnits = ruleSet.units.filter {
             it.value.uniqueObjects.any { it.placeholderText == Constants.settlerUnique }
@@ -211,7 +217,7 @@ object GameStarter {
         for (civ in gameInfo.civilizations.filter { !it.isBarbarian() && !it.isSpectator() }) {
             val startingLocation = startingLocations[civ]!!
 
-            if(civ.isMajorCiv() && startingLocation.getTileStartScore() < 45) {
+            if(civ.isMajorCiv() && spawnRatings[startingLocation]!! < 45) {
                 // An unusually bad spawning location
                 addConsolationPrize(gameInfo, startingLocation, 45 - startingLocation.getTileStartScore().toInt())
             }
@@ -304,7 +310,7 @@ object GameStarter {
         }
     }
 
-    private fun getStartingLocations(civs: List<CivilizationInfo>, tileMap: TileMap): HashMap<CivilizationInfo, TileInfo> {
+    private fun getStartingLocations(civs: List<CivilizationInfo>, tileMap: TileMap, spawnRatings: HashMap<TileInfo, Float>): HashMap<CivilizationInfo, TileInfo> {
         var landTiles = tileMap.values
                 // Games starting on snow might as well start over...
                 .filter { it.isLand && !it.isImpassible() && it.baseTerrain != Constants.snow }
@@ -350,7 +356,7 @@ object GameStarter {
                     if (civ.isCityState())
                         distanceToNext = minimumDistanceBetweenStartingLocations / 2 // We allow random city states to squeeze in tighter
 
-                    freeTiles.sortBy { it.getTileStartScore() }
+                    freeTiles.sortBy { spawnRatings[it] }
 
                     var preferredTiles = freeTiles.toList()
 
