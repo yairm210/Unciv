@@ -12,10 +12,8 @@ import com.unciv.models.ruleset.Unique
 import com.unciv.models.ruleset.tile.ResourceSupplyList
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.unit.BaseUnit
-import com.unciv.models.stats.Stat
-import com.unciv.models.stats.StatMap
-import com.unciv.models.stats.Stats
 import java.util.*
+import kotlin.collections.HashMap
 import kotlin.collections.HashSet
 import kotlin.math.ceil
 import kotlin.math.min
@@ -260,7 +258,8 @@ class CityInfo {
         for (unique in getLocalMatchingUniques("Provides [] []")) { // E.G "Provides [1] [Iron]"
             val resource = getRuleset().tileResources[unique.params[1]]
             if (resource != null) {
-                cityResources.add(resource, unique.params[0].toInt() * civInfo.getResourceModifier(resource), "Tiles")
+                cityResources.add(resource, unique.params[0].toInt()
+                        * civInfo.getResourceModifier(resource), "Tiles")
             }
         }
 
@@ -317,67 +316,59 @@ class CityInfo {
 
     fun containsBuildingUnique(unique: String) = cityConstructions.getBuiltBuildings().any { it.uniques.contains(unique) }
 
-    fun getGreatPersonPointsForNextTurn(): StatMap {
-        val stats = StatMap()
-        for ((specialist, amount) in population.getNewSpecialists())
-            if (getRuleset().specialists.containsKey(specialist)) // To solve problems in total remake mods
-                stats.add("Specialists", getRuleset().specialists[specialist]!!.greatPersonPoints.times(amount))
+    fun getGreatPersonPointsForNextTurn(): HashMap<String, Counter<String>> {
+        val sourceToGPP = HashMap<String, Counter<String>>()
 
-        val buildingStats = Stats()
+        val specialistsCounter = Counter<String>()
+        for ((specialistName, amount) in population.getNewSpecialists())
+            if (getRuleset().specialists.containsKey(specialistName)) { // To solve problems in total remake mods
+                val specialist = getRuleset().specialists[specialistName]!!
+                specialistsCounter.add(GreatPersonManager.statsToGreatPersonCounter(specialist.greatPersonPoints)
+                    .times(amount))
+            }
+        sourceToGPP["Specialists"] = specialistsCounter
+
+        val buildingsCounter = Counter<String>()
         for (building in cityConstructions.getBuiltBuildings())
             if (building.greatPersonPoints != null)
-                buildingStats.add(building.greatPersonPoints!!)
-        if (!buildingStats.isEmpty())
-            stats["Buildings"] = buildingStats
+                buildingsCounter.add(GreatPersonManager.statsToGreatPersonCounter(building.greatPersonPoints!!))
+        sourceToGPP["Buildings"] = buildingsCounter
 
-        for (entry in stats) {
+        for ((source, gppCounter) in sourceToGPP) {
             for (unique in civInfo.getMatchingUniques("[] is earned []% faster")) {
-                val unit = civInfo.gameInfo.ruleSet.units[unique.params[0]]
-                if (unit == null) continue
-                val greatUnitUnique = unit.uniqueObjects.firstOrNull { it.placeholderText == "Great Person - []" }
-                if (greatUnitUnique == null) continue
-                val statName = greatUnitUnique.params[0]
-                val stat = Stat.values().firstOrNull { it.name == statName }
-                // this is not very efficient, and if it causes problems we can try and think of a way of improving it
-                if (stat != null) entry.value.add(stat, entry.value.get(stat) * unique.params[1].toFloat() / 100)
+                val unitName = unique.params[0]
+                if (!gppCounter.containsKey(unitName)) continue
+                gppCounter.add(unitName, gppCounter[unitName]!! * unique.params[1].toInt() / 100)
             }
-            
+
+            var allGppPercentageBonus = 0
             for (unique in getMatchingUniques("[]% great person generation []")) {
                 if (!matchesFilter(unique.params[1])) continue
-                stats[entry.key]!!.timesInPlace(1 + unique.params[0].toFloat() / 100f)
+                allGppPercentageBonus += unique.params[0].toInt()
             }
 
             // Sweden UP
-            var friendshipMultiplier = 0f
             for (otherciv in civInfo.getKnownCivs()) {
-                if (civInfo.getDiplomacyManager(otherciv).hasFlag(DiplomacyFlags.DeclarationOfFriendship)) {
-                    for(ourunique in civInfo.getMatchingUniques("When declaring friendship, both parties gain a []% boost to great person generation"))
-                        friendshipMultiplier += ourunique.params[0].toFloat()
-                    for(theirunique in otherciv.getMatchingUniques("When declaring friendship, both parties gain a []% boost to great person generation"))
-                        friendshipMultiplier += theirunique.params[0].toFloat()
-                }
-            }
-            if (friendshipMultiplier > 0f)
-                stats[entry.key]!!.timesInPlace(1 + friendshipMultiplier / 100f)
+                if (!civInfo.getDiplomacyManager(otherciv).hasFlag(DiplomacyFlags.DeclarationOfFriendship)) continue
 
-            // Deprecated since 3.15.9
-                for (unique in getMatchingUniques("+[]% great person generation in this city") 
-                        + getMatchingUniques("+[]% great person generation in all cities")
-                ) {
-                    stats[entry.key]!!.timesInPlace(1 + unique.params[0].toFloat() / 100f)
-                }
-            //
-            
+                for(ourunique in civInfo.getMatchingUniques("When declaring friendship, both parties gain a []% boost to great person generation"))
+                    allGppPercentageBonus += ourunique.params[0].toInt()
+                for(theirunique in otherciv.getMatchingUniques("When declaring friendship, both parties gain a []% boost to great person generation"))
+                    allGppPercentageBonus += theirunique.params[0].toInt()
+            }
+
+            for (unitName in gppCounter.keys)
+                gppCounter.add(unitName, gppCounter[unitName]!! * allGppPercentageBonus / 100)
         }
 
-        return stats
+        return sourceToGPP
     }
 
     fun getGreatPersonPoints(): Counter<String> {
-        val stats = Stats()
+        val gppCounter = Counter<String>()
         for (entry in getGreatPersonPointsForNextTurn().values)
-            stats.add(entry)
-        return GreatPersonManager.statsToGreatPersonCounter(stats)
+            gppCounter.add(entry)
+        return gppCounter
     }
 
     internal fun getMaxHealth() = 200 + cityConstructions.getBuiltBuildings().sumBy { it.cityHealth }
