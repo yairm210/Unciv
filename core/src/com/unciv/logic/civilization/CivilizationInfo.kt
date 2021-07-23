@@ -657,7 +657,11 @@ class CivilizationInfo {
     fun addFlag(flag: String, count: Int) { flagsCountdown[flag] = count }
     fun removeFlag(flag: String) { flagsCountdown.remove(flag) }
 
-    fun getTurnsBetweenDiplomaticVotings() = (20 * gameInfo.gameParameters.gameSpeed.modifier).toInt() // Dunno the exact calculation, hidden in Lua files
+    fun getTurnsBetweenDiplomaticVotings() = (15 * gameInfo.gameParameters.gameSpeed.modifier).toInt() // Dunno the exact calculation, hidden in Lua files
+    
+    fun getTurnsTillNextDiplomaticVote() = 
+        if (CivFlags.TurnsTillNextDiplomaticVote.name !in flagsCountdown) null 
+        else flagsCountdown[CivFlags.TurnsTillNextDiplomaticVote.name]
     
     fun mayVoteForDiplomaticVictory() =
         CivFlags.TurnsTillNextDiplomaticVote.name in flagsCountdown.keys 
