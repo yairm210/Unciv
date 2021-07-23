@@ -430,9 +430,12 @@ open class TileInfo {
             // deprecated as of 3.15.15
                 "Can only be built on Coastal tiles" in improvement.uniques && isCoastalTile() -> true
             //
-            improvement.uniqueObjects.filter { it.placeholderText == "Can only be built on [] tiles" }.all {
-                unique -> matchesTerrainFilter(unique.params[0])
+
+            // If an unique of this type exists, we want all to match (e.g. Hill _and_ Forest would be meaningful).
+            improvement.uniqueObjects.filter { it.placeholderText == "Can only be built on [] tiles" }.let {
+                it.any() && it.all { unique -> matchesTerrainFilter(unique.params[0]) }
             } -> true
+
             else -> resourceIsVisible && getTileResource().improvement == improvement.name
         }
     }
