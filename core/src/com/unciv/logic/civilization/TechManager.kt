@@ -373,8 +373,6 @@ class TechManager {
         researchedTechnologies.addAll(techsResearched.map { getRuleset().technologies[it]!! })
         researchedTechUniques.addAll(researchedTechnologies.asSequence().flatMap { it.uniqueObjects.asSequence() })
         updateTransientBooleans()
-        movementSpeedOnRoads = if (civInfo.hasUnique("Improves movement speed on roads"))
-            RoadStatus.Road.movementImproved else RoadStatus.Road.movement
     }
 
     private fun updateTransientBooleans() {
@@ -382,6 +380,8 @@ class TechManager {
         unitsCanEmbark = wayfinding || civInfo.hasUnique("Enables embarkation for land units")
 
         embarkedUnitsCanEnterOcean = wayfinding || civInfo.hasUnique("Enables embarked units to enter ocean tiles")
+        movementSpeedOnRoads = if (civInfo.hasUnique("Improves movement speed on roads"))
+            RoadStatus.Road.movementImproved else RoadStatus.Road.movement
         roadsConnectAcrossRivers = civInfo.hasUnique("Roads connect tiles across rivers")
     }
 

@@ -486,7 +486,6 @@ class MapUnit {
                     tile.terrainFeatures.remove(removedFeatureName)
                 }
             }
-            //todo: is it possible worldscreen-visible stats change by connecting stuff?
             tile.improvementInProgress == RoadStatus.Road.name -> tile.roadStatus = RoadStatus.Road
             tile.improvementInProgress == RoadStatus.Railroad.name -> tile.roadStatus = RoadStatus.Railroad
             else -> {
