@@ -6,7 +6,8 @@ open class Counter<K> : LinkedHashMap<K, Int>() {
 
     override operator fun get(key: K): Int? { // don't return null if empty
         if (containsKey(key))
-            return super.get(key)
+        // .toInt(), because GDX deserializes Counter values as *floats* for some reason
+            return super.get(key)!!.toInt()
         else return 0
     }
 

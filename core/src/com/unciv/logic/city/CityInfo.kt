@@ -323,15 +323,16 @@ class CityInfo {
         for ((specialistName, amount) in population.getNewSpecialists())
             if (getRuleset().specialists.containsKey(specialistName)) { // To solve problems in total remake mods
                 val specialist = getRuleset().specialists[specialistName]!!
-                specialistsCounter.add(GreatPersonManager.statsToGreatPersonCounter(specialist.greatPersonPoints)
-                    .times(amount))
+                specialistsCounter.add(
+                    GreatPersonManager.statsToGreatPersonCounter(specialist.greatPersonPoints)
+                        .times(amount)
+                )
             }
         sourceToGPP["Specialists"] = specialistsCounter
 
         val buildingsCounter = Counter<String>()
         for (building in cityConstructions.getBuiltBuildings())
-            if (building.greatPersonPoints != null)
-                buildingsCounter.add(GreatPersonManager.statsToGreatPersonCounter(building.greatPersonPoints!!))
+            buildingsCounter.add(building.greatPersonPoints)
         sourceToGPP["Buildings"] = buildingsCounter
 
         for ((source, gppCounter) in sourceToGPP) {
@@ -349,17 +350,33 @@ class CityInfo {
 
             // Sweden UP
             for (otherciv in civInfo.getKnownCivs()) {
-                if (!civInfo.getDiplomacyManager(otherciv).hasFlag(DiplomacyFlags.DeclarationOfFriendship)) continue
+                if (!civInfo.getDiplomacyManager(otherciv)
+                        .hasFlag(DiplomacyFlags.DeclarationOfFriendship)
+                ) continue
 
-                for(ourunique in civInfo.getMatchingUniques("When declaring friendship, both parties gain a []% boost to great person generation"))
+                for (ourunique in civInfo.getMatchingUniques("When declaring friendship, both parties gain a []% boost to great person generation"))
                     allGppPercentageBonus += ourunique.params[0].toInt()
-                for(theirunique in otherciv.getMatchingUniques("When declaring friendship, both parties gain a []% boost to great person generation"))
+                for (theirunique in otherciv.getMatchingUniques("When declaring friendship, both parties gain a []% boost to great person generation"))
                     allGppPercentageBonus += theirunique.params[0].toInt()
             }
 
             for (unitName in gppCounter.keys)
                 gppCounter.add(unitName, gppCounter[unitName]!! * allGppPercentageBonus / 100)
         }
+
+        // Since existing buildings and specialists have *stat names* rather than Great Person names
+        //  as the keys, convert every stat name to the appropriate Great Person name instead
+
+        for (counter in sourceToGPP.values)
+            for ((key, gppAmount) in counter.toMap()) { // since we're removing, copy to avoid concurrency problems
+                val relevantStatEntry = GreatPersonManager.statToGreatPersonMapping
+                    .entries.firstOrNull { it.key.name.equals(key, true) }
+                if (relevantStatEntry == null) continue
+
+                counter.add(relevantStatEntry.value, gppAmount)
+                counter.remove(key)
+            }
+
 
         return sourceToGPP
     }
