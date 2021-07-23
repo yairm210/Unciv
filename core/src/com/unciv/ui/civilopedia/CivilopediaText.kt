@@ -153,6 +153,7 @@ class FormattedLine (
             val ruleSet = UncivGame.Current.gameInfo.ruleSet
             // order these with the categories that should take precedence in case of name conflicts (e.g. Railroad) _last_
             val allObjectMapsSequence = sequence {
+                yield(CivilopediaCategories.Belief to ruleSet.beliefs)
                 yield(CivilopediaCategories.Difficulty to ruleSet.difficulties)
                 yield(CivilopediaCategories.Promotion to ruleSet.unitPromotions)
                 yield(CivilopediaCategories.Policy to ruleSet.policies)

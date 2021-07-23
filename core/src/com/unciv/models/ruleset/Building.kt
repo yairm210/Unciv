@@ -4,7 +4,6 @@ import com.unciv.logic.city.CityConstructions
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.city.IConstruction
 import com.unciv.logic.civilization.CivilizationInfo
-import com.unciv.logic.civilization.GreatPersonManager
 import com.unciv.models.Counter
 import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.stats.NamedStats
@@ -42,7 +41,7 @@ class Building : NamedStats(), IConstruction, ICivilopediaText {
         return counter
     }
 
-    var greatPersonPoints: Stats? = null
+    var greatPersonPoints= Counter<String>()
 
     /** Extra cost percentage when purchasing */
     private var hurryCostModifier = 0
@@ -136,13 +135,8 @@ class Building : NamedStats(), IConstruction, ICivilopediaText {
         if (percentStats.food != 0f) stringBuilder.append("+" + percentStats.food.toInt() + "% {Food}\n".tr())
         if (percentStats.culture != 0f) stringBuilder.append("+" + percentStats.culture.toInt() + "% {Culture}\r\n".tr())
 
-        if (this.greatPersonPoints != null) {
-            val gpp = this.greatPersonPoints!!
-            if (gpp.production != 0f) stringBuilder.appendLine("+" + gpp.production.toInt() + " " + "[Great Engineer] points".tr())
-            if (gpp.gold != 0f) stringBuilder.appendLine("+" + gpp.gold.toInt() + " " + "[Great Merchant] points".tr())
-            if (gpp.science != 0f) stringBuilder.appendLine("+" + gpp.science.toInt() + " " + "[Great Scientist] points".tr())
-            if (gpp.culture != 0f) stringBuilder.appendLine("+" + gpp.culture.toInt() + " " + "[Great Artist] points".tr())
-        }
+        for((greatPersonName, value) in greatPersonPoints)
+            stringBuilder.appendLine("+$value "+"[$greatPersonName] points".tr())
 
         for ((specialistName, amount) in newSpecialists())
             stringBuilder.appendLine("+$amount " + "[$specialistName] slots".tr())
@@ -260,7 +254,7 @@ class Building : NamedStats(), IConstruction, ICivilopediaText {
         val stats = this.clone()
         val percentStats = getStatPercentageBonuses(null)
         val specialists = newSpecialists()
-        if (uniques.isNotEmpty() || !stats.isEmpty() || !percentStats.isEmpty() || this.greatPersonPoints != null || specialists.isNotEmpty())
+        if (uniques.isNotEmpty() || !stats.isEmpty() || !percentStats.isEmpty() || this.greatPersonPoints.isNotEmpty() || specialists.isNotEmpty())
             textList += FormattedLine()
 
         if (uniques.isNotEmpty()) {
@@ -282,14 +276,11 @@ class Building : NamedStats(), IConstruction, ICivilopediaText {
             }
         }
 
-        if (greatPersonPoints != null) {
-            for ( (key, value) in greatPersonPoints!!.toHashMap()) {
-                if (value == 0f) continue
-                val gppName = GreatPersonManager.statToGreatPersonMapping[key]
-                    ?: continue
-                textList += FormattedLine(value.formatSignedInt() + " " + "[$gppName] points".tr(),
-                    link = "Unit/$gppName")
-            }
+        for((greatPersonName, value) in greatPersonPoints) {
+            textList += FormattedLine(
+                "+$value " + "[$greatPersonName] points".tr(),
+                link = "Unit/$greatPersonName"
+            )
         }
 
         if (specialists.isNotEmpty()) {
@@ -338,6 +329,8 @@ class Building : NamedStats(), IConstruction, ICivilopediaText {
         for (unique in uniqueObjects.filter { it.placeholderText == "Cost increases by [] per owned city" })
             productionCost += civInfo.cities.count() * unique.params[0].toInt()
 
+        if (civInfo.isCityState())
+            productionCost *= 1.5f
         if (civInfo.isPlayerCivilization()) {
             if (!isWonder)
                 productionCost *= civInfo.getDifficulty().buildingCostModifier

@@ -40,9 +40,10 @@ class CivilopediaScreen(
         val image: Actor? = null,
         val flavour: ICivilopediaText? = null,
         val y: Float = 0f,              // coordinates of button cell used to scroll to entry
-        val height: Float = 0f
+        val height: Float = 0f,
+        val sortBy: Int = 0             // optional, enabling overriding alphabetical order
     ) {
-        fun withCoordinates(y: Float, height: Float) = CivilopediaEntry(name, description, image, flavour, y, height)
+        fun withCoordinates(y: Float, height: Float) = CivilopediaEntry(name, description, image, flavour, y, height, sortBy)
     }
 
     private val categoryToEntries = LinkedHashMap<CivilopediaCategories, Collection<CivilopediaEntry>>()
@@ -99,7 +100,10 @@ class CivilopediaScreen(
         var entries = categoryToEntries[category]!!
         if (category != CivilopediaCategories.Difficulty) // this is the only case where we need them in order
             // Alphabetical order of localized names, using system default locale
-            entries = entries.sortedWith(compareBy(Collator.getInstance(), { it.name.tr() }))
+            entries = entries.sortedWith(
+                compareBy<CivilopediaEntry>{ it.sortBy }
+                    .thenBy (Collator.getInstance(), { it.name.tr() })
+            )
 
         var currentY = -1f
 
@@ -293,6 +297,26 @@ class CivilopediaScreen(
                     )
                 }
 
+        if (!hideReligionItems)
+            categoryToEntries[CivilopediaCategories.Belief] = (
+                ruleset.beliefs.values.asSequence()
+                .map {
+                    CivilopediaEntry(
+                        it.name,
+                        "",
+                        CivilopediaCategories.Belief.getImage?.invoke(it.type.name, imageSize),
+                        (it as? ICivilopediaText).takeUnless { ct -> ct==null || ct.isCivilopediaTextEmpty() },
+                        sortBy = it.type.ordinal
+                    )
+                } + CivilopediaEntry(
+                        "Religions",
+                        "",
+                        CivilopediaCategories.Belief.getImage?.invoke("Religion", imageSize),
+                        getReligionText(),
+                        sortBy = -1
+                    )
+            ).toList()
+                    
         val buttonTable = Table()
         buttonTable.pad(15f)
         buttonTable.defaults().pad(10f)
@@ -349,6 +373,16 @@ class CivilopediaScreen(
                 selectLink(link)
             else
                 selectEntry(link, noScrollAnimation = true)
+    }
+
+    private fun getReligionText(): ICivilopediaText {
+        val lines = ArrayList<FormattedLine>()
+        lines += FormattedLine("Religions", header=2, color="#e34a2b")
+        lines += FormattedLine(separator=true)
+        ruleset.religions.sortedWith(compareBy(Collator.getInstance(), { it.tr() })).forEach { 
+            lines += FormattedLine(it, icon="Belief/$it")
+        }
+        return SimpleCivilopediaText(lines, true)
     }
 
     override fun resize(width: Int, height: Int) {
