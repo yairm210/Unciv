@@ -193,7 +193,7 @@ class BaseUnit : INamed, INonPerpetualConstruction, CivilopediaText() {
                 }
         //
         
-        for (unique in cityInfo.getMatchingUniques("[] cost of purchasing [] units -[]%")) {
+        for (unique in cityInfo.getMatchingUniques("[] cost of purchasing [] units []%")) {
             if (stat.name == unique.params[0] && matchesFilter(unique.params[1]))
                 cost *= 1f - unique.params[2].toFloat() / 100f
         }
