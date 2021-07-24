@@ -1,3 +1,44 @@
+## 3.15.14
+
+By xlenstra:
+- Fixed bug where "[All] units" would not apply to city combatants 
+- Fixed comodification errors under certain circumstances 
+- Fixed a crash in badly defined mods 
+- Implemented temples 
+- Hide lesser used action buttons to free up space 
+- Fixed bug where 'remove road' would also remove other improvements under specific circumstances 
+- Fixed units not being removed from open borders area after declaring war 
+- Fixed bug where all great people suddenly were scientists 
+- Fix autocracy bonus accidentally being disabled 
+
+By SomeTroglodyte:
+- Resolve #4589 
+- Spruced up Civilopedia - phase 6 - uniques 
+- City construction Civilopedia-linked 
+
+By SimonCeder:
+- Map generation and start locations 
+- Added Sweden Civ 
+
+Performance boost - should resolve some ANRs
+
+## 3.15.13
+
+By SomeTroglodyte:
+- Fix for missing Farm images
+- Better keyboard shortcuts
+- Rewritten Tooltip class 
+- Sort Civilopedia entries using locale 
+- Spruced up Civilopedia - phase 5 - buildings 
+
+By xlenstra:
+- Implemented Follower beliefs for religions 
+- Fixed unique of Persian immortal not working
+
+Unit gifting - By SimonCeder
+
+Added Polder image
+
 ## 3.15.12
 
 By xlenstra:

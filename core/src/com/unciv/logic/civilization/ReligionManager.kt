@@ -3,6 +3,7 @@ package com.unciv.logic.civilization
 import com.unciv.logic.map.MapUnit
 import com.unciv.models.Religion
 import com.unciv.models.ruleset.Belief
+import com.unciv.models.ruleset.BeliefType
 import kotlin.random.Random
 
 class ReligionManager {
@@ -73,7 +74,7 @@ class ReligionManager {
     }
 
     fun isPickablePantheonBelief(belief: Belief): Boolean {
-        if (belief.type != "Pantheon") return false
+        if (belief.type != BeliefType.Pantheon) return false
         if (civInfo.gameInfo.civilizations.any { it.religionManager.religion != null && it.religionManager.religion!!.followerBeliefs.contains(belief.name)})
             return false
         return true
@@ -151,13 +152,13 @@ class ReligionManager {
         foundingCityId = prophet.getTile().getCity()!!.id
     }
 
-    fun foundReligion(iconName: String, name: String, founderBelief: String, followerBelief: String) {
+    fun foundReligion(iconName: String, name: String, founderBelief: String, followerBeliefs: List<String>) {
         val newReligion = Religion(name, civInfo.gameInfo, civInfo.civName)
         newReligion.iconName = iconName
         if (religion != null) {
             newReligion.followerBeliefs.addAll(religion!!.followerBeliefs)
         }
-        newReligion.followerBeliefs.add(followerBelief)
+        newReligion.followerBeliefs.addAll(followerBeliefs)
         newReligion.founderBeliefs.add(founderBelief)
         newReligion.holyCityId = foundingCityId
         religion = newReligion

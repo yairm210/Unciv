@@ -7,9 +7,11 @@ import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.models.ruleset.Ruleset
+import com.unciv.models.ruleset.VictoryType
 import com.unciv.models.stats.INamed
 import com.unciv.models.translations.tr
 import com.unciv.ui.utils.*
+import java.text.Collator
 import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 
 /** Screen displaying the Civilopedia
@@ -38,9 +40,10 @@ class CivilopediaScreen(
         val image: Actor? = null,
         val flavour: ICivilopediaText? = null,
         val y: Float = 0f,              // coordinates of button cell used to scroll to entry
-        val height: Float = 0f
+        val height: Float = 0f,
+        val sortBy: Int = 0             // optional, enabling overriding alphabetical order
     ) {
-        fun withCoordinates(y: Float, height: Float) = CivilopediaEntry(name, description, image, flavour, y, height)
+        fun withCoordinates(y: Float, height: Float) = CivilopediaEntry(name, description, image, flavour, y, height, sortBy)
     }
 
     private val categoryToEntries = LinkedHashMap<CivilopediaCategories, Collection<CivilopediaEntry>>()
@@ -96,7 +99,12 @@ class CivilopediaScreen(
         if (category !in categoryToEntries) return        // defense, allowing buggy panes to remain empty while others work
         var entries = categoryToEntries[category]!!
         if (category != CivilopediaCategories.Difficulty) // this is the only case where we need them in order
-            entries = entries.sortedBy { it.name.tr() }   // Alphabetical order of localized names
+            // Alphabetical order of localized names, using system default locale
+            entries = entries.sortedWith(
+                compareBy<CivilopediaEntry>{ it.sortBy }
+                    .thenBy (Collator.getInstance(), { it.name.tr() })
+            )
+
         var currentY = -1f
 
         for (entry in entries) {
@@ -163,22 +171,31 @@ class CivilopediaScreen(
         val imageSize = 50f
         onBackButtonClicked { UncivGame.Current.setWorldScreen() }
 
+        val hideReligionItems = !game.gameInfo.hasReligionEnabled()
+        val noCulturalVictory = VictoryType.Cultural !in game.gameInfo.gameParameters.victoryTypes
+
         categoryToEntries[CivilopediaCategories.Building] = ruleset.buildings.values
-                .filter { "Will not be displayed in Civilopedia" !in it.uniques && !(it.isWonder || it.isNationalWonder) }
+                .filter { "Will not be displayed in Civilopedia" !in it.uniques
+                        && !(hideReligionItems && "Hidden when religion is disabled" in it.uniques)
+                        && !(noCulturalVictory && "Hidden when cultural victory is disabled" in it.uniques)
+                        && !it.isAnyWonder() }
                 .map {
                     CivilopediaEntry(
                         it.name,
-                        it.getDescription(false, null, ruleset),
+                        "",
                         CivilopediaCategories.Building.getImage?.invoke(it.name, imageSize),
                         (it as? ICivilopediaText).takeUnless { ct -> ct==null || ct.isCivilopediaTextEmpty() }
                     )
                 }
         categoryToEntries[CivilopediaCategories.Wonder] = ruleset.buildings.values
-                .filter { "Will not be displayed in Civilopedia" !in it.uniques && (it.isWonder || it.isNationalWonder) }
+                .filter { "Will not be displayed in Civilopedia" !in it.uniques
+                        && !(hideReligionItems && "Hidden when religion is disabled" in it.uniques)
+                        && !(noCulturalVictory && "Hidden when cultural victory is disabled" in it.uniques)
+                        && it.isAnyWonder() }
                 .map {
                     CivilopediaEntry(
                         it.name,
-                        it.getDescription(false, null, ruleset),
+                        "",
                         CivilopediaCategories.Wonder.getImage?.invoke(it.name, imageSize),
                         (it as? ICivilopediaText).takeUnless { ct -> ct==null || ct.isCivilopediaTextEmpty() }
                     )
@@ -270,6 +287,26 @@ class CivilopediaScreen(
                     )
                 }
 
+        if (!hideReligionItems)
+            categoryToEntries[CivilopediaCategories.Belief] = (
+                ruleset.beliefs.values.asSequence()
+                .map {
+                    CivilopediaEntry(
+                        it.name,
+                        "",
+                        CivilopediaCategories.Belief.getImage?.invoke(it.type.name, imageSize),
+                        (it as? ICivilopediaText).takeUnless { ct -> ct==null || ct.isCivilopediaTextEmpty() },
+                        sortBy = it.type.ordinal
+                    )
+                } + CivilopediaEntry(
+                        "Religions",
+                        "",
+                        CivilopediaCategories.Belief.getImage?.invoke("Religion", imageSize),
+                        getReligionText(),
+                        sortBy = -1
+                    )
+            ).toList()
+                    
         val buttonTable = Table()
         buttonTable.pad(15f)
         buttonTable.defaults().pad(10f)
@@ -326,6 +363,16 @@ class CivilopediaScreen(
                 selectLink(link)
             else
                 selectEntry(link, noScrollAnimation = true)
+    }
+
+    private fun getReligionText(): ICivilopediaText {
+        val lines = ArrayList<FormattedLine>()
+        lines += FormattedLine("Religions", header=2, color="#e34a2b")
+        lines += FormattedLine(separator=true)
+        ruleset.religions.sortedWith(compareBy(Collator.getInstance(), { it.tr() })).forEach { 
+            lines += FormattedLine(it, icon="Belief/$it")
+        }
+        return SimpleCivilopediaText(lines, true)
     }
 
     override fun resize(width: Int, height: Int) {

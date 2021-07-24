@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Slider
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.GreatPersonManager
 import com.unciv.models.translations.tr
 import com.unciv.ui.utils.*
 import kotlin.math.roundToInt
@@ -104,8 +105,11 @@ class StatsOverviewTable (
     private fun getGreatPeopleTable(): Table {
         val greatPeopleTable = Table(CameraStageBaseScreen.skin)
 
-        val greatPersonPoints = viewingPlayer.greatPeople.greatPersonPoints.toHashMap()
-        val greatPersonPointsPerTurn = viewingPlayer.getGreatPersonPointsForNextTurn().toHashMap()
+        val greatPersonPoints = GreatPersonManager
+            .greatPersonCounterToStats(viewingPlayer.greatPeople.greatPersonPointsCounter)
+            .toHashMap()
+        val greatPersonPointsPerTurn = GreatPersonManager
+            .greatPersonCounterToStats(viewingPlayer.getGreatPersonPointsForNextTurn()).toHashMap()
         val pointsToGreatPerson = viewingPlayer.greatPeople.pointsForNextGreatPerson
 
         greatPeopleTable.defaults().pad(5f)
@@ -120,7 +124,7 @@ class StatsOverviewTable (
         greatPeopleTable.add("Current points".tr())
         greatPeopleTable.add("Points per turn".tr()).row()
 
-        val mapping = viewingPlayer.greatPeople.statToGreatPersonMapping
+        val mapping = GreatPersonManager.statToGreatPersonMapping
         for(entry in mapping){
             greatPeopleTable.add(entry.value.tr())
             greatPeopleTable.add(greatPersonPoints[entry.key]!!.toInt().toString()+"/"+pointsToGreatPerson)

@@ -62,7 +62,7 @@
 		"impassable": true,
 		"defenceBonus": 0.25,
 		"RGB": [120, 120, 120],
-		"uniques":["Rough terrain", "Has an elevation of [4] for visibility calculations"]
+		"uniques":["Rough terrain", "Has an elevation of [4] for visibility calculations", "Occurs in chains at high elevations"]
 	},
 	{
 		"name": "Snow",
@@ -83,7 +83,8 @@
 		"RGB": [105,125,72],
 		"occursOn": ["Tundra","Plains","Grassland","Desert","Snow"],
 		"uniques": ["Rough terrain", "[+5] Strength for cities built on this terrain",
-			"[+1] Sight for [Land] units", "Has an elevation of [2] for visibility calculations"]
+			"[+1] Sight for [Land] units", "Has an elevation of [2] for visibility calculations",
+			"Occurs in groups around high elevations"]
 	},
 	{
 		"name": "Forest",

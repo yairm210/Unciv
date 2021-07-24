@@ -8,13 +8,15 @@ import com.badlogic.gdx.scenes.scene2d.InputListener
 import com.badlogic.gdx.scenes.scene2d.Stage
 
 /*
- * For now, combination keys cannot easily be expressed.
+ * For now, many combination keys cannot easily be expressed.
  * Pressing Ctrl-Letter will arrive one event for Input.Keys.CONTROL_LEFT and one for the ASCII control code point
- *      so Ctrl-R can be handled using KeyCharAndCode('\u0012')
+ *      so Ctrl-R can be handled using KeyCharAndCode('\u0012') or KeyCharAndCode.ctrl('R')
  * Pressing Alt-Something likewise will fire once for Alt and once for the unmodified keys with no indication Alt is held
  *      (Exception: international keyboard AltGr-combos)
  * An update supporting easy declarations for any modifier combos would need to use Gdx.input.isKeyPressed()
  * Gdx seems to omit support for a modifier mask (e.g. Ctrl-Alt-Shift) so we would need to reinvent this
+ * 
+ * Note: It is important that KeyCharAndCode is an immutable data class to support usage as HashMap key
  */
 
 /**
@@ -23,36 +25,53 @@ import com.badlogic.gdx.scenes.scene2d.Stage
  * Example: KeyCharAndCode('R'), KeyCharAndCode(Input.Keys.F1)
  */
 data class KeyCharAndCode(val char: Char, val code: Int) {
-    // express keys with a Char value
-    constructor(char: Char): this(char.toLowerCase(), 0)
-    // express keys that only have a keyCode like F1
+    /** helper 'cloning constructor' to allow feeding both fields from a factory function */
+    private constructor(from: KeyCharAndCode): this(from.char, from.code)
+    /** Map keys from a Char - will detect by keycode if one can be mapped, by character otherwise */
+    constructor(char: Char): this(mapChar(char))
+    /** express keys that only have a keyCode like F1 */
     constructor(code: Int): this(Char.MIN_VALUE, code)
-    // helper for use in InputListener keyTyped()
-    constructor(event: InputEvent?, character: Char)
-            : this (
-                character.toLowerCase(),
-                if (character == Char.MIN_VALUE && event!=null) event.keyCode else 0
-            )
 
-    // From Kotlin 1.5 on the Ctrl- line will need Char(char.code+64)
+    // From Kotlin 1.5? on the Ctrl- line will need Char(char.code+64)
     // see https://github.com/Kotlin/KEEP/blob/master/proposals/stdlib/char-int-conversions.md
     override fun toString(): String {
-        // debug helper
+        // debug helper, but also used for tooltips
+        fun fixedKeysToString(code: Int) = when (code) {
+            Input.Keys.BACKSPACE -> "Backspace"  // Gdx displaying this as "Delete" is Bullshit!
+            Input.Keys.FORWARD_DEL -> "Del"      // Likewise
+            else -> Input.Keys.toString(code)
+        }
         return when {
-            char == Char.MIN_VALUE -> Input.Keys.toString(code)
+            char == Char.MIN_VALUE -> fixedKeysToString(code)
             this == ESC -> "ESC"
             char < ' ' -> "Ctrl-" + (char.toInt()+64).toChar()
             else -> "\"$char\""
         }
     }
     
-    // Convenience shortcuts for frequently used constants
     companion object {
+        // Convenience shortcuts for frequently used constants
         val BACK = KeyCharAndCode(Input.Keys.BACK)
-        val ESC = KeyCharAndCode('\u001B')
-        val RETURN = KeyCharAndCode('\r')
-        val NEWLINE = KeyCharAndCode('\n')
-        val SPACE = KeyCharAndCode(' ')
+        val ESC = KeyCharAndCode(Input.Keys.ESCAPE)
+        val RETURN = KeyCharAndCode(Input.Keys.ENTER)
+        val NUMPAD_ENTER = KeyCharAndCode(Input.Keys.NUMPAD_ENTER)
+        val SPACE = KeyCharAndCode(Input.Keys.SPACE)
+        val BACKSPACE= KeyCharAndCode(Input.Keys.BACKSPACE)
+        val DEL = KeyCharAndCode(Input.Keys.FORWARD_DEL)        // Gdx "DEL" is just plain wrong!
+        /** Guaranteed to be ignored by [KeyPressDispatcher.set] and never to be generated for an actual event, used as fallback to ensure no action is taken */
+        val UNKNOWN = KeyCharAndCode(Input.Keys.UNKNOWN)
+
+        /** mini-factory for control codes - case insensitive */
+        fun ctrl(letter: Char) = KeyCharAndCode((letter.toInt() and 31).toChar(), 0)
+
+        /** mini-factory for KeyCharAndCode values to be compared by character, not by code */
+        fun ascii(char: Char) = KeyCharAndCode(char.toLowerCase(), 0)
+        
+        /** factory maps a Char to a keyCode if possible, returns a Char-based instance otherwise */
+        fun mapChar(char: Char): KeyCharAndCode {
+            val code = Input.Keys.valueOf(char.toUpperCase().toString())
+            return if (code == -1) KeyCharAndCode(char,0) else KeyCharAndCode(Char.MIN_VALUE, code)
+        }
     }
 }
 
@@ -94,19 +113,21 @@ class KeyPressDispatcher(val name: String? = null) : HashMap<KeyCharAndCode, (()
 
     // access by KeyCharAndCode
     operator fun set(key: KeyCharAndCode, action: () -> Unit) {
+        if (key == KeyCharAndCode.UNKNOWN) return
         super.put(key, action)
-        // On Android the Enter key will fire with Ascii code `Linefeed`, on desktop as `Carriage Return`
+        // Make both Enter keys equivalent
         if (key == KeyCharAndCode.RETURN)
-            super.put(KeyCharAndCode.NEWLINE, action)
+            super.put(KeyCharAndCode.NUMPAD_ENTER, action)
         // Likewise always match Back to ESC
         if (key == KeyCharAndCode.BACK)
             super.put(KeyCharAndCode.ESC, action)
         checkInstall()
     }
     override fun remove(key: KeyCharAndCode): (() -> Unit)? {
+        if (key == KeyCharAndCode.UNKNOWN) return null
         val result = super.remove(key)
         if (key == KeyCharAndCode.RETURN)
-            super.remove(KeyCharAndCode.NEWLINE)
+            super.remove(KeyCharAndCode.NUMPAD_ENTER)
         if (key == KeyCharAndCode.BACK)
             super.remove(KeyCharAndCode.ESC)
         checkInstall()
@@ -145,13 +166,23 @@ class KeyPressDispatcher(val name: String? = null) : HashMap<KeyCharAndCode, (()
         listener =
             object : InputListener() {
                 override fun keyTyped(event: InputEvent?, character: Char): Boolean {
-                    val key = KeyCharAndCode(event, character)
+                    // look for both key code and ascii entries - ascii first as the
+                    // Char constructor of KeyCharAndCode generates keyCode based instances
+                    // preferentially but we would miss Ctrl- combos otherwise
+                    val key = when {
+                        contains(KeyCharAndCode.ascii(character)) ->
+                            KeyCharAndCode.ascii(character)
+                        event == null ->
+                            KeyCharAndCode.UNKNOWN
+                        else ->
+                            KeyCharAndCode(event.keyCode)
+                    }
 
                     // see if we want to handle this key, and if not, let it propagate
                     if (!contains(key) || (checkIgnoreKeys?.invoke() == true))
                         return super.keyTyped(event, character)
                     
-                    //try-catch mainly for debugging. Breakpoints in the vicinity can make the event fire twice in rapid succession, second time the context can be invalid
+                    // try-catch mainly for debugging. Breakpoints in the vicinity can make the event fire twice in rapid succession, second time the context can be invalid
                     try {
                         this@KeyPressDispatcher[key]?.invoke()
                     } catch (ex: Exception) {}

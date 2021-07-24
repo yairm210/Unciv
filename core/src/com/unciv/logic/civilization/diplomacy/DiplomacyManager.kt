@@ -57,7 +57,8 @@ enum class DiplomaticModifiers{
     DeclaredFriendshipWithOurAllies,
     DenouncedOurEnemies,
     OpenBorders,
-    FulfilledPromiseToNotSettleCitiesNearUs
+    FulfilledPromiseToNotSettleCitiesNearUs,
+    GaveUsUnits
 }
 
 class DiplomacyManager() {
@@ -486,6 +487,7 @@ class DiplomacyManager() {
         revertToZero(DiplomaticModifiers.DenouncedOurAllies, 1 / 4f)
         revertToZero(DiplomaticModifiers.DenouncedOurEnemies, 1 / 4f)
         revertToZero(DiplomaticModifiers.Denunciation, 1 / 8f) // That's personal, it'll take a long time to fade
+        revertToZero(DiplomaticModifiers.GaveUsUnits, 1 / 4f)
 
         setFriendshipBasedModifier()
 
@@ -503,8 +505,6 @@ class DiplomacyManager() {
 
     /** Everything that happens to both sides equally when war is delcared by one side on the other */
     private fun onWarDeclared() {
-        diplomaticStatus = DiplomaticStatus.War
-
         // Cancel all trades.
         for (trade in trades)
             for (offer in trade.theirOffers.filter { it.duration > 0 })
@@ -512,6 +512,8 @@ class DiplomacyManager() {
         trades.clear()
         updateHasOpenBorders()
 
+        diplomaticStatus = DiplomaticStatus.War
+        
         removeModifier(DiplomaticModifiers.YearsOfPeace)
         setFlag(DiplomacyFlags.DeclinedPeace, 10)/// AI won't propose peace for 10 turns
         setFlag(DiplomacyFlags.DeclaredWar, 10) // AI won't agree to trade for 10 turns
@@ -524,7 +526,7 @@ class DiplomacyManager() {
 
         onWarDeclared()
         otherCivDiplomacy.onWarDeclared()
-
+        
         otherCiv.addNotification("[${civInfo.civName}] has declared war on us!", NotificationIcon.War, civInfo.civName)
         otherCiv.popupAlerts.add(PopupAlert(AlertType.WarDeclaration, civInfo.civName))
 
@@ -580,8 +582,7 @@ class DiplomacyManager() {
             }
         }
 
-        if (otherCiv.isCityState())
-        {
+        if (otherCiv.isCityState()) {
             for (thirdCiv in otherCiv.getProtectorCivs()) {
                 if (thirdCiv.knows(civInfo)
                     && thirdCiv.getDiplomacyManager(civInfo).canDeclareWar()) {

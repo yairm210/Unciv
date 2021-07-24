@@ -71,7 +71,7 @@ class CityConstructions {
             .asSequence().filter { it.isBuildable(this) }
 
     fun getBasicCultureBuildings() = cityInfo.getRuleset().buildings.values
-            .asSequence().filter { it.culture > 0f && !it.isWonder && !it.isNationalWonder && it.replaces == null }
+            .asSequence().filter { it.culture > 0f && !it.isAnyWonder() && it.replaces == null }
 
     /**
      * @return [Stats] provided by all built buildings in city plus the bonus from Library
@@ -184,8 +184,7 @@ class CityConstructions {
         val currentConstructionSnapshot = currentConstructionFromQueue
         if (currentConstructionSnapshot.isEmpty()) return FormattedLine()
         val category = when {
-            ruleset.buildings[currentConstructionSnapshot]
-                ?.let{ it.isWonder || it.isNationalWonder } == true ->
+            ruleset.buildings[currentConstructionSnapshot]?.isAnyWonder() == true ->
                 CivilopediaCategories.Wonder.name
             currentConstructionSnapshot in ruleset.buildings ->
                 CivilopediaCategories.Building.name

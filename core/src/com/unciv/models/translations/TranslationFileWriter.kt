@@ -222,6 +222,7 @@ object TranslationFileWriter {
                                     || parameter == "non-fresh water"
                                     || parameter == "Open Terrain"
                                     || parameter == "Rough Terrain"
+                                    || parameter == "Natural Wonder"
                             -> "tileFilter"
                             RulesetCache.getBaseRuleset().units.containsKey(parameter) -> "unit"
                             RulesetCache.getBaseRuleset().tileImprovements.containsKey(parameter)
@@ -281,6 +282,10 @@ object TranslationFileWriter {
             }
 
             fun serializeElement(element: Any) {
+                if (element is String) {
+                    submitString(element)
+                    return
+                }
                 val allFields = (element.javaClass.declaredFields + element.javaClass.fields
                         + element.javaClass.superclass.declaredFields) // This is so the main PolicyBranch, which inherits from Policy, will recognize its Uniques and have them translated
                         .filter {
@@ -334,11 +339,14 @@ object TranslationFileWriter {
 
     private fun getJavaClassByName(name: String): Class<Any> {
         return when (name) {
+            "Beliefs" -> emptyArray<Belief>().javaClass
             "Buildings" -> emptyArray<Building>().javaClass
             "Difficulties" -> emptyArray<Difficulty>().javaClass
+            "Eras" -> emptyArray<Era>().javaClass
             "Nations" -> emptyArray<Nation>().javaClass
             "Policies" -> emptyArray<PolicyBranch>().javaClass
             "Quests" -> emptyArray<Quest>().javaClass
+            "Religions" -> emptyArray<String>().javaClass
             "Specialists" -> emptyArray<Specialist>().javaClass
             "Techs" -> emptyArray<TechColumn>().javaClass
             "Terrains" -> emptyArray<Terrain>().javaClass

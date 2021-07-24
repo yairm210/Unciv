@@ -96,7 +96,7 @@
     {
         "name": "Religious Idols",
         "type": "Pantheon",
-        "uniques": ["[+1 Culture, +1 Faith] from every [Gold]", "[+1 Culture, +1 Faith] from every [Silver]"]
+        "uniques": ["[+1 Culture, +1 Faith] from every [Gold Ore]", "[+1 Culture, +1 Faith] from every [Silver]"]
     },
     {
         "name": "Religious Settlements",
@@ -117,6 +117,47 @@
         "name": "Stone Circles",
         "type": "Pantheon",
         "uniques": ["[+2 Faith] from every [Quarry]"]
+    },
+///////////////////////////////////////// Follower beliefs /////////////////////////////////////////
+    
+    // Missing: asceticism (requires followers)
+    // Missing: cathedrals (requires purchasing with faith)
+    // Missing: choral music (requires followers)
+    {
+        "name": "Divine inspiration",
+        "type": "Follower",
+        "uniques": ["[+2 Faith] from every Wonder"]
+    },
+    {
+        "name": "Feed the World",
+        "type": "Follower",
+        "uniques": ["[+1 Food] from every [Shrine]", "[+1 Food] from every [Temple]"]
+    },
+    {
+        "name": "Guruship",
+        "type": "Follower",
+        "uniques": ["[+2 Production] if this city has at least [1] specialists"]
+    },
+    // Missing: Holy Warriors (requires purchasing with faith)
+    // Missing: Liturgical drama (requires followers)
+    // Missing: Monasteries (requires purchasing with faith)
+    // Missing: Mosques (requires purchasing with faith)
+    // Missing: Pagodas (requires purchasing with faith)
+    {
+        "name": "Peace Gardens",
+        "type": "Follower",
+        "uniques": ["[+2 Happiness] from every [Garden]"]
+    },
+    {
+        "name": "Religious Art",
+        "type": "Follower",
+        "uniques": ["[+8 Culture] from every [Hermitage]"]
+    },
+    // Missing: Religious center (requires followers)
+    // Missing: Religious community (requires followers)
+    {
+        "name": "Swords into Ploughshares",
+        "type": "Follower",
+        "uniques": ["[+15]% growth [in this city] when not at war"]
     }
-
 ]

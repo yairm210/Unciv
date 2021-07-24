@@ -67,7 +67,7 @@ jobs:
           ./gradlew desktop:zipLinuxFilesForJar;
           mv desktop/build/libs/Unciv.jar deploy/Unciv.jar
 
-      - name: Read release.md and use it as a body of new release
+      - name: Read release.md and use it as a body of new release. This will fail for patch releases, since they have no readme.
         continue-on-error: true
         if: github.event_name == 'push' && contains(github.ref, 'refs/tags/') 
         id: read_release
@@ -87,7 +87,8 @@ jobs:
           
       - name: Post announcement on Discord
         continue-on-error: true
-        if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
+        ## On patch releases, don't notify Discord
+        if: github.event_name == 'push' && contains(github.ref, 'refs/tags/') && env.RELEASE_BODY != ''
         env:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
         uses: Ilshidur/action-discord@0.3.2

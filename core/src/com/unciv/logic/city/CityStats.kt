@@ -159,8 +159,11 @@ class CityStats {
     fun getGrowthBonusFromPoliciesAndWonders(): Float {
         var bonus = 0f
         // "+[amount]% growth [cityFilter]"
-        for (unique in cityInfo.civInfo.getMatchingUniques("+[]% growth []"))
+        for (unique in cityInfo.getMatchingUniques("+[]% growth []"))
             if (cityInfo.matchesFilter(unique.params[1]))
+                bonus += unique.params[0].toFloat()
+        for (unique in cityInfo.getMatchingUniques("+[]% growth [] when not at war"))
+            if (cityInfo.matchesFilter(unique.params[1]) && !cityInfo.civInfo.isAtWar())
                 bonus += unique.params[0].toFloat()
         return bonus / 100
     }
@@ -277,7 +280,11 @@ class CityStats {
             
             // "[stats] in cities on [tileFilter] tiles"
             if (unique.placeholderText == "[] in cities on [] tiles" && cityInfo.getCenterTile().matchesTerrainFilter(unique.params[1]))
-                {stats.add(unique.stats); println(unique.text)}
+                stats.add(unique.stats)
+            
+            // "[stats] if this city has at least [amount] specialists"
+            if (unique.placeholderText == "[] if this city has at least [] specialists" && cityInfo.population.getNumberOfSpecialists() >= unique.params[1].toInt())
+                stats.add(unique.stats)
         }
 
         return stats
@@ -299,7 +306,7 @@ class CityStats {
           // Since this is sometimes run from a different thread (getConstructionButtonDTOs),
           // this helps mitigate concurrency problems.
 
-        if (currentConstruction is Building && !currentConstruction.isWonder && !currentConstruction.isNationalWonder)
+        if (currentConstruction is Building && !currentConstruction.isAnyWonder())
             for (unique in uniques.filter { it.placeholderText == "+[]% Production when constructing [] buildings" }) {
                 val stat = Stat.valueOf(unique.params[1])
                 if (currentConstruction.isStatRelated(stat))
@@ -533,11 +540,6 @@ class CityStats {
 
         for (unique in cityInfo.civInfo.getMatchingUniques("-[]% food consumption by specialists"))
             foodEatenBySpecialists *= 1f - unique.params[0].toFloat() / 100f
-
-        // Deprecated since 3.15
-            if (cityInfo.civInfo.hasUnique("-50% food consumption by specialists"))
-                foodEatenBySpecialists *= 0.5f
-        //
 
         foodEaten -= 2f * cityInfo.population.getNumberOfSpecialists() - foodEatenBySpecialists
     }

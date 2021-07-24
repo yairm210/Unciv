@@ -5,7 +5,9 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
+import com.unciv.UncivGame
 import com.unciv.models.ruleset.Ruleset
+import com.unciv.models.ruleset.Unique
 import com.unciv.models.stats.INamed
 import com.unciv.ui.utils.*
 import kotlin.math.max
@@ -65,6 +67,9 @@ class FormattedLine (
     // Note: This gets directly deserialized by Json - please keep all attributes meant to be read
     // from json in the primary constructor parameters above. Everything else should be a fun(),
     // have no backing field, be `by lazy` or use @Transient, Thank you.
+
+    /** Looks for linkable ruleset objects in [Unique] parameters and returns a linked [FormattedLine] if successful, a plain one otherwise */
+    constructor(unique: Unique) : this(unique.text, getUniqueLink(unique))
 
     /** Link types that can be used for [FormattedLine.link] */
     enum class LinkType {
@@ -133,6 +138,44 @@ class FormattedLine (
         const val iconPad = 5f
         /** Padding distance per [indent] level */
         const val indentPad = 30f
+
+        // Helper for constructor(Unique)
+        private fun getUniqueLink(unique: Unique): String {
+            for (parameter in unique.params) {
+                val category = allObjectNamesCategoryMap[parameter] ?: continue
+                return category.name + "/" + parameter
+            }
+            return ""
+        }
+        // Cache to quickly match Categories to names. Takes a few ms to build on a slower desktop and will use just a few 10k bytes.
+        private val allObjectNamesCategoryMap: HashMap<String, CivilopediaCategories> by lazy {
+            //val startTime = System.nanoTime()
+            val ruleSet = UncivGame.Current.gameInfo.ruleSet
+            // order these with the categories that should take precedence in case of name conflicts (e.g. Railroad) _last_
+            val allObjectMapsSequence = sequence {
+                yield(CivilopediaCategories.Belief to ruleSet.beliefs)
+                yield(CivilopediaCategories.Difficulty to ruleSet.difficulties)
+                yield(CivilopediaCategories.Promotion to ruleSet.unitPromotions)
+                yield(CivilopediaCategories.Policy to ruleSet.policies)
+                yield(CivilopediaCategories.Terrain to ruleSet.terrains)
+                yield(CivilopediaCategories.Improvement to ruleSet.tileImprovements)
+                yield(CivilopediaCategories.Resource to ruleSet.tileResources)
+                yield(CivilopediaCategories.Nation to ruleSet.nations)
+                yield(CivilopediaCategories.Unit to ruleSet.units)
+                yield(CivilopediaCategories.Technology to ruleSet.technologies)
+                yield(CivilopediaCategories.Building to ruleSet.buildings.filter { !it.value.isAnyWonder() })
+                yield(CivilopediaCategories.Wonder to ruleSet.buildings.filter { it.value.isAnyWonder() })
+            }
+            val result = HashMap<String,CivilopediaCategories>()
+            allObjectMapsSequence.filter { !it.first.hide }
+                .flatMap { pair -> pair.second.keys.asSequence().map { key -> pair.first to key } }
+                .forEach { 
+                    result[it.second] = it.first
+                    //println("  ${it.second} is a ${it.first}")
+                }
+            //println("allObjectNamesCategoryMap took ${System.nanoTime()-startTime}ns to initialize")
+            result
+        }
     }
 
     /** Extension: determines if a [String] looks like a link understood by the OS */
@@ -212,7 +255,7 @@ class FormattedLine (
         }
         if (textToDisplay.isNotEmpty()) {
             val usedWidth = iconCount * (iconSize + iconPad)
-            val padIndent = when {
+            val indentWidth = when {
                 centered -> -usedWidth
                 indent == 0 && iconCount == 0 -> 0f
                 indent == 0 -> iconPad
@@ -224,10 +267,10 @@ class FormattedLine (
             label.setAlignment(align)
             if (labelWidth == 0f)
                 table.add(label)
-                    .padLeft(padIndent).align(align)
+                    .padLeft(indentWidth).align(align)
             else
-                table.add(label).width(labelWidth - usedWidth - padIndent)
-                    .padLeft(padIndent).align(align)
+                table.add(label).width(labelWidth - usedWidth - indentWidth)
+                    .padLeft(indentWidth).align(align)
         }
         return table
     }

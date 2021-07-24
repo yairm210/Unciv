@@ -104,14 +104,8 @@ class BaseUnit : INamed, INonPerpetualConstruction, CivilopediaText() {
             textList += FormattedLine(replacementTextForUniques)
         } else if (uniques.isNotEmpty()) {
             textList += FormattedLine()
-            for (uniqueObject in uniqueObjects.sortedBy { it.text }) {
-                if (uniqueObject.placeholderText == "Can construct []") {
-                    val improvement = uniqueObject.params[0]
-                    textList += FormattedLine(uniqueObject.text, link="Improvement/$improvement")
-                } else {
-                    textList += FormattedLine(uniqueObject.text)
-                }
-            }
+            for (uniqueObject in uniqueObjects.sortedBy { it.text })
+                textList += FormattedLine(uniqueObject)
         }
 
         val resourceRequirements = getResourceRequirements()
@@ -126,9 +120,9 @@ class BaseUnit : INamed, INonPerpetualConstruction, CivilopediaText() {
 
         if (uniqueTo != null) {
             textList += FormattedLine()
-            textList += FormattedLine("Unique to [$uniqueTo],", link="Nation/$uniqueTo")
+            textList += FormattedLine("Unique to [$uniqueTo]", link="Nation/$uniqueTo")
             if (replaces != null)
-                textList += FormattedLine("replaces [$replaces]", link="Unit/$replaces", indent=1)
+                textList += FormattedLine("Replaces [$replaces]", link="Unit/$replaces", indent=1)
         }
 
         if (requiredTech != null || upgradesTo != null || obsoleteTech != null) textList += FormattedLine()
@@ -177,6 +171,8 @@ class BaseUnit : INamed, INonPerpetualConstruction, CivilopediaText() {
     
     override fun getProductionCost(civInfo: CivilizationInfo): Int {
         var productionCost = cost.toFloat()
+        if (civInfo.isCityState())
+            productionCost *= 1.5f
         if (civInfo.isPlayerCivilization())
             productionCost *= civInfo.getDifficulty().unitCostModifier
         else
