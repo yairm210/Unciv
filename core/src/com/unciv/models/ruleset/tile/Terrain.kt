@@ -2,10 +2,10 @@ package com.unciv.models.ruleset.tile
 
 import com.badlogic.gdx.graphics.Color
 import com.unciv.Constants
+import com.unciv.models.ruleset.Belief
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.Unique
 import com.unciv.models.stats.NamedStats
-import com.unciv.models.translations.tr
 import com.unciv.ui.civilopedia.FormattedLine
 import com.unciv.ui.civilopedia.ICivilopediaText
 import com.unciv.ui.utils.colorFromRGB
@@ -33,6 +33,7 @@ class Terrain : NamedStats(), ICivilopediaText {
     var weight = 10
 
     /** RGB color of base terrain  */
+    @Suppress("PropertyName")   // RGB is expected to be in caps
     var RGB: List<Int>? = null
     var movementCost = 1
     var defenceBonus:Float = 0f
@@ -41,17 +42,31 @@ class Terrain : NamedStats(), ICivilopediaText {
     override var civilopediaText = listOf<FormattedLine>()
 
     fun isRough(): Boolean = uniques.contains("Rough terrain")
+    
+    /** Tests base terrains, features and natural wonders whether they should be treated as Land/Water.
+     *  Currently only used for civilopedia display, as other code can test the tile itself.
+     */
+    fun displayAs(asType: TerrainType, ruleset: Ruleset) =
+        type == asType
+        || occursOn.any {
+            occursName -> occursName in ruleset.terrains.values
+                .filter { it.type == asType }
+                .map { it.name }
+        }
+        || ruleset.terrains[this.turnsInto]?.type == asType
 
     fun getColor(): Color { // Can't be a lazy initialize, because we play around with the resulting color with lerp()s and the like
         if (RGB == null) return Color.GOLD
         return colorFromRGB(RGB!!)
     }
 
-    override fun getCivilopediaTextHeader() = FormattedLine(name, icon="Terrain/$name", header=2)
+    override fun makeLink() = "Terrain/$name"
     override fun hasCivilopediaTextLines() = true
     override fun replacesCivilopediaDescription() = true
 
     override fun getCivilopediaTextLines(ruleset: Ruleset): List<FormattedLine> {
+        //todo where should we explain Rivers?
+
         val textList = ArrayList<FormattedLine>()
 
         if (turnsInto != null) {
@@ -68,10 +83,10 @@ class Terrain : NamedStats(), ICivilopediaText {
             textList += FormattedLine()
             if (occursOn.size == 1) {
                 with (occursOn[0]) {
-                    textList += FormattedLine("{Occurs on} {$this}", link="Terrain/$this")
+                    textList += FormattedLine("Occurs on [$this]", link="Terrain/$this")
                 }
             } else {
-                textList += FormattedLine("{Occurs on}:")
+                textList += FormattedLine("Occurs on:")
                 occursOn.forEach {
                     textList += FormattedLine(it, link="Terrain/$it", indent=1)
                 }
@@ -87,10 +102,10 @@ class Terrain : NamedStats(), ICivilopediaText {
             textList += FormattedLine()
             if (resourcesFound.size == 1) {
                 with (resourcesFound[0]) {
-                    textList += FormattedLine("{May contain} {$this}", link="Resource/$this")
+                    textList += FormattedLine("May contain [$this]", link="Resource/$this")
                 }
             } else {
-                textList += FormattedLine("{May contain}:")
+                textList += FormattedLine("May contain:")
                 resourcesFound.forEach {
                     textList += FormattedLine("$it", link="Resource/$it", indent=1)
                 }
@@ -98,13 +113,11 @@ class Terrain : NamedStats(), ICivilopediaText {
         }
 
         textList += FormattedLine()
-        textList += FormattedLine(if (isRough()) "Rough terrain" else "Open terrain")
-
-        if (uniques.isNotEmpty()) {
-            textList += FormattedLine()
-            uniqueObjects.forEach {
-                textList += FormattedLine(it)
-            }
+        // For now, natural wonders show no "open terrain" - may change later
+        if (turnsInto == null && displayAs(TerrainType.Land, ruleset) && !isRough())
+            textList += FormattedLine("Open terrain")   // Rough is in uniques
+        uniqueObjects.forEach {
+            textList += FormattedLine(it)
         }
 
         textList += FormattedLine()
@@ -113,6 +126,28 @@ class Terrain : NamedStats(), ICivilopediaText {
 
         if (defenceBonus != 0f)
             textList += FormattedLine("{Defence bonus}: ${(defenceBonus * 100).toInt()}%")
+
+        val seeAlso = (
+            //todo: Could vastly be simplified using upcoming INonPerpetualConstruction
+            ruleset.buildings.values.asSequence()
+                .filter {
+                    building -> building.uniqueObjects.any {
+                        unique -> unique.params.any { it == name }
+                    }
+                } +
+            ruleset.units.values.asSequence()
+                .filter {
+                    unit -> unit.uniqueObjects.any {
+                        unique -> unique.params.any { it == name }
+                    }
+                }
+            ).map { FormattedLine(it.name, it.makeLink(), indent=1) } +
+            Belief.getCivilopediaTextMatching(name, ruleset, false)
+        if (seeAlso.any()) {
+            textList += FormattedLine()
+            textList += FormattedLine("{See also}:")
+            textList += seeAlso
+        }
 
         return textList
     }

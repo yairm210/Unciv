@@ -14,7 +14,6 @@ import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.ruleset.unit.UnitType
 import java.text.DecimalFormat
-import kotlin.math.pow
 import kotlin.random.Random
 
 /**
@@ -188,6 +187,8 @@ class MapUnit {
         }
 
         tempUniques = uniques
+
+        //todo: parameterize [terrainFilter] in 5 to 7 of the following:
 
         // "All tiles costs 1" obsoleted in 3.11.18
         allTilesCosts1 = hasUnique("All tiles cost 1 movement") || hasUnique("All tiles costs 1")
@@ -677,6 +678,7 @@ class MapUnit {
             clearEncampment(tile)
 
         if (!hasUnique("All healing effects doubled") && type.isLandUnit() && type.isMilitary()) {
+            //todo: Grants [promotion] to adjacent [unitFilter] units for the rest of the game
             val gainDoubleHealPromotion = tile.neighbors
                 .any { it.hasUnique("Grants Rejuvenation (all healing effects doubled) to adjacent military land units for the rest of the game") }
             if (gainDoubleHealPromotion && civInfo.gameInfo.ruleSet.unitPromotions.containsKey("Rejuvenation"))

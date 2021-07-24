@@ -55,7 +55,7 @@ class Building : NamedStats(), IConstruction, ICivilopediaText {
     private var requiredResource: String? = null
 
     /** City can only be built if one of these resources is nearby - it must be improved! */
-    private var requiredNearbyImprovedResources: List<String>? = null
+    var requiredNearbyImprovedResources: List<String>? = null
     private var cannotBeBuiltWith: String? = null
     var cityStrength = 0
     var cityHealth = 0
@@ -195,10 +195,10 @@ class Building : NamedStats(), IConstruction, ICivilopediaText {
         return stats
     }
 
-    fun makeLink() = if (isAnyWonder()) "Wonder/$name" else "Building/$name"
-    override fun getCivilopediaTextHeader() = FormattedLine(name, header=2, icon=makeLink())
+    override fun makeLink() = if (isAnyWonder()) "Wonder/$name" else "Building/$name"
     override fun hasCivilopediaTextLines() = true
     override fun replacesCivilopediaDescription() = true
+
     override fun getCivilopediaTextLines(ruleset: Ruleset): List<FormattedLine> {
         fun Float.formatSignedInt() = (if (this > 0f) "+" else "") + this.toInt().toString()
         
@@ -303,11 +303,12 @@ class Building : NamedStats(), IConstruction, ICivilopediaText {
         if (maintenance != 0) textList +=  FormattedLine("{Maintenance cost}: $maintenance {Gold}")
 
         val seeAlso = ArrayList<FormattedLine>()
-        for ((other, building) in ruleset.buildings) {
-            if (building.replaces == name || building.providesFreeBuilding == name || uniques.contains("[$name]") ) {
-                seeAlso += FormattedLine(other, link=building.makeLink(), indent=1)
-            }
+        for (building in ruleset.buildings.values) {
+            if (building.replaces == name || building.providesFreeBuilding == name
+                    || building.uniqueObjects.any { unique -> unique.params.any { it ==name } })
+                seeAlso += FormattedLine(building.name, link=building.makeLink(), indent=1)
         }
+        seeAlso += Belief.getCivilopediaTextMatching(name, ruleset, false)
         if (seeAlso.isNotEmpty()) {
             textList += FormattedLine()
             textList += FormattedLine("{See also}:")

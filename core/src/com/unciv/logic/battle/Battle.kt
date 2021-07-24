@@ -518,6 +518,7 @@ object Battle {
         }
     }
 
+    // todo: reduce extreme code duplication, parameterize probabilities where an unique already used
     private fun nukeStrength1Effect(attacker: MapUnitCombatant, tile: TileInfo) {
         // https://forums.civfanatics.com/resources/unit-guide-modern-future-units-g-k.25628/
         // https://www.carlsguides.com/strategy/civilization5/units/aircraft-nukes.php

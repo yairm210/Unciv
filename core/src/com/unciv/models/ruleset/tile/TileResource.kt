@@ -1,10 +1,10 @@
 package com.unciv.models.ruleset.tile
 
+import com.unciv.models.ruleset.Belief
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.Unique
 import com.unciv.models.stats.NamedStats
 import com.unciv.models.stats.Stats
-import com.unciv.models.translations.tr
 import com.unciv.ui.civilopedia.FormattedLine
 import com.unciv.ui.civilopedia.ICivilopediaText
 import java.util.*
@@ -21,14 +21,15 @@ class TileResource : NamedStats(), ICivilopediaText {
     override var civilopediaText = listOf<FormattedLine>()
 
 
-    override fun getCivilopediaTextHeader() = FormattedLine(name, icon="Resource/$name", header=2)
+    override fun makeLink() = "Resource/$name"
     override fun hasCivilopediaTextLines() = true
     override fun replacesCivilopediaDescription() = true
 
     override fun getCivilopediaTextLines(ruleset: Ruleset): List<FormattedLine> {
         val textList = ArrayList<FormattedLine>()
 
-        textList += FormattedLine("{${resourceType.name}} {resource}", header=4, color=resourceType.color)
+        textList += FormattedLine("${resourceType.name} resource", header=4, color=resourceType.color)
+        textList += FormattedLine()
 
         textList += FormattedLine(this.clone().toString())
 
@@ -69,11 +70,25 @@ class TileResource : NamedStats(), ICivilopediaText {
             }
         }
 
+        val buildingsRequiringThis =  ruleset.buildings.values.filter {
+            it.requiredNearbyImprovedResources?.contains(name) == true
+        }
+        if (buildingsRequiringThis.isNotEmpty()) {
+            textList += FormattedLine()
+            textList += FormattedLine("{Buildings that require this resource worked near the city}: ")
+            buildingsRequiringThis.forEach {
+                textList += FormattedLine(it.name, link="Building/${it.name}", indent=1)
+            }
+        }
+
         if (unique != null) {
             textList += FormattedLine()
             // Marble's unique is not parameterized, so the detour through the object is only useful for mods
             textList += FormattedLine(Unique(unique!!))
         }
+
+        textList += Belief.getCivilopediaTextMatching(name, ruleset)
+
         return textList
     }
 }

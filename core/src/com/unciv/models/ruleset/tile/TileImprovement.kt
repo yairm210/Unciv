@@ -1,6 +1,7 @@
 package com.unciv.models.ruleset.tile
 
 import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.models.ruleset.Belief
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.Unique
 import com.unciv.models.stats.NamedStats
@@ -98,7 +99,8 @@ class TileImprovement : NamedStats(), ICivilopediaText {
             else -> false
         }
     }
-    override fun getCivilopediaTextHeader() = FormattedLine(name, icon="Improvement/$name", header=2)
+
+    override fun makeLink() = "Improvement/$name"
     override fun hasCivilopediaTextLines() = true
     override fun replacesCivilopediaDescription() = true
 
@@ -161,13 +163,18 @@ class TileImprovement : NamedStats(), ICivilopediaText {
                 textList += FormattedLine(unique)
         }
 
-        val unitEntry = ruleset.units.asSequence().firstOrNull { "Can construct [$name]" in it.value.uniques }
-        if (unitEntry != null) {
+        val unit = ruleset.units.asSequence().firstOrNull {
+            entry -> entry.value.uniques.any { 
+                it.startsWith("Can construct [$name]")
+            }
+        }?.key
+        if (unit != null) {
             textList += FormattedLine()
-            textList += FormattedLine("{Can be constructed by} {${unitEntry.key}}", link="Unit/${unitEntry.key}")
+            textList += FormattedLine("{Can be constructed by} {$unit}", link="Unit/$unit")
         }
+
+        textList += Belief.getCivilopediaTextMatching(name, ruleset)
 
         return textList
     }
 }
-
