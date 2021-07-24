@@ -3,27 +3,27 @@ package com.unciv.models.ruleset.unit
 import com.unciv.Constants
 import com.unciv.logic.city.CityConstructions
 import com.unciv.logic.city.CityInfo
-import com.unciv.logic.city.IConstruction
+import com.unciv.logic.city.INonPerpetualConstruction
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.MapUnit
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.Unique
 import com.unciv.models.translations.tr
 import com.unciv.models.stats.INamed
+import com.unciv.models.stats.Stat
 import com.unciv.ui.civilopedia.CivilopediaText
 import com.unciv.ui.civilopedia.FormattedLine
 import com.unciv.ui.utils.Fonts
-import kotlin.math.pow
 
 // This is BaseUnit because Unit is already a base Kotlin class and to avoid mixing the two up
 
 /** This is the basic info of the units, as specified in Units.json,
  in contrast to MapUnit, which is a specific unit of a certain type that appears on the map */
-class BaseUnit : INamed, IConstruction, CivilopediaText() {
+class BaseUnit : INamed, INonPerpetualConstruction, CivilopediaText() {
 
     override lateinit var name: String
     var cost: Int = 0
-    var hurryCostModifier: Int = 0
+    override var hurryCostModifier: Int = 0
     var movement: Int = 0
     var strength: Int = 0
     var rangedStrength: Int = 0
@@ -32,8 +32,8 @@ class BaseUnit : INamed, IConstruction, CivilopediaText() {
     lateinit var unitType: UnitType
     var requiredTech: String? = null
     var requiredResource: String? = null
-    var uniques = HashSet<String>()
-    val uniqueObjects: List<Unique> by lazy { uniques.map { Unique(it) } }
+    override var uniques = listOf<String>() // Can not be a hashset to exclude doubles
+    override val uniqueObjects: List<Unique> by lazy { uniques.map { Unique(it) } }
     var replacementTextForUniques = ""
     var promotions = HashSet<String>()
     var obsoleteTech: String? = null
@@ -174,12 +174,7 @@ class BaseUnit : INamed, IConstruction, CivilopediaText() {
 
         return unit
     }
-
-    override fun canBePurchased() = "Cannot be purchased" !in uniques
-    override fun canBePurchasedWithFaith(cityInfo: CityInfo) =
-        "Can be purchased with Faith" in uniques
-        || uniqueObjects.filter { it.placeholderText == "Can be purchased with Faith []"}.any { cityInfo.matchesFilter(it.params[0]) }
-
+    
     override fun getProductionCost(civInfo: CivilizationInfo): Int {
         var productionCost = cost.toFloat()
         if (civInfo.isPlayerCivilization())
@@ -189,44 +184,49 @@ class BaseUnit : INamed, IConstruction, CivilopediaText() {
         productionCost *= civInfo.gameInfo.gameParameters.gameSpeed.modifier
         return productionCost.toInt()
     }
-
-    fun getBaseGoldCost(civInfo: CivilizationInfo): Double {
-        return (30.0 * cost).pow(0.75) * (1 + hurryCostModifier / 100f) * civInfo.gameInfo.gameParameters.gameSpeed.modifier
-    }
-
-
-    override fun getGoldCost(civInfo: CivilizationInfo): Int {
-        var cost = getBaseGoldCost(civInfo)
-        for (unique in civInfo.getMatchingUniques("Gold cost of purchasing [] units -[]%")) {
-            if (matchesFilter(unique.params[0]))
-                cost *= 1f - unique.params[1].toFloat() / 100f
+    
+    override fun getStatBuyCost(cityInfo: CityInfo, stat: Stat): Int? {
+        var cost = getBaseBuyCost(cityInfo, stat)
+        if (cost == null) return null
+        
+        // Deprecated since 3.15.15
+            if (stat == Stat.Gold)
+                for (unique in cityInfo.getMatchingUniques("Gold cost of purchasing [] units -[]%")) {
+                    if (matchesFilter(unique.params[0]))
+                        cost *= 1f - unique.params[1].toFloat() / 100f
+                }
+        //
+        
+        for (unique in cityInfo.getMatchingUniques("[] cost of purchasing [] units -[]%")) {
+            if (stat.name == unique.params[0] && matchesFilter(unique.params[1]))
+                cost *= 1f - unique.params[2].toFloat() / 100f
         }
 
         // Deprecated since 3.15
-            if (civInfo.hasUnique("Gold cost of purchasing units -33%")) cost *= 0.67f
+            if (stat == Stat.Gold && cityInfo.civInfo.hasUnique("Gold cost of purchasing units -33%")) cost *= 0.67f
+        //
+        
+        // Deprecated since 3.15.15
+            if (stat == Stat.Gold)
+                for (unique in cityInfo.getMatchingUniques("Cost of purchasing items in cities reduced by []%"))
+                    cost *= 1f - (unique.params[0].toFloat() / 100f)
         //
 
-        for (unique in civInfo.getMatchingUniques("Cost of purchasing items in cities reduced by []%"))
-            cost *= 1f - (unique.params[0].toFloat() / 100f)
-        return (cost / 10).toInt() * 10 // rounded down to nearest ten
-    }
-
-    override fun getFaithCost(civInfo: CivilizationInfo): Int {
-        if (uniques.contains("Can be purchased with Faith")
-            || uniqueObjects.any { it.placeholderText == "Can be purchased with Faith []" }
-        ) 
-           return civInfo.gameInfo.ruleSet.eras[civInfo.getEra()]!!.faithUnitCost
-        return -1
+        for (unique in cityInfo.getMatchingUniques("[] cost of purchasing items in cities []%"))
+            if (stat.name == unique.params[0])
+                cost *= 1f + (unique.params[1].toFloat() / 100f)
+        
+        return (cost / 10f).toInt() * 10
     }
 
     fun getDisbandGold(civInfo: CivilizationInfo) = getBaseGoldCost(civInfo).toInt() / 20
 
-    override fun shouldBeDisplayed(construction: CityConstructions): Boolean {
-        val rejectionReason = getRejectionReason(construction)
+    override fun shouldBeDisplayed(cityConstructions: CityConstructions): Boolean {
+        val rejectionReason = getRejectionReason(cityConstructions)
         return rejectionReason == ""
                 || rejectionReason.startsWith("Requires")
                 || rejectionReason.startsWith("Consumes")
-                || rejectionReason == "Can only be purchased with Faith"
+                || rejectionReason == "Can only be purchased"
     }
 
     fun getRejectionReason(cityConstructions: CityConstructions): String {
@@ -241,8 +241,8 @@ class BaseUnit : INamed, IConstruction, CivilopediaText() {
         }
         val civRejectionReason = getRejectionReason(civInfo)
         if (civRejectionReason != "") {
-            if (civRejectionReason == "Unbuildable" && canBePurchasedWithFaith(cityConstructions.cityInfo))
-                return "Can only be purchased with Faith"
+            if (civRejectionReason == "Unbuildable" && canBePurchasedWithAnyStat(cityConstructions.cityInfo))
+                return "Can only be purchased"
             return civRejectionReason
         }
         for (unique in uniqueObjects.filter { it.placeholderText == "Requires at least [] population" })

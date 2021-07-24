@@ -1,25 +1,99 @@
 package com.unciv.logic.city
 
 import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.models.ruleset.Unique
 import com.unciv.models.stats.INamed
+import com.unciv.models.stats.Stat
 import com.unciv.ui.utils.Fonts
+import kotlin.math.pow
 import kotlin.math.roundToInt
 
 interface IConstruction : INamed {
-    fun getProductionCost(civInfo: CivilizationInfo): Int
-    fun getGoldCost(civInfo: CivilizationInfo): Int
-    fun getFaithCost(civInfo: CivilizationInfo): Int
     fun isBuildable(cityConstructions: CityConstructions): Boolean
     fun shouldBeDisplayed(cityConstructions: CityConstructions): Boolean
     fun postBuildEvent(cityConstructions: CityConstructions, wasBought: Boolean = false): Boolean  // Yes I'm hilarious.
     fun getResourceRequirements(): HashMap<String,Int>
-    fun canBePurchased(): Boolean
-    fun canBePurchasedWithFaith(cityInfo: CityInfo): Boolean
+}
+
+interface INonPerpetualConstruction : IConstruction, INamed {
+    val hurryCostModifier: Int
+    val uniqueObjects: List<Unique>
+    val uniques: List<String>
+
+    fun getProductionCost(civInfo: CivilizationInfo): Int
+    fun getStatBuyCost(cityInfo: CityInfo, stat: Stat): Int?
+    
+    private fun getMatchingUniques(uniqueTemplate: String): Sequence<Unique> {
+        return uniqueObjects.asSequence().filter { it.placeholderText == uniqueTemplate }
+    }
+    
+    fun canBePurchasedWithStat(cityInfo: CityInfo, stat: Stat): Boolean {
+        if (stat in listOf(Stat.Production, Stat.Happiness)) return false
+        if ("Cannot be purchased" in uniques) return false
+        if (stat == Stat.Gold) return !uniques.contains("Unbuildable")
+        if (getMatchingUniques("Can be purchased with []")
+                .filter { it.params[0] == stat.name }
+                .any()
+        ) return true
+        if (getMatchingUniques("Can be purchased with [] []")
+                .filter { it.params[0] == stat.name && cityInfo.matchesFilter(it.params[1]) }
+                .any()
+        ) return true
+        if (getMatchingUniques("Can be purchased for [] []")
+                .filter { it.params[1] == stat.name}
+                .any()
+        ) return true
+        if (getMatchingUniques("Can be purchased for [] [] []")
+                .filter { it.params[1] == stat.name && cityInfo.matchesFilter(it.params[2]) }
+                .any()
+        ) return true
+        return false
+    }
+    
+    fun canBePurchasedWithAnyStat(cityInfo: CityInfo): Boolean {
+        return Stat.values().any { canBePurchasedWithStat(cityInfo, it) }
+    }
+    
+    // I can't make this function protected or private :(
+    fun getBaseGoldCost(civInfo: CivilizationInfo): Double {
+        // https://forums.civfanatics.com/threads/rush-buying-formula.393892/
+        return (30.0 * getProductionCost(civInfo)).pow(0.75) * (1 + hurryCostModifier / 100f)
+    }
+    
+    // I can't make this function protected or private :(
+    fun getBaseBuyCost(cityInfo: CityInfo, stat: Stat): Double? {
+        if (stat == Stat.Gold) return getBaseGoldCost(cityInfo.civInfo)
+
+        val cost = getMatchingUniques("Can be purchased for [] []")
+            .filter { it.params[1] == stat.name }
+            .minByOrNull { it.params[0].toInt() }
+            ?.params?.get(0)
+            ?.toDouble()
+        // I don't know if all these question marks are necessary, but Android Studio _really_ wants them
+        if (cost != null) return cost
+
+        val alternativeCost = getMatchingUniques("Can be purchased for [] [] []")
+            .filter { it.params[1] == stat.name && cityInfo.matchesFilter(it.params[2]) }
+            .minByOrNull { it.params[0].toInt() }
+            ?.params?.get(0)
+            ?.toDouble()
+        if (alternativeCost != null) return alternativeCost
+
+        if (getMatchingUniques("Can be purchased with []")
+                .filter { it.params[0] == stat.name }
+                .any()
+            || getMatchingUniques("Can be purchased with [] []")
+                .filter { it.params[0] == stat.name && cityInfo.matchesFilter(it.params[1])}
+                .any()
+        ) return cityInfo.civInfo.gameInfo.ruleSet.eras[cityInfo.civInfo.getEra()]!!.baseUnitBuyCost.toDouble()
+        return null
+    }
 }
 
 
 
 open class PerpetualConstruction(override var name: String, val description: String) : IConstruction {
+    
     override fun shouldBeDisplayed(cityConstructions: CityConstructions) = isBuildable(cityConstructions)
     open fun getProductionTooltip(cityInfo: CityInfo) : String
             = "\r\n${(cityInfo.cityStats.currentCityStats.production / CONVERSION_RATE).roundToInt()}/${Fonts.turn}"
@@ -51,15 +125,6 @@ open class PerpetualConstruction(override var name: String, val description: Str
         val perpetualConstructionsMap: Map<String, PerpetualConstruction>
                 = mapOf(science.name to science, gold.name to gold, idle.name to idle)
     }
-
-    override fun canBePurchased() = false
-
-    override fun canBePurchasedWithFaith(cityInfo: CityInfo) = false
-
-    override fun getProductionCost(civInfo: CivilizationInfo) = throw Exception("Impossible!")
-
-    override fun getGoldCost(civInfo: CivilizationInfo) = throw Exception("Impossible!")
-    override fun getFaithCost(civInfo: CivilizationInfo) = throw Exception("Impossible!")
 
     override fun isBuildable(cityConstructions: CityConstructions): Boolean =
             throw Exception("Impossible!")

@@ -2,7 +2,7 @@ package com.unciv.models.ruleset
 
 import com.unciv.logic.city.CityConstructions
 import com.unciv.logic.city.CityInfo
-import com.unciv.logic.city.IConstruction
+import com.unciv.logic.city.INonPerpetualConstruction
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.Counter
 import com.unciv.models.ruleset.tile.TileImprovement
@@ -14,10 +14,9 @@ import com.unciv.models.translations.tr
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
-import kotlin.math.pow
 
 
-class Building : NamedStats(), IConstruction {
+class Building : NamedStats(), INonPerpetualConstruction {
 
     var requiredTech: String? = null
 
@@ -42,7 +41,7 @@ class Building : NamedStats(), IConstruction {
     var greatPersonPoints: Stats? = null
 
     /** Extra cost percentage when purchasing */
-    private var hurryCostModifier = 0
+    override var hurryCostModifier = 0
     var isWonder = false
     var isNationalWonder = false
     var requiredBuilding: String? = null
@@ -61,9 +60,9 @@ class Building : NamedStats(), IConstruction {
     var uniqueTo: String? = null
     var quote: String = ""
     var providesFreeBuilding: String? = null
-    var uniques = ArrayList<String>()
+    override var uniques = ArrayList<String>()
     var replacementTextForUniques = ""
-    val uniqueObjects: List<Unique> by lazy { uniques.map { Unique(it) } }
+    override val uniqueObjects: List<Unique> by lazy { uniques.map { Unique(it) } }
 
     fun getShortDescription(ruleset: Ruleset): String { // should fit in one line
         val infoList = mutableListOf<String>()
@@ -196,15 +195,12 @@ class Building : NamedStats(), IConstruction {
 
         return stats
     }
-
-    override fun canBePurchased(): Boolean {
-        return !isWonder && !isNationalWonder && "Cannot be purchased" !in uniques
+    
+    override fun canBePurchasedWithStat(cityInfo: CityInfo, stat: Stat): Boolean {
+        if (stat == Stat.Gold && (isWonder || isNationalWonder)) return false // FIXME: Replace with `isAnyWonder()` after merging master back in
+        return super.canBePurchasedWithStat(cityInfo, stat)
     }
-
-    override fun canBePurchasedWithFaith(cityInfo: CityInfo) =
-        "Can be purchased with Faith" in uniques
-        || uniqueObjects.filter { it.placeholderText == "Can be purchased with Faith []"}.any { cityInfo.matchesFilter(it.params[0]) }
-
+    
     override fun getProductionCost(civInfo: CivilizationInfo): Int {
         var productionCost = cost.toFloat()
 
@@ -225,24 +221,32 @@ class Building : NamedStats(), IConstruction {
         return productionCost.toInt()
     }
 
-    override fun getGoldCost(civInfo: CivilizationInfo): Int {
-        // https://forums.civfanatics.com/threads/rush-buying-formula.393892/
-        var cost = (30 * getProductionCost(civInfo)).toDouble().pow(0.75) * (1 + hurryCostModifier / 100f)
+    override fun getStatBuyCost(cityInfo: CityInfo, stat: Stat): Int? {
+        var cost = getBaseBuyCost(cityInfo, stat)
+        if (cost == null) return null
 
-        for (unique in civInfo.getMatchingUniques("Cost of purchasing items in cities reduced by []%"))
-            cost *= 1 - (unique.params[0].toFloat() / 100)
+        // Deprecated since 3.15.15
+            if (stat == Stat.Gold) {
+                for (unique in cityInfo.getMatchingUniques("Cost of purchasing items in cities reduced by []%"))
+                    cost *= 1 - (unique.params[0].toFloat() / 100)
+    
+                for (unique in cityInfo.getMatchingUniques("Cost of purchasing [] buildings reduced by []%")) {
+                    if (matchesFilter(unique.params[0]))
+                        cost *= 1 - (unique.params[1].toFloat() / 100)
+                }
+            }
+        //
 
-        for (unique in civInfo.getMatchingUniques("Cost of purchasing [] buildings reduced by []%")) {
-            if (matchesFilter(unique.params[0]))
-                cost *= 1 - (unique.params[1].toFloat() / 100)
+        for (unique in cityInfo.getMatchingUniques("[] cost of purchasing items in cities []%"))
+            if (stat.name == unique.params[0])
+                cost *= 1 + (unique.params[1].toFloat() / 100)
+
+        for (unique in cityInfo.getMatchingUniques("[] cost of purchasing [] buildings []%")) {
+            if (stat.name == unique.params[0] && matchesFilter(unique.params[1]))
+                cost *= 1 + (unique.params[2].toFloat() / 100)
         }
-
-        return (cost / 10).toInt() * 10
-    }
-
-    override fun getFaithCost(civInfo: CivilizationInfo): Int {
-        if (uniques.contains("Can be purchased with Faith")) return civInfo.gameInfo.ruleSet.eras[civInfo.getEra()]!!.faithUnitCost
-        return -1
+        
+        return (cost / 10f).toInt() * 10
     }
 
     override fun shouldBeDisplayed(cityConstructions: CityConstructions): Boolean {
@@ -253,7 +257,7 @@ class Building : NamedStats(), IConstruction {
                 || rejectionReason.startsWith("Requires")
                 || rejectionReason.startsWith("Consumes")
                 || rejectionReason.endsWith("Wonder is being built elsewhere")
-                || rejectionReason == "Can only be purchased with Faith"
+                || rejectionReason == "Can only be purchased"
     }
 
     fun getRejectionReason(construction: CityConstructions): String {
@@ -261,8 +265,8 @@ class Building : NamedStats(), IConstruction {
         // for buildings that are created as side effects of other things, and not directly built
         // unless they can be bought with faith
         if (uniques.contains("Unbuildable")) {
-            if (canBePurchasedWithFaith(construction.cityInfo))
-                return "Can only be purchased with Faith"
+            if (canBePurchasedWithAnyStat(construction.cityInfo))
+                return "Can only be purchased"
             return "Unbuildable"
         }
 

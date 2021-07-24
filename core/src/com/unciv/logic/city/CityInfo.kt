@@ -364,6 +364,21 @@ class CityInfo {
             stats.add(entry)
         return stats
     }
+    
+    fun addStat(stat: Stat, amount: Int) {
+        when (stat) {
+            Stat.Production -> cityConstructions.addProductionPoints(amount)
+            Stat.Food -> population.foodStored += amount
+            else -> civInfo.addStat(stat, amount)
+        }
+    }
+    
+    fun getStatReserve(stat: Stat): Int {
+        return when (stat) {
+            Stat.Food -> population.foodStored
+            else -> civInfo.getStatReserve(stat)
+        }
+    }
 
     internal fun getMaxHealth() = 200 + cityConstructions.getBuiltBuildings().sumBy { it.cityHealth }
 
@@ -520,7 +535,7 @@ class CityInfo {
             otherCiv.getDiplomacyManager(civInfo).setFlag(DiplomacyFlags.SettledCitiesNearUs, 30)
     }
 
-    fun canPurchase(construction: IConstruction): Boolean {
+    fun canPurchase(construction: INonPerpetualConstruction): Boolean {
         if (construction is BaseUnit) {
             val tile = getCenterTile()
             if (construction.unitType.isCivilian())

@@ -2,6 +2,9 @@ package com.unciv.logic.automation
 
 import com.unciv.Constants
 import com.unciv.logic.city.CityInfo
+import com.unciv.logic.city.IConstruction
+import com.unciv.logic.city.INonPerpetualConstruction
+import com.unciv.logic.city.PerpetualConstruction
 import com.unciv.logic.civilization.*
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
@@ -15,6 +18,7 @@ import com.unciv.models.ruleset.ModOptionsConstants
 import com.unciv.models.ruleset.VictoryType
 import com.unciv.models.ruleset.tech.Technology
 import com.unciv.models.ruleset.unit.BaseUnit
+import com.unciv.models.stats.Stat
 import com.unciv.models.translations.tr
 import kotlin.math.min
 
@@ -135,8 +139,9 @@ object NextTurnAutomation {
 
         for (city in civInfo.cities.sortedByDescending { it.population.population }) {
             val construction = city.cityConstructions.getCurrentConstruction()
-            if (construction.canBePurchased()
-                    && city.civInfo.gold / 3 >= construction.getGoldCost(civInfo)) {
+            if (construction is PerpetualConstruction) continue
+            if ((construction as INonPerpetualConstruction).canBePurchasedWithStat(city, Stat.Gold)
+                    && city.civInfo.gold / 3 >= construction.getStatBuyCost(city, Stat.Gold)!!) {
                 city.cityConstructions.purchaseConstruction(construction.name, 0, true)
             }
         }
