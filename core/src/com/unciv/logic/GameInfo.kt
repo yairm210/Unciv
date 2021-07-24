@@ -420,7 +420,24 @@ class GameInfo {
             cityConstructions.inProgressConstructions.remove(oldBuildingName)
         }
     }
-    
+
+    /** Replace a changed tech name, only temporarily used for breaking ruleset updates */
+    private fun TechManager.replaceUpdatedTechName(oldTechName: String, newTechName: String) {
+        if (oldTechName in techsResearched) {
+            techsResearched.remove(oldTechName)
+            techsResearched.add(newTechName)
+        }
+        val index = techsToResearch.indexOf(oldTechName)
+        if (index >= 0) {
+            techsToResearch[index] = newTechName
+        }
+        if (oldTechName in techsInProgress) {
+            techsInProgress[newTechName] = researchOfTech(oldTechName)
+            techsInProgress.remove(oldTechName)
+        }
+    }
+
+
     fun hasReligionEnabled() = gameParameters.religionEnabled || ruleSet.hasReligion() // Temporary function to check whether religion should be used for this game
 }
 

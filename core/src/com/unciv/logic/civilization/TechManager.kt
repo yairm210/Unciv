@@ -50,7 +50,7 @@ class TechManager {
     /** When moving towards a certain tech, the user doesn't have to manually pick every one. */
     var techsToResearch = ArrayList<String>()
     var overflowScience = 0
-    private var techsInProgress = HashMap<String, Int>()
+    var techsInProgress = HashMap<String, Int>()
 
     /** In civ IV, you can auto-convert a certain percentage of gold in cities to science */
     var goldPercentConvertedToScience = 0.6f
@@ -111,22 +111,6 @@ class TechManager {
     fun researchOfTech(TechName: String?) = techsInProgress[TechName] ?: 0
     // Was once duplicated as fun scienceSpentOnTech(tech: String): Int
     
-    /** Replace a changed tech name, only temporarily used for breaking ruleset updates */
-    fun replaceUpdatedTechName(oldTechName: String, newTechName: String) {
-        if (oldTechName in techsResearched) {
-            techsResearched.remove(oldTechName)
-            techsResearched.add(newTechName)
-        }
-        val index = techsToResearch.indexOf(oldTechName)
-        if (index >= 0) {
-            techsToResearch[index] = newTechName
-        }
-        if (oldTechName in techsInProgress) {
-            techsInProgress[newTechName] = researchOfTech(oldTechName)
-            techsInProgress.remove(oldTechName)
-        }
-    }
-
     fun remainingScienceToTech(techName: String) = costOfTech(techName) - researchOfTech(techName)
 
     fun turnsToTech(techName: String): String {
