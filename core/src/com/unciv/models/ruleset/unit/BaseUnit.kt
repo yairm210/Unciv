@@ -32,7 +32,7 @@ class BaseUnit : INamed, INonPerpetualConstruction, CivilopediaText() {
     lateinit var unitType: UnitType
     var requiredTech: String? = null
     var requiredResource: String? = null
-    override var uniques = listOf<String>() // Can not be a hashset to exclude doubles
+    override var uniques = ArrayList<String>() // Can not be a hashset as that would remove doubles
     override val uniqueObjects: List<Unique> by lazy { uniques.map { Unique(it) } }
     var replacementTextForUniques = ""
     var promotions = HashSet<String>()
