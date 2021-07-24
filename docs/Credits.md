@@ -562,6 +562,8 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [taoism](https://thenounproject.com/search/?q=Taoism&i=740812) by parkjisun for Taosim
 * [Buddhism](https://thenounproject.com/search/?q=buddhism&i=38764) by Julio Yanes for Buddhism
 * [Hinduism](https://thenounproject.com/search/?q=hinduism&i=20383) by Mugda Damle for Hinduism
+* [praying](https://thenounproject.com/term/praying/740809/) by parkjisun for Religion (Civilopedia concept entry)
+* [praying](https://thenounproject.com/term/praying/886367/) by Gan Khoon Lay for Follower
 
 ## Others
 
