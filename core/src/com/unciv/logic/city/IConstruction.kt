@@ -56,12 +56,10 @@ interface INonPerpetualConstruction : IConstruction, INamed {
         if (stat == Stat.Gold) return getBaseGoldCost(cityInfo.civInfo).toInt()
 
         // Can be purchased for [amount] [Stat] [cityFilter]
-        val cost = getMatchingUniques("Can be purchased for [] [] []")
+        val lowestCostUnique = getMatchingUniques("Can be purchased for [] [] []")
             .filter { it.params[1] == stat.name && cityInfo.matchesFilter(it.params[2]) }
             .minByOrNull { it.params[0].toInt() }
-            ?.params?.get(0)
-            ?.toInt()
-        if (cost != null) return cost
+        if (lowestCostUnique != null) return lowestCostUnique.params[0].toInt()
 
         // Can be purchased with [Stat] [cityFilter]
         if (getMatchingUniques("Can be purchased with [] []")
