@@ -1,16 +1,17 @@
 package com.unciv.models.ruleset
 
 import com.unciv.models.stats.INamed
-import com.unciv.ui.civilopedia.CivilopediaText
 import com.unciv.ui.civilopedia.FormattedLine
-import java.awt.Color
+import com.unciv.ui.civilopedia.ICivilopediaText
 import java.util.ArrayList
 
-class Belief: INamed, CivilopediaText() {
+class Belief : INamed, ICivilopediaText {
     override var name: String = ""
     var type: BeliefType = BeliefType.None
     var uniques = ArrayList<String>()
     val uniqueObjects: List<Unique> by lazy { uniques.map { Unique(it) } }
+
+    override var civilopediaText = listOf<FormattedLine>()
 
     override fun getCivilopediaTextHeader() = FormattedLine(name, icon="Belief/$name", header=2)
     override fun replacesCivilopediaDescription() = true
