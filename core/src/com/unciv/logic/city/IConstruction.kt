@@ -31,21 +31,13 @@ interface INonPerpetualConstruction : IConstruction, INamed {
         if (stat in listOf(Stat.Production, Stat.Happiness)) return false
         if ("Cannot be purchased" in uniques) return false
         if (stat == Stat.Gold) return !uniques.contains("Unbuildable")
-        if (getMatchingUniques("Can be purchased with []")
-                .filter { it.params[0] == stat.name }
-                .any()
-        ) return true
+        // Can be purchased with [Stat] [cityFilter]
         if (getMatchingUniques("Can be purchased with [] []")
-                .filter { it.params[0] == stat.name && cityInfo.matchesFilter(it.params[1]) }
-                .any()
+                .any { it.params[0] == stat.name && cityInfo.matchesFilter(it.params[1]) }
         ) return true
-        if (getMatchingUniques("Can be purchased for [] []")
-                .filter { it.params[1] == stat.name}
-                .any()
-        ) return true
+        // Can be purchased for [amount] [Stat] [cityFilter]
         if (getMatchingUniques("Can be purchased for [] [] []")
-                .filter { it.params[1] == stat.name && cityInfo.matchesFilter(it.params[2]) }
-                .any()
+                .any { it.params[1] == stat.name && cityInfo.matchesFilter(it.params[2]) }
         ) return true
         return false
     }
@@ -54,38 +46,27 @@ interface INonPerpetualConstruction : IConstruction, INamed {
         return Stat.values().any { canBePurchasedWithStat(cityInfo, it) }
     }
     
-    // I can't make this function protected or private :(
     fun getBaseGoldCost(civInfo: CivilizationInfo): Double {
         // https://forums.civfanatics.com/threads/rush-buying-formula.393892/
         return (30.0 * getProductionCost(civInfo)).pow(0.75) * (1 + hurryCostModifier / 100f)
     }
     
     // I can't make this function protected or private :(
-    fun getBaseBuyCost(cityInfo: CityInfo, stat: Stat): Double? {
-        if (stat == Stat.Gold) return getBaseGoldCost(cityInfo.civInfo)
+    fun getBaseBuyCost(cityInfo: CityInfo, stat: Stat): Int? {
+        if (stat == Stat.Gold) return getBaseGoldCost(cityInfo.civInfo).toInt()
 
-        val cost = getMatchingUniques("Can be purchased for [] []")
-            .filter { it.params[1] == stat.name }
-            .minByOrNull { it.params[0].toInt() }
-            ?.params?.get(0)
-            ?.toDouble()
-        // I don't know if all these question marks are necessary, but Android Studio _really_ wants them
-        if (cost != null) return cost
-
-        val alternativeCost = getMatchingUniques("Can be purchased for [] [] []")
+        // Can be purchased for [amount] [Stat] [cityFilter]
+        val cost = getMatchingUniques("Can be purchased for [] [] []")
             .filter { it.params[1] == stat.name && cityInfo.matchesFilter(it.params[2]) }
             .minByOrNull { it.params[0].toInt() }
             ?.params?.get(0)
-            ?.toDouble()
-        if (alternativeCost != null) return alternativeCost
+            ?.toInt()
+        if (cost != null) return cost
 
-        if (getMatchingUniques("Can be purchased with []")
-                .filter { it.params[0] == stat.name }
-                .any()
-            || getMatchingUniques("Can be purchased with [] []")
-                .filter { it.params[0] == stat.name && cityInfo.matchesFilter(it.params[1])}
-                .any()
-        ) return cityInfo.civInfo.gameInfo.ruleSet.eras[cityInfo.civInfo.getEra()]!!.baseUnitBuyCost.toDouble()
+        // Can be purchased with [Stat] [cityFilter]
+        if (getMatchingUniques("Can be purchased with [] []")
+                .any { it.params[0] == stat.name && cityInfo.matchesFilter(it.params[1])}
+        ) return cityInfo.civInfo.gameInfo.ruleSet.eras[cityInfo.civInfo.getEra()]!!.baseUnitBuyCost
         return null
     }
 }

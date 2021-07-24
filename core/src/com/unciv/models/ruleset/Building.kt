@@ -344,7 +344,7 @@ class Building : NamedStats(), INonPerpetualConstruction, ICivilopediaText {
     }
 
     override fun getStatBuyCost(cityInfo: CityInfo, stat: Stat): Int? {
-        var cost = getBaseBuyCost(cityInfo, stat)
+        var cost = getBaseBuyCost(cityInfo, stat)?.toDouble()
         if (cost == null) return null
 
         // Deprecated since 3.15.15
@@ -396,11 +396,12 @@ class Building : NamedStats(), INonPerpetualConstruction, ICivilopediaText {
         val civInfo = construction.cityInfo.civInfo
 
         // This overrides the others
-        if (uniqueObjects.any {
-                    it.placeholderText == "Not displayed as an available construction unless [] is built"
-                            && !construction.containsBuildingOrEquivalent(it.params[0])
-                })
-            return "Should not be displayed"
+        if (uniqueObjects
+            .any {
+                it.placeholderText == "Not displayed as an available construction unless [] is built"
+                && !construction.containsBuildingOrEquivalent(it.params[0])
+            }
+        ) return "Should not be displayed"
 
         for (unique in uniqueObjects.filter { it.placeholderText == "Not displayed as an available construction without []" }) {
             val filter = unique.params[0]

@@ -303,7 +303,7 @@ class CityConstructions {
 
     fun addProductionPoints(productionToAdd: Int) {
         if (!inProgressConstructions.containsKey(currentConstructionFromQueue))
-            inProgressConstructions[currentConstructionFromQueue] = 0 // Should this be `productionToAdd`?
+            inProgressConstructions[currentConstructionFromQueue] = 0
         inProgressConstructions[currentConstructionFromQueue] = inProgressConstructions[currentConstructionFromQueue]!! + productionToAdd
     }
 
