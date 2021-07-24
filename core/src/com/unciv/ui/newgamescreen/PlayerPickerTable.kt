@@ -20,6 +20,7 @@ import com.unciv.models.translations.tr
 import com.unciv.ui.mapeditor.GameParametersScreen
 import com.unciv.ui.pickerscreens.PickerScreen
 import com.unciv.ui.utils.*
+import java.text.Collator
 import java.util.*
 
 /**
@@ -82,7 +83,7 @@ class PlayerPickerTable(
                         var player = Player()
                         // no random mode - add first not spectator civ if still available
                         if (noRandom) {
-                            val availableCiv = getAvailablePlayerCivs().firstOrNull { !it.isSpectator() }
+                            val availableCiv = getAvailablePlayerCivs().firstOrNull()
                             if (availableCiv != null) player = Player(availableCiv.name)
                             // Spectators only Humans
                             else player = Player(Constants.spectator).apply { playerType = PlayerType.Human }
@@ -224,24 +225,18 @@ class PlayerPickerTable(
     }
 
     /**
-     * Returns list of available civilization for all players, according
-     * to current ruleset, with exception of city states nations and barbarians.
+     * Returns a list of available civilization for all players, according
+     * to current ruleset, with exception of city states nations, spectator and barbarians.
      * 
      * Skips nations already chosen by a player, unless parameter [dontSkipNation] says to keep a
      * specific one. That is used so the picker can be used to inspect and confirm the current selection.
      * 
-     * @return [ArrayList] of available [Nation]s
+     * @return [Sequence] of available [Nation]s
      */
-    internal fun getAvailablePlayerCivs(dontSkipNation: String? = null): ArrayList<Nation> {
-        val nations = ArrayList<Nation>()
-        for (nation in previousScreen.ruleset.nations.values
-                .filter { it.isMajorCiv() || it.isSpectator() }) {
-            if (nation.name != dontSkipNation && gameParameters.players.any { it.chosenCiv == nation.name })
-                continue
-            nations.add(nation)
-        }
-        return nations
-    }
+    internal fun getAvailablePlayerCivs(dontSkipNation: String? = null) =
+        previousScreen.ruleset.nations.values.asSequence()
+            .filter { it.isMajorCiv() }
+            .filter { it.name == dontSkipNation || gameParameters.players.none { player -> player.chosenCiv == it.name } }
 
 }
 
@@ -275,7 +270,12 @@ private class NationPickerPopup(
         }
         val nations = ArrayList<Nation>()
         if (!playerPicker.noRandom) nations += randomNation
+        val spectator = previousScreen.ruleset.nations[Constants.spectator]
+        if (spectator != null) nations += spectator
+
         nations += playerPicker.getAvailablePlayerCivs(player.chosenCiv)
+            .sortedWith(compareBy(Collator.getInstance(), { it.name.tr() }))
+
         var nationListScrollY = 0f
         var currentY = 0f
         for (nation in nations) {
