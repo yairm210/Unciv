@@ -91,7 +91,7 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
                 val position = selectedUnit?.currentTile?.position
                     ?: selectedCity?.location
                 if (position != null)
-                    worldScreen.mapHolder.setCenterPosition(position, false, false)
+                    worldScreen.mapHolder.setCenterPosition(position, immediately = false, selectUnit = false)
             }
         }).expand()
 
@@ -109,7 +109,7 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
             }
         }
 
-        if (prevIdleUnitButton.hasIdleUnits()) { // more efficient to do this check once for both
+        if (worldScreen.viewingCiv.getIdleUnits().any()) { // more efficient to do this check once for both
             prevIdleUnitButton.enable()
             nextIdleUnitButton.enable()
         } else {
