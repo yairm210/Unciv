@@ -208,8 +208,6 @@ class CivilizationInfo {
         val newResourceSupplyList = ResourceSupplyList()
         for (resourceSupply in detailedCivResources)
             newResourceSupplyList.add(resourceSupply.resource, resourceSupply.amount, "All")
-        if (cityStateResource != null)
-            newResourceSupplyList.add(cityStateResource!!, 1, "All")
         return newResourceSupplyList
     }
 
