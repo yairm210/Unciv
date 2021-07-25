@@ -34,7 +34,10 @@ data class UnitAction(
             }
             type == UnitActionType.SpreadReligion
                     && title.equalsPlaceholderText("Spread []") -> {
-                ImageGetter.getReligionIcon(title.getPlaceholderParameters()[0])
+                val religionName = title.getPlaceholderParameters()[0]
+                ImageGetter.getReligionIcon(
+                    if (ImageGetter.religionIconExists(religionName)) religionName else "Pantheon"
+                ).apply { color = Color.BLACK }
             }
             type == UnitActionType.Fortify || type == UnitActionType.FortifyUntilHealed -> {
                 val match = fortificationRegex.matchEntire(title)
