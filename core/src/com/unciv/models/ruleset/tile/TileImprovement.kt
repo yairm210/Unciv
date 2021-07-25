@@ -51,7 +51,7 @@ class TileImprovement : NamedStats(), ICivilopediaText {
             for (i in terrainsCanBeBuiltOn) {
                 terrainsCanBeBuiltOnString.add(i.tr())
             }
-            lines += "Can be built on ".tr() + terrainsCanBeBuiltOnString.joinToString(", ") //language can be changed when setting changes.
+            lines += "Can be built on".tr() + terrainsCanBeBuiltOnString.joinToString(", ", " ") //language can be changed when setting changes.
         }
         val statsToResourceNames = HashMap<String, ArrayList<String>>()
         for (tr: TileResource in ruleset.tileResources.values.filter { it.improvement == name }) {
@@ -61,7 +61,7 @@ class TileImprovement : NamedStats(), ICivilopediaText {
             statsToResourceNames[statsString]!!.add(tr.name.tr())
         }
         statsToResourceNames.forEach {
-            lines += it.key + " for ".tr() + it.value.joinToString(", ")
+            lines += "{${it.key}} {for} ".tr() + it.value.joinToString(", ")
         }
 
         if (techRequired != null) lines += "Required tech: [$techRequired]".tr()
