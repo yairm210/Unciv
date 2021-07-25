@@ -89,11 +89,14 @@ class MapUnit {
 
     /**
      * Name which should be displayed in UI
+     * 
+     * Note this is translated after being returned from this function, so let's pay
+     * attention to combined names (renamed units, religion).
      */
     fun displayName(): String {
         val name = if (instanceName == null) name
-                   else "$instanceName (${name})"
-        return if (religion != null && maxReligionSpreads() > 0) "$name ($religion)"
+                   else "$instanceName ({${name}})"
+        return if (religion != null && maxReligionSpreads() > 0) "[$name] ([$religion])"
                else name
     }
 
