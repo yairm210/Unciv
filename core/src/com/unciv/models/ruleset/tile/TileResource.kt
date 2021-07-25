@@ -28,7 +28,7 @@ class TileResource : NamedStats(), ICivilopediaText {
     override fun getCivilopediaTextLines(ruleset: Ruleset): List<FormattedLine> {
         val textList = ArrayList<FormattedLine>()
 
-        textList += FormattedLine("${resourceType.name} resource", header=4, color=resourceType.color)
+        textList += FormattedLine("${resourceType.name} resource", header = 4, color = resourceType.color)
         textList += FormattedLine()
 
         textList += FormattedLine(this.clone().toString())
@@ -37,27 +37,29 @@ class TileResource : NamedStats(), ICivilopediaText {
             textList += FormattedLine()
             if (terrainsCanBeFoundOn.size == 1) {
                 with (terrainsCanBeFoundOn[0]) {
-                    textList += FormattedLine("{Can be found on} {$this}", link="Terrain/$this")
+                    textList += FormattedLine("{Can be found on} {$this}", link = "Terrain/$this")
                 }
             } else {
                 textList += FormattedLine("{Can be found on}:")
                 terrainsCanBeFoundOn.forEach {
-                    textList += FormattedLine(it, link="Terrain/$it", indent=1)
+                    textList += FormattedLine(it, link = "Terrain/$it", indent = 1)
                 }
             }
         }
 
-        textList += FormattedLine()
-        textList += FormattedLine("Improved by [$improvement]", link="Improvement/$improvement")
-        if (improvementStats != null && !improvementStats!!.isEmpty())
-            textList += FormattedLine("{Bonus stats for improvement}: " + improvementStats.toString())
+        if (improvement != null) {
+            textList += FormattedLine()
+            textList += FormattedLine("Improved by [$improvement]", link = "Improvement/$improvement")
+            if (improvementStats != null && !improvementStats!!.isEmpty())
+                textList += FormattedLine("{Bonus stats for improvement}: " + improvementStats.toString())
+        }
 
         val buildingsThatConsumeThis = ruleset.buildings.values.filter { it.getResourceRequirements().containsKey(name) }
         if (buildingsThatConsumeThis.isNotEmpty()) {
             textList += FormattedLine()
             textList += FormattedLine("{Buildings that consume this resource}:")
             buildingsThatConsumeThis.forEach {
-                textList += FormattedLine(it.name, link="Building/${it.name}", indent=1)
+                textList += FormattedLine(it.name, link = "Building/${it.name}", indent = 1)
             }
         }
 
@@ -66,7 +68,7 @@ class TileResource : NamedStats(), ICivilopediaText {
             textList += FormattedLine()
             textList += FormattedLine("{Units that consume this resource}: ")
             unitsThatConsumeThis.forEach {
-                textList += FormattedLine(it.name, link="Unit/${it.name}", indent=1)
+                textList += FormattedLine(it.name, link = "Unit/${it.name}", indent = 1)
             }
         }
 
@@ -77,7 +79,7 @@ class TileResource : NamedStats(), ICivilopediaText {
             textList += FormattedLine()
             textList += FormattedLine("{Buildings that require this resource worked near the city}: ")
             buildingsRequiringThis.forEach {
-                textList += FormattedLine(it.name, link="Building/${it.name}", indent=1)
+                textList += FormattedLine(it.name, link = "Building/${it.name}", indent = 1)
             }
         }
 
