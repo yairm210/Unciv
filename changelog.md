@@ -1,3 +1,22 @@
+## 3.15.15
+
+Great Person points are now moddable!
+
+By SomeTroglodyte:
+- Minimap Slider UI
+- Unit name translation
+- Rename Railroad tech to Railroads
+- Fix canImprovementBeBuiltHere regression
+- Newgame screen overhaul for portrait mode 
+- Deprecate "Can only be built on coastal tiles" unique 
+- A Civilopedia category for Religion 
+
+By SimonCeder:
+- Optimized spawn placement algorithm
+- City states adjustments 
+
+Resolved #4394 - corrected misspelled city names
+
 ## 3.15.14
 
 By xlenstra:

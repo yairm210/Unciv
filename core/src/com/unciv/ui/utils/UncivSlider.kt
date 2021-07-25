@@ -9,6 +9,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener
 import com.badlogic.gdx.utils.Align
 import com.badlogic.gdx.utils.Timer
+import com.unciv.models.UncivSound
 
 /**
  * Modified Gdx [Slider]
@@ -33,6 +34,9 @@ class UncivSlider (
     step: Float,
     vertical: Boolean = false,
     plusMinus: Boolean = true,
+    initial: Float = min,
+    sound: UncivSound = UncivSound.Slider,
+    private val getTipText: ((Float) -> String)? = null,
     onChange: ((Float) -> Unit)? = null
 ): Table(CameraStageBaseScreen.skin) {
     // constants for geometry tuning
@@ -71,6 +75,9 @@ class UncivSlider (
         }
     val isDragging: Boolean
         get() = slider.isDragging
+    var isDisabled: Boolean
+        get() = slider.isDisabled
+        set(value) { slider.isDisabled = value }
 
     // Value tip format
     var tipFormat = "%.1f"
@@ -102,19 +109,6 @@ class UncivSlider (
             if (vertical) row()
         } else minusButton = null
 
-        slider.addListener(object : ChangeListener() {
-            override fun changed(event: ChangeEvent?, actor: Actor?) {
-                if (slider.isDragging != hasFocus) {
-                    hasFocus = slider.isDragging
-                    if (hasFocus)
-                        killScrollPanes()
-                    else
-                        resurrectScrollPanes()
-                }
-                valueChanged()
-                onChange?.invoke(slider.value)
-            }
-        })
         add(slider).pad(padding).fill()
 
         if (plusMinus) {
@@ -131,12 +125,32 @@ class UncivSlider (
         } else plusButton = null
         
         row()
-        valueChanged()
+        value = initial  // set initial value late so the tooltip can work with the layout 
+
+        // Add the listener late so the setting of the initial value is silent
+        slider.addListener(object : ChangeListener() {
+            override fun changed(event: ChangeEvent?, actor: Actor?) {
+                if (slider.isDragging != hasFocus) {
+                    hasFocus = slider.isDragging
+                    if (hasFocus)
+                        killScrollPanes()
+                    else
+                        resurrectScrollPanes()
+                }
+                valueChanged()
+                onChange?.invoke(slider.value)
+                Sounds.play(sound)
+            }
+        })
     }
 
     // Visual feedback
     private fun valueChanged() {
-        tipLabel.setText(tipFormat.format(slider.value))
+        if (getTipText == null)
+            tipLabel.setText(tipFormat.format(slider.value))
+        else
+            @Suppress("UNNECESSARY_NOT_NULL_ASSERTION") // warning wrong, without !! won't compile
+            tipLabel.setText(getTipText!!(slider.value))
         if (!tipHideTask.isScheduled) showTip()
         tipHideTask.cancel()
         Timer.schedule(tipHideTask, hideDelay)

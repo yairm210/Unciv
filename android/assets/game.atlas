@@ -1859,9 +1859,9 @@ TechIcons/Radio
   orig: 100, 100
   offset: 0, 0
   index: -1
-TechIcons/Railroad
+TechIcons/Railroads
   rotate: false
-  xy: 1292, 760
+  xy: 1184, 652
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
@@ -2071,14 +2071,14 @@ TileSets/Default/OasisOverlay
   index: -1
 TileSets/Default/Railroad
   rotate: false
-  xy: 1184, 652
+  xy: 1292, 760
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 ImprovementIcons/Railroad
   rotate: false
-  xy: 1184, 652
+  xy: 1292, 760
   size: 100, 100
   orig: 100, 100
   offset: 0, 0

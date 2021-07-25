@@ -1,7 +1,6 @@
 package com.unciv.logic.civilization
 
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
-import com.unciv.logic.map.RoadStatus
 import com.unciv.models.metadata.BASE_GAME_DURATION_TURNS
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.stats.Stat
@@ -65,13 +64,7 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
                 if (tile.isCityCenter()) continue
                 if (ignoredTileTypes.any { tile.matchesFilter(it, civInfo) }) continue
 
-                val tileUpkeep =
-                        when (tile.roadStatus) {
-                            RoadStatus.Road -> 1
-                            RoadStatus.Railroad -> 2
-                            RoadStatus.None -> 0
-                        }
-                transportationUpkeep += tileUpkeep
+                transportationUpkeep += tile.roadStatus.upkeep
             }
         }
         for (unique in civInfo.getMatchingUniques("Maintenance on roads & railroads reduced by []%"))
@@ -158,8 +151,10 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
                 .map { it.params[0].toFloat() / 100f }.sum()
         
         val luxuriesProvidedByCityStates = 
-            civInfo.getKnownCivs().filter { it.isCityState() && it.getAllyCiv() == civInfo.civName }
-                .map { it.getCivResources().map { res -> res.resource } }.flatten().distinct().count { it.resourceType === ResourceType.Luxury }
+            civInfo.getKnownCivs().asSequence()
+                .filter { it.isCityState() && it.getAllyCiv() == civInfo.civName }
+                .map { it.getCivResources().map { res -> res.resource } }
+                .flatten().distinct().count { it.resourceType === ResourceType.Luxury }
         
         statMap["City-State Luxuries"] = happinessBonusForCityStateProvidedLuxuries * luxuriesProvidedByCityStates * happinessPerUniqueLuxury
 

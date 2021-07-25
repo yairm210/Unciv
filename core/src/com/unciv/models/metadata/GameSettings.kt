@@ -27,7 +27,7 @@ class GameSettings {
     var automatedWorkersReplaceImprovements = true
 
     var showMinimap: Boolean = true
-    var minimapSize: Int = 1
+    var minimapSize: Int = 6    // default corresponds to 15% screen space
     var showPixelUnits: Boolean = false
     var showPixelImprovements: Boolean = true
     var continuousRendering = false
