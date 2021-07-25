@@ -14,7 +14,6 @@ import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.ui.newgamescreen.GameSetupInfo
 import java.util.*
-import kotlin.NoSuchElementException
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 import kotlin.math.max
@@ -240,10 +239,10 @@ object GameStarter {
                     else -> gameInfo.getDifficulty().aiCityStateStartingUnits
                 }).toMutableList()
 
-                val warriorEquivalent = ruleSet.units
-                    .filter { it.value.unitType.isLandUnit() && it.value.unitType.isMilitary() && it.value.isBuildable(civ) }
-                    .maxByOrNull {max(it.value.strength, it.value.rangedStrength)}
-                    ?.key
+                val warriorEquivalent = ruleSet.units.values
+                    .filter { it.unitType.isLandUnit() && it.isMilitary() && it.isBuildable(civ) }
+                    .maxByOrNull {max(it.strength, it.rangedStrength)}
+                    ?.name
                 
                 for (unit in startingUnits) {
                     val unitToAdd = if (unit == "Warrior") warriorEquivalent else unit 
@@ -277,7 +276,7 @@ object GameStarter {
                     val buildableSettlerLikeUnits = 
                         settlerLikeUnits.filter {
                             it.value.isBuildable(civ)
-                            && it.value.unitType.isCivilian()
+                            && it.value.isCivilian()
                         }
                     if (buildableSettlerLikeUnits.isEmpty()) return null // No settlers in this mod
                     return civ.getEquivalentUnit(buildableSettlerLikeUnits.keys.random()).name
@@ -286,7 +285,7 @@ object GameStarter {
                     val buildableWorkerLikeUnits = ruleSet.units.filter {
                         it.value.uniqueObjects.any { it.placeholderText == Constants.canBuildImprovements }
                                 && it.value.isBuildable(civ)
-                                && it.value.unitType.isCivilian()
+                                && it.value.isCivilian()
                     }
                     if (buildableWorkerLikeUnits.isEmpty()) return null // No workers in this mod
                     return civ.getEquivalentUnit(buildableWorkerLikeUnits.keys.random()).name

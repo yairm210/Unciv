@@ -225,7 +225,7 @@ class MapUnit {
         if (hasUnique("Limited Visibility")) visibilityRange -= 1
 
         // Deprecated since 3.15.1
-            if (civInfo.hasUnique("+1 Sight for all land military units") && type.isMilitary() && type.isLandUnit())
+            if (civInfo.hasUnique("+1 Sight for all land military units") && baseUnit.isMilitary() && type.isLandUnit())
                 visibilityRange += 1
         //
 
@@ -253,16 +253,18 @@ class MapUnit {
     }
 
     fun isFortified() = action?.startsWith("Fortify") == true
-    
+
     fun isFortifyingUntilHealed() = isFortified() && action?.endsWith("until healed") == true
 
     fun isSleeping() = action?.startsWith("Sleep") == true
-    
+
     fun isSleepingUntilHealed() = isSleeping() && action?.endsWith("until healed") == true
 
     fun isMoving() = action?.startsWith("moveTo") == true
     
     fun isAutomaticallyBuildingImprovements() = action != null && action == Constants.unitActionAutomation
+
+    fun isCivilian() = baseUnit.isCivilian()
 
     fun getFortificationTurns(): Int {
         if (!isFortified()) return 0
@@ -303,7 +305,7 @@ class MapUnit {
     }
 
     fun getRange(): Int {
-        if (type.isMelee()) return 1
+        if (baseUnit.isMelee()) return 1
         var range = baseUnit().range
         // Deprecated since 3.15.6
             if (hasUnique("+1 Range")) range++
@@ -372,9 +374,8 @@ class MapUnit {
 
     fun canFortify(): Boolean {
         if (type.isWaterUnit()) return false
-        if (type.isCivilian()) return false
-        if (type.isAirUnit()) return false
-        if (type.isMissile()) return false
+        if (isCivilian()) return false
+        if (baseUnit.movesLikeAirUnits()) return false
         if (isEmbarked()) return false
         if (hasUnique("No defensive terrain bonus")) return false
         if (isFortified()) return false
@@ -397,7 +398,7 @@ class MapUnit {
         return getMatchingUniques("All adjacent units heal [] HP when healing").sumBy { it.params[0].toInt() }
     }
 
-    fun canGarrison() = type.isMilitary() && type.isLandUnit()
+    fun canGarrison() = baseUnit.isMilitary() && type.isLandUnit()
 
     fun isGreatPerson() = baseUnit.isGreatPerson()
 
@@ -636,7 +637,7 @@ class MapUnit {
 
         // Wake sleeping units if there's an enemy in vision range:
         // Military units always but civilians only if not protected.
-        if (isSleeping() && (!type.isCivilian() || currentTile.militaryUnit == null) &&
+        if (isSleeping() && (baseUnit.isMilitary() || currentTile.militaryUnit == null) &&
             this.viewableTiles.any {
                 it.militaryUnit != null && it.militaryUnit!!.civInfo.isAtWarWith(civInfo)
             }
@@ -681,7 +682,7 @@ class MapUnit {
         if (tile.improvement == Constants.barbarianEncampment && !civInfo.isBarbarian())
             clearEncampment(tile)
 
-        if (!hasUnique("All healing effects doubled") && type.isLandUnit() && type.isMilitary()) {
+        if (!hasUnique("All healing effects doubled") && type.isLandUnit() && baseUnit.isMilitary()) {
             //todo: Grants [promotion] to adjacent [unitFilter] units for the rest of the game
             val gainDoubleHealPromotion = tile.neighbors
                 .any { it.hasUnique("Grants Rejuvenation (all healing effects doubled) to adjacent military land units for the rest of the game") }
@@ -696,13 +697,12 @@ class MapUnit {
         when {
             !movement.canMoveTo(tile) ->
                 throw Exception("I can't go there!")
-            type.isAirUnit() || type.isMissile() -> tile.airUnits.add(this)
-            type.isCivilian() -> tile.civilianUnit = this
+            baseUnit.movesLikeAirUnits() -> tile.airUnits.add(this)
+            isCivilian() -> tile.civilianUnit = this
             else -> tile.militaryUnit = this
         }
         // this check is here in order to not load the fresh built unit into carrier right after the build
-        isTransported = !tile.isCityCenter() &&
-                (type.isAirUnit() || type.isMissile()) // not moving civilians
+        isTransported = !tile.isCityCenter() && baseUnit.movesLikeAirUnits()  // not moving civilians
         moveThroughTile(tile)
     }
 
@@ -819,7 +819,7 @@ class MapUnit {
                 }
             }
 
-        if (!type.isCivilian())
+        if (!isCivilian())
             actions.add {
                 promotions.XP += 10
                 civInfo.addNotification(
@@ -884,7 +884,7 @@ class MapUnit {
 
     fun isTransportTypeOf(mapUnit: MapUnit): Boolean {
         // Currently, only missiles and airplanes can be carried
-        if (!mapUnit.type.isMissile() && !mapUnit.type.isAirUnit()) return false
+        if (!mapUnit.baseUnit.movesLikeAirUnits()) return false
         return getMatchingUniques("Can carry [] [] units").any { mapUnit.matchesFilter(it.params[1]) }
     }
     
@@ -944,13 +944,12 @@ class MapUnit {
     private fun getCitadelDamage() {
         // Check for Citadel damage - note: 'Damage does not stack with other Citadels'
         val citadelTile = currentTile.neighbors
-            .filter {
+            .firstOrNull {
                 it.getOwner() != null && civInfo.isAtWarWith(it.getOwner()!!) &&
                         with(it.getTileImprovement()) {
                             this != null && this.hasUnique("Deal 30 damage to adjacent enemy units")
                         }
             }
-            .firstOrNull()
 
         if (citadelTile != null) {
             health -= 30

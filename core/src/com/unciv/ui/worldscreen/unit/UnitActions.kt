@@ -82,7 +82,7 @@ object UnitActions {
 
     private fun addSwapAction(unit: MapUnit, actionList: ArrayList<UnitAction>, worldScreen: WorldScreen) {
         // Air units cannot swap
-        if (unit.type.isAirUnit() || unit.type.isMissile()) return
+        if (unit.baseUnit.movesLikeAirUnits()) return
         // Disable unit swapping if multiple units are selected. It would make little sense.
         // In principle, the unit swapping mode /will/ function with multiselect: it will simply
         // only consider the first selected unit, and ignore the other selections. However, it does
@@ -208,7 +208,7 @@ object UnitActions {
     }
 
     private fun addPromoteAction(unit: MapUnit, actionList: ArrayList<UnitAction>) {
-        if (unit.type.isCivilian() || !unit.promotions.canBePromoted()) return
+        if (unit.isCivilian() || !unit.promotions.canBePromoted()) return
         // promotion does not consume movement points, so we can do it always
         actionList += UnitAction(UnitActionType.Promote,
                 uncivSound = UncivSound.Promote,
@@ -264,7 +264,7 @@ object UnitActions {
 
     fun getPillageAction(unit: MapUnit): UnitAction? {
         val tile = unit.currentTile
-        if (unit.type.isCivilian() || tile.improvement == null) return null
+        if (unit.isCivilian() || tile.improvement == null) return null
 
         return UnitAction(UnitActionType.Pillage,
                 action = {
@@ -278,7 +278,7 @@ object UnitActions {
                     if (tile.resource != null) tile.getOwner()?.updateDetailedCivResources()    // this might take away a resource
 
                     val freePillage = unit.hasUnique("No movement cost to pillage") ||
-                            (unit.type.isMelee() && unit.civInfo.hasUnique("Melee units pay no movement cost to pillage"))
+                            (unit.baseUnit.isMelee() && unit.civInfo.hasUnique("Melee units pay no movement cost to pillage"))
                     if (!freePillage) unit.useMovementPoints(1f)
 
                     unit.healBy(25)
