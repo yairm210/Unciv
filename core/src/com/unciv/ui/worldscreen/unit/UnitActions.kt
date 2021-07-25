@@ -56,7 +56,6 @@ object UnitActions {
         addSpreadReligionActions(unit, actionList, tile)
 
 
-
         addToggleActionsAction(unit, actionList, unitTable)
 
         return actionList
@@ -74,7 +73,6 @@ object UnitActions {
         addExplorationActions(unit, actionList)
         addDisbandAction(actionList, unit, worldScreen)
         addGiftAction(unit, actionList, tile)
-
 
 
         addToggleActionsAction(unit, actionList, unitTable)
