@@ -248,7 +248,7 @@ class GameInfo {
 
     /**
      * [CivilizationInfo.addNotification][Add a notification] to every civilization that have
-     * adopted Honor policy and have explored the [tile] where the Barbarian Encampent has spawned.
+     * adopted Honor policy and have explored the [tile] where the Barbarian Encampment has spawned.
      */
     fun notifyCivsOfBarbarianEncampment(tile: TileInfo) {
         civilizations.filter {
@@ -271,6 +271,14 @@ class GameInfo {
                 .joinToString(limit = 120) { it }
         if (missingMods.isNotEmpty()) {
             throw UncivShowableException("Missing mods: [$missingMods]")
+        }
+
+        // compatibility code translating changed tech name "Railroad" - to be deprecated soon
+        val (oldTechName, newTechName) = "Railroad" to "Railroads"
+        if (ruleSet.technologies[oldTechName] == null && ruleSet.technologies[newTechName] != null) {
+            civilizations.forEach {
+                it.tech.replaceUpdatedTechName(oldTechName, newTechName)
+            }
         }
 
         removeMissingModReferences()
@@ -391,6 +399,7 @@ class GameInfo {
      * This function can be used for backwards compatibility with older save files when a building
      * name is changed.
      */
+    @Suppress("unused")   // it's OK if there's no deprecation currently needing this
     private fun changeBuildingNameIfNotInRuleset(cityConstructions: CityConstructions, oldBuildingName: String, newBuildingName: String) {
         if (ruleSet.buildings.containsKey(oldBuildingName))
             return
@@ -411,7 +420,24 @@ class GameInfo {
             cityConstructions.inProgressConstructions.remove(oldBuildingName)
         }
     }
-    
+
+    /** Replace a changed tech name, only temporarily used for breaking ruleset updates */
+    private fun TechManager.replaceUpdatedTechName(oldTechName: String, newTechName: String) {
+        if (oldTechName in techsResearched) {
+            techsResearched.remove(oldTechName)
+            techsResearched.add(newTechName)
+        }
+        val index = techsToResearch.indexOf(oldTechName)
+        if (index >= 0) {
+            techsToResearch[index] = newTechName
+        }
+        if (oldTechName in techsInProgress) {
+            techsInProgress[newTechName] = researchOfTech(oldTechName)
+            techsInProgress.remove(oldTechName)
+        }
+    }
+
+
     fun hasReligionEnabled() = gameParameters.religionEnabled || ruleSet.hasReligion() // Temporary function to check whether religion should be used for this game
 }
 

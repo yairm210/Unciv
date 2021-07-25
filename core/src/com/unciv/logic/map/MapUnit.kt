@@ -14,7 +14,6 @@ import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.ruleset.unit.UnitType
 import java.text.DecimalFormat
-import kotlin.math.pow
 import kotlin.random.Random
 
 /**
@@ -275,7 +274,7 @@ class MapUnit {
             && canBuildImprovement(getTile().getTileImprovementInProgress()!!)) 
                 return false
         // unique "Can construct roads" deprecated since 3.15.5
-            if (hasUnique("Can construct roads") && currentTile.improvementInProgress == "Road") return false
+            if (hasUnique("Can construct roads") && currentTile.improvementInProgress == RoadStatus.Road.name) return false
         //
         if (isFortified()) return false
         if (action == Constants.unitActionExplore || isSleeping()
@@ -459,6 +458,7 @@ class MapUnit {
 
         if (civInfo.isCurrentPlayer())
             UncivGame.Current.settings.addCompletedTutorialTask("Construct an improvement")
+
         when {
             tile.improvementInProgress!!.startsWith("Remove ") -> {
                 val removedFeatureName = tile.improvementInProgress!!.removePrefix("Remove ")
@@ -473,9 +473,9 @@ class MapUnit {
                     tile.improvement = null 
                     if (tile.resource != null) civInfo.updateDetailedCivResources() // unlikely, but maybe a mod makes a resource improvement dependent on a terrain feature
                 }
-                if (tile.improvementInProgress == "Remove Road" || tile.improvementInProgress == "Remove Railroad") {
+                if (RoadStatus.values().any { tile.improvementInProgress == it.removeAction })
                     tile.roadStatus = RoadStatus.None
-                } else {
+                else {
                     val removedFeatureObject = tile.ruleset.terrains[removedFeatureName]
                     if (removedFeatureObject != null && removedFeatureObject.uniques
                             .contains("Provides a one-time Production bonus to the closest city when cut down")
@@ -485,8 +485,8 @@ class MapUnit {
                     tile.terrainFeatures.remove(removedFeatureName)
                 }
             }
-            tile.improvementInProgress == "Road" -> tile.roadStatus = RoadStatus.Road
-            tile.improvementInProgress == "Railroad" -> tile.roadStatus = RoadStatus.Railroad
+            tile.improvementInProgress == RoadStatus.Road.name -> tile.roadStatus = RoadStatus.Road
+            tile.improvementInProgress == RoadStatus.Railroad.name -> tile.roadStatus = RoadStatus.Railroad
             else -> {
                 tile.improvement = tile.improvementInProgress
                 if (tile.resource != null) civInfo.updateDetailedCivResources()
