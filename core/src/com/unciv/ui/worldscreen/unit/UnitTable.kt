@@ -137,7 +137,7 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
                 unitDescriptionTable.add(ImageGetter.getStatIcon("Movement")).size(20f)
                 unitDescriptionTable.add(unit.getMovementString()).padRight(10f)
 
-                if (!unit.type.isCivilian()) {
+                if (!unit.isCivilian()) {
                     unitDescriptionTable.add(ImageGetter.getStatIcon("Strength")).size(20f)
                     unitDescriptionTable.add(unit.baseUnit().strength.toString()).padRight(10f)
                 }
@@ -147,18 +147,18 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
                     unitDescriptionTable.add(unit.baseUnit().rangedStrength.toString()).padRight(10f)
                 }
 
-                if (unit.type.isRanged()) {
+                if (unit.baseUnit.isRanged()) {
                     unitDescriptionTable.add(ImageGetter.getStatIcon("Range")).size(20f)
                     unitDescriptionTable.add(unit.getRange().toString()).padRight(10f)
                 }
 
                 if (unit.baseUnit.interceptRange > 0) {
                     unitDescriptionTable.add(ImageGetter.getStatIcon("InterceptRange")).size(20f)
-                    val range = if (unit.type.isRanged()) unit.getRange() else unit.baseUnit.interceptRange
+                    val range = if (unit.baseUnit.isRanged()) unit.getRange() else unit.baseUnit.interceptRange
                     unitDescriptionTable.add(range.toString()).padRight(10f)
                 }
 
-                if (!unit.type.isCivilian()) {
+                if (!unit.isCivilian()) {
                     unitDescriptionTable.add("XP")
                     unitDescriptionTable.add(unit.promotions.XP.toString() + "/" + unit.promotions.xpForNextPromotion())
                 }

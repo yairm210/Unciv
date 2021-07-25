@@ -543,9 +543,9 @@ class CityInfo {
     fun canPurchase(construction: IConstruction): Boolean {
         if (construction is BaseUnit) {
             val tile = getCenterTile()
-            if (construction.unitType.isCivilian())
+            if (construction.isCivilian())
                 return tile.civilianUnit == null
-            if (construction.unitType.isAirUnit() || construction.unitType.isMissile())
+            if (construction.movesLikeAirUnits())
                 return tile.airUnits.filter { !it.isTransported }.size < 6
             else return tile.militaryUnit == null
         }

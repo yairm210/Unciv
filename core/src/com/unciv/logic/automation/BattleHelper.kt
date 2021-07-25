@@ -122,7 +122,7 @@ object BattleHelper {
 
     fun tryDisembarkUnitToAttackPosition(unit: MapUnit): Boolean {
         val unitDistanceToTiles = unit.movement.getDistanceToTiles()
-        if (!unit.type.isMelee() || !unit.type.isLandUnit() || !unit.isEmbarked()) return false
+        if (!unit.baseUnit.isMelee() || !unit.type.isLandUnit() || !unit.isEmbarked()) return false
 
         val attackableEnemiesNextTurn = getAttackableEnemies(unit, unitDistanceToTiles)
                 // Only take enemies we can fight without dying
@@ -154,7 +154,7 @@ object BattleHelper {
             cityTilesToAttack.filter { it.tileToAttack.getCity()!!.health != 1 } // don't want ranged units to attack defeated cities
                 .minByOrNull { it.tileToAttack.getCity()!!.health }
 
-        if (unit.type.isMelee() && capturableCity != null)
+        if (unit.baseUnit.isMelee() && capturableCity != null)
             enemyTileToAttack = capturableCity // enter it quickly, top priority!
 
         else if (nonCityTilesToAttack.isNotEmpty()) // second priority, units

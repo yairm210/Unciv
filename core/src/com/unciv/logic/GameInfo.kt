@@ -232,7 +232,7 @@ class GameInfo {
         val barbarianCiv = getBarbarianCivilization()
         barbarianCiv.tech.techsResearched = allResearchedTechs.toHashSet()
         val unitList = ruleSet.units.values
-                .filter { !it.unitType.isCivilian() }
+                .filter { it.isMilitary() }
                 .filter { it.isBuildable(barbarianCiv) }
 
         val landUnits = unitList.filter { it.unitType.isLandUnit() }

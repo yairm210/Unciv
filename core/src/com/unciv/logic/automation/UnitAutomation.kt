@@ -86,7 +86,7 @@ object UnitAutomation {
         if (unit.civInfo.isBarbarian())
             throw IllegalStateException("Barbarians is not allowed here.")
 
-        if (unit.type.isCivilian()) {
+        if (unit.isCivilian()) {
             if (unit.hasUnique(Constants.settlerUnique))
                 return SpecificUnitAutomation.automateSettlerActions(unit)
 
@@ -171,7 +171,7 @@ object UnitAutomation {
     }
 
     fun tryHealUnit(unit: MapUnit): Boolean {
-        if (unit.type.isRanged() && unit.hasUnique("Unit will heal every turn, even if it performs an action"))
+        if (unit.baseUnit.isRanged() && unit.hasUnique("Unit will heal every turn, even if it performs an action"))
             return false // will heal anyway, and attacks don't hurt
 
         val unitDistanceToTiles = unit.movement.getDistanceToTiles()
@@ -222,7 +222,7 @@ object UnitAutomation {
     }
 
     fun tryPillageImprovement(unit: MapUnit): Boolean {
-        if (unit.type.isCivilian()) return false
+        if (unit.isCivilian()) return false
         val unitDistanceToTiles = unit.movement.getDistanceToTiles()
         val tilesThatCanWalkToAndThenPillage = unitDistanceToTiles
             .filter { it.value.totalDistance < unit.currentMovement }.keys
@@ -263,7 +263,7 @@ object UnitAutomation {
                     Battle.getMapCombatantOfTile(it.tileToAttack)!!) < unit.health
         }
 
-        if (unit.type.isRanged())
+        if (unit.baseUnit.isRanged())
             closeEnemies = closeEnemies.filterNot { it.tileToAttack.isCityCenter() && it.tileToAttack.getCity()!!.health == 1 }
 
         val closestEnemy = closeEnemies.minByOrNull { it.tileToAttack.aerialDistanceTo(unit.getTile()) }
@@ -317,7 +317,7 @@ object UnitAutomation {
                 .flatMap { it.cities }.asSequence()
                 .filter { it.location in unit.civInfo.exploredTiles }
 
-        if (unit.type.isRanged()) // ranged units don't harm capturable cities, waste of a turn
+        if (unit.baseUnit.isRanged()) // ranged units don't harm capturable cities, waste of a turn
             enemyCities = enemyCities.filterNot { it.health == 1 }
 
         val closestReachableEnemyCity = enemyCities
@@ -396,7 +396,7 @@ object UnitAutomation {
         if (siegeUnits.any()) targets = siegeUnits
         else {
             val rangedUnits = targets
-                    .filter { it.getUnitType().isRanged() }
+                    .filter { it.isRanged() }
             if (rangedUnits.any()) targets = rangedUnits
         }
         return targets.minByOrNull { it: ICombatant -> it.getHealth() }
@@ -413,7 +413,7 @@ object UnitAutomation {
                 } //Most likely just been captured
 
 
-        if (unit.type.isRanged()) // ranged units don't harm capturable cities, waste of a turn
+        if (unit.baseUnit.isRanged()) // ranged units don't harm capturable cities, waste of a turn
             capturedCities = capturedCities.filterNot { it.health == 1 }
 
         val closestReachableCapturedCity = capturedCities
@@ -429,7 +429,7 @@ object UnitAutomation {
     }
 
     private fun tryGarrisoningUnit(unit: MapUnit): Boolean {
-        if (unit.type.isMelee() || unit.type.isWaterUnit()) return false // don't garrison melee units, they're not that good at it
+        if (unit.baseUnit.isMelee() || unit.type.isWaterUnit()) return false // don't garrison melee units, they're not that good at it
         val citiesWithoutGarrison = unit.civInfo.cities.filter {
             val centerTile = it.getCenterTile()
             centerTile.militaryUnit == null

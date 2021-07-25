@@ -7,8 +7,8 @@ import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.MapUnit
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.Unique
-import com.unciv.models.translations.tr
 import com.unciv.models.stats.INamed
+import com.unciv.models.translations.tr
 import com.unciv.ui.civilopedia.CivilopediaText
 import com.unciv.ui.civilopedia.FormattedLine
 import com.unciv.ui.utils.Fonts
@@ -277,7 +277,7 @@ class BaseUnit : INamed, IConstruction, CivilopediaText() {
         if (wasBought && !civInfo.gameInfo.gameParameters.godMode && !unit.hasUnique("Can move immediately once bought"))
             unit.currentMovement = 0f
 
-        if (this.unitType.isCivilian()) return true // tiny optimization makes save files a few bytes smaller
+        if (this.isCivilian()) return true // tiny optimization makes save files a few bytes smaller
 
         var XP = cityConstructions.getBuiltBuildings().sumBy { it.xpForNewUnits }
 
@@ -339,24 +339,20 @@ class BaseUnit : INamed, IConstruction, CivilopediaText() {
             name -> true
             "All" -> true
             
-            "Melee" -> unitType.isMelee()
-            "Ranged" -> unitType.isRanged()
+            "Melee" -> isMelee()
+            "Ranged" -> isRanged()
             "Land", "land units" -> unitType.isLandUnit()
-            "Civilian" -> unitType.isCivilian()
-            "Military", "military units" -> unitType.isMilitary()
+            "Civilian" -> isCivilian()
+            "Military", "military units" -> isMilitary()
             "Water", "water units" -> unitType.isWaterUnit()
             "Air", "air units" -> unitType.isAirUnit()
-            "non-air" -> !unitType.isAirUnit() && !unitType.isMissile()
-            "Missile" -> unitType.isMissile()
+            "non-air" -> !movesLikeAirUnits()
             
             "Submarine", "submarine units" -> unitType == UnitType.WaterSubmarine
             "Nuclear Weapon" -> isNuclearWeapon()
             // Deprecated as of 3.15.2
-            "military water" -> unitType.isMilitary() && unitType.isWaterUnit()
-            else -> {
-                if (uniques.contains(filter)) return true
-                return false
-            }
+            "military water" -> isMilitary() && unitType.isWaterUnit()
+            else -> return uniques.contains(filter)
         }
     }
 
@@ -365,7 +361,7 @@ class BaseUnit : INamed, IConstruction, CivilopediaText() {
     // "Nuclear Weapon" unique deprecated since 3.15.4
     fun isNuclearWeapon() = uniqueObjects.any { it.placeholderText == "Nuclear Weapon" || it.placeholderText == "Nuclear weapon of Strength []" }
 
-    fun movesLikeAirUnits() = unitType.isAirUnit() || unitType.isMissile()
+    fun movesLikeAirUnits() = unitType.isAirUnit() || unitType == UnitType.Missile
 
     override fun getResourceRequirements(): HashMap<String, Int> {
         val resourceRequirements = HashMap<String, Int>()
@@ -375,4 +371,9 @@ class BaseUnit : INamed, IConstruction, CivilopediaText() {
                 resourceRequirements[unique.params[1]] = unique.params[0].toInt()
         return resourceRequirements
     }
+
+    fun isRanged() = rangedStrength > 0
+    fun isMelee() = !isRanged() && strength > 0
+    fun isMilitary() = isRanged() || isMelee()
+    fun isCivilian() = !isMilitary()
 }

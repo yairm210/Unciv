@@ -488,7 +488,7 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
         }
 
         // Fade out less relevant images if a military unit is selected
-        val fadeout = if (unit.type.isCivilian()) 1f
+        val fadeout = if (unit.isCivilian()) 1f
         else 0.5f
         for (tile in allWorldTileGroups) {
             if (tile.icons.populationIcon != null) tile.icons.populationIcon!!.color.a = fadeout
@@ -545,7 +545,7 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
                 tileGroup.showCircle(Color.WHITE, 0.7f)
         }
 
-        val attackableTiles: List<AttackableTile> = if (unit.type.isCivilian()) listOf()
+        val attackableTiles: List<AttackableTile> = if (unit.isCivilian()) listOf()
         else {
             BattleHelper.getAttackableEnemies(unit, unit.movement.getDistanceToTiles())
                     .filter {

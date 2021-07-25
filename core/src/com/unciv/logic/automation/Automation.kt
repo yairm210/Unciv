@@ -3,7 +3,6 @@ package com.unciv.logic.automation
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.BFS
-import com.unciv.logic.map.RoadStatus
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.ruleset.VictoryType
 import com.unciv.models.ruleset.tile.ResourceType
@@ -60,7 +59,7 @@ object Automation {
 
     fun chooseMilitaryUnit(city: CityInfo): String? {
         var militaryUnits =
-            city.cityConstructions.getConstructableUnits().filter { !it.unitType.isCivilian() }
+            city.cityConstructions.getConstructableUnits().filter { !it.isCivilian() }
         if (militaryUnits.map { it.name }
                 .contains(city.cityConstructions.currentConstructionFromQueue))
             return city.cityConstructions.currentConstructionFromQueue

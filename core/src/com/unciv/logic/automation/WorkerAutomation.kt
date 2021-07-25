@@ -15,7 +15,7 @@ class WorkerAutomation(val unit: MapUnit) {
         val enemyUnitsInWalkingDistance = unit.movement.getDistanceToTiles().keys
                 .filter { UnitAutomation.containsEnemyMilitaryUnit(unit, it) }
 
-        if (enemyUnitsInWalkingDistance.isNotEmpty() && !unit.type.isMilitary()) return UnitAutomation.runAway(unit)
+        if (enemyUnitsInWalkingDistance.isNotEmpty() && !unit.baseUnit.isMilitary()) return UnitAutomation.runAway(unit)
 
         val currentTile = unit.getTile()
         val tileToWork = findTileToWork()
