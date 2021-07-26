@@ -166,7 +166,7 @@
 			},
 			{
 				"name": "Free Religion",
-				"uniques": ["[+1 Culture] from every [Monument]", "[+1 Culture] from every [Temple]", "[+1 Culture] from every [Monastery]",
+				"uniques": ["[+1 Culture] from every [Monument]", "[+1 Culture] from every [Amphitheater]", "[+1 Culture] from every [Monastery]",
 					"Free Social Policy"],
 				"requires": ["Mandate Of Heaven","Reformation"],
 				"row": 3,
