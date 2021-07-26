@@ -176,7 +176,7 @@ class CivilizationInfo {
     fun isCityState(): Boolean = nation.isCityState()
     val cityStateType: CityStateType get() = nation.cityStateType!!
     var cityStatePersonality: CityStatePersonality = CityStatePersonality.Neutral
-    var cityStateResource: TileResource? = null
+    var cityStateResource: String? = null
     fun isMajorCiv() = nation.isMajorCiv()
     fun isAlive(): Boolean = !isDefeated()
     fun hasEverBeenFriendWith(otherCiv: CivilizationInfo): Boolean = getDiplomacyManager(otherCiv).everBeenFriends()

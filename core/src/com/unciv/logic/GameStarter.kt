@@ -178,11 +178,12 @@ object GameStarter {
                     civ.cityStateResource = null
                 } else if (unusedMercantileResources.isNotEmpty()) {
                     // First pick an unused luxury if possible
-                    civ.cityStateResource = unusedMercantileResources.random()
-                    unusedMercantileResources.remove(civ.cityStateResource)
+                    val unusedResource = unusedMercantileResources.random()
+                    civ.cityStateResource = unusedResource.name
+                    unusedMercantileResources.remove(unusedResource)
                 } else {
                     // Then random
-                    civ.cityStateResource = ruleset.tileResources.values.filter { it.unique == "Can only be created by Mercantile City-States" }.random()
+                    civ.cityStateResource = ruleset.tileResources.values.filter { it.unique == "Can only be created by Mercantile City-States" }.random().name
                 }
             }
             gameInfo.civilizations.add(civ)
