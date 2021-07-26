@@ -63,6 +63,7 @@ class Building : NamedStats(), IConstruction, ICivilopediaText {
     var replaces: String? = null
     var uniqueTo: String? = null
     var quote: String = ""
+    @Deprecated("As of 3.15.16 - replaced with 'Provides a free [buildingName] [cityFilter]'")
     var providesFreeBuilding: String? = null
     var uniques = ArrayList<String>()
     var replacementTextForUniques = ""
@@ -549,14 +550,21 @@ class Building : NamedStats(), IConstruction, ICivilopediaText {
             }
         }
 
-        if (providesFreeBuilding != null && !cityConstructions.containsBuildingOrEquivalent(providesFreeBuilding!!)) {
-            var buildingToAdd = providesFreeBuilding!!
+        // "Provides a free [buildingName] [cityFilter]"
+        var freeBuildingUniques = uniqueObjects.asSequence().filter { it.placeholderText=="Provides a free [] []" }
+        if (providesFreeBuilding!=null) freeBuildingUniques += sequenceOf(Unique("Provides a free [$providesFreeBuilding] [in this city]"))
 
-            for (building in civInfo.gameInfo.ruleSet.buildings.values)
-                if (building.replaces == buildingToAdd && building.uniqueTo == civInfo.civName)
-                    buildingToAdd = building.name
+        for(unique in freeBuildingUniques) {
+            val affectedCities =
+                if (unique.params[1] == "in this city") sequenceOf(cityConstructions.cityInfo)
+                else civInfo.cities.asSequence().filter { it.matchesFilter(unique.params[1]) }
 
-            cityConstructions.addBuilding(buildingToAdd)
+            val freeBuildingName = civInfo.getEquivalentBuilding(unique.params[0]).name
+
+            for (city in affectedCities) {
+                if (cityConstructions.containsBuildingOrEquivalent(freeBuildingName)) continue
+                cityConstructions.addBuilding(freeBuildingName)
+            }
         }
 
         for (unique in uniqueObjects)
@@ -598,8 +606,7 @@ class Building : NamedStats(), IConstruction, ICivilopediaText {
     }
 
     fun getBaseBuilding(ruleset: Ruleset): Building {
-        return if (replaces == null) this
-            else ruleset.buildings[replaces!!]!!
+        return if (replaces == null) this else ruleset.buildings[replaces!!]!!
     }
 
     fun getImprovement(ruleset: Ruleset): TileImprovement? {
