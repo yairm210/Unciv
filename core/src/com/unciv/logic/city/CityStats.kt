@@ -189,10 +189,6 @@ class CityStats {
         for (unique in civInfo.getMatchingUniques("Specialists only produce []% of normal unhappiness")) {
             unhappinessFromSpecialists *= (1f - unique.params[0].toFloat() / 100f)
         }
-        // Deprecated since 3.15
-            if (civInfo.hasUnique("Specialists produce half normal unhappiness"))
-                unhappinessFromSpecialists *= 0.5f
-        //
 
         unhappinessFromCitizens -= cityInfo.population.getNumberOfSpecialists().toFloat() - unhappinessFromSpecialists
 
