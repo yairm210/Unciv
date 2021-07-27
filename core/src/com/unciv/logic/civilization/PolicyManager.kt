@@ -1,7 +1,6 @@
 package com.unciv.logic.civilization
 
 import com.unciv.models.ruleset.Policy
-import com.unciv.models.ruleset.Unique
 import com.unciv.models.ruleset.UniqueMap
 import com.unciv.models.ruleset.UniqueTriggerActivation
 import com.unciv.models.translations.equalsPlaceholderText
@@ -31,9 +30,6 @@ class PolicyManager {
     private var cultureBuildingsAdded = HashMap<String, String>() // Maps cities to buildings
     private var specificBuildingsAdded = HashMap<String, MutableSet<String>>() // Maps buildings to cities
 
-    @Deprecated("Deprecated since 3.15")
-    var autocracyCompletedTurns = 0
-
 
     fun clone(): PolicyManager {
         val toReturn = PolicyManager()
@@ -45,9 +41,6 @@ class PolicyManager {
         toReturn.cultureBuildingsAdded.putAll(cultureBuildingsAdded)
         toReturn.specificBuildingsAdded.putAll(specificBuildingsAdded)
 
-        // Deprecated since 3.15 left for backwards compatibility
-            toReturn.autocracyCompletedTurns = autocracyCompletedTurns
-        //
         return toReturn
     }
 
@@ -70,13 +63,6 @@ class PolicyManager {
         //
         for (policyName in adoptedPolicies)
             addPolicyToTransients(getPolicyByName(policyName))
-        
-        // Deprecated since 3.15.2, left for backwards compatibility
-            if (autocracyCompletedTurns != 0) {
-                civInfo.temporaryUniques.add(Pair(Unique("+[25]% attack strength to all [Military] units for [50] turns"), autocracyCompletedTurns))
-                autocracyCompletedTurns = 0
-            }
-        //
     }
 
     fun addPolicyToTransients(policy: Policy) {
