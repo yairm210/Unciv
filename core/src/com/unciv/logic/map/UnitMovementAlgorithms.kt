@@ -291,6 +291,7 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
      * This will not use movement points or check for a possible route.
      * It is used e.g. if an enemy city expands its borders, or trades or diplomacy change a unit's
      * allowed position.
+     * CAN DESTROY THE UNIT.
      */
     fun teleportToClosestMoveableTile() {
         var allowedTile: TileInfo? = null
@@ -310,13 +311,16 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
                 if (allowedTile != null) break
             }
         }
-        unit.removeFromTile() // we "teleport" them away
-        if (allowedTile != null) { // it's possible that there is no close tile, and all the guy's cities are full. Screw him then.
+        if (allowedTile != null) {
+            unit.removeFromTile() // we "teleport" them away
             unit.putInTile(allowedTile)
             // Cancel sleep or fortification if forcibly displaced - for now, leave movement / auto / explore orders
             if (unit.isSleeping() || unit.isFortified())
                 unit.action = null
         }
+        // it's possible that there is no close tile, and all the guy's cities are full.
+        // Nothing we can do.
+        else unit.destroy()
     }
 
     fun moveToTile(destination: TileInfo) {

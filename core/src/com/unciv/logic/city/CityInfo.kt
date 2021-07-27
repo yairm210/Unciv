@@ -479,7 +479,7 @@ class CityInfo {
 
         // Edge case! What if a water unit is in a city, and you raze the city?
         // Well, the water unit has to return to the water!
-        for (unit in getCenterTile().getUnits()) {
+        for (unit in getCenterTile().getUnits().toList()) {
             if (!unit.movement.canPassThrough(getCenterTile()))
                 unit.movement.teleportToClosestMoveableTile()
         }
