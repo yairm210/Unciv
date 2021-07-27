@@ -161,19 +161,19 @@
 	},
 	{
 		"name": "Barracks",
-		"xpForNewUnits": 15,
 		"hurryCostModifier": 25,
 		"maintenance": 1,
+		"uniques": ["New [Military] units start with [15] Experience [in this city]"]
 		"requiredTech": "Bronze Working"
 	},
 	{
 		"name": "Krepost",
 		"replaces": "Barracks",
 		"uniqueTo": "Russia",
-		"xpForNewUnits": 15,
 		"hurryCostModifier": 25,
 		"maintenance": 1,
-		"uniques": ["-[25]% Culture cost of acquiring tiles [in this city]","-[25]% Gold cost of acquiring tiles [in this city]"],
+		"uniques": ["-[25]% Culture cost of acquiring tiles [in this city]","-[25]% Gold cost of acquiring tiles [in this city]",
+			"New [Military] units start with [15] Experience [in this city]"],
 		"requiredTech": "Bronze Working"
 	},
 	{
@@ -625,10 +625,10 @@
 	},
 	{
 		"name": "Armory",
-		"xpForNewUnits": 15,
 		"hurryCostModifier": 25,
 		"maintenance": 1,
 		"requiredBuilding": "Barracks",
+		"uniques": ["New [Military] units start with [15] Experience [in this city]"]
 		"requiredTech": "Steel"
 	},
 	
@@ -853,19 +853,18 @@
 	},
 	{
 		"name": "Military Academy",
-		"xpForNewUnits": 15,
 		"hurryCostModifier": 0,
 		"maintenance": 1,
 		"requiredBuilding": "Armory",
+		"uniques": ["New [Military] units start with [15] Experience [in this city]"],
 		"requiredTech": "Military Science"
 	},
 	{
 		"name": "Brandenburg Gate",
 		"culture": 3,
-		"xpForNewUnits": 15,
 		"greatPersonPoints": {"Great Scientist": 2},
 		"isWonder": true,
-		"uniques": ["Free [Great General] appears"],
+		"uniques": ["Free [Great General] appears", "New [Military] units start with [15] Experience [in this city]"],
 		"requiredTech": "Military Science",
 		"quote": "'Pale Death beats equally at the poor man's gate and at the palaces of kings.'  - Horace"
 	},

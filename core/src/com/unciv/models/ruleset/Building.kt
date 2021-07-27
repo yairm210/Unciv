@@ -59,6 +59,7 @@ class Building : NamedStats(), IConstruction, ICivilopediaText {
     private var cannotBeBuiltWith: String? = null
     var cityStrength = 0
     var cityHealth = 0
+    @Deprecated("As of 3.15.16, replace with 'New [Military] units start with [15] Experience [in this city]'")
     var xpForNewUnits = 0
     var replaces: String? = null
     var uniqueTo: String? = null
