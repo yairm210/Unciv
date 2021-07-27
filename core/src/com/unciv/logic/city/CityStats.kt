@@ -124,8 +124,11 @@ class CityStats {
         for (otherCiv in cityInfo.civInfo.getKnownCivs()) {
             if (otherCiv.isCityState() && otherCiv.cityStateType == CityStateType.Maritime
                     && otherCiv.getDiplomacyManager(cityInfo.civInfo).relationshipLevel() >= RelationshipLevel.Friend) {
-                if (cityInfo.isCapital()) stats.food += 3
-                else stats.food += 1
+                // 2 in capital for friends, 3 in capital + 1 in all other cities for allies
+                if (cityInfo.isCapital())
+                    stats.food += 2
+                if (otherCiv.getDiplomacyManager(cityInfo.civInfo).relationshipLevel() == RelationshipLevel.Ally)
+                    stats.food += 1
 
                 if (cityInfo.civInfo.hasUnique("Food and Culture from Friendly City-States are increased by 50%"))
                     stats.food *= 1.5f

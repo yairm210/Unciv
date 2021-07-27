@@ -498,8 +498,11 @@ class DiplomacyManager() {
         if (otherCiv().isCityState() && otherCiv().cityStateType == CityStateType.Militaristic) {
             if (relationshipLevel() < RelationshipLevel.Friend) {
                 if (hasFlag(DiplomacyFlags.ProvideMilitaryUnit)) removeFlag(DiplomacyFlags.ProvideMilitaryUnit)
-            } else {
+            } else if (relationshipLevel() == RelationshipLevel.Friend) {
                 if (!hasFlag(DiplomacyFlags.ProvideMilitaryUnit)) setFlag(DiplomacyFlags.ProvideMilitaryUnit, 20)
+            } else {
+                // Faster unit gifts for allies
+                if (!hasFlag(DiplomacyFlags.ProvideMilitaryUnit) || getFlag(DiplomacyFlags.ProvideMilitaryUnit) > 17) setFlag(DiplomacyFlags.ProvideMilitaryUnit, 17)
             }
         }
     }
