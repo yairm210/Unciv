@@ -94,7 +94,7 @@ class BaseUnit : INamed, IConstruction, CivilopediaText() {
             stats += "$rangedStrength${Fonts.rangedStrength}"
             stats += "$range${Fonts.range}"
         }
-        if (movement != 0) stats += "$movement${Fonts.movement}"
+        if (movement != 0 && !movesLikeAirUnits()) stats += "$movement${Fonts.movement}"
         if (cost != 0) stats += "{Cost}: $cost"
         if (stats.isNotEmpty())
             textList += FormattedLine(stats.joinToString(", "))

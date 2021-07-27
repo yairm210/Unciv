@@ -138,6 +138,8 @@ class FormattedLine (
         const val iconPad = 5f
         /** Padding distance per [indent] level */
         const val indentPad = 30f
+        /** Where indent==1 will be, measured as icon count */
+        const val indentOneAtNumIcons = 3
 
         // Helper for constructor(Unique)
         private fun getUniqueLink(unique: Unique): String {
@@ -259,7 +261,9 @@ class FormattedLine (
                 centered -> -usedWidth
                 indent == 0 && iconCount == 0 -> 0f
                 indent == 0 -> iconPad
-                else -> (indent-1) * indentPad + 3 * minIconSize + 4 * iconPad - usedWidth
+                noLinkImages -> indent * indentPad - usedWidth
+                else -> (indent-1) * indentPad +
+                        indentOneAtNumIcons * (minIconSize + iconPad) + iconPad - usedWidth
             }
             val label = if (fontSize == defaultSize && labelColor == defaultColor) textToDisplay.toLabel()
             else textToDisplay.toLabel(labelColor,fontSize)
