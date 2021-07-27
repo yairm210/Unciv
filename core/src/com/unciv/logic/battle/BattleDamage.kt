@@ -196,7 +196,7 @@ object BattleDamage {
             )
                 modifiers["Tile"] = (tileDefenceBonus * 100).toInt()
 
-            for (unique in defender.unit.getMatchingUniques("[]% Strength when defending vs []")) {
+            for (unique in defender.unit.getMatchingUniques("[]% Strength when defending vs [] units")) {
                 if (attacker.matchesCategory(unique.params[1]))
                     modifiers.add("defence vs [${unique.params[1]}] ", unique.params[0].toInt())
             }
