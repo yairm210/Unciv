@@ -282,8 +282,10 @@ class BaseUnit : INamed, IConstruction, CivilopediaText() {
         var XP = cityConstructions.getBuiltBuildings().sumBy { it.xpForNewUnits }
 
 
-        for (unique in 
-            cityConstructions.cityInfo.getMatchingUniques("New [] units start with [] Experience") +
+        for (unique in
+            // Deprecated since 3.15.9
+                cityConstructions.cityInfo.getMatchingUniques("New [] units start with [] Experience") +
+            //
             cityConstructions.cityInfo.getMatchingUniques("New [] units start with [] Experience []")
                 .filter { cityConstructions.cityInfo.matchesFilter(it.params[2]) } +
             // Deprecated since 3.15.9
