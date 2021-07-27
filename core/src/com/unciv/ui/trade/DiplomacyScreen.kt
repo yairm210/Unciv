@@ -137,11 +137,22 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
             diplomacyTable.add(nextLevelString.toLabel()).row()
         }
 
+        val cultureBonus = if (viewingCiv.getEraNumber() in 0..1) 3f else if (viewingCiv.getEraNumber() in 2..3) 6f else 13f
+        val happinessBonus = if (viewingCiv.getEraNumber() in 0..1) 2 else 3
+        val bonusMultiplier = if (viewingCiv.hasUnique("Food and Culture from Friendly City-States are increased by 50%")) 1.5f else 1f
+
+
         val friendBonusText = when (otherCiv.cityStateType) {
-            CityStateType.Cultured -> ("Provides [" + (3 * (viewingCiv.getEraNumber() + 1)).toString() + "] culture at 30 Influence").tr()
-            CityStateType.Maritime -> "Provides 3 food in capital and 1 food in other cities at 30 Influence".tr()
-            CityStateType.Mercantile -> "Provides 3 happiness at 30 Influence".tr()
+            CityStateType.Cultured -> ("Provides [" + (cultureBonus * bonusMultiplier).toString() + "] culture at 30 Influence").tr()
+            CityStateType.Maritime -> "Provides " + (2f * bonusMultiplier).toInt().toString() + " food in capital at 30 Influence".tr()
+            CityStateType.Mercantile -> "Provides [" + happinessBonus + "] happiness at 30 Influence".tr()
             CityStateType.Militaristic -> "Provides land units every 20 turns at 30 Influence".tr()
+        }
+        val allyBonusText = when (otherCiv.cityStateType) {
+            CityStateType.Cultured -> ("Provides [" + (cultureBonus * bonusMultiplier * 2f).toString() + "] culture when Allies").tr()
+            CityStateType.Maritime -> "Provides " + (3f * bonusMultiplier).toString() + " food in capital and " + (1f * bonusMultiplier).toString() + " in other cities when Allies".tr()
+            CityStateType.Mercantile -> "Provides [" + happinessBonus + "] happiness and unique luxury resources when Allies".tr()
+            CityStateType.Militaristic -> "Provides land units every 17 turns when Allies".tr()
         }
 
         val friendBonusLabelColor: Color
@@ -156,6 +167,11 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
         val friendBonusLabel = friendBonusText.toLabel(friendBonusLabelColor)
             .apply { setAlignment(Align.center) }
         diplomacyTable.add(friendBonusLabel).row()
+
+        val allyBonusLabelColor = if (otherCivDiplomacyManager.relationshipLevel() == RelationshipLevel.Ally) Color.GREEN else Color.GRAY
+        val allyBonusLabel = allyBonusText.toLabel(allyBonusLabelColor)
+            .apply { setAlignment(Align.center) }
+        diplomacyTable.add(allyBonusLabel).row()
         
         return diplomacyTable
     }
