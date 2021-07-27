@@ -1,3 +1,15 @@
+## 3.15.16
+
+City states no longer grant Great Prophets when religion is not enabled
+
+Background work for moddable uit types :)
+
+Mercantile CS resources - By SimonCeder
+
+Civilopedia phase7 - By SomeTroglodyte
+
+Petra as in G&K fix - By ravignir
+
 ## 3.15.15
 
 Great Person points are now moddable!

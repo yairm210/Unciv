@@ -30,10 +30,8 @@ object Battle {
             }
         }
 
-        if (attacker is MapUnitCombatant && attacker.unit.baseUnit.isNuclearWeapon()
-        ) {
+        if (attacker is MapUnitCombatant && attacker.unit.baseUnit.isNuclearWeapon())
             return NUKE(attacker, attackableTile.tileToAttack)
-        }
         attack(attacker, getMapCombatantOfTile(attackableTile.tileToAttack)!!)
     }
 
