@@ -191,6 +191,8 @@ class MapUnit {
 
         tempUniques = uniques
 
+        //todo: parameterize [terrainFilter] in 5 to 7 of the following:
+
         // "All tiles costs 1" obsoleted in 3.11.18
         allTilesCosts1 = hasUnique("All tiles cost 1 movement") || hasUnique("All tiles costs 1")
         canPassThroughImpassableTiles = hasUnique("Can pass through impassable tiles")
@@ -681,6 +683,7 @@ class MapUnit {
             clearEncampment(tile)
 
         if (!hasUnique("All healing effects doubled") && type.isLandUnit() && baseUnit.isMilitary()) {
+            //todo: Grants [promotion] to adjacent [unitFilter] units for the rest of the game
             val gainDoubleHealPromotion = tile.neighbors
                 .any { it.hasUnique("Grants Rejuvenation (all healing effects doubled) to adjacent military land units for the rest of the game") }
             if (gainDoubleHealPromotion && civInfo.gameInfo.ruleSet.unitPromotions.containsKey("Rejuvenation"))

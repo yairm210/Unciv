@@ -96,8 +96,9 @@
 		"unbuildable": true,
 		"defenceBonus": 0.25,
 		"occursOn": ["Tundra","Plains","Grassland","Hill"],
-		"uniques": ["Provides a one-time Production bonus to the closest city when cut down", "Rough terrain",
-			"Blocks line-of-sight from tiles at same elevation", "Resistant to nukes", "Can be destroyed by nukes"]
+		"uniques": ["Rough terrain", "Provides a one-time Production bonus to the closest city when cut down", 
+			"Blocks line-of-sight from tiles at same elevation", "Resistant to nukes", "Can be destroyed by nukes"],
+		"civilopediaText": [{"text":"A Camp can be built here without cutting it down", "link":"Improvement/Camp"}]
 	},
 	{
 		"name": "Jungle",
@@ -118,7 +119,8 @@
 		"unbuildable": true,
 		"defenceBonus": -0.15,
 		"occursOn": ["Grassland"],
-		"uniques": ["Rare feature"]
+		"uniques": ["Rare feature"],
+		"civilopediaText": [{"text":"Only Polders can be built here", "link":"Improvement/Polder"}]
 	},
 	{
 		"name": "Fallout",

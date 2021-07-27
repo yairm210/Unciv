@@ -81,9 +81,10 @@ class BaseUnit : INamed, IConstruction, CivilopediaText() {
         return lines.joinToString("\n")
     }
 
-    override fun getCivilopediaTextHeader() = FormattedLine(name, icon="Unit/$name", header=2)
+    override fun makeLink() = "Unit/$name"
     override fun replacesCivilopediaDescription() = true
     override fun hasCivilopediaTextLines() = true
+
     override fun getCivilopediaTextLines(ruleset: Ruleset): List<FormattedLine> {
         val textList = ArrayList<FormattedLine>()
 
