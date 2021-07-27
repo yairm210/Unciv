@@ -262,6 +262,9 @@ class CityInfo {
                         * civInfo.getResourceModifier(resource), "Tiles")
             }
         }
+        if (civInfo.isCityState() && isCapital() && civInfo.cityStateResource != null) {
+            cityResources.add(getRuleset().tileResources[civInfo.cityStateResource]!!, 1, "Mercantile City-State")
+        }
 
         return cityResources
     }
