@@ -34,9 +34,6 @@ class PolicyManager {
     @Deprecated("Deprecated since 3.15")
     var autocracyCompletedTurns = 0
 
-    @Deprecated("Deprecated since 3.14.17") // Replaced with cultureBuildingsAdded
-    var legalismState = HashMap<String, String>() // Maps cities to buildings
-
 
     fun clone(): PolicyManager {
         val toReturn = PolicyManager()
@@ -49,7 +46,6 @@ class PolicyManager {
         toReturn.specificBuildingsAdded.putAll(specificBuildingsAdded)
 
         // Deprecated since 3.15 left for backwards compatibility
-            toReturn.legalismState.putAll(cultureBuildingsAdded)
             toReturn.autocracyCompletedTurns = autocracyCompletedTurns
         //
         return toReturn
@@ -74,12 +70,6 @@ class PolicyManager {
         //
         for (policyName in adoptedPolicies)
             addPolicyToTransients(getPolicyByName(policyName))
-        // Deprecated since 3.14.17, left for backwards compatibility
-            if (cultureBuildingsAdded.isEmpty() && legalismState.isNotEmpty()) {
-                cultureBuildingsAdded.putAll(legalismState)
-                legalismState.clear()
-            }
-        //
         
         // Deprecated since 3.15.2, left for backwards compatibility
             if (autocracyCompletedTurns != 0) {
