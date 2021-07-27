@@ -2,7 +2,6 @@ package com.unciv.logic.battle
 
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.Counter
-import com.unciv.models.ruleset.unit.UnitType
 import java.util.*
 import kotlin.collections.set
 import kotlin.math.max
@@ -197,7 +196,7 @@ object BattleDamage {
             )
                 modifiers["Tile"] = (tileDefenceBonus * 100).toInt()
 
-            for (unique in defender.unit.getMatchingUniques("[]% Strength when defending vs []")) {
+            for (unique in defender.unit.getMatchingUniques("[]% Strength when defending vs [] units")) {
                 if (attacker.matchesCategory(unique.params[1]))
                     modifiers.add("defence vs [${unique.params[1]}] ", unique.params[0].toInt())
             }
@@ -269,11 +268,10 @@ object BattleDamage {
     }
 
     private fun getHealthDependantDamageRatio(combatant: ICombatant): Float {
-        return if (combatant.getUnitType() == UnitType.City
+        return if (combatant !is MapUnitCombatant // is city
             || combatant.getCivInfo()
                 .hasUnique("Units fight as though they were at full strength even when damaged")
-            && !combatant.getUnitType().isAirUnit()
-            && !combatant.getUnitType().isMissile()
+            && !combatant.unit.baseUnit.movesLikeAirUnits()
         )
             1f
         else 1 - (100 - combatant.getHealth()) / 300f// Each 3 points of health reduces damage dealt by 1% like original game
@@ -307,7 +305,7 @@ object BattleDamage {
         defender: ICombatant
     ): Int {
         if (attacker.isRanged()) return 0
-        if (defender.getUnitType().isCivilian()) return 0
+        if (defender.isCivilian()) return 0
         val ratio =
             getAttackingStrength(attacker, tileToAttackFrom, defender) / getDefendingStrength(
                 attacker,

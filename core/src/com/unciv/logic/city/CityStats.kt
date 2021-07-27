@@ -189,10 +189,6 @@ class CityStats {
         for (unique in civInfo.getMatchingUniques("Specialists only produce []% of normal unhappiness")) {
             unhappinessFromSpecialists *= (1f - unique.params[0].toFloat() / 100f)
         }
-        // Deprecated since 3.15
-            if (civInfo.hasUnique("Specialists produce half normal unhappiness"))
-                unhappinessFromSpecialists *= 0.5f
-        //
 
         unhappinessFromCitizens -= cityInfo.population.getNumberOfSpecialists().toFloat() - unhappinessFromSpecialists
 
@@ -528,12 +524,6 @@ class CityStats {
         for (unique in cityInfo.getMatchingUniques("-[]% maintenance cost for buildings []", citySpecificUniques)) {
             buildingsMaintenance *= (1f - unique.params[0].toFloat() / 100)
         }
-
-        // Deprecated since 3.15
-            for (unique in cityInfo.getMatchingUniques("-[]% building maintenance costs []", citySpecificUniques)) {
-                buildingsMaintenance *= (1f - unique.params[0].toFloat() / 100)
-            }
-        //
 
         return buildingsMaintenance
     }

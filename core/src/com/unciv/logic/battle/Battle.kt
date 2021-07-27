@@ -75,11 +75,11 @@ object Battle {
         // Add culture when defeating a barbarian when Honor policy is adopted, gold from enemy killed when honor is complete
         // or any enemy military unit with Sacrificial captives unique (can be either attacker or defender!)
         // or check if unit is captured by the attacker (prize ships unique)
-        if (defender.isDefeated() && defender is MapUnitCombatant && !defender.getUnitType().isCivilian()) {
+        if (defender.isDefeated() && defender is MapUnitCombatant && !defender.unit.isCivilian()) {
             tryEarnFromKilling(attacker, defender)
             tryCaptureUnit(attacker, defender)
             tryHealAfterKilling(attacker)
-        } else if (attacker.isDefeated() && attacker is MapUnitCombatant && !attacker.getUnitType().isCivilian()) {
+        } else if (attacker.isDefeated() && attacker is MapUnitCombatant && !attacker.unit.isCivilian()) {
             tryEarnFromKilling(defender, attacker)
             tryCaptureUnit(defender, attacker)
             tryHealAfterKilling(defender)
@@ -140,12 +140,11 @@ object Battle {
         }
     }
 
-    private fun tryCaptureUnit(attacker: ICombatant, defender: ICombatant) {
+    private fun tryCaptureUnit(attacker: ICombatant, defender: MapUnitCombatant) {
         // https://forums.civfanatics.com/threads/prize-ships-for-land-units.650196/
         // https://civilization.fandom.com/wiki/Module:Data/Civ5/GK/Defines
         if (!defender.isDefeated()) return
         if (attacker !is MapUnitCombatant) return
-        if (defender is MapUnitCombatant && !defender.getUnitType().isMilitary()) return
         if (attacker.unit.getMatchingUniques("May capture killed [] units").none { defender.matchesCategory(it.params[0]) }) return
 
         var captureChance = 10 + attacker.getAttackingStrength().toFloat() / defender.getDefendingStrength().toFloat() * 40
@@ -167,8 +166,8 @@ object Battle {
         var damageToAttacker = attacker.getHealth() // These variables names don't make any sense as of yet ...
         var damageToDefender = defender.getHealth()
 
-        if (defender.getUnitType().isCivilian() && attacker.isMelee()) {
-            captureCivilianUnit(attacker, defender as MapUnitCombatant)
+        if (defender is MapUnitCombatant && defender.unit.isCivilian() && attacker.isMelee()) {
+            captureCivilianUnit(attacker, defender)
         } else if (attacker.isRanged()) {
             defender.takeDamage(potentialDamageToDefender) // straight up
         } else {
@@ -302,7 +301,7 @@ object Battle {
 
     private fun postBattleAddXp(attacker: ICombatant, defender: ICombatant) {
         if (attacker.isMelee()) {
-            if (!defender.getUnitType().isCivilian()) // unit was not captured but actually attacked
+            if (!defender.isCivilian()) // unit was not captured but actually attacked
             {
                 addXp(attacker, 5, defender)
                 addXp(defender, 4, attacker)
@@ -321,7 +320,7 @@ object Battle {
                 // if it was a melee attack and we won, then the unit ALREADY got movement points deducted,
                 // for the movement to the enemy's tile!
                 // and if it's an air unit, it only has 1 movement anyway, so...
-                if (!attacker.unit.baseUnit.movesLikeAirUnits() && !(attacker.getUnitType().isMelee() && defender.isDefeated()))
+                if (!attacker.unit.baseUnit.movesLikeAirUnits() && !(attacker.isMelee() && defender.isDefeated()))
                     unit.useMovementPoints(1f)
             } else unit.currentMovement = 0f
             if (unit.isFortified() || unit.isSleeping())
@@ -518,6 +517,7 @@ object Battle {
         }
     }
 
+    // todo: reduce extreme code duplication, parameterize probabilities where an unique already used
     private fun nukeStrength1Effect(attacker: MapUnitCombatant, tile: TileInfo) {
         // https://forums.civfanatics.com/resources/unit-guide-modern-future-units-g-k.25628/
         // https://www.carlsguides.com/strategy/civilization5/units/aircraft-nukes.php
@@ -554,7 +554,7 @@ object Battle {
         // Damage and/or destroy units on the tile
         for (unit in tile.getUnits().toList()) { // tolist so if it's destroyed there's no concurrent modification
             val defender = MapUnitCombatant(unit)
-            if (defender.unit.baseUnit.unitType.isCivilian()) {
+            if (defender.unit.isCivilian()) {
                 unit.destroy() // destroy the unit
             } else {
                 defender.takeDamage(((40 + Random().nextInt(60)) * damageModifierFromMissingResource).toInt())
@@ -647,9 +647,6 @@ object Battle {
 
     private fun tryInterceptAirAttack(attacker: MapUnitCombatant, defender: ICombatant) {
         if (attacker.unit.hasUnique("Cannot be intercepted")) return
-        // Deprecated since 3.15.6
-            if (attacker.unit.hasUnique("Can not be intercepted")) return
-        // End deprecation
         val attackedTile = defender.getTile()
         for (interceptor in defender.getCivInfo().getCivUnits().filter { it.canIntercept(attackedTile) }) {
             if (Random().nextFloat() > 100f / interceptor.interceptChance()) continue

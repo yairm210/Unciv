@@ -75,21 +75,9 @@ object BattleHelper {
     }
 
     fun containsAttackableEnemy(tile: TileInfo, combatant: ICombatant): Boolean {
-        if (combatant is MapUnitCombatant) {
-            if (combatant.unit.isEmbarked()) {
-                if (tile.isWater) return false // can't attack water units while embarked, only land
-                if (combatant.isRanged()) return false
-            }
-            
-            // "Can only attack water" unique deprecated since 3.15.7
-                if (combatant.unit.hasUnique("Can only attack water")) {
-                    if (tile.isLand) return false
-            //
-
-                // trying to attack lake-to-coast or vice versa
-                if ((tile.baseTerrain == Constants.lakes) != (combatant.getTile().baseTerrain == Constants.lakes))
-                    return false
-            }
+        if (combatant is MapUnitCombatant && combatant.unit.isEmbarked()) {
+            if (tile.isWater) return false // can't attack water units while embarked, only land
+            if (combatant.isRanged()) return false
         }
 
         val tileCombatant = Battle.getMapCombatantOfTile(tile) ?: return false
@@ -101,6 +89,7 @@ object BattleHelper {
             combatant.unit.getMatchingUniques("Can only attack [] units").none { tileCombatant.matchesCategory(it.params[0]) }
         )
             return false
+
         if (combatant is MapUnitCombatant &&
             combatant.unit.hasUnique("Can only attack [] tiles") &&
             combatant.unit.getMatchingUniques("Can only attack [] tiles").none { tile.matchesFilter(it.params[0]) }
@@ -122,7 +111,7 @@ object BattleHelper {
 
     fun tryDisembarkUnitToAttackPosition(unit: MapUnit): Boolean {
         val unitDistanceToTiles = unit.movement.getDistanceToTiles()
-        if (!unit.type.isMelee() || !unit.type.isLandUnit() || !unit.isEmbarked()) return false
+        if (!unit.baseUnit.isMelee() || !unit.type.isLandUnit() || !unit.isEmbarked()) return false
 
         val attackableEnemiesNextTurn = getAttackableEnemies(unit, unitDistanceToTiles)
                 // Only take enemies we can fight without dying
@@ -154,7 +143,7 @@ object BattleHelper {
             cityTilesToAttack.filter { it.tileToAttack.getCity()!!.health != 1 } // don't want ranged units to attack defeated cities
                 .minByOrNull { it.tileToAttack.getCity()!!.health }
 
-        if (unit.type.isMelee() && capturableCity != null)
+        if (unit.baseUnit.isMelee() && capturableCity != null)
             enemyTileToAttack = capturableCity // enter it quickly, top priority!
 
         else if (nonCityTilesToAttack.isNotEmpty()) // second priority, units

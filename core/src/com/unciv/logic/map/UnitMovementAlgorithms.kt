@@ -179,7 +179,7 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
         if (currentTile == finalDestination) return currentTile
 
         // If we can fly, head there directly
-        if (unit.type.isAirUnit() || unit.type.isMissile() || unit.action == Constants.unitActionParadrop) return finalDestination
+        if (unit.baseUnit.movesLikeAirUnits() || unit.action == Constants.unitActionParadrop) return finalDestination
 
         val distanceToTiles = getDistanceToTiles()
 
@@ -217,13 +217,13 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
     /** This is performance-heavy - use as last resort, only after checking everything else!
      * Also note that REACHABLE tiles are not necessarily tiles that the unit CAN ENTER */
     fun canReach(destination: TileInfo): Boolean {
-        if (unit.type.isAirUnit() || unit.type.isMissile() || unit.action == Constants.unitActionParadrop)
+        if (unit.baseUnit.movesLikeAirUnits() || unit.action == Constants.unitActionParadrop)
             return canReachInCurrentTurn(destination)
         return getShortestPath(destination).any()
     }
 
     fun canReachInCurrentTurn(destination: TileInfo): Boolean {
-        if (unit.type.isAirUnit() || unit.type.isMissile())
+        if (unit.baseUnit.movesLikeAirUnits())
             return unit.currentTile.aerialDistanceTo(destination) <= unit.getRange()*2
         if (unit.action == Constants.unitActionParadrop)
             return getDistance(unit.currentTile.position, destination.position) <= unit.paradropRange && canParadropOn(destination)
@@ -232,7 +232,7 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
 
     fun getReachableTilesInCurrentTurn(): Sequence<TileInfo> {
         return when {
-            unit.type.isAirUnit() || unit.type.isMissile() ->
+            unit.baseUnit.movesLikeAirUnits() ->
                 unit.getTile().getTilesInDistanceRange(IntRange(1, unit.getRange() * 2))
             unit.action == Constants.unitActionParadrop ->
                 unit.getTile().getTilesInDistance(unit.paradropRange)
@@ -259,13 +259,13 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
      */
     private fun canUnitSwapToReachableTile(reachableTile: TileInfo): Boolean {
         // Air units cannot swap
-        if (unit.type.isAirUnit() || unit.type.isMissile()) return false
+        if (unit.baseUnit.movesLikeAirUnits()) return false
         // We can't swap with ourself
         if (reachableTile == unit.getTile()) return false
         // Check whether the tile contains a unit of the same type as us that we own and that can
         // also reach our tile in its current turn.
         val otherUnit = (
-            if (unit.type.isCivilian())
+            if (unit.isCivilian())
                 reachableTile.civilianUnit
             else
                 reachableTile.militaryUnit
@@ -322,7 +322,7 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
     fun moveToTile(destination: TileInfo) {
         if (destination == unit.getTile()) return // already here!
 
-        if (unit.type.isAirUnit() || unit.type.isMissile()) { // air units move differently from all other units
+        if (unit.baseUnit.movesLikeAirUnits()) { // air units move differently from all other units
             unit.action = null
             unit.removeFromTile()
             unit.isTransported = false // it has left the carrier by own means
@@ -398,7 +398,7 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
      */
     fun swapMoveToTile(destination: TileInfo) {
         val otherUnit = (
-            if (unit.type.isCivilian())
+            if (unit.isCivilian())
                 destination.civilianUnit
             else
                 destination.militaryUnit
@@ -421,7 +421,7 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
      * DOES NOT designate whether we can reach that tile in the current turn
      */
     fun canMoveTo(tile: TileInfo): Boolean {
-        if (unit.type.isAirUnit() || unit.type.isMissile())
+        if (unit.baseUnit.movesLikeAirUnits())
             return canAirUnitMoveTo(tile, unit)
 
         if (!canPassThrough(tile))
@@ -429,7 +429,7 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
 
         if (tile.isCityCenter() && tile.getOwner() != unit.civInfo) return false // even if they'll let us pass through, we can't enter their city
 
-        if (unit.type.isCivilian())
+        if (unit.isCivilian())
             return tile.civilianUnit == null && (tile.militaryUnit == null || tile.militaryUnit!!.owner == unit.owner)
         else return tile.militaryUnit == null && (tile.civilianUnit == null || tile.civilianUnit!!.owner == unit.owner)
     }

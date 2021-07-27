@@ -565,7 +565,7 @@ class CivilizationInfo {
         // disband units until there are none left OR the gold values are normal
         if (!isBarbarian() && gold < -100 && nextTurnStats.gold.toInt() < 0) {
             for (i in 1 until (gold / -100)) {
-                var civMilitaryUnits = getCivUnits().filter { !it.type.isCivilian() }
+                var civMilitaryUnits = getCivUnits().filter { it.baseUnit.isMilitary() }
                 if (civMilitaryUnits.any()) {
                     val unitToDisband = civMilitaryUnits.first()
                     unitToDisband.disband()
@@ -767,7 +767,7 @@ class CivilizationInfo {
         val cities = NextTurnAutomation.getClosestCities(this, otherCiv)
         val city = cities.city1
         val militaryUnit = city.cityConstructions.getConstructableUnits()
-                .filter { !it.unitType.isCivilian() && it.unitType.isLandUnit() && it.uniqueTo==null }
+                .filter { !it.isCivilian() && it.unitType.isLandUnit() && it.uniqueTo==null }
                 .toList().random()
         // placing the unit may fail - in that case stay quiet
         val placedUnit = placeUnitNearTile(city.location, militaryUnit.name) ?: return

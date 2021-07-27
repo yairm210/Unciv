@@ -8,9 +8,9 @@ class BarbarianAutomation(val civInfo: CivilizationInfo) {
 
     fun automate() {
         // ranged go first, after melee and then everyone else
-        civInfo.getCivUnits().filter { it.type.isRanged() }.forEach { automateUnit(it) }
-        civInfo.getCivUnits().filter { it.type.isMelee() }.forEach { automateUnit(it) }
-        civInfo.getCivUnits().filter { !it.type.isRanged() && !it.type.isMelee() }.forEach { automateUnit(it) }
+        civInfo.getCivUnits().filter { it.baseUnit.isRanged() }.forEach { automateUnit(it) }
+        civInfo.getCivUnits().filter { it.baseUnit.isMelee() }.forEach { automateUnit(it) }
+        civInfo.getCivUnits().filter { !it.baseUnit.isRanged() && !it.baseUnit.isMelee() }.forEach { automateUnit(it) }
     }
 
     private fun automateUnit(unit: MapUnit) {
@@ -39,7 +39,7 @@ class BarbarianAutomation(val civInfo: CivilizationInfo) {
         // 3 - trying to attack enemy
         // if a embarked melee unit can land and attack next turn, do not attack from water.
         if (BattleHelper.tryDisembarkUnitToAttackPosition(unit)) return
-        if (!unit.type.isCivilian() && BattleHelper.tryAttackNearbyEnemy(unit)) return
+        if (!unit.isCivilian() && BattleHelper.tryAttackNearbyEnemy(unit)) return
 
         // 4 - trying to pillage tile or route
         if (UnitAutomation.tryPillageImprovement(unit)) return

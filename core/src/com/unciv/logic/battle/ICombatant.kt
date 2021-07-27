@@ -21,10 +21,10 @@ interface ICombatant{
     fun matchesCategory(category:String): Boolean
     fun getAttackSound(): UncivSound
 
-    fun isMelee(): Boolean {
-        return getUnitType().isMelee()
-    }
+    fun isMelee(): Boolean = !isRanged()
     fun isRanged(): Boolean {
-        return getUnitType().isRanged()
+        if (this is CityCombatant) return true
+        return (this as MapUnitCombatant).unit.baseUnit.isRanged()
     }
+    fun isCivilian() = this is MapUnitCombatant && this.unit.isCivilian()
 }

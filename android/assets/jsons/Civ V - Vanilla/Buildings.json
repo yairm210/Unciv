@@ -91,9 +91,8 @@
 		"culture": 1,
 		"greatPersonPoints": {"Great Scientist": 1},
 		"isWonder": true,
-		"providesFreeBuilding":  "Library",
 		"requiredTech": "Writing",
-		"uniques": ["Free Technology"],
+		"uniques": ["Free Technology", "Provides a free [Library] [in this city]"],
 		"quote": "'Libraries are as the shrine where all the relics of the ancient saints, full of true virtue, and all that without delusion or imposture are preserved and reposed.' - Sir Francis Bacon"
 	},
 	{
@@ -162,19 +161,19 @@
 	},
 	{
 		"name": "Barracks",
-		"xpForNewUnits": 15,
 		"hurryCostModifier": 25,
 		"maintenance": 1,
+		"uniques": ["New [Military] units start with [15] Experience [in this city]"]
 		"requiredTech": "Bronze Working"
 	},
 	{
 		"name": "Krepost",
 		"replaces": "Barracks",
 		"uniqueTo": "Russia",
-		"xpForNewUnits": 15,
 		"hurryCostModifier": 25,
 		"maintenance": 1,
-		"uniques": ["-[25]% Culture cost of acquiring tiles [in this city]","-[25]% Gold cost of acquiring tiles [in this city]"],
+		"uniques": ["-[25]% Culture cost of acquiring tiles [in this city]","-[25]% Gold cost of acquiring tiles [in this city]",
+			"New [Military] units start with [15] Experience [in this city]"],
 		"requiredTech": "Bronze Working"
 	},
 	{
@@ -205,9 +204,8 @@
 		"culture": 1,
 		"greatPersonPoints": {"Great Merchant": 1},
 		"isWonder": true,
-		"providesFreeBuilding": "Lighthouse",
 		"uniques": ["Must be next to [Coast]", "+[1] Movement for all [{Military} {Water}] units",
-			"+[1] Sight for all [{Military} {Water}] units"],
+			"+[1] Sight for all [{Military} {Water}] units", "Provides a free [Lighthouse] [in this city]"],
 		"requiredTech": "Optics",
 		"quote": "'They that go down to the sea in ships, that do business in great waters; these see the works of the Lord, and his wonders in the deep.' - The Bible, Psalms 107:23-24"
 	},
@@ -245,8 +243,8 @@
 		"food": 6,
 		"culture": 1,
 		"isWonder": true,
-		"providesFreeBuilding": "Garden",
 		"requiredTech": "Mathematics",
+		"uniques": ["Provides a free [Garden] [in this city]"]
 		"quote": "'I think that if ever a mortal heard the word of God it would be in a garden at the cool of the day.'  - F. Frankfort Moore"
 	},
 	{
@@ -392,7 +390,7 @@
 		"culture": 1,
 		"isWonder": true,
 		"greatPersonPoints": {"Great Engineer": 1},
-		"uniques": ["Must be next to [Desert]", "[+1 Food, +1 Production] from [Desert] tiles [in this city]", "[-1 Food, -1 Production] from [Flood plains] tiles [in this city]", "[+6 Culture] once [Archaeology] is discovered"],
+		"uniques": ["Must be next to [Desert]", "[+1 Food, +1 Production, +1 Gold] from [Desert] tiles [in this city]", "[-1 Food, -1 Production, -1 Gold] from [Flood plains] tiles [in this city]", "Provides a free [Amphitheater] [in this city]", "[+6 Culture] once [Archaeology] is discovered"],
 		"requiredTech": "Currency",
 		"quote": "'...who drinks the water I shall give him, says the Lord, will have a spring inside him welling up for eternal life. Let them bring me to your holy mountain in the place where you dwell. Across the desert and through the mountain to the Canyon of the Crescent Moon...'  - Indiana Jones"
 	},
@@ -408,8 +406,8 @@
 		"culture": 3,
 		"greatPersonPoints": {"Great Engineer": 1},
 		"isWonder": true,
-		"providesFreeBuilding": "Walls",
-		"uniques": ["Enemy land units must spend 1 extra movement point when inside your territory (obsolete upon Dynamite)"],
+		"uniques": ["Enemy land units must spend 1 extra movement point when inside your territory (obsolete upon Dynamite)",
+			"Provides a free [Walls] [in this city]"],
 		"requiredTech": "Engineering",
 		"quote": "'The art of war teaches us to rely not on the likelihood of the enemy's not attacking, but rather on the fact that we have made our position unassailable.'  - Sun Tzu"
 	},
@@ -601,9 +599,9 @@
 		"culture": 1,
 		"greatPersonPoints": {"Great Artist": 1},
 		"isWonder": true,
-		"providesFreeBuilding": "Castle",
 		"percentStatBonus": {"culture": 20},
-		"uniques": ["All newly-trained [relevant] units [in this city] receive the [Drill I] promotion"],
+		"uniques": ["All newly-trained [relevant] units [in this city] receive the [Drill I] promotion",
+			"Provides a free [Castle] [in this city]"],
 		"requiredTech": "Chivalry",
 		"quote": "'Justice is an unassailable fortress, built on the brow of a mountain which cannot be overthrown by the violence of torrents, nor demolished by the force of armies.'  - Joseph Addison"
 	},
@@ -627,10 +625,10 @@
 	},
 	{
 		"name": "Armory",
-		"xpForNewUnits": 15,
 		"hurryCostModifier": 25,
 		"maintenance": 1,
 		"requiredBuilding": "Barracks",
+		"uniques": ["New [Military] units start with [15] Experience [in this city]"]
 		"requiredTech": "Steel"
 	},
 	
@@ -729,8 +727,8 @@
 		"culture": 3,
 		"isWonder": true,
 		"greatPersonPoints": {"Great Engineer": 2},
-		"providesFreeBuilding": "Castle",
-		"uniques": ["+[15]% Strength for units fighting in [Friendly Land]"],
+		"uniques": ["+[15]% Strength for units fighting in [Friendly Land]",
+			"Provides a free [Castle] [in this city]"],
 		"requiredTech": "Gunpowder",
 		"quote": "'Bushido is realized in the presence of death. This means choosing death whenever there is a choice between life and death. There is no other reasoning.'  - Yamamoto Tsunetomo"
 	},
@@ -855,19 +853,18 @@
 	},
 	{
 		"name": "Military Academy",
-		"xpForNewUnits": 15,
 		"hurryCostModifier": 0,
 		"maintenance": 1,
 		"requiredBuilding": "Armory",
+		"uniques": ["New [Military] units start with [15] Experience [in this city]"],
 		"requiredTech": "Military Science"
 	},
 	{
 		"name": "Brandenburg Gate",
 		"culture": 3,
-		"xpForNewUnits": 15,
 		"greatPersonPoints": {"Great Scientist": 2},
 		"isWonder": true,
-		"uniques": ["Free [Great General] appears"],
+		"uniques": ["Free [Great General] appears", "New [Military] units start with [15] Experience [in this city]"],
 		"requiredTech": "Military Science",
 		"quote": "'Pale Death beats equally at the poor man's gate and at the palaces of kings.'  - Horace"
 	},
@@ -1049,8 +1046,7 @@
 		"isWonder": true,
 		"culture": 1,
 		"greatPersonPoints": {"Great Merchant": 1},
-		"providesFreeBuilding": "Broadcast Tower",
-		"uniques": ["[+1] population [in all cities]", "[+1 Happiness] [in all cities]"],
+		"uniques": ["[+1] population [in all cities]", "[+1 Happiness] [in all cities]", "Provides a free [Broadcast Tower] [in this city]"],
 		"requiredTech": "Telecommunications",
 		"quote": "'Nothing travels faster than light with the possible exception of bad news, which obeys its own special rules.' - Douglas Adams"
 	},
@@ -1071,11 +1067,11 @@
 		"name": "Hubble Space Telescope",
 		"isWonder": true,
 		"greatPersonPoints": {"Great Scientist": 1},
-		"providesFreeBuilding": "Spaceship Factory",
 		// If spaceship parts are changed into units, the spaceship part unique should be changed to
 		// "+[25]% Production when constructing [Spaceship part] units [in this city]"
 		"uniques": ["[2] free [Great Scientist] units appear",
-			"+[25]% Production when constructing [Spaceship part] [in this city]"],
+			"+[25]% Production when constructing [Spaceship part] [in this city]",
+			"Provides a free [Spaceship Factory] [in this city]"],
 		"requiredTech": "Satellites",
 		"quote": "'The wonder is, not that the field of stars is so vast, but that man has measured it.'  - Anatole France"
 	},
