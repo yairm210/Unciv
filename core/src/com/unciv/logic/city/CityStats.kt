@@ -525,12 +525,6 @@ class CityStats {
             buildingsMaintenance *= (1f - unique.params[0].toFloat() / 100)
         }
 
-        // Deprecated since 3.15
-            for (unique in cityInfo.getMatchingUniques("-[]% building maintenance costs []", citySpecificUniques)) {
-                buildingsMaintenance *= (1f - unique.params[0].toFloat() / 100)
-            }
-        //
-
         return buildingsMaintenance
     }
 

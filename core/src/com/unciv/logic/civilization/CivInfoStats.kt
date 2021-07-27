@@ -136,10 +136,6 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
         var happinessPerUniqueLuxury = 4f + civInfo.getDifficulty().extraHappinessPerLuxury
         for (unique in civInfo.getMatchingUniques("+[] happiness from each type of luxury resource"))
             happinessPerUniqueLuxury += unique.params[0].toInt()
-        // Deprecated since 3.14.17
-            for (unique in civInfo.getMatchingUniques("+1 happiness from each type of luxury resource"))
-                happinessPerUniqueLuxury += 1
-        //
         
         val ownedLuxuries = civInfo.getCivResources().map { it.resource }.filter { it.resourceType == ResourceType.Luxury }
         

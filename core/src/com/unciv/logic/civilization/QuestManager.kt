@@ -509,12 +509,10 @@ class QuestManager {
     private fun getGreatPersonForQuest(challenger: CivilizationInfo): BaseUnit? {
         val ruleSet = civInfo.gameInfo.ruleSet
 
-        val challengerGreatPeople = challenger.getCivGreatPeople().map { it.baseUnit.getReplacedUnit(ruleSet) }
+        val challengerGreatPeople = challenger.getGreatPeople()getCivGreatPeople().map { it.baseUnit.getReplacedUnit(ruleSet) }
         val cityStateGreatPeople = civInfo.getCivGreatPeople().map { it.baseUnit.getReplacedUnit(ruleSet) }
 
-        val greatPeople = ruleSet.units.values
-                .asSequence()
-                .filter { it.isGreatPerson() }
+        val greatPeople = challenger.getGreatPeople()
                 .map { it.getReplacedUnit(ruleSet) }
                 .distinct()
                 .filter { !challengerGreatPeople.contains(it) && !cityStateGreatPeople.contains(it) }
