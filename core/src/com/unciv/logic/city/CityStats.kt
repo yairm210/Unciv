@@ -36,7 +36,7 @@ class CityStats {
     @Transient
     lateinit var cityInfo: CityInfo
 
-    //region pure fuctions
+    //region pure functions
     private fun getStatsFromTiles(): Stats {
         val stats = Stats()
         for (cell in cityInfo.tilesInRange
@@ -280,6 +280,11 @@ class CityStats {
             
             // "[stats] if this city has at least [amount] specialists"
             if (unique.placeholderText == "[] if this city has at least [] specialists" && cityInfo.population.getNumberOfSpecialists() >= unique.params[1].toInt())
+                stats.add(unique.stats)
+
+            // "[stats] per city with [amount] or more adjacent [tileFilter] tiles"
+            if (unique.placeholderText == "[] per city with [] or more adjacent [] tiles" &&
+                    cityInfo.getCenterTile().neighbors.count { it.matchesFilter(unique.params[2]) } >= unique.params[1].toInt())
                 stats.add(unique.stats)
         }
 

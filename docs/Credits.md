@@ -39,6 +39,8 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Spiked club](https://thenounproject.com/search/?q=club%20weapon&creator=1933477&i=831794) for Brute
 * [Hoplite](https://www.flaticon.com/free-icon/hoplite_659126#term=hoplite&page=1&position=20) by Eucalyp for Immortal
 * [Slingshot](https://thenounproject.com/term/slingshot/9106/) by James Keuning for Slinger
+* [warrior](https://thenounproject.com/search/?q=warrior&i=988830) By DinosoftLab combined with...
+* [Shamrock](https://thenounproject.com/term/shamrock/358507/) By P Thanga Vignesh for Pictish Warrior
 
 ### Classical Era
 
@@ -265,6 +267,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Harbor](https://thenounproject.com/term/harbor/225583/) By Rflor for Seaport
 * [Mansion](https://www.flaticon.com/free-icon/mansion_509903#term=persian&page=1&position=19) by Freepik for Satrap's Court
 * [Bullets](https://thenounproject.com/term/bullets/810156/) By Aldric Rodriguez for Arsenal
+* [Ceilidh](https://thenounproject.com/term/ceilidh/403422/) By P Thanga Vignesh for Ceilidh Hall
 
 ### Industrial Era
 
@@ -523,7 +526,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Sun symbol black](https://en.wikiquote.org/wiki/File:Sun_symbol_black.svg) by Eddo for The Huns
 * [Lion](https://thenounproject.com/search/?q=lion&i=76154) by Nikki Rodriguez for The Netherlands
 * [Three Crowns](https://thenounproject.com/search/?q=three+crowns&i=1155972) by Daniel Falk for Sweden
-
+* [Celtic Knot](https://thenounproject.com/term/celtic/168483/) by Ervin Bolat for the Celts
 
 ## Promotions
 

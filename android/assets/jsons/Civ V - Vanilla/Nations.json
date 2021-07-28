@@ -714,7 +714,6 @@
 		"uniques": ["Retain [50]% of the happiness from a luxury after the last copy has been traded away"],
 		"cities": ["Amsterdam", "Rotterdam", "Utrecht", "Groningen", "Breda", "Nijmegen", "Den Haag", "Haarlem", "Arnhem", "Zutphen", "Maastricht", "Tilburg", "Eindhoven", "Dordrecht", "Leiden", "Hertogenbosch", "Almere", "Alkmaar", "Brielle", "Vlissingen", "Apeldoorn", "Enschede", "Amersfoort", "Zwolle", "Venlo", "Uden", "Grave", "Delft", "Gouda", "Nieuwstadt", "Weesp", "Coevorden", "Kerkrade"]
 	},
-
 	{        
 	    "name": "Sweden",
 		"leaderName": "Gustavus Adolphus",
@@ -742,6 +741,42 @@
 		"Helsingborg","Härnösand","Vadstena","Lund","Västervik","Enköping","Skövde","Eskilstuna","Luleå","Lidköping",
 		"Södertälje","Mariestad","Östersund","Borås","Sundsvall","Vimmerby","Köping","Mora","Arboga","Växjö","Gränna",
 		"Kiruna","Borgholm","Strängnäs","Sveg"]
+	},
+	{
+		"name": "Celts",
+		"leaderName": "Boudicca",
+		"adjective": ["celtic"],
+		"startBias": ["Forest"],
+		"preferredVictoryType": "Domination",
+
+		"startIntroPart1": "Eternal glory and praise for you, fierce and vengeful Warrior Queen! In a time dominated by men, you not only secured your throne and sovereign rule, but also successfully defied the power of the Roman Empire. After suffering terrible punishment and humiliation at the hand of the Roman invaders, you rallied your people in a bloody and terrifying revolt. Legions fell under your chariot wheels and the city of London burned. While in the end the Romans retained ownership of the isles, you alone made Nero consider withdrawing all troops and leaving Britain forever.",
+		"startIntroPart2": "Oh sleeping lioness, your people desire that you rise and lead them again in the calling that is your namesake. Will you meet their challenge on the open field and lead the Celts to everlasting victory? Will you restore your lands and build an empire to stand the test of time?",
+
+		"declaringWar": "You shall stain this land no longer with your vileness! To arms, my countrymen. We ride to war!",
+		"attacked": "Traitorous man! The Celtic peoples will not stand for such wanton abuse and slander - I shall have your balls!",
+		"defeated": "Vile ruler, know you have won this war in name alone. Your cities lie buried and your troops defeated. I have my own victory.",
+		"introduction": "I am Boudicca, Queen of the Celts. Let no-one underestimate me!",
+		"tradeRequest": "Let us join our forces together and reap the rewards.",
+		"afterPeace": "Well played, fellow warrior.",
+
+		"neutralHello": "God has given good to you.",
+		"neutralLetsHearIt": ["We are all ears…","We are all ears…","Forward."],
+		"neutralNo": ["We must decline.","No.","We refuse."],
+		"neutralYes": ["Okay.","Sure, it shall be so.","Accepted."],
+
+		"hateHello": "Well?",
+		"hateLetsHearIt": ["Forward! Before I change my mind!","And?","Speak!"],
+		"hateNo": ["That's unacceptable!","A thousand times no!","Never!"],
+		"hateYes": ["Eugh! Fine then…","Disgusting! Okay then…","But if I have to…"],
+		
+		"outerColor": [14,62,42],
+		"innerColor": [157,172,255],
+		"uniqueName": "Druidic Lore",
+		"uniques": ["[+1 Faith] per city with [1] or more adjacent [unimproved Forest] tiles", "[+1 Faith] per city with [3] or more adjacent [unimproved Forest] tiles"],
+		"cities": ["Edinburgh","Dublin","Cardiff","Truro","Nantes","Douglas","Glasgow","Cork","Aberystwyth",
+			"Penzance","Rennes","Ramsey","Inverness","Limerick","Swansea","St. Ives","Brest","Peel","Aberdeen",
+			"Belfast","Caernarfon","Newquay","Saint-Nazaire","Castletown","Stirling","Galway","Conwy",
+			"St. Austell","Saint-Malo","Onchan","Dundee","Londonderry","Llanfairpwllgwyngyll","Falmouth","Lorient"]
 	},
 
 

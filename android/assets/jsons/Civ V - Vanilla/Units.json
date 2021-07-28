@@ -288,7 +288,21 @@
 		"-[1] Visibility Range", "Can only attack [City] units"],
 		"promotions":  ["Cover I"],
 		"attackSound": "throw"
-	}
+	},
+	{
+		"name": "Pictish Warrior",
+		"replaces": "Spearman",
+		"uniqueTo": "Celts",
+		"unitType": "Melee",
+		"movement": 2,
+		"strength": 11,
+		"cost": 56,
+		"requiredTech": "Bronze Working",
+		"obsoleteTech": "Civil Service",
+		"upgradesTo": "Pikeman",
+		"uniques": ["No movement cost to pillage","+[20]% Strength in [Foreign Land]","Earn [50]% of killed [Military] unit's [Strength] as [Faith]"],
+		"attackSound": "metalhit"
+	},
 	/*
 	{
 		"name": "Spearman",

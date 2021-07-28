@@ -442,6 +442,8 @@ open class TileInfo {
      * @see <a href="https://github.com/yairm210/Unciv/wiki/uniques#user-content-tilefilter">tileFilter</a>
      */
     fun matchesFilter(filter: String, civInfo: CivilizationInfo? = null): Boolean {
+        if (filter == "unimproved Forest")
+            return "Forest" in terrainFeatures && improvement == null
         if (matchesTerrainFilter(filter, civInfo)) return true
         if (improvement != null && ruleset.tileImprovements[improvement]!!.matchesFilter(filter)) return true
         return false
