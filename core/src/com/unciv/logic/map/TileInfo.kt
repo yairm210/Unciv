@@ -577,7 +577,7 @@ open class TileInfo {
     }
 
     fun toMarkup(viewingCiv: CivilizationInfo?): ArrayList<FormattedLine> {
-        val lineList = ArrayList<FormattedLine>() // more readable than StringBuilder, with same performance for our use-case
+        val lineList = ArrayList<FormattedLine>()
         val isViewableToPlayer = viewingCiv == null || UncivGame.Current.viewEntireMapForDebug
                 || viewingCiv.viewableTiles.contains(this)
 
