@@ -156,14 +156,15 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
 
 
         val friendBonusText = when (otherCiv.cityStateType) {
-            CityStateType.Cultured -> ("Provides [" + (cultureBonus * bonusMultiplier).toString() + "] culture at 30 Influence").tr()
-            CityStateType.Maritime -> "Provides " + (2f * bonusMultiplier).toInt().toString() + " food in capital at 30 Influence".tr()
-            CityStateType.Mercantile -> "Provides [" + happinessBonus + "] happiness at 30 Influence".tr()
-            CityStateType.Militaristic -> "Provides land units every 20 turns at 30 Influence".tr()
+            CityStateType.Cultured -> ("Provides [" + (cultureBonus * bonusMultiplier).toString().removeSuffix(".0") + "] culture when Friends").tr()
+            CityStateType.Maritime -> "Provides [" + (2f * bonusMultiplier).toInt().toString().removeSuffix(".0") + "] food in capital when Friends".tr()
+            CityStateType.Mercantile -> "Provides [" + happinessBonus + "] happiness when Friends".tr()
+            CityStateType.Militaristic -> "Provides land units every 20 turns when Friends".tr()
         }
         val allyBonusText = when (otherCiv.cityStateType) {
-            CityStateType.Cultured -> ("Provides [" + (cultureBonus * bonusMultiplier * 2f).toString() + "] culture when Allies").tr()
-            CityStateType.Maritime -> "Provides " + (3f * bonusMultiplier).toString() + " food in capital and " + (1f * bonusMultiplier).toString() + " in other cities when Allies".tr()
+            CityStateType.Cultured -> ("Provides [" + (cultureBonus * bonusMultiplier * 2f).toString().removeSuffix(".0") + "] culture when Allies").tr()
+            CityStateType.Maritime -> "Provides [" + (3f * bonusMultiplier).toString().removeSuffix(".0") +
+                    "] food in capital and [" + (1f * bonusMultiplier).toString().removeSuffix(".0") + "] in other cities when Allies".tr()
             CityStateType.Mercantile -> "Provides [" + happinessBonus + "] happiness and unique luxury resources when Allies".tr()
             CityStateType.Militaristic -> "Provides land units every 17 turns when Allies".tr()
         }
