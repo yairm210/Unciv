@@ -49,8 +49,8 @@ class Promotion : INamed, ICivilopediaText {
     override fun getCivilopediaTextLines(ruleset: Ruleset): List<FormattedLine> {
         // todo Sort uniques in json where display order not nice
         // + Morale, Rejuvenation
-        // todo Available for Submarine not linked
-        // todo "WaterAircraftCarrier" 
+        // + "Available for Submarine" not linked -> because it's not "submarine" before translation
+        // + "WaterAircraftCarrier" 
 
         val textList = ArrayList<FormattedLine>()
 
@@ -70,7 +70,7 @@ class Promotion : INamed, ICivilopediaText {
             } else {
                 textList += FormattedLine("{Requires}:")
                 filteredPrerequisites.withIndex().forEach {
-                    textList += FormattedLine((if (it.index == 0) "" else "{OR} ") + "{"+it.value.name+"}", link = it.value.makeLink())
+                    textList += FormattedLine(if (it.index == 0) it.value.name else "OR [${it.value.name}]", link = it.value.makeLink())
                 }
             }
         }
