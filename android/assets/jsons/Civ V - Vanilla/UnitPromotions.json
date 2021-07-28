@@ -509,5 +509,9 @@
 	{
 		"name": "Slinger Withdraw", // only for Slinger and subsequent upgrades
 		"effect": "May withdraw before melee ([80]%)"
+	},
+	{
+		"name": "Pictish Courage", // only for Pictish Warrior and subsequent upgrades
+		"uniques": ["No movement cost to pillage","+[20]% Strength in [Foreign Land]"],
 	}
 ]

@@ -769,7 +769,7 @@
 		"hateNo": ["That's unacceptable!","A thousand times no!","Never!"],
 		"hateYes": ["Eugh! Fine then…","Disgusting! Okay then…","But if I have to…"],
 		
-		"outerColor": [14,62,42],
+		"outerColor": [12,75,25],
 		"innerColor": [157,172,255],
 		"uniqueName": "Druidic Lore",
 		"uniques": ["[+1 Faith] per city with [1] or more adjacent [unimproved Forest] tiles", "[+1 Faith] per city with [3] or more adjacent [unimproved Forest] tiles"],
@@ -833,18 +833,6 @@
 		"outerColor": [0, 0, 0],
 		"innerColor": [194,97,255],
 		"cities": ["Antwerp"]
-	},
-	{
-		"name": "Dublin",
-		"adjective": ["Dubliner"],
-		"cityStateType": "Militaristic",
-
-		"declaringWar": "War lingers in our hearts. Why carry on with a false peace?",
-		"attacked": "You gormless radger! You'll dine on your own teeth before you set foot in Ireland!",
-		"defeated": "A lonely wind blows through the highlands today. A dirge for Ireland. Can you hear it?",
-		"outerColor": [0, 0, 0],
-		"innerColor": [211,180,113],
-		"cities": ["Dublin"]
 	},
 	{
 		"name": "Tyre",
@@ -947,8 +935,8 @@
 		"cities": ["Almaty"]
 	},
 	{
-		"name": "Edinburgh",
-		"adjective": ["Edinburghensian"],
+		"name": "Valletta",
+		"adjective": ["maltese"],
 		"cityStateType": "Militaristic",
 
 		"declaringWar": "You shall stain this land no longer with your vileness! To arms, my countrymen - we ride to war!",
@@ -956,7 +944,7 @@
 		"defeated": "Vile ruler, know that you 'won' this war in name only!",
 		"outerColor": [0, 0, 0],
 		"innerColor": [0,102,102],
-		"cities": ["Edinburgh"]
+		"cities": ["Valletta"]
 	},
 	{
 		"name": "Singapore",
