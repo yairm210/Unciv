@@ -203,8 +203,8 @@ class Nation : INamed, ICivilopediaText {
         val textList = ArrayList<FormattedLine>()
 
         if (leaderName.isNotEmpty()) {
-            textList += FormattedLine(getLeaderDisplayName(), centered = true, header = 3)
             textList += FormattedLine(extraImage = "LeaderIcons/$leaderName", imageSize = 200f)
+            textList += FormattedLine(getLeaderDisplayName(), centered = true, header = 3)
             textList += FormattedLine()
         }
 
@@ -296,6 +296,9 @@ class Nation : INamed, ICivilopediaText {
                     if (!unit.getResourceRequirements().containsKey(resource)) {
                         textList += FormattedLine("[$resource] not required", link="Resource/$resource", indent=1)
                     }
+                // This does not use the auto-linking FormattedLine(Unique) for two reasons:
+                // would look a little chaotic as unit uniques unlike most uniques are a HashSet and thus do not preserve order
+                // No .copy() factory on FormattedLine and no FormattedLine(Unique, all other val's) constructor either
                 for (unique in unit.uniques.filterNot { it in originalUnit.uniques })
                     textList += FormattedLine(unique, indent=1)
                 for (unique in originalUnit.uniques.filterNot { it in unit.uniques })
@@ -329,10 +332,9 @@ class Nation : INamed, ICivilopediaText {
             textList += FormattedLine(improvement.name, link="Improvement/${improvement.name}")
             textList += FormattedLine(improvement.clone().toString(), indent=1)   // = (improvement as Stats).toString minus import plus copy overhead
             if (improvement.terrainsCanBeBuiltOn.isNotEmpty()) {
-                var first = true
-                improvement.terrainsCanBeBuiltOn.forEach {
-                    textList += FormattedLine((if (first) "{Can be built on}" else "{or}") + " {$it}", link="Terrain/$it", indent=if (first) 1 else 2)
-                    first = false
+                improvement.terrainsCanBeBuiltOn.withIndex().forEach {
+                    textList += FormattedLine(if (it.index == 0) "{Can be built on} {${it.value}}" else "or [${it.value}]",
+                        link="Terrain/${it.value}", indent=if (it.index == 0) 1 else 2)
                 }
             }
             for (unique in improvement.uniques)
