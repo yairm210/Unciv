@@ -37,7 +37,7 @@ class Promotion : INamed, ICivilopediaText {
             for (i in prerequisites.filter { promotionsForUnitType.any { promotion -> promotion.name == it } }) {
                 prerequisitesString.add(i.tr())
             }
-            textList += "{Requires}: ".tr() + prerequisitesString.joinToString(" {OR} ".tr())
+            textList += "{Requires}: ".tr() + prerequisitesString.joinToString(" OR ".tr())
         }
         return textList.joinToString("\n")
     }
@@ -47,11 +47,6 @@ class Promotion : INamed, ICivilopediaText {
     override fun replacesCivilopediaDescription() = true
 
     override fun getCivilopediaTextLines(ruleset: Ruleset): List<FormattedLine> {
-        // todo Sort uniques in json where display order not nice
-        // + Morale, Rejuvenation
-        // + "Available for Submarine" not linked -> because it's not "submarine" before translation
-        // + "WaterAircraftCarrier" 
-
         val textList = ArrayList<FormattedLine>()
 
         for (unique in uniqueObjects) {
@@ -65,12 +60,12 @@ class Promotion : INamed, ICivilopediaText {
             textList += FormattedLine()
             if (filteredPrerequisites.size == 1) {
                 filteredPrerequisites[0].let {
-                    textList += FormattedLine("{Requires}: {${it.name}}", link = it.makeLink())
+                    textList += FormattedLine("Requires [${it.name}]", link = it.makeLink())
                 }
             } else {
-                textList += FormattedLine("{Requires}:")
-                filteredPrerequisites.withIndex().forEach {
-                    textList += FormattedLine(if (it.index == 0) it.value.name else "OR [${it.value.name}]", link = it.value.makeLink())
+                textList += FormattedLine("Requires at least one of the following:")
+                filteredPrerequisites.forEach {
+                    textList += FormattedLine(it.name, link = it.makeLink())
                 }
             }
         }
