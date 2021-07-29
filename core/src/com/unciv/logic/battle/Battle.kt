@@ -504,9 +504,7 @@ object Battle {
         }
 
         // Instead of postBattleAction() just destroy the unit, all other functions are not relevant
-        if (attacker.unit.hasUnique("Self-destructs when attacking")) {
-            attacker.unit.destroy()
-        }
+        if (attacker.unit.hasUnique("Self-destructs when attacking")) attacker.unit.destroy()
 
         // It's unclear whether using nukes results in a penalty with all civs, or only affected civs.
         // For now I'll make it give a diplomatic penalty to all known civs, but some testing for this would be appreciated

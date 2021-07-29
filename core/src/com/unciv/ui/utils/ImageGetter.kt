@@ -291,6 +291,7 @@ object ImageGetter {
         return circle
     }
     
+    fun religionIconExists(iconName: String) = imageExists("ReligionIcons/$iconName")
     fun getReligionIcon(iconName: String): Image {
         return getImage("ReligionIcons/$iconName")
     }
