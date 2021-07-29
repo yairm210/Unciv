@@ -86,28 +86,10 @@ class CityInfo {
 
         civInfo.cities = civInfo.cities.toMutableList().apply { add(this@CityInfo) }
 
-        if (civInfo.cities.size == 1) cityConstructions.addBuilding(capitalCityIndicator())
-
-        civInfo.policies.tryToAddPolicyBuildings()
-
-        for (unique in civInfo.getMatchingUniques("Gain a free [] []")) {
-            val freeBuildingName = unique.params[0]
-            if (matchesFilter(unique.params[1])) {
-                if (!cityConstructions.isBuilt(freeBuildingName))
-                    cityConstructions.addBuilding(freeBuildingName)
-            }
-        }
-        
-        // Add buildings and pop we get from starting in this era
-        val ruleset = civInfo.gameInfo.ruleSet
         val startingEra = civInfo.gameInfo.gameParameters.startingEra
-        if (startingEra in ruleset.eras) {
-            for (building in ruleset.eras[startingEra]!!.settlerBuildings) {
-                if (ruleset.buildings[building]!!.isBuildable(cityConstructions)) {
-                    cityConstructions.addBuilding(civInfo.getEquivalentBuilding(building).name)
-                }
-            }
-        }
+
+        addStartingBuildings(civInfo, startingEra)
+
 
         expansion.reset()
 
@@ -121,6 +103,7 @@ class CityInfo {
         tile.improvement = null
         tile.improvementInProgress = null
 
+        val ruleset = civInfo.gameInfo.ruleSet
         workedTiles = hashSetOf() //reassign 1st working tile
         if (startingEra in ruleset.eras)
             population.setPopulation(ruleset.eras[startingEra]!!.settlerPopulation)
@@ -128,6 +111,30 @@ class CityInfo {
         cityStats.update()
 
         triggerCitiesSettledNearOtherCiv()
+    }
+
+    private fun addStartingBuildings(civInfo: CivilizationInfo, startingEra: String) {
+        val ruleset = civInfo.gameInfo.ruleSet
+        if (civInfo.cities.size == 1) cityConstructions.addBuilding(capitalCityIndicator())
+
+        // Add buildings and pop we get from starting in this era
+        if (startingEra in ruleset.eras) {
+            for (building in ruleset.eras[startingEra]!!.settlerBuildings) {
+                if (ruleset.buildings[building]!!.isBuildable(cityConstructions)) {
+                    cityConstructions.addBuilding(civInfo.getEquivalentBuilding(building).name)
+                }
+            }
+        }
+
+        civInfo.policies.tryToAddPolicyBuildings()
+
+        for (unique in civInfo.getMatchingUniques("Gain a free [] []")) {
+            val freeBuildingName = unique.params[0]
+            if (matchesFilter(unique.params[1])) {
+                if (!cityConstructions.isBuilt(freeBuildingName))
+                    cityConstructions.addBuilding(freeBuildingName)
+            }
+        }
     }
 
     private fun setNewCityName(civInfo: CivilizationInfo) {
