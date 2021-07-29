@@ -75,7 +75,7 @@ class TradeEvaluation {
                 return when (offer.name) {
                     // Since it will be evaluated twice, once when they evaluate our offer and once when they evaluate theirs
                     Constants.peaceTreaty -> evaluatePeaceCostForThem(civInfo, tradePartner)
-                    Constants.researchAgreement -> evaluateResearchAgreementCostForThem(civInfo, tradePartner)
+                    Constants.researchAgreement -> -offer.amount
                     else -> 1000
                 }
             }
@@ -167,7 +167,7 @@ class TradeEvaluation {
                 return when (offer.name) {
                     // Since it will be evaluated twice, once when they evaluate our offer and once when they evaluate theirs
                     Constants.peaceTreaty -> evaluatePeaceCostForThem(civInfo, tradePartner)
-                    Constants.researchAgreement -> evaluateResearchAgreementCostForThem(civInfo, tradePartner)
+                    Constants.researchAgreement -> -offer.amount
                     else -> 1000
                 }
             }
@@ -254,7 +254,4 @@ class TradeEvaluation {
         }
     }
 
-    fun evaluateResearchAgreementCostForThem(ourCivilization: CivilizationInfo, otherCivilization: CivilizationInfo): Int {
-        return -100 * (ourCivilization.getEraNumber() - otherCivilization.getEraNumber())
-    }
 }
