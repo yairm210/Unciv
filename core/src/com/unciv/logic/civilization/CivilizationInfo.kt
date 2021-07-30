@@ -740,7 +740,7 @@ class CivilizationInfo {
         // line 8681 and below
         var influenceGained = giftAmount.toFloat().pow(1.01f) / 9.8f
         val gameProgressApproximate = min(gameInfo.turns / (400f * gameInfo.gameParameters.gameSpeed.modifier), 1f)
-        influenceGained *= 1 - (2/3) * gameProgressApproximate
+        influenceGained *= 1 - (2/3f) * gameProgressApproximate
         influenceGained *= when (gameInfo.gameParameters.gameSpeed) {
             GameSpeed.Quick -> 1.25f
             GameSpeed.Standard -> 1f
