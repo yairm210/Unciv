@@ -7,6 +7,7 @@ import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.models.ruleset.tile.ResourceType
+import java.lang.Math.pow
 import kotlin.math.abs
 import kotlin.math.min
 import kotlin.math.sqrt
@@ -219,7 +220,7 @@ class TradeEvaluation {
 
             TradeType.City -> {
                 val city = civInfo.cities.first { it.id == offer.name }
-                val capitalcity = civInfo.cities[0]
+                val capitalcity = civInfo.getCapital()
                 val distanceCost = distanceDiscount(civInfo, capitalcity, city)
                 val stats = city.cityStats.currentCityStats
                 val sumOfStats = stats.culture + stats.gold + stats.science + stats.production + stats.happiness + stats.food - distanceCost
@@ -242,7 +243,8 @@ class TradeEvaluation {
     fun distanceDiscount(civInfo: CivilizationInfo, capitalcity: CityInfo, city: CityInfo): Int{
 
         if (abs(capitalcity.location.x - city.location.x) > 500 && abs(capitalcity.location.x - city.location.x) > 500){ // calculates distance between cities
-            return min(35, 5 * civInfo.getEraNumber()) // prevents AI from selling cities for too cheap
+            return min(50, (500 - sqrt((pow(abs(capitalcity.location.x - city.location.x).toDouble(), 2.0).toInt() + pow(abs(capitalcity.location.x - city.location.x).toDouble(), 2.0)) * civInfo.getEraNumber())).toInt())
+            // this code does pythagoras theorem to find the distance between the two cities then subtracts it 500 before finally multiplying it the the number of the era. This number cannot exceed 50
         }
         return 0
     }
