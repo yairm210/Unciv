@@ -12,7 +12,6 @@ import com.unciv.models.ruleset.Era
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.tile.ResourceType
-import com.unciv.models.ruleset.tile.TileResource
 import com.unciv.ui.newgamescreen.GameSetupInfo
 import java.util.*
 import kotlin.collections.ArrayList
@@ -309,13 +308,12 @@ object GameStarter {
                 return civ.getEquivalentUnit(unit).name
             }
 
-            
-            if (civ.isCityState()) {
-                // City states should spawn with one settler only irregardless of era and difficulty
+            // City states & one city challengers should spawn with one settler only regardless of era and difficulty
+            if (civ.isCityState() || civ.playerType==PlayerType.Human && gameInfo.gameParameters.oneCityChallenge) {
                 val startingSettlers = startingUnits.filter { settlerLikeUnits.contains(it) }
 
                 startingUnits.clear()
-                startingUnits.add( startingSettlers.random() )
+                startingUnits.add(startingSettlers.random())
             }
 
             for (unit in startingUnits) {
