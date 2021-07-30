@@ -8,6 +8,7 @@ import com.unciv.logic.map.MapUnit
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.Unique
 import com.unciv.models.stats.INamed
+import com.unciv.models.translations.tr
 import com.unciv.ui.civilopedia.ICivilopediaText
 import com.unciv.ui.civilopedia.FormattedLine
 import com.unciv.ui.utils.Fonts
