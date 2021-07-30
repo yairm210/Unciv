@@ -150,7 +150,7 @@ class TradeEvaluation {
                 val city = tradePartner.cities.first { it.id == offer.name }
                 val stats = city.cityStats.currentCityStats
                 if (civInfo.getHappiness() + city.cityStats.happinessList.values.sum() < 0)
-                    return 0
+                    return 0 // we can't really afford to go into negative happiness because of buying a city
                 val sumOfStats = stats.culture + stats.gold + stats.science + stats.production + stats.happiness + stats.food
                 return sumOfStats.toInt() * 100
             }
