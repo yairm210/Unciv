@@ -60,12 +60,14 @@ data class UnitAction(
  * @param imageGetter   optional lambda to get an Icon - `null` if icon is dependent on outside factors and needs special handling
  * @param key           keyboard binding - can be a [KeyCharAndCode], a [Char], or omitted.
  * @param uncivSound    _default_ sound, can be overridden in UnitAction instantiation
+ * @param translationTemplate   if not null, the actual title is dynamic and this is the template with placeholders that needs a translation
  */
 enum class UnitActionType(
     val value: String,
     val imageGetter: (()-> Actor)?,
     val key: KeyCharAndCode,
-    val uncivSound: UncivSound = UncivSound.Click
+    val uncivSound: UncivSound = UncivSound.Click,
+    val translationTemplate: String? = null
 ) {
     SwapUnits("Swap units",
         { ImageGetter.getImage("OtherIcons/Swap") }, 'y'),
@@ -79,6 +81,9 @@ enum class UnitActionType(
         { ImageGetter.getImage("OtherIcons/Sleep") }, 'f'),
     SleepUntilHealed("Sleep until healed",
         { ImageGetter.getImage("OtherIcons/Sleep") }, 'h'),
+    // Note: Both Fortify actions are a special case. The button starting fortification uses the `value` here,
+    // the button label as shown when the unit is already fortifying is "Fortification".tr() + " nn%".
+    // For now we keep it simple, and the unit test `allUnitActionsHaveTranslation` does not know about the latter.
     Fortify("Fortify",
         null, 'f', UncivSound.Fortify),
     FortifyUntilHealed("Fortify until healed",
@@ -90,7 +95,7 @@ enum class UnitActionType(
     Promote("Promote",
         { imageGetPromote() }, 'o', UncivSound.Promote),
     Upgrade("Upgrade",
-        null, 'u', UncivSound.Upgrade),
+        'u', UncivSound.Upgrade, "Upgrade to [unitType] ([goldCost] gold)"),
     Pillage("Pillage", 
         { ImageGetter.getImage("OtherIcons/Pillage") }, 'p'),
     Paradrop("Paradrop",
@@ -105,9 +110,9 @@ enum class UnitActionType(
         ConstructRoad("Construct road", {ImageGetter.getImprovementIcon("Road")}, 'r'),
     //
     Create("Create",
-        null, 'i', UncivSound.Chimes),
+        'i', UncivSound.Chimes, "Create [improvement]"),
     SpreadReligion("Spread Religion",
-        null, 'g', UncivSound.Choir),
+        'g', UncivSound.Choir, "Spread [religionName]"),
     HurryResearch("Hurry Research",
         { ImageGetter.getUnitIcon("Great Scientist") }, 'g', UncivSound.Chimes),
     StartGoldenAge("Start Golden Age",
@@ -133,6 +138,8 @@ enum class UnitActionType(
             : this(value, imageGetter, KeyCharAndCode(key), uncivSound)
     constructor(value: String, imageGetter: (() -> Actor)?, uncivSound: UncivSound = UncivSound.Click)
             : this(value, imageGetter, KeyCharAndCode.UNKNOWN, uncivSound)
+    constructor(value: String, key: Char, uncivSound: UncivSound = UncivSound.Click, translationTemplate: String)
+            : this(value, null, KeyCharAndCode(key), uncivSound, translationTemplate)
 
     companion object {
         // readability factories

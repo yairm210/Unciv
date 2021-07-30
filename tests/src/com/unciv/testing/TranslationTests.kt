@@ -48,10 +48,7 @@ class TranslationTests {
     fun allUnitActionsHaveTranslation() {
         val actions: MutableSet<String> = HashSet()
         for (action in UnitActionType.values()) {
-            if (action == UnitActionType.Upgrade)
-                actions.add("Upgrade to [unitType] ([goldCost] gold)")
-            else
-                actions.add(action.value)
+            actions.add(action.translationTemplate ?: action.value)
         }
         val allUnitActionsHaveTranslation = allStringAreTranslated(actions)
         Assert.assertTrue("This test will only pass when there is a translation for all unit actions",
