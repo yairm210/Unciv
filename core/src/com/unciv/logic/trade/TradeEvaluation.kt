@@ -3,9 +3,11 @@ package com.unciv.logic.trade
 import com.unciv.Constants
 import com.unciv.logic.automation.Automation
 import com.unciv.logic.automation.ThreatLevel
+import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.models.ruleset.tile.ResourceType
+import kotlin.math.abs
 import kotlin.math.min
 import kotlin.math.sqrt
 
@@ -148,7 +150,7 @@ class TradeEvaluation {
                 val city = tradePartner.cities.first { it.id == offer.name }
                 val stats = city.cityStats.currentCityStats
                 if (civInfo.getHappiness() + city.cityStats.happinessList.values.sum() < 0)
-                    return 0 // we can't really afford to go into negative happiness because of buying a city
+                    return 0
                 val sumOfStats = stats.culture + stats.gold + stats.science + stats.production + stats.happiness + stats.food
                 return sumOfStats.toInt() * 100
             }
@@ -217,8 +219,10 @@ class TradeEvaluation {
 
             TradeType.City -> {
                 val city = civInfo.cities.first { it.id == offer.name }
+                val capitalcity = civInfo.cities[0]
+                val distanceCost = distanceDiscount(civInfo, capitalcity, city)
                 val stats = city.cityStats.currentCityStats
-                val sumOfStats = stats.culture + stats.gold + stats.science + stats.production + stats.happiness + stats.food
+                val sumOfStats = stats.culture + stats.gold + stats.science + stats.production + stats.happiness + stats.food - distanceCost
                 return sumOfStats.toInt() * 100
             }
             TradeType.Agreement -> {
@@ -234,6 +238,13 @@ class TradeEvaluation {
                 throw Exception("Invalid agreement type!")
             }
         }
+    }
+    fun distanceDiscount(civInfo: CivilizationInfo, capitalcity: CityInfo, city: CityInfo): Int{
+
+        if (abs(capitalcity.location.x - city.location.x) > 500 && abs(capitalcity.location.x - city.location.x) > 500){ // calculates distance between cities
+            return min(35, 5 * civInfo.getEraNumber()) // prevents AI from selling cities for too cheap
+        }
+        return 0
     }
 
     fun evaluatePeaceCostForThem(ourCivilization: CivilizationInfo, otherCivilization: CivilizationInfo): Int {
