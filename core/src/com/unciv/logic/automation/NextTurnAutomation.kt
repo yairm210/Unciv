@@ -345,7 +345,7 @@ object NextTurnAutomation {
             if (civInfo.isAtWarWith(otherCiv)) continue
             val diplomacy = civInfo.getDiplomacyManager(otherCiv)
 
-            val unitsInBorder = otherCiv.getCivUnits().count { !it.type.isCivilian() && it.getTile().getOwner() == civInfo }
+            val unitsInBorder = otherCiv.getCivUnits().count { !it.isCivilian() && it.getTile().getOwner() == civInfo }
             if (unitsInBorder > 0 && diplomacy.relationshipLevel() < RelationshipLevel.Friend) {
                 diplomacy.influence -= 10f
                 if (!diplomacy.hasFlag(DiplomacyFlags.BorderConflict)) {
@@ -361,7 +361,7 @@ object NextTurnAutomation {
         if (civInfo.cities.isEmpty() || civInfo.diplomacy.isEmpty()) return
         if (civInfo.isAtWar() || civInfo.getHappiness() <= 0) return
 
-        val ourMilitaryUnits = civInfo.getCivUnits().filter { !it.type.isCivilian() }.count()
+        val ourMilitaryUnits = civInfo.getCivUnits().filter { !it.isCivilian() }.count()
         if (ourMilitaryUnits < civInfo.cities.size) return
 
         //evaluate war
@@ -510,8 +510,8 @@ object NextTurnAutomation {
             }
 
             when {
-                unit.type.isRanged() -> rangedUnits.add(unit)
-                unit.type.isMelee() -> meleeUnits.add(unit)
+                unit.baseUnit.isRanged() -> rangedUnits.add(unit)
+                unit.baseUnit.isMelee() -> meleeUnits.add(unit)
                 unit.hasUnique("Bonus for units in 2 tile radius 15%")
                 -> generals.add(unit) //generals move after military units
                 else -> civilianUnits.add(unit)

@@ -18,8 +18,6 @@ class IdleUnitButton (
 
     val image = ImageGetter.getImage("OtherIcons/BackArrow")
 
-    fun hasIdleUnits() = unitTable.worldScreen.viewingCiv.getIdleUnits().any()
-
     init {
         val imageSize = 25f
         if(!previous) {

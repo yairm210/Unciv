@@ -158,6 +158,8 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Leather](https://thenounproject.com/term/leather/16499/) By Alen Krummenacher for Furs
 * [Gem](https://thenounproject.com/term/gem/948920/) By Lluisa Iborra
 * [Joss Stick](https://thenounproject.com/search/?q=incense&i=583033) By Hea Poh Lin for Incense
+* [Pottery](https://thenounproject.com/term/pottery/2317144/) By Laymik, UA for Porcelain
+* [Jewelry](https://thenounproject.com/term/jewelry/3688098/) By Shocho, IN
 
 ## Improvements
 

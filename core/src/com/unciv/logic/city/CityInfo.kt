@@ -87,28 +87,10 @@ class CityInfo {
 
         civInfo.cities = civInfo.cities.toMutableList().apply { add(this@CityInfo) }
 
-        if (civInfo.cities.size == 1) cityConstructions.addBuilding(capitalCityIndicator())
-
-        civInfo.policies.tryToAddPolicyBuildings()
-
-        for (unique in civInfo.getMatchingUniques("Gain a free [] []")) {
-            val freeBuildingName = unique.params[0]
-            if (matchesFilter(unique.params[1])) {
-                if (!cityConstructions.isBuilt(freeBuildingName))
-                    cityConstructions.addBuilding(freeBuildingName)
-            }
-        }
-        
-        // Add buildings and pop we get from starting in this era
-        val ruleset = civInfo.gameInfo.ruleSet
         val startingEra = civInfo.gameInfo.gameParameters.startingEra
-        if (startingEra in ruleset.eras) {
-            for (building in ruleset.eras[startingEra]!!.settlerBuildings) {
-                if (ruleset.buildings[building]!!.isBuildable(cityConstructions)) {
-                    cityConstructions.addBuilding(civInfo.getEquivalentBuilding(building).name)
-                }
-            }
-        }
+
+        addStartingBuildings(civInfo, startingEra)
+
 
         expansion.reset()
 
@@ -122,6 +104,7 @@ class CityInfo {
         tile.improvement = null
         tile.improvementInProgress = null
 
+        val ruleset = civInfo.gameInfo.ruleSet
         workedTiles = hashSetOf() //reassign 1st working tile
         if (startingEra in ruleset.eras)
             population.setPopulation(ruleset.eras[startingEra]!!.settlerPopulation)
@@ -129,6 +112,30 @@ class CityInfo {
         cityStats.update()
 
         triggerCitiesSettledNearOtherCiv()
+    }
+
+    private fun addStartingBuildings(civInfo: CivilizationInfo, startingEra: String) {
+        val ruleset = civInfo.gameInfo.ruleSet
+        if (civInfo.cities.size == 1) cityConstructions.addBuilding(capitalCityIndicator())
+
+        // Add buildings and pop we get from starting in this era
+        if (startingEra in ruleset.eras) {
+            for (building in ruleset.eras[startingEra]!!.settlerBuildings) {
+                if (ruleset.buildings[building]!!.isBuildable(cityConstructions)) {
+                    cityConstructions.addBuilding(civInfo.getEquivalentBuilding(building).name)
+                }
+            }
+        }
+
+        civInfo.policies.tryToAddPolicyBuildings()
+
+        for (unique in civInfo.getMatchingUniques("Gain a free [] []")) {
+            val freeBuildingName = unique.params[0]
+            if (matchesFilter(unique.params[1])) {
+                if (!cityConstructions.isBuilt(freeBuildingName))
+                    cityConstructions.addBuilding(freeBuildingName)
+            }
+        }
     }
 
     private fun setNewCityName(civInfo: CivilizationInfo) {
@@ -262,6 +269,9 @@ class CityInfo {
                 cityResources.add(resource, unique.params[0].toInt()
                         * civInfo.getResourceModifier(resource), "Tiles")
             }
+        }
+        if (civInfo.isCityState() && isCapital() && civInfo.cityStateResource != null) {
+            cityResources.add(getRuleset().tileResources[civInfo.cityStateResource]!!, 1, "Mercantile City-State")
         }
 
         return cityResources
@@ -492,7 +502,7 @@ class CityInfo {
 
         // Edge case! What if a water unit is in a city, and you raze the city?
         // Well, the water unit has to return to the water!
-        for (unit in getCenterTile().getUnits()) {
+        for (unit in getCenterTile().getUnits().toList()) {
             if (!unit.movement.canPassThrough(getCenterTile()))
                 unit.movement.teleportToClosestMoveableTile()
         }
@@ -514,11 +524,11 @@ class CityInfo {
 
     internal fun tryUpdateRoadStatus() {
         if (getCenterTile().roadStatus == RoadStatus.None) {
-            val roadImprovement = getRuleset().tileImprovements["Road"]
+            val roadImprovement = RoadStatus.Road.improvement(getRuleset())
             if (roadImprovement != null && roadImprovement.techRequired in civInfo.tech.techsResearched)
                 getCenterTile().roadStatus = RoadStatus.Road
         } else if (getCenterTile().roadStatus != RoadStatus.Railroad) {
-            val railroadImprovement = getRuleset().tileImprovements["Railroad"]
+            val railroadImprovement = RoadStatus.Railroad.improvement(getRuleset())
             if (railroadImprovement != null && railroadImprovement.techRequired in civInfo.tech.techsResearched)
                 getCenterTile().roadStatus = RoadStatus.Railroad
         }
@@ -559,9 +569,9 @@ class CityInfo {
     fun canPurchase(construction: INonPerpetualConstruction): Boolean {
         if (construction is BaseUnit) {
             val tile = getCenterTile()
-            if (construction.unitType.isCivilian())
+            if (construction.isCivilian())
                 return tile.civilianUnit == null
-            if (construction.unitType.isAirUnit() || construction.unitType.isMissile())
+            if (construction.movesLikeAirUnits())
                 return tile.airUnits.filter { !it.isTransported }.size < 6
             else return tile.militaryUnit == null
         }

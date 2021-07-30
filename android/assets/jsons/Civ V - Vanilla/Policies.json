@@ -166,7 +166,7 @@
 			},
 			{
 				"name": "Free Religion",
-				"uniques": ["[+1 Culture] from every [Monument]", "[+1 Culture] from every [Temple]", "[+1 Culture] from every [Monastery]",
+				"uniques": ["[+1 Culture] from every [Monument]", "[+1 Culture] from every [Amphitheater]", "[+1 Culture] from every [Monastery]",
 					"Free Social Policy"],
 				"requires": ["Mandate Of Heaven","Reformation"],
 				"row": 3,
@@ -402,7 +402,7 @@
 			},
 			{
 				"name": "Total War",
-				"uniques": ["+[25]% Production when constructing [Military] units [in all cities]", "New [Military] units start with [15] Experience"],
+				"uniques": ["+[25]% Production when constructing [Military] units [in all cities]", "New [Military] units start with [15] Experience [in all cities]"],
 				"requires": ["Police State","Fascism"],
 				"row": 3,
 				"column": 4

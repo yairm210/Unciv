@@ -277,9 +277,9 @@ class Ruleset {
         for (unit in units.values) {
             if (unit.upgradesTo == unit.name)
                 lines += "${unit.name} upgrades to itself!"
-            if (!unit.unitType.isCivilian() && unit.strength == 0)
+            if (!unit.isCivilian() && unit.strength == 0)
                 lines += "${unit.name} is a military unit but has no assigned strength!"
-            if (unit.unitType.isRanged() && unit.rangedStrength == 0 && "Cannot attack" !in unit.uniques)
+            if (unit.isRanged() && unit.rangedStrength == 0 && "Cannot attack" !in unit.uniques)
                 lines += "${unit.name} is a ranged unit but has no assigned rangedStrength!"
         }
 
@@ -388,13 +388,17 @@ class Ruleset {
                 lines += "Unknown era ${tech.era()} referenced in column of tech ${tech.name}"
         }
 
+        if(eras.isEmpty()){
+            lines += "Eras file is empty! This mod will be unusable in the near future!"
+            warningCount++
+        }
         for (era in eras) {
             for (wonder in era.value.startingObsoleteWonders)
                 if (wonder !in buildings)
-                    lines += "Nonexistent wonder ${wonder} obsoleted when starting in ${era.key}!"
+                    lines += "Nonexistent wonder $wonder obsoleted when starting in ${era.key}!"
             for (building in era.value.settlerBuildings)
                 if (building !in buildings)
-                    lines += "Nonexistent building ${building} built by settlers when starting in ${era.key}"
+                    lines += "Nonexistent building $building built by settlers when starting in ${era.key}"
             if (era.value.startingMilitaryUnit !in units)
                 lines += "Nonexistent unit ${era.value.startingMilitaryUnit} marked as starting unit when starting in ${era.key}"
             if (era.value.researchAgreementCost < 0 || era.value.startingSettlerCount < 0 || era.value.startingWorkerCount < 0 || era.value.startingMilitaryUnitCount < 0 || era.value.startingGold < 0 || era.value.startingCulture < 0)

@@ -213,7 +213,7 @@ object TranslationFileWriter {
                 if (parameters.any()) {
                     for (parameter in parameters) {
                         var parameterName = when {
-                            parameter.toIntOrNull() != null -> "amount"
+                            parameter.toFloatOrNull() != null -> "amount"
                             Stat.values().any { it.name == parameter } -> "stat"
                             RulesetCache.getBaseRuleset().terrains.containsKey(parameter) 
                                     || parameter == "Friendly Land"

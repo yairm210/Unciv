@@ -14,7 +14,6 @@ import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.ruleset.unit.UnitType
 import java.text.DecimalFormat
-import kotlin.math.pow
 import kotlin.random.Random
 
 /**
@@ -90,11 +89,14 @@ class MapUnit {
 
     /**
      * Name which should be displayed in UI
+     * 
+     * Note this is translated after being returned from this function, so let's pay
+     * attention to combined names (renamed units, religion).
      */
     fun displayName(): String {
         val name = if (instanceName == null) name
-                   else "$instanceName (${name})"
-        return if (religion != null && maxReligionSpreads() > 0) "$name ($religion)"
+                   else "$instanceName ({${name}})"
+        return if (religion != null && maxReligionSpreads() > 0) "[$name] ([$religion])"
                else name
     }
 
@@ -189,6 +191,8 @@ class MapUnit {
 
         tempUniques = uniques
 
+        //todo: parameterize [terrainFilter] in 5 to 7 of the following:
+
         // "All tiles costs 1" obsoleted in 3.11.18
         allTilesCosts1 = hasUnique("All tiles cost 1 movement") || hasUnique("All tiles costs 1")
         canPassThroughImpassableTiles = hasUnique("Can pass through impassable tiles")
@@ -221,7 +225,7 @@ class MapUnit {
         if (hasUnique("Limited Visibility")) visibilityRange -= 1
 
         // Deprecated since 3.15.1
-            if (civInfo.hasUnique("+1 Sight for all land military units") && type.isMilitary() && type.isLandUnit())
+            if (civInfo.hasUnique("+1 Sight for all land military units") && baseUnit.isMilitary() && type.isLandUnit())
                 visibilityRange += 1
         //
 
@@ -249,16 +253,18 @@ class MapUnit {
     }
 
     fun isFortified() = action?.startsWith("Fortify") == true
-    
+
     fun isFortifyingUntilHealed() = isFortified() && action?.endsWith("until healed") == true
 
     fun isSleeping() = action?.startsWith("Sleep") == true
-    
+
     fun isSleepingUntilHealed() = isSleeping() && action?.endsWith("until healed") == true
 
     fun isMoving() = action?.startsWith("moveTo") == true
     
     fun isAutomaticallyBuildingImprovements() = action != null && action == Constants.unitActionAutomation
+
+    fun isCivilian() = baseUnit.isCivilian()
 
     fun getFortificationTurns(): Int {
         if (!isFortified()) return 0
@@ -275,7 +281,7 @@ class MapUnit {
             && canBuildImprovement(getTile().getTileImprovementInProgress()!!)) 
                 return false
         // unique "Can construct roads" deprecated since 3.15.5
-            if (hasUnique("Can construct roads") && currentTile.improvementInProgress == "Road") return false
+            if (hasUnique("Can construct roads") && currentTile.improvementInProgress == RoadStatus.Road.name) return false
         //
         if (isFortified()) return false
         if (action == Constants.unitActionExplore || isSleeping()
@@ -299,7 +305,7 @@ class MapUnit {
     }
 
     fun getRange(): Int {
-        if (type.isMelee()) return 1
+        if (baseUnit.isMelee()) return 1
         var range = baseUnit().range
         // Deprecated since 3.15.6
             if (hasUnique("+1 Range")) range++
@@ -368,9 +374,8 @@ class MapUnit {
 
     fun canFortify(): Boolean {
         if (type.isWaterUnit()) return false
-        if (type.isCivilian()) return false
-        if (type.isAirUnit()) return false
-        if (type.isMissile()) return false
+        if (isCivilian()) return false
+        if (baseUnit.movesLikeAirUnits()) return false
         if (isEmbarked()) return false
         if (hasUnique("No defensive terrain bonus")) return false
         if (isFortified()) return false
@@ -393,7 +398,7 @@ class MapUnit {
         return getMatchingUniques("All adjacent units heal [] HP when healing").sumBy { it.params[0].toInt() }
     }
 
-    fun canGarrison() = type.isMilitary() && type.isLandUnit()
+    fun canGarrison() = baseUnit.isMilitary() && type.isLandUnit()
 
     fun isGreatPerson() = baseUnit.isGreatPerson()
 
@@ -459,6 +464,7 @@ class MapUnit {
 
         if (civInfo.isCurrentPlayer())
             UncivGame.Current.settings.addCompletedTutorialTask("Construct an improvement")
+
         when {
             tile.improvementInProgress!!.startsWith("Remove ") -> {
                 val removedFeatureName = tile.improvementInProgress!!.removePrefix("Remove ")
@@ -473,9 +479,9 @@ class MapUnit {
                     tile.improvement = null 
                     if (tile.resource != null) civInfo.updateDetailedCivResources() // unlikely, but maybe a mod makes a resource improvement dependent on a terrain feature
                 }
-                if (tile.improvementInProgress == "Remove Road" || tile.improvementInProgress == "Remove Railroad") {
+                if (RoadStatus.values().any { tile.improvementInProgress == it.removeAction })
                     tile.roadStatus = RoadStatus.None
-                } else {
+                else {
                     val removedFeatureObject = tile.ruleset.terrains[removedFeatureName]
                     if (removedFeatureObject != null && removedFeatureObject.uniques
                             .contains("Provides a one-time Production bonus to the closest city when cut down")
@@ -485,8 +491,8 @@ class MapUnit {
                     tile.terrainFeatures.remove(removedFeatureName)
                 }
             }
-            tile.improvementInProgress == "Road" -> tile.roadStatus = RoadStatus.Road
-            tile.improvementInProgress == "Railroad" -> tile.roadStatus = RoadStatus.Railroad
+            tile.improvementInProgress == RoadStatus.Road.name -> tile.roadStatus = RoadStatus.Road
+            tile.improvementInProgress == RoadStatus.Railroad.name -> tile.roadStatus = RoadStatus.Railroad
             else -> {
                 tile.improvement = tile.improvementInProgress
                 if (tile.resource != null) civInfo.updateDetailedCivResources()
@@ -631,7 +637,7 @@ class MapUnit {
 
         // Wake sleeping units if there's an enemy in vision range:
         // Military units always but civilians only if not protected.
-        if (isSleeping() && (!type.isCivilian() || currentTile.militaryUnit == null) &&
+        if (isSleeping() && (baseUnit.isMilitary() || currentTile.militaryUnit == null) &&
             this.viewableTiles.any {
                 it.militaryUnit != null && it.militaryUnit!!.civInfo.isAtWarWith(civInfo)
             }
@@ -676,7 +682,8 @@ class MapUnit {
         if (tile.improvement == Constants.barbarianEncampment && !civInfo.isBarbarian())
             clearEncampment(tile)
 
-        if (!hasUnique("All healing effects doubled") && type.isLandUnit() && type.isMilitary()) {
+        if (!hasUnique("All healing effects doubled") && type.isLandUnit() && baseUnit.isMilitary()) {
+            //todo: Grants [promotion] to adjacent [unitFilter] units for the rest of the game
             val gainDoubleHealPromotion = tile.neighbors
                 .any { it.hasUnique("Grants Rejuvenation (all healing effects doubled) to adjacent military land units for the rest of the game") }
             if (gainDoubleHealPromotion && civInfo.gameInfo.ruleSet.unitPromotions.containsKey("Rejuvenation"))
@@ -690,13 +697,12 @@ class MapUnit {
         when {
             !movement.canMoveTo(tile) ->
                 throw Exception("I can't go there!")
-            type.isAirUnit() || type.isMissile() -> tile.airUnits.add(this)
-            type.isCivilian() -> tile.civilianUnit = this
+            baseUnit.movesLikeAirUnits() -> tile.airUnits.add(this)
+            isCivilian() -> tile.civilianUnit = this
             else -> tile.militaryUnit = this
         }
         // this check is here in order to not load the fresh built unit into carrier right after the build
-        isTransported = !tile.isCityCenter() &&
-                (type.isAirUnit() || type.isMissile()) // not moving civilians
+        isTransported = !tile.isCityCenter() && baseUnit.movesLikeAirUnits()  // not moving civilians
         moveThroughTile(tile)
     }
 
@@ -813,7 +819,7 @@ class MapUnit {
                 }
             }
 
-        if (!type.isCivilian())
+        if (!isCivilian())
             actions.add {
                 promotions.XP += 10
                 civInfo.addNotification(
@@ -878,7 +884,7 @@ class MapUnit {
 
     fun isTransportTypeOf(mapUnit: MapUnit): Boolean {
         // Currently, only missiles and airplanes can be carried
-        if (!mapUnit.type.isMissile() && !mapUnit.type.isAirUnit()) return false
+        if (!mapUnit.baseUnit.movesLikeAirUnits()) return false
         return getMatchingUniques("Can carry [] [] units").any { mapUnit.matchesFilter(it.params[1]) }
     }
     
@@ -938,13 +944,12 @@ class MapUnit {
     private fun getCitadelDamage() {
         // Check for Citadel damage - note: 'Damage does not stack with other Citadels'
         val citadelTile = currentTile.neighbors
-            .filter {
+            .firstOrNull {
                 it.getOwner() != null && civInfo.isAtWarWith(it.getOwner()!!) &&
                         with(it.getTileImprovement()) {
                             this != null && this.hasUnique("Deal 30 damage to adjacent enemy units")
                         }
             }
-            .firstOrNull()
 
         if (citadelTile != null) {
             health -= 30
