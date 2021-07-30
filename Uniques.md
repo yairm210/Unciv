@@ -54,7 +54,7 @@ Most uniques are *ongoing* - they describe something continuous. Some, however, 
 Parameters come in various types, and will be addressed as such inside the [square brackets].
 
 - amount - This indicates a whole, (usually) positive number, like "2" or "13".
-- unitName, buildingName, improvementName etc - Rather self explanatory. Examples: "Warrior", "Library', and "Mine", accordingly.
+- unitName, buildingName, improvementName etc - Rather self explanatory. Examples: "Warrior", "Library", and "Mine", accordingly.
 - stat - This is one of the 7 major stats in the game - "Gold", "Science", "Production", "Food", "Happiness", "Culture" and "Faith". Note that the stat names need to be capitalized!
 - stats, tileFilter, unitFilter, cityFilter, constructionFilter - these are more complex and are addressed individually
 
@@ -62,31 +62,42 @@ Parameters come in various types, and will be addressed as such inside the [squa
 
 This indicates a text comprised of specific stats and is slightly more complex.
 
-Each stats is comprised of several stat changes, each in the form of "+{amount} {stat}", where 'stat' is one of the size major stats mentioned above.
+Each stats is comprised of several stat changes, each in the form of "+{amount} {stat}", where 'stat' is one of the seven major stats mentioned above.
 For example: "+1 Science".
 
 These can be strung together with ", " between them, for example: "+2 Production, +3 Food".
 
 A full example would be, for the "[stats] from every [buildingName]" unique:
 
-"[+1 Culture, +1 Gold] from every [Baracks]"
+"[+1 Culture, +1 Gold] from every [Barracks]"
 
 #### tileFilter
 
-TileFilters are split up into two parts: terrainFilters and improvementFilters. TerrainFilters only check if the tile itself has certain charactaristics, while the improvementFilters only checks the improvement on a tile. Using the tileFilter itself will check both of these.
+TileFilters are split up into two parts: terrainFilters and improvementFilters. TerrainFilters only check if the tile itself has certain characteristics, while the improvementFilters only checks the improvement on a tile. Using the tileFilter itself will check both of these.
 
 terrainFilters allow us to specify tiles according to a number of different aspects:
 
-- Base terrain
-- Terrain features
-- Base terrain uniques
-- Terrain feature uniques
-- Resource
-- "Water", "Land"
-- "River" (as in all 'river on tile' contexts, it means 'adjacent to a river on at least on side')
-- Natural wonder
-- "Friendly Land" - land belonging to you, or other civs with open borders to you
-- "Foreign Land" - any land that isn't friendly land
+- A filter names a specific json attribute (by name):
+    - Base terrain
+    - Terrain features
+    - Base terrain uniques
+    - Terrain feature uniques
+    - Resource
+    - Natural wonder
+- Or the filter is a constant string choosing a derived test:
+    - "All"
+    - "Water", "Land"
+    - "Coastal" (at least one direct neighbor is a coast)
+    - "River" (as in all 'river on tile' contexts, it means 'adjacent to a river on at least one side')
+    - "Open terrain", "Rough terrain" (note all terrain not having the rough unique is counted as open)
+    - "Friendly Land" - land belonging to you, or other civs with open borders to you
+    - "Foreign Land" - any land that isn't friendly land
+    - "Water resource", "Strategic resource", "Luxury resource", "Bonus resource"
+    - "Natural Wonder" (as opposed to above which means testing for a specific Natural Wonder by name, this tests for any of them)
+
+Please note all of these are _case-sensitive_.
+
+Also note: Resource filters depend on whether a viewing civ is known in the context where the filter runs. Water and specific tests require a viewing civ, and if the resource needs a tech to be visible, that tech to be researched by the viewing civ. The other resource category tests can succeed without a known viewing civ only for resources not requiring any tech. So - test your mod!
 
 So for instance, the unique "[stats] from [tileFilter] tiles [cityFilter]" can match several cases:
 - "[+2 Food] from [Lakes] tiles [in this city]"
@@ -98,10 +109,10 @@ Please note that using resources is most use cases, but not in combat ones.
 This is due to the fact that resources can be visible to some civs while invisible to others - so if you're attacking with a +10% combat bonus from Coal, while the enemy can't see coal, it could get weird.
 
 improvementFilters only check for the improvements on a tile. The following are implemented:
-- improvement name
+- improvement name (Note that "Road" and "Railroad" _do_ work as improvementFilters, but not as tileFilters at the moment.)
 - "All"
 - "Great Improvements", "Great"
-- "All Road" - for Rodas & Railroads
+- "All Road" - for Roads & Railroads
 
 #### unitFilter
 
@@ -465,6 +476,7 @@ Follower uniques are uniques applied to each city following a religion which inc
 ### Civilian
 
 "Can build [improvementFilter] improvements on tiles"
+    - Note this can also take a terrainFilter
 
 "May create improvements on water resources"
 
