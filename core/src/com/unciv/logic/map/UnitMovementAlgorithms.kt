@@ -546,7 +546,8 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
 
 class PathsToTilesWithinTurn : LinkedHashMap<TileInfo, UnitMovementAlgorithms.ParentTileAndTotalDistance>() {
     fun getPathToTile(tile: TileInfo): List<TileInfo> {
-        if (!containsKey(tile)) throw Exception("Can't reach this tile!")
+        if (!containsKey(tile))
+            throw Exception("Can't reach this tile!")
         val reversePathList = ArrayList<TileInfo>()
         var currentTile = tile
         while (get(currentTile)!!.parentTile != currentTile) {
