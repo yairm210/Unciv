@@ -657,7 +657,7 @@ class CivilizationInfo {
             Stat.Culture -> policies.storedCulture
             Stat.Science -> {
                 if (tech.currentTechnology() == null) 0
-                else tech.scienceSpentOnTech(tech.currentTechnology()!!.name)
+                else tech.remainingScienceToTech(tech.currentTechnology()!!.name)
             }
             Stat.Gold -> gold
             Stat.Faith -> religionManager.storedFaith
