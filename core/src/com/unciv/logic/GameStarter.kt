@@ -14,7 +14,6 @@ import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.ui.newgamescreen.GameSetupInfo
 import java.util.*
-import kotlin.NoSuchElementException
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 import kotlin.math.max
@@ -167,9 +166,24 @@ object GameStarter {
         availableCityStatesNames.addAll(ruleset.nations.filter { it.value.isCityState() }.keys
                 .shuffled().sortedByDescending { it in cityStatesWithStartingLocations })
 
+        val unusedMercantileResources = ruleset.tileResources.values.filter { it.unique == "Can only be created by Mercantile City-States" }.toMutableList()
+
         for (cityStateName in availableCityStatesNames.take(newGameParameters.numberOfCityStates)) {
             val civ = CivilizationInfo(cityStateName)
             civ.cityStatePersonality = CityStatePersonality.values().random()
+            if (ruleset.nations[cityStateName]?.cityStateType == CityStateType.Mercantile) {
+                if (!ruleset.tileResources.values.any { it.unique == "Can only be created by Mercantile City-States" }) {
+                    civ.cityStateResource = null
+                } else if (unusedMercantileResources.isNotEmpty()) {
+                    // First pick an unused luxury if possible
+                    val unusedResource = unusedMercantileResources.random()
+                    civ.cityStateResource = unusedResource.name
+                    unusedMercantileResources.remove(unusedResource)
+                } else {
+                    // Then random
+                    civ.cityStateResource = ruleset.tileResources.values.filter { it.unique == "Can only be created by Mercantile City-States" }.random().name
+                }
+            }
             gameInfo.civilizations.add(civ)
             for (tech in ruleset.technologies.values.filter { it.uniques.contains("Starting tech") })
                 civ.tech.techsResearched.add(tech.name) // can't be .addTechnology because the civInfo isn't assigned yet
@@ -240,10 +254,10 @@ object GameStarter {
                     else -> gameInfo.getDifficulty().aiCityStateStartingUnits
                 }).toMutableList()
 
-                val warriorEquivalent = ruleSet.units
-                    .filter { it.value.unitType.isLandUnit() && it.value.unitType.isMilitary() && it.value.isBuildable(civ) }
-                    .maxByOrNull {max(it.value.strength, it.value.rangedStrength)}
-                    ?.key
+                val warriorEquivalent = ruleSet.units.values
+                    .filter { it.unitType.isLandUnit() && it.isMilitary() && it.isBuildable(civ) }
+                    .maxByOrNull {max(it.strength, it.rangedStrength)}
+                    ?.name
                 
                 for (unit in startingUnits) {
                     val unitToAdd = if (unit == "Warrior") warriorEquivalent else unit 
@@ -277,7 +291,7 @@ object GameStarter {
                     val buildableSettlerLikeUnits = 
                         settlerLikeUnits.filter {
                             it.value.isBuildable(civ)
-                            && it.value.unitType.isCivilian()
+                            && it.value.isCivilian()
                         }
                     if (buildableSettlerLikeUnits.isEmpty()) return null // No settlers in this mod
                     return civ.getEquivalentUnit(buildableSettlerLikeUnits.keys.random()).name
@@ -286,7 +300,7 @@ object GameStarter {
                     val buildableWorkerLikeUnits = ruleSet.units.filter {
                         it.value.uniqueObjects.any { it.placeholderText == Constants.canBuildImprovements }
                                 && it.value.isBuildable(civ)
-                                && it.value.unitType.isCivilian()
+                                && it.value.isCivilian()
                     }
                     if (buildableWorkerLikeUnits.isEmpty()) return null // No workers in this mod
                     return civ.getEquivalentUnit(buildableWorkerLikeUnits.keys.random()).name
@@ -294,13 +308,12 @@ object GameStarter {
                 return civ.getEquivalentUnit(unit).name
             }
 
-            
-            if (civ.isCityState()) {
-                // City states should spawn with one settler only irregardless of era and difficulty
+            // City states & one city challengers should spawn with one settler only regardless of era and difficulty
+            if (civ.isCityState() || civ.playerType==PlayerType.Human && gameInfo.gameParameters.oneCityChallenge) {
                 val startingSettlers = startingUnits.filter { settlerLikeUnits.contains(it) }
 
                 startingUnits.clear()
-                startingUnits.add( startingSettlers.random() )
+                startingUnits.add(startingSettlers.random())
             }
 
             for (unit in startingUnits) {

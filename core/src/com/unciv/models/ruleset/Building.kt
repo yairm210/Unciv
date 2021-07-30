@@ -55,14 +55,16 @@ class Building : NamedStats(), IConstruction, ICivilopediaText {
     private var requiredResource: String? = null
 
     /** City can only be built if one of these resources is nearby - it must be improved! */
-    private var requiredNearbyImprovedResources: List<String>? = null
+    var requiredNearbyImprovedResources: List<String>? = null
     private var cannotBeBuiltWith: String? = null
     var cityStrength = 0
     var cityHealth = 0
+    @Deprecated("As of 3.15.16, replace with 'New [Military] units start with [15] Experience [in this city]'")
     var xpForNewUnits = 0
     var replaces: String? = null
     var uniqueTo: String? = null
     var quote: String = ""
+    @Deprecated("As of 3.15.16 - replaced with 'Provides a free [buildingName] [cityFilter]'")
     var providesFreeBuilding: String? = null
     var uniques = ArrayList<String>()
     var replacementTextForUniques = ""
@@ -195,10 +197,10 @@ class Building : NamedStats(), IConstruction, ICivilopediaText {
         return stats
     }
 
-    fun makeLink() = if (isAnyWonder()) "Wonder/$name" else "Building/$name"
-    override fun getCivilopediaTextHeader() = FormattedLine(name, header=2, icon=makeLink())
+    override fun makeLink() = if (isAnyWonder()) "Wonder/$name" else "Building/$name"
     override fun hasCivilopediaTextLines() = true
     override fun replacesCivilopediaDescription() = true
+
     override fun getCivilopediaTextLines(ruleset: Ruleset): List<FormattedLine> {
         fun Float.formatSignedInt() = (if (this > 0f) "+" else "") + this.toInt().toString()
         
@@ -303,11 +305,12 @@ class Building : NamedStats(), IConstruction, ICivilopediaText {
         if (maintenance != 0) textList +=  FormattedLine("{Maintenance cost}: $maintenance {Gold}")
 
         val seeAlso = ArrayList<FormattedLine>()
-        for ((other, building) in ruleset.buildings) {
-            if (building.replaces == name || building.providesFreeBuilding == name || uniques.contains("[$name]") ) {
-                seeAlso += FormattedLine(other, link=building.makeLink(), indent=1)
-            }
+        for (building in ruleset.buildings.values) {
+            if (building.replaces == name || building.providesFreeBuilding == name
+                    || building.uniqueObjects.any { unique -> unique.params.any { it ==name } })
+                seeAlso += FormattedLine(building.name, link=building.makeLink(), indent=1)
         }
+        seeAlso += Belief.getCivilopediaTextMatching(name, ruleset, false)
         if (seeAlso.isNotEmpty()) {
             textList += FormattedLine()
             textList += FormattedLine("{See also}:")
@@ -549,14 +552,21 @@ class Building : NamedStats(), IConstruction, ICivilopediaText {
             }
         }
 
-        if (providesFreeBuilding != null && !cityConstructions.containsBuildingOrEquivalent(providesFreeBuilding!!)) {
-            var buildingToAdd = providesFreeBuilding!!
+        // "Provides a free [buildingName] [cityFilter]"
+        var freeBuildingUniques = uniqueObjects.asSequence().filter { it.placeholderText=="Provides a free [] []" }
+        if (providesFreeBuilding!=null) freeBuildingUniques += sequenceOf(Unique("Provides a free [$providesFreeBuilding] [in this city]"))
 
-            for (building in civInfo.gameInfo.ruleSet.buildings.values)
-                if (building.replaces == buildingToAdd && building.uniqueTo == civInfo.civName)
-                    buildingToAdd = building.name
+        for(unique in freeBuildingUniques) {
+            val affectedCities =
+                if (unique.params[1] == "in this city") sequenceOf(cityConstructions.cityInfo)
+                else civInfo.cities.asSequence().filter { it.matchesFilter(unique.params[1]) }
 
-            cityConstructions.addBuilding(buildingToAdd)
+            val freeBuildingName = civInfo.getEquivalentBuilding(unique.params[0]).name
+
+            for (city in affectedCities) {
+                if (cityConstructions.containsBuildingOrEquivalent(freeBuildingName)) continue
+                cityConstructions.addBuilding(freeBuildingName)
+            }
         }
 
         for (unique in uniqueObjects)
@@ -598,8 +608,7 @@ class Building : NamedStats(), IConstruction, ICivilopediaText {
     }
 
     fun getBaseBuilding(ruleset: Ruleset): Building {
-        return if (replaces == null) this
-            else ruleset.buildings[replaces!!]!!
+        return if (replaces == null) this else ruleset.buildings[replaces!!]!!
     }
 
     fun getImprovement(ruleset: Ruleset): TileImprovement? {

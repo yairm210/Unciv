@@ -204,7 +204,7 @@ class CivilopediaScreen(
                 .map {
                     CivilopediaEntry(
                         it.name,
-                        it.getDescription(ruleset),
+                        "",
                         CivilopediaCategories.Resource.getImage?.invoke(it.name, imageSize),
                         (it as? ICivilopediaText).takeUnless { ct -> ct==null || ct.isCivilopediaTextEmpty() }
                     )
@@ -213,7 +213,7 @@ class CivilopediaScreen(
                 .map {
                     CivilopediaEntry(
                         it.name,
-                        it.getDescription(ruleset),
+                        "",
                         CivilopediaCategories.Terrain.getImage?.invoke(it.name, imageSize),
                         (it as? ICivilopediaText).takeUnless { ct -> ct==null || ct.isCivilopediaTextEmpty() }
                     )
@@ -222,7 +222,7 @@ class CivilopediaScreen(
                 .map {
                     CivilopediaEntry(
                         it.name,
-                        it.getDescription(ruleset, false),
+                        "",
                         CivilopediaCategories.Improvement.getImage?.invoke(it.name, imageSize),
                         (it as? ICivilopediaText).takeUnless { ct -> ct==null || ct.isCivilopediaTextEmpty() }
                     )
@@ -242,7 +242,7 @@ class CivilopediaScreen(
                 .map {
                     CivilopediaEntry(
                         it.name,
-                        it.getUniqueString(ruleset, false),
+                        "",
                         CivilopediaCategories.Nation.getImage?.invoke(it.name, imageSize),
                         (it as? ICivilopediaText).takeUnless { ct -> ct==null || ct.isCivilopediaTextEmpty() }
                     )
@@ -260,7 +260,7 @@ class CivilopediaScreen(
                 .map {
                     CivilopediaEntry(
                         it.name,
-                        it.getDescription(ruleset.unitPromotions.values, true, ruleset),
+                        "",
                         CivilopediaCategories.Promotion.getImage?.invoke(it.name, imageSize),
                         (it as? ICivilopediaText).takeUnless { ct -> ct==null || ct.isCivilopediaTextEmpty() }
                     )

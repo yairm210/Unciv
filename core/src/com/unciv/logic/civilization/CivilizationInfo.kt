@@ -144,6 +144,7 @@ class CivilizationInfo {
         toReturn.tradeRequests.addAll(tradeRequests)
         toReturn.naturalWonders.addAll(naturalWonders)
         toReturn.cityStatePersonality = cityStatePersonality
+        toReturn.cityStateResource = cityStateResource
         toReturn.flagsCountdown.putAll(flagsCountdown)
         toReturn.temporaryUniques.addAll(temporaryUniques)
         return toReturn
@@ -175,6 +176,7 @@ class CivilizationInfo {
     fun isCityState(): Boolean = nation.isCityState()
     val cityStateType: CityStateType get() = nation.cityStateType!!
     var cityStatePersonality: CityStatePersonality = CityStatePersonality.Neutral
+    var cityStateResource: String? = null
     fun isMajorCiv() = nation.isMajorCiv()
     fun isAlive(): Boolean = !isDefeated()
     fun hasEverBeenFriendWith(otherCiv: CivilizationInfo): Boolean = getDiplomacyManager(otherCiv).everBeenFriends()
@@ -563,7 +565,7 @@ class CivilizationInfo {
         // disband units until there are none left OR the gold values are normal
         if (!isBarbarian() && gold < -100 && nextTurnStats.gold.toInt() < 0) {
             for (i in 1 until (gold / -100)) {
-                var civMilitaryUnits = getCivUnits().filter { !it.type.isCivilian() }
+                var civMilitaryUnits = getCivUnits().filter { it.baseUnit.isMilitary() }
                 if (civMilitaryUnits.any()) {
                     val unitToDisband = civMilitaryUnits.first()
                     unitToDisband.disband()
@@ -738,7 +740,7 @@ class CivilizationInfo {
         // line 8681 and below
         var influenceGained = giftAmount.toFloat().pow(1.01f) / 9.8f
         val gameProgressApproximate = min(gameInfo.turns / (400f * gameInfo.gameParameters.gameSpeed.modifier), 1f)
-        influenceGained *= 1 - (2/3) * gameProgressApproximate
+        influenceGained *= 1 - (2/3f) * gameProgressApproximate
         influenceGained *= when (gameInfo.gameParameters.gameSpeed) {
             GameSpeed.Quick -> 1.25f
             GameSpeed.Standard -> 1f
@@ -765,7 +767,7 @@ class CivilizationInfo {
         val cities = NextTurnAutomation.getClosestCities(this, otherCiv)
         val city = cities.city1
         val militaryUnit = city.cityConstructions.getConstructableUnits()
-                .filter { !it.unitType.isCivilian() && it.unitType.isLandUnit() && it.uniqueTo==null }
+                .filter { !it.isCivilian() && it.unitType.isLandUnit() && it.uniqueTo==null }
                 .toList().random()
         // placing the unit may fail - in that case stay quiet
         val placedUnit = placeUnitNearTile(city.location, militaryUnit.name) ?: return

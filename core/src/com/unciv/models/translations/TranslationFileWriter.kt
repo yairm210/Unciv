@@ -260,7 +260,7 @@ object TranslationFileWriter {
                 if (parameters.any()) {
                     for (parameter in parameters) {
                         var parameterName = when {
-                            parameter.toIntOrNull() != null -> "amount"
+                            parameter.toFloatOrNull() != null -> "amount"
                             Stat.values().any { it.name == parameter } -> "stat"
                             parameter in tileFilterMap -> "tileFilter"
                             ruleset.units.containsKey(parameter) -> "unit"

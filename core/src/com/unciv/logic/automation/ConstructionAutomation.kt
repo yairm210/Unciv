@@ -26,9 +26,9 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
             .filter { it.isAnyWonder() }
 
     val civUnits = civInfo.getCivUnits()
-    val militaryUnits = civUnits.count { !it.type.isCivilian() }
+    val militaryUnits = civUnits.count { it.baseUnit.isMilitary() }
     // Constants.workerUnique deprecated since 3.15.5
-    val workers = civUnits.count { (it.hasUnique(Constants.canBuildImprovements) || it.hasUnique(Constants.workerUnique)) && it.type.isCivilian() }.toFloat()
+    val workers = civUnits.count { (it.hasUnique(Constants.canBuildImprovements) || it.hasUnique(Constants.workerUnique)) && it.isCivilian() }.toFloat()
     val cities = civInfo.cities.size
     val allTechsAreResearched = civInfo.tech.getNumberOfTechsResearched() >= civInfo.gameInfo.ruleSet.technologies.size
 

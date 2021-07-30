@@ -90,7 +90,7 @@
 		"terrainsCanBeBuiltOn": ["Plains","Grassland","Desert","Hill","Tundra","Snow","Forest","Jungle"],
 		"turnsToBuild": 6,
 		"techRequired": "Engineering",
-		"uniques": ["Gives a defensive bonus of [50]%", "Can be built outside your borders"],
+		"uniques": ["Can be built outside your borders", "Gives a defensive bonus of [50]%"],
 		"shortcutKey": "O"
 	},
 
@@ -102,18 +102,18 @@
 		"uniques": ["Can be built outside your borders", "Costs [1] gold per turn when in your territory"],
 		"shortcutKey": "R",
         "civilopediaText": [
-            {text:"Reduces movement cost to ½ if the other tile also has a Road or Railroad"},
-            {text:"Reduces movement cost to ⅓ with Machinery",link:"Technology/Machinery"},
-            {text:"Requires Engineering to bridge rivers",link:"Technology/Engineering"}
+            {"text":"Reduces movement cost to ½ if the other tile also has a Road or Railroad"},
+            {"text":"Reduces movement cost to ⅓ with Machinery", "link":"Technology/Machinery"},
+            {"text":"Requires Engineering to bridge rivers", "link":"Technology/Engineering"}
         ]
 	},
 	{
 		"name": "Railroad",
 		"turnsToBuild": 4,
-		"techRequired": "Railroad",
+		"techRequired": "Railroads",
 		"uniques": ["Can be built outside your borders", "Costs [2] gold per turn when in your territory"],
 		"shortcutKey": "R",
-        "civilopediaText": [{text:"Reduces movement cost to ⅒ if the other tile also has a Railroad"}]
+        "civilopediaText": [{"text":"Reduces movement cost to ⅒ if the other tile also has a Railroad"}]
 	},
 	
 	// Removals
@@ -124,7 +124,7 @@
 		"techRequired": "Mining",
 		"uniques": ["Can be built outside your borders"],
 		"shortcutKey": "X",
-        "civilopediaText": [{text:"Provides a one-time Production bonus depending on distance to the closest city once finished"}]
+        "civilopediaText": [{"text":"Provides a one-time Production bonus depending on distance to the closest city once finished"}]
 	},
 	{
 		"name": "Remove Jungle",
@@ -196,8 +196,8 @@
 	},
 	{
 		"name": "Citadel",
-		"uniques": ["Gives a defensive bonus of [100]%", "Deal 30 damage to adjacent enemy units", "Great Improvement", "Can be built just outside your borders"],
-        "civilopediaText": [{text:"Constructing it will take over the tiles around it and assign them to your closest city"}]
+		"uniques": ["Great Improvement", "Gives a defensive bonus of [100]%", "Deal 30 damage to adjacent enemy units", "Can be built just outside your borders"],
+        "civilopediaText": [{"text":"Constructing it will take over the tiles around it and assign them to your closest city"}]
 	},
 
 	//Civilization unique improvements
@@ -206,7 +206,7 @@
 		"uniqueTo": "Polynesia",
 		"culture": 1,
 		"turnsToBuild": 4,
-		"uniques": ["[+1 Culture] for each adjacent [Moai]", "Can only be built on [Coastal] tiles", "[+1 Gold] once [Flight] is discovered"],
+		"uniques": ["Can only be built on [Coastal] tiles", "[+1 Culture] for each adjacent [Moai]", "[+1 Gold] once [Flight] is discovered"],
 		"techRequired": "Construction",
 		"shortcutKey": "M"
 	},
@@ -216,7 +216,8 @@
 		"terrainsCanBeBuiltOn": ["Hill"],
 		"food": 1,
 		"turnsToBuild": 7,
-		"uniques": ["[+1 Food] for each adjacent [Mountain]", "Cannot be built on [Bonus resource] tiles",
+		"uniques": ["Cannot be built on [Bonus resource] tiles",
+			"[+1 Food] for each adjacent [Mountain]",
 			"[+1 Food] on [Fresh water] tiles once [Civil Service] is discovered",
 			"[+1 Food] on [non-fresh water] tiles once [Fertilizer] is discovered"],
 		"techRequired": "Construction",
@@ -232,13 +233,29 @@
 		"techRequired": "Guilds",
 		"shortcutKey": "F"
 	},
-	
+
 	{ "name": "Ancient ruins", "uniques": ["Unpillagable"],
-        "civilopediaText": [{text:"Ancient ruins provide a one-time random bonus when explored"}] },
+        "civilopediaText": [
+			{"text":"Ancient ruins provide a one-time random bonus when explored"},
+			{},
+			{"text":"The possible rewards are:"},
+			{"text":"a stash of gold", "indent":1, "starred":true, "color":"#ffeb7f"},
+			{"text":"survivors (adds population to a city)", "indent":1, "starred":true, "color":"#81c784"},
+			{"text":"discover a lost technology", "indent":1, "starred":true, "color":"#7f7fff"},
+			{"text":"a unit joins you", "indent":1, "starred":true},
+			{"text":"your exploring unit receives training", "indent":1, "starred":true}, // "link":"Tutorial/Experience"
+			{"text":"discover cultural artifacts", "indent":1, "starred":true, "color":"#cf8ff7"},
+			{"text":"find a crudely-drawn map", "indent":1, "starred":true}
+		]
+	},
 	{ "name": "City ruins", "uniques": ["Unpillagable"],
-        "civilopediaText": [{text:"A bleak reminder of the destruction wreaked by War"}] },
+        "civilopediaText": [{"text":"A bleak reminder of the destruction wreaked by War"}] },
 	{ "name": "City center", "uniques": ["Unpillagable", "Indestructible"],
-        "civilopediaText": [{text:"Marks the center of a city"},{text:"Appearance changes with the technological era of the owning civilization"}] },
+        "civilopediaText": [
+			{"text":"Marks the center of a city"},
+			{"text":"Appearance changes with the technological era of the owning civilization"}
+		]
+	},
 	{ "name": "Barbarian encampment", "uniques": ["Unpillagable"],
-        "civilopediaText": [{text:"Home to uncivilized barbarians, will spawn a hostile unit from time to time"}] }
+        "civilopediaText": [{"text":"Home to uncivilized barbarians, will spawn a hostile unit from time to time"}] }
 ]
