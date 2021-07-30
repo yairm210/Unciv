@@ -1,3 +1,58 @@
+## 3.15.17
+
+Influence-by-game-progress works as intended
+
+One-city-challengers no longer get multiple settlers for later eras
+
+Maori Warrior debuff only applies to enemy units
+
+AI accepts research agreement offers
+
+Buildings from era are applied before buildings from policies
+
+Translations update 
+
+Updated Hungarian Translates  - By JurDan775
+
+By SomeTroglodyte:
+- Civilopedia phase 8 - Nations and Promotions 
+- UnitActionType now knows keys, sounds and most icons 
+
+And new unit pixel and some improvement - By AdityaMH
+
+Map climate overhaul - By ravignir
+
+## 3.15.16
+
+City states no longer grant Great Prophets when religion is not enabled
+
+Background work for moddable uit types :)
+
+Mercantile CS resources - By SimonCeder
+
+Civilopedia phase7 - By SomeTroglodyte
+
+Petra as in G&K fix - By ravignir
+
+## 3.15.15
+
+Great Person points are now moddable!
+
+By SomeTroglodyte:
+- Minimap Slider UI
+- Unit name translation
+- Rename Railroad tech to Railroads
+- Fix canImprovementBeBuiltHere regression
+- Newgame screen overhaul for portrait mode 
+- Deprecate "Can only be built on coastal tiles" unique 
+- A Civilopedia category for Religion 
+
+By SimonCeder:
+- Optimized spawn placement algorithm
+- City states adjustments 
+
+Resolved #4394 - corrected misspelled city names
+
 ## 3.15.14
 
 By xlenstra:

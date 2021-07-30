@@ -18,6 +18,7 @@ import com.unciv.logic.trade.TradeOffer
 import com.unciv.logic.trade.TradeType
 import com.unciv.models.ruleset.ModOptionsConstants
 import com.unciv.models.ruleset.Quest
+import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.translations.tr
 import com.unciv.ui.tilegroups.CityButton
 import com.unciv.ui.utils.*
@@ -101,6 +102,17 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
 
         diplomacyTable.add("{Type}:  {${otherCiv.cityStateType}}".toLabel()).row()
         diplomacyTable.add("{Personality}:  {${otherCiv.cityStatePersonality}}".toLabel()).row()
+
+        val resourcesTable = Table()
+        resourcesTable.add("{Resources:}  ".toLabel()).padRight(10f)
+        for (supplyList in otherCiv.detailedCivResources) {
+            if (supplyList.resource.resourceType == ResourceType.Bonus)
+                continue
+            resourcesTable.add(ImageGetter.getResourceImage(supplyList.resource.name, 30f)).padRight(5f)
+            resourcesTable.add(supplyList.amount.toLabel()).padRight(20f)
+        }
+        diplomacyTable.add(resourcesTable).row()
+
         otherCiv.updateAllyCivForCityState()
         val ally = otherCiv.getAllyCiv()
         if (ally != null) {

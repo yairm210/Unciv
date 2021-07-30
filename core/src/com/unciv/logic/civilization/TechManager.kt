@@ -35,7 +35,7 @@ class TechManager {
 
     // UnitMovementAlgorithms.getMovementCostBetweenAdjacentTiles is a close second =)
     @Transient
-    var movementSpeedOnRoadsImproved = false
+    var movementSpeedOnRoads = 1f
     @Transient
     var roadsConnectAcrossRivers = false
 
@@ -50,8 +50,7 @@ class TechManager {
     /** When moving towards a certain tech, the user doesn't have to manually pick every one. */
     var techsToResearch = ArrayList<String>()
     var overflowScience = 0
-    private var techsInProgress = HashMap<String, Int>()
-    fun scienceSpentOnTech(tech: String): Int = if (tech in techsInProgress) techsInProgress[tech]!! else 0
+    var techsInProgress = HashMap<String, Int>()
 
     /** In civ IV, you can auto-convert a certain percentage of gold in cities to science */
     var goldPercentConvertedToScience = 0.6f
@@ -109,10 +108,9 @@ class TechManager {
         return if (techsToResearch.isEmpty()) null else techsToResearch[0]
     }
 
-    private fun researchOfTech(TechName: String?): Int {
-        return if (techsInProgress.containsKey(TechName)) techsInProgress[TechName]!! else 0
-    }
-
+    fun researchOfTech(TechName: String?) = techsInProgress[TechName] ?: 0
+    // Was once duplicated as fun scienceSpentOnTech(tech: String): Int
+    
     fun remainingScienceToTech(techName: String) = costOfTech(techName) - researchOfTech(techName)
 
     fun turnsToTech(techName: String): String {
@@ -302,7 +300,7 @@ class TechManager {
                     val text = "[${cities.size}] cities changed production from [$unit] to [${construction.upgradesTo!!}]"
                     civInfo.addNotification(text, locationAction, unit, NotificationIcon.Construction, construction.upgradesTo!!)
                 } else {
-                    val text = "[$unit] has become osbolete and was removed from the queue in [${cities.size}] cities!"
+                    val text = "[$unit] has become obsolete and was removed from the queue in [${cities.size}] cities!"
                     civInfo.addNotification(text, locationAction, NotificationIcon.Construction)
                 }
             }
@@ -365,7 +363,8 @@ class TechManager {
         unitsCanEmbark = wayfinding || civInfo.hasUnique("Enables embarkation for land units")
 
         embarkedUnitsCanEnterOcean = wayfinding || civInfo.hasUnique("Enables embarked units to enter ocean tiles")
-        movementSpeedOnRoadsImproved = civInfo.hasUnique("Improves movement speed on roads")
+        movementSpeedOnRoads = if (civInfo.hasUnique("Improves movement speed on roads"))
+            RoadStatus.Road.movementImproved else RoadStatus.Road.movement
         roadsConnectAcrossRivers = civInfo.hasUnique("Roads connect tiles across rivers")
     }
 

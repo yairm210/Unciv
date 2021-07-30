@@ -406,8 +406,7 @@ open class TileInfo {
             } -> false
 
             // Road improvements can change on tiles with irremovable improvements - nothing else can, though.
-            improvement.name != RoadStatus.Railroad.name && improvement.name != RoadStatus.Railroad.name
-                    && improvement.name != "Remove Road" && improvement.name != "Remove Railroad"
+            RoadStatus.values().none { it.name == improvement.name || it.removeAction == improvement.name }
                     && getTileImprovement().let { it != null && it.hasUnique("Irremovable") } -> false
 
             // Decide cancelImprovementOrder earlier, otherwise next check breaks it
@@ -420,19 +419,20 @@ open class TileInfo {
                 if (filter == "River") return@any !isAdjacentToRiver()
                 else return@any !neighbors.any { neighbor -> neighbor.matchesFilter(filter) }
             } -> false
-            improvement.name == "Road" && roadStatus == RoadStatus.None && !isWater -> true
-            improvement.name == "Railroad" && this.roadStatus != RoadStatus.Railroad && !isWater -> true
-            improvement.name == "Remove Road" && this.roadStatus == RoadStatus.Road -> true
-            improvement.name == "Remove Railroad" && this.roadStatus == RoadStatus.Railroad -> true
+            !isWater && RoadStatus.values().any { it.name == improvement.name && it > roadStatus } -> true
+            improvement.name == roadStatus.removeAction -> true
             topTerrain.unbuildable && !improvement.isAllowedOnFeature(topTerrain.name) -> false
             // DO NOT reverse this &&. isAdjacentToFreshwater() is a lazy which calls a function, and reversing it breaks the tests.
             improvement.hasUnique("Can also be built on tiles adjacent to fresh water") && isAdjacentToFreshwater -> true
             // deprecated as of 3.15.15
                 "Can only be built on Coastal tiles" in improvement.uniques && isCoastalTile() -> true
             //
-            improvement.uniqueObjects.filter { it.placeholderText == "Can only be built on [] tiles" }.all {
-                unique -> matchesTerrainFilter(unique.params[0])
+
+            // If an unique of this type exists, we want all to match (e.g. Hill _and_ Forest would be meaningful).
+            improvement.uniqueObjects.filter { it.placeholderText == "Can only be built on [] tiles" }.let {
+                it.any() && it.all { unique -> matchesTerrainFilter(unique.params[0]) }
             } -> true
+
             else -> resourceIsVisible && getTileResource().improvement == improvement.name
         }
     }
@@ -575,7 +575,7 @@ open class TileInfo {
     }
 
     fun toMarkup(viewingCiv: CivilizationInfo?): ArrayList<FormattedLine> {
-        val lineList = ArrayList<FormattedLine>() // more readable than StringBuilder, with same performance for our use-case
+        val lineList = ArrayList<FormattedLine>()
         val isViewableToPlayer = viewingCiv == null || UncivGame.Current.viewEntireMapForDebug
                 || viewingCiv.viewableTiles.contains(this)
 

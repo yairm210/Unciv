@@ -340,7 +340,8 @@ class DiplomacyManager() {
         hasOpenBorders = newHasOpenBorders
 
         if (bordersWereClosed) { // borders were closed, get out!
-            for (unit in civInfo.getCivUnits().filter { it.currentTile.getOwner()?.civName == otherCivName }) {
+            for (unit in civInfo.getCivUnits()
+                .filter { it.currentTile.getOwner()?.civName == otherCivName }.toList()) {
                 unit.movement.teleportToClosestMoveableTile()
             }
         }
@@ -597,7 +598,7 @@ class DiplomacyManager() {
         diplomaticStatus = DiplomaticStatus.Peace
         val otherCiv = otherCiv()
         // Get out of others' territory
-        for (unit in civInfo.getCivUnits().filter { it.getTile().getOwner() == otherCiv })
+        for (unit in civInfo.getCivUnits().filter { it.getTile().getOwner() == otherCiv }.toList())
             unit.movement.teleportToClosestMoveableTile()
 
         for (thirdCiv in civInfo.getKnownCivs()) {
