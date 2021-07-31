@@ -254,8 +254,7 @@ class TradeEvaluation {
     fun distanceDiscount(civInfo: CivilizationInfo, capitalcity: CityInfo, city: CityInfo): Int{
 
         if (abs(capitalcity.location.x - city.location.x) > 500 && abs(capitalcity.location.x - city.location.x) > 500){ // calculates distance between cities
-            return min(50, (500 - sqrt((pow(abs(capitalcity.location.x - city.location.x).toDouble(), 2.0).toInt() + pow(abs(capitalcity.location.x - city.location.x).toDouble(), 2.0)) * civInfo.getEraNumber())).toInt())
-            // this code does pythagoras theorem to find the distance between the two cities then subtracts it 500 before finally multiplying it the the number of the era. This number cannot exceed 50
+            return min(50, capitalcity.getTiles().toList()[0].aerialDistanceTo(city.getTiles().toList()[0]) * civInfo.getEraNumber())
         }
         return 0
     }

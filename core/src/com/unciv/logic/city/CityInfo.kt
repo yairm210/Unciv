@@ -631,36 +631,30 @@ class CityInfo {
     fun canBeDestroyed(): Boolean {
         return !isOriginalCapital && !isCapital() && !isHolyCity()
     }
+
+
     fun cityBorders(): ArrayList<String>{
-        val dimensionalList: ArrayList<Vector2> = arrayListOf()
-        val cityPositionList: ArrayList<Vector2> = arrayListOf()
+        val dimensionalList: ArrayList<TileInfo> = arrayListOf()
+        val cityPositionList: ArrayList<TileInfo> = arrayListOf()
         val neighbouringCivilizationList: ArrayList<String> = arrayListOf()
 
         for (tile in getTiles()){
-            if (!dimensionalList.contains(tile.position))
-                dimensionalList.add(tile.position)
+            if (!dimensionalList.contains(tile))
+                dimensionalList.add(tile)
         }
-        for (tile in dimensionalList){
-            if (!dimensionalList.contains(Vector2(tile.x + 1f, tile.y +1f)))
-                cityPositionList.add(Vector2(tile.x + 1f, tile.y + 1f))
-            if (!dimensionalList.contains(Vector2(tile.x + 1f, tile.y + 0f)))
-                cityPositionList.add(Vector2(tile.x + 1f, tile.y + 0f))
-            if (!dimensionalList.contains(Vector2(tile.x + 0f, tile.y + 1f)))
-                cityPositionList.add(Vector2(tile.x + 0f, tile.y + 1f))
-            if (!dimensionalList.contains(Vector2(tile.x - 1f, tile.y - 1f)))
-                cityPositionList.add(Vector2(tile.x - 1f, tile.y - 1f))
-            if (!dimensionalList.contains(Vector2(tile.x - 0f, tile.y - 1f)))
-                cityPositionList.add(Vector2(tile.x - 0f, tile.y - 1f))
-            if (!dimensionalList.contains(Vector2(tile.x - 1f, tile.y - 0f)))
-                cityPositionList.add(Vector2(tile.x - 1f, tile.y - 0f))
-        }
-        for (tile in cityPositionList){
-            if (neighbouringCivilizationList.contains(tileMap[tile].getOwner().toString()))
-                continue
-            neighbouringCivilizationList.add(tileMap[tile].getOwner().toString())
-        }
-        return neighbouringCivilizationList
+        for (tiles in dimensionalList)
+            for (tile in tiles.neighbors)
+                if (!dimensionalList.contains(tile))
+                    cityPositionList.add(tile)
 
+
+        for (tile in cityPositionList)
+            if (!neighbouringCivilizationList.contains(tile.getOwner().toString()))
+                neighbouringCivilizationList.add(tile.getOwner().toString())
+
+
+
+        return neighbouringCivilizationList
     }
 
 
