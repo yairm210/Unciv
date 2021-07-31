@@ -647,12 +647,9 @@ class CityInfo {
                 if (!dimensionalList.contains(tile))
                     cityPositionList.add(tile)
 
-
         for (tile in cityPositionList)
             if (!neighbouringCivilizationList.contains(tile.getOwner().toString()))
                 neighbouringCivilizationList.add(tile.getOwner().toString())
-
-
 
         return neighbouringCivilizationList
     }
