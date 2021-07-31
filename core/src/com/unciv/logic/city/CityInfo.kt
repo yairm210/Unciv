@@ -13,6 +13,7 @@ import com.unciv.models.ruleset.tile.ResourceSupplyList
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.unit.BaseUnit
 import java.util.*
+import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 import kotlin.collections.HashSet
 import kotlin.math.ceil
@@ -232,6 +233,7 @@ class CityInfo {
     fun isConnectedToCapital(connectionTypePredicate: (Set<String>) -> Boolean = { true }): Boolean {
         val mediumTypes = civInfo.citiesConnectedToCapitalToMediums[this] ?: return false
         return connectionTypePredicate(mediumTypes)
+
     }
 
     fun isInResistance() = resistanceCounter > 0
@@ -433,6 +435,7 @@ class CityInfo {
     fun reassignPopulation() {
         var foodWeight = 1f
         var foodPerTurn = 0f
+        cityBorders()
         while (foodWeight < 3 && foodPerTurn <= 0) {
             workedTiles = hashSetOf()
             population.specialistAllocations.clear()
@@ -629,6 +632,42 @@ class CityInfo {
     fun canBeDestroyed(): Boolean {
         return !isOriginalCapital && !isCapital() && !isHolyCity()
     }
+    fun cityBorders(): ArrayList<String>{
+        val dimensionalList: ArrayList<Vector2> = arrayListOf()
+        val cityPositionList: ArrayList<Vector2> = arrayListOf()
+        val neighbouringCivilizationList: ArrayList<String> = arrayListOf()
 
-    //endregion
+        for (tile in getTiles()){
+            if (!dimensionalList.contains(tile.position))
+                dimensionalList.add(tile.position)
+        }
+        for (tile in dimensionalList){
+            if (!dimensionalList.contains(Vector2(tile.x + 1f, tile.y +1f)))
+                cityPositionList.add(Vector2(tile.x + 1f, tile.y + 1f))
+            if (!dimensionalList.contains(Vector2(tile.x + 1f, tile.y + 0f)))
+                cityPositionList.add(Vector2(tile.x + 1f, tile.y + 0f))
+            if (!dimensionalList.contains(Vector2(tile.x + 0f, tile.y + 1f)))
+                cityPositionList.add(Vector2(tile.x + 0f, tile.y + 1f))
+            if (!dimensionalList.contains(Vector2(tile.x - 1f, tile.y - 1f)))
+                cityPositionList.add(Vector2(tile.x - 1f, tile.y - 1f))
+            if (!dimensionalList.contains(Vector2(tile.x - 0f, tile.y - 1f)))
+                cityPositionList.add(Vector2(tile.x - 0f, tile.y - 1f))
+            if (!dimensionalList.contains(Vector2(tile.x - 1f, tile.y - 0f)))
+                cityPositionList.add(Vector2(tile.x - 1f, tile.y - 0f))
+        }
+        for (tile in dimensionalList)
+            println(tile)
+        println("")
+        for (tile in cityPositionList){
+            if (neighbouringCivilizationList.contains(tileMap[tile].getOwner().toString()))
+                continue
+            neighbouringCivilizationList.add(tileMap[tile].getOwner().toString())
+            println(tileMap[tile].getOwner().toString())
+        }
+        return neighbouringCivilizationList
+
+    }
+
+
+    //endregion ()()(0, 1)(1, 0)(0, 0)(1, 1)
 }
