@@ -150,9 +150,10 @@ class TradeEvaluation {
             TradeType.City -> {
                 val city = tradePartner.cities.first { it.id == offer.name }
                 val stats = city.cityStats.currentCityStats
+                val surrounded: Int = isSurroundedByOurCities(city, civInfo)
                 if (civInfo.getHappiness() + city.cityStats.happinessList.values.sum() < 0)
                     return 0 // we can't really afford to go into negative happiness because of buying a city
-                val sumOfStats = stats.culture + stats.gold + stats.science + stats.production + stats.happiness + stats.food
+                val sumOfStats = stats.culture + stats.gold + stats.science + stats.production + stats.happiness + stats.food + surrounded
                 return sumOfStats.toInt() * 100
             }
             TradeType.Agreement -> {
@@ -160,6 +161,16 @@ class TradeEvaluation {
                 throw Exception("Invalid agreement type!")
             }
         }
+    }
+    fun isSurroundedByOurCities(city: CityInfo, civInfo: CivilizationInfo): Int{
+        val borderingCivs: ArrayList<String> = city.cityBorders()
+        if (borderingCivs.size == 1 && borderingCivs.asSequence().contains(civInfo.civName)){
+            return 10*civInfo.getEraNumber()
+        }
+        if (borderingCivs.asSequence().contains(civInfo.civName))
+            return 2*civInfo.getEraNumber()
+        return 0
+
     }
 
     fun evaluateSellCost(offer: TradeOffer, civInfo: CivilizationInfo, tradePartner: CivilizationInfo): Int {
