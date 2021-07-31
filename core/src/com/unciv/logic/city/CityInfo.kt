@@ -638,10 +638,10 @@ class CityInfo {
         val cityPositionList: ArrayList<TileInfo> = arrayListOf()
         val neighbouringCivilizationList: ArrayList<String> = arrayListOf()
 
-        for (tile in getTiles()){
+        for (tile in getTiles())
             if (!dimensionalList.contains(tile))
                 dimensionalList.add(tile)
-        }
+
         for (tiles in dimensionalList)
             for (tile in tiles.neighbors)
                 if (!dimensionalList.contains(tile))
@@ -650,6 +650,7 @@ class CityInfo {
         for (tile in cityPositionList)
             if (!neighbouringCivilizationList.contains(tile.getOwner().toString()))
                 neighbouringCivilizationList.add(tile.getOwner().toString())
+
 
         return neighbouringCivilizationList
     }
