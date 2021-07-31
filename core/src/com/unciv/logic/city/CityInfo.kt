@@ -435,7 +435,6 @@ class CityInfo {
     fun reassignPopulation() {
         var foodWeight = 1f
         var foodPerTurn = 0f
-        cityBorders()
         while (foodWeight < 3 && foodPerTurn <= 0) {
             workedTiles = hashSetOf()
             population.specialistAllocations.clear()
@@ -655,14 +654,10 @@ class CityInfo {
             if (!dimensionalList.contains(Vector2(tile.x - 1f, tile.y - 0f)))
                 cityPositionList.add(Vector2(tile.x - 1f, tile.y - 0f))
         }
-        for (tile in dimensionalList)
-            println(tile)
-        println("")
         for (tile in cityPositionList){
             if (neighbouringCivilizationList.contains(tileMap[tile].getOwner().toString()))
                 continue
             neighbouringCivilizationList.add(tileMap[tile].getOwner().toString())
-            println(tileMap[tile].getOwner().toString())
         }
         return neighbouringCivilizationList
 
