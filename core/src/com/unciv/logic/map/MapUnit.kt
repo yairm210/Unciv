@@ -958,21 +958,18 @@ class MapUnit {
                 civInfo.addNotification(
                     "An enemy [Citadel] has destroyed our [$name]",
                     locations,
-                    name,
-                    NotificationIcon.Death
+                    NotificationIcon.Citadel, NotificationIcon.Death, name
                 )
                 citadelTile.getOwner()?.addNotification(
                     "Your [Citadel] has destroyed an enemy [$name]",
                     locations,
-                    name,
-                    NotificationIcon.Death
+                    NotificationIcon.Citadel, NotificationIcon.Death, name
                 )
                 destroy()
             } else civInfo.addNotification(
                 "An enemy [Citadel] has attacked our [$name]",
                 locations,
-                name,
-                NotificationIcon.War
+                NotificationIcon.Citadel, NotificationIcon.War, name 
             )
         }
     }
