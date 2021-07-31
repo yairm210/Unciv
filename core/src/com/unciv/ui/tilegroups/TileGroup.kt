@@ -2,14 +2,12 @@ package com.unciv.ui.tilegroups
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.Batch
-import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.utils.Align
 import com.unciv.UncivGame
-import com.unciv.logic.HexMath
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.RoadStatus
 import com.unciv.logic.map.TileInfo
@@ -444,16 +442,7 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings, 
             }
             if (neighborOwner != tileOwner && !borderImages.containsKey(neighbor)) { // there should be a border here but there isn't
 
-                val relativeHexPosition = when (tileInfo.tileMap.getNeighborTileClockPosition(tileInfo, neighbor)){
-                    2 -> Vector2(0f,-1f)
-                    4 -> Vector2(1f,0f)
-                    6 -> Vector2(1f,1f)
-                    8 -> Vector2(0f,1f)
-                    10 -> Vector2(-1f,0f)
-                    12 -> Vector2(-1f,-1f)
-                    else -> Vector2.Zero
-                }
-                val relativeWorldPosition = HexMath.hex2WorldCoords(relativeHexPosition)
+                val relativeWorldPosition = tileInfo.tileMap.getNeighborTilePositionAsWorldCoords(tileInfo, neighbor)
 
                 // This is some crazy voodoo magic so I'll explain.
                 val images = mutableListOf<Image>()
@@ -487,8 +476,7 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings, 
     private fun updateRoadImages() {
         if (forMapEditorIcon) return
         for (neighbor in tileInfo.neighbors) {
-            if (!roadImages.containsKey(neighbor)) roadImages[neighbor] = RoadImage()
-            val roadImage = roadImages[neighbor]!!
+            val roadImage = roadImages[neighbor] ?: RoadImage().also { roadImages[neighbor] = it }
 
             val roadStatus = when {
                 tileInfo.roadStatus == RoadStatus.None || neighbor.roadStatus === RoadStatus.None -> RoadStatus.None
@@ -505,20 +493,10 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings, 
             }
             if (roadStatus == RoadStatus.None) continue // no road image
 
-            val image = if (roadStatus == RoadStatus.Road) ImageGetter.getDot(Color.BROWN)
-            else ImageGetter.getImage(tileSetStrings.railroad)
+            val image = ImageGetter.getImage(tileSetStrings.tileSetLocation + roadStatus.name)
             roadImage.image = image
 
-            val relativeHexPosition = when (tileInfo.tileMap.getNeighborTileClockPosition(neighbor, tileInfo)){
-                2 -> Vector2(0f,1f)
-                4 -> Vector2(-1f,0f)
-                6 -> Vector2(-1f,-1f)
-                8 -> Vector2(0f,-1f)
-                10 -> Vector2(1f,0f)
-                12 -> Vector2(1f,1f)
-                else -> Vector2.Zero
-            }
-            val relativeWorldPosition = HexMath.hex2WorldCoords(relativeHexPosition)
+            val relativeWorldPosition = tileInfo.tileMap.getNeighborTilePositionAsWorldCoords(tileInfo, neighbor)
 
             // This is some crazy voodoo magic so I'll explain.
             image.moveBy(25f, 25f) // Move road to center of tile

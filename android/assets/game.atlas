@@ -2139,7 +2139,7 @@ TileSets/FantasyHex/Tiles/River-BottomRight
   orig: 32, 28
   offset: 0, 0
   index: -1
-TileSets/Default/road
+TileSets/Default/Road
   rotate: false
   xy: 693, 1822
   size: 61, 11
@@ -3868,7 +3868,7 @@ TileSets/FantasyHex/Units/Tank
   orig: 32, 28
   offset: 0, 0
   index: -1
-TileSets/FantasyHex/road
+TileSets/FantasyHex/Road
   rotate: false
   xy: 528, 1162
   size: 61, 11
