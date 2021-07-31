@@ -233,7 +233,8 @@ object Battle {
             civ.addNotification(
                 "Your [${plunderingUnit.getName()}] plundered [${plunderedAmount}] [${it.key.name}] from [${plunderedUnit.getName()}]",
                 plunderedUnit.getTile().position,
-                plunderingUnit.getName(), NotificationIcon.War, "StatIcons/${it.key.name}", plunderedUnit.getName()
+                plunderingUnit.getName(), NotificationIcon.War, "StatIcons/${it.key.name}",
+                if (plunderedUnit is CityCombatant) NotificationIcon.City else plunderedUnit.getName()
             )
         }
     }
