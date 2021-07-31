@@ -121,8 +121,9 @@ class CityInfo {
         // Add buildings and pop we get from starting in this era
         if (startingEra in ruleset.eras) {
             for (building in ruleset.eras[startingEra]!!.settlerBuildings) {
-                if (ruleset.buildings[building]!!.isBuildable(cityConstructions))
+                if (ruleset.buildings[building]!!.isBuildable(cityConstructions)) {
                     cityConstructions.addBuilding(civInfo.getEquivalentBuilding(building).name)
+                }
             }
         }
 
@@ -434,6 +435,7 @@ class CityInfo {
     fun reassignPopulation() {
         var foodWeight = 1f
         var foodPerTurn = 0f
+        cityBorders()
         while (foodWeight < 3 && foodPerTurn <= 0) {
             workedTiles = hashSetOf()
             population.specialistAllocations.clear()
@@ -630,22 +632,42 @@ class CityInfo {
     fun canBeDestroyed(): Boolean {
         return !isOriginalCapital && !isCapital() && !isHolyCity()
     }
+    fun cityBorders(): ArrayList<String>{
+        val dimensionalList: ArrayList<Vector2> = arrayListOf()
+        val cityPositionList: ArrayList<Vector2> = arrayListOf()
+        val neighbouringCivilizationList: ArrayList<String> = arrayListOf()
 
+        for (tile in getTiles()){
+            if (!dimensionalList.contains(tile.position))
+                dimensionalList.add(tile.position)
+        }
+        for (tile in dimensionalList){
+            if (!dimensionalList.contains(Vector2(tile.x + 1f, tile.y +1f)))
+                cityPositionList.add(Vector2(tile.x + 1f, tile.y + 1f))
+            if (!dimensionalList.contains(Vector2(tile.x + 1f, tile.y + 0f)))
+                cityPositionList.add(Vector2(tile.x + 1f, tile.y + 0f))
+            if (!dimensionalList.contains(Vector2(tile.x + 0f, tile.y + 1f)))
+                cityPositionList.add(Vector2(tile.x + 0f, tile.y + 1f))
+            if (!dimensionalList.contains(Vector2(tile.x - 1f, tile.y - 1f)))
+                cityPositionList.add(Vector2(tile.x - 1f, tile.y - 1f))
+            if (!dimensionalList.contains(Vector2(tile.x - 0f, tile.y - 1f)))
+                cityPositionList.add(Vector2(tile.x - 0f, tile.y - 1f))
+            if (!dimensionalList.contains(Vector2(tile.x - 1f, tile.y - 0f)))
+                cityPositionList.add(Vector2(tile.x - 1f, tile.y - 0f))
+        }
+        for (tile in dimensionalList)
+            println(tile)
+        println("")
+        for (tile in cityPositionList){
+            if (neighbouringCivilizationList.contains(tileMap[tile].getOwner().toString()))
+                continue
+            neighbouringCivilizationList.add(tileMap[tile].getOwner().toString())
+            println(tileMap[tile].getOwner().toString())
+        }
+        return neighbouringCivilizationList
 
-    fun getNeighbouringCivs(): List<String> {
-        val tilesList: HashSet<TileInfo> = getTiles().toHashSet()
-        val cityPositionList: ArrayList<TileInfo> = arrayListOf()
-
-        for (tiles in tilesList)
-            for (tile in tiles.neighbors)
-                if (!tilesList.contains(tile))
-                    cityPositionList.add(tile)
-
-        return cityPositionList.asSequence()
-            .map { it.getOwner()?.civName }.filterNotNull().toSet() 
-            .distinct().toList()
     }
 
 
-    //endregion
+    //endregion ()()(0, 1)(1, 0)(0, 0)(1, 1)
 }
