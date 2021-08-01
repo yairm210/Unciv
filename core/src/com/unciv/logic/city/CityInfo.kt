@@ -633,26 +633,17 @@ class CityInfo {
     }
 
 
-    fun cityBorders(): ArrayList<String>{
-        val dimensionalList: ArrayList<TileInfo> = arrayListOf()
+    fun getNeighbouringCivs(): List<String> {
+        val dimensionalList: ArrayList<TileInfo> = getTiles().toList() as ArrayList<TileInfo>
         val cityPositionList: ArrayList<TileInfo> = arrayListOf()
-        val neighbouringCivilizationList: ArrayList<String> = arrayListOf()
-
-        for (tile in getTiles())
-            if (!dimensionalList.contains(tile))
-                dimensionalList.add(tile)
 
         for (tiles in dimensionalList)
             for (tile in tiles.neighbors)
                 if (!dimensionalList.contains(tile))
                     cityPositionList.add(tile)
 
-        for (tile in cityPositionList)
-            if (!neighbouringCivilizationList.contains(tile.getOwner().toString()))
-                neighbouringCivilizationList.add(tile.getOwner().toString())
 
-
-        return neighbouringCivilizationList
+        return cityPositionList.asSequence().map { it.getOwner()!!.civName }.distinct().toList()
     }
 
 
