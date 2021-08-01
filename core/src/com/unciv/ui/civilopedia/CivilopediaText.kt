@@ -6,7 +6,9 @@ import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.UncivGame
+import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.ruleset.Ruleset
+import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.Unique
 import com.unciv.models.stats.INamed
 import com.unciv.ui.utils.*
@@ -141,18 +143,28 @@ class FormattedLine (
         /** Where indent==1 will be, measured as icon count */
         const val indentOneAtNumIcons = 3
 
+        private var rulesetCachedInNameMap: Ruleset? = null
+        // Cache to quickly match Categories to names. Takes a few ms to build on a slower desktop and will use just a few 10k bytes.
+        private var allObjectNamesCategoryMap: HashMap<String, CivilopediaCategories>? = null
+
         // Helper for constructor(Unique)
         private fun getUniqueLink(unique: Unique): String {
+            val ruleSet = getCurrentRuleset()
+            if (allObjectNamesCategoryMap == null || rulesetCachedInNameMap !== ruleSet)
+                allObjectNamesCategoryMap = initNamesCategoryMap(ruleSet)
             for (parameter in unique.params) {
-                val category = allObjectNamesCategoryMap[parameter] ?: continue
+                val category = allObjectNamesCategoryMap!![parameter] ?: continue
                 return category.name + "/" + parameter
             }
             return ""
         }
-        // Cache to quickly match Categories to names. Takes a few ms to build on a slower desktop and will use just a few 10k bytes.
-        private val allObjectNamesCategoryMap: HashMap<String, CivilopediaCategories> by lazy {
+        private fun getCurrentRuleset() = when {
+            !UncivGame.isCurrentInitialized() -> Ruleset()
+            !UncivGame.Current.isGameInfoInitialized() -> RulesetCache[BaseRuleset.Civ_V_Vanilla.fullName]!!
+            else -> UncivGame.Current.gameInfo.ruleSet
+        }
+        private fun initNamesCategoryMap(ruleSet: Ruleset): HashMap<String, CivilopediaCategories> {
             //val startTime = System.nanoTime()
-            val ruleSet = UncivGame.Current.gameInfo.ruleSet
             // order these with the categories that should take precedence in case of name conflicts (e.g. Railroad) _last_
             val allObjectMapsSequence = sequence {
                 yield(CivilopediaCategories.Belief to ruleSet.beliefs)
@@ -175,8 +187,10 @@ class FormattedLine (
                     result[it.second] = it.first
                     //println("  ${it.second} is a ${it.first}")
                 }
+
             //println("allObjectNamesCategoryMap took ${System.nanoTime()-startTime}ns to initialize")
-            result
+            rulesetCachedInNameMap = ruleSet
+            return result
         }
     }
 

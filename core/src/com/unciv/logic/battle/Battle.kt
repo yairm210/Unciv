@@ -421,18 +421,24 @@ object Battle {
         capturedUnit.civInfo.addNotification("An enemy [" + attacker.getName() + "] has captured our [" + defender.getName() + "]",
                 defender.getTile().position, attacker.getName(), NotificationIcon.War, defender.getName())
 
+        val capturedUnitTile = capturedUnit.getTile()
+
         // Apparently in Civ V, captured settlers are converted to workers.
         if (capturedUnit.name == Constants.settler) {
-            val tile = capturedUnit.getTile()
             capturedUnit.destroy()
             // This is so that future checks which check if a unit has been captured are caught give the right answer
             //  For example, in postBattleMoveToAttackedTile
             capturedUnit.civInfo = attacker.getCivInfo()
-            attacker.getCivInfo().placeUnitNearTile(tile.position, Constants.worker)
+            attacker.getCivInfo().placeUnitNearTile(capturedUnitTile.position, Constants.worker)
         } else {
             capturedUnit.civInfo.removeUnit(capturedUnit)
             capturedUnit.assignOwner(attacker.getCivInfo())
             capturedUnit.currentMovement = 0f
+            // It's possible that the unit can no longer stand on the tile it was captured on.
+            // For example, because it's embarked and the capturing civ cannot embark units yet.
+            if (!capturedUnit.movement.canPassThrough(capturedUnitTile)) {
+                capturedUnit.movement.teleportToClosestMoveableTile()
+            }
         }
 
         destroyIfDefeated(defenderCiv, attacker.getCivInfo())

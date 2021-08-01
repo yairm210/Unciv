@@ -25,7 +25,7 @@ import kotlin.math.roundToInt
  * City constructions manager.
  *
  * @property cityInfo the city it refers to
- * @property currentConstructionFromQueue the name of the construction is currently worked, default = "Monument"
+ * @property currentConstructionFromQueue the name of the construction is currently worked
  * @property currentConstructionIsUserSet a flag indicating if the [currentConstructionFromQueue] has been set by the user or by the AI
  * @property constructionQueue a list of constructions names enqueued
  */
@@ -101,8 +101,7 @@ class CityConstructions {
         // all non-local uniques with this placeholderText from other cities belong to wonders, 
         // while the local uniques with this placeholderText are from buildings, but this is in no
         // way a given. In reality, there should be functions getBuildingStats and getWonderStats,
-        // to solve this, with getStats merely adding these two together. Implementing this is on
-        // my ToDoList, but this PR is already large enough as it is.
+        // to solve this, with getStats merely adding these two together. 
         for (unique in cityInfo.getLocalMatchingUniques("[] per [] population []")
                 .filter { cityInfo.matchesFilter(it.params[2])}
         ) {
@@ -220,7 +219,7 @@ class CityConstructions {
         // if the construction name is the same as the current construction, it isn't the first
         return constructionQueueIndex == constructionQueue.indexOfFirst { it == name }
     }
-
+    
 
     internal fun getConstruction(constructionName: String): IConstruction {
         val gameBasics = cityInfo.getRuleset()
@@ -302,6 +301,11 @@ class CityConstructions {
     }
 
     fun addProductionPoints(productionToAdd: Int) {
+        val construction = getConstruction(currentConstructionFromQueue)
+        if (construction is PerpetualConstruction) {
+            productionOverflow += productionToAdd
+            return
+        }
         if (!inProgressConstructions.containsKey(currentConstructionFromQueue))
             inProgressConstructions[currentConstructionFromQueue] = 0
         inProgressConstructions[currentConstructionFromQueue] = inProgressConstructions[currentConstructionFromQueue]!! + productionToAdd

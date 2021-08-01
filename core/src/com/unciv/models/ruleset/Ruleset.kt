@@ -21,6 +21,8 @@ import kotlin.collections.set
 
 object ModOptionsConstants {
     const val diplomaticRelationshipsCannotChange = "Diplomatic relationships cannot change"
+    const val convertGoldToScience = "Can convert gold to science with sliders"
+    const val allowCityStatesSpawnUnits = "Allow City States to spawn with additional units"
 }
 
 class ModOptions {
@@ -29,13 +31,15 @@ class ModOptions {
     var buildingsToRemove = HashSet<String>()
     var unitsToRemove = HashSet<String>()
     var nationsToRemove = HashSet<String>()
-    var uniques = HashSet<String>()
-    val maxXPfromBarbarians = 30
+    
 
     var lastUpdated = ""
     var modUrl = ""
     var author = ""
     var modSize = 0
+    
+    val maxXPfromBarbarians = 30
+    var uniques = HashSet<String>()
 }
 
 class Ruleset {
