@@ -148,7 +148,7 @@ class TradeEvaluation {
             TradeType.City -> {
                 val city = tradePartner.cities.first { it.id == offer.name }
                 val stats = city.cityStats.currentCityStats
-                val surrounded: Int = isSurroundedByOurCities(city, civInfo)
+                val surrounded: Int = surroundedByOurCities(city, civInfo)
                 if (civInfo.getHappiness() + city.cityStats.happinessList.values.sum() < 0)
                     return 0 // we can't really afford to go into negative happiness because of buying a city
                 val sumOfStats = stats.culture + stats.gold + stats.science + stats.production + stats.happiness + stats.food + surrounded
@@ -160,7 +160,7 @@ class TradeEvaluation {
             }
         }
     }
-    fun isSurroundedByOurCities(city: CityInfo, civInfo: CivilizationInfo): Int{
+    fun surroundedByOurCities(city: CityInfo, civInfo: CivilizationInfo): Int{
         val borderingCivs: List<String> = city.getNeighbouringCivs()
         if (borderingCivs.size == 1 && borderingCivs.contains(civInfo.civName)){
             return 10*civInfo.getEraNumber() // if the city is surrounded only by trading civ
