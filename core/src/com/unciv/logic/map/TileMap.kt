@@ -357,20 +357,12 @@ class TileMap {
         }
     }
 
-    companion object {
-        // Statically allocate the Vectors (in World coordinates)
-        // of the 6 clock directions for border and road drawing in TileGroup 
-        private val clockToHexVectors: Map<Int,Vector2> = mapOf(
-            2 to HexMath.hex2WorldCoords(Vector2(0f, -1f)),
-            4 to HexMath.hex2WorldCoords(Vector2(1f, 0f)),
-            6 to HexMath.hex2WorldCoords(Vector2(1f, 1f)),
-            8 to HexMath.hex2WorldCoords(Vector2(0f, 1f)),
-            10 to HexMath.hex2WorldCoords(Vector2(-1f, 0f)),
-            12 to HexMath.hex2WorldCoords(Vector2(-1f, -1f))
-        )
-    }
+    /** Convert relative direction of otherTile seen from tile's position into a vector
+     * in world coordinates of length sqrt(3), so that it can be used to go from tile center to
+     * the edge of the hex in that direction (meaning the center of the border between the hexes)
+     */
     fun getNeighborTilePositionAsWorldCoords(tile: TileInfo, otherTile: TileInfo): Vector2 =
-        clockToHexVectors[getNeighborTileClockPosition(tile, otherTile)] ?: Vector2.Zero
+        HexMath.getClockDirectionToWorldVector(getNeighborTileClockPosition(tile, otherTile))
 
 
     /**

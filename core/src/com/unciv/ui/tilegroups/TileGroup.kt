@@ -493,7 +493,7 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings, 
             }
             if (roadStatus == RoadStatus.None) continue // no road image
 
-            val image = ImageGetter.getImage(tileSetStrings.tileSetLocation + roadStatus.name)
+            val image = ImageGetter.getImage(tileSetStrings.roadsMap[roadStatus]!!)
             roadImage.image = image
 
             val relativeWorldPosition = tileInfo.tileMap.getNeighborTilePositionAsWorldCoords(tileInfo, neighbor)
