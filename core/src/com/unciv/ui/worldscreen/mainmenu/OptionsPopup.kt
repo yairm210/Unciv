@@ -31,7 +31,7 @@ class OptionsPopup(val previousScreen:CameraStageBaseScreen) : Popup(previousScr
     private var selectedLanguage: String = "English"
     private val settings = previousScreen.game.settings
     private val optionsTable = Table(CameraStageBaseScreen.skin)
-    private val resolutionArray = GdxArray(arrayOf("750x500", "900x600", "1050x700", "1200x800", "1500x1000"))
+    private val resolutionArray = GdxArray(arrayOf("750x500", "900x600", "1050x700", "1200x800", "1280x720", "1366x768", "1440x900", "1500x1000", "1536x864", "1920x1080"))
 
     init {
         settings.addCompletedTutorialTask("Open the options table")
