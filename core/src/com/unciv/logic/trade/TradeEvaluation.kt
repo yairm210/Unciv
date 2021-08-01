@@ -7,8 +7,6 @@ import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.models.ruleset.tile.ResourceType
-import java.lang.Math.pow
-import kotlin.math.abs
 import kotlin.math.min
 import kotlin.math.sqrt
 
@@ -163,11 +161,11 @@ class TradeEvaluation {
         }
     }
     fun isSurroundedByOurCities(city: CityInfo, civInfo: CivilizationInfo): Int{
-        val borderingCivs: ArrayList<String> = city.cityBorders()
-        if (borderingCivs.size == 1 && borderingCivs.asSequence().contains(civInfo.civName)){
+        val borderingCivs: List<String> = city.getNeighbouringCivs()
+        if (borderingCivs.size == 1 && borderingCivs.contains(civInfo.civName)){
             return 10*civInfo.getEraNumber() // if the city is surrounded only by trading civ
         }
-        if (borderingCivs.asSequence().contains(civInfo.civName))
+        if (borderingCivs.contains(civInfo.civName))
             return 2*civInfo.getEraNumber() // if the city has a border with trading civ
         return 0
 
@@ -232,7 +230,7 @@ class TradeEvaluation {
             TradeType.City -> {
                 val city = civInfo.cities.first { it.id == offer.name }
                 val capitalcity = civInfo.getCapital()
-                val distanceCost = distanceDiscount(civInfo, capitalcity, city)
+                val distanceCost = aidistanceCalculation(civInfo, capitalcity, city)
                 val stats = city.cityStats.currentCityStats
                 val sumOfStats = stats.culture + stats.gold + stats.science + stats.production + stats.happiness + stats.food - distanceCost
                 return sumOfStats.toInt() * 100
@@ -251,10 +249,10 @@ class TradeEvaluation {
             }
         }
     }
-    fun distanceDiscount(civInfo: CivilizationInfo, capitalcity: CityInfo, city: CityInfo): Int{
+    fun aidistanceCalculation(civInfo: CivilizationInfo, capitalcity: CityInfo, city: CityInfo): Int{
 
-        if (abs(capitalcity.location.x - city.location.x) > 500 && abs(capitalcity.location.x - city.location.x) > 500){ // calculates distance between cities
-            return min(50, capitalcity.getTiles().toList()[0].aerialDistanceTo(city.getTiles().toList()[0]) * civInfo.getEraNumber())
+        if (capitalcity.getCenterTile().aerialDistanceTo(city.getCenterTile()) > 500){ // calculates distance between cities
+            return min(50, 500 - capitalcity.getCenterTile().aerialDistanceTo(city.getCenterTile()) * civInfo.getEraNumber())
         }
         return 0
     }
