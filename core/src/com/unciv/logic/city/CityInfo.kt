@@ -634,7 +634,7 @@ class CityInfo {
 
 
     fun getNeighbouringCivs(): List<String> {
-        val tilesList: ArrayList<TileInfo> = getTiles().toList() as ArrayList<TileInfo>
+        val tilesList: HashSet<TileInfo> = getTiles().toHashSet()
         val cityPositionList: ArrayList<TileInfo> = arrayListOf()
 
         for (tiles in tilesList)
