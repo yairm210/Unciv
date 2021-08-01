@@ -161,7 +161,7 @@ class TradeEvaluation {
         }
     }
     fun surroundedByOurCities(city: CityInfo, civInfo: CivilizationInfo): Int{
-        val borderingCivs: List<String?> = city.getNeighbouringCivs()
+        val borderingCivs: List<String> = city.getNeighbouringCivs()
         if (borderingCivs.size == 1 && borderingCivs.contains(civInfo.civName)){
             return 10*civInfo.getEraNumber() // if the city is surrounded only by trading civ
         }
