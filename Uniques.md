@@ -131,7 +131,7 @@ unitFilters allow us to activate uniques for specific units, based on:
 - "Embarked"
 - "Wounded", "wounded units"
 - "Barbarians", "Barbarian"
-- Any combination of the above (will match only if all match). The format is "{filter1} {filter2}" and can match any number of filters. For example: "[{Military} {Water}]" units, "[{Wounded} {Armor}]" units, etc.
+- Any combination of the above (will match only if all match). The format is "{filter1} {filter2}" and can match any number of filters. For example: "[{Military} {Water}]" units, "[{Wounded} {Armor}]" units, etc. No space or other text is allowed between the "[" and the first "{".
 
 #### cityFilter
 
