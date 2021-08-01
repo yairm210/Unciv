@@ -89,9 +89,11 @@ class SaveAndLoadMapScreen(mapToSave: TileMap?, save:Boolean = false, previousSc
                         }
                     } catch (ex: Throwable) {
                         needPopup = false
-                        popup?.close()
-                        println("Error loading map \"$chosenMap\": ${ex.localizedMessage}")
-                        ToastPopup("Error loading map!", this)
+                        Gdx.app.postRunnable {
+                            popup?.close()
+                            println("Error loading map \"$chosenMap\": ${ex.localizedMessage}")
+                            ToastPopup("Error loading map!", this)
+                        }
                     }
                 }
             }
