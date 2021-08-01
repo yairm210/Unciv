@@ -7,11 +7,14 @@ import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.Unique
 import com.unciv.models.translations.tr
 import com.unciv.models.ruleset.unit.BaseUnit
+import com.unciv.models.stats.INamed
+import com.unciv.ui.civilopedia.ICivilopediaText
+import com.unciv.ui.civilopedia.FormattedLine
 import java.util.*
 
-class Technology {
+class Technology: INamed, ICivilopediaText {
 
-    lateinit var name: String
+    override lateinit var name: String
 
     var cost: Int = 0
     var prerequisites = HashSet<String>()
@@ -22,6 +25,20 @@ class Technology {
     var row: Int = 0
     var quote = ""
 
+    override var civilopediaText = listOf<FormattedLine>()
+
+
+    // Debug helper
+    override fun toString() = name
+
+    fun era(): String = column!!.era
+
+    fun isContinuallyResearchable() = uniques.contains("Can be continually researched")
+
+
+    /**
+     * Textual description used in TechPickerScreen and AlertPopup(AlertType.TechResearched)
+     */
     fun getDescription(ruleset: Ruleset): String {
         val lineList = ArrayList<String>() // more readable than StringBuilder, with same performance for our use-case
         for (unique in uniques) lineList += unique.tr()
@@ -35,8 +52,8 @@ class Technology {
             }
 
         val viewingCiv = UncivGame.Current.worldScreen.viewingCiv
-        val enabledUnits = getEnabledUnits(viewingCiv).filter { "Will not be displayed in Civilopedia" !in it.uniques }
-        if (enabledUnits.isNotEmpty()) {
+        val enabledUnits = getEnabledUnits(viewingCiv)
+        if (enabledUnits.any()) {
             lineList += "{Units enabled}: "
             for (unit in enabledUnits)
                 lineList += " * " + unit.name.tr() + " (" + unit.getShortDescription() + ")"
@@ -44,31 +61,22 @@ class Technology {
 
         val enabledBuildings = getEnabledBuildings(viewingCiv)
 
-        val regularBuildings = enabledBuildings.filter {
-            !it.isAnyWonder()
-                    && "Will not be displayed in Civilopedia" !in it.uniques
-                    &&  !(!viewingCiv.gameInfo.hasReligionEnabled() && it.uniques.contains("Hidden when religion is disabled"))
-        }
-        if (regularBuildings.isNotEmpty()) {
+        val regularBuildings = enabledBuildings.filter { !it.isAnyWonder() }
+        if (regularBuildings.any()) {
             lineList += "{Buildings enabled}: "
             for (building in regularBuildings)
                 lineList += "* " + building.name.tr() + " (" + building.getShortDescription(ruleset) + ")"
         }
 
-        val wonders = enabledBuildings.filter {
-            it.isAnyWonder()
-                    && "Will not be displayed in Civilopedia" !in it.uniques
-        }
-        if (wonders.isNotEmpty()) {
+        val wonders = enabledBuildings.filter { it.isAnyWonder() }
+        if (wonders.any()) {
             lineList += "{Wonders enabled}: "
             for (wonder in wonders)
                 lineList += " * " + wonder.name.tr() + " (" + wonder.getShortDescription(ruleset) + ")"
         }
 
-        for (building in getObsoletedBuildings(viewingCiv)
-                .filter { "Will not be displayed in Civilopedia" !in it.uniques })
+        for (building in getObsoletedBuildings(viewingCiv))
             lineList += "[${building.name}] obsoleted"
-
 
         for (resource in ruleset.tileResources.values.asSequence().filter { it.revealedBy == name }
                 .map { it.name })
@@ -81,47 +89,161 @@ class Technology {
         return lineList.joinToString("\n") { it.tr() }
     }
 
-    fun getEnabledBuildings(civInfo: CivilizationInfo): List<Building> {
-        var enabledBuildings = civInfo.gameInfo.ruleSet.buildings.values.filter {
-            it.requiredTech == name &&
-                    (it.uniqueTo == null || it.uniqueTo == civInfo.civName)
-        }
-        val replacedBuildings = enabledBuildings.mapNotNull { it.replaces }
-        enabledBuildings = enabledBuildings.filter { it.name !in replacedBuildings }
+    /**
+     * Returns a Sequence of [Building]s enabled by this Technology, filtered for [civInfo]'s uniques,
+     * nuclear weapons and religion settings, and without those expressly hidden from Civilopedia.
+     */
+    // Used for Civilopedia, Alert and Picker, so if any of these decide to ignore the "Will not be displayed in Civilopedia" unique this needs refactoring
+    fun getEnabledBuildings(civInfo: CivilizationInfo) = getFilteredBuildings(civInfo)
+        { it.requiredTech == name }
 
-        if (!civInfo.gameInfo.gameParameters.nuclearWeaponsEnabled)
-            enabledBuildings = enabledBuildings.filterNot { it.name == "Manhattan Project" }
+    /**
+     * Returns a Sequence of [Building]s obsoleted by this Technology, filtered for [civInfo]'s uniques,
+     * nuclear weapons and religion settings, and without those expressly hidden from Civilopedia.
+     */
+    // Used for Civilopedia, Alert and Picker, so if any of these decide to ignore the "Will not be displayed in Civilopedia" unique this needs refactoring
+    fun getObsoletedBuildings(civInfo: CivilizationInfo) = getFilteredBuildings(civInfo)
+        { it.uniqueObjects.any { unique -> unique.placeholderText == "Obsolete with []" && unique.params[0] == name } }
+    
+    // Helper: common filtering for both getEnabledBuildings and getObsoletedBuildings, difference via predicate parameter
+    private fun getFilteredBuildings(civInfo: CivilizationInfo, predicate: (Building)->Boolean): Sequence<Building> {
+        val nuclearWeaponsEnabled = civInfo.gameInfo.gameParameters.nuclearWeaponsEnabled
+        val religionEnabled = civInfo.gameInfo.hasReligionEnabled()
+
+        return civInfo.gameInfo.ruleSet.buildings.values.asSequence()
+            .filter {
+                predicate(it)   // expected to be the most selective, thus tested first
+                && (it.uniqueTo == civInfo.civName || it.uniqueTo==null && civInfo.getEquivalentBuilding(it) == it)
+                && (nuclearWeaponsEnabled || "Enables nuclear weapon" !in it.uniques)
+                && (religionEnabled || "Hidden when religion is disabled" !in it.uniques)
+                && "Will not be displayed in Civilopedia" !in it.uniques
+            }
+    }
+
+    /**
+     * Returns a Sequence of [BaseUnit]s enabled by this Technology, filtered for [civInfo]'s uniques,
+     * nuclear weapons and religion settings, and without those expressly hidden from Civilopedia.
+     */
+    // Used for Civilopedia, Alert and Picker, so if any of these decide to ignore the "Will not be displayed in Civilopedia" unique this needs refactoring
+    fun getEnabledUnits(civInfo: CivilizationInfo): Sequence<BaseUnit> {
+        val nuclearWeaponsEnabled = civInfo.gameInfo.gameParameters.nuclearWeaponsEnabled
+        val religionEnabled = civInfo.gameInfo.hasReligionEnabled()
+
+        return civInfo.gameInfo.ruleSet.units.values.asSequence()
+            .filter {
+                it.requiredTech == name
+                && (it.uniqueTo == civInfo.civName || it.uniqueTo==null && civInfo.getEquivalentUnit(it) == it)
+                && (nuclearWeaponsEnabled || it.uniqueObjects.none { unique -> unique.placeholderText == "Nuclear weapon of Strength []" })
+                && (religionEnabled || "Hidden when religion is disabled" !in it.uniques)
+                && "Will not be displayed in Civilopedia" !in it.uniques
+            }
+    }
+
+
+    override fun makeLink() = "Technology/$name"
+    override fun hasCivilopediaTextLines() = true
+    override fun replacesCivilopediaDescription() = true
+
+    override fun getCivilopediaTextLines(ruleset: Ruleset): List<FormattedLine> {
+        val lineList = ArrayList<FormattedLine>()
+
+        if (quote.isNotEmpty()) {
+            lineList += FormattedLine(quote, size=22, color="#DCB")
+        }
+
+        if (prerequisites.isNotEmpty()) {
+            lineList += FormattedLine()
+            if (prerequisites.size == 1)
+                prerequisites.first().let { lineList += FormattedLine("Required tech: [$it]", link = "Technology/$it") }
+            else {
+                lineList += FormattedLine("Requires all of the following:")
+                prerequisites.forEach {
+                    lineList += FormattedLine(it, link = "Technology/$it")
+                }
+            }
+        }
+
+        val leadsTo = ruleset.technologies.values.filter { name in it.prerequisites }
+        if (leadsTo.isNotEmpty()) {
+            lineList += FormattedLine()
+            if (leadsTo.size == 1)
+                leadsTo.first().let { lineList += FormattedLine("Leads to [${it.name}]", link = it.makeLink()) }
+            else {
+                lineList += FormattedLine("Leads to:")
+                leadsTo.forEach {
+                    lineList += FormattedLine(it.name, link = it.makeLink())
+                }
+            }
+        }
         
-        if (!civInfo.gameInfo.hasReligionEnabled())
-            enabledBuildings = enabledBuildings.filterNot { it.uniques.contains("Hidden when religion is disabled") }
-
-        return enabledBuildings
-    }
-
-    fun getObsoletedBuildings(civInfo: CivilizationInfo): Sequence<Building> {
-        val obsoletedBuildings = civInfo.gameInfo.ruleSet.buildings.values.asSequence()
-                .filter { it.uniqueObjects.any { it.placeholderText=="Obsolete with []" && it.params[0]==name } }
-        return obsoletedBuildings.filter { civInfo.getEquivalentBuilding(it.name)==it }
-    }
-
-    fun getEnabledUnits(civInfo: CivilizationInfo): List<BaseUnit> {
-        var enabledUnits = civInfo.gameInfo.ruleSet.units.values.filter {
-            it.requiredTech == name &&
-                    (it.uniqueTo == null || it.uniqueTo == civInfo.civName)
+        if (uniques.isNotEmpty()) {
+            lineList += FormattedLine()
+            for (unique in uniqueObjects) lineList += FormattedLine(unique)
         }
-        val replacedUnits = civInfo.gameInfo.ruleSet.units.values.filter { it.uniqueTo == civInfo.civName }
-                .mapNotNull { it.replaces }
-        enabledUnits = enabledUnits.filter { it.name !in replacedUnits }
 
-        if (!civInfo.gameInfo.gameParameters.nuclearWeaponsEnabled)
-            enabledUnits = enabledUnits.filterNot { it.uniques.contains("Requires Manhattan Project") }
+        var wantEmpty = true
+        for (improvement in ruleset.tileImprovements.values)
+            for (unique in improvement.uniqueObjects) {
+                if (unique.placeholderText == "[] once [] is discovered" && unique.params.last() == name) {
+                    if (wantEmpty) { lineList += FormattedLine(); wantEmpty = false }
+                    lineList += FormattedLine("[${unique.params[0]}] from every [${improvement.name}]",
+                        link = improvement.makeLink())
+                } else if (unique.placeholderText == "[] on [] tiles once [] is discovered" && unique.params.last() == name) {
+                    if (wantEmpty) { lineList += FormattedLine(); wantEmpty = false }
+                    lineList += FormattedLine("[${unique.params[0]}] from every [${improvement.name}] on [${unique.params[1]}] tiles",
+                        link = improvement.makeLink())
+                }
+            }
 
-        return enabledUnits
+        val viewingCiv = UncivGame.Current.worldScreen.viewingCiv
+        val enabledUnits = getEnabledUnits(viewingCiv)
+        if (enabledUnits.any()) {
+            lineList += FormattedLine()
+            lineList += FormattedLine("{Units enabled}:")
+            for (unit in enabledUnits)
+                lineList += FormattedLine(unit.name.tr() + " (" + unit.getShortDescription() + ")", link = unit.makeLink())
+        }
+
+        val enabledBuildings = getEnabledBuildings(viewingCiv)
+            .partition { it.isAnyWonder() }
+        if (enabledBuildings.first.isNotEmpty()) {
+            lineList += FormattedLine()
+            lineList += FormattedLine("{Wonders enabled}:")
+            for (wonder in enabledBuildings.first)
+                lineList += FormattedLine(wonder.name.tr() + " (" + wonder.getShortDescription(ruleset) + ")", link = wonder.makeLink())
+        }
+        if (enabledBuildings.second.isNotEmpty()) {
+            lineList += FormattedLine()
+            lineList += FormattedLine("{Buildings enabled}:")
+            for (building in enabledBuildings.second)
+                lineList += FormattedLine(building.name.tr() + " (" + building.getShortDescription(ruleset) + ")", link = building.makeLink())
+        }
+
+        val obsoletedBuildings = getObsoletedBuildings(viewingCiv)
+        if (obsoletedBuildings.any()) {
+            lineList += FormattedLine()
+            obsoletedBuildings.forEach {
+                lineList += FormattedLine("[${it.name}] obsoleted", link = it.makeLink())
+            }
+        }
+
+        val revealedResources = ruleset.tileResources.values.asSequence().filter { it.revealedBy == name }
+        if (revealedResources.any()) {
+            lineList += FormattedLine()
+            revealedResources.forEach {
+                lineList += FormattedLine("Reveals [${it.name}] on the map", link = it.makeLink())
+            }
+        }
+
+        val tileImprovements = ruleset.tileImprovements.values.asSequence().filter { it.techRequired == name }
+        if (tileImprovements.any()) {
+            lineList += FormattedLine()
+            lineList += FormattedLine("{Tile improvements enabled}:")
+            tileImprovements.forEach {
+                lineList += FormattedLine(it.name, link = it.makeLink())
+            }
+        }
+
+        return lineList
     }
-
-    override fun toString() = name
-
-    fun era(): String = column!!.era
-
-    fun isContinuallyResearchable() = uniques.contains("Can be continually researched")
 }
