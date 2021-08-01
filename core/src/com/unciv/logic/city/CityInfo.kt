@@ -433,7 +433,6 @@ class CityInfo {
     }
 
     fun reassignPopulation() {
-        getNeighbouringCivs()
         var foodWeight = 1f
         var foodPerTurn = 0f
         while (foodWeight < 3 && foodPerTurn <= 0) {
@@ -643,11 +642,11 @@ class CityInfo {
                 if (!tilesList.contains(tile))
                     cityPositionList.add(tile)
 
-        val Neighaouringcivs = cityPositionList.asSequence()
+        val NeighbouringCivs = cityPositionList.asSequence()
             .map { if(it.getOwner()?.civName == null) "" else it.getOwner()!!.civName} // to avoid a null pointer exception
             .distinct().toList()
 
-        return Neighaouringcivs
+        return NeighbouringCivs
     }
 
 
