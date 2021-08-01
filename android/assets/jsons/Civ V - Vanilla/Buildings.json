@@ -455,7 +455,7 @@
 		"culture": 1,
 		"greatPersonPoints": {"Great Artist": 1},
 		"isWonder": true,
-		"uniques": ["[+25]% great person generation [in all cities]"],
+		"uniques": ["[+25]% great person generation [in all cities]", "Free Great Person"],
 		"requiredTech": "Theology",
 		"quote": "'For it soars to a height to match the sky, and as if surging up from among the other buildings it stands on high and looks down upon the remainder of the city, adorning it, because it is a part of it, but glorying in its own beauty'  - Procopius, De Aedificis"
 	},
@@ -1046,7 +1046,7 @@
 		"isWonder": true,
 		"culture": 1,
 		"greatPersonPoints": {"Great Merchant": 1},
-		"uniques": ["[+1] population [in all cities]", "[+1 Happiness] [in all cities]", "Provides a free [Broadcast Tower] [in this city]"],
+		"uniques": ["[+1] population [in all cities]", "[+1 Happiness] [in all cities]", "Provides a free [Broadcast Tower] [in all cities]"],
 		"requiredTech": "Telecommunications",
 		"quote": "'Nothing travels faster than light with the possible exception of bad news, which obeys its own special rules.' - Douglas Adams"
 	},
