@@ -252,10 +252,8 @@ class TradeEvaluation {
     fun evaluateDistanceSellCost(civInfo: CivilizationInfo, capitalcity: CityInfo, city: CityInfo): Int{
         val distanceBetweenCities = capitalcity.getCenterTile().aerialDistanceTo(city.getCenterTile())
 
-        if (distanceBetweenCities < 500){ // calculates distance between cities
-            return min(50,  capitalcity.getCenterTile().aerialDistanceTo(city.getCenterTile()) * civInfo.getEraNumber())
-        }
-        return 50 // maximum amount of distance discounted
+        if (distanceBetweenCities < 500)  return 0
+        return min(50,  500 - capitalcity.getCenterTile().aerialDistanceTo(city.getCenterTile()) * civInfo.getEraNumber())
     }
 
     fun evaluatePeaceCostForThem(ourCivilization: CivilizationInfo, otherCivilization: CivilizationInfo): Int {
