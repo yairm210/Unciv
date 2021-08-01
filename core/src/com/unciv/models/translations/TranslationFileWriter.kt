@@ -12,6 +12,7 @@ import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.tile.TileResource
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.ruleset.unit.Promotion
+import com.unciv.models.ruleset.unit.UnitType
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import java.lang.reflect.Field
@@ -205,7 +206,7 @@ object TranslationFileWriter {
             "non-air",
             "relevant",
             "Nuclear Weapon",
-            "Submarine",
+            "City",
             // These are up for debate
             "Air",
             "land units",
@@ -379,6 +380,7 @@ object TranslationFileWriter {
             "Tutorials" -> this.javaClass // dummy value
             "UnitPromotions" -> emptyArray<Promotion>().javaClass
             "Units" -> emptyArray<BaseUnit>().javaClass
+            "UnitTypes" -> emptyArray<UnitType>().javaClass
             else -> this.javaClass // dummy value
         }
     }
