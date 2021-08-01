@@ -10,10 +10,6 @@ AI accepts research agreement offers
 
 Buildings from era are applied before buildings from policies
 
-Translations update 
-
-Updated Hungarian Translates  - By JurDan775
-
 By SomeTroglodyte:
 - Civilopedia phase 8 - Nations and Promotions 
 - UnitActionType now knows keys, sounds and most icons 

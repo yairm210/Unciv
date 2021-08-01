@@ -159,7 +159,7 @@ class TileMap {
 
     /** Tries to place the [unitName] into the [TileInfo] closest to the given [position]
      * @param position where to try to place the unit (or close - max 10 tiles distance)
-     * @param unitName name of the [BaseUnit] to create and place
+     * @param unitName name of the [BaseUnit][com.unciv.models.ruleset.unit.BaseUnit] to create and place
      * @param civInfo civilization to assign unit to
      * @return created [MapUnit] or null if no suitable location was found
      * */
@@ -335,9 +335,9 @@ class TileMap {
      * Returns -1 if not neighbors
      */
     fun getNeighborTileClockPosition(tile: TileInfo, otherTile: TileInfo): Int {
-        var radius = mapParameters.mapSize.radius
-        if (mapParameters.shape == MapShape.rectangular)
-            radius = mapParameters.mapSize.width / 2
+        val radius = if (mapParameters.shape == MapShape.rectangular)
+                mapParameters.mapSize.width / 2
+            else mapParameters.mapSize.radius
 
         val xDifference = tile.position.x - otherTile.position.x
         val yDifference = tile.position.y - otherTile.position.y
@@ -356,6 +356,14 @@ class TileMap {
             else -> -1
         }
     }
+
+    /** Convert relative direction of otherTile seen from tile's position into a vector
+     * in world coordinates of length sqrt(3), so that it can be used to go from tile center to
+     * the edge of the hex in that direction (meaning the center of the border between the hexes)
+     */
+    fun getNeighborTilePositionAsWorldCoords(tile: TileInfo, otherTile: TileInfo): Vector2 =
+        HexMath.getClockDirectionToWorldVector(getNeighborTileClockPosition(tile, otherTile))
+
 
     /**
      * Returns the closest position to (0, 0) outside the map which can be wrapped

@@ -606,11 +606,13 @@ class CivilizationInfo {
         for (flag in flagsCountdown.keys.toList()) {
             // the "ignoreCase = true" is to catch 'cityStateGreatPersonGift' instead of 'CityStateGreatPersonGift' being in old save files 
             if (flag == CivFlags.CityStateGreatPersonGift.name || flag.equals(CivFlags.CityStateGreatPersonGift.name, ignoreCase = true)) {
-                val cityStateAllies = getKnownCivs().filter { it.isCityState() && it.getAllyCiv() == civName }.count()
+                val cityStateAllies = getKnownCivs().filter { it.isCityState() && it.getAllyCiv() == civName }
 
-                if (cityStateAllies >= 1) flagsCountdown[flag] = flagsCountdown[flag]!! - 1
+                if (cityStateAllies.any()) flagsCountdown[flag] = flagsCountdown[flag]!! - 1
 
-                if (flagsCountdown[flag]!! < min(cityStateAllies, 10)) {
+                if (flagsCountdown[flag]!! < min(cityStateAllies.count(), 10) && cities.isNotEmpty()
+                    && cityStateAllies.any { it.cities.isNotEmpty() }
+                ) {
                     gainGreatPersonFromCityState()
                     flagsCountdown[flag] = turnsForGreatPersonFromCityState()
                 }
@@ -816,7 +818,7 @@ class CivilizationInfo {
 
     /** Gain a random great person from a random city state */
     private fun gainGreatPersonFromCityState() {
-        val givingCityState = getKnownCivs().filter { it.isCityState() && it.getAllyCiv() == civName}.random()
+        val givingCityState = getKnownCivs().filter { it.isCityState() && it.getAllyCiv() == civName && it.cities.isNotEmpty()}.random()
         var giftableUnits = gameInfo.ruleSet.units.values.filter { it.isGreatPerson() }
         if (!gameInfo.hasReligionEnabled()) giftableUnits = giftableUnits.filterNot { it.uniques.contains("Great Person - [Faith]")}
         if (giftableUnits.isEmpty()) // For badly defined mods that don't have great people but do have the policy that makes city states grant them

@@ -9,7 +9,7 @@ import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.Unique
 import com.unciv.models.stats.INamed
 import com.unciv.models.translations.tr
-import com.unciv.ui.civilopedia.CivilopediaText
+import com.unciv.ui.civilopedia.ICivilopediaText
 import com.unciv.ui.civilopedia.FormattedLine
 import com.unciv.ui.utils.Fonts
 import kotlin.math.pow
@@ -18,7 +18,7 @@ import kotlin.math.pow
 
 /** This is the basic info of the units, as specified in Units.json,
  in contrast to MapUnit, which is a specific unit of a certain type that appears on the map */
-class BaseUnit : INamed, IConstruction, CivilopediaText() {
+class BaseUnit : INamed, IConstruction, ICivilopediaText {
 
     override lateinit var name: String
     var cost: Int = 0
@@ -40,6 +40,8 @@ class BaseUnit : INamed, IConstruction, CivilopediaText() {
     var replaces: String? = null
     var uniqueTo: String? = null
     var attackSound: String? = null
+
+    override var civilopediaText = listOf<FormattedLine>()
 
     fun getShortDescription(): String {
         val infoList = mutableListOf<String>()

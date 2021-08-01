@@ -9,6 +9,7 @@ import com.unciv.logic.map.TileMap
 import com.unciv.logic.map.mapgenerator.MapGenerator
 import com.unciv.models.metadata.GameParameters
 import com.unciv.models.ruleset.Era
+import com.unciv.models.ruleset.ModOptionsConstants
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.tile.ResourceType
@@ -235,6 +236,7 @@ object GameStarter {
                 // An unusually bad spawning location
                 addConsolationPrize(gameInfo, startingLocation, 45 - startingLocation.getTileStartScore().toInt())
             }
+            
             if(civ.isCityState())
                 addCityStateLuxury(gameInfo, startingLocation)
 
@@ -308,11 +310,19 @@ object GameStarter {
                 return civ.getEquivalentUnit(unit).name
             }
 
-            // City states & one city challengers should spawn with one settler only regardless of era and difficulty
-            if (civ.isCityState() || civ.playerType==PlayerType.Human && gameInfo.gameParameters.oneCityChallenge) {
+            // City states should only spawn with one settler regardless of difficulty, but this may be disabled in mods 
+            if (civ.isCityState() && !ruleSet.modOptions.uniques.contains(ModOptionsConstants.allowCityStatesSpawnUnits)) {
                 val startingSettlers = startingUnits.filter { settlerLikeUnits.contains(it) }
 
                 startingUnits.clear()
+                startingUnits.add(startingSettlers.random())
+            }
+            
+            // One city challengers should spawn with one settler only regardless of era and difficulty
+            if (civ.playerType == PlayerType.Human && gameInfo.gameParameters.oneCityChallenge) {
+                val startingSettlers = startingUnits.filter { settlerLikeUnits.contains(it) }
+                
+                startingUnits.removeAll(startingSettlers)
                 startingUnits.add(startingSettlers.random())
             }
 
