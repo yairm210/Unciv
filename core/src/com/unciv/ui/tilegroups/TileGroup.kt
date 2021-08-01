@@ -11,7 +11,6 @@ import com.unciv.UncivGame
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.RoadStatus
 import com.unciv.logic.map.TileInfo
-import com.unciv.models.ruleset.unit.UnitType
 import com.unciv.ui.cityscreen.YieldGroup
 import com.unciv.ui.utils.ImageGetter
 import com.unciv.ui.utils.center
@@ -557,14 +556,17 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings, 
                 ImageGetter.imageExists(specificUnitIconLocation + "-" + militaryUnit.civInfo.nation.style) ->
                     specificUnitIconLocation + "-" + militaryUnit.civInfo.nation.style
                 ImageGetter.imageExists(specificUnitIconLocation) -> specificUnitIconLocation
-                militaryUnit.baseUnit.replaces!=null &&
+                militaryUnit.baseUnit.replaces != null &&
                         ImageGetter.imageExists(tileSetStrings.unitsLocation + militaryUnit.baseUnit.replaces) ->
                     tileSetStrings.unitsLocation + militaryUnit.baseUnit.replaces
-
-                unitType == UnitType.Mounted -> tileSetStrings.unitsLocation + "Horseman"
-                unitType == UnitType.Ranged -> tileSetStrings.unitsLocation + "Archer"
-                unitType == UnitType.Armor -> tileSetStrings.unitsLocation + "Tank"
-                unitType == UnitType.Siege -> tileSetStrings.unitsLocation + "Catapult"
+    
+                /** FIXME: these should probably not be hardcoded, but I don't know any other easy solution
+                 *         other than to add a default sprite for each unitType, which also felt like overkill
+                 */
+                unitType!!.name.contains("Mounted", ignoreCase = true) -> tileSetStrings.unitsLocation + "Horseman"
+                militaryUnit.baseUnit.isRanged() -> tileSetStrings.unitsLocation + "Archer"
+                unitType.name.contains("Armor", ignoreCase = true) -> tileSetStrings.unitsLocation + "Tank"
+                unitType.name == "Siege" -> tileSetStrings.unitsLocation + "Catapult"
                 unitType.isLandUnit() && ImageGetter.imageExists(tileSetStrings.landUnit) -> tileSetStrings.landUnit
                 unitType.isWaterUnit() && ImageGetter.imageExists(tileSetStrings.waterUnit) -> tileSetStrings.waterUnit
                 else -> ""

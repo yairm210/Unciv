@@ -36,7 +36,7 @@ class MapUnitCombatant(val unit: MapUnit) : ICombatant {
     }
 
     override fun getUnitType(): UnitType {
-        return unit.type
+        return unit.type!!
     }
 
     override fun toString(): String {

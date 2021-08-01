@@ -10,7 +10,6 @@ import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.scenes.scene2d.actions.RepeatAction
 import com.badlogic.gdx.scenes.scene2d.ui.Button
-import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.utils.Align
@@ -24,7 +23,6 @@ import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.models.Tutorial
 import com.unciv.models.UncivSound
 import com.unciv.models.ruleset.tile.ResourceType
-import com.unciv.models.ruleset.unit.UnitType
 import com.unciv.models.translations.tr
 import com.unciv.ui.cityscreen.CityScreen
 import com.unciv.ui.civilopedia.CivilopediaScreen
@@ -753,7 +751,7 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Cam
                     .flatMap { it.cities.asSequence() }.any { viewingCiv.exploredTiles.contains(it.location) }
         }
         displayTutorial(Tutorial.ApolloProgram) { viewingCiv.hasUnique("Enables construction of Spaceship parts") }
-        displayTutorial(Tutorial.SiegeUnits) { viewingCiv.getCivUnits().any { it.type == UnitType.Siege } }
+        displayTutorial(Tutorial.SiegeUnits) { viewingCiv.getCivUnits().any { it.type!!.name == "Siege" } }
         displayTutorial(Tutorial.Embarking) { viewingCiv.hasUnique("Enables embarkation for land units") }
         displayTutorial(Tutorial.NaturalWonders) { viewingCiv.naturalWonders.size > 0 }
     }

@@ -25,7 +25,7 @@ class TechManager {
     @Transient
     private var researchedTechUniques = ArrayList<Unique>()
 
-    // MapUnit.canPassThrough is the most called function in the game, and having these extremely specific booleans is or way of improving the time cost
+    // MapUnit.canPassThrough is the most called function in the game, and having these extremely specific booleans is one way of improving the time cost
     @Transient
     var wayfinding = false
     @Transient

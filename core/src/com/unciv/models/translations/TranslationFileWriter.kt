@@ -12,7 +12,6 @@ import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.tile.TileResource
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.ruleset.unit.Promotion
-import com.unciv.models.ruleset.unit.UnitType
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import java.lang.reflect.Field
@@ -200,7 +199,7 @@ object TranslationFileWriter {
             "Buildings",
             "Building"
         )) }
-        val unitTypeMap = UnitType.values().map { it.name }.toMutableSet().apply { addAll(sequenceOf(
+        val unitTypeMap = ruleset.unitTypes.keys.toMutableSet().apply { addAll(sequenceOf(
             "Military",
             "Civilian",
             "non-air",

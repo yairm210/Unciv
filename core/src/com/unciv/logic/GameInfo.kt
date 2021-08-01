@@ -9,6 +9,7 @@ import com.unciv.logic.civilization.*
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
 import com.unciv.models.Religion
+import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.metadata.GameParameters
 import com.unciv.models.ruleset.Difficulty
 import com.unciv.models.ruleset.Ruleset
@@ -235,8 +236,8 @@ class GameInfo {
                 .filter { it.isMilitary() }
                 .filter { it.isBuildable(barbarianCiv) }
 
-        val landUnits = unitList.filter { it.unitType.isLandUnit() }
-        val waterUnits = unitList.filter { it.unitType.isWaterUnit() }
+        val landUnits = unitList.filter { it.isLandUnit() }
+        val waterUnits = unitList.filter { it.isWaterUnit() }
 
         val unit: String
         if (waterUnits.isNotEmpty() && tileToPlace.isCoastalTile() && Random().nextBoolean())
@@ -272,7 +273,7 @@ class GameInfo {
         if (missingMods.isNotEmpty()) {
             throw UncivShowableException("Missing mods: [$missingMods]")
         }
-
+        
         // compatibility code translating changed tech name "Railroad" - to be deprecated soon
         val (oldTechName, newTechName) = "Railroad" to "Railroads"
         if (ruleSet.technologies[oldTechName] == null && ruleSet.technologies[newTechName] != null) {
@@ -282,6 +283,9 @@ class GameInfo {
         }
 
         removeMissingModReferences()
+
+        for (baseUnit in ruleSet.units.values)
+            baseUnit.ruleset = ruleSet
 
         tileMap.setTransients(ruleSet)
 

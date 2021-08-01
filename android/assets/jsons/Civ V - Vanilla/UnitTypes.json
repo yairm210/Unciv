@@ -1,0 +1,123 @@
+[
+    {
+        "name": "Civilian",
+        "domain": "Land"
+    },
+    {
+        "name": "Sword",
+        "domain": "Land"
+    },
+    {
+        "name": "Gunpowder",
+        "domain": "Land"
+    },
+    {
+        "name": "Archery",
+        "domain": "Land"
+    },
+    {
+        "name": "Ranged Gunpowder",
+        "domain": "Land"
+    },
+    {
+        "name": "Scout",
+        "domain": "Land"
+    },
+    {
+        "name": "Mounted",
+        "domain": "Land"
+    },
+    {
+        "name": "Armored",
+        "domain": "Land"
+    },
+    {
+        "name": "Siege",
+        "domain": "Land"
+    },
+    {
+        "name": "Civilian Water",
+        "domain": "Water"
+    },
+    {
+        "name": "Melee Water",
+        "domain": "Water"
+    },
+    {
+        "name": "Ranged Water",
+        "domain": "Water"
+    },
+    {
+        "name": "Submarine",
+        "domain": "Water",
+        "uniques": ["Can enter ice tiles", "Invisible to others"]
+    },
+    {
+        "name": "Aircraft Carrier",
+        "domain": "Water"
+    },
+    {
+        "name": "Fighter",
+        "domain": "Air",
+        "uniques": ["Aircraft", "6 tiles in every direction always visible"]
+    },
+    {
+        "name": "Bomber",
+        "domain": "Air",
+        "uniques": ["Aircraft"]
+    },
+    {
+        "name": "Atomic Bomber",
+        "domain": "Air",
+        "uniques": ["Aircraft"]
+    },
+    {
+        "name": "Missile",
+        "domain": "Air",
+        "uniques": ["Self-destructs when attacking", "Cannot be intercepted"]
+    },
+    {
+        "name": "Helicopter",
+        "domain": "Land",
+        "uniques": ["Can pass through impassable tiles"]
+    },
+    
+    // Deprecated unit types required for mods without a UnitTypes.json file to work
+    
+    {
+        "name": "Melee",
+        "domain": "Land"
+    },
+    {
+        "name": "Ranged",
+        "domain": "Land"
+    },
+    {
+        "name": "Armor",
+        "domain": "Land"
+    },
+    {
+        "name": "WaterCivilian",
+        "domain": "Water"
+    },
+    {
+        "name": "WaterMelee",
+        "domain": "Water"
+    },
+    {
+        "name": "WaterRanged",
+        "domain": "Water"
+    },
+    {
+        "name": "WaterSubmarine",
+        "domain": "Water"
+    },
+    {
+        "name": "WaterAircraftCarrier",
+        "domain": "Water"
+    },
+    {
+        "name": "AtomicBomber",
+        "Domain": "Air"
+    }
+]

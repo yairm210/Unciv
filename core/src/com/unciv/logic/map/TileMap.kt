@@ -187,7 +187,7 @@ class TileMap {
             var potentialCandidates = getPassableNeighbours(currentTile)
             while (unitToPlaceTile == null && tryCount++ < 10) {
                 unitToPlaceTile = potentialCandidates
-                        .sortedByDescending { if (unit.type.isLandUnit()) it.isLand else true } // Land units should prefer to go into land tiles
+                        .sortedByDescending { if (unit.baseUnit.isLandUnit()) it.isLand else true } // Land units should prefer to go into land tiles
                         .firstOrNull { unit.movement.canMoveTo(it) }
                 if (unitToPlaceTile != null) continue
                 // if it's not found yet, let's check their neighbours
