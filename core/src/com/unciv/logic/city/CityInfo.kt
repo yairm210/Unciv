@@ -634,12 +634,12 @@ class CityInfo {
 
 
     fun getNeighbouringCivs(): List<String> {
-        val dimensionalList: ArrayList<TileInfo> = getTiles().toList() as ArrayList<TileInfo>
+        val tilesList: ArrayList<TileInfo> = getTiles().toList() as ArrayList<TileInfo>
         val cityPositionList: ArrayList<TileInfo> = arrayListOf()
 
-        for (tiles in dimensionalList)
+        for (tiles in tilesList)
             for (tile in tiles.neighbors)
-                if (!dimensionalList.contains(tile))
+                if (!tilesList.contains(tile))
                     cityPositionList.add(tile)
 
 
