@@ -2111,7 +2111,7 @@ ImprovementIcons/Railroad
   orig: 100, 100
   offset: 0, 0
   index: -1
-TileSets/Default/road
+TileSets/Default/Road
   rotate: false
   xy: 1421, 1847
   size: 61, 11
@@ -4085,7 +4085,7 @@ TileSets/FantasyHex/Units/Worker
   orig: 32, 28
   offset: 0, 0
   index: -1
-TileSets/FantasyHex/road
+TileSets/FantasyHex/Road
   rotate: false
   xy: 1121, 1847
   size: 61, 11
