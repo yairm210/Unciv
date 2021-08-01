@@ -6,6 +6,7 @@ import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.logic.map.RoadStatus
 import com.unciv.models.Counter
 import com.unciv.models.ruleset.Building
+import com.unciv.models.ruleset.ModOptionsConstants
 import com.unciv.models.ruleset.Unique
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
@@ -457,7 +458,7 @@ class CityStats {
         }
 
         // AFTER we've gotten all the gold stats figured out, only THEN do we plonk that gold into Science
-        if (cityInfo.getRuleset().modOptions.uniques.contains("Can convert gold to science with sliders")) {
+        if (cityInfo.getRuleset().modOptions.uniques.contains(ModOptionsConstants.convertGoldToScience)) {
             val amountConverted = (newFinalStatList.values.sumByDouble { it.gold.toDouble() }
                     * cityInfo.civInfo.tech.goldPercentConvertedToScience).toInt().toFloat()
             if (amountConverted > 0) // Don't want you converting negative gold to negative science yaknow
