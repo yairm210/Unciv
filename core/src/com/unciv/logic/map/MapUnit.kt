@@ -841,21 +841,24 @@ class MapUnit {
         }
 
         // Map of the surrounding area
-        actions.add {
-            val revealCenter = tile.getTilesAtDistance(ANCIENT_RUIN_MAP_REVEAL_OFFSET).toList()
-                .random(tileBasedRandom)
-            val tilesToReveal = revealCenter
-                .getTilesInDistance(ANCIENT_RUIN_MAP_REVEAL_RANGE)
-                .filter { Random.nextFloat() < ANCIENT_RUIN_MAP_REVEAL_CHANCE }
-                .map { it.position }
-            civInfo.exploredTiles.addAll(tilesToReveal)
-            civInfo.updateViewableTiles()
-            civInfo.addNotification(
-                "We have found a crudely-drawn map in the ruins!",
-                tile.position,
-                "ImprovementIcons/Ancient ruins"
-            )
-        }
+        val revealCenter = tile.getTilesAtDistance(ANCIENT_RUIN_MAP_REVEAL_OFFSET)
+            .filter { it.position !in civInfo.exploredTiles }
+            .toList()
+            .randomOrNull(tileBasedRandom)
+        if (revealCenter != null)
+            actions.add {
+                val tilesToReveal = revealCenter
+                    .getTilesInDistance(ANCIENT_RUIN_MAP_REVEAL_RANGE)
+                    .filter { Random.nextFloat() < ANCIENT_RUIN_MAP_REVEAL_CHANCE }
+                    .map { it.position }
+                civInfo.exploredTiles.addAll(tilesToReveal)
+                civInfo.updateViewableTiles()
+                civInfo.addNotification(
+                    "We have found a crudely-drawn map in the ruins!",
+                    tile.position,
+                    "ImprovementIcons/Ancient ruins"
+                )
+            }
 
         (actions.random(tileBasedRandom))()
     }
