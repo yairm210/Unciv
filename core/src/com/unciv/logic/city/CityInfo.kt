@@ -634,18 +634,17 @@ class CityInfo {
     }
 
 
-    fun getNeighbouringCivs(): List<String?> {
+    fun getNeighbouringCivs(): List<String> {
         val tilesList: HashSet<TileInfo> = getTiles().toHashSet()
         val cityPositionList: ArrayList<TileInfo> = arrayListOf()
 
         for (tiles in tilesList)
             for (tile in tiles.neighbors)
                 if (!tilesList.contains(tile)) {
-                    println(tile)
                     cityPositionList.add(tile)
                 }
         val Neighaouringcivs = cityPositionList.asSequence()
-            .map { it.getOwner()?.civName }
+            .map { if(it.getOwner()?.civName == null) "" else it.getOwner()!!.civName}
             .distinct().toList()
 
         return Neighaouringcivs
