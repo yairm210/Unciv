@@ -980,8 +980,13 @@ class MapUnit {
         }
     }
 
+    /**
+     * Implementation of _`unitFilter`_
+     * @see <a href="https://github.com/yairm210/Unciv/wiki/Uniques#unitfilter">unitFilter</a>
+     */
+    //todo this is a pure function placed in region state-changing functions, while region pure has functions with side effects -> remove regions or clean up 
     fun matchesFilter(filter: String): Boolean {
-        if (filter.contains('{')) // multiple types at once - AND logic. Looks like:"{Military} {Land}"
+        if (filter.startsWith('{')) // multiple types at once - AND logic. Looks like:"{Military} {Land}"
             return filter.removePrefix("{").removeSuffix("}").split("} {")
                 .all { matchesFilter(it) }
         return when (filter) {

@@ -439,11 +439,15 @@ open class TileInfo {
 
     /**
      * Implementation of _`tileFilter`_
-     * @see <a href="https://github.com/yairm210/Unciv/wiki/uniques#user-content-tilefilter">tileFilter</a>
+     * @see <a href="https://github.com/yairm210/Unciv/wiki/Uniques#tilefilter">tileFilter</a>
      */
     fun matchesFilter(filter: String, civInfo: CivilizationInfo? = null): Boolean {
+        if (filter.startsWith('{')) // multiple types at once - AND logic. Looks like:"{Forest} {Hill}"
+            return filter.removePrefix("{").removeSuffix("}").split("} {")
+                .all { matchesFilter(it) }
         if (matchesTerrainFilter(filter, civInfo)) return true
         if (improvement != null && ruleset.tileImprovements[improvement]!!.matchesFilter(filter)) return true
+        if (improvement == null && filter == "unimproved") return true
         return false
     }
 

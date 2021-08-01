@@ -206,6 +206,7 @@ object TranslationFileWriter {
             fun submitString(item: Any) {
                 val string = item.toString()
 
+                //todo This needs to learn about {}-using "AND" filters
                 val parameters = string.getPlaceholderParameters()
                 var stringToTranslate = string
 
