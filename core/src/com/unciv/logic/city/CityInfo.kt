@@ -643,7 +643,7 @@ class CityInfo {
                     cityPositionList.add(tile)
 
         val NeighbouringCivs = cityPositionList.asSequence()
-            .map { if(it.getOwner()?.civName == null) "" else it.getOwner()!!.civName} // to avoid a null pointer exception
+            .map {it.getOwner()?.civName}.filterNotNull().toSet() // to avoid a null pointer exception
             .distinct().toList()
 
         return NeighbouringCivs
