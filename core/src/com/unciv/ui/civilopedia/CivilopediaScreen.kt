@@ -251,7 +251,7 @@ class CivilopediaScreen(
                 .map {
                     CivilopediaEntry(
                         it.name,
-                        it.getDescription(ruleset),
+                        "",
                         CivilopediaCategories.Technology.getImage?.invoke(it.name, imageSize),
                         (it as? ICivilopediaText).takeUnless { ct -> ct==null || ct.isCivilopediaTextEmpty() }
                     )
