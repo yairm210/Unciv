@@ -25,6 +25,15 @@ object Battle {
     fun moveAndAttack(attacker: ICombatant, attackableTile: AttackableTile) {
         if (attacker is MapUnitCombatant) {
             attacker.unit.movement.moveToTile(attackableTile.tileToAttackFrom)
+            /** You might ask: When can this possibly happen?
+             * We always receive an AttackableTile, which means that it was returned from getAttackableTiles!
+             * The answer is: when crossing a HIDDEN TILE.
+             * When calculating movement distance, we assume that a hidden tile is 1 movement point,
+             * which can lead to EXCEEDINGLY RARE edge cases where you think
+             * that you can attack a tile by passing through a hidden tile,
+             * but the hidden tile is actually IMPASSIBLE so you stop halfway!
+             */
+            if (attacker.getTile() != attackableTile.tileToAttackFrom) return
             if (attacker.unit.hasUnique("Must set up to ranged attack") && attacker.unit.action != Constants.unitActionSetUp) {
                 attacker.unit.action = Constants.unitActionSetUp
                 attacker.unit.useMovementPoints(1f)
