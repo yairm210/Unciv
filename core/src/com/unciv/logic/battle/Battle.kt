@@ -174,8 +174,7 @@ object Battle {
         var potentialDamageToDefender = BattleDamage.calculateDamageToDefender(attacker, attacker.getTile(), defender)
         var potentialDamageToAttacker = BattleDamage.calculateDamageToAttacker(attacker, attacker.getTile(), defender)
 
-        var damageToAttacker = attacker.getHealth() // These variables names don't make any sense as of yet ...
-        var damageToDefender = defender.getHealth()
+        val defenderHealthBefore = defender.getHealth()
 
         if (defender is MapUnitCombatant && defender.unit.isCivilian() && attacker.isMelee()) {
             captureCivilianUnit(attacker, defender)
@@ -198,30 +197,30 @@ object Battle {
             }
         }
 
-        damageToAttacker -= attacker.getHealth() // ... but from here on they are accurate
-        damageToDefender -= defender.getHealth()
-
-        plunderFromDamage(attacker, defender, damageToDefender, "Earn []% of the damage done to [] units as []")
-        plunderFromDamage(defender, attacker, damageToAttacker, "Earn []% of the damage done while defending against [] units as []")
+        plunderFromDamage(attacker, defender, defenderHealthBefore - defender.getHealth())
     }
 
+    private object PlunderableStats {
+        val stats = setOf (Stat.Gold, Stat.Science, Stat.Culture, Stat.Faith)
+    }
     private fun plunderFromDamage(
         plunderingUnit: ICombatant,
         plunderedUnit: ICombatant,
-        damageDealt: Int,
-        uniquePlaceholder: String
+        damageDealt: Int
     ) {
         // implementation based on the description of the original civilopedia, see issue #4374
         if (plunderingUnit !is MapUnitCombatant) return
         val plunderedGoods = Stats()
 
-        for (unique in plunderingUnit.unit.getMatchingUniques(uniquePlaceholder)) {
+        for (unique in plunderingUnit.unit.getMatchingUniques("Earn []% of the damage done to [] units as []")) {
             if (plunderedUnit.matchesCategory(unique.params[1])) {
-                val stat = Stat.valueOfOrNull(unique.params[2])
-                    ?: continue  // silently ignore bad mods here - or test in checkModLinks
-                if (!stat.canBePlundered) continue
+                // silently ignore bad mods here - or test in checkModLinks
+                val stat = Stat.values().firstOrNull { it.name == unique.params[2] }
+                    ?: continue  // stat badly defined in unique
+                if (stat !in PlunderableStats.stats)
+                    continue     // stat known but not valid 
                 val percentage = unique.params[0].toFloatOrNull()
-                    ?: continue  // silently ignore bad mods here - or test in checkModLinks
+                    ?: continue  // percentage parameter invalid
                 plunderedGoods.add(stat, percentage / 100f * damageDealt)
             }
         }
