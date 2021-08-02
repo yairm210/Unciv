@@ -230,7 +230,7 @@ class TradeEvaluation {
             TradeType.City -> {
                 val city = civInfo.cities.first { it.id == offer.name }
                 val capitalcity = civInfo.getCapital()
-                val distanceCost = evaluateSellDiscountForCitiesFarFromCapital(civInfo, capitalcity, city)
+                val distanceCost = distanceCityTradeModifier(civInfo, capitalcity, city)
                 val stats = city.cityStats.currentCityStats
                 val sumOfStats = stats.culture + stats.gold + stats.science + stats.production + stats.happiness + stats.food - distanceCost
                 return sumOfStats.toInt() * 100
@@ -249,7 +249,7 @@ class TradeEvaluation {
             }
         }
     }
-    fun evaluateSellDiscountForCitiesFarFromCapital(civInfo: CivilizationInfo, capitalcity: CityInfo, city: CityInfo): Int{
+    fun distanceCityTradeModifier(civInfo: CivilizationInfo, capitalcity: CityInfo, city: CityInfo): Int{
         val distanceBetweenCities = capitalcity.getCenterTile().aerialDistanceTo(city.getCenterTile())
 
         if (distanceBetweenCities < 500)  return 0

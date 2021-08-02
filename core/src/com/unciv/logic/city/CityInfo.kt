@@ -642,11 +642,9 @@ class CityInfo {
                 if (!tilesList.contains(tile))
                     cityPositionList.add(tile)
 
-        val NeighbouringCivs = cityPositionList.asSequence()
-            .map {it.getOwner()?.civName}.filterNotNull().toSet() // to avoid a null pointer exception
+        return cityPositionList.asSequence()
+            .map { it.getOwner()?.civName }.filterNotNull().toSet() 
             .distinct().toList()
-
-        return NeighbouringCivs
     }
 
 
