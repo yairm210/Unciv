@@ -228,7 +228,9 @@ class CivilopediaScreen(
                     )
                 }
         categoryToEntries[CivilopediaCategories.Unit] = ruleset.units.values
-                .filter { "Will not be displayed in Civilopedia" !in it.uniques }
+                .filter { "Will not be displayed in Civilopedia" !in it.uniques
+                        && !(hideReligionItems && "Hidden when religion is disabled" in it.uniques)
+                }
                 .map {
                     CivilopediaEntry(
                         it.name,
