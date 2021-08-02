@@ -44,7 +44,7 @@ object Battle {
         val attackedTile = defender.getTile()
 
         if (attacker is MapUnitCombatant && attacker.getUnitType().isAirUnit()) {
-            tryInterceptAirAttack(attacker, defender)
+            tryInterceptAirAttack(attacker, attackedTile, defender.getCivInfo())
             if (attacker.isDefeated()) return
         }
 
@@ -505,10 +505,10 @@ object Battle {
         }
 
         // Declare war on all potentially hit units. They'll try to intercept the nuke before it drops
-        for (hitUnit in hitTiles.map { it.getUnits() }.flatten()) {
-            tryDeclareWar(hitUnit.civInfo)
+        for(civWhoseUnitWasAttacked in hitTiles.flatMap { it.getUnits() }.map { it.civInfo }.distinct()) {
+            tryDeclareWar(civWhoseUnitWasAttacked)
             if (attacker.getUnitType().isAirUnit() && !attacker.isDefeated()) {
-                tryInterceptAirAttack(attacker, MapUnitCombatant(hitUnit))
+                tryInterceptAirAttack(attacker, targetTile, civWhoseUnitWasAttacked)
             }
         }
         if (attacker.isDefeated()) return
@@ -668,10 +668,9 @@ object Battle {
         }
     }
 
-    private fun tryInterceptAirAttack(attacker: MapUnitCombatant, defender: ICombatant) {
+    private fun tryInterceptAirAttack(attacker: MapUnitCombatant, attackedTile:TileInfo, interceptingCiv:CivilizationInfo) {
         if (attacker.unit.hasUnique("Cannot be intercepted")) return
-        val attackedTile = defender.getTile()
-        for (interceptor in defender.getCivInfo().getCivUnits().filter { it.canIntercept(attackedTile) }) {
+        for (interceptor in interceptingCiv.getCivUnits().filter { it.canIntercept(attackedTile) }) {
             if (Random().nextFloat() > 100f / interceptor.interceptChance()) continue
 
             var damage = BattleDamage.calculateDamageToDefender(MapUnitCombatant(interceptor), null, attacker)
@@ -692,14 +691,14 @@ object Battle {
                 attacker.getCivInfo()
                         .addNotification("Our [$attackerName] was destroyed by an intercepting [$interceptorName]",
                             interceptor.currentTile.position, attackerName, NotificationIcon.War, interceptorName)
-                defender.getCivInfo()
+                interceptingCiv
                         .addNotification("Our [$interceptorName] intercepted and destroyed an enemy [$attackerName]",
                             locations, interceptorName, NotificationIcon.War, attackerName)
             } else {
                 attacker.getCivInfo()
                         .addNotification("Our [$attackerName] was attacked by an intercepting [$interceptorName]",
                             interceptor.currentTile.position, attackerName, NotificationIcon.War, interceptorName)
-                defender.getCivInfo()
+                interceptingCiv
                         .addNotification("Our [$interceptorName] intercepted and attacked an enemy [$attackerName]",
                             locations, interceptorName, NotificationIcon.War, attackerName)
             }
