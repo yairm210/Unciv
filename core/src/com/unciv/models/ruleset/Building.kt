@@ -56,6 +56,7 @@ class Building : NamedStats(), IConstruction, ICivilopediaText {
 
     /** City can only be built if one of these resources is nearby - it must be improved! */
     var requiredNearbyImprovedResources: List<String>? = null
+    @Deprecated("As of 3.15.19, replace with 'Cannot be built with []' unique")
     private var cannotBeBuiltWith: String? = null
     var cityStrength = 0
     var cityHealth = 0
@@ -501,8 +502,13 @@ class Building : NamedStats(), IConstruction, ICivilopediaText {
                 return "Requires a [${requiredBuilding}] in this city, which doesn't seem to exist in this ruleset!"
             return "Requires a [${civInfo.getEquivalentBuilding(requiredBuilding!!)}] in this city"
         }
-        if (cannotBeBuiltWith != null && construction.isBuilt(cannotBeBuiltWith!!))
-            return "Cannot be built with $cannotBeBuiltWith"
+        // cannotBeBuiltWith is Deprecated as of 3.15.19
+        val cannotBeBuiltWith = uniqueObjects
+            .firstOrNull { it.placeholderText == "Cannot be built with []" }
+            ?.params?.get(0)
+            ?: this.cannotBeBuiltWith
+        if (cannotBeBuiltWith != null && construction.isBuilt(cannotBeBuiltWith))
+            return "Cannot be built with [$cannotBeBuiltWith]"
 
         for ((resource, amount) in getResourceRequirements())
             if (civInfo.getCivResourcesByName()[resource]!! < amount) {
