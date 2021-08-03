@@ -13,7 +13,6 @@ import com.unciv.logic.automation.UnitAutomation
 import com.unciv.logic.battle.*
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.AttackableTile
-import com.unciv.models.ruleset.unit.UnitType
 import com.unciv.models.translations.tr
 import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.WorldScreen
@@ -83,7 +82,7 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
         else {
             when {
                 defender.isInvisible() -> attackerCiv.viewableInvisibleUnitsTiles.contains(selectedTile)
-                defender.getUnitType()==UnitType.City -> attackerCiv.exploredTiles.contains(selectedTile.position)
+                defender.isCity() -> attackerCiv.exploredTiles.contains(selectedTile.position)
                 else -> attackerCiv.viewableTiles.contains(selectedTile)
             }
         }

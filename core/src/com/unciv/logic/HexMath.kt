@@ -146,7 +146,7 @@ object HexMath {
         val current = origin.cpy().sub(distance.toFloat(), distance.toFloat()) // start at 6 o clock
         for (i in 0 until distance) { // From 6 to 8
             vectors += current.cpy()
-            vectors += origin.cpy().scl(2f).sub(current) // Get vector on other side of cloick
+            vectors += origin.cpy().scl(2f).sub(current) // Get vector on other side of clock
             current.add(1f, 0f)
         }
         for (i in 0 until distance) { // 8 to 10
@@ -180,4 +180,17 @@ object HexMath {
         else
             return (abs(relative_x) + abs(relative_y)).toInt()
     }
+
+    // Statically allocate the Vectors (in World coordinates)
+    // of the 6 clock directions for border and road drawing in TileGroup 
+    private val clockToWorldVectors: Map<Int,Vector2> = mapOf(
+        2 to hex2WorldCoords(Vector2(0f, -1f)),
+        4 to hex2WorldCoords(Vector2(1f, 0f)),
+        6 to hex2WorldCoords(Vector2(1f, 1f)),
+        8 to hex2WorldCoords(Vector2(0f, 1f)),
+        10 to hex2WorldCoords(Vector2(-1f, 0f)),
+        12 to hex2WorldCoords(Vector2(-1f, -1f)) )
+
+    fun getClockDirectionToWorldVector(clockDirection: Int): Vector2 =
+        clockToWorldVectors[clockDirection] ?: Vector2.Zero
 }

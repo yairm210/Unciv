@@ -96,9 +96,10 @@ class GameOptionsTable(
         val slider = UncivSlider(0f,numberOfCityStates.toFloat(),1f) {
             gameParameters.numberOfCityStates = it.toInt()
         }
-        slider.value = gameParameters.numberOfCityStates.toFloat()
+        slider.permanentTip = true
         slider.isDisabled = locked
-        add(slider).row()
+        add(slider).padTop(10f).row()
+        slider.value = gameParameters.numberOfCityStates.toFloat()
     }
 
     private fun Table.addSelectBox(text: String, values: Collection<String>, initialState: String, onChange: (newValue: String) -> Unit) {

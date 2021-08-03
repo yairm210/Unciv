@@ -9,6 +9,7 @@ import com.unciv.logic.civilization.*
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
 import com.unciv.models.Religion
+import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.metadata.GameParameters
 import com.unciv.models.ruleset.Difficulty
 import com.unciv.models.ruleset.Ruleset
@@ -42,6 +43,9 @@ class GameInfo {
     var currentPlayer = ""
     var gameId = UUID.randomUUID().toString() // random string
 
+    // Maps a civ to the civ they voted for
+    var diplomaticVictoryVotesCast = HashMap<String, String>()
+
     /**Keep track of a custom location this game was saved to _or_ loaded from
      *
      * Note this was used as silent autosave destination, but it was decided (#3898) to
@@ -70,6 +74,7 @@ class GameInfo {
         toReturn.difficulty = difficulty
         toReturn.gameParameters = gameParameters
         toReturn.gameId = gameId
+        toReturn.diplomaticVictoryVotesCast.putAll(diplomaticVictoryVotesCast)
         toReturn.oneMoreTurnMode = oneMoreTurnMode
         toReturn.customSaveLocation = customSaveLocation
         return toReturn
@@ -235,8 +240,8 @@ class GameInfo {
                 .filter { it.isMilitary() }
                 .filter { it.isBuildable(barbarianCiv) }
 
-        val landUnits = unitList.filter { it.unitType.isLandUnit() }
-        val waterUnits = unitList.filter { it.unitType.isWaterUnit() }
+        val landUnits = unitList.filter { it.isLandUnit() }
+        val waterUnits = unitList.filter { it.isWaterUnit() }
 
         val unit: String
         if (waterUnits.isNotEmpty() && tileToPlace.isCoastalTile() && Random().nextBoolean())
@@ -272,7 +277,7 @@ class GameInfo {
         if (missingMods.isNotEmpty()) {
             throw UncivShowableException("Missing mods: [$missingMods]")
         }
-
+        
         // compatibility code translating changed tech name "Railroad" - to be deprecated soon
         val (oldTechName, newTechName) = "Railroad" to "Railroads"
         if (ruleSet.technologies[oldTechName] == null && ruleSet.technologies[newTechName] != null) {
@@ -282,6 +287,9 @@ class GameInfo {
         }
 
         removeMissingModReferences()
+
+        for (baseUnit in ruleSet.units.values)
+            baseUnit.ruleset = ruleSet
 
         tileMap.setTransients(ruleSet)
 
