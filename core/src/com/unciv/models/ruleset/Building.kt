@@ -13,6 +13,7 @@ import com.unciv.models.translations.fillPlaceholders
 import com.unciv.models.translations.tr
 import com.unciv.ui.civilopedia.FormattedLine
 import com.unciv.ui.civilopedia.ICivilopediaText
+import com.unciv.ui.utils.Fonts
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
@@ -221,8 +222,9 @@ class Building : NamedStats(), IConstruction, ICivilopediaText {
         }
 
         if (cost > 0) {
-            textList += FormattedLine()
-            textList += FormattedLine("{Cost}: $cost")
+            val stats = mutableListOf("$cost${Fonts.production}")
+            if (canBePurchased()) stats += "${(getBaseGoldCost()*0.1).toInt()*10}${Fonts.gold}"
+            textList += FormattedLine(stats.joinToString(", ", "{Cost}: "))
         }
 
         if (requiredTech != null || requiredBuilding != null || requiredBuildingInAllCities != null)
@@ -348,6 +350,8 @@ class Building : NamedStats(), IConstruction, ICivilopediaText {
         productionCost *= civInfo.gameInfo.gameParameters.gameSpeed.modifier
         return productionCost.toInt()
     }
+
+    private fun getBaseGoldCost() = (30.0 * cost).pow(0.75) * (1 + hurryCostModifier / 100.0)
 
     override fun getGoldCost(civInfo: CivilizationInfo): Int {
         // https://forums.civfanatics.com/threads/rush-buying-formula.393892/
