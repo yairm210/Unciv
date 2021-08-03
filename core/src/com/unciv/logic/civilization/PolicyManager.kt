@@ -1,5 +1,6 @@
 package com.unciv.logic.civilization
 
+import com.unciv.logic.map.MapSize
 import com.unciv.models.ruleset.Policy
 import com.unciv.models.ruleset.UniqueMap
 import com.unciv.models.ruleset.UniqueTriggerActivation
@@ -89,7 +90,15 @@ class PolicyManager {
     // round down to nearest 5
     fun getCultureNeededForNextPolicy(): Int {
         var policyCultureCost = 25 + (numberOfAdoptedPolicies * 6).toDouble().pow(1.7)
-        var cityModifier = 0.3f * (civInfo.cities.count { !it.isPuppet } - 1)
+        // https://civilization.fandom.com/wiki/Map_(Civ5)
+        val worldSizeModifier = with (civInfo.gameInfo.tileMap.mapParameters.mapSize) {
+            when {
+                radius >= MapSize.Huge.radius -> 0.05f
+                radius >= MapSize.Large.radius -> 0.075f
+                else -> 0.1f
+            }
+        }
+        var cityModifier = worldSizeModifier * (civInfo.cities.count { !it.isPuppet } - 1)
 
         for (unique in civInfo.getMatchingUniques("Each city founded increases culture cost of policies []% less than normal"))
             cityModifier *= 1 - unique.params[0].toFloat() / 100
@@ -128,9 +137,8 @@ class PolicyManager {
         if (freePolicies == 0 && storedCulture < getCultureNeededForNextPolicy())
             return false
 
-        val hasAdoptablePolicies = civInfo.gameInfo.ruleSet.policies.values
-                .any { civInfo.policies.isAdoptable(it) }
-        return hasAdoptablePolicies
+        //Return true if there is a policy to adopt, else return false
+        return civInfo.gameInfo.ruleSet.policies.values.any { civInfo.policies.isAdoptable(it) }
     }
 
     fun adopt(policy: Policy, branchCompletion: Boolean = false) {
@@ -157,11 +165,8 @@ class PolicyManager {
         }
 
         for (unique in policy.uniques) {
-            if (unique == "Triggers a global alert") {
-                triggerGlobalAlerts(policy)
-            } else if (unique.equalsPlaceholderText("Triggers the following global alert: []")) {
+            if (unique.equalsPlaceholderText("Triggers the following global alert: []"))
                 triggerGlobalAlerts(policy, unique.getPlaceholderParameters()[0])
-            }
         }
 
         for (unique in policy.uniqueObjects)
@@ -196,7 +201,7 @@ class PolicyManager {
                 }
         for (city in candidateCities) {
             val builtBuilding = city.cityConstructions.addCultureBuilding()
-            if (builtBuilding != null) cultureBuildingsAdded[city.id] = builtBuilding!!
+            if (builtBuilding != null) cultureBuildingsAdded[city.id] = builtBuilding
 
         }
     }

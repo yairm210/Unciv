@@ -27,17 +27,17 @@ interface INonPerpetualConstruction : IConstruction, INamed {
         return uniqueObjects.asSequence().filter { it.placeholderText == uniqueTemplate }
     }
     
-    fun canBePurchasedWithStat(cityInfo: CityInfo, stat: Stat): Boolean {
+    fun canBePurchasedWithStat(cityInfo: CityInfo, stat: Stat, ignoreCityRequirements: Boolean = false): Boolean {
         if (stat in listOf(Stat.Production, Stat.Happiness)) return false
         if ("Cannot be purchased" in uniques) return false
         if (stat == Stat.Gold) return !uniques.contains("Unbuildable")
         // Can be purchased with [Stat] [cityFilter]
         if (getMatchingUniques("Can be purchased with [] []")
-                .any { it.params[0] == stat.name && cityInfo.matchesFilter(it.params[1]) }
+                .any { it.params[0] == stat.name && (ignoreCityRequirements || cityInfo.matchesFilter(it.params[1])) }
         ) return true
         // Can be purchased for [amount] [Stat] [cityFilter]
         if (getMatchingUniques("Can be purchased for [] [] []")
-                .any { it.params[1] == stat.name && cityInfo.matchesFilter(it.params[2]) }
+                .any { it.params[1] == stat.name && ( ignoreCityRequirements || cityInfo.matchesFilter(it.params[2])) }
         ) return true
         return false
     }

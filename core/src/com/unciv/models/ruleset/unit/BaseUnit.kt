@@ -1,6 +1,7 @@
 package com.unciv.models.ruleset.unit
 
 import com.unciv.Constants
+import com.unciv.UncivGame
 import com.unciv.logic.city.CityConstructions
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.city.INonPerpetualConstruction
@@ -98,9 +99,16 @@ class BaseUnit : INamed, INonPerpetualConstruction, CivilopediaText() {
             stats += "$range${Fonts.range}"
         }
         if (movement != 0 && !movesLikeAirUnits()) stats += "$movement${Fonts.movement}"
-        if (cost != 0) stats += "{Cost}: $cost"
         if (stats.isNotEmpty())
             textList += FormattedLine(stats.joinToString(", "))
+
+        if (cost > 0) {
+            stats.clear()
+            stats += "$cost${Fonts.production}"
+            if (canBePurchasedWithStat(CityInfo(), Stat.Gold, true))
+                stats += "${getBaseGoldCost(UncivGame.Current.gameInfo.currentPlayerCiv).toInt() / 10 * 10}${Fonts.gold}"
+            textList += FormattedLine(stats.joinToString(", ", "{Cost}: "))
+        }
 
         if (replacementTextForUniques != "") {
             textList += FormattedLine()
@@ -171,7 +179,7 @@ class BaseUnit : INamed, INonPerpetualConstruction, CivilopediaText() {
 
         return unit
     }
-    
+
     override fun getProductionCost(civInfo: CivilizationInfo): Int {
         var productionCost = cost.toFloat()
         if (civInfo.isCityState())
@@ -183,15 +191,15 @@ class BaseUnit : INamed, INonPerpetualConstruction, CivilopediaText() {
         productionCost *= civInfo.gameInfo.gameParameters.gameSpeed.modifier
         return productionCost.toInt()
     }
-    
+
     override fun getStatBuyCost(cityInfo: CityInfo, stat: Stat): Int? {
         var cost = getBaseBuyCost(cityInfo, stat)?.toDouble()
         if (cost == null) return null
-        
+
         // Deprecated since 3.15
             if (stat == Stat.Gold && cityInfo.civInfo.hasUnique("Gold cost of purchasing units -33%")) cost *= 0.67f
         //
-        
+
         // Deprecated since 3.15.15
             if (stat == Stat.Gold) {
                 for (unique in cityInfo.getMatchingUniques("Gold cost of purchasing [] units -[]%")) {
@@ -202,7 +210,7 @@ class BaseUnit : INamed, INonPerpetualConstruction, CivilopediaText() {
                     cost *= 1f - (unique.params[0].toFloat() / 100f)
             }
         //
-        
+
         for (unique in cityInfo.getMatchingUniques("[] cost of purchasing [] units []%")) {
             if (stat.name == unique.params[0] && matchesFilter(unique.params[1]))
                 cost *= 1f + unique.params[2].toFloat() / 100f
@@ -210,7 +218,7 @@ class BaseUnit : INamed, INonPerpetualConstruction, CivilopediaText() {
         for (unique in cityInfo.getMatchingUniques("[] cost of purchasing items in cities []%"))
             if (stat.name == unique.params[0])
                 cost *= 1f + (unique.params[1].toFloat() / 100f)
-        
+
         return (cost / 10f).toInt() * 10
     }
 
@@ -297,7 +305,7 @@ class BaseUnit : INamed, INonPerpetualConstruction, CivilopediaText() {
         if (unit.hasUnique("Religious Unit")) {
             unit.religion = cityConstructions.cityInfo.religion.getMajorityReligion()
         }
-        
+
         if (this.isCivilian()) return true // tiny optimization makes save files a few bytes smaller
 
         var XP = cityConstructions.getBuiltBuildings().sumBy { it.xpForNewUnits }
@@ -318,7 +326,7 @@ class BaseUnit : INamed, INonPerpetualConstruction, CivilopediaText() {
         }
         unit.promotions.XP = XP
 
-        for (unique in 
+        for (unique in
             cityConstructions.cityInfo.getMatchingUniques("All newly-trained [] units [] receive the [] promotion")
                 .filter { cityConstructions.cityInfo.matchesFilter(it.params[1]) } +
             // Deprecated since 3.15.9
@@ -328,12 +336,12 @@ class BaseUnit : INamed, INonPerpetualConstruction, CivilopediaText() {
             val filter = unique.params[0]
             val promotion = unique.params.last()
 
-            if (unit.matchesFilter(filter) || 
+            if (unit.matchesFilter(filter) ||
                 (
-                    filter == "relevant" && 
+                    filter == "relevant" &&
                         civInfo.gameInfo.ruleSet.unitPromotions.values
                         .any {
-                            it.name == promotion && unit.type.name in it.unitTypes 
+                            it.name == promotion && unit.type.name in it.unitTypes
                         }
                 )
             ) {
@@ -361,7 +369,7 @@ class BaseUnit : INamed, INonPerpetualConstruction, CivilopediaText() {
             unitType.name -> true
             name -> true
             "All" -> true
-            
+
             "Melee" -> isMelee()
             "Ranged" -> isRanged()
             "Land", "land units" -> unitType.isLandUnit()
@@ -370,7 +378,7 @@ class BaseUnit : INamed, INonPerpetualConstruction, CivilopediaText() {
             "Water", "water units" -> unitType.isWaterUnit()
             "Air", "air units" -> unitType.isAirUnit()
             "non-air" -> !movesLikeAirUnits()
-            
+
             "Submarine", "submarine units" -> unitType == UnitType.WaterSubmarine
             "Nuclear Weapon" -> isNuclearWeapon()
             // Deprecated as of 3.15.2

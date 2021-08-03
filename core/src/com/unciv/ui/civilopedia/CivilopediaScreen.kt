@@ -228,7 +228,9 @@ class CivilopediaScreen(
                     )
                 }
         categoryToEntries[CivilopediaCategories.Unit] = ruleset.units.values
-                .filter { "Will not be displayed in Civilopedia" !in it.uniques }
+                .filter { "Will not be displayed in Civilopedia" !in it.uniques
+                        && !(hideReligionItems && "Hidden when religion is disabled" in it.uniques)
+                }
                 .map {
                     CivilopediaEntry(
                         it.name,
@@ -251,7 +253,7 @@ class CivilopediaScreen(
                 .map {
                     CivilopediaEntry(
                         it.name,
-                        it.getDescription(ruleset),
+                        "",
                         CivilopediaCategories.Technology.getImage?.invoke(it.name, imageSize),
                         (it as? ICivilopediaText).takeUnless { ct -> ct==null || ct.isCivilopediaTextEmpty() }
                     )
