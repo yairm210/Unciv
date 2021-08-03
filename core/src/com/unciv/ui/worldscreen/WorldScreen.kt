@@ -751,7 +751,7 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Cam
                     .flatMap { it.cities.asSequence() }.any { viewingCiv.exploredTiles.contains(it.location) }
         }
         displayTutorial(Tutorial.ApolloProgram) { viewingCiv.hasUnique("Enables construction of Spaceship parts") }
-        displayTutorial(Tutorial.SiegeUnits) { viewingCiv.getCivUnits().any { it.type!!.name == "Siege" } }
+        displayTutorial(Tutorial.SiegeUnits) { viewingCiv.getCivUnits().any { it.baseUnit.isProbablySiegeUnit() } }
         displayTutorial(Tutorial.Embarking) { viewingCiv.hasUnique("Enables embarkation for land units") }
         displayTutorial(Tutorial.NaturalWonders) { viewingCiv.naturalWonders.size > 0 }
     }

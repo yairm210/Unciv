@@ -28,7 +28,7 @@ class CityCombatant(val city: CityInfo) : ICombatant {
         if (city.health < 1) city.health = 1  // min health is 1
     }
 
-    override fun getUnitType(): UnitType = UnitType("City")
+    override fun getUnitType(): UnitType = UnitType.City
     override fun getAttackingStrength(): Int = (getCityStrength() * 0.75).roundToInt()
     override fun getDefendingStrength(): Int {
         if (isDefeated()) return 1

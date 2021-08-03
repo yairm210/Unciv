@@ -394,11 +394,7 @@ object UnitAutomation {
         if (targets.none()) return null
 
         val siegeUnits = targets
-                .filter { 
-                    it.getUnitType().name.contains("siege", ignoreCase = true)
-                    || (it as MapUnitCombatant).unit.getMatchingUniques("+[]% Strength vs []")
-                        .any { unique -> unique.params.last() == "City" }
-                }
+                .filter { it is MapUnitCombatant && it.unit.baseUnit.isProbablySiegeUnit() }
         if (siegeUnits.any()) targets = siegeUnits
         else {
             val rangedUnits = targets

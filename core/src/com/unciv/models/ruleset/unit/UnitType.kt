@@ -24,7 +24,7 @@ class UnitType(
     
     val uniqueObjects: List<Unique> by lazy { uniques.map { Unique(it) } }
     
-    constructor(name: String, layer: String? = null, domain: String? = null) : this(domain) {
+    constructor(name: String, domain: String? = null) : this(domain) {
         this.name = name
     }
     
@@ -44,6 +44,10 @@ class UnitType(
                 else false
             }
         }
+    }
+    
+    companion object {
+        val City = UnitType("City", "Land")
     }
 }
 

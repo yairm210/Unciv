@@ -329,7 +329,7 @@ class BaseUnit : INamed, IConstruction, ICivilopediaText {
                         civInfo.gameInfo.ruleSet.unitPromotions.values
                         .any {
                             it.name == promotion 
-                            && unit.type!!.name in it.unitTypes 
+                            && unit.type.name in it.unitTypes 
                         }
                 )
             ) {
@@ -407,4 +407,11 @@ class BaseUnit : INamed, IConstruction, ICivilopediaText {
     fun isLandUnit() = getType().isLandUnit()
     fun isWaterUnit() = getType().isWaterUnit()
     fun isAirUnit() = getType().isAirUnit()
+
+    fun isProbablySiegeUnit() = 
+        (
+            isRanged()
+            && (uniqueObjects + getType().uniqueObjects)
+                .any { it.placeholderText == "+[]% Strength vs []" && it.params[1] == "City" }
+        )
 }

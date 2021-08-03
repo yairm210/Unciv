@@ -236,7 +236,7 @@ class UnitMovementAlgorithmsTests {
         city.civInfo = otherCiv
         tile.owningCity = city
 
-        unit.baseUnit = BaseUnit().apply { unitType = ruleSet.unitTypes.keys.random(); ruleset = ruleSet }
+        unit.baseUnit = BaseUnit().apply { unitType = ruleSet.unitTypes.keys.first(); ruleset = ruleSet }
         unit.owner = civInfo.civName
 
         Assert.assertFalse("Unit must not enter other civ tile", unit.movement.canPassThrough(tile))
