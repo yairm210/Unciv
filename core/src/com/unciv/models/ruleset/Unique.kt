@@ -103,7 +103,7 @@ object UniqueTriggerActivation {
                 for (unit in civInfo.getCivUnits())
                     if (unit.matchesFilter(filter)
                         || civInfo.gameInfo.ruleSet.unitPromotions.values.any {
-                            it.name == promotion && unit.type.name in it.unitTypes
+                            it.name == promotion && unit.type!!.name in it.unitTypes
                         }
                     ) {
                         unit.promotions.addPromotion(promotion, isFree = true)
