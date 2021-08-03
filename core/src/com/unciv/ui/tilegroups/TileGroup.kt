@@ -559,14 +559,16 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings, 
                 militaryUnit.baseUnit.replaces != null &&
                         ImageGetter.imageExists(tileSetStrings.unitsLocation + militaryUnit.baseUnit.replaces) ->
                     tileSetStrings.unitsLocation + militaryUnit.baseUnit.replaces
-    
-                /** FIXME: these should probably not be hardcoded, but I don't know any other easy solution
-                 *         other than to add a default sprite for each unitType, which also felt like overkill
-                 */
-                unitType!!.name.contains("Mounted", ignoreCase = true) -> tileSetStrings.unitsLocation + "Horseman"
-                militaryUnit.baseUnit.isRanged() -> tileSetStrings.unitsLocation + "Archer"
-                unitType.name.contains("Armor", ignoreCase = true) -> tileSetStrings.unitsLocation + "Tank"
-                unitType.name == "Siege" -> tileSetStrings.unitsLocation + "Catapult"
+                
+                militaryUnit.civInfo.gameInfo.ruleSet.units.values.any {
+                    it.unitType == unitType.name && ImageGetter.unitIconExists(it.name)
+                } -> 
+                    {
+                        val unitWithSprite = militaryUnit.civInfo.gameInfo.ruleSet.units.values.first {
+                            it.unitType == unitType.name && ImageGetter.unitIconExists(it.name)
+                        }.name
+                        tileSetStrings.unitsLocation + unitWithSprite
+                    }
                 unitType.isLandUnit() && ImageGetter.imageExists(tileSetStrings.landUnit) -> tileSetStrings.landUnit
                 unitType.isWaterUnit() && ImageGetter.imageExists(tileSetStrings.waterUnit) -> tileSetStrings.waterUnit
                 else -> ""
