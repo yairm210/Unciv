@@ -29,7 +29,7 @@ class LimitOrientationsHelperAndroid(private val activity: Activity) : LimitOrie
     override fun allowPortrait(allow: Boolean) {
         val orientation = when {
             allow -> ActivityInfo.SCREEN_ORIENTATION_USER
-            Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2 -> ActivityInfo.SCREEN_ORIENTATION_USER_LANDSCAPE
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2 -> ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE
             else -> ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
         }
         // Comparison ensures ActivityTaskManager.getService().setRequestedOrientation isn't called unless necessary
