@@ -1,5 +1,6 @@
 package com.unciv.ui.worldscreen.mainmenu
 
+import com.badlogic.gdx.Files
 import com.badlogic.gdx.files.FileHandle
 import com.unciv.logic.GameSaver
 import java.io.*
@@ -61,12 +62,15 @@ object Github {
         val zipUrl = "$gitRepoUrl/archive/$defaultBranch.zip"
         val inputStream = download(zipUrl) ?: return null
 
+        // Get a mod-specific temp file name
+        val tempName = "temp-" + gitRepoUrl.hashCode().toString(16)
+
         // Download to temporary zip
-        val tempZipFileHandle = folderFileHandle.child("tempZip.zip")
+        val tempZipFileHandle = folderFileHandle.child("$tempName.zip")
         tempZipFileHandle.write(inputStream, false)
 
         // prepare temp unpacking folder
-        val unzipDestination = tempZipFileHandle.sibling("tempZip") // folder, not file
+        val unzipDestination = tempZipFileHandle.sibling(tempName) // folder, not file
         // prevent mixing new content with old - hopefully there will never be cadavers of our tempZip stuff
         if (unzipDestination.exists())
             if (unzipDestination.isDirectory) unzipDestination.deleteDirectory() else unzipDestination.delete()
@@ -74,7 +78,7 @@ object Github {
         Zip.extractFolder(tempZipFileHandle, unzipDestination)
 
         val innerFolder = unzipDestination.list().first()
-        // innerFolder should now be "tempZip/$repoName-$defaultBranch/" - use this to get mod name
+        // innerFolder should now be "$tempName/$repoName-$defaultBranch/" - use this to get mod name
         val finalDestinationName = innerFolder.name().replace("-$defaultBranch", "").replace('-', ' ')
         // finalDestinationName is now the mod name as we display it. Folder name needs to be identical.
         val finalDestination = folderFileHandle.child(finalDestinationName)
@@ -83,7 +87,7 @@ object Github {
         var tempBackup: FileHandle? = null
         if (finalDestination.exists()) {
             tempBackup = finalDestination.sibling("$finalDestinationName.updating")
-            finalDestination.moveTo(tempBackup)
+            finalDestination.renameOrMove(tempBackup)
         }
 
         // Move temp unpacked content to their final place
@@ -92,7 +96,7 @@ object Github {
         // This sort will guarantee the desktop launcher will not re-pack textures and overwrite the atlas as delivered by the mod
         for (innerFileOrFolder in innerFolder.list()
             .sortedBy { file -> file.extension() == "atlas" } ) {
-            innerFileOrFolder.moveTo(finalDestination)
+            innerFileOrFolder.renameOrMove(finalDestination)
         }
 
         // clean up
@@ -102,6 +106,12 @@ object Github {
             if (tempBackup.isDirectory) tempBackup.deleteDirectory() else tempBackup.delete()
 
         return finalDestination
+    }
+    
+    private fun FileHandle.renameOrMove(dest: FileHandle) {
+        // Gdx tries a java rename for Absolute and External, but NOT for Local - rectify that
+        if (type() == Files.FileType.Local && file().renameTo(dest.file())) return
+        moveTo(dest)
     }
 
     /**

@@ -364,7 +364,7 @@ class ModManagementScreen: PickerScreen(disableScroll = true) {
                     ?: throw Exception()    // downloadAndExtract returns null for 404 errors and the like -> display something!
                 rewriteModOptions(repo, modFolder)
                 Gdx.app.postRunnable {
-                    ToastPopup("Downloaded!", this)
+                    ToastPopup("[${repo.name}] Downloaded!", this)
                     RulesetCache.loadRulesets()
                     refreshInstalledModTable()
                     showModDescription(repo.name)
@@ -372,7 +372,7 @@ class ModManagementScreen: PickerScreen(disableScroll = true) {
                 }
             } catch (ex: Exception) {
                 Gdx.app.postRunnable {
-                    ToastPopup("Could not download mod", this)
+                    ToastPopup("Could not download [${repo.name}]", this)
                 }
             } finally {
                 postAction()
