@@ -1,84 +1,84 @@
 [
     {
         "name": "Civilian",
-        "domain": "Land"
+        "movementType": "Land"
     },
     {
         "name": "Sword",
-        "domain": "Land"
+        "movementType": "Land"
     },
     {
         "name": "Gunpowder",
-        "domain": "Land"
+        "movementType": "Land"
     },
     {
         "name": "Archery",
-        "domain": "Land"
+        "movementType": "Land"
     },
     {
         "name": "Ranged Gunpowder",
-        "domain": "Land"
+        "movementType": "Land"
     },
     {
         "name": "Scout",
-        "domain": "Land"
+        "movementType": "Land"
     },
     {
         "name": "Mounted",
-        "domain": "Land"
+        "movementType": "Land"
     },
     {
         "name": "Armored",
-        "domain": "Land"
+        "movementType": "Land"
     },
     {
         "name": "Siege",
-        "domain": "Land"
+        "movementType": "Land"
     },
     {
         "name": "Civilian Water",
-        "domain": "Water"
+        "movementType": "Water"
     },
     {
         "name": "Melee Water",
-        "domain": "Water"
+        "movementType": "Water"
     },
     {
         "name": "Ranged Water",
-        "domain": "Water"
+        "movementType": "Water"
     },
     {
         "name": "Submarine",
-        "domain": "Water",
+        "movementType": "Water",
         "uniques": ["Can enter ice tiles", "Invisible to others"]
     },
     {
         "name": "Aircraft Carrier",
-        "domain": "Water"
+        "movementType": "Water"
     },
     {
         "name": "Fighter",
-        "domain": "Air",
+        "movementType": "Air",
         "uniques": ["Aircraft", "6 tiles in every direction always visible"]
     },
     {
         "name": "Bomber",
-        "domain": "Air",
+        "movementType": "Air",
         "uniques": ["Aircraft"]
     },
     {
         "name": "Atomic Bomber",
-        "domain": "Air",
+        "movementType": "Air",
         "uniques": ["Aircraft"]
     },
     {
         "name": "Missile",
-        "domain": "Air",
+        "movementType": "Air",
         "uniques": ["Self-destructs when attacking", "Cannot be intercepted"]
     },
     {
         "name": "Helicopter",
-        "domain": "Land",
+        "movementType": "Land",
         "uniques": ["Can pass through impassable tiles"]
     },
     
@@ -86,35 +86,35 @@
     
     {
         "name": "Melee",
-        "domain": "Land"
+        "movementType": "Land"
     },
     {
         "name": "Ranged",
-        "domain": "Land"
+        "movementType": "Land"
     },
     {
         "name": "Armor",
-        "domain": "Land"
+        "movementType": "Land"
     },
     {
         "name": "WaterCivilian",
-        "domain": "Water"
+        "movementType": "Water"
     },
     {
         "name": "WaterMelee",
-        "domain": "Water"
+        "movementType": "Water"
     },
     {
         "name": "WaterRanged",
-        "domain": "Water"
+        "movementType": "Water"
     },
     {
         "name": "WaterSubmarine",
-        "domain": "Water"
+        "movementType": "Water"
     },
     {
         "name": "WaterAircraftCarrier",
-        "domain": "Water"
+        "movementType": "Water"
     },
     {
         "name": "AtomicBomber",

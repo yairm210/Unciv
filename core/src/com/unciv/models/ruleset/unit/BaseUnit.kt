@@ -1,8 +1,6 @@
 package com.unciv.models.ruleset.unit
 
 import com.unciv.Constants
-import com.unciv.UncivGame
-import com.unciv.logic.GameInfo
 import com.unciv.logic.city.CityConstructions
 import com.unciv.logic.city.IConstruction
 import com.unciv.logic.civilization.CivilizationInfo
@@ -384,7 +382,7 @@ class BaseUnit : INamed, IConstruction, ICivilopediaText {
     // "Nuclear Weapon" unique deprecated since 3.15.4
     fun isNuclearWeapon() = uniqueObjects.any { it.placeholderText == "Nuclear Weapon" || it.placeholderText == "Nuclear weapon of Strength []" }
 
-    fun movesLikeAirUnits() = getType().getDomain() == UnitDomain.Air
+    fun movesLikeAirUnits() = getType().getMovementType() == UnitMovementType.Air
 
     override fun getResourceRequirements(): HashMap<String, Int> {
         val resourceRequirements = HashMap<String, Int>()

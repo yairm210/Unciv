@@ -10,14 +10,14 @@ enum class UnitLayer { // The layer in which the unit moves
     Air 
 }
 
-enum class UnitDomain { // The types of tiles the unit can by default enter
+enum class UnitMovementType { // The types of tiles the unit can by default enter
     Land, // Only land tiles except when certain techs are researched
     Water, // Only water tiles
     Air // Only city tiles and carrying units
 }
 
 class UnitType(
-    val domain: String? = null
+    val movementType: String? = null
 ) : INamed {
     override lateinit var name: String
     val uniques: ArrayList<String> = ArrayList()
@@ -28,11 +28,11 @@ class UnitType(
         this.name = name
     }
     
-    fun getDomain() = if (domain == null) null else UnitDomain.valueOf(domain)
+    fun getMovementType() = if (movementType == null) null else UnitMovementType.valueOf(movementType)
     
-    fun isLandUnit() = getDomain() == UnitDomain.Land
-    fun isWaterUnit() = getDomain() == UnitDomain.Water
-    fun isAirUnit() = getDomain() == UnitDomain.Air
+    fun isLandUnit() = getMovementType() == UnitMovementType.Land
+    fun isWaterUnit() = getMovementType() == UnitMovementType.Water
+    fun isAirUnit() = getMovementType() == UnitMovementType.Air
     
     fun matchesFilter(filter: String): Boolean {
         return when (filter) {
