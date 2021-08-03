@@ -13,6 +13,7 @@ import com.unciv.models.translations.fillPlaceholders
 import com.unciv.models.translations.tr
 import com.unciv.ui.civilopedia.FormattedLine
 import com.unciv.ui.civilopedia.ICivilopediaText
+import com.unciv.ui.utils.Fonts
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
@@ -56,6 +57,7 @@ class Building : NamedStats(), IConstruction, ICivilopediaText {
 
     /** City can only be built if one of these resources is nearby - it must be improved! */
     var requiredNearbyImprovedResources: List<String>? = null
+    @Deprecated("As of 3.15.19, replace with 'Cannot be built with []' unique")
     private var cannotBeBuiltWith: String? = null
     var cityStrength = 0
     var cityHealth = 0
@@ -220,8 +222,9 @@ class Building : NamedStats(), IConstruction, ICivilopediaText {
         }
 
         if (cost > 0) {
-            textList += FormattedLine()
-            textList += FormattedLine("{Cost}: $cost")
+            val stats = mutableListOf("$cost${Fonts.production}")
+            if (canBePurchased()) stats += "${(getBaseGoldCost()*0.1).toInt()*10}${Fonts.gold}"
+            textList += FormattedLine(stats.joinToString(", ", "{Cost}: "))
         }
 
         if (requiredTech != null || requiredBuilding != null || requiredBuildingInAllCities != null)
@@ -347,6 +350,8 @@ class Building : NamedStats(), IConstruction, ICivilopediaText {
         productionCost *= civInfo.gameInfo.gameParameters.gameSpeed.modifier
         return productionCost.toInt()
     }
+
+    private fun getBaseGoldCost() = (30.0 * cost).pow(0.75) * (1 + hurryCostModifier / 100.0)
 
     override fun getGoldCost(civInfo: CivilizationInfo): Int {
         // https://forums.civfanatics.com/threads/rush-buying-formula.393892/
@@ -508,8 +513,13 @@ class Building : NamedStats(), IConstruction, ICivilopediaText {
                 return "Requires a [${requiredBuilding}] in this city, which doesn't seem to exist in this ruleset!"
             return "Requires a [${civInfo.getEquivalentBuilding(requiredBuilding!!)}] in this city"
         }
-        if (cannotBeBuiltWith != null && construction.isBuilt(cannotBeBuiltWith!!))
-            return "Cannot be built with $cannotBeBuiltWith"
+        // cannotBeBuiltWith is Deprecated as of 3.15.19
+        val cannotBeBuiltWith = uniqueObjects
+            .firstOrNull { it.placeholderText == "Cannot be built with []" }
+            ?.params?.get(0)
+            ?: this.cannotBeBuiltWith
+        if (cannotBeBuiltWith != null && construction.isBuilt(cannotBeBuiltWith))
+            return "Cannot be built with [$cannotBeBuiltWith]"
 
         for ((resource, amount) in getResourceRequirements())
             if (civInfo.getCivResourcesByName()[resource]!! < amount) {

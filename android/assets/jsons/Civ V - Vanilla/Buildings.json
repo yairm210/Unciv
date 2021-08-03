@@ -1007,9 +1007,8 @@
 		"percentStatBonus": {"production": 15},
 		"requiredBuilding": "Factory",
 		"maintenance": 3,
-		"cannotBeBuiltWith": "Nuclear Plant",
 		"requiredTech": "Ecology",
-		"uniques": ["Must be next to [Desert]"]
+		"uniques": ["Must be next to [Desert]", "Cannot be built with [Nuclear Plant]"]
 	},
 	{
 		"name": "Sydney Opera House",
@@ -1026,9 +1025,9 @@
 		"percentStatBonus": {"production": 15},
 		"requiredBuilding": "Factory",
 		"maintenance": 3,
-		"cannotBeBuiltWith": "Solar Plant",
 		"requiredResource": "Uranium",
-		"requiredTech": "Nuclear Fission"
+		"requiredTech": "Nuclear Fission",
+		"uniques": ["Cannot be built with [Solar Plant]"]
 	},
 	{
 		"name": "Apollo Program",

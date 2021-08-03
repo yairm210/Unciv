@@ -81,7 +81,9 @@ class UncivSlider (
 
     // Value tip format
     var tipFormat = "%.1f"
-    
+
+    var permanentTip = false
+
     // Detect changes in isDragging
     private var hasFocus = false
 
@@ -153,7 +155,8 @@ class UncivSlider (
             tipLabel.setText(getTipText!!(slider.value))
         if (!tipHideTask.isScheduled) showTip()
         tipHideTask.cancel()
-        Timer.schedule(tipHideTask, hideDelay)
+        if (!permanentTip)
+            Timer.schedule(tipHideTask, hideDelay)
 
         val enableMinus = slider.value > slider.minValue
         minusButton?.touchable = if(enableMinus) Touchable.enabled else Touchable.disabled
@@ -210,6 +213,7 @@ class UncivSlider (
     private fun showTip() {
         if (tipContainer.hasParent()) return
         tipContainer.pack()
+        if (needsLayout()) pack()
         val pos = slider.localToParentCoordinates(Vector2(slider.width / 2, slider.height))
         tipContainer.run {
             setOrigin(Align.bottom)

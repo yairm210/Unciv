@@ -97,9 +97,15 @@ class BaseUnit : INamed, IConstruction, ICivilopediaText {
             stats += "$range${Fonts.range}"
         }
         if (movement != 0 && !movesLikeAirUnits()) stats += "$movement${Fonts.movement}"
-        if (cost != 0) stats += "{Cost}: $cost"
         if (stats.isNotEmpty())
             textList += FormattedLine(stats.joinToString(", "))
+
+        if (cost > 0) {
+            stats.clear()
+            stats += "$cost${Fonts.production}"
+            if (canBePurchased()) stats += "${(getBaseGoldCost()*0.1).toInt()*10}${Fonts.gold}"
+            textList += FormattedLine(stats.joinToString(", ", "{Cost}: "))
+        }
 
         if (replacementTextForUniques != "") {
             textList += FormattedLine()
@@ -185,12 +191,12 @@ class BaseUnit : INamed, IConstruction, ICivilopediaText {
         return productionCost.toInt()
     }
 
-    fun getBaseGoldCost(civInfo: CivilizationInfo): Double {
-        return (30.0 * cost).pow(0.75) * (1 + hurryCostModifier / 100f) * civInfo.gameInfo.gameParameters.gameSpeed.modifier
-    }
+    private fun getBaseGoldCost() = (30.0 * cost).pow(0.75) * (1 + hurryCostModifier / 100.0)
+    private fun getGoldCostWithGameSpeed(civInfo: CivilizationInfo) =
+        getBaseGoldCost() * civInfo.gameInfo.gameParameters.gameSpeed.modifier
 
     override fun getGoldCost(civInfo: CivilizationInfo): Int {
-        var cost = getBaseGoldCost(civInfo)
+        var cost = getGoldCostWithGameSpeed(civInfo)
         for (unique in civInfo.getMatchingUniques("Gold cost of purchasing [] units -[]%")) {
             if (matchesFilter(unique.params[0]))
                 cost *= 1f - unique.params[1].toFloat() / 100f
@@ -205,7 +211,7 @@ class BaseUnit : INamed, IConstruction, ICivilopediaText {
         return (cost / 10).toInt() * 10 // rounded down to nearest ten
     }
 
-    fun getDisbandGold(civInfo: CivilizationInfo) = getBaseGoldCost(civInfo).toInt() / 20
+    fun getDisbandGold(civInfo: CivilizationInfo) = getGoldCostWithGameSpeed(civInfo).toInt() / 20
 
     override fun shouldBeDisplayed(construction: CityConstructions): Boolean {
         val rejectionReason = getRejectionReason(construction)

@@ -173,7 +173,7 @@ class Nation : INamed, ICivilopediaText {
                 for (unique in originalUnit.uniques.filterNot { it in unit.uniques })
                     textList += "  " + "Lost ability".tr() + "(" + "vs [${originalUnit.name}]".tr() + "): " + unique.tr()
                 for (promotion in unit.promotions.filter { it !in originalUnit.promotions })
-                    textList += "  " + promotion.tr() + " (" + ruleset.unitPromotions[promotion]!!.effect.tr() + ")"
+                    textList += "  " + promotion.tr() + " (" + ruleset.unitPromotions[promotion]!!.uniquesWithEffect().joinToString(",") { it.tr() } + ")"
             } else if (unit.replaces != null) {
                 textList += unit.name.tr() + " - " + "Replaces [${unit.replaces}], which is not found in the ruleset!".tr()
             } else {
@@ -306,11 +306,10 @@ class Nation : INamed, ICivilopediaText {
                     textList += FormattedLine("Lost ability".tr() + " (" + "vs [${originalUnit.name}]".tr() + "): " +
                             unique.tr(), indent=1)
                 for (promotion in unit.promotions.filter { it !in originalUnit.promotions }) {
-                    val effect = ruleset.unitPromotions[promotion]!!.effect
+                    val effect = ruleset.unitPromotions[promotion]!!.uniquesWithEffect()
                     // "{$promotion} ({$effect})" won't work as effect may contain [] and tr() does not support that kind of nesting
                     textList += FormattedLine(
-                        if (effect.isEmpty()) promotion
-                        else "${promotion.tr()} (${effect.tr()})",
+                        "${promotion.tr()} (${effect.joinToString(",") { it.tr() }})",
                         link = "Promotion/$promotion", indent = 1 )
                 }
             } else if (unit.replaces != null) {
