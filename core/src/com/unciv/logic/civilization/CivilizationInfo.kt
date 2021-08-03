@@ -253,8 +253,8 @@ class CivilizationInfo {
                     city -> city.getMatchingUniquesWithNonLocalEffects(uniqueTemplate)
                 } +
                 policies.policyUniques.getUniques(uniqueTemplate) +
-                tech.getTechUniques().filter { it.placeholderText == uniqueTemplate } +
-                temporaryUniques.asSequence().filter { it.first.placeholderText == uniqueTemplate }.map { it.first }
+                tech.techUniques.getUniques(uniqueTemplate) +
+                temporaryUniques.filter { it.first.placeholderText == uniqueTemplate }.map { it.first }
     }
 
     //region Units
@@ -305,9 +305,10 @@ class CivilizationInfo {
         return tech.currentTechnology() == null && cities.isNotEmpty()
     }
 
-
-    fun getEquivalentBuilding(buildingName: String): Building {
-        val baseBuilding = gameInfo.ruleSet.buildings[buildingName]!!.getBaseBuilding(gameInfo.ruleSet)
+    fun getEquivalentBuilding(buildingName: String) = getEquivalentBuilding(gameInfo.ruleSet.buildings[buildingName]!!)
+    fun getEquivalentBuilding(baseBuilding: Building): Building {
+        if (baseBuilding.replaces != null)
+            return getEquivalentBuilding(baseBuilding.replaces!!)
 
         for (building in gameInfo.ruleSet.buildings.values)
             if (building.replaces == baseBuilding.name && building.uniqueTo == civName)
@@ -317,12 +318,15 @@ class CivilizationInfo {
 
     fun getEquivalentUnit(baseUnitName: String): BaseUnit {
         val baseUnit = gameInfo.ruleSet.units[baseUnitName]
-        @Suppress("FoldInitializerAndIfToElvis")
-        if (baseUnit == null) throw UncivShowableException("Unit $baseUnitName doesn't seem to exist!")
-        if (baseUnit.replaces != null) return getEquivalentUnit(baseUnit.replaces!!) // Equivalent of unique unit is the equivalent of the replaced unit
+            ?: throw UncivShowableException("Unit $baseUnitName doesn't seem to exist!")
+        return getEquivalentUnit(baseUnit)
+    } 
+    fun getEquivalentUnit(baseUnit: BaseUnit): BaseUnit {
+        if (baseUnit.replaces != null)
+            return getEquivalentUnit(baseUnit.replaces!!) // Equivalent of unique unit is the equivalent of the replaced unit
 
         for (unit in gameInfo.ruleSet.units.values)
-            if (unit.replaces == baseUnitName && unit.uniqueTo == civName)
+            if (unit.replaces == baseUnit.name && unit.uniqueTo == civName)
                 return unit
         return baseUnit
     }

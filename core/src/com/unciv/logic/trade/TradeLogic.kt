@@ -88,12 +88,10 @@ class TradeLogic(val ourCivilization:CivilizationInfo, val otherCivilization: Ci
                 if (offer.type == TradeType.City) {
                     val city = from.cities.first { it.id == offer.name }
                     city.moveToCiv(to)
-                    city.getCenterTile().getUnits().forEach { it.movement.teleportToClosestMoveableTile() }
+                    city.getCenterTile().getUnits().toList().forEach { it.movement.teleportToClosestMoveableTile() }
                     for (tile in city.getTiles()) {
                         for (unit in tile.getUnits().toList()) {
-                            if (!unit.civInfo.canEnterTiles(to)) {
-                                unit.movement.teleportToClosestMoveableTile()
-                            }
+                            if (!unit.civInfo.canEnterTiles(to)) unit.movement.teleportToClosestMoveableTile()
                         }
                     }
                     to.updateViewableTiles()

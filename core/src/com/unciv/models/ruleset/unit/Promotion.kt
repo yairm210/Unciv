@@ -15,7 +15,7 @@ class Promotion : INamed, ICivilopediaText {
     var unitTypes = listOf<String>() // The json parser wouldn't agree to deserialize this as a list of UnitTypes. =(
 
     var uniques = ArrayList<String>()
-    private fun uniquesWithEffect() = sequence {
+    fun uniquesWithEffect() = sequence {
         if (effect.isNotEmpty()) yield(effect)
         yieldAll(uniques)
     }
