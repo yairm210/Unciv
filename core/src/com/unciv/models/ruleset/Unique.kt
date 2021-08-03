@@ -110,7 +110,7 @@ object UniqueTriggerActivation {
                     }
             }
             "Allied City-States will occasionally gift Great People" -> 
-                civInfo.addFlag(CivFlags.cityStateGreatPersonGift.name, civInfo.turnsForGreatPersonFromCityState() / 2)
+                civInfo.addFlag(CivFlags.CityStateGreatPersonGift.name, civInfo.turnsForGreatPersonFromCityState() / 2)
             // The mechanics for granting great people are wonky, but basically the following happens:
             // Based on the game speed, a timer with some amount of turns is set, 40 on regular speed
             // Every turn, 1 is subtracted from this timer, as long as you have at least 1 city state ally
@@ -126,6 +126,10 @@ object UniqueTriggerActivation {
 
             // Note that the way this is implemented now, this unique does NOT stack
             // I could parametrize the [Allied], but eh.
+            "Triggers voting for the Diplomatic Victory" ->
+                for (civ in civInfo.gameInfo.civilizations)
+                    if (!civ.isBarbarian() && !civ.isSpectator())
+                        civ.addFlag(CivFlags.TurnsTillNextDiplomaticVote.name, civInfo.getTurnsBetweenDiplomaticVotings())
         }
     }
 }
