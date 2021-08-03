@@ -13,6 +13,7 @@ import com.unciv.models.ruleset.tile.ResourceSupplyList
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.unit.BaseUnit
 import java.util.*
+import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 import kotlin.collections.HashSet
 import kotlin.math.ceil
@@ -231,6 +232,7 @@ class CityInfo {
     fun isConnectedToCapital(connectionTypePredicate: (Set<String>) -> Boolean = { true }): Boolean {
         val mediumTypes = civInfo.citiesConnectedToCapitalToMediums[this] ?: return false
         return connectionTypePredicate(mediumTypes)
+
     }
 
     fun isInResistance() = resistanceCounter > 0
@@ -628,6 +630,22 @@ class CityInfo {
     fun canBeDestroyed(): Boolean {
         return !isOriginalCapital && !isCapital() && !isHolyCity()
     }
+
+
+    fun getNeighbouringCivs(): List<String> {
+        val tilesList: HashSet<TileInfo> = getTiles().toHashSet()
+        val cityPositionList: ArrayList<TileInfo> = arrayListOf()
+
+        for (tiles in tilesList)
+            for (tile in tiles.neighbors)
+                if (!tilesList.contains(tile))
+                    cityPositionList.add(tile)
+
+        return cityPositionList.asSequence()
+            .map { it.getOwner()?.civName }.filterNotNull().toSet() 
+            .distinct().toList()
+    }
+
 
     //endregion
 }
