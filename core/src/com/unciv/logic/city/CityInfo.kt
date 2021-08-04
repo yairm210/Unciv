@@ -648,9 +648,10 @@ class CityInfo {
             .distinct().toList()
     }
     fun getImprovableTiles(): List<TileInfo> = getTiles().map {it}
-            .filter {it.hasViewableResource(civInfo) && it.improvement == null}.toList()
+            .filter {it.hasViewableResource(civInfo) && it.improvement == null}
+        .filter {it.getTileResource().resourceType == ResourceType.Strategic || it.getTileResource().resourceType == ResourceType.Luxury}.toList()
 
 
-
+// it.getTileResource().improvement
     //endregion
 }
