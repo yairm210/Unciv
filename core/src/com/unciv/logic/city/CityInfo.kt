@@ -11,7 +11,6 @@ import com.unciv.models.Counter
 import com.unciv.models.ruleset.Unique
 import com.unciv.models.ruleset.tile.ResourceSupplyList
 import com.unciv.models.ruleset.tile.ResourceType
-import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.unit.BaseUnit
 import java.util.*
 import kotlin.collections.ArrayList
@@ -122,9 +121,9 @@ class CityInfo {
         // Add buildings and pop we get from starting in this era
         if (startingEra in ruleset.eras) {
             for (building in ruleset.eras[startingEra]!!.settlerBuildings) {
-                if (ruleset.buildings[building]!!.isBuildable(cityConstructions)) {
+                if (ruleset.buildings[building]!!.isBuildable(cityConstructions))
                     cityConstructions.addBuilding(civInfo.getEquivalentBuilding(building).name)
-                }
+
             }
         }
 
