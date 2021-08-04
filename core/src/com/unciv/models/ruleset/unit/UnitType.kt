@@ -16,23 +16,24 @@ enum class UnitMovementType { // The types of tiles the unit can by default ente
     Air // Only city tiles and carrying units
 }
 
-class UnitType(
-    val movementType: String? = null
-) : INamed {
+class UnitType() : INamed {
     override lateinit var name: String
-    val uniques: ArrayList<String> = ArrayList()
+    private var movementType: String? = null
+    private val unitMovementType: UnitMovementType? by lazy { if (movementType == null) null else UnitMovementType.valueOf(movementType!!) }
     
+    val uniques: ArrayList<String> = ArrayList()
     val uniqueObjects: List<Unique> by lazy { uniques.map { Unique(it) } }
     
-    constructor(name: String, domain: String? = null) : this(domain) {
+    constructor(name: String, domain: String? = null) : this() {
         this.name = name
+        this.movementType = domain
     }
     
-    fun getMovementType() = if (movementType == null) null else UnitMovementType.valueOf(movementType)
+    fun getMovementType() = unitMovementType
     
-    fun isLandUnit() = getMovementType() == UnitMovementType.Land
-    fun isWaterUnit() = getMovementType() == UnitMovementType.Water
-    fun isAirUnit() = getMovementType() == UnitMovementType.Air
+    fun isLandUnit() = unitMovementType == UnitMovementType.Land
+    fun isWaterUnit() = unitMovementType == UnitMovementType.Water
+    fun isAirUnit() = unitMovementType == UnitMovementType.Air
     
     fun matchesFilter(filter: String): Boolean {
         return when (filter) {
@@ -40,8 +41,7 @@ class UnitType(
             "Water" -> isWaterUnit()
             "Air" -> isAirUnit()
             else -> {
-                if (uniques.contains(filter)) true
-                else false
+                uniques.contains(filter)
             }
         }
     }
