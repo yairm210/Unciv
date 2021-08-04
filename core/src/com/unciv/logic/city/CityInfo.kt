@@ -652,6 +652,5 @@ class CityInfo {
         .filter {it.getTileResource().resourceType == ResourceType.Strategic || it.getTileResource().resourceType == ResourceType.Luxury}.toList()
 
 
-// it.getTileResource().improvement
     //endregion
 }
