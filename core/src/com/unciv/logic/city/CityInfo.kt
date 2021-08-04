@@ -646,7 +646,7 @@ class CityInfo {
             .map { it.getOwner()?.civName }.filterNotNull().toSet() 
             .distinct().toList()
     }
-    fun getImproveableTiles(): List<TileInfo> = getTiles().map {it}
+    fun getImprovableTiles(): List<TileInfo> = getTiles().map {it}
             .filter {it.hasViewableResource(civInfo) && it.improvement == null}.toList()
 
 
