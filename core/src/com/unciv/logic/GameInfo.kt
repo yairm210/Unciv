@@ -339,6 +339,10 @@ class GameInfo {
                 )
                 civInfo.greatPeople.greatPersonPoints.clear()
             }
+
+            if (civInfo.hasEverOwnedOriginalCapital == null) {
+                civInfo.hasEverOwnedOriginalCapital = civInfo.cities.any { it.isOriginalCapital }
+            }
         }
     }
 

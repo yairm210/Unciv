@@ -69,7 +69,7 @@ class CityInfo {
 
     /** The very first found city is the _original_ capital,
      * while the _current_ capital can be any other city after the original one is captured.
-     * It is important to distinct them since the original cannot be razed and defines the Domination Victory. */
+     * It is important to distinguish them since the original cannot be razed and defines the Domination Victory. */
     var isOriginalCapital = false
 
     constructor()   // for json parsing, we need to have a default constructor
@@ -83,6 +83,7 @@ class CityInfo {
         setNewCityName(civInfo)
 
         isOriginalCapital = civInfo.citiesCreated == 0
+        if (isOriginalCapital) civInfo.hasEverOwnedOriginalCapital = true
         civInfo.citiesCreated++
 
         civInfo.cities = civInfo.cities.toMutableList().apply { add(this@CityInfo) }

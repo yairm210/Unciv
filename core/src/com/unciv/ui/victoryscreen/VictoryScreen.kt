@@ -76,15 +76,15 @@ class VictoryScreen(val worldScreen: WorldScreen) : PickerScreen() {
 
 
     private fun wonOrLost(description: String) {
-        
-        val endGameMessage = when (description.getPlaceholderParameters()[0]) {
+        // description will be empty when the player loses - don't `[0]`
+        val endGameMessage = when (description.getPlaceholderParameters().firstOrNull()) {
             // Taking the 0th element is a dirty hack to differentiate between the cases 
             // "you have won" and "someone else has won", but it works, so I don't question it
             VictoryType.Cultural.name -> "You have achieved victory through the awesome power of your Culture. Your civilization's greatness - the magnificence of its monuments and the power of its artists - have astounded the world! Poets will honor you as long as beauty brings gladness to a weary heart."
             VictoryType.Domination.name -> "The world has been convulsed by war. Many great and powerful civilizations have fallen, but you have survived - and emerged victorious! The world will long remember your glorious triumph!"
             VictoryType.Scientific.name -> "You have achieved victory through mastery of Science! You have conquered the mysteries of nature and led your people on a voyage to a brave new world! Your triumph will be remembered as long as the stars burn in the night sky!"
             VictoryType.Diplomatic.name -> "You have triumphed over your foes through the art of diplomacy! Your cunning and wisdom have earned you great friends - and divided and sown confusion among your enemies! Forever will you be remembered as the leader who brought peace to this weary world!"
-            VictoryType.Neutral.name -> "Your civilization stands above all others! The exploits of your people shall be remembered until the end of civilizaton itself!"
+            VictoryType.Neutral.name -> "Your civilization stands above all others! The exploits of your people shall be remembered until the end of civilization itself!"
             else -> "You have been defeated. Your civilization has been overwhelmed by its many foes. But your people do not despair, for they know that one day you shall return - and lead them forward to victory!"
         }
 
