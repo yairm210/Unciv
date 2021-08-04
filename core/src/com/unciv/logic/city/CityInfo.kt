@@ -647,9 +647,10 @@ class CityInfo {
             .map { it.getOwner()?.civName }.filterNotNull().toSet() 
             .distinct().toList()
     }
-    fun getImprovableTiles(): List<TileInfo> = getTiles().map {it}
-            .filter {it.hasViewableResource(civInfo) && it.improvement == null}.toList()
-
+    fun getImprovableStrategicAndLuxeryTiles(): List<TileInfo> = getTiles().map {it}
+            .filter {it.hasViewableResource(civInfo) && it.improvement == null}
+        .filter { it.getTileResource().resourceType == ResourceType.Luxury || it.getTileResource().resourceType == ResourceType.Strategic }.toList()
+    // two filters are needed to avoid "There is no resource for this tile!"
 
 
     //endregion
