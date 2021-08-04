@@ -181,9 +181,8 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
             rightSideTable.clear()
             rightSideTable.add(ScrollPane(getImprovementGiftTable(otherCiv)))
         }
-        diplomacyTable.add(improveTileButton).row()
-        if (isNotPlayersTurn() || otherCivDiplomacyManager.influence <= 60) improveTileButton.disable()
 
+        diplomacyTable.add(improveTileButton).row()
         if (otherCivDiplomacyManager.diplomaticStatus == DiplomaticStatus.Protector){
             val revokeProtectionButton = "Revoke Protection".toTextButton()
             revokeProtectionButton.onClick {
@@ -271,14 +270,17 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
         val improvementGiftTable = getCityStateDiplomacyTableHeader(otherCiv)
         improvementGiftTable.addSeparator()
 
-        val improvableTiles = otherCiv.getCapital().getImprovableStrategicAndLuxeryTiles()
+        val improvableTiles = otherCiv.getCapital().getImproveableTiles()
         val tileImprovements = otherCiv.gameInfo.ruleSet.tileImprovements.filter { it.value.turnsToBuild != 0 }
-        var anyImprovements = false
 
+        val backButton = "Back".toTextButton()
+        backButton.onClick {
+            rightSideTable.clear()
+            rightSideTable.add(ScrollPane(getCityStateDiplomacyTable(otherCiv)))
+        }
         for (improvableTile in improvableTiles){
             for (tileImprovement in tileImprovements.values){
-                if (improvableTile.canBuildImprovement(tileImprovement, otherCiv) && improvableTile.getTileResource().improvement == tileImprovement.name){
-                    anyImprovements = true
+                if (improvableTile.canBuildImprovement(tileImprovement, otherCiv)){
                     val improveTileButton = "Build $tileImprovement on ${improvableTile.getTileResource()} (200 Gold)".toTextButton()
                     improveTileButton.onClick {
                         viewingCiv.giveGoldGift(otherCiv, 200)
@@ -291,15 +293,6 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
                     improvementGiftTable.add(improveTileButton).row()
                 }
             }
-        }
-        if (!anyImprovements){
-            improvementGiftTable.add("No Improvements Buildable".toLabel()).row()
-        }
-
-        val backButton = "Back".toTextButton()
-        backButton.onClick {
-            rightSideTable.clear()
-            rightSideTable.add(ScrollPane(getCityStateDiplomacyTable(otherCiv)))
         }
         improvementGiftTable.add(backButton)
         return improvementGiftTable
