@@ -11,6 +11,7 @@ import com.unciv.models.Counter
 import com.unciv.models.ruleset.Unique
 import com.unciv.models.ruleset.tile.ResourceSupplyList
 import com.unciv.models.ruleset.tile.ResourceType
+import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.unit.BaseUnit
 import java.util.*
 import kotlin.collections.ArrayList
@@ -645,6 +646,9 @@ class CityInfo {
             .map { it.getOwner()?.civName }.filterNotNull().toSet() 
             .distinct().toList()
     }
+    fun getImproveableTiles(): List<TileInfo> = getTiles().map {it}
+            .filter {it.hasViewableResource(civInfo) && it.improvement == null}.toList()
+
 
 
     //endregion
