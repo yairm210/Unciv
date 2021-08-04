@@ -120,9 +120,11 @@ class CityInfo {
 
         // Add buildings and pop we get from starting in this era
         if (startingEra in ruleset.eras) {
-            for (building in ruleset.eras[startingEra]!!.settlerBuildings) {
-                if (ruleset.buildings[building]!!.isBuildable(cityConstructions))
-                    cityConstructions.addBuilding(civInfo.getEquivalentBuilding(building).name)
+            for (buildingName in ruleset.eras[startingEra]!!.settlerBuildings) {
+                val building = ruleset.buildings[buildingName] ?: continue
+                val uniqueBuilding = civInfo.getEquivalentBuilding(building)
+                if (uniqueBuilding.isBuildable(cityConstructions))
+                    cityConstructions.addBuilding(uniqueBuilding.name)
             }
         }
 
