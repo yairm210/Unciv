@@ -271,7 +271,7 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
         val improvementGiftTable = getCityStateDiplomacyTableHeader(otherCiv)
         improvementGiftTable.addSeparator()
 
-        val improvableTiles = otherCiv.getCapital().getImprovableStrategicAndLuxuryTiles()
+        val improvableTiles = otherCiv.getCapital().getImprovableTiles().filterNot {it.getTileResource().resourceType == ResourceType.Bonus}.toList()
         val tileImprovements = otherCiv.gameInfo.ruleSet.tileImprovements.filter { it.value.turnsToBuild != 0 }
         var anyImprovements = false
 

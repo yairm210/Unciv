@@ -646,9 +646,8 @@ class CityInfo {
             .map { it.getOwner()?.civName }.filterNotNull().toSet() 
             .distinct().toList()
     }
-    fun getImprovableStrategicAndLuxuryTiles(): List<TileInfo> = getTiles().map {it}
+    fun getImprovableTiles(): Sequence<TileInfo> = getTiles().map {it}
             .filter {it.hasViewableResource(civInfo) && it.improvement == null}
-        .filter {it.getTileResource().resourceType == ResourceType.Strategic || it.getTileResource().resourceType == ResourceType.Luxury}.toList()
 
 
     //endregion
