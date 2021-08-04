@@ -140,7 +140,7 @@ class ModManagementScreen: PickerScreen(disableScroll = true) {
 
         refreshInstalledModTable()
 
-        if (isNarrowerThan4to3()) initPortrait()
+        if (isPortrait()) initPortrait()
         else initLandscape()
 
         reloadOnlineMods()
