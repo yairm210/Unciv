@@ -118,6 +118,33 @@ class ModManagementScreen: PickerScreen(disableScroll = true) {
 
         refreshInstalledModTable()
 
+        if (isPortrait()) initPortrait()
+        else initLandscape()
+
+        reloadOnlineMods()
+    }
+
+    private fun initPortrait() {
+        topTable.defaults().top()
+        val minHeight = scrollPane.height * 0.3f
+        val maxHeight = scrollPane.height * 0.7f
+
+        topTable.add(ExpanderTab("Current mods") {
+            it.add(scrollInstalledMods).growX()
+        }).top().growX().minHeight(minHeight).maxHeight(maxHeight).row()
+
+        topTable.add(ExpanderTab("Downloadable mods") {
+            it.add(scrollOnlineMods).growX()
+        }).top().padTop(10f).growX().minHeight(minHeight).maxHeight(maxHeight).row()
+
+        topTable.add().expandY().row() // prevents top() being ignored
+
+        topTable.add(ExpanderTab("Mod info and options") {
+            it.add(modActionTable).growX()
+        }).bottom().padTop(10f).growX().row()
+    }
+
+    private fun initLandscape() {
         // Header row
         topTable.add().expandX()                // empty cols left and right for separator
         topTable.add("Current mods".toLabel()).pad(5f).minWidth(200f).padLeft(25f)
@@ -134,7 +161,6 @@ class ModManagementScreen: PickerScreen(disableScroll = true) {
         topTable.add()      // skip empty first column
         topTable.add(scrollInstalledMods)
 
-        reloadOnlineMods()
         topTable.add(scrollOnlineMods)
 
         topTable.add(modActionTable)
