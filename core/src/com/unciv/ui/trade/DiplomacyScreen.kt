@@ -181,7 +181,7 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
             rightSideTable.clear()
             rightSideTable.add(ScrollPane(getImprovementGiftTable(otherCiv)))
         }
-        if (isNotPlayersTurn() && otherCivDiplomacyManager.influence >= 60) giveGiftButton.disable()
+        if (isNotPlayersTurn() || otherCivDiplomacyManager.influence < 60) improveTileButton.disable()
 
         diplomacyTable.add(improveTileButton).row()
         if (otherCivDiplomacyManager.diplomaticStatus == DiplomaticStatus.Protector){
