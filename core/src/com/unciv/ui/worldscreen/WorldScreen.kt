@@ -400,6 +400,8 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Cam
             when {
                 !gameInfo.oneMoreTurnMode && (viewingCiv.isDefeated() || gameInfo.civilizations.any { it.victoryManager.hasWon() }) ->
                     game.setScreen(VictoryScreen(this))
+                viewingCiv.shouldShowDiplomaticVotingResults() ->
+                    UncivGame.Current.setScreen(DiplomaticVoteResultScreen(gameInfo.diplomaticVictoryVotesCast, viewingCiv))
                 viewingCiv.greatPeople.freeGreatPeople > 0 -> game.setScreen(GreatPersonPickerScreen(viewingCiv))
                 viewingCiv.popupAlerts.any() -> AlertPopup(this, viewingCiv.popupAlerts.first()).open()
                 viewingCiv.tradeRequests.isNotEmpty() -> TradePopup(this).open()
@@ -700,6 +702,10 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Cam
             viewingCiv.religionManager.religionState == ReligionState.FoundingReligion ->
                 NextTurnAction("Found Religion", Color.WHITE) {
                     game.setScreen(FoundReligionPickerScreen(viewingCiv, gameInfo))
+                }
+            viewingCiv.mayVoteForDiplomaticVictory() ->
+                NextTurnAction("Vote for World Leader", Color.RED) {
+                    game.setScreen(DiplomaticVotePickerScreen(viewingCiv))
                 }
 
             else ->

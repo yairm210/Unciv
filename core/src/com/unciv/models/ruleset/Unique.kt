@@ -41,49 +41,57 @@ class UniqueMap:HashMap<String, ArrayList<Unique>>() {
     fun getAllUniques() = this.asSequence().flatMap { it.value.asSequence() }
 }
 
-// Buildings, techs, policies and ancient ruins can have 'triggered' effects
+// Buildings, techs, policies, ancient ruins and promotions can have 'triggered' effects
 object UniqueTriggerActivation {
     /** @return boolean whether an action was successfully preformed */
     fun triggerCivwideUnique(
-        unique: Unique, 
-        civInfo: CivilizationInfo, 
-        cityInfo: CityInfo? = null, 
+        unique: Unique,
+        civInfo: CivilizationInfo,
+        cityInfo: CityInfo? = null,
         tile: TileInfo? = null,
         notification: String? = null
     ): Boolean {
-        val chosenCity = 
-            if (cityInfo != null) cityInfo 
+        val chosenCity =
+            if (cityInfo != null) cityInfo
             else civInfo.cities.firstOrNull { it.isCapital() }
-        val tileBasedRandom = 
+        val tileBasedRandom =
             if (tile != null) Random(tile.position.toString().hashCode())
             else Random(-550) // Very random indeed
         when (unique.placeholderText) {
             "Free [] appears" -> {
                 val unitName = unique.params[0]
                 val unit = civInfo.gameInfo.ruleSet.units[unitName]
-                if (chosenCity == null || unit == null || (unit.uniques.contains("Founds a new city") && civInfo.isOneCityChallenger())) 
+                if (chosenCity == null || unit == null || (unit.uniques.contains("Founds a new city") && civInfo.isOneCityChallenger()))
                     return false
-                
+
                 val placedUnit = civInfo.addUnit(unitName, chosenCity)
                 if (notification != null && placedUnit != null) {
-                    civInfo.addNotification(notification, placedUnit.getTile().position, placedUnit.name)
+                    civInfo.addNotification(
+                        notification,
+                        placedUnit.getTile().position,
+                        placedUnit.name
+                    )
                 }
                 return true
             }
             "[] free [] units appear" -> {
                 val unitName = unique.params[1]
                 val unit = civInfo.gameInfo.ruleSet.units[unitName]
-                if (chosenCity == null || unit == null || (unit.uniques.contains("Founds a new city") && civInfo.isOneCityChallenger())) 
+                if (chosenCity == null || unit == null || (unit.uniques.contains("Founds a new city") && civInfo.isOneCityChallenger()))
                     return false
-                
+
                 val tilesUnitsWerePlacedOn: MutableList<Vector2> = mutableListOf()
                 for (i in 1..unique.params[0].toInt()) {
                     val placedUnit = civInfo.addUnit(unitName, chosenCity)
-                    if (placedUnit != null) 
+                    if (placedUnit != null)
                         tilesUnitsWerePlacedOn.add(placedUnit.getTile().position)
                 }
                 if (notification != null && tilesUnitsWerePlacedOn.isNotEmpty()) {
-                    civInfo.addNotification(notification, LocationAction(tilesUnitsWerePlacedOn), civInfo.getEquivalentUnit(unit).name)
+                    civInfo.addNotification(
+                        notification,
+                        LocationAction(tilesUnitsWerePlacedOn),
+                        civInfo.getEquivalentUnit(unit).name
+                    )
                 }
                 return true
             }
@@ -97,7 +105,7 @@ object UniqueTriggerActivation {
                 return true
             }
             "[] Free Social Policies" -> {
-                if (civInfo.isSpectator()) return false 
+                if (civInfo.isSpectator()) return false
                 civInfo.policies.freePolicies += unique.params[0].toInt()
                 if (notification != null) {
                     civInfo.addNotification(notification, NotificationIcon.Culture)
@@ -118,19 +126,20 @@ object UniqueTriggerActivation {
                     if (notification != null)
                         civInfo.addNotification(notification) // Anyone an idea for a good icon?
                     return true
-                }
-                else {
+                } else {
                     val greatPeople = civInfo.getGreatPeople()
                     if (greatPeople.isEmpty()) return false
                     var greatPerson = civInfo.getGreatPeople().random()
 
                     val preferredVictoryType = civInfo.victoryType()
                     if (preferredVictoryType == VictoryType.Cultural) {
-                        val culturalGP = greatPeople.firstOrNull { it.uniques.contains("Great Person - [Culture]") }
+                        val culturalGP =
+                            greatPeople.firstOrNull { it.uniques.contains("Great Person - [Culture]") }
                         if (culturalGP != null) greatPerson = culturalGP
                     }
                     if (preferredVictoryType == VictoryType.Scientific) {
-                        val scientificGP = greatPeople.firstOrNull { it.uniques.contains("Great Person - [Science]") }
+                        val scientificGP =
+                            greatPeople.firstOrNull { it.uniques.contains("Great Person - [Science]") }
                         if (scientificGP != null) greatPerson = scientificGP
                     }
 
@@ -138,20 +147,20 @@ object UniqueTriggerActivation {
                 }
             }
             // Deprecated since 3.15.4
-                "+1 population in each city" -> {
-                    for (city in civInfo.cities) {
-                        city.population.addPopulation(1)
-                    }
-                    if (notification != null) {
-                        civInfo.addNotification(
-                            notification, 
-                            LocationAction(civInfo.cities.map { it.location }), 
-                            NotificationIcon.Population
-                        )
-                    }
-                    return true
+            "+1 population in each city" -> {
+                for (city in civInfo.cities) {
+                    city.population.addPopulation(1)
                 }
-            // 
+                if (notification != null) {
+                    civInfo.addNotification(
+                        notification,
+                        LocationAction(civInfo.cities.map { it.location }),
+                        NotificationIcon.Population
+                    )
+                }
+                return true
+            }
+            //
             "[] population []" -> {
                 val citiesWithPopulationChanged: MutableList<Vector2> = mutableListOf()
                 for (city in civInfo.cities) {
@@ -161,7 +170,11 @@ object UniqueTriggerActivation {
                     }
                 }
                 if (notification != null && citiesWithPopulationChanged.isNotEmpty())
-                    civInfo.addNotification(notification, LocationAction(citiesWithPopulationChanged), NotificationIcon.Population)
+                    civInfo.addNotification(
+                        notification,
+                        LocationAction(citiesWithPopulationChanged),
+                        NotificationIcon.Population
+                    )
                 return citiesWithPopulationChanged.isNotEmpty()
             }
             "[] population in a random city" -> {
@@ -169,11 +182,15 @@ object UniqueTriggerActivation {
                 val randomCity = civInfo.cities.random(tileBasedRandom)
                 randomCity.population.addPopulation(unique.params[0].toInt())
                 if (notification != null) {
-                    val notificationText = 
-                        if (notification.hasPlaceholderParameters()) 
+                    val notificationText =
+                        if (notification.hasPlaceholderParameters())
                             notification.fillPlaceholders(randomCity.name)
                         else notification
-                    civInfo.addNotification(notificationText, randomCity.location, NotificationIcon.Population)
+                    civInfo.addNotification(
+                        notificationText,
+                        randomCity.location,
+                        NotificationIcon.Population
+                    )
                 }
                 return true
             }
@@ -183,32 +200,34 @@ object UniqueTriggerActivation {
                 if (notification != null) {
                     civInfo.addNotification(notification, NotificationIcon.Science)
                 }
-                return true 
+                return true
             }
-            "[] Free Technologies" -> { 
+            "[] Free Technologies" -> {
                 if (civInfo.isSpectator()) return false
                 civInfo.tech.freeTechs += unique.params[0].toInt()
                 if (notification != null) {
                     civInfo.addNotification(notification, NotificationIcon.Science)
                 }
-                return true 
+                return true
             }
             "[] free random researchable Techs from the []" -> {
                 val researchableTechsFromThatEra = civInfo.gameInfo.ruleSet.technologies.values
                     .filter {
                         (it.column!!.era == unique.params[1] || unique.params[1] == "any era")
-                        && civInfo.tech.canBeResearched(it.name)
+                                && civInfo.tech.canBeResearched(it.name)
                     }
                 if (researchableTechsFromThatEra.isEmpty()) return false
 
-                val techsToResearch = researchableTechsFromThatEra.shuffled(tileBasedRandom).take(unique.params[0].toInt())
+                val techsToResearch = researchableTechsFromThatEra.shuffled(tileBasedRandom)
+                    .take(unique.params[0].toInt())
                 for (tech in techsToResearch)
                     civInfo.tech.addTechnology(tech.name)
 
                 if (notification != null) {
                     val notificationText =
                         if (notification.hasPlaceholderParameters())
-                            notification.fillPlaceholders(*(techsToResearch.map { it.name }.toTypedArray()))
+                            notification.fillPlaceholders(*(techsToResearch.map { it.name }
+                                .toTypedArray()))
                         else notification
                     civInfo.addNotification(notificationText, NotificationIcon.Science)
                 }
@@ -219,7 +238,10 @@ object UniqueTriggerActivation {
             "Quantity of strategic resources produced by the empire increased by 100%" -> {
                 civInfo.updateDetailedCivResources()
                 if (notification != null) {
-                    civInfo.addNotification(notification, NotificationIcon.War) // I'm open for better icons
+                    civInfo.addNotification(
+                        notification,
+                        NotificationIcon.War
+                    ) // I'm open for better icons
                 }
                 return true
             }
@@ -233,15 +255,16 @@ object UniqueTriggerActivation {
 
             "Reveals the entire map" -> {
                 if (notification != null) {
-                    civInfo.addNotification(notification, "UnitIcons/Scout") 
+                    civInfo.addNotification(notification, "UnitIcons/Scout")
                 }
-                return civInfo.exploredTiles.addAll(civInfo.gameInfo.tileMap.values.asSequence().map { it.position })
+                return civInfo.exploredTiles.addAll(
+                    civInfo.gameInfo.tileMap.values.asSequence().map { it.position })
             }
 
             "[] units gain the [] promotion" -> {
                 val filter = unique.params[0]
                 val promotion = unique.params[1]
-                
+
                 val promotedUnitLocations: MutableList<Vector2> = mutableListOf()
                 for (unit in civInfo.getCivUnits()) {
                     if (unit.matchesFilter(filter)
@@ -253,15 +276,22 @@ object UniqueTriggerActivation {
                         promotedUnitLocations.add(unit.getTile().position)
                     }
                 }
-                
+
                 if (notification != null) {
-                    civInfo.addNotification(notification, LocationAction(promotedUnitLocations), "unitPromotionIcons/${unique.params[1]}")
+                    civInfo.addNotification(
+                        notification,
+                        LocationAction(promotedUnitLocations),
+                        "unitPromotionIcons/${unique.params[1]}"
+                    )
                 }
                 return promotedUnitLocations.isNotEmpty()
             }
-            
+
             "Allied City-States will occasionally gift Great People" -> {
-                civInfo.addFlag(CivFlags.cityStateGreatPersonGift.name, civInfo.turnsForGreatPersonFromCityState() / 2)
+                civInfo.addFlag(
+                    CivFlags.CityStateGreatPersonGift.name,
+                    civInfo.turnsForGreatPersonFromCityState() / 2
+                )
                 if (notification != null) {
                     civInfo.addNotification(notification, NotificationIcon.CityState)
                 }
@@ -282,35 +312,39 @@ object UniqueTriggerActivation {
 
             // Note that the way this is implemented now, this unique does NOT stack
             // I could parametrize the [Allied], but eh.
-            
+
             // Differs from "Free [] appears" in that it spawns near the ruins instead of in a city
             "Free [] found in the ruins" -> {
                 val unit = civInfo.getEquivalentUnit(unique.params[0])
                 val placingTile =
                     tile ?: civInfo.cities.random().getCenterTile()
-                
+
                 val placedUnit = civInfo.placeUnitNearTile(placingTile.position, unit.name)
                 if (notification != null && placedUnit != null)
-                    civInfo.addNotification(notification, placedUnit.getTile().position, placedUnit.name)
-                    
+                    civInfo.addNotification(
+                        notification,
+                        placedUnit.getTile().position,
+                        placedUnit.name
+                    )
+
                 return placedUnit != null
             }
-            
+
             "Gain [] []" -> {
-                if (Stat.values().none { it.name == unique.params[1]}) return false
+                if (Stat.values().none { it.name == unique.params[1] }) return false
                 val stat = Stat.valueOf(unique.params[1])
-                
+
                 if (stat !in listOf(Stat.Gold, Stat.Faith, Stat.Science, Stat.Culture)
                     || unique.params[0].toIntOrNull() == null
-                ) return false 
-                
+                ) return false
+
                 civInfo.addStat(stat, unique.params[0].toInt())
                 if (notification != null)
                     civInfo.addNotification(notification, NotificationIcon.statToIcon(stat))
                 return true
             }
             "Gain []-[] []" -> {
-                if (Stat.values().none { it.name == unique.params[2]}) return false
+                if (Stat.values().none { it.name == unique.params[2] }) return false
                 val stat = Stat.valueOf(unique.params[2])
 
                 if (stat !in listOf(Stat.Gold, Stat.Faith, Stat.Science, Stat.Culture)
@@ -318,34 +352,33 @@ object UniqueTriggerActivation {
                     || unique.params[1].toIntOrNull() == null
                 ) return false
 
-                val foundStatAmount = 
+                val foundStatAmount =
                     (tileBasedRandom.nextInt(unique.params[0].toInt(), unique.params[1].toInt()) *
-                        civInfo.gameInfo.gameParameters.gameSpeed.modifier
-                    ).toInt()
-                
+                            civInfo.gameInfo.gameParameters.gameSpeed.modifier
+                            ).toInt()
+
                 civInfo.addStat(
-                    Stat.valueOf(unique.params[2]), 
+                    Stat.valueOf(unique.params[2]),
                     foundStatAmount
                 )
-                
+
                 if (notification != null) {
                     val notificationText =
                         if (notification.hasPlaceholderParameters()) {
                             notification.fillPlaceholders(foundStatAmount.toString())
-                        }
-                        else notification
+                        } else notification
                     civInfo.addNotification(notificationText, NotificationIcon.statToIcon(stat))
                 }
-                
+
                 return true
             }
             "Gain enough Faith for a Pantheon" -> {
                 if (civInfo.religionManager.religionState != ReligionState.None) return false
                 val gainedFaith = civInfo.religionManager.faithForPantheon(2)
                 if (gainedFaith == 0) return false
-                
+
                 civInfo.addStat(Stat.Faith, gainedFaith)
-                
+
                 if (notification != null) {
                     val notificationText =
                         if (notification.hasPlaceholderParameters())
@@ -353,13 +386,14 @@ object UniqueTriggerActivation {
                         else notification
                     civInfo.addNotification(notificationText, NotificationIcon.Faith)
                 }
-                
+
                 return true
             }
             "Gain enough Faith for []% of a Great Prophet" -> {
-                val gainedFaith = (civInfo.religionManager.faithForNextGreatProphet() * (unique.params[0].toFloat() / 100f)).toInt()
+                val gainedFaith =
+                    (civInfo.religionManager.faithForNextGreatProphet() * (unique.params[0].toFloat() / 100f)).toInt()
                 if (gainedFaith == 0) return false
-                
+
                 civInfo.addStat(Stat.Faith, gainedFaith)
 
                 if (notification != null) {
@@ -372,25 +406,32 @@ object UniqueTriggerActivation {
 
                 return true
             }
-            
+
             "Reveal up to [] [] within a [] tile radius" -> {
                 if (tile == null) return false
                 val nearbyRevealableTiles = tile
                     .getTilesInDistance(unique.params[2].toInt())
-                    .filter { !civInfo.exploredTiles.contains(it.position) && it.matchesFilter(unique.params[1]) }
+                    .filter {
+                        !civInfo.exploredTiles.contains(it.position) && it.matchesFilter(
+                            unique.params[1]
+                        )
+                    }
                     .map { it.position }
                 if (nearbyRevealableTiles.none()) return false
                 civInfo.exploredTiles.addAll(nearbyRevealableTiles
                     .shuffled(tileBasedRandom)
                     .apply {
-                        if (unique.params[0] != "All") this.take(unique.params[0].toInt()) 
+                        if (unique.params[0] != "All") this.take(unique.params[0].toInt())
                     }
                 )
-                
+
                 if (notification != null) {
-                    civInfo.addNotification(notification, LocationAction(nearbyRevealableTiles.toList())) // We really need a barbarian icon    
+                    civInfo.addNotification(
+                        notification,
+                        LocationAction(nearbyRevealableTiles.toList())
+                    ) // We really need a barbarian icon
                 }
-                
+
                 return true
             }
             "From a randomly chosen tile [] tiles away from the ruins, reveal tiles up to [] tiles away with []% chance" -> {
@@ -413,14 +454,25 @@ object UniqueTriggerActivation {
                         "ImprovementIcons/Ancient ruins"
                     )
             }
+            "Triggers voting for the Diplomatic Victory" -> {
+                for (civ in civInfo.gameInfo.civilizations)
+                    if (!civ.isBarbarian() && !civ.isSpectator())
+                        civ.addFlag(
+                            CivFlags.TurnsTillNextDiplomaticVote.name,
+                            civInfo.getTurnsBetweenDiplomaticVotings()
+                        )
+                if (notification != null)
+                    civInfo.addNotification(notification, NotificationIcon.Diplomacy)
+                return true
+            }
         }
         return false
     }
 
     /** @return boolean whether an action was successfully preformed */
     fun triggerUnitwideUnique(
-        unique: Unique, 
-        unit: MapUnit, 
+        unique: Unique,
+        unit: MapUnit,
         notification: String? = null
     ): Boolean {
         when (unique.placeholderText) {
@@ -438,7 +490,7 @@ object UniqueTriggerActivation {
                 return true
             }
             "This Unit upgrades for free" -> {
-                val upgradeAction = UnitActions.getUpgradeAction(unit, true) 
+                val upgradeAction = UnitActions.getUpgradeAction(unit, true)
                     ?: return false
                 upgradeAction.action!!()
                 if (notification != null)

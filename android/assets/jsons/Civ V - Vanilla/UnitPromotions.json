@@ -53,7 +53,6 @@
 		"name": "Extended Range",
 		"prerequisites": ["Accuracy III","Barrage III","Targeting II","Bombardment II", "Wolfpack II"],
 		"uniques": ["[+1] Range"],
-		"effect": "[+1] Range",
 		"unitTypes": ["Archery","Ranged Gunpowder","Siege","Ranged Water","Submarine"]
 	},
 	{
@@ -412,36 +411,36 @@
 	// Helicopter
 	{
 		"name": "Mobility I",
-		"effect": "[+1] Movement",
+		"uniques": ["[+1] Movement"],
 		"unitTypes": ["Helicopter"]
 	},
 	{
 		"name": "Mobility II",
 		"prerequisites": ["Mobility I"],
-		"effect": "[+1] Movement",
+		"uniques": ["[+1] Movement"],
 		"unitTypes": ["Helicopter"]
 	},
 	{
 		"name": "Anti-Armor I",
-		"effect": "+[25]% vs [Armored]",
+		"uniques": ["+[25]% vs [Armored]"],
 		"unitTypes:": ["Helicopter"]
 	},
 	{
 		"name": "Anti-Armor II",
-		"effect": "+[25]% vs [Armored]",
+		"uniques": ["+[25]% vs [Armored]"],
 		"unitTypes:": ["Helicopter"]
 	},
 
 	// Mixed
 	{
 		"name": "Cover I",
-		"effect": "[+33]% Strength when defending vs [Ranged] units",
+		"uniques": ["[+33]% Strength when defending vs [Ranged] units"],
 		"unitTypes": ["Sword","Gunpowder","Archery","Ranged Gunpowder","Siege"]
 	},
 	{
 		"name": "Cover II",
 		"prerequisites": ["Cover I"],
-		"effect": "[+33]% Strength when defending vs [Ranged] units",
+		"uniques": ["[+33]% Strength when defending vs [Ranged] units"],
 		"unitTypes": ["Sword","Gunpowder","Archery","Ranged Gunpowder","Siege"]
 	},
 

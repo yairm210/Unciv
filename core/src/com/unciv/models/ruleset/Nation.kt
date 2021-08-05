@@ -17,8 +17,9 @@ import com.unciv.ui.utils.colorFromRGB
 enum class VictoryType {
     Neutral,
     Cultural,
+    Diplomatic,
     Domination,
-    Scientific
+    Scientific,
 }
 
 class Nation : INamed, ICivilopediaText {
