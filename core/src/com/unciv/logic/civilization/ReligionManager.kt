@@ -24,7 +24,8 @@ class ReligionManager {
     // But the other one should still be _somewhere_. So our only option is to have the GameInfo
     // contain the master list, and the ReligionManagers retrieve it from there every time the game loads.
 
-    private var greatProphetsEarned = 0
+    var greatProphetsEarned = 0
+        private set
 
     var religionState = ReligionState.None
         private set
@@ -62,8 +63,9 @@ class ReligionManager {
         storedFaith += faithFromNewTurn
     }
 
-    private fun faithForPantheon() = 10 + civInfo.gameInfo.civilizations.count { it.isMajorCiv() && it.religionManager.religion != null } * 5
-
+    fun faithForPantheon(additionalCivs: Int = 0) =
+        10 + (civInfo.gameInfo.civilizations.count { it.isMajorCiv() && it.religionManager.religion != null } + additionalCivs) * 5
+        
     fun canFoundPantheon(): Boolean {
         if (!civInfo.gameInfo.hasReligionEnabled()) return false
         if (religionState != ReligionState.None) return false
@@ -92,7 +94,7 @@ class ReligionManager {
     
     // https://www.reddit.com/r/civ/comments/2m82wu/can_anyone_detail_the_finer_points_of_great/
     // Game files (globaldefines.xml)
-    private fun faithForNextGreatProphet() = (
+    fun faithForNextGreatProphet() = (
             (200 + 100 * greatProphetsEarned * (greatProphetsEarned + 1) / 2) *
                     civInfo.gameInfo.gameParameters.gameSpeed.modifier
             ).toInt()

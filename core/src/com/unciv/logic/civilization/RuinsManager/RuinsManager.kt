@@ -35,6 +35,8 @@ class RuinsManager {
         val possibleRewards = validRewards.filter { it.name !in lastChosenRewards }.shuffled(tileBasedRandom)
         for (possibleReward in possibleRewards) {
             if (civInfo.gameInfo.difficulty in possibleReward.excludedDifficulties) continue
+            if ("Hidden when religion is disabled" in possibleReward.uniques && !civInfo.gameInfo.hasReligionEnabled()) continue
+            if ("Hidden after generating a Great Prophet" in possibleReward.uniques && civInfo.religionManager.greatProphetsEarned > 0) continue
             
             var atLeastOneUniqueHadEffect = false
             for (unique in possibleReward.uniqueObjects) {

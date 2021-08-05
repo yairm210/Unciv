@@ -114,13 +114,7 @@ class MapUnit {
     
     var abilityUsedCount: HashMap<String, Int> = hashMapOf()
     var religion: String? = null
-
-    companion object {
-        private const val ANCIENT_RUIN_MAP_REVEAL_OFFSET = 4
-        private const val ANCIENT_RUIN_MAP_REVEAL_RANGE = 4
-        private const val ANCIENT_RUIN_MAP_REVEAL_CHANCE = 0.8f
-    }
-
+    
     //region pure functions
     fun clone(): MapUnit {
         val toReturn = MapUnit()
@@ -770,10 +764,7 @@ class MapUnit {
 
     private fun getAncientRuinBonus(tile: TileInfo) {
         tile.improvement = null
-        val tileBasedRandom = Random(tile.position.toString().hashCode())
-        
         civInfo.ruinsManager.selectNextRuinsReward(this)
-        return
     }
 
     fun assignOwner(civInfo: CivilizationInfo, updateCivInfo: Boolean = true) {

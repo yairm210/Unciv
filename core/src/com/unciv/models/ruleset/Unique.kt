@@ -2,10 +2,7 @@ package com.unciv.models.ruleset
 
 import com.badlogic.gdx.math.Vector2
 import com.unciv.logic.city.CityInfo
-import com.unciv.logic.civilization.CivFlags
-import com.unciv.logic.civilization.CivilizationInfo
-import com.unciv.logic.civilization.LocationAction
-import com.unciv.logic.civilization.NotificationIcon
+import com.unciv.logic.civilization.*
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.stats.Stat
@@ -199,8 +196,8 @@ object UniqueTriggerActivation {
             "[] free random researchable Techs from the []" -> {
                 val researchableTechsFromThatEra = civInfo.gameInfo.ruleSet.technologies.values
                     .filter {
-                        it.column!!.era == unique.params[1]
-                                && civInfo.tech.canBeResearched(it.name)
+                        (it.column!!.era == unique.params[1] || unique.params[1] == "any era")
+                        && civInfo.tech.canBeResearched(it.name)
                     }
                 if (researchableTechsFromThatEra.isEmpty()) return false
 
@@ -340,6 +337,39 @@ object UniqueTriggerActivation {
                     civInfo.addNotification(notificationText, NotificationIcon.statToIcon(stat))
                 }
                 
+                return true
+            }
+            "Gain enough Faith for a Pantheon" -> {
+                if (civInfo.religionManager.religionState != ReligionState.None) return false
+                val gainedFaith = civInfo.religionManager.faithForPantheon(2)
+                if (gainedFaith == 0) return false
+                
+                civInfo.addStat(Stat.Faith, gainedFaith)
+                
+                if (notification != null) {
+                    val notificationText =
+                        if (notification.hasPlaceholderParameters())
+                            notification.fillPlaceholders(gainedFaith.toString())
+                        else notification
+                    civInfo.addNotification(notificationText, NotificationIcon.Faith)
+                }
+                
+                return true
+            }
+            "Gain enough Faith for []% of a Great Prophet" -> {
+                val gainedFaith = (civInfo.religionManager.faithForNextGreatProphet() * (unique.params[0].toFloat() / 100f)).toInt()
+                if (gainedFaith == 0) return false
+                
+                civInfo.addStat(Stat.Faith, gainedFaith)
+
+                if (notification != null) {
+                    val notificationText =
+                        if (notification.hasPlaceholderParameters())
+                            notification.fillPlaceholders(gainedFaith.toString())
+                        else notification
+                    civInfo.addNotification(notificationText, NotificationIcon.Faith)
+                }
+
                 return true
             }
             
