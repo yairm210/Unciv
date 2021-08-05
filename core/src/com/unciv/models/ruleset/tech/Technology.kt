@@ -146,11 +146,13 @@ class Technology: INamed, ICivilopediaText, IHasUniques {
     override fun makeLink() = "Technology/$name"
     override fun hasCivilopediaTextLines() = true
     override fun replacesCivilopediaDescription() = true
+    override fun getUniques() = uniqueObjects
 
     override fun getCivilopediaTextLines(ruleset: Ruleset): List<FormattedLine> {
         val lineList = ArrayList<FormattedLine>()
 
-        lineList += FormattedLine(era(), header = 3, color = "#8080ff")
+        val eraColor = ruleset.eras[era()]?.getHexColor() ?: ""
+        lineList += FormattedLine(era(), header = 3, color = eraColor)
         lineList += FormattedLine()
         lineList += FormattedLine("{Cost}: $cost${Fonts.science}")
 

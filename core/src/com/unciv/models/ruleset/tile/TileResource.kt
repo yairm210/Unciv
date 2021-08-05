@@ -24,6 +24,7 @@ class TileResource : NamedStats(), ICivilopediaText {
     override fun makeLink() = "Resource/$name"
     override fun hasCivilopediaTextLines() = true
     override fun replacesCivilopediaDescription() = true
+    //override fun getUniques() = uniqueObjects
 
     override fun getCivilopediaTextLines(ruleset: Ruleset): List<FormattedLine> {
         val textList = ArrayList<FormattedLine>()

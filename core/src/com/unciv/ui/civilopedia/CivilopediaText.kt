@@ -141,7 +141,7 @@ class FormattedLine (
         /** Padding distance per [indent] level */
         const val indentPad = 30f
         /** Where indent==1 will be, measured as icon count */
-        const val indentOneAtNumIcons = 3
+        const val indentOneAtNumIcons = 2
 
         private var rulesetCachedInNameMap: Ruleset? = null
         // Cache to quickly match Categories to names. Takes a few ms to build on a slower desktop and will use just a few 10k bytes.
@@ -484,4 +484,14 @@ interface ICivilopediaText {
 
     /** Create the correct string for a Civilopedia link */
     fun makeLink(): String
+
+    /** Overrides alphabetical sorting in Civilopedia
+     *  @param ruleset The current ruleset in case the function needs to do lookups
+     */
+    fun getSortGroup(ruleset: Ruleset): Int = 0
+    
+    /** Overrides Icon used for Civilopedia entry list (where you select the instance)
+     *  This will still be passed to the category-specific image getter.
+     */
+    fun getIconName() = if (this is INamed) name else ""
 }

@@ -6,6 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.unciv.Constants
 import com.unciv.UncivGame
+import com.unciv.models.ruleset.Belief
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.Unique
 import com.unciv.models.ruleset.VictoryType
@@ -173,139 +174,39 @@ class CivilopediaScreen(
         onBackButtonClicked { UncivGame.Current.setWorldScreen() }
 
         val hideReligionItems = !game.gameInfo.hasReligionEnabled()
+        val noCulturalVictory = VictoryType.Cultural !in game.gameInfo.gameParameters.victoryTypes
 
-        categoryToEntries[CivilopediaCategories.Building] = ruleset.buildings.values
-                .filter { shouldBeDisplayed(it.uniqueObjects)
-                        && !it.isAnyWonder() }
-                .map {
-                    CivilopediaEntry(
-                        it.name,
-                        "",
-                        CivilopediaCategories.Building.getImage?.invoke(it.name, imageSize),
-                        (it as? ICivilopediaText).takeUnless { ct -> ct==null || ct.isCivilopediaTextEmpty() }
-                    )
-                }
-        categoryToEntries[CivilopediaCategories.Wonder] = ruleset.buildings.values
-                .filter { shouldBeDisplayed(it.uniqueObjects)
-                        && it.isAnyWonder() }
-                .map {
-                    CivilopediaEntry(
-                        it.name,
-                        "",
-                        CivilopediaCategories.Wonder.getImage?.invoke(it.name, imageSize),
-                        (it as? ICivilopediaText).takeUnless { ct -> ct==null || ct.isCivilopediaTextEmpty() }
-                    )
-                }
-        categoryToEntries[CivilopediaCategories.Resource] = ruleset.tileResources.values
-                .map {
-                    CivilopediaEntry(
-                        it.name,
-                        "",
-                        CivilopediaCategories.Resource.getImage?.invoke(it.name, imageSize),
-                        (it as? ICivilopediaText).takeUnless { ct -> ct==null || ct.isCivilopediaTextEmpty() }
-                    )
-                }
-        categoryToEntries[CivilopediaCategories.Terrain] = ruleset.terrains.values
-                .filter { shouldBeDisplayed(it.uniqueObjects) }
-                .map {
-                    CivilopediaEntry(
-                        it.name,
-                        "",
-                        CivilopediaCategories.Terrain.getImage?.invoke(it.name, imageSize),
-                        (it as? ICivilopediaText).takeUnless { ct -> ct==null || ct.isCivilopediaTextEmpty() }
-                    )
-                }
-        categoryToEntries[CivilopediaCategories.Improvement] = ruleset.tileImprovements.values
-                .filter { shouldBeDisplayed(it.uniqueObjects) }
-                .map {
-                    CivilopediaEntry(
-                        it.name,
-                        "",
-                        CivilopediaCategories.Improvement.getImage?.invoke(it.name, imageSize),
-                        (it as? ICivilopediaText).takeUnless { ct -> ct==null || ct.isCivilopediaTextEmpty() }
-                    )
-                }
-        categoryToEntries[CivilopediaCategories.Unit] = ruleset.units.values
-                .filter { shouldBeDisplayed(it.uniqueObjects) }
-                .map {
-                    CivilopediaEntry(
-                        it.name,
-                        "",
-                        CivilopediaCategories.Unit.getImage?.invoke(it.name, imageSize),
-                        (it as? ICivilopediaText).takeUnless { ct -> ct==null || ct.isCivilopediaTextEmpty() }
-                    )
-                }
-        categoryToEntries[CivilopediaCategories.Nation] = ruleset.nations.values
-                .filter { shouldBeDisplayed(it.uniqueObjects) && it.isMajorCiv() }
-                .map {
-                    CivilopediaEntry(
-                        it.name,
-                        "",
-                        CivilopediaCategories.Nation.getImage?.invoke(it.name, imageSize),
-                        (it as? ICivilopediaText).takeUnless { ct -> ct==null || ct.isCivilopediaTextEmpty() }
-                    )
-                }
-        categoryToEntries[CivilopediaCategories.Technology] = ruleset.technologies.values
-                .filter { shouldBeDisplayed(it.uniqueObjects) }
-                .map {
-                    CivilopediaEntry(
-                        it.name,
-                        "",
-                        CivilopediaCategories.Technology.getImage?.invoke(it.name, imageSize),
-                        (it as? ICivilopediaText).takeUnless { ct -> ct==null || ct.isCivilopediaTextEmpty() }
-                    )
-                }
-        categoryToEntries[CivilopediaCategories.Promotion] = ruleset.unitPromotions.values
-                .filter { shouldBeDisplayed(it.uniqueObjects) }
-                .map {
-                    CivilopediaEntry(
-                        it.name,
-                        "",
-                        CivilopediaCategories.Promotion.getImage?.invoke(it.name, imageSize),
-                        (it as? ICivilopediaText).takeUnless { ct -> ct==null || ct.isCivilopediaTextEmpty() }
-                    )
-                }
+        fun getCategoryIterator(category: CivilopediaCategories): Collection<ICivilopediaText> =
+            when (category) {
+                CivilopediaCategories.Building -> ruleset.buildings.values.filter { !it.isAnyWonder() }
+                CivilopediaCategories.Wonder -> ruleset.buildings.values.filter { it.isAnyWonder() }
+                CivilopediaCategories.Resource -> ruleset.tileResources.values
+                CivilopediaCategories.Terrain -> ruleset.terrains.values
+                CivilopediaCategories.Improvement -> ruleset.tileImprovements.values
+                CivilopediaCategories.Unit -> ruleset.units.values
+                CivilopediaCategories.Nation -> ruleset.nations.values.filter { !it.isSpectator() }
+                CivilopediaCategories.Technology -> ruleset.technologies.values
+                CivilopediaCategories.Promotion -> ruleset.unitPromotions.values
+                CivilopediaCategories.Policy -> ruleset.policies.values
+                CivilopediaCategories.Tutorial -> tutorialController.getCivilopediaTutorials()
+                CivilopediaCategories.Difficulty -> ruleset.difficulties.values
+                CivilopediaCategories.Belief -> (ruleset.beliefs.values.asSequence() + Belief.getCivilopediaReligionEntry(ruleset)).toList()
+            }
 
-        categoryToEntries[CivilopediaCategories.Tutorial] = tutorialController.getCivilopediaTutorials()
-                .map {
-                    CivilopediaEntry(
-                        it.name,
-                        "",
-//                        CivilopediaCategories.Tutorial.getImage?.invoke(it.name, imageSize)
-                        flavour = it
-                    )
-                }
+        for (loopCategory in CivilopediaCategories.values()) {
+            if (loopCategory.hide) continue
+            if (hideReligionItems && loopCategory == CivilopediaCategories.Belief) continue
+            categoryToEntries[loopCategory] =
+                getCategoryIterator(loopCategory)
+                    .filter { it.getUniques()?.let { uniques -> shouldBeDisplayed(uniques) } ?: true }
+                    .map { CivilopediaEntry(
+                        (it as INamed).name, "",
+                        loopCategory.getImage?.invoke(it.getIconName(), imageSize),
+                        it.takeUnless { ct -> ct.isCivilopediaTextEmpty() },
+                        sortBy = it.getSortGroup(ruleset)
+                    ) }
+        }
 
-        categoryToEntries[CivilopediaCategories.Difficulty] = ruleset.difficulties.values
-                .map {
-                    CivilopediaEntry(
-                        it.name,
-                        "",
-//                        CivilopediaCategories.Difficulty.getImage?.invoke(it.name, imageSize)
-                        flavour = (it as? ICivilopediaText)
-                    )
-                }
-
-        if (!hideReligionItems)
-            categoryToEntries[CivilopediaCategories.Belief] = (
-                ruleset.beliefs.values.asSequence()
-                .map {
-                    CivilopediaEntry(
-                        it.name,
-                        "",
-                        CivilopediaCategories.Belief.getImage?.invoke(it.type.name, imageSize),
-                        (it as? ICivilopediaText).takeUnless { ct -> ct==null || ct.isCivilopediaTextEmpty() },
-                        sortBy = it.type.ordinal
-                    )
-                } + CivilopediaEntry(
-                        "Religions",
-                        "",
-                        CivilopediaCategories.Belief.getImage?.invoke("Religion", imageSize),
-                        getReligionText(),
-                        sortBy = -1
-                    )
-            ).toList()
-                    
         val buttonTable = Table()
         buttonTable.pad(15f)
         buttonTable.defaults().pad(10f)
@@ -366,10 +267,10 @@ class CivilopediaScreen(
 
     private fun getReligionText(): ICivilopediaText {
         val lines = ArrayList<FormattedLine>()
-        lines += FormattedLine("Religions", header=2, color="#e34a2b")
-        lines += FormattedLine(separator=true)
+        lines += FormattedLine("Religions", header = 2, color = "#e34a2b")
+        lines += FormattedLine(separator = true)
         ruleset.religions.sortedWith(compareBy(Collator.getInstance(), { it.tr() })).forEach { 
-            lines += FormattedLine(it, icon="Belief/$it")
+            lines += FormattedLine(it, icon = "Belief/$it")
         }
         return SimpleCivilopediaText(lines, true)
     }

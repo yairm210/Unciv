@@ -245,6 +245,7 @@ class Building : NamedStats(), INonPerpetualConstruction, ICivilopediaText {
     override fun makeLink() = if (isAnyWonder()) "Wonder/$name" else "Building/$name"
     override fun hasCivilopediaTextLines() = true
     override fun replacesCivilopediaDescription() = true
+    override fun getUniques() = uniqueObjects
 
     override fun getCivilopediaTextLines(ruleset: Ruleset): List<FormattedLine> {
         fun Float.formatSignedInt() = (if (this > 0f) "+" else "") + this.toInt().toString()

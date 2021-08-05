@@ -36,4 +36,6 @@ class Era : INamed {
         if (iconRGB == null) return Color.WHITE.cpy()
         return colorFromRGB(iconRGB!![0], iconRGB!![1], iconRGB!![2])
     }
+
+    fun getHexColor() = "#" + getColor().toString().substring(0,6)
 }

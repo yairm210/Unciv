@@ -104,6 +104,7 @@ class BaseUnit : INamed, INonPerpetualConstruction, ICivilopediaText {
     override fun makeLink() = "Unit/$name"
     override fun replacesCivilopediaDescription() = true
     override fun hasCivilopediaTextLines() = true
+    override fun getUniques() = uniqueObjects
 
     override fun getCivilopediaTextLines(ruleset: Ruleset): List<FormattedLine> {
         val textList = ArrayList<FormattedLine>()
