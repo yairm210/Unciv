@@ -487,8 +487,14 @@ object RulesetCache : HashMap<String,Ruleset>() {
         }
         newRuleset.updateBuildingCosts() // only after we've added all the mods can we calculate the building costs
 
+        // This one should be temporary
         if (newRuleset.unitTypes.isEmpty()) {
             newRuleset.unitTypes.putAll(getBaseRuleset().unitTypes)
+        }
+        
+        // This one should be permanent
+        if (newRuleset.ruinRewards.isEmpty()) {
+            newRuleset.ruinRewards.putAll(getBaseRuleset().ruinRewards)
         }
         
         return newRuleset
