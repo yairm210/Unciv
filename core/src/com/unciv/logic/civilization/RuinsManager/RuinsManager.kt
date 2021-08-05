@@ -37,6 +37,10 @@ class RuinsManager {
             if (civInfo.gameInfo.difficulty in possibleReward.excludedDifficulties) continue
             if ("Hidden when religion is disabled" in possibleReward.uniques && !civInfo.gameInfo.hasReligionEnabled()) continue
             if ("Hidden after generating a Great Prophet" in possibleReward.uniques && civInfo.religionManager.greatProphetsEarned > 0) continue
+            if (possibleReward.uniqueObjects.any { unique ->
+                unique.placeholderText == "Only available after [] turns" 
+                && unique.params[0].toInt() < civInfo.gameInfo.turns
+            }) continue
             
             var atLeastOneUniqueHadEffect = false
             for (unique in possibleReward.uniqueObjects) {
