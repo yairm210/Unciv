@@ -114,7 +114,6 @@ class TechManager {
     fun remainingScienceToTech(techName: String) = costOfTech(techName) - researchOfTech(techName)
 
     fun turnsToTech(techName: String) = when {
-        civInfo.cities.isEmpty() -> "∞"
         civInfo.statsForNextTurn.science <= 0f -> "∞"
         else -> max(1, ceil(remainingScienceToTech(techName).toDouble() / civInfo.statsForNextTurn.science).toInt()).toString()
     }
