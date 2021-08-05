@@ -51,13 +51,14 @@ class Ruleset {
 
     var name = ""
     val beliefs = LinkedHashMap<String, Belief>()
-    val religions = ArrayList<String>()
     val buildings = LinkedHashMap<String, Building>()
     val difficulties = LinkedHashMap<String, Difficulty>()
     val eras = LinkedHashMap<String, Era>()
     val nations = LinkedHashMap<String, Nation>()
     val policies = LinkedHashMap<String, Policy>()
     val policyBranches = LinkedHashMap<String, PolicyBranch>()
+    val religions = ArrayList<String>()
+    val ruinRewards = LinkedHashMap<String, RuinReward>()
     val quests = LinkedHashMap<String, Quest>()
     val specialists = LinkedHashMap<String, Specialist>()
     val technologies = LinkedHashMap<String, Technology>()
@@ -96,6 +97,7 @@ class Ruleset {
         beliefs.putAll(ruleset.beliefs)
         quests.putAll(ruleset.quests)
         religions.addAll(ruleset.religions)
+        ruinRewards.putAll(ruleset.ruinRewards)
         specialists.putAll(ruleset.specialists)
         technologies.putAll(ruleset.technologies)
         for (techToRemove in ruleset.modOptions.techsToRemove) technologies.remove(techToRemove)
@@ -121,6 +123,7 @@ class Ruleset {
         nations.clear()
         policies.clear()
         religions.clear()
+        ruinRewards.clear()
         quests.clear()
         technologies.clear()
         terrains.clear()
@@ -209,6 +212,10 @@ class Ruleset {
         if (religionsFile.exists())
             religions += jsonParser.getFromJson(Array<String>::class.java, religionsFile).toList()
 
+        val ruinRewardsFile = folderHandle.child("Ruins.json")
+        if (ruinRewardsFile.exists())
+            ruinRewards += createHashmap(jsonParser.getFromJson(Array<RuinReward>::class.java, ruinRewardsFile))
+        
         val nationsFile = folderHandle.child("Nations.json")
         if (nationsFile.exists()) {
             nations += createHashmap(jsonParser.getFromJson(Array<Nation>::class.java, nationsFile))

@@ -1,6 +1,7 @@
 package com.unciv.logic.civilization
 
 import com.badlogic.gdx.math.Vector2
+import com.unciv.models.stats.Stat
 import com.unciv.ui.cityscreen.CityScreen
 import com.unciv.ui.pickerscreens.TechPickerScreen
 import com.unciv.ui.trade.DiplomacyScreen
@@ -18,6 +19,24 @@ object NotificationIcon {
     const val Diplomacy = "OtherIcons/Diplomacy"
     const val City = "ImprovementIcons/City center"
     const val Citadel = "ImprovementIcons/Citadel"
+    const val Happiness = "StatIcons/Happiness"
+    const val Population = "StatIcons/Population"
+    const val CityState = "NationIcons/CityState"
+    const val Production = "StatIcons/Production"
+    const val Food = "StatIcons/Food"
+    const val Faith = "StatIcons/Faith"
+    
+    fun statToIcon(stat: Stat): String {
+        return when (stat) {
+            Stat.Production -> Production
+            Stat.Food -> Food
+            Stat.Gold -> Gold
+            Stat.Science -> Science
+            Stat.Culture -> Culture
+            Stat.Happiness -> Happiness
+            Stat.Faith -> Faith
+        }
+    }
 }
 
 /**

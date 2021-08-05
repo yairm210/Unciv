@@ -212,6 +212,18 @@ class MapUnit {
         return getUniques().any { it.placeholderText == unique }
     }
 
+    fun copyStatisticsTo(newUnit: MapUnit) {
+        newUnit.health = health
+        newUnit.instanceName = instanceName
+        newUnit.currentMovement = currentMovement
+        newUnit.attacksThisTurn = attacksThisTurn
+        newUnit.isTransported = isTransported
+        newUnit.promotions = promotions.clone()
+        
+        newUnit.updateUniques()
+        newUnit.updateVisibleTiles()
+    }
+    
     /**
      * Determines this (land or sea) unit's current maximum vision range from unit properties, civ uniques and terrain.
      * @return Maximum distance of tiles this unit may possibly see
@@ -346,16 +358,20 @@ class MapUnit {
         return unit
     }
 
-    fun canUpgrade(): Boolean {
+    /** @param preemptively: Ignore possible tech/culture requirements. Used for upgrading units
+     * via ancient ruins.
+     */
+    fun canUpgrade(unitToUpgradeTo: BaseUnit = getUnitToUpgradeTo(), preemptively: Boolean = false): Boolean {
         // We need to remove the unit from the civ for this check,
         // because if the unit requires, say, horses, and so does its upgrade,
         // and the civ currently has 0 horses,
         // if we don't remove the unit before the check it's return false!
 
-        val unitToUpgradeTo = getUnitToUpgradeTo()
         if (name == unitToUpgradeTo.name) return false
         civInfo.removeUnit(this)
-        val canUpgrade = unitToUpgradeTo.isBuildable(civInfo)
+        val canUpgrade = 
+            if (preemptively) unitToUpgradeTo.isPreemptivelyBuildable(civInfo)
+            else unitToUpgradeTo.isBuildable(civInfo)
         civInfo.addUnit(this)
         return canUpgrade
     }
@@ -755,113 +771,9 @@ class MapUnit {
     private fun getAncientRuinBonus(tile: TileInfo) {
         tile.improvement = null
         val tileBasedRandom = Random(tile.position.toString().hashCode())
-        val actions: ArrayList<() -> Unit> = ArrayList()
-
-        fun goldBonus() {
-            val amount = listOf(25, 60, 100).random(tileBasedRandom)
-            civInfo.addGold(amount)
-            civInfo.addNotification(
-                "We have found a stash of [$amount] gold in the ruins!",
-                tile.position,
-                NotificationIcon.Gold
-            )
-        }
-
-        if (civInfo.cities.isNotEmpty()) actions.add {
-            val city = civInfo.cities.random(tileBasedRandom)
-            city.population.addPopulation(1)
-            val locations = LocationAction(listOf(tile.position, city.location))
-            civInfo.addNotification(
-                "We have found survivors in the ruins - population added to [" + city.name + "]",
-                locations,
-                NotificationIcon.Growth
-            )
-        }
-
-        val researchableFirstEraTechs = tile.tileMap.gameInfo.ruleSet.technologies.values
-            .filter {
-                !civInfo.tech.isResearched(it.name)
-                        && civInfo.tech.canBeResearched(it.name)
-                        && civInfo.gameInfo.ruleSet.getEraNumber(it.era()) == 1
-            }
-        if (researchableFirstEraTechs.isNotEmpty())
-            actions.add {
-                val tech = researchableFirstEraTechs.random(tileBasedRandom).name
-                civInfo.tech.addTechnology(tech)
-                civInfo.addNotification(
-                    "We have discovered the lost technology of [$tech] in the ruins!",
-                    tile.position,
-                    NotificationIcon.Science,
-                    tech
-                )
-            }
-
-        val militaryUnit = 
-            if (civInfo.gameInfo.gameParameters.startingEra !in civInfo.gameInfo.ruleSet.eras) "Warrior" 
-            else civInfo.gameInfo.ruleSet.eras[civInfo.gameInfo.gameParameters.startingEra]!!.startingMilitaryUnit
-        val possibleUnits = (
-                //City-States and OCC don't get settler from ruins
-                listOf(Constants.settler).filterNot { civInfo.isCityState() || civInfo.isOneCityChallenger() }
-                + listOf(Constants.worker, militaryUnit)
-            ).filter { civInfo.gameInfo.ruleSet.units.containsKey(it) }
-        if (possibleUnits.isNotEmpty())
-            actions.add {
-                val chosenUnit = possibleUnits.random(tileBasedRandom)
-                // placeUnitNearTile _can_ fail, and since this code can run behind a try with empty
-                // catch inside nested thread switches - petter play it safe
-                if (civInfo.placeUnitNearTile(tile.position, chosenUnit) == null) {
-                    goldBonus()
-                } else {
-                    civInfo.addNotification(
-                        "A [$chosenUnit] has joined us!",
-                        tile.position,
-                        chosenUnit
-                    )
-                }
-            }
-
-        if (!isCivilian())
-            actions.add {
-                promotions.XP += 10
-                civInfo.addNotification(
-                    "An ancient tribe trains our [$name] in their ways of combat!",
-                    tile.position,
-                    name
-                )
-            }
-
-        actions.add { goldBonus() }
-
-        actions.add {
-            civInfo.policies.addCulture(20)
-            civInfo.addNotification(
-                "We have discovered cultural artifacts in the ruins! (+20 Culture)",
-                tile.position,
-                NotificationIcon.Culture
-            )
-        }
-
-        // Map of the surrounding area
-        val revealCenter = tile.getTilesAtDistance(ANCIENT_RUIN_MAP_REVEAL_OFFSET)
-            .filter { it.position !in civInfo.exploredTiles }
-            .toList()
-            .randomOrNull(tileBasedRandom)
-        if (revealCenter != null)
-            actions.add {
-                val tilesToReveal = revealCenter
-                    .getTilesInDistance(ANCIENT_RUIN_MAP_REVEAL_RANGE)
-                    .filter { Random.nextFloat() < ANCIENT_RUIN_MAP_REVEAL_CHANCE }
-                    .map { it.position }
-                civInfo.exploredTiles.addAll(tilesToReveal)
-                civInfo.updateViewableTiles()
-                civInfo.addNotification(
-                    "We have found a crudely-drawn map in the ruins!",
-                    tile.position,
-                    "ImprovementIcons/Ancient ruins"
-                )
-            }
-
-        (actions.random(tileBasedRandom))()
+        
+        civInfo.ruinsManager.selectNextRuinsReward(this)
+        return
     }
 
     fun assignOwner(civInfo: CivilizationInfo, updateCivInfo: Boolean = true) {

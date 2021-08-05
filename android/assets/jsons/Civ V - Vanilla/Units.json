@@ -27,6 +27,7 @@
 		"cost": 25,
 		"obsoleteTech": "Scientific Theory",
 		"uniques": ["Ignores terrain cost"],
+		"specialUpgradesTo": "Archer",
 		"attackSound": "nonmetalhit"
 	},
 	{
@@ -37,6 +38,7 @@
 		"cost": 40,
 		"obsoleteTech": "Metal Casting",
 		"upgradesTo": "Swordsman",
+		"specialUpgradesTo": "Spearman",
 		"attackSound": "nonmetalhit",
         "civilopediaText": [
 			{"text": "This is your basic, club-swinging fighter."}
