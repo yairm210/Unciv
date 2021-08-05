@@ -32,7 +32,13 @@ class RuinsManager {
     
     fun selectNextRuinsReward(triggeringUnit: MapUnit) {
         val tileBasedRandom = Random(triggeringUnit.getTile().position.toString().hashCode())
-        val possibleRewards = validRewards.filter { it.name !in lastChosenRewards }.shuffled(tileBasedRandom)
+        val availableRewards = validRewards.filter { it.name !in lastChosenRewards }
+        
+        // This might be a dirty way to do this, but it works.
+        // For each possible reward, this creates a list with reward.weight amount of copies of this reward
+        // These lists are then combined into a single list, and the result is shuffled.
+        val possibleRewards = availableRewards.flatMap { reward -> List(reward.weight) { reward } }.shuffled(tileBasedRandom)
+        
         for (possibleReward in possibleRewards) {
             if (civInfo.gameInfo.difficulty in possibleReward.excludedDifficulties) continue
             if ("Hidden when religion is disabled" in possibleReward.uniques && !civInfo.gameInfo.hasReligionEnabled()) continue

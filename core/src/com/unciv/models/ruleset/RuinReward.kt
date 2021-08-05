@@ -8,4 +8,5 @@ class RuinReward : INamed {
     val uniques: List<String> = listOf()
     val uniqueObjects: List<Unique> by lazy { uniques.map { Unique(it) } }
     val excludedDifficulties: List<String> = listOf()
+    val weight: Int = 1
 }
