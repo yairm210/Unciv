@@ -27,7 +27,6 @@ class RuinsManager {
     fun setTransients(civInfo: CivilizationInfo) {
         this.civInfo = civInfo
         validRewards = civInfo.gameInfo.ruleSet.ruinRewards.values.toList()
-        println("Rewards:" + validRewards.map { it.name })
     }
     
     fun selectNextRuinsReward(triggeringUnit: MapUnit) {

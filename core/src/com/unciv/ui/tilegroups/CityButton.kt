@@ -260,7 +260,7 @@ class CityButton(val city: CityInfo, private val tileGroup: WorldTileGroup): Tab
         }
 
         iconTable.pack()
-        cityStrengthLabel.x = label.x + label.width / 2 - cityStrengthLabel.width / 2 // so it'll be aligned right above the city name
+        cityStrengthLabel.x = label.x // so it'll be aligned right above the city name
         cityStrengthLabel.setY(iconTable.height, Align.top)
         return iconTable
     }
