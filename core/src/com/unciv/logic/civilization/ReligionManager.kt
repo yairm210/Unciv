@@ -117,6 +117,7 @@ class ReligionManager {
             prophet.religion = religion!!.name
             prophet.abilityUsedCount["Religion Spread"] = 0
             storedFaith -= faithForNextGreatProphet()
+            greatProphetsEarned += 1
         }
     }
 
