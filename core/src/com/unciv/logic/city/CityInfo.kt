@@ -12,6 +12,7 @@ import com.unciv.models.ruleset.Unique
 import com.unciv.models.ruleset.tile.ResourceSupplyList
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.unit.BaseUnit
+import com.unciv.models.stats.Stat
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
@@ -398,6 +399,21 @@ class CityInfo {
             gppCounter.add(entry)
         return gppCounter
     }
+    
+    fun addStat(stat: Stat, amount: Int) {
+        when (stat) {
+            Stat.Production -> cityConstructions.addProductionPoints(amount)
+            Stat.Food -> population.foodStored += amount
+            else -> civInfo.addStat(stat, amount)
+        }
+    }
+    
+    fun getStatReserve(stat: Stat): Int {
+        return when (stat) {
+            Stat.Food -> population.foodStored
+            else -> civInfo.getStatReserve(stat)
+        }
+    }
 
     internal fun getMaxHealth() = 200 + cityConstructions.getBuiltBuildings().sumBy { it.cityHealth }
 
@@ -554,7 +570,7 @@ class CityInfo {
             otherCiv.getDiplomacyManager(civInfo).setFlag(DiplomacyFlags.SettledCitiesNearUs, 30)
     }
 
-    fun canPurchase(construction: IConstruction): Boolean {
+    fun canPurchase(construction: INonPerpetualConstruction): Boolean {
         if (construction is BaseUnit) {
             val tile = getCenterTile()
             if (construction.isCivilian())
@@ -576,6 +592,9 @@ class CityInfo {
             "in all cities with a world wonder" -> cityConstructions.getBuiltBuildings().any { it.isWonder }
             "in all cities connected to capital" -> isConnectedToCapital()
             "in all cities with a garrison" -> getCenterTile().militaryUnit != null
+            "in all cities in which the majority religion is a major religion" -> 
+                religion.getMajorityReligion() != null
+                && civInfo.gameInfo.religions[religion.getMajorityReligion()]!!.isMajorReligion()
             else -> false
         }
     }

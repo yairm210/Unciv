@@ -13,6 +13,7 @@ import com.badlogic.gdx.utils.Align
 import com.unciv.logic.battle.CityCombatant
 import com.unciv.logic.city.CityConstructions
 import com.unciv.logic.city.CityInfo
+import com.unciv.logic.city.INonPerpetualConstruction
 import com.unciv.logic.city.PerpetualConstruction
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.ui.cityscreen.CityScreen
@@ -386,7 +387,7 @@ class CityButton(val city: CityInfo, private val tileGroup: WorldTileGroup): Tab
             group.addActor(label)
 
             val constructionPercentage = cityConstructions.getWorkDone(cityCurrentConstruction.name) /
-                    cityCurrentConstruction.getProductionCost(cityConstructions.cityInfo.civInfo).toFloat()
+                    (cityCurrentConstruction as INonPerpetualConstruction).getProductionCost(cityConstructions.cityInfo.civInfo).toFloat()
             val productionBar = ImageGetter.getProgressBarVertical(2f, groupHeight, constructionPercentage,
                     Color.BROWN.cpy().lerp(Color.WHITE, 0.5f), Color.BLACK)
             productionBar.x = 10f

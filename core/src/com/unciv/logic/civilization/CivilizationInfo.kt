@@ -705,6 +705,19 @@ class CivilizationInfo {
             // Happiness cannot be added as it is recalculated again, use a unique instead
         }
     }
+    
+    fun getStatReserve(stat: Stat): Int {
+        return when (stat) {
+            Stat.Culture -> policies.storedCulture
+            Stat.Science -> {
+                if (tech.currentTechnology() == null) 0
+                else tech.remainingScienceToTech(tech.currentTechnology()!!.name)
+            }
+            Stat.Gold -> gold
+            Stat.Faith -> religionManager.storedFaith
+            else -> 0
+        }
+    }
 
     fun getGreatPersonPointsForNextTurn(): Counter<String> {
         val greatPersonPoints = Counter<String>()

@@ -1176,9 +1176,9 @@
 			"May withdraw before melee ([80]%)", "+[100]% Strength vs [submarine units]"],
 		"attackSound": "shipguns"
 	},
-	
+
 	// Atomic Era
-	
+
 	{
 		"name": "Marine",
 		"unitType": "Gunpowder",
@@ -1375,7 +1375,7 @@
 		"cost": 425,
 		"requiredTech": "Computers",
 		"requiredResource": "Aluminum",
-		"uniques": ["+[100]% Strength vs [Armored]", "No defensive terrain bonus", "Can move after attacking", 
+		"uniques": ["+[100]% Strength vs [Armored]", "No defensive terrain bonus", "Can move after attacking",
 			"All tiles cost 1 movement", "Unable to capture cities"],
 		"attackSound": "machinegun"
 	},
@@ -1390,7 +1390,7 @@
 		"rangedStrength": 85,
 		"cost": 425,
 		"requiredTech": "Telecommunications",
-		"uniques": ["+[75]% Strength when attacking", "Can only attack [Water] tiles", "Can attack submarines", 
+		"uniques": ["+[75]% Strength when attacking", "Can only attack [Water] tiles", "Can attack submarines",
 			"[+1] Visibility Range", "Can carry [2] [Missile] units"],
 		"attackSound": "torpedo"
 	},
@@ -1500,7 +1500,7 @@
 		"name": "Great Prophet",
 		"unitType": "Civilian",
 		"uniques": ["Can construct [Holy site] if it hasn't spread religion yet", "Can spread religion [4] times",
-			"May found a religion", "Great Person - [Faith]", "Unbuildable", "Hidden when religion is disabled"],
+			"May found a religion", "Great Person - [Faith]", "Unbuildable", "Religious Unit", "Hidden when religion is disabled"],
 		"movement": 2
 	},
 	{
@@ -1518,6 +1518,16 @@
 		"uniques": ["Can start an [8]-turn golden age","Bonus for units in 2 tile radius 15%",
 			"Heal adjacent units for an additional 15 HP per turn", "Can construct [Citadel]", "Great Person - [War]", "Unbuildable"],
 		"movement": 5
+	},
+
+	/* Religious units */
+
+	{
+		"name": "Missionary",
+		"unitType": "Civilian",
+		"uniques": ["Can spread religion [2] times", "Can be purchased with [Faith] [in all cities in which the majority religion is a major religion]",
+			"Unbuildable", "Religious Unit"],
+		"movement": 4
 	}
 
 	/* Spaceship Parts */
