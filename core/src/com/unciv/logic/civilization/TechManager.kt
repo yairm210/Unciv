@@ -25,7 +25,7 @@ class TechManager {
     @Transient
     internal var techUniques = UniqueMap()
 
-    // MapUnit.canPassThrough is the most called function in the game, and having these extremely specific booleans is or way of improving the time cost
+    // MapUnit.canPassThrough is the most called function in the game, and having these extremely specific booleans is one way of improving the time cost
     @Transient
     var wayfinding = false
     @Transient
@@ -113,8 +113,9 @@ class TechManager {
     
     fun remainingScienceToTech(techName: String) = costOfTech(techName) - researchOfTech(techName)
 
-    fun turnsToTech(techName: String): String {
-        return if (civInfo.cities.isEmpty()) "∞" else max(1, ceil(remainingScienceToTech(techName).toDouble() / civInfo.statsForNextTurn.science).toInt()).toString()
+    fun turnsToTech(techName: String) = when {
+        civInfo.statsForNextTurn.science <= 0f -> "∞"
+        else -> max(1, ceil(remainingScienceToTech(techName).toDouble() / civInfo.statsForNextTurn.science).toInt()).toString()
     }
 
     fun isResearched(techName: String): Boolean = techsResearched.contains(techName)

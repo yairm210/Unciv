@@ -257,7 +257,7 @@ object GameStarter {
                 }).toMutableList()
 
                 val warriorEquivalent = ruleSet.units.values
-                    .filter { it.unitType.isLandUnit() && it.isMilitary() && it.isBuildable(civ) }
+                    .filter { it.isLandUnit() && it.isMilitary() && it.isBuildable(civ) }
                     .maxByOrNull {max(it.strength, it.rangedStrength)}
                     ?.name
                 

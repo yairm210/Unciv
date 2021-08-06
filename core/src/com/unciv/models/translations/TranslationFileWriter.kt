@@ -200,13 +200,13 @@ object TranslationFileWriter {
             "Buildings",
             "Building"
         )) }
-        val unitTypeMap = UnitType.values().map { it.name }.toMutableSet().apply { addAll(sequenceOf(
+        val unitTypeMap = ruleset.unitTypes.keys.toMutableSet().apply { addAll(sequenceOf(
             "Military",
             "Civilian",
             "non-air",
             "relevant",
             "Nuclear Weapon",
-            "Submarine",
+            "City",
             // These are up for debate
             "Air",
             "land units",
@@ -381,6 +381,7 @@ object TranslationFileWriter {
             "Tutorials" -> this.javaClass // dummy value
             "UnitPromotions" -> emptyArray<Promotion>().javaClass
             "Units" -> emptyArray<BaseUnit>().javaClass
+            "UnitTypes" -> emptyArray<UnitType>().javaClass
             else -> this.javaClass // dummy value
         }
     }

@@ -13,6 +13,7 @@ import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.tile.TileResource
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.ruleset.unit.Promotion
+import com.unciv.models.ruleset.unit.UnitType
 import com.unciv.models.stats.INamed
 import com.unciv.models.stats.NamedStats
 import com.unciv.models.stats.Stat
@@ -65,6 +66,7 @@ class Ruleset {
     val tileResources = LinkedHashMap<String, TileResource>()
     val units = LinkedHashMap<String, BaseUnit>()
     val unitPromotions = LinkedHashMap<String, Promotion>()
+    val unitTypes = LinkedHashMap<String, UnitType>()
     
     val mods = LinkedHashSet<String>()
     var modOptions = ModOptions()
@@ -102,6 +104,7 @@ class Ruleset {
         tileResources.putAll(ruleset.tileResources)
         unitPromotions.putAll(ruleset.unitPromotions)
         units.putAll(ruleset.units)
+        unitTypes.putAll(ruleset.unitTypes)
         for (unitToRemove in ruleset.modOptions.unitsToRemove) units.remove(unitToRemove)
         mods += ruleset.mods
         modWithReligionLoaded = modWithReligionLoaded || ruleset.modWithReligionLoaded
@@ -125,6 +128,7 @@ class Ruleset {
         tileResources.clear()
         unitPromotions.clear()
         units.clear()
+        unitTypes.clear()
         modWithReligionLoaded = false
     }
 
@@ -166,12 +170,15 @@ class Ruleset {
         val erasFile = folderHandle.child("Eras.json")
         if (erasFile.exists()) eras += createHashmap(jsonParser.getFromJson(Array<Era>::class.java, erasFile))
         
+        val unitTypesFile = folderHandle.child("UnitTypes.json")
+        if (unitTypesFile.exists()) unitTypes += createHashmap(jsonParser.getFromJson(Array<UnitType>::class.java, unitTypesFile))
+        
         val unitsFile = folderHandle.child("Units.json")
         if (unitsFile.exists()) units += createHashmap(jsonParser.getFromJson(Array<BaseUnit>::class.java, unitsFile))
 
         val promotionsFile = folderHandle.child("UnitPromotions.json")
         if (promotionsFile.exists()) unitPromotions += createHashmap(jsonParser.getFromJson(Array<Promotion>::class.java, promotionsFile))
-
+        
         val questsFile = folderHandle.child("Quests.json")
         if (questsFile.exists()) quests += createHashmap(jsonParser.getFromJson(Array<Quest>::class.java, questsFile))
 
@@ -411,7 +418,6 @@ class Ruleset {
                 lines += "Population in cities from settlers must be strictly positive! Found value ${era.value.settlerPopulation} for era ${era.key}"
         }
 
-
         return CheckModLinksResult(warningCount, lines)
     }
 }
@@ -419,7 +425,7 @@ class Ruleset {
 /** Loading mods is expensive, so let's only do it once and
  * save all of the loaded rulesets somewhere for later use
  *  */
-object RulesetCache :HashMap<String,Ruleset>() {
+object RulesetCache : HashMap<String,Ruleset>() {
     fun loadRulesets(consoleMode: Boolean = false, printOutput: Boolean = false) {
         clear()
         for (ruleset in BaseRuleset.values()) {
@@ -474,6 +480,10 @@ object RulesetCache :HashMap<String,Ruleset>() {
         }
         newRuleset.updateBuildingCosts() // only after we've added all the mods can we calculate the building costs
 
+        if (newRuleset.unitTypes.isEmpty()) {
+            newRuleset.unitTypes.putAll(getBaseRuleset().unitTypes)
+        }
+        
         return newRuleset
     }
 

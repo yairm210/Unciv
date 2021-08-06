@@ -31,7 +31,7 @@
 	},
 	{
 		"name": "Warrior",
-		"unitType": "Melee",
+		"unitType": "Sword",
 		"movement": 2,
 		"strength": 8,
 		"cost": 40,
@@ -44,7 +44,7 @@
 	},
 	{
 		"name": "Maori Warrior",
-		"unitType": "Melee",
+		"unitType": "Sword",
 		"uniqueTo": "Polynesia",
 		"replaces": "Warrior",
 		"movement": 2,
@@ -57,7 +57,7 @@
 	},
 	{
 		"name": "Jaguar",
-		"unitType": "Melee",
+		"unitType": "Sword",
 		"uniqueTo": "Aztecs",
 		"replaces": "Warrior",
 		"movement": 2,
@@ -71,7 +71,7 @@
 	},
 	{
 		"name": "Brute",
-		"unitType": "Melee",
+		"unitType": "Sword",
 		"uniqueTo": "Barbarians",
 		"replaces": "Warrior",
 		"movement": 2,
@@ -83,7 +83,7 @@
 	},
 	{
 		"name": "Archer",
-		"unitType": "Ranged",
+		"unitType": "Archery",
 		"movement": 2,
 		"strength": 5,
 		"rangedStrength": 7,
@@ -95,7 +95,7 @@
 	},
 	{
 		"name": "Bowman",
-		"unitType": "Ranged",
+		"unitType": "Archery",
 		"movement": 2,
 		"strength": 7,
 		"rangedStrength": 9,
@@ -109,7 +109,7 @@
 	},
 	{
 		"name": "Slinger",
-		"unitType": "Ranged",
+		"unitType": "Archery",
 		"uniqueTo": "Inca",
 		"replaces": "Archer",
 		"movement": 2,
@@ -125,7 +125,7 @@
 	/*
 	{
 		"name": "Archer",
-		"unitType": "Ranged",
+		"unitType": "Archery",
 		"uniqueTo": "Barbarians",
 		"replaces": "Archer",
 		"movement": 2,
@@ -141,7 +141,7 @@
 	*/
 	{
 		"name": "Work Boats",
-		"unitType": "WaterCivilian",
+		"unitType": "Civilian Water",
 		"movement": 4,
 		"cost": 30,
 		"requiredTech": "Sailing",
@@ -149,7 +149,7 @@
 	},
 	{
 		"name": "Trireme",
-		"unitType": "WaterMelee",
+		"unitType": "Melee Water",
 		"movement": 4,
 		"strength": 10,
 		"cost": 45,
@@ -162,7 +162,7 @@
 	/*
 	{
 		"name": "Galley",
-		"unitType": "WaterMelee",
+		"unitType": "Water Melee",
 		"uniqueTo": "Barbarian",
 		"movement": 3,
 		"strength": 7,
@@ -175,7 +175,7 @@
 	*/
 	{
 		"name": "Chariot Archer",
-		"unitType": "Ranged",
+		"unitType": "Archery",
 		"movement": 4,
 		"strength": 6,
 		"rangedStrength": 10,
@@ -189,7 +189,7 @@
 	},
 	{
 		"name": "War Chariot",
-		"unitType": "Ranged",
+		"unitType": "Archery",
 		"uniqueTo": "Egypt",
 		"replaces": "Chariot Archer",
 		"movement": 5,
@@ -204,7 +204,7 @@
 	},
 	{
 		"name": "Horse Archer",
-		"unitType": "Ranged",
+		"unitType": "Archery",
 		"uniqueTo": "The Huns",
 		"replaces": "Chariot Archer",
 		"movement": 4,
@@ -220,7 +220,7 @@
 	},
 	{
 		"name": "War Elephant",
-		"unitType": "Ranged",
+		"unitType": "Archery",
 		"uniqueTo": "India",
 		"replaces": "Chariot Archer",
 		"movement": 3,
@@ -235,7 +235,7 @@
 	},
 	{
 		"name": "Spearman",
-		"unitType": "Melee",
+		"unitType": "Sword",
 		"movement": 2,
 		"strength": 11,
 		"cost": 56,
@@ -247,9 +247,9 @@
 	},
 	{
 		"name": "Hoplite",
+		"unitType": "Sword",
 		"replaces": "Spearman",
 		"uniqueTo": "Greece",
-		"unitType": "Melee",
 		"movement": 2,
 		"strength": 13,
 		"cost": 56,
@@ -261,9 +261,9 @@
 	},
 	{
 		"name": "Persian Immortal",
+		"unitType": "Sword",
 		"replaces": "Spearman",
 		"uniqueTo": "Persia",
-		"unitType": "Melee",
 		"movement": 2,
 		"strength": 12,
 		"cost": 56,
@@ -275,9 +275,9 @@
 	},
 	{
 		"name": "Battering Ram",
+		"unitType": "Sword", // You might expect this to be a siege unit, but apparently it is not
 		"replaces": "Spearman",
 		"uniqueTo": "The Huns",
-		"unitType": "Melee",
 		"movement": 2,
 		"strength": 10,
 		"cost": 75,
@@ -292,9 +292,9 @@
 	/*
 	{
 		"name": "Spearman",
-		"unitType": "Melee",
+		"unitType": "Sword",
 		"movement": 2,
-		"strength": 7,
+		"strength": 10,
 		"cost": 56,
 		"requiredTech": "Bronze Working",
 		"obsoleteTech": "Civil Service",
@@ -302,7 +302,6 @@
 		"uniques": ["+[50]% Strength vs [Mounted]"],
 		"attackSound": "metalhit"
 		// Barbarian unique Spearman. Has same icon and name but slightly different 3d texture
-		// 10 strength in expansions
 	},
 	*/
 
@@ -372,7 +371,7 @@
 	},
 	{
 		"name": "Composite Bowman",
-		"unitType": "Ranged",
+		"unitType": "Archery",
 		"movement": 2,
 		"strength": 7,
 		"rangedStrength": 11,
@@ -384,7 +383,7 @@
 	},
 	{
 		"name": "Swordsman",
-		"unitType": "Melee",
+		"unitType": "Sword",
 		"movement": 2,
 		"strength": 14,
 		"cost": 75,
@@ -397,7 +396,7 @@
 	},
 	{
 		"name": "Legion",
-		"unitType": "Melee",
+		"unitType": "Sword",
 		"uniqueTo": "Rome",
 		"replaces": "Swordsman",
 		"movement": 2,
@@ -413,7 +412,7 @@
 	},
 	{
 		"name": "Mohawk Warrior",
-		"unitType": "Melee",
+		"unitType": "Sword",
 		"uniqueTo": "Iroquois",
 		"replaces": "Swordsman",
 		"movement": 2,
@@ -429,9 +428,9 @@
 	/*
 	{
 		"name": "Swordsman",
-		"unitType": "Melee",
+		"unitType": "Sword",
 		"movement": 2,
-		"strength": 11,
+		"strength": 14,
 		"cost": 75,
 		"requiredTech": "Iron Working",
 		"upgradesTo": "Longswordsman",
@@ -440,14 +439,13 @@
 		"hurryCostModifier": 20,
 		"attackSound": "metalhit"
 		// Barbarian unique Swordsman. Has same icon and name but slightly different 3d texture
-		// 14 strength in expansions
 	},
 	*/
 
 	// Medieval Era
 	{
 		"name": "Pikeman",
-		"unitType": "Melee",
+		"unitType": "Sword",
 		"movement": 2,
 		"strength": 16,
 		"cost": 90,
@@ -460,9 +458,9 @@
 	},
 	{
 		"name": "Landsknecht",
+		"unitType": "Sword",
 		"replaces": "Pikeman",
 		"uniqueTo": "Germany",
-		"unitType": "Melee",
 		"movement": 2,
 		"strength": 16,
 		"cost": 45,
@@ -475,7 +473,7 @@
 	},
 	{
 		"name": "Galleass",
-		"unitType": "WaterRanged",
+		"unitType": "Ranged Water",
 		"movement": 3,
 		"strength": 16,
 		"rangedStrength": 17,
@@ -501,9 +499,9 @@
 	},
 	{
 		"name": "Camel Archer",
+		"unitType": "Archery",
 		"replaces": "Knight",
 		"uniqueTo": "Arabia",
-		"unitType": "Ranged",
 		"movement": 4,
 		"strength": 17,
 		"rangedStrength": 21,
@@ -518,9 +516,9 @@
 	},
 	{
 		"name": "Conquistador",
+		"unitType": "Mounted",
 		"replaces": "Knight",
 		"uniqueTo": "Spain",
-		"unitType": "Mounted",
 		"movement": 4,
 		"strength": 20,
 		"cost": 135,
@@ -549,9 +547,9 @@
 	},
 	{
 		"name": "Mandekalu Cavalry",
+		"unitType": "Mounted",
 		"replaces": "Knight",
 		"uniqueTo": "Songhai",
-		"unitType": "Mounted",
 		"movement": 4,
 		"strength": 20,
 		"cost": 110,
@@ -564,9 +562,9 @@
 	},
 	{
 		"name": "Keshik",
+		"unitType": "Archery",
 		"replaces": "Knight",
 		"uniqueTo": "Mongolia",
-		"unitType": "Ranged",
 		"range": 2,
 		"movement": 5,
 		"strength": 15,
@@ -583,7 +581,7 @@
 	},
 	{
 		"name": "Crossbowman",
-		"unitType": "Ranged",
+		"unitType": "Archery",
 		"movement": 2,
 		"strength": 13,
 		"rangedStrength": 18,
@@ -595,7 +593,7 @@
 	},
 	{
 		"name": "Chu-Ko-Nu",
-		"unitType": "Ranged",
+		"unitType": "Archery",
 		"uniqueTo": "China",
 		"movement": 2,
 		"strength": 13,
@@ -610,7 +608,7 @@
 	},
 	{
 		"name": "Longbowman",
-		"unitType": "Ranged",
+		"unitType": "Archery",
 		"range": 2,
 		"movement": 2,
 		"strength": 13,
@@ -654,7 +652,7 @@
 	},
 	{
 		"name": "Longswordsman",
-		"unitType": "Melee",
+		"unitType": "Sword",
 		"movement": 2,
 		"strength": 21,
 		"cost": 120,
@@ -666,9 +664,9 @@
 	},
 	{
 		"name": "Samurai",
+		"unitType": "Sword",
 		"replaces": "Longswordsman",
 		"uniqueTo": "Japan",
-		"unitType": "Melee",
 		"movement": 2,
 		"strength": 21,
 		"cost": 120,
@@ -682,9 +680,9 @@
 	},
 	{
 		"name": "Berserker",
+		"unitType": "Sword",
 		"replaces": "Longswordsman",
 		"uniqueTo": "Denmark",
-		"unitType": "Melee",
 		"movement": 3,
 		"strength": 21,
 		"cost": 120,
@@ -702,7 +700,7 @@
 
 	{
 		"name": "Caravel",
-		"unitType": "WaterMelee",
+		"unitType": "Melee Water",
 		"movement": 4,
 		"strength": 20,
 		"cost": 120,
@@ -715,7 +713,7 @@
 	},
 	{
 		"name": "Turtle Ship",
-		"unitType": "WaterMelee",
+		"unitType": "Melee Water",
 		"replaces": "Caravel",
 		"uniqueTo": "Korea",
 		"movement": 4,
@@ -730,7 +728,7 @@
 	},
 	{
 		"name": "Musketman",
-		"unitType": "Melee",
+		"unitType": "Gunpowder",
 		"movement": 2,
 		"strength": 24,
 		"cost": 150,
@@ -741,7 +739,7 @@
 	},
 	{
 		"name": "Musketeer",
-		"unitType": "Melee",
+		"unitType": "Gunpowder",
 		"replaces": "Musketman",
 		"uniqueTo": "France",
 		"movement": 2,
@@ -754,7 +752,7 @@
 	},
 	{
 		"name": "Janissary",
-		"unitType": "Melee",
+		"unitType": "Gunpowder",
 		"replaces": "Musketman",
 		"uniqueTo": "The Ottomans",
 		"movement": 2,
@@ -768,7 +766,7 @@
 	},
 	{
 		"name": "Minuteman",
-		"unitType": "Melee",
+		"unitType": "Gunpowder",
 		"replaces": "Musketman",
 		"uniqueTo": "America",
 		"movement": 2,
@@ -783,7 +781,7 @@
 	},
 	{
 		"name": "Tercio",
-		"unitType": "Melee",
+		"unitType": "Gunpowder",
 		"replaces": "Musketman",
 		"uniqueTo": "Spain",
 		"movement": 2,
@@ -797,7 +795,7 @@
 	},
 	{
 		"name": "Privateer",
-		"unitType": "WaterMelee",
+		"unitType": "Melee Water",
 		"movement": 5,
 		"strength": 25,
 		"cost": 150,
@@ -809,7 +807,7 @@
 	},
 	{
 		"name": "Sea Beggar",
-		"unitType": "WaterMelee",
+		"unitType": "Melee Water",
 		"replaces": "Privateer",
 		"uniqueTo": "The Netherlands",
 		"movement": 5,
@@ -822,7 +820,7 @@
 	},
 	{
 		"name": "Frigate",
-		"unitType": "WaterRanged",
+		"unitType": "Ranged Water",
 		"movement": 5,
 		"strength": 25,
 		"rangedStrength": 28,
@@ -836,7 +834,7 @@
 	},
 	{
 		"name": "Ship of the Line",
-		"unitType": "WaterRanged",
+		"unitType": "Ranged Water",
 		"replaces": "Frigate",
 		"uniqueTo": "England",
 		"movement": 5,
@@ -917,7 +915,7 @@
 
 	{
 		"name": "Gatling Gun",
-		"unitType": "Ranged",
+		"unitType": "Ranged Gunpowder",
 		"range": 1,
 		"movement": 2,
 		"strength": 30,
@@ -930,7 +928,7 @@
 	},
 	{
 		"name": "Rifleman",
-		"unitType": "Melee",
+		"unitType": "Gunpowder",
 		"movement": 2,
 		"strength": 34,
 		"cost": 225,
@@ -941,7 +939,7 @@
 	},
 	{
 		"name": "Norwegian Ski Infantry",
-		"unitType": "Melee",
+		"unitType": "Gunpowder",
 		"replaces": "Rifleman",
 		"uniqueTo": "Denmark",
 		"movement": 2,
@@ -955,7 +953,7 @@
 	},
 	{
 		"name": "Carolean",
-		"unitType": "Melee",
+		"unitType": "Gunpowder",
 		"replaces": "Rifleman",
 		"uniqueTo": "Sweden",
 		"movement": 2,
@@ -998,7 +996,7 @@
 	},
 	{
 		"name": "Ironclad",
-		"unitType": "WaterMelee",
+		"unitType": "Melee Water",
 		"movement": 3,
 		"strength": 45,
 		"cost": 250,
@@ -1028,20 +1026,19 @@
 
 	{
 		"name": "Submarine",
-		"unitType": "WaterSubmarine",
+		"unitType": "Submarine",
 		"movement": 5,
 		"strength": 35,
 		"rangedStrength": 60,
 		"cost": 325,
 		"requiredTech": "Refrigeration",
 		"upgradesTo": "Nuclear Submarine",
-		"uniques": ["+[75]% Strength when attacking", "Invisible to others", "Can only attack [Water] tiles",
-			"Can attack submarines", "Can enter ice tiles"],
+		"uniques": ["+[75]% Strength when attacking", "Can only attack [Water] tiles", "Can attack submarines"],
 		"attackSound": "torpedo"
 	},
 	{
 		"name": "Great War Infantry",
-		"unitType": "Melee",
+		"unitType": "Gunpowder",
 		"movement": 2,
 		"strength": 50,
 		"cost": 320,
@@ -1052,7 +1049,7 @@
 	},
 	{
 		"name": "Foreign Legion",
-		"unitType": "Melee",
+		"unitType": "Gunpowder",
 		"replaces": "Great War Infantry",
 		"uniqueTo": "France",
 		"movement": 2,
@@ -1077,8 +1074,7 @@
 		"requiredResource": "Oil",
 		"upgradesTo": "Fighter",
 		"obsoleteTech": "Radar",
-		"uniques": ["[50]% chance to intercept air attacks","+[50]% Strength vs [Bomber]",
-			"6 tiles in every direction always visible"],
+		"uniques": ["[50]% chance to intercept air attacks","+[50]% Strength vs [Bomber]"],
 		"attackSound": "machinegun"
 	},
 	{
@@ -1097,7 +1093,7 @@
 	},
 	{
 		"name": "Infantry",
-		"unitType": "Melee",
+		"unitType": "Gunpowder",
 		"movement": 2,
 		"strength": 70,
 		"cost": 375,
@@ -1108,16 +1104,16 @@
 	},
 	{
 		"name": "Carrier",
-		"unitType": "WaterAircraftCarrier",
+		"unitType": "Aircraft Carrier",
 		"movement": 5,
 		"strength": 40,
 		"cost": 375,
 		"requiredTech": "Electronics",
-		"uniques": ["Cannot attack", "Can carry [2] [Air] units"]
+		"uniques": ["Cannot attack", "Can carry [2] [Aircraft] units"]
 	},
 	{
 		"name": "Battleship",
-		"unitType": "WaterRanged",
+		"unitType": "Ranged Water",
 		"movement": 5,
 		"strength": 55,
 		"rangedStrength": 55,
@@ -1131,7 +1127,7 @@
 	},
 	{
 		"name": "Machine Gun",
-		"unitType": "Ranged",
+		"unitType": "Ranged Gunpowder",
 		"range": 1,
 		"movement": 2,
 		"strength": 60,
@@ -1144,7 +1140,7 @@
 	},
 	{
 		"name": "Anti-Aircraft Gun",
-		"unitType": "Melee",
+		"unitType": "Gunpowder",
 		"movement": 2,
 		"interceptRange": 2,
 		"strength": 50,
@@ -1157,7 +1153,7 @@
 	},
 	{
 		"name": "Landship",
-		"unitType": "Armor",
+		"unitType": "Armored",
 		"movement": 4,
 		"strength": 60,
 		"cost": 350,
@@ -1170,14 +1166,14 @@
 	},
 	{
 		"name": "Destroyer",
-		"unitType": "WaterMelee",
+		"unitType": "Melee Water",
 		"movement": 6,
 		"strength": 55,
 		"interceptRange": 2,
 		"cost": 375,
 		"requiredTech": "Combustion",
 		"uniques": ["Can attack submarines", "[40]% chance to intercept air attacks",
-			"May withdraw before melee ([80]%)", "+[100]% Strength vs [WaterSubmarine]"],
+			"May withdraw before melee ([80]%)", "+[100]% Strength vs [submarine units]"],
 		"attackSound": "shipguns"
 	},
 
@@ -1185,7 +1181,7 @@
 
 	{
 		"name": "Marine",
-		"unitType": "Melee",
+		"unitType": "Gunpowder",
 		"movement": 2,
 		"strength": 65,
 		"cost": 400,
@@ -1206,8 +1202,7 @@
 		"requiredTech": "Radar",
 		"requiredResource": "Oil",
 		"upgradesTo": "Jet Fighter",
-		"uniques": ["[100]% chance to intercept air attacks", "+[150]% Strength vs [Bomber]",
-			"6 tiles in every direction always visible"],
+		"uniques": ["[100]% chance to intercept air attacks", "+[150]% Strength vs [Bomber]"],
 		"attackSound": "machinegun"
 	},
 	{
@@ -1258,7 +1253,7 @@
 	},
 	{
 		"name": "Paratrooper",
-		"unitType": "Melee",
+		"unitType": "Gunpowder",
 		"movement": 2,
 		"strength": 65,
 		"cost": 375,
@@ -1269,7 +1264,7 @@
 	},
 	{
 		"name": "Tank",
-		"unitType": "Armor",
+		"unitType": "Armored",
 		"movement": 5,
 		"strength": 70,
 		"cost": 375,
@@ -1281,7 +1276,7 @@
 	},
 	{
 		"name": "Panzer",
-		"unitType": "Armor",
+		"unitType": "Armored",
 		"uniqueTo": "Germany",
 		"replaces": "Tank",
 		"movement": 6,
@@ -1295,18 +1290,18 @@
 	},
 	{
 		"name": "Anti-Tank Gun",
-		"unitType": "Melee",
+		"unitType": "Gunpowder",
 		"movement": 2,
 		"strength": 50,
 		"cost": 300,
 		"requiredTech": "Combined Arms",
 		"upgradesTo": "Helicopter Gunship",
-		"uniques": ["+[100]% Strength vs [Armor]"],
+		"uniques": ["+[100]% Strength vs [Armored]"],
 		"attackSound": "machinegun"
 	},
 	{
 		"name": "Atomic Bomb",
-		"unitType": "AtomicBomber",
+		"unitType": "Atomic Bomber",
 		"movement": 1,
 		"strength": 150,
 		"rangedStrength": 150,
@@ -1337,7 +1332,7 @@
 	},
 	{
 		"name": "Mobile SAM",
-		"unitType": "Melee",
+		"unitType": "Gunpowder",
 		"movement": 3,
 		"interceptRange": 2,
 		"strength": 65,
@@ -1355,7 +1350,6 @@
 		"range": 8,
 		"cost": 150,
 		"requiredTech": "Advanced Ballistics",
-		"uniques": ["Self-destructs when attacking"],
 		"attackSound": "missile"
 	},
 	{
@@ -1367,7 +1361,7 @@
 		"range": 12,
 		"cost": 1000,
 		"requiredTech": "Advanced Ballistics",
-		"uniques": ["Self-destructs when attacking", "Nuclear weapon of Strength [2]", "Requires [Manhattan Project]",
+		"uniques": ["Nuclear weapon of Strength [2]", "Requires [Manhattan Project]",
 			"Blast radius [2]", "Consumes [2] [Uranium]"],
 		"attackSound": "nuke"
 	},
@@ -1375,35 +1369,34 @@
 		// "Hovering unit" unique gives ability to get into impassable tiles - and only that (no vision bonus or flying over ocean)
 		// Unit embarks like any other ground unit and has penalty for attacking over river or from embarked state
 		"name": "Helicopter Gunship",
-		"unitType": "Melee",
+		"unitType": "Helicopter",
 		"movement": 6,
 		"strength": 60,
 		"cost": 425,
 		"requiredTech": "Computers",
 		"requiredResource": "Aluminum",
-		"uniques": ["+[100]% Strength vs [Armor]", "No defensive terrain bonus", "Can move after attacking", "All tiles cost 1 movement",
-			"Can pass through impassable tiles", "Unable to capture cities"],
+		"uniques": ["+[100]% Strength vs [Armored]", "No defensive terrain bonus", "Can move after attacking",
+			"All tiles cost 1 movement", "Unable to capture cities"],
 		"attackSound": "machinegun"
 	},
 
 	// Information Era
 	{
 		"name": "Nuclear Submarine",
-		"unitType": "WaterSubmarine",
+		"unitType": "Submarine",
 		"movement": 6,
 		"strength": 50,
 		"range": 3,
 		"rangedStrength": 85,
 		"cost": 425,
 		"requiredTech": "Telecommunications",
-		"uniques": ["+[75]% Strength when attacking", "Invisible to others",
-			"Can only attack [Water] tiles", "Can attack submarines", "Can enter ice tiles",
+		"uniques": ["+[75]% Strength when attacking", "Can only attack [Water] tiles", "Can attack submarines",
 			"[+1] Visibility Range", "Can carry [2] [Missile] units"],
 		"attackSound": "torpedo"
 	},
 	{
 		"name": "Mechanized Infantry",
-		"unitType": "Melee",
+		"unitType": "Gunpowder",
 		"movement": 3,
 		"strength": 90,
 		"cost": 375,
@@ -1412,7 +1405,7 @@
 	},
 	{
 		"name": "Missile Cruiser",
-		"unitType": "WaterRanged",
+		"unitType": "Ranged Water",
 		"movement": 7,
 		"strength": 80,
 		"rangedStrength": 100,
@@ -1427,14 +1420,14 @@
 	},
 	{
 		"name": "Modern Armor",
-		"unitType": "Armor",
+		"unitType": "Armored",
 		"movement": 5,
 		"strength": 100,
 		"cost": 425,
 		"requiredTech": "Lasers",
 		"requiredResource": "Aluminum",
 		"upgradesTo": "Giant Death Robot",
-		"uniques": ["Can move after attacking","No defensive terrain bonus"],
+		"uniques": ["Can move after attacking", "No defensive terrain bonus"],
 		"attackSound": "tankshot"
 	},
 	{
@@ -1448,14 +1441,12 @@
 		"cost": 425,
 		"requiredTech": "Lasers",
 		"requiredResource": "Aluminum",
-		"uniques": ["[100]% chance to intercept air attacks",
-			"+[150]% Strength vs [Bomber]",
-			"6 tiles in every direction always visible"],
+		"uniques": ["[100]% chance to intercept air attacks", "+[150]% Strength vs [Bomber]"],
 		"attackSound": "jetgun"
 	},
 	{
 		"name": "Giant Death Robot",
-		"unitType": "Armor",
+		"unitType": "Armored",
 		"movement": 5,
 		"strength": 150,
 		"cost": 425,

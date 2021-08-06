@@ -266,6 +266,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Harbor](https://thenounproject.com/term/harbor/225583/) By Rflor for Seaport
 * [Mansion](https://www.flaticon.com/free-icon/mansion_509903#term=persian&page=1&position=19) by Freepik for Satrap's Court
 * [Bullets](https://thenounproject.com/term/bullets/810156/) By Aldric Rodriguez for Arsenal
+* [St. Petersburg](https://thenounproject.com/search/?q=kremlin&i=1569704) By Carpe Diem for Kremlin
 
 ### Industrial Era
 
@@ -282,30 +283,30 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Hangar](https://thenounproject.com/search/?q=hangar&i=1705288) By Rflor for Military Base
 * [Eiffel Tower](https://thenounproject.com/term/eiffel-tower/1907757/) By Felipe Alvarado
 * [Statue of Liberty](https://thenounproject.com/search/?q=statue%20of%20liberty&i=1801199) By 1516
+* [Microscope](https://thenounproject.com/term/microscope/1452362/) By Arafat Uddin for Research Lab
 * [Christ the redeemer](https://thenounproject.com/term/christ-the-redeemer/56112/) By Stefan Spieler for Cristo Redentor
-* [St. Petersburg](https://thenounproject.com/search/?q=kremlin&i=1569704) By Carpe Diem for Kremlin
 * [Neuschwanstein](https://thenounproject.com/search/?q=Neuschwanstein&i=2107683) By Vectors Market
 * [Big Ben](https://thenounproject.com/search/?q=Big%20Ben&i=443690) By Ben Davis, RO
 
-### Information Era
 
+### Atomic Era
 * [Chemistry](https://thenounproject.com/term/chemistry/175847/) By Creative Stall for Medical Lab
-* [Microscope](https://thenounproject.com/term/microscope/1452362/) By Arafat Uddin for Research Lab
-* [Water dam](https://thenounproject.com/term/water-dam/1002726/) By Symbolon for Hydro Plant
+* [Pentagon](https://thenounproject.com/search/?q=the%20pentagon&i=1788323) By Maxim Kulikov
 * [Solar panel](https://thenounproject.com/term/solar-panel/1131/) By Modik for Solar Plant
 * [Opera House Sydney](https://thenounproject.com/term/opera-house-sydney/1626283/) By Pham Duy Phuong Hung for Sydney Opera House
+* [Water dam](https://thenounproject.com/term/water-dam/1002726/) By Symbolon for Hydro Plant
 * [Manhattan Project](https://thenounproject.com/search/?q=Nuclear%20Bomb&i=2041074) By corpus delicti, GR
-* [Spaceship](https://thenounproject.com/term/spaceship/1444621/) By Dinosoft Labs for Apollo Program
-* [Build](https://thenounproject.com/term/build/1156478/) By Michael G Brown for Spaceship Factory
 * [Nuclear Plant](https://thenounproject.com/term/nuclear-plant/1132340/) By Andrejs Kirma
-* [Pentagon](https://thenounproject.com/search/?q=the%20pentagon&i=1788323) By Maxim Kulikov
+* [Spaceship](https://thenounproject.com/term/spaceship/1444621/) By Dinosoft Labs for Apollo Program
 
-### Future Era
-* [Hubble Telescope](https://thenounproject.com/search/?q=hubble%20space&i=445502) By Scott Lewis for Hubble Space Telescope
+### Information Era
 * [CN Tower Toronto](https://thenounproject.com/search/?q=cn%20tower&i=807678) By mikicon for CN tower
 * [War Shelter](https://www.flaticon.com/free-icon/war-shelter_978661) by [Frepik](www.freepik.com) for Bomb Shelter
 * [Missile](https://thenounproject.com/term/missile/799922/) By ProSymbols for SS Booster
 * [Rocket](https://thenounproject.com/term/rocket/937173/) By BomSymbols for SS Cockpit
+* [Hubble Telescope](https://thenounproject.com/search/?q=hubble%20space&i=445502) By Scott Lewis for Hubble Space Telescope
+* [Build](https://thenounproject.com/term/build/1156478/) By Michael G Brown for Spaceship Factory
+* [United Nations](https://thenounproject.com/search/?q=united+nations&i=3104698) by Imam for United Nations
 * [Engine](https://thenounproject.com/term/engine/1877958/) By Andre for SS Engine
 * [Chamber](https://thenounproject.com/term/chamber/1242689/) By IYIKON for SS Stasis Chamber
 
@@ -462,29 +463,32 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Plastic](https://thenounproject.com/term/plastic/478826/) By Yu luck
 * [Microphone](https://thenounproject.com/term/microphone/470266/) By Viktor Vorobyev for Mass Media
 * [Flight](https://thenounproject.com/term/flight/1014306/) By Genius Icons
-* [Train](https://thenounproject.com/term/train/651644/) By  Federico Panzano for Railroad
-* [Refridgerator](https://thenounproject.com/search/?q=refridgerator&i=1188873) By b farias, CL
+* [Train](https://thenounproject.com/term/train/651644/) By Federico Panzano for Railroad
+* [Fridge](https://thenounproject.com/search/?q=refridgerator&i=1188873) By b farias for Refrigeration
+
+### Atomic
+* [Pill](https://thenounproject.com/term/pill/780458/) By Alex Arseneau for Pharmaceuticals
+* [Satellite Dish](https://thenounproject.com/search/?q=satellite%20dish&i=2054441) By Vectors Market for Radar
+* [Ecology](https://thenounproject.com/term/ecology/1970666/) By ProSymbols
+* [Nuclear Reactor](https://thenounproject.com/term/nuclear-reactor/426463/) By Jeremie Sommet for Nuclear Fission
+* [Rocket](https://thenounproject.com/term/rocket/1743642/) By kareemov for Rocketry
+* [Computer](https://thenounproject.com/term/computer/1967529/) By Shastry for Computers
 
 ### Information
-* [Pill](https://thenounproject.com/term/pill/780458/) By Alex Arseneau for Pharmaceuticals
-* [Computer](https://thenounproject.com/term/computer/1967529/) By Shastry for Computers
+* [telecommunications](https://thenounproject.com/search/?q=telecommunications&i=3191260) by Wichai Wi for Telcommunications
 * [Tactics](https://thenounproject.com/search/?q=tactics&i=2290123) By Grafix Point for Mobile Tactics
-* [Laser](https://thenounproject.com/search/?q=laser&i=232249) by Andrew Doane for Lasers
-* [Satellite Dish](https://thenounproject.com/search/?q=satellite%20dish&i=2054441) By Vectors Market for Radar
-* [Nuclear Reactor](https://thenounproject.com/term/nuclear-reactor/426463/) By Jeremie Sommet for Nuclear Fission
-* [Ecology](https://thenounproject.com/term/ecology/1970666/) By ProSymbols
-* [Robotic Arm](https://thenounproject.com/term/robotic-arm/1970874/) By Karl Gilbert for Robotics
-* [Rocket](https://thenounproject.com/term/rocket/1743642/) By kareemov for Rocketry
 * [Rocket](https://thenounproject.com/term/rocket/3999811) Kusdarti for Advanced Ballistics
+* [Satellite](https://thenounproject.com/term/satellite/1466641/) By Ben Davis for Satellites
+* [Robotic Arm](https://thenounproject.com/term/robotic-arm/1970874/) By Karl Gilbert for Robotics
+* [Laser](https://thenounproject.com/search/?q=laser&i=232249) by Andrew Doane for Lasers
+* [global](https://thenounproject.com/search/?q=globalization&i=4073147) by Rank Sol for Globilization
+* [Atom](https://thenounproject.com/term/atom/1586852/) By Kelsey Armstrong for Particle Physics
+* [Nanoparticles](https://thenounproject.com/term/nanoparticles/822286/) By Gyan Lakhwani for Nanotechnology
+* [Thermonuclear fusion](https://thenounproject.com/search/?q=fusion&i=3292735) by Olena Panasovska, UA for Nuclear Fusion
+* [Electronics](https://thenounproject.com/search/?q=Electronics&i=1565843) By Cuby Design
+* [Radar](https://thenounproject.com/term/radar/1546196/) By CINDYFLA, ID for Stealth
 
 ### Future
-* [Nanoparticles](https://thenounproject.com/term/nanoparticles/822286/) By Gyan Lakhwani for Nanotechnology
-* [Satellite](https://thenounproject.com/term/satellite/1466641/) By Ben Davis for Satellites
-* [Electronics](https://thenounproject.com/search/?q=Electronics&i=1565843) By Cuby Design
-* [Atom](https://thenounproject.com/term/atom/1586852/) By Kelsey Armstrong for Particle Physics
-* [Thermonuclear fusion](https://thenounproject.com/search/?q=fusion&i=3292735) by Olena Panasovska, UA for Nuclear Fusion
-* [telecommunications](https://thenounproject.com/search/?q=telecommunications&i=3191260) by Wichai Wi for Telcommunications
-* [Radar](https://thenounproject.com/term/radar/1546196/) By CINDYFLA, ID for Stealth
 * [Information Technology](https://thenounproject.com/term/information-technology/1927668/) By Vectors Markeet for Future Tech
 
 ## Terrain

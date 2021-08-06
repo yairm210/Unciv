@@ -175,6 +175,7 @@ class CityInfoConquestFunctions(val city: CityInfo){
             civInfo.cities = civInfo.cities.toMutableList().apply { remove(city) }
             newCivInfo.cities = newCivInfo.cities.toMutableList().apply { add(city) }
             civInfo = newCivInfo
+            if (isOriginalCapital) civInfo.hasEverOwnedOriginalCapital = true
             hasJustBeenConquered = false
             turnAcquired = civInfo.gameInfo.turns
 

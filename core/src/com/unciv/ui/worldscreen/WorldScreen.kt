@@ -10,7 +10,6 @@ import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.scenes.scene2d.actions.RepeatAction
 import com.badlogic.gdx.scenes.scene2d.ui.Button
-import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.utils.Align
@@ -24,7 +23,6 @@ import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.models.Tutorial
 import com.unciv.models.UncivSound
 import com.unciv.models.ruleset.tile.ResourceType
-import com.unciv.models.ruleset.unit.UnitType
 import com.unciv.models.translations.tr
 import com.unciv.ui.cityscreen.CityScreen
 import com.unciv.ui.civilopedia.CivilopediaScreen
@@ -402,6 +400,8 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Cam
             when {
                 !gameInfo.oneMoreTurnMode && (viewingCiv.isDefeated() || gameInfo.civilizations.any { it.victoryManager.hasWon() }) ->
                     game.setScreen(VictoryScreen(this))
+                viewingCiv.shouldShowDiplomaticVotingResults() ->
+                    UncivGame.Current.setScreen(DiplomaticVoteResultScreen(gameInfo.diplomaticVictoryVotesCast, viewingCiv))
                 viewingCiv.greatPeople.freeGreatPeople > 0 -> game.setScreen(GreatPersonPickerScreen(viewingCiv))
                 viewingCiv.popupAlerts.any() -> AlertPopup(this, viewingCiv.popupAlerts.first()).open()
                 viewingCiv.tradeRequests.isNotEmpty() -> TradePopup(this).open()
@@ -703,6 +703,10 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Cam
                 NextTurnAction("Found Religion", Color.WHITE) {
                     game.setScreen(FoundReligionPickerScreen(viewingCiv, gameInfo))
                 }
+            viewingCiv.mayVoteForDiplomaticVictory() ->
+                NextTurnAction("Vote for World Leader", Color.RED) {
+                    game.setScreen(DiplomaticVotePickerScreen(viewingCiv))
+                }
 
             else ->
                 NextTurnAction("${Fonts.turn}{Next turn}", Color.WHITE) {
@@ -753,7 +757,7 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Cam
                     .flatMap { it.cities.asSequence() }.any { viewingCiv.exploredTiles.contains(it.location) }
         }
         displayTutorial(Tutorial.ApolloProgram) { viewingCiv.hasUnique("Enables construction of Spaceship parts") }
-        displayTutorial(Tutorial.SiegeUnits) { viewingCiv.getCivUnits().any { it.type == UnitType.Siege } }
+        displayTutorial(Tutorial.SiegeUnits) { viewingCiv.getCivUnits().any { it.baseUnit.isProbablySiegeUnit() } }
         displayTutorial(Tutorial.Embarking) { viewingCiv.hasUnique("Enables embarkation for land units") }
         displayTutorial(Tutorial.NaturalWonders) { viewingCiv.naturalWonders.size > 0 }
     }

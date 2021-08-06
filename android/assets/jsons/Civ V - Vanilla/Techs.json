@@ -607,6 +607,12 @@
 		"wonderCost": 1250,
 		"techs": [
 			{
+				"name": "Globalization",
+				"row": 2,
+				"prerequisites": ["Telecommunications"],
+				"quote": "'The new electronic interdependence recreates the world in the image of a global village.' - Marshall McLuhan"
+			},
+			{
 				"name": "Particle Physics",
 				"row": 3,
 				"prerequisites": ["Telecommunications","Mobile Tactics","Advanced Ballistics"],
@@ -642,7 +648,7 @@
 			{
 				"name": "Future Tech",
 				"row": 5,
-				"prerequisites": ["Particle Physics", "Nuclear Fusion", "Nanotechnology", "Stealth"],
+				"prerequisites": ["Globalization","Particle Physics", "Nuclear Fusion", "Nanotechnology", "Stealth"],
 				"uniques": ["Who knows what the future holds?", "Can be continually researched"],
 				"quote": "'I think we agree, the past is over.' - George W. Bush"
 			}

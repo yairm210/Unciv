@@ -1,3 +1,32 @@
+## 3.16.0-patch1
+
+Bugfixes from unitTypes so promotions work again  - By xlenstra
+
+By SomeTroglodyte:
+- Allow civ-unique buildings to be created by startingEra 
+- Mod manager concurrency 
+
+Randomize Plains/Grasslands around deserts  - By ravignir
+
+## 3.16.0
+
+By xlenstra:
+- Added Diplomatic victory!
+- Unit types are now moddable!
+
+Bugfixes
+
+Atomic bomb interception works as intended
+
+Ai now cares about city distances   - By Interdice
+
+By SomeTroglodyte:
+- Civilopedia phase 9 - Technologies 
+- Harden map editor map loader against most bad maps 
+- UI improvements
+
+General fixes - By lishaoxia1985
+
 ## 3.15.18
 
 600th version!

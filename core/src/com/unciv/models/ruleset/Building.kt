@@ -513,11 +513,18 @@ class Building : NamedStats(), INonPerpetualConstruction, ICivilopediaText {
                     return "Should not be displayed"
                 }
             }
-            "Hidden when cultural victory is disabled" -> {
-                if ( !civInfo.gameInfo.gameParameters.victoryTypes.contains(VictoryType.Cultural)) {
-                    return "Hidden when cultural victory is disabled"
+            "Hidden when [] Victory is disabled" -> {
+                if (!civInfo.gameInfo.gameParameters.victoryTypes.contains(VictoryType.valueOf(unique.params[0]))) {
+                    return unique.text
                 }
             }
+            // Deprecated since 3.15.14
+                "Hidden when cultural victory is disabled" -> {
+                    if (!civInfo.gameInfo.gameParameters.victoryTypes.contains(VictoryType.Cultural)) {
+                        return unique.text
+                    }
+                }
+            //
         }
 
         if (requiredBuilding != null && !construction.containsBuildingOrEquivalent(requiredBuilding!!)) {
