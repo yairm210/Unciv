@@ -307,6 +307,7 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
                     improveTileButton.onClick {
                         viewingCiv.giveGoldGift(otherCiv, 200)
                         improvableTile.improvement = tileImprovement.name
+                        otherCiv.updateDetailedCivResources()
                         rightSideTable.clear()
                         rightSideTable.add(ScrollPane(getCityStateDiplomacyTable(otherCiv)))
                     }
