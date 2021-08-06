@@ -211,6 +211,8 @@ For units, the UnitFilter is called. For Buildings, the following options are im
 
 "Triggers victory"
 
+"Triggers voting for diplomatic victory"
+
 "Allied City-States will occasionally gift Great People" - This will start a timer for the player with this unique, which grants a free great person every 25-60 turns (based on game speed), as long as they are allied to at least one city-state. 
 
 "[amount] population [cityfilter]" - e.g.: [-2] population [in all cities]
@@ -391,7 +393,7 @@ These last two uniques may seem like they only have a one-time effect. However, 
 
 "Triggers a Cultural Victory upon completion"
 
-"Hidden when cultural victory is disabled"
+"Hidden when [victoryType] victory is disabled"
 
 "Population loss from nuclear attacks -[amount]%"
 
@@ -740,3 +742,5 @@ These uniques have been recently deprecated. While they are still supported, the
 "New [unitFilter] units start with [amount] Experience in this city" - Replaced with "New [unitFilter] units start with [amount] Experience [cityFilter]"
 
 "[amount]% of food is carried over after population increases" - Replaced with "[amount]% of food is carried over [cityFilter] after population increases"
+
+"Hidden when cultural victory is disabled" - Replaced with ""Hidden when [victoryName] victory is disabled"
