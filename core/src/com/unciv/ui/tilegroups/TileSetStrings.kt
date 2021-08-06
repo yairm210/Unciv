@@ -1,6 +1,7 @@
 package com.unciv.ui.tilegroups
 
 import com.unciv.UncivGame
+import com.unciv.logic.map.RoadStatus
 import com.unciv.models.tilesets.TileSetCache
 import com.unciv.models.tilesets.TileSetConfig
 
@@ -13,7 +14,10 @@ class TileSetStrings {
     val hexagon = tileSetLocation + "Hexagon"
     val crosshatchHexagon = tileSetLocation + "CrosshatchHexagon"
     val cityOverlay = tileSetLocation + "CityOverlay"
-    val railroad = tileSetLocation + "Railroad"
+    val roadsMap = RoadStatus.values()
+        .filterNot { it == RoadStatus.None }
+        .map { it to tileSetLocation + it.name }
+        .toMap()
     val naturalWonderOverlay = tileSetLocation + "NaturalWonderOverlay"
 
     val tilesLocation = tileSetLocation + "Tiles/"

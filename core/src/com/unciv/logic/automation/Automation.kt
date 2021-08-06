@@ -7,7 +7,6 @@ import com.unciv.logic.map.TileInfo
 import com.unciv.models.ruleset.VictoryType
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.unit.BaseUnit
-import com.unciv.models.ruleset.unit.UnitType
 import com.unciv.models.stats.Stats
 import kotlin.math.max
 import kotlin.math.sqrt
@@ -76,21 +75,25 @@ object Automation {
                 (it.isCityCenter() && it.getOwner() != city.civInfo)
                         || (it.militaryUnit != null && it.militaryUnit!!.civInfo != city.civInfo)
             }) // there is absolutely no reason for you to make water units on this body of water.
-            militaryUnits =
-                militaryUnits.filter { !it.unitType.isWaterUnit() }
+            militaryUnits = militaryUnits.filter { !it.isWaterUnit() }
 
         val chosenUnit: BaseUnit
-        if (!city.civInfo.isAtWar() && city.civInfo.cities.any { it.getCenterTile().militaryUnit == null }
-            && militaryUnits.any { it.unitType == UnitType.Ranged }) // this is for city defence so get an archery unit if we can
-            chosenUnit = militaryUnits.filter { it.unitType == UnitType.Ranged }
+        if (!city.civInfo.isAtWar() 
+            && city.civInfo.cities.any { it.getCenterTile().militaryUnit == null }
+            && militaryUnits.any { it.isRanged() } // this is for city defence so get a ranged unit if we can
+        ) {
+            chosenUnit = militaryUnits
+                .filter { it.isRanged() }
                 .maxByOrNull { it.cost }!!
-        else { // randomize type of unit and take the most expensive of its kind
-            val availableTypes =
-                militaryUnits.map { it.unitType }.distinct().filterNot { it == UnitType.Scout }
-                    .toList()
+        } else { // randomize type of unit and take the most expensive of its kind
+            val availableTypes = militaryUnits
+                .map { it.unitType }
+                .distinct()
+                .toList()
             if (availableTypes.isEmpty()) return null
             val randomType = availableTypes.random()
-            chosenUnit = militaryUnits.filter { it.unitType == randomType }
+            chosenUnit = militaryUnits
+                .filter { it.unitType == randomType }
                 .maxByOrNull { it.cost }!!
         }
         return chosenUnit.name

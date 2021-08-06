@@ -22,7 +22,7 @@
 	},
 	// Column 1
 	{
-		"name": "Granary", 
+		"name": "Granary",
 		"food": 2,
 		"maintenance": 1,
 		"hurryCostModifier": 25,
@@ -121,7 +121,7 @@
 		"hurryCostModifier": 25,
 		"maintenance": 1,
 		"percentStatBonus": {"food": 15},
-		"requiredTech": "The Wheel"     
+		"requiredTech": "The Wheel"
 	},
 	{
 		"name": "Walls",
@@ -185,7 +185,7 @@
 		"quote": "'He spoke, the son of Kronos, and nodded his head with the dark brows, and the immortally anointed hair of the great god swept from his divine head, and all Olympos was shaken' - The Iliad"
 		// "Requires [Honor]" in BNW
 	},
-	
+
 	// Classical Era
 
 	// Column 3
@@ -210,11 +210,11 @@
 		"quote": "'They that go down to the sea in ships, that do business in great waters; these see the works of the Lord, and his wonders in the deep.' - The Bible, Psalms 107:23-24"
 	},
 	{
-		"name": "Stable", 
+		"name": "Stable",
 		"maintenance": 1,
 		"requiredNearbyImprovedResources": ["Horses","Sheep","Cattle"],
 		"hurryCostModifier": 25,
-		"uniques": ["+[15]% Production when constructing [Mounted] units [in this city]", 
+		"uniques": ["+[15]% Production when constructing [Mounted] units [in this city]",
 			"[+1 Production] from [Cattle] tiles [in this city]",
 			"[+1 Production] from [Horses] tiles [in this city]",
 			"[+1 Production] from [Sheep] tiles [in this city]"],
@@ -248,7 +248,7 @@
 		"quote": "'I think that if ever a mortal heard the word of God it would be in a garden at the cool of the day.'  - F. Frankfort Moore"
 	},
 	{
-		"name": "Colosseum", 
+		"name": "Colosseum",
 		"maintenance": 1,
 		"happiness": 2,
 		"hurryCostModifier": 25,
@@ -320,7 +320,7 @@
 		// stats, so it's a mish-mash of vanilla and G&K. It should be changed when faith is
 		// implemented.
 
-		// Further edit: Temples are now implemented. However, due to Religion still being in 
+		// Further edit: Temples are now implemented. However, due to Religion still being in
 		// its alpha stages, these buildings are still the culture variant. When religion is finally
 		// fully released, this building should be replaced with amphitheatres in existing save files,
 		// and then later the G&K faith version can be added
@@ -344,7 +344,7 @@
 		// stats, so it's a mish-mash of vanilla and G&K. It should be changed when faith is
 		// implemented.
 
-		// Further edit: Temples are now implemented. However, due to Religion still being in 
+		// Further edit: Temples are now implemented. However, due to Religion still being in
 		// its alpha stages, these buildings are still the culture variant. When religion is finally
 		// fully released, this building should be replaced with amphitheatres in existing save files,
 		// and then later the G&K faith version can be added
@@ -390,7 +390,7 @@
 		"culture": 1,
 		"isWonder": true,
 		"greatPersonPoints": {"Great Engineer": 1},
-		"uniques": ["Must be next to [Desert]", "[+1 Food, +1 Production, +1 Gold] from [Desert] tiles [in this city]", "[-1 Food, -1 Production, -1 Gold] from [Flood plains] tiles [in this city]", "Provides a free [Amphitheater] [in this city]", "[+6 Culture] once [Archaeology] is discovered"],
+		"uniques": ["Must be next to [Desert]", "[+1 Food, +1 Production, +1 Gold] from [Desert] tiles without [Flood plains] [in this city]", "Provides a free [Amphitheater] [in this city]", "[+6 Culture] once [Archaeology] is discovered"],
 		"requiredTech": "Currency",
 		"quote": "'...who drinks the water I shall give him, says the Lord, will have a spring inside him welling up for eternal life. Let them bring me to your holy mountain in the place where you dwell. Across the desert and through the mountain to the Canyon of the Crescent Moon...'  - Indiana Jones"
 	},
@@ -431,7 +431,7 @@
 		"requiredTech": "Iron Working",
 		"quote": "'Why man, he doth bestride the narrow world like a colossus, and we petty men walk under his huge legs, and peep about to find ourselves dishonorable graves.' - William Shakespeare, Julius Caesar"
 	},
-	
+
 	// Medieval Era
 
 	// Column 5
@@ -455,7 +455,7 @@
 		"culture": 1,
 		"greatPersonPoints": {"Great Artist": 1},
 		"isWonder": true,
-		"uniques": ["[+25]% great person generation [in all cities]"],
+		"uniques": ["[+25]% great person generation [in all cities]", "Free Great Person"],
 		"requiredTech": "Theology",
 		"quote": "'For it soars to a height to match the sky, and as if surging up from among the other buildings it stands on high and looks down upon the remainder of the city, adorning it, because it is a part of it, but glorying in its own beauty'  - Procopius, De Aedificis"
 	},
@@ -489,7 +489,7 @@
 		"quote": "'Few romances can ever surpass that of the granite citadel on top of the beetling precipices of Machu Picchu, the crown of Inca Land.'  - Hiram Bingham"
 	},
 	{
-		"name": "Workshop", 
+		"name": "Workshop",
 		"maintenance": 2,
 		"production": 2,
 		"specialistSlots": {"Engineer": 1},
@@ -631,7 +631,7 @@
 		"uniques": ["New [Military] units start with [15] Experience [in this city]"]
 		"requiredTech": "Steel"
 	},
-	
+
 	// Renaissance Era
 
 	// Column 7
@@ -674,7 +674,7 @@
 	{
 		"name": "Satrap's Court",
 		"replaces": "Bank",
-		"uniqueTo": "Persia",	
+		"uniqueTo": "Persia",
 		"gold": 2,
 		"specialistSlots": {"Merchant": 1},
 		"happiness": 2,
@@ -686,7 +686,7 @@
 	{
 		"name": "Hanse",
 		"replaces": "Bank",
-		"uniqueTo": "Germany",		
+		"uniqueTo": "Germany",
 		"gold": 2,
 		"specialistSlots": {"Merchant": 1},
 		"hurryCostModifier": 15,
@@ -717,7 +717,7 @@
 		"name": "Leaning Tower of Pisa",
 		"culture": 1,
 		"isWonder": true,
-		"greatPersonPoints": {"Great Artist": 1},		
+		"greatPersonPoints": {"Great Artist": 1},
 		"uniques": ["[+25]% great person generation [in all cities]", "Free Great Person"],
 		"requiredTech": "Printing Press",
 		"quote": "'Don't clap too hard - it's a very old building.' - John Osbourne"
@@ -769,7 +769,7 @@
 		"uniques": ["Free [Great Scientist] appears","Science gained from research agreements [+50]%"],
 		"requiredTech": "Architecture",
 		"quote": "'Things always seem fairer when we look back at them, and it is out of that inaccessible tower of the past that Longing leans and beckons.'  - James Russell Lowell"
-	}, 
+	},
 	{
 		"name": "Windmill",
 		"production": 2,
@@ -797,7 +797,7 @@
 		"requiredTech": "Metallurgy",
 		"quote": "'The Law is a fortress on a hill that armies cannot take or floods wash away.'  - The Prophet Muhammed"
 	},
-	
+
 	// Industrial Era
 
 	// Column 9
@@ -896,7 +896,7 @@
 		"requiredTech": "Electricity"
 	},
 	*/
-	
+
 	// Modern Era
 
 	// Column 11
@@ -1003,13 +1003,12 @@
 	// Column 14
 	{
 		"name": "Solar Plant",
-		"production": 5,		
+		"production": 5,
 		"percentStatBonus": {"production": 15},
 		"requiredBuilding": "Factory",
 		"maintenance": 3,
-		"cannotBeBuiltWith": "Nuclear Plant",
 		"requiredTech": "Ecology",
-		"uniques": ["Must be next to [Desert]"]
+		"uniques": ["Must be next to [Desert]", "Cannot be built with [Nuclear Plant]"]
 	},
 	{
 		"name": "Sydney Opera House",
@@ -1026,9 +1025,9 @@
 		"percentStatBonus": {"production": 15},
 		"requiredBuilding": "Factory",
 		"maintenance": 3,
-		"cannotBeBuiltWith": "Solar Plant",
 		"requiredResource": "Uranium",
-		"requiredTech": "Nuclear Fission"
+		"requiredTech": "Nuclear Fission",
+		"uniques": ["Cannot be built with [Solar Plant]"]
 	},
 	{
 		"name": "Apollo Program",
@@ -1046,7 +1045,7 @@
 		"isWonder": true,
 		"culture": 1,
 		"greatPersonPoints": {"Great Merchant": 1},
-		"uniques": ["[+1] population [in all cities]", "[+1 Happiness] [in all cities]", "Provides a free [Broadcast Tower] [in this city]"],
+		"uniques": ["[+1] population [in all cities]", "[+1 Happiness] [in all cities]", "Provides a free [Broadcast Tower] [in all cities]"],
 		"requiredTech": "Telecommunications",
 		"quote": "'Nothing travels faster than light with the possible exception of bad news, which obeys its own special rules.' - Douglas Adams"
 	},
@@ -1093,17 +1092,15 @@
 		"requiredTech": "Robotics"
 	},
 	// Column 16
-	/*
 	{
 		"name": "United Nations",
 		"isWonder": true,
 		"culture": 1,
 		"greatPersonPoints": {"Great Merchant": 2},
-		"uniques": ["Triggers voting for the Diplomatic Victory"],
-		"quote": "'More than ever before in human history, we share a common destiny. We can master it only if we face it together. And that is why we have the United Nations.'  - Kofi Annan"
-		"requiredTech": "Globalization", // todo doesn't exist yet!
+		"requiredTech": "Globalization",
+		"uniques": ["Triggers voting for the Diplomatic Victory", "Hidden when [Diplomatic] Victory is disabled", "Triggers a global alert upon completion"],
+		"quote": "'More than ever before in human history, we share a common destiny. We can master it only if we face it together. And that is why we have the United Nations.' - Kofi Annan"
 	},
-	*/
 	{
 		"name": "SS Engine",
 		"requiredResource": "Aluminum",
@@ -1118,12 +1115,12 @@
 	},
 
 	// All Eras
-	
+
 	{
 		"name": "Utopia Project",
 		"cost": 1500,
 		"isNationalWonder": true,
-		"uniques": ["Hidden until [5] social policy branches have been completed", "Triggers a global alert upon build start", 
-			"Triggers a Cultural Victory upon completion", "Hidden when cultural victory is disabled"]
+		"uniques": ["Hidden until [5] social policy branches have been completed", "Triggers a global alert upon build start",
+			"Triggers a Cultural Victory upon completion", "Hidden when [Cultural] Victory is disabled"]
 	}
 ]

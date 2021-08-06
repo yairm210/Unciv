@@ -50,6 +50,7 @@ object NextTurnAutomation {
         automateUnits(civInfo)
         reassignWorkedTiles(civInfo)
         trainSettler(civInfo)
+        tryVoteForDiplomaticVictory(civInfo)
 
     }
 
@@ -208,6 +209,7 @@ object NextTurnAutomation {
                         VictoryType.Cultural -> listOf("Piety", "Freedom", "Tradition", "Commerce", "Patronage")
                         VictoryType.Scientific -> listOf("Rationalism", "Commerce", "Liberty", "Order", "Patronage")
                         VictoryType.Domination -> listOf("Autocracy", "Honor", "Liberty", "Rationalism", "Commerce")
+                        VictoryType.Diplomatic -> listOf("Patronage", "Commerce", "Rationalism", "Freedom", "Tradition")
                         VictoryType.Neutral -> listOf()
                     }
             val policiesByPreference = adoptablePolicies
@@ -464,7 +466,7 @@ object NextTurnAutomation {
                 .filterNot { it == civInfo || it.isBarbarian() || it.cities.isEmpty() }
                 .filter { !civInfo.getDiplomacyManager(it).hasFlag(DiplomacyFlags.DeclinedPeace) }
                 // Don't allow AIs to offer peace to city states allied with their enemies
-                .filterNot { it.isCityState() && it.getAllyCiv() != "" && civInfo.isAtWarWith(civInfo.gameInfo.getCivilization(it.getAllyCiv())) }
+                .filterNot { it.isCityState() && it.getAllyCiv() != null && civInfo.isAtWarWith(civInfo.gameInfo.getCivilization(it.getAllyCiv()!!)) }
 
         for (enemy in enemiesCiv) {
             val motivationToAttack = motivationToAttack(civInfo, enemy)
@@ -559,6 +561,27 @@ object NextTurnAutomation {
         }
     }
 
+    // Technically, this function should also check for civs that have liberated one or more cities
+    // Hoewever, that can be added in another update, this PR is large enough as it is.
+    private fun tryVoteForDiplomaticVictory(civInfo: CivilizationInfo) {
+        if (!civInfo.mayVoteForDiplomaticVictory()) return
+        val chosenCiv: String? = if (civInfo.isMajorCiv()) {
+            
+            val knownMajorCivs = civInfo.getKnownCivs().filter { it.isMajorCiv() }
+            val highestOpinion = knownMajorCivs
+                .maxOfOrNull {
+                    civInfo.getDiplomacyManager(it).opinionOfOtherCiv()
+                }
+            
+            if (highestOpinion == null) null
+            else knownMajorCivs.filter { civInfo.getDiplomacyManager(it).opinionOfOtherCiv() == highestOpinion}.random().civName
+            
+        } else {
+            civInfo.getAllyCiv()
+        }
+        
+        civInfo.diplomaticVoteForCiv(chosenCiv)
+    }
 
     private fun issueRequests(civInfo: CivilizationInfo) {
         for (otherCiv in civInfo.getKnownCivs().filter { it.isMajorCiv() && !civInfo.isAtWarWith(it) }) {

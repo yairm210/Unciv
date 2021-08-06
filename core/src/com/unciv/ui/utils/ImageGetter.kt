@@ -197,6 +197,7 @@ object ImageGetter {
 
     fun imageExists(fileName: String) = textureRegionDrawables.containsKey(fileName)
     fun techIconExists(techName: String) = imageExists("TechIcons/$techName")
+    fun unitIconExists(unitName: String) = imageExists("UnitIcons/$unitName")
 
     fun getStatIcon(statName: String): Image {
         return getImage("StatIcons/$statName")

@@ -1,3 +1,55 @@
+## 3.16.0-patch1
+
+Bugfixes from unitTypes so promotions work again  - By xlenstra
+
+By SomeTroglodyte:
+- Allow civ-unique buildings to be created by startingEra 
+- Mod manager concurrency 
+
+Randomize Plains/Grasslands around deserts  - By ravignir
+
+## 3.16.0
+
+By xlenstra:
+- Added Diplomatic victory!
+- Unit types are now moddable!
+
+Bugfixes
+
+Atomic bomb interception works as intended
+
+Ai now cares about city distances   - By Interdice
+
+By SomeTroglodyte:
+- Civilopedia phase 9 - Technologies 
+- Harden map editor map loader against most bad maps 
+- UI improvements
+
+General fixes - By lishaoxia1985
+
+## 3.15.18
+
+600th version!
+
+Solved crash where city states would try to gift great people without cities
+
+By avdstaaij:
+- Fixed captured units not tp-ing out of illegal tiles 
+
+By SomeTroglodyte:
+- TranslationFileWriter support for CivilopediaText 
+- Fix Civilopedia Unique auto-linking when Ruleset changes 
+- Reduce atlas - The Huns was 4x larger than the other nations, and a dirty Hexagon dupe 
+- Better crude maps - zero uncovered tiles impossible 
+
+By xlenstra:
+- Added modoptions unique for disabling city-state spawning with only a settler 
+- Fixed bug where production from cutting down forests could apply to perpetual constructions 
+
+Improve River for FantasyHex  - By AdityaMH
+
+Fix Hagia Sophia and CN Tower not giving civ 5 bonuses  - By logicminimal
+
 ## 3.15.17
 
 Influence-by-game-progress works as intended
@@ -9,10 +61,6 @@ Maori Warrior debuff only applies to enemy units
 AI accepts research agreement offers
 
 Buildings from era are applied before buildings from policies
-
-Translations update 
-
-Updated Hungarian Translates  - By JurDan775
 
 By SomeTroglodyte:
 - Civilopedia phase 8 - Nations and Promotions 

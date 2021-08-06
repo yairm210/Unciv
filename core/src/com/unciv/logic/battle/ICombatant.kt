@@ -26,5 +26,8 @@ interface ICombatant{
         if (this is CityCombatant) return true
         return (this as MapUnitCombatant).unit.baseUnit.isRanged()
     }
+    fun isCity(): Boolean {
+        return this is CityCombatant
+    }
     fun isCivilian() = this is MapUnitCombatant && this.unit.isCivilian()
 }

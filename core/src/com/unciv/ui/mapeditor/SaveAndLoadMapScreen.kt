@@ -10,6 +10,7 @@ import com.badlogic.gdx.utils.Json
 import com.unciv.logic.MapSaver
 import com.unciv.logic.map.MapType
 import com.unciv.logic.map.TileMap
+import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.translations.tr
 import com.unciv.ui.pickerscreens.PickerScreen
 import com.unciv.ui.saves.Gzip
@@ -54,17 +55,45 @@ class SaveAndLoadMapScreen(mapToSave: TileMap?, save:Boolean = false, previousSc
         } else {
             rightSideButton.setText("Load map".tr())
             rightSideButtonAction = {
-                thread {
+                thread(name = "MapLoader") {
+                    var popup: Popup? = null
+                    var needPopup = true    // loadMap can fail faster than postRunnable runs
                     Gdx.app.postRunnable {
-                        val popup = Popup(this)
-                        popup.addGoodSizedLabel("Loading...")
-                        popup.open()
+                        if (!needPopup) return@postRunnable
+                        popup = Popup(this).apply {
+                            addGoodSizedLabel("Loading...")
+                            open()
+                        }
                     }
-                    val map = MapSaver.loadMap(chosenMap!!)
-                    Gdx.app.postRunnable {
-                        Gdx.input.inputProcessor = null // This is to stop ANRs happening here, until the map editor screen sets up.
-                        game.setScreen(MapEditorScreen(map))
-                        dispose()
+                    try {
+                        val map = MapSaver.loadMap(chosenMap!!)
+                        val missingMods = map.mapParameters.mods.filter { it !in RulesetCache }
+                        if (missingMods.isNotEmpty()) {
+                            Gdx.app.postRunnable {
+                                needPopup = false
+                                popup?.close()
+                                ToastPopup("Missing mods: [${missingMods.joinToString()}]", this)
+                            }
+                        } else Gdx.app.postRunnable {
+                            Gdx.input.inputProcessor = null // This is to stop ANRs happening here, until the map editor screen sets up.
+                            try {
+                                game.setScreen(MapEditorScreen(map))
+                                dispose()
+                            } catch (ex: Throwable) {
+                                needPopup = false
+                                popup?.close()
+                                println("Error displaying map \"$chosenMap\": ${ex.localizedMessage}")
+                                Gdx.input.inputProcessor = stage
+                                ToastPopup("Error loading map!", this)
+                            }
+                        }
+                    } catch (ex: Throwable) {
+                        needPopup = false
+                        Gdx.app.postRunnable {
+                            popup?.close()
+                            println("Error loading map \"$chosenMap\": ${ex.localizedMessage}")
+                            ToastPopup("Error loading map!", this)
+                        }
                     }
                 }
             }

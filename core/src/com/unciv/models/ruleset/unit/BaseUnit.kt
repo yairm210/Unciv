@@ -9,16 +9,20 @@ import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.Unique
 import com.unciv.models.stats.INamed
 import com.unciv.models.translations.tr
-import com.unciv.ui.civilopedia.CivilopediaText
+import com.unciv.ui.civilopedia.ICivilopediaText
 import com.unciv.ui.civilopedia.FormattedLine
 import com.unciv.ui.utils.Fonts
+import java.util.*
+import kotlin.collections.ArrayList
+import kotlin.collections.HashMap
+import kotlin.collections.HashSet
 import kotlin.math.pow
 
 // This is BaseUnit because Unit is already a base Kotlin class and to avoid mixing the two up
 
 /** This is the basic info of the units, as specified in Units.json,
  in contrast to MapUnit, which is a specific unit of a certain type that appears on the map */
-class BaseUnit : INamed, IConstruction, CivilopediaText() {
+class BaseUnit : INamed, IConstruction, ICivilopediaText {
 
     override lateinit var name: String
     var cost: Int = 0
@@ -28,7 +32,8 @@ class BaseUnit : INamed, IConstruction, CivilopediaText() {
     var rangedStrength: Int = 0
     var range: Int = 2
     var interceptRange = 0
-    lateinit var unitType: UnitType
+    lateinit var unitType: String
+    fun getType() = ruleset.unitTypes[unitType]!!
     var requiredTech: String? = null
     var requiredResource: String? = null
     var uniques = HashSet<String>()
@@ -40,6 +45,10 @@ class BaseUnit : INamed, IConstruction, CivilopediaText() {
     var replaces: String? = null
     var uniqueTo: String? = null
     var attackSound: String? = null
+    
+    lateinit var ruleset: Ruleset
+
+    override var civilopediaText = listOf<FormattedLine>()
 
     fun getShortDescription(): String {
         val infoList = mutableListOf<String>()
@@ -95,9 +104,15 @@ class BaseUnit : INamed, IConstruction, CivilopediaText() {
             stats += "$range${Fonts.range}"
         }
         if (movement != 0 && !movesLikeAirUnits()) stats += "$movement${Fonts.movement}"
-        if (cost != 0) stats += "{Cost}: $cost"
         if (stats.isNotEmpty())
             textList += FormattedLine(stats.joinToString(", "))
+
+        if (cost > 0) {
+            stats.clear()
+            stats += "$cost${Fonts.production}"
+            if (canBePurchased()) stats += "${(getBaseGoldCost()*0.1).toInt()*10}${Fonts.gold}"
+            textList += FormattedLine(stats.joinToString(", ", "{Cost}: "))
+        }
 
         if (replacementTextForUniques != "") {
             textList += FormattedLine()
@@ -159,7 +174,7 @@ class BaseUnit : INamed, IConstruction, CivilopediaText() {
 
         return textList
     }
-
+    
     fun getMapUnit(ruleset: Ruleset): MapUnit {
         val unit = MapUnit()
         unit.name = name
@@ -183,12 +198,12 @@ class BaseUnit : INamed, IConstruction, CivilopediaText() {
         return productionCost.toInt()
     }
 
-    fun getBaseGoldCost(civInfo: CivilizationInfo): Double {
-        return (30.0 * cost).pow(0.75) * (1 + hurryCostModifier / 100f) * civInfo.gameInfo.gameParameters.gameSpeed.modifier
-    }
+    private fun getBaseGoldCost() = (30.0 * cost).pow(0.75) * (1 + hurryCostModifier / 100.0)
+    private fun getGoldCostWithGameSpeed(civInfo: CivilizationInfo) =
+        getBaseGoldCost() * civInfo.gameInfo.gameParameters.gameSpeed.modifier
 
     override fun getGoldCost(civInfo: CivilizationInfo): Int {
-        var cost = getBaseGoldCost(civInfo)
+        var cost = getGoldCostWithGameSpeed(civInfo)
         for (unique in civInfo.getMatchingUniques("Gold cost of purchasing [] units -[]%")) {
             if (matchesFilter(unique.params[0]))
                 cost *= 1f - unique.params[1].toFloat() / 100f
@@ -203,7 +218,7 @@ class BaseUnit : INamed, IConstruction, CivilopediaText() {
         return (cost / 10).toInt() * 10 // rounded down to nearest ten
     }
 
-    fun getDisbandGold(civInfo: CivilizationInfo) = getBaseGoldCost(civInfo).toInt() / 20
+    fun getDisbandGold(civInfo: CivilizationInfo) = getGoldCostWithGameSpeed(civInfo).toInt() / 20
 
     override fun shouldBeDisplayed(construction: CityConstructions): Boolean {
         val rejectionReason = getRejectionReason(construction)
@@ -213,7 +228,7 @@ class BaseUnit : INamed, IConstruction, CivilopediaText() {
     }
 
     fun getRejectionReason(cityConstructions: CityConstructions): String {
-        if (unitType.isWaterUnit() && !cityConstructions.cityInfo.isCoastal())
+        if (isWaterUnit() && !cityConstructions.cityInfo.isCoastal())
             return "Can only build water units in coastal cities"
         val civInfo = cityConstructions.cityInfo.civInfo
         for (unique in uniqueObjects.filter { it.placeholderText == "Not displayed as an available construction without []" }) {
@@ -313,7 +328,8 @@ class BaseUnit : INamed, IConstruction, CivilopediaText() {
                     filter == "relevant" && 
                         civInfo.gameInfo.ruleSet.unitPromotions.values
                         .any {
-                            it.name == promotion && unit.type.name in it.unitTypes 
+                            it.name == promotion 
+                            && unit.type.name in it.unitTypes 
                         }
                 )
             ) {
@@ -337,25 +353,33 @@ class BaseUnit : INamed, IConstruction, CivilopediaText() {
     }
 
     fun matchesFilter(filter: String): Boolean {
+        
         return when (filter) {
-            unitType.name -> true
+            unitType -> true
             name -> true
             "All" -> true
             
             "Melee" -> isMelee()
             "Ranged" -> isRanged()
-            "Land", "land units" -> unitType.isLandUnit()
             "Civilian" -> isCivilian()
-            "Military", "military units" -> isMilitary()
-            "Water", "water units" -> unitType.isWaterUnit()
-            "Air", "air units" -> unitType.isAirUnit()
+            "Military" -> isMilitary()
+            "Land" -> isLandUnit()
+            "Water" -> isWaterUnit()
+            "Air" -> isAirUnit()
             "non-air" -> !movesLikeAirUnits()
             
-            "Submarine", "submarine units" -> unitType == UnitType.WaterSubmarine
             "Nuclear Weapon" -> isNuclearWeapon()
             // Deprecated as of 3.15.2
-            "military water" -> isMilitary() && unitType.isWaterUnit()
-            else -> return uniques.contains(filter)
+            "military water" -> isMilitary() && isWaterUnit()
+            else -> {
+                if (getType().matchesFilter(filter)) return true
+                if (
+                    filter.endsWith(" units")
+                    // "military units" --> "Military"
+                    && matchesFilter(filter.removeSuffix(" units").toLowerCase(Locale.ENGLISH).capitalize(Locale.ENGLISH))
+                ) return true
+                return uniques.contains(filter)  
+            } 
         }
     }
 
@@ -364,7 +388,7 @@ class BaseUnit : INamed, IConstruction, CivilopediaText() {
     // "Nuclear Weapon" unique deprecated since 3.15.4
     fun isNuclearWeapon() = uniqueObjects.any { it.placeholderText == "Nuclear Weapon" || it.placeholderText == "Nuclear weapon of Strength []" }
 
-    fun movesLikeAirUnits() = unitType.isAirUnit() || unitType == UnitType.Missile
+    fun movesLikeAirUnits() = getType().getMovementType() == UnitMovementType.Air
 
     override fun getResourceRequirements(): HashMap<String, Int> {
         val resourceRequirements = HashMap<String, Int>()
@@ -379,4 +403,15 @@ class BaseUnit : INamed, IConstruction, CivilopediaText() {
     fun isMelee() = !isRanged() && strength > 0
     fun isMilitary() = isRanged() || isMelee()
     fun isCivilian() = !isMilitary()
+    
+    fun isLandUnit() = getType().isLandUnit()
+    fun isWaterUnit() = getType().isWaterUnit()
+    fun isAirUnit() = getType().isAirUnit()
+
+    fun isProbablySiegeUnit() = 
+        (
+            isRanged()
+            && (uniqueObjects + getType().uniqueObjects)
+                .any { it.placeholderText == "+[]% Strength vs []" && it.params[1] == "City" }
+        )
 }
