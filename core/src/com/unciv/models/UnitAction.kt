@@ -60,14 +60,16 @@ data class UnitAction(
  * @param imageGetter   optional lambda to get an Icon - `null` if icon is dependent on outside factors and needs special handling
  * @param key           keyboard binding - can be a [KeyCharAndCode], a [Char], or omitted.
  * @param uncivSound    _default_ sound, can be overridden in UnitAction instantiation
- * @param translationTemplate   if not null, the actual title is dynamic and this is the template with placeholders that needs a translation
  */
+
+// Note for Creators of new UnitActions: If your action uses a dynamic label overriding UnitActionType.value,
+// then you need to teach [com.unciv.testing.TranslationTests.allUnitActionsHaveTranslation] how to deal with it!
+
 enum class UnitActionType(
     val value: String,
     val imageGetter: (()-> Actor)?,
     val key: KeyCharAndCode,
-    val uncivSound: UncivSound = UncivSound.Click,
-    val translationTemplate: String? = null
+    val uncivSound: UncivSound = UncivSound.Click
 ) {
     SwapUnits("Swap units",
         { ImageGetter.getImage("OtherIcons/Swap") }, 'y'),
@@ -95,7 +97,7 @@ enum class UnitActionType(
     Promote("Promote",
         { imageGetPromote() }, 'o', UncivSound.Promote),
     Upgrade("Upgrade",
-        'u', UncivSound.Upgrade, "Upgrade to [unitType] ([goldCost] gold)"),
+        null, 'u', UncivSound.Upgrade),
     Pillage("Pillage", 
         { ImageGetter.getImage("OtherIcons/Pillage") }, 'p'),
     Paradrop("Paradrop",
@@ -110,9 +112,9 @@ enum class UnitActionType(
         ConstructRoad("Construct road", {ImageGetter.getImprovementIcon("Road")}, 'r'),
     //
     Create("Create",
-        'i', UncivSound.Chimes, "Create [improvement]"),
+        null, 'i', UncivSound.Chimes),
     SpreadReligion("Spread Religion",
-        'g', UncivSound.Choir, "Spread [religionName]"),
+        null, 'g', UncivSound.Choir),
     HurryResearch("Hurry Research",
         { ImageGetter.getUnitIcon("Great Scientist") }, 'g', UncivSound.Chimes),
     StartGoldenAge("Start Golden Age",
@@ -138,8 +140,6 @@ enum class UnitActionType(
             : this(value, imageGetter, KeyCharAndCode(key), uncivSound)
     constructor(value: String, imageGetter: (() -> Actor)?, uncivSound: UncivSound = UncivSound.Click)
             : this(value, imageGetter, KeyCharAndCode.UNKNOWN, uncivSound)
-    constructor(value: String, key: Char, uncivSound: UncivSound = UncivSound.Click, translationTemplate: String)
-            : this(value, null, KeyCharAndCode(key), uncivSound, translationTemplate)
 
     companion object {
         // readability factories
