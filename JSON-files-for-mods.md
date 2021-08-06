@@ -48,7 +48,17 @@ In some sense you can see from these types that JSON files themselves are actual
 
 Many parts of Unciv are moddable, and for each there is a seperate json file. There is a json file for buildings, for units, for promotions units can have, for technologies, etc. The different new buildings or units you define can also have lots of different attributes, though not all are required. Below are tables documenting all the different attributes everything can have. Only the attributes which are noted to be 'required' must be provided. All others have a default value that will be used when it is omitted.
 
+## Beliefs.json
+[link to original](https://github.com/yairm210/Unciv/blob/master/android/assets/jsons/Civ%20V%20-%20Vanilla/Beliefs.json)
 
+This file contains the beliefs that can be chosen for religions in your mod.
+
+Each belief can have the following attributes:
+| attribute | Type | Optional or not | notes |
+| --------- | ---- | --------------- | ----- |
+| name | String | Required | Name of the belief |
+| type | String | Required | The type of the belief. Valid values are: "Pantheon" and "Follower". Later "Founder" will be added, but this has not been implemented yet |
+| uniques | List of Strings | defaults to none | The unique abilities this belief adds to cities following it. May be chosen from the list of building uniques [here](https://github.com/yairm210/Unciv/wiki/Uniques#buildings-only), as well as the general uniques on that page |
 
 ## Buildings.json
 [link to original](https://github.com/yairm210/Unciv/blob/master/android/assets/jsons/Civ%20V%20-%20Vanilla/Buildings.json)
@@ -146,7 +156,7 @@ Each unit can have the following attributes:
 | attribute | Type | optional or not | notes |
 | --------- | ---- | -------- | ----- |
 | name | String | required | The name of the units (required) |
-| unitType | String | required | The type of the unit. Must be in UnitTypes.json |
+| unitType | String | required | The type of the unit. Must be in [UnitTypes.json](UnitTypes.json) |
 | cost | Integer (≥0) | defaults to 0 | The amount of production required to build this unit |
 | movement | Integer (≥0) | defaults to 0 | The amount of movement points the unit has by default |
 | strength | Integer (≥0) | defaults to 0 | The melee attack and defensive strength of the unit. If this and rangedStrength are ommited or 0, the unit will be a civilian |
@@ -165,6 +175,8 @@ Each unit can have the following attributes:
 | replacementTextForUniques | String | defaults to none | If provided, this will be displayed instead of the list of uniques. Can be used for better formatting. |
 | attackSound | String | defaults to none | The sound that is to be played when this unit attacks. For possible values, see [sounds](#Sounds)
 "Hidden when cultural victory is disabled"
+
+
 
 ## UnitTypes.json
 
