@@ -2,6 +2,7 @@
 
 import com.badlogic.gdx.graphics.Color
 import com.unciv.Constants
+import com.unciv.UncivGame
 import com.unciv.logic.civilization.CityStateType
 import com.unciv.models.stats.INamed
 import com.unciv.models.translations.squareBraceRegex
@@ -203,6 +204,8 @@ class Nation : INamed, ICivilopediaText, IHasUniques {
     }
 
     override fun getCivilopediaTextLines(ruleset: Ruleset): List<FormattedLine> {
+        if (isCityState()) return getCityStateInfo(ruleset)
+
         val textList = ArrayList<FormattedLine>()
 
         if (leaderName.isNotEmpty()) {
@@ -237,6 +240,19 @@ class Nation : INamed, ICivilopediaText, IHasUniques {
         addUniqueBuildingsText(textList, ruleset)
         addUniqueUnitsText(textList, ruleset)
         addUniqueImprovementsText(textList, ruleset)
+
+        return textList
+    }
+
+    private fun getCityStateInfo(ruleset: Ruleset): List<FormattedLine> {
+        val textList = ArrayList<FormattedLine>()
+
+        textList += FormattedLine("Type: [$cityStateType]")
+        val viewingCiv = UncivGame.Current.gameInfo.currentPlayerCiv
+        textList += FormattedLine(cityStateType!!.getBonusText(viewingCiv))
+
+        // personality is not a nation property, it gets assigned to the civ randomly
+        // so are rewarded resources
 
         return textList
     }
