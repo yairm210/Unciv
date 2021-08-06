@@ -297,15 +297,18 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
         val improvementGiftTable = getCityStateDiplomacyTableHeader(otherCiv)
         improvementGiftTable.addSeparator()
 
-        val improvableTiles = otherCiv.getCapital().getImprovableTiles().filterNot {it.getTileResource().resourceType == ResourceType.Bonus}.toList()
+        val improvableTiles = otherCiv.getCapital().getImprovableTiles()
+            .filterNot { it.getTileResource().resourceType == ResourceType.Bonus }.toList()
         val tileImprovements = otherCiv.gameInfo.ruleSet.tileImprovements.filter { it.value.turnsToBuild != 0 }
 
         for (improvableTile in improvableTiles){
             for (tileImprovement in tileImprovements.values){
-                if (improvableTile.canBuildImprovement(tileImprovement, otherCiv) && improvableTile.getTileResource().improvement == tileImprovement.name){
+                if (improvableTile.canBuildImprovement(tileImprovement, otherCiv) &&
+                        improvableTile.getTileResource().improvement == tileImprovement.name) {
                     val improveTileButton = "Build [${tileImprovement}] on [${improvableTile.getTileResource()}] (200 Gold)".toTextButton()
                     improveTileButton.onClick {
-                        viewingCiv.giveGoldGift(otherCiv, 200)
+                        viewingCiv.addGold(-200)
+                        improvableTile.stopWorkingOnImprovement()
                         improvableTile.improvement = tileImprovement.name
                         otherCiv.updateDetailedCivResources()
                         rightSideTable.clear()
