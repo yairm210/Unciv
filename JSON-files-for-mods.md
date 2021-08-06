@@ -146,11 +146,11 @@ Each unit can have the following attributes:
 | attribute | Type | optional or not | notes |
 | --------- | ---- | -------- | ----- |
 | name | String | required | The name of the units (required) |
-| unitType | String | required | The type of the unit: Civilian, Melee, Ranged, Scout, Mounted, Armor, Siege, WaterCivilian, WaterMelee, WaterRanged, WaterSubmarine, WaterAircraftCarrier, Fighter, Bomber, AtomicBomber, or Missile. This decides many of the properties of the unit. |
+| unitType | String | required | The type of the unit. Must be in UnitTypes.json |
 | cost | Integer (≥0) | defaults to 0 | The amount of production required to build this unit |
 | movement | Integer (≥0) | defaults to 0 | The amount of movement points the unit has by default |
-| strength | Integer (≥0) | defaults to 0 | The melee attack and defensive strength of the unit |
-| rangedStrength | Integer (≥0) | defaults to 0 | The ranged attack strength of the unit |
+| strength | Integer (≥0) | defaults to 0 | The melee attack and defensive strength of the unit. If this and rangedStrength are ommited or 0, the unit will be a civilian |
+| rangedStrength | Integer (≥0) | defaults to 0 | The ranged attack strength of the unit. If omitted, the unit cannot ranged attack |
 | range | Integer (≥0) | defaults to 2 | The default range from which ranged attacks can be preformed |
 | interceptRange | Integer (≥0) | defaults to 0 | Air units attacking within in this range will be intercepted |
 | requiredTech | String | defaults to none | The tech required to build this unit. Must be in Techs.json |
@@ -164,7 +164,18 @@ Each unit can have the following attributes:
 | uniques | List of Strings | defaults to none | A list of the unique abilities this unit has. A list of almost all uniques can be found [here](../Uniques#unit-uniques) |
 | replacementTextForUniques | String | defaults to none | If provided, this will be displayed instead of the list of uniques. Can be used for better formatting. |
 | attackSound | String | defaults to none | The sound that is to be played when this unit attacks. For possible values, see [sounds](#Sounds)
+"Hidden when cultural victory is disabled"
 
+## UnitTypes.json
+
+This optional file is used for defining new types of units. The names of these can be used in unitFilters, and these types determine what domain the unit moves in: over land, over water or through the air. If the file is ommitted, the following are automatically added:
+Civilian, Melee, Ranged, Scout, Mounted, Armor, Siege, WaterCivilian, WaterMelee, WaterRanged, WaterSubmarine, WaterAircraftCarrier, Fighter, Bomber, AtomicBomber, and Missile.
+
+| attribute | Type | optional or not | notes |
+| --------- | ---- | -------- | ----- |
+| name | String | required | The name of the unit type |
+| movementType | String | required | The domain through which the unit moves. Allowed values: "Water", "Land", "Air" |
+| uniques | List of String | defaults to none | A list of the unique abilities every unit of this type has. A list of almost all uniques can be found [here](../Uniques#unit-uniques) |
 
 ## techs.json
 
