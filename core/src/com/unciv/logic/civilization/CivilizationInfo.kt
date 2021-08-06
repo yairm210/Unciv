@@ -110,6 +110,11 @@ class CivilizationInfo {
     var citiesCreated = 0
     var exploredTiles = HashSet<Vector2>()
 
+    // To correctly determine "game over" condition as clarified in #4707
+    // Nullable type meant to be deprecated and converted to non-nullable,
+    // default false once we no longer want legacy save-game compatibility
+    var hasEverOwnedOriginalCapital: Boolean? = null
+
     constructor()
 
     constructor(civName: String) {
@@ -147,6 +152,7 @@ class CivilizationInfo {
         toReturn.cityStateResource = cityStateResource
         toReturn.flagsCountdown.putAll(flagsCountdown)
         toReturn.temporaryUniques.addAll(temporaryUniques)
+        toReturn.hasEverOwnedOriginalCapital = hasEverOwnedOriginalCapital
         return toReturn
     }
 
@@ -375,12 +381,16 @@ class CivilizationInfo {
         return civName
     } // for debug
 
-    /** Returns true if the civ was fully initialized and has no cities remaining */
-    fun isDefeated(): Boolean {
-        // Dirty hack: exploredTiles are empty only before starting units are placed
-        return if (exploredTiles.isEmpty() || isBarbarian() || isSpectator()) false
-        else cities.isEmpty() // No cities
-                && (citiesCreated > 0 || !getCivUnits().any { it.hasUnique(Constants.settlerUnique) })
+    /**
+     *  Determine loss conditions.
+     *
+     *  If the civ has never controlled an original capital, it stays 'alive' as long as it has units (irrespective of non-original-capitals owned)
+     *  Otherwise, it stays 'alive' as long as it has cities (irrespective of settlers owned)
+     */
+    fun isDefeated() = when {
+        isBarbarian() || isSpectator() -> false     // Barbarians and voyeurs can't lose
+        hasEverOwnedOriginalCapital == true -> cities.isEmpty()
+        else -> getCivUnits().none()
     }
 
     fun getEra(): String {
@@ -693,6 +703,19 @@ class CivilizationInfo {
             else -> {}
             // Food and Production wouldn't make sense to be added nationwide
             // Happiness cannot be added as it is recalculated again, use a unique instead
+        }
+    }
+    
+    fun getStatReserve(stat: Stat): Int {
+        return when (stat) {
+            Stat.Culture -> policies.storedCulture
+            Stat.Science -> {
+                if (tech.currentTechnology() == null) 0
+                else tech.remainingScienceToTech(tech.currentTechnology()!!.name)
+            }
+            Stat.Gold -> gold
+            Stat.Faith -> religionManager.storedFaith
+            else -> 0
         }
     }
 

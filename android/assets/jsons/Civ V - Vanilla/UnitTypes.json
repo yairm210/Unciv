@@ -118,6 +118,6 @@
     },
     {
         "name": "AtomicBomber",
-        "Domain": "Air"
+        "movementType": "Air"
     }
 ]

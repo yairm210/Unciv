@@ -1,3 +1,13 @@
+## 3.16.0-patch1
+
+Bugfixes from unitTypes so promotions work again  - By xlenstra
+
+By SomeTroglodyte:
+- Allow civ-unique buildings to be created by startingEra 
+- Mod manager concurrency 
+
+Randomize Plains/Grasslands around deserts  - By ravignir
+
 ## 3.16.0
 
 By xlenstra:
