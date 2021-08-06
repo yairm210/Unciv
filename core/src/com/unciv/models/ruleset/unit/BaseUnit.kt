@@ -246,14 +246,14 @@ class BaseUnit : INamed, IConstruction, ICivilopediaText {
         return ""
     }
 
-    /** @param ignoreTechRequirements: its `true` value is used when upgrading via ancient ruins,
-     * as there we don't care whether we have the tech or policy required for the unit, but
-     * do still care whether we have the resources required for the unit
+    /** @param ignoreTechPolicyRequirements: its `true` value is used when upgrading via ancient ruins,
+     * as there we don't care whether we have the required tech, policy or building for the unit,
+     * but do still care whether we have the resources required for the unit
      */
-    fun getRejectionReason(civInfo: CivilizationInfo, ignoreTechRequirements: Boolean = false): String {
+    fun getRejectionReason(civInfo: CivilizationInfo, ignoreTechPolicyRequirements: Boolean = false): String {
         if (uniques.contains("Unbuildable")) return "Unbuildable"
-        if (!ignoreTechRequirements && requiredTech != null && !civInfo.tech.isResearched(requiredTech!!)) return "$requiredTech not researched"
-        if (!ignoreTechRequirements && obsoleteTech != null && civInfo.tech.isResearched(obsoleteTech!!)) return "Obsolete by $obsoleteTech"
+        if (!ignoreTechPolicyRequirements && requiredTech != null && !civInfo.tech.isResearched(requiredTech!!)) return "$requiredTech not researched"
+        if (!ignoreTechPolicyRequirements && obsoleteTech != null && civInfo.tech.isResearched(obsoleteTech!!)) return "Obsolete by $obsoleteTech"
         if (uniqueTo != null && uniqueTo != civInfo.civName) return "Unique to $uniqueTo"
         if (civInfo.gameInfo.ruleSet.units.values.any { it.uniqueTo == civInfo.civName && it.replaces == name })
             return "Our unique unit replaces this"
@@ -267,9 +267,9 @@ class BaseUnit : INamed, IConstruction, ICivilopediaText {
 
         for (unique in uniqueObjects.filter { it.placeholderText == "Requires []" }) {
             val filter = unique.params[0]
-            if (filter in civInfo.gameInfo.ruleSet.buildings) {
+            if (!ignoreTechPolicyRequirements && filter in civInfo.gameInfo.ruleSet.buildings) {
                 if (civInfo.cities.none { it.cityConstructions.containsBuildingOrEquivalent(filter) }) return unique.text // Wonder is not built
-            } else if (!ignoreTechRequirements && !civInfo.policies.adoptedPolicies.contains(filter)) return "Policy is not adopted"
+            } else if (!ignoreTechPolicyRequirements && !civInfo.policies.adoptedPolicies.contains(filter)) return "Policy is not adopted"
         }
 
         for ((resource, amount) in getResourceRequirements())
@@ -292,7 +292,7 @@ class BaseUnit : INamed, IConstruction, ICivilopediaText {
     /** Preemptively as in: buildable without actually having the tech and/or policy required for it.
      * Still checks for resource use and other things
      */
-    fun isPreemptivelyBuildable(civInfo: CivilizationInfo) =
+    fun isBuildableIgnoringTechs(civInfo: CivilizationInfo) =
         getRejectionReason(civInfo, true) == ""
 
     override fun postBuildEvent(cityConstructions: CityConstructions, wasBought: Boolean): Boolean {

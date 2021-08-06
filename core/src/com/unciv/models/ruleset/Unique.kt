@@ -194,6 +194,7 @@ object UniqueTriggerActivation {
                 }
                 return true
             }
+            
             "Free Technology" -> {
                 if (civInfo.isSpectator()) return false
                 civInfo.tech.freeTechs += 1
@@ -340,7 +341,7 @@ object UniqueTriggerActivation {
 
                 civInfo.addStat(stat, unique.params[0].toInt())
                 if (notification != null)
-                    civInfo.addNotification(notification, NotificationIcon.statToIcon(stat))
+                    civInfo.addNotification(notification, stat.notificationIcon)
                 return true
             }
             "Gain []-[] []" -> {
@@ -367,7 +368,7 @@ object UniqueTriggerActivation {
                         if (notification.hasPlaceholderParameters()) {
                             notification.fillPlaceholders(foundStatAmount.toString())
                         } else notification
-                    civInfo.addNotification(notificationText, NotificationIcon.statToIcon(stat))
+                    civInfo.addNotification(notificationText, stat.notificationIcon)
                 }
 
                 return true
@@ -503,6 +504,14 @@ object UniqueTriggerActivation {
                 upgradeAction.action!!()
                 if (notification != null)
                     unit.civInfo.addNotification(notification, unit.getTile().position)
+                return true
+            }
+            "This Unit gains the [] promotion" -> {
+                val promotion = unit.civInfo.gameInfo.ruleSet.unitPromotions.keys.firstOrNull { it == unique.params[0] }
+                if (promotion == null) return false
+                unit.promotions.addPromotion(promotion, true)
+                if (notification != null)
+                    unit.civInfo.addNotification(notification, unit.name)
                 return true
             }
         }

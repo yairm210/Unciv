@@ -48,8 +48,11 @@ object UnitAutomation {
         val unitDistanceToTiles = unit.movement.getDistanceToTiles()
         val tileWithRuinOrEncampment = unitDistanceToTiles.keys
                 .firstOrNull {
-                    (it.improvement == Constants.ancientRuins || it.improvement == Constants.barbarianEncampment)
-                            && unit.movement.canMoveTo(it)
+                    (
+                        (it.improvement != null && it.getTileImprovement()!!.isAncientRuinsEquivalent()) 
+                        || it.improvement == Constants.barbarianEncampment
+                    )
+                    && unit.movement.canMoveTo(it)
                 }
         if (tileWithRuinOrEncampment == null)
             return false

@@ -25,18 +25,6 @@ object NotificationIcon {
     const val Production = "StatIcons/Production"
     const val Food = "StatIcons/Food"
     const val Faith = "StatIcons/Faith"
-    
-    fun statToIcon(stat: Stat): String {
-        return when (stat) {
-            Stat.Production -> Production
-            Stat.Food -> Food
-            Stat.Gold -> Gold
-            Stat.Science -> Science
-            Stat.Culture -> Culture
-            Stat.Happiness -> Happiness
-            Stat.Faith -> Faith
-        }
-    }
 }
 
 /**

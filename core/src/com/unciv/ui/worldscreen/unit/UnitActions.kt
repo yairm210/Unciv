@@ -329,13 +329,15 @@ object UnitActions {
     
     fun getAncientRuinsUpgradeAction(unit: MapUnit): UnitAction? {
         val upgradedUnit = 
-            unit.civInfo.gameInfo.ruleSet.units[
-                when {
-                    unit.baseUnit.specialUpgradesTo != null -> unit.baseUnit.specialUpgradesTo
-                    unit.baseUnit.upgradesTo != null -> unit.baseUnit.upgradesTo
-                    else -> return null
-                }
-            ]!!
+            unit.civInfo.getEquivalentUnit(
+                unit.civInfo.gameInfo.ruleSet.units[
+                    when {
+                        unit.baseUnit.specialUpgradesTo != null -> unit.baseUnit.specialUpgradesTo
+                        unit.baseUnit.upgradesTo != null -> unit.baseUnit.upgradesTo
+                        else -> return null
+                    }
+                ]!!
+            )
         if (!unit.canUpgrade(upgradedUnit,true)) return null
         
         return UnitAction(UnitActionType.Upgrade,

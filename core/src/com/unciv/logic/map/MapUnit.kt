@@ -14,7 +14,6 @@ import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.ruleset.unit.UnitType
 import java.text.DecimalFormat
-import kotlin.random.Random
 
 /**
  * The immutable properties and mutable game state of an individual unit present on the map
@@ -352,10 +351,10 @@ class MapUnit {
         return unit
     }
 
-    /** @param preemptively: Ignore possible tech/culture requirements. Used for upgrading units
-     * via ancient ruins.
+    /** @param ignoreRequired: Ignore possible tech/policy/building requirements. 
+     * Used for upgrading units via ancient ruins.
      */
-    fun canUpgrade(unitToUpgradeTo: BaseUnit = getUnitToUpgradeTo(), preemptively: Boolean = false): Boolean {
+    fun canUpgrade(unitToUpgradeTo: BaseUnit = getUnitToUpgradeTo(), ignoreRequired: Boolean = false): Boolean {
         // We need to remove the unit from the civ for this check,
         // because if the unit requires, say, horses, and so does its upgrade,
         // and the civ currently has 0 horses,
@@ -364,7 +363,7 @@ class MapUnit {
         if (name == unitToUpgradeTo.name) return false
         civInfo.removeUnit(this)
         val canUpgrade = 
-            if (preemptively) unitToUpgradeTo.isPreemptivelyBuildable(civInfo)
+            if (ignoreRequired) unitToUpgradeTo.isBuildableIgnoringTechs(civInfo)
             else unitToUpgradeTo.isBuildable(civInfo)
         civInfo.addUnit(this)
         return canUpgrade
@@ -688,7 +687,9 @@ class MapUnit {
         // getAncientRuinBonus, if it places a new unit, does too
         currentTile = tile
 
-        if (tile.improvement == Constants.ancientRuins && civInfo.isMajorCiv())
+        if (civInfo.isMajorCiv() && tile.improvement != null 
+            && tile.getTileImprovement()!!.isAncientRuinsEquivalent()
+        )
             getAncientRuinBonus(tile)
         if (tile.improvement == Constants.barbarianEncampment && !civInfo.isBarbarian())
             clearEncampment(tile)
