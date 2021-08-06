@@ -61,6 +61,10 @@ data class UnitAction(
  * @param key           keyboard binding - can be a [KeyCharAndCode], a [Char], or omitted.
  * @param uncivSound    _default_ sound, can be overridden in UnitAction instantiation
  */
+
+// Note for Creators of new UnitActions: If your action uses a dynamic label overriding UnitActionType.value,
+// then you need to teach [com.unciv.testing.TranslationTests.allUnitActionsHaveTranslation] how to deal with it!
+
 enum class UnitActionType(
     val value: String,
     val imageGetter: (()-> Actor)?,
@@ -79,6 +83,9 @@ enum class UnitActionType(
         { ImageGetter.getImage("OtherIcons/Sleep") }, 'f'),
     SleepUntilHealed("Sleep until healed",
         { ImageGetter.getImage("OtherIcons/Sleep") }, 'h'),
+    // Note: Both Fortify actions are a special case. The button starting fortification uses the `value` here,
+    // the button label as shown when the unit is already fortifying is "Fortification".tr() + " nn%".
+    // For now we keep it simple, and the unit test `allUnitActionsHaveTranslation` does not know about the latter.
     Fortify("Fortify",
         null, 'f', UncivSound.Fortify),
     FortifyUntilHealed("Fortify until healed",
