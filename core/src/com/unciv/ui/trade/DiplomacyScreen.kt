@@ -293,7 +293,7 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
         for (improvableTile in improvableTiles){
             for (tileImprovement in tileImprovements.values){
                 if (improvableTile.canBuildImprovement(tileImprovement, otherCiv) && improvableTile.getTileResource().improvement == tileImprovement.name){
-                    val improveTileButton = "Build [$tileImprovement] on [${improvableTile.getTileResource()}] (200 Gold)".toTextButton()
+                    val improveTileButton = "Build [${tileImprovement}] on [${improvableTile.getTileResource()}] (200 Gold)".toTextButton()
                     improveTileButton.onClick {
                         viewingCiv.giveGoldGift(otherCiv, 200)
                         improvableTile.improvement = tileImprovement.name
