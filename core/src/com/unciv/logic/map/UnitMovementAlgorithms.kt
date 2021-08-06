@@ -10,7 +10,7 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
     // This function is called ALL THE TIME and should be as time-optimal as possible!
     fun getMovementCostBetweenAdjacentTiles(from: TileInfo, to: TileInfo, civInfo: CivilizationInfo): Float {
 
-        if (from.isLand != to.isLand && unit.type.isLandUnit())
+        if (from.isLand != to.isLand && unit.baseUnit.isLandUnit())
             if (unit.civInfo.nation.disembarkCosts1 && from.isWater && to.isLand) return 1f
             else return 100f // this is embarkment or disembarkment, and will take the entire turn
 
@@ -471,13 +471,13 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
                 return false
         }
         if (tile.isLand
-                && unit.type.isWaterUnit()
+                && unit.baseUnit.isWaterUnit()
                 // Check that the tile is not a coastal city's center
                 && !(tile.isCityCenter() && tile.isCoastalTile()))
             return false
 
 
-        if (tile.isWater && unit.type.isLandUnit()) {
+        if (tile.isWater && unit.baseUnit.isLandUnit()) {
             if (!unit.civInfo.tech.unitsCanEmbark) return false
             if (tile.isOcean && !unit.civInfo.tech.embarkedUnitsCanEnterOcean)
                 return false
