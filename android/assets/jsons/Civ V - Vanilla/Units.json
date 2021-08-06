@@ -451,15 +451,14 @@
 		"cost": 90,
 		"requiredTech": "Civil Service",
 		"uniques": ["+[50]% Strength vs [Mounted]"],
-		"upgradesTo": "Musketman",
+		"upgradesTo": "Lancer",
 		"obsoleteTech": "Gunpowder",
-		"attackSound": "metalhit"
-		//Pikeman should upgrade not only to Musketman but also to Lancer
+		"attackSound": "metalhit" 
 	},
 	{
 		"name": "Landsknecht",
 		"unitType": "Sword",
-		"replaces": "Pikeman",
+		"replaces": "Lancer",
 		"uniqueTo": "Germany",
 		"movement": 2,
 		"strength": 16,
