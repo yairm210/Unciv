@@ -667,6 +667,8 @@ class CityInfo {
             .map { it.getOwner()?.civName }.filterNotNull().toSet() 
             .distinct().toList()
     }
+    fun getImprovableTiles(): Sequence<TileInfo> = getTiles()
+            .filter {it.hasViewableResource(civInfo) && it.improvement == null}
 
 
     //endregion

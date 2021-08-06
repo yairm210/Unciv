@@ -174,7 +174,30 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
         }
         diplomacyTable.add(giveGiftButton).row()
         if (isNotPlayersTurn()) giveGiftButton.disable()
-        
+
+        val improvableTiles = otherCiv.getCapital().getImprovableTiles().filterNot {it.getTileResource().resourceType == ResourceType.Bonus}.toList()
+        val improvements = otherCiv.gameInfo.ruleSet.tileImprovements.filter { it.value.turnsToBuild != 0 }
+        var needsImprovements = false
+
+        for (improvableTile in improvableTiles)
+            for (tileImprovement in improvements.values)
+                if (improvableTile.canBuildImprovement(tileImprovement, otherCiv) && improvableTile.getTileResource().improvement == tileImprovement.name)
+                    needsImprovements = true
+
+
+        val improveTileButton = "Gift Improvement".toTextButton()
+        improveTileButton.onClick {
+            rightSideTable.clear()
+            rightSideTable.add(ScrollPane(getImprovementGiftTable(otherCiv)))
+        }
+
+
+        if (isNotPlayersTurn() || otherCivDiplomacyManager.influence < 60 || !needsImprovements)
+            improveTileButton.disable()
+
+
+
+        diplomacyTable.add(improveTileButton).row()
         if (otherCivDiplomacyManager.diplomaticStatus == DiplomaticStatus.Protector){
             val revokeProtectionButton = "Revoke Protection".toTextButton()
             revokeProtectionButton.onClick {
@@ -257,6 +280,39 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
         }
         diplomacyTable.add(backButton)
         return diplomacyTable
+    }
+    private fun getImprovementGiftTable(otherCiv: CivilizationInfo): Table{
+        val improvementGiftTable = getCityStateDiplomacyTableHeader(otherCiv)
+        improvementGiftTable.addSeparator()
+
+        val improvableTiles = otherCiv.getCapital().getImprovableTiles().filterNot {it.getTileResource().resourceType == ResourceType.Bonus}.toList()
+        val tileImprovements = otherCiv.gameInfo.ruleSet.tileImprovements.filter { it.value.turnsToBuild != 0 }
+
+        for (improvableTile in improvableTiles){
+            for (tileImprovement in tileImprovements.values){
+                if (improvableTile.canBuildImprovement(tileImprovement, otherCiv) && improvableTile.getTileResource().improvement == tileImprovement.name){
+                    val improveTileButton = "Build [${tileImprovement}] on [${improvableTile.getTileResource()}] (200 Gold)".toTextButton()
+                    improveTileButton.onClick {
+                        viewingCiv.giveGoldGift(otherCiv, 200)
+                        improvableTile.improvement = tileImprovement.name
+                        rightSideTable.clear()
+                        rightSideTable.add(ScrollPane(getCityStateDiplomacyTable(otherCiv)))
+                    }
+                    if (viewingCiv.gold < 200)
+                        improveTileButton.disable()
+                    improvementGiftTable.add(improveTileButton).row()
+                }
+            }
+        }
+
+        val backButton = "Back".toTextButton()
+        backButton.onClick {
+            rightSideTable.clear()
+            rightSideTable.add(ScrollPane(getCityStateDiplomacyTable(otherCiv)))
+        }
+        improvementGiftTable.add(backButton)
+        return improvementGiftTable
+
     }
 
     private fun getQuestTable(assignedQuest: AssignedQuest): Table {
