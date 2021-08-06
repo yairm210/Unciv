@@ -135,7 +135,7 @@ open class TileInfo {
     fun getCity(): CityInfo? = owningCity
 
     fun getLastTerrain(): Terrain = when {
-        terrainFeatures.isNotEmpty() -> getTerrainFeatures().last()
+        getTerrainFeatures().isNotEmpty() -> getTerrainFeatures().last()
         naturalWonder != null -> getNaturalWonder()
         else -> getBaseTerrain()
     }
@@ -187,14 +187,28 @@ open class TileInfo {
         }
     }
 
-    fun getTerrainFeatures(): List<Terrain> = terrainFeatures.mapNotNull { ruleset.terrains[it] }
+    @Transient
+    private lateinit var terrainFeatureObjects: List<Terrain>
+    @Transient
+    private var terrainFeaturesHash = 0
+
+    /** @return [terrainFeatures] mapped to [Terrain] instances, without those missing in the ruleset, **cached** */
+    fun getTerrainFeatures(): List<Terrain> {
+        val newHash = terrainFeatures.hashCode()
+        if (!::terrainFeatureObjects.isInitialized || terrainFeaturesHash != newHash) {
+            terrainFeatureObjects = terrainFeatures.mapNotNull { ruleset.terrains[it] }
+            terrainFeaturesHash = newHash
+        }
+        return terrainFeatureObjects
+    }
+
     fun getAllTerrains(): Sequence<Terrain> = sequence {
         yield(baseTerrainObject)
         if (naturalWonder != null) yield(getNaturalWonder())
-        yieldAll(terrainFeatures.asSequence().mapNotNull { ruleset.terrains[it] })
+        yieldAll(getTerrainFeatures())
     }
 
-    fun isRoughTerrain() = getAllTerrains().any{ it.isRough() }
+    fun isRoughTerrain() = getAllTerrains().any { it.isRough() }
 
     fun hasUnique(unique: String) = getAllTerrains().any { it.uniques.contains(unique) }
 
@@ -774,10 +788,7 @@ open class TileInfo {
                     .groupBy { it.baseTerrain }.maxByOrNull { it.value.size }
             baseTerrain = mostCommonBaseTerrain?.key ?: Constants.grassland
             //We have to add hill as first terrain feature
-            val copy = terrainFeatures.toTypedArray()
-            terrainFeatures.clear()
-            terrainFeatures.add(Constants.hill)
-            terrainFeatures.addAll(copy)
+            terrainFeatures.add(0, Constants.hill)
         }
     }
 
