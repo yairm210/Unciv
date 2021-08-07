@@ -8,6 +8,7 @@ import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.UniqueMap
 import com.unciv.models.ruleset.unit.BaseUnit
+import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.tr
 import com.unciv.ui.civilopedia.CivilopediaCategories
@@ -152,15 +153,19 @@ class CityConstructions {
     }
 
 
+    /** @constructionName needs to be a non-perpetual construction, else a cost of -1 is inferred */
     internal fun getTurnsToConstructionString(constructionName: String, useStoredProduction:Boolean = true): String {
         val construction = getConstruction(constructionName)
-        val cost = construction.getProductionCost(cityInfo.civInfo)
+        val cost = 
+            if (construction is INonPerpetualConstruction) construction.getProductionCost(cityInfo.civInfo)
+            else -1 // This could _should_ never be reached
         val turnsToConstruction = turnsToConstruction(constructionName, useStoredProduction)
         val currentProgress = if (useStoredProduction) getWorkDone(constructionName) else 0
         if (currentProgress == 0) return "\n$cost${Fonts.production} $turnsToConstruction${Fonts.turn}"
         else return "\n$currentProgress/$cost${Fonts.production}\n$turnsToConstruction${Fonts.turn}"
     }
 
+    // This function appears unused, can it be removed?
     fun getProductionForTileInfo(): String {
         /* this is because there were rare errors that I assume were caused because
            currentConstruction changed on another thread */
@@ -246,8 +251,8 @@ class CityConstructions {
         val constr = getConstruction(constructionName)
         return when {
             constr is PerpetualConstruction -> 0
-            useStoredProduction -> constr.getProductionCost(cityInfo.civInfo) - getWorkDone(constructionName)
-            else -> constr.getProductionCost(cityInfo.civInfo)
+            useStoredProduction -> (constr as INonPerpetualConstruction).getProductionCost(cityInfo.civInfo) - getWorkDone(constructionName)
+            else -> (constr as INonPerpetualConstruction).getProductionCost(cityInfo.civInfo)
         }
     }
 
@@ -315,7 +320,7 @@ class CityConstructions {
         val construction = getConstruction(currentConstructionFromQueue)
         if (construction is PerpetualConstruction) chooseNextConstruction() // check every turn if we could be doing something better, because this doesn't end by itself
         else {
-            val productionCost = construction.getProductionCost(cityInfo.civInfo)
+            val productionCost = (construction as INonPerpetualConstruction).getProductionCost(cityInfo.civInfo)
             if (inProgressConstructions.containsKey(currentConstructionFromQueue)
                     && inProgressConstructions[currentConstructionFromQueue]!! >= productionCost) {
                 productionOverflow = inProgressConstructions[currentConstructionFromQueue]!! - productionCost
@@ -481,14 +486,25 @@ class CityConstructions {
      *                          Note: -1 does not guarantee queue will remain unchanged (validation)
      *  @param automatic        Flag whether automation should try to choose what next to build (not coming from UI)
      *                          Note: settings.autoAssignCityProduction is handled later
+     *  @param stat             Stat object of the stat with which was paid for the construction
      *  @return                 Success (false e.g. unit cannot be placed
      */
-    fun purchaseConstruction(constructionName: String, queuePosition: Int, automatic: Boolean): Boolean {
+    fun purchaseConstruction(
+        constructionName: String, 
+        queuePosition: Int, 
+        automatic: Boolean, 
+        stat: Stat = Stat.Gold
+    ): Boolean {
         if (!getConstruction(constructionName).postBuildEvent(this, true))
             return false // nothing built - no pay
 
-        if (!cityInfo.civInfo.gameInfo.gameParameters.godMode)
-            cityInfo.civInfo.addGold(-getConstruction(constructionName).getGoldCost(cityInfo.civInfo))
+        if (!cityInfo.civInfo.gameInfo.gameParameters.godMode) {
+            val construction = getConstruction(constructionName)
+            if (construction is PerpetualConstruction) return false
+            val constructionCost = (construction as INonPerpetualConstruction).getStatBuyCost(cityInfo, stat)
+            if (constructionCost == null) return false // We should never end up here anyway, so things have already gone _way_ wrong
+            cityInfo.addStat(stat, -1 * constructionCost)
+        }
 
         if (queuePosition in 0 until constructionQueue.size)
             removeFromQueue(queuePosition, automatic)

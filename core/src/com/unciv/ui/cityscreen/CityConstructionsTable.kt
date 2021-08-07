@@ -7,10 +7,7 @@ import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.utils.Align
-import com.unciv.logic.city.CityConstructions
-import com.unciv.logic.city.CityInfo
-import com.unciv.logic.city.IConstruction
-import com.unciv.logic.city.PerpetualConstruction
+import com.unciv.logic.city.*
 import com.unciv.models.UncivSound
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.unit.BaseUnit
@@ -70,7 +67,9 @@ class CityConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBase
     private fun updateButtons(construction: IConstruction?) {
         buttons.clear()
         buttons.add(getQueueButton(construction)).padRight(5f)
-        buttons.add(getBuyButton(construction))
+        if (construction != null && construction !is PerpetualConstruction)
+            for (button in getBuyButtons(construction as INonPerpetualConstruction))
+                buttons.add(button).padRight(5f)
     }
 
     private fun updateConstructionQueue() {
@@ -262,7 +261,7 @@ class CityConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBase
         if (cityConstructions.getWorkDone(constructionName) == 0) return Table()
 
         val constructionPercentage = cityConstructions.getWorkDone(constructionName) /
-                construction.getProductionCost(cityConstructions.cityInfo.civInfo).toFloat()
+                (construction as INonPerpetualConstruction).getProductionCost(cityConstructions.cityInfo.civInfo).toFloat()
         return ImageGetter.getProgressBarVertical(2f, 30f, constructionPercentage,
                 Color.BROWN.cpy().lerp(Color.WHITE, 0.5f), Color.WHITE)
     }
@@ -377,9 +376,9 @@ class CityConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBase
         }
     }
 
-    fun purchaseConstruction(construction: IConstruction) {
+    fun purchaseConstruction(construction: INonPerpetualConstruction, stat: Stat = Stat.Gold) {
         val city = cityScreen.city
-        if (!city.cityConstructions.purchaseConstruction(construction.name, selectedQueueEntry, false)) {
+        if (!city.cityConstructions.purchaseConstruction(construction.name, selectedQueueEntry, false, stat)) {
             Popup(cityScreen).apply {
                 add("No space available to place [${construction.name}] near [${city.name}]".tr()).row()
                 addCloseButton()
@@ -393,38 +392,47 @@ class CityConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBase
         }
         cityScreen.update()
     }
+    
+    private fun getBuyButtons(construction: INonPerpetualConstruction?): List<TextButton> {
+        return listOf(Stat.Gold, Stat.Faith, Stat.Culture, Stat.Science, Stat.Food)
+            .mapNotNull { getBuyButton(construction, it) }
+    }
 
-    private fun getBuyButton(construction: IConstruction?): TextButton {
+    private fun getBuyButton(construction: INonPerpetualConstruction?, stat: Stat = Stat.Gold): TextButton? {
+        if (stat !in listOf(Stat.Gold, Stat.Faith, Stat.Culture, Stat.Science, Stat.Food))
+            return null
         val city = cityScreen.city
-        val cityConstructions = city.cityConstructions
 
         val button = "".toTextButton()
 
         if (construction == null || construction is PerpetualConstruction ||
-                (!construction.canBePurchased() && !city.civInfo.gameInfo.gameParameters.godMode)) {
+                (!construction.canBePurchasedWithStat(city, stat) && !city.civInfo.gameInfo.gameParameters.godMode)) {
             // fully disable a "buy" button only for "priceless" buildings such as wonders
             // for all other cases, the price should be displayed
-            button.setText("Buy".tr())
-            button.disable()
+            if (stat == Stat.Gold) {
+                button.setText("Buy".tr())
+                button.disable()
+            }
+            else return null
         } else {
-            val constructionGoldCost = construction.getGoldCost(city.civInfo)
-            button.setText("Buy".tr() + " " + constructionGoldCost)
-            button.add(ImageGetter.getStatIcon(Stat.Gold.name)).size(20f).padBottom(2f)
+            val constructionBuyCost = construction.getStatBuyCost(city, stat)!!
+            button.setText("Buy".tr() + " " + constructionBuyCost)
+            button.add(ImageGetter.getStatIcon(stat.name)).size(20f).padBottom(2f)
 
-            button.onClick(UncivSound.Coin) {
+            button.onClick(stat.purchaseSound) {
                 button.disable()
                 cityScreen.closeAllPopups()
-
-                val purchasePrompt = "Currently you have [${city.civInfo.gold}] gold.".tr() + "\n" +
-                        "Would you like to purchase [${construction.name}] for [$constructionGoldCost] gold?".tr()
-                YesNoPopup(purchasePrompt, { purchaseConstruction(construction) }, cityScreen, { cityScreen.update() }).open()
+                
+                val purchasePrompt = "Currently you have [${city.getStatReserve(stat)}] [${stat.name}].".tr() + "\n" +
+                        "Would you like to purchase [${construction.name}] for [$constructionBuyCost] [${stat.name}]?".tr()
+                YesNoPopup(purchasePrompt, { purchaseConstruction(construction, stat) }, cityScreen, { cityScreen.update() }).open()
             }
-
-            if (!construction.isBuildable(cityConstructions)
-                    || !cityScreen.canChangeState
-                    || city.isPuppet || city.isInResistance()
+            
+            if (!cityScreen.canChangeState
+                    || city.isPuppet 
+                    || city.isInResistance()
                     || !city.canPurchase(construction)
-                    || (constructionGoldCost > city.civInfo.gold && !city.civInfo.gameInfo.gameParameters.godMode))
+                    || (constructionBuyCost > city.getStatReserve(stat) && !city.civInfo.gameInfo.gameParameters.godMode))
                 button.disable()
         }
 
@@ -432,7 +440,7 @@ class CityConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBase
 
         return button
     }
-
+    
     private fun getRaisePriorityButton(constructionQueueIndex: Int, name: String, city: CityInfo): Table {
         val tab = Table()
         tab.add(ImageGetter.getImage("OtherIcons/Up").surroundWithCircle(40f))

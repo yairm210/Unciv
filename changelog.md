@@ -1,3 +1,17 @@
+## 3.16.1
+
+By xlenstra:
+- Added missionairy units, which can spread religion and bought with faith 
+- Replaced the last promotion effects with uniques 
+- Removed $ signs from translatable strings 
+
+By SomeTroglodyte:
+- Bring `allUnitActionsHaveTranslation` test up to date 
+- Change defeat conditions 
+
+By ravignir:
+- Minor fix to Great Prophets cost not increasing 
+
 ## 3.16.0-patch1
 
 Bugfixes from unitTypes so promotions work again  - By xlenstra

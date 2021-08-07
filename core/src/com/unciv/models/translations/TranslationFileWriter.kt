@@ -224,7 +224,8 @@ object TranslationFileWriter {
              "in all non-occupied cities",
              "in all cities with a world wonder",
              "in all cities connected to capital",
-             "in all cities with a garrison"
+             "in all cities with a garrison",
+             "in all cities in which the majority religion is a major religion"
         )
 
         val startMillis = System.currentTimeMillis()
