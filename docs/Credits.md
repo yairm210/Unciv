@@ -569,6 +569,12 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [taoism](https://thenounproject.com/search/?q=Taoism&i=740812) by parkjisun for Taosim
 * [Buddhism](https://thenounproject.com/search/?q=buddhism&i=38764) by Julio Yanes for Buddhism
 * [Hinduism](https://thenounproject.com/search/?q=hinduism&i=20383) by Mugda Damle for Hinduism
+* [Confucianism](https://thenounproject.com/search/?q=Confucianism&i=200406) by Dabid J. Pascual for Confucianism
+* [Judaism](https://thenounproject.com/search/?q=Judaism&i=200418) by Dabid J. Pascual for Judaism
+* [Shinto](https://thenounproject.com/dabid/uploads/?i=238069) by Dabid J. Pascual for Shinto
+* [Sikhism](https://thenounproject.com/dabid/uploads/?i=238064) by Dabid J. Pascual for Sikhism
+* [Tengrism](https://thenounproject.com/search/?q=Tengrism&i=238067) by Dabid J. Pascual for Tengriism
+* [Zoroastrianism](https://thenounproject.com/search/?q=Zoroastrianism&i=238059) by Dabid J. Pascual for Zoroastrianism
 * [praying](https://thenounproject.com/term/praying/740809/) by parkjisun for Religion (Civilopedia concept entry)
 * [praying](https://thenounproject.com/term/praying/886367/) by Gan Khoon Lay for Follower
 
