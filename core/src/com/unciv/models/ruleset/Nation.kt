@@ -94,7 +94,7 @@ class Nation : INamed, ICivilopediaText {
         disembarkCosts1 = uniques.contains("Units pay only 1 movement point to disembark")
     }
 
-    lateinit var cities: ArrayList<String>
+    var cities: ArrayList<String> = arrayListOf()
 
 
     /** Used only by NewGame Nation picker */
