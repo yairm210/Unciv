@@ -22,6 +22,7 @@ interface INonPerpetualConstruction : IConstruction, INamed {
 
     fun getProductionCost(civInfo: CivilizationInfo): Int
     fun getStatBuyCost(cityInfo: CityInfo, stat: Stat): Int?
+    fun getRejectionReason(cityConstructions: CityConstructions): String
     
     private fun getMatchingUniques(uniqueTemplate: String): Sequence<Unique> {
         return uniqueObjects.asSequence().filter { it.placeholderText == uniqueTemplate }
@@ -40,6 +41,13 @@ interface INonPerpetualConstruction : IConstruction, INamed {
                 .any { it.params[1] == stat.name && ( ignoreCityRequirements || cityInfo.matchesFilter(it.params[2])) }
         ) return true
         return false
+    }
+
+    /** Checks if the construction should be purchasable, not whether it can be bought with a stat at all */
+    fun isPurchasable(cityConstructions: CityConstructions): Boolean {
+        val rejectionReason = getRejectionReason(cityConstructions)
+        return rejectionReason == ""
+                || rejectionReason == "Can only be purchased"
     }
     
     fun canBePurchasedWithAnyStat(cityInfo: CityInfo): Boolean {
@@ -107,7 +115,7 @@ open class PerpetualConstruction(override var name: String, val description: Str
 
     override fun isBuildable(cityConstructions: CityConstructions): Boolean =
             throw Exception("Impossible!")
-
+    
     override fun postBuildEvent(cityConstructions: CityConstructions, wasBought: Boolean) =
             throw Exception("Impossible!")
 
