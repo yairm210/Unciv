@@ -211,7 +211,7 @@ object UniqueTriggerActivation {
                 }
                 return true
             }
-            "[] free random researchable Techs from the []" -> {
+            "[] free random researchable Tech(s) from the []" -> {
                 val researchableTechsFromThatEra = civInfo.gameInfo.ruleSet.technologies.values
                     .filter {
                         (it.column!!.era == unique.params[1] || unique.params[1] == "any era")
@@ -498,7 +498,7 @@ object UniqueTriggerActivation {
                     unit.civInfo.addNotification(notification, unit.getTile().position)
                 return true
             }
-            "This Unit finds advanced weapons" -> {
+            "This Unit upgrades for free including special upgrades" -> {
                 val upgradeAction = UnitActions.getAncientRuinsUpgradeAction(unit)
                     ?: return false
                 upgradeAction.action!!()

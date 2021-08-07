@@ -34,12 +34,12 @@
     {
         "name": "freeAncientTech",
         "notification": "We have discovered the lost technology of [techName] in the ruins!",
-        "uniques": ["[1] free random researchable Techs from the [Ancient era]"]
+        "uniques": ["[1] free random researchable Tech(s) from the [Ancient era]"]
     },
     {
         "name": "unitUpgrade",
         "notification": "Our unit finds advanced weaponry hidden in the ruins!",
-        "uniques": ["This Unit finds advanced weapons"]
+        "uniques": ["This Unit upgrades for free including special upgrades"]
     },
     {
         "name": "barbCampsRevealed",

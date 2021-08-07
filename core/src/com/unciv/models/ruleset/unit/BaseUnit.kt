@@ -42,7 +42,12 @@ class BaseUnit : INamed, IConstruction, ICivilopediaText {
     var promotions = HashSet<String>()
     var obsoleteTech: String? = null
     var upgradesTo: String? = null
-    val specialUpgradesTo: String? = null
+    val specialUpgradesTo: String? by lazy { 
+        uniqueObjects
+        .filter { it.placeholderText == "May upgrade to [] through ruins-like effects"}
+        .map { it.params[0] }
+        .firstOrNull() 
+    }
     var replaces: String? = null
     var uniqueTo: String? = null
     var attackSound: String? = null

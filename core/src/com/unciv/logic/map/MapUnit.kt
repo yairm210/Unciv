@@ -687,7 +687,16 @@ class MapUnit {
         // getAncientRuinBonus, if it places a new unit, does too
         currentTile = tile
 
-        if (civInfo.isMajorCiv() && tile.improvement != null 
+        if (civInfo.isMajorCiv() 
+            && tile.improvement != null
+            // I don't know who came up with the idea of making starting locations improvements, 
+            // but I don't like having to make this check here.
+            // Why not just cache these somewhere for easy access? Why do they have to be saved
+            // on the map instead of in some variable? I can't imagine it being easier to
+            // find where they are this way, and this kind of random check feels way out of place.
+            // This is just misuse of an existing variable for a completely different usecase at this point.
+            // Now we have to check this every time a unit moves over an improvement, which happens _quite often_.
+            && !tile.improvement!!.startsWith("StartingLocation ")
             && tile.getTileImprovement()!!.isAncientRuinsEquivalent()
         )
             getAncientRuinBonus(tile)

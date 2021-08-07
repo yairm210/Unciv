@@ -234,7 +234,9 @@
 		"shortcutKey": "F"
 	},
 
-	{ "name": "Ancient ruins", "uniques": ["Unpillagable"],
+	{ 
+		"name": "Ancient ruins", 
+		"uniques": ["Unpillagable", "Provides a random bonus when entered"],
         "civilopediaText": [
 			{"text":"Ancient ruins provide a one-time random bonus when explored"},
 			{},
@@ -250,7 +252,7 @@
 	},
 	{ 
 		"name": "City ruins", 
-		"uniques": ["Unpillagable", "Provides a random bonus when entered"],
+		"uniques": ["Unpillagable"],
         "civilopediaText": [{"text":"A bleak reminder of the destruction wreaked by War"}]
 	},
 	{ 
