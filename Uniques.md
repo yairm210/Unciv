@@ -145,6 +145,7 @@ cityFilters allow us to choose the range of cities affected by this unique:
 - "in all cities with a world wonder"
 - "in all cities connected to capital"
 - "in all cities with a garrison"
+- "in all cities in which the majority religion is a major religion"
 
 ### ConstructionFilter
 
@@ -156,6 +157,11 @@ For units, the UnitFilter is called. For Buildings, the following options are im
 - "Wonders", "Wonders"
 - building name
 - an exact unique the building has (e.g.: "spaceship part")
+- if the building is "stat-related" for some stat. Stat-related buildings are defined as one of the following:
+  - Provides that stat directly (e.g. +1 Culture)
+  - Provides a percentage bonus for that stat (e.g. +10% Production)
+  - Provides that stat as a bonus for resources (e.g. +1 Food for Wheat)
+  - Provides that stat per some amount of population (e.g. +1 Science for every 2 population [cityFilter])
 
 ## General uniques
 
@@ -163,7 +169,7 @@ For units, the UnitFilter is called. For Buildings, the following options are im
 
 "+[amount]% growth [cityFilter]" - for example "+[15]% growth [in all cities]". 'Growth' is the amount of food retained by a city after calculating all bonuses and removing food eaten by population - that is, the food that leads to population growth. "+[amount]% growth in all cities" and "+[amount]% growth in capital" are to be deprecated and should not be used.
 
-"+[amount]% [stat] [cityFilter]" - For example, "+[25]% [Culture] [in all cities]"
+"+[amount]% [Stat] [cityFilter]" - For example, "+[25]% [Culture] [in all cities]"
 
 "[stats] [cityFilter]" - for example "[+3 Culture] [in capital]", "[+2 Food] [in all cities]". "[stats] in capital", "[stats] in all cities" are to be deprecated and should not be used.
 
@@ -180,7 +186,7 @@ For units, the UnitFilter is called. For Buildings, the following options are im
 
 "[stats] from each Trade Route"
 
-"[amount]% [stat] while the empire is happy"
+"[amount]% [Stat] while the empire is happy"
 
 "Specialists only produce [amount]% of normal unhappiness"
 
@@ -188,6 +194,9 @@ For units, the UnitFilter is called. For Buildings, the following options are im
 
 "[stats] if this city has at least [amount] specialists"
 
+"Can be purchased with [Stat] [cityFilter]"
+
+"Can be purchased for [amount] [Stat] [cityFilter]"
 
 ### One time effect
 
@@ -251,7 +260,7 @@ For units, the UnitFilter is called. For Buildings, the following options are im
 
 "-[amount]% unit upkeep costs"
 
-"Gold cost of purchasing [unitFilter] units -[amount]%"
+"[Stat] cost of purchasing [unitFilter] units [amount]%"
 
 "+[amount]% attack strength to all [unitFilter] units for [amount] turns"
 
@@ -263,7 +272,7 @@ For units, the UnitFilter is called. For Buildings, the following options are im
 
 "Resting point for Influence with City-States is increased by [amount]"
 
-"Allied City-States provide [stat] equal to [amount]% of what they produce for themselves"
+"Allied City-States provide [Stat] equal to [amount]% of what they produce for themselves"
 
 "Quantity of Resources gifted by City-States increased by [amount]%"
 
@@ -295,11 +304,7 @@ For units, the UnitFilter is called. For Buildings, the following options are im
 
 "+[amount]% Production when constructing [buildingFilter]", "+[amount]% Production when constructing [buildingFilter] [cityfilter]", "+[amount]% Production when constructing a [buildingFilter]
 
-"Cost of purchasing [stat] buildings reduced by [amount]%" - Stat-related buildings are defined as one of the following:
-- Provides that stat directly (e.g. +1 Culture)
-- Provides a percentage bonus for that stat (e.g. +10% Production)
-- Provides that stat as a bonus for resources (e.g. +1 Food for Wheat)
-- Provides that stat per some amount of population (e.g. +1 Science for every 2 population [cityFilter])
+"[Stat] cost of purchasing [buildingFilter] buildings [amount]%"
 
 "Culture cost of adopting new Policies reduced by [amount]%"
 
@@ -327,7 +332,7 @@ For units, the UnitFilter is called. For Buildings, the following options are im
 
 "Science gained from research agreements [amount]%"
 
-"Cost of purchasing items in cities reduced by [amount]%" - 'Purchasing' refers to the gold cost of buying buildings or units, not the amount of production needed to construct.
+"[Stat] cost of purchasing items in cities [amount]%" - 'Purchasing' refers to the gold cost of buying buildings or units, not the amount of production needed to construct.
 
 "Maintenance on roads & railroads reduced by [amount]%"
 
@@ -339,7 +344,7 @@ For units, the UnitFilter is called. For Buildings, the following options are im
 
 "Earn [amount]% of killed [unitFilter] unit's [param1] as [param2]" - param1 accepts "Cost" or "Strength", param2 accepts "Culture", "Science", "Gold" and "Faith". For example, "Earn [100]% of killed [Military] unit's [Strength] as [Culture]", "Earn [10]% of killed [Military] unit's [Cost] as [Gold]". This can also be applied directly to a unit (as a unique or as a promotion effect).
 
-"Upon capturing a city, receive [amount] times its [stat] production as [param1] immediately" - param1 accepts "Culture", "Science", "Gold" and "Faith".
+"Upon capturing a city, receive [amount] times its [Stat] production as [param1] immediately" - param1 accepts "Culture", "Science", "Gold" and "Faith".
 
 "-[amount]% maintenance cost for buildings [cityFilter]"
 
@@ -447,7 +452,7 @@ Follower uniques are uniques applied to each city following a religion which inc
 
 "[stats] from [tileFilter] tiles without [tileFilter] [cityFilter]"
 
-"Earn [amount]% of [unitFilter] unit's [param] as [stat] when killed within 4 tiles of a city following this religion"
+"Earn [amount]% of [unitFilter] unit's [param] as [Stat] when killed within 4 tiles of a city following this religion"
 
 ## Improvement uniques
 
@@ -488,7 +493,7 @@ Follower uniques are uniques applied to each city following a religion which inc
 
 "Can start an 8-turn golden age"
 
-"Great Person - [stat]"
+"Great Person - [Stat]"
 
 "Can hurry technology research"
 
@@ -628,7 +633,9 @@ Follower uniques are uniques applied to each city following a religion which inc
 
 "May capture killed [unitFilter] units"
 
-"Earn [amount]% of the damage done to [unitFilter] units as [stat]" - stat must be Gold, Culture, Science or Faith. If a unit would do more damage than the defender has health, the damage will instead be the health the defender had left before attacking.
+"Earn [amount]% of the damage done to [unitFilter] units as [Stat]" - stat must be Gold, Culture, Science or Faith. If a unit would do more damage than the defender has health, the damage will instead be the health the defender had left before attacking.
+
+"Religious unit" - Will make sure that the unit has a religion upon being built/purchased in a city with a religion
 
 # Terrain uniques
 
@@ -667,7 +674,7 @@ These uniques have been recently deprecated. While they are still supported, the
 
 "+1 happiness from each type of luxury resource" - Replaced with "+[amount] happiness from each type of luxury resource"
 
-"+15% science while the empire is happy" - Replaced with "[amount]% [stat] while the empire is happy"
+"+15% science while the empire is happy" - Replaced with "[amount]% [Stat] while the empire is happy"
 
 "Science gained from research agreements +50%" - Replaced with "Science gained from research agreements [+amount]%"
 
@@ -687,7 +694,7 @@ These uniques have been recently deprecated. While they are still supported, the
 
 "-[amount]% building maintenance costs []" - Replaced with "[-amount]% maintenance cost for buildings []"
 
-"Allied City-States provide Science equal to [amount]% of what they produce for themselves" - Replaced with "Allied City-States provide [stat] equal to [amount]% of what they produce for themselves"
+"Allied City-States provide Science equal to [amount]% of what they produce for themselves" - Replaced with "Allied City-States provide [Stat] equal to [amount]% of what they produce for themselves"
 
 "Nuclear weapon" - Replaced with "Nuclear Weapon of Strength [amount]" - [amount] should be 1 (atomic bomb) or 2 (nuclear missile)
 
@@ -743,4 +750,10 @@ These uniques have been recently deprecated. While they are still supported, the
 
 "[amount]% of food is carried over after population increases" - Replaced with "[amount]% of food is carried over [cityFilter] after population increases"
 
-"Hidden when cultural victory is disabled" - Replaced with ""Hidden when [victoryName] victory is disabled"
+"Hidden when cultural victory is disabled" - Replaced with "Hidden when [victoryName] victory is disabled"
+
+"Cost of purchasing items in cities reduced by [amount]%" - Replaced with "[Stat] cost of purchasing items in cities [amount]%"
+
+"Cost of purchasing [buildingFilter] buildings reduced by [amount]%" - Replaced with "[Stat] cost of purchasing [buildingFilter] buildings [amount]%"
+
+"Gold cost of purchasing [unitFilter] units -[amount]%" - Replaced with "[Stat] cost of purchasing [unitFilter] units [amount]%"
