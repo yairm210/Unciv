@@ -365,12 +365,11 @@ class CityConstructions {
         val inProgressSnapshot = inProgressConstructions.keys.filter { it != currentConstructionFromQueue }
         for (constructionName in inProgressSnapshot) {
             val construction = getConstruction(constructionName)
-            val rejectionReason: String =
-                    when (construction) {
-                        is Building -> construction.getRejectionReason(this)
-                        is BaseUnit -> construction.getRejectionReason(this)
-                        else -> ""
-                    }
+            // Perpetual constructions should always still be valid (I hope)
+            if (construction is PerpetualConstruction) continue
+            
+            val rejectionReason = 
+                (construction as INonPerpetualConstruction).getRejectionReason(this)
 
             if (rejectionReason.endsWith("lready built")
                     || rejectionReason.startsWith("Cannot be built with")

@@ -429,11 +429,12 @@ class CityConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBase
             }
             
             if (!cityScreen.canChangeState
-                    || city.isPuppet 
-                    || city.isInResistance()
-                    || !city.canPurchase(construction)
-                    || (constructionBuyCost > city.getStatReserve(stat) && !city.civInfo.gameInfo.gameParameters.godMode))
-                button.disable()
+                || !construction.isPurchasable(city.cityConstructions)
+                || city.isPuppet 
+                || city.isInResistance()
+                || !city.canPurchase(construction)
+                || (constructionBuyCost > city.getStatReserve(stat) && !city.civInfo.gameInfo.gameParameters.godMode)
+            ) button.disable()
         }
 
         button.labelCell.pad(5f)

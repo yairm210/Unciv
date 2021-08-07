@@ -240,7 +240,7 @@ class BaseUnit : INamed, INonPerpetualConstruction, CivilopediaText() {
                 || rejectionReason == "Can only be purchased"
     }
 
-    fun getRejectionReason(cityConstructions: CityConstructions): String {
+    override fun getRejectionReason(cityConstructions: CityConstructions): String {
         if (isWaterUnit() && !cityConstructions.cityInfo.isCoastal())
             return "Can only build water units in coastal cities"
         val civInfo = cityConstructions.cityInfo.civInfo
