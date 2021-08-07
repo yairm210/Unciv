@@ -305,6 +305,12 @@ class Ruleset {
             if (building.requiredTech == null && building.cost == 0)
                 lines += "${building.name} must either have an explicit cost or reference an existing tech!"
         }
+        
+        for (nation in nations.values) {
+            if (nation.cities.isEmpty() && !nation.isSpectator() && !nation.isBarbarian()) {
+                lines += "${nation.name} can settle cities, but has no city names!"
+            }
+        }
 
         if (!modOptions.isBaseRuleset) return CheckModLinksResult(warningCount, lines)
 
