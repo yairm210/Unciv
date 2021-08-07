@@ -382,7 +382,7 @@ class Building : NamedStats(), INonPerpetualConstruction, ICivilopediaText {
 
     override fun getStatBuyCost(cityInfo: CityInfo, stat: Stat): Int? {
         var cost = getBaseBuyCost(cityInfo, stat)?.toDouble()
-        if (cost == null) { println(name); return null}
+        if (cost == null) return null
 
         // Deprecated since 3.15.15
             if (stat == Stat.Gold) {
