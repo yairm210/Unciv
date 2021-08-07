@@ -443,14 +443,6 @@
 		"requiredTech": "Theology"
 	},
 	{
-		"name": "Monastery",
-		"maintenance": 0,
-		"requiredNearbyImprovedResources": ["Wine","Incense"],
-		"uniques": ["[+2 Culture] from [Wine] tiles [in this city]", "[+2 Culture] from [Incense] tiles [in this city]"],
-		"hurryCostModifier": 25,
-		"requiredTech": "Theology"
-	},
-	{
 		"name": "Hagia Sophia",
 		"culture": 1,
 		"greatPersonPoints": {"Great Artist": 1},
@@ -1122,5 +1114,41 @@
 		"isNationalWonder": true,
 		"uniques": ["Hidden until [5] social policy branches have been completed", "Triggers a global alert upon build start",
 			"Triggers a Cultural Victory upon completion", "Hidden when [Cultural] Victory is disabled"]
-	}
+	},
+	
+	// Religious buildings
+	
+	{
+		"name": "Cathedral",
+		"cost": 0,
+		"faith": 1,
+		"culture": 3,
+		"happiness": 1,
+		"specialistSlots": {"Artist": 1},
+		"uniques": ["Unbuildable"]
+	},
+	{
+		"name": "Monastery",
+		"cost": 0,
+		"culture": 2,
+		"faith": 2,
+		"uniques": ["[+1 Culture, +1 Faith] from [Wine] tiles [in this city]", 
+			"[+1 Culture, +1 Faith] from [Incense] tiles [in this city]","Unbuildable"]
+	},
+	{
+		"name": "Mosque",
+		"cost": 0,
+		"culture": 2,
+		"faith": 3,
+		"happiness": 1,
+		"uniques": ["Unbuildable"]
+	},
+	{
+		"name": "Pagoda",
+		"cost": 0,
+		"culture": 2,
+		"faith": 2,
+		"happiness": 2,
+		"uniques": ["Unbuildable"]
+	},
 ]

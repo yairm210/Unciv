@@ -201,7 +201,34 @@ class Building : NamedStats(), INonPerpetualConstruction, ICivilopediaText {
 
     override fun canBePurchasedWithStat(cityInfo: CityInfo, stat: Stat, ignoreCityRequirements: Boolean): Boolean {
         if (stat == Stat.Gold && isAnyWonder()) return false
+        // May buy [buildingFilter] buildings for [amount] [Stat] [cityFilter]
+        if (cityInfo.getMatchingUniques("May buy [] buildings for [] [] []")
+                .any { it.params[2] == stat.name && matchesFilter(it.params[0]) && cityInfo.matchesFilter(it.params[3]) }
+        ) return true
         return super.canBePurchasedWithStat(cityInfo, stat, ignoreCityRequirements)
+    }
+
+    override fun getBaseBuyCost(cityInfo: CityInfo, stat: Stat): Int? {
+        if (stat == Stat.Gold) return getBaseGoldCost(cityInfo.civInfo).toInt()
+
+        val lowestCostFromUnique = 
+            (
+                // Can be purchased for [amount] [Stat] [cityFilter]
+                getMatchingUniques("Can be purchased for [] [] []")
+                    .filter { it.params[1] == stat.name && cityInfo.matchesFilter(it.params[2]) }
+                    .map { it.params[0].toInt() }
+                // May buy [buildingFilter] buildings for [amount] [Stat] [cityFilter]
+                + cityInfo.getMatchingUniques("May buy [] buildings for [] [] []")
+                    .filter { it.params[2] == stat.name && matchesFilter(it.params[0]) && cityInfo.matchesFilter(it.params[3])}
+                    .map { it.params[1].toInt() }
+            ).minOrNull()
+        if (lowestCostFromUnique != null) return lowestCostFromUnique
+
+        // Can be purchased with [Stat] [cityFilter]
+        if (getMatchingUniques("Can be purchased with [] []")
+                .any { it.params[0] == stat.name && cityInfo.matchesFilter(it.params[1])}
+        ) return cityInfo.civInfo.gameInfo.ruleSet.eras[cityInfo.civInfo.getEra()]!!.baseUnitBuyCost
+        return null
     }
 
     override fun getCivilopediaTextHeader() = FormattedLine(name, header=2, icon=makeLink())
@@ -355,7 +382,7 @@ class Building : NamedStats(), INonPerpetualConstruction, ICivilopediaText {
 
     override fun getStatBuyCost(cityInfo: CityInfo, stat: Stat): Int? {
         var cost = getBaseBuyCost(cityInfo, stat)?.toDouble()
-        if (cost == null) return null
+        if (cost == null) { println(name); return null}
 
         // Deprecated since 3.15.15
             if (stat == Stat.Gold) {

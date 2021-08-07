@@ -23,7 +23,7 @@ interface INonPerpetualConstruction : IConstruction, INamed {
     fun getProductionCost(civInfo: CivilizationInfo): Int
     fun getStatBuyCost(cityInfo: CityInfo, stat: Stat): Int?
     
-    private fun getMatchingUniques(uniqueTemplate: String): Sequence<Unique> {
+    fun getMatchingUniques(uniqueTemplate: String): Sequence<Unique> {
         return uniqueObjects.asSequence().filter { it.placeholderText == uniqueTemplate }
     }
     
@@ -51,7 +51,6 @@ interface INonPerpetualConstruction : IConstruction, INamed {
         return (30.0 * getProductionCost(civInfo)).pow(0.75) * (1 + hurryCostModifier / 100f)
     }
     
-    // I can't make this function protected or private :(
     fun getBaseBuyCost(cityInfo: CityInfo, stat: Stat): Int? {
         if (stat == Stat.Gold) return getBaseGoldCost(cityInfo.civInfo).toInt()
 

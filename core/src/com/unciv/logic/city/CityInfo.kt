@@ -595,6 +595,10 @@ class CityInfo {
             "in all cities in which the majority religion is a major religion" -> 
                 religion.getMajorityReligion() != null
                 && civInfo.gameInfo.religions[religion.getMajorityReligion()]!!.isMajorReligion()
+            // This is only used in communication to the user indicating that only in cities with this
+            // religion a unique is active. However, since religion uniques only come from the city itself,
+            // this will always be true when checked.
+            "in cities following this religion" -> true
             else -> false
         }
     }
