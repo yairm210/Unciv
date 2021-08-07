@@ -95,6 +95,28 @@ object UniqueTriggerActivation {
                 }
                 return true
             }
+            // Differs from "Free [] appears" in that it spawns near the ruins instead of in a city
+            "Free [] found in the ruins" -> {
+                val unit = civInfo.getEquivalentUnit(unique.params[0])
+                val placingTile =
+                    tile ?: civInfo.cities.random().getCenterTile()
+
+                val placedUnit = civInfo.placeUnitNearTile(placingTile.position, unit.name)
+                if (notification != null && placedUnit != null) {
+                    val notificationText =
+                        if (notification.hasPlaceholderParameters())
+                            notification.fillPlaceholders(unique.params[0])
+                        else notification
+                    civInfo.addNotification(
+                        notificationText,
+                        placedUnit.getTile().position,
+                        placedUnit.name
+                    )
+                }
+
+                return placedUnit != null
+            }
+            
             // spectators get all techs at start of game, and if (in a mod) a tech gives a free policy, the game gets stuck on the policy picker screen
             "Free Social Policy" -> {
                 if (civInfo.isSpectator()) return false
@@ -313,23 +335,6 @@ object UniqueTriggerActivation {
 
             // Note that the way this is implemented now, this unique does NOT stack
             // I could parametrize the [Allied], but eh.
-
-            // Differs from "Free [] appears" in that it spawns near the ruins instead of in a city
-            "Free [] found in the ruins" -> {
-                val unit = civInfo.getEquivalentUnit(unique.params[0])
-                val placingTile =
-                    tile ?: civInfo.cities.random().getCenterTile()
-
-                val placedUnit = civInfo.placeUnitNearTile(placingTile.position, unit.name)
-                if (notification != null && placedUnit != null)
-                    civInfo.addNotification(
-                        notification,
-                        placedUnit.getTile().position,
-                        placedUnit.name
-                    )
-
-                return placedUnit != null
-            }
 
             "Gain [] []" -> {
                 if (Stat.values().none { it.name == unique.params[1] }) return false

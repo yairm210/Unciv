@@ -6,13 +6,13 @@
     },
     {
         "name": "joinWorker",
-        "notification": "A worker has joined us!",
+        "notification": "A [Worker] has joined us!",
         "uniques": ["Free [Worker] found in the ruins"],
         "excludedDifficulties": ["Prince", "King", "Emperor", "Immortal", "Deity"]
     },
     {
         "name": "joinSettler",
-        "notification": "A settler has joined us!",
+        "notification": "A [Settler] has joined us!",
         "uniques": ["Free [Settler] found in the ruins"],
         "excludedDifficulties": ["Warlord","Prince","King","Emperor","Immortal","Deity"]
     },
