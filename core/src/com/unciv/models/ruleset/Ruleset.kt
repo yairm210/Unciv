@@ -17,6 +17,7 @@ import com.unciv.models.ruleset.unit.UnitType
 import com.unciv.models.stats.INamed
 import com.unciv.models.stats.NamedStats
 import com.unciv.models.stats.Stat
+import com.unciv.models.translations.tr
 import com.unciv.ui.utils.colorFromRGB
 import kotlin.collections.set
 
@@ -244,14 +245,15 @@ class Ruleset {
     fun getSummary(): String {
         val stringList = ArrayList<String>()
         if (modOptions.isBaseRuleset) stringList += "Base Ruleset"
-        if (technologies.isNotEmpty()) stringList.add(technologies.size.toString() + " Techs")
-        if (nations.isNotEmpty()) stringList.add(nations.size.toString() + " Nations")
-        if (units.isNotEmpty()) stringList.add(units.size.toString() + " Units")
-        if (buildings.isNotEmpty()) stringList.add(buildings.size.toString() + " Buildings")
-        if (tileResources.isNotEmpty()) stringList.add(tileResources.size.toString() + " Resources")
-        if (tileImprovements.isNotEmpty()) stringList.add(tileImprovements.size.toString() + " Improvements")
-        if (beliefs.isNotEmpty()) stringList.add(beliefs.size.toString() + " Beliefs")
-        return stringList.joinToString()
+        if (technologies.isNotEmpty()) stringList += "[${technologies.size}] Techs"
+        if (nations.isNotEmpty()) stringList += "[${nations.size}] Nations"
+        if (units.isNotEmpty()) stringList += "[${units.size}] Units"
+        if (buildings.isNotEmpty()) stringList += "[${buildings.size}] Buildings"
+        if (tileResources.isNotEmpty()) stringList += "[${tileResources.size}] Resources"
+        if (tileImprovements.isNotEmpty()) stringList += "[${tileImprovements.size}] Improvements"
+        if (religions.isNotEmpty()) stringList += "[${religions.size}] Religions"
+        if (beliefs.isNotEmpty()) stringList += "[${beliefs.size}] Beliefs"
+        return stringList.joinToString { it.tr() }
     }
 
     /** Severity level of Mod RuleSet check */
