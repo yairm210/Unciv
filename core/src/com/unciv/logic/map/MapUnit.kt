@@ -8,6 +8,7 @@ import com.unciv.logic.automation.WorkerAutomation
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.LocationAction
 import com.unciv.logic.civilization.NotificationIcon
+import com.unciv.models.UnitActionType
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.Unique
 import com.unciv.models.ruleset.tile.TileImprovement
@@ -73,6 +74,9 @@ class MapUnit {
 
     @Transient
     var paradropRange = 0
+    
+    @Transient
+    var hasUniqueToBuildImprovements = false    // not canBuildImprovements to avoid confusion
 
     lateinit var owner: String
 
@@ -163,15 +167,20 @@ class MapUnit {
         return movement
     }
 
+
     // This SHOULD NOT be a hashset, because if it is, then promotions with the same text (e.g. barrage I, barrage II)
     //  will not get counted twice!
     @Transient
-    var tempUniques = ArrayList<Unique>()
+    private var tempUniques = ArrayList<Unique>()
 
     fun getUniques(): ArrayList<Unique> = tempUniques
 
     fun getMatchingUniques(placeholderText: String): Sequence<Unique> =
         tempUniques.asSequence().filter { it.placeholderText == placeholderText }
+
+    fun hasUnique(unique: String): Boolean {
+        return getUniques().any { it.placeholderText == unique }
+    }
 
     fun updateUniques() {
         val uniques = ArrayList<Unique>()
@@ -187,7 +196,7 @@ class MapUnit {
 
         //todo: parameterize [terrainFilter] in 5 to 7 of the following:
 
-        // "All tiles costs 1" obsoleted in 3.11.18
+        // "All tiles costs 1" obsoleted in 3.11.18 - keyword: Deprecate
         allTilesCosts1 = hasUnique("All tiles cost 1 movement") || hasUnique("All tiles costs 1")
         canPassThroughImpassableTiles = hasUnique("Can pass through impassable tiles")
         ignoresTerrainCost = hasUnique("Ignores terrain cost")
@@ -199,10 +208,8 @@ class MapUnit {
         canEnterIceTiles = hasUnique("Can enter ice tiles")
         cannotEnterOceanTiles = hasUnique("Cannot enter ocean tiles")
         cannotEnterOceanTilesUntilAstronomy = hasUnique("Cannot enter ocean tiles until Astronomy")
-    }
-
-    fun hasUnique(unique: String): Boolean {
-        return getUniques().any { it.placeholderText == unique }
+        // Constants.workerUnique deprecated since 3.15.5
+        hasUniqueToBuildImprovements = hasUnique(Constants.canBuildImprovements) || hasUnique(Constants.workerUnique)
     }
 
     fun copyStatisticsTo(newUnit: MapUnit) {
@@ -258,16 +265,24 @@ class MapUnit {
         civInfo.updateViewableTiles() // for the civ
     }
 
-    fun isFortified() = action?.startsWith("Fortify") == true
+    fun isActionUntilHealed() = action?.endsWith("until healed") == true
 
-    fun isFortifyingUntilHealed() = isFortified() && action?.endsWith("until healed") == true
+    fun isFortified() = action?.startsWith(UnitActionType.Fortify.value) == true
+    fun isFortifyingUntilHealed() = isFortified() && isActionUntilHealed()
 
-    fun isSleeping() = action?.startsWith("Sleep") == true
-
-    fun isSleepingUntilHealed() = isSleeping() && action?.endsWith("until healed") == true
+    fun isSleeping() = action?.startsWith(UnitActionType.Sleep.value) == true
+    fun isSleepingUntilHealed() = isSleeping() && isActionUntilHealed()
 
     fun isMoving() = action?.startsWith("moveTo") == true
     
+    fun isAutomated() = action == UnitActionType.Automate.value
+    fun isExploring() = action == UnitActionType.Explore.value
+    fun isPreparingParadrop() = action == UnitActionType.Paradrop.value
+    fun isSetUpForSiege() = action == UnitActionType.SetUp.value
+
+    /** For display in Unit Overview */
+    fun getActionLabel() = if (action == null) "" else if (isFortified()) UnitActionType.Fortify.value else action!!
+
     fun isCivilian() = baseUnit.isCivilian()
 
     fun getFortificationTurns(): Int {
@@ -275,6 +290,7 @@ class MapUnit {
         return action!!.split(" ")[1].toInt()
     }
 
+    // debug helper (please update comment if you see some "$unit" using this)
     override fun toString() = "$name - $owner"
 
 
@@ -287,11 +303,7 @@ class MapUnit {
         // unique "Can construct roads" deprecated since 3.15.5
             if (hasUnique("Can construct roads") && currentTile.improvementInProgress == RoadStatus.Road.name) return false
         //
-        if (isFortified()) return false
-        if (action == Constants.unitActionExplore || isSleeping()
-            || action == Constants.unitActionAutomation || isMoving()
-        ) return false
-        return true
+        return !(isFortified() || isExploring() || isSleeping() || isAutomated() || isMoving())
     }
 
     fun maxAttacksPerTurn(): Int {
@@ -459,9 +471,9 @@ class MapUnit {
             return
         }
 
-        if (action == Constants.unitActionAutomation) WorkerAutomation(this).automateWorkerAction()
+        if (isAutomated()) WorkerAutomation(this).automateWorkerAction()
 
-        if (action == Constants.unitActionExplore) UnitAutomation.automatedExplore(this)
+        if (isExploring()) UnitAutomation.automatedExplore(this)
     }
 
 
@@ -613,11 +625,11 @@ class MapUnit {
         ) heal()
 
         if (action != null && health > 99)
-            if (action!!.endsWith(" until healed")) {
+            if (isActionUntilHealed()) {
                 action = null // wake up when healed
             }
 
-        if (action == Constants.unitActionParadrop)
+        if (isPreparingParadrop())
             action = null
 
         getCitadelDamage()
@@ -922,7 +934,7 @@ class MapUnit {
 
     fun actionsOnDeselect() {
         showAdditionalActions = false
-        if (action == Constants.unitActionParadrop) action = null
+        if (isPreparingParadrop()) action = null
     }
 
     //endregion

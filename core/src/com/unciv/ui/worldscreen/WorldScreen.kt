@@ -482,8 +482,7 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Cam
 
         displayTutorial(Tutorial.Workers) {
             gameInfo.getCurrentPlayerCivilization().getCivUnits().any {
-                (it.hasUnique(Constants.canBuildImprovements) || it.hasUnique(Constants.workerUnique))
-                    && it.isCivilian()
+                it.hasUniqueToBuildImprovements && it.isCivilian()
             }
         }
     }

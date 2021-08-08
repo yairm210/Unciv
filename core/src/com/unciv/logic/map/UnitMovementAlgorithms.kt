@@ -86,7 +86,7 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
                         if (!canPassThrough(neighbor))
                             totalDistanceToTile = unitMovement // Can't go here.
                         // The reason that we don't just "return" is so that when calculating how to reach an enemy,
-                        // You need to assume his tile is reachable, otherwise all movement algs on reaching enemy
+                        // You need to assume his tile is reachable, otherwise all movement algorithms on reaching enemy
                         // cities and units goes kaput.
 
                         else {
@@ -179,7 +179,7 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
         if (currentTile == finalDestination) return currentTile
 
         // If we can fly, head there directly
-        if (unit.baseUnit.movesLikeAirUnits() || unit.action == Constants.unitActionParadrop) return finalDestination
+        if (unit.baseUnit.movesLikeAirUnits() || unit.isPreparingParadrop()) return finalDestination
 
         val distanceToTiles = getDistanceToTiles()
 
@@ -217,7 +217,7 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
     /** This is performance-heavy - use as last resort, only after checking everything else!
      * Also note that REACHABLE tiles are not necessarily tiles that the unit CAN ENTER */
     fun canReach(destination: TileInfo): Boolean {
-        if (unit.baseUnit.movesLikeAirUnits() || unit.action == Constants.unitActionParadrop)
+        if (unit.baseUnit.movesLikeAirUnits() || unit.isPreparingParadrop())
             return canReachInCurrentTurn(destination)
         return getShortestPath(destination).any()
     }
@@ -225,7 +225,7 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
     fun canReachInCurrentTurn(destination: TileInfo): Boolean {
         if (unit.baseUnit.movesLikeAirUnits())
             return unit.currentTile.aerialDistanceTo(destination) <= unit.getRange()*2
-        if (unit.action == Constants.unitActionParadrop)
+        if (unit.isPreparingParadrop())
             return getDistance(unit.currentTile.position, destination.position) <= unit.paradropRange && canParadropOn(destination)
         return getDistanceToTiles().containsKey(destination)
     }
@@ -234,7 +234,7 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
         return when {
             unit.baseUnit.movesLikeAirUnits() ->
                 unit.getTile().getTilesInDistanceRange(IntRange(1, unit.getRange() * 2))
-            unit.action == Constants.unitActionParadrop ->
+            unit.isPreparingParadrop() ->
                 unit.getTile().getTilesInDistance(unit.paradropRange)
                     .filter { unit.movement.canParadropOn(it) }
             else ->
@@ -333,7 +333,7 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
             unit.putInTile(destination)
             unit.currentMovement = 0f
             return
-        } else if (unit.action == Constants.unitActionParadrop) { // paradropping units move differently
+        } else if (unit.isPreparingParadrop()) { // paradropping units move differently
             unit.action = null
             unit.removeFromTile()
             unit.putInTile(destination)
@@ -362,8 +362,8 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
             unit.currentMovement -= distanceToTiles[lastReachableTile]!!.totalDistance
             if (unit.currentMovement < 0.1) unit.currentMovement = 0f // silly floats which are "almost zero"
         }
-        if (unit.isFortified() || unit.action == Constants.unitActionSetUp || unit.isSleeping())
-            unit.action = null // unfortify/setup after moving
+        if (unit.isFortified() || unit.isSetUpForSiege() || unit.isSleeping())
+            unit.action = null // un-fortify/un-setup after moving
 
         // If this unit is a carrier, keep record of its air payload whereabouts.
         val origin = unit.getTile()

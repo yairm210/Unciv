@@ -92,11 +92,10 @@ object UnitAutomation {
             if (unit.hasUnique(Constants.settlerUnique))
                 return SpecificUnitAutomation.automateSettlerActions(unit)
 
-            // Constants.workerUnique deprecated since 3.15.5
-            if (unit.hasUnique(Constants.canBuildImprovements) || unit.hasUnique(Constants.workerUnique))
+            if (unit.hasUniqueToBuildImprovements)
                 return WorkerAutomation(unit).automateWorkerAction()
 
-            if (unit.name == "Work Boats") // This is really not modular
+            if (unit.name == "Work Boats") //todo This is really not modular
                 return SpecificUnitAutomation.automateWorkBoats(unit)
 
             if (unit.hasUnique("Bonus for units in 2 tile radius 15%"))
