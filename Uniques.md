@@ -17,6 +17,7 @@
 - [Religion uniques](#religion-uniques)
 - [Improvement uniques](#improvement-uniques)
 - [Unit uniques](#unit-uniques)
+  * [One time effect units](#one-time-effect-units)
   * [Civilian](#civilian)
   * [Visibility](#visibility)
   * [Movement](#movement)
@@ -202,7 +203,7 @@ For units, the UnitFilter is called. For Buildings, the following options are im
 
 "[amount] free [unitName] units appear", "Free [unitName] appears" - Self explanatory. If given to a building, the units will appear next to the city the building was constructed in. If the specified unit can construct cities, the unique will not activate for One-City Challenge players.
 
-"Free Great Person" - Same. Great Person DOES NOT count towards your Great Person generation.
+"Free Great Person" - Same. Great Person does NOT count towards your Great Person generation.
 
 "Receive free [unitName] when you discover [techName]" - this is rather special, as it's activated not when you receive the unique, but rather when the specified tech is researched.
 
@@ -226,11 +227,32 @@ For units, the UnitFilter is called. For Buildings, the following options are im
 
 "[amount] population [cityfilter]" - e.g.: [-2] population [in all cities]
 
+"[amount] population in a random city" - Population appears in a single randomly chosen city
+
+"[amount] free random researchable Tech(s) from the [eraName]" - Grants [amount] techs that you can currently research from the [eraName] era. If you have no such techs, this will have no effect
+
+"Gain [amount] [Stat]"
+
+"Gain [amount]-[amount] Stat" - Will make you gain a random amount of [Stat] between the two provided values
+
+"Gain enough Faith for a Pantheon"
+
+"Gain enough Faith for [amount]% of a Great Prophet"
+
+"Reveal up to [amount or "All"] [tileFilter] within a [amount] tile radius" - Used for revealing barbarian encampments in base game ruins
+
+"From a randomly chosen tile [amount] tiles away from the ruins, reveal tiles up to [amount] tiles away with [amount]% chance"
+
+
 "Triggers a global alert" - Can only be used as a unique for a policy. All players receive the following notification: "[civilizationName] has adopted the [policyName] policy"
 
 "Triggers the following global alert: [param1]" - Can only be used as a unique for a policy. [param1] can be any sentence. All player receive the following notification: 
 "[civilizationName] has adopted the [policyName] policy 
 [param1]"
+
+"Triggers voting for the Diplomatic Victory"
+
+
 
 ### Unit-affecting uniques
 
@@ -354,6 +376,8 @@ For units, the UnitFilter is called. For Buildings, the following options are im
 
 These last two uniques may seem like they only have a one-time effect. However, the 'free' also means that you don't pay any maintenance costs for these buildings. 
 
+"Hidden when religion is disabled" - Removes units, buildings or ancient ruin rewards from the game when religion is disabled
+
 "+[amount]% attacking strength for cities with garrisoned units"
 
 "+[amount]% defensive strength for cities"
@@ -369,6 +393,8 @@ These last two uniques may seem like they only have a one-time effect. However, 
 "Retain [amount]% of the happiness from a luxury after the last copy has been traded away"
 
 "When declaring friendship, both parties gain a [amount]% boost to great people generation"
+
+"Hidden after generating a Great Prophet" - Used for ancient ruins to disable a reward after generating a great prophet
 
 ## Buildings-only
 
@@ -430,8 +456,6 @@ These last two uniques may seem like they only have a one-time effect. However, 
 
 "Hidden until [amount] social policy branches have been completed"
 
-"Hidden when religion is disabled" - Also hides the building from the tech tree. 
-
 ## Religion uniques
 
 ### Follower uniques
@@ -478,7 +502,25 @@ Follower uniques are uniques applied to each city following a religion which inc
 
 "Indestructable" - Cannot be removed by nukes (might be used more later, for now only this)
 
+"Provides a random bonus when entered" - Effectively makes this improvement ancient ruins, including it being removed when it is entered.
+
 ## Unit uniques
+
+### One time effect units
+
+May be added in promotions or ancient ruins equivalents
+
+
+"Heal this unit by [] HP"
+
+"This Unit gains [] XP"
+
+"This Unit upgrades for free"
+
+"This Unit upgrades for free including special upgrades" - For example scout -> archer in the base game
+
+"This Unit gains the [] promotion"
+
 
 ### Civilian
 
@@ -636,6 +678,8 @@ Follower uniques are uniques applied to each city following a religion which inc
 "Earn [amount]% of the damage done to [unitFilter] units as [Stat]" - stat must be Gold, Culture, Science or Faith. If a unit would do more damage than the defender has health, the damage will instead be the health the defender had left before attacking.
 
 "Religious unit" - Will make sure that the unit has a religion upon being built/purchased in a city with a religion
+
+"May upgrade to [unitName] through ruins-like effects"
 
 # Terrain uniques
 
