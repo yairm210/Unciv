@@ -7,6 +7,7 @@ import com.unciv.logic.GameInfo
 import com.unciv.logic.UncivShowableException
 import com.unciv.logic.automation.NextTurnAutomation
 import com.unciv.logic.city.CityInfo
+import com.unciv.logic.civilization.RuinsManager.RuinsManager
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomacyManager
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
@@ -86,6 +87,7 @@ class CivilizationInfo {
     var goldenAges = GoldenAgeManager()
     var greatPeople = GreatPersonManager()
     var victoryManager = VictoryManager()
+    var ruinsManager = RuinsManager()
     var diplomacy = HashMap<String, DiplomacyManager>()
     var notifications = ArrayList<Notification>()
     val popupAlerts = ArrayList<PopupAlert>()
@@ -133,6 +135,7 @@ class CivilizationInfo {
         toReturn.questManager = questManager.clone()
         toReturn.goldenAges = goldenAges.clone()
         toReturn.greatPeople = greatPeople.clone()
+        toReturn.ruinsManager = ruinsManager.clone()
         toReturn.victoryManager = victoryManager.clone()
         toReturn.allyCivName = allyCivName
         for (diplomacyManager in diplomacy.values.map { it.clone() })
@@ -510,6 +513,7 @@ class CivilizationInfo {
         tech.civInfo = this
         tech.setTransients()
 
+        ruinsManager.setTransients(this)
 
         for (diplomacyManager in diplomacy.values) {
             diplomacyManager.civInfo = this

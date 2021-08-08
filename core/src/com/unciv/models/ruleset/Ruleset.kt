@@ -17,6 +17,7 @@ import com.unciv.models.ruleset.unit.UnitType
 import com.unciv.models.stats.INamed
 import com.unciv.models.stats.NamedStats
 import com.unciv.models.stats.Stat
+import com.unciv.models.translations.tr
 import com.unciv.ui.utils.colorFromRGB
 import kotlin.collections.set
 
@@ -40,7 +41,7 @@ class ModOptions {
     var modSize = 0
     
     val maxXPfromBarbarians = 30
-    var uniques = HashSet<String>()
+    var uniques = HashSet<String>()     // No reason for now to use IHasUniques here, in that case needs to change to ArrayList
 }
 
 class Ruleset {
@@ -51,13 +52,14 @@ class Ruleset {
 
     var name = ""
     val beliefs = LinkedHashMap<String, Belief>()
-    val religions = ArrayList<String>()
     val buildings = LinkedHashMap<String, Building>()
     val difficulties = LinkedHashMap<String, Difficulty>()
     val eras = LinkedHashMap<String, Era>()
     val nations = LinkedHashMap<String, Nation>()
     val policies = LinkedHashMap<String, Policy>()
     val policyBranches = LinkedHashMap<String, PolicyBranch>()
+    val religions = ArrayList<String>()
+    val ruinRewards = LinkedHashMap<String, RuinReward>()
     val quests = LinkedHashMap<String, Quest>()
     val specialists = LinkedHashMap<String, Specialist>()
     val technologies = LinkedHashMap<String, Technology>()
@@ -96,6 +98,7 @@ class Ruleset {
         beliefs.putAll(ruleset.beliefs)
         quests.putAll(ruleset.quests)
         religions.addAll(ruleset.religions)
+        ruinRewards.putAll(ruleset.ruinRewards)
         specialists.putAll(ruleset.specialists)
         technologies.putAll(ruleset.technologies)
         for (techToRemove in ruleset.modOptions.techsToRemove) technologies.remove(techToRemove)
@@ -121,6 +124,7 @@ class Ruleset {
         nations.clear()
         policies.clear()
         religions.clear()
+        ruinRewards.clear()
         quests.clear()
         technologies.clear()
         terrains.clear()
@@ -209,6 +213,10 @@ class Ruleset {
         if (religionsFile.exists())
             religions += jsonParser.getFromJson(Array<String>::class.java, religionsFile).toList()
 
+        val ruinRewardsFile = folderHandle.child("Ruins.json")
+        if (ruinRewardsFile.exists())
+            ruinRewards += createHashmap(jsonParser.getFromJson(Array<RuinReward>::class.java, ruinRewardsFile))
+        
         val nationsFile = folderHandle.child("Nations.json")
         if (nationsFile.exists()) {
             nations += createHashmap(jsonParser.getFromJson(Array<Nation>::class.java, nationsFile))
@@ -244,14 +252,15 @@ class Ruleset {
     fun getSummary(): String {
         val stringList = ArrayList<String>()
         if (modOptions.isBaseRuleset) stringList += "Base Ruleset"
-        if (technologies.isNotEmpty()) stringList.add(technologies.size.toString() + " Techs")
-        if (nations.isNotEmpty()) stringList.add(nations.size.toString() + " Nations")
-        if (units.isNotEmpty()) stringList.add(units.size.toString() + " Units")
-        if (buildings.isNotEmpty()) stringList.add(buildings.size.toString() + " Buildings")
-        if (tileResources.isNotEmpty()) stringList.add(tileResources.size.toString() + " Resources")
-        if (tileImprovements.isNotEmpty()) stringList.add(tileImprovements.size.toString() + " Improvements")
-        if (beliefs.isNotEmpty()) stringList.add(beliefs.size.toString() + " Beliefs")
-        return stringList.joinToString()
+        if (technologies.isNotEmpty()) stringList += "[${technologies.size}] Techs"
+        if (nations.isNotEmpty()) stringList += "[${nations.size}] Nations"
+        if (units.isNotEmpty()) stringList += "[${units.size}] Units"
+        if (buildings.isNotEmpty()) stringList += "[${buildings.size}] Buildings"
+        if (tileResources.isNotEmpty()) stringList += "[${tileResources.size}] Resources"
+        if (tileImprovements.isNotEmpty()) stringList += "[${tileImprovements.size}] Improvements"
+        if (religions.isNotEmpty()) stringList += "[${religions.size}] Religions"
+        if (beliefs.isNotEmpty()) stringList += "[${beliefs.size}] Beliefs"
+        return stringList.joinToString { it.tr() }
     }
 
     /** Severity level of Mod RuleSet check */
@@ -304,6 +313,12 @@ class Ruleset {
         for (building in buildings.values) {
             if (building.requiredTech == null && building.cost == 0)
                 lines += "${building.name} must either have an explicit cost or reference an existing tech!"
+        }
+        
+        for (nation in nations.values) {
+            if (nation.cities.isEmpty() && !nation.isSpectator() && !nation.isBarbarian()) {
+                lines += "${nation.name} can settle cities, but has no city names!"
+            }
         }
 
         if (!modOptions.isBaseRuleset) return CheckModLinksResult(warningCount, lines)
@@ -480,8 +495,14 @@ object RulesetCache : HashMap<String,Ruleset>() {
         }
         newRuleset.updateBuildingCosts() // only after we've added all the mods can we calculate the building costs
 
+        // This one should be temporary
         if (newRuleset.unitTypes.isEmpty()) {
             newRuleset.unitTypes.putAll(getBaseRuleset().unitTypes)
+        }
+        
+        // This one should be permanent
+        if (newRuleset.ruinRewards.isEmpty()) {
+            newRuleset.ruinRewards.putAll(getBaseRuleset().ruinRewards)
         }
         
         return newRuleset

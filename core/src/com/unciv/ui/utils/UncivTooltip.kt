@@ -152,6 +152,7 @@ class UncivTooltip <T: Actor>(
          * 
          * Tip is positioned over top right corner, slightly overshooting the receiver widget, longer tip [text]s will extend to the left.
          * 
+         * @param text Automatically translated tooltip text
          * @param size _Vertical_ size of the entire Tooltip including background
          * @param always override requirement: presence of physical keyboard
          */

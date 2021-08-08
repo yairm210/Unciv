@@ -223,7 +223,7 @@ open class TileInfo {
             else
                 stats.add(terrainFeatureBase)
         }
-
+        
         if (city != null) {
             var tileUniques = city.getMatchingUniques("[] from [] tiles []")
                 .filter { city.matchesFilter(it.params[2]) }
@@ -236,6 +236,9 @@ open class TileInfo {
                 if (tileType == improvement) continue // This is added to the calculation in getImprovementStats. we don't want to add it twice
                 if (matchesTerrainFilter(tileType, observingCiv)) 
                     stats.add(unique.stats)
+                if (tileType == "Natural Wonder" && naturalWonder != null && city.civInfo.hasUnique("Tile yields from Natural Wonders doubled")) {
+                    stats.add(unique.stats)
+                }
             }
             
             for (unique in city.getMatchingUniques("[] from [] tiles without [] []")) 

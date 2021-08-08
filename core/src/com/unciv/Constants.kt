@@ -45,7 +45,6 @@ object Constants {
     const val fountainOfYouth = "Fountain of Youth"
 
     const val barbarianEncampment = "Barbarian encampment"
-    const val ancientRuins = "Ancient ruins"
 
     const val peaceTreaty = "Peace Treaty"
     const val researchAgreement = "Research Agreement"

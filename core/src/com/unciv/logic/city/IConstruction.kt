@@ -1,6 +1,7 @@
 package com.unciv.logic.city
 
 import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.models.ruleset.IHasUniques
 import com.unciv.models.ruleset.Unique
 import com.unciv.models.stats.INamed
 import com.unciv.models.stats.Stat
@@ -15,13 +16,12 @@ interface IConstruction : INamed {
     fun getResourceRequirements(): HashMap<String,Int>
 }
 
-interface INonPerpetualConstruction : IConstruction, INamed {
+interface INonPerpetualConstruction : IConstruction, INamed, IHasUniques {
     val hurryCostModifier: Int
-    val uniqueObjects: List<Unique>
-    val uniques: List<String>
 
     fun getProductionCost(civInfo: CivilizationInfo): Int
     fun getStatBuyCost(cityInfo: CityInfo, stat: Stat): Int?
+    fun getRejectionReason(cityConstructions: CityConstructions): String
     
     private fun getMatchingUniques(uniqueTemplate: String): Sequence<Unique> {
         return uniqueObjects.asSequence().filter { it.placeholderText == uniqueTemplate }
@@ -40,6 +40,13 @@ interface INonPerpetualConstruction : IConstruction, INamed {
                 .any { it.params[1] == stat.name && ( ignoreCityRequirements || cityInfo.matchesFilter(it.params[2])) }
         ) return true
         return false
+    }
+
+    /** Checks if the construction should be purchasable, not whether it can be bought with a stat at all */
+    fun isPurchasable(cityConstructions: CityConstructions): Boolean {
+        val rejectionReason = getRejectionReason(cityConstructions)
+        return rejectionReason == ""
+                || rejectionReason == "Can only be purchased"
     }
     
     fun canBePurchasedWithAnyStat(cityInfo: CityInfo): Boolean {
@@ -107,7 +114,7 @@ open class PerpetualConstruction(override var name: String, val description: Str
 
     override fun isBuildable(cityConstructions: CityConstructions): Boolean =
             throw Exception("Impossible!")
-
+    
     override fun postBuildEvent(cityConstructions: CityConstructions, wasBought: Boolean) =
             throw Exception("Impossible!")
 

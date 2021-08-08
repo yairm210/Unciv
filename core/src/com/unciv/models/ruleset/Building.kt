@@ -69,10 +69,11 @@ class Building : NamedStats(), INonPerpetualConstruction, ICivilopediaText {
     @Deprecated("As of 3.15.16 - replaced with 'Provides a free [buildingName] [cityFilter]'")
     var providesFreeBuilding: String? = null
     override var uniques = ArrayList<String>()
-    var replacementTextForUniques = ""
     override val uniqueObjects: List<Unique> by lazy { uniques.map { Unique(it) } }
+    var replacementTextForUniques = ""
 
     override var civilopediaText = listOf<FormattedLine>()
+
 
     fun getShortDescription(ruleset: Ruleset): String { // should fit in one line
         val infoList = mutableListOf<String>()
@@ -392,7 +393,7 @@ class Building : NamedStats(), INonPerpetualConstruction, ICivilopediaText {
                 || rejectionReason == "Can only be purchased"
     }
 
-    fun getRejectionReason(construction: CityConstructions): String {
+    override fun getRejectionReason(construction: CityConstructions): String {
         if (construction.isBuilt(name)) return "Already built"
         // for buildings that are created as side effects of other things, and not directly built
         // unless they can be bought with faith
