@@ -16,8 +16,7 @@ class Religion() : INamed {
 
     var founderBeliefs: HashSet<String> = hashSetOf()
     var followerBeliefs: HashSet<String> = hashSetOf()
-
-
+    
     @Transient
     lateinit var gameInfo: GameInfo
 
@@ -60,6 +59,12 @@ class Religion() : INamed {
             .asSequence()
     }
     
+    fun getFounderBeliefs(): Sequence<Belief> {
+        return mapToExistingBeliefs(founderBeliefs)
+            .filter { it.type == BeliefType.Founder }
+            .asSequence()
+    }
+    
     private fun getUniquesOfBeliefs(beliefs: HashSet<String>): Sequence<Unique> {
         return mapToExistingBeliefs(beliefs)
             .map { it.uniqueObjects }
@@ -80,7 +85,6 @@ class Religion() : INamed {
     }
 
     fun isMajorReligion(): Boolean {
-        if ("" in followerBeliefs) return true // Temporary as a result of follower beliefs not yet being implemented
         return founderBeliefs.isNotEmpty() && followerBeliefs
             .any { gameInfo.ruleSet.beliefs[it]!!.type == BeliefType.Follower}
     }

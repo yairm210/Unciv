@@ -220,6 +220,14 @@ object ImageGetter {
         } else getCircle().apply { color = nation.getOuterColor() }
                 .surroundWithCircle(size).apply { circle.color = nation.getInnerColor() }
     }
+    
+    fun getRandomNationIndicator(size: Float): IconCircleGroup {
+        return "?"
+            .toLabel(Color.WHITE, (size * 5f/8f).toInt())
+            .apply { this.setAlignment(Align.center) }
+            .surroundWithCircle(size * 0.9f).apply { circle.color = Color.BLACK }
+            .surroundWithCircle(size, false).apply { circle.color = Color.WHITE }
+    }
 
     private fun nationIconExists(nation: String) = imageExists("NationIcons/$nation")
     fun getNationIcon(nation: String) = getImage("NationIcons/$nation")
