@@ -15,8 +15,9 @@ import kotlin.random.Random
 
 class MapGenerator(val ruleset: Ruleset) {
     companion object {
-        const val consoleOutput = true
-        private const val consoleTimings = true
+        // temporary instrumentation while tuning/debugging
+        const val consoleOutput = false
+        private const val consoleTimings = false
     }
     
     private var randomness = MapGenerationRandomness()
@@ -46,7 +47,7 @@ class MapGenerator(val ruleset: Ruleset) {
             return map
         }
 
-        if (consoleTimings) println("\nMapGenerator run with parameters $mapParameters")
+        if (consoleOutput || consoleTimings) println("\nMapGenerator run with parameters $mapParameters")
         runAndMeasure("MapLandmassGenerator") {
             MapLandmassGenerator(ruleset, randomness).generateLand(map)
         }
@@ -442,7 +443,7 @@ class MapGenerator(val ruleset: Ruleset) {
     private fun spawnIce(tileMap: TileMap) {
         tileMap.setTransients(ruleset)
         val temperatureSeed = randomness.RNG.nextInt().toDouble()
-        for (tile in tileMap.values.asSequence()) {
+        for (tile in tileMap.values) {
             if (tile.baseTerrain !in Constants.sea || tile.terrainFeatures.isNotEmpty())
                 continue
 
@@ -483,10 +484,13 @@ class MapGenerationRandomness{
 
 
     fun chooseSpreadOutLocations(number: Int, suitableTiles: List<TileInfo>, mapRadius: Int): ArrayList<TileInfo> {
+        if (number <= 0) return ArrayList(0)
+
         // Determine sensible initial distance from number of desired placements and mapRadius
         // empiric formula comes very close to eliminating retries for distance
-        val sparsityFactor = (suitableTiles.size.toDouble() / HexMath.getNumberOfTilesInHexagon(mapRadius)).pow(0.4)
-        val initialDistance = max(1, (mapRadius * 1.2 / number.toDouble().pow(0.4) * sparsityFactor + 0.5).toInt())
+        val sparsityFactor = (HexMath.getHexagonalRadiusForArea(suitableTiles.size) / mapRadius).pow(0.333f)
+        val initialDistance = if (number == 1 || number * 4 >= suitableTiles.size * 3) 1
+            else max(1, (mapRadius * 0.666f / HexMath.getHexagonalRadiusForArea(number).pow(0.9f) * sparsityFactor + 0.5).toInt())
 
         // If possible, we want to equalize the base terrains upon which
         //  the resources are found, so we save how many have been
@@ -515,13 +519,15 @@ class MapGenerationRandomness{
                 chosenTiles.add(chosenTile)
                 baseTerrainsToChosenTiles[firstKeyWithTilesLeft] = baseTerrainsToChosenTiles[firstKeyWithTilesLeft]!! + 1
             }
-            // Either we got them all, or we're not going to get anything better
-            if (chosenTiles.size == number || distanceBetweenResources == 1) return chosenTiles
-//            if (MapGenerator.consoleOutput)
-//                println("chooseSpreadOutLocations: distance $distanceBetweenResources failed, trying one less")
+            if (chosenTiles.size == number || distanceBetweenResources == 1) {
+                // Either we got them all, or we're not going to get anything better
+                if (MapGenerator.consoleOutput && distanceBetweenResources < initialDistance)
+                    println("chooseSpreadOutLocations: distance $distanceBetweenResources < initial $initialDistance")
+                return chosenTiles
+            }
         }
-        // unreachable due to last loop iteration always returning
-        throw Exception("Couldn't choose suitable tiles for $number resources!")
+        // unreachable due to last loop iteration always returning and initialDistance >= 1
+        throw Exception()
     }
 }
 
