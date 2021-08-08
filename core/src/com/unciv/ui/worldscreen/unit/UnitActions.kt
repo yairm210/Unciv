@@ -35,7 +35,9 @@ object UnitActions {
         val actionList = ArrayList<UnitAction>()
 
         if (unit.isMoving()) actionList += UnitAction(UnitActionType.StopMovement) { unit.action = null }
-        if (unit.isAutomaticallyBuildingImprovements())
+        if (unit.action == Constants.unitActionExplore)
+            actionList += UnitAction(UnitActionType.StopExploration) { unit.action = null }
+        if (unit.action == Constants.unitActionAutomation)
             actionList += UnitAction(UnitActionType.StopAutomation) { unit.action = null }
 
         addSleepActions(actionList, unit, false)
@@ -48,14 +50,14 @@ object UnitActions {
         addSetupAction(unit, actionList)
         addFoundCityAction(unit, actionList, tile)
         addBuildingImprovementsAction(unit, actionList, tile, worldScreen, unitTable)
-        addAutomateBuildingImprovementsAction(unit, actionList)
         addCreateWaterImprovements(unit, actionList)
         addGreatPersonActions(unit, actionList, tile)
         addFoundReligionAction(unit, actionList, tile)
         actionList += getImprovementConstructionActions(unit, tile)
         addSpreadReligionActions(unit, actionList, tile)
 
-
+        
+        
         addToggleActionsAction(unit, actionList, unitTable)
 
         return actionList
@@ -71,6 +73,7 @@ object UnitActions {
 
         addSwapAction(unit, actionList, worldScreen)
         addExplorationActions(unit, actionList)
+        addAutomateBuildingImprovementsAction(unit, actionList)
         addDisbandAction(actionList, unit, worldScreen)
         addGiftAction(unit, actionList, tile)
 
@@ -290,7 +293,7 @@ object UnitActions {
                 unit.action = Constants.unitActionExplore
                 if (unit.currentMovement > 0) UnitAutomation.automatedExplore(unit)
             }
-        } else actionList += UnitAction(UnitActionType.StopExploration) { unit.action = null }
+        }
     }
 
     private fun addUnitUpgradeAction(unit: MapUnit, actionList: ArrayList<UnitAction>) {
