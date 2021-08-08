@@ -1,7 +1,6 @@
 package com.unciv.logic.civilization
 
 import com.badlogic.gdx.math.Vector2
-import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
 import com.unciv.logic.UncivShowableException
@@ -622,6 +621,9 @@ class CivilizationInfo {
 
     private fun startTurnFlags() {
         for (flag in flagsCountdown.keys.toList()) {
+            // There are cases where we remove flags while iterating, like ShowDiplomaticVotingResults
+            if (!flagsCountdown.containsKey(flag)) continue
+
             // the "ignoreCase = true" is to catch 'cityStateGreatPersonGift' instead of 'CityStateGreatPersonGift' being in old save files 
             if (flag == CivFlags.CityStateGreatPersonGift.name || flag.equals(CivFlags.CityStateGreatPersonGift.name, ignoreCase = true)) {
                 val cityStateAllies = getKnownCivs().filter { it.isCityState() && it.getAllyCiv() == civName }
