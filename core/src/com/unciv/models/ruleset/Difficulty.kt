@@ -2,7 +2,6 @@ package com.unciv.models.ruleset
 
 import com.unciv.Constants
 import com.unciv.models.stats.INamed
-import com.unciv.models.translations.tr
 import com.unciv.ui.civilopedia.ICivilopediaText
 import com.unciv.ui.civilopedia.FormattedLine
 import com.unciv.ui.utils.Fonts
@@ -34,6 +33,9 @@ class Difficulty: INamed, ICivilopediaText {
     var aiUnhappinessModifier = 1f
     var turnBarbariansCanEnterPlayerTiles = 0
     var clearBarbarianCampReward = 25
+    
+    // property defined in json but so far unused:
+    // var aisExchangeTechs = false
 
     override var civilopediaText = listOf<FormattedLine>()
 
@@ -54,7 +56,18 @@ class Difficulty: INamed, ICivilopediaText {
         lines += FormattedLine("{Policy cost modifier}: ${policyCostModifier.toPercent()}% ${Fonts.culture}", indent = 1)
         lines += FormattedLine("{Unhappiness modifier}: ${unhappinessModifier.toPercent()}%", indent = 1)
         lines += FormattedLine("{Bonus vs. Barbarians}: ${barbarianBonus.toPercent()}% ${Fonts.strength}", indent = 1)
-//        lines += FormattedLine("{Starting units}: $startingUnits", indent = 1)
+
+        if (playerBonusStartingUnits.isNotEmpty()) {
+            lines += FormattedLine()
+            lines += FormattedLine("{Bonus starting units}:", indent = 1)
+            playerBonusStartingUnits.groupBy { it }.map {
+                it.key to it.value.size     // name to Pair.first and count to Pair.second
+            }.forEach {
+                // Through a virtual Unique was the simplest way to prevent white icons showing for stuff like eraSpecificUnit
+                lines += FormattedLine(Unique(if (it.second == 1) "[${it.first}]" else "${it.second} [${it.first}]"), indent = 2)
+            }
+        }
+
         lines += FormattedLine()
         lines += FormattedLine("AI settings", header = 3)
         lines += FormattedLine("{AI city growth modifier}: ${aiCityGrowthModifier.toPercent()}% ${Fonts.food}", indent = 1)
@@ -63,10 +76,34 @@ class Difficulty: INamed, ICivilopediaText {
         lines += FormattedLine("{AI wonder cost modifier}: ${aiWonderCostModifier.toPercent()}% ${Fonts.production}", indent = 1)
         lines += FormattedLine("{AI building maintenance modifier}: ${aiBuildingMaintenanceModifier.toPercent()}% ${Fonts.gold}", indent = 1)
         lines += FormattedLine("{AI unit maintenance modifier}: ${aiUnitMaintenanceModifier.toPercent()}% ${Fonts.gold}", indent = 1)
-//        lines += FormattedLine("{AI free techs}: $aiFreeTechs", indent = 1)
-//        lines += FormattedLine("{AI major civilizations starting units}: $aiMajorCivStartingUnits", indent = 1)
-//        lines += FormattedLine("{AI city-state starting units}: $aiCityStateStartingUnits", indent = 1)
         lines += FormattedLine("{AI unhappiness modifier}: ${aiUnhappinessModifier.toPercent()}%", indent = 1)
+
+        if (aiFreeTechs.isNotEmpty()) {
+            lines += FormattedLine()
+            lines += FormattedLine("{AI free techs}:", indent = 1)
+            aiFreeTechs.forEach {
+                lines += FormattedLine(it, link = "Technology/$it", indent = 2)
+            }
+        }
+        if (aiMajorCivBonusStartingUnits.isNotEmpty()) {
+            lines += FormattedLine()
+            lines += FormattedLine("{Major AI civilization bonus starting units}:", indent = 1)
+            aiMajorCivBonusStartingUnits.groupBy { it }.map { 
+                it.key to it.value.size
+            }.forEach {
+                lines += FormattedLine(Unique(if (it.second == 1) "[${it.first}]" else "${it.second} [${it.first}]"), indent = 2)
+            }
+        }
+        if (aiCityStateBonusStartingUnits.isNotEmpty()) {
+            lines += FormattedLine()
+            lines += FormattedLine("{City state bonus starting units}:", indent = 1)
+            aiCityStateBonusStartingUnits.groupBy { it }.map {
+                it.key to it.value.size
+            }.forEach {
+                lines += FormattedLine(Unique(if (it.second == 1) "[${it.first}]" else "${it.second} [${it.first}]"), indent = 2)
+            }
+        }
+
         lines += FormattedLine()
         lines += FormattedLine("{Turns until barbarians enter player tiles}: $turnBarbariansCanEnterPlayerTiles ${Fonts.turn}")
         lines += FormattedLine("{Gold reward for clearing barbarian camps}: $clearBarbarianCampReward ${Fonts.gold}")
