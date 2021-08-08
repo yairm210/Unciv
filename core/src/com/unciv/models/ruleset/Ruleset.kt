@@ -41,7 +41,7 @@ class ModOptions {
     var modSize = 0
     
     val maxXPfromBarbarians = 30
-    var uniques = HashSet<String>()
+    var uniques = HashSet<String>()     // No reason for now to use IHasUniques here, in that case needs to change to ArrayList
 }
 
 class Ruleset {

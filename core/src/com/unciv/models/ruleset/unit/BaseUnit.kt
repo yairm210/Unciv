@@ -12,20 +12,19 @@ import com.unciv.models.ruleset.Unique
 import com.unciv.models.stats.INamed
 import com.unciv.models.stats.Stat
 import com.unciv.models.translations.tr
-import com.unciv.ui.civilopedia.CivilopediaText
 import com.unciv.ui.civilopedia.FormattedLine
+import com.unciv.ui.civilopedia.ICivilopediaText
 import com.unciv.ui.utils.Fonts
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 import kotlin.collections.HashSet
-import kotlin.math.pow
 
 // This is BaseUnit because Unit is already a base Kotlin class and to avoid mixing the two up
 
 /** This is the basic info of the units, as specified in Units.json,
  in contrast to MapUnit, which is a specific unit of a certain type that appears on the map */
-class BaseUnit : INamed, INonPerpetualConstruction, CivilopediaText() {
+class BaseUnit : INamed, INonPerpetualConstruction, ICivilopediaText {
 
     override lateinit var name: String
     var cost: Int = 0
