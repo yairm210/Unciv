@@ -1525,7 +1525,7 @@
 		"name": "Missionary",
 		"unitType": "Civilian",
 		"uniques": ["Can spread religion [2] times", "Can be purchased with [Faith] [in all cities in which the majority religion is a major religion]",
-			"Unbuildable", "Religious Unit"],
+			"Unbuildable", "Religious Unit", "Hidden when religion is disabled"],
 		"movement": 4
 	}
 
