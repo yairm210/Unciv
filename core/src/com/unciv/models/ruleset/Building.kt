@@ -460,7 +460,7 @@ class Building : NamedStats(), INonPerpetualConstruction, ICivilopediaText {
 
             val ruleSet = civInfo.gameInfo.ruleSet
             val startingEra = civInfo.gameInfo.gameParameters.startingEra
-            if (startingEra in ruleSet.eras && name in ruleSet.eras[startingEra]!!.startingObsoleteWonders)
+            if (name in ruleSet.eras[startingEra]!!.startingObsoleteWonders)
                 return "Wonder is disabled when starting in this era"
         }
 

@@ -71,7 +71,7 @@ interface INonPerpetualConstruction : IConstruction, INamed, IHasUniques {
         // Can be purchased with [Stat] [cityFilter]
         if (getMatchingUniques("Can be purchased with [] []")
                 .any { it.params[0] == stat.name && cityInfo.matchesFilter(it.params[1])}
-        ) return cityInfo.civInfo.gameInfo.ruleSet.eras[cityInfo.civInfo.getEra()]!!.baseUnitBuyCost
+        ) return cityInfo.civInfo.getEra().baseUnitBuyCost
         return null
     }
 }

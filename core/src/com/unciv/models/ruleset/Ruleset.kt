@@ -173,6 +173,10 @@ class Ruleset {
 
         val erasFile = folderHandle.child("Eras.json")
         if (erasFile.exists()) eras += createHashmap(jsonParser.getFromJson(Array<Era>::class.java, erasFile))
+        // While `eras.values.toList()` might seem more logical, eras.values is a MutableCollection and
+        // therefore does not guarantee keeping the order of elements like a LinkedHashMap does.
+        // Using a map sidesteps this problem
+        eras.map { it.value }.withIndex().forEach { it.value.eraNumber = it.index }
         
         val unitTypesFile = folderHandle.child("UnitTypes.json")
         if (unitTypesFile.exists()) unitTypes += createHashmap(jsonParser.getFromJson(Array<UnitType>::class.java, unitTypesFile))
@@ -245,10 +249,8 @@ class Ruleset {
         }
     }
 
-    fun getEras(): List<String> = technologies.values.map { it.column!!.era }.distinct()
     fun hasReligion() = beliefs.any() && modWithReligionLoaded
-
-    fun getEraNumber(era: String) = getEras().indexOf(era)
+    
     fun getSummary(): String {
         val stringList = ArrayList<String>()
         if (modOptions.isBaseRuleset) stringList += "Base Ruleset"
@@ -409,15 +411,15 @@ class Ruleset {
                     warningCount++
                 }
             }
-            // eras.isNotEmpty() is only for mod compatibility, it should be removed at some point.
-            if (eras.isNotEmpty() && tech.era() !in eras)
+            if (tech.era() !in eras)
                 lines += "Unknown era ${tech.era()} referenced in column of tech ${tech.name}"
         }
 
-        if(eras.isEmpty()){
-            lines += "Eras file is empty! This mod will be unusable in the near future!"
+        if (eras.isEmpty()) {
+            lines += "Eras file is empty! This will likely lead to crashes. Ask the mod maker to update this mod!"
             warningCount++
         }
+        
         for (era in eras) {
             for (wonder in era.value.startingObsoleteWonders)
                 if (wonder !in buildings)

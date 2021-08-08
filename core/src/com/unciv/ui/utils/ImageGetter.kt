@@ -334,10 +334,7 @@ object ImageGetter {
     fun getTechIconGroup(techName: String, circleSize: Float) = getTechIcon(techName).surroundWithCircle(circleSize)
 
     fun getTechIcon(techName: String): Image {
-        val era = ruleset.technologies[techName]!!.era()
-        val techIconColor = 
-            if (era !in ruleset.eras) Era().getColor()
-            else ruleset.eras[ruleset.technologies[techName]!!.era()]!!.getColor()
+        val techIconColor = ruleset.eras[ruleset.technologies[techName]!!.era()]!!.getColor()
         return getImage("TechIcons/$techName").apply { color = techIconColor.lerp(Color.BLACK, 0.6f) }
     }
 

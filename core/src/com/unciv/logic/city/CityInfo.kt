@@ -108,8 +108,7 @@ class CityInfo {
 
         val ruleset = civInfo.gameInfo.ruleSet
         workedTiles = hashSetOf() //reassign 1st working tile
-        if (startingEra in ruleset.eras)
-            population.setPopulation(ruleset.eras[startingEra]!!.settlerPopulation)
+        population.setPopulation(ruleset.eras[startingEra]!!.settlerPopulation)
         population.autoAssignPopulation()
         cityStats.update()
 
@@ -121,13 +120,11 @@ class CityInfo {
         if (civInfo.cities.size == 1) cityConstructions.addBuilding(capitalCityIndicator())
 
         // Add buildings and pop we get from starting in this era
-        if (startingEra in ruleset.eras) {
-            for (buildingName in ruleset.eras[startingEra]!!.settlerBuildings) {
-                val building = ruleset.buildings[buildingName] ?: continue
-                val uniqueBuilding = civInfo.getEquivalentBuilding(building)
-                if (uniqueBuilding.isBuildable(cityConstructions))
-                    cityConstructions.addBuilding(uniqueBuilding.name)
-            }
+        for (buildingName in ruleset.eras[startingEra]!!.settlerBuildings) {
+            val building = ruleset.buildings[buildingName] ?: continue
+            val uniqueBuilding = civInfo.getEquivalentBuilding(building)
+            if (uniqueBuilding.isBuildable(cityConstructions))
+                cityConstructions.addBuilding(uniqueBuilding.name)
         }
 
         civInfo.policies.tryToAddPolicyBuildings()

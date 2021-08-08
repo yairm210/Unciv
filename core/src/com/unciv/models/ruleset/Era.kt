@@ -6,6 +6,7 @@ import com.unciv.ui.utils.colorFromRGB
 
 class Era : INamed {
     override var name: String = ""
+    var eraNumber: Int = -1
     var researchAgreementCost = 300
     var startingSettlerCount = 1
     var startingSettlerUnit = "Settler" // For mods which have differently named settlers
