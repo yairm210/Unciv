@@ -1,9 +1,7 @@
 package com.unciv.ui.overviewscreen
 
-import com.badlogic.gdx.graphics.Camera
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Button
-import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.Religion
@@ -19,24 +17,14 @@ class ReligionOverviewTable(
     
     val gameInfo = viewingPlayer.gameInfo
     private val topButtons = Table(CameraStageBaseScreen.skin)
-    private val topButtonLabel = "Click an icon to see the stats of this religion".tr().toLabel()
+    private val topButtonLabel = "Click an icon to see the stats of this religion".toLabel()
     private val statsTable = Table(CameraStageBaseScreen.skin)
     private val beliefsTable = Table(CameraStageBaseScreen.skin)
     private var selectedReligion: String? = null
     
     init {
-        draw(null)
-    }
-    
-    private fun draw(religion: Religion?) {
-        topButtons.clear()
-        topButtonLabel.clear()
-        statsTable.clear()
-        beliefsTable.clear()
-        clear()
-
         addReligionButtons()
-        if (religion != null) loadReligion(religion)
+        
         add(topButtons).pad(5f).row()
         add(topButtonLabel).pad(5f)
         addSeparator()
@@ -64,7 +52,8 @@ class ReligionOverviewTable(
             
             button.onClick {
                 selectedReligion = religion.name
-                draw(religion)
+                addReligionButtons()
+                loadReligion(religion)
             }
             
             if (selectedReligion == religion.name)
@@ -75,14 +64,14 @@ class ReligionOverviewTable(
     }
     
     private fun loadReligion(religion: Religion) {
+        statsTable.clear()
+        beliefsTable.clear()
         topButtonLabel.setText(religion.name.tr())
-        for (belief in religion.getPantheonBeliefs()) {
-            beliefsTable.add(createBeliefDescription(belief)).pad(10f).row()
-        }
-        for (belief in religion.getFollowerBeliefs()) {
-            beliefsTable.add(createBeliefDescription(belief)).pad(10f).row()
-        }
-        for (belief in religion.getFounderBeliefs()) {
+        for (belief in 
+            religion.getPantheonBeliefs()
+            + religion.getFollowerBeliefs()
+            + religion.getFounderBeliefs()
+        ) {
             beliefsTable.add(createBeliefDescription(belief)).pad(10f).row()
         }
         
@@ -95,7 +84,7 @@ class ReligionOverviewTable(
             else "???"
         statsTable.add(foundingCivName.tr()).pad(5f).row()
         statsTable.add("Cities following this religion:".tr())
-        statsTable.add(gameInfo.getCivilization(religion.foundingCivName).religionManager.citiesFollowingThisReligionCount().toString()).pad(5f).row()
+        statsTable.add(gameInfo.getCivilization(religion.foundingCivName).religionManager.numberOfCitiesFollowingThisReligion().toString()).pad(5f).row()
         
         val minWidth = min(statsTable.minWidth, beliefsTable.minWidth) + 5f
         
