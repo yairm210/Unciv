@@ -101,7 +101,37 @@ Each building can have the following attributes:
 | specialistSlots | Object | defaults to none | Specialist slots provided by this building. Valid keys are the names of specialists (as defined in [Specialists.json](Specialists.json)), valid values are Integers, the amount of slots provided for this specialist |
 
 
+## Difficulties.json
+[Link to original](https://github.com/yairm210/Unciv/blob/master/android/assets/jsons/Civ%20V%20-%20Vanilla/Difficulties.json)
 
+This file defines the difficulty levels a player can choose when starting a new game.
+
+Each difficulty level can have the following attributes:
+| Attribute | Type | Mandatory | Notes |
+| --------- | ---- | ------- | ----- |
+| name | String | Required | Name of the difficulty level |
+| baseHappiness | Integer | Default 0 |
+| extraHappinessPerLuxury | Float | Default 0 |
+| researchCostModifier | Float | Default 1 |
+| unitCostModifier | Float | Default 1 |
+| buildingCostModifier | Float | Default 1 |
+| policyCostModifier | Float | Default 1 |
+| unhappinessModifier | Float | Default 1 |
+| barbarianBonus | Float | Default 0 |
+| playerBonusStartingUnits | List of Units | Default empty | Can also be 'Era Starting Unit', maps to `startingMilitaryUnit` of the Eras file |
+| aiCityGrowthModifier | Float | Default 1 |
+| aiUnitCostModifier | Float | Default 1 |
+| aiBuildingCostModifier | Float | Default 1 |
+| aiWonderCostModifier | Float | Default 1 |
+| aiBuildingMaintenanceModifier | Float | Default 1 |
+| aiUnitMaintenanceModifier | Float | Default 1 |
+| aiFreeTechs | List of Techs | Default empty |
+| aiMajorCivBonusStartingUnits | List of Units | Default empty | See above |
+| aiCityStateBonusStartingUnits | List of Units | Default empty | See above |
+| aiUnhappinessModifier | Float | Default 1 |
+| aisExchangeTechs | Boolean | | Unimplemented |
+| turnBarbariansCanEnterPlayerTiles | Integer | Default 0 |
+| clearBarbarianCampReward | Integer | Default 25 |
 
 ## Eras.json
 [Link to original](https://github.com/yairm210/Unciv/blob/master/android/assets/jsons/Civ%20V%20-%20Vanilla/Eras.json)
