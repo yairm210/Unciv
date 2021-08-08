@@ -50,7 +50,7 @@ class ReligionOverviewTable(
         for (religion in existingReligions) {
             val button: Button
             if (religion.isPantheon()) {
-                val image = if (viewingPlayer.knows(religion.foundingCivName))
+                val image = if (viewingPlayer.knows(religion.foundingCivName) || viewingPlayer.civName == religion.foundingCivName)
                     ImageGetter.getNationIndicator(gameInfo.getCivilization(religion.foundingCivName).nation, 60f)
                 else
                     ImageGetter.getRandomNationIndicator(60f)
@@ -90,7 +90,8 @@ class ReligionOverviewTable(
         statsTable.add(religion.name.tr()).pad(5f).row()
         statsTable.add("Founding Civ:".tr())
         val foundingCivName =
-            if (viewingPlayer.knows(religion.foundingCivName)) religion.foundingCivName
+            if (viewingPlayer.knows(religion.foundingCivName) || viewingPlayer.civName == religion.foundingCivName) 
+                religion.foundingCivName
             else "???"
         statsTable.add(foundingCivName.tr()).pad(5f).row()
         statsTable.add("Cities following this religion:".tr())
