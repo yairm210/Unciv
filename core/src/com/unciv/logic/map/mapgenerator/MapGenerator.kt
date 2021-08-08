@@ -488,9 +488,10 @@ class MapGenerationRandomness{
         if (number <= 0) return ArrayList(0)
 
         // Determine sensible initial distance from number of desired placements and mapRadius
-        // empiric formula comes very close to eliminating retries for distance
+        // empiric formula comes very close to eliminating retries for distance.
+        // The `if` means if we need to fill 60% or more of the available tiles, no sense starting with minimum distance 2.
         val sparsityFactor = (HexMath.getHexagonalRadiusForArea(suitableTiles.size) / mapRadius).pow(0.333f)
-        val initialDistance = if (number == 1 || number * 4 >= suitableTiles.size * 3) 1
+        val initialDistance = if (number == 1 || number * 5 >= suitableTiles.size * 3) 1
             else max(1, (mapRadius * 0.666f / HexMath.getHexagonalRadiusForArea(number).pow(0.9f) * sparsityFactor + 0.5).toInt())
 
         // If possible, we want to equalize the base terrains upon which
