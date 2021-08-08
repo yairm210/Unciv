@@ -1,6 +1,7 @@
 package com.unciv.logic.city
 
 import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.models.ruleset.IHasUniques
 import com.unciv.models.ruleset.Unique
 import com.unciv.models.stats.INamed
 import com.unciv.models.stats.Stat
@@ -15,10 +16,8 @@ interface IConstruction : INamed {
     fun getResourceRequirements(): HashMap<String,Int>
 }
 
-interface INonPerpetualConstruction : IConstruction, INamed {
+interface INonPerpetualConstruction : IConstruction, INamed, IHasUniques {
     val hurryCostModifier: Int
-    val uniqueObjects: List<Unique>
-    val uniques: List<String>
 
     fun getProductionCost(civInfo: CivilizationInfo): Int
     fun getStatBuyCost(cityInfo: CityInfo, stat: Stat): Int?

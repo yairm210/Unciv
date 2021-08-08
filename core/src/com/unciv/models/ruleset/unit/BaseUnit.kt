@@ -12,20 +12,19 @@ import com.unciv.models.ruleset.Unique
 import com.unciv.models.stats.INamed
 import com.unciv.models.stats.Stat
 import com.unciv.models.translations.tr
-import com.unciv.ui.civilopedia.CivilopediaText
 import com.unciv.ui.civilopedia.FormattedLine
+import com.unciv.ui.civilopedia.ICivilopediaText
 import com.unciv.ui.utils.Fonts
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 import kotlin.collections.HashSet
-import kotlin.math.pow
 
 // This is BaseUnit because Unit is already a base Kotlin class and to avoid mixing the two up
 
 /** This is the basic info of the units, as specified in Units.json,
  in contrast to MapUnit, which is a specific unit of a certain type that appears on the map */
-class BaseUnit : INamed, INonPerpetualConstruction, CivilopediaText() {
+class BaseUnit : INamed, INonPerpetualConstruction, ICivilopediaText {
 
     override lateinit var name: String
     var cost: Int = 0
@@ -45,6 +44,12 @@ class BaseUnit : INamed, INonPerpetualConstruction, CivilopediaText() {
     var promotions = HashSet<String>()
     var obsoleteTech: String? = null
     var upgradesTo: String? = null
+    val specialUpgradesTo: String? by lazy { 
+        uniqueObjects
+        .filter { it.placeholderText == "May upgrade to [] through ruins-like effects"}
+        .map { it.params[0] }
+        .firstOrNull() 
+    }
     var replaces: String? = null
     var uniqueTo: String? = null
     var attackSound: String? = null
@@ -262,10 +267,14 @@ class BaseUnit : INamed, INonPerpetualConstruction, CivilopediaText() {
         return ""
     }
 
-    fun getRejectionReason(civInfo: CivilizationInfo): String {
+    /** @param ignoreTechPolicyRequirements: its `true` value is used when upgrading via ancient ruins,
+     * as there we don't care whether we have the required tech, policy or building for the unit,
+     * but do still care whether we have the resources required for the unit
+     */
+    fun getRejectionReason(civInfo: CivilizationInfo, ignoreTechPolicyRequirements: Boolean = false): String {
         if (uniques.contains("Unbuildable")) return "Unbuildable"
-        if (requiredTech != null && !civInfo.tech.isResearched(requiredTech!!)) return "$requiredTech not researched"
-        if (obsoleteTech != null && civInfo.tech.isResearched(obsoleteTech!!)) return "Obsolete by $obsoleteTech"
+        if (!ignoreTechPolicyRequirements && requiredTech != null && !civInfo.tech.isResearched(requiredTech!!)) return "$requiredTech not researched"
+        if (!ignoreTechPolicyRequirements && obsoleteTech != null && civInfo.tech.isResearched(obsoleteTech!!)) return "Obsolete by $obsoleteTech"
         if (uniqueTo != null && uniqueTo != civInfo.civName) return "Unique to $uniqueTo"
         if (civInfo.gameInfo.ruleSet.units.values.any { it.uniqueTo == civInfo.civName && it.replaces == name })
             return "Our unique unit replaces this"
@@ -279,9 +288,9 @@ class BaseUnit : INamed, INonPerpetualConstruction, CivilopediaText() {
 
         for (unique in uniqueObjects.filter { it.placeholderText == "Requires []" }) {
             val filter = unique.params[0]
-            if (filter in civInfo.gameInfo.ruleSet.buildings) {
+            if (!ignoreTechPolicyRequirements && filter in civInfo.gameInfo.ruleSet.buildings) {
                 if (civInfo.cities.none { it.cityConstructions.containsBuildingOrEquivalent(filter) }) return unique.text // Wonder is not built
-            } else if (!civInfo.policies.adoptedPolicies.contains(filter)) return "Policy is not adopted"
+            } else if (!ignoreTechPolicyRequirements && !civInfo.policies.adoptedPolicies.contains(filter)) return "Policy is not adopted"
         }
 
         for ((resource, amount) in getResourceRequirements())
@@ -300,6 +309,12 @@ class BaseUnit : INamed, INonPerpetualConstruction, CivilopediaText() {
     override fun isBuildable(cityConstructions: CityConstructions): Boolean {
         return getRejectionReason(cityConstructions) == ""
     }
+
+    /** Preemptively as in: buildable without actually having the tech and/or policy required for it.
+     * Still checks for resource use and other things
+     */
+    fun isBuildableIgnoringTechs(civInfo: CivilizationInfo) =
+        getRejectionReason(civInfo, true) == ""
 
     override fun postBuildEvent(cityConstructions: CityConstructions, wasBought: Boolean): Boolean {
         val civInfo = cityConstructions.cityInfo.civInfo

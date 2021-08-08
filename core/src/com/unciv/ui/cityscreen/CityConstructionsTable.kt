@@ -419,7 +419,7 @@ class CityConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBase
             button.setText("Buy".tr() + " " + constructionBuyCost)
             button.add(ImageGetter.getStatIcon(stat.name)).size(20f).padBottom(2f)
 
-            button.onClick(stat.sound) {
+            button.onClick(stat.purchaseSound) {
                 button.disable()
                 cityScreen.closeAllPopups()
                 

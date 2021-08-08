@@ -492,7 +492,7 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
         for (tile in allWorldTileGroups) {
             if (tile.icons.populationIcon != null) tile.icons.populationIcon!!.color.a = fadeout
             if (tile.icons.improvementIcon != null && tile.tileInfo.improvement != Constants.barbarianEncampment
-                && tile.tileInfo.improvement != Constants.ancientRuins)
+                && tile.tileInfo.getTileImprovement()!!.isAncientRuinsEquivalent())
                 tile.icons.improvementIcon!!.color.a = fadeout
             if (tile.resourceImage != null) tile.resourceImage!!.color.a = fadeout
         }

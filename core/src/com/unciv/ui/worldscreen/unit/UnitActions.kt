@@ -298,35 +298,59 @@ object UnitActions {
         if (upgradeAction != null) actionList += upgradeAction
     }
 
-    fun getUpgradeAction(unit: MapUnit): UnitAction? {
+    fun getUpgradeAction(unit: MapUnit, isFree: Boolean = false): UnitAction? {
         val tile = unit.currentTile
-        if (unit.baseUnit().upgradesTo == null || tile.getOwner() != unit.civInfo
-                || !unit.canUpgrade()) return null
-        val goldCostOfUpgrade = unit.getCostOfUpgrade()
+        if (unit.baseUnit().upgradesTo == null || !unit.canUpgrade()) return null
+        if (tile.getOwner() != unit.civInfo && !isFree) return null
+        val goldCostOfUpgrade = 
+            if (isFree) 0
+            else unit.getCostOfUpgrade()
         val upgradedUnit = unit.getUnitToUpgradeTo()
 
         return UnitAction(UnitActionType.Upgrade,
-                title = "Upgrade to [${upgradedUnit.name}] ([$goldCostOfUpgrade] gold)",
-                action = {
-                    unit.civInfo.addGold(-goldCostOfUpgrade)
-                    val unitTile = unit.getTile()
-                    unit.destroy()
-                    val newUnit = unit.civInfo.placeUnitNearTile(unitTile.position, upgradedUnit.name)!!
-                    newUnit.health = unit.health
-                    newUnit.promotions = unit.promotions
-                    newUnit.instanceName = unit.instanceName
-
-                    for (promotion in newUnit.baseUnit.promotions)
-                        if (promotion !in newUnit.promotions.promotions)
-                            newUnit.promotions.addPromotion(promotion, true)
-
-                    newUnit.updateUniques()
-                    newUnit.updateVisibleTiles()
-                    newUnit.currentMovement = 0f
-                }.takeIf {
+            title = "Upgrade to [${upgradedUnit.name}] ([$goldCostOfUpgrade] gold)",
+            action = {
+                unit.civInfo.addGold(-goldCostOfUpgrade)
+                val unitTile = unit.getTile()
+                unit.destroy()
+                val newUnit = unit.civInfo.placeUnitNearTile(unitTile.position, upgradedUnit.name)!!
+                unit.copyStatisticsTo(newUnit)
+                
+                newUnit.currentMovement = 0f
+            }.takeIf {
+                isFree ||
+                (
                     unit.civInfo.gold >= goldCostOfUpgrade && !unit.isEmbarked()
-                            && unit.currentMovement == unit.getMaxMovement().toFloat()
-                })
+                    && unit.currentMovement == unit.getMaxMovement().toFloat()
+                )
+            }
+        )
+    }
+    
+    fun getAncientRuinsUpgradeAction(unit: MapUnit): UnitAction? {
+        val upgradedUnitName =
+            when {
+                unit.baseUnit.specialUpgradesTo != null -> unit.baseUnit.specialUpgradesTo
+                unit.baseUnit.upgradesTo != null -> unit.baseUnit.upgradesTo
+                else -> return null
+            }
+        val upgradedUnit = 
+            unit.civInfo.getEquivalentUnit(
+                unit.civInfo.gameInfo.ruleSet.units[upgradedUnitName]!!
+            )
+        if (!unit.canUpgrade(upgradedUnit,true)) return null
+        
+        return UnitAction(UnitActionType.Upgrade,
+            title = "Upgrade to [${upgradedUnit.name}] (free)",
+            action = {
+                val unitTile = unit.getTile()
+                unit.destroy()
+                val newUnit = unit.civInfo.placeUnitNearTile(unitTile.position, upgradedUnit.name)!!
+                unit.copyStatisticsTo(newUnit)
+                
+                newUnit.currentMovement = 0f
+            }
+        )
     }
 
     private fun addBuildingImprovementsAction(unit: MapUnit, actionList: ArrayList<UnitAction>, tile: TileInfo, worldScreen: WorldScreen, unitTable: UnitTable) {
