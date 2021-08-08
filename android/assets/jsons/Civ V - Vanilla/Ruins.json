@@ -1,0 +1,64 @@
+[
+    {
+        "name": "freeCulture",
+        "notification": "We have discovered cultural artifacts in the ruins! (+20 culture)",
+        "uniques": ["Gain [20] [Culture]"]
+    },
+    {
+        "name": "joinWorker",
+        "notification": "A [Worker] has joined us!",
+        "uniques": ["Free [Worker] found in the ruins"],
+        "excludedDifficulties": ["Prince", "King", "Emperor", "Immortal", "Deity"]
+    },
+    {
+        "name": "joinSettler",
+        "notification": "A [Settler] has joined us!",
+        "uniques": ["Free [Settler] found in the ruins"],
+        "excludedDifficulties": ["Warlord","Prince","King","Emperor","Immortal","Deity"]
+    },
+    {
+        "name": "freeXP",
+        "notification": "An ancient tribe trained us in their ways of combat!",
+        "uniques": ["This Unit gains [10] XP"]
+    },
+    {
+        "name": "freePop",
+        "notification": "We have found survivors in the ruins! Population added to [cityName].",
+        "uniques": ["[+1] population in a random city"] // This can't be easily added to cityFilter, as it is non-deterministic
+    },
+    {
+        "name": "freeGold",
+        "notification": "We have found a stash of [goldAmount] Gold in the ruins!",
+        "uniques": ["Gain [50]-[100] [Gold]"]
+    },
+    {
+        "name": "freeAncientTech",
+        "notification": "We have discovered the lost technology of [techName] in the ruins!",
+        "uniques": ["[1] free random researchable Tech(s) from the [Ancient era]"]
+    },
+    {
+        "name": "unitUpgrade",
+        "notification": "Our unit finds advanced weaponry hidden in the ruins!",
+        "uniques": ["This Unit upgrades for free including special upgrades"]
+    },
+    {
+        "name": "barbCampsRevealed",
+        "notification": "You find evidence of Barbarian activity. Nearby Barbarian camps are revealed!",
+        "uniques": ["Reveal up to [All] [Barbarian encampment] within a [10] tile radius"]
+    },
+    {
+        "name": "crudelyDrawnMap",
+        "notification": "We have found a crudely-drawn map in the ruins!",
+        "uniques": ["From a randomly chosen tile [4] tiles away, reveal tiles up to [4] tiles away with [80]% chance"]
+    },
+    {
+        "name": "holySymbols",
+        "notification": "We have found holy symbols in the ruins, giving us a deeper understanding of religion! (+[faithAmount] Faith)",
+        "uniques": ["Hidden when religion is disabled", "Gain enough Faith for a Pantheon"]
+    },
+    {
+        "name": "prophecy",
+        "notification": "We have found an ancient prophecy in the ruins, greatly increasing our spiritual connection! (+[faithAmount] Faith)",
+        "uniques": ["Hidden when religion is disabled", "Gain enough Faith for [33]% of a Great Prophet", "Hidden after generating a Great Prophet"]
+    }
+]

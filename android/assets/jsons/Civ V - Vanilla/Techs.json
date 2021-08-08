@@ -279,7 +279,7 @@
 			{
 				"name": "Banking",
 				"row": 6,
-				"prerequisites": ["Chivalry"],
+				"prerequisites": ["Chivalry", "Education"],
 				"quote": "'Happiness: a good bank account, a good cook and a good digestion' - Jean Jacques Rousseau"
 			},
 			{
@@ -345,7 +345,7 @@
 			{
 				"name": "Archaeology",
 				"row": 2,
-				"prerequisites": ["Navigation"],
+				"prerequisites": ["Navigation","Architecture"],
 				"quote": "'Those who cannot remember the past are condemned to repeat it.' - George Santayana"
 			},
 			{

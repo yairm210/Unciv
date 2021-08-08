@@ -105,13 +105,14 @@ class MapGenerator(val ruleset: Ruleset) {
     }
 
     private fun spreadAncientRuins(map: TileMap) {
-        if (map.mapParameters.noRuins || !ruleset.tileImprovements.containsKey(Constants.ancientRuins))
+        val ruinsEquivalents = ruleset.tileImprovements.filter { it.value.isAncientRuinsEquivalent() }
+        if (map.mapParameters.noRuins || ruinsEquivalents.isEmpty() )
             return
         val suitableTiles = map.values.filter { it.isLand && !it.isImpassible() }
         val locations = randomness.chooseSpreadOutLocations(suitableTiles.size / 50,
                 suitableTiles, 10)
         for (tile in locations)
-            tile.improvement = Constants.ancientRuins
+            tile.improvement = ruinsEquivalents.keys.random()
     }
 
     private fun spreadResources(tileMap: TileMap) {

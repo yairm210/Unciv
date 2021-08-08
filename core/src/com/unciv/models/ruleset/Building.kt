@@ -393,7 +393,7 @@ class Building : NamedStats(), INonPerpetualConstruction, ICivilopediaText {
                 || rejectionReason == "Can only be purchased"
     }
 
-    fun getRejectionReason(construction: CityConstructions): String {
+    override fun getRejectionReason(construction: CityConstructions): String {
         if (construction.isBuilt(name)) return "Already built"
         // for buildings that are created as side effects of other things, and not directly built
         // unless they can be bought with faith
