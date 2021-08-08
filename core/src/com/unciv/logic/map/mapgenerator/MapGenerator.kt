@@ -90,6 +90,7 @@ class MapGenerator(val ruleset: Ruleset) {
         val delta = System.nanoTime() - startNanos
         println("MapGenerator.$text took ${delta/1000000L}.${(delta/10000L).rem(100)}ms")
     }
+
     //todo: Why is this unused?
     private fun seedRNG(seed: Long) {
         randomness.RNG = Random(seed)
@@ -182,7 +183,8 @@ class MapGenerator(val ruleset: Ruleset) {
     }
 
     /**
-     * Spreads resources of type [resourceType] picking locations at [distance] from each other.
+     * Spreads resources of type [resourceType] picking locations at a minimum distance from each other,
+     * which is determined from [mapRadius] and then tuned down until the desired number fits.
      * [MapParameters.resourceRichness] used to control how many resources to spawn.
      */
     private fun spreadResources(tileMap: TileMap, mapRadius: Int, resourceType: ResourceType) {
@@ -213,9 +215,9 @@ class MapGenerator(val ruleset: Ruleset) {
      * [MapParameters.elevationExponent] favors high elevation
      */
     private fun raiseMountainsAndHills(tileMap: TileMap) {
-        val mountain = ruleset.terrains.values.filter { it.uniques.contains("Occurs in chains at high elevations") }.firstOrNull()?.name
-        val hill = ruleset.terrains.values.filter { it.uniques.contains("Occurs in groups around high elevations") }.firstOrNull()?.name
-        val flat = ruleset.terrains.values.filter { !it.impassable && it.type == TerrainType.Land && !it.uniques.contains("Rough Terrain") }.firstOrNull()?.name
+        val mountain = ruleset.terrains.values.firstOrNull { it.uniques.contains("Occurs in chains at high elevations") }?.name
+        val hill = ruleset.terrains.values.firstOrNull { it.uniques.contains("Occurs in groups around high elevations") }?.name
+        val flat = ruleset.terrains.values.firstOrNull { !it.impassable && it.type == TerrainType.Land && !it.uniques.contains("Rough Terrain") }?.name
 
         if (flat == null) {
             println("Ruleset seems to contain no flat terrain - can't generate heightmap")
@@ -536,15 +538,15 @@ class RiverCoordinate(val position: Vector2, val bottomRightOrLeft: BottomRightO
     fun getAdjacentPositions(): Sequence<RiverCoordinate> {
         // What's nice is that adjacents are always the OPPOSITE in terms of right-left - rights are adjacent to only lefts, and vice-versa
         // This means that a lot of obviously-wrong assignments are simple to spot
-        if (bottomRightOrLeft == BottomRightOrLeft.BottomLeft) {
-            return sequenceOf(RiverCoordinate(position, BottomRightOrLeft.BottomRight), // same tile, other side
-                    RiverCoordinate(position.cpy().add(1f, 0f), BottomRightOrLeft.BottomRight), // tile to MY top-left, take its bottom right corner
-                    RiverCoordinate(position.cpy().add(0f, -1f), BottomRightOrLeft.BottomRight) // Tile to MY bottom-left, take its bottom right
+        return if (bottomRightOrLeft == BottomRightOrLeft.BottomLeft) {
+            sequenceOf(RiverCoordinate(position, BottomRightOrLeft.BottomRight), // same tile, other side
+                RiverCoordinate(position.cpy().add(1f, 0f), BottomRightOrLeft.BottomRight), // tile to MY top-left, take its bottom right corner
+                RiverCoordinate(position.cpy().add(0f, -1f), BottomRightOrLeft.BottomRight) // Tile to MY bottom-left, take its bottom right
             )
         } else {
-            return sequenceOf(RiverCoordinate(position, BottomRightOrLeft.BottomLeft), // same tile, other side
-                    RiverCoordinate(position.cpy().add(0f, 1f), BottomRightOrLeft.BottomLeft), // tile to MY top-right, take its bottom left
-                    RiverCoordinate(position.cpy().add(-1f, 0f), BottomRightOrLeft.BottomLeft)  // tile to MY bottom-right, take its bottom left
+            sequenceOf(RiverCoordinate(position, BottomRightOrLeft.BottomLeft), // same tile, other side
+                RiverCoordinate(position.cpy().add(0f, 1f), BottomRightOrLeft.BottomLeft), // tile to MY top-right, take its bottom left
+                RiverCoordinate(position.cpy().add(-1f, 0f), BottomRightOrLeft.BottomLeft)  // tile to MY bottom-right, take its bottom left
             )
         }
     }
