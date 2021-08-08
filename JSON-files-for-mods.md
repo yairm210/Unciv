@@ -127,6 +127,41 @@ Each era can have the following attributes:
 | settlerBuildings | List of Strings | defaults to none | Buildings that should automatically be built whenever a city is settled when starting a game in this era |
 | startingObsoleteWonders | List of Strings | defaults to none | Wonders (and technically buildings) that should be impossible to built when starting a game in this era. Used in the base game to remove all wonders older than 2 era's |
 
+## Ruins.json
+[Link to original](https://github.com/yairm210/Unciv/blob/master/android/assets/jsons/Civ%20V%20-%20Vanilla/Ruins.json)
+
+This file contains the possible rewards ancient ruins give. It is not required, if omitted, the default file for the game is used, even in baseRuleSet mods.
+
+Each of the objects in the file represents a single reward you can get from ruins. It has the following properties:
+
+
+| attribute | Type | optional or not | notes |
+| --------- | ---- | --------------- | ----- |
+| name | String | required | Name of the ruins. Never shown to the user, but they have to be destinct |
+| notification | String | required | Notification added to the user when this reward is chosen. If omitted, an empty notification is shown. Some notifications may have parameters, refer to the table below. |
+| weight | Integer (≥0) | defaults to 1 | Weight this reward should have. Higher weights result in a higher chance of it being chosen* |
+| uniques | List of Strings | defaults to none | [uniques](https://github.com/yairm210/Unciv/wiki/Uniques#one-time-effect) that will trigger when entering the ruins. If more than 1 unique is added, the notification will be shown multiple times due to a bug. |
+| excludedDifficulties | List of Strings | defaults to None | A list of all difficulties on which this reward may _not_ be awarded |
+
+
+* The exact algorithm for choosing a reward is the following: 
+- Create a list of all possible rewards, with rewards with a higher weight appearing multiple times. A reward with weight one will appear once, a reward with weight two will appear twice, etc. 
+- Shuffle this list
+- Try give rewards starting from the top of the list. If any of the uniques of the rewards is valid in this context, reward it and stop trying more rewards.
+
+### Notifications
+
+Some of the rewards ruins can give will have results that are not deterministic when writing it in the JSON, so creating a good notification for it would be impossible. An example for this would be the "Gain [50]-[100] [Gold]" unique, which will give a random amount of gold. For this reason, we allow some notifications to have parameters, in which values will be filled, such as "You found [goldAmount] gold in the ruins!". All the uniques which have this property can be found below.
+
+| unique | parameters |
+| ------ | ---------- |
+| Free [] found in the ruins | The name of the unit will be filled in the notification, including unique units of the nation |
+| [] population in a random city | The name of the city to which the population is added will be filled in the notification |
+| Gain []-[] [] | The exact amount of the stat gained will be filled in the notification |
+| [] free random reasearchable Tech(s) from the [] | The notification must have placeholders equal to the number of techs granted this way. Each of the names of these free techs will be filled in the notification |
+| Gain enough Faith for a Pantheon | The amount of faith gained is filled in the notification |
+| Gain engouh Faith for []% of a Great Prophet | The amount of faith gained is filled in the notifciation |
+
 ## Specialists.json
 [Link to original](https://github.com/yairm210/Unciv/blob/master/android/assets/jsons/Civ%20V%20-%20Vanilla/Specialists.json)
 
