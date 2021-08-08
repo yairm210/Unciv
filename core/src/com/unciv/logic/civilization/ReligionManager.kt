@@ -139,7 +139,6 @@ class ReligionManager {
             return false
         // Mod maker did not provide enough religions for the amount of civs present
         
-        
         return true
     }
 
@@ -173,6 +172,12 @@ class ReligionManager {
         holyCity.religion[name] = 100
 
         foundingCityId = null
+    }
+    
+    fun numberOfCitiesFollowingThisReligion(): Int {
+        if (religion == null) return 0
+        return civInfo.gameInfo.getCities()
+            .count { it.religion.getMajorityReligion() == religion!!.name }
     }
 }
 

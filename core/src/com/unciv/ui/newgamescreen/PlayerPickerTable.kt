@@ -199,11 +199,10 @@ class PlayerPickerTable(
      */
     private fun getNationTable(player: Player): Table {
         val nationTable = Table()
-        val nationImage = if (player.chosenCiv == Constants.random) "?".toLabel(Color.WHITE, 25)
-                .apply { this.setAlignment(Align.center) }
-                .surroundWithCircle(36f).apply { circle.color = Color.BLACK }
-                .surroundWithCircle(40f, false).apply { circle.color = Color.WHITE }
-        else ImageGetter.getNationIndicator(previousScreen.ruleset.nations[player.chosenCiv]!!, 40f)
+        val nationImage = 
+            if (player.chosenCiv == Constants.random) 
+                ImageGetter.getRandomNationIndicator(40f)
+            else ImageGetter.getNationIndicator(previousScreen.ruleset.nations[player.chosenCiv]!!, 40f)
         nationTable.add(nationImage).pad(5f)
         nationTable.add(player.chosenCiv.toLabel()).pad(5f)
         nationTable.touchable = Touchable.enabled
