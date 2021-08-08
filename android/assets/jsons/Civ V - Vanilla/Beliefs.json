@@ -121,7 +121,11 @@
 ///////////////////////////////////////// Follower beliefs /////////////////////////////////////////
     
     // Missing: asceticism (requires followers)
-    // Missing: cathedrals (requires purchasing with faith)
+    {
+        "name": "Cathedrals",
+        "type": "Follower",
+        "uniques": ["May buy [Cathedral] buildings for [200] [Faith] [in cities following this religion]"]
+    },
     // Missing: choral music (requires followers)
     {
         "name": "Divine inspiration",
@@ -140,9 +144,21 @@
     },
     // Missing: Holy Warriors (requires purchasing with faith)
     // Missing: Liturgical drama (requires followers)
-    // Missing: Monasteries (requires purchasing with faith)
-    // Missing: Mosques (requires purchasing with faith)
-    // Missing: Pagodas (requires purchasing with faith)
+    {
+        "name": "Monasteries",
+        "type": "Follower",
+        "uniques": ["May buy [Monastery] buildings for [200] [Faith] [in cities following this religion]"]
+    },
+    {
+        "name": "Mosques",
+        "type": "Follower",
+        "uniques": ["May buy [Mosque] buildings for [200] [Faith] [in cities following this religion]"]
+    },
+    {
+        "name": "Pagodas",
+        "type": "Follower",
+        "uniques": ["May buy [Pagoda] buildings for [200] [Faith] [in cities following this religion]"]
+    },
     {
         "name": "Peace Gardens",
         "type": "Follower",

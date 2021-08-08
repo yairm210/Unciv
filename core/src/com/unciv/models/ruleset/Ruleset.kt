@@ -237,9 +237,9 @@ class Ruleset {
      *  */
     fun updateBuildingCosts() {
         for (building in buildings.values) {
-            if (building.cost == 0) {
+            if (building.cost == 0 && !building.uniques.contains("Unbuildable")) {
                 val column = technologies[building.requiredTech]?.column
-                        ?: throw UncivShowableException("Building (${building.name}) must either have an explicit cost or reference an existing tech")
+                        ?: throw UncivShowableException("Building (${building.name}) is buildable and therefore must either have an explicit cost or reference an existing tech")
                 building.cost = if (building.isAnyWonder()) column.wonderCost else column.buildingCost
             }
         }
@@ -311,8 +311,8 @@ class Ruleset {
         }
 
         for (building in buildings.values) {
-            if (building.requiredTech == null && building.cost == 0)
-                lines += "${building.name} must either have an explicit cost or reference an existing tech!"
+            if (building.requiredTech == null && building.cost == 0 && !building.uniques.contains("Unbuildable"))
+                lines += "${building.name} is buildable and therefore must either have an explicit cost or reference an existing tech!"
         }
         
         for (nation in nations.values) {

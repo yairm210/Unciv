@@ -231,7 +231,6 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Wat Arun Ratchawararam Ratchawaramahawihan](https://thenounproject.com/term/wat-arun-ratchawararam-ratchawaramahawihan/320664/) By József Balázs-Hegedüs for Wat
 * [College](https://thenounproject.com/term/college/1203703/) By Vectors Market for National College
 * [Chichen Itza](https://thenounproject.com/term/chichen-itza/668065/) By Hea Poh Lin
-* [Christian Church](https://thenounproject.com/term/christian-church/1174183/) By Andrejs Kirma for Monastery
 * [Castle](https://thenounproject.com/search/?q=castle&i=390189) By Mint Shirt
 * [Red Fort](https://thenounproject.com/arunabh.jain.0fficial/collection/famous-indian-monuments/?i=2092466), [Gateway of India](https://thenounproject.com/arunabh.jain.0fficial/collection/famous-indian-monuments/?i=2092468) By Arunabh Jain, IN for Mughal Fort
 * [Angkor Wat](https://thenounproject.com/search/?q=angkor%20wat&i=2412873) By Phạm Thanh Lộc for Angkor Wat
@@ -312,6 +311,11 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 
 ### All Era's
 * [Illuminati](https://thenounproject.com/term/illuminati/1617812) by emilegraphics for the Utopia Project
+* [Christian Church](https://thenounproject.com/term/christian-church/1174183/) by Andrejs Kirma for Monastery
+* [cathedral](https://thenounproject.com/search/?q=Cathedral&i=4136407) by Pixel Bazaar for Cathedral
+* [Mosque](https://thenounproject.com/search/?q=mosque&i=4139519) by Ahmad Roaayala for Mosque
+* [Pagoda](https://thenounproject.com/search/?q=pagoda&i=446665) by Xinh Studio for Pagoda 
+
 
 ## Social Policies
 
