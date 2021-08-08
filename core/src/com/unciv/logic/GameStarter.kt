@@ -240,9 +240,14 @@ object GameStarter {
             if(civ.isCityState())
                 addCityStateLuxury(gameInfo, startingLocation)
 
-            for (tile in startingLocation.getTilesInDistance(3))
-                if (tile.improvement == Constants.ancientRuins)
+            for (tile in startingLocation.getTilesInDistance(3)) {
+                if (tile.improvement != null 
+                    && !tile.improvement!!.startsWith("StartingLocation") 
+                    && tile.getTileImprovement()!!.isAncientRuinsEquivalent()
+                ) {
                     tile.improvement = null // Remove ancient ruins in immediate vicinity
+                }
+            }
 
             fun placeNearStartingPosition(unitName: String) {
                 civ.placeUnitNearTile(startingLocation.position, unitName)

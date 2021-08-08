@@ -75,6 +75,7 @@ class TileImprovement : NamedStats(), ICivilopediaText {
     fun hasUnique(unique: String) = uniques.contains(unique)
     fun isGreatImprovement() = hasUnique("Great Improvement")
     fun isRoad() = RoadStatus.values().any { it != RoadStatus.None && it.name == this.name }
+    fun isAncientRuinsEquivalent() = hasUnique("Provides a random bonus when entered")
 
     /**
      * Check: Is this improvement allowed on a [given][name] terrain feature?

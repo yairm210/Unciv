@@ -276,6 +276,8 @@ fun String.equalsPlaceholderText(str:String): Boolean {
     return this.getPlaceholderText() == str
 }
 
+fun String.hasPlaceholderParameters() = squareBraceRegex.containsMatchIn(this)
+
 fun String.getPlaceholderParameters() = squareBraceRegex.findAll(this).map { it.groups[1]!!.value }.toList()
 
 /** Substitutes placeholders with [strings], respecting order of appearance. */
