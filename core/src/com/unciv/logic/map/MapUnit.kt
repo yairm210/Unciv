@@ -268,8 +268,6 @@ class MapUnit {
 
     fun isMoving() = action?.startsWith("moveTo") == true
     
-    fun isAutomaticallyBuildingImprovements() = action != null && action == Constants.unitActionAutomation
-
     fun isCivilian() = baseUnit.isCivilian()
 
     fun getFortificationTurns(): Int {
