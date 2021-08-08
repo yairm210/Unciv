@@ -37,9 +37,6 @@ class Difficulty: INamed, ICivilopediaText {
 
     override var civilopediaText = listOf<FormattedLine>()
 
-//    fun getDescription(): String {
-//        return getCivilopediaTextLines(RulesetCache.getBaseRuleset()).joinToString("\n") { it.text.tr() }
-//    }
 
     override fun makeLink() = "Difficulty/$name"
     override fun replacesCivilopediaDescription() = true
