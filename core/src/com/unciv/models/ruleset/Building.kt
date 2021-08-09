@@ -203,7 +203,7 @@ class Building : NamedStats(), INonPerpetualConstruction, ICivilopediaText {
     override fun canBePurchasedWithStat(cityInfo: CityInfo, stat: Stat, ignoreCityRequirements: Boolean): Boolean {
         if (stat == Stat.Gold && isAnyWonder()) return false
         // May buy [buildingFilter] buildings for [amount] [Stat] [cityFilter]
-        if (cityInfo.getMatchingUniques("May buy [] buildings for [] [] []")
+        if (!ignoreCityRequirements && cityInfo.getMatchingUniques("May buy [] buildings for [] [] []")
                 .any { it.params[2] == stat.name && matchesFilter(it.params[0]) && cityInfo.matchesFilter(it.params[3]) }
         ) return true
         return super.canBePurchasedWithStat(cityInfo, stat, ignoreCityRequirements)
