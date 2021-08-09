@@ -118,7 +118,7 @@ Each building can have the following attributes:
 | cityHealth | Integer | defaults to 0 | Health bonus the city in which this building is built receives |
 | hurryCostModifier | Integer | defaults to 0 | When this building is bought using gold or faith, the price is increased by this much percent |
 | quote | String | defaults to none | If this building is a (national) wonder, this string will be shown on the completion popup |
-| uniques | List of Strings | defaults to none | List of unique abilities this building has. Most of these can be found [here](https://github.com/yairm210/Unciv/wiki/Uniques#buildings-only) |
+| uniques | List of Strings | defaults to none | List of unique abilities this building has. Most of these can be found [here](../Uniques#buildings-only) |
 | replacementTextForUniques | String | defaults to none | If provided, this string will be shown instead of all of the uniques |
 | percentStatBonus | Object | defaults to none | Percentual bonus for stats provided by the building. Valid keys are the names of stats (production, gold, science, etc.), valid values are Integers (≥0) |
 | greatPersonPoints | Object | defaults to none | How many great person points for each type will be generated per turn. Valid keys are the stat names (production, gold, science, etc.), valid values are Integers (≥0) |
@@ -210,7 +210,7 @@ This file contains all the nations and city states, including Barbarians and Spe
 | outerColor | 3x Integer | Required | R, G, B for inner circle of nation icon |
 | uniqueName | String | Default empty | Decorative name for the special characteristic of this Nation |
 | uniqueText | String | Default empty | Replacement text for "uniques". If empty, uniques are listed individually. |
-| uniques | List | Default empty | Properties of the civilization - see [here](../Uniques#unit-uniques) |
+| uniques | List | Default empty | Properties of the civilization - see [here](../Uniques#general-uniques) |
 | cities | List | Default empty | City names used sequentially for newly founded cities. |
 | civilopediaText | List | Default empty | see [civilopediaText chapter](#civilopedia-text) |
 
@@ -320,11 +320,30 @@ Civilian, Melee, Ranged, Scout, Mounted, Armor, Siege, WaterCivilian, WaterMelee
 | uniques | List of String | defaults to none | A list of the unique abilities every unit of this type has. A list of almost all uniques can be found [here](../Uniques#unit-uniques) |
 
 ## Techs.json
+[Link to original](https://github.com/yairm210/Unciv/blob/master/android/assets/jsons/Civ%20V%20-%20Vanilla/Techs.json)
 
-Technologies can have the following attributes:
-- name: String - The name of the technology
-- cost: Integer - The amount of science required to research this tech
-- prerequisites: List of strings - A list of the names of techs that are prerequisites of this tech. Only direct prerequisites are necessary.
+This file contains all the technologies. It is organized into an outer list of 'columns' which in turn contain one or more tech each.
+
+#### Column structure
+| Attribute | Type | Optional? | Notes |
+|-----------|------|-----------|-------|
+| columnNumber | Integer | Required | Horizontal placement in the Tech Tree. |
+| era | String | Required | References [Eras.json](#erasjson). |
+| techCost | Integer | Required | Default cost of the techs in this column. |
+| buildingCost | Integer | Required | Default cost of buildings requiring this tech. |
+| wonderCost | Integer | Required | Default cost of wonders requiring this tech. |
+| techs | List of Techs | Required | List of techs as follows - pay attention to the nesting of {} and []. |
+
+#### Tech structure
+| Attribute | Type | Optional? | Notes |
+|-----------|------|-----------|-------|
+| name | String | Required | The name of this Technology. |
+| row | Integer | Defaults to 0 | Vertical placement in the Tech Tree, must be unique per column. |
+| cost | Integer | Defaults to column techCost | The amount of science required to research this tech. |
+| prerequisites | List | Default empty | A list of the names of techs that are prerequisites of this tech. Only direct prerequisites are necessary. |
+| quote | String | Default empty | A nice story presented to the player when they research this tech. |
+| uniques | List | Default empty | Properties of the civilization - see [here](../Uniques#general-uniques). |
+| civilopediaText | List | Default empty | see [civilopediaText chapter](#civilopedia-text). |
 
 
 ## Sounds
