@@ -247,8 +247,8 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
         }
     }
 
-    override fun close() {
-        worldScreen.viewingCiv.popupAlerts.remove(popupAlert)
-        super.close()
-    }
+//    override fun close() {
+//        worldScreen.viewingCiv.popupAlerts.remove(popupAlert)
+//        super.close()
+//    }
 }

@@ -404,7 +404,7 @@ object Battle {
 
         city.getCenterTile().apply {
             if (militaryUnit != null) militaryUnit!!.destroy()
-            if (civilianUnit != null) captureCivilianUnit(attacker, MapUnitCombatant(civilianUnit!!))
+            if (civilianUnit != null) captureCivilianUnit(attacker, MapUnitCombatant(civilianUnit!!), checkDefeat = false)
             for (airUnit in airUnits.toList()) airUnit.destroy()
         }
         city.hasJustBeenConquered = true
@@ -440,7 +440,7 @@ object Battle {
         return null
     }
 
-    private fun captureCivilianUnit(attacker: ICombatant, defender: MapUnitCombatant) {
+    private fun captureCivilianUnit(attacker: ICombatant, defender: MapUnitCombatant, checkDefeat: Boolean = true) {
         // barbarians don't capture civilians
         if (attacker.getCivInfo().isBarbarian()
                 || defender.unit.hasUnique("Uncapturable")) {
@@ -475,7 +475,8 @@ object Battle {
             }
         }
 
-        destroyIfDefeated(defenderCiv, attacker.getCivInfo())
+        if (checkDefeat)
+            destroyIfDefeated(defenderCiv, attacker.getCivInfo())
         capturedUnit.updateVisibleTiles()
     }
 

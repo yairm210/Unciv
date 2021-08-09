@@ -115,9 +115,9 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
 
     private fun addWorkBoatChoice() {
         val buildableWorkboatUnits = cityInfo.cityConstructions.getConstructableUnits()
-                .filter { it.uniques.contains("May create improvements on water resources") }
+                .filter { it.uniques.contains(Constants.workBoatsUnique) }
         val canBuildWorkboat = buildableWorkboatUnits.any()
-                && !cityInfo.getTiles().any { it.civilianUnit?.hasUnique("May create improvements on water resources") == true }
+                && !cityInfo.getTiles().any { it.civilianUnit?.hasUnique(Constants.workBoatsUnique) == true }
         if (!canBuildWorkboat) return
         val tilesThatNeedWorkboat = cityInfo.getTiles()
                 .filter { it.isWater && it.hasViewableResource(civInfo) && it.improvement == null }.toList()

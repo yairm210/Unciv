@@ -95,7 +95,7 @@ object UnitAutomation {
             if (unit.hasUniqueToBuildImprovements)
                 return WorkerAutomation(unit).automateWorkerAction()
 
-            if (unit.name == "Work Boats") //todo This is really not modular
+            if (unit.hasUnique(Constants.workBoatsUnique))
                 return SpecificUnitAutomation.automateWorkBoats(unit)
 
             if (unit.hasUnique("Bonus for units in 2 tile radius 15%"))

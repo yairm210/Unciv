@@ -122,7 +122,7 @@ object UnitActions {
 
     fun getWaterImprovementAction(unit: MapUnit): UnitAction? {
         val tile = unit.currentTile
-        if (!tile.isWater || !unit.hasUnique("May create improvements on water resources") || tile.resource == null) return null
+        if (!tile.isWater || !unit.hasUnique(Constants.workBoatsUnique) || tile.resource == null) return null
 
         val improvementName = tile.getTileResource().improvement ?: return null
         val improvement = tile.ruleset.tileImprovements[improvementName] ?: return null
@@ -287,13 +287,11 @@ object UnitActions {
 
     private fun addExplorationActions(unit: MapUnit, actionList: ArrayList<UnitAction>) {
         if (unit.baseUnit.movesLikeAirUnits()) return
-        actionList += if (unit.isExploring())
-            UnitAction(UnitActionType.StopExploration) { unit.action = null }
-        else
-            UnitAction(UnitActionType.Explore) {
-                unit.action = UnitActionType.Explore.value
-                if (unit.currentMovement > 0) UnitAutomation.automatedExplore(unit)
-            }
+        if (unit.isExploring()) return
+        actionList += UnitAction(UnitActionType.Explore) {
+            unit.action = UnitActionType.Explore.value
+            if (unit.currentMovement > 0) UnitAutomation.automatedExplore(unit)
+        }
     }
 
     private fun addUnitUpgradeAction(unit: MapUnit, actionList: ArrayList<UnitAction>) {
@@ -376,6 +374,7 @@ object UnitActions {
         if (!unit.hasUniqueToBuildImprovements) return
 
         actionList += UnitAction(UnitActionType.Automate,
+            isCurrentAction = unit.isAutomated(),
             action = {
                 unit.action = UnitActionType.Automate.value
                 WorkerAutomation(unit).automateWorkerAction()
