@@ -342,7 +342,7 @@ This file contains all the technologies. It is organized into an outer list of '
 | cost | Integer | Defaults to column techCost | The amount of science required to research this tech. |
 | prerequisites | List | Default empty | A list of the names of techs that are prerequisites of this tech. Only direct prerequisites are necessary. |
 | quote | String | Default empty | A nice story presented to the player when they research this tech. |
-| uniques | List | Default empty | Properties of the civilization - see [here](../Uniques#general-uniques). |
+| uniques | List | Default empty | Properties granted by the tech - see [here](../Uniques#general-uniques). |
 | civilopediaText | List | Default empty | see [civilopediaText chapter](#civilopedia-text). |
 
 
