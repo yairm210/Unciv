@@ -170,7 +170,7 @@ Each of the objects in the file represents a single reward you can get from ruin
 | name | String | required | Name of the ruins. Never shown to the user, but they have to be destinct |
 | notification | String | required | Notification added to the user when this reward is chosen. If omitted, an empty notification is shown. Some notifications may have parameters, refer to the table below. |
 | weight | Integer (≥0) | defaults to 1 | Weight this reward should have. Higher weights result in a higher chance of it being chosen* |
-| uniques | List of Strings | defaults to none | [uniques](https://github.com/yairm210/Unciv/wiki/Uniques#one-time-effect) that will trigger when entering the ruins. If more than 1 unique is added, the notification will be shown multiple times due to a bug. |
+| uniques | List of Strings | defaults to none | [uniques](https://github.com/yairm210/Unciv/wiki/Uniques#one-time-effect) or [uniques](https://github.com/yairm210/Unciv/wiki/Uniques#one-time-effect-units) that will trigger when entering the ruins. If more than 1 unique is added, the notification will be shown multiple times due to a bug. |
 | excludedDifficulties | List of Strings | defaults to None | A list of all difficulties on which this reward may _not_ be awarded |
 
 
@@ -191,6 +191,13 @@ Some of the rewards ruins can give will have results that are not deterministic 
 | [] free random reasearchable Tech(s) from the [] | The notification must have placeholders equal to the number of techs granted this way. Each of the names of these free techs will be filled in the notification |
 | Gain enough Faith for a Pantheon | The amount of faith gained is filled in the notification |
 | Gain engouh Faith for []% of a Great Prophet | The amount of faith gained is filled in the notifciation |
+
+### Specific uniques
+
+A few uniques can be added to ancient ruin effects to modify when they can be earned. These are:
+- "Only available after [amount] turns"
+- "Hidden when religion is disabled"
+- "Hidden after a great prophet has been earned"
 
 ## Specialists.json
 [Link to original](https://github.com/yairm210/Unciv/blob/master/android/assets/jsons/Civ%20V%20-%20Vanilla/Specialists.json)
