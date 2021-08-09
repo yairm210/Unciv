@@ -160,13 +160,17 @@ class CityConstructions {
         val cost = construction.getProductionCost(cityInfo.civInfo)
         val turnsToConstruction = turnsToConstruction(constructionName, useStoredProduction)
         val currentProgress = if (useStoredProduction) getWorkDone(constructionName) else 0
-        if (construction.getMatchingUniques("Unbuildable").none())
-            return "\n" + (if (currentProgress == 0) "" else "$currentProgress/") +
+        val lines = ArrayList<String>()
+        val buildable = construction.uniques.none{ it == "Unbuildable" }
+        if (buildable)
+            lines += (if (currentProgress == 0) "" else "$currentProgress/") +
                     "$cost${Fonts.production} $turnsToConstruction${Fonts.turn}"
-        if (!construction.canBePurchasedWithAnyStat(cityInfo)) return ""  // expensive and only suppresses the \n
-        return Stat.values().filter {
-            construction.canBePurchasedWithStat(cityInfo, it, true)
-        }.joinToString(prefix = "\n") { "${construction.getStatBuyCost(cityInfo, it)}${it.character}" }
+        val otherStats = Stat.values().filter {
+            (it != Stat.Gold || !buildable) &&  // Don't show rush cost for consistency
+            construction.canBePurchasedWithStat(cityInfo, it)
+        }.joinToString(" / ") { "${construction.getStatBuyCost(cityInfo, it)}${it.character}" }
+        if (otherStats.isNotEmpty()) lines += otherStats
+        return lines.joinToString("\n", "\n")
     }
 
     // This function appears unused, can it be removed?
