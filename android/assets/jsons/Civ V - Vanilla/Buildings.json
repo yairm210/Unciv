@@ -1125,14 +1125,14 @@
 		"culture": 3,
 		"happiness": 1,
 		"specialistSlots": {"Artist": 1},
-		"uniques": ["Unbuildable"]
+		"uniques": ["Unbuildable", "Hidden when religion is disabled"]
 	},
 	{
 		"name": "Monastery",
 		"cost": 0,
 		"culture": 2,
 		"faith": 2,
-		"uniques": ["[+1 Culture, +1 Faith] from [Wine] tiles [in this city]", 
+		"uniques": ["[+1 Culture, +1 Faith] from [Wine] tiles [in this city]", "Hidden when religion is disabled", 
 			"[+1 Culture, +1 Faith] from [Incense] tiles [in this city]","Unbuildable"]
 	},
 	{
@@ -1141,7 +1141,7 @@
 		"culture": 2,
 		"faith": 3,
 		"happiness": 1,
-		"uniques": ["Unbuildable"]
+		"uniques": ["Unbuildable", "Hidden when religion is disabled"]
 	},
 	{
 		"name": "Pagoda",
@@ -1149,6 +1149,6 @@
 		"culture": 2,
 		"faith": 2,
 		"happiness": 2,
-		"uniques": ["Unbuildable"]
+		"uniques": ["Unbuildable", "Hidden when religion is disabled"]
 	},
 ]
