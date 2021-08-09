@@ -11,8 +11,8 @@ The JSON files that make up mods can have many different fields, and as not all 
 2. [Eras.json](#erasjson)
 2. [Nations.json](#nationsjson)
 2. [(Policies.json)](#work-in-progress)
-2. [(Quests.json)](#work-in-progress)
-2. [(Religions.json)](#work-in-progress)
+2. [Quests.json](#questsjson)
+2. [Religions.json](#religionsjson)
 2. [Ruins.json](#ruinsjson)
 2. [Specialists.json](#specialistsjson)
 2. [Techs.json](#techsjson)
@@ -213,6 +213,26 @@ This file contains all the nations and city states, including Barbarians and Spe
 | uniques | List | Default empty | Properties of the civilization - see [here](../Uniques#general-uniques) |
 | cities | List | Default empty | City names used sequentially for newly founded cities. |
 | civilopediaText | List | Default empty | see [civilopediaText chapter](#civilopedia-text) |
+
+## Quests.json
+[Link to original](https://github.com/yairm210/Unciv/blob/master/android/assets/jsons/Civ%20V%20-%20Vanilla/Quests.json)
+
+This file contains the Quests that may be given to major Civilizations by City States.
+
+| Attribute | Type | Optional? | Notes |
+|-----------|------|-----------|-------|
+| name | String | Required | Unique identifier name of the quest, it is also shown |
+| description | String | Required | Description of the quest shown to players |
+| type | Enum | Default Individual | Individual or Global |
+| influece | Float | Default 40 | Influence reward gained on quest completion |
+| duration | Integer | Default 0 | Maximum number of turns to complete the quest, 0 if there's no turn limit |
+| minimumCivs | Integer | Default 1 | Minimum number of Civs needed to start the quest. It is meaningful only for type = Global |
+
+
+## Religions.json
+[Link to original](https://github.com/yairm210/Unciv/blob/master/android/assets/jsons/Civ%20V%20-%20Vanilla/Religions.json)
+
+This is just a list of Strings specifying all predefined Religion names. Corresponding icons must exist, that's all to it. After all, they're just containers for [Beliefs](#beliefsjson).
 
 
 ## Ruins.json
