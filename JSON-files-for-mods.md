@@ -3,6 +3,29 @@ This page is a work in progress. Information it contains may be incomplete.
 
 The JSON files that make up mods can have many different fields, and as not all are used in the base game, this wiki page will contain the full information of each. It will also give a short explanation of the syntax of JSON files.
 
+# Table of Contents
+1. [General Overview of JSON files](#general-overview-of-json-files)
+2. [Beliefs.json](#beliefsjson)
+2. [Buildings.json](#buildingsjson)
+2. [Difficulties.json](#difficultiesjson)
+2. [Eras.json](#erasjson)
+2. [Nations.json](#nationsjson)
+2. [(Policies.json)](#work-in-progress)
+2. [(Quests.json)](#work-in-progress)
+2. [(Religions.json)](#work-in-progress)
+2. [Ruins.json](#ruinsjson)
+2. [Specialists.json](#specialistsjson)
+2. [Techs.json](#techsjson)
+2. [(Terrains.json)](#work-in-progress)
+2. [(TileImprovements.json)](#work-in-progress)
+2. [(TileResources.json)](#work-in-progress)
+2. [(UnitPromotions.json)](#work-in-progress)
+2. [Units.json](#unitsjson)
+2. [UnitTypes.json](#unittypesjson)
+2. [Sounds](#sounds)
+2. [Civilopedia text](#civilopedia-text)
+
+
 # General Overview of JSON files
 
 Almost all JSON files start with a "[" and end with a "]". In between these are different objects of the type you are describing, each of which is contained between a "{" and a "}". For example, a very simple units.json may look like:
@@ -59,6 +82,7 @@ Each belief can have the following attributes:
 | name | String | Required | Name of the belief |
 | type | String | Required | The type of the belief. Valid values are: "Pantheon" and "Follower". Later "Founder" will be added, but this has not been implemented yet |
 | uniques | List of Strings | defaults to none | The unique abilities this belief adds to cities following it. May be chosen from the list of building uniques [here](https://github.com/yairm210/Unciv/wiki/Uniques#buildings-only), as well as the general uniques on that page |
+| civilopediaText | List | Default empty | see [civilopediaText chapter](#civilopedia-text) |
 
 ## Buildings.json
 [link to original](https://github.com/yairm210/Unciv/blob/master/android/assets/jsons/Civ%20V%20-%20Vanilla/Buildings.json)
@@ -87,7 +111,7 @@ Each building can have the following attributes:
 | requiredTech | String | defaults to none | The tech that should be researched before this building may be built. Must be in Techs.json |
 | requiredResource | String | defaults to none | The resource that is consumed when building this building. Must be in TileResources.json |
 | requiredNearbyImprovedResources | List of Strings | defaults to none | The building can only be built if any of the resources in this list are within the borders of this city and have been improved. Each resource must be in TileResources.json |
-| replaces | String | defaults to none | The name of a building that should be replaced by this building. Must be in [Buildings.json](Buildings.json) |
+| replaces | String | defaults to none | The name of a building that should be replaced by this building. Must be in [Buildings.json](#buildingsjson) |
 | uniqueTo | String | defaults to none | If supplied, only the nation with this name can build this building. Must be in Nations.json |
 | xpForNewUnits | Integer | defaults to 0 | XP granted automatically to units built in this city |
 | cityStrength | Integer | defaults to 0 | Strength bonus the city in which this building is built receives |
@@ -99,6 +123,7 @@ Each building can have the following attributes:
 | percentStatBonus | Object | defaults to none | Percentual bonus for stats provided by the building. Valid keys are the names of stats (production, gold, science, etc.), valid values are Integers (≥0) |
 | greatPersonPoints | Object | defaults to none | How many great person points for each type will be generated per turn. Valid keys are the stat names (production, gold, science, etc.), valid values are Integers (≥0) |
 | specialistSlots | Object | defaults to none | Specialist slots provided by this building. Valid keys are the names of specialists (as defined in [Specialists.json](Specialists.json)), valid values are Integers, the amount of slots provided for this specialist |
+| civilopediaText | List | Default empty | see [civilopediaText chapter](#civilopedia-text) |
 
 
 ## Difficulties.json
@@ -133,6 +158,7 @@ Each difficulty level can have the following attributes:
 | turnBarbariansCanEnterPlayerTiles | Integer | Default 0 |
 | clearBarbarianCampReward | Integer | Default 25 |
 
+
 ## Eras.json
 [Link to original](https://github.com/yairm210/Unciv/blob/master/android/assets/jsons/Civ%20V%20-%20Vanilla/Eras.json)
 
@@ -156,6 +182,38 @@ Each era can have the following attributes:
 | settlerPopulation | Integer (>0) | defaults to 1 | Default amount of population each city should have when settled when starting a game in this era |
 | settlerBuildings | List of Strings | defaults to none | Buildings that should automatically be built whenever a city is settled when starting a game in this era |
 | startingObsoleteWonders | List of Strings | defaults to none | Wonders (and technically buildings) that should be impossible to built when starting a game in this era. Used in the base game to remove all wonders older than 2 era's |
+
+## Nations.json
+[Link to original](https://github.com/yairm210/Unciv/blob/master/android/assets/jsons/Civ%20V%20-%20Vanilla/Nations.json)
+
+This file contains all the nations and city states, including Barbarians and Spectator.
+
+| Attribute | Type | Optional? | Notes |
+|-----------|------|-----------|-------|
+| name | String | Required |  |
+| leaderName | String | Default empty | Omit only for city states! If you want LeaderPortraits, the image file names must match exactly, including case. |
+| style | String | Default empty | Modifier appended to pixel unit image names |
+| adjective | String | Default empty | Currently unused |
+| cityStateType | Enum | Default absent | Distinguishes Major Civilizations from City States (Cultured, Maritime, Mercantile, Militaristic) |
+| startBias | List | Default empty | Zero or more of: terrainFilter or "Avoid [terrainFilter]" |
+| preferredVictoryType | Enum | Default Neutral | Neutral, Cultural, Diplomatic, Domination or Scientific |
+| startIntroPart1 | String | Default empty | Introductory blurb shown to Player on game start... |
+| startIntroPart2 | String | Default empty | ... second paragraph. ***NO*** "TBD"!!! Leave empty to skip that alert. |
+| declaringWar | String | Default empty | another greeting |
+| attacked | String | Default empty | another greeting |
+| defeated | String | Default empty | another greeting |
+| introduction | String | Default empty | another greeting |
+| neutralHello | String | Default empty | another greeting |
+| hateHello | String | Default empty | another greeting |
+| tradeRequest | String | Default empty | another greeting |
+| innerColor | 3x Integer | Default black | R, G, B for outer ring of nation icon |
+| outerColor | 3x Integer | Required | R, G, B for inner circle of nation icon |
+| uniqueName | String | Default empty | Decorative name for the special characteristic of this Nation |
+| uniqueText | String | Default empty | Replacement text for "uniques". If empty, uniques are listed individually. |
+| uniques | List | Default empty | Properties of the civilization - see [here](../Uniques#unit-uniques) |
+| cities | List | Default empty | City names used sequentially for newly founded cities. |
+| civilopediaText | List | Default empty | see [civilopediaText chapter](#civilopedia-text) |
+
 
 ## Ruins.json
 [Link to original](https://github.com/yairm210/Unciv/blob/master/android/assets/jsons/Civ%20V%20-%20Vanilla/Ruins.json)
@@ -247,8 +305,7 @@ Each unit can have the following attributes:
 | uniques | List of Strings | defaults to none | A list of the unique abilities this unit has. A list of almost all uniques can be found [here](../Uniques#unit-uniques) |
 | replacementTextForUniques | String | defaults to none | If provided, this will be displayed instead of the list of uniques. Can be used for better formatting. |
 | attackSound | String | defaults to none | The sound that is to be played when this unit attacks. For possible values, see [sounds](#Sounds)
-"Hidden when cultural victory is disabled"
-
+| civilopediaText | List | Default empty | see [civilopediaText chapter](#civilopedia-text) |
 
 
 ## UnitTypes.json
@@ -262,12 +319,13 @@ Civilian, Melee, Ranged, Scout, Mounted, Armor, Siege, WaterCivilian, WaterMelee
 | movementType | String | required | The domain through which the unit moves. Allowed values: "Water", "Land", "Air" |
 | uniques | List of String | defaults to none | A list of the unique abilities every unit of this type has. A list of almost all uniques can be found [here](../Uniques#unit-uniques) |
 
-## techs.json
+## Techs.json
 
 Technologies can have the following attributes:
 - name: String - The name of the technology
 - cost: Integer - The amount of science required to research this tech
 - prerequisites: List of strings - A list of the names of techs that are prerequisites of this tech. Only direct prerequisites are necessary.
+
 
 ## Sounds
 Standard values are below. The sounds themselves can be found [here](https://github.com/yairm210/Unciv/tree/master/android/assets/sounds).
@@ -275,6 +333,7 @@ Standard values are below. The sounds themselves can be found [here](https://git
 arrow, artillery, bombard, bombing, cannon, chimes, choir, click, coin, construction, elephant, fortify, gdrAttack, horse, jetgun, machinegun, metalhit, missile, nonmetalhit, nuke, paper, policy, promote, setup, shipguns, shot, slider, swap, tankshot, throw, torpedo, upgrade, whoosh.
 
 Mods can add their own sounds, as long as any new value in attackSound has a corresponding sound file in the mod's sound folder, using one of the formats mp3, ogg or wav (file name extension must match codec used). Remember, names are case sensitive. Small sizes strongly recommended, Unciv's own sounds use 24kHz joint stereo 8-bit VBR at about 50-100kBps.
+
 
 ## Civilopedia text
 Any 'thing' defined in json and listed in the Civilopedia can supply extra text, specifically for the Civilopedia. This can be used to explain special considerations better when the automatically generated display is insufficient, or for 'flavour', background stories and the like. Such text can be formatted and linked to other Civilopedia entries, within limits.
@@ -306,6 +365,7 @@ List of attributes - note not all combinations are valid:
 |`centered`|Boolean|Centers the line (and turns off automatic wrap).|
 
 The lines from json will 'surround' the automatically generated lines such that the latter are inserted just above the first json line carrying a link, if any. If no json lines have links, they will be inserted between the automatic title and the automatic info. This method may, however, change in the future.
+
 
 ## Work in progress
 I'll work more on this later
