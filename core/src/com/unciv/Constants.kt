@@ -67,9 +67,12 @@ object Constants {
     const val cancelImprovementOrder = "Cancel improvement order"
     const val tutorialPopupNamePrefix = "Tutorial: "
 
+    const val OK = "OK"
     const val close = "Close"
-    const val disabled = "disabled"
+    const val yes = "Yes"
+    const val no = "No"
     const val enabled = "enabled"
+    const val disabled = "disabled"
 
     const val barbarians = "Barbarians"
     const val spectator = "Spectator"
