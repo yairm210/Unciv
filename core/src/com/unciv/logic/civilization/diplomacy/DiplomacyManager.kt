@@ -198,10 +198,7 @@ class DiplomacyManager() {
             restingPoint += unique.params[0].toInt()
         
         for (unique in otherCiv().getMatchingUniques("Resting point for Influence with City-States following this religion []"))
-            if (
-                otherCiv().religionManager.religion != null 
-                && civInfo.getCapital().religion.getMajorityReligion() == otherCiv().religionManager.religion!!.name
-            )
+            if (otherCiv().religionManager.religion?.name == civInfo.getCapital().religion.getMajorityReligion())
                 restingPoint += unique.params[0].toInt()
         
         if (diplomaticStatus == DiplomaticStatus.Protector) restingPoint += 5

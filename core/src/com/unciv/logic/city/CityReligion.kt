@@ -112,7 +112,7 @@ class CityInfoReligionManager {
             if (majorityReligionOfCity == null) continue
             else addPressure(
                 majorityReligionOfCity, 
-                if (city.isHolyCity()) 11 // ToDo: check if this should be 6 + 5 or 6 * 5
+                if (city.isHolyCity()) 30
                 else 6
             ) 
         }
