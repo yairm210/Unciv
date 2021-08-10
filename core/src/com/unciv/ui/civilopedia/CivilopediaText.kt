@@ -6,7 +6,9 @@ import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.UncivGame
+import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.ruleset.Ruleset
+import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.Unique
 import com.unciv.models.stats.INamed
 import com.unciv.ui.utils.*
@@ -138,19 +140,31 @@ class FormattedLine (
         const val iconPad = 5f
         /** Padding distance per [indent] level */
         const val indentPad = 30f
+        /** Where indent==1 will be, measured as icon count */
+        const val indentOneAtNumIcons = 3
+
+        private var rulesetCachedInNameMap: Ruleset? = null
+        // Cache to quickly match Categories to names. Takes a few ms to build on a slower desktop and will use just a few 10k bytes.
+        private var allObjectNamesCategoryMap: HashMap<String, CivilopediaCategories>? = null
 
         // Helper for constructor(Unique)
         private fun getUniqueLink(unique: Unique): String {
+            val ruleSet = getCurrentRuleset()
+            if (allObjectNamesCategoryMap == null || rulesetCachedInNameMap !== ruleSet)
+                allObjectNamesCategoryMap = initNamesCategoryMap(ruleSet)
             for (parameter in unique.params) {
-                val category = allObjectNamesCategoryMap[parameter] ?: continue
+                val category = allObjectNamesCategoryMap!![parameter] ?: continue
                 return category.name + "/" + parameter
             }
             return ""
         }
-        // Cache to quickly match Categories to names. Takes a few ms to build on a slower desktop and will use just a few 10k bytes.
-        private val allObjectNamesCategoryMap: HashMap<String, CivilopediaCategories> by lazy {
+        private fun getCurrentRuleset() = when {
+            !UncivGame.isCurrentInitialized() -> Ruleset()
+            !UncivGame.Current.isGameInfoInitialized() -> RulesetCache[BaseRuleset.Civ_V_Vanilla.fullName]!!
+            else -> UncivGame.Current.gameInfo.ruleSet
+        }
+        private fun initNamesCategoryMap(ruleSet: Ruleset): HashMap<String, CivilopediaCategories> {
             //val startTime = System.nanoTime()
-            val ruleSet = UncivGame.Current.gameInfo.ruleSet
             // order these with the categories that should take precedence in case of name conflicts (e.g. Railroad) _last_
             val allObjectMapsSequence = sequence {
                 yield(CivilopediaCategories.Belief to ruleSet.beliefs)
@@ -173,8 +187,10 @@ class FormattedLine (
                     result[it.second] = it.first
                     //println("  ${it.second} is a ${it.first}")
                 }
+
             //println("allObjectNamesCategoryMap took ${System.nanoTime()-startTime}ns to initialize")
-            result
+            rulesetCachedInNameMap = ruleSet
+            return result
         }
     }
 
@@ -242,7 +258,7 @@ class FormattedLine (
         var iconCount = 0
         val iconSize = max(minIconSize, fontSize * 1.5f)
         if (linkType != LinkType.None && !noLinkImages) {
-            table.add( ImageGetter.getImage(linkImage) ).size(iconSize).padRight(iconPad)
+            table.add(ImageGetter.getImage(linkImage)).size(iconSize).padRight(iconPad)
             iconCount++
         }
         if (!noLinkImages)
@@ -259,7 +275,9 @@ class FormattedLine (
                 centered -> -usedWidth
                 indent == 0 && iconCount == 0 -> 0f
                 indent == 0 -> iconPad
-                else -> (indent-1) * indentPad + 3 * minIconSize + 4 * iconPad - usedWidth
+                noLinkImages -> indent * indentPad - usedWidth
+                else -> (indent-1) * indentPad +
+                        indentOneAtNumIcons * (minIconSize + iconPad) + iconPad - usedWidth
             }
             val label = if (fontSize == defaultSize && labelColor == defaultColor) textToDisplay.toLabel()
             else textToDisplay.toLabel(labelColor,fontSize)
@@ -367,22 +385,23 @@ object MarkupRenderer {
 }
 
 /** Storage class for interface [ICivilopediaText] for use as base class */
+@Deprecated("As of 3.16.1, use ICivilopediaText directly please")
 abstract class CivilopediaText : ICivilopediaText {
     override var civilopediaText = listOf<FormattedLine>()
 }
 /** Storage class for instantiation of the simplest form containing only the lines collection */
-class SimpleCivilopediaText(lines: List<FormattedLine>, val isComplete: Boolean = false) : CivilopediaText() {
-    init {
-        civilopediaText = lines
-    }
-    override fun hasCivilopediaTextLines() = true
-    override fun replacesCivilopediaDescription() = isComplete
-    override fun makeLink() = ""
-
+open class SimpleCivilopediaText(
+    override var civilopediaText: List<FormattedLine>,
+    val isComplete: Boolean = false
+) : ICivilopediaText {
     constructor(strings: Sequence<String>, isComplete: Boolean = false) : this(
         strings.map { FormattedLine(it) }.toList(), isComplete)
     constructor(first: Sequence<FormattedLine>, strings: Sequence<String>, isComplete: Boolean = false) : this(
         (first + strings.map { FormattedLine(it) }).toList(), isComplete)
+
+    override fun hasCivilopediaTextLines() = true
+    override fun replacesCivilopediaDescription() = isComplete
+    override fun makeLink() = ""
 }
 
 /** Addon common to most ruleset game objects managing civilopedia display
@@ -406,7 +425,7 @@ interface ICivilopediaText {
      * @return A [FormattedLine] that will be inserted on top
      */
     fun getCivilopediaTextHeader(): FormattedLine? =
-        if (this is INamed) FormattedLine(name, icon=makeLink(), header = 2)
+        if (this is INamed) FormattedLine(name, icon = makeLink(), header = 2)
         else null
 
     /** Generate automatic lines from object metadata.
@@ -438,7 +457,7 @@ interface ICivilopediaText {
      * @param ruleset The current ruleset for the Civilopedia viewer
      * @return A new CivilopediaText instance containing original [civilopediaText] lines merged with those from [getCivilopediaTextHeader] and [getCivilopediaTextLines] calls.
      */
-    fun assembleCivilopediaText(ruleset: Ruleset): CivilopediaText {
+    fun assembleCivilopediaText(ruleset: Ruleset): ICivilopediaText {
         val outerLines = civilopediaText.iterator()
         val newLines = sequence {
             var middleDone = false

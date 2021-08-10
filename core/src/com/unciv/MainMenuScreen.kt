@@ -185,7 +185,7 @@ class MainMenuScreen: CameraStageBaseScreen() {
             add(loadMapButton).row()
             keyPressDispatcher['l'] = loadMapAction
 
-            add(screen.getMenuButton("Close", "OtherIcons/Close") { close() }
+            add(screen.getMenuButton(Constants.close, "OtherIcons/Close") { close() }
                     .apply { background=tableBackground })
             keyPressDispatcher[KeyCharAndCode.BACK] = { close() }
 

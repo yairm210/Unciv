@@ -2,8 +2,10 @@ package com.unciv.ui.worldscreen.mainmenu
 
 import com.badlogic.gdx.Application
 import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.Input
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.*
+import com.unciv.Constants
 import com.unciv.MainMenuScreen
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.models.UncivSound
@@ -13,6 +15,7 @@ import com.unciv.models.translations.TranslationFileWriter
 import com.unciv.models.translations.Translations
 import com.unciv.models.translations.tr
 import com.unciv.ui.utils.*
+import com.unciv.ui.utils.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.worldscreen.WorldScreen
 import java.util.*
 import kotlin.concurrent.thread
@@ -245,7 +248,7 @@ class OptionsPopup(val previousScreen:CameraStageBaseScreen) : Popup(previousScr
     private fun addTranslationGeneration() {
         if (Gdx.app.type == Application.ApplicationType.Desktop) {
             val generateTranslationsButton = "Generate translation files".toTextButton()
-            generateTranslationsButton.onClick {
+            val generateAction = {
                 val translations = Translations()
                 translations.readAllLanguagesTranslation()
                 TranslationFileWriter.writeNewTranslationFiles(translations)
@@ -253,6 +256,9 @@ class OptionsPopup(val previousScreen:CameraStageBaseScreen) : Popup(previousScr
                 generateTranslationsButton.setText("Translation files are generated successfully.".tr())
                 generateTranslationsButton.disable()
             }
+            generateTranslationsButton.onClick(generateAction)
+            keyPressDispatcher[Input.Keys.F12] = generateAction
+            generateTranslationsButton.addTooltip("F12",18f)
             optionsTable.add(generateTranslationsButton).colspan(2).row()
         }
     }
@@ -450,7 +456,7 @@ class OptionsPopup(val previousScreen:CameraStageBaseScreen) : Popup(previousScr
 
         Usage: YesNoButton(someSetting: Boolean, skin) { someSetting = it; sideEffects() }
  */
-private fun Boolean.toYesNo(): String = (if (this) "Yes" else "No").tr()
+private fun Boolean.toYesNo(): String = (if (this) Constants.yes else Constants.no).tr()
 private class YesNoButton(initialValue: Boolean, skin: Skin, action: (Boolean) -> Unit)
         : TextButton (initialValue.toYesNo(), skin ) {
 

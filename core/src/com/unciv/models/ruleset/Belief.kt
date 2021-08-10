@@ -2,16 +2,17 @@ package com.unciv.models.ruleset
 
 import com.unciv.UncivGame
 import com.unciv.models.stats.INamed
-import com.unciv.ui.civilopedia.CivilopediaText
 import com.unciv.ui.civilopedia.FormattedLine
+import com.unciv.ui.civilopedia.ICivilopediaText
 import java.util.ArrayList
 
-class Belief: INamed, CivilopediaText() {
+class Belief : INamed, ICivilopediaText, IHasUniques {
     override var name: String = ""
     var type: BeliefType = BeliefType.None
-    var uniques = ArrayList<String>()
-    val uniqueObjects: List<Unique> by lazy { uniques.map { Unique(it) } }
+    override var uniques = ArrayList<String>()
+    override val uniqueObjects: List<Unique> by lazy { uniques.map { Unique(it) } }
 
+    override var civilopediaText = listOf<FormattedLine>()
 
     override fun makeLink() = "Belief/$name"
     override fun replacesCivilopediaDescription() = true

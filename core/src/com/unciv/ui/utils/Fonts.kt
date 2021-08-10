@@ -12,6 +12,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.utils.Array
 import com.badlogic.gdx.utils.Disposable
 import com.unciv.UncivGame
+import com.unciv.models.stats.Stat
 
 interface NativeFontImplementation {
     fun getFontSize(): Int
@@ -90,6 +91,11 @@ class NativeBitmapFontData(val fontImplementation: NativeFontImplementation) : B
             Fonts.turn -> Fonts.extractPixmapFromTextureRegion(ImageGetter.getDrawable("EmojiIcons/Turn").region)
             Fonts.production -> Fonts.extractPixmapFromTextureRegion(ImageGetter.getDrawable("EmojiIcons/Production").region)
             Fonts.gold -> Fonts.extractPixmapFromTextureRegion(ImageGetter.getDrawable("EmojiIcons/Gold").region)
+            Fonts.food -> Fonts.extractPixmapFromTextureRegion(ImageGetter.getDrawable("EmojiIcons/Food").region)
+            Fonts.science -> Fonts.extractPixmapFromTextureRegion(ImageGetter.getDrawable("EmojiIcons/Science").region)
+            Fonts.culture -> Fonts.extractPixmapFromTextureRegion(ImageGetter.getDrawable("EmojiIcons/Culture").region)
+            Fonts.faith -> Fonts.extractPixmapFromTextureRegion(ImageGetter.getDrawable("EmojiIcons/Faith").region)
+            Fonts.happiness -> Fonts.extractPixmapFromTextureRegion(ImageGetter.getDrawable("EmojiIcons/Happiness").region)
             else -> fontImplementation.getCharPixmap(ch)
         }
     }
@@ -146,7 +152,6 @@ object Fonts {
         return pixmap
     }
 
-
     const val turn = '⏳'               // U+23F3 'hourglass'
     const val strength = '†'            // U+2020 'dagger'
     const val rangedStrength = '‡'      // U+2021 'double dagger'
@@ -154,4 +159,21 @@ object Fonts {
     const val range = '…'               // U+2026 'horizontal ellipsis'
     const val production = '⚙'          // U+2699 'gear'
     const val gold = '¤'                // U+00A4 'currency sign'
+    const val food = '⁂'                // U+2042 'asterism' (to avoid 🍏 U+1F34F 'green apple' needing 2 symbols in utf-16 and 4 in utf-8)
+    const val science = '⍾'             // U+237E 'bell symbol' (🧪 U+1F9EA 'test tube', 🔬 U+1F52C 'microscope')
+    const val culture = '♪'             // U+266A 'eighth note' (🎵 U+1F3B5 'musical note')
+    const val happiness = '⌣'           // U+2323 'smile' (😀 U+1F600 'grinning face')
+    const val faith = '☮'               // U+262E 'peace symbol' (🕊 U+1F54A 'dove of peace')
+    
+    fun statToChar(stat: Stat): Char {
+        return when (stat) {
+            Stat.Food -> food
+            Stat.Production -> production
+            Stat.Gold -> gold
+            Stat.Happiness -> happiness
+            Stat.Culture -> culture
+            Stat.Science -> science
+            Stat.Faith -> faith
+        }
+    }
 }

@@ -197,6 +197,7 @@ object ImageGetter {
 
     fun imageExists(fileName: String) = textureRegionDrawables.containsKey(fileName)
     fun techIconExists(techName: String) = imageExists("TechIcons/$techName")
+    fun unitIconExists(unitName: String) = imageExists("UnitIcons/$unitName")
 
     fun getStatIcon(statName: String): Image {
         return getImage("StatIcons/$statName")
@@ -218,6 +219,14 @@ object ImageGetter {
                     .surroundWithCircle(size, false).apply { circle.color = nation.getInnerColor() }
         } else getCircle().apply { color = nation.getOuterColor() }
                 .surroundWithCircle(size).apply { circle.color = nation.getInnerColor() }
+    }
+    
+    fun getRandomNationIndicator(size: Float): IconCircleGroup {
+        return "?"
+            .toLabel(Color.WHITE, (size * 5f/8f).toInt())
+            .apply { this.setAlignment(Align.center) }
+            .surroundWithCircle(size * 0.9f).apply { circle.color = Color.BLACK }
+            .surroundWithCircle(size, false).apply { circle.color = Color.WHITE }
     }
 
     private fun nationIconExists(nation: String) = imageExists("NationIcons/$nation")
@@ -291,6 +300,7 @@ object ImageGetter {
         return circle
     }
     
+    fun religionIconExists(iconName: String) = imageExists("ReligionIcons/$iconName")
     fun getReligionIcon(iconName: String): Image {
         return getImage("ReligionIcons/$iconName")
     }

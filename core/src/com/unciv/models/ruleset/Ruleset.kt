@@ -13,14 +13,18 @@ import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.tile.TileResource
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.ruleset.unit.Promotion
+import com.unciv.models.ruleset.unit.UnitType
 import com.unciv.models.stats.INamed
 import com.unciv.models.stats.NamedStats
 import com.unciv.models.stats.Stat
+import com.unciv.models.translations.tr
 import com.unciv.ui.utils.colorFromRGB
 import kotlin.collections.set
 
 object ModOptionsConstants {
     const val diplomaticRelationshipsCannotChange = "Diplomatic relationships cannot change"
+    const val convertGoldToScience = "Can convert gold to science with sliders"
+    const val allowCityStatesSpawnUnits = "Allow City States to spawn with additional units"
 }
 
 class ModOptions {
@@ -29,13 +33,15 @@ class ModOptions {
     var buildingsToRemove = HashSet<String>()
     var unitsToRemove = HashSet<String>()
     var nationsToRemove = HashSet<String>()
-    var uniques = HashSet<String>()
-    val maxXPfromBarbarians = 30
+    
 
     var lastUpdated = ""
     var modUrl = ""
     var author = ""
     var modSize = 0
+    
+    val maxXPfromBarbarians = 30
+    var uniques = HashSet<String>()     // No reason for now to use IHasUniques here, in that case needs to change to ArrayList
 }
 
 class Ruleset {
@@ -46,13 +52,14 @@ class Ruleset {
 
     var name = ""
     val beliefs = LinkedHashMap<String, Belief>()
-    val religions = ArrayList<String>()
     val buildings = LinkedHashMap<String, Building>()
     val difficulties = LinkedHashMap<String, Difficulty>()
     val eras = LinkedHashMap<String, Era>()
     val nations = LinkedHashMap<String, Nation>()
     val policies = LinkedHashMap<String, Policy>()
     val policyBranches = LinkedHashMap<String, PolicyBranch>()
+    val religions = ArrayList<String>()
+    val ruinRewards = LinkedHashMap<String, RuinReward>()
     val quests = LinkedHashMap<String, Quest>()
     val specialists = LinkedHashMap<String, Specialist>()
     val technologies = LinkedHashMap<String, Technology>()
@@ -61,6 +68,7 @@ class Ruleset {
     val tileResources = LinkedHashMap<String, TileResource>()
     val units = LinkedHashMap<String, BaseUnit>()
     val unitPromotions = LinkedHashMap<String, Promotion>()
+    val unitTypes = LinkedHashMap<String, UnitType>()
     
     val mods = LinkedHashSet<String>()
     var modOptions = ModOptions()
@@ -90,6 +98,7 @@ class Ruleset {
         beliefs.putAll(ruleset.beliefs)
         quests.putAll(ruleset.quests)
         religions.addAll(ruleset.religions)
+        ruinRewards.putAll(ruleset.ruinRewards)
         specialists.putAll(ruleset.specialists)
         technologies.putAll(ruleset.technologies)
         for (techToRemove in ruleset.modOptions.techsToRemove) technologies.remove(techToRemove)
@@ -98,6 +107,7 @@ class Ruleset {
         tileResources.putAll(ruleset.tileResources)
         unitPromotions.putAll(ruleset.unitPromotions)
         units.putAll(ruleset.units)
+        unitTypes.putAll(ruleset.unitTypes)
         for (unitToRemove in ruleset.modOptions.unitsToRemove) units.remove(unitToRemove)
         mods += ruleset.mods
         modWithReligionLoaded = modWithReligionLoaded || ruleset.modWithReligionLoaded
@@ -114,6 +124,7 @@ class Ruleset {
         nations.clear()
         policies.clear()
         religions.clear()
+        ruinRewards.clear()
         quests.clear()
         technologies.clear()
         terrains.clear()
@@ -121,6 +132,7 @@ class Ruleset {
         tileResources.clear()
         unitPromotions.clear()
         units.clear()
+        unitTypes.clear()
         modWithReligionLoaded = false
     }
 
@@ -162,12 +174,15 @@ class Ruleset {
         val erasFile = folderHandle.child("Eras.json")
         if (erasFile.exists()) eras += createHashmap(jsonParser.getFromJson(Array<Era>::class.java, erasFile))
         
+        val unitTypesFile = folderHandle.child("UnitTypes.json")
+        if (unitTypesFile.exists()) unitTypes += createHashmap(jsonParser.getFromJson(Array<UnitType>::class.java, unitTypesFile))
+        
         val unitsFile = folderHandle.child("Units.json")
         if (unitsFile.exists()) units += createHashmap(jsonParser.getFromJson(Array<BaseUnit>::class.java, unitsFile))
 
         val promotionsFile = folderHandle.child("UnitPromotions.json")
         if (promotionsFile.exists()) unitPromotions += createHashmap(jsonParser.getFromJson(Array<Promotion>::class.java, promotionsFile))
-
+        
         val questsFile = folderHandle.child("Quests.json")
         if (questsFile.exists()) quests += createHashmap(jsonParser.getFromJson(Array<Quest>::class.java, questsFile))
 
@@ -198,6 +213,10 @@ class Ruleset {
         if (religionsFile.exists())
             religions += jsonParser.getFromJson(Array<String>::class.java, religionsFile).toList()
 
+        val ruinRewardsFile = folderHandle.child("Ruins.json")
+        if (ruinRewardsFile.exists())
+            ruinRewards += createHashmap(jsonParser.getFromJson(Array<RuinReward>::class.java, ruinRewardsFile))
+        
         val nationsFile = folderHandle.child("Nations.json")
         if (nationsFile.exists()) {
             nations += createHashmap(jsonParser.getFromJson(Array<Nation>::class.java, nationsFile))
@@ -218,9 +237,9 @@ class Ruleset {
      *  */
     fun updateBuildingCosts() {
         for (building in buildings.values) {
-            if (building.cost == 0) {
+            if (building.cost == 0 && !building.uniques.contains("Unbuildable")) {
                 val column = technologies[building.requiredTech]?.column
-                        ?: throw UncivShowableException("Building (${building.name}) must either have an explicit cost or reference an existing tech")
+                        ?: throw UncivShowableException("Building (${building.name}) is buildable and therefore must either have an explicit cost or reference an existing tech")
                 building.cost = if (building.isAnyWonder()) column.wonderCost else column.buildingCost
             }
         }
@@ -233,14 +252,15 @@ class Ruleset {
     fun getSummary(): String {
         val stringList = ArrayList<String>()
         if (modOptions.isBaseRuleset) stringList += "Base Ruleset"
-        if (technologies.isNotEmpty()) stringList.add(technologies.size.toString() + " Techs")
-        if (nations.isNotEmpty()) stringList.add(nations.size.toString() + " Nations")
-        if (units.isNotEmpty()) stringList.add(units.size.toString() + " Units")
-        if (buildings.isNotEmpty()) stringList.add(buildings.size.toString() + " Buildings")
-        if (tileResources.isNotEmpty()) stringList.add(tileResources.size.toString() + " Resources")
-        if (tileImprovements.isNotEmpty()) stringList.add(tileImprovements.size.toString() + " Improvements")
-        if (beliefs.isNotEmpty()) stringList.add(beliefs.size.toString() + " Beliefs")
-        return stringList.joinToString()
+        if (technologies.isNotEmpty()) stringList += "[${technologies.size}] Techs"
+        if (nations.isNotEmpty()) stringList += "[${nations.size}] Nations"
+        if (units.isNotEmpty()) stringList += "[${units.size}] Units"
+        if (buildings.isNotEmpty()) stringList += "[${buildings.size}] Buildings"
+        if (tileResources.isNotEmpty()) stringList += "[${tileResources.size}] Resources"
+        if (tileImprovements.isNotEmpty()) stringList += "[${tileImprovements.size}] Improvements"
+        if (religions.isNotEmpty()) stringList += "[${religions.size}] Religions"
+        if (beliefs.isNotEmpty()) stringList += "[${beliefs.size}] Beliefs"
+        return stringList.joinToString { it.tr() }
     }
 
     /** Severity level of Mod RuleSet check */
@@ -291,8 +311,14 @@ class Ruleset {
         }
 
         for (building in buildings.values) {
-            if (building.requiredTech == null && building.cost == 0)
-                lines += "${building.name} must either have an explicit cost or reference an existing tech!"
+            if (building.requiredTech == null && building.cost == 0 && !building.uniques.contains("Unbuildable"))
+                lines += "${building.name} is buildable and therefore must either have an explicit cost or reference an existing tech!"
+        }
+        
+        for (nation in nations.values) {
+            if (nation.cities.isEmpty() && !nation.isSpectator() && !nation.isBarbarian()) {
+                lines += "${nation.name} can settle cities, but has no city names!"
+            }
         }
 
         if (!modOptions.isBaseRuleset) return CheckModLinksResult(warningCount, lines)
@@ -388,13 +414,17 @@ class Ruleset {
                 lines += "Unknown era ${tech.era()} referenced in column of tech ${tech.name}"
         }
 
+        if(eras.isEmpty()){
+            lines += "Eras file is empty! This mod will be unusable in the near future!"
+            warningCount++
+        }
         for (era in eras) {
             for (wonder in era.value.startingObsoleteWonders)
                 if (wonder !in buildings)
-                    lines += "Nonexistent wonder ${wonder} obsoleted when starting in ${era.key}!"
+                    lines += "Nonexistent wonder $wonder obsoleted when starting in ${era.key}!"
             for (building in era.value.settlerBuildings)
                 if (building !in buildings)
-                    lines += "Nonexistent building ${building} built by settlers when starting in ${era.key}"
+                    lines += "Nonexistent building $building built by settlers when starting in ${era.key}"
             if (era.value.startingMilitaryUnit !in units)
                 lines += "Nonexistent unit ${era.value.startingMilitaryUnit} marked as starting unit when starting in ${era.key}"
             if (era.value.researchAgreementCost < 0 || era.value.startingSettlerCount < 0 || era.value.startingWorkerCount < 0 || era.value.startingMilitaryUnitCount < 0 || era.value.startingGold < 0 || era.value.startingCulture < 0)
@@ -403,7 +433,6 @@ class Ruleset {
                 lines += "Population in cities from settlers must be strictly positive! Found value ${era.value.settlerPopulation} for era ${era.key}"
         }
 
-
         return CheckModLinksResult(warningCount, lines)
     }
 }
@@ -411,7 +440,7 @@ class Ruleset {
 /** Loading mods is expensive, so let's only do it once and
  * save all of the loaded rulesets somewhere for later use
  *  */
-object RulesetCache :HashMap<String,Ruleset>() {
+object RulesetCache : HashMap<String,Ruleset>() {
     fun loadRulesets(consoleMode: Boolean = false, printOutput: Boolean = false) {
         clear()
         for (ruleset in BaseRuleset.values()) {
@@ -447,7 +476,7 @@ object RulesetCache :HashMap<String,Ruleset>() {
     }
 
 
-    fun getBaseRuleset() = this[BaseRuleset.Civ_V_Vanilla.fullName]!!.clone() // safeguard, o no-one edits the base ruleset by mistake
+    fun getBaseRuleset() = this[BaseRuleset.Civ_V_Vanilla.fullName]!!.clone() // safeguard, so no-one edits the base ruleset by mistake
 
     fun getComplexRuleset(mods: LinkedHashSet<String>): Ruleset {
         val newRuleset = Ruleset()
@@ -466,6 +495,16 @@ object RulesetCache :HashMap<String,Ruleset>() {
         }
         newRuleset.updateBuildingCosts() // only after we've added all the mods can we calculate the building costs
 
+        // This one should be temporary
+        if (newRuleset.unitTypes.isEmpty()) {
+            newRuleset.unitTypes.putAll(getBaseRuleset().unitTypes)
+        }
+        
+        // This one should be permanent
+        if (newRuleset.ruinRewards.isEmpty()) {
+            newRuleset.ruinRewards.putAll(getBaseRuleset().ruinRewards)
+        }
+        
         return newRuleset
     }
 

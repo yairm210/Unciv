@@ -3,6 +3,7 @@ package com.unciv.logic.trade
 import com.unciv.Constants
 import com.unciv.logic.automation.Automation
 import com.unciv.logic.automation.ThreatLevel
+import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.models.ruleset.tile.ResourceType
@@ -75,7 +76,7 @@ class TradeEvaluation {
                 return when (offer.name) {
                     // Since it will be evaluated twice, once when they evaluate our offer and once when they evaluate theirs
                     Constants.peaceTreaty -> evaluatePeaceCostForThem(civInfo, tradePartner)
-                    Constants.researchAgreement -> evaluateResearchAgreementCostForThem(civInfo, tradePartner)
+                    Constants.researchAgreement -> -offer.amount
                     else -> 1000
                 }
             }
@@ -147,9 +148,10 @@ class TradeEvaluation {
             TradeType.City -> {
                 val city = tradePartner.cities.first { it.id == offer.name }
                 val stats = city.cityStats.currentCityStats
+                val surrounded: Int = surroundedByOurCities(city, civInfo)
                 if (civInfo.getHappiness() + city.cityStats.happinessList.values.sum() < 0)
                     return 0 // we can't really afford to go into negative happiness because of buying a city
-                val sumOfStats = stats.culture + stats.gold + stats.science + stats.production + stats.happiness + stats.food
+                val sumOfStats = stats.culture + stats.gold + stats.science + stats.production + stats.happiness + stats.food + surrounded
                 return sumOfStats.toInt() * 100
             }
             TradeType.Agreement -> {
@@ -157,6 +159,16 @@ class TradeEvaluation {
                 throw Exception("Invalid agreement type!")
             }
         }
+    }
+    fun surroundedByOurCities(city: CityInfo, civInfo: CivilizationInfo): Int{
+        val borderingCivs: List<String> = city.getNeighbouringCivs()
+        if (borderingCivs.size == 1 && borderingCivs.contains(civInfo.civName)){
+            return 10*civInfo.getEraNumber() // if the city is surrounded only by trading civ
+        }
+        if (borderingCivs.contains(civInfo.civName))
+            return 2*civInfo.getEraNumber() // if the city has a border with trading civ
+        return 0
+
     }
 
     fun evaluateSellCost(offer: TradeOffer, civInfo: CivilizationInfo, tradePartner: CivilizationInfo): Int {
@@ -167,7 +179,7 @@ class TradeEvaluation {
                 return when (offer.name) {
                     // Since it will be evaluated twice, once when they evaluate our offer and once when they evaluate theirs
                     Constants.peaceTreaty -> evaluatePeaceCostForThem(civInfo, tradePartner)
-                    Constants.researchAgreement -> evaluateResearchAgreementCostForThem(civInfo, tradePartner)
+                    Constants.researchAgreement -> -offer.amount
                     else -> 1000
                 }
             }
@@ -217,8 +229,10 @@ class TradeEvaluation {
 
             TradeType.City -> {
                 val city = civInfo.cities.first { it.id == offer.name }
+                val capitalcity = civInfo.getCapital()
+                val distanceCost = distanceCityTradeModifier(civInfo, capitalcity, city)
                 val stats = city.cityStats.currentCityStats
-                val sumOfStats = stats.culture + stats.gold + stats.science + stats.production + stats.happiness + stats.food
+                val sumOfStats = stats.culture + stats.gold + stats.science + stats.production + stats.happiness + stats.food - distanceCost
                 return sumOfStats.toInt() * 100
             }
             TradeType.Agreement -> {
@@ -234,6 +248,12 @@ class TradeEvaluation {
                 throw Exception("Invalid agreement type!")
             }
         }
+    }
+    fun distanceCityTradeModifier(civInfo: CivilizationInfo, capitalcity: CityInfo, city: CityInfo): Int{
+        val distanceBetweenCities = capitalcity.getCenterTile().aerialDistanceTo(city.getCenterTile())
+
+        if (distanceBetweenCities < 500)  return 0
+        return min(50,  (500 - distanceBetweenCities) * civInfo.getEraNumber())
     }
 
     fun evaluatePeaceCostForThem(ourCivilization: CivilizationInfo, otherCivilization: CivilizationInfo): Int {
@@ -254,7 +274,4 @@ class TradeEvaluation {
         }
     }
 
-    fun evaluateResearchAgreementCostForThem(ourCivilization: CivilizationInfo, otherCivilization: CivilizationInfo): Int {
-        return -100 * (ourCivilization.getEraNumber() - otherCivilization.getEraNumber())
-    }
 }

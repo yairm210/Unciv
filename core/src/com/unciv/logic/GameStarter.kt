@@ -9,10 +9,10 @@ import com.unciv.logic.map.TileMap
 import com.unciv.logic.map.mapgenerator.MapGenerator
 import com.unciv.models.metadata.GameParameters
 import com.unciv.models.ruleset.Era
+import com.unciv.models.ruleset.ModOptionsConstants
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.tile.ResourceType
-import com.unciv.models.ruleset.tile.TileResource
 import com.unciv.ui.newgamescreen.GameSetupInfo
 import java.util.*
 import kotlin.collections.ArrayList
@@ -236,12 +236,18 @@ object GameStarter {
                 // An unusually bad spawning location
                 addConsolationPrize(gameInfo, startingLocation, 45 - startingLocation.getTileStartScore().toInt())
             }
+            
             if(civ.isCityState())
                 addCityStateLuxury(gameInfo, startingLocation)
 
-            for (tile in startingLocation.getTilesInDistance(3))
-                if (tile.improvement == Constants.ancientRuins)
+            for (tile in startingLocation.getTilesInDistance(3)) {
+                if (tile.improvement != null 
+                    && !tile.improvement!!.startsWith("StartingLocation") 
+                    && tile.getTileImprovement()!!.isAncientRuinsEquivalent()
+                ) {
                     tile.improvement = null // Remove ancient ruins in immediate vicinity
+                }
+            }
 
             fun placeNearStartingPosition(unitName: String) {
                 civ.placeUnitNearTile(startingLocation.position, unitName)
@@ -256,7 +262,7 @@ object GameStarter {
                 }).toMutableList()
 
                 val warriorEquivalent = ruleSet.units.values
-                    .filter { it.unitType.isLandUnit() && it.isMilitary() && it.isBuildable(civ) }
+                    .filter { it.isLandUnit() && it.isMilitary() && it.isBuildable(civ) }
                     .maxByOrNull {max(it.strength, it.rangedStrength)}
                     ?.name
                 
@@ -309,13 +315,20 @@ object GameStarter {
                 return civ.getEquivalentUnit(unit).name
             }
 
-            
-            if (civ.isCityState()) {
-                // City states should spawn with one settler only irregardless of era and difficulty
+            // City states should only spawn with one settler regardless of difficulty, but this may be disabled in mods 
+            if (civ.isCityState() && !ruleSet.modOptions.uniques.contains(ModOptionsConstants.allowCityStatesSpawnUnits)) {
                 val startingSettlers = startingUnits.filter { settlerLikeUnits.contains(it) }
 
                 startingUnits.clear()
-                startingUnits.add( startingSettlers.random() )
+                startingUnits.add(startingSettlers.random())
+            }
+            
+            // One city challengers should spawn with one settler only regardless of era and difficulty
+            if (civ.playerType == PlayerType.Human && gameInfo.gameParameters.oneCityChallenge) {
+                val startingSettlers = startingUnits.filter { settlerLikeUnits.contains(it) }
+                
+                startingUnits.removeAll(startingSettlers)
+                startingUnits.add(startingSettlers.random())
             }
 
             for (unit in startingUnits) {

@@ -24,7 +24,6 @@ import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.*
 import com.unciv.models.AttackableTile
 import com.unciv.models.UncivSound
-import com.unciv.models.ruleset.unit.UnitType
 import com.unciv.ui.map.TileGroupMap
 import com.unciv.ui.tilegroups.TileGroup
 import com.unciv.ui.tilegroups.TileSetStrings
@@ -168,7 +167,7 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
         } else addTileOverlays(tileInfo) // no unit movement but display the units in the tile etc.
 
 
-        if (newSelectedUnit == null || newSelectedUnit.type == UnitType.Civilian) {
+        if (newSelectedUnit == null || newSelectedUnit.isCivilian()) {
             val unitsInTile = selectedTile!!.getUnits()
             if (previousSelectedCity != null && previousSelectedCity.canBombard()
                     && selectedTile!!.getTilesInDistance(2).contains(previousSelectedCity.getCenterTile())
@@ -493,7 +492,7 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
         for (tile in allWorldTileGroups) {
             if (tile.icons.populationIcon != null) tile.icons.populationIcon!!.color.a = fadeout
             if (tile.icons.improvementIcon != null && tile.tileInfo.improvement != Constants.barbarianEncampment
-                && tile.tileInfo.improvement != Constants.ancientRuins)
+                && tile.tileInfo.getTileImprovement()!!.isAncientRuinsEquivalent())
                 tile.icons.improvementIcon!!.color.a = fadeout
             if (tile.resourceImage != null) tile.resourceImage!!.color.a = fadeout
         }

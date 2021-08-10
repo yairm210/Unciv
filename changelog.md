@@ -1,3 +1,126 @@
+## 3.16.2
+
+Fixed crashing Diplomatic victory bug
+
+By xlenstra:
+- Added follower beliefs for buying religious buildings 
+- Hides 'automate' unit action and unhides 'stop exploring' unit action 
+- Ruins now have their own file 
+- Architecture is now a prerequiste of Archaeology 
+- Fixed bug where units could still be purchased if they used a depleted resource 
+- Fixed crash when borrowing names 
+- Fixes bug where Russia's unique no longer works 
+- One with nature yield for spain is now doubled 
+
+By SomeTroglodyte:
+- MapGenerator optimization 
+- Diplomacy: City State resource UI, improvement gift effect 
+- Mod description translation 
+
+Pikeman upgrades only to Lancer  - By ravignir
+
+Fix banking's required techs  - By logicminimal
+
+City state resources  - By Interdice
+
+## 3.16.1
+
+By xlenstra:
+- Added missionairy units, which can spread religion and bought with faith 
+- Replaced the last promotion effects with uniques 
+- Removed $ signs from translatable strings 
+
+By SomeTroglodyte:
+- Bring `allUnitActionsHaveTranslation` test up to date 
+- Change defeat conditions 
+
+By ravignir:
+- Minor fix to Great Prophets cost not increasing 
+
+## 3.16.0-patch1
+
+Bugfixes from unitTypes so promotions work again  - By xlenstra
+
+By SomeTroglodyte:
+- Allow civ-unique buildings to be created by startingEra 
+- Mod manager concurrency 
+
+Randomize Plains/Grasslands around deserts  - By ravignir
+
+## 3.16.0
+
+By xlenstra:
+- Added Diplomatic victory!
+- Unit types are now moddable!
+
+Bugfixes
+
+Atomic bomb interception works as intended
+
+Ai now cares about city distances   - By Interdice
+
+By SomeTroglodyte:
+- Civilopedia phase 9 - Technologies 
+- Harden map editor map loader against most bad maps 
+- UI improvements
+
+General fixes - By lishaoxia1985
+
+## 3.15.18
+
+600th version!
+
+Solved crash where city states would try to gift great people without cities
+
+By avdstaaij:
+- Fixed captured units not tp-ing out of illegal tiles 
+
+By SomeTroglodyte:
+- TranslationFileWriter support for CivilopediaText 
+- Fix Civilopedia Unique auto-linking when Ruleset changes 
+- Reduce atlas - The Huns was 4x larger than the other nations, and a dirty Hexagon dupe 
+- Better crude maps - zero uncovered tiles impossible 
+
+By xlenstra:
+- Added modoptions unique for disabling city-state spawning with only a settler 
+- Fixed bug where production from cutting down forests could apply to perpetual constructions 
+
+Improve River for FantasyHex  - By AdityaMH
+
+Fix Hagia Sophia and CN Tower not giving civ 5 bonuses  - By logicminimal
+
+## 3.15.17
+
+Influence-by-game-progress works as intended
+
+One-city-challengers no longer get multiple settlers for later eras
+
+Maori Warrior debuff only applies to enemy units
+
+AI accepts research agreement offers
+
+Buildings from era are applied before buildings from policies
+
+By SomeTroglodyte:
+- Civilopedia phase 8 - Nations and Promotions 
+- UnitActionType now knows keys, sounds and most icons 
+
+And new unit pixel and some improvement - By AdityaMH
+
+Map climate overhaul - By ravignir
+
+## 3.15.16
+
+City states no longer grant Great Prophets when religion is not enabled
+
+Background work for moddable uit types :)
+
+Mercantile CS resources - By SimonCeder
+
+Civilopedia phase7 - By SomeTroglodyte
+
+Petra as in G&K fix - By ravignir
+
 ## 3.15.15
 
 Great Person points are now moddable!

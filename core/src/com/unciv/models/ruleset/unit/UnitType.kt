@@ -1,45 +1,54 @@
 package com.unciv.models.ruleset.unit
 
-enum class UnitType{
-    City,
+import com.unciv.models.ruleset.Unique
+import com.unciv.models.stats.INamed
+
+
+enum class UnitLayer { // The layer in which the unit moves
     Civilian,
-    Melee,
-    Ranged,
-    Scout,
-    Mounted,
-    Armor,
-    Siege,
-
-    WaterCivilian,
-    WaterMelee,
-    WaterRanged,
-    WaterSubmarine,
-    WaterAircraftCarrier,
-
-    Fighter,
-    Bomber,
-    AtomicBomber,
-    Missile;
-
-    fun isLandUnit() =
-                this == Civilian
-                || this == Melee
-                || this == Mounted
-                || this == Armor
-                || this == Scout
-                || this == Ranged
-                || this == Siege
-
-    fun isWaterUnit() =
-                this == WaterSubmarine
-                || this == WaterRanged
-                || this == WaterMelee
-                || this == WaterCivilian
-                || this == WaterAircraftCarrier
-
-    fun isAirUnit() =
-                this == Bomber
-                || this == Fighter
-                || this == AtomicBomber
-
+    Military,
+    Air 
 }
+
+enum class UnitMovementType { // The types of tiles the unit can by default enter
+    Land, // Only land tiles except when certain techs are researched
+    Water, // Only water tiles
+    Air // Only city tiles and carrying units
+}
+
+class UnitType() : INamed {
+    override lateinit var name: String
+    private var movementType: String? = null
+    private val unitMovementType: UnitMovementType? by lazy { if (movementType == null) null else UnitMovementType.valueOf(movementType!!) }
+    
+    val uniques: ArrayList<String> = ArrayList()
+    val uniqueObjects: List<Unique> by lazy { uniques.map { Unique(it) } }
+    
+    constructor(name: String, domain: String? = null) : this() {
+        this.name = name
+        this.movementType = domain
+    }
+    
+    fun getMovementType() = unitMovementType
+    
+    fun isLandUnit() = unitMovementType == UnitMovementType.Land
+    fun isWaterUnit() = unitMovementType == UnitMovementType.Water
+    fun isAirUnit() = unitMovementType == UnitMovementType.Air
+    
+    fun matchesFilter(filter: String): Boolean {
+        return when (filter) {
+            "Land" -> isLandUnit()
+            "Water" -> isWaterUnit()
+            "Air" -> isAirUnit()
+            else -> {
+                uniques.contains(filter)
+            }
+        }
+    }
+    
+    companion object {
+        val City = UnitType("City", "Land")
+    }
+}
+
+

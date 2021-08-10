@@ -6,7 +6,6 @@ import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
-import com.unciv.models.ruleset.unit.UnitType
 import com.unciv.ui.worldscreen.unit.UnitActions
 
 object UnitAutomation {
@@ -49,8 +48,11 @@ object UnitAutomation {
         val unitDistanceToTiles = unit.movement.getDistanceToTiles()
         val tileWithRuinOrEncampment = unitDistanceToTiles.keys
                 .firstOrNull {
-                    (it.improvement == Constants.ancientRuins || it.improvement == Constants.barbarianEncampment)
-                            && unit.movement.canMoveTo(it)
+                    (
+                        (it.improvement != null && it.getTileImprovement()!!.isAncientRuinsEquivalent()) 
+                        || it.improvement == Constants.barbarianEncampment
+                    )
+                    && unit.movement.canMoveTo(it)
                 }
         if (tileWithRuinOrEncampment == null)
             return false
@@ -106,13 +108,16 @@ object UnitAutomation {
             return // The AI doesn't know how to handle unknown civilian units
         }
 
-        if (unit.type == UnitType.Fighter)
+        if (unit.baseUnit.isAirUnit() && unit.canIntercept())
             return SpecificUnitAutomation.automateFighter(unit)
 
-        if (unit.type == UnitType.Bomber)
+        if (unit.baseUnit.isAirUnit())
             return SpecificUnitAutomation.automateBomber(unit)
 
-        if (unit.type == UnitType.Missile || unit.type == UnitType.AtomicBomber)
+        if (unit.baseUnit.isNuclearWeapon())
+            return SpecificUnitAutomation.automateNukes(unit)
+        
+        if (unit.hasUnique("Self-destructs when attacking"))
             return SpecificUnitAutomation.automateMissile(unit)
 
 
@@ -151,12 +156,12 @@ object UnitAutomation {
 
         if (tryHeadTowardsEncampment(unit)) return
 
-        // else, try to go o unreached tiles
+        // else, try to go to unreached tiles
         if (tryExplore(unit)) return
     }
 
     private fun tryHeadTowardsEncampment(unit: MapUnit): Boolean {
-        if (unit.type == UnitType.Missile) return false // don't use missiles against barbarians...
+        if (unit.hasUnique("Self-destructs when attacking")) return false // don't use single-use units against barbarians...
         val knownEncampments = unit.civInfo.gameInfo.tileMap.values.asSequence()
                 .filter { it.improvement == Constants.barbarianEncampment && unit.civInfo.exploredTiles.contains(it.position) }
         val cities = unit.civInfo.cities
@@ -279,7 +284,7 @@ object UnitAutomation {
         val settlerOrGreatPersonToAccompany = unit.civInfo.getCivUnits()
                 .firstOrNull {
                     val tile = it.currentTile
-                    it.type == UnitType.Civilian &&
+                    it.isCivilian() &&
                             (it.hasUnique(Constants.settlerUnique) || unit.isGreatPerson())
                             && tile.militaryUnit == null && unit.movement.canMoveTo(tile) && unit.movement.canReach(tile)
                 }
@@ -392,7 +397,7 @@ object UnitAutomation {
         if (targets.none()) return null
 
         val siegeUnits = targets
-                .filter { it.getUnitType() == UnitType.Siege }
+                .filter { it is MapUnitCombatant && it.unit.baseUnit.isProbablySiegeUnit() }
         if (siegeUnits.any()) targets = siegeUnits
         else {
             val rangedUnits = targets
@@ -429,7 +434,7 @@ object UnitAutomation {
     }
 
     private fun tryGarrisoningUnit(unit: MapUnit): Boolean {
-        if (unit.baseUnit.isMelee() || unit.type.isWaterUnit()) return false // don't garrison melee units, they're not that good at it
+        if (unit.baseUnit.isMelee() || unit.baseUnit.isWaterUnit()) return false // don't garrison melee units, they're not that good at it
         val citiesWithoutGarrison = unit.civInfo.cities.filter {
             val centerTile = it.getCenterTile()
             centerTile.militaryUnit == null

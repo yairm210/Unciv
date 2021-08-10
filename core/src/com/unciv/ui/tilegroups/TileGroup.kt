@@ -2,18 +2,15 @@ package com.unciv.ui.tilegroups
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.Batch
-import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.utils.Align
 import com.unciv.UncivGame
-import com.unciv.logic.HexMath
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.RoadStatus
 import com.unciv.logic.map.TileInfo
-import com.unciv.models.ruleset.unit.UnitType
 import com.unciv.ui.cityscreen.YieldGroup
 import com.unciv.ui.utils.ImageGetter
 import com.unciv.ui.utils.center
@@ -444,16 +441,7 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings, 
             }
             if (neighborOwner != tileOwner && !borderImages.containsKey(neighbor)) { // there should be a border here but there isn't
 
-                val relativeHexPosition = when (tileInfo.tileMap.getNeighborTileClockPosition(tileInfo, neighbor)){
-                    2 -> Vector2(0f,-1f)
-                    4 -> Vector2(1f,0f)
-                    6 -> Vector2(1f,1f)
-                    8 -> Vector2(0f,1f)
-                    10 -> Vector2(-1f,0f)
-                    12 -> Vector2(-1f,-1f)
-                    else -> Vector2.Zero
-                }
-                val relativeWorldPosition = HexMath.hex2WorldCoords(relativeHexPosition)
+                val relativeWorldPosition = tileInfo.tileMap.getNeighborTilePositionAsWorldCoords(tileInfo, neighbor)
 
                 // This is some crazy voodoo magic so I'll explain.
                 val images = mutableListOf<Image>()
@@ -487,8 +475,7 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings, 
     private fun updateRoadImages() {
         if (forMapEditorIcon) return
         for (neighbor in tileInfo.neighbors) {
-            if (!roadImages.containsKey(neighbor)) roadImages[neighbor] = RoadImage()
-            val roadImage = roadImages[neighbor]!!
+            val roadImage = roadImages[neighbor] ?: RoadImage().also { roadImages[neighbor] = it }
 
             val roadStatus = when {
                 tileInfo.roadStatus == RoadStatus.None || neighbor.roadStatus === RoadStatus.None -> RoadStatus.None
@@ -505,20 +492,10 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings, 
             }
             if (roadStatus == RoadStatus.None) continue // no road image
 
-            val image = if (roadStatus == RoadStatus.Road) ImageGetter.getDot(Color.BROWN)
-            else ImageGetter.getImage(tileSetStrings.railroad)
+            val image = ImageGetter.getImage(tileSetStrings.roadsMap[roadStatus]!!)
             roadImage.image = image
 
-            val relativeHexPosition = when (tileInfo.tileMap.getNeighborTileClockPosition(neighbor, tileInfo)){
-                2 -> Vector2(0f,1f)
-                4 -> Vector2(-1f,0f)
-                6 -> Vector2(-1f,-1f)
-                8 -> Vector2(0f,-1f)
-                10 -> Vector2(1f,0f)
-                12 -> Vector2(1f,1f)
-                else -> Vector2.Zero
-            }
-            val relativeWorldPosition = HexMath.hex2WorldCoords(relativeHexPosition)
+            val relativeWorldPosition = tileInfo.tileMap.getNeighborTilePositionAsWorldCoords(tileInfo, neighbor)
 
             // This is some crazy voodoo magic so I'll explain.
             image.moveBy(25f, 25f) // Move road to center of tile
@@ -579,14 +556,19 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings, 
                 ImageGetter.imageExists(specificUnitIconLocation + "-" + militaryUnit.civInfo.nation.style) ->
                     specificUnitIconLocation + "-" + militaryUnit.civInfo.nation.style
                 ImageGetter.imageExists(specificUnitIconLocation) -> specificUnitIconLocation
-                militaryUnit.baseUnit.replaces!=null &&
+                militaryUnit.baseUnit.replaces != null &&
                         ImageGetter.imageExists(tileSetStrings.unitsLocation + militaryUnit.baseUnit.replaces) ->
                     tileSetStrings.unitsLocation + militaryUnit.baseUnit.replaces
-
-                unitType == UnitType.Mounted -> tileSetStrings.unitsLocation + "Horseman"
-                unitType == UnitType.Ranged -> tileSetStrings.unitsLocation + "Archer"
-                unitType == UnitType.Armor -> tileSetStrings.unitsLocation + "Tank"
-                unitType == UnitType.Siege -> tileSetStrings.unitsLocation + "Catapult"
+                
+                militaryUnit.civInfo.gameInfo.ruleSet.units.values.any {
+                    it.unitType == unitType.name && ImageGetter.unitIconExists(it.name)
+                } -> 
+                    {
+                        val unitWithSprite = militaryUnit.civInfo.gameInfo.ruleSet.units.values.first {
+                            it.unitType == unitType.name && ImageGetter.unitIconExists(it.name)
+                        }.name
+                        tileSetStrings.unitsLocation + unitWithSprite
+                    }
                 unitType.isLandUnit() && ImageGetter.imageExists(tileSetStrings.landUnit) -> tileSetStrings.landUnit
                 unitType.isWaterUnit() && ImageGetter.imageExists(tileSetStrings.waterUnit) -> tileSetStrings.waterUnit
                 else -> ""

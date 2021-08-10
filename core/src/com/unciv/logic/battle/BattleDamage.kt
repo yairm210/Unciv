@@ -60,7 +60,8 @@ object BattleDamage {
                 }
             }
             
-            for (unique in adjacentUnits.flatMap { it.getMatchingUniques("[]% Strength for enemy [] units in adjacent [] tiles") })
+            for (unique in adjacentUnits.filter { it.civInfo.isAtWarWith(combatant.getCivInfo()) }
+                .flatMap { it.getMatchingUniques("[]% Strength for enemy [] units in adjacent [] tiles") })
                 if (combatant.matchesCategory(unique.params[1]) && combatant.getTile().matchesFilter(unique.params[2]))
                     modifiers.add("Adjacent enemy units", unique.params[0].toInt())
 

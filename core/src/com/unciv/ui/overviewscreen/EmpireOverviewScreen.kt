@@ -32,7 +32,8 @@ class EmpireOverviewScreen(private var viewingPlayer:CivilizationInfo, defaultPa
             Pair("Trades", IconAndKey("StatIcons/Acquire", 'T')),
             Pair("Units", IconAndKey("OtherIcons/Shield", 'U')),
             Pair("Diplomacy", IconAndKey("OtherIcons/DiplomacyW", 'D')),
-            Pair("Resources", IconAndKey("StatIcons/Happiness", 'R'))
+            Pair("Resources", IconAndKey("StatIcons/Happiness", 'R')),
+            Pair("Religion", IconAndKey("StatIcons/Faith", 'F'))
         )
     }
 
@@ -85,6 +86,8 @@ class EmpireOverviewScreen(private var viewingPlayer:CivilizationInfo, defaultPa
         addCategory("Units", UnitOverviewTable(viewingPlayer, this), viewingPlayer.getCivUnits().none())
         addCategory("Diplomacy", DiplomacyOverviewTable(viewingPlayer, this), viewingPlayer.diplomacy.isEmpty())
         addCategory("Resources", ResourcesOverviewTable(viewingPlayer, this), viewingPlayer.detailedCivResources.isEmpty())
+        if (viewingPlayer.gameInfo.hasReligionEnabled())
+            addCategory("Religion", ReligionOverviewTable(viewingPlayer, this), viewingPlayer.gameInfo.religions.isEmpty())
 
         val closeButton = Constants.close.toTextButton().apply {
             setColor(0.75f, 0.1f, 0.1f, 1f)
@@ -131,12 +134,7 @@ class EmpireOverviewScreen(private var viewingPlayer:CivilizationInfo, defaultPa
                 backgroundColor = civ.nation.getOuterColor()
                 labelColor = civ.nation.getInnerColor()
             } else {
-                civGroup.add(
-                        "?".toLabel(Color.WHITE)
-                        .apply { this.setAlignment(Align.center) }
-                        .surroundWithCircle(27f).apply { circle.color = Color.BLACK }
-                        .surroundWithCircle(30f, false).apply { circle.color = Color.WHITE }
-                )
+                civGroup.add(ImageGetter.getRandomNationIndicator(30f))
                 backgroundColor = Color.DARK_GRAY
                 labelText = "???"
             }
