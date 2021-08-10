@@ -17,7 +17,7 @@ The JSON files that make up mods can have many different fields, and as not all 
 * Map-related JSON files
 * * [(Terrains.json)](#work-in-progress)
 * * [(TileImprovements.json)](#work-in-progress)
-* * [(TileResources.json)](#work-in-progress)
+* * [TileResources.json](#tileresourcesjson)
 * * [Ruins.json](#ruinsjson)
 * Unit-related JSON files
 * * [Units.json](#unitsjson)
@@ -27,6 +27,7 @@ The JSON files that make up mods can have many different fields, and as not all 
 * * [Difficulties.json](#difficultiesjson)
 * * [Eras.json](#erasjson)
 * * [ModOptions.json](#modoptionsjson)
+* [Stats](#stats)
 * [Sounds](#sounds)
 * [Civilopedia text](#civilopedia-text)
 
@@ -440,6 +441,42 @@ This file contains all the technologies. It is organized into an outer list of '
 | quote | String | Default empty | A nice story presented to the player when they research this tech. |
 | uniques | List | Default empty | Properties granted by the tech - see [here](../Uniques#general-uniques). |
 | civilopediaText | List | Default empty | see [civilopediaText chapter](#civilopedia-text). |
+
+
+## TileResources.json
+This file lists the resources that a map tile can have.
+
+Note the predefined resource _types_ cannot be altered in json.
+
+Note also that resources have two visual representations - icon and pixel graphic in the tileset. Omitting the icon results in a horribly ugly user interface, while omitting tileset graphics will just miss out on an optional visualization. If you provide a pixel graphic for FantasyHex, please be aware of the layering system and the ruleVariants in the tileset json. A single graphic may suffice if it has lots of transparency, as it will be drawn on top of terrain and features but below an improvement - if the single improvement graphic exists at all.
+
+Each resource can have the following properties:
+| Attribute | Type | Optional? | Notes |
+|-----------|------|-----------|-------|
+| name | String | Required |  |
+| resourceType | String | Default Bonus | Bonus, Luxury or Strategic |
+| terrainsCanBeFoundOn | List | Default empty | [Terrains](#terrainsjson) that allow this resource |
+| <stat> | Float | Optional | Per-turn bonus yield for the tile, see [Stats](#stats), can be repeated |
+| improvement | String | Default empty | The improvement ([TileImprovements.json](#tileimprovementsjson)) for this resource |
+| improvementStats | Object | Default empty | The additional yield when improved as sub-object with one or more [Stats](#stats) |
+| revealedBy | String | Default empty | The technology name required to see, work and improve this resource |
+| unique | String | Default empty | Effects, [see here](../Uniques#terrain-uniques) - sorry, at the moment only a single one |
+| civilopediaText | List | Default empty | see [civilopediaText chapter](#civilopedia-text) |
+
+
+## Stats
+
+Terrains, features, resources and improvements may list yield statistics. They can be one of the following:
+- production, food, gold, science, culture, happiness, faith
+
+If an object carries general stats, any combination (or none) of these can be specified. For specialized stats, they might come as sub-object in a named field. Example:
+```json
+		"gold": 2,
+		"improvement": "Quarry",
+		"improvementStats": {"gold": 1,"production": 1},
+```
+
+The values are usually integers, though the underlying code supports floating point. The effects are, however, insufficiently tested and therefore -so far- using fractional stats is unsupproted. Go ahead and thoroughly test that in a mod and help out with feedback 😁.
 
 
 ## Sounds
