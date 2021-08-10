@@ -1,8 +1,10 @@
 package com.unciv.logic.city
 
+import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.models.Counter
 import com.unciv.models.ruleset.Unique
+import com.unciv.models.stats.Stats
 import kotlin.math.roundToInt
 
 class CityInfoReligionManager {
@@ -36,6 +38,39 @@ class CityInfoReligionManager {
         return getUniques().filter { it.placeholderText == unique }
     }
     
+    fun clearAllPressures() {
+        pressures.clear()
+    }
+    
+    fun addPressure(religionName: String, amount: Int) {
+        val oldMajorityReligion = getMajorityReligion()
+        pressures.add(religionName, amount)
+        val newMajorityReligion = getMajorityReligion()
+        if (oldMajorityReligion != newMajorityReligion && newMajorityReligion != null) {
+            triggerReligionAdoption(newMajorityReligion)
+        }
+    }
+
+    private fun triggerReligionAdoption(newMajorityReligion: String) {
+        cityInfo.civInfo.addNotification("Your city [${cityInfo.name}] was converted to [$newMajorityReligion]!", cityInfo.location, NotificationIcon.Faith)
+        if (newMajorityReligion in religionsAtSomePointAdopted) return
+        
+        val religionOwningCiv = cityInfo.civInfo.gameInfo.getCivilization(cityInfo.civInfo.gameInfo.religions[newMajorityReligion]!!.foundingCivName)
+        for (unique in cityInfo.civInfo.gameInfo.religions[newMajorityReligion]!!.getFounderUniques()) {
+            val statsGranted = when (unique.placeholderText) {
+                "[] when a city adopts this religion for the first time (modified by game speed)" -> unique.stats.times(cityInfo.civInfo.gameInfo.gameParameters.gameSpeed.modifier)
+                "[] when a city adopts this religion for the first time" -> unique.stats
+                else -> continue
+            }
+            religionOwningCiv.addStats(statsGranted)
+            if (cityInfo.location in religionOwningCiv.exploredTiles)
+                religionOwningCiv.addNotification("You gained [$statsGranted] as your religion was spread to [${cityInfo.name}]", cityInfo.location, NotificationIcon.Faith)
+            else
+                religionOwningCiv.addNotification("You gained [$statsGranted] as your religion was spread to an unknown city", NotificationIcon.Faith)
+        }
+        religionsAtSomePointAdopted.add(newMajorityReligion)
+    }
+    
     fun getNumberOfFollowers(): Counter<String> {
         val totalInfluence = pressures.values.sum()
         val population = cityInfo.population.population
@@ -55,50 +90,6 @@ class CityInfoReligionManager {
             toReturn.add(key, relativePopulation)
         }
         return toReturn
-    }
-    
-    fun clearAllPressures() {
-        pressures.clear()
-    }
-    
-    fun addPressure(religionName: String, amount: Int) {
-        val currentMajorityReligion = getMajorityReligion()
-        pressures.add(religionName, amount)
-        val newMajorityReligion = getMajorityReligion()
-        if (currentMajorityReligion != newMajorityReligion && newMajorityReligion != null) {
-            triggerReligionAdoption(newMajorityReligion)
-        }
-    }
-
-    private fun triggerReligionAdoption(newMajorityReligion: String) {
-        cityInfo.civInfo.addNotification("Your city [${cityInfo.name}] was converted to [$newMajorityReligion]!", NotificationIcon.Faith)
-
-        if (newMajorityReligion in religionsAtSomePointAdopted) return
-        
-        
-        val religionOwningCiv = cityInfo.civInfo.gameInfo.getCivilization(cityInfo.civInfo.gameInfo.religions[newMajorityReligion]!!.foundingCivName)
-        
-        for (unique in cityInfo.civInfo.gameInfo.religions[newMajorityReligion]!!.getFounderUniques()) {
-            if (unique.placeholderText == "[] when a city adopts this religion for the first time (modified by game speed)") {
-                val statsGranted = unique.stats.times(cityInfo.civInfo.gameInfo.gameParameters.gameSpeed.modifier)
-                religionOwningCiv.addStats(statsGranted)
-                
-                if (cityInfo.location in religionOwningCiv.exploredTiles)
-                    religionOwningCiv.addNotification("You gained [$statsGranted] as your religion was spread to [${cityInfo.name}]", cityInfo.location, NotificationIcon.Faith)
-                else
-                    religionOwningCiv.addNotification("You gained [$statsGranted] as your religion was spread to an unknown city", NotificationIcon.Faith)
-            }
-            
-            if (unique.placeholderText == "[] when a city adopts this religion for the first time") {
-                religionOwningCiv.addStats(unique.stats)
-                
-                if (cityInfo.location in religionOwningCiv.exploredTiles)
-                    religionOwningCiv.addNotification("You gained [${unique.stats}] as your religion was spread to [${cityInfo.name}]", cityInfo.location, NotificationIcon.Faith)
-                else
-                    religionOwningCiv.addNotification("You gained [${unique.stats}] as your religion was spread to an unknown city", NotificationIcon.Faith)
-            }
-        }
-        religionsAtSomePointAdopted.add(newMajorityReligion)
     }
 
     fun getMajorityReligion(): String? {
@@ -121,7 +112,7 @@ class CityInfoReligionManager {
             if (majorityReligionOfCity == null) continue
             else addPressure(
                 majorityReligionOfCity, 
-                if (city.isHolyCity()) 11
+                if (city.isHolyCity()) 11 // ToDo: check if this should be 6 + 5 or 6 * 5
                 else 6
             ) 
         }

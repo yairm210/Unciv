@@ -450,13 +450,13 @@ object UnitActions {
 
     private fun addFoundReligionAction(unit: MapUnit, actionList: ArrayList<UnitAction>, tile: TileInfo) {
         if (!unit.hasUnique("May found a religion")) return // should later also include enhance religion
-        if (!unit.civInfo.religionManager.mayUseGreatProphetAtAll(unit)) return
+        if (!unit.civInfo.religionManager.mayFoundReligionAtAll(unit)) return
         actionList += UnitAction(UnitActionType.FoundReligion,
             action = {
                 addGoldPerGreatPersonUsage(unit.civInfo)
                 unit.civInfo.religionManager.useGreatProphet(unit)
                 unit.destroy()
-            }.takeIf { unit.civInfo.religionManager.mayUseGreatProphetNow(unit) }
+            }.takeIf { unit.civInfo.religionManager.mayFoundReligionNow(unit) }
         )
     }
 
@@ -472,6 +472,7 @@ object UnitActions {
             title = "Spread [${unit.religion!!}]",
             action = {
                 unit.abilityUsedCount["Religion Spread"] = unit.abilityUsedCount["Religion Spread"]!! + 1
+                // ToDo: implement followers
                 city.religion.clearAllPressures()
                 city.religion.addPressure(unit.religion!!, 100)
                 unit.currentMovement = 0f

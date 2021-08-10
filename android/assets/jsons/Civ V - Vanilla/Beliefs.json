@@ -193,15 +193,19 @@
         "type": "Founder",
         "uniques": ["[+100 Gold] when a city adopts this religion for the first time (modified by game speed)"]
     },
+    // Missing: Interfaith Dialogue (requires followers)
     {
         "name": "Papal Primacy",
         "type": "Founder",
         "uniques": ["Resting point for influence with City-States following this religion [+15]"]
     },
+    // Missing: Peace Loving (requires followers)
     {
-        "name": "Pilgramige",
+        "name": "Pilgrimage",
         "type": "Founder",
         "uniques": ["[+2 Faith] for each global city following this religion"]
     },
+    // Missing: Tithe (requires followers)
+    // Missing: World Churhc (requires followers)
 ]
 

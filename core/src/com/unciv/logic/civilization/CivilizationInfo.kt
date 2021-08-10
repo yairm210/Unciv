@@ -714,6 +714,7 @@ class CivilizationInfo {
         }
     }
     
+    /** Rounds each of the stats down to the nearest integer */
     fun addStats(stats: Stats) {
         for (stat in stats.toHashMap()) {
             addStat(stat.key, stat.value.toInt())

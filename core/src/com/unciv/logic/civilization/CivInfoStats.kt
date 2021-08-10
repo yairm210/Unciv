@@ -200,9 +200,9 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
             statMap["Religion"] = 0f
             for (unique in civInfo.religionManager.religion!!.getFounderBeliefs().flatMap { it.uniqueObjects }) {
                 if (unique.placeholderText == "[] for each global city following this religion") {
-                    statMap["Religion"] = statMap["Religion"]!! + unique.stats.apply {
-                        this.timesInPlace(civInfo.religionManager.numberOfCitiesFollowingThisReligion().toFloat())
-                    }.happiness
+                    statMap["Religion"] = 
+                        statMap["Religion"]!! +
+                        unique.stats.times(civInfo.religionManager.numberOfCitiesFollowingThisReligion().toFloat()).happiness
                 }
             }
             if (statMap["Religion"] == 0f) 
