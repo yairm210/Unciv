@@ -26,6 +26,7 @@
   * [Other](#other)
 - [Terrain uniques](#terrain-uniques)
 - [Deprecated uniques](#deprecated-uniques)
+- [ModOptions uniques](#modoptions-uniques)
 
 
 ## Overview
@@ -699,6 +700,16 @@ May be added in promotions or ancient ruins equivalents
 
 "Can be destroyed by nukes" - Features with this unique will be removed when fallout is placed on this tile
 
+
+# ModOptions Uniques
+These are valid only in a ModOptions file.
+
+|unique|comment|
+|------|-------|
+| Allow City States to spawn with additional units | CS get the same starting units as major civs |
+| Can convert gold to science with sliders | Adds sliders to the Overview screen Stats page |
+| Diplomatic relationships cannot change | Prevent changes in diplomatic relations |
+|  |  |
 
 
 # Deprecated Uniques
