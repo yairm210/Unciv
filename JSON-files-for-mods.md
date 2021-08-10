@@ -4,27 +4,31 @@ This page is a work in progress. Information it contains may be incomplete.
 The JSON files that make up mods can have many different fields, and as not all are used in the base game, this wiki page will contain the full information of each. It will also give a short explanation of the syntax of JSON files.
 
 # Table of Contents
-1. [General Overview of JSON files](#general-overview-of-json-files)
-2. [Beliefs.json](#beliefsjson)
-2. [Buildings.json](#buildingsjson)
-2. [Difficulties.json](#difficultiesjson)
-2. [Eras.json](#erasjson)
-2. [ModOptions.json](#modoptionsjson)
-2. [Nations.json](#nationsjson)
-2. [(Policies.json)](#work-in-progress)
-2. [Quests.json](#questsjson)
-2. [Religions.json](#religionsjson)
-2. [Ruins.json](#ruinsjson)
-2. [Specialists.json](#specialistsjson)
-2. [Techs.json](#techsjson)
-2. [(Terrains.json)](#work-in-progress)
-2. [(TileImprovements.json)](#work-in-progress)
-2. [(TileResources.json)](#work-in-progress)
-2. [(UnitPromotions.json)](#work-in-progress)
-2. [Units.json](#unitsjson)
-2. [UnitTypes.json](#unittypesjson)
-2. [Sounds](#sounds)
-2. [Civilopedia text](#civilopedia-text)
+* [General Overview of JSON files](#general-overview-of-json-files)
+* Civilization-related JSON files
+* * [Beliefs.json](#beliefsjson)
+* * [Buildings.json](#buildingsjson)
+* * [Nations.json](#nationsjson)
+* * [(Policies.json)](#work-in-progress)
+* * [Quests.json](#questsjson)
+* * [Religions.json](#religionsjson)
+* * [Specialists.json](#specialistsjson)
+* * [Techs.json](#techsjson)
+* Map-related JSON files
+* * [(Terrains.json)](#work-in-progress)
+* * [(TileImprovements.json)](#work-in-progress)
+* * [(TileResources.json)](#work-in-progress)
+* * [Ruins.json](#ruinsjson)
+* Unit-related JSON files
+* * [Units.json](#unitsjson)
+* * [UnitPromotions.json](#unitpromotionsjson)
+* * [UnitTypes.json](#unittypesjson)
+* Miscellaneous JSON files
+* * [Difficulties.json](#difficultiesjson)
+* * [Eras.json](#erasjson)
+* * [ModOptions.json](#modoptionsjson)
+* [Sounds](#sounds)
+* [Civilopedia text](#civilopedia-text)
 
 
 # General Overview of JSON files
@@ -348,6 +352,24 @@ Each unit can have the following attributes:
 | uniques | List of Strings | defaults to none | A list of the unique abilities this unit has. A list of almost all uniques can be found [here](../Uniques#unit-uniques) |
 | replacementTextForUniques | String | defaults to none | If provided, this will be displayed instead of the list of uniques. Can be used for better formatting. |
 | attackSound | String | defaults to none | The sound that is to be played when this unit attacks. For possible values, see [sounds](#Sounds)
+| civilopediaText | List | Default empty | see [civilopediaText chapter](#civilopedia-text) |
+
+
+## UnitPromotions.json
+This file lists the available unit promotions.
+
+Each promotion must have an icon, except progressions ending in " I", " II", " III" (no IV V VI allowed) are rendered by looking up an icon without those suffixes and adding stars.
+
+Remember, promotions can be "bought" with XP, but also granted by the unit type, buildings, wonders and such. They are preserved when a unit upgrades, therefore special properties of nation unique units that can be inherited when they upgrade should be in a promotion, not uniques/stats in the units json (example: Slinger withdraw).
+
+Each promotion can have the following properties:
+| Attribute | Type | Optional? | Notes |
+|-----------|------|-----------|-------|
+| name | String | Required | See above for "I, II, III" progressions |
+| prerequisites | List | Default empty | Prerequisite promotions |
+| effect | String | Default empty | Deprecated, use uniques instead |
+| unitTypes | List | Default empty | The unit types for which this promotion applies as specified in [UnitTypes.json](#unittypesjson) |
+| uniques | List | Default empty | List of effects, [see here](../Uniques#unit-uniques) |
 | civilopediaText | List | Default empty | see [civilopediaText chapter](#civilopedia-text) |
 
 
