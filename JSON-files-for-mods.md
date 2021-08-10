@@ -15,7 +15,7 @@ The JSON files that make up mods can have many different fields, and as not all 
 * * [Specialists.json](#specialistsjson)
 * * [Techs.json](#techsjson)
 * Map-related JSON files
-* * [(Terrains.json)](#work-in-progress)
+* * [Terrains.json](#terrainsjson)
 * * [TileImprovements.json](#tileimprovementsjson)
 * * [TileResources.json](#tileresourcesjson)
 * * [Ruins.json](#ruinsjson)
@@ -379,6 +379,30 @@ This file contains all the technologies. It is organized into an outer list of '
 | civilopediaText | List | Default empty | see [civilopediaText chapter](#civilopedia-text). |
 
 
+## Terrains.json
+This file lists the base terrains, terrain features and natural wonders that can appear on the map.
+
+Each terrain entry can have the following properties:
+| Attribute | Type | Optional? | Notes |
+|-----------|------|-----------|-------|
+| name | String | Required |  |
+| type | Enum | Required | Land, Water, TerrainFeature, NaturalWonder |
+| occursOn | List | Default none | Only for terrain features and Natural Wonders: The baseTerrain it can be placed on |
+| turnsInto  | String | Default none | Only for Natural Wonders: After placing the Natural Wonder its base terrain is changed to this |
+| weight | Integer | Default 10 | Only for Natural Wonders: _relative_ weight it will be picked by the map generator |
+| `<stats>` | Float | Optional | Per-turn yield or bonus yield for the tile, see [Stats](#stats) |
+| overrideStats | Boolean | Default false | If on, a feature's yields replace any yield from underlying terrain instead of adding to it |
+| unbuildable | Boolean | Default false | If true, nothing can be built here - not even resource improvements |
+| impassable | Boolean | Default false | no unit can enter unless it has a special unique |
+| movementCost | Integer | Default 1 | base movement cost |
+| defenceBonus | Float | Default 0 | combat bonus for units being attacked here |
+| RGB | List Integer * 3 | Default 'Gold' | RGB color for 'Default' tileset display |
+| uniques | List | Default empty | List of effects, [see here](../Uniques#terrain-uniques) |
+| civilopediaText | List | Default empty | see [civilopediaText chapter](#civilopedia-text) |
+
+Note that many Natural Wonders have hardcoded routines for their placement and are recognized by name (e.g. Great Barrier Reef being more than one tile).
+
+
 ## TileImprovements.json
 This file lists the improvements that can be constructed or created on a map tile by a unit (any unit having the appropriate unique).
 
@@ -391,7 +415,7 @@ Each improvement can have the following properties:
 | terrainsCanBeFoundOn | List | Default empty | [Terrains](#terrainsjson) that allow this resource |
 | techRequired | String | Default none | The name of the technology required to build this improvement |
 | uniqueTo | String | Default none | The name of the nation this improvement is unique for |
-| <stats> | Float | Optional | Per-turn bonus yield for the tile, see [Stats](#stats) |
+| `<stats>` | Float | Optional | Per-turn bonus yield for the tile, see [Stats](#stats) |
 | turnsToBuild | Integer |  | Number of turns a worker spends building this (ignored for 'create' actions) |
 | uniques | List | Default empty | List of effects, [see here](../Uniques#terrain-uniques) |
 | shortcutKey | String | Default none | Keyboard binding. At the moment a single character (no function keys or Ctrl combinations) |
@@ -416,7 +440,7 @@ Each resource can have the following properties:
 | name | String | Required |  |
 | resourceType | String | Default Bonus | Bonus, Luxury or Strategic |
 | terrainsCanBeFoundOn | List | Default empty | [Terrains](#terrainsjson) that allow this resource |
-| <stat> | Float | Optional | Per-turn bonus yield for the tile, see [Stats](#stats), can be repeated |
+| `<stats>` | Float | Optional | Per-turn bonus yield for the tile, see [Stats](#stats), can be repeated |
 | improvement | String | Default empty | The improvement ([TileImprovements.json](#tileimprovementsjson)) for this resource |
 | improvementStats | Object | Default empty | The additional yield when improved as sub-object with one or more [Stats](#stats) |
 | revealedBy | String | Default empty | The technology name required to see, work and improve this resource |
