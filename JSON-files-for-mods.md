@@ -9,6 +9,7 @@ The JSON files that make up mods can have many different fields, and as not all 
 2. [Buildings.json](#buildingsjson)
 2. [Difficulties.json](#difficultiesjson)
 2. [Eras.json](#erasjson)
+2. [ModOptions.json](#modoptionsjson)
 2. [Nations.json](#nationsjson)
 2. [(Policies.json)](#work-in-progress)
 2. [Quests.json](#questsjson)
@@ -182,6 +183,28 @@ Each era can have the following attributes:
 | settlerPopulation | Integer (>0) | defaults to 1 | Default amount of population each city should have when settled when starting a game in this era |
 | settlerBuildings | List of Strings | defaults to none | Buildings that should automatically be built whenever a city is settled when starting a game in this era |
 | startingObsoleteWonders | List of Strings | defaults to none | Wonders (and technically buildings) that should be impossible to built when starting a game in this era. Used in the base game to remove all wonders older than 2 era's |
+
+
+## ModOptions.json
+This file is a little different:
+- Does not exist in Vanilla ruleset
+- Is entirely optional but will be created after downloading a mod
+
+The file can have the following attributes, including the values Unciv sets (no point in a mod author setting those):
+| Attribute | Type | Defaults | Notes |
+|-----------|------|-----------|-------|
+| isBaseRuleset | Boolean | false | Differentiates mods that change the vanilla ruleset or replace it |
+| maxXPfromBarbarians | Integer | 30 | ...as the name says... |
+| uniques | List | empty | Mod-wide specials, [see here](../Uniques/#modoptions-uniques) |
+| techsToRemove | List | empty | List of [Technologies](#techsjson) to remove (isBaseRuleset=false only) |
+| buildingsToRemove | List | empty | List of [Buildings or Wonders](#buildingsjson) to remove (isBaseRuleset=false only) |
+| unitsToRemove | List | empty | List of [Units](#unitsjson) to remove (isBaseRuleset=false only) |
+| nationsToRemove | List | empty | List of [Nations](#nationsjson) to remove (isBaseRuleset=false only) |
+| lastUpdated | String | empty | Set automatically after download - Last repository update, not necessarily last content change |
+| modUrl | String | empty | Set automatically after download - URL of repository |
+| author | String | empty | Set automatically after download - Owner of repository |
+| modSize | Integer | empty | Set automatically after download - kB in entire repository, not sum of default branch files |
+
 
 ## Nations.json
 [Link to original](https://github.com/yairm210/Unciv/blob/master/android/assets/jsons/Civ%20V%20-%20Vanilla/Nations.json)
