@@ -14,6 +14,8 @@ import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
+import kotlin.math.abs
+import kotlin.random.Random
 
 @RunWith(GdxTestRunner::class)
 class BasicTests {
@@ -85,4 +87,49 @@ class BasicTests {
         Assert.assertFalse(modCheck.isNotOK())
     }
 
+    //@Test  // commented so github doesn't run this
+    fun statMathStressTest() {
+        val runtime = Runtime.getRuntime()
+        val startFreeMem = runtime.freeMemory()
+        val startTime = System.nanoTime()
+        statMathRunner(iterations = 1000000)
+        println("statMathStressTest took ${(System.nanoTime()-startTime)/1000}µs and ${(startFreeMem-runtime.freeMemory())/1024}kB")
+    }
+
+    @Test
+    fun statMathRandomResultTest() {
+        val iterations = 42
+        val expectedStats = Stats().apply {
+            production = 1381.1195f
+            food = 37650.625f
+            gold = -54857.508f
+            science = 82838.1f
+            culture = 264289.88f
+            happiness = -98249.61f
+            faith = -21620.709f
+        }
+        val stats = statMathRunner(iterations)
+        Assert.assertTrue(stats.equals(expectedStats))
+    }
+
+    private fun statMathRunner(iterations: Int): Stats {
+        val random = Random(42)
+        val statCount = Stat.values().size
+        val stats = Stats()
+
+        for (i in 0 until iterations) {
+            val value: Float = random.nextDouble(-10.0, 10.0).toFloat()
+            stats.add( Stats(gold = value) )
+            stats.toHashMap().forEach {
+                val stat = Stat.values()[(it.key.ordinal + random.nextInt(1,statCount)).rem(statCount)]
+                stats.add(stat, -it.value)
+            }
+            val stat = Stat.values()[random.nextInt(statCount)]
+            stats.add(stat, stats.times(4).get(stat))
+            stats.timesInPlace(0.8f)
+            if (abs(stats.toHashMap().maxOfOrNull { it.value }!!) > 1000000f)
+                stats.timesInPlace(0.1f)
+        }
+        return stats
+    }
 }

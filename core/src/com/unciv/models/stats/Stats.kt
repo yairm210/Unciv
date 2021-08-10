@@ -1,20 +1,28 @@
 package com.unciv.models.stats
 
 import com.unciv.models.translations.tr
+import kotlin.reflect.KMutableProperty0
 
 
-open class Stats() {
-    var production: Float = 0f
-    var food: Float = 0f
-    var gold: Float = 0f
-    var science: Float = 0f
-    var culture: Float = 0f
-    var happiness: Float = 0f
+open class Stats(
+    var production: Float = 0f,
+    var food: Float = 0f,
+    var gold: Float = 0f,
+    var science: Float = 0f,
+    var culture: Float = 0f,
+    var happiness: Float = 0f,
     var faith: Float = 0f
-
-    constructor(hashMap: HashMap<Stat, Float>) : this() {
-        setStats(hashMap)
-    }
+) {
+    @Transient
+    private val mapView: Map<Stat, KMutableProperty0<Float>> = mapOf(
+        Stat.Production to ::production,
+        Stat.Food to ::food,
+        Stat.Gold to ::gold,
+        Stat.Science to ::science,
+        Stat.Culture to ::culture,
+        Stat.Happiness to ::happiness,
+        Stat.Faith to ::faith
+    )
 
     fun clear() {
         production = 0f
@@ -37,41 +45,45 @@ open class Stats() {
         faith += other.faith
     }
 
-
     fun add(stat: Stat, value: Float): Stats {
-        val hashMap = toHashMap()
-        hashMap[stat] = hashMap[stat]!! + value
-        setStats(hashMap)
+        mapView[stat]!!.set(value + mapView[stat]!!.get())
         return this
     }
 
-    operator fun plus(stat: Stats): Stats {
-        val clone = clone()
-        clone.add(stat)
-        return clone
-    }
+    operator fun plus(stats: Stats) = clone().apply { add(stats) }
 
-    fun clone(): Stats {
-        val stats = Stats()
-        stats.add(this)
-        return stats
-    }
+    fun clone() = Stats(production, food, gold, science, culture, happiness, faith)
 
     operator fun times(number: Int) = times(number.toFloat())
 
-    operator fun times(number: Float): Stats {
-        val hashMap = toHashMap()
-        for (stat in Stat.values()) hashMap[stat] = number * hashMap[stat]!!
-        return Stats(hashMap)
-    }
+    operator fun times(number: Float) = Stats(
+        production * number,
+        food * number,
+        gold * number,
+        science * number,
+        culture * number,
+        happiness * number,
+        faith * number
+    )
     
     fun timesInPlace(number: Float) {
-        val hashMap = toHashMap()
-        for (stat in Stat.values()) hashMap[stat] = number * hashMap[stat]!!
-        setStats(hashMap)
+        production *= number
+        food *= number
+        gold *= number
+        science *= number
+        culture *= number
+        happiness *= number
+        faith *= number
     }
 
-    fun isEmpty() = equals(Stats())
+    fun isEmpty() = (
+            production == 0f
+            && food == 0f
+            && gold == 0f
+            && science == 0f
+            && culture == 0f
+            && happiness == 0f
+            && faith == 0f )
 
     override fun toString(): String {
         return toHashMap().filter { it.value != 0f }
@@ -89,27 +101,16 @@ open class Stats() {
         )
     }
 
-    fun get(stat: Stat): Float {
-        return this.toHashMap()[stat]!!
-    }
-
-    private fun setStats(hashMap: HashMap<Stat, Float>) {
-        culture = hashMap[Stat.Culture]!!
-        gold = hashMap[Stat.Gold]!!
-        production = hashMap[Stat.Production]!!
-        food = hashMap[Stat.Food]!!
-        happiness = hashMap[Stat.Happiness]!!
-        science = hashMap[Stat.Science]!!
-        faith = hashMap[Stat.Faith]!!
-    }
+    operator fun get(stat: Stat) = mapView[stat]!!.get()
+    operator fun set(stat: Stat, value: Float) = mapView[stat]!!.set(value)
 
     fun equals(otherStats: Stats): Boolean {
-        return culture == otherStats.culture
-                && gold == otherStats.gold
-                && production == otherStats.production
+        return production == otherStats.production
                 && food == otherStats.food
-                && happiness == otherStats.happiness
+                && gold == otherStats.gold
                 && science == otherStats.science
+                && culture == otherStats.culture
+                && happiness == otherStats.happiness
                 && faith == otherStats.faith
     }
 
@@ -118,17 +119,19 @@ open class Stats() {
         private val statRegexPattern = "([+-])(\\d+) ($allStatNames)"
         private val statRegex = Regex(statRegexPattern)
         private val entireStringRegexPattern = Regex("$statRegexPattern(, $statRegexPattern)*")
-        fun isStats(string:String): Boolean {
+
+        fun isStats(string: String): Boolean {
             if (string.isEmpty() || string[0] !in "+-") return false // very quick negative check before the heavy Regex
             return entireStringRegexPattern.matches(string)
         }
-        fun parse(string:String):Stats{
+
+        fun parse(string: String): Stats {
             val toReturn = Stats()
             val statsWithBonuses = string.split(", ")
             for(statWithBonuses in statsWithBonuses){
                 val match = statRegex.matchEntire(statWithBonuses)!!
                 val statName = match.groupValues[3]
-                val statAmount = match.groupValues[2].toFloat() * (if(match.groupValues[1]=="-") -1 else 1)
+                val statAmount = match.groupValues[2].toFloat() * (if (match.groupValues[1] == "-") -1 else 1)
                 toReturn.add(Stat.valueOf(statName), statAmount)
             }
             return toReturn
