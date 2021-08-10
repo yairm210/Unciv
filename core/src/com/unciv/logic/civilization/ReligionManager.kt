@@ -69,7 +69,7 @@ class ReligionManager {
     fun canFoundPantheon(): Boolean {
         if (!civInfo.gameInfo.hasReligionEnabled()) return false
         if (religionState != ReligionState.None) return false
-        if (!civInfo.isMajorCiv()) return false
+        if (civInfo.isCityState()) return false
         if (civInfo.gameInfo.ruleSet.beliefs.values.none { isPickablePantheonBelief(it) })
             return false
         return storedFaith >= faithForPantheon()
@@ -88,7 +88,8 @@ class ReligionManager {
         religion!!.followerBeliefs.add(belief.name)
         civInfo.gameInfo.religions[belief.name] = religion!!
         // This should later be changed when religions can have multiple beliefs
-        civInfo.getCapital().religion[belief.name] = 100 // Capital is religious, other cities are not
+        civInfo.getCapital().religion.clearAllPressures()
+        civInfo.getCapital().religion.addPressure(belief.name, 100) // Capital is religious, other cities are not
         religionState = ReligionState.Pantheon
     }
     
@@ -102,6 +103,7 @@ class ReligionManager {
     private fun canGenerateProphet(): Boolean {
         if (religion == null || religionState == ReligionState.None) return false // First get a pantheon, then we'll talk about a real religion
         if (storedFaith < faithForNextGreatProphet()) return false
+        if (civInfo.isCityState()) return false
         // In the base game, great prophets shouldn't generate anymore starting from the industrial era
         // This is difficult to implement in the current codebase, probably requires an additional variable in eras.json
         return true
@@ -127,6 +129,7 @@ class ReligionManager {
         if (religion == null) return false // First found a pantheon
         if (religion!!.isMajorReligion()) return false // Already created a major religion
         if (prophet.abilityUsedCount["Religion Spread"] != 0) return false // Already used its power for other things
+        if (civInfo.isCityState()) return false // Only major civs may use religion
         
         val foundedReligionsCount = civInfo.gameInfo.civilizations.count {
             it.religionManager.religion != null && it.religionManager.religion!!.isMajorReligion()
@@ -138,6 +141,12 @@ class ReligionManager {
         if (foundedReligionsCount >= civInfo.gameInfo.ruleSet.religions.count())
             return false
         // Mod maker did not provide enough religions for the amount of civs present
+        
+        if (foundedReligionsCount >= civInfo.gameInfo.ruleSet.beliefs.values.count { it.type == BeliefType.Follower })
+            return false // Mod maker did not provide enough follower beliefs
+        
+        if (foundedReligionsCount >= civInfo.gameInfo.ruleSet.beliefs.values.count { it.type == BeliefType.Founder })
+            return false // Mod maker did not provide enough founder beliefs
         
         return true
     }
@@ -154,22 +163,22 @@ class ReligionManager {
         foundingCityId = prophet.getTile().getCity()!!.id
     }
 
-    fun foundReligion(iconName: String, name: String, founderBelief: String, followerBeliefs: List<String>) {
+    fun foundReligion(iconName: String, name: String, founderBelief: List<String>, followerBeliefs: List<String>) {
         val newReligion = Religion(name, civInfo.gameInfo, civInfo.civName)
         newReligion.iconName = iconName
         if (religion != null) {
             newReligion.followerBeliefs.addAll(religion!!.followerBeliefs)
         }
         newReligion.followerBeliefs.addAll(followerBeliefs)
-        newReligion.founderBeliefs.add(founderBelief)
+        newReligion.founderBeliefs.addAll(founderBelief)
         newReligion.holyCityId = foundingCityId
         religion = newReligion
         civInfo.gameInfo.religions[name] = newReligion
 
         religionState = ReligionState.Religion
         val holyCity = civInfo.cities.firstOrNull { it.id == newReligion.holyCityId }!!
-        holyCity.religion.clear()
-        holyCity.religion[name] = 100
+        holyCity.religion.clearAllPressures()
+        holyCity.religion.addPressure(name, 100)
 
         foundingCityId = null
     }
