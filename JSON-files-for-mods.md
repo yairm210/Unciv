@@ -9,7 +9,7 @@ The JSON files that make up mods can have many different fields, and as not all 
 * * [Beliefs.json](#beliefsjson)
 * * [Buildings.json](#buildingsjson)
 * * [Nations.json](#nationsjson)
-* * [(Policies.json)](#work-in-progress)
+* * [Policies.json](#policiesjson)
 * * [Quests.json](#questsjson)
 * * [Religions.json](#religionsjson)
 * * [Specialists.json](#specialistsjson)
@@ -33,7 +33,9 @@ The JSON files that make up mods can have many different fields, and as not all 
 
 # General Overview of JSON files
 
-Almost all JSON files start with a "[" and end with a "]". In between these are different objects of the type you are describing, each of which is contained between a "{" and a "}". For example, a very simple units.json may look like:
+Resources: [json.org](https://www.json.org/), [ISO standard](https://standards.iso.org/ittf/PubliclyAvailableStandards/c071616_ISO_IEC_21778_2017.zip)
+
+Almost all Unciv JSON files start with a "[" and end with a "]". In between these are different objects of the type you are describing, each of which is contained between a "{" and a "}". For example, a very simple units.json may look like:
 ```
 [
     {
@@ -240,6 +242,30 @@ This file contains all the nations and city states, including Barbarians and Spe
 | uniques | List | Default empty | Properties of the civilization - see [here](../Uniques#general-uniques) |
 | cities | List | Default empty | City names used sequentially for newly founded cities. |
 | civilopediaText | List | Default empty | see [civilopediaText chapter](#civilopedia-text) |
+
+
+## Policies.json
+This file lists the available social policies that can be "bought" with culture.
+
+They are organized in 'branches', each branch has an 'opener', one or more 'member' policies, and a 'finisher'. Therefore this file is organized using two levels - branch and member policy. The properties of the 'opener' are defined with the branch level, while the 'finisher' has an entry on the member level which _must_ be named as branch name + " Complete", case sensitive.
+
+Each policy branch can have the following properties:
+| Attribute | Type | Optional? | Notes |
+|-----------|------|-----------|-------|
+| name | String | Required |  |
+| era | String | Required | Unlocking era as defined in [Eras.json](#erasjson) |
+| uniques | List | Default empty | List of effects, [see here](../Uniques#general-uniques) |
+| policies | List | Default empty | List of member policies |
+
+Each member policy can have the following properties:
+| Attribute | Type | Optional? | Notes |
+|-----------|------|-----------|-------|
+| name | String | Required |  |
+| row | Integer | Required | Placement in UI, each unit approximately half the icon size |
+| column | Integer | Required | Placement in UI, each unit approximately half the icon size |
+| requires | List | Default empty | List of prerequisite policy names |
+| uniques | List | Default empty | List of effects, [see here](../Uniques#general-uniques) |
+
 
 ## Quests.json
 [Link to original](https://github.com/yairm210/Unciv/blob/master/android/assets/jsons/Civ%20V%20-%20Vanilla/Quests.json)
