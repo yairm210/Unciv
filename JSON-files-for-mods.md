@@ -564,7 +564,3 @@ List of attributes - note not all combinations are valid:
 |`centered`|Boolean|Centers the line (and turns off automatic wrap).|
 
 The lines from json will 'surround' the automatically generated lines such that the latter are inserted just above the first json line carrying a link, if any. If no json lines have links, they will be inserted between the automatic title and the automatic info. This method may, however, change in the future.
-
-
-## Work in progress
-I'll work more on this later
