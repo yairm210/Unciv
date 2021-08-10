@@ -115,11 +115,11 @@ Each building can have the following attributes:
 | requiredBuildingInAllCities | String | defaults to none | A building that has to be built in all cities before this building can be built. Must be in [Buildings.json](Buildings.json) |
 | cannotBeBuiltWith | String | defaults to none | The building [cannotBeBuiltWith] and this building cannot exist in the same city together. Should be in [Buildings.json](Buildings.json) |
 | providesFreeBuilding | String | defaults to none | When the building is built, [providesFreeBuilding] is also automatically added to the city |
-| requiredTech | String | defaults to none | The tech that should be researched before this building may be built. Must be in [Techs.json] |
-| requiredResource | String | defaults to none | The resource that is consumed when building this building. Must be in [TileResources.json] |
+| requiredTech | String | defaults to none | The tech that should be researched before this building may be built. Must be in [Techs.json](#techsjson) |
+| requiredResource | String | defaults to none | The resource that is consumed when building this building. Must be in [TileResources.json](#tileresourcesjson) |
 | requiredNearbyImprovedResources | List of Strings | defaults to none | The building can only be built if any of the resources in this list are within the borders of this city and have been improved. Each resource must be in TileResources.json |
 | replaces | String | defaults to none | The name of a building that should be replaced by this building. Must be in [Buildings.json](#buildingsjson) |
-| uniqueTo | String | defaults to none | If supplied, only the nation with this name can build this building. Must be in [Nations.json] |
+| uniqueTo | String | defaults to none | If supplied, only the nation with this name can build this building. Must be in [Nations.json](#nationsjson) |
 | xpForNewUnits | Integer | defaults to 0 | XP granted automatically to units built in this city |
 | cityStrength | Integer | defaults to 0 | Strength bonus the city in which this building is built receives |
 | cityHealth | Integer | defaults to 0 | Health bonus the city in which this building is built receives |
@@ -150,7 +150,7 @@ Each difficulty level can have the following attributes:
 | policyCostModifier | Float | Default 1 |
 | unhappinessModifier | Float | Default 1 |
 | barbarianBonus | Float | Default 0 |
-| playerBonusStartingUnits | List of Units | Default empty | Can also be 'Era Starting Unit', maps to `startingMilitaryUnit` of the Eras file. All other units must be in [units.json] |
+| playerBonusStartingUnits | List of Units | Default empty | Can also be 'Era Starting Unit', maps to `startingMilitaryUnit` of the Eras file. All other units must be in [units.json(#unitsjson)] |
 | aiCityGrowthModifier | Float | Default 1 |
 | aiUnitCostModifier | Float | Default 1 |
 | aiBuildingCostModifier | Float | Default 1 |
@@ -369,14 +369,14 @@ Each unit can have the following attributes:
 | rangedStrength | Integer (≥0) | defaults to 0 | The ranged attack strength of the unit. If omitted, the unit cannot ranged attack |
 | range | Integer (≥0) | defaults to 2 | The default range from which ranged attacks can be preformed |
 | interceptRange | Integer (≥0) | defaults to 0 | Air units attacking within in this range will be intercepted |
-| requiredTech | String | defaults to none | The tech required to build this unit. Must be in [Techs.json] |
-| obsoleteTech | String | defaults to none | After researching this tech, the unit can no longer be build. Must be in [Techs.json] |
-| requiredResource | String | defaults to none | Resource that is consumed by building this unit. Must be in [TileResources.json] |
-| upgradesTo | String | defaults to none | Unit that this unit can upgrade to when it is available. Must be in [Units.json] |
-| replaces | String | defaults to none | If this unit is unique to a nation, this is the unit it replaces. Must be in [Units.json](Units.json) |
-| uniqueTo | String | defaults to none | The nation that this unit is unique to. Must be in [Nations.json] |
+| requiredTech | String | defaults to none | The tech required to build this unit. Must be in [Techs.json](#techsjson) |
+| obsoleteTech | String | defaults to none | After researching this tech, the unit can no longer be build. Must be in [Techs.json](#techsjson) |
+| requiredResource | String | defaults to none | Resource that is consumed by building this unit. Must be in [TileResources.json](#tilereousrcesjson) |
+| upgradesTo | String | defaults to none | Unit that this unit can upgrade to when it is available. Must be in [Units.json](#unitsjson) |
+| replaces | String | defaults to none | If this unit is unique to a nation, this is the unit it replaces. Must be in [Units.json](#unitsjson)(Units.json) |
+| uniqueTo | String | defaults to none | The nation that this unit is unique to. Must be in [Nations.json](#nationsjson) |
 | hurryCostModifier | Integer | defaults to 0 | If this unit is bought for gold/faith, it's price is increased by so much percent |
-| promotions | List of Strings | defaults to none | A list of all the promotions the unit automatically receives upon being built. Each promotion must be in [UnitPromotions.json] |
+| promotions | List of Strings | defaults to none | A list of all the promotions the unit automatically receives upon being built. Each promotion must be in [UnitPromotions.json](#unitpromotionsjson) |
 | uniques | List of Strings | defaults to none | A list of the unique abilities this unit has. A list of almost all uniques can be found [here](../Uniques#unit-uniques) |
 | replacementTextForUniques | String | defaults to none | If provided, this will be displayed instead of the list of uniques. Can be used for better formatting. |
 | attackSound | String | defaults to none | The sound that is to be played when this unit attacks. For possible values, see [sounds](#Sounds)
