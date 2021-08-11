@@ -58,15 +58,24 @@ class CityInfoReligionManager {
         val religionOwningCiv = cityInfo.civInfo.gameInfo.getCivilization(cityInfo.civInfo.gameInfo.religions[newMajorityReligion]!!.foundingCivName)
         for (unique in cityInfo.civInfo.gameInfo.religions[newMajorityReligion]!!.getFounderUniques()) {
             val statsGranted = when (unique.placeholderText) {
-                "[] when a city adopts this religion for the first time (modified by game speed)" -> unique.stats.times(cityInfo.civInfo.gameInfo.gameParameters.gameSpeed.modifier)
+                "[] when a city adopts this religion for the first time (modified by game speed)" ->
+                    unique.stats.times(cityInfo.civInfo.gameInfo.gameParameters.gameSpeed.modifier)
                 "[] when a city adopts this religion for the first time" -> unique.stats
                 else -> continue
             }
-            religionOwningCiv.addStats(statsGranted)
+            for (stat in statsGranted.toHashMap())
+                religionOwningCiv.addStat(stat.key, stat.value.toInt())
             if (cityInfo.location in religionOwningCiv.exploredTiles)
-                religionOwningCiv.addNotification("You gained [$statsGranted] as your religion was spread to [${cityInfo.name}]", cityInfo.location, NotificationIcon.Faith)
+                religionOwningCiv.addNotification(
+                    "You gained [$statsGranted] as your religion was spread to [${cityInfo.name}]",
+                    cityInfo.location,
+                    NotificationIcon.Faith
+                )
             else
-                religionOwningCiv.addNotification("You gained [$statsGranted] as your religion was spread to an unknown city", NotificationIcon.Faith)
+                religionOwningCiv.addNotification(
+                    "You gained [$statsGranted] as your religion was spread to an unknown city",
+                    NotificationIcon.Faith
+                )
         }
         religionsAtSomePointAdopted.add(newMajorityReligion)
     }
