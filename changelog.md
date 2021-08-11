@@ -1,3 +1,11 @@
+## 3.16.2-patch1
+
+Fixed diplomacy screen crash for city-states with no cities
+
+Added mod check for units whose unitType is not defined
+
+Fixed crash when selecting certain buildings in the civilopedia - by xlenstra 
+
 ## 3.16.2
 
 Fixed crashing Diplomatic victory bug
