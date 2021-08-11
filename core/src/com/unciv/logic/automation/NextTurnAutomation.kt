@@ -2,7 +2,6 @@ package com.unciv.logic.automation
 
 import com.unciv.Constants
 import com.unciv.logic.city.CityInfo
-import com.unciv.logic.city.IConstruction
 import com.unciv.logic.city.INonPerpetualConstruction
 import com.unciv.logic.city.PerpetualConstruction
 import com.unciv.logic.civilization.*
@@ -399,7 +398,7 @@ object NextTurnAutomation {
         fun isTileCanMoveThrough(tileInfo: TileInfo): Boolean {
             val owner = tileInfo.getOwner()
             return !tileInfo.isImpassible()
-                    && (owner == otherCiv || owner == null || civInfo.canEnterTiles(owner))
+                    && (owner == otherCiv || owner == null || civInfo.canPassThroughTiles(owner))
         }
 
         val reachableEnemyCitiesBfs = BFS(civInfo.getCapital().getCenterTile()) { isTileCanMoveThrough(it) }

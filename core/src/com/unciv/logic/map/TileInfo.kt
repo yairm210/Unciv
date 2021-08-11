@@ -565,13 +565,17 @@ open class TileInfo {
 
     fun isAdjacentToRiver() = neighbors.any { isConnectedByRiver(it) }
 
-    fun canCivEnter(civInfo: CivilizationInfo): Boolean {
+    /**
+     * @returns whether units of [civInfo] can pass through this tile, considering only civ-wide filters.
+     * Use [UnitMovementAlgorithms.canPassThrough] to check whether a specific unit can pass through a tile.
+     */
+    fun canCivPassThrough(civInfo: CivilizationInfo): Boolean {
         val tileOwner = getOwner()
-        if (tileOwner == null || tileOwner == civInfo) return true
         // comparing the CivInfo objects is cheaper than comparing strings
+        if (tileOwner == null || tileOwner == civInfo) return true
         if (isCityCenter() && civInfo.isAtWarWith(tileOwner)
                 && !getCity()!!.hasJustBeenConquered) return false
-        if (!civInfo.canEnterTiles(tileOwner)
+        if (!civInfo.canPassThroughTiles(tileOwner)
                 && !(civInfo.isPlayerCivilization() && tileOwner.isCityState())) return false
         // AIs won't enter city-state's border.
         return true

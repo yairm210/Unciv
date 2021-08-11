@@ -460,9 +460,15 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
         return true
     }
 
-    // This is the most called function in the entire game,
-    // so multiple callees of this function have been optimized,
-    // because optimization on this function results in massive benefits!
+    /**
+     * @returns whether this unit can pass through [tile].
+     * Note that sometimes, a tile can be passed through but not entered. Use [canMoveTo] to
+     * determine whether a unit can enter a tile.
+     *
+     * This is the most called function in the entire game,
+     * so multiple callees of this function have been optimized,
+     * because optimization on this function results in massive benefits!
+     */
     fun canPassThrough(tile: TileInfo): Boolean {
         if (tile.isImpassible()) {
             // special exception - ice tiles are technically impassible, but some units can move through them anyway
@@ -490,7 +496,7 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
         }
         if (tile.naturalWonder != null) return false
 
-        if (!tile.canCivEnter(unit.civInfo)) return false
+        if (!tile.canCivPassThrough(unit.civInfo)) return false
 
         val firstUnit = tile.getFirstUnit()
         if (firstUnit != null && firstUnit.civInfo != unit.civInfo && unit.civInfo.isAtWarWith(firstUnit.civInfo))

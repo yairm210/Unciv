@@ -12,6 +12,7 @@ import com.unciv.logic.civilization.diplomacy.DiplomacyManager
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
+import com.unciv.logic.map.UnitMovementAlgorithms
 import com.unciv.logic.trade.TradeEvaluation
 import com.unciv.logic.trade.TradeRequest
 import com.unciv.models.Counter
@@ -740,7 +741,13 @@ class CivilizationInfo {
         return greatPersonPoints
     }
 
-    fun canEnterTiles(otherCiv: CivilizationInfo): Boolean {
+    /**
+     * @returns whether units of this civilization can pass through the tiles owned by [otherCiv],
+     * considering only civ-wide filters.
+     * Use [UnitMovementAlgorithms.canPassThrough] to check whether a specific unit can pass through
+     * a specific tile.
+     */
+    fun canPassThroughTiles(otherCiv: CivilizationInfo): Boolean {
         if (otherCiv == this) return true
         if (otherCiv.isBarbarian()) return true
         if (nation.isBarbarian() && gameInfo.turns >= gameInfo.difficultyObject.turnBarbariansCanEnterPlayerTiles)
