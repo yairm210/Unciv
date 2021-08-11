@@ -262,7 +262,9 @@ class CivilizationInfo {
                 } +
                 policies.policyUniques.getUniques(uniqueTemplate) +
                 tech.techUniques.getUniques(uniqueTemplate) +
-                temporaryUniques.filter { it.first.placeholderText == uniqueTemplate }.map { it.first }
+                temporaryUniques.filter { it.first.placeholderText == uniqueTemplate }.map { it.first } +
+                if (religionManager.religion != null) religionManager.religion!!.getFounderUniques().asSequence()
+                else sequenceOf()
     }
 
     //region Units
@@ -709,6 +711,13 @@ class CivilizationInfo {
             else -> {}
             // Food and Production wouldn't make sense to be added nationwide
             // Happiness cannot be added as it is recalculated again, use a unique instead
+        }
+    }
+    
+    /** Rounds each of the stats down to the nearest integer */
+    fun addStats(stats: Stats) {
+        for (stat in stats.toHashMap()) {
+            addStat(stat.key, stat.value.toInt())
         }
     }
     

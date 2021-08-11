@@ -450,34 +450,37 @@ object UnitActions {
 
     private fun addFoundReligionAction(unit: MapUnit, actionList: ArrayList<UnitAction>, tile: TileInfo) {
         if (!unit.hasUnique("May found a religion")) return // should later also include enhance religion
-        if (!unit.civInfo.religionManager.mayUseGreatProphetAtAll(unit)) return
+        if (!unit.civInfo.religionManager.mayFoundReligionAtAll(unit)) return
         actionList += UnitAction(UnitActionType.FoundReligion,
             action = {
                 addGoldPerGreatPersonUsage(unit.civInfo)
                 unit.civInfo.religionManager.useGreatProphet(unit)
                 unit.destroy()
-            }.takeIf { unit.civInfo.religionManager.mayUseGreatProphetNow(unit) }
+            }.takeIf { unit.civInfo.religionManager.mayFoundReligionNow(unit) }
         )
     }
 
     private fun addSpreadReligionActions(unit: MapUnit, actionList: ArrayList<UnitAction>, tile: TileInfo) {
         if (!unit.hasUnique("Can spread religion [] times")) return
-        if (unit.religion == null) return
+        if (unit.religion == null || unit.civInfo.gameInfo.religions[unit.religion]!!.isPantheon()) return
         val maxReligionSpreads = unit.maxReligionSpreads()
         if (!unit.abilityUsedCount.containsKey("Religion Spread")) return // This should be impossible anyways, but just in case
         if (maxReligionSpreads <= unit.abilityUsedCount["Religion Spread"]!!) return
         val city = tile.getCity()
+        if (city == null) return
         actionList += UnitAction(UnitActionType.SpreadReligion,
             title = "Spread [${unit.religion!!}]",
             action = {
                 unit.abilityUsedCount["Religion Spread"] = unit.abilityUsedCount["Religion Spread"]!! + 1
-                city!!.religion[unit.religion!!] = 100
+                // ToDo: implement followers
+                city.religion.clearAllPressures()
+                city.religion.addPressure(unit.religion!!, 100)
                 unit.currentMovement = 0f
                 if (unit.abilityUsedCount["Religion Spread"] == maxReligionSpreads) {
                     addGoldPerGreatPersonUsage(unit.civInfo)
                     unit.destroy()
                 }
-            }.takeIf { unit.currentMovement > 0 && city != null && city.civInfo == unit.civInfo } // For now you can only convert your own cities
+            }.takeIf { unit.currentMovement > 0 } 
         )
     }
 

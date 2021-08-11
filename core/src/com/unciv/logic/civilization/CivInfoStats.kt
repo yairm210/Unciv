@@ -108,6 +108,18 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
         statMap["Transportation upkeep"] = Stats().apply { gold = -getTransportationUpkeep().toFloat() }
         statMap["Unit upkeep"] = Stats().apply { gold = -getUnitMaintenance().toFloat() }
 
+        if (civInfo.religionManager.religion != null) {
+            for (unique in civInfo.religionManager.religion!!.getFounderBeliefs().flatMap { it.uniqueObjects }) {
+                if (unique.placeholderText == "[] for each global city following this religion") {
+                    statMap.add(
+                        "Religion", 
+                        unique.stats.times(civInfo.religionManager.numberOfCitiesFollowingThisReligion().toFloat())
+                    )
+                }
+            }
+        }
+        
+
         if (civInfo.hasUnique("50% of excess happiness added to culture towards policies")) {
             val happiness = civInfo.getHappiness()
             if (happiness > 0) statMap.add("Policies", Stats().apply { culture = happiness / 2f })
@@ -185,6 +197,19 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
 
         statMap["Natural Wonders"] = happinessPerNaturalWonder * civInfo.naturalWonders.size
 
+        if (civInfo.religionManager.religion != null) {
+            statMap["Religion"] = 0f
+            for (unique in civInfo.religionManager.religion!!.getFounderBeliefs().flatMap { it.uniqueObjects }) {
+                if (unique.placeholderText == "[] for each global city following this religion") {
+                    statMap["Religion"] = 
+                        statMap["Religion"]!! +
+                        unique.stats.happiness * civInfo.religionManager.numberOfCitiesFollowingThisReligion().toFloat()
+                }
+            }
+            if (statMap["Religion"] == 0f) 
+                statMap.remove("Religion")
+        }
+        
         //From city-states
         for (otherCiv in civInfo.getKnownCivs()) {
             if (otherCiv.isCityState() && otherCiv.cityStateType == CityStateType.Mercantile
