@@ -86,11 +86,13 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
                     && otherCiv.getDiplomacyManager(civInfo.civName).relationshipLevel() >= RelationshipLevel.Friend) {
                 val cultureBonus = Stats()
 
-                // 3/6 for ancient-classical, 6/12 for medieval-renaissance, 13/26 later
-                var culture = if (civInfo.getEraNumber() in 0..1) 3f else if (civInfo.getEraNumber() in 2..3) 6f else 13f
+                val eraInfo = civInfo.gameInfo.ruleSet.eras[civInfo.getEra()]!!
 
-                if (otherCiv.getDiplomacyManager(civInfo.civName).relationshipLevel() == RelationshipLevel.Ally)
-                    culture *= 2f
+                var culture = when (otherCiv.getDiplomacyManager(civInfo.civName).relationshipLevel()) {
+                    RelationshipLevel.Friend -> eraInfo.culturedFriendCulture.toFloat()
+                    RelationshipLevel.Ally -> eraInfo.culturedAllyCulture.toFloat()
+                    else -> 0f
+                }
 
                 if (civInfo.hasUnique("Food and Culture from Friendly City-States are increased by 50%"))
                     culture *= 1.5f
@@ -192,15 +194,15 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
         statMap["Natural Wonders"] = happinessPerNaturalWonder * civInfo.naturalWonders.size
 
         //From city-states
-        // Mercantile gives only 2 happiness during ancient and classical
-        val mercantileBonus = if (civInfo.getEraNumber() in 0..1) 2f else 3f
+        val eraInfo = civInfo.gameInfo.ruleSet.eras[civInfo.getEra()]!!
+
         for (otherCiv in civInfo.getKnownCivs()) {
             if (otherCiv.isCityState() && otherCiv.cityStateType == CityStateType.Mercantile
                     && otherCiv.getDiplomacyManager(civInfo).relationshipLevel() >= RelationshipLevel.Friend) {
                 if (statMap.containsKey("City-States"))
-                    statMap["City-States"] = statMap["City-States"]!! + mercantileBonus
+                    statMap["City-States"] = statMap["City-States"]!! + eraInfo.mercantileHappiness
                 else
-                    statMap["City-States"] = mercantileBonus
+                    statMap["City-States"] = eraInfo.mercantileHappiness.toFloat()
             }
         }
 

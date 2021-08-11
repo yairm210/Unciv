@@ -19,6 +19,13 @@ class Era : INamed {
     var settlerBuildings = ArrayList<String>()
     var startingObsoleteWonders = ArrayList<String>()
     var baseUnitBuyCost = 200
+    var mercantileHappiness = 2
+    var maritimeCapitalFood = 2
+    var maritimeAllCitiesFood = 1
+    var culturedFriendCulture = 3
+    var culturedAllyCulture = 6
+    var militaristicFriendDelay = 20
+    var militaristicAllyDelay = 17
     var iconRGB: List<Int>? = null
     
     fun getStartingUnits(): List<String> {
