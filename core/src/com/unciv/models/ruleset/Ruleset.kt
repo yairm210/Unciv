@@ -289,6 +289,7 @@ class Ruleset {
         fun isError() = status == CheckModLinksStatus.Error
         fun isNotOK() = status != CheckModLinksStatus.OK
     }
+
     fun checkModLinks(): CheckModLinksResult {
         val lines = ArrayList<String>()
         var warningCount = 0
@@ -338,8 +339,9 @@ class Ruleset {
                 lines += "${unit.name} replaces ${unit.replaces} which does not exist!"
             for (promotion in unit.promotions)
                 if (!unitPromotions.containsKey(promotion))
-                    lines += "${unit.replaces} contains promotion $promotion which does not exist!"
-
+                    lines += "${unit.name} contains promotion $promotion which does not exist!"
+            if (!unitTypes.containsKey(unit.unitType))
+                lines += "${unit.name} is of type ${unit.unitType}, which does not exist!"
         }
 
         for (building in buildings.values) {

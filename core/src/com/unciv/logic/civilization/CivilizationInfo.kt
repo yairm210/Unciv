@@ -262,9 +262,7 @@ class CivilizationInfo {
                 } +
                 policies.policyUniques.getUniques(uniqueTemplate) +
                 tech.techUniques.getUniques(uniqueTemplate) +
-                temporaryUniques.filter { it.first.placeholderText == uniqueTemplate }.map { it.first } +
-                if (religionManager.religion != null) religionManager.religion!!.getFounderUniques().asSequence()
-                else sequenceOf()
+                temporaryUniques.filter { it.first.placeholderText == uniqueTemplate }.map { it.first }
     }
 
     //region Units
@@ -371,7 +369,9 @@ class CivilizationInfo {
             otherCiv.addNotification(meetString, cityStateLocation, NotificationIcon.Gold)
         else
             otherCiv.addNotification(meetString, NotificationIcon.Gold)
-        otherCiv.addStats(giftAmount)
+
+        for (stat in giftAmount.toHashMap().filter { it.value != 0f })
+            otherCiv.addStat(stat.key, stat.value.toInt())
     }
 
     fun discoverNaturalWonder(naturalWonderName: String) {
@@ -708,13 +708,6 @@ class CivilizationInfo {
             else -> {}
             // Food and Production wouldn't make sense to be added nationwide
             // Happiness cannot be added as it is recalculated again, use a unique instead
-        }
-    }
-    
-    /** Rounds each of the stats down to the nearest integer */
-    fun addStats(stats: Stats) {
-        for (stat in stats.toHashMap()) {
-            addStat(stat.key, stat.value.toInt())
         }
     }
     
