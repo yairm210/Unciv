@@ -8,7 +8,7 @@ So first things first - the initial "No assumptions" setup to have Unciv run fro
    * Create a Github account, if you don't already have one
    * Fork the repo (click the "Fork" button on the top-right corner of https://github.com/yairm210/Unciv) - this will create a "copy" of the code on your account, at https://github.com/YourUsername/Unciv
    * Clone your fork with git - the location will be https://github.com/YourUsername/Unciv.git, visible from the green "Clone or download" button at https://github.com/YourUsername/Unciv
-* Load the project in Android Studio
+* Load the project in Android Studio, Gradle will attempt the initial sync. This may require you to accept the Android Build-tools licenses, which works differently on every device, so search for your OS-specific solution.
 * In Android Studio, Run > Edit configurations.
   * Click "+" to add a new configuration
   * Choose "Application"
