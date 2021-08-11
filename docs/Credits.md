@@ -160,6 +160,11 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Joss Stick](https://thenounproject.com/search/?q=incense&i=583033) By Hea Poh Lin for Incense
 * [Pottery](https://thenounproject.com/term/pottery/2317144/) By Laymik, UA for Porcelain
 * [Jewelry](https://thenounproject.com/term/jewelry/3688098/) By Shocho, IN
+* [Lemons](https://thenounproject.com/search/?q=lemon&i=4147611) By sachin modgekar, IN for Citrus
+* [Pipes](https://thenounproject.com/search/?q=pipes&i=1637792) By Nibras@design for Copper
+* [Crab](https://thenounproject.com/search/?q=crab&i=246420) By YuguDesign
+* [Truffle](https://thenounproject.com/search/?q=Truffles&i=1576609) By parkjisun
+* [Salt](https://thenounproject.com/search/?q=salt&i=3614173) By HAMEL KHALED, DZ 
 
 ## Improvements
 
