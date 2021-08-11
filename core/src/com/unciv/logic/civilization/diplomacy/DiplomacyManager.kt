@@ -496,13 +496,17 @@ class DiplomacyManager() {
             revertToZero(DiplomaticModifiers.DeclarationOfFriendship, 1 / 2f) //decreases slowly and will revert to full if it is declared later
 
         if (otherCiv().isCityState() && otherCiv().cityStateType == CityStateType.Militaristic) {
+            val eraInfo = civInfo.gameInfo.ruleSet.eras[civInfo.getEra()]!!
+
             if (relationshipLevel() < RelationshipLevel.Friend) {
                 if (hasFlag(DiplomacyFlags.ProvideMilitaryUnit)) removeFlag(DiplomacyFlags.ProvideMilitaryUnit)
             } else if (relationshipLevel() == RelationshipLevel.Friend) {
-                if (!hasFlag(DiplomacyFlags.ProvideMilitaryUnit)) setFlag(DiplomacyFlags.ProvideMilitaryUnit, 20)
+                if (!hasFlag(DiplomacyFlags.ProvideMilitaryUnit))
+                    setFlag(DiplomacyFlags.ProvideMilitaryUnit, eraInfo.militaristicFriendDelay)
             } else {
                 // Faster unit gifts for allies
-                if (!hasFlag(DiplomacyFlags.ProvideMilitaryUnit) || getFlag(DiplomacyFlags.ProvideMilitaryUnit) > 17) setFlag(DiplomacyFlags.ProvideMilitaryUnit, 17)
+                if (!hasFlag(DiplomacyFlags.ProvideMilitaryUnit) || getFlag(DiplomacyFlags.ProvideMilitaryUnit) > eraInfo.militaristicAllyDelay)
+                    setFlag(DiplomacyFlags.ProvideMilitaryUnit, eraInfo.militaristicAllyDelay)
             }
         }
     }
