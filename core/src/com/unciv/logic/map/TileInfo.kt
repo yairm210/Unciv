@@ -575,9 +575,7 @@ open class TileInfo {
         if (tileOwner == null || tileOwner == civInfo) return true
         if (isCityCenter() && civInfo.isAtWarWith(tileOwner)
                 && !getCity()!!.hasJustBeenConquered) return false
-        if (!civInfo.canPassThroughTiles(tileOwner)
-                && !(civInfo.isPlayerCivilization() && tileOwner.isCityState())) return false
-        // AIs won't enter city-state's border.
+        if (!civInfo.canPassThroughTiles(tileOwner)) return false
         return true
     }
 
