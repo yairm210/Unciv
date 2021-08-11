@@ -149,13 +149,14 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
         val luxuriesProvidedByCityStates = 
             civInfo.getKnownCivs().asSequence()
                 .filter { it.isCityState() && it.getAllyCiv() == civInfo.civName }
-                .map { it.getCivResources().map { res -> res.resource } }
-                .flatten().distinct().count { it.resourceType === ResourceType.Luxury }
+                .flatMap { it.getCivResources().map { res -> res.resource } }
+                .distinct().count { it.resourceType === ResourceType.Luxury }
         
         statMap["City-State Luxuries"] = happinessBonusForCityStateProvidedLuxuries * luxuriesProvidedByCityStates * happinessPerUniqueLuxury
 
         val luxuriesAllOfWhichAreTradedAway = civInfo.detailedCivResources
-            .filter { it.amount < 0 && it.resource.resourceType == ResourceType.Luxury && (it.origin == "Trade" || it.origin == "Trade request")}
+            .filter { it.amount < 0 && it.resource.resourceType == ResourceType.Luxury
+                    && (it.origin == "Trade" || it.origin == "Trade request")}
             .map { it.resource }
             .filter { !ownedLuxuries.contains(it) }
         
