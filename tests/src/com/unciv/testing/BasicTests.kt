@@ -91,9 +91,9 @@ class BasicTests {
     fun statMathStressTest() {
         val runtime = Runtime.getRuntime()
         runtime.gc()
-        Thread.sleep(5000)
+        Thread.sleep(5000) // makes timings a little more repeatable
         val startTime = System.nanoTime()
-        statMathRunner(iterations = 1000000)
+        statMathRunner(iterations = 1_000_000)
         println("statMathStressTest took ${(System.nanoTime()-startTime)/1000}µs")
     }
 
@@ -101,13 +101,13 @@ class BasicTests {
     fun statMathRandomResultTest() {
         val iterations = 42
         val expectedStats = Stats().apply {
-            production = 1381.1195f
-            food = 37650.625f
-            gold = -54857.508f
-            science = 82838.1f
-            culture = 264289.88f
-            happiness = -98249.61f
-            faith = -21620.709f
+            production = 12970.174f
+            food = -153216.12f
+            gold = 28614.738f
+            science = 142650.89f
+            culture = -45024.03f
+            happiness = -7081.2495f
+            faith = -14933.622f
         }
         val stats = statMathRunner(iterations)
         Assert.assertTrue(stats.equals(expectedStats))
