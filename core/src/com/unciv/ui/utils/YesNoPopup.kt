@@ -17,8 +17,9 @@ open class YesNoPopup (
             restoreDefault:()->Unit = {}
         ) : Popup(screen) {
 
+    val promptLabel = question.toLabel()
     init {
-        add(question.toLabel()).colspan(2).row()
+        add(promptLabel).colspan(2).row()
         addOKButton(Constants.yes, KeyCharAndCode('y'), action)
         addCloseButton(Constants.no, KeyCharAndCode('n'), restoreDefault)
         equalizeLastTwoButtonWidths()
