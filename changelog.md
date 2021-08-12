@@ -1,3 +1,18 @@
+## 3.16.3
+
+By SomeTroglodyte:
+- Civilopedia - Difficulty
+- City screen stats double separators
+- Unit rename UI
+
+By xlenstra:
+- Added founder beliefs, updates to pantheon spreading
+- Added an overview screen for religions
+
+Resources changed to match civ5 G&K - By ravignir
+
+Add Holy Site for FantasyHex  - By AdityaMH
+
 ## 3.16.2-patch1
 
 Fixed diplomacy screen crash for city-states with no cities
