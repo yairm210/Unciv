@@ -6,27 +6,28 @@ The JSON files that make up mods can have many different fields, and as not all 
 # Table of Contents
 * [General Overview of JSON files](#general-overview-of-json-files)
 * Civilization-related JSON files
-* * [Beliefs.json](#beliefsjson)
-* * [Buildings.json](#buildingsjson)
-* * [Nations.json](#nationsjson)
-* * [Policies.json](#policiesjson)
-* * [Quests.json](#questsjson)
-* * [Religions.json](#religionsjson)
-* * [Specialists.json](#specialistsjson)
-* * [Techs.json](#techsjson)
+    * [Beliefs.json](#beliefsjson)
+    * [Buildings.json](#buildingsjson)
+    * [Nations.json](#nationsjson)
+    * [Policies.json](#policiesjson)
+    * [Quests.json](#questsjson)
+    * [Religions.json](#religionsjson)
+    * [Specialists.json](#specialistsjson)
+    * [Techs.json](#techsjson)
 * Map-related JSON files
-* * [Terrains.json](#terrainsjson)
-* * [TileImprovements.json](#tileimprovementsjson)
-* * [TileResources.json](#tileresourcesjson)
-* * [Ruins.json](#ruinsjson)
+    * [Terrains.json](#terrainsjson)
+    * [TileResources.json](#tileresourcesjson)
+    * [TileImprovements.json](#tileimprovementsjson)
+    * [Ruins.json](#ruinsjson)
+    * [Tileset-specific json](#tileset-specific-json)
 * Unit-related JSON files
-* * [Units.json](#unitsjson)
-* * [UnitPromotions.json](#unitpromotionsjson)
-* * [UnitTypes.json](#unittypesjson)
+    * [Units.json](#unitsjson)
+    * [UnitPromotions.json](#unitpromotionsjson)
+    * [UnitTypes.json](#unittypesjson)
 * Miscellaneous JSON files
-* * [Difficulties.json](#difficultiesjson)
-* * [Eras.json](#erasjson)
-* * [ModOptions.json](#modoptionsjson)
+    * [Difficulties.json](#difficultiesjson)
+    * [Eras.json](#erasjson)
+    * [ModOptions.json](#modoptionsjson)
 * [Stats](#stats)
 * [Sounds](#sounds)
 * [Civilopedia text](#civilopedia-text)
@@ -298,7 +299,6 @@ This file contains the possible rewards ancient ruins give. It is not required, 
 
 Each of the objects in the file represents a single reward you can get from ruins. It has the following properties:
 
-
 | attribute | Type | optional or not | notes |
 | --------- | ---- | --------------- | ----- |
 | name | String | required | Name of the ruins. Never shown to the user, but they have to be distinct |
@@ -447,6 +447,29 @@ Each resource can have the following properties:
 | unique | String | Default empty | Effects, [see here](../Uniques#terrain-uniques) - sorry, at the moment only a single one |
 | civilopediaText | List | Default empty | see [civilopediaText chapter](#civilopedia-text) |
 
+## Tileset-specific json
+
+A mod can define new Tilesets or add to existing ones, namely FantasyHex. There is one json file per Tileset, named same as the Tileset, and placed in a subfolder named "TileSets" relative to the other json files. This is called TileSetConfig and has the following structure:
+
+| Attribute | Type | Optional? | Notes |
+|-----------|------|-----------|-------|
+| useColorAsBaseTerrain | Boolean | Default true | ? *WIP* |
+| unexploredTileColor | Color | Default Dark Gray | `{"r":0.25,"g":0.25,"b":0.25,"a":1}` |
+| fogOfWarColor | Color | Default Black | `{"r":0,"g":0,"b":0,"a":1}` |
+| ruleVariants | List | Default empty | see below |
+
+ruleVariants control substitutions when layering images for a tile, they are list looking like:
+```json
+    "ruleVariants": {
+        "Grassland+Forest": ["Grassland","GrasslandForest"],
+        "Plains+Forest": ["Plains","PlainsForest"],
+        "Plains+Jungle": ["Plains","PlainsJungle"],
+        ...
+    }
+```
+Each line means "if the tile content is this... then combine the following png images". The key part follows a specific order and must match in its entirety, meaning "Plains+Forest" is not valid for "Plains+Forest+Deer", and when it matches no other image layering is done except roads and units (I think - *WIP*).
+
+When TileSetConfig's for the same Tileset are combined, for the first three properties the last mod wins, while ruleVariants are merged, meaning only an entry with the same key overwrites an earlier entry.
 
 ## Units.json
 [Link to original](https://github.com/yairm210/Unciv/blob/master/android/assets/jsons/Civ%20V%20-%20Vanilla/Units.json)
