@@ -324,6 +324,7 @@ class Ruleset {
 
         if (!modOptions.isBaseRuleset) return CheckModLinksResult(warningCount, lines)
 
+        val baseRuleset = RulesetCache.getBaseRuleset()
 
         for (unit in units.values) {
             if (unit.requiredTech != null && !technologies.containsKey(unit.requiredTech!!))
@@ -340,7 +341,7 @@ class Ruleset {
             for (promotion in unit.promotions)
                 if (!unitPromotions.containsKey(promotion))
                     lines += "${unit.name} contains promotion $promotion which does not exist!"
-            if (!unitTypes.containsKey(unit.unitType))
+            if (!unitTypes.containsKey(unit.unitType) && !baseRuleset.unitTypes.containsKey(unit.unitType))
                 lines += "${unit.name} is of type ${unit.unitType}, which does not exist!"
         }
 
