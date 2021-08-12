@@ -6,6 +6,9 @@ import com.unciv.logic.trade.Trade
 import com.unciv.logic.trade.TradeOffer
 import com.unciv.logic.trade.TradeType
 import com.unciv.models.ruleset.tile.ResourceSupplyList
+import com.unciv.models.translations.getPlaceholderParameters
+import com.unciv.models.translations.getPlaceholderText
+import javax.management.relation.Relation
 import kotlin.math.ceil
 import kotlin.math.max
 import kotlin.math.min
@@ -495,18 +498,22 @@ class DiplomacyManager() {
         if (!hasFlag(DiplomacyFlags.DeclarationOfFriendship))
             revertToZero(DiplomaticModifiers.DeclarationOfFriendship, 1 / 2f) //decreases slowly and will revert to full if it is declared later
 
-        if (otherCiv().isCityState() && otherCiv().cityStateType == CityStateType.Militaristic) {
-            val eraInfo = civInfo.gameInfo.ruleSet.eras[civInfo.getEra()]!!
+        if (otherCiv().isCityState()) {
+            val eraInfo = civInfo.getEraObject()
 
             if (relationshipLevel() < RelationshipLevel.Friend) {
                 if (hasFlag(DiplomacyFlags.ProvideMilitaryUnit)) removeFlag(DiplomacyFlags.ProvideMilitaryUnit)
-            } else if (relationshipLevel() == RelationshipLevel.Friend) {
-                if (!hasFlag(DiplomacyFlags.ProvideMilitaryUnit))
-                    setFlag(DiplomacyFlags.ProvideMilitaryUnit, eraInfo.militaristicFriendDelay)
             } else {
-                // Faster unit gifts for allies
-                if (!hasFlag(DiplomacyFlags.ProvideMilitaryUnit) || getFlag(DiplomacyFlags.ProvideMilitaryUnit) > eraInfo.militaristicAllyDelay)
-                    setFlag(DiplomacyFlags.ProvideMilitaryUnit, eraInfo.militaristicAllyDelay)
+                val relevantBonuses = if (relationshipLevel() == RelationshipLevel.Friend) eraInfo.friendBonus[otherCiv().cityStateType.name]
+                                    else eraInfo.allyBonus[otherCiv().cityStateType.name]
+                if (relevantBonuses != null) {
+                    for (bonus in relevantBonuses) {
+                        if (bonus.getPlaceholderText() == "Provides military units every [] turns") {
+                            if (!hasFlag(DiplomacyFlags.ProvideMilitaryUnit) || getFlag(DiplomacyFlags.ProvideMilitaryUnit) > bonus.getPlaceholderParameters()[0].toInt())
+                                setFlag(DiplomacyFlags.ProvideMilitaryUnit, bonus.getPlaceholderParameters()[0].toInt())
+                        }
+                    }
+                }
             }
         }
     }

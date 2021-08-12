@@ -150,21 +150,23 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
             diplomacyTable.add(nextLevelString.toLabel()).row()
         }
 
-        val bonusMultiplier = if (viewingCiv.hasUnique("Food and Culture from Friendly City-States are increased by 50%")) 1.5f else 1f
-        val eraInfo = viewingCiv.gameInfo.ruleSet.eras[viewingCiv.getEra()]!!
-
-        val friendBonusText = when (otherCiv.cityStateType) {
-            CityStateType.Cultured -> ("Provides [" + (eraInfo.culturedFriendCulture * bonusMultiplier).toString().removeSuffix(".0") + "] culture when Friends").tr()
-            CityStateType.Maritime -> ("Provides [" + (eraInfo.maritimeCapitalFood * bonusMultiplier).toString().removeSuffix(".0") + "] food in capital when Friends").tr()
-            CityStateType.Mercantile -> ("Provides [" + eraInfo.mercantileHappiness + "] happiness when Friends").tr()
-            CityStateType.Militaristic -> ("Provides land units every [" + eraInfo.militaristicFriendDelay + "] turns when Friends").tr()
+        var friendBonusText = "When Friends: "
+        val friendBonuses = viewingCiv.getEraObject().friendBonus[otherCiv.cityStateType.name]
+        if (friendBonuses != null) {
+            for (bonus in friendBonuses) {
+                if (friendBonuses.first() != bonus)
+                    friendBonusText += ", "
+                friendBonusText += bonus.tr()
+            }
         }
-        val allyBonusText = when (otherCiv.cityStateType) {
-            CityStateType.Cultured -> ("Provides [" + (eraInfo.culturedAllyCulture * bonusMultiplier).toString().removeSuffix(".0") + "] culture when Allies").tr()
-            CityStateType.Maritime -> ("Provides [" + ((eraInfo.maritimeCapitalFood + eraInfo.maritimeAllCitiesFood) * bonusMultiplier).toString().removeSuffix(".0") +
-                    "] food in capital and [" + (eraInfo.maritimeAllCitiesFood * bonusMultiplier).toString().removeSuffix(".0") + "] in other cities when Allies").tr()
-            CityStateType.Mercantile -> ("Provides [" + eraInfo.mercantileHappiness + "] happiness and unique luxury resources when Allies").tr()
-            CityStateType.Militaristic -> ("Provides land units every [" + eraInfo.militaristicAllyDelay + "] turns when Allies").tr()
+        var allyBonusText = "When Allies: "
+        val allyBonuses = viewingCiv.getEraObject().allyBonus[otherCiv.cityStateType.name]
+        if (allyBonuses != null) {
+            for (bonus in allyBonuses) {
+                if (allyBonuses.first() != bonus)
+                    allyBonusText += ", "
+                allyBonusText += bonus.tr()
+            }
         }
 
         val friendBonusLabelColor: Color

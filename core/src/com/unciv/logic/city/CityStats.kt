@@ -11,6 +11,8 @@ import com.unciv.models.ruleset.Unique
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
+import com.unciv.models.translations.getPlaceholderParameters
+import com.unciv.models.translations.getPlaceholderText
 
 
 class CityStats {
@@ -122,17 +124,31 @@ class CityStats {
         val stats = Stats()
 
         for (otherCiv in cityInfo.civInfo.getKnownCivs()) {
-            if (otherCiv.isCityState() && otherCiv.cityStateType == CityStateType.Maritime
-                    && otherCiv.getDiplomacyManager(cityInfo.civInfo).relationshipLevel() >= RelationshipLevel.Friend) {
-                val eraInfo = cityInfo.civInfo.gameInfo.ruleSet.eras[cityInfo.civInfo.getEra()]!!
-                // 2 in capital for friends, 3 in capital + 1 in all other cities for allies
-                if (cityInfo.isCapital())
-                    stats.food += eraInfo.maritimeCapitalFood
-                if (otherCiv.getDiplomacyManager(cityInfo.civInfo).relationshipLevel() == RelationshipLevel.Ally)
-                    stats.food += eraInfo.maritimeAllCitiesFood
+            if (otherCiv.isCityState() && otherCiv.getDiplomacyManager(cityInfo.civInfo).relationshipLevel() >= RelationshipLevel.Friend) {
+                val eraInfo = cityInfo.civInfo.getEraObject()
+
+                for (bonus in if (otherCiv.getDiplomacyManager(cityInfo.civInfo).relationshipLevel() == RelationshipLevel.Friend)
+                    eraInfo.friendBonus[otherCiv.cityStateType.name]!! else eraInfo.allyBonus[otherCiv.cityStateType.name]!!) {
+                    if (bonus.getPlaceholderText() == "Provides [] [] []" && cityInfo.matchesFilter(bonus.getPlaceholderParameters()[2])) {
+                        val stattoadd = when (bonus.getPlaceholderParameters()[1]) {
+                            "Food" -> Stat.Food
+                            "Production" -> Stat.Production
+                            "Gold" -> Stat.Gold
+                            "Faith" -> Stat.Faith
+                            "Science" -> Stat.Science
+                            "Culture" -> Stat.Culture
+                            "Happiness" -> Stat.Happiness
+                            else -> null
+                        }
+                        if (stattoadd != null) {
+                            stats.add(stattoadd, bonus.getPlaceholderParameters()[0].toFloat())
+                        }
+                    }
+                }
 
                 if (cityInfo.civInfo.hasUnique("Food and Culture from Friendly City-States are increased by 50%"))
                     stats.food *= 1.5f
+                    stats.culture *= 1.5f
             }
         }
 
