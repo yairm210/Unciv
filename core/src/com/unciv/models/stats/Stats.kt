@@ -13,16 +13,19 @@ open class Stats(
     var happiness: Float = 0f,
     var faith: Float = 0f
 ) {
-    @Transient
-    private val mapView: Map<Stat, KMutableProperty0<Float>> = mapOf(
-        Stat.Production to ::production,
-        Stat.Food to ::food,
-        Stat.Gold to ::gold,
-        Stat.Science to ::science,
-        Stat.Culture to ::culture,
-        Stat.Happiness to ::happiness,
-        Stat.Faith to ::faith
-    )
+    @delegate:Transient
+    private val mapView: Map<Stat, KMutableProperty0<Float>> by lazy {
+        mapOf(
+            Stat.Production to ::production,
+            Stat.Food to ::food,
+            Stat.Gold to ::gold,
+            Stat.Science to ::science,
+            Stat.Culture to ::culture,
+            Stat.Happiness to ::happiness,
+            Stat.Faith to ::faith
+        )
+    }
+
 
     fun clear() {
         production = 0f

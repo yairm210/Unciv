@@ -90,10 +90,11 @@ class BasicTests {
     //@Test  // commented so github doesn't run this
     fun statMathStressTest() {
         val runtime = Runtime.getRuntime()
-        val startFreeMem = runtime.freeMemory()
+        runtime.gc()
+        Thread.sleep(5000)
         val startTime = System.nanoTime()
         statMathRunner(iterations = 1000000)
-        println("statMathStressTest took ${(System.nanoTime()-startTime)/1000}µs and ${(startFreeMem-runtime.freeMemory())/1024}kB")
+        println("statMathStressTest took ${(System.nanoTime()-startTime)/1000}µs")
     }
 
     @Test
