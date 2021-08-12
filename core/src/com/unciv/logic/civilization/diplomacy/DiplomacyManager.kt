@@ -193,8 +193,14 @@ class DiplomacyManager() {
     // To be run from City-State DiplomacyManager, which holds the influence. Resting point for every major civ can be different.
     fun getCityStateInfluenceRestingPoint(): Float {
         var restingPoint = 0f
+        
         for (unique in otherCiv().getMatchingUniques("Resting point for Influence with City-States is increased by []"))
             restingPoint += unique.params[0].toInt()
+        
+        for (unique in otherCiv().getMatchingUniques("Resting point for Influence with City-States following this religion []"))
+            if (otherCiv().religionManager.religion?.name == civInfo.getCapital().religion.getMajorityReligion())
+                restingPoint += unique.params[0].toInt()
+        
         if (diplomaticStatus == DiplomaticStatus.Protector) restingPoint += 5
         return restingPoint
     }

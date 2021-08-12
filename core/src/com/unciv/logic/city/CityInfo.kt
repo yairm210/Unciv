@@ -92,10 +92,8 @@ class CityInfo {
         val startingEra = civInfo.gameInfo.gameParameters.startingEra
 
         addStartingBuildings(civInfo, startingEra)
-
-
+        
         expansion.reset()
-
 
         tryUpdateRoadStatus()
 
@@ -106,6 +104,10 @@ class CityInfo {
         tile.improvement = null
         tile.improvementInProgress = null
 
+        if (civInfo.religionManager.religion != null && civInfo.religionManager.religion!!.isPantheon()) {
+            religion.addPressure(civInfo.religionManager.religion!!.name, 100)
+        }
+        
         val ruleset = civInfo.gameInfo.ruleSet
         workedTiles = hashSetOf() //reassign 1st working tile
         if (startingEra in ruleset.eras)
@@ -204,6 +206,7 @@ class CityInfo {
         toReturn.population = population.clone()
         toReturn.cityConstructions = cityConstructions.clone()
         toReturn.expansion = expansion.clone()
+        toReturn.religion = religion.clone()
         toReturn.tiles = tiles
         toReturn.workedTiles = workedTiles
         toReturn.lockedTiles = lockedTiles
@@ -214,7 +217,6 @@ class CityInfo {
         toReturn.turnAcquired = turnAcquired
         toReturn.isPuppet = isPuppet
         toReturn.isOriginalCapital = isOriginalCapital
-        toReturn.religion = CityInfoReligionManager().apply { putAll(religion) }
         return toReturn
     }
 
@@ -431,7 +433,7 @@ class CityInfo {
         cityStats.cityInfo = this
         cityConstructions.cityInfo = this
         cityConstructions.setTransients()
-        religion.cityInfo = this
+        religion.setTransients(this)
     }
 
     fun startTurn() {

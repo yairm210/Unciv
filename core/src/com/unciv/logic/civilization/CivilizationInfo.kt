@@ -369,10 +369,9 @@ class CivilizationInfo {
             otherCiv.addNotification(meetString, cityStateLocation, NotificationIcon.Gold)
         else
             otherCiv.addNotification(meetString, NotificationIcon.Gold)
+
         for (stat in giftAmount.toHashMap().filter { it.value != 0f })
             otherCiv.addStat(stat.key, stat.value.toInt())
-            
-            
     }
 
     fun discoverNaturalWonder(naturalWonderName: String) {
