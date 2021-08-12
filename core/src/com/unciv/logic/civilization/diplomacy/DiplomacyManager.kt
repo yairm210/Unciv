@@ -506,13 +506,13 @@ class DiplomacyManager() {
             } else {
                 val relevantBonuses = if (relationshipLevel() == RelationshipLevel.Friend) eraInfo.friendBonus[otherCiv().cityStateType.name]
                                     else eraInfo.allyBonus[otherCiv().cityStateType.name]
-                if (relevantBonuses != null) {
-                    for (bonus in relevantBonuses) {
-                        if (bonus.getPlaceholderText() == "Provides military units every [] turns") {
-                            if (!hasFlag(DiplomacyFlags.ProvideMilitaryUnit) || getFlag(DiplomacyFlags.ProvideMilitaryUnit) > bonus.getPlaceholderParameters()[0].toInt())
-                                setFlag(DiplomacyFlags.ProvideMilitaryUnit, bonus.getPlaceholderParameters()[0].toInt())
-                        }
-                    }
+                if (relevantBonuses == null) return
+
+                for (bonus in relevantBonuses) {
+                    // Reset the countdown if it has ended, or if we have longer to go than the current maximum (can happen when going from friend to ally)
+                    if (bonus.getPlaceholderText() == "Provides military units every [] turns" &&
+                       (!hasFlag(DiplomacyFlags.ProvideMilitaryUnit) || getFlag(DiplomacyFlags.ProvideMilitaryUnit) > bonus.getPlaceholderParameters()[0].toInt()))
+                            setFlag(DiplomacyFlags.ProvideMilitaryUnit, bonus.getPlaceholderParameters()[0].toInt())
                 }
             }
         }
