@@ -1,6 +1,7 @@
 package com.unciv.ui.utils
 
 import com.badlogic.gdx.Gdx
+import com.unciv.Constants
 import com.unciv.UncivGame
 
 /** Variant of [Popup] pre-populated with one label, plus yes and no buttons
@@ -15,15 +16,12 @@ open class YesNoPopup (
             screen: CameraStageBaseScreen = UncivGame.Current.worldScreen,
             restoreDefault:()->Unit = {}
         ) : Popup(screen) {
-    private val yes = { close(); action() }
-    private val no = { close(); restoreDefault() }
 
     init {
         add(question.toLabel()).colspan(2).row()
-        addButtonInRow("Yes", 'y', yes)
-        addButtonInRow("No", 'n', no)
-        keyPressDispatcher[KeyCharAndCode.RETURN] = yes
-        keyPressDispatcher[KeyCharAndCode.BACK] = no
+        addOKButton(Constants.yes, KeyCharAndCode('y'), action)
+        addCloseButton(Constants.no, KeyCharAndCode('n'), restoreDefault)
+        equalizeLastTwoButtonWidths()
     }
 }
 

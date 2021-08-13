@@ -82,10 +82,23 @@ class TileImprovementConstructionTests {
         map.tileMatrix.add(arrayListOf(tile, otherTile))
 
         for (improvement in ruleSet.tileImprovements.values) {
-            if (!improvement.uniques.contains("Can only be built on Coastal tiles")) continue
+            if (!improvement.uniques.contains("Can only be built on [Coastal] tiles")) continue
             civInfo.civName = improvement.uniqueTo ?: "OtherCiv"
             val canBeBuilt = tile.canBuildImprovement(improvement, civInfo)
             Assert.assertTrue(improvement.name, canBeBuilt)
+        }
+    }
+
+    @Test
+    fun coastalImprovementsCanNOTBeBuiltInland() {
+        tile.baseTerrain = "Plains"
+        tile.setTransients()
+
+        for (improvement in ruleSet.tileImprovements.values) {
+            if (!improvement.uniques.contains("Can only be built on [Coastal] tiles")) continue
+            civInfo.civName = improvement.uniqueTo ?: "OtherCiv"
+            val canBeBuilt = tile.canBuildImprovement(improvement, civInfo)
+            Assert.assertFalse(improvement.name, canBeBuilt)
         }
     }
 
@@ -96,6 +109,40 @@ class TileImprovementConstructionTests {
             civInfo.civName = "OtherCiv"
             tile.baseTerrain = "Plains"
             tile.setTransients()
+            val canBeBuilt = tile.canBuildImprovement(improvement, civInfo)
+            Assert.assertFalse(improvement.name, canBeBuilt)
+        }
+    }
+
+    @Test
+    fun improvementsCanNOTBeBuiltOnWrongResource() {
+        tile.baseTerrain = "Plains"
+        civInfo.civName = "OtherCiv"
+
+        for (resource in ruleSet.tileResources.values) {
+            if (resource.improvement == null) continue
+            val improvement = ruleSet.tileImprovements[resource.improvement]!!
+            if (improvement.terrainsCanBeBuiltOn.isNotEmpty()) continue
+            val wrongResource = ruleSet.tileResources.values.firstOrNull { 
+                it != resource && it.improvement != improvement.name 
+            } ?: continue
+            tile.resource = wrongResource.name
+            tile.setTransients()
+            val canBeBuilt = tile.canBuildImprovement(improvement, civInfo)
+            Assert.assertFalse(improvement.name, canBeBuilt)
+        }
+    }
+
+    @Test
+    fun terraceFarmCanNOTBeBuiltOnBonus() {
+        tile.baseTerrain = "Plains"
+        tile.terrainFeatures.add("Hill")
+        tile.resource = "Sheep"
+        tile.setTransients()
+        civInfo.civName = "Inca"
+
+        for (improvement in ruleSet.tileImprovements.values) {
+            if (!improvement.uniques.contains("Cannot be built on [Bonus resource] tiles")) continue
             val canBeBuilt = tile.canBuildImprovement(improvement, civInfo)
             Assert.assertFalse(improvement.name, canBeBuilt)
         }

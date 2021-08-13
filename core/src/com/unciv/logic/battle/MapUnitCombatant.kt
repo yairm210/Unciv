@@ -31,12 +31,12 @@ class MapUnitCombatant(val unit: MapUnit) : ICombatant {
     }
 
     override fun getDefendingStrength(): Int {
-        return if (unit.isEmbarked() && !unit.type.isCivilian()) 5 * getCivInfo().getEraNumber()
+        return if (unit.isEmbarked() && !isCivilian()) 5 * getCivInfo().getEraNumber()
         else unit.baseUnit().strength
     }
 
     override fun getUnitType(): UnitType {
-        return unit.type
+        return unit.type!!
     }
 
     override fun toString(): String {

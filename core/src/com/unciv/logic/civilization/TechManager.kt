@@ -1,14 +1,13 @@
 package com.unciv.logic.civilization
 
-import com.unciv.logic.civilization.LocationAction
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.map.MapSize
 import com.unciv.logic.map.RoadStatus
 import com.unciv.logic.map.TileInfo
-import com.unciv.models.ruleset.Unique
+import com.unciv.models.ruleset.UniqueMap
 import com.unciv.models.ruleset.UniqueTriggerActivation
-import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.ruleset.tech.Technology
+import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.ui.utils.withItem
 import java.util.*
 import kotlin.collections.ArrayList
@@ -24,9 +23,9 @@ class TechManager {
     @Transient
     var researchedTechnologies = ArrayList<Technology>()
     @Transient
-    private var researchedTechUniques = ArrayList<Unique>()
+    internal var techUniques = UniqueMap()
 
-    // MapUnit.canPassThrough is the most called function in the game, and having these extremely specific booleans is or way of improving the time cost
+    // MapUnit.canPassThrough is the most called function in the game, and having these extremely specific booleans is one way of improving the time cost
     @Transient
     var wayfinding = false
     @Transient
@@ -36,7 +35,7 @@ class TechManager {
 
     // UnitMovementAlgorithms.getMovementCostBetweenAdjacentTiles is a close second =)
     @Transient
-    var movementSpeedOnRoadsImproved = false
+    var movementSpeedOnRoads = 1f
     @Transient
     var roadsConnectAcrossRivers = false
 
@@ -50,8 +49,8 @@ class TechManager {
 
     /** When moving towards a certain tech, the user doesn't have to manually pick every one. */
     var techsToResearch = ArrayList<String>()
-    private var techsInProgress = HashMap<String, Int>()
     var overflowScience = 0
+    var techsInProgress = HashMap<String, Int>()
 
     /** In civ IV, you can auto-convert a certain percentage of gold in cities to science */
     var goldPercentConvertedToScience = 0.6f
@@ -85,12 +84,12 @@ class TechManager {
                 .count { it.isMajorCiv() && !it.isDefeated() }
         // https://forums.civfanatics.com/threads/the-mechanics-of-overflow-inflation.517970/
         techCost /= 1 + techsResearchedKnownCivs / undefeatedCivs.toFloat() * 0.3f
-        // http://web.archive.org/web/20201204043641/http://www.civclub.net/bbs/forum.php?mod=viewthread&tid=123976
+        // https://civilization.fandom.com/wiki/Map_(Civ5)
         val worldSizeModifier = with (civInfo.gameInfo.tileMap.mapParameters.mapSize) {
             when {
+                radius >= MapSize.Huge.radius -> floatArrayOf(1.3f, 0.025f)
+                radius >= MapSize.Large.radius -> floatArrayOf(1.2f, 0.0375f)
                 radius >= MapSize.Medium.radius -> floatArrayOf(1.1f, 0.05f)
-                radius >= MapSize.Large.radius -> floatArrayOf(1.2f, 0.03f)
-                radius >= MapSize.Huge.radius -> floatArrayOf(1.3f, 0.02f)
                 else -> floatArrayOf(1f, 0.05f)
             }
         }
@@ -109,14 +108,14 @@ class TechManager {
         return if (techsToResearch.isEmpty()) null else techsToResearch[0]
     }
 
-    private fun researchOfTech(TechName: String?): Int {
-        return if (techsInProgress.containsKey(TechName)) techsInProgress[TechName]!! else 0
-    }
-
+    fun researchOfTech(TechName: String?) = techsInProgress[TechName] ?: 0
+    // Was once duplicated as fun scienceSpentOnTech(tech: String): Int
+    
     fun remainingScienceToTech(techName: String) = costOfTech(techName) - researchOfTech(techName)
 
-    fun turnsToTech(techName: String): String {
-        return if (civInfo.cities.isEmpty()) "∞" else max(1, ceil(remainingScienceToTech(techName).toDouble() / civInfo.statsForNextTurn.science).toInt()).toString()
+    fun turnsToTech(techName: String) = when {
+        civInfo.statsForNextTurn.science <= 0f -> "∞"
+        else -> max(1, ceil(remainingScienceToTech(techName).toDouble() / civInfo.statsForNextTurn.science).toInt()).toString()
     }
 
     fun isResearched(techName: String): Boolean = techsResearched.contains(techName)
@@ -129,8 +128,6 @@ class TechManager {
             return false
         return tech.prerequisites.all { isResearched(it) }
     }
-
-    fun getTechUniques() = researchedTechUniques.asSequence()
 
     //endregion
 
@@ -182,8 +179,9 @@ class TechManager {
     private fun scienceFromResearchAgreements(): Int {
         // https://forums.civfanatics.com/resources/research-agreements-bnw.25568/
         var researchAgreementModifier = 0.5f
-        for (unique in civInfo.getMatchingUniques("Science gained from research agreements +50%"))
-            researchAgreementModifier += 0.25f
+        for (unique in civInfo.getMatchingUniques("Science gained from research agreements []%")) {
+            researchAgreementModifier += unique.params[0].toFloat() / 200f
+        }
         return (scienceFromResearchAgreements / 3 * researchAgreementModifier).toInt()
     }
 
@@ -239,13 +237,13 @@ class TechManager {
         if (!newTech.isContinuallyResearchable())
             techsToResearch.remove(techName)
         researchedTechnologies = researchedTechnologies.withItem(newTech)
+        addTechToTransients(newTech)
         for (unique in newTech.uniqueObjects) {
-            researchedTechUniques = researchedTechUniques.withItem(unique)
             UniqueTriggerActivation.triggerCivwideUnique(unique, civInfo)
         }
         updateTransientBooleans()
 
-        civInfo.addNotification("Research of [$techName] has completed!", TechAction(techName), NotificationIcon.Science, techName )
+        civInfo.addNotification("Research of [$techName] has completed!", TechAction(techName), NotificationIcon.Science, techName)
         civInfo.popupAlerts.add(PopupAlert(AlertType.TechResearched, techName))
 
         val currentEra = civInfo.getEra()
@@ -256,7 +254,7 @@ class TechManager {
                     knownCiv.addNotification("[${civInfo.civName}] has entered the [$currentEra]!", civInfo.civName, NotificationIcon.Science)
                 }
             }
-            for (it in getRuleset().policyBranches.values.filter { it.era == currentEra }) {
+            for (it in getRuleset().policyBranches.values.filter { it.era == currentEra && civInfo.policies.isAdoptable(it) }) {
                 civInfo.addNotification("[" + it.name + "] policy branch unlocked!", NotificationIcon.Culture)
             }
         }
@@ -301,7 +299,7 @@ class TechManager {
                     val text = "[${cities.size}] cities changed production from [$unit] to [${construction.upgradesTo!!}]"
                     civInfo.addNotification(text, locationAction, unit, NotificationIcon.Construction, construction.upgradesTo!!)
                 } else {
-                    val text = "[$unit] has become osbolete and was removed from the queue in [${cities.size}] cities!"
+                    val text = "[$unit] has become obsolete and was removed from the queue in [${cities.size}] cities!"
                     civInfo.addNotification(text, locationAction, NotificationIcon.Construction)
                 }
             }
@@ -311,6 +309,11 @@ class TechManager {
             if (unique.params[1] != techName) continue
             civInfo.addUnit(unique.params[0])
         }
+    }
+
+    fun addTechToTransients(tech: Technology) {
+        for (unique in tech.uniqueObjects)
+            techUniques.addUnique(unique)
     }
 
     private fun notifyRevealedResources(techName: String) {
@@ -329,6 +332,7 @@ class TechManager {
                         city -> CityTileAndDistance(city, tile, tile.aerialDistanceTo(city.getCenterTile()))
                     }
                 }
+                .filter { it.distance <= 5 && (it.tile.getOwner() == null || it.tile.getOwner() == civInfo) }
                 .sortedWith ( compareBy { it.distance } )
                 .distinctBy { it.tile }
 
@@ -347,14 +351,14 @@ class TechManager {
             civInfo.addNotification(
                 text,
                 LocationAction(positions),
-                "ResourceIcons/" + revealedName
+                "ResourceIcons/$revealedName"
             )
         }
     }
 
     fun setTransients() {
         researchedTechnologies.addAll(techsResearched.map { getRuleset().technologies[it]!! })
-        researchedTechUniques.addAll(researchedTechnologies.asSequence().flatMap { it.uniqueObjects.asSequence() })
+        researchedTechnologies.forEach { addTechToTransients(it) }
         updateTransientBooleans()
     }
 
@@ -363,7 +367,8 @@ class TechManager {
         unitsCanEmbark = wayfinding || civInfo.hasUnique("Enables embarkation for land units")
 
         embarkedUnitsCanEnterOcean = wayfinding || civInfo.hasUnique("Enables embarked units to enter ocean tiles")
-        movementSpeedOnRoadsImproved = civInfo.hasUnique("Improves movement speed on roads")
+        movementSpeedOnRoads = if (civInfo.hasUnique("Improves movement speed on roads"))
+            RoadStatus.Road.movementImproved else RoadStatus.Road.movement
         roadsConnectAcrossRivers = civInfo.hasUnique("Roads connect tiles across rivers")
     }
 

@@ -16,8 +16,8 @@ class RiverGenerator(val randomness: MapGenerationRandomness) {
         if (optionalTiles.size < numberOfRivers)
             optionalTiles = map.values.filter { it.isLand && it.aerialDistanceTo(getClosestWaterTile(it)) > 4 }.toMutableList()
 
-
-        val riverStarts = randomness.chooseSpreadOutLocations(numberOfRivers, optionalTiles, 10)
+        val mapRadius = map.mapParameters.mapSize.radius
+        val riverStarts = randomness.chooseSpreadOutLocations(numberOfRivers, optionalTiles, mapRadius)
         for (tile in riverStarts) spawnRiver(tile, map)
 
         for (tile in map.values) {

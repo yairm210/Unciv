@@ -89,6 +89,11 @@ class TradeLogic(val ourCivilization:CivilizationInfo, val otherCivilization: Ci
                     val city = from.cities.first { it.id == offer.name }
                     city.moveToCiv(to)
                     city.getCenterTile().getUnits().toList().forEach { it.movement.teleportToClosestMoveableTile() }
+                    for (tile in city.getTiles()) {
+                        for (unit in tile.getUnits().toList()) {
+                            if (!unit.civInfo.canEnterTiles(to)) unit.movement.teleportToClosestMoveableTile()
+                        }
+                    }
                     to.updateViewableTiles()
                     from.updateViewableTiles()
                 }
@@ -100,7 +105,7 @@ class TradeLogic(val ourCivilization:CivilizationInfo, val otherCivilization: Ci
                     }
                 }
                 if (offer.type == TradeType.Introduction)
-                    to.meetCivilization(to.gameInfo.getCivilization(offer.name))
+                    to.makeCivilizationsMeet(to.gameInfo.getCivilization(offer.name))
 
                 if (offer.type == TradeType.WarDeclaration) {
                     val nameOfCivToDeclareWarOn = offer.name

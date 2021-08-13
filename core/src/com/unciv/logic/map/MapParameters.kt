@@ -92,6 +92,9 @@ class MapSizeNew {
         // tell the caller that map dimensions have changed and why
         return message
     }
+
+    // For debugging and MapGenerator console output
+    override fun toString() = if (name == Constants.custom) "${width}x${height}" else name
 }
 
 object MapShape {
@@ -120,14 +123,12 @@ class MapParameters {
     var name = ""
     var type = MapType.pangaea
     var shape = MapShape.hexagonal
-    @Deprecated("replaced by mapSize since 3.14.7")
-    var size = MapSize.Medium
     var mapSize = MapSizeNew(MapSize.Medium)
     var noRuins = false
     var noNaturalWonders = false
     var worldWrap = false
 
-    /** This is used mainly for the map editor, so you can continue editing a map under the ame ruleset you started with */
+    /** This is used mainly for the map editor, so you can continue editing a map under the same ruleset you started with */
     var mods = LinkedHashSet<String>()
 
     var seed: Long = System.currentTimeMillis()
@@ -140,8 +141,12 @@ class MapParameters {
     var resourceRichness = 0.1f
     var waterThreshold = 0f
 
-    fun resetAdvancedSettings() {
+    fun reseed() {
         seed = System.currentTimeMillis()
+    }
+
+    fun resetAdvancedSettings() {
+        reseed()
         tilesPerBiomeArea = 6
         maxCoastExtension = 2
         elevationExponent = 0.7f
@@ -151,4 +156,7 @@ class MapParameters {
         resourceRichness = 0.1f
         waterThreshold = 0f
     }
+
+    // For debugging and MapGenerator console output
+    override fun toString() = "($mapSize ${if (worldWrap)"wrapped " else ""}$shape $type, Seed $seed, $elevationExponent/$temperatureExtremeness/$resourceRichness/$vegetationRichness/$rareFeaturesRichness/$maxCoastExtension/$tilesPerBiomeArea/$waterThreshold)"
 }

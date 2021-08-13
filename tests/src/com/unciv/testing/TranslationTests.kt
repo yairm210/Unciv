@@ -2,12 +2,15 @@
 package com.unciv.testing
 
 import com.badlogic.gdx.Gdx
+import com.unciv.UncivGame
 import com.unciv.models.UnitActionType
+import com.unciv.models.metadata.GameSettings
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.translations.TranslationFileWriter
 import com.unciv.models.translations.Translations
 import com.unciv.models.translations.squareBraceRegex
+import com.unciv.models.translations.tr
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
@@ -29,13 +32,10 @@ class TranslationTests {
         System.setOut(PrintStream(object : OutputStream() {
             override fun write(b: Int) {}
         }))
-//        System.setOut(TextWriter.Null)
-//        Console(). //(TextWriter.Null);
         translations.readAllLanguagesTranslation()
         RulesetCache.loadRulesets()
         ruleset = RulesetCache.getBaseRuleset()
         System.setOut(outputChannel)
-//        Console.SetOut()
     }
 
     @Test
@@ -48,10 +48,12 @@ class TranslationTests {
     fun allUnitActionsHaveTranslation() {
         val actions: MutableSet<String> = HashSet()
         for (action in UnitActionType.values()) {
-            if (action == UnitActionType.Upgrade)
-                actions.add("Upgrade to [unitType] ([goldCost] gold)")
-            else
-                actions.add(action.value)
+            actions.add( when(action) {
+                UnitActionType.Upgrade -> "Upgrade to [unitType] ([goldCost] gold)"
+                UnitActionType.Create -> "Create [improvement]"
+                UnitActionType.SpreadReligion -> "Spread [religionName]"
+                else -> action.value
+            })
         }
         val allUnitActionsHaveTranslation = allStringAreTranslated(actions)
         Assert.assertTrue("This test will only pass when there is a translation for all unit actions",
@@ -155,5 +157,33 @@ class TranslationTests {
             }
         }
         Assert.assertFalse(failed)
+    }
+
+
+    @Test
+    fun allStringsTranslate() {
+        // Needed for .tr() to work
+        UncivGame.Current = UncivGame("")
+        UncivGame.Current.settings = GameSettings()
+
+        for ((key, value) in translations)
+            UncivGame.Current.translations[key] = value
+
+        var allWordsTranslatedCorrectly = true
+        for (translationEntry in translations.values) {
+            for ((language, translation) in translationEntry) {
+                UncivGame.Current.settings.language = language
+                try {
+                    translationEntry.entry.tr()
+                } catch (ex: Exception) {
+                    allWordsTranslatedCorrectly = false
+                    println("Crashed when translating ${translationEntry.entry} to $language")
+                }
+            }
+        }
+        Assert.assertTrue(
+            "This test will only pass when all phrases properly translate to their language",
+            allWordsTranslatedCorrectly
+        )
     }
 }

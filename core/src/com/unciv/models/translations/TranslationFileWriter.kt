@@ -4,7 +4,6 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.utils.Array
 import com.unciv.JsonParser
-import com.unciv.logic.battle.BattleDamage
 import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.ruleset.*
 import com.unciv.models.ruleset.tech.TechColumn
@@ -17,6 +16,7 @@ import com.unciv.models.ruleset.unit.UnitType
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import java.lang.reflect.Field
+import java.lang.reflect.Modifier
 
 object TranslationFileWriter {
 
@@ -110,6 +110,24 @@ object TranslationFileWriter {
                     translationsOfThisLanguage++
                 } else stringBuilder.appendLine(" # Requires translation!")
 
+                // THE PROBLEM
+                // When we come to change params written in the TranslationFileWriter,
+                //  this messes up the param name matching in existing translations.
+                // Tests fail and much manual work was required.
+                // SO, as a fix, for each translation where a single param is different than in the source line,
+                // we try to autocorrect it.
+                if (translationValue.contains('[')) {
+                    val paramsOfKey = translationKey.getPlaceholderParameters()
+                    val paramsOfValue = translationValue.getPlaceholderParameters()
+                    val paramsOfKeyNotInValue = paramsOfKey.filterNot { it in paramsOfValue }
+                    val paramsOfValueNotInKey = paramsOfValue.filterNot { it in paramsOfKey }
+                    if (paramsOfKeyNotInValue.size == 1 && paramsOfValueNotInKey.size == 1)
+                        translationValue = translationValue.replace(
+                            "[" + paramsOfValueNotInKey.first() + "]",
+                            "[" + paramsOfKeyNotInValue.first() + "]"
+                        )
+                }
+
                 val lineToWrite = translationKey.replace("\n", "\\n") +
                         " = " + translationValue.replace("\n", "\\n")
                 stringBuilder.appendLine(lineToWrite)
@@ -164,6 +182,54 @@ object TranslationFileWriter {
     }
 
     private fun generateStringsFromJSONs(jsonsFolder: FileHandle): LinkedHashMap<String, MutableSet<String>> {
+        // build maps identifying parameters as certain types of filters - unitFilter etc
+        val ruleset = RulesetCache.getBaseRuleset()
+        val tileFilterMap = ruleset.terrains.keys.toMutableSet().apply { addAll(sequenceOf(
+            "Friendly Land",
+            "Foreign Land",
+            "Fresh water",
+            "non-fresh water",
+            "Open Terrain",
+            "Rough Terrain",
+            "Natural Wonder"
+        )) }
+        val tileImprovementMap = ruleset.tileImprovements.keys.toMutableSet().apply { add("Great Improvement") }
+        val buildingMap = ruleset.buildings.keys.toMutableSet().apply { addAll(sequenceOf(
+            "Wonders",
+            "Wonder",
+            "Buildings",
+            "Building"
+        )) }
+        val unitTypeMap = ruleset.unitTypes.keys.toMutableSet().apply { addAll(sequenceOf(
+            "Military",
+            "Civilian",
+            "non-air",
+            "relevant",
+            "Nuclear Weapon",
+            "City",
+            // These are up for debate
+            "Air",
+            "land units",
+            "water units",
+            "air units",
+            "military units",
+            "submarine units",
+            // Note: this can't handle combinations of parameters (e.g. [{Military} {Water}])
+        )) }
+        val cityFilterMap = setOf(
+            "in this city",
+            "in all cities",
+            "in all coastal cities",
+            "in capital",
+            "in all non-occupied cities",
+            "in all cities with a world wonder",
+            "in all cities connected to capital",
+            "in all cities with a garrison",
+            "in all cities in which the majority religion is a major religion",
+            "in cities following this religion",
+        )
+
+        val startMillis = System.currentTimeMillis()
 
         // Using LinkedHashMap (instead of HashMap) is important to maintain the order of sections in the translation file
         val generatedStrings = LinkedHashMap<String, MutableSet<String>>()
@@ -196,27 +262,18 @@ object TranslationFileWriter {
                 if (parameters.any()) {
                     for (parameter in parameters) {
                         var parameterName = when {
-                            parameter.toIntOrNull() != null -> "amount"
+                            parameter.toFloatOrNull() != null -> "amount"
                             Stat.values().any { it.name == parameter } -> "stat"
-                            RulesetCache.getBaseRuleset().terrains.containsKey(parameter) -> "terrain"
-                            RulesetCache.getBaseRuleset().units.containsKey(parameter) -> "unit"
-                            RulesetCache.getBaseRuleset().tileImprovements.containsKey(parameter) -> "tileImprovement"
-                            RulesetCache.getBaseRuleset().tileResources.containsKey(parameter) -> "resource"
-                            RulesetCache.getBaseRuleset().technologies.containsKey(parameter) -> "tech"
-                            RulesetCache.getBaseRuleset().unitPromotions.containsKey(parameter) -> "promotion"
-                            RulesetCache.getBaseRuleset().buildings.containsKey(parameter)
-                                    || parameter == "Wonders" -> "building"
-
-                            UnitType.values().any { it.name == parameter } || parameter == "Military" -> "unitType"
+                            parameter in tileFilterMap -> "tileFilter"
+                            ruleset.units.containsKey(parameter) -> "unit"
+                            parameter in tileImprovementMap -> "tileImprovement"
+                            ruleset.tileResources.containsKey(parameter) -> "resource"
+                            ruleset.technologies.containsKey(parameter) -> "tech"
+                            ruleset.unitPromotions.containsKey(parameter) -> "promotion"
+                            parameter in buildingMap -> "building"
+                            parameter in unitTypeMap -> "unitType"
                             Stats.isStats(parameter) -> "stats"
-                            parameter == "in this city"
-                                    || parameter == "in all cities"
-                                    || parameter == "in all coastal cities"
-                                    || parameter == "in capital"
-                                    || parameter == "in all cities with a world wonder"
-                                    || parameter == "in all cities connected to capital"
-                                    || parameter == "in all cities with a garrison"
-                            -> "cityFilter"
+                            parameter in cityFilterMap -> "cityFilter"
                             else -> "param"
                         }
                         if (parameterName in existingParameterNames) {
@@ -226,35 +283,46 @@ object TranslationFileWriter {
                         }
                         existingParameterNames += parameterName
 
-                        stringToTranslate = stringToTranslate.replace(parameter, parameterName)
+                        stringToTranslate = stringToTranslate.replaceFirst(parameter, parameterName)
                     }
-                } else {
-                    // substitute the regex for "Bonus/Penalty vs ..."
-                    val match = Regex(BattleDamage.BONUS_VS_UNIT_TYPE).matchEntire(string)
-                    if (match != null) stringToTranslate = "${match.groupValues[1]} vs [unitType]"
                 }
                 resultStrings!!.add("$stringToTranslate = ")
                 return
             }
 
             fun serializeElement(element: Any) {
-                val allFields = (element.javaClass.declaredFields + element.javaClass.fields
-                        + element.javaClass.superclass.declaredFields) // This is so the main PolicyBranch, which inherits from Policy, will recognize its Uniques and have them translated
-                        .filter {
+                if (element is String) {
+                    submitString(element)
+                    return
+                }
+                val allFields = (
+                            element.javaClass.declaredFields
+                            + element.javaClass.fields
+                            // Include superclass so the main PolicyBranch, which inherits from Policy,
+                            // will recognize its Uniques and have them translated
+                            + element.javaClass.superclass.declaredFields
+                        ).filter {
                             it.type == String::class.java ||
-                                    it.type == java.util.ArrayList::class.java ||
-                                    it.type == java.util.HashSet::class.java
+                            it.type == java.util.ArrayList::class.java ||
+                            it.type == java.util.List::class.java ||        // CivilopediaText is not an ArrayList
+                            it.type == java.util.HashSet::class.java ||
+                            it.type.isEnum  // allow scanning Enum names
                         }
                 for (field in allFields) {
                     field.isAccessible = true
                     val fieldValue = field.get(element)
                     if (isFieldTranslatable(field, fieldValue)) { // skip fields which must not be translated
                         // this field can contain sub-objects, let's serialize them as well
-                        if (fieldValue is java.util.AbstractCollection<*>) {
-                            for (item in fieldValue)
-                                if (item is String) submitString(item) else serializeElement(item!!)
-                        } else
-                            submitString(fieldValue)
+                        @Suppress("RemoveRedundantQualifierName")  // to clarify List does _not_ inherit from anything in java.util
+                        when (fieldValue) {
+                            is java.util.AbstractCollection<*> ->
+                                for (item in fieldValue)
+                                    if (item is String) submitString(item) else serializeElement(item!!)
+                            is kotlin.collections.List<*> ->
+                                for (item in fieldValue)
+                                    if (item is String) submitString(item) else serializeElement(item!!)
+                            else -> submitString(fieldValue)
+                        }
                     }
                 }
             }
@@ -266,6 +334,8 @@ object TranslationFileWriter {
                     resultStrings!!.add("$specialNewLineCode ${uniqueIndexOfNewLine++}")
                 }
         }
+        println("Translation writer took ${System.currentTimeMillis()-startMillis}ms for ${jsonsFolder.name()}")
+
         return generatedStrings
     }
 
@@ -276,26 +346,34 @@ object TranslationFileWriter {
             "providesFreeBuilding", "replaces", "requiredBuilding", "requiredBuildingInAllCities",
             "requiredNearbyImprovedResources", "requiredResource", "requiredTech", "requires",
             "resourceTerrainAllow", "revealedBy", "startBias", "techRequired",
-            "terrainsCanBeBuiltOn", "terrainsCanBeFoundOn", "turnsInto", "uniqueTo", "upgradesTo"
+            "terrainsCanBeBuiltOn", "terrainsCanBeFoundOn", "turnsInto", "uniqueTo", "upgradesTo",
+            "link", "icon", "extraImage", "color"  // FormattedLine
     )
+    private val translatableEnumsSet = setOf("BeliefType")
 
     private fun isFieldTranslatable(field: Field, fieldValue: Any?): Boolean {
         // Exclude fields by name that contain references to items defined elsewhere
-        // - the definition should cause the inclusion in our translatables list, not the reference.
-        // This prevents duplication within the base game (e.g. Mines were duplicated by being output
-        // by both TerrainResources and TerrainImprovements) and duplication of base game items into
+        // or are otherwise Strings but not user-displayed.
+        // The Modifier.STATIC exclusion removes fields from e.g. companion objects.
+        // Fields of enum types need that type explicitly allowed in translatableEnumsSet
+        // (Using an annotation failed, even with @Retention RUNTIME they were invisible to reflection)
         return fieldValue != null &&
                 fieldValue != "" &&
+                (field.modifiers and Modifier.STATIC) == 0 &&
+                (!field.type.isEnum || field.type.simpleName in translatableEnumsSet) &&
                 field.name !in untranslatableFieldSet
     }
 
     private fun getJavaClassByName(name: String): Class<Any> {
         return when (name) {
+            "Beliefs" -> emptyArray<Belief>().javaClass
             "Buildings" -> emptyArray<Building>().javaClass
             "Difficulties" -> emptyArray<Difficulty>().javaClass
+            "Eras" -> emptyArray<Era>().javaClass
             "Nations" -> emptyArray<Nation>().javaClass
             "Policies" -> emptyArray<PolicyBranch>().javaClass
             "Quests" -> emptyArray<Quest>().javaClass
+            "Religions" -> emptyArray<String>().javaClass
             "Specialists" -> emptyArray<Specialist>().javaClass
             "Techs" -> emptyArray<TechColumn>().javaClass
             "Terrains" -> emptyArray<Terrain>().javaClass
@@ -304,6 +382,7 @@ object TranslationFileWriter {
             "Tutorials" -> this.javaClass // dummy value
             "UnitPromotions" -> emptyArray<Promotion>().javaClass
             "Units" -> emptyArray<BaseUnit>().javaClass
+            "UnitTypes" -> emptyArray<UnitType>().javaClass
             else -> this.javaClass // dummy value
         }
     }

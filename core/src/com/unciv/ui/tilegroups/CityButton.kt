@@ -13,6 +13,7 @@ import com.badlogic.gdx.utils.Align
 import com.unciv.logic.battle.CityCombatant
 import com.unciv.logic.city.CityConstructions
 import com.unciv.logic.city.CityInfo
+import com.unciv.logic.city.INonPerpetualConstruction
 import com.unciv.logic.city.PerpetualConstruction
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.ui.cityscreen.CityScreen
@@ -129,7 +130,7 @@ class CityButton(val city: CityInfo, private val tileGroup: WorldTileGroup): Tab
         if (!showAdditionalInfoTags || tileGroup.tileInfo.airUnits.isEmpty()) return
         val secondarycolor = city.civInfo.nation.getInnerColor()
         val airUnitTable = Table()
-        airUnitTable.background = ImageGetter.getRoundedEdgeTableBackground(city.civInfo.nation.getOuterColor()).apply { setMinSize(0f,0f) }
+        airUnitTable.background = ImageGetter.getRoundedEdgeRectangle(city.civInfo.nation.getOuterColor()).apply { setMinSize(0f,0f) }
         val aircraftImage = ImageGetter.getImage("OtherIcons/Aircraft")
         aircraftImage.color = secondarycolor
         airUnitTable.add(aircraftImage).size(15f)
@@ -185,7 +186,7 @@ class CityButton(val city: CityInfo, private val tileGroup: WorldTileGroup): Tab
         }
         val iconTable = IconTable()
         iconTable.touchable=Touchable.enabled
-        iconTable.background = ImageGetter.getRoundedEdgeTableBackground(city.civInfo.nation.getOuterColor())
+        iconTable.background = ImageGetter.getRoundedEdgeRectangle(city.civInfo.nation.getOuterColor())
 
         if (city.isInResistance()) {
             val resistanceImage = ImageGetter.getImage("StatIcons/Resistance")
@@ -250,6 +251,13 @@ class CityButton(val city: CityInfo, private val tileGroup: WorldTileGroup): Tab
             val nationIcon = ImageGetter.getNationIcon(city.civInfo.nation.name)
             nationIcon.color = secondaryColor
             iconTable.add(nationIcon).size(20f)
+        }
+        
+        val cityReligionName = city.religion.getMajorityReligion()
+        if (cityReligionName != null) {
+            val cityReligion = city.civInfo.gameInfo.religions[cityReligionName]!!
+            val religionImage = ImageGetter.getReligionIcon(cityReligion.iconName)
+            iconTable.add(religionImage).size(20f).padLeft(5f).fillY()
         }
 
         iconTable.pack()
@@ -379,7 +387,7 @@ class CityButton(val city: CityInfo, private val tileGroup: WorldTileGroup): Tab
             group.addActor(label)
 
             val constructionPercentage = cityConstructions.getWorkDone(cityCurrentConstruction.name) /
-                    cityCurrentConstruction.getProductionCost(cityConstructions.cityInfo.civInfo).toFloat()
+                    (cityCurrentConstruction as INonPerpetualConstruction).getProductionCost(cityConstructions.cityInfo.civInfo).toFloat()
             val productionBar = ImageGetter.getProgressBarVertical(2f, groupHeight, constructionPercentage,
                     Color.BROWN.cpy().lerp(Color.WHITE, 0.5f), Color.BLACK)
             productionBar.x = 10f

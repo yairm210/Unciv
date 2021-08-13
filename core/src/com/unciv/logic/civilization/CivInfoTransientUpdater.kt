@@ -38,7 +38,7 @@ class CivInfoTransientUpdater(val civInfo: CivilizationInfo) {
             for (entry in viewedCivs) {
                 val metCiv = entry.key
                 if (metCiv == civInfo || metCiv.isBarbarian() || civInfo.diplomacy.containsKey(metCiv.civName)) continue
-                civInfo.meetCivilization(metCiv)
+                civInfo.makeCivilizationsMeet(metCiv)
                 civInfo.addNotification("We have encountered [" + metCiv.civName + "]!", entry.value.position, metCiv.civName, NotificationIcon.Diplomacy)
                 metCiv.addNotification("We have encountered [" + civInfo.civName + "]!", entry.value.position, civInfo.civName, NotificationIcon.Diplomacy)
             }
@@ -130,8 +130,9 @@ class CivInfoTransientUpdater(val civInfo: CivilizationInfo) {
                 if (city !in civInfo.citiesConnectedToCapitalToMediums && city.civInfo == civInfo && city != civInfo.getCapital())
                     civInfo.addNotification("[${city.name}] has been connected to your capital!", city.location, NotificationIcon.Gold)
 
+            // This may still contain cities that have just been destroyed by razing - thus the population test
             for (city in civInfo.citiesConnectedToCapitalToMediums.keys)
-                if (!citiesReachedToMediums.containsKey(city) && city.civInfo == civInfo)
+                if (!citiesReachedToMediums.containsKey(city) && city.civInfo == civInfo && city.population.population > 0)
                     civInfo.addNotification("[${city.name}] has been disconnected from your capital!", city.location, NotificationIcon.Gold)
         }
 

@@ -15,15 +15,17 @@ class GameParameters { // Default values are the default new game
         add(Player().apply { playerType = PlayerType.Human })
         for (i in 1..3) add(Player())
     }
-    var numberOfCityStates = 2
+    var numberOfCityStates = 6
 
     var noBarbarians = false
     var oneCityChallenge = false
     var godMode = false
     var nuclearWeaponsEnabled = true
+    var religionEnabled = false
 
-    var victoryTypes: ArrayList<VictoryType> = arrayListOf(VictoryType.Cultural, VictoryType.Domination, VictoryType.Scientific) // By default, all victory types
-    var startingEra = Constants.ancientEra
+    // By default, all victory types except Diplomacy as it is quite new
+    var victoryTypes: ArrayList<VictoryType> = arrayListOf(VictoryType.Cultural, VictoryType.Domination, VictoryType.Scientific)  
+    var startingEra = "Ancient Era"
 
     var isOnlineMultiplayer = false
     var baseRuleset: BaseRuleset = BaseRuleset.Civ_V_Vanilla

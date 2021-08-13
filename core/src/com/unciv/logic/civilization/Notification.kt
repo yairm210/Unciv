@@ -1,21 +1,30 @@
 package com.unciv.logic.civilization
 
 import com.badlogic.gdx.math.Vector2
+import com.unciv.models.stats.Stat
 import com.unciv.ui.cityscreen.CityScreen
 import com.unciv.ui.pickerscreens.TechPickerScreen
 import com.unciv.ui.trade.DiplomacyScreen
 import com.unciv.ui.worldscreen.WorldScreen
 
 object NotificationIcon {
-    val Culture = "StatIcons/Culture"
-    val Construction = "StatIcons/Production"
-    val Growth = "StatIcons/Population"
-    val War = "OtherIcons/Pillage"
-    val Trade = "StatIcons/Acquire"
-    val Science = "StatIcons/Science"
-    val Gold = "StatIcons/Gold"
-    val Death = "OtherIcons/DisbandUnit"
-    val Diplomacy = "OtherIcons/Diplomacy"
+    const val Culture = "StatIcons/Culture"
+    const val Construction = "StatIcons/Production"
+    const val Growth = "StatIcons/Population"
+    const val War = "OtherIcons/Pillage"
+    const val Trade = "StatIcons/Acquire"
+    const val Science = "StatIcons/Science"
+    const val Gold = "StatIcons/Gold"
+    const val Death = "OtherIcons/DisbandUnit"
+    const val Diplomacy = "OtherIcons/Diplomacy"
+    const val City = "ImprovementIcons/City center"
+    const val Citadel = "ImprovementIcons/Citadel"
+    const val Happiness = "StatIcons/Happiness"
+    const val Population = "StatIcons/Population"
+    const val CityState = "NationIcons/CityState"
+    const val Production = "StatIcons/Production"
+    const val Food = "StatIcons/Food"
+    const val Faith = "StatIcons/Faith"
 }
 
 /**

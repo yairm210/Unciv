@@ -2,6 +2,7 @@ package com.unciv.ui.cityscreen
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.unciv.logic.civilization.ReligionState
 import com.unciv.models.stats.Stat
 import com.unciv.models.translations.tr
 import com.unciv.ui.utils.ImageGetter
@@ -29,19 +30,23 @@ class CityStatsTable(val cityScreen: CityScreen): Table() {
     fun update() {
         innerTable.clear()
 
-        val ministatsTable = Table()
+        val miniStatsTable = Table()
         for ((stat, amount) in cityInfo.cityStats.currentCityStats.toHashMap()) {
-            if (stat == Stat.Faith && !cityInfo.getRuleset().hasReligion()) continue
-            ministatsTable.add(ImageGetter.getStatIcon(stat.name)).size(20f).padRight(5f)
+            if (stat == Stat.Faith && !cityInfo.civInfo.gameInfo.hasReligionEnabled()) continue
+            miniStatsTable.add(ImageGetter.getStatIcon(stat.name)).size(20f).padRight(5f)
             val valueToDisplay = if (stat == Stat.Happiness) cityInfo.cityStats.happinessList.values.sum() else amount
-            ministatsTable.add(round(valueToDisplay).toInt().toString().toLabel()).padRight(10f)
+            miniStatsTable.add(round(valueToDisplay).toInt().toLabel()).padRight(10f)
         }
-        innerTable.add(ministatsTable)
+        innerTable.add(miniStatsTable)
 
         innerTable.addSeparator()
         addText()
-        innerTable.addSeparator()
-        innerTable.add(SpecialistAllocationTable(cityScreen).apply { update() })
+        if (!cityInfo.population.getMaxSpecialists().isEmpty()) {
+            innerTable.addSeparator()
+            innerTable.add(SpecialistAllocationTable(cityScreen).apply { update() })
+        }
+
+        addReligionInfo()
 
         pack()
     }
@@ -77,5 +82,14 @@ class CityStatsTable(val cityScreen: CityScreen): Table() {
         innerTable.add(turnsToPopString.toLabel()).row()
         if (cityInfo.isInResistance())
             innerTable.add("In resistance for another [${cityInfo.resistanceCounter}] turns".toLabel()).row()
+    }
+
+    private fun addReligionInfo() {
+        // This will later become large enough to be its own class, but for now it is small enough to fit inside a single function
+        if(cityInfo.civInfo.religionManager.religionState == ReligionState.None) return
+        innerTable.addSeparator()
+        val label = cityInfo.religion.getMajorityReligion()
+            ?: "None"
+        innerTable.add("Majority Religion: [$label]".toLabel())
     }
 }

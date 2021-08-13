@@ -3,8 +3,8 @@ package com.unciv.ui.worldscreen.unit
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Touchable
-import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup
 import com.unciv.UncivGame
@@ -22,8 +22,9 @@ import com.unciv.ui.worldscreen.WorldScreen
 class UnitTable(val worldScreen: WorldScreen) : Table(){
     private val prevIdleUnitButton = IdleUnitButton(this,worldScreen.mapHolder,true)
     private val nextIdleUnitButton = IdleUnitButton(this,worldScreen.mapHolder,false)
-    private val unitIconHolder=Table()
+    private val unitIconHolder = Table()
     private val unitNameLabel = "".toLabel()
+    private val unitIconNameGroup = Table()
     private val promotionsTable = Table()
     private val unitDescriptionTable = Table(CameraStageBaseScreen.skin)
 
@@ -39,7 +40,10 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
     fun selectUnit(unit:MapUnit?=null, append:Boolean=false) {
         if (!append) selectedUnits.clear()
         selectedCity = null
-        if (unit != null) selectedUnits.add(unit)
+        if (unit != null) {
+            selectedUnits.add(unit)
+            unit.actionsOnDeselect()
+        }
         selectedUnitIsSwapping = false
     }
 
@@ -49,7 +53,7 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
     // This is so that not on every update(), we will update the unit table.
     // Most of the time it's the same unit with the same stats so why waste precious time?
     var selectedUnitHasChanged = false
-    val separator: Image
+    val separator: Actor
 
     init {
         pad(5f)
@@ -71,30 +75,31 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
         add(Table().apply {
             val moveBetweenUnitsTable = Table().apply {
                 add(prevIdleUnitButton)
-                add(unitIconHolder)
-                add(unitNameLabel).pad(5f)
+                unitIconNameGroup.add(unitIconHolder)
+                unitIconNameGroup.add(unitNameLabel).pad(5f)
+                unitIconNameGroup.touchable = Touchable.enabled
+                add(unitIconNameGroup)
                 add(nextIdleUnitButton)
             }
             add(moveBetweenUnitsTable).colspan(2).fill().row()
 
-            separator= addSeparator().actor!!
+            separator = addSeparator().actor!!
             add(promotionsTable).colspan(2).row()
             add(unitDescriptionTable)
             touchable = Touchable.enabled
             onClick {
-                selectedUnit?.currentTile?.position?.let {
-                    if ( !worldScreen.mapHolder.setCenterPosition(it, false, false) && selectedUnit != null ) {
-                        worldScreen.game.setScreen(CivilopediaScreen(worldScreen.gameInfo.ruleSet, CivilopediaCategories.Unit, selectedUnit!!.name))
-                    }
-                }
+                val position = selectedUnit?.currentTile?.position
+                    ?: selectedCity?.location
+                if (position != null)
+                    worldScreen.mapHolder.setCenterPosition(position, immediately = false, selectUnit = false)
             }
         }).expand()
 
     }
 
     fun update() {
-        if(selectedUnit!=null) {
-            isVisible=true
+        if (selectedUnit != null) {
+            isVisible = true
             if (selectedUnit!!.civInfo != worldScreen.viewingCiv && !worldScreen.viewingCiv.isSpectator()) { // The unit that was selected, was captured. It exists but is no longer ours.
                 selectUnit()
                 selectedUnitHasChanged = true
@@ -104,17 +109,16 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
             }
         }
 
-        if(prevIdleUnitButton.hasIdleUnits()) { // more efficient to do this check once for both
+        if (worldScreen.viewingCiv.getIdleUnits().any()) { // more efficient to do this check once for both
             prevIdleUnitButton.enable()
             nextIdleUnitButton.enable()
-        }
-        else{
+        } else {
             prevIdleUnitButton.disable()
             nextIdleUnitButton.disable()
         }
 
-        if(selectedUnit!=null) { // set texts - this is valid even when it's the same unit, because movement points and health change
-            if(selectedUnits.size==1) { //single selected unit
+        if (selectedUnit != null) { // set texts - this is valid even when it's the same unit, because movement points and health change
+            if (selectedUnits.size == 1) { //single selected unit
                 separator.isVisible = true
                 val unit = selectedUnit!!
                 var nameLabelText = unit.displayName().tr()
@@ -123,13 +127,17 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
                     unitNameLabel.setText(nameLabelText)
                     selectedUnitHasChanged = true // We need to reload the health bar of the unit in the icon - happens e.g. when picking the Heal Instantly promotion
                 }
+                unitIconNameGroup.clearListeners()
+                unitIconNameGroup.onClick {
+                    worldScreen.game.setScreen(CivilopediaScreen(worldScreen.gameInfo.ruleSet, CivilopediaCategories.Unit, unit.name))
+                }
 
                 unitDescriptionTable.clear()
                 unitDescriptionTable.defaults().pad(2f)
                 unitDescriptionTable.add(ImageGetter.getStatIcon("Movement")).size(20f)
                 unitDescriptionTable.add(unit.getMovementString()).padRight(10f)
 
-                if (!unit.type.isCivilian()) {
+                if (!unit.isCivilian()) {
                     unitDescriptionTable.add(ImageGetter.getStatIcon("Strength")).size(20f)
                     unitDescriptionTable.add(unit.baseUnit().strength.toString()).padRight(10f)
                 }
@@ -139,33 +147,37 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
                     unitDescriptionTable.add(unit.baseUnit().rangedStrength.toString()).padRight(10f)
                 }
 
-                if (unit.type.isRanged()) {
+                if (unit.baseUnit.isRanged()) {
                     unitDescriptionTable.add(ImageGetter.getStatIcon("Range")).size(20f)
                     unitDescriptionTable.add(unit.getRange().toString()).padRight(10f)
                 }
 
                 if (unit.baseUnit.interceptRange > 0) {
                     unitDescriptionTable.add(ImageGetter.getStatIcon("InterceptRange")).size(20f)
-                    val range = if (unit.type.isRanged()) unit.getRange() else unit.baseUnit.interceptRange
+                    val range = if (unit.baseUnit.isRanged()) unit.getRange() else unit.baseUnit.interceptRange
                     unitDescriptionTable.add(range.toString()).padRight(10f)
                 }
 
-                if (!unit.type.isCivilian()) {
+                if (!unit.isCivilian()) {
                     unitDescriptionTable.add("XP")
                     unitDescriptionTable.add(unit.promotions.XP.toString() + "/" + unit.promotions.xpForNextPromotion())
+                }
+                
+                if (unit.maxReligionSpreads() > 0) {
+                    unitDescriptionTable.add(ImageGetter.getStatIcon("Faith")).size(20f)
+                    unitDescriptionTable.add(unit.getReligionString())
                 }
 
                 if (unit.promotions.promotions.size != promotionsTable.children.size) // The unit has been promoted! Reload promotions!
                     selectedUnitHasChanged = true
-            }
-            else { // multiple selected units
+            } else { // multiple selected units
                 unitNameLabel.setText("")
                 unitDescriptionTable.clear()
             }
         }
 
         else if (selectedCity != null) {
-            separator.isVisible=true
+            separator.isVisible = true
             val city = selectedCity!!
             var nameLabelText = city.name.tr()
             if(city.health<city.getMaxHealth()) nameLabelText+=" ("+city.health+")"
@@ -179,20 +191,20 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
             unitDescriptionTable.add(CityCombatant(city).getAttackingStrength().toString()).row()
 
             selectedUnitHasChanged = true
-        }
-        else {
+        } else {
             isVisible = false
         }
 
-        if(!selectedUnitHasChanged) return
+        if (!selectedUnitHasChanged) return
 
         unitIconHolder.clear()
         promotionsTable.clear()
         unitDescriptionTable.clearListeners()
 
-        if(selectedUnit!=null) {
-            if(selectedUnits.size==1) { // single selected unit
+        if (selectedUnit != null) {
+            if (selectedUnits.size == 1) { // single selected unit
                 unitIconHolder.add(UnitGroup(selectedUnit!!, 30f)).pad(5f)
+
                 for (promotion in selectedUnit!!.promotions.promotions.sorted())
                     promotionsTable.add(ImageGetter.getPromotionIcon(promotion))
 
@@ -201,8 +213,7 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
                     if (selectedUnit == null || selectedUnit!!.promotions.promotions.isEmpty()) return@onClick
                     UncivGame.Current.setScreen(PromotionPickerScreen(selectedUnit!!))
                 }
-            }
-            else { // multiple selected units
+            } else { // multiple selected units
                 for (unit in selectedUnits)
                     unitIconHolder.add(UnitGroup(unit, 30f)).pad(5f)
             }

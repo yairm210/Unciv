@@ -245,6 +245,18 @@
 		"gold": 2,
 		"improvement": "Fishing Boats",
 		"improvementStats": {"food": 1}
+	},
+	{
+		"name": "Jewelry",
+		"resourceType": "Luxury",
+		"gold": 2,
+		"unique": "Can only be created by Mercantile City-States"
+	},
+	{
+		"name": "Porcelain",
+		"resourceType": "Luxury",
+		"gold": 2,
+		"unique": "Can only be created by Mercantile City-States"
 	}
 	/*
 	{

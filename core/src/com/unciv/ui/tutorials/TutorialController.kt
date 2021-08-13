@@ -4,6 +4,9 @@ import com.badlogic.gdx.utils.Array
 import com.unciv.JsonParser
 import com.unciv.UncivGame
 import com.unciv.models.Tutorial
+import com.unciv.models.stats.INamed
+import com.unciv.ui.civilopedia.FormattedLine
+import com.unciv.ui.civilopedia.SimpleCivilopediaText
 import com.unciv.ui.utils.CameraStageBaseScreen
 
 class TutorialController(screen: CameraStageBaseScreen) {
@@ -45,11 +48,33 @@ class TutorialController(screen: CameraStageBaseScreen) {
         }
     }
 
-    fun getCivilopediaTutorials(): Map<String, Array<String>> {
-        return tutorials.filter { Tutorial.findByName(it.key)!!.isCivilopedia }
-    }
-
     private fun getTutorial(tutorial: Tutorial): Array<String> {
         return tutorials[tutorial.value] ?: Array()
     }
+
+    /** Wrapper for a Tutorial, supports INamed and ICivilopediaText,
+     *  and already provisions for the display of an ExtraImage on top.
+     *  @param rawName from Tutorial.value, with underscores (this wrapper replaces them with spaces)
+     *  @param lines   Array of lines exactly as stored in a TutorialController.tutorials MapEntry
+     */
+    class CivilopediaTutorial(
+        rawName: String,
+        lines: Array<String>
+    ) : INamed, SimpleCivilopediaText(
+        sequenceOf(FormattedLine(extraImage = rawName)),
+        lines.asSequence(),
+        true
+    ) {
+        override var name = rawName.replace("_", " ")
+    }
+
+    /** Get all Tutorials intended to be displayed in the Civilopedia
+     *  as a List of wrappers supporting INamed and ICivilopediaText
+     */
+    fun getCivilopediaTutorials() =
+        tutorials.filter {
+            Tutorial.findByName(it.key)!!.isCivilopedia
+        }.map {
+            CivilopediaTutorial(it.key, it.value)
+        }
 }

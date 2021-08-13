@@ -15,11 +15,11 @@ class WorkerAutomation(val unit: MapUnit) {
         val enemyUnitsInWalkingDistance = unit.movement.getDistanceToTiles().keys
                 .filter { UnitAutomation.containsEnemyMilitaryUnit(unit, it) }
 
-        if (enemyUnitsInWalkingDistance.isNotEmpty()) return UnitAutomation.runAway(unit)
+        if (enemyUnitsInWalkingDistance.isNotEmpty() && !unit.baseUnit.isMilitary()) return UnitAutomation.runAway(unit)
 
         val currentTile = unit.getTile()
         val tileToWork = findTileToWork()
-
+        
         if (getPriority(tileToWork, unit.civInfo) < 3) { // building roads is more important
             if (tryConnectingCities(unit)) return
         }
@@ -63,7 +63,6 @@ class WorkerAutomation(val unit: MapUnit) {
         //Player can choose not to auto-build roads & railroads.
         if (unit.civInfo.isPlayerCivilization() && !UncivGame.Current.settings.autoBuildingRoads)
             return false
-
         val targetRoad = unit.civInfo.tech.getBestRoadAvailable()
 
         val citiesThatNeedConnecting = unit.civInfo.cities.asSequence()
@@ -137,7 +136,7 @@ class WorkerAutomation(val unit: MapUnit) {
         return if (selectedTile != null
                 && getPriority(selectedTile, unit.civInfo) > 1
                 && (!workableTiles.contains(currentTile)
-                        || getPriority(selectedTile, unit.civInfo) > getPriority(currentTile, unit.civInfo)))
+                    || getPriority(selectedTile, unit.civInfo) > getPriority(currentTile, unit.civInfo)))
             selectedTile
         else currentTile
     }
@@ -152,15 +151,14 @@ class WorkerAutomation(val unit: MapUnit) {
             return false
 
         if (tile.improvement == null) {
-            if (tile.improvementInProgress != null) return true
+            if (tile.improvementInProgress != null && unit.canBuildImprovement(tile.getTileImprovementInProgress()!!, tile)) return true
             val chosenImprovement = chooseImprovement(tile, civInfo)
-            if (chosenImprovement != null && tile.canBuildImprovement(chosenImprovement, civInfo)) return true
+            if (chosenImprovement != null && tile.canBuildImprovement(chosenImprovement, civInfo) && unit.canBuildImprovement(chosenImprovement, tile)) return true
         } else if (!tile.containsGreatImprovement() && tile.hasViewableResource(civInfo)
                 && tile.getTileResource().improvement != tile.improvement
                 && chooseImprovement(tile, civInfo) // if the chosen improvement is not null and buildable
-                        .let { it != null && tile.canBuildImprovement(it, civInfo) })
+                    .let { it != null && tile.canBuildImprovement(it, civInfo) && unit.canBuildImprovement(it, tile)})
             return true
-
         return false // couldn't find anything to construct here
     }
 
@@ -204,7 +202,9 @@ class WorkerAutomation(val unit: MapUnit) {
             // While AI sucks in strategical placement of forts, allow a human does it manually
             !civInfo.isPlayerCivilization() && evaluateFortPlacement(tile, civInfo, false) -> Constants.fort
             // I think we can assume that the unique improvement is better
-            uniqueImprovement != null && tile.canBuildImprovement(uniqueImprovement, civInfo) -> uniqueImprovement.name
+            uniqueImprovement != null && tile.canBuildImprovement(uniqueImprovement, civInfo) 
+                && unit.canBuildImprovement(uniqueImprovement, tile) -> 
+                    uniqueImprovement.name
 
             tile.terrainFeatures.contains("Fallout") -> "Remove Fallout"
             tile.terrainFeatures.contains(Constants.marsh) -> "Remove Marsh"

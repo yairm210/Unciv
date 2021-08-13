@@ -147,7 +147,7 @@ class CityScreen(internal val city: CityInfo): CameraStageBaseScreen() {
             val razeCityButton = "Raze city".toTextButton()
             razeCityButton.labelCell.pad(10f)
             razeCityButton.onClick { city.isBeingRazed = true; update() }
-            if (!canChangeState || city.isOriginalCapital)
+            if (!canChangeState || !city.canBeDestroyed())
                 razeCityButton.disable()
 
             razeCityButtonHolder.add(razeCityButton).colspan(cityPickerTable.columns)
@@ -252,4 +252,9 @@ class CityScreen(internal val city: CityInfo): CameraStageBaseScreen() {
         game.setScreen(newCityScreen)
     }
 
+    override fun resize(width: Int, height: Int) {
+        if (stage.viewport.screenWidth != width || stage.viewport.screenHeight != height) {
+            game.setScreen(CityScreen(city))
+        }
+    }
 }

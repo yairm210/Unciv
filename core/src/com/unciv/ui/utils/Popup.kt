@@ -73,11 +73,12 @@ open class Popup(val screen: CameraStageBaseScreen): Table(CameraStageBaseScreen
     /* All additions to the popup are to the inner table - we shouldn't care that there's an inner table at all */
     final override fun <T : Actor?> add(actor: T): Cell<T> = innerTable.add(actor)
     override fun row(): Cell<Actor> = innerTable.row()
+    override fun defaults(): Cell<Actor> = innerTable.defaults()
     fun addSeparator() = innerTable.addSeparator()
 
     /**
      * Adds a [caption][text] label: A label with word wrap enabled over half the stage width.
-     * Will be larger than normal text if the [size] parameter is set to >18f.
+     * Will be larger than normal text if the [size] parameter is set to >18.
      * @param text The caption text.
      * @param size The font size for the label.
      */
@@ -96,7 +97,7 @@ open class Popup(val screen: CameraStageBaseScreen): Table(CameraStageBaseScreen
      * @return The new [Cell]
      */
     fun addButtonInRow(text: String, key: KeyCharAndCode? = null, action: () -> Unit): Cell<TextButton> {
-        val button = text.toTextButton().apply { color = ImageGetter.getBlue() }
+        val button = text.toTextButton()
         button.onClick(action)
         if (key != null) {
             keyPressDispatcher[key] = action
@@ -124,11 +125,11 @@ open class Popup(val screen: CameraStageBaseScreen): Table(CameraStageBaseScreen
         = addButtonInRow(text, key, action).apply { row() }
 
     /**
-     * Adds a [TextButton] that closes the popup.
+     * Adds a [TextButton] that closes the popup, with [BACK][KeyCharAndCode.BACK] already mapped.
      * @param text The button's caption, defaults to "Close".
-     * @param additionalKey An additional key that should close the popup, Back and ESC are assigned by default.
+     * @param additionalKey An additional key that should act like a click.
      * @param action A lambda to be executed after closing the popup when the button is clicked.
-     * @return The new [Cell]
+     * @return The new [Cell], marked as end of row.
      */
     fun addCloseButton(
         text: String = Constants.close,
@@ -138,6 +139,37 @@ open class Popup(val screen: CameraStageBaseScreen): Table(CameraStageBaseScreen
         val closeAction = { close(); if(action!=null) action()  }
         keyPressDispatcher[KeyCharAndCode.BACK] = closeAction
         return addButton(text, additionalKey, closeAction)
+    }
+
+    /**
+     * Adds a [TextButton] that closes the popup, with [RETURN][KeyCharAndCode.RETURN] already mapped.
+     * @param text The button's caption, defaults to "OK".
+     * @param additionalKey An additional key that should act like a click.
+     * @param action A lambda to be executed after closing the popup when the button is clicked.
+     * @return The new [Cell], NOT marked as end of row.
+     */
+    fun addOKButton(
+        text: String = Constants.OK,
+        additionalKey: KeyCharAndCode? = null,
+        action: (()->Unit)
+    ): Cell<TextButton> {
+        val okAction = { close(); action() }
+        keyPressDispatcher[KeyCharAndCode.RETURN] = okAction
+        return addButtonInRow(text, additionalKey, okAction)
+    }
+
+    /**
+     * The last two additions ***must*** be buttons.
+     * Make their width equal by setting minWidth of one cell to actor width of the other.
+     */
+    fun equalizeLastTwoButtonWidths() {
+        val n = innerTable.cells.size
+        if (n < 2) throw UnsupportedOperationException()
+        val cell1 = innerTable.cells[n-2]
+        val cell2 = innerTable.cells[n-1]
+        if (cell1.actor !is Button || cell2.actor !is Button) throw UnsupportedOperationException()
+        cell1.minWidth(cell2.actor.width)
+        cell2.minWidth(cell1.actor.width)
     }
 
     /**

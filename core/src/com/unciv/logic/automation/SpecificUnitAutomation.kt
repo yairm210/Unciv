@@ -146,7 +146,16 @@ object SpecificUnitAutomation {
     }
 
     fun automateSettlerActions(unit: MapUnit) {
-        if (unit.getTile().militaryUnit == null) return // Don't move until you're accompanied by a military unit
+        if (unit.civInfo.gameInfo.turns == 0) {   // Special case, we want AI to settle in place on turn 1.
+            val foundCityAction = UnitActions.getFoundCityAction(unit, unit.getTile())
+            if(foundCityAction?.action != null) {
+                foundCityAction.action.invoke()
+                return
+            }
+        }
+
+        if (unit.getTile().militaryUnit == null     // Don't move until you're accompanied by a military unit
+            && !unit.civInfo.isCityState()) return  // ..unless you're a city state that was unable to settle its city on turn 1
 
         val tilesNearCities = unit.civInfo.gameInfo.getCities().asSequence()
                 .flatMap {
@@ -296,9 +305,9 @@ object SpecificUnitAutomation {
     private fun tryMoveToCitiesToAerialAttackFrom(pathsToCities: HashMap<TileInfo, ArrayList<TileInfo>>, airUnit: MapUnit) {
         val citiesThatCanAttackFrom = pathsToCities.keys
                 .filter {
-                    it != airUnit.currentTile
-                            && it.getTilesInDistance(airUnit.getRange())
-                            .any { BattleHelper.containsAttackableEnemy(it, MapUnitCombatant(airUnit)) }
+                    destinationCity -> destinationCity != airUnit.currentTile
+                    && destinationCity.getTilesInDistance(airUnit.getRange())
+                        .any { BattleHelper.containsAttackableEnemy(it, MapUnitCombatant(airUnit)) }
                 }
         if (citiesThatCanAttackFrom.isEmpty()) return
 
@@ -308,28 +317,33 @@ object SpecificUnitAutomation {
         val firstStepInPath = pathsToCities[closestCityThatCanAttackFrom]!!.first()
         airUnit.movement.moveToTile(firstStepInPath)
     }
+    
+    fun automateNukes(unit: MapUnit) {
+        val tilesInRange = unit.currentTile.getTilesInDistance(unit.getRange())
+        for (tile in tilesInRange) {
+            // For now AI will only use nukes against cities because in all honesty that's the best use for them.
+            if (tile.isCityCenter() && tile.getOwner()!!.isAtWarWith(unit.civInfo)) {
+                Battle.NUKE(MapUnitCombatant(unit), tile)
+                return
+            }
+        }
+        tryRelocateToNearbyAttackableCities(unit)
+    }
 
     // This really needs to be changed, to have better targetting for missiles
     fun automateMissile(unit: MapUnit) {
+        if (BattleHelper.tryAttackNearbyEnemy(unit)) return
+        tryRelocateToNearbyAttackableCities(unit)
+    }
+    
+    private fun tryRelocateToNearbyAttackableCities(unit: MapUnit) {
         val tilesInRange = unit.currentTile.getTilesInDistance(unit.getRange())
-        if (unit.hasUnique("Nuclear weapon")) {
-            for (tile in tilesInRange) {
-                // For now AI will only use nukes against cities because in all honesty that's the best use for them.
-                if (tile.isCityCenter() && tile.getOwner()!!.isAtWarWith(unit.civInfo)) {
-                    Battle.nuke(MapUnitCombatant(unit), tile)
-                    return
-                }
-            }
-        } else { //Guided Missile
-            if (BattleHelper.tryAttackNearbyEnemy(unit)) return
-        }
-        
         val immediatelyReachableCities = tilesInRange
                 .filter { unit.movement.canMoveTo(it) }
-
+        
         for (city in immediatelyReachableCities) {
             if (city.getTilesInDistance(unit.getRange())
-                            .any { it.isCityCenter() && it.getOwner()!!.isAtWarWith(unit.civInfo) }) {
+                    .any { it.isCityCenter() && it.getOwner()!!.isAtWarWith(unit.civInfo) }) {
                 unit.movement.moveToTile(city)
                 return
             }

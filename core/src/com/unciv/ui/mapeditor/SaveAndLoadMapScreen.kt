@@ -10,6 +10,7 @@ import com.badlogic.gdx.utils.Json
 import com.unciv.logic.MapSaver
 import com.unciv.logic.map.MapType
 import com.unciv.logic.map.TileMap
+import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.translations.tr
 import com.unciv.ui.pickerscreens.PickerScreen
 import com.unciv.ui.saves.Gzip
@@ -54,17 +55,45 @@ class SaveAndLoadMapScreen(mapToSave: TileMap?, save:Boolean = false, previousSc
         } else {
             rightSideButton.setText("Load map".tr())
             rightSideButtonAction = {
-                thread {
+                thread(name = "MapLoader") {
+                    var popup: Popup? = null
+                    var needPopup = true    // loadMap can fail faster than postRunnable runs
                     Gdx.app.postRunnable {
-                        val popup = Popup(this)
-                        popup.addGoodSizedLabel("Loading...")
-                        popup.open()
+                        if (!needPopup) return@postRunnable
+                        popup = Popup(this).apply {
+                            addGoodSizedLabel("Loading...")
+                            open()
+                        }
                     }
-                    val map = MapSaver.loadMap(chosenMap!!)
-                    Gdx.app.postRunnable {
-                        Gdx.input.inputProcessor = null // This is to stop ANRs happening here, until the map editor screen sets up.
-                        game.setScreen(MapEditorScreen(map))
-                        dispose()
+                    try {
+                        val map = MapSaver.loadMap(chosenMap!!)
+                        val missingMods = map.mapParameters.mods.filter { it !in RulesetCache }
+                        if (missingMods.isNotEmpty()) {
+                            Gdx.app.postRunnable {
+                                needPopup = false
+                                popup?.close()
+                                ToastPopup("Missing mods: [${missingMods.joinToString()}]", this)
+                            }
+                        } else Gdx.app.postRunnable {
+                            Gdx.input.inputProcessor = null // This is to stop ANRs happening here, until the map editor screen sets up.
+                            try {
+                                game.setScreen(MapEditorScreen(map))
+                                dispose()
+                            } catch (ex: Throwable) {
+                                needPopup = false
+                                popup?.close()
+                                println("Error displaying map \"$chosenMap\": ${ex.localizedMessage}")
+                                Gdx.input.inputProcessor = stage
+                                ToastPopup("Error loading map!", this)
+                            }
+                        }
+                    } catch (ex: Throwable) {
+                        needPopup = false
+                        Gdx.app.postRunnable {
+                            popup?.close()
+                            println("Error loading map \"$chosenMap\": ${ex.localizedMessage}")
+                            ToastPopup("Error loading map!", this)
+                        }
                     }
                 }
             }
@@ -83,14 +112,6 @@ class SaveAndLoadMapScreen(mapToSave: TileMap?, save:Boolean = false, previousSc
             rightSideTable.add(mapNameTextField).width(300f).pad(10f)
             stage.keyboardFocus = mapNameTextField
             mapNameTextField.selectAll()
-        } else {
-            val downloadMapButton = "Download map".toTextButton()
-            val downloadAction = {
-                MapDownloadPopup(this).open()
-            }
-            downloadMapButton.onClick(downloadAction)
-            keyPressDispatcher['\u0004'] = downloadAction   // Ctrl-D
-            rightSideTable.add(downloadMapButton).row()
         }
 
         rightSideTable.addSeparator()
@@ -103,7 +124,7 @@ class SaveAndLoadMapScreen(mapToSave: TileMap?, save:Boolean = false, previousSc
                 Gdx.app.clipboard.contents = base64Gzip
             }
             copyMapAsTextButton.onClick (copyMapAsTextAction)
-            keyPressDispatcher['\u0003'] = copyMapAsTextAction   // Ctrl-C
+            keyPressDispatcher[KeyCharAndCode.ctrl('C')] = copyMapAsTextAction
             rightSideTable.add(copyMapAsTextButton).row()
         } else {
             val loadFromClipboardButton = "Load copied data".toTextButton()
@@ -119,7 +140,7 @@ class SaveAndLoadMapScreen(mapToSave: TileMap?, save:Boolean = false, previousSc
                 }
             }
             loadFromClipboardButton.onClick(loadFromClipboardAction)
-            keyPressDispatcher['\u0016'] = loadFromClipboardAction   // Ctrl-V
+            keyPressDispatcher[KeyCharAndCode.ctrl('V')] = loadFromClipboardAction
             rightSideTable.add(loadFromClipboardButton).row()
             rightSideTable.add(couldNotLoadMapLabel).row()
         }
@@ -131,7 +152,7 @@ class SaveAndLoadMapScreen(mapToSave: TileMap?, save:Boolean = false, previousSc
             }, this).open()
         }
         deleteButton.onClick(deleteAction)
-        keyPressDispatcher['\u007f'] = deleteAction     // Input.Keys.DEL but ascii has precedence
+        keyPressDispatcher[KeyCharAndCode.DEL] = deleteAction
         rightSideTable.add(deleteButton).row()
 
         topTable.add(rightSideTable)

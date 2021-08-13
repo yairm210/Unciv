@@ -2,16 +2,20 @@ package com.unciv.ui.worldscreen.mainmenu
 
 import com.badlogic.gdx.Application
 import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.Input
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.*
+import com.unciv.Constants
 import com.unciv.MainMenuScreen
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.models.UncivSound
 import com.unciv.models.ruleset.RulesetCache
+import com.unciv.models.tilesets.TileSetCache
 import com.unciv.models.translations.TranslationFileWriter
 import com.unciv.models.translations.Translations
 import com.unciv.models.translations.tr
 import com.unciv.ui.utils.*
+import com.unciv.ui.utils.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.worldscreen.WorldScreen
 import java.util.*
 import kotlin.concurrent.thread
@@ -134,10 +138,16 @@ class OptionsPopup(val previousScreen:CameraStageBaseScreen) : Popup(previousScr
 
         addHeader("Other options")
 
-        addYesNoRow("Show experimental world wrap for maps\n"
-                +"HIGHLY EXPERIMENTAL - YOU HAVE BEEN WARNED!".tr(),
-                settings.showExperimentalWorldWrap)
-        { settings.showExperimentalWorldWrap = it }
+
+        addYesNoRow("{Show experimental world wrap for maps}\n{HIGHLY EXPERIMENTAL - YOU HAVE BEEN WARNED!}".tr(),
+                settings.showExperimentalWorldWrap) {
+            settings.showExperimentalWorldWrap = it
+        }
+        addYesNoRow("{Enable experimental religion in start games}\n{HIGHLY EXPERIMENTAL - UPDATES WILL BREAK SAVES!}".tr(),
+                settings.showExperimentalReligion) {
+            settings.showExperimentalReligion = it
+        }
+
 
         if (previousScreen.game.limitOrientationsHelper != null) {
             addYesNoRow("Enable portrait orientation", settings.allowAndroidPortrait) {
@@ -168,20 +178,28 @@ class OptionsPopup(val previousScreen:CameraStageBaseScreen) : Popup(previousScr
     private fun addMinimapSizeSlider() {
         optionsTable.add("Show minimap".tr())
 
-        val minimapSliderLimit = (resolutionArray.indexOf(settings.resolution) + 1) *5f
-        // each 1 point is effectively 10px per hexagon
-        val minimapSlider = Slider(0f, minimapSliderLimit, 1f, false, skin)
-        minimapSlider.value = if(settings.showMinimap) min(settings.minimapSize.toFloat(), minimapSliderLimit)
-        else 0f
-        minimapSlider.onChange {
-            val size = minimapSlider.value.toInt()
+        // The meaning of the values needs a formula to be synchronized between here and
+        // [Minimap.init]. It goes off-10%-11%..29%-30%-35%-40%-45%-50% - and the percentages
+        // correspond roughly to the minimap's proportion relative to screen dimensions.
+        val offTranslated = "off".tr()  // translate only once and cache in closure
+        val getTipText: (Float)->String = {
+            when (it) {
+                0f -> offTranslated
+                in 0.99f..21.01f -> "%.0f".format(it+9) + "%"
+                else -> "%.0f".format(it * 5 - 75) + "%"
+            }
+        }
+        val minimapSlider = UncivSlider(0f, 25f, 1f,
+            initial = if (settings.showMinimap) settings.minimapSize.toFloat() else 0f,
+            getTipText = getTipText
+        ) {
+            val size = it.toInt()
             if (size == 0) settings.showMinimap = false
             else {
                 settings.showMinimap = true
                 settings.minimapSize = size
             }
             settings.save()
-            Sounds.play(UncivSound.Slider)
             if (previousScreen is WorldScreen)
                 previousScreen.shouldUpdate = true
         }
@@ -230,7 +248,7 @@ class OptionsPopup(val previousScreen:CameraStageBaseScreen) : Popup(previousScr
     private fun addTranslationGeneration() {
         if (Gdx.app.type == Application.ApplicationType.Desktop) {
             val generateTranslationsButton = "Generate translation files".toTextButton()
-            generateTranslationsButton.onClick {
+            val generateAction = {
                 val translations = Translations()
                 translations.readAllLanguagesTranslation()
                 TranslationFileWriter.writeNewTranslationFiles(translations)
@@ -238,6 +256,9 @@ class OptionsPopup(val previousScreen:CameraStageBaseScreen) : Popup(previousScr
                 generateTranslationsButton.setText("Translation files are generated successfully.".tr())
                 generateTranslationsButton.disable()
             }
+            generateTranslationsButton.onClick(generateAction)
+            keyPressDispatcher[Input.Keys.F12] = generateAction
+            generateTranslationsButton.addTooltip("F12",18f)
             optionsTable.add(generateTranslationsButton).colspan(2).row()
         }
     }
@@ -271,12 +292,11 @@ class OptionsPopup(val previousScreen:CameraStageBaseScreen) : Popup(previousScr
     private fun addSoundEffectsVolumeSlider() {
         optionsTable.add("Sound effects volume".tr())
 
-        val soundEffectsVolumeSlider = Slider(0f, 1.0f, 0.1f, false, skin)
-        soundEffectsVolumeSlider.value = settings.soundEffectsVolume
-        soundEffectsVolumeSlider.onChange {
-            settings.soundEffectsVolume = soundEffectsVolumeSlider.value
+        val soundEffectsVolumeSlider = UncivSlider(0f, 1.0f, 0.1f,
+            initial = settings.soundEffectsVolume
+        ) {
+            settings.soundEffectsVolume = it
             settings.save()
-            Sounds.play(UncivSound.Slider)
         }
         optionsTable.add(soundEffectsVolumeSlider).pad(5f).row()
     }
@@ -286,18 +306,20 @@ class OptionsPopup(val previousScreen:CameraStageBaseScreen) : Popup(previousScr
         if (musicLocation.exists()) {
             optionsTable.add("Music volume".tr())
 
-            val musicVolumeSlider = Slider(0f, 1.0f, 0.1f, false, skin)
-            musicVolumeSlider.value = settings.musicVolume
-            musicVolumeSlider.onChange {
-                settings.musicVolume = musicVolumeSlider.value
+            val musicVolumeSlider = UncivSlider(0f, 1.0f, 0.1f,
+                initial = settings.musicVolume,
+                sound = UncivSound.Silent
+            ) {
+                settings.musicVolume = it
                 settings.save()
 
                 val music = previousScreen.game.music
                 if (music == null) // restart music, if it was off at the app start
                     thread(name = "Music") { previousScreen.game.startMusic() }
 
-                music?.volume = 0.4f * musicVolumeSlider.value
+                music?.volume = 0.4f * it
             }
+            musicVolumeSlider.value = settings.musicVolume
             optionsTable.add(musicVolumeSlider).pad(5f).row()
         } else {
             val downloadMusicButton = "Download music".toTextButton()
@@ -357,6 +379,7 @@ class OptionsPopup(val previousScreen:CameraStageBaseScreen) : Popup(previousScr
 
         tileSetSelectBox.onChange {
             settings.tileSet = tileSetSelectBox.selected
+            TileSetCache.assembleTileSetConfigs()
             reloadWorldAndOptions()
         }
     }
@@ -433,7 +456,7 @@ class OptionsPopup(val previousScreen:CameraStageBaseScreen) : Popup(previousScr
 
         Usage: YesNoButton(someSetting: Boolean, skin) { someSetting = it; sideEffects() }
  */
-private fun Boolean.toYesNo(): String = (if (this) "Yes" else "No").tr()
+private fun Boolean.toYesNo(): String = (if (this) Constants.yes else Constants.no).tr()
 private class YesNoButton(initialValue: Boolean, skin: Skin, action: (Boolean) -> Unit)
         : TextButton (initialValue.toYesNo(), skin ) {
 

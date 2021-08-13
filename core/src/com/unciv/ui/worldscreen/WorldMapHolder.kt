@@ -24,7 +24,6 @@ import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.*
 import com.unciv.models.AttackableTile
 import com.unciv.models.UncivSound
-import com.unciv.models.ruleset.unit.UnitType
 import com.unciv.ui.map.TileGroupMap
 import com.unciv.ui.tilegroups.TileGroup
 import com.unciv.ui.tilegroups.TileSetStrings
@@ -43,6 +42,8 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
     private val allWorldTileGroups = ArrayList<WorldTileGroup>()
 
     private val unitActionOverlays: ArrayList<Actor> = ArrayList()
+
+    private val unitMovementPaths: HashMap<MapUnit, ArrayList<TileInfo>> = HashMap()
 
     init {
         if (Gdx.app.type == Application.ApplicationType.Desktop) this.setFlingTime(0f)
@@ -135,6 +136,7 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
     private fun onTileClicked(tileInfo: TileInfo) {
         removeUnitActionOverlay()
         selectedTile = tileInfo
+        unitMovementPaths.clear()
 
         val unitTable = worldScreen.bottomUnitTable
         val previousSelectedUnits = unitTable.selectedUnits.toList() // create copy
@@ -151,7 +153,7 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
                     else
                         previousSelectedUnits.any {
                             it.movement.canMoveTo(tileInfo) ||
-                                    it.movement.isUnknownTileWeShouldAssumeToBePassable(tileInfo) && !it.type.isAirUnit()
+                                    it.movement.isUnknownTileWeShouldAssumeToBePassable(tileInfo) && !it.baseUnit.movesLikeAirUnits()
                         }
                 )) {
             if (previousSelectedUnitIsSwapping) {
@@ -160,11 +162,12 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
             else {
                 // this can take a long time, because of the unit-to-tile calculation needed, so we put it in a different thread
                 addTileOverlaysWithUnitMovement(previousSelectedUnits, tileInfo)
+
             }
         } else addTileOverlays(tileInfo) // no unit movement but display the units in the tile etc.
 
 
-        if (newSelectedUnit == null || newSelectedUnit.type == UnitType.Civilian) {
+        if (newSelectedUnit == null || newSelectedUnit.isCivilian()) {
             val unitsInTile = selectedTile!!.getUnits()
             if (previousSelectedCity != null && previousSelectedCity.canBombard()
                     && selectedTile!!.getTilesInDistance(2).contains(previousSelectedCity.getCenterTile())
@@ -198,6 +201,8 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
             try {
                 tileToMoveTo = selectedUnit.movement.getTileToMoveToThisTurn(targetTile)
             } catch (ex: Exception) {
+                println("Exception in getTileToMoveToThisTurn: ${ex.message}")
+                ex.printStackTrace()
                 return@thread
             } // can't move here
 
@@ -220,7 +225,9 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
                     if (selectedUnits.size > 1) { // We have more tiles to move
                         moveUnitToTargetTile(selectedUnits.subList(1, selectedUnits.size), targetTile)
                     } else removeUnitActionOverlay() //we're done here
-                } catch (e: Exception) {
+                } catch (ex: Exception) {
+                    println("Exception in moveUnitToTargetTile: ${ex.message}")
+                    ex.printStackTrace()
                 }
             }
         }
@@ -232,8 +239,8 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
         if (selectedUnit.action == Constants.unitActionExplore || selectedUnit.isMoving())
             selectedUnit.action = null // remove explore on manual swap-move
 
-        // Perhaps something like a swish-swoosh would be clearer
-        Sounds.play(UncivSound.Whoosh)
+        // Play something like a swish-swoosh
+        Sounds.play(UncivSound.Swap)
 
         if (selectedUnit.currentMovement > 0) worldScreen.bottomUnitTable.selectUnit(selectedUnit)
 
@@ -251,14 +258,19 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
 
             val unitToTurnsToTile = HashMap<MapUnit, Int>()
             for (unit in selectedUnits) {
-                val turnsToGetThere = if (unit.type.isAirUnit()) {
+                val shortestPath = ArrayList<TileInfo>()
+                val turnsToGetThere = if (unit.baseUnit.movesLikeAirUnits()) {
                     if (unit.movement.canReach(tileInfo)) 1
                     else 0
                 } else if (unit.action == Constants.unitActionParadrop) {
                     if (unit.movement.canReach(tileInfo)) 1
                     else 0
-                } else
-                    unit.movement.getShortestPath(tileInfo).size // this is what takes the most time, tbh
+                } else {
+                    // this is the most time-consuming call
+                    shortestPath.addAll(unit.movement.getShortestPath(tileInfo))
+                    shortestPath.size
+                }
+                unitMovementPaths[unit] = shortestPath
                 unitToTurnsToTile[unit] = turnsToGetThere
             }
 
@@ -368,7 +380,7 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
         else {
             moveHereButton.onClick(UncivSound.Silent) {
                 UncivGame.Current.settings.addCompletedTutorialTask("Move unit")
-                if (unitsThatCanMove.any { it.type.isAirUnit() })
+                if (unitsThatCanMove.any { it.baseUnit.movesLikeAirUnits() })
                     UncivGame.Current.settings.addCompletedTutorialTask("Move an air unit")
                 moveUnitToTargetTile(unitsThatCanMove, dto.tileInfo)
             }
@@ -389,7 +401,7 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
 
         swapWithButton.onClick(UncivSound.Silent) {
             UncivGame.Current.settings.addCompletedTutorialTask("Move unit")
-            if (dto.unit.type.isAirUnit())
+            if (dto.unit.baseUnit.movesLikeAirUnits())
                 UncivGame.Current.settings.addCompletedTutorialTask("Move an air unit")
             swapMoveUnitToTargetTile(dto.unit, dto.tileInfo)
         }
@@ -475,12 +487,12 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
         }
 
         // Fade out less relevant images if a military unit is selected
-        val fadeout = if (unit.type.isCivilian()) 1f
+        val fadeout = if (unit.isCivilian()) 1f
         else 0.5f
         for (tile in allWorldTileGroups) {
             if (tile.icons.populationIcon != null) tile.icons.populationIcon!!.color.a = fadeout
             if (tile.icons.improvementIcon != null && tile.tileInfo.improvement != Constants.barbarianEncampment
-                && tile.tileInfo.improvement != Constants.ancientRuins)
+                && tile.tileInfo.getTileImprovement()!!.isAncientRuinsEquivalent())
                 tile.icons.improvementIcon!!.color.a = fadeout
             if (tile.resourceImage != null) tile.resourceImage!!.color.a = fadeout
         }
@@ -497,7 +509,7 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
             return // We don't want to show normal movement or attack overlays in unit-swapping mode
         }
 
-        val isAirUnit = unit.type.isAirUnit()
+        val isAirUnit = unit.baseUnit.movesLikeAirUnits()
         val moveTileOverlayColor = if (unit.action == Constants.unitActionParadrop) Color.BLUE else Color.WHITE
         val tilesInMoveRange = unit.movement.getReachableTilesInCurrentTurn()
 
@@ -512,9 +524,17 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
                         tileToColor.showCircle(Color.BLUE, 0.3f)
                     }
                 if (unit.movement.canMoveTo(tile) ||
-                        unit.movement.isUnknownTileWeShouldAssumeToBePassable(tile) && !unit.type.isAirUnit())
+                        unit.movement.isUnknownTileWeShouldAssumeToBePassable(tile) && !unit.baseUnit.movesLikeAirUnits())
                     tileToColor.showCircle(moveTileOverlayColor,
                             if (UncivGame.Current.settings.singleTapMove || isAirUnit) 0.7f else 0.3f)
+            }
+        }
+
+        // Movement paths
+        if (unitMovementPaths.containsKey(unit)) {
+            for (tile in unitMovementPaths[unit]!!) {
+                for (tileToColor in tileGroups[tile]!!)
+                    tileToColor.showCircle(Color.SKY, 0.8f)
             }
         }
 
@@ -524,7 +544,7 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
                 tileGroup.showCircle(Color.WHITE, 0.7f)
         }
 
-        val attackableTiles: List<AttackableTile> = if (unit.type.isCivilian()) listOf()
+        val attackableTiles: List<AttackableTile> = if (unit.isCivilian()) listOf()
         else {
             BattleHelper.getAttackableEnemies(unit, unit.movement.getDistanceToTiles())
                     .filter {

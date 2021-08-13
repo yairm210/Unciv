@@ -128,9 +128,7 @@ class ModManagementScreen: PickerScreen(disableScroll = true) {
         topTable.row()
 
         // horizontal separator looking like the SplitPane handle
-        val separator = Table(skin)
-        separator.background = skin.get("default-vertical", SplitPane.SplitPaneStyle::class.java).handle
-        topTable.add(separator).minHeight(3f).fillX().colspan(5).row()
+        topTable.addSeparator(Color.CLEAR, 5, 3f)
 
         // main row containing the three 'blocks' installed, online and information
         topTable.add()      // skip empty first column
@@ -319,13 +317,14 @@ class ModManagementScreen: PickerScreen(disableScroll = true) {
         val downloadButton = "Download mod from URL".toTextButton()
         downloadButton.onClick {
             val popup = Popup(this)
+            popup.addGoodSizedLabel("Please enter the mod repository -or- archive zip url:").row()
             val textArea = TextArea("https://github.com/...", skin)
             popup.add(textArea).width(stage.width / 2).row()
             val actualDownloadButton = "Download".toTextButton()
             actualDownloadButton.onClick {
                 actualDownloadButton.setText("Downloading...".tr())
                 actualDownloadButton.disable()
-                downloadMod(Github.Repo().apply { html_url = textArea.text; default_branch = "master" }) { popup.close() }
+                downloadMod(Github.Repo().parseUrl(textArea.text)) { popup.close() }
             }
             popup.add(actualDownloadButton).row()
             popup.addCloseButton()
@@ -356,16 +355,16 @@ class ModManagementScreen: PickerScreen(disableScroll = true) {
         addModInfoToActionTable(repo)
     }
 
-    /** Download and install a mod in the background, called from the right-bottom button */
+    /** Download and install a mod in the background, called both from the right-bottom button and the URL entry popup */
     private fun downloadMod(repo: Github.Repo, postAction: () -> Unit = {}) {
         thread(name="DownloadMod") { // to avoid ANRs - we've learnt our lesson from previous download-related actions
             try {
                 val modFolder = Github.downloadAndExtract(repo.html_url, repo.default_branch,
                     Gdx.files.local("mods"))
-                    ?: return@thread
+                    ?: throw Exception()    // downloadAndExtract returns null for 404 errors and the like -> display something!
                 rewriteModOptions(repo, modFolder)
                 Gdx.app.postRunnable {
-                    ToastPopup("Downloaded!", this)
+                    ToastPopup("[${repo.name}] Downloaded!", this)
                     RulesetCache.loadRulesets()
                     refreshInstalledModTable()
                     showModDescription(repo.name)
@@ -373,7 +372,7 @@ class ModManagementScreen: PickerScreen(disableScroll = true) {
                 }
             } catch (ex: Exception) {
                 Gdx.app.postRunnable {
-                    ToastPopup("Could not download mod", this)
+                    ToastPopup("Could not download [${repo.name}]", this)
                 }
             } finally {
                 postAction()
@@ -419,22 +418,18 @@ class ModManagementScreen: PickerScreen(disableScroll = true) {
         val visualMods = game.settings.visualMods
         val isVisual = visualMods.contains(mod.name)
         modStateImages[mod.name]?.isVisual = isVisual
-        if (!isVisual) {
-            modActionTable.add("Enable as permanent visual mod".toTextButton().onClick {
+
+        val visualCheckBox = "Permanent audiovisual mod".toCheckBox(isVisual) {
+            checked ->
+            if (checked)
                 visualMods.add(mod.name)
-                game.settings.save()
-                ImageGetter.setNewRuleset(ImageGetter.ruleset)
-                refreshModActions(mod)
-            })
-        } else {
-            modActionTable.add("Disable as permanent visual mod".toTextButton().onClick {
+            else
                 visualMods.remove(mod.name)
-                game.settings.save()
-                ImageGetter.setNewRuleset(ImageGetter.ruleset)
-                refreshModActions(mod)
-            })
+            game.settings.save()
+            ImageGetter.setNewRuleset(ImageGetter.ruleset)
+            refreshModActions(mod)
         }
-        modActionTable.row()
+        modActionTable.add(visualCheckBox).row()
     }
 
     /** Rebuild the left-hand column containing all installed mods */
@@ -501,5 +496,11 @@ class ModManagementScreen: PickerScreen(disableScroll = true) {
         RulesetCache.loadRulesets()
         modStateImages.remove(mod.name)
         refreshInstalledModTable()
+    }
+
+    override fun resize(width: Int, height: Int) {
+        if (stage.viewport.screenWidth != width || stage.viewport.screenHeight != height) {
+            game.setScreen(ModManagementScreen())
+        }
     }
 }

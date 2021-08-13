@@ -1,3 +1,413 @@
+## 3.16.2
+
+Fixed crashing Diplomatic victory bug
+
+By xlenstra:
+- Added follower beliefs for buying religious buildings 
+- Hides 'automate' unit action and unhides 'stop exploring' unit action 
+- Ruins now have their own file 
+- Architecture is now a prerequiste of Archaeology 
+- Fixed bug where units could still be purchased if they used a depleted resource 
+- Fixed crash when borrowing names 
+- Fixes bug where Russia's unique no longer works 
+- One with nature yield for spain is now doubled 
+
+By SomeTroglodyte:
+- MapGenerator optimization 
+- Diplomacy: City State resource UI, improvement gift effect 
+- Mod description translation 
+
+Pikeman upgrades only to Lancer  - By ravignir
+
+Fix banking's required techs  - By logicminimal
+
+City state resources  - By Interdice
+
+## 3.16.1
+
+By xlenstra:
+- Added missionairy units, which can spread religion and bought with faith 
+- Replaced the last promotion effects with uniques 
+- Removed $ signs from translatable strings 
+
+By SomeTroglodyte:
+- Bring `allUnitActionsHaveTranslation` test up to date 
+- Change defeat conditions 
+
+By ravignir:
+- Minor fix to Great Prophets cost not increasing 
+
+## 3.16.0-patch1
+
+Bugfixes from unitTypes so promotions work again  - By xlenstra
+
+By SomeTroglodyte:
+- Allow civ-unique buildings to be created by startingEra 
+- Mod manager concurrency 
+
+Randomize Plains/Grasslands around deserts  - By ravignir
+
+## 3.16.0
+
+By xlenstra:
+- Added Diplomatic victory!
+- Unit types are now moddable!
+
+Bugfixes
+
+Atomic bomb interception works as intended
+
+Ai now cares about city distances   - By Interdice
+
+By SomeTroglodyte:
+- Civilopedia phase 9 - Technologies 
+- Harden map editor map loader against most bad maps 
+- UI improvements
+
+General fixes - By lishaoxia1985
+
+## 3.15.18
+
+600th version!
+
+Solved crash where city states would try to gift great people without cities
+
+By avdstaaij:
+- Fixed captured units not tp-ing out of illegal tiles 
+
+By SomeTroglodyte:
+- TranslationFileWriter support for CivilopediaText 
+- Fix Civilopedia Unique auto-linking when Ruleset changes 
+- Reduce atlas - The Huns was 4x larger than the other nations, and a dirty Hexagon dupe 
+- Better crude maps - zero uncovered tiles impossible 
+
+By xlenstra:
+- Added modoptions unique for disabling city-state spawning with only a settler 
+- Fixed bug where production from cutting down forests could apply to perpetual constructions 
+
+Improve River for FantasyHex  - By AdityaMH
+
+Fix Hagia Sophia and CN Tower not giving civ 5 bonuses  - By logicminimal
+
+## 3.15.17
+
+Influence-by-game-progress works as intended
+
+One-city-challengers no longer get multiple settlers for later eras
+
+Maori Warrior debuff only applies to enemy units
+
+AI accepts research agreement offers
+
+Buildings from era are applied before buildings from policies
+
+By SomeTroglodyte:
+- Civilopedia phase 8 - Nations and Promotions 
+- UnitActionType now knows keys, sounds and most icons 
+
+And new unit pixel and some improvement - By AdityaMH
+
+Map climate overhaul - By ravignir
+
+## 3.15.16
+
+City states no longer grant Great Prophets when religion is not enabled
+
+Background work for moddable uit types :)
+
+Mercantile CS resources - By SimonCeder
+
+Civilopedia phase7 - By SomeTroglodyte
+
+Petra as in G&K fix - By ravignir
+
+## 3.15.15
+
+Great Person points are now moddable!
+
+By SomeTroglodyte:
+- Minimap Slider UI
+- Unit name translation
+- Rename Railroad tech to Railroads
+- Fix canImprovementBeBuiltHere regression
+- Newgame screen overhaul for portrait mode 
+- Deprecate "Can only be built on coastal tiles" unique 
+- A Civilopedia category for Religion 
+
+By SimonCeder:
+- Optimized spawn placement algorithm
+- City states adjustments 
+
+Resolved #4394 - corrected misspelled city names
+
+## 3.15.14
+
+By xlenstra:
+- Fixed bug where "[All] units" would not apply to city combatants 
+- Fixed comodification errors under certain circumstances 
+- Fixed a crash in badly defined mods 
+- Implemented temples 
+- Hide lesser used action buttons to free up space 
+- Fixed bug where 'remove road' would also remove other improvements under specific circumstances 
+- Fixed units not being removed from open borders area after declaring war 
+- Fixed bug where all great people suddenly were scientists 
+- Fix autocracy bonus accidentally being disabled 
+
+By SomeTroglodyte:
+- Resolve #4589 
+- Spruced up Civilopedia - phase 6 - uniques 
+- City construction Civilopedia-linked 
+
+By SimonCeder:
+- Map generation and start locations 
+- Added Sweden Civ 
+
+Performance boost - should resolve some ANRs
+
+## 3.15.13
+
+By SomeTroglodyte:
+- Fix for missing Farm images
+- Better keyboard shortcuts
+- Rewritten Tooltip class 
+- Sort Civilopedia entries using locale 
+- Spruced up Civilopedia - phase 5 - buildings 
+
+By xlenstra:
+- Implemented Follower beliefs for religions 
+- Fixed unique of Persian immortal not working
+
+Unit gifting - By SimonCeder
+
+Added Polder image
+
+## 3.15.12
+
+By xlenstra:
+- Founding Religions 
+- Updated the tile choosing algorithm for city expansion 
+- Disabled city state diplomacy buttons when it is not your turn 
+- Fixed bug where great prophets could be given when religion was disabled 
+- Fixed bug where effects of all aquaducts nationwide stacked in each city 
+
+Wonder build screens redux - By SimonCeder
+
+By SomeTroglodyte:
+- Better Slider UI
+- 'Swap units' sound replaced 
+
+## 3.15.11
+
+Civs with no cities can no longer pick policies
+
+Spectator no longer appears on Diplomacy overview
+
+By xlenstra:
+- Fixed crashes on loading save games with religion 
+- Fixed bug where submarines could not attack embarked units 
+- Fixed bug where tile construction time was increased instead of decreased 
+
+By lishaoxia1985:
+- Fix worldSizeModifier in TechManager 
+- Make map symmetrical if it's not wrapped 
+
+Fix Hun city names - By freddyhayward
+
+## 3.15.10
+
+Automated atomic bombs no longer cause crashes
+
+Fix for placeholder parameters changing names and becoming out of sync with existing translations.
+
+By xlenstra:
+- Add missing pantheons
+- City states give gold when met; updates to city state gold gifts 
+- Fixed many bugs
+- City Centers can no longer be removed by nukes 
+- Added a simplified version of great prophets, implemented a basic city religion UI 
+- Updated TranslationFileWriter to include the new values that filters can have 
+- Fixed a bug where one city challengers could capture enemy cities 
+- Refactored the way cities determine what uniques should apply when 
+
+Fixed spurious notifications of revealed resources too far away or in foreign territory  - By freddyhayward
+
+Quick salvage of some lost translations  - By SomeTroglodyte
+
+## 3.15.9
+
+By SomeTroglodyte:
+- Better mod download and error display 
+- Spruced up Civilopedia - phase 4 - Visual candy, Units 
+- 'Swap units' sound and more attack sounds 
+- Unified separators, CheckBox helper 
+- ExpanderTab UI update
+
+By xlenstra:
+- Fixed crash when a city had negative population due to faster razing 
+- Fixed bug where logistics _still_ did not work 
+- Fixed bug where city-states would not share their science income even if the player had the right policy 
+- Added the nation of the Netherlands 
+
+Fixed Denmark's unique
+
+More concurrency problem fixes in nuke effects
+
+## 3.15.8
+
+By xlenstra:
+- Made eras more moddable
+- Updated and generalized more promotions 
+- Added Privateer unit; updated Coastal Raider promotion 
+
+By SomeTroglodyte:
+- Fix mod custom maps unavailable when no local ones exist 
+- Spruced up Civilopedia - phase 3 - Interface, flavour text, new Tutorial 
+
+## 3.15.7-announcementTest
+
+I'm checking if this information gets to the Github release and the Discord announcements
+
+## 3.15.7
+
+Resolved 'getting stuck when there are no more pickable Pantheon beliefs'
+
+Removed final vestiges of old Bonus/Penalty effects.
+
+By xlenstra:
+- Fixed bug where all units could move after attacking 
+- Fix a few bugs related to nukes 
+- Research Tech Button shows progress; Small bug fix 
+- Updated promotions - make more generalizable, update to G&K 
+
+By SomeTroglodyte:
+- Translate nested placeholders for English
+- Fixed sound problems on Android
+
+## 3.15.6
+
+Faster 'false' results for isStats, as proposed by @SomeTroglodyte  in #4259
+
+By SomeTroglodyte:
+- Hide notifications for incompatible policy branches
+- Nicer distribution of policy picker branches 
+- Fix "National Wonder is being built elsewhere" not displayed 
+- Respect visualMods for Sound - CheckBox, formats, modchange detect
+
+By xlenstra:
+- Added Shrine, option for enabling religion 
+- Added Nuclear Submarines & Missile Cruisers, capable of transporting missiles 
+- Fixed crash when selecting worker 
+- Fixed bug where on quick game speed, educated elite would yield a great person every turn
+
+By avdstaaij:
+- Added Stealth tech and Stealth Bombers 
+- Added Drama and Poetry tech and replaced Temples with Amphitheaters 
+
+## 3.15.5
+
+Solved Discord RPC not crashing devices in which it is unsupported
+
+Resolved #4200 - Cities in resistance cannot bombard
+
+More generic "gain stat" for some uniques
+
+By xlenstra:
+- Generalized building of improvements 
+- Added Telecommunications tech
+- Added Advanced Ballistics Tech, Atomic Bomb Unit, Updated how nukes work 
+- Fixed rare bug where building improvements would increase tile base yield
+
+Promotion picker keeps vertical scroll pos on promote or resize  - By SomeTroglodyte
+
+## 3.15.4
+
+Deprecated 'download map' in favor of mod-based map sharing
+
+By xlenstra:
+- Created Patronage policy branch 
+- Fixed a bug where excess food would not be converted to production for settlers 
+
+By avdstaaij:
+- Added Nuclear Fusion tech and Giant Death Robot 
+- Fixed open terrain bonus working in rough terrain 
+- Fixed captured units not tp-ing out of liberated cities 
+- Fixed naval units not tp-ing out of razed cities 
+
+Split off all individual OverviewScreen panes  - By SomeTroglodyte
+
+## 3.15.3
+
+By xlenstra:
+- Created Order branch with G&K policies 
+- Fixed bug where coastal buildings cannot be built
+- Stop AI from pillaging their own tiles. Fixes #4203 
+- Fixed autocracy complete bonus not continuing after updating
+
+Corrected many building production costs, tech requirements and wonder effects  - By avdstaaij
+
+Change improvement key indicators to tooltip - By SomeTroglodyte
+
+Resolved #4209 - AI city-founding no longer plays music
+
+## 3.15.2
+
+By xlenstra:
+- Updated Autocracy and Freedom branches to G&K 
+- Fixed honor policy not adding bonus vs barbarians 
+- Fixed old worker speed improvement uniques no longer working 
+
+Wake up units when enemy sighted or displaced or attacked  - By SomeTroglodyte
+
+By avdstaaij:
+- Made atlas textures use mipmaps again 
+- Fixed units not teleporting out of sold city tiles 
+
+Resolved #4170 - updated deprecated Polynesian unique - By SpacedOutChicken
+
+Unitfilter now accepts multiple filters (see wiki/uniques for details)
+
+## 3.15.1
+
+By xlenstra:
+- Updated the culture victory so it now requires the Utopia Project to be built 
+- Updated Commerce and Commerce branches to G&K 
+
+By SomeTroglodyte:
+- Show promises not to settle
+- Shortcut tooltips indicators 
+
+Map RNG reproducibility fix - By r3versi
+
+## 3.15.0
+
+Updated Tradition, Honor and Liberty branches to G&K rules - By xlenstra
+
+Enabled various G&K buildings and units - by By avdstaaij
+
+Nation start intros - By SomeTroglodyte
+
+By r3versi:
+- New borders images
+- Display Movement Paths on map
+- Unified Menu Popups
+
+Better button images - By lishaoxia1985
+
+## 3.14.16
+
+Cities in resistance cannot bombard, as per Civ V - #663
+
+By SomeTroglodyte:
+- Hopefully fixed F-Droid missing libgdx.so problem 
+- Trade UI improvements - Leader portraits, keys, layout
+- Nations spellchecking 
+
+Implemented production overflow - By Thyrum
+
+By r3versi:
+- Map Generation Seedable 
+- Map Generation Fixes and Tweaks 
+
 ## 3.14.15
 
 Unit swapping - By avdstaaij

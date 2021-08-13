@@ -1,5 +1,6 @@
 package com.unciv.ui.worldscreen.mainmenu
 
+import com.badlogic.gdx.Files
 import com.badlogic.gdx.files.FileHandle
 import com.unciv.logic.GameSaver
 import java.io.*
@@ -57,16 +58,19 @@ object Github {
         defaultBranch: String,
         folderFileHandle: FileHandle
     ): FileHandle? {
-        // Initiate download - the helper returns null when it fails 
+        // Initiate download - the helper returns null when it fails
         val zipUrl = "$gitRepoUrl/archive/$defaultBranch.zip"
         val inputStream = download(zipUrl) ?: return null
 
+        // Get a mod-specific temp file name
+        val tempName = "temp-" + gitRepoUrl.hashCode().toString(16)
+
         // Download to temporary zip
-        val tempZipFileHandle = folderFileHandle.child("tempZip.zip")
+        val tempZipFileHandle = folderFileHandle.child("$tempName.zip")
         tempZipFileHandle.write(inputStream, false)
 
         // prepare temp unpacking folder
-        val unzipDestination = tempZipFileHandle.sibling("tempZip") // folder, not file
+        val unzipDestination = tempZipFileHandle.sibling(tempName) // folder, not file
         // prevent mixing new content with old - hopefully there will never be cadavers of our tempZip stuff
         if (unzipDestination.exists())
             if (unzipDestination.isDirectory) unzipDestination.deleteDirectory() else unzipDestination.delete()
@@ -74,7 +78,7 @@ object Github {
         Zip.extractFolder(tempZipFileHandle, unzipDestination)
 
         val innerFolder = unzipDestination.list().first()
-        // innerFolder should now be "tempZip/$repoName-$defaultBranch/" - use this to get mod name
+        // innerFolder should now be "$tempName/$repoName-$defaultBranch/" - use this to get mod name
         val finalDestinationName = innerFolder.name().replace("-$defaultBranch", "").replace('-', ' ')
         // finalDestinationName is now the mod name as we display it. Folder name needs to be identical.
         val finalDestination = folderFileHandle.child(finalDestinationName)
@@ -83,7 +87,7 @@ object Github {
         var tempBackup: FileHandle? = null
         if (finalDestination.exists()) {
             tempBackup = finalDestination.sibling("$finalDestinationName.updating")
-            finalDestination.moveTo(tempBackup)
+            finalDestination.renameOrMove(tempBackup)
         }
 
         // Move temp unpacked content to their final place
@@ -92,7 +96,7 @@ object Github {
         // This sort will guarantee the desktop launcher will not re-pack textures and overwrite the atlas as delivered by the mod
         for (innerFileOrFolder in innerFolder.list()
             .sortedBy { file -> file.extension() == "atlas" } ) {
-            innerFileOrFolder.moveTo(finalDestination)
+            innerFileOrFolder.renameOrMove(finalDestination)
         }
 
         // clean up
@@ -102,6 +106,12 @@ object Github {
             if (tempBackup.isDirectory) tempBackup.deleteDirectory() else tempBackup.delete()
 
         return finalDestination
+    }
+    
+    private fun FileHandle.renameOrMove(dest: FileHandle) {
+        // Gdx tries a java rename for Absolute and External, but NOT for Local - rectify that
+        if (type() == Files.FileType.Local && file().renameTo(dest.file())) return
+        moveTo(dest)
     }
 
     /**
@@ -247,6 +257,38 @@ object Github {
         //var stargazers_url = ""
         //var homepage: String? = null      // might use instead of go to repo?
         //var has_wiki = false              // a wiki could mean proper documentation for the mod?
+
+        /**
+         * Initialize `this` with an url, extracting all possible fields from it.
+         *
+         * Allows basic repo url or complete 'zip' url from github's code->download zip menu
+         *
+         * @return `this` to allow chaining
+         */
+        fun parseUrl(url: String): Repo {
+            // Allow url formats
+            //  https://github.com/author/repoName
+            // or
+            //  https://github.com/author/repoName/archive/refs/heads/branchName.zip
+            // and extract author, repoName, branchName
+
+            html_url = url
+            default_branch = "master"
+            val matchZip = Regex("""^(.*/(.*)/(.*))/archive/(?:.*/)?([^.]+).zip$""").matchEntire(url)
+            if (matchZip != null && matchZip.groups.size > 3) {
+                html_url = matchZip.groups[1]!!.value
+                owner.login = matchZip.groups[2]!!.value
+                name = matchZip.groups[3]!!.value
+                default_branch = matchZip.groups[4]!!.value
+            } else {
+                val matchRepo = Regex("""^.*/(.*)/(.*)/?$""").matchEntire(url)
+                if (matchRepo != null && matchRepo.groups.size > 2) {
+                    owner.login = matchRepo.groups[1]!!.value
+                    name = matchRepo.groups[2]!!.value
+                }
+            }
+            return this
+        }
     }
 
     /** Part of [Repo] in Github API response */

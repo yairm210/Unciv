@@ -141,8 +141,8 @@ class MapEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(CameraS
             improvementImage.onClick {
                 tileAction = {
                     when (improvement.name) {
-                        "Road" -> it.roadStatus = RoadStatus.Road
-                        "Railroad" -> it.roadStatus = RoadStatus.Railroad
+                        RoadStatus.Road.name -> it.roadStatus = RoadStatus.Road
+                        RoadStatus.Railroad.name -> it.roadStatus = RoadStatus.Railroad
                         else -> it.improvement = improvement.name
                     }
                 }
@@ -210,11 +210,11 @@ class MapEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(CameraS
                 unit.updateUniques()
                 if (unit.movement.canMoveTo(it)) {
                     when {
-                        unit.type.isAirUnit() -> {
+                        unit.baseUnit.movesLikeAirUnits() -> {
                             it.airUnits.add(unit)
                             if (!it.isCityCenter()) unit.isTransported = true  // if not city - air unit enters carrier
                         }
-                        unit.type.isCivilian() -> it.civilianUnit = unit
+                        unit.isCivilian() -> it.civilianUnit = unit
                         else -> it.militaryUnit = unit
                     }
                     unit.currentTile = it // needed for unit icon - unit needs to know if it's embarked or not...

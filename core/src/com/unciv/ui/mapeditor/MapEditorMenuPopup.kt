@@ -1,7 +1,9 @@
 package com.unciv.ui.mapeditor
 
+import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.unciv.Constants
 import com.unciv.MainMenuScreen
 import com.unciv.UncivGame
 import com.unciv.models.ruleset.RulesetCache
@@ -11,16 +13,23 @@ import com.unciv.ui.utils.*
 class MapEditorMenuPopup(var mapEditorScreen: MapEditorScreen): Popup(mapEditorScreen) {
 
     init {
-        addButton("New map", 'n') { UncivGame.Current.setScreen(NewMapScreen(mapEditorScreen.tileMap.mapParameters)) }
-        addButton("Save map", 's') { mapEditorScreen.game.setScreen(SaveAndLoadMapScreen(mapEditorScreen.tileMap, true, mapEditorScreen)); this.close() }
-        addButton("Load map", 'l') { mapEditorScreen.game.setScreen(SaveAndLoadMapScreen(mapEditorScreen.tileMap, false, mapEditorScreen)); this.close() }
+        defaults().fillX()
+        add(("{RNG Seed} " + mapEditorScreen.tileMap.mapParameters.seed.toString()).toLabel()).row()
+        addButton("Copy to clipboard") { Gdx.app.clipboard.contents = mapEditorScreen.tileMap.mapParameters.seed.toString() }
+        addSeparator()
+        addButton("New map", 'n') {
+            mapEditorScreen.tileMap.mapParameters.reseed()
+            UncivGame.Current.setScreen(NewMapScreen(mapEditorScreen.tileMap.mapParameters))
+        }
+        addButton("Save map", 's') { mapEditorScreen.game.setScreen(SaveAndLoadMapScreen(mapEditorScreen.tileMap, true, mapEditorScreen)); close() }
+        addButton("Load map", 'l') { mapEditorScreen.game.setScreen(SaveAndLoadMapScreen(mapEditorScreen.tileMap, false, mapEditorScreen)); close() }
         addButton("Exit map editor", 'x') { mapEditorScreen.game.setScreen(MainMenuScreen()); mapEditorScreen.dispose() }
         addButton("Change ruleset", 'c') { MapEditorRulesetPopup(mapEditorScreen).open(); close() }
         addCloseButton()
     }
 
     class MapEditorRulesetPopup(mapEditorScreen: MapEditorScreen) : Popup(mapEditorScreen) {
-        var ruleset = mapEditorScreen.ruleset.clone() // don't take the actual one, so w can decide to not make changes
+        var ruleset = mapEditorScreen.ruleset.clone() // don't take the actual one, so we can decide to not make changes
 
         init {
             val mods = mapEditorScreen.tileMap.mapParameters.mods
@@ -56,13 +65,14 @@ class MapEditorMenuPopup(var mapEditorScreen: MapEditorScreen): Popup(mapEditorS
                     add(ScrollPane(incompatibilityTable)).colspan(2)
                         .maxHeight(screen.stage.height * 0.8f).row()
                     add("Change map to fit selected ruleset?".toLabel()).colspan(2).row()
-                    addButtonInRow("Yes", 'y') {
+                    addButtonInRow(Constants.yes, 'y') {
                         for (tile in mapEditorScreen.tileMap.values)
                             tile.normalizeToRuleset(ruleset)
                         mapEditorScreen.tileMap.mapParameters.mods = mods
                         mapEditorScreen.game.setScreen(MapEditorScreen(mapEditorScreen.tileMap))
                     }
-                    addButtonInRow("No", 'n') { close() }
+                    addButtonInRow(Constants.no, 'n') { close() }
+                    equalizeLastTwoButtonWidths()
                 }.open(true)
             }
 

@@ -27,7 +27,7 @@ class GameSettings {
     var automatedWorkersReplaceImprovements = true
 
     var showMinimap: Boolean = true
-    var minimapSize: Int = 1
+    var minimapSize: Int = 6    // default corresponds to 15% screen space
     var showPixelUnits: Boolean = false
     var showPixelImprovements: Boolean = true
     var continuousRendering = false
@@ -41,6 +41,7 @@ class GameSettings {
     var visualMods = HashSet<String>()
 
     var showExperimentalWorldWrap = false // We're keeping this as a config due to ANR problems on Android phones for people who don't know what they're doing :/
+    var showExperimentalReligion = false
 
     var lastOverviewPage: String = "Cities"
 

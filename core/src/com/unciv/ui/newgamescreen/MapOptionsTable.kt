@@ -13,38 +13,48 @@ import com.unciv.ui.utils.Popup
 import com.unciv.ui.utils.onChange
 import com.unciv.ui.utils.toLabel
 
-class MapOptionsTable(val newGameScreen: NewGameScreen): Table() {
+class MapOptionsTable(private val newGameScreen: NewGameScreen): Table() {
 
-    val mapParameters = newGameScreen.gameSetupInfo.mapParameters
+    private val mapParameters = newGameScreen.gameSetupInfo.mapParameters
     private var mapTypeSpecificTable = Table()
     val generatedMapOptionsTable = MapParametersTable(mapParameters)
     private val savedMapOptionsTable = Table()
     lateinit var mapTypeSelectBox: TranslatedSelectBox
+    private val mapFileSelectBox = createMapFileSelectBox()
+
+    private val mapFilesSequence = sequence<FileHandleWrapper> {
+        yieldAll(MapSaver.getMaps().asSequence().map { FileHandleWrapper(it) })
+        for (mod in Gdx.files.local("mods").list()) {
+            val mapsFolder = mod.child("maps")
+            if (mapsFolder.exists())
+                yieldAll(mapsFolder.list().asSequence().map { FileHandleWrapper(it) })
+        }
+    }
 
     init {
-        defaults().pad(5f)
-        add("Map Options".toLabel(fontSize = 24)).top().padBottom(20f).colspan(2).row()
+        //defaults().pad(5f) - each nested table having the same can give 'stairs' effects,
+        // better control directly. Besides, the first Labels/Buttons should have 10f to look nice
         addMapTypeSelection()
     }
 
     private fun addMapTypeSelection() {
-        add("{Map Type}:".toLabel())
         val mapTypes = arrayListOf("Generated")
-        if (MapSaver.getMaps().isNotEmpty()) mapTypes.add(MapType.custom)
+        if (mapFilesSequence.any()) mapTypes.add(MapType.custom)
         mapTypeSelectBox = TranslatedSelectBox(mapTypes, "Generated", CameraStageBaseScreen.skin)
 
-        val mapFileSelectBox = getMapFileSelectBox()
         savedMapOptionsTable.defaults().pad(5f)
         savedMapOptionsTable.add("{Map file}:".toLabel()).left()
         // because SOME people gotta give the hugest names to their maps
-        savedMapOptionsTable.add(mapFileSelectBox).maxWidth(newGameScreen.stage.width / 2)
-                .right().row()
-
+        val columnWidth = newGameScreen.stage.width / (if (newGameScreen.isNarrowerThan4to3()) 1 else 3)
+        savedMapOptionsTable.add(mapFileSelectBox)
+            .maxWidth((columnWidth - 120f).coerceAtLeast(120f))
+            .right().row()
 
 
         fun updateOnMapTypeChange() {
             mapTypeSpecificTable.clear()
             if (mapTypeSelectBox.selected.value == MapType.custom) {
+                fillMapFileSelectBox()
                 mapParameters.type = MapType.custom
                 mapParameters.name = mapFileSelectBox.selected.toString()
                 mapTypeSpecificTable.add(savedMapOptionsTable)
@@ -64,31 +74,15 @@ class MapOptionsTable(val newGameScreen: NewGameScreen): Table() {
 
         mapTypeSelectBox.onChange { updateOnMapTypeChange() }
 
-        add(mapTypeSelectBox).row()
-        add(mapTypeSpecificTable).colspan(2).row()
+        val mapTypeSelectWrapper = Table()  // wrap to center-align Label and SelectBox easier
+        mapTypeSelectWrapper.add("{Map Type}:".toLabel()).left().expandX()
+        mapTypeSelectWrapper.add(mapTypeSelectBox).right()
+        add(mapTypeSelectWrapper).pad(10f).fillX().row()
+        add(mapTypeSpecificTable).row()
     }
 
-    private fun getMapFileSelectBox(): SelectBox<FileHandleWrapper> {
+    private fun createMapFileSelectBox(): SelectBox<FileHandleWrapper> {
         val mapFileSelectBox = SelectBox<FileHandleWrapper>(CameraStageBaseScreen.skin)
-        val mapFiles = Array<FileHandleWrapper>()
-        for (mapFile in MapSaver.getMaps())
-            mapFiles.add(FileHandleWrapper(mapFile))
-        for (mod in Gdx.files.local("mods").list()) {
-            val mapsFolder = mod.child("maps")
-            if (mapsFolder.exists())
-                for (map in mapsFolder.list())
-                    mapFiles.add(FileHandleWrapper(map))
-        }
-        mapFileSelectBox.items = mapFiles
-        val selectedItem = mapFiles.firstOrNull { it.fileHandle.name() == mapParameters.name }
-        if (selectedItem != null) {
-            mapFileSelectBox.selected = selectedItem
-            newGameScreen.gameSetupInfo.mapFile = mapFileSelectBox.selected.fileHandle
-        } else if (!mapFiles.isEmpty) {
-            mapFileSelectBox.selected = mapFiles.first()
-            newGameScreen.gameSetupInfo.mapFile = mapFileSelectBox.selected.fileHandle
-        }
-
         mapFileSelectBox.onChange {
             val mapFile = mapFileSelectBox.selected.fileHandle
             val map: TileMap
@@ -110,11 +104,26 @@ class MapOptionsTable(val newGameScreen: NewGameScreen): Table() {
         }
         return mapFileSelectBox
     }
-
+    
+    private fun fillMapFileSelectBox() {
+        if (!mapFileSelectBox.items.isEmpty) return
+        val mapFiles = Array<FileHandleWrapper>()
+        mapFilesSequence.forEach { mapFiles.add(it) }
+        mapFileSelectBox.items = mapFiles
+        val selectedItem = mapFiles.firstOrNull { it.fileHandle.name() == mapParameters.name }
+        if (selectedItem != null) {
+            mapFileSelectBox.selected = selectedItem
+            newGameScreen.gameSetupInfo.mapFile = mapFileSelectBox.selected.fileHandle
+        } else if (!mapFiles.isEmpty) {
+            mapFileSelectBox.selected = mapFiles.first()
+            newGameScreen.gameSetupInfo.mapFile = mapFileSelectBox.selected.fileHandle
+        }
+    }
 
     // The SelectBox auto displays the text a object.toString(), which on the FileHandle itself includes the folder path.
     //  So we wrap it in another object with a custom toString()
     class FileHandleWrapper(val fileHandle: FileHandle) {
         override fun toString(): String = fileHandle.name()
     }
+    
 }

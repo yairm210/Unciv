@@ -1,22 +1,18 @@
 package com.unciv.ui.newgamescreen
 
-import com.badlogic.gdx.scenes.scene2d.ui.CheckBox
-import com.badlogic.gdx.scenes.scene2d.ui.SelectBox
 import com.badlogic.gdx.scenes.scene2d.ui.Table
-import com.badlogic.gdx.utils.Array
 import com.unciv.UncivGame
 import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.metadata.GameSpeed
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.VictoryType
-import com.unciv.models.translations.tr
-import com.unciv.ui.utils.CameraStageBaseScreen
-import com.unciv.ui.utils.ImageGetter
-import com.unciv.ui.utils.onChange
-import com.unciv.ui.utils.toLabel
+import com.unciv.ui.utils.*
 
-class GameOptionsTable(val previousScreen: IPreviousScreen, val updatePlayerPickerTable:(desiredCiv:String)->Unit)
-    : Table(CameraStageBaseScreen.skin) {
+class GameOptionsTable(
+    val previousScreen: IPreviousScreen,
+    val withoutMods: Boolean = false,
+    val updatePlayerPickerTable:(desiredCiv:String)->Unit
+) : Table(CameraStageBaseScreen.skin) {
     var gameParameters = previousScreen.gameSetupInfo.gameParameters
     val ruleset = previousScreen.ruleset
     var locked = false
@@ -34,34 +30,38 @@ class GameOptionsTable(val previousScreen: IPreviousScreen, val updatePlayerPick
         top()
         defaults().pad(5f)
 
-        add("Game Options".toLabel(fontSize = 24)).padTop(0f).padBottom(20f).colspan(2).row()
         add(Table().apply {
             defaults().pad(5f)
-            //addBaseRulesetSelectBox()
+            addBaseRulesetSelectBox()
             addDifficultySelectBox()
             addGameSpeedSelectBox()
             addEraSelectBox()
-        }).colspan(2).row()
-        addCityStatesSelectBox()
+            // align left and right edges with other SelectBoxes but allow independent dropdown width
+            add(Table().apply {
+                addCityStatesSlider()
+            }).colspan(2).fillX().row()
+        }).row()
         addVictoryTypeCheckboxes()
 
-        val checkboxTable = Table().apply { defaults().pad(5f) }
+        val checkboxTable = Table().apply { defaults().left().pad(2.5f) }
         checkboxTable.addBarbariansCheckbox()
         checkboxTable.addOneCityChallengeCheckbox()
         checkboxTable.addNuclearWeaponsCheckbox()
         checkboxTable.addIsOnlineMultiplayerCheckbox()
-        checkboxTable.addModCheckboxes()
-        add(checkboxTable).colspan(2).row()
+        if (UncivGame.Current.settings.showExperimentalReligion)
+            checkboxTable.addReligionCheckbox()
+        add(checkboxTable).center().row()
+
+        if (!withoutMods)
+            add(getModCheckboxes()).row()
 
         pack()
     }
 
     private fun Table.addCheckbox(text: String, initialState: Boolean, lockable: Boolean = true, onChange: (newValue: Boolean) -> Unit) {
-        val checkbox = CheckBox(text.tr(), CameraStageBaseScreen.skin)
-        checkbox.isChecked = initialState
+        val checkbox = text.toCheckBox(initialState) { onChange(it) }
         checkbox.isDisabled = lockable && locked
-        checkbox.onChange { onChange(checkbox.isChecked) }
-        add(checkbox).colspan(2).left().row()
+        add(checkbox).colspan(2).row()
     }
 
     private fun Table.addBarbariansCheckbox() =
@@ -83,26 +83,26 @@ class GameOptionsTable(val previousScreen: IPreviousScreen, val updatePlayerPick
                 gameParameters.isOnlineMultiplayer = it
                 updatePlayerPickerTable("")
             }
+    
+    private fun Table.addReligionCheckbox() =
+            addCheckbox("Enable Religion", gameParameters.religionEnabled)
+            { gameParameters.religionEnabled = it }
 
-    private fun addCityStatesSelectBox() {
-        add("{Number of City-States}:".toLabel())
-        val cityStatesSelectBox = SelectBox<Int>(CameraStageBaseScreen.skin)
-
+    private fun Table.addCityStatesSlider() {
         val numberOfCityStates = ruleset.nations.filter { it.value.isCityState() }.size
+        if (numberOfCityStates == 0) return
 
-        val cityStatesArray = Array<Int>(numberOfCityStates + 1)
-        (0..numberOfCityStates).forEach { cityStatesArray.add(it) }
-
-        cityStatesSelectBox.items = cityStatesArray
-        cityStatesSelectBox.selected = gameParameters.numberOfCityStates
-        add(cityStatesSelectBox).width(50f).row()
-        cityStatesSelectBox.isDisabled = locked
-        cityStatesSelectBox.onChange {
-            gameParameters.numberOfCityStates = cityStatesSelectBox.selected
+        add("{Number of City-States}:".toLabel()).left().expandX()
+        val slider = UncivSlider(0f,numberOfCityStates.toFloat(),1f) {
+            gameParameters.numberOfCityStates = it.toInt()
         }
+        slider.permanentTip = true
+        slider.isDisabled = locked
+        add(slider).padTop(10f).row()
+        slider.value = gameParameters.numberOfCityStates.toFloat()
     }
 
-    fun Table.addSelectBox(text: String, values: Collection<String>, initialState: String, onChange: (newValue: String) -> Unit) {
+    private fun Table.addSelectBox(text: String, values: Collection<String>, initialState: String, onChange: (newValue: String) -> Unit) {
         add(text.toLabel()).left()
         val selectBox = TranslatedSelectBox(values, initialState, CameraStageBaseScreen.skin)
         selectBox.isDisabled = locked
@@ -117,6 +117,7 @@ class GameOptionsTable(val previousScreen: IPreviousScreen, val updatePlayerPick
     }
 
     private fun Table.addBaseRulesetSelectBox() {
+        if (BaseRuleset.values().size < 2) return
         addSelectBox("{Base Ruleset}:", BaseRuleset.values().map { it.fullName }, gameParameters.baseRuleset.fullName)
         {
             gameParameters.baseRuleset = BaseRuleset.values().first { br -> br.fullName == it }
@@ -131,6 +132,7 @@ class GameOptionsTable(val previousScreen: IPreviousScreen, val updatePlayerPick
 
     private fun Table.addEraSelectBox() {
         if (ruleset.technologies.isEmpty()) return // mod with no techs
+        // Should eventually be changed to use eras.json, but we'll keep it like this for now for mod compatibility
         val eras = ruleset.technologies.values.filter { !it.uniques.contains("Starting tech") }.map { it.era() }.distinct()
         addSelectBox("{Starting Era}:", eras, gameParameters.startingEra)
         { gameParameters.startingEra = it }
@@ -145,18 +147,16 @@ class GameOptionsTable(val previousScreen: IPreviousScreen, val updatePlayerPick
         val victoryConditionsTable = Table().apply { defaults().pad(5f) }
         for (victoryType in VictoryType.values()) {
             if (victoryType == VictoryType.Neutral) continue
-            val victoryCheckbox = CheckBox(victoryType.name.tr(), CameraStageBaseScreen.skin)
-            victoryCheckbox.name = victoryType.name
-            victoryCheckbox.isChecked = gameParameters.victoryTypes.contains(victoryType)
-            victoryCheckbox.isDisabled = locked
-            victoryCheckbox.onChange {
+            val victoryCheckbox = victoryType.name.toCheckBox(gameParameters.victoryTypes.contains(victoryType)) {
                 // If the checkbox is checked, adds the victoryTypes else remove it
-                if (victoryCheckbox.isChecked) {
+                if (it) {
                     gameParameters.victoryTypes.add(victoryType)
                 } else {
                     gameParameters.victoryTypes.remove(victoryType)
                 }
             }
+            victoryCheckbox.name = victoryType.name
+            victoryCheckbox.isDisabled = locked
             victoryConditionsTable.add(victoryCheckbox).left()
             if (++i % 2 == 0) victoryConditionsTable.row()
         }
@@ -173,8 +173,8 @@ class GameOptionsTable(val previousScreen: IPreviousScreen, val updatePlayerPick
         ImageGetter.setNewRuleset(ruleset)
     }
 
-    fun Table.addModCheckboxes() {
-        val table = ModCheckboxTable(gameParameters.mods, previousScreen as CameraStageBaseScreen) {
+    fun getModCheckboxes(isPortrait: Boolean = false): Table {
+        return ModCheckboxTable(gameParameters.mods, previousScreen as CameraStageBaseScreen, isPortrait) {
             UncivGame.Current.translations.translationActiveMods = gameParameters.mods
             reloadRuleset()
             update()
@@ -189,7 +189,6 @@ class GameOptionsTable(val previousScreen: IPreviousScreen, val updatePlayerPick
 
             updatePlayerPickerTable(desiredCiv)
         }
-        add(table).row()
     }
 
 }

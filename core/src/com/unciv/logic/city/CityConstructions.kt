@@ -8,6 +8,7 @@ import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.UniqueMap
 import com.unciv.models.ruleset.unit.BaseUnit
+import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.tr
 import com.unciv.ui.civilopedia.CivilopediaCategories
@@ -24,7 +25,7 @@ import kotlin.math.roundToInt
  * City constructions manager.
  *
  * @property cityInfo the city it refers to
- * @property currentConstructionFromQueue the name of the construction is currently worked, default = "Monument"
+ * @property currentConstructionFromQueue the name of the construction is currently worked
  * @property currentConstructionIsUserSet a flag indicating if the [currentConstructionFromQueue] has been set by the user or by the AI
  * @property constructionQueue a list of constructions names enqueued
  */
@@ -70,7 +71,7 @@ class CityConstructions {
             .asSequence().filter { it.isBuildable(this) }
 
     fun getBasicCultureBuildings() = cityInfo.getRuleset().buildings.values
-            .asSequence().filter { it.culture > 0f && !it.isWonder && !it.isNationalWonder && it.replaces == null }
+            .asSequence().filter { it.culture > 0f && !it.isAnyWonder() && it.replaces == null }
 
     /**
      * @return [Stats] provided by all built buildings in city plus the bonus from Library
@@ -78,13 +79,40 @@ class CityConstructions {
     fun getStats(): Stats {
         val stats = Stats()
         for (building in getBuiltBuildings())
-            stats.add(building.getStats(cityInfo.civInfo))
-
-        for (unique in builtBuildingUniqueMap.getAllUniques()) when (unique.placeholderText) {
-            "[] Per [] Population in this city" -> stats.add(unique.stats.times(cityInfo.population.population / unique.params[1].toFloat()))
-            "[] once [] is discovered" -> if (cityInfo.civInfo.tech.isResearched(unique.params[1])) stats.add(unique.stats)
+            stats.add(building.getStats(cityInfo))
+        
+        // Why only the local matching uniques you ask? Well, the non-local uniques are evaluated in
+        // CityStats.getStatsFromUniques(uniques). This function gets a list of uniques and one of
+        // the placeholderTexts it filters for is "[] per [] population []". Why doesn't that function
+        // then not also handle the local (i.e. cityFilter == "in this city") versions?
+        // This is because of what it is used for. The only time time a unique with this placeholderText
+        // is actually contained in `uniques`, is when `getStatsFromUniques` is called for determining
+        // the stats a city receives from wonders. It is then called with `unique` being the list
+        // of all specifically non-local uniques of all cities.
+        // 
+        // This averts the problem, albeit it barely, and it might change in the future without 
+        // anyone noticing, which might lead to further bugs. So why can't these two unique checks
+        // just be merged then? Because of another problem.
+        //
+        // As noted earlier, `getStatsFromUniques` is called in that case to calculate the stats
+        // this city received from wonders, both local and non-local. This function, `getStats`,
+        // is only called to calculate the stats the city receives from local buildings.
+        // In the current codebase with the current JSON objects it just so happens to be that
+        // all non-local uniques with this placeholderText from other cities belong to wonders, 
+        // while the local uniques with this placeholderText are from buildings, but this is in no
+        // way a given. In reality, there should be functions getBuildingStats and getWonderStats,
+        // to solve this, with getStats merely adding these two together. 
+        for (unique in cityInfo.getLocalMatchingUniques("[] per [] population []")
+                .filter { cityInfo.matchesFilter(it.params[2])}
+        ) {
+            stats.add(unique.stats.times(cityInfo.population.population / unique.params[1].toFloat()))
         }
-
+        
+        for (unique in cityInfo.getLocalMatchingUniques("[] once [] is discovered")) {
+            if (cityInfo.civInfo.tech.isResearched(unique.params[1]))
+                stats.add(unique.stats)
+        }
+        
         return stats
     }
 
@@ -92,13 +120,14 @@ class CityConstructions {
      * @return Maintenance cost of all built buildings
      */
     fun getMaintenanceCosts(): Int {
-        var maintenanceCost = getBuiltBuildings().sumBy { it.maintenance }
-        val policyManager = cityInfo.civInfo.policies
-        if (cityInfo.id in policyManager.legalismState) {
-            val buildingName = policyManager.legalismState[cityInfo.id]
-            maintenanceCost -= cityInfo.getRuleset().buildings[buildingName]!!.maintenance
+        var maintenanceCost = 0
+        // We cache this to increase performance
+        val freeBuildings = cityInfo.civInfo.policies.getListOfFreeBuildings(cityInfo.id)
+        for (building in getBuiltBuildings()) {
+            if (building.name !in freeBuildings) {
+                maintenanceCost += building.maintenance
+            }
         }
-
         return maintenanceCost
     }
 
@@ -108,7 +137,7 @@ class CityConstructions {
     fun getStatPercentBonuses(): Stats {
         val stats = Stats()
         for (building in getBuiltBuildings())
-            stats.add(building.getStatPercentageBonuses(cityInfo.civInfo))
+            stats.add(building.getStatPercentageBonuses(cityInfo))
         return stats
     }
 
@@ -124,15 +153,19 @@ class CityConstructions {
     }
 
 
+    /** @constructionName needs to be a non-perpetual construction, else a cost of -1 is inferred */
     internal fun getTurnsToConstructionString(constructionName: String, useStoredProduction:Boolean = true): String {
         val construction = getConstruction(constructionName)
-        val cost = construction.getProductionCost(cityInfo.civInfo)
+        val cost = 
+            if (construction is INonPerpetualConstruction) construction.getProductionCost(cityInfo.civInfo)
+            else -1 // This could _should_ never be reached
         val turnsToConstruction = turnsToConstruction(constructionName, useStoredProduction)
         val currentProgress = if (useStoredProduction) getWorkDone(constructionName) else 0
         if (currentProgress == 0) return "\n$cost${Fonts.production} $turnsToConstruction${Fonts.turn}"
         else return "\n$currentProgress/$cost${Fonts.production}\n$turnsToConstruction${Fonts.turn}"
     }
 
+    // This function appears unused, can it be removed?
     fun getProductionForTileInfo(): String {
         /* this is because there were rare errors that I assume were caused because
            currentConstruction changed on another thread */
@@ -150,8 +183,7 @@ class CityConstructions {
         val currentConstructionSnapshot = currentConstructionFromQueue
         if (currentConstructionSnapshot.isEmpty()) return FormattedLine()
         val category = when {
-            ruleset.buildings[currentConstructionSnapshot]
-                ?.let{ it.isWonder || it.isNationalWonder } == true ->
+            ruleset.buildings[currentConstructionSnapshot]?.isAnyWonder() == true ->
                 CivilopediaCategories.Wonder.name
             currentConstructionSnapshot in ruleset.buildings ->
                 CivilopediaCategories.Building.name
@@ -187,7 +219,7 @@ class CityConstructions {
         // if the construction name is the same as the current construction, it isn't the first
         return constructionQueueIndex == constructionQueue.indexOfFirst { it == name }
     }
-
+    
 
     internal fun getConstruction(constructionName: String): IConstruction {
         val gameBasics = cityInfo.getRuleset()
@@ -219,14 +251,17 @@ class CityConstructions {
         val constr = getConstruction(constructionName)
         return when {
             constr is PerpetualConstruction -> 0
-            useStoredProduction -> constr.getProductionCost(cityInfo.civInfo) - getWorkDone(constructionName)
-            else -> constr.getProductionCost(cityInfo.civInfo)
+            useStoredProduction -> (constr as INonPerpetualConstruction).getProductionCost(cityInfo.civInfo) - getWorkDone(constructionName)
+            else -> (constr as INonPerpetualConstruction).getProductionCost(cityInfo.civInfo)
         }
     }
 
     fun turnsToConstruction(constructionName: String, useStoredProduction: Boolean = true): Int {
         val workLeft = getRemainingWork(constructionName, useStoredProduction)
-        if (workLeft < 0) // we've done more work than actually necessary - possible if circumstances cause buildings to be cheaper later
+        if (workLeft < 0) // This most often happens when a production is more than finished in a multiplayer game while its not your turn
+            return 0 // So we finish it at the start of the next turn. This could technically also happen when we lower production costs during our turn,
+        // but distinguishing those two cases is difficult, and the second one is much rarer than the first
+        if (workLeft <= productionOverflow) // if we already have stored up enough production to finish it directly
             return 1 // we'll finish this next turn
 
         val cityStatsForConstruction: Stats
@@ -266,6 +301,11 @@ class CityConstructions {
     }
 
     fun addProductionPoints(productionToAdd: Int) {
+        val construction = getConstruction(currentConstructionFromQueue)
+        if (construction is PerpetualConstruction) {
+            productionOverflow += productionToAdd
+            return
+        }
         if (!inProgressConstructions.containsKey(currentConstructionFromQueue))
             inProgressConstructions[currentConstructionFromQueue] = 0
         inProgressConstructions[currentConstructionFromQueue] = inProgressConstructions[currentConstructionFromQueue]!! + productionToAdd
@@ -280,7 +320,7 @@ class CityConstructions {
         val construction = getConstruction(currentConstructionFromQueue)
         if (construction is PerpetualConstruction) chooseNextConstruction() // check every turn if we could be doing something better, because this doesn't end by itself
         else {
-            val productionCost = construction.getProductionCost(cityInfo.civInfo)
+            val productionCost = (construction as INonPerpetualConstruction).getProductionCost(cityInfo.civInfo)
             if (inProgressConstructions.containsKey(currentConstructionFromQueue)
                     && inProgressConstructions[currentConstructionFromQueue]!! >= productionCost) {
                 productionOverflow = inProgressConstructions[currentConstructionFromQueue]!! - productionCost
@@ -299,6 +339,9 @@ class CityConstructions {
         validateInProgressConstructions()
 
         if (getConstruction(currentConstructionFromQueue) !is PerpetualConstruction) {
+            if (getWorkDone(currentConstructionFromQueue) == 0) {
+                constructionBegun(getConstruction(currentConstructionFromQueue))
+            }
             addProductionPoints(cityStats.production.roundToInt() + productionOverflow)
             productionOverflow = 0
         }
@@ -322,12 +365,11 @@ class CityConstructions {
         val inProgressSnapshot = inProgressConstructions.keys.filter { it != currentConstructionFromQueue }
         for (constructionName in inProgressSnapshot) {
             val construction = getConstruction(constructionName)
-            val rejectionReason: String =
-                    when (construction) {
-                        is Building -> construction.getRejectionReason(this)
-                        is BaseUnit -> construction.getRejectionReason(this)
-                        else -> ""
-                    }
+            // Perpetual constructions should always still be valid (I hope)
+            if (construction is PerpetualConstruction) continue
+            
+            val rejectionReason = 
+                (construction as INonPerpetualConstruction).getRejectionReason(this)
 
             if (rejectionReason.endsWith("lready built")
                     || rejectionReason.startsWith("Cannot be built with")
@@ -357,6 +399,25 @@ class CityConstructions {
         }
     }
 
+    private fun constructionBegun(construction: IConstruction) {
+        if (construction !is Building) return;
+        if (construction.uniqueObjects.none { it.placeholderText == "Triggers a global alert upon build start" }) return
+        val buildingIcon = "BuildingIcons/${construction.name}"
+        for (otherCiv in cityInfo.civInfo.gameInfo.civilizations) {
+            if (otherCiv == cityInfo.civInfo) continue
+            when {
+                (otherCiv.exploredTiles.contains(cityInfo.location) && otherCiv != cityInfo.civInfo) ->
+                    otherCiv.addNotification("The city of [${cityInfo.name}] has started constructing [${construction.name}]!",
+                        cityInfo.location, NotificationIcon.Construction, buildingIcon)
+                (otherCiv.knows(cityInfo.civInfo)) ->
+                    otherCiv.addNotification("[${cityInfo.civInfo.civName}] has started constructing [${construction.name}]!",
+                        NotificationIcon.Construction, buildingIcon)
+                else -> otherCiv.addNotification("An unknown civilization has started constructing [${construction.name}]!",
+                    NotificationIcon.Construction, buildingIcon)
+            }
+        }
+    }
+
     private fun constructionComplete(construction: IConstruction) {
         construction.postBuildEvent(this)
         if (construction.name in inProgressConstructions)
@@ -381,7 +442,7 @@ class CityConstructions {
             cityInfo.civInfo.addNotification("[${construction.name}] has been built in [" + cityInfo.name + "]",
                     cityInfo.location, NotificationIcon.Construction, icon)
         }
-        if (construction is Building && "Triggers a global alert upon completion" in construction.uniques) {
+        if (construction is Building && construction.uniqueObjects.any { it.placeholderText == "Triggers a global alert upon completion" } ) {
             for (otherCiv in cityInfo.civInfo.gameInfo.civilizations) {
                 // No need to notify ourself, since we already got the building notification anyway
                 if (otherCiv == cityInfo.civInfo) continue
@@ -424,14 +485,25 @@ class CityConstructions {
      *                          Note: -1 does not guarantee queue will remain unchanged (validation)
      *  @param automatic        Flag whether automation should try to choose what next to build (not coming from UI)
      *                          Note: settings.autoAssignCityProduction is handled later
+     *  @param stat             Stat object of the stat with which was paid for the construction
      *  @return                 Success (false e.g. unit cannot be placed
      */
-    fun purchaseConstruction(constructionName: String, queuePosition: Int, automatic: Boolean): Boolean {
+    fun purchaseConstruction(
+        constructionName: String, 
+        queuePosition: Int, 
+        automatic: Boolean, 
+        stat: Stat = Stat.Gold
+    ): Boolean {
         if (!getConstruction(constructionName).postBuildEvent(this, true))
             return false // nothing built - no pay
 
-        if (!cityInfo.civInfo.gameInfo.gameParameters.godMode)
-            cityInfo.civInfo.addGold(-getConstruction(constructionName).getGoldCost(cityInfo.civInfo))
+        if (!cityInfo.civInfo.gameInfo.gameParameters.godMode) {
+            val construction = getConstruction(constructionName)
+            if (construction is PerpetualConstruction) return false
+            val constructionCost = (construction as INonPerpetualConstruction).getStatBuyCost(cityInfo, stat)
+            if (constructionCost == null) return false // We should never end up here anyway, so things have already gone _way_ wrong
+            cityInfo.addStat(stat, -1 * constructionCost)
+        }
 
         if (queuePosition in 0 until constructionQueue.size)
             removeFromQueue(queuePosition, automatic)
