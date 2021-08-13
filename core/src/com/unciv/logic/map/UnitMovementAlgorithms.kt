@@ -76,7 +76,9 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
         // a unit. This last case is handled in the movement-after-attacking code instead of here.
         //
         // We only need to check the two shared neighbors of [from] and [to]: the way of getting
-        // these two tiles can perhaps be optimized.
+        // these two tiles can perhaps be optimized. Using a hex-math-based "commonAdjacentTiles"
+        // function is surprisingly less efficient than the current neighbor-intersection approach.
+        // See #4085 for more details.
         return from.neighbors.any{
             (
                 (
