@@ -107,6 +107,13 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
                             }
                         }
                     }
+                } else {
+                    // Deprecated, assume Civ V values for compatibility
+                    if (otherCiv.cityStateType == CityStateType.Cultured) {
+                        cityStateBonus.culture = if(civInfo.getEraNumber() in 0..1) 3f else if (civInfo.getEraNumber() in 2..3) 6f else 13f
+                        if (otherCiv.getDiplomacyManager(civInfo.civName).relationshipLevel() == RelationshipLevel.Ally)
+                            cityStateBonus.culture *= 2f
+                    }
                 }
 
                 if (civInfo.hasUnique("Food and Culture from Friendly City-States are increased by 50%"))
@@ -224,6 +231,15 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
                             else
                                 statMap["City-States"] = bonus.getPlaceholderParameters()[0].toFloat()
                         }
+                    }
+                } else {
+                    // Deprecated, assume Civ V values for compatibility
+                    if (otherCiv.cityStateType == CityStateType.Mercantile) {
+                        val happinessBonus = if(civInfo.getEraNumber() in 0..1) 2f else 3f
+                        if (statMap.containsKey("City-States"))
+                            statMap["City-States"] = statMap["City-States"]!! + happinessBonus
+                        else
+                            statMap["City-States"] = happinessBonus
                     }
                 }
             }
