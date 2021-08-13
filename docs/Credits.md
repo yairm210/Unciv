@@ -630,7 +630,7 @@ Sounds are from FreeSound.org and are either Creative Commons or Public Domain
 
 * [Soft two-fingered snap](https://freesound.org/people/EathanMarkson/sounds/388958/) By EathanMarkson as 'click' for most clicks
 * [Pencil1](https://freesound.org/people/stijn/sounds/43673/) By stijn as 'paper' for opening and closing the tech picker
-* [SawInOut01](https://freesound.org/people/kingof_thelab/sounds/340243/) By kingof_thelab for construction picking?
+* [SawInOut01](https://freesound.org/people/kingof_thelab/sounds/340243/) By kingof_thelab for old construction picking?
 * [Chain Snare #1](https://freesound.org/people/lovesbody/sounds/322079/) By lovesbody as 'fortify'
 * [Level up](https://freesound.org/people/Marregheriti/sounds/266100/) By Marregheriti as 'upgrade' for upgrading units
 * [levelup](https://freesound.org/people/Seidhepriest/sounds/382915/) By Seidhepriest as 'chimes' for special actions (free tech, build city, hurry wonder etc.)
@@ -643,6 +643,9 @@ Sounds are from FreeSound.org and are either Creative Commons or Public Domain
 * [Slingshot fly by 2](https://freesound.org/people/saturdaysoundguy/sounds/394186/) by saturdaysoundguy as 'arrow' for arrow attacks
 * [Metal hit slide](https://freesound.org/people/orginaljun/sounds/149102/) by orginaljun as 'nonmetalhit' for pre-metal melee sounds
 * [klick_anlauf](https://freesound.org/people/jascha/sounds/16576/) By jascha as 'metalhit' for metal melee sounds
+* [Horse Whinny 3](https://orangefreesounds.com/horse-whinny-3/) By ALEXANDER as 'horse' for new cavalry attack sounds
+
+
 * [Horse Neigh 2](https://freesound.org/people/GoodListener/sounds/322450/) By GoodListener as 'horse' for cavalry attack sounds
 * [machine gun 001 - loop](https://freesound.org/people/pgi/sounds/212602/) By pgi as 'machinegun' for machine gun attack sound
 * [uzzi_full_single](https://freesound.org/people/Deganoth/sounds/348685/) By Deganoth as 'shot' for bullet attacks
