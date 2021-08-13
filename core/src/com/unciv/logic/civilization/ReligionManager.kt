@@ -118,8 +118,10 @@ class ReligionManager {
                 else civInfo.cities.firstOrNull { it.id == religion!!.holyCityId }
             val prophet = civInfo.addUnit("Great Prophet", birthCity)
             if (prophet == null) return
-            prophet.religion = religion!!.name
-            prophet.abilityUsedCount["Religion Spread"] = 0
+            /** ToDo: Put this line somewhere in `CivilizationInfo.addUnit()` as well, so that prophets gained
+             *  via policies and the like also are of the major religion 
+             */
+            prophet.religion = religion!!.name 
             storedFaith -= faithForNextGreatProphet()
             greatProphetsEarned += 1
         }
