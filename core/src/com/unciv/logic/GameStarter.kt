@@ -347,7 +347,7 @@ object GameStarter {
         while (landTiles.any()) {
             val bfs = BFS(landTiles.random()) { it.isLand && !it.isImpassible() }
             bfs.stepToEnd()
-            val tilesInGroup = bfs.tilesReached.keys
+            val tilesInGroup = bfs.getReachedTiles()
             landTiles = landTiles.filter { it !in tilesInGroup }
             if (tilesInGroup.size > 20) // is this a good number? I dunno, but it's easy enough to change later on
                 landTilesInBigEnoughGroup.addAll(tilesInGroup)

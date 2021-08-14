@@ -254,10 +254,10 @@ class TileMap {
                 val containsViewableNeighborThatCanSeeOver = cTile.neighbors.any {
                         bNeighbor: TileInfo ->
                     val bNeighborHeight = bNeighbor.getHeight()
-                    if(cTile.resource=="Marble"
-                        && bNeighbor.terrainFeatures.contains("Forest")
-                    )
-                        println()
+//                    if(cTile.resource=="Marble"
+//                        && bNeighbor.terrainFeatures.contains("Forest")
+//                    )
+//                        println()
                     viewableTiles.contains(bNeighbor) && (
                             currentTileHeight > bNeighborHeight // a>b
                                     || cTileHeight > bNeighborHeight // c>b
