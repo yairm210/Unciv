@@ -10,6 +10,12 @@ You don't need to download anything, all translation work can be done on the Git
 
 When you feel that you're ready to add your translation to the game, you'll need to create a merge request, which takes your changes and puts them into the main version of the game - it's pretty straightforward once you do it
 
+## Pitfalls
+
+- If a translation template (the stuff to the left of "` = `") contains square brackets, you will have to include each of them _verbatim_ in your translation, but you can move them. Upper/lower case is relevant! e.g. `All [personFilter] are cool` can be translated as `Tous les [personFilter] sont cool`, but _not_ as `Tous les [personnages] sont cool`. Failing this is the main cause of your PR's showing up with red "x"es and "checks failed".
+
+- Blanks: Watch out for blanks at the start of a line or two of them before the equals sign. If you got such a line - those blanks are part of the translation key and must not be deleted on the left side, and you should probably also include them in your translation (unless your language doesn't need spaces to separate things).
+
 ## Wait, what just happened?
 
 Like most open-source projects, Unciv is developed at Github, so if you don't have a user you'll first have to create one. The way Github works is the following:
