@@ -638,7 +638,7 @@ class MapUnit {
             if (lostReligiousStrength != null)
                 religiousStrengthLost += lostReligiousStrength
             if (religiousStrengthLost >= baseUnit.religiousStrength) {
-                civInfo.addNotification("Your [${name}] was destroyed after spending too long inside enemy territory!", getTile().position, name)
+                civInfo.addNotification("Your [${name}] lost its faith after spending too long inside enemy territory!", getTile().position, name)
                 destroy()
             }
         }

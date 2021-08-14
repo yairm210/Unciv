@@ -1500,8 +1500,8 @@
 		"name": "Great Prophet",
 		"unitType": "Civilian",
 		"uniques": ["Can construct [Holy site] if it hasn't spread religion yet", "Can spread religion [4] times",
-			"May found a religion", "Great Person - [Faith]", "Unbuildable", "Religious Unit", "Hidden when religion is disabled",
-			"May enter foreign tiles without open borders, but loses [250] religious strength each turn it ends there"],
+			"May found a religion", "May enter foreign tiles without open borders, but loses [250] religious strength each turn it ends there",
+			"Great Person - [Faith]", "Unbuildable", "Religious Unit", "Hidden when religion is disabled"],
 		"movement": 2,
 		"religiousStrength": 1000
 	},
@@ -1527,9 +1527,9 @@
 	{
 		"name": "Missionary",
 		"unitType": "Civilian",
-		"uniques": ["Can spread religion [2] times", "Can be purchased with [Faith] [in all cities in which the majority religion is a major religion]",
-			"Unbuildable", "Religious Unit", "Hidden when religion is disabled", 
-			"May enter foreign tiles without open borders, but loses [250] religious strength each turn it ends there"],
+		"uniques": ["Can spread religion [2] times", "May enter foreign tiles without open borders, but loses [250] religious strength each turn it ends there",
+			"Can be purchased with [Faith] [in all cities in which the majority religion is a major religion]",
+			"Unbuildable", "Religious Unit", "Hidden when religion is disabled"],
 		"movement": 4,
 		"religiousStrength": 1000
 	}
