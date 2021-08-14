@@ -87,9 +87,8 @@ class ReligionManager {
         religion = Religion(belief.name, civInfo.gameInfo, civInfo.civName)
         religion!!.followerBeliefs.add(belief.name)
         civInfo.gameInfo.religions[belief.name] = religion!!
-        // ToDo: This should later be changed when religions can have multiple beliefs
-        civInfo.getCapital().religion.clearAllPressures()
-        civInfo.getCapital().religion.addPressure(belief.name, 100) // Capital is religious, other cities are not
+        for (city in civInfo.cities)
+            city.religion.addPressure(belief.name, 200 * city.population.population) 
         religionState = ReligionState.Pantheon
     }
     
@@ -114,10 +113,9 @@ class ReligionManager {
 
         if (Random(civInfo.gameInfo.turns).nextFloat() < prophetSpawnChange) {
             val birthCity =
-                if (religionState == ReligionState.Pantheon) civInfo.getCapital()
-                else civInfo.cities.firstOrNull { it.id == religion!!.holyCityId }
-            val prophet = civInfo.addUnit("Great Prophet", birthCity)
-            if (prophet == null) return
+                if (religionState <= ReligionState.Pantheon) civInfo.getCapital()
+                else civInfo.cities.firstOrNull { it.religion.religionThisIsTheHolyCityOf == religion!!.name }
+            val prophet = civInfo.addUnit("Great Prophet", birthCity) ?: return
             prophet.religion = religion!!.name
             prophet.abilityUsedCount["Religion Spread"] = 0
             storedFaith -= faithForNextGreatProphet()
@@ -170,15 +168,14 @@ class ReligionManager {
         }
         newReligion.followerBeliefs.addAll(followerBeliefs)
         newReligion.founderBeliefs.addAll(founderBelief)
-        newReligion.holyCityId = foundingCityId
         religion = newReligion
         civInfo.gameInfo.religions[name] = newReligion
 
         religionState = ReligionState.Religion
-        val holyCity = civInfo.cities.firstOrNull { it.id == newReligion.holyCityId }!!
-        // ToDo: check this when implementing followers
-        holyCity.religion.clearAllPressures()
-        holyCity.religion.addPressure(name, 100)
+
+        val holyCity = civInfo.cities.first { it.id == foundingCityId }
+        holyCity.religion.religionThisIsTheHolyCityOf = newReligion.name
+        holyCity.religion.addPressure(name, holyCity.population.population * 500)
 
         foundingCityId = null
     }

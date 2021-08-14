@@ -72,6 +72,9 @@ class MapUnit {
     var cannotEnterOceanTilesUntilAstronomy = false
 
     @Transient
+    var canEnterForeignTerrain: Boolean = false
+    
+    @Transient
     var paradropRange = 0
 
     lateinit var owner: String
@@ -95,7 +98,7 @@ class MapUnit {
     fun displayName(): String {
         val name = if (instanceName == null) name
                    else "$instanceName ({${name}})"
-        return if (religion != null && maxReligionSpreads() > 0) "[$name] ([$religion])"
+        return if (religion != null) "[$name] ([$religion])"
                else name
     }
 
@@ -113,6 +116,7 @@ class MapUnit {
     
     var abilityUsedCount: HashMap<String, Int> = hashMapOf()
     var religion: String? = null
+    var religiousStrengthLost = 0
     
     //region pure functions
     fun clone(): MapUnit {
@@ -130,6 +134,7 @@ class MapUnit {
         toReturn.isTransported = isTransported
         toReturn.abilityUsedCount.putAll(abilityUsedCount)
         toReturn.religion = religion
+        toReturn.religiousStrengthLost = religiousStrengthLost
         return toReturn
     }
 
@@ -177,7 +182,7 @@ class MapUnit {
         val uniques = ArrayList<Unique>()
         val baseUnit = baseUnit()
         uniques.addAll(baseUnit.uniqueObjects)
-        if (type != null) uniques.addAll(type!!.uniqueObjects)
+        uniques.addAll(type.uniqueObjects)
         
         for (promotion in promotions.promotions) {
             uniques.addAll(currentTile.tileMap.gameInfo.ruleSet.unitPromotions[promotion]!!.uniqueObjects)
@@ -193,12 +198,13 @@ class MapUnit {
         ignoresTerrainCost = hasUnique("Ignores terrain cost")
         roughTerrainPenalty = hasUnique("Rough terrain penalty")
         doubleMovementInCoast = hasUnique("Double movement in coast")
-        doubleMovementInForestAndJungle =
-            hasUnique("Double movement rate through Forest and Jungle")
+        doubleMovementInForestAndJungle = hasUnique("Double movement rate through Forest and Jungle")
         doubleMovementInSnowTundraAndHills = hasUnique("Double movement in Snow, Tundra and Hills")
         canEnterIceTiles = hasUnique("Can enter ice tiles")
         cannotEnterOceanTiles = hasUnique("Cannot enter ocean tiles")
         cannotEnterOceanTilesUntilAstronomy = hasUnique("Cannot enter ocean tiles until Astronomy")
+        canEnterForeignTerrain = 
+            hasUnique("May enter foreign tiles without open borders, but loses [] religious strength each turn it ends there")
     }
 
     fun hasUnique(unique: String): Boolean {
@@ -619,6 +625,23 @@ class MapUnit {
 
         if (action == Constants.unitActionParadrop)
             action = null
+        
+        if (hasUnique("Religious Unit") 
+            && getTile().getOwner() != null 
+            && !getTile().getOwner()!!.isCityState() 
+            && !civInfo.canEnterTiles(getTile().getOwner()!!)
+        ) {
+            val lostReligiousStrength =
+                getMatchingUniques("May enter foreign tiles without open borders, but loses [] religious strength each turn it ends there")
+                    .map { it.params[0].toInt() }
+                    .minOrNull()
+            if (lostReligiousStrength != null)
+                religiousStrengthLost += lostReligiousStrength
+            if (religiousStrengthLost >= baseUnit.religiousStrength) {
+                civInfo.addNotification("Your [${name}] was destroyed after spending too long inside enemy territory!", getTile().position, name)
+                destroy()
+            }
+        }
 
         getCitadelDamage()
         getTerrainDamage()
@@ -653,7 +676,8 @@ class MapUnit {
             action = null
 
         val tileOwner = getTile().getOwner()
-        if (tileOwner != null && !civInfo.canEnterTiles(tileOwner) && !tileOwner.isCityState()) // if an enemy city expanded onto this tile while I was in it
+        // if an enemy city expanded onto this tile while I was in it
+        if (tileOwner != null && !civInfo.canEnterTiles(tileOwner) && !tileOwner.isCityState() && !canEnterForeignTerrain) 
             movement.teleportToClosestMoveableTile()
     }
 
@@ -912,6 +936,14 @@ class MapUnit {
     
     fun maxReligionSpreads(): Int {
         return getMatchingUniques("Can spread religion [] times").sumBy { it.params[0].toInt() }
+    }
+    
+    fun canSpreadReligion(): Boolean {
+        return hasUnique("Can spread religion [] times")
+    }
+    
+    fun getPressureAddedFromSpread(): Int {
+        return baseUnit.religiousStrength
     }
     
     fun getReligionString(): String {

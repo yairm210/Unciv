@@ -489,8 +489,8 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
                 return false
         }
         if (tile.naturalWonder != null) return false
-
-        if (!tile.canCivEnter(unit.civInfo)) return false
+        
+        if (!unit.canEnterForeignTerrain && !tile.canCivEnter(unit.civInfo)) return false
 
         val firstUnit = tile.getFirstUnit()
         if (firstUnit != null && firstUnit.civInfo != unit.civInfo && unit.civInfo.isAtWarWith(firstUnit.civInfo))
