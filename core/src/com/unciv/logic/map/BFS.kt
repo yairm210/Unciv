@@ -44,7 +44,7 @@ class BFS(
      * Will do nothing when [hasEnded] returns `true`
      */
     fun nextStep() {
-        val current = tilesToCheck.firstOrNull() ?: return
+        val current = tilesToCheck.removeFirstOrNull() ?: return
         for (neighbor in current.neighbors) {
             if (neighbor !in tilesReached && predicate(neighbor)) {
                 tilesReached[neighbor] = current
