@@ -6,4 +6,15 @@
     <string name="Notify_Error_Long">Service de notification du tour multijoueur terminé</string>
     <string name="Notify_Error_Short">Une erreur est survenue</string>
     <string name="Notify_Persist_Long_P4">Configurable dans le menu des options de Unciv</string>
+    <string name="Notify_Persist_Short">Dernière contrôle en ligne</string>
+    <string name="Notify_Persist_Long_P2">Contrôles environ chaque</string>
+    <string name="Notify_Persist_Long_P3">minutes si l\'internet est disponible</string>
+    <string name="Notify_Persist_Long_P1">Unciv va pleurnicher lors que c\'est ton tour en multi-joueurs</string>
+    <string name="Notify_Error_StackTrace_Toast">Stacktraces mises au presse-papiers</string>
+    <string name="Notify_Error_Retrying">échoué, essayant encore une fois...</string>
+    <string name="Notify_Error_CopyAction">Mettre le Stacktrace au presse-papiers</string>
+    <string name="Notify_ChannelService_Short">Contrôle tour de multi-joueurs Unciv</string>
+    <string name="Notify_ChannelService_Long">Notification persistente permet à Unciv de réagir vitement aux fin de tour des autres joueurs.</string>
+    <string name="Notify_ChannelInfo_Short">Notification contrôle tour Unciv</string>
+    <string name="Notify_ChannelInfo_Long">Cette notification de Unciv vous informe que c\'est votre tour.</string>
 </resources>

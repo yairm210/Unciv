@@ -2,6 +2,11 @@ import com.unciv.build.BuildConfig.gdxVersion
 import com.unciv.build.BuildConfig.kotlinVersion
 import com.unciv.build.BuildConfig.roboVMVersion
 
+// You'll still get kotlin-reflect-1.3.70.jar in your classpath, but lint no longer crashes?
+configurations.all { resolutionStrategy {
+    force("org.jetbrains.kotlin:kotlin-reflect:1.4.30")
+} }
+
 buildscript {
 
     repositories {
@@ -15,9 +20,11 @@ buildscript {
         mavenCentral()
         maven { url = uri("https://oss.sonatype.org/content/repositories/snapshots/") }
         gradlePluginPortal()
-        maven{ url = uri("https://jitpack.io") } // for the anuken packr
+        maven { url = uri("https://jitpack.io") } // for the anuken packr
     }
+
     dependencies {
+        @Suppress("RemoveRedundantQualifierName")  // accessing module-level stuff just fails to compile 
         classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${com.unciv.build.BuildConfig.kotlinVersion}")
         classpath("de.richsource.gradle.plugins:gwt-gradle-plugin:0.6")
         classpath("com.android.tools.build:gradle:7.0.0")
@@ -27,7 +34,7 @@ buildscript {
         classpath("com.github.anuken:packr:-SNAPSHOT")
     }
 }
-        
+
 allprojects {
     apply(plugin  = "eclipse")
     apply(plugin  = "idea")
@@ -118,7 +125,7 @@ project(":core") {
              * If you do have some classes to test in os specific code you may want to uncomment
              * some of these lines.
              *
-             * BUT: I recommend to create seperate test sub projects for each platform. Trust me :)
+             * BUT: I recommend to create separate test sub projects for each platform. Trust me :)
              *
              */
 
@@ -141,7 +148,8 @@ project(":core") {
             "testImplementation"("com.badlogicgames.gdx:gdx:$gdxVersion")
             "testImplementation"("com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop")
         }
-    }}
+    }
+}
 
 tasks {
     "eclipse" {

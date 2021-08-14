@@ -7,7 +7,7 @@ plugins {
 }
 
 android {
-    compileSdkVersion(30)
+    compileSdk = 30
     sourceSets {
         getByName("main").apply {
             manifest.srcFile("AndroidManifest.xml")
@@ -20,12 +20,12 @@ android {
         }
     }
     packagingOptions {
-        exclude("META-INF/robovm/ios/robovm.xml")
+        resources.excludes.add("META-INF/robovm/ios/robovm.xml")
     }
     defaultConfig {
         applicationId = "com.unciv.app"
-        minSdkVersion(14)
-        targetSdkVersion(30)
+        minSdk = 14
+        targetSdk = 30
         versionCode = BuildConfig.appCodeNumber
         versionName = BuildConfig.appVersion
 
@@ -56,13 +56,16 @@ android {
         }
 
     }
-    lintOptions {
-        disable("MissingTranslation")
+
+    lint {
+        isAbortOnError = false
     }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_7
         targetCompatibility = JavaVersion.VERSION_1_7
     }
+
     androidResources {
         ignoreAssetsPattern = "!SaveFiles:!fonts:!maps:!music:!mods"
     }

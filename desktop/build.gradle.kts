@@ -13,7 +13,7 @@ plugins {
 }
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_1_6
+    sourceCompatibility = JavaVersion.VERSION_1_7
 }
 sourceSets {
     main {

@@ -3,5 +3,5 @@ plugins {
 }
 
 repositories {
-    jcenter()
+    mavenCentral()  // "JFrog announced JCenter's shutdown in February 2021"
 }
