@@ -69,11 +69,11 @@ object Battle {
 
         // check if unit is captured by the attacker (prize ships unique)
         // As ravignir clarified in issue #4374, this only works for aggressor
-        val captureSuccess = defender is MapUnitCombatant && attacker is MapUnitCombatant
+        val captureMilitaryUnitSuccess = defender is MapUnitCombatant && attacker is MapUnitCombatant
                 && defender.isDefeated() && !defender.unit.isCivilian()
                 && tryCaptureUnit(attacker, defender)
 
-        if (!captureSuccess)  // capture creates a new unit, but `defender` still is the original, so this function would still show a kill message
+        if (!captureMilitaryUnitSuccess) // capture creates a new unit, but `defender` still is the original, so this function would still show a kill message
             postBattleNotifications(attacker, defender, attackedTile, attacker.getTile())
 
         postBattleNationUniques(defender, attackedTile, attacker)
@@ -104,9 +104,8 @@ object Battle {
                 attacker.unit.action = null
         }
 
-        // we're a melee unit and we destroyed\captured an enemy unit
         // Should be called after tryCaptureUnit(), as that might spawn a unit on the tile we go to
-        if (!captureSuccess)
+        if (!captureMilitaryUnitSuccess)
             postBattleMoveToAttackedTile(attacker, defender, attackedTile)
 
         reduceAttackerMovementPointsAndAttacks(attacker, defender)
@@ -401,12 +400,12 @@ object Battle {
 
         attackerCiv.addNotification("We have conquered the city of [${city.name}]!", city.location, NotificationIcon.War)
 
+        city.hasJustBeenConquered = true
         city.getCenterTile().apply {
             if (militaryUnit != null) militaryUnit!!.destroy()
             if (civilianUnit != null) captureCivilianUnit(attacker, MapUnitCombatant(civilianUnit!!))
             for (airUnit in airUnits.toList()) airUnit.destroy()
         }
-        city.hasJustBeenConquered = true
 
         for (unique in attackerCiv.getMatchingUniques("Upon capturing a city, receive [] times its [] production as [] immediately")) {
             attackerCiv.addStat(

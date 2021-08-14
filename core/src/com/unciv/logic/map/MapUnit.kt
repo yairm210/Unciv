@@ -629,7 +629,7 @@ class MapUnit {
         if (hasUnique("Religious Unit") 
             && getTile().getOwner() != null 
             && !getTile().getOwner()!!.isCityState() 
-            && !civInfo.canEnterTiles(getTile().getOwner()!!)
+            && !civInfo.canPassThroughTiles(getTile().getOwner()!!)
         ) {
             val lostReligiousStrength =
                 getMatchingUniques("May enter foreign tiles without open borders, but loses [] religious strength each turn it ends there")
@@ -676,8 +676,7 @@ class MapUnit {
             action = null
 
         val tileOwner = getTile().getOwner()
-        // if an enemy city expanded onto this tile while I was in it
-        if (tileOwner != null && !civInfo.canEnterTiles(tileOwner) && !tileOwner.isCityState() && !canEnterForeignTerrain) 
+        if (tileOwner != null && !canEnterForeignTerrain && !civInfo.canPassThroughTiles(tileOwner) && !tileOwner.isCityState()) // if an enemy city expanded onto this tile while I was in it
             movement.teleportToClosestMoveableTile()
     }
 
