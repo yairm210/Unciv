@@ -42,7 +42,7 @@ import kotlin.concurrent.thread
  * app lifetime - and we do dispose them when the app is disposed.
  */
 object Sounds {
-    private const val debugMessages = true
+    private const val debugMessages = false
 
     @Suppress("EnumEntryName")
     private enum class SupportedExtensions { mp3, ogg, wav }    // Per Gdx docs, no aac/m4a

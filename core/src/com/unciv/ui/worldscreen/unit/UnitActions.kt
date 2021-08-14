@@ -380,7 +380,7 @@ object UnitActions {
         actionList += UnitAction(UnitActionType.Automate,
             action = {
                 unit.action = Constants.unitActionAutomation
-                WorkerAutomation(unit).automateWorkerAction()
+                WorkerAutomation.automateWorkerAction(unit)
             }.takeIf { unit.currentMovement > 0 }
         )
     }

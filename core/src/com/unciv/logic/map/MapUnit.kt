@@ -472,7 +472,7 @@ class MapUnit {
             return
         }
 
-        if (action == Constants.unitActionAutomation) WorkerAutomation(this).automateWorkerAction()
+        if (action == Constants.unitActionAutomation) WorkerAutomation.automateWorkerAction(this)
 
         if (action == Constants.unitActionExplore) UnitAutomation.automatedExplore(this)
     }

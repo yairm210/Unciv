@@ -39,7 +39,7 @@ object NextTurnAutomation {
             offerResearchAgreement(civInfo)
             exchangeLuxuries(civInfo)
             issueRequests(civInfo)
-            adoptPolicy(civInfo)
+            adoptPolicy(civInfo)  //todo can take a second - why?
             choosePantheon(civInfo)
         } else {
             getFreeTechForCityStates(civInfo)
@@ -50,8 +50,8 @@ object NextTurnAutomation {
         automateCityBombardment(civInfo)
         useGold(civInfo)
         protectCityStates(civInfo)
-        automateUnits(civInfo)
-        reassignWorkedTiles(civInfo)
+        automateUnits(civInfo)  // this is the most expensive part
+        reassignWorkedTiles(civInfo)  // second most expensive
         trainSettler(civInfo)
         tryVoteForDiplomaticVictory(civInfo)
 
