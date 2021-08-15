@@ -1,5 +1,3 @@
-# Map-related JSON files
-
 * [Terrains.json](#terrainsjson)
 * [TileResources.json](#tileresourcesjson)
 * [TileImprovements.json](#tileimprovementsjson)
