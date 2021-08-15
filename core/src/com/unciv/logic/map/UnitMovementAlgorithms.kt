@@ -75,12 +75,12 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
         // land and sea units. Embarked land units do not exert a ZoC. Finally, units that can move
         // after attacking are not affected by zone of control if the movement is caused by killing
         // a unit. This last case is handled in the movement-after-attacking code instead of here.
-        //
+
         // We only need to check the two shared neighbors of [from] and [to]: the way of getting
         // these two tiles can perhaps be optimized. Using a hex-math-based "commonAdjacentTiles"
         // function is surprisingly less efficient than the current neighbor-intersection approach.
         // See #4085 for more details.
-        return from.neighbors.any{
+        if (from.neighbors.none{
             (
                 (
                     it.isCityCenter() &&
@@ -95,7 +95,17 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
             )
             &&
             to.neighbors.contains(it)
-        }
+        })
+            return false
+
+        // Even though this is a very fast check, we perform it last. This is because very few units
+        // ignore zone of control, so the previous check has a much higher chance of yielding an
+        // early "false". If this function is going to return "true", the order doesn't matter
+        // anyway.
+        if (unit.ignoresZoneOfControl)
+            return false
+
+        return true
     }
 
     class ParentTileAndTotalDistance(val parentTile: TileInfo, val totalDistance: Float)
