@@ -139,3 +139,18 @@ ruleVariants control substitutions when layering images for a tile, they are lis
 Each line means "if the tile content is this... then combine the following png images". The key part follows a specific order and must match in its entirety, meaning "Plains+Forest" is not valid for "Plains+Forest+Deer", and when it matches no other image layering is done except roads and units (I think - *WIP*).
 
 When TileSetConfig's for the same Tileset are combined, for the first three properties the last mod wins, while ruleVariants are merged, meaning only an entry with the same key overwrites an earlier entry.
+
+
+## Stats
+
+Terrains, features, resources and improvements may list yield statistics. They can be one of the following:
+- production, food, gold, science, culture, happiness, faith
+
+If an object carries general stats, any combination (or none) of these can be specified. For specialized stats, they might come as sub-object in a named field. Example:
+```json
+		"gold": 2,
+		"improvement": "Quarry",
+		"improvementStats": {"gold": 1,"production": 1},
+```
+
+The values are usually integers, though the underlying code supports floating point. The effects are, however, insufficiently tested and therefore -so far- using fractional stats is unsupproted. Go ahead and thoroughly test that in a mod and help out with feedback 😁.
