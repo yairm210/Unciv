@@ -1,5 +1,3 @@
-# Civilization-related JSON files
-
 * [Beliefs.json](#beliefsjson)
 * [Buildings.json](#buildingsjson)
 * [Nations.json](#nationsjson)
