@@ -263,11 +263,13 @@ class CivilizationInfo {
                 } +
                 policies.policyUniques.getUniques(uniqueTemplate) +
                 tech.techUniques.getUniques(uniqueTemplate) +
-                temporaryUniques.filter { it.first.placeholderText == uniqueTemplate }.map { it.first } +
+                temporaryUniques
+                    .asSequence()
+                    .filter { it.first.placeholderText == uniqueTemplate }.map { it.first } +
                 if (religionManager.religion != null) 
                     religionManager.religion!!.getFounderUniques()
-                        .filter { it.placeholderText == uniqueTemplate }
                         .asSequence()
+                        .filter { it.placeholderText == uniqueTemplate }
                 else sequenceOf()
     }
 
