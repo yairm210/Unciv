@@ -183,12 +183,12 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
 
         val distanceToTiles = getDistanceToTiles()
 
-        class UnreachableDestinationException : Exception()
+        class UnreachableDestinationException(msg: String) : Exception(msg)
 
         // If the tile is far away, we need to build a path how to get there, and then take the first step
         if (!distanceToTiles.containsKey(finalDestination))
             return getShortestPath(finalDestination).firstOrNull()
-                    ?: throw UnreachableDestinationException()
+                    ?: throw UnreachableDestinationException("$unit ${unit.currentTile.position} cannot reach $finalDestination")
 
         // we should be able to get there this turn
         if (canMoveTo(finalDestination))
