@@ -19,6 +19,7 @@ class CityInfoReligionManager {
     @Transient
     private val followers: Counter<String> = Counter()
     
+    @delegate:Transient
     private val pressureFromAdjacentCities: Int by lazy {
         when (cityInfo.civInfo.gameInfo.gameParameters.gameSpeed) {
             GameSpeed.Quick -> 9
