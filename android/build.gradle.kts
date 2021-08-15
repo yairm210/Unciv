@@ -93,7 +93,8 @@ task("copyAndroidNatives") {
 }
 
 tasks.whenTaskAdded {
-    if ("package" in name || "assemble" in name) {
+    // See https://github.com/yairm210/Unciv/issues/4842
+    if ("package" in name || "assemble" in name || "bundleRelease" in name) {
         dependsOn("copyAndroidNatives")
     }
 }
@@ -121,27 +122,4 @@ tasks.register<JavaExec>("run") {
 dependencies {
     implementation("androidx.core:core-ktx:1.3.2")
     implementation("androidx.work:work-runtime-ktx:2.6.0-alpha02")
-}
-
-// sets up the Android Eclipse project, using the old Ant based build.
-eclipse {
-    jdt {
-        sourceCompatibility = JavaVersion.VERSION_1_6
-        targetCompatibility = JavaVersion.VERSION_1_6
-    }
-
-    classpath {
-        plusConfigurations = plusConfigurations.apply { add(project.configurations.compile.get()) }
-        containers("com.android.ide.eclipse.adt.ANDROID_FRAMEWORK", "com.android.ide.eclipse.adt.LIBRARIES")
-    }
-
-    project {
-        name = "${BuildConfig.appName}-android"
-        natures("com.android.ide.eclipse.adt.AndroidNature")
-        buildCommands.clear()
-        buildCommand("com.android.ide.eclipse.adt.ResourceManagerBuilder")
-        buildCommand("com.android.ide.eclipse.adt.PreCompilerBuilder")
-        buildCommand("org.eclipse.jdt.core.javabuilder")
-        buildCommand("com.android.ide.eclipse.adt.ApkBuilder")
-    }
 }

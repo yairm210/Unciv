@@ -71,7 +71,7 @@ object Automation {
         val findWaterConnectedCitiesAndEnemies =
             BFS(city.getCenterTile()) { it.isWater || it.isCityCenter() }
         findWaterConnectedCitiesAndEnemies.stepToEnd()
-        if (findWaterConnectedCitiesAndEnemies.tilesReached.keys.none {
+        if (findWaterConnectedCitiesAndEnemies.getReachedTiles().none {
                 (it.isCityCenter() && it.getOwner() != city.civInfo)
                         || (it.militaryUnit != null && it.militaryUnit!!.civInfo != city.civInfo)
             }) // there is absolutely no reason for you to make water units on this body of water.

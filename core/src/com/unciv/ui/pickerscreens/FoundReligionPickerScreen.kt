@@ -46,14 +46,13 @@ class FoundReligionPickerScreen (
         middlePanes.add(ScrollPane(rightBeliefsToChoose))
         
         topTable.add(topReligionIcons).row()
-        // commented out, as the middle panes will always be empty for now, and this will create a random line otherwise
         topTable.addSeparator()
         topTable.add(middlePanes)
         
         rightSideButton.label = "Choose a religion".toLabel()
         rightSideButton.onClick(UncivSound.Choir) {
             choosingCiv.religionManager.foundReligion(
-                iconName!!, religionName!!, "" /**chosenFollowerBeliefs.map {it!!.name} */, chosenFollowerBeliefs.map { it!!.name}
+                iconName!!, religionName!!, chosenFounderBeliefs.map {it!!.name}, chosenFollowerBeliefs.map { it!!.name}
             )            
             UncivGame.Current.setWorldScreen()
         }
@@ -61,8 +60,8 @@ class FoundReligionPickerScreen (
 
     private fun checkAndEnableRightSideButton() {
         if (religionName == null) return
-        println(chosenFollowerBeliefs)
         if (chosenFollowerBeliefs.any { it == null }) return
+        if (chosenFounderBeliefs.any { it == null }) return
         // check if founder belief chosen
         rightSideButton.enable()
     }
@@ -113,21 +112,32 @@ class FoundReligionPickerScreen (
         
         for (newFollowerBelief in chosenFollowerBeliefs.withIndex()) {
             val newFollowerBeliefButton =
-                if (newFollowerBelief.value == null) emptyBeliefButton("Follower")
+                if (newFollowerBelief.value == null) emptyBeliefButton(BeliefType.Follower)
                 else convertBeliefToButton(newFollowerBelief.value!!)
                 
             leftChosenBeliefs.add(newFollowerBeliefButton).pad(10f).row()
             newFollowerBeliefButton.onClick {
-                loadRightTable("Follower", newFollowerBelief.index)
+                loadRightTable(BeliefType.Follower, newFollowerBelief.index)
+            }
+        }
+        
+        for (newFounderBelief in chosenFounderBeliefs.withIndex()) {
+            val newFounderBeliefButton =
+                if (newFounderBelief.value == null) emptyBeliefButton(BeliefType.Founder)
+                else convertBeliefToButton(newFounderBelief.value!!)
+
+            leftChosenBeliefs.add(newFounderBeliefButton).pad(10f).row()
+            newFounderBeliefButton.onClick {
+                loadRightTable(BeliefType.Founder, newFounderBelief.index)
             }
         }
     }
     
-    private fun loadRightTable(beliefType: String, leftButtonIndex: Int) {
+    private fun loadRightTable(beliefType: BeliefType, leftButtonIndex: Int) {
         rightBeliefsToChoose.clear()
         val availableBeliefs = gameInfo.ruleSet.beliefs.values
             .filter { 
-                it.type.name == beliefType
+                it.type == beliefType
                 && gameInfo.religions.values.none {
                     religion -> religion.hasBelief(it.name)
                 }
@@ -136,8 +146,8 @@ class FoundReligionPickerScreen (
         for (belief in availableBeliefs) {
             val beliefButton = convertBeliefToButton(belief)
             beliefButton.onClick {
-                if (beliefType == BeliefType.Follower.name) chosenFollowerBeliefs[leftButtonIndex] = belief
-                else if (beliefType == BeliefType.Founder.name) chosenFounderBeliefs[leftButtonIndex] = belief
+                if (beliefType == BeliefType.Follower) chosenFollowerBeliefs[leftButtonIndex] = belief
+                else if (beliefType == BeliefType.Founder) chosenFounderBeliefs[leftButtonIndex] = belief
                 updateLeftTable()
                 checkAndEnableRightSideButton()
             }
@@ -153,9 +163,9 @@ class FoundReligionPickerScreen (
         return Button(contentsTable, skin)
     }
     
-    private fun emptyBeliefButton(beliefType: String): Button {
+    private fun emptyBeliefButton(beliefType: BeliefType): Button {
         val contentsTable = Table()
-        contentsTable.add("Choose a [$beliefType] belief!".toLabel())
+        contentsTable.add("Choose a [${beliefType.name}] belief!".toLabel())
         return Button(contentsTable, skin)
     }
 }
