@@ -95,16 +95,7 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
                 if (relevantBonuses != null) {
                     for (bonus in relevantBonuses) {
                         if (bonus.getPlaceholderText() == "Provides [] [] per turn") {
-                            val stattoadd = when (bonus.getPlaceholderParameters()[1]) {
-                                "Gold" -> Stat.Gold
-                                "Faith" -> Stat.Faith
-                                "Science" -> Stat.Science
-                                "Culture" -> Stat.Culture
-                                else -> null // Can't add food or production since we are adding to empire-wide and not to a city. Happiness implemented elsewhere.
-                            }
-                            if (stattoadd != null) {
-                                cityStateBonus.add(stattoadd, bonus.getPlaceholderParameters()[0].toFloat())
-                            }
+                            cityStateBonus.add(Stat.valueOf(bonus.getPlaceholderParameters()[1]), bonus.getPlaceholderParameters()[0].toFloat())
                         }
                     }
                 } else {

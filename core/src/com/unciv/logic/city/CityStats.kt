@@ -142,19 +142,7 @@ class CityStats {
                 for (bonus in if (otherCiv.getDiplomacyManager(cityInfo.civInfo).relationshipLevel() == RelationshipLevel.Friend)
                     eraInfo.friendBonus[otherCiv.cityStateType.name]!! else eraInfo.allyBonus[otherCiv.cityStateType.name]!!) {
                     if (bonus.getPlaceholderText() == "Provides [] [] []" && cityInfo.matchesFilter(bonus.getPlaceholderParameters()[2])) {
-                        val stattoadd = when (bonus.getPlaceholderParameters()[1]) {
-                            "Food" -> Stat.Food
-                            "Production" -> Stat.Production
-                            "Gold" -> Stat.Gold
-                            "Faith" -> Stat.Faith
-                            "Science" -> Stat.Science
-                            "Culture" -> Stat.Culture
-                            "Happiness" -> Stat.Happiness
-                            else -> null
-                        }
-                        if (stattoadd != null) {
-                            stats.add(stattoadd, bonus.getPlaceholderParameters()[0].toFloat())
-                        }
+                        stats.add(Stat.valueOf(bonus.getPlaceholderParameters()[1]), bonus.getPlaceholderParameters()[0].toFloat())
                     }
                 }
 
