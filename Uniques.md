@@ -564,6 +564,8 @@ May be added in promotions or ancient ruins equivalents
 
 "Ignores terrain cost"
 
+"Ignores Zone of Control"
+
 "Cannot enter ocean tiles until Astronomy"
 
 "Can move immediately once bought"
