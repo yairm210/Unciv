@@ -45,6 +45,9 @@ class MapUnit {
     var ignoresTerrainCost = false
 
     @Transient
+    var ignoresZoneOfControl = false
+
+    @Transient
     var allTilesCosts1 = false
 
     @Transient
@@ -196,6 +199,7 @@ class MapUnit {
         allTilesCosts1 = hasUnique("All tiles cost 1 movement") || hasUnique("All tiles costs 1")
         canPassThroughImpassableTiles = hasUnique("Can pass through impassable tiles")
         ignoresTerrainCost = hasUnique("Ignores terrain cost")
+        ignoresZoneOfControl = hasUnique("Ignores Zone of Control")
         roughTerrainPenalty = hasUnique("Rough terrain penalty")
         doubleMovementInCoast = hasUnique("Double movement in coast")
         doubleMovementInForestAndJungle = hasUnique("Double movement rate through Forest and Jungle")

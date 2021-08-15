@@ -1376,7 +1376,7 @@
 		"requiredTech": "Computers",
 		"requiredResource": "Aluminum",
 		"uniques": ["+[100]% Strength vs [Armored]", "No defensive terrain bonus", "Can move after attacking",
-			"All tiles cost 1 movement", "Unable to capture cities"],
+			"All tiles cost 1 movement", "Ignores Zone of Control", "Unable to capture cities"],
 		"attackSound": "machinegun"
 	},
 
