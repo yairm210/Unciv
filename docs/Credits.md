@@ -613,6 +613,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Lock](https://thenounproject.com/search/?q=lock&i=3217613) by Vadim Solomakhin for locked tiles
 * [Hourglass](https://thenounproject.com/search/?q=hourglass&i=142268) by I Create Stuff for the 'Turn' icon
 * [Dove](https://thenounproject.com/search/?q=dove&i=1344084) by Sandra for Faith
+* [Shield](https://thenounproject.com/search/?q=shield&i=813568) by Gregor Cresnar for Religious Strength
 
 ## Main menu
 
