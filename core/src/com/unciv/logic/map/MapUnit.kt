@@ -205,6 +205,7 @@ class MapUnit {
         cannotEnterOceanTilesUntilAstronomy = hasUnique("Cannot enter ocean tiles until Astronomy")
         canEnterForeignTerrain = 
             hasUnique("May enter foreign tiles without open borders, but loses [] religious strength each turn it ends there")
+            || hasUnique("May enter foreign tiles without open borders")
     }
 
     fun hasUnique(unique: String): Boolean {
@@ -245,7 +246,9 @@ class MapUnit {
         for (unique in getTile().getAllTerrains().flatMap { it.uniqueObjects })
             if (unique.placeholderText == "[] Sight for [] units" && matchesFilter(unique.params[1]))
                 visibilityRange += unique.params[0].toInt()
-
+        
+        if (visibilityRange < 1) visibilityRange = 1
+        
         return visibilityRange
     }
 

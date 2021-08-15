@@ -3,6 +3,7 @@ package com.unciv.logic.city
 import com.unciv.Constants
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.models.Counter
+import com.unciv.models.metadata.GameSpeed
 import com.unciv.models.ruleset.Unique
 
 class CityInfoReligionManager {
@@ -15,7 +16,17 @@ class CityInfoReligionManager {
 
     private val pressures: Counter<String> = Counter()
     // `getNumberOfFollowers()` was called a surprisingly large amount of time, so caching it feels useful
+    @Transient
     private val followers: Counter<String> = Counter()
+    
+    private val pressureFromAdjacentCities: Int by lazy {
+        when (cityInfo.civInfo.gameInfo.gameParameters.gameSpeed) {
+            GameSpeed.Quick -> 9
+            GameSpeed.Standard -> 6
+            GameSpeed.Epic -> 4
+            GameSpeed.Marathon -> 2
+        }
+    }
     
     var religionThisIsTheHolyCityOf: String? = null 
     
@@ -34,6 +45,7 @@ class CityInfoReligionManager {
     
     fun setTransients(cityInfo: CityInfo) {
         this.cityInfo = cityInfo
+        updateNumberOfFollowers()
     }
     
     fun endTurn() {
@@ -167,7 +179,7 @@ class CityInfoReligionManager {
         // this will make it so we only receive a notification for the last one.
         // Also, doing it like this increases performance :D
         if (cityInfo.isHolyCity()) {
-            addPressure(religionThisIsTheHolyCityOf!!,30,false)
+            addPressure(religionThisIsTheHolyCityOf!!,5 * pressureFromAdjacentCities, false)
         }
         
         val allCitiesWithin10Tiles =
@@ -179,7 +191,7 @@ class CityInfoReligionManager {
         for (city in allCitiesWithin10Tiles) {
             val majorityReligionOfCity = city.religion.getMajorityReligion() ?: continue
             if (!cityInfo.civInfo.gameInfo.religions[majorityReligionOfCity]!!.isMajorReligion()) continue
-            addPressure(majorityReligionOfCity,6,false) 
+            addPressure(majorityReligionOfCity, pressureFromAdjacentCities, false) 
         }
         
         updateNumberOfFollowers()
