@@ -164,6 +164,21 @@ class CityInfoReligionManager {
         
         return followers
     }
+    
+    /** Removes all pantheons except for the one founded by the current owner of the city
+     *  Should be called whenever a city changes hands, e.g. conquering and trading
+     */
+    fun removeUnknownPantheons() {
+        for (pressure in pressures) {
+            val correspondingReligion = cityInfo.civInfo.gameInfo.religions[pressure.key]!!
+            if (correspondingReligion.isPantheon() 
+                && correspondingReligion.foundingCivName != cityInfo.civInfo.civName
+            ) {
+                pressures.remove(pressure.key)
+            }
+        }
+        updateNumberOfFollowers()
+    }
 
     fun getMajorityReligion(): String? {
         val followersPerReligion = getNumberOfFollowers()
