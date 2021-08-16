@@ -171,6 +171,7 @@ class CityInfoReligionManager {
      */
     fun removeUnknownPantheons() {
         for (pressure in pressures) {
+            if (pressure.key == Constants.noReligionName) continue
             val correspondingReligion = cityInfo.civInfo.gameInfo.religions[pressure.key]!!
             if (correspondingReligion.isPantheon() 
                 && correspondingReligion.foundingCivName != cityInfo.civInfo.civName
