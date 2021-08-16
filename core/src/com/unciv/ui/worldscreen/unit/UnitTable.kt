@@ -163,9 +163,14 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
                     unitDescriptionTable.add(unit.promotions.XP.toString() + "/" + unit.promotions.xpForNextPromotion())
                 }
                 
-                if (unit.maxReligionSpreads() > 0) {
+                if (unit.canSpreadReligion()) {
                     unitDescriptionTable.add(ImageGetter.getStatIcon("Faith")).size(20f)
                     unitDescriptionTable.add(unit.getReligionString())
+                }
+                
+                if (unit.baseUnit.religiousStrength > 0) {
+                    unitDescriptionTable.add(ImageGetter.getStatIcon("ReligiousStrength")).size(20f)
+                    unitDescriptionTable.add((unit.baseUnit.religiousStrength - unit.religiousStrengthLost).toString())
                 }
 
                 if (unit.promotions.promotions.size != promotionsTable.children.size) // The unit has been promoted! Reload promotions!

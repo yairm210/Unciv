@@ -1,3 +1,13 @@
+## 3.16.4
+
+Implemented Zone of Control mechanic - by avdstaaij
+
+Runtime optimizations - By SomeTroglodyte
+
+Implemented religious pressure - By xlenstra
+
+Fix units not entering cities upon capture - By avdstaaij
+
 ## 3.16.3
 
 By SomeTroglodyte:

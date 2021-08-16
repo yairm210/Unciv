@@ -32,6 +32,7 @@ class BaseUnit : INamed, INonPerpetualConstruction, ICivilopediaText {
     var movement: Int = 0
     var strength: Int = 0
     var rangedStrength: Int = 0
+    var religiousStrength: Int = 0
     var range: Int = 2
     var interceptRange = 0
     lateinit var unitType: String
@@ -327,7 +328,7 @@ class BaseUnit : INamed, INonPerpetualConstruction, ICivilopediaText {
 
         if (unit.hasUnique("Religious Unit")) {
             unit.religion = cityConstructions.cityInfo.religion.getMajorityReligion()
-            if (unit.hasUnique("Can spread religion [] times"))
+            if (unit.canSpreadReligion())
                 unit.abilityUsedCount["Religion Spread"] = 0
         }
 
