@@ -44,12 +44,6 @@ class TradeLogic(val ourCivilization:CivilizationInfo, val otherCivilization: Ci
 
         val otherCivsWeKnow = civInfo.getKnownCivs()
                 .filter { it.civName != otherCivilization.civName && it.isMajorCiv() && !it.isDefeated() }
-        val civsWeKnowAndTheyDont = otherCivsWeKnow
-                .filter { !otherCivilization.diplomacy.containsKey(it.civName) && !it.isDefeated() }
-
-        for (thirdCiv in civsWeKnowAndTheyDont) {
-            offers.add(TradeOffer(thirdCiv.civName, TradeType.Introduction))
-        }
 
         if (!civInfo.isCityState() && !otherCivilization.isCityState()
                 && !civInfo.gameInfo.ruleSet.modOptions.uniques.contains(ModOptionsConstants.diplomaticRelationshipsCannotChange)) {
@@ -104,8 +98,6 @@ class TradeLogic(val ourCivilization:CivilizationInfo, val otherCivilization: Ci
                         to.getDiplomacyManager(from).setFlag(DiplomacyFlags.ResearchAgreement, offer.duration)
                     }
                 }
-                if (offer.type == TradeType.Introduction)
-                    to.makeCivilizationsMeet(to.gameInfo.getCivilization(offer.name))
 
                 if (offer.type == TradeType.WarDeclaration) {
                     val nameOfCivToDeclareWarOn = offer.name

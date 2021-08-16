@@ -44,7 +44,9 @@ class TradeEvaluation {
             TradeType.Luxury_Resource -> return hasResource(tradeOffer)
             TradeType.Strategic_Resource -> return hasResource(tradeOffer)
             TradeType.Technology -> return true
-            TradeType.Introduction -> return true
+            // Removed in 3.16.5; this code temporarily left in to not break saves with a pending introduction trade
+                TradeType.Introduction -> return false // Cancel any pending introduction trades
+            //
             TradeType.WarDeclaration -> return true
             TradeType.City -> return offerer.cities.any { it.id == tradeOffer.name }
         }
@@ -131,7 +133,9 @@ class TradeEvaluation {
             TradeType.Technology ->
                 return (sqrt(civInfo.gameInfo.ruleSet.technologies[offer.name]!!.cost.toDouble())
                         * civInfo.gameInfo.gameParameters.gameSpeed.modifier).toInt() * 20
-            TradeType.Introduction -> return 250
+            // Removed in 3.16.5; this code temporarily left in to not break saves with a pending introduction trade
+                TradeType.Introduction -> return 250
+            //
             TradeType.WarDeclaration -> {
                 val civToDeclareWarOn = civInfo.gameInfo.getCivilization(offer.name)
                 val threatToThem = Automation.threatAssessment(civInfo, civToDeclareWarOn)
@@ -213,7 +217,9 @@ class TradeEvaluation {
                 return totalCost
             }
             TradeType.Technology -> return sqrt(civInfo.gameInfo.ruleSet.technologies[offer.name]!!.cost.toDouble()).toInt() * 20
-            TradeType.Introduction -> return 250
+            // Removed in 3.16.5; this code temporarily left in to not break saves with a pending introduction trade
+                TradeType.Introduction -> return 250
+            //
             TradeType.WarDeclaration -> {
                 val civToDeclareWarOn = civInfo.gameInfo.getCivilization(offer.name)
                 val threatToUs = Automation.threatAssessment(civInfo, civToDeclareWarOn)
