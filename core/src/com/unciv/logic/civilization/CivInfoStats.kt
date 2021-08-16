@@ -129,6 +129,18 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
         statMap["Transportation upkeep"] = Stats().apply { gold = -getTransportationUpkeep().toFloat() }
         statMap["Unit upkeep"] = Stats().apply { gold = -getUnitMaintenance().toFloat() }
 
+        if (civInfo.religionManager.religion != null) {
+            for (unique in civInfo.religionManager.religion!!.getFounderBeliefs().flatMap { it.uniqueObjects }) {
+                if (unique.placeholderText == "[] for each global city following this religion") {
+                    statMap.add(
+                        "Religion", 
+                        unique.stats.times(civInfo.religionManager.numberOfCitiesFollowingThisReligion().toFloat())
+                    )
+                }
+            }
+        }
+        
+
         if (civInfo.hasUnique("50% of excess happiness added to culture towards policies")) {
             val happiness = civInfo.getHappiness()
             if (happiness > 0) statMap.add("Policies", Stats().apply { culture = happiness / 2f })
@@ -170,13 +182,14 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
         val luxuriesProvidedByCityStates = 
             civInfo.getKnownCivs().asSequence()
                 .filter { it.isCityState() && it.getAllyCiv() == civInfo.civName }
-                .map { it.getCivResources().map { res -> res.resource } }
-                .flatten().distinct().count { it.resourceType === ResourceType.Luxury }
+                .flatMap { it.getCivResources().map { res -> res.resource } }
+                .distinct().count { it.resourceType === ResourceType.Luxury }
         
         statMap["City-State Luxuries"] = happinessBonusForCityStateProvidedLuxuries * luxuriesProvidedByCityStates * happinessPerUniqueLuxury
 
         val luxuriesAllOfWhichAreTradedAway = civInfo.detailedCivResources
-            .filter { it.amount < 0 && it.resource.resourceType == ResourceType.Luxury && (it.origin == "Trade" || it.origin == "Trade request")}
+            .filter { it.amount < 0 && it.resource.resourceType == ResourceType.Luxury
+                    && (it.origin == "Trade" || it.origin == "Trade request")}
             .map { it.resource }
             .filter { !ownedLuxuries.contains(it) }
         
@@ -206,6 +219,19 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
 
         statMap["Natural Wonders"] = happinessPerNaturalWonder * civInfo.naturalWonders.size
 
+        if (civInfo.religionManager.religion != null) {
+            statMap["Religion"] = 0f
+            for (unique in civInfo.religionManager.religion!!.getFounderBeliefs().flatMap { it.uniqueObjects }) {
+                if (unique.placeholderText == "[] for each global city following this religion") {
+                    statMap["Religion"] = 
+                        statMap["Religion"]!! +
+                        unique.stats.happiness * civInfo.religionManager.numberOfCitiesFollowingThisReligion().toFloat()
+                }
+            }
+            if (statMap["Religion"] == 0f) 
+                statMap.remove("Religion")
+        }
+        
         //From city-states
         for (otherCiv in civInfo.getKnownCivs()) {
             if (otherCiv.isCityState() && otherCiv.getDiplomacyManager(civInfo).relationshipLevel() >= RelationshipLevel.Friend) {

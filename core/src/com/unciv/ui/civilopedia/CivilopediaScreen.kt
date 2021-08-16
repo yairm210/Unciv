@@ -280,8 +280,9 @@ class CivilopediaScreen(
                 .map {
                     CivilopediaEntry(
                         it.name,
-                        it.getDescription(),
+                        "",
 //                        CivilopediaCategories.Difficulty.getImage?.invoke(it.name, imageSize)
+                        flavour = (it as? ICivilopediaText)
                     )
                 }
 

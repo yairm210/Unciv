@@ -42,7 +42,7 @@ class Building : NamedStats(), INonPerpetualConstruction, ICivilopediaText {
         return counter
     }
 
-    var greatPersonPoints= Counter<String>()
+    var greatPersonPoints = Counter<String>()
 
     /** Extra cost percentage when purchasing */
     override var hurryCostModifier = 0

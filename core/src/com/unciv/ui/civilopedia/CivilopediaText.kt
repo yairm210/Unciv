@@ -71,7 +71,7 @@ class FormattedLine (
     // have no backing field, be `by lazy` or use @Transient, Thank you.
 
     /** Looks for linkable ruleset objects in [Unique] parameters and returns a linked [FormattedLine] if successful, a plain one otherwise */
-    constructor(unique: Unique) : this(unique.text, getUniqueLink(unique))
+    constructor(unique: Unique, indent: Int = 0) : this(unique.text, getUniqueLink(unique), indent = indent)
 
     /** Link types that can be used for [FormattedLine.link] */
     enum class LinkType {
