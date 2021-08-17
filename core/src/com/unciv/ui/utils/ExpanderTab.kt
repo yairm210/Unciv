@@ -28,6 +28,7 @@ class ExpanderTab(
     defaultPad: Float = 10f,
     expanderWidth: Float = 0f,
     private val persistenceID: String? = null,
+    private val onChange: (() -> Unit)? = null,
     initContent: ((Table) -> Unit)? = null
 ): Table(CameraStageBaseScreen.skin) {
     private companion object {
@@ -92,6 +93,7 @@ class ExpanderTab(
             contentWrapper.clear()
             if (isOpen) contentWrapper.add(innerTable)
             headerIcon.rotation = if (isOpen) 90f else 180f
+            if (!noAnimation) onChange?.invoke()
             return
         }
         val action = object: FloatAction ( 90f, 180f, animationDuration, Interpolation.linear) {
@@ -101,6 +103,7 @@ class ExpanderTab(
                 if (this.isComplete) {
                     contentWrapper.clear()
                     if (isOpen) contentWrapper.add(innerTable)
+                    onChange?.invoke()
                 }
             }
         }.apply { isReverse = isOpen }

@@ -26,7 +26,10 @@ class CityScreen(internal val city: CityInfo): CameraStageBaseScreen() {
 
     // Clockwise from the top-left
 
-    /** Displays current production, production queue and available productions list - sits on LEFT */
+    /** Displays current production, production queue and available productions list
+     *  Not a widget, but manages two: construction queue, info toggle button, buy buttons
+     *  in a Table holder on upper LEFT, and available constructions in a ScrollPane lower LEFT.
+     */
     private var constructionsTable = CityConstructionsTable(this)
 
     /** Displays stats, buildings, specialists and stats drilldown - sits on TOP LEFT, can be toggled to */
@@ -64,7 +67,7 @@ class CityScreen(internal val city: CityInfo): CameraStageBaseScreen() {
 
         //stage.setDebugTableUnderMouse(true)
         stage.addActor(cityStatsTable)
-        stage.addActor(constructionsTable)
+        constructionsTable.addActorsToStage()
         stage.addActor(tileTable)
         stage.addActor(selectedConstructionTable)
         stage.addActor(cityPickerTable)
@@ -88,7 +91,6 @@ class CityScreen(internal val city: CityInfo): CameraStageBaseScreen() {
         city.cityStats.update()
 
         constructionsTable.update(selectedConstruction)
-        constructionsTable.setPosition(5f, stage.height - 5f, Align.topLeft)
 
         cityInfoTable.update()
         cityInfoTable.setPosition(5f, stage.height - 5f, Align.topLeft)
