@@ -126,6 +126,7 @@ class CityInfoReligionManager {
         val oldMajorityReligion = getMajorityReligion()
         
         followers.clear()
+        if (cityInfo.population.population <= 0) return
 
         val remainders = HashMap<String, Float>()
         val pressurePerFollower = pressures.values.sum() / cityInfo.population.population
