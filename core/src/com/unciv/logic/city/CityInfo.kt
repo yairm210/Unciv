@@ -485,7 +485,8 @@ class CityInfo {
             }
         } else population.nextTurn(foodForNextTurn())
 
-        // if (civInfo.gameInfo.hasReligionEnabled()) religion.getAffectedBySurroundingCities()
+        // This should go after the population change, as that might impact the amount of followers in this city
+        if (civInfo.gameInfo.hasReligionEnabled()) religion.endTurn()
 
         if (this in civInfo.cities) { // city was not destroyed
             health = min(health + 20, getMaxHealth())
@@ -652,7 +653,7 @@ class CityInfo {
     }
 
     fun isHolyCity(): Boolean {
-        return civInfo.gameInfo.religions.values.any { it.holyCityId == id } 
+        return religion.religionThisIsTheHolyCityOf != null 
     }
     
     fun canBeDestroyed(): Boolean {

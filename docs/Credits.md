@@ -613,6 +613,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Lock](https://thenounproject.com/search/?q=lock&i=3217613) by Vadim Solomakhin for locked tiles
 * [Hourglass](https://thenounproject.com/search/?q=hourglass&i=142268) by I Create Stuff for the 'Turn' icon
 * [Dove](https://thenounproject.com/search/?q=dove&i=1344084) by Sandra for Faith
+* [Shield](https://thenounproject.com/search/?q=shield&i=813568) by Gregor Cresnar for Religious Strength
 
 ## Main menu
 
@@ -643,7 +644,7 @@ Sounds are from FreeSound.org and are either Creative Commons or Public Domain
 * [Slingshot fly by 2](https://freesound.org/people/saturdaysoundguy/sounds/394186/) by saturdaysoundguy as 'arrow' for arrow attacks
 * [Metal hit slide](https://freesound.org/people/orginaljun/sounds/149102/) by orginaljun as 'nonmetalhit' for pre-metal melee sounds
 * [klick_anlauf](https://freesound.org/people/jascha/sounds/16576/) By jascha as 'metalhit' for metal melee sounds
-* [Horse Neigh 2](https://freesound.org/people/GoodListener/sounds/322450/) By GoodListener as 'horse' for cavalry attack sounds
+* [Horse's whinny](https://freesound.org/people/Kubuzz/sounds/347036/) By Kubuzz as 'horse' for cavalry attack sounds
 * [machine gun 001 - loop](https://freesound.org/people/pgi/sounds/212602/) By pgi as 'machinegun' for machine gun attack sound
 * [uzzi_full_single](https://freesound.org/people/Deganoth/sounds/348685/) By Deganoth as 'shot' for bullet attacks
 * [Grenade Launcher 2](https://soundbible.com/2140-Grenade-Launcher-2.html) By Daniel Simon as city bombard sound (CC Attribution 3.0 license)

@@ -7,16 +7,19 @@ import com.unciv.ui.utils.Fonts
 enum class Stat(
     val notificationIcon: String,
     val purchaseSound: UncivSound,
-    val character: Char,
-    val isPotentialCurrency: Boolean = true
+    val character: Char
 ) {
-    Production(NotificationIcon.Production, UncivSound.Click, Fonts.production, false),
+    Production(NotificationIcon.Production, UncivSound.Click, Fonts.production),
     Food(NotificationIcon.Food, UncivSound.Click, Fonts.food),
     Gold(NotificationIcon.Gold, UncivSound.Coin, Fonts.gold),
     Science(NotificationIcon.Science, UncivSound.Chimes, Fonts.science),
     Culture(NotificationIcon.Culture, UncivSound.Paper, Fonts.culture),
-    Happiness(NotificationIcon.Happiness, UncivSound.Click, Fonts.happiness, false),
+    Happiness(NotificationIcon.Happiness, UncivSound.Click, Fonts.happiness),
     Faith(NotificationIcon.Faith, UncivSound.Choir, Fonts.faith);
+    
+    companion object {
+        val statsUseableToBuy = listOf(Gold,Food,Science,Culture,Faith)
+    }
 }
 
 // Should the well-known colours for these be needed:

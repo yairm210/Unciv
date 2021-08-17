@@ -14,6 +14,8 @@ import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
+import kotlin.math.abs
+import kotlin.random.Random
 
 @RunWith(GdxTestRunner::class)
 class BasicTests {
@@ -85,4 +87,50 @@ class BasicTests {
         Assert.assertFalse(modCheck.isNotOK())
     }
 
+    //@Test  // commented so github doesn't run this
+    fun statMathStressTest() {
+        val runtime = Runtime.getRuntime()
+        runtime.gc()
+        Thread.sleep(5000) // makes timings a little more repeatable
+        val startTime = System.nanoTime()
+        statMathRunner(iterations = 1_000_000)
+        println("statMathStressTest took ${(System.nanoTime()-startTime)/1000}µs")
+    }
+
+    @Test
+    fun statMathRandomResultTest() {
+        val iterations = 42
+        val expectedStats = Stats().apply {
+            production = 12970.174f
+            food = -153216.12f
+            gold = 28614.738f
+            science = 142650.89f
+            culture = -45024.03f
+            happiness = -7081.2495f
+            faith = -14933.622f
+        }
+        val stats = statMathRunner(iterations)
+        Assert.assertTrue(stats.equals(expectedStats))
+    }
+
+    private fun statMathRunner(iterations: Int): Stats {
+        val random = Random(42)
+        val statCount = Stat.values().size
+        val stats = Stats()
+
+        for (i in 0 until iterations) {
+            val value: Float = random.nextDouble(-10.0, 10.0).toFloat()
+            stats.add( Stats(gold = value) )
+            stats.toHashMap().forEach {
+                val stat = Stat.values()[(it.key.ordinal + random.nextInt(1,statCount)).rem(statCount)]
+                stats.add(stat, -it.value)
+            }
+            val stat = Stat.values()[random.nextInt(statCount)]
+            stats.add(stat, stats.times(4).get(stat))
+            stats.timesInPlace(0.8f)
+            if (abs(stats.toHashMap().maxOfOrNull { it.value }!!) > 1000000f)
+                stats.timesInPlace(0.1f)
+        }
+        return stats
+    }
 }

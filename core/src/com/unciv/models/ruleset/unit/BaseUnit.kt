@@ -32,6 +32,7 @@ class BaseUnit : INamed, INonPerpetualConstruction, ICivilopediaText {
     var movement: Int = 0
     var strength: Int = 0
     var rangedStrength: Int = 0
+    var religiousStrength: Int = 0
     var range: Int = 2
     var interceptRange = 0
     lateinit var unitType: String
@@ -87,7 +88,9 @@ class BaseUnit : INamed, INonPerpetualConstruction, ICivilopediaText {
         lines += "$strengthLine$movement${Fonts.movement}"
 
         if (replacementTextForUniques != "") lines += replacementTextForUniques
-        else for (unique in uniques)
+        else for (unique in uniques.filterNot {
+            it.startsWith("Hidden ") && it.endsWith(" disabled") || it == "Unbuildable"
+        })
             lines += unique.tr()
 
         if (promotions.isNotEmpty()) {
@@ -327,6 +330,8 @@ class BaseUnit : INamed, INonPerpetualConstruction, ICivilopediaText {
 
         if (unit.hasUnique("Religious Unit")) {
             unit.religion = cityConstructions.cityInfo.religion.getMajorityReligion()
+            if (unit.canSpreadReligion())
+                unit.abilityUsedCount["Religion Spread"] = 0
         }
 
         if (this.isCivilian()) return true // tiny optimization makes save files a few bytes smaller
