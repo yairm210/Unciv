@@ -497,7 +497,7 @@ class CityConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBase
         if (list.isEmpty()) return
 
         if (rows > 0) addSeparator()
-        val expander = ExpanderTab(title, defaultPad = 0f, expanderWidth = prefWidth) {
+        val expander = ExpanderTab(title, defaultPad = 0f, expanderWidth = prefWidth, persistenceID = "CityConstruction") {
             for (table in list) {
                 it.addSeparator(colSpan = 1)
                 it.add(table).left().row()
