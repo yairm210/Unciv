@@ -1,3 +1,9 @@
+## 3.16.4-patch1
+
+Fixed crash from conquering cities - By xlenstra
+
+Fix DOS attack perpetrated by CityInfoReligionManager on Json Serializer - By SomeTroglodyte
+
 ## 3.16.4
 
 Implemented Zone of Control mechanic - by avdstaaij

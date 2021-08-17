@@ -263,7 +263,14 @@ class CivilizationInfo {
                 } +
                 policies.policyUniques.getUniques(uniqueTemplate) +
                 tech.techUniques.getUniques(uniqueTemplate) +
-                temporaryUniques.filter { it.first.placeholderText == uniqueTemplate }.map { it.first }
+                temporaryUniques
+                    .asSequence()
+                    .filter { it.first.placeholderText == uniqueTemplate }.map { it.first } +
+                if (religionManager.religion != null) 
+                    religionManager.religion!!.getFounderUniques()
+                        .asSequence()
+                        .filter { it.placeholderText == uniqueTemplate }
+                else sequenceOf()
     }
 
     //region Units
@@ -407,6 +414,8 @@ class CivilizationInfo {
     }
 
     fun getEraNumber(): Int = gameInfo.ruleSet.getEraNumber(getEra())
+
+    fun getEraObject(): Era = gameInfo.ruleSet.eras[getEra()]!!
 
     fun isAtWarWith(otherCiv: CivilizationInfo): Boolean {
         if (otherCiv.civName == civName) return false // never at war with itself
@@ -776,6 +785,15 @@ class CivilizationInfo {
         if (unit.isGreatPerson()) {
             addNotification("A [${unit.name}] has been born in [${cityToAddTo.name}]!", placedUnit.getTile().position, unit.name)
         }
+
+        if (placedUnit.hasUnique("Religious Unit")) {
+            placedUnit.religion = 
+                if (city != null) city.cityConstructions.cityInfo.religion.getMajorityReligion()
+                else religionManager.religion?.name
+            if (placedUnit.hasUnique("Can spread religion [] times"))
+                placedUnit.abilityUsedCount["Religion Spread"] = 0
+        }
+        
         return placedUnit
     }
 
@@ -854,6 +872,10 @@ class CivilizationInfo {
                 .toList().random()
         // placing the unit may fail - in that case stay quiet
         val placedUnit = placeUnitNearTile(city.location, militaryUnit.name) ?: return
+        // Siam gets +10 XP for all CS units
+        for (unique in getMatchingUniques("Military Units gifted from City-States start with [] XP")) {
+            placedUnit.promotions.XP += unique.params[0].toInt()
+        }
         // Point to the places mentioned in the message _in that order_ (debatable)
         val placedLocation = placedUnit.getTile().position
         val locations = LocationAction(listOf(placedLocation, cities.city2.location, city.location))

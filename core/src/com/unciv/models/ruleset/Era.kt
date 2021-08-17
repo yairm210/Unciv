@@ -1,6 +1,7 @@
 package com.unciv.models.ruleset
 
 import com.badlogic.gdx.graphics.Color
+import com.unciv.logic.civilization.CityStateType
 import com.unciv.models.stats.INamed
 import com.unciv.ui.utils.colorFromRGB
 
@@ -19,8 +20,10 @@ class Era : INamed {
     var settlerBuildings = ArrayList<String>()
     var startingObsoleteWonders = ArrayList<String>()
     var baseUnitBuyCost = 200
+    var friendBonus = HashMap<String, ArrayList<String>>()
+    var allyBonus = HashMap<String, ArrayList<String>>()
     var iconRGB: List<Int>? = null
-    
+
     fun getStartingUnits(): List<String> {
         val startingUnits = mutableListOf<String>()
         repeat(startingSettlerCount) {startingUnits.add(startingSettlerUnit)}

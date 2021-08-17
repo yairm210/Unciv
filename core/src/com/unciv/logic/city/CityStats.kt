@@ -11,6 +11,8 @@ import com.unciv.models.ruleset.Unique
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
+import com.unciv.models.translations.getPlaceholderParameters
+import com.unciv.models.translations.getPlaceholderText
 import kotlin.math.min
 
 
@@ -123,13 +125,32 @@ class CityStats {
         val stats = Stats()
 
         for (otherCiv in cityInfo.civInfo.getKnownCivs()) {
-            if (otherCiv.isCityState() && otherCiv.cityStateType == CityStateType.Maritime
-                    && otherCiv.getDiplomacyManager(cityInfo.civInfo).relationshipLevel() >= RelationshipLevel.Friend) {
-                if (cityInfo.isCapital()) stats.food += 3
-                else stats.food += 1
+            if (otherCiv.isCityState() && otherCiv.getDiplomacyManager(cityInfo.civInfo).relationshipLevel() >= RelationshipLevel.Friend) {
+                val eraInfo = cityInfo.civInfo.getEraObject()
 
-                if (cityInfo.civInfo.hasUnique("Food and Culture from Friendly City-States are increased by 50%"))
+                if (eraInfo.friendBonus[otherCiv.cityStateType.name] == null || eraInfo.allyBonus[otherCiv.cityStateType.name] == null) {
+                    // Deprecated, assume Civ V values for compatibility
+                    if (otherCiv.cityStateType == CityStateType.Maritime && otherCiv.getDiplomacyManager(cityInfo.civInfo).relationshipLevel() == RelationshipLevel.Ally)
+                        stats.food += 1
+                    if (otherCiv.cityStateType == CityStateType.Maritime && cityInfo.isCapital())
+                        stats.food += 2
+
+                    if (cityInfo.civInfo.hasUnique("Food and Culture from Friendly City-States are increased by 50%"))
+                        stats.food *= 1.5f
+                    return stats
+                }
+
+                for (bonus in if (otherCiv.getDiplomacyManager(cityInfo.civInfo).relationshipLevel() == RelationshipLevel.Friend)
+                    eraInfo.friendBonus[otherCiv.cityStateType.name]!! else eraInfo.allyBonus[otherCiv.cityStateType.name]!!) {
+                    if (bonus.getPlaceholderText() == "Provides [] [] []" && cityInfo.matchesFilter(bonus.getPlaceholderParameters()[2])) {
+                        stats.add(Stat.valueOf(bonus.getPlaceholderParameters()[1]), bonus.getPlaceholderParameters()[0].toFloat())
+                    }
+                }
+
+                if (cityInfo.civInfo.hasUnique("Food and Culture from Friendly City-States are increased by 50%")) {
                     stats.food *= 1.5f
+                    stats.culture *= 1.5f
+                }
             }
         }
 
