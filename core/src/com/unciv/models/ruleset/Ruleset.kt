@@ -289,6 +289,7 @@ class Ruleset {
         fun isError() = status == CheckModLinksStatus.Error
         fun isNotOK() = status != CheckModLinksStatus.OK
     }
+
     fun checkModLinks(): CheckModLinksResult {
         val lines = ArrayList<String>()
         var warningCount = 0
@@ -323,6 +324,7 @@ class Ruleset {
 
         if (!modOptions.isBaseRuleset) return CheckModLinksResult(warningCount, lines)
 
+        val baseRuleset = RulesetCache.getBaseRuleset()
 
         for (unit in units.values) {
             if (unit.requiredTech != null && !technologies.containsKey(unit.requiredTech!!))
@@ -338,8 +340,9 @@ class Ruleset {
                 lines += "${unit.name} replaces ${unit.replaces} which does not exist!"
             for (promotion in unit.promotions)
                 if (!unitPromotions.containsKey(promotion))
-                    lines += "${unit.replaces} contains promotion $promotion which does not exist!"
-
+                    lines += "${unit.name} contains promotion $promotion which does not exist!"
+            if (!unitTypes.containsKey(unit.unitType) && !baseRuleset.unitTypes.containsKey(unit.unitType))
+                lines += "${unit.name} is of type ${unit.unitType}, which does not exist!"
         }
 
         for (building in buildings.values) {
@@ -441,7 +444,7 @@ class Ruleset {
  * save all of the loaded rulesets somewhere for later use
  *  */
 object RulesetCache : HashMap<String,Ruleset>() {
-    fun loadRulesets(consoleMode: Boolean = false, printOutput: Boolean = false) {
+    fun loadRulesets(consoleMode: Boolean = false, printOutput: Boolean = false, noMods: Boolean = true) {
         clear()
         for (ruleset in BaseRuleset.values()) {
             val fileName = "jsons/${ruleset.fullName}"
@@ -449,6 +452,8 @@ object RulesetCache : HashMap<String,Ruleset>() {
             else Gdx.files.internal(fileName)
             this[ruleset.fullName] = Ruleset().apply { load(fileHandle, printOutput) }
         }
+
+        if (noMods) return
 
         val modsHandles = if (consoleMode) FileHandle("mods").list()
         else Gdx.files.local("mods").list()

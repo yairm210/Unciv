@@ -6,6 +6,9 @@ import com.unciv.logic.trade.Trade
 import com.unciv.logic.trade.TradeOffer
 import com.unciv.logic.trade.TradeType
 import com.unciv.models.ruleset.tile.ResourceSupplyList
+import com.unciv.models.translations.getPlaceholderParameters
+import com.unciv.models.translations.getPlaceholderText
+import javax.management.relation.Relation
 import kotlin.math.ceil
 import kotlin.math.max
 import kotlin.math.min
@@ -193,8 +196,14 @@ class DiplomacyManager() {
     // To be run from City-State DiplomacyManager, which holds the influence. Resting point for every major civ can be different.
     fun getCityStateInfluenceRestingPoint(): Float {
         var restingPoint = 0f
+        
         for (unique in otherCiv().getMatchingUniques("Resting point for Influence with City-States is increased by []"))
             restingPoint += unique.params[0].toInt()
+        
+        for (unique in otherCiv().getMatchingUniques("Resting point for Influence with City-States following this religion []"))
+            if (otherCiv().religionManager.religion?.name == civInfo.getCapital().religion.getMajorityReligion())
+                restingPoint += unique.params[0].toInt()
+        
         if (diplomaticStatus == DiplomaticStatus.Protector) restingPoint += 5
         return restingPoint
     }
@@ -495,11 +504,31 @@ class DiplomacyManager() {
         if (!hasFlag(DiplomacyFlags.DeclarationOfFriendship))
             revertToZero(DiplomaticModifiers.DeclarationOfFriendship, 1 / 2f) //decreases slowly and will revert to full if it is declared later
 
-        if (otherCiv().isCityState() && otherCiv().cityStateType == CityStateType.Militaristic) {
+        if (otherCiv().isCityState()) {
+            val eraInfo = civInfo.getEraObject()
+
             if (relationshipLevel() < RelationshipLevel.Friend) {
                 if (hasFlag(DiplomacyFlags.ProvideMilitaryUnit)) removeFlag(DiplomacyFlags.ProvideMilitaryUnit)
             } else {
-                if (!hasFlag(DiplomacyFlags.ProvideMilitaryUnit)) setFlag(DiplomacyFlags.ProvideMilitaryUnit, 20)
+                val relevantBonuses = if (relationshipLevel() == RelationshipLevel.Friend) eraInfo.friendBonus[otherCiv().cityStateType.name]
+                                    else eraInfo.allyBonus[otherCiv().cityStateType.name]
+                if (relevantBonuses == null && otherCiv().cityStateType == CityStateType.Militaristic) {
+                    // Deprecated, assume Civ V values for compatibility
+                    if (!hasFlag(DiplomacyFlags.ProvideMilitaryUnit) && relationshipLevel() == RelationshipLevel.Friend)
+                        setFlag(DiplomacyFlags.ProvideMilitaryUnit, 20)
+
+                    if ((!hasFlag(DiplomacyFlags.ProvideMilitaryUnit) || getFlag(DiplomacyFlags.ProvideMilitaryUnit) > 17)
+                        && relationshipLevel() == RelationshipLevel.Ally)
+                        setFlag(DiplomacyFlags.ProvideMilitaryUnit, 17)
+                }
+                if (relevantBonuses == null) return
+
+                for (bonus in relevantBonuses) {
+                    // Reset the countdown if it has ended, or if we have longer to go than the current maximum (can happen when going from friend to ally)
+                    if (bonus.getPlaceholderText() == "Provides military units every [] turns" &&
+                       (!hasFlag(DiplomacyFlags.ProvideMilitaryUnit) || getFlag(DiplomacyFlags.ProvideMilitaryUnit) > bonus.getPlaceholderParameters()[0].toInt()))
+                            setFlag(DiplomacyFlags.ProvideMilitaryUnit, bonus.getPlaceholderParameters()[0].toInt())
+                }
             }
         }
     }

@@ -85,10 +85,10 @@ class WorkerAutomation(val unit: MapUnit) {
         // we order cities by their closeness to the worker first, and then check for each one whether there's a viable path
         // it can take to an existing connected city.
         for (bfs in citiesThatNeedConnectingBfs) {
-            while (bfs.tilesToCheck.isNotEmpty()) {
+            while (!bfs.hasEnded()) {
                 bfs.nextStep()
                 for (city in connectedCities)
-                    if (bfs.tilesToCheck.contains(city)) { // we have a winner!
+                    if (bfs.hasReachedTile(city)) { // we have a winner!
                         val pathToCity = bfs.getPathTo(city).asSequence()
                         val roadableTiles = pathToCity.filter { it.roadStatus < targetRoad }
                         val tileToConstructRoadOn: TileInfo

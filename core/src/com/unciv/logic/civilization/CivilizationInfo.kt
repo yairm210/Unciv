@@ -12,6 +12,7 @@ import com.unciv.logic.civilization.diplomacy.DiplomacyManager
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
+import com.unciv.logic.map.UnitMovementAlgorithms
 import com.unciv.logic.trade.TradeEvaluation
 import com.unciv.logic.trade.TradeRequest
 import com.unciv.models.Counter
@@ -262,7 +263,14 @@ class CivilizationInfo {
                 } +
                 policies.policyUniques.getUniques(uniqueTemplate) +
                 tech.techUniques.getUniques(uniqueTemplate) +
-                temporaryUniques.filter { it.first.placeholderText == uniqueTemplate }.map { it.first }
+                temporaryUniques
+                    .asSequence()
+                    .filter { it.first.placeholderText == uniqueTemplate }.map { it.first } +
+                if (religionManager.religion != null) 
+                    religionManager.religion!!.getFounderUniques()
+                        .asSequence()
+                        .filter { it.placeholderText == uniqueTemplate }
+                else sequenceOf()
     }
 
     //region Units
@@ -369,10 +377,9 @@ class CivilizationInfo {
             otherCiv.addNotification(meetString, cityStateLocation, NotificationIcon.Gold)
         else
             otherCiv.addNotification(meetString, NotificationIcon.Gold)
+
         for (stat in giftAmount.toHashMap().filter { it.value != 0f })
             otherCiv.addStat(stat.key, stat.value.toInt())
-            
-            
     }
 
     fun discoverNaturalWonder(naturalWonderName: String) {
@@ -407,6 +414,8 @@ class CivilizationInfo {
     }
 
     fun getEraNumber(): Int = gameInfo.ruleSet.getEraNumber(getEra())
+
+    fun getEraObject(): Era = gameInfo.ruleSet.eras[getEra()]!!
 
     fun isAtWarWith(otherCiv: CivilizationInfo): Boolean {
         if (otherCiv.civName == civName) return false // never at war with itself
@@ -731,14 +740,25 @@ class CivilizationInfo {
         return greatPersonPoints
     }
 
-    fun canEnterTiles(otherCiv: CivilizationInfo): Boolean {
+    /**
+     * @returns whether units of this civilization can pass through the tiles owned by [otherCiv],
+     * considering only civ-wide filters.
+     * Use [TileInfo.canCivPassThrough] to check whether units of a civilization can pass through
+     * a specific tile, considering only civ-wide filters.
+     * Use [UnitMovementAlgorithms.canPassThrough] to check whether a specific unit can pass through
+     * a specific tile.
+     */
+    fun canPassThroughTiles(otherCiv: CivilizationInfo): Boolean {
         if (otherCiv == this) return true
         if (otherCiv.isBarbarian()) return true
         if (nation.isBarbarian() && gameInfo.turns >= gameInfo.difficultyObject.turnBarbariansCanEnterPlayerTiles)
             return true
         val diplomacyManager = diplomacy[otherCiv.civName]
-                ?: return false // not encountered yet
-        return (diplomacyManager.hasOpenBorders || diplomacyManager.diplomaticStatus == DiplomaticStatus.War)
+        if (diplomacyManager != null && (diplomacyManager.hasOpenBorders || diplomacyManager.diplomaticStatus == DiplomaticStatus.War))
+            return true
+        // Players can always pass through city-state tiles
+        if (isPlayerCivilization() && otherCiv.isCityState()) return true
+        return false
     }
 
 
@@ -765,6 +785,15 @@ class CivilizationInfo {
         if (unit.isGreatPerson()) {
             addNotification("A [${unit.name}] has been born in [${cityToAddTo.name}]!", placedUnit.getTile().position, unit.name)
         }
+
+        if (placedUnit.hasUnique("Religious Unit")) {
+            placedUnit.religion = 
+                if (city != null) city.cityConstructions.cityInfo.religion.getMajorityReligion()
+                else religionManager.religion?.name
+            if (placedUnit.hasUnique("Can spread religion [] times"))
+                placedUnit.abilityUsedCount["Religion Spread"] = 0
+        }
+        
         return placedUnit
     }
 
@@ -843,6 +872,10 @@ class CivilizationInfo {
                 .toList().random()
         // placing the unit may fail - in that case stay quiet
         val placedUnit = placeUnitNearTile(city.location, militaryUnit.name) ?: return
+        // Siam gets +10 XP for all CS units
+        for (unique in getMatchingUniques("Military Units gifted from City-States start with [] XP")) {
+            placedUnit.promotions.XP += unique.params[0].toInt()
+        }
         // Point to the places mentioned in the message _in that order_ (debatable)
         val placedLocation = placedUnit.getTile().position
         val locations = LocationAction(listOf(placedLocation, cities.city2.location, city.location))

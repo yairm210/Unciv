@@ -8,7 +8,6 @@ import com.unciv.logic.map.TileInfo
 import com.unciv.ui.utils.withItem
 import com.unciv.ui.utils.withoutItem
 import kotlin.math.max
-import kotlin.math.min
 import kotlin.math.pow
 import kotlin.math.roundToInt
 
@@ -158,7 +157,7 @@ class CityExpansionManager {
         cityInfo.cityStats.update()
 
         for (unit in tileInfo.getUnits().toList()) // toListed because we're modifying
-            if (!unit.civInfo.canEnterTiles(cityInfo.civInfo))
+            if (!unit.civInfo.canPassThroughTiles(cityInfo.civInfo))
                 unit.movement.teleportToClosestMoveableTile()
 
         cityInfo.civInfo.updateViewableTiles()

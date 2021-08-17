@@ -12,7 +12,6 @@ class Religion() : INamed {
     override lateinit var name: String
     var iconName: String = "Pantheon"
     lateinit var foundingCivName: String
-    var holyCityId: String? = null
 
     var founderBeliefs: HashSet<String> = hashSetOf()
     var followerBeliefs: HashSet<String> = hashSetOf()
@@ -29,7 +28,6 @@ class Religion() : INamed {
     fun clone(): Religion {
         val toReturn = Religion(name, gameInfo, foundingCivName)
         toReturn.iconName = iconName
-        toReturn.holyCityId = holyCityId
         toReturn.founderBeliefs.addAll(founderBeliefs)
         toReturn.followerBeliefs.addAll(followerBeliefs)
         return toReturn

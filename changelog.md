@@ -1,3 +1,42 @@
+## 3.16.4-patch1
+
+Fixed crash from conquering cities - By xlenstra
+
+Fix DOS attack perpetrated by CityInfoReligionManager on Json Serializer - By SomeTroglodyte
+
+## 3.16.4
+
+Implemented Zone of Control mechanic - by avdstaaij
+
+Runtime optimizations - By SomeTroglodyte
+
+Implemented religious pressure - By xlenstra
+
+Fix units not entering cities upon capture - By avdstaaij
+
+## 3.16.3
+
+By SomeTroglodyte:
+- Civilopedia - Difficulty
+- City screen stats double separators
+- Unit rename UI
+
+By xlenstra:
+- Added founder beliefs, updates to pantheon spreading
+- Added an overview screen for religions
+
+Resources changed to match civ5 G&K - By ravignir
+
+Add Holy Site for FantasyHex  - By AdityaMH
+
+## 3.16.2-patch1
+
+Fixed diplomacy screen crash for city-states with no cities
+
+Added mod check for units whose unitType is not defined
+
+Fixed crash when selecting certain buildings in the civilopedia - by xlenstra 
+
 ## 3.16.2
 
 Fixed crashing Diplomatic victory bug

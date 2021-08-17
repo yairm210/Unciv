@@ -46,6 +46,9 @@ class MapUnit {
     var ignoresTerrainCost = false
 
     @Transient
+    var ignoresZoneOfControl = false
+
+    @Transient
     var allTilesCosts1 = false
 
     @Transient
@@ -73,8 +76,11 @@ class MapUnit {
     var cannotEnterOceanTilesUntilAstronomy = false
 
     @Transient
+    var canEnterForeignTerrain: Boolean = false
+
+    @Transient
     var paradropRange = 0
-    
+
     @Transient
     var hasUniqueToBuildImprovements = false    // not canBuildImprovements to avoid confusion
 
@@ -99,7 +105,7 @@ class MapUnit {
     fun displayName(): String {
         val name = if (instanceName == null) name
                    else "$instanceName ({${name}})"
-        return if (religion != null && maxReligionSpreads() > 0) "[$name] ([$religion])"
+        return if (religion != null) "[$name] ([$religion])"
                else name
     }
 
@@ -117,7 +123,8 @@ class MapUnit {
     
     var abilityUsedCount: HashMap<String, Int> = hashMapOf()
     var religion: String? = null
-    
+    var religiousStrengthLost = 0
+
     //region pure functions
     fun clone(): MapUnit {
         val toReturn = MapUnit()
@@ -134,6 +141,7 @@ class MapUnit {
         toReturn.isTransported = isTransported
         toReturn.abilityUsedCount.putAll(abilityUsedCount)
         toReturn.religion = religion
+        toReturn.religiousStrengthLost = religiousStrengthLost
         return toReturn
     }
 
@@ -168,7 +176,7 @@ class MapUnit {
     }
 
 
-    // This SHOULD NOT be a hashset, because if it is, then promotions with the same text (e.g. barrage I, barrage II)
+    // This SHOULD NOT be a HashSet, because if it is, then promotions with the same text (e.g. barrage I, barrage II)
     //  will not get counted twice!
     @Transient
     private var tempUniques = ArrayList<Unique>()
@@ -186,7 +194,7 @@ class MapUnit {
         val uniques = ArrayList<Unique>()
         val baseUnit = baseUnit()
         uniques.addAll(baseUnit.uniqueObjects)
-        if (type != null) uniques.addAll(type!!.uniqueObjects)
+        uniques.addAll(type.uniqueObjects)
         
         for (promotion in promotions.promotions) {
             uniques.addAll(currentTile.tileMap.gameInfo.ruleSet.unitPromotions[promotion]!!.uniqueObjects)
@@ -200,16 +208,19 @@ class MapUnit {
         allTilesCosts1 = hasUnique("All tiles cost 1 movement") || hasUnique("All tiles costs 1")
         canPassThroughImpassableTiles = hasUnique("Can pass through impassable tiles")
         ignoresTerrainCost = hasUnique("Ignores terrain cost")
+        ignoresZoneOfControl = hasUnique("Ignores Zone of Control")
         roughTerrainPenalty = hasUnique("Rough terrain penalty")
         doubleMovementInCoast = hasUnique("Double movement in coast")
-        doubleMovementInForestAndJungle =
-            hasUnique("Double movement rate through Forest and Jungle")
+        doubleMovementInForestAndJungle = hasUnique("Double movement rate through Forest and Jungle")
         doubleMovementInSnowTundraAndHills = hasUnique("Double movement in Snow, Tundra and Hills")
         canEnterIceTiles = hasUnique("Can enter ice tiles")
         cannotEnterOceanTiles = hasUnique("Cannot enter ocean tiles")
         cannotEnterOceanTilesUntilAstronomy = hasUnique("Cannot enter ocean tiles until Astronomy")
         // Constants.workerUnique deprecated since 3.15.5
         hasUniqueToBuildImprovements = hasUnique(Constants.canBuildImprovements) || hasUnique(Constants.workerUnique)
+        canEnterForeignTerrain =
+            hasUnique("May enter foreign tiles without open borders, but loses [] religious strength each turn it ends there")
+                    || hasUnique("May enter foreign tiles without open borders")
     }
 
     fun copyStatisticsTo(newUnit: MapUnit) {
@@ -246,6 +257,8 @@ class MapUnit {
         for (unique in getTile().getAllTerrains().flatMap { it.uniqueObjects })
             if (unique.placeholderText == "[] Sight for [] units" && matchesFilter(unique.params[1]))
                 visibilityRange += unique.params[0].toInt()
+
+        if (visibilityRange < 1) visibilityRange = 1
 
         return visibilityRange
     }
@@ -632,6 +645,23 @@ class MapUnit {
         if (isPreparingParadrop())
             action = null
 
+        if (hasUnique("Religious Unit")
+            && getTile().getOwner() != null
+            && !getTile().getOwner()!!.isCityState()
+            && !civInfo.canPassThroughTiles(getTile().getOwner()!!)
+        ) {
+            val lostReligiousStrength =
+                getMatchingUniques("May enter foreign tiles without open borders, but loses [] religious strength each turn it ends there")
+                    .map { it.params[0].toInt() }
+                    .minOrNull()
+            if (lostReligiousStrength != null)
+                religiousStrengthLost += lostReligiousStrength
+            if (religiousStrengthLost >= baseUnit.religiousStrength) {
+                civInfo.addNotification("Your [${name}] lost its faith after spending too long inside enemy territory!", getTile().position, name)
+                destroy()
+            }
+        }
+
         getCitadelDamage()
         getTerrainDamage()
     }
@@ -665,7 +695,7 @@ class MapUnit {
             action = null
 
         val tileOwner = getTile().getOwner()
-        if (tileOwner != null && !civInfo.canEnterTiles(tileOwner) && !tileOwner.isCityState()) // if an enemy city expanded onto this tile while I was in it
+        if (tileOwner != null && !canEnterForeignTerrain && !civInfo.canPassThroughTiles(tileOwner) && !tileOwner.isCityState()) // if an enemy city expanded onto this tile while I was in it
             movement.teleportToClosestMoveableTile()
     }
 
@@ -926,6 +956,14 @@ class MapUnit {
         return getMatchingUniques("Can spread religion [] times").sumBy { it.params[0].toInt() }
     }
     
+    fun canSpreadReligion(): Boolean {
+        return hasUnique("Can spread religion [] times")
+    }
+
+    fun getPressureAddedFromSpread(): Int {
+        return baseUnit.religiousStrength
+    }
+
     fun getReligionString(): String {
         val maxSpreads = maxReligionSpreads()
         if (abilityUsedCount["Religion Spread"] == null) return "" // That is, either the key doesn't exist, or it does exist and the value is null.
