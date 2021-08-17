@@ -232,7 +232,6 @@ object UnitAutomation {
         val tilesThatCanWalkToAndThenPillage = unitDistanceToTiles
             .filter { it.value.totalDistance < unit.currentMovement }.keys
             .filter { unit.movement.canMoveTo(it) && UnitActions.canPillage(unit, it) }
-            .filter { it.getOwner() != unit.civInfo }
 
         if (tilesThatCanWalkToAndThenPillage.isEmpty()) return false
         val tileToPillage = tilesThatCanWalkToAndThenPillage.maxByOrNull { it: TileInfo -> it.getDefensiveBonus() }!!
