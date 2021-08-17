@@ -23,15 +23,15 @@ class TradeEvaluation {
             return false
 
         for (offer in trade.ourOffers)
-            if (!isOfferValid(offer, offerer))
+            if (!isOfferValid(offer, offerer, tradePartner))
                 return false
         for (offer in trade.theirOffers)
-            if (!isOfferValid(offer, tradePartner))
+            if (!isOfferValid(offer, tradePartner, offerer))
                 return false
         return true
     }
 
-    private fun isOfferValid(tradeOffer: TradeOffer, offerer: CivilizationInfo): Boolean {
+    private fun isOfferValid(tradeOffer: TradeOffer, offerer: CivilizationInfo, tradePartner: CivilizationInfo): Boolean {
 
         fun hasResource(tradeOffer: TradeOffer): Boolean {
             val resourcesByName = offerer.getCivResourcesByName()
@@ -46,7 +46,7 @@ class TradeEvaluation {
             TradeType.Luxury_Resource -> hasResource(tradeOffer)
             TradeType.Strategic_Resource -> hasResource(tradeOffer)
             TradeType.Technology -> true
-            TradeType.Introduction -> true
+            TradeType.Introduction -> !tradePartner.knows(tradeOffer.name) // You can't introduce them to someone they already know!
             TradeType.WarDeclaration -> true
             TradeType.City -> offerer.cities.any { it.id == tradeOffer.name }
         }
