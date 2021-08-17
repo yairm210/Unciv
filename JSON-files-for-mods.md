@@ -6,7 +6,7 @@ The JSON files that make up mods can have many different fields, and as not all 
 # Table of Contents
 * [General Overview of JSON files](#general-overview-of-json-files)
 * [Civilization-related JSON files](../Civilization-related-JSON-files)
-    * [Beliefs.json](../Civilization-related-JSON-files#beliefsjson)
+    * [Beliefs.json](Civilization-related-JSON-files#beliefsjson)
     * [Buildings.json](../Civilization-related-JSON-files#buildingsjson)
     * [Nations.json](../Civilization-related-JSON-files#nationsjson)
     * [Policies.json](../Civilization-related-JSON-files#policiesjson)
