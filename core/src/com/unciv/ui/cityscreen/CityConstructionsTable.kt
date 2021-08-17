@@ -384,11 +384,11 @@ class CityConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBase
     }
     
     private fun getBuyButtons(construction: INonPerpetualConstruction?): List<TextButton> {
-        return Stat.values().mapNotNull { getBuyButton(construction, it) }
+        return Stat.statsUsableToBuy.mapNotNull { getBuyButton(construction, it) }
     }
 
     private fun getBuyButton(construction: INonPerpetualConstruction?, stat: Stat = Stat.Gold): TextButton? {
-        if (!stat.isPotentialCurrency || construction == null)
+        if (stat !in Stat.statsUsableToBuy || construction == null)
             return null
 
         val city = cityScreen.city

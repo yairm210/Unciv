@@ -5,6 +5,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.UncivGame
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.UncivSound
+import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.tr
 import com.unciv.ui.civilopedia.CivilopediaScreen
@@ -47,8 +48,8 @@ class CityScreenTileTable(private val cityScreen: CityScreen): Table() {
 
             val buyTileButton = "Buy for [$goldCostOfTile] gold".toTextButton()
             buyTileButton.onClick(UncivSound.Coin) {
-                val purchasePrompt = "Currently you have [${city.civInfo.gold}] gold.".tr() + "\n" +
-                        "Would you like to purchase [Tile] for [$goldCostOfTile] gold?".tr()
+                val purchasePrompt = "Currently you have [${city.civInfo.gold}] [Gold].".tr() + "\n\n" +
+                        "Would you like to purchase [Tile] for [$goldCostOfTile] [${Stat.Gold.character}]?".tr()
                 YesNoPopup(purchasePrompt, { city.expansion.buyTile(selectedTile);UncivGame.Current.setScreen(CityScreen(city)) }, cityScreen).open()
             }
             val canPurchase = goldCostOfTile == 0 || city.civInfo.gold >= goldCostOfTile

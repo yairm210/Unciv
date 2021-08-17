@@ -18,7 +18,7 @@ enum class Stat(
     Faith(NotificationIcon.Faith, UncivSound.Choir, Fonts.faith);
     
     companion object {
-        val statsUseableToBuy = listOf(Gold,Food,Science,Culture,Faith)
+        val statsUsableToBuy = listOf(Gold, Food, Science, Culture, Faith)
     }
 }
 

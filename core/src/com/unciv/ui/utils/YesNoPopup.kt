@@ -1,6 +1,7 @@
 package com.unciv.ui.utils
 
 import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.UncivGame
 
@@ -11,14 +12,17 @@ import com.unciv.UncivGame
  * @param restoreDefault A lambda to execute when "No" is chosen
  */
 open class YesNoPopup (
-            question:String,
-            action:()->Unit,
+            question: String,
+            action: ()->Unit,
             screen: CameraStageBaseScreen = UncivGame.Current.worldScreen,
-            restoreDefault:()->Unit = {}
+            restoreDefault: ()->Unit = {}
         ) : Popup(screen) {
 
+    /** The [Label][com.badlogic.gdx.scenes.scene2d.ui.Label] created for parameter `question` for optional layout tweaking */
     val promptLabel = question.toLabel()
+
     init {
+        promptLabel.setAlignment(Align.center)
         add(promptLabel).colspan(2).row()
         addOKButton(Constants.yes, KeyCharAndCode('y'), action)
         addCloseButton(Constants.no, KeyCharAndCode('n'), restoreDefault)
