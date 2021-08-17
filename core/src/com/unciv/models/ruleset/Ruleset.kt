@@ -444,7 +444,7 @@ class Ruleset {
  * save all of the loaded rulesets somewhere for later use
  *  */
 object RulesetCache : HashMap<String,Ruleset>() {
-    fun loadRulesets(consoleMode: Boolean = false, printOutput: Boolean = false, noMods: Boolean = true) {
+    fun loadRulesets(consoleMode: Boolean = false, printOutput: Boolean = false, noMods: Boolean = false) {
         clear()
         for (ruleset in BaseRuleset.values()) {
             val fileName = "jsons/${ruleset.fullName}"
