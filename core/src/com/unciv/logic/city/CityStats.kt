@@ -11,6 +11,7 @@ import com.unciv.models.ruleset.Unique
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
+import kotlin.math.min
 
 
 class CityStats {
@@ -347,6 +348,15 @@ class CityStats {
             for (unique in uniques.filter { it.placeholderText == "[]% [] while the empire is happy"})
                 stats.add(Stat.valueOf(unique.params[1]), unique.params[0].toFloat())
         }
+        
+        for (unique in uniques.filter { it.placeholderText == "[]% [] from every follower, up to []%" })
+            stats.add(
+                Stat.valueOf(unique.params[1]), 
+                min(
+                    unique.params[0].toFloat() * cityInfo.religion.getFollowersOfMajorityReligion(), 
+                    unique.params[2].toFloat()
+                )
+            )
 
         return stats
     }

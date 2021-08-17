@@ -117,6 +117,13 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
                     )
                 }
             }
+            for (unique in civInfo.religionManager.religion!!.getFounderUniques())
+                if (unique.placeholderText == "[] for every [] global followers []")
+                    statMap.add("Religion",
+                        unique.stats *
+                        civInfo.religionManager.numberOfFollowersFollowingThisReligion(unique.params[2]).toFloat() /
+                        unique.params[1].toFloat()
+                    )
         }
         
 
@@ -205,6 +212,13 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
                     statMap["Religion"] = 
                         statMap["Religion"]!! +
                         unique.stats.happiness * civInfo.religionManager.numberOfCitiesFollowingThisReligion().toFloat()
+                }
+                if (unique.placeholderText == "[] for every [] global followers []") {
+                    statMap["Religion"] =
+                        statMap["Religion"]!! +
+                            unique.stats.happiness * 
+                            civInfo.religionManager.numberOfFollowersFollowingThisReligion(unique.params[2]).toFloat() / 
+                            unique.params[1].toFloat()
                 }
             }
             if (statMap["Religion"] == 0f) 

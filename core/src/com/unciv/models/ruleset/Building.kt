@@ -167,6 +167,10 @@ class Building : NamedStats(), INonPerpetualConstruction, ICivilopediaText {
             stats.add(unique.stats)
         }
 
+        for (unique in city.getMatchingUniques("[] from every [] in cities where this religion has at least [] followers"))
+            if (unique.params[2].toInt() <= city.religion.getFollowersOfMajorityReligion())
+                stats.add(unique.stats)
+
         for (unique in uniqueObjects)
             if (unique.placeholderText == "[] with []" && civInfo.hasResource(unique.params[1])
                     && Stats.isStats(unique.params[0]))

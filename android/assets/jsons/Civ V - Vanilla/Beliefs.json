@@ -119,14 +119,21 @@
         "uniques": ["[+2 Faith] from every [Quarry]"]
     },
 ///////////////////////////////////////// Follower beliefs /////////////////////////////////////////
-    
-    // Missing: asceticism (requires followers)
+    {
+        "name": "Asceticism",
+        "type": "Follower",
+        "uniques": ["[+1 Happiness] from every [Shrine] in cities where this religion has at least [3] followers"]
+    },
     {
         "name": "Cathedrals",
         "type": "Follower",
         "uniques": ["May buy [Cathedral] buildings for [200] [Faith] [in cities following this religion]"]
     },
-    // Missing: choral music (requires followers)
+    {
+        "name": "Choral Music",
+        "type": "Follower",
+        "uniques": ["[+2 Culture] from every [Temple] in cities where this religion has at least [5] followers"]
+    },
     {
         "name": "Divine inspiration",
         "type": "Follower",
@@ -142,8 +149,12 @@
         "type": "Follower",
         "uniques": ["[+2 Production] if this city has at least [1] specialists"]
     },
-    // Missing: Holy Warriors (requires purchasing with faith)
-    // Missing: Liturgical drama (requires followers)
+    // Missing: Holy Warriors (I have to look up the faith costs for these sometime)
+    {
+        "name": "Liturgical Drama",
+        "type": "Follower",
+        "uniques": ["[+1 Faith] from every [Amphitheatre] in cities where this religion has at least [3] followers"]
+    },
     {
         "name": "Monasteries",
         "type": "Follower",
@@ -169,8 +180,16 @@
         "type": "Follower",
         "uniques": ["[+8 Culture] from every [Hermitage]"]
     },
-    // Missing: Religious center (requires followers)
-    // Missing: Religious community (requires followers)
+    {
+        "name": "Religious Center",
+        "type": "Follower",
+        "uniques": ["[+2 Happiness] from every [Temple] in cities where this religion has at least [5] followers"]
+    },
+    {
+        "name": "Religious Community",
+        "type": "Follower",
+        "uniques": ["[+1]% [Production] from every follower, up to [15]%"]
+    },
     {
         "name": "Swords into Ploughshares",
         "type": "Follower",
@@ -193,19 +212,35 @@
         "type": "Founder",
         "uniques": ["[+100 Gold] when a city adopts this religion for the first time (modified by game speed)"]
     },
-    // Missing: Interfaith Dialogue (requires followers)
+    {
+        "name": "Interfaith Dialogue",
+        "type": "Founder",
+        "uniques": ["When spreading religion to a city, gain [10] times the amount of followers of other religions as [Science]"]
+    }
     {
         "name": "Papal Primacy",
         "type": "Founder",
         "uniques": ["Resting point for influence with City-States following this religion [+15]"]
     },
-    // Missing: Peace Loving (requires followers)
+    {
+        "name": "Peace Loving",
+        "type": "Founder",
+        "uniques": ["[+1 Happiness] for every [5] global followers [in non-enemy foreign cities]"]
+    },
     {
         "name": "Pilgrimage",
         "type": "Founder",
         "uniques": ["[+2 Faith] for each global city following this religion"]
     },
-    // Missing: Tithe (requires followers)
-    // Missing: World Churhc (requires followers)
+    {
+        "name": "Tithe",
+        "type": "Founder",
+        "uniques": ["[+1 Gold] for every [4] global followers [in all cities]"]
+    },
+    {
+        "name": "World Church",
+        "type": "Founder",
+        "uniques": ["[+1 Culture] for every [5] global followers [in foreign cities]"]
+    }
 ]
 
