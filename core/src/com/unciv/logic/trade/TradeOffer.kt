@@ -38,9 +38,7 @@ data class TradeOffer(val name:String, val type:TradeType, var amount:Int = 1, v
     fun getOfferText(): String {
         var offerText = when(type){
             TradeType.WarDeclaration -> "Declare war on [$name]"
-            // Removed in 3.16.5; this code temporarily left in to not break saves with a pending introduction trade
-                TradeType.Introduction -> "Introduction to [$name]"
-            //
+            TradeType.Introduction -> "Introduction to [$name]"
             TradeType.City -> UncivGame.Current.gameInfo.getCities().firstOrNull{ it.id == name }?.name ?: "Non-existent city"
             else -> name
         }.tr()

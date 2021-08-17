@@ -6,6 +6,8 @@ import com.unciv.logic.automation.ThreatLevel
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
+import com.unciv.models.ruleset.ModOptionsConstants
+import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tile.ResourceType
 import kotlin.math.min
 import kotlin.math.sqrt
@@ -36,19 +38,17 @@ class TradeEvaluation {
             return resourcesByName.containsKey(tradeOffer.name) && resourcesByName[tradeOffer.name]!! >= 0
         }
 
-        when (tradeOffer.type) {
-            TradeType.Gold -> return true // even if they go negative it's okay
-            TradeType.Gold_Per_Turn -> return true // even if they go negative it's okay
-            TradeType.Treaty -> return true
-            TradeType.Agreement -> return true
-            TradeType.Luxury_Resource -> return hasResource(tradeOffer)
-            TradeType.Strategic_Resource -> return hasResource(tradeOffer)
-            TradeType.Technology -> return true
-            // Removed in 3.16.5; this code temporarily left in to not break saves with a pending introduction trade
-                TradeType.Introduction -> return false // Cancel any pending introduction trades
-            //
-            TradeType.WarDeclaration -> return true
-            TradeType.City -> return offerer.cities.any { it.id == tradeOffer.name }
+        return when (tradeOffer.type) {
+            TradeType.Gold -> true // even if they go negative it's okay
+            TradeType.Gold_Per_Turn -> true // even if they go negative it's okay
+            TradeType.Treaty -> true
+            TradeType.Agreement -> true
+            TradeType.Luxury_Resource -> hasResource(tradeOffer)
+            TradeType.Strategic_Resource -> hasResource(tradeOffer)
+            TradeType.Technology -> true
+            TradeType.Introduction -> true
+            TradeType.WarDeclaration -> true
+            TradeType.City -> offerer.cities.any { it.id == tradeOffer.name }
         }
     }
 
@@ -70,7 +70,7 @@ class TradeEvaluation {
         return sumOfOurOffers <= sumOfTheirOffers
     }
 
-    fun evaluateBuyCost(offer: TradeOffer, civInfo: CivilizationInfo, tradePartner: CivilizationInfo): Int {
+    private fun evaluateBuyCost(offer: TradeOffer, civInfo: CivilizationInfo, tradePartner: CivilizationInfo): Int {
         when (offer.type) {
             TradeType.Gold -> return offer.amount
             TradeType.Gold_Per_Turn -> return offer.amount * offer.duration
@@ -133,9 +133,7 @@ class TradeEvaluation {
             TradeType.Technology ->
                 return (sqrt(civInfo.gameInfo.ruleSet.technologies[offer.name]!!.cost.toDouble())
                         * civInfo.gameInfo.gameParameters.gameSpeed.modifier).toInt() * 20
-            // Removed in 3.16.5; this code temporarily left in to not break saves with a pending introduction trade
-                TradeType.Introduction -> return 250
-            //
+            TradeType.Introduction -> return introductionValue(civInfo.gameInfo.ruleSet)
             TradeType.WarDeclaration -> {
                 val civToDeclareWarOn = civInfo.gameInfo.getCivilization(offer.name)
                 val threatToThem = Automation.threatAssessment(civInfo, civToDeclareWarOn)
@@ -164,7 +162,7 @@ class TradeEvaluation {
             }
         }
     }
-    fun surroundedByOurCities(city: CityInfo, civInfo: CivilizationInfo): Int{
+    private fun surroundedByOurCities(city: CityInfo, civInfo: CivilizationInfo): Int{
         val borderingCivs: List<String> = city.getNeighbouringCivs()
         if (borderingCivs.size == 1 && borderingCivs.contains(civInfo.civName)){
             return 10*civInfo.getEraNumber() // if the city is surrounded only by trading civ
@@ -175,7 +173,7 @@ class TradeEvaluation {
 
     }
 
-    fun evaluateSellCost(offer: TradeOffer, civInfo: CivilizationInfo, tradePartner: CivilizationInfo): Int {
+    private fun evaluateSellCost(offer: TradeOffer, civInfo: CivilizationInfo, tradePartner: CivilizationInfo): Int {
         when (offer.type) {
             TradeType.Gold -> return offer.amount
             TradeType.Gold_Per_Turn -> return offer.amount * offer.duration
@@ -217,9 +215,7 @@ class TradeEvaluation {
                 return totalCost
             }
             TradeType.Technology -> return sqrt(civInfo.gameInfo.ruleSet.technologies[offer.name]!!.cost.toDouble()).toInt() * 20
-            // Removed in 3.16.5; this code temporarily left in to not break saves with a pending introduction trade
-                TradeType.Introduction -> return 250
-            //
+            TradeType.Introduction -> return introductionValue(civInfo .gameInfo.ruleSet)
             TradeType.WarDeclaration -> {
                 val civToDeclareWarOn = civInfo.gameInfo.getCivilization(offer.name)
                 val threatToUs = Automation.threatAssessment(civInfo, civToDeclareWarOn)
@@ -280,4 +276,7 @@ class TradeEvaluation {
         }
     }
 
+    private fun introductionValue(ruleSet: Ruleset): Int {
+        return ruleSet.modOptions.uniqueObjects.firstOrNull{ it.placeholderText == ModOptionsConstants.tradeCivIntroductions }?.let{ it.params[0].toInt() } ?: 0
+    }
 }

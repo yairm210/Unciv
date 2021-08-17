@@ -15,9 +15,7 @@ enum class TradeType(val numberType: TradeTypeNumberType, val isImmediate: Boole
     Luxury_Resource     (TradeTypeNumberType.Simple, false),
     Strategic_Resource  (TradeTypeNumberType.Simple, false),
     Technology          (TradeTypeNumberType.None, true),
-    // Removed in 3.16.5; this code temporarily left in to not break saves with a pending introduction trade
-        Introduction        (TradeTypeNumberType.None, true),
-    //
+    Introduction        (TradeTypeNumberType.None, true),
     WarDeclaration      (TradeTypeNumberType.None, true),
     City                (TradeTypeNumberType.None, true);
     

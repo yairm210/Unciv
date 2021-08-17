@@ -29,10 +29,7 @@ class OffersListScroll(val onOfferClicked: (TradeOffer) -> Unit) : ScrollPane(nu
 
         for (offerType in values()) {
             val labelName = when(offerType){
-                Gold, Gold_Per_Turn, Treaty, Agreement -> ""
-                // Removed in 3.16.5; this code temporarily left in to not break saves with a pending introduction trade
-                    Introduction -> ""
-                //
+                Gold, Gold_Per_Turn, Treaty, Agreement, Introduction -> ""
                 Luxury_Resource -> "Luxury resources"
                 Strategic_Resource -> "Strategic resources"
                 Technology -> "Technologies"
