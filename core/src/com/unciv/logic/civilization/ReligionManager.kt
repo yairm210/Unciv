@@ -117,7 +117,6 @@ class ReligionManager {
                 else civInfo.cities.firstOrNull { it.religion.religionThisIsTheHolyCityOf == religion!!.name }
             val prophet = civInfo.addUnit("Great Prophet", birthCity) ?: return
             prophet.religion = religion!!.name
-            prophet.abilityUsedCount["Religion Spread"] = 0
             storedFaith -= faithForNextGreatProphet()
             greatProphetsEarned += 1
         }

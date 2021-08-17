@@ -263,7 +263,14 @@ class CivilizationInfo {
                 } +
                 policies.policyUniques.getUniques(uniqueTemplate) +
                 tech.techUniques.getUniques(uniqueTemplate) +
-                temporaryUniques.filter { it.first.placeholderText == uniqueTemplate }.map { it.first }
+                temporaryUniques
+                    .asSequence()
+                    .filter { it.first.placeholderText == uniqueTemplate }.map { it.first } +
+                if (religionManager.religion != null) 
+                    religionManager.religion!!.getFounderUniques()
+                        .asSequence()
+                        .filter { it.placeholderText == uniqueTemplate }
+                else sequenceOf()
     }
 
     //region Units
@@ -778,6 +785,15 @@ class CivilizationInfo {
         if (unit.isGreatPerson()) {
             addNotification("A [${unit.name}] has been born in [${cityToAddTo.name}]!", placedUnit.getTile().position, unit.name)
         }
+
+        if (placedUnit.hasUnique("Religious Unit")) {
+            placedUnit.religion = 
+                if (city != null) city.cityConstructions.cityInfo.religion.getMajorityReligion()
+                else religionManager.religion?.name
+            if (placedUnit.hasUnique("Can spread religion [] times"))
+                placedUnit.abilityUsedCount["Religion Spread"] = 0
+        }
+        
         return placedUnit
     }
 
