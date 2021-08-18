@@ -660,6 +660,10 @@ class CityInfo {
         return !isOriginalCapital && !isCapital() && !isHolyCity()
     }
 
+    fun canBeDestroyedAfterCapture(): Boolean {
+        return !isOriginalCapital && !isHolyCity()
+    }
+
 
     fun getNeighbouringCivs(): List<String> {
         val tilesList: HashSet<TileInfo> = getTiles().toHashSet()
