@@ -35,9 +35,9 @@ object UnitActions {
         val actionList = ArrayList<UnitAction>()
 
         if (unit.isMoving()) actionList += UnitAction(UnitActionType.StopMovement) { unit.action = null }
-        if (unit.action == Constants.unitActionExplore)
+        if (unit.isExploring())
             actionList += UnitAction(UnitActionType.StopExploration) { unit.action = null }
-        if (unit.action == Constants.unitActionAutomation)
+        if (unit.isAutomated())
             actionList += UnitAction(UnitActionType.StopAutomation) { unit.action = null }
 
         addSleepActions(actionList, unit, false)
@@ -56,8 +56,7 @@ object UnitActions {
         actionList += getImprovementConstructionActions(unit, tile)
         addSpreadReligionActions(unit, actionList, tile)
 
-        
-        
+
         addToggleActionsAction(unit, actionList, unitTable)
 
         return actionList
@@ -123,7 +122,7 @@ object UnitActions {
 
     fun getWaterImprovementAction(unit: MapUnit): UnitAction? {
         val tile = unit.currentTile
-        if (!tile.isWater || !unit.hasUnique("May create improvements on water resources") || tile.resource == null) return null
+        if (!tile.isWater || !unit.hasUnique(Constants.workBoatsUnique) || tile.resource == null) return null
 
         val improvementName = tile.getTileResource().improvement ?: return null
         val improvement = tile.ruleset.tileImprovements[improvementName] ?: return null
@@ -221,11 +220,11 @@ object UnitActions {
 
     private fun addSetupAction(unit: MapUnit, actionList: ArrayList<UnitAction>) {
         if (!unit.hasUnique("Must set up to ranged attack") || unit.isEmbarked()) return
-        val isSetUp = unit.action == "Set Up"
+        val isSetUp = unit.isSetUpForSiege()
         actionList += UnitAction(UnitActionType.SetUp,
                 isCurrentAction = isSetUp,
                 action = {
-                    unit.action = Constants.unitActionSetUp
+                    unit.action = UnitActionType.SetUp.value
                     unit.useMovementPoints(1f)
                 }.takeIf { unit.currentMovement > 0 && !isSetUp })
     }
@@ -235,12 +234,12 @@ object UnitActions {
         if (!paradropUniques.any() || unit.isEmbarked()) return
         unit.paradropRange = paradropUniques.maxOfOrNull { it.params[0] }!!.toInt()
         actionList += UnitAction(UnitActionType.Paradrop,
-                isCurrentAction = unit.action == Constants.unitActionParadrop,
+                isCurrentAction = unit.isPreparingParadrop(),
                 action = {
-                    if (unit.action != Constants.unitActionParadrop) {
-                        unit.action = Constants.unitActionParadrop
-                    } else {
+                    if (unit.isPreparingParadrop()) {
                         unit.action = null
+                    } else {
+                        unit.action = UnitActionType.Paradrop.value
                     }
                 }.takeIf {
                     unit.currentMovement == unit.getMaxMovement().toFloat() &&
@@ -288,11 +287,10 @@ object UnitActions {
 
     private fun addExplorationActions(unit: MapUnit, actionList: ArrayList<UnitAction>) {
         if (unit.baseUnit.movesLikeAirUnits()) return
-        if (unit.action != Constants.unitActionExplore) {
-            actionList += UnitAction(UnitActionType.Explore) {
-                unit.action = Constants.unitActionExplore
-                if (unit.currentMovement > 0) UnitAutomation.automatedExplore(unit)
-            }
+        if (unit.isExploring()) return
+        actionList += UnitAction(UnitActionType.Explore) {
+            unit.action = UnitActionType.Explore.value
+            if (unit.currentMovement > 0) UnitAutomation.automatedExplore(unit)
         }
     }
 
@@ -357,8 +355,7 @@ object UnitActions {
     }
 
     private fun addBuildingImprovementsAction(unit: MapUnit, actionList: ArrayList<UnitAction>, tile: TileInfo, worldScreen: WorldScreen, unitTable: UnitTable) {
-        // Constants.workerUnique deprecated since 3.15.5
-        if (!unit.hasUnique(Constants.canBuildImprovements) && !unit.hasUnique(Constants.workerUnique)) return
+        if (!unit.hasUniqueToBuildImprovements) return
         if (unit.isEmbarked()) return
 
         val canConstruct = unit.currentMovement > 0
@@ -374,12 +371,12 @@ object UnitActions {
     }
 
     private fun addAutomateBuildingImprovementsAction(unit: MapUnit, actionList: ArrayList<UnitAction>) {
-        // Constants.workerUnique deprecated since 3.15.5
-        if (!unit.hasUnique(Constants.canBuildImprovements) && !unit.hasUnique(Constants.workerUnique)) return
+        if (!unit.hasUniqueToBuildImprovements) return
 
         actionList += UnitAction(UnitActionType.Automate,
+            isCurrentAction = unit.isAutomated(),
             action = {
-                unit.action = Constants.unitActionAutomation
+                unit.action = UnitActionType.Automate.value
                 WorkerAutomation(unit).automateWorkerAction()
             }.takeIf { unit.currentMovement > 0 }
         )
@@ -575,7 +572,7 @@ object UnitActions {
     private fun addFortifyActions(actionList: ArrayList<UnitAction>, unit: MapUnit, showingAdditionalActions: Boolean) {
         if (unit.isFortified() && !showingAdditionalActions) {
             actionList += UnitAction(
-                type = if (unit.action!!.endsWith(" until healed"))
+                type = if (unit.isActionUntilHealed())
                     UnitActionType.FortifyUntilHealed else
                     UnitActionType.Fortify,
                 isCurrentAction = true,
@@ -614,13 +611,13 @@ object UnitActions {
         if (isDamaged && !showingAdditionalActions) {
             actionList += UnitAction(UnitActionType.SleepUntilHealed,
                 action = {
-                    unit.action = Constants.unitActionSleepUntilHealed
+                    unit.action = UnitActionType.SleepUntilHealed.value
                 }.takeIf { !unit.isSleepingUntilHealed() }
             )
         } else if (isDamaged || !showingAdditionalActions) {
             actionList += UnitAction(UnitActionType.Sleep,
                 action = {
-                    unit.action = Constants.unitActionSleep
+                    unit.action = UnitActionType.Sleep.value
                 }.takeIf { !isSleeping }
             )
         }

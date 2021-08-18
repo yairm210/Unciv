@@ -1,6 +1,5 @@
 package com.unciv.logic.automation
 
-import com.unciv.Constants
 import com.unciv.logic.battle.Battle
 import com.unciv.logic.battle.BattleDamage
 import com.unciv.logic.battle.ICombatant
@@ -54,7 +53,7 @@ object BattleHelper {
             unitDistanceToTiles.asSequence()
                     .filter {
                         val movementPointsToExpendAfterMovement = if (unitMustBeSetUp) 1 else 0
-                        val movementPointsToExpendHere = if (unitMustBeSetUp && unit.action != Constants.unitActionSetUp) 1 else 0
+                        val movementPointsToExpendHere = if (unitMustBeSetUp && !unit.isSetUpForSiege()) 1 else 0
                         val movementPointsToExpendBeforeAttack = if (it.key == unit.currentTile) movementPointsToExpendHere else movementPointsToExpendAfterMovement
                         unit.currentMovement - it.value.totalDistance - movementPointsToExpendBeforeAttack > 0.1
                     } // still got leftover movement points after all that, to attack (0.1 is because of Float nonsense, see MapUnit.moveToTile(...)
