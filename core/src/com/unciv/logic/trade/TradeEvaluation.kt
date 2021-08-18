@@ -215,7 +215,7 @@ class TradeEvaluation {
                 return totalCost
             }
             TradeType.Technology -> return sqrt(civInfo.gameInfo.ruleSet.technologies[offer.name]!!.cost.toDouble()).toInt() * 20
-            TradeType.Introduction -> return introductionValue(civInfo .gameInfo.ruleSet)
+            TradeType.Introduction -> return introductionValue(civInfo.gameInfo.ruleSet)
             TradeType.WarDeclaration -> {
                 val civToDeclareWarOn = civInfo.gameInfo.getCivilization(offer.name)
                 val threatToUs = Automation.threatAssessment(civInfo, civToDeclareWarOn)
