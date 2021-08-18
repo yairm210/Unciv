@@ -602,7 +602,7 @@ class CityInfo {
                 && civInfo.gameInfo.religions[religion.getMajorityReligion()]!!.isMajorReligion()
             "in non-enemy foreign cities" ->
                 viewingCiv != civInfo
-                && civInfo.isAtWarWith(viewingCiv)
+                && !civInfo.isAtWarWith(viewingCiv)
             "in foreign cities" ->
                 viewingCiv != civInfo
             // This is only used in communication to the user indicating that only in cities with this
