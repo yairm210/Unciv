@@ -499,6 +499,10 @@ Follower uniques are uniques applied to each city following a religion which inc
 
 "Cannot be built on bonus resource"
 
+"Cannot be built on [tileFilter] tiles"
+
+"Cannot be built on [tileFilter] tiles until [techName] is discovered"
+
 "Tile provides yield without assigned population"
 
 "Indestructable" - Cannot be removed by nukes (might be used more later, for now only this)
