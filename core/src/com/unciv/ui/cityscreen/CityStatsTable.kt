@@ -2,13 +2,9 @@ package com.unciv.ui.cityscreen
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Table
-import com.unciv.logic.civilization.ReligionState
 import com.unciv.models.stats.Stat
 import com.unciv.models.translations.tr
-import com.unciv.ui.utils.ImageGetter
-import com.unciv.ui.utils.addSeparator
-import com.unciv.ui.utils.colorFromRGB
-import com.unciv.ui.utils.toLabel
+import com.unciv.ui.utils.*
 import kotlin.math.ceil
 import kotlin.math.round
 
@@ -45,8 +41,9 @@ class CityStatsTable(val cityScreen: CityScreen): Table() {
             innerTable.addSeparator()
             innerTable.add(SpecialistAllocationTable(cityScreen).apply { update() })
         }
-
-        addReligionInfo()
+        
+        if (cityInfo.religion.getNumberOfFollowers().isNotEmpty())
+            addReligionInfo()
 
         pack()
     }
@@ -86,10 +83,45 @@ class CityStatsTable(val cityScreen: CityScreen): Table() {
 
     private fun addReligionInfo() {
         // This will later become large enough to be its own class, but for now it is small enough to fit inside a single function
-        if(cityInfo.civInfo.religionManager.religionState == ReligionState.None) return
         innerTable.addSeparator()
         val label = cityInfo.religion.getMajorityReligion()
             ?: "None"
-        innerTable.add("Majority Religion: [$label]".toLabel())
+        innerTable.add("Majority Religion: [$label]".toLabel()).pad(5f).row()
+        // This line above will have merge conflicts with #4902, this version should have priority
+        
+        innerTable.add(addReligionsTable())
+    }
+    
+    private fun addReligionsTable(): Table {
+        val religionsTable = Table(CameraStageBaseScreen.skin)
+        val followers = cityInfo.religion.getNumberOfFollowers()
+        val futurePressures = cityInfo.religion.getPressuresFromSurroundingCities()
+        
+        religionsTable.add("Religion").pad(5f)
+        religionsTable.addSeparatorVertical()
+        val followerImage = ImageGetter.getReligionIcon("Follower")
+            .apply { color = Color.BLACK }
+        religionsTable.add(followerImage.surroundWithCircle(30f)).pad(5f)
+        religionsTable.addSeparatorVertical()
+        religionsTable.add("Pressure").pad(5f)
+        religionsTable.row()
+        religionsTable.addSeparator()
+        
+        for ((religion, followerCount) in followers) {
+            val religionImage = ImageGetter.getReligionIcon(cityInfo.civInfo.gameInfo.religions[religion]!!.iconName)
+                .apply { color = Color.BLACK }
+            religionsTable.add(religionImage.surroundWithCircle(30f)).pad(5f)
+            religionsTable.addSeparatorVertical()
+            religionsTable.add(followerCount.toLabel()).pad(5f)
+            religionsTable.addSeparatorVertical()
+            if (futurePressures.containsKey(religion))
+                religionsTable.add(("+ [${futurePressures[religion]!!}] pressure").toLabel()).pad(5f)
+            else
+                religionsTable.add()
+            religionsTable.row()
+        }
+        
+        
+        return religionsTable
     }
 }

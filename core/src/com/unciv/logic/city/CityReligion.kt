@@ -37,6 +37,7 @@ class CityInfoReligionManager {
     
     fun clone(): CityInfoReligionManager {
         val toReturn = CityInfoReligionManager()
+        toReturn.cityInfo = cityInfo
         toReturn.religionsAtSomePointAdopted.addAll(religionsAtSomePointAdopted)
         toReturn.pressures.putAll(pressures)
         toReturn.followers.putAll(followers)
@@ -213,5 +214,25 @@ class CityInfoReligionManager {
         }
         
         updateNumberOfFollowers()
+    }
+    
+    /** Doesn't update the pressures, only returns what they are if the update were to happen right now */
+    fun getPressuresFromSurroundingCities(): Counter<String> {
+        val addedPressure = Counter<String>()
+        if (cityInfo.isHolyCity()) {
+            addedPressure[religionThisIsTheHolyCityOf!!] = 5 * pressureFromAdjacentCities
+        }
+        val allCitiesWithin10Tiles =
+            cityInfo.civInfo.gameInfo.getCities()
+                .filter {
+                    it != cityInfo
+                            && it.getCenterTile().aerialDistanceTo(cityInfo.getCenterTile()) <= 10
+                }
+        for (city in allCitiesWithin10Tiles) {
+            val majorityReligionOfCity = city.religion.getMajorityReligion() ?: continue
+            if (!cityInfo.civInfo.gameInfo.religions[majorityReligionOfCity]!!.isMajorReligion()) continue
+            addedPressure.add(majorityReligionOfCity, pressureFromAdjacentCities)
+        }
+        return addedPressure
     }
 }
