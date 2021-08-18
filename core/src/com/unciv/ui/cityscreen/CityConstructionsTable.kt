@@ -120,28 +120,18 @@ class CityConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBase
         val city = cityScreen.city
         val cityConstructions = city.cityConstructions
 
-        for (unit in city.getRuleset().units.values.filter { it.shouldBeDisplayed(cityConstructions) }) {
-            val useStoredProduction = !cityConstructions.isBeingConstructedOrEnqueued(unit.name)
-            var buttonText = unit.name.tr() + cityConstructions.getTurnsToConstructionString(unit.name, useStoredProduction)
-            for ((resource, amount) in unit.getResourceRequirements()) {
-                if (amount == 1) buttonText += "\n" + "Consumes 1 [$resource]".tr()
-                else buttonText += "\n" + "Consumes [$amount] [$resource]".tr()
+        val constructionsSequence = city.getRuleset().units.values.asSequence() +
+                city.getRuleset().buildings.values.asSequence()
+        for (entry in constructionsSequence.filter { it.shouldBeDisplayed(cityConstructions) }) {
+            val useStoredProduction = entry is Building || !cityConstructions.isBeingConstructedOrEnqueued(entry.name)
+            var buttonText = entry.name.tr() + cityConstructions.getTurnsToConstructionString(entry.name, useStoredProduction)
+            for ((resource, amount) in entry.getResourceRequirements()) {
+                buttonText += "\n" + (if (amount == 1) "Consumes 1 [$resource]"
+                else "Consumes [$amount] [$resource]").tr()
             }
 
-            constructionButtonDTOList.add(ConstructionButtonDTO(unit, buttonText,
-                    unit.getRejectionReason(cityConstructions)))
-        }
-
-
-        for (building in city.getRuleset().buildings.values.filter { it.shouldBeDisplayed(cityConstructions) }) {
-            var buttonText = building.name.tr() + cityConstructions.getTurnsToConstructionString(building.name)
-            for ((resource, amount) in building.getResourceRequirements()) {
-                if (amount == 1) buttonText += "\n" + "Consumes 1 [$resource]".tr()
-                else buttonText += "\n" + "Consumes [$amount] [$resource]".tr()
-            }
-
-            constructionButtonDTOList.add(ConstructionButtonDTO(building, buttonText,
-                    building.getRejectionReason(cityConstructions)))
+            constructionButtonDTOList.add(ConstructionButtonDTO(entry, buttonText,
+                entry.getRejectionReason(cityConstructions)))
         }
 
         for (specialConstruction in PerpetualConstruction.perpetualConstructionsMap.values
@@ -376,7 +366,7 @@ class CityConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBase
         }
     }
 
-    fun purchaseConstruction(construction: INonPerpetualConstruction, stat: Stat = Stat.Gold) {
+    private fun purchaseConstruction(construction: INonPerpetualConstruction, stat: Stat = Stat.Gold) {
         val city = cityScreen.city
         if (!city.cityConstructions.purchaseConstruction(construction.name, selectedQueueEntry, false, stat)) {
             Popup(cityScreen).apply {
@@ -386,7 +376,7 @@ class CityConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBase
             }
             return
         }
-        if (isSelectedQueueEntry()) {
+        if (isSelectedQueueEntry() || cityScreen.selectedConstruction?.isBuildable(city.cityConstructions) != true) {
             selectedQueueEntry = -1
             cityScreen.selectedConstruction = null
         }
@@ -394,38 +384,43 @@ class CityConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBase
     }
     
     private fun getBuyButtons(construction: INonPerpetualConstruction?): List<TextButton> {
-        return listOf(Stat.Gold, Stat.Faith, Stat.Culture, Stat.Science, Stat.Food)
-            .mapNotNull { getBuyButton(construction, it) }
+        return Stat.statsUsableToBuy.mapNotNull { getBuyButton(construction, it) }
     }
 
     private fun getBuyButton(construction: INonPerpetualConstruction?, stat: Stat = Stat.Gold): TextButton? {
-        if (stat !in listOf(Stat.Gold, Stat.Faith, Stat.Culture, Stat.Science, Stat.Food))
+        if (stat !in Stat.statsUsableToBuy || construction == null)
             return null
-        val city = cityScreen.city
 
+        val city = cityScreen.city
         val button = "".toTextButton()
 
-        if (construction == null || construction is PerpetualConstruction ||
-                (!construction.canBePurchasedWithStat(city, stat) && !city.civInfo.gameInfo.gameParameters.godMode)) {
-            // fully disable a "buy" button only for "priceless" buildings such as wonders
-            // for all other cases, the price should be displayed
-            if (stat == Stat.Gold) {
-                button.setText("Buy".tr())
-                button.disable()
-            }
-            else return null
+        if (!construction.canBePurchasedWithStat(city, stat) && !city.civInfo.gameInfo.gameParameters.godMode) {
+            // This can't ever be bought with the given currency.
+            // We want one disabled "buy" button without a price for "priceless" buildings such as wonders
+            // We don't want such a button when the construction can be bought using a different currency
+            if (stat != Stat.Gold || construction.canBePurchasedWithAnyStat(city))
+                return null
+            button.setText("Buy".tr())
+            button.disable()
         } else {
             val constructionBuyCost = construction.getStatBuyCost(city, stat)!!
-            button.setText("Buy".tr() + " " + constructionBuyCost)
-            button.add(ImageGetter.getStatIcon(stat.name)).size(20f).padBottom(2f)
+            button.setText("Buy".tr() + " " + constructionBuyCost + stat.character)
 
             button.onClick(stat.purchaseSound) {
                 button.disable()
                 cityScreen.closeAllPopups()
                 
-                val purchasePrompt = "Currently you have [${city.getStatReserve(stat)}] [${stat.name}].".tr() + "\n" +
-                        "Would you like to purchase [${construction.name}] for [$constructionBuyCost] [${stat.name}]?".tr()
-                YesNoPopup(purchasePrompt, { purchaseConstruction(construction, stat) }, cityScreen, { cityScreen.update() }).open()
+                val purchasePrompt = "Currently you have [${city.getStatReserve(stat)}] [${stat.name}].".tr() + "\n\n" +
+                        "Would you like to purchase [${construction.name}] for [$constructionBuyCost] [${stat.character}]?".tr()
+                YesNoPopup(
+                    purchasePrompt,
+                    action = { purchaseConstruction(construction, stat) },
+                    screen = cityScreen,
+                    restoreDefault = { cityScreen.update() }
+                ).apply {
+                    promptLabel.setAlignment(Align.center)
+                    open()
+                }
             }
             
             if (!cityScreen.canChangeState

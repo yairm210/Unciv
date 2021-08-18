@@ -16,4 +16,11 @@ enum class Stat(
     Culture(NotificationIcon.Culture, UncivSound.Paper, Fonts.culture),
     Happiness(NotificationIcon.Happiness, UncivSound.Click, Fonts.happiness),
     Faith(NotificationIcon.Faith, UncivSound.Choir, Fonts.faith);
+    
+    companion object {
+        val statsUsableToBuy = listOf(Gold, Food, Science, Culture, Faith)
+    }
 }
+
+// Should the well-known colours for these be needed:
+// Production = "#c14d00", Food = "#38ff70", Gold = "#ffeb7f", Science = "#8c9dff", Culture = "#8b60ff", Happiness = "#ffd800", Faith = "#cbdfff"
