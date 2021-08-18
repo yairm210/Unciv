@@ -20,7 +20,13 @@ import kotlin.math.max
 import kotlin.math.min
 import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 
-class CityConstructionsTable(val cityScreen: CityScreen) {
+/**
+ * Manager to hold and coordinate two widgets for the city screen left side:
+ * - Construction queue with switch to [ConstructionInfoTable] button and the enqueue / buy buttons.
+ *   The queue is scrollable, limited to one third of the stage height.
+ * - Available constructions display, scrolling, grouped with expanders and therefore of dynamic height.
+ */
+class CityConstructionsTable(private val cityScreen: CityScreen) {
     /* -1 = Nothing, >= 0 queue entry (0 = current construction) */
     private var selectedQueueEntry = -1 // None
     var improvementBuildingToConstruct: Building? = null
@@ -37,9 +43,10 @@ class CityConstructionsTable(val cityScreen: CityScreen) {
     private val lowerTableScrollCell: Cell<ScrollPane>
 
     private val pad = 10f
-    private val posFromEdge = 5f
+    private val posFromEdge = CityScreen.posFromEdge
     private val stageHeight = cityScreen.stage.height
 
+    /** Gets or sets visibility of [both widgets][CityConstructionsTable] */
     var isVisible: Boolean
         get() = upperTable.isVisible
         set(value) {
@@ -71,6 +78,13 @@ class CityConstructionsTable(val cityScreen: CityScreen) {
         lowerTable.row()
     }
 
+    /** Forces layout calculation and returns the upper Table's (construction queue) width */
+    fun getUpperWidth() = upperTable.packIfNeeded().width
+    /** Forces layout calculation and returns the lower Table's (available constructions) width
+     *  - or - the upper Table's width, whichever is greater (in case the former only contains "Loading...")
+     */
+    fun getLowerWidth() = max(lowerTable.packIfNeeded().width, getUpperWidth())  // 
+
     fun addActorsToStage() {
         cityScreen.stage.addActor(upperTable)
         cityScreen.stage.addActor(lowerTable)
@@ -85,7 +99,6 @@ class CityConstructionsTable(val cityScreen: CityScreen) {
         upperTable.setPosition(posFromEdge, stageHeight - posFromEdge, Align.topLeft)
         
         updateAvailableConstructions()
-        lowerTable.pack()
         lowerTableScrollCell.maxHeight(stageHeight - upperTable.height - 2 * posFromEdge)
     }
 
@@ -199,8 +212,7 @@ class CityConstructionsTable(val cityScreen: CityScreen) {
                         }
                         is PerpetualConstruction -> specialConstructions.add(constructionButton)
                     }
-                    if (constructionButton.needsLayout()) constructionButton.pack()
-                    maxButtonWidth = max(maxButtonWidth, constructionButton.width)
+                    maxButtonWidth = max(maxButtonWidth, constructionButton.packIfNeeded().width)
                 }
 
                 availableConstructionsTable.apply { 
@@ -283,7 +295,7 @@ class CityConstructionsTable(val cityScreen: CityScreen) {
                 Color.BROWN.cpy().lerp(Color.WHITE, 0.5f), Color.WHITE)
     }
 
-    class ConstructionButtonDTO(val construction: IConstruction, val buttonText: String, val rejectionReason: String = "")
+    private class ConstructionButtonDTO(val construction: IConstruction, val buttonText: String, val rejectionReason: String = "")
 
     private fun getConstructionButton(constructionButtonDTO: ConstructionButtonDTO): Table {
         val construction = constructionButtonDTO.construction

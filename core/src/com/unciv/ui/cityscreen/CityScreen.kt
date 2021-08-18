@@ -12,9 +12,13 @@ import com.unciv.ui.map.TileGroupMap
 import com.unciv.ui.tilegroups.TileSetStrings
 import com.unciv.ui.utils.*
 import java.util.*
-import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 
 class CityScreen(internal val city: CityInfo): CameraStageBaseScreen() {
+    companion object {
+        /** Distance from stage edges to floating widgets */
+        const val posFromEdge = 5f
+    }
+
     var selectedTile: TileInfo? = null
     var selectedConstruction: IConstruction? = null
 
@@ -59,6 +63,9 @@ class CityScreen(internal val city: CityInfo): CameraStageBaseScreen() {
     /** Holds City tiles group*/
     private var tileGroups = ArrayList<CityTileGroup>()
 
+    /** The ScrollPane for the background map view of the city surroundings */
+    private val mapScrollPane = ZoomableScrollPane()
+
     init {
         onBackButtonClicked { game.setWorldScreen() }
         UncivGame.Current.settings.addCompletedTutorialTask("Enter city screen")
@@ -68,11 +75,11 @@ class CityScreen(internal val city: CityInfo): CameraStageBaseScreen() {
         //stage.setDebugTableUnderMouse(true)
         stage.addActor(cityStatsTable)
         constructionsTable.addActorsToStage()
-        stage.addActor(tileTable)
-        stage.addActor(selectedConstructionTable)
-        stage.addActor(cityPickerTable)
-        stage.addActor(exitCityButton)
         stage.addActor(cityInfoTable)
+        stage.addActor(selectedConstructionTable)
+        stage.addActor(tileTable)
+        stage.addActor(cityPickerTable)  // add late so it's top in Z-order and doesn't get covered in cramped portrait
+        stage.addActor(exitCityButton)
         update()
 
         keyPressDispatcher[Input.Keys.LEFT] = { page(-1) }
@@ -80,38 +87,61 @@ class CityScreen(internal val city: CityInfo): CameraStageBaseScreen() {
     }
 
     internal fun update() {
+        // Recalculate Stats
+        city.cityStats.update()
+
+        // Left side, top and bottom: Construction queue / details
         if (showConstructionsTable) {
             constructionsTable.isVisible = true
             cityInfoTable.isVisible = false
+            constructionsTable.update(selectedConstruction)
         } else {
             constructionsTable.isVisible = false
             cityInfoTable.isVisible = true
+            cityInfoTable.update()
+            cityInfoTable.setPosition(posFromEdge, stage.height - posFromEdge, Align.topLeft)
         }
 
-        city.cityStats.update()
-
-        constructionsTable.update(selectedConstruction)
-
-        cityInfoTable.update()
-        cityInfoTable.setPosition(5f, stage.height - 5f, Align.topLeft)
-
-        exitCityButton.centerX(stage)
-        exitCityButton.y = 10f
-        cityPickerTable.update()
-        cityPickerTable.centerX(stage)
-        cityPickerTable.setY(exitCityButton.top + 10f, Align.bottom)
-
+        // Bottom right: Tile or selected construction info
         tileTable.update(selectedTile)
-        tileTable.setPosition(stage.width - 5f, 5f, Align.bottomRight)
-
+        tileTable.setPosition(stage.width - posFromEdge, posFromEdge, Align.bottomRight)
         selectedConstructionTable.update(selectedConstruction)
-        selectedConstructionTable.setPosition(stage.width - 5f, 5f, Align.bottomRight)
+        selectedConstructionTable.setPosition(stage.width - posFromEdge, posFromEdge, Align.bottomRight)
 
+        // In portrait mode only: calculate already occupied horizontal space
+        val rightMargin = when {
+            !isPortrait() -> 0f
+            selectedTile != null -> tileTable.packIfNeeded().width
+            selectedConstruction != null -> selectedConstructionTable.packIfNeeded().width
+            else -> posFromEdge
+        }
+        val leftMargin = when {
+            !isPortrait() -> 0f
+            showConstructionsTable -> constructionsTable.getLowerWidth()
+            else -> cityInfoTable.packIfNeeded().width
+        }
+
+        // Bottom center: Name, paging, exit city button
+        val centeredX = (stage.width - leftMargin - rightMargin) / 2 + leftMargin
+        exitCityButton.setPosition(centeredX, 10f, Align.bottom)
+        cityPickerTable.update()
+        cityPickerTable.setPosition(centeredX, exitCityButton.top + 10f, Align.bottom)
+
+        // Top right of screen: Stats / Specialists
         cityStatsTable.update()
-        cityStatsTable.setPosition(stage.width - 5f, stage.height - 5f, Align.topRight)
+        cityStatsTable.setPosition(stage.width - posFromEdge, stage.height - posFromEdge, Align.topRight)
 
+        // Top center: Annex/Raze button
         updateAnnexAndRazeCityButton()
+
+        // Rest of screen: Map of surroundings
         updateTileGroups()
+        if (isPortrait()) mapScrollPane.apply {
+            // center scrolling so city center sits more to the bottom right
+            scrollX = (maxX - constructionsTable.getLowerWidth() - posFromEdge) / 2
+            scrollY = (maxY - cityStatsTable.packIfNeeded().height - posFromEdge + cityPickerTable.top) / 2
+            updateVisualScroll()
+        }
     }
 
     private fun updateTileGroups() {
@@ -161,9 +191,9 @@ class CityScreen(internal val city: CityInfo): CameraStageBaseScreen() {
             razeCityButtonHolder.add(stopRazingCityButton).colspan(cityPickerTable.columns)
         }
         razeCityButtonHolder.pack()
-        //goToWorldButton.setSize(goToWorldButton.prefWidth, goToWorldButton.prefHeight)
-        razeCityButtonHolder.centerX(stage)
-        razeCityButtonHolder.y = stage.height - razeCityButtonHolder.height - 20
+        val centerX = if (!isPortrait()) stage.width / 2
+            else constructionsTable.getUpperWidth().let { it + (stage.width - cityStatsTable.width - it) / 2 }
+        razeCityButtonHolder.setPosition(centerX, stage.height - 20f, Align.top)
         stage.addActor(razeCityButtonHolder)
     }
 
@@ -224,16 +254,16 @@ class CityScreen(internal val city: CityInfo): CameraStageBaseScreen() {
         }
 
         val tileMapGroup = TileGroupMap(tileGroups, stage.width / 2, stage.height / 2, tileGroupsToUnwrap = tilesToUnwrap)
-        val scrollPane = ScrollPane(tileMapGroup)
-        scrollPane.setSize(stage.width, stage.height)
-        scrollPane.setOrigin(stage.width / 2, stage.height / 2)
-        scrollPane.center(stage)
-        stage.addActor(scrollPane)
+        mapScrollPane.actor = tileMapGroup
+        mapScrollPane.setSize(stage.width, stage.height)
+        mapScrollPane.setOrigin(stage.width / 2, stage.height / 2)
+        mapScrollPane.center(stage)
+        stage.addActor(mapScrollPane)
 
-        scrollPane.layout() // center scrolling
-        scrollPane.scrollPercentX = 0.5f
-        scrollPane.scrollPercentY = 0.5f
-        scrollPane.updateVisualScroll()
+        mapScrollPane.layout() // center scrolling
+        mapScrollPane.scrollPercentX = 0.5f
+        mapScrollPane.scrollPercentY = 0.5f
+        mapScrollPane.updateVisualScroll()
     }
 
     fun exit() {

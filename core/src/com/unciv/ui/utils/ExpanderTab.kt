@@ -18,6 +18,7 @@ import com.unciv.UncivGame
  * @param defaultPad Padding between content and wrapper. Header padding is currently not modifiable.
  * @param expanderWidth If set initializes header width
  * @param persistenceID If specified, the ExpanderTab will remember its open/closed state for the duration of one app run
+ * @param onChange If specified, this will be called after the visual change for a change in [isOpen] completes (e.g. to react to changed size) 
  * @param initContent Optional lambda with [innerTable] as parameter, to help initialize content.
  */
 class ExpanderTab(
