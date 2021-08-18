@@ -153,16 +153,24 @@ class CityConstructions {
     }
 
 
-    /** @constructionName needs to be a non-perpetual construction, else a cost of -1 is inferred */
+    /** @constructionName needs to be a non-perpetual construction, else an empty string is returned */
     internal fun getTurnsToConstructionString(constructionName: String, useStoredProduction:Boolean = true): String {
         val construction = getConstruction(constructionName)
-        val cost = 
-            if (construction is INonPerpetualConstruction) construction.getProductionCost(cityInfo.civInfo)
-            else -1 // This could _should_ never be reached
+        if (construction !is INonPerpetualConstruction) return ""   // shouldn't happen
+        val cost = construction.getProductionCost(cityInfo.civInfo)
         val turnsToConstruction = turnsToConstruction(constructionName, useStoredProduction)
         val currentProgress = if (useStoredProduction) getWorkDone(constructionName) else 0
-        if (currentProgress == 0) return "\n$cost${Fonts.production} $turnsToConstruction${Fonts.turn}"
-        else return "\n$currentProgress/$cost${Fonts.production}\n$turnsToConstruction${Fonts.turn}"
+        val lines = ArrayList<String>()
+        val buildable = construction.uniques.none{ it == "Unbuildable" }
+        if (buildable)
+            lines += (if (currentProgress == 0) "" else "$currentProgress/") +
+                    "$cost${Fonts.production} $turnsToConstruction${Fonts.turn}"
+        val otherStats = Stat.values().filter {
+            (it != Stat.Gold || !buildable) &&  // Don't show rush cost for consistency
+            construction.canBePurchasedWithStat(cityInfo, it)
+        }.joinToString(" / ") { "${construction.getStatBuyCost(cityInfo, it)}${it.character}" }
+        if (otherStats.isNotEmpty()) lines += otherStats
+        return lines.joinToString("\n", "\n")
     }
 
     // This function appears unused, can it be removed?
