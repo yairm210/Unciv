@@ -387,6 +387,10 @@ open class TileInfo {
             improvement.uniqueObjects.any {
                 it.placeholderText == "Obsolete with []" && civInfo.tech.isResearched(it.params[0])
             } -> return false
+            improvement.uniqueObjects.any {
+                it.placeholderText == "Cannot be built on [] tiles until [] is discovered" &&
+                matchesTerrainFilter(it.params[0]) && !civInfo.tech.isResearched(it.params[1])
+            } -> false
             else -> canImprovementBeBuiltHere(improvement, hasViewableResource(civInfo))
         }
     }
