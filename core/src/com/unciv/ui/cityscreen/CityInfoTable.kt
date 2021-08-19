@@ -5,6 +5,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.UncivGame
 import com.unciv.logic.city.CityInfo
+import com.unciv.models.UncivSound
 import com.unciv.models.ruleset.Building
 import com.unciv.models.stats.Stat
 import com.unciv.models.translations.tr
@@ -51,9 +52,9 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(CameraStageBaseS
         pack()
     }
 
-    private fun Table.addCategory(str: String, showHideTable: Table) {
+    private fun Table.addCategory(category: String, showHideTable: Table) {
         val categoryWidth = cityScreen.stage.width / 4
-        val expander = ExpanderTab(str) {
+        val expander = ExpanderTab(category, persistenceID = "CityInfo") {
             it.add(showHideTable).minWidth(categoryWidth)
         }
         addSeparator()
@@ -71,7 +72,7 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(CameraStageBaseS
                 val sellBuildingButton = "Sell for [$sellAmount] gold".toTextButton()
                 it.add(sellBuildingButton).pad(5f).row()
 
-                sellBuildingButton.onClick {
+                sellBuildingButton.onClick(UncivSound.Coin) {
                     sellBuildingButton.disable()
                     cityScreen.closeAllPopups()
 

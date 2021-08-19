@@ -44,7 +44,6 @@ class ConstructionInfoTable(val city: CityInfo): Table() {
 
         //val selectedConstructionTable = Table()
         selectedConstructionTable.run {
-            background = ImageGetter.getBackground(ImageGetter.getBlue().lerp(Color.BLACK, 0.5f))
             pad(10f)
 
             add(ImageGetter.getConstructionImage(construction.name).surroundWithCircle(50f))
@@ -59,7 +58,7 @@ class ConstructionInfoTable(val city: CityInfo): Table() {
             add(buildingText.toLabel()).row()
 
             val (description, link) = when (construction) {
-                is BaseUnit -> construction.getDescription() to "Unit/${construction.name}"
+                is BaseUnit -> construction.getDescription() to construction.makeLink()
                 is Building -> construction.getDescription(city, city.getRuleset()) to construction.makeLink()
                 is PerpetualConstruction -> construction.description.replace("[rate]", "[${construction.getConversionRate(city)}]") to ""
                 else -> "" to "" // Should never happen

@@ -88,7 +88,9 @@ class BaseUnit : INamed, INonPerpetualConstruction, ICivilopediaText {
         lines += "$strengthLine$movement${Fonts.movement}"
 
         if (replacementTextForUniques != "") lines += replacementTextForUniques
-        else for (unique in uniques)
+        else for (unique in uniques.filterNot {
+            it.startsWith("Hidden ") && it.endsWith(" disabled") || it == "Unbuildable"
+        })
             lines += unique.tr()
 
         if (promotions.isNotEmpty()) {

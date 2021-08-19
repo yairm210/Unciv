@@ -19,6 +19,7 @@ class CityInfoReligionManager {
     @Transient
     private val followers: Counter<String> = Counter()
     
+    @delegate:Transient
     private val pressureFromAdjacentCities: Int by lazy {
         when (cityInfo.civInfo.gameInfo.gameParameters.gameSpeed) {
             GameSpeed.Quick -> 9
@@ -125,6 +126,7 @@ class CityInfoReligionManager {
         val oldMajorityReligion = getMajorityReligion()
         
         followers.clear()
+        if (cityInfo.population.population <= 0) return
 
         val remainders = HashMap<String, Float>()
         val pressurePerFollower = pressures.values.sum() / cityInfo.population.population
@@ -170,6 +172,7 @@ class CityInfoReligionManager {
      */
     fun removeUnknownPantheons() {
         for (pressure in pressures) {
+            if (pressure.key == Constants.noReligionName) continue
             val correspondingReligion = cityInfo.civInfo.gameInfo.religions[pressure.key]!!
             if (correspondingReligion.isPantheon() 
                 && correspondingReligion.foundingCivName != cityInfo.civInfo.civName

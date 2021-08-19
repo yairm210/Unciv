@@ -75,10 +75,10 @@ class Building : NamedStats(), INonPerpetualConstruction, ICivilopediaText {
     override var civilopediaText = listOf<FormattedLine>()
 
 
+    /** Used for AlertType.WonderBuilt, and as sub-text in Nation and Tech descriptions */
     fun getShortDescription(ruleset: Ruleset): String { // should fit in one line
         val infoList = mutableListOf<String>()
-        val str = getStats(null).toString()
-        if (str.isNotEmpty()) infoList += str
+        getStats(null).toString().also { if (it.isNotEmpty()) infoList += it }
         for (stat in getStatPercentageBonuses(null).toHashMap())
             if (stat.value != 0f) infoList += "+${stat.value.toInt()}% ${stat.key.name.tr()}"
 
@@ -86,7 +86,7 @@ class Building : NamedStats(), INonPerpetualConstruction, ICivilopediaText {
             infoList += "Requires worked [" + requiredNearbyImprovedResources!!.joinToString("/") { it.tr() } + "] near city"
         if (uniques.isNotEmpty()) {
             if (replacementTextForUniques != "") infoList += replacementTextForUniques
-            else infoList += getUniquesStrings()
+            else infoList += getUniquesStringsWithoutDisablers()
         }
         if (cityStrength != 0) infoList += "{City strength} +$cityStrength"
         if (cityHealth != 0) infoList += "{City health} +$cityHealth"
@@ -113,48 +113,51 @@ class Building : NamedStats(), INonPerpetualConstruction, ICivilopediaText {
                     if (value.size == 1) value[0] else value.joinToString { it.tr() }
                 ))
     }
+    private fun getUniquesStringsWithoutDisablers() = getUniquesStrings()
+        .filterNot {
+            it.startsWith("Hidden ") && it.endsWith(" disabled") ||
+            it == "Unbuildable" ||
+            it == "Will not be displayed in Civilopedia"
+        }
 
+    /** used in CityScreen (CityInfoTable and ConstructionInfoTable) */
     fun getDescription(cityInfo: CityInfo?, ruleset: Ruleset): String {
         val stats = getStats(cityInfo)
-        val stringBuilder = StringBuilder()
-        if (uniqueTo != null) stringBuilder.appendLine("Unique to [$uniqueTo], replaces [$replaces]".tr())
-        if (isWonder) stringBuilder.appendLine("Wonder".tr())
-        if (isNationalWonder) stringBuilder.appendLine("National Wonder".tr())
+        val lines = ArrayList<String>()
+        if (uniqueTo != null) lines += if (replaces == null) "Unique to [$uniqueTo]"
+            else "Unique to [$uniqueTo], replaces [$replaces]"
+        if (isWonder) lines += "Wonder"
+        if (isNationalWonder) lines += "National Wonder"
         for ((resource, amount) in getResourceRequirements()) {
-            if (amount == 1) stringBuilder.appendLine("Consumes 1 [$resource]".tr()) // For now, to keep the existing translations
-            else stringBuilder.appendLine("Consumes [$amount] [$resource]".tr())
+            lines += if (amount == 1) "Consumes 1 [$resource]" // For now, to keep the existing translations
+            else "Consumes [$amount] [$resource]"
         }
         if (providesFreeBuilding != null)
-            stringBuilder.appendLine("Provides a free [$providesFreeBuilding] in the city".tr())
+            lines += "Provides a free [$providesFreeBuilding] in the city"
         if (uniques.isNotEmpty()) {
-            if (replacementTextForUniques != "") stringBuilder.appendLine(replacementTextForUniques)
-            else stringBuilder.appendLine(getUniquesStrings().map { it.tr() }.joinToString("\n"))
+            if (replacementTextForUniques != "") lines += replacementTextForUniques
+            else lines += getUniquesStringsWithoutDisablers()
         }
         if (!stats.isEmpty())
-            stringBuilder.appendLine(stats.toString())
+            lines += stats.toString()
 
-        val percentStats = getStatPercentageBonuses(cityInfo)
-        if (percentStats.production != 0f) stringBuilder.append("+" + percentStats.production.toInt() + "% {Production}\n".tr())
-        if (percentStats.gold != 0f) stringBuilder.append("+" + percentStats.gold.toInt() + "% {Gold}\n".tr())
-        if (percentStats.science != 0f) stringBuilder.append("+" + percentStats.science.toInt() + "% {Science}\r\n".tr())
-        if (percentStats.food != 0f) stringBuilder.append("+" + percentStats.food.toInt() + "% {Food}\n".tr())
-        if (percentStats.culture != 0f) stringBuilder.append("+" + percentStats.culture.toInt() + "% {Culture}\r\n".tr())
+        for ((stat, value) in getStatPercentageBonuses(cityInfo).toHashMap())
+            if (value != 0f) lines += "+${value.toInt()}% {${stat.name}}\n"
 
-        for((greatPersonName, value) in greatPersonPoints)
-            stringBuilder.appendLine("+$value "+"[$greatPersonName] points".tr())
+        for ((greatPersonName, value) in greatPersonPoints)
+            lines += "+$value " + "[$greatPersonName] points".tr()
 
         for ((specialistName, amount) in newSpecialists())
-            stringBuilder.appendLine("+$amount " + "[$specialistName] slots".tr())
+            lines += "+$amount " + "[$specialistName] slots".tr()
 
         if (requiredNearbyImprovedResources != null)
-            stringBuilder.appendLine(("Requires worked [" + requiredNearbyImprovedResources!!.joinToString("/") { it.tr() } + "] near city").tr())
+            lines += "Requires worked [" + requiredNearbyImprovedResources!!.joinToString("/") { it.tr() } + "] near city"
 
-        if (cityStrength != 0) stringBuilder.appendLine("{City strength} +".tr() + cityStrength)
-        if (cityHealth != 0) stringBuilder.appendLine("{City health} +".tr() + cityHealth)
-        if (xpForNewUnits != 0) stringBuilder.appendLine("+$xpForNewUnits {XP for new units}".tr())
-        if (maintenance != 0)
-            stringBuilder.appendLine("{Maintenance cost}: $maintenance {Gold}".tr())
-        return stringBuilder.toString().trim()
+        if (cityStrength != 0) lines += "{City strength} +$cityStrength"
+        if (cityHealth != 0) lines += "{City health} +$cityHealth"
+        if (xpForNewUnits != 0) lines += "+$xpForNewUnits {XP for new units}"
+        if (maintenance != 0) lines += "{Maintenance cost}: $maintenance {Gold}"
+        return lines.joinToString("\n") { it.tr() }.trim()
     }
 
     fun getStats(city: CityInfo?): Stats {

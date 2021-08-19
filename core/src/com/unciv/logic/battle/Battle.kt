@@ -9,6 +9,7 @@ import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.map.RoadStatus
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.AttackableTile
+import com.unciv.models.UnitActionType
 import com.unciv.models.ruleset.Unique
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
@@ -33,8 +34,8 @@ object Battle {
              * but the hidden tile is actually IMPASSIBLE so you stop halfway!
              */
             if (attacker.getTile() != attackableTile.tileToAttackFrom) return
-            if (attacker.unit.hasUnique("Must set up to ranged attack") && attacker.unit.action != Constants.unitActionSetUp) {
-                attacker.unit.action = Constants.unitActionSetUp
+            if (attacker.unit.hasUnique("Must set up to ranged attack") && !attacker.unit.isSetUpForSiege()) {
+                attacker.unit.action = UnitActionType.SetUp.value
                 attacker.unit.useMovementPoints(1f)
             }
         }
@@ -84,7 +85,7 @@ object Battle {
             conquerCity(defender.city, attacker)
 
         // Exploring units surviving an attack should "wake up"
-        if (!defender.isDefeated() && defender is MapUnitCombatant && defender.unit.action == Constants.unitActionExplore)
+        if (!defender.isDefeated() && defender is MapUnitCombatant && defender.unit.isExploring())
             defender.unit.action = null
 
         // Add culture when defeating a barbarian when Honor policy is adopted, gold from enemy killed when honor is complete
@@ -407,7 +408,7 @@ object Battle {
         city.hasJustBeenConquered = true
         city.getCenterTile().apply {
             if (militaryUnit != null) militaryUnit!!.destroy()
-            if (civilianUnit != null) captureCivilianUnit(attacker, MapUnitCombatant(civilianUnit!!))
+            if (civilianUnit != null) captureCivilianUnit(attacker, MapUnitCombatant(civilianUnit!!), checkDefeat = false)
             for (airUnit in airUnits.toList()) airUnit.destroy()
         }
 
@@ -442,7 +443,7 @@ object Battle {
         return null
     }
 
-    private fun captureCivilianUnit(attacker: ICombatant, defender: MapUnitCombatant) {
+    private fun captureCivilianUnit(attacker: ICombatant, defender: MapUnitCombatant, checkDefeat: Boolean = true) {
         // barbarians don't capture civilians
         if (attacker.getCivInfo().isBarbarian()
                 || defender.unit.hasUnique("Uncapturable")) {
@@ -477,7 +478,8 @@ object Battle {
             }
         }
 
-        destroyIfDefeated(defenderCiv, attacker.getCivInfo())
+        if (checkDefeat)
+            destroyIfDefeated(defenderCiv, attacker.getCivInfo())
         capturedUnit.updateVisibleTiles()
     }
 

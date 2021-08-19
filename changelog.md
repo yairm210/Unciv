@@ -1,3 +1,29 @@
+## 3.16.5
+
+By SomeTroglodyte:
+- Expander tab persist
+- UI improvements for city screen
+- Unit action constants and worker unique cleanup
+
+By avdstaaij:
+- Removed the civ introduction trade option
+- Made water oil wells require the Refrigeration tech
+- Removed the sight bonus from hills
+- Gave anti-air units a bonus vs helicopters
+- Disabled pillaging your own tiles
+
+Fixes crashes from loading mods without an eras.json file - xlenstra
+
+CS bonuses graded according to relationship level  - By SimonCeder
+
+Improve horse sound  - By AdityaMH
+
+## 3.16.4-patch1
+
+Fixed crash from conquering cities - By xlenstra
+
+Fix DOS attack perpetrated by CityInfoReligionManager on Json Serializer - By SomeTroglodyte
+
 ## 3.16.4
 
 Implemented Zone of Control mechanic - by avdstaaij

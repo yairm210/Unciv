@@ -18,19 +18,19 @@ class OfferColumnsTable(private val tradeLogic: TradeLogic, val screen: Diplomac
         onChange()
     }
 
-    private val ourAvailableOffersTable = OffersListScroll {
+    private val ourAvailableOffersTable = OffersListScroll("OurAvail") {
         if (it.type == TradeType.Gold) openGoldSelectionPopup(it, tradeLogic.currentTrade.ourOffers, tradeLogic.ourCivilization)
         else addOffer(it, tradeLogic.currentTrade.ourOffers, tradeLogic.currentTrade.theirOffers)
     }
-    private val ourOffersTable = OffersListScroll {
+    private val ourOffersTable = OffersListScroll("OurTrade") {
         if (it.type == TradeType.Gold) openGoldSelectionPopup(it, tradeLogic.currentTrade.ourOffers, tradeLogic.ourCivilization)
         else addOffer(it.copy(amount = -it.amount), tradeLogic.currentTrade.ourOffers, tradeLogic.currentTrade.theirOffers)
     }
-    private val theirOffersTable = OffersListScroll {
+    private val theirOffersTable = OffersListScroll("TheirTrade") {
         if (it.type == TradeType.Gold) openGoldSelectionPopup(it, tradeLogic.currentTrade.theirOffers, tradeLogic.otherCivilization)
         else addOffer(it.copy(amount = -it.amount), tradeLogic.currentTrade.theirOffers, tradeLogic.currentTrade.ourOffers)
     }
-    private val theirAvailableOffersTable = OffersListScroll {
+    private val theirAvailableOffersTable = OffersListScroll("TheirAvail") {
         if (it.type == TradeType.Gold) openGoldSelectionPopup(it, tradeLogic.currentTrade.theirOffers, tradeLogic.otherCivilization)
         else addOffer(it, tradeLogic.currentTrade.theirOffers, tradeLogic.currentTrade.ourOffers)
     }

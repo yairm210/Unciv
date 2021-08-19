@@ -6,6 +6,8 @@ import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.StatMap
 import com.unciv.models.stats.Stats
+import com.unciv.models.translations.getPlaceholderParameters
+import com.unciv.models.translations.getPlaceholderText
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.pow
@@ -80,16 +82,39 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
                 statMap.add(entry.key, entry.value)
         }
 
-        //City-States culture bonus
+        //City-States bonuses
         for (otherCiv in civInfo.getKnownCivs()) {
-            if (otherCiv.isCityState() && otherCiv.cityStateType == CityStateType.Cultured
-                    && otherCiv.getDiplomacyManager(civInfo.civName).relationshipLevel() >= RelationshipLevel.Friend) {
-                val cultureBonus = Stats()
-                var culture = 3f * (civInfo.getEraNumber() + 1)
+            if (otherCiv.isCityState() && otherCiv.getDiplomacyManager(civInfo.civName).relationshipLevel() >= RelationshipLevel.Friend) {
+                val cityStateBonus = Stats()
+                val eraInfo = civInfo.getEraObject()
+
+                val relevantBonuses =
+                    when {
+                        eraInfo == null -> null
+                        otherCiv.getDiplomacyManager(civInfo.civName).relationshipLevel() == RelationshipLevel.Friend ->
+                            eraInfo.friendBonus[otherCiv.cityStateType.name]
+                        else -> eraInfo.allyBonus[otherCiv.cityStateType.name]
+                    }
+
+                if (relevantBonuses != null) {
+                    for (bonus in relevantBonuses) {
+                        if (bonus.getPlaceholderText() == "Provides [] [] per turn") {
+                            cityStateBonus.add(Stat.valueOf(bonus.getPlaceholderParameters()[1]), bonus.getPlaceholderParameters()[0].toFloat())
+                        }
+                    }
+                } else {
+                    // Deprecated, assume Civ V values for compatibility
+                    if (otherCiv.cityStateType == CityStateType.Cultured) {
+                        cityStateBonus.culture = if(civInfo.getEraNumber() in 0..1) 3f else if (civInfo.getEraNumber() in 2..3) 6f else 13f
+                        if (otherCiv.getDiplomacyManager(civInfo.civName).relationshipLevel() == RelationshipLevel.Ally)
+                            cityStateBonus.culture *= 2f
+                    }
+                }
+
                 if (civInfo.hasUnique("Food and Culture from Friendly City-States are increased by 50%"))
-                    culture *= 1.5f
-                cultureBonus.add(Stat.Culture, culture)
-                statMap.add("City-States", cultureBonus)
+                    cityStateBonus.culture *= 1.5f
+
+                statMap.add("City-States", cityStateBonus)
             }
 
             if (otherCiv.isCityState())
@@ -213,12 +238,36 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
         
         //From city-states
         for (otherCiv in civInfo.getKnownCivs()) {
-            if (otherCiv.isCityState() && otherCiv.cityStateType == CityStateType.Mercantile
-                    && otherCiv.getDiplomacyManager(civInfo).relationshipLevel() >= RelationshipLevel.Friend) {
-                if (statMap.containsKey("City-States"))
-                    statMap["City-States"] = statMap["City-States"]!! + 3f
-                else
-                    statMap["City-States"] = 3f
+            if (otherCiv.isCityState() && otherCiv.getDiplomacyManager(civInfo).relationshipLevel() >= RelationshipLevel.Friend) {
+                val eraInfo = civInfo.getEraObject()
+                val relevantbonuses = 
+                    when {
+                        eraInfo == null -> null
+                        otherCiv.getDiplomacyManager(civInfo).relationshipLevel() == RelationshipLevel.Friend ->
+                            eraInfo.friendBonus[otherCiv.cityStateType.name]
+                        else ->
+                            eraInfo.allyBonus[otherCiv.cityStateType.name]
+                    }
+
+                if (relevantbonuses != null) {
+                    for (bonus in relevantbonuses) {
+                        if (bonus.getPlaceholderText() == "Provides [] Happiness") {
+                            if (statMap.containsKey("City-States"))
+                                statMap["City-States"] = statMap["City-States"]!! + bonus.getPlaceholderParameters()[0].toFloat()
+                            else
+                                statMap["City-States"] = bonus.getPlaceholderParameters()[0].toFloat()
+                        }
+                    }
+                } else {
+                    // Deprecated, assume Civ V values for compatibility
+                    if (otherCiv.cityStateType == CityStateType.Mercantile) {
+                        val happinessBonus = if(civInfo.getEraNumber() in 0..1) 2f else 3f
+                        if (statMap.containsKey("City-States"))
+                            statMap["City-States"] = statMap["City-States"]!! + happinessBonus
+                        else
+                            statMap["City-States"] = happinessBonus
+                    }
+                }
             }
         }
 

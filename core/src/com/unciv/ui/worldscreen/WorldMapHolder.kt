@@ -214,7 +214,7 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
                     // I can't think of any way to avoid this,
                     // but it's so rare and edge-case-y that ignoring its failure is actually acceptable, hence the empty catch
                     selectedUnit.movement.moveToTile(tileToMoveTo)
-                    if (selectedUnit.action == Constants.unitActionExplore || selectedUnit.isMoving())
+                    if (selectedUnit.isExploring() || selectedUnit.isMoving())
                         selectedUnit.action = null // remove explore on manual move
                     Sounds.play(UncivSound.Whoosh)
                     if (selectedUnit.currentTile != targetTile)
@@ -236,7 +236,7 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
     private fun swapMoveUnitToTargetTile(selectedUnit: MapUnit, targetTile: TileInfo) {
         selectedUnit.movement.swapMoveToTile(targetTile)
 
-        if (selectedUnit.action == Constants.unitActionExplore || selectedUnit.isMoving())
+        if (selectedUnit.isExploring() || selectedUnit.isMoving())
             selectedUnit.action = null // remove explore on manual swap-move
 
         // Play something like a swish-swoosh
@@ -262,7 +262,7 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
                 val turnsToGetThere = if (unit.baseUnit.movesLikeAirUnits()) {
                     if (unit.movement.canReach(tileInfo)) 1
                     else 0
-                } else if (unit.action == Constants.unitActionParadrop) {
+                } else if (unit.isPreparingParadrop()) {
                     if (unit.movement.canReach(tileInfo)) 1
                     else 0
                 } else {
@@ -481,7 +481,7 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
     private fun updateTilegroupsForSelectedUnit(unit: MapUnit, playerViewableTilePositions: HashSet<Vector2>) {
         val tileGroup = tileGroups[unit.getTile()] ?: return
         // Entirely unclear when this happens, but this seems to happen since version 520 (3.12.9)
-        // so maybe has to do with the construction list being asyc?
+        // so maybe has to do with the construction list being async?
         for (group in tileGroup) {
             group.selectUnit(unit)
         }
@@ -510,7 +510,7 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
         }
 
         val isAirUnit = unit.baseUnit.movesLikeAirUnits()
-        val moveTileOverlayColor = if (unit.action == Constants.unitActionParadrop) Color.BLUE else Color.WHITE
+        val moveTileOverlayColor = if (unit.isPreparingParadrop()) Color.BLUE else Color.WHITE
         val tilesInMoveRange = unit.movement.getReachableTilesInCurrentTurn()
 
         for (tile in tilesInMoveRange) {
@@ -538,10 +538,10 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
             }
         }
 
-        if(unit.isMoving()) {
+        if (unit.isMoving()) {
             val destinationTileGroups = tileGroups[unit.getMovementDestination()]!!
-            for (tileGroup in destinationTileGroups)
-                tileGroup.showCircle(Color.WHITE, 0.7f)
+            for (destinationTileGroup in destinationTileGroups)
+                destinationTileGroup.showCircle(Color.WHITE, 0.7f)
         }
 
         val attackableTiles: List<AttackableTile> = if (unit.isCivilian()) listOf()
@@ -629,7 +629,7 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
                 Actions.run { tileGroup.circleImage.isVisible = true },
                 Actions.delay(.3f)
         ))
-        addAction(blinkAction) // Don't set it on the group because it's an actionlss group
+        addAction(blinkAction) // Don't set it on the group because it's an actionless group
 
         worldScreen.shouldUpdate = true
         return true
@@ -643,7 +643,7 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
                 tileGroup.cityButtonLayerGroup.isTransform = false // to save on rendering time to improve framerate
         if (scale < 1 && scale > 0.5f)
             for (tileGroup in allWorldTileGroups) {
-                // ONLY set those groups that have active citybuttons as transformable!
+                // ONLY set those groups that have active city buttons as transformable!
                 // This is massively framerate-improving!
                 if (tileGroup.cityButtonLayerGroup.hasChildren())
                     tileGroup.cityButtonLayerGroup.isTransform = true

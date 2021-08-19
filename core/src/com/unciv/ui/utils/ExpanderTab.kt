@@ -17,6 +17,8 @@ import com.unciv.UncivGame
  * @param icon Optional icon - please use [Image][com.badlogic.gdx.scenes.scene2d.ui.Image] or [IconCircleGroup]
  * @param defaultPad Padding between content and wrapper. Header padding is currently not modifiable.
  * @param expanderWidth If set initializes header width
+ * @param persistenceID If specified, the ExpanderTab will remember its open/closed state for the duration of one app run
+ * @param onChange If specified, this will be called after the visual change for a change in [isOpen] completes (e.g. to react to changed size) 
  * @param initContent Optional lambda with [innerTable] as parameter, to help initialize content.
  */
 class ExpanderTab(
@@ -26,6 +28,8 @@ class ExpanderTab(
     startsOutOpened: Boolean = true,
     defaultPad: Float = 10f,
     expanderWidth: Float = 0f,
+    private val persistenceID: String? = null,
+    private val onChange: (() -> Unit)? = null,
     initContent: ((Table) -> Unit)? = null
 ): Table(CameraStageBaseScreen.skin) {
     private companion object {
@@ -33,6 +37,8 @@ class ExpanderTab(
         const val arrowImage = "OtherIcons/BackArrow"
         val arrowColor = Color(1f,0.96f,0.75f,1f)
         const val animationDuration = 0.2f
+        
+        val persistedStates = HashMap<String, Boolean>()
     }
 
     private val header = Table(skin)  // Header with label and icon, touchable to show/hide
@@ -44,7 +50,8 @@ class ExpanderTab(
     val innerTable = Table()
 
     /** Indicates whether the contents are currently shown, changing this will animate the widget */
-    var isOpen = startsOutOpened
+    // This works because a HashMap _could_ store an entry for the null key but we cannot actually store one when declaring as HashMap<String, Boolean>
+    var isOpen = persistedStates[persistenceID] ?: startsOutOpened
         private set(value) {
             if (value == field) return
             field = value
@@ -81,10 +88,13 @@ class ExpanderTab(
     }
 
     private fun update(noAnimation: Boolean = false) {
+        if (persistenceID != null)
+            persistedStates[persistenceID] = isOpen
         if (noAnimation || !UncivGame.Current.settings.continuousRendering) {
             contentWrapper.clear()
             if (isOpen) contentWrapper.add(innerTable)
             headerIcon.rotation = if (isOpen) 90f else 180f
+            if (!noAnimation) onChange?.invoke()
             return
         }
         val action = object: FloatAction ( 90f, 180f, animationDuration, Interpolation.linear) {
@@ -94,6 +104,7 @@ class ExpanderTab(
                 if (this.isComplete) {
                     contentWrapper.clear()
                     if (isOpen) contentWrapper.add(innerTable)
+                    onChange?.invoke()
                 }
             }
         }.apply { isReverse = isOpen }

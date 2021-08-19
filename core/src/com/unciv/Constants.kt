@@ -3,9 +3,9 @@ package com.unciv
 object Constants {
     const val worker = "Worker"
     const val canBuildImprovements = "Can build [] improvements on tiles"
-    // Deprecated as of 3.15.5
+    @Deprecated("as of 3.15.5")
         const val workerUnique = "Can build improvements on tiles"
-    //
+    const val workBoatsUnique = "May create improvements on water resources"
     const val settler = "Settler"
     const val settlerUnique = "Founds a new city"
     const val eraSpecificUnit = "Era Starting Unit"
@@ -54,13 +54,6 @@ object Constants {
     const val fort = "Fort"
     const val citadel = "Citadel"
     const val tradingPost = "Trading post"
-
-    const val unitActionSetUp = "Set Up"
-    const val unitActionSleep = "Sleep"
-    const val unitActionSleepUntilHealed = "Sleep until healed"
-    const val unitActionAutomation = "Automate"
-    const val unitActionExplore = "Explore"
-    const val unitActionParadrop = "Paradrop"
 
     const val futureTech = "Future Tech"
     // Easter egg name. Hopefully is to hopefully avoid conflicts when later players can name their own religions.
