@@ -90,6 +90,6 @@ class CityStatsTable(val cityScreen: CityScreen): Table() {
         innerTable.addSeparator()
         val label = cityInfo.religion.getMajorityReligion()
             ?: "None"
-        innerTable.add("Majority Religion: [$label]".toLabel())
+        innerTable.add("Majority Religion: [$label]".toLabel()).padTop(5f)
     }
 }

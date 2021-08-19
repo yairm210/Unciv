@@ -75,10 +75,10 @@ class Building : NamedStats(), INonPerpetualConstruction, ICivilopediaText {
     override var civilopediaText = listOf<FormattedLine>()
 
 
+    /** Used for AlertType.WonderBuilt, and as sub-text in Nation and Tech descriptions */
     fun getShortDescription(ruleset: Ruleset): String { // should fit in one line
         val infoList = mutableListOf<String>()
-        val str = getStats(null).toString()
-        if (str.isNotEmpty()) infoList += str
+        getStats(null).toString().also { if (it.isNotEmpty()) infoList += it }
         for (stat in getStatPercentageBonuses(null).toHashMap())
             if (stat.value != 0f) infoList += "+${stat.value.toInt()}% ${stat.key.name.tr()}"
 
@@ -114,13 +114,18 @@ class Building : NamedStats(), INonPerpetualConstruction, ICivilopediaText {
                 ))
     }
     private fun getUniquesStringsWithoutDisablers() = getUniquesStrings()
-        .filterNot { it.startsWith("Hidden ") && it.endsWith(" disabled") || it == "Unbuildable" }
+        .filterNot {
+            it.startsWith("Hidden ") && it.endsWith(" disabled") ||
+            it == "Unbuildable" ||
+            it == "Will not be displayed in Civilopedia"
+        }
 
     /** used in CityScreen (CityInfoTable and ConstructionInfoTable) */
     fun getDescription(cityInfo: CityInfo?, ruleset: Ruleset): String {
         val stats = getStats(cityInfo)
         val lines = ArrayList<String>()
-        if (uniqueTo != null) lines += "Unique to [$uniqueTo], replaces [$replaces]"
+        if (uniqueTo != null) lines += if (replaces == null) "Unique to [$uniqueTo]"
+            else "Unique to [$uniqueTo], replaces [$replaces]"
         if (isWonder) lines += "Wonder"
         if (isNationalWonder) lines += "National Wonder"
         for ((resource, amount) in getResourceRequirements()) {
