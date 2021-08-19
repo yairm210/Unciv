@@ -378,7 +378,7 @@ object UnitActions {
             isCurrentAction = unit.isAutomated(),
             action = {
                 unit.action = UnitActionType.Automate.value
-                WorkerAutomation(unit).automateWorkerAction()
+                WorkerAutomation.automateWorkerAction(unit)
             }.takeIf { unit.currentMovement > 0 }
         )
     }
