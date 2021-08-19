@@ -52,9 +52,9 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(CameraStageBaseS
         pack()
     }
 
-    private fun Table.addCategory(str: String, showHideTable: Table) {
+    private fun Table.addCategory(category: String, showHideTable: Table) {
         val categoryWidth = cityScreen.stage.width / 4
-        val expander = ExpanderTab(str) {
+        val expander = ExpanderTab(category, persistenceID = "CityInfo") {
             it.add(showHideTable).minWidth(categoryWidth)
         }
         addSeparator()
