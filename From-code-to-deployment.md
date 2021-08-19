@@ -25,7 +25,15 @@ When I'm ready to release a new version I:
    * Pack a .jar file, which will work for every operating system with Java
    * Use Linux and Windows JDKs to create standalone zips for 32 and 64 bit systems, because we can't rely on the fact that users will have a JRE
    * Download [Butler](https://itch.io/docs/butler/installing.html) and use it to [push](https://itch.io/docs/butler/pushing.html) the new versions to the [itch.io page](https://yairm210.itch.io/unciv)
-   * Upload all of these files to a new release on Github, together with the release notes for the version (read from the changelod.md file), which will get added to the [Releases](https://github.com/yairm210/Unciv/releases) page
+   * Read the changelog.md file to get the changes for the latest version
+   * Upload all of these files to a new release on Github, with the release notes, which will get added to the [Releases](https://github.com/yairm210/Unciv/releases) page
    * Send an announcement on the Discord server of the version release and release notes via webhook
+   * Pack, Sign, and Upload a new APK to the Google Play Console at 10% rollout
 * The F-Droid bot checks periodically if we added a new tag. When it recognizes that we did, it will update the [yaml file here](https://gitlab.com/fdroid/fdroiddata/blob/master/metadata/com.unciv.app.yml)
    * When the bot next runs and sees that there's a version it doesn't have a release for, it will attempt to build the new release. The log of the build will be added [here](https://f-droid.org/wiki/page/com.unciv.app/lastbuild) (redirects to the latest build), and the new release will eventually be available [here](https://f-droid.org/en/packages/com.unciv.app/)
+
+## About Google Play publishing
+
+Dear future me - this was extremely annoying guesswork to set up, so the facts you need to know are:
+- There is a user at the [Google Cloud Platform Account Manager](https://console.cloud.google.com/iam-admin/iam) called  Unciv_Upload_Account. There is an access key to this account, in json, stored as the Github secret GOOGLE_PLAY_SERVICE_ACCOUNT_JSON.
+- This user was granted ADMIN permissions to the Google Play (after much trial and error since nothing else seemed to work) under User > Users and Permissions. Under Manage > Account permissions, you can see that it has Admin.
