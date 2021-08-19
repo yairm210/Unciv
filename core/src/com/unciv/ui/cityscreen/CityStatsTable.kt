@@ -87,7 +87,6 @@ class CityStatsTable(val cityScreen: CityScreen): Table() {
         val label = cityInfo.religion.getMajorityReligion()
             ?: "None"
         innerTable.add("Majority Religion: [$label]".toLabel()).pad(5f).row()
-        // This line above will have merge conflicts with #4902, this version should have priority
         
         innerTable.add(addReligionsTable())
     }

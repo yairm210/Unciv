@@ -13,15 +13,23 @@ import com.unciv.ui.utils.*
 import kotlin.math.min
 import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 
-class OffersListScroll(val onOfferClicked: (TradeOffer) -> Unit) : ScrollPane(null) {
+/**
+ * Widget for one fourth of an [OfferColumnsTable] - instantiated for ours/theirs × available/traded
+ * @param persistenceID  Part of ID added to [ExpanderTab.persistenceID] to distinguish the four usecases
+ * @param onOfferClicked What to do when a tradeButton is clicked
+ */
+class OffersListScroll(
+    private val persistenceID: String,
+    private val onOfferClicked: (TradeOffer) -> Unit
+) : ScrollPane(null) {
     val table = Table(CameraStageBaseScreen.skin).apply { defaults().pad(5f) }
 
 
     private val expanderTabs = HashMap<TradeType, ExpanderTab>()
 
     /**
-     *   offersToDisplay - the offers which should be displayed as buttons
-     *   otherOffers - the list of other side's offers to compare with whether these offers are unique
+     * @param offersToDisplay The offers which should be displayed as buttons
+     * @param otherOffers The list of other side's offers to compare with whether these offers are unique
      */
     fun update(offersToDisplay:TradeOffersList, otherOffers: TradeOffersList) {
         table.clear()
@@ -29,7 +37,7 @@ class OffersListScroll(val onOfferClicked: (TradeOffer) -> Unit) : ScrollPane(nu
 
         for (offerType in values()) {
             val labelName = when(offerType){
-                Gold, Gold_Per_Turn, Treaty,Agreement,Introduction -> ""
+                Gold, Gold_Per_Turn, Treaty, Agreement, Introduction -> ""
                 Luxury_Resource -> "Luxury resources"
                 Strategic_Resource -> "Strategic resources"
                 Technology -> "Technologies"
@@ -38,7 +46,7 @@ class OffersListScroll(val onOfferClicked: (TradeOffer) -> Unit) : ScrollPane(nu
             }
             val offersOfType = offersToDisplay.filter { it.type == offerType }
             if (labelName.isNotEmpty() && offersOfType.any()) {
-                expanderTabs[offerType] = ExpanderTab(labelName) {
+                expanderTabs[offerType] = ExpanderTab(labelName, persistenceID = "Trade.$persistenceID.$offerType") {
                     it.defaults().pad(5f)
                 }
             }

@@ -223,6 +223,14 @@ fun Label.setFontSize(size:Int): Label {
     return this
 }
 
+/** [pack][WidgetGroup.pack] a [WidgetGroup] if its [needsLayout][WidgetGroup.needsLayout] is true.
+ *  @return the receiver to allow chaining
+ */
+fun WidgetGroup.packIfNeeded(): WidgetGroup {
+    if (needsLayout()) pack()
+    return this
+}
+
 /** Get one random element of a given List.
  *
  * The probability for each element is proportional to the value of its corresponding element in the [weights] List.
