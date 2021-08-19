@@ -165,7 +165,12 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
                 
                 if (unit.canSpreadReligion()) {
                     unitDescriptionTable.add(ImageGetter.getStatIcon("Faith")).size(20f)
-                    unitDescriptionTable.add(unit.getReligionString())
+                    unitDescriptionTable.add(unit.getSpreadReligionString())
+                }
+                
+                if (unit.canRemoveHeresy()) {
+                    unitDescriptionTable.add(ImageGetter.getImage("OtherIcons/Remove Heresy")).size(20f)
+                    unitDescriptionTable.add(unit.getRemoveHeresyString())
                 }
                 
                 if (unit.baseUnit.religiousStrength > 0) {

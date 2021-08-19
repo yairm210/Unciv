@@ -331,7 +331,9 @@ class BaseUnit : INamed, INonPerpetualConstruction, ICivilopediaText {
         if (unit.hasUnique("Religious Unit")) {
             unit.religion = cityConstructions.cityInfo.religion.getMajorityReligion()
             if (unit.canSpreadReligion())
-                unit.abilityUsedCount["Religion Spread"] = 0
+                unit.abilityUsedCount[Constants.spreadReligionAbilityCount] = 0
+            if (unit.canRemoveHeresy())
+                unit.abilityUsedCount[Constants.removeHeresyAbilityCount] = 0
         }
 
         if (this.isCivilian()) return true // tiny optimization makes save files a few bytes smaller

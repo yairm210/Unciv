@@ -628,7 +628,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 
 # Sound credits
 
-Sounds are from FreeSound.org and are either Creative Commons or Public Domain
+Sounds are from FreeSound.org unless otherwise noted and are either Creative Commons or Public Domain unless otherwise noted
 
 * [Soft two-fingered snap](https://freesound.org/people/EathanMarkson/sounds/388958/) By EathanMarkson as 'click' for most clicks
 * [Pencil1](https://freesound.org/people/stijn/sounds/43673/) By stijn as 'paper' for opening and closing the tech picker
@@ -670,6 +670,8 @@ Sounds are from FreeSound.org and are either Creative Commons or Public Domain
     *    [Artillery Explosion (Close) (Mixed)](https://freesound.org/people/EFlexMusic/sounds/388528/) by EFlexMusic
 * [elephant 44](https://freesound.org/people/y89312/sounds/139875/) by y89312 for Naruesan's Elephant sound
 * Excerpt from [Missile Strike](https://freesound.org/people/BaDoink/sounds/570690/) by BaDoink for guided missile
+
+* Excerpt from [Campfire](https://www.soundjay.com/nature/sounds/campfire-1.mp3) by SoundJay for Fire & 'remove heresy' action of inquisitor
 
 # Music
 The following music is from https://filmmusic.io

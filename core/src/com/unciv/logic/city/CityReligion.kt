@@ -63,6 +63,10 @@ class CityInfoReligionManager {
         return getUniques().filter { it.placeholderText == unique }
     }
     
+    fun getPressures(): Counter<String> {
+        return pressures.clone()
+    }
+    
     fun clearAllPressures() {
         pressures.clear()
         // We add pressure for following no religion
@@ -79,6 +83,12 @@ class CityInfoReligionManager {
         if (shouldUpdateFollowers) {
             updateNumberOfFollowers()
         }
+    }
+
+    fun removeAllPressuresExceptFor(religion: String) {
+        val pressureFromThisReligion = pressures[religion]!!
+        clearAllPressures()
+        pressures.add(religion, pressureFromThisReligion)
     }
     
     fun updatePressureOnPopulationChange(populationChangeAmount: Int) {
@@ -186,8 +196,8 @@ class CityInfoReligionManager {
     fun getMajorityReligion(): String? {
         val followersPerReligion = getNumberOfFollowers()
         if (followersPerReligion.isEmpty()) return null
-        val religionWithMaxFollowers = followersPerReligion.maxByOrNull { it.value }!!
-        return if (religionWithMaxFollowers.value >= cityInfo.population.population / 2) religionWithMaxFollowers.key
+        val religionWithMaxPressure = pressures.maxByOrNull { it.value }!!.key
+        return if (followersPerReligion[religionWithMaxPressure]!! >= cityInfo.population.population / 2) religionWithMaxPressure
         else null
     }
 

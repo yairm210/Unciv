@@ -959,15 +959,29 @@ class MapUnit {
     fun canSpreadReligion(): Boolean {
         return hasUnique("Can spread religion [] times")
     }
+    
+    fun maxHeresyRemovals(): Int {
+        return getMatchingUniques("May remove heresy [] times").sumBy { it.params[0].toInt() }
+    }
+    
+    fun canRemoveHeresy(): Boolean {
+        return hasUnique("May remove heresy [] times")
+    }
 
     fun getPressureAddedFromSpread(): Int {
         return baseUnit.religiousStrength
     }
 
-    fun getReligionString(): String {
+    fun getSpreadReligionString(): String {
         val maxSpreads = maxReligionSpreads()
-        if (abilityUsedCount["Religion Spread"] == null) return "" // That is, either the key doesn't exist, or it does exist and the value is null.
-        return "${maxSpreads - abilityUsedCount["Religion Spread"]!!}/${maxSpreads}"
+        if (abilityUsedCount[Constants.spreadReligionAbilityCount] == null) return "" // That is, either the key doesn't exist, or it does exist and the value is null.
+        return "${maxSpreads - abilityUsedCount[Constants.spreadReligionAbilityCount]!!}/${maxSpreads}"
+    }
+    
+    fun getRemoveHeresyString(): String {
+        val maxRemovals = maxHeresyRemovals()
+        if (abilityUsedCount[Constants.removeHeresyAbilityCount] == null) return "" // That is, either the key doesn't exist, or it does exist and the value is null.
+        return "${maxRemovals - abilityUsedCount[Constants.removeHeresyAbilityCount]!!}/${maxRemovals}"
     }
 
     fun actionsOnDeselect() {
