@@ -708,7 +708,7 @@ May be added in promotions or ancient ruins equivalents
 
 
 # ModOptions Uniques
-These are valid only in a ModOptions file.
+These are valid only in a [ModOptions.json](/yairm210/Unciv/wiki/Miscellaneous-JSON-files#modoptionsjson) file.
 
 |unique|comment|
 |------|-------|
