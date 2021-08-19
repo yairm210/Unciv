@@ -173,6 +173,19 @@ class CityInfoReligionManager {
         return followers.clone()
     }
     
+    fun getFollowersOf(religion: String): Int? {
+        return followers[religion]
+    }
+    
+    fun getFollowersOfMajorityReligion(): Int {
+        val majorityReligion = getMajorityReligionName() ?: return 0
+        return followers[majorityReligion]!!
+    }
+    
+    fun getFollowersOfOtherReligionsThan(religion: String): Int {
+        return followers.filterNot { it.key == religion }.values.sum()
+    }
+    
     /** Removes all pantheons except for the one founded by the current owner of the city
      *  Should be called whenever a city changes hands, e.g. conquering and trading
      */
@@ -190,9 +203,8 @@ class CityInfoReligionManager {
     }
 
     fun getMajorityReligionName(): String? {
-        val followersPerReligion = getNumberOfFollowers()
-        if (followersPerReligion.isEmpty()) return null
-        val religionWithMaxFollowers = followersPerReligion.maxByOrNull { it.value }!!
+        if (followers.isEmpty()) return null
+        val religionWithMaxFollowers = followers.maxByOrNull { it.value }!!
         return if (religionWithMaxFollowers.value >= cityInfo.population.population / 2) religionWithMaxFollowers.key
         else null
     }
