@@ -415,7 +415,7 @@ class CivilizationInfo {
 
     fun getEraNumber(): Int = gameInfo.ruleSet.getEraNumber(getEra())
 
-    fun getEraObject(): Era = gameInfo.ruleSet.eras[getEra()]!!
+    fun getEraObject(): Era? = gameInfo.ruleSet.eras[getEra()]
 
     fun isAtWarWith(otherCiv: CivilizationInfo): Boolean {
         if (otherCiv.civName == civName) return false // never at war with itself
