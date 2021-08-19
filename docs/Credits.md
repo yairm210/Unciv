@@ -133,6 +133,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Dove](https://thenounproject.com/search/?q=dove&i=1344088) by sandra for Great Prophet
 * [General](https://thenounproject.com/search/?q=general&i=933566) By anbileru adaleru for Great General
 * [Religion](https://thenounproject.com/search/?q=preach&i=53064) by Bruno Gätjens González adapted for Missionary
+* [Detective](https://thenounproject.com/search/?q=detective&i=404933) by Nikita Kozin for Inquisitor
 
 ## Resources
 
