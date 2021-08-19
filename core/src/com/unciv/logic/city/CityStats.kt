@@ -372,6 +372,14 @@ class CityStats {
         return stats
     }
 
+    private fun getStatPercentBonusesFromUnitSupply(): Stats {
+        val stats = Stats()
+        val supplyDeficit = cityInfo.civInfo.stats().getUnitSupplyDeficit()
+        if (supplyDeficit > 0)
+            stats.production = cityInfo.civInfo.stats().getUnitSupplyProductionMalus()
+        return stats
+    }
+
     private fun constructionMatchesFilter(construction: IConstruction, filter: String): Boolean {
         if (construction is Building) return construction.matchesFilter(filter)
         if (construction is BaseUnit) return construction.matchesFilter(filter)
@@ -425,6 +433,7 @@ class CityStats {
         newStatPercentBonusList["National ability"] = getStatPercentBonusesFromNationUnique(currentConstruction)
         newStatPercentBonusList["Puppet City"] = getStatPercentBonusesFromPuppetCity()
         newStatPercentBonusList["Religion"] = getStatPercentBonusesFromUniques(currentConstruction, cityInfo.religion.getUniques())
+        newStatPercentBonusList["Unit Supply"] = getStatPercentBonusesFromUnitSupply()
 
         if (UncivGame.Current.superchargedForDebug) {
             val stats = Stats()

@@ -274,6 +274,7 @@ class CivilizationInfo {
     }
 
     //region Units
+    fun getCivUnitsSize(): Int = units.size
     fun getCivUnits(): Sequence<MapUnit> = units.asSequence()
     fun getCivGreatPeople(): Sequence<MapUnit> = getCivUnits().filter { mapUnit -> mapUnit.isGreatPerson() }
 
