@@ -110,7 +110,7 @@ jobs:
           releaseFiles: android/build/outputs/bundle/release/Unciv-release.aab
           track: production
           userFraction: 0.1
-          whatsNewDirectory: whatsnew
+          whatsNewDirectory: whatsNewDirectory
 
 
 ## DESKTOP
