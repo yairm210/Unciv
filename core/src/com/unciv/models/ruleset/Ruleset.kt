@@ -25,9 +25,10 @@ object ModOptionsConstants {
     const val diplomaticRelationshipsCannotChange = "Diplomatic relationships cannot change"
     const val convertGoldToScience = "Can convert gold to science with sliders"
     const val allowCityStatesSpawnUnits = "Allow City States to spawn with additional units"
+    const val tradeCivIntroductions = "Can trade civilization introductions for [] Gold"
 }
 
-class ModOptions {
+class ModOptions : IHasUniques {
     var isBaseRuleset = false
     var techsToRemove = HashSet<String>()
     var buildingsToRemove = HashSet<String>()
@@ -41,7 +42,10 @@ class ModOptions {
     var modSize = 0
     
     val maxXPfromBarbarians = 30
-    var uniques = HashSet<String>()     // No reason for now to use IHasUniques here, in that case needs to change to ArrayList
+
+    override var uniques = ArrayList<String>()
+    // If this is delegated with "by lazy", the mod download process crashes and burns
+    override var uniqueObjects: List<Unique> = listOf()
 }
 
 class Ruleset {
@@ -145,6 +149,7 @@ class Ruleset {
             try {
                 modOptions = jsonParser.getFromJson(ModOptions::class.java, modOptionsFile)
             } catch (ex: Exception) {}
+            modOptions.uniqueObjects = modOptions.uniques.map { Unique(it) }
         }
 
         val techFile = folderHandle.child("Techs.json")
