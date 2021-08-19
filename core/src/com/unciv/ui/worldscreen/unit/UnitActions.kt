@@ -502,7 +502,7 @@ object UnitActions {
         actionList += UnitAction(UnitActionType.RemoveHeresy,
             title = "Remove Heresy",
             action = {
-                unit.abilityUsedCount[Constants.removeHeresyAbilityCount] = unit.abilityUsedCount["Remove Heresy"]!! + 1
+                unit.abilityUsedCount[Constants.removeHeresyAbilityCount] = unit.abilityUsedCount[Constants.removeHeresyAbilityCount]!! + 1
                 city.religion.removeAllPressuresExceptFor(unit.religion!!)
                 unit.currentMovement = 0f
                 if (unit.abilityUsedCount[Constants.removeHeresyAbilityCount] == maxHerseyRemovals) {
