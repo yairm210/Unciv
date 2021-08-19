@@ -22,7 +22,7 @@ Each difficulty level can have the following attributes:
 | policyCostModifier | Float | Default 1 |
 | unhappinessModifier | Float | Default 1 |
 | barbarianBonus | Float | Default 0 |
-| playerBonusStartingUnits | List of Units | Default empty | Can also be 'Era Starting Unit', maps to `startingMilitaryUnit` of the Eras file. All other units must be in [units.json](/yairm210/Unciv/wiki/Unit-related-JSON-files#unitsjson)] |
+| playerBonusStartingUnits | List of Units | Default empty | Can also be 'Era Starting Unit', maps to `startingMilitaryUnit` of the Eras file. All other units must be in [Units.json](/yairm210/Unciv/wiki/Unit-related-JSON-files#unitsjson)] |
 | aiCityGrowthModifier | Float | Default 1 |
 | aiUnitCostModifier | Float | Default 1 |
 | aiBuildingCostModifier | Float | Default 1 |
@@ -51,11 +51,11 @@ Each era can have the following attributes:
 | iconRGB | List of 3 Integers | defaults to [255,255,255] | RGB color that icons for technologies of this era should have in the Tech screen |
 | unitBaseBuyCost | Integer (≥0) | defaults to 200 | Base cost of buying units with Faith, Food, Science or Culture when no other cost is provided |
 | startingSettlerCount | Integer (≥0) | defaults to 1 | Amount of settler units that should be spawned when starting a game in this era |
-| startingSettlerUnit | String | defaults to "Settler" | Name of the unit that should be used for the previous field. Must be in [Units.json](Units.json) |
+| startingSettlerUnit | String | defaults to "Settler" | Name of the unit that should be used for the previous field. Must be in [Units.json](/yairm210/Unciv/wiki/Unit-related-JSON-files#unitsjson) |
 | startingWokerCount | Integer (≥0) | defaults to 0 | Amount of worker units that should be spawned when starting a game in this era |
-| startingWorkerUnit | String | defaults to "Worker" | Name of the unit that should be used for the previous field. Must be in [Units.json ](Units.json) |
+| startingWorkerUnit | String | defaults to "Worker" | Name of the unit that should be used for the previous field. Must be in [Units.json](/yairm210/Unciv/wiki/Unit-related-JSON-files#unitsjson) |
 | startingMilitaryUnitCount | Integer (≥0) | defaults to 1 | Amount of military units that should be spawned when starting a game in this era |
-| startingMilitaryUnit | String | defaults to "Warrior" | Name of the unit that should be used for the previous field. Must be in [Units.json ](Units.json)|
+| startingMilitaryUnit | String | defaults to "Warrior" | Name of the unit that should be used for the previous field. Must be in [Units.json](/yairm210/Unciv/wiki/Unit-related-JSON-files#unitsjson)|
 | startingGold | Integer (≥0) | defaults to 0 | Amount of gold each civ should receive when starting a game in this era |
 | startingCulture | Integer (≥0) | defaults to 0 | Amount of culture each civ should receive when starting a game in this era |
 | settlerPopulation | Integer (>0) | defaults to 1 | Default amount of population each city should have when settled when starting a game in this era |
