@@ -184,6 +184,13 @@ class ReligionManager {
         return civInfo.gameInfo.getCities()
             .count { it.religion.getMajorityReligion() == religion!!.name }
     }
+    
+    fun numberOfFollowersFollowingThisReligion(cityFilter: String): Int {
+        if (religion == null) return 0
+        return civInfo.gameInfo.getCities()
+            .filter { it.matchesFilter(cityFilter, civInfo) }
+            .sumBy { it.religion.getFollowersOf(religion!!.name)!! }
+    }
 }
 
 enum class ReligionState {

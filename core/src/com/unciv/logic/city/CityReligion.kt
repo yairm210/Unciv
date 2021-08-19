@@ -160,11 +160,17 @@ class CityInfoReligionManager {
         }
     }
     
-    fun getNumberOfFollowers(): Counter<String> {
-        
-        // println(followers) // ToDo: remove this when a UI for viewing followers is added
-        
-        return followers
+    fun getFollowersOf(religion: String): Int? {
+        return followers[religion]
+    }
+    
+    fun getFollowersOfMajorityReligion(): Int {
+        val majorityReligion = getMajorityReligion() ?: return 0
+        return followers[majorityReligion]!!
+    }
+    
+    fun getFollowersOfOtherReligionsThan(religion: String): Int {
+        return followers.filterNot { it.key == religion }.values.sum()
     }
     
     /** Removes all pantheons except for the one founded by the current owner of the city
@@ -184,9 +190,8 @@ class CityInfoReligionManager {
     }
 
     fun getMajorityReligion(): String? {
-        val followersPerReligion = getNumberOfFollowers()
-        if (followersPerReligion.isEmpty()) return null
-        val religionWithMaxFollowers = followersPerReligion.maxByOrNull { it.value }!!
+        if (followers.isEmpty()) return null
+        val religionWithMaxFollowers = followers.maxByOrNull { it.value }!!
         return if (religionWithMaxFollowers.value >= cityInfo.population.population / 2) religionWithMaxFollowers.key
         else null
     }
