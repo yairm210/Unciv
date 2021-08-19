@@ -311,7 +311,7 @@ object TranslationFileWriter {
                 for (field in allFields) {
                     field.isAccessible = true
                     val fieldValue = field.get(element)
-                    if (isFieldTranslatable(field, fieldValue)) { // skip fields which must not be translated
+                    if (isFieldTranslatable(javaClass, field, fieldValue)) { // skip fields which must not be translated
                         // this field can contain sub-objects, let's serialize them as well
                         @Suppress("RemoveRedundantQualifierName")  // to clarify List does _not_ inherit from anything in java.util
                         when (fieldValue) {
@@ -347,11 +347,12 @@ object TranslationFileWriter {
             "requiredNearbyImprovedResources", "requiredResource", "requiredTech", "requires",
             "resourceTerrainAllow", "revealedBy", "startBias", "techRequired",
             "terrainsCanBeBuiltOn", "terrainsCanBeFoundOn", "turnsInto", "uniqueTo", "upgradesTo",
-            "link", "icon", "extraImage", "color"  // FormattedLine
+            "link", "icon", "extraImage", "color",  // FormattedLine
+            "RuinReward.name", "excludedDifficulties"      // RuinReward
     )
     private val translatableEnumsSet = setOf("BeliefType")
 
-    private fun isFieldTranslatable(field: Field, fieldValue: Any?): Boolean {
+    private fun isFieldTranslatable(clazz: Class<*>, field: Field, fieldValue: Any?): Boolean {
         // Exclude fields by name that contain references to items defined elsewhere
         // or are otherwise Strings but not user-displayed.
         // The Modifier.STATIC exclusion removes fields from e.g. companion objects.
@@ -361,7 +362,8 @@ object TranslationFileWriter {
                 fieldValue != "" &&
                 (field.modifiers and Modifier.STATIC) == 0 &&
                 (!field.type.isEnum || field.type.simpleName in translatableEnumsSet) &&
-                field.name !in untranslatableFieldSet
+                field.name !in untranslatableFieldSet &&
+                clazz.simpleName + "." + field.name !in untranslatableFieldSet
     }
 
     private fun getJavaClassByName(name: String): Class<Any> {
@@ -374,6 +376,7 @@ object TranslationFileWriter {
             "Policies" -> emptyArray<PolicyBranch>().javaClass
             "Quests" -> emptyArray<Quest>().javaClass
             "Religions" -> emptyArray<String>().javaClass
+            "Ruins" -> emptyArray<RuinReward>().javaClass
             "Specialists" -> emptyArray<Specialist>().javaClass
             "Techs" -> emptyArray<TechColumn>().javaClass
             "Terrains" -> emptyArray<Terrain>().javaClass

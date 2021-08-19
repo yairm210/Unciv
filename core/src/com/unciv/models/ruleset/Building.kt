@@ -1,5 +1,6 @@
 package com.unciv.models.ruleset
 
+import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.city.CityConstructions
 import com.unciv.logic.city.CityInfo
@@ -117,7 +118,7 @@ class Building : NamedStats(), INonPerpetualConstruction, ICivilopediaText {
         .filterNot {
             it.startsWith("Hidden ") && it.endsWith(" disabled") ||
             it == "Unbuildable" ||
-            it == "Will not be displayed in Civilopedia"
+            it == Constants.hideFromCivilopediaUnique
         }
 
     /** used in CityScreen (CityInfoTable and ConstructionInfoTable) */
@@ -464,7 +465,7 @@ class Building : NamedStats(), INonPerpetualConstruction, ICivilopediaText {
             "Can only be built in annexed cities" -> if (construction.cityInfo.isPuppet || construction.cityInfo.foundingCiv == ""
                     || construction.cityInfo.civInfo.civName == construction.cityInfo.foundingCiv) return unique.text
             "Obsolete with []" -> if (civInfo.tech.isResearched(unique.params[0])) return unique.text
-            "Hidden when religion is disabled" -> if (!civInfo.gameInfo.hasReligionEnabled()) return unique.text
+            Constants.hiddenWithoutReligionUnique -> if (!civInfo.gameInfo.hasReligionEnabled()) return unique.text
         }
 
         if (uniqueTo != null && uniqueTo != civInfo.civName) return "Unique to $uniqueTo"

@@ -1,6 +1,9 @@
 package com.unciv.models.ruleset.tile
 
+import com.unciv.Constants
+import com.unciv.UncivGame
 import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.RuinsManager.RuinsManager
 import com.unciv.models.ruleset.Belief
 import com.unciv.logic.map.RoadStatus
 import com.unciv.models.ruleset.IHasUniques
@@ -165,6 +168,24 @@ class TileImprovement : NamedStats(), ICivilopediaText, IHasUniques {
             textList += FormattedLine()
             for (unique in uniqueObjects)
                 textList += FormattedLine(unique)
+        }
+
+        if (isAncientRuinsEquivalent()) {
+            val difficulty = UncivGame.Current.gameInfo.gameParameters.difficulty
+            val religionEnabled = UncivGame.Current.gameInfo.hasReligionEnabled()
+            ruleset.ruinRewards.values.asSequence()
+                .filter { reward ->
+                    difficulty !in reward.excludedDifficulties &&
+                    (religionEnabled || Constants.hiddenWithoutReligionUnique !in reward.uniques)
+                }
+                .forEach { reward ->
+                    textList += FormattedLine(reward.notification, indent = 1)
+                    reward.uniqueObjects.asSequence()
+                        .filter { it.placeholderText != Constants.hiddenWithoutReligionUnique }
+                        .forEach {
+                            textList += FormattedLine(it, indent = 2)
+                        }
+                }
         }
 
         val unit = ruleset.units.asSequence().firstOrNull {
