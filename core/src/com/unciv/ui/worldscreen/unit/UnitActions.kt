@@ -464,6 +464,14 @@ object UnitActions {
         if (!unit.abilityUsedCount.containsKey("Religion Spread")) return // This should be impossible anyways, but just in case
         if (maxReligionSpreads <= unit.abilityUsedCount["Religion Spread"]!!) return
         val city = tile.getCity() ?: return
+        val blockedByInquisitor =
+            city.getCenterTile()
+                .getTilesInDistance(1)
+                .flatMap { it.getUnits() }
+                .any {
+                    it.hasUnique("Prevents spreading of religion to the city it is next to")
+                    && it.religion != unit.religion
+                }
         actionList += UnitAction(UnitActionType.SpreadReligion,
             title = "Spread [${unit.religion!!}]",
             action = {
@@ -474,7 +482,7 @@ object UnitActions {
                     addGoldPerGreatPersonUsage(unit.civInfo)
                     unit.destroy()
                 }
-            }.takeIf { unit.currentMovement > 0 } 
+            }.takeIf { unit.currentMovement > 0 && !blockedByInquisitor } 
         )
     }
 
