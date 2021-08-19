@@ -85,8 +85,10 @@ class WorkerAutomation(
     }
 
     /** Caches BFS by city locations (cities needing connecting).
-     * @param [key][Vector2] from city to connect as hex position
-     * @param [value][BFS] the BFS searching from that city, whether successful or not.
+     * 
+     *  key: The city to connect from as [hex position][Vector2].
+     *  
+     *  value: The [BFS] searching from that city, whether successful or not.
      */
     //todo: If BFS were to deal in vectors instead of TileInfos, we could copy this on cloning
     private val bfsCache = HashMap<Vector2, BFS?>()
@@ -119,7 +121,7 @@ class WorkerAutomation(
     /**
      * @return A complete, or partial clone, or null - meaning any missing information should be regenerated
      */
-    fun clone(): WorkerAutomation? {
+    fun clone(): WorkerAutomation {
         // This is a tricky one - we'd like to continue using the cached knowledge stored while the turn was
         // interactive at the moment nextTurn clones the GameInfo - but would a shallow copy work? No.
         // Also, AutoSave pulls another clone of GameInfo where any extra work would be wasted.

@@ -23,7 +23,7 @@ import kotlin.math.min
 
 object NextTurnAutomation {
 
-    /** Top-level AI turn tasklist */
+    /** Top-level AI turn task list */
     fun automateCivMoves(civInfo: CivilizationInfo) {
         if (civInfo.isBarbarian()) return BarbarianAutomation(civInfo).automate()
 
@@ -183,20 +183,30 @@ object NextTurnAutomation {
             if (researchableTechs.isEmpty()) return
 
             val cheapestTechs = techsGroups[costs[0]]!!
-            //Do not consider advanced techs if only one tech left in cheapest groupe
-            val techToResearch: Technology
-            if (cheapestTechs.size == 1 || costs.size == 1) {
-                techToResearch = cheapestTechs.random()
-            } else {
-                //Choose randomly between cheapest and second cheapest groupe
-                val techsAdvanced = techsGroups[costs[1]]!!
-                techToResearch = (cheapestTechs + techsAdvanced).random()
-            }
+            //Do not consider advanced techs if only one tech left in cheapest group
+            val techToResearch: Technology =
+                if (cheapestTechs.size == 1 || costs.size == 1) {
+                    cheapestTechs.random()
+                } else {
+                    //Choose randomly between cheapest and second cheapest group
+                    val techsAdvanced = techsGroups[costs[1]]!!
+                    (cheapestTechs + techsAdvanced).random()
+                }
 
             civInfo.tech.techsToResearch.add(techToResearch.name)
         }
     }
 
+    private object PolicyPriorityMap {
+        //todo This should be moddable, and needs an update to include new G&K Policies
+        /** Maps [VictoryType] to an ordered List of PolicyBranch names - the AI will prefer them in that order */
+        val priorities = mapOf(
+            VictoryType.Cultural to listOf("Piety", "Freedom", "Tradition", "Commerce", "Patronage"),
+            VictoryType.Scientific to listOf("Rationalism", "Commerce", "Liberty", "Order", "Patronage"),
+            VictoryType.Domination to listOf("Autocracy", "Honor", "Liberty", "Rationalism", "Commerce"),
+            VictoryType.Diplomatic to listOf("Patronage", "Commerce", "Rationalism", "Freedom", "Tradition")
+        )
+    }
     private fun adoptPolicy(civInfo: CivilizationInfo) {
         while (civInfo.policies.canAdoptPolicy()) {
 
@@ -206,20 +216,11 @@ object NextTurnAutomation {
             // This can happen if the player is crazy enough to have the game continue forever and he disabled cultural victory
             if (adoptablePolicies.isEmpty()) return
 
-
-            val preferredVictoryType = civInfo.victoryType()
-            val policyBranchPriority =
-                    when (preferredVictoryType) {
-                        VictoryType.Cultural -> listOf("Piety", "Freedom", "Tradition", "Commerce", "Patronage")
-                        VictoryType.Scientific -> listOf("Rationalism", "Commerce", "Liberty", "Order", "Patronage")
-                        VictoryType.Domination -> listOf("Autocracy", "Honor", "Liberty", "Rationalism", "Commerce")
-                        VictoryType.Diplomatic -> listOf("Patronage", "Commerce", "Rationalism", "Freedom", "Tradition")
-                        VictoryType.Neutral -> listOf()
-                    }
+            val policyBranchPriority = PolicyPriorityMap.priorities[civInfo.victoryType()]
+                ?: emptyList()
             val policiesByPreference = adoptablePolicies
-                    .groupBy {
-                        if (it.branch.name in policyBranchPriority)
-                            policyBranchPriority.indexOf(it.branch.name) else 10
+                    .groupBy { policy ->
+                        policyBranchPriority.indexOf(policy.branch.name).let { if (it == -1) 99 else it }
                     }
 
             val preferredPolicies = policiesByPreference.minByOrNull { it.key }!!.value
@@ -235,7 +236,7 @@ object NextTurnAutomation {
         // the functions for choosing beliefs total in at around 400 lines.
         // https://github.com/Gedemon/Civ5-DLL/blob/aa29e80751f541ae04858b6d2a2c7dcca454201e/CvGameCoreDLL_Expansion1/CvReligionClasses.cpp
         // line 4426 through 4870.
-        // This is way to much work for now, so I'll just choose a random pantheon instead.
+        // This is way too much work for now, so I'll just choose a random pantheon instead.
         // Should probably be changed later, but it works for now.
         // If this is omitted, the AI will never choose a religion,
         // instead automatically choosing the same one as the player,
@@ -300,6 +301,7 @@ object NextTurnAutomation {
         }
     }
 
+    @Suppress("unused")  //todo: Work in Progress?
     private fun offerDeclarationOfFriendship(civInfo: CivilizationInfo) {
         val civsThatWeCanDeclareFriendshipWith = civInfo.getKnownCivs()
                 .asSequence()
@@ -369,7 +371,7 @@ object NextTurnAutomation {
         val enemyCivs = civInfo.getKnownCivs()
                 .filterNot {
                     it == civInfo || it.cities.isEmpty() || !civInfo.getDiplomacyManager(it).canDeclareWar()
-                            || it.cities.none { civInfo.exploredTiles.contains(it.location) }
+                            || it.cities.none { city -> civInfo.exploredTiles.contains(city.location) }
                 }
         // If the AI declares war on a civ without knowing the location of any cities, it'll just keep amassing an army and not sending it anywhere,
         //   and end up at a massive disadvantage
@@ -452,7 +454,7 @@ object NextTurnAutomation {
         if (diplomacyManager.resourcesFromTrade().any { it.amount > 0 })
             modifierMap["Receiving trade resources"] = -5
 
-        if (theirCity.getTiles().none { it.neighbors.any { it.getOwner() == theirCity.civInfo && it.getCity() != theirCity } })
+        if (theirCity.getTiles().none { tile -> tile.neighbors.any { it.getOwner() == theirCity.civInfo && it.getCity() != theirCity } })
             modifierMap["Isolated city"] = 15
 
         //Maybe not needed if city-state has potential protectors?
@@ -566,7 +568,7 @@ object NextTurnAutomation {
     }
 
     // Technically, this function should also check for civs that have liberated one or more cities
-    // Hoewever, that can be added in another update, this PR is large enough as it is.
+    // However, that can be added in another update, this PR is large enough as it is.
     private fun tryVoteForDiplomaticVictory(civInfo: CivilizationInfo) {
         if (!civInfo.mayVoteForDiplomaticVictory()) return
         val chosenCiv: String? = if (civInfo.isMajorCiv()) {
