@@ -90,7 +90,7 @@ class CityOverviewTable(private val viewingPlayer: CivilizationInfo, private val
         cityInfoTableTotal.add(viewingPlayer.cities.sumBy { it.population.population }.toString().toLabel()).myAlign(Align.center)
         for (column in columnsNames.filter { it.isStat() }) {
             val stat = Stat.valueOf(column)
-            if (stat == Stat.Food || stat == Stat.Production) cityInfoTableTotal.add() //an intended empty space
+            if (stat == Stat.Food || stat == Stat.Production) cityInfoTableTotal.add() // an intended empty space
             else cityInfoTableTotal.add(viewingPlayer.cities.sumBy { getStatOfCity(it, stat) }.toLabel()).myAlign(Align.center)
         }
         cityInfoTableTotal.pack()

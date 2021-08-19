@@ -44,10 +44,10 @@ class ReligionOverviewTable(
                     ImageGetter.getRandomNationIndicator(60f)
                 button = Button(image, CameraStageBaseScreen.skin)
             } else {
-                val image = ImageGetter.getReligionIcon(religion.iconName)
-                image.color = Color.BLACK
-                val icon = image.surroundWithCircle(60f)
-                button = Button(icon, CameraStageBaseScreen.skin)
+                button = Button(
+                    ImageGetter.getCircledReligionIcon(religion.iconName, 60f),
+                    CameraStageBaseScreen.skin
+                )
             }
             
             button.onClick {
