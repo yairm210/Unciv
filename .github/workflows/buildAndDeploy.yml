@@ -130,9 +130,11 @@ jobs:
 ## ANDROID
 
       - name: Setup Android SDK
+        if: github.event_name == 'push' && contains(github.ref, 'refs/tags/') 
         uses: android-actions/setup-android@v2
         
       - uses: r0adkll/sign-android-release@v1
+        if: github.event_name == 'push' && contains(github.ref, 'refs/tags/') 
         name: Sign app APK
         # ID used to access action output
         id: sign_app
@@ -142,11 +144,12 @@ jobs:
           alias: ${{ secrets.BUNDLE_SIGNING_KEY_ALIAS }}
           keyStorePassword: ${{ secrets.BUNDLE_SIGNING_KEYSTORE_PASSWORD }}
           keyPassword: ${{ secrets.BUNDLE_SIGNING_KEY_PASSWORD }}
-        env:
+        #env:
           # override default build-tools version (29.0.3) -- optional
-          BUILD_TOOLS_VERSION: "30.0.2"
+          #BUILD_TOOLS_VERSION: "30.0.2"
 
       - name: Upload apk to google play
+        if: github.event_name == 'push' && contains(github.ref, 'refs/tags/') 
         uses: r0adkll/upload-google-play@v1
         with:
           serviceAccountJson: ${{ SERVICE_ACCOUNT_JSON }}
