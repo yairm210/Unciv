@@ -8,9 +8,9 @@ on:
   push:
     tags:
       - '*' # This doesn't mean that it HAS to have a tag, only that the workflow triggers when we push a tag
-    branches: [ googlePlayTest ]
+    branches: [ master ]
   pull_request:
-    branches: [ googlePlayTest ]
+    branches: [ master ]
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -98,6 +98,7 @@ jobs:
 
       - name: Upload apk to google play
         if: github.event_name == 'push' && contains(github.ref, 'refs/tags/') 
+        continue-on-error: true
         uses: r0adkll/upload-google-play@v1
         with:
           serviceAccountJsonPlainText: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON  }}
