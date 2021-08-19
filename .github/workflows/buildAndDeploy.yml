@@ -8,9 +8,9 @@ on:
   push:
     tags:
       - '*' # This doesn't mean that it HAS to have a tag, only that the workflow triggers when we push a tag
-    branches: [ master ]
+    branches: [ googlePlayTest ]
   pull_request:
-    branches: [ master ]
+    branches: [ googlePlayTest ]
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -75,7 +75,7 @@ jobs:
         run: |
           ## To test this in Windows PS:  cat .\changelog.md | wsl grep -Pzo --color '\\#{2}.3.15.7[^\\#]*?\\#{2}' | wsl head -n -2
           r=$(grep -Pzo '\#{2}.${{steps.tag.outputs.tag}}[^\#]*\#' changelog.md)  # grep to get only our release
-          r=$(echo "$r" | head -n -2) 
+          r=$(echo "$r" | head -n -2 | tail -n +3) 
           
           ## See https://trstringer.com/github-actions-multiline-strings/
           
@@ -84,6 +84,7 @@ jobs:
           echo "RELEASE_BODY<<EOF" >> $GITHUB_ENV
           echo "$r" >> $GITHUB_ENV
           echo "EOF" >> $GITHUB_ENV
+          
           
       - name: Post announcement on Discord
         continue-on-error: true
@@ -95,10 +96,12 @@ jobs:
         with: 
           args: | # See https://discordjs.guide/miscellaneous/parsing-mention-arguments.html#how-discord-mentions-work
             <@&663705024265715743>
+            *${{steps.tag.outputs.tag}} rolling out!*
+
             ${{ env.RELEASE_BODY }}
 
 
-      - name: Upload binaries to release
+      - name: Upload binaries to Github release
         if: github.event_name == 'push' && contains(github.ref, 'refs/tags/') 
         uses: svenstaro/upload-release-action@v2
         with:
@@ -110,4 +113,46 @@ jobs:
             # <--- Use environment variables that was created earlier - see https://github.com/svenstaro/upload-release-action
             # Single-quotes do not solve the multiline problem.
           body: |
+            ## ${{steps.tag.outputs.tag}}
+
             ${{ env.RELEASE_BODY }}
+
+      - name: Prepare files for Google Play upload
+        continue-on-error: true
+        if: github.event_name == 'push' && contains(github.ref, 'refs/tags/') 
+        shell: bash
+        run: |
+          mkdir whatsNewDirectory
+          echo "${{ env.RELEASE_BODY }}" > whatsNewDirectory/whatsnew-en-US
+          ./gradlew :android:bundleRelease
+          ## New file is now in android/build/outputs/bundle/release
+
+## ANDROID
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v2
+        
+      - uses: r0adkll/sign-android-release@v1
+        name: Sign app APK
+        # ID used to access action output
+        id: sign_app
+        with:
+          releaseDirectory: app/build/outputs/apk/release
+          signingKeyBase64: ${{ secrets.BUNDLE_SIGNING_KEY_BASE64 }}
+          alias: ${{ secrets.BUNDLE_SIGNING_KEY_ALIAS }}
+          keyStorePassword: ${{ secrets.BUNDLE_SIGNING_KEYSTORE_PASSWORD }}
+          keyPassword: ${{ secrets.BUNDLE_SIGNING_KEY_PASSWORD }}
+        env:
+          # override default build-tools version (29.0.3) -- optional
+          BUILD_TOOLS_VERSION: "30.0.2"
+
+      - name: Upload apk to google play
+        uses: r0adkll/upload-google-play@v1
+        with:
+          serviceAccountJson: ${{ SERVICE_ACCOUNT_JSON }}
+          packageName: com.unciv.app
+          releaseFiles: android/build/outputs/bundle/release/Unciv-release.aab
+          track: production
+          userFraction: 0.1
+          whatsNewDirectory: whatsnew
+
