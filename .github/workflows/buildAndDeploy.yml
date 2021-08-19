@@ -152,7 +152,7 @@ jobs:
         if: github.event_name == 'push' && contains(github.ref, 'refs/tags/') 
         uses: r0adkll/upload-google-play@v1
         with:
-          serviceAccountJson: ${{ SERVICE_ACCOUNT_JSON }}
+          serviceAccountJsonPlainText: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON  }}
           packageName: com.unciv.app
           releaseFiles: android/build/outputs/bundle/release/Unciv-release.aab
           track: production
