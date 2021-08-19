@@ -119,15 +119,7 @@ open class Stats(
         faith *= number
     }
     
-    operator fun div(number: Float) = Stats(
-        production / number,
-        food / number,
-        gold / number,
-        science / number,
-        culture / number,
-        happiness / number,
-        faith / number
-    )
+    operator fun div(number: Float) = times(1/number)
 
     /** ***Not*** only a debug helper. It returns a string representing the content, already _translated_.
      * 

@@ -169,11 +169,7 @@ class CityInfoReligionManager {
     }
     
     fun getFollowersOfOtherReligionsThan(religion: String): Int {
-        var totalFollowers = 0
-        for ((religionName, followerCount) in followers)
-            if (religionName != religion) 
-                totalFollowers += followerCount
-        return totalFollowers
+        return followers.filterNot { it.key == religion }.values.sum()
     }
     
     /** Removes all pantheons except for the one founded by the current owner of the city
