@@ -22,7 +22,7 @@ Each difficulty level can have the following attributes:
 | policyCostModifier | Float | Default 1 |
 | unhappinessModifier | Float | Default 1 |
 | barbarianBonus | Float | Default 0 |
-| playerBonusStartingUnits | List of Units | Default empty | Can also be 'Era Starting Unit', maps to `startingMilitaryUnit` of the Eras file. All other units must be in [units.json](#unitsjson)] |
+| playerBonusStartingUnits | List of Units | Default empty | Can also be 'Era Starting Unit', maps to `startingMilitaryUnit` of the Eras file. All other units must be in [units.json](/yairm210/Unciv/wiki/Unit-related-JSON-files#unitsjson)] |
 | aiCityGrowthModifier | Float | Default 1 |
 | aiUnitCostModifier | Float | Default 1 |
 | aiBuildingCostModifier | Float | Default 1 |
@@ -74,10 +74,10 @@ The file can have the following attributes, including the values Unciv sets (no 
 | isBaseRuleset | Boolean | false | Differentiates mods that change the vanilla ruleset or replace it |
 | maxXPfromBarbarians | Integer | 30 | ...as the name says... |
 | uniques | List | empty | Mod-wide specials, [see here](/yairm210/Unciv/wiki/Uniques/#modoptions-uniques) |
-| techsToRemove | List | empty | List of [Technologies](#techsjson) to remove (isBaseRuleset=false only) |
-| buildingsToRemove | List | empty | List of [Buildings or Wonders](#buildingsjson) to remove (isBaseRuleset=false only) |
-| unitsToRemove | List | empty | List of [Units](#unitsjson) to remove (isBaseRuleset=false only) |
-| nationsToRemove | List | empty | List of [Nations](#nationsjson) to remove (isBaseRuleset=false only) |
+| techsToRemove | List | empty | List of [Technologies](/yairm210/Unciv/wiki/Civilization-related-JSON-files#techsjson) to remove (isBaseRuleset=false only) |
+| buildingsToRemove | List | empty | List of [Buildings or Wonders](/yairm210/Unciv/wiki/Civilization-related-JSON-files#buildingsjson) to remove (isBaseRuleset=false only) |
+| unitsToRemove | List | empty | List of [Units](/yairm210/Unciv/wiki/Unit-related-JSON-files#unitsjson) to remove (isBaseRuleset=false only) |
+| nationsToRemove | List | empty | List of [Nations](/yairm210/Unciv/wiki/Civilization-related-JSON-files#nationsjson) to remove (isBaseRuleset=false only) |
 | lastUpdated | String | empty | Set automatically after download - Last repository update, not necessarily last content change |
 | modUrl | String | empty | Set automatically after download - URL of repository |
 | author | String | empty | Set automatically after download - Owner of repository |
