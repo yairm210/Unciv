@@ -73,7 +73,7 @@ The file can have the following attributes, including the values Unciv sets (no 
 |-----------|------|-----------|-------|
 | isBaseRuleset | Boolean | false | Differentiates mods that change the vanilla ruleset or replace it |
 | maxXPfromBarbarians | Integer | 30 | ...as the name says... |
-| uniques | List | empty | Mod-wide specials, [see here](../Uniques/#modoptions-uniques) |
+| uniques | List | empty | Mod-wide specials, [see here](/yairm210/Unciv/wiki/Uniques/#modoptions-uniques) |
 | techsToRemove | List | empty | List of [Technologies](#techsjson) to remove (isBaseRuleset=false only) |
 | buildingsToRemove | List | empty | List of [Buildings or Wonders](#buildingsjson) to remove (isBaseRuleset=false only) |
 | unitsToRemove | List | empty | List of [Units](#unitsjson) to remove (isBaseRuleset=false only) |
