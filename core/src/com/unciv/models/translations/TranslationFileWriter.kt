@@ -250,7 +250,7 @@ object TranslationFileWriter {
             val array = jsonParser.getFromJson(javaClass, jsonFile.path())
 
             generatedStrings[filename] = mutableSetOf()
-            val resultStrings = generatedStrings[filename]
+            val resultStrings = generatedStrings[filename]!!
 
             fun submitString(item: Any) {
                 val string = item.toString()
@@ -285,8 +285,15 @@ object TranslationFileWriter {
 
                         stringToTranslate = stringToTranslate.replaceFirst(parameter, parameterName)
                     }
+                } else if (string.contains('{')) {
+                    val matches = curlyBraceRegex.findAll(string)
+                    if (matches.any()) {
+                        // Ignore outer string, only translate the parts within `{}`
+                        matches.forEach { submitString(it.groups[1]!!.value) }
+                        return
+                    }
                 }
-                resultStrings!!.add("$stringToTranslate = ")
+                resultStrings.add("$stringToTranslate = ")
                 return
             }
 
@@ -331,7 +338,7 @@ object TranslationFileWriter {
                 for (element in array) {
                     serializeElement(element!!) // let's serialize the strings recursively
                     // This is a small hack to insert multiple /n into the set, which can't contain identical lines
-                    resultStrings!!.add("$specialNewLineCode ${uniqueIndexOfNewLine++}")
+                    resultStrings.add("$specialNewLineCode ${uniqueIndexOfNewLine++}")
                 }
         }
         println("Translation writer took ${System.currentTimeMillis()-startMillis}ms for ${jsonsFolder.name()}")
@@ -339,6 +346,12 @@ object TranslationFileWriter {
         return generatedStrings
     }
 
+    /** Exclude fields by name that contain references to items defined elsewhere
+     * or are otherwise Strings but not user-displayed.
+     *
+     * An exclusion applies either over _all_ json files and all classes contained in them
+     * or Class-specific by using a "Class.Field" notation.
+     */
     private val untranslatableFieldSet = setOf(
             "aiFreeTechs", "aiFreeUnits", "attackSound", "building",
             "cannotBeBuiltWith", "cultureBuildings", "improvement", "improvingTech",
@@ -348,22 +361,23 @@ object TranslationFileWriter {
             "resourceTerrainAllow", "revealedBy", "startBias", "techRequired",
             "terrainsCanBeBuiltOn", "terrainsCanBeFoundOn", "turnsInto", "uniqueTo", "upgradesTo",
             "link", "icon", "extraImage", "color",  // FormattedLine
-            "RuinReward.name", "excludedDifficulties"      // RuinReward
+            "excludedDifficulties", "RuinReward.uniques"      // RuinReward
     )
+    /** Specifies Enums where the name property _is_ translatable, by Class name */
     private val translatableEnumsSet = setOf("BeliefType")
 
+    /** Checks whether a field's value should be included in the translation templates.
+     * Applies explicit field exclusions from [untranslatableFieldSet].
+     * The Modifier.STATIC exclusion removes fields from e.g. companion objects.
+     * Fields of enum types need that type explicitly allowed in [translatableEnumsSet]
+     */
     private fun isFieldTranslatable(clazz: Class<*>, field: Field, fieldValue: Any?): Boolean {
-        // Exclude fields by name that contain references to items defined elsewhere
-        // or are otherwise Strings but not user-displayed.
-        // The Modifier.STATIC exclusion removes fields from e.g. companion objects.
-        // Fields of enum types need that type explicitly allowed in translatableEnumsSet
-        // (Using an annotation failed, even with @Retention RUNTIME they were invisible to reflection)
         return fieldValue != null &&
                 fieldValue != "" &&
                 (field.modifiers and Modifier.STATIC) == 0 &&
                 (!field.type.isEnum || field.type.simpleName in translatableEnumsSet) &&
                 field.name !in untranslatableFieldSet &&
-                clazz.simpleName + "." + field.name !in untranslatableFieldSet
+                (clazz.componentType?.simpleName ?: clazz.simpleName) + "." + field.name !in untranslatableFieldSet
     }
 
     private fun getJavaClassByName(name: String): Class<Any> {
