@@ -2,6 +2,7 @@ package com.unciv.ui.overviewscreen
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Button
+import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.translations.tr
@@ -42,10 +43,20 @@ class UnitOverviewTable(
             add("In Use".tr()).left()
             add(viewingPlayer.getCivUnitsSize().toLabel()).right().row()
             addSeparator()
+            val deficit = viewingPlayer.stats().getUnitSupplyDeficit()
             add("Supply Deficit".tr()).left()
-            add(viewingPlayer.stats().getUnitSupplyDeficit().toLabel()).right().row()
+            add(deficit.toLabel()).right().row()
             add("Production Penalty".tr()).left()
             add((viewingPlayer.stats().getUnitSupplyProductionMalus()).toInt().toString()+"%").right().row()
+            if (deficit > 0) {
+                add("Increase your supply or reduce the amount of units to remove the production malus"
+                    .toLabel().apply { wrap = true; color = Color.FIREBRICK })
+                    .colspan(2)
+                    .width(overviewScreen.stage.width * 0.2f)
+                    .left()
+                    .row()
+            }
+            pack()
         }
         return unitSupplyTable
     }
