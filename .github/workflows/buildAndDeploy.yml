@@ -8,7 +8,7 @@ on:
   push:
     tags:
       - '*' # This doesn't mean that it HAS to have a tag, only that the workflow triggers when we push a tag
-    branches: [ master ]
+    branches: [ buildtestJava11 ]
   pull_request:
     branches: [ master ]
 
