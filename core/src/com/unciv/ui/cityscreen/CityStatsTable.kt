@@ -85,11 +85,12 @@ class CityStatsTable(val cityScreen: CityScreen): Table() {
     private fun addReligionInfo() {
         val label = cityInfo.religion.getMajorityReligionName()
             ?: "None"
+        val icon = if (label == "None") "Religion" else label
         val expanderTab =
             ExpanderTab(
                 title = "Majority Religion: [$label]",
                 fontSize = 18,
-                icon = ImageGetter.getCircledReligionIcon(label, 30f),
+                icon = ImageGetter.getCircledReligionIcon(icon, 30f),
                 defaultPad = 0f,
                 persistenceID = "CityStatsTable.Religion",
                 startsOutOpened = false,
