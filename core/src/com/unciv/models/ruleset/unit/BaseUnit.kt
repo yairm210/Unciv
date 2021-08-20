@@ -329,7 +329,7 @@ class BaseUnit : INamed, INonPerpetualConstruction, ICivilopediaText {
             unit.currentMovement = 0f
 
         if (unit.hasUnique("Religious Unit")) {
-            unit.religion = cityConstructions.cityInfo.religion.getMajorityReligion()
+            unit.religion = cityConstructions.cityInfo.religion.getMajorityReligionName()
             if (unit.canSpreadReligion())
                 unit.abilityUsedCount["Religion Spread"] = 0
         }
