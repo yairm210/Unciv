@@ -28,6 +28,9 @@ open class TileInfo {
     @Transient
     private lateinit var baseTerrainObject: Terrain
 
+    @Transient
+    private lateinit var terrainFeatureObjects: List<Terrain>
+
     // These are for performance - checked with every tile movement and "canEnter" check, which makes them performance-critical
     @Transient
     var isLand = false
@@ -187,25 +190,13 @@ open class TileInfo {
         }
     }
 
-    @Transient
-    private lateinit var terrainFeatureObjects: List<Terrain>
-    @Transient
-    private var terrainFeaturesHash = 0
-
     /** @return [terrainFeatures] mapped to [Terrain] instances, without those missing in the ruleset, **cached** */
-    fun getTerrainFeatures(): List<Terrain> {
-        val newHash = terrainFeatures.hashCode()
-        if (!::terrainFeatureObjects.isInitialized || terrainFeaturesHash != newHash) {
-            terrainFeatureObjects = terrainFeatures.mapNotNull { ruleset.terrains[it] }
-            terrainFeaturesHash = newHash
-        }
-        return terrainFeatureObjects
-    }
+    fun getTerrainFeatures(): List<Terrain> = terrainFeatureObjects
 
     fun getAllTerrains(): Sequence<Terrain> = sequence {
         yield(baseTerrainObject)
         if (naturalWonder != null) yield(getNaturalWonder())
-        yieldAll(getTerrainFeatures())
+        yieldAll(terrainFeatureObjects)
     }
 
     fun isRoughTerrain() = getAllTerrains().any { it.isRough() }
@@ -686,6 +677,7 @@ open class TileInfo {
         if (!ruleset.terrains.containsKey(baseTerrain))
             throw Exception()
         baseTerrainObject = ruleset.terrains[baseTerrain]!!
+        terrainFeatureObjects = terrainFeatures.mapNotNull { ruleset.terrains[it] }
         isWater = getBaseTerrain().type == TerrainType.Water
         isLand = getBaseTerrain().type == TerrainType.Land
         isOcean = baseTerrain == Constants.ocean
