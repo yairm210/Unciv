@@ -32,7 +32,7 @@ jobs:
 
       - uses: actions/setup-java@v1
         with:
-          java-version: '8'
+          java-version: '11'
           
         # Cache gradle to improve runtime. For comparison, 20.08.21 - ~8m for full build.
       - name: Cache Gradle packages
