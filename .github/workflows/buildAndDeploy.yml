@@ -34,10 +34,6 @@ jobs:
         with:
           java-version: '8'
 
-      # Runs a set of commands using the runners shell
-      - name: build
-        run: ./gradlew build
-        
       - name: check
         run: ./gradlew check
 
