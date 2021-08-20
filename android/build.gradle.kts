@@ -120,6 +120,8 @@ tasks.register<JavaExec>("run") {
 }
 
 dependencies {
+    // Updating to latest version would require upgrading sourceCompatability and targetCompatability to 1_8 -
+    //   run `./gradlew build --scan` to see details
     implementation("androidx.core:core-ktx:1.3.2")
     implementation("androidx.work:work-runtime-ktx:2.6.0-alpha02")
 }

@@ -1,5 +1,4 @@
 import com.unciv.build.BuildConfig.gdxVersion
-import com.unciv.build.BuildConfig.kotlinVersion
 import com.unciv.build.BuildConfig.roboVMVersion
 
 buildscript {
@@ -111,16 +110,6 @@ project(":core") {
         apply(plugin = "kotlin")
 
         dependencies {
-
-            /**
-             * If you do have some classes to test in os specific code you may want to uncomment
-             * some of these lines.
-             *
-             * BUT: I recommend to create seperate test sub projects for each platform. Trust me :)
-             *
-             */
-
-
             "implementation"(project(":core"))
 
             "implementation"("junit:junit:4.13.1")
