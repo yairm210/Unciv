@@ -72,7 +72,7 @@ class BasicTests {
         Assert.assertTrue(Stats.isStats("+1 Gold, +2 Production"))
         Assert.assertFalse(Stats.isStats("+1 Gold from tree"))
 
-        val statsThatShouldBe = Stats().add(Stat.Gold,1f).add(Stat.Production, 2f)
+        val statsThatShouldBe = Stats(gold = 1f, production = 2f)
         Assert.assertTrue(Stats.parse("+1 Gold, +2 Production").equals(statsThatShouldBe))
 
         UncivGame.Current = UncivGame("")
@@ -100,15 +100,16 @@ class BasicTests {
     @Test
     fun statMathRandomResultTest() {
         val iterations = 42
-        val expectedStats = Stats().apply {
-            production = 12970.174f
-            food = -153216.12f
-            gold = 28614.738f
-            science = 142650.89f
-            culture = -45024.03f
-            happiness = -7081.2495f
-            faith = -14933.622f
-        }
+        val expectedStats = Stats(
+            production = 212765.08f,
+            food = 776.8394f,
+            gold = -4987.297f,
+            science = 14880.18f,
+            culture = -49435.21f,
+            happiness = -13046.4375f,
+            faith = 7291.375f
+        )
+        // This is dependent on iterator order, so when that changes the expected values must change too
         val stats = statMathRunner(iterations)
         Assert.assertTrue(stats.equals(expectedStats))
     }
@@ -121,14 +122,14 @@ class BasicTests {
         for (i in 0 until iterations) {
             val value: Float = random.nextDouble(-10.0, 10.0).toFloat()
             stats.add( Stats(gold = value) )
-            stats.toHashMap().forEach {
+            stats.forEach {
                 val stat = Stat.values()[(it.key.ordinal + random.nextInt(1,statCount)).rem(statCount)]
                 stats.add(stat, -it.value)
             }
             val stat = Stat.values()[random.nextInt(statCount)]
-            stats.add(stat, stats.times(4).get(stat))
+            stats.add(stat, stats.times(4)[stat])
             stats.timesInPlace(0.8f)
-            if (abs(stats.toHashMap().maxOfOrNull { it.value }!!) > 1000000f)
+            if (abs(stats.values.maxOrNull()!!) > 1000000f)
                 stats.timesInPlace(0.1f)
         }
         return stats

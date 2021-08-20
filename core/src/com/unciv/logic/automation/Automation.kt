@@ -162,7 +162,7 @@ object Automation {
 
         // Improvements are good: less points
         if (tile.improvement != null &&
-            tile.getImprovementStats(tile.getTileImprovement()!!, cityInfo.civInfo, cityInfo).toHashMap().values.sum() > 0f
+            tile.getImprovementStats(tile.getTileImprovement()!!, cityInfo.civInfo, cityInfo).values.sum() > 0f
         ) score -= 5
 
         // The original checks if the tile has a road, but adds a score of 0 if it does.
@@ -171,7 +171,7 @@ object Automation {
         if (tile.naturalWonder != null) score -= 105
 
         // Straight up take the sum of all yields
-        score -= tile.getTileStats(null, cityInfo.civInfo).toHashMap().values.sum().toInt()
+        score -= tile.getTileStats(null, cityInfo.civInfo).values.sum().toInt()
 
         // Check if we get access to better tiles from this tile
         var adjacentNaturalWonder = false

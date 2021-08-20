@@ -6,6 +6,10 @@ import kotlin.reflect.KMutableProperty0
 /**
  * A container for the seven basic ["currencies"][Stat] in Unciv,
  * **Mutable**, allowing for easy merging of sources and applying bonuses.
+ * 
+ * Supports e.g. `for ((key,value) in <Stats>)` - the [iterator] will skip zero values automatically.
+ * 
+ * Also possible: `<Stats>`.[values].sum() and similar aggregates over a Sequence<Float>.
  */
 open class Stats(
     var production: Float = 0f,
@@ -15,7 +19,7 @@ open class Stats(
     var culture: Float = 0f,
     var happiness: Float = 0f,
     var faith: Float = 0f
-) {
+): Iterable<Stats.StatValuePair> {
     // This is what facilitates indexed access by [Stat] or add(Stat,Float)
     // without additional memory allocation or expensive conditionals
     @delegate:Transient
@@ -126,22 +130,43 @@ open class Stats(
      * Example output: `+1 Production, -1 Food`.
      */
     override fun toString(): String {
-        return toHashMap().filter { it.value != 0f }
-                .map { (if (it.value > 0) "+" else "") + it.value.toInt() + " " + it.key.toString().tr() }.joinToString()
+        return this.joinToString {
+            (if (it.value > 0) "+" else "") + it.value.toInt() + " " + it.key.toString().tr()
+        }
     }
 
-    /** @return a Map copy of the values in this instance, can be used to iterate over the values */
-    fun toHashMap(): HashMap<Stat, Float> {
-        return linkedMapOf(
-            Stat.Production to production,
-            Stat.Food to food,
-            Stat.Gold to gold,
-            Stat.Science to science,
-            Stat.Culture to culture,
-            Stat.Happiness to happiness,
-            Stat.Faith to faith
-        )
+    /** Represents one [key][Stat]/[value][Float] pair returned by the [iterator] */
+    data class StatValuePair (val key: Stat, val value: Float)
+
+    /** Enables iteration over the non-zero [Stat]/value [pairs][StatValuePair].
+     * Explicit use unnecessary - [Stats] is [iterable][Iterable] directly.
+     * @see iterator */
+    fun asSequence() = sequence {
+        if (production != 0f) yield(StatValuePair(Stat.Production, production))
+        if (food != 0f) yield(StatValuePair(Stat.Food, food))
+        if (gold != 0f) yield(StatValuePair(Stat.Gold, gold))
+        if (science != 0f) yield(StatValuePair(Stat.Science, science))
+        if (culture != 0f) yield(StatValuePair(Stat.Culture, culture))
+        if (happiness != 0f) yield(StatValuePair(Stat.Happiness, happiness))
+        if (faith != 0f) yield(StatValuePair(Stat.Faith, faith))
     }
+
+    /** Enables aggregates over the values, never empty */
+    // Property syntax to emulate Map.values pattern
+    // Doesn't skip zero values as it's meant for sum() or max() where the overhead would be higher than any gain
+    val values
+        get() = sequence {
+            yield(production)
+            yield(food)
+            yield(gold)
+            yield(science)
+            yield(culture)
+            yield(happiness)
+            yield(faith)
+        }
+
+    /** Returns an iterator over the elements of this object, wrapped as [StatValuePair]s */
+    override fun iterator(): Iterator<StatValuePair> = asSequence().iterator()
 
 
     companion object {
