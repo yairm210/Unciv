@@ -37,7 +37,7 @@
 		"production": 1,
 		"movementCost": 1,
 		"RGB": [168,185,102],
-		"uniques": ["Occurs at temperature between [-0.3] and [-0.1] and humidity between [0] and [0.2]",
+		"uniques": ["Occurs at temperature between [-0.4] and [-0.1] and humidity between [0] and [0.2]",
 			    "Occurs at temperature between [-0.4] and [0.4] and humidity between [0.4] and [0.6]",
 			    "Occurs at temperature between [0.4] and [0.5] and humidity between [0.5] and [0.6]",
 			    "Occurs at temperature between [-0.6] and [0.7] and humidity between [0.8] and [0.9]",
@@ -111,8 +111,7 @@
 		"RGB": [105,125,72],
 		"occursOn": ["Tundra","Plains","Grassland","Desert","Snow"],
 		"uniques": ["Rough terrain", "[+5] Strength for cities built on this terrain",
-			"[+1] Sight for [Land] units", "Has an elevation of [2] for visibility calculations",
-			"Occurs in groups around high elevations"]
+			"Has an elevation of [2] for visibility calculations", "Occurs in groups around high elevations"]
 	},
 	{
 		"name": "Forest",

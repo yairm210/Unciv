@@ -160,6 +160,11 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Joss Stick](https://thenounproject.com/search/?q=incense&i=583033) By Hea Poh Lin for Incense
 * [Pottery](https://thenounproject.com/term/pottery/2317144/) By Laymik, UA for Porcelain
 * [Jewelry](https://thenounproject.com/term/jewelry/3688098/) By Shocho, IN
+* [Lemons](https://thenounproject.com/search/?q=lemon&i=4147611) By sachin modgekar, IN for Citrus
+* [Pipes](https://thenounproject.com/search/?q=pipes&i=1637792) By Nibras@design for Copper
+* [Crab](https://thenounproject.com/search/?q=crab&i=246420) By YuguDesign
+* [Truffle](https://thenounproject.com/search/?q=Truffles&i=1576609) By parkjisun
+* [Salt](https://thenounproject.com/search/?q=salt&i=3614173) By HAMEL KHALED, DZ 
 
 ## Improvements
 
@@ -231,7 +236,6 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Wat Arun Ratchawararam Ratchawaramahawihan](https://thenounproject.com/term/wat-arun-ratchawararam-ratchawaramahawihan/320664/) By József Balázs-Hegedüs for Wat
 * [College](https://thenounproject.com/term/college/1203703/) By Vectors Market for National College
 * [Chichen Itza](https://thenounproject.com/term/chichen-itza/668065/) By Hea Poh Lin
-* [Christian Church](https://thenounproject.com/term/christian-church/1174183/) By Andrejs Kirma for Monastery
 * [Castle](https://thenounproject.com/search/?q=castle&i=390189) By Mint Shirt
 * [Red Fort](https://thenounproject.com/arunabh.jain.0fficial/collection/famous-indian-monuments/?i=2092466), [Gateway of India](https://thenounproject.com/arunabh.jain.0fficial/collection/famous-indian-monuments/?i=2092468) By Arunabh Jain, IN for Mughal Fort
 * [Angkor Wat](https://thenounproject.com/search/?q=angkor%20wat&i=2412873) By Phạm Thanh Lộc for Angkor Wat
@@ -312,6 +316,11 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 
 ### All Era's
 * [Illuminati](https://thenounproject.com/term/illuminati/1617812) by emilegraphics for the Utopia Project
+* [Christian Church](https://thenounproject.com/term/christian-church/1174183/) by Andrejs Kirma for Monastery
+* [cathedral](https://thenounproject.com/search/?q=Cathedral&i=4136407) by Pixel Bazaar for Cathedral
+* [Mosque](https://thenounproject.com/search/?q=mosque&i=4139519) by Ahmad Roaayala for Mosque
+* [Pagoda](https://thenounproject.com/search/?q=pagoda&i=446665) by Xinh Studio for Pagoda 
+
 
 ## Social Policies
 
@@ -569,6 +578,12 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [taoism](https://thenounproject.com/search/?q=Taoism&i=740812) by parkjisun for Taosim
 * [Buddhism](https://thenounproject.com/search/?q=buddhism&i=38764) by Julio Yanes for Buddhism
 * [Hinduism](https://thenounproject.com/search/?q=hinduism&i=20383) by Mugda Damle for Hinduism
+* [Confucianism](https://thenounproject.com/search/?q=Confucianism&i=200406) by Dabid J. Pascual for Confucianism
+* [Judaism](https://thenounproject.com/search/?q=Judaism&i=200418) by Dabid J. Pascual for Judaism
+* [Shinto](https://thenounproject.com/dabid/uploads/?i=238069) by Dabid J. Pascual for Shinto
+* [Sikhism](https://thenounproject.com/dabid/uploads/?i=238064) by Dabid J. Pascual for Sikhism
+* [Tengrism](https://thenounproject.com/search/?q=Tengrism&i=238067) by Dabid J. Pascual for Tengriism
+* [Zoroastrianism](https://thenounproject.com/search/?q=Zoroastrianism&i=238059) by Dabid J. Pascual for Zoroastrianism
 * [praying](https://thenounproject.com/term/praying/740809/) by parkjisun for Religion (Civilopedia concept entry)
 * [praying](https://thenounproject.com/term/praying/886367/) by Gan Khoon Lay for Follower
 
@@ -598,6 +613,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Lock](https://thenounproject.com/search/?q=lock&i=3217613) by Vadim Solomakhin for locked tiles
 * [Hourglass](https://thenounproject.com/search/?q=hourglass&i=142268) by I Create Stuff for the 'Turn' icon
 * [Dove](https://thenounproject.com/search/?q=dove&i=1344084) by Sandra for Faith
+* [Shield](https://thenounproject.com/search/?q=shield&i=813568) by Gregor Cresnar for Religious Strength
 
 ## Main menu
 
@@ -628,7 +644,7 @@ Sounds are from FreeSound.org and are either Creative Commons or Public Domain
 * [Slingshot fly by 2](https://freesound.org/people/saturdaysoundguy/sounds/394186/) by saturdaysoundguy as 'arrow' for arrow attacks
 * [Metal hit slide](https://freesound.org/people/orginaljun/sounds/149102/) by orginaljun as 'nonmetalhit' for pre-metal melee sounds
 * [klick_anlauf](https://freesound.org/people/jascha/sounds/16576/) By jascha as 'metalhit' for metal melee sounds
-* [Horse Neigh 2](https://freesound.org/people/GoodListener/sounds/322450/) By GoodListener as 'horse' for cavalry attack sounds
+* [Horse's whinny](https://freesound.org/people/Kubuzz/sounds/347036/) By Kubuzz as 'horse' for cavalry attack sounds
 * [machine gun 001 - loop](https://freesound.org/people/pgi/sounds/212602/) By pgi as 'machinegun' for machine gun attack sound
 * [uzzi_full_single](https://freesound.org/people/Deganoth/sounds/348685/) By Deganoth as 'shot' for bullet attacks
 * [Grenade Launcher 2](https://soundbible.com/2140-Grenade-Launcher-2.html) By Daniel Simon as city bombard sound (CC Attribution 3.0 license)

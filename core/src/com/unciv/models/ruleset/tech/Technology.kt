@@ -3,6 +3,7 @@ package com.unciv.models.ruleset.tech
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.ruleset.Building
+import com.unciv.models.ruleset.IHasUniques
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.Unique
 import com.unciv.models.translations.tr
@@ -13,14 +14,14 @@ import com.unciv.ui.civilopedia.FormattedLine
 import com.unciv.ui.utils.Fonts
 import java.util.*
 
-class Technology: INamed, ICivilopediaText {
+class Technology: INamed, ICivilopediaText, IHasUniques {
 
     override lateinit var name: String
 
     var cost: Int = 0
     var prerequisites = HashSet<String>()
-    var uniques = ArrayList<String>()
-    val uniqueObjects: List<Unique> by lazy { uniques.map { Unique(it) } }
+    override var uniques = ArrayList<String>()
+    override val uniqueObjects: List<Unique> by lazy { uniques.map { Unique(it) } }
 
     var column: TechColumn? = null // The column that this tech is in the tech tree
     var row: Int = 0

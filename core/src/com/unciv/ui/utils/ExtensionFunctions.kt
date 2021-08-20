@@ -30,7 +30,7 @@ fun Button.enable() {
     touchable = Touchable.enabled
 }
 /** Enable or disable a [Button] by setting its [touchable][Button.touchable] and [color][Button.color] properties,
- *  or returns the corresponding state. *
+ *  or returns the corresponding state.
  *
  *  Do not confuse with Gdx' builtin [isDisabled][Button.isDisabled] property,
  *  which is more appropriate to toggle On/Off buttons, while this one is good for 'click-to-do-something' buttons.
@@ -220,6 +220,14 @@ fun Label.setFontSize(size:Int): Label {
     style.font = Fonts.font
     @Suppress("UsePropertyAccessSyntax") setStyle(style)
     setFontScale(size/ Fonts.ORIGINAL_FONT_SIZE)
+    return this
+}
+
+/** [pack][WidgetGroup.pack] a [WidgetGroup] if its [needsLayout][WidgetGroup.needsLayout] is true.
+ *  @return the receiver to allow chaining
+ */
+fun WidgetGroup.packIfNeeded(): WidgetGroup {
+    if (needsLayout()) pack()
     return this
 }
 

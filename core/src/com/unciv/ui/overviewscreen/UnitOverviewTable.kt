@@ -45,9 +45,8 @@ class UnitOverviewTable(
                 game.worldScreen.mapHolder.setCenterPosition(unit.currentTile.position)
             }
             add(button).left()
-            val mapUnitAction = unit.action
-            if (mapUnitAction == null) add()
-            else add(if (mapUnitAction.startsWith("Fortify")) "Fortify".tr() else mapUnitAction.tr())
+            if (unit.action == null) add()
+            else add(unit.getActionLabel().tr())
             if (baseUnit.strength > 0) add(baseUnit.strength.toString()) else add()
             if (baseUnit.rangedStrength > 0) add(baseUnit.rangedStrength.toString()) else add()
             add(DecimalFormat("0.#").format(unit.currentMovement) + "/" + unit.getMaxMovement())

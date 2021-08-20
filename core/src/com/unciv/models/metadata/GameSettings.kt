@@ -62,7 +62,7 @@ class GameSettings {
     }
 
     fun addCompletedTutorialTask(tutorialTask: String) {
-        tutorialTasksCompleted.add(tutorialTask)
-        save()
+        if (tutorialTasksCompleted.add(tutorialTask))
+            save()
     }
 }

@@ -56,7 +56,7 @@ class PopulationManager {
         if (food < 0)
             cityInfo.civInfo.addNotification("[${cityInfo.name}] is starving!", cityInfo.location, NotificationIcon.Growth, NotificationIcon.Death)
         if (foodStored < 0) {        // starvation!
-            if (population > 1) population--
+            if (population > 1) addPopulation(-1)
             foodStored = 0
         }
         if (foodStored >= getFoodToNextPopulation()) {  // growth!
@@ -68,7 +68,7 @@ class PopulationManager {
             // Try to avoid runaway food gain in mods, just in case 
             if (percentOfFoodCarriedOver > 95) percentOfFoodCarriedOver = 95 
             foodStored += (getFoodToNextPopulation() * percentOfFoodCarriedOver / 100f).toInt()
-            population++
+            addPopulation(1)
             autoAssignPopulation()
             cityInfo.civInfo.addNotification("[${cityInfo.name}] has grown!", cityInfo.location, NotificationIcon.Growth)
         }
@@ -77,14 +77,18 @@ class PopulationManager {
     private fun getStatsOfSpecialist(name: String) = cityInfo.cityStats.getStatsOfSpecialist(name)
 
     internal fun addPopulation(count: Int) {
-        population += count
-        if (population < 0) population = 0
+        val changedAmount = 
+            if (population + count < 0) -population
+            else count
+        population += changedAmount
         val freePopulation = getFreePopulation()
         if (freePopulation < 0) {
             unassignExtraPopulation()
         } else {
             autoAssignPopulation()
         }
+        
+        cityInfo.religion.updatePressureOnPopulationChange(changedAmount)
     }
     
     internal fun setPopulation(count: Int) {

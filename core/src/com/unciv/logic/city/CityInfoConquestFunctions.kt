@@ -215,6 +215,8 @@ class CityInfoConquestFunctions(val city: CityInfo){
                     cityConstructions.addBuilding(civEquivalentBuilding.name)
                 }
             }
+            
+            if (civInfo.gameInfo.hasReligionEnabled()) religion.removeUnknownPantheons()
 
             tryUpdateRoadStatus()
         }

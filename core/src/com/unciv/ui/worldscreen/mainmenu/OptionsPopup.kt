@@ -5,6 +5,7 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.*
+import com.unciv.Constants
 import com.unciv.MainMenuScreen
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.models.UncivSound
@@ -455,7 +456,7 @@ class OptionsPopup(val previousScreen:CameraStageBaseScreen) : Popup(previousScr
 
         Usage: YesNoButton(someSetting: Boolean, skin) { someSetting = it; sideEffects() }
  */
-private fun Boolean.toYesNo(): String = (if (this) "Yes" else "No").tr()
+private fun Boolean.toYesNo(): String = (if (this) Constants.yes else Constants.no).tr()
 private class YesNoButton(initialValue: Boolean, skin: Skin, action: (Boolean) -> Unit)
         : TextButton (initialValue.toYesNo(), skin ) {
 

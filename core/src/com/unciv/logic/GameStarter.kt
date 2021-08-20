@@ -240,9 +240,14 @@ object GameStarter {
             if(civ.isCityState())
                 addCityStateLuxury(gameInfo, startingLocation)
 
-            for (tile in startingLocation.getTilesInDistance(3))
-                if (tile.improvement == Constants.ancientRuins)
+            for (tile in startingLocation.getTilesInDistance(3)) {
+                if (tile.improvement != null 
+                    && !tile.improvement!!.startsWith("StartingLocation") 
+                    && tile.getTileImprovement()!!.isAncientRuinsEquivalent()
+                ) {
                     tile.improvement = null // Remove ancient ruins in immediate vicinity
+                }
+            }
 
             fun placeNearStartingPosition(unitName: String) {
                 civ.placeUnitNearTile(startingLocation.position, unitName)
@@ -342,7 +347,7 @@ object GameStarter {
         while (landTiles.any()) {
             val bfs = BFS(landTiles.random()) { it.isLand && !it.isImpassible() }
             bfs.stepToEnd()
-            val tilesInGroup = bfs.tilesReached.keys
+            val tilesInGroup = bfs.getReachedTiles()
             landTiles = landTiles.filter { it !in tilesInGroup }
             if (tilesInGroup.size > 20) // is this a good number? I dunno, but it's easy enough to change later on
                 landTilesInBigEnoughGroup.addAll(tilesInGroup)

@@ -34,7 +34,7 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
     private val scienceLabel = "0".toLabel(colorFromRGB(78, 140, 151))
     private val happinessLabel = "0".toLabel()
     private val cultureLabel = "0".toLabel(colorFromRGB(210, 94, 210))
-    private val faithLabel = "0".toLabel(colorFromRGB(210, 94, 210))
+    private val faithLabel = "0".toLabel(colorFromRGB(210, 94, 210)) // TODO: This colour should be changed at some point
     private val resourceLabels = HashMap<String, Label>()
     private val resourceImages = HashMap<String, Actor>()
     private val happinessImage = Group()
@@ -126,7 +126,15 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
 
         if(worldScreen.gameInfo.hasReligionEnabled()) {
             statsTable.add(faithLabel).padLeft(20f)
-            statsTable.add(ImageGetter.getStatIcon("Faith")).padBottom(6f).size(20f)
+            val faithImage = ImageGetter.getStatIcon("Faith")
+            statsTable.add(faithImage).padBottom(6f).size(20f)
+            
+            val invokeFaithOverview = {
+                worldScreen.game.setScreen(EmpireOverviewScreen(worldScreen.selectedCiv, "Religion"))
+            }
+            
+            faithLabel.onClick(invokeFaithOverview)
+            faithImage.onClick(invokeFaithOverview)
         }
 
         statsTable.pack()

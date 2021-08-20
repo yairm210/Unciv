@@ -71,7 +71,7 @@ class FormattedLine (
     // have no backing field, be `by lazy` or use @Transient, Thank you.
 
     /** Looks for linkable ruleset objects in [Unique] parameters and returns a linked [FormattedLine] if successful, a plain one otherwise */
-    constructor(unique: Unique) : this(unique.text, getUniqueLink(unique))
+    constructor(unique: Unique, indent: Int = 0) : this(unique.text, getUniqueLink(unique), indent = indent)
 
     /** Link types that can be used for [FormattedLine.link] */
     enum class LinkType {
@@ -258,7 +258,7 @@ class FormattedLine (
         var iconCount = 0
         val iconSize = max(minIconSize, fontSize * 1.5f)
         if (linkType != LinkType.None && !noLinkImages) {
-            table.add( ImageGetter.getImage(linkImage) ).size(iconSize).padRight(iconPad)
+            table.add(ImageGetter.getImage(linkImage)).size(iconSize).padRight(iconPad)
             iconCount++
         }
         if (!noLinkImages)
@@ -385,22 +385,23 @@ object MarkupRenderer {
 }
 
 /** Storage class for interface [ICivilopediaText] for use as base class */
+@Deprecated("As of 3.16.1, use ICivilopediaText directly please")
 abstract class CivilopediaText : ICivilopediaText {
     override var civilopediaText = listOf<FormattedLine>()
 }
 /** Storage class for instantiation of the simplest form containing only the lines collection */
-class SimpleCivilopediaText(lines: List<FormattedLine>, val isComplete: Boolean = false) : CivilopediaText() {
-    init {
-        civilopediaText = lines
-    }
-    override fun hasCivilopediaTextLines() = true
-    override fun replacesCivilopediaDescription() = isComplete
-    override fun makeLink() = ""
-
+open class SimpleCivilopediaText(
+    override var civilopediaText: List<FormattedLine>,
+    val isComplete: Boolean = false
+) : ICivilopediaText {
     constructor(strings: Sequence<String>, isComplete: Boolean = false) : this(
         strings.map { FormattedLine(it) }.toList(), isComplete)
     constructor(first: Sequence<FormattedLine>, strings: Sequence<String>, isComplete: Boolean = false) : this(
         (first + strings.map { FormattedLine(it) }).toList(), isComplete)
+
+    override fun hasCivilopediaTextLines() = true
+    override fun replacesCivilopediaDescription() = isComplete
+    override fun makeLink() = ""
 }
 
 /** Addon common to most ruleset game objects managing civilopedia display
@@ -424,7 +425,7 @@ interface ICivilopediaText {
      * @return A [FormattedLine] that will be inserted on top
      */
     fun getCivilopediaTextHeader(): FormattedLine? =
-        if (this is INamed) FormattedLine(name, icon=makeLink(), header = 2)
+        if (this is INamed) FormattedLine(name, icon = makeLink(), header = 2)
         else null
 
     /** Generate automatic lines from object metadata.
@@ -456,7 +457,7 @@ interface ICivilopediaText {
      * @param ruleset The current ruleset for the Civilopedia viewer
      * @return A new CivilopediaText instance containing original [civilopediaText] lines merged with those from [getCivilopediaTextHeader] and [getCivilopediaTextLines] calls.
      */
-    fun assembleCivilopediaText(ruleset: Ruleset): CivilopediaText {
+    fun assembleCivilopediaText(ruleset: Ruleset): ICivilopediaText {
         val outerLines = civilopediaText.iterator()
         val newLines = sequence {
             var middleDone = false

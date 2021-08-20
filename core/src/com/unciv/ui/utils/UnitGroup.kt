@@ -5,7 +5,6 @@ import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.scenes.scene2d.actions.RepeatAction
 import com.badlogic.gdx.scenes.scene2d.ui.Image
-import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.map.MapUnit
 
@@ -56,9 +55,10 @@ class UnitGroup(val unit: MapUnit, val size: Float): Group() {
             unit.isFortified() -> ImageGetter.getImage("OtherIcons/Shield")
             unit.isSleeping() -> ImageGetter.getImage("OtherIcons/Sleep")
             unit.isMoving() -> ImageGetter.getStatIcon("Movement")
-            unit.action == Constants.unitActionExplore -> ImageGetter.getUnitIcon("Scout")
-            unit.action == Constants.unitActionAutomation -> ImageGetter.getUnitIcon("Great Engineer")
-            unit.action == Constants.unitActionSetUp -> ImageGetter.getUnitIcon("Catapult")
+            //todo: Less hardcoding, or move to Constants with explanation (should icon change with mods?)
+            unit.isExploring() -> ImageGetter.getUnitIcon("Scout")
+            unit.isAutomated() -> ImageGetter.getUnitIcon("Great Engineer")
+            unit.isSetUpForSiege() -> ImageGetter.getUnitIcon("Catapult")
             else -> null
         }
     }
