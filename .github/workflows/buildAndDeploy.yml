@@ -33,15 +33,6 @@ jobs:
       - uses: actions/setup-java@v1
         with:
           java-version: '8'
-          
-        # Cache gradle to improve runtime. For comparison, 20.08.21 - ~8m for full build.
-      - name: Cache Gradle packages
-        uses: actions/cache@v2
-        with:
-          key: "Gradle cache"
-          path: |
-            ~/.gradle/caches
-            ~/.gradle/wrapper
 
       # Runs a set of commands using the runners shell
       - name: check
