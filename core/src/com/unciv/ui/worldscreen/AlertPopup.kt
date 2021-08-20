@@ -142,7 +142,7 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
                         close()
                     }
                     add("Raze".toTextButton().apply {
-                        if (!city.canBeDestroyedAfterCapture()) disable()
+                        if (!city.canBeDestroyed(justCaptured = true)) disable()
                         else {
                             onClick(function = razeAction)
                             keyPressDispatcher['r'] = razeAction

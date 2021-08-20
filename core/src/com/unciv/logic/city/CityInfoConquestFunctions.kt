@@ -100,12 +100,16 @@ class CityInfoConquestFunctions(val city: CityInfo){
     }
 
     fun liberateCity(conqueringCiv: CivilizationInfo) {
+        val goldPlundered = getGoldForCapturingCity(conqueringCiv)
         city.apply {
             if (foundingCiv == "") { // this should never happen but just in case...
                 puppetCity(conqueringCiv)
                 annexCity()
                 return
             }
+
+            conqueringCiv.addGold(goldPlundered)
+            conqueringCiv.addNotification("Received [$goldPlundered] Gold for capturing [$name]", getCenterTile().position, NotificationIcon.Gold)
 
             val oldCiv = civInfo
 
@@ -120,6 +124,7 @@ class CityInfoConquestFunctions(val city: CityInfo){
             Battle.destroyIfDefeated(oldCiv, conqueringCiv)
 
             health = getMaxHealth() / 2 // I think that cities recover to half health when conquered?
+            if (population.population > 1) population.addPopulation(-1 - population.population / 4) // so from 2-4 population, remove 1, from 5-8, remove 2, etc.
             reassignPopulation()
 
             if (foundingCiv.cities.size == 1) cityConstructions.addBuilding(capitalCityIndicator()) // Resurrection!

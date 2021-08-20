@@ -656,14 +656,9 @@ class CityInfo {
         return religion.religionThisIsTheHolyCityOf != null 
     }
     
-    fun canBeDestroyed(): Boolean {
-        return !isOriginalCapital && !isCapital() && !isHolyCity()
+    fun canBeDestroyed(justCaptured: Boolean = false): Boolean {
+        return !isOriginalCapital && !isHolyCity() && (!isCapital() || justCaptured)
     }
-
-    fun canBeDestroyedAfterCapture(): Boolean {
-        return !isOriginalCapital && !isHolyCity()
-    }
-
 
     fun getNeighbouringCivs(): List<String> {
         val tilesList: HashSet<TileInfo> = getTiles().toHashSet()
