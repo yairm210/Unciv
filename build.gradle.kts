@@ -60,7 +60,6 @@ project(":desktop") {
         "implementation"("com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop")
 
         "implementation"("com.badlogicgames.gdx:gdx-tools:$gdxVersion")  // This is for the TexturePacker class
-        "implementation"("org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion") // This is so the JAR works with Kotlin
 
         "implementation"("com.github.MinnDevelopment:java-discord-rpc:v2.0.1")
         "implementation"("io.ktor:ktor-server-netty:1.3.2")
@@ -103,7 +102,6 @@ project(":core") {
 
     dependencies {
         "implementation"("com.badlogicgames.gdx:gdx:$gdxVersion")
-        "implementation"("org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion")
     }
 
 
@@ -124,8 +122,6 @@ project(":core") {
 
 
             "implementation"(project(":core"))
-
-            "implementation"("org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion")
 
             "implementation"("junit:junit:4.13.1")
             "implementation"("org.mockito:mockito-all:1.9.5")
