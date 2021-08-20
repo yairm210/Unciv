@@ -113,13 +113,13 @@ project(":core") {
             "implementation"(project(":core"))
 
             "implementation"("junit:junit:4.13.1")
-            "implementation"("org.mockito:mockito-all:1.9.5")
+            "implementation"("org.mockito:mockito-all:1.10.19")
 
             "implementation"("com.badlogicgames.gdx:gdx-backend-headless:$gdxVersion")
             "implementation"("com.badlogicgames.gdx:gdx:$gdxVersion")
 
             "testImplementation"("junit:junit:4.13.1")
-            "testImplementation"("org.mockito:mockito-all:1.9.5")
+            "testImplementation"("org.mockito:mockito-all:1.10.19")
             "testImplementation"("io.mockk:mockk:1.9.3")
 
             "testImplementation"("com.badlogicgames.gdx:gdx-backend-headless:$gdxVersion")
