@@ -9,6 +9,9 @@ class BFS(
     val startingPoint: TileInfo,
     private val predicate : (TileInfo) -> Boolean
 ) {
+    /** Maximum number of tiles to search */
+    var maxSize = Int.MAX_VALUE
+    
     /** remaining tiles to check */
     private val tilesToCheck = ArrayDeque<TileInfo>(37)  // needs resize at distance 4
 
@@ -44,6 +47,7 @@ class BFS(
      * Will do nothing when [hasEnded] returns `true`
      */
     fun nextStep() {
+        if (tilesReached.size >= maxSize) { tilesToCheck.clear(); return }
         val current = tilesToCheck.removeFirstOrNull() ?: return
         for (neighbor in current.neighbors) {
             if (neighbor !in tilesReached && predicate(neighbor)) {

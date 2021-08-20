@@ -5,6 +5,7 @@ import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
 import com.unciv.logic.UncivShowableException
 import com.unciv.logic.automation.NextTurnAutomation
+import com.unciv.logic.automation.WorkerAutomation
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.RuinsManager.RuinsManager
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
@@ -34,6 +35,18 @@ import kotlin.math.pow
 import kotlin.math.roundToInt
 
 class CivilizationInfo {
+
+    @Transient
+    private var workerAutomationCache: WorkerAutomation? = null
+    /** Returns an instance of WorkerAutomation valid for the duration of the current turn
+     * This instance carries cached data common for all Workers of this civ */
+    fun getWorkerAutomation(): WorkerAutomation {
+        val currentTurn = if (UncivGame.Current.isInitialized && UncivGame.Current.isGameInfoInitialized())
+                UncivGame.Current.gameInfo.turns else 0
+        if (workerAutomationCache == null || workerAutomationCache!!.cachedForTurn != currentTurn)
+            workerAutomationCache = workerAutomationCache?.clone() ?: WorkerAutomation(this, currentTurn)
+        return workerAutomationCache!!
+    }
 
     @Transient
     lateinit var gameInfo: GameInfo
@@ -156,6 +169,7 @@ class CivilizationInfo {
         toReturn.flagsCountdown.putAll(flagsCountdown)
         toReturn.temporaryUniques.addAll(temporaryUniques)
         toReturn.hasEverOwnedOriginalCapital = hasEverOwnedOriginalCapital
+        toReturn.workerAutomationCache = workerAutomationCache?.clone()
         return toReturn
     }
 
@@ -415,7 +429,7 @@ class CivilizationInfo {
 
     fun getEraNumber(): Int = gameInfo.ruleSet.getEraNumber(getEra())
 
-    fun getEraObject(): Era = gameInfo.ruleSet.eras[getEra()]!!
+    fun getEraObject(): Era? = gameInfo.ruleSet.eras[getEra()]
 
     fun isAtWarWith(otherCiv: CivilizationInfo): Boolean {
         if (otherCiv.civName == civName) return false // never at war with itself
@@ -563,7 +577,7 @@ class CivilizationInfo {
         updateViewableTiles() // adds explored tiles so that the units will be able to perform automated actions better
         transients().updateCitiesConnectedToCapital()
         startTurnFlags()
-        for (city in cities) city.startTurn()
+        for (city in cities) city.startTurn()  // Most expensive part of startTurn
 
         for (unit in getCivUnits()) unit.startTurn()
 
@@ -622,7 +636,7 @@ class CivilizationInfo {
         }
 
         goldenAges.endTurn(getHappiness())
-        getCivUnits().forEach { it.endTurn() }
+        getCivUnits().forEach { it.endTurn() }  // This is the most expensive part of endTurn
         diplomacy.values.toList().forEach { it.nextTurn() } // we copy the diplomacy values so if it changes in-loop we won't crash
         updateAllyCivForCityState()
         updateHasActiveGreatWall()
@@ -788,7 +802,7 @@ class CivilizationInfo {
 
         if (placedUnit.hasUnique("Religious Unit")) {
             placedUnit.religion = 
-                if (city != null) city.cityConstructions.cityInfo.religion.getMajorityReligion()
+                if (city != null) city.cityConstructions.cityInfo.religion.getMajorityReligionName()
                 else religionManager.religion?.name
             if (placedUnit.hasUnique("Can spread religion [] times"))
                 placedUnit.abilityUsedCount["Religion Spread"] = 0

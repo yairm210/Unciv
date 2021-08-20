@@ -118,6 +118,8 @@ open class Stats(
         happiness *= number
         faith *= number
     }
+    
+    operator fun div(number: Float) = times(1/number)
 
     /** ***Not*** only a debug helper. It returns a string representing the content, already _translated_.
      * 

@@ -78,7 +78,7 @@ object CivilopediaImageGetters {
     val belief = { name: String, size: Float ->
         // Kludge until we decide how exactly to show Religions
         if (ImageGetter.imageExists("ReligionIcons/$name")) {
-            ImageGetter.getReligionIcon(name).surroundWithCircle(size, color = Color.BLACK)
+            ImageGetter.getCircledReligionIcon(name, size)
         }
         else null
     }
