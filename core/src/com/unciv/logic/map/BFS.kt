@@ -1,59 +1,84 @@
 package com.unciv.logic.map
 
-// Kotlin's ArrayDeque is experimental
-import java.util.ArrayDeque
+import kotlin.collections.ArrayDeque
 
 /**
- * Defines intermediate steps of a breadth-first search, for use in either get shortest path or get onnected tiles.
+ * Defines intermediate steps of a breadth-first search, for use in either get shortest path or get connected tiles.
  */
-class BFS(val startingPoint: TileInfo, val predicate : (TileInfo) -> Boolean) {
-    var tilesToCheck = ArrayDeque<TileInfo>()
+class BFS(
+    val startingPoint: TileInfo,
+    private val predicate : (TileInfo) -> Boolean
+) {
+    /** Maximum number of tiles to search */
+    var maxSize = Int.MAX_VALUE
+    
+    /** remaining tiles to check */
+    private val tilesToCheck = ArrayDeque<TileInfo>(37)  // needs resize at distance 4
 
     /** each tile reached points to its parent tile, where we got to it from */
-    val tilesReached = HashMap<TileInfo, TileInfo>()
+    private val tilesReached = HashMap<TileInfo, TileInfo>()
 
     init {
         tilesToCheck.add(startingPoint)
         tilesReached[startingPoint] = startingPoint
     }
 
+    /** Process fully until there's nowhere left to check */
     fun stepToEnd() {
         while (!hasEnded())
             nextStep()
     }
 
-
+    /**
+     * Process until either [destination] is reached or there's nowhere left to check
+     * @return `this` instance for chaining
+     */
     fun stepUntilDestination(destination: TileInfo): BFS {
         while (!tilesReached.containsKey(destination) && !hasEnded())
             nextStep()
         return this
     }
 
+    /**
+     * Process one tile-to-search, fetching all neighbors not yet touched
+     * and adding those that fulfill the [predicate] to the reached set
+     * and to the yet-to-be-processed set.
+     * 
+     * Will do nothing when [hasEnded] returns `true`
+     */
     fun nextStep() {
-        val current = tilesToCheck.remove()
+        if (tilesReached.size >= maxSize) { tilesToCheck.clear(); return }
+        val current = tilesToCheck.removeFirstOrNull() ?: return
         for (neighbor in current.neighbors) {
-            if (predicate(neighbor) && !tilesReached.containsKey(neighbor)) {
+            if (neighbor !in tilesReached && predicate(neighbor)) {
                 tilesReached[neighbor] = current
                 tilesToCheck.add(neighbor)
             }
         }
     }
 
-    fun getPathTo(destination: TileInfo): ArrayList<TileInfo> {
-        val path = ArrayList<TileInfo>()
-        path.add(destination)
+    /**
+     * @return a Sequence from the [destination] back to the [startingPoint], including both, or empty if [destination] has not been reached
+     */
+    fun getPathTo(destination: TileInfo): Sequence<TileInfo> = sequence {
         var currentNode = destination
-        while (currentNode != startingPoint) {
-            val parent = tilesReached[currentNode]
-            if (parent == null) return ArrayList()// destination is not in our path
+        while (true) {
+            val parent = tilesReached[currentNode] ?: break  // destination is not in our path
+            yield(currentNode)
+            if (currentNode == startingPoint) break
             currentNode = parent
-            path.add(currentNode)
         }
-        return path
     }
 
+    /** @return true if there are no more tiles to check */
     fun hasEnded() = tilesToCheck.isEmpty()
 
-    fun hasReachedTile(tile: TileInfo) =
-            tilesReached.containsKey(tile)
+    /** @return true if the [tile] has been reached */
+    fun hasReachedTile(tile: TileInfo) = tilesReached.containsKey(tile)
+
+    /** @return all tiles reached so far */
+    fun getReachedTiles(): MutableSet<TileInfo> = tilesReached.keys
+
+    /** @return number of tiles reached so far */
+    fun size() = tilesReached.size
 }

@@ -1,17 +1,19 @@
 package com.unciv.logic.civilization
 
 import com.badlogic.gdx.math.Vector2
-import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
 import com.unciv.logic.UncivShowableException
 import com.unciv.logic.automation.NextTurnAutomation
+import com.unciv.logic.automation.WorkerAutomation
 import com.unciv.logic.city.CityInfo
+import com.unciv.logic.civilization.RuinsManager.RuinsManager
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomacyManager
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
+import com.unciv.logic.map.UnitMovementAlgorithms
 import com.unciv.logic.trade.TradeEvaluation
 import com.unciv.logic.trade.TradeRequest
 import com.unciv.models.Counter
@@ -33,6 +35,18 @@ import kotlin.math.pow
 import kotlin.math.roundToInt
 
 class CivilizationInfo {
+
+    @Transient
+    private var workerAutomationCache: WorkerAutomation? = null
+    /** Returns an instance of WorkerAutomation valid for the duration of the current turn
+     * This instance carries cached data common for all Workers of this civ */
+    fun getWorkerAutomation(): WorkerAutomation {
+        val currentTurn = if (UncivGame.Current.isInitialized && UncivGame.Current.isGameInfoInitialized())
+                UncivGame.Current.gameInfo.turns else 0
+        if (workerAutomationCache == null || workerAutomationCache!!.cachedForTurn != currentTurn)
+            workerAutomationCache = workerAutomationCache?.clone() ?: WorkerAutomation(this, currentTurn)
+        return workerAutomationCache!!
+    }
 
     @Transient
     lateinit var gameInfo: GameInfo
@@ -86,6 +100,7 @@ class CivilizationInfo {
     var goldenAges = GoldenAgeManager()
     var greatPeople = GreatPersonManager()
     var victoryManager = VictoryManager()
+    var ruinsManager = RuinsManager()
     var diplomacy = HashMap<String, DiplomacyManager>()
     var notifications = ArrayList<Notification>()
     val popupAlerts = ArrayList<PopupAlert>()
@@ -133,6 +148,7 @@ class CivilizationInfo {
         toReturn.questManager = questManager.clone()
         toReturn.goldenAges = goldenAges.clone()
         toReturn.greatPeople = greatPeople.clone()
+        toReturn.ruinsManager = ruinsManager.clone()
         toReturn.victoryManager = victoryManager.clone()
         toReturn.allyCivName = allyCivName
         for (diplomacyManager in diplomacy.values.map { it.clone() })
@@ -153,6 +169,7 @@ class CivilizationInfo {
         toReturn.flagsCountdown.putAll(flagsCountdown)
         toReturn.temporaryUniques.addAll(temporaryUniques)
         toReturn.hasEverOwnedOriginalCapital = hasEverOwnedOriginalCapital
+        toReturn.workerAutomationCache = workerAutomationCache?.clone()
         return toReturn
     }
 
@@ -260,7 +277,14 @@ class CivilizationInfo {
                 } +
                 policies.policyUniques.getUniques(uniqueTemplate) +
                 tech.techUniques.getUniques(uniqueTemplate) +
-                temporaryUniques.filter { it.first.placeholderText == uniqueTemplate }.map { it.first }
+                temporaryUniques
+                    .asSequence()
+                    .filter { it.first.placeholderText == uniqueTemplate }.map { it.first } +
+                if (religionManager.religion != null) 
+                    religionManager.religion!!.getFounderUniques()
+                        .asSequence()
+                        .filter { it.placeholderText == uniqueTemplate }
+                else sequenceOf()
     }
 
     //region Units
@@ -367,10 +391,9 @@ class CivilizationInfo {
             otherCiv.addNotification(meetString, cityStateLocation, NotificationIcon.Gold)
         else
             otherCiv.addNotification(meetString, NotificationIcon.Gold)
+
         for (stat in giftAmount.toHashMap().filter { it.value != 0f })
             otherCiv.addStat(stat.key, stat.value.toInt())
-            
-            
     }
 
     fun discoverNaturalWonder(naturalWonderName: String) {
@@ -405,6 +428,8 @@ class CivilizationInfo {
     }
 
     fun getEraNumber(): Int = gameInfo.ruleSet.getEraNumber(getEra())
+
+    fun getEraObject(): Era? = gameInfo.ruleSet.eras[getEra()]
 
     fun isAtWarWith(otherCiv: CivilizationInfo): Boolean {
         if (otherCiv.civName == civName) return false // never at war with itself
@@ -510,6 +535,7 @@ class CivilizationInfo {
         tech.civInfo = this
         tech.setTransients()
 
+        ruinsManager.setTransients(this)
 
         for (diplomacyManager in diplomacy.values) {
             diplomacyManager.civInfo = this
@@ -551,7 +577,7 @@ class CivilizationInfo {
         updateViewableTiles() // adds explored tiles so that the units will be able to perform automated actions better
         transients().updateCitiesConnectedToCapital()
         startTurnFlags()
-        for (city in cities) city.startTurn()
+        for (city in cities) city.startTurn()  // Most expensive part of startTurn
 
         for (unit in getCivUnits()) unit.startTurn()
 
@@ -610,7 +636,7 @@ class CivilizationInfo {
         }
 
         goldenAges.endTurn(getHappiness())
-        getCivUnits().forEach { it.endTurn() }
+        getCivUnits().forEach { it.endTurn() }  // This is the most expensive part of endTurn
         diplomacy.values.toList().forEach { it.nextTurn() } // we copy the diplomacy values so if it changes in-loop we won't crash
         updateAllyCivForCityState()
         updateHasActiveGreatWall()
@@ -618,6 +644,9 @@ class CivilizationInfo {
 
     private fun startTurnFlags() {
         for (flag in flagsCountdown.keys.toList()) {
+            // There are cases where we remove flags while iterating, like ShowDiplomaticVotingResults
+            if (!flagsCountdown.containsKey(flag)) continue
+
             // the "ignoreCase = true" is to catch 'cityStateGreatPersonGift' instead of 'CityStateGreatPersonGift' being in old save files 
             if (flag == CivFlags.CityStateGreatPersonGift.name || flag.equals(CivFlags.CityStateGreatPersonGift.name, ignoreCase = true)) {
                 val cityStateAllies = getKnownCivs().filter { it.isCityState() && it.getAllyCiv() == civName }
@@ -725,14 +754,25 @@ class CivilizationInfo {
         return greatPersonPoints
     }
 
-    fun canEnterTiles(otherCiv: CivilizationInfo): Boolean {
+    /**
+     * @returns whether units of this civilization can pass through the tiles owned by [otherCiv],
+     * considering only civ-wide filters.
+     * Use [TileInfo.canCivPassThrough] to check whether units of a civilization can pass through
+     * a specific tile, considering only civ-wide filters.
+     * Use [UnitMovementAlgorithms.canPassThrough] to check whether a specific unit can pass through
+     * a specific tile.
+     */
+    fun canPassThroughTiles(otherCiv: CivilizationInfo): Boolean {
         if (otherCiv == this) return true
         if (otherCiv.isBarbarian()) return true
         if (nation.isBarbarian() && gameInfo.turns >= gameInfo.difficultyObject.turnBarbariansCanEnterPlayerTiles)
             return true
         val diplomacyManager = diplomacy[otherCiv.civName]
-                ?: return false // not encountered yet
-        return (diplomacyManager.hasOpenBorders || diplomacyManager.diplomaticStatus == DiplomaticStatus.War)
+        if (diplomacyManager != null && (diplomacyManager.hasOpenBorders || diplomacyManager.diplomaticStatus == DiplomaticStatus.War))
+            return true
+        // Players can always pass through city-state tiles
+        if (isPlayerCivilization() && otherCiv.isCityState()) return true
+        return false
     }
 
 
@@ -759,6 +799,15 @@ class CivilizationInfo {
         if (unit.isGreatPerson()) {
             addNotification("A [${unit.name}] has been born in [${cityToAddTo.name}]!", placedUnit.getTile().position, unit.name)
         }
+
+        if (placedUnit.hasUnique("Religious Unit")) {
+            placedUnit.religion = 
+                if (city != null) city.cityConstructions.cityInfo.religion.getMajorityReligionName()
+                else religionManager.religion?.name
+            if (placedUnit.hasUnique("Can spread religion [] times"))
+                placedUnit.abilityUsedCount["Religion Spread"] = 0
+        }
+        
         return placedUnit
     }
 
@@ -837,6 +886,10 @@ class CivilizationInfo {
                 .toList().random()
         // placing the unit may fail - in that case stay quiet
         val placedUnit = placeUnitNearTile(city.location, militaryUnit.name) ?: return
+        // Siam gets +10 XP for all CS units
+        for (unique in getMatchingUniques("Military Units gifted from City-States start with [] XP")) {
+            placedUnit.promotions.XP += unique.params[0].toInt()
+        }
         // Point to the places mentioned in the message _in that order_ (debatable)
         val placedLocation = placedUnit.getTile().position
         val locations = LocationAction(listOf(placedLocation, cities.city2.location, city.location))

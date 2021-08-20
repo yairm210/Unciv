@@ -1,5 +1,6 @@
 package com.unciv.models.ruleset.unit
 
+import com.unciv.models.ruleset.IHasUniques
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.Unique
 import com.unciv.models.stats.INamed
@@ -8,18 +9,18 @@ import com.unciv.ui.civilopedia.FormattedLine
 import com.unciv.ui.civilopedia.ICivilopediaText
 
 
-class Promotion : INamed, ICivilopediaText {
+class Promotion : INamed, ICivilopediaText, IHasUniques {
     override lateinit var name: String
     var prerequisites = listOf<String>()
     var effect = ""
     var unitTypes = listOf<String>() // The json parser wouldn't agree to deserialize this as a list of UnitTypes. =(
 
-    var uniques = ArrayList<String>()
+    override var uniques = ArrayList<String>()
     fun uniquesWithEffect() = sequence {
         if (effect.isNotEmpty()) yield(effect)
         yieldAll(uniques)
     }
-    val uniqueObjects: List<Unique> by lazy { uniquesWithEffect().map { Unique(it) }.toList() }
+    override val uniqueObjects: List<Unique> by lazy { uniquesWithEffect().map { Unique(it) }.toList() }
 
     override var civilopediaText = listOf<FormattedLine>()
 

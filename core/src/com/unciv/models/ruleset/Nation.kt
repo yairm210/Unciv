@@ -3,12 +3,9 @@
 import com.badlogic.gdx.graphics.Color
 import com.unciv.Constants
 import com.unciv.logic.civilization.CityStateType
-import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.stats.INamed
-import com.unciv.models.translations.Translations
 import com.unciv.models.translations.squareBraceRegex
 import com.unciv.models.translations.tr
-import com.unciv.ui.civilopedia.CivilopediaText
 import com.unciv.ui.civilopedia.FormattedLine
 import com.unciv.ui.civilopedia.ICivilopediaText
 import com.unciv.ui.utils.Fonts
@@ -22,7 +19,7 @@ enum class VictoryType {
     Scientific,
 }
 
-class Nation : INamed, ICivilopediaText {
+class Nation : INamed, ICivilopediaText, IHasUniques {
     override lateinit var name: String
 
     var leaderName = ""
@@ -43,8 +40,8 @@ class Nation : INamed, ICivilopediaText {
 
     lateinit var outerColor: List<Int>
     var uniqueName = ""
-    var uniques = HashSet<String>()
-    val uniqueObjects: List<Unique> by lazy { uniques.map { Unique(it) } }
+    override var uniques = ArrayList<String>()
+    override val uniqueObjects: List<Unique> by lazy { uniques.map { Unique(it) } }
     var uniqueText = ""
     var innerColor: List<Int>? = null
     var startBias = ArrayList<String>()
@@ -94,7 +91,7 @@ class Nation : INamed, ICivilopediaText {
         disembarkCosts1 = uniques.contains("Units pay only 1 movement point to disembark")
     }
 
-    lateinit var cities: ArrayList<String>
+    var cities: ArrayList<String> = arrayListOf()
 
 
     /** Used only by NewGame Nation picker */

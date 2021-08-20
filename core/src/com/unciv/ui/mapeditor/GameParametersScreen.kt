@@ -1,5 +1,6 @@
 package com.unciv.ui.mapeditor
 
+import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.translations.tr
@@ -30,7 +31,7 @@ class GameParametersScreen(var mapEditorScreen: MapEditorScreen): IPreviousScree
                 .maxHeight(topTable.parent.height).width(stage.width / 2).padTop(20f).top()
         topTable.addSeparatorVertical()
         topTable.add(playerPickerTable).maxHeight(topTable.parent.height).width(stage.width / 2).padTop(20f).top()
-        rightSideButton.setText("OK".tr())
+        rightSideButton.setText(Constants.OK.tr())
         rightSideButton.onClick {
             mapEditorScreen.gameSetupInfo = gameSetupInfo
             mapEditorScreen.ruleset.clear()

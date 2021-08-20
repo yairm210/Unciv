@@ -26,7 +26,7 @@
 		"strength": 5,
 		"cost": 25,
 		"obsoleteTech": "Scientific Theory",
-		"uniques": ["Ignores terrain cost"],
+		"uniques": ["Ignores terrain cost", "May upgrade to [Archer] through ruins-like effects"],
 		"attackSound": "nonmetalhit"
 	},
 	{
@@ -37,6 +37,7 @@
 		"cost": 40,
 		"obsoleteTech": "Metal Casting",
 		"upgradesTo": "Swordsman",
+		"uniques" : ["May upgrade to [Spearman] through ruins-like effects"],
 		"attackSound": "nonmetalhit",
         "civilopediaText": [
 			{"text": "This is your basic, club-swinging fighter."}
@@ -451,15 +452,14 @@
 		"cost": 90,
 		"requiredTech": "Civil Service",
 		"uniques": ["+[50]% Strength vs [Mounted]"],
-		"upgradesTo": "Musketman",
+		"upgradesTo": "Lancer",
 		"obsoleteTech": "Gunpowder",
-		"attackSound": "metalhit"
-		//Pikeman should upgrade not only to Musketman but also to Lancer
+		"attackSound": "metalhit" 
 	},
 	{
 		"name": "Landsknecht",
 		"unitType": "Sword",
-		"replaces": "Pikeman",
+		"replaces": "Lancer",
 		"uniqueTo": "Germany",
 		"movement": 2,
 		"strength": 16,
@@ -1074,7 +1074,7 @@
 		"requiredResource": "Oil",
 		"upgradesTo": "Fighter",
 		"obsoleteTech": "Radar",
-		"uniques": ["[50]% chance to intercept air attacks","+[50]% Strength vs [Bomber]"],
+		"uniques": ["[50]% chance to intercept air attacks", "+[150]% Strength vs [Bomber]", "+[150]% Strength vs [Helicopter]"],
 		"attackSound": "machinegun"
 	},
 	{
@@ -1148,7 +1148,7 @@
 		"requiredTech": "Ballistics",
 		"upgradesTo": "Mobile SAM",
 		"obsoleteTech": "Rocketry",
-		"uniques": ["[100]% chance to intercept air attacks","+[150]% Strength vs [air units]"],
+		"uniques": ["[100]% chance to intercept air attacks", "+[150]% Strength vs [air units]", "+[150]% Strength vs [Helicopter]"],
 		"attackSound": "machinegun"
 	},
 	{
@@ -1202,7 +1202,7 @@
 		"requiredTech": "Radar",
 		"requiredResource": "Oil",
 		"upgradesTo": "Jet Fighter",
-		"uniques": ["[100]% chance to intercept air attacks", "+[150]% Strength vs [Bomber]"],
+		"uniques": ["[100]% chance to intercept air attacks", "+[150]% Strength vs [Bomber]", "+[150]% Strength vs [Helicopter]"],
 		"attackSound": "machinegun"
 	},
 	{
@@ -1218,8 +1218,8 @@
 		"cost": 375,
 		"requiredTech": "Radar",
 		"upgradesTo": "Jet Fighter",
-		"uniques": ["[100]% chance to intercept air attacks","+[150]% Strength vs [Bomber]","+[33]% Strength vs [Fighter]",
-			"6 tiles in every direction always visible"],
+		"uniques": ["[100]% chance to intercept air attacks", "+[150]% Strength vs [Bomber]", "+[150]% Strength vs [Helicopter]",
+			"+[33]% Strength vs [Fighter]"],
 		"attackSound": "machinegun"
 	},
 	{
@@ -1338,7 +1338,7 @@
 		"strength": 65,
 		"cost": 425,
 		"requiredTech": "Rocketry",
-		"uniques": ["[100]% chance to intercept air attacks","+[150]% Strength vs [air units]"],
+		"uniques": ["[100]% chance to intercept air attacks", "+[150]% Strength vs [air units]", "+[150]% Strength vs [Helicopter]"],
 		"attackSound": "missile"
 	},
 	{
@@ -1376,7 +1376,7 @@
 		"requiredTech": "Computers",
 		"requiredResource": "Aluminum",
 		"uniques": ["+[100]% Strength vs [Armored]", "No defensive terrain bonus", "Can move after attacking",
-			"All tiles cost 1 movement", "Unable to capture cities"],
+			"All tiles cost 1 movement", "Ignores Zone of Control", "Unable to capture cities"],
 		"attackSound": "machinegun"
 	},
 
@@ -1441,7 +1441,7 @@
 		"cost": 425,
 		"requiredTech": "Lasers",
 		"requiredResource": "Aluminum",
-		"uniques": ["[100]% chance to intercept air attacks", "+[150]% Strength vs [Bomber]"],
+		"uniques": ["[100]% chance to intercept air attacks", "+[150]% Strength vs [Bomber]", "+[150]% Strength vs [Helicopter]"],
 		"attackSound": "jetgun"
 	},
 	{
@@ -1500,8 +1500,10 @@
 		"name": "Great Prophet",
 		"unitType": "Civilian",
 		"uniques": ["Can construct [Holy site] if it hasn't spread religion yet", "Can spread religion [4] times",
-			"May found a religion", "Great Person - [Faith]", "Unbuildable", "Religious Unit", "Hidden when religion is disabled"],
-		"movement": 2
+			"May found a religion", "May enter foreign tiles without open borders", "[-1] Visibility Range",
+			"Great Person - [Faith]", "Unbuildable", "Religious Unit", "Hidden when religion is disabled"],
+		"movement": 2,
+		"religiousStrength": 1000
 	},
 	{
 		"name": "Great General",
@@ -1525,9 +1527,11 @@
 	{
 		"name": "Missionary",
 		"unitType": "Civilian",
-		"uniques": ["Can spread religion [2] times", "Can be purchased with [Faith] [in all cities in which the majority religion is a major religion]",
-			"Unbuildable", "Religious Unit"],
-		"movement": 4
+		"uniques": ["Can spread religion [2] times", "May enter foreign tiles without open borders, but loses [250] religious strength each turn it ends there",
+			"Can be purchased with [Faith] [in all cities in which the majority religion is a major religion]", 
+			"[-1] Visibility Range", "Unbuildable", "Religious Unit", "Hidden when religion is disabled"],
+		"movement": 4,
+		"religiousStrength": 1000
 	}
 
 	/* Spaceship Parts */

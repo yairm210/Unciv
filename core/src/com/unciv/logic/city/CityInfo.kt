@@ -13,6 +13,8 @@ import com.unciv.models.ruleset.tile.ResourceSupplyList
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
+import com.unciv.models.translations.equalsPlaceholderText
+import com.unciv.models.translations.getPlaceholderParameters
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
@@ -93,9 +95,7 @@ class CityInfo {
 
         addStartingBuildings(civInfo, startingEra)
 
-
         expansion.reset()
-
 
         tryUpdateRoadStatus()
 
@@ -105,6 +105,10 @@ class CityInfo {
 
         tile.improvement = null
         tile.improvementInProgress = null
+
+        if (civInfo.religionManager.religion != null && civInfo.religionManager.religion!!.isPantheon()) {
+            religion.addPressure(civInfo.religionManager.religion!!.name, 100)
+        }
 
         val ruleset = civInfo.gameInfo.ruleSet
         workedTiles = hashSetOf() //reassign 1st working tile
@@ -159,7 +163,7 @@ class CityInfo {
 
         name = cityNamePrefix + cityName
     }
-    
+
     private fun borrowCityName(): String {
         val usedCityNames =
             civInfo.gameInfo.civilizations.flatMap { it.cities.map { city -> city.name } }
@@ -168,12 +172,12 @@ class CityInfo {
         var newNames = civInfo.gameInfo.civilizations
             .filter { it.isMajorCiv() && it != civInfo }
             .mapNotNull { it.nation.cities
-                .lastOrNull { city -> city !in usedCityNames } 
+                .lastOrNull { city -> city !in usedCityNames }
             }
         if (newNames.isNotEmpty()) {
             return newNames.random()
         }
-        
+
         // As per fandom wiki, once the names from the other nations in the game are exhausted,
         // names are taken from the rest of the nations in the ruleset
         newNames = getRuleset()
@@ -204,6 +208,7 @@ class CityInfo {
         toReturn.population = population.clone()
         toReturn.cityConstructions = cityConstructions.clone()
         toReturn.expansion = expansion.clone()
+        toReturn.religion = religion.clone()
         toReturn.tiles = tiles
         toReturn.workedTiles = workedTiles
         toReturn.lockedTiles = lockedTiles
@@ -214,7 +219,6 @@ class CityInfo {
         toReturn.turnAcquired = turnAcquired
         toReturn.isPuppet = isPuppet
         toReturn.isOriginalCapital = isOriginalCapital
-        toReturn.religion = CityInfoReligionManager().apply { putAll(religion) }
         return toReturn
     }
 
@@ -399,7 +403,7 @@ class CityInfo {
             gppCounter.add(entry)
         return gppCounter
     }
-    
+
     fun addStat(stat: Stat, amount: Int) {
         when (stat) {
             Stat.Production -> cityConstructions.addProductionPoints(amount)
@@ -407,7 +411,7 @@ class CityInfo {
             else -> civInfo.addStat(stat, amount)
         }
     }
-    
+
     fun getStatReserve(stat: Stat): Int {
         return when (stat) {
             Stat.Food -> population.foodStored
@@ -431,7 +435,7 @@ class CityInfo {
         cityStats.cityInfo = this
         cityConstructions.cityInfo = this
         cityConstructions.setTransients()
-        religion.cityInfo = this
+        religion.setTransients(this)
     }
 
     fun startTurn() {
@@ -473,7 +477,7 @@ class CityInfo {
         if (isBeingRazed) {
             val removedPopulation = 1 + civInfo.getMatchingUniques("Cities are razed [] times as fast").sumBy { it.params[0].toInt() - 1 }
             population.addPopulation(-1 * removedPopulation)
-            if (population.population <= 0) { 
+            if (population.population <= 0) {
                 civInfo.addNotification("[$name] has been razed to the ground!", location, "OtherIcons/Fire")
                 destroyCity()
             } else { //if not razed yet:
@@ -483,7 +487,8 @@ class CityInfo {
             }
         } else population.nextTurn(foodForNextTurn())
 
-        // if (civInfo.gameInfo.hasReligionEnabled()) religion.getAffectedBySurroundingCities()
+        // This should go after the population change, as that might impact the amount of followers in this city
+        if (civInfo.gameInfo.hasReligionEnabled()) religion.endTurn()
 
         if (this in civInfo.cities) { // city was not destroyed
             health = min(health + 20, getMaxHealth())
@@ -495,7 +500,7 @@ class CityInfo {
         // Original capitals and holy cities cannot be destroyed,
         // unless, of course, they are captured by a one-city-challenger.
         if (!canBeDestroyed() && !overrideSafeties) return
-        
+
         for (airUnit in getCenterTile().airUnits.toList()) airUnit.destroy() //Destroy planes stationed in city
 
         // The relinquish ownership MUST come before removing the city,
@@ -582,7 +587,7 @@ class CityInfo {
         return true
     }
 
-    fun matchesFilter(filter: String): Boolean {
+    fun matchesFilter(filter: String, viewingCiv: CivilizationInfo = civInfo): Boolean {
         return when (filter) {
             "in this city" -> true
             "in all cities" -> true
@@ -592,14 +597,23 @@ class CityInfo {
             "in all cities with a world wonder" -> cityConstructions.getBuiltBuildings().any { it.isWonder }
             "in all cities connected to capital" -> isConnectedToCapital()
             "in all cities with a garrison" -> getCenterTile().militaryUnit != null
-            "in all cities in which the majority religion is a major religion" -> 
-                religion.getMajorityReligion() != null
-                && civInfo.gameInfo.religions[religion.getMajorityReligion()]!!.isMajorReligion()
+            "in all cities in which the majority religion is a major religion" ->
+                religion.getMajorityReligionName() != null
+                && religion.getMajorityReligion()!!.isMajorReligion()
+            "in non-enemy foreign cities" ->
+                viewingCiv != civInfo
+                && !civInfo.isAtWarWith(viewingCiv)
+            "in foreign cities" ->
+                viewingCiv != civInfo
+            // This is only used in communication to the user indicating that only in cities with this
+            // religion a unique is active. However, since religion uniques only come from the city itself,
+            // this will always be true when checked.
+            "in cities following this religion" -> true
             else -> false
         }
     }
-    
-    // So everywhere in the codebase there were continuous calls to either 
+
+    // So everywhere in the codebase there were continuous calls to either
     // `cityConstructions.builtBuildingUniqueMap.getUniques()` or `cityConstructions.builtBuildingMap.getAllUniques()`,
     // which was fine as long as those were the only uniques that cities could provide.
     // However, with the introduction of religion, cities might also get uniques from the religion the city follows.
@@ -619,7 +633,7 @@ class CityInfo {
         return civInfo.getMatchingUniques(placeholderText, this) +
                localUniques.filter { it.placeholderText == placeholderText }
     }
-    
+
     // Matching uniques provided by sources in the city itself
     fun getLocalMatchingUniques(placeholderText: String): Sequence<Unique> {
         return cityConstructions.builtBuildingUniqueMap.getUniques(placeholderText) +
@@ -630,14 +644,14 @@ class CityInfo {
     fun getAllLocalUniques(): Sequence<Unique> {
         return cityConstructions.builtBuildingUniqueMap.getAllUniques() + religion.getUniques()
     }
-    
+
     // Get all matching uniques that don't apply to only this city
     fun getMatchingUniquesWithNonLocalEffects(placeholderText: String): Sequence<Unique> {
         return cityConstructions.builtBuildingUniqueMap.getUniques(placeholderText)
             .filter { it.params.none { param -> param == "in this city" } }
         // Note that we don't query religion here, as those only have local effects (for now at least)
     }
-    
+
     // Get all uniques that don't apply to only this city
     fun getAllUniquesWithNonLocalEffects(): Sequence<Unique> {
         return cityConstructions.builtBuildingUniqueMap.getAllUniques()
@@ -646,9 +660,9 @@ class CityInfo {
     }
 
     fun isHolyCity(): Boolean {
-        return civInfo.gameInfo.religions.values.any { it.holyCityId == id } 
+        return religion.religionThisIsTheHolyCityOf != null
     }
-    
+
     fun canBeDestroyed(): Boolean {
         return !isOriginalCapital && !isCapital() && !isHolyCity()
     }
@@ -664,7 +678,7 @@ class CityInfo {
                     cityPositionList.add(tile)
 
         return cityPositionList.asSequence()
-            .map { it.getOwner()?.civName }.filterNotNull().toSet() 
+            .map { it.getOwner()?.civName }.filterNotNull().toSet()
             .distinct().toList()
     }
     fun getImprovableTiles(): Sequence<TileInfo> = getTiles()

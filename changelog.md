@@ -1,3 +1,91 @@
+## 3.16.5-googlePlayPushTest
+
+A test to ensure that publishing new versions to Google Play works properly
+
+## 3.16.5
+
+By SomeTroglodyte:
+- Expander tab persist
+- UI improvements for city screen
+- Unit action constants and worker unique cleanup
+
+By avdstaaij:
+- Removed the civ introduction trade option
+- Made water oil wells require the Refrigeration tech
+- Removed the sight bonus from hills
+- Gave anti-air units a bonus vs helicopters
+- Disabled pillaging your own tiles
+
+Fixes crashes from loading mods without an eras.json file - xlenstra
+
+CS bonuses graded according to relationship level  - By SimonCeder
+
+Improve horse sound  - By AdityaMH
+
+## 3.16.4-patch1
+
+Fixed crash from conquering cities - By xlenstra
+
+Fix DOS attack perpetrated by CityInfoReligionManager on Json Serializer - By SomeTroglodyte
+
+## 3.16.4
+
+Implemented Zone of Control mechanic - by avdstaaij
+
+Runtime optimizations - By SomeTroglodyte
+
+Implemented religious pressure - By xlenstra
+
+Fix units not entering cities upon capture - By avdstaaij
+
+## 3.16.3
+
+By SomeTroglodyte:
+- Civilopedia - Difficulty
+- City screen stats double separators
+- Unit rename UI
+
+By xlenstra:
+- Added founder beliefs, updates to pantheon spreading
+- Added an overview screen for religions
+
+Resources changed to match civ5 G&K - By ravignir
+
+Add Holy Site for FantasyHex  - By AdityaMH
+
+## 3.16.2-patch1
+
+Fixed diplomacy screen crash for city-states with no cities
+
+Added mod check for units whose unitType is not defined
+
+Fixed crash when selecting certain buildings in the civilopedia - by xlenstra 
+
+## 3.16.2
+
+Fixed crashing Diplomatic victory bug
+
+By xlenstra:
+- Added follower beliefs for buying religious buildings 
+- Hides 'automate' unit action and unhides 'stop exploring' unit action 
+- Ruins now have their own file 
+- Architecture is now a prerequiste of Archaeology 
+- Fixed bug where units could still be purchased if they used a depleted resource 
+- Fixed crash when borrowing names 
+- Fixes bug where Russia's unique no longer works 
+- One with nature yield for spain is now doubled 
+
+By SomeTroglodyte:
+- MapGenerator optimization 
+- Diplomacy: City State resource UI, improvement gift effect 
+- Mod description translation 
+
+Pikeman upgrades only to Lancer  - By ravignir
+
+Fix banking's required techs  - By logicminimal
+
+City state resources  - By Interdice
+
 ## 3.16.1
 
 By xlenstra:

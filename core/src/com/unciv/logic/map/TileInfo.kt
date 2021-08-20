@@ -223,7 +223,7 @@ open class TileInfo {
             else
                 stats.add(terrainFeatureBase)
         }
-
+        
         if (city != null) {
             var tileUniques = city.getMatchingUniques("[] from [] tiles []")
                 .filter { city.matchesFilter(it.params[2]) }
@@ -236,6 +236,9 @@ open class TileInfo {
                 if (tileType == improvement) continue // This is added to the calculation in getImprovementStats. we don't want to add it twice
                 if (matchesTerrainFilter(tileType, observingCiv)) 
                     stats.add(unique.stats)
+                if (tileType == "Natural Wonder" && naturalWonder != null && city.civInfo.hasUnique("Tile yields from Natural Wonders doubled")) {
+                    stats.add(unique.stats)
+                }
             }
             
             for (unique in city.getMatchingUniques("[] from [] tiles without [] []")) 
@@ -384,6 +387,10 @@ open class TileInfo {
             improvement.uniqueObjects.any {
                 it.placeholderText == "Obsolete with []" && civInfo.tech.isResearched(it.params[0])
             } -> return false
+            improvement.uniqueObjects.any {
+                it.placeholderText == "Cannot be built on [] tiles until [] is discovered" &&
+                matchesTerrainFilter(it.params[0]) && !civInfo.tech.isResearched(it.params[1])
+            } -> false
             else -> canImprovementBeBuiltHere(improvement, hasViewableResource(civInfo))
         }
     }
@@ -562,15 +569,17 @@ open class TileInfo {
 
     fun isAdjacentToRiver() = neighbors.any { isConnectedByRiver(it) }
 
-    fun canCivEnter(civInfo: CivilizationInfo): Boolean {
+    /**
+     * @returns whether units of [civInfo] can pass through this tile, considering only civ-wide filters.
+     * Use [UnitMovementAlgorithms.canPassThrough] to check whether a specific unit can pass through a tile.
+     */
+    fun canCivPassThrough(civInfo: CivilizationInfo): Boolean {
         val tileOwner = getOwner()
-        if (tileOwner == null || tileOwner == civInfo) return true
         // comparing the CivInfo objects is cheaper than comparing strings
+        if (tileOwner == null || tileOwner == civInfo) return true
         if (isCityCenter() && civInfo.isAtWarWith(tileOwner)
                 && !getCity()!!.hasJustBeenConquered) return false
-        if (!civInfo.canEnterTiles(tileOwner)
-                && !(civInfo.isPlayerCivilization() && tileOwner.isCityState())) return false
-        // AIs won't enter city-state's border.
+        if (!civInfo.canPassThroughTiles(tileOwner)) return false
         return true
     }
 

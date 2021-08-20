@@ -31,7 +31,7 @@ class CivilopediaScreen(
      * @param name From [Ruleset] object [INamed.name]
      * @param description Multiline text
      * @param image Icon for button
-     * @param flavour [CivilopediaText]
+     * @param flavour [ICivilopediaText]
      * @param y Y coordinate for scrolling to
      * @param height Cell height
      */
@@ -269,12 +269,10 @@ class CivilopediaScreen(
         categoryToEntries[CivilopediaCategories.Tutorial] = tutorialController.getCivilopediaTutorials()
                 .map {
                     CivilopediaEntry(
-                        it.key.replace("_", " "),
+                        it.name,
                         "",
 //                        CivilopediaCategories.Tutorial.getImage?.invoke(it.name, imageSize)
-                        flavour = SimpleCivilopediaText(
-                            sequenceOf(FormattedLine(extraImage = it.key)),
-                            it.value.asSequence(), true)
+                        flavour = it
                     )
                 }
 
@@ -282,8 +280,9 @@ class CivilopediaScreen(
                 .map {
                     CivilopediaEntry(
                         it.name,
-                        it.getDescription(),
+                        "",
 //                        CivilopediaCategories.Difficulty.getImage?.invoke(it.name, imageSize)
+                        flavour = (it as? ICivilopediaText)
                     )
                 }
 

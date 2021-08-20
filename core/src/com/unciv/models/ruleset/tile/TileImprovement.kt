@@ -3,6 +3,7 @@ package com.unciv.models.ruleset.tile
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.ruleset.Belief
 import com.unciv.logic.map.RoadStatus
+import com.unciv.models.ruleset.IHasUniques
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.Unique
 import com.unciv.models.stats.NamedStats
@@ -12,13 +13,13 @@ import com.unciv.ui.civilopedia.ICivilopediaText
 import java.util.*
 import kotlin.math.roundToInt
 
-class TileImprovement : NamedStats(), ICivilopediaText {
+class TileImprovement : NamedStats(), ICivilopediaText, IHasUniques {
 
     var terrainsCanBeBuiltOn: Collection<String> = ArrayList()
     var techRequired: String? = null
     var uniqueTo:String? = null
-    var uniques = ArrayList<String>()
-    val uniqueObjects:List<Unique> by lazy { uniques.map { Unique(it) } }
+    override var uniques = ArrayList<String>()
+    override val uniqueObjects: List<Unique> by lazy { uniques.map { Unique(it) } }
     val shortcutKey: Char? = null
     val turnsToBuild: Int = 0 // This is the base cost.
 
@@ -75,6 +76,7 @@ class TileImprovement : NamedStats(), ICivilopediaText {
     fun hasUnique(unique: String) = uniques.contains(unique)
     fun isGreatImprovement() = hasUnique("Great Improvement")
     fun isRoad() = RoadStatus.values().any { it != RoadStatus.None && it.name == this.name }
+    fun isAncientRuinsEquivalent() = hasUnique("Provides a random bonus when entered")
 
     /**
      * Check: Is this improvement allowed on a [given][name] terrain feature?

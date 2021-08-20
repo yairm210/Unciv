@@ -24,7 +24,8 @@ class ReligionManager {
     // But the other one should still be _somewhere_. So our only option is to have the GameInfo
     // contain the master list, and the ReligionManagers retrieve it from there every time the game loads.
 
-    private var greatProphetsEarned = 0
+    var greatProphetsEarned = 0
+        private set
 
     var religionState = ReligionState.None
         private set
@@ -62,8 +63,9 @@ class ReligionManager {
         storedFaith += faithFromNewTurn
     }
 
-    private fun faithForPantheon() = 10 + civInfo.gameInfo.civilizations.count { it.isMajorCiv() && it.religionManager.religion != null } * 5
-
+    fun faithForPantheon(additionalCivs: Int = 0) =
+        10 + (civInfo.gameInfo.civilizations.count { it.isMajorCiv() && it.religionManager.religion != null } + additionalCivs) * 5
+        
     fun canFoundPantheon(): Boolean {
         if (!civInfo.gameInfo.hasReligionEnabled()) return false
         if (religionState != ReligionState.None) return false
@@ -85,14 +87,14 @@ class ReligionManager {
         religion = Religion(belief.name, civInfo.gameInfo, civInfo.civName)
         religion!!.followerBeliefs.add(belief.name)
         civInfo.gameInfo.religions[belief.name] = religion!!
-        // This should later be changed when religions can have multiple beliefs
-        civInfo.getCapital().religion[belief.name] = 100 // Capital is religious, other cities are not
+        for (city in civInfo.cities)
+            city.religion.addPressure(belief.name, 200 * city.population.population) 
         religionState = ReligionState.Pantheon
     }
     
     // https://www.reddit.com/r/civ/comments/2m82wu/can_anyone_detail_the_finer_points_of_great/
     // Game files (globaldefines.xml)
-    private fun faithForNextGreatProphet() = (
+    fun faithForNextGreatProphet() = (
             (200 + 100 * greatProphetsEarned * (greatProphetsEarned + 1) / 2) *
                     civInfo.gameInfo.gameParameters.gameSpeed.modifier
             ).toInt()
@@ -100,6 +102,7 @@ class ReligionManager {
     private fun canGenerateProphet(): Boolean {
         if (religion == null || religionState == ReligionState.None) return false // First get a pantheon, then we'll talk about a real religion
         if (storedFaith < faithForNextGreatProphet()) return false
+        if (!civInfo.isMajorCiv()) return false
         // In the base game, great prophets shouldn't generate anymore starting from the industrial era
         // This is difficult to implement in the current codebase, probably requires an additional variable in eras.json
         return true
@@ -110,67 +113,83 @@ class ReligionManager {
 
         if (Random(civInfo.gameInfo.turns).nextFloat() < prophetSpawnChange) {
             val birthCity =
-                if (religionState == ReligionState.Pantheon) civInfo.getCapital()
-                else civInfo.cities.firstOrNull { it.id == religion!!.holyCityId }
-            val prophet = civInfo.addUnit("Great Prophet", birthCity)
-            if (prophet == null) return
+                if (religionState <= ReligionState.Pantheon) civInfo.getCapital()
+                else civInfo.cities.firstOrNull { it.religion.religionThisIsTheHolyCityOf == religion!!.name }
+            val prophet = civInfo.addUnit("Great Prophet", birthCity) ?: return
             prophet.religion = religion!!.name
-            prophet.abilityUsedCount["Religion Spread"] = 0
             storedFaith -= faithForNextGreatProphet()
             greatProphetsEarned += 1
         }
     }
 
-    fun mayUseGreatProphetAtAll(prophet: MapUnit): Boolean {
+    fun mayFoundReligionAtAll(prophet: MapUnit): Boolean {
         if (religion == null) return false // First found a pantheon
         if (religion!!.isMajorReligion()) return false // Already created a major religion
         if (prophet.abilityUsedCount["Religion Spread"] != 0) return false // Already used its power for other things
+        if (!civInfo.isMajorCiv()) return false // Only major civs may use religion
         
         val foundedReligionsCount = civInfo.gameInfo.civilizations.count {
             it.religionManager.religion != null && it.religionManager.religion!!.isMajorReligion()
         }
         
         if (foundedReligionsCount >= civInfo.gameInfo.civilizations.count { it.isMajorCiv() } / 2 + 1) 
-            return false // Too bad, too many religions have already been founded.
+            return false // Too bad, too many religions have already been founded
         
         if (foundedReligionsCount >= civInfo.gameInfo.ruleSet.religions.count())
-            return false
-        // Mod maker did not provide enough religions for the amount of civs present
+            return false // Mod maker did not provide enough religions for the amount of civs present
         
+        if (foundedReligionsCount >= civInfo.gameInfo.ruleSet.beliefs.values.count { it.type == BeliefType.Follower })
+            return false // Mod maker did not provide enough follower beliefs
+        
+        if (foundedReligionsCount >= civInfo.gameInfo.ruleSet.beliefs.values.count { it.type == BeliefType.Founder })
+            return false // Mod maker did not provide enough founder beliefs
         
         return true
     }
 
-    fun mayUseGreatProphetNow(prophet: MapUnit): Boolean {
-        if (!mayUseGreatProphetAtAll(prophet)) return false
+    fun mayFoundReligionNow(prophet: MapUnit): Boolean {
+        if (!mayFoundReligionAtAll(prophet)) return false
         if (!prophet.getTile().isCityCenter()) return false
         return true
     }
 
     fun useGreatProphet(prophet: MapUnit) {
-        if (!mayUseGreatProphetNow(prophet)) return // How did you do this?
+        if (!mayFoundReligionNow(prophet)) return // How did you do this?
         religionState = ReligionState.FoundingReligion
         foundingCityId = prophet.getTile().getCity()!!.id
     }
 
-    fun foundReligion(iconName: String, name: String, founderBelief: String, followerBeliefs: List<String>) {
+    fun foundReligion(iconName: String, name: String, founderBelief: List<String>, followerBeliefs: List<String>) {
         val newReligion = Religion(name, civInfo.gameInfo, civInfo.civName)
         newReligion.iconName = iconName
         if (religion != null) {
             newReligion.followerBeliefs.addAll(religion!!.followerBeliefs)
         }
         newReligion.followerBeliefs.addAll(followerBeliefs)
-        newReligion.founderBeliefs.add(founderBelief)
-        newReligion.holyCityId = foundingCityId
+        newReligion.founderBeliefs.addAll(founderBelief)
         religion = newReligion
         civInfo.gameInfo.religions[name] = newReligion
 
         religionState = ReligionState.Religion
-        val holyCity = civInfo.cities.firstOrNull { it.id == newReligion.holyCityId }!!
-        holyCity.religion.clear()
-        holyCity.religion[name] = 100
+
+        val holyCity = civInfo.cities.first { it.id == foundingCityId }
+        holyCity.religion.religionThisIsTheHolyCityOf = newReligion.name
+        holyCity.religion.addPressure(name, holyCity.population.population * 500)
 
         foundingCityId = null
+    }
+    
+    fun numberOfCitiesFollowingThisReligion(): Int {
+        if (religion == null) return 0
+        return civInfo.gameInfo.getCities()
+            .count { it.religion.getMajorityReligion() == religion }
+    }
+    
+    fun numberOfFollowersFollowingThisReligion(cityFilter: String): Int {
+        if (religion == null) return 0
+        return civInfo.gameInfo.getCities()
+            .filter { it.matchesFilter(cityFilter, civInfo) }
+            .sumBy { it.religion.getFollowersOf(religion!!.name)!! }
     }
 }
 

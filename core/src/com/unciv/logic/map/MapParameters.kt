@@ -92,6 +92,9 @@ class MapSizeNew {
         // tell the caller that map dimensions have changed and why
         return message
     }
+
+    // For debugging and MapGenerator console output
+    override fun toString() = if (name == Constants.custom) "${width}x${height}" else name
 }
 
 object MapShape {
@@ -125,7 +128,7 @@ class MapParameters {
     var noNaturalWonders = false
     var worldWrap = false
 
-    /** This is used mainly for the map editor, so you can continue editing a map under the ame ruleset you started with */
+    /** This is used mainly for the map editor, so you can continue editing a map under the same ruleset you started with */
     var mods = LinkedHashSet<String>()
 
     var seed: Long = System.currentTimeMillis()
@@ -153,4 +156,7 @@ class MapParameters {
         resourceRichness = 0.1f
         waterThreshold = 0f
     }
+
+    // For debugging and MapGenerator console output
+    override fun toString() = "($mapSize ${if (worldWrap)"wrapped " else ""}$shape $type, Seed $seed, $elevationExponent/$temperatureExtremeness/$resourceRichness/$vegetationRichness/$rareFeaturesRichness/$maxCoastExtension/$tilesPerBiomeArea/$waterThreshold)"
 }

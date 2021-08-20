@@ -182,6 +182,7 @@ class NewGameScreen(
         try {
             newGame = GameStarter.startNewGame(gameSetupInfo)
         } catch (exception: Exception) {
+            exception.printStackTrace()
             Gdx.app.postRunnable {
                 Popup(this).apply {
                     addGoodSizedLabel("It looks like we can't make a map with the parameters you requested!".tr()).row()
