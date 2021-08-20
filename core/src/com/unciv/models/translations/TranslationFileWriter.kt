@@ -48,7 +48,7 @@ object TranslationFileWriter {
         if (modFolder == null) { // base game
             val templateFile = getFileHandle(modFolder, templateFileLocation) // read the template
             if (templateFile.exists())
-                linesFromTemplates.addAll(templateFile.reader().readLines())
+                linesFromTemplates.addAll(templateFile.reader(TranslationFileReader.charset).readLines())
 
             for (baseRuleset in BaseRuleset.values()) {
                 val generatedStringsFromBaseRuleset =
