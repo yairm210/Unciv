@@ -32,7 +32,7 @@ jobs:
 
       - uses: actions/setup-java@v1
         with:
-          java-version: '11'
+          java-version: '8'
 
       # Runs a set of commands using the runners shell
       - name: check
