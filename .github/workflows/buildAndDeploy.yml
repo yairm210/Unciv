@@ -34,6 +34,9 @@ jobs:
         with:
           java-version: '8'
 
+      - name: classes
+        run: ./gradlew classes
+        
       - name: check
         run: ./gradlew check
 
