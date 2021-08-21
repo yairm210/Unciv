@@ -190,13 +190,13 @@ class CityInfoReligionManager {
      *  Should be called whenever a city changes hands, e.g. conquering and trading
      */
     fun removeUnknownPantheons() {
-        for (pressure in pressures) {
-            if (pressure.key == Constants.noReligionName) continue
-            val correspondingReligion = cityInfo.civInfo.gameInfo.religions[pressure.key]!!
+        for (pressure in pressures.keys.toList()) {  // Copy the keys because we might modify
+            if (pressure == Constants.noReligionName) continue
+            val correspondingReligion = cityInfo.civInfo.gameInfo.religions[pressure]!!
             if (correspondingReligion.isPantheon() 
                 && correspondingReligion.foundingCivName != cityInfo.civInfo.civName
             ) {
-                pressures.remove(pressure.key)
+                pressures.remove(pressure)
             }
         }
         updateNumberOfFollowers()
