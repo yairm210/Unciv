@@ -35,17 +35,17 @@ jobs:
         with:
           java-version: '8'
 
-      - name: classes
+      - name: Compile kotlin and build classes
         run: ./gradlew classes
         
-      - name: check
+      - name: Run code checks
         run: ./gradlew check
 
-      - name: test
+      - name: Run unit tests
         run: ./gradlew tests:test
 
       
-      - name: Get tag # We can then get the tag using ${{steps.tag.outputs.tag}} as below
+      - name: Get release tag # We can then get the tag using ${{steps.tag.outputs.tag}} as below
         if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
         id: tag
         uses: dawidd6/action-get-tag@v1 
@@ -83,11 +83,9 @@ jobs:
           ./gradlew :android:bundleRelease
 
         
-      - uses: r0adkll/sign-android-release@v1
-        if: github.event_name == 'push' && contains(github.ref, 'refs/tags/') 
-        name: Sign app APK
-        # ID used to access action output
-        id: sign_app
+      - name: Sign app APK
+        uses: r0adkll/sign-android-release@v1
+        if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
         with:
           releaseDirectory: android/build/outputs/bundle/release
           signingKeyBase64: ${{ secrets.BUNDLE_SIGNING_KEY_BASE64 }}
@@ -110,14 +108,14 @@ jobs:
 
 ## DESKTOP
       
-      - name: release
+      - name: Upload to itch.io
         if: github.event_name == 'push' && contains(github.ref, 'refs/tags/') 
         env:
           BUTLER_API_KEY: ${{ secrets.BUTLER_API_KEY }}
         run: |
-          wget -O jdk-windows-64.zip https://github.com/ojdkbuild/ojdkbuild/releases/download/java-1.8.0-openjdk-1.8.0.232-1.b09/java-1.8.0-openjdk-1.8.0.232-1.b09.ojdkbuild.windows.x86_64.zip  > /dev/null;
-          wget -O jdk-windows-32.zip https://github.com/ojdkbuild/ojdkbuild/releases/download/java-1.8.0-openjdk-1.8.0.252-2.b09-x86/java-1.8.0-openjdk-1.8.0.252-2.b09.ojdkbuild.windows.x86.zip > /dev/null;
-          wget -O butler.zip https://broth.itch.ovh/butler/linux-amd64/LATEST/archive/default > /dev/null;
+          wget -q -O jdk-windows-64.zip https://github.com/ojdkbuild/ojdkbuild/releases/download/java-1.8.0-openjdk-1.8.0.232-1.b09/java-1.8.0-openjdk-1.8.0.232-1.b09.ojdkbuild.windows.x86_64.zip
+          wget -q -O jdk-windows-32.zip https://github.com/ojdkbuild/ojdkbuild/releases/download/java-1.8.0-openjdk-1.8.0.252-2.b09-x86/java-1.8.0-openjdk-1.8.0.252-2.b09.ojdkbuild.windows.x86.zip
+          wget -q -O butler.zip https://broth.itch.ovh/butler/linux-amd64/LATEST/archive/default
           unzip butler.zip;
           chmod +x butler;
           ./butler -V;
