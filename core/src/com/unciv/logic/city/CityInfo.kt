@@ -653,12 +653,13 @@ class CityInfo {
     }
 
     fun isHolyCity(): Boolean {
-        return religion.religionThisIsTheHolyCityOf != null 
+        return religion.religionThisIsTheHolyCityOf != null
     }
-    
+
     fun canBeDestroyed(justCaptured: Boolean = false): Boolean {
         return !isOriginalCapital && !isHolyCity() && (!isCapital() || justCaptured)
     }
+
 
     fun getNeighbouringCivs(): List<String> {
         val tilesList: HashSet<TileInfo> = getTiles().toHashSet()
@@ -670,8 +671,8 @@ class CityInfo {
                     cityPositionList.add(tile)
 
         return cityPositionList.asSequence()
-            .map { it.getOwner()?.civName }.filterNotNull().toSet() 
-            .distinct().toList()
+                .map { it.getOwner()?.civName }.filterNotNull().toSet()
+                .distinct().toList()
     }
     fun getImprovableTiles(): Sequence<TileInfo> = getTiles()
             .filter {it.hasViewableResource(civInfo) && it.improvement == null}
