@@ -45,7 +45,7 @@ class CivilizationInfo {
         val currentTurn = if (UncivGame.Current.isInitialized && UncivGame.Current.isGameInfoInitialized())
                 UncivGame.Current.gameInfo.turns else 0
         if (workerAutomationCache == null || workerAutomationCache!!.cachedForTurn != currentTurn)
-            workerAutomationCache = workerAutomationCache?.clone() ?: WorkerAutomation(this, currentTurn)
+            workerAutomationCache = WorkerAutomation(this, currentTurn)
         return workerAutomationCache!!
     }
 
@@ -170,7 +170,6 @@ class CivilizationInfo {
         toReturn.flagsCountdown.putAll(flagsCountdown)
         toReturn.temporaryUniques.addAll(temporaryUniques)
         toReturn.hasEverOwnedOriginalCapital = hasEverOwnedOriginalCapital
-        toReturn.workerAutomationCache = workerAutomationCache?.clone()
         return toReturn
     }
 

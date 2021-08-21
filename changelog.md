@@ -1,3 +1,20 @@
+## 3.15.6
+
+City-states grant copies of ALL resources
+
+By SomeTroglodyte:
+- Fixed multiple crashing errors
+- Ancient Ruins Civilopedia and Translations
+- WorkerAutomation cached per Civ - BFS cached
+
+Made great people and boats uncapturable  - By logicminimal
+
+Added Bucketeer unit images - By AdityaMH
+
+By xlenstra:
+- Added a UI for viewing the religions inside a city
+- Implemented almost all missing founder & follower beliefs
+
 ## 3.16.5-googlePlayPushTest
 
 A test to ensure that publishing new versions to Google Play works properly

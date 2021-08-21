@@ -237,19 +237,7 @@
 
 	{ 
 		"name": "Ancient ruins", 
-		"uniques": ["Unpillagable", "Provides a random bonus when entered"],
-        "civilopediaText": [
-			{"text":"Ancient ruins provide a one-time random bonus when explored"},
-			{},
-			{"text":"The possible rewards are:"},
-			{"text":"a stash of gold", "indent":1, "starred":true, "color":"#ffeb7f"},
-			{"text":"survivors (adds population to a city)", "indent":1, "starred":true, "color":"#81c784"},
-			{"text":"discover a lost technology", "indent":1, "starred":true, "color":"#7f7fff"},
-			{"text":"a unit joins you", "indent":1, "starred":true},
-			{"text":"your exploring unit receives training", "indent":1, "starred":true}, // "link":"Tutorial/Experience"
-			{"text":"discover cultural artifacts", "indent":1, "starred":true, "color":"#cf8ff7"},
-			{"text":"find a crudely-drawn map", "indent":1, "starred":true}
-		]
+		"uniques": ["Unpillagable", "Provides a random bonus when entered"]
 	},
 	{ 
 		"name": "City ruins", 
