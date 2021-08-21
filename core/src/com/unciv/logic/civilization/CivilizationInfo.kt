@@ -44,7 +44,7 @@ class CivilizationInfo {
         val currentTurn = if (UncivGame.Current.isInitialized && UncivGame.Current.isGameInfoInitialized())
                 UncivGame.Current.gameInfo.turns else 0
         if (workerAutomationCache == null || workerAutomationCache!!.cachedForTurn != currentTurn)
-            workerAutomationCache = workerAutomationCache?.clone() ?: WorkerAutomation(this, currentTurn)
+            workerAutomationCache = WorkerAutomation(this, currentTurn)
         return workerAutomationCache!!
     }
 

@@ -91,7 +91,7 @@ class WorkerAutomation(
      *  value: The [BFS] searching from that city, whether successful or not.
      */
     //todo: If BFS were to deal in vectors instead of TileInfos, we could copy this on cloning
-    private val bfsCache = HashMap<Vector2, BFS?>()
+    private val bfsCache = HashMap<Vector2, BFS>()
 
     //todo: UnitMovementAlgorithms.canReach still very expensive and could benefit from caching, it's not using BFS
 
