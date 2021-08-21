@@ -15,7 +15,7 @@ class CityInfoReligionManager {
     val religionsAtSomePointAdopted: HashSet<String> = hashSetOf()
 
     private val pressures: Counter<String> = Counter()
-    // `getNumberOfFollowers()` was called a surprisingly large amount of time, so caching it feels useful
+    // Cached because using `updateNumberOfFollowers` to get this value resulted in many calls
     @Transient
     private val followers: Counter<String> = Counter()
     
@@ -170,11 +170,17 @@ class CityInfoReligionManager {
         }
     }
     
-    fun getNumberOfFollowers(): Counter<String> {
-        
-        // println(followers) // ToDo: remove this when a UI for viewing followers is added
-        
-        return followers
+    fun getFollowersOf(religion: String): Int? {
+        return followers[religion]
+    }
+    
+    fun getFollowersOfMajorityReligion(): Int {
+        val majorityReligion = getMajorityReligion() ?: return 0
+        return followers[majorityReligion]!!
+    }
+    
+    fun getFollowersOfOtherReligionsThan(religion: String): Int {
+        return followers.filterNot { it.key == religion }.values.sum()
     }
     
     /** Removes all pantheons except for the one founded by the current owner of the city
@@ -194,10 +200,9 @@ class CityInfoReligionManager {
     }
 
     fun getMajorityReligion(): String? {
-        val followersPerReligion = getNumberOfFollowers()
-        if (followersPerReligion.isEmpty()) return null
+        if (followers.isEmpty()) return null
         val religionWithMaxPressure = pressures.maxByOrNull { it.value }!!.key
-        return if (followersPerReligion[religionWithMaxPressure]!! >= cityInfo.population.population / 2) religionWithMaxPressure
+        return if (followers[religionWithMaxPressure]!! >= cityInfo.population.population / 2) religionWithMaxPressure
         else null
     }
 

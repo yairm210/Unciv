@@ -32,6 +32,7 @@ import com.unciv.ui.saves.LoadGameScreen
 import com.unciv.ui.saves.SaveGameScreen
 import com.unciv.ui.trade.DiplomacyScreen
 import com.unciv.ui.utils.*
+import com.unciv.ui.utils.UncivDateFormat.formatDate
 import com.unciv.ui.victoryscreen.VictoryScreen
 import com.unciv.ui.worldscreen.bottombar.BattleTable
 import com.unciv.ui.worldscreen.bottombar.TileInfoTable
@@ -83,6 +84,13 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Cam
     private val notificationsScroll: NotificationsScroll
     var shouldUpdate = false
 
+    companion object {
+        /** Switch for console logging of next turn duration */
+        private const val consoleLog = false
+
+        // this object must not be created multiple times
+        private var multiPlayerRefresher: Timer? = null
+    }
 
     init {
         topBar.setPosition(0f, stage.height - topBar.height)
@@ -585,8 +593,12 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Cam
 
 
         thread(name = "NextTurn") { // on a separate thread so the user can explore their world while we're passing the turn
+            if (consoleLog)
+                println("\nNext turn starting " + Date().formatDate())
+            val startTime = System.currentTimeMillis()
             val gameInfoClone = gameInfo.clone()
-            gameInfoClone.setTransients()
+            gameInfoClone.setTransients()  // this can get expensive on large games, not the clone itself
+
             try {
                 gameInfoClone.nextTurn()
 
@@ -611,6 +623,8 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Cam
             }
 
             game.gameInfo = gameInfoClone
+            if (consoleLog)
+                println("Next turn took ${System.currentTimeMillis()-startTime}ms")
 
             val shouldAutoSave = gameInfoClone.turns % game.settings.turnsBetweenAutosaves == 0
 
@@ -781,11 +795,5 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Cam
 
         ExitGamePopup(this, true)
 
-    }
-
-
-    companion object {
-        // this object must not be created multiple times
-        private var multiPlayerRefresher: Timer? = null
     }
 }

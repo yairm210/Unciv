@@ -15,6 +15,7 @@ import com.unciv.models.UncivSound
 import com.unciv.models.UnitAction
 import com.unciv.models.UnitActionType
 import com.unciv.models.ruleset.Building
+import com.unciv.models.stats.Stat
 import com.unciv.models.translations.tr
 import com.unciv.ui.pickerscreens.ImprovementPickerScreen
 import com.unciv.ui.pickerscreens.PromotionPickerScreen
@@ -379,7 +380,7 @@ object UnitActions {
             isCurrentAction = unit.isAutomated(),
             action = {
                 unit.action = UnitActionType.Automate.value
-                WorkerAutomation(unit).automateWorkerAction()
+                WorkerAutomation.automateWorkerAction(unit)
             }.takeIf { unit.currentMovement > 0 }
         )
     }
@@ -478,6 +479,10 @@ object UnitActions {
             title = "Spread [${unit.religion!!}]",
             action = {
                 unit.abilityUsedCount[Constants.spreadReligionAbilityCount] = unit.abilityUsedCount[Constants.spreadReligionAbilityCount]!! + 1
+                val followersOfOtherReligions = city.religion.getFollowersOfOtherReligionsThan(unit.religion!!)
+                for (unique in unit.civInfo.getMatchingUniques("When spreading religion to a city, gain [] times the amount of followers of other religions as []")) {
+                    unit.civInfo.addStat(Stat.valueOf(unique.params[1]), followersOfOtherReligions * unique.params[0].toInt())
+                }
                 city.religion.addPressure(unit.religion!!, unit.getPressureAddedFromSpread())
                 unit.currentMovement = 0f
                 if (unit.abilityUsedCount[Constants.spreadReligionAbilityCount] == maxReligionSpreads) {

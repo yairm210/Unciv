@@ -13,6 +13,7 @@ import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.getPlaceholderParameters
 import com.unciv.models.translations.getPlaceholderText
+import kotlin.math.min
 
 
 class CityStats {
@@ -127,7 +128,7 @@ class CityStats {
             if (otherCiv.isCityState() && otherCiv.getDiplomacyManager(cityInfo.civInfo).relationshipLevel() >= RelationshipLevel.Friend) {
                 val eraInfo = cityInfo.civInfo.getEraObject()
 
-                if (eraInfo.friendBonus[otherCiv.cityStateType.name] == null || eraInfo.allyBonus[otherCiv.cityStateType.name] == null) {
+                if (eraInfo == null || eraInfo.friendBonus[otherCiv.cityStateType.name] == null || eraInfo.allyBonus[otherCiv.cityStateType.name] == null) {
                     // Deprecated, assume Civ V values for compatibility
                     if (otherCiv.cityStateType == CityStateType.Maritime && otherCiv.getDiplomacyManager(cityInfo.civInfo).relationshipLevel() == RelationshipLevel.Ally)
                         stats.food += 1
@@ -368,6 +369,15 @@ class CityStats {
             for (unique in uniques.filter { it.placeholderText == "[]% [] while the empire is happy"})
                 stats.add(Stat.valueOf(unique.params[1]), unique.params[0].toFloat())
         }
+        
+        for (unique in uniques.filter { it.placeholderText == "[]% [] from every follower, up to []%" })
+            stats.add(
+                Stat.valueOf(unique.params[1]), 
+                min(
+                    unique.params[0].toFloat() * cityInfo.religion.getFollowersOfMajorityReligion(), 
+                    unique.params[2].toFloat()
+                )
+            )
 
         return stats
     }

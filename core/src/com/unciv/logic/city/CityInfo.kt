@@ -13,6 +13,8 @@ import com.unciv.models.ruleset.tile.ResourceSupplyList
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
+import com.unciv.models.translations.equalsPlaceholderText
+import com.unciv.models.translations.getPlaceholderParameters
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
@@ -585,7 +587,7 @@ class CityInfo {
         return true
     }
 
-    fun matchesFilter(filter: String): Boolean {
+    fun matchesFilter(filter: String, viewingCiv: CivilizationInfo = civInfo): Boolean {
         return when (filter) {
             "in this city" -> true
             "in all cities" -> true
@@ -598,6 +600,11 @@ class CityInfo {
             "in all cities in which the majority religion is a major religion" -> 
                 religion.getMajorityReligion() != null
                 && civInfo.gameInfo.religions[religion.getMajorityReligion()]!!.isMajorReligion()
+            "in non-enemy foreign cities" ->
+                viewingCiv != civInfo
+                && !civInfo.isAtWarWith(viewingCiv)
+            "in foreign cities" ->
+                viewingCiv != civInfo
             // This is only used in communication to the user indicating that only in cities with this
             // religion a unique is active. However, since religion uniques only come from the city itself,
             // this will always be true when checked.

@@ -484,7 +484,7 @@ class MapUnit {
             return
         }
 
-        if (isAutomated()) WorkerAutomation(this).automateWorkerAction()
+        if (isAutomated()) WorkerAutomation.automateWorkerAction(this)
 
         if (isExploring()) UnitAutomation.automatedExplore(this)
     }
