@@ -1537,16 +1537,12 @@
 		"name": "Inquisitor",
 		"unitType": "Civilian",
 		"uniques": ["Prevents spreading of religion to the city it is next to",
-			"May remove heresy [1] times",
+			"May remove foreign religions from your own cities [1] times",
 			// ToDo: change this to an _enhanced_ religion when that is implemented
 			"Can be purchased with [Faith] [in all cities in which the majority religion is a major religion]",
 			"[+1] Visibility Range", "Hidden when religion is disabled", "Unbuildable", "Religious Unit"
 		],
 		"movement": 3,
-		"religiousStrength": 1000,
-		"civilopediaText": [
-			{"text": "Can remove foreign religions from your own cities."}
-		]
 	}
 
 	/* Spaceship Parts */

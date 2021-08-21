@@ -133,7 +133,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Dove](https://thenounproject.com/search/?q=dove&i=1344088) by sandra for Great Prophet
 * [General](https://thenounproject.com/search/?q=general&i=933566) By anbileru adaleru for Great General
 * [Religion](https://thenounproject.com/search/?q=preach&i=53064) by Bruno Gätjens González adapted for Missionary
-* [Detective](https://thenounproject.com/search/?q=detective&i=404933) by Nikita Kozin for Inquisitor
+* [invisibility cloak ](https://thenounproject.com/term/invisibility-cloak/1419648/) by Locad for Inquisitor
 
 ## Resources
 
@@ -615,6 +615,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Hourglass](https://thenounproject.com/search/?q=hourglass&i=142268) by I Create Stuff for the 'Turn' icon
 * [Dove](https://thenounproject.com/search/?q=dove&i=1344084) by Sandra for Faith
 * [Shield](https://thenounproject.com/search/?q=shield&i=813568) by Gregor Cresnar for Religious Strength
+* [skill sword flame](https://thenounproject.com/term/skill-sword-flame/2360212/) by Maxicons) for Remove Heresy
 
 ## Main menu
 

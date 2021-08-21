@@ -498,7 +498,7 @@ object UnitActions {
         val city = tile.getCity() ?: return
         if (city.civInfo != unit.civInfo) return
         // Only allow the action if the city actually has any foreign religion
-        if (city.religion.getPressures().any { it.key != unit.religion!! }) return
+        if (city.religion.getPressures().none { it.key != unit.religion!! }) return
         actionList += UnitAction(UnitActionType.RemoveHeresy,
             title = "Remove Heresy",
             action = {

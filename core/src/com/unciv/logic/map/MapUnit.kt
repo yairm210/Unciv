@@ -961,11 +961,11 @@ class MapUnit {
     }
     
     fun maxHeresyRemovals(): Int {
-        return getMatchingUniques("May remove heresy [] times").sumBy { it.params[0].toInt() }
+        return getMatchingUniques("May remove foreign religions from your own cities [] times").sumBy { it.params[0].toInt() }
     }
     
     fun canRemoveHeresy(): Boolean {
-        return hasUnique("May remove heresy [] times")
+        return hasUnique("May remove foreign religions from your own cities [] times")
     }
 
     fun getPressureAddedFromSpread(): Int {
