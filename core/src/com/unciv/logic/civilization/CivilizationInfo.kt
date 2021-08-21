@@ -169,7 +169,6 @@ class CivilizationInfo {
         toReturn.flagsCountdown.putAll(flagsCountdown)
         toReturn.temporaryUniques.addAll(temporaryUniques)
         toReturn.hasEverOwnedOriginalCapital = hasEverOwnedOriginalCapital
-        toReturn.workerAutomationCache = workerAutomationCache?.clone()
         return toReturn
     }
 
