@@ -5,17 +5,9 @@ plugins {
 }
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_1_6
+    sourceCompatibility = JavaVersion.VERSION_1_7
 }
 
-tasks {
-    compileJava {
-        options.encoding = "UTF-8"
-    }
-    compileTestJava {
-        options.encoding = "UTF-8"
-    }
-}
 
 sourceSets {
     main {

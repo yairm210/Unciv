@@ -184,7 +184,7 @@ class ReligionManager {
     fun numberOfCitiesFollowingThisReligion(): Int {
         if (religion == null) return 0
         return civInfo.gameInfo.getCities()
-            .count { it.religion.getMajorityReligion() == religion!!.name }
+            .count { it.religion.getMajorityReligion() == religion }
     }
     
     fun numberOfFollowersFollowingThisReligion(cityFilter: String): Int {

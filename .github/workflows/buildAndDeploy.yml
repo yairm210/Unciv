@@ -32,9 +32,11 @@ jobs:
 
       - uses: actions/setup-java@v1
         with:
-          java-version: '8'
+          java-version: '11'
 
-      # Runs a set of commands using the runners shell
+      - name: classes
+        run: ./gradlew classes
+        
       - name: check
         run: ./gradlew check
 

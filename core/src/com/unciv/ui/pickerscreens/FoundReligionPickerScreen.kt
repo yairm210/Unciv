@@ -70,15 +70,16 @@ class FoundReligionPickerScreen (
         topReligionIcons.clear()
         
         // This should later be replaced with a user-modifiable text field, but not in this PR
+        // Note that this would require replacing 'religion.name' with 'religion.iconName' at many spots
         val descriptionLabel = "Choose an Icon and name for your Religion".toLabel() 
         
         val iconsTable = Table()
         iconsTable.align(Align.center)
         for (religionName in gameInfo.ruleSet.religions) {
-            val image = ImageGetter.getReligionIcon(religionName)
-            image.color = Color.BLACK
-            val icon = image.surroundWithCircle(60f)
-            val button = Button(icon, skin)
+            val button = Button(
+                ImageGetter.getCircledReligionIcon(religionName, 60f), 
+                skin
+            )
             val translatedReligionName = religionName.tr()
             button.onClick {
                 if (previouslySelectedIcon != null) {

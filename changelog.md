@@ -1,6 +1,6 @@
 ## 3.16.5-googlePlayPushTest
 
-This is just to test if the automatic upload to Google Play is working
+A test to ensure that publishing new versions to Google Play works properly
 
 ## 3.16.5
 

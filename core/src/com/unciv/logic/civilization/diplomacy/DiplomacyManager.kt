@@ -8,7 +8,6 @@ import com.unciv.logic.trade.TradeType
 import com.unciv.models.ruleset.tile.ResourceSupplyList
 import com.unciv.models.translations.getPlaceholderParameters
 import com.unciv.models.translations.getPlaceholderText
-import javax.management.relation.Relation
 import kotlin.math.ceil
 import kotlin.math.max
 import kotlin.math.min
@@ -201,7 +200,7 @@ class DiplomacyManager() {
             restingPoint += unique.params[0].toInt()
         
         for (unique in otherCiv().getMatchingUniques("Resting point for Influence with City-States following this religion []"))
-            if (otherCiv().religionManager.religion?.name == civInfo.getCapital().religion.getMajorityReligion())
+            if (otherCiv().religionManager.religion?.name == civInfo.getCapital().religion.getMajorityReligionName())
                 restingPoint += unique.params[0].toInt()
         
         if (diplomaticStatus == DiplomaticStatus.Protector) restingPoint += 5

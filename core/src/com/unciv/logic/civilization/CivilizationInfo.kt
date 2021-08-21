@@ -803,7 +803,7 @@ class CivilizationInfo {
 
         if (placedUnit.hasUnique("Religious Unit")) {
             placedUnit.religion = 
-                if (city != null) city.cityConstructions.cityInfo.religion.getMajorityReligion()
+                if (city != null) city.cityConstructions.cityInfo.religion.getMajorityReligionName()
                 else religionManager.religion?.name
             if (placedUnit.canSpreadReligion())
                 placedUnit.abilityUsedCount[Constants.spreadReligionAbilityCount] = 0
