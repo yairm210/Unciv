@@ -91,7 +91,7 @@ class WorkerAutomation(
      *  value: The [BFS] searching from that city, whether successful or not.
      */
     //todo: If BFS were to deal in vectors instead of TileInfos, we could copy this on cloning
-    private val bfsCache = HashMap<Vector2, BFS?>()
+    private val bfsCache = HashMap<Vector2, BFS>()
 
     //todo: UnitMovementAlgorithms.canReach still very expensive and could benefit from caching, it's not using BFS
 
@@ -118,20 +118,6 @@ class WorkerAutomation(
         private fun MapUnit.label() = toString() + " " + getTile().position.toString()
     }
 
-    /**
-     * @return A complete, or partial clone, or null - meaning any missing information should be regenerated
-     */
-    fun clone(): WorkerAutomation {
-        // This is a tricky one - we'd like to continue using the cached knowledge stored while the turn was
-        // interactive at the moment nextTurn clones the GameInfo - but would a shallow copy work? No.
-        // Also, AutoSave pulls another clone of GameInfo where any extra work would be wasted.
-        //
-        // Is a deep clone by looking up cloned objects by their primary keys worthwhile?
-        // Current answer: NO. But we still allow this method to carry the decision.
-        //
-        // The following is cheap and does not convert the lazies, forcing a rebuild:
-        return WorkerAutomation(civInfo, cachedForTurn, this)
-    }
 
     ///////////////////////////////////////// Methods /////////////////////////////////////////
     /**
