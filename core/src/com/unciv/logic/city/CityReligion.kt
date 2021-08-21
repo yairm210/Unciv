@@ -215,8 +215,11 @@ class CityInfoReligionManager {
     fun getMajorityReligionName(): String? {
         if (followers.isEmpty()) return null
         val religionWithMaxPressure = pressures.maxByOrNull { it.value }!!.key
-        return if (followers[religionWithMaxPressure]!! >= cityInfo.population.population / 2) religionWithMaxPressure
-        else null
+        return when {
+            religionWithMaxPressure == Constants.noReligionName -> null
+            followers[religionWithMaxPressure]!! >= cityInfo.population.population / 2 -> religionWithMaxPressure
+            else -> null
+        }
     }
     
     fun getMajorityReligion(): Religion? {
