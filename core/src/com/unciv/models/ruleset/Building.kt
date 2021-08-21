@@ -1,5 +1,6 @@
 package com.unciv.models.ruleset
 
+import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.city.CityConstructions
 import com.unciv.logic.city.CityInfo
@@ -75,10 +76,10 @@ class Building : NamedStats(), INonPerpetualConstruction, ICivilopediaText {
     override var civilopediaText = listOf<FormattedLine>()
 
 
+    /** Used for AlertType.WonderBuilt, and as sub-text in Nation and Tech descriptions */
     fun getShortDescription(ruleset: Ruleset): String { // should fit in one line
         val infoList = mutableListOf<String>()
-        val str = getStats(null).toString()
-        if (str.isNotEmpty()) infoList += str
+        getStats(null).toString().also { if (it.isNotEmpty()) infoList += it }
         for (stat in getStatPercentageBonuses(null).toHashMap())
             if (stat.value != 0f) infoList += "+${stat.value.toInt()}% ${stat.key.name.tr()}"
 
@@ -114,13 +115,18 @@ class Building : NamedStats(), INonPerpetualConstruction, ICivilopediaText {
                 ))
     }
     private fun getUniquesStringsWithoutDisablers() = getUniquesStrings()
-        .filterNot { it.startsWith("Hidden ") && it.endsWith(" disabled") || it == "Unbuildable" }
+        .filterNot {
+            it.startsWith("Hidden ") && it.endsWith(" disabled") ||
+            it == "Unbuildable" ||
+            it == Constants.hideFromCivilopediaUnique
+        }
 
     /** used in CityScreen (CityInfoTable and ConstructionInfoTable) */
     fun getDescription(cityInfo: CityInfo?, ruleset: Ruleset): String {
         val stats = getStats(cityInfo)
         val lines = ArrayList<String>()
-        if (uniqueTo != null) lines += "Unique to [$uniqueTo], replaces [$replaces]"
+        if (uniqueTo != null) lines += if (replaces == null) "Unique to [$uniqueTo]"
+            else "Unique to [$uniqueTo], replaces [$replaces]"
         if (isWonder) lines += "Wonder"
         if (isNationalWonder) lines += "National Wonder"
         for ((resource, amount) in getResourceRequirements()) {
@@ -164,6 +170,10 @@ class Building : NamedStats(), INonPerpetualConstruction, ICivilopediaText {
             if (!matchesFilter(unique.params[1])) continue
             stats.add(unique.stats)
         }
+
+        for (unique in city.getMatchingUniques("[] from every [] in cities where this religion has at least [] followers"))
+            if (unique.params[2].toInt() <= city.religion.getFollowersOfMajorityReligion())
+                stats.add(unique.stats)
 
         for (unique in uniqueObjects)
             if (unique.placeholderText == "[] with []" && civInfo.hasResource(unique.params[1])
@@ -459,7 +469,7 @@ class Building : NamedStats(), INonPerpetualConstruction, ICivilopediaText {
             "Can only be built in annexed cities" -> if (construction.cityInfo.isPuppet || construction.cityInfo.foundingCiv == ""
                     || construction.cityInfo.civInfo.civName == construction.cityInfo.foundingCiv) return unique.text
             "Obsolete with []" -> if (civInfo.tech.isResearched(unique.params[0])) return unique.text
-            "Hidden when religion is disabled" -> if (!civInfo.gameInfo.hasReligionEnabled()) return unique.text
+            Constants.hiddenWithoutReligionUnique -> if (!civInfo.gameInfo.hasReligionEnabled()) return unique.text
         }
 
         if (uniqueTo != null && uniqueTo != civInfo.civName) return "Unique to $uniqueTo"

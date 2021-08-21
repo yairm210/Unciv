@@ -1,5 +1,6 @@
 package com.unciv.models.ruleset.tech
 
+import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.ruleset.Building
@@ -117,8 +118,8 @@ class Technology: INamed, ICivilopediaText, IHasUniques {
                 predicate(it)   // expected to be the most selective, thus tested first
                 && (it.uniqueTo == civInfo.civName || it.uniqueTo==null && civInfo.getEquivalentBuilding(it) == it)
                 && (nuclearWeaponsEnabled || "Enables nuclear weapon" !in it.uniques)
-                && (religionEnabled || "Hidden when religion is disabled" !in it.uniques)
-                && "Will not be displayed in Civilopedia" !in it.uniques
+                && (religionEnabled || Constants.hiddenWithoutReligionUnique !in it.uniques)
+                && Constants.hideFromCivilopediaUnique !in it.uniques
             }
     }
 
@@ -136,8 +137,8 @@ class Technology: INamed, ICivilopediaText, IHasUniques {
                 it.requiredTech == name
                 && (it.uniqueTo == civInfo.civName || it.uniqueTo==null && civInfo.getEquivalentUnit(it) == it)
                 && (nuclearWeaponsEnabled || it.uniqueObjects.none { unique -> unique.placeholderText == "Nuclear weapon of Strength []" })
-                && (religionEnabled || "Hidden when religion is disabled" !in it.uniques)
-                && "Will not be displayed in Civilopedia" !in it.uniques
+                && (religionEnabled || Constants.hiddenWithoutReligionUnique !in it.uniques)
+                && Constants.hideFromCivilopediaUnique !in it.uniques
             }
     }
 

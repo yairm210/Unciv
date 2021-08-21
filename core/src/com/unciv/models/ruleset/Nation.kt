@@ -119,7 +119,7 @@ class Nation : INamed, ICivilopediaText, IHasUniques {
 
     private fun addUniqueBuildingsText(textList: ArrayList<String>, ruleset: Ruleset) {
         for (building in ruleset.buildings.values
-                .filter { it.uniqueTo == name && "Will not be displayed in Civilopedia" !in it.uniques }) {
+                .filter { it.uniqueTo == name && Constants.hideFromCivilopediaUnique !in it.uniques }) {
             if (building.replaces != null && ruleset.buildings.containsKey(building.replaces!!)) {
                 val originalBuilding = ruleset.buildings[building.replaces!!]!!
 
@@ -148,7 +148,7 @@ class Nation : INamed, ICivilopediaText, IHasUniques {
 
     private fun addUniqueUnitsText(textList: ArrayList<String>, ruleset: Ruleset) {
         for (unit in ruleset.units.values
-                .filter { it.uniqueTo == name && "Will not be displayed in Civilopedia" !in it.uniques }) {
+                .filter { it.uniqueTo == name && Constants.hideFromCivilopediaUnique !in it.uniques }) {
             if (unit.replaces != null && ruleset.units.containsKey(unit.replaces!!)) {
                 val originalUnit = ruleset.units[unit.replaces!!]!!
                 textList += unit.name.tr() + " - " + "Replaces [${originalUnit.name}]".tr()
@@ -239,7 +239,7 @@ class Nation : INamed, ICivilopediaText, IHasUniques {
     @JvmName("addUniqueBuildingsText1")  // These overloads are too similar - but I hope to remove the other one soon
     private fun addUniqueBuildingsText(textList: ArrayList<FormattedLine>, ruleset: Ruleset) {
         for (building in ruleset.buildings.values) {
-            if (building.uniqueTo != name || "Will not be displayed in Civilopedia" in building.uniques) continue
+            if (building.uniqueTo != name || Constants.hideFromCivilopediaUnique in building.uniques) continue
             textList += FormattedLine("{${building.name}} -", link=building.makeLink())
             if (building.replaces != null && ruleset.buildings.containsKey(building.replaces!!)) {
                 val originalBuilding = ruleset.buildings[building.replaces!!]!!
@@ -275,7 +275,7 @@ class Nation : INamed, ICivilopediaText, IHasUniques {
     @JvmName("addUniqueUnitsText1")
     private fun addUniqueUnitsText(textList: ArrayList<FormattedLine>, ruleset: Ruleset) {
         for (unit in ruleset.units.values) {
-            if (unit.uniqueTo != name || "Will not be displayed in Civilopedia" in unit.uniques) continue
+            if (unit.uniqueTo != name || Constants.hideFromCivilopediaUnique in unit.uniques) continue
             textList += FormattedLine("{${unit.name}} -", link="Unit/${unit.name}")
             if (unit.replaces != null && ruleset.units.containsKey(unit.replaces!!)) {
                 val originalUnit = ruleset.units[unit.replaces!!]!!

@@ -253,10 +253,9 @@ class CityButton(val city: CityInfo, private val tileGroup: WorldTileGroup): Tab
             iconTable.add(nationIcon).size(20f)
         }
         
-        val cityReligionName = city.religion.getMajorityReligion()
-        if (cityReligionName != null) {
-            val cityReligion = city.civInfo.gameInfo.religions[cityReligionName]!!
-            val religionImage = ImageGetter.getReligionIcon(cityReligion.iconName)
+        val cityReligion = city.religion.getMajorityReligion()
+        if (cityReligion != null) {
+            val religionImage = ImageGetter.getReligionImage(cityReligion.iconName)
             iconTable.add(religionImage).size(20f).padLeft(5f).fillY()
         }
 

@@ -163,24 +163,30 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
         }
 
         var friendBonusText = "When Friends: ".tr()
-        val friendBonuses = viewingCiv.getEraObject().friendBonus[otherCiv.cityStateType.name]
-        if (friendBonuses != null) {
-            friendBonusText += friendBonuses.joinToString(separator = ", ") { it.tr() }
-        } else {
-            // Deprecated, assume Civ V values for compatibility
-            val cultureBonus = if(viewingCiv.getEraNumber() in 0..1) "3" else if (viewingCiv.getEraNumber() in 2..3) "6" else "13"
-            val happinessBonus = if(viewingCiv.getEraNumber() in 0..1) "2" else "3"
-            friendBonusText += when (otherCiv.cityStateType) {
-                CityStateType.Militaristic -> "Provides military units every [20] turns".tr()
-                CityStateType.Cultured -> ("Provides [" + cultureBonus + "] [Culture] per turn").tr()
-                CityStateType.Mercantile -> ("Provides [" + happinessBonus + "] Happiness").tr()
-                CityStateType.Maritime -> "Provides [2] [Food] [in capital]".tr()
+        val eraInfo = viewingCiv.getEraObject()
+        val friendBonuses =
+            if (eraInfo == null) null
+            else eraInfo.friendBonus[otherCiv.cityStateType.name]
+        friendBonusText += 
+            if (friendBonuses != null) {
+                friendBonuses.joinToString(separator = ", ") { it.tr() }
+            } else {
+                // Deprecated, assume Civ V values for compatibility
+                val cultureBonus = if(viewingCiv.getEraNumber() in 0..1) "3" else if (viewingCiv.getEraNumber() in 2..3) "6" else "13"
+                val happinessBonus = if(viewingCiv.getEraNumber() in 0..1) "2" else "3"
+                when (otherCiv.cityStateType) {
+                    CityStateType.Militaristic -> "Provides military units every [20] turns".tr()
+                    CityStateType.Cultured -> ("Provides [" + cultureBonus + "] [Culture] per turn").tr()
+                    CityStateType.Mercantile -> ("Provides [" + happinessBonus + "] Happiness").tr()
+                    CityStateType.Maritime -> "Provides [2] [Food] [in capital]".tr()
+                }
             }
-        }
 
 
         var allyBonusText = "When Allies: "
-        val allyBonuses = viewingCiv.getEraObject().allyBonus[otherCiv.cityStateType.name]
+        val allyBonuses = 
+            if (eraInfo == null) null
+            else eraInfo.allyBonus[otherCiv.cityStateType.name]
         if (allyBonuses != null) {
             allyBonusText += allyBonuses.joinToString(separator = ", ") { it.tr() }
         } else {

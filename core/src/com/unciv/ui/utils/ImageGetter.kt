@@ -301,8 +301,11 @@ object ImageGetter {
     }
     
     fun religionIconExists(iconName: String) = imageExists("ReligionIcons/$iconName")
-    fun getReligionIcon(iconName: String): Image {
+    fun getReligionImage(iconName: String): Image {
         return getImage("ReligionIcons/$iconName")
+    }
+    fun getCircledReligionIcon(iconName: String, size: Float): IconCircleGroup {
+        return getReligionImage(iconName).surroundWithCircle(size, color = Color.BLACK )
     }
 
     fun getBlue() = Color(0x004085bf)
