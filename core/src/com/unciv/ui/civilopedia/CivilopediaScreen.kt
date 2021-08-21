@@ -379,8 +379,8 @@ class CivilopediaScreen(
         val hideReligionItems = !game.gameInfo.hasReligionEnabled()
         val noCulturalVictory = VictoryType.Cultural !in game.gameInfo.gameParameters.victoryTypes
         
-        return "Will not be displayed in Civilopedia" !in uniques
-            && !(hideReligionItems && "Hidden when religion is disabled" in uniques)
+        return Constants.hideFromCivilopediaUnique !in uniques
+            && !(hideReligionItems && Constants.hiddenWithoutReligionUnique in uniques)
             && !(uniqueObjects.filter { unique -> unique.placeholderText == "Hidden when [] Victory is disabled"}.any {
                 unique -> !game.gameInfo.gameParameters.victoryTypes.contains(VictoryType.valueOf(unique.params[0] ))
             })
