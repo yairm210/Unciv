@@ -166,14 +166,14 @@ class CityInfo {
 
     private fun borrowCityName(): String {
         val usedCityNames =
-                civInfo.gameInfo.civilizations.flatMap { it.cities.map { city -> city.name } }
+            civInfo.gameInfo.civilizations.flatMap { it.cities.map { city -> city.name } }
         // We take the last unused city name for each other civ in this game, skipping civs whose
         // names are exhausted, and choose a random one from that pool if it's not empty.
         var newNames = civInfo.gameInfo.civilizations
-                .filter { it.isMajorCiv() && it != civInfo }
-                .mapNotNull { it.nation.cities
-                        .lastOrNull { city -> city !in usedCityNames }
-                }
+            .filter { it.isMajorCiv() && it != civInfo }
+            .mapNotNull { it.nation.cities
+                    .lastOrNull { city -> city !in usedCityNames }
+            }
         if (newNames.isNotEmpty()) {
             return newNames.random()
         }
@@ -181,13 +181,13 @@ class CityInfo {
         // As per fandom wiki, once the names from the other nations in the game are exhausted,
         // names are taken from the rest of the nations in the ruleset
         newNames = getRuleset()
-                .nations
-                .filter { it.key !in civInfo.gameInfo.civilizations.map { civ -> civ.nation.name } }
-                .values
-                .map {
-                    it.cities
-                            .filter { city -> city !in usedCityNames }
-                }.flatten()
+            .nations
+            .filter { it.key !in civInfo.gameInfo.civilizations.map { civ -> civ.nation.name } }
+            .values
+            .map {
+                it.cities
+                        .filter { city -> city !in usedCityNames }
+            }.flatten()
         if (newNames.isNotEmpty()) {
             return newNames.random()
         }
@@ -367,7 +367,7 @@ class CityInfo {
             // Sweden UP
             for (otherciv in civInfo.getKnownCivs()) {
                 if (!civInfo.getDiplomacyManager(otherciv)
-                                .hasFlag(DiplomacyFlags.DeclarationOfFriendship)
+                        .hasFlag(DiplomacyFlags.DeclarationOfFriendship)
                 ) continue
 
                 for (ourunique in civInfo.getMatchingUniques("When declaring friendship, both parties gain a []% boost to great person generation"))
@@ -386,7 +386,7 @@ class CityInfo {
         for (counter in sourceToGPP.values)
             for ((key, gppAmount) in counter.toMap()) { // since we're removing, copy to avoid concurrency problems
                 val relevantStatEntry = GreatPersonManager.statToGreatPersonMapping
-                        .entries.firstOrNull { it.key.name.equals(key, true) }
+                    .entries.firstOrNull { it.key.name.equals(key, true) }
                 if (relevantStatEntry == null) continue
 
                 counter.add(relevantStatEntry.value, gppAmount)
@@ -599,10 +599,10 @@ class CityInfo {
             "in all cities with a garrison" -> getCenterTile().militaryUnit != null
             "in all cities in which the majority religion is a major religion" ->
                 religion.getMajorityReligionName() != null
-                        && religion.getMajorityReligion()!!.isMajorReligion()
+                && religion.getMajorityReligion()!!.isMajorReligion()
             "in non-enemy foreign cities" ->
                 viewingCiv != civInfo
-                        && !civInfo.isAtWarWith(viewingCiv)
+                && !civInfo.isAtWarWith(viewingCiv)
             "in foreign cities" ->
                 viewingCiv != civInfo
             // This is only used in communication to the user indicating that only in cities with this
@@ -624,14 +624,14 @@ class CityInfo {
 
     // Finds matching uniques provided from both local and non-local sources.
     fun getMatchingUniques(
-            placeholderText: String,
-            // We might have this cached to avoid concurrency problems. If we don't, just get it directly
-            localUniques: Sequence<Unique> = getLocalMatchingUniques(placeholderText),
+        placeholderText: String,
+        // We might have this cached to avoid concurrency problems. If we don't, just get it directly
+        localUniques: Sequence<Unique> = getLocalMatchingUniques(placeholderText),
     ): Sequence<Unique> {
         // The localUniques might not be filtered when passed as a parameter, so we filter it anyway
         // The time loss shouldn't be that large I don't think
         return civInfo.getMatchingUniques(placeholderText, this) +
-                localUniques.filter { it.placeholderText == placeholderText }
+               localUniques.filter { it.placeholderText == placeholderText }
     }
 
     // Matching uniques provided by sources in the city itself
@@ -648,14 +648,14 @@ class CityInfo {
     // Get all matching uniques that don't apply to only this city
     fun getMatchingUniquesWithNonLocalEffects(placeholderText: String): Sequence<Unique> {
         return cityConstructions.builtBuildingUniqueMap.getUniques(placeholderText)
-                .filter { it.params.none { param -> param == "in this city" } }
+            .filter { it.params.none { param -> param == "in this city" } }
         // Note that we don't query religion here, as those only have local effects (for now at least)
     }
 
     // Get all uniques that don't apply to only this city
     fun getAllUniquesWithNonLocalEffects(): Sequence<Unique> {
         return cityConstructions.builtBuildingUniqueMap.getAllUniques()
-                .filter { it.params.none { param -> param == "in this city" } }
+            .filter { it.params.none { param -> param == "in this city" } }
         // Note that we don't query religion here, as those only have local effects (for now at least)
     }
 
@@ -678,8 +678,8 @@ class CityInfo {
                     cityPositionList.add(tile)
 
         return cityPositionList.asSequence()
-                .map { it.getOwner()?.civName }.filterNotNull().toSet()
-                .distinct().toList()
+            .map { it.getOwner()?.civName }.filterNotNull().toSet()
+            .distinct().toList()
     }
     fun getImprovableTiles(): Sequence<TileInfo> = getTiles()
             .filter {it.hasViewableResource(civInfo) && it.improvement == null}
