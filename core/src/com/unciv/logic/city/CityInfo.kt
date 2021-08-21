@@ -172,7 +172,7 @@ class CityInfo {
         var newNames = civInfo.gameInfo.civilizations
             .filter { it.isMajorCiv() && it != civInfo }
             .mapNotNull { it.nation.cities
-                    .lastOrNull { city -> city !in usedCityNames }
+                .lastOrNull { city -> city !in usedCityNames }
             }
         if (newNames.isNotEmpty()) {
             return newNames.random()
@@ -186,7 +186,7 @@ class CityInfo {
             .values
             .map {
                 it.cities
-                        .filter { city -> city !in usedCityNames }
+                .filter { city -> city !in usedCityNames }
             }.flatten()
         if (newNames.isNotEmpty()) {
             return newNames.random()
