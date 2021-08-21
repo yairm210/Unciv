@@ -115,13 +115,9 @@ class UnitMovementAlgorithmsTests {
 
         for (type in ruleSet.unitTypes) {
             unit.baseUnit = BaseUnit().apply { unitType = type.key; ruleset = ruleSet }
-
             unit.updateUniques()
-            
-            println(type.key + " " + unit.movement.canPassThrough(tile)) 
-            println()
 
-            Assert.assertTrue("$type cannot be in Ice", (   
+            Assert.assertTrue("$type cannot be in Ice", (
                                 type.value.uniques.contains("Can enter ice tiles"))
                                 || type.value.uniques.contains("Can pass through impassable tiles"
                             ) == unit.movement.canPassThrough(tile))

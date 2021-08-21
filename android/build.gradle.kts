@@ -7,7 +7,7 @@ plugins {
 }
 
 android {
-    compileSdkVersion(30)
+    compileSdkVersion(31)
     sourceSets {
         getByName("main").apply {
             manifest.srcFile("AndroidManifest.xml")
@@ -25,7 +25,7 @@ android {
     defaultConfig {
         applicationId = "com.unciv.app"
         minSdkVersion(14)
-        targetSdkVersion(30)
+        targetSdkVersion(31)
         versionCode = BuildConfig.appCodeNumber
         versionName = BuildConfig.appVersion
 
@@ -120,6 +120,8 @@ tasks.register<JavaExec>("run") {
 }
 
 dependencies {
+    // Updating to latest version would require upgrading sourceCompatability and targetCompatability to 1_8 -
+    //   run `./gradlew build --scan` to see details
     implementation("androidx.core:core-ktx:1.3.2")
     implementation("androidx.work:work-runtime-ktx:2.6.0-alpha02")
 }

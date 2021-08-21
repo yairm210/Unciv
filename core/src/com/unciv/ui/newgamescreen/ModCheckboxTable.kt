@@ -35,7 +35,7 @@ class ModCheckboxTable(
         val padTop = if (isPortrait) 0f else 16f
 
         if (baseRulesetCheckboxes.any()) {
-            add(ExpanderTab("Base ruleset mods:") {
+            add(ExpanderTab("Base ruleset mods:", persistenceID = "NewGameBaseMods") {
                 it.defaults().pad(5f,0f)
                 for (checkbox in baseRulesetCheckboxes) it.add(checkbox).row()
             }).padTop(padTop).growX().row()
@@ -45,7 +45,7 @@ class ModCheckboxTable(
             addSeparator(Color.DARK_GRAY, height = 1f)
 
         if (extensionRulesetModButtons.any()) {
-            add(ExpanderTab("Extension mods:") {
+            add(ExpanderTab("Extension mods:", persistenceID = "NewGameExpansionMods") {
                 it.defaults().pad(5f,0f)
                 for (checkbox in extensionRulesetModButtons) it.add(checkbox).row()
             }).padTop(padTop).growX().row()

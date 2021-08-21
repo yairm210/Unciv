@@ -86,11 +86,15 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
         for (otherCiv in civInfo.getKnownCivs()) {
             if (otherCiv.isCityState() && otherCiv.getDiplomacyManager(civInfo.civName).relationshipLevel() >= RelationshipLevel.Friend) {
                 val cityStateBonus = Stats()
+                val eraInfo = civInfo.getEraObject()
 
-                val relevantBonuses =   if (otherCiv.getDiplomacyManager(civInfo.civName).relationshipLevel() == RelationshipLevel.Friend)
-                                            civInfo.getEraObject().friendBonus[otherCiv.cityStateType.name]
-                                        else
-                                            civInfo.getEraObject().allyBonus[otherCiv.cityStateType.name]
+                val relevantBonuses =
+                    when {
+                        eraInfo == null -> null
+                        otherCiv.getDiplomacyManager(civInfo.civName).relationshipLevel() == RelationshipLevel.Friend ->
+                            eraInfo.friendBonus[otherCiv.cityStateType.name]
+                        else -> eraInfo.allyBonus[otherCiv.cityStateType.name]
+                    }
 
                 if (relevantBonuses != null) {
                     for (bonus in relevantBonuses) {
@@ -138,6 +142,13 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
                     )
                 }
             }
+            for (unique in civInfo.religionManager.religion!!.getFounderUniques())
+                if (unique.placeholderText == "[] for every [] global followers []")
+                    statMap.add("Religion",
+                        unique.stats *
+                        civInfo.religionManager.numberOfFollowersFollowingThisReligion(unique.params[2]).toFloat() /
+                        unique.params[1].toFloat()
+                    )
         }
         
 
@@ -227,6 +238,13 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
                         statMap["Religion"]!! +
                         unique.stats.happiness * civInfo.religionManager.numberOfCitiesFollowingThisReligion().toFloat()
                 }
+                if (unique.placeholderText == "[] for every [] global followers []") {
+                    statMap["Religion"] =
+                        statMap["Religion"]!! +
+                            unique.stats.happiness * 
+                            civInfo.religionManager.numberOfFollowersFollowingThisReligion(unique.params[2]).toFloat() / 
+                            unique.params[1].toFloat()
+                }
             }
             if (statMap["Religion"] == 0f) 
                 statMap.remove("Religion")
@@ -235,10 +253,15 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
         //From city-states
         for (otherCiv in civInfo.getKnownCivs()) {
             if (otherCiv.isCityState() && otherCiv.getDiplomacyManager(civInfo).relationshipLevel() >= RelationshipLevel.Friend) {
-                val relevantbonuses = if (otherCiv.getDiplomacyManager(civInfo).relationshipLevel() == RelationshipLevel.Friend)
-                                        civInfo.getEraObject().friendBonus[otherCiv.cityStateType.name]
-                                    else
-                                        civInfo.getEraObject().allyBonus[otherCiv.cityStateType.name]
+                val eraInfo = civInfo.getEraObject()
+                val relevantbonuses = 
+                    when {
+                        eraInfo == null -> null
+                        otherCiv.getDiplomacyManager(civInfo).relationshipLevel() == RelationshipLevel.Friend ->
+                            eraInfo.friendBonus[otherCiv.cityStateType.name]
+                        else ->
+                            eraInfo.allyBonus[otherCiv.cityStateType.name]
+                    }
 
                 if (relevantbonuses != null) {
                     for (bonus in relevantbonuses) {
