@@ -9,6 +9,8 @@ object Constants {
     const val settler = "Settler"
     const val settlerUnique = "Founds a new city"
     const val eraSpecificUnit = "Era Starting Unit"
+    const val hiddenWithoutReligionUnique = "Hidden when religion is disabled"
+    const val hideFromCivilopediaUnique = "Will not be displayed in Civilopedia"
 
     const val impassable = "Impassable"
     const val ocean = "Ocean"

@@ -31,20 +31,21 @@ jobs:
       - uses: actions/checkout@v2
 
       - uses: actions/setup-java@v1
+        # Don't upgrade to java 11 until you've managed to run packr with it.
         with:
-          java-version: '11'
+          java-version: '8'
 
-      - name: classes
+      - name: Compile kotlin and build classes
         run: ./gradlew classes
         
-      - name: check
+      - name: Run code checks
         run: ./gradlew check
 
-      - name: test
+      - name: Run unit tests
         run: ./gradlew tests:test
 
       
-      - name: Get tag # We can then get the tag using ${{steps.tag.outputs.tag}} as below
+      - name: Get release tag # We can then get the tag using ${{steps.tag.outputs.tag}} as below
         if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
         id: tag
         uses: dawidd6/action-get-tag@v1 
@@ -80,23 +81,17 @@ jobs:
           mkdir whatsNewDirectory
           echo "${{ env.RELEASE_BODY }}" > whatsNewDirectory/whatsnew-en-US
           ./gradlew :android:bundleRelease
-          ## New file is now in android/build/outputs/bundle/release
 
         
-      - uses: r0adkll/sign-android-release@v1
-        if: github.event_name == 'push' && contains(github.ref, 'refs/tags/') 
-        name: Sign app APK
-        # ID used to access action output
-        id: sign_app
+      - name: Sign app APK
+        uses: r0adkll/sign-android-release@v1
+        if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
         with:
           releaseDirectory: android/build/outputs/bundle/release
           signingKeyBase64: ${{ secrets.BUNDLE_SIGNING_KEY_BASE64 }}
           alias: ${{ secrets.BUNDLE_SIGNING_KEY_ALIAS }}
           keyStorePassword: ${{ secrets.BUNDLE_SIGNING_KEYSTORE_PASSWORD }}
           keyPassword: ${{ secrets.BUNDLE_SIGNING_KEY_PASSWORD }}
-        #env:
-          # override default build-tools version (29.0.3) -- optional
-          #BUILD_TOOLS_VERSION: "30.0.2"
 
       - name: Upload apk to google play
         if: github.event_name == 'push' && contains(github.ref, 'refs/tags/') 
@@ -113,14 +108,14 @@ jobs:
 
 ## DESKTOP
       
-      - name: release
+      - name: Upload to itch.io
         if: github.event_name == 'push' && contains(github.ref, 'refs/tags/') 
         env:
           BUTLER_API_KEY: ${{ secrets.BUTLER_API_KEY }}
         run: |
-          wget -O jdk-windows-64.zip https://github.com/ojdkbuild/ojdkbuild/releases/download/java-1.8.0-openjdk-1.8.0.232-1.b09/java-1.8.0-openjdk-1.8.0.232-1.b09.ojdkbuild.windows.x86_64.zip  > /dev/null;
-          wget -O jdk-windows-32.zip https://github.com/ojdkbuild/ojdkbuild/releases/download/java-1.8.0-openjdk-1.8.0.252-2.b09-x86/java-1.8.0-openjdk-1.8.0.252-2.b09.ojdkbuild.windows.x86.zip > /dev/null;
-          wget -O butler.zip https://broth.itch.ovh/butler/linux-amd64/LATEST/archive/default > /dev/null;
+          wget -q -O jdk-windows-64.zip https://github.com/ojdkbuild/ojdkbuild/releases/download/java-1.8.0-openjdk-1.8.0.232-1.b09/java-1.8.0-openjdk-1.8.0.232-1.b09.ojdkbuild.windows.x86_64.zip
+          wget -q -O jdk-windows-32.zip https://github.com/ojdkbuild/ojdkbuild/releases/download/java-1.8.0-openjdk-1.8.0.252-2.b09-x86/java-1.8.0-openjdk-1.8.0.252-2.b09.ojdkbuild.windows.x86.zip
+          wget -q -O butler.zip https://broth.itch.ovh/butler/linux-amd64/LATEST/archive/default
           unzip butler.zip;
           chmod +x butler;
           ./butler -V;
@@ -132,10 +127,12 @@ jobs:
           ./butler push deploy/Unciv-Linux64.zip yairm210/unciv:Linux64     --userversion ${{steps.tag.outputs.tag}};
           ./gradlew desktop:zipLinuxFilesForJar;
           mv desktop/build/libs/Unciv.jar deploy/Unciv.jar
+          mv android/build/outputs/bundle/release/Unciv-release.aab deploy/Unciv.aab
           
 
       - name: Upload binaries to Github release
-        if: github.event_name == 'push' && contains(github.ref, 'refs/tags/') 
+        if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
+        continue-on-error: true
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
