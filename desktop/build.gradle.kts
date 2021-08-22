@@ -122,15 +122,16 @@ for(platform in PackrConfig.Platform.values()) {
             if (platform == PackrConfig.Platform.Linux64 || platform == PackrConfig.Platform.MacOS) {
                 val jdkFile = if (platform == PackrConfig.Platform.Linux64) "jre-linux-64.tar.gz"
                 else "jre-macOS.tar.gz"
-                val platformNameForPackrCmd =  if (platform == PackrConfig.Platform.Linux64) "linux64"
-                else "mac"
+                val platformNameForPackrCmd =
+                    if (platform == PackrConfig.Platform.Linux64) "linux64"
+                    else "mac"
                 val command = "java -jar $rootDir/packr-all-4.0.0.jar" +
                         " --platform $platformNameForPackrCmd" +
                         " --jdk $jdkFile" +
                         " --executable Unciv" +
                         " --classpath $jarFile" +
                         " --mainclass $mainClassName" +
-                        " --vmargs Xmx1G" +
+                        " --vmargs Xmx1G " + (if (platform == PackrConfig.Platform.MacOS) "XstartOnFirstThread" else "") +
                         " --output ${config.outDir}"
                 command.runCommand(rootDir)
             } else Packr().pack(config)
