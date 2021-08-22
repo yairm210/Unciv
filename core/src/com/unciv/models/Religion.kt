@@ -51,16 +51,22 @@ class Religion() : INamed {
             .filter { it.type == BeliefType.Pantheon }
     }
     
+    fun getFounderBeliefs(): Sequence<Belief> {
+        return mapToExistingBeliefs(founderBeliefs)
+            .asSequence()
+            .filter { it.type == BeliefType.Founder }
+    }
+    
     fun getFollowerBeliefs(): Sequence<Belief> {
         return mapToExistingBeliefs(followerBeliefs)
             .asSequence()
             .filter { it.type == BeliefType.Follower }
     }
     
-    fun getFounderBeliefs(): Sequence<Belief> {
+    fun getEnhancerBeliefs(): Sequence<Belief> {
         return mapToExistingBeliefs(founderBeliefs)
             .asSequence()
-            .filter { it.type == BeliefType.Founder }
+            .filter { it.type == BeliefType.Enhancer }
     }
     
     private fun getUniquesOfBeliefs(beliefs: HashSet<String>): Sequence<Unique> {

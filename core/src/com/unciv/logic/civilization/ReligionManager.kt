@@ -4,6 +4,7 @@ import com.unciv.logic.map.MapUnit
 import com.unciv.models.Religion
 import com.unciv.models.ruleset.Belief
 import com.unciv.models.ruleset.BeliefType
+import com.unciv.ui.pickerscreens.BeliefContainer
 import kotlin.random.Random
 
 class ReligionManager {
@@ -158,15 +159,24 @@ class ReligionManager {
         religionState = ReligionState.FoundingReligion
         foundingCityId = prophet.getTile().getCity()!!.id
     }
+    
+    fun getBeliefsToChooseAtFounding(): BeliefContainer {
+        return BeliefContainer(founderBeliefCount = 1, followerBeliefCount = 1)
+    }
 
-    fun foundReligion(iconName: String, name: String, founderBelief: List<String>, followerBeliefs: List<String>) {
+    fun foundReligion(iconName: String, name: String, beliefContainer: BeliefContainer) {
         val newReligion = Religion(name, civInfo.gameInfo, civInfo.civName)
         newReligion.iconName = iconName
         if (religion != null) {
             newReligion.followerBeliefs.addAll(religion!!.followerBeliefs)
+            newReligion.founderBeliefs.addAll(religion!!.founderBeliefs)
         }
-        newReligion.followerBeliefs.addAll(followerBeliefs)
-        newReligion.founderBeliefs.addAll(founderBelief)
+        newReligion.followerBeliefs.addAll(
+            beliefContainer.chosenFollowerBeliefs.map { it!!.name } +
+                    beliefContainer.chosenPantheonBeliefs.map { it!!.name }
+        )
+        newReligion.founderBeliefs.addAll(beliefContainer.chosenFounderBeliefs.map { it!!.name })
+        
         religion = newReligion
         civInfo.gameInfo.religions[name] = newReligion
 
@@ -177,7 +187,7 @@ class ReligionManager {
         holyCity.religion.addPressure(name, holyCity.population.population * 500)
 
         foundingCityId = null
-    }
+    }    
     
     fun numberOfCitiesFollowingThisReligion(): Int {
         if (religion == null) return 0
