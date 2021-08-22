@@ -3,15 +3,26 @@ package com.unciv.logic.map
 import com.unciv.models.ruleset.UniqueTriggerActivation
 import com.unciv.models.ruleset.unit.Promotion
 
-class UnitPromotions{
-    @Transient lateinit var unit:MapUnit
+class UnitPromotions {
+    // Having this as mandatory constructor parameter would be safer, but this class is part of a
+    // saved game and as usual the json deserializer needs a default constructor.
+    // Initialization occurs in setTransients() - called as part of MapUnit.setTransients,
+    // or copied in clone() as part of the UnitAction `Upgrade`.
+    @Transient 
+    private lateinit var unit: MapUnit
+
     @Suppress("PropertyName")
     var XP = 0
+
     var promotions = HashSet<String>()
     // The number of times this unit has been promoted
     // some promotions don't come from being promoted but from other things,
     // like from being constructed in a specific city etc.
     var numberOfPromotions = 0
+
+    fun setTransients(unit: MapUnit) {
+        this.unit = unit
+    }
 
     fun xpForNextPromotion() = (numberOfPromotions+1)*10
     fun canBePromoted(): Boolean {
@@ -58,6 +69,7 @@ class UnitPromotions{
         toReturn.XP = XP
         toReturn.promotions.addAll(promotions)
         toReturn.numberOfPromotions = numberOfPromotions
+        toReturn.unit = unit
         return toReturn
     }
 
@@ -66,5 +78,4 @@ class UnitPromotions{
         for(i in 1..numberOfPromotions) sum += 10*i
         return sum
     }
-
 }
