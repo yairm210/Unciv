@@ -475,6 +475,15 @@ object UnitActions {
             }
         }
     }
+    
+    private fun useActionWithLimitedUses(unit: MapUnit, action: String, maximumUses: Int) {
+        unit.abilityUsedCount[action] = unit.abilityUsedCount[action]!! + 1
+        if (unit.abilityUsedCount[action] == maximumUses) {
+            if (unit.isGreatPerson())
+                addGoldPerGreatPersonUsage(unit.civInfo)
+            unit.destroy()
+        }
+    }
 
     private fun addSpreadReligionActions(unit: MapUnit, actionList: ArrayList<UnitAction>, city: CityInfo, maxSpreadUses: Int) {
         val blockedByInquisitor =
@@ -488,18 +497,13 @@ object UnitActions {
         actionList += UnitAction(UnitActionType.SpreadReligion,
             title = "Spread [${unit.religion!!}]",
             action = {
-                unit.abilityUsedCount[Constants.spreadReligionAbilityCount] = unit.abilityUsedCount[Constants.spreadReligionAbilityCount]!! + 1
                 val followersOfOtherReligions = city.religion.getFollowersOfOtherReligionsThan(unit.religion!!)
                 for (unique in unit.civInfo.getMatchingUniques("When spreading religion to a city, gain [] times the amount of followers of other religions as []")) {
                     unit.civInfo.addStat(Stat.valueOf(unique.params[1]), followersOfOtherReligions * unique.params[0].toInt())
                 }
                 city.religion.addPressure(unit.religion!!, unit.getPressureAddedFromSpread())
                 unit.currentMovement = 0f
-                if (unit.abilityUsedCount[Constants.spreadReligionAbilityCount] == maxSpreadUses) {
-                    if (unit.isGreatPerson())
-                        addGoldPerGreatPersonUsage(unit.civInfo)
-                    unit.destroy()
-                }
+                useActionWithLimitedUses(unit, Constants.spreadReligionAbilityCount, maxSpreadUses)
             }.takeIf { unit.currentMovement > 0 && !blockedByInquisitor } 
         )
     }
@@ -507,18 +511,14 @@ object UnitActions {
     private fun addRemoveHeresyActions(unit: MapUnit, actionList: ArrayList<UnitAction>, city: CityInfo, maxHerseyUses: Int) {
         if (city.civInfo != unit.civInfo) return
         // Only allow the action if the city actually has any foreign religion
+        // This will almost be always due to pressure from cities close-by
         if (city.religion.getPressures().none { it.key != unit.religion!! }) return
         actionList += UnitAction(UnitActionType.RemoveHeresy,
             title = "Remove Heresy",
             action = {
-                unit.abilityUsedCount[Constants.removeHeresyAbilityCount] = unit.abilityUsedCount[Constants.removeHeresyAbilityCount]!! + 1
                 city.religion.removeAllPressuresExceptFor(unit.religion!!)
                 unit.currentMovement = 0f
-                if (unit.abilityUsedCount[Constants.removeHeresyAbilityCount] == maxHerseyUses) {
-                    if (unit.isGreatPerson())
-                        addGoldPerGreatPersonUsage(unit.civInfo)
-                    unit.destroy()
-                }
+                useActionWithLimitedUses(unit, Constants.removeHeresyAbilityCount, maxHerseyUses)
             }.takeIf { unit.currentMovement > 0f }
         )
     }

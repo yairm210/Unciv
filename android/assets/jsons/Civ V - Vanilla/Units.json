@@ -1544,9 +1544,6 @@
 			"[+1] Visibility Range", "Hidden when religion is disabled", "Unbuildable", "Religious Unit"
 		],
 		"movement": 3,
-		"civilopediaText": [
-			{"text": "Can remove foreign religions from your own cities."}
-		]
 	}
 
 	/* Spaceship Parts */
