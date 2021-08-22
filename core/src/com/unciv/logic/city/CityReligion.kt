@@ -94,6 +94,7 @@ class CityInfoReligionManager {
         val pressureFromThisReligion = pressures[religion]!!
         clearAllPressures()
         pressures.add(religion, pressureFromThisReligion)
+        updateNumberOfFollowers()
     }
     
     fun updatePressureOnPopulationChange(populationChangeAmount: Int) {

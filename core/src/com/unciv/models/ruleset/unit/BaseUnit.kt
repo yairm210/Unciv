@@ -330,9 +330,9 @@ class BaseUnit : INamed, INonPerpetualConstruction, ICivilopediaText {
 
         if (unit.hasUnique("Religious Unit")) {
             unit.religion = cityConstructions.cityInfo.religion.getMajorityReligionName()
-            if (unit.canSpreadReligion())
+            if (unit.canDoReligiousAction(Constants.spreadReligionAbilityCount))
                 unit.abilityUsedCount[Constants.spreadReligionAbilityCount] = 0
-            if (unit.canRemoveHeresy())
+            if (unit.canDoReligiousAction(Constants.removeHeresyAbilityCount))
                 unit.abilityUsedCount[Constants.removeHeresyAbilityCount] = 0
         }
 

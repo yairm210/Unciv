@@ -442,6 +442,14 @@ class MapUnit {
         promotions.setTransients(this)
         baseUnit = ruleset.units[name]
             ?: throw java.lang.Exception("Unit $name is not found!")
+        
+        // "Religion Spread" ability deprecated since 3.16.7, replaced with "Spread Religion"
+            if ("Religion Spread" in abilityUsedCount) {
+                abilityUsedCount[Constants.spreadReligionAbilityCount] = abilityUsedCount["Religion Spread"]!!
+                abilityUsedCount.remove("Religion Spread")
+            }
+        //
+        
         updateUniques()
     }
 
@@ -952,36 +960,29 @@ class MapUnit {
         return matchingUniques.any { improvement.matchesFilter(it.params[0]) || tile.matchesTerrainFilter(it.params[0]) }
     }
     
-    fun maxReligionSpreads(): Int {
-        return getMatchingUniques("Can spread religion [] times").sumBy { it.params[0].toInt() }
+    fun religiousActionsUnitCanDo(): Sequence<String> {
+        return getMatchingUniques("Can [] [] times")
+            .map { it.params[0] }
     }
     
-    fun canSpreadReligion(): Boolean {
-        return hasUnique("Can spread religion [] times")
+    fun canDoReligiousAction(action: String): Boolean {
+        return getMatchingUniques("Can [] [] times").any { it.params[0] == action }
     }
     
-    fun maxHeresyRemovals(): Int {
-        return getMatchingUniques("May remove foreign religions from your own cities [] times").sumBy { it.params[0].toInt() }
+    fun getMaxReligiousActionUses(action: String): Int {
+        return getMatchingUniques("Can [] [] times")
+            .filter { it.params[0] == action }
+            .sumBy { it.params[1].toInt() }
     }
     
-    fun canRemoveHeresy(): Boolean {
-        return hasUnique("May remove foreign religions from your own cities [] times")
-    }
-
     fun getPressureAddedFromSpread(): Int {
         return baseUnit.religiousStrength
     }
-
-    fun getSpreadReligionString(): String {
-        val maxSpreads = maxReligionSpreads()
-        if (abilityUsedCount[Constants.spreadReligionAbilityCount] == null) return "" // That is, either the key doesn't exist, or it does exist and the value is null.
-        return "${maxSpreads - abilityUsedCount[Constants.spreadReligionAbilityCount]!!}/${maxSpreads}"
-    }
     
-    fun getRemoveHeresyString(): String {
-        val maxRemovals = maxHeresyRemovals()
-        if (abilityUsedCount[Constants.removeHeresyAbilityCount] == null) return "" // That is, either the key doesn't exist, or it does exist and the value is null.
-        return "${maxRemovals - abilityUsedCount[Constants.removeHeresyAbilityCount]!!}/${maxRemovals}"
+    fun getActionString(action: String): String {
+        val maxActionUses = getMaxReligiousActionUses(action)
+        if (abilityUsedCount[action] == null) return "0/0" // Something went wrong
+        return "${maxActionUses - abilityUsedCount[action]!!}/${maxActionUses}"
     }
 
     fun actionsOnDeselect() {

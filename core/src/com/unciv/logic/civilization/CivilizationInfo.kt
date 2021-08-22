@@ -804,9 +804,9 @@ class CivilizationInfo {
             placedUnit.religion = 
                 if (city != null) city.cityConstructions.cityInfo.religion.getMajorityReligionName()
                 else religionManager.religion?.name
-            if (placedUnit.canSpreadReligion())
+            if (placedUnit.canDoReligiousAction(Constants.spreadReligionAbilityCount))
                 placedUnit.abilityUsedCount[Constants.spreadReligionAbilityCount] = 0
-            if (placedUnit.canRemoveHeresy())
+            if (placedUnit.canDoReligiousAction(Constants.removeHeresyAbilityCount))
                 placedUnit.abilityUsedCount[Constants.removeHeresyAbilityCount] = 0
         }
         

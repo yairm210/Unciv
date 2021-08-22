@@ -83,7 +83,7 @@ class CityStatsTable(val cityScreen: CityScreen): Table() {
     }
 
     private fun addReligionInfo() {
-        val label = cityInfo.religion.getMajorityReligionName()
+        val label = cityInfo.religion.getMajorityReligion()?.iconName
             ?: "None"
         val icon = if (label == "None") "Religion" else label
         val expanderTab =
@@ -97,7 +97,7 @@ class CityStatsTable(val cityScreen: CityScreen): Table() {
                 onChange = {
                     pack()
                     // We have to re-anchor as our position in the city screen, otherwise it expands upwards.
-                    // This probably should be refactored so its placed somewhere else in due time
+                    // ToDo: This probably should be refactored so its placed somewhere else in due time
                     setPosition(stage.width - CityScreen.posFromEdge, stage.height - CityScreen.posFromEdge, Align.topRight)
                 }
             ) {
