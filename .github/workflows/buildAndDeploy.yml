@@ -113,19 +113,25 @@ jobs:
         env:
           BUTLER_API_KEY: ${{ secrets.BUTLER_API_KEY }}
         run: |
-          wget -q -O jdk-windows-64.zip https://github.com/ojdkbuild/ojdkbuild/releases/download/java-1.8.0-openjdk-1.8.0.232-1.b09/java-1.8.0-openjdk-1.8.0.232-1.b09.ojdkbuild.windows.x86_64.zip
-          wget -q -O jdk-windows-32.zip https://github.com/ojdkbuild/ojdkbuild/releases/download/java-1.8.0-openjdk-1.8.0.252-2.b09-x86/java-1.8.0-openjdk-1.8.0.252-2.b09.ojdkbuild.windows.x86.zip
           wget -q -O butler.zip https://broth.itch.ovh/butler/linux-amd64/LATEST/archive/default
           unzip butler.zip;
           chmod +x butler;
           ./butler -V;
+
+          wget -q -O jdk-windows-32.zip https://github.com/ojdkbuild/ojdkbuild/releases/download/java-1.8.0-openjdk-1.8.0.252-2.b09-x86/java-1.8.0-openjdk-1.8.0.252-2.b09.ojdkbuild.windows.x86.zip
           ./gradlew desktop:packrWindows32;
           ./butler push deploy/Unciv-Windows32.zip yairm210/unciv:Windows32 --userversion ${{steps.tag.outputs.tag}};
+
           ./gradlew desktop:packrWindows64;
+          wget -q -O jdk-windows-64.zip https://github.com/ojdkbuild/ojdkbuild/releases/download/java-1.8.0-openjdk-1.8.0.232-1.b09/java-1.8.0-openjdk-1.8.0.232-1.b09.ojdkbuild.windows.x86_64.zip
           ./butler push deploy/Unciv-Windows64.zip yairm210/unciv:Windows64 --userversion ${{steps.tag.outputs.tag}};
+
+          wget -q -O jre-linux-64.tar.gz https://github.com/AdoptOpenJDK/openjdk11-binaries/releases/download/jdk-11.0.11%2B9/OpenJDK11U-jre_x64_linux_hotspot_11.0.11_9.tar.gz
+          wget -q -O packr-all-4.0.0.jar https://github.com/libgdx/packr/releases/download/4.0.0/packr-all-4.0.0.jar
           ./gradlew desktop:packrLinux64;
           ./butler push deploy/Unciv-Linux64.zip yairm210/unciv:Linux64     --userversion ${{steps.tag.outputs.tag}};
           ./gradlew desktop:zipLinuxFilesForJar;
+
           mv desktop/build/libs/Unciv.jar deploy/Unciv.jar
           mv android/build/outputs/bundle/release/Unciv-release.aab deploy/Unciv.aab
           
