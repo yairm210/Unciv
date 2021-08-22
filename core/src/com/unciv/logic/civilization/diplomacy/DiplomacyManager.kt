@@ -35,7 +35,9 @@ enum class DiplomacyFlags{
     AgreedToNotSettleNearUs,
     IgnoreThemSettlingNearUs,
     ProvideMilitaryUnit,
-    EverBeenFriends
+    EverBeenFriends,
+    RecentlyDemandedTribute,
+    VeryRecentlyDemandedTribute
 }
 
 enum class DiplomaticModifiers{

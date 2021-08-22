@@ -267,6 +267,14 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
             if (isNotPlayersTurn()) protectionButton.disable()
         }
 
+        val demandTributeButton = "Demand Tribute".toTextButton()
+        demandTributeButton.onClick {
+            rightSideTable.clear()
+            rightSideTable.add(ScrollPane(getGoldGiftTable(otherCiv)))
+        }
+        diplomacyTable.add(demandTributeButton).row()
+        if (isNotPlayersTurn() || otherCiv.getTributeWillingness(viewingCiv) <= 0) demandTributeButton.disable()
+
         val diplomacyManager = viewingCiv.getDiplomacyManager(otherCiv)
         if (!viewingCiv.gameInfo.ruleSet.modOptions.uniques.contains(ModOptionsConstants.diplomaticRelationshipsCannotChange)) {
             if (viewingCiv.isAtWarWith(otherCiv)) {

@@ -6,6 +6,7 @@ import com.unciv.logic.GameInfo
 import com.unciv.logic.UncivShowableException
 import com.unciv.logic.automation.NextTurnAutomation
 import com.unciv.logic.automation.WorkerAutomation
+import com.unciv.logic.battle.CityCombatant
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.RuinsManager.RuinsManager
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
@@ -30,6 +31,7 @@ import com.unciv.ui.victoryscreen.RankingType
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
+import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.pow
 import kotlin.math.roundToInt
@@ -976,6 +978,58 @@ class CivilizationInfo {
                 oldAllyCiv.updateDetailedCivResources()
             }
         }
+    }
+
+    fun getTributeWillingness(demandingCiv: CivilizationInfo, demandingWorker: Boolean = false): Int {
+        // Can't bully major civs or unsettled CS's
+        if (!isCityState() || cities.isEmpty()) return -110
+        var willingness = -110  // Base value
+
+        if (cityStatePersonality == CityStatePersonality.Hostile)
+            willingness -= 10   // -10 if Hostile
+        if (cityStateType == CityStateType.Militaristic)
+            willingness -= 10   // -10 if Militaristic
+        if (allyCivName != null)
+            willingness -= 10   // -10 if someone is their Ally
+        if (getProtectorCivs().isNotEmpty())
+            willingness -= 20   // -20 if someone pledged protection
+        if (demandingWorker)
+            willingness -= 30   // -30 if demanding worker
+        if (demandingWorker && getCapital().population.population < 4)
+            willingness -= 300  // -300 if demanding worker from size < 4 city
+        if (demandingCiv.getDiplomacyManager(this).hasFlag(DiplomacyFlags.VeryRecentlyDemandedTribute))
+            willingness -= 300  // -300 if very recently demanded tribute (10 turns?)
+        if (demandingCiv.getDiplomacyManager(this).hasFlag(DiplomacyFlags.RecentlyDemandedTribute))
+            willingness -= 40   // -40 if recently demanded tribute (30 turns?)
+        if (getDiplomacyManager(demandingCiv).influence < -30)
+            willingness -= 300  // -300 if less than -30 influence
+
+        val forcerank = gameInfo.getAliveMajorCivs().sortedByDescending { it.getStatForRanking(RankingType.Force) }.indexOf(demandingCiv)
+        willingness += 75 - ((75 / gameInfo.gameParameters.players.size) * forcerank)
+
+        val forcenearcity = getCapital().getCenterTile().getTilesInDistanceRange(1..7)
+            .sumBy { if (it.militaryUnit != null && it.militaryUnit!!.civInfo == demandingCiv)
+                max(it.militaryUnit!!.baseUnit().strength, it.militaryUnit!!.baseUnit().rangedStrength)
+            else 0 }    // Sum up strength (or ranged strength) of units within 7 tiles
+        val csforce = CityCombatant(getCapital()).getCityStrength() + units.sumBy { max(it.baseUnit().strength, it.baseUnit().rangedStrength) }
+        val forceratio = forcenearcity.toFloat() / csforce.toFloat()
+
+        if (forceratio > 3f)
+            willingness += 125
+        else if (forceratio > 2f)
+            willingness += 100
+        else if (forceratio > 1.5f)
+            willingness += 75
+        else if (forceratio > 1f)
+            willingness += 50
+        else if (forceratio > 0.5f)
+            willingness += 25
+
+        println ("Force rank " + forcerank.toString())
+        println ("Force near CS " + forcenearcity.toString() + ", CS Force " + csforce.toString() + ", ratio " + forceratio.toString())
+        println ("Willingness " + willingness.toString())
+
+        return willingness
     }
 
     //endregion
