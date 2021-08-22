@@ -30,7 +30,7 @@ import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 class CityConstructionsTable(private val cityScreen: CityScreen) {
     /* -1 = Nothing, >= 0 queue entry (0 = current construction) */
     private var selectedQueueEntry = -1 // None
-    private var preferredBuyStat = Stat.Gold
+    private var preferredBuyStat = Stat.Gold  // Used for keyboard buy
     var improvementBuildingToConstruct: Building? = null
 
     private val upperTable = Table(CameraStageBaseScreen.skin)
