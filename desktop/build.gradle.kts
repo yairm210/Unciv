@@ -119,10 +119,14 @@ for(platform in PackrConfig.Platform.values()) {
             if (config.outDir.exists()) delete(config.outDir)
 
             // Requires that both packr and the linux jre are downloaded, as per buildAndDeploy.yml, "Upload to itch.io"
-            if (platform == PackrConfig.Platform.Linux64) {
+            if (platform == PackrConfig.Platform.Linux64 || platform == PackrConfig.Platform.MacOS) {
+                val jdkFile = if (platform == PackrConfig.Platform.Linux64) "jre-linux-64.tar.gz"
+                else "jre-macOS.tar.gz"
+                val platformNameForPackrCmd =  if (platform == PackrConfig.Platform.Linux64) "linux64"
+                else "mac"
                 val command = "java -jar $rootDir/packr-all-4.0.0.jar" +
-                        " --platform linux64" +
-                        " --jdk jre-linux-64.tar.gz" +
+                        " --platform $platformNameForPackrCmd" +
+                        " --jdk $jdkFile" +
                         " --executable Unciv" +
                         " --classpath $jarFile" +
                         " --mainclass $mainClassName" +

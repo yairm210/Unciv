@@ -31,7 +31,6 @@ jobs:
       - uses: actions/checkout@v2
 
       - uses: actions/setup-java@v1
-        # Don't upgrade to java 11 until you've managed to run packr with it.
         with:
           java-version: '11'
 
@@ -126,6 +125,10 @@ jobs:
           wget -q -O jdk-windows-32.zip https://github.com/ojdkbuild/ojdkbuild/releases/download/java-1.8.0-openjdk-1.8.0.252-2.b09-x86/java-1.8.0-openjdk-1.8.0.252-2.b09.ojdkbuild.windows.x86.zip
           ./gradlew desktop:packrWindows32
           ./butler push deploy/Unciv-Windows32.zip yairm210/unciv:Windows32 --userversion ${{steps.tag.outputs.tag}}
+
+          wget -q -O jre-macOS.tar.gz https://github.com/AdoptOpenJDK/openjdk11-binaries/releases/download/jdk-11.0.11%2B9/OpenJDK11U-jre_x64_mac_hotspot_11.0.11_9.tar.gz
+          ./gradlew desktop:packrMacOS
+          ./butler push deploy/Unciv-MacOS.zip yairm210/unciv:MacOS --userversion ${{steps.tag.outputs.tag}}
 
           wget -q -O jdk-windows-64.zip https://github.com/ojdkbuild/ojdkbuild/releases/download/java-1.8.0-openjdk-1.8.0.232-1.b09/java-1.8.0-openjdk-1.8.0.232-1.b09.ojdkbuild.windows.x86_64.zip
           ./gradlew desktop:packrWindows64
