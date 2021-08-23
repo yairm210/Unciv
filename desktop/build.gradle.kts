@@ -1,11 +1,6 @@
 import com.badlogicgames.packr.Packr
 import com.badlogicgames.packr.PackrConfig
 import com.unciv.build.BuildConfig
-import groovy.util.Node
-import groovy.util.XmlNodePrinter
-import groovy.util.XmlParser
-import java.io.FileWriter
-import java.io.PrintWriter
 
 
 plugins {
@@ -77,10 +72,6 @@ for(platform in PackrConfig.Platform.values()) {
         val config = PackrConfig()
         config.platform = platform
 
-        if (platform == PackrConfig.Platform.Linux32 || platform == PackrConfig.Platform.Linux64)
-            config.jdk = "jdk-linux-64.zip"
-        // take the jdk straight from the building linux computer
-
         if (platform == PackrConfig.Platform.Windows64)
             config.jdk = "jdk-windows-64.zip" // see how we download and name this in travis yml
         if (platform == PackrConfig.Platform.Windows32)
@@ -120,8 +111,9 @@ for(platform in PackrConfig.Platform.values()) {
 
             // Requires that both packr and the linux jre are downloaded, as per buildAndDeploy.yml, "Upload to itch.io"
             if (platform == PackrConfig.Platform.Linux64 || platform == PackrConfig.Platform.MacOS) {
-                val jdkFile = if (platform == PackrConfig.Platform.Linux64) "jre-linux-64.tar.gz"
-                else "jre-macOS.tar.gz"
+                val jdkFile =
+                    if (platform == PackrConfig.Platform.Linux64) "jre-linux-64.tar.gz"
+                    else "jre-macOS.tar.gz"
                 val platformNameForPackrCmd =
                     if (platform == PackrConfig.Platform.Linux64) "linux64"
                     else "mac"
@@ -151,32 +143,4 @@ tasks.register<Zip>("zipLinuxFilesForJar") {
     archiveFileName.set("linuxFilesForJar.zip")
     from(file("linuxFilesForJar"))
     destinationDirectory.set(deployFolder)
-}
-
-tasks.register("packr") {
-    for(platform in PackrConfig.Platform.values())
-        finalizedBy("packr$platform")
-}
-
-
-
-eclipse {
-    project {
-        name = "${BuildConfig.appName}-desktop"
-        linkedResource(mapOf("name" to "assets", "type" to "2", "location" to "PARENT-1-PROJECT_LOC/android/assets"))
-    }
-}
-
-tasks.register("afterEclipseImport") {
-    description =  "Post processing after project generation"
-    group = "IDE"
-
-    doLast {
-        val classpath = XmlParser().parse(file(".classpath"))
-        Node(classpath, "classpathentry", mapOf("kind" to "src", "path" to "assets"))
-        val writer = FileWriter(file(".classpath"))
-        val printer = XmlNodePrinter(PrintWriter(writer))
-        printer.isPreserveWhitespace = true
-        printer.print(classpath)
-    }
 }
