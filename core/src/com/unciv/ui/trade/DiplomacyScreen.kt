@@ -270,7 +270,7 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
         val demandTributeButton = "Demand Tribute".toTextButton()
         demandTributeButton.onClick {
             rightSideTable.clear()
-            rightSideTable.add(ScrollPane(getGoldGiftTable(otherCiv)))
+            rightSideTable.add(ScrollPane(getDemandTributeTable(otherCiv)))
         }
         diplomacyTable.add(demandTributeButton).row()
         if (isNotPlayersTurn() || otherCiv.getTributeWillingness(viewingCiv) <= 0) demandTributeButton.disable()
@@ -418,6 +418,37 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
         improvementGiftTable.add(backButton)
         return improvementGiftTable
 
+    }
+
+    private fun getDemandTributeTable(otherCiv: CivilizationInfo): Table {
+        val diplomacyTable = getCityStateDiplomacyTableHeader(otherCiv)
+        diplomacyTable.addSeparator()
+
+        val demandGoldButton = "Take [${otherCiv.goldGainedByTribute()}] gold (-15 Influence)".toTextButton()
+        demandGoldButton.onClick {
+            viewingCiv.demandGold(otherCiv)
+            rightSideTable.clear()
+            rightSideTable.add(ScrollPane(getCityStateDiplomacyTable(otherCiv)))
+        }
+        diplomacyTable.add(demandGoldButton).row()
+        if (otherCiv.getTributeWillingness(viewingCiv, demandingWorker = false) <= 0)   demandGoldButton.disable()
+
+        val demandWorkerButton = "Take worker (-50 Influence)".toTextButton()
+        demandWorkerButton.onClick {
+            viewingCiv.demandWorker(otherCiv)
+            rightSideTable.clear()
+            rightSideTable.add(ScrollPane(getCityStateDiplomacyTable(otherCiv)))
+        }
+        diplomacyTable.add(demandWorkerButton).row()
+        if (otherCiv.getTributeWillingness(viewingCiv, demandingWorker = true) <= 0)    demandWorkerButton.disable()
+
+        val backButton = "Back".toTextButton()
+        backButton.onClick {
+            rightSideTable.clear()
+            rightSideTable.add(ScrollPane(getCityStateDiplomacyTable(otherCiv)))
+        }
+        diplomacyTable.add(backButton)
+        return diplomacyTable
     }
 
     private fun getQuestTable(assignedQuest: AssignedQuest): Table {

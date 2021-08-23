@@ -1,6 +1,7 @@
 package com.unciv.logic.civilization
 
 import com.badlogic.gdx.math.Vector2
+import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
 import com.unciv.logic.UncivShowableException
@@ -998,9 +999,9 @@ class CivilizationInfo {
         if (demandingWorker && getCapital().population.population < 4)
             willingness -= 300  // -300 if demanding worker from size < 4 city
         if (demandingCiv.getDiplomacyManager(this).hasFlag(DiplomacyFlags.VeryRecentlyDemandedTribute))
-            willingness -= 300  // -300 if very recently demanded tribute (10 turns?)
+            willingness -= 300  // -300 if very recently demanded tribute (10 turns)
         if (demandingCiv.getDiplomacyManager(this).hasFlag(DiplomacyFlags.RecentlyDemandedTribute))
-            willingness -= 40   // -40 if recently demanded tribute (30 turns?)
+            willingness -= 40   // -40 if recently demanded tribute (20 turns)
         if (getDiplomacyManager(demandingCiv).influence < -30)
             willingness -= 300  // -300 if less than -30 influence
 
@@ -1030,6 +1031,64 @@ class CivilizationInfo {
         println ("Willingness " + willingness.toString())
 
         return willingness
+    }
+
+    fun goldGainedByTribute(): Int {
+        var gold = when (gameInfo.gameParameters.gameSpeed) {
+            GameSpeed.Quick -> 60
+            GameSpeed.Standard -> 50
+            GameSpeed.Epic -> 35
+            GameSpeed.Marathon -> 30
+        }
+        val turnsToIncrement = when (gameInfo.gameParameters.gameSpeed) {
+            GameSpeed.Quick -> 5f
+            GameSpeed.Standard -> 6.5f
+            GameSpeed.Epic -> 14f
+            GameSpeed.Marathon -> 32f
+        }
+        gold += 5 * (gameInfo.turns / turnsToIncrement).toInt()
+
+        return gold
+    }
+
+    fun demandGold(cityState: CivilizationInfo) {
+        if (!cityState.isCityState()) throw Exception("You can only demand gold from City-States!")
+        val goldAmount = goldGainedByTribute()
+        addGold(goldAmount)
+        cityState.addGold(-goldAmount)
+        cityState.getDiplomacyManager(this).influence -= 15
+        getDiplomacyManager(cityState).setFlag(DiplomacyFlags.RecentlyDemandedTribute, 20)
+        getDiplomacyManager(cityState).setFlag(DiplomacyFlags.VeryRecentlyDemandedTribute, 10)
+        cityState.updateAllyCivForCityState()
+        updateStatsForNextTurn()
+
+        // TODO: Give protector option to denounce
+    }
+
+    fun demandWorker(cityState: CivilizationInfo) {
+        if (!cityState.isCityState()) throw Exception("You can only demand workers from City-States!")
+
+        val stealableWorkers = cityState.units.filter { it.hasUniqueToBuildImprovements && !it.getTile().isCityCenter() && it.getTile().militaryUnit == null }
+        if (stealableWorkers.isNotEmpty()) {
+            // Steal an existing worker
+            stealableWorkers.random().gift(this)
+        } else {
+            // Phantom up a worker from thin space
+            val buildableWorkerLikeUnits = gameInfo.ruleSet.units.filter {
+                it.value.uniqueObjects.any { it.placeholderText == Constants.canBuildImprovements }
+                        && it.value.isBuildable(this)
+                        && it.value.isCivilian()
+            }
+            if (buildableWorkerLikeUnits.isEmpty()) return  // Bad luck?
+            placeUnitNearTile(cityState.getCapital().location, buildableWorkerLikeUnits.keys.random())
+        }
+
+        cityState.getDiplomacyManager(this).influence -= 50
+        getDiplomacyManager(cityState).setFlag(DiplomacyFlags.RecentlyDemandedTribute, 20)
+        getDiplomacyManager(cityState).setFlag(DiplomacyFlags.VeryRecentlyDemandedTribute, 10)
+        cityState.updateAllyCivForCityState()
+
+        // TODO: Give protector option to denounce
     }
 
     //endregion
