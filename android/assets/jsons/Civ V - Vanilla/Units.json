@@ -26,7 +26,8 @@
 		"strength": 5,
 		"cost": 25,
 		"obsoleteTech": "Scientific Theory",
-		"uniques": ["Ignores terrain cost", "May upgrade to [Archer] through ruins-like effects"],
+		"uniques": ["May upgrade to [Archer] through ruins-like effects"],
+		"promotions": ["Ignore terrain cost"],
 		"attackSound": "nonmetalhit"
 	},
 	{
