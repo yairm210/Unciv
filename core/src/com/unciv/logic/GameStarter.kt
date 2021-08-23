@@ -21,8 +21,8 @@ import kotlin.math.max
 
 object GameStarter {
     // temporary instrumentation while tuning/debugging
-    private const val consoleOutput = true
-    private const val consoleTimings = true
+    private const val consoleOutput = false
+    private const val consoleTimings = false
 
     fun startNewGame(gameSetupInfo: GameSetupInfo): GameInfo {
         if (consoleOutput || consoleTimings)
