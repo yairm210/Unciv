@@ -54,8 +54,8 @@ object UnitActions {
         addBuildingImprovementsAction(unit, actionList, tile, worldScreen, unitTable)
         addCreateWaterImprovements(unit, actionList)
         addGreatPersonActions(unit, actionList, tile)
-        addFoundReligionAction(unit, actionList, tile)
-        addEnhanceReligionAction(unit, actionList, tile)
+        addFoundReligionAction(unit, actionList)
+        addEnhanceReligionAction(unit, actionList)
         actionList += getImprovementConstructionActions(unit, tile)
         addSpreadReligionActions(unit, actionList, tile)
 
@@ -448,7 +448,7 @@ object UnitActions {
         }
     }
 
-    private fun addFoundReligionAction(unit: MapUnit, actionList: ArrayList<UnitAction>, tile: TileInfo) {
+    private fun addFoundReligionAction(unit: MapUnit, actionList: ArrayList<UnitAction>) {
         if (!unit.hasUnique("May found a religion")) return 
         if (!unit.civInfo.religionManager.mayFoundReligionAtAll(unit)) return
         actionList += UnitAction(UnitActionType.FoundReligion,
@@ -460,10 +460,11 @@ object UnitActions {
         )
     }
     
-    private fun addEnhanceReligionAction(unit: MapUnit, actionList: ArrayList<UnitAction>, tile: TileInfo) {
+    private fun addEnhanceReligionAction(unit: MapUnit, actionList: ArrayList<UnitAction>) {
         if (!unit.hasUnique("May enhance a religion")) return
         if (!unit.civInfo.religionManager.mayEnhanceReligionAtAll(unit)) return
         actionList += UnitAction(UnitActionType.EnhanceReligion,
+            title = "Enhance [${unit.civInfo.religionManager.religion!!.name}]",
             action = {
                 addStatsPerGreatPersonUsage(unit.civInfo, unit)
                 unit.civInfo.religionManager.useGreatProphet(unit)
