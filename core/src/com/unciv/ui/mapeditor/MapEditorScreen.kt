@@ -35,6 +35,7 @@ class MapEditorScreen(): CameraStageBaseScreen() {
     private fun initialize() {
         ImageGetter.setNewRuleset(ruleset)
         tileMap.setTransients(ruleset,false)
+        tileMap.setStartingLocationsTransients()
         UncivGame.Current.translations.translationActiveMods = ruleset.mods
 
         mapHolder = EditorMapHolder(this, tileMap)

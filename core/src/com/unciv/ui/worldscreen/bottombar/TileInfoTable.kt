@@ -24,9 +24,9 @@ class TileInfoTable(private val viewingCiv :CivilizationInfo) : Table(CameraStag
             add(getStatsTable(tile))
             add( MarkupRenderer.render(tile.toMarkup(viewingCiv), padding = 0f, noLinkImages = true) {
                 UncivGame.Current.setScreen(CivilopediaScreen(viewingCiv.gameInfo.ruleSet, link = it))
-            } ).pad(5f)
-            // For debug only!
-//            add(tile.position.toString().toLabel()).colspan(2).pad(10f)
+            } ).pad(5f).row()
+            if (UncivGame.Current.viewEntireMapForDebug)
+                add(tile.position.run { "(${x.toInt()},${y.toInt()})" }.toLabel()).colspan(2).pad(5f)
         }
 
         pack()

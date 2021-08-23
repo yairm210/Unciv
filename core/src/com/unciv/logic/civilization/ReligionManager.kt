@@ -1,5 +1,6 @@
 package com.unciv.logic.civilization
 
+import com.unciv.Constants
 import com.unciv.logic.map.MapUnit
 import com.unciv.models.Religion
 import com.unciv.models.ruleset.Belief
@@ -125,7 +126,7 @@ class ReligionManager {
     fun mayFoundReligionAtAll(prophet: MapUnit): Boolean {
         if (religion == null) return false // First found a pantheon
         if (religion!!.isMajorReligion()) return false // Already created a major religion
-        if (prophet.abilityUsedCount["Religion Spread"] != 0) return false // Already used its power for other things
+        if (prophet.abilityUsedCount.any { it.value != 0 }) return false // Already used its power for other things
         if (!civInfo.isMajorCiv()) return false // Only major civs may use religion
         
         val foundedReligionsCount = civInfo.gameInfo.civilizations.count {

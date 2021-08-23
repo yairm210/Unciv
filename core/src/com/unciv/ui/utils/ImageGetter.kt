@@ -16,6 +16,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.UncivGame
+import com.unciv.logic.map.TileMap
 import com.unciv.models.ruleset.Era
 import com.unciv.models.ruleset.Nation
 import com.unciv.models.ruleset.Ruleset
@@ -252,11 +253,6 @@ object ImageGetter {
     fun getImprovementIcon(improvementName: String, size: Float = 20f): Actor {
         if (improvementName.startsWith("Remove") || improvementName == Constants.cancelImprovementOrder)
             return Table().apply { add(getImage("OtherIcons/Stop")).size(size) }
-        if (improvementName.startsWith("StartingLocation ")) {
-            val nationName = improvementName.removePrefix("StartingLocation ")
-            val nation = ruleset.nations[nationName]!!
-            return getNationIndicator(nation, size)
-        }
 
         val iconGroup = getImage("ImprovementIcons/$improvementName").surroundWithCircle(size)
 
