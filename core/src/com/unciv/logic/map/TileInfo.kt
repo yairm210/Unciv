@@ -135,7 +135,8 @@ open class TileInfo {
     fun getCity(): CityInfo? = owningCity
 
     fun getLastTerrain(): Terrain = when {
-        terrainFeatures.isNotEmpty() -> getTerrainFeatures().last()
+        terrainFeatures.isNotEmpty() -> ruleset.terrains[terrainFeatures.last()]
+                ?: getBaseTerrain()  // defense against rare edge cases involving baseTerrain Hill deprecation
         naturalWonder != null -> getNaturalWonder()
         else -> getBaseTerrain()
     }
