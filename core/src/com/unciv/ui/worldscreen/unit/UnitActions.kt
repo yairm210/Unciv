@@ -22,6 +22,7 @@ import com.unciv.ui.pickerscreens.PromotionPickerScreen
 import com.unciv.ui.utils.YesNoPopup
 import com.unciv.ui.utils.hasOpenPopups
 import com.unciv.ui.worldscreen.WorldScreen
+import kotlin.math.min
 
 object UnitActions {
 
@@ -406,22 +407,53 @@ object UnitActions {
                     }.takeIf { unit.currentTile.getOwner() != null && unit.currentTile.getOwner() == unit.civInfo }
                 )
             }
-            "Can speed up construction of a wonder" -> {
-                val canHurryWonder = if (!tile.isCityCenter()) false
-                else {
-                    val currentConstruction = tile.getCity()!!.cityConstructions.getCurrentConstruction()
-                    if (currentConstruction !is Building) false
-                    else currentConstruction.isAnyWonder()
-                }
+            "Can speed up the construction of a wonder" -> {
+                val canHurryWonder =
+                    if (!tile.isCityCenter()) false
+                    else tile.getCity()!!.cityConstructions.isBuildingWonder()
+                
+
                 actionList += UnitAction(UnitActionType.HurryWonder,
                     action = {
                         tile.getCity()!!.cityConstructions.apply {
-                            addProductionPoints(300 + 30 * tile.getCity()!!.population.population) //http://civilization.wikia.com/wiki/Great_engineer_(Civ5)
+                            //http://civilization.wikia.com/wiki/Great_engineer_(Civ5)
+                            addProductionPoints(((300 + 30 * tile.getCity()!!.population.population) * unit.civInfo.gameInfo.gameParameters.gameSpeed.modifier).toInt())
                             constructIfEnough()
                         }
+
                         addGoldPerGreatPersonUsage(unit.civInfo)
                         unit.destroy()
                     }.takeIf { canHurryWonder }
+                )
+            }
+            
+            "Can speed up construction of a building" -> {
+                if (!tile.isCityCenter()) {
+                    actionList += UnitAction(UnitActionType.HurryBuilding, action = null)
+                    continue
+                }
+                
+                val canHurryConstruction = tile.getCity()!!.cityConstructions.getCurrentConstruction() is Building
+                
+                val cityConstructions = tile.getCity()!!.cityConstructions
+
+                //http://civilization.wikia.com/wiki/Great_engineer_(Civ5)
+                val productionPointsToAdd = min(
+                    (300 + 30 * tile.getCity()!!.population.population) * unit.civInfo.gameInfo.gameParameters.gameSpeed.modifier,
+                    cityConstructions.getRemainingWork(cityConstructions.currentConstructionFromQueue).toFloat() - 1
+                ).toInt()
+                
+                actionList += UnitAction(UnitActionType.HurryBuilding,
+                    title = "Hurry Construction (+[$productionPointsToAdd]⚙)",
+                    action = {
+                        cityConstructions.apply {
+                            addProductionPoints(productionPointsToAdd) 
+                            constructIfEnough()
+                        }
+                        
+                        addGoldPerGreatPersonUsage(unit.civInfo)
+                        unit.destroy()
+                    }.takeIf { canHurryConstruction }
                 )
             }
             "Can undertake a trade mission with City-State, giving a large sum of gold and [] Influence" -> {

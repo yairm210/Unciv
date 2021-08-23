@@ -122,6 +122,8 @@ enum class UnitActionType(
         { ImageGetter.getUnitIcon("Great Artist") }, 'g', UncivSound.Chimes),
     HurryWonder("Hurry Wonder",
         { ImageGetter.getUnitIcon("Great Engineer") }, 'g', UncivSound.Chimes),
+    HurryBuilding("Hurry Construction",
+        { ImageGetter.getUnitIcon("Great Engineer") }, 'g', UncivSound.Chimes),
     ConductTradeMission("Conduct Trade Mission",
         { ImageGetter.getUnitIcon("Great Merchant") }, 'g', UncivSound.Chimes),
     FoundReligion("Found a Religion",
