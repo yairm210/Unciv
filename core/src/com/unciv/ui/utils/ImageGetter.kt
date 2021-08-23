@@ -254,11 +254,6 @@ object ImageGetter {
     fun getImprovementIcon(improvementName: String, size: Float = 20f): Actor {
         if (improvementName.startsWith("Remove") || improvementName == Constants.cancelImprovementOrder)
             return Table().apply { add(getImage("OtherIcons/Stop")).size(size) }
-        if (improvementName.startsWith(TileMap.startingLocationPrefix)) {
-            val nationName = improvementName.removePrefix(TileMap.startingLocationPrefix)
-            val nation = ruleset.nations[nationName]!!
-            return getNationIndicator(nation, size)
-        }
 
         val iconGroup = getImage("ImprovementIcons/$improvementName").surroundWithCircle(size)
 

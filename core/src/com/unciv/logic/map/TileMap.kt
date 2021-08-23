@@ -17,12 +17,13 @@ import kotlin.math.abs
  */
 class TileMap {
     companion object {
+        /** Legacy way to store starting locations - now this is used only in [translateStartingLocationsFromMap] */
         const val startingLocationPrefix = "StartingLocation "
 
         /**
          * To be backwards compatible, a json without a startingLocations element will be recognized by an entry with this marker
          * New saved maps will never have this marker and will always have a serialized startingLocations list even if empty.
-         * New saved maps will also never have "StartingLocation" improvements, these _must_ be converted before use anywhere outside map editor.
+         * New saved maps will also never have "StartingLocation" improvements, these are converted on load in [setTransients].
          */
         private const val legacyMarker = " Legacy "
     }
@@ -452,32 +453,41 @@ class TileMap {
 
     /** Strips all units and starting locations from [TileMap] for specified [Player]
      * Operation in place
+     * 
+     * Currently unreachable code
+     * 
      * @param player units of this player will be removed
      */
     fun stripPlayer(player: Player) {
         tileList.forEach {
-            if (it.improvement == startingLocationPrefix + player.chosenCiv) {
-                it.improvement = null
-            }
             for (unit in it.getUnits()) if (unit.owner == player.chosenCiv) unit.removeFromTile()
         }
+        startingLocations.removeAll(startingLocations.filter { it.nation == player.chosenCiv }) // filter creates a copy, no concurrent modification
+        startingLocationsByNation.remove(player.chosenCiv)
     }
 
     /** Finds all units and starting location of [Player] and changes their [Nation]
      * Operation in place
+     * 
+     * Currently unreachable code
+     * 
      * @param player player whose all units will be changed
      * @param newNation new nation to be set up
      */
     fun switchPlayersNation(player: Player, newNation: Nation) {
+        val newCiv = CivilizationInfo(newNation.name).apply { nation = newNation }
         tileList.forEach {
-            if (it.improvement == startingLocationPrefix + player.chosenCiv) {
-                it.improvement = startingLocationPrefix + newNation.name
-            }
             for (unit in it.getUnits()) if (unit.owner == player.chosenCiv) {
                 unit.owner = newNation.name
-                unit.civInfo = CivilizationInfo(newNation.name).apply { nation = newNation }
+                unit.civInfo = newCiv
             }
         }
+        for (element in startingLocations.filter { it.nation != player.chosenCiv }) {
+            startingLocations.remove(element)
+            if (startingLocations.none { it.nation == newNation.name && it.position == element.position })
+                startingLocations.add(StartingLocation(element.position, newNation.name))
+        }
+        setStartingLocationsTransients()
     }
 
     /**
@@ -496,7 +506,7 @@ class TileMap {
     /**
      *  Scan and remove placeholder improvements from map and build startingLocations from them
      */
-    fun translateStartingLocationsFromMap() {
+    private fun translateStartingLocationsFromMap() {
         startingLocations.clear()
         tileList.asSequence()
             .filter { it.improvement?.startsWith(startingLocationPrefix) == true }
@@ -509,25 +519,22 @@ class TileMap {
         setStartingLocationsTransients()
     }
 
-    /**
-     *  Place placeholder improvements on the map for the startingLocations entries.
-     *  
-     *  **For use by the map editor only**
-     *  
-     *  This is a copy, the startingLocations array and transients are untouched.
-     *  Any actual improvements on the tiles will be overwritten.
-     */
-    fun translateStartingLocationsToMap() {
-        for ((position, nationName) in startingLocations) {
-            get(position).improvement = startingLocationPrefix + nationName
-        }
-    }
-
-    /** Adds a starting position, maintaining the transients */
-    fun addStartingLocation(nationName: String, tile: TileInfo) {
+    /** Adds a starting position, maintaining the transients 
+     * @return true if the starting position was not already stored as per [Collection]'s add */
+    fun addStartingLocation(nationName: String, tile: TileInfo): Boolean {
+        if (startingLocationsByNation[nationName]?.contains(tile) == true) return false
         startingLocations.add(StartingLocation(tile.position, nationName))
         val nationSet = startingLocationsByNation[nationName] ?: hashSetOf<TileInfo>().also { startingLocationsByNation[nationName] = it }
-        nationSet.add(tile)
+        return nationSet.add(tile)
+    }
+
+    /** Removes a starting position, maintaining the transients
+     * @return true if the starting position was removed as per [Collection]'s remove */
+    fun removeStartingLocation(nationName: String, tile: TileInfo): Boolean {
+        if (startingLocationsByNation[nationName]?.contains(tile) != true) return false
+        startingLocations.remove(StartingLocation(tile.position, nationName))
+        return startingLocationsByNation[nationName]!!.remove(tile)
+        // we do not clean up an empty startingLocationsByNation[nationName] set - not worth it
     }
 
     /** Clears starting positions, e.g. after GameStarter is done with them. Does not clear the pseudo-improvements. */

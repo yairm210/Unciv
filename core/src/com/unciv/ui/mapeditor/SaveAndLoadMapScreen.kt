@@ -182,8 +182,8 @@ class SaveAndLoadMapScreen(mapToSave: TileMap?, save:Boolean = false, previousSc
         }
     }
 
-    fun getMapCloneForSave(mapToSave: TileMap) = mapToSave!!.clone().also {
-            it.setTransients(setUnitCivTransients = false)
-            it.translateStartingLocationsFromMap()
+    private fun getMapCloneForSave(mapToSave: TileMap) =
+        mapToSave.clone().apply {
+            setTransients(setUnitCivTransients = false)
         }
 }

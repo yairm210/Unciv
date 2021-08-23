@@ -332,15 +332,6 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings, 
     }
 
     private fun removeMissingModReferences() {
-        // This runs from map editor too, so the Pseudo-improvements for starting locations need to stay.
-        // The nations can be checked.
-        val improvementName = tileInfo.improvement
-        if (improvementName != null && improvementName.startsWith(TileMap.startingLocationPrefix)) {
-            val nationName = improvementName.removePrefix(TileMap.startingLocationPrefix)
-            if (!tileInfo.ruleset.nations.containsKey(nationName))
-                tileInfo.improvement = null
-        }
-
         for (unit in tileInfo.getUnits())
             if (!tileInfo.ruleset.nations.containsKey(unit.owner)) unit.removeFromTile()
     }

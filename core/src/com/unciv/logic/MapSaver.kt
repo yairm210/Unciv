@@ -10,7 +10,7 @@ object MapSaver {
     fun json() = GameSaver.json()
 
     private const val mapsFolder = "maps"
-    private const val saveZipped = false
+    private const val saveZipped = true
 
     private fun getMap(mapName:String) = Gdx.files.local("$mapsFolder/$mapName")
 

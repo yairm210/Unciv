@@ -49,23 +49,21 @@ class GameParameters { // Default values are the default new game
         return parameters
     }
 
-    // For debugging and MapGenerator console output
-    override fun toString() = "($difficulty $gameSpeed $startingEra, " +
-            "${players.count { it.playerType == PlayerType.Human }} ${PlayerType.Human} " +
-            "${players.count { it.playerType == PlayerType.AI }} ${PlayerType.AI} " +
-            "$numberOfCityStates CS, " +
-            sequence<String> {
-                if (isOnlineMultiplayer) yield("Online Multiplayer")
-                if (noBarbarians) yield("No barbs")
-                if (oneCityChallenge) yield("OCC")
-                if (!nuclearWeaponsEnabled) yield("No nukes")
-                if (religionEnabled) yield("Religion")
-                if (godMode) yield("God mode")
-                if (VictoryType.Cultural !in victoryTypes) yield("No ${VictoryType.Cultural} Victory")
-                if (VictoryType.Diplomatic in victoryTypes) yield("${VictoryType.Diplomatic} Victory")
-                if (VictoryType.Domination !in victoryTypes) yield("No ${VictoryType.Domination} Victory")
-                if (VictoryType.Scientific !in victoryTypes) yield("No ${VictoryType.Scientific} Victory")
-            }.joinToString() +
-            (if (mods.isEmpty()) ", no mods" else mods.joinToString(",", ", mods=(", ")", 6) ) +
-            ")"
+    // For debugging and GameStarter console output
+    override fun toString() = sequence<String> {
+            yield("$difficulty $gameSpeed $startingEra")
+            yield("${players.count { it.playerType == PlayerType.Human }} ${PlayerType.Human}")
+            yield("${players.count { it.playerType == PlayerType.AI }} ${PlayerType.AI}")
+            yield("$numberOfCityStates CS")
+            if (isOnlineMultiplayer) yield("Online Multiplayer")
+            if (noBarbarians) yield("No barbs")
+            if (oneCityChallenge) yield("OCC")
+            if (!nuclearWeaponsEnabled) yield("No nukes")
+            if (religionEnabled) yield("Religion")
+            if (godMode) yield("God mode")
+            for (victoryType in VictoryType.values()) {
+                if (victoryType !in victoryTypes) yield("No $victoryType Victory")
+            }
+            yield(if (mods.isEmpty()) "no mods" else mods.joinToString(",", "mods=(", ")", 6) )
+        }.joinToString(prefix = "(", postfix = ")")
 }
