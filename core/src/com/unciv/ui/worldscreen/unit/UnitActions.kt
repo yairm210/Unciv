@@ -4,6 +4,7 @@ import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.automation.UnitAutomation
 import com.unciv.logic.automation.WorkerAutomation
+import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.PlayerType
@@ -56,9 +57,9 @@ object UnitActions {
         addGreatPersonActions(unit, actionList, tile)
         addFoundReligionAction(unit, actionList, tile)
         actionList += getImprovementConstructionActions(unit, tile)
-        addSpreadReligionActions(unit, actionList, tile)
+        addActionsWithLimitedUses(unit, actionList, tile)
 
-
+        
         addToggleActionsAction(unit, actionList, unitTable)
 
         return actionList
@@ -374,6 +375,7 @@ object UnitActions {
 
     private fun addAutomateBuildingImprovementsAction(unit: MapUnit, actionList: ArrayList<UnitAction>) {
         if (!unit.hasUniqueToBuildImprovements) return
+        if (unit.isAutomated()) return
 
         actionList += UnitAction(UnitActionType.Automate,
             isCurrentAction = unit.isAutomated(),
@@ -489,37 +491,76 @@ object UnitActions {
             }.takeIf { unit.civInfo.religionManager.mayFoundReligionNow(unit) }
         )
     }
-
-    private fun addSpreadReligionActions(unit: MapUnit, actionList: ArrayList<UnitAction>, tile: TileInfo) {
-        if (!unit.hasUnique("Can spread religion [] times")) return
+    
+    private fun addActionsWithLimitedUses(unit: MapUnit, actionList: ArrayList<UnitAction>, tile: TileInfo) {
+        val actionsToAdd = unit.religiousActionsUnitCanDo()
+        if (actionsToAdd.none()) return
         if (unit.religion == null || unit.civInfo.gameInfo.religions[unit.religion]!!.isPantheon()) return
-        val maxReligionSpreads = unit.maxReligionSpreads()
-        if (!unit.abilityUsedCount.containsKey("Religion Spread")) return // This should be impossible anyways, but just in case
-        if (maxReligionSpreads <= unit.abilityUsedCount["Religion Spread"]!!) return
         val city = tile.getCity() ?: return
+        for (action in actionsToAdd) {
+            if (!unit.abilityUsedCount.containsKey(action)) continue
+            val maxActionUses = unit.getMaxReligiousActionUses(action)
+            if (maxActionUses <= unit.abilityUsedCount[action]!!) continue
+            when (action) {
+                Constants.spreadReligionAbilityCount -> addSpreadReligionActions(unit, actionList, city, maxActionUses)
+                Constants.removeHeresyAbilityCount -> addRemoveHeresyActions(unit, actionList, city, maxActionUses)
+            }
+        }
+    }
+    
+    private fun useActionWithLimitedUses(unit: MapUnit, action: String, maximumUses: Int) {
+        unit.abilityUsedCount[action] = unit.abilityUsedCount[action]!! + 1
+        if (unit.abilityUsedCount[action] == maximumUses) {
+            if (unit.isGreatPerson())
+                addGoldPerGreatPersonUsage(unit.civInfo)
+            unit.destroy()
+        }
+    }
+
+    private fun addSpreadReligionActions(unit: MapUnit, actionList: ArrayList<UnitAction>, city: CityInfo, maxSpreadUses: Int) {
+        val blockedByInquisitor =
+            city.getCenterTile()
+                .getTilesInDistance(1)
+                .flatMap { it.getUnits() }
+                .any {
+                    it.hasUnique("Prevents spreading of religion to the city it is next to")
+                    && it.religion != unit.religion
+                }
         actionList += UnitAction(UnitActionType.SpreadReligion,
             title = "Spread [${unit.religion!!}]",
             action = {
-                unit.abilityUsedCount["Religion Spread"] = unit.abilityUsedCount["Religion Spread"]!! + 1
                 val followersOfOtherReligions = city.religion.getFollowersOfOtherReligionsThan(unit.religion!!)
                 for (unique in unit.civInfo.getMatchingUniques("When spreading religion to a city, gain [] times the amount of followers of other religions as []")) {
                     unit.civInfo.addStat(Stat.valueOf(unique.params[1]), followersOfOtherReligions * unique.params[0].toInt())
                 }
                 city.religion.addPressure(unit.religion!!, unit.getPressureAddedFromSpread())
                 unit.currentMovement = 0f
-                if (unit.abilityUsedCount["Religion Spread"] == maxReligionSpreads) {
-                    addGoldPerGreatPersonUsage(unit.civInfo)
-                    unit.destroy()
-                }
-            }.takeIf { unit.currentMovement > 0 } 
+                useActionWithLimitedUses(unit, Constants.spreadReligionAbilityCount, maxSpreadUses)
+            }.takeIf { unit.currentMovement > 0 && !blockedByInquisitor } 
+        )
+    }
+    
+    private fun addRemoveHeresyActions(unit: MapUnit, actionList: ArrayList<UnitAction>, city: CityInfo, maxHerseyUses: Int) {
+        if (city.civInfo != unit.civInfo) return
+        // Only allow the action if the city actually has any foreign religion
+        // This will almost be always due to pressure from cities close-by
+        if (city.religion.getPressures().none { it.key != unit.religion!! }) return
+        actionList += UnitAction(UnitActionType.RemoveHeresy,
+            title = "Remove Heresy",
+            action = {
+                city.religion.removeAllPressuresExceptFor(unit.religion!!)
+                unit.currentMovement = 0f
+                useActionWithLimitedUses(unit, Constants.removeHeresyAbilityCount, maxHerseyUses)
+            }.takeIf { unit.currentMovement > 0f }
         )
     }
 
     fun getImprovementConstructionActions(unit: MapUnit, tile: TileInfo): ArrayList<UnitAction> {
         val finalActions = ArrayList<UnitAction>()
         var uniquesToCheck = unit.getMatchingUniques("Can construct []")
-        if (unit.abilityUsedCount.containsKey("Religion Spread") && unit.abilityUsedCount["Religion Spread"]!! == 0 && unit.canSpreadReligion())
-            uniquesToCheck += unit.getMatchingUniques("Can construct [] if it hasn't spread religion yet")
+        if (unit.religiousActionsUnitCanDo().all { unit.abilityUsedCount[it] == 0 })
+            uniquesToCheck += unit.getMatchingUniques("Can construct [] if it hasn't used other actions yet")
+        
         for (unique in uniquesToCheck) {
             val improvementName = unique.params[0]
             val improvement = tile.ruleset.tileImprovements[improvementName]

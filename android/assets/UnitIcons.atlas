@@ -354,422 +354,429 @@ Infantry
   orig: 100, 100
   offset: 0, 0
   index: -1
-Ironclad
+Inquisitor
   rotate: false
   xy: 760, 646
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Jaguar
+Ironclad
   rotate: false
   xy: 868, 754
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Janissary
+Jaguar
   rotate: false
   xy: 976, 862
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Jet Fighter
+Janissary
   rotate: false
   xy: 328, 106
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Keshik
+Jet Fighter
   rotate: false
   xy: 436, 214
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Khan
+Keshik
   rotate: false
   xy: 544, 322
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Knight
+Khan
   rotate: false
   xy: 652, 430
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Lancer
+Knight
   rotate: false
   xy: 760, 538
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Landship
+Lancer
   rotate: false
   xy: 868, 646
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Landsknecht
+Landship
   rotate: false
   xy: 976, 754
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Legion
+Landsknecht
   rotate: false
   xy: 1084, 862
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Longbowman
+Legion
   rotate: false
   xy: 436, 106
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Longswordsman
+Longbowman
   rotate: false
   xy: 544, 214
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Machine Gun
+Longswordsman
   rotate: false
   xy: 652, 322
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Mandekalu Cavalry
+Machine Gun
   rotate: false
   xy: 760, 430
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Maori Warrior
+Mandekalu Cavalry
   rotate: false
   xy: 868, 538
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Marine
+Maori Warrior
   rotate: false
   xy: 976, 646
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Mechanized Infantry
+Marine
   rotate: false
   xy: 1084, 754
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Minuteman
+Mechanized Infantry
   rotate: false
   xy: 1192, 862
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Missile Cruiser
+Minuteman
   rotate: false
   xy: 544, 106
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Missionary
+Missile Cruiser
   rotate: false
   xy: 652, 214
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Mobile SAM
+Missionary
   rotate: false
   xy: 760, 322
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Modern Armor
+Mobile SAM
   rotate: false
   xy: 868, 430
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Mohawk Warrior
+Modern Armor
   rotate: false
   xy: 976, 538
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Musketeer
+Mohawk Warrior
   rotate: false
   xy: 1084, 646
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
+Musketeer
+  rotate: false
+  xy: 1192, 754
+  size: 100, 100
+  orig: 100, 100
+  offset: 0, 0
+  index: -1
 Musketman
   rotate: false
-  xy: 1192, 755
+  xy: 1300, 863
   size: 100, 99
   orig: 100, 99
   offset: 0, 0
   index: -1
 Naresuan's Elephant
   rotate: false
-  xy: 1300, 862
+  xy: 652, 106
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 Norwegian Ski Infantry
   rotate: false
-  xy: 652, 106
+  xy: 760, 214
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 Nuclear Missile
   rotate: false
-  xy: 760, 214
+  xy: 868, 322
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 Nuclear Submarine
   rotate: false
-  xy: 868, 322
+  xy: 976, 430
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 Panzer
   rotate: false
-  xy: 976, 430
+  xy: 1084, 538
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 Paratrooper
   rotate: false
-  xy: 1084, 538
+  xy: 1192, 646
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 Persian Immortal
   rotate: false
-  xy: 1192, 647
+  xy: 1300, 755
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 Pikeman
   rotate: false
-  xy: 1300, 754
+  xy: 1408, 862
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 Privateer
   rotate: false
-  xy: 1408, 862
+  xy: 760, 106
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 Rifleman
   rotate: false
-  xy: 760, 106
+  xy: 868, 214
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 Rocket Artillery
   rotate: false
-  xy: 868, 214
+  xy: 976, 322
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 Samurai
   rotate: false
-  xy: 976, 322
+  xy: 1084, 430
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 Scout
   rotate: false
-  xy: 1084, 430
+  xy: 1192, 538
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 Sea Beggar
   rotate: false
-  xy: 1192, 539
+  xy: 1300, 647
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 Settler
   rotate: false
-  xy: 1300, 646
+  xy: 1408, 754
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 Ship of the Line
   rotate: false
-  xy: 1408, 754
+  xy: 1516, 862
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 Sipahi
   rotate: false
-  xy: 1516, 862
+  xy: 868, 106
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 Slinger
   rotate: false
-  xy: 868, 106
+  xy: 976, 214
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 Spearman
   rotate: false
-  xy: 976, 214
+  xy: 1084, 322
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 Stealth Bomber
   rotate: false
-  xy: 1084, 322
+  xy: 1192, 430
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 Submarine
   rotate: false
-  xy: 1192, 431
+  xy: 1300, 539
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 Swordsman
   rotate: false
-  xy: 1300, 538
+  xy: 1408, 646
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 Tank
   rotate: false
-  xy: 1408, 646
+  xy: 1516, 754
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 Tercio
   rotate: false
-  xy: 1516, 754
+  xy: 1624, 862
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 Trebuchet
   rotate: false
-  xy: 1624, 862
+  xy: 976, 106
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 Triplane
   rotate: false
-  xy: 976, 106
+  xy: 1084, 214
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 Trireme
   rotate: false
-  xy: 1084, 213
+  xy: 1192, 321
   size: 100, 101
   orig: 100, 101
   offset: 0, 0
   index: -1
 Turtle Ship
   rotate: false
-  xy: 1192, 323
+  xy: 1300, 431
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 War Chariot
   rotate: false
-  xy: 1300, 430
+  xy: 1408, 538
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 War Elephant
   rotate: false
-  xy: 1408, 538
+  xy: 1516, 646
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 Warrior
   rotate: false
-  xy: 1516, 646
+  xy: 1624, 754
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 Work Boats
   rotate: false
-  xy: 1624, 754
+  xy: 1732, 862
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 Worker
   rotate: false
-  xy: 1732, 862
+  xy: 1084, 106
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 Zero
   rotate: false
-  xy: 1192, 215
+  xy: 1192, 213
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
