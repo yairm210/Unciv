@@ -7,20 +7,22 @@ import com.badlogic.gdx.utils.Align
 import com.unciv.UncivGame
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.city.IConstruction
+import com.unciv.logic.city.INonPerpetualConstruction
 import com.unciv.logic.map.TileInfo
 import com.unciv.ui.map.TileGroupMap
 import com.unciv.ui.tilegroups.TileSetStrings
 import com.unciv.ui.utils.*
 import java.util.*
 
-class CityScreen(internal val city: CityInfo): CameraStageBaseScreen() {
+class CityScreen(
+    internal val city: CityInfo,
+    var selectedConstruction: IConstruction? = null,
+    var selectedTile: TileInfo? = null
+): CameraStageBaseScreen() {
     companion object {
         /** Distance from stage edges to floating widgets */
         const val posFromEdge = 5f
     }
-
-    var selectedTile: TileInfo? = null
-    var selectedConstruction: IConstruction? = null
 
     /** Toggles or adds/removes all state changing buttons */
     val canChangeState = UncivGame.Current.worldScreen.canChangeState
@@ -84,6 +86,14 @@ class CityScreen(internal val city: CityInfo): CameraStageBaseScreen() {
 
         keyPressDispatcher[Input.Keys.LEFT] = { page(-1) }
         keyPressDispatcher[Input.Keys.RIGHT] = { page(1) }
+        keyPressDispatcher['T'] = {
+            if (selectedTile != null)
+                tileTable.askToBuyTile(selectedTile!!)
+        }
+        keyPressDispatcher['B'] = {
+            if (selectedConstruction is INonPerpetualConstruction)
+                constructionsTable.askToBuyConstruction(selectedConstruction as INonPerpetualConstruction)
+        }
     }
 
     internal fun update() {
