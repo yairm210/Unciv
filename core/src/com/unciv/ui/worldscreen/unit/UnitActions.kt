@@ -22,6 +22,7 @@ import com.unciv.ui.pickerscreens.PromotionPickerScreen
 import com.unciv.ui.utils.YesNoPopup
 import com.unciv.ui.utils.hasOpenPopups
 import com.unciv.ui.worldscreen.WorldScreen
+import kotlin.math.min
 
 object UnitActions {
 
@@ -407,18 +408,22 @@ object UnitActions {
                 )
             }
             "Can speed up construction of a wonder" -> {
-                val canHurryWonder = if (!tile.isCityCenter()) false
-                else {
-                    val currentConstruction = tile.getCity()!!.cityConstructions.getCurrentConstruction()
-                    if (currentConstruction !is Building) false
-                    else currentConstruction.isAnyWonder()
-                }
+                val canHurryWonder = 
+                    if (!tile.isCityCenter()) false
+                    else tile.getCity()!!.cityConstructions.getCurrentConstruction() is Building
+                
                 actionList += UnitAction(UnitActionType.HurryWonder,
                     action = {
                         tile.getCity()!!.cityConstructions.apply {
-                            addProductionPoints(300 + 30 * tile.getCity()!!.population.population) //http://civilization.wikia.com/wiki/Great_engineer_(Civ5)
+                            //http://civilization.wikia.com/wiki/Great_engineer_(Civ5)
+                            val productionPointsToAdd = min(
+                                (300 + 30 * tile.getCity()!!.population.population) * unit.civInfo.gameInfo.gameParameters.gameSpeed.modifier,
+                                getRemainingWork(currentConstructionFromQueue).toFloat() - 1
+                            )
+                            addProductionPoints(productionPointsToAdd.toInt()) 
                             constructIfEnough()
                         }
+                        
                         addGoldPerGreatPersonUsage(unit.civInfo)
                         unit.destroy()
                     }.takeIf { canHurryWonder }
