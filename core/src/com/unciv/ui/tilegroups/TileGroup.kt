@@ -11,6 +11,7 @@ import com.unciv.UncivGame
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.RoadStatus
 import com.unciv.logic.map.TileInfo
+import com.unciv.logic.map.TileMap
 import com.unciv.ui.cityscreen.YieldGroup
 import com.unciv.ui.utils.ImageGetter
 import com.unciv.ui.utils.center
@@ -331,9 +332,11 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings, 
     }
 
     private fun removeMissingModReferences() {
+        // This runs from map editor too, so the Pseudo-improvements for starting locations need to stay.
+        // The nations can be checked.
         val improvementName = tileInfo.improvement
-        if(improvementName != null && improvementName.startsWith("StartingLocation ")){
-            val nationName = improvementName.removePrefix("StartingLocation ")
+        if (improvementName != null && improvementName.startsWith(TileMap.startingLocationPrefix)) {
+            val nationName = improvementName.removePrefix(TileMap.startingLocationPrefix)
             if (!tileInfo.ruleset.nations.containsKey(nationName))
                 tileInfo.improvement = null
         }

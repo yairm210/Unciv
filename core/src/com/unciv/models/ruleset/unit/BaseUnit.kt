@@ -330,8 +330,6 @@ class BaseUnit : INamed, INonPerpetualConstruction, ICivilopediaText {
 
         if (unit.hasUnique("Religious Unit")) {
             unit.religion = cityConstructions.cityInfo.religion.getMajorityReligionName()
-            if (unit.canSpreadReligion())
-                unit.abilityUsedCount["Religion Spread"] = 0
         }
 
         if (this.isCivilian()) return true // tiny optimization makes save files a few bytes smaller
@@ -340,12 +338,10 @@ class BaseUnit : INamed, INonPerpetualConstruction, ICivilopediaText {
 
 
         for (unique in
-            // Deprecated since 3.15.9
-                cityConstructions.cityInfo.getMatchingUniques("New [] units start with [] Experience") +
-            //
             cityConstructions.cityInfo.getMatchingUniques("New [] units start with [] Experience []")
                 .filter { cityConstructions.cityInfo.matchesFilter(it.params[2]) } +
             // Deprecated since 3.15.9
+                cityConstructions.cityInfo.getMatchingUniques("New [] units start with [] Experience") +
                 cityConstructions.cityInfo.getLocalMatchingUniques("New [] units start with [] Experience in this city")
             //
         ) {

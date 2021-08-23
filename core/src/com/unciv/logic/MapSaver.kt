@@ -10,20 +10,32 @@ object MapSaver {
     fun json() = GameSaver.json()
 
     private const val mapsFolder = "maps"
+    private const val saveZipped = false
 
     private fun getMap(mapName:String) = Gdx.files.local("$mapsFolder/$mapName")
 
+    fun mapFromSavedString(mapString: String): TileMap {
+        val unzippedJson = try {
+            Gzip.unzip(mapString)
+        } catch (ex: Exception) {
+            mapString
+        }
+        return mapFromJson(unzippedJson)
+    }
+    fun mapToSavedString(tileMap: TileMap): String {
+        val mapJson = json().toJson(tileMap)
+        return if (saveZipped) Gzip.zip(mapJson) else mapJson
+    }
+
     fun saveMap(mapName: String,tileMap: TileMap) {
-        getMap(mapName).writeString(Gzip.zip(json().toJson(tileMap)), false)
+        getMap(mapName).writeString(mapToSavedString(tileMap), false)
     }
 
     fun loadMap(mapFile:FileHandle):TileMap {
-        val gzippedString = mapFile.readString()
-        val unzippedJson = Gzip.unzip(gzippedString)
-        return json().fromJson(TileMap::class.java, unzippedJson)
+        return mapFromSavedString(mapFile.readString())
     }
 
-    fun getMaps() = Gdx.files.local(mapsFolder).list()
+    fun getMaps(): Array<FileHandle> = Gdx.files.local(mapsFolder).list()
 
-    fun mapFromJson(json:String): TileMap = json().fromJson(TileMap::class.java, json)
+    private fun mapFromJson(json:String): TileMap = json().fromJson(TileMap::class.java, json)
 }

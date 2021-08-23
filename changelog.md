@@ -1,4 +1,4 @@
-## 3.15.6
+## 3.16.6
 
 City-states grant copies of ALL resources
 
