@@ -5,6 +5,7 @@ import com.unciv.logic.automation.Automation
 import com.unciv.logic.civilization.LocationAction
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.map.TileInfo
+import com.unciv.ui.utils.toPercent
 import com.unciv.ui.utils.withItem
 import com.unciv.ui.utils.withoutItem
 import kotlin.math.max
@@ -41,11 +42,11 @@ class CityExpansionManager {
 
         for (unique in cityInfo.getMatchingUniques("-[]% Culture cost of acquiring tiles []")) {
             if (cityInfo.matchesFilter(unique.params[1]))
-                cultureToNextTile *= (100 - unique.params[0].toFloat()) / 100
+                cultureToNextTile /= unique.params[0].toPercent()
         }
         
         for (unique in cityInfo.getMatchingUniques("[]% cost of natural border growth")) 
-            cultureToNextTile *= 1 + unique.params[0].toFloat() / 100f
+            cultureToNextTile *= unique.params[0].toPercent()
         
         // Unique deprecated since 3.15.10 (seems unused, and should be replaced by the unique above)
             if (cityInfo.civInfo.hasUnique("Increased rate of border expansion")) cultureToNextTile *= 0.75
