@@ -158,5 +158,6 @@ class MapParameters {
     }
 
     // For debugging and MapGenerator console output
-    override fun toString() = "($mapSize ${if (worldWrap)"wrapped " else ""}$shape $type, Seed $seed, $elevationExponent/$temperatureExtremeness/$resourceRichness/$vegetationRichness/$rareFeaturesRichness/$maxCoastExtension/$tilesPerBiomeArea/$waterThreshold)"
+    override fun toString() = if (name.isNotEmpty()) "\"$name\""
+        else "($mapSize ${if (worldWrap)"wrapped " else ""}$shape $type, Seed $seed, $elevationExponent/$temperatureExtremeness/$resourceRichness/$vegetationRichness/$rareFeaturesRichness/$maxCoastExtension/$tilesPerBiomeArea/$waterThreshold)"
 }

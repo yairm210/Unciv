@@ -733,7 +733,6 @@ class MapUnit {
 
         if (civInfo.isMajorCiv() 
             && tile.improvement != null
-            && !tile.improvement!!.startsWith("StartingLocation ")
             && tile.getTileImprovement()!!.isAncientRuinsEquivalent()
         )
             getAncientRuinBonus(tile)
