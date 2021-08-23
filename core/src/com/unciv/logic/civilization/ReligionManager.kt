@@ -132,7 +132,7 @@ class ReligionManager {
     }
     
     fun useGreatProphet(prophet: MapUnit) {
-        if (religionState == ReligionState.Pantheon) {
+        if (religionState <= ReligionState.Pantheon) {
             if (!mayFoundReligionNow(prophet)) return // How did you do this?
             religionState = ReligionState.FoundingReligion
             foundingCityId = prophet.getTile().getCity()!!.id
@@ -143,7 +143,6 @@ class ReligionManager {
     }
 
     fun mayFoundReligionAtAll(prophet: MapUnit): Boolean {
-        if (religion == null) return false // First found a pantheon
         if (religionState >= ReligionState.Religion) return false // Already created a major religion
         if (prophet.abilityUsedCount["Religion Spread"] != 0) return false // Already used its power for other things
         if (!civInfo.isMajorCiv()) return false // Only major civs may use religion
@@ -176,6 +175,8 @@ class ReligionManager {
     }
     
     fun getBeliefsToChooseAtFounding(): BeliefContainer {
+        if (religionState == ReligionState.None)
+            return BeliefContainer(pantheonBeliefCount = 1, founderBeliefCount = 1, followerBeliefCount = 1)
         return BeliefContainer(founderBeliefCount = 1, followerBeliefCount = 1)
     }
     
