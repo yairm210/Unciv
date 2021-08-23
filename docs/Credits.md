@@ -145,6 +145,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Dove](https://thenounproject.com/search/?q=dove&i=1344088) by sandra for Great Prophet
 * [General](https://thenounproject.com/search/?q=general&i=933566) By anbileru adaleru for Great General
 * [Religion](https://thenounproject.com/search/?q=preach&i=53064) by Bruno Gätjens González adapted for Missionary
+* [invisibility cloak ](https://thenounproject.com/term/invisibility-cloak/1419648/) by Locad for Inquisitor
 
 ## Resources
 
@@ -625,6 +626,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Lock](https://thenounproject.com/search/?q=lock&i=3217613) by Vadim Solomakhin for locked tiles
 * [Hourglass](https://thenounproject.com/search/?q=hourglass&i=142268) by I Create Stuff for the 'Turn' icon
 * [Shield](https://thenounproject.com/search/?q=shield&i=813568) by Gregor Cresnar for Religious Strength
+* [skill sword flame](https://thenounproject.com/term/skill-sword-flame/2360212/) by Maxicons) for Remove Heresy
 
 ## Main menu
 
@@ -638,7 +640,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 
 # Sound credits
 
-Sounds are from FreeSound.org and are either Creative Commons or Public Domain
+Sounds are from FreeSound.org unless otherwise noted and are either Creative Commons or Public Domain unless otherwise noted
 
 * [Soft two-fingered snap](https://freesound.org/people/EathanMarkson/sounds/388958/) By EathanMarkson as 'click' for most clicks
 * [Pencil1](https://freesound.org/people/stijn/sounds/43673/) By stijn as 'paper' for opening and closing the tech picker
@@ -680,6 +682,8 @@ Sounds are from FreeSound.org and are either Creative Commons or Public Domain
     *    [Artillery Explosion (Close) (Mixed)](https://freesound.org/people/EFlexMusic/sounds/388528/) by EFlexMusic
 * [elephant 44](https://freesound.org/people/y89312/sounds/139875/) by y89312 for Naruesan's Elephant sound
 * Excerpt from [Missile Strike](https://freesound.org/people/BaDoink/sounds/570690/) by BaDoink for guided missile
+
+* Excerpt from [Campfire](https://www.soundjay.com/nature/sounds/campfire-1.mp3) by SoundJay for Fire & 'remove heresy' action of inquisitor
 
 # Music
 The following music is from https://filmmusic.io

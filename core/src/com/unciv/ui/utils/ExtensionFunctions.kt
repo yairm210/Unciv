@@ -172,6 +172,15 @@ fun <T> HashSet<T>.withoutItem(item:T): HashSet<T> {
     return newHashSet
 }
 
+/** Translate a percentage number - e.g. 25 - to the multiplication value - e.g. 1.25f */
+fun String.toPercent() = toFloat().toPercent()
+
+/** Translate a percentage number - e.g. 25 - to the multiplication value - e.g. 1.25f */
+fun Int.toPercent() = toFloat().toPercent()
+
+/** Translate a percentage number - e.g. 25 - to the multiplication value - e.g. 1.25f */
+fun Float.toPercent() = 1 + this/100
+
 /** Translate a [String] and make a [TextButton] widget from it */
 fun String.toTextButton() = TextButton(this.tr(), CameraStageBaseScreen.skin)
 

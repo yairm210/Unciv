@@ -13,6 +13,7 @@ import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.getPlaceholderParameters
 import com.unciv.models.translations.getPlaceholderText
+import com.unciv.ui.utils.toPercent
 import kotlin.math.min
 
 
@@ -475,7 +476,7 @@ class CityStats {
         for (bonus in statPercentBonusList.values) statPercentBonusesSum.add(bonus)
 
         for (entry in newFinalStatList.values)
-            entry.production *= 1 + statPercentBonusesSum.production / 100
+            entry.production *= statPercentBonusesSum.production.toPercent()
 
         val statsFromProduction = getStatsFromProduction(newFinalStatList.values.map { it.production }.sum())
         baseStatList = LinkedHashMap(baseStatList).apply { put("Construction", statsFromProduction) } // concurrency-safe addition
@@ -483,9 +484,9 @@ class CityStats {
 
         val isUnhappy = cityInfo.civInfo.getHappiness() < 0
         for (entry in newFinalStatList.values) {
-            entry.gold *= 1 + statPercentBonusesSum.gold / 100
-            entry.culture *= 1 + statPercentBonusesSum.culture / 100
-            entry.food *= 1 + statPercentBonusesSum.food / 100 
+            entry.gold *= statPercentBonusesSum.gold.toPercent()
+            entry.culture *= statPercentBonusesSum.culture.toPercent()
+            entry.food *= statPercentBonusesSum.food.toPercent()
         }
 
         // AFTER we've gotten all the gold stats figured out, only THEN do we plonk that gold into Science
@@ -496,7 +497,7 @@ class CityStats {
                 newFinalStatList["Gold -> Science"] = Stats().apply { science = amountConverted; gold = -amountConverted }
         }
         for (entry in newFinalStatList.values) {
-            entry.science *= 1 + statPercentBonusesSum.science / 100
+            entry.science *= statPercentBonusesSum.science.toPercent()
         }
 
 

@@ -2,6 +2,7 @@ package com.unciv.logic.battle
 
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.Counter
+import com.unciv.ui.utils.toPercent
 import java.util.*
 import kotlin.collections.set
 import kotlin.math.max
@@ -264,7 +265,7 @@ object BattleDamage {
 
     private fun modifiersToMultiplicationBonus(modifiers: Counter<String>): Float {
         var finalModifier = 1f
-        for (modifierValue in modifiers.values) finalModifier *= (1 + modifierValue / 100f) // so 25 will result in *= 1.25
+        for (modifierValue in modifiers.values) finalModifier *= modifierValue.toPercent()
         return finalModifier
     }
 

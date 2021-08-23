@@ -13,6 +13,7 @@ import com.unciv.models.stats.NamedStats
 import com.unciv.models.translations.tr
 import com.unciv.ui.civilopedia.FormattedLine
 import com.unciv.ui.civilopedia.ICivilopediaText
+import com.unciv.ui.utils.toPercent
 import java.util.*
 import kotlin.math.roundToInt
 
@@ -32,7 +33,7 @@ class TileImprovement : NamedStats(), ICivilopediaText, IHasUniques {
     fun getTurnsToBuild(civInfo: CivilizationInfo): Int {
         var realTurnsToBuild = turnsToBuild.toFloat() * civInfo.gameInfo.gameParameters.gameSpeed.modifier
         for (unique in civInfo.getMatchingUniques("[]% tile improvement construction time")) {
-            realTurnsToBuild *= 1 + unique.params[0].toFloat() / 100f
+            realTurnsToBuild *= unique.params[0].toPercent()
         }
         // Deprecated since 3.14.17
             if (civInfo.hasUnique("Worker construction increased 25%"))

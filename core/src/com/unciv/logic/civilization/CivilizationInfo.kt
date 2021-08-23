@@ -1,6 +1,7 @@
 package com.unciv.logic.civilization
 
 import com.badlogic.gdx.math.Vector2
+import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
 import com.unciv.logic.UncivShowableException
@@ -803,8 +804,6 @@ class CivilizationInfo {
             placedUnit.religion = 
                 if (city != null) city.cityConstructions.cityInfo.religion.getMajorityReligionName()
                 else religionManager.religion?.name
-            if (placedUnit.hasUnique("Can spread religion [] times"))
-                placedUnit.abilityUsedCount["Religion Spread"] = 0
         }
         
         return placedUnit
