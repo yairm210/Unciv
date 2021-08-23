@@ -432,7 +432,7 @@
 		},
 		{
 			"name": "Nationalism",
-			"uniques": ["+[15]% Strength for units fighting in [Friendly Land]"],
+			"uniques": ["+[15]% Strength for [Non-City] units fighting in [Friendly Land]"],
 			"row": 1,
 			"column": 5
 		},

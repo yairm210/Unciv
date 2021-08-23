@@ -16,6 +16,7 @@ import com.unciv.models.UnitAction
 import com.unciv.models.UnitActionType
 import com.unciv.models.ruleset.Building
 import com.unciv.models.stats.Stat
+import com.unciv.models.stats.Stats
 import com.unciv.models.translations.tr
 import com.unciv.ui.pickerscreens.ImprovementPickerScreen
 import com.unciv.ui.pickerscreens.PromotionPickerScreen
@@ -392,7 +393,7 @@ object UnitActions {
                 actionList += UnitAction(UnitActionType.HurryResearch,
                     action = {
                         unit.civInfo.tech.addScience(unit.civInfo.tech.getScienceFromGreatScientist())
-                        addGoldPerGreatPersonUsage(unit.civInfo)
+                        addStatsPerGreatPersonUsage(unit.civInfo, unit)
                         unit.destroy()
                     }.takeIf { unit.civInfo.tech.currentTechnologyName() != null }
                 )
@@ -402,7 +403,7 @@ object UnitActions {
                 actionList += UnitAction(UnitActionType.StartGoldenAge,
                     action = {
                         unit.civInfo.goldenAges.enterGoldenAge(turnsToGoldenAge)
-                        addGoldPerGreatPersonUsage(unit.civInfo)
+                        addStatsPerGreatPersonUsage(unit.civInfo, unit)
                         unit.destroy()
                     }.takeIf { unit.currentTile.getOwner() != null && unit.currentTile.getOwner() == unit.civInfo }
                 )
@@ -420,7 +421,7 @@ object UnitActions {
                             addProductionPoints(300 + 30 * tile.getCity()!!.population.population) //http://civilization.wikia.com/wiki/Great_engineer_(Civ5)
                             constructIfEnough()
                         }
-                        addGoldPerGreatPersonUsage(unit.civInfo)
+                        addStatsPerGreatPersonUsage(unit.civInfo, unit)
                         unit.destroy()
                     }.takeIf { canHurryWonder }
                 )
@@ -439,7 +440,7 @@ object UnitActions {
                         tile.owningCity!!.civInfo.getDiplomacyManager(unit.civInfo).influence += influenceEarned
                         unit.civInfo.addNotification("Your trade mission to [${tile.owningCity!!.civInfo}] has earned you [${goldEarned}] gold and [$influenceEarned] influence!",
                             tile.owningCity!!.civInfo.civName, NotificationIcon.Gold, NotificationIcon.Culture)
-                        addGoldPerGreatPersonUsage(unit.civInfo)
+                        addStatsPerGreatPersonUsage(unit.civInfo, unit)
                         unit.destroy()
                     }.takeIf { canConductTradeMission }
                 )
@@ -452,8 +453,7 @@ object UnitActions {
         if (!unit.civInfo.religionManager.mayFoundReligionAtAll(unit)) return
         actionList += UnitAction(UnitActionType.FoundReligion,
             action = {
-                if (unit.isGreatPerson())
-                    addGoldPerGreatPersonUsage(unit.civInfo)
+                addStatsPerGreatPersonUsage(unit.civInfo, unit)
                 unit.civInfo.religionManager.useGreatProphet(unit)
                 unit.destroy()
             }.takeIf { unit.civInfo.religionManager.mayFoundReligionNow(unit) }
@@ -465,8 +465,7 @@ object UnitActions {
         if (!unit.civInfo.religionManager.mayEnhanceReligionAtAll(unit)) return
         actionList += UnitAction(UnitActionType.EnhanceReligion,
             action = {
-                if (unit.isGreatPerson())
-                    addGoldPerGreatPersonUsage(unit.civInfo)
+                addStatsPerGreatPersonUsage(unit.civInfo, unit)
                 unit.civInfo.religionManager.useGreatProphet(unit)
                 unit.destroy()
             }.takeIf { unit.civInfo.religionManager.mayEnhanceReligionNow(unit) }
@@ -491,7 +490,7 @@ object UnitActions {
                 city.religion.addPressure(unit.religion!!, unit.getPressureAddedFromSpread())
                 unit.currentMovement = 0f
                 if (unit.abilityUsedCount["Religion Spread"] == maxReligionSpreads) {
-                    addGoldPerGreatPersonUsage(unit.civInfo)
+                    addStatsPerGreatPersonUsage(unit.civInfo, unit)
                     unit.destroy()
                 }
             }.takeIf { unit.currentMovement > 0 } 
@@ -523,8 +522,7 @@ object UnitActions {
                         city.cityStats.update()
                         city.civInfo.updateDetailedCivResources()
                     }
-                    if (unit.hasUnique("Great Person - []"))
-                        addGoldPerGreatPersonUsage(unit.civInfo)
+                    addStatsPerGreatPersonUsage(unit.civInfo, unit)
                     unit.destroy()
                 }.takeIf {
                     unit.currentMovement > 0f && tile.canBuildImprovement(improvement, unit.civInfo)
@@ -578,15 +576,22 @@ object UnitActions {
             otherCiv.addNotification("[${unit.civInfo}] has stolen your territory!", unit.currentTile.position, unit.civInfo.civName, NotificationIcon.War)
     }
 
-    private fun addGoldPerGreatPersonUsage(civInfo: CivilizationInfo) {
-        val uniqueText = "Provides a sum of gold each time you spend a Great Person"
-        val cityWithMausoleum = civInfo.cities.firstOrNull { it.containsBuildingUnique(uniqueText) }
-                ?: return
-        val goldEarned = (100 * civInfo.gameInfo.gameParameters.gameSpeed.modifier).toInt()
-        civInfo.addGold(goldEarned)
-
-        val mausoleum = cityWithMausoleum.cityConstructions.getBuiltBuildings().first { it.uniques.contains(uniqueText) }
-        civInfo.addNotification("[${mausoleum.name}] has provided [$goldEarned] Gold!", cityWithMausoleum.location, NotificationIcon.Gold)
+    private fun addStatsPerGreatPersonUsage(civInfo: CivilizationInfo, unit: MapUnit) {
+        if (!unit.isGreatPerson()) return
+        
+        val gainedStats = Stats()
+        for (unique in civInfo.getMatchingUniques("Provides a sum of gold each time you spend a Great Person")) {
+            gainedStats.gold += (100 * civInfo.gameInfo.gameParameters.gameSpeed.modifier).toInt()
+        }
+        for (unique in civInfo.getMatchingUniques("[] whenever a great person is expended")) {
+            gainedStats.add(unique.stats)
+        }
+        
+        if (gainedStats.isEmpty()) return
+        
+        for (stat in gainedStats.toHashMap())
+            civInfo.addStat(stat.key, stat.value.toInt())
+        civInfo.addNotification("By expending your [${unit.name}] you gained [${gainedStats}]!", unit.getTile().position, unit.name)
     }
 
     private fun addFortifyActions(actionList: ArrayList<UnitAction>, unit: MapUnit, showingAdditionalActions: Boolean) {

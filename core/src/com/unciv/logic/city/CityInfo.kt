@@ -610,6 +610,7 @@ class CityInfo {
             // religion a unique is active. However, since religion uniques only come from the city itself,
             // this will always be true when checked.
             "in cities following this religion" -> true
+            "in City-State cities" -> civInfo.isCityState()
             else -> false
         }
     }

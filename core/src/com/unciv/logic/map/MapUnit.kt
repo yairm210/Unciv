@@ -936,7 +936,9 @@ class MapUnit {
         return when (filter) {
             "Wounded", "wounded units" -> health < 100
             "Barbarians", "Barbarian" -> civInfo.isBarbarian()
+            "City-State" -> civInfo.isCityState()
             "Embarked" -> isEmbarked()
+            "Non-City" -> true
             else -> {
                 if (baseUnit.matchesFilter(filter)) return true
                 if (hasUnique(filter)) return true
@@ -961,7 +963,12 @@ class MapUnit {
     }
 
     fun getPressureAddedFromSpread(): Int {
-        return baseUnit.religiousStrength
+        var pressureAdded = baseUnit.religiousStrength.toFloat()
+        for (unique in civInfo.getMatchingUniques("[]% Spread Religion Strength for [] units"))
+            if (matchesFilter(unique.params[0]))
+                pressureAdded *= 1f + unique.params[0].toFloat() / 100f
+        
+        return pressureAdded.toInt()
     }
 
     fun getReligionString(): String {

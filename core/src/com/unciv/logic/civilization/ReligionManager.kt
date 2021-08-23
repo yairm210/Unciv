@@ -97,10 +97,16 @@ class ReligionManager {
     
     // https://www.reddit.com/r/civ/comments/2m82wu/can_anyone_detail_the_finer_points_of_great/
     // Game files (globaldefines.xml)
-    fun faithForNextGreatProphet() = (
-            (200 + 100 * greatProphetsEarned * (greatProphetsEarned + 1) / 2) *
-                    civInfo.gameInfo.gameParameters.gameSpeed.modifier
-            ).toInt()
+    fun faithForNextGreatProphet(): Int {
+        var faithCost = 
+            (200 + 100 * greatProphetsEarned * (greatProphetsEarned + 1) / 2f) * 
+            civInfo.gameInfo.gameParameters.gameSpeed.modifier
+        
+        for (unique in civInfo.getMatchingUniques("[]% Faith cost of generating Great Prophet equivalents"))
+            faithCost *= 1f + unique.params[0].toFloat() / 100f
+        
+        return faithCost.toInt()
+    }
 
     private fun canGenerateProphet(): Boolean {
         if (religion == null || religionState == ReligionState.None) return false // First get a pantheon, then we'll talk about a real religion
