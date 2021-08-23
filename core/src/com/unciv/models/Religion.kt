@@ -83,21 +83,22 @@ class Religion() : INamed {
         return getUniquesOfBeliefs(founderBeliefs)
     }
 
+    fun hasBelief(belief: String): Boolean {
+        return followerBeliefs.contains(belief) || founderBeliefs.contains(belief)
+    }
+
     fun isPantheon(): Boolean { // Currently unused
-        return hasPantheon() && !isMajorReligion()
+        return getPantheonBeliefs().any() && !isMajorReligion()
     }
 
     fun isMajorReligion(): Boolean {
         return founderBeliefs.isNotEmpty() && followerBeliefs
             .any { gameInfo.ruleSet.beliefs[it]!!.type == BeliefType.Follower}
     }
-
-    fun hasPantheon(): Boolean { // Currently unused
-        // Temporary as a result of follower beliefs not yet being implemented
-        return followerBeliefs.any { it != "" && gameInfo.ruleSet.beliefs[it]!!.type == BeliefType.Pantheon }
-    }
     
-    fun hasBelief(belief: String): Boolean {
-        return followerBeliefs.contains(belief) || founderBeliefs.contains(belief)
+    fun isEnhancedReligion(): Boolean {
+        return founderBeliefs.any {
+            gameInfo.ruleSet.beliefs[it]!!.type == BeliefType.Enhancer
+        }
     }
 }

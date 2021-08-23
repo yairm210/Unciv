@@ -717,7 +717,18 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Cam
                     game.setScreen(FoundReligionPickerScreen(
                         viewingCiv, 
                         gameInfo,
-                        viewingCiv.religionManager.getBeliefsToChooseAtFounding()
+                        viewingCiv.religionManager.getBeliefsToChooseAtFounding(),
+                        pickIcon = true
+                    ))
+                }
+            
+            viewingCiv.religionManager.religionState == ReligionState.EnhancingReligion -> 
+                NextTurnAction("Enhance Religion", Color.ORANGE) {
+                    game.setScreen(FoundReligionPickerScreen(
+                        viewingCiv,
+                        gameInfo,
+                        viewingCiv.religionManager.getBeliefsToChooseAtEnhancing(),
+                        pickIcon = false
                     ))
                 }
             

@@ -54,6 +54,7 @@ object UnitActions {
         addCreateWaterImprovements(unit, actionList)
         addGreatPersonActions(unit, actionList, tile)
         addFoundReligionAction(unit, actionList, tile)
+        addEnhanceReligionAction(unit, actionList, tile)
         actionList += getImprovementConstructionActions(unit, tile)
         addSpreadReligionActions(unit, actionList, tile)
 
@@ -447,14 +448,28 @@ object UnitActions {
     }
 
     private fun addFoundReligionAction(unit: MapUnit, actionList: ArrayList<UnitAction>, tile: TileInfo) {
-        if (!unit.hasUnique("May found a religion")) return // should later also include enhance religion
+        if (!unit.hasUnique("May found a religion")) return 
         if (!unit.civInfo.religionManager.mayFoundReligionAtAll(unit)) return
         actionList += UnitAction(UnitActionType.FoundReligion,
             action = {
-                addGoldPerGreatPersonUsage(unit.civInfo)
+                if (unit.isGreatPerson())
+                    addGoldPerGreatPersonUsage(unit.civInfo)
                 unit.civInfo.religionManager.useGreatProphet(unit)
                 unit.destroy()
             }.takeIf { unit.civInfo.religionManager.mayFoundReligionNow(unit) }
+        )
+    }
+    
+    private fun addEnhanceReligionAction(unit: MapUnit, actionList: ArrayList<UnitAction>, tile: TileInfo) {
+        if (!unit.hasUnique("May enhance a religion")) return
+        if (!unit.civInfo.religionManager.mayEnhanceReligionAtAll(unit)) return
+        actionList += UnitAction(UnitActionType.EnhanceReligion,
+            action = {
+                if (unit.isGreatPerson())
+                    addGoldPerGreatPersonUsage(unit.civInfo)
+                unit.civInfo.religionManager.useGreatProphet(unit)
+                unit.destroy()
+            }.takeIf { unit.civInfo.religionManager.mayEnhanceReligionNow(unit) }
         )
     }
 

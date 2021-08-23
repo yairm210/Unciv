@@ -69,8 +69,9 @@ class ReligionOverviewTable(
         topButtonLabel.setText(religion.name.tr())
         for (belief in 
             religion.getPantheonBeliefs()
-            + religion.getFollowerBeliefs()
             + religion.getFounderBeliefs()
+            + religion.getFollowerBeliefs()
+            + religion.getEnhancerBeliefs()
         ) {
             beliefsTable.add(createBeliefDescription(belief)).pad(10f).row()
         }

@@ -3,6 +3,7 @@ package com.unciv.logic.city
 import com.badlogic.gdx.math.Vector2
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.GreatPersonManager
+import com.unciv.logic.civilization.ReligionState
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.map.RoadStatus
 import com.unciv.logic.map.TileInfo
@@ -106,7 +107,7 @@ class CityInfo {
         tile.improvement = null
         tile.improvementInProgress = null
 
-        if (civInfo.religionManager.religion != null && civInfo.religionManager.religion!!.isPantheon()) {
+        if (civInfo.religionManager.religionState == ReligionState.Pantheon) {
             religion.addPressure(civInfo.religionManager.religion!!.name, 100)
         }
 

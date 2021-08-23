@@ -126,6 +126,8 @@ enum class UnitActionType(
         { ImageGetter.getUnitIcon("Great Merchant") }, 'g', UncivSound.Chimes),
     FoundReligion("Found a Religion",
         { ImageGetter.getUnitIcon("Great Prophet") }, 'g', UncivSound.Choir),
+    EnhanceReligion("Enhance a Religion",
+        { ImageGetter.getUnitIcon("Great Prophet") }, 'g', UncivSound.Choir),
     DisbandUnit("Disband unit",
         { ImageGetter.getImage("OtherIcons/DisbandUnit") }, KeyCharAndCode.DEL),
     GiftUnit("Gift unit",

@@ -15,7 +15,8 @@ import com.unciv.ui.utils.*
 class FoundReligionPickerScreen (
     private val choosingCiv: CivilizationInfo,
     private val gameInfo: GameInfo,
-    private val beliefsContainer: BeliefContainer
+    private val beliefsContainer: BeliefContainer,
+    private val pickIcon: Boolean
 ): PickerScreen(disableScroll = true) {
 
     // Roughly follows the layout of the original (although I am not very good at UI designing, so please improve this)
@@ -33,7 +34,8 @@ class FoundReligionPickerScreen (
         closeButton.isVisible = true
         setDefaultCloseAction()
         
-        setupReligionIcons()
+        if (pickIcon) setupChoosableReligionIcons()
+        else setupVisibleReligionIcons()
         
         updateLeftTable()
         
@@ -47,18 +49,18 @@ class FoundReligionPickerScreen (
         
         rightSideButton.label = "Choose a religion".toLabel()
         rightSideButton.onClick(UncivSound.Choir) {
-            choosingCiv.religionManager.foundReligion(iconName!!, religionName!!, beliefsContainer)            
+            choosingCiv.religionManager.chooseBeliefs(iconName, religionName, beliefsContainer)            
             UncivGame.Current.setWorldScreen()
         }
     }
 
     private fun checkAndEnableRightSideButton() {
-        if (religionName == null) return
+        if (pickIcon && (religionName == null || iconName == null)) return
         if (!beliefsContainer.isFilled()) return
         rightSideButton.enable()
     }
 
-    private fun setupReligionIcons() {
+    private fun setupChoosableReligionIcons() {
         topReligionIcons.clear()
         
         // This should later be replaced with a user-modifiable text field, but not in this PR
@@ -89,6 +91,24 @@ class FoundReligionPickerScreen (
             iconsTable.add(button).pad(5f)
         }
         iconsTable.row()
+        topReligionIcons.add(iconsTable).padBottom(10f).row()
+        topReligionIcons.add(descriptionLabel).center().padBottom(5f)
+    }
+
+    private fun setupVisibleReligionIcons() {
+        topReligionIcons.clear()
+        val descriptionLabel = choosingCiv.religionManager.religion!!.name.toLabel()
+        
+        val iconsTable = Table()
+        
+        for (religionName in gameInfo.ruleSet.religions) {
+            val button = Button(
+                ImageGetter.getCircledReligionIcon(religionName, 60f),
+                skin
+            )
+            button.disable()
+            iconsTable.add(button).pad(5f)            
+        }
         topReligionIcons.add(iconsTable).padBottom(10f).row()
         topReligionIcons.add(descriptionLabel).center().padBottom(5f)
     }

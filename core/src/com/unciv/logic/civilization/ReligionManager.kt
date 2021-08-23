@@ -73,6 +73,8 @@ class ReligionManager {
         if (!civInfo.isMajorCiv()) return false
         if (civInfo.gameInfo.ruleSet.beliefs.values.none { isPickablePantheonBelief(it) })
             return false
+        if (civInfo.gameInfo.civilizations.any { it.religionManager.religionState == ReligionState.EnhancedReligion }) 
+            return false
         return storedFaith >= faithForPantheon()
     }
 
@@ -122,15 +124,26 @@ class ReligionManager {
             greatProphetsEarned += 1
         }
     }
+    
+    fun useGreatProphet(prophet: MapUnit) {
+        if (religionState == ReligionState.Pantheon) {
+            if (!mayFoundReligionNow(prophet)) return // How did you do this?
+            religionState = ReligionState.FoundingReligion
+            foundingCityId = prophet.getTile().getCity()!!.id
+        } else if (religionState == ReligionState.Religion) {
+            if (!mayEnhanceReligionNow(prophet)) return
+            religionState = ReligionState.EnhancingReligion
+        }
+    }
 
     fun mayFoundReligionAtAll(prophet: MapUnit): Boolean {
         if (religion == null) return false // First found a pantheon
-        if (religion!!.isMajorReligion()) return false // Already created a major religion
+        if (religionState >= ReligionState.Religion) return false // Already created a major religion
         if (prophet.abilityUsedCount["Religion Spread"] != 0) return false // Already used its power for other things
         if (!civInfo.isMajorCiv()) return false // Only major civs may use religion
         
         val foundedReligionsCount = civInfo.gameInfo.civilizations.count {
-            it.religionManager.religion != null && it.religionManager.religion!!.isMajorReligion()
+            it.religionManager.religion != null && it.religionManager.religionState >= ReligionState.Religion
         }
         
         if (foundedReligionsCount >= civInfo.gameInfo.civilizations.count { it.isMajorCiv() } / 2 + 1) 
@@ -138,9 +151,11 @@ class ReligionManager {
         
         if (foundedReligionsCount >= civInfo.gameInfo.ruleSet.religions.count())
             return false // Mod maker did not provide enough religions for the amount of civs present
-        
-        if (foundedReligionsCount >= civInfo.gameInfo.ruleSet.beliefs.values.count { it.type == BeliefType.Follower })
-            return false // Mod maker did not provide enough follower beliefs
+
+        if (civInfo.gameInfo.ruleSet.beliefs.values.none {
+            it.type == BeliefType.Follower
+            && civInfo.gameInfo.religions.values.none { religion -> it in religion.getFollowerBeliefs() }
+        }) return false // Mod maker did not provide enough follower beliefs
         
         if (foundedReligionsCount >= civInfo.gameInfo.ruleSet.beliefs.values.count { it.type == BeliefType.Founder })
             return false // Mod maker did not provide enough founder beliefs
@@ -153,16 +168,20 @@ class ReligionManager {
         if (!prophet.getTile().isCityCenter()) return false
         return true
     }
-
-    fun useGreatProphet(prophet: MapUnit) {
-        if (!mayFoundReligionNow(prophet)) return // How did you do this?
-        religionState = ReligionState.FoundingReligion
-        foundingCityId = prophet.getTile().getCity()!!.id
-    }
     
     fun getBeliefsToChooseAtFounding(): BeliefContainer {
         return BeliefContainer(founderBeliefCount = 1, followerBeliefCount = 1)
     }
+    
+    fun chooseBeliefs(iconName: String?, religionName: String?, beliefs: BeliefContainer) {
+        if (religionState == ReligionState.FoundingReligion) {
+            foundReligion(iconName!!, religionName!!, beliefs)
+            return
+        }
+        if (religionState == ReligionState.EnhancingReligion)
+            enhanceReligion(beliefs)
+    }
+    
 
     fun foundReligion(iconName: String, name: String, beliefContainer: BeliefContainer) {
         val newReligion = Religion(name, civInfo.gameInfo, civInfo.civName)
@@ -173,7 +192,7 @@ class ReligionManager {
         }
         newReligion.followerBeliefs.addAll(
             beliefContainer.chosenFollowerBeliefs.map { it!!.name } +
-                    beliefContainer.chosenPantheonBeliefs.map { it!!.name }
+            beliefContainer.chosenPantheonBeliefs.map { it!!.name }
         )
         newReligion.founderBeliefs.addAll(beliefContainer.chosenFounderBeliefs.map { it!!.name })
         
@@ -187,7 +206,42 @@ class ReligionManager {
         holyCity.religion.addPressure(name, holyCity.population.population * 500)
 
         foundingCityId = null
-    }    
+    }
+    
+    fun mayEnhanceReligionAtAll(prophet: MapUnit): Boolean {
+        if (religion == null) return false // First found a pantheon
+        if (religionState != ReligionState.Religion) return false // First found an actual religion
+        if (prophet.abilityUsedCount.any { it.value > 0 }) return false // Already used its ability for other things
+        if (!civInfo.isMajorCiv()) return false // Only major civs
+
+        if (civInfo.gameInfo.ruleSet.beliefs.values.none { 
+            it.type == BeliefType.Follower 
+            && civInfo.gameInfo.religions.values.none { religion -> religion.getFollowerBeliefs().contains(it) }
+        }) return false // Mod maker did not provide enough follower beliefs
+        
+        if (civInfo.gameInfo.ruleSet.beliefs.values.none { 
+            it.type == BeliefType.Enhancer 
+            && civInfo.gameInfo.religions.values.none { religion -> religion.getFounderBeliefs().contains(it) }
+        }) return false // Mod maker did not provide enough enhancer beliefs
+        
+        return true
+    }
+
+    fun mayEnhanceReligionNow(prophet: MapUnit): Boolean {
+        if (!mayEnhanceReligionAtAll(prophet)) return false
+        if (!prophet.getTile().isCityCenter()) return false
+        return true
+    }
+
+    fun getBeliefsToChooseAtEnhancing(): BeliefContainer {
+        return BeliefContainer(followerBeliefCount = 1, enhancerBeliefCount = 1)
+    }
+    
+    fun enhanceReligion(beliefs: BeliefContainer) {
+        religion!!.followerBeliefs.addAll(beliefs.chosenFollowerBeliefs.map { it!!.name })
+        religion!!.founderBeliefs.addAll(beliefs.chosenEnhancerBeliefs.map { it!!.name })
+        religionState = ReligionState.EnhancedReligion
+    }
     
     fun numberOfCitiesFollowingThisReligion(): Int {
         if (religion == null) return 0
