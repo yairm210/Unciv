@@ -411,6 +411,7 @@ object UnitActions {
                 val canHurryWonder =
                     if (!tile.isCityCenter()) false
                     else tile.getCity()!!.cityConstructions.isBuildingWonder()
+                
 
                 actionList += UnitAction(UnitActionType.HurryWonder,
                     action = {
@@ -427,25 +428,32 @@ object UnitActions {
             }
             
             "Can speed up construction of a building" -> {
-                val canHurryWonder = 
-                    if (!tile.isCityCenter()) false
-                    else tile.getCity()!!.cityConstructions.getCurrentConstruction() is Building
+                if (!tile.isCityCenter()) {
+                    actionList += UnitAction(UnitActionType.HurryBuilding, action = null)
+                    continue
+                }
                 
-                actionList += UnitAction(UnitActionType.HurryWonder,
+                val canHurryConstruction = tile.getCity()!!.cityConstructions.getCurrentConstruction() is Building
+                
+                val cityConstructions = tile.getCity()!!.cityConstructions
+
+                //http://civilization.wikia.com/wiki/Great_engineer_(Civ5)
+                val productionPointsToAdd = min(
+                    (300 + 30 * tile.getCity()!!.population.population) * unit.civInfo.gameInfo.gameParameters.gameSpeed.modifier,
+                    cityConstructions.getRemainingWork(cityConstructions.currentConstructionFromQueue).toFloat() - 1
+                ).toInt()
+                
+                actionList += UnitAction(UnitActionType.HurryBuilding,
+                    title = "Hurry Construction (+[$productionPointsToAdd]⚙)",
                     action = {
-                        tile.getCity()!!.cityConstructions.apply {
-                            //http://civilization.wikia.com/wiki/Great_engineer_(Civ5)
-                            val productionPointsToAdd = min(
-                                (300 + 30 * tile.getCity()!!.population.population) * unit.civInfo.gameInfo.gameParameters.gameSpeed.modifier,
-                                getRemainingWork(currentConstructionFromQueue).toFloat() - 1
-                            )
-                            addProductionPoints(productionPointsToAdd.toInt()) 
+                        cityConstructions.apply {
+                            addProductionPoints(productionPointsToAdd) 
                             constructIfEnough()
                         }
                         
                         addGoldPerGreatPersonUsage(unit.civInfo)
                         unit.destroy()
-                    }.takeIf { canHurryWonder }
+                    }.takeIf { canHurryConstruction }
                 )
             }
             "Can undertake a trade mission with City-State, giving a large sum of gold and [] Influence" -> {
