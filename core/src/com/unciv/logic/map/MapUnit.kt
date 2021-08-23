@@ -229,6 +229,10 @@ class MapUnit {
         newUnit.currentMovement = currentMovement
         newUnit.attacksThisTurn = attacksThisTurn
         newUnit.isTransported = isTransported
+        for (promotion in newUnit.promotions.promotions)
+            if (promotion !in promotions.promotions)
+                promotions.addPromotion(promotion, isFree = true)
+        
         newUnit.promotions = promotions.clone()
         
         newUnit.updateUniques()
@@ -439,7 +443,7 @@ class MapUnit {
 
     //region state-changing functions
     fun setTransients(ruleset: Ruleset) {
-        promotions.unit = this
+        promotions.setTransients(this)
         baseUnit = ruleset.units[name]
             ?: throw java.lang.Exception("Unit $name is not found!")
         updateUniques()
@@ -723,13 +727,12 @@ class MapUnit {
     fun removeFromTile() = currentTile.removeUnit(this)
 
     fun moveThroughTile(tile: TileInfo) {
-        // addPromotion requires currentTile to be valid because it accesses ruleset through it
+        // addPromotion requires currentTile to be valid because it accesses ruleset through it.
         // getAncientRuinBonus, if it places a new unit, does too
         currentTile = tile
 
         if (civInfo.isMajorCiv() 
             && tile.improvement != null
-            && !tile.improvement!!.startsWith("StartingLocation ")
             && tile.getTileImprovement()!!.isAncientRuinsEquivalent()
         )
             getAncientRuinBonus(tile)

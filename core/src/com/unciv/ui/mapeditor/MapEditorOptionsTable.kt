@@ -162,7 +162,7 @@ class MapEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(CameraS
 
             val nationImage = getHex(ImageGetter.getNationIndicator(nation, 40f))
             nationImage.onClick {
-                val improvementName = "StartingLocation " + nation.name
+                val improvementName = TileMap.startingLocationPrefix + nation.name
                 tileAction = {
                     it.improvement = improvementName
                     for ((tileInfo, tileGroups) in mapEditorScreen.mapHolder.tileGroups) {
@@ -265,17 +265,6 @@ class MapEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(CameraS
             unitImage.onClick { currentUnit = unit; setUnitTileAction() }
         }
         editorPickTable.add(AutoScrollPane(unitsTable)).height(scrollPanelHeight)
-    }
-
-    private fun nationsFromMap(tileMap: TileMap): ArrayList<Nation> {
-        val tilesWithStartingLocations = tileMap.values
-                .filter { it.improvement != null && it.improvement!!.startsWith("StartingLocation ") }
-        var nations = ArrayList<Nation>()
-        for (tile in tilesWithStartingLocations) {
-            var civName = tile.improvement!!.removePrefix("StartingLocation ")
-            nations.add(ruleset.nations[civName]!!)
-        }
-        return nations
     }
 
     private fun getPlayerIndexString(player: Player): String {

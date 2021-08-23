@@ -73,25 +73,19 @@ for(platform in PackrConfig.Platform.values()) {
     tasks.create("packr${platformName}") {
         dependsOn(tasks.getByName("dist"))
 
-        val jarFile = "desktop/build/libs/${BuildConfig.appName}.jar"
+        val jarFile = "$rootDir/desktop/build/libs/${BuildConfig.appName}.jar"
         val config = PackrConfig()
         config.platform = platform
 
-        val forTravis = true // change to false for local build
-        if(forTravis) {
-            if (platform == PackrConfig.Platform.Linux32 || platform == PackrConfig.Platform.Linux64)
-                config.jdk = System.getenv("JAVA_HOME")
-            // take the jdk straight from the building linux computer
+        if (platform == PackrConfig.Platform.Linux32 || platform == PackrConfig.Platform.Linux64)
+            config.jdk = "jdk-linux-64.zip"
+        // take the jdk straight from the building linux computer
 
-            if (platform == PackrConfig.Platform.Windows64)
-                config.jdk = "jdk-windows-64.zip" // see how we download and name this in travis yml
-            if (platform == PackrConfig.Platform.Windows32)
-                config.jdk = "jdk-windows-32.zip" // see how we download and name this in travis yml
-        }
-        else {
-            // for my computer
-            config.jdk = "C:/Users/LENOVO/Downloads/java-1.8.0-openjdk-1.8.0.232-1.b09.ojdkbuild.windows.x86_64.zip"
-        }
+        if (platform == PackrConfig.Platform.Windows64)
+            config.jdk = "jdk-windows-64.zip" // see how we download and name this in travis yml
+        if (platform == PackrConfig.Platform.Windows32)
+            config.jdk = "jdk-windows-32.zip" // see how we download and name this in travis yml
+
         config.apply {
             executable = "Unciv"
             classpath = listOf(jarFile)
@@ -104,8 +98,43 @@ for(platform in PackrConfig.Platform.values()) {
 
 
         doLast {
-            if(config.outDir.exists()) delete(config.outDir)
-            Packr().pack(config)
+            //  https://gist.github.com/seanf/58b76e278f4b7ec0a2920d8e5870eed6
+            fun String.runCommand(workingDir: File) {
+                val process = ProcessBuilder(*split(" ").toTypedArray())
+                    .directory(workingDir)
+                    .redirectOutput(ProcessBuilder.Redirect.PIPE)
+                    .redirectError(ProcessBuilder.Redirect.PIPE)
+                    .start()
+
+                if (!process.waitFor(30, TimeUnit.SECONDS)) {
+                    process.destroy()
+                    throw RuntimeException("execution timed out: $this")
+                }
+                if (process.exitValue() != 0) {
+                    throw RuntimeException("execution failed with code ${process.exitValue()}: $this")
+                }
+                println(process.inputStream.bufferedReader().readText())
+            }
+
+            if (config.outDir.exists()) delete(config.outDir)
+
+            // Requires that both packr and the linux jre are downloaded, as per buildAndDeploy.yml, "Upload to itch.io"
+            if (platform == PackrConfig.Platform.Linux64 || platform == PackrConfig.Platform.MacOS) {
+                val jdkFile = if (platform == PackrConfig.Platform.Linux64) "jre-linux-64.tar.gz"
+                else "jre-macOS.tar.gz"
+                val platformNameForPackrCmd =
+                    if (platform == PackrConfig.Platform.Linux64) "linux64"
+                    else "mac"
+                val command = "java -jar $rootDir/packr-all-4.0.0.jar" +
+                        " --platform $platformNameForPackrCmd" +
+                        " --jdk $jdkFile" +
+                        " --executable Unciv" +
+                        " --classpath $jarFile" +
+                        " --mainclass $mainClassName" +
+                        " --vmargs Xmx1G " + (if (platform == PackrConfig.Platform.MacOS) "XstartOnFirstThread" else "") +
+                        " --output ${config.outDir}"
+                command.runCommand(rootDir)
+            } else Packr().pack(config)
         }
 
         tasks.register<Zip>("zip${platformName}") {

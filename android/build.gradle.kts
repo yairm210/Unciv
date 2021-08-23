@@ -56,16 +56,16 @@ android {
         }
 
     }
-    aaptOptions {
-        // Don't add local save files and fonts to release, obviously
-        ignoreAssetsPattern = "!SaveFiles:!fonts:!maps:!music:!mods"
-    }
-    lintOptions {
+    lint {
         disable("MissingTranslation")
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_7
         targetCompatibility = JavaVersion.VERSION_1_7
+    }
+    androidResources {
+        // Don't add local save files and fonts to release, obviously
+        ignoreAssetsPattern = "!SaveFiles:!fonts:!maps:!music:!mods"
     }
 }
 

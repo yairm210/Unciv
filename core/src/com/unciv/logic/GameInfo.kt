@@ -354,8 +354,7 @@ class GameInfo {
                 tile.terrainFeatures.remove(terrainFeature)
             if (tile.resource != null && !ruleSet.tileResources.containsKey(tile.resource!!))
                 tile.resource = null
-            if (tile.improvement != null && !ruleSet.tileImprovements.containsKey(tile.improvement!!)
-                    && !tile.improvement!!.startsWith("StartingLocation ")) // To not remove the starting locations in GameStarter.startNewGame()
+            if (tile.improvement != null && !ruleSet.tileImprovements.containsKey(tile.improvement!!))
                 tile.improvement = null
 
             for (unit in tile.getUnits()) {

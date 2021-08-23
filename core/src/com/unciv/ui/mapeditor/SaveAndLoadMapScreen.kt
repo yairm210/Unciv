@@ -6,14 +6,12 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.scenes.scene2d.ui.TextField
-import com.badlogic.gdx.utils.Json
 import com.unciv.logic.MapSaver
 import com.unciv.logic.map.MapType
 import com.unciv.logic.map.TileMap
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.translations.tr
 import com.unciv.ui.pickerscreens.PickerScreen
-import com.unciv.ui.saves.Gzip
 import com.unciv.ui.utils.*
 import kotlin.concurrent.thread
 import com.unciv.ui.utils.AutoScrollPane as ScrollPane
@@ -35,7 +33,7 @@ class SaveAndLoadMapScreen(mapToSave: TileMap?, save:Boolean = false, previousSc
                 mapToSave.mapParameters.type = MapType.custom
                 thread(name = "SaveMap") {
                     try {
-                        MapSaver.saveMap(mapNameTextField.text, mapToSave)
+                        MapSaver.saveMap(mapNameTextField.text, getMapCloneForSave(mapToSave))
                         Gdx.app.postRunnable {
                             Gdx.input.inputProcessor = null // This is to stop ANRs happening here, until the map editor screen sets up.
                             game.setScreen(MapEditorScreen(mapToSave))
@@ -119,9 +117,7 @@ class SaveAndLoadMapScreen(mapToSave: TileMap?, save:Boolean = false, previousSc
         if (save) {
             val copyMapAsTextButton = "Copy to clipboard".toTextButton()
             val copyMapAsTextAction = {
-                val json = Json().toJson(mapToSave)
-                val base64Gzip = Gzip.zip(json)
-                Gdx.app.clipboard.contents = base64Gzip
+                Gdx.app.clipboard.contents = MapSaver.mapToSavedString(getMapCloneForSave(mapToSave!!))
             }
             copyMapAsTextButton.onClick (copyMapAsTextAction)
             keyPressDispatcher[KeyCharAndCode.ctrl('C')] = copyMapAsTextAction
@@ -132,8 +128,7 @@ class SaveAndLoadMapScreen(mapToSave: TileMap?, save:Boolean = false, previousSc
             val loadFromClipboardAction = {
                 try {
                     val clipboardContentsString = Gdx.app.clipboard.contents.trim()
-                    val decoded = Gzip.unzip(clipboardContentsString)
-                    val loadedMap = MapSaver.mapFromJson(decoded)
+                    val loadedMap = MapSaver.mapFromSavedString(clipboardContentsString)
                     game.setScreen(MapEditorScreen(loadedMap))
                 } catch (ex: Exception) {
                     couldNotLoadMapLabel.isVisible = true
@@ -187,4 +182,8 @@ class SaveAndLoadMapScreen(mapToSave: TileMap?, save:Boolean = false, previousSc
         }
     }
 
+    fun getMapCloneForSave(mapToSave: TileMap) = mapToSave!!.clone().also {
+            it.setTransients(setUnitCivTransients = false)
+            it.translateStartingLocationsFromMap()
+        }
 }
