@@ -979,5 +979,9 @@ class MapUnit {
         if (isPreparingParadrop()) action = null
     }
 
+    fun getPower(): Int {
+        return baseUnit.strength
+    }
+
     //endregion
 }

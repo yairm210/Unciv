@@ -1,6 +1,7 @@
 package com.unciv.logic.city
 
 import com.badlogic.gdx.math.Vector2
+import com.unciv.logic.battle.CityCombatant
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.GreatPersonManager
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
@@ -21,6 +22,7 @@ import kotlin.collections.HashMap
 import kotlin.collections.HashSet
 import kotlin.math.ceil
 import kotlin.math.min
+import kotlin.math.pow
 import kotlin.math.roundToInt
 
 class CityInfo {
@@ -683,6 +685,11 @@ class CityInfo {
     }
     fun getImprovableTiles(): Sequence<TileInfo> = getTiles()
             .filter {it.hasViewableResource(civInfo) && it.improvement == null}
+
+    fun getPower(): Int {
+        // Same as for units, so higher values count more
+        return CityCombatant(this).getCityStrength().toFloat().pow(1.5f).toInt()
+    }
 
 
     //endregion

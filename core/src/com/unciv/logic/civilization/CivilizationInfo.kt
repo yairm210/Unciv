@@ -983,57 +983,63 @@ class CivilizationInfo {
 
     fun getTributeWillingness(demandingCiv: CivilizationInfo, demandingWorker: Boolean = false): Int {
         // Can't bully major civs or unsettled CS's
-        if (!isCityState() || cities.isEmpty()) return -110
+        if (!isCityState() || cities.isEmpty()) return -999
         var willingness = -110  // Base value
 
         if (cityStatePersonality == CityStatePersonality.Hostile)
             willingness -= 10   // -10 if Hostile
         if (cityStateType == CityStateType.Militaristic)
             willingness -= 10   // -10 if Militaristic
-        if (allyCivName != null)
-            willingness -= 10   // -10 if someone is their Ally
-        if (getProtectorCivs().isNotEmpty())
-            willingness -= 20   // -20 if someone pledged protection
+        if (allyCivName != null && allyCivName != demandingCiv.civName)
+            willingness -= 10   // -10 if someone else is their Ally
+        if (getProtectorCivs().any { it != demandingCiv })
+            willingness -= 20   // -20 if someone else pledged protection
         if (demandingWorker)
             willingness -= 30   // -30 if demanding worker
         if (demandingWorker && getCapital().population.population < 4)
             willingness -= 300  // -300 if demanding worker from size < 4 city
-        if (demandingCiv.getDiplomacyManager(this).hasFlag(DiplomacyFlags.VeryRecentlyDemandedTribute))
+        val recentBullying = flagsCountdown[CivFlags.RecentlyBullied.name]
+        if (recentBullying != null && recentBullying > 10)
             willingness -= 300  // -300 if very recently demanded tribute (10 turns)
-        if (demandingCiv.getDiplomacyManager(this).hasFlag(DiplomacyFlags.RecentlyDemandedTribute))
+        else if (recentBullying != null)
             willingness -= 40   // -40 if recently demanded tribute (20 turns)
         if (getDiplomacyManager(demandingCiv).influence < -30)
             willingness -= 300  // -300 if less than -30 influence
 
-        val forcerank = gameInfo.getAliveMajorCivs().sortedByDescending { it.getStatForRanking(RankingType.Force) }.indexOf(demandingCiv)
-        willingness += 75 - ((75 / gameInfo.gameParameters.players.size) * forcerank)
+        val forceRank = gameInfo.getAliveMajorCivs().sortedByDescending { it.getStatForRanking(RankingType.Force) }.indexOf(demandingCiv)
+        willingness += 75 - ((75 / gameInfo.gameParameters.players.size) * forceRank)
 
-        val forcenearcity = getCapital().getCenterTile().getTilesInDistanceRange(1..7)
-            .sumBy { if (it.militaryUnit != null && it.militaryUnit!!.civInfo == demandingCiv)
-                max(it.militaryUnit!!.baseUnit().strength, it.militaryUnit!!.baseUnit().rangedStrength)
-            else 0 }    // Sum up strength (or ranged strength) of units within 7 tiles
-        val csforce = CityCombatant(getCapital()).getCityStrength() + units.sumBy { max(it.baseUnit().strength, it.baseUnit().rangedStrength) }
-        val forceratio = forcenearcity.toFloat() / csforce.toFloat()
+        val bullyRange = max(5, gameInfo.tileMap.tileMatrix.size / 10)   // Longer range for larger maps
+        val inRangeTiles = getCapital().getCenterTile().getTilesInDistanceRange(1..bullyRange)
+        val forceNearCity = inRangeTiles
+            .sumBy { if (it.militaryUnit?.civInfo == demandingCiv)
+                it.militaryUnit!!.getPower()
+            else 0
+            }
+        val csForce = getCapital().getPower() + inRangeTiles
+            .sumBy { if (it.militaryUnit?.civInfo == this)
+                it.militaryUnit!!.getPower()
+            else 0
+            }
+        val forceRatio = forceNearCity.toFloat() / csForce.toFloat()
 
-        if (forceratio > 3f)
-            willingness += 125
-        else if (forceratio > 2f)
-            willingness += 100
-        else if (forceratio > 1.5f)
-            willingness += 75
-        else if (forceratio > 1f)
-            willingness += 50
-        else if (forceratio > 0.5f)
-            willingness += 25
+        when {
+            forceRatio > 3f -> willingness += 125
+            forceRatio > 2f -> willingness += 100
+            forceRatio > 1.5f -> willingness += 75
+            forceRatio > 1f -> willingness += 50
+            forceRatio > 0.5f -> willingness += 25
+        }
 
-        println ("Force rank " + forcerank.toString())
-        println ("Force near CS " + forcenearcity.toString() + ", CS Force " + csforce.toString() + ", ratio " + forceratio.toString())
+        println ("Force rank " + forceRank.toString())
+        println ("Force near CS " + forceNearCity.toString() + ", CS Force " + csForce.toString() + ", ratio " + forceRatio.toString())
         println ("Willingness " + willingness.toString())
 
         return willingness
     }
 
     fun goldGainedByTribute(): Int {
+        // These values are close enough, linear increase throughout the game
         var gold = when (gameInfo.gameParameters.gameSpeed) {
             GameSpeed.Quick -> 60
             GameSpeed.Standard -> 50
@@ -1055,40 +1061,26 @@ class CivilizationInfo {
         if (!cityState.isCityState()) throw Exception("You can only demand gold from City-States!")
         val goldAmount = goldGainedByTribute()
         addGold(goldAmount)
-        cityState.addGold(-goldAmount)
         cityState.getDiplomacyManager(this).influence -= 15
-        getDiplomacyManager(cityState).setFlag(DiplomacyFlags.RecentlyDemandedTribute, 20)
-        getDiplomacyManager(cityState).setFlag(DiplomacyFlags.VeryRecentlyDemandedTribute, 10)
+        cityState.addFlag(CivFlags.RecentlyBullied.name, 20)
         cityState.updateAllyCivForCityState()
         updateStatsForNextTurn()
-
-        // TODO: Give protector option to denounce
     }
 
     fun demandWorker(cityState: CivilizationInfo) {
         if (!cityState.isCityState()) throw Exception("You can only demand workers from City-States!")
 
-        val stealableWorkers = cityState.units.filter { it.hasUniqueToBuildImprovements && !it.getTile().isCityCenter() && it.getTile().militaryUnit == null }
-        if (stealableWorkers.isNotEmpty()) {
-            // Steal an existing worker
-            stealableWorkers.random().gift(this)
-        } else {
-            // Phantom up a worker from thin space
-            val buildableWorkerLikeUnits = gameInfo.ruleSet.units.filter {
-                it.value.uniqueObjects.any { it.placeholderText == Constants.canBuildImprovements }
-                        && it.value.isBuildable(this)
-                        && it.value.isCivilian()
-            }
-            if (buildableWorkerLikeUnits.isEmpty()) return  // Bad luck?
-            placeUnitNearTile(cityState.getCapital().location, buildableWorkerLikeUnits.keys.random())
+        val buildableWorkerLikeUnits = gameInfo.ruleSet.units.filter {
+            it.value.uniqueObjects.any { it.placeholderText == Constants.canBuildImprovements }
+                    && it.value.isBuildable(this)
+                    && it.value.isCivilian()
         }
+        if (buildableWorkerLikeUnits.isEmpty()) return  // Bad luck?
+        placeUnitNearTile(cityState.getCapital().location, buildableWorkerLikeUnits.keys.random())
 
         cityState.getDiplomacyManager(this).influence -= 50
-        getDiplomacyManager(cityState).setFlag(DiplomacyFlags.RecentlyDemandedTribute, 20)
-        getDiplomacyManager(cityState).setFlag(DiplomacyFlags.VeryRecentlyDemandedTribute, 10)
+        cityState.addFlag(CivFlags.RecentlyBullied.name, 20)
         cityState.updateAllyCivForCityState()
-
-        // TODO: Give protector option to denounce
     }
 
     //endregion
@@ -1107,4 +1099,5 @@ enum class CivFlags {
     TurnsTillNextDiplomaticVote,
     ShowDiplomaticVotingResults,
     ShouldResetDiplomaticVotes,
+    RecentlyBullied
 }
