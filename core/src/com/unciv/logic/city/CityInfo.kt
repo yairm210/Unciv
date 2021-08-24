@@ -669,6 +669,11 @@ class CityInfo {
         return !isOriginalCapital && !isHolyCity() && (!isCapital() || justCaptured)
     }
 
+    fun getPower(): Int {
+        // Same as for units, so higher values count more
+        return CityCombatant(this).getCityStrength().toFloat().pow(1.5f).toInt()
+    }
+
 
     fun getNeighbouringCivs(): List<String> {
         val tilesList: HashSet<TileInfo> = getTiles().toHashSet()
@@ -684,13 +689,7 @@ class CityInfo {
             .distinct().toList()
     }
     fun getImprovableTiles(): Sequence<TileInfo> = getTiles()
-            .filter {it.hasViewableResource(civInfo) && it.improvement == null}
-
-    fun getPower(): Int {
-        // Same as for units, so higher values count more
-        return CityCombatant(this).getCityStrength().toFloat().pow(1.5f).toInt()
-    }
-
+        .filter {it.hasViewableResource(civInfo) && it.improvement == null}
 
     //endregion
 }

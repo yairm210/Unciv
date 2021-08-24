@@ -1021,7 +1021,7 @@ class CivilizationInfo {
             modifiers["Influence below -30"] = -300
 
         val forceRank = gameInfo.getAliveMajorCivs().sortedByDescending { it.getStatForRanking(RankingType.Force) }.indexOf(demandingCiv)
-        modifiers["Military Rank"] = 75 - ((75 / gameInfo.gameParameters.players.size) * forceRank)
+        modifiers["Military Rank"] = 100 - ((100 / gameInfo.gameParameters.players.size) * forceRank)
 
         val bullyRange = max(5, gameInfo.tileMap.tileMatrix.size / 10)   // Longer range for larger maps
         val inRangeTiles = getCapital().getCenterTile().getTilesInDistanceRange(1..bullyRange)
@@ -1038,11 +1038,11 @@ class CivilizationInfo {
         val forceRatio = forceNearCity.toFloat() / csForce.toFloat()
 
         modifiers["Military near City-State"] = when {
-            forceRatio > 3f -> 125
-            forceRatio > 2f -> 100
-            forceRatio > 1.5f -> 75
-            forceRatio > 1f -> 50
-            forceRatio > 0.5f -> 25
+            forceRatio > 3f -> 100
+            forceRatio > 2f -> 80
+            forceRatio > 1.5f -> 60
+            forceRatio > 1f -> 40
+            forceRatio > 0.5f -> 20
             else -> 0
         }
 

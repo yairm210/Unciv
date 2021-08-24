@@ -463,16 +463,16 @@ class BaseUnit : INamed, INonPerpetualConstruction, ICivilopediaText {
         var power = strength.toFloat().pow(1.5f).toInt()
         var rangedPower = rangedStrength.toFloat().pow(1.45f).toInt()
 
-        // Value ranged naval units slightly less
+        // Value ranged naval units less
         if (isWaterUnit()) {
-            rangedPower *= 3
-            rangedPower /= 4
+            rangedPower /= 2
         }
-        if (rangedPower > power)
+        if (rangedPower > 0)
             power = rangedPower
 
-        /* In Civ V, there was an attempt to implement scaling by unit movement at this point,
-        however the formula was bugged. To preserve the bug this scaling is not implemented here. */
+        // Replicates the formula from civ V, which is a lower multiplier than probably intended, because math
+        // They did fix it in BNW so it was completely bugged and always 1, again math
+        power = (power * movement.toFloat().pow(0.3f)).toInt()
 
         if (uniqueObjects.any { it.placeholderText =="Self-destructs when attacking" } )
             power /= 2
@@ -512,8 +512,8 @@ class BaseUnit : INamed, INonPerpetualConstruction, ICivilopediaText {
                         -> power += (power * unique.params[0].toInt()) / 200
                     unique.placeholderText == "+[]% Strength when defending" // Defense - half the bonus
                         -> power += (power * unique.params[0].toInt()) / 200
-                    unique.placeholderText == "[] additional attacks per turn" // Extra attacks - 25% bonus per extra attack
-                        -> power += (power * unique.params[0].toInt()) / 4
+                    unique.placeholderText == "[] additional attacks per turn" // Extra attacks - 20% bonus per extra attack
+                        -> power += (power * unique.params[0].toInt()) / 5
                     unique.placeholderText == "+[]% Strength in []" // Bonus in terrain or feature - half the bonus
                         -> power += (power * unique.params[0].toInt()) / 200
                 }

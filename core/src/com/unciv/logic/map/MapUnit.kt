@@ -15,6 +15,7 @@ import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.ruleset.unit.UnitType
 import java.text.DecimalFormat
+import kotlin.math.pow
 
 /**
  * The immutable properties and mutable game state of an individual unit present on the map
@@ -980,8 +981,8 @@ class MapUnit {
     }
 
     fun getPower(): Int {
-        val promotionBonus = promotions.numberOfPromotions * 125
-        var power = (baseUnit.getPower() * (1000 + promotionBonus)) / 1000
+        val promotionBonus = promotions.numberOfPromotions.toFloat().pow(0.3f)
+        var power = (baseUnit.getPower() * promotionBonus).toInt()
         power *= health
         power /= 100
         return power
