@@ -9,6 +9,7 @@ import com.unciv.UncivGame
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.MapUnit
 import com.unciv.ui.utils.*
+import kotlin.math.min
 
 /** Helper class for TileGroup, which was getting too full */
 class TileGroupIcons(val tileGroup: TileGroup) {
@@ -76,13 +77,13 @@ class TileGroupIcons(val tileGroup: TileGroup) {
             // Display number of carried air units
             if (unit.getTile().airUnits.any { unit.isTransportTypeOf(it) } && !unit.getTile().isCityCenter()) {
                 val holder = Table()
-                val secondarycolor = unit.civInfo.nation.getInnerColor()
+                val secondaryColor = unit.civInfo.nation.getInnerColor()
                 val airUnitTable = Table().apply { defaults().pad(3f) }
                 airUnitTable.background = ImageGetter.getBackground(unit.civInfo.nation.getOuterColor())
                 val aircraftImage = ImageGetter.getImage("OtherIcons/Aircraft")
-                aircraftImage.color = secondarycolor
+                aircraftImage.color = secondaryColor
                 airUnitTable.add(aircraftImage).size(10f)
-                airUnitTable.add(unit.getTile().airUnits.size.toString().toLabel(secondarycolor, 10))
+                airUnitTable.add(unit.getTile().airUnits.size.toString().toLabel(secondaryColor, 10))
                 val surroundedWithCircle = airUnitTable.surroundWithCircle(20f,false, unit.civInfo.nation.getOuterColor())
                 surroundedWithCircle.circle.width *= 1.5f
                 surroundedWithCircle.circle.centerX(surroundedWithCircle)
@@ -176,31 +177,50 @@ class TileGroupIcons(val tileGroup: TileGroup) {
         if (!showResourcesAndImprovements) return
         if (tileGroup.forMapEditorIcon) return  // the editor options for terrain do not bother to fully initialize, so tileInfo.tileMap would be an uninitialized lateinit
 
-        // Allow display of up to three nations starting locations on the same tile, ignore rest
-        // The sort is just so it shows _some_ deterministic behaviour, otherwise you could get
+        // Allow display of up to three nations starting locations on the same tile, rest only as count.
+        // Sorted so major get precedence and to make the display deterministic, otherwise you could get
         // different stacking order of the same nations in the same editing session
         val tileInfo = tileGroup.tileInfo
         val nations = tileInfo.tileMap.startingLocationsByNation.asSequence()
-            .filter { tileInfo in it.value }.map { it.key }.take(3)
-            .sorted().toList()
+            .filter { tileInfo in it.value }
+            .map { it.key to ImageGetter.ruleset.nations[it.key]!! }
+            .sortedWith(compareBy({ it.second.isCityState() }, { it.first }))
+            .toList()
         if (nations.isEmpty()) return
 
-        var offsetX = (nations.size - 1) * 4f
-        var offsetY = (nations.size - 1) * 2f
-        for (nation in nations) {
+        val displayCount = min(nations.size, 3)
+        var offsetX = (displayCount - 1) * 4f
+        var offsetY = (displayCount - 1) * 2f
+        for (nation in nations.take(3).asReversed()) {
             val newNationIcon =
-                ImageGetter.getNationIndicator(ImageGetter.ruleset.nations[nation]!!, 20f)
+                ImageGetter.getNationIndicator(nation.second, 20f)
             tileGroup.miscLayerGroup.addActor(newNationIcon)
             newNationIcon.run {
                 setSize(20f, 20f)
                 center(tileGroup)
-                x += offsetX
-                y += offsetY
+                moveBy(offsetX, offsetY)
                 color = Color.WHITE.cpy().apply { a = 0.6f }
             }
             startingLocationIcons.add(newNationIcon)
             offsetX -= 8f
             offsetY -= 4f
         }
-    } 
+
+        // Add a Label with the total count for this tile
+        if (nations.size > 3) {
+            // Tons of locations for this tile - display number in red, behind the top three
+            startingLocationIcons.add(nations.size.toString().toLabel(Color.BLACK.cpy().apply { a = 0.7f }, 14).apply {
+                tileGroup.miscLayerGroup.addActor(this)
+                setOrigin(Align.center)
+                center(tileGroup)
+                moveBy(14.4f, -9f)
+            })
+            startingLocationIcons.add(nations.size.toString().toLabel(Color.FIREBRICK, 14).apply {
+                tileGroup.miscLayerGroup.addActor(this)
+                setOrigin(Align.center)
+                center(tileGroup)
+                moveBy(14f, -8.4f)
+            })
+        }
+    }
 }
