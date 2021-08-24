@@ -81,6 +81,7 @@ jobs:
           echo "${{ env.RELEASE_BODY }}" > whatsNewDirectory/whatsnew-en-US
           ./gradlew :android:bundleRelease
           ./gradlew :android:assembleRelease
+          mkdir deploy
           mv android/build/outputs/apk/release/Unciv-release-unsigned.apk deploy/Unciv.apk
 
         
