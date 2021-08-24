@@ -20,12 +20,12 @@ android {
         }
     }
     packagingOptions {
-        exclude("META-INF/robovm/ios/robovm.xml")
+        resources.excludes.add("META-INF/robovm/ios/robovm.xml")
     }
     defaultConfig {
         applicationId = "com.unciv.app"
-        minSdkVersion(14)
-        targetSdkVersion(31)
+        minSdk = 14
+        targetSdk =31
         versionCode = BuildConfig.appCodeNumber
         versionName = BuildConfig.appVersion
 
