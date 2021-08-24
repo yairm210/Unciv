@@ -981,7 +981,7 @@ class MapUnit {
     }
 
     fun getPower(): Int {
-        val promotionBonus = promotions.numberOfPromotions.toFloat().pow(0.3f)
+        val promotionBonus = (promotions.numberOfPromotions + 1).toFloat().pow(0.3f)
         var power = (baseUnit.getPower() * promotionBonus).toInt()
         power *= health
         power /= 100
