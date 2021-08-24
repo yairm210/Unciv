@@ -757,11 +757,6 @@ open class TileInfo {
     }
 
     private fun normalizeTileImprovement(ruleset: Ruleset) {
-        // This runs from map editor too, so the Pseudo-improvements for starting locations need to stay.
-        if (improvement!!.startsWith(TileMap.startingLocationPrefix)) {
-            if (!isLand || getLastTerrain().impassable) improvement = null
-            return
-        }
         val improvementObject = ruleset.tileImprovements[improvement]
         if (improvementObject == null) {
             improvement = null

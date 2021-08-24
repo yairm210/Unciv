@@ -15,6 +15,7 @@ class TileGroupIcons(val tileGroup: TileGroup) {
 
     var improvementIcon: Actor? = null
     var populationIcon: Image? = null //reuse for acquire icon
+    val startingLocationIcons = mutableListOf<Actor>()
 
     var civilianUnitIcon: UnitGroup? = null
     var militaryUnitIcon: UnitGroup? = null
@@ -22,6 +23,7 @@ class TileGroupIcons(val tileGroup: TileGroup) {
     fun update(showResourcesAndImprovements: Boolean, showTileYields: Boolean, tileIsViewable: Boolean, showMilitaryUnit: Boolean, viewingCiv: CivilizationInfo?) {
         updateResourceIcon(showResourcesAndImprovements)
         updateImprovementIcon(showResourcesAndImprovements)
+        updateStartingLocationIcon(showResourcesAndImprovements)
 
         if (viewingCiv != null) updateYieldIcon(showTileYields, viewingCiv)
 
@@ -49,7 +51,7 @@ class TileGroupIcons(val tileGroup: TileGroup) {
     }
 
 
-    fun newUnitIcon(unit: MapUnit?, oldUnitGroup: UnitGroup?, isViewable: Boolean, yFromCenter: Float, viewingCiv: CivilizationInfo?): UnitGroup? {
+    private fun newUnitIcon(unit: MapUnit?, oldUnitGroup: UnitGroup?, isViewable: Boolean, yFromCenter: Float, viewingCiv: CivilizationInfo?): UnitGroup? {
         var newImage: UnitGroup? = null
         // The unit can change within one update - for instance, when attacking, the attacker replaces the defender!
         oldUnitGroup?.unitBaseImage?.remove()
@@ -101,24 +103,21 @@ class TileGroupIcons(val tileGroup: TileGroup) {
     }
 
 
-    fun updateImprovementIcon(showResourcesAndImprovements: Boolean) {
+    private fun updateImprovementIcon(showResourcesAndImprovements: Boolean) {
         improvementIcon?.remove()
         improvementIcon = null
+        if (tileGroup.tileInfo.improvement == null || !showResourcesAndImprovements) return
 
-        if (tileGroup.tileInfo.improvement != null && showResourcesAndImprovements) {
-            val newImprovementImage = ImageGetter.getImprovementIcon(tileGroup.tileInfo.improvement!!)
-            tileGroup.miscLayerGroup.addActor(newImprovementImage)
-            newImprovementImage.run {
-                setSize(20f, 20f)
-                center(tileGroup)
-                this.x -= 22 // left
-                this.y -= 10 // bottom
-            }
-            improvementIcon = newImprovementImage
+        val newImprovementImage = ImageGetter.getImprovementIcon(tileGroup.tileInfo.improvement!!)
+        tileGroup.miscLayerGroup.addActor(newImprovementImage)
+        newImprovementImage.run {
+            setSize(20f, 20f)
+            center(tileGroup)
+            this.x -= 22 // left
+            this.y -= 10 // bottom
+            color = Color.WHITE.cpy().apply { a = 0.7f }
         }
-        if (improvementIcon != null) {
-            improvementIcon!!.color = Color.WHITE.cpy().apply { a = 0.7f }
-        }
+        improvementIcon = newImprovementImage
     }
 
     // JN updating display of tile yields
@@ -144,7 +143,7 @@ class TileGroupIcons(val tileGroup: TileGroup) {
     }
 
 
-    fun updateResourceIcon(showResourcesAndImprovements: Boolean) {
+    private fun updateResourceIcon(showResourcesAndImprovements: Boolean) {
         if (tileGroup.resource != tileGroup.tileInfo.resource) {
             tileGroup.resource = tileGroup.tileInfo.resource
             tileGroup.resourceImage?.remove()
@@ -169,4 +168,39 @@ class TileGroupIcons(val tileGroup: TileGroup) {
     }
 
 
+    private fun updateStartingLocationIcon(showResourcesAndImprovements: Boolean) {
+        // these are visible in map editor only, but making that bit available here seems overkill
+
+        startingLocationIcons.forEach { it.remove() }
+        startingLocationIcons.clear()
+        if (!showResourcesAndImprovements) return
+        if (tileGroup.forMapEditorIcon) return  // the editor options for terrain do not bother to fully initialize, so tileInfo.tileMap would be an uninitialized lateinit
+
+        // Allow display of up to three nations starting locations on the same tile, ignore rest
+        // The sort is just so it shows _some_ deterministic behaviour, otherwise you could get
+        // different stacking order of the same nations in the same editing session
+        val tileInfo = tileGroup.tileInfo
+        val nations = tileInfo.tileMap.startingLocationsByNation.asSequence()
+            .filter { tileInfo in it.value }.map { it.key }.take(3)
+            .sorted().toList()
+        if (nations.isEmpty()) return
+
+        var offsetX = (nations.size - 1) * 4f
+        var offsetY = (nations.size - 1) * 2f
+        for (nation in nations) {
+            val newNationIcon =
+                ImageGetter.getNationIndicator(ImageGetter.ruleset.nations[nation]!!, 20f)
+            tileGroup.miscLayerGroup.addActor(newNationIcon)
+            newNationIcon.run {
+                setSize(20f, 20f)
+                center(tileGroup)
+                x += offsetX
+                y += offsetY
+                color = Color.WHITE.cpy().apply { a = 0.6f }
+            }
+            startingLocationIcons.add(newNationIcon)
+            offsetX -= 8f
+            offsetY -= 4f
+        }
+    } 
 }
