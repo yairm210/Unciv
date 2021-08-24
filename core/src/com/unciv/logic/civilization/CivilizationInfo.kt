@@ -1001,9 +1001,9 @@ class CivilizationInfo {
         modifiers["Base value"] = -110
 
         if (cityStatePersonality == CityStatePersonality.Hostile)
-            modifiers["Hostile personality"] = -10
+            modifiers["Hostile"] = -10
         if (cityStateType == CityStateType.Militaristic)
-            modifiers["Militaristic City-State"] = -10
+            modifiers["Militaristic"] = -10
         if (allyCivName != null && allyCivName != demandingCiv.civName)
             modifiers["Has Ally"] = -10
         if (getProtectorCivs().any { it != demandingCiv })
