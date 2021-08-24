@@ -32,6 +32,7 @@ import com.unciv.ui.victoryscreen.RankingType
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
+import kotlin.collections.LinkedHashMap
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.pow
@@ -982,32 +983,45 @@ class CivilizationInfo {
     }
 
     fun getTributeWillingness(demandingCiv: CivilizationInfo, demandingWorker: Boolean = false): Int {
+        return getTributeModifiers(demandingCiv, demandingWorker).values.sum()
+    }
+
+    fun getTributeModifiers(demandingCiv: CivilizationInfo, demandingWorker: Boolean = false): HashMap<String, Int> {
+        val modifiers = LinkedHashMap<String, Int>()    // Linked to preserve order when presenting the modifiers table
         // Can't bully major civs or unsettled CS's
-        if (!isCityState() || cities.isEmpty()) return -999
-        var willingness = -110  // Base value
+        if (!isCityState()) {
+            modifiers["Major Civ"] = -999
+            return modifiers
+        }
+        if (cities.isEmpty()) {
+            modifiers["No Cities"] = -999
+            return  modifiers
+        }
+
+        modifiers["Base value"] = -110
 
         if (cityStatePersonality == CityStatePersonality.Hostile)
-            willingness -= 10   // -10 if Hostile
+            modifiers["Hostile personality"] = -10
         if (cityStateType == CityStateType.Militaristic)
-            willingness -= 10   // -10 if Militaristic
+            modifiers["Militaristic City-State"] = -10
         if (allyCivName != null && allyCivName != demandingCiv.civName)
-            willingness -= 10   // -10 if someone else is their Ally
+            modifiers["Has Ally"] = -10
         if (getProtectorCivs().any { it != demandingCiv })
-            willingness -= 20   // -20 if someone else pledged protection
+            modifiers["Has Protector"] = -20
         if (demandingWorker)
-            willingness -= 30   // -30 if demanding worker
+            modifiers["Demanding a Worker"] = -30
         if (demandingWorker && getCapital().population.population < 4)
-            willingness -= 300  // -300 if demanding worker from size < 4 city
+            modifiers["Demanding a Worker from small City-State"] = -300
         val recentBullying = flagsCountdown[CivFlags.RecentlyBullied.name]
         if (recentBullying != null && recentBullying > 10)
-            willingness -= 300  // -300 if very recently demanded tribute (10 turns)
+            modifiers["Very recently paid tribute"] = -300
         else if (recentBullying != null)
-            willingness -= 40   // -40 if recently demanded tribute (20 turns)
+            modifiers["Recently paid tribute"] = -40
         if (getDiplomacyManager(demandingCiv).influence < -30)
-            willingness -= 300  // -300 if less than -30 influence
+            modifiers["Influence below -30"] = -300
 
         val forceRank = gameInfo.getAliveMajorCivs().sortedByDescending { it.getStatForRanking(RankingType.Force) }.indexOf(demandingCiv)
-        willingness += 75 - ((75 / gameInfo.gameParameters.players.size) * forceRank)
+        modifiers["Military Rank"] = 75 - ((75 / gameInfo.gameParameters.players.size) * forceRank)
 
         val bullyRange = max(5, gameInfo.tileMap.tileMatrix.size / 10)   // Longer range for larger maps
         val inRangeTiles = getCapital().getCenterTile().getTilesInDistanceRange(1..bullyRange)
@@ -1023,19 +1037,16 @@ class CivilizationInfo {
             }
         val forceRatio = forceNearCity.toFloat() / csForce.toFloat()
 
-        when {
-            forceRatio > 3f -> willingness += 125
-            forceRatio > 2f -> willingness += 100
-            forceRatio > 1.5f -> willingness += 75
-            forceRatio > 1f -> willingness += 50
-            forceRatio > 0.5f -> willingness += 25
+        modifiers["Military near City-State"] = when {
+            forceRatio > 3f -> 125
+            forceRatio > 2f -> 100
+            forceRatio > 1.5f -> 75
+            forceRatio > 1f -> 50
+            forceRatio > 0.5f -> 25
+            else -> 0
         }
 
-        println ("Force rank " + forceRank.toString())
-        println ("Force near CS " + forceNearCity.toString() + ", CS Force " + csForce.toString() + ", ratio " + forceRatio.toString())
-        println ("Willingness " + willingness.toString())
-
-        return willingness
+        return modifiers
     }
 
     fun goldGainedByTribute(): Int {

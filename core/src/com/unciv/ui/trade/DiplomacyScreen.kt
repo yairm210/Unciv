@@ -273,7 +273,7 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
             rightSideTable.add(ScrollPane(getDemandTributeTable(otherCiv)))
         }
         diplomacyTable.add(demandTributeButton).row()
-        if (isNotPlayersTurn() || otherCiv.getTributeWillingness(viewingCiv) <= 0) demandTributeButton.disable()
+        if (isNotPlayersTurn()) demandTributeButton.disable()
 
         val diplomacyManager = viewingCiv.getDiplomacyManager(otherCiv)
         if (!viewingCiv.gameInfo.ruleSet.modOptions.uniques.contains(ModOptionsConstants.diplomaticRelationshipsCannotChange)) {
@@ -422,6 +422,16 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
 
     private fun getDemandTributeTable(otherCiv: CivilizationInfo): Table {
         val diplomacyTable = getCityStateDiplomacyTableHeader(otherCiv)
+        diplomacyTable.addSeparator()
+
+        val modifierTable = Table()
+        for (item in otherCiv.getTributeModifiers(viewingCiv)) {
+            modifierTable.add(item.key.toLabel())
+            modifierTable.add(item.value.toLabel()).row()
+        }
+        modifierTable.add("Sum:".toLabel())
+        modifierTable.add(otherCiv.getTributeWillingness(viewingCiv).toLabel()).row()
+        diplomacyTable.add(modifierTable).row()
         diplomacyTable.addSeparator()
 
         val demandGoldButton = "Take [${otherCiv.goldGainedByTribute()}] gold (-15 Influence)".toTextButton()

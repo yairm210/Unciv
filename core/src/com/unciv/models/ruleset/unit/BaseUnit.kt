@@ -458,6 +458,8 @@ class BaseUnit : INamed, INonPerpetualConstruction, ICivilopediaText {
         )
 
     fun getPower(): Int {
+        if (strength == 0 && rangedStrength == 0) return 0
+
         var power = strength.toFloat().pow(1.5f).toInt()
         var rangedPower = rangedStrength.toFloat().pow(1.45f).toInt()
 
