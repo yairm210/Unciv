@@ -19,6 +19,7 @@ import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 import kotlin.collections.HashSet
+import kotlin.math.pow
 
 // This is BaseUnit because Unit is already a base Kotlin class and to avoid mixing the two up
 
@@ -455,4 +456,69 @@ class BaseUnit : INamed, INonPerpetualConstruction, ICivilopediaText {
             && (uniqueObjects + getType().uniqueObjects)
                 .any { it.placeholderText == "+[]% Strength vs []" && it.params[1] == "City" }
         )
+
+    fun getPower(): Int {
+        var power = strength.toFloat().pow(1.5f).toInt()
+        var rangedPower = rangedStrength.toFloat().pow(1.45f).toInt()
+
+        // Value ranged naval units slightly less
+        if (isWaterUnit()) {
+            rangedPower *= 3
+            rangedPower /= 4
+        }
+        if (rangedPower > power)
+            power = rangedPower
+
+        /* In Civ V, there was an attempt to implement scaling by unit movement at this point,
+        however the formula was bugged. To preserve the bug this scaling is not implemented here. */
+
+        if (uniqueObjects.any { it.placeholderText =="Self-destructs when attacking" } )
+            power /= 2
+        if (uniqueObjects.any { it.placeholderText =="Nuclear weapon of Strength []" } )
+            power += 4000
+
+        // Uniques
+        for (unique in uniqueObjects) {
+
+            when {
+                unique.placeholderText == "+[]% Strength vs []" && unique.params[1] == "City" // City Attack - half the bonus
+                    -> power += (power * unique.params[0].toInt()) / 200
+                unique.placeholderText == "+[]% Strength vs []" && unique.params[1] != "City" // Bonus vs something else - a quarter of the bonus
+                    -> power += (power * unique.params[0].toInt()) / 400
+                unique.placeholderText == "+[]% Strength when attacking" // Attack - half the bonus
+                    -> power += (power * unique.params[0].toInt()) / 200
+                unique.placeholderText == "+[]% Strength when defending" // Defense - half the bonus
+                    -> power += (power * unique.params[0].toInt()) / 200
+                unique.placeholderText == "May Paradrop up to [] tiles from inside friendly territory" // Paradrop - 25% bonus
+                    -> power += power / 4
+                unique.placeholderText == "Must set up to ranged attack" // Must set up - 20 % penalty
+                    -> power -= power / 5
+                unique.placeholderText == "+[]% Strength in []" // Bonus in terrain or feature - half the bonus
+                    -> power += (power * unique.params[0].toInt()) / 200
+            }
+        }
+
+        // Base promotions
+        for (promotionName in promotions) {
+            for (unique in ruleset.unitPromotions[promotionName]!!.uniqueObjects) {
+                when {
+                    unique.placeholderText == "+[]% Strength vs []" && unique.params[1] == "City" // City Attack - half the bonus
+                        -> power += (power * unique.params[0].toInt()) / 200
+                    unique.placeholderText == "+[]% Strength vs []" && unique.params[1] != "City" // Bonus vs something else - a quarter of the bonus
+                        -> power += (power * unique.params[0].toInt()) / 400
+                    unique.placeholderText == "+[]% Strength when attacking" // Attack - half the bonus
+                        -> power += (power * unique.params[0].toInt()) / 200
+                    unique.placeholderText == "+[]% Strength when defending" // Defense - half the bonus
+                        -> power += (power * unique.params[0].toInt()) / 200
+                    unique.placeholderText == "[] additional attacks per turn" // Extra attacks - 25% bonus per extra attack
+                        -> power += (power * unique.params[0].toInt()) / 4
+                    unique.placeholderText == "+[]% Strength in []" // Bonus in terrain or feature - half the bonus
+                        -> power += (power * unique.params[0].toInt()) / 200
+                }
+            }
+
+        }
+
+        return power
+    }
 }

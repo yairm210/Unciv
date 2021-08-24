@@ -980,7 +980,11 @@ class MapUnit {
     }
 
     fun getPower(): Int {
-        return baseUnit.strength
+        val promotionBonus = promotions.numberOfPromotions * 125
+        var power = (baseUnit.getPower() * (1000 + promotionBonus)) / 1000
+        power *= health
+        power /= 100
+        return power
     }
 
     //endregion
