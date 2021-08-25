@@ -81,8 +81,8 @@ class Building : NamedStats(), INonPerpetualConstruction, ICivilopediaText {
     fun getShortDescription(ruleset: Ruleset): String { // should fit in one line
         val infoList = mutableListOf<String>()
         getStats(null).toString().also { if (it.isNotEmpty()) infoList += it }
-        for (stat in getStatPercentageBonuses(null).toHashMap())
-            if (stat.value != 0f) infoList += "+${stat.value.toInt()}% ${stat.key.name.tr()}"
+        for ((key, value) in getStatPercentageBonuses(null))
+            infoList += "+${value.toInt()}% ${key.name.tr()}"
 
         if (requiredNearbyImprovedResources != null)
             infoList += "Requires worked [" + requiredNearbyImprovedResources!!.joinToString("/") { it.tr() } + "] near city"
@@ -143,7 +143,7 @@ class Building : NamedStats(), INonPerpetualConstruction, ICivilopediaText {
         if (!stats.isEmpty())
             lines += stats.toString()
 
-        for ((stat, value) in getStatPercentageBonuses(cityInfo).toHashMap())
+        for ((stat, value) in getStatPercentageBonuses(cityInfo))
             if (value != 0f) lines += "+${value.toInt()}% {${stat.name}}\n"
 
         for ((greatPersonName, value) in greatPersonPoints)
@@ -193,7 +193,7 @@ class Building : NamedStats(), INonPerpetualConstruction, ICivilopediaText {
     }
 
     fun getStatPercentageBonuses(cityInfo: CityInfo?): Stats {
-        val stats = if (percentStatBonus == null) Stats() else percentStatBonus!!.clone()
+        val stats = percentStatBonus?.clone() ?: Stats()
         val civInfo = cityInfo?.civInfo ?: return stats  // initial stats
 
         val baseBuildingName = getBaseBuilding(civInfo.gameInfo.ruleSet).name
@@ -320,7 +320,7 @@ class Building : NamedStats(), INonPerpetualConstruction, ICivilopediaText {
         }
 
         if (!percentStats.isEmpty()) {
-            for ( (key, value) in percentStats.toHashMap()) {
+            for ((key, value) in percentStats) {
                 if (value == 0f) continue
                 textList += FormattedLine(value.formatSignedInt() + "% {$key}")
             }
@@ -676,8 +676,8 @@ class Building : NamedStats(), INonPerpetualConstruction, ICivilopediaText {
 
     fun isStatRelated(stat: Stat): Boolean {
         if (get(stat) > 0) return true
-        if (getStatPercentageBonuses(null).get(stat) > 0) return true
-        if (uniqueObjects.any { it.placeholderText == "[] per [] population []" && it.stats.get(stat) > 0 }) return true
+        if (getStatPercentageBonuses(null)[stat] > 0) return true
+        if (uniqueObjects.any { it.placeholderText == "[] per [] population []" && it.stats[stat] > 0 }) return true
         return false
     }
 

@@ -218,12 +218,12 @@ object SpecificUnitAutomation {
     fun automateImprovementPlacer(unit: MapUnit) {
         val improvementName = unit.getMatchingUniques("Can construct []").first().params[0]
         val improvement = unit.civInfo.gameInfo.ruleSet.tileImprovements[improvementName]!!
-        val relatedStat = improvement.toHashMap().maxByOrNull { it.value }!!.key
+        val relatedStat = improvement.maxByOrNull { it.value }!!.key
 
         val citiesByStatBoost = unit.civInfo.cities.sortedByDescending {
             val stats = Stats()
             for (bonus in it.cityStats.statPercentBonusList.values) stats.add(bonus)
-            stats.toHashMap()[relatedStat]!!
+            stats[relatedStat]
         }
 
 

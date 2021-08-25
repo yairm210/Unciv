@@ -92,13 +92,13 @@ class StatsOverviewTable (
         scienceTable.add(scienceHeader).colspan(2).row()
         scienceTable.addSeparator()
         val scienceStats = viewingPlayer.stats().getStatMapForNextTurn()
-            .filter { it.value.science!=0f }
+            .filter { it.value.science != 0f }
         for (entry in scienceStats) {
             scienceTable.add(entry.key.tr())
             scienceTable.add(entry.value.science.roundToInt().toString()).right().row()
         }
         scienceTable.add("Total".tr())
-        scienceTable.add(scienceStats.values.map { it.science }.sum().roundToInt().toString()).right()
+        scienceTable.add(scienceStats.map { it.value.science }.sum().roundToInt().toString()).right()
         scienceTable.pack()
         return scienceTable
     }
@@ -108,9 +108,8 @@ class StatsOverviewTable (
 
         val greatPersonPoints = GreatPersonManager
             .greatPersonCounterToStats(viewingPlayer.greatPeople.greatPersonPointsCounter)
-            .toHashMap()
         val greatPersonPointsPerTurn = GreatPersonManager
-            .greatPersonCounterToStats(viewingPlayer.getGreatPersonPointsForNextTurn()).toHashMap()
+            .greatPersonCounterToStats(viewingPlayer.getGreatPersonPointsForNextTurn())
         val pointsToGreatPerson = viewingPlayer.greatPeople.pointsForNextGreatPerson
 
         greatPeopleTable.defaults().pad(5f)
@@ -128,11 +127,11 @@ class StatsOverviewTable (
         val mapping = GreatPersonManager.statToGreatPersonMapping
         for(entry in mapping){
             greatPeopleTable.add(entry.value.tr())
-            greatPeopleTable.add(greatPersonPoints[entry.key]!!.toInt().toString()+"/"+pointsToGreatPerson)
-            greatPeopleTable.add(greatPersonPointsPerTurn[entry.key]!!.toInt().toString()).row()
+            greatPeopleTable.add(greatPersonPoints[entry.key].toInt().toString()+"/"+pointsToGreatPerson)
+            greatPeopleTable.add(greatPersonPointsPerTurn[entry.key].toInt().toString()).row()
         }
-        val pointsForGreatGeneral = viewingPlayer.greatPeople.greatGeneralPoints.toString()
-        val pointsForNextGreatGeneral = viewingPlayer.greatPeople.pointsForNextGreatGeneral.toString()
+        val pointsForGreatGeneral = viewingPlayer.greatPeople.greatGeneralPoints
+        val pointsForNextGreatGeneral = viewingPlayer.greatPeople.pointsForNextGreatGeneral
         greatPeopleTable.add("Great General".tr())
         greatPeopleTable.add("$pointsForGreatGeneral/$pointsForNextGreatGeneral").row()
         greatPeopleTable.pack()
