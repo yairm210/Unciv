@@ -24,9 +24,9 @@ class TileInfoTable(private val viewingCiv :CivilizationInfo) : Table(CameraStag
             add(getStatsTable(tile))
             add( MarkupRenderer.render(tile.toMarkup(viewingCiv), padding = 0f, noLinkImages = true) {
                 UncivGame.Current.setScreen(CivilopediaScreen(viewingCiv.gameInfo.ruleSet, link = it))
-            } ).pad(5f)
-            // For debug only!
-//            add(tile.position.toString().toLabel()).colspan(2).pad(10f)
+            } ).pad(5f).row()
+            if (UncivGame.Current.viewEntireMapForDebug)
+                add(tile.position.run { "(${x.toInt()},${y.toInt()})" }.toLabel()).colspan(2).pad(5f)
         }
 
         pack()
@@ -38,11 +38,10 @@ class TileInfoTable(private val viewingCiv :CivilizationInfo) : Table(CameraStag
 
         // padLeft = padRight + 5: for symmetry. An extra 5 for the distance yield number to
         // tile text comes from the pad up there in updateTileTable
-        for (entry in tile.getTileStats(viewingCiv).toHashMap()
-                .filterNot { it.value == 0f || it.key.toString() == "" }) {
-            table.add(ImageGetter.getStatIcon(entry.key.toString()))
+        for ((key, value) in tile.getTileStats(viewingCiv)) {
+            table.add(ImageGetter.getStatIcon(key.name))
                 .size(20f).align(Align.right).padLeft(10f)
-            table.add(entry.value.toInt().toLabel())
+            table.add(value.toInt().toLabel())
                 .align(Align.left).padRight(5f)
             table.row()
         }

@@ -91,10 +91,7 @@ class NewGameScreen(
 
             if (mapOptionsTable.mapTypeSelectBox.selected.value == MapType.custom){
                 val map = MapSaver.loadMap(gameSetupInfo.mapFile!!)
-                val rulesetIncompatibilities = HashSet<String>()
-                for (set in map.values.map { it.getRulesetIncompatibility(ruleset) })
-                    rulesetIncompatibilities.addAll(set)
-                rulesetIncompatibilities.remove("")
+                val rulesetIncompatibilities = map.getRulesetIncompatibility(ruleset)
 
                 if (rulesetIncompatibilities.isNotEmpty()) {
                     val incompatibleMap = Popup(this)

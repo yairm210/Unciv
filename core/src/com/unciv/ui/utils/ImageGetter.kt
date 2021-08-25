@@ -16,6 +16,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.UncivGame
+import com.unciv.logic.map.TileMap
 import com.unciv.models.ruleset.Era
 import com.unciv.models.ruleset.Nation
 import com.unciv.models.ruleset.Ruleset
@@ -60,19 +61,18 @@ object ImageGetter {
             textureRegionDrawables[region.name] = drawable
         }
 
-        for (singleImagesFolder in sequenceOf("BuildingIcons", "FlagIcons", "UnitIcons")) {
-            if (!atlases.containsKey(singleImagesFolder)) atlases[singleImagesFolder] = TextureAtlas("$singleImagesFolder.atlas")
-            val tempAtlas = atlases[singleImagesFolder]!!
+        // Load all other atlas files
+        for (file in Gdx.files.internal(".").list(".atlas")) {
+            val extraAtlas = file.nameWithoutExtension()
+            val tempAtlas = atlases[extraAtlas]  // fetch if cached
+                ?: TextureAtlas(file.name()).apply {  // load if not
+                    atlases[extraAtlas] = this  // cache the freshly loaded
+                }
+            val prefix = if (extraAtlas == "Skin") "Skin/" else ""  // Only Skin is packed without folder prefix
             for (region in tempAtlas.regions) {
                 val drawable = TextureRegionDrawable(region)
-                textureRegionDrawables["$singleImagesFolder/" + region.name] = drawable
+                textureRegionDrawables[prefix + region.name] = drawable
             }
-        }
-
-        if (!atlases.containsKey("Skin")) atlases["Skin"] = TextureAtlas("Skin.atlas")
-        for (region in atlases["Skin"]!!.regions) {
-            val drawable = TextureRegionDrawable(region)
-            textureRegionDrawables["Skin/" + region.name] = drawable
         }
 
         // These are from the mods
@@ -131,10 +131,10 @@ object ImageGetter {
         val layerNames = mutableListOf(baseFileName)
         val layerList = arrayListOf<Image>()
 
-        var i = 1
-        while (imageExists("$baseFileName-$i")) {
-            layerNames.add("$baseFileName-$i")
-            ++i
+        var number = 1
+        while (imageExists("$baseFileName-$number")) {
+            layerNames.add("$baseFileName-$number")
+            ++number
         }
 
         for (i in layerNames.indices) {
@@ -253,11 +253,6 @@ object ImageGetter {
     fun getImprovementIcon(improvementName: String, size: Float = 20f): Actor {
         if (improvementName.startsWith("Remove") || improvementName == Constants.cancelImprovementOrder)
             return Table().apply { add(getImage("OtherIcons/Stop")).size(size) }
-        if (improvementName.startsWith("StartingLocation ")) {
-            val nationName = improvementName.removePrefix("StartingLocation ")
-            val nation = ruleset.nations[nationName]!!
-            return getNationIndicator(nation, size)
-        }
 
         val iconGroup = getImage("ImprovementIcons/$improvementName").surroundWithCircle(size)
 

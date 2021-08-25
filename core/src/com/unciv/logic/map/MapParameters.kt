@@ -158,5 +158,14 @@ class MapParameters {
     }
 
     // For debugging and MapGenerator console output
-    override fun toString() = "($mapSize ${if (worldWrap)"wrapped " else ""}$shape $type, Seed $seed, $elevationExponent/$temperatureExtremeness/$resourceRichness/$vegetationRichness/$rareFeaturesRichness/$maxCoastExtension/$tilesPerBiomeArea/$waterThreshold)"
+    override fun toString() = sequence {
+        if (name.isNotEmpty()) yield("\"$name\" ")
+        yield("($mapSize ")
+        if (worldWrap) yield("wrapped ")
+        yield(shape)
+        if (name.isEmpty()) return@sequence
+        yield(" $type, Seed $seed, ")
+        yield("$elevationExponent/$temperatureExtremeness/$resourceRichness/$vegetationRichness/")
+        yield("$rareFeaturesRichness/$maxCoastExtension/$tilesPerBiomeArea/$waterThreshold")
+    }.joinToString("", postfix = ")")
 }

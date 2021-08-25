@@ -16,6 +16,18 @@ Tile icons for the "ThorfMaps tileset belong to Thorfinn Tait and are licensed u
 Unless otherwise specified, all the following are from [the Noun Project](https://thenounproject.com) licenced under either Creative Commons or Public Domain
 
 
+## Stat icons
+
+* [Gear](https://thenounproject.com/term/gear/29368) by Alex Bickov for Production
+* [Apple](https://thenounproject.com/term/apple/1139396) by Pedro Gonçalves for Food
+* [gold](https://thenounproject.com/term/gold/25438) by Eliricon for Gold
+* [Beaker](https://thenounproject.com/term/beaker/621510) by Delwar Hossain for Science
+* [Music](https://thenounproject.com/term/music/5611/) by Naomi Atkinson for Culture
+* [Smiley](https://thenounproject.com/term/smiley/1024026) by Alexander Skowalsky for Happiness
+* [Dove](https://thenounproject.com/term/dove/1344084) by Sandra for Faith
+* [User](https://thenounproject.com/term/user/38217) by Stéphanie Rusch for Population
+* [Unhappy](https://thenounproject.com/term/unhappy/116793) By Daryl Vandermont for Malcontent
+
 ## Units
 
 ### Ancient Era
@@ -133,6 +145,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Dove](https://thenounproject.com/search/?q=dove&i=1344088) by sandra for Great Prophet
 * [General](https://thenounproject.com/search/?q=general&i=933566) By anbileru adaleru for Great General
 * [Religion](https://thenounproject.com/search/?q=preach&i=53064) by Bruno Gätjens González adapted for Missionary
+* [invisibility cloak ](https://thenounproject.com/term/invisibility-cloak/1419648/) by Locad for Inquisitor
 
 ## Resources
 
@@ -171,7 +184,6 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Woodcutting axe](https://thenounproject.com/term/woodcutting-axe/1060560/) By Chanut is Industries for Lumber Mill
 * [Monument](https://thenounproject.com/term/monument/1175928/) By Setyo Ari Wibowo for Landmark
 * [Farm](https://thenounproject.com/term/farm/25362/) By Bonnie Beach
-* [Unhappy](https://thenounproject.com/term/unhappy/116793/) By Daryl Vandermont (doesn't belong here)
 * [Bank](https://thenounproject.com/term/bank/1648569/) By Scott Dunlap for Customs House
 * [Academy](https://thenounproject.com/term/academy/1689703/) By CJS
 * [Factory](https://thenounproject.com/term/factory/1049531/) By RULI for Manufactory
@@ -572,6 +584,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [survival knife](https://thenounproject.com/search/?q=survival&i=2663392) by b faris for Survivalism
 
 ## Religions
+
 * [Lightning Bolt](https://thenounproject.com/search/?q=lightning+bolt&i=154820) by sian huxtable for Pantheon
 * [Christianity](https://thenounproject.com/search/?q=christianity&i=181) by Public Domain Nouns for Christianity
 * [Islam](https://thenounproject.com/search/?q=Islam&i=2431350) by Muhammed Riza for Islam
@@ -612,8 +625,8 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [City](https://thenounproject.com/search/?q=city&i=1765370) By Muhajir ila Robbi in the Icon center
 * [Lock](https://thenounproject.com/search/?q=lock&i=3217613) by Vadim Solomakhin for locked tiles
 * [Hourglass](https://thenounproject.com/search/?q=hourglass&i=142268) by I Create Stuff for the 'Turn' icon
-* [Dove](https://thenounproject.com/search/?q=dove&i=1344084) by Sandra for Faith
 * [Shield](https://thenounproject.com/search/?q=shield&i=813568) by Gregor Cresnar for Religious Strength
+* [skill sword flame](https://thenounproject.com/term/skill-sword-flame/2360212/) by Maxicons) for Remove Heresy
 
 ## Main menu
 
@@ -627,7 +640,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 
 # Sound credits
 
-Sounds are from FreeSound.org and are either Creative Commons or Public Domain
+Sounds are from FreeSound.org unless otherwise noted and are either Creative Commons or Public Domain unless otherwise noted
 
 * [Soft two-fingered snap](https://freesound.org/people/EathanMarkson/sounds/388958/) By EathanMarkson as 'click' for most clicks
 * [Pencil1](https://freesound.org/people/stijn/sounds/43673/) By stijn as 'paper' for opening and closing the tech picker
@@ -669,6 +682,8 @@ Sounds are from FreeSound.org and are either Creative Commons or Public Domain
     *    [Artillery Explosion (Close) (Mixed)](https://freesound.org/people/EFlexMusic/sounds/388528/) by EFlexMusic
 * [elephant 44](https://freesound.org/people/y89312/sounds/139875/) by y89312 for Naruesan's Elephant sound
 * Excerpt from [Missile Strike](https://freesound.org/people/BaDoink/sounds/570690/) by BaDoink for guided missile
+
+* Excerpt from [Campfire](https://www.soundjay.com/nature/sounds/campfire-1.mp3) by SoundJay for Fire & 'remove heresy' action of inquisitor
 
 # Music
 The following music is from https://filmmusic.io

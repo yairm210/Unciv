@@ -124,21 +124,21 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
                         "City-States",
                         Stats().add(
                             Stat.valueOf(unique.params[0]),
-                            otherCiv.statsForNextTurn.get(Stat.valueOf(unique.params[0])) * unique.params[1].toFloat() / 100f
+                            otherCiv.statsForNextTurn[Stat.valueOf(unique.params[0])] * unique.params[1].toFloat() / 100f
                         )
                     )
                 }
         }
 
-        statMap["Transportation upkeep"] = Stats().apply { gold = -getTransportationUpkeep().toFloat() }
-        statMap["Unit upkeep"] = Stats().apply { gold = -getUnitMaintenance().toFloat() }
+        statMap["Transportation upkeep"] = Stats(gold = -getTransportationUpkeep().toFloat())
+        statMap["Unit upkeep"] = Stats(gold = -getUnitMaintenance().toFloat())
 
         if (civInfo.religionManager.religion != null) {
             for (unique in civInfo.religionManager.religion!!.getFounderBeliefs().flatMap { it.uniqueObjects }) {
                 if (unique.placeholderText == "[] for each global city following this religion") {
                     statMap.add(
                         "Religion", 
-                        unique.stats.times(civInfo.religionManager.numberOfCitiesFollowingThisReligion().toFloat())
+                        unique.stats.times(civInfo.religionManager.numberOfCitiesFollowingThisReligion())
                     )
                 }
             }
@@ -154,7 +154,7 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
 
         if (civInfo.hasUnique("50% of excess happiness added to culture towards policies")) {
             val happiness = civInfo.getHappiness()
-            if (happiness > 0) statMap.add("Policies", Stats().apply { culture = happiness / 2f })
+            if (happiness > 0) statMap.add("Policies", Stats(culture = happiness / 2f))
         }
 
         // negative gold hurts science
@@ -163,11 +163,11 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
         if (statMap.values.map { it.gold }.sum() < 0 && civInfo.gold < 0) {
             val scienceDeficit = max(statMap.values.map { it.gold }.sum(),
                     1 - statMap.values.map { it.science }.sum())// Leave at least 1
-            statMap["Treasury deficit"] = Stats().apply { science = scienceDeficit }
+            statMap["Treasury deficit"] = Stats(science = scienceDeficit)
         }
         val goldDifferenceFromTrade = civInfo.diplomacy.values.sumBy { it.goldPerTurn() }
         if (goldDifferenceFromTrade != 0)
-            statMap["Trade"] = Stats().apply { gold = goldDifferenceFromTrade.toFloat() }
+            statMap["Trade"] = Stats(gold = goldDifferenceFromTrade.toFloat())
 
         return statMap
     }

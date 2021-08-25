@@ -6,6 +6,7 @@ import com.unciv.models.ruleset.Unique
 import com.unciv.models.stats.INamed
 import com.unciv.models.stats.Stat
 import com.unciv.ui.utils.Fonts
+import com.unciv.ui.utils.toPercent
 import kotlin.math.pow
 import kotlin.math.roundToInt
 
@@ -55,7 +56,7 @@ interface INonPerpetualConstruction : IConstruction, INamed, IHasUniques {
     
     fun getBaseGoldCost(civInfo: CivilizationInfo): Double {
         // https://forums.civfanatics.com/threads/rush-buying-formula.393892/
-        return (30.0 * getProductionCost(civInfo)).pow(0.75) * (1 + hurryCostModifier / 100f)
+        return (30.0 * getProductionCost(civInfo)).pow(0.75) * hurryCostModifier.toPercent()
     }
     
     fun getBaseBuyCost(cityInfo: CityInfo, stat: Stat): Int? {

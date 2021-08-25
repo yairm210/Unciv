@@ -385,7 +385,7 @@ class CivilizationInfo {
 
         val cityStateLocation = if (cities.isEmpty()) null else getCapital().location
 
-        val giftAmount = Stats().add(Stat.Gold, 15f)
+        val giftAmount = Stats(gold = 15f)
         // Later, religious city-states will also gift gold, making this the better implementation
         // For now, it might be overkill though.
         var meetString = "[${civName}] has given us [${giftAmount}] as a token of goodwill for meeting us"
@@ -398,8 +398,8 @@ class CivilizationInfo {
         else
             otherCiv.addNotification(meetString, NotificationIcon.Gold)
 
-        for (stat in giftAmount.toHashMap().filter { it.value != 0f })
-            otherCiv.addStat(stat.key, stat.value.toInt())
+        for ((key, value) in giftAmount)
+            otherCiv.addStat(key, value.toInt())
     }
 
     fun discoverNaturalWonder(naturalWonderName: String) {
@@ -810,8 +810,6 @@ class CivilizationInfo {
             placedUnit.religion = 
                 if (city != null) city.cityConstructions.cityInfo.religion.getMajorityReligionName()
                 else religionManager.religion?.name
-            if (placedUnit.hasUnique("Can spread religion [] times"))
-                placedUnit.abilityUsedCount["Religion Spread"] = 0
         }
         
         return placedUnit

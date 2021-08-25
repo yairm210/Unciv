@@ -24,7 +24,7 @@ class GreatPersonManager {
 
         fun statsToGreatPersonCounter(stats: Stats): Counter<String> {
             val counter = Counter<String>()
-            for ((key, value) in stats.toHashMap())
+            for ((key, value) in stats)
                 if (statToGreatPersonMapping.containsKey(key))
                     counter.add(statToGreatPersonMapping[key]!!, value.toInt())
             return counter
