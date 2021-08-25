@@ -665,7 +665,7 @@ object UnitActions {
         
         if (gainedStats.isEmpty()) return
         
-        for (stat in gainedStats.toHashMap())
+        for (stat in gainedStats)
             civInfo.addStat(stat.key, stat.value.toInt())
         civInfo.addNotification("By expending your [${unit.name}] you gained [${gainedStats}]!", unit.getTile().position, unit.name)
     }

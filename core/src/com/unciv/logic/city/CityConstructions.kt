@@ -286,8 +286,7 @@ class CityConstructions {
               we get all sorts of fun concurrency problems when accessing various parts of the cityStats.
             SO, we create an entirely new CityStats and iterate there - problem solve!
             */
-            val cityStats = CityStats()
-            cityStats.cityInfo = cityInfo
+            val cityStats = CityStats(cityInfo)
             val construction = cityInfo.cityConstructions.getConstruction(constructionName)
             cityStats.update(construction)
             cityStatsForConstruction = cityStats.currentCityStats

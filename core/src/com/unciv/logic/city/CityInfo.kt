@@ -56,7 +56,9 @@ class CityInfo {
     var population = PopulationManager()
     var cityConstructions = CityConstructions()
     var expansion = CityExpansionManager()
-    var cityStats = CityStats()
+    
+    @Transient  // CityStats has no serializable fields
+    var cityStats = CityStats(this)
 
     /** All tiles that this city controls */
     var tiles = HashSet<Vector2>()
@@ -433,7 +435,6 @@ class CityInfo {
         population.cityInfo = this
         expansion.cityInfo = this
         expansion.setTransients()
-        cityStats.cityInfo = this
         cityConstructions.cityInfo = this
         cityConstructions.setTransients()
         religion.setTransients(this)

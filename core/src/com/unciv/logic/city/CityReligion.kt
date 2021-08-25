@@ -121,8 +121,8 @@ class CityInfoReligionManager {
                 "[] when a city adopts this religion for the first time" -> unique.stats
                 else -> continue
             }
-            for (stat in statsGranted.toHashMap())
-                religionOwningCiv.addStat(stat.key, stat.value.toInt())
+            for ((key, value) in statsGranted)
+                religionOwningCiv.addStat(key, value.toInt())
             if (cityInfo.location in religionOwningCiv.exploredTiles)
                 religionOwningCiv.addNotification(
                     "You gained [$statsGranted] as your religion was spread to [${cityInfo.name}]",

@@ -124,10 +124,9 @@ class Nation : INamed, ICivilopediaText, IHasUniques {
                 val originalBuilding = ruleset.buildings[building.replaces!!]!!
 
                 textList += building.name.tr() + " - " + "Replaces [${originalBuilding.name}]".tr()
-                val originalBuildingStatMap = originalBuilding.toHashMap()
-                for (stat in building.toHashMap())
-                    if (stat.value != originalBuildingStatMap[stat.key])
-                        textList += "  " + stat.key.toString().tr() + " " + "[${stat.value.toInt()}] vs [${originalBuildingStatMap[stat.key]!!.toInt()}]".tr()
+                for ((key, value) in building)
+                    if (value != originalBuilding[key])
+                        textList += "  " + key.name.tr() + " " + "[${value.toInt()}] vs [${originalBuilding[key].toInt()}]".tr()
 
                 for (unique in building.uniques.filter { it !in originalBuilding.uniques })
                     textList += "  " + unique.tr()
@@ -245,13 +244,9 @@ class Nation : INamed, ICivilopediaText, IHasUniques {
                 val originalBuilding = ruleset.buildings[building.replaces!!]!!
                 textList += FormattedLine("Replaces [${originalBuilding.name}]", link=originalBuilding.makeLink(), indent=1)
 
-                val originalBuildingStatMap = originalBuilding.toHashMap()
-                for (stat in building.toHashMap())
-                    if (stat.value != originalBuildingStatMap[stat.key])
-                        textList += FormattedLine(
-                            stat.key.toString().tr() + " " +
-                            "[${stat.value.toInt()}] vs [${originalBuildingStatMap[stat.key]!!.toInt()}]".tr(),
-                            indent=1)
+                for ((key, value) in building)
+                    if (value != originalBuilding[key])
+                        textList += FormattedLine( key.name.tr() + " " +"[${value.toInt()}] vs [${originalBuilding[key].toInt()}]".tr(), indent=1)
 
                 for (unique in building.uniques.filter { it !in originalBuilding.uniques })
                     textList += FormattedLine(unique, indent=1)

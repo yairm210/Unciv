@@ -17,6 +17,7 @@ import com.unciv.models.translations.tr
 import com.unciv.ui.utils.*
 import com.unciv.ui.utils.UncivTooltip.Companion.addTooltip
 import kotlin.math.round
+import kotlin.math.roundToInt
 
 class ImprovementPickerScreen(val tileInfo: TileInfo, unit: MapUnit, val onAccept: ()->Unit) : PickerScreen() {
     private var selectedImprovement: TileImprovement? = null
@@ -164,13 +165,13 @@ class ImprovementPickerScreen(val tileInfo: TileInfo, unit: MapUnit, val onAccep
     // icons of benefits (food, gold, etc) by improvement
     private fun getStatsTable(stats: Stats): Table {
         val statsTable = Table()
-        for (stat in stats.toHashMap()) {
-            val statValue = round(stat.value).toInt()
+        for ((key, value) in stats) {
+            val statValue = value.roundToInt()
             if (statValue == 0) continue
 
-            statsTable.add(ImageGetter.getStatIcon(stat.key.name)).size(20f).padRight(3f)
+            statsTable.add(ImageGetter.getStatIcon(key.name)).size(20f).padRight(3f)
 
-            val valueLabel = statValue.toString().toLabel()
+            val valueLabel = statValue.toLabel()
             valueLabel.color = if (statValue < 0) Color.RED else Color.WHITE
 
             statsTable.add(valueLabel).padRight(13f)

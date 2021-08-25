@@ -77,11 +77,11 @@ class SpecialistAllocationTable(val cityScreen: CityScreen): Table(CameraStageBa
 
     private fun getSpecialistStatsTable(specialistName: String): Table {
         val specialistStatTable = Table().apply { defaults().pad(5f) }
-        val specialistStats = cityInfo.cityStats.getStatsOfSpecialist(specialistName).toHashMap()
-        for (entry in specialistStats) {
-            if (entry.value == 0f) continue
-            specialistStatTable.add(ImageGetter.getStatIcon(entry.key.name)).size(20f)
-            specialistStatTable.add(entry.value.toInt().toLabel()).padRight(10f)
+        val specialistStats = cityInfo.cityStats.getStatsOfSpecialist(specialistName)
+        for ((key, value) in specialistStats) {
+            if (value == 0f) continue
+            specialistStatTable.add(ImageGetter.getStatIcon(key.name)).size(20f)
+            specialistStatTable.add(value.toInt().toLabel()).padRight(10f)
         }
         return specialistStatTable
     }
