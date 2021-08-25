@@ -303,13 +303,7 @@ class FormattedLine (
         val parts = iconToDisplay.split('/', limit = 2)
         if (parts.size != 2) return 0
         val category = CivilopediaCategories.fromLink(parts[0]) ?: return 0
-        if (category.getImage == null) return 0
-
-        // That Enum custom property is a nullable reference to a lambda which
-        // in turn is allowed to return null. Sorry, but without `!!` the code
-        // won't compile and with we would get the incorrect warning.
-        @Suppress("UNNECESSARY_NOT_NULL_ASSERTION")
-        val image = category.getImage!!(parts[1], iconSize) ?: return 0
+        val image = category.getImage?.invoke(parts[1], iconSize) ?: return 0
 
         table.add(image).size(iconSize).padRight(iconPad)
         return 1
