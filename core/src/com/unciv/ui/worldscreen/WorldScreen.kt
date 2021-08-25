@@ -331,7 +331,7 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Cam
             val latestGame = OnlineMultiplayer().tryDownloadGame(gameInfo.gameId)
 
             // if we find it still isn't player's turn...nothing changed
-            if (viewingCiv.civName != latestGame.currentPlayer) {
+            if (viewingCiv.playerId != latestGame.getCurrentPlayerCivilization().playerId) {
                 Gdx.app.postRunnable { loadingGamePopup.close() }
                 shouldUpdate = true
                 return
@@ -573,11 +573,15 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Cam
 
         game.gameInfo = gameInfo
         val newWorldScreen = WorldScreen(gameInfo, gameInfo.getPlayerToViewAs())
-        newWorldScreen.mapHolder.scrollX = mapHolder.scrollX
-        newWorldScreen.mapHolder.scrollY = mapHolder.scrollY
-        newWorldScreen.mapHolder.scaleX = mapHolder.scaleX
-        newWorldScreen.mapHolder.scaleY = mapHolder.scaleY
-        newWorldScreen.mapHolder.updateVisualScroll()
+
+        // This is not the case if you have a multiplayer game where you play as 2 civs
+        if (newWorldScreen.viewingCiv.civName == viewingCiv.civName) {
+            newWorldScreen.mapHolder.scrollX = mapHolder.scrollX
+            newWorldScreen.mapHolder.scrollY = mapHolder.scrollY
+            newWorldScreen.mapHolder.scaleX = mapHolder.scaleX
+            newWorldScreen.mapHolder.scaleY = mapHolder.scaleY
+            newWorldScreen.mapHolder.updateVisualScroll()
+        }
 
         newWorldScreen.selectedCiv = gameInfo.getCivilization(selectedCiv.civName)
         newWorldScreen.fogOfWar = fogOfWar

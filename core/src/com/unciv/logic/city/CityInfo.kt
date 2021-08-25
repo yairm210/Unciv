@@ -685,7 +685,6 @@ class CityInfo {
     }
     fun getImprovableTiles(): Sequence<TileInfo> = getTiles()
             .filter {it.hasViewableResource(civInfo) && it.improvement == null}
-
-
+    
     //endregion
 }

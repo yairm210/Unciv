@@ -20,12 +20,12 @@ android {
         }
     }
     packagingOptions {
-        exclude("META-INF/robovm/ios/robovm.xml")
+        resources.excludes.add("META-INF/robovm/ios/robovm.xml")
     }
     defaultConfig {
         applicationId = "com.unciv.app"
-        minSdkVersion(14)
-        targetSdkVersion(31)
+        minSdk = 14
+        targetSdk =31
         versionCode = BuildConfig.appCodeNumber
         versionName = BuildConfig.appVersion
 
@@ -56,16 +56,16 @@ android {
         }
 
     }
-    aaptOptions {
-        // Don't add local save files and fonts to release, obviously
-        ignoreAssetsPattern = "!SaveFiles:!fonts:!maps:!music:!mods"
-    }
-    lintOptions {
+    lint {
         disable("MissingTranslation")
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_7
         targetCompatibility = JavaVersion.VERSION_1_7
+    }
+    androidResources {
+        // Don't add local save files and fonts to release, obviously
+        ignoreAssetsPattern = "!SaveFiles:!fonts:!maps:!music:!mods"
     }
 }
 

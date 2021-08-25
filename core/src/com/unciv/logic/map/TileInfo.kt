@@ -135,7 +135,8 @@ open class TileInfo {
     fun getCity(): CityInfo? = owningCity
 
     fun getLastTerrain(): Terrain = when {
-        terrainFeatures.isNotEmpty() -> getTerrainFeatures().last()
+        terrainFeatures.isNotEmpty() -> ruleset.terrains[terrainFeatures.last()]
+                ?: getBaseTerrain()  // defense against rare edge cases involving baseTerrain Hill deprecation
         naturalWonder != null -> getNaturalWonder()
         else -> getBaseTerrain()
     }
@@ -665,8 +666,7 @@ open class TileInfo {
             out.add("Terrain feature [$terrainFeature] does not exist in ruleset!")
         if (resource != null && !ruleset.tileResources.containsKey(resource))
             out.add("Resource [$resource] does not exist in ruleset!")
-        if (improvement != null && !improvement!!.startsWith("StartingLocation")
-                && !ruleset.tileImprovements.containsKey(improvement))
+        if (improvement != null && !ruleset.tileImprovements.containsKey(improvement))
             out.add("Improvement [$improvement] does not exist in ruleset!")
         return out
     }
@@ -762,12 +762,7 @@ open class TileInfo {
             roadStatus = RoadStatus.None
     }
 
-
     private fun normalizeTileImprovement(ruleset: Ruleset) {
-        if (improvement!!.startsWith("StartingLocation")) {
-            if (!isLand || getLastTerrain().impassable) improvement = null
-            return
-        }
         val improvementObject = ruleset.tileImprovements[improvement]
         if (improvementObject == null) {
             improvement = null

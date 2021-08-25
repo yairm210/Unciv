@@ -16,6 +16,7 @@ import com.unciv.models.translations.tr
 import com.unciv.ui.civilopedia.FormattedLine
 import com.unciv.ui.civilopedia.ICivilopediaText
 import com.unciv.ui.utils.Fonts
+import com.unciv.ui.utils.toPercent
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
@@ -407,11 +408,11 @@ class Building : NamedStats(), INonPerpetualConstruction, ICivilopediaText {
 
         for (unique in cityInfo.getMatchingUniques("[] cost of purchasing items in cities []%"))
             if (stat.name == unique.params[0])
-                cost *= 1 + (unique.params[1].toFloat() / 100)
+                cost *= unique.params[1].toPercent()
 
         for (unique in cityInfo.getMatchingUniques("[] cost of purchasing [] buildings []%")) {
             if (stat.name == unique.params[0] && matchesFilter(unique.params[1]))
-                cost *= 1 + (unique.params[2].toFloat() / 100)
+                cost *= unique.params[2].toPercent()
         }
 
         return (cost / 10f).toInt() * 10

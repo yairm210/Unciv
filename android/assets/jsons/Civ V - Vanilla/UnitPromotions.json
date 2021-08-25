@@ -503,7 +503,7 @@
 		"unitTypes": ["Ranged Water","Fighter","Bomber"]
 	},
 
-	// Uniques
+	// Uniques that should be kept on upgrades
 	{
 		"name": "Morale", // Heroic Epic
 		"uniques": ["+[15]% Combat Strength"]
@@ -531,5 +531,9 @@
 	{
 		"name": "Slinger Withdraw", // only for Slinger and subsequent upgrades
 		"uniques": ["May withdraw before melee ([80]%)"]
+	},
+	{
+		"name": "Ignore terrain cost",
+		"uniques": ["Ignores terrain cost"]
 	}
 ]

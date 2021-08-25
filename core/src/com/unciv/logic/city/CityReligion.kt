@@ -16,7 +16,7 @@ class CityInfoReligionManager {
     val religionsAtSomePointAdopted: HashSet<String> = hashSetOf()
 
     private val pressures: Counter<String> = Counter()
-    // `getNumberOfFollowers()` was called a surprisingly large amount of time, so caching it feels useful
+    // Cached because using `updateNumberOfFollowers` to get this value resulted in many calls
     @Transient
     private val followers: Counter<String> = Counter()
     
@@ -68,6 +68,10 @@ class CityInfoReligionManager {
         return getUniques().filter { it.placeholderText == unique }
     }
     
+    fun getPressures(): Counter<String> {
+        return pressures.clone()
+    }
+    
     fun clearAllPressures() {
         pressures.clear()
         // We add pressure for following no religion
@@ -84,6 +88,13 @@ class CityInfoReligionManager {
         if (shouldUpdateFollowers) {
             updateNumberOfFollowers(shouldUpdateFollowers)
         }
+    }
+
+    fun removeAllPressuresExceptFor(religion: String) {
+        val pressureFromThisReligion = pressures[religion]!!
+        clearAllPressures()
+        pressures.add(religion, pressureFromThisReligion)
+        updateNumberOfFollowers()
     }
     
     fun updatePressureOnPopulationChange(populationChangeAmount: Int) {
@@ -204,9 +215,12 @@ class CityInfoReligionManager {
 
     fun getMajorityReligionName(): String? {
         if (followers.isEmpty()) return null
-        val religionWithMaxFollowers = followers.maxByOrNull { it.value }!!
-        return if (religionWithMaxFollowers.value >= cityInfo.population.population / 2) religionWithMaxFollowers.key
-        else null
+        val religionWithMaxPressure = pressures.maxByOrNull { it.value }!!.key
+        return when {
+            religionWithMaxPressure == Constants.noReligionName -> null
+            followers[religionWithMaxPressure]!! >= cityInfo.population.population / 2 -> religionWithMaxPressure
+            else -> null
+        }
     }
     
     fun getMajorityReligion(): Religion? {
