@@ -59,5 +59,5 @@ enum class BeliefType(val color: String) {
     Pantheon("#44c6cc"),
     Follower("#ccaa44"),
     Founder("#c00000"),
-    Enhancer("#ffffff") // ToDo: Better color
+    Enhancer("#72cc45") 
 }

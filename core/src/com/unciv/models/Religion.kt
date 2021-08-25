@@ -44,29 +44,26 @@ class Religion() : INamed {
             else rulesetBeliefs[it]!!
         }
     }
-
-    fun getPantheonBeliefs(): Sequence<Belief> {
-        return mapToExistingBeliefs(followerBeliefs)
+    
+    fun getBeliefs(beliefType: BeliefType): Sequence<Belief> {
+        val beliefs = 
+            when (beliefType) {
+                BeliefType.Pantheon -> followerBeliefs
+                BeliefType.Follower -> followerBeliefs
+                BeliefType.Founder -> founderBeliefs
+                BeliefType.Enhancer -> founderBeliefs
+                else -> null!! // This is fine...
+            }
+        return mapToExistingBeliefs(beliefs)
             .asSequence()
-            .filter { it.type == BeliefType.Pantheon }
+            .filter { it.type == beliefType }
     }
     
-    fun getFounderBeliefs(): Sequence<Belief> {
-        return mapToExistingBeliefs(founderBeliefs)
-            .asSequence()
-            .filter { it.type == BeliefType.Founder }
-    }
-    
-    fun getFollowerBeliefs(): Sequence<Belief> {
-        return mapToExistingBeliefs(followerBeliefs)
-            .asSequence()
-            .filter { it.type == BeliefType.Follower }
-    }
-    
-    fun getEnhancerBeliefs(): Sequence<Belief> {
-        return mapToExistingBeliefs(founderBeliefs)
-            .asSequence()
-            .filter { it.type == BeliefType.Enhancer }
+    fun getAllBeliefsOrdered(): Sequence<Belief> {
+        return mapToExistingBeliefs(followerBeliefs).asSequence().filter { it.type == BeliefType.Pantheon } +
+            mapToExistingBeliefs(founderBeliefs).asSequence().filter { it.type == BeliefType.Founder } +
+            mapToExistingBeliefs(followerBeliefs).asSequence().filter { it.type == BeliefType.Follower } +
+            mapToExistingBeliefs(founderBeliefs).asSequence().filter { it.type == BeliefType.Enhancer }
     }
     
     private fun getUniquesOfBeliefs(beliefs: HashSet<String>): Sequence<Unique> {
@@ -88,7 +85,7 @@ class Religion() : INamed {
     }
 
     fun isPantheon(): Boolean { // Currently unused
-        return getPantheonBeliefs().any() && !isMajorReligion()
+        return getBeliefs(BeliefType.Pantheon).any() && !isMajorReligion()
     }
 
     fun isMajorReligion(): Boolean {

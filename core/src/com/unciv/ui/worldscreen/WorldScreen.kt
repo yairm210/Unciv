@@ -13,7 +13,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Button
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.utils.Align
-import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
 import com.unciv.logic.GameSaver
@@ -714,7 +713,7 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Cam
             
             viewingCiv.religionManager.religionState == ReligionState.FoundingReligion ->
                 NextTurnAction("Found Religion", Color.WHITE) {
-                    game.setScreen(FoundReligionPickerScreen(
+                    game.setScreen(ReligiousBeliefsPickerScreen(
                         viewingCiv, 
                         gameInfo,
                         viewingCiv.religionManager.getBeliefsToChooseAtFounding(),
@@ -724,7 +723,7 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Cam
             
             viewingCiv.religionManager.religionState == ReligionState.EnhancingReligion -> 
                 NextTurnAction("Enhance Religion", Color.ORANGE) {
-                    game.setScreen(FoundReligionPickerScreen(
+                    game.setScreen(ReligiousBeliefsPickerScreen(
                         viewingCiv,
                         gameInfo,
                         viewingCiv.religionManager.getBeliefsToChooseAtEnhancing(),

@@ -244,8 +244,7 @@ object BattleDamage {
                 modifiers.add(filter, unique.params[0].toInt())
         }
 
-        for (unique in unit.getCivInfo()
-            .getMatchingUniques("+[]% Strength if within [] tiles of a []")) {
+        for (unique in unit.getCivInfo().getMatchingUniques("+[]% Strength if within [] tiles of a []")) {
             if (tile.getTilesInDistance(unique.params[1].toInt())
                     .any { it.matchesFilter(unique.params[2]) }
             )
@@ -253,8 +252,8 @@ object BattleDamage {
         }
 
         for (unique in unit.getCivInfo().getMatchingUniques("[]% Strength for [] units in []")) {
-            if (unit.matchesCategory(unique.params[1]) && tile.matchesFilter(unique.params[1], unit.getCivInfo())) {
-                modifiers.add("Friendly Territory", unique.params[0].toInt())
+            if (unit.matchesCategory(unique.params[1]) && tile.matchesFilter(unique.params[2], unit.getCivInfo())) {
+                modifiers.add(unique.params[2], unique.params[0].toInt())
             }
         }
     

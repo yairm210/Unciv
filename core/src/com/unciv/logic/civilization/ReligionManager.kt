@@ -159,9 +159,10 @@ class ReligionManager {
 
         if (civInfo.gameInfo.ruleSet.beliefs.values.none {
             it.type == BeliefType.Follower
-            && civInfo.gameInfo.religions.values.none { religion -> it in religion.getFollowerBeliefs() }
+            && civInfo.gameInfo.religions.values.none { religion -> it in religion.getBeliefs(BeliefType.Follower) }
         }) return false // Mod maker did not provide enough follower beliefs
         
+        // Shortcut as each religion will always have exactly one founder belief
         if (foundedReligionsCount >= civInfo.gameInfo.ruleSet.beliefs.values.count { it.type == BeliefType.Founder })
             return false // Mod maker did not provide enough founder beliefs
         
@@ -180,7 +181,7 @@ class ReligionManager {
         return BeliefContainer(founderBeliefCount = 1, followerBeliefCount = 1)
     }
     
-    fun chooseBeliefs(iconName: String?, religionName: String?, beliefs: BeliefContainer) {
+    fun chooseBeliefs(iconName: String?, religionName: String?, beliefs: List<Belief>) {
         if (religionState == ReligionState.FoundingReligion) {
             foundReligion(iconName!!, religionName!!, beliefs)
             return
@@ -190,18 +191,24 @@ class ReligionManager {
     }
     
 
-    fun foundReligion(iconName: String, name: String, beliefContainer: BeliefContainer) {
+    fun foundReligion(iconName: String, name: String, beliefs: List<Belief>) {
         val newReligion = Religion(name, civInfo.gameInfo, civInfo.civName)
         newReligion.iconName = iconName
         if (religion != null) {
             newReligion.followerBeliefs.addAll(religion!!.followerBeliefs)
             newReligion.founderBeliefs.addAll(religion!!.founderBeliefs)
         }
+        
         newReligion.followerBeliefs.addAll(
-            beliefContainer.chosenFollowerBeliefs.map { it!!.name } +
-            beliefContainer.chosenPantheonBeliefs.map { it!!.name }
+            beliefs
+                .filter { it.type == BeliefType.Pantheon || it.type == BeliefType.Follower }
+                .map { it.name }
         )
-        newReligion.founderBeliefs.addAll(beliefContainer.chosenFounderBeliefs.map { it!!.name })
+        newReligion.founderBeliefs.addAll(
+            beliefs
+                .filter { it.type == BeliefType.Founder }
+                .map { it.name }
+        )
         
         religion = newReligion
         civInfo.gameInfo.religions[name] = newReligion
@@ -223,12 +230,12 @@ class ReligionManager {
 
         if (civInfo.gameInfo.ruleSet.beliefs.values.none { 
             it.type == BeliefType.Follower 
-            && civInfo.gameInfo.religions.values.none { religion -> religion.getFollowerBeliefs().contains(it) }
+            && civInfo.gameInfo.religions.values.none { religion -> religion.getBeliefs(BeliefType.Follower).contains(it) }
         }) return false // Mod maker did not provide enough follower beliefs
         
         if (civInfo.gameInfo.ruleSet.beliefs.values.none { 
             it.type == BeliefType.Enhancer 
-            && civInfo.gameInfo.religions.values.none { religion -> religion.getFounderBeliefs().contains(it) }
+            && civInfo.gameInfo.religions.values.none { religion -> religion.getBeliefs(BeliefType.Enhancer).contains(it) }
         }) return false // Mod maker did not provide enough enhancer beliefs
         
         return true
@@ -244,9 +251,9 @@ class ReligionManager {
         return BeliefContainer(followerBeliefCount = 1, enhancerBeliefCount = 1)
     }
     
-    fun enhanceReligion(beliefs: BeliefContainer) {
-        religion!!.followerBeliefs.addAll(beliefs.chosenFollowerBeliefs.map { it!!.name })
-        religion!!.founderBeliefs.addAll(beliefs.chosenEnhancerBeliefs.map { it!!.name })
+    fun enhanceReligion(beliefs: List<Belief>) {
+        religion!!.followerBeliefs.addAll(beliefs.filter { it.type == BeliefType.Follower}.map { it.name })
+        religion!!.founderBeliefs.addAll(beliefs.filter { it.type == BeliefType.Enhancer}.map { it.name })
         religionState = ReligionState.EnhancedReligion
     }
     

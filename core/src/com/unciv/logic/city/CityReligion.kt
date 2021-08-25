@@ -273,12 +273,12 @@ class CityInfoReligionManager {
     private fun pressureAmountToAdjacentCities(pressuredCity: CityInfo): Int {
         var pressure = pressureFromAdjacentCities.toFloat()
         
-        for (unique in cityInfo.getMatchingUniques("[]% Natural religion spread to []")) {
+        for (unique in cityInfo.getMatchingUniques("[]% Natural religion spread []")) {
             if (pressuredCity.matchesFilter(unique.params[1]))
                 pressure *= 1f + unique.params[0].toFloat() / 100f
         }
         
-        for (unique in cityInfo.getMatchingUniques("[]% Natural religion spread to [] after discovering []"))
+        for (unique in cityInfo.getMatchingUniques("[]% Natural religion spread [] with []"))
             if (pressuredCity.matchesFilter(unique.params[1]) 
                 && (
                     cityInfo.civInfo.tech.isResearched(unique.params[2]) 

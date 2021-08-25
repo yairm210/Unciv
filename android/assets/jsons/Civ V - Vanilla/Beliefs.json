@@ -248,7 +248,7 @@
     {
         "name": "Defender of the Faith",
         "type": "Enhancer",
-        "uniques": ["[+20]% Strength for [Non-City] units in [Friendly Land]"],
+        "uniques": ["[+20]% Strength for [All] units in [Friendly Land]"],
         // ToDo: Should only be friendly territory of cities that follow this religion
     },
     {
@@ -280,7 +280,7 @@
     {
         "name": "Religious Texts",
         "type": "Enhancer",
-        "uniques": ["[+34]% Natural religion spread to [in all cities]", "[+34]% Natural religion spread to [in all cities] after discovering [Printing Press]"]
+        "uniques": ["[+34]% Natural religion spread [in all cities]", "[+34]% Natural religion spread [in all cities] with [Printing Press]"]
     },
     {
         "name": "Religious Unity",
@@ -290,7 +290,7 @@
     {
         "name": "Reliquary",
         "type": "Enhancer",
-        "uniques": ["[+50 Faith] whenever a great person is expended"]
+        "uniques": ["[+50 Faith] whenever a Great Person is expended"]
     }
 ]
 
