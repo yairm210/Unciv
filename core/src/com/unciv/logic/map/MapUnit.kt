@@ -14,6 +14,7 @@ import com.unciv.models.ruleset.Unique
 import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.ruleset.unit.UnitType
+import com.unciv.ui.utils.toPercent
 import java.text.DecimalFormat
 
 /**
@@ -984,7 +985,7 @@ class MapUnit {
         var pressureAdded = baseUnit.religiousStrength.toFloat()
         for (unique in civInfo.getMatchingUniques("[]% Spread Religion Strength for [] units"))
             if (matchesFilter(unique.params[0]))
-                pressureAdded *= 1f + unique.params[0].toFloat() / 100f
+                pressureAdded *= unique.params[0].toPercent()
         
         return pressureAdded.toInt()
     }

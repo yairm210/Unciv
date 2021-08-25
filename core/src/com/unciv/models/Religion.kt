@@ -54,6 +54,7 @@ class Religion() : INamed {
                 BeliefType.Enhancer -> founderBeliefs
                 else -> null!! // This is fine...
             }
+        
         return mapToExistingBeliefs(beliefs)
             .asSequence()
             .filter { it.type == beliefType }
@@ -66,36 +67,18 @@ class Religion() : INamed {
             mapToExistingBeliefs(founderBeliefs).asSequence().filter { it.type == BeliefType.Enhancer }
     }
     
-    private fun getUniquesOfBeliefs(beliefs: HashSet<String>): Sequence<Unique> {
-        return mapToExistingBeliefs(beliefs)
-            .flatMap { it.uniqueObjects }
-            .asSequence()
-    }
+    private fun getUniquesOfBeliefs(beliefs: HashSet<String>) = 
+        mapToExistingBeliefs(beliefs).asSequence().flatMap { it.uniqueObjects }
 
-    fun getFollowerUniques(): Sequence<Unique> {
-        return getUniquesOfBeliefs(followerBeliefs)
-    }
+    fun getFollowerUniques() = getUniquesOfBeliefs(followerBeliefs)
 
-    fun getFounderUniques(): Sequence<Unique> {
-        return getUniquesOfBeliefs(founderBeliefs)
-    }
+    fun getFounderUniques() = getUniquesOfBeliefs(founderBeliefs)
 
-    fun hasBelief(belief: String): Boolean {
-        return followerBeliefs.contains(belief) || founderBeliefs.contains(belief)
-    }
+    fun hasBelief(belief: String) = followerBeliefs.contains(belief) || founderBeliefs.contains(belief)
 
-    fun isPantheon(): Boolean { // Currently unused
-        return getBeliefs(BeliefType.Pantheon).any() && !isMajorReligion()
-    }
+    fun isPantheon() = getBeliefs(BeliefType.Pantheon).any() && !isMajorReligion()
 
-    fun isMajorReligion(): Boolean {
-        return founderBeliefs.isNotEmpty() && followerBeliefs
-            .any { gameInfo.ruleSet.beliefs[it]!!.type == BeliefType.Follower}
-    }
+    fun isMajorReligion() = getBeliefs(BeliefType.Founder).any()
     
-    fun isEnhancedReligion(): Boolean {
-        return founderBeliefs.any {
-            gameInfo.ruleSet.beliefs[it]!!.type == BeliefType.Enhancer
-        }
-    }
+    fun isEnhancedReligion() = getBeliefs(BeliefType.Enhancer).any()
 }
