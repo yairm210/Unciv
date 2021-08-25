@@ -1,4 +1,19 @@
-## 3.15.6
+## 3.16.7
+
+By xlenstra:
+- Implemented Inquisitors
+- Implemented a cap for the production boost of great engineers
+- Scouts still ignore terrain costs after upgrades
+- Fixes bug where upgrading units would no longer provide their default upgrades
+
+By SomeTroglodyte:
+- City keyboard buy construction and tile
+- getLastTerrain simple patch
+- StartingLocation-Improvements-be-gone phase 1
+
+Can now raze non-original capitals at capture  - By SimonCeder
+
+## 3.16.6
 
 City-states grant copies of ALL resources
 

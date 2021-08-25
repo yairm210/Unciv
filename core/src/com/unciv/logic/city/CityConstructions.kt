@@ -25,7 +25,7 @@ import kotlin.math.roundToInt
  * City constructions manager.
  *
  * @property cityInfo the city it refers to
- * @property currentConstructionFromQueue the name of the construction is currently worked
+ * @property currentConstructionFromQueue name of the construction that is currently being produced
  * @property currentConstructionIsUserSet a flag indicating if the [currentConstructionFromQueue] has been set by the user or by the AI
  * @property constructionQueue a list of constructions names enqueued
  */
@@ -286,8 +286,7 @@ class CityConstructions {
               we get all sorts of fun concurrency problems when accessing various parts of the cityStats.
             SO, we create an entirely new CityStats and iterate there - problem solve!
             */
-            val cityStats = CityStats()
-            cityStats.cityInfo = cityInfo
+            val cityStats = CityStats(cityInfo)
             val construction = cityInfo.cityConstructions.getConstruction(constructionName)
             cityStats.update(construction)
             cityStatsForConstruction = cityStats.currentCityStats

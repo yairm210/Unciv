@@ -150,7 +150,7 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(CameraStageBaseS
 
             if (stat != Stat.Happiness)
                 for ((key, value) in cityStats.baseStatList)
-                    relevantBaseStats[key] = value.get(stat)
+                    relevantBaseStats[key] = value[stat]
             else relevantBaseStats.putAll(cityStats.happinessList)
             for (key in relevantBaseStats.keys.toList())
                 if (relevantBaseStats[key] == 0f) relevantBaseStats.remove(key)
@@ -172,12 +172,12 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(CameraStageBaseS
             statValuesTable.add("Total".toLabel())
             statValuesTable.add(sumOfAllBaseValues.toOneDecimalLabel()).row()
 
-            val relevantBonuses = cityStats.statPercentBonusList.filter { it.value.get(stat) != 0f }
+            val relevantBonuses = cityStats.statPercentBonusList.filter { it.value[stat] != 0f }
             if (relevantBonuses.isNotEmpty()) {
                 statValuesTable.add("Bonuses".toLabel(fontSize = FONT_SIZE_STAT_INFO_HEADER)).colspan(2).padTop(20f).row()
                 var sumOfBonuses = 0f
                 for (entry in relevantBonuses) {
-                    val specificStatValue = entry.value.get(stat)
+                    val specificStatValue = entry.value[stat]
                     sumOfBonuses += specificStatValue
                     statValuesTable.add(entry.key.toLabel())
                     statValuesTable.add(specificStatValue.toPercentLabel()).row() // negative bonus
@@ -191,7 +191,7 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(CameraStageBaseS
                 statValuesTable.add("Final".toLabel(fontSize = FONT_SIZE_STAT_INFO_HEADER)).colspan(2).padTop(20f).row()
                 var finalTotal = 0f
                 for (entry in cityStats.finalStatList) {
-                    val specificStatValue = entry.value.get(stat)
+                    val specificStatValue = entry.value[stat]
                     finalTotal += specificStatValue
                     if (specificStatValue == 0f) continue
                     statValuesTable.add(entry.key.toLabel())

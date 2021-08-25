@@ -447,6 +447,14 @@ class MapUnit {
         promotions.setTransients(this)
         baseUnit = ruleset.units[name]
             ?: throw java.lang.Exception("Unit $name is not found!")
+        
+        // "Religion Spread" ability deprecated since 3.16.7, replaced with "Spread Religion"
+            if ("Religion Spread" in abilityUsedCount) {
+                abilityUsedCount[Constants.spreadReligionAbilityCount] = abilityUsedCount["Religion Spread"]!!
+                abilityUsedCount.remove("Religion Spread")
+            }
+        //
+        
         updateUniques()
     }
 
@@ -734,7 +742,6 @@ class MapUnit {
 
         if (civInfo.isMajorCiv() 
             && tile.improvement != null
-            && !tile.improvement!!.startsWith("StartingLocation ")
             && tile.getTileImprovement()!!.isAncientRuinsEquivalent()
         )
             getAncientRuinBonus(tile)
@@ -957,22 +964,29 @@ class MapUnit {
         return matchingUniques.any { improvement.matchesFilter(it.params[0]) || tile.matchesTerrainFilter(it.params[0]) }
     }
     
-    fun maxReligionSpreads(): Int {
-        return getMatchingUniques("Can spread religion [] times").sumBy { it.params[0].toInt() }
+    fun religiousActionsUnitCanDo(): Sequence<String> {
+        return getMatchingUniques("Can [] [] times")
+            .map { it.params[0] }
     }
     
-    fun canSpreadReligion(): Boolean {
-        return hasUnique("Can spread religion [] times")
+    fun canDoReligiousAction(action: String): Boolean {
+        return getMatchingUniques("Can [] [] times").any { it.params[0] == action }
     }
-
+    
+    fun getMaxReligiousActionUses(action: String): Int {
+        return getMatchingUniques("Can [] [] times")
+            .filter { it.params[0] == action }
+            .sumBy { it.params[1].toInt() }
+    }
+    
     fun getPressureAddedFromSpread(): Int {
         return baseUnit.religiousStrength
     }
-
-    fun getReligionString(): String {
-        val maxSpreads = maxReligionSpreads()
-        if (abilityUsedCount["Religion Spread"] == null) return "" // That is, either the key doesn't exist, or it does exist and the value is null.
-        return "${maxSpreads - abilityUsedCount["Religion Spread"]!!}/${maxSpreads}"
+    
+    fun getActionString(action: String): String {
+        val maxActionUses = getMaxReligiousActionUses(action)
+        if (abilityUsedCount[action] == null) return "0/0" // Something went wrong
+        return "${maxActionUses - abilityUsedCount[action]!!}/${maxActionUses}"
     }
 
     fun actionsOnDeselect() {
