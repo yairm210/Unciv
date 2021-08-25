@@ -12,7 +12,7 @@ import com.unciv.models.ruleset.BeliefType
 import com.unciv.models.translations.tr
 import com.unciv.ui.utils.*
 
-class ChooseReligionBeliefsPickerScreen (
+class ReligiousBeliefsPickerScreen (
     private val choosingCiv: CivilizationInfo,
     private val gameInfo: GameInfo,
     private val beliefsContainer: BeliefContainer,
