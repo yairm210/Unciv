@@ -16,6 +16,7 @@ import com.unciv.logic.trade.*
 import com.unciv.models.ruleset.ModOptionsConstants
 import com.unciv.models.ruleset.VictoryType
 import com.unciv.models.ruleset.tech.Technology
+import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
 import com.unciv.models.translations.tr
@@ -49,7 +50,10 @@ object NextTurnAutomation {
         chooseTechToResearch(civInfo)
         automateCityBombardment(civInfo)
         useGold(civInfo)
-        protectCityStates(civInfo)
+        if (!civInfo.isCityState()) {
+            protectCityStates(civInfo)
+            bullyCityStates(civInfo)
+        }
         automateUnits(civInfo)  // this is the most expensive part
         reassignWorkedTiles(civInfo)  // second most expensive
         trainSettler(civInfo)
@@ -114,28 +118,18 @@ object NextTurnAutomation {
 
     /** allow AI to spend money to purchase city-state friendship, buildings & unit */
     private fun useGold(civInfo: CivilizationInfo) {
-        if (civInfo.victoryType() == VictoryType.Cultural) {
-            for (cityState in civInfo.getKnownCivs()
-                    .filter { it.isCityState() && it.cityStateType == CityStateType.Cultured }) {
-                val diploManager = cityState.getDiplomacyManager(civInfo)
-                if (diploManager.influence < 40) { // we want to gain influence with them
+
+        if (!civInfo.isCityState()) {
+            val potentialAllies = civInfo.getKnownCivs().filter { it.isCityState() }
+            if (potentialAllies.isNotEmpty()) {
+                val cityState =
+                    potentialAllies.maxByOrNull { valueCityStateAlliance(civInfo, it) }!!
+                if (cityState.getAllyCiv() != civInfo.civName && valueCityStateAlliance(civInfo, cityState) > 0) {
                     tryGainInfluence(civInfo, cityState)
                     return
                 }
             }
         }
-
-        if (civInfo.getHappiness() < 5) {
-            for (cityState in civInfo.getKnownCivs()
-                    .filter { it.isCityState() && it.cityStateType == CityStateType.Mercantile }) {
-                val diploManager = cityState.getDiplomacyManager(civInfo)
-                if (diploManager.influence < 40) { // we want to gain influence with them
-                    tryGainInfluence(civInfo, cityState)
-                    return
-                }
-            }
-        }
-
 
         for (city in civInfo.cities.sortedByDescending { it.population.population }) {
             val construction = city.cityConstructions.getCurrentConstruction()
@@ -145,6 +139,46 @@ object NextTurnAutomation {
                 city.cityConstructions.purchaseConstruction(construction.name, 0, true)
             }
         }
+    }
+
+    private fun valueCityStateAlliance(civInfo: CivilizationInfo, cityState: CivilizationInfo): Int {
+        var value = 0
+        if (!cityState.isAlive() || cityState.cities.isEmpty())
+            return value
+
+        if (civInfo.victoryType() == VictoryType.Cultural && cityState.canGiveStat(Stat.Culture)) {
+            value += 10
+        }
+        else if (civInfo.victoryType() == VictoryType.Scientific && cityState.canGiveStat(Stat.Science)) {
+            // In case someone mods this in
+            value += 10
+        }
+        else if (civInfo.victoryType() == VictoryType.Domination) {
+            // Don't ally close city-states, conquer them instead
+            val distance = getMinDistanceBetweenCities(civInfo, cityState)
+            if (distance < 20)
+                value -= (20 - distance) / 4
+        }
+        if (civInfo.gold < 100) {
+            // Consider bullying for cash
+            value -= 5
+        }
+        if (civInfo.getHappiness() < 5 && cityState.canGiveStat(Stat.Happiness)) {
+            value += 10 - civInfo.getHappiness()
+        }
+        if (civInfo.getHappiness() > 5 && cityState.canGiveStat(Stat.Food)) {
+            value += 5
+        }
+        if (cityState.getAllyCiv() != null && cityState.getAllyCiv() != civInfo.civName) {
+            // easier not to compete if a third civ has this locked down
+            val thirdCivInfluence = cityState.getDiplomacyManager(cityState.getAllyCiv()!!).influence.toInt()
+            value -= (thirdCivInfluence - 60) / 10
+        }
+
+        // Bonus for resources we can get from them
+        value += cityState.detailedCivResources.count { it.resource.resourceType != ResourceType.Bonus }
+
+        return value
     }
 
     private fun protectCityStates(civInfo: CivilizationInfo) {
@@ -157,6 +191,21 @@ object NextTurnAutomation {
             } else if (diplomacyManager.relationshipLevel() < RelationshipLevel.Friend
                     && diplomacyManager.diplomaticStatus == DiplomaticStatus.Protector) {
                 state.removeProtectorCiv(civInfo)
+            }
+        }
+    }
+
+    private fun bullyCityStates(civInfo: CivilizationInfo) {
+        for (state in civInfo.getKnownCivs().filter{!it.isDefeated() && it.isCityState()}) {
+            val diplomacyManager = state.getDiplomacyManager(civInfo.civName)
+            if(diplomacyManager.relationshipLevel() < RelationshipLevel.Friend
+                    && diplomacyManager.diplomaticStatus == DiplomaticStatus.Peace
+                    && valueCityStateAlliance(civInfo, state) <= 0
+                    && state.getTributeWillingness(civInfo) > 0) {
+                if (state.getTributeWillingness(civInfo, demandingWorker = true) > 0)
+                    civInfo.demandWorker(state)
+                else
+                    civInfo.demandGold(state)
             }
         }
     }

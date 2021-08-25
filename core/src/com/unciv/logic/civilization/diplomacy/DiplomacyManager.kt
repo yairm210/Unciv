@@ -36,8 +36,7 @@ enum class DiplomacyFlags{
     IgnoreThemSettlingNearUs,
     ProvideMilitaryUnit,
     EverBeenFriends,
-    RecentlyDemandedTribute,
-    VeryRecentlyDemandedTribute
+    NotifiedAfraid
 }
 
 enum class DiplomaticModifiers{
@@ -399,6 +398,16 @@ class DiplomacyManager() {
 
             if (initialRelationshipLevel >= RelationshipLevel.Friend && initialRelationshipLevel != relationshipLevel()) {
                 val text = "Your relationship with [${civInfo.civName}] degraded"
+                if (civCapitalLocation != null) otherCiv().addNotification(text, civCapitalLocation, civInfo.civName, NotificationIcon.Diplomacy)
+                else otherCiv().addNotification(text, civInfo.civName, NotificationIcon.Diplomacy)
+            }
+
+            // Potentially notify about afraid status
+            if (influence < 30  // We usually don't want to bully our friends
+            && !hasFlag(DiplomacyFlags.NotifiedAfraid)
+            && civInfo.getTributeWillingness(otherCiv()) > 0) {
+                setFlag(DiplomacyFlags.NotifiedAfraid, 20)  // Wait 20 turns until next reminder
+                val text = "[${civInfo.civName}] is afraid of your military power!"
                 if (civCapitalLocation != null) otherCiv().addNotification(text, civCapitalLocation, civInfo.civName, NotificationIcon.Diplomacy)
                 else otherCiv().addNotification(text, civInfo.civName, NotificationIcon.Diplomacy)
             }

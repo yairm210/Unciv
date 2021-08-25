@@ -55,6 +55,7 @@ class BaseUnit : INamed, INonPerpetualConstruction, ICivilopediaText {
     var replaces: String? = null
     var uniqueTo: String? = null
     var attackSound: String? = null
+    var cachedPower: Int = -1
 
     lateinit var ruleset: Ruleset
 
@@ -458,7 +459,15 @@ class BaseUnit : INamed, INonPerpetualConstruction, ICivilopediaText {
         )
 
     fun getPower(): Int {
-        if (strength == 0 && rangedStrength == 0) return 0
+        if (cachedPower < 0)    calculatePower()
+        return  cachedPower
+    }
+
+    private fun calculatePower() {
+        if (strength == 0 && rangedStrength == 0) {
+            cachedPower = 0
+            return
+        }
 
         var power = strength.toFloat().pow(1.5f).toInt()
         var rangedPower = rangedStrength.toFloat().pow(1.45f).toInt()
@@ -520,7 +529,6 @@ class BaseUnit : INamed, INonPerpetualConstruction, ICivilopediaText {
             }
 
         }
-
-        return power
+        cachedPower = power
     }
 }

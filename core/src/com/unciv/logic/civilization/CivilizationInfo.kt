@@ -13,6 +13,7 @@ import com.unciv.logic.civilization.RuinsManager.RuinsManager
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomacyManager
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
+import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.UnitMovementAlgorithms
@@ -27,6 +28,8 @@ import com.unciv.models.ruleset.tile.TileResource
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
+import com.unciv.models.translations.getPlaceholderParameters
+import com.unciv.models.translations.getPlaceholderText
 import com.unciv.models.translations.tr
 import com.unciv.ui.victoryscreen.RankingType
 import java.util.*
@@ -1092,6 +1095,37 @@ class CivilizationInfo {
         cityState.getDiplomacyManager(this).influence -= 50
         cityState.addFlag(CivFlags.RecentlyBullied.name, 20)
         cityState.updateAllyCivForCityState()
+    }
+
+    fun canGiveStat(statType: Stat): Boolean {
+        if (!isCityState())
+            return false
+        val eraInfo = getEraObject()
+        val bonuses = if (eraInfo == null) null
+            else eraInfo.allyBonus[cityStateType.name]
+        if (bonuses != null) {
+            // Defined city states in json
+            bonuses.addAll(eraInfo!!.friendBonus[cityStateType.name]!!)
+            for (bonus in bonuses) {
+                if (statType == Stat.Happiness && bonus.getPlaceholderText() == "Provides [] Happiness")
+                    return true
+                if (bonus.getPlaceholderText() == "Provides [] [] per turn" && bonus.getPlaceholderParameters()[1] == statType.name)
+                    return true
+                if (bonus.getPlaceholderText() == "Provides [] [] []" && bonus.getPlaceholderParameters()[1] == statType.name)
+                    return true
+            }
+
+        } else {
+            // compatibility mode
+            return when {
+                cityStateType == CityStateType.Mercantile && statType == Stat.Happiness -> true
+                cityStateType == CityStateType.Cultured && statType == Stat.Culture -> true
+                cityStateType == CityStateType.Maritime && statType == Stat.Food -> true
+                else -> false
+            }
+        }
+
+        return false
     }
 
     //endregion
