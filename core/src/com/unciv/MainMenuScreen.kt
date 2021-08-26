@@ -1,6 +1,7 @@
 ﻿package com.unciv
 
 import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.Input
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
@@ -20,6 +21,7 @@ import com.unciv.ui.newgamescreen.GameSetupInfo
 import com.unciv.ui.newgamescreen.NewGameScreen
 import com.unciv.ui.pickerscreens.ModManagementScreen
 import com.unciv.ui.saves.LoadGameScreen
+import com.unciv.ui.tutorials.TutorialController
 import com.unciv.ui.utils.*
 import com.unciv.ui.utils.UncivTooltip.Companion.addTooltip
 import kotlin.concurrent.thread
@@ -125,6 +127,31 @@ class MainMenuScreen: CameraStageBaseScreen() {
         val modsTable = getMenuButton("Mods", "OtherIcons/Mods", 'd')
             { game.setScreen(ModManagementScreen()) }
         column2.add(modsTable).row()
+
+        val test = getMenuButton("Test Tabs", "OtherIcons/Options", 't') {
+            val popup = Popup(this)
+            popup.innerTable.pad(0f)
+            val label = "".toLabel(Color.CORAL)
+            val tabs = TabbedPager(stage.width*0.5f, stage.height*0.5f)
+            if (Gdx.input.isKeyPressed(Input.Keys.SHIFT_RIGHT)) {
+                val page = ImageGetter.getReligionImage("Religion")
+                val icon = ImageGetter.getCircledReligionIcon("Pantheon", 24f)
+                tabs.addPage("Secret", page, icon, secret = true)
+            }
+            TutorialController(this).getCivilopediaTutorials().forEach {
+                val page = it.renderCivilopediaText(stage.width*0.5f)
+                tabs.addPage(it.name, page) { _, name ->
+                    label.setText(name)
+                }
+            }
+            popup.add(tabs).colspan(2).grow().row()
+            popup.add(label)
+            popup.addCloseButton()
+            popup.debug = true
+            popup.innerTable.debug = true
+            popup.open()
+        }
+        column2.add(test).row()
 
         val optionsTable = getMenuButton("Options", "OtherIcons/Options", 'o')
             { this.openOptionsPopup() }
