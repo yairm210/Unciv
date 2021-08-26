@@ -190,7 +190,7 @@ fun String.toLabel() = Label(this.tr(), CameraStageBaseScreen.skin)
 fun Int.toLabel() = this.toString().toLabel()
 
 /** Translate a [String] and make a [Label] widget from it with a specified font color and size */
-fun String.toLabel(fontColor: Color = Color.WHITE, fontSize:Int=18): Label {
+fun String.toLabel(fontColor: Color = Color.WHITE, fontSize: Int = 18): Label {
     // We don't want to use setFontSize and setFontColor because they set the font,
     //  which means we need to rebuild the font cache which means more memory allocation.
     var labelStyle = CameraStageBaseScreen.skin.get(Label.LabelStyle::class.java)
