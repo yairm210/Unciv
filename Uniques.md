@@ -148,6 +148,11 @@ cityFilters allow us to choose the range of cities affected by this unique:
 - "in all cities connected to capital"
 - "in all cities with a garrison"
 - "in all cities in which the majority religion is a major religion"
+- "in non-enemy foreign cities" - In all cities owned by civs other than you that you are not at war with
+- "in foreign cities"
+- "in cities following this religion" - Should only be used in pantheon/follower uniques for religions
+- "in all cities in which the majority religion is a major religion"
+- "in all cities in which the majority religion is a enhanced religion"
 
 ### ConstructionFilter
 
@@ -199,6 +204,20 @@ For units, the UnitFilter is called. For Buildings, the following options are im
 "Can be purchased with [Stat] [cityFilter]"
 
 "Can be purchased for [amount] [Stat] [cityFilter]"
+
+"May buy [constructionFilter] buildings for [amount] [Stat] [cityFilter]"
+
+"[Stats] when a city adopts this religion for the first time"
+
+"[Stats] when a city adopts this religion for the first time (modified by game speed)" - The difference with the previous is that the stats for these are multiplied by a value dependent on the game speed: 0.67 for quick, 1 for normal, 1.5 for epic and 3 for marathon
+
+"[Stats] for each global city following this religion"
+
+"[amount]% [Stat] from every follower, up to [amount]%"
+
+"[Stats] for every [amount] global followers [cityFilter]"
+
+"[Stats] from every [constructionFilter] in cities where this religion has at least [amount] followers"
 
 ### One time effect
 
@@ -287,6 +306,9 @@ For units, the UnitFilter is called. For Buildings, the following options are im
 
 "+[amount]% attack strength to all [unitFilter] units for [amount] turns"
 
+"When spreading religion to a city, gain [amount] times the amount of followers of other religions as [Stat]" - "Stat" may be Science, Culture, Faith or Gold
+
+
 ### City-state related uniques
 
 "City-State Influence degrades [amount]% slower"
@@ -294,6 +316,8 @@ For units, the UnitFilter is called. For Buildings, the following options are im
 "Gifts of Gold to City-States generate [amount]% more Influence"
 
 "Resting point for Influence with City-States is increased by [amount]"
+
+"Resting point for Influence with City-States following this religion [amount]"
 
 "Allied City-States provide [Stat] equal to [amount]% of what they produce for themselves"
 
@@ -431,6 +455,11 @@ These last two uniques may seem like they only have a one-time effect. However, 
 
 "New [unitFilter] units start with [amount] Experience [cityFilter]"
 
+"Destroyed when the city is captured"
+
+"Never destroyed when the city is captured"
+
+
 ### Stat uniques
 
 "[stats] per [amount] population [cityFilter]" - provides the given stats for every [amount] of population. For instance, "[+2 Science] Per [2] Population in this city" would provide only 4 Science in a city with 5 population - since there are only 2 'sets' of 2 population in the city, each providing 2 Science.
@@ -546,11 +575,16 @@ May be added in promotions or ancient ruins equivalents
 
 "Can speed up construction of a wonder"
 
+"Can speed up construction of a building" - Same as above, but capped and can be used for buildings also
+
 "Can construct [improvement]" - destroys the unit upon construction
+
+"Can construct [improvement] if it hasn't used other actions yet" - as above, but only if the unit hasn't used its other actions yet
 
 "Unbuildable"
 
 "May found a religion"
+
 
 ### Visibility
 
@@ -561,6 +595,7 @@ May be added in promotions or ancient ruins equivalents
 "+1 Sight when embarked"
 
 "Limited Visibility"
+
 
 ### Movement
 
@@ -583,6 +618,10 @@ May be added in promotions or ancient ruins equivalents
 "May Paradrop up to [amount] tiles from inside friendly territory"
 
 "Transfer Movement to [unitFilter]"
+
+"May enter foreign tiles without open borders, but loses [amount] religious strength each turn it ends there"
+
+"May enter foreign tiles without open borders"
 
 ### Healing
 
@@ -687,6 +726,11 @@ May be added in promotions or ancient ruins equivalents
 "Religious unit" - Will make sure that the unit has a religion upon being built/purchased in a city with a religion
 
 "May upgrade to [unitName] through ruins-like effects"
+
+"Can [unitAction] [amount] times" - "unitAction" may be one of: "Spread Religion", "Remove Foreign religions from your own cities"
+
+"Prevents spreading of religion to the city it is next to"
+
 
 # Terrain uniques
 
