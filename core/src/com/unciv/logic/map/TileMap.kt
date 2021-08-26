@@ -330,6 +330,8 @@ class TileMap {
      *  Is run before setTransients, so make do without startingLocationsByNation
      */
     fun getRulesetIncompatibility(ruleset: Ruleset): HashSet<String> {
+        setTransients(ruleset)
+        setStartingLocationsTransients()
         val rulesetIncompatibilities = HashSet<String>()
         for (set in values.map { it.getRulesetIncompatibility(ruleset) })
             rulesetIncompatibilities.addAll(set)
