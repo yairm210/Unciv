@@ -26,6 +26,9 @@ interface INonPerpetualConstruction : IConstruction, INamed, IHasUniques {
     fun getMatchingUniques(uniqueTemplate: String): Sequence<Unique> {
         return uniqueObjects.asSequence().filter { it.placeholderText == uniqueTemplate }
     }
+    fun hasUnique(uniqueTemplate: String): Boolean {
+        return uniqueObjects.any { it.placeholderText == uniqueTemplate }
+    }
     
     fun canBePurchasedWithStat(cityInfo: CityInfo, stat: Stat, ignoreCityRequirements: Boolean = false): Boolean {
         if (stat in listOf(Stat.Production, Stat.Happiness)) return false
