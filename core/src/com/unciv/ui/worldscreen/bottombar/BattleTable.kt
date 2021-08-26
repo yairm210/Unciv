@@ -74,20 +74,20 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
         val attackerCiv = worldScreen.viewingCiv
         val defender: ICombatant? = Battle.getMapCombatantOfTile(selectedTile)
 
-        if(defender==null ||
-                !includeFriendly && defender.getCivInfo()==attackerCiv )
+        if (defender == null || (!includeFriendly && defender.getCivInfo() == attackerCiv))
             return null  // no enemy combatant in tile
 
-        val canSeeDefender = if(UncivGame.Current.viewEntireMapForDebug) true
-        else {
-            when {
-                defender.isInvisible() -> attackerCiv.viewableInvisibleUnitsTiles.contains(selectedTile)
-                defender.isCity() -> attackerCiv.exploredTiles.contains(selectedTile.position)
-                else -> attackerCiv.viewableTiles.contains(selectedTile)
+        val canSeeDefender = 
+            if (UncivGame.Current.viewEntireMapForDebug) true
+            else {
+                when {
+                    defender.isInvisible(attackerCiv) -> attackerCiv.viewableInvisibleUnitsTiles.contains(selectedTile)
+                    defender.isCity() -> attackerCiv.exploredTiles.contains(selectedTile.position)
+                    else -> attackerCiv.viewableTiles.contains(selectedTile)
+                }
             }
-        }
 
-        if(!canSeeDefender) return null
+        if (!canSeeDefender) return null
 
         return defender
     }
@@ -97,14 +97,14 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
 
         val attackerNameWrapper = Table()
         val attackerLabel = attacker.getName().toLabel()
-        if(attacker is MapUnitCombatant)
+        if (attacker is MapUnitCombatant)
             attackerNameWrapper.add(UnitGroup(attacker.unit,25f)).padRight(5f)
         attackerNameWrapper.add(attackerLabel)
         add(attackerNameWrapper)
 
         val defenderNameWrapper = Table()
         val defenderLabel = Label(defender.getName().tr(), skin)
-        if(defender is MapUnitCombatant)
+        if (defender is MapUnitCombatant)
             defenderNameWrapper.add(UnitGroup(defender.unit,25f)).padRight(5f)
         defenderNameWrapper.add(defenderLabel)
         add(defenderNameWrapper).row()

@@ -12,12 +12,26 @@ class CivInfoTransientUpdater(val civInfo: CivilizationInfo) {
 
         val newViewableInvisibleTiles = HashSet<TileInfo>()
         newViewableInvisibleTiles.addAll(civInfo.getCivUnits()
-                .filter { it.hasUnique("Can attack submarines") }
-                .flatMap { it.viewableTiles.asSequence() })
+            .filter { attacker -> attacker.hasUnique("Can see invisible [] units") || attacker.hasUnique("Can attack submarines") }
+            .flatMap { attacker ->
+                attacker.viewableTiles
+                    .asSequence()
+                    .filter { tile -> 
+                        ( tile.militaryUnit != null 
+                            && attacker.getMatchingUniques("Can see invisible [] units")
+                                .any { unique -> tile.militaryUnit!!.matchesFilter(unique.params[0]) }
+                        ) || (
+                            tile.militaryUnit != null 
+                            && attacker.hasUnique("Can attack submarines") 
+                            && tile.militaryUnit!!.matchesFilter("Submarine")
+                        )
+                    } 
+            }
+        )
         civInfo.viewableInvisibleUnitsTiles = newViewableInvisibleTiles
 
 
-        // updating the viewable tiles also affects the explored tiles, obvs
+        // updating the viewable tiles also affects the explored tiles, obviously.
         // So why don't we play switcharoo with the explored tiles as well?
         // Well, because it gets REALLY LARGE so it's a lot of memory space,
         // and we never actually iterate on the explored tiles (only check contains()),

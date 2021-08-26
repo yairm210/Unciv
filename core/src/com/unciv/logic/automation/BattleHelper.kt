@@ -95,15 +95,11 @@ object BattleHelper {
         )
             return false
 
-        //only submarine and destroyer can attack submarine
-        //garrisoned submarine can be attacked by anyone, or the city will be in invincible
-        if (tileCombatant.isInvisible() && !tile.isCityCenter()) {
-            if (combatant is MapUnitCombatant
-                && combatant.unit.hasUnique("Can attack submarines")
-                && combatant.getCivInfo().viewableInvisibleUnitsTiles.map { it.position }.contains(tile.position)) {
-                return true
-            }
-            return false
+        // Only units with the right unique can view submarines (or other invisible units) from more then one tile away.
+        // Garrisoned invisible units can be attacked by anyone, as else the city will be in invincible.
+        if (tileCombatant.isInvisible(combatant.getCivInfo()) && !tile.isCityCenter()) {
+            return combatant is MapUnitCombatant 
+                && combatant.getCivInfo().viewableInvisibleUnitsTiles.map { it.position }.contains(tile.position)
         }
         return true
     }
