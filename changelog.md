@@ -2,7 +2,7 @@
 
 Upload APK files to Github release
 
-Can now play as 2 separate civs with the same userId
+Can now play as 2 separate Civs with the same userId
 
 Fixed Krepost unique
 
