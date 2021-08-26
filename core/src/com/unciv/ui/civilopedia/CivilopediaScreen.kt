@@ -78,7 +78,7 @@ class CivilopediaScreen(
     /** Select a specified category
      * @param name Category name or label
      */
-    fun selectCategory(name: String) {
+    private fun selectCategory(name: String) {
         val category = CivilopediaCategories.fromLink(name)
             ?: return       // silently ignore unknown category names in links
         selectCategory(category)
@@ -87,7 +87,7 @@ class CivilopediaScreen(
     /** Select a specified category - unselects entry, rebuilds left side buttons.
      * @param category Category key
      */
-    fun selectCategory(category: CivilopediaCategories) {
+    private fun selectCategory(category: CivilopediaCategories) {
         currentCategory = category
         entrySelectTable.clear()
         entryIndex.clear()
@@ -176,6 +176,19 @@ class CivilopediaScreen(
         val hideReligionItems = !game.gameInfo.hasReligionEnabled()
         val noCulturalVictory = VictoryType.Cultural !in game.gameInfo.gameParameters.victoryTypes
 
+        fun shouldBeDisplayed(uniqueObjects: List<Unique>): Boolean {
+            val uniques = uniqueObjects.map { it.placeholderText }
+
+            return Constants.hideFromCivilopediaUnique !in uniques
+                    && !(hideReligionItems && Constants.hiddenWithoutReligionUnique in uniques)
+                    && !(uniqueObjects.filter { unique -> unique.placeholderText == "Hidden when [] Victory is disabled"}.any {
+                    unique -> !game.gameInfo.gameParameters.victoryTypes.contains(VictoryType.valueOf(unique.params[0] ))
+            })
+                    // Deprecated since 3.15.14
+                    && !(noCulturalVictory && "Hidden when cultural victory is disabled" in uniques)
+            //
+        }
+
         fun getCategoryIterator(category: CivilopediaCategories): Collection<ICivilopediaText> =
             when (category) {
                 CivilopediaCategories.Building -> ruleset.buildings.values.filter { !it.isAnyWonder() }
@@ -198,7 +211,7 @@ class CivilopediaScreen(
             if (hideReligionItems && loopCategory == CivilopediaCategories.Belief) continue
             categoryToEntries[loopCategory] =
                 getCategoryIterator(loopCategory)
-                    .filter { it.getUniques()?.let { uniques -> shouldBeDisplayed(uniques) } ?: true }
+                    .filter { it.getUniquesObjects()?.let { uniques -> shouldBeDisplayed(uniques) } ?: true }
                     .map { CivilopediaEntry(
                         (it as INamed).name, "",
                         loopCategory.getImage?.invoke(it.getIconName(), imageSize),
@@ -263,31 +276,6 @@ class CivilopediaScreen(
                 selectLink(link)
             else
                 selectEntry(link, noScrollAnimation = true)
-    }
-
-    private fun getReligionText(): ICivilopediaText {
-        val lines = ArrayList<FormattedLine>()
-        lines += FormattedLine("Religions", header = 2, color = "#e34a2b")
-        lines += FormattedLine(separator = true)
-        ruleset.religions.sortedWith(compareBy(Collator.getInstance(), { it.tr() })).forEach { 
-            lines += FormattedLine(it, icon = "Belief/$it")
-        }
-        return SimpleCivilopediaText(lines, true)
-    }
-    
-    private fun shouldBeDisplayed(uniqueObjects: List<Unique>): Boolean {
-        val uniques = uniqueObjects.map { it.placeholderText }
-        val hideReligionItems = !game.gameInfo.hasReligionEnabled()
-        val noCulturalVictory = VictoryType.Cultural !in game.gameInfo.gameParameters.victoryTypes
-        
-        return Constants.hideFromCivilopediaUnique !in uniques
-            && !(hideReligionItems && Constants.hiddenWithoutReligionUnique in uniques)
-            && !(uniqueObjects.filter { unique -> unique.placeholderText == "Hidden when [] Victory is disabled"}.any {
-                unique -> !game.gameInfo.gameParameters.victoryTypes.contains(VictoryType.valueOf(unique.params[0] ))
-            })
-            // Deprecated since 3.15.14
-                && !(noCulturalVictory && "Hidden when cultural victory is disabled" in uniques)
-            //
     }
 
     override fun resize(width: Int, height: Int) {

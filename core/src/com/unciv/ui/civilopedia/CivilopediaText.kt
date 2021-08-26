@@ -7,6 +7,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.UncivGame
 import com.unciv.models.metadata.BaseRuleset
+import com.unciv.models.ruleset.IHasUniques
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.Unique
@@ -378,11 +379,11 @@ object MarkupRenderer {
     }
 }
 
-/** Storage class for interface [ICivilopediaText] for use as base class */
-@Deprecated("As of 3.16.1, use ICivilopediaText directly please")
-abstract class CivilopediaText : ICivilopediaText {
-    override var civilopediaText = listOf<FormattedLine>()
-}
+///** Storage class for interface [ICivilopediaText] for use as base class */
+//@Deprecated("As of 3.16.1, use ICivilopediaText directly please")
+//abstract class CivilopediaText : ICivilopediaText {
+//    override var civilopediaText = listOf<FormattedLine>()
+//}
 /** Storage class for instantiation of the simplest form containing only the lines collection */
 open class SimpleCivilopediaText(
     override var civilopediaText: List<FormattedLine>,
@@ -401,7 +402,7 @@ open class SimpleCivilopediaText(
 /** Addon common to most ruleset game objects managing civilopedia display
  *
  * ### Usage:
- * 1. Let [Ruleset] object implement this (e.g. by inheriting class [CivilopediaText] or adding var [civilopediaText] itself)
+ * 1. Let [Ruleset] object implement this (by inheriting and implementing class [ICivilopediaText])
  * 2. Add `"civilopediaText": ["",…],` in the json for these objects
  * 3. Optionally override [getCivilopediaTextHeader] to supply a different header line
  * 4. Optionally override [getCivilopediaTextLines] to supply automatic stuff like tech prerequisites, uniques, etc.
@@ -485,11 +486,17 @@ interface ICivilopediaText {
     /** Create the correct string for a Civilopedia link */
     fun makeLink(): String
 
+    /** This just marshals access to the uniques so they can be queried as part of the ICivilopediaText interface.
+     *  Used exclusively by CivilopediaScreen, named to avoid JVM signature confusion
+     *  (a getUniqueObjects exists in IHasUniques and most civilopedia objects will implement that interface)
+     */
+    fun getUniquesAsObjects() = (this as? IHasUniques)?.uniqueObjects
+
     /** Overrides alphabetical sorting in Civilopedia
      *  @param ruleset The current ruleset in case the function needs to do lookups
      */
     fun getSortGroup(ruleset: Ruleset): Int = 0
-    
+
     /** Overrides Icon used for Civilopedia entry list (where you select the instance)
      *  This will still be passed to the category-specific image getter.
      */
