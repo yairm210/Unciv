@@ -426,13 +426,14 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
         diplomacyTable.add("Tribute Willingness".toLabel()).row()
         diplomacyTable.add(">0 to take gold, >30 and size 4 city for worker".toLabel()).row()
         val modifierTable = Table()
-        for (item in otherCiv.getTributeModifiers(viewingCiv, requireWholeList = true)) {
+        val tributeModifiers = otherCiv.getTributeModifiers(viewingCiv, requireWholeList = true)
+        for (item in tributeModifiers) {
             val color = if (item.value > 0) Color.GREEN else Color.RED
             modifierTable.add(item.key.toLabel(color))
             modifierTable.add(item.value.toString().toLabel(color)).row()
         }
         modifierTable.add("Sum:".toLabel())
-        modifierTable.add(otherCiv.getTributeWillingness(viewingCiv).toLabel()).row()
+        modifierTable.add(tributeModifiers.values.sum().toLabel()).row()
         diplomacyTable.add(modifierTable).row()
         diplomacyTable.addSeparator()
 
