@@ -16,6 +16,7 @@ import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.logic.trade.TradeLogic
 import com.unciv.logic.trade.TradeOffer
 import com.unciv.logic.trade.TradeType
+import com.unciv.models.ruleset.Era
 import com.unciv.models.ruleset.ModOptionsConstants
 import com.unciv.models.ruleset.Quest
 import com.unciv.models.ruleset.tile.ResourceType
@@ -158,67 +159,38 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
             else -> "Reach highest influence above 60 for alliance."
         }
         diplomacyTable.add(getRelationshipTable(otherCivDiplomacyManager)).row()
-        if (nextLevelString != "") {
+        if (nextLevelString.isNotEmpty()) {
             diplomacyTable.add(nextLevelString.toLabel()).row()
         }
 
-        var friendBonusText = "When Friends: ".tr()
-        val eraInfo = viewingCiv.getEraObject()
-        val friendBonuses =
-            if (eraInfo == null) null
-            else eraInfo.friendBonus[otherCiv.cityStateType.name]
-        friendBonusText += 
-            if (friendBonuses != null) {
-                friendBonuses.joinToString(separator = ", ") { it.tr() }
-            } else {
-                // Deprecated, assume Civ V values for compatibility
-                val cultureBonus = if(viewingCiv.getEraNumber() in 0..1) "3" else if (viewingCiv.getEraNumber() in 2..3) "6" else "13"
-                val happinessBonus = if(viewingCiv.getEraNumber() in 0..1) "2" else "3"
-                when (otherCiv.cityStateType) {
-                    CityStateType.Militaristic -> "Provides military units every [20] turns".tr()
-                    CityStateType.Cultured -> ("Provides [" + cultureBonus + "] [Culture] per turn").tr()
-                    CityStateType.Mercantile -> ("Provides [" + happinessBonus + "] Happiness").tr()
-                    CityStateType.Maritime -> "Provides [2] [Food] [in capital]".tr()
-                }
-            }
+        val eraInfo = viewingCiv.getEraObject() ?: Era.getLegacyCityStateBonusEra(viewingCiv.getEraNumber())
 
+        var friendBonusText = "{When Friends:} ".tr()
+        val friendBonuses = eraInfo.friendBonus[otherCiv.cityStateType.name]
+        friendBonusText += friendBonuses?.joinToString(separator = ", ") { it.tr() } ?: ""
 
-        var allyBonusText = "When Allies: "
-        val allyBonuses = 
-            if (eraInfo == null) null
-            else eraInfo.allyBonus[otherCiv.cityStateType.name]
-        if (allyBonuses != null) {
-            allyBonusText += allyBonuses.joinToString(separator = ", ") { it.tr() }
-        } else {
-            // Deprecated, assume Civ V values for compatibility
-            val cultureBonus = if(viewingCiv.getEraNumber() in 0..1) "6" else if (viewingCiv.getEraNumber() in 2..3) "12" else "26"
-            val happinessBonus = if(viewingCiv.getEraNumber() in 0..1) "2" else "3"
-            allyBonusText += when (otherCiv.cityStateType) {
-                CityStateType.Militaristic -> "Provides military units every [20] turns".tr()
-                CityStateType.Cultured -> ("Provides [" + cultureBonus + "] [Culture] per turn").tr()
-                CityStateType.Mercantile -> ("Provides [" + happinessBonus + "] Happiness").tr() + ", " + "Provides a unique luxury".tr()
-                CityStateType.Maritime -> "Provides [2] [Food] [in capital]".tr() + ", " + "Provides [1] [Food] [in all cities]".tr()
-            }
-        }
+        var allyBonusText = "{When Allies:} ".tr()
+        val allyBonuses = eraInfo.allyBonus[otherCiv.cityStateType.name]
+        allyBonusText += allyBonuses?.joinToString(separator = ", ") { it.tr() } ?: ""
 
-        val friendBonusLabelColor: Color
-        if (otherCivDiplomacyManager.relationshipLevel() >= RelationshipLevel.Friend) {
-            friendBonusLabelColor = Color.GREEN
+        val relationLevel = otherCivDiplomacyManager.relationshipLevel()
+        if (relationLevel >= RelationshipLevel.Friend) {
             // RelationshipChange = Ally -> Friend or Friend -> Favorable
             val turnsToRelationshipChange = otherCivDiplomacyManager.getTurnsToRelationshipChange()
             diplomacyTable.add("Relationship changes in another [$turnsToRelationshipChange] turns".toLabel())
                 .row()
-        } else
-            friendBonusLabelColor = Color.GRAY
+        }
 
+        val friendBonusLabelColor = if (relationLevel >= RelationshipLevel.Friend) Color.GREEN else Color.GRAY
         val friendBonusLabel = friendBonusText.toLabel(friendBonusLabelColor)
             .apply { setAlignment(Align.center) }
         diplomacyTable.add(friendBonusLabel).row()
-        val allyBonusLabelColor = if (otherCivDiplomacyManager.relationshipLevel() == RelationshipLevel.Ally) Color.GREEN else Color.GRAY
+
+        val allyBonusLabelColor = if (relationLevel == RelationshipLevel.Ally) Color.GREEN else Color.GRAY
         val allyBonusLabel = allyBonusText.toLabel(allyBonusLabelColor)
             .apply { setAlignment(Align.center) }
         diplomacyTable.add(allyBonusLabel).row()
-        
+
         return diplomacyTable
     }
 

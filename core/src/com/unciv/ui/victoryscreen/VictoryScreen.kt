@@ -203,11 +203,11 @@ class VictoryScreen(val worldScreen: WorldScreen) : PickerScreen() {
         policyVictoryColumn.add("Branches completed".toLabel()).row()
         policyVictoryColumn.addSeparator()
 
-        data class civToBranchesCompleted(val civ: CivilizationInfo, val branchesCompleted: Int)
+        data class CivToBranchesCompleted(val civ: CivilizationInfo, val branchesCompleted: Int)
 
-        val civsToBranchesCompleted =
-                majorCivs.map { civToBranchesCompleted(it, it.policies.adoptedPolicies.count { pol -> Policy.isBranchCompleteByName(pol) }) }
-                        .sortedByDescending { it.branchesCompleted }
+        val civsToBranchesCompleted = majorCivs.map {
+            CivToBranchesCompleted(it, it.policies.adoptedPolicies.count { pol -> Policy.isBranchCompleteByName(pol) })
+        }.sortedByDescending { it.branchesCompleted }
 
         for (entry in civsToBranchesCompleted) {
             val civToBranchesHaveCompleted = EmpireOverviewScreen.getCivGroup(entry.civ, " - " + entry.branchesCompleted, playerCivInfo)

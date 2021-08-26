@@ -246,13 +246,44 @@ class Nation : INamed, ICivilopediaText, IHasUniques {
     private fun getCityStateInfo(ruleset: Ruleset): List<FormattedLine> {
         val textList = ArrayList<FormattedLine>()
 
-        textList += FormattedLine("Type: [$cityStateType]")
+        textList += FormattedLine("Type: [$cityStateType]", header = 4, color = cityStateType!!.color)
         val viewingCiv = UncivGame.Current.gameInfo.currentPlayerCiv
-        textList += FormattedLine(cityStateType!!.getBonusText(viewingCiv))
+        val era = viewingCiv.getEraObject() ?: Era.getLegacyCityStateBonusEra(viewingCiv.getEraNumber())
+        var showResources = false
+
+        val friendBonus = era.friendBonus[cityStateType!!.name]
+        if (friendBonus != null && friendBonus.isNotEmpty()) {
+            textList += FormattedLine()
+            textList += FormattedLine("When Friends: ")
+            friendBonus.forEach {
+                textList += FormattedLine(Unique(it), indent = 1)
+                if (it == "Provides a unique luxury") showResources = true
+            }
+        }
+
+        val allyBonus = era.allyBonus[cityStateType!!.name]
+        if (allyBonus != null && allyBonus.isNotEmpty()) {
+            textList += FormattedLine()
+            textList += FormattedLine("When Allies: ")
+            allyBonus.forEach {
+                textList += FormattedLine(Unique(it), indent = 1)
+                if (it == "Provides a unique luxury") showResources = true
+            }
+        }
+
+        if (showResources) {
+            val allMercantileResources = ruleset.tileResources.values
+                .filter { it.unique == "Can only be created by Mercantile City-States" }
+            if (allMercantileResources.isNotEmpty()) {
+                textList += FormattedLine()
+                textList += FormattedLine("The unique luxury is one of:")
+                allMercantileResources.forEach { 
+                    textList += FormattedLine(it.name, it.makeLink(), indent = 1)
+                }
+            }
+        }
 
         // personality is not a nation property, it gets assigned to the civ randomly
-        // so are rewarded resources
-
         return textList
     }
 

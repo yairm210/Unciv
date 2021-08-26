@@ -203,7 +203,8 @@ class CivilopediaScreen(
                 CivilopediaCategories.Policy -> ruleset.policies.values
                 CivilopediaCategories.Tutorial -> tutorialController.getCivilopediaTutorials()
                 CivilopediaCategories.Difficulty -> ruleset.difficulties.values
-                CivilopediaCategories.Belief -> (ruleset.beliefs.values.asSequence() + Belief.getCivilopediaReligionEntry(ruleset)).toList()
+                CivilopediaCategories.Belief -> (ruleset.beliefs.values.asSequence() +
+                        Belief.getCivilopediaReligionEntry(ruleset)).toList()
             }
 
         for (loopCategory in CivilopediaCategories.values()) {
@@ -211,7 +212,7 @@ class CivilopediaScreen(
             if (hideReligionItems && loopCategory == CivilopediaCategories.Belief) continue
             categoryToEntries[loopCategory] =
                 getCategoryIterator(loopCategory)
-                    .filter { it.getUniquesObjects()?.let { uniques -> shouldBeDisplayed(uniques) } ?: true }
+                    .filter { it.getUniquesAsObjects()?.let { uniques -> shouldBeDisplayed(uniques) } ?: true }
                     .map { CivilopediaEntry(
                         (it as INamed).name, "",
                         loopCategory.getImage?.invoke(it.getIconName(), imageSize),
