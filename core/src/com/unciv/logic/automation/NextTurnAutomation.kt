@@ -175,8 +175,9 @@ object NextTurnAutomation {
             value -= (thirdCivInfluence - 60) / 10
         }
 
-        // Bonus for resources we can get from them
-        value += cityState.detailedCivResources.count { it.resource.resourceType != ResourceType.Bonus }
+        // Bonus for luxury resources we can get from them
+        value += cityState.detailedCivResources.count { it.resource.resourceType == ResourceType.Luxury
+                && !(it.resource in civInfo.detailedCivResources) }
 
         return value
     }

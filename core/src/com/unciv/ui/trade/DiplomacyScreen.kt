@@ -709,6 +709,7 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
             RelationshipLevel.Neutral -> Color.WHITE
             RelationshipLevel.Favorable, RelationshipLevel.Friend,
             RelationshipLevel.Ally -> Color.GREEN
+            RelationshipLevel.Afraid -> Color.YELLOW
             else -> Color.RED
         }
 

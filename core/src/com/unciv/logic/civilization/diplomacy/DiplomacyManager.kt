@@ -14,6 +14,7 @@ import kotlin.math.min
 
 enum class RelationshipLevel{
     Unforgivable,
+    Afraid,
     Enemy,
     Competitor,
     Neutral,
@@ -143,6 +144,7 @@ class DiplomacyManager() {
 
         if (civInfo.isCityState()) {
             if (influence <= -30 || civInfo.isAtWarWith(otherCiv())) return RelationshipLevel.Unforgivable
+            if (influence < 30 && civInfo.getTributeWillingness(otherCiv()) > 0) return RelationshipLevel.Afraid
             if (influence < 0) return RelationshipLevel.Enemy
             if (influence >= 60 && civInfo.getAllyCiv() == otherCivName) return RelationshipLevel.Ally
             if (influence >= 30) return RelationshipLevel.Friend
