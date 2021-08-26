@@ -40,6 +40,8 @@ import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.pow
 import kotlin.math.roundToInt
+import kotlin.system.measureNanoTime
+import kotlin.system.measureTimeMillis
 
 class CivilizationInfo {
 
@@ -987,7 +989,7 @@ class CivilizationInfo {
         return getTributeModifiers(demandingCiv, demandingWorker).values.sum()
     }
 
-    fun getTributeModifiers(demandingCiv: CivilizationInfo, demandingWorker: Boolean = false): HashMap<String, Int> {
+    fun getTributeModifiers(demandingCiv: CivilizationInfo, demandingWorker: Boolean = false, requireWholeList: Boolean = false): HashMap<String, Int> {
         val modifiers = LinkedHashMap<String, Int>()    // Linked to preserve order when presenting the modifiers table
         // Can't bully major civs or unsettled CS's
         if (!isCityState()) {
@@ -1020,6 +1022,9 @@ class CivilizationInfo {
             modifiers["Recently paid tribute"] = -40
         if (getDiplomacyManager(demandingCiv).influence < -30)
             modifiers["Influence below -30"] = -300
+
+        if (!requireWholeList && modifiers.values.sum() <= -200)
+            return modifiers
 
         val forceRank = gameInfo.getAliveMajorCivs().sortedByDescending { it.getStatForRanking(RankingType.Force) }.indexOf(demandingCiv)
         modifiers["Military Rank"] = 100 - ((100 / gameInfo.gameParameters.players.size) * forceRank)
