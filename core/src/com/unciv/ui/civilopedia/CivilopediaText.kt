@@ -379,11 +379,6 @@ object MarkupRenderer {
     }
 }
 
-///** Storage class for interface [ICivilopediaText] for use as base class */
-//@Deprecated("As of 3.16.1, use ICivilopediaText directly please")
-//abstract class CivilopediaText : ICivilopediaText {
-//    override var civilopediaText = listOf<FormattedLine>()
-//}
 /** Storage class for instantiation of the simplest form containing only the lines collection */
 open class SimpleCivilopediaText(
     override var civilopediaText: List<FormattedLine>,
