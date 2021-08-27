@@ -37,7 +37,7 @@ class LanguageTable(val language:String, val percentComplete: Int):Table(){
 class LanguagePickerScreen : PickerScreen(){
     var chosenLanguage = "English"
 
-    private val languageTables = ArrayList<LanguageTable>()
+    private val languageTables: ArrayList<LanguageTable>
 
     fun update(){
         languageTables.forEach { it.update(chosenLanguage) }
@@ -45,25 +45,8 @@ class LanguagePickerScreen : PickerScreen(){
 
     init {
         closeButton.isVisible = false
-        /// trimMargin is overhead, but easier to maintain and see when it might get trimmed without wrap:
-        val translationDisclaimer = """
-            |Please note that translations are a community-based work in progress and are INCOMPLETE!
-            |The percentage shown is how much of the language is translated in-game.
-            |If you want to help translating the game into your language,
-            |  instructions are in the Github readme! (Menu > Community > Github)
-            """.trimMargin()
-        topTable.add(translationDisclaimer.toLabel()).pad(10f).row()
-        val tableLanguages = Table()
-        tableLanguages.defaults().uniformX()
-        tableLanguages.defaults().pad(10.0f)
-        tableLanguages.defaults().fillX()
-        topTable.add(tableLanguages).row()
 
-        val languageCompletionPercentage = UncivGame.Current.translations
-                .percentCompleteOfLanguages
-        languageTables.addAll(languageCompletionPercentage
-                .map { LanguageTable(it.key,if(it.key=="English") 100 else it.value) }
-                .sortedByDescending { it.percentComplete} )
+        languageTables = topTable.addLanguageTables()
 
         languageTables.forEach {
             it.onClick {
@@ -71,7 +54,6 @@ class LanguagePickerScreen : PickerScreen(){
                 rightSideButton.enable()
                 update()
             }
-            tableLanguages.add(it).row()
         }
 
         rightSideButton.setText("Pick language".tr())
@@ -88,5 +70,36 @@ class LanguagePickerScreen : PickerScreen(){
         game.translations.tryReadTranslationForCurrentLanguage()
         game.setScreen(MainMenuScreen())
         dispose()
+    }
+
+    companion object {
+        fun Table.addLanguageTables(): ArrayList<LanguageTable> {
+            val languageTables = ArrayList<LanguageTable>()
+
+            val translationDisclaimer = """
+                |Please note that translations are a community-based work in progress and are INCOMPLETE!
+                |The percentage shown is how much of the language is translated in-game.
+                |If you want to help translating the game into your language,
+                |  instructions are in the Github readme! (Menu > Community > Github)
+            """.trimMargin()
+            add(translationDisclaimer.toLabel()).pad(10f).row()
+            val tableLanguages = Table()
+            tableLanguages.defaults().uniformX()
+            tableLanguages.defaults().pad(10.0f)
+            tableLanguages.defaults().fillX()
+
+            val languageCompletionPercentage = UncivGame.Current.translations
+                .percentCompleteOfLanguages
+            languageTables.addAll(languageCompletionPercentage
+                .map { LanguageTable(it.key,if(it.key=="English") 100 else it.value) }
+                .sortedByDescending { it.percentComplete} )
+
+            languageTables.forEach {
+                tableLanguages.add(it).row()
+            }
+            add(tableLanguages).row()
+
+            return languageTables
+        }
     }
 }

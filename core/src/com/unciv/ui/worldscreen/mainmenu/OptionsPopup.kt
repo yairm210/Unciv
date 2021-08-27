@@ -20,6 +20,7 @@ import com.unciv.models.tilesets.TileSetCache
 import com.unciv.models.translations.TranslationFileWriter
 import com.unciv.models.translations.Translations
 import com.unciv.models.translations.tr
+import com.unciv.ui.LanguagePickerScreen.Companion.addLanguageTables
 import com.unciv.ui.civilopedia.FormattedLine
 import com.unciv.ui.civilopedia.SimpleCivilopediaText
 import com.unciv.ui.utils.*
@@ -40,7 +41,6 @@ private class Language(val language:String, val percentComplete:Int){
 class OptionsPopup(val previousScreen:CameraStageBaseScreen) : Popup(previousScreen) {
     private val settings = previousScreen.game.settings
     private val tabs: TabbedPager
-    private var selectedLanguage: String = "English"
     private val resolutionArray = com.badlogic.gdx.utils.Array(arrayOf("750x500", "900x600", "1050x700", "1200x800", "1500x1000"))
     private var modCheckFirstRun = true   // marker for automatic first run on selecting the page
     private var modCheckCheckBox: CheckBox? = null
@@ -62,8 +62,9 @@ class OptionsPopup(val previousScreen:CameraStageBaseScreen) : Popup(previousScr
         add(tabs).pad(0f).grow().row()
 
         tabs.selectPage(tabs.addPage("About", getAboutTab(), ImageGetter.getExternalImage("Icon.png"), 24f))
-        tabs.addPage("Display", getDisplayTab(), ImageGetter.getImage("UnitPromotionIcons/Scouting"), 24f)
-        tabs.addPage("Gameplay", getGamePlayTab(), ImageGetter.getImage("OtherIcons/Options"), 24f)
+        tabs.addPage("Language", getLanguageTab(), ImageGetter.getImage("FlagIcons/${settings.language}"), 24f)
+        tabs.addPage("Display options", getDisplayTab(), ImageGetter.getImage("UnitPromotionIcons/Scouting"), 24f)
+        tabs.addPage("Gameplay options", getGamePlayTab(), ImageGetter.getImage("OtherIcons/Options"), 24f)
         tabs.addPage("Sound", getSoundTab(), ImageGetter.getImage("OtherIcons/Speaker"), 24f)
         // at the moment the notification service only exists on Android
         if (Gdx.app.type == Application.ApplicationType.Android)
@@ -116,6 +117,32 @@ class OptionsPopup(val previousScreen:CameraStageBaseScreen) : Popup(previousScr
         }
     }
 
+    private fun getLanguageTab() = Table(CameraStageBaseScreen.skin).apply {
+        val languageTables = this.addLanguageTables()
+        (cells[0].actor as Label).wrap = true
+        cells[0].width(tabs.prefWidth - 90f)
+
+        var chosenLanguage = settings.language
+        fun selectLanguage() {
+            settings.language = chosenLanguage
+            previousScreen.game.translations.tryReadTranslationForCurrentLanguage()
+            reloadWorldAndOptions()
+        }
+        fun updateSelection() {
+            languageTables.forEach { it.update(chosenLanguage) }
+            if (chosenLanguage != settings.language)
+                selectLanguage()
+        }
+        updateSelection()
+
+        languageTables.forEach {
+            it.onClick {
+                chosenLanguage = it.language
+                updateSelection()
+            }
+        }
+    }
+
     private fun getDisplayTab() = Table(CameraStageBaseScreen.skin).apply {
         pad(10f)
         defaults().pad(2.5f)
@@ -128,8 +155,6 @@ class OptionsPopup(val previousScreen:CameraStageBaseScreen) : Popup(previousScr
 
         addYesNoRow("Show pixel units", settings.showPixelUnits, true) { settings.showPixelUnits = it }
         addYesNoRow("Show pixel improvements", settings.showPixelImprovements, true) { settings.showPixelImprovements = it }
-
-        addLanguageSelectBox()
 
         addResolutionSelectBox()
 
@@ -293,36 +318,6 @@ class OptionsPopup(val previousScreen:CameraStageBaseScreen) : Popup(previousScr
                 previousScreen.shouldUpdate = true
         }
         add(button).row()
-    }
-
-    private fun Table.addLanguageSelectBox() {
-        fun selectLanguage() {
-            settings.language = selectedLanguage
-            previousScreen.game.translations.tryReadTranslationForCurrentLanguage()
-            reloadWorldAndOptions()
-        }
-
-        val languageSelectBox = SelectBox<Language>(skin)
-        val languageArray = GdxArray<Language>()
-        previousScreen.game.translations.percentCompleteOfLanguages
-            .map { Language(it.key, if (it.key == "English") 100 else it.value) }
-            .sortedByDescending { it.percentComplete }
-            .forEach { languageArray.add(it) }
-        if (languageArray.size == 0) return
-
-        add("Language".toLabel())
-        languageSelectBox.items = languageArray
-        val matchingLanguage = languageArray.firstOrNull { it.language == settings.language }
-        languageSelectBox.selected = matchingLanguage ?: languageArray.first()
-        add(languageSelectBox).minWidth(240f).pad(10f).row()
-
-        languageSelectBox.onChange {
-            // Sometimes the "changed" is triggered even when we didn't choose something
-            selectedLanguage = languageSelectBox.selected.language
-
-            if (selectedLanguage != settings.language)
-                selectLanguage()
-        }
     }
 
     private fun Table.addMinimapSizeSlider() {
