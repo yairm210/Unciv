@@ -994,9 +994,9 @@ class MapUnit {
         if (isPreparingParadrop()) action = null
     }
 
-    fun getPower(): Int {
+    fun getForceEvaluation(): Int {
         val promotionBonus = (promotions.numberOfPromotions + 1).toFloat().pow(0.3f)
-        var power = (baseUnit.getPower() * promotionBonus).toInt()
+        var power = (baseUnit.getForceEvaluation() * promotionBonus).toInt()
         power *= health
         power /= 100
         return power

@@ -55,7 +55,9 @@ class BaseUnit : INamed, INonPerpetualConstruction, ICivilopediaText {
     var replaces: String? = null
     var uniqueTo: String? = null
     var attackSound: String? = null
-    var cachedPower: Int = -1
+
+    @Transient
+    var cachedForceEvaluation: Int = -1
 
     lateinit var ruleset: Ruleset
 
@@ -454,14 +456,14 @@ class BaseUnit : INamed, INonPerpetualConstruction, ICivilopediaText {
                 .any { it.placeholderText == "+[]% Strength vs []" && it.params[1] == "City" }
         )
 
-    fun getPower(): Int {
-        if (cachedPower < 0)    calculatePower()
-        return  cachedPower
+    fun getForceEvaluation(): Int {
+        if (cachedForceEvaluation < 0)    evaluateForce()
+        return  cachedForceEvaluation
     }
 
-    private fun calculatePower() {
+    private fun evaluateForce() {
         if (strength == 0 && rangedStrength == 0) {
-            cachedPower = 0
+            cachedForceEvaluation = 0
             return
         }
 
@@ -525,6 +527,6 @@ class BaseUnit : INamed, INonPerpetualConstruction, ICivilopediaText {
             }
 
         }
-        cachedPower = power
+        cachedForceEvaluation = power
     }
 }

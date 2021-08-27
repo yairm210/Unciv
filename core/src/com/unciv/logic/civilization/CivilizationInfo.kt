@@ -1037,12 +1037,12 @@ class CivilizationInfo {
         val inRangeTiles = getCapital().getCenterTile().getTilesInDistanceRange(1..bullyRange)
         val forceNearCity = inRangeTiles
             .sumBy { if (it.militaryUnit?.civInfo == demandingCiv)
-                it.militaryUnit!!.getPower()
+                it.militaryUnit!!.getForceEvaluation()
             else 0
             }
-        val csForce = getCapital().getPower() + inRangeTiles
+        val csForce = getCapital().getForceEvaluation() + inRangeTiles
             .sumBy { if (it.militaryUnit?.civInfo == this)
-                it.militaryUnit!!.getPower()
+                it.militaryUnit!!.getForceEvaluation()
             else 0
             }
         val forceRatio = forceNearCity.toFloat() / csForce.toFloat()

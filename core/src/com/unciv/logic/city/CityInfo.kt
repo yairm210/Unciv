@@ -670,7 +670,7 @@ class CityInfo {
         return !isOriginalCapital && !isHolyCity() && (!isCapital() || justCaptured)
     }
 
-    fun getPower(): Int {
+    fun getForceEvaluation(): Int {
         // Same as for units, so higher values count more
         return CityCombatant(this).getCityStrength().toFloat().pow(1.5f).toInt()
     }
