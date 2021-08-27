@@ -4,7 +4,6 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.ui.*
-import com.badlogic.gdx.scenes.scene2d.ui.Button.ButtonStyle
 import com.unciv.UncivGame
 
 /**
@@ -69,7 +68,6 @@ class TabbedPager(
         removePage(addPage("Dummy"))
         add(headerScroll).growX().minHeight(headerHeight).row()
         add(contentScroll).grow().row()
-        debug = true
     }
 
     override fun getPrefWidth() = prefWidthField
@@ -97,8 +95,9 @@ class TabbedPager(
     private fun getPageIndex(page: PageState) = pages.indexOf(page)
 
     @Suppress("MemberVisibilityCanBePrivate", "unused")  // This is part of our API
-    fun activatePage(index: Int): Boolean {
-        if (activePage == index || index < -1 || index >= pages.size) return false
+    fun selectPage(index: Int): Boolean {
+        if (index !in 0 until pages.size) return false
+        if (activePage == index) return false
         if (index >= 0 && pages[index].disabled) return false
         if (activePage != -1) {
             pages[activePage].apply {
@@ -124,24 +123,41 @@ class TabbedPager(
         }
         return true
     }
-    fun activatePage(caption: String) = activatePage(getPageIndex(caption))
-    private fun activatePage(page: PageState) = activatePage(getPageIndex(page))
+    fun selectPage(caption: String) = selectPage(getPageIndex(caption))
+    private fun selectPage(page: PageState) = selectPage(getPageIndex(page))
+
+    @Suppress("MemberVisibilityCanBePrivate")  // This is part of our API
+    fun setDisablePage(index: Int, disabled: Boolean): Boolean {
+        if (index !in 0 until pages.size) return false
+        val page = pages[index]
+        val oldValue = page.disabled
+        page.disabled = disabled
+        page.button.isEnabled = !disabled
+        return oldValue
+    }
+    fun setDisablePage(caption: String, disabled: Boolean) = setDisablePage(getPageIndex(caption), disabled)
 
     @Suppress("MemberVisibilityCanBePrivate")  // This is part of our API
     fun removePage(index: Int): Boolean {
-        if (index < 0 || index >= pages.size) return false
-        if (index == activePage) activatePage(-1)
+        if (index !in 0 until pages.size) return false
+        if (index == activePage) selectPage(-1)
         val page = pages.removeAt(index)
         header.getCell(page.button).clearActor()
         header.cells.removeIndex(index)
         return true
     }
     @Suppress("MemberVisibilityCanBePrivate", "unused")  // This is part of our API
-    fun removePage(caption: String): Boolean {
-        val index = getPageIndex(caption)
-        if (index < 0) return false
-        return removePage(index)
+    fun removePage(caption: String) = removePage(getPageIndex(caption))
+
+    @Suppress("MemberVisibilityCanBePrivate")  // This is part of our API
+    fun replacePage(index: Int, content: Actor) {
+        if (index !in 0 until pages.size) return
+        if (index == activePage) selectPage(-1)
+        pages[index].content = content
+        if (index == activePage) selectPage(index)
     }
+    @Suppress("MemberVisibilityCanBePrivate", "unused")  // This is part of our API
+    fun replacePage(caption: String, content: Actor) = replacePage(getPageIndex(caption), content)
 
     @Suppress("MemberVisibilityCanBePrivate")  // This is part of our API
     fun addPage(
@@ -158,14 +174,18 @@ class TabbedPager(
         val page = PageState(content ?: Group(), disabled, onActivation)
         page.button.apply {
             name = caption  // enable finding pages by untranslated caption without needing our own field
-            if (icon != null)
+            if (icon != null) {
+                if (iconSize != 0f) icon.setSize(iconSize, iconSize)
+                val wrapper = Container(icon)
+                if (iconSize != 0f) wrapper.setSize(iconSize, iconSize)
                 add(icon).apply {
                     if (iconSize != 0f) setSize(iconSize, iconSize)
                 }
+            }
             add(caption.toLabel(fontColor, fontSize))
             isEnabled = !disabled
             onClick {
-                activatePage(page)
+                selectPage(page)
             }
             pack()
             if (height + 2 * headerPadding > headerHeight) {

@@ -112,7 +112,7 @@ open class CameraStageBaseScreen : Screen {
     fun openOptionsPopup() {
         val limitOrientationsHelper = game.limitOrientationsHelper
         if (limitOrientationsHelper == null || !game.settings.allowAndroidPortrait || !isCrampedPortrait()) {
-            OptionsPopup(this).open(force = true)
+            OptionsPopup(this).open()
             return
         }
         if (!(this is MainMenuScreen || this is WorldScreen)) {
