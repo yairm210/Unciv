@@ -132,9 +132,9 @@ class CityScreenTileTable(private val cityScreen: CityScreen): Table() {
     private fun getTileStatsTable(stats: Stats): Table {
         val statsTable = Table()
         statsTable.defaults().pad(2f)
-        for (entry in stats.toHashMap().filterNot { it.value == 0f }) {
-            statsTable.add(ImageGetter.getStatIcon(entry.key.toString())).size(20f)
-            statsTable.add(entry.value.roundToInt().toString().toLabel()).padRight(5f)
+        for ((key, value) in stats) {
+            statsTable.add(ImageGetter.getStatIcon(key.name)).size(20f)
+            statsTable.add(value.roundToInt().toLabel()).padRight(5f)
         }
         return statsTable
     }

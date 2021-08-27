@@ -72,7 +72,7 @@ jobs:
         
 ## ANDROID        
         
-      - name: Prepare files for Google Play upload
+      - name: Prepare .aab (for Google Play) and .apk (for Github) files
         continue-on-error: true
         if: github.event_name == 'push' && contains(github.ref, 'refs/tags/') 
         shell: bash
@@ -80,6 +80,9 @@ jobs:
           mkdir whatsNewDirectory
           echo "${{ env.RELEASE_BODY }}" > whatsNewDirectory/whatsnew-en-US
           ./gradlew :android:bundleRelease
+          ./gradlew :android:assembleRelease
+          mkdir deploy
+          mv android/build/outputs/apk/release/Unciv-release-unsigned.apk deploy/Unciv.apk
 
         
       - name: Sign app APK
@@ -103,7 +106,6 @@ jobs:
           track: production
           userFraction: 0.1
           whatsNewDirectory: whatsNewDirectory
-
 
 ## DESKTOP
       
@@ -137,7 +139,6 @@ jobs:
           ./butler push deploy/Unciv-Windows64.zip yairm210/unciv:Windows64 --userversion ${{steps.tag.outputs.tag}}
 
           mv desktop/build/libs/Unciv.jar deploy/Unciv.jar
-          mv android/build/outputs/bundle/release/Unciv-release.aab deploy/Unciv.aab
           
 
       - name: Upload binaries to Github release

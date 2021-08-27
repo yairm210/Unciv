@@ -234,13 +234,13 @@ object Battle {
         }
 
         val civ = plunderingUnit.getCivInfo()
-        plunderedGoods.toHashMap().filterNot { it.value == 0f }.forEach {
-            val plunderedAmount = it.value.toInt()
-            civ.addStat(it.key, plunderedAmount)
+        for ((key, value) in plunderedGoods) {
+            val plunderedAmount = value.toInt()
+            civ.addStat(key, plunderedAmount)
             civ.addNotification(
-                "Your [${plunderingUnit.getName()}] plundered [${plunderedAmount}] [${it.key.name}] from [${plunderedUnit.getName()}]",
+                "Your [${plunderingUnit.getName()}] plundered [${plunderedAmount}] [${key.name}] from [${plunderedUnit.getName()}]",
                 plunderedUnit.getTile().position,
-                plunderingUnit.getName(), NotificationIcon.War, "StatIcons/${it.key.name}",
+                plunderingUnit.getName(), NotificationIcon.War, "StatIcons/${key.name}",
                 if (plunderedUnit is CityCombatant) NotificationIcon.City else plunderedUnit.getName()
             )
         }

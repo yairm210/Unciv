@@ -1,831 +1,572 @@
 
-BuildingIcons.png
-size: 2048, 1024
+Tech.png
+size: 1024, 1024
 format: RGBA8888
 filter: MipMapLinearLinear, MipMapLinearLinear
 repeat: none
-Alhambra
+TechIcons/Acoustics
   rotate: false
   xy: 4, 868
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Amphitheater
+TechIcons/Advanced Ballistics
   rotate: false
   xy: 4, 760
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Angkor Wat
+TechIcons/Agriculture
   rotate: false
   xy: 112, 868
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Apollo Program
+TechIcons/Animal Husbandry
   rotate: false
   xy: 4, 652
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Aqueduct
+TechIcons/Archaeology
   rotate: false
   xy: 112, 760
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Armory
+TechIcons/Archery
   rotate: false
   xy: 220, 868
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Arsenal
+TechIcons/Architecture
   rotate: false
   xy: 4, 544
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Bank
+TechIcons/Astronomy
   rotate: false
   xy: 112, 652
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Barracks
+TechIcons/Atomic Theory
   rotate: false
   xy: 220, 760
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Bazaar
+TechIcons/Ballistics
   rotate: false
   xy: 328, 868
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Big Ben
+TechIcons/Banking
   rotate: false
   xy: 4, 436
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Bomb Shelter
+TechIcons/Biology
   rotate: false
   xy: 112, 544
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Brandenburg Gate
+TechIcons/Bronze Working
   rotate: false
   xy: 220, 652
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Broadcast Tower
+TechIcons/Calendar
   rotate: false
   xy: 328, 760
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Burial Tomb
+TechIcons/Chemistry
   rotate: false
   xy: 436, 868
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-CN Tower
+TechIcons/Chivalry
   rotate: false
   xy: 4, 328
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Castle
+TechIcons/Civil Service
   rotate: false
   xy: 112, 436
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Cathedral
+TechIcons/Combined Arms
   rotate: false
   xy: 220, 544
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Chichen Itza
+TechIcons/Combustion
   rotate: false
   xy: 328, 652
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Circus
+TechIcons/Compass
   rotate: false
   xy: 436, 760
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Circus Maximus
+TechIcons/Computers
   rotate: false
   xy: 544, 868
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Colosseum
+TechIcons/Construction
   rotate: false
   xy: 4, 220
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Colossus
+TechIcons/Currency
   rotate: false
   xy: 112, 328
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Courthouse
+TechIcons/Drama and Poetry
   rotate: false
   xy: 220, 436
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Cristo Redentor
+TechIcons/Dynamite
   rotate: false
   xy: 328, 544
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Eiffel Tower
+TechIcons/Ecology
   rotate: false
   xy: 436, 652
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Factory
+TechIcons/Economics
   rotate: false
   xy: 544, 760
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Floating Gardens
+TechIcons/Education
   rotate: false
   xy: 652, 868
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Forbidden Palace
+TechIcons/Electricity
   rotate: false
   xy: 4, 112
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Forge
+TechIcons/Electronics
   rotate: false
   xy: 112, 220
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Garden
+TechIcons/Engineering
   rotate: false
   xy: 220, 328
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Granary
+TechIcons/Fertilizer
   rotate: false
   xy: 328, 436
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Great Wall
+TechIcons/Flight
   rotate: false
   xy: 436, 544
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Hagia Sophia
+TechIcons/Future Tech
   rotate: false
   xy: 544, 652
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Hanging Gardens
+TechIcons/Globalization
   rotate: false
   xy: 652, 760
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Hanse
+TechIcons/Guilds
   rotate: false
   xy: 760, 868
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Harbor
+TechIcons/Gunpowder
   rotate: false
   xy: 4, 4
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Hermitage
+TechIcons/Horseback Riding
   rotate: false
   xy: 112, 112
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Heroic Epic
+TechIcons/Industrialization
   rotate: false
   xy: 220, 220
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Himeji Castle
+TechIcons/Iron Working
   rotate: false
   xy: 328, 328
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Hospital
+TechIcons/Lasers
   rotate: false
   xy: 436, 436
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Hubble Space Telescope
+TechIcons/Machinery
   rotate: false
   xy: 544, 544
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Hydro Plant
+TechIcons/Masonry
   rotate: false
   xy: 652, 652
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Ironworks
+TechIcons/Mass Media
   rotate: false
   xy: 760, 760
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Kremlin
+TechIcons/Mathematics
   rotate: false
   xy: 868, 868
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Krepost
+TechIcons/Metal Casting
   rotate: false
   xy: 112, 4
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Leaning Tower of Pisa
+TechIcons/Metallurgy
   rotate: false
   xy: 220, 112
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Library
+TechIcons/Military Science
   rotate: false
   xy: 328, 220
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Lighthouse
+TechIcons/Mining
   rotate: false
   xy: 436, 328
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Longhouse
+TechIcons/Mobile Tactics
   rotate: false
   xy: 544, 436
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Machu Picchu
+TechIcons/Nanotechnology
   rotate: false
   xy: 652, 544
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Manhattan Project
+TechIcons/Navigation
   rotate: false
   xy: 760, 652
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Market
+TechIcons/Nuclear Fission
   rotate: false
   xy: 868, 760
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Mausoleum of Halicarnassus
-  rotate: false
-  xy: 976, 868
-  size: 100, 100
-  orig: 100, 100
-  offset: 0, 0
-  index: -1
-Medical Lab
+TechIcons/Nuclear Fusion
   rotate: false
   xy: 220, 4
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Military Academy
+TechIcons/Optics
   rotate: false
   xy: 328, 112
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Military Base
+TechIcons/Particle Physics
   rotate: false
   xy: 436, 220
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Mint
+TechIcons/Pharmaceuticals
   rotate: false
   xy: 544, 328
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Monastery
+TechIcons/Philosophy
   rotate: false
   xy: 652, 436
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Monument
+TechIcons/Physics
   rotate: false
   xy: 760, 544
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Mosque
+TechIcons/Plastics
   rotate: false
   xy: 868, 652
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Mud Pyramid Mosque
-  rotate: false
-  xy: 976, 760
-  size: 100, 100
-  orig: 100, 100
-  offset: 0, 0
-  index: -1
-Mughal Fort
-  rotate: false
-  xy: 1084, 868
-  size: 100, 100
-  orig: 100, 100
-  offset: 0, 0
-  index: -1
-Museum
+TechIcons/Pottery
   rotate: false
   xy: 328, 4
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-National College
+TechIcons/Printing Press
   rotate: false
   xy: 436, 112
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-National Epic
+TechIcons/Radar
   rotate: false
   xy: 544, 220
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-National Treasury
+TechIcons/Radio
   rotate: false
   xy: 652, 328
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Neuschwanstein
+TechIcons/Railroads
   rotate: false
   xy: 760, 436
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Notre Dame
+TechIcons/Refrigeration
   rotate: false
   xy: 868, 544
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Nuclear Plant
-  rotate: false
-  xy: 976, 652
-  size: 100, 100
-  orig: 100, 100
-  offset: 0, 0
-  index: -1
-Observatory
-  rotate: false
-  xy: 1084, 760
-  size: 100, 100
-  orig: 100, 100
-  offset: 0, 0
-  index: -1
-Opera House
-  rotate: false
-  xy: 1192, 868
-  size: 100, 100
-  orig: 100, 100
-  offset: 0, 0
-  index: -1
-Oxford University
+TechIcons/Replaceable Parts
   rotate: false
   xy: 436, 4
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Pagoda
+TechIcons/Rifling
   rotate: false
   xy: 544, 112
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Palace
+TechIcons/Robotics
   rotate: false
   xy: 652, 220
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Paper Maker
+TechIcons/Rocketry
   rotate: false
   xy: 760, 328
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Pentagon
+TechIcons/Sailing
   rotate: false
   xy: 868, 436
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Petra
-  rotate: false
-  xy: 976, 544
-  size: 100, 100
-  orig: 100, 100
-  offset: 0, 0
-  index: -1
-Porcelain Tower
-  rotate: false
-  xy: 1084, 652
-  size: 100, 100
-  orig: 100, 100
-  offset: 0, 0
-  index: -1
-Public School
-  rotate: false
-  xy: 1192, 760
-  size: 100, 100
-  orig: 100, 100
-  offset: 0, 0
-  index: -1
-Research Lab
-  rotate: false
-  xy: 1300, 868
-  size: 100, 100
-  orig: 100, 100
-  offset: 0, 0
-  index: -1
-SS Booster
+TechIcons/Satellites
   rotate: false
   xy: 544, 4
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-SS Cockpit
+TechIcons/Scientific Theory
   rotate: false
   xy: 652, 112
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-SS Engine
+TechIcons/Stealth
   rotate: false
   xy: 760, 220
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-SS Stasis Chamber
+TechIcons/Steam Power
   rotate: false
   xy: 868, 328
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Satrap's Court
-  rotate: false
-  xy: 976, 436
-  size: 100, 100
-  orig: 100, 100
-  offset: 0, 0
-  index: -1
-Seaport
-  rotate: false
-  xy: 1084, 544
-  size: 100, 100
-  orig: 100, 100
-  offset: 0, 0
-  index: -1
-Shrine
-  rotate: false
-  xy: 1192, 652
-  size: 100, 100
-  orig: 100, 100
-  offset: 0, 0
-  index: -1
-Sistine Chapel
-  rotate: false
-  xy: 1300, 760
-  size: 100, 100
-  orig: 100, 100
-  offset: 0, 0
-  index: -1
-Solar Plant
-  rotate: false
-  xy: 1408, 868
-  size: 100, 100
-  orig: 100, 100
-  offset: 0, 0
-  index: -1
-Spaceship Factory
+TechIcons/Steel
   rotate: false
   xy: 652, 4
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Stable
+TechIcons/Telecommunications
   rotate: false
   xy: 760, 112
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Stadium
+TechIcons/The Wheel
   rotate: false
   xy: 868, 220
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Statue of Liberty
-  rotate: false
-  xy: 976, 328
-  size: 100, 100
-  orig: 100, 100
-  offset: 0, 0
-  index: -1
-Statue of Zeus
-  rotate: false
-  xy: 1084, 436
-  size: 100, 100
-  orig: 100, 100
-  offset: 0, 0
-  index: -1
-Stock Exchange
-  rotate: false
-  xy: 1192, 544
-  size: 100, 100
-  orig: 100, 100
-  offset: 0, 0
-  index: -1
-Stone Works
-  rotate: false
-  xy: 1300, 652
-  size: 100, 100
-  orig: 100, 100
-  offset: 0, 0
-  index: -1
-Stonehenge
-  rotate: false
-  xy: 1408, 760
-  size: 100, 100
-  orig: 100, 100
-  offset: 0, 0
-  index: -1
-Sydney Opera House
-  rotate: false
-  xy: 1516, 868
-  size: 100, 100
-  orig: 100, 100
-  offset: 0, 0
-  index: -1
-Taj Mahal
+TechIcons/Theology
   rotate: false
   xy: 760, 4
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Temple
+TechIcons/Trapping
   rotate: false
   xy: 868, 112
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-Temple of Artemis
-  rotate: false
-  xy: 976, 220
-  size: 100, 100
-  orig: 100, 100
-  offset: 0, 0
-  index: -1
-Terracotta Army
-  rotate: false
-  xy: 1084, 328
-  size: 100, 100
-  orig: 100, 100
-  offset: 0, 0
-  index: -1
-The Great Library
-  rotate: false
-  xy: 1192, 436
-  size: 100, 100
-  orig: 100, 100
-  offset: 0, 0
-  index: -1
-The Great Lighthouse
-  rotate: false
-  xy: 1300, 544
-  size: 100, 100
-  orig: 100, 100
-  offset: 0, 0
-  index: -1
-The Louvre
-  rotate: false
-  xy: 1408, 652
-  size: 100, 100
-  orig: 100, 100
-  offset: 0, 0
-  index: -1
-The Oracle
-  rotate: false
-  xy: 1516, 760
-  size: 100, 100
-  orig: 100, 100
-  offset: 0, 0
-  index: -1
-The Pyramids
-  rotate: false
-  xy: 1624, 868
-  size: 100, 100
-  orig: 100, 100
-  offset: 0, 0
-  index: -1
-Theatre
+TechIcons/Writing
   rotate: false
   xy: 868, 4
-  size: 100, 100
-  orig: 100, 100
-  offset: 0, 0
-  index: -1
-United Nations
-  rotate: false
-  xy: 976, 112
-  size: 100, 100
-  orig: 100, 100
-  offset: 0, 0
-  index: -1
-University
-  rotate: false
-  xy: 1084, 220
-  size: 100, 100
-  orig: 100, 100
-  offset: 0, 0
-  index: -1
-Utopia Project
-  rotate: false
-  xy: 1192, 328
-  size: 100, 100
-  orig: 100, 100
-  offset: 0, 0
-  index: -1
-Walls
-  rotate: false
-  xy: 1300, 436
-  size: 100, 100
-  orig: 100, 100
-  offset: 0, 0
-  index: -1
-Walls of Babylon
-  rotate: false
-  xy: 1408, 544
-  size: 100, 100
-  orig: 100, 100
-  offset: 0, 0
-  index: -1
-Wat
-  rotate: false
-  xy: 1516, 652
-  size: 100, 100
-  orig: 100, 100
-  offset: 0, 0
-  index: -1
-Water Mill
-  rotate: false
-  xy: 1624, 760
-  size: 100, 100
-  orig: 100, 100
-  offset: 0, 0
-  index: -1
-Windmill
-  rotate: false
-  xy: 1732, 868
-  size: 100, 100
-  orig: 100, 100
-  offset: 0, 0
-  index: -1
-Workshop
-  rotate: false
-  xy: 976, 4
   size: 100, 100
   orig: 100, 100
   offset: 0, 0

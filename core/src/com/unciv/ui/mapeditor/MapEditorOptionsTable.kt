@@ -61,11 +61,9 @@ class MapEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(CameraS
 
         val sliderTab = Table()
 
-        val slider = Slider(1f, 5f, 1f, false, skin)
         val sliderLabel = "{Brush Size} $brushSize".toLabel()
-
-        slider.onChange {
-            brushSize = slider.value.toInt()
+        val slider = UncivSlider(1f, 5f, 1f, initial = brushSize.toFloat()) {
+            brushSize = it.toInt()
             sliderLabel.setText("{Brush Size} $brushSize".tr())
         }
 
@@ -153,23 +151,20 @@ class MapEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(CameraS
         }
         editorPickTable.add(AutoScrollPane(improvementsTable).apply { setScrollingDisabled(true, false) }).height(scrollPanelHeight)
 
+        // Menu for the Starting Locations
         val nationTable = Table()
 
-        /** old way improvements for all civs
-         * */
         for (nation in ruleset.nations.values) {
-            if (nation.isSpectator()) continue  // no improvements for spectator
+            if (nation.isSpectator() || nation.isBarbarian()) continue  // no improvements for spectator
 
             val nationImage = getHex(ImageGetter.getNationIndicator(nation, 40f))
             nationImage.onClick {
-                val improvementName = TileMap.startingLocationPrefix + nation.name
                 tileAction = {
-                    it.improvement = improvementName
-                    for ((tileInfo, tileGroups) in mapEditorScreen.mapHolder.tileGroups) {
-                        if (tileInfo.improvement == improvementName && tileInfo != it)
-                            tileInfo.improvement = null
-                        tileInfo.setTerrainTransients()
-                        tileGroups.forEach { it.update() }
+                    mapEditorScreen.tileMap.apply {
+                        // toggle the starting location here, note this allows
+                        // both multiple locations per nation and multiple nations per tile
+                        if (!addStartingLocation(nation.name, it))
+                            removeStartingLocation(nation.name, it)
                     }
                 }
 
@@ -182,6 +177,7 @@ class MapEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(CameraS
         editorPickTable.add(AutoScrollPane(nationTable).apply { setScrollingDisabled(true, false) }).height(scrollPanelHeight)
     }
 
+    /** currently unused */
     fun setUnits() {
         editorPickTable.clear()
 

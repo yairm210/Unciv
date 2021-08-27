@@ -61,19 +61,20 @@ object ImageGetter {
             textureRegionDrawables[region.name] = drawable
         }
 
-        for (singleImagesFolder in sequenceOf("BuildingIcons", "FlagIcons", "UnitIcons")) {
-            if (!atlases.containsKey(singleImagesFolder)) atlases[singleImagesFolder] = TextureAtlas("$singleImagesFolder.atlas")
-            val tempAtlas = atlases[singleImagesFolder]!!
+        // This is a quickfix for #4993, since you can't .list() on a jar file. This should be fixed in a nicer way.
+        val fileNames = listOf("game","Flags","Tech","Skin","Construction")
+        for (fileName in fileNames) {
+            val file = Gdx.files.internal("$fileName.atlas")
+            val extraAtlas = file.nameWithoutExtension()
+            val tempAtlas = atlases[extraAtlas]  // fetch if cached
+                ?: TextureAtlas(file.name()).apply {  // load if not
+                    atlases[extraAtlas] = this  // cache the freshly loaded
+                }
+            val prefix = if (extraAtlas == "Skin") "Skin/" else ""  // Only Skin is packed without folder prefix
             for (region in tempAtlas.regions) {
                 val drawable = TextureRegionDrawable(region)
-                textureRegionDrawables["$singleImagesFolder/" + region.name] = drawable
+                textureRegionDrawables[prefix + region.name] = drawable
             }
-        }
-
-        if (!atlases.containsKey("Skin")) atlases["Skin"] = TextureAtlas("Skin.atlas")
-        for (region in atlases["Skin"]!!.regions) {
-            val drawable = TextureRegionDrawable(region)
-            textureRegionDrawables["Skin/" + region.name] = drawable
         }
 
         // These are from the mods
@@ -132,10 +133,10 @@ object ImageGetter {
         val layerNames = mutableListOf(baseFileName)
         val layerList = arrayListOf<Image>()
 
-        var i = 1
-        while (imageExists("$baseFileName-$i")) {
-            layerNames.add("$baseFileName-$i")
-            ++i
+        var number = 1
+        while (imageExists("$baseFileName-$number")) {
+            layerNames.add("$baseFileName-$number")
+            ++number
         }
 
         for (i in layerNames.indices) {
@@ -254,11 +255,6 @@ object ImageGetter {
     fun getImprovementIcon(improvementName: String, size: Float = 20f): Actor {
         if (improvementName.startsWith("Remove") || improvementName == Constants.cancelImprovementOrder)
             return Table().apply { add(getImage("OtherIcons/Stop")).size(size) }
-        if (improvementName.startsWith(TileMap.startingLocationPrefix)) {
-            val nationName = improvementName.removePrefix(TileMap.startingLocationPrefix)
-            val nation = ruleset.nations[nationName]!!
-            return getNationIndicator(nation, size)
-        }
 
         val iconGroup = getImage("ImprovementIcons/$improvementName").surroundWithCircle(size)
 

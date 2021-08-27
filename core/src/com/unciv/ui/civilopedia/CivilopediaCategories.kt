@@ -2,6 +2,7 @@ package com.unciv.ui.civilopedia
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
+import com.badlogic.gdx.scenes.scene2d.ui.Container
 import com.unciv.Constants
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.ruleset.Ruleset
@@ -42,7 +43,7 @@ object CivilopediaImageGetters {
         group.showEntireMap = true
         group.forMapEditorIcon = true
         group.update()
-        return group
+        return Container(group)
     }
 
     val construction = { name: String, size: Float ->
@@ -77,10 +78,19 @@ object CivilopediaImageGetters {
     }
     val belief = { name: String, size: Float ->
         // Kludge until we decide how exactly to show Religions
-        if (ImageGetter.imageExists("ReligionIcons/$name")) {
-            ImageGetter.getCircledReligionIcon(name, size)
+        fun getInvertedCircledReligionIcon(iconName: String, size: Float) =
+            ImageGetter.getCircledReligionIcon(iconName, size).apply { 
+                circle.color = Color.WHITE
+                actor.color = Color.BLACK
+            }
+        if (ImageGetter.religionIconExists(name)) {
+            getInvertedCircledReligionIcon(name, size)
+        } else {
+            val typeName = ImageGetter.ruleset.beliefs[name]?.type?.name
+            if (typeName != null && ImageGetter.religionIconExists(typeName))
+                getInvertedCircledReligionIcon(typeName, size)
+            else null
         }
-        else null
     }
 }
 
