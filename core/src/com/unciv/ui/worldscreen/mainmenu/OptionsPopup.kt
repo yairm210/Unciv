@@ -5,6 +5,7 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
 import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
@@ -12,6 +13,8 @@ import com.unciv.MainMenuScreen
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.models.UncivSound
+import com.unciv.models.metadata.BaseRuleset
+import com.unciv.models.ruleset.Ruleset.CheckModLinksStatus
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.tilesets.TileSetCache
 import com.unciv.models.translations.TranslationFileWriter
@@ -25,9 +28,8 @@ import com.unciv.ui.worldscreen.WorldScreen
 import java.util.*
 import kotlin.concurrent.thread
 import com.badlogic.gdx.utils.Array as GdxArray
-import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 
-/** Helper class feeding the language [Select] box */
+/** Helper class feeding the language [SelectBox] */
 private class Language(val language:String, val percentComplete:Int){
     override fun toString(): String {
         val spaceSplitLang = language.replace("_"," ")
@@ -40,7 +42,9 @@ class OptionsPopup(val previousScreen:CameraStageBaseScreen) : Popup(previousScr
     private val tabs: TabbedPager
     private var selectedLanguage: String = "English"
     private val resolutionArray = com.badlogic.gdx.utils.Array(arrayOf("750x500", "900x600", "1050x700", "1200x800", "1500x1000"))
-
+    private var modCheckFirstRun = true   // marker for automatic first run on selecting the page
+    private var modCheckCheckBox: CheckBox? = null
+    private var modCheckResultCell: Cell<Actor>? = null
 
     init {
         settings.addCompletedTutorialTask("Open the options table")
@@ -52,32 +56,33 @@ class OptionsPopup(val previousScreen:CameraStageBaseScreen) : Popup(previousScr
             tabWidth = (if (isPortrait()) 0.9f else 0.8f) * stage.width
             tabHeight = (if (isPortrait()) 0.6f else 0.65f) * stage.height
         }
-        tabs = TabbedPager(tabWidth, tabHeight, backgroundColor = Color.CLEAR)
+        tabs = TabbedPager(tabWidth, tabHeight,
+            fontSize = 21, backgroundColor = Color.CLEAR,
+            secretHashCode = 2747985, capacity = 8)
         add(tabs).pad(0f).grow().row()
 
-        tabs.selectPage(tabs.addPage("About", getAboutTab(tabWidth-10f), ImageGetter.getExternalImage("Icon.png"), 24f))
+        tabs.selectPage(tabs.addPage("About", getAboutTab(), ImageGetter.getExternalImage("Icon.png"), 24f))
         tabs.addPage("Display", getDisplayTab(), ImageGetter.getImage("UnitPromotionIcons/Scouting"), 24f)
         tabs.addPage("Gameplay", getGamePlayTab(), ImageGetter.getImage("OtherIcons/Options"), 24f)
-        tabs.addPage("Sound", getSoundTab(), ImageGetter.getImage("OtherIcons/Options"), 24f)
+        tabs.addPage("Sound", getSoundTab(), ImageGetter.getImage("OtherIcons/Speaker"), 24f)
         // at the moment the notification service only exists on Android
         if (Gdx.app.type == Application.ApplicationType.Android)
             tabs.addPage("Multiplayer options", getMultiplayerTab(), ImageGetter.getImage("OtherIcons/Multiplayer"), 24f)
-        tabs.addPage("Other options", getOtherTab(), ImageGetter.getImage("OtherIcons/Options"), 24f)
+        tabs.addPage("Other options", getOtherTab(), ImageGetter.getImage("OtherIcons/Settings"), 24f)
         if (RulesetCache.size > 1) {
-            val modCheckTab = getModErrorTab()
-            tabs.addPage("Locate mod errors", modCheckTab, ImageGetter.getImage("OtherIcons/Mods"), 24f) { _, _ ->
-                runModChecker(modCheckTab)
+            tabs.addPage("Locate mod errors", getModCheckTab(), ImageGetter.getImage("OtherIcons/Mods"), 24f) { _, _ ->
+                if (modCheckFirstRun) runModChecker()
             }
         }
         if (Gdx.input.isKeyPressed(Input.Keys.SHIFT_RIGHT) && Gdx.input.isKeyPressed(Input.Keys.CONTROL_RIGHT)) {
-            tabs.addPage("Debug", getDebugTab(), ImageGetter.getImage("ReligionIcons/Pantheon"), 24f, secret = true)
+            tabs.addPage("Debug", getDebugTab(), ImageGetter.getImage("OtherIcons/SecretOptions"), 24f, secret = true)
         }
 
         addCloseButton {
             previousScreen.game.limitOrientationsHelper?.allowPortrait(settings.allowAndroidPortrait)
             if (previousScreen is WorldScreen)
                 previousScreen.enableNextTurnButtonAfterOptions()
-        }
+        }.padBottom(10f)
 
         pack() // Needed to show the background.
         center(previousScreen.stage)
@@ -95,7 +100,8 @@ class OptionsPopup(val previousScreen:CameraStageBaseScreen) : Popup(previousScr
         (previousScreen.game.screen as CameraStageBaseScreen).openOptionsPopup()
     }
 
-    private fun getAboutTab(width: Float): Table {
+    private fun getAboutTab(): Table {
+        defaults().pad(5f)
         val version = previousScreen.game.version.replace(".","")
         val lines = sequence {
             yield(FormattedLine("{Version} $version", link = "https://github.com/yairm210/Unciv/blob/master/changelog.md#$version"))
@@ -104,12 +110,13 @@ class OptionsPopup(val previousScreen:CameraStageBaseScreen) : Popup(previousScr
         }
         return SimpleCivilopediaText(lines.toList()).renderCivilopediaText(0f).apply {
             pad(20f)
-            align(Align.top)
         }
     }
 
     private fun getDisplayTab() = Table(CameraStageBaseScreen.skin).apply {
         pad(10f)
+        defaults().pad(2.5f)
+
         addYesNoRow("Show worked tiles", settings.showWorkedTiles, true) { settings.showWorkedTiles = it }
         addYesNoRow("Show resources and improvements", settings.showResourcesAndImprovements, true) { settings.showResourcesAndImprovements = it }
         addYesNoRow("Show tile yields", settings.showTileYields, true) { settings.showTileYields = it } // JN
@@ -136,6 +143,7 @@ class OptionsPopup(val previousScreen:CameraStageBaseScreen) : Popup(previousScr
 
     private fun getGamePlayTab() = Table(CameraStageBaseScreen.skin).apply {
         pad(10f)
+        defaults().pad(5f)
         addYesNoRow("Check for idle units", settings.checkForDueUnits, true) { settings.checkForDueUnits = it }
         addYesNoRow("Move units with a single tap", settings.singleTapMove) { settings.singleTapMove = it }
         addYesNoRow("Auto-assign city production", settings.autoAssignCityProduction, true) {
@@ -154,6 +162,7 @@ class OptionsPopup(val previousScreen:CameraStageBaseScreen) : Popup(previousScr
 
     private fun getSoundTab() = Table(CameraStageBaseScreen.skin).apply {
         pad(10f)
+        defaults().pad(5f)
 
         addSoundEffectsVolumeSlider()
 
@@ -166,6 +175,7 @@ class OptionsPopup(val previousScreen:CameraStageBaseScreen) : Popup(previousScr
 
     private fun getMultiplayerTab(): Table = Table(CameraStageBaseScreen.skin).apply {
         pad(10f)
+        defaults().pad(5f)
 
         addYesNoRow("Enable out-of-game turn notifications", settings.multiplayerTurnCheckerEnabled) {
             settings.multiplayerTurnCheckerEnabled = it
@@ -183,6 +193,7 @@ class OptionsPopup(val previousScreen:CameraStageBaseScreen) : Popup(previousScr
 
     private fun getOtherTab() = Table(CameraStageBaseScreen.skin).apply {
         pad(10f)
+        defaults().pad(5f)
 
         addAutosaveTurnsSelectBox()
 
@@ -208,34 +219,55 @@ class OptionsPopup(val previousScreen:CameraStageBaseScreen) : Popup(previousScr
         addSetUserId()
     }
 
-    private fun getModErrorTab() = Table(CameraStageBaseScreen.skin).apply {
-        add("Checking mods for errors...".toLabel()).center()
+    private fun getModCheckTab() = Table(CameraStageBaseScreen.skin).apply {
+        defaults().pad(10f).align(Align.top)
+        modCheckCheckBox = "Check extension mods thoroughly with vanilla ruleset".toCheckBox {
+            runModChecker(it)
+        }
+        add(modCheckCheckBox).row()
+        modCheckResultCell = add("Checking mods for errors...".toLabel())
     }
 
-    private fun runModChecker(modCheckTab: Table) {
+    private fun runModChecker(complex: Boolean = false) {
+        modCheckFirstRun = false
+        if (modCheckCheckBox == null) return
+        modCheckCheckBox!!.disable()
+        if (modCheckResultCell == null) return
         thread(name="ModChecker") {
             val lines = ArrayList<FormattedLine>()
-            for (mod in RulesetCache.values) {
-                val modLinks = mod.checkModLinks()
-                if (modLinks.isNotOK()) {
-                    lines += FormattedLine("${mod.name}{}", starred = true, color = "#F00", header = 2)
-                    lines += FormattedLine(modLinks.message)
-                    lines += FormattedLine()
+            var noProblem = true
+            for (mod in RulesetCache.values.sortedBy { it.name }) {
+                val modLinks = if (complex) RulesetCache.checkModLinks(linkedSetOf(mod.name))
+                    else mod.checkModLinks()
+                val color = when (modLinks.status) {
+                    CheckModLinksStatus.OK -> "#0F0"
+                    CheckModLinksStatus.Warning -> "#FF0"
+                    CheckModLinksStatus.Error -> "#F00"
                 }
+                val label = if (mod.name.isEmpty()) BaseRuleset.Civ_V_Vanilla.fullName else mod.name
+                lines += FormattedLine("$label{}", starred = true, color = color, header = 3)
+                if (modLinks.isNotOK()) {
+                    lines += FormattedLine(modLinks.message)
+                    noProblem = false
+                }
+                lines += FormattedLine()
             }
-            if (lines.isEmpty()) lines += FormattedLine("{No problems found}.")
+            if (noProblem) lines += FormattedLine("{No problems found}.")
 
-            val result = SimpleCivilopediaText(lines).renderCivilopediaText(modCheckTab.width)
             Gdx.app.postRunnable {
-                modCheckTab.clear()
-                modCheckTab.add(result).pad(10f).align(Align.top)
+                // My math says -25f would cover padding, this is empiric
+                val result = SimpleCivilopediaText(lines).renderCivilopediaText(tabs.prefWidth - 150f)
+                modCheckResultCell?.setActor(result)
+                modCheckCheckBox!!.enable()
             }
         }
     }
 
     private fun getDebugTab() = Table(CameraStageBaseScreen.skin).apply {
-        val game = UncivGame.Current
         pad(10f)
+        defaults().pad(5f)
+
+        val game = UncivGame.Current
         add("Supercharged".toCheckBox(game.superchargedForDebug) {
             game.superchargedForDebug = it
         }).row()

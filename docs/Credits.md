@@ -628,7 +628,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Shield](https://thenounproject.com/search/?q=shield&i=813568) by Gregor Cresnar for Religious Strength
 * [skill sword flame](https://thenounproject.com/term/skill-sword-flame/2360212/) by Maxicons) for Remove Heresy
 
-## Main menu
+## Main menu and Options
 
 * [Lightning](https://thenounproject.com/search/?q=lightning&i=102300) by Rohith M S for Quickstart
 * [Loading](https://thenounproject.com/search/?q=load&i=208033) by Universal Icons for Load Game
@@ -637,6 +637,9 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Multiplayer](https://thenounproject.com/search/?q=multiplayer&i=1215652) by Roy Charles
 * [Options](https://thenounproject.com/search/?q=options&i=866090) By Thengakola
 * [Package](https://thenounproject.com/search/?q=package&i=1886048) by shashank singh
+* [spy](https://thenounproject.com/term/spy/2277455) by Luiz Carvalho for Secret Options
+* [Speaker](https://thenounproject.com/term/speaker/10453) by Vania Platonov for Sound Options
+* [Settings](https://thenounproject.com/term/settings/2279537) by chiccabubble for Other Options
 
 # Sound credits
 

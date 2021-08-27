@@ -71,17 +71,7 @@ class ModCheckboxTable(
                         mods.remove(oldBaseRuleset)
             mods.add(mod.name)
 
-            var complexModLinkCheck: CheckModLinksResult
-            try {
-                val newRuleset = RulesetCache.getComplexRuleset(mods)
-                newRuleset.modOptions.isBaseRuleset = true // This is so the checkModLinks finds all connections
-                complexModLinkCheck = newRuleset.checkModLinks()
-            } catch (ex: Exception) {
-                // This happens if a building is dependent on a tech not in the base ruleset
-                //  because newRuleset.updateBuildingCosts() in getComplexRuleset() throws an error
-                complexModLinkCheck = CheckModLinksResult(Ruleset.CheckModLinksStatus.Error, ex.localizedMessage)
-            }
-
+            val complexModLinkCheck = RulesetCache.checkModLinks(mods)
             if (complexModLinkCheck.isError()) {
                 ToastPopup("{The mod you selected is incompatible with the defined ruleset!}\n\n{$complexModLinkCheck}", screen)
                 checkBox.isChecked = false

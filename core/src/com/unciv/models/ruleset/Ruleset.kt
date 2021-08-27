@@ -488,6 +488,10 @@ object RulesetCache : HashMap<String,Ruleset>() {
 
     fun getBaseRuleset() = this[BaseRuleset.Civ_V_Vanilla.fullName]!!.clone() // safeguard, so no-one edits the base ruleset by mistake
 
+    /**
+     * Creates a combined [Ruleset] from a list of mods. If no baseRuleset is listed in [mods],
+     * then the vanilla Ruleset is included automatically.
+     */
     fun getComplexRuleset(mods: LinkedHashSet<String>): Ruleset {
         val newRuleset = Ruleset()
         val loadedMods = mods.filter { containsKey(it) }.map { this[it]!! }
@@ -509,13 +513,28 @@ object RulesetCache : HashMap<String,Ruleset>() {
         if (newRuleset.unitTypes.isEmpty()) {
             newRuleset.unitTypes.putAll(getBaseRuleset().unitTypes)
         }
-        
+
         // This one should be permanent
         if (newRuleset.ruinRewards.isEmpty()) {
             newRuleset.ruinRewards.putAll(getBaseRuleset().ruinRewards)
         }
-        
+
         return newRuleset
+    }
+
+    /**
+     * Runs [Ruleset.checkModLinks] on a temporary [combined Ruleset][getComplexRuleset] for a list of [mods]
+     */
+    fun checkModLinks(mods: LinkedHashSet<String>): Ruleset.CheckModLinksResult {
+        return try {
+            val newRuleset = getComplexRuleset(mods)
+            newRuleset.modOptions.isBaseRuleset = true // This is so the checkModLinks finds all connections
+            newRuleset.checkModLinks()
+        } catch (ex: Exception) {
+            // This happens if a building is dependent on a tech not in the base ruleset
+            //  because newRuleset.updateBuildingCosts() in getComplexRuleset() throws an error
+            Ruleset.CheckModLinksResult(Ruleset.CheckModLinksStatus.Error, ex.localizedMessage)
+        }
     }
 
 }

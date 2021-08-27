@@ -8,6 +8,13 @@ import com.unciv.UncivGame
 
 /**
  * Implements a 'Tabs' widget where different pages can be switched by selecting a header button.
+ * 
+ * Each page is an Actor, passed to the Widget via [addPage]. Pages can be [removed][removePage],
+ * [replaced][replacePage] or dynamically added after the Widget is already shown.
+
+ * Pages are automatically scrollable, switching pages preserves scroll positions individually.
+ * Pages can be disabled or secret - the first 'secret' page added requires a password entry to proceed with these pages (or without if the password is wrong).
+ * 
  * @param prefWidth Width of shown content area, can grow if pages with wider content are added.
  * @param prefHeight Height of shown content area without header.
  * @param fontSize Size of font used for header.
@@ -16,6 +23,7 @@ import com.unciv.UncivGame
  * @param capacity How many pages to pre-allocate space for.
  */
 @Suppress("unused")  // This is part of our API
+//region Fields and initialization
 class TabbedPager(
     prefWidth: Float,
     prefHeight: Float,
@@ -24,6 +32,7 @@ class TabbedPager(
     private val highlightColor: Color = Color.BLUE,
     backgroundColor: Color = ImageGetter.getBlue().lerp(Color.BLACK, 0.5f),
     private val headerPadding: Float = 10f,
+    private val secretHashCode: Int = 0,
     capacity: Int = 4
 ) : Table() {
 
@@ -45,6 +54,9 @@ class TabbedPager(
 
     private val pages = ArrayList<PageState>(capacity)
 
+    /**
+     * Index of currently selected page, or -1 of none. Read-only, use [selectPage] to change.
+     */
     @Suppress("MemberVisibilityCanBePrivate")  // This is part of our API
     var activePage = -1
         private set
@@ -70,6 +82,10 @@ class TabbedPager(
         add(contentScroll).grow().row()
     }
 
+    //endregion
+    //region Widget interface
+
+    // The following are part of the Widget interface and serve dynamic sizing
     override fun getPrefWidth() = prefWidthField
     @Suppress("MemberVisibilityCanBePrivate", "unused")  // This is part of our API
     fun setPrefWidth(width: Float) {
@@ -87,13 +103,21 @@ class TabbedPager(
 
     override fun getMinHeight() = headerHeight
 
+    //endregion
+    //region API
+
+    /** @return Number of pages currently stored */
     @Suppress("MemberVisibilityCanBePrivate", "unused")  // This is part of our API
     fun pageCount() = pages.size
 
+    /** @return index of a page by its (untranslated) caption, or -1 if no such page exists */
     @Suppress("MemberVisibilityCanBePrivate")  // This is part of our API
     fun getPageIndex(caption: String) = pages.indexOfLast { it.button.name == caption }
-    private fun getPageIndex(page: PageState) = pages.indexOf(page)
 
+    /** Change the selected page by using its index.
+     * @param index Page number or -1 to deselect the current page.
+     * @return `true` if the page was successfully changed.
+     */
     @Suppress("MemberVisibilityCanBePrivate", "unused")  // This is part of our API
     fun selectPage(index: Int): Boolean {
         if (index !in 0 until pages.size) return false
@@ -112,6 +136,7 @@ class TabbedPager(
             pages[index].apply {
                 button.color = highlightColor
                 contentScroll.actor = content
+                contentScroll.layout()
                 contentScroll.scrollX = scrollX
                 contentScroll.scrollY = scrollY
                 contentScroll.updateVisualScroll()
@@ -123,20 +148,37 @@ class TabbedPager(
         }
         return true
     }
+
+    /** Change the selected page by using its caption.
+     * @param caption Caption of the page to select. A nonexistent name will deselect the current page.
+     * @return `true` if the page was successfully changed.
+     */
+    @Suppress("MemberVisibilityCanBePrivate")  // This is part of our API
     fun selectPage(caption: String) = selectPage(getPageIndex(caption))
     private fun selectPage(page: PageState) = selectPage(getPageIndex(page))
 
+    /** Change the disabled property of a page by its index.
+     * @return previous value or `false` if index invalid.
+     */
     @Suppress("MemberVisibilityCanBePrivate")  // This is part of our API
-    fun setDisablePage(index: Int, disabled: Boolean): Boolean {
+    fun setPageDisabled(index: Int, disabled: Boolean): Boolean {
         if (index !in 0 until pages.size) return false
         val page = pages[index]
         val oldValue = page.disabled
         page.disabled = disabled
         page.button.isEnabled = !disabled
+        if (disabled && index == activePage) selectPage(-1)
         return oldValue
     }
-    fun setDisablePage(caption: String, disabled: Boolean) = setDisablePage(getPageIndex(caption), disabled)
 
+    /** Change the disabled property of a page by its caption.
+     * @return previous value or `false` if caption not found.
+     */
+    @Suppress("MemberVisibilityCanBePrivate")  // This is part of our API
+    fun setPageDisabled(caption: String, disabled: Boolean) = setPageDisabled(getPageIndex(caption), disabled)
+
+    /** Remove a page by its index.
+     * @return `true` if page successfully removed */
     @Suppress("MemberVisibilityCanBePrivate")  // This is part of our API
     fun removePage(index: Int): Boolean {
         if (index !in 0 until pages.size) return false
@@ -146,9 +188,13 @@ class TabbedPager(
         header.cells.removeIndex(index)
         return true
     }
+
+    /** Remove a page by its caption.
+     * @return `true` if page successfully removed */
     @Suppress("MemberVisibilityCanBePrivate", "unused")  // This is part of our API
     fun removePage(caption: String) = removePage(getPageIndex(caption))
 
+    /** Replace a page's content by its index. */
     @Suppress("MemberVisibilityCanBePrivate")  // This is part of our API
     fun replacePage(index: Int, content: Actor) {
         if (index !in 0 until pages.size) return
@@ -156,9 +202,22 @@ class TabbedPager(
         pages[index].content = content
         if (index == activePage) selectPage(index)
     }
+
+    /** Replace a page's content by its caption. */
     @Suppress("MemberVisibilityCanBePrivate", "unused")  // This is part of our API
     fun replacePage(caption: String, content: Actor) = replacePage(getPageIndex(caption), content)
 
+    /** Add a page!
+     * @param caption Text to be shown on the header button (automatically translated), can later be used to reference the page in other calls.
+     * @param content Actor to show when this page is selected.
+     * @param icon Actor, typically an [Image], to show before the caption.
+     * @param iconSize Size for [icon] - if not zero, the icon is wrapped to allow a [setSize] even on [Image] which ignores size.
+     * @param insertBefore -1 to add at the end or index of existing page to insert this before
+     * @param secret Marks page as 'secret'. A password is asked once per [TabbedPager] and if it does not match the has passed in the constructor the page and all subsequent secret pages are dropped.
+     * @param disabled Initial disabled state. Disabled pages cannot be selected aven with [selectPage], their button is dimmed.
+     * @param onActivation _Optional_ callback called when this page is shown (per actual change to this page, not per header click). Lambda arguments are page index and caption.
+     * @return The new page's index or -1 if it could not be immediately added (secret).
+     */
     @Suppress("MemberVisibilityCanBePrivate")  // This is part of our API
     fun addPage(
         caption: String,
@@ -212,6 +271,11 @@ class TabbedPager(
         return addAndShowPage(page, insertBefore)
     }
 
+    //endregion
+    //region Helper routines
+
+    private fun getPageIndex(page: PageState) = pages.indexOf(page)
+
     private fun addAndShowPage(page: PageState, insertBefore: Int): Int {
         // Update pages array and header table
         val newIndex: Int
@@ -232,12 +296,14 @@ class TabbedPager(
             pages[i].buttonX += page.buttonW
 
         // Content Sizing
-        if (page.content is Widget) {
+        if (page.content is WidgetGroup) {
+            (page.content as WidgetGroup).packIfNeeded()
             val contentWidth = page.content.width
             if (contentWidth > prefWidthField) {
                 prefWidthField = contentWidth
                 if (activePage >= 0) invalidateHierarchy()
             }
+            page.scrollX = ((contentWidth - this.width) / 2).coerceIn(0f, contentScroll.maxX)
         }
 
         return newIndex
@@ -250,7 +316,7 @@ class TabbedPager(
                 passEntry.isPasswordMode = true
                 add(passEntry).row()
                 addOKButton {
-                    if (passEntry.text.hashCode() == 2747985) unlockAction() else lockAction()
+                    if (passEntry.text.hashCode() == secretHashCode) unlockAction() else lockAction()
                 }
                 this.keyboardFocus = passEntry
             }
