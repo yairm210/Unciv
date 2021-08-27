@@ -18,7 +18,7 @@ class CityCombatant(val city: CityInfo) : ICombatant {
     override fun getTile(): TileInfo = city.getCenterTile()
     override fun getName(): String = city.name
     override fun isDefeated(): Boolean = city.health == 1
-    override fun isInvisible(): Boolean = false
+    override fun isInvisible(to: CivilizationInfo): Boolean = false
     override fun canAttack(): Boolean = city.canBombard()
     override fun matchesCategory(category: String) = category == "City" || category == "All"
     override fun getAttackSound() = UncivSound.Bombard

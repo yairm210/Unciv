@@ -13,7 +13,7 @@ class MapUnitCombatant(val unit: MapUnit) : ICombatant {
     override fun getTile(): TileInfo = unit.getTile()
     override fun getName(): String = unit.name
     override fun isDefeated(): Boolean = unit.health <= 0
-    override fun isInvisible(): Boolean = unit.isInvisible()
+    override fun isInvisible(to: CivilizationInfo): Boolean = unit.isInvisible(to)
     override fun canAttack(): Boolean = unit.canAttack()
     override fun matchesCategory(category:String) = unit.matchesFilter(category)
     override fun getAttackSound() = unit.baseUnit.attackSound.let { 
@@ -36,7 +36,7 @@ class MapUnitCombatant(val unit: MapUnit) : ICombatant {
     }
 
     override fun getUnitType(): UnitType {
-        return unit.type!!
+        return unit.type
     }
 
     override fun toString(): String {
