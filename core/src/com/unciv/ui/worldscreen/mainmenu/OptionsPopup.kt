@@ -102,9 +102,12 @@ class OptionsPopup(val previousScreen:CameraStageBaseScreen) : Popup(previousScr
 
     private fun getAboutTab(): Table {
         defaults().pad(5f)
-        val version = previousScreen.game.version.replace(".","")
+        val version = previousScreen.game.version
+        val versionAnchor = version.replace(".","")
         val lines = sequence {
-            yield(FormattedLine("{Version} $version", link = "https://github.com/yairm210/Unciv/blob/master/changelog.md#$version"))
+            yield(FormattedLine(extraImage = "banner", imageSize = 240f, centered = true))
+            yield(FormattedLine())
+            yield(FormattedLine("{Version}: $version", link = "https://github.com/yairm210/Unciv/blob/master/changelog.md#$versionAnchor"))
             yield(FormattedLine("See online Readme", link = "https://github.com/yairm210/Unciv/blob/master/README.md#unciv---foss-civ-v-for-androiddesktop"))
             yield(FormattedLine("Visit repository", link = "https://github.com/yairm210/Unciv"))
         }
