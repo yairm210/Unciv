@@ -684,7 +684,7 @@ Sounds are from FreeSound.org unless otherwise noted and are either Creative Com
 * [elephant 44](https://freesound.org/people/y89312/sounds/139875/) by y89312 for Naruesan's Elephant sound
 * Excerpt from [Missile Strike](https://freesound.org/people/BaDoink/sounds/570690/) by BaDoink for guided missile
 
-* Excerpt from [Campfire](https://www.soundjay.com/nature/sounds/campfire-1.mp3) by SoundJay for Fire & 'remove heresy' action of inquisitor
+* Excerpt from [Campfire](https://www.soundjay.com/fire-sound-effects.html) by SoundJay for Fire & 'remove heresy' action of inquisitor
 
 # Music
 The following music is from https://filmmusic.io
