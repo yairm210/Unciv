@@ -176,14 +176,15 @@ class TileGroupIcons(val tileGroup: TileGroup) {
         startingLocationIcons.clear()
         if (!showResourcesAndImprovements) return
         if (tileGroup.forMapEditorIcon) return  // the editor options for terrain do not bother to fully initialize, so tileInfo.tileMap would be an uninitialized lateinit
+        val tileInfo = tileGroup.tileInfo
+        if (tileInfo.tileMap.startingLocationsByNation.isEmpty()) return
 
         // Allow display of up to three nations starting locations on the same tile, rest only as count.
         // Sorted so major get precedence and to make the display deterministic, otherwise you could get
         // different stacking order of the same nations in the same editing session
-        val tileInfo = tileGroup.tileInfo
         val nations = tileInfo.tileMap.startingLocationsByNation.asSequence()
             .filter { tileInfo in it.value }
-            .map { it.key to ImageGetter.ruleset.nations[it.key]!! }
+            .map { it.key to tileInfo.tileMap.ruleset!!.nations[it.key]!! }
             .sortedWith(compareBy({ it.second.isCityState() }, { it.first }))
             .toList()
         if (nations.isEmpty()) return
