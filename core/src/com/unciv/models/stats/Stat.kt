@@ -16,7 +16,7 @@ enum class Stat(
     Culture(NotificationIcon.Culture, UncivSound.Paper, Fonts.culture),
     Happiness(NotificationIcon.Happiness, UncivSound.Click, Fonts.happiness),
     Faith(NotificationIcon.Faith, UncivSound.Choir, Fonts.faith);
-    
+
     companion object {
         val statsUsableToBuy = listOf(Gold, Food, Science, Culture, Faith)
     }

@@ -1034,7 +1034,7 @@
 		"cost": 325,
 		"requiredTech": "Refrigeration",
 		"upgradesTo": "Nuclear Submarine",
-		"uniques": ["+[75]% Strength when attacking", "Can only attack [Water] tiles", "Can attack submarines"],
+		"uniques": ["+[75]% Strength when attacking", "Can only attack [Water] tiles"],
 		"attackSound": "torpedo"
 	},
 	{
@@ -1173,7 +1173,7 @@
 		"interceptRange": 2,
 		"cost": 375,
 		"requiredTech": "Combustion",
-		"uniques": ["Can attack submarines", "[40]% chance to intercept air attacks",
+		"uniques": ["Can see invisible [Submarine] units", "[40]% chance to intercept air attacks",
 			"May withdraw before melee ([80]%)", "+[100]% Strength vs [submarine units]"],
 		"attackSound": "shipguns"
 	},
@@ -1391,8 +1391,7 @@
 		"rangedStrength": 85,
 		"cost": 425,
 		"requiredTech": "Telecommunications",
-		"uniques": ["+[75]% Strength when attacking", "Can only attack [Water] tiles", "Can attack submarines",
-			"[+1] Visibility Range", "Can carry [2] [Missile] units"],
+		"uniques": ["+[75]% Strength when attacking", "Can only attack [Water] tiles", "[+1] Visibility Range", "Can carry [2] [Missile] units"],
 		"attackSound": "torpedo"
 	},
 	{
@@ -1414,7 +1413,7 @@
 		"interceptRange": 2,
 		"cost": 425,
 		"requiredTech": "Robotics",
-		"uniques": ["[100]% chance to intercept air attacks", "Can attack submarines",
+		"uniques": ["[100]% chance to intercept air attacks", "Can see invisible [Submarine] units",
 			"Ranged attacks may be performed over obstacles", "Can carry [3] [Missile] units",
 			"+[100]% Strength vs [submarine units]"],
 		"attackSound": "shipguns"

@@ -9,6 +9,7 @@ import com.unciv.models.Tutorial
 import com.unciv.models.UncivSound
 import com.unciv.models.ruleset.Policy
 import com.unciv.models.ruleset.PolicyBranch
+import com.unciv.models.ruleset.Policy.PolicyBranchType
 import com.unciv.models.translations.tr
 import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.WorldScreen
@@ -110,7 +111,7 @@ class PolicyPickerScreen(val worldScreen: WorldScreen, civInfo: CivilizationInfo
                 || worldScreen.viewingCiv.isSpectator() // viewingCiv var points to selectedCiv in case of spectator
                 || viewingCiv.isDefeated()
                 || viewingCiv.policies.isAdopted(policy.name)
-                || policy.name.endsWith("Complete")
+                || policy.policyBranchType == PolicyBranchType.BranchComplete
                 || !viewingCiv.policies.isAdoptable(policy)
                 || !viewingCiv.policies.canAdoptPolicy()) {
             rightSideButton.disable()
@@ -123,17 +124,8 @@ class PolicyPickerScreen(val worldScreen: WorldScreen, civInfo: CivilizationInfo
             game.setScreen(PolicyPickerScreen(worldScreen))
         }
         pickedPolicy = policy
-        val policyText = mutableListOf<String>()
-        policyText += policy.name
-        policyText += policy.uniques
-
-        if (!policy.name.endsWith("Complete")) {
-            if (policy.requires!!.isNotEmpty())
-                policyText += "Requires [" + policy.requires!!.joinToString { it.tr() } + "]"
-            else
-                policyText += "{Unlocked at} {" + policy.branch.era + "}"
-        }
-        descriptionLabel.setText(policyText.joinToString("\n") { it.tr() })
+        
+        descriptionLabel.setText(policy.getDescription())
     }
 
     /**
@@ -151,7 +143,7 @@ class PolicyPickerScreen(val worldScreen: WorldScreen, civInfo: CivilizationInfo
         var currentColumn = 1
         val branchTable = Table()
         for (policy in branch.policies) {
-            if (policy.name.endsWith("Complete")) continue
+            if (policy.policyBranchType == PolicyBranchType.BranchComplete) continue
             if (policy.row > currentRow) {
                 branchTable.row().pad(2.5f)
                 currentRow++

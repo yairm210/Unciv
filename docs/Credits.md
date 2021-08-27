@@ -599,6 +599,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Zoroastrianism](https://thenounproject.com/search/?q=Zoroastrianism&i=238059) by Dabid J. Pascual for Zoroastrianism
 * [praying](https://thenounproject.com/term/praying/740809/) by parkjisun for Religion (Civilopedia concept entry)
 * [praying](https://thenounproject.com/term/praying/886367/) by Gan Khoon Lay for Follower
+* [Hero](https://thenounproject.com/term/preacher/195465/) by Andrew J. Young for Founder
 
 ## Others
 
@@ -683,7 +684,7 @@ Sounds are from FreeSound.org unless otherwise noted and are either Creative Com
 * [elephant 44](https://freesound.org/people/y89312/sounds/139875/) by y89312 for Naruesan's Elephant sound
 * Excerpt from [Missile Strike](https://freesound.org/people/BaDoink/sounds/570690/) by BaDoink for guided missile
 
-* Excerpt from [Campfire](https://www.soundjay.com/nature/sounds/campfire-1.mp3) by SoundJay for Fire & 'remove heresy' action of inquisitor
+* Excerpt from [Campfire](https://www.soundjay.com/fire-sound-effects.html) by SoundJay for Fire & 'remove heresy' action of inquisitor
 
 # Music
 The following music is from https://filmmusic.io

@@ -204,10 +204,10 @@ class BaseUnit : INamed, INonPerpetualConstruction, ICivilopediaText {
         var productionCost = cost.toFloat()
         if (civInfo.isCityState())
             productionCost *= 1.5f
-        if (civInfo.isPlayerCivilization())
-            productionCost *= civInfo.getDifficulty().unitCostModifier
-        else
-            productionCost *= civInfo.gameInfo.getDifficulty().aiUnitCostModifier
+        productionCost *= if (civInfo.isPlayerCivilization())
+                civInfo.getDifficulty().unitCostModifier
+            else
+                civInfo.gameInfo.getDifficulty().aiUnitCostModifier
         productionCost *= civInfo.gameInfo.gameParameters.gameSpeed.modifier
         return productionCost.toInt()
     }
@@ -302,8 +302,8 @@ class BaseUnit : INamed, INonPerpetualConstruction, ICivilopediaText {
 
         for ((resource, amount) in getResourceRequirements())
             if (civInfo.getCivResourcesByName()[resource]!! < amount) {
-                if (amount == 1) return "Consumes 1 [$resource]" // Again, to preserve existing translations
-                else return "Consumes [$amount] [$resource]"
+                return if (amount == 1) "Consumes 1 [$resource]" // Again, to preserve existing translations
+                    else "Consumes [$amount] [$resource]"
             }
 
         if (uniques.contains(Constants.settlerUnique) && civInfo.isCityState()) return "No settler for city-states"
@@ -326,7 +326,7 @@ class BaseUnit : INamed, INonPerpetualConstruction, ICivilopediaText {
     override fun postBuildEvent(cityConstructions: CityConstructions, wasBought: Boolean): Boolean {
         val civInfo = cityConstructions.cityInfo.civInfo
         val unit = civInfo.placeUnitNearTile(cityConstructions.cityInfo.location, name)
-        if (unit == null) return false // couldn't place the unit, so there's actually no unit =(
+                ?: return false  // couldn't place the unit, so there's actually no unit =(
 
         //movement penalty
         if (wasBought && !civInfo.gameInfo.gameParameters.godMode && !unit.hasUnique("Can move immediately once bought"))

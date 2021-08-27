@@ -127,21 +127,12 @@ class Terrain : NamedStats(), ICivilopediaText {
         if (defenceBonus != 0f)
             textList += FormattedLine("{Defence bonus}: ${(defenceBonus * 100).toInt()}%")
 
-        val seeAlso = (
-            //todo: Could vastly be simplified using upcoming INonPerpetualConstruction
-            ruleset.buildings.values.asSequence()
-                .filter {
-                    building -> building.uniqueObjects.any {
-                        unique -> unique.params.any { it == name }
-                    }
-                } +
-            ruleset.units.values.asSequence()
-                .filter {
-                    unit -> unit.uniqueObjects.any {
-                        unique -> unique.params.any { it == name }
-                    }
+        val seeAlso = (ruleset.buildings.values.asSequence() + ruleset.units.values.asSequence())
+            .filter {
+                construction -> construction.uniqueObjects.any {
+                    unique -> unique.params.any { it == name }
                 }
-            ).map { FormattedLine(it.name, it.makeLink(), indent=1) } +
+            }.map { FormattedLine(it.name, it.makeLink(), indent=1) } +
             Belief.getCivilopediaTextMatching(name, ruleset, false)
         if (seeAlso.any()) {
             textList += FormattedLine()

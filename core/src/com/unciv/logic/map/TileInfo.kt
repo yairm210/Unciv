@@ -637,7 +637,7 @@ open class TileInfo {
         val unitsInTile = getUnits()
         if (unitsInTile.none()) return false
         if (unitsInTile.first().civInfo != viewingCiv &&
-                unitsInTile.firstOrNull { it.isInvisible() } != null) {
+                unitsInTile.firstOrNull { it.isInvisible(viewingCiv) } != null) {
             return true
         }
         return false

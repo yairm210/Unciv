@@ -1,3 +1,17 @@
+## 3.16.8
+
+Upload APK files to Github release
+
+Can now play as 2 separate Civs with the same userId
+
+Fixed Krepost unique
+
+Conquering a city destroys buildings inside the city  - By xlenstra
+
+By SomeTroglodyte:
+- Starting locations reworked
+- Stat Icons Redone
+
 ## 3.16.7
 
 By xlenstra:

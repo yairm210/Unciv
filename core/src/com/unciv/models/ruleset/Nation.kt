@@ -2,6 +2,7 @@
 
 import com.badlogic.gdx.graphics.Color
 import com.unciv.Constants
+import com.unciv.UncivGame
 import com.unciv.logic.civilization.CityStateType
 import com.unciv.models.stats.INamed
 import com.unciv.models.translations.squareBraceRegex
@@ -195,8 +196,15 @@ class Nation : INamed, ICivilopediaText, IHasUniques {
     override fun makeLink() = "Nation/$name"
     override fun replacesCivilopediaDescription() = true
     override fun hasCivilopediaTextLines() = true
+    override fun getSortGroup(ruleset: Ruleset) = when {
+        isCityState() -> 1
+        isBarbarian() -> 9
+        else -> 0
+    }
 
     override fun getCivilopediaTextLines(ruleset: Ruleset): List<FormattedLine> {
+        if (isCityState()) return getCityStateInfo(ruleset)
+
         val textList = ArrayList<FormattedLine>()
 
         if (leaderName.isNotEmpty()) {
@@ -232,6 +240,50 @@ class Nation : INamed, ICivilopediaText, IHasUniques {
         addUniqueUnitsText(textList, ruleset)
         addUniqueImprovementsText(textList, ruleset)
 
+        return textList
+    }
+
+    private fun getCityStateInfo(ruleset: Ruleset): List<FormattedLine> {
+        val textList = ArrayList<FormattedLine>()
+
+        textList += FormattedLine("Type: [$cityStateType]", header = 4, color = cityStateType!!.color)
+        val viewingCiv = UncivGame.Current.gameInfo.currentPlayerCiv
+        val era = viewingCiv.getEraObject() ?: Era.getLegacyCityStateBonusEra(viewingCiv.getEraNumber())
+        var showResources = false
+
+        val friendBonus = era.friendBonus[cityStateType!!.name]
+        if (friendBonus != null && friendBonus.isNotEmpty()) {
+            textList += FormattedLine()
+            textList += FormattedLine("When Friends: ")
+            friendBonus.forEach {
+                textList += FormattedLine(Unique(it), indent = 1)
+                if (it == "Provides a unique luxury") showResources = true
+            }
+        }
+
+        val allyBonus = era.allyBonus[cityStateType!!.name]
+        if (allyBonus != null && allyBonus.isNotEmpty()) {
+            textList += FormattedLine()
+            textList += FormattedLine("When Allies: ")
+            allyBonus.forEach {
+                textList += FormattedLine(Unique(it), indent = 1)
+                if (it == "Provides a unique luxury") showResources = true
+            }
+        }
+
+        if (showResources) {
+            val allMercantileResources = ruleset.tileResources.values
+                .filter { it.unique == "Can only be created by Mercantile City-States" }
+            if (allMercantileResources.isNotEmpty()) {
+                textList += FormattedLine()
+                textList += FormattedLine("The unique luxury is one of:")
+                allMercantileResources.forEach { 
+                    textList += FormattedLine(it.name, it.makeLink(), indent = 1)
+                }
+            }
+        }
+
+        // personality is not a nation property, it gets assigned to the civ randomly
         return textList
     }
 
@@ -305,10 +357,10 @@ class Nation : INamed, ICivilopediaText, IHasUniques {
                         link = "Promotion/$promotion", indent = 1 )
                 }
             } else if (unit.replaces != null) {
-                textList += FormattedLine("Replaces [${unit.replaces}], which is not found in the ruleset!", indent=1)
+                textList += FormattedLine("Replaces [${unit.replaces}], which is not found in the ruleset!", indent = 1)
             } else {
                 textList += unit.getCivilopediaTextLines(ruleset).map {
-                    FormattedLine(it.text, link=it.link, indent = it.indent + 1, color=it.color)
+                    FormattedLine(it.text, link = it.link, indent = it.indent + 1, color = it.color)
                 }
             }
 
@@ -321,16 +373,16 @@ class Nation : INamed, ICivilopediaText, IHasUniques {
         for (improvement in ruleset.tileImprovements.values) {
             if (improvement.uniqueTo != name ) continue
 
-            textList += FormattedLine(improvement.name, link="Improvement/${improvement.name}")
-            textList += FormattedLine(improvement.clone().toString(), indent=1)   // = (improvement as Stats).toString minus import plus copy overhead
+            textList += FormattedLine(improvement.name, link = "Improvement/${improvement.name}")
+            textList += FormattedLine(improvement.clone().toString(), indent = 1)   // = (improvement as Stats).toString minus import plus copy overhead
             if (improvement.terrainsCanBeBuiltOn.isNotEmpty()) {
                 improvement.terrainsCanBeBuiltOn.withIndex().forEach {
                     textList += FormattedLine(if (it.index == 0) "{Can be built on} {${it.value}}" else "or [${it.value}]",
-                        link="Terrain/${it.value}", indent=if (it.index == 0) 1 else 2)
+                        link = "Terrain/${it.value}", indent = if (it.index == 0) 1 else 2)
                 }
             }
             for (unique in improvement.uniques)
-                textList += FormattedLine(unique, indent=1)
+                textList += FormattedLine(unique, indent = 1)
         }
     }
 

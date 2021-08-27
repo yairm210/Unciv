@@ -355,9 +355,13 @@ class MapUnit {
         return currentTile.isWater
     }
 
-    fun isInvisible(): Boolean {
+    fun isInvisible(to: CivilizationInfo): Boolean {
         if (hasUnique("Invisible to others"))
             return true
+        if (hasUnique("Invisible to non-adjacent units"))
+            return getTile().getTilesInDistance(1).none {
+                it.getOwner() == to || it.getUnits().any { unit -> unit.owner == to.civName }
+            }
         return false
     }
 

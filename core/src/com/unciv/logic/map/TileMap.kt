@@ -48,7 +48,7 @@ class TileMap {
     @Transient
     lateinit var gameInfo: GameInfo
 
-    /** Keep a copy of the [Ruleset] object passer to setTransients, for now only to allow subsequent setTransients without. Copied on [clone]. */
+    /** Keep a copy of the [Ruleset] object passed to setTransients, for now only to allow subsequent setTransients without. Copied on [clone]. */
     @Transient
     var ruleset: Ruleset? = null
 
@@ -330,6 +330,8 @@ class TileMap {
      *  Is run before setTransients, so make do without startingLocationsByNation
      */
     fun getRulesetIncompatibility(ruleset: Ruleset): HashSet<String> {
+        setTransients(ruleset)
+        setStartingLocationsTransients()
         val rulesetIncompatibilities = HashSet<String>()
         for (set in values.map { it.getRulesetIncompatibility(ruleset) })
             rulesetIncompatibilities.addAll(set)
