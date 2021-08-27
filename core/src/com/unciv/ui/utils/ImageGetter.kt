@@ -61,8 +61,10 @@ object ImageGetter {
             textureRegionDrawables[region.name] = drawable
         }
 
-        // Load all other atlas files
-        for (file in Gdx.files.internal(".").list(".atlas")) {
+        // This is a quickfix for #4993, since you can't .list() on a jar file. This should be fixed in a nicer way.
+        val fileNames = listOf("game","Flags","Tech","Skin","Construction")
+        for (fileName in fileNames) {
+            val file = Gdx.files.internal("$fileName.atlas")
             val extraAtlas = file.nameWithoutExtension()
             val tempAtlas = atlases[extraAtlas]  // fetch if cached
                 ?: TextureAtlas(file.name()).apply {  // load if not

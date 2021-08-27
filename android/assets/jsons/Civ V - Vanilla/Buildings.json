@@ -18,7 +18,8 @@
 		"culture": 2,
 		"cost": 40,
 		"hurryCostModifier": 40,
-		"maintenance": 1
+		"maintenance": 1,
+		"uniques": ["Destroyed when the city is captured"]
 	},
 	// Column 1
 	{
@@ -128,7 +129,8 @@
 		"cityStrength": 5,
 		"cityHealth": 50,
 		"hurryCostModifier": 25,
-		"requiredTech": "Masonry"
+		"requiredTech": "Masonry",
+		"uniques": ["Destroyed when the city is captured"]
 	},
 	{
 		"name": "Walls of Babylon",
@@ -138,7 +140,8 @@
 		"cityStrength": 6,
 		"cityHealth": 100,
 		"hurryCostModifier": 25,
-		"requiredTech": "Masonry"
+		"requiredTech": "Masonry",
+		"uniques": ["Destroyed when the city is captured"]
 	},
 	{
 		"name": "The Pyramids",
@@ -163,7 +166,7 @@
 		"name": "Barracks",
 		"hurryCostModifier": 25,
 		"maintenance": 1,
-		"uniques": ["New [Military] units start with [15] Experience [in this city]"]
+		"uniques": ["New [Military] units start with [15] Experience [in this city]", "Destroyed when the city is captured"],
 		"requiredTech": "Bronze Working"
 	},
 	{
@@ -173,7 +176,7 @@
 		"hurryCostModifier": 25,
 		"maintenance": 1,
 		"uniques": ["-[25]% Culture cost of acquiring tiles [in this city]","-[25]% Gold cost of acquiring tiles [in this city]",
-			"New [Military] units start with [15] Experience [in this city]"],
+			"New [Military] units start with [15] Experience [in this city]", "Destroyed when the city is captured"],
 		"requiredTech": "Bronze Working"
 	},
 	{
@@ -270,7 +273,7 @@
 		"maintenance": 2,
 		"hurryCostModifier": 25,
 		"requiredTech": "Philosophy",
-		"uniques": ["Hidden when religion is disabled"]
+		"uniques": ["Hidden when religion is disabled", "Destroyed when the city is captured"]
 	},
 	{
 		"name": "National College",
@@ -570,8 +573,8 @@
 		"cityHealth": 25,
 		"hurryCostModifier": 25,
 		"requiredBuilding": "Walls",
-		"requiredTech": "Chivalry"
-		// 4 cityStrength in vanilla, no ExtraCityHitPoints in vanilla
+		"requiredTech": "Chivalry",
+		"uniques": ["Destroyed when the city is captured"]
 	},
 	{
 		"name": "Mughal Fort",
@@ -583,7 +586,7 @@
 		"culture": 2,
 		"hurryCostModifier": 25,
 		"requiredBuilding": "Walls",
-		"uniques": ["[+1 Gold] once [Flight] is discovered"],
+		"uniques": ["[+1 Gold] once [Flight] is discovered", "Destroyed when the city is captured"],
 		"requiredTech": "Chivalry"
 	},
 	{
@@ -620,7 +623,7 @@
 		"hurryCostModifier": 25,
 		"maintenance": 1,
 		"requiredBuilding": "Barracks",
-		"uniques": ["New [Military] units start with [15] Experience [in this city]"]
+		"uniques": ["New [Military] units start with [15] Experience [in this city]", "Destroyed when the city is captured"],
 		"requiredTech": "Steel"
 	},
 
@@ -643,7 +646,8 @@
 		"hurryCostModifier": 10,
 		"requiredBuilding": "Amphitheater",
 		"maintenance": 2,
-		"requiredTech": "Acoustics"
+		"requiredTech": "Acoustics",
+		"uniques": ["Destroyed when the city is captured"]
 	},
 	{
 		"name": "Sistine Chapel",
@@ -800,7 +804,8 @@
 		"requiredBuilding": "Opera House",
 		"maintenance": 3,
 		"hurryCostModifier": 0,
-		"requiredTech": "Archaeology"
+		"requiredTech": "Archaeology",
+		"uniques": ["Destroyed when the city is captured"]
 	},
 	{
 		"name": "The Louvre",
@@ -848,7 +853,7 @@
 		"hurryCostModifier": 0,
 		"maintenance": 1,
 		"requiredBuilding": "Armory",
-		"uniques": ["New [Military] units start with [15] Experience [in this city]"],
+		"uniques": ["New [Military] units start with [15] Experience [in this city]", "Destroyed when the city is captured"],
 		"requiredTech": "Military Science"
 	},
 	{
@@ -905,7 +910,8 @@
 		"percentStatBonus": {"culture": 33},
 		"requiredBuilding": "Museum",
 		"maintenance": 3,
-		"requiredTech": "Radio"
+		"requiredTech": "Radio",
+		"uniques": ["Destroyed when the city is captured"]
 	},
 	{
 		"name": "Eiffel Tower",
@@ -923,7 +929,8 @@
 		"cityHealth": 25,
 		"hurryCostModifier": 25,
 		"requiredBuilding": "Arsenal",
-		"requiredTech": "Replaceable Parts"
+		"requiredTech": "Replaceable Parts",
+		"uniques": ["Destroyed when the city is captured"]
 	},
 	{
 		"name": "Statue of Liberty",
@@ -1134,7 +1141,7 @@
 		"faith": 2,
 		"uniques": ["[+1 Culture, +1 Faith] from [Wine] tiles [in this city]", 
 			"[+1 Culture, +1 Faith] from [Incense] tiles [in this city]",
-			"Unbuildable", "Hidden when religion is disabled"]
+			"Unbuildable", "Hidden when religion is disabled", "Destroyed when the city is captured"]
 	},
 	{
 		"name": "Mosque",

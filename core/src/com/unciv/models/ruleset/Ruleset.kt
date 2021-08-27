@@ -206,7 +206,7 @@ class Ruleset {
                     if (policy.requires == null) policy.requires = arrayListOf(branch.name)
                     policies[policy.name] = policy
                 }
-                branch.policies.last().name = branch.name + " Complete"
+                branch.policies.last().name = branch.name + Policy.branchCompleteSuffix
             }
         }
 

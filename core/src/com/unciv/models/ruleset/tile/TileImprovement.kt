@@ -3,7 +3,6 @@ package com.unciv.models.ruleset.tile
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.CivilizationInfo
-import com.unciv.logic.civilization.RuinsManager.RuinsManager
 import com.unciv.models.ruleset.Belief
 import com.unciv.logic.map.RoadStatus
 import com.unciv.models.ruleset.IHasUniques

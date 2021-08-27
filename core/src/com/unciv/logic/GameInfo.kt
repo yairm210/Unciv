@@ -169,7 +169,7 @@ class GameInfo {
                     it.militaryUnit != null && it.militaryUnit!!.civInfo != thisPlayer
                             && thisPlayer.isAtWarWith(it.militaryUnit!!.civInfo)
                             && (it.getOwner() == thisPlayer || it.neighbors.any { neighbor -> neighbor.getOwner() == thisPlayer }
-                            && (!it.militaryUnit!!.isInvisible() || viewableInvisibleTiles.contains(it.position)))
+                            && (!it.militaryUnit!!.isInvisible(thisPlayer) || viewableInvisibleTiles.contains(it.position)))
                 }
 
         // enemy units ON our territory
