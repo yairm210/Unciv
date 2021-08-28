@@ -4,42 +4,42 @@ size: 256, 64
 format: RGBA8888
 filter: Linear, Linear
 repeat: none
-checkbox
+Skin/checkbox
   rotate: false
   xy: 160, 23
   size: 31, 31
   orig: 31, 31
   offset: 0, 0
   index: -1
-checkbox-pressed
+Skin/checkbox-pressed
   rotate: false
   xy: 199, 23
   size: 31, 31
   orig: 31, 31
   offset: 0, 0
   index: -1
-rectangleWithOutline
+Skin/rectangleWithOutline
   rotate: false
   xy: 64, 13
   size: 3, 3
   orig: 3, 3
   offset: 0, 0
   index: -1
-roundedEdgeRectangle
+Skin/roundedEdgeRectangle
   rotate: false
   xy: 4, 4
   size: 52, 50
   orig: 52, 50
   offset: 0, 0
   index: -1
-select-box
+Skin/select-box
   rotate: false
   xy: 64, 24
   size: 40, 30
   orig: 40, 30
   offset: 0, 0
   index: -1
-select-box-pressed
+Skin/select-box-pressed
   rotate: false
   xy: 112, 24
   size: 40, 30
