@@ -679,8 +679,6 @@ May be added in promotions or ancient ruins equivalents
 
 "Requires Manhattan Project"
 
-"Can construct roads"
-
 "Must set up to ranged attack"
 
 "Ranged attacks may be performed over obstacles"
@@ -789,11 +787,7 @@ These uniques have been recently deprecated. While they are still supported, the
 
 "-33% unit upkeep costs" - Replaced with "-[amount]% unit upkeep costs"
 
-"Tile yield from Great Improvements +100%" - Replaced with "+[amount]% yield from [improvementFilter]"
-
 "Quantity of Resources gifted by City-States increased by 100%" - Replaced with "Quantity of Resources gifted by City-States increased by [amount]%"
-
-"Gold cost of purchasing units -33%" - Replaced with "Gold cost of purchasing [unitFilter] units -[amount]%"
 
 "+[amount]% Strength for units fighting in [tileFilter]"- Replaced with "+[amount]% Strength for units fighting in [tileFilter]"
 
@@ -805,10 +799,6 @@ These uniques have been recently deprecated. While they are still supported, the
 
 "+1 population in each city" - Replaced with "[amount] population [cityFilter]"
 
-"Can build improvements on tiles" - Replaced with "Can build [improvementFilter] improvements on tiles"
-
-"Can construct roads" - Replaced with "Can build [improvementFilter] improvements on tiles"
-
 "Can carry 2 aircraft" - Replaced with "Can carry [amount] [unitFilter] units"
 
 "Can carry 1 extra aircraft" - Replaced with "Can carry [amount] extra [unitFilter] units"
@@ -819,25 +809,13 @@ These uniques have been recently deprecated. While they are still supported, the
 
 "Heal this Unit by 50 HP; Doing so will consume this opportunity to choose a Promotion" - Replaced with "Heal this Unit by [amount] HP" and "Doing so will consume this opportunity to choose a Promotion"
 
-"+1 Range" - Replaced with "[amount] Range"
-
-"+2 Range" - Replaced with "[amount] Range"
-
-"1 additional attack per turn" - Replaced with "[amount] additional attacks per turn"
-
 "This unit and all others in adjacent tiles heal 5 additional HP. This unit heals 5 additional HP outside of friendly territory." - Replaced with "[amount] HP when healing" and "All adjacent units heal [amount] extra HP when healing" and "[amount] HP when healing in [tileFilter] tiles"
 
 "+1 Visibility Range" - Replaced with "[amount] Visibility Range"
 
 "+2 Visibility Range" - Replaced with "[amount] Visibility Range"
 
-"+1 Movement" - Replaced with "[amount] Movement"
-
 "Can only attack water" - Replaced with "Can only attack [unitFilter] units" or "Can only attack [tileFilter] tiles", depending on use
-
-"+25% Defence against ranged attacks" - Replaced with "[amount]% Strength when defending vs [unitFilter]"
-
-"-10% combat strength for adjacent enemy units" - Replaced with "[amount]% Strength for enemy [unitFilter] units in adjacent [tileFilter] tiles"
 
 "1 extra interception may be made per turn" - Replaced with "[amount] extra interceptions may be made per turn"
 
@@ -857,8 +835,4 @@ These uniques have been recently deprecated. While they are still supported, the
 
 "Hidden when cultural victory is disabled" - Replaced with "Hidden when [victoryName] victory is disabled"
 
-"Cost of purchasing items in cities reduced by [amount]%" - Replaced with "[Stat] cost of purchasing items in cities [amount]%"
-
 "Cost of purchasing [buildingFilter] buildings reduced by [amount]%" - Replaced with "[Stat] cost of purchasing [buildingFilter] buildings [amount]%"
-
-"Gold cost of purchasing [unitFilter] units -[amount]%" - Replaced with "[Stat] cost of purchasing [unitFilter] units [amount]%"
