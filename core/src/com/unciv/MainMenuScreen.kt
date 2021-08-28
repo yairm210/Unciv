@@ -16,7 +16,7 @@ import com.unciv.logic.map.mapgenerator.MapGenerator
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.ui.MultiplayerScreen
 import com.unciv.ui.mapeditor.*
-import com.unciv.ui.newgamescreen.GameSetupInfo
+import com.unciv.models.metadata.GameSetupInfo
 import com.unciv.ui.newgamescreen.NewGameScreen
 import com.unciv.ui.pickerscreens.ModManagementScreen
 import com.unciv.ui.saves.LoadGameScreen
@@ -236,7 +236,7 @@ class MainMenuScreen: CameraStageBaseScreen() {
     }
 
     private fun quickstartNewGame() {
-        val newGame = GameStarter.startNewGame(GameSetupInfo().apply { gameParameters.difficulty = "Chieftain" })
+        val newGame = GameStarter.startNewGame(GameSetupInfo.fromSettings("Chieftain"))
         game.loadGame(newGame)
     }
 

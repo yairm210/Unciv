@@ -9,7 +9,7 @@ import com.unciv.models.ruleset.Policy
 import com.unciv.models.ruleset.VictoryType
 import com.unciv.models.translations.getPlaceholderParameters
 import com.unciv.models.translations.tr
-import com.unciv.ui.newgamescreen.GameSetupInfo
+import com.unciv.models.metadata.GameSetupInfo
 import com.unciv.ui.newgamescreen.NewGameScreen
 import com.unciv.ui.overviewscreen.EmpireOverviewScreen
 import com.unciv.ui.pickerscreens.PickerScreen
