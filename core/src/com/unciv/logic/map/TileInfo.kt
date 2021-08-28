@@ -12,6 +12,7 @@ import com.unciv.models.stats.Stats
 import com.unciv.models.translations.tr
 import com.unciv.ui.civilopedia.FormattedLine
 import com.unciv.ui.utils.Fonts
+import com.unciv.ui.utils.toPercent
 import kotlin.math.abs
 import kotlin.math.min
 
@@ -233,9 +234,6 @@ open class TileInfo {
         if (city != null) {
             var tileUniques = city.getMatchingUniques("[] from [] tiles []")
                 .filter { city.matchesFilter(it.params[2]) }
-            // Deprecated since 3.15.9
-                tileUniques += city.getLocalMatchingUniques("[] from [] tiles in this city")
-            //
             tileUniques += city.getMatchingUniques("[] from every []")
             for (unique in tileUniques) {
                 val tileType = unique.params[1]
@@ -334,9 +332,6 @@ open class TileInfo {
         if (city != null) {
             var tileUniques = city.getMatchingUniques("[] from [] tiles []")
                 .filter { city.matchesFilter(it.params[2]) }
-            // Deprecated since 3.15.9
-                tileUniques += city.getLocalMatchingUniques("[] from [] tiles in this city")
-            //
             val improvementUniques = improvement.uniqueObjects.filter {
                 it.placeholderText == "[] on [] tiles once [] is discovered"
                         && observingCiv.tech.isResearched(it.params[2])
@@ -369,12 +364,7 @@ open class TileInfo {
 
         for (unique in observingCiv.getMatchingUniques("+[]% yield from every []"))
             if (improvement.matchesFilter(unique.params[1]))
-                stats.timesInPlace(1f + unique.params[0].toFloat() / 100f)
-
-        // Deprecated since 3.15
-            if (containsGreatImprovement() && observingCiv.hasUnique("Tile yield from Great Improvements +100%"))
-                stats.timesInPlace(2f)
-        //
+                stats.timesInPlace(unique.params[0].toPercent())
 
         return stats
     }
@@ -643,7 +633,7 @@ open class TileInfo {
         val unitsInTile = getUnits()
         if (unitsInTile.none()) return false
         if (unitsInTile.first().civInfo != viewingCiv &&
-                unitsInTile.firstOrNull { it.isInvisible() } != null) {
+                unitsInTile.firstOrNull { it.isInvisible(viewingCiv) } != null) {
             return true
         }
         return false
