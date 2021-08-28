@@ -202,14 +202,6 @@ object BattleDamage {
                 if (attacker.matchesCategory(unique.params[1]))
                     modifiers.add("defence vs [${unique.params[1]}] ", unique.params[0].toInt())
             }
-            
-            // Deprecated since 3.15.7
-                if (attacker.isRanged()) {
-                    val defenceVsRanged = 25 * defender.unit.getUniques()
-                        .count { it.text == "+25% Defence against ranged attacks" }
-                    if (defenceVsRanged > 0) modifiers.add("defence vs ranged", defenceVsRanged)
-                }
-            //
 
             for (unique in defender.unit.getMatchingUniques("+[]% Strength when defending")) {
                 modifiers.add("Defender Bonus", unique.params[0].toInt())
@@ -223,10 +215,10 @@ object BattleDamage {
             if (defender.unit.isFortified())
                 modifiers["Fortification"] = 20 * defender.unit.getFortificationTurns()
         } else if (defender is CityCombatant) {
-            
-            modifiers["Defensive Bonus"] = defender.city.civInfo.getMatchingUniques("+[]% Defensive strength for cities")
-                .map { it.params[0].toFloat() / 100f }.sum().toInt()
-            
+
+            modifiers["Defensive Bonus"] =
+                defender.city.civInfo.getMatchingUniques("+[]% Defensive strength for cities")
+                    .map { it.params[0].toFloat() / 100f }.sum().toInt()
         }
 
         return modifiers
@@ -250,16 +242,6 @@ object BattleDamage {
             )
                 modifiers[unique.params[2]] = unique.params[0].toInt()
         }
-    
-        // Deprecated since 3.15.7
-            if (tile.neighbors.flatMap { it.getUnits() }
-                    .any {
-                        it.hasUnique("-10% combat strength for adjacent enemy units") && it.civInfo.isAtWarWith(
-                            unit.getCivInfo()
-                        )
-                    })
-                modifiers["Haka War Dance"] = -10
-        //
         return modifiers
     }
 
