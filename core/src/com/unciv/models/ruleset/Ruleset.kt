@@ -299,7 +299,7 @@ class Ruleset {
         val lines = ArrayList<String>()
         var warningCount = 0
 
-        // Checks for all mods
+        // Checks for all mods - only those that can succeed without loading a base ruleset
         for (unit in units.values) {
             if (unit.upgradesTo == unit.name)
                 lines += "${unit.name} upgrades to itself!"
@@ -327,9 +327,10 @@ class Ruleset {
             }
         }
 
+        // Quit here when no base ruleset is loaded - references cannot be checked
         if (!modOptions.isBaseRuleset) return CheckModLinksResult(warningCount, lines)
 
-        val baseRuleset = RulesetCache.getBaseRuleset()
+        val baseRuleset = RulesetCache.getBaseRuleset()  // for UnitTypes fallback
 
         for (unit in units.values) {
             if (unit.requiredTech != null && !technologies.containsKey(unit.requiredTech!!))
@@ -348,6 +349,15 @@ class Ruleset {
                     lines += "${unit.name} contains promotion $promotion which does not exist!"
             if (!unitTypes.containsKey(unit.unitType) && !baseRuleset.unitTypes.containsKey(unit.unitType))
                 lines += "${unit.name} is of type ${unit.unitType}, which does not exist!"
+            for (unique in unit.getMatchingUniques("Can construct []")) {
+                val improvementName = unique.params[0]
+                if (improvementName !in tileImprovements)
+                    lines += "${unit.name} can place improvement $improvementName which does not exist!"
+                else if (tileImprovements[improvementName]!!.firstOrNull() == null && !unit.hasUnique("Bonus for units in 2 tile radius 15%")) {
+                    lines += "${unit.name} can place improvement $improvementName which has no stats, preventing unit automation!"
+                    warningCount++
+                }
+            }
         }
 
         for (building in buildings.values) {

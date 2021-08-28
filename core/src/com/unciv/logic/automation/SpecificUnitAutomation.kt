@@ -9,6 +9,7 @@ import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.tile.TileResource
+import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import com.unciv.ui.worldscreen.unit.UnitActions
 
@@ -217,8 +218,9 @@ object SpecificUnitAutomation {
 
     fun automateImprovementPlacer(unit: MapUnit) {
         val improvementName = unit.getMatchingUniques("Can construct []").first().params[0]
-        val improvement = unit.civInfo.gameInfo.ruleSet.tileImprovements[improvementName]!!
-        val relatedStat = improvement.maxByOrNull { it.value }!!.key
+        val improvement = unit.civInfo.gameInfo.ruleSet.tileImprovements[improvementName]
+            ?: return
+        val relatedStat = improvement.maxByOrNull { it.value }?.key ?: Stat.Culture
 
         val citiesByStatBoost = unit.civInfo.cities.sortedByDescending {
             val stats = Stats()
