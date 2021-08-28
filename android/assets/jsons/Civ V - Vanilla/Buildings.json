@@ -776,6 +776,18 @@
 		"requiredTech": "Economics"
 	},
 	{
+		"name": "Coffee House",
+		"replaces": "Windmill",
+		"uniqueTo": "Austria",
+		"production": 2,
+		"percentStatBonus": {"production": 10},
+		"specialistSlots": {"Engineer": 1},
+		"hurryCostModifier": 25,
+		"maintenance": 2,
+		"uniques": ["[+25]% great person generation [in this city]"],
+		"requiredTech": "Economics"
+	},
+	{
 		"name": "Arsenal",
 		"cost": 300,
 		"cityStrength": 9,

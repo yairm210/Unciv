@@ -996,6 +996,22 @@
 		"attackSound": "horse"
 	},
 	{
+		"name": "Hussar",
+		"unitType": "Mounted",
+		"replaces": "Cavalry",
+		"uniqueTo": "Austria",
+		"movement": 5,
+		"strength": 34,
+		"cost": 225,
+		"requiredTech": "Military Science",
+		"obsoleteTech": "Combustion",
+		"requiredResource": "Horses",
+		"upgradesTo": "Landship",
+		"uniques": ["Can move after attacking","No defensive terrain bonus","-[33]% Strength vs [City]" ,
+		"[+1] Visibility Range", "[+50]% Flank Attack modifier" ],
+		"attackSound": "horse"
+	},
+	{
 		"name": "Ironclad",
 		"unitType": "Melee Water",
 		"movement": 3,

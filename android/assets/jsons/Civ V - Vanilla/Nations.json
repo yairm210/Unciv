@@ -758,10 +758,10 @@
 		"defeated": "The world is pitiful! There's no beauty in it, no wisdom. I am almost glad to go.",
 		"introduction": "The archduchess of Austria welcomes your Eminence to... Oh let's get this over with! I have a luncheon at four o'clock.",
 
-		"neutralHello": "Greet God!",
+		"neutralHello": "Hello!",
 		"hateHello": "Oh, it's ye!",
 		"tradeRequest": "I see you admire my new damask. Nobody should say that I am an unjust woman. Let's reach an agreement!",
-		"outerColor": [72,0,0],
+		"outerColor": [234,0,0],
 		"innerColor": [255,255,255],
 		"uniqueName": "Diplomatic Marriage",
 		"uniques": ["Can spend Gold to annex or puppet a City-State that has been your ally for [5] turns."],
