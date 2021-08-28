@@ -2,6 +2,7 @@ package com.unciv.logic.civilization
 
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.models.metadata.BASE_GAME_DURATION_TURNS
+import com.unciv.models.ruleset.BeliefType
 import com.unciv.models.ruleset.Policy
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.stats.Stat
@@ -135,7 +136,7 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
         statMap["Unit upkeep"] = Stats(gold = -getUnitMaintenance().toFloat())
 
         if (civInfo.religionManager.religion != null) {
-            for (unique in civInfo.religionManager.religion!!.getFounderBeliefs().flatMap { it.uniqueObjects }) {
+            for (unique in civInfo.religionManager.religion!!.getBeliefs(BeliefType.Founder).flatMap { it.uniqueObjects }) {
                 if (unique.placeholderText == "[] for each global city following this religion") {
                     statMap.add(
                         "Religion", 
@@ -233,7 +234,7 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
 
         if (civInfo.religionManager.religion != null) {
             statMap["Religion"] = 0f
-            for (unique in civInfo.religionManager.religion!!.getFounderBeliefs().flatMap { it.uniqueObjects }) {
+            for (unique in civInfo.religionManager.religion!!.getBeliefs(BeliefType.Founder).flatMap { it.uniqueObjects }) {
                 if (unique.placeholderText == "[] for each global city following this religion") {
                     statMap["Religion"] = 
                         statMap["Religion"]!! +

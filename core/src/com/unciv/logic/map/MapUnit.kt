@@ -14,6 +14,7 @@ import com.unciv.models.ruleset.Unique
 import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.ruleset.unit.UnitType
+import com.unciv.ui.utils.toPercent
 import java.text.DecimalFormat
 
 /**
@@ -933,7 +934,9 @@ class MapUnit {
         return when (filter) {
             "Wounded", "wounded units" -> health < 100
             "Barbarians", "Barbarian" -> civInfo.isBarbarian()
+            "City-State" -> civInfo.isCityState()
             "Embarked" -> isEmbarked()
+            "Non-City" -> true
             else -> {
                 if (baseUnit.matchesFilter(filter)) return true
                 if (hasUnique(filter)) return true
@@ -963,7 +966,12 @@ class MapUnit {
     }
     
     fun getPressureAddedFromSpread(): Int {
-        return baseUnit.religiousStrength
+        var pressureAdded = baseUnit.religiousStrength.toFloat()
+        for (unique in civInfo.getMatchingUniques("[]% Spread Religion Strength for [] units"))
+            if (matchesFilter(unique.params[0]))
+                pressureAdded *= unique.params[0].toPercent()
+        
+        return pressureAdded.toInt()
     }
     
     fun getActionString(action: String): String {

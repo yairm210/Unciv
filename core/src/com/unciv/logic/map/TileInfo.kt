@@ -188,6 +188,11 @@ open class TileInfo {
             else -> tileOwner.getDiplomacyManager(civInfo).isConsideredFriendlyTerritory()
         }
     }
+    
+    fun isEnemyTerritory(civInfo: CivilizationInfo): Boolean {
+        val tileOwner = getOwner() ?: return false
+        return civInfo.isAtWarWith(tileOwner)
+    }
 
     fun getTerrainFeatures(): List<Terrain> = terrainFeatures.mapNotNull { ruleset.terrains[it] }
     fun getAllTerrains(): Sequence<Terrain> = sequence {
@@ -458,6 +463,7 @@ open class TileInfo {
             "Rough terrain" -> isRoughTerrain()
             "Foreign Land", "Foreign" -> observingCiv != null && !isFriendlyTerritory(observingCiv)
             "Friendly Land", "Friendly" -> observingCiv != null && isFriendlyTerritory(observingCiv)
+            "Enemy Land", "Enemy" -> observingCiv != null && isEnemyTerritory(observingCiv)
             resource -> observingCiv != null && hasViewableResource(observingCiv)
             "Water resource" -> isWater && observingCiv != null && hasViewableResource(observingCiv)
             "Natural Wonder" -> naturalWonder != null

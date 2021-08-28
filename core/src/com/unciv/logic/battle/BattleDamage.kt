@@ -229,19 +229,26 @@ object BattleDamage {
 
         for (unique in unit.unit.getMatchingUniques("+[]% Strength in []")
                 + unit.getCivInfo()
-            .getMatchingUniques("+[]% Strength for units fighting in []")) {
+            // Deprecated since 3.16.7
+                .getMatchingUniques("+[]% Strength for units fighting in []")) {
+            //
             val filter = unique.params[1]
             if (tile.matchesFilter(filter, unit.getCivInfo()))
                 modifiers.add(filter, unique.params[0].toInt())
         }
 
-        for (unique in unit.getCivInfo()
-            .getMatchingUniques("+[]% Strength if within [] tiles of a []")) {
+        for (unique in unit.getCivInfo().getMatchingUniques("+[]% Strength if within [] tiles of a []")) {
             if (tile.getTilesInDistance(unique.params[1].toInt())
                     .any { it.matchesFilter(unique.params[2]) }
             )
                 modifiers[unique.params[2]] = unique.params[0].toInt()
         }
+        for (unique in unit.getCivInfo().getMatchingUniques("[]% Strength for [] units in []")) {
+            if (unit.matchesCategory(unique.params[1]) && tile.matchesFilter(unique.params[2], unit.getCivInfo())) {
+                modifiers.add(unique.params[2], unique.params[0].toInt())
+            }
+        }
+    
         return modifiers
     }
 
