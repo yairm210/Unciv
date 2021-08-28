@@ -275,6 +275,18 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
             }
         }
 
+        for (unique in viewingCiv.getMatchingUniques("Can spend Gold to annex or puppet a City-State that has been your ally for [] turns.")) {
+            val diplomaticMarriageButton =
+                "Diplomatic Marriage ([${otherCiv.getDiplomaticMarriageCost()}] Gold)".toTextButton()
+            diplomaticMarriageButton.onClick {
+                otherCiv.diplomaticMarriage(viewingCiv)
+                UncivGame.Current.setWorldScreen() // The other civ will no longer exist
+            }
+            diplomacyTable.add(diplomaticMarriageButton).row()
+            if (isNotPlayersTurn() || viewingCiv.gold < otherCiv.getDiplomaticMarriageCost()
+                || diplomacyManager.hasFlag(DiplomacyFlags.MarriageCooldown)) diplomaticMarriageButton.disable()
+        }
+
         for (assignedQuest in otherCiv.questManager.assignedQuests.filter { it.assignee == viewingCiv.civName }) {
             diplomacyTable.addSeparator()
             diplomacyTable.add(getQuestTable(assignedQuest)).row()

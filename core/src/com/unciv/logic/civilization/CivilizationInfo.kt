@@ -965,6 +965,8 @@ class CivilizationInfo {
                 else newAllyCiv.addNotification(text, civName, NotificationIcon.Diplomacy)
                 newAllyCiv.updateViewableTiles()
                 newAllyCiv.updateDetailedCivResources()
+                for (unique in newAllyCiv.getMatchingUniques("Can spend Gold to annex or puppet a City-State that has been your ally for [] turns."))
+                    newAllyCiv.getDiplomacyManager(civName).setFlag(DiplomacyFlags.MarriageCooldown, unique.params[0].toInt())
             }
             if (oldAllyName != null) {
                 val oldAllyCiv = gameInfo.getCivilization(oldAllyName)
@@ -975,6 +977,14 @@ class CivilizationInfo {
                 oldAllyCiv.updateDetailedCivResources()
             }
         }
+    }
+
+    fun getDiplomaticMarriageCost(): Int {
+        return 500
+    }
+
+    fun diplomaticMarriage(otherCiv: CivilizationInfo) {
+
     }
 
     //endregion
