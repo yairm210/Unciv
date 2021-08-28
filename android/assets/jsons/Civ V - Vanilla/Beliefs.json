@@ -76,7 +76,7 @@
         "name": "Monument to the Gods",
         "type": "Pantheon",
         "uniques": ["+[15]% Production when constructing [Wonders]"]
-        // Should only be ancient/classical era wonders, but implementing that is another can of worms
+        // ToDo: Should only be ancient/classical era wonders, but implementing that is another can of worms
         // For that we really should need an era.matchesFilter() AND support for multiple values in 
         // construction.matchesFilter(), so we could write something like:
         //"uniques": ["[+15]% Production when constructing [{Ancient Era} {Wonders}]",
@@ -149,7 +149,7 @@
         "type": "Follower",
         "uniques": ["[+2 Production] if this city has at least [1] specialists"]
     },
-    // Missing: Holy Warriors (I have to look up the faith costs for these sometime)
+    // ToDo: Holy Warriors (I have to look up the faith costs for these sometime)
     {
         "name": "Liturgical Drama",
         "type": "Follower",
@@ -241,6 +241,56 @@
         "name": "World Church",
         "type": "Founder",
         "uniques": ["[+1 Culture] for every [5] global followers [in foreign cities]"]
+    },
+
+    ////////////////////////////////////// Enhancer beliefs ///////////////////////////////////////
+    
+    {
+        "name": "Defender of the Faith",
+        "type": "Enhancer",
+        "uniques": ["[+20]% Strength for [All] units in [Friendly Land]"],
+        // ToDo: Should only be friendly territory of cities that follow this religion
+    },
+    {
+        "name": "Holy Order",
+        "type": "Enhancer",
+        "uniques": ["[Faith] cost of purchasing [Missionary] units [-30]% ", "[Faith] cost of purchasing [Inquisitor] units [-30]% "]
+    },
+    {
+        "name": "Itinerant Preachers",
+        "type": "Enhancer",
+        "uniques": ["Religion naturally spreads to cities [+3] tiles away"]
+    },
+    {
+        "name": "Just War",
+        "type": "Enhancer",
+        "uniques": ["[+20]% Strength for [Non-City] units in [Enemy Land]"],
+        // ToDo: Should only be enemy territory of cities that follow this religion
+    },
+    {
+        "name": "Messiah",
+        "type": "Enhancer",
+        "uniques": ["[+25]% Spread Religion Strength for [Great Prophet] units", "[-25]% Faith cost of generating Great Prophet equivalents"]
+    },
+    {
+        "name": "Missionary Zeal",
+        "type": "Enhancer",
+        "uniques": ["[+25]% Spread Religion Strength for [Missionary] units"]
+    },
+    {
+        "name": "Religious Texts",
+        "type": "Enhancer",
+        "uniques": ["[+34]% Natural religion spread [in all cities]", "[+34]% Natural religion spread [in all cities] with [Printing Press]"]
+    },
+    {
+        "name": "Religious Unity",
+        "type": "Enhancer",
+        "uniques": ["[+100]% Natural religion spread to [in City-State cities]"]
+    },
+    {
+        "name": "Reliquary",
+        "type": "Enhancer",
+        "uniques": ["[+50 Faith] whenever a Great Person is expended"]
     }
 ]
 
