@@ -139,8 +139,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
     private fun addWorkerChoice() {
         val workerEquivalents = civInfo.gameInfo.ruleSet.units.values
                 .filter { it.uniques.any {
-                    // Constants.workerUnique deprecated since 3.15.5
-                        unique -> unique.equalsPlaceholderText(Constants.canBuildImprovements) || unique.equalsPlaceholderText(Constants.workerUnique) 
+                        unique -> unique.equalsPlaceholderText(Constants.canBuildImprovements)
                 } && it.isBuildable(cityConstructions) }
         if (workerEquivalents.isEmpty()) return // for mods with no worker units
         if (civInfo.getIdleUnits().any { it.isAutomated() && it.hasUniqueToBuildImprovements })
