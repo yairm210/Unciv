@@ -7,6 +7,7 @@ import com.unciv.logic.GameInfo
 import com.unciv.logic.UncivShowableException
 import com.unciv.logic.automation.NextTurnAutomation
 import com.unciv.logic.automation.WorkerAutomation
+import com.unciv.logic.battle.Battle
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.RuinsManager.RuinsManager
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
@@ -980,11 +981,35 @@ class CivilizationInfo {
     }
 
     fun getDiplomaticMarriageCost(): Int {
-        return 500
+        // https://github.com/Gedemon/Civ5-DLL/blob/master/CvGameCoreDLL_Expansion1/CvMinorCivAI.cpp, line 7812
+        var cost = when (gameInfo.gameParameters.gameSpeed) {
+            GameSpeed.Quick -> 335
+            GameSpeed.Standard -> 500
+            GameSpeed.Epic -> 750
+            GameSpeed.Marathon -> 1500
+        }
+        // Plus disband value of all units
+        for (unit in units) {
+            cost += unit.baseUnit.getDisbandGold(this)
+        }
+        // Round to nearest 5
+        cost /= 5
+        cost *= 5
+
+        return cost
     }
 
     fun diplomaticMarriage(otherCiv: CivilizationInfo) {
-
+        otherCiv.addNotification("We have married into the leading families of [${civName}], bringing them under our control.",
+            getCapital().location, civName, NotificationIcon.Marriage, otherCiv.civName)
+        for (civ in gameInfo.civilizations.filter { it != otherCiv })
+            civ.addNotification("[${otherCiv.civName}] has married into the leading families of [${civName}], bringing them under their control.",
+                getCapital().location, civName, NotificationIcon.Marriage, otherCiv.civName)
+        for (unit in units)
+            unit.gift(otherCiv)
+        for (city in cities)
+            city.moveToCiv(otherCiv)
+        destroy()
     }
 
     //endregion

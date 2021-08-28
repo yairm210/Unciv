@@ -25,6 +25,7 @@ object NotificationIcon {
     const val Production = "StatIcons/Production"
     const val Food = "StatIcons/Food"
     const val Faith = "StatIcons/Faith"
+    const val Marriage = "OtherIcons/Marriage"
 }
 
 /**
