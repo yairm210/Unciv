@@ -1,6 +1,7 @@
 package com.unciv.ui.newgamescreen
 
 import com.badlogic.gdx.scenes.scene2d.Stage
+import com.unciv.models.metadata.GameSetupInfo
 import com.unciv.models.ruleset.Ruleset
 
 /**

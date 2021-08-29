@@ -3,7 +3,7 @@ package com.unciv.models.simulation
 import com.unciv.logic.GameInfo
 import com.unciv.logic.GameStarter
 import com.unciv.models.ruleset.VictoryType
-import com.unciv.ui.newgamescreen.GameSetupInfo
+import com.unciv.models.metadata.GameSetupInfo
 import java.lang.Integer.max
 import java.time.Duration
 import kotlin.concurrent.thread
