@@ -29,16 +29,9 @@ import com.unciv.ui.utils.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.worldscreen.WorldScreen
 import java.util.*
 import kotlin.concurrent.thread
+import kotlin.math.max
 import kotlin.math.min
 import com.badlogic.gdx.utils.Array as GdxArray
-
-/** Helper class feeding the language [SelectBox] */
-private class Language(val language:String, val percentComplete:Int){
-    override fun toString(): String {
-        val spaceSplitLang = language.replace("_"," ")
-        return "$spaceSplitLang - $percentComplete%"
-    }
-}
 
 class OptionsPopup(val previousScreen:CameraStageBaseScreen) : Popup(previousScreen) {
     private val settings = previousScreen.game.settings
@@ -47,6 +40,7 @@ class OptionsPopup(val previousScreen:CameraStageBaseScreen) : Popup(previousScr
     private var modCheckFirstRun = true   // marker for automatic first run on selecting the page
     private var modCheckCheckBox: CheckBox? = null
     private var modCheckResultCell: Cell<Actor>? = null
+    private val selectBoxMinWidth: Float
 
     init {
         settings.addCompletedTutorialTask("Open the options table")
@@ -55,6 +49,7 @@ class OptionsPopup(val previousScreen:CameraStageBaseScreen) : Popup(previousScr
         val tabWidth: Float
         val tabHeight: Float
         previousScreen.run {
+            selectBoxMinWidth = if (stage.width < 600f) 200f else 240f
             tabWidth = (if (isPortrait()) 0.9f else 0.8f) * stage.width
             tabHeight = (if (isPortrait()) 0.6f else 0.65f) * stage.height
         }
@@ -170,7 +165,10 @@ class OptionsPopup(val previousScreen:CameraStageBaseScreen) : Popup(previousScr
         }
 
         val continuousRenderingDescription = "When disabled, saves battery life but certain animations will be suspended"
-        add(continuousRenderingDescription.toLabel(fontSize = 14)).colspan(2).padTop(20f).row()
+        val continuousRenderingLabel = WrappableLabel(continuousRenderingDescription,
+                tabs.prefWidth - 30f, Color.ORANGE.cpy().lerp(Color.WHITE, 0.7f), 14)
+        continuousRenderingLabel.wrap = true
+        add(continuousRenderingLabel).colspan(2).padTop(10f).row()
     }
 
     private fun getGamePlayTab() = Table(CameraStageBaseScreen.skin).apply {
@@ -313,27 +311,6 @@ class OptionsPopup(val previousScreen:CameraStageBaseScreen) : Popup(previousScr
         }
     }
 
-    private fun Table.addYesNoRow(text: String, initialValue: Boolean, updateWorld: Boolean = false, action: ((Boolean) -> Unit)) {
-        add(text.toLabel()).left().fillX().apply {
-                (cells[0].actor as Label).apply {
-                    wrap = true
-                    pack()
-                    val clazz = this::class.java
-                    val field = clazz.getDeclaredField("prefSize")
-                    field.isAccessible = true
-                    val prefSize = field.get(this) as Vector2
-                    prefWidth(min(prefSize.x, tabs.prefWidth - 150f))
-                }
-                maxWidth(tabs.prefWidth - 150f)  // Yes width 66, pad: 30 button, 10 this, 5 defaults
-        }
-        val button = YesNoButton(initialValue, CameraStageBaseScreen.skin) {
-            action(it)
-            settings.save()
-            if (updateWorld && previousScreen is WorldScreen)
-                previousScreen.shouldUpdate = true
-        }
-        add(button).row()
-    }
 
     private fun Table.addMinimapSizeSlider() {
         add("Show minimap".toLabel()).left().fillX()
@@ -372,7 +349,7 @@ class OptionsPopup(val previousScreen:CameraStageBaseScreen) : Popup(previousScr
         val resolutionSelectBox = SelectBox<String>(skin)
         resolutionSelectBox.items = resolutionArray
         resolutionSelectBox.selected = settings.resolution
-        add(resolutionSelectBox).minWidth(240f).pad(10f).row()
+        add(resolutionSelectBox).minWidth(selectBoxMinWidth).pad(10f).row()
 
         resolutionSelectBox.onChange {
             settings.resolution = resolutionSelectBox.selected
@@ -389,7 +366,7 @@ class OptionsPopup(val previousScreen:CameraStageBaseScreen) : Popup(previousScr
         for (tileset in tileSets) tileSetArray.add(tileset)
         tileSetSelectBox.items = tileSetArray
         tileSetSelectBox.selected = settings.tileSet
-        add(tileSetSelectBox).minWidth(240f).pad(10f).row()
+        add(tileSetSelectBox).minWidth(selectBoxMinWidth).pad(10f).row()
 
         tileSetSelectBox.onChange {
             settings.tileSet = tileSetSelectBox.selected
@@ -535,6 +512,20 @@ class OptionsPopup(val previousScreen:CameraStageBaseScreen) : Popup(previousScr
         }
     }
 
+
+    private fun Table.addYesNoRow(text: String, initialValue: Boolean, updateWorld: Boolean = false, action: ((Boolean) -> Unit)) {
+        val wrapWidth = max(tabs.prefWidth * 0.5f, tabs.prefWidth - 180f)
+        add(WrappableLabel(text, wrapWidth).apply { wrap = true })
+            .left().fillX()
+            .maxWidth(wrapWidth)
+        val button = YesNoButton(initialValue, CameraStageBaseScreen.skin) {
+            action(it)
+            settings.save()
+            if (updateWorld && previousScreen is WorldScreen)
+                previousScreen.shouldUpdate = true
+        }
+        add(button).row()
+    }
 }
 
 
@@ -561,4 +552,42 @@ private class YesNoButton(initialValue: Boolean, skin: Skin, action: (Boolean) -
             action.invoke(value)
         }
     }
+}
+
+/** A [Label] that unlike the original participates correctly in layout
+ *  Caveat: You still need to turn wrap on _after_ instantiation, doing it here in init leads to hell.
+ *
+ *  @param text Automatically translated text
+ *  @param expectedWidth Upper limit for the preferred width the Label will report
+ */
+private class WrappableLabel(
+    text: String,
+    private val expectedWidth: Float,
+    fontColor: Color = Color.WHITE,
+    fontSize: Int = 18
+) : Label(text.tr(), CameraStageBaseScreen.skin) {
+    private var _measuredWidth = 0f
+
+    init {
+        if (fontColor != Color.WHITE || fontSize!=18) {
+            val style = LabelStyle(this.style)
+            style.fontColor = fontColor
+            if (fontSize != 18) {
+                style.font = Fonts.font
+                setFontScale(fontSize / Fonts.ORIGINAL_FONT_SIZE)
+            }
+            setStyle(style)
+        }
+    }
+
+    override fun setWrap(wrap: Boolean) {
+        _measuredWidth = super.getPrefWidth()
+        super.setWrap(wrap)
+    }
+
+    private fun getMeasuredWidth(): Float = if (wrap) _measuredWidth else super.getPrefWidth()
+
+    override fun getMinWidth() = 48f  // ~ 2 chars 
+    override fun getPrefWidth() = min(getMeasuredWidth(), expectedWidth)
+    override fun getMaxWidth() = getMeasuredWidth()
 }

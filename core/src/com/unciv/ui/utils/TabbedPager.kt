@@ -6,8 +6,12 @@ import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.unciv.UncivGame
 
-//todo Secret asking Popup and force
-//todo content fixed-headers
+/*
+    Unimplemented ideas:
+    Allow "fixed header" content that does not participate in scrolling
+        (OptionsPopup mod check tab)
+    `scrollAlign: Align` property controls initial content scroll position (currently it's Align.top)
+ */
 
 /**
  * Implements a 'Tabs' widget where different pages can be switched by selecting a header button.
@@ -19,8 +23,8 @@ import com.unciv.UncivGame
  * Pages can be disabled or secret - any 'secret' pages added require a later call to [askForPassword]
  * to activate them (or discard if the password is wrong).
  * 
- * @param prefWidth Width of shown content area, can grow if pages with wider content are added.
- * @param prefHeight Height of shown content area without header.
+ * @param expectedWidth Width of shown content area, can grow if pages with wider content are added.
+ * @param expectedHeight Height of shown content area without header.
  * @param fontSize Size of font used for header.
  * @param fontColor Color of font used for header.
  * @param headerPadding Default padding used for header.
@@ -29,8 +33,8 @@ import com.unciv.UncivGame
 @Suppress("unused")  // This is part of our API
 //region Fields and initialization
 class TabbedPager(
-    prefWidth: Float,
-    prefHeight: Float,
+    private val expectedWidth: Float,
+    private val expectedHeight: Float,
     private val fontSize: Int = 18,
     private val fontColor: Color = Color.WHITE,
     private val highlightColor: Color = Color.BLUE,
@@ -52,8 +56,8 @@ class TabbedPager(
         var buttonW = 0f
     }
 
-    private var prefWidthField = prefWidth
-    private var prefHeightField = prefHeight
+    private var prefWidthField = expectedWidth
+    private var prefHeightField = expectedHeight
 
     private val pages = ArrayList<PageState>(capacity)
 
@@ -330,7 +334,7 @@ class TabbedPager(
                 prefWidthField = contentWidth
                 if (activePage >= 0) invalidateHierarchy()
             }
-            page.scrollX = ((contentWidth - this.width) / 2).coerceIn(0f, contentScroll.maxX)
+            page.scrollX = ((contentWidth - expectedWidth) / 2).coerceIn(0f, contentScroll.maxX)
         }
 
         return newIndex
