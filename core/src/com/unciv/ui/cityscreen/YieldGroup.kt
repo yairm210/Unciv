@@ -19,7 +19,8 @@ class YieldGroup : HorizontalGroup() {
         currentStats = stats
         clearChildren()
         for ((stat, amount) in stats) {
-            addActor(getStatIconsTable(stat.name, amount.toInt()))
+            if (amount > 0f)  // Defense against upstream bugs - negatives would show as "lots"
+                addActor(getStatIconsTable(stat.name, amount.toInt()))
         }
         pack()
     }

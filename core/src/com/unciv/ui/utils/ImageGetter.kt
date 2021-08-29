@@ -3,6 +3,7 @@ package com.unciv.ui.utils
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.Texture
+import com.badlogic.gdx.graphics.Texture.TextureFilter
 import com.badlogic.gdx.graphics.g2d.NinePatch
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
 import com.badlogic.gdx.graphics.g2d.TextureRegion
@@ -16,7 +17,6 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.UncivGame
-import com.unciv.logic.map.TileMap
 import com.unciv.models.ruleset.Era
 import com.unciv.models.ruleset.Nation
 import com.unciv.models.ruleset.Ruleset
@@ -153,7 +153,12 @@ object ImageGetter {
     fun getDot(dotColor: Color) = getWhiteDot().apply { color = dotColor }
 
     fun getExternalImage(fileName: String): Image {
-        return Image(TextureRegion(Texture("ExtraImages/$fileName")))
+        // Since these are not packed in an atlas, they have no scaling filter metadata and
+        // default to Nearest filter, anisotropic level 1. Use Linear instead, helps
+        // loading screen and Tutorial.WorldScreen quite a bit. More anisotropy barely helps.
+        val texture = Texture("ExtraImages/$fileName")
+        texture.setFilter(TextureFilter.Linear, TextureFilter.Linear)
+        return Image(TextureRegion(texture))
     }
 
     fun getImage(fileName: String): Image {

@@ -10,7 +10,7 @@ import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
-import com.unciv.ui.newgamescreen.GameSetupInfo
+import com.unciv.models.metadata.GameSetupInfo
 import com.unciv.ui.utils.*
 
 class MapEditorScreen(): CameraStageBaseScreen() {
