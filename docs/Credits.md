@@ -631,7 +631,6 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Hourglass](https://thenounproject.com/search/?q=hourglass&i=142268) by I Create Stuff for the 'Turn' icon
 * [Shield](https://thenounproject.com/search/?q=shield&i=813568) by Gregor Cresnar for Religious Strength
 * [skill sword flame](https://thenounproject.com/term/skill-sword-flame/2360212/) by Maxicons) for Remove Heresy
-* [wedding rings](https://thenounproject.com/term/wedding-rings/235200/) by Icon Utopia for Diplomatic Marriage
 
 ## Main menu
 

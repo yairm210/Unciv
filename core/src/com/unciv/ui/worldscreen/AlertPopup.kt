@@ -247,7 +247,7 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
             }
             AlertType.DiplomaticMarriage -> {
                 val city = worldScreen.gameInfo.getCities().first { it.id == popupAlert.value }
-                addGoodSizedLabel(city.name + ": " + "What would you like to do with the city?".tr(), 24) // Add name because there might be several cities
+                addGoodSizedLabel(city.name.tr() + ": " + "What would you like to do with the city?".tr(), 24) // Add name because there might be several cities
                     .padBottom(20f).row()
                 val marryingCiv = worldScreen.gameInfo.currentPlayerCiv
 
