@@ -230,7 +230,7 @@ open class TileInfo {
             else
                 stats.add(terrainFeatureBase)
         }
-        
+
         if (city != null) {
             var tileUniques = city.getMatchingUniques("[] from [] tiles []")
                 .filter { city.matchesFilter(it.params[2]) }
@@ -244,7 +244,7 @@ open class TileInfo {
                     stats.add(unique.stats)
                 }
             }
-            
+
             for (unique in city.getMatchingUniques("[] from [] tiles without [] []")) 
                 if (
                     matchesTerrainFilter(unique.params[1]) &&
@@ -280,7 +280,8 @@ open class TileInfo {
         if (stats.gold != 0f && observingCiv.goldenAges.isGoldenAge())
             stats.gold++
 
-        if (stats.production < 0) stats.production = 0f
+        for ((stat, value) in stats)
+            if (value < 0f) stats[stat] = 0f
 
         return stats
     }

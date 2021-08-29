@@ -422,13 +422,14 @@
 	},
 	{
 		"name": "Anti-Armor I",
-		"uniques": ["+[25]% vs [Armored]"],
-		"unitTypes:": ["Helicopter"]
+		"uniques": ["+[25]% Strength vs [Armored]"],
+		"unitTypes": ["Helicopter"]
 	},
 	{
 		"name": "Anti-Armor II",
-		"uniques": ["+[25]% vs [Armored]"],
-		"unitTypes:": ["Helicopter"]
+		"prerequisites": ["Anti-Armor I"],
+		"uniques": ["+[25]% Strength vs [Armored]"],
+		"unitTypes": ["Helicopter"]
 	},
 
 	// Mixed
@@ -473,13 +474,13 @@
 
 	{
 		"name": "Ambush I",
-		"uniques": ["+[33]% Strength vs [Armored]"],
+		"uniques": ["+[25]% Strength vs [Armored]"],
 		"unitTypes": ["Sword","Gunpowder","Fighter","Bomber"]
 	},
 	{
 		"name": "Ambush II",
 		"prerequisites": ["Ambush I"],
-		"uniques": ["+[33]% Strength vs [Armored]"],
+		"uniques": ["+[25]% Strength vs [Armored]"],
 		"unitTypes": ["Sword","Gunpowder","Fighter","Bomber"]
 	},
 
