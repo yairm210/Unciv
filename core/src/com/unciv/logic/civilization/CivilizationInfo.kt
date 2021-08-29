@@ -1005,7 +1005,8 @@ class CivilizationInfo {
                 && !otherCiv.getDiplomacyManager(this).hasFlag(DiplomacyFlags.MarriageCooldown)
                 && otherCiv.gold >= getDiplomaticMarriageCost()
                 && !otherCiv.getMatchingUniques("Can spend Gold to annex or puppet a City-State that has been your ally for [] turns.").none()
-                && !isDefeated())
+                && !isDefeated()
+                && isCityState())
     }
 
     fun diplomaticMarriage(otherCiv: CivilizationInfo) {
@@ -1013,16 +1014,17 @@ class CivilizationInfo {
             return
 
         otherCiv.gold -= getDiplomaticMarriageCost()
-        otherCiv.addNotification("We have married into the leading families of [${civName}], bringing them under our control.",
-            getCapital().location, civName, NotificationIcon.Marriage, otherCiv.civName)
+        otherCiv.addNotification("We have married into the ruling family of [${civName}], bringing them under our control.",
+            getCapital().location, civName, NotificationIcon.Diplomacy, otherCiv.civName)
         for (civ in gameInfo.civilizations.filter { it != otherCiv })
-            civ.addNotification("[${otherCiv.civName}] has married into the leading families of [${civName}], bringing them under their control.",
-                getCapital().location, civName, NotificationIcon.Marriage, otherCiv.civName)
+            civ.addNotification("[${otherCiv.civName}] has married into the ruling family of [${civName}], bringing them under their control.",
+                getCapital().location, civName, NotificationIcon.Diplomacy, otherCiv.civName)
         for (unit in units)
             unit.gift(otherCiv)
         for (city in cities) {
             city.moveToCiv(otherCiv)
-            city.isPuppet = true
+            city.isPuppet = true // Human players get a popup that allows them to annex instead
+            city.foundingCiv = "" // This is no longer a city-state
         }
         destroy()
     }

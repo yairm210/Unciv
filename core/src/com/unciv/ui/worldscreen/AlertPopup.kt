@@ -8,6 +8,7 @@ import com.unciv.logic.civilization.AlertType
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.PopupAlert
 import com.unciv.models.translations.fillPlaceholders
+import com.unciv.models.translations.tr
 import com.unciv.ui.trade.LeaderIntroTable
 import com.unciv.ui.utils.*
 
@@ -243,6 +244,46 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
                 addGoodSizedLabel(civInfo.nation.startIntroPart1).row()
                 addGoodSizedLabel(civInfo.nation.startIntroPart2).row()
                 add(getCloseButton("Let's begin!"))
+            }
+            AlertType.DiplomaticMarriage -> {
+                val city = worldScreen.gameInfo.getCities().first { it.id == popupAlert.value }
+                addGoodSizedLabel(city.name + ": " + "What would you like to do with the city?".tr(), 24) // Add name because there might be several cities
+                    .padBottom(20f).row()
+                val marryingCiv = worldScreen.gameInfo.currentPlayerCiv
+
+                if (marryingCiv.isOneCityChallenger()) {
+                    val destroyAction = {
+                        city.destroyCity(overrideSafeties = true)
+                        worldScreen.shouldUpdate = true
+                        close()
+                    }
+                    add("Destroy".toTextButton().onClick(function = destroyAction)).row()
+                    keyPressDispatcher['d'] = destroyAction
+                    addGoodSizedLabel("Destroying the city instantly razes the city to the ground.").row()
+                } else {
+                    val annexAction = {
+                        city.annexCity()
+                        close()
+                    }
+                    add("Annex".toTextButton().onClick(function = annexAction)).row()
+                    keyPressDispatcher['a'] = annexAction
+                    addGoodSizedLabel("Annexed cities become part of your regular empire.").row()
+                    addGoodSizedLabel("Their citizens generate 2x the unhappiness, unless you build a courthouse.").row()
+                    addSeparator()
+
+                    val puppetAction = {
+                        city.isPuppet = true
+                        city.cityStats.update()
+                        worldScreen.shouldUpdate = true
+                        close()
+                    }
+                    add("Puppet".toTextButton().onClick(function = puppetAction) ).row()
+                    keyPressDispatcher['p'] = puppetAction
+                    addGoodSizedLabel("Puppeted cities do not increase your tech or policy cost, but their citizens generate 1.5x the regular unhappiness.").row()
+                    addGoodSizedLabel("You have no control over the the production of puppeted cities.").row()
+                    addGoodSizedLabel("Puppeted cities also generate 25% less Gold and Science.").row()
+                    addGoodSizedLabel("A puppeted city can be annexed at any time.").row()
+                }
             }
         }
     }

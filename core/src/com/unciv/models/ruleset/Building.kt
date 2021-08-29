@@ -467,7 +467,7 @@ class Building : NamedStats(), INonPerpetualConstruction, ICivilopediaText {
             "Must have an owned [] within [] tiles" -> if (cityCenter.getTilesInDistance(unique.params[1].toInt()).none {
                         it.matchesFilter(unique.params[0], civInfo) && it.getOwner() == construction.cityInfo.civInfo
                     }) return unique.text
-            "Can only be built in annexed cities" -> if (construction.cityInfo.isPuppet || construction.cityInfo.foundingCiv == ""
+            "Can only be built in annexed cities" -> if (construction.cityInfo.isPuppet
                     || construction.cityInfo.civInfo.civName == construction.cityInfo.foundingCiv) return unique.text
             "Obsolete with []" -> if (civInfo.tech.isResearched(unique.params[0])) return unique.text
             Constants.hiddenWithoutReligionUnique -> if (!civInfo.gameInfo.hasReligionEnabled()) return unique.text
