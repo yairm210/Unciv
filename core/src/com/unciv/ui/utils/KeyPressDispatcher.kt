@@ -48,7 +48,7 @@ data class KeyCharAndCode(val char: Char, val code: Int) {
             else -> "\"$char\""
         }
     }
-    
+
     companion object {
         // Convenience shortcuts for frequently used constants
         /** Android back, assigns ESC automatically as well */
@@ -70,7 +70,7 @@ data class KeyCharAndCode(val char: Char, val code: Int) {
 
         /** mini-factory for KeyCharAndCode values to be compared by character, not by code */
         fun ascii(char: Char) = KeyCharAndCode(char.toLowerCase(), 0)
-        
+
         /** factory maps a Char to a keyCode if possible, returns a Char-based instance otherwise */
         fun mapChar(char: Char): KeyCharAndCode {
             val code = Input.Keys.valueOf(char.toUpperCase().toString())
@@ -185,7 +185,10 @@ class KeyPressDispatcher(val name: String? = null) : HashMap<KeyCharAndCode, (()
                     // see if we want to handle this key, and if not, let it propagate
                     if (!contains(key) || (checkIgnoreKeys?.invoke() == true))
                         return super.keyTyped(event, character)
-                    
+
+                    if (consoleLog)
+                        println(this@KeyPressDispatcher.toString() + " invoke: $key")
+
                     // try-catch mainly for debugging. Breakpoints in the vicinity can make the event fire twice in rapid succession, second time the context can be invalid
                     try {
                         this@KeyPressDispatcher[key]?.invoke()
@@ -231,5 +234,7 @@ class KeyPressDispatcher(val name: String? = null) : HashMap<KeyCharAndCode, (()
     companion object {
         /** Tests presence of a physical keyboard - static here as convenience shortcut only */
         val keyboardAvailable = Gdx.input.isPeripheralAvailable(Input.Peripheral.HardwareKeyboard)
+
+        const val consoleLog = false
     }
 }

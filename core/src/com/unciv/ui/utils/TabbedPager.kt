@@ -75,6 +75,7 @@ class TabbedPager(
     private val contentScroll = AutoScrollPane(null)
 
     private val deferredSecretPages = ArrayDeque<PageState>(0)
+    private var askPasswordLock = false
 
     init {
         background = ImageGetter.getBackground(backgroundColor)
@@ -294,7 +295,8 @@ class TabbedPager(
                 this.keyboardFocus = passEntry
             }
         }
-        if (!UncivGame.isCurrentInitialized() || deferredSecretPages.isEmpty()) return
+        if (!UncivGame.isCurrentInitialized() || askPasswordLock || deferredSecretPages.isEmpty()) return
+        askPasswordLock = true  // race condition: Popup closes _first_, then deferredSecretPages is emptied -> parent shows and calls us again
         PassPopup(UncivGame.Current.screen as CameraStageBaseScreen, {
             addDeferredSecrets()
         }, {
