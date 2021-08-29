@@ -1,3 +1,13 @@
+## 3.16.9
+
+By xlenstra:
+- Implemented the enhancing of religions
+- Submarines are now visible to adjacent units, and once turned visible, can be attacked by all enemy units
+
+By SomeTroglodyte:
+- Multiple Civilopedia improvements
+- Better mod problem detection
+
 ## 3.16.8
 
 Upload APK files to Github release

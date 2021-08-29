@@ -4,6 +4,7 @@ import com.badlogic.gdx.math.Vector2
 import com.unciv.logic.battle.CityCombatant
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.GreatPersonManager
+import com.unciv.logic.civilization.ReligionState
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.map.RoadStatus
 import com.unciv.logic.map.TileInfo
@@ -110,7 +111,7 @@ class CityInfo {
         tile.improvement = null
         tile.improvementInProgress = null
 
-        if (civInfo.religionManager.religion != null && civInfo.religionManager.religion!!.isPantheon()) {
+        if (civInfo.religionManager.religionState == ReligionState.Pantheon) {
             religion.addPressure(civInfo.religionManager.religion!!.name, 100)
         }
 
@@ -603,6 +604,9 @@ class CityInfo {
             "in all cities in which the majority religion is a major religion" ->
                 religion.getMajorityReligionName() != null
                 && religion.getMajorityReligion()!!.isMajorReligion()
+            "in all cities in which the majority religion is an enhanced religion" ->
+                religion.getMajorityReligionName() != null
+                && religion.getMajorityReligion()!!.isEnhancedReligion()
             "in non-enemy foreign cities" ->
                 viewingCiv != civInfo
                 && !civInfo.isAtWarWith(viewingCiv)
@@ -612,6 +616,7 @@ class CityInfo {
             // religion a unique is active. However, since religion uniques only come from the city itself,
             // this will always be true when checked.
             "in cities following this religion" -> true
+            "in City-State cities" -> civInfo.isCityState()
             else -> false
         }
     }

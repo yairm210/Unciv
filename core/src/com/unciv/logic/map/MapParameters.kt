@@ -57,6 +57,13 @@ class MapSizeNew {
         this.radius = getEquivalentHexagonalRadius(width, height)
     }
 
+    fun clone() = MapSizeNew().also { 
+        it.name = name
+        it.radius = radius
+        it.width = width
+        it.height = height
+    }
+
     /** Check custom dimensions, fix if too extreme
      * @param worldWrap whether world wrap is on
      * @return null if size was acceptable, otherwise untranslated reason message
@@ -140,6 +147,26 @@ class MapParameters {
     var rareFeaturesRichness = 0.05f
     var resourceRichness = 0.1f
     var waterThreshold = 0f
+
+    fun clone() = MapParameters().also {
+        it.name = name
+        it.type = type
+        it.shape = shape
+        it.mapSize = mapSize.clone()
+        it.noRuins = noRuins
+        it.noNaturalWonders = noNaturalWonders
+        it.worldWrap = worldWrap
+        it.mods = LinkedHashSet(mods)
+        it.seed = seed
+        it.tilesPerBiomeArea = tilesPerBiomeArea
+        it.maxCoastExtension = maxCoastExtension
+        it.elevationExponent = elevationExponent
+        it.temperatureExtremeness = temperatureExtremeness
+        it.vegetationRichness = vegetationRichness
+        it.rareFeaturesRichness = rareFeaturesRichness
+        it.resourceRichness = resourceRichness
+        it.waterThreshold = waterThreshold
+    }
 
     fun reseed() {
         seed = System.currentTimeMillis()

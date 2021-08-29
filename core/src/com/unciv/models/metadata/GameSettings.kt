@@ -47,6 +47,9 @@ class GameSettings {
 
     var allowAndroidPortrait = false    // Opt-in to allow Unciv to follow a screen rotation to portrait
 
+    /** Saves the last successful new game's setup */
+    var lastGameSetup: GameSetupInfo? = null
+
     init {
         // 26 = Android Oreo. Versions below may display permanent icon in notification bar.
         if (Gdx.app?.type == Application.ApplicationType.Android && Gdx.app.version < 26) {

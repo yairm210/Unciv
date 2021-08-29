@@ -130,6 +130,8 @@ enum class UnitActionType(
         null, 'g', UncivSound.Choir),
     RemoveHeresy("Remove Heresy",
         { ImageGetter.getImage("OtherIcons/Remove Heresy") }, 'h', UncivSound.Fire),
+    EnhanceReligion("Enhance a Religion",
+        { ImageGetter.getUnitIcon("Great Prophet") }, 'g', UncivSound.Choir),
     DisbandUnit("Disband unit",
         { ImageGetter.getImage("OtherIcons/DisbandUnit") }, KeyCharAndCode.DEL),
     GiftUnit("Gift unit",

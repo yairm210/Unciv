@@ -236,21 +236,34 @@ class CityInfoReligionManager {
             addPressure(religionThisIsTheHolyCityOf!!,5 * pressureFromAdjacentCities, false)
         }
         
-        val allCitiesWithin10Tiles =
+        val allCitiesWithinSpreadRange =
             cityInfo.civInfo.gameInfo.getCities()
                 .filter {
                     it != cityInfo 
-                    && it.getCenterTile().aerialDistanceTo(cityInfo.getCenterTile()) <= 10
+                    && it.getCenterTile().aerialDistanceTo(cityInfo.getCenterTile()) <= it.religion.getSpreadRange() 
                 }
-        for (city in allCitiesWithin10Tiles) {
+        for (city in allCitiesWithinSpreadRange) {
             val majorityReligionOfCity = city.religion.getMajorityReligionName() ?: continue
             if (!cityInfo.civInfo.gameInfo.religions[majorityReligionOfCity]!!.isMajorReligion()) continue
-            addPressure(majorityReligionOfCity, pressureFromAdjacentCities, false) 
+            addPressure(majorityReligionOfCity, city.religion.pressureAmountToAdjacentCities(cityInfo), false) 
         }
         
         updateNumberOfFollowers()
     }
-    
+
+    private fun getSpreadRange(): Int {
+        var spreadRange = 10
+        for (unique in cityInfo.getMatchingUniques("Religion naturally spreads to cities [] tiles away"))
+            spreadRange += unique.params[0].toInt()
+        
+        if (getMajorityReligion() != null)
+            for (unique in getMajorityReligion()!!.getFounderUniques()
+                .filter { it.placeholderText == "Religion naturally spreads to cities [] tiles away"}
+            ) spreadRange += unique.params[0].toInt()
+        
+        return spreadRange
+    }
+
     /** Doesn't update the pressures, only returns what they are if the update were to happen right now */
     fun getPressuresFromSurroundingCities(): Counter<String> {
         val addedPressure = Counter<String>()
@@ -261,13 +274,32 @@ class CityInfoReligionManager {
             cityInfo.civInfo.gameInfo.getCities()
                 .filter {
                     it != cityInfo
-                            && it.getCenterTile().aerialDistanceTo(cityInfo.getCenterTile()) <= 10
+                    && it.getCenterTile().aerialDistanceTo(cityInfo.getCenterTile()) <= it.religion.getSpreadRange()
                 }
         for (city in allCitiesWithin10Tiles) {
             val majorityReligionOfCity = city.religion.getMajorityReligion() ?: continue
             if (!majorityReligionOfCity.isMajorReligion()) continue
-            addedPressure.add(majorityReligionOfCity.name, pressureFromAdjacentCities)
+            addedPressure.add(majorityReligionOfCity.name, city.religion.pressureAmountToAdjacentCities(cityInfo))
         }
         return addedPressure
+    }
+    
+    private fun pressureAmountToAdjacentCities(pressuredCity: CityInfo): Int {
+        var pressure = pressureFromAdjacentCities.toFloat()
+        
+        for (unique in cityInfo.getMatchingUniques("[]% Natural religion spread []")) {
+            if (pressuredCity.matchesFilter(unique.params[1]))
+                pressure *= 1f + unique.params[0].toFloat() / 100f
+        }
+        
+        for (unique in cityInfo.getMatchingUniques("[]% Natural religion spread [] with []"))
+            if (pressuredCity.matchesFilter(unique.params[1]) 
+                && (
+                    cityInfo.civInfo.tech.isResearched(unique.params[2]) 
+                    || cityInfo.civInfo.policies.isAdopted(unique.params[2])
+                )
+            ) pressure *= 1f + unique.params[0].toFloat() / 100f
+        
+        return pressure.toInt()
     }
 }
