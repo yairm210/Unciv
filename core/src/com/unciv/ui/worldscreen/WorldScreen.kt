@@ -13,7 +13,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Button
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.utils.Align
-import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
 import com.unciv.logic.GameSaver
@@ -718,8 +717,24 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Cam
             
             viewingCiv.religionManager.religionState == ReligionState.FoundingReligion ->
                 NextTurnAction("Found Religion", Color.WHITE) {
-                    game.setScreen(FoundReligionPickerScreen(viewingCiv, gameInfo))
+                    game.setScreen(ReligiousBeliefsPickerScreen(
+                        viewingCiv, 
+                        gameInfo,
+                        viewingCiv.religionManager.getBeliefsToChooseAtFounding(),
+                        pickIcon = true
+                    ))
                 }
+            
+            viewingCiv.religionManager.religionState == ReligionState.EnhancingReligion -> 
+                NextTurnAction("Enhance Religion", Color.ORANGE) {
+                    game.setScreen(ReligiousBeliefsPickerScreen(
+                        viewingCiv,
+                        gameInfo,
+                        viewingCiv.religionManager.getBeliefsToChooseAtEnhancing(),
+                        pickIcon = false
+                    ))
+                }
+            
             viewingCiv.mayVoteForDiplomaticVictory() ->
                 NextTurnAction("Vote for World Leader", Color.RED) {
                     game.setScreen(DiplomaticVotePickerScreen(viewingCiv))

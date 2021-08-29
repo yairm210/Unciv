@@ -47,10 +47,6 @@ class CityExpansionManager {
         
         for (unique in cityInfo.getMatchingUniques("[]% cost of natural border growth")) 
             cultureToNextTile *= unique.params[0].toPercent()
-        
-        // Unique deprecated since 3.15.10 (seems unused, and should be replaced by the unique above)
-            if (cityInfo.civInfo.hasUnique("Increased rate of border expansion")) cultureToNextTile *= 0.75
-        //
 
         return cultureToNextTile.roundToInt()
     }

@@ -49,20 +49,6 @@ class PolicyManager {
     fun getPolicyByName(name: String): Policy = civInfo.gameInfo.ruleSet.policies[name]!!
 
     fun setTransients() {
-        // Reassign policies deprecated in 3.14.17, left for backwards compatibility
-            if (adoptedPolicies.contains("Patronage") && 
-                !civInfo.gameInfo.ruleSet.policies.contains("Patronage")
-            ) {
-                adoptedPolicies.add("Merchant Navy")
-                adoptedPolicies.remove("Patronage")
-            }
-            if (adoptedPolicies.contains("Entrepreneurship") &&
-                !civInfo.gameInfo.ruleSet.policies.contains("Entrepreneurship")
-            ) {
-                adoptedPolicies.add("Naval Tradition")
-                adoptedPolicies.remove("Entrepreneurship")
-            }
-        //
         for (policyName in adoptedPolicies)
             addPolicyToTransients(getPolicyByName(policyName))
     }

@@ -12,6 +12,7 @@ import com.unciv.models.stats.Stats
 import com.unciv.models.translations.tr
 import com.unciv.ui.civilopedia.FormattedLine
 import com.unciv.ui.utils.Fonts
+import com.unciv.ui.utils.toPercent
 import kotlin.math.abs
 import kotlin.math.min
 
@@ -187,6 +188,11 @@ open class TileInfo {
             else -> tileOwner.getDiplomacyManager(civInfo).isConsideredFriendlyTerritory()
         }
     }
+    
+    fun isEnemyTerritory(civInfo: CivilizationInfo): Boolean {
+        val tileOwner = getOwner() ?: return false
+        return civInfo.isAtWarWith(tileOwner)
+    }
 
     fun getTerrainFeatures(): List<Terrain> = terrainFeatures.mapNotNull { ruleset.terrains[it] }
     fun getAllTerrains(): Sequence<Terrain> = sequence {
@@ -224,13 +230,10 @@ open class TileInfo {
             else
                 stats.add(terrainFeatureBase)
         }
-        
+
         if (city != null) {
             var tileUniques = city.getMatchingUniques("[] from [] tiles []")
                 .filter { city.matchesFilter(it.params[2]) }
-            // Deprecated since 3.15.9
-                tileUniques += city.getLocalMatchingUniques("[] from [] tiles in this city")
-            //
             tileUniques += city.getMatchingUniques("[] from every []")
             for (unique in tileUniques) {
                 val tileType = unique.params[1]
@@ -241,7 +244,7 @@ open class TileInfo {
                     stats.add(unique.stats)
                 }
             }
-            
+
             for (unique in city.getMatchingUniques("[] from [] tiles without [] []")) 
                 if (
                     matchesTerrainFilter(unique.params[1]) &&
@@ -277,7 +280,8 @@ open class TileInfo {
         if (stats.gold != 0f && observingCiv.goldenAges.isGoldenAge())
             stats.gold++
 
-        if (stats.production < 0) stats.production = 0f
+        for ((stat, value) in stats)
+            if (value < 0f) stats[stat] = 0f
 
         return stats
     }
@@ -329,9 +333,6 @@ open class TileInfo {
         if (city != null) {
             var tileUniques = city.getMatchingUniques("[] from [] tiles []")
                 .filter { city.matchesFilter(it.params[2]) }
-            // Deprecated since 3.15.9
-                tileUniques += city.getLocalMatchingUniques("[] from [] tiles in this city")
-            //
             val improvementUniques = improvement.uniqueObjects.filter {
                 it.placeholderText == "[] on [] tiles once [] is discovered"
                         && observingCiv.tech.isResearched(it.params[2])
@@ -364,12 +365,7 @@ open class TileInfo {
 
         for (unique in observingCiv.getMatchingUniques("+[]% yield from every []"))
             if (improvement.matchesFilter(unique.params[1]))
-                stats.timesInPlace(1f + unique.params[0].toFloat() / 100f)
-
-        // Deprecated since 3.15
-            if (containsGreatImprovement() && observingCiv.hasUnique("Tile yield from Great Improvements +100%"))
-                stats.timesInPlace(2f)
-        //
+                stats.timesInPlace(unique.params[0].toPercent())
 
         return stats
     }
@@ -468,6 +464,7 @@ open class TileInfo {
             "Rough terrain" -> isRoughTerrain()
             "Foreign Land", "Foreign" -> observingCiv != null && !isFriendlyTerritory(observingCiv)
             "Friendly Land", "Friendly" -> observingCiv != null && isFriendlyTerritory(observingCiv)
+            "Enemy Land", "Enemy" -> observingCiv != null && isEnemyTerritory(observingCiv)
             resource -> observingCiv != null && hasViewableResource(observingCiv)
             "Water resource" -> isWater && observingCiv != null && hasViewableResource(observingCiv)
             "Natural Wonder" -> naturalWonder != null

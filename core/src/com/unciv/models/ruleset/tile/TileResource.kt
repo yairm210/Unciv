@@ -59,7 +59,7 @@ class TileResource : NamedStats(), ICivilopediaText {
             textList += FormattedLine()
             textList += FormattedLine("{Buildings that consume this resource}:")
             buildingsThatConsumeThis.forEach {
-                textList += FormattedLine(it.name, link = "Building/${it.name}", indent = 1)
+                textList += FormattedLine(it.name, link = it.makeLink(), indent = 1)
             }
         }
 
@@ -68,7 +68,7 @@ class TileResource : NamedStats(), ICivilopediaText {
             textList += FormattedLine()
             textList += FormattedLine("{Units that consume this resource}: ")
             unitsThatConsumeThis.forEach {
-                textList += FormattedLine(it.name, link = "Unit/${it.name}", indent = 1)
+                textList += FormattedLine(it.name, link = it.makeLink(), indent = 1)
             }
         }
 
@@ -79,7 +79,7 @@ class TileResource : NamedStats(), ICivilopediaText {
             textList += FormattedLine()
             textList += FormattedLine("{Buildings that require this resource worked near the city}: ")
             buildingsRequiringThis.forEach {
-                textList += FormattedLine(it.name, link = "Building/${it.name}", indent = 1)
+                textList += FormattedLine(it.name, link = it.makeLink(), indent = 1)
             }
         }
 

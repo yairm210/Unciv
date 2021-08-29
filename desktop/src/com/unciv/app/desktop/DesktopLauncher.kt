@@ -15,13 +15,6 @@ import com.unciv.logic.GameSaver
 import com.unciv.models.metadata.GameSettings
 import com.unciv.models.translations.tr
 import com.unciv.ui.utils.Fonts
-import io.ktor.application.*
-import io.ktor.http.*
-import io.ktor.request.*
-import io.ktor.response.*
-import io.ktor.routing.*
-import io.ktor.server.engine.*
-import io.ktor.server.netty.*
 import java.util.*
 import kotlin.concurrent.timer
 
@@ -62,56 +55,6 @@ internal object DesktopLauncher {
             tryActivateDiscord(game)
 
         LwjglApplication(game, config)
-    }
-
-    // Work in Progress?
-    @Suppress("unused")
-    private fun startMultiplayerServer() {
-//        val games = HashMap<String, GameSetupInfo>()
-        val files = HashMap<String, String>()
-        embeddedServer(Netty, 8080) {
-            routing {
-                get("/files/getFile/{fileName}") {
-                    val fileName = call.parameters["fileName"]
-                    if (!files.containsKey(fileName)) call.respond(HttpStatusCode.NotFound,
-                            "Game with the name $fileName does not exist")
-                    else call.respondText(files[fileName]!!)
-                }
-
-                post("/files/{fileName}") {
-                    val fileName = call.parameters["fileName"]!!
-                    val body = call.receiveText()
-                    files[fileName] = body
-                }
-//
-//                get("/getGame/{gameName}") {
-//                    val gameName = call.parameters["gameName"]
-//                    if(!games.containsKey(gameName)) call.respond(HttpStatusCode.NotFound,
-//                            "Game with the name $gameName does not exist")
-//                    else call.respondText(Json().toJson(games[gameName]))
-//                }
-//                get("/getGameNames"){
-//                    call.respondText(Json().toJson(games.keys.toList()))
-//                }
-//                post("/addNewGame/{gameName}") {
-//                    val gameName = call.parameters["gameName"]!!
-//                    if (games.containsKey(gameName)) {
-//                        call.respond(HttpStatusCode.NotAcceptable, "A game with the name $gameName already exists")
-//                        return@post
-//                    }
-//                    val body = call.receiveText()
-//                    val newGameInfo:GameSetupInfo
-//                    try{
-//                        newGameInfo = Json().apply { ignoreUnknownFields }.fromJson(GameSetupInfo::class.java, body)
-//                    }
-//                    catch (ex:Exception){
-//                        call.respond(HttpStatusCode.NotAcceptable, "Could not deserialize json")
-//                        return@post
-//                    }
-//                    games[gameName] = newGameInfo
-//                }
-            }
-        }.start()
     }
 
     private fun tryActivateDiscord(game: UncivGame) {
