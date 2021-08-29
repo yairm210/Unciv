@@ -993,7 +993,7 @@ class CivilizationInfo {
         for (unit in units) {
             cost += unit.baseUnit.getDisbandGold(this)
         }
-        // Round to nearest 5
+        // Round to lower multiple of 5
         cost /= 5
         cost *= 5
 
@@ -1001,12 +1001,13 @@ class CivilizationInfo {
     }
 
     fun canBeMarriedBy(otherCiv: CivilizationInfo): Boolean {
-        return (getDiplomacyManager(otherCiv).relationshipLevel() == RelationshipLevel.Ally
+        return (!isDefeated()
+                && isCityState()
+                && getDiplomacyManager(otherCiv).relationshipLevel() == RelationshipLevel.Ally
                 && !otherCiv.getDiplomacyManager(this).hasFlag(DiplomacyFlags.MarriageCooldown)
-                && otherCiv.gold >= getDiplomaticMarriageCost()
-                && !otherCiv.getMatchingUniques("Can spend Gold to annex or puppet a City-State that has been your ally for [] turns.").none()
-                && !isDefeated()
-                && isCityState())
+                && otherCiv.getMatchingUniques("Can spend Gold to annex or puppet a City-State that has been your ally for [] turns.").any()
+                && otherCiv.gold >= getDiplomaticMarriageCost())
+
     }
 
     fun diplomaticMarriage(otherCiv: CivilizationInfo) {

@@ -92,10 +92,7 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
                         worldScreen.shouldUpdate = true
                         close()
                     }        
-                    val liberateText = "Liberate (city returns to [originalOwner])".fillPlaceholders(city.foundingCiv)
-                    add(liberateText.toTextButton().onClick(function = liberateAction)).row()
-                    keyPressDispatcher['l'] = liberateAction
-                    addGoodSizedLabel("Liberating a city returns it to its original owner, giving you a massive relationship boost with them!")
+                    addLiberateOption(city.foundingCiv, liberateAction)
                     addSeparator()
                 }
 
@@ -106,9 +103,7 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
                         worldScreen.shouldUpdate = true
                         close()
                     }
-                    add("Destroy".toTextButton().onClick(function = destroyAction)).row()
-                    keyPressDispatcher['d'] = destroyAction
-                    addGoodSizedLabel("Destroying the city instantly razes the city to the ground.").row()
+                    addDestroyOption(destroyAction)
                 } else {
                     val annexAction = {
                         city.puppetCity(conqueringCiv)
@@ -116,10 +111,7 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
                         worldScreen.shouldUpdate = true
                         close()
                     }
-                    add("Annex".toTextButton().onClick(function = annexAction)).row()
-                    keyPressDispatcher['a'] = annexAction
-                    addGoodSizedLabel("Annexed cities become part of your regular empire.").row()
-                    addGoodSizedLabel("Their citizens generate 2x the unhappiness, unless you build a courthouse.").row()
+                    addAnnexOption(annexAction)
                     addSeparator()
 
                     val puppetAction = {
@@ -127,12 +119,7 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
                         worldScreen.shouldUpdate = true
                         close()
                     }
-                    add("Puppet".toTextButton().onClick(function = puppetAction) ).row()
-                    keyPressDispatcher['p'] = puppetAction
-                    addGoodSizedLabel("Puppeted cities do not increase your tech or policy cost, but their citizens generate 1.5x the regular unhappiness.").row()
-                    addGoodSizedLabel("You have no control over the the production of puppeted cities.").row()
-                    addGoodSizedLabel("Puppeted cities also generate 25% less Gold and Science.").row()
-                    addGoodSizedLabel("A puppeted city can be annexed at any time.").row()
+                    addPuppetOption(puppetAction)
                     addSeparator()
 
                     val razeAction = {
@@ -257,18 +244,13 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
                         worldScreen.shouldUpdate = true
                         close()
                     }
-                    add("Destroy".toTextButton().onClick(function = destroyAction)).row()
-                    keyPressDispatcher['d'] = destroyAction
-                    addGoodSizedLabel("Destroying the city instantly razes the city to the ground.").row()
+                    addDestroyOption(destroyAction)
                 } else {
                     val annexAction = {
                         city.annexCity()
                         close()
                     }
-                    add("Annex".toTextButton().onClick(function = annexAction)).row()
-                    keyPressDispatcher['a'] = annexAction
-                    addGoodSizedLabel("Annexed cities become part of your regular empire.").row()
-                    addGoodSizedLabel("Their citizens generate 2x the unhappiness, unless you build a courthouse.").row()
+                    addAnnexOption(annexAction)
                     addSeparator()
 
                     val puppetAction = {
@@ -277,15 +259,39 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
                         worldScreen.shouldUpdate = true
                         close()
                     }
-                    add("Puppet".toTextButton().onClick(function = puppetAction) ).row()
-                    keyPressDispatcher['p'] = puppetAction
-                    addGoodSizedLabel("Puppeted cities do not increase your tech or policy cost, but their citizens generate 1.5x the regular unhappiness.").row()
-                    addGoodSizedLabel("You have no control over the the production of puppeted cities.").row()
-                    addGoodSizedLabel("Puppeted cities also generate 25% less Gold and Science.").row()
-                    addGoodSizedLabel("A puppeted city can be annexed at any time.").row()
+                    addPuppetOption(puppetAction)
                 }
             }
         }
+    }
+
+    private fun addDestroyOption(destroyAction: () -> Unit) {
+        add("Destroy".toTextButton().onClick(function = destroyAction)).row()
+        keyPressDispatcher['d'] = destroyAction
+        addGoodSizedLabel("Destroying the city instantly razes the city to the ground.").row()
+    }
+
+    private fun addAnnexOption(annexAction: () -> Unit) {
+        add("Annex".toTextButton().onClick(function = annexAction)).row()
+        keyPressDispatcher['a'] = annexAction
+        addGoodSizedLabel("Annexed cities become part of your regular empire.").row()
+        addGoodSizedLabel("Their citizens generate 2x the unhappiness, unless you build a courthouse.").row()
+    }
+
+    private fun addPuppetOption(puppetAction: () -> Unit) {
+        add("Puppet".toTextButton().onClick(function = puppetAction) ).row()
+        keyPressDispatcher['p'] = puppetAction
+        addGoodSizedLabel("Puppeted cities do not increase your tech or policy cost, but their citizens generate 1.5x the regular unhappiness.").row()
+        addGoodSizedLabel("You have no control over the the production of puppeted cities.").row()
+        addGoodSizedLabel("Puppeted cities also generate 25% less Gold and Science.").row()
+        addGoodSizedLabel("A puppeted city can be annexed at any time.").row()
+    }
+
+    private fun addLiberateOption(foundingCiv: String, liberateAction: () -> Unit) {
+        val liberateText = "Liberate (city returns to [originalOwner])".fillPlaceholders(foundingCiv)
+        add(liberateText.toTextButton().onClick(function = liberateAction)).row()
+        keyPressDispatcher['l'] = liberateAction
+        addGoodSizedLabel("Liberating a city returns it to its original owner, giving you a massive relationship boost with them!")
     }
 
     override fun close() {
