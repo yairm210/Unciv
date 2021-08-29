@@ -474,13 +474,13 @@
 
 	{
 		"name": "Ambush I",
-		"uniques": ["+[25]% Strength vs [Armored]"],
+		"uniques": ["+[33]% Strength vs [Armored]"],
 		"unitTypes": ["Sword","Gunpowder","Fighter","Bomber"]
 	},
 	{
 		"name": "Ambush II",
 		"prerequisites": ["Ambush I"],
-		"uniques": ["+[25]% Strength vs [Armored]"],
+		"uniques": ["+[33]% Strength vs [Armored]"],
 		"unitTypes": ["Sword","Gunpowder","Fighter","Bomber"]
 	},
 
