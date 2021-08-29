@@ -114,6 +114,15 @@ object NextTurnAutomation {
 
     /** allow AI to spend money to purchase city-state friendship, buildings & unit */
     private fun useGold(civInfo: CivilizationInfo) {
+        if (civInfo.getHappiness() > 0) {
+            // Marry all possible city-states
+            for (unique in civInfo.getMatchingUniques("Can spend Gold to annex or puppet a City-State that has been your ally for [] turns.")) {
+                for (cityState in civInfo.getKnownCivs().filter { it.isCityState() && it.canBeMarriedBy(civInfo) } ) {
+                            cityState.diplomaticMarriage(civInfo)
+                }
+            }
+        }
+
         if (civInfo.victoryType() == VictoryType.Cultural) {
             for (cityState in civInfo.getKnownCivs()
                     .filter { it.isCityState() && it.cityStateType == CityStateType.Cultured }) {

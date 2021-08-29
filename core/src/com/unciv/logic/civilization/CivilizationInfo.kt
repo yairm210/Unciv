@@ -13,6 +13,7 @@ import com.unciv.logic.civilization.RuinsManager.RuinsManager
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomacyManager
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
+import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.UnitMovementAlgorithms
@@ -999,7 +1000,19 @@ class CivilizationInfo {
         return cost
     }
 
+    fun canBeMarriedBy(otherCiv: CivilizationInfo): Boolean {
+        return (getDiplomacyManager(otherCiv).relationshipLevel() == RelationshipLevel.Ally
+                && !otherCiv.getDiplomacyManager(this).hasFlag(DiplomacyFlags.MarriageCooldown)
+                && otherCiv.gold >= getDiplomaticMarriageCost()
+                && !otherCiv.getMatchingUniques("Can spend Gold to annex or puppet a City-State that has been your ally for [] turns.").none()
+                && !isDefeated())
+    }
+
     fun diplomaticMarriage(otherCiv: CivilizationInfo) {
+        if (!canBeMarriedBy(otherCiv))  // Just in case
+            return
+
+        otherCiv.gold -= getDiplomaticMarriageCost()
         otherCiv.addNotification("We have married into the leading families of [${civName}], bringing them under our control.",
             getCapital().location, civName, NotificationIcon.Marriage, otherCiv.civName)
         for (civ in gameInfo.civilizations.filter { it != otherCiv })
@@ -1007,8 +1020,10 @@ class CivilizationInfo {
                 getCapital().location, civName, NotificationIcon.Marriage, otherCiv.civName)
         for (unit in units)
             unit.gift(otherCiv)
-        for (city in cities)
+        for (city in cities) {
             city.moveToCiv(otherCiv)
+            city.isPuppet = true
+        }
         destroy()
     }
 
