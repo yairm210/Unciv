@@ -6,6 +6,9 @@ import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.unciv.UncivGame
 
+//todo Secret asking Popup and force
+//todo content fixed-headers
+
 /**
  * Implements a 'Tabs' widget where different pages can be switched by selecting a header button.
  * 
@@ -13,7 +16,8 @@ import com.unciv.UncivGame
  * [replaced][replacePage] or dynamically added after the Widget is already shown.
 
  * Pages are automatically scrollable, switching pages preserves scroll positions individually.
- * Pages can be disabled or secret - the first 'secret' page added requires a password entry to proceed with these pages (or without if the password is wrong).
+ * Pages can be disabled or secret - any 'secret' pages added require a later call to [askForPassword]
+ * to activate them (or discard if the password is wrong).
  * 
  * @param prefWidth Width of shown content area, can grow if pages with wider content are added.
  * @param prefHeight Height of shown content area without header.
@@ -32,7 +36,6 @@ class TabbedPager(
     private val highlightColor: Color = Color.BLUE,
     backgroundColor: Color = ImageGetter.getBlue().lerp(Color.BLACK, 0.5f),
     private val headerPadding: Float = 10f,
-    private val secretHashCode: Int = 0,
     capacity: Int = 4
 ) : Table() {
 
@@ -67,8 +70,6 @@ class TabbedPager(
 
     private val contentScroll = AutoScrollPane(null)
 
-    private enum class SecretState {Ask, Hide, Show}
-    private var secretState = SecretState.Ask
     private val deferredSecretPages = ArrayDeque<PageState>(0)
 
     init {
@@ -120,7 +121,7 @@ class TabbedPager(
      */
     @Suppress("MemberVisibilityCanBePrivate", "unused")  // This is part of our API
     fun selectPage(index: Int): Boolean {
-        if (index !in 0 until pages.size) return false
+        if (index !in -1 until pages.size) return false
         if (activePage == index) return false
         if (index >= 0 && pages[index].disabled) return false
         if (activePage != -1) {
@@ -198,9 +199,10 @@ class TabbedPager(
     @Suppress("MemberVisibilityCanBePrivate")  // This is part of our API
     fun replacePage(index: Int, content: Actor) {
         if (index !in 0 until pages.size) return
-        if (index == activePage) selectPage(-1)
+        val isActive = index == activePage
+        if (isActive) selectPage(-1)
         pages[index].content = content
-        if (index == activePage) selectPage(index)
+        if (isActive) selectPage(index)
     }
 
     /** Replace a page's content by its caption. */
@@ -214,7 +216,7 @@ class TabbedPager(
      * @param iconSize Size for [icon] - if not zero, the icon is wrapped to allow a [setSize] even on [Image] which ignores size.
      * @param insertBefore -1 to add at the end or index of existing page to insert this before
      * @param secret Marks page as 'secret'. A password is asked once per [TabbedPager] and if it does not match the has passed in the constructor the page and all subsequent secret pages are dropped.
-     * @param disabled Initial disabled state. Disabled pages cannot be selected aven with [selectPage], their button is dimmed.
+     * @param disabled Initial disabled state. Disabled pages cannot be selected even with [selectPage], their button is dimmed.
      * @param onActivation _Optional_ callback called when this page is shown (per actual change to this page, not per header click). Lambda arguments are page index and caption.
      * @return The new page's index or -1 if it could not be immediately added (secret).
      */
@@ -261,14 +263,39 @@ class TabbedPager(
         }
 
         // Support 'secret' pages
-        if (secret && secretState == SecretState.Ask) {
+        if (secret) {
             deferredSecretPages.addLast(page)
-            askForPassword()
             return -1
         }
-        if (secret && secretState != SecretState.Show) return -1
 
         return addAndShowPage(page, insertBefore)
+    }
+
+    /**
+     * Activate any [secret][addPage] pages by asking for the password.
+     *
+     * If the parent of this Widget is a Popup, then this needs to be called _after_ the parent
+     * is shown to ensure proper popup stacking.
+     */
+    @Suppress("MemberVisibilityCanBePrivate")  // This is part of our API
+    fun askForPassword(secretHashCode: Int = 0) {
+        class PassPopup(screen: CameraStageBaseScreen, unlockAction: ()->Unit, lockAction: ()->Unit) : Popup(screen) {
+            val passEntry = TextField("", CameraStageBaseScreen.skin)
+            init {
+                passEntry.isPasswordMode = true
+                add(passEntry).row()
+                addOKButton {
+                    if (passEntry.text.hashCode() == secretHashCode) unlockAction() else lockAction()
+                }
+                this.keyboardFocus = passEntry
+            }
+        }
+        if (!UncivGame.isCurrentInitialized() || deferredSecretPages.isEmpty()) return
+        PassPopup(UncivGame.Current.screen as CameraStageBaseScreen, {
+            addDeferredSecrets()
+        }, {
+            deferredSecretPages.clear()
+        }).open(true)
     }
 
     //endregion
@@ -307,28 +334,6 @@ class TabbedPager(
         }
 
         return newIndex
-    }
-
-    private fun askForPassword() {
-        class PassPopup(screen: CameraStageBaseScreen, unlockAction: ()->Unit, lockAction: ()->Unit) : Popup(screen) {
-            val passEntry = TextField("", CameraStageBaseScreen.skin)
-            init {
-                passEntry.isPasswordMode = true
-                add(passEntry).row()
-                addOKButton {
-                    if (passEntry.text.hashCode() == secretHashCode) unlockAction() else lockAction()
-                }
-                this.keyboardFocus = passEntry
-            }
-        }
-        if (!UncivGame.isCurrentInitialized()) return
-        PassPopup(UncivGame.Current.screen as CameraStageBaseScreen, {
-            secretState = SecretState.Show
-            addDeferredSecrets()
-        }, {
-            secretState = SecretState.Hide
-            deferredSecretPages.clear()
-        }).open(true)
     }
 
     private fun addDeferredSecrets() {

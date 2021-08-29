@@ -5,6 +5,7 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
 import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.badlogic.gdx.utils.Align
@@ -28,6 +29,7 @@ import com.unciv.ui.utils.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.worldscreen.WorldScreen
 import java.util.*
 import kotlin.concurrent.thread
+import kotlin.math.min
 import com.badlogic.gdx.utils.Array as GdxArray
 
 /** Helper class feeding the language [SelectBox] */
@@ -56,20 +58,18 @@ class OptionsPopup(val previousScreen:CameraStageBaseScreen) : Popup(previousScr
             tabWidth = (if (isPortrait()) 0.9f else 0.8f) * stage.width
             tabHeight = (if (isPortrait()) 0.6f else 0.65f) * stage.height
         }
-        tabs = TabbedPager(tabWidth, tabHeight,
-            fontSize = 21, backgroundColor = Color.CLEAR,
-            secretHashCode = 2747985, capacity = 8)
+        tabs = TabbedPager(tabWidth, tabHeight, fontSize = 21, backgroundColor = Color.CLEAR, capacity = 8)
         add(tabs).pad(0f).grow().row()
 
         tabs.selectPage(tabs.addPage("About", getAboutTab(), ImageGetter.getExternalImage("Icon.png"), 24f))
         tabs.addPage("Language", getLanguageTab(), ImageGetter.getImage("FlagIcons/${settings.language}"), 24f)
-        tabs.addPage("Display options", getDisplayTab(), ImageGetter.getImage("UnitPromotionIcons/Scouting"), 24f)
-        tabs.addPage("Gameplay options", getGamePlayTab(), ImageGetter.getImage("OtherIcons/Options"), 24f)
+        tabs.addPage("Display", getDisplayTab(), ImageGetter.getImage("UnitPromotionIcons/Scouting"), 24f)
+        tabs.addPage("Gameplay", getGamePlayTab(), ImageGetter.getImage("OtherIcons/Options"), 24f)
         tabs.addPage("Sound", getSoundTab(), ImageGetter.getImage("OtherIcons/Speaker"), 24f)
         // at the moment the notification service only exists on Android
         if (Gdx.app.type == Application.ApplicationType.Android)
-            tabs.addPage("Multiplayer options", getMultiplayerTab(), ImageGetter.getImage("OtherIcons/Multiplayer"), 24f)
-        tabs.addPage("Other options", getOtherTab(), ImageGetter.getImage("OtherIcons/Settings"), 24f)
+            tabs.addPage("Multiplayer", getMultiplayerTab(), ImageGetter.getImage("OtherIcons/Multiplayer"), 24f)
+        tabs.addPage("Advanced", getAdvancedTab(), ImageGetter.getImage("OtherIcons/Settings"), 24f)
         if (RulesetCache.size > 1) {
             tabs.addPage("Locate mod errors", getModCheckTab(), ImageGetter.getImage("OtherIcons/Mods"), 24f) { _, _ ->
                 if (modCheckFirstRun) runModChecker()
@@ -87,6 +87,10 @@ class OptionsPopup(val previousScreen:CameraStageBaseScreen) : Popup(previousScr
 
         pack() // Needed to show the background.
         center(previousScreen.stage)
+    }
+
+    override fun notifyPopupShown() {
+        tabs.askForPassword(secretHashCode = 2747985)
     }
 
     private fun reloadWorldAndOptions() {
@@ -208,7 +212,7 @@ class OptionsPopup(val previousScreen:CameraStageBaseScreen) : Popup(previousScr
         addYesNoRow("Enable out-of-game turn notifications", settings.multiplayerTurnCheckerEnabled) {
             settings.multiplayerTurnCheckerEnabled = it
             settings.save()
-            tabs.replacePage("Multiplayer options", getMultiplayerTab())
+            tabs.replacePage("Multiplayer", getMultiplayerTab())
         }
 
         if (settings.multiplayerTurnCheckerEnabled) {
@@ -219,7 +223,7 @@ class OptionsPopup(val previousScreen:CameraStageBaseScreen) : Popup(previousScr
         }
     }
 
-    private fun getOtherTab() = Table(CameraStageBaseScreen.skin).apply {
+    private fun getAdvancedTab() = Table(CameraStageBaseScreen.skin).apply {
         pad(10f)
         defaults().pad(5f)
 
@@ -310,7 +314,18 @@ class OptionsPopup(val previousScreen:CameraStageBaseScreen) : Popup(previousScr
     }
 
     private fun Table.addYesNoRow(text: String, initialValue: Boolean, updateWorld: Boolean = false, action: ((Boolean) -> Unit)) {
-        add(text.toLabel())
+        add(text.toLabel()).left().fillX().apply {
+                (cells[0].actor as Label).apply {
+                    wrap = true
+                    pack()
+                    val clazz = this::class.java
+                    val field = clazz.getDeclaredField("prefSize")
+                    field.isAccessible = true
+                    val prefSize = field.get(this) as Vector2
+                    prefWidth(min(prefSize.x, tabs.prefWidth - 150f))
+                }
+                maxWidth(tabs.prefWidth - 150f)  // Yes width 66, pad: 30 button, 10 this, 5 defaults
+        }
         val button = YesNoButton(initialValue, CameraStageBaseScreen.skin) {
             action(it)
             settings.save()
@@ -321,7 +336,7 @@ class OptionsPopup(val previousScreen:CameraStageBaseScreen) : Popup(previousScr
     }
 
     private fun Table.addMinimapSizeSlider() {
-        add("Show minimap".tr())
+        add("Show minimap".toLabel()).left().fillX()
 
         // The meaning of the values needs a formula to be synchronized between here and
         // [Minimap.init]. It goes off-10%-11%..29%-30%-35%-40%-45%-50% - and the percentages
@@ -352,7 +367,7 @@ class OptionsPopup(val previousScreen:CameraStageBaseScreen) : Popup(previousScr
     }
 
     private fun Table.addResolutionSelectBox() {
-        add("Resolution".toLabel())
+        add("Resolution".toLabel()).left().fillX()
 
         val resolutionSelectBox = SelectBox<String>(skin)
         resolutionSelectBox.items = resolutionArray
@@ -366,7 +381,7 @@ class OptionsPopup(val previousScreen:CameraStageBaseScreen) : Popup(previousScr
     }
 
     private fun Table.addTileSetSelectBox() {
-        add("Tileset".toLabel())
+        add("Tileset".toLabel()).left().fillX()
 
         val tileSetSelectBox = SelectBox<String>(skin)
         val tileSetArray = GdxArray<String>()
@@ -384,7 +399,7 @@ class OptionsPopup(val previousScreen:CameraStageBaseScreen) : Popup(previousScr
     }
 
     private fun Table.addSoundEffectsVolumeSlider() {
-        add("Sound effects volume".tr())
+        add("Sound effects volume".tr()).left().fillX()
 
         val soundEffectsVolumeSlider = UncivSlider(0f, 1.0f, 0.1f,
             initial = settings.soundEffectsVolume
@@ -396,7 +411,7 @@ class OptionsPopup(val previousScreen:CameraStageBaseScreen) : Popup(previousScr
     }
 
     private fun Table.addMusicVolumeSlider() {
-        add("Music volume".tr())
+        add("Music volume".tr()).left().fillX()
 
         val musicVolumeSlider = UncivSlider(0f, 1.0f, 0.1f,
             initial = settings.musicVolume,
@@ -446,7 +461,7 @@ class OptionsPopup(val previousScreen:CameraStageBaseScreen) : Popup(previousScr
     }
 
     private fun Table.addMultiplayerTurnCheckerDelayBox() {
-        add("Time between turn checks out-of-game (in minutes)".toLabel())
+        add("Time between turn checks out-of-game (in minutes)".toLabel()).left().fillX()
 
         val checkDelaySelectBox = SelectBox<Int>(skin)
         val possibleDelaysArray = GdxArray<Int>()
@@ -486,7 +501,7 @@ class OptionsPopup(val previousScreen:CameraStageBaseScreen) : Popup(previousScr
     }
 
     private fun Table.addAutosaveTurnsSelectBox() {
-        add("Turns between autosaves".toLabel())
+        add("Turns between autosaves".toLabel()).left().fillX()
 
         val autosaveTurnsSelectBox = SelectBox<Int>(skin)
         val autosaveTurnsArray = GdxArray<Int>()
