@@ -423,13 +423,13 @@
 	{
 		"name": "Anti-Armor I",
 		"uniques": ["+[25]% Strength vs [Armored]"],
-		"unitTypes:": ["Helicopter"]
+		"unitTypes": ["Helicopter"]
 	},
 	{
 		"name": "Anti-Armor II",
 		"prerequisites": ["Anti-Armor I"],
 		"uniques": ["+[25]% Strength vs [Armored]"],
-		"unitTypes:": ["Helicopter"]
+		"unitTypes": ["Helicopter"]
 	},
 
 	// Mixed
