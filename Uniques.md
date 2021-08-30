@@ -799,10 +799,6 @@ These uniques have been recently deprecated. While they are still supported, the
 
 "+1 population in each city" - Replaced with "[amount] population [cityFilter]"
 
-"Can carry 2 aircraft" - Replaced with "Can carry [amount] [unitFilter] units"
-
-"Can carry 1 extra aircraft" - Replaced with "Can carry [amount] extra [unitFilter] units"
-
 "Reduces damage taken from interception by 50%" - Replaced with "Damage taken from interception reduced by [amount]%"
 
 "Can not be intercepted" - Replaced with "Cannot be intercepted"
@@ -817,10 +813,6 @@ These uniques have been recently deprecated. While they are still supported, the
 
 "Can only attack water" - Replaced with "Can only attack [unitFilter] units" or "Can only attack [tileFilter] tiles", depending on use
 
-"1 extra interception may be made per turn" - Replaced with "[amount] extra interceptions may be made per turn"
-
-"Bonus when intercepting []%" - Replaced with "[]% Damage when intercepting"
-
 "[stats] from [tileFilter] tiles in this city" - Replaced with "[stats] from [tileFilter] tiles [cityFilter]"
 
 "+[amount]% great person generation in this city" - Replaced with "[amount]% great person generation [cityFilter]"
@@ -832,7 +824,5 @@ These uniques have been recently deprecated. While they are still supported, the
 "New [unitFilter] units start with [amount] Experience in this city" - Replaced with "New [unitFilter] units start with [amount] Experience [cityFilter]"
 
 "[amount]% of food is carried over after population increases" - Replaced with "[amount]% of food is carried over [cityFilter] after population increases"
-
-"Hidden when cultural victory is disabled" - Replaced with "Hidden when [victoryName] victory is disabled"
 
 "Cost of purchasing [buildingFilter] buildings reduced by [amount]%" - Replaced with "[Stat] cost of purchasing [buildingFilter] buildings [amount]%"
