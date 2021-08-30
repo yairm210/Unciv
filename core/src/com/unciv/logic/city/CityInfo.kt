@@ -385,20 +385,6 @@ class CityInfo {
                 gppCounter.add(unitName, gppCounter[unitName]!! * allGppPercentageBonus / 100)
         }
 
-        // Since existing buildings and specialists have *stat names* rather than Great Person names
-        //  as the keys, convert every stat name to the appropriate Great Person name instead
-
-        for (counter in sourceToGPP.values)
-            for ((key, gppAmount) in counter.toMap()) { // since we're removing, copy to avoid concurrency problems
-                val relevantStatEntry = GreatPersonManager.statToGreatPersonMapping
-                    .entries.firstOrNull { it.key.name.equals(key, true) }
-                if (relevantStatEntry == null) continue
-
-                counter.add(relevantStatEntry.value, gppAmount)
-                counter.remove(key)
-            }
-
-
         return sourceToGPP
     }
 

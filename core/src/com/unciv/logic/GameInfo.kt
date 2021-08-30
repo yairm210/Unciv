@@ -342,13 +342,6 @@ class GameInfo {
                 cityInfo.cityStats.update()
             }
 
-            if(!civInfo.greatPeople.greatPersonPoints.isEmpty()) {
-                civInfo.greatPeople.greatPersonPointsCounter.add(
-                    GreatPersonManager.statsToGreatPersonCounter(civInfo.greatPeople.greatPersonPoints)
-                )
-                civInfo.greatPeople.greatPersonPoints.clear()
-            }
-
             if (civInfo.hasEverOwnedOriginalCapital == null) {
                 civInfo.hasEverOwnedOriginalCapital = civInfo.cities.any { it.isOriginalCapital }
             }

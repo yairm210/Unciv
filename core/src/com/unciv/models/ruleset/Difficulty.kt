@@ -16,7 +16,7 @@ class Difficulty: INamed, ICivilopediaText {
     var policyCostModifier:Float = 1f
     var unhappinessModifier:Float = 1f
     var barbarianBonus:Float = 0f
-    var startingUnits = ArrayList<String>() // Deprecated since 3.15.8
+    var startingUnits = ArrayList<String>() // Deprecated since 3.15.8 - with eras
     var playerBonusStartingUnits = ArrayList<String>()
 
     var aiCityGrowthModifier:Float = 1f
@@ -26,7 +26,7 @@ class Difficulty: INamed, ICivilopediaText {
     var aiBuildingMaintenanceModifier:Float = 1f
     var aiUnitMaintenanceModifier = 1f
     var aiFreeTechs = ArrayList<String>()
-    var aiMajorCivStartingUnits = ArrayList<String>() // Deprecated since 3.15.8
+    var aiMajorCivStartingUnits = ArrayList<String>() // Deprecated since 3.15.8 - with eras
     var aiMajorCivBonusStartingUnits = ArrayList<String>()
     var aiCityStateStartingUnits = ArrayList<String>() // Deprecated since 3.15.8
     var aiCityStateBonusStartingUnits = ArrayList<String>()
