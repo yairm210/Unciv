@@ -16,6 +16,7 @@ import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.ruleset.unit.UnitType
 import com.unciv.ui.utils.toPercent
 import java.text.DecimalFormat
+import kotlin.math.pow
 
 /**
  * The immutable properties and mutable game state of an individual unit present on the map
@@ -983,6 +984,14 @@ class MapUnit {
     fun actionsOnDeselect() {
         showAdditionalActions = false
         if (isPreparingParadrop()) action = null
+    }
+
+    fun getForceEvaluation(): Int {
+        val promotionBonus = (promotions.numberOfPromotions + 1).toFloat().pow(0.3f)
+        var power = (baseUnit.getForceEvaluation() * promotionBonus).toInt()
+        power *= health
+        power /= 100
+        return power
     }
 
     //endregion

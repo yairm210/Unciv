@@ -239,6 +239,14 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
             if (isNotPlayersTurn()) protectionButton.disable()
         }
 
+        val demandTributeButton = "Demand Tribute".toTextButton()
+        demandTributeButton.onClick {
+            rightSideTable.clear()
+            rightSideTable.add(ScrollPane(getDemandTributeTable(otherCiv)))
+        }
+        diplomacyTable.add(demandTributeButton).row()
+        if (isNotPlayersTurn()) demandTributeButton.disable()
+
         val diplomacyManager = viewingCiv.getDiplomacyManager(otherCiv)
         if (!viewingCiv.gameInfo.ruleSet.modOptions.uniques.contains(ModOptionsConstants.diplomaticRelationshipsCannotChange)) {
             if (viewingCiv.isAtWarWith(otherCiv)) {
@@ -382,6 +390,50 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
         improvementGiftTable.add(backButton)
         return improvementGiftTable
 
+    }
+
+    private fun getDemandTributeTable(otherCiv: CivilizationInfo): Table {
+        val diplomacyTable = getCityStateDiplomacyTableHeader(otherCiv)
+        diplomacyTable.addSeparator()
+        diplomacyTable.add("Tribute Willingness".toLabel()).row()
+        diplomacyTable.add(">0 to take gold, >30 and size 4 city for worker".toLabel()).row()
+        val modifierTable = Table()
+        val tributeModifiers = otherCiv.getTributeModifiers(viewingCiv, requireWholeList = true)
+        for (item in tributeModifiers) {
+            val color = if (item.value > 0) Color.GREEN else Color.RED
+            modifierTable.add(item.key.toLabel(color))
+            modifierTable.add(item.value.toString().toLabel(color)).row()
+        }
+        modifierTable.add("Sum:".toLabel())
+        modifierTable.add(tributeModifiers.values.sum().toLabel()).row()
+        diplomacyTable.add(modifierTable).row()
+        diplomacyTable.addSeparator()
+
+        val demandGoldButton = "Take [${otherCiv.goldGainedByTribute()}] gold (-15 Influence)".toTextButton()
+        demandGoldButton.onClick {
+            viewingCiv.demandGold(otherCiv)
+            rightSideTable.clear()
+            rightSideTable.add(ScrollPane(getCityStateDiplomacyTable(otherCiv)))
+        }
+        diplomacyTable.add(demandGoldButton).row()
+        if (otherCiv.getTributeWillingness(viewingCiv, demandingWorker = false) <= 0)   demandGoldButton.disable()
+
+        val demandWorkerButton = "Take worker (-50 Influence)".toTextButton()
+        demandWorkerButton.onClick {
+            viewingCiv.demandWorker(otherCiv)
+            rightSideTable.clear()
+            rightSideTable.add(ScrollPane(getCityStateDiplomacyTable(otherCiv)))
+        }
+        diplomacyTable.add(demandWorkerButton).row()
+        if (otherCiv.getTributeWillingness(viewingCiv, demandingWorker = true) <= 0)    demandWorkerButton.disable()
+
+        val backButton = "Back".toTextButton()
+        backButton.onClick {
+            rightSideTable.clear()
+            rightSideTable.add(ScrollPane(getCityStateDiplomacyTable(otherCiv)))
+        }
+        diplomacyTable.add(backButton)
+        return diplomacyTable
     }
 
     private fun getQuestTable(assignedQuest: AssignedQuest): Table {
@@ -630,6 +682,7 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
             RelationshipLevel.Neutral -> Color.WHITE
             RelationshipLevel.Favorable, RelationshipLevel.Friend,
             RelationshipLevel.Ally -> Color.GREEN
+            RelationshipLevel.Afraid -> Color.YELLOW
             else -> Color.RED
         }
 
