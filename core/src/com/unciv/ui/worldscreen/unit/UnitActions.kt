@@ -489,7 +489,6 @@ object UnitActions {
             action = {
                 addStatsPerGreatPersonUsage(unit)
                 unit.civInfo.religionManager.useGreatProphet(unit)
-                unit.destroy()
             }.takeIf { unit.civInfo.religionManager.mayFoundReligionNow(unit) }
         )
     }
@@ -502,7 +501,6 @@ object UnitActions {
             action = {
                 addStatsPerGreatPersonUsage(unit)
                 unit.civInfo.religionManager.useGreatProphet(unit)
-                unit.destroy()
             }.takeIf { unit.civInfo.religionManager.mayEnhanceReligionNow(unit) }
         )
     }
@@ -650,7 +648,7 @@ object UnitActions {
             otherCiv.addNotification("[${unit.civInfo}] has stolen your territory!", unit.currentTile.position, unit.civInfo.civName, NotificationIcon.War)
     }
 
-    private fun addStatsPerGreatPersonUsage(unit: MapUnit) {
+    fun addStatsPerGreatPersonUsage(unit: MapUnit) {
         if (!unit.isGreatPerson()) return
         
         val civInfo = unit.civInfo

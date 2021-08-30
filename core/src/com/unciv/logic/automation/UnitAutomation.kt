@@ -3,6 +3,7 @@ package com.unciv.logic.automation
 import com.unciv.Constants
 import com.unciv.logic.battle.*
 import com.unciv.logic.city.CityInfo
+import com.unciv.logic.civilization.ReligionState
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
@@ -87,6 +88,8 @@ object UnitAutomation {
             throw IllegalStateException("Barbarians is not allowed here.")
 
         if (unit.isCivilian()) {
+            if (tryRunAwayIfNeccessary(unit)) return
+            
             if (unit.hasUnique(Constants.settlerUnique))
                 return SpecificUnitAutomation.automateSettlerActions(unit)
 
@@ -101,7 +104,21 @@ object UnitAutomation {
 
             if (unit.hasUnique("Can construct []"))
                 return SpecificUnitAutomation.automateImprovementPlacer(unit) // includes great people plus moddable units
-
+            
+            if (unit.hasUnique("May found a religion") 
+                && unit.civInfo.religionManager.religionState < ReligionState.Religion 
+                && unit.civInfo.religionManager.mayFoundReligionAtAll(unit)
+            )
+                return SpecificUnitAutomation.foundReligion(unit)
+            
+            if (unit.hasUnique("May enhance a religion") 
+                && unit.civInfo.religionManager.religionState < ReligionState.EnhancedReligion
+                && unit.civInfo.religionManager.mayEnhanceReligionAtAll(unit)
+            )
+                return SpecificUnitAutomation.enhanceReligion(unit)
+            
+            // ToDo: automation of great people skills (may speed up construction, provides a science boost, etc.)
+            
             return // The AI doesn't know how to handle unknown civilian units
         }
 
@@ -275,12 +292,12 @@ object UnitAutomation {
 
     private fun tryAccompanySettlerOrGreatPerson(unit: MapUnit): Boolean {
         val settlerOrGreatPersonToAccompany = unit.civInfo.getCivUnits()
-                .firstOrNull {
-                    val tile = it.currentTile
-                    it.isCivilian() &&
-                            (it.hasUnique(Constants.settlerUnique) || unit.isGreatPerson())
-                            && tile.militaryUnit == null && unit.movement.canMoveTo(tile) && unit.movement.canReach(tile)
-                } ?: return false
+            .firstOrNull {
+                val tile = it.currentTile
+                it.isCivilian() &&
+                        (it.hasUnique(Constants.settlerUnique) || unit.isGreatPerson())
+                        && tile.militaryUnit == null && unit.movement.canMoveTo(tile) && unit.movement.canReach(tile)
+            } ?: return false
         unit.movement.headTowards(settlerOrGreatPersonToAccompany.currentTile)
         return true
     }
@@ -304,7 +321,6 @@ object UnitAutomation {
         }
         return false
     }
-
 
     private fun tryHeadTowardsEnemyCity(unit: MapUnit): Boolean {
         if (unit.civInfo.cities.isEmpty()) return false
@@ -373,6 +389,18 @@ object UnitAutomation {
 
         unit.movement.headTowards(closestReachableEnemyCity) // go for it!
 
+        return true
+    }
+    
+    fun tryEnterOwnClosestCity(unit: MapUnit): Boolean {
+        val closestCity = unit.civInfo.cities
+            .asSequence()
+            .sortedBy { it.getCenterTile().aerialDistanceTo(unit.getTile()) }
+            .firstOrNull { unit.movement.canReach(it.getCenterTile()) }
+        
+        if (closestCity == null) return false // Panic!
+        
+        unit.movement.headTowards(closestCity.getCenterTile())
         return true
     }
 
@@ -469,16 +497,43 @@ object UnitAutomation {
         unit.civInfo.addNotification("[${unit.displayName()}] finished exploring.", unit.currentTile.position, unit.name, "OtherIcons/Sleep")
         unit.action = null
     }
+    
+    /** Returns whether the civilian spends its turn hiding and not moving */
+    fun tryRunAwayIfNeccessary(unit: MapUnit): Boolean {        
+        // This is a little 'Bugblatter Beast of Traal': Run if we can attack an enemy
+        // Cheaper than determining which enemies could attack us next turn
+        //todo - stay when we're stacked with a good military unit???
+        val enemyUnitsInWalkingDistance = unit.movement.getDistanceToTiles().keys
+            .filter { containsEnemyMilitaryUnit(unit, it) }
 
+        if (enemyUnitsInWalkingDistance.isNotEmpty() && !unit.baseUnit.isMilitary()) {
+            if (unit.getTile().militaryUnit == null && !unit.getTile().isCityCenter())
+                runAway(unit)
+            
+            return true
+        }
+        
+        return false
+    }
 
     fun runAway(unit: MapUnit) {
         val reachableTiles = unit.movement.getDistanceToTiles()
-        val enterableCity = reachableTiles.keys.firstOrNull { it.isCityCenter() && unit.movement.canMoveTo(it) }
+        val enterableCity = reachableTiles.keys
+            .firstOrNull { it.isCityCenter() && unit.movement.canMoveTo(it) }
         if (enterableCity != null) {
             unit.movement.moveToTile(enterableCity)
             return
         }
-        val tileFurthestFromEnemy = reachableTiles.keys.filter { unit.movement.canMoveTo(it) }
+        val defensiveUnit = reachableTiles.keys
+            .firstOrNull { 
+                it.militaryUnit != null && it.militaryUnit!!.civInfo == unit.civInfo && it.civilianUnit == null 
+            }
+        if (defensiveUnit != null) {
+            unit.movement.moveToTile(defensiveUnit)
+            return
+        }
+        val tileFurthestFromEnemy = reachableTiles.keys
+            .filter { unit.movement.canMoveTo(it) }
             .maxByOrNull { countDistanceToClosestEnemy(unit, it) }
             ?: return // can't move anywhere!
         unit.movement.moveToTile(tileFurthestFromEnemy)
@@ -492,7 +547,8 @@ object UnitAutomation {
         return 4
     }
 
-    fun containsEnemyMilitaryUnit(unit: MapUnit, tileInfo: TileInfo) = tileInfo.militaryUnit != null
-            && tileInfo.militaryUnit!!.civInfo.isAtWarWith(unit.civInfo)
+    private fun containsEnemyMilitaryUnit(unit: MapUnit, tileInfo: TileInfo) = 
+        tileInfo.militaryUnit != null
+        && tileInfo.militaryUnit!!.civInfo.isAtWarWith(unit.civInfo)
 
 }

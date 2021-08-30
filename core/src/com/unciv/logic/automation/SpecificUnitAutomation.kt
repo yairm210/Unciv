@@ -369,4 +369,27 @@ object SpecificUnitAutomation {
         }
         return false
     }
+
+    fun foundReligion(unit: MapUnit) {
+        val cityToFoundReligionAt = unit.civInfo.cities.first { !it.isHolyCity() }
+        if (unit.getTile() != cityToFoundReligionAt.getCenterTile()) {
+            unit.movement.headTowards(cityToFoundReligionAt.getCenterTile())
+            return   
+        }
+        unit.civInfo.religionManager.useGreatProphet(unit)
+        UnitActions.addStatsPerGreatPersonUsage(unit)
+    }
+    
+    fun enhanceReligion(unit: MapUnit) {
+        // Try go to a nearby city
+        if (!unit.getTile().isCityCenter())
+            UnitAutomation.tryEnterOwnClosestCity(unit)
+        
+        // If we were unable to go there this turn, unable to do anything else
+        if (!unit.getTile().isCityCenter())
+            return
+        
+        unit.civInfo.religionManager.useGreatProphet(unit)
+        UnitActions.addStatsPerGreatPersonUsage(unit)
+    }
 }

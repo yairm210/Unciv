@@ -13,12 +13,15 @@ import com.unciv.logic.map.BFS
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.trade.*
+import com.unciv.models.ruleset.Belief
+import com.unciv.models.ruleset.BeliefType
 import com.unciv.models.ruleset.ModOptionsConstants
 import com.unciv.models.ruleset.VictoryType
 import com.unciv.models.ruleset.tech.Technology
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
 import com.unciv.models.translations.tr
+import com.unciv.ui.pickerscreens.BeliefContainer
 import kotlin.math.min
 
 object NextTurnAutomation {
@@ -39,8 +42,7 @@ object NextTurnAutomation {
             offerResearchAgreement(civInfo)
             exchangeLuxuries(civInfo)
             issueRequests(civInfo)
-            adoptPolicy(civInfo)  //todo can take a second - why?
-            choosePantheon(civInfo)
+            adoptPolicy(civInfo)  // todo can take a second - why?
         } else {
             getFreeTechForCityStates(civInfo)
             updateDiplomaticRelationshipForCityStates(civInfo)
@@ -51,10 +53,15 @@ object NextTurnAutomation {
         useGold(civInfo)
         protectCityStates(civInfo)
         automateUnits(civInfo)  // this is the most expensive part
+        
+        if (civInfo.isMajorCiv()) {
+            // Can only be done now, as the prophet first has to decide to found/enhance a religion
+            chooseReligiousBeliefs(civInfo)
+        }
+        
         reassignWorkedTiles(civInfo)  // second most expensive
         trainSettler(civInfo)
         tryVoteForDiplomaticVictory(civInfo)
-
     }
 
     private fun respondToTradeRequests(civInfo: CivilizationInfo) {
@@ -230,6 +237,12 @@ object NextTurnAutomation {
         }
     }
     
+    private fun chooseReligiousBeliefs(civInfo: CivilizationInfo) {
+        choosePantheon(civInfo)
+        foundReligion(civInfo)
+        enhanceReligion(civInfo)
+    }
+    
     private fun choosePantheon(civInfo: CivilizationInfo) {
         if (!civInfo.religionManager.canFoundPantheon()) return
         // So looking through the source code of the base game available online,
@@ -238,14 +251,70 @@ object NextTurnAutomation {
         // line 4426 through 4870.
         // This is way too much work for now, so I'll just choose a random pantheon instead.
         // Should probably be changed later, but it works for now.
-        // If this is omitted, the AI will never choose a religion,
-        // instead automatically choosing the same one as the player,
-        // which is not good.
         val availablePantheons = civInfo.gameInfo.ruleSet.beliefs.values
             .filter { civInfo.religionManager.isPickablePantheonBelief(it) }
         if (availablePantheons.isEmpty()) return // panic!
         val chosenPantheon = availablePantheons.random() // Why calculate stuff?
         civInfo.religionManager.choosePantheonBelief(chosenPantheon)
+    }
+    
+    private fun foundReligion(civInfo: CivilizationInfo) {
+        println("Founding check?")
+        if (civInfo.religionManager.religionState != ReligionState.FoundingReligion) return
+        println("Founding check!!")
+        val religionIcon = civInfo.gameInfo.ruleSet.religions
+            .filterNot { civInfo.gameInfo.religions.values.map { religion -> religion.iconName }.contains(it) }
+            .randomOrNull()
+            ?: return // Wait what? How did we pass the checking when using a great prophet but not this?
+        println("Icon has been chosen")
+        val chosenBeliefs = chooseBeliefs(civInfo, civInfo.religionManager.getBeliefsToChooseAtFounding()).toList()
+        println("Beliefs have been chosen")
+        civInfo.religionManager.chooseBeliefs(religionIcon, religionIcon, chosenBeliefs)
+    }
+    
+    private fun enhanceReligion(civInfo: CivilizationInfo) {
+        civInfo.religionManager.chooseBeliefs(
+            null, 
+            null, 
+            chooseBeliefs(civInfo, civInfo.religionManager.getBeliefsToChooseAtEnhancing()).toList()
+        )
+    }
+    
+    private fun chooseBeliefs(civInfo: CivilizationInfo, beliefContainer: BeliefContainer): HashSet<Belief> {
+        val chosenBeliefs = hashSetOf<Belief>()
+        // The 'continues' should never be reached, but just in case I'd rather have AI have a
+        // belief less than make the game crash. The 'continue's should only be reached whenever
+        // there are not enough beliefs to choose, but there should be, as otherwise we could
+        // not have used a great prophet to found/enhance our religion.
+        for (counter in 0 until beliefContainer.pantheonBeliefCount)
+            chosenBeliefs.add(
+                chooseBeliefOfType(civInfo, BeliefType.Pantheon, chosenBeliefs) ?: continue
+            )
+        for (counter in 0 until beliefContainer.followerBeliefCount)
+            chosenBeliefs.add(
+                chooseBeliefOfType(civInfo, BeliefType.Follower, chosenBeliefs) ?: continue
+            )
+        for (counter in 0 until beliefContainer.founderBeliefCount)
+            chosenBeliefs.add(
+                chooseBeliefOfType(civInfo, BeliefType.Founder, chosenBeliefs) ?: continue
+            )
+        for (counter in 0 until beliefContainer.enhancerBeliefCount)
+            chosenBeliefs.add(
+                chooseBeliefOfType(civInfo, BeliefType.Enhancer, chosenBeliefs) ?: continue
+            )
+        return chosenBeliefs
+    }
+    
+    private fun chooseBeliefOfType(civInfo: CivilizationInfo, beliefType: BeliefType, additionalBeliefsToExclude: HashSet<Belief> = hashSetOf()): Belief? {
+        return civInfo.gameInfo.ruleSet.beliefs
+            .filter { 
+                it.value.type == beliefType 
+                && !additionalBeliefsToExclude.contains(it.value)
+                && !civInfo.gameInfo.religions.values
+                    .flatMap { religion -> religion.getBeliefs(beliefType) }.contains(it.value) 
+            }
+            .map { it.value }
+            .randomOrNull() // ToDo: Better algorithm
     }
 
     private fun potentialLuxuryTrades(civInfo: CivilizationInfo, otherCivInfo: CivilizationInfo): ArrayList<Trade> {

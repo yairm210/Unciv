@@ -137,9 +137,11 @@ class ReligionManager {
             if (!mayFoundReligionNow(prophet)) return // How did you do this?
             religionState = ReligionState.FoundingReligion
             foundingCityId = prophet.getTile().getCity()!!.id
+            prophet.destroy()
         } else if (religionState == ReligionState.Religion) {
             if (!mayEnhanceReligionNow(prophet)) return
             religionState = ReligionState.EnhancingReligion
+            prophet.destroy()
         }
     }
 
@@ -173,6 +175,8 @@ class ReligionManager {
     fun mayFoundReligionNow(prophet: MapUnit): Boolean {
         if (!mayFoundReligionAtAll(prophet)) return false
         if (!prophet.getTile().isCityCenter()) return false
+        if (prophet.getTile().getCity()!!.isHolyCity()) return false 
+        // No double holy cities. Not sure if these were allowed in the base game 
         return true
     }
     
