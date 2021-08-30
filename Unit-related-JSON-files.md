@@ -50,7 +50,7 @@ Each promotion can have the following properties:
 | prerequisites | List | Default empty | Prerequisite promotions |
 | effect | String | Default empty | Deprecated, use uniques instead |
 | unitTypes | List | Default empty | The unit types for which this promotion applies as specified in [UnitTypes.json](#unittypesjson) |
-| uniques | List | Default empty | List of effects, [see here](../Uniques#unit-uniques) |
+| uniques | List | Default empty | List of effects, [see here](https://github.com/yairm210/Unciv/wiki/Uniques#unit-uniques) |
 | civilopediaText | List | Default empty | see [civilopediaText chapter](#civilopedia-text) |
 
 
@@ -64,7 +64,7 @@ Civilian, Melee, Ranged, Scout, Mounted, Armor, Siege, WaterCivilian, WaterMelee
 | --------- | ---- | -------- | ----- |
 | name | String | required | The name of the unit type |
 | movementType | String | required | The domain through which the unit moves. Allowed values: "Water", "Land", "Air" |
-| uniques | List of String | defaults to none | A list of the unique abilities every unit of this type has. A list of almost all uniques can be found [here](../Uniques#unit-uniques) |
+| uniques | List of String | defaults to none | A list of the unique abilities every unit of this type has. A list of almost all uniques can be found [here](https://github.com/yairm210/Unciv/wiki/Uniques#unit-uniques) |
 
 
 ## Sounds
