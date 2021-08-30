@@ -376,8 +376,9 @@ object SpecificUnitAutomation {
             unit.movement.headTowards(cityToFoundReligionAt.getCenterTile())
             return   
         }
-        unit.civInfo.religionManager.useGreatProphet(unit)
-        UnitActions.addStatsPerGreatPersonUsage(unit)
+        
+        UnitActions.getFoundReligionAction(unit)()
+        
     }
     
     fun enhanceReligion(unit: MapUnit) {
@@ -389,7 +390,6 @@ object SpecificUnitAutomation {
         if (!unit.getTile().isCityCenter())
             return
         
-        unit.civInfo.religionManager.useGreatProphet(unit)
-        UnitActions.addStatsPerGreatPersonUsage(unit)
+        UnitActions.getEnhanceReligionAction(unit)()
     }
 }
