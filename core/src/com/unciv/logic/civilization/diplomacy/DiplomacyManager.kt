@@ -1,5 +1,6 @@
 package com.unciv.logic.civilization.diplomacy
 
+import com.badlogic.gdx.graphics.Color
 import com.unciv.Constants
 import com.unciv.logic.civilization.*
 import com.unciv.logic.trade.Trade
@@ -12,15 +13,16 @@ import kotlin.math.ceil
 import kotlin.math.max
 import kotlin.math.min
 
-enum class RelationshipLevel{
-    Unforgivable,
-    Afraid,
-    Enemy,
-    Competitor,
-    Neutral,
-    Favorable,
-    Friend,
-    Ally
+enum class RelationshipLevel(val color: Color) {
+    // War is tested separately for the Diplomacy Screen. Colored RED. 
+    Unforgivable(Color.FIREBRICK),
+    Afraid(Color(0x5300ffff)),     // HSV(260,100,100)
+    Enemy(Color.YELLOW),
+    Competitor(Color(0x1f998fff)), // HSV(175,80,60)
+    Neutral(Color(0x1bb371ff)),    // HSV(154,85,70)
+    Favorable(Color(0x14cc3cff)),  // HSV(133,90,80)
+    Friend(Color(0x2ce60bff)),     // HSV(111,95,90)
+    Ally(Color.CHARTREUSE)           // HSV(90,100,100)
 }
 
 enum class DiplomacyFlags{
@@ -72,6 +74,7 @@ class DiplomacyManager() {
         const val MINIMUM_INFLUENCE = -60f
     }
 
+    @Suppress("JoinDeclarationAndAssignment")  // incorrect warning - constructor would need to be higher in scope
     @Transient
     lateinit var civInfo: CivilizationInfo
 
@@ -93,8 +96,8 @@ class DiplomacyManager() {
      * As for why it's String and not DiplomaticModifier see FlagsCountdown comment */
     var diplomaticModifiers = HashMap<String, Float>()
 
-    /** For city-states. Influence is saved in the CITY STATE -> major civ Diplomacy, NOT in the major civ -> cty state diplomacy.
-     *  Won't go below [MINIMUM_INFLUENCE] */
+    /** For city-states. Influence is saved in the CITY STATE -> major civ Diplomacy, NOT in the major civ -> city state diplomacy.
+     *  Won't go below [MINIMUM_INFLUENCE]. Note this declaration leads to Major Civs getting MINIMUM_INFLUENCE serialized, but that is ignored. */
     var influence = 0f
         set(value) {
             field = max(value, MINIMUM_INFLUENCE)
@@ -142,13 +145,13 @@ class DiplomacyManager() {
         if (civInfo.isPlayerCivilization())
             return otherCiv().getDiplomacyManager(civInfo).relationshipLevel()
 
-        if (civInfo.isCityState()) {
-            if (influence <= -30 || civInfo.isAtWarWith(otherCiv())) return RelationshipLevel.Unforgivable
-            if (influence < 30 && civInfo.getTributeWillingness(otherCiv()) > 0) return RelationshipLevel.Afraid
-            if (influence < 0) return RelationshipLevel.Enemy
-            if (influence >= 60 && civInfo.getAllyCiv() == otherCivName) return RelationshipLevel.Ally
-            if (influence >= 30) return RelationshipLevel.Friend
-            return RelationshipLevel.Neutral
+        if (civInfo.isCityState()) return when {
+            influence <= -30 || civInfo.isAtWarWith(otherCiv()) -> RelationshipLevel.Unforgivable
+            influence < 30 && civInfo.getTributeWillingness(otherCiv()) > 0 -> RelationshipLevel.Afraid
+            influence < 0 -> RelationshipLevel.Enemy
+            influence >= 60 && civInfo.getAllyCiv() == otherCivName -> RelationshipLevel.Ally
+            influence >= 30 -> RelationshipLevel.Friend
+            else -> RelationshipLevel.Neutral
         }
 
         // not entirely sure what to do between AI civs, because they probably have different views of each other,
@@ -182,7 +185,7 @@ class DiplomacyManager() {
         }
         return 0
     }
-    
+
     fun matchesCityStateRelationshipFilter(filter: String): Boolean {
         val relationshipLevel = relationshipLevel()
         return when (filter) {
@@ -198,14 +201,14 @@ class DiplomacyManager() {
     // To be run from City-State DiplomacyManager, which holds the influence. Resting point for every major civ can be different.
     fun getCityStateInfluenceRestingPoint(): Float {
         var restingPoint = 0f
-        
+
         for (unique in otherCiv().getMatchingUniques("Resting point for Influence with City-States is increased by []"))
             restingPoint += unique.params[0].toInt()
-        
+
         for (unique in otherCiv().getMatchingUniques("Resting point for Influence with City-States following this religion []"))
             if (otherCiv().religionManager.religion?.name == civInfo.getCapital().religion.getMajorityReligionName())
                 restingPoint += unique.params[0].toInt()
-        
+
         if (diplomaticStatus == DiplomaticStatus.Protector) restingPoint += 5
         return restingPoint
     }
@@ -228,7 +231,7 @@ class DiplomacyManager() {
 
         for (unique in otherCiv().getMatchingUniques("City-State Influence degrades []% slower"))
             modifier *= 1f - unique.params[0].toFloat() / 100f
-        
+
         for (civ in civInfo.gameInfo.civilizations.filter { it.isMajorCiv() && it != otherCiv()}) {
             for (unique in civ.getMatchingUniques("Influence of all other civilizations with all city-states degrades []% faster")) {
                 modifier *= 1f + unique.params[0].toFloat() / 100f
@@ -421,7 +424,7 @@ class DiplomacyManager() {
             // No need to decrement negative countdown flags: they do not expire
             if (flagsCountdown[flag]!! > 0)
                 flagsCountdown[flag] = flagsCountdown[flag]!! - 1
-            
+
             // If we have uniques that make city states grant military units faster when at war with a common enemy, add higher numbers to this flag
             if (flag == DiplomacyFlags.ProvideMilitaryUnit.name && civInfo.isMajorCiv() && otherCiv().isCityState() && 
                     civInfo.gameInfo.civilizations.filter { civInfo.isAtWarWith(it) && otherCiv().isAtWarWith(it) }.any()) {
@@ -551,7 +554,7 @@ class DiplomacyManager() {
         }
     }
 
-    /** Everything that happens to both sides equally when war is delcared by one side on the other */
+    /** Everything that happens to both sides equally when war is declared by one side on the other */
     private fun onWarDeclared() {
         // Cancel all trades.
         for (trade in trades)
@@ -561,7 +564,7 @@ class DiplomacyManager() {
         updateHasOpenBorders()
 
         diplomaticStatus = DiplomaticStatus.War
-        
+
         removeModifier(DiplomaticModifiers.YearsOfPeace)
         setFlag(DiplomacyFlags.DeclinedPeace, 10)/// AI won't propose peace for 10 turns
         setFlag(DiplomacyFlags.DeclaredWar, 10) // AI won't agree to trade for 10 turns
@@ -574,7 +577,7 @@ class DiplomacyManager() {
 
         onWarDeclared()
         otherCivDiplomacy.onWarDeclared()
-        
+
         otherCiv.addNotification("[${civInfo.civName}] has declared war on us!", NotificationIcon.War, civInfo.civName)
         otherCiv.popupAlerts.add(PopupAlert(AlertType.WarDeclaration, civInfo.civName))
 
@@ -652,7 +655,7 @@ class DiplomacyManager() {
             // Our ally city states make peace with us
             if (thirdCiv.getAllyCiv() == civInfo.civName && thirdCiv.isAtWarWith(otherCiv))
                 thirdCiv.getDiplomacyManager(otherCiv).makePeace()
-            // Other ccity states that are not our ally don't like the fact that we made peace with their enemy
+            // Other city states that are not our ally don't like the fact that we made peace with their enemy
             if (thirdCiv.getAllyCiv() != civInfo.civName && thirdCiv.isAtWarWith(otherCiv))
                 thirdCiv.getDiplomacyManager(civInfo).influence -= 10
         }
