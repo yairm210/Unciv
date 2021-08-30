@@ -892,10 +892,16 @@ class CivilizationInfo {
                 .toList().random()
         // placing the unit may fail - in that case stay quiet
         val placedUnit = placeUnitNearTile(city.location, militaryUnit.name) ?: return
+
+        // The unit should have bonuses from Barracks, Alhambra etc as if it was built in the CS capital
+        militaryUnit.addConstructionBonuses(placedUnit, otherCiv.getCapital().cityConstructions)
+
         // Siam gets +10 XP for all CS units
         for (unique in getMatchingUniques("Military Units gifted from City-States start with [] XP")) {
             placedUnit.promotions.XP += unique.params[0].toInt()
         }
+
+
         // Point to the places mentioned in the message _in that order_ (debatable)
         val placedLocation = placedUnit.getTile().position
         val locations = LocationAction(listOf(placedLocation, cities.city2.location, city.location))
