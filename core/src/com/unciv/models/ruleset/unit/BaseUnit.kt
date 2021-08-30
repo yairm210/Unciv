@@ -338,15 +338,11 @@ class BaseUnit : INamed, INonPerpetualConstruction, ICivilopediaText {
 
     fun addConstructionBonuses(unit: MapUnit, cityConstructions: CityConstructions) {
         val civInfo = cityConstructions.cityInfo.civInfo
-        var XP = cityConstructions.getBuiltBuildings().sumBy { it.xpForNewUnits }
+        var XP = 0
 
         for (unique in
         cityConstructions.cityInfo.getMatchingUniques("New [] units start with [] Experience []")
-            .filter { cityConstructions.cityInfo.matchesFilter(it.params[2]) } +
-                // Deprecated since 3.15.9
-                cityConstructions.cityInfo.getMatchingUniques("New [] units start with [] Experience") +
-                cityConstructions.cityInfo.getLocalMatchingUniques("New [] units start with [] Experience in this city")
-        //
+            .filter { cityConstructions.cityInfo.matchesFilter(it.params[2]) }
         ) {
             if (unit.matchesFilter(unique.params[0]))
                 XP += unique.params[1].toInt()

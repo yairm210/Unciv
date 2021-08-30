@@ -309,9 +309,6 @@ class MapUnit {
         if (getTile().improvementInProgress != null 
             && canBuildImprovement(getTile().getTileImprovementInProgress()!!)) 
                 return false
-        // unique "Can construct roads" deprecated since 3.15.5
-            if (hasUnique("Can construct roads") && currentTile.improvementInProgress == RoadStatus.Road.name) return false
-        //
         return !(isFortified() || isExploring() || isSleeping() || isAutomated() || isMoving())
     }
 
@@ -616,8 +613,7 @@ class MapUnit {
     fun endTurn() {
         doAction()
 
-        if (currentMovement > 0 && 
-            // Constants.workerUnique deprecated since 3.15.5
+        if (currentMovement > 0 &&
             getTile().improvementInProgress != null
             && canBuildImprovement(getTile().getTileImprovementInProgress()!!)
         ) workOnImprovement()
@@ -824,10 +820,7 @@ class MapUnit {
     fun canIntercept(): Boolean {
         if (interceptChance() == 0) return false
         val maxAttacksPerTurn = 1 +
-            getMatchingUniques("[] extra interceptions may be made per turn").sumBy { it.params[0].toInt() } +
-            // Deprecated since 3.15.7
-                getMatchingUniques("1 extra interception may be made per turn").count()
-            //
+            getMatchingUniques("[] extra interceptions may be made per turn").sumBy { it.params[0].toInt() }
         if (attacksThisTurn >= maxAttacksPerTurn) return false
         return true
     }
@@ -843,11 +836,10 @@ class MapUnit {
     }
     
     fun carryCapacity(unit: MapUnit): Int {
-        var capacity = getMatchingUniques("Can carry [] [] units").filter { unit.matchesFilter(it.params[1]) }.sumBy { it.params[0].toInt() }
-        capacity += getMatchingUniques("Can carry [] extra [] units").filter { unit.matchesFilter(it.params[1]) }.sumBy { it.params[0].toInt() }
-        // Deprecated since 3.15.5
-        capacity += getMatchingUniques("Can carry 2 aircraft").filter { unit.matchesFilter("Air") }.sumBy { 2 }
-        capacity += getMatchingUniques("Can carry 1 extra aircraft").filter { unit.matchesFilter("Air") }.sumBy { 1 }
+        var capacity = getMatchingUniques("Can carry [] [] units").filter { unit.matchesFilter(it.params[1]) }
+                .sumBy { it.params[0].toInt() }
+        capacity += getMatchingUniques("Can carry [] extra [] units").filter { unit.matchesFilter(it.params[1]) }
+            .sumBy { it.params[0].toInt() }
         return capacity
     }
 
@@ -860,8 +852,7 @@ class MapUnit {
     }
 
     fun interceptDamagePercentBonus(): Int {
-        // "Bonus when intercepting []%" deprecated since 3.15.7
-        return getUniques().filter { it.placeholderText == "Bonus when intercepting []%" || it.placeholderText == "[]% Damage when intercepting"}
+        return getUniques().filter { it.placeholderText == "[]% Damage when intercepting"}
             .sumBy { it.params[0].toInt() }
     }
 
