@@ -96,6 +96,18 @@ object UnitAutomation {
             if (unit.hasUniqueToBuildImprovements)
                 return WorkerAutomation.automateWorkerAction(unit)
 
+            if (unit.hasUnique("May found a religion")
+                && unit.civInfo.religionManager.religionState < ReligionState.Religion
+                && unit.civInfo.religionManager.mayFoundReligionAtAll(unit)
+            )
+                return SpecificUnitAutomation.foundReligion(unit)
+
+            if (unit.hasUnique("May enhance a religion")
+                && unit.civInfo.religionManager.religionState < ReligionState.EnhancedReligion
+                && unit.civInfo.religionManager.mayEnhanceReligionAtAll(unit)
+            )
+                return SpecificUnitAutomation.enhanceReligion(unit)
+
             if (unit.hasUnique(Constants.workBoatsUnique))
                 return SpecificUnitAutomation.automateWorkBoats(unit)
 
@@ -104,19 +116,7 @@ object UnitAutomation {
 
             if (unit.hasUnique("Can construct []"))
                 return SpecificUnitAutomation.automateImprovementPlacer(unit) // includes great people plus moddable units
-            
-            if (unit.hasUnique("May found a religion") 
-                && unit.civInfo.religionManager.religionState < ReligionState.Religion 
-                && unit.civInfo.religionManager.mayFoundReligionAtAll(unit)
-            )
-                return SpecificUnitAutomation.foundReligion(unit)
-            
-            if (unit.hasUnique("May enhance a religion") 
-                && unit.civInfo.religionManager.religionState < ReligionState.EnhancedReligion
-                && unit.civInfo.religionManager.mayEnhanceReligionAtAll(unit)
-            )
-                return SpecificUnitAutomation.enhanceReligion(unit)
-            
+
             // ToDo: automation of great people skills (may speed up construction, provides a science boost, etc.)
             
             return // The AI doesn't know how to handle unknown civilian units
