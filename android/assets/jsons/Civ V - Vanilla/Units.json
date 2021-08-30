@@ -1008,7 +1008,7 @@
 		"requiredResource": "Horses",
 		"upgradesTo": "Landship",
 		"uniques": ["Can move after attacking","No defensive terrain bonus","-[33]% Strength vs [City]" ,
-		"[+1] Visibility Range", "[+50]% Flank Attack modifier" ],
+		"[+1] Visibility Range", "[+50]% to Flank Attack bonuses" ],
 		"attackSound": "horse"
 	},
 	{

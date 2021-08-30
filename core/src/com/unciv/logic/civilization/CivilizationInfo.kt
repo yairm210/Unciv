@@ -983,12 +983,7 @@ class CivilizationInfo {
 
     fun getDiplomaticMarriageCost(): Int {
         // https://github.com/Gedemon/Civ5-DLL/blob/master/CvGameCoreDLL_Expansion1/CvMinorCivAI.cpp, line 7812
-        var cost = when (gameInfo.gameParameters.gameSpeed) {
-            GameSpeed.Quick -> 335
-            GameSpeed.Standard -> 500
-            GameSpeed.Epic -> 750
-            GameSpeed.Marathon -> 1500
-        }
+        var cost = (500 * gameInfo.gameParameters.gameSpeed.modifier).toInt()
         // Plus disband value of all units
         for (unit in units) {
             cost += unit.baseUnit.getDisbandGold(this)

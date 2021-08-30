@@ -132,7 +132,7 @@ object BattleDamage {
                 }
                 if (numberOfAttackersSurroundingDefender > 1) {
                     var flankingBonus = 10f //https://www.carlsguides.com/strategy/civilization5/war/combatbonuses.php
-                    for (unique in attacker.unit.getMatchingUniques("[]% Flank Attack modifier"))
+                    for (unique in attacker.unit.getMatchingUniques("[]% to Flank Attack bonuses"))
                         flankingBonus *= unique.params[0].toPercent()
                     modifiers["Flanking"] =
                         (flankingBonus * (numberOfAttackersSurroundingDefender - 1)).toInt()

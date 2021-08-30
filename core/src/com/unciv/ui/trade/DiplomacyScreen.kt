@@ -275,19 +275,8 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
             }
         }
 
-        for (unique in viewingCiv.getMatchingUniques("Can spend Gold to annex or puppet a City-State that has been your ally for [] turns.")) {
-            val diplomaticMarriageButton =
-                "Diplomatic Marriage ([${otherCiv.getDiplomaticMarriageCost()}] Gold)".toTextButton()
-            diplomaticMarriageButton.onClick {
-                val newCities = otherCiv.cities
-                otherCiv.diplomaticMarriage(viewingCiv)
-                UncivGame.Current.setWorldScreen() // The other civ will no longer exist
-                for (city in newCities)
-                    viewingCiv.popupAlerts.add(PopupAlert(AlertType.DiplomaticMarriage, city.id))   // Player gets to choose between annex and puppet
-            }
-            diplomacyTable.add(diplomaticMarriageButton).row()
-            if (isNotPlayersTurn() || !otherCiv.canBeMarriedBy(viewingCiv)) diplomaticMarriageButton.disable()
-        }
+        val diplomaticMarriageButton = getDiplomaticMarriageButton(otherCiv)
+        if (diplomaticMarriageButton != null) diplomacyTable.add(diplomaticMarriageButton).row()
 
         for (assignedQuest in otherCiv.questManager.assignedQuests.filter { it.assignee == viewingCiv.civName }) {
             diplomacyTable.addSeparator()
@@ -330,6 +319,23 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
         if (isNotPlayersTurn() || otherCivDiplomacyManager.influence < 60 || !needsImprovements)
             improveTileButton.disable()
         return improveTileButton
+    }
+
+    private fun getDiplomaticMarriageButton(otherCiv: CivilizationInfo): TextButton? {
+        if (!viewingCiv.hasUnique("Can spend Gold to annex or puppet a City-State that has been your ally for [] turns."))
+            return null
+
+        val diplomaticMarriageButton =
+            "Diplomatic Marriage ([${otherCiv.getDiplomaticMarriageCost()}] Gold)".toTextButton()
+        diplomaticMarriageButton.onClick {
+            val newCities = otherCiv.cities
+            otherCiv.diplomaticMarriage(viewingCiv)
+            UncivGame.Current.setWorldScreen() // The other civ will no longer exist
+            for (city in newCities)
+                viewingCiv.popupAlerts.add(PopupAlert(AlertType.DiplomaticMarriage, city.id))   // Player gets to choose between annex and puppet
+        }
+        if (isNotPlayersTurn() || !otherCiv.canBeMarriedBy(viewingCiv)) diplomaticMarriageButton.disable()
+        return diplomaticMarriageButton
     }
 
     private fun getGoldGiftTable(otherCiv: CivilizationInfo): Table {
