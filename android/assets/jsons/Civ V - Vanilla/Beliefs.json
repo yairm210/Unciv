@@ -244,7 +244,7 @@
     },
 
     ////////////////////////////////////// Enhancer beliefs ///////////////////////////////////////
-    
+
     {
         "name": "Defender of the Faith",
         "type": "Enhancer",
@@ -254,7 +254,7 @@
     {
         "name": "Holy Order",
         "type": "Enhancer",
-        "uniques": ["[Faith] cost of purchasing [Missionary] units [-30]% ", "[Faith] cost of purchasing [Inquisitor] units [-30]% "]
+        "uniques": ["[Faith] cost of purchasing [Missionary] units [-30]%", "[Faith] cost of purchasing [Inquisitor] units [-30]%"]
     },
     {
         "name": "Itinerant Preachers",
@@ -293,4 +293,3 @@
         "uniques": ["[+50 Faith] whenever a Great Person is expended"]
     }
 ]
-
