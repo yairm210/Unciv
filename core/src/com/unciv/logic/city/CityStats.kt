@@ -192,7 +192,7 @@ class CityStats(val cityInfo: CityInfo) {
     }
 
     fun hasExtraAnnexUnhappiness(): Boolean {
-        if (cityInfo.civInfo.civName == cityInfo.foundingCiv || cityInfo.foundingCiv == "" || cityInfo.isPuppet) return false
+        if (cityInfo.civInfo.civName == cityInfo.foundingCiv || cityInfo.isPuppet) return false
         return !cityInfo.containsBuildingUnique("Remove extra unhappiness from annexed cities")
     }
 

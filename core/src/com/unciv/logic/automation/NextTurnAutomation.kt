@@ -125,6 +125,25 @@ object NextTurnAutomation {
 
     /** allow AI to spend money to purchase city-state friendship, buildings & unit */
     private fun useGold(civInfo: CivilizationInfo) {
+        if (civInfo.getHappiness() > 0
+        && civInfo.hasUnique("Can spend Gold to annex or puppet a City-State that has been your ally for [] turns.")) {
+            for (cityState in civInfo.getKnownCivs().filter { it.isCityState() } ) {
+                if (cityState.canBeMarriedBy(civInfo))
+                    cityState.diplomaticMarriage(civInfo)
+                if (civInfo.getHappiness() <= 0) break // Stop marrying if happiness is getting too low
+            }
+        }
+
+        if (civInfo.victoryType() == VictoryType.Cultural) {
+            for (cityState in civInfo.getKnownCivs()
+                    .filter { it.isCityState() && it.cityStateType == CityStateType.Cultured }) {
+                val diploManager = cityState.getDiplomacyManager(civInfo)
+                if (diploManager.influence < 40) { // we want to gain influence with them
+                    tryGainInfluence(civInfo, cityState)
+                    return
+                }
+            }
+        }
 
         if (!civInfo.isCityState()) {
             val potentialAllies = civInfo.getKnownCivs().filter { it.isCityState() }

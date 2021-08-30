@@ -979,6 +979,8 @@ class CivilizationInfo {
                 else newAllyCiv.addNotification(text, civName, NotificationIcon.Diplomacy)
                 newAllyCiv.updateViewableTiles()
                 newAllyCiv.updateDetailedCivResources()
+                for (unique in newAllyCiv.getMatchingUniques("Can spend Gold to annex or puppet a City-State that has been your ally for [] turns."))
+                    newAllyCiv.getDiplomacyManager(civName).setFlag(DiplomacyFlags.MarriageCooldown, unique.params[0].toInt())
             }
             if (oldAllyName != null) {
                 val oldAllyCiv = gameInfo.getCivilization(oldAllyName)
@@ -989,6 +991,50 @@ class CivilizationInfo {
                 oldAllyCiv.updateDetailedCivResources()
             }
         }
+    }
+
+    fun getDiplomaticMarriageCost(): Int {
+        // https://github.com/Gedemon/Civ5-DLL/blob/master/CvGameCoreDLL_Expansion1/CvMinorCivAI.cpp, line 7812
+        var cost = (500 * gameInfo.gameParameters.gameSpeed.modifier).toInt()
+        // Plus disband value of all units
+        for (unit in units) {
+            cost += unit.baseUnit.getDisbandGold(this)
+        }
+        // Round to lower multiple of 5
+        cost /= 5
+        cost *= 5
+
+        return cost
+    }
+
+    fun canBeMarriedBy(otherCiv: CivilizationInfo): Boolean {
+        return (!isDefeated()
+                && isCityState()
+                && getDiplomacyManager(otherCiv).relationshipLevel() == RelationshipLevel.Ally
+                && !otherCiv.getDiplomacyManager(this).hasFlag(DiplomacyFlags.MarriageCooldown)
+                && otherCiv.getMatchingUniques("Can spend Gold to annex or puppet a City-State that has been your ally for [] turns.").any()
+                && otherCiv.gold >= getDiplomaticMarriageCost())
+
+    }
+
+    fun diplomaticMarriage(otherCiv: CivilizationInfo) {
+        if (!canBeMarriedBy(otherCiv))  // Just in case
+            return
+
+        otherCiv.gold -= getDiplomaticMarriageCost()
+        otherCiv.addNotification("We have married into the ruling family of [${civName}], bringing them under our control.",
+            getCapital().location, civName, NotificationIcon.Diplomacy, otherCiv.civName)
+        for (civ in gameInfo.civilizations.filter { it != otherCiv })
+            civ.addNotification("[${otherCiv.civName}] has married into the ruling family of [${civName}], bringing them under their control.",
+                getCapital().location, civName, NotificationIcon.Diplomacy, otherCiv.civName)
+        for (unit in units)
+            unit.gift(otherCiv)
+        for (city in cities) {
+            city.moveToCiv(otherCiv)
+            city.isPuppet = true // Human players get a popup that allows them to annex instead
+            city.foundingCiv = "" // This is no longer a city-state
+        }
+        destroy()
     }
 
     fun getTributeWillingness(demandingCiv: CivilizationInfo, demandingWorker: Boolean = false): Int {

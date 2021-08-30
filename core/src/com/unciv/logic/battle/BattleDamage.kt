@@ -130,9 +130,13 @@ object BattleDamage {
                             && it.militaryUnit!!.owner == attacker.getCivInfo().civName
                             && MapUnitCombatant(it.militaryUnit!!).isMelee()
                 }
-                if (numberOfAttackersSurroundingDefender > 1)
+                if (numberOfAttackersSurroundingDefender > 1) {
+                    var flankingBonus = 10f //https://www.carlsguides.com/strategy/civilization5/war/combatbonuses.php
+                    for (unique in attacker.unit.getMatchingUniques("[]% to Flank Attack bonuses"))
+                        flankingBonus *= unique.params[0].toPercent()
                     modifiers["Flanking"] =
-                        10 * (numberOfAttackersSurroundingDefender - 1) //https://www.carlsguides.com/strategy/civilization5/war/combatbonuses.php
+                        (flankingBonus * (numberOfAttackersSurroundingDefender - 1)).toInt()
+                }
                 if (attacker.getTile()
                         .aerialDistanceTo(defender.getTile()) == 1 && attacker.getTile()
                         .isConnectedByRiver(defender.getTile())
