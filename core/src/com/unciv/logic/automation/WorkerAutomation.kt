@@ -124,19 +124,6 @@ class WorkerAutomation(
      * Automate one Worker - decide what to do and where, move, start or continue work.
      */
     fun automateWorkerAction(unit: MapUnit) {
-
-        // This is a little 'Bugblatter Beast of Traal': Run if we can attack an enemy
-        // Cheaper than determining which enemies could attack us next turn
-        //todo - stay when we're stacked with a good military unit???
-        val enemyUnitsInWalkingDistance = unit.movement.getDistanceToTiles().keys
-            .filter { UnitAutomation.containsEnemyMilitaryUnit(unit, it) }
-
-        if (enemyUnitsInWalkingDistance.isNotEmpty() && !unit.baseUnit.isMilitary()) {
-            if (WorkerAutomationConst.consoleOutput)
-                println("WorkerAutomation: ${unit.label()} -> run away")
-            return UnitAutomation.runAway(unit)
-        }
-
         val currentTile = unit.getTile()
         val tileToWork = findTileToWork(unit)
 

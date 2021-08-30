@@ -40,8 +40,7 @@ class UnitPromotions {
         val promotion = unit.civInfo.gameInfo.ruleSet.unitPromotions[promotionName]!!
         doDirectPromotionEffects(promotion)
         
-        // This usage of a promotion name as its identifier is deprecated since 3.15.6
-        if (promotionName != "Heal Instantly" && promotion.uniqueObjects.none { it.placeholderText == "Doing so will consume this opportunity to choose a Promotion" }) 
+        if (promotion.uniqueObjects.none { it.placeholderText == "Doing so will consume this opportunity to choose a Promotion" })
             promotions.add(promotionName)
 
         unit.updateUniques()

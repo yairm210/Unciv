@@ -184,9 +184,6 @@ class CivilopediaScreen(
                     && !(uniqueObjects.filter { unique -> unique.placeholderText == "Hidden when [] Victory is disabled"}.any {
                     unique -> !game.gameInfo.gameParameters.victoryTypes.contains(VictoryType.valueOf(unique.params[0] ))
             })
-                    // Deprecated since 3.15.14
-                    && !(noCulturalVictory && "Hidden when cultural victory is disabled" in uniques)
-            //
         }
 
         fun getCategoryIterator(category: CivilopediaCategories): Collection<ICivilopediaText> =

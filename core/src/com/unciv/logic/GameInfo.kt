@@ -286,14 +286,6 @@ class GameInfo {
         if (missingMods.isNotEmpty()) {
             throw UncivShowableException("Missing mods: [$missingMods]")
         }
-        
-        // compatibility code translating changed tech name "Railroad" - to be deprecated soon
-        val (oldTechName, newTechName) = "Railroad" to "Railroads"
-        if (ruleSet.technologies[oldTechName] == null && ruleSet.technologies[newTechName] != null) {
-            civilizations.forEach {
-                it.tech.replaceUpdatedTechName(oldTechName, newTechName)
-            }
-        }
 
         removeMissingModReferences()
 
@@ -340,13 +332,6 @@ class GameInfo {
                     cityInfo.cityConstructions.chooseNextConstruction()
 
                 cityInfo.cityStats.update()
-            }
-
-            if(!civInfo.greatPeople.greatPersonPoints.isEmpty()) {
-                civInfo.greatPeople.greatPersonPointsCounter.add(
-                    GreatPersonManager.statsToGreatPersonCounter(civInfo.greatPeople.greatPersonPoints)
-                )
-                civInfo.greatPeople.greatPersonPoints.clear()
             }
 
             if (civInfo.hasEverOwnedOriginalCapital == null) {

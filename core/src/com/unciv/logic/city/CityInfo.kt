@@ -1,6 +1,7 @@
 package com.unciv.logic.city
 
 import com.badlogic.gdx.math.Vector2
+import com.unciv.logic.battle.CityCombatant
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.GreatPersonManager
 import com.unciv.logic.civilization.ReligionState
@@ -22,6 +23,7 @@ import kotlin.collections.HashMap
 import kotlin.collections.HashSet
 import kotlin.math.ceil
 import kotlin.math.min
+import kotlin.math.pow
 import kotlin.math.roundToInt
 
 class CityInfo {
@@ -383,20 +385,6 @@ class CityInfo {
                 gppCounter.add(unitName, gppCounter[unitName]!! * allGppPercentageBonus / 100)
         }
 
-        // Since existing buildings and specialists have *stat names* rather than Great Person names
-        //  as the keys, convert every stat name to the appropriate Great Person name instead
-
-        for (counter in sourceToGPP.values)
-            for ((key, gppAmount) in counter.toMap()) { // since we're removing, copy to avoid concurrency problems
-                val relevantStatEntry = GreatPersonManager.statToGreatPersonMapping
-                    .entries.firstOrNull { it.key.name.equals(key, true) }
-                if (relevantStatEntry == null) continue
-
-                counter.add(relevantStatEntry.value, gppAmount)
-                counter.remove(key)
-            }
-
-
         return sourceToGPP
     }
 
@@ -673,6 +661,11 @@ class CityInfo {
         return !isOriginalCapital && !isHolyCity() && (!isCapital() || justCaptured)
     }
 
+    fun getForceEvaluation(): Int {
+        // Same as for units, so higher values count more
+        return CityCombatant(this).getCityStrength().toFloat().pow(1.5f).toInt()
+    }
+
 
     fun getNeighbouringCivs(): List<String> {
         val tilesList: HashSet<TileInfo> = getTiles().toHashSet()
@@ -688,7 +681,7 @@ class CityInfo {
             .distinct().toList()
     }
     fun getImprovableTiles(): Sequence<TileInfo> = getTiles()
-            .filter {it.hasViewableResource(civInfo) && it.improvement == null}
-    
+        .filter {it.hasViewableResource(civInfo) && it.improvement == null}
+           
     //endregion
 }

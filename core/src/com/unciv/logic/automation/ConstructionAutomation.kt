@@ -222,7 +222,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
 
     private fun addUnitTrainingBuildingChoice() {
         val unitTrainingBuilding = buildableNotWonders.asSequence()
-                .filter { it.xpForNewUnits > 0 }.minByOrNull { it.cost }
+                .filter { it.hasUnique("New [] units start with [] Experience []") }.minByOrNull { it.cost }
         if (unitTrainingBuilding != null && (preferredVictoryType != VictoryType.Cultural || isAtWar)) {
             var modifier = if (cityIsOverAverageProduction) 0.5f else 0.1f // You shouldn't be cranking out units anytime soon
             if (isAtWar) modifier *= 2

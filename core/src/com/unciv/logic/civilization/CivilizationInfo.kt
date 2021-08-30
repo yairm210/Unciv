@@ -7,7 +7,7 @@ import com.unciv.logic.GameInfo
 import com.unciv.logic.UncivShowableException
 import com.unciv.logic.automation.NextTurnAutomation
 import com.unciv.logic.automation.WorkerAutomation
-import com.unciv.logic.battle.Battle
+import com.unciv.logic.battle.CityCombatant
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.RuinsManager.RuinsManager
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
@@ -28,14 +28,20 @@ import com.unciv.models.ruleset.tile.TileResource
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
+import com.unciv.models.translations.getPlaceholderParameters
+import com.unciv.models.translations.getPlaceholderText
 import com.unciv.models.translations.tr
 import com.unciv.ui.victoryscreen.RankingType
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
+import kotlin.collections.LinkedHashMap
+import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.pow
 import kotlin.math.roundToInt
+import kotlin.system.measureNanoTime
+import kotlin.system.measureTimeMillis
 
 class CivilizationInfo {
 
@@ -886,10 +892,16 @@ class CivilizationInfo {
                 .toList().random()
         // placing the unit may fail - in that case stay quiet
         val placedUnit = placeUnitNearTile(city.location, militaryUnit.name) ?: return
+
+        // The unit should have bonuses from Barracks, Alhambra etc as if it was built in the CS capital
+        militaryUnit.addConstructionBonuses(placedUnit, otherCiv.getCapital().cityConstructions)
+
         // Siam gets +10 XP for all CS units
         for (unique in getMatchingUniques("Military Units gifted from City-States start with [] XP")) {
             placedUnit.promotions.XP += unique.params[0].toInt()
         }
+
+
         // Point to the places mentioned in the message _in that order_ (debatable)
         val placedLocation = placedUnit.getTile().position
         val locations = LocationAction(listOf(placedLocation, cities.city2.location, city.location))
@@ -1025,6 +1037,156 @@ class CivilizationInfo {
         destroy()
     }
 
+    fun getTributeWillingness(demandingCiv: CivilizationInfo, demandingWorker: Boolean = false): Int {
+        return getTributeModifiers(demandingCiv, demandingWorker).values.sum()
+    }
+
+    fun getTributeModifiers(demandingCiv: CivilizationInfo, demandingWorker: Boolean = false, requireWholeList: Boolean = false): HashMap<String, Int> {
+        val modifiers = LinkedHashMap<String, Int>()    // Linked to preserve order when presenting the modifiers table
+        // Can't bully major civs or unsettled CS's
+        if (!isCityState()) {
+            modifiers["Major Civ"] = -999
+            return modifiers
+        }
+        if (cities.isEmpty()) {
+            modifiers["No Cities"] = -999
+            return  modifiers
+        }
+
+        modifiers["Base value"] = -110
+
+        if (cityStatePersonality == CityStatePersonality.Hostile)
+            modifiers["Hostile"] = -10
+        if (cityStateType == CityStateType.Militaristic)
+            modifiers["Militaristic"] = -10
+        if (allyCivName != null && allyCivName != demandingCiv.civName)
+            modifiers["Has Ally"] = -10
+        if (getProtectorCivs().any { it != demandingCiv })
+            modifiers["Has Protector"] = -20
+        if (demandingWorker)
+            modifiers["Demanding a Worker"] = -30
+        if (demandingWorker && getCapital().population.population < 4)
+            modifiers["Demanding a Worker from small City-State"] = -300
+        val recentBullying = flagsCountdown[CivFlags.RecentlyBullied.name]
+        if (recentBullying != null && recentBullying > 10)
+            modifiers["Very recently paid tribute"] = -300
+        else if (recentBullying != null)
+            modifiers["Recently paid tribute"] = -40
+        if (getDiplomacyManager(demandingCiv).influence < -30)
+            modifiers["Influence below -30"] = -300
+
+        // Slight optimization, we don't do the expensive stuff if we have no chance of getting a positive result
+        if (!requireWholeList && modifiers.values.sum() <= -200)
+            return modifiers
+
+        val forceRank = gameInfo.getAliveMajorCivs().sortedByDescending { it.getStatForRanking(RankingType.Force) }.indexOf(demandingCiv)
+        modifiers["Military Rank"] = 100 - ((100 / gameInfo.gameParameters.players.size) * forceRank)
+
+        if (!requireWholeList && modifiers.values.sum() <= -100)
+            return modifiers
+
+        val bullyRange = max(5, gameInfo.tileMap.tileMatrix.size / 10)   // Longer range for larger maps
+        val inRangeTiles = getCapital().getCenterTile().getTilesInDistanceRange(1..bullyRange)
+        val forceNearCity = inRangeTiles
+            .sumBy { if (it.militaryUnit?.civInfo == demandingCiv)
+                it.militaryUnit!!.getForceEvaluation()
+            else 0
+            }
+        val csForce = getCapital().getForceEvaluation() + inRangeTiles
+            .sumBy { if (it.militaryUnit?.civInfo == this)
+                it.militaryUnit!!.getForceEvaluation()
+            else 0
+            }
+        val forceRatio = forceNearCity.toFloat() / csForce.toFloat()
+
+        modifiers["Military near City-State"] = when {
+            forceRatio > 3f -> 100
+            forceRatio > 2f -> 80
+            forceRatio > 1.5f -> 60
+            forceRatio > 1f -> 40
+            forceRatio > 0.5f -> 20
+            else -> 0
+        }
+
+        return modifiers
+    }
+
+    fun goldGainedByTribute(): Int {
+        // These values are close enough, linear increase throughout the game
+        var gold = when (gameInfo.gameParameters.gameSpeed) {
+            GameSpeed.Quick -> 60
+            GameSpeed.Standard -> 50
+            GameSpeed.Epic -> 35
+            GameSpeed.Marathon -> 30
+        }
+        val turnsToIncrement = when (gameInfo.gameParameters.gameSpeed) {
+            GameSpeed.Quick -> 5f
+            GameSpeed.Standard -> 6.5f
+            GameSpeed.Epic -> 14f
+            GameSpeed.Marathon -> 32f
+        }
+        gold += 5 * (gameInfo.turns / turnsToIncrement).toInt()
+
+        return gold
+    }
+
+    fun demandGold(cityState: CivilizationInfo) {
+        if (!cityState.isCityState()) throw Exception("You can only demand gold from City-States!")
+        val goldAmount = goldGainedByTribute()
+        addGold(goldAmount)
+        cityState.getDiplomacyManager(this).influence -= 15
+        cityState.addFlag(CivFlags.RecentlyBullied.name, 20)
+        cityState.updateAllyCivForCityState()
+        updateStatsForNextTurn()
+    }
+
+    fun demandWorker(cityState: CivilizationInfo) {
+        if (!cityState.isCityState()) throw Exception("You can only demand workers from City-States!")
+
+        val buildableWorkerLikeUnits = gameInfo.ruleSet.units.filter {
+            it.value.uniqueObjects.any { it.placeholderText == Constants.canBuildImprovements }
+                    && it.value.isBuildable(this)
+                    && it.value.isCivilian()
+        }
+        if (buildableWorkerLikeUnits.isEmpty()) return  // Bad luck?
+        placeUnitNearTile(cityState.getCapital().location, buildableWorkerLikeUnits.keys.random())
+
+        cityState.getDiplomacyManager(this).influence -= 50
+        cityState.addFlag(CivFlags.RecentlyBullied.name, 20)
+        cityState.updateAllyCivForCityState()
+    }
+
+    fun canGiveStat(statType: Stat): Boolean {
+        if (!isCityState())
+            return false
+        val eraInfo = getEraObject()
+        val bonuses = if (eraInfo == null) null
+            else eraInfo.allyBonus[cityStateType.name]
+        if (bonuses != null) {
+            // Defined city states in json
+            bonuses.addAll(eraInfo!!.friendBonus[cityStateType.name]!!)
+            for (bonus in bonuses) {
+                if (statType == Stat.Happiness && bonus.getPlaceholderText() == "Provides [] Happiness")
+                    return true
+                if (bonus.getPlaceholderText() == "Provides [] [] per turn" && bonus.getPlaceholderParameters()[1] == statType.name)
+                    return true
+                if (bonus.getPlaceholderText() == "Provides [] [] []" && bonus.getPlaceholderParameters()[1] == statType.name)
+                    return true
+            }
+
+        } else {
+            // compatibility mode
+            return when {
+                cityStateType == CityStateType.Mercantile && statType == Stat.Happiness -> true
+                cityStateType == CityStateType.Cultured && statType == Stat.Culture -> true
+                cityStateType == CityStateType.Maritime && statType == Stat.Food -> true
+                else -> false
+            }
+        }
+
+        return false
+    }
+
     //endregion
 }
 
@@ -1041,4 +1203,5 @@ enum class CivFlags {
     TurnsTillNextDiplomaticVote,
     ShowDiplomaticVotingResults,
     ShouldResetDiplomaticVotes,
+    RecentlyBullied
 }
