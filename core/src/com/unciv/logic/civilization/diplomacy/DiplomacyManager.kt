@@ -456,7 +456,7 @@ class DiplomacyManager() {
                         if (civInfo.cities.isEmpty() || otherCiv().cities.isEmpty())
                             continue@loop
                         else
-                            civInfo.gainMilitaryUnitFromCityState(otherCiv())
+                            otherCiv().giveMilitaryUnitToPatron(civInfo)
                     }
                     DiplomacyFlags.AgreedToNotSettleNearUs.name -> {
                         addModifier(DiplomaticModifiers.FulfilledPromiseToNotSettleCitiesNearUs, 10f)

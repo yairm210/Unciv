@@ -700,7 +700,7 @@ class CivilizationInfo {
     fun addFlag(flag: String, count: Int) { flagsCountdown[flag] = count }
     fun removeFlag(flag: String) { flagsCountdown.remove(flag) }
 
-    private fun turnsForGreatPersonFromCityState(): Int = ((40 + -2 + Random().nextInt(5)) * gameInfo.gameParameters.gameSpeed.modifier).toInt()
+    fun turnsForGreatPersonFromCityState(): Int = ((40 + -2 + Random().nextInt(5)) * gameInfo.gameParameters.gameSpeed.modifier).toInt()
     // There seems to be some randomness in the amount of turns between receiving each great person,
     // but I have no idea what the actual lower and upper bound are, so this is just an approximation
 
