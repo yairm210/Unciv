@@ -14,7 +14,9 @@ import com.unciv.models.ruleset.Unique
 import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.ruleset.unit.UnitType
+import com.unciv.ui.utils.toPercent
 import java.text.DecimalFormat
+import kotlin.math.pow
 
 /**
  * The immutable properties and mutable game state of an individual unit present on the map
@@ -158,11 +160,7 @@ class MapUnit {
 
         var movement = baseUnit.movement
         movement += getMatchingUniques("[] Movement").sumBy { it.params[0].toInt() }
-        
-        // Deprecated since 3.15.6
-            movement += getUniques().count { it.text == "+1 Movement" }
-        //
-        
+
         for (unique in civInfo.getMatchingUniques("+[] Movement for all [] units"))
             if (matchesFilter(unique.params[1]))
                 movement += unique.params[0].toInt()
@@ -204,8 +202,7 @@ class MapUnit {
 
         //todo: parameterize [terrainFilter] in 5 to 7 of the following:
 
-        // "All tiles costs 1" obsoleted in 3.11.18 - keyword: Deprecate
-        allTilesCosts1 = hasUnique("All tiles cost 1 movement") || hasUnique("All tiles costs 1")
+        allTilesCosts1 = hasUnique("All tiles cost 1 movement")
         canPassThroughImpassableTiles = hasUnique("Can pass through impassable tiles")
         ignoresTerrainCost = hasUnique("Ignores terrain cost")
         ignoresZoneOfControl = hasUnique("Ignores Zone of Control")
@@ -216,8 +213,7 @@ class MapUnit {
         canEnterIceTiles = hasUnique("Can enter ice tiles")
         cannotEnterOceanTiles = hasUnique("Cannot enter ocean tiles")
         cannotEnterOceanTilesUntilAstronomy = hasUnique("Cannot enter ocean tiles until Astronomy")
-        // Constants.workerUnique deprecated since 3.15.5
-        hasUniqueToBuildImprovements = hasUnique(Constants.canBuildImprovements) || hasUnique(Constants.workerUnique)
+        hasUniqueToBuildImprovements = hasUnique(Constants.canBuildImprovements)
         canEnterForeignTerrain =
             hasUnique("May enter foreign tiles without open borders, but loses [] religious strength each turn it ends there")
                     || hasUnique("May enter foreign tiles without open borders")
@@ -248,14 +244,11 @@ class MapUnit {
         for (unique in civInfo.getMatchingUniques("+[] Sight for all [] units"))
             if (matchesFilter(unique.params[1]))
                 visibilityRange += unique.params[0].toInt()
+
+        // TODO: This should be replaced with "Sight" like others, for naming consistency
         visibilityRange += getMatchingUniques("[] Visibility Range").sumBy { it.params[0].toInt() }
         
         if (hasUnique("Limited Visibility")) visibilityRange -= 1
-
-        // Deprecated since 3.15.1
-            if (civInfo.hasUnique("+1 Sight for all land military units") && baseUnit.isMilitary() && baseUnit.isLandUnit())
-                visibilityRange += 1
-        //
 
 
         for (unique in getTile().getAllTerrains().flatMap { it.uniqueObjects })
@@ -313,22 +306,14 @@ class MapUnit {
 
     fun isIdle(): Boolean {
         if (currentMovement == 0f) return false
-        // Constants.workerUnique deprecated since 3.15.5
         if (getTile().improvementInProgress != null 
             && canBuildImprovement(getTile().getTileImprovementInProgress()!!)) 
                 return false
-        // unique "Can construct roads" deprecated since 3.15.5
-            if (hasUnique("Can construct roads") && currentTile.improvementInProgress == RoadStatus.Road.name) return false
-        //
         return !(isFortified() || isExploring() || isSleeping() || isAutomated() || isMoving())
     }
 
     fun maxAttacksPerTurn(): Int {
         var maxAttacksPerTurn = 1 + getMatchingUniques("[] additional attacks per turn").sumBy { it.params[0].toInt() }
-        // Deprecated since 3.15.6
-        if (hasUnique("1 additional attack per turn"))
-            maxAttacksPerTurn++
-        //
         return maxAttacksPerTurn
     }
     
@@ -340,10 +325,6 @@ class MapUnit {
     fun getRange(): Int {
         if (baseUnit.isMelee()) return 1
         var range = baseUnit().range
-        // Deprecated since 3.15.6
-            if (hasUnique("+1 Range")) range++
-            if (hasUnique("+2 Range")) range += 2
-        //
         range += getMatchingUniques("[] Range").sumBy { it.params[0].toInt() }
         return range
     }
@@ -354,9 +335,13 @@ class MapUnit {
         return currentTile.isWater
     }
 
-    fun isInvisible(): Boolean {
+    fun isInvisible(to: CivilizationInfo): Boolean {
         if (hasUnique("Invisible to others"))
             return true
+        if (hasUnique("Invisible to non-adjacent units"))
+            return getTile().getTilesInDistance(1).none {
+                it.getOwner() == to || it.getUnits().any { unit -> unit.owner == to.civName }
+            }
         return false
     }
 
@@ -628,8 +613,7 @@ class MapUnit {
     fun endTurn() {
         doAction()
 
-        if (currentMovement > 0 && 
-            // Constants.workerUnique deprecated since 3.15.5
+        if (currentMovement > 0 &&
             getTile().improvementInProgress != null
             && canBuildImprovement(getTile().getTileImprovementInProgress()!!)
         ) workOnImprovement()
@@ -836,10 +820,7 @@ class MapUnit {
     fun canIntercept(): Boolean {
         if (interceptChance() == 0) return false
         val maxAttacksPerTurn = 1 +
-            getMatchingUniques("[] extra interceptions may be made per turn").sumBy { it.params[0].toInt() } +
-            // Deprecated since 3.15.7
-                getMatchingUniques("1 extra interception may be made per turn").count()
-            //
+            getMatchingUniques("[] extra interceptions may be made per turn").sumBy { it.params[0].toInt() }
         if (attacksThisTurn >= maxAttacksPerTurn) return false
         return true
     }
@@ -855,11 +836,10 @@ class MapUnit {
     }
     
     fun carryCapacity(unit: MapUnit): Int {
-        var capacity = getMatchingUniques("Can carry [] [] units").filter { unit.matchesFilter(it.params[1]) }.sumBy { it.params[0].toInt() }
-        capacity += getMatchingUniques("Can carry [] extra [] units").filter { unit.matchesFilter(it.params[1]) }.sumBy { it.params[0].toInt() }
-        // Deprecated since 3.15.5
-        capacity += getMatchingUniques("Can carry 2 aircraft").filter { unit.matchesFilter("Air") }.sumBy { 2 }
-        capacity += getMatchingUniques("Can carry 1 extra aircraft").filter { unit.matchesFilter("Air") }.sumBy { 1 }
+        var capacity = getMatchingUniques("Can carry [] [] units").filter { unit.matchesFilter(it.params[1]) }
+                .sumBy { it.params[0].toInt() }
+        capacity += getMatchingUniques("Can carry [] extra [] units").filter { unit.matchesFilter(it.params[1]) }
+            .sumBy { it.params[0].toInt() }
         return capacity
     }
 
@@ -872,8 +852,7 @@ class MapUnit {
     }
 
     fun interceptDamagePercentBonus(): Int {
-        // "Bonus when intercepting []%" deprecated since 3.15.7
-        return getUniques().filter { it.placeholderText == "Bonus when intercepting []%" || it.placeholderText == "[]% Damage when intercepting"}
+        return getUniques().filter { it.placeholderText == "[]% Damage when intercepting"}
             .sumBy { it.params[0].toInt() }
     }
 
@@ -947,7 +926,9 @@ class MapUnit {
         return when (filter) {
             "Wounded", "wounded units" -> health < 100
             "Barbarians", "Barbarian" -> civInfo.isBarbarian()
+            "City-State" -> civInfo.isCityState()
             "Embarked" -> isEmbarked()
+            "Non-City" -> true
             else -> {
                 if (baseUnit.matchesFilter(filter)) return true
                 if (hasUnique(filter)) return true
@@ -957,8 +938,6 @@ class MapUnit {
     }
 
     fun canBuildImprovement(improvement: TileImprovement, tile: TileInfo = currentTile): Boolean {
-        // Constants.workerUnique deprecated since 3.15.5
-        if (hasUnique(Constants.workerUnique)) return true
         val matchingUniques = getMatchingUniques(Constants.canBuildImprovements)
         return matchingUniques.any { improvement.matchesFilter(it.params[0]) || tile.matchesTerrainFilter(it.params[0]) }
     }
@@ -979,7 +958,12 @@ class MapUnit {
     }
     
     fun getPressureAddedFromSpread(): Int {
-        return baseUnit.religiousStrength
+        var pressureAdded = baseUnit.religiousStrength.toFloat()
+        for (unique in civInfo.getMatchingUniques("[]% Spread Religion Strength for [] units"))
+            if (matchesFilter(unique.params[0]))
+                pressureAdded *= unique.params[0].toPercent()
+        
+        return pressureAdded.toInt()
     }
     
     fun getActionString(action: String): String {
@@ -991,6 +975,14 @@ class MapUnit {
     fun actionsOnDeselect() {
         showAdditionalActions = false
         if (isPreparingParadrop()) action = null
+    }
+
+    fun getForceEvaluation(): Int {
+        val promotionBonus = (promotions.numberOfPromotions + 1).toFloat().pow(0.3f)
+        var power = (baseUnit.getForceEvaluation() * promotionBonus).toInt()
+        power *= health
+        power /= 100
+        return power
     }
 
     //endregion

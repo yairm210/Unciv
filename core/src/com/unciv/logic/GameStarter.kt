@@ -2,6 +2,7 @@ package com.unciv.logic
 
 import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
+import com.unciv.UncivGame
 import com.unciv.logic.civilization.*
 import com.unciv.logic.map.BFS
 import com.unciv.logic.map.TileInfo
@@ -13,7 +14,7 @@ import com.unciv.models.ruleset.ModOptionsConstants
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.tile.ResourceType
-import com.unciv.ui.newgamescreen.GameSetupInfo
+import com.unciv.models.metadata.GameSetupInfo
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
@@ -90,6 +91,10 @@ object GameStarter {
         // This triggers the one-time greeting from Nation.startIntroPart1/2
         addPlayerIntros(gameInfo)
 
+        UncivGame.Current.settings.apply {
+            lastGameSetup = gameSetupInfo
+            save()
+        }
         return gameInfo
     }
 

@@ -68,7 +68,6 @@ project(":desktop") {
         "implementation"("com.badlogicgames.gdx:gdx-tools:$gdxVersion")  // This is for the TexturePacker class
 
         "implementation"("com.github.MinnDevelopment:java-discord-rpc:v2.0.1")
-        "implementation"("io.ktor:ktor-server-netty:1.3.2")
     }
 
 }

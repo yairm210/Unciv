@@ -19,6 +19,7 @@ import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 import kotlin.collections.HashSet
+import kotlin.math.pow
 
 // This is BaseUnit because Unit is already a base Kotlin class and to avoid mixing the two up
 
@@ -54,6 +55,9 @@ class BaseUnit : INamed, INonPerpetualConstruction, ICivilopediaText {
     var replaces: String? = null
     var uniqueTo: String? = null
     var attackSound: String? = null
+
+    @Transient
+    var cachedForceEvaluation: Int = -1
 
     lateinit var ruleset: Ruleset
 
@@ -200,10 +204,10 @@ class BaseUnit : INamed, INonPerpetualConstruction, ICivilopediaText {
         var productionCost = cost.toFloat()
         if (civInfo.isCityState())
             productionCost *= 1.5f
-        if (civInfo.isPlayerCivilization())
-            productionCost *= civInfo.getDifficulty().unitCostModifier
-        else
-            productionCost *= civInfo.gameInfo.getDifficulty().aiUnitCostModifier
+        productionCost *= if (civInfo.isPlayerCivilization())
+                civInfo.getDifficulty().unitCostModifier
+            else
+                civInfo.gameInfo.getDifficulty().aiUnitCostModifier
         productionCost *= civInfo.gameInfo.gameParameters.gameSpeed.modifier
         return productionCost.toInt()
     }
@@ -212,16 +216,9 @@ class BaseUnit : INamed, INonPerpetualConstruction, ICivilopediaText {
         var cost = getBaseBuyCost(cityInfo, stat)?.toDouble()
         if (cost == null) return null
 
-        // Deprecated since 3.15
-            if (stat == Stat.Gold && cityInfo.civInfo.hasUnique("Gold cost of purchasing units -33%")) cost *= 0.67f
-        //
 
         // Deprecated since 3.15.15
             if (stat == Stat.Gold) {
-                for (unique in cityInfo.getMatchingUniques("Gold cost of purchasing [] units -[]%")) {
-                    if (matchesFilter(unique.params[0]))
-                        cost *= 1f - unique.params[1].toFloat() / 100f
-                }
                 for (unique in cityInfo.getMatchingUniques("Cost of purchasing items in cities reduced by []%"))
                     cost *= 1f - (unique.params[0].toFloat() / 100f)
             }
@@ -298,8 +295,8 @@ class BaseUnit : INamed, INonPerpetualConstruction, ICivilopediaText {
 
         for ((resource, amount) in getResourceRequirements())
             if (civInfo.getCivResourcesByName()[resource]!! < amount) {
-                if (amount == 1) return "Consumes 1 [$resource]" // Again, to preserve existing translations
-                else return "Consumes [$amount] [$resource]"
+                return if (amount == 1) "Consumes 1 [$resource]" // Again, to preserve existing translations
+                    else "Consumes [$amount] [$resource]"
             }
 
         if (uniques.contains(Constants.settlerUnique) && civInfo.isCityState()) return "No settler for city-states"
@@ -322,7 +319,7 @@ class BaseUnit : INamed, INonPerpetualConstruction, ICivilopediaText {
     override fun postBuildEvent(cityConstructions: CityConstructions, wasBought: Boolean): Boolean {
         val civInfo = cityConstructions.cityInfo.civInfo
         val unit = civInfo.placeUnitNearTile(cityConstructions.cityInfo.location, name)
-        if (unit == null) return false // couldn't place the unit, so there's actually no unit =(
+                ?: return false  // couldn't place the unit, so there's actually no unit =(
 
         //movement penalty
         if (wasBought && !civInfo.gameInfo.gameParameters.godMode && !unit.hasUnique("Can move immediately once bought"))
@@ -334,16 +331,18 @@ class BaseUnit : INamed, INonPerpetualConstruction, ICivilopediaText {
 
         if (this.isCivilian()) return true // tiny optimization makes save files a few bytes smaller
 
-        var XP = cityConstructions.getBuiltBuildings().sumBy { it.xpForNewUnits }
+        addConstructionBonuses(unit, cityConstructions)
 
+        return true
+    }
+
+    fun addConstructionBonuses(unit: MapUnit, cityConstructions: CityConstructions) {
+        val civInfo = cityConstructions.cityInfo.civInfo
+        var XP = 0
 
         for (unique in
-            cityConstructions.cityInfo.getMatchingUniques("New [] units start with [] Experience []")
-                .filter { cityConstructions.cityInfo.matchesFilter(it.params[2]) } +
-            // Deprecated since 3.15.9
-                cityConstructions.cityInfo.getMatchingUniques("New [] units start with [] Experience") +
-                cityConstructions.cityInfo.getLocalMatchingUniques("New [] units start with [] Experience in this city")
-            //
+        cityConstructions.cityInfo.getMatchingUniques("New [] units start with [] Experience []")
+            .filter { cityConstructions.cityInfo.matchesFilter(it.params[2]) }
         ) {
             if (unit.matchesFilter(unique.params[0]))
                 XP += unique.params[1].toInt()
@@ -351,30 +350,28 @@ class BaseUnit : INamed, INonPerpetualConstruction, ICivilopediaText {
         unit.promotions.XP = XP
 
         for (unique in
-            cityConstructions.cityInfo.getMatchingUniques("All newly-trained [] units [] receive the [] promotion")
-                .filter { cityConstructions.cityInfo.matchesFilter(it.params[1]) } +
-            // Deprecated since 3.15.9
+        cityConstructions.cityInfo.getMatchingUniques("All newly-trained [] units [] receive the [] promotion")
+            .filter { cityConstructions.cityInfo.matchesFilter(it.params[1]) } +
+                // Deprecated since 3.15.9
                 cityConstructions.cityInfo.getLocalMatchingUniques("All newly-trained [] units in this city receive the [] promotion")
-            //
+        //
         ) {
             val filter = unique.params[0]
             val promotion = unique.params.last()
 
             if (unit.matchesFilter(filter) ||
                 (
-                    filter == "relevant" &&
-                        civInfo.gameInfo.ruleSet.unitPromotions.values
-                        .any {
-                            it.name == promotion
-                            && unit.type.name in it.unitTypes
-                        }
-                )
+                        filter == "relevant" &&
+                                civInfo.gameInfo.ruleSet.unitPromotions.values
+                                    .any {
+                                        it.name == promotion
+                                                && unit.type.name in it.unitTypes
+                                    }
+                        )
             ) {
                 unit.promotions.addPromotion(promotion, isFree = true)
             }
         }
-
-        return true
     }
 
 
@@ -451,4 +448,78 @@ class BaseUnit : INamed, INonPerpetualConstruction, ICivilopediaText {
             && (uniqueObjects + getType().uniqueObjects)
                 .any { it.placeholderText == "+[]% Strength vs []" && it.params[1] == "City" }
         )
+
+    fun getForceEvaluation(): Int {
+        if (cachedForceEvaluation < 0)    evaluateForce()
+        return  cachedForceEvaluation
+    }
+
+    private fun evaluateForce() {
+        if (strength == 0 && rangedStrength == 0) {
+            cachedForceEvaluation = 0
+            return
+        }
+
+        var power = strength.toFloat().pow(1.5f).toInt()
+        var rangedPower = rangedStrength.toFloat().pow(1.45f).toInt()
+
+        // Value ranged naval units less
+        if (isWaterUnit()) {
+            rangedPower /= 2
+        }
+        if (rangedPower > 0)
+            power = rangedPower
+
+        // Replicates the formula from civ V, which is a lower multiplier than probably intended, because math
+        // They did fix it in BNW so it was completely bugged and always 1, again math
+        power = (power * movement.toFloat().pow(0.3f)).toInt()
+
+        if (uniqueObjects.any { it.placeholderText =="Self-destructs when attacking" } )
+            power /= 2
+        if (uniqueObjects.any { it.placeholderText =="Nuclear weapon of Strength []" } )
+            power += 4000
+
+        // Uniques
+        for (unique in uniqueObjects) {
+
+            when {
+                unique.placeholderText == "+[]% Strength vs []" && unique.params[1] == "City" // City Attack - half the bonus
+                    -> power += (power * unique.params[0].toInt()) / 200
+                unique.placeholderText == "+[]% Strength vs []" && unique.params[1] != "City" // Bonus vs something else - a quarter of the bonus
+                    -> power += (power * unique.params[0].toInt()) / 400
+                unique.placeholderText == "+[]% Strength when attacking" // Attack - half the bonus
+                    -> power += (power * unique.params[0].toInt()) / 200
+                unique.placeholderText == "+[]% Strength when defending" // Defense - half the bonus
+                    -> power += (power * unique.params[0].toInt()) / 200
+                unique.placeholderText == "May Paradrop up to [] tiles from inside friendly territory" // Paradrop - 25% bonus
+                    -> power += power / 4
+                unique.placeholderText == "Must set up to ranged attack" // Must set up - 20 % penalty
+                    -> power -= power / 5
+                unique.placeholderText == "+[]% Strength in []" // Bonus in terrain or feature - half the bonus
+                    -> power += (power * unique.params[0].toInt()) / 200
+            }
+        }
+
+        // Base promotions
+        for (promotionName in promotions) {
+            for (unique in ruleset.unitPromotions[promotionName]!!.uniqueObjects) {
+                when {
+                    unique.placeholderText == "+[]% Strength vs []" && unique.params[1] == "City" // City Attack - half the bonus
+                        -> power += (power * unique.params[0].toInt()) / 200
+                    unique.placeholderText == "+[]% Strength vs []" && unique.params[1] != "City" // Bonus vs something else - a quarter of the bonus
+                        -> power += (power * unique.params[0].toInt()) / 400
+                    unique.placeholderText == "+[]% Strength when attacking" // Attack - half the bonus
+                        -> power += (power * unique.params[0].toInt()) / 200
+                    unique.placeholderText == "+[]% Strength when defending" // Defense - half the bonus
+                        -> power += (power * unique.params[0].toInt()) / 200
+                    unique.placeholderText == "[] additional attacks per turn" // Extra attacks - 20% bonus per extra attack
+                        -> power += (power * unique.params[0].toInt()) / 5
+                    unique.placeholderText == "+[]% Strength in []" // Bonus in terrain or feature - half the bonus
+                        -> power += (power * unique.params[0].toInt()) / 200
+                }
+            }
+
+        }
+        cachedForceEvaluation = power
+    }
 }

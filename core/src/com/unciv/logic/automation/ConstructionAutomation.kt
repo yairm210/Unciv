@@ -139,8 +139,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
     private fun addWorkerChoice() {
         val workerEquivalents = civInfo.gameInfo.ruleSet.units.values
                 .filter { it.uniques.any {
-                    // Constants.workerUnique deprecated since 3.15.5
-                        unique -> unique.equalsPlaceholderText(Constants.canBuildImprovements) || unique.equalsPlaceholderText(Constants.workerUnique) 
+                        unique -> unique.equalsPlaceholderText(Constants.canBuildImprovements)
                 } && it.isBuildable(cityConstructions) }
         if (workerEquivalents.isEmpty()) return // for mods with no worker units
         if (civInfo.getIdleUnits().any { it.isAutomated() && it.hasUniqueToBuildImprovements })
@@ -223,7 +222,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
 
     private fun addUnitTrainingBuildingChoice() {
         val unitTrainingBuilding = buildableNotWonders.asSequence()
-                .filter { it.xpForNewUnits > 0 }.minByOrNull { it.cost }
+                .filter { it.hasUnique("New [] units start with [] Experience []") }.minByOrNull { it.cost }
         if (unitTrainingBuilding != null && (preferredVictoryType != VictoryType.Cultural || isAtWar)) {
             var modifier = if (cityIsOverAverageProduction) 0.5f else 0.1f // You shouldn't be cranking out units anytime soon
             if (isAtWar) modifier *= 2

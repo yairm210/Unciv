@@ -109,9 +109,6 @@ enum class UnitActionType(
         { ImageGetter.getUnitIcon(Constants.settler) }, 'c', UncivSound.Silent),
     ConstructImprovement("Construct improvement",
         { ImageGetter.getUnitIcon(Constants.worker) }, 'i'),
-    // Deprecated since 3.15.4
-        ConstructRoad("Construct road", {ImageGetter.getImprovementIcon("Road")}, 'r'),
-    //
     Create("Create",
         null, 'i', UncivSound.Chimes),
     HurryResearch("Hurry Research",
@@ -130,6 +127,8 @@ enum class UnitActionType(
         null, 'g', UncivSound.Choir),
     RemoveHeresy("Remove Heresy",
         { ImageGetter.getImage("OtherIcons/Remove Heresy") }, 'h', UncivSound.Fire),
+    EnhanceReligion("Enhance a Religion",
+        { ImageGetter.getUnitIcon("Great Prophet") }, 'g', UncivSound.Choir),
     DisbandUnit("Disband unit",
         { ImageGetter.getImage("OtherIcons/DisbandUnit") }, KeyCharAndCode.DEL),
     GiftUnit("Gift unit",

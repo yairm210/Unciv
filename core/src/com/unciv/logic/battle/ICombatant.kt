@@ -5,7 +5,7 @@ import com.unciv.logic.map.TileInfo
 import com.unciv.models.UncivSound
 import com.unciv.models.ruleset.unit.UnitType
 
-interface ICombatant{
+interface ICombatant {
     fun getName(): String
     fun getHealth():Int
     fun getMaxHealth():Int
@@ -16,7 +16,7 @@ interface ICombatant{
     fun isDefeated():Boolean
     fun getCivInfo(): CivilizationInfo
     fun getTile(): TileInfo
-    fun isInvisible(): Boolean
+    fun isInvisible(to: CivilizationInfo): Boolean
     fun canAttack(): Boolean
     fun matchesCategory(category:String): Boolean
     fun getAttackSound(): UncivSound

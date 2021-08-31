@@ -2,9 +2,12 @@ package com.unciv.app.desktop
 
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.tools.texturepacker.TexturePacker
+import com.badlogic.gdx.utils.Json
 import java.io.File
 
 /**
+ * Entry point: _ImagePacker.[packImages] ()_
+ * 
  * Re-packs our texture assets into atlas + png File pairs, which will be loaded by the game.
  * With the exception of the ExtraImages folder and the Font system these are the only
  * graphics used (The source Image folders are unused at run time except here).
@@ -12,11 +15,7 @@ import java.io.File
  * [TexturePacker] documentation is [here](https://github.com/libgdx/libgdx/wiki/Texture-packer)
  */
 internal object ImagePacker {
-
-    fun packImages() {
-        val startTime = System.currentTimeMillis()
-
-        val settings = TexturePacker.Settings()
+    private fun getDefaultSettings() = TexturePacker.Settings().apply {
         // Apparently some chipsets, like NVIDIA Tegra 3 graphics chipset (used in Asus TF700T tablet),
         // don't support non-power-of-two texture sizes - kudos @yuroller!
         // https://github.com/yairm210/UnCiv/issues/1340
@@ -35,33 +34,38 @@ internal object ImagePacker {
          *
          *    TL;DR this should be 2048.
          */
-        settings.maxWidth = 2048
-        settings.maxHeight = 2048
+        maxWidth = 2048
+        maxHeight = 2048
 
         // Trying to disable the subdirectory combine lead to even worse results. Don't.
-        settings.combineSubdirectories = true
-        settings.pot = true  // powers of two only for width/height
-        settings.fast = true  // with pot on this just resorts by width
+        combineSubdirectories = true
+        pot = true  // powers of two only for width/height
+        fast = true  // with pot on this just sorts by width
         // settings.rotation - do not set. Allows rotation, potentially packing tighter.
         //      Proper rendering is mostly automatic - except borders which overwrite rotation.
 
         // Set some additional padding and enable duplicatePadding to prevent image edges from bleeding into each other due to mipmapping
-        settings.paddingX = 8
-        settings.paddingY = 8
-        settings.duplicatePadding = true
-        settings.filterMin = Texture.TextureFilter.MipMapLinearLinear
-        settings.filterMag = Texture.TextureFilter.MipMapLinearLinear // I'm pretty sure this doesn't make sense for magnification, but setting it to Linear gives strange results
+        paddingX = 8
+        paddingY = 8
+        duplicatePadding = true
+        filterMin = Texture.TextureFilter.MipMapLinearLinear
+        filterMag = Texture.TextureFilter.MipMapLinearLinear // I'm pretty sure this doesn't make sense for magnification, but setting it to Linear gives strange results
+    }
 
+    fun packImages() {
+        val startTime = System.currentTimeMillis()
+
+        val defaultSettings = getDefaultSettings()
+
+        // Scan for Image folders and build one atlas each
         if (File("../Images").exists()) { // So we don't run this from within a fat JAR
+            val atlasList = mutableListOf<String>()
             for ((file, packFileName) in imageFolders()) {
-                packImagesIfOutdated(settings, file, ".", packFileName)
+                atlasList += packFileName
+                packImagesIfOutdated(defaultSettings, file, ".", packFileName)
             }
-        }
-
-        if (File("../Skin").exists()) {
-            settings.filterMag = Texture.TextureFilter.Linear
-            settings.filterMin = Texture.TextureFilter.Linear
-            packImagesIfOutdated(settings, "../Skin", ".", "Skin")
+            atlasList.remove("game")
+            File("Atlases.json").writeText(atlasList.joinToString(",","[","]"))
         }
 
         // pack for mods as well
@@ -69,7 +73,7 @@ internal object ImagePacker {
         if (modDirectory.exists()) {
             for (mod in modDirectory.listFiles()!!) {
                 if (!mod.isHidden && File(mod.path + "/Images").exists())
-                    packImagesIfOutdated(settings, mod.path + "/Images", mod.path, "game")
+                    packImagesIfOutdated(defaultSettings, mod.path + "/Images", mod.path, "game")
             }
         }
 
@@ -77,22 +81,31 @@ internal object ImagePacker {
         println("Packing textures - " + texturePackingTime + "ms")
     }
 
-    private fun packImagesIfOutdated(settings: TexturePacker.Settings, input: String, output: String, packFileName: String) {
+    // Process one Image folder, checking for atlas older than contained images first
+    private fun packImagesIfOutdated(defaultSettings: TexturePacker.Settings, input: String, output: String, packFileName: String) {
         fun File.listTree(): Sequence<File> = when {
             this.isFile -> sequenceOf(this)
             this.isDirectory -> this.listFiles()!!.asSequence().flatMap { it.listTree() }
             else -> sequenceOf()
         }
 
+        // Check if outdated
         val atlasFile = File("$output${File.separator}$packFileName.atlas")
         if (atlasFile.exists() && File("$output${File.separator}$packFileName.png").exists()) {
             val atlasModTime = atlasFile.lastModified()
             if (File(input).listTree().none { it.extension in listOf("png", "jpg", "jpeg") && it.lastModified() > atlasModTime }) return
         }
 
+        // An image folder can optionally have a TexturePacker settings file
+        val settingsFile = File("$input${File.separator}TexturePacker.settings")
+        val settings = if (settingsFile.exists())
+            Json().fromJson(TexturePacker.Settings::class.java, settingsFile.reader())
+        else defaultSettings
+
         TexturePacker.process(settings, input, output, packFileName)
     }
 
+    // Iterator providing all Image folders to process with the destination atlas name
     private data class ImageFolderResult(val folder: String, val atlasName: String)
     private fun imageFolders() = sequence {
         val parent = File("..")

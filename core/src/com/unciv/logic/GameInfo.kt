@@ -169,7 +169,7 @@ class GameInfo {
                     it.militaryUnit != null && it.militaryUnit!!.civInfo != thisPlayer
                             && thisPlayer.isAtWarWith(it.militaryUnit!!.civInfo)
                             && (it.getOwner() == thisPlayer || it.neighbors.any { neighbor -> neighbor.getOwner() == thisPlayer }
-                            && (!it.militaryUnit!!.isInvisible() || viewableInvisibleTiles.contains(it.position)))
+                            && (!it.militaryUnit!!.isInvisible(thisPlayer) || viewableInvisibleTiles.contains(it.position)))
                 }
 
         // enemy units ON our territory
@@ -286,14 +286,6 @@ class GameInfo {
         if (missingMods.isNotEmpty()) {
             throw UncivShowableException("Missing mods: [$missingMods]")
         }
-        
-        // compatibility code translating changed tech name "Railroad" - to be deprecated soon
-        val (oldTechName, newTechName) = "Railroad" to "Railroads"
-        if (ruleSet.technologies[oldTechName] == null && ruleSet.technologies[newTechName] != null) {
-            civilizations.forEach {
-                it.tech.replaceUpdatedTechName(oldTechName, newTechName)
-            }
-        }
 
         removeMissingModReferences()
 
@@ -340,13 +332,6 @@ class GameInfo {
                     cityInfo.cityConstructions.chooseNextConstruction()
 
                 cityInfo.cityStats.update()
-            }
-
-            if(!civInfo.greatPeople.greatPersonPoints.isEmpty()) {
-                civInfo.greatPeople.greatPersonPointsCounter.add(
-                    GreatPersonManager.statsToGreatPersonCounter(civInfo.greatPeople.greatPersonPoints)
-                )
-                civInfo.greatPeople.greatPersonPoints.clear()
             }
 
             if (civInfo.hasEverOwnedOriginalCapital == null) {
@@ -402,14 +387,6 @@ class GameInfo {
             for (tech in civinfo.tech.techsResearched.toList())
                 if (!ruleSet.technologies.containsKey(tech))
                     civinfo.tech.techsResearched.remove(tech)
-            for (policy in civinfo.policies.adoptedPolicies.toList())
-                // So these two policies are deprecated since 3.14.17
-                // However, we still need to convert save files that have those to valid save files
-                // The easiest way to do this, is just to allow them here, and filter them out in
-                // the policyManager class.
-                // Yes, this is ugly, but it should be temporary, and it works.
-                if (!ruleSet.policies.containsKey(policy) && !(policy == "Entrepreneurship" || policy == "Patronage"))
-                    civinfo.policies.adoptedPolicies.remove(policy)
         }
     }
 

@@ -289,7 +289,6 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
                     .filter { unit.movement.canParadropOn(it) }
             else ->
                 unit.movement.getDistanceToTiles().keys.asSequence()
-
         }
     }
 

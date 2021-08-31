@@ -12,6 +12,7 @@ import com.unciv.models.stats.Stats
 import com.unciv.models.translations.tr
 import com.unciv.ui.civilopedia.FormattedLine
 import com.unciv.ui.utils.Fonts
+import com.unciv.ui.utils.toPercent
 import kotlin.math.abs
 import kotlin.math.min
 
@@ -54,18 +55,6 @@ open class TileInfo {
     lateinit var baseTerrain: String
     val terrainFeatures: ArrayList<String> = ArrayList()
 
-    // Deprecation level can't be increased because of convertTerrainFeatureToArray
-    // Can't be flagged transient because it won't deserialize then
-    // but it should not serialize because it always has the default value on serialization and is flagged optional
-    // Can be removed together with convertTerrainFeatureToArray to drop support for save files from version 3.13.7 and below
-    @Deprecated(message = "Since 3.13.7 - replaced by terrainFeatures")
-    private var terrainFeature: String? = null
-    private fun convertTerrainFeatureToArray() {
-        if (terrainFeature != null) {
-            terrainFeatures.add(terrainFeature!!)
-            terrainFeature = null
-        }
-    }
 
     var naturalWonder: String? = null
     var resource: String? = null
@@ -93,7 +82,6 @@ open class TileInfo {
         for (airUnit in airUnits) toReturn.airUnits.add(airUnit.clone())
         toReturn.position = position.cpy()
         toReturn.baseTerrain = baseTerrain
-        convertTerrainFeatureToArray()
         toReturn.terrainFeatures.addAll(terrainFeatures)
         toReturn.naturalWonder = naturalWonder
         toReturn.resource = resource
@@ -187,6 +175,11 @@ open class TileInfo {
             else -> tileOwner.getDiplomacyManager(civInfo).isConsideredFriendlyTerritory()
         }
     }
+    
+    fun isEnemyTerritory(civInfo: CivilizationInfo): Boolean {
+        val tileOwner = getOwner() ?: return false
+        return civInfo.isAtWarWith(tileOwner)
+    }
 
     fun getTerrainFeatures(): List<Terrain> = terrainFeatures.mapNotNull { ruleset.terrains[it] }
     fun getAllTerrains(): Sequence<Terrain> = sequence {
@@ -224,13 +217,10 @@ open class TileInfo {
             else
                 stats.add(terrainFeatureBase)
         }
-        
+
         if (city != null) {
             var tileUniques = city.getMatchingUniques("[] from [] tiles []")
                 .filter { city.matchesFilter(it.params[2]) }
-            // Deprecated since 3.15.9
-                tileUniques += city.getLocalMatchingUniques("[] from [] tiles in this city")
-            //
             tileUniques += city.getMatchingUniques("[] from every []")
             for (unique in tileUniques) {
                 val tileType = unique.params[1]
@@ -241,7 +231,7 @@ open class TileInfo {
                     stats.add(unique.stats)
                 }
             }
-            
+
             for (unique in city.getMatchingUniques("[] from [] tiles without [] []")) 
                 if (
                     matchesTerrainFilter(unique.params[1]) &&
@@ -277,7 +267,8 @@ open class TileInfo {
         if (stats.gold != 0f && observingCiv.goldenAges.isGoldenAge())
             stats.gold++
 
-        if (stats.production < 0) stats.production = 0f
+        for ((stat, value) in stats)
+            if (value < 0f) stats[stat] = 0f
 
         return stats
     }
@@ -327,11 +318,8 @@ open class TileInfo {
                 stats.add(unique.stats)
 
         if (city != null) {
-            var tileUniques = city.getMatchingUniques("[] from [] tiles []")
+            val tileUniques = city.getMatchingUniques("[] from [] tiles []")
                 .filter { city.matchesFilter(it.params[2]) }
-            // Deprecated since 3.15.9
-                tileUniques += city.getLocalMatchingUniques("[] from [] tiles in this city")
-            //
             val improvementUniques = improvement.uniqueObjects.filter {
                 it.placeholderText == "[] on [] tiles once [] is discovered"
                         && observingCiv.tech.isResearched(it.params[2])
@@ -364,12 +352,7 @@ open class TileInfo {
 
         for (unique in observingCiv.getMatchingUniques("+[]% yield from every []"))
             if (improvement.matchesFilter(unique.params[1]))
-                stats.timesInPlace(1f + unique.params[0].toFloat() / 100f)
-
-        // Deprecated since 3.15
-            if (containsGreatImprovement() && observingCiv.hasUnique("Tile yield from Great Improvements +100%"))
-                stats.timesInPlace(2f)
-        //
+                stats.timesInPlace(unique.params[0].toPercent())
 
         return stats
     }
@@ -405,10 +388,6 @@ open class TileInfo {
         return when {
             improvement.name == this.improvement -> false
             isCityCenter() -> false
-            // deprecated as of 3.15.15
-                "Cannot be built on bonus resource" in improvement.uniques && resource != null
-                    && getTileResource().resourceType == ResourceType.Bonus -> false
-            //
             improvement.uniqueObjects.filter { it.placeholderText == "Cannot be built on [] tiles" }.any {
                     unique -> matchesTerrainFilter(unique.params[0])
             } -> false
@@ -468,6 +447,7 @@ open class TileInfo {
             "Rough terrain" -> isRoughTerrain()
             "Foreign Land", "Foreign" -> observingCiv != null && !isFriendlyTerritory(observingCiv)
             "Friendly Land", "Friendly" -> observingCiv != null && isFriendlyTerritory(observingCiv)
+            "Enemy Land", "Enemy" -> observingCiv != null && isEnemyTerritory(observingCiv)
             resource -> observingCiv != null && hasViewableResource(observingCiv)
             "Water resource" -> isWater && observingCiv != null && hasViewableResource(observingCiv)
             "Natural Wonder" -> naturalWonder != null
@@ -637,7 +617,7 @@ open class TileInfo {
         val unitsInTile = getUnits()
         if (unitsInTile.none()) return false
         if (unitsInTile.first().civInfo != viewingCiv &&
-                unitsInTile.firstOrNull { it.isInvisible() } != null) {
+                unitsInTile.firstOrNull { it.isInvisible(viewingCiv) } != null) {
             return true
         }
         return false
@@ -675,7 +655,6 @@ open class TileInfo {
     }
 
     fun setTerrainTransients() {
-        convertTerrainFeatureToArray()
         // Uninitialized tilemap - when you're displaying a tile in the civilopedia or map editor
         if (::tileMap.isInitialized) convertHillToTerrainFeature()
         if (!ruleset.terrains.containsKey(baseTerrain))

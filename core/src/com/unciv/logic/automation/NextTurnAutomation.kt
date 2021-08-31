@@ -13,12 +13,16 @@ import com.unciv.logic.map.BFS
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.trade.*
+import com.unciv.models.ruleset.Belief
+import com.unciv.models.ruleset.BeliefType
 import com.unciv.models.ruleset.ModOptionsConstants
 import com.unciv.models.ruleset.VictoryType
 import com.unciv.models.ruleset.tech.Technology
+import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
 import com.unciv.models.translations.tr
+import com.unciv.ui.pickerscreens.BeliefContainer
 import kotlin.math.min
 
 object NextTurnAutomation {
@@ -39,8 +43,7 @@ object NextTurnAutomation {
             offerResearchAgreement(civInfo)
             exchangeLuxuries(civInfo)
             issueRequests(civInfo)
-            adoptPolicy(civInfo)  //todo can take a second - why?
-            choosePantheon(civInfo)
+            adoptPolicy(civInfo)  // todo can take a second - why?
         } else {
             getFreeTechForCityStates(civInfo)
             updateDiplomaticRelationshipForCityStates(civInfo)
@@ -49,12 +52,20 @@ object NextTurnAutomation {
         chooseTechToResearch(civInfo)
         automateCityBombardment(civInfo)
         useGold(civInfo)
-        protectCityStates(civInfo)
+        if (!civInfo.isCityState()) {
+            protectCityStates(civInfo)
+            bullyCityStates(civInfo)
+        }
         automateUnits(civInfo)  // this is the most expensive part
+        
+        if (civInfo.isMajorCiv()) {
+            // Can only be done now, as the prophet first has to decide to found/enhance a religion
+            chooseReligiousBeliefs(civInfo)
+        }
+        
         reassignWorkedTiles(civInfo)  // second most expensive
         trainSettler(civInfo)
         tryVoteForDiplomaticVictory(civInfo)
-
     }
 
     private fun respondToTradeRequests(civInfo: CivilizationInfo) {
@@ -114,6 +125,15 @@ object NextTurnAutomation {
 
     /** allow AI to spend money to purchase city-state friendship, buildings & unit */
     private fun useGold(civInfo: CivilizationInfo) {
+        if (civInfo.getHappiness() > 0
+        && civInfo.hasUnique("Can spend Gold to annex or puppet a City-State that has been your ally for [] turns.")) {
+            for (cityState in civInfo.getKnownCivs().filter { it.isCityState() } ) {
+                if (cityState.canBeMarriedBy(civInfo))
+                    cityState.diplomaticMarriage(civInfo)
+                if (civInfo.getHappiness() <= 0) break // Stop marrying if happiness is getting too low
+            }
+        }
+
         if (civInfo.victoryType() == VictoryType.Cultural) {
             for (cityState in civInfo.getKnownCivs()
                     .filter { it.isCityState() && it.cityStateType == CityStateType.Cultured }) {
@@ -125,17 +145,17 @@ object NextTurnAutomation {
             }
         }
 
-        if (civInfo.getHappiness() < 5) {
-            for (cityState in civInfo.getKnownCivs()
-                    .filter { it.isCityState() && it.cityStateType == CityStateType.Mercantile }) {
-                val diploManager = cityState.getDiplomacyManager(civInfo)
-                if (diploManager.influence < 40) { // we want to gain influence with them
+        if (!civInfo.isCityState()) {
+            val potentialAllies = civInfo.getKnownCivs().filter { it.isCityState() }
+            if (potentialAllies.isNotEmpty()) {
+                val cityState =
+                    potentialAllies.maxByOrNull { valueCityStateAlliance(civInfo, it) }!!
+                if (cityState.getAllyCiv() != civInfo.civName && valueCityStateAlliance(civInfo, cityState) > 0) {
                     tryGainInfluence(civInfo, cityState)
                     return
                 }
             }
         }
-
 
         for (city in civInfo.cities.sortedByDescending { it.population.population }) {
             val construction = city.cityConstructions.getCurrentConstruction()
@@ -145,6 +165,47 @@ object NextTurnAutomation {
                 city.cityConstructions.purchaseConstruction(construction.name, 0, true)
             }
         }
+    }
+
+    private fun valueCityStateAlliance(civInfo: CivilizationInfo, cityState: CivilizationInfo): Int {
+        var value = 0
+        if (!cityState.isAlive() || cityState.cities.isEmpty())
+            return value
+
+        if (civInfo.victoryType() == VictoryType.Cultural && cityState.canGiveStat(Stat.Culture)) {
+            value += 10
+        }
+        else if (civInfo.victoryType() == VictoryType.Scientific && cityState.canGiveStat(Stat.Science)) {
+            // In case someone mods this in
+            value += 10
+        }
+        else if (civInfo.victoryType() == VictoryType.Domination) {
+            // Don't ally close city-states, conquer them instead
+            val distance = getMinDistanceBetweenCities(civInfo, cityState)
+            if (distance < 20)
+                value -= (20 - distance) / 4
+        }
+        if (civInfo.gold < 100) {
+            // Consider bullying for cash
+            value -= 5
+        }
+        if (civInfo.getHappiness() < 5 && cityState.canGiveStat(Stat.Happiness)) {
+            value += 10 - civInfo.getHappiness()
+        }
+        if (civInfo.getHappiness() > 5 && cityState.canGiveStat(Stat.Food)) {
+            value += 5
+        }
+        if (cityState.getAllyCiv() != null && cityState.getAllyCiv() != civInfo.civName) {
+            // easier not to compete if a third civ has this locked down
+            val thirdCivInfluence = cityState.getDiplomacyManager(cityState.getAllyCiv()!!).influence.toInt()
+            value -= (thirdCivInfluence - 60) / 10
+        }
+
+        // Bonus for luxury resources we can get from them
+        value += cityState.detailedCivResources.count { it.resource.resourceType == ResourceType.Luxury
+                && !(it.resource in civInfo.detailedCivResources) }
+
+        return value
     }
 
     private fun protectCityStates(civInfo: CivilizationInfo) {
@@ -157,6 +218,21 @@ object NextTurnAutomation {
             } else if (diplomacyManager.relationshipLevel() < RelationshipLevel.Friend
                     && diplomacyManager.diplomaticStatus == DiplomaticStatus.Protector) {
                 state.removeProtectorCiv(civInfo)
+            }
+        }
+    }
+
+    private fun bullyCityStates(civInfo: CivilizationInfo) {
+        for (state in civInfo.getKnownCivs().filter{!it.isDefeated() && it.isCityState()}) {
+            val diplomacyManager = state.getDiplomacyManager(civInfo.civName)
+            if(diplomacyManager.relationshipLevel() < RelationshipLevel.Friend
+                    && diplomacyManager.diplomaticStatus == DiplomaticStatus.Peace
+                    && valueCityStateAlliance(civInfo, state) <= 0
+                    && state.getTributeWillingness(civInfo) > 0) {
+                if (state.getTributeWillingness(civInfo, demandingWorker = true) > 0)
+                    civInfo.demandWorker(state)
+                else
+                    civInfo.demandGold(state)
             }
         }
     }
@@ -230,6 +306,12 @@ object NextTurnAutomation {
         }
     }
     
+    private fun chooseReligiousBeliefs(civInfo: CivilizationInfo) {
+        choosePantheon(civInfo)
+        foundReligion(civInfo)
+        enhanceReligion(civInfo)
+    }
+    
     private fun choosePantheon(civInfo: CivilizationInfo) {
         if (!civInfo.religionManager.canFoundPantheon()) return
         // So looking through the source code of the base game available online,
@@ -238,14 +320,70 @@ object NextTurnAutomation {
         // line 4426 through 4870.
         // This is way too much work for now, so I'll just choose a random pantheon instead.
         // Should probably be changed later, but it works for now.
-        // If this is omitted, the AI will never choose a religion,
-        // instead automatically choosing the same one as the player,
-        // which is not good.
         val availablePantheons = civInfo.gameInfo.ruleSet.beliefs.values
             .filter { civInfo.religionManager.isPickablePantheonBelief(it) }
         if (availablePantheons.isEmpty()) return // panic!
         val chosenPantheon = availablePantheons.random() // Why calculate stuff?
         civInfo.religionManager.choosePantheonBelief(chosenPantheon)
+    }
+    
+    private fun foundReligion(civInfo: CivilizationInfo) {
+        println("Founding check?")
+        if (civInfo.religionManager.religionState != ReligionState.FoundingReligion) return
+        println("Founding check!!")
+        val religionIcon = civInfo.gameInfo.ruleSet.religions
+            .filterNot { civInfo.gameInfo.religions.values.map { religion -> religion.iconName }.contains(it) }
+            .randomOrNull()
+            ?: return // Wait what? How did we pass the checking when using a great prophet but not this?
+        println("Icon has been chosen")
+        val chosenBeliefs = chooseBeliefs(civInfo, civInfo.religionManager.getBeliefsToChooseAtFounding()).toList()
+        println("Beliefs have been chosen")
+        civInfo.religionManager.chooseBeliefs(religionIcon, religionIcon, chosenBeliefs)
+    }
+    
+    private fun enhanceReligion(civInfo: CivilizationInfo) {
+        civInfo.religionManager.chooseBeliefs(
+            null, 
+            null, 
+            chooseBeliefs(civInfo, civInfo.religionManager.getBeliefsToChooseAtEnhancing()).toList()
+        )
+    }
+    
+    private fun chooseBeliefs(civInfo: CivilizationInfo, beliefContainer: BeliefContainer): HashSet<Belief> {
+        val chosenBeliefs = hashSetOf<Belief>()
+        // The 'continues' should never be reached, but just in case I'd rather have AI have a
+        // belief less than make the game crash. The 'continue's should only be reached whenever
+        // there are not enough beliefs to choose, but there should be, as otherwise we could
+        // not have used a great prophet to found/enhance our religion.
+        for (counter in 0 until beliefContainer.pantheonBeliefCount)
+            chosenBeliefs.add(
+                chooseBeliefOfType(civInfo, BeliefType.Pantheon, chosenBeliefs) ?: continue
+            )
+        for (counter in 0 until beliefContainer.followerBeliefCount)
+            chosenBeliefs.add(
+                chooseBeliefOfType(civInfo, BeliefType.Follower, chosenBeliefs) ?: continue
+            )
+        for (counter in 0 until beliefContainer.founderBeliefCount)
+            chosenBeliefs.add(
+                chooseBeliefOfType(civInfo, BeliefType.Founder, chosenBeliefs) ?: continue
+            )
+        for (counter in 0 until beliefContainer.enhancerBeliefCount)
+            chosenBeliefs.add(
+                chooseBeliefOfType(civInfo, BeliefType.Enhancer, chosenBeliefs) ?: continue
+            )
+        return chosenBeliefs
+    }
+    
+    private fun chooseBeliefOfType(civInfo: CivilizationInfo, beliefType: BeliefType, additionalBeliefsToExclude: HashSet<Belief> = hashSetOf()): Belief? {
+        return civInfo.gameInfo.ruleSet.beliefs
+            .filter { 
+                it.value.type == beliefType 
+                && !additionalBeliefsToExclude.contains(it.value)
+                && !civInfo.gameInfo.religions.values
+                    .flatMap { religion -> religion.getBeliefs(beliefType) }.contains(it.value) 
+            }
+            .map { it.value }
+            .randomOrNull() // ToDo: Better algorithm
     }
 
     private fun potentialLuxuryTrades(civInfo: CivilizationInfo, otherCivInfo: CivilizationInfo): ArrayList<Trade> {

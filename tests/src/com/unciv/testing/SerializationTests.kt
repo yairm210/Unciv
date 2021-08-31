@@ -13,7 +13,7 @@ import com.unciv.models.metadata.GameParameters
 import com.unciv.models.metadata.GameSettings
 import com.unciv.models.metadata.Player
 import com.unciv.models.ruleset.RulesetCache
-import com.unciv.ui.newgamescreen.GameSetupInfo
+import com.unciv.models.metadata.GameSetupInfo
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test

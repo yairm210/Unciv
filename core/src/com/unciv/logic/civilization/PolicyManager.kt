@@ -2,6 +2,7 @@ package com.unciv.logic.civilization
 
 import com.unciv.logic.map.MapSize
 import com.unciv.models.ruleset.Policy
+import com.unciv.models.ruleset.Policy.PolicyBranchType
 import com.unciv.models.ruleset.UniqueMap
 import com.unciv.models.ruleset.UniqueTriggerActivation
 import com.unciv.models.translations.equalsPlaceholderText
@@ -48,20 +49,6 @@ class PolicyManager {
     fun getPolicyByName(name: String): Policy = civInfo.gameInfo.ruleSet.policies[name]!!
 
     fun setTransients() {
-        // Reassign policies deprecated in 3.14.17, left for backwards compatibility
-            if (adoptedPolicies.contains("Patronage") && 
-                !civInfo.gameInfo.ruleSet.policies.contains("Patronage")
-            ) {
-                adoptedPolicies.add("Merchant Navy")
-                adoptedPolicies.remove("Patronage")
-            }
-            if (adoptedPolicies.contains("Entrepreneurship") &&
-                !civInfo.gameInfo.ruleSet.policies.contains("Entrepreneurship")
-            ) {
-                adoptedPolicies.add("Naval Tradition")
-                adoptedPolicies.remove("Entrepreneurship")
-            }
-        //
         for (policyName in adoptedPolicies)
             addPolicyToTransients(getPolicyByName(policyName))
     }
@@ -124,7 +111,7 @@ class PolicyManager {
      */
     fun isAdoptable(policy: Policy, checkEra: Boolean = true): Boolean {
         if (isAdopted(policy.name)) return false
-        if (policy.name.endsWith("Complete")) return false
+        if (policy.policyBranchType == PolicyBranchType.BranchComplete) return false
         if (!getAdoptedPolicies().containsAll(policy.requires!!)) return false
         if (checkEra && civInfo.gameInfo.ruleSet.getEraNumber(policy.branch.era) > civInfo.getEraNumber()) return false
         if (policy.uniqueObjects.any { it.placeholderText == "Incompatible with []" && adoptedPolicies.contains(it.params[0]) }) return false

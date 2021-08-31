@@ -3,6 +3,7 @@ package com.unciv.ui.utils
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.Texture
+import com.badlogic.gdx.graphics.Texture.TextureFilter
 import com.badlogic.gdx.graphics.g2d.NinePatch
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
 import com.badlogic.gdx.graphics.g2d.TextureRegion
@@ -16,7 +17,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.UncivGame
-import com.unciv.logic.map.TileMap
+import com.unciv.logic.GameSaver
 import com.unciv.models.ruleset.Era
 import com.unciv.models.ruleset.Nation
 import com.unciv.models.ruleset.Ruleset
@@ -42,7 +43,7 @@ object ImageGetter {
 
     // We then shove all the drawables into a hashmap, because the atlas specifically tells us
     //   that the search on it is inefficient
-    internal val textureRegionDrawables = HashMap<String, TextureRegionDrawable>()
+    private val textureRegionDrawables = HashMap<String, TextureRegionDrawable>()
 
     fun resetAtlases() {
         atlases.values.forEach { it.dispose() }
@@ -61,8 +62,8 @@ object ImageGetter {
             textureRegionDrawables[region.name] = drawable
         }
 
-        // This is a quickfix for #4993, since you can't .list() on a jar file. This should be fixed in a nicer way.
-        val fileNames = listOf("game","Flags","Tech","Skin","Construction")
+        // See #4993 - you can't .list() on a jar file, so the ImagePacker leaves us the list of actual atlases.
+        val fileNames = GameSaver.json().fromJson(Array<String>::class.java, Gdx.files.internal("Atlases.json"))
         for (fileName in fileNames) {
             val file = Gdx.files.internal("$fileName.atlas")
             val extraAtlas = file.nameWithoutExtension()
@@ -70,10 +71,9 @@ object ImageGetter {
                 ?: TextureAtlas(file.name()).apply {  // load if not
                     atlases[extraAtlas] = this  // cache the freshly loaded
                 }
-            val prefix = if (extraAtlas == "Skin") "Skin/" else ""  // Only Skin is packed without folder prefix
             for (region in tempAtlas.regions) {
                 val drawable = TextureRegionDrawable(region)
-                textureRegionDrawables[prefix + region.name] = drawable
+                textureRegionDrawables[region.name] = drawable
             }
         }
 
@@ -114,7 +114,7 @@ object ImageGetter {
      *      getLayeredImageColored("TileSets/FantasyHex/Units/Warrior", null, Color.GOLD, Color.RED)
      *
      *      All images in the atlas that match the pattern "TileSets/FantasyHex/Units/Warrior" or
-     *      "TileSets/FantasyHex/Units/Warrior-NUMBER" are retrieved. NUMBERs must start from 1 and
+     *      "TileSets/FantasyHex/Units/Warrior-NUMBER" are retrieved. NUMBER must start from 1 and
      *      be incremented by 1 per layer. If the n-th NUMBER is missing, the (n-1)-th layer is the
      *      last one retrieved:
      *      Given the layer names:
@@ -153,7 +153,12 @@ object ImageGetter {
     fun getDot(dotColor: Color) = getWhiteDot().apply { color = dotColor }
 
     fun getExternalImage(fileName: String): Image {
-        return Image(TextureRegion(Texture("ExtraImages/$fileName")))
+        // Since these are not packed in an atlas, they have no scaling filter metadata and
+        // default to Nearest filter, anisotropic level 1. Use Linear instead, helps
+        // loading screen and Tutorial.WorldScreen quite a bit. More anisotropy barely helps.
+        val texture = Texture("ExtraImages/$fileName")
+        texture.setFilter(TextureFilter.Linear, TextureFilter.Linear)
+        return Image(TextureRegion(texture))
     }
 
     fun getImage(fileName: String): Image {

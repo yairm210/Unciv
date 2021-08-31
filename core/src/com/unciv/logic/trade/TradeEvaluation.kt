@@ -243,7 +243,7 @@ class TradeEvaluation {
                         RelationshipLevel.Unforgivable -> 10000
                         RelationshipLevel.Enemy -> 2000
                         RelationshipLevel.Competitor -> 500
-                        RelationshipLevel.Neutral -> 200
+                        RelationshipLevel.Neutral, RelationshipLevel.Afraid -> 200
                         RelationshipLevel.Favorable, RelationshipLevel.Friend, RelationshipLevel.Ally -> 100
                     }
                 }

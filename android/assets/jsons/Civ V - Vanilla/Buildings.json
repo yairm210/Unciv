@@ -723,7 +723,7 @@
 		"culture": 3,
 		"isWonder": true,
 		"greatPersonPoints": {"Great Engineer": 2},
-		"uniques": ["+[15]% Strength for units fighting in [Friendly Land]",
+		"uniques": ["+[15]% Strength for [Non-City] units fighting in [Friendly Land]",
 			"Provides a free [Castle] [in this city]"],
 		"requiredTech": "Gunpowder",
 		"quote": "'Bushido is realized in the presence of death. This means choosing death whenever there is a choice between life and death. There is no other reasoning.'  - Yamamoto Tsunetomo"
@@ -773,6 +773,18 @@
 		"hurryCostModifier": 25,
 		"maintenance": 2,
 		"uniques": ["Must not be on [Hill]", "+[10]% Production when constructing [Buildings] [in this city]"],
+		"requiredTech": "Economics"
+	},
+	{
+		"name": "Coffee House",
+		"replaces": "Windmill",
+		"uniqueTo": "Austria",
+		"production": 2,
+		"percentStatBonus": {"production": 10},
+		"specialistSlots": {"Engineer": 1},
+		"hurryCostModifier": 25,
+		"maintenance": 2,
+		"uniques": ["[+25]% great person generation [in this city]"],
 		"requiredTech": "Economics"
 	},
 	{
