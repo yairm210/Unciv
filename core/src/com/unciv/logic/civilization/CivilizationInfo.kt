@@ -1165,7 +1165,6 @@ class CivilizationInfo {
         if (allyBonuses != null) {
             // Defined city states in json
             val bonuses = allyBonuses + eraInfo!!.friendBonus[cityStateType.name]!!
-            println(bonuses)
             for (bonus in bonuses) {
                 if (statType == Stat.Happiness && bonus.getPlaceholderText() == "Provides [] Happiness")
                     return true
