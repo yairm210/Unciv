@@ -702,6 +702,8 @@ class CivilizationInfo {
     fun getTurnsBetweenDiplomaticVotings() = (15 * gameInfo.gameParameters.gameSpeed.modifier).toInt() // Dunno the exact calculation, hidden in Lua files
     
     fun getTurnsTillNextDiplomaticVote() = flagsCountdown[CivFlags.TurnsTillNextDiplomaticVote.name]
+
+    fun getRecentBullyingCountdown() = flagsCountdown[CivFlags.RecentlyBullied.name]
     
     fun mayVoteForDiplomaticVictory() =
         getTurnsTillNextDiplomaticVote() == 0 
@@ -928,7 +930,7 @@ class CivilizationInfo {
     // but I have no idea what the actual lower and upper bound are, so this is just an approximation
 
     fun getAllyCiv() = allyCivName
-    fun setAllyCiv(newAllyName: String) { allyCivName = newAllyName }
+    fun setAllyCiv(newAllyName: String?) { allyCivName = newAllyName }
 
 
     //endregion
