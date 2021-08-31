@@ -522,26 +522,25 @@ object UnitActions {
         if (unit.religion == null || unit.civInfo.gameInfo.religions[unit.religion]!!.isPantheon()) return
         val city = tile.getCity() ?: return
         for (action in actionsToAdd) {
-            if (!unit.abilityUsedCount.containsKey(action)) continue
-            val maxActionUses = unit.getMaxReligiousActionUses(action)
-            if (maxActionUses <= unit.abilityUsedCount[action]!!) continue
+            if (!unit.abilityUsesLeft.containsKey(action)) continue
+            if (unit.abilityUsesLeft[action]!! <= 0) continue
             when (action) {
-                Constants.spreadReligionAbilityCount -> addSpreadReligionActions(unit, actionList, city, maxActionUses)
-                Constants.removeHeresyAbilityCount -> addRemoveHeresyActions(unit, actionList, city, maxActionUses)
+                Constants.spreadReligionAbilityCount -> addSpreadReligionActions(unit, actionList, city)
+                Constants.removeHeresyAbilityCount -> addRemoveHeresyActions(unit, actionList, city)
             }
         }
     }
     
-    private fun useActionWithLimitedUses(unit: MapUnit, action: String, maximumUses: Int) {
-        unit.abilityUsedCount[action] = unit.abilityUsedCount[action]!! + 1
-        if (unit.abilityUsedCount[action] == maximumUses) {
+    private fun useActionWithLimitedUses(unit: MapUnit, action: String) {
+        unit.abilityUsesLeft[action] = unit.abilityUsesLeft[action]!! - 1
+        if (unit.abilityUsesLeft[action]!! <= 0) {
             if (unit.isGreatPerson())
                 addStatsPerGreatPersonUsage(unit)
             unit.destroy()
         }
     }
 
-    private fun addSpreadReligionActions(unit: MapUnit, actionList: ArrayList<UnitAction>, city: CityInfo, maxSpreadUses: Int) {
+    private fun addSpreadReligionActions(unit: MapUnit, actionList: ArrayList<UnitAction>, city: CityInfo) {
         val blockedByInquisitor =
             city.getCenterTile()
                 .getTilesInDistance(1)
@@ -559,12 +558,12 @@ object UnitActions {
                 }
                 city.religion.addPressure(unit.religion!!, unit.getPressureAddedFromSpread())
                 unit.currentMovement = 0f
-                useActionWithLimitedUses(unit, Constants.spreadReligionAbilityCount, maxSpreadUses)
+                useActionWithLimitedUses(unit, Constants.spreadReligionAbilityCount)
             }.takeIf { unit.currentMovement > 0 && !blockedByInquisitor } 
         )
     }
     
-    private fun addRemoveHeresyActions(unit: MapUnit, actionList: ArrayList<UnitAction>, city: CityInfo, maxHerseyUses: Int) {
+    private fun addRemoveHeresyActions(unit: MapUnit, actionList: ArrayList<UnitAction>, city: CityInfo) {
         if (city.civInfo != unit.civInfo) return
         // Only allow the action if the city actually has any foreign religion
         // This will almost be always due to pressure from cities close-by
@@ -574,7 +573,7 @@ object UnitActions {
             action = {
                 city.religion.removeAllPressuresExceptFor(unit.religion!!)
                 unit.currentMovement = 0f
-                useActionWithLimitedUses(unit, Constants.removeHeresyAbilityCount, maxHerseyUses)
+                useActionWithLimitedUses(unit, Constants.removeHeresyAbilityCount)
             }.takeIf { unit.currentMovement > 0f }
         )
     }
@@ -582,7 +581,7 @@ object UnitActions {
     fun getImprovementConstructionActions(unit: MapUnit, tile: TileInfo): ArrayList<UnitAction> {
         val finalActions = ArrayList<UnitAction>()
         var uniquesToCheck = unit.getMatchingUniques("Can construct []")
-        if (unit.religiousActionsUnitCanDo().all { unit.abilityUsedCount[it] == 0 })
+        if (unit.religiousActionsUnitCanDo().all { unit.abilityUsesLeft[it] == unit.maxAbilityUses[it] })
             uniquesToCheck += unit.getMatchingUniques("Can construct [] if it hasn't used other actions yet")
         
         for (unique in uniquesToCheck) {
