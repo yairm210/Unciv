@@ -5,6 +5,7 @@ import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.automation.UnitAutomation
 import com.unciv.logic.automation.WorkerAutomation
+import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.LocationAction
 import com.unciv.logic.civilization.NotificationIcon
@@ -123,7 +124,14 @@ class MapUnit {
     var due: Boolean = true
     var isTransported: Boolean = false
     
-    var abilityUsedCount: HashMap<String, Int> = hashMapOf()
+    // Deprecated since 3.16.11
+        @Deprecated("Deprecated since 3.16.11", replaceWith = ReplaceWith("abilityUsesLeft"))
+        var abilityUsedCount: HashMap<String, Int> = hashMapOf()
+    //
+    
+    var abilityUsesLeft: HashMap<String, Int> = hashMapOf()
+    var maxAbilityUses: HashMap<String, Int> = hashMapOf()
+    
     var religion: String? = null
     var religiousStrengthLost = 0
 
@@ -141,7 +149,11 @@ class MapUnit {
         toReturn.attacksThisTurn = attacksThisTurn
         toReturn.promotions = promotions.clone()
         toReturn.isTransported = isTransported
-        toReturn.abilityUsedCount.putAll(abilityUsedCount)
+        // Deprecated since 3.16.11
+            toReturn.abilityUsedCount.putAll(abilityUsedCount)
+        //
+        toReturn.abilityUsesLeft.putAll(abilityUsesLeft)
+        toReturn.maxAbilityUses.putAll(maxAbilityUses)
         toReturn.religion = religion
         toReturn.religiousStrengthLost = religiousStrengthLost
         return toReturn
@@ -440,6 +452,20 @@ class MapUnit {
         //
         
         updateUniques()
+        
+        // abilityUsedCount deprecated since 3.16.11, this is replacement code
+            if (abilityUsedCount.isNotEmpty()) {
+                for (ability in abilityUsedCount) {
+                    val maxUsesOfThisAbility = getMatchingUniques("Can [] [] times")
+                        .filter { it.params[0] == ability.key }
+                        .sumBy { it.params[1].toInt() }
+                    abilityUsesLeft[ability.key] = maxUsesOfThisAbility - ability.value
+                    maxAbilityUses[ability.key] = maxUsesOfThisAbility
+                }
+                abilityUsedCount.clear()
+            }
+        //
+        
     }
 
     fun useMovementPoints(amount: Float) {
@@ -950,12 +976,30 @@ class MapUnit {
     fun canDoReligiousAction(action: String): Boolean {
         return getMatchingUniques("Can [] [] times").any { it.params[0] == action }
     }
-    
-    fun getMaxReligiousActionUses(action: String): Int {
+
+    /** For the actual value, check the member variable `maxAbilityUses`
+     */
+    fun getBaseMaxActionUses(action: String): Int {
         return getMatchingUniques("Can [] [] times")
             .filter { it.params[0] == action }
             .sumBy { it.params[1].toInt() }
     }
+    
+    fun setupAbilityUses(buildCity: CityInfo? = null) {
+        for (action in religiousActionsUnitCanDo()) {
+            val baseAmount = getBaseMaxActionUses(action)
+            val additional =
+                if (buildCity == null) 0
+                else buildCity.getMatchingUniques("[] units built [] can [] [] extra times")
+                    .filter { matchesFilter(it.params[0]) && buildCity.matchesFilter(it.params[1]) && it.params[2] == action }
+                    .sumBy { println("Addition ability found: ${it.params[1]}"); it.params[3].toInt() }
+            
+            maxAbilityUses[action] = baseAmount + additional
+            
+            abilityUsesLeft[action] = maxAbilityUses[action]!!
+        }
+    }
+    
     
     fun getPressureAddedFromSpread(): Int {
         var pressureAdded = baseUnit.religiousStrength.toFloat()
@@ -967,9 +1011,9 @@ class MapUnit {
     }
     
     fun getActionString(action: String): String {
-        val maxActionUses = getMaxReligiousActionUses(action)
-        if (abilityUsedCount[action] == null) return "0/0" // Something went wrong
-        return "${maxActionUses - abilityUsedCount[action]!!}/${maxActionUses}"
+        val maxActionUses = maxAbilityUses[action]
+        if (abilityUsesLeft[action] == null) return "0/0" // Something went wrong
+        return "${abilityUsesLeft[action]!!}/${maxActionUses}"
     }
 
     fun actionsOnDeselect() {

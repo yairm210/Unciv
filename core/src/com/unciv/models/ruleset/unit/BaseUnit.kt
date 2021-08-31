@@ -325,8 +325,10 @@ class BaseUnit : INamed, INonPerpetualConstruction, ICivilopediaText {
         if (wasBought && !civInfo.gameInfo.gameParameters.godMode && !unit.hasUnique("Can move immediately once bought"))
             unit.currentMovement = 0f
 
+        // If this unit has special abilities that need to be kept track of, start doing so here
         if (unit.hasUnique("Religious Unit")) {
             unit.religion = cityConstructions.cityInfo.religion.getMajorityReligionName()
+            unit.setupAbilityUses(cityConstructions.cityInfo)
         }
 
         if (this.isCivilian()) return true // tiny optimization makes save files a few bytes smaller

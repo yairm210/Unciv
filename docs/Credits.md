@@ -264,6 +264,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Shield and Swords](https://thenounproject.com/term/shield-and-swords/1477527/) By Alina Oleynik for Armory
 * [Machu Picchu](https://thenounproject.com/browse/?i=1678226/) By [Chanut is Industries](https://thenounproject.com/chanut-is)
 * [Garden](https://thenounproject.com/search/?q=garden&i=1478380) By Bharat
+* [Mosque](https://thenounproject.com/search/?q=mosque&i=2458353) by yanti for Great Mosque of Djenne
 
 ### Renaissance Era
 
@@ -332,7 +333,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Illuminati](https://thenounproject.com/term/illuminati/1617812) by emilegraphics for the Utopia Project
 * [Christian Church](https://thenounproject.com/term/christian-church/1174183/) by Andrejs Kirma for Monastery
 * [cathedral](https://thenounproject.com/search/?q=Cathedral&i=4136407) by Pixel Bazaar for Cathedral
-* [Mosque](https://thenounproject.com/search/?q=mosque&i=4139519) by Ahmad Roaayala for Mosque
+* [Mosque](https://thenounproject.com/search/?q=mosque&i=1744106) by yanti for Mosque
 * [Pagoda](https://thenounproject.com/search/?q=pagoda&i=446665) by Xinh Studio for Pagoda 
 
 
