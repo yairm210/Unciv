@@ -455,6 +455,24 @@
 		"quote": "'For it soars to a height to match the sky, and as if surging up from among the other buildings it stands on high and looks down upon the remainder of the city, adorning it, because it is a part of it, but glorying in its own beauty'  - Procopius, De Aedificis"
 	},
 	{
+		"name": "Great Mosque of Djenne",
+		"culture": 1,
+		"faith": 3,
+		"greatPersonPoints": {"Great Engineer": 1},
+		"isWonder": true,
+		"uniques": ["Provides a free [Mosque] [in this city]", "Hidden when religion is disabled"],
+		"requiredTech": "Theology",
+		"quote": "'With the magnificence of eternity before us, let time, with all its fluctuations, dwindle into its own littleness.' - Thomas Chalmers"
+	},
+	{
+		"name": "Grand Temple",
+		"culture": 1,
+		"faith": 8,
+		"uniques": ["Requires a [Temple] in all cities", "Cost increases by [30] per owned city", "Hidden when religion is disabled"],
+		"requiredTech": "Theology",
+		"isNationalWonder": true
+	},
+	{
 		"name": "Chichen Itza",
 		"culture": 1,
 		"happiness": 4,
