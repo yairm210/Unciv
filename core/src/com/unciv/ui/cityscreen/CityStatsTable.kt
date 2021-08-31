@@ -101,6 +101,11 @@ class CityStatsTable(val cityScreen: CityScreen): Table() {
                     setPosition(stage.width - CityScreen.posFromEdge, stage.height - CityScreen.posFromEdge, Align.topRight)
                 }
             ) {
+                if (cityInfo.religion.religionThisIsTheHolyCityOf != null) {
+                    // I want this to be centered, but `.center()` doesn't seem to do anything,
+                    // regardless of where I place it :(
+                    it.add("Holy city of: [${cityInfo.religion.religionThisIsTheHolyCityOf!!}]".toLabel()).center().colspan(2).pad(5f).row()
+                }
                 it.add(getReligionsTable()).colspan(2).pad(5f)
             }
         
