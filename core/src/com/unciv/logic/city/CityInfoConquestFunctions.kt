@@ -33,10 +33,9 @@ class CityInfoConquestFunctions(val city: CityInfo){
     
     private fun destroyBuildingsOnCapture() {
         city.apply {
-            // Remove all national wonders (must come after the palace relocation because that's a national wonder too!)
             for (building in cityConstructions.getBuiltBuildings()) {
                 when {
-                    building.hasUnique("Never destroyed when the city is captured") -> continue
+                    building.hasUnique("Never destroyed when the city is captured") || building.isWonder -> continue
                     building.hasUnique("Destroyed when the city is captured") ->
                         cityConstructions.removeBuilding(building.name)
                     else -> {

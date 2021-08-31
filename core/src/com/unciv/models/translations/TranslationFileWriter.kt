@@ -226,6 +226,12 @@ object TranslationFileWriter {
             "in all cities connected to capital",
             "in all cities with a garrison",
             "in all cities in which the majority religion is a major religion",
+            "in all cities in which the majority religion is an enhanced religion",
+            "in non-enemy foreign cities",
+            "in foreign cities",
+            "in annexed cities",
+            "in holy cities",
+            "in City-State cities",
             "in cities following this religion",
         )
 

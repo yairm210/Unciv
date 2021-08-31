@@ -596,13 +596,14 @@ class CityInfo {
             "in non-enemy foreign cities" ->
                 viewingCiv != civInfo
                 && !civInfo.isAtWarWith(viewingCiv)
-            "in foreign cities" ->
-                viewingCiv != civInfo
+            "in foreign cities" -> viewingCiv != civInfo
+            "in annexed cities" -> foundingCiv != civInfo.civName && !isPuppet
+            "in holy cities" -> religion.religionThisIsTheHolyCityOf != null
+            "in City-State cities" -> civInfo.isCityState()
             // This is only used in communication to the user indicating that only in cities with this
             // religion a unique is active. However, since religion uniques only come from the city itself,
             // this will always be true when checked.
             "in cities following this religion" -> true
-            "in City-State cities" -> civInfo.isCityState()
             else -> false
         }
     }

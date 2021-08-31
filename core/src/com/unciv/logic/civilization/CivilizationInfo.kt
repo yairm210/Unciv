@@ -7,7 +7,6 @@ import com.unciv.logic.GameInfo
 import com.unciv.logic.UncivShowableException
 import com.unciv.logic.automation.NextTurnAutomation
 import com.unciv.logic.automation.WorkerAutomation
-import com.unciv.logic.battle.CityCombatant
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.RuinsManager.RuinsManager
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
@@ -40,8 +39,6 @@ import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.pow
 import kotlin.math.roundToInt
-import kotlin.system.measureNanoTime
-import kotlin.system.measureTimeMillis
 
 class CivilizationInfo {
 
@@ -819,6 +816,7 @@ class CivilizationInfo {
             placedUnit.religion = 
                 if (city != null) city.cityConstructions.cityInfo.religion.getMajorityReligionName()
                 else religionManager.religion?.name
+            placedUnit.setupAbilityUses()
         }
         
         return placedUnit
@@ -903,7 +901,6 @@ class CivilizationInfo {
 
     fun getAllyCiv() = allyCivName
     fun setAllyCiv(newAllyName: String?) { allyCivName = newAllyName }
-
 
     //endregion
 }

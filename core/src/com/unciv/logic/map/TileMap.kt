@@ -440,11 +440,6 @@ class TileMap {
             }
         }
         
-        // If this unit has special abilities that need to be kept track of, start doing so here
-        for (action in unit.religiousActionsUnitCanDo()) {
-            unit.abilityUsedCount[action] = 0
-        }        
-
         // And update civ stats, since the new unit changes both unit upkeep and resource consumption
         civInfo.updateStatsForNextTurn()
         civInfo.updateDetailedCivResources()
