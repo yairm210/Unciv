@@ -15,6 +15,7 @@ import com.unciv.models.translations.tr
 import com.unciv.ui.civilopedia.FormattedLine
 import com.unciv.ui.civilopedia.ICivilopediaText
 import com.unciv.ui.utils.Fonts
+import com.unciv.ui.utils.toPercent
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
@@ -212,6 +213,49 @@ class BaseUnit : INamed, INonPerpetualConstruction, ICivilopediaText {
         return productionCost.toInt()
     }
 
+    override fun canBePurchasedWithStat(
+        cityInfo: CityInfo,
+        stat: Stat,
+        ignoreCityRequirements: Boolean
+    ): Boolean {
+        // May buy [unitFilter] units for [amount] [Stat] starting from the [eraName] at an increasing price ([amount])
+        if (cityInfo.civInfo.getMatchingUniques("May buy [] units for [] [] [] starting from the [] at an increasing price ([])")
+            .any { 
+                matchesFilter(it.params[0])
+                && cityInfo.matchesFilter(it.params[3])        
+                && cityInfo.civInfo.getEraNumber() >= ruleset.getEraNumber(it.params[4]) 
+                && it.params[2] == stat.name
+            }
+        ) return true
+        
+        return super.canBePurchasedWithStat(cityInfo, stat, ignoreCityRequirements)
+    }
+    
+    private fun getCostForConstructionsIncreasingInPrice(baseCost: Int, increaseCost: Int, previouslyBought: Int): Int {
+        return (baseCost + increaseCost / 2f * ( previouslyBought * previouslyBought + previouslyBought )).toInt()        
+    }
+
+    override fun getBaseBuyCost(cityInfo: CityInfo, stat: Stat): Int? {
+        if (stat == Stat.Gold) return getBaseGoldCost(cityInfo.civInfo).toInt()
+        return (
+            sequenceOf(super.getBaseBuyCost(cityInfo, stat)).filterNotNull()
+                // May buy [unitFilter] units for [amount] [Stat] starting from the [eraName] at an increasing price ([amount])
+            + cityInfo.civInfo.getMatchingUniques("May buy [] units for [] [] [] starting from the [] at an increasing price ([])")
+                .filter {
+                    matchesFilter(it.params[0])
+                        && cityInfo.matchesFilter(it.params[3])
+                        && cityInfo.civInfo.getEraNumber() >= ruleset.getEraNumber(it.params[4])
+                        && it.params[2] == stat.name
+                }.map {
+                    getCostForConstructionsIncreasingInPrice(
+                        it.params[1].toInt(),
+                        it.params[5].toInt(),
+                        cityInfo.civInfo.boughtConstructionsWithGloballyIncreasingPrice[name] ?: 0
+                    )
+                }
+        ).minOrNull()
+    }
+    
     override fun getStatBuyCost(cityInfo: CityInfo, stat: Stat): Int? {
         var cost = getBaseBuyCost(cityInfo, stat)?.toDouble()
         if (cost == null) return null
@@ -226,11 +270,11 @@ class BaseUnit : INamed, INonPerpetualConstruction, ICivilopediaText {
 
         for (unique in cityInfo.getMatchingUniques("[] cost of purchasing [] units []%")) {
             if (stat.name == unique.params[0] && matchesFilter(unique.params[1]))
-                cost *= 1f + unique.params[2].toFloat() / 100f
+                cost *= unique.params[2].toPercent()
         }
         for (unique in cityInfo.getMatchingUniques("[] cost of purchasing items in cities []%"))
             if (stat.name == unique.params[0])
-                cost *= 1f + (unique.params[1].toFloat() / 100f)
+                cost *= unique.params[1].toPercent()
 
         return (cost / 10f).toInt() * 10
     }
@@ -316,17 +360,29 @@ class BaseUnit : INamed, INonPerpetualConstruction, ICivilopediaText {
     fun isBuildableIgnoringTechs(civInfo: CivilizationInfo) =
         getRejectionReason(civInfo, true) == ""
 
-    override fun postBuildEvent(cityConstructions: CityConstructions, wasBought: Boolean): Boolean {
+    override fun postBuildEvent(cityConstructions: CityConstructions, boughtWith: Stat?): Boolean {
         val civInfo = cityConstructions.cityInfo.civInfo
         val unit = civInfo.placeUnitNearTile(cityConstructions.cityInfo.location, name)
-                ?: return false  // couldn't place the unit, so there's actually no unit =(
+            ?: return false  // couldn't place the unit, so there's actually no unit =(
 
         //movement penalty
-        if (wasBought && !civInfo.gameInfo.gameParameters.godMode && !unit.hasUnique("Can move immediately once bought"))
+        if (boughtWith != null && !civInfo.gameInfo.gameParameters.godMode && !unit.hasUnique("Can move immediately once bought"))
             unit.currentMovement = 0f
 
         if (unit.hasUnique("Religious Unit")) {
             unit.religion = cityConstructions.cityInfo.religion.getMajorityReligionName()
+        }
+        
+        if (boughtWith != null && cityConstructions.cityInfo.civInfo.getMatchingUniques("May buy [] units for [] [] [] starting from the [] at an increasing price ([])")
+            .filter {
+                matchesFilter(it.params[0])
+                && cityConstructions.cityInfo.matchesFilter(it.params[3])
+                && cityConstructions.cityInfo.civInfo.getEraNumber() >= ruleset.getEraNumber(it.params[4])
+                && it.params[2] == boughtWith.name
+            }.any()
+        ) {
+            cityConstructions.cityInfo.civInfo.boughtConstructionsWithGloballyIncreasingPrice[name] = 
+                (cityConstructions.cityInfo.civInfo.boughtConstructionsWithGloballyIncreasingPrice[name] ?: 0) + 1
         }
 
         if (this.isCivilian()) return true // tiny optimization makes save files a few bytes smaller
@@ -338,6 +394,7 @@ class BaseUnit : INamed, INonPerpetualConstruction, ICivilopediaText {
 
     fun addConstructionBonuses(unit: MapUnit, cityConstructions: CityConstructions) {
         val civInfo = cityConstructions.cityInfo.civInfo
+        @Suppress("LocalVariableName")
         var XP = 0
 
         for (unique in
@@ -352,22 +409,22 @@ class BaseUnit : INamed, INonPerpetualConstruction, ICivilopediaText {
         for (unique in
         cityConstructions.cityInfo.getMatchingUniques("All newly-trained [] units [] receive the [] promotion")
             .filter { cityConstructions.cityInfo.matchesFilter(it.params[1]) } +
-                // Deprecated since 3.15.9
+            // Deprecated since 3.15.9
                 cityConstructions.cityInfo.getLocalMatchingUniques("All newly-trained [] units in this city receive the [] promotion")
-        //
+            //
         ) {
             val filter = unique.params[0]
             val promotion = unique.params.last()
 
-            if (unit.matchesFilter(filter) ||
-                (
-                        filter == "relevant" &&
-                                civInfo.gameInfo.ruleSet.unitPromotions.values
-                                    .any {
-                                        it.name == promotion
-                                                && unit.type.name in it.unitTypes
-                                    }
-                        )
+            if (unit.matchesFilter(filter) 
+                || (
+                    filter == "relevant" 
+                    && civInfo.gameInfo.ruleSet.unitPromotions.values
+                        .any {
+                            it.name == promotion
+                            && unit.type.name in it.unitTypes
+                        }
+                )
             ) {
                 unit.promotions.addPromotion(promotion, isFree = true)
             }

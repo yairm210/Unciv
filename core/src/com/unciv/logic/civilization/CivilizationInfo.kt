@@ -125,7 +125,10 @@ class CivilizationInfo {
      * Pairs of Uniques and the amount of turns they are still active
      * If the counter reaches 0 at the end of a turn, it is removed immediately
      */
-    var temporaryUniques = ArrayList<Pair<Unique, Int>>()
+    val temporaryUniques = ArrayList<Pair<Unique, Int>>()
+    
+    /** Maps the name of the construction to the amount of times bouhgt */
+    val boughtConstructionsWithGloballyIncreasingPrice = HashMap<String, Int>()
 
     // if we only use lists, and change the list each time the cities are changed,
     // we won't get concurrent modification exceptions.
@@ -177,6 +180,7 @@ class CivilizationInfo {
         toReturn.cityStateResource = cityStateResource
         toReturn.flagsCountdown.putAll(flagsCountdown)
         toReturn.temporaryUniques.addAll(temporaryUniques)
+        toReturn.boughtConstructionsWithGloballyIncreasingPrice.putAll(boughtConstructionsWithGloballyIncreasingPrice)
         toReturn.hasEverOwnedOriginalCapital = hasEverOwnedOriginalCapital
         return toReturn
     }
