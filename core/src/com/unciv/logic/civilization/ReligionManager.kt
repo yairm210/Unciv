@@ -246,7 +246,7 @@ class ReligionManager {
     }
 
     fun useProphetForEnhancingReligion(prophet: MapUnit) {
-        if (!mayFoundReligionNow(prophet)) return // How did you do this?
+        if (!mayEnhanceReligionNow(prophet)) return // How did you do this?
         religionState = ReligionState.EnhancingReligion
     }
 
