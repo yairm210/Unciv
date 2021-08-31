@@ -55,18 +55,6 @@ open class TileInfo {
     lateinit var baseTerrain: String
     val terrainFeatures: ArrayList<String> = ArrayList()
 
-    // Deprecation level can't be increased because of convertTerrainFeatureToArray
-    // Can't be flagged transient because it won't deserialize then
-    // but it should not serialize because it always has the default value on serialization and is flagged optional
-    // Can be removed together with convertTerrainFeatureToArray to drop support for save files from version 3.13.7 and below
-    @Deprecated(message = "Since 3.13.7 - replaced by terrainFeatures")
-    private var terrainFeature: String? = null
-    private fun convertTerrainFeatureToArray() {
-        if (terrainFeature != null) {
-            terrainFeatures.add(terrainFeature!!)
-            terrainFeature = null
-        }
-    }
 
     var naturalWonder: String? = null
     var resource: String? = null
@@ -94,7 +82,6 @@ open class TileInfo {
         for (airUnit in airUnits) toReturn.airUnits.add(airUnit.clone())
         toReturn.position = position.cpy()
         toReturn.baseTerrain = baseTerrain
-        convertTerrainFeatureToArray()
         toReturn.terrainFeatures.addAll(terrainFeatures)
         toReturn.naturalWonder = naturalWonder
         toReturn.resource = resource
@@ -331,7 +318,7 @@ open class TileInfo {
                 stats.add(unique.stats)
 
         if (city != null) {
-            var tileUniques = city.getMatchingUniques("[] from [] tiles []")
+            val tileUniques = city.getMatchingUniques("[] from [] tiles []")
                 .filter { city.matchesFilter(it.params[2]) }
             val improvementUniques = improvement.uniqueObjects.filter {
                 it.placeholderText == "[] on [] tiles once [] is discovered"
@@ -401,10 +388,6 @@ open class TileInfo {
         return when {
             improvement.name == this.improvement -> false
             isCityCenter() -> false
-            // deprecated as of 3.15.15
-                "Cannot be built on bonus resource" in improvement.uniques && resource != null
-                    && getTileResource().resourceType == ResourceType.Bonus -> false
-            //
             improvement.uniqueObjects.filter { it.placeholderText == "Cannot be built on [] tiles" }.any {
                     unique -> matchesTerrainFilter(unique.params[0])
             } -> false
@@ -672,7 +655,6 @@ open class TileInfo {
     }
 
     fun setTerrainTransients() {
-        convertTerrainFeatureToArray()
         // Uninitialized tilemap - when you're displaying a tile in the civilopedia or map editor
         if (::tileMap.isInitialized) convertHillToTerrainFeature()
         if (!ruleset.terrains.containsKey(baseTerrain))

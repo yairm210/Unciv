@@ -8,6 +8,7 @@ import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.PlayerType
+import com.unciv.logic.civilization.ReligionState
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.map.MapUnit
@@ -486,25 +487,33 @@ object UnitActions {
         if (!unit.hasUnique("May found a religion")) return 
         if (!unit.civInfo.religionManager.mayFoundReligionAtAll(unit)) return
         actionList += UnitAction(UnitActionType.FoundReligion,
-            action = {
-                addStatsPerGreatPersonUsage(unit)
-                unit.civInfo.religionManager.useGreatProphet(unit)
-                unit.destroy()
-            }.takeIf { unit.civInfo.religionManager.mayFoundReligionNow(unit) }
+            action = getFoundReligionAction(unit).takeIf { unit.civInfo.religionManager.mayFoundReligionNow(unit) }
         )
     }
     
+    fun getFoundReligionAction(unit: MapUnit): () -> Unit {
+        return {
+            addStatsPerGreatPersonUsage(unit)
+            unit.civInfo.religionManager.useProphetForFoundingReligion(unit)
+            unit.destroy()
+        }
+    }
+
     private fun addEnhanceReligionAction(unit: MapUnit, actionList: ArrayList<UnitAction>) {
         if (!unit.hasUnique("May enhance a religion")) return
         if (!unit.civInfo.religionManager.mayEnhanceReligionAtAll(unit)) return
         actionList += UnitAction(UnitActionType.EnhanceReligion,
             title = "Enhance [${unit.civInfo.religionManager.religion!!.name}]",
-            action = {
-                addStatsPerGreatPersonUsage(unit)
-                unit.civInfo.religionManager.useGreatProphet(unit)
-                unit.destroy()
-            }.takeIf { unit.civInfo.religionManager.mayEnhanceReligionNow(unit) }
+            action = getEnhanceReligionAction(unit).takeIf { unit.civInfo.religionManager.mayEnhanceReligionNow(unit) }
         )
+    }
+    
+    fun getEnhanceReligionAction(unit: MapUnit): () -> Unit {
+        return {
+            addStatsPerGreatPersonUsage(unit)
+            unit.civInfo.religionManager.useProphetForEnhancingReligion(unit)
+            unit.destroy()
+        }
     }
 
     private fun addActionsWithLimitedUses(unit: MapUnit, actionList: ArrayList<UnitAction>, tile: TileInfo) {
@@ -650,7 +659,7 @@ object UnitActions {
             otherCiv.addNotification("[${unit.civInfo}] has stolen your territory!", unit.currentTile.position, unit.civInfo.civName, NotificationIcon.War)
     }
 
-    private fun addStatsPerGreatPersonUsage(unit: MapUnit) {
+    fun addStatsPerGreatPersonUsage(unit: MapUnit) {
         if (!unit.isGreatPerson()) return
         
         val civInfo = unit.civInfo

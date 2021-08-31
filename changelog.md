@@ -1,3 +1,21 @@
+## 3.16.10
+
+By SimonCeder:
+- Add Austrian civ
+- units get promotions and xp bonuses from CS buildings
+- Demanding tribute from city states
+
+By xlenstra:
+- AI will now found & enhance religions - minor improvement to civilian AI
+- Fixed ambush bonus amount
+
+By SomeTroglodyte:
+- Diplomacy Screen Nation relation indicator
+- Persistent new game setup
+- Anti-Armor, negative tile yield, LoadScreen
+
+For modders: Mass unique deprecation
+
 ## 3.16.9
 
 By xlenstra:

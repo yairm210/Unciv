@@ -106,12 +106,6 @@ class StatsOverviewTable (
     private fun getGreatPeopleTable(): Table {
         val greatPeopleTable = Table(CameraStageBaseScreen.skin)
 
-        val greatPersonPoints = GreatPersonManager
-            .greatPersonCounterToStats(viewingPlayer.greatPeople.greatPersonPointsCounter)
-        val greatPersonPointsPerTurn = GreatPersonManager
-            .greatPersonCounterToStats(viewingPlayer.getGreatPersonPointsForNextTurn())
-        val pointsToGreatPerson = viewingPlayer.greatPeople.pointsForNextGreatPerson
-
         greatPeopleTable.defaults().pad(5f)
         val greatPeopleHeader = Table(CameraStageBaseScreen.skin)
         val greatPeopleIcon = ImageGetter.getStatIcon("Specialist")
@@ -124,11 +118,14 @@ class StatsOverviewTable (
         greatPeopleTable.add("Current points".tr())
         greatPeopleTable.add("Points per turn".tr()).row()
 
-        val mapping = GreatPersonManager.statToGreatPersonMapping
-        for(entry in mapping){
-            greatPeopleTable.add(entry.value.tr())
-            greatPeopleTable.add(greatPersonPoints[entry.key].toInt().toString()+"/"+pointsToGreatPerson)
-            greatPeopleTable.add(greatPersonPointsPerTurn[entry.key].toInt().toString()).row()
+        val greatPersonPoints = viewingPlayer.greatPeople.greatPersonPointsCounter
+        val greatPersonPointsPerTurn = viewingPlayer.getGreatPersonPointsForNextTurn()
+        val pointsToGreatPerson = viewingPlayer.greatPeople.pointsForNextGreatPerson
+
+        for((greatPerson, points) in greatPersonPoints) {
+            greatPeopleTable.add(greatPerson.tr())
+            greatPeopleTable.add("$points/$pointsToGreatPerson")
+            greatPeopleTable.add(greatPersonPointsPerTurn[greatPerson].toString()).row()
         }
         val pointsForGreatGeneral = viewingPlayer.greatPeople.greatGeneralPoints
         val pointsForNextGreatGeneral = viewingPlayer.greatPeople.pointsForNextGreatGeneral

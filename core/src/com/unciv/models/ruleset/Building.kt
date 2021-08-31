@@ -63,8 +63,6 @@ class Building : NamedStats(), INonPerpetualConstruction, ICivilopediaText {
     private var cannotBeBuiltWith: String? = null
     var cityStrength = 0
     var cityHealth = 0
-    @Deprecated("As of 3.15.16, replace with 'New [Military] units start with [15] Experience [in this city]'")
-    var xpForNewUnits = 0
     var replaces: String? = null
     var uniqueTo: String? = null
     var quote: String = ""
@@ -92,7 +90,6 @@ class Building : NamedStats(), INonPerpetualConstruction, ICivilopediaText {
         }
         if (cityStrength != 0) infoList += "{City strength} +$cityStrength"
         if (cityHealth != 0) infoList += "{City health} +$cityHealth"
-        if (xpForNewUnits != 0) infoList += "+$xpForNewUnits {XP for new units}"
         return infoList.joinToString("; ") { it.tr() }
     }
 
@@ -157,7 +154,6 @@ class Building : NamedStats(), INonPerpetualConstruction, ICivilopediaText {
 
         if (cityStrength != 0) lines += "{City strength} +$cityStrength"
         if (cityHealth != 0) lines += "{City health} +$cityHealth"
-        if (xpForNewUnits != 0) lines += "+$xpForNewUnits {XP for new units}"
         if (maintenance != 0) lines += "{Maintenance cost}: $maintenance {Gold}"
         return lines.joinToString("\n") { it.tr() }.trim()
     }
@@ -346,10 +342,9 @@ class Building : NamedStats(), INonPerpetualConstruction, ICivilopediaText {
             }
         }
 
-        if (cityStrength != 0 || cityHealth != 0 || xpForNewUnits != 0 || maintenance != 0) textList += FormattedLine()
+        if (cityStrength != 0 || cityHealth != 0 || maintenance != 0) textList += FormattedLine()
         if (cityStrength != 0) textList +=  FormattedLine("{City strength} +$cityStrength")
         if (cityHealth != 0) textList +=  FormattedLine("{City health} +$cityHealth")
-        if (xpForNewUnits != 0) textList +=  FormattedLine("+$xpForNewUnits {XP for new units}")
         if (maintenance != 0) textList +=  FormattedLine("{Maintenance cost}: $maintenance {Gold}")
 
         val seeAlso = ArrayList<FormattedLine>()
@@ -467,7 +462,7 @@ class Building : NamedStats(), INonPerpetualConstruction, ICivilopediaText {
             "Must have an owned [] within [] tiles" -> if (cityCenter.getTilesInDistance(unique.params[1].toInt()).none {
                         it.matchesFilter(unique.params[0], civInfo) && it.getOwner() == construction.cityInfo.civInfo
                     }) return unique.text
-            "Can only be built in annexed cities" -> if (construction.cityInfo.isPuppet || construction.cityInfo.foundingCiv == ""
+            "Can only be built in annexed cities" -> if (construction.cityInfo.isPuppet
                     || construction.cityInfo.civInfo.civName == construction.cityInfo.foundingCiv) return unique.text
             "Obsolete with []" -> if (civInfo.tech.isResearched(unique.params[0])) return unique.text
             Constants.hiddenWithoutReligionUnique -> if (!civInfo.gameInfo.hasReligionEnabled()) return unique.text
