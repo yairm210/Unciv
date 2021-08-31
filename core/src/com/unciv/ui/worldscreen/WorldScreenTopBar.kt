@@ -200,7 +200,7 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
             else resourceLabels[resource.name]!!.setText(civResources.first { it.resource == resource }.amount.toString())
         }
 
-        val year = getYear(civInfo.gameInfo.gameParameters.gameSpeed, civInfo.gameInfo.turns).toInt()
+        val year = getYear(civInfo.gameInfo.gameParameters.gameSpeed, civInfo.gameInfo.getEquivalentTurn()).toInt()
 
         val yearText = "[" + abs(year) + "] " + if (year < 0) "BC" else "AD"
         turnsLabel.setText(Fonts.turn + "" + civInfo.gameInfo.turns + " | " + yearText.tr())
@@ -264,10 +264,10 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
 
 
     // Best to initialize these once only
-    private val marathon = listOf(YearsToTurn(100, 15.0), YearsToTurn(400, 10.0), YearsToTurn(570, 5.0), YearsToTurn(771, 2.0), YearsToTurn(900, 1.0), YearsToTurn(1000, 0.5), YearsToTurn(1500, 0.25))
+    private val marathon = listOf(YearsToTurn(100, 15.0), YearsToTurn(400, 10.0), YearsToTurn(570, 5.0), YearsToTurn(771, 2.0), YearsToTurn(900, 1.0), YearsToTurn(1080, 0.5), YearsToTurn(1344, 0.25), YearsToTurn(1500, 0.083333))
     private val epic     = listOf(YearsToTurn(140, 25.0), YearsToTurn(230, 15.0), YearsToTurn(270, 10.0), YearsToTurn(360, 5.0), YearsToTurn(430, 2.0), YearsToTurn(530, 1.0), YearsToTurn(1500, 0.5))
-    private val standard = listOf(YearsToTurn(75, 40.0), YearsToTurn(135, 25.0), YearsToTurn(160, 15.0), YearsToTurn(211, 10.0), YearsToTurn(270, 5.0), YearsToTurn(315, 2.0), YearsToTurn(440, 1.0))
-    private val quick    = listOf(YearsToTurn(50, 60.0), YearsToTurn(80, 40.0), YearsToTurn(100, 25.0), YearsToTurn(130, 15.0), YearsToTurn(155, 10.0), YearsToTurn(195, 5.0), YearsToTurn(260, 2.0))
+    private val standard = listOf(YearsToTurn(75, 40.0), YearsToTurn(135, 25.0), YearsToTurn(160, 20.0), YearsToTurn(210, 10.0), YearsToTurn(270, 5.0), YearsToTurn(320, 2.0), YearsToTurn(440, 1.0), YearsToTurn(500, 0.5))
+    private val quick    = listOf(YearsToTurn(50, 60.0), YearsToTurn(80, 40.0), YearsToTurn(100, 30.0), YearsToTurn(130, 20.0), YearsToTurn(155, 10.0), YearsToTurn(195, 5.0), YearsToTurn(260, 2.0), YearsToTurn(310, 1.0))
 
     private fun getYear(gameSpeed: GameSpeed, turn: Int): Float {
 
