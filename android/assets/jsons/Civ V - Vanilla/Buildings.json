@@ -237,7 +237,7 @@
 		"maintenance": 4,
 		"hurryCostModifier": 50,
 		"uniques": ["Remove extra unhappiness from annexed cities",
-			"Can only be built in annexed cities"],
+			"Can only be built [in annexed cities]"],
 		"requiredTech": "Mathematics"
 	},
 	{
@@ -468,7 +468,8 @@
 		"name": "Grand Temple",
 		"culture": 1,
 		"faith": 8,
-		"uniques": ["Requires a [Temple] in all cities", "Cost increases by [30] per owned city", "Hidden when religion is disabled"],
+		"uniques": ["Requires a [Temple] in all cities", "Cost increases by [30] per owned city",
+			"[+100]% Natural religion spread [in this city]", "Hidden when religion is disabled", "Can only be built [in holy cities]"],
 		"requiredTech": "Theology",
 		"isNationalWonder": true
 	},
