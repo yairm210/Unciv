@@ -868,8 +868,8 @@ class CivilizationInfo {
     fun giveMilitaryUnitToPatron(receivingCiv: CivilizationInfo) {
         CityStateFunctions(this).giveMilitaryUnitToPatron(receivingCiv)
     }
-    fun influenceGainedByGift(giftAmount: Int)
-        = CityStateFunctions(this).influenceGainedByGift(giftAmount)
+    fun influenceGainedByGift(donorCiv: CivilizationInfo, giftAmount: Int)
+        = CityStateFunctions(this).influenceGainedByGift(donorCiv, giftAmount)
     fun receiveGoldGift(donorCiv: CivilizationInfo, giftAmount: Int) {
         CityStateFunctions(this).receiveGoldGift(donorCiv, giftAmount)
     }

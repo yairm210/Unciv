@@ -58,7 +58,7 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
         receivingCiv.addNotification("[${civInfo.civName}] gave us a [${militaryUnit.name}] as gift near [${city.name}]!", locations, civInfo.civName, militaryUnit.name)
     }
 
-    fun influenceGainedByGift(giftAmount: Int): Int {
+    fun influenceGainedByGift(donorCiv: CivilizationInfo, giftAmount: Int): Int {
         // https://github.com/Gedemon/Civ5-DLL/blob/aa29e80751f541ae04858b6d2a2c7dcca454201e/CvGameCoreDLL_Expansion1/CvMinorCivAI.cpp
         // line 8681 and below
         var influenceGained = giftAmount.toFloat().pow(1.01f) / 9.8f
@@ -70,7 +70,7 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
             GameSpeed.Epic -> 0.75f
             GameSpeed.Marathon -> 0.67f
         }
-        for (unique in civInfo.getMatchingUniques("Gifts of Gold to City-States generate []% more Influence"))
+        for (unique in donorCiv.getMatchingUniques("Gifts of Gold to City-States generate []% more Influence"))
             influenceGained *= 1f + unique.params[0].toFloat() / 100f
         influenceGained -= influenceGained % 5
         if (influenceGained < 5f) influenceGained = 5f
@@ -81,7 +81,7 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
         if (!civInfo.isCityState()) throw Exception("You can only gain influence with City-States!")
         donorCiv.addGold(-giftAmount)
         civInfo.addGold(giftAmount)
-        civInfo.getDiplomacyManager(donorCiv).influence += influenceGainedByGift(giftAmount)
+        civInfo.getDiplomacyManager(donorCiv).influence += influenceGainedByGift(donorCiv, giftAmount)
         updateAllyCivForCityState()
         donorCiv.updateStatsForNextTurn()
     }
