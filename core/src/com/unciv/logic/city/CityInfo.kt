@@ -111,14 +111,16 @@ class CityInfo {
         tile.improvement = null
         tile.improvementInProgress = null
 
-        if (civInfo.religionManager.religionState == ReligionState.Pantheon) {
-            religion.addPressure(civInfo.religionManager.religion!!.name, 100)
-        }
-
         val ruleset = civInfo.gameInfo.ruleSet
         workedTiles = hashSetOf() //reassign 1st working tile
+        
         if (startingEra in ruleset.eras)
             population.setPopulation(ruleset.eras[startingEra]!!.settlerPopulation)
+
+        if (civInfo.religionManager.religionState == ReligionState.Pantheon) {
+            religion.addPressure(civInfo.religionManager.religion!!.name, 200 * population.population)
+        }
+        
         population.autoAssignPopulation()
         cityStats.update()
 
