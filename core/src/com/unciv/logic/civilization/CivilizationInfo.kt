@@ -506,6 +506,9 @@ class CivilizationInfo {
         return if (!gameInfo.hasReligionEnabled()) greatPeople.filter { !it.uniques.contains("Great Person - [Faith]")}.toHashSet()
         else greatPeople.toHashSet()
     }
+    
+    fun hasTechOrPolicy(techOrPolicyName: String) =
+        tech.isResearched(techOrPolicyName) || policies.isAdopted(techOrPolicyName)
 
     //endregion
 
@@ -877,8 +880,7 @@ class CivilizationInfo {
         if (!cityState.isCityState()) throw Exception("You can only gain influence with City-States!")
         addGold(-giftAmount)
         cityState.addGold(giftAmount)
-        cityState.getDiplomacyManager(this).influence += influenceGainedByGift(giftAmount)
-        cityState.updateAllyCivForCityState()
+        cityState.getDiplomacyManager(this).addInfluence(influenceGainedByGift(giftAmount).toFloat())
         updateStatsForNextTurn()
     }
 
@@ -936,20 +938,20 @@ class CivilizationInfo {
     }
 
     fun addProtectorCiv(otherCiv: CivilizationInfo) {
-        if(!this.isCityState() or !otherCiv.isMajorCiv() or otherCiv.isDefeated()) return
-        if(!knows(otherCiv) or isAtWarWith(otherCiv)) return //Exception
+        if (!isCityState() || !otherCiv.isMajorCiv() || otherCiv.isDefeated()) return
+        if (!knows(otherCiv) || isAtWarWith(otherCiv)) return //Exception
 
         val diplomacy = getDiplomacyManager(otherCiv.civName)
         diplomacy.diplomaticStatus = DiplomaticStatus.Protector
     }
 
     fun removeProtectorCiv(otherCiv: CivilizationInfo) {
-        if(!this.isCityState() or !otherCiv.isMajorCiv() or otherCiv.isDefeated()) return
-        if(!knows(otherCiv) or isAtWarWith(otherCiv)) return //Exception
+        if (!isCityState() || !otherCiv.isMajorCiv() || otherCiv.isDefeated()) return
+        if (!knows(otherCiv) || isAtWarWith(otherCiv)) return //Exception
 
         val diplomacy = getDiplomacyManager(otherCiv.civName)
         diplomacy.diplomaticStatus = DiplomaticStatus.Peace
-        diplomacy.influence -= 20
+        diplomacy.addInfluence(-20f)
     }
 
     fun updateAllyCivForCityState() {
@@ -1132,9 +1134,8 @@ class CivilizationInfo {
         if (!cityState.isCityState()) throw Exception("You can only demand gold from City-States!")
         val goldAmount = goldGainedByTribute()
         addGold(goldAmount)
-        cityState.getDiplomacyManager(this).influence -= 15
+        cityState.getDiplomacyManager(this).addInfluence(-15f)
         cityState.addFlag(CivFlags.RecentlyBullied.name, 20)
-        cityState.updateAllyCivForCityState()
         updateStatsForNextTurn()
     }
 
@@ -1149,9 +1150,8 @@ class CivilizationInfo {
         if (buildableWorkerLikeUnits.isEmpty()) return  // Bad luck?
         placeUnitNearTile(cityState.getCapital().location, buildableWorkerLikeUnits.keys.random())
 
-        cityState.getDiplomacyManager(this).influence -= 50
+        cityState.getDiplomacyManager(this).addInfluence(-50f)
         cityState.addFlag(CivFlags.RecentlyBullied.name, 20)
-        cityState.updateAllyCivForCityState()
     }
 
     fun canGiveStat(statType: Stat): Boolean {

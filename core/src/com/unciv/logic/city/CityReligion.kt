@@ -294,10 +294,7 @@ class CityInfoReligionManager {
         
         for (unique in cityInfo.getMatchingUniques("[]% Natural religion spread [] with []"))
             if (pressuredCity.matchesFilter(unique.params[1]) 
-                && (
-                    cityInfo.civInfo.tech.isResearched(unique.params[2]) 
-                    || cityInfo.civInfo.policies.isAdopted(unique.params[2])
-                )
+                && cityInfo.civInfo.hasTechOrPolicy(unique.params[2])
             ) pressure *= 1f + unique.params[0].toFloat() / 100f
         
         return pressure.toInt()

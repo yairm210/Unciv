@@ -464,7 +464,7 @@ object UnitActions {
             "Can undertake a trade mission with City-State, giving a large sum of gold and [] Influence" -> {
                 val canConductTradeMission = tile.owningCity?.civInfo?.isCityState() == true
                         && tile.owningCity?.civInfo?.isAtWarWith(unit.civInfo) == false
-                val influenceEarned = unique.params[0].toInt()
+                val influenceEarned = unique.params[0].toFloat()
                 actionList += UnitAction(UnitActionType.ConductTradeMission,
                     action = {
                         // http://civilization.wikia.com/wiki/Great_Merchant_(Civ5)
@@ -472,7 +472,7 @@ object UnitActions {
                         if (unit.civInfo.hasUnique("Double gold from Great Merchant trade missions"))
                             goldEarned *= 2
                         unit.civInfo.addGold(goldEarned)
-                        tile.owningCity!!.civInfo.getDiplomacyManager(unit.civInfo).influence += influenceEarned
+                        tile.owningCity!!.civInfo.getDiplomacyManager(unit.civInfo).addInfluence(influenceEarned)
                         unit.civInfo.addNotification("Your trade mission to [${tile.owningCity!!.civInfo}] has earned you [${goldEarned}] gold and [$influenceEarned] influence!",
                             tile.owningCity!!.civInfo.civName, NotificationIcon.Gold, NotificationIcon.Culture)
                         addStatsPerGreatPersonUsage(unit)
@@ -553,7 +553,7 @@ object UnitActions {
             title = "Spread [${unit.religion!!}]",
             action = {
                 val followersOfOtherReligions = city.religion.getFollowersOfOtherReligionsThan(unit.religion!!)
-                for (unique in unit.civInfo.getMatchingUniques("When spreading religion to a city, gain [] times the amount of followers of other religions as []")) {
+                for (unique in unit.getMatchingUniques("When spreading religion to a city, gain [] times the amount of followers of other religions as []")) {
                     unit.civInfo.addStat(Stat.valueOf(unique.params[1]), followersOfOtherReligions * unique.params[0].toInt())
                 }
                 city.religion.addPressure(unit.religion!!, unit.getPressureAddedFromSpread())
@@ -751,14 +751,12 @@ object UnitActions {
         // We need to be in another civs territory.
         if (recipient == null || recipient.isCurrentPlayer()) return null
 
-        // City States only take military units (and GPs for certain civs)
+        // City States only take military units (and units specifically allowed by uniques)
         if (recipient.isCityState()) {
-            if (unit.isGreatPerson()) {
-                // Do we have a unique ability to gift GPs?
-                if (unit.civInfo.getMatchingUniques("Gain [] Influence with a [] gift to a City-State").none {
-                    it.params[1] == "Great Person" } )  return null
-            }
-            else if (!unit.baseUnit().matchesFilter("Military")) return null
+            if (!unit.matchesFilter("Military") 
+                && unit.getMatchingUniques("Gain [] Influence with a [] gift to a City-State")
+                    .none { unit.matchesFilter(it.params[1]) }
+            ) return null
         }
         // If gifting to major civ they need to be friendly
         else if (!tile.isFriendlyTerritory(unit.civInfo)) return null
@@ -769,15 +767,15 @@ object UnitActions {
         val giftAction = {
             if (recipient.isCityState()) {
                 for (unique in unit.civInfo.getMatchingUniques("Gain [] Influence with a [] gift to a City-State")) {
-                    if((unit.isGreatPerson() && unique.params[1] == "Great Person")
-                        || unit.matchesFilter(unique.params[1])) {
-                        recipient.getDiplomacyManager(unit.civInfo).influence += unique.params[0].toInt() - 5
+                    if ((unit.isGreatPerson() && unique.params[1] == "Great Person")
+                        || unit.matchesFilter(unique.params[1])
+                    ) {
+                        recipient.getDiplomacyManager(unit.civInfo).addInfluence(unique.params[0].toInt() - 5)
+                        break
                     }
                 }
 
-                recipient.getDiplomacyManager(unit.civInfo).influence += 5
-
-                recipient.updateAllyCivForCityState()
+                recipient.getDiplomacyManager(unit.civInfo).addInfluence(5)
             }
             else recipient.getDiplomacyManager(unit.civInfo).addModifier(DiplomaticModifiers.GaveUsUnits, 5f)
 

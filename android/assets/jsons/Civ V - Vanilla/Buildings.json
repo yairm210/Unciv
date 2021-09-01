@@ -717,7 +717,7 @@
 		"culture": 1,
 		"isWonder": true,
 		"greatPersonPoints": {"Great Artist": 1},
-		"uniques": ["Unhappiness from population decreased by [10]%"],
+		"uniques": ["[-10]% unhappiness from population [in all cities]"],
 		"requiredTech": "Banking",
 		"quote": "'Most of us can, as we choose, make of this world either a palace or a prison' - John Lubbock"
 	},
@@ -969,7 +969,7 @@
 		"culture": 1,
 		"isWonder": true,
 		"greatPersonPoints": {"Great Engineer": 2},
-		"uniques": ["[+1 Production] from every specialist"],
+		"uniques": ["[+1 Production] from every specialist [in all cities]"],
 		"requiredTech": "Replaceable Parts",
 		"quote": "'Give me your tired, your poor, your huddled masses yearning to breathe free, the wretched refuse of your teeming shore. Send these, the homeless, tempest-tossed to me, I lift my lamp beside the golden door!'  - Emma Lazarus"
 	},
@@ -1085,7 +1085,7 @@
 		"cost": 300,
 		"maintenance": 1,
 		"requiredTech": "Telecommunications",
-		"uniques": ["Population loss from nuclear attacks -[75]%"]
+		"uniques": ["Population loss from nuclear attacks [-75]% [in this city]"]
 	},
 	{
 		"name": "SS Cockpit",
