@@ -371,17 +371,21 @@ class BaseUnit : INamed, INonPerpetualConstruction, ICivilopediaText {
 
         // If this unit has special abilities that need to be kept track of, start doing so here
         if (unit.hasUnique("Religious Unit")) {
-            unit.religion = cityConstructions.cityInfo.religion.getMajorityReligionName()
+            unit.religion =  
+                if (unit.hasUnique("Always takes the religion of your civilization"))
+                    civInfo.religionManager.religion?.name
+                else cityConstructions.cityInfo.religion.getMajorityReligionName()
+            
             unit.setupAbilityUses(cityConstructions.cityInfo)
         }
         
         if (boughtWith != null && cityConstructions.cityInfo.civInfo.getMatchingUniques("May buy [] units for [] [] [] starting from the [] at an increasing price ([])")
-            .filter {
+            .any {
                 matchesFilter(it.params[0])
                 && cityConstructions.cityInfo.matchesFilter(it.params[3])
                 && cityConstructions.cityInfo.civInfo.getEraNumber() >= ruleset.getEraNumber(it.params[4])
                 && it.params[2] == boughtWith.name
-            }.any()
+            }
         ) {
             cityConstructions.cityInfo.civInfo.boughtConstructionsWithGloballyIncreasingPrice[name] = 
                 (cityConstructions.cityInfo.civInfo.boughtConstructionsWithGloballyIncreasingPrice[name] ?: 0) + 1
