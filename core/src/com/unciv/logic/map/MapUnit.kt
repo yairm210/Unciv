@@ -168,9 +168,10 @@ class MapUnit {
 
     fun getTile(): TileInfo = currentTile
     fun getMaxMovement(): Int {
-        if (isEmbarked()) return getEmbarkedMovement()
-
-        var movement = baseUnit.movement
+        var movement = 
+            if (isEmbarked()) 2
+            else baseUnit.movement
+        
         movement += getMatchingUniques("[] Movement").sumBy { it.params[0].toInt() }
 
         for (unique in civInfo.getMatchingUniques("+[] Movement for all [] units"))
@@ -181,6 +182,13 @@ class MapUnit {
             civInfo.hasUnique("+1 Movement for all units during Golden Age")
         )
             movement += 1
+
+        // Deprecated since 3.16.11
+            if (isEmbarked()) {
+                movement += civInfo.getMatchingUniques("Increases embarked movement +1").count()
+                if (civInfo.hasUnique("+1 Movement for all embarked units")) movement += 1
+            }
+        //
 
         return movement
     }
@@ -194,10 +202,11 @@ class MapUnit {
     fun getUniques(): ArrayList<Unique> = tempUniques
 
     fun getMatchingUniques(placeholderText: String): Sequence<Unique> =
-        tempUniques.asSequence().filter { it.placeholderText == placeholderText }
+        tempUniques.asSequence().filter { it.placeholderText == placeholderText } + 
+            civInfo.getMatchingUniques(placeholderText)
 
     fun hasUnique(unique: String): Boolean {
-        return getUniques().any { it.placeholderText == unique }
+        return getUniques().any { it.placeholderText == unique } || civInfo.hasUnique(unique)
     }
 
     fun updateUniques() {
@@ -341,7 +350,6 @@ class MapUnit {
         return range
     }
 
-
     fun isEmbarked(): Boolean {
         if (!baseUnit.isLandUnit()) return false
         return currentTile.isWater
@@ -355,13 +363,6 @@ class MapUnit {
                 it.getOwner() == to || it.getUnits().any { unit -> unit.owner == to.civName }
             }
         return false
-    }
-
-    fun getEmbarkedMovement(): Int {
-        var movement = 2
-        movement += civInfo.getMatchingUniques("Increases embarked movement +1").count()
-        if (civInfo.hasUnique("+1 Movement for all embarked units")) movement += 1
-        return movement
     }
 
     fun getUnitToUpgradeTo(): BaseUnit {

@@ -111,14 +111,16 @@ class CityInfo {
         tile.improvement = null
         tile.improvementInProgress = null
 
-        if (civInfo.religionManager.religionState == ReligionState.Pantheon) {
-            religion.addPressure(civInfo.religionManager.religion!!.name, 100)
-        }
-
         val ruleset = civInfo.gameInfo.ruleSet
         workedTiles = hashSetOf() //reassign 1st working tile
+        
         if (startingEra in ruleset.eras)
             population.setPopulation(ruleset.eras[startingEra]!!.settlerPopulation)
+
+        if (civInfo.religionManager.religionState == ReligionState.Pantheon) {
+            religion.addPressure(civInfo.religionManager.religion!!.name, 200 * population.population)
+        }
+        
         population.autoAssignPopulation()
         cityStats.update()
 
@@ -141,7 +143,7 @@ class CityInfo {
 
         civInfo.policies.tryToAddPolicyBuildings()
 
-        for (unique in civInfo.getMatchingUniques("Gain a free [] []")) {
+        for (unique in getMatchingUniques("Gain a free [] []")) {
             val freeBuildingName = unique.params[0]
             if (matchesFilter(unique.params[1])) {
                 if (!cityConstructions.isBuilt(freeBuildingName))
@@ -370,15 +372,15 @@ class CityInfo {
             }
 
             // Sweden UP
-            for (otherciv in civInfo.getKnownCivs()) {
-                if (!civInfo.getDiplomacyManager(otherciv)
+            for (otherCiv in civInfo.getKnownCivs()) {
+                if (!civInfo.getDiplomacyManager(otherCiv)
                         .hasFlag(DiplomacyFlags.DeclarationOfFriendship)
                 ) continue
 
-                for (ourunique in civInfo.getMatchingUniques("When declaring friendship, both parties gain a []% boost to great person generation"))
-                    allGppPercentageBonus += ourunique.params[0].toInt()
-                for (theirunique in otherciv.getMatchingUniques("When declaring friendship, both parties gain a []% boost to great person generation"))
-                    allGppPercentageBonus += theirunique.params[0].toInt()
+                for (ourUnique in civInfo.getMatchingUniques("When declaring friendship, both parties gain a []% boost to great person generation"))
+                    allGppPercentageBonus += ourUnique.params[0].toInt()
+                for (theirUnique in otherCiv.getMatchingUniques("When declaring friendship, both parties gain a []% boost to great person generation"))
+                    allGppPercentageBonus += theirUnique.params[0].toInt()
             }
 
             for (unitName in gppCounter.keys)

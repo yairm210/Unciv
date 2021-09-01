@@ -251,8 +251,8 @@ class CityConstructions {
             isBuilt(building) || getBuiltBuildings().any { it.replaces == building }
 
     fun getWorkDone(constructionName: String): Int {
-        if (inProgressConstructions.containsKey(constructionName)) return inProgressConstructions[constructionName]!!
-        else return 0
+        return if (inProgressConstructions.containsKey(constructionName)) inProgressConstructions[constructionName]!!
+            else 0
     }
 
     fun getRemainingWork(constructionName: String, useStoredProduction: Boolean = true): Int {
@@ -425,7 +425,7 @@ class CityConstructions {
         }
     }
 
-    private fun constructionComplete(construction: IConstruction) {
+    private fun constructionComplete(construction: INonPerpetualConstruction) {
         construction.postBuildEvent(this)
         if (construction.name in inProgressConstructions)
             inProgressConstructions.remove(construction.name)
@@ -501,7 +501,7 @@ class CityConstructions {
         automatic: Boolean, 
         stat: Stat = Stat.Gold
     ): Boolean {
-        if (!getConstruction(constructionName).postBuildEvent(this, true))
+        if (!(getConstruction(constructionName) as INonPerpetualConstruction).postBuildEvent(this, stat))
             return false // nothing built - no pay
 
         if (!cityInfo.civInfo.gameInfo.gameParameters.godMode) {
@@ -535,7 +535,7 @@ class CityConstructions {
             return null
 
         val cultureBuildingToBuild = buildableCultureBuildings.minByOrNull { it.cost }!!.name
-        constructionComplete(getConstruction(cultureBuildingToBuild))
+        constructionComplete(getConstruction(cultureBuildingToBuild) as INonPerpetualConstruction)
 
         return cultureBuildingToBuild
     }

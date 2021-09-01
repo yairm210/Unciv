@@ -6,6 +6,7 @@ import com.unciv.models.Religion
 import com.unciv.models.ruleset.Belief
 import com.unciv.models.ruleset.BeliefType
 import com.unciv.ui.pickerscreens.BeliefContainer
+import com.unciv.ui.utils.toPercent
 import kotlin.random.Random
 
 class ReligionManager {
@@ -110,7 +111,7 @@ class ReligionManager {
             civInfo.gameInfo.gameParameters.gameSpeed.modifier
         
         for (unique in civInfo.getMatchingUniques("[]% Faith cost of generating Great Prophet equivalents"))
-            faithCost *= 1f + unique.params[0].toFloat() / 100f
+            faithCost *= unique.params[0].toPercent()
         
         return faithCost.toInt()
     }

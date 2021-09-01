@@ -1,6 +1,7 @@
 package com.unciv.logic.civilization
 
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
+import com.unciv.logic.map.RoadStatus
 import com.unciv.models.metadata.BASE_GAME_DURATION_TURNS
 import com.unciv.models.ruleset.BeliefType
 import com.unciv.models.ruleset.Policy
@@ -60,12 +61,13 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
         // just to go over them once is a waste of memory - there are low-end phones who don't have much ram
 
         val ignoredTileTypes = civInfo.getMatchingUniques("No Maintenance costs for improvements in [] tiles")
-                .map { it.params[0] }.toHashSet() // needs to be .toHashSet()ed,
+            .map { it.params[0] }.toHashSet() // needs to be .toHashSet()ed,
         // Because we go over every tile in every city and check if it's in this list, which can get real heavy.
 
         for (city in civInfo.cities) {
             for (tile in city.getTiles()) {
                 if (tile.isCityCenter()) continue
+                if (tile.roadStatus == RoadStatus.None) continue // Cheap checks before pricy checks
                 if (ignoredTileTypes.any { tile.matchesFilter(it, civInfo) }) continue
 
                 transportationUpkeep += tile.roadStatus.upkeep
@@ -185,20 +187,21 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
         
         val ownedLuxuries = civInfo.getCivResources().map { it.resource }.filter { it.resourceType == ResourceType.Luxury }
         
-        statMap["Luxury resources"] = civInfo.getCivResources().map { it.resource }
-                .count { it.resourceType === ResourceType.Luxury } * happinessPerUniqueLuxury
+        statMap["Luxury resources"] = civInfo.getCivResources()
+            .map { it.resource }
+            .count { it.resourceType === ResourceType.Luxury } * happinessPerUniqueLuxury
         
-        val happinessBonusForCityStateProvidedLuxuries = 
+        val happinessBonusForCityStateProvidedLuxuries =
             civInfo.getMatchingUniques("Happiness from Luxury Resources gifted by City-States increased by []%")
-                .map { it.params[0].toFloat() / 100f }.sum()
+                .sumBy { it.params[0].toInt() } / 100f
         
-        val luxuriesProvidedByCityStates = 
-            civInfo.getKnownCivs().asSequence()
-                .filter { it.isCityState() && it.getAllyCiv() == civInfo.civName }
-                .flatMap { it.getCivResources().map { res -> res.resource } }
-                .distinct().count { it.resourceType === ResourceType.Luxury }
+        val luxuriesProvidedByCityStates = civInfo.getKnownCivs().asSequence()
+            .filter { it.isCityState() && it.getAllyCiv() == civInfo.civName }
+            .flatMap { it.getCivResources().map { res -> res.resource } }
+            .distinct()
+            .count { it.resourceType === ResourceType.Luxury && ownedLuxuries.contains(it) }
         
-        statMap["City-State Luxuries"] = happinessBonusForCityStateProvidedLuxuries * luxuriesProvidedByCityStates * happinessPerUniqueLuxury
+        statMap["City-State Luxuries"] = happinessPerUniqueLuxury * luxuriesProvidedByCityStates * happinessBonusForCityStateProvidedLuxuries
 
         val luxuriesAllOfWhichAreTradedAway = civInfo.detailedCivResources
             .filter { it.amount < 0 && it.resource.resourceType == ResourceType.Luxury
@@ -256,7 +259,7 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
         for (otherCiv in civInfo.getKnownCivs()) {
             if (otherCiv.isCityState() && otherCiv.getDiplomacyManager(civInfo).relationshipLevel() >= RelationshipLevel.Friend) {
                 val eraInfo = civInfo.getEraObject()
-                val relevantbonuses = 
+                val relevantBonuses = 
                     when {
                         eraInfo == null -> null
                         otherCiv.getDiplomacyManager(civInfo).relationshipLevel() == RelationshipLevel.Friend ->
@@ -265,8 +268,8 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
                             eraInfo.allyBonus[otherCiv.cityStateType.name]
                     }
 
-                if (relevantbonuses != null) {
-                    for (bonus in relevantbonuses) {
+                if (relevantBonuses != null) {
+                    for (bonus in relevantBonuses) {
                         if (bonus.getPlaceholderText() == "Provides [] Happiness") {
                             if (statMap.containsKey("City-States"))
                                 statMap["City-States"] = statMap["City-States"]!! + bonus.getPlaceholderParameters()[0].toFloat()

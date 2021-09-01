@@ -392,7 +392,7 @@ class TileMap {
             unitName: String,
             civInfo: CivilizationInfo
     ): MapUnit? {
-        val unit = gameInfo.ruleSet.units[unitName]!!.getMapUnit(gameInfo.ruleSet)
+        val unit = gameInfo.ruleSet.units[unitName]!!.getMapUnit(civInfo)
 
         fun getPassableNeighbours(tileInfo: TileInfo): Set<TileInfo> =
                 tileInfo.neighbors.filter { unit.movement.canPassThrough(it) }.toSet()

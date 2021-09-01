@@ -13,7 +13,6 @@ import kotlin.math.roundToInt
 interface IConstruction : INamed {
     fun isBuildable(cityConstructions: CityConstructions): Boolean
     fun shouldBeDisplayed(cityConstructions: CityConstructions): Boolean
-    fun postBuildEvent(cityConstructions: CityConstructions, wasBought: Boolean = false): Boolean  // Yes I'm hilarious.
     fun getResourceRequirements(): HashMap<String,Int>
 }
 
@@ -23,6 +22,7 @@ interface INonPerpetualConstruction : IConstruction, INamed, IHasUniques {
     fun getProductionCost(civInfo: CivilizationInfo): Int
     fun getStatBuyCost(cityInfo: CityInfo, stat: Stat): Int?
     fun getRejectionReason(cityConstructions: CityConstructions): String
+    fun postBuildEvent(cityConstructions: CityConstructions, boughtWith: Stat? = null): Boolean  // Yes I'm hilarious.
     
     fun getMatchingUniques(uniqueTemplate: String): Sequence<Unique> {
         return uniqueObjects.asSequence().filter { it.placeholderText == uniqueTemplate }
@@ -118,9 +118,6 @@ open class PerpetualConstruction(override var name: String, val description: Str
     override fun isBuildable(cityConstructions: CityConstructions): Boolean =
             throw Exception("Impossible!")
     
-    override fun postBuildEvent(cityConstructions: CityConstructions, wasBought: Boolean) =
-            throw Exception("Impossible!")
-
     override fun getResourceRequirements(): HashMap<String, Int> = hashMapOf()
 
 }
