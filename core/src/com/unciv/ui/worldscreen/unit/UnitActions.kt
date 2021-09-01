@@ -557,6 +557,8 @@ object UnitActions {
                     unit.civInfo.addStat(Stat.valueOf(unique.params[1]), followersOfOtherReligions * unique.params[0].toInt())
                 }
                 city.religion.addPressure(unit.religion!!, unit.getPressureAddedFromSpread())
+                if (unit.hasUnique("Removes other religions when spreading religion"))
+                    city.religion.removeAllPressuresExceptFor(unit.religion!!)
                 unit.currentMovement = 0f
                 useActionWithLimitedUses(unit, Constants.spreadReligionAbilityCount)
             }.takeIf { unit.currentMovement > 0 && !blockedByInquisitor } 

@@ -59,8 +59,7 @@ class CityInfoReligionManager {
     }
     
     fun getUniques(): Sequence<Unique> {
-        val majorityReligion = getMajorityReligion()
-        if (majorityReligion == null) return sequenceOf()
+        val majorityReligion = getMajorityReligion() ?: return sequenceOf()
         return majorityReligion.getFollowerUniques()
     }
     
@@ -72,7 +71,7 @@ class CityInfoReligionManager {
         return pressures.clone()
     }
     
-    fun clearAllPressures() {
+    private fun clearAllPressures() {
         pressures.clear()
         // We add pressure for following no religion
         // Basically used as a failsafe so that there is always some religion, 
@@ -92,8 +91,11 @@ class CityInfoReligionManager {
 
     fun removeAllPressuresExceptFor(religion: String) {
         val pressureFromThisReligion = pressures[religion]!!
+        // Atheism is never removed
+        val pressureFromAtheism = pressures[Constants.noReligionName]
         clearAllPressures()
         pressures.add(religion, pressureFromThisReligion)
+        if (pressureFromAtheism != null) pressures[Constants.noReligionName] = pressureFromAtheism
         updateNumberOfFollowers()
     }
     
