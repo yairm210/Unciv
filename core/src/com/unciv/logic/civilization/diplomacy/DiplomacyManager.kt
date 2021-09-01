@@ -198,11 +198,11 @@ class DiplomacyManager() {
     }
     
     fun addInfluence(amount: Float) {
-        setInfluence(max(influence + amount, MINIMUM_INFLUENCE))
+        setInfluence(influence + amount)
     }
     
     fun setInfluence(amount: Float) {
-        influence = amount
+        influence = max(amount, MINIMUM_INFLUENCE)
         civInfo.updateAllyCivForCityState()
     }
 
