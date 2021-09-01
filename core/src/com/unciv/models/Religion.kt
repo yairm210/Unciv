@@ -10,7 +10,7 @@ import com.unciv.models.stats.INamed
 class Religion() : INamed {
 
     override lateinit var name: String
-    var iconName: String = "Pantheon"
+    var displayName: String? = null
     lateinit var foundingCivName: String
 
     var founderBeliefs: HashSet<String> = hashSetOf()
@@ -21,13 +21,14 @@ class Religion() : INamed {
 
     constructor(name: String, gameInfo: GameInfo, foundingCivName: String) : this() {
         this.name = name
+        this.displayName = name
         this.foundingCivName = foundingCivName
         this.gameInfo = gameInfo
     }
 
     fun clone(): Religion {
         val toReturn = Religion(name, gameInfo, foundingCivName)
-        toReturn.iconName = iconName
+        toReturn.displayName = displayName
         toReturn.founderBeliefs.addAll(founderBeliefs)
         toReturn.followerBeliefs.addAll(followerBeliefs)
         return toReturn
@@ -36,6 +37,10 @@ class Religion() : INamed {
     fun setTransients(gameInfo: GameInfo) {
         this.gameInfo = gameInfo
     }
+    
+    fun getIconName() = 
+        if (isPantheon()) "Pantheon"
+        else name
     
     private fun mapToExistingBeliefs(beliefs: HashSet<String>): List<Belief> {
         val rulesetBeliefs = gameInfo.ruleSet.beliefs

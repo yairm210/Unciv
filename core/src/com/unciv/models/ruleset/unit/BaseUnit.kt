@@ -219,7 +219,7 @@ class BaseUnit : INamed, INonPerpetualConstruction, ICivilopediaText {
         ignoreCityRequirements: Boolean
     ): Boolean {
         // May buy [unitFilter] units for [amount] [Stat] starting from the [eraName] at an increasing price ([amount])
-        if (cityInfo.civInfo.getMatchingUniques("May buy [] units for [] [] [] starting from the [] at an increasing price ([])")
+        if (!ignoreCityRequirements && cityInfo.civInfo.getMatchingUniques("May buy [] units for [] [] [] starting from the [] at an increasing price ([])")
             .any { 
                 matchesFilter(it.params[0])
                 && cityInfo.matchesFilter(it.params[3])        

@@ -503,7 +503,7 @@ object UnitActions {
         if (!unit.hasUnique("May enhance a religion")) return
         if (!unit.civInfo.religionManager.mayEnhanceReligionAtAll(unit)) return
         actionList += UnitAction(UnitActionType.EnhanceReligion,
-            title = "Enhance [${unit.civInfo.religionManager.religion!!.name}]",
+            title = "Enhance [${unit.civInfo.religionManager.religion!!.displayName}]",
             action = getEnhanceReligionAction(unit).takeIf { unit.civInfo.religionManager.mayEnhanceReligionNow(unit) }
         )
     }
@@ -550,7 +550,7 @@ object UnitActions {
                     && it.religion != unit.religion
                 }
         actionList += UnitAction(UnitActionType.SpreadReligion,
-            title = "Spread [${unit.religion!!}]",
+            title = "Spread [${unit.getReligionDisplayName()!!}]",
             action = {
                 val followersOfOtherReligions = city.religion.getFollowersOfOtherReligionsThan(unit.religion!!)
                 for (unique in unit.civInfo.getMatchingUniques("When spreading religion to a city, gain [] times the amount of followers of other religions as []")) {

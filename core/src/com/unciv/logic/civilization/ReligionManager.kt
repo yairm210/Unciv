@@ -1,6 +1,5 @@
 package com.unciv.logic.civilization
 
-import com.unciv.Constants
 import com.unciv.logic.map.MapUnit
 import com.unciv.models.Religion
 import com.unciv.models.ruleset.Belief
@@ -33,17 +32,18 @@ class ReligionManager {
     var religionState = ReligionState.None
         private set
 
-    @Transient
+    // These cannot be transient, as saving and loading after using a great prophet but before
+    // founding a religion would break :(
     private var foundingCityId: String? = null
     // Only used for keeping track of the city a prophet was used when founding a religion
     
-    @Transient
     private var shouldChoosePantheonBelief: Boolean = false
 
     
     fun clone(): ReligionManager {
         val clone = ReligionManager()
         clone.foundingCityId = foundingCityId
+        clone.shouldChoosePantheonBelief = shouldChoosePantheonBelief
         clone.storedFaith = storedFaith
         clone.religionState = religionState
         clone.greatProphetsEarned = greatProphetsEarned
@@ -199,9 +199,9 @@ class ReligionManager {
     }
     
 
-    fun foundReligion(iconName: String, name: String, beliefs: List<Belief>) {
+    fun foundReligion(displayName: String, name: String, beliefs: List<Belief>) {
         val newReligion = Religion(name, civInfo.gameInfo, civInfo.civName)
-        newReligion.iconName = iconName
+        newReligion.displayName = displayName
         if (religion != null) {
             newReligion.followerBeliefs.addAll(religion!!.followerBeliefs)
             newReligion.founderBeliefs.addAll(religion!!.founderBeliefs)

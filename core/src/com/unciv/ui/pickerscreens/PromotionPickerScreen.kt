@@ -47,21 +47,32 @@ class PromotionPickerScreen(val unit: MapUnit) : PickerScreen() {
 
         val unitType = unit.type
         val promotionsForUnitType = unit.civInfo.gameInfo.ruleSet.unitPromotions.values.filter {
-            it.unitTypes.contains(unitType.name)
-                    || unit.promotions.promotions.contains(it.name) }
+            it.unitTypes.contains(unitType.name) || unit.promotions.promotions.contains(it.name) 
+        }
         val unitAvailablePromotions = unit.promotions.getAvailablePromotions()
 
-        if(canPromoteNow && unit.instanceName == null) {
+        if (canPromoteNow && unit.instanceName == null) {
             val renameButton = "Choose name for [${unit.name}]".toTextButton()
             renameButton.isEnabled = true
             renameButton.onClick {
-                RenameUnitPopup(unit, this).open()
+                AskTextPopup(
+                    this,
+                    label = "Choose name for [${unit.baseUnit.name}]",
+                    icon = ImageGetter.getUnitIcon(unit.name).surroundWithCircle(80f),
+                    defaultText = unit.name,
+                    actionOnOk = { userInput -> 
+                        if (userInput != "" && userInput != unit.name) {
+                            unit.instanceName = userInput
+                        }
+                        this.game.setScreen(PromotionPickerScreen(unit))
+                    }
+                ).open()
             }
             availablePromotionsGroup.add(renameButton)
             availablePromotionsGroup.row()
         }
         for (promotion in promotionsForUnitType) {
-            if(promotion.name=="Heal Instantly" && unit.health==100) continue
+            if (promotion.uniqueObjects.any { it.placeholderText == "Heal this unit by [] HP" } && unit.health == 100) continue
             val isPromotionAvailable = promotion in unitAvailablePromotions
             val unitHasPromotion = unit.promotions.promotions.contains(promotion.name)
 
