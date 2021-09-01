@@ -91,6 +91,9 @@ class CivilizationInfo {
     @Transient
     var detailedCivResources = ResourceSupplyList()
 
+    @Transient
+    val cityStateFunctions = CityStateFunctions(this)
+
     var playerType = PlayerType.AI
 
     /** Used in online multiplayer for human players */
@@ -861,43 +864,43 @@ class CivilizationInfo {
     //////////////////////// City State wrapper functions ////////////////////////
     /** Gain a random great person from the city state */
     private fun giveGreatPersonToPatron(receivingCiv: CivilizationInfo) {
-        CityStateFunctions(this).giveGreatPersonToPatron(receivingCiv)
+        cityStateFunctions.giveGreatPersonToPatron(receivingCiv)
     }
     fun giveMilitaryUnitToPatron(receivingCiv: CivilizationInfo) {
-        CityStateFunctions(this).giveMilitaryUnitToPatron(receivingCiv)
+        cityStateFunctions.giveMilitaryUnitToPatron(receivingCiv)
     }
     fun influenceGainedByGift(donorCiv: CivilizationInfo, giftAmount: Int)
-        = CityStateFunctions(this).influenceGainedByGift(donorCiv, giftAmount)
+        = cityStateFunctions.influenceGainedByGift(donorCiv, giftAmount)
     fun receiveGoldGift(donorCiv: CivilizationInfo, giftAmount: Int) {
-        CityStateFunctions(this).receiveGoldGift(donorCiv, giftAmount)
+        cityStateFunctions.receiveGoldGift(donorCiv, giftAmount)
     }
-    fun getProtectorCivs() = CityStateFunctions(this).getProtectorCivs()
+    fun getProtectorCivs() = cityStateFunctions.getProtectorCivs()
     fun addProtectorCiv(otherCiv: CivilizationInfo) {
-        CityStateFunctions(this).addProtectorCiv(otherCiv)
+        cityStateFunctions.addProtectorCiv(otherCiv)
     }
     fun removeProtectorCiv(otherCiv: CivilizationInfo) {
-        CityStateFunctions(this).removeProtectorCiv(otherCiv)
+        cityStateFunctions.removeProtectorCiv(otherCiv)
     }
     fun updateAllyCivForCityState() {
-        CityStateFunctions(this).updateAllyCivForCityState()
+        cityStateFunctions.updateAllyCivForCityState()
     }
-    fun getDiplomaticMarriageCost() = CityStateFunctions(this).getDiplomaticMarriageCost()
-    fun canBeMarriedBy(otherCiv: CivilizationInfo) = CityStateFunctions(this).canBeMarriedBy(otherCiv)
+    fun getDiplomaticMarriageCost() = cityStateFunctions.getDiplomaticMarriageCost()
+    fun canBeMarriedBy(otherCiv: CivilizationInfo) = cityStateFunctions.canBeMarriedBy(otherCiv)
     fun diplomaticMarriage(otherCiv: CivilizationInfo) {
-        CityStateFunctions(this).diplomaticMarriage(otherCiv)
+        cityStateFunctions.diplomaticMarriage(otherCiv)
     }
     fun getTributeWillingness(demandingCiv: CivilizationInfo, demandingWorker: Boolean = false)
-        = CityStateFunctions(this).getTributeWillingness(demandingCiv, demandingWorker)
+        = cityStateFunctions.getTributeWillingness(demandingCiv, demandingWorker)
     fun getTributeModifiers(demandingCiv: CivilizationInfo, demandingWorker: Boolean = false, requireWholeList: Boolean = false)
-        = CityStateFunctions(this).getTributeModifiers(demandingCiv, demandingWorker, requireWholeList)
-    fun goldGainedByTribute() = CityStateFunctions(this).goldGainedByTribute()
+        = cityStateFunctions.getTributeModifiers(demandingCiv, demandingWorker, requireWholeList)
+    fun goldGainedByTribute() = cityStateFunctions.goldGainedByTribute()
     fun tributeGold(demandingCiv: CivilizationInfo) {
-        CityStateFunctions(this).tributeGold(demandingCiv)
+        cityStateFunctions.tributeGold(demandingCiv)
     }
     fun tributeWorker(demandingCiv: CivilizationInfo) {
-        CityStateFunctions(this).tributeWorker(demandingCiv)
+        cityStateFunctions.tributeWorker(demandingCiv)
     }
-    fun canGiveStat(statType: Stat) = CityStateFunctions(this).canGiveStat(statType)
+    fun canGiveStat(statType: Stat) = cityStateFunctions.canGiveStat(statType)
 
     fun getAllyCiv() = allyCivName
     fun setAllyCiv(newAllyName: String?) { allyCivName = newAllyName }
