@@ -328,16 +328,12 @@ object NextTurnAutomation {
     }
     
     private fun foundReligion(civInfo: CivilizationInfo) {
-        println("Founding check?")
         if (civInfo.religionManager.religionState != ReligionState.FoundingReligion) return
-        println("Founding check!!")
         val religionIcon = civInfo.gameInfo.ruleSet.religions
             .filterNot { civInfo.gameInfo.religions.values.map { religion -> religion.iconName }.contains(it) }
             .randomOrNull()
             ?: return // Wait what? How did we pass the checking when using a great prophet but not this?
-        println("Icon has been chosen")
         val chosenBeliefs = chooseBeliefs(civInfo, civInfo.religionManager.getBeliefsToChooseAtFounding()).toList()
-        println("Beliefs have been chosen")
         civInfo.religionManager.chooseBeliefs(religionIcon, religionIcon, chosenBeliefs)
     }
     

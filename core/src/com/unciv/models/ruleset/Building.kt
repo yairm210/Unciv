@@ -205,38 +205,6 @@ class Building : NamedStats(), INonPerpetualConstruction, ICivilopediaText {
         return stats
     }
 
-    override fun canBePurchasedWithStat(cityInfo: CityInfo, stat: Stat, ignoreCityRequirements: Boolean): Boolean {
-        if (stat == Stat.Gold && isAnyWonder()) return false
-        // May buy [buildingFilter] buildings for [amount] [Stat] [cityFilter]
-        if (!ignoreCityRequirements && cityInfo.getMatchingUniques("May buy [] buildings for [] [] []")
-                .any { it.params[2] == stat.name && matchesFilter(it.params[0]) && cityInfo.matchesFilter(it.params[3]) }
-        ) return true
-        return super.canBePurchasedWithStat(cityInfo, stat, ignoreCityRequirements)
-    }
-
-    override fun getBaseBuyCost(cityInfo: CityInfo, stat: Stat): Int? {
-        if (stat == Stat.Gold) return getBaseGoldCost(cityInfo.civInfo).toInt()
-
-        val lowestCostFromUnique = 
-            (
-                // Can be purchased for [amount] [Stat] [cityFilter]
-                getMatchingUniques("Can be purchased for [] [] []")
-                    .filter { it.params[1] == stat.name && cityInfo.matchesFilter(it.params[2]) }
-                    .map { it.params[0].toInt() }
-                // May buy [buildingFilter] buildings for [amount] [Stat] [cityFilter]
-                + cityInfo.getMatchingUniques("May buy [] buildings for [] [] []")
-                    .filter { it.params[2] == stat.name && matchesFilter(it.params[0]) && cityInfo.matchesFilter(it.params[3])}
-                    .map { it.params[1].toInt() }
-            ).minOrNull()
-        if (lowestCostFromUnique != null) return lowestCostFromUnique
-
-        // Can be purchased with [Stat] [cityFilter]
-        if (getMatchingUniques("Can be purchased with [] []")
-                .any { it.params[0] == stat.name && cityInfo.matchesFilter(it.params[1])}
-        ) return cityInfo.civInfo.gameInfo.ruleSet.eras[cityInfo.civInfo.getEra()]!!.baseUnitBuyCost
-        return null
-    }
-
     override fun getCivilopediaTextHeader() = FormattedLine(name, header=2, icon=makeLink())
     override fun makeLink() = if (isAnyWonder()) "Wonder/$name" else "Building/$name"
     override fun hasCivilopediaTextLines() = true
@@ -383,6 +351,32 @@ class Building : NamedStats(), INonPerpetualConstruction, ICivilopediaText {
 
         productionCost *= civInfo.gameInfo.gameParameters.gameSpeed.modifier
         return productionCost.toInt()
+    }
+
+
+    override fun canBePurchasedWithStat(cityInfo: CityInfo, stat: Stat, ignoreCityRequirements: Boolean): Boolean {
+        if (stat == Stat.Gold && isAnyWonder()) return false
+        // May buy [buildingFilter] buildings for [amount] [Stat] [cityFilter]
+        if (!ignoreCityRequirements && cityInfo.getMatchingUniques("May buy [] buildings for [] [] []")
+                .any { it.params[2] == stat.name && matchesFilter(it.params[0]) && cityInfo.matchesFilter(it.params[3]) }
+        ) return true
+        return super.canBePurchasedWithStat(cityInfo, stat, ignoreCityRequirements)
+    }
+
+    override fun getBaseBuyCost(cityInfo: CityInfo, stat: Stat): Int? {
+        if (stat == Stat.Gold) return getBaseGoldCost(cityInfo.civInfo).toInt()
+
+        return (
+            sequenceOf(super.getBaseBuyCost(cityInfo, stat)).filterNotNull()
+            // May buy [buildingFilter] buildings for [amount] [Stat] [cityFilter]
+            + cityInfo.getMatchingUniques("May buy [] buildings for [] [] []")
+                .filter {
+                    it.params[2] == stat.name && matchesFilter(it.params[0]) && cityInfo.matchesFilter(
+                        it.params[3]
+                    )
+                }
+                .map { it.params[1].toInt() }
+        ).minOrNull()
     }
 
     override fun getStatBuyCost(cityInfo: CityInfo, stat: Stat): Int? {
@@ -603,7 +597,7 @@ class Building : NamedStats(), INonPerpetualConstruction, ICivilopediaText {
     override fun isBuildable(cityConstructions: CityConstructions): Boolean =
             getRejectionReason(cityConstructions) == ""
 
-    override fun postBuildEvent(cityConstructions: CityConstructions, wasBought: Boolean): Boolean {
+    override fun postBuildEvent(cityConstructions: CityConstructions, boughtWith: Stat?): Boolean {
         val civInfo = cityConstructions.cityInfo.civInfo
 
         if ("Spaceship part" in uniques) {
@@ -627,7 +621,7 @@ class Building : NamedStats(), INonPerpetualConstruction, ICivilopediaText {
         var freeBuildingUniques = uniqueObjects.asSequence().filter { it.placeholderText=="Provides a free [] []" }
         if (providesFreeBuilding!=null) freeBuildingUniques += sequenceOf(Unique("Provides a free [$providesFreeBuilding] [in this city]"))
 
-        for(unique in freeBuildingUniques) {
+        for (unique in freeBuildingUniques) {
             val affectedCities =
                 if (unique.params[1] == "in this city") sequenceOf(cityConstructions.cityInfo)
                 else civInfo.cities.asSequence().filter { it.matchesFilter(unique.params[1]) }
