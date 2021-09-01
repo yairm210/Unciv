@@ -81,7 +81,7 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
         if (!civInfo.isCityState()) throw Exception("You can only gain influence with City-States!")
         donorCiv.addGold(-giftAmount)
         civInfo.addGold(giftAmount)
-        civInfo.getDiplomacyManager(donorCiv).influence += influenceGainedByGift(donorCiv, giftAmount)
+        civInfo.getDiplomacyManager(donorCiv).addInfluence(influenceGainedByGift(donorCiv, giftAmount).toFloat())
         updateAllyCivForCityState()
         donorCiv.updateStatsForNextTurn()
     }
@@ -107,7 +107,7 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
 
         val diplomacy = civInfo.getDiplomacyManager(otherCiv.civName)
         diplomacy.diplomaticStatus = DiplomaticStatus.Peace
-        diplomacy.influence -= 20
+        diplomacy.addInfluence(-20f)
     }
 
     fun updateAllyCivForCityState() {
@@ -291,7 +291,7 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
         if (!civInfo.isCityState()) throw Exception("You can only demand gold from City-States!")
         val goldAmount = goldGainedByTribute()
         demandingCiv.addGold(goldAmount)
-        civInfo.getDiplomacyManager(demandingCiv).influence -= 15
+        civInfo.getDiplomacyManager(demandingCiv).addInfluence(-15f)
         civInfo.addFlag(CivFlags.RecentlyBullied.name, 20)
         updateAllyCivForCityState()
         civInfo.updateStatsForNextTurn()
@@ -308,7 +308,7 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
         if (buildableWorkerLikeUnits.isEmpty()) return  // Bad luck?
         demandingCiv.placeUnitNearTile(civInfo.getCapital().location, buildableWorkerLikeUnits.keys.random())
 
-        civInfo.getDiplomacyManager(demandingCiv).influence -= 50
+        civInfo.getDiplomacyManager(demandingCiv).addInfluence(-50f)
         civInfo.addFlag(CivFlags.RecentlyBullied.name, 20)
         updateAllyCivForCityState()
     }
