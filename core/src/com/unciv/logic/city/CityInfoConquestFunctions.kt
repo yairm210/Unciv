@@ -33,10 +33,9 @@ class CityInfoConquestFunctions(val city: CityInfo){
     
     private fun destroyBuildingsOnCapture() {
         city.apply {
-            // Remove all national wonders (must come after the palace relocation because that's a national wonder too!)
             for (building in cityConstructions.getBuiltBuildings()) {
                 when {
-                    building.hasUnique("Never destroyed when the city is captured") -> continue
+                    building.hasUnique("Never destroyed when the city is captured") || building.isWonder -> continue
                     building.hasUnique("Destroyed when the city is captured") ->
                         cityConstructions.removeBuilding(building.name)
                     else -> {
@@ -182,7 +181,7 @@ class CityInfoConquestFunctions(val city: CityInfo){
                     .addModifier(DiplomaticModifiers.CapturedOurCities, respectForLiberatingOurCity)
         } else {
             //Liberating a city state gives a large amount of influence, and peace
-            foundingCiv.getDiplomacyManager(conqueringCiv).influence = 90f
+            foundingCiv.getDiplomacyManager(conqueringCiv).setInfluence(90f)
             if (foundingCiv.isAtWarWith(conqueringCiv)) {
                 val tradeLogic = TradeLogic(foundingCiv, conqueringCiv)
                 tradeLogic.currentTrade.ourOffers.add(TradeOffer(Constants.peaceTreaty, TradeType.Treaty))
@@ -249,6 +248,7 @@ class CityInfoConquestFunctions(val city: CityInfo){
             if (civInfo.gameInfo.hasReligionEnabled()) religion.removeUnknownPantheons()
 
             tryUpdateRoadStatus()
+            cityStats.update()
         }
     }
 

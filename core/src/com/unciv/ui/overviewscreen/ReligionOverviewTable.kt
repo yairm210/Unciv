@@ -71,15 +71,26 @@ class ReligionOverviewTable(
             beliefsTable.add(createBeliefDescription(belief)).pad(10f).row()
         }
         
-        statsTable.add("Religion Name:".tr())
-        statsTable.add(religion.name.tr()).pad(5f).row()
-        statsTable.add("Founding Civ:".tr())
+        statsTable.add("Religion Name:".toLabel())
+        statsTable.add(religion.name.toLabel()).pad(5f).row()
+        statsTable.add("Founding Civ:".toLabel())
         val foundingCivName =
             if (viewingPlayer.knows(religion.foundingCivName) || viewingPlayer.civName == religion.foundingCivName) 
                 religion.foundingCivName
             else "???"
-        statsTable.add(foundingCivName.tr()).pad(5f).row()
-        statsTable.add("Cities following this religion:".tr())
+        statsTable.add(foundingCivName.toLabel()).pad(5f).row()
+        if (religion.isMajorReligion()) {
+            val holyCity = gameInfo.getCities().firstOrNull { it.religion.religionThisIsTheHolyCityOf == religion.name }
+            if (holyCity != null) {
+                statsTable.add("Holy City:".toLabel())
+                val cityName = 
+                    if (viewingPlayer.exploredTiles.contains(holyCity.getCenterTile().position))
+                        holyCity.name
+                    else "???"
+                statsTable.add(cityName.toLabel()).pad(5f).row()
+            }
+        }
+        statsTable.add("Cities following this religion:".toLabel())
         statsTable.add(gameInfo.getCivilization(religion.foundingCivName).religionManager.numberOfCitiesFollowingThisReligion().toString()).pad(5f).row()
         
         val minWidth = min(statsTable.minWidth, beliefsTable.minWidth) + 5f

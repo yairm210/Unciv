@@ -392,7 +392,7 @@ class TileMap {
             unitName: String,
             civInfo: CivilizationInfo
     ): MapUnit? {
-        val unit = gameInfo.ruleSet.units[unitName]!!.getMapUnit(gameInfo.ruleSet)
+        val unit = gameInfo.ruleSet.units[unitName]!!.getMapUnit(civInfo)
 
         fun getPassableNeighbours(tileInfo: TileInfo): Set<TileInfo> =
                 tileInfo.neighbors.filter { unit.movement.canPassThrough(it) }.toSet()
@@ -440,11 +440,6 @@ class TileMap {
             }
         }
         
-        // If this unit has special abilities that need to be kept track of, start doing so here
-        for (action in unit.religiousActionsUnitCanDo()) {
-            unit.abilityUsedCount[action] = 0
-        }        
-
         // And update civ stats, since the new unit changes both unit upkeep and resource consumption
         civInfo.updateStatsForNextTurn()
         civInfo.updateDetailedCivResources()

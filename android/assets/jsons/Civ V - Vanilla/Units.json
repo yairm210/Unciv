@@ -996,6 +996,22 @@
 		"attackSound": "horse"
 	},
 	{
+		"name": "Hussar",
+		"unitType": "Mounted",
+		"replaces": "Cavalry",
+		"uniqueTo": "Austria",
+		"movement": 5,
+		"strength": 34,
+		"cost": 225,
+		"requiredTech": "Military Science",
+		"obsoleteTech": "Combustion",
+		"requiredResource": "Horses",
+		"upgradesTo": "Landship",
+		"uniques": ["Can move after attacking","No defensive terrain bonus","-[33]% Strength vs [City]" ,
+		"[+1] Visibility Range", "[+50]% to Flank Attack bonuses" ],
+		"attackSound": "horse"
+	},
+	{
 		"name": "Ironclad",
 		"unitType": "Melee Water",
 		"movement": 3,
@@ -1500,9 +1516,9 @@
 		"name": "Great Prophet",
 		"unitType": "Civilian",
 		"uniques": ["Can construct [Holy site] if it hasn't used other actions yet", "Can [Spread Religion] [4] times",
-			"May found a religion", "May enhance a religion", "May enter foreign tiles without open borders", 
-			"[-1] Visibility Range", "Great Person - [Faith]", "Unbuildable", "Religious Unit", 
-			"Hidden when religion is disabled"],
+			"Removes other religions when spreading religion", "May found a religion", "May enhance a religion", 
+			"May enter foreign tiles without open borders", "[-1] Visibility Range", "Great Person - [Faith]", 
+			"Unbuildable", "Religious Unit", "Hidden when religion is disabled"],
 		"movement": 2,
 		"religiousStrength": 1000
 	},

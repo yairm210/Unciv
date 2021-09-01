@@ -1,6 +1,7 @@
 package com.unciv.logic.city
 
 import com.badlogic.gdx.math.Vector2
+import com.unciv.logic.battle.CityCombatant
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.GreatPersonManager
 import com.unciv.logic.civilization.ReligionState
@@ -22,6 +23,7 @@ import kotlin.collections.HashMap
 import kotlin.collections.HashSet
 import kotlin.math.ceil
 import kotlin.math.min
+import kotlin.math.pow
 import kotlin.math.roundToInt
 
 class CityInfo {
@@ -109,14 +111,16 @@ class CityInfo {
         tile.improvement = null
         tile.improvementInProgress = null
 
-        if (civInfo.religionManager.religionState == ReligionState.Pantheon) {
-            religion.addPressure(civInfo.religionManager.religion!!.name, 100)
-        }
-
         val ruleset = civInfo.gameInfo.ruleSet
         workedTiles = hashSetOf() //reassign 1st working tile
+        
         if (startingEra in ruleset.eras)
             population.setPopulation(ruleset.eras[startingEra]!!.settlerPopulation)
+
+        if (civInfo.religionManager.religionState == ReligionState.Pantheon) {
+            religion.addPressure(civInfo.religionManager.religion!!.name, 200 * population.population)
+        }
+        
         population.autoAssignPopulation()
         cityStats.update()
 
@@ -139,7 +143,7 @@ class CityInfo {
 
         civInfo.policies.tryToAddPolicyBuildings()
 
-        for (unique in civInfo.getMatchingUniques("Gain a free [] []")) {
+        for (unique in getMatchingUniques("Gain a free [] []")) {
             val freeBuildingName = unique.params[0]
             if (matchesFilter(unique.params[1])) {
                 if (!cityConstructions.isBuilt(freeBuildingName))
@@ -368,34 +372,20 @@ class CityInfo {
             }
 
             // Sweden UP
-            for (otherciv in civInfo.getKnownCivs()) {
-                if (!civInfo.getDiplomacyManager(otherciv)
+            for (otherCiv in civInfo.getKnownCivs()) {
+                if (!civInfo.getDiplomacyManager(otherCiv)
                         .hasFlag(DiplomacyFlags.DeclarationOfFriendship)
                 ) continue
 
-                for (ourunique in civInfo.getMatchingUniques("When declaring friendship, both parties gain a []% boost to great person generation"))
-                    allGppPercentageBonus += ourunique.params[0].toInt()
-                for (theirunique in otherciv.getMatchingUniques("When declaring friendship, both parties gain a []% boost to great person generation"))
-                    allGppPercentageBonus += theirunique.params[0].toInt()
+                for (ourUnique in civInfo.getMatchingUniques("When declaring friendship, both parties gain a []% boost to great person generation"))
+                    allGppPercentageBonus += ourUnique.params[0].toInt()
+                for (theirUnique in otherCiv.getMatchingUniques("When declaring friendship, both parties gain a []% boost to great person generation"))
+                    allGppPercentageBonus += theirUnique.params[0].toInt()
             }
 
             for (unitName in gppCounter.keys)
                 gppCounter.add(unitName, gppCounter[unitName]!! * allGppPercentageBonus / 100)
         }
-
-        // Since existing buildings and specialists have *stat names* rather than Great Person names
-        //  as the keys, convert every stat name to the appropriate Great Person name instead
-
-        for (counter in sourceToGPP.values)
-            for ((key, gppAmount) in counter.toMap()) { // since we're removing, copy to avoid concurrency problems
-                val relevantStatEntry = GreatPersonManager.statToGreatPersonMapping
-                    .entries.firstOrNull { it.key.name.equals(key, true) }
-                if (relevantStatEntry == null) continue
-
-                counter.add(relevantStatEntry.value, gppAmount)
-                counter.remove(key)
-            }
-
 
         return sourceToGPP
     }
@@ -608,13 +598,14 @@ class CityInfo {
             "in non-enemy foreign cities" ->
                 viewingCiv != civInfo
                 && !civInfo.isAtWarWith(viewingCiv)
-            "in foreign cities" ->
-                viewingCiv != civInfo
+            "in foreign cities" -> viewingCiv != civInfo
+            "in annexed cities" -> foundingCiv != civInfo.civName && !isPuppet
+            "in holy cities" -> religion.religionThisIsTheHolyCityOf != null
+            "in City-State cities" -> civInfo.isCityState()
             // This is only used in communication to the user indicating that only in cities with this
             // religion a unique is active. However, since religion uniques only come from the city itself,
             // this will always be true when checked.
             "in cities following this religion" -> true
-            "in City-State cities" -> civInfo.isCityState()
             else -> false
         }
     }
@@ -673,6 +664,11 @@ class CityInfo {
         return !isOriginalCapital && !isHolyCity() && (!isCapital() || justCaptured)
     }
 
+    fun getForceEvaluation(): Int {
+        // Same as for units, so higher values count more
+        return CityCombatant(this).getCityStrength().toFloat().pow(1.5f).toInt()
+    }
+
 
     fun getNeighbouringCivs(): List<String> {
         val tilesList: HashSet<TileInfo> = getTiles().toHashSet()
@@ -688,7 +684,7 @@ class CityInfo {
             .distinct().toList()
     }
     fun getImprovableTiles(): Sequence<TileInfo> = getTiles()
-            .filter {it.hasViewableResource(civInfo) && it.improvement == null}
-    
+        .filter {it.hasViewableResource(civInfo) && it.improvement == null}
+           
     //endregion
 }

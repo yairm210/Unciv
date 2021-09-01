@@ -109,9 +109,6 @@ enum class UnitActionType(
         { ImageGetter.getUnitIcon(Constants.settler) }, 'c', UncivSound.Silent),
     ConstructImprovement("Construct improvement",
         { ImageGetter.getUnitIcon(Constants.worker) }, 'i'),
-    // Deprecated since 3.15.4
-        ConstructRoad("Construct road", {ImageGetter.getImprovementIcon("Road")}, 'r'),
-    //
     Create("Create",
         null, 'i', UncivSound.Chimes),
     HurryResearch("Hurry Research",

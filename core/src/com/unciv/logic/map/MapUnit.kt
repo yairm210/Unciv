@@ -5,6 +5,7 @@ import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.automation.UnitAutomation
 import com.unciv.logic.automation.WorkerAutomation
+import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.LocationAction
 import com.unciv.logic.civilization.NotificationIcon
@@ -16,6 +17,7 @@ import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.ruleset.unit.UnitType
 import com.unciv.ui.utils.toPercent
 import java.text.DecimalFormat
+import kotlin.math.pow
 
 /**
  * The immutable properties and mutable game state of an individual unit present on the map
@@ -122,7 +124,14 @@ class MapUnit {
     var due: Boolean = true
     var isTransported: Boolean = false
     
-    var abilityUsedCount: HashMap<String, Int> = hashMapOf()
+    // Deprecated since 3.16.11
+        @Deprecated("Deprecated since 3.16.11", replaceWith = ReplaceWith("abilityUsesLeft"))
+        var abilityUsedCount: HashMap<String, Int> = hashMapOf()
+    //
+    
+    var abilityUsesLeft: HashMap<String, Int> = hashMapOf()
+    var maxAbilityUses: HashMap<String, Int> = hashMapOf()
+    
     var religion: String? = null
     var religiousStrengthLost = 0
 
@@ -140,7 +149,11 @@ class MapUnit {
         toReturn.attacksThisTurn = attacksThisTurn
         toReturn.promotions = promotions.clone()
         toReturn.isTransported = isTransported
-        toReturn.abilityUsedCount.putAll(abilityUsedCount)
+        // Deprecated since 3.16.11
+            toReturn.abilityUsedCount.putAll(abilityUsedCount)
+        //
+        toReturn.abilityUsesLeft.putAll(abilityUsesLeft)
+        toReturn.maxAbilityUses.putAll(maxAbilityUses)
         toReturn.religion = religion
         toReturn.religiousStrengthLost = religiousStrengthLost
         return toReturn
@@ -155,9 +168,10 @@ class MapUnit {
 
     fun getTile(): TileInfo = currentTile
     fun getMaxMovement(): Int {
-        if (isEmbarked()) return getEmbarkedMovement()
-
-        var movement = baseUnit.movement
+        var movement = 
+            if (isEmbarked()) 2
+            else baseUnit.movement
+        
         movement += getMatchingUniques("[] Movement").sumBy { it.params[0].toInt() }
 
         for (unique in civInfo.getMatchingUniques("+[] Movement for all [] units"))
@@ -168,6 +182,13 @@ class MapUnit {
             civInfo.hasUnique("+1 Movement for all units during Golden Age")
         )
             movement += 1
+
+        // Deprecated since 3.16.11
+            if (isEmbarked()) {
+                movement += civInfo.getMatchingUniques("Increases embarked movement +1").count()
+                if (civInfo.hasUnique("+1 Movement for all embarked units")) movement += 1
+            }
+        //
 
         return movement
     }
@@ -181,10 +202,11 @@ class MapUnit {
     fun getUniques(): ArrayList<Unique> = tempUniques
 
     fun getMatchingUniques(placeholderText: String): Sequence<Unique> =
-        tempUniques.asSequence().filter { it.placeholderText == placeholderText }
+        tempUniques.asSequence().filter { it.placeholderText == placeholderText } + 
+            civInfo.getMatchingUniques(placeholderText)
 
     fun hasUnique(unique: String): Boolean {
-        return getUniques().any { it.placeholderText == unique }
+        return getUniques().any { it.placeholderText == unique } || civInfo.hasUnique(unique)
     }
 
     fun updateUniques() {
@@ -308,9 +330,6 @@ class MapUnit {
         if (getTile().improvementInProgress != null 
             && canBuildImprovement(getTile().getTileImprovementInProgress()!!)) 
                 return false
-        // unique "Can construct roads" deprecated since 3.15.5
-            if (hasUnique("Can construct roads") && currentTile.improvementInProgress == RoadStatus.Road.name) return false
-        //
         return !(isFortified() || isExploring() || isSleeping() || isAutomated() || isMoving())
     }
 
@@ -331,7 +350,6 @@ class MapUnit {
         return range
     }
 
-
     fun isEmbarked(): Boolean {
         if (!baseUnit.isLandUnit()) return false
         return currentTile.isWater
@@ -345,13 +363,6 @@ class MapUnit {
                 it.getOwner() == to || it.getUnits().any { unit -> unit.owner == to.civName }
             }
         return false
-    }
-
-    fun getEmbarkedMovement(): Int {
-        var movement = 2
-        movement += civInfo.getMatchingUniques("Increases embarked movement +1").count()
-        if (civInfo.hasUnique("+1 Movement for all embarked units")) movement += 1
-        return movement
     }
 
     fun getUnitToUpgradeTo(): BaseUnit {
@@ -442,6 +453,20 @@ class MapUnit {
         //
         
         updateUniques()
+        
+        // abilityUsedCount deprecated since 3.16.11, this is replacement code
+            if (abilityUsedCount.isNotEmpty()) {
+                for (ability in abilityUsedCount) {
+                    val maxUsesOfThisAbility = getMatchingUniques("Can [] [] times")
+                        .filter { it.params[0] == ability.key }
+                        .sumBy { it.params[1].toInt() }
+                    abilityUsesLeft[ability.key] = maxUsesOfThisAbility - ability.value
+                    maxAbilityUses[ability.key] = maxUsesOfThisAbility
+                }
+                abilityUsedCount.clear()
+            }
+        //
+        
     }
 
     fun useMovementPoints(amount: Float) {
@@ -615,8 +640,7 @@ class MapUnit {
     fun endTurn() {
         doAction()
 
-        if (currentMovement > 0 && 
-            // Constants.workerUnique deprecated since 3.15.5
+        if (currentMovement > 0 &&
             getTile().improvementInProgress != null
             && canBuildImprovement(getTile().getTileImprovementInProgress()!!)
         ) workOnImprovement()
@@ -823,10 +847,7 @@ class MapUnit {
     fun canIntercept(): Boolean {
         if (interceptChance() == 0) return false
         val maxAttacksPerTurn = 1 +
-            getMatchingUniques("[] extra interceptions may be made per turn").sumBy { it.params[0].toInt() } +
-            // Deprecated since 3.15.7
-                getMatchingUniques("1 extra interception may be made per turn").count()
-            //
+            getMatchingUniques("[] extra interceptions may be made per turn").sumBy { it.params[0].toInt() }
         if (attacksThisTurn >= maxAttacksPerTurn) return false
         return true
     }
@@ -842,11 +863,10 @@ class MapUnit {
     }
     
     fun carryCapacity(unit: MapUnit): Int {
-        var capacity = getMatchingUniques("Can carry [] [] units").filter { unit.matchesFilter(it.params[1]) }.sumBy { it.params[0].toInt() }
-        capacity += getMatchingUniques("Can carry [] extra [] units").filter { unit.matchesFilter(it.params[1]) }.sumBy { it.params[0].toInt() }
-        // Deprecated since 3.15.5
-        capacity += getMatchingUniques("Can carry 2 aircraft").filter { unit.matchesFilter("Air") }.sumBy { 2 }
-        capacity += getMatchingUniques("Can carry 1 extra aircraft").filter { unit.matchesFilter("Air") }.sumBy { 1 }
+        var capacity = getMatchingUniques("Can carry [] [] units").filter { unit.matchesFilter(it.params[1]) }
+                .sumBy { it.params[0].toInt() }
+        capacity += getMatchingUniques("Can carry [] extra [] units").filter { unit.matchesFilter(it.params[1]) }
+            .sumBy { it.params[0].toInt() }
         return capacity
     }
 
@@ -859,8 +879,7 @@ class MapUnit {
     }
 
     fun interceptDamagePercentBonus(): Int {
-        // "Bonus when intercepting []%" deprecated since 3.15.7
-        return getUniques().filter { it.placeholderText == "Bonus when intercepting []%" || it.placeholderText == "[]% Damage when intercepting"}
+        return getUniques().filter { it.placeholderText == "[]% Damage when intercepting"}
             .sumBy { it.params[0].toInt() }
     }
 
@@ -958,12 +977,30 @@ class MapUnit {
     fun canDoReligiousAction(action: String): Boolean {
         return getMatchingUniques("Can [] [] times").any { it.params[0] == action }
     }
-    
-    fun getMaxReligiousActionUses(action: String): Int {
+
+    /** For the actual value, check the member variable `maxAbilityUses`
+     */
+    fun getBaseMaxActionUses(action: String): Int {
         return getMatchingUniques("Can [] [] times")
             .filter { it.params[0] == action }
             .sumBy { it.params[1].toInt() }
     }
+    
+    fun setupAbilityUses(buildCity: CityInfo? = null) {
+        for (action in religiousActionsUnitCanDo()) {
+            val baseAmount = getBaseMaxActionUses(action)
+            val additional =
+                if (buildCity == null) 0
+                else buildCity.getMatchingUniques("[] units built [] can [] [] extra times")
+                    .filter { matchesFilter(it.params[0]) && buildCity.matchesFilter(it.params[1]) && it.params[2] == action }
+                    .sumBy { println("Addition ability found: ${it.params[1]}"); it.params[3].toInt() }
+            
+            maxAbilityUses[action] = baseAmount + additional
+            
+            abilityUsesLeft[action] = maxAbilityUses[action]!!
+        }
+    }
+    
     
     fun getPressureAddedFromSpread(): Int {
         var pressureAdded = baseUnit.religiousStrength.toFloat()
@@ -975,14 +1012,22 @@ class MapUnit {
     }
     
     fun getActionString(action: String): String {
-        val maxActionUses = getMaxReligiousActionUses(action)
-        if (abilityUsedCount[action] == null) return "0/0" // Something went wrong
-        return "${maxActionUses - abilityUsedCount[action]!!}/${maxActionUses}"
+        val maxActionUses = maxAbilityUses[action]
+        if (abilityUsesLeft[action] == null) return "0/0" // Something went wrong
+        return "${abilityUsesLeft[action]!!}/${maxActionUses}"
     }
 
     fun actionsOnDeselect() {
         showAdditionalActions = false
         if (isPreparingParadrop()) action = null
+    }
+
+    fun getForceEvaluation(): Int {
+        val promotionBonus = (promotions.numberOfPromotions + 1).toFloat().pow(0.3f)
+        var power = (baseUnit.getForceEvaluation() * promotionBonus).toInt()
+        power *= health
+        power /= 100
+        return power
     }
 
     //endregion

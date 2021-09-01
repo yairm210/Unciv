@@ -409,6 +409,7 @@ class CityButton(val city: CityInfo, private val tileGroup: WorldTileGroup): Tab
             val color = when (relationshipLevel) {
                 RelationshipLevel.Unforgivable -> Color.RED
                 RelationshipLevel.Enemy -> Color.ORANGE
+                RelationshipLevel.Afraid -> Color.YELLOW
                 RelationshipLevel.Neutral, RelationshipLevel.Friend -> Color.LIME
                 RelationshipLevel.Ally -> Color.SKY
                 else -> Color.DARK_GRAY

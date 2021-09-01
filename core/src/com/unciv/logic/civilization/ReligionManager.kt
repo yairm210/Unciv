@@ -6,9 +6,11 @@ import com.unciv.models.Religion
 import com.unciv.models.ruleset.Belief
 import com.unciv.models.ruleset.BeliefType
 import com.unciv.ui.pickerscreens.BeliefContainer
+import com.unciv.ui.utils.toPercent
 import kotlin.random.Random
 
 class ReligionManager {
+
     @Transient
     lateinit var civInfo: CivilizationInfo
 
@@ -32,9 +34,14 @@ class ReligionManager {
     var religionState = ReligionState.None
         private set
 
+    @Transient
     private var foundingCityId: String? = null
     // Only used for keeping track of the city a prophet was used when founding a religion
+    
+    @Transient
+    private var shouldChoosePantheonBelief: Boolean = false
 
+    
     fun clone(): ReligionManager {
         val clone = ReligionManager()
         clone.foundingCityId = foundingCityId
@@ -104,7 +111,7 @@ class ReligionManager {
             civInfo.gameInfo.gameParameters.gameSpeed.modifier
         
         for (unique in civInfo.getMatchingUniques("[]% Faith cost of generating Great Prophet equivalents"))
-            faithCost *= 1f + unique.params[0].toFloat() / 100f
+            faithCost *= unique.params[0].toPercent()
         
         return faithCost.toInt()
     }
@@ -131,21 +138,13 @@ class ReligionManager {
             greatProphetsEarned += 1
         }
     }
-    
-    fun useGreatProphet(prophet: MapUnit) {
-        if (religionState <= ReligionState.Pantheon) {
-            if (!mayFoundReligionNow(prophet)) return // How did you do this?
-            religionState = ReligionState.FoundingReligion
-            foundingCityId = prophet.getTile().getCity()!!.id
-        } else if (religionState == ReligionState.Religion) {
-            if (!mayEnhanceReligionNow(prophet)) return
-            religionState = ReligionState.EnhancingReligion
-        }
-    }
 
     fun mayFoundReligionAtAll(prophet: MapUnit): Boolean {
         if (religionState >= ReligionState.Religion) return false // Already created a major religion
-        if (prophet.abilityUsedCount.any { it.value != 0 }) return false // Already used its power for other things
+        
+        // Already used its power for other things
+        if (prophet.abilityUsesLeft.any { it.value != prophet.maxAbilityUses[it.key] }) return false
+        
         if (!civInfo.isMajorCiv()) return false // Only major civs may use religion
         
         val foundedReligionsCount = civInfo.gameInfo.civilizations.count {
@@ -173,11 +172,20 @@ class ReligionManager {
     fun mayFoundReligionNow(prophet: MapUnit): Boolean {
         if (!mayFoundReligionAtAll(prophet)) return false
         if (!prophet.getTile().isCityCenter()) return false
+        if (prophet.getTile().getCity()!!.isHolyCity()) return false 
+        // No double holy cities. Not sure if these were allowed in the base game 
         return true
+    }
+
+    fun useProphetForFoundingReligion(prophet: MapUnit) {
+        if (!mayFoundReligionNow(prophet)) return // How did you do this?
+        if (religionState == ReligionState.None) shouldChoosePantheonBelief = true
+        religionState = ReligionState.FoundingReligion
+        civInfo.religionManager.foundingCityId = prophet.getTile().getCity()!!.id
     }
     
     fun getBeliefsToChooseAtFounding(): BeliefContainer {
-        if (religionState == ReligionState.None)
+        if (shouldChoosePantheonBelief)
             return BeliefContainer(pantheonBeliefCount = 1, founderBeliefCount = 1, followerBeliefCount = 1)
         return BeliefContainer(founderBeliefCount = 1, followerBeliefCount = 1)
     }
@@ -221,12 +229,14 @@ class ReligionManager {
         holyCity.religion.addPressure(name, holyCity.population.population * 500)
 
         foundingCityId = null
+        shouldChoosePantheonBelief = false
     }
     
     fun mayEnhanceReligionAtAll(prophet: MapUnit): Boolean {
         if (religion == null) return false // First found a pantheon
         if (religionState != ReligionState.Religion) return false // First found an actual religion
-        if (prophet.abilityUsedCount.any { it.value > 0 }) return false // Already used its ability for other things
+        // Already used its power for other things
+        if (prophet.abilityUsesLeft.any { it.value != prophet.maxAbilityUses[it.key] }) return false
         if (!civInfo.isMajorCiv()) return false // Only major civs
 
         if (civInfo.gameInfo.ruleSet.beliefs.values.none { 
@@ -246,6 +256,11 @@ class ReligionManager {
         if (!mayEnhanceReligionAtAll(prophet)) return false
         if (!prophet.getTile().isCityCenter()) return false
         return true
+    }
+
+    fun useProphetForEnhancingReligion(prophet: MapUnit) {
+        if (!mayEnhanceReligionNow(prophet)) return // How did you do this?
+        religionState = ReligionState.EnhancingReligion
     }
 
     fun getBeliefsToChooseAtEnhancing(): BeliefContainer {

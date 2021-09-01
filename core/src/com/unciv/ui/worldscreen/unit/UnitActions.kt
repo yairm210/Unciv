@@ -8,6 +8,7 @@ import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.PlayerType
+import com.unciv.logic.civilization.ReligionState
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.map.MapUnit
@@ -463,7 +464,7 @@ object UnitActions {
             "Can undertake a trade mission with City-State, giving a large sum of gold and [] Influence" -> {
                 val canConductTradeMission = tile.owningCity?.civInfo?.isCityState() == true
                         && tile.owningCity?.civInfo?.isAtWarWith(unit.civInfo) == false
-                val influenceEarned = unique.params[0].toInt()
+                val influenceEarned = unique.params[0].toFloat()
                 actionList += UnitAction(UnitActionType.ConductTradeMission,
                     action = {
                         // http://civilization.wikia.com/wiki/Great_Merchant_(Civ5)
@@ -471,7 +472,7 @@ object UnitActions {
                         if (unit.civInfo.hasUnique("Double gold from Great Merchant trade missions"))
                             goldEarned *= 2
                         unit.civInfo.addGold(goldEarned)
-                        tile.owningCity!!.civInfo.getDiplomacyManager(unit.civInfo).influence += influenceEarned
+                        tile.owningCity!!.civInfo.getDiplomacyManager(unit.civInfo).addInfluence(influenceEarned)
                         unit.civInfo.addNotification("Your trade mission to [${tile.owningCity!!.civInfo}] has earned you [${goldEarned}] gold and [$influenceEarned] influence!",
                             tile.owningCity!!.civInfo.civName, NotificationIcon.Gold, NotificationIcon.Culture)
                         addStatsPerGreatPersonUsage(unit)
@@ -486,25 +487,33 @@ object UnitActions {
         if (!unit.hasUnique("May found a religion")) return 
         if (!unit.civInfo.religionManager.mayFoundReligionAtAll(unit)) return
         actionList += UnitAction(UnitActionType.FoundReligion,
-            action = {
-                addStatsPerGreatPersonUsage(unit)
-                unit.civInfo.religionManager.useGreatProphet(unit)
-                unit.destroy()
-            }.takeIf { unit.civInfo.religionManager.mayFoundReligionNow(unit) }
+            action = getFoundReligionAction(unit).takeIf { unit.civInfo.religionManager.mayFoundReligionNow(unit) }
         )
     }
     
+    fun getFoundReligionAction(unit: MapUnit): () -> Unit {
+        return {
+            addStatsPerGreatPersonUsage(unit)
+            unit.civInfo.religionManager.useProphetForFoundingReligion(unit)
+            unit.destroy()
+        }
+    }
+
     private fun addEnhanceReligionAction(unit: MapUnit, actionList: ArrayList<UnitAction>) {
         if (!unit.hasUnique("May enhance a religion")) return
         if (!unit.civInfo.religionManager.mayEnhanceReligionAtAll(unit)) return
         actionList += UnitAction(UnitActionType.EnhanceReligion,
             title = "Enhance [${unit.civInfo.religionManager.religion!!.name}]",
-            action = {
-                addStatsPerGreatPersonUsage(unit)
-                unit.civInfo.religionManager.useGreatProphet(unit)
-                unit.destroy()
-            }.takeIf { unit.civInfo.religionManager.mayEnhanceReligionNow(unit) }
+            action = getEnhanceReligionAction(unit).takeIf { unit.civInfo.religionManager.mayEnhanceReligionNow(unit) }
         )
+    }
+    
+    fun getEnhanceReligionAction(unit: MapUnit): () -> Unit {
+        return {
+            addStatsPerGreatPersonUsage(unit)
+            unit.civInfo.religionManager.useProphetForEnhancingReligion(unit)
+            unit.destroy()
+        }
     }
 
     private fun addActionsWithLimitedUses(unit: MapUnit, actionList: ArrayList<UnitAction>, tile: TileInfo) {
@@ -513,26 +522,25 @@ object UnitActions {
         if (unit.religion == null || unit.civInfo.gameInfo.religions[unit.religion]!!.isPantheon()) return
         val city = tile.getCity() ?: return
         for (action in actionsToAdd) {
-            if (!unit.abilityUsedCount.containsKey(action)) continue
-            val maxActionUses = unit.getMaxReligiousActionUses(action)
-            if (maxActionUses <= unit.abilityUsedCount[action]!!) continue
+            if (!unit.abilityUsesLeft.containsKey(action)) continue
+            if (unit.abilityUsesLeft[action]!! <= 0) continue
             when (action) {
-                Constants.spreadReligionAbilityCount -> addSpreadReligionActions(unit, actionList, city, maxActionUses)
-                Constants.removeHeresyAbilityCount -> addRemoveHeresyActions(unit, actionList, city, maxActionUses)
+                Constants.spreadReligionAbilityCount -> addSpreadReligionActions(unit, actionList, city)
+                Constants.removeHeresyAbilityCount -> addRemoveHeresyActions(unit, actionList, city)
             }
         }
     }
     
-    private fun useActionWithLimitedUses(unit: MapUnit, action: String, maximumUses: Int) {
-        unit.abilityUsedCount[action] = unit.abilityUsedCount[action]!! + 1
-        if (unit.abilityUsedCount[action] == maximumUses) {
+    private fun useActionWithLimitedUses(unit: MapUnit, action: String) {
+        unit.abilityUsesLeft[action] = unit.abilityUsesLeft[action]!! - 1
+        if (unit.abilityUsesLeft[action]!! <= 0) {
             if (unit.isGreatPerson())
                 addStatsPerGreatPersonUsage(unit)
             unit.destroy()
         }
     }
 
-    private fun addSpreadReligionActions(unit: MapUnit, actionList: ArrayList<UnitAction>, city: CityInfo, maxSpreadUses: Int) {
+    private fun addSpreadReligionActions(unit: MapUnit, actionList: ArrayList<UnitAction>, city: CityInfo) {
         val blockedByInquisitor =
             city.getCenterTile()
                 .getTilesInDistance(1)
@@ -545,17 +553,19 @@ object UnitActions {
             title = "Spread [${unit.religion!!}]",
             action = {
                 val followersOfOtherReligions = city.religion.getFollowersOfOtherReligionsThan(unit.religion!!)
-                for (unique in unit.civInfo.getMatchingUniques("When spreading religion to a city, gain [] times the amount of followers of other religions as []")) {
+                for (unique in unit.getMatchingUniques("When spreading religion to a city, gain [] times the amount of followers of other religions as []")) {
                     unit.civInfo.addStat(Stat.valueOf(unique.params[1]), followersOfOtherReligions * unique.params[0].toInt())
                 }
                 city.religion.addPressure(unit.religion!!, unit.getPressureAddedFromSpread())
+                if (unit.hasUnique("Removes other religions when spreading religion"))
+                    city.religion.removeAllPressuresExceptFor(unit.religion!!)
                 unit.currentMovement = 0f
-                useActionWithLimitedUses(unit, Constants.spreadReligionAbilityCount, maxSpreadUses)
+                useActionWithLimitedUses(unit, Constants.spreadReligionAbilityCount)
             }.takeIf { unit.currentMovement > 0 && !blockedByInquisitor } 
         )
     }
     
-    private fun addRemoveHeresyActions(unit: MapUnit, actionList: ArrayList<UnitAction>, city: CityInfo, maxHerseyUses: Int) {
+    private fun addRemoveHeresyActions(unit: MapUnit, actionList: ArrayList<UnitAction>, city: CityInfo) {
         if (city.civInfo != unit.civInfo) return
         // Only allow the action if the city actually has any foreign religion
         // This will almost be always due to pressure from cities close-by
@@ -565,7 +575,7 @@ object UnitActions {
             action = {
                 city.religion.removeAllPressuresExceptFor(unit.religion!!)
                 unit.currentMovement = 0f
-                useActionWithLimitedUses(unit, Constants.removeHeresyAbilityCount, maxHerseyUses)
+                useActionWithLimitedUses(unit, Constants.removeHeresyAbilityCount)
             }.takeIf { unit.currentMovement > 0f }
         )
     }
@@ -573,7 +583,7 @@ object UnitActions {
     fun getImprovementConstructionActions(unit: MapUnit, tile: TileInfo): ArrayList<UnitAction> {
         val finalActions = ArrayList<UnitAction>()
         var uniquesToCheck = unit.getMatchingUniques("Can construct []")
-        if (unit.religiousActionsUnitCanDo().all { unit.abilityUsedCount[it] == 0 })
+        if (unit.religiousActionsUnitCanDo().all { unit.abilityUsesLeft[it] == unit.maxAbilityUses[it] })
             uniquesToCheck += unit.getMatchingUniques("Can construct [] if it hasn't used other actions yet")
         
         for (unique in uniquesToCheck) {
@@ -650,7 +660,7 @@ object UnitActions {
             otherCiv.addNotification("[${unit.civInfo}] has stolen your territory!", unit.currentTile.position, unit.civInfo.civName, NotificationIcon.War)
     }
 
-    private fun addStatsPerGreatPersonUsage(unit: MapUnit) {
+    fun addStatsPerGreatPersonUsage(unit: MapUnit) {
         if (!unit.isGreatPerson()) return
         
         val civInfo = unit.civInfo
@@ -743,14 +753,12 @@ object UnitActions {
         // We need to be in another civs territory.
         if (recipient == null || recipient.isCurrentPlayer()) return null
 
-        // City States only take military units (and GPs for certain civs)
+        // City States only take military units (and units specifically allowed by uniques)
         if (recipient.isCityState()) {
-            if (unit.isGreatPerson()) {
-                // Do we have a unique ability to gift GPs?
-                if (unit.civInfo.getMatchingUniques("Gain [] Influence with a [] gift to a City-State").none {
-                    it.params[1] == "Great Person" } )  return null
-            }
-            else if (!unit.baseUnit().matchesFilter("Military")) return null
+            if (!unit.matchesFilter("Military") 
+                && unit.getMatchingUniques("Gain [] Influence with a [] gift to a City-State")
+                    .none { unit.matchesFilter(it.params[1]) }
+            ) return null
         }
         // If gifting to major civ they need to be friendly
         else if (!tile.isFriendlyTerritory(unit.civInfo)) return null
@@ -761,15 +769,15 @@ object UnitActions {
         val giftAction = {
             if (recipient.isCityState()) {
                 for (unique in unit.civInfo.getMatchingUniques("Gain [] Influence with a [] gift to a City-State")) {
-                    if((unit.isGreatPerson() && unique.params[1] == "Great Person")
-                        || unit.matchesFilter(unique.params[1])) {
-                        recipient.getDiplomacyManager(unit.civInfo).influence += unique.params[0].toInt() - 5
+                    if ((unit.isGreatPerson() && unique.params[1] == "Great Person")
+                        || unit.matchesFilter(unique.params[1])
+                    ) {
+                        recipient.getDiplomacyManager(unit.civInfo).addInfluence(unique.params[0].toFloat() - 5f)
+                        break
                     }
                 }
 
-                recipient.getDiplomacyManager(unit.civInfo).influence += 5
-
-                recipient.updateAllyCivForCityState()
+                recipient.getDiplomacyManager(unit.civInfo).addInfluence(5f)
             }
             else recipient.getDiplomacyManager(unit.civInfo).addModifier(DiplomaticModifiers.GaveUsUnits, 5f)
 

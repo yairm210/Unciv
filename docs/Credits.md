@@ -99,6 +99,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Bayonet](https://thenounproject.com/term/bayonet/3101681/) By food lover for Carolean
 * [Horse](https://thenounproject.com/search/?q=Horse&i=1023745) By Bakunetso Kaito for Cavalry
 * [horse racing](https://thenounproject.com/antimso/uploads/?i=2427932) By Sergio Morozov for Cossack
+* [Marching Band](https://thenounproject.com/term/marching-band/871426/) by Darrin Loeliger, US for Hussar
 * [Artillery](https://thenounproject.com/search/?q=Artillery&i=1165261) By Creative Mania
 * [Ship](https://thenounproject.com/term/ship/1594793/) By Aisyah for Ironclad
 
@@ -263,6 +264,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Shield and Swords](https://thenounproject.com/term/shield-and-swords/1477527/) By Alina Oleynik for Armory
 * [Machu Picchu](https://thenounproject.com/browse/?i=1678226/) By [Chanut is Industries](https://thenounproject.com/chanut-is)
 * [Garden](https://thenounproject.com/search/?q=garden&i=1478380) By Bharat
+* [Mosque](https://thenounproject.com/search/?q=mosque&i=2458353) by yanti for Great Mosque of Djenne
 
 ### Renaissance Era
 
@@ -274,6 +276,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Tower of Pisa](https://thenounproject.com/search/?q=leaning%20tower%20of%20pisa&i=1002578) By Pedro Santos
 * [Himeji Castle](https://thenounproject.com/search/?q=himeji&i=1125277) By Chanut is Industries
 * [Windmill](https://thenounproject.com/term/windmill/1705107/) By corpus delicti
+* [Coffee](https://thenounproject.com/term/coffee/3954451/) by SURYANI, ID for Coffee House
 * [Taj Mahal](https://thenounproject.com/term/taj-mahal/1907755/) By Felipe Alvarado
 * [Observatory](https://thenounproject.com/term/observatory/1259/) By Nathan Driskell
 * [Opera House](https://thenounproject.com/term/opera-house/446672/) By Xinh Studio
@@ -330,7 +333,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Illuminati](https://thenounproject.com/term/illuminati/1617812) by emilegraphics for the Utopia Project
 * [Christian Church](https://thenounproject.com/term/christian-church/1174183/) by Andrejs Kirma for Monastery
 * [cathedral](https://thenounproject.com/search/?q=Cathedral&i=4136407) by Pixel Bazaar for Cathedral
-* [Mosque](https://thenounproject.com/search/?q=mosque&i=4139519) by Ahmad Roaayala for Mosque
+* [Mosque](https://thenounproject.com/search/?q=mosque&i=1744106) by yanti for Mosque
 * [Pagoda](https://thenounproject.com/search/?q=pagoda&i=446665) by Xinh Studio for Pagoda 
 
 
@@ -549,6 +552,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Sun symbol black](https://en.wikiquote.org/wiki/File:Sun_symbol_black.svg) by Eddo for The Huns
 * [Lion](https://thenounproject.com/search/?q=lion&i=76154) by Nikki Rodriguez for The Netherlands
 * [Three Crowns](https://thenounproject.com/search/?q=three+crowns&i=1155972) by Daniel Falk for Sweden
+* [Flag of Austria](https://thenounproject.com/term/flag-of-austria/3292053/) by Olena Panasovska, UA for Austria
 
 
 ## Promotions
