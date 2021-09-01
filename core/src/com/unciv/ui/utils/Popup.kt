@@ -58,11 +58,7 @@ open class Popup(val screen: CameraStageBaseScreen): Table(CameraStageBaseScreen
         val currentCount = screen.countOpenPopups()
         // the lambda is for stacked key dispatcher precedence:
         keyPressDispatcher.install(screen.stage) { screen.countOpenPopups() > currentCount }
-        notifyPopupShown()
     }
-
-    /** Subclasses can override this to be notified once they're actually shown */
-    open fun notifyPopupShown() {}
 
     /**
      * Close this popup and - if any other popups are pending - display the next one.

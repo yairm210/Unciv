@@ -5,7 +5,6 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
 import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.badlogic.gdx.utils.Align
@@ -21,19 +20,20 @@ import com.unciv.models.tilesets.TileSetCache
 import com.unciv.models.translations.TranslationFileWriter
 import com.unciv.models.translations.Translations
 import com.unciv.models.translations.tr
-import com.unciv.ui.LanguagePickerScreen.Companion.addLanguageTables
 import com.unciv.ui.civilopedia.FormattedLine
 import com.unciv.ui.civilopedia.SimpleCivilopediaText
 import com.unciv.ui.utils.*
+import com.unciv.ui.utils.LanguageTable.Companion.addLanguageTables
 import com.unciv.ui.utils.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.worldscreen.WorldScreen
 import java.util.*
 import kotlin.concurrent.thread
 import kotlin.math.max
-import kotlin.math.min
 import com.badlogic.gdx.utils.Array as GdxArray
 
-class OptionsPopup(val previousScreen:CameraStageBaseScreen) : Popup(previousScreen) {
+//todo check label wrap widths
+//todo Kdoc here
+class OptionsPopup(val previousScreen: CameraStageBaseScreen) : Popup(previousScreen) {
     private val settings = previousScreen.game.settings
     private val tabs: TabbedPager
     private val resolutionArray = com.badlogic.gdx.utils.Array(arrayOf("750x500", "900x600", "1050x700", "1200x800", "1500x1000"))
@@ -46,20 +46,21 @@ class OptionsPopup(val previousScreen:CameraStageBaseScreen) : Popup(previousScr
         settings.addCompletedTutorialTask("Open the options table")
 
         innerTable.pad(0f)
-        val tabWidth: Float
-        val tabHeight: Float
+        val tabMaxWidth: Float
+        val tabMaxHeight: Float
         previousScreen.run {
             selectBoxMinWidth = if (stage.width < 600f) 200f else 240f
-            tabWidth = (if (isPortrait()) 0.9f else 0.8f) * stage.width
-            tabHeight = (if (isPortrait()) 0.6f else 0.65f) * stage.height
+            tabMaxWidth = (if (isPortrait()) 0.95f else 0.8f) * stage.width
+            tabMaxHeight = (if (isPortrait()) 0.65f else 0.65f) * stage.height
         }
-        tabs = TabbedPager(tabWidth, tabHeight, fontSize = 21, backgroundColor = Color.CLEAR, capacity = 8)
+        tabs = TabbedPager(0f, tabMaxWidth, 0f, tabMaxHeight,
+            fontSize = 21, backgroundColor = Color.CLEAR, capacity = 8)
         add(tabs).pad(0f).grow().row()
 
-        tabs.selectPage(tabs.addPage("About", getAboutTab(), ImageGetter.getExternalImage("Icon.png"), 24f))
-        tabs.addPage("Language", getLanguageTab(), ImageGetter.getImage("FlagIcons/${settings.language}"), 24f)
+        tabs.addPage("About", getAboutTab(), ImageGetter.getExternalImage("Icon.png"), 24f)
         tabs.addPage("Display", getDisplayTab(), ImageGetter.getImage("UnitPromotionIcons/Scouting"), 24f)
         tabs.addPage("Gameplay", getGamePlayTab(), ImageGetter.getImage("OtherIcons/Options"), 24f)
+        tabs.addPage("Language", getLanguageTab(), ImageGetter.getImage("FlagIcons/${settings.language}"), 24f)
         tabs.addPage("Sound", getSoundTab(), ImageGetter.getImage("OtherIcons/Speaker"), 24f)
         // at the moment the notification service only exists on Android
         if (Gdx.app.type == Application.ApplicationType.Android)
@@ -84,8 +85,11 @@ class OptionsPopup(val previousScreen:CameraStageBaseScreen) : Popup(previousScr
         center(previousScreen.stage)
     }
 
-    override fun notifyPopupShown() {
+    override fun setVisible(visible: Boolean) {
+        super.setVisible(visible)
+        if (!visible) return
         tabs.askForPassword(secretHashCode = 2747985)
+        if (tabs.activePage < 0) tabs.selectPage(2)
     }
 
     private fun reloadWorldAndOptions() {
@@ -117,9 +121,7 @@ class OptionsPopup(val previousScreen:CameraStageBaseScreen) : Popup(previousScr
     }
 
     private fun getLanguageTab() = Table(CameraStageBaseScreen.skin).apply {
-        val languageTables = this.addLanguageTables()
-        (cells[0].actor as Label).wrap = true
-        cells[0].width(tabs.prefWidth - 90f)
+        val languageTables = this.addLanguageTables(tabs.prefWidth * 0.8f - 20f)
 
         var chosenLanguage = settings.language
         fun selectLanguage() {
@@ -526,68 +528,35 @@ class OptionsPopup(val previousScreen:CameraStageBaseScreen) : Popup(previousScr
         }
         add(button).row()
     }
-}
 
+    /**
+     *  This TextButton subclass helps to keep looks and behaviour of our Yes/No
+     *  in one place, but it also helps keeping context for those action lambdas.
+     *
+     *  Usage: YesNoButton(someSetting: Boolean, skin) { someSetting = it; sideEffects() }
+     */
+    private class YesNoButton(
+        initialValue: Boolean,
+        skin: Skin,
+        action: (Boolean) -> Unit
+    ) : TextButton (initialValue.toYesNo(), skin ) {
 
-/*
-        This TextButton subclass helps to keep looks and behaviour of our Yes/No
-        in one place, but it also helps keeping context for those action lambdas.
-
-        Usage: YesNoButton(someSetting: Boolean, skin) { someSetting = it; sideEffects() }
- */
-fun Boolean.toYesNo(): String = (if (this) Constants.yes else Constants.no).tr()
-private class YesNoButton(initialValue: Boolean, skin: Skin, action: (Boolean) -> Unit)
-        : TextButton (initialValue.toYesNo(), skin ) {
-
-    var value = initialValue
-        private set(value) {
-            field = value
-            setText(value.toYesNo())
-        }
-
-    init {
-        color = ImageGetter.getBlue()
-        onClick {
-            value = !value
-            action.invoke(value)
-        }
-    }
-}
-
-/** A [Label] that unlike the original participates correctly in layout
- *  Caveat: You still need to turn wrap on _after_ instantiation, doing it here in init leads to hell.
- *
- *  @param text Automatically translated text
- *  @param expectedWidth Upper limit for the preferred width the Label will report
- */
-private class WrappableLabel(
-    text: String,
-    private val expectedWidth: Float,
-    fontColor: Color = Color.WHITE,
-    fontSize: Int = 18
-) : Label(text.tr(), CameraStageBaseScreen.skin) {
-    private var _measuredWidth = 0f
-
-    init {
-        if (fontColor != Color.WHITE || fontSize!=18) {
-            val style = LabelStyle(this.style)
-            style.fontColor = fontColor
-            if (fontSize != 18) {
-                style.font = Fonts.font
-                setFontScale(fontSize / Fonts.ORIGINAL_FONT_SIZE)
+        var value = initialValue
+            private set(value) {
+                field = value
+                setText(value.toYesNo())
             }
-            setStyle(style)
+
+        init {
+            color = ImageGetter.getBlue()
+            onClick {
+                value = !value
+                action.invoke(value)
+            }
+        }
+
+        companion object {
+            fun Boolean.toYesNo(): String = (if (this) Constants.yes else Constants.no).tr()
         }
     }
-
-    override fun setWrap(wrap: Boolean) {
-        _measuredWidth = super.getPrefWidth()
-        super.setWrap(wrap)
-    }
-
-    private fun getMeasuredWidth(): Float = if (wrap) _measuredWidth else super.getPrefWidth()
-
-    override fun getMinWidth() = 48f  // ~ 2 chars 
-    override fun getPrefWidth() = min(getMeasuredWidth(), expectedWidth)
-    override fun getMaxWidth() = getMeasuredWidth()
 }
