@@ -191,11 +191,14 @@ class BaseUnit : INamed, INonPerpetualConstruction, ICivilopediaText {
         return textList
     }
 
-    fun getMapUnit(ruleset: Ruleset): MapUnit {
+    fun getMapUnit(civInfo: CivilizationInfo): MapUnit {
         val unit = MapUnit()
         unit.name = name
+        unit.civInfo = civInfo
 
-        unit.setTransients(ruleset) // must be after setting name because it sets the baseUnit according to the name
+        // must be after setting name & civInfo because it sets the baseUnit according to the name
+        // and the civInfo is required for using `hasUnique` when determining its movement options  
+        unit.setTransients(civInfo.gameInfo.ruleSet) 
 
         return unit
     }

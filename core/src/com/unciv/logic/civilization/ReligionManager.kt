@@ -6,6 +6,7 @@ import com.unciv.models.Religion
 import com.unciv.models.ruleset.Belief
 import com.unciv.models.ruleset.BeliefType
 import com.unciv.ui.pickerscreens.BeliefContainer
+import com.unciv.ui.utils.toPercent
 import kotlin.random.Random
 
 class ReligionManager {

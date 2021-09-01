@@ -770,12 +770,12 @@ object UnitActions {
                     if ((unit.isGreatPerson() && unique.params[1] == "Great Person")
                         || unit.matchesFilter(unique.params[1])
                     ) {
-                        recipient.getDiplomacyManager(unit.civInfo).addInfluence(unique.params[0].toInt() - 5)
+                        recipient.getDiplomacyManager(unit.civInfo).addInfluence(unique.params[0].toFloat() - 5f)
                         break
                     }
                 }
 
-                recipient.getDiplomacyManager(unit.civInfo).addInfluence(5)
+                recipient.getDiplomacyManager(unit.civInfo).addInfluence(5f)
             }
             else recipient.getDiplomacyManager(unit.civInfo).addModifier(DiplomaticModifiers.GaveUsUnits, 5f)
 
