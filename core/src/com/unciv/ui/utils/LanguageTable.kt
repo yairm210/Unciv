@@ -4,6 +4,8 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.UncivGame
+import com.unciv.ui.civilopedia.FormattedLine
+import com.unciv.ui.civilopedia.MarkupRenderer
 import java.util.ArrayList
 
 /** Represents a row in the Language picker, used both in OptionsPopup and in LanguagePickerScreen */
@@ -35,14 +37,14 @@ internal class LanguageTable(val language:String, val percentComplete: Int): Tab
         internal fun Table.addLanguageTables(expectedWidth: Float): ArrayList<LanguageTable> {
             val languageTables = ArrayList<LanguageTable>()
 
-            val translationDisclaimer =
-                "Please note that translations are a community-based work in progress and are INCOMPLETE!" +
-                        " The percentage shown is how much of the language is translated in-game. If you want to help translating" +
-                        " the game into your language, instructions are in the Github readme! (Options ➙ About ➙ Readme)."
-            val translationDisclaimerLabel =
-                WrappableLabel(translationDisclaimer, expectedWidth, fontSize = 16)
-            translationDisclaimerLabel.wrap = true
-            add(translationDisclaimerLabel).pad(10f).row()
+            val translationDisclaimer = FormattedLine(
+                text = "Please note that translations are a community-based work in progress and are" +
+                    " INCOMPLETE! The percentage shown is how much of the language is translated in-game." +
+                    " If you want to help translating the game into your language, click here.",
+                link = "https://github.com/yairm210/Unciv/wiki/Translating",
+                size = 15
+            )
+            add(MarkupRenderer.render(listOf(translationDisclaimer),expectedWidth)).pad(5f).row()
 
             val tableLanguages = Table()
             tableLanguages.defaults().uniformX()

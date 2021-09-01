@@ -21,6 +21,7 @@ import com.unciv.models.translations.TranslationFileWriter
 import com.unciv.models.translations.Translations
 import com.unciv.models.translations.tr
 import com.unciv.ui.civilopedia.FormattedLine
+import com.unciv.ui.civilopedia.MarkupRenderer
 import com.unciv.ui.civilopedia.SimpleCivilopediaText
 import com.unciv.ui.utils.*
 import com.unciv.ui.utils.LanguageTable.Companion.addLanguageTables
@@ -28,11 +29,13 @@ import com.unciv.ui.utils.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.worldscreen.WorldScreen
 import java.util.*
 import kotlin.concurrent.thread
-import kotlin.math.max
 import com.badlogic.gdx.utils.Array as GdxArray
 
-//todo check label wrap widths
-//todo Kdoc here
+/**
+ * The Options (Settings) Popup
+ * @param previousScreen Tha caller - note if this is a [WorldScreen] or [MainMenuScreen] they will be rebuilt when major options change.
+ */
+//region Fields
 class OptionsPopup(val previousScreen: CameraStageBaseScreen) : Popup(previousScreen) {
     private val settings = previousScreen.game.settings
     private val tabs: TabbedPager
@@ -42,18 +45,22 @@ class OptionsPopup(val previousScreen: CameraStageBaseScreen) : Popup(previousSc
     private var modCheckResultCell: Cell<Actor>? = null
     private val selectBoxMinWidth: Float
 
+    //endregion
+
     init {
         settings.addCompletedTutorialTask("Open the options table")
 
         innerTable.pad(0f)
         val tabMaxWidth: Float
+        val tabMinWidth: Float
         val tabMaxHeight: Float
         previousScreen.run {
             selectBoxMinWidth = if (stage.width < 600f) 200f else 240f
-            tabMaxWidth = (if (isPortrait()) 0.95f else 0.8f) * stage.width
-            tabMaxHeight = (if (isPortrait()) 0.65f else 0.65f) * stage.height
+            tabMaxWidth = if (isPortrait()) stage.width - 10f else 0.8f * stage.width
+            tabMinWidth = 0.6f * stage.width
+            tabMaxHeight = (if (isPortrait()) 0.7f else 0.8f) * stage.height
         }
-        tabs = TabbedPager(0f, tabMaxWidth, 0f, tabMaxHeight,
+        tabs = TabbedPager(tabMinWidth, tabMaxWidth, 0f, tabMaxHeight,
             fontSize = 21, backgroundColor = Color.CLEAR, capacity = 8)
         add(tabs).pad(0f).grow().row()
 
@@ -92,17 +99,19 @@ class OptionsPopup(val previousScreen: CameraStageBaseScreen) : Popup(previousSc
         if (tabs.activePage < 0) tabs.selectPage(2)
     }
 
+    /** Reload this Popup after major changes (resolution, tileset, language) */
     private fun reloadWorldAndOptions() {
         settings.save()
         if (previousScreen is WorldScreen) {
             previousScreen.game.worldScreen = WorldScreen(previousScreen.gameInfo, previousScreen.viewingCiv)
             previousScreen.game.setWorldScreen()
-
         } else if (previousScreen is MainMenuScreen) {
             previousScreen.game.setScreen(MainMenuScreen())
         }
         (previousScreen.game.screen as CameraStageBaseScreen).openOptionsPopup()
     }
+
+    //region Page builders
 
     private fun getAboutTab(): Table {
         defaults().pad(5f)
@@ -115,13 +124,11 @@ class OptionsPopup(val previousScreen: CameraStageBaseScreen) : Popup(previousSc
             yield(FormattedLine("See online Readme", link = "https://github.com/yairm210/Unciv/blob/master/README.md#unciv---foss-civ-v-for-androiddesktop"))
             yield(FormattedLine("Visit repository", link = "https://github.com/yairm210/Unciv"))
         }
-        return SimpleCivilopediaText(lines.toList()).renderCivilopediaText(0f).apply {
-            pad(20f)
-        }
+        return MarkupRenderer.render(lines.toList()).pad(20f)
     }
 
     private fun getLanguageTab() = Table(CameraStageBaseScreen.skin).apply {
-        val languageTables = this.addLanguageTables(tabs.prefWidth * 0.8f - 20f)
+        val languageTables = this.addLanguageTables(tabs.prefWidth * 0.9f - 10f)
 
         var chosenLanguage = settings.language
         fun selectLanguage() {
@@ -168,7 +175,7 @@ class OptionsPopup(val previousScreen: CameraStageBaseScreen) : Popup(previousSc
 
         val continuousRenderingDescription = "When disabled, saves battery life but certain animations will be suspended"
         val continuousRenderingLabel = WrappableLabel(continuousRenderingDescription,
-                tabs.prefWidth - 30f, Color.ORANGE.cpy().lerp(Color.WHITE, 0.7f), 14)
+                tabs.prefWidth, Color.ORANGE.cpy().lerp(Color.WHITE, 0.7f), 14)
         continuousRenderingLabel.wrap = true
         add(continuousRenderingLabel).colspan(2).padTop(10f).row()
     }
@@ -253,7 +260,7 @@ class OptionsPopup(val previousScreen: CameraStageBaseScreen) : Popup(previousSc
 
     private fun getModCheckTab() = Table(CameraStageBaseScreen.skin).apply {
         defaults().pad(10f).align(Align.top)
-        modCheckCheckBox = "Check extension mods thoroughly with vanilla ruleset".toCheckBox {
+        modCheckCheckBox = "Check extension mods based on vanilla".toCheckBox {
             runModChecker(it)
         }
         add(modCheckCheckBox).row()
@@ -287,8 +294,7 @@ class OptionsPopup(val previousScreen: CameraStageBaseScreen) : Popup(previousSc
             if (noProblem) lines += FormattedLine("{No problems found}.")
 
             Gdx.app.postRunnable {
-                // My math says -25f would cover padding, this is empiric
-                val result = SimpleCivilopediaText(lines).renderCivilopediaText(tabs.prefWidth - 150f)
+                val result = SimpleCivilopediaText(lines).renderCivilopediaText(tabs.prefWidth - 25f)
                 modCheckResultCell?.setActor(result)
                 modCheckCheckBox!!.enable()
             }
@@ -313,6 +319,8 @@ class OptionsPopup(val previousScreen: CameraStageBaseScreen) : Popup(previousSc
         }
     }
 
+    //endregion
+    //region Row builders
 
     private fun Table.addMinimapSizeSlider() {
         add("Show minimap".toLabel()).left().fillX()
@@ -516,7 +524,7 @@ class OptionsPopup(val previousScreen: CameraStageBaseScreen) : Popup(previousSc
 
 
     private fun Table.addYesNoRow(text: String, initialValue: Boolean, updateWorld: Boolean = false, action: ((Boolean) -> Unit)) {
-        val wrapWidth = max(tabs.prefWidth * 0.5f, tabs.prefWidth - 180f)
+        val wrapWidth = tabs.prefWidth - 60f
         add(WrappableLabel(text, wrapWidth).apply { wrap = true })
             .left().fillX()
             .maxWidth(wrapWidth)
@@ -528,6 +536,8 @@ class OptionsPopup(val previousScreen: CameraStageBaseScreen) : Popup(previousSc
         }
         add(button).row()
     }
+
+    //endregion
 
     /**
      *  This TextButton subclass helps to keep looks and behaviour of our Yes/No
