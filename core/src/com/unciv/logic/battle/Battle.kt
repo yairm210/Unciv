@@ -6,6 +6,7 @@ import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.*
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
+import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.RoadStatus
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.AttackableTile
@@ -13,6 +14,7 @@ import com.unciv.models.UnitActionType
 import com.unciv.models.ruleset.Unique
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
+import com.unciv.ui.utils.toPercent
 import java.util.*
 import kotlin.math.max
 import kotlin.math.min
@@ -121,10 +123,11 @@ object Battle {
 
         val bonusUniques = ArrayList<Unique>()
 
-        bonusUniques.addAll(civUnit.getCivInfo().getMatchingUniques(bonusUniquePlaceholderText))
 
         if (civUnit is MapUnitCombatant) {
-            bonusUniques.addAll(civUnit.unit.getMatchingUniques(bonusUniquePlaceholderText))
+            bonusUniques.addAll(civUnit.getMatchingUniques(bonusUniquePlaceholderText))
+        } else {
+            bonusUniques.addAll(civUnit.getCivInfo().getMatchingUniques(bonusUniquePlaceholderText))
         }
 
         bonusUniquePlaceholderText = "Earn []% of [] unit's [] as [] when killed within 4 tiles of a city following this religion"
@@ -386,9 +389,7 @@ object Battle {
 
         if (thisCombatant.getCivInfo().isMajorCiv()) {
             var greatGeneralPointsModifier = 1f
-            val unitUniques = thisCombatant.unit.getMatchingUniques("[] is earned []% faster")
-            val civUniques = thisCombatant.getCivInfo().getMatchingUniques("[] is earned []% faster")
-            for (unique in unitUniques + civUniques) {
+            for (unique in thisCombatant.getMatchingUniques("[] is earned []% faster")) {
                 val unitName = unique.params[0]
                 val unit = thisCombatant.getCivInfo().gameInfo.ruleSet.units[unitName]
                 if (unit != null && unit.uniques.contains("Great Person - [War]"))
@@ -400,7 +401,7 @@ object Battle {
         }
     }
 
-    private fun conquerCity(city: CityInfo, attacker: ICombatant) {
+    private fun conquerCity(city: CityInfo, attacker: MapUnitCombatant) {
         val attackerCiv = attacker.getCivInfo()
 
         attackerCiv.addNotification("We have conquered the city of [${city.name}]!", city.location, NotificationIcon.War)
@@ -412,10 +413,10 @@ object Battle {
             for (airUnit in airUnits.toList()) airUnit.destroy()
         }
 
-        for (unique in attackerCiv.getMatchingUniques("Upon capturing a city, receive [] times its [] production as [] immediately")) {
+        for (unique in attacker.getMatchingUniques("Upon capturing a city, receive [] times its [] production as [] immediately")) {
             attackerCiv.addStat(
                 Stat.valueOf(unique.params[2]),
-                unique.params[0].toInt() * city.cityStats.currentCityStats.get(Stat.valueOf(unique.params[1])).toInt()
+                unique.params[0].toInt() * city.cityStats.currentCityStats[Stat.valueOf(unique.params[1])].toInt()
             )
         }
 
@@ -559,6 +560,10 @@ object Battle {
         for (civ in attackingCiv.getKnownCivs()) {
             civ.getDiplomacyManager(attackingCiv).setModifier(DiplomaticModifiers.UsedNuclearWeapons, -50f)
         }
+        
+        if (!attacker.isDefeated()) {
+            attacker.unit.attacksThisTurn += 1
+        }
     }
 
     // todo: reduce extreme code duplication, parameterize probabilities where an unique already used
@@ -578,8 +583,15 @@ object Battle {
         if (city != null && tile.position == city.location) {
             var populationLoss = city.population.population * (0.3 + Random().nextFloat() * 0.4)
             var populationLossReduced = false
-            for (unique in city.civInfo.getMatchingUniques("Population loss from nuclear attacks -[]%")) {
-                populationLoss *= 1 - unique.params[0].toFloat() / 100f
+            // Deprecated since 3.16.11
+                for (unique in city.getLocalMatchingUniques("Population loss from nuclear attacks -[]%")) {
+                    populationLoss *= 1 - unique.params[0].toFloat() / 100f
+                    populationLossReduced = true
+                }
+            //
+            for (unique in city.getMatchingUniques("Population loss from nuclear attacks []% []")) {
+                if (!city.matchesFilter(unique.params[1])) continue
+                populationLoss *= unique.params[0].toPercent()
                 populationLossReduced = true
             }
             if (city.population.population < 5 && !populationLossReduced) {
@@ -647,8 +659,15 @@ object Battle {
             } else {
                 var populationLoss = city.population.population * (0.6 + Random().nextFloat() * 0.2)
                 var populationLossReduced = false
-                for (unique in city.civInfo.getMatchingUniques("Population loss from nuclear attacks -[]%")) {
-                    populationLoss *= 1 - unique.params[0].toFloat() / 100f
+                // Deprecated since 3.15.11
+                    for (unique in city.getLocalMatchingUniques("Population loss from nuclear attacks -[]%")) {
+                        populationLoss *= 1 - unique.params[0].toFloat() / 100f
+                        populationLossReduced = true
+                    }
+                //
+                for (unique in city.getMatchingUniques("Population loss from nuclear attacks []% []")) {
+                    if (!city.matchesFilter(unique.params[1]))
+                    populationLoss *= unique.params[0].toPercent()
                     populationLossReduced = true
                 }
                 city.population.addPopulation(-populationLoss.toInt())

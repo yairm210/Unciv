@@ -192,11 +192,14 @@ class BaseUnit : INamed, INonPerpetualConstruction, ICivilopediaText {
         return textList
     }
 
-    fun getMapUnit(ruleset: Ruleset): MapUnit {
+    fun getMapUnit(civInfo: CivilizationInfo): MapUnit {
         val unit = MapUnit()
         unit.name = name
+        unit.civInfo = civInfo
 
-        unit.setTransients(ruleset) // must be after setting name because it sets the baseUnit according to the name
+        // must be after setting name & civInfo because it sets the baseUnit according to the name
+        // and the civInfo is required for using `hasUnique` when determining its movement options  
+        unit.setTransients(civInfo.gameInfo.ruleSet) 
 
         return unit
     }
@@ -326,15 +329,16 @@ class BaseUnit : INamed, INonPerpetualConstruction, ICivilopediaText {
         ) return "Disabled by setting"
 
         for (unique in uniqueObjects.filter { it.placeholderText == "Unlocked with []" })
-            if (civInfo.tech.researchedTechnologies.none { it.era() == unique.params[0] || it.name == unique.params[0] }
-                    && !civInfo.policies.isAdopted(unique.params[0]))
-                return unique.text
+            // ToDo: Clean this up when eras.json is required
+            if ((civInfo.gameInfo.ruleSet.getEraNumber(unique.params[0]) != -1 && civInfo.getEraNumber() >= civInfo.gameInfo.ruleSet.getEraNumber(unique.params[0]))
+                || civInfo.hasTechOrPolicy(unique.params[0])
+            ) return unique.text
 
         for (unique in uniqueObjects.filter { it.placeholderText == "Requires []" }) {
             val filter = unique.params[0]
             if (!ignoreTechPolicyRequirements && filter in civInfo.gameInfo.ruleSet.buildings) {
                 if (civInfo.cities.none { it.cityConstructions.containsBuildingOrEquivalent(filter) }) return unique.text // Wonder is not built
-            } else if (!ignoreTechPolicyRequirements && !civInfo.policies.adoptedPolicies.contains(filter)) return "Policy is not adopted"
+            } else if (!ignoreTechPolicyRequirements && !civInfo.policies.isAdopted(filter)) return "Policy is not adopted"
         }
 
         for ((resource, amount) in getResourceRequirements())

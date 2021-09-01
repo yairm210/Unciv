@@ -343,7 +343,7 @@ class QuestManager {
         val rewardInfluence = civInfo.gameInfo.ruleSet.quests[assignedQuest.questName]!!.influece
         val assignee = civInfo.gameInfo.getCivilization(assignedQuest.assignee)
 
-        civInfo.getDiplomacyManager(assignedQuest.assignee).influence += rewardInfluence
+        civInfo.getDiplomacyManager(assignedQuest.assignee).addInfluence(rewardInfluence)
         if (rewardInfluence > 0)
             assignee.addNotification(
                 "[${civInfo.civName}] rewarded you with [${rewardInfluence.toInt()}] influence for completing the [${assignedQuest.questName}] quest.",

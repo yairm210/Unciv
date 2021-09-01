@@ -192,10 +192,8 @@ class Building : NamedStats(), INonPerpetualConstruction, ICivilopediaText {
         val stats = percentStatBonus?.clone() ?: Stats()
         val civInfo = cityInfo?.civInfo ?: return stats  // initial stats
 
-        val baseBuildingName = getBaseBuilding(civInfo.gameInfo.ruleSet).name
-
         for (unique in civInfo.getMatchingUniques("+[]% [] from every []")) {
-            if (unique.params[2] == baseBuildingName)
+            if (matchesFilter(unique.params[2]))
                 stats.add(Stat.valueOf(unique.params[1]), unique.params[0].toFloat())
         }
 
@@ -521,7 +519,7 @@ class Building : NamedStats(), INonPerpetualConstruction, ICivilopediaText {
                 val filter = unique.params[0]
                 if (filter in civInfo.gameInfo.ruleSet.buildings) {
                     if (civInfo.cities.none { it.cityConstructions.containsBuildingOrEquivalent(filter) }) return unique.text // Wonder is not built
-                } else if (!civInfo.policies.adoptedPolicies.contains(filter)) return "Policy is not adopted" // this reason should not be displayed
+                } else if (!civInfo.policies.isAdopted(filter)) return "Policy is not adopted" // this reason should not be displayed
             }
 
             "Requires a [] in this city" -> {
@@ -671,10 +669,6 @@ class Building : NamedStats(), INonPerpetualConstruction, ICivilopediaText {
         if (getStatPercentageBonuses(null)[stat] > 0) return true
         if (uniqueObjects.any { it.placeholderText == "[] per [] population []" && it.stats[stat] > 0 }) return true
         return false
-    }
-
-    fun getBaseBuilding(ruleset: Ruleset): Building {
-        return if (replaces == null) this else ruleset.buildings[replaces!!]!!
     }
 
     fun getImprovement(ruleset: Ruleset): TileImprovement? {
