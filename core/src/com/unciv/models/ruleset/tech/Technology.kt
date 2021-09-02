@@ -68,14 +68,14 @@ class Technology: INamed, ICivilopediaText, IHasUniques {
         if (regularBuildings.any()) {
             lineList += "{Buildings enabled}: "
             for (building in regularBuildings)
-                lineList += "* " + building.name.tr() + " (" + building.getShortDescription(ruleset) + ")"
+                lineList += "* " + building.name.tr() + " (" + building.getShortDescription() + ")"
         }
 
         val wonders = enabledBuildings.filter { it.isAnyWonder() }
         if (wonders.any()) {
             lineList += "{Wonders enabled}: "
             for (wonder in wonders)
-                lineList += " * " + wonder.name.tr() + " (" + wonder.getShortDescription(ruleset) + ")"
+                lineList += " * " + wonder.name.tr() + " (" + wonder.getShortDescription() + ")"
         }
 
         for (building in getObsoletedBuildings(viewingCiv))
@@ -214,13 +214,13 @@ class Technology: INamed, ICivilopediaText, IHasUniques {
             lineList += FormattedLine()
             lineList += FormattedLine("{Wonders enabled}:")
             for (wonder in enabledBuildings.first)
-                lineList += FormattedLine(wonder.name.tr() + " (" + wonder.getShortDescription(ruleset) + ")", link = wonder.makeLink())
+                lineList += FormattedLine(wonder.name.tr() + " (" + wonder.getShortDescription() + ")", link = wonder.makeLink())
         }
         if (enabledBuildings.second.isNotEmpty()) {
             lineList += FormattedLine()
             lineList += FormattedLine("{Buildings enabled}:")
             for (building in enabledBuildings.second)
-                lineList += FormattedLine(building.name.tr() + " (" + building.getShortDescription(ruleset) + ")", link = building.makeLink())
+                lineList += FormattedLine(building.name.tr() + " (" + building.getShortDescription() + ")", link = building.makeLink())
         }
 
         val obsoletedBuildings = getObsoletedBuildings(viewingCiv)
