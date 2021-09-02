@@ -707,10 +707,6 @@ class CivilizationInfo {
     fun addFlag(flag: String, count: Int) { flagsCountdown[flag] = count }
     fun removeFlag(flag: String) { flagsCountdown.remove(flag) }
 
-    fun turnsForGreatPersonFromCityState(): Int = ((40 + -2 + Random().nextInt(5)) * gameInfo.gameParameters.gameSpeed.modifier).toInt()
-    // There seems to be some randomness in the amount of turns between receiving each great person,
-    // but I have no idea what the actual lower and upper bound are, so this is just an approximation
-
     fun getTurnsBetweenDiplomaticVotings() = (15 * gameInfo.gameParameters.gameSpeed.modifier).toInt() // Dunno the exact calculation, hidden in Lua files
     
     fun getTurnsTillNextDiplomaticVote() = flagsCountdown[CivFlags.TurnsTillNextDiplomaticVote.name]
@@ -881,6 +877,7 @@ class CivilizationInfo {
     fun receiveGoldGift(donorCiv: CivilizationInfo, giftAmount: Int) {
         cityStateFunctions.receiveGoldGift(donorCiv, giftAmount)
     }
+    fun turnsForGreatPersonFromCityState(): Int = ((37 + Random().nextInt(7)) * gameInfo.gameParameters.gameSpeed.modifier).toInt()    
     fun getProtectorCivs() = cityStateFunctions.getProtectorCivs()
     fun addProtectorCiv(otherCiv: CivilizationInfo) {
         cityStateFunctions.addProtectorCiv(otherCiv)

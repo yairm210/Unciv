@@ -169,7 +169,7 @@ object NextTurnAutomation {
 
     private fun valueCityStateAlliance(civInfo: CivilizationInfo, cityState: CivilizationInfo): Int {
         var value = 0
-        if (!cityState.isAlive() || cityState.cities.isEmpty())
+        if (!cityState.isAlive() || cityState.cities.isEmpty() || civInfo.cities.isEmpty())
             return value
 
         if (civInfo.victoryType() == VictoryType.Cultural && cityState.canGiveStat(Stat.Culture)) {

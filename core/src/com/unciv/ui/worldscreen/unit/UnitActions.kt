@@ -769,8 +769,7 @@ object UnitActions {
         val giftAction = {
             if (recipient.isCityState()) {
                 for (unique in unit.civInfo.getMatchingUniques("Gain [] Influence with a [] gift to a City-State")) {
-                    if ((unit.isGreatPerson() && unique.params[1] == "Great Person")
-                        || unit.matchesFilter(unique.params[1])
+                    if (unit.matchesFilter(unique.params[1])
                     ) {
                         recipient.getDiplomacyManager(unit.civInfo).addInfluence(unique.params[0].toFloat() - 5f)
                         break

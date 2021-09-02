@@ -375,14 +375,10 @@ class CityConstructions {
             // Perpetual constructions should always still be valid (I hope)
             if (construction is PerpetualConstruction) continue
             
-            val rejectionReason = 
-                (construction as INonPerpetualConstruction).getRejectionReason(this)
+            val rejectionReasons = 
+                (construction as INonPerpetualConstruction).getRejectionReasons(this)
 
-            if (rejectionReason.endsWith("lready built")
-                    || rejectionReason.startsWith("Cannot be built with")
-                    || rejectionReason.startsWith("Don't need to build any more")
-                    || rejectionReason.startsWith("Obsolete")
-            ) {
+            if (rejectionReasons.hasAReasonToBeRemovedFromQueue()) {
                 if (construction is Building) {
                     // Production put into wonders gets refunded
                     if (construction.isWonder && getWorkDone(constructionName) != 0) {
@@ -392,7 +388,7 @@ class CityConstructions {
                     }
                 } else if (construction is BaseUnit) {
                     // Production put into upgradable units gets put into upgraded version
-                    if (rejectionReason.startsWith("Obsolete") && construction.upgradesTo != null) {
+                    if (rejectionReasons.all { it == RejectionReason.Obsoleted } && construction.upgradesTo != null) {
                         // I'd love to use the '+=' operator but since 'inProgressConstructions[...]' can be null, kotlin doesn't allow me to
                         if (!inProgressConstructions.contains(construction.upgradesTo)) {
                             inProgressConstructions[construction.upgradesTo!!] = getWorkDone(constructionName)
