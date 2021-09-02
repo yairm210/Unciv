@@ -101,15 +101,17 @@ class MapUnit {
 
     /**
      * Name which should be displayed in UI
-     * 
+     *
      * Note this is translated after being returned from this function, so let's pay
      * attention to combined names (renamed units, religion).
      */
     fun displayName(): String {
-        val name = if (instanceName == null) name
-                   else "$instanceName ({${name}})"
-        return if (religion != null) "[$name] ([$religion])"
-               else name
+        val baseName =
+            if (instanceName == null) "[$name]"
+            else "instanceName ([$name])"
+
+        return if (religion == null) baseName
+        else "$baseName ([${getReligionDisplayName()}])"
     }
 
     var currentMovement: Float = 0f
@@ -967,6 +969,11 @@ class MapUnit {
     fun canBuildImprovement(improvement: TileImprovement, tile: TileInfo = currentTile): Boolean {
         val matchingUniques = getMatchingUniques(Constants.canBuildImprovements)
         return matchingUniques.any { improvement.matchesFilter(it.params[0]) || tile.matchesTerrainFilter(it.params[0]) }
+    }
+    
+    fun getReligionDisplayName(): String? {
+        if (religion == null) return null
+        return civInfo.gameInfo.religions[religion]!!.displayName ?: religion
     }
     
     fun religiousActionsUnitCanDo(): Sequence<String> {

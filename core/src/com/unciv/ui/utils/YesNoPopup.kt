@@ -24,7 +24,7 @@ open class YesNoPopup (
     init {
         promptLabel.setAlignment(Align.center)
         add(promptLabel).colspan(2).row()
-        addOKButton(Constants.yes, KeyCharAndCode('y'), action)
+        addOKButton(Constants.yes, KeyCharAndCode('y'), action = action)
         addCloseButton(Constants.no, KeyCharAndCode('n'), restoreDefault)
         equalizeLastTwoButtonWidths()
     }
