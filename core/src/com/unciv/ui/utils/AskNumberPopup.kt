@@ -1,0 +1,114 @@
+package com.unciv.ui.utils
+
+import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.scenes.scene2d.ui.Button
+import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.badlogic.gdx.scenes.scene2d.ui.TextField
+
+/** Simple class for showing a prompt for a positive integer to the user
+ * @param screen The previous screen the user was on
+ * @param label A line of text shown to the user
+ * @param icon Icon at the top, should have size 80f
+ * @param defaultText The text that should be in the prompt at the start
+ * @param amountButtons Buttons that when clicked will add/subtract these amounts to the number
+ * @param bounds The bounds in which the number must lie. If one is provided, both must be provided,
+ * but `null` can be used as a 'there is no bounds' value.
+ * @param errorText Text that will be shown when an error is detected
+ * @param actionOnOk Lambda that will be executed after pressing 'OK'.
+ */
+
+class AskNumberPopup(
+    screen: CameraStageBaseScreen,
+    label: String = "Please enter a number",
+    icon: IconCircleGroup = ImageGetter.getImage("OtherIcons/Pencil").apply { this.color = Color.BLACK }.surroundWithCircle(80f),
+    defaultText: String = "",
+    amountButtons: List<Int> = listOf(),
+    bounds: Array<Int?> = arrayOf(null, null), 
+    errorText: String = "Invalid input! Please enter a valid number.",
+    actionOnOk: (input: Int) -> Boolean = { true },
+): Popup(screen) {
+    /** Note for future developers: Why this class only accepts positive digits and not negative.
+     * 
+     * The problems is the minus sign. This might not seem like a large obstacle, but problems
+     * arrive quickly. First is that our clean `DigitsOnlyFilter()` must be replaced with a check
+     * that allows for adding a minus sign, but only when it is the first character. So far so good,
+     * until a user starts typing numbers before an already placed - sign --> crash. Fix that
+     * by disallowing any character being typed in front of a - sign. All is fixed right? Wrong!
+     * Because you now also disallowed writing two minus signs at the same time, copying over a
+     * new number after clamping now disallows overwriting the existing minus sign with a new minus
+     * sign, as there is already a minus sign in the number. Well, no problem, you can just remove
+     * the number before overwriting it with the clamped variant. But now you reset your cursor
+     * position every time you type a character. You might start trying to cache the cursor position
+     * as well, but at that point you're basically rewriting the setText() function, and when I
+     * reached this point I decided to stop. 
+     * 
+     * P.S., if you do decide to go on this quest of adding minus signs, don't forget that 
+     * `"-".toInt()` also crashes, so you need to exclude that before checking to clamp.
+     */
+
+    init {
+        val wrapper = Table()
+        wrapper.add(icon).padRight(10f)
+        wrapper.add(label.toLabel())
+        add(wrapper).colspan(2).row()
+
+        val nameField = TextField(defaultText, skin)
+        nameField.textFieldFilter = TextField.TextFieldFilter.DigitsOnlyFilter()
+        
+        fun clampInBounds(int: Int): Int {
+            if (bounds[0] != null && bounds[0]!! > int) {
+                return bounds[0]!!
+            }
+            if (bounds[1] != null && bounds[1]!! < int)
+                return bounds[1]!!
+            return int
+        } 
+        
+        nameField.onChange {
+            if (nameField.text.isNotEmpty()) {
+                nameField.text = clampInBounds(nameField.text.toInt()).toString()
+            }
+        }
+        
+        val centerTable = Table(skin)
+        val sortedAmountValues = amountButtons.sorted()
+        
+        fun addValueButton(value: Int) {
+            centerTable.add(
+                Button(
+                    if (value > 0) "+$value".toLabel()
+                    else value.toLabel(),
+                    skin
+                ).apply {
+                    onClick {
+                        nameField.text = clampInBounds(nameField.text.toInt() + value).toString()
+                    }
+                }
+            ).pad(5f)
+        }
+        
+        for (value in sortedAmountValues.reversed()) {
+            addValueButton(-value)
+        }
+
+        centerTable.add(nameField).growX().pad(10f)
+        
+        add(centerTable).colspan(2).row()
+
+        for (value in sortedAmountValues) {
+            addValueButton(value)
+        }
+        
+        val errorLabel = errorText.toLabel()
+        errorLabel.color = Color.RED
+
+        addOKButton(automaticallyCloseOnPress = false) {
+            if (nameField.text == "" || !actionOnOk(nameField.text.toInt()))
+                add(errorLabel).colspan(2).center()
+            else close()
+        }
+        addCloseButton()
+        equalizeLastTwoButtonWidths()
+        keyboardFocus = nameField
+    }
+}
