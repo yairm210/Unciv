@@ -88,7 +88,6 @@ class ReligiousBeliefsPickerScreen (
                 ImageGetter.getCircledReligionIcon(religionName, 60f), 
                 skin
             )
-            val translatedReligionName = religionName.tr()
             button.onClick {
                 if (previouslySelectedIcon != null) {
                     previouslySelectedIcon!!.enable()
@@ -118,9 +117,15 @@ class ReligiousBeliefsPickerScreen (
                 label = "Choose a name for your religion",
                 icon = ImageGetter.getCircledReligionIcon(religionName!!, 80f),
                 defaultText = religionName!!,
-                actionOnOk = {
-                    if (it != "" && it != Constants.noReligionName)
-                        changeDisplayedReligionName(it)
+                actionOnOk = { religionName ->
+                    if (religionName == Constants.noReligionName 
+                        || gameInfo.ruleSet.religions.any { it == religionName } 
+                        || gameInfo.religions.any { it.value.name == religionName }
+                    ) {
+                        return@AskTextPopup false
+                    }
+                    changeDisplayedReligionName(religionName)
+                    return@AskTextPopup true
                 }
             ).open()
         }

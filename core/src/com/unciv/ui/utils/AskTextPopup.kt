@@ -9,17 +9,20 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextField
  * @param label A line of text shown to the user
  * @param icon Icon at the top, should have size 80f
  * @param defaultText The text that should be in the prompt at the start
+ * @param errorText Text that will be shown when an error is detected
  * @param maxLength The maximal amount of characters the user may input
  * @param actionOnOk Lambda that will be executed after pressing 'OK'. 
- * Gets the text the user inputted as a parameter, and will automatically close() afterwards
+ * Gets the text the user inputted as a parameter. Should return `true` if ready to close,
+ * `false` if `errorText` is to be displayed
  */
 class AskTextPopup(
     screen: CameraStageBaseScreen,
     label: String = "Please enter some text",
     icon: IconCircleGroup = ImageGetter.getImage("OtherIcons/Pencil").apply { this.color = Color.BLACK }.surroundWithCircle(80f),
     defaultText: String = "",
+    errorText: String = "Invalid input! Please enter a different string.",
     maxLength: Int = 32,
-    actionOnOk: (input: String) -> Unit = {},
+    actionOnOk: (input: String) -> Boolean = { true },
 ) : Popup(screen) {
     
     val illegalChars = "[]{}\"\\<>"
@@ -36,7 +39,14 @@ class AskTextPopup(
         
         add(nameField).growX().colspan(2).row()
         
-        addOKButton { actionOnOk(nameField.text); close() }
+        val errorLabel = errorText.toLabel()
+        errorLabel.color = Color.RED
+        
+        addOKButton(automaticallyCloseOnPress = false) { 
+            if (nameField.text == "" || !actionOnOk(nameField.text)) 
+                add(errorLabel).colspan(2).center()
+            else close() 
+        }
         addCloseButton()
         equalizeLastTwoButtonWidths()
         keyboardFocus = nameField

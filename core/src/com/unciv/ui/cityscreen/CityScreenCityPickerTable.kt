@@ -51,18 +51,16 @@ class CityScreenCityPickerTable(private val cityScreen: CityScreen) : Table() {
 
         val currentCityLabel = city.name.toLabel(fontSize = 30, fontColor = civInfo.nation.getInnerColor())
         if (cityScreen.canChangeState) currentCityLabel.onClick {
-            val editCityNamePopup = Popup(cityScreen)
-            val textArea = TextField(city.name, CameraStageBaseScreen.skin)
-            textArea.alignment = Align.center
-            editCityNamePopup.add(textArea).colspan(2).row()
-            //editCityNamePopup.name = "CityNamePopup" // debug help
-            editCityNamePopup.addButtonInRow("Save", KeyCharAndCode.RETURN) {
-                city.name = textArea.text
-                cityScreen.game.setScreen(CityScreen(city))
-            }
-            editCityNamePopup.addCloseButton("Cancel")
-            editCityNamePopup.keyboardFocus = textArea
-            editCityNamePopup.open()
+            AskTextPopup(
+                cityScreen,
+                label = "Please enter a new name for your city",
+                defaultText = city.name,
+                actionOnOk = { text ->
+                    city.name = text
+                    cityScreen.game.setScreen(CityScreen(city))
+                    true
+                }
+            ).open()
         }
 
         cityNameTable.add(currentCityLabel)
