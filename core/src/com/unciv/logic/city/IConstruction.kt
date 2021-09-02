@@ -13,7 +13,6 @@ import kotlin.math.roundToInt
 interface IConstruction : INamed {
     fun isBuildable(cityConstructions: CityConstructions): Boolean
     fun shouldBeDisplayed(cityConstructions: CityConstructions): Boolean
-    fun postBuildEvent(cityConstructions: CityConstructions, wasBought: Boolean = false): Boolean  // Yes I'm hilarious.
     fun getResourceRequirements(): HashMap<String,Int>
 }
 
@@ -22,7 +21,8 @@ interface INonPerpetualConstruction : IConstruction, INamed, IHasUniques {
 
     fun getProductionCost(civInfo: CivilizationInfo): Int
     fun getStatBuyCost(cityInfo: CityInfo, stat: Stat): Int?
-    fun getRejectionReason(cityConstructions: CityConstructions): String
+    fun getRejectionReasons(cityConstructions: CityConstructions): RejectionReasons
+    fun postBuildEvent(cityConstructions: CityConstructions, boughtWith: Stat? = null): Boolean  // Yes I'm hilarious.
     
     fun getMatchingUniques(uniqueTemplate: String): Sequence<Unique> {
         return uniqueObjects.asSequence().filter { it.placeholderText == uniqueTemplate }
@@ -31,26 +31,25 @@ interface INonPerpetualConstruction : IConstruction, INamed, IHasUniques {
         return uniqueObjects.any { it.placeholderText == uniqueTemplate }
     }
     
-    fun canBePurchasedWithStat(cityInfo: CityInfo, stat: Stat, ignoreCityRequirements: Boolean = false): Boolean {
+    fun canBePurchasedWithStat(cityInfo: CityInfo?, stat: Stat): Boolean {
         if (stat in listOf(Stat.Production, Stat.Happiness)) return false
         if ("Cannot be purchased" in uniques) return false
         if (stat == Stat.Gold) return !uniques.contains("Unbuildable")
         // Can be purchased with [Stat] [cityFilter]
         if (getMatchingUniques("Can be purchased with [] []")
-                .any { it.params[0] == stat.name && (ignoreCityRequirements || cityInfo.matchesFilter(it.params[1])) }
+                .any { it.params[0] == stat.name && (cityInfo != null && cityInfo.matchesFilter(it.params[1])) }
         ) return true
         // Can be purchased for [amount] [Stat] [cityFilter]
         if (getMatchingUniques("Can be purchased for [] [] []")
-                .any { it.params[1] == stat.name && ( ignoreCityRequirements || cityInfo.matchesFilter(it.params[2])) }
+                .any { it.params[1] == stat.name && (cityInfo != null && cityInfo.matchesFilter(it.params[2])) }
         ) return true
         return false
     }
 
     /** Checks if the construction should be purchasable, not whether it can be bought with a stat at all */
     fun isPurchasable(cityConstructions: CityConstructions): Boolean {
-        val rejectionReason = getRejectionReason(cityConstructions)
-        return rejectionReason == ""
-                || rejectionReason == "Can only be purchased"
+        val rejectionReasons = getRejectionReasons(cityConstructions)
+        return rejectionReasons.all { it == RejectionReason.Unbuildable }
     }
     
     fun canBePurchasedWithAnyStat(cityInfo: CityInfo): Boolean {
@@ -78,6 +77,100 @@ interface INonPerpetualConstruction : IConstruction, INamed, IHasUniques {
         return null
     }
 }
+
+
+
+
+class RejectionReasons(): HashSet<RejectionReason>() {
+    private val techPolicyEraWonderRequirements = hashSetOf(
+        RejectionReason.Obsoleted,
+        RejectionReason.RequiresTech,
+        RejectionReason.RequiresPolicy,
+        RejectionReason.MorePolicyBranches,
+        RejectionReason.RequiresBuildingInSomeCity
+    )
+    fun filterTechPolicyEraWonderRequirements(): HashSet<RejectionReason> {
+        return filterNot { it in techPolicyEraWonderRequirements }.toHashSet()
+    }
+
+    private val reasonsToDefinitivelyRemoveFromQueue = hashSetOf(
+        RejectionReason.Obsoleted,
+        RejectionReason.WonderAlreadyBuilt,
+        RejectionReason.NationalWonderAlreadyBuilt,
+        RejectionReason.CannotBeBuiltWith,
+        RejectionReason.ReachedBuildCap
+    )
+    fun hasAReasonToBeRemovedFromQueue(): Boolean {
+        return any { it in reasonsToDefinitivelyRemoveFromQueue }
+    }
+
+    private val orderOfErrorMessages = listOf(
+        RejectionReason.WonderBeingBuiltElsewhere,
+        RejectionReason.NationalWonderBeingBuiltElsewhere,
+        RejectionReason.RequiresBuildingInAllCities,
+        RejectionReason.RequiresBuildingInThisCity,
+        RejectionReason.RequiresBuildingInSomeCity,
+        RejectionReason.PopulationRequirement,
+        RejectionReason.ConsumesResources,
+        RejectionReason.CanOnlyBePurchased
+    )
+    fun getMostImportantRejectionReason(): String? {
+        return orderOfErrorMessages.firstOrNull { it in this }?.errorMessage
+    }
+} 
+
+
+enum class RejectionReason(val shouldShow: Boolean, var errorMessage: String) {
+    AlreadyBuilt(false, "Building already built in this city"),
+    Unbuildable(false, "Unbuildable"),
+    CanOnlyBePurchased(true, "Can only be purchased"),
+    ShouldNotBeDisplayed(false, "Should not be displayed"),
+    
+    DisabledBySetting(false, "Disabled by setting"),
+    HiddenWithoutVictory(false, "Hidden because a victory type has been disabled"),
+    
+    MustBeOnTile(false, "Must be on a specific tile"),
+    MustNotBeOnTile(false, "Must not be on a specific tile"),
+    MustBeNextToTile(false, "Must be next to a specific tile"),
+    MustNotBeNextToTile(false, "Must not be next to a specific tile"),
+    MustOwnTile(false, "Must own a specific tile closeby"),
+    WaterUnitsInCoastalCities(false, "May only built water units in coastal cities"),
+    CanOnlyBeBuiltInSpecificCities(false, "Can only be built in specific cities"),
+    
+    UniqueToOtherNation(false, "Unique to another nation"),
+    ReplacedByOurUnique(false, "Our unique replaces this"),
+    
+    Obsoleted(false, "Obsolete"),
+    RequiresTech(false, "Required tech not researched"),
+    RequiresPolicy(false, "Requires a specific policy!"),
+    UnlockedWithEra(false, "Unlocked when reacing a specific era"),
+    MorePolicyBranches(false, "Hidden until more policy branches are fully adopted"),
+    
+    RequiresNearbyResource(false, "Requires a certain resource being exploited nearby"),
+    InvalidRequiredBuilding(false, "Required building does not exist in ruleSet!"),
+    CannotBeBuiltWith(false, "Cannot be built at the same time as another building already built"),
+    
+    RequiresBuildingInThisCity(true, "Requires a specific building in this city!"),
+    RequiresBuildingInAllCities(true, "Requires a specific building in all cities!"),
+    RequiresBuildingInSomeCity(true, "Requires a specific building anywhere in your empire!"),
+    
+    WonderAlreadyBuilt(false, "Wonder already built"),
+    NationalWonderAlreadyBuilt(false, "National Wonder already built"),
+    WonderBeingBuiltElsewhere(true, "Wonder is being built elsewhere"),
+    NationalWonderBeingBuiltElsewhere(true, "National Wonder is being built elsewhere"),
+    CityStateWonder(false, "No Wonders for city-states"),
+    CityStateNationalWonder(false, "No National Wonders for city-states"),
+    WonderDisabledEra(false, "This Wonder is disabled when starting in this era"),
+    
+    ReachedBuildCap(false, "Don't need to build any more of these!"),
+    
+    ConsumesResources(true, "Consumes resources which you are lacking"),
+    
+    PopulationRequirement(true, "Requires more population"),
+    
+    NoSettlerForOneCityPlayers(false, "No settlers for city-states or one-city challangers");
+}
+
 
 
 
@@ -118,9 +211,6 @@ open class PerpetualConstruction(override var name: String, val description: Str
     override fun isBuildable(cityConstructions: CityConstructions): Boolean =
             throw Exception("Impossible!")
     
-    override fun postBuildEvent(cityConstructions: CityConstructions, wasBought: Boolean) =
-            throw Exception("Impossible!")
-
     override fun getResourceRequirements(): HashMap<String, Int> = hashMapOf()
 
 }

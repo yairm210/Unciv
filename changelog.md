@@ -1,3 +1,18 @@
+## 3.16.11
+
+Resolved crash due to evaluating distance to city state when we have no cities
+
+By xlenstra:
+- Great Prophets now always have your religion as their religion
+- Implemented renaming of religions
+- Finishing the later five policy trees now allows you to buy great people with faith
+- Added Religious wonders
+- Fixed bug making enhancing religions impossible
+- Added UI to show what cities are holy cities to the player
+
+By SimonCeder:
+- fix duplicated city-state bonus bug
+
 ## 3.16.10
 
 By SimonCeder:

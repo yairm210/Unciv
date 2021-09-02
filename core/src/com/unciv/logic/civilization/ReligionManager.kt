@@ -1,11 +1,11 @@
 package com.unciv.logic.civilization
 
-import com.unciv.Constants
 import com.unciv.logic.map.MapUnit
 import com.unciv.models.Religion
 import com.unciv.models.ruleset.Belief
 import com.unciv.models.ruleset.BeliefType
 import com.unciv.ui.pickerscreens.BeliefContainer
+import com.unciv.ui.utils.toPercent
 import kotlin.random.Random
 
 class ReligionManager {
@@ -33,17 +33,18 @@ class ReligionManager {
     var religionState = ReligionState.None
         private set
 
-    @Transient
+    // These cannot be transient, as saving and loading after using a great prophet but before
+    // founding a religion would break :(
     private var foundingCityId: String? = null
     // Only used for keeping track of the city a prophet was used when founding a religion
     
-    @Transient
     private var shouldChoosePantheonBelief: Boolean = false
 
     
     fun clone(): ReligionManager {
         val clone = ReligionManager()
         clone.foundingCityId = foundingCityId
+        clone.shouldChoosePantheonBelief = shouldChoosePantheonBelief
         clone.storedFaith = storedFaith
         clone.religionState = religionState
         clone.greatProphetsEarned = greatProphetsEarned
@@ -110,7 +111,7 @@ class ReligionManager {
             civInfo.gameInfo.gameParameters.gameSpeed.modifier
         
         for (unique in civInfo.getMatchingUniques("[]% Faith cost of generating Great Prophet equivalents"))
-            faithCost *= 1f + unique.params[0].toFloat() / 100f
+            faithCost *= unique.params[0].toPercent()
         
         return faithCost.toInt()
     }
@@ -199,9 +200,9 @@ class ReligionManager {
     }
     
 
-    fun foundReligion(iconName: String, name: String, beliefs: List<Belief>) {
+    fun foundReligion(displayName: String, name: String, beliefs: List<Belief>) {
         val newReligion = Religion(name, civInfo.gameInfo, civInfo.civName)
-        newReligion.iconName = iconName
+        newReligion.displayName = displayName
         if (religion != null) {
             newReligion.followerBeliefs.addAll(religion!!.followerBeliefs)
             newReligion.founderBeliefs.addAll(religion!!.founderBeliefs)
@@ -229,6 +230,10 @@ class ReligionManager {
 
         foundingCityId = null
         shouldChoosePantheonBelief = false
+        
+        for (unit in civInfo.getCivUnits()) 
+            if (unit.hasUnique("Religious Unit") && unit.hasUnique("Takes your religion over the one in their birth city"))
+                unit.religion = newReligion.name
     }
     
     fun mayEnhanceReligionAtAll(prophet: MapUnit): Boolean {

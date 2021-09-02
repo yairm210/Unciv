@@ -251,8 +251,8 @@ class CityConstructions {
             isBuilt(building) || getBuiltBuildings().any { it.replaces == building }
 
     fun getWorkDone(constructionName: String): Int {
-        if (inProgressConstructions.containsKey(constructionName)) return inProgressConstructions[constructionName]!!
-        else return 0
+        return if (inProgressConstructions.containsKey(constructionName)) inProgressConstructions[constructionName]!!
+            else 0
     }
 
     fun getRemainingWork(constructionName: String, useStoredProduction: Boolean = true): Int {
@@ -375,14 +375,10 @@ class CityConstructions {
             // Perpetual constructions should always still be valid (I hope)
             if (construction is PerpetualConstruction) continue
             
-            val rejectionReason = 
-                (construction as INonPerpetualConstruction).getRejectionReason(this)
+            val rejectionReasons = 
+                (construction as INonPerpetualConstruction).getRejectionReasons(this)
 
-            if (rejectionReason.endsWith("lready built")
-                    || rejectionReason.startsWith("Cannot be built with")
-                    || rejectionReason.startsWith("Don't need to build any more")
-                    || rejectionReason.startsWith("Obsolete")
-            ) {
+            if (rejectionReasons.hasAReasonToBeRemovedFromQueue()) {
                 if (construction is Building) {
                     // Production put into wonders gets refunded
                     if (construction.isWonder && getWorkDone(constructionName) != 0) {
@@ -392,7 +388,7 @@ class CityConstructions {
                     }
                 } else if (construction is BaseUnit) {
                     // Production put into upgradable units gets put into upgraded version
-                    if (rejectionReason.startsWith("Obsolete") && construction.upgradesTo != null) {
+                    if (rejectionReasons.all { it == RejectionReason.Obsoleted } && construction.upgradesTo != null) {
                         // I'd love to use the '+=' operator but since 'inProgressConstructions[...]' can be null, kotlin doesn't allow me to
                         if (!inProgressConstructions.contains(construction.upgradesTo)) {
                             inProgressConstructions[construction.upgradesTo!!] = getWorkDone(constructionName)
@@ -425,7 +421,7 @@ class CityConstructions {
         }
     }
 
-    private fun constructionComplete(construction: IConstruction) {
+    private fun constructionComplete(construction: INonPerpetualConstruction) {
         construction.postBuildEvent(this)
         if (construction.name in inProgressConstructions)
             inProgressConstructions.remove(construction.name)
@@ -501,7 +497,7 @@ class CityConstructions {
         automatic: Boolean, 
         stat: Stat = Stat.Gold
     ): Boolean {
-        if (!getConstruction(constructionName).postBuildEvent(this, true))
+        if (!(getConstruction(constructionName) as INonPerpetualConstruction).postBuildEvent(this, stat))
             return false // nothing built - no pay
 
         if (!cityInfo.civInfo.gameInfo.gameParameters.godMode) {
@@ -535,7 +531,7 @@ class CityConstructions {
             return null
 
         val cultureBuildingToBuild = buildableCultureBuildings.minByOrNull { it.cost }!!.name
-        constructionComplete(getConstruction(cultureBuildingToBuild))
+        constructionComplete(getConstruction(cultureBuildingToBuild) as INonPerpetualConstruction)
 
         return cultureBuildingToBuild
     }

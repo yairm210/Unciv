@@ -721,7 +721,7 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Cam
                         viewingCiv, 
                         gameInfo,
                         viewingCiv.religionManager.getBeliefsToChooseAtFounding(),
-                        pickIcon = true
+                        pickIconAndName = true
                     ))
                 }
             
@@ -731,7 +731,7 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Cam
                         viewingCiv,
                         gameInfo,
                         viewingCiv.religionManager.getBeliefsToChooseAtEnhancing(),
-                        pickIcon = false
+                        pickIconAndName = false
                     ))
                 }
             

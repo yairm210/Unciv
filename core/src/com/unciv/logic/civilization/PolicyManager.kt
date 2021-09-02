@@ -1,5 +1,6 @@
 package com.unciv.logic.civilization
 
+import com.unciv.logic.city.INonPerpetualConstruction
 import com.unciv.logic.map.MapSize
 import com.unciv.models.ruleset.Policy
 import com.unciv.models.ruleset.Policy.PolicyBranchType
@@ -214,7 +215,7 @@ class PolicyManager {
             }
 
         for (city in candidateCities) {
-            city.cityConstructions.getConstruction(building).postBuildEvent(city.cityConstructions, false)
+            (city.cityConstructions.getConstruction(building) as INonPerpetualConstruction).postBuildEvent(city.cityConstructions)
             citiesAlreadyGivenBuilding.add(city.id)
         }
     }

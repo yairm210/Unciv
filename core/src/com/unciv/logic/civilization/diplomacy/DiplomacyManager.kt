@@ -100,9 +100,7 @@ class DiplomacyManager() {
     /** For city-states. Influence is saved in the CITY STATE -> major civ Diplomacy, NOT in the major civ -> city state diplomacy.
      *  Won't go below [MINIMUM_INFLUENCE]. Note this declaration leads to Major Civs getting MINIMUM_INFLUENCE serialized, but that is ignored. */
     var influence = 0f
-        set(value) {
-            field = max(value, MINIMUM_INFLUENCE)
-        }
+        private set
         get() = if (civInfo.isAtWarWith(otherCiv())) MINIMUM_INFLUENCE else field
 
     /** Total of each turn Science during Research Agreement */
@@ -197,6 +195,15 @@ class DiplomacyManager() {
             "Neutral" -> relationshipLevel == RelationshipLevel.Neutral
             else -> false
         }
+    }
+    
+    fun addInfluence(amount: Float) {
+        setInfluence(influence + amount)
+    }
+    
+    fun setInfluence(amount: Float) {
+        influence = max(amount, MINIMUM_INFLUENCE)
+        civInfo.updateAllyCivForCityState()
     }
 
     // To be run from City-State DiplomacyManager, which holds the influence. Resting point for every major civ can be different.
@@ -393,6 +400,7 @@ class DiplomacyManager() {
             val increment = getCityStateInfluenceRecovery()
             influence = min(restingPoint, influence + increment)
         }
+        civInfo.updateAllyCivForCityState()
 
         if (!civInfo.isDefeated()) { // don't display city state relationship notifications when the city state is currently defeated
             val civCapitalLocation = if (civInfo.cities.isNotEmpty()) civInfo.getCapital().location else null
@@ -456,7 +464,7 @@ class DiplomacyManager() {
                         if (civInfo.cities.isEmpty() || otherCiv().cities.isEmpty())
                             continue@loop
                         else
-                            civInfo.gainMilitaryUnitFromCityState(otherCiv())
+                            otherCiv().giveMilitaryUnitToPatron(civInfo)
                     }
                     DiplomacyFlags.AgreedToNotSettleNearUs.name -> {
                         addModifier(DiplomaticModifiers.FulfilledPromiseToNotSettleCitiesNearUs, 10f)
@@ -658,7 +666,7 @@ class DiplomacyManager() {
                 thirdCiv.getDiplomacyManager(otherCiv).makePeace()
             // Other city states that are not our ally don't like the fact that we made peace with their enemy
             if (thirdCiv.getAllyCiv() != civInfo.civName && thirdCiv.isAtWarWith(otherCiv))
-                thirdCiv.getDiplomacyManager(civInfo).influence -= 10
+                thirdCiv.getDiplomacyManager(civInfo).addInfluence(-10f)
         }
     }
 

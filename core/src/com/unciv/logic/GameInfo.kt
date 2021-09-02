@@ -299,22 +299,20 @@ class GameInfo {
         for (baseUnit in ruleSet.units.values)
             baseUnit.ruleset = ruleSet
 
+        // This needs to go before tileMap.setTransients, as units need to access 
+        // the nation of their civilization when setting transients
+        for (civInfo in civilizations) civInfo.gameInfo = this
+        for (civInfo in civilizations) civInfo.setNationTransient()
+        
         tileMap.setTransients(ruleSet)
 
         if (currentPlayer == "") currentPlayer = civilizations.first { it.isPlayerCivilization() }.civName
         currentPlayerCiv = getCivilization(currentPlayer)
 
-        // this is separated into 2 loops because when we activate updateVisibleTiles in civ.setTransients,
-        //  we try to find new civs, and we check if civ is barbarian, which we can't know unless the gameInfo is already set.
-        for (civInfo in civilizations) civInfo.gameInfo = this
-
         difficultyObject = ruleSet.difficulties[difficulty]!!
         
         for (religion in religions.values) religion.setTransients(this)
 
-        // This doesn't HAVE to go here, but why not.
-
-        for (civInfo in civilizations) civInfo.setNationTransient()
         for (civInfo in civilizations) civInfo.setTransients()
         for (civInfo in civilizations) civInfo.updateSightAndResources()
 
