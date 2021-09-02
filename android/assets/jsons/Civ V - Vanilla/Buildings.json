@@ -1064,7 +1064,8 @@
 		"name": "Apollo Program",
 		"cost": 750,
 		"isNationalWonder": true,
-		"uniques": ["Enables construction of Spaceship parts", "Triggers a global alert upon completion"],
+		"uniques": ["Enables construction of Spaceship parts", "Triggers a global alert upon completion", 
+			"Hidden when [Scientific] Victory is disabled"],
 		"requiredTech": "Rocketry"
 	},
 
@@ -1091,7 +1092,7 @@
 		"name": "SS Cockpit",
 		"requiredResource": "Aluminum",
 		"requiredTech": "Satellites",
-		"uniques": ["Spaceship part", "Triggers a global alert upon completion", "Cannot be purchased"]
+		"uniques": ["Spaceship part", "Triggers a global alert upon completion", "Cannot be purchased", "Hidden when [Scientific] Victory is disabled"]
 	},
 	{
 		"name": "Hubble Space Telescope",
@@ -1109,7 +1110,7 @@
 		"name": "SS Booster",
 		"requiredResource": "Aluminum",
 		"requiredTech": "Advanced Ballistics",
-		"uniques": ["Spaceship part", "Triggers a global alert upon completion", "Cannot be purchased"]
+		"uniques": ["Spaceship part", "Triggers a global alert upon completion", "Cannot be purchased", "Hidden when [Scientific] Victory is disabled"]
 	},
 	{
 		"name": "Spaceship Factory",
@@ -1136,13 +1137,13 @@
 		"name": "SS Engine",
 		"requiredResource": "Aluminum",
 		"requiredTech": "Particle Physics",
-		"uniques": ["Spaceship part", "Triggers a global alert upon completion", "Cannot be purchased"]
+		"uniques": ["Spaceship part", "Triggers a global alert upon completion", "Cannot be purchased", "Hidden when [Scientific] Victory is disabled"]
 	},
 	{
 		"name": "SS Stasis Chamber",
 		"requiredResource": "Aluminum",
 		"requiredTech": "Nanotechnology",
-		"uniques": ["Spaceship part", "Triggers a global alert upon completion", "Cannot be purchased"]
+		"uniques": ["Spaceship part", "Triggers a global alert upon completion", "Cannot be purchased", "Hidden when [Scientific] Victory is disabled"]
 	},
 
 	// All Eras

@@ -2,11 +2,10 @@ package com.unciv.models.ruleset
 
 import com.unciv.Constants
 import com.unciv.UncivGame
-import com.unciv.logic.city.CityConstructions
-import com.unciv.logic.city.CityInfo
-import com.unciv.logic.city.INonPerpetualConstruction
+import com.unciv.logic.city.*
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.Counter
+import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.stats.NamedStats
 import com.unciv.models.stats.Stat
@@ -408,192 +407,264 @@ class Building : NamedStats(), INonPerpetualConstruction, ICivilopediaText {
     override fun shouldBeDisplayed(cityConstructions: CityConstructions): Boolean {
         if (cityConstructions.isBeingConstructedOrEnqueued(name))
             return false
-        val rejectionReason = getRejectionReason(cityConstructions)
-        return rejectionReason == ""
-                || rejectionReason.startsWith("Requires")
-                || rejectionReason.startsWith("Consumes")
-                || rejectionReason.endsWith("Wonder is being built elsewhere")
-                || rejectionReason == "Can only be purchased"
+        val rejectionReasons = getRejectionReasons(cityConstructions)
+        return rejectionReasons.none { !it.shouldShow }
+            || (
+                canBePurchasedWithAnyStat(cityConstructions.cityInfo)
+                && rejectionReasons.all { it == RejectionReason.Unbuildable }
+            )
     }
 
-    override fun getRejectionReason(construction: CityConstructions): String {
-        if (construction.isBuilt(name)) return "Already built"
-        // for buildings that are created as side effects of other things, and not directly built
-        // unless they can be bought with faith
-        if (uniques.contains("Unbuildable")) {
-            if (canBePurchasedWithAnyStat(construction.cityInfo))
-                return "Can only be purchased"
-            return "Unbuildable"
-        }
+    override fun getRejectionReasons(cityConstructions: CityConstructions): RejectionReasons {
+        val rejectionReasons = RejectionReasons()
+        val cityCenter = cityConstructions.cityInfo.getCenterTile()
+        val civInfo = cityConstructions.cityInfo.civInfo
+        val ruleSet = civInfo.gameInfo.ruleSet
+        
+        if (cityConstructions.isBuilt(name)) 
+            rejectionReasons.add(RejectionReason.AlreadyBuilt)
+        // for buildings that are created as side effects of other things, and not directly built,
+        // or for buildings that can only be bought
+        if (uniques.contains("Unbuildable"))
+            rejectionReasons.add(RejectionReason.Unbuildable)
 
-        val cityCenter = construction.cityInfo.getCenterTile()
-        val civInfo = construction.cityInfo.civInfo
-
-        // This overrides the others
-        if (uniqueObjects
-            .any {
-                it.placeholderText == "Not displayed as an available construction unless [] is built"
-                && !construction.containsBuildingOrEquivalent(it.params[0])
+        for (unique in uniqueObjects) {
+            when (unique.placeholderText) {
+                // Deprecated since 3.16.11, replace with "Not displayed [...] construction without []"
+                    "Not displayed as an available construction unless [] is built" -> 
+                        if (!cityConstructions.containsBuildingOrEquivalent(unique.params[0]))
+                            rejectionReasons.add(RejectionReason.ShouldNotBeDisplayed)
+                //
+                
+                "Not displayed as an available construction without []" ->
+                    if (unique.params[0] in ruleSet.tileResources && !civInfo.hasResource(unique.params[0])
+                        || unique.params[0] in ruleSet.buildings && !cityConstructions.containsBuildingOrEquivalent(unique.params[0])
+                        || unique.params[0] in ruleSet.technologies && !civInfo.tech.isResearched(unique.params[0])
+                        || unique.params[0] in ruleSet.policies && !civInfo.policies.isAdopted(unique.params[0])
+                    )
+                        rejectionReasons.add(RejectionReason.ShouldNotBeDisplayed)
+                
+                "Enables nuclear weapon" -> if (!cityConstructions.cityInfo.civInfo.gameInfo.gameParameters.nuclearWeaponsEnabled) 
+                        rejectionReasons.add(RejectionReason.DisabledBySetting)
+                
+                "Must be on []" -> 
+                    if (!cityCenter.matchesTerrainFilter(unique.params[0], civInfo))
+                        rejectionReasons.add(RejectionReason.MustBeOnTile.apply { errorMessage = unique.text })
+                
+                "Must not be on []" -> 
+                    if (cityCenter.matchesTerrainFilter(unique.params[0], civInfo))
+                        rejectionReasons.add(RejectionReason.MustNotBeOnTile.apply { errorMessage = unique.text })
+                
+                "Must be next to []" -> 
+                    if (// Fresh water is special, in that rivers are not tiles themselves but also fit the filter.
+                        !(unique.params[0] == "Fresh water" && cityCenter.isAdjacentToRiver()) 
+                        && cityCenter.getTilesInDistance(1).none { it.matchesFilter(unique.params[0], civInfo) }
+                    ) 
+                        rejectionReasons.add(RejectionReason.MustBeNextToTile.apply { errorMessage = unique.text })
+                
+                "Must not be next to []" -> 
+                    if (cityCenter.getTilesInDistance(1).any { it.matchesFilter(unique.params[0], civInfo) }) 
+                        rejectionReasons.add(RejectionReason.MustNotBeNextToTile.apply { errorMessage = unique.text })
+                
+                "Must have an owned [] within [] tiles" -> 
+                    if (cityCenter.getTilesInDistance(unique.params[1].toInt())
+                        .none { it.matchesFilter(unique.params[0], civInfo) && it.getOwner() == cityConstructions.cityInfo.civInfo }
+                    ) 
+                        rejectionReasons.add(RejectionReason.MustOwnTile.apply { errorMessage = unique.text })
+                
+                // Deprecated since 3.16.11
+                    "Can only be built in annexed cities" -> 
+                        if (
+                            cityConstructions.cityInfo.isPuppet
+                            || cityConstructions.cityInfo.civInfo.civName == cityConstructions.cityInfo.foundingCiv
+                        ) 
+                            rejectionReasons.add(RejectionReason.CanOnlyBeBuiltInSpecificCities.apply { errorMessage = unique.text })
+                //
+                
+                "Can only be built []" -> 
+                    if (!cityConstructions.cityInfo.matchesFilter(unique.params[0])) 
+                        rejectionReasons.add(RejectionReason.CanOnlyBeBuiltInSpecificCities.apply { errorMessage = unique.text })
+                
+                "Obsolete with []" -> 
+                    if (civInfo.tech.isResearched(unique.params[0])) 
+                        rejectionReasons.add(RejectionReason.Obsoleted.apply { errorMessage = unique.text })
+                
+                Constants.hiddenWithoutReligionUnique -> 
+                    if (!civInfo.gameInfo.hasReligionEnabled())
+                        rejectionReasons.add(RejectionReason.DisabledBySetting)
             }
-        ) return "Should not be displayed"
-
-        for (unique in uniqueObjects.filter { it.placeholderText == "Not displayed as an available construction without []" }) {
-            val filter = unique.params[0]
-            if (filter in civInfo.gameInfo.ruleSet.tileResources && !construction.cityInfo.civInfo.hasResource(filter)
-                    || filter in civInfo.gameInfo.ruleSet.buildings && !construction.containsBuildingOrEquivalent(filter))
-                return "Should not be displayed"
         }
 
-        for (unique in uniqueObjects) when (unique.placeholderText) {
-            "Enables nuclear weapon" -> if(!construction.cityInfo.civInfo.gameInfo.gameParameters.nuclearWeaponsEnabled) return "Disabled by setting"
-            "Must be on []" -> if (!cityCenter.matchesTerrainFilter(unique.params[0], civInfo)) return unique.text
-            "Must not be on []" -> if (cityCenter.matchesTerrainFilter(unique.params[0], civInfo)) return unique.text
-            "Must be next to []" -> if (!(unique.params[0] == "Fresh water" && cityCenter.isAdjacentToRiver()) // Fresh water is special, in that rivers are not tiles themselves but also fit the filter.
-                    && cityCenter.getTilesInDistance(1).none { it.matchesFilter(unique.params[0], civInfo) }) return unique.text
-            "Must not be next to []" -> if (cityCenter.getTilesInDistance(1).any { it.matchesFilter(unique.params[0], civInfo) }) return unique.text
-            "Must have an owned [] within [] tiles" -> if (cityCenter.getTilesInDistance(unique.params[1].toInt()).none {
-                        it.matchesFilter(unique.params[0], civInfo) && it.getOwner() == construction.cityInfo.civInfo
-                    }) return unique.text
-            // Deprecated since 3.16.11
-                "Can only be built in annexed cities" -> if (construction.cityInfo.isPuppet
-                        || construction.cityInfo.civInfo.civName == construction.cityInfo.foundingCiv) return unique.text
-            //
-            "Can only be built []" -> if (!construction.cityInfo.matchesFilter(unique.params[0])) return unique.text
-            "Obsolete with []" -> if (civInfo.tech.isResearched(unique.params[0])) return unique.text
-            Constants.hiddenWithoutReligionUnique -> if (!civInfo.gameInfo.hasReligionEnabled()) return unique.text
-        }
-
-        if (uniqueTo != null && uniqueTo != civInfo.civName) return "Unique to $uniqueTo"
+        if (uniqueTo != null && uniqueTo != civInfo.civName)
+            rejectionReasons.add(RejectionReason.UniqueToOtherNation.apply { errorMessage = "Unique to $uniqueTo"})
+        
         if (civInfo.gameInfo.ruleSet.buildings.values.any { it.uniqueTo == civInfo.civName && it.replaces == name })
-            return "Our unique building replaces this"
-        if (requiredTech != null && !civInfo.tech.isResearched(requiredTech!!)) return "$requiredTech not researched"
+            rejectionReasons.add(RejectionReason.ReplacedByOurUnique)
+        
+        if (requiredTech != null && !civInfo.tech.isResearched(requiredTech!!))
+            rejectionReasons.add(RejectionReason.RequiresTech.apply { "$requiredTech not researched!"})
 
-        for (unique in uniqueObjects.filter { it.placeholderText == "Unlocked with []" })
-            if (civInfo.tech.researchedTechnologies.none { it.era() == unique.params[0] || it.name == unique.params[0] }
-                    && !civInfo.policies.isAdopted(unique.params[0]))
-                return unique.text
+        for (unique in uniqueObjects) {
+            if (unique.placeholderText != "Unlocked with []" && unique.placeholderText != "Requires []") continue
+            val filter = unique.params[0]
+            when {
+                ruleSet.technologies.contains(filter) ->
+                    if (!civInfo.tech.isResearched(filter))
+                        rejectionReasons.add(RejectionReason.RequiresTech.apply { errorMessage = unique.text })
+                ruleSet.policies.contains(filter) ->
+                    if (!civInfo.policies.isAdopted(filter))
+                        rejectionReasons.add(RejectionReason.RequiresPolicy.apply { errorMessage = unique.text })
+                // ToDo: Fix this when eras.json is required
+                ruleSet.getEraNumber(filter) != -1 ->
+                    if (civInfo.getEraNumber() < ruleSet.getEraNumber(filter))
+                        rejectionReasons.add(RejectionReason.UnlockedWithEra.apply { errorMessage = unique.text })
+                ruleSet.buildings.contains(filter) ->
+                    if (civInfo.cities.none { it.cityConstructions.containsBuildingOrEquivalent(filter) })
+                        rejectionReasons.add(RejectionReason.RequiresBuildingInSomeCity.apply { errorMessage = unique.text })
+            }
+        }
 
         // Regular wonders
         if (isWonder) {
             if (civInfo.gameInfo.getCities().any { it.cityConstructions.isBuilt(name) })
-                return "Wonder is already built"
+                rejectionReasons.add(RejectionReason.WonderAlreadyBuilt)
 
-            if (civInfo.cities.any { it != construction.cityInfo && it.cityConstructions.isBeingConstructedOrEnqueued(name) })
-                return "Wonder is being built elsewhere"
+            if (civInfo.cities.any { it != cityConstructions.cityInfo && it.cityConstructions.isBeingConstructedOrEnqueued(name) })
+                rejectionReasons.add(RejectionReason.WonderBeingBuiltElsewhere)
 
             if (civInfo.isCityState())
-                return "No world wonders for city-states"
+                rejectionReasons.add(RejectionReason.CityStateWonder)
 
-            val ruleSet = civInfo.gameInfo.ruleSet
             val startingEra = civInfo.gameInfo.gameParameters.startingEra
             if (startingEra in ruleSet.eras && name in ruleSet.eras[startingEra]!!.startingObsoleteWonders)
-                return "Wonder is disabled when starting in this era"
+                rejectionReasons.add(RejectionReason.WonderDisabledEra)
         }
 
 
         // National wonders
         if (isNationalWonder) {
             if (civInfo.cities.any { it.cityConstructions.isBuilt(name) })
-                return "National Wonder is already built"
-            if (requiredBuildingInAllCities != null && civInfo.gameInfo.ruleSet.buildings[requiredBuildingInAllCities!!] == null)
-                return "Required building in all cities does not exist in the ruleset!"
-            if (requiredBuildingInAllCities != null
+                rejectionReasons.add(RejectionReason.NationalWonderAlreadyBuilt)
+                
+            if (requiredBuildingInAllCities != null && civInfo.gameInfo.ruleSet.buildings[requiredBuildingInAllCities!!] == null) {
+                rejectionReasons.add(RejectionReason.InvalidRequiredBuilding)
+            } else {
+                if (requiredBuildingInAllCities != null
                     && civInfo.cities.any {
                         !it.isPuppet && !it.cityConstructions
-                                .containsBuildingOrEquivalent(requiredBuildingInAllCities!!)
-                    })
-                return "Requires a [${civInfo.getEquivalentBuilding(requiredBuildingInAllCities!!)}] in all cities"
-            if (civInfo.cities.any { it != construction.cityInfo && it.cityConstructions.isBeingConstructedOrEnqueued(name) })
-                return "National Wonder is being built elsewhere"
-            if (civInfo.isCityState())
-                return "No national wonders for city-states"
+                        .containsBuildingOrEquivalent(requiredBuildingInAllCities!!)
+                    }
+                ) {
+                    rejectionReasons.add(RejectionReason.RequiresBuildingInAllCities
+                        .apply { errorMessage = "Requires a [${civInfo.getEquivalentBuilding(requiredBuildingInAllCities!!)}] in all cities"})
+                }
+                
+                if (civInfo.cities.any { it != cityConstructions.cityInfo && it.cityConstructions.isBeingConstructedOrEnqueued(name) })
+                    rejectionReasons.add(RejectionReason.NationalWonderBeingBuiltElsewhere)
+                
+                if (civInfo.isCityState())
+                    rejectionReasons.add(RejectionReason.CityStateNationalWonder)
+            }
         }
 
         if ("Spaceship part" in uniques) {
-            if (!civInfo.hasUnique("Enables construction of Spaceship parts")) return "Apollo project not built!"
-            if (civInfo.victoryManager.unconstructedSpaceshipParts()[name] == 0) return "Don't need to build any more of these!"
+            if (!civInfo.hasUnique("Enables construction of Spaceship parts")) 
+                rejectionReasons.add(
+                    RejectionReason.RequiresBuildingInSomeCity.apply { errorMessage = "Apollo project not built!" }
+                )
+            
+            if (civInfo.victoryManager.unconstructedSpaceshipParts()[name] == 0)
+                rejectionReasons.add(RejectionReason.ReachedBuildCap)
         }
 
         for (unique in uniqueObjects) when (unique.placeholderText) {
-            "Requires []" -> {
-                val filter = unique.params[0]
-                if (filter in civInfo.gameInfo.ruleSet.buildings) {
-                    if (civInfo.cities.none { it.cityConstructions.containsBuildingOrEquivalent(filter) }) return unique.text // Wonder is not built
-                } else if (!civInfo.policies.isAdopted(filter)) return "Policy is not adopted" // this reason should not be displayed
-            }
-
             "Requires a [] in this city" -> {
                 val filter = unique.params[0]
-                if (civInfo.gameInfo.ruleSet.buildings.containsKey(filter)
-                        && !construction.containsBuildingOrEquivalent(filter))
-                    return "Requires a [${civInfo.getEquivalentBuilding(filter)}] in this city" // replace with civ-specific building for user
+                if (civInfo.gameInfo.ruleSet.buildings.containsKey(filter) && !cityConstructions.containsBuildingOrEquivalent(filter))
+                    rejectionReasons.add(
+                        // replace with civ-specific building for user
+                        RejectionReason.RequiresBuildingInThisCity.apply { errorMessage = "Requires a [${civInfo.getEquivalentBuilding(filter)}] in this city" }
+                    )
             }
 
             "Requires a [] in all cities" -> {
                 val filter = unique.params[0]
-                if (civInfo.gameInfo.ruleSet.buildings.containsKey(filter)
-                        && civInfo.cities.any { !it.isPuppet && !it.cityConstructions.containsBuildingOrEquivalent(unique.params[0]) })
-                    return "Requires a [${civInfo.getEquivalentBuilding(unique.params[0])}] in all cities"  // replace with civ-specific building for user
-            }
-            "Hidden until [] social policy branches have been completed" -> {
-                if (construction.cityInfo.civInfo.getCompletedPolicyBranchesCount() < unique.params[0].toInt()) {
-                    return "Should not be displayed"
+                if (civInfo.gameInfo.ruleSet.buildings.containsKey(filter) 
+                    && civInfo.cities.any { 
+                        !it.isPuppet && !it.cityConstructions.containsBuildingOrEquivalent(unique.params[0]) 
+                    }
+                ) {
+                    rejectionReasons.add(
+                        // replace with civ-specific building for user
+                        RejectionReason.RequiresBuildingInAllCities.apply { 
+                            errorMessage = "Requires a [${civInfo.getEquivalentBuilding(unique.params[0])}] in all cities"
+                        }
+                    )
                 }
+            }
+            
+            "Hidden until [] social policy branches have been completed" -> {
+                if (cityConstructions.cityInfo.civInfo.getCompletedPolicyBranchesCount() < unique.params[0].toInt())
+                    rejectionReasons.add(RejectionReason.MorePolicyBranches.apply { errorMessage = unique.text })
             }
             "Hidden when [] Victory is disabled" -> {
-                if (!civInfo.gameInfo.gameParameters.victoryTypes.contains(VictoryType.valueOf(unique.params[0]))) {
-                    return unique.text
-                }
+                if (!civInfo.gameInfo.gameParameters.victoryTypes.contains(VictoryType.valueOf(unique.params[0])))
+                    rejectionReasons.add(RejectionReason.HiddenWithoutVictory.apply { errorMessage = unique.text })
             }
             // Deprecated since 3.15.14
                 "Hidden when cultural victory is disabled" -> {
-                    if (!civInfo.gameInfo.gameParameters.victoryTypes.contains(VictoryType.Cultural)) {
-                        return unique.text
-                    }
+                    if (!civInfo.gameInfo.gameParameters.victoryTypes.contains(VictoryType.Cultural))
+                        rejectionReasons.add(RejectionReason.HiddenWithoutVictory.apply { errorMessage = unique.text })
                 }
             //
         }
 
-        if (requiredBuilding != null && !construction.containsBuildingOrEquivalent(requiredBuilding!!)) {
-            if (!civInfo.gameInfo.ruleSet.buildings.containsKey(requiredBuilding!!))
-                return "Requires a [${requiredBuilding}] in this city, which doesn't seem to exist in this ruleset!"
-            return "Requires a [${civInfo.getEquivalentBuilding(requiredBuilding!!)}] in this city"
+        if (requiredBuilding != null && !cityConstructions.containsBuildingOrEquivalent(requiredBuilding!!)) {
+            if (!civInfo.gameInfo.ruleSet.buildings.containsKey(requiredBuilding!!)) {
+                rejectionReasons.add(
+                    RejectionReason.InvalidRequiredBuilding
+                        .apply { errorMessage = "Requires a [${requiredBuilding}] in this city, which doesn't seem to exist in this ruleset!" }
+                )
+            } else {
+                rejectionReasons.add(
+                    RejectionReason.RequiresBuildingInThisCity.apply { errorMessage = "Requires a [${civInfo.getEquivalentBuilding(requiredBuilding!!)}] in this city"}
+                )
+            }
         }
         // cannotBeBuiltWith is Deprecated as of 3.15.19
         val cannotBeBuiltWith = uniqueObjects
             .firstOrNull { it.placeholderText == "Cannot be built with []" }
             ?.params?.get(0)
             ?: this.cannotBeBuiltWith
-        if (cannotBeBuiltWith != null && construction.isBuilt(cannotBeBuiltWith))
-            return "Cannot be built with [$cannotBeBuiltWith]"
+        if (cannotBeBuiltWith != null && cityConstructions.isBuilt(cannotBeBuiltWith))
+            rejectionReasons.add(RejectionReason.CannotBeBuiltWith.apply { errorMessage = "Cannot be built with [$cannotBeBuiltWith]" })
 
         for ((resource, amount) in getResourceRequirements())
             if (civInfo.getCivResourcesByName()[resource]!! < amount) {
-                return if (amount == 1) "Consumes 1 [$resource]" // Again, to preserve existing translations
-                    else "Consumes [$amount] [$resource]"
+                rejectionReasons.add(RejectionReason.ConsumesResources.apply {
+                    errorMessage = "Consumes [$amount] [$resource]"
+                })
             }
 
         if (requiredNearbyImprovedResources != null) {
-            val containsResourceWithImprovement = construction.cityInfo.getWorkableTiles()
-                    .any {
-                        it.resource != null
-                                && requiredNearbyImprovedResources!!.contains(it.resource!!)
-                                && it.getOwner() == civInfo
-                                && (it.getTileResource().improvement == it.improvement || it.getTileImprovement()?.isGreatImprovement() == true || it.isCityCenter())
-                    }
-            if (!containsResourceWithImprovement) return "Nearby $requiredNearbyImprovedResources required"
+            val containsResourceWithImprovement = cityConstructions.cityInfo.getWorkableTiles()
+                .any {
+                    it.resource != null
+                    && requiredNearbyImprovedResources!!.contains(it.resource!!)
+                    && it.getOwner() == civInfo
+                    && (it.getTileResource().improvement == it.improvement || it.isCityCenter()
+                       || (it.getTileImprovement()?.isGreatImprovement() == true && it.getTileResource().resourceType == ResourceType.Strategic) 
+                    )
+                }
+            if (!containsResourceWithImprovement) 
+                rejectionReasons.add(RejectionReason.RequiresNearbyResource.apply { errorMessage = "Nearby $requiredNearbyImprovedResources required" })
         }
-
-
-        if (!civInfo.gameInfo.gameParameters.victoryTypes.contains(VictoryType.Scientific)
-                && "Enables construction of Spaceship parts" in uniques)
-            return "Can't construct spaceship parts if scientific victory is not enabled!"
-
-        return ""
+        
+        return rejectionReasons
     }
 
     override fun isBuildable(cityConstructions: CityConstructions): Boolean =
-            getRejectionReason(cityConstructions) == ""
+            getRejectionReasons(cityConstructions).isEmpty()
 
     override fun postBuildEvent(cityConstructions: CityConstructions, boughtWith: Stat?): Boolean {
         val civInfo = cityConstructions.cityInfo.civInfo

@@ -165,19 +165,30 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
             val useStoredProduction = entry is Building || !cityConstructions.isBeingConstructedOrEnqueued(entry.name)
             var buttonText = entry.name.tr() + cityConstructions.getTurnsToConstructionString(entry.name, useStoredProduction)
             for ((resource, amount) in entry.getResourceRequirements()) {
-                buttonText += "\n" + (if (amount == 1) "Consumes 1 [$resource]"
-                    else "Consumes [$amount] [$resource]").tr()
+                buttonText += "\n" + (
+                    if (amount == 1) "Consumes 1 [$resource]"
+                    else "Consumes [$amount] [$resource]"
+                ).tr()
             }
 
-            constructionButtonDTOList.add(ConstructionButtonDTO(entry, buttonText,
-                entry.getRejectionReason(cityConstructions)))
+            constructionButtonDTOList.add(
+                ConstructionButtonDTO(
+                    entry, 
+                    buttonText,
+                    entry.getRejectionReasons(cityConstructions).getMostImportantRejectionReason()
+                )
+            )
         }
 
         for (specialConstruction in PerpetualConstruction.perpetualConstructionsMap.values
-                .filter { it.shouldBeDisplayed(cityConstructions) }) {
-            constructionButtonDTOList.add(ConstructionButtonDTO(specialConstruction,
-                    "Produce [${specialConstruction.name}]".tr()
-                            + specialConstruction.getProductionTooltip(city)))
+                .filter { it.shouldBeDisplayed(cityConstructions) }
+        ) {
+            constructionButtonDTOList.add(
+                ConstructionButtonDTO(
+                    specialConstruction,
+                    "Produce [${specialConstruction.name}]".tr() + specialConstruction.getProductionTooltip(city)
+                )
+            )
         }
 
         return constructionButtonDTOList
@@ -297,7 +308,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
                 Color.BROWN.cpy().lerp(Color.WHITE, 0.5f), Color.WHITE)
     }
 
-    private class ConstructionButtonDTO(val construction: IConstruction, val buttonText: String, val rejectionReason: String = "")
+    private class ConstructionButtonDTO(val construction: IConstruction, val buttonText: String, val rejectionReason: String? = null)
 
     private fun getConstructionButton(constructionButtonDTO: ConstructionButtonDTO): Table {
         val construction = constructionButtonDTO.construction
@@ -325,7 +336,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
         pickConstructionButton.row()
 
         // no rejection reason means we can build it!
-        if (constructionButtonDTO.rejectionReason != "") {
+        if (constructionButtonDTO.rejectionReason != null) {
             pickConstructionButton.color = Color.GRAY
             pickConstructionButton.add(constructionButtonDTO.rejectionReason.toLabel(Color.RED).apply { wrap = true })
                     .colspan(pickConstructionButton.columns).fillX().left().padTop(2f)

@@ -2,9 +2,7 @@ package com.unciv.models.ruleset.unit
 
 import com.unciv.Constants
 import com.unciv.UncivGame
-import com.unciv.logic.city.CityConstructions
-import com.unciv.logic.city.CityInfo
-import com.unciv.logic.city.INonPerpetualConstruction
+import com.unciv.logic.city.*
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.MapUnit
 import com.unciv.models.ruleset.Ruleset
@@ -281,84 +279,103 @@ class BaseUnit : INamed, INonPerpetualConstruction, ICivilopediaText {
     fun getDisbandGold(civInfo: CivilizationInfo) = getBaseGoldCost(civInfo).toInt() / 20
 
     override fun shouldBeDisplayed(cityConstructions: CityConstructions): Boolean {
-        val rejectionReason = getRejectionReason(cityConstructions)
-        return rejectionReason == ""
-                || rejectionReason.startsWith("Requires")
-                || rejectionReason.startsWith("Consumes")
-                || rejectionReason == "Can only be purchased"
+        val rejectionReasons = getRejectionReasons(cityConstructions)
+        return rejectionReasons.none { !it.shouldShow }
+            || (
+                canBePurchasedWithAnyStat(cityConstructions.cityInfo)
+                && rejectionReasons.all { it == RejectionReason.Unbuildable }
+            )
     }
 
-    override fun getRejectionReason(cityConstructions: CityConstructions): String {
+    override fun getRejectionReasons(cityConstructions: CityConstructions): RejectionReasons {
+        val rejectionReasons = RejectionReasons()
         if (isWaterUnit() && !cityConstructions.cityInfo.isCoastal())
-            return "Can only build water units in coastal cities"
+            rejectionReasons.add(RejectionReason.WaterUnitsInCoastalCities)
         val civInfo = cityConstructions.cityInfo.civInfo
         for (unique in uniqueObjects.filter { it.placeholderText == "Not displayed as an available construction without []" }) {
             val filter = unique.params[0]
             if (filter in civInfo.gameInfo.ruleSet.tileResources && !civInfo.hasResource(filter)
                     || filter in civInfo.gameInfo.ruleSet.buildings && !cityConstructions.containsBuildingOrEquivalent(filter))
-                return "Should not be displayed"
+                rejectionReasons.add(RejectionReason.ShouldNotBeDisplayed)
         }
-        val civRejectionReason = getRejectionReason(civInfo)
-        if (civRejectionReason != "") {
-            if (civRejectionReason == "Unbuildable" && canBePurchasedWithAnyStat(cityConstructions.cityInfo))
-                return "Can only be purchased"
-            return civRejectionReason
+        val civRejectionReasons = getRejectionReasons(civInfo)
+        if (civRejectionReasons.isNotEmpty()) {
+            rejectionReasons.addAll(civRejectionReasons)
         }
         for (unique in uniqueObjects.filter { it.placeholderText == "Requires at least [] population" })
             if (unique.params[0].toInt() > cityConstructions.cityInfo.population.population)
-                return unique.text
-        return ""
+                rejectionReasons.add(RejectionReason.PopulationRequirement)
+        return rejectionReasons
     }
 
     /** @param ignoreTechPolicyRequirements: its `true` value is used when upgrading via ancient ruins,
      * as there we don't care whether we have the required tech, policy or building for the unit,
      * but do still care whether we have the resources required for the unit
      */
-    fun getRejectionReason(civInfo: CivilizationInfo, ignoreTechPolicyRequirements: Boolean = false): String {
-        if (uniques.contains("Unbuildable")) return "Unbuildable"
-        if (!ignoreTechPolicyRequirements && requiredTech != null && !civInfo.tech.isResearched(requiredTech!!)) return "$requiredTech not researched"
-        if (!ignoreTechPolicyRequirements && obsoleteTech != null && civInfo.tech.isResearched(obsoleteTech!!)) return "Obsolete by $obsoleteTech"
-        if (uniqueTo != null && uniqueTo != civInfo.civName) return "Unique to $uniqueTo"
-        if (civInfo.gameInfo.ruleSet.units.values.any { it.uniqueTo == civInfo.civName && it.replaces == name })
-            return "Our unique unit replaces this"
-        if (!civInfo.gameInfo.gameParameters.nuclearWeaponsEnabled && isNuclearWeapon()
-        ) return "Disabled by setting"
+    fun getRejectionReasons(civInfo: CivilizationInfo): RejectionReasons {
+        val rejectionReasons = RejectionReasons()
+        val ruleSet = civInfo.gameInfo.ruleSet
+        
+        if (uniques.contains("Unbuildable")) 
+            rejectionReasons.add(RejectionReason.Unbuildable)
+        
+        if (requiredTech != null && !civInfo.tech.isResearched(requiredTech!!)) 
+            rejectionReasons.add(RejectionReason.RequiresTech.apply { this.errorMessage = "$requiredTech not researched" }) 
+        if (obsoleteTech != null && civInfo.tech.isResearched(obsoleteTech!!))
+            rejectionReasons.add(RejectionReason.Obsoleted.apply { this.errorMessage = "Obsolete by $obsoleteTech" })
+        
+        if (uniqueTo != null && uniqueTo != civInfo.civName) 
+            rejectionReasons.add(RejectionReason.UniqueToOtherNation.apply { this.errorMessage = "Unique to $uniqueTo" })
+        if (ruleSet.units.values.any { it.uniqueTo == civInfo.civName && it.replaces == name })
+            rejectionReasons.add(RejectionReason.ReplacedByOurUnique.apply { this.errorMessage = "Our unique unit replaces this" })
+        
+        if (!civInfo.gameInfo.gameParameters.nuclearWeaponsEnabled && isNuclearWeapon()) 
+            rejectionReasons.add(RejectionReason.DisabledBySetting)
 
-        for (unique in uniqueObjects.filter { it.placeholderText == "Unlocked with []" })
-            // ToDo: Clean this up when eras.json is required
-            if ((civInfo.gameInfo.ruleSet.getEraNumber(unique.params[0]) != -1 && civInfo.getEraNumber() >= civInfo.gameInfo.ruleSet.getEraNumber(unique.params[0]))
-                || civInfo.hasTechOrPolicy(unique.params[0])
-            ) return unique.text
-
-        for (unique in uniqueObjects.filter { it.placeholderText == "Requires []" }) {
+        for (unique in uniqueObjects) {
+            if (unique.placeholderText != "Unlocked with []" && unique.placeholderText != "Requires []") continue
             val filter = unique.params[0]
-            if (!ignoreTechPolicyRequirements && filter in civInfo.gameInfo.ruleSet.buildings) {
-                if (civInfo.cities.none { it.cityConstructions.containsBuildingOrEquivalent(filter) }) return unique.text // Wonder is not built
-            } else if (!ignoreTechPolicyRequirements && !civInfo.policies.isAdopted(filter)) return "Policy is not adopted"
+            when {
+                ruleSet.technologies.contains(filter) -> 
+                    if (!civInfo.tech.isResearched(filter)) 
+                        rejectionReasons.add(RejectionReason.RequiresTech.apply { errorMessage = unique.text })
+                ruleSet.policies.contains(filter) ->
+                    if (!civInfo.policies.isAdopted(filter))
+                        rejectionReasons.add(RejectionReason.RequiresPolicy.apply { errorMessage = unique.text })
+                // ToDo: Fix this when eras.json is required
+                ruleSet.getEraNumber(filter) != -1 ->
+                    if (civInfo.getEraNumber() < ruleSet.getEraNumber(filter))
+                        rejectionReasons.add(RejectionReason.UnlockedWithEra.apply { errorMessage = unique.text })
+                ruleSet.buildings.contains(filter) ->
+                    if (civInfo.cities.none { it.cityConstructions.containsBuildingOrEquivalent(filter) })
+                        rejectionReasons.add(RejectionReason.RequiresBuildingInSomeCity.apply { errorMessage = unique.text })
+            }
         }
 
         for ((resource, amount) in getResourceRequirements())
             if (civInfo.getCivResourcesByName()[resource]!! < amount) {
-                return if (amount == 1) "Consumes 1 [$resource]" // Again, to preserve existing translations
-                    else "Consumes [$amount] [$resource]"
+                rejectionReasons.add(RejectionReason.ConsumesResources.apply {
+                    errorMessage = "Consumes [$amount] [$resource]"
+                })
             }
-
-        if (uniques.contains(Constants.settlerUnique) && civInfo.isCityState()) return "No settler for city-states"
-        if (uniques.contains(Constants.settlerUnique) && civInfo.isOneCityChallenger()) return "No settler for players in One City Challenge"
-        return ""
+        
+        if (uniques.contains(Constants.settlerUnique) &&
+            (civInfo.isCityState() || civInfo.isOneCityChallenger())
+        )
+            rejectionReasons.add(RejectionReason.NoSettlerForOneCityPlayers)
+        return rejectionReasons
     }
 
-    fun isBuildable(civInfo: CivilizationInfo) = getRejectionReason(civInfo) == ""
+    fun isBuildable(civInfo: CivilizationInfo) = getRejectionReasons(civInfo).isEmpty()
 
     override fun isBuildable(cityConstructions: CityConstructions): Boolean {
-        return getRejectionReason(cityConstructions) == ""
+        return getRejectionReasons(cityConstructions).isEmpty()
     }
-
-    /** Preemptively as in: buildable without actually having the tech and/or policy required for it.
-     * Still checks for resource use and other things
-     */
-    fun isBuildableIgnoringTechs(civInfo: CivilizationInfo) =
-        getRejectionReason(civInfo, true) == ""
+    
+    fun isBuildableIgnoringTechs(civInfo: CivilizationInfo): Boolean {
+        val rejectionReasons = getRejectionReasons(civInfo)
+        return rejectionReasons.filterTechPolicyEraWonderRequirements().isEmpty()
+    }
 
     override fun postBuildEvent(cityConstructions: CityConstructions, boughtWith: Stat?): Boolean {
         val civInfo = cityConstructions.cityInfo.civInfo
