@@ -45,7 +45,7 @@ class ReligionOverviewTable(
                 button = Button(image, CameraStageBaseScreen.skin)
             } else {
                 button = Button(
-                    ImageGetter.getCircledReligionIcon(religion.iconName, 60f),
+                    ImageGetter.getCircledReligionIcon(religion.getIconName(), 60f),
                     CameraStageBaseScreen.skin
                 )
             }
@@ -66,13 +66,13 @@ class ReligionOverviewTable(
     private fun loadReligion(religion: Religion) {
         statsTable.clear()
         beliefsTable.clear()
-        topButtonLabel.setText(religion.name.tr())
+        topButtonLabel.setText(religion.displayName!!.tr())
         for (belief in religion.getAllBeliefsOrdered()) {
             beliefsTable.add(createBeliefDescription(belief)).pad(10f).row()
         }
         
         statsTable.add("Religion Name:".toLabel())
-        statsTable.add(religion.name.toLabel()).pad(5f).row()
+        statsTable.add(religion.displayName!!.toLabel()).pad(5f).row()
         statsTable.add("Founding Civ:".toLabel())
         val foundingCivName =
             if (viewingPlayer.knows(religion.foundingCivName) || viewingPlayer.civName == religion.foundingCivName) 

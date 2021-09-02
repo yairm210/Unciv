@@ -1,7 +1,9 @@
 package com.unciv.ui.pickerscreens
 
+import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.badlogic.gdx.utils.Align
+import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
 import com.unciv.logic.civilization.CivilizationInfo
@@ -16,7 +18,7 @@ class ReligiousBeliefsPickerScreen (
     private val choosingCiv: CivilizationInfo,
     private val gameInfo: GameInfo,
     private val beliefsContainer: BeliefContainer,
-    private val pickIcon: Boolean
+    private val pickIconAndName: Boolean
 ): PickerScreen(disableScroll = true) {
 
     // Roughly follows the layout of the original (although I am not very good at UI designing, so please improve this)
@@ -27,14 +29,14 @@ class ReligiousBeliefsPickerScreen (
     private val middlePanes = Table()
  
     private var previouslySelectedIcon: Button? = null
-    private var iconName: String? = null
+    private var displayName: String? = null
     private var religionName: String? = null
     
     init {
         closeButton.isVisible = true
         setDefaultCloseAction()
         
-        if (pickIcon) setupChoosableReligionIcons()
+        if (pickIconAndName) setupChoosableReligionIcons()
         else setupVisibleReligionIcons()
         
         updateLeftTable()
@@ -47,25 +49,37 @@ class ReligiousBeliefsPickerScreen (
         topTable.addSeparator()
         topTable.add(middlePanes)
         
-        rightSideButton.label = "Choose a religion".toLabel()
+        if (pickIconAndName) rightSideButton.label = "Choose a religion".toLabel()
+        else rightSideButton.label = "Enhance [${choosingCiv.religionManager.religion!!.displayName}]".toLabel()
         rightSideButton.onClick(UncivSound.Choir) {
-            choosingCiv.religionManager.chooseBeliefs(iconName, religionName, beliefsContainer.chosenBeliefs.map { it!! })            
+            choosingCiv.religionManager.chooseBeliefs(displayName, religionName, beliefsContainer.chosenBeliefs.map { it!! })            
             UncivGame.Current.setWorldScreen()
         }
     }
 
     private fun checkAndEnableRightSideButton() {
-        if (pickIcon && (religionName == null || iconName == null)) return
+        if (pickIconAndName && (religionName == null || displayName == null)) return
         if (beliefsContainer.chosenBeliefs.any { it == null }) return
         rightSideButton.enable()
     }
-
+    
     private fun setupChoosableReligionIcons() {
         topReligionIcons.clear()
         
         // This should later be replaced with a user-modifiable text field, but not in this PR
         // Note that this would require replacing 'religion.name' with 'religion.iconName' at many spots
-        val descriptionLabel = "Choose an Icon and name for your Religion".toLabel() 
+        val descriptionLabel = "Choose an Icon and name for your Religion".toLabel()
+
+        fun changeDisplayedReligionName(newReligionName: String) {
+            displayName = newReligionName
+            rightSideButton.label = "Found [$newReligionName]".toLabel()
+            descriptionLabel.setText(newReligionName)
+        }
+
+        val changeReligionNameButton = Button(
+            ImageGetter.getImage("OtherIcons/Pencil").apply { this.color = Color.BLACK }.surroundWithCircle(30f),
+            skin
+        )
         
         val iconsTable = Table()
         iconsTable.align(Align.center)
@@ -74,25 +88,48 @@ class ReligiousBeliefsPickerScreen (
                 ImageGetter.getCircledReligionIcon(religionName, 60f), 
                 skin
             )
-            val translatedReligionName = religionName.tr()
             button.onClick {
                 if (previouslySelectedIcon != null) {
                     previouslySelectedIcon!!.enable()
                 }
-                iconName = religionName
-                this.religionName = religionName
                 previouslySelectedIcon = button
                 button.disable()
-                descriptionLabel.setText(translatedReligionName)
-                rightSideButton.label = "Found [$translatedReligionName]".toLabel()
                 checkAndEnableRightSideButton()
+                
+                changeDisplayedReligionName(religionName)
+                this.religionName = religionName
+                changeReligionNameButton.enable()
             }
             if (religionName == this.religionName || gameInfo.religions.keys.any { it == religionName }) button.disable()
             iconsTable.add(button).pad(5f)
         }
         iconsTable.row()
-        topReligionIcons.add(iconsTable).padBottom(10f).row()
-        topReligionIcons.add(descriptionLabel).center().padBottom(5f)
+        topReligionIcons.add(iconsTable).pad(5f).row()
+        val labelTable = Table()
+        labelTable.add(descriptionLabel).pad(5f)
+        labelTable.add(changeReligionNameButton).pad(5f).row()
+        topReligionIcons.add(labelTable).center().pad(5f).row()
+        
+        
+        changeReligionNameButton.onClick {
+            AskTextPopup(
+                this,
+                label = "Choose a name for your religion",
+                icon = ImageGetter.getCircledReligionIcon(religionName!!, 80f),
+                defaultText = religionName!!,
+                actionOnOk = { religionName ->
+                    if (religionName == Constants.noReligionName 
+                        || gameInfo.ruleSet.religions.any { it == religionName } 
+                        || gameInfo.religions.any { it.value.name == religionName }
+                    ) {
+                        return@AskTextPopup false
+                    }
+                    changeDisplayedReligionName(religionName)
+                    return@AskTextPopup true
+                }
+            ).open()
+        }
+        changeReligionNameButton.disable()
     }
 
     private fun setupVisibleReligionIcons() {
@@ -178,7 +215,7 @@ class ReligiousBeliefsPickerScreen (
 
 data class BeliefContainer(val pantheonBeliefCount: Int = 0, val founderBeliefCount: Int = 0, val followerBeliefCount: Int = 0, val enhancerBeliefCount: Int = 0) {
     
-    val chosenBeliefs: MutableList<Belief?> = MutableList(pantheonBeliefCount + founderBeliefCount + followerBeliefCount + enhancerBeliefCount) { null }
+    val chosenBeliefs: Array<Belief?> = Array(pantheonBeliefCount + founderBeliefCount + followerBeliefCount + enhancerBeliefCount) { null }
     
     fun getBeliefTypeFromIndex(index: Int): BeliefType {
         return when {

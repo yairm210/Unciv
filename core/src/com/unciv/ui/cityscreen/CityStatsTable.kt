@@ -83,9 +83,11 @@ class CityStatsTable(val cityScreen: CityScreen): Table() {
     }
 
     private fun addReligionInfo() {
-        val label = cityInfo.religion.getMajorityReligion()?.iconName
+        val label = cityInfo.religion.getMajorityReligion()?.displayName
             ?: "None"
-        val icon = if (label == "None") "Religion" else label
+        val icon = 
+            if (label == "None") "Religion" 
+            else cityInfo.religion.getMajorityReligion()!!.name
         val expanderTab =
             ExpanderTab(
                 title = "Majority Religion: [$label]",
@@ -104,7 +106,9 @@ class CityStatsTable(val cityScreen: CityScreen): Table() {
                 if (cityInfo.religion.religionThisIsTheHolyCityOf != null) {
                     // I want this to be centered, but `.center()` doesn't seem to do anything,
                     // regardless of where I place it :(
-                    it.add("Holy city of: [${cityInfo.religion.religionThisIsTheHolyCityOf!!}]".toLabel()).center().colspan(2).pad(5f).row()
+                    it.add(
+                        "Holy city of: [${cityInfo.civInfo.gameInfo.religions[cityInfo.religion.religionThisIsTheHolyCityOf!!]!!.displayName}]".toLabel()
+                    ).center().colspan(2).pad(5f).row()
                 }
                 it.add(getReligionsTable()).colspan(2).pad(5f)
             }
@@ -128,7 +132,7 @@ class CityStatsTable(val cityScreen: CityScreen): Table() {
         
         for ((religion, followerCount) in followers) {
             religionsTable.add(
-                ImageGetter.getCircledReligionIcon(cityInfo.civInfo.gameInfo.religions[religion]!!.iconName, 30f)
+                ImageGetter.getCircledReligionIcon(cityInfo.civInfo.gameInfo.religions[religion]!!.getIconName(), 30f)
             ).pad(5f)
             religionsTable.addSeparatorVertical(gridColor)
             religionsTable.add(followerCount.toLabel()).pad(5f)
