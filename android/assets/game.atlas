@@ -214,20 +214,6 @@ ImprovementIcons/Quarry
   orig: 100, 100
   offset: 0, 0
   index: -1
-ImprovementIcons/Railroad
-  rotate: false
-  xy: 220, 642
-  size: 100, 100
-  orig: 100, 100
-  offset: 0, 0
-  index: -1
-TileSets/Default/Railroad
-  rotate: false
-  xy: 220, 642
-  size: 100, 100
-  orig: 100, 100
-  offset: 0, 0
-  index: -1
 ImprovementIcons/Road
   rotate: false
   xy: 328, 1320
@@ -1712,6 +1698,20 @@ TileSets/Default/OasisOverlay
   orig: 100, 100
   offset: 0, 0
   index: -1
+TileSets/Default/Railroad
+  rotate: false
+  xy: 220, 642
+  size: 100, 100
+  orig: 100, 100
+  offset: 0, 0
+  index: -1
+ImprovementIcons/Railroad
+  rotate: false
+  xy: 220, 642
+  size: 100, 100
+  orig: 100, 100
+  offset: 0, 0
+  index: -1
 TileSets/Default/Road
   rotate: false
   xy: 4, 53
@@ -2314,7 +2314,7 @@ TileSets/FantasyHex/Tiles/HillStoneQuarry
   orig: 32, 28
   offset: 0, 0
   index: -1
-TileSets/FantasyHex/Tiles/Holy Site
+TileSets/FantasyHex/Tiles/Holy site
   rotate: false
   xy: 552, 468
   size: 32, 36
