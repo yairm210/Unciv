@@ -366,11 +366,11 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
         diplomacyTable.addSeparator()
 
         for (giftAmount in listOf(250, 500, 1000)) {
-            val influenceAmount = viewingCiv.influenceGainedByGift(giftAmount)
+            val influenceAmount = otherCiv.influenceGainedByGift(viewingCiv, giftAmount)
             val giftButton =
                 "Gift [$giftAmount] gold (+[$influenceAmount] influence)".toTextButton()
             giftButton.onClick {
-                viewingCiv.giveGoldGift(otherCiv, giftAmount)
+                otherCiv.receiveGoldGift(viewingCiv, giftAmount)
                 updateLeftSideTable()
                 updateRightSide(otherCiv)
             }
@@ -447,7 +447,7 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
 
         val demandGoldButton = "Take [${otherCiv.goldGainedByTribute()}] gold (-15 Influence)".toTextButton()
         demandGoldButton.onClick {
-            viewingCiv.demandGold(otherCiv)
+            otherCiv.tributeGold(viewingCiv)
             rightSideTable.clear()
             rightSideTable.add(ScrollPane(getCityStateDiplomacyTable(otherCiv)))
         }
@@ -456,7 +456,7 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
 
         val demandWorkerButton = "Take worker (-50 Influence)".toTextButton()
         demandWorkerButton.onClick {
-            viewingCiv.demandWorker(otherCiv)
+            otherCiv.tributeWorker(viewingCiv)
             rightSideTable.clear()
             rightSideTable.add(ScrollPane(getCityStateDiplomacyTable(otherCiv)))
         }

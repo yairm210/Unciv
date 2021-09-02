@@ -115,11 +115,11 @@ object NextTurnAutomation {
     private fun tryGainInfluence(civInfo: CivilizationInfo, cityState: CivilizationInfo) {
         if (civInfo.gold < 250) return // save up
         if (cityState.getDiplomacyManager(civInfo).influence < 20) {
-            civInfo.giveGoldGift(cityState, 250)
+            cityState.receiveGoldGift(civInfo, 250)
             return
         }
         if (civInfo.gold < 500) return // it's not worth it to invest now, wait until you have enough for 2
-        civInfo.giveGoldGift(cityState, 500)
+        cityState.receiveGoldGift(civInfo, 500)
         return
     }
 
@@ -230,9 +230,9 @@ object NextTurnAutomation {
                     && valueCityStateAlliance(civInfo, state) <= 0
                     && state.getTributeWillingness(civInfo) > 0) {
                 if (state.getTributeWillingness(civInfo, demandingWorker = true) > 0)
-                    civInfo.demandWorker(state)
+                    state.tributeWorker(civInfo)
                 else
-                    civInfo.demandGold(state)
+                    state.tributeGold(civInfo)
             }
         }
     }

@@ -91,6 +91,9 @@ class CivilizationInfo {
     @Transient
     var detailedCivResources = ResourceSupplyList()
 
+    @Transient
+    val cityStateFunctions = CityStateFunctions(this)
+
     var playerType = PlayerType.AI
 
     /** Used in online multiplayer for human players */
@@ -668,7 +671,8 @@ class CivilizationInfo {
                 if (flagsCountdown[flag]!! < min(cityStateAllies.count(), 10) && cities.isNotEmpty()
                     && cityStateAllies.any { it.cities.isNotEmpty() }
                 ) {
-                    gainGreatPersonFromCityState()
+                    val givingCityState = getKnownCivs().filter { it.isCityState() && it.getAllyCiv() == civName && it.cities.isNotEmpty()}.random()
+                    givingCityState.giveGreatPersonToPatron(this)
                     flagsCountdown[flag] = turnsForGreatPersonFromCityState()
                 }
 
@@ -706,6 +710,8 @@ class CivilizationInfo {
     fun getTurnsBetweenDiplomaticVotings() = (15 * gameInfo.gameParameters.gameSpeed.modifier).toInt() // Dunno the exact calculation, hidden in Lua files
     
     fun getTurnsTillNextDiplomaticVote() = flagsCountdown[CivFlags.TurnsTillNextDiplomaticVote.name]
+
+    fun getRecentBullyingCountdown() = flagsCountdown[CivFlags.RecentlyBullied.name]
     
     fun mayVoteForDiplomaticVictory() =
         getTurnsTillNextDiplomaticVote() == 0 
@@ -858,333 +864,50 @@ class CivilizationInfo {
         return (era.researchAgreementCost * gameInfo.gameParameters.gameSpeed.modifier).toInt()
     }
     
-    //////////////////////// Functions specific to City State civilizations ////////////////////////
-
-    
-    fun influenceGainedByGift(giftAmount: Int): Int {
-        // https://github.com/Gedemon/Civ5-DLL/blob/aa29e80751f541ae04858b6d2a2c7dcca454201e/CvGameCoreDLL_Expansion1/CvMinorCivAI.cpp
-        // line 8681 and below
-        var influenceGained = giftAmount.toFloat().pow(1.01f) / 9.8f
-        val gameProgressApproximate = min(gameInfo.turns / (400f * gameInfo.gameParameters.gameSpeed.modifier), 1f)
-        influenceGained *= 1 - (2/3f) * gameProgressApproximate
-        influenceGained *= when (gameInfo.gameParameters.gameSpeed) {
-            GameSpeed.Quick -> 1.25f
-            GameSpeed.Standard -> 1f
-            GameSpeed.Epic -> 0.75f
-            GameSpeed.Marathon -> 0.67f
-        }
-        for (unique in getMatchingUniques("Gifts of Gold to City-States generate []% more Influence"))
-            influenceGained *= 1f + unique.params[0].toFloat() / 100f
-        influenceGained -= influenceGained % 5
-        if (influenceGained < 5f) influenceGained = 5f
-        return influenceGained.toInt()
+    //////////////////////// City State wrapper functions ////////////////////////
+    /** Gain a random great person from the city state */
+    private fun giveGreatPersonToPatron(receivingCiv: CivilizationInfo) {
+        cityStateFunctions.giveGreatPersonToPatron(receivingCiv)
     }
-
-    fun giveGoldGift(cityState: CivilizationInfo, giftAmount: Int) {
-        if (!cityState.isCityState()) throw Exception("You can only gain influence with City-States!")
-        addGold(-giftAmount)
-        cityState.addGold(giftAmount)
-        cityState.getDiplomacyManager(this).addInfluence(influenceGainedByGift(giftAmount).toFloat())
-        updateStatsForNextTurn()
+    fun giveMilitaryUnitToPatron(receivingCiv: CivilizationInfo) {
+        cityStateFunctions.giveMilitaryUnitToPatron(receivingCiv)
     }
-
-    fun gainMilitaryUnitFromCityState(otherCiv: CivilizationInfo) {
-        val cities = NextTurnAutomation.getClosestCities(this, otherCiv)
-        val city = cities.city1
-        val militaryUnit = city.cityConstructions.getConstructableUnits()
-                .filter { !it.isCivilian() && it.isLandUnit() && it.uniqueTo==null }
-                .toList().random()
-        // placing the unit may fail - in that case stay quiet
-        val placedUnit = placeUnitNearTile(city.location, militaryUnit.name) ?: return
-
-        // The unit should have bonuses from Barracks, Alhambra etc as if it was built in the CS capital
-        militaryUnit.addConstructionBonuses(placedUnit, otherCiv.getCapital().cityConstructions)
-
-        // Siam gets +10 XP for all CS units
-        for (unique in getMatchingUniques("Military Units gifted from City-States start with [] XP")) {
-            placedUnit.promotions.XP += unique.params[0].toInt()
-        }
-
-
-        // Point to the places mentioned in the message _in that order_ (debatable)
-        val placedLocation = placedUnit.getTile().position
-        val locations = LocationAction(listOf(placedLocation, cities.city2.location, city.location))
-        addNotification("[${otherCiv.civName}] gave us a [${militaryUnit.name}] as gift near [${city.name}]!", locations, otherCiv.civName, militaryUnit.name)
+    fun influenceGainedByGift(donorCiv: CivilizationInfo, giftAmount: Int)
+        = cityStateFunctions.influenceGainedByGift(donorCiv, giftAmount)
+    fun receiveGoldGift(donorCiv: CivilizationInfo, giftAmount: Int) {
+        cityStateFunctions.receiveGoldGift(donorCiv, giftAmount)
     }
-
-    /** Gain a random great person from a random city state */
-    private fun gainGreatPersonFromCityState() {
-        val givingCityState = getKnownCivs().filter { it.isCityState() && it.getAllyCiv() == civName && it.cities.isNotEmpty()}.random()
-        var giftableUnits = gameInfo.ruleSet.units.values.filter { it.isGreatPerson() }
-        if (!gameInfo.hasReligionEnabled()) giftableUnits = giftableUnits.filterNot { it.uniques.contains("Great Person - [Faith]")}
-        if (giftableUnits.isEmpty()) // For badly defined mods that don't have great people but do have the policy that makes city states grant them
-            return
-        val giftedUnit = giftableUnits.random()
-        val cities = NextTurnAutomation.getClosestCities(this, givingCityState)
-        val placedUnit = placeUnitNearTile(cities.city1.location, giftedUnit.name)
-        if (placedUnit == null) return
-        val locations = LocationAction(listOf(placedUnit.getTile().position, cities.city2.location))
-        addNotification( "[${givingCityState.civName}] gave us a [${giftedUnit.name}] as a gift!", locations, givingCityState.civName, giftedUnit.name)
-    }
-
     fun turnsForGreatPersonFromCityState(): Int = ((37 + Random().nextInt(7)) * gameInfo.gameParameters.gameSpeed.modifier).toInt()    
-
-    fun getAllyCiv() = allyCivName
-
-    fun getProtectorCivs() : List<CivilizationInfo> {
-        if(this.isMajorCiv()) return emptyList()
-        return diplomacy.values
-                .filter{ !it.otherCiv().isDefeated() && it.diplomaticStatus == DiplomaticStatus.Protector }
-                .map{ it.otherCiv() }
-    }
-
+    fun getProtectorCivs() = cityStateFunctions.getProtectorCivs()
     fun addProtectorCiv(otherCiv: CivilizationInfo) {
-        if (!isCityState() || !otherCiv.isMajorCiv() || otherCiv.isDefeated()) return
-        if (!knows(otherCiv) || isAtWarWith(otherCiv)) return //Exception
-
-        val diplomacy = getDiplomacyManager(otherCiv.civName)
-        diplomacy.diplomaticStatus = DiplomaticStatus.Protector
+        cityStateFunctions.addProtectorCiv(otherCiv)
     }
-
     fun removeProtectorCiv(otherCiv: CivilizationInfo) {
-        if (!isCityState() || !otherCiv.isMajorCiv() || otherCiv.isDefeated()) return
-        if (!knows(otherCiv) || isAtWarWith(otherCiv)) return //Exception
-
-        val diplomacy = getDiplomacyManager(otherCiv.civName)
-        diplomacy.diplomaticStatus = DiplomaticStatus.Peace
-        diplomacy.addInfluence(-20f)
+        cityStateFunctions.removeProtectorCiv(otherCiv)
     }
-
     fun updateAllyCivForCityState() {
-        var newAllyName: String? = null
-        if (!isCityState()) return
-        val maxInfluence = diplomacy
-                .filter { !it.value.otherCiv().isCityState() && !it.value.otherCiv().isDefeated() }
-                .maxByOrNull { it.value.influence }
-        if (maxInfluence != null && maxInfluence.value.influence >= 60) {
-            newAllyName = maxInfluence.key
-        }
-
-        if (allyCivName != newAllyName) {
-            val oldAllyName = allyCivName
-            allyCivName = newAllyName
-
-            // If the city-state is captured by a civ, it stops being the ally of the civ it was previously an ally of.
-            //  This means that it will NOT HAVE a capital at that time, so if we run getCapital we'll get a crash!
-            val capitalLocation = if (cities.isNotEmpty()) getCapital().location else null
-
-            if (newAllyName != null) {
-                val newAllyCiv = gameInfo.getCivilization(newAllyName)
-                val text = "We have allied with [${civName}]."
-                if (capitalLocation != null) newAllyCiv.addNotification(text, capitalLocation, civName, NotificationIcon.Diplomacy)
-                else newAllyCiv.addNotification(text, civName, NotificationIcon.Diplomacy)
-                newAllyCiv.updateViewableTiles()
-                newAllyCiv.updateDetailedCivResources()
-                for (unique in newAllyCiv.getMatchingUniques("Can spend Gold to annex or puppet a City-State that has been your ally for [] turns."))
-                    newAllyCiv.getDiplomacyManager(civName).setFlag(DiplomacyFlags.MarriageCooldown, unique.params[0].toInt())
-            }
-            if (oldAllyName != null) {
-                val oldAllyCiv = gameInfo.getCivilization(oldAllyName)
-                val text = "We have lost alliance with [${civName}]."
-                if (capitalLocation != null) oldAllyCiv.addNotification(text, capitalLocation, civName, NotificationIcon.Diplomacy)
-                else oldAllyCiv.addNotification(text, civName, NotificationIcon.Diplomacy)
-                oldAllyCiv.updateViewableTiles()
-                oldAllyCiv.updateDetailedCivResources()
-            }
-        }
+        cityStateFunctions.updateAllyCivForCityState()
     }
-
-    fun getDiplomaticMarriageCost(): Int {
-        // https://github.com/Gedemon/Civ5-DLL/blob/master/CvGameCoreDLL_Expansion1/CvMinorCivAI.cpp, line 7812
-        var cost = (500 * gameInfo.gameParameters.gameSpeed.modifier).toInt()
-        // Plus disband value of all units
-        for (unit in units) {
-            cost += unit.baseUnit.getDisbandGold(this)
-        }
-        // Round to lower multiple of 5
-        cost /= 5
-        cost *= 5
-
-        return cost
-    }
-
-    fun canBeMarriedBy(otherCiv: CivilizationInfo): Boolean {
-        return (!isDefeated()
-                && isCityState()
-                && getDiplomacyManager(otherCiv).relationshipLevel() == RelationshipLevel.Ally
-                && !otherCiv.getDiplomacyManager(this).hasFlag(DiplomacyFlags.MarriageCooldown)
-                && otherCiv.getMatchingUniques("Can spend Gold to annex or puppet a City-State that has been your ally for [] turns.").any()
-                && otherCiv.gold >= getDiplomaticMarriageCost())
-
-    }
-
+    fun getDiplomaticMarriageCost() = cityStateFunctions.getDiplomaticMarriageCost()
+    fun canBeMarriedBy(otherCiv: CivilizationInfo) = cityStateFunctions.canBeMarriedBy(otherCiv)
     fun diplomaticMarriage(otherCiv: CivilizationInfo) {
-        if (!canBeMarriedBy(otherCiv))  // Just in case
-            return
-
-        otherCiv.gold -= getDiplomaticMarriageCost()
-        otherCiv.addNotification("We have married into the ruling family of [${civName}], bringing them under our control.",
-            getCapital().location, civName, NotificationIcon.Diplomacy, otherCiv.civName)
-        for (civ in gameInfo.civilizations.filter { it != otherCiv })
-            civ.addNotification("[${otherCiv.civName}] has married into the ruling family of [${civName}], bringing them under their control.",
-                getCapital().location, civName, NotificationIcon.Diplomacy, otherCiv.civName)
-        for (unit in units)
-            unit.gift(otherCiv)
-        for (city in cities) {
-            city.moveToCiv(otherCiv)
-            city.isPuppet = true // Human players get a popup that allows them to annex instead
-            city.foundingCiv = "" // This is no longer a city-state
-        }
-        destroy()
+        cityStateFunctions.diplomaticMarriage(otherCiv)
     }
-
-    fun getTributeWillingness(demandingCiv: CivilizationInfo, demandingWorker: Boolean = false): Int {
-        return getTributeModifiers(demandingCiv, demandingWorker).values.sum()
+    fun getTributeWillingness(demandingCiv: CivilizationInfo, demandingWorker: Boolean = false)
+        = cityStateFunctions.getTributeWillingness(demandingCiv, demandingWorker)
+    fun getTributeModifiers(demandingCiv: CivilizationInfo, demandingWorker: Boolean = false, requireWholeList: Boolean = false)
+        = cityStateFunctions.getTributeModifiers(demandingCiv, demandingWorker, requireWholeList)
+    fun goldGainedByTribute() = cityStateFunctions.goldGainedByTribute()
+    fun tributeGold(demandingCiv: CivilizationInfo) {
+        cityStateFunctions.tributeGold(demandingCiv)
     }
-
-    fun getTributeModifiers(demandingCiv: CivilizationInfo, demandingWorker: Boolean = false, requireWholeList: Boolean = false): HashMap<String, Int> {
-        val modifiers = LinkedHashMap<String, Int>()    // Linked to preserve order when presenting the modifiers table
-        // Can't bully major civs or unsettled CS's
-        if (!isCityState()) {
-            modifiers["Major Civ"] = -999
-            return modifiers
-        }
-        if (cities.isEmpty()) {
-            modifiers["No Cities"] = -999
-            return  modifiers
-        }
-
-        modifiers["Base value"] = -110
-
-        if (cityStatePersonality == CityStatePersonality.Hostile)
-            modifiers["Hostile"] = -10
-        if (cityStateType == CityStateType.Militaristic)
-            modifiers["Militaristic"] = -10
-        if (allyCivName != null && allyCivName != demandingCiv.civName)
-            modifiers["Has Ally"] = -10
-        if (getProtectorCivs().any { it != demandingCiv })
-            modifiers["Has Protector"] = -20
-        if (demandingWorker)
-            modifiers["Demanding a Worker"] = -30
-        if (demandingWorker && getCapital().population.population < 4)
-            modifiers["Demanding a Worker from small City-State"] = -300
-        val recentBullying = flagsCountdown[CivFlags.RecentlyBullied.name]
-        if (recentBullying != null && recentBullying > 10)
-            modifiers["Very recently paid tribute"] = -300
-        else if (recentBullying != null)
-            modifiers["Recently paid tribute"] = -40
-        if (getDiplomacyManager(demandingCiv).influence < -30)
-            modifiers["Influence below -30"] = -300
-
-        // Slight optimization, we don't do the expensive stuff if we have no chance of getting a positive result
-        if (!requireWholeList && modifiers.values.sum() <= -200)
-            return modifiers
-
-        val forceRank = gameInfo.getAliveMajorCivs().sortedByDescending { it.getStatForRanking(RankingType.Force) }.indexOf(demandingCiv)
-        modifiers["Military Rank"] = 100 - ((100 / gameInfo.gameParameters.players.size) * forceRank)
-
-        if (!requireWholeList && modifiers.values.sum() <= -100)
-            return modifiers
-
-        val bullyRange = max(5, gameInfo.tileMap.tileMatrix.size / 10)   // Longer range for larger maps
-        val inRangeTiles = getCapital().getCenterTile().getTilesInDistanceRange(1..bullyRange)
-        val forceNearCity = inRangeTiles
-            .sumBy { if (it.militaryUnit?.civInfo == demandingCiv)
-                it.militaryUnit!!.getForceEvaluation()
-            else 0
-            }
-        val csForce = getCapital().getForceEvaluation() + inRangeTiles
-            .sumBy { if (it.militaryUnit?.civInfo == this)
-                it.militaryUnit!!.getForceEvaluation()
-            else 0
-            }
-        val forceRatio = forceNearCity.toFloat() / csForce.toFloat()
-
-        modifiers["Military near City-State"] = when {
-            forceRatio > 3f -> 100
-            forceRatio > 2f -> 80
-            forceRatio > 1.5f -> 60
-            forceRatio > 1f -> 40
-            forceRatio > 0.5f -> 20
-            else -> 0
-        }
-
-        return modifiers
+    fun tributeWorker(demandingCiv: CivilizationInfo) {
+        cityStateFunctions.tributeWorker(demandingCiv)
     }
-
-    fun goldGainedByTribute(): Int {
-        // These values are close enough, linear increase throughout the game
-        var gold = when (gameInfo.gameParameters.gameSpeed) {
-            GameSpeed.Quick -> 60
-            GameSpeed.Standard -> 50
-            GameSpeed.Epic -> 35
-            GameSpeed.Marathon -> 30
-        }
-        val turnsToIncrement = when (gameInfo.gameParameters.gameSpeed) {
-            GameSpeed.Quick -> 5f
-            GameSpeed.Standard -> 6.5f
-            GameSpeed.Epic -> 14f
-            GameSpeed.Marathon -> 32f
-        }
-        gold += 5 * (gameInfo.turns / turnsToIncrement).toInt()
-
-        return gold
-    }
-
-    fun demandGold(cityState: CivilizationInfo) {
-        if (!cityState.isCityState()) throw Exception("You can only demand gold from City-States!")
-        val goldAmount = goldGainedByTribute()
-        addGold(goldAmount)
-        cityState.getDiplomacyManager(this).addInfluence(-15f)
-        cityState.addFlag(CivFlags.RecentlyBullied.name, 20)
-        updateStatsForNextTurn()
-    }
-
-    fun demandWorker(cityState: CivilizationInfo) {
-        if (!cityState.isCityState()) throw Exception("You can only demand workers from City-States!")
-
-        val buildableWorkerLikeUnits = gameInfo.ruleSet.units.filter {
-            it.value.uniqueObjects.any { it.placeholderText == Constants.canBuildImprovements }
-                    && it.value.isBuildable(this)
-                    && it.value.isCivilian()
-        }
-        if (buildableWorkerLikeUnits.isEmpty()) return  // Bad luck?
-        placeUnitNearTile(cityState.getCapital().location, buildableWorkerLikeUnits.keys.random())
-
-        cityState.getDiplomacyManager(this).addInfluence(-50f)
-        cityState.addFlag(CivFlags.RecentlyBullied.name, 20)
-    }
-
-    fun canGiveStat(statType: Stat): Boolean {
-        if (!isCityState())
-            return false
-        val eraInfo = getEraObject()
-        val allyBonuses = if (eraInfo == null) null
-            else eraInfo.allyBonus[cityStateType.name]
-        if (allyBonuses != null) {
-            // Defined city states in json
-            val bonuses = allyBonuses + eraInfo!!.friendBonus[cityStateType.name]!!
-            for (bonus in bonuses) {
-                if (statType == Stat.Happiness && bonus.getPlaceholderText() == "Provides [] Happiness")
-                    return true
-                if (bonus.getPlaceholderText() == "Provides [] [] per turn" && bonus.getPlaceholderParameters()[1] == statType.name)
-                    return true
-                if (bonus.getPlaceholderText() == "Provides [] [] []" && bonus.getPlaceholderParameters()[1] == statType.name)
-                    return true
-            }
-
-        } else {
-            // compatibility mode
-            return when {
-                cityStateType == CityStateType.Mercantile && statType == Stat.Happiness -> true
-                cityStateType == CityStateType.Cultured && statType == Stat.Culture -> true
-                cityStateType == CityStateType.Maritime && statType == Stat.Food -> true
-                else -> false
-            }
-        }
-
-        return false
-    }
+    fun canGiveStat(statType: Stat) = cityStateFunctions.canGiveStat(statType)
+    
+    fun getAllyCiv() = allyCivName
+    fun setAllyCiv(newAllyName: String?) { allyCivName = newAllyName }
 
     //endregion
 }
