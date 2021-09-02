@@ -820,8 +820,12 @@ class CivilizationInfo {
 
         if (placedUnit.hasUnique("Religious Unit")) {
             placedUnit.religion = 
-                if (city != null) city.cityConstructions.cityInfo.religion.getMajorityReligionName()
-                else religionManager.religion?.name
+                when {
+                    placedUnit.hasUnique("Takes your religion over the one in their birth city") ->
+                        religionManager.religion?.name
+                    city != null -> city.cityConstructions.cityInfo.religion.getMajorityReligionName()
+                    else -> religionManager.religion?.name
+                }
             placedUnit.setupAbilityUses()
         }
         

@@ -230,6 +230,10 @@ class ReligionManager {
 
         foundingCityId = null
         shouldChoosePantheonBelief = false
+        
+        for (unit in civInfo.getCivUnits()) 
+            if (unit.hasUnique("Religious Unit") && unit.hasUnique("Takes your religion over the one in their birth city"))
+                unit.religion = newReligion.name
     }
     
     fun mayEnhanceReligionAtAll(prophet: MapUnit): Boolean {
