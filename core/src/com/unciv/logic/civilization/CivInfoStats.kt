@@ -109,8 +109,15 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
                 } else {
                     // Deprecated, assume Civ V values for compatibility
                     if (otherCiv.cityStateType == CityStateType.Cultured) {
-                        cityStateBonus.culture = if(civInfo.getEraNumber() in 0..1) 3f else if (civInfo.getEraNumber() in 2..3) 6f else 13f
-                        if (otherCiv.getDiplomacyManager(civInfo.civName).relationshipLevel() == RelationshipLevel.Ally)
+                        cityStateBonus.culture =
+                            when {
+                                civInfo.getEraNumber() in 0..1 -> 3f
+                                civInfo.getEraNumber() in 2..3 -> 6f
+                                else -> 13f
+                            }
+                        if (otherCiv.getDiplomacyManager(civInfo.civName)
+                                .relationshipLevel() == RelationshipLevel.Ally
+                        )
                             cityStateBonus.culture *= 2f
                     }
                 }
