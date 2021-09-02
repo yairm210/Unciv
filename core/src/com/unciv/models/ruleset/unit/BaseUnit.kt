@@ -40,6 +40,7 @@ class BaseUnit : INamed, INonPerpetualConstruction, ICivilopediaText {
     lateinit var unitType: String
     fun getType() = ruleset.unitTypes[unitType]!!
     var requiredTech: String? = null
+    var requiredPolicy: String? = null
     var requiredResource: String? = null
     override var uniques = ArrayList<String>() // Can not be a hashset as that would remove doubles
     override val uniqueObjects: List<Unique> by lazy { uniques.map { Unique(it) } }
@@ -78,12 +79,8 @@ class BaseUnit : INamed, INonPerpetualConstruction, ICivilopediaText {
     }
 
     /** Generate description as multi-line string for Nation description addUniqueUnitsText and CityScreen addSelectedConstructionTable */
-    fun getDescription(): String {
+    fun getDescription(isConstructionInfoTable: Boolean = false): String {
         val lines = mutableListOf<String>()
-        for ((resource, amount) in getResourceRequirements()) {
-            lines += if (amount == 1) "Consumes 1 [$resource]".tr()
-                     else "Consumes [$amount] [$resource]".tr()
-        }
         var strengthLine = ""
         if (strength != 0) {
             strengthLine += "$strength${Fonts.strength}, "
@@ -95,8 +92,15 @@ class BaseUnit : INamed, INonPerpetualConstruction, ICivilopediaText {
         if (replacementTextForUniques != "") lines += replacementTextForUniques
         else for (unique in uniques.filterNot {
             it.startsWith("Hidden ") && it.endsWith(" disabled") || it == "Unbuildable"
-        })
-            lines += unique.tr()
+        }) // Don't show ConstructionRequirement if the table is ConstructionInfoTable
+            if (isConstructionInfoTable && Unique(unique).placeholderText.startsWith("Requires")) continue
+            else lines += unique.tr()
+
+        if (!isConstructionInfoTable)
+            for ((resource, amount) in getResourceRequirements()) {
+                lines += if (amount == 1) "Consumes 1 [$resource]".tr()
+                else "Consumes [$amount] [$resource]".tr()
+            }
 
         if (promotions.isNotEmpty()) {
             val prefix = "Free promotion${if (promotions.size == 1) "" else "s"}:".tr() + " "
@@ -285,33 +289,9 @@ class BaseUnit : INamed, INonPerpetualConstruction, ICivilopediaText {
     fun getDisbandGold(civInfo: CivilizationInfo) = getBaseGoldCost(civInfo).toInt() / 20
 
     override fun shouldBeDisplayed(cityConstructions: CityConstructions): Boolean {
-        val rejectionReason = getRejectionReason(cityConstructions)
-        return rejectionReason == ""
-                || rejectionReason.startsWith("Requires")
-                || rejectionReason.startsWith("Consumes")
-                || rejectionReason == "Can only be purchased"
-    }
-
-    override fun getRejectionReason(cityConstructions: CityConstructions): String {
-        if (isWaterUnit() && !cityConstructions.cityInfo.isCoastal())
-            return "Can only build water units in coastal cities"
-        val civInfo = cityConstructions.cityInfo.civInfo
-        for (unique in uniqueObjects.filter { it.placeholderText == "Not displayed as an available construction without []" }) {
-            val filter = unique.params[0]
-            if (filter in civInfo.gameInfo.ruleSet.tileResources && !civInfo.hasResource(filter)
-                    || filter in civInfo.gameInfo.ruleSet.buildings && !cityConstructions.containsBuildingOrEquivalent(filter))
-                return "Should not be displayed"
-        }
-        val civRejectionReason = getRejectionReason(civInfo)
-        if (civRejectionReason != "") {
-            if (civRejectionReason == "Unbuildable" && canBePurchasedWithAnyStat(cityConstructions.cityInfo))
-                return "Can only be purchased"
-            return civRejectionReason
-        }
-        for (unique in uniqueObjects.filter { it.placeholderText == "Requires at least [] population" })
-            if (unique.params[0].toInt() > cityConstructions.cityInfo.population.population)
-                return unique.text
-        return ""
+        val hideInConstructionListReason = getHideInConstructionListReason(cityConstructions)
+        return hideInConstructionListReason == ""
+                || hideInConstructionListReason == "Can only be purchased"
     }
 
     /** @param ignoreTechPolicyRequirements: its `true` value is used when upgrading via ancient ruins,
@@ -322,23 +302,18 @@ class BaseUnit : INamed, INonPerpetualConstruction, ICivilopediaText {
         if (uniques.contains("Unbuildable")) return "Unbuildable"
         if (!ignoreTechPolicyRequirements && requiredTech != null && !civInfo.tech.isResearched(requiredTech!!)) return "$requiredTech not researched"
         if (!ignoreTechPolicyRequirements && obsoleteTech != null && civInfo.tech.isResearched(obsoleteTech!!)) return "Obsolete by $obsoleteTech"
+        if (requiredPolicy != null && !civInfo.policies.isAdopted(requiredPolicy!!)) return "$requiredPolicy not adopted"
         if (uniqueTo != null && uniqueTo != civInfo.civName) return "Unique to $uniqueTo"
         if (civInfo.gameInfo.ruleSet.units.values.any { it.uniqueTo == civInfo.civName && it.replaces == name })
             return "Our unique unit replaces this"
         if (!civInfo.gameInfo.gameParameters.nuclearWeaponsEnabled && isNuclearWeapon()
         ) return "Disabled by setting"
 
-        for (unique in uniqueObjects.filter { it.placeholderText == "Unlocked with []" })
-            // ToDo: Clean this up when eras.json is required
-            if ((civInfo.gameInfo.ruleSet.getEraNumber(unique.params[0]) != -1 && civInfo.getEraNumber() >= civInfo.gameInfo.ruleSet.getEraNumber(unique.params[0]))
-                || civInfo.hasTechOrPolicy(unique.params[0])
-            ) return unique.text
-
         for (unique in uniqueObjects.filter { it.placeholderText == "Requires []" }) {
             val filter = unique.params[0]
             if (!ignoreTechPolicyRequirements && filter in civInfo.gameInfo.ruleSet.buildings) {
                 if (civInfo.cities.none { it.cityConstructions.containsBuildingOrEquivalent(filter) }) return unique.text // Wonder is not built
-            } else if (!ignoreTechPolicyRequirements && !civInfo.policies.isAdopted(filter)) return "Policy is not adopted"
+            }
         }
 
         for ((resource, amount) in getResourceRequirements())
@@ -352,10 +327,61 @@ class BaseUnit : INamed, INonPerpetualConstruction, ICivilopediaText {
         return ""
     }
 
+    // These reasons will lead to that the unit hides in construction list
+    override fun getHideInConstructionListReason(cityConstructions: CityConstructions): String {
+        if (uniques.contains("Unbuildable")) {
+            if (canBePurchasedWithAnyStat(cityConstructions.cityInfo))
+                return "Can only be purchased"
+            return "Unbuildable"
+        }
+
+        if (isWaterUnit() && !cityConstructions.cityInfo.isCoastal())
+            return "Can only build water units in coastal cities"
+        val civInfo = cityConstructions.cityInfo.civInfo
+
+        if (requiredTech != null && !civInfo.tech.isResearched(requiredTech!!)) return "$requiredTech not researched"
+        if (obsoleteTech != null && civInfo.tech.isResearched(obsoleteTech!!)) return "Obsolete by $obsoleteTech"
+        if (requiredPolicy != null && !civInfo.policies.isAdopted(requiredPolicy!!)) return "$requiredPolicy not adopted"
+        if (uniqueTo != null && uniqueTo != civInfo.civName) return "Unique to $uniqueTo"
+        if (civInfo.gameInfo.ruleSet.units.values.any { it.uniqueTo == civInfo.civName && it.replaces == name })
+            return "Our unique unit replaces this"
+        if (!civInfo.gameInfo.gameParameters.nuclearWeaponsEnabled && isNuclearWeapon()
+        ) return "Disabled by setting"
+
+        if (uniques.contains(Constants.settlerUnique) && civInfo.isCityState()) return "No settler for city-states"
+        if (uniques.contains(Constants.settlerUnique) && civInfo.isOneCityChallenger()) return "No settler for players in One City Challenge"
+
+        return ""
+    }
+
+    // If all Construction Requirements are true, the unit will be buildable
+    override fun getConstructionRequirement(construction: CityConstructions): HashMap<String, Boolean> {
+        val civInfo = construction.cityInfo.civInfo
+        val constructionRequirement = hashMapOf<String, Boolean>()
+        for ((resource, amount) in getResourceRequirements())
+            if (civInfo.getCivResourcesByName()[resource]!! < amount) {
+                if (amount == 1) constructionRequirement["Consumes 1 [$resource]"] = false
+                else constructionRequirement["Consumes [$amount] [$resource]"] = false
+            }
+            else if (amount == 1) constructionRequirement["Consumes 1 [$resource]"] = true
+            else constructionRequirement["Consumes [$amount] [$resource]"] = true
+        for (unique in uniqueObjects) when (unique.placeholderText) {
+            "Requires at least [] population" -> constructionRequirement[unique.text] = unique.params[0].toInt() <= construction.cityInfo.population.population
+            "Requires []" -> {
+                val filter = unique.params[0]
+                if (filter in civInfo.gameInfo.ruleSet.buildings) { // Some unit requires wonder, this will check that
+                    constructionRequirement[unique.text] = !civInfo.cities.none { it.cityConstructions.containsBuildingOrEquivalent(filter) }
+                }
+            }
+        }
+        return constructionRequirement
+    }
+
     fun isBuildable(civInfo: CivilizationInfo) = getRejectionReason(civInfo) == ""
 
     override fun isBuildable(cityConstructions: CityConstructions): Boolean {
-        return getRejectionReason(cityConstructions) == ""
+        return getHideInConstructionListReason(cityConstructions) == ""
+                && (getConstructionRequirement(cityConstructions).isEmpty() || getConstructionRequirement(cityConstructions).none { !it.value })
     }
 
     /** Preemptively as in: buildable without actually having the tech and/or policy required for it.

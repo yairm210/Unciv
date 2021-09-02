@@ -43,7 +43,7 @@ class CityConstructions {
     val inProgressConstructions = HashMap<String, Int>()
     var currentConstructionFromQueue: String
         get() {
-            if (constructionQueue.isEmpty()) return "" else return constructionQueue.first()
+            return if (constructionQueue.isEmpty()) "" else constructionQueue.first()
         }
         set(value) {
             if (constructionQueue.isEmpty()) constructionQueue.add(value) else constructionQueue[0] = value
@@ -374,14 +374,14 @@ class CityConstructions {
             val construction = getConstruction(constructionName)
             // Perpetual constructions should always still be valid (I hope)
             if (construction is PerpetualConstruction) continue
-            
-            val rejectionReason = 
-                (construction as INonPerpetualConstruction).getRejectionReason(this)
 
-            if (rejectionReason.endsWith("lready built")
-                    || rejectionReason.startsWith("Cannot be built with")
-                    || rejectionReason.startsWith("Don't need to build any more")
-                    || rejectionReason.startsWith("Obsolete")
+            val hideInConstructionListReason =
+                (construction as INonPerpetualConstruction).getHideInConstructionListReason(this)
+
+            if (hideInConstructionListReason.endsWith("lready built")
+                    || hideInConstructionListReason.startsWith("Cannot be built with")
+                    || hideInConstructionListReason.startsWith("Don't need to build any more")
+                    || hideInConstructionListReason.startsWith("Obsolete")
             ) {
                 if (construction is Building) {
                     // Production put into wonders gets refunded
@@ -392,7 +392,7 @@ class CityConstructions {
                     }
                 } else if (construction is BaseUnit) {
                     // Production put into upgradable units gets put into upgraded version
-                    if (rejectionReason.startsWith("Obsolete") && construction.upgradesTo != null) {
+                    if (hideInConstructionListReason.startsWith("Obsolete") && construction.upgradesTo != null) {
                         // I'd love to use the '+=' operator but since 'inProgressConstructions[...]' can be null, kotlin doesn't allow me to
                         if (!inProgressConstructions.contains(construction.upgradesTo)) {
                             inProgressConstructions[construction.upgradesTo!!] = getWorkDone(constructionName)

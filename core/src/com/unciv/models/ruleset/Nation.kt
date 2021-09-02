@@ -142,7 +142,7 @@ class Nation : INamed, ICivilopediaText, IHasUniques {
                 textList += ""
             } else if (building.replaces != null) {
                 textList += building.name.tr() + " - " + "Replaces [${building.replaces}], which is not found in the ruleset!".tr()
-            } else textList += building.getShortDescription(ruleset)
+            } else textList += building.getShortDescription()
         }
     }
 
@@ -314,7 +314,7 @@ class Nation : INamed, ICivilopediaText, IHasUniques {
             } else if (building.replaces != null) {
                 textList += FormattedLine("Replaces [${building.replaces}], which is not found in the ruleset!", indent=1)
             } else {
-                textList += FormattedLine(building.getShortDescription(ruleset), indent=1)
+                textList += FormattedLine(building.getShortDescription(), indent=1)
             }
         }
     }

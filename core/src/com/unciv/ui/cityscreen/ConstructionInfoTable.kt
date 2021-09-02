@@ -6,6 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.UncivGame
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.city.IConstruction
+import com.unciv.logic.city.INonPerpetualConstruction
 import com.unciv.logic.city.PerpetualConstruction
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.unit.BaseUnit
@@ -58,12 +59,15 @@ class ConstructionInfoTable(val city: CityInfo): Table() {
             add(buildingText.toLabel()).row()
 
             val (description, link) = when (construction) {
-                is BaseUnit -> construction.getDescription() to construction.makeLink()
-                is Building -> construction.getDescription(city, city.getRuleset()) to construction.makeLink()
+                is BaseUnit -> construction.getDescription(true) to construction.makeLink()
+                is Building -> construction.getDescription(city, true) to construction.makeLink()
                 is PerpetualConstruction -> construction.description.replace("[rate]", "[${construction.getConversionRate(city)}]") to ""
                 else -> "" to "" // Should never happen
             }
-
+            (construction as INonPerpetualConstruction).getConstructionRequirement(cityConstructions).forEach {
+                if (it.value) add(("✔"+it.key.tr()).toLabel(Color.GREEN)).left().colspan(2).row()
+                else add(("✘"+it.key.tr()).toLabel(Color.RED)).left().colspan(2).row()
+            }
             val descriptionLabel = description.toLabel()
             descriptionLabel.wrap = true
             add(descriptionLabel).colspan(2).width(stage.width / 4)
