@@ -103,13 +103,6 @@ class GameInfo {
     fun getCities() = civilizations.asSequence().flatMap { it.cities }
     fun getAliveCityStates() = civilizations.filter { it.isAlive() && it.isCityState() }
     fun getAliveMajorCivs() = civilizations.filter { it.isAlive() && it.isMajorCiv() }
-
-    fun getEquivalentTurn(): Int {
-        val totalTurns = 500f * gameParameters.gameSpeed.modifier
-        val startPercent = ruleSet.eras[gameParameters.startingEra]?.startPercent
-        if (startPercent == null) return turns
-        return turns + ((totalTurns * startPercent).toInt() / 100)
-    }
     //endregion
 
     fun nextTurn() {

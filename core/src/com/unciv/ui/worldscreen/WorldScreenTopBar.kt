@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.ui.*
+import com.unciv.logic.GameInfo
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.metadata.GameSpeed
 import com.unciv.models.ruleset.tile.ResourceType
@@ -200,7 +201,7 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
             else resourceLabels[resource.name]!!.setText(civResources.first { it.resource == resource }.amount.toString())
         }
 
-        val year = getYear(civInfo.gameInfo.gameParameters.gameSpeed, civInfo.gameInfo.getEquivalentTurn()).toInt()
+        val year = getYear(civInfo.gameInfo.gameParameters.gameSpeed, getEquivalentTurn(civInfo.gameInfo)).toInt()
 
         val yearText = "[" + abs(year) + "] " + if (year < 0) "BC" else "AD"
         turnsLabel.setText(Fonts.turn + "" + civInfo.gameInfo.turns + " | " + yearText.tr())
@@ -289,5 +290,12 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
         }
 
         return year
+    }
+
+    private fun getEquivalentTurn(gameInfo: GameInfo): Int {
+        val totalTurns = 500f * gameInfo.gameParameters.gameSpeed.modifier
+        val startPercent = gameInfo.ruleSet.eras[gameInfo.gameParameters.startingEra]?.startPercent
+        if (startPercent == null) return gameInfo.turns
+        return gameInfo.turns + ((totalTurns * startPercent).toInt() / 100)
     }
 }
