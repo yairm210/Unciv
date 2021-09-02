@@ -126,7 +126,7 @@ class BaseUnit : INamed, INonPerpetualConstruction, ICivilopediaText {
         if (cost > 0) {
             stats.clear()
             stats += "$cost${Fonts.production}"
-            if (canBePurchasedWithStat(CityInfo(), Stat.Gold, true))
+            if (canBePurchasedWithStat(null, Stat.Gold))
                 stats += "${getBaseGoldCost(UncivGame.Current.gameInfo.currentPlayerCiv).toInt() / 10 * 10}${Fonts.gold}"
             textList += FormattedLine(stats.joinToString(", ", "{Cost}: "))
         }
@@ -216,13 +216,9 @@ class BaseUnit : INamed, INonPerpetualConstruction, ICivilopediaText {
         return productionCost.toInt()
     }
 
-    override fun canBePurchasedWithStat(
-        cityInfo: CityInfo,
-        stat: Stat,
-        ignoreCityRequirements: Boolean
-    ): Boolean {
+    override fun canBePurchasedWithStat(cityInfo: CityInfo?, stat: Stat): Boolean {
         // May buy [unitFilter] units for [amount] [Stat] starting from the [eraName] at an increasing price ([amount])
-        if (cityInfo.civInfo.getMatchingUniques("May buy [] units for [] [] [] starting from the [] at an increasing price ([])")
+        if (cityInfo != null && cityInfo.civInfo.getMatchingUniques("May buy [] units for [] [] [] starting from the [] at an increasing price ([])")
             .any { 
                 matchesFilter(it.params[0])
                 && cityInfo.matchesFilter(it.params[3])        
@@ -231,7 +227,7 @@ class BaseUnit : INamed, INonPerpetualConstruction, ICivilopediaText {
             }
         ) return true
         
-        return super.canBePurchasedWithStat(cityInfo, stat, ignoreCityRequirements)
+        return super.canBePurchasedWithStat(cityInfo, stat)
     }
     
     private fun getCostForConstructionsIncreasingInPrice(baseCost: Int, increaseCost: Int, previouslyBought: Int): Int {
@@ -466,8 +462,10 @@ class BaseUnit : INamed, INonPerpetualConstruction, ICivilopediaText {
             "non-air" -> !movesLikeAirUnits()
 
             "Nuclear Weapon" -> isNuclearWeapon()
+            "Great Person", "Great" -> isGreatPerson()
             // Deprecated as of 3.15.2
-            "military water" -> isMilitary() && isWaterUnit()
+                "military water" -> isMilitary() && isWaterUnit()
+            //
             else -> {
                 if (getType().matchesFilter(filter)) return true
                 if (

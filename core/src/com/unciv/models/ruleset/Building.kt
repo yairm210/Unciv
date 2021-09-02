@@ -228,7 +228,7 @@ class Building : NamedStats(), INonPerpetualConstruction, ICivilopediaText {
 
         if (cost > 0) {
             val stats = mutableListOf("$cost${Fonts.production}")
-            if (canBePurchasedWithStat(CityInfo(), Stat.Gold, true)) {
+            if (canBePurchasedWithStat(null, Stat.Gold)) {
                 stats += "${getBaseGoldCost(UncivGame.Current.gameInfo.currentPlayerCiv).toInt() / 10 * 10}${Fonts.gold}"
             }
             textList += FormattedLine(stats.joinToString(", ", "{Cost}: "))
@@ -352,13 +352,13 @@ class Building : NamedStats(), INonPerpetualConstruction, ICivilopediaText {
     }
 
 
-    override fun canBePurchasedWithStat(cityInfo: CityInfo, stat: Stat, ignoreCityRequirements: Boolean): Boolean {
+    override fun canBePurchasedWithStat(cityInfo: CityInfo?, stat: Stat): Boolean {
         if (stat == Stat.Gold && isAnyWonder()) return false
         // May buy [buildingFilter] buildings for [amount] [Stat] [cityFilter]
-        if (!ignoreCityRequirements && cityInfo.getMatchingUniques("May buy [] buildings for [] [] []")
+        if (cityInfo != null && cityInfo.getMatchingUniques("May buy [] buildings for [] [] []")
                 .any { it.params[2] == stat.name && matchesFilter(it.params[0]) && cityInfo.matchesFilter(it.params[3]) }
         ) return true
-        return super.canBePurchasedWithStat(cityInfo, stat, ignoreCityRequirements)
+        return super.canBePurchasedWithStat(cityInfo, stat)
     }
 
     override fun getBaseBuyCost(cityInfo: CityInfo, stat: Stat): Int? {
