@@ -1518,7 +1518,7 @@
 		"uniques": ["Can construct [Holy site] if it hasn't used other actions yet", "Can [Spread Religion] [4] times",
 			"May found a religion", "May enhance a religion", "May enter foreign tiles without open borders", 
 			"[-1] Visibility Range", "Great Person - [Faith]", "Unbuildable", "Religious Unit", 
-			"Hidden when religion is disabled", "Always takes the religion of your civilization"],
+			"Hidden when religion is disabled", "Takes your religion over the one in their birth city"],
 		"movement": 2,
 		"religiousStrength": 1000
 	},

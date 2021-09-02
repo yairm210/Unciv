@@ -372,7 +372,7 @@ class BaseUnit : INamed, INonPerpetualConstruction, ICivilopediaText {
         // If this unit has special abilities that need to be kept track of, start doing so here
         if (unit.hasUnique("Religious Unit")) {
             unit.religion =  
-                if (unit.hasUnique("Always takes the religion of your civilization"))
+                if (unit.hasUnique("Takes your religion over the one in their birth city"))
                     civInfo.religionManager.religion?.name
                 else cityConstructions.cityInfo.religion.getMajorityReligionName()
             
