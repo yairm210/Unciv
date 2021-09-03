@@ -104,7 +104,7 @@ class CivilopediaScreen(
             // Alphabetical order of localized names, using system default locale
             entries = entries.sortedWith(
                 compareBy<CivilopediaEntry>{ it.sortBy }
-                    .thenBy (Collator.getInstance(), { it.name.tr() })
+                    .thenBy (Collator.getInstance(UncivGame.Current.settings.getCurrentLocale()), { it.name.tr() })
             )
 
         var currentY = -1f

@@ -82,6 +82,7 @@ class LanguagePickerScreen : PickerScreen(){
 
     fun pickLanguage(){
         game.settings.language = chosenLanguage
+        game.settings.updateLocaleFromLanguage()
         game.settings.isFreshlyCreated = false     // mark so the picker isn't called next launch
         game.settings.save()
 

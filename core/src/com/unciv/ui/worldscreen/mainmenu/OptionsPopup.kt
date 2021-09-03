@@ -444,6 +444,7 @@ class OptionsPopup(val previousScreen:CameraStageBaseScreen) : Popup(previousScr
 
     private fun selectLanguage() {
         settings.language = selectedLanguage
+        settings.updateLocaleFromLanguage()
         previousScreen.game.translations.tryReadTranslationForCurrentLanguage()
         reloadWorldAndOptions()
     }

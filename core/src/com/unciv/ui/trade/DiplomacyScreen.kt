@@ -70,7 +70,7 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
             }
             .sortedWith(
                 compareByDescending<CivilizationInfo>{ it.isMajorCiv() }
-                    .thenBy (Collator.getInstance(), { it.civName.tr() })
+                    .thenBy (Collator.getInstance(UncivGame.Current.settings.getCurrentLocale()), { it.civName.tr() })
             )
 
         for (civ in civsToDisplay) {
