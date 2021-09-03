@@ -481,7 +481,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
     /** This tests whether the buy button should be _shown_ */
     private fun isConstructionPurchaseShown(construction: INonPerpetualConstruction, stat: Stat): Boolean {
         val city = cityScreen.city
-        return construction.canBePurchasedWithStat(city, stat) || city.civInfo.gameInfo.gameParameters.godMode
+        return construction.canBePurchasedWithStat(city, stat)
     }
 
     /** This tests whether the buy button should be _enabled_ */

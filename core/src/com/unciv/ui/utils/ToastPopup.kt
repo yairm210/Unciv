@@ -1,6 +1,7 @@
 package com.unciv.ui.utils
 
 import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.scenes.scene2d.Touchable
 import kotlin.concurrent.thread
 
 /**
@@ -11,6 +12,7 @@ class ToastPopup (message: String, screen: CameraStageBaseScreen, val time: Long
     init {
         //Make this popup unobtrusive
         setFillParent(false)
+        onClick { close() }  // or `touchable = Touchable.disabled` so you can operate what's behind
 
         addGoodSizedLabel(message)
         open()
