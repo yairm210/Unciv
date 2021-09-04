@@ -60,13 +60,10 @@ class PromotionPickerScreen(val unit: MapUnit) : PickerScreen() {
                     label = "Choose name for [${unit.baseUnit.name}]",
                     icon = ImageGetter.getUnitIcon(unit.name).surroundWithCircle(80f),
                     defaultText = unit.name,
+                    validate = { it != unit.name},
                     actionOnOk = { userInput -> 
-                        if (userInput == unit.name) 
-                            return@AskTextPopup false
-                        
                         unit.instanceName = userInput
                         this.game.setScreen(PromotionPickerScreen(unit))
-                        return@AskTextPopup true
                     }
                 ).open()
             }

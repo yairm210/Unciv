@@ -11,9 +11,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextField
  * @param icon Icon at the top, should have size 80f
  * @param defaultText The text that should be in the prompt at the start
  * @param amountButtons Buttons that when clicked will add/subtract these amounts to the number
- * @param bounds The bounds in which the number must lie. If one is provided, both must be provided,
- * but `null` can be used as a 'there is no bounds' value.
+ * @param bounds The bounds in which the number must lie. Defaults to [Int.MIN_VALUE, Int.MAX_VALUE]
  * @param errorText Text that will be shown when an error is detected
+ * @param validate Function that should return `true` when a valid input is detected
  * @param actionOnOk Lambda that will be executed after pressing 'OK'.
  */
 
@@ -23,9 +23,10 @@ class AskNumberPopup(
     icon: IconCircleGroup = ImageGetter.getImage("OtherIcons/Pencil").apply { this.color = Color.BLACK }.surroundWithCircle(80f),
     defaultText: String = "",
     amountButtons: List<Int> = listOf(),
-    bounds: Array<Int?> = arrayOf(null, null), 
+    bounds: IntRange = IntRange(Int.MIN_VALUE, Int.MAX_VALUE),
     errorText: String = "Invalid input! Please enter a valid number.",
-    actionOnOk: (input: Int) -> Boolean = { true },
+    validate: (input: Int) -> Boolean = { true },
+    actionOnOk: (input: Int) -> Unit = { },
 ): Popup(screen) {
     /** Note for future developers: Why this class only accepts positive digits and not negative.
      * 
@@ -53,25 +54,30 @@ class AskNumberPopup(
         add(wrapper).colspan(2).row()
 
         val nameField = TextField(defaultText, skin)
-        nameField.textFieldFilter = TextField.TextFieldFilter.DigitsOnlyFilter()
+        nameField.textFieldFilter = TextField.TextFieldFilter { _, char -> char.isDigit() || char == '-' }
         
-        fun clampInBounds(int: Int): Int {
-            if (bounds[0] != null && bounds[0]!! > int) {
-                return bounds[0]!!
+        fun isValidInt(input: String): Boolean {
+            return input.toIntOrNull() != null
+        }
+        
+        
+        fun clampInBounds(input: String): String {
+            val int = input.toIntOrNull() ?: return input
+            
+            if (bounds.first > int) {
+                return bounds.first.toString()
             }
-            if (bounds[1] != null && bounds[1]!! < int)
-                return bounds[1]!!
-            return int
+            if (bounds.last < int)
+                return bounds.last.toString()
+            
+            return input
         } 
         
         nameField.onChange {
-            if (nameField.text.isNotEmpty()) {
-                nameField.text = clampInBounds(nameField.text.toInt()).toString()
-            }
+            nameField.text = clampInBounds(nameField.text)
         }
         
         val centerTable = Table(skin)
-        val sortedAmountValues = amountButtons.sorted()
         
         fun addValueButton(value: Int) {
             centerTable.add(
@@ -81,13 +87,14 @@ class AskNumberPopup(
                     skin
                 ).apply {
                     onClick {
-                        nameField.text = clampInBounds(nameField.text.toInt() + value).toString()
+                        if (isValidInt(nameField.text))
+                            nameField.text = clampInBounds((nameField.text.toInt() + value).toString())
                     }
                 }
             ).pad(5f)
         }
         
-        for (value in sortedAmountValues.reversed()) {
+        for (value in amountButtons.reversed()) {
             addValueButton(-value)
         }
 
@@ -95,20 +102,25 @@ class AskNumberPopup(
         
         add(centerTable).colspan(2).row()
 
-        for (value in sortedAmountValues) {
+        for (value in amountButtons) {
             addValueButton(value)
         }
         
         val errorLabel = errorText.toLabel()
         errorLabel.color = Color.RED
 
-        addOKButton(automaticallyCloseOnPress = false) {
-            if (nameField.text == "" || !actionOnOk(nameField.text.toInt()))
-                add(errorLabel).colspan(2).center()
-            else close()
+        addOKButton(
+            validate = {
+                val errorFound = !isValidInt(nameField.text) || !validate(nameField.text.toInt())
+                if (errorFound) add(errorLabel).colspan(2).center()
+                !errorFound
+            }
+        ) {
+            actionOnOk(nameField.text.toInt())
         }
         addCloseButton()
         equalizeLastTwoButtonWidths()
+        
         keyboardFocus = nameField
     }
 }

@@ -89,7 +89,7 @@ class OfferColumnsTable(private val tradeLogic: TradeLogic, val screen: Diplomac
             amountButtons = 
                 if (offer.type == TradeType.Gold) listOf(50, 500)
                 else listOf(5, 15),
-            bounds = arrayOf(0, maxGold),
+            bounds = IntRange(0, maxGold),
             actionOnOk = { userInput ->
                 offer.amount = userInput
                 if (existingGoldOffer == null)
@@ -97,7 +97,6 @@ class OfferColumnsTable(private val tradeLogic: TradeLogic, val screen: Diplomac
                 else existingGoldOffer.amount = offer.amount
                 if (offer.amount == 0) ourOffers.remove(offer)
                 onChange()
-                true
             }
         ).open()
     }
