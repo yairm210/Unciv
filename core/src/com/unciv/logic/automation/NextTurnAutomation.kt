@@ -203,7 +203,8 @@ object NextTurnAutomation {
 
         // Bonus for luxury resources we can get from them
         value += cityState.detailedCivResources.count { it.resource.resourceType == ResourceType.Luxury
-                && !(it.resource in civInfo.detailedCivResources) }
+                && it.resource !in civInfo.detailedCivResources.map { it.resource }
+        }
 
         return value
     }
