@@ -2,9 +2,11 @@ package com.unciv.models.metadata
 
 import com.badlogic.gdx.Application
 import com.badlogic.gdx.Gdx
+import com.unciv.UncivGame
 import com.unciv.logic.GameSaver
 import com.unciv.ui.worldscreen.mainmenu.Language
 import java.lang.IllegalArgumentException
+import java.text.Collator
 import java.util.*
 import kotlin.collections.HashSet
 
@@ -83,13 +85,18 @@ class GameSettings {
         } catch (e: IllegalArgumentException) {
             LocaleCode.English
         }
-        locale = Locale(code.language, code.country)
+        locale = try { Locale(code.language, code.country) }
+        catch (e: Exception) { Locale.getDefault() } // In case of stone age JVM
     }
 
     fun getCurrentLocale(): Locale {
         if (locale == null)
             updateLocaleFromLanguage()
         return locale!!
+    }
+
+    fun getCollatorFromLocale(): Collator {
+        return Collator.getInstance(getCurrentLocale())
     }
 }
 
@@ -119,7 +126,8 @@ enum class LocaleCode(var language: String, var country: String) {
     Malay("ms", "MY"),
     Norwegian("no", "NO"),
     NorwegianNynorsk("nn", "NO"),
-    // Sorry Persian is not in the supported locales
+    PersianPinglishDIN("fa", "IR"), // These might just fall back to default
+    PersianPinglishUN("fa", "IR"),
     Polish("pl", "PL"),
     Portuguese("pt", "PT"),
     Romanian("ro", "RO"),

@@ -25,7 +25,6 @@ import com.unciv.ui.civilopedia.CivilopediaScreen
 import com.unciv.ui.tilegroups.CityButton
 import com.unciv.ui.utils.*
 import com.unciv.ui.utils.UncivTooltip.Companion.addTooltip
-import java.text.Collator
 import kotlin.math.floor
 import kotlin.math.roundToInt
 import com.unciv.ui.utils.AutoScrollPane as ScrollPane
@@ -70,7 +69,7 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
             }
             .sortedWith(
                 compareByDescending<CivilizationInfo>{ it.isMajorCiv() }
-                    .thenBy (Collator.getInstance(UncivGame.Current.settings.getCurrentLocale()), { it.civName.tr() })
+                    .thenBy (UncivGame.Current.settings.getCollatorFromLocale(), { it.civName.tr() })
             )
 
         for (civ in civsToDisplay) {

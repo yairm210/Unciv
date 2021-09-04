@@ -13,7 +13,6 @@ import com.unciv.models.ruleset.VictoryType
 import com.unciv.models.stats.INamed
 import com.unciv.models.translations.tr
 import com.unciv.ui.utils.*
-import java.text.Collator
 import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 
 /** Screen displaying the Civilopedia
@@ -104,7 +103,7 @@ class CivilopediaScreen(
             // Alphabetical order of localized names, using system default locale
             entries = entries.sortedWith(
                 compareBy<CivilopediaEntry>{ it.sortBy }
-                    .thenBy (Collator.getInstance(UncivGame.Current.settings.getCurrentLocale()), { it.name.tr() })
+                    .thenBy (UncivGame.Current.settings.getCollatorFromLocale(), { it.name.tr() })
             )
 
         var currentY = -1f
