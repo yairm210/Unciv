@@ -367,8 +367,8 @@ class TileMap {
             }
         } else {
             // Yes the map generator calls this repeatedly, and we don't want to end up with an oversized tileMatrix
-            // rightX is -leftX or -leftX + 1
-            if (tileMatrix.size != 1 - 2 * leftX && tileMatrix.size != 2 - 2 * leftX)
+            // rightX is -leftX or -leftX + 1 or -leftX + 2
+            if (tileMatrix.size !in (1 - 2 * leftX)..(3 - 2 * leftX))
                 throw(IllegalStateException("TileMap.setTransients called on existing tileMatrix of different size"))
         }
 
