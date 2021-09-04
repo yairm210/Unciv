@@ -80,13 +80,12 @@ class GameSettings {
     fun updateLocaleFromLanguage() {
         val bannedCharacters = listOf(' ', '_', '-', '(', ')') // Things not to have in enum names
         val languageName = language.filterNot { it in bannedCharacters }
-        val code = try {
-            LocaleCode.valueOf(languageName)
-        } catch (e: IllegalArgumentException) {
-            LocaleCode.English
+        try {
+            val code = LocaleCode.valueOf(languageName)
+            locale = Locale(code.language, code.country)
+        } catch (e: Exception) {
+            locale = Locale.getDefault()
         }
-        locale = try { Locale(code.language, code.country) }
-        catch (e: Exception) { Locale.getDefault() } // In case of stone age JVM
     }
 
     fun getCurrentLocale(): Locale {
