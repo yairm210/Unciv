@@ -40,7 +40,8 @@ enum class DiplomacyFlags{
     ProvideMilitaryUnit,
     EverBeenFriends,
     MarriageCooldown,
-    NotifiedAfraid
+    NotifiedAfraid,
+    AngerFreeIntrusion
 }
 
 enum class DiplomaticModifiers{

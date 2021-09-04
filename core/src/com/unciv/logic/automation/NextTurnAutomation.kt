@@ -45,8 +45,8 @@ object NextTurnAutomation {
             issueRequests(civInfo)
             adoptPolicy(civInfo)  // todo can take a second - why?
         } else {
-            getFreeTechForCityStates(civInfo)
-            updateDiplomaticRelationshipForCityStates(civInfo)
+            civInfo.getFreeTechForCityState()
+            civInfo.updateDiplomaticRelationshipForCityState()
         }
 
         chooseTechToResearch(civInfo)
@@ -235,18 +235,6 @@ object NextTurnAutomation {
                     state.tributeGold(civInfo)
             }
         }
-    }
-
-    private fun getFreeTechForCityStates(civInfo: CivilizationInfo) {
-        // City-States automatically get all techs that at least half of the major civs know
-        val researchableTechs = civInfo.gameInfo.ruleSet.technologies.keys
-            .filter { civInfo.tech.canBeResearched(it) }
-        for (tech in researchableTechs) {
-            val aliveMajorCivs = civInfo.gameInfo.getAliveMajorCivs()
-            if (aliveMajorCivs.count { it.tech.isResearched(tech) } >= aliveMajorCivs.count() / 2)
-                civInfo.tech.addTechnology(tech)
-        }
-        return
     }
 
     private fun chooseTechToResearch(civInfo: CivilizationInfo) {
@@ -473,23 +461,6 @@ object NextTurnAutomation {
             tradeLogic.currentTrade.theirOffers.add(TradeOffer(Constants.researchAgreement, TradeType.Treaty, cost))
 
             otherCiv.tradeRequests.add(TradeRequest(civInfo.civName, tradeLogic.currentTrade.reverse()))
-        }
-    }
-
-    private fun updateDiplomaticRelationshipForCityStates(civInfo: CivilizationInfo) {
-        // Check if city-state invaded by other civs
-        for (otherCiv in civInfo.getKnownCivs().filter { it.isMajorCiv() }) {
-            if (civInfo.isAtWarWith(otherCiv)) continue
-            val diplomacy = civInfo.getDiplomacyManager(otherCiv)
-
-            val unitsInBorder = otherCiv.getCivUnits().count { !it.isCivilian() && it.getTile().getOwner() == civInfo }
-            if (unitsInBorder > 0 && diplomacy.relationshipLevel() < RelationshipLevel.Friend) {
-                diplomacy.addInfluence(-10f)
-                if (!diplomacy.hasFlag(DiplomacyFlags.BorderConflict)) {
-                    otherCiv.popupAlerts.add(PopupAlert(AlertType.BorderConflict, civInfo.civName))
-                    diplomacy.setFlag(DiplomacyFlags.BorderConflict, 10)
-                }
-            }
         }
     }
 

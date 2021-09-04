@@ -344,4 +344,47 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
         return false
     }
 
+    fun updateDiplomaticRelationshipForCityState() {
+        // Check if city-state invaded by other civs
+        if (getNumThreateningBarbarians() > 0) return // Assume any players are there to fight barbarians
+
+        for (otherCiv in civInfo.getKnownCivs().filter { it.isMajorCiv() }) {
+            if (civInfo.isAtWarWith(otherCiv)) continue
+            if (otherCiv.hasUnique("City-State territory always counts as friendly territory")) continue
+            val diplomacy = civInfo.getDiplomacyManager(otherCiv)
+            if (diplomacy.hasFlag(DiplomacyFlags.AngerFreeIntrusion)) continue // They recently helped us
+
+            val unitsInBorder = otherCiv.getCivUnits().count { !it.isCivilian() && it.getTile().getOwner() == civInfo }
+            if (unitsInBorder > 0 && diplomacy.relationshipLevel() < RelationshipLevel.Friend) {
+                diplomacy.addInfluence(-10f)
+                if (!diplomacy.hasFlag(DiplomacyFlags.BorderConflict)) {
+                    otherCiv.popupAlerts.add(PopupAlert(AlertType.BorderConflict, civInfo.civName))
+                    diplomacy.setFlag(DiplomacyFlags.BorderConflict, 10)
+                }
+            }
+        }
+    }
+
+    fun getFreeTechForCityState() {
+        // City-States automatically get all techs that at least half of the major civs know
+        val researchableTechs = civInfo.gameInfo.ruleSet.technologies.keys
+            .filter { civInfo.tech.canBeResearched(it) }
+        for (tech in researchableTechs) {
+            val aliveMajorCivs = civInfo.gameInfo.getAliveMajorCivs()
+            if (aliveMajorCivs.count { it.tech.isResearched(tech) } >= aliveMajorCivs.count() / 2)
+                civInfo.tech.addTechnology(tech)
+        }
+        return
+    }
+
+    private fun getNumThreateningBarbarians(): Int {
+        var count = 0
+        for (barb in civInfo.gameInfo.getBarbarianCivilization().getCivUnits()) {
+            // Check if barb in or adjacent to our tiles
+            if (barb.getTile().getTilesInDistance(1).any { it.getOwner() == civInfo })
+                count++
+        }
+        return count
+    }
+
 }

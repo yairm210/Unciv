@@ -909,6 +909,12 @@ class CivilizationInfo {
         cityStateFunctions.tributeWorker(demandingCiv)
     }
     fun canGiveStat(statType: Stat) = cityStateFunctions.canGiveStat(statType)
+    fun updateDiplomaticRelationshipForCityState() {
+        cityStateFunctions.updateDiplomaticRelationshipForCityState()
+    }
+    fun getFreeTechForCityState() {
+        cityStateFunctions.getFreeTechForCityState()
+    }
     
     fun getAllyCiv() = allyCivName
     fun setAllyCiv(newAllyName: String?) { allyCivName = newAllyName }
