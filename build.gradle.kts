@@ -4,7 +4,7 @@ import com.unciv.build.BuildConfig.roboVMVersion
 
 // You'll still get kotlin-reflect-1.3.70.jar in your classpath, but will no longer be used
 configurations.all { resolutionStrategy {
-    force("org.jetbrains.kotlin:kotlin-reflect:1.4.30")
+    force("org.jetbrains.kotlin:kotlin-reflect:${com.unciv.build.BuildConfig.kotlinVersion}")
 } }
 
 
