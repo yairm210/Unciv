@@ -4,7 +4,6 @@ import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.*
-import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.map.MapUnit
@@ -160,13 +159,7 @@ object Battle {
         if (defeatedUnit.matchesCategory("{Barbarian} {Military}") && civUnit.getCivInfo().isMajorCiv()) {
             for (cityState in UncivGame.Current.gameInfo.getAliveCityStates()) {
                 if (attackedTile.getOwner() == cityState || attackedTile.neighbors.any { it.getOwner() == cityState }) {
-                    val diplomacy = cityState.getDiplomacyManager(civUnit.getCivInfo())
-                    diplomacy.addInfluence(12f)
-                    if (diplomacy.hasFlag(DiplomacyFlags.AngerFreeIntrusion))
-                        diplomacy.setFlag(DiplomacyFlags.AngerFreeIntrusion, diplomacy.getFlag(DiplomacyFlags.AngerFreeIntrusion) + 5)
-                    else
-                        diplomacy.setFlag(DiplomacyFlags.AngerFreeIntrusion, 5)
-                    println("Thx, from " + cityState.civName + ". Feel free to stay for " + diplomacy.getFlag(DiplomacyFlags.AngerFreeIntrusion).toString() + " more turns.")
+                    cityState.threateningBarbarianKilledBy(civUnit.getCivInfo())
                 }
             }
         }

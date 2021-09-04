@@ -915,6 +915,9 @@ class CivilizationInfo {
     fun getFreeTechForCityState() {
         cityStateFunctions.getFreeTechForCityState()
     }
+    fun threateningBarbarianKilledBy(otherCiv: CivilizationInfo) {
+        cityStateFunctions.threateningBarbarianKilledBy(otherCiv)
+    }
     
     fun getAllyCiv() = allyCivName
     fun setAllyCiv(newAllyName: String?) { allyCivName = newAllyName }
