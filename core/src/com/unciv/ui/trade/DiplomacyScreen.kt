@@ -35,7 +35,7 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
     private val leftSideTable = Table().apply { defaults().pad(10f) }
     private val rightSideTable = Table()
 
-    private fun isNotPlayersTurn() = !UncivGame.Current.worldScreen.isPlayersTurn
+    private fun isNotPlayersTurn() = !UncivGame.Current.worldScreen.canChangeState
 
     init {
         onBackButtonClicked { UncivGame.Current.setWorldScreen() }
