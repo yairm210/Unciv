@@ -4,8 +4,6 @@ import com.badlogic.gdx.Application
 import com.badlogic.gdx.Gdx
 import com.unciv.UncivGame
 import com.unciv.logic.GameSaver
-import com.unciv.ui.worldscreen.mainmenu.Language
-import java.lang.IllegalArgumentException
 import java.text.Collator
 import java.util.*
 import kotlin.collections.HashSet
