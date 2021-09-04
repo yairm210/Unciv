@@ -973,7 +973,7 @@ class MapUnit {
     
     fun getReligionDisplayName(): String? {
         if (religion == null) return null
-        return civInfo.gameInfo.religions[religion]!!.displayName ?: religion
+        return civInfo.gameInfo.religions[religion]!!.getReligionDisplayName()
     }
     
     fun religiousActionsUnitCanDo(): Sequence<String> {
