@@ -20,6 +20,7 @@ class Era : INamed {
     var settlerBuildings = ArrayList<String>()
     var startingObsoleteWonders = ArrayList<String>()
     var baseUnitBuyCost = 200
+    var startPercent = 0
     var friendBonus = HashMap<String, List<String>>()
     var allyBonus = HashMap<String, List<String>>()
     var iconRGB: List<Int>? = null

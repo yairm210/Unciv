@@ -249,7 +249,7 @@ class FormattedLine (
         }
 
         val fontSize = when {
-            header in headerSizes.indices -> headerSizes[header]
+            header in 1 until headerSizes.size -> headerSizes[header]
             size == Int.MIN_VALUE -> defaultSize
             else -> size
         }

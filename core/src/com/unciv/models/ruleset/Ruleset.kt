@@ -17,6 +17,7 @@ import com.unciv.models.ruleset.unit.UnitType
 import com.unciv.models.stats.INamed
 import com.unciv.models.stats.NamedStats
 import com.unciv.models.stats.Stat
+import com.unciv.models.stats.Stats
 import com.unciv.models.translations.tr
 import com.unciv.ui.utils.colorFromRGB
 import kotlin.collections.set
@@ -347,13 +348,15 @@ class Ruleset {
             for (promotion in unit.promotions)
                 if (!unitPromotions.containsKey(promotion))
                     lines += "${unit.name} contains promotion $promotion which does not exist!"
-            if (!unitTypes.containsKey(unit.unitType) && !baseRuleset.unitTypes.containsKey(unit.unitType))
+            if (!unitTypes.containsKey(unit.unitType) && (unitTypes.isNotEmpty() || !baseRuleset.unitTypes.containsKey(unit.unitType)))
                 lines += "${unit.name} is of type ${unit.unitType}, which does not exist!"
             for (unique in unit.getMatchingUniques("Can construct []")) {
                 val improvementName = unique.params[0]
                 if (improvementName !in tileImprovements)
                     lines += "${unit.name} can place improvement $improvementName which does not exist!"
-                else if (tileImprovements[improvementName]!!.firstOrNull() == null && !unit.hasUnique("Bonus for units in 2 tile radius 15%")) {
+                else if ((tileImprovements[improvementName] as Stats).none() &&
+                        unit.isCivilian() &&
+                        !unit.hasUnique("Bonus for units in 2 tile radius 15%")) {
                     lines += "${unit.name} can place improvement $improvementName which has no stats, preventing unit automation!"
                     warningCount++
                 }
@@ -498,6 +501,10 @@ object RulesetCache : HashMap<String,Ruleset>() {
 
     fun getBaseRuleset() = this[BaseRuleset.Civ_V_Vanilla.fullName]!!.clone() // safeguard, so no-one edits the base ruleset by mistake
 
+    /**
+     * Creates a combined [Ruleset] from a list of mods. If no baseRuleset is listed in [mods],
+     * then the vanilla Ruleset is included automatically.
+     */
     fun getComplexRuleset(mods: LinkedHashSet<String>): Ruleset {
         val newRuleset = Ruleset()
         val loadedMods = mods.filter { containsKey(it) }.map { this[it]!! }
@@ -519,13 +526,28 @@ object RulesetCache : HashMap<String,Ruleset>() {
         if (newRuleset.unitTypes.isEmpty()) {
             newRuleset.unitTypes.putAll(getBaseRuleset().unitTypes)
         }
-        
+
         // This one should be permanent
         if (newRuleset.ruinRewards.isEmpty()) {
             newRuleset.ruinRewards.putAll(getBaseRuleset().ruinRewards)
         }
-        
+
         return newRuleset
+    }
+
+    /**
+     * Runs [Ruleset.checkModLinks] on a temporary [combined Ruleset][getComplexRuleset] for a list of [mods]
+     */
+    fun checkCombinedModLinks(mods: LinkedHashSet<String>): Ruleset.CheckModLinksResult {
+        return try {
+            val newRuleset = getComplexRuleset(mods)
+            newRuleset.modOptions.isBaseRuleset = true // This is so the checkModLinks finds all connections
+            newRuleset.checkModLinks()
+        } catch (ex: Exception) {
+            // This happens if a building is dependent on a tech not in the base ruleset
+            //  because newRuleset.updateBuildingCosts() in getComplexRuleset() throws an error
+            Ruleset.CheckModLinksResult(Ruleset.CheckModLinksStatus.Error, ex.localizedMessage)
+        }
     }
 
 }
