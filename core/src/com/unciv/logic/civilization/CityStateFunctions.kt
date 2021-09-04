@@ -378,13 +378,7 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
     }
 
     private fun getNumThreateningBarbarians(): Int {
-        var count = 0
-        for (barb in civInfo.gameInfo.getBarbarianCivilization().getCivUnits()) {
-            // Check if barb in or adjacent to our tiles
-            if (barb.getTile().getTilesInDistance(1).any { it.getOwner() == civInfo })
-                count++
-        }
-        return count
+        return civInfo.gameInfo.getBarbarianCivilization().getCivUnits().count { it.threatensCiv(civInfo) }
     }
 
 }

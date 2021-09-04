@@ -4,6 +4,7 @@ import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.*
+import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.map.MapUnit
@@ -93,10 +94,10 @@ object Battle {
         // Add culture when defeating a barbarian when Honor policy is adopted, gold from enemy killed when honor is complete
         // or any enemy military unit with Sacrificial captives unique (can be either attacker or defender!)
         if (defender.isDefeated() && defender is MapUnitCombatant && !defender.unit.isCivilian()) {
-            tryEarnFromKilling(attacker, defender)
+            tryEarnFromKilling(attacker, defender, attackedTile)
             tryHealAfterKilling(attacker)
         } else if (attacker.isDefeated() && attacker is MapUnitCombatant && !attacker.unit.isCivilian()) {
-            tryEarnFromKilling(defender, attacker)
+            tryEarnFromKilling(defender, attacker, attackedTile)
             tryHealAfterKilling(defender)
         }
 
@@ -116,7 +117,7 @@ object Battle {
         if (!isAlreadyDefeatedCity) postBattleAddXp(attacker, defender)
     }
 
-    private fun tryEarnFromKilling(civUnit: ICombatant, defeatedUnit: MapUnitCombatant) {
+    private fun tryEarnFromKilling(civUnit: ICombatant, defeatedUnit: MapUnitCombatant, attackedTile: TileInfo) {
         val unitStr = max(defeatedUnit.unit.baseUnit.strength, defeatedUnit.unit.baseUnit.rangedStrength)
         val unitCost = defeatedUnit.unit.baseUnit.cost
         var bonusUniquePlaceholderText = "Earn []% of killed [] unit's [] as []"
@@ -153,6 +154,21 @@ object Battle {
                 civUnit.getCivInfo().addStat(stat, yieldAmount)
             } catch (ex: Exception) {
             } // parameter is not a stat
+        }
+
+        // CS friendship from killing barbarians
+        if (defeatedUnit.matchesCategory("{Barbarian} {Military}") && civUnit.getCivInfo().isMajorCiv()) {
+            for (cityState in UncivGame.Current.gameInfo.getAliveCityStates()) {
+                if (attackedTile.getOwner() == cityState || attackedTile.neighbors.any { it.getOwner() == cityState }) {
+                    val diplomacy = cityState.getDiplomacyManager(civUnit.getCivInfo())
+                    diplomacy.addInfluence(12f)
+                    if (diplomacy.hasFlag(DiplomacyFlags.AngerFreeIntrusion))
+                        diplomacy.setFlag(DiplomacyFlags.AngerFreeIntrusion, diplomacy.getFlag(DiplomacyFlags.AngerFreeIntrusion) + 5)
+                    else
+                        diplomacy.setFlag(DiplomacyFlags.AngerFreeIntrusion, 5)
+                    println("Thx, from " + cityState.civName + ". Feel free to stay for " + diplomacy.getFlag(DiplomacyFlags.AngerFreeIntrusion).toString() + " more turns.")
+                }
+            }
         }
     }
 
