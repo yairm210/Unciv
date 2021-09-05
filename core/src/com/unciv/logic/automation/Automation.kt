@@ -8,6 +8,7 @@ import com.unciv.models.ruleset.VictoryType
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stats
+import com.unciv.ui.victoryscreen.RankingType
 import kotlin.math.max
 import kotlin.math.sqrt
 
@@ -99,17 +100,9 @@ object Automation {
         return chosenUnit.name
     }
 
-    fun evaluateCombatStrength(civInfo: CivilizationInfo): Int {
-        // Since units become exponentially stronger per combat strength increase, we square em all
-        fun square(x: Int) = x * x
-        val unitStrength = civInfo.getCivUnits()
-            .map { square(max(it.baseUnit().strength, it.baseUnit().rangedStrength)) }.sum()
-        return sqrt(unitStrength.toDouble()).toInt() + 1 //avoid 0, because we divide by the result
-    }
-
     fun threatAssessment(assessor: CivilizationInfo, assessed: CivilizationInfo): ThreatLevel {
         val powerLevelComparison =
-            evaluateCombatStrength(assessed) / evaluateCombatStrength(assessor).toFloat()
+            assessed.getStatForRanking(RankingType.Force) / assessor.getStatForRanking(RankingType.Force).toFloat()
         return when {
             powerLevelComparison > 2 -> ThreatLevel.VeryHigh
             powerLevelComparison > 1.5f -> ThreatLevel.High
