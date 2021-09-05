@@ -120,8 +120,7 @@ class ReligionManager {
         if (religion == null || religionState == ReligionState.None) return false // First get a pantheon, then we'll talk about a real religion
         if (storedFaith < faithForNextGreatProphet()) return false
         if (!civInfo.isMajorCiv()) return false
-        // In the base game, great prophets shouldn't generate anymore starting from the industrial era
-        // This is difficult to implement in the current codebase, probably requires an additional variable in eras.json
+        if (civInfo.hasUnique("May not generate great prophet equivalents naturally")) return false
         return true
     }
 

@@ -5,7 +5,7 @@ import com.unciv.logic.civilization.CityStateType
 import com.unciv.models.stats.INamed
 import com.unciv.ui.utils.colorFromRGB
 
-class Era : INamed {
+class Era : INamed, IHasUniques {
     override var name: String = ""
     var researchAgreementCost = 300
     var startingSettlerCount = 1
@@ -24,6 +24,8 @@ class Era : INamed {
     var friendBonus = HashMap<String, List<String>>()
     var allyBonus = HashMap<String, List<String>>()
     var iconRGB: List<Int>? = null
+    override var uniques: ArrayList<String> = arrayListOf()
+    override val uniqueObjects: List<Unique> by lazy { uniques.map { Unique(it) } }
 
     fun getStartingUnits(): List<String> {
         val startingUnits = mutableListOf<String>()
@@ -40,6 +42,10 @@ class Era : INamed {
 
     fun getHexColor() = "#" + getColor().toString().substring(0, 6)
 
+    fun hasUnique(uniqueTemplate: String) = uniqueObjects.any { it.placeholderText == uniqueTemplate }
+    
+    fun getMatchingUniques(uniqueTemplate: String) = uniqueObjects.filter { it.placeholderText == uniqueTemplate }
+    
     companion object {
         // User for CS bonuses in case the Eras file is missing (legacy mods)
         fun getLegacyCityStateBonusEra(eraNumber: Int) = Era().apply {

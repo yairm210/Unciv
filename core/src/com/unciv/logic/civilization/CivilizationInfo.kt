@@ -292,11 +292,20 @@ class CivilizationInfo {
                 temporaryUniques
                     .asSequence()
                     .filter { it.first.placeholderText == uniqueTemplate }.map { it.first } +
-                if (religionManager.religion != null) 
-                    religionManager.religion!!.getFounderUniques()
-                        .asSequence()
-                        .filter { it.placeholderText == uniqueTemplate }
-                else sequenceOf()
+                (
+                    if (religionManager.religion != null) 
+                        religionManager.religion!!.getFounderUniques()
+                            .asSequence()
+                            .filter { it.placeholderText == uniqueTemplate }
+                    else sequenceOf()
+                ) +
+                (
+                    if (getEraObject() != null) {
+                        getEraObject()!!.getMatchingUniques(uniqueTemplate)
+                            .asSequence()
+                    }
+                    else sequenceOf()
+                )
     }
 
     //region Units

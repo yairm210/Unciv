@@ -433,7 +433,10 @@ class GameInfo {
     }
 
 
-    fun hasReligionEnabled() = gameParameters.religionEnabled || ruleSet.hasReligion() // Temporary function to check whether religion should be used for this game
+    fun hasReligionEnabled() =
+        // Temporary function to check whether religion should be used for this game
+        (gameParameters.religionEnabled || ruleSet.hasReligion())
+        && (ruleSet.eras.isEmpty() || !ruleSet.eras[gameParameters.startingEra]!!.hasUnique("Starting in this era disables religion"))
 }
 
 // reduced variant only for load preview
