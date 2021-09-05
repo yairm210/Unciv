@@ -17,6 +17,7 @@ import com.unciv.models.ruleset.unit.UnitType
 import com.unciv.models.stats.INamed
 import com.unciv.models.stats.NamedStats
 import com.unciv.models.stats.Stat
+import com.unciv.models.stats.Stats
 import com.unciv.models.translations.tr
 import com.unciv.ui.utils.colorFromRGB
 import kotlin.collections.set
@@ -25,9 +26,10 @@ object ModOptionsConstants {
     const val diplomaticRelationshipsCannotChange = "Diplomatic relationships cannot change"
     const val convertGoldToScience = "Can convert gold to science with sliders"
     const val allowCityStatesSpawnUnits = "Allow City States to spawn with additional units"
+    const val tradeCivIntroductions = "Can trade civilization introductions for [] Gold"
 }
 
-class ModOptions {
+class ModOptions : IHasUniques {
     var isBaseRuleset = false
     var techsToRemove = HashSet<String>()
     var buildingsToRemove = HashSet<String>()
@@ -41,7 +43,10 @@ class ModOptions {
     var modSize = 0
     
     val maxXPfromBarbarians = 30
-    var uniques = HashSet<String>()     // No reason for now to use IHasUniques here, in that case needs to change to ArrayList
+
+    override var uniques = ArrayList<String>()
+    // If this is delegated with "by lazy", the mod download process crashes and burns
+    override var uniqueObjects: List<Unique> = listOf()
 }
 
 class Ruleset {
@@ -145,6 +150,7 @@ class Ruleset {
             try {
                 modOptions = jsonParser.getFromJson(ModOptions::class.java, modOptionsFile)
             } catch (ex: Exception) {}
+            modOptions.uniqueObjects = modOptions.uniques.map { Unique(it) }
         }
 
         val techFile = folderHandle.child("Techs.json")
@@ -205,7 +211,7 @@ class Ruleset {
                     if (policy.requires == null) policy.requires = arrayListOf(branch.name)
                     policies[policy.name] = policy
                 }
-                branch.policies.last().name = branch.name + " Complete"
+                branch.policies.last().name = branch.name + Policy.branchCompleteSuffix
             }
         }
 
@@ -241,9 +247,9 @@ class Ruleset {
      *  */
     fun updateBuildingCosts() {
         for (building in buildings.values) {
-            if (building.cost == 0) {
+            if (building.cost == 0 && !building.uniques.contains("Unbuildable")) {
                 val column = technologies[building.requiredTech]?.column
-                        ?: throw UncivShowableException("Building (${building.name}) must either have an explicit cost or reference an existing tech")
+                        ?: throw UncivShowableException("Building (${building.name}) is buildable and therefore must either have an explicit cost or reference an existing tech")
                 building.cost = if (building.isAnyWonder()) column.wonderCost else column.buildingCost
             }
         }
@@ -291,11 +297,12 @@ class Ruleset {
         fun isError() = status == CheckModLinksStatus.Error
         fun isNotOK() = status != CheckModLinksStatus.OK
     }
+
     fun checkModLinks(): CheckModLinksResult {
         val lines = ArrayList<String>()
         var warningCount = 0
 
-        // Checks for all mods
+        // Checks for all mods - only those that can succeed without loading a base ruleset
         for (unit in units.values) {
             if (unit.upgradesTo == unit.name)
                 lines += "${unit.name} upgrades to itself!"
@@ -313,8 +320,8 @@ class Ruleset {
         }
 
         for (building in buildings.values) {
-            if (building.requiredTech == null && building.cost == 0)
-                lines += "${building.name} must either have an explicit cost or reference an existing tech!"
+            if (building.requiredTech == null && building.cost == 0 && !building.uniques.contains("Unbuildable"))
+                lines += "${building.name} is buildable and therefore must either have an explicit cost or reference an existing tech!"
         }
         
         for (nation in nations.values) {
@@ -323,8 +330,10 @@ class Ruleset {
             }
         }
 
+        // Quit here when no base ruleset is loaded - references cannot be checked
         if (!modOptions.isBaseRuleset) return CheckModLinksResult(warningCount, lines)
 
+        val baseRuleset = RulesetCache.getBaseRuleset()  // for UnitTypes fallback
 
         for (unit in units.values) {
             if (unit.requiredTech != null && !technologies.containsKey(unit.requiredTech!!))
@@ -340,8 +349,20 @@ class Ruleset {
                 lines += "${unit.name} replaces ${unit.replaces} which does not exist!"
             for (promotion in unit.promotions)
                 if (!unitPromotions.containsKey(promotion))
-                    lines += "${unit.replaces} contains promotion $promotion which does not exist!"
-
+                    lines += "${unit.name} contains promotion $promotion which does not exist!"
+            if (!unitTypes.containsKey(unit.unitType) && (unitTypes.isNotEmpty() || !baseRuleset.unitTypes.containsKey(unit.unitType)))
+                lines += "${unit.name} is of type ${unit.unitType}, which does not exist!"
+            for (unique in unit.getMatchingUniques("Can construct []")) {
+                val improvementName = unique.params[0]
+                if (improvementName !in tileImprovements)
+                    lines += "${unit.name} can place improvement $improvementName which does not exist!"
+                else if ((tileImprovements[improvementName] as Stats).none() &&
+                        unit.isCivilian() &&
+                        !unit.hasUnique("Bonus for units in 2 tile radius 15%")) {
+                    lines += "${unit.name} can place improvement $improvementName which has no stats, preventing unit automation!"
+                    warningCount++
+                }
+            }
         }
 
         for (building in buildings.values) {
@@ -356,8 +377,6 @@ class Ruleset {
                 lines += "${building.name} requires ${building.requiredBuilding} which does not exist!"
             if (building.requiredBuildingInAllCities != null && !buildings.containsKey(building.requiredBuildingInAllCities!!))
                 lines += "${building.name} requires ${building.requiredBuildingInAllCities} in all cities which does not exist!"
-            if (building.providesFreeBuilding != null && !buildings.containsKey(building.providesFreeBuilding!!))
-                lines += "${building.name} provides a free ${building.providesFreeBuilding} which does not exist!"
             for (unique in building.uniqueObjects)
                 if (unique.placeholderText == "Creates a [] improvement on a specific tile" && !tileImprovements.containsKey(unique.params[0]))
                     lines += "${building.name} creates a ${unique.params[0]} improvement which does not exist!"
@@ -443,7 +462,7 @@ class Ruleset {
  * save all of the loaded rulesets somewhere for later use
  *  */
 object RulesetCache : HashMap<String,Ruleset>() {
-    fun loadRulesets(consoleMode: Boolean = false, printOutput: Boolean = false) {
+    fun loadRulesets(consoleMode: Boolean = false, printOutput: Boolean = false, noMods: Boolean = false) {
         clear()
         for (ruleset in BaseRuleset.values()) {
             val fileName = "jsons/${ruleset.fullName}"
@@ -451,6 +470,8 @@ object RulesetCache : HashMap<String,Ruleset>() {
             else Gdx.files.internal(fileName)
             this[ruleset.fullName] = Ruleset().apply { load(fileHandle, printOutput) }
         }
+
+        if (noMods) return
 
         val modsHandles = if (consoleMode) FileHandle("mods").list()
         else Gdx.files.local("mods").list()
@@ -480,6 +501,10 @@ object RulesetCache : HashMap<String,Ruleset>() {
 
     fun getBaseRuleset() = this[BaseRuleset.Civ_V_Vanilla.fullName]!!.clone() // safeguard, so no-one edits the base ruleset by mistake
 
+    /**
+     * Creates a combined [Ruleset] from a list of mods. If no baseRuleset is listed in [mods],
+     * then the vanilla Ruleset is included automatically.
+     */
     fun getComplexRuleset(mods: LinkedHashSet<String>): Ruleset {
         val newRuleset = Ruleset()
         val loadedMods = mods.filter { containsKey(it) }.map { this[it]!! }
@@ -501,13 +526,28 @@ object RulesetCache : HashMap<String,Ruleset>() {
         if (newRuleset.unitTypes.isEmpty()) {
             newRuleset.unitTypes.putAll(getBaseRuleset().unitTypes)
         }
-        
+
         // This one should be permanent
         if (newRuleset.ruinRewards.isEmpty()) {
             newRuleset.ruinRewards.putAll(getBaseRuleset().ruinRewards)
         }
-        
+
         return newRuleset
+    }
+
+    /**
+     * Runs [Ruleset.checkModLinks] on a temporary [combined Ruleset][getComplexRuleset] for a list of [mods]
+     */
+    fun checkCombinedModLinks(mods: LinkedHashSet<String>): Ruleset.CheckModLinksResult {
+        return try {
+            val newRuleset = getComplexRuleset(mods)
+            newRuleset.modOptions.isBaseRuleset = true // This is so the checkModLinks finds all connections
+            newRuleset.checkModLinks()
+        } catch (ex: Exception) {
+            // This happens if a building is dependent on a tech not in the base ruleset
+            //  because newRuleset.updateBuildingCosts() in getComplexRuleset() throws an error
+            Ruleset.CheckModLinksResult(Ruleset.CheckModLinksStatus.Error, ex.localizedMessage)
+        }
     }
 
 }

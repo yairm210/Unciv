@@ -1,0 +1,12 @@
+{
+    "paddingX":8,
+    "paddingY":8,
+    "duplicatePadding":true,
+    "maxWidth":2048,
+    "maxHeight":2048,
+    "filterMin":"Linear",
+    "filterMag":"Linear",
+    "fast":false,
+    "limitMemory":false,
+    "combineSubdirectories":true
+}

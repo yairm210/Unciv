@@ -1,5 +1,6 @@
 package com.unciv.logic.civilization.RuinsManager
 
+import com.unciv.Constants
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.MapUnit
 import com.unciv.models.ruleset.RuinReward
@@ -40,7 +41,7 @@ class RuinsManager {
         
         for (possibleReward in possibleRewards) {
             if (civInfo.gameInfo.difficulty in possibleReward.excludedDifficulties) continue
-            if ("Hidden when religion is disabled" in possibleReward.uniques && !civInfo.gameInfo.hasReligionEnabled()) continue
+            if (Constants.hiddenWithoutReligionUnique in possibleReward.uniques && !civInfo.gameInfo.hasReligionEnabled()) continue
             if ("Hidden after generating a Great Prophet" in possibleReward.uniques && civInfo.religionManager.greatProphetsEarned > 0) continue
             if (possibleReward.uniqueObjects.any { unique ->
                 unique.placeholderText == "Only available after [] turns" 

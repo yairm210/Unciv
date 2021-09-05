@@ -44,6 +44,7 @@
         "Grassland+Forest+Uranium": ["Grassland","Uranium","GrasslandForest"],
         "Grassland+Forest+Deer": ["Grassland","Deer","GrasslandForest"],
         "Grassland+Forest+Furs": ["Grassland","Furs","GrasslandForest"],
+	"Grassland+Forest+Truffles": ["Grassland","Truffles","GrasslandForest"],
         //Grassland+Hill
         "Grassland+Hill+Forest+Horses": ["Grassland","Hill","Horses","Forest"],
         "Grassland+Hill+Forest+Iron": ["Grassland","Hill","Iron","Forest"],
@@ -52,6 +53,7 @@
         "Grassland+Hill+Forest+Uranium": ["Grassland","Hill","Uranium","Forest"],
         "Grassland+Hill+Forest+Furs": ["Grassland","Hill","Furs","Forest"],
         "Grassland+Hill+Forest+Deer": ["Grassland","Hill","Deer","Forest"],
+	"Grassland+Hill+Forest+Truffles": ["Grassland","Hill","Truffles","Forest"],
         //Plains
         "Plains+Jungle+Oil": ["Plains","Oil","PlainsJungle"],
         "Plains+Forest+Horses": ["Plains","Horses","PlainsForest"],
@@ -61,6 +63,7 @@
         "Plains+Forest+Uranium": ["Plains","Uranium","PlainsForest"],
         "Plains+Forest+Deer": ["Plains","Deer","PlainsForest"],
         "Plains+Forest+Furs": ["Plains","Furs","PlainsForest"],
+	"Plains+Forest+Truffles": ["Plains","Truffles","PlainsForest"],
         "Plains+Wheat+Farm": ["Plains+Farm","Wheat"],
         //Plains+Hill
         "Plains+Hill+Forest+Horses": ["Plains","Hill","Horses","Forest"],
@@ -70,6 +73,7 @@
         "Plains+Hill+Forest+Uranium": ["Plains","Hill","Uranium","Forest"],
         "Plains+Hill+Forest+Furs": ["Plains","Hill","Furs","Forest"],
         "Plains+Hill+Forest+Deer": ["Plains","Hill","Deer","Forest"],
+	"Plains+Hill+Forest+Truffles": ["Plains","Hill","Truffles","Forest"],
         //Tundra
         "Tundra+Jungle+Oil": ["Tundra","Oil","TundraForest"],
         "Tundra+Forest+Horses": ["Tundra","Horses","TundraForest"],

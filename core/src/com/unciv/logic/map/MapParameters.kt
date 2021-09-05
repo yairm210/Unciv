@@ -57,6 +57,13 @@ class MapSizeNew {
         this.radius = getEquivalentHexagonalRadius(width, height)
     }
 
+    fun clone() = MapSizeNew().also { 
+        it.name = name
+        it.radius = radius
+        it.width = width
+        it.height = height
+    }
+
     /** Check custom dimensions, fix if too extreme
      * @param worldWrap whether world wrap is on
      * @return null if size was acceptable, otherwise untranslated reason message
@@ -92,6 +99,9 @@ class MapSizeNew {
         // tell the caller that map dimensions have changed and why
         return message
     }
+
+    // For debugging and MapGenerator console output
+    override fun toString() = if (name == Constants.custom) "${width}x${height}" else name
 }
 
 object MapShape {
@@ -125,7 +135,7 @@ class MapParameters {
     var noNaturalWonders = false
     var worldWrap = false
 
-    /** This is used mainly for the map editor, so you can continue editing a map under the ame ruleset you started with */
+    /** This is used mainly for the map editor, so you can continue editing a map under the same ruleset you started with */
     var mods = LinkedHashSet<String>()
 
     var seed: Long = System.currentTimeMillis()
@@ -137,6 +147,26 @@ class MapParameters {
     var rareFeaturesRichness = 0.05f
     var resourceRichness = 0.1f
     var waterThreshold = 0f
+
+    fun clone() = MapParameters().also {
+        it.name = name
+        it.type = type
+        it.shape = shape
+        it.mapSize = mapSize.clone()
+        it.noRuins = noRuins
+        it.noNaturalWonders = noNaturalWonders
+        it.worldWrap = worldWrap
+        it.mods = LinkedHashSet(mods)
+        it.seed = seed
+        it.tilesPerBiomeArea = tilesPerBiomeArea
+        it.maxCoastExtension = maxCoastExtension
+        it.elevationExponent = elevationExponent
+        it.temperatureExtremeness = temperatureExtremeness
+        it.vegetationRichness = vegetationRichness
+        it.rareFeaturesRichness = rareFeaturesRichness
+        it.resourceRichness = resourceRichness
+        it.waterThreshold = waterThreshold
+    }
 
     fun reseed() {
         seed = System.currentTimeMillis()
@@ -153,4 +183,16 @@ class MapParameters {
         resourceRichness = 0.1f
         waterThreshold = 0f
     }
+
+    // For debugging and MapGenerator console output
+    override fun toString() = sequence {
+        if (name.isNotEmpty()) yield("\"$name\" ")
+        yield("($mapSize ")
+        if (worldWrap) yield("wrapped ")
+        yield(shape)
+        if (name.isEmpty()) return@sequence
+        yield(" $type, Seed $seed, ")
+        yield("$elevationExponent/$temperatureExtremeness/$resourceRichness/$vegetationRichness/")
+        yield("$rareFeaturesRichness/$maxCoastExtension/$tilesPerBiomeArea/$waterThreshold")
+    }.joinToString("", postfix = ")")
 }

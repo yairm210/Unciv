@@ -8,6 +8,7 @@ import com.unciv.models.ruleset.UniqueMap
 import com.unciv.models.ruleset.UniqueTriggerActivation
 import com.unciv.models.ruleset.tech.Technology
 import com.unciv.models.ruleset.unit.BaseUnit
+import com.unciv.ui.utils.toPercent
 import com.unciv.ui.utils.withItem
 import java.util.*
 import kotlin.collections.ArrayList
@@ -163,7 +164,7 @@ class TechManager {
         civInfo.cities.forEach { it ->
             val totalBaseScience = it.cityStats.baseStatList.values.map { it.science }.sum()
             val totalBonusPercents = it.cityStats.statPercentBonusList.filter { it.key != "Policies" }.values.map { it.science }.sum()
-            allCitiesScience += totalBaseScience * (1 + totalBonusPercents / 100)
+            allCitiesScience += totalBaseScience * totalBonusPercents.toPercent()
         }
         scienceOfLast8Turns[civInfo.gameInfo.turns % 8] = allCitiesScience.toInt()
     }

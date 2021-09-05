@@ -9,7 +9,6 @@ import com.unciv.logic.civilization.*
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
 import com.unciv.models.Religion
-import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.metadata.GameParameters
 import com.unciv.models.ruleset.Difficulty
 import com.unciv.models.ruleset.Ruleset
@@ -83,7 +82,17 @@ class GameInfo {
     fun getPlayerToViewAs(): CivilizationInfo {
         if (!gameParameters.isOnlineMultiplayer) return currentPlayerCiv // non-online, play as human player
         val userId = UncivGame.Current.settings.userId
-        if (civilizations.any { it.playerId == userId }) return civilizations.first { it.playerId == userId }
+
+        // Iterating on all civs, starting from the the current player, gives us the one that will have the next turn
+        // This allows multiple civs from the same UserID
+        if (civilizations.any { it.playerId == userId }) {
+            var civIndex = civilizations.map { it.civName }.indexOf(currentPlayer)
+            while (true) {
+                val civToCheck = civilizations[civIndex % civilizations.size]
+                if (civToCheck.playerId == userId) return civToCheck
+                civIndex++
+            }
+        }
         else return getBarbarianCivilization()// you aren't anyone. How did you even get this game? Can you spectate?
     }
 
@@ -91,7 +100,7 @@ class GameInfo {
     fun getCurrentPlayerCivilization() = currentPlayerCiv
     fun getBarbarianCivilization() = getCivilization(Constants.barbarians)
     fun getDifficulty() = difficultyObject
-    fun getCities() = civilizations.flatMap { it.cities }
+    fun getCities() = civilizations.asSequence().flatMap { it.cities }
     fun getAliveCityStates() = civilizations.filter { it.isAlive() && it.isCityState() }
     fun getAliveMajorCivs() = civilizations.filter { it.isAlive() && it.isMajorCiv() }
     //endregion
@@ -160,7 +169,7 @@ class GameInfo {
                     it.militaryUnit != null && it.militaryUnit!!.civInfo != thisPlayer
                             && thisPlayer.isAtWarWith(it.militaryUnit!!.civInfo)
                             && (it.getOwner() == thisPlayer || it.neighbors.any { neighbor -> neighbor.getOwner() == thisPlayer }
-                            && (!it.militaryUnit!!.isInvisible() || viewableInvisibleTiles.contains(it.position)))
+                            && (!it.militaryUnit!!.isInvisible(thisPlayer) || viewableInvisibleTiles.contains(it.position)))
                 }
 
         // enemy units ON our territory
@@ -277,36 +286,26 @@ class GameInfo {
         if (missingMods.isNotEmpty()) {
             throw UncivShowableException("Missing mods: [$missingMods]")
         }
-        
-        // compatibility code translating changed tech name "Railroad" - to be deprecated soon
-        val (oldTechName, newTechName) = "Railroad" to "Railroads"
-        if (ruleSet.technologies[oldTechName] == null && ruleSet.technologies[newTechName] != null) {
-            civilizations.forEach {
-                it.tech.replaceUpdatedTechName(oldTechName, newTechName)
-            }
-        }
 
         removeMissingModReferences()
 
         for (baseUnit in ruleSet.units.values)
             baseUnit.ruleset = ruleSet
 
+        // This needs to go before tileMap.setTransients, as units need to access 
+        // the nation of their civilization when setting transients
+        for (civInfo in civilizations) civInfo.gameInfo = this
+        for (civInfo in civilizations) civInfo.setNationTransient()
+        
         tileMap.setTransients(ruleSet)
 
         if (currentPlayer == "") currentPlayer = civilizations.first { it.isPlayerCivilization() }.civName
         currentPlayerCiv = getCivilization(currentPlayer)
 
-        // this is separated into 2 loops because when we activate updateVisibleTiles in civ.setTransients,
-        //  we try to find new civs, and we check if civ is barbarian, which we can't know unless the gameInfo is already set.
-        for (civInfo in civilizations) civInfo.gameInfo = this
-
         difficultyObject = ruleSet.difficulties[difficulty]!!
         
         for (religion in religions.values) religion.setTransients(this)
 
-        // This doesn't HAVE to go here, but why not.
-
-        for (civInfo in civilizations) civInfo.setNationTransient()
         for (civInfo in civilizations) civInfo.setTransients()
         for (civInfo in civilizations) civInfo.updateSightAndResources()
 
@@ -333,13 +332,6 @@ class GameInfo {
                 cityInfo.cityStats.update()
             }
 
-            if(!civInfo.greatPeople.greatPersonPoints.isEmpty()) {
-                civInfo.greatPeople.greatPersonPointsCounter.add(
-                    GreatPersonManager.statsToGreatPersonCounter(civInfo.greatPeople.greatPersonPoints)
-                )
-                civInfo.greatPeople.greatPersonPoints.clear()
-            }
-
             if (civInfo.hasEverOwnedOriginalCapital == null) {
                 civInfo.hasEverOwnedOriginalCapital = civInfo.cities.any { it.isOriginalCapital }
             }
@@ -355,8 +347,7 @@ class GameInfo {
                 tile.terrainFeatures.remove(terrainFeature)
             if (tile.resource != null && !ruleSet.tileResources.containsKey(tile.resource!!))
                 tile.resource = null
-            if (tile.improvement != null && !ruleSet.tileImprovements.containsKey(tile.improvement!!)
-                    && !tile.improvement!!.startsWith("StartingLocation ")) // To not remove the starting locations in GameStarter.startNewGame()
+            if (tile.improvement != null && !ruleSet.tileImprovements.containsKey(tile.improvement!!))
                 tile.improvement = null
 
             for (unit in tile.getUnits()) {
@@ -394,14 +385,6 @@ class GameInfo {
             for (tech in civinfo.tech.techsResearched.toList())
                 if (!ruleSet.technologies.containsKey(tech))
                     civinfo.tech.techsResearched.remove(tech)
-            for (policy in civinfo.policies.adoptedPolicies.toList())
-                // So these two policies are deprecated since 3.14.17
-                // However, we still need to convert save files that have those to valid save files
-                // The easiest way to do this, is just to allow them here, and filter them out in
-                // the policyManager class.
-                // Yes, this is ugly, but it should be temporary, and it works.
-                if (!ruleSet.policies.containsKey(policy) && !(policy == "Entrepreneurship" || policy == "Patronage"))
-                    civinfo.policies.adoptedPolicies.remove(policy)
         }
     }
 

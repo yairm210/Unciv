@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.Touchable
+import com.badlogic.gdx.scenes.scene2d.ui.Cell
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.utils.Align
@@ -14,28 +15,48 @@ import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
 import com.unciv.models.translations.tr
 import com.unciv.ui.utils.*
+import com.unciv.ui.utils.UncivTooltip.Companion.addTooltip
 import kotlin.concurrent.thread
 import kotlin.math.max
+import kotlin.math.min
 import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 
-class CityConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScreen.skin) {
+/**
+ * Manager to hold and coordinate two widgets for the city screen left side:
+ * - Construction queue with switch to [ConstructionInfoTable] button and the enqueue / buy buttons.
+ *   The queue is scrollable, limited to one third of the stage height.
+ * - Available constructions display, scrolling, grouped with expanders and therefore of dynamic height.
+ */
+class CityConstructionsTable(private val cityScreen: CityScreen) {
     /* -1 = Nothing, >= 0 queue entry (0 = current construction) */
     private var selectedQueueEntry = -1 // None
-
-    private val showCityInfoTableButton: TextButton
-    private val constructionsQueueScrollPane: ScrollPane
-    private val availableConstructionsScrollPane: ScrollPane
-
-    private val constructionsQueueTable = Table()
-    private val availableConstructionsTable = Table()
-    private val buttons = Table()
-    private val pad = 10f
-
+    private var preferredBuyStat = Stat.Gold  // Used for keyboard buy
     var improvementBuildingToConstruct: Building? = null
 
+    private val upperTable = Table(CameraStageBaseScreen.skin)
+    private val showCityInfoTableButton = "Show stats drilldown".toTextButton()
+    private val constructionsQueueScrollPane: ScrollPane
+    private val constructionsQueueTable = Table()
+    private val buyButtonsTable = Table()
+
+    private val lowerTable = Table()
+    private val availableConstructionsScrollPane: ScrollPane
+    private val availableConstructionsTable = Table()
+    private val lowerTableScrollCell: Cell<ScrollPane>
+
+    private val pad = 10f
+    private val posFromEdge = CityScreen.posFromEdge
+    private val stageHeight = cityScreen.stage.height
+
+    /** Gets or sets visibility of [both widgets][CityConstructionsTable] */
+    var isVisible: Boolean
+        get() = upperTable.isVisible
+        set(value) {
+            upperTable.isVisible = value
+            lowerTable.isVisible = value
+        }
 
     init {
-        showCityInfoTableButton = "Show stats drilldown".toTextButton()
         showCityInfoTableButton.onClick {
             cityScreen.showConstructionsTable = false
             cityScreen.update()
@@ -43,33 +64,52 @@ class CityConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBase
 
         constructionsQueueScrollPane = ScrollPane(constructionsQueueTable.addBorder(2f, Color.WHITE))
         constructionsQueueScrollPane.setOverscroll(false, false)
+        constructionsQueueTable.background = ImageGetter.getBackground(Color.BLACK)
+
+        upperTable.defaults().left().top()
+        upperTable.add(showCityInfoTableButton).padLeft(pad).padBottom(pad).row()
+        upperTable.add(constructionsQueueScrollPane)
+            .maxHeight(stageHeight / 3 - 10f)
+            .padBottom(pad).row()
+        upperTable.add(buyButtonsTable).padBottom(pad).row()
+
         availableConstructionsScrollPane = ScrollPane(availableConstructionsTable.addBorder(2f, Color.WHITE))
         availableConstructionsScrollPane.setOverscroll(false, false)
-
-        constructionsQueueTable.background = ImageGetter.getBackground(Color.BLACK)
         availableConstructionsTable.background = ImageGetter.getBackground(Color.BLACK)
+        lowerTableScrollCell = lowerTable.add(availableConstructionsScrollPane).bottom()
+        lowerTable.row()
+    }
 
-        add(showCityInfoTableButton).left().padLeft(pad).padBottom(pad).row()
-        add(constructionsQueueScrollPane).left().padBottom(pad).row()
-        add().expandY().row()  // allow the bottom() below to open up the unneeded space 
-        add(buttons).left().bottom().padBottom(pad).row()
-        add(availableConstructionsScrollPane).left().bottom().row()
+    /** Forces layout calculation and returns the upper Table's (construction queue) width */
+    fun getUpperWidth() = upperTable.packIfNeeded().width
+    /** Forces layout calculation and returns the lower Table's (available constructions) width
+     *  - or - the upper Table's width, whichever is greater (in case the former only contains "Loading...")
+     */
+    fun getLowerWidth() = max(lowerTable.packIfNeeded().width, getUpperWidth())  // 
+
+    fun addActorsToStage() {
+        cityScreen.stage.addActor(upperTable)
+        cityScreen.stage.addActor(lowerTable)
+        lowerTable.setPosition(posFromEdge, posFromEdge, Align.bottomLeft)
     }
 
     fun update(selectedConstruction: IConstruction?) {
         updateButtons(selectedConstruction)
         updateConstructionQueue()
-        pack() // Need to pack before computing space left for bottom panel
+        upperTable.pack()
+        // This should work when set once only in addActorsToStage, but it doesn't (table invisible - why?)
+        upperTable.setPosition(posFromEdge, stageHeight - posFromEdge, Align.topLeft)
+        
         updateAvailableConstructions()
-        pack()
+        lowerTableScrollCell.maxHeight(stageHeight - upperTable.height - 2 * posFromEdge)
     }
 
     private fun updateButtons(construction: IConstruction?) {
-        buttons.clear()
-        buttons.add(getQueueButton(construction)).padRight(5f)
+        buyButtonsTable.clear()
+        buyButtonsTable.add(getQueueButton(construction)).padRight(5f)
         if (construction != null && construction !is PerpetualConstruction)
             for (button in getBuyButtons(construction as INonPerpetualConstruction))
-                buttons.add(button).padRight(5f)
+                buyButtonsTable.add(button).padRight(5f)
     }
 
     private fun updateConstructionQueue() {
@@ -111,7 +151,6 @@ class CityConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBase
         constructionsQueueScrollPane.layout()
         constructionsQueueScrollPane.scrollY = queueScrollY
         constructionsQueueScrollPane.updateVisualScroll()
-        getCell(constructionsQueueScrollPane).maxHeight(stage.height / 3 - 10f)
     }
 
     private fun getConstructionButtonDTOs(): ArrayList<ConstructionButtonDTO> {
@@ -120,58 +159,59 @@ class CityConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBase
         val city = cityScreen.city
         val cityConstructions = city.cityConstructions
 
-        for (unit in city.getRuleset().units.values.filter { it.shouldBeDisplayed(cityConstructions) }) {
-            val useStoredProduction = !cityConstructions.isBeingConstructedOrEnqueued(unit.name)
-            var buttonText = unit.name.tr() + cityConstructions.getTurnsToConstructionString(unit.name, useStoredProduction)
-            for ((resource, amount) in unit.getResourceRequirements()) {
-                if (amount == 1) buttonText += "\n" + "Consumes 1 [$resource]".tr()
-                else buttonText += "\n" + "Consumes [$amount] [$resource]".tr()
+        val constructionsSequence = city.getRuleset().units.values.asSequence() +
+                city.getRuleset().buildings.values.asSequence()
+        for (entry in constructionsSequence.filter { it.shouldBeDisplayed(cityConstructions) }) {
+            val useStoredProduction = entry is Building || !cityConstructions.isBeingConstructedOrEnqueued(entry.name)
+            var buttonText = entry.name.tr() + cityConstructions.getTurnsToConstructionString(entry.name, useStoredProduction)
+            for ((resource, amount) in entry.getResourceRequirements()) {
+                buttonText += "\n" + (
+                    if (amount == 1) "Consumes 1 [$resource]"
+                    else "Consumes [$amount] [$resource]"
+                ).tr()
             }
 
-            constructionButtonDTOList.add(ConstructionButtonDTO(unit, buttonText,
-                    unit.getRejectionReason(cityConstructions)))
-        }
-
-
-        for (building in city.getRuleset().buildings.values.filter { it.shouldBeDisplayed(cityConstructions) }) {
-            var buttonText = building.name.tr() + cityConstructions.getTurnsToConstructionString(building.name)
-            for ((resource, amount) in building.getResourceRequirements()) {
-                if (amount == 1) buttonText += "\n" + "Consumes 1 [$resource]".tr()
-                else buttonText += "\n" + "Consumes [$amount] [$resource]".tr()
-            }
-
-            constructionButtonDTOList.add(ConstructionButtonDTO(building, buttonText,
-                    building.getRejectionReason(cityConstructions)))
+            constructionButtonDTOList.add(
+                ConstructionButtonDTO(
+                    entry, 
+                    buttonText,
+                    entry.getRejectionReasons(cityConstructions).getMostImportantRejectionReason()
+                )
+            )
         }
 
         for (specialConstruction in PerpetualConstruction.perpetualConstructionsMap.values
-                .filter { it.shouldBeDisplayed(cityConstructions) }) {
-            constructionButtonDTOList.add(ConstructionButtonDTO(specialConstruction,
-                    "Produce [${specialConstruction.name}]".tr()
-                            + specialConstruction.getProductionTooltip(city)))
+                .filter { it.shouldBeDisplayed(cityConstructions) }
+        ) {
+            constructionButtonDTOList.add(
+                ConstructionButtonDTO(
+                    specialConstruction,
+                    "Produce [${specialConstruction.name}]".tr() + specialConstruction.getProductionTooltip(city)
+                )
+            )
         }
 
         return constructionButtonDTOList
     }
 
     private fun updateAvailableConstructions() {
-        val constrScrollY = availableConstructionsScrollPane.scrollY
+        val constructionsScrollY = availableConstructionsScrollPane.scrollY
 
         if (!availableConstructionsTable.hasChildren()) { //
             availableConstructionsTable.add("Loading...".toLabel()).pad(10f)
         }
-        val units = ArrayList<Table>()
-        val buildableWonders = ArrayList<Table>()
-        val buildableNationalWonders = ArrayList<Table>()
-        val buildableBuildings = ArrayList<Table>()
-        val specialConstructions = ArrayList<Table>()
 
         thread {
             // Since this can be a heavy operation and leads to many ANRs on older phones we put the metadata-gathering in another thread.
             val constructionButtonDTOList = getConstructionButtonDTOs()
             Gdx.app.postRunnable {
-                availableConstructionsTable.clear()
-                var maxWidth = constructionsQueueTable.width
+                val units = ArrayList<Table>()
+                val buildableWonders = ArrayList<Table>()
+                val buildableNationalWonders = ArrayList<Table>()
+                val buildableBuildings = ArrayList<Table>()
+                val specialConstructions = ArrayList<Table>()
+
+                var maxButtonWidth = constructionsQueueTable.width
                 for (dto in constructionButtonDTOList) {
                     val constructionButton = getConstructionButton(dto)
                     when (dto.construction) {
@@ -185,24 +225,27 @@ class CityConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBase
                         }
                         is PerpetualConstruction -> specialConstructions.add(constructionButton)
                     }
-                    if (constructionButton.needsLayout()) constructionButton.pack()
-                    maxWidth = max(maxWidth, constructionButton.width)
+                    maxButtonWidth = max(maxButtonWidth, constructionButton.packIfNeeded().width)
                 }
 
-                availableConstructionsTable.addCategory("Units", units, maxWidth)
-                availableConstructionsTable.addCategory("Wonders", buildableWonders, maxWidth)
-                availableConstructionsTable.addCategory("National Wonders", buildableNationalWonders, maxWidth)
-                availableConstructionsTable.addCategory("Buildings", buildableBuildings, maxWidth)
-                availableConstructionsTable.addCategory("Other", specialConstructions, maxWidth)
+                availableConstructionsTable.apply { 
+                    clear()
+                    defaults().left().bottom()
+                    addCategory("Units", units, maxButtonWidth)
+                    addCategory("Wonders", buildableWonders, maxButtonWidth)
+                    addCategory("National Wonders", buildableNationalWonders, maxButtonWidth)
+                    addCategory("Buildings", buildableBuildings, maxButtonWidth)
+                    addCategory("Other", specialConstructions, maxButtonWidth)
+                    pack()
+                }
 
-                availableConstructionsScrollPane.layout()
-                availableConstructionsScrollPane.scrollY = constrScrollY
-                availableConstructionsScrollPane.updateVisualScroll()
-                val usedHeight = showCityInfoTableButton.height + constructionsQueueScrollPane.height + buttons.height + 3f * pad + 10f
-                getCell(availableConstructionsScrollPane).maxHeight(stage.height - usedHeight)
-                pack()
-
-                setPosition(5f, stage.height - 5f, Align.topLeft)
+                availableConstructionsScrollPane.apply { 
+                    setSize(maxButtonWidth, min(availableConstructionsTable.prefHeight, lowerTableScrollCell.maxHeight))
+                    layout()
+                    scrollY = constructionsScrollY
+                    updateVisualScroll()
+                }
+                lowerTable.pack()
             }
         }
     }
@@ -226,9 +269,8 @@ class CityConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBase
 
         val constructionResource = cityConstructions.getConstruction(constructionName).getResourceRequirements()
         for ((resource, amount) in constructionResource)
-            if (amount == 1) text += "\n" + "Consumes 1 [$resource]".tr()
-            else text += "\n" + "Consumes [$amount] [$resource]".tr()
-
+            text += if (amount == 1) "\n" + "Consumes 1 [$resource]".tr()
+                else "\n" + "Consumes [$amount] [$resource]".tr()
 
         table.defaults().pad(2f).minWidth(40f)
         if (isFirstConstructionOfItsKind) table.add(getProgressBar(constructionName)).minWidth(5f)
@@ -254,7 +296,7 @@ class CityConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBase
         return table
     }
 
-    fun getProgressBar(constructionName: String): Group {
+    private fun getProgressBar(constructionName: String): Group {
         val cityConstructions = cityScreen.city.cityConstructions
         val construction = cityConstructions.getConstruction(constructionName)
         if (construction is PerpetualConstruction) return Table()
@@ -266,7 +308,7 @@ class CityConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBase
                 Color.BROWN.cpy().lerp(Color.WHITE, 0.5f), Color.WHITE)
     }
 
-    class ConstructionButtonDTO(val construction: IConstruction, val buttonText: String, val rejectionReason: String = "")
+    private class ConstructionButtonDTO(val construction: IConstruction, val buttonText: String, val rejectionReason: String? = null)
 
     private fun getConstructionButton(constructionButtonDTO: ConstructionButtonDTO): Table {
         val construction = constructionButtonDTO.construction
@@ -294,7 +336,7 @@ class CityConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBase
         pickConstructionButton.row()
 
         // no rejection reason means we can build it!
-        if (constructionButtonDTO.rejectionReason != "") {
+        if (constructionButtonDTO.rejectionReason != null) {
             pickConstructionButton.color = Color.GRAY
             pickConstructionButton.add(constructionButtonDTO.rejectionReason.toLabel(Color.RED).apply { wrap = true })
                     .colspan(pickConstructionButton.columns).fillX().left().padTop(2f)
@@ -311,7 +353,7 @@ class CityConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBase
 
     private fun isSelectedQueueEntry(): Boolean = selectedQueueEntry >= 0
 
-    fun cannotAddConstructionToQueue(construction: IConstruction, city: CityInfo, cityConstructions: CityConstructions): Boolean {
+    private fun cannotAddConstructionToQueue(construction: IConstruction, city: CityInfo, cityConstructions: CityConstructions): Boolean {
         return cityConstructions.isQueueFull()
                 || !cityConstructions.getConstruction(construction.name).isBuildable(cityConstructions)
                 || !cityScreen.canChangeState
@@ -352,7 +394,7 @@ class CityConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBase
         return button
     }
 
-    fun addConstructionToQueue(construction: IConstruction, cityConstructions: CityConstructions) {
+    private fun addConstructionToQueue(construction: IConstruction, cityConstructions: CityConstructions) {
         if (construction is Building && construction.uniqueObjects.any { it.placeholderText == "Creates a [] improvement on a specific tile" }) {
             cityScreen.selectedTile
             improvementBuildingToConstruct = construction
@@ -366,7 +408,7 @@ class CityConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBase
         cityScreen.game.settings.addCompletedTutorialTask("Pick construction")
     }
 
-    fun getConstructionSound(construction: IConstruction): UncivSound {
+    private fun getConstructionSound(construction: IConstruction): UncivSound {
         return when(construction) {
             is Building -> UncivSound.Construction
             is BaseUnit -> UncivSound.Promote
@@ -376,7 +418,90 @@ class CityConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBase
         }
     }
 
-    fun purchaseConstruction(construction: INonPerpetualConstruction, stat: Stat = Stat.Gold) {
+    private fun getBuyButtons(construction: INonPerpetualConstruction?): List<TextButton> {
+        return Stat.statsUsableToBuy.mapNotNull { getBuyButton(construction, it) }
+    }
+
+    private fun getBuyButton(construction: INonPerpetualConstruction?, stat: Stat = Stat.Gold): TextButton? {
+        if (stat !in Stat.statsUsableToBuy || construction == null)
+            return null
+
+        val city = cityScreen.city
+        val button = "".toTextButton()
+
+        if (!isConstructionPurchaseShown(construction, stat)) {
+            // This can't ever be bought with the given currency.
+            // We want one disabled "buy" button without a price for "priceless" buildings such as wonders
+            // We don't want such a button when the construction can be bought using a different currency
+            if (stat != Stat.Gold || construction.canBePurchasedWithAnyStat(city))
+                return null
+            button.setText("Buy".tr())
+            button.disable()
+        } else {
+            val constructionBuyCost = construction.getStatBuyCost(city, stat)!!
+            button.setText("Buy".tr() + " " + constructionBuyCost + stat.character)
+
+            button.onClick {
+                button.disable()
+                askToBuyConstruction(construction, stat)
+            }
+            button.isEnabled = isConstructionPurchaseAllowed(construction, stat, constructionBuyCost)
+            button.addTooltip('B')  // The key binding is done in CityScreen constructor
+            preferredBuyStat = stat  // Not very intelligent, but the least common currency "wins"
+        }
+
+        button.labelCell.pad(5f)
+
+        return button
+    }
+    
+    /** Ask whether user wants to buy [construction] for [stat].
+     *
+     * Used from onClick and keyboard dispatch, thus only minimal parameters are passed,
+     * and it needs to do all checks and the sound as appropriate.
+     */
+    fun askToBuyConstruction(construction: INonPerpetualConstruction, stat: Stat = preferredBuyStat) {
+        if (!isConstructionPurchaseShown(construction, stat)) return
+        val city = cityScreen.city
+        val constructionBuyCost = construction.getStatBuyCost(city, stat)!!
+        if (!isConstructionPurchaseAllowed(construction, stat, constructionBuyCost)) return
+
+        cityScreen.closeAllPopups()
+
+        val purchasePrompt = "Currently you have [${city.getStatReserve(stat)}] [${stat.name}].".tr() + "\n\n" +
+                "Would you like to purchase [${construction.name}] for [$constructionBuyCost] [${stat.character}]?".tr()
+        YesNoPopup(
+            purchasePrompt,
+            action = { purchaseConstruction(construction, stat) },
+            screen = cityScreen,
+            restoreDefault = { cityScreen.update() }
+        ).open()
+    }
+
+    /** This tests whether the buy button should be _shown_ */
+    private fun isConstructionPurchaseShown(construction: INonPerpetualConstruction, stat: Stat): Boolean {
+        val city = cityScreen.city
+        return construction.canBePurchasedWithStat(city, stat)
+    }
+
+    /** This tests whether the buy button should be _enabled_ */
+    private fun isConstructionPurchaseAllowed(construction: INonPerpetualConstruction, stat: Stat, constructionBuyCost: Int): Boolean {
+        val city = cityScreen.city
+        return when {
+            city.isPuppet -> false
+            !cityScreen.canChangeState -> false
+            city.isInResistance() -> false
+            !construction.isPurchasable(city.cityConstructions) -> false    // checks via 'rejection reason'
+            construction is BaseUnit && !city.canPlaceNewUnit(construction) -> false
+            city.civInfo.gameInfo.gameParameters.godMode -> true
+            constructionBuyCost == 0 -> true
+            else -> city.getStatReserve(stat) >= constructionBuyCost
+        }
+}
+
+    // called only by askToBuyConstruction's Yes answer
+    private fun purchaseConstruction(construction: INonPerpetualConstruction, stat: Stat = Stat.Gold) {
+        Sounds.play(stat.purchaseSound)
         val city = cityScreen.city
         if (!city.cityConstructions.purchaseConstruction(construction.name, selectedQueueEntry, false, stat)) {
             Popup(cityScreen).apply {
@@ -386,60 +511,16 @@ class CityConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBase
             }
             return
         }
-        if (isSelectedQueueEntry()) {
+        if (isSelectedQueueEntry() || cityScreen.selectedConstruction?.isBuildable(city.cityConstructions) != true) {
             selectedQueueEntry = -1
             cityScreen.selectedConstruction = null
+            
+            // Allow buying next queued or auto-assigned construction right away
+            city.cityConstructions.chooseNextConstruction()
+            if (city.cityConstructions.currentConstructionFromQueue.isNotEmpty())
+                cityScreen.selectedConstruction = city.cityConstructions.getCurrentConstruction().takeIf { it is INonPerpetualConstruction }
         }
         cityScreen.update()
-    }
-    
-    private fun getBuyButtons(construction: INonPerpetualConstruction?): List<TextButton> {
-        return listOf(Stat.Gold, Stat.Faith, Stat.Culture, Stat.Science, Stat.Food)
-            .mapNotNull { getBuyButton(construction, it) }
-    }
-
-    private fun getBuyButton(construction: INonPerpetualConstruction?, stat: Stat = Stat.Gold): TextButton? {
-        if (stat !in listOf(Stat.Gold, Stat.Faith, Stat.Culture, Stat.Science, Stat.Food))
-            return null
-        val city = cityScreen.city
-
-        val button = "".toTextButton()
-
-        if (construction == null || construction is PerpetualConstruction ||
-                (!construction.canBePurchasedWithStat(city, stat) && !city.civInfo.gameInfo.gameParameters.godMode)) {
-            // fully disable a "buy" button only for "priceless" buildings such as wonders
-            // for all other cases, the price should be displayed
-            if (stat == Stat.Gold) {
-                button.setText("Buy".tr())
-                button.disable()
-            }
-            else return null
-        } else {
-            val constructionBuyCost = construction.getStatBuyCost(city, stat)!!
-            button.setText("Buy".tr() + " " + constructionBuyCost)
-            button.add(ImageGetter.getStatIcon(stat.name)).size(20f).padBottom(2f)
-
-            button.onClick(stat.purchaseSound) {
-                button.disable()
-                cityScreen.closeAllPopups()
-                
-                val purchasePrompt = "Currently you have [${city.getStatReserve(stat)}] [${stat.name}].".tr() + "\n" +
-                        "Would you like to purchase [${construction.name}] for [$constructionBuyCost] [${stat.name}]?".tr()
-                YesNoPopup(purchasePrompt, { purchaseConstruction(construction, stat) }, cityScreen, { cityScreen.update() }).open()
-            }
-            
-            if (!cityScreen.canChangeState
-                || !construction.isPurchasable(city.cityConstructions)
-                || city.isPuppet 
-                || city.isInResistance()
-                || !city.canPurchase(construction)
-                || (constructionBuyCost > city.getStatReserve(stat) && !city.civInfo.gameInfo.gameParameters.godMode)
-            ) button.disable()
-        }
-
-        button.labelCell.pad(5f)
-
-        return button
     }
     
     private fun getRaisePriorityButton(constructionQueueIndex: Int, name: String, city: CityInfo): Table {
@@ -498,11 +579,22 @@ class CityConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBase
                 .pad(4f)
     }
 
+    private fun resizeAvailableConstructionsScrollPane() {
+        availableConstructionsScrollPane.height = min(availableConstructionsTable.prefHeight, lowerTableScrollCell.maxHeight)
+        lowerTable.pack()
+    }
+
     private fun Table.addCategory(title: String, list: ArrayList<Table>, prefWidth: Float) {
         if (list.isEmpty()) return
 
         if (rows > 0) addSeparator()
-        val expander = ExpanderTab(title, defaultPad = 0f, expanderWidth = prefWidth) {
+        val expander = ExpanderTab(
+            title,
+            defaultPad = 0f,
+            expanderWidth = prefWidth,
+            persistenceID = "CityConstruction.$title",
+            onChange = { resizeAvailableConstructionsScrollPane() }
+        ) {
             for (table in list) {
                 it.addSeparator(colSpan = 1)
                 it.add(table).left().row()

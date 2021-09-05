@@ -16,6 +16,18 @@ Tile icons for the "ThorfMaps tileset belong to Thorfinn Tait and are licensed u
 Unless otherwise specified, all the following are from [the Noun Project](https://thenounproject.com) licenced under either Creative Commons or Public Domain
 
 
+## Stat icons
+
+* [Gear](https://thenounproject.com/term/gear/29368) by Alex Bickov for Production
+* [Apple](https://thenounproject.com/term/apple/1139396) by Pedro Gonçalves for Food
+* [gold](https://thenounproject.com/term/gold/25438) by Eliricon for Gold
+* [Beaker](https://thenounproject.com/term/beaker/621510) by Delwar Hossain for Science
+* [Music](https://thenounproject.com/term/music/5611/) by Naomi Atkinson for Culture
+* [Smiley](https://thenounproject.com/term/smiley/1024026) by Alexander Skowalsky for Happiness
+* [Dove](https://thenounproject.com/term/dove/1344084) by Sandra for Faith
+* [User](https://thenounproject.com/term/user/38217) by Stéphanie Rusch for Population
+* [Unhappy](https://thenounproject.com/term/unhappy/116793) By Daryl Vandermont for Malcontent
+
 ## Units
 
 ### Ancient Era
@@ -87,6 +99,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Bayonet](https://thenounproject.com/term/bayonet/3101681/) By food lover for Carolean
 * [Horse](https://thenounproject.com/search/?q=Horse&i=1023745) By Bakunetso Kaito for Cavalry
 * [horse racing](https://thenounproject.com/antimso/uploads/?i=2427932) By Sergio Morozov for Cossack
+* [Marching Band](https://thenounproject.com/term/marching-band/871426/) by Darrin Loeliger, US for Hussar
 * [Artillery](https://thenounproject.com/search/?q=Artillery&i=1165261) By Creative Mania
 * [Ship](https://thenounproject.com/term/ship/1594793/) By Aisyah for Ironclad
 
@@ -133,6 +146,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Dove](https://thenounproject.com/search/?q=dove&i=1344088) by sandra for Great Prophet
 * [General](https://thenounproject.com/search/?q=general&i=933566) By anbileru adaleru for Great General
 * [Religion](https://thenounproject.com/search/?q=preach&i=53064) by Bruno Gätjens González adapted for Missionary
+* [invisibility cloak ](https://thenounproject.com/term/invisibility-cloak/1419648/) by Locad for Inquisitor
 
 ## Resources
 
@@ -160,13 +174,17 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Joss Stick](https://thenounproject.com/search/?q=incense&i=583033) By Hea Poh Lin for Incense
 * [Pottery](https://thenounproject.com/term/pottery/2317144/) By Laymik, UA for Porcelain
 * [Jewelry](https://thenounproject.com/term/jewelry/3688098/) By Shocho, IN
+* [Lemons](https://thenounproject.com/search/?q=lemon&i=4147611) By sachin modgekar, IN for Citrus
+* [Pipes](https://thenounproject.com/search/?q=pipes&i=1637792) By Nibras@design for Copper
+* [Crab](https://thenounproject.com/search/?q=crab&i=246420) By YuguDesign
+* [Truffle](https://thenounproject.com/search/?q=Truffles&i=1576609) By parkjisun
+* [Salt](https://thenounproject.com/search/?q=salt&i=3614173) By HAMEL KHALED, DZ 
 
 ## Improvements
 
 * [Woodcutting axe](https://thenounproject.com/term/woodcutting-axe/1060560/) By Chanut is Industries for Lumber Mill
 * [Monument](https://thenounproject.com/term/monument/1175928/) By Setyo Ari Wibowo for Landmark
 * [Farm](https://thenounproject.com/term/farm/25362/) By Bonnie Beach
-* [Unhappy](https://thenounproject.com/term/unhappy/116793/) By Daryl Vandermont (doesn't belong here)
 * [Bank](https://thenounproject.com/term/bank/1648569/) By Scott Dunlap for Customs House
 * [Academy](https://thenounproject.com/term/academy/1689703/) By CJS
 * [Factory](https://thenounproject.com/term/factory/1049531/) By RULI for Manufactory
@@ -231,7 +249,6 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Wat Arun Ratchawararam Ratchawaramahawihan](https://thenounproject.com/term/wat-arun-ratchawararam-ratchawaramahawihan/320664/) By József Balázs-Hegedüs for Wat
 * [College](https://thenounproject.com/term/college/1203703/) By Vectors Market for National College
 * [Chichen Itza](https://thenounproject.com/term/chichen-itza/668065/) By Hea Poh Lin
-* [Christian Church](https://thenounproject.com/term/christian-church/1174183/) By Andrejs Kirma for Monastery
 * [Castle](https://thenounproject.com/search/?q=castle&i=390189) By Mint Shirt
 * [Red Fort](https://thenounproject.com/arunabh.jain.0fficial/collection/famous-indian-monuments/?i=2092466), [Gateway of India](https://thenounproject.com/arunabh.jain.0fficial/collection/famous-indian-monuments/?i=2092468) By Arunabh Jain, IN for Mughal Fort
 * [Angkor Wat](https://thenounproject.com/search/?q=angkor%20wat&i=2412873) By Phạm Thanh Lộc for Angkor Wat
@@ -247,6 +264,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Shield and Swords](https://thenounproject.com/term/shield-and-swords/1477527/) By Alina Oleynik for Armory
 * [Machu Picchu](https://thenounproject.com/browse/?i=1678226/) By [Chanut is Industries](https://thenounproject.com/chanut-is)
 * [Garden](https://thenounproject.com/search/?q=garden&i=1478380) By Bharat
+* [Mosque](https://thenounproject.com/search/?q=mosque&i=2458353) by yanti for Great Mosque of Djenne
 
 ### Renaissance Era
 
@@ -258,6 +276,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Tower of Pisa](https://thenounproject.com/search/?q=leaning%20tower%20of%20pisa&i=1002578) By Pedro Santos
 * [Himeji Castle](https://thenounproject.com/search/?q=himeji&i=1125277) By Chanut is Industries
 * [Windmill](https://thenounproject.com/term/windmill/1705107/) By corpus delicti
+* [Coffee](https://thenounproject.com/term/coffee/3954451/) by SURYANI, ID for Coffee House
 * [Taj Mahal](https://thenounproject.com/term/taj-mahal/1907755/) By Felipe Alvarado
 * [Observatory](https://thenounproject.com/term/observatory/1259/) By Nathan Driskell
 * [Opera House](https://thenounproject.com/term/opera-house/446672/) By Xinh Studio
@@ -312,6 +331,11 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 
 ### All Era's
 * [Illuminati](https://thenounproject.com/term/illuminati/1617812) by emilegraphics for the Utopia Project
+* [Christian Church](https://thenounproject.com/term/christian-church/1174183/) by Andrejs Kirma for Monastery
+* [cathedral](https://thenounproject.com/search/?q=Cathedral&i=4136407) by Pixel Bazaar for Cathedral
+* [Mosque](https://thenounproject.com/search/?q=mosque&i=1744106) by yanti for Mosque
+* [Pagoda](https://thenounproject.com/search/?q=pagoda&i=446665) by Xinh Studio for Pagoda 
+
 
 ## Social Policies
 
@@ -528,6 +552,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Sun symbol black](https://en.wikiquote.org/wiki/File:Sun_symbol_black.svg) by Eddo for The Huns
 * [Lion](https://thenounproject.com/search/?q=lion&i=76154) by Nikki Rodriguez for The Netherlands
 * [Three Crowns](https://thenounproject.com/search/?q=three+crowns&i=1155972) by Daniel Falk for Sweden
+* [Flag of Austria](https://thenounproject.com/term/flag-of-austria/3292053/) by Olena Panasovska, UA for Austria
 
 
 ## Promotions
@@ -563,6 +588,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [survival knife](https://thenounproject.com/search/?q=survival&i=2663392) by b faris for Survivalism
 
 ## Religions
+
 * [Lightning Bolt](https://thenounproject.com/search/?q=lightning+bolt&i=154820) by sian huxtable for Pantheon
 * [Christianity](https://thenounproject.com/search/?q=christianity&i=181) by Public Domain Nouns for Christianity
 * [Islam](https://thenounproject.com/search/?q=Islam&i=2431350) by Muhammed Riza for Islam
@@ -577,6 +603,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Zoroastrianism](https://thenounproject.com/search/?q=Zoroastrianism&i=238059) by Dabid J. Pascual for Zoroastrianism
 * [praying](https://thenounproject.com/term/praying/740809/) by parkjisun for Religion (Civilopedia concept entry)
 * [praying](https://thenounproject.com/term/praying/886367/) by Gan Khoon Lay for Follower
+* [Hero](https://thenounproject.com/term/preacher/195465/) by Andrew J. Young for Founder
 
 ## Others
 
@@ -603,7 +630,9 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [City](https://thenounproject.com/search/?q=city&i=1765370) By Muhajir ila Robbi in the Icon center
 * [Lock](https://thenounproject.com/search/?q=lock&i=3217613) by Vadim Solomakhin for locked tiles
 * [Hourglass](https://thenounproject.com/search/?q=hourglass&i=142268) by I Create Stuff for the 'Turn' icon
-* [Dove](https://thenounproject.com/search/?q=dove&i=1344084) by Sandra for Faith
+* [Shield](https://thenounproject.com/search/?q=shield&i=813568) by Gregor Cresnar for Religious Strength
+* [skill sword flame](https://thenounproject.com/term/skill-sword-flame/2360212/) by Maxicons) for Remove Heresy
+* [Pencil](https://thenounproject.com/search/?q=pencil&i=4195852) by Muhamad Aldi Maulana for Enter Text Prompt Button / Pencil
 
 ## Main menu
 
@@ -617,7 +646,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 
 # Sound credits
 
-Sounds are from FreeSound.org and are either Creative Commons or Public Domain
+Sounds are from FreeSound.org unless otherwise noted and are either Creative Commons or Public Domain unless otherwise noted
 
 * [Soft two-fingered snap](https://freesound.org/people/EathanMarkson/sounds/388958/) By EathanMarkson as 'click' for most clicks
 * [Pencil1](https://freesound.org/people/stijn/sounds/43673/) By stijn as 'paper' for opening and closing the tech picker
@@ -634,7 +663,7 @@ Sounds are from FreeSound.org and are either Creative Commons or Public Domain
 * [Slingshot fly by 2](https://freesound.org/people/saturdaysoundguy/sounds/394186/) by saturdaysoundguy as 'arrow' for arrow attacks
 * [Metal hit slide](https://freesound.org/people/orginaljun/sounds/149102/) by orginaljun as 'nonmetalhit' for pre-metal melee sounds
 * [klick_anlauf](https://freesound.org/people/jascha/sounds/16576/) By jascha as 'metalhit' for metal melee sounds
-* [Horse Neigh 2](https://freesound.org/people/GoodListener/sounds/322450/) By GoodListener as 'horse' for cavalry attack sounds
+* [Horse's whinny](https://freesound.org/people/Kubuzz/sounds/347036/) By Kubuzz as 'horse' for cavalry attack sounds
 * [machine gun 001 - loop](https://freesound.org/people/pgi/sounds/212602/) By pgi as 'machinegun' for machine gun attack sound
 * [uzzi_full_single](https://freesound.org/people/Deganoth/sounds/348685/) By Deganoth as 'shot' for bullet attacks
 * [Grenade Launcher 2](https://soundbible.com/2140-Grenade-Launcher-2.html) By Daniel Simon as city bombard sound (CC Attribution 3.0 license)
@@ -659,6 +688,8 @@ Sounds are from FreeSound.org and are either Creative Commons or Public Domain
     *    [Artillery Explosion (Close) (Mixed)](https://freesound.org/people/EFlexMusic/sounds/388528/) by EFlexMusic
 * [elephant 44](https://freesound.org/people/y89312/sounds/139875/) by y89312 for Naruesan's Elephant sound
 * Excerpt from [Missile Strike](https://freesound.org/people/BaDoink/sounds/570690/) by BaDoink for guided missile
+
+* Excerpt from [Campfire](https://www.soundjay.com/fire-sound-effects.html) by SoundJay for Fire & 'remove heresy' action of inquisitor
 
 # Music
 The following music is from https://filmmusic.io

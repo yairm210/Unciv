@@ -343,10 +343,16 @@ class QuestManager {
         val rewardInfluence = civInfo.gameInfo.ruleSet.quests[assignedQuest.questName]!!.influece
         val assignee = civInfo.gameInfo.getCivilization(assignedQuest.assignee)
 
-        civInfo.getDiplomacyManager(assignedQuest.assignee).influence += rewardInfluence
+        civInfo.getDiplomacyManager(assignedQuest.assignee).addInfluence(rewardInfluence)
         if (rewardInfluence > 0)
-            assignee.addNotification("[${civInfo.civName}] rewarded you with [${rewardInfluence.toInt()}] influence for completing the [${assignedQuest.questName}] quest.",
-                    civInfo.getCapital().location, civInfo.civName, "OtherIcons/Quest")
+            assignee.addNotification(
+                "[${civInfo.civName}] rewarded you with [${rewardInfluence.toInt()}] influence for completing the [${assignedQuest.questName}] quest.",
+                civInfo.getCapital().location, civInfo.civName, "OtherIcons/Quest"
+            )
+
+        // We may have received bonuses from city-state friend-ness or ally-ness
+        for (city in civInfo.cities)
+            city.cityStats.update()
     }
 
     /** Returns the score for the [assignedQuest] */

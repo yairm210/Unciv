@@ -13,7 +13,7 @@ class TradeLogic(val ourCivilization:CivilizationInfo, val otherCivilization: Ci
     val theirAvailableOffers = getAvailableOffers(otherCivilization, ourCivilization)
     val currentTrade = Trade()
 
-    fun getAvailableOffers(civInfo: CivilizationInfo, otherCivilization: CivilizationInfo): TradeOffersList {
+    private fun getAvailableOffers(civInfo: CivilizationInfo, otherCivilization: CivilizationInfo): TradeOffersList {
         val offers = TradeOffersList()
         if (civInfo.isCityState() && otherCivilization.isCityState()) return offers
         if (civInfo.isAtWarWith(otherCivilization))
@@ -43,12 +43,14 @@ class TradeLogic(val ourCivilization:CivilizationInfo, val otherCivilization: Ci
         }
 
         val otherCivsWeKnow = civInfo.getKnownCivs()
-                .filter { it.civName != otherCivilization.civName && it.isMajorCiv() && !it.isDefeated() }
-        val civsWeKnowAndTheyDont = otherCivsWeKnow
-                .filter { !otherCivilization.diplomacy.containsKey(it.civName) && !it.isDefeated() }
+            .filter { it.civName != otherCivilization.civName && it.isMajorCiv() && !it.isDefeated() }
 
-        for (thirdCiv in civsWeKnowAndTheyDont) {
-            offers.add(TradeOffer(thirdCiv.civName, TradeType.Introduction))
+        if (civInfo.gameInfo.ruleSet.modOptions.uniqueObjects.any{ it.placeholderText == ModOptionsConstants.tradeCivIntroductions }) {
+            val civsWeKnowAndTheyDont = otherCivsWeKnow
+                .filter { !otherCivilization.diplomacy.containsKey(it.civName) && !it.isDefeated() }
+            for (thirdCiv in civsWeKnowAndTheyDont) {
+                offers.add(TradeOffer(thirdCiv.civName, TradeType.Introduction))
+            }
         }
 
         if (!civInfo.isCityState() && !otherCivilization.isCityState()
@@ -91,7 +93,7 @@ class TradeLogic(val ourCivilization:CivilizationInfo, val otherCivilization: Ci
                     city.getCenterTile().getUnits().toList().forEach { it.movement.teleportToClosestMoveableTile() }
                     for (tile in city.getTiles()) {
                         for (unit in tile.getUnits().toList()) {
-                            if (!unit.civInfo.canEnterTiles(to)) unit.movement.teleportToClosestMoveableTile()
+                            if (!unit.civInfo.canPassThroughTiles(to)) unit.movement.teleportToClosestMoveableTile()
                         }
                     }
                     to.updateViewableTiles()
@@ -106,7 +108,6 @@ class TradeLogic(val ourCivilization:CivilizationInfo, val otherCivilization: Ci
                 }
                 if (offer.type == TradeType.Introduction)
                     to.makeCivilizationsMeet(to.gameInfo.getCivilization(offer.name))
-
                 if (offer.type == TradeType.WarDeclaration) {
                     val nameOfCivToDeclareWarOn = offer.name
                     from.getDiplomacyManager(nameOfCivToDeclareWarOn).declareWar()

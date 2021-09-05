@@ -40,7 +40,8 @@ class NaturalWonderGenerator(val ruleset: Ruleset, val randomness: MapGeneration
             }
         }
 
-        println("Natural Wonders for this game: $toBeSpawned")
+        if (MapGenerator.consoleOutput)
+            println("Natural Wonders for this game: $toBeSpawned")
 
         for (wonder in toBeSpawned) {
             when (wonder.name) {
@@ -67,7 +68,8 @@ class NaturalWonderGenerator(val ruleset: Ruleset, val randomness: MapGeneration
             return location
         }
 
-        println("No suitable location for ${wonder.name}")
+        if (MapGenerator.consoleOutput)
+            println("No suitable location for ${wonder.name}")
         return null
     }
 

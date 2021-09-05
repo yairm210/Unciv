@@ -25,7 +25,7 @@ import kotlin.math.roundToInt
  * City constructions manager.
  *
  * @property cityInfo the city it refers to
- * @property currentConstructionFromQueue the name of the construction is currently worked
+ * @property currentConstructionFromQueue name of the construction that is currently being produced
  * @property currentConstructionIsUserSet a flag indicating if the [currentConstructionFromQueue] has been set by the user or by the AI
  * @property constructionQueue a list of constructions names enqueued
  */
@@ -153,16 +153,24 @@ class CityConstructions {
     }
 
 
-    /** @constructionName needs to be a non-perpetual construction, else a cost of -1 is inferred */
+    /** @constructionName needs to be a non-perpetual construction, else an empty string is returned */
     internal fun getTurnsToConstructionString(constructionName: String, useStoredProduction:Boolean = true): String {
         val construction = getConstruction(constructionName)
-        val cost = 
-            if (construction is INonPerpetualConstruction) construction.getProductionCost(cityInfo.civInfo)
-            else -1 // This could _should_ never be reached
+        if (construction !is INonPerpetualConstruction) return ""   // shouldn't happen
+        val cost = construction.getProductionCost(cityInfo.civInfo)
         val turnsToConstruction = turnsToConstruction(constructionName, useStoredProduction)
         val currentProgress = if (useStoredProduction) getWorkDone(constructionName) else 0
-        if (currentProgress == 0) return "\n$cost${Fonts.production} $turnsToConstruction${Fonts.turn}"
-        else return "\n$currentProgress/$cost${Fonts.production}\n$turnsToConstruction${Fonts.turn}"
+        val lines = ArrayList<String>()
+        val buildable = construction.uniques.none{ it == "Unbuildable" }
+        if (buildable)
+            lines += (if (currentProgress == 0) "" else "$currentProgress/") +
+                    "$cost${Fonts.production} $turnsToConstruction${Fonts.turn}"
+        val otherStats = Stat.values().filter {
+            (it != Stat.Gold || !buildable) &&  // Don't show rush cost for consistency
+            construction.canBePurchasedWithStat(cityInfo, it)
+        }.joinToString(" / ") { "${construction.getStatBuyCost(cityInfo, it)}${it.character}" }
+        if (otherStats.isNotEmpty()) lines += otherStats
+        return lines.joinToString("\n", "\n")
     }
 
     // This function appears unused, can it be removed?
@@ -243,8 +251,8 @@ class CityConstructions {
             isBuilt(building) || getBuiltBuildings().any { it.replaces == building }
 
     fun getWorkDone(constructionName: String): Int {
-        if (inProgressConstructions.containsKey(constructionName)) return inProgressConstructions[constructionName]!!
-        else return 0
+        return if (inProgressConstructions.containsKey(constructionName)) inProgressConstructions[constructionName]!!
+            else 0
     }
 
     fun getRemainingWork(constructionName: String, useStoredProduction: Boolean = true): Int {
@@ -278,8 +286,7 @@ class CityConstructions {
               we get all sorts of fun concurrency problems when accessing various parts of the cityStats.
             SO, we create an entirely new CityStats and iterate there - problem solve!
             */
-            val cityStats = CityStats()
-            cityStats.cityInfo = cityInfo
+            val cityStats = CityStats(cityInfo)
             val construction = cityInfo.cityConstructions.getConstruction(constructionName)
             cityStats.update(construction)
             cityStatsForConstruction = cityStats.currentCityStats
@@ -368,14 +375,10 @@ class CityConstructions {
             // Perpetual constructions should always still be valid (I hope)
             if (construction is PerpetualConstruction) continue
             
-            val rejectionReason = 
-                (construction as INonPerpetualConstruction).getRejectionReason(this)
+            val rejectionReasons = 
+                (construction as INonPerpetualConstruction).getRejectionReasons(this)
 
-            if (rejectionReason.endsWith("lready built")
-                    || rejectionReason.startsWith("Cannot be built with")
-                    || rejectionReason.startsWith("Don't need to build any more")
-                    || rejectionReason.startsWith("Obsolete")
-            ) {
+            if (rejectionReasons.hasAReasonToBeRemovedFromQueue()) {
                 if (construction is Building) {
                     // Production put into wonders gets refunded
                     if (construction.isWonder && getWorkDone(constructionName) != 0) {
@@ -385,7 +388,7 @@ class CityConstructions {
                     }
                 } else if (construction is BaseUnit) {
                     // Production put into upgradable units gets put into upgraded version
-                    if (rejectionReason.startsWith("Obsolete") && construction.upgradesTo != null) {
+                    if (rejectionReasons.all { it == RejectionReason.Obsoleted } && construction.upgradesTo != null) {
                         // I'd love to use the '+=' operator but since 'inProgressConstructions[...]' can be null, kotlin doesn't allow me to
                         if (!inProgressConstructions.contains(construction.upgradesTo)) {
                             inProgressConstructions[construction.upgradesTo!!] = getWorkDone(constructionName)
@@ -418,7 +421,7 @@ class CityConstructions {
         }
     }
 
-    private fun constructionComplete(construction: IConstruction) {
+    private fun constructionComplete(construction: INonPerpetualConstruction) {
         construction.postBuildEvent(this)
         if (construction.name in inProgressConstructions)
             inProgressConstructions.remove(construction.name)
@@ -494,7 +497,7 @@ class CityConstructions {
         automatic: Boolean, 
         stat: Stat = Stat.Gold
     ): Boolean {
-        if (!getConstruction(constructionName).postBuildEvent(this, true))
+        if (!(getConstruction(constructionName) as INonPerpetualConstruction).postBuildEvent(this, stat))
             return false // nothing built - no pay
 
         if (!cityInfo.civInfo.gameInfo.gameParameters.godMode) {
@@ -528,7 +531,7 @@ class CityConstructions {
             return null
 
         val cultureBuildingToBuild = buildableCultureBuildings.minByOrNull { it.cost }!!.name
-        constructionComplete(getConstruction(cultureBuildingToBuild))
+        constructionComplete(getConstruction(cultureBuildingToBuild) as INonPerpetualConstruction)
 
         return cultureBuildingToBuild
     }

@@ -1,7 +1,6 @@
 package com.unciv.ui.newgamescreen
 
 import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox
 import com.badlogic.gdx.scenes.scene2d.ui.Skin
@@ -9,41 +8,24 @@ import com.badlogic.gdx.utils.Array
 import com.unciv.UncivGame
 import com.unciv.logic.*
 import com.unciv.logic.civilization.PlayerType
-import com.unciv.logic.map.MapParameters
 import com.unciv.logic.map.MapType
-import com.unciv.models.metadata.GameParameters
+import com.unciv.models.metadata.GameSetupInfo
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.translations.tr
 import com.unciv.ui.pickerscreens.PickerScreen
 import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.mainmenu.OnlineMultiplayer
 import java.util.*
-import kotlin.collections.HashSet
 import kotlin.concurrent.thread
 import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 
-
-class GameSetupInfo(var gameId:String, var gameParameters: GameParameters, var mapParameters: MapParameters) {
-    var mapFile: FileHandle? = null
-    constructor() : this("", GameParameters(), MapParameters())
-    constructor(gameInfo: GameInfo) : this("", gameInfo.gameParameters.clone(), gameInfo.tileMap.mapParameters)
-    constructor(gameParameters: GameParameters, mapParameters: MapParameters) : this("", gameParameters, mapParameters)
-
-    fun clone(): GameSetupInfo {
-        val toReturn = GameSetupInfo()
-        toReturn.gameId = this.gameId
-        toReturn.gameParameters = this.gameParameters
-        toReturn.mapParameters = this.mapParameters
-        return toReturn
-    }
-}
 
 class NewGameScreen(
     private val previousScreen: CameraStageBaseScreen,
     _gameSetupInfo: GameSetupInfo? = null
 ): IPreviousScreen, PickerScreen() {
 
-    override val gameSetupInfo = _gameSetupInfo ?: GameSetupInfo()
+    override val gameSetupInfo = _gameSetupInfo ?: GameSetupInfo.fromSettings()
     override var ruleset = RulesetCache.getComplexRuleset(gameSetupInfo.gameParameters.mods) // needs to be set because the GameOptionsTable etc. depend on this
     private val newGameOptionsTable = GameOptionsTable(this, isNarrowerThan4to3()) { desiredCiv: String -> playerPickerTable.update(desiredCiv) }
 
@@ -91,10 +73,7 @@ class NewGameScreen(
 
             if (mapOptionsTable.mapTypeSelectBox.selected.value == MapType.custom){
                 val map = MapSaver.loadMap(gameSetupInfo.mapFile!!)
-                val rulesetIncompatibilities = HashSet<String>()
-                for (set in map.values.map { it.getRulesetIncompatibility(ruleset) })
-                    rulesetIncompatibilities.addAll(set)
-                rulesetIncompatibilities.remove("")
+                val rulesetIncompatibilities = map.getRulesetIncompatibility(ruleset)
 
                 if (rulesetIncompatibilities.isNotEmpty()) {
                     val incompatibleMap = Popup(this)

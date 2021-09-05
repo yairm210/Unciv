@@ -51,9 +51,13 @@ data class KeyCharAndCode(val char: Char, val code: Int) {
     
     companion object {
         // Convenience shortcuts for frequently used constants
+        /** Android back, assigns ESC automatically as well */
         val BACK = KeyCharAndCode(Input.Keys.BACK)
+        /** Automatically assigned for [BACK] */
         val ESC = KeyCharAndCode(Input.Keys.ESCAPE)
+        /** Assigns [NUMPAD_ENTER] automatically as well */
         val RETURN = KeyCharAndCode(Input.Keys.ENTER)
+        /** Automatically assigned for [RETURN] */
         val NUMPAD_ENTER = KeyCharAndCode(Input.Keys.NUMPAD_ENTER)
         val SPACE = KeyCharAndCode(Input.Keys.SPACE)
         val BACKSPACE= KeyCharAndCode(Input.Keys.BACKSPACE)

@@ -6,6 +6,8 @@ import com.unciv.logic.automation.ThreatLevel
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
+import com.unciv.models.ruleset.ModOptionsConstants
+import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tile.ResourceType
 import kotlin.math.min
 import kotlin.math.sqrt
@@ -21,32 +23,32 @@ class TradeEvaluation {
             return false
 
         for (offer in trade.ourOffers)
-            if (!isOfferValid(offer, offerer))
+            if (!isOfferValid(offer, offerer, tradePartner))
                 return false
         for (offer in trade.theirOffers)
-            if (!isOfferValid(offer, tradePartner))
+            if (!isOfferValid(offer, tradePartner, offerer))
                 return false
         return true
     }
 
-    private fun isOfferValid(tradeOffer: TradeOffer, offerer: CivilizationInfo): Boolean {
+    private fun isOfferValid(tradeOffer: TradeOffer, offerer: CivilizationInfo, tradePartner: CivilizationInfo): Boolean {
 
         fun hasResource(tradeOffer: TradeOffer): Boolean {
             val resourcesByName = offerer.getCivResourcesByName()
             return resourcesByName.containsKey(tradeOffer.name) && resourcesByName[tradeOffer.name]!! >= 0
         }
 
-        when (tradeOffer.type) {
-            TradeType.Gold -> return true // even if they go negative it's okay
-            TradeType.Gold_Per_Turn -> return true // even if they go negative it's okay
-            TradeType.Treaty -> return true
-            TradeType.Agreement -> return true
-            TradeType.Luxury_Resource -> return hasResource(tradeOffer)
-            TradeType.Strategic_Resource -> return hasResource(tradeOffer)
-            TradeType.Technology -> return true
-            TradeType.Introduction -> return true
-            TradeType.WarDeclaration -> return true
-            TradeType.City -> return offerer.cities.any { it.id == tradeOffer.name }
+        return when (tradeOffer.type) {
+            TradeType.Gold -> true // even if they go negative it's okay
+            TradeType.Gold_Per_Turn -> true // even if they go negative it's okay
+            TradeType.Treaty -> true
+            TradeType.Agreement -> true
+            TradeType.Luxury_Resource -> hasResource(tradeOffer)
+            TradeType.Strategic_Resource -> hasResource(tradeOffer)
+            TradeType.Technology -> true
+            TradeType.Introduction -> !tradePartner.knows(tradeOffer.name) // You can't introduce them to someone they already know!
+            TradeType.WarDeclaration -> true
+            TradeType.City -> offerer.cities.any { it.id == tradeOffer.name }
         }
     }
 
@@ -68,7 +70,7 @@ class TradeEvaluation {
         return sumOfOurOffers <= sumOfTheirOffers
     }
 
-    fun evaluateBuyCost(offer: TradeOffer, civInfo: CivilizationInfo, tradePartner: CivilizationInfo): Int {
+    private fun evaluateBuyCost(offer: TradeOffer, civInfo: CivilizationInfo, tradePartner: CivilizationInfo): Int {
         when (offer.type) {
             TradeType.Gold -> return offer.amount
             TradeType.Gold_Per_Turn -> return offer.amount * offer.duration
@@ -131,7 +133,7 @@ class TradeEvaluation {
             TradeType.Technology ->
                 return (sqrt(civInfo.gameInfo.ruleSet.technologies[offer.name]!!.cost.toDouble())
                         * civInfo.gameInfo.gameParameters.gameSpeed.modifier).toInt() * 20
-            TradeType.Introduction -> return 250
+            TradeType.Introduction -> return introductionValue(civInfo.gameInfo.ruleSet)
             TradeType.WarDeclaration -> {
                 val civToDeclareWarOn = civInfo.gameInfo.getCivilization(offer.name)
                 val threatToThem = Automation.threatAssessment(civInfo, civToDeclareWarOn)
@@ -160,7 +162,7 @@ class TradeEvaluation {
             }
         }
     }
-    fun surroundedByOurCities(city: CityInfo, civInfo: CivilizationInfo): Int{
+    private fun surroundedByOurCities(city: CityInfo, civInfo: CivilizationInfo): Int{
         val borderingCivs: List<String> = city.getNeighbouringCivs()
         if (borderingCivs.size == 1 && borderingCivs.contains(civInfo.civName)){
             return 10*civInfo.getEraNumber() // if the city is surrounded only by trading civ
@@ -171,7 +173,7 @@ class TradeEvaluation {
 
     }
 
-    fun evaluateSellCost(offer: TradeOffer, civInfo: CivilizationInfo, tradePartner: CivilizationInfo): Int {
+    private fun evaluateSellCost(offer: TradeOffer, civInfo: CivilizationInfo, tradePartner: CivilizationInfo): Int {
         when (offer.type) {
             TradeType.Gold -> return offer.amount
             TradeType.Gold_Per_Turn -> return offer.amount * offer.duration
@@ -213,7 +215,7 @@ class TradeEvaluation {
                 return totalCost
             }
             TradeType.Technology -> return sqrt(civInfo.gameInfo.ruleSet.technologies[offer.name]!!.cost.toDouble()).toInt() * 20
-            TradeType.Introduction -> return 250
+            TradeType.Introduction -> return introductionValue(civInfo.gameInfo.ruleSet)
             TradeType.WarDeclaration -> {
                 val civToDeclareWarOn = civInfo.gameInfo.getCivilization(offer.name)
                 val threatToUs = Automation.threatAssessment(civInfo, civToDeclareWarOn)
@@ -241,7 +243,7 @@ class TradeEvaluation {
                         RelationshipLevel.Unforgivable -> 10000
                         RelationshipLevel.Enemy -> 2000
                         RelationshipLevel.Competitor -> 500
-                        RelationshipLevel.Neutral -> 200
+                        RelationshipLevel.Neutral, RelationshipLevel.Afraid -> 200
                         RelationshipLevel.Favorable, RelationshipLevel.Friend, RelationshipLevel.Ally -> 100
                     }
                 }
@@ -274,4 +276,9 @@ class TradeEvaluation {
         }
     }
 
+    private fun introductionValue(ruleSet: Ruleset): Int {
+        val unique = ruleSet.modOptions.uniqueObjects.firstOrNull{ it.placeholderText == ModOptionsConstants.tradeCivIntroductions }
+        if (unique == null) return 0
+        return unique.params[0].toInt()
+    }
 }

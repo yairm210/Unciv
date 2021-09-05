@@ -2,6 +2,7 @@ package com.unciv.logic.battle
 
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.Counter
+import com.unciv.ui.utils.toPercent
 import java.util.*
 import kotlin.collections.set
 import kotlin.math.max
@@ -129,9 +130,13 @@ object BattleDamage {
                             && it.militaryUnit!!.owner == attacker.getCivInfo().civName
                             && MapUnitCombatant(it.militaryUnit!!).isMelee()
                 }
-                if (numberOfAttackersSurroundingDefender > 1)
+                if (numberOfAttackersSurroundingDefender > 1) {
+                    var flankingBonus = 10f //https://www.carlsguides.com/strategy/civilization5/war/combatbonuses.php
+                    for (unique in attacker.unit.getMatchingUniques("[]% to Flank Attack bonuses"))
+                        flankingBonus *= unique.params[0].toPercent()
                     modifiers["Flanking"] =
-                        10 * (numberOfAttackersSurroundingDefender - 1) //https://www.carlsguides.com/strategy/civilization5/war/combatbonuses.php
+                        (flankingBonus * (numberOfAttackersSurroundingDefender - 1)).toInt()
+                }
                 if (attacker.getTile()
                         .aerialDistanceTo(defender.getTile()) == 1 && attacker.getTile()
                         .isConnectedByRiver(defender.getTile())
@@ -201,14 +206,6 @@ object BattleDamage {
                 if (attacker.matchesCategory(unique.params[1]))
                     modifiers.add("defence vs [${unique.params[1]}] ", unique.params[0].toInt())
             }
-            
-            // Deprecated since 3.15.7
-                if (attacker.isRanged()) {
-                    val defenceVsRanged = 25 * defender.unit.getUniques()
-                        .count { it.text == "+25% Defence against ranged attacks" }
-                    if (defenceVsRanged > 0) modifiers.add("defence vs ranged", defenceVsRanged)
-                }
-            //
 
             for (unique in defender.unit.getMatchingUniques("+[]% Strength when defending")) {
                 modifiers.add("Defender Bonus", unique.params[0].toInt())
@@ -222,10 +219,10 @@ object BattleDamage {
             if (defender.unit.isFortified())
                 modifiers["Fortification"] = 20 * defender.unit.getFortificationTurns()
         } else if (defender is CityCombatant) {
-            
-            modifiers["Defensive Bonus"] = defender.city.civInfo.getMatchingUniques("+[]% Defensive strength for cities")
-                .map { it.params[0].toFloat() / 100f }.sum().toInt()
-            
+
+            modifiers["Defensive Bonus"] =
+                defender.city.civInfo.getMatchingUniques("+[]% Defensive strength for cities")
+                    .map { it.params[0].toFloat() / 100f }.sum().toInt()
         }
 
         return modifiers
@@ -236,35 +233,32 @@ object BattleDamage {
 
         for (unique in unit.unit.getMatchingUniques("+[]% Strength in []")
                 + unit.getCivInfo()
-            .getMatchingUniques("+[]% Strength for units fighting in []")) {
+            // Deprecated since 3.16.7
+                .getMatchingUniques("+[]% Strength for units fighting in []")) {
+            //
             val filter = unique.params[1]
             if (tile.matchesFilter(filter, unit.getCivInfo()))
                 modifiers.add(filter, unique.params[0].toInt())
         }
 
-        for (unique in unit.getCivInfo()
-            .getMatchingUniques("+[]% Strength if within [] tiles of a []")) {
+        for (unique in unit.getCivInfo().getMatchingUniques("+[]% Strength if within [] tiles of a []")) {
             if (tile.getTilesInDistance(unique.params[1].toInt())
                     .any { it.matchesFilter(unique.params[2]) }
             )
                 modifiers[unique.params[2]] = unique.params[0].toInt()
         }
+        for (unique in unit.getCivInfo().getMatchingUniques("[]% Strength for [] units in []")) {
+            if (unit.matchesCategory(unique.params[1]) && tile.matchesFilter(unique.params[2], unit.getCivInfo())) {
+                modifiers.add(unique.params[2], unique.params[0].toInt())
+            }
+        }
     
-        // Deprecated since 3.15.7
-            if (tile.neighbors.flatMap { it.getUnits() }
-                    .any {
-                        it.hasUnique("-10% combat strength for adjacent enemy units") && it.civInfo.isAtWarWith(
-                            unit.getCivInfo()
-                        )
-                    })
-                modifiers["Haka War Dance"] = -10
-        //
         return modifiers
     }
 
     private fun modifiersToMultiplicationBonus(modifiers: Counter<String>): Float {
         var finalModifier = 1f
-        for (modifierValue in modifiers.values) finalModifier *= (1 + modifierValue / 100f) // so 25 will result in *= 1.25
+        for (modifierValue in modifiers.values) finalModifier *= modifierValue.toPercent()
         return finalModifier
     }
 

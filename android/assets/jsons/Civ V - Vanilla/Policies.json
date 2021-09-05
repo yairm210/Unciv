@@ -75,7 +75,7 @@
 			},
 			{
 				"name": "Meritocracy",
-				"uniques": ["[+1 Happiness] [in all cities connected to capital]", "Unhappiness from population decreased by [5]% [in all non-occupied cities]"],
+				"uniques": ["[+1 Happiness] [in all cities connected to capital]", "[-5]% unhappiness from population [in all non-occupied cities]"],
 				"requires": ["Citizenship"],
 				"row": 2,
 				"column": 5
@@ -240,7 +240,7 @@
 			{
 				"name": "Naval Tradition",
 				"uniques": ["+[1] Movement for all [{Military} {Water}] units", "+[1] Sight for all [{Military} {Water}] units",
-				 "Free [Great Admiral] appears", "+[2] Movement for all [Great Admiral] units"
+				 "Free [Great General] appears", "+[2] Movement for all [Great Admiral] units"
 				],
 				"row": 1,
 				"column": 2
@@ -275,7 +275,9 @@
 			},
 			{
 				"name": "Commerce Complete",
-				"uniques": ["[+1 Gold] from every [Trading post]", "Double gold from Great Merchant trade missions"]
+				"uniques": ["[+1 Gold] from every [Trading post]", "Double gold from Great Merchant trade missions",
+					"May buy [Great Merchant] units for [1000] [Faith] [in all cities in which the majority religion is a major religion] starting from the [Industrial era] at an increasing price ([500])"
+				]
 			}
 		]
 	},
@@ -286,7 +288,7 @@
 		"policies": [
 			{
 				"name": "Secularism",
-				"uniques": ["[+2 Science] from every specialist"],
+				"uniques": ["[+2 Science] from every specialist [in all cities]"],
 				"row": 1,
 				"column": 2
 			},
@@ -320,7 +322,9 @@
 			},
 			{
 				"name": "Rationalism Complete",
-				"uniques": ["[2] Free Technologies"]
+				"uniques": ["[2] Free Technologies",
+					"May buy [Great Scientist] units for [1000] [Faith] [in all cities in which the majority religion is a major religion] starting from the [Industrial era] at an increasing price ([500])"
+				]
 			}
 		]
 	},
@@ -343,7 +347,7 @@
 			},
 			{
 				"name": "Civil Society",
-				"uniques": ["-[50]% food consumption by specialists"],
+				"uniques": ["-[50]% food consumption by specialists [in all cities]"],
 				"row": 1,
 				"column": 5
 			},
@@ -356,14 +360,16 @@
 			},
 			{
 				"name": "Democracy",
-				"uniques": ["Specialists only produce [50]% of normal unhappiness"],
+				"uniques": ["[-50]% unhappiness from specialists [in all cities]"],
 				"requires": ["Civil Society"],
 				"row": 2,
 				"column": 5
 			},
 			{
 				"name": "Freedom Complete",
-				"uniques": ["+[100]% yield from every [Great Improvement]", "Golden Age length increased by [50]%"]
+				"uniques": ["+[100]% yield from every [Great Improvement]", "Golden Age length increased by [50]%",
+					"May buy [Great Artist] units for [1000] [Faith] [in all cities in which the majority religion is a major religion] starting from the [Industrial era] at an increasing price ([500])"
+				]
 			}
 		]
 	},
@@ -409,7 +415,10 @@
 			},
 			{
 				"name": "Autocracy Complete",
-				"uniques": ["+[25]% attack strength to all [Military] units for [50] turns"]
+				"uniques": ["+[25]% attack strength to all [Military] units for [50] turns",
+					"May buy [Great General] units for [1000] [Faith] [in all cities in which the majority religion is a major religion] starting from the [Industrial era] at an increasing price ([500])",
+					"May buy [Great Admiral] units for [1000] [Faith] [in all cities in which the majority religion is a major religion] starting from the [Industrial era] at an increasing price ([500])"
+				]
 			}
 		]
 	},
@@ -432,7 +441,7 @@
 		},
 		{
 			"name": "Nationalism",
-			"uniques": ["+[15]% Strength for units fighting in [Friendly Land]"],
+			"uniques": ["+[15]% Strength for [Non-City] units fighting in [Friendly Land]"],
 			"row": 1,
 			"column": 5
 		},
@@ -452,7 +461,9 @@
         },
         {
             "name": "Order Complete",
-			"uniques": ["[+2 Food, +2 Production, +2 Science, +2 Gold, +2 Culture] [in all cities]"]
+			"uniques": ["[+2 Food, +2 Production, +2 Science, +2 Gold, +2 Culture] [in all cities]",
+				"May buy [Great Engineer] units for [1000] [Faith] [in all cities in which the majority religion is a major religion] starting from the [Industrial era] at an increasing price ([500])"
+			]
         }
     ]
 }

@@ -253,10 +253,9 @@ class CityButton(val city: CityInfo, private val tileGroup: WorldTileGroup): Tab
             iconTable.add(nationIcon).size(20f)
         }
         
-        val cityReligionName = city.religion.getMajorityReligion()
-        if (cityReligionName != null) {
-            val cityReligion = city.civInfo.gameInfo.religions[cityReligionName]!!
-            val religionImage = ImageGetter.getReligionIcon(cityReligion.iconName)
+        val cityReligion = city.religion.getMajorityReligion()
+        if (cityReligion != null) {
+            val religionImage = ImageGetter.getReligionImage(cityReligion.getIconName())
             iconTable.add(religionImage).size(20f).padLeft(5f).fillY()
         }
 
@@ -410,6 +409,7 @@ class CityButton(val city: CityInfo, private val tileGroup: WorldTileGroup): Tab
             val color = when (relationshipLevel) {
                 RelationshipLevel.Unforgivable -> Color.RED
                 RelationshipLevel.Enemy -> Color.ORANGE
+                RelationshipLevel.Afraid -> Color.YELLOW
                 RelationshipLevel.Neutral, RelationshipLevel.Friend -> Color.LIME
                 RelationshipLevel.Ally -> Color.SKY
                 else -> Color.DARK_GRAY

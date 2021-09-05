@@ -27,8 +27,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
 
     val civUnits = civInfo.getCivUnits()
     val militaryUnits = civUnits.count { it.baseUnit.isMilitary() }
-    // Constants.workerUnique deprecated since 3.15.5
-    val workers = civUnits.count { (it.hasUnique(Constants.canBuildImprovements) || it.hasUnique(Constants.workerUnique)) && it.isCivilian() }.toFloat()
+    val workers = civUnits.count { it.hasUniqueToBuildImprovements && it.isCivilian() }.toFloat()
     val cities = civInfo.cities.size
     val allTechsAreResearched = civInfo.tech.getNumberOfTechsResearched() >= civInfo.gameInfo.ruleSet.technologies.size
 
@@ -116,9 +115,9 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
 
     private fun addWorkBoatChoice() {
         val buildableWorkboatUnits = cityInfo.cityConstructions.getConstructableUnits()
-                .filter { it.uniques.contains("May create improvements on water resources") }
+                .filter { it.uniques.contains(Constants.workBoatsUnique) }
         val canBuildWorkboat = buildableWorkboatUnits.any()
-                && !cityInfo.getTiles().any { it.civilianUnit?.hasUnique("May create improvements on water resources") == true }
+                && !cityInfo.getTiles().any { it.civilianUnit?.hasUnique(Constants.workBoatsUnique) == true }
         if (!canBuildWorkboat) return
         val tilesThatNeedWorkboat = cityInfo.getTiles()
                 .filter { it.isWater && it.hasViewableResource(civInfo) && it.improvement == null }.toList()
@@ -140,17 +139,14 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
     private fun addWorkerChoice() {
         val workerEquivalents = civInfo.gameInfo.ruleSet.units.values
                 .filter { it.uniques.any {
-                    // Constants.workerUnique deprecated since 3.15.5
-                        unique -> unique.equalsPlaceholderText(Constants.canBuildImprovements) || unique.equalsPlaceholderText(Constants.workerUnique) 
+                        unique -> unique.equalsPlaceholderText(Constants.canBuildImprovements)
                 } && it.isBuildable(cityConstructions) }
         if (workerEquivalents.isEmpty()) return // for mods with no worker units
-        // Constants.workerUnique deprecated since 3.15.5
-        if (civInfo.getIdleUnits().any { it.action == Constants.unitActionAutomation && (it.hasUnique(Constants.canBuildImprovements) || it.hasUnique(Constants.workerUnique)) })
+        if (civInfo.getIdleUnits().any { it.isAutomated() && it.hasUniqueToBuildImprovements })
             return // If we have automated workers who have no work to do then it's silly to construct new workers.
 
         val citiesCountedTowardsWorkers = min(5, cities) // above 5 cities, extra cities won't make us want more workers
-        // Constants.workerUnique deprecated since 3.15.5
-        if (workers < citiesCountedTowardsWorkers * 0.6f && civUnits.none { (it.hasUnique(Constants.canBuildImprovements) || it.hasUnique(Constants.workerUnique)) && it.isIdle() }) {
+        if (workers < citiesCountedTowardsWorkers * 0.6f && civUnits.none { it.hasUniqueToBuildImprovements && it.isIdle() }) {
             var modifier = citiesCountedTowardsWorkers / (workers + 0.1f)
             if (!cityIsOverAverageProduction) modifier /= 5 // higher production cities will deal with this
             addChoice(relativeCostEffectiveness, workerEquivalents.minByOrNull { it.cost }!!.name, modifier)
@@ -226,7 +222,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
 
     private fun addUnitTrainingBuildingChoice() {
         val unitTrainingBuilding = buildableNotWonders.asSequence()
-                .filter { it.xpForNewUnits > 0 }.minByOrNull { it.cost }
+                .filter { it.hasUnique("New [] units start with [] Experience []") }.minByOrNull { it.cost }
         if (unitTrainingBuilding != null && (preferredVictoryType != VictoryType.Cultural || isAtWar)) {
             var modifier = if (cityIsOverAverageProduction) 0.5f else 0.1f // You shouldn't be cranking out units anytime soon
             if (isAtWar) modifier *= 2

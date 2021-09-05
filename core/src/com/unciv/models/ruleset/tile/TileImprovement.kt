@@ -1,5 +1,7 @@
 package com.unciv.models.ruleset.tile
 
+import com.unciv.Constants
+import com.unciv.UncivGame
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.ruleset.Belief
 import com.unciv.logic.map.RoadStatus
@@ -10,6 +12,7 @@ import com.unciv.models.stats.NamedStats
 import com.unciv.models.translations.tr
 import com.unciv.ui.civilopedia.FormattedLine
 import com.unciv.ui.civilopedia.ICivilopediaText
+import com.unciv.ui.utils.toPercent
 import java.util.*
 import kotlin.math.roundToInt
 
@@ -29,14 +32,8 @@ class TileImprovement : NamedStats(), ICivilopediaText, IHasUniques {
     fun getTurnsToBuild(civInfo: CivilizationInfo): Int {
         var realTurnsToBuild = turnsToBuild.toFloat() * civInfo.gameInfo.gameParameters.gameSpeed.modifier
         for (unique in civInfo.getMatchingUniques("[]% tile improvement construction time")) {
-            realTurnsToBuild *= 1 + unique.params[0].toFloat() / 100f
+            realTurnsToBuild *= unique.params[0].toPercent()
         }
-        // Deprecated since 3.14.17
-            if (civInfo.hasUnique("Worker construction increased 25%"))
-                realTurnsToBuild *= 0.75f
-            if (civInfo.hasUnique("Tile improvement speed +25%"))
-                realTurnsToBuild *= 0.75f
-        //
         // In some weird cases it was possible for something to take 0 turns, leading to it instead never finishing
         if (realTurnsToBuild < 1) realTurnsToBuild = 1f
         return realTurnsToBuild.roundToInt()
@@ -165,6 +162,22 @@ class TileImprovement : NamedStats(), ICivilopediaText, IHasUniques {
             textList += FormattedLine()
             for (unique in uniqueObjects)
                 textList += FormattedLine(unique)
+        }
+
+        if (isAncientRuinsEquivalent() && ruleset.ruinRewards.isNotEmpty()) {
+            val difficulty = UncivGame.Current.gameInfo.gameParameters.difficulty
+            val religionEnabled = UncivGame.Current.gameInfo.hasReligionEnabled()
+            textList += FormattedLine()
+            textList += FormattedLine("The possible rewards are:")
+            ruleset.ruinRewards.values.asSequence()
+                .filter { reward ->
+                    difficulty !in reward.excludedDifficulties &&
+                    (religionEnabled || Constants.hiddenWithoutReligionUnique !in reward.uniques)
+                }
+                .forEach { reward ->
+                    textList += FormattedLine(reward.name, starred = true, color = reward.color)
+                    textList += reward.civilopediaText
+                }
         }
 
         val unit = ruleset.units.asSequence().firstOrNull {

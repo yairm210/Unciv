@@ -7,7 +7,6 @@
 [![itch.io](https://img.shields.io/static/v1?label=itch.io&message=Unciv&color=607D8B&logo=itch.io)](https://yairm210.itch.io/unciv)
 [![Flathub](https://img.shields.io/flathub/v/io.github.yairm210.unciv)](https://flathub.org/apps/details/io.github.yairm210.unciv)
 
-[![Travis CI w/ Logo](https://img.shields.io/travis/yairm210/Unciv/master.svg?logo=travis)](https://travis-ci.com/yairm210/Unciv)
 ![Build and deploy](https://github.com/yairm210/Unciv/workflows/Build%20and%20deploy/badge.svg)
 [![Discord Chat](https://img.shields.io/discord/586194543280390151.svg)](https://discord.gg/bjrB4Xw)
 
@@ -83,7 +82,7 @@ If you have Java 8, and are familiar with the command line, there are (considera
 
 If you use Flatpaks, there's a Flatpak by [MayeulC](https://github.com/MayeulC) and you can know more about it [here](https://github.com/flathub/io.github.yairm210.unciv). Flathub link is available in the [Downloads](#downloads) section.
 
-If you want to build it from sratch for some reason, [we have instructions for that as well](https://github.com/yairm210/Unciv/wiki/Building-locally-without-Android-Studio)
+If you want to build it from scratch for some reason, [we have instructions for that as well](https://github.com/yairm210/Unciv/wiki/Building-locally-without-Android-Studio)
 
 ## How about IOS?
 

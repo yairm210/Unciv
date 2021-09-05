@@ -1,3 +1,201 @@
+## 3.16.12
+
+Can no longer enter city-screen that is not yours
+
+Spectator cannot take over player diplomacy options
+
+Better check for units with no unitType defined
+
+Fixed crash where deleting mods meant you could never start a game again
+
+By xlenstra:
+- You can now input distinct numbers when trading gold
+- Fixed religion bugs
+
+By SimonCeder:
+- Correct year shown when starting in later eras
+
+By SomeTroglodyte
+- Options displays well for portrait mode
+- Fixed rare map generation crash 
+
+## 3.16.11
+
+Resolved crash due to evaluating distance to city state when we have no cities
+
+By xlenstra:
+- Great Prophets now always have your religion as their religion
+- Implemented renaming of religions
+- Finishing the later five policy trees now allows you to buy great people with faith
+- Added Religious wonders
+- Fixed bug making enhancing religions impossible
+- Added UI to show what cities are holy cities to the player
+
+By SimonCeder:
+- fix duplicated city-state bonus bug
+
+## 3.16.10
+
+By SimonCeder:
+- Add Austrian civ
+- units get promotions and xp bonuses from CS buildings
+- Demanding tribute from city states
+
+By xlenstra:
+- AI will now found & enhance religions - minor improvement to civilian AI
+- Fixed ambush bonus amount
+
+By SomeTroglodyte:
+- Diplomacy Screen Nation relation indicator
+- Persistent new game setup
+- Anti-Armor, negative tile yield, LoadScreen
+
+For modders: Mass unique deprecation
+
+## 3.16.9
+
+By xlenstra:
+- Implemented the enhancing of religions
+- Submarines are now visible to adjacent units, and once turned visible, can be attacked by all enemy units
+
+By SomeTroglodyte:
+- Multiple Civilopedia improvements
+- Better mod problem detection
+
+## 3.16.8
+
+Upload APK files to Github release
+
+Can now play as 2 separate Civs with the same userId
+
+Fixed Krepost unique
+
+Conquering a city destroys buildings inside the city  - By xlenstra
+
+By SomeTroglodyte:
+- Starting locations reworked
+- Stat Icons Redone
+
+## 3.16.7
+
+By xlenstra:
+- Implemented Inquisitors
+- Implemented a cap for the production boost of great engineers
+- Scouts still ignore terrain costs after upgrades
+- Fixes bug where upgrading units would no longer provide their default upgrades
+
+By SomeTroglodyte:
+- City keyboard buy construction and tile
+- getLastTerrain simple patch
+- StartingLocation-Improvements-be-gone phase 1
+
+Can now raze non-original capitals at capture  - By SimonCeder
+
+## 3.16.6
+
+City-states grant copies of ALL resources
+
+By SomeTroglodyte:
+- Fixed multiple crashing errors
+- Ancient Ruins Civilopedia and Translations
+- WorkerAutomation cached per Civ - BFS cached
+
+Made great people and boats uncapturable  - By logicminimal
+
+Added Bucketeer unit images - By AdityaMH
+
+By xlenstra:
+- Added a UI for viewing the religions inside a city
+- Implemented almost all missing founder & follower beliefs
+
+## 3.16.5-googlePlayPushTest
+
+A test to ensure that publishing new versions to Google Play works properly
+
+## 3.16.5
+
+By SomeTroglodyte:
+- Expander tab persist
+- UI improvements for city screen
+- Unit action constants and worker unique cleanup
+
+By avdstaaij:
+- Removed the civ introduction trade option
+- Made water oil wells require the Refrigeration tech
+- Removed the sight bonus from hills
+- Gave anti-air units a bonus vs helicopters
+- Disabled pillaging your own tiles
+
+Fixes crashes from loading mods without an eras.json file - xlenstra
+
+CS bonuses graded according to relationship level  - By SimonCeder
+
+Improve horse sound  - By AdityaMH
+
+## 3.16.4-patch1
+
+Fixed crash from conquering cities - By xlenstra
+
+Fix DOS attack perpetrated by CityInfoReligionManager on Json Serializer - By SomeTroglodyte
+
+## 3.16.4
+
+Implemented Zone of Control mechanic - by avdstaaij
+
+Runtime optimizations - By SomeTroglodyte
+
+Implemented religious pressure - By xlenstra
+
+Fix units not entering cities upon capture - By avdstaaij
+
+## 3.16.3
+
+By SomeTroglodyte:
+- Civilopedia - Difficulty
+- City screen stats double separators
+- Unit rename UI
+
+By xlenstra:
+- Added founder beliefs, updates to pantheon spreading
+- Added an overview screen for religions
+
+Resources changed to match civ5 G&K - By ravignir
+
+Add Holy Site for FantasyHex  - By AdityaMH
+
+## 3.16.2-patch1
+
+Fixed diplomacy screen crash for city-states with no cities
+
+Added mod check for units whose unitType is not defined
+
+Fixed crash when selecting certain buildings in the civilopedia - by xlenstra 
+
+## 3.16.2
+
+Fixed crashing Diplomatic victory bug
+
+By xlenstra:
+- Added follower beliefs for buying religious buildings 
+- Hides 'automate' unit action and unhides 'stop exploring' unit action 
+- Ruins now have their own file 
+- Architecture is now a prerequiste of Archaeology 
+- Fixed bug where units could still be purchased if they used a depleted resource 
+- Fixed crash when borrowing names 
+- Fixes bug where Russia's unique no longer works 
+- One with nature yield for spain is now doubled 
+
+By SomeTroglodyte:
+- MapGenerator optimization 
+- Diplomacy: City State resource UI, improvement gift effect 
+- Mod description translation 
+
+Pikeman upgrades only to Lancer  - By ravignir
+
+Fix banking's required techs  - By logicminimal
+
+City state resources  - By Interdice
+
 ## 3.16.1
 
 By xlenstra:

@@ -3,6 +3,7 @@ package com.unciv.ui.mapeditor
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.unciv.Constants
 import com.unciv.MainMenuScreen
 import com.unciv.UncivGame
 import com.unciv.models.ruleset.RulesetCache
@@ -64,13 +65,14 @@ class MapEditorMenuPopup(var mapEditorScreen: MapEditorScreen): Popup(mapEditorS
                     add(ScrollPane(incompatibilityTable)).colspan(2)
                         .maxHeight(screen.stage.height * 0.8f).row()
                     add("Change map to fit selected ruleset?".toLabel()).colspan(2).row()
-                    addButtonInRow("Yes", 'y') {
+                    addButtonInRow(Constants.yes, 'y') {
                         for (tile in mapEditorScreen.tileMap.values)
                             tile.normalizeToRuleset(ruleset)
                         mapEditorScreen.tileMap.mapParameters.mods = mods
                         mapEditorScreen.game.setScreen(MapEditorScreen(mapEditorScreen.tileMap))
                     }
-                    addButtonInRow("No", 'n') { close() }
+                    addButtonInRow(Constants.no, 'n') { close() }
+                    equalizeLastTwoButtonWidths()
                 }.open(true)
             }
 

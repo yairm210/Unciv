@@ -5,10 +5,10 @@ import com.unciv.logic.automation.Automation
 import com.unciv.logic.civilization.LocationAction
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.map.TileInfo
+import com.unciv.ui.utils.toPercent
 import com.unciv.ui.utils.withItem
 import com.unciv.ui.utils.withoutItem
 import kotlin.math.max
-import kotlin.math.min
 import kotlin.math.pow
 import kotlin.math.roundToInt
 
@@ -40,17 +40,13 @@ class CityExpansionManager {
         if (cityInfo.civInfo.isCityState())
             cultureToNextTile *= 1.5f   // City states grow slower, perhaps 150% cost?
 
-        for (unique in cityInfo.civInfo.getMatchingUniques("-[]% Culture cost of acquiring tiles []")) {
+        for (unique in cityInfo.getMatchingUniques("-[]% Culture cost of acquiring tiles []")) {
             if (cityInfo.matchesFilter(unique.params[1]))
-                cultureToNextTile *= (100 - unique.params[0].toFloat()) / 100
+                cultureToNextTile /= unique.params[0].toPercent()
         }
         
         for (unique in cityInfo.getMatchingUniques("[]% cost of natural border growth")) 
-            cultureToNextTile *= 1 + unique.params[0].toFloat() / 100f
-        
-        // Unique deprecated since 3.15.10 (seems unused, and should be replaced by the unique above)
-            if (cityInfo.civInfo.hasUnique("Increased rate of border expansion")) cultureToNextTile *= 0.75
-        //
+            cultureToNextTile *= unique.params[0].toPercent()
 
         return cultureToNextTile.roundToInt()
     }
@@ -70,7 +66,7 @@ class CityExpansionManager {
         val distanceFromCenter = tileInfo.aerialDistanceTo(cityInfo.getCenterTile())
         var cost = baseCost * (distanceFromCenter - 1) + tilesClaimed() * 5.0
 
-        for (unique in cityInfo.civInfo.getMatchingUniques("-[]% Gold cost of acquiring tiles []")) {
+        for (unique in cityInfo.getMatchingUniques("-[]% Gold cost of acquiring tiles []")) {
             if (cityInfo.matchesFilter(unique.params[1]))
                 cost *= (100 - unique.params[0].toFloat()) / 100
         }
@@ -158,7 +154,7 @@ class CityExpansionManager {
         cityInfo.cityStats.update()
 
         for (unit in tileInfo.getUnits().toList()) // toListed because we're modifying
-            if (!unit.civInfo.canEnterTiles(cityInfo.civInfo))
+            if (!unit.civInfo.canPassThroughTiles(cityInfo.civInfo))
                 unit.movement.teleportToClosestMoveableTile()
 
         cityInfo.civInfo.updateViewableTiles()

@@ -172,6 +172,15 @@ fun <T> HashSet<T>.withoutItem(item:T): HashSet<T> {
     return newHashSet
 }
 
+/** Translate a percentage number - e.g. 25 - to the multiplication value - e.g. 1.25f */
+fun String.toPercent() = toFloat().toPercent()
+
+/** Translate a percentage number - e.g. 25 - to the multiplication value - e.g. 1.25f */
+fun Int.toPercent() = toFloat().toPercent()
+
+/** Translate a percentage number - e.g. 25 - to the multiplication value - e.g. 1.25f */
+fun Float.toPercent() = 1 + this/100
+
 /** Translate a [String] and make a [TextButton] widget from it */
 fun String.toTextButton() = TextButton(this.tr(), CameraStageBaseScreen.skin)
 
@@ -181,16 +190,16 @@ fun String.toLabel() = Label(this.tr(), CameraStageBaseScreen.skin)
 fun Int.toLabel() = this.toString().toLabel()
 
 /** Translate a [String] and make a [Label] widget from it with a specified font color and size */
-fun String.toLabel(fontColor: Color = Color.WHITE, fontSize:Int=18): Label {
+fun String.toLabel(fontColor: Color = Color.WHITE, fontSize: Int = 18): Label {
     // We don't want to use setFontSize and setFontColor because they set the font,
     //  which means we need to rebuild the font cache which means more memory allocation.
     var labelStyle = CameraStageBaseScreen.skin.get(Label.LabelStyle::class.java)
-    if(fontColor!= Color.WHITE || fontSize!=18) { // if we want the default we don't need to create another style
+    if(fontColor != Color.WHITE || fontSize != 18) { // if we want the default we don't need to create another style
         labelStyle = Label.LabelStyle(labelStyle) // clone this to another
         labelStyle.fontColor = fontColor
         if (fontSize != 18) labelStyle.font = Fonts.font
     }
-    return Label(this.tr(), labelStyle).apply { setFontScale(fontSize/Fonts.ORIGINAL_FONT_SIZE) }
+    return Label(this.tr(), labelStyle).apply { setFontScale(fontSize / Fonts.ORIGINAL_FONT_SIZE) }
 }
 
 /**
@@ -220,6 +229,14 @@ fun Label.setFontSize(size:Int): Label {
     style.font = Fonts.font
     @Suppress("UsePropertyAccessSyntax") setStyle(style)
     setFontScale(size/ Fonts.ORIGINAL_FONT_SIZE)
+    return this
+}
+
+/** [pack][WidgetGroup.pack] a [WidgetGroup] if its [needsLayout][WidgetGroup.needsLayout] is true.
+ *  @return the receiver to allow chaining
+ */
+fun WidgetGroup.packIfNeeded(): WidgetGroup {
+    if (needsLayout()) pack()
     return this
 }
 

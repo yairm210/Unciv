@@ -7,6 +7,7 @@ import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup
+import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.battle.CityCombatant
 import com.unciv.logic.city.CityInfo
@@ -163,9 +164,19 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
                     unitDescriptionTable.add(unit.promotions.XP.toString() + "/" + unit.promotions.xpForNextPromotion())
                 }
                 
-                if (unit.maxReligionSpreads() > 0) {
+                if (unit.canDoReligiousAction(Constants.spreadReligionAbilityCount)) {
                     unitDescriptionTable.add(ImageGetter.getStatIcon("Faith")).size(20f)
-                    unitDescriptionTable.add(unit.getReligionString())
+                    unitDescriptionTable.add(unit.getActionString(Constants.spreadReligionAbilityCount))
+                }
+                
+                if (unit.canDoReligiousAction(Constants.removeHeresyAbilityCount)) {
+                    unitDescriptionTable.add(ImageGetter.getImage("OtherIcons/Remove Heresy")).size(20f)
+                    unitDescriptionTable.add(unit.getActionString(Constants.removeHeresyAbilityCount))
+                }
+                
+                if (unit.baseUnit.religiousStrength > 0) {
+                    unitDescriptionTable.add(ImageGetter.getStatIcon("ReligiousStrength")).size(20f)
+                    unitDescriptionTable.add((unit.baseUnit.religiousStrength - unit.religiousStrengthLost).toString())
                 }
 
                 if (unit.promotions.promotions.size != promotionsTable.children.size) // The unit has been promoted! Reload promotions!

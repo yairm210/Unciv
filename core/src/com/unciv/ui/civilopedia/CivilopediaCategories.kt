@@ -2,6 +2,7 @@ package com.unciv.ui.civilopedia
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
+import com.badlogic.gdx.scenes.scene2d.ui.Container
 import com.unciv.Constants
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.ruleset.Ruleset
@@ -16,6 +17,7 @@ import java.io.File
 /** Encapsulates the knowledge on how to get an icon for each of the Civilopedia categories */
 object CivilopediaImageGetters {
     private const val policyIconFolder = "PolicyIcons"
+    private const val policyInnerSize = 0.25f
 
     // Todo: potential synergy with map editor
     fun terrainImage(terrain: Terrain, ruleset: Ruleset, imageSize: Float): Actor {
@@ -42,12 +44,12 @@ object CivilopediaImageGetters {
         group.showEntireMap = true
         group.forMapEditorIcon = true
         group.update()
-        return group
+        return Container(group)
     }
 
     val construction = { name: String, size: Float ->
         ImageGetter.getConstructionImage(name)
-            .surroundWithCircle(size, color = Color.WHITE)
+            .surroundWithCircle(size)
     }
     val improvement = { name: String, size: Float ->
         ImageGetter.getImprovementIcon(name, size)
@@ -58,8 +60,16 @@ object CivilopediaImageGetters {
         else ImageGetter.getNationIndicator(nation, size)
     }
     val policy = { name: String, size: Float ->
-        ImageGetter.getImage(policyIconFolder + File.separator + name)
-            .apply { setSize(size,size) }
+        // policy branch start and complete have no icons but are linked -> nonexistence must be passed down
+        val fileName = policyIconFolder + File.separator + name
+        if (ImageGetter.imageExists(fileName))
+            ImageGetter.getImage(fileName)
+                .apply {
+                    setSize(size * policyInnerSize,size * policyInnerSize)
+                    color = Color.BROWN
+                }
+                .surroundWithCircle(size)
+        else null
     }
     val resource = { name: String, size: Float ->
         ImageGetter.getResourceImage(name, size)
@@ -77,16 +87,26 @@ object CivilopediaImageGetters {
     }
     val belief = { name: String, size: Float ->
         // Kludge until we decide how exactly to show Religions
-        if (ImageGetter.imageExists("ReligionIcons/$name")) {
-            ImageGetter.getReligionIcon(name).surroundWithCircle(size, color = Color.BLACK)
+        fun getInvertedCircledReligionIcon(iconName: String, size: Float) =
+            ImageGetter.getCircledReligionIcon(iconName, size).apply { 
+                circle.color = Color.WHITE
+                actor.color = Color.BLACK
+            }
+        if (ImageGetter.religionIconExists(name)) {
+            getInvertedCircledReligionIcon(name, size)
+        } else {
+            val typeName = ImageGetter.ruleset.beliefs[name]?.type?.name
+            if (typeName != null && ImageGetter.religionIconExists(typeName))
+                getInvertedCircledReligionIcon(typeName, size)
+            else null
         }
-        else null
     }
 }
 
 /** Enum used as keys for Civilopedia "pages" (categories).
  *
  *  Note names are singular on purpose - a "link" allows both key and label
+ *  Order of values determines ordering of the categories in the Civilopedia top bar 
  *
  * @param label Translatable caption for the Civilopedia button
  */
@@ -104,10 +124,10 @@ enum class CivilopediaCategories (
     Nation ("Nations", false, CivilopediaImageGetters.nation ),
     Technology ("Technologies", false, CivilopediaImageGetters.technology ),
     Promotion ("Promotions", false, CivilopediaImageGetters.promotion ),
-    Policy ("Policies", true, CivilopediaImageGetters.policy ),
+    Policy ("Policies", false, CivilopediaImageGetters.policy ),
+    Belief("Religions and Beliefs", false, CivilopediaImageGetters.belief ),
     Tutorial ("Tutorials", false, null ),
     Difficulty ("Difficulty levels", false, null ),
-    Belief("Religions and Beliefs", false, CivilopediaImageGetters.belief)
     ;
 
     companion object {

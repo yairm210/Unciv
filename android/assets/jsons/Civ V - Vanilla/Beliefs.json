@@ -76,7 +76,7 @@
         "name": "Monument to the Gods",
         "type": "Pantheon",
         "uniques": ["+[15]% Production when constructing [Wonders]"]
-        // Should only be ancient/classical era wonders, but implementing that is another can of worms
+        // ToDo: Should only be ancient/classical era wonders, but implementing that is another can of worms
         // For that we really should need an era.matchesFilter() AND support for multiple values in 
         // construction.matchesFilter(), so we could write something like:
         //"uniques": ["[+15]% Production when constructing [{Ancient Era} {Wonders}]",
@@ -119,10 +119,21 @@
         "uniques": ["[+2 Faith] from every [Quarry]"]
     },
 ///////////////////////////////////////// Follower beliefs /////////////////////////////////////////
-    
-    // Missing: asceticism (requires followers)
-    // Missing: cathedrals (requires purchasing with faith)
-    // Missing: choral music (requires followers)
+    {
+        "name": "Asceticism",
+        "type": "Follower",
+        "uniques": ["[+1 Happiness] from every [Shrine] in cities where this religion has at least [3] followers"]
+    },
+    {
+        "name": "Cathedrals",
+        "type": "Follower",
+        "uniques": ["May buy [Cathedral] buildings for [200] [Faith] [in cities following this religion]"]
+    },
+    {
+        "name": "Choral Music",
+        "type": "Follower",
+        "uniques": ["[+2 Culture] from every [Temple] in cities where this religion has at least [5] followers"]
+    },
     {
         "name": "Divine inspiration",
         "type": "Follower",
@@ -138,11 +149,27 @@
         "type": "Follower",
         "uniques": ["[+2 Production] if this city has at least [1] specialists"]
     },
-    // Missing: Holy Warriors (requires purchasing with faith)
-    // Missing: Liturgical drama (requires followers)
-    // Missing: Monasteries (requires purchasing with faith)
-    // Missing: Mosques (requires purchasing with faith)
-    // Missing: Pagodas (requires purchasing with faith)
+    // ToDo: Holy Warriors (I have to look up the faith costs for these sometime)
+    {
+        "name": "Liturgical Drama",
+        "type": "Follower",
+        "uniques": ["[+1 Faith] from every [Amphitheatre] in cities where this religion has at least [3] followers"]
+    },
+    {
+        "name": "Monasteries",
+        "type": "Follower",
+        "uniques": ["May buy [Monastery] buildings for [200] [Faith] [in cities following this religion]"]
+    },
+    {
+        "name": "Mosques",
+        "type": "Follower",
+        "uniques": ["May buy [Mosque] buildings for [200] [Faith] [in cities following this religion]"]
+    },
+    {
+        "name": "Pagodas",
+        "type": "Follower",
+        "uniques": ["May buy [Pagoda] buildings for [200] [Faith] [in cities following this religion]"]
+    },
     {
         "name": "Peace Gardens",
         "type": "Follower",
@@ -153,11 +180,116 @@
         "type": "Follower",
         "uniques": ["[+8 Culture] from every [Hermitage]"]
     },
-    // Missing: Religious center (requires followers)
-    // Missing: Religious community (requires followers)
+    {
+        "name": "Religious Center",
+        "type": "Follower",
+        "uniques": ["[+2 Happiness] from every [Temple] in cities where this religion has at least [5] followers"]
+    },
+    {
+        "name": "Religious Community",
+        "type": "Follower",
+        "uniques": ["[+1]% [Production] from every follower, up to [15]%"]
+    },
     {
         "name": "Swords into Ploughshares",
         "type": "Follower",
         "uniques": ["[+15]% growth [in this city] when not at war"]
+    },
+///////////////////////////////////////// Founder beliefs //////////////////////////////////////////
+    
+    {
+        "name": "Ceremonial Burial",
+        "type": "Founder",
+        "uniques": ["[+1 Happiness] for each global city following this religion"]
+    },
+    {
+        "name": "Church Property",
+        "type": "Founder",
+        "uniques": ["[+2 Gold] for each global city following this religion"]
+    },
+    {
+        "name": "Initiation Rites",
+        "type": "Founder",
+        "uniques": ["[+100 Gold] when a city adopts this religion for the first time (modified by game speed)"]
+    },
+    {
+        "name": "Interfaith Dialogue",
+        "type": "Founder",
+        "uniques": ["When spreading religion to a city, gain [10] times the amount of followers of other religions as [Science]"]
+    }
+    {
+        "name": "Papal Primacy",
+        "type": "Founder",
+        "uniques": ["Resting point for influence with City-States following this religion [+15]"]
+    },
+    {
+        "name": "Peace Loving",
+        "type": "Founder",
+        "uniques": ["[+1 Happiness] for every [5] global followers [in non-enemy foreign cities]"]
+    },
+    {
+        "name": "Pilgrimage",
+        "type": "Founder",
+        "uniques": ["[+2 Faith] for each global city following this religion"]
+    },
+    {
+        "name": "Tithe",
+        "type": "Founder",
+        "uniques": ["[+1 Gold] for every [4] global followers [in all cities]"]
+    },
+    {
+        "name": "World Church",
+        "type": "Founder",
+        "uniques": ["[+1 Culture] for every [5] global followers [in foreign cities]"]
+    },
+
+    ////////////////////////////////////// Enhancer beliefs ///////////////////////////////////////
+
+    {
+        "name": "Defender of the Faith",
+        "type": "Enhancer",
+        "uniques": ["[+20]% Strength for [All] units in [Friendly Land]"],
+        // ToDo: Should only be friendly territory of cities that follow this religion
+    },
+    {
+        "name": "Holy Order",
+        "type": "Enhancer",
+        "uniques": ["[Faith] cost of purchasing [Missionary] units [-30]%", "[Faith] cost of purchasing [Inquisitor] units [-30]%"]
+    },
+    {
+        "name": "Itinerant Preachers",
+        "type": "Enhancer",
+        "uniques": ["Religion naturally spreads to cities [+3] tiles away"]
+    },
+    {
+        "name": "Just War",
+        "type": "Enhancer",
+        "uniques": ["[+20]% Strength for [Non-City] units in [Enemy Land]"],
+        // ToDo: Should only be enemy territory of cities that follow this religion
+    },
+    {
+        "name": "Messiah",
+        "type": "Enhancer",
+        "uniques": ["[+25]% Spread Religion Strength for [Great Prophet] units", "[-25]% Faith cost of generating Great Prophet equivalents"]
+    },
+    {
+        "name": "Missionary Zeal",
+        "type": "Enhancer",
+        "uniques": ["[+25]% Spread Religion Strength for [Missionary] units"]
+    },
+    {
+        "name": "Religious Texts",
+        "type": "Enhancer",
+        "uniques": ["[+34]% Natural religion spread [in all cities]", "[+34]% Natural religion spread [in all cities] with [Printing Press]"]
+    },
+    {
+        "name": "Religious Unity",
+        "type": "Enhancer",
+        "uniques": ["[+100]% Natural religion spread to [in City-State cities]"]
+    },
+    {
+        "name": "Reliquary",
+        "type": "Enhancer",
+        "uniques": ["[+50 Faith] whenever a Great Person is expended"]
     }
 ]

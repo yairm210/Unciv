@@ -1,10 +1,10 @@
 package com.unciv.logic.civilization
 
-enum class CityStateType {
-    Cultured,
-    Maritime,
-    Mercantile,
-    Militaristic
+enum class CityStateType(val color: String = "") {
+    Cultured("#8b60ff"),
+    Maritime("#38ff70"),
+    Mercantile("#ffd800"),
+    Militaristic("#ff0000")
 }
 
 enum class CityStatePersonality {

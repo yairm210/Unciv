@@ -2,6 +2,7 @@ package com.unciv.logic
 
 import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
+import com.unciv.UncivGame
 import com.unciv.logic.civilization.*
 import com.unciv.logic.map.BFS
 import com.unciv.logic.map.TileInfo
@@ -13,67 +14,100 @@ import com.unciv.models.ruleset.ModOptionsConstants
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.tile.ResourceType
-import com.unciv.ui.newgamescreen.GameSetupInfo
+import com.unciv.models.metadata.GameSetupInfo
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 import kotlin.math.max
 
 object GameStarter {
+    // temporary instrumentation while tuning/debugging
+    private const val consoleOutput = false
+    private const val consoleTimings = false
 
     fun startNewGame(gameSetupInfo: GameSetupInfo): GameInfo {
+        if (consoleOutput || consoleTimings)
+            println("\nGameStarter run with parameters ${gameSetupInfo.gameParameters}, map ${gameSetupInfo.mapParameters}")
+
         val gameInfo = GameInfo()
+        lateinit var tileMap: TileMap
+
+        // In the case where we used to have a mod, and now we don't, we cannot "unselect" it in the UI.
+        // We need to remove the dead mods so there aren't problems later.
+        gameSetupInfo.gameParameters.mods.removeAll{ !RulesetCache.containsKey(it) }
 
         gameInfo.gameParameters = gameSetupInfo.gameParameters
         val ruleset = RulesetCache.getComplexRuleset(gameInfo.gameParameters.mods)
 
-        if (gameSetupInfo.mapParameters.name != "") {
-            gameInfo.tileMap = MapSaver.loadMap(gameSetupInfo.mapFile!!)
+        if (gameSetupInfo.mapParameters.name != "") runAndMeasure("loadMap") {
+            tileMap = MapSaver.loadMap(gameSetupInfo.mapFile!!)
             // Don't override the map parameters - this can include if we world wrap or not!
-        } else {
-            gameInfo.tileMap = MapGenerator(ruleset).generateMap(gameSetupInfo.mapParameters)
-            gameInfo.tileMap.mapParameters = gameSetupInfo.mapParameters
+        } else runAndMeasure("generateMap") {
+            tileMap = MapGenerator(ruleset).generateMap(gameSetupInfo.mapParameters)
+            tileMap.mapParameters = gameSetupInfo.mapParameters
         }
 
+        runAndMeasure("addCivilizations") {
+            gameInfo.tileMap = tileMap
+            tileMap.gameInfo = gameInfo // need to set this transient before placing units in the map
+            addCivilizations(gameSetupInfo.gameParameters, gameInfo, ruleset) // this is before gameInfo.setTransients, so gameInfo doesn't yet have the gameBasics
+        }
 
-        gameInfo.tileMap.gameInfo = gameInfo // need to set this transient before placing units in the map
-        addCivilizations(gameSetupInfo.gameParameters, gameInfo, ruleset) // this is before gameInfo.setTransients, so gameInfo doesn't yet have the gameBasics
+        runAndMeasure("Remove units") {
+            // Remove units for civs that aren't in this game
+            for (tile in tileMap.values)
+                for (unit in tile.getUnits())
+                    if (gameInfo.civilizations.none { it.civName == unit.owner }) {
+                        unit.currentTile = tile
+                        unit.setTransients(ruleset)
+                        unit.removeFromTile()
+                    }
+        }
 
-        // Remove units for civs that aren't in this game
-        for (tile in gameInfo.tileMap.values)
-            for (unit in tile.getUnits())
-                if (gameInfo.civilizations.none { it.civName == unit.owner }) {
-                    unit.currentTile = tile
-                    unit.setTransients(ruleset)
-                    unit.removeFromTile()
-                }
+        runAndMeasure("setTransients") {
+            tileMap.setTransients(ruleset) // if we're starting from a map with pre-placed units, they need the civs to exist first
+            tileMap.setStartingLocationsTransients()
 
-        gameInfo.tileMap.setTransients(ruleset) // if we're starting from a map with preplaced units, they need the civs to exist first
+            gameInfo.difficulty = gameSetupInfo.gameParameters.difficulty
 
-        gameInfo.difficulty = gameSetupInfo.gameParameters.difficulty
+            gameInfo.setTransients() // needs to be before placeBarbarianUnit because it depends on the tilemap having its gameInfo set
+        }
 
+        runAndMeasure("Techs and Stats") {
+            addCivTechs(gameInfo, ruleset, gameSetupInfo)
 
-        gameInfo.setTransients() // needs to be before placeBarbarianUnit because it depends on the tilemap having its gameinfo set
+            addCivStats(gameInfo)
+        }
 
-        addCivTechs(gameInfo, ruleset, gameSetupInfo)
-        
-        addCivStats(gameInfo)
-
-        // and only now do we add units for everyone, because otherwise both the gameInfo.setTransients() and the placeUnit will both add the unit to the civ's unit list!
-        addCivStartingUnits(gameInfo)
+        runAndMeasure("addCivStartingUnits") {
+            // and only now do we add units for everyone, because otherwise both the gameInfo.setTransients() and the placeUnit will both add the unit to the civ's unit list!
+            addCivStartingUnits(gameInfo)
+        }
 
         // remove starting locations once we're done
-        for (tile in gameInfo.tileMap.values) {
-            if (tile.improvement != null && tile.improvement!!.startsWith("StartingLocation "))
-                tile.improvement = null
-            // set max starting movement for units loaded from map
+        tileMap.clearStartingLocations()
+
+        // set max starting movement for units loaded from map
+        for (tile in tileMap.values) {
             for (unit in tile.getUnits()) unit.currentMovement = unit.getMaxMovement().toFloat()
         }
-        
+
         // This triggers the one-time greeting from Nation.startIntroPart1/2
         addPlayerIntros(gameInfo)
 
+        UncivGame.Current.settings.apply {
+            lastGameSetup = gameSetupInfo
+            save()
+        }
         return gameInfo
+    }
+
+    private fun runAndMeasure(text: String, action: ()->Unit) {
+        if (!consoleTimings) return action()
+        val startNanos = System.nanoTime()
+        action()
+        val delta = System.nanoTime() - startNanos
+        println("GameStarter.$text took ${delta/1000000L}.${(delta/10000L).rem(100)}ms")
     }
 
     private fun addPlayerIntros(gameInfo: GameInfo) {
@@ -133,6 +167,8 @@ object GameStarter {
         availableCivNames.addAll(ruleset.nations.filter { it.value.isMajorCiv() }.keys.shuffled())
         availableCivNames.removeAll(newGameParameters.players.map { it.chosenCiv })
         availableCivNames.remove(Constants.barbarians)
+        
+        val startingTechs = ruleset.technologies.values.filter { it.uniques.contains("Starting tech") }
 
         if (!newGameParameters.noBarbarians && ruleset.nations.containsKey(Constants.barbarians)) {
             val barbarianCivilization = CivilizationInfo(Constants.barbarians)
@@ -144,44 +180,36 @@ object GameStarter {
             else availableCivNames.pop()
 
             val playerCiv = CivilizationInfo(nationName)
-            for (tech in ruleset.technologies.values.filter { it.uniques.contains("Starting tech") })
+            for (tech in startingTechs)
                 playerCiv.tech.techsResearched.add(tech.name) // can't be .addTechnology because the civInfo isn't assigned yet
             playerCiv.playerType = player.playerType
             playerCiv.playerId = player.playerId
             gameInfo.civilizations.add(playerCiv)
         }
 
-        val cityStatesWithStartingLocations =
-                gameInfo.tileMap.values
-                        .filter { it.improvement != null && it.improvement!!.startsWith("StartingLocation ") }
-                        .map { it.improvement!!.replace("StartingLocation ", "") }
+        val civNamesWithStartingLocations = gameInfo.tileMap.startingLocationsByNation.keys
 
         val availableCityStatesNames = Stack<String>()
         // since we shuffle and then order by, we end up with all the City-States with starting tiles first in a random order,
         //   and then all the other City-States in a random order! Because the sortedBy function is stable!
         availableCityStatesNames.addAll(ruleset.nations.filter { it.value.isCityState() }.keys
-                .shuffled().sortedByDescending { it in cityStatesWithStartingLocations })
+                .shuffled().sortedByDescending { it in civNamesWithStartingLocations })
 
-        val unusedMercantileResources = ruleset.tileResources.values.filter { it.unique == "Can only be created by Mercantile City-States" }.toMutableList()
+        val allMercantileResources = ruleset.tileResources.values.filter { it.unique == "Can only be created by Mercantile City-States" }.map { it.name }
+        val unusedMercantileResources = Stack<String>()
+        unusedMercantileResources.addAll(allMercantileResources.shuffled())
 
         for (cityStateName in availableCityStatesNames.take(newGameParameters.numberOfCityStates)) {
             val civ = CivilizationInfo(cityStateName)
             civ.cityStatePersonality = CityStatePersonality.values().random()
-            if (ruleset.nations[cityStateName]?.cityStateType == CityStateType.Mercantile) {
-                if (!ruleset.tileResources.values.any { it.unique == "Can only be created by Mercantile City-States" }) {
-                    civ.cityStateResource = null
-                } else if (unusedMercantileResources.isNotEmpty()) {
-                    // First pick an unused luxury if possible
-                    val unusedResource = unusedMercantileResources.random()
-                    civ.cityStateResource = unusedResource.name
-                    unusedMercantileResources.remove(unusedResource)
-                } else {
-                    // Then random
-                    civ.cityStateResource = ruleset.tileResources.values.filter { it.unique == "Can only be created by Mercantile City-States" }.random().name
-                }
+            civ.cityStateResource = when {
+                ruleset.nations[cityStateName]?.cityStateType != CityStateType.Mercantile -> null
+                allMercantileResources.isEmpty() -> null
+                unusedMercantileResources.empty() -> allMercantileResources.random()  // When unused luxuries exhausted, random
+                else -> unusedMercantileResources.pop()  // First pick an unused luxury if possible
             }
             gameInfo.civilizations.add(civ)
-            for (tech in ruleset.technologies.values.filter { it.uniques.contains("Starting tech") })
+            for (tech in startingTechs)
                 civ.tech.techsResearched.add(tech.name) // can't be .addTechnology because the civInfo isn't assigned yet
         }
     }
@@ -189,38 +217,35 @@ object GameStarter {
     private fun addCivStartingUnits(gameInfo: GameInfo) {
 
         val ruleSet = gameInfo.ruleSet
+        val tileMap = gameInfo.tileMap
         val startingEra = gameInfo.gameParameters.startingEra
         var startingUnits: MutableList<String>
         var eraUnitReplacement: String
 
-        val startScores = HashMap<TileInfo, Float>()
-        for (tile in gameInfo.tileMap.values) {
+        val startScores = HashMap<TileInfo, Float>(tileMap.values.size)
+        for (tile in tileMap.values) {
             startScores[tile] = tile.getTileStartScore()
         }
 
         // First we get start locations for the major civs, on the second pass the city states (without predetermined starts) can squeeze in wherever
         // I hear copying code is good
-        val cityStatesWithStartingLocations =
-            gameInfo.tileMap.values
-                .filter { it.improvement != null && it.improvement!!.startsWith("StartingLocation ") }
-                .map { it.improvement!!.replace("StartingLocation ", "") }
-        val bestCivs = gameInfo.civilizations.filter { !it.isBarbarian() && (!it.isCityState() || it.civName in cityStatesWithStartingLocations) }
-        val bestLocations = getStartingLocations(bestCivs, gameInfo.tileMap, startScores)
-        for (civ in bestCivs)
-        {
-            if (civ.isCityState())  // Already have explicit starting locations
+        val civNamesWithStartingLocations = tileMap.startingLocationsByNation.keys
+        val bestCivs = gameInfo.civilizations.filter { !it.isBarbarian() && (!it.isCityState() || it.civName in civNamesWithStartingLocations) }
+        val bestLocations = getStartingLocations(bestCivs, tileMap, startScores)
+        for ((civ, tile) in bestLocations) {
+            if (civ.civName in civNamesWithStartingLocations)  // Already have explicit starting locations
                 continue
 
             // Mark the best start locations so we remember them for the second pass
-            bestLocations[civ]!!.improvement = "StartingLocation " + civ.civName
+            tileMap.addStartingLocation(civ.civName, tile)
         }
 
         val startingLocations = getStartingLocations(
                 gameInfo.civilizations.filter { !it.isBarbarian() },
-                gameInfo.tileMap, startScores)
+                tileMap, startScores)
 
         val settlerLikeUnits = ruleSet.units.filter {
-            it.value.uniqueObjects.any { it.placeholderText == Constants.settlerUnique }
+            it.value.uniqueObjects.any { unique -> unique.placeholderText == Constants.settlerUnique }
         }
 
         // no starting units for Barbarians and Spectators
@@ -236,8 +261,7 @@ object GameStarter {
                 addCityStateLuxury(gameInfo, startingLocation)
 
             for (tile in startingLocation.getTilesInDistance(3)) {
-                if (tile.improvement != null 
-                    && !tile.improvement!!.startsWith("StartingLocation") 
+                if (tile.improvement != null
                     && tile.getTileImprovement()!!.isAncientRuinsEquivalent()
                 ) {
                     tile.improvement = null // Remove ancient ruins in immediate vicinity
@@ -274,7 +298,7 @@ object GameStarter {
                 }
                 if (unit == "Worker" && "Worker" !in ruleSet.units) {
                     val buildableWorkerLikeUnits = ruleSet.units.filter {
-                        it.value.uniqueObjects.any { it.placeholderText == Constants.canBuildImprovements }
+                        it.value.uniqueObjects.any { unique -> unique.placeholderText == Constants.canBuildImprovements }
                                 && it.value.isBuildable(civ)
                                 && it.value.isCivilian()
                     }
@@ -316,24 +340,20 @@ object GameStarter {
         while (landTiles.any()) {
             val bfs = BFS(landTiles.random()) { it.isLand && !it.isImpassible() }
             bfs.stepToEnd()
-            val tilesInGroup = bfs.tilesReached.keys
+            val tilesInGroup = bfs.getReachedTiles()
             landTiles = landTiles.filter { it !in tilesInGroup }
             if (tilesInGroup.size > 20) // is this a good number? I dunno, but it's easy enough to change later on
                 landTilesInBigEnoughGroup.addAll(tilesInGroup)
         }
 
-        val tilesWithStartingLocations = tileMap.values
-                .filter { it.improvement != null && it.improvement!!.startsWith("StartingLocation ") }
-
-
         val civsOrderedByAvailableLocations = civs.shuffled()   // Order should be random since it determines who gets best start
             .sortedBy { civ ->
             when {
-                tilesWithStartingLocations.any { it.improvement == "StartingLocation " + civ.civName } -> 1 // harshest requirements
+                civ.civName in tileMap.startingLocationsByNation -> 1 // harshest requirements
                 civ.nation.startBias.contains("Tundra") -> 2    // Tundra starts are hard to find, so let's do them first
                 civ.nation.startBias.isNotEmpty() -> 3 // less harsh
-                else -> 4
-            }  // no requirements
+                else -> 4  // no requirements
+            }
         }
 
         for (minimumDistanceBetweenStartingLocations in tileMap.tileMatrix.size / 4 downTo 0) {
@@ -344,7 +364,7 @@ object GameStarter {
             val startingLocations = HashMap<CivilizationInfo, TileInfo>()
             for (civ in civsOrderedByAvailableLocations) {
                 var startingLocation: TileInfo
-                val presetStartingLocation = tilesWithStartingLocations.firstOrNull { it.improvement == "StartingLocation " + civ.civName }
+                val presetStartingLocation = tileMap.startingLocationsByNation[civ.civName]?.randomOrNull()  // in case map editor is extended to allow alternate starting locations for a nation
                 var distanceToNext = minimumDistanceBetweenStartingLocations
 
                 if (presetStartingLocation != null) startingLocation = presetStartingLocation
@@ -358,11 +378,14 @@ object GameStarter {
                     var preferredTiles = freeTiles.toList()
 
                     for (startBias in civ.nation.startBias) {
-                        if (startBias.startsWith("Avoid ")) {
-                            val tileToAvoid = startBias.removePrefix("Avoid [").removeSuffix("]")
-                            preferredTiles = preferredTiles.filter { !it.matchesTerrainFilter(tileToAvoid) }
-                        } else if (startBias == Constants.coast) preferredTiles = preferredTiles.filter { it.isCoastalTile() }
-                        else preferredTiles = preferredTiles.filter { it.matchesTerrainFilter(startBias) }
+                        preferredTiles = when {
+                            startBias.startsWith("Avoid [") -> {
+                                val tileToAvoid = startBias.removePrefix("Avoid [").removeSuffix("]")
+                                preferredTiles.filter { !it.matchesTerrainFilter(tileToAvoid) }
+                            }
+                            startBias == Constants.coast -> preferredTiles.filter { it.isCoastalTile() }
+                            else -> preferredTiles.filter { it.matchesTerrainFilter(startBias) }
+                        }
                     }
 
                     startingLocation = if (preferredTiles.isNotEmpty()) preferredTiles.last() else freeTiles.last()

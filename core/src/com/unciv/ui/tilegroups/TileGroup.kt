@@ -11,6 +11,7 @@ import com.unciv.UncivGame
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.RoadStatus
 import com.unciv.logic.map.TileInfo
+import com.unciv.logic.map.TileMap
 import com.unciv.ui.cityscreen.YieldGroup
 import com.unciv.ui.utils.ImageGetter
 import com.unciv.ui.utils.center
@@ -331,13 +332,6 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings, 
     }
 
     private fun removeMissingModReferences() {
-        val improvementName = tileInfo.improvement
-        if(improvementName != null && improvementName.startsWith("StartingLocation ")){
-            val nationName = improvementName.removePrefix("StartingLocation ")
-            if (!tileInfo.ruleset.nations.containsKey(nationName))
-                tileInfo.improvement = null
-        }
-
         for (unit in tileInfo.getUnits())
             if (!tileInfo.ruleset.nations.containsKey(unit.owner)) unit.removeFromTile()
     }

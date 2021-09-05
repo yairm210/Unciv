@@ -26,7 +26,8 @@
 		"strength": 5,
 		"cost": 25,
 		"obsoleteTech": "Scientific Theory",
-		"uniques": ["Ignores terrain cost", "May upgrade to [Archer] through ruins-like effects"],
+		"uniques": ["May upgrade to [Archer] through ruins-like effects"],
+		"promotions": ["Ignore terrain cost"],
 		"attackSound": "nonmetalhit"
 	},
 	{
@@ -146,7 +147,7 @@
 		"movement": 4,
 		"cost": 30,
 		"requiredTech": "Sailing",
-		"uniques": ["Cannot enter ocean tiles until Astronomy", "May create improvements on water resources"]
+		"uniques": ["Cannot enter ocean tiles until Astronomy", "May create improvements on water resources", "Uncapturable"]
 	},
 	{
 		"name": "Trireme",
@@ -995,6 +996,22 @@
 		"attackSound": "horse"
 	},
 	{
+		"name": "Hussar",
+		"unitType": "Mounted",
+		"replaces": "Cavalry",
+		"uniqueTo": "Austria",
+		"movement": 5,
+		"strength": 34,
+		"cost": 225,
+		"requiredTech": "Military Science",
+		"obsoleteTech": "Combustion",
+		"requiredResource": "Horses",
+		"upgradesTo": "Landship",
+		"uniques": ["Can move after attacking","No defensive terrain bonus","-[33]% Strength vs [City]" ,
+		"[+1] Visibility Range", "[+50]% to Flank Attack bonuses" ],
+		"attackSound": "horse"
+	},
+	{
 		"name": "Ironclad",
 		"unitType": "Melee Water",
 		"movement": 3,
@@ -1033,7 +1050,7 @@
 		"cost": 325,
 		"requiredTech": "Refrigeration",
 		"upgradesTo": "Nuclear Submarine",
-		"uniques": ["+[75]% Strength when attacking", "Can only attack [Water] tiles", "Can attack submarines"],
+		"uniques": ["+[75]% Strength when attacking", "Can only attack [Water] tiles"],
 		"attackSound": "torpedo"
 	},
 	{
@@ -1074,7 +1091,7 @@
 		"requiredResource": "Oil",
 		"upgradesTo": "Fighter",
 		"obsoleteTech": "Radar",
-		"uniques": ["[50]% chance to intercept air attacks","+[50]% Strength vs [Bomber]"],
+		"uniques": ["[50]% chance to intercept air attacks", "+[150]% Strength vs [Bomber]", "+[150]% Strength vs [Helicopter]"],
 		"attackSound": "machinegun"
 	},
 	{
@@ -1148,7 +1165,7 @@
 		"requiredTech": "Ballistics",
 		"upgradesTo": "Mobile SAM",
 		"obsoleteTech": "Rocketry",
-		"uniques": ["[100]% chance to intercept air attacks","+[150]% Strength vs [air units]"],
+		"uniques": ["[100]% chance to intercept air attacks", "+[150]% Strength vs [air units]", "+[150]% Strength vs [Helicopter]"],
 		"attackSound": "machinegun"
 	},
 	{
@@ -1172,7 +1189,7 @@
 		"interceptRange": 2,
 		"cost": 375,
 		"requiredTech": "Combustion",
-		"uniques": ["Can attack submarines", "[40]% chance to intercept air attacks",
+		"uniques": ["Can see invisible [Submarine] units", "[40]% chance to intercept air attacks",
 			"May withdraw before melee ([80]%)", "+[100]% Strength vs [submarine units]"],
 		"attackSound": "shipguns"
 	},
@@ -1202,7 +1219,7 @@
 		"requiredTech": "Radar",
 		"requiredResource": "Oil",
 		"upgradesTo": "Jet Fighter",
-		"uniques": ["[100]% chance to intercept air attacks", "+[150]% Strength vs [Bomber]"],
+		"uniques": ["[100]% chance to intercept air attacks", "+[150]% Strength vs [Bomber]", "+[150]% Strength vs [Helicopter]"],
 		"attackSound": "machinegun"
 	},
 	{
@@ -1218,8 +1235,8 @@
 		"cost": 375,
 		"requiredTech": "Radar",
 		"upgradesTo": "Jet Fighter",
-		"uniques": ["[100]% chance to intercept air attacks","+[150]% Strength vs [Bomber]","+[33]% Strength vs [Fighter]",
-			"6 tiles in every direction always visible"],
+		"uniques": ["[100]% chance to intercept air attacks", "+[150]% Strength vs [Bomber]", "+[150]% Strength vs [Helicopter]",
+			"+[33]% Strength vs [Fighter]"],
 		"attackSound": "machinegun"
 	},
 	{
@@ -1338,7 +1355,7 @@
 		"strength": 65,
 		"cost": 425,
 		"requiredTech": "Rocketry",
-		"uniques": ["[100]% chance to intercept air attacks","+[150]% Strength vs [air units]"],
+		"uniques": ["[100]% chance to intercept air attacks", "+[150]% Strength vs [air units]", "+[150]% Strength vs [Helicopter]"],
 		"attackSound": "missile"
 	},
 	{
@@ -1376,7 +1393,7 @@
 		"requiredTech": "Computers",
 		"requiredResource": "Aluminum",
 		"uniques": ["+[100]% Strength vs [Armored]", "No defensive terrain bonus", "Can move after attacking",
-			"All tiles cost 1 movement", "Unable to capture cities"],
+			"All tiles cost 1 movement", "Ignores Zone of Control", "Unable to capture cities"],
 		"attackSound": "machinegun"
 	},
 
@@ -1390,8 +1407,7 @@
 		"rangedStrength": 85,
 		"cost": 425,
 		"requiredTech": "Telecommunications",
-		"uniques": ["+[75]% Strength when attacking", "Can only attack [Water] tiles", "Can attack submarines",
-			"[+1] Visibility Range", "Can carry [2] [Missile] units"],
+		"uniques": ["+[75]% Strength when attacking", "Can only attack [Water] tiles", "[+1] Visibility Range", "Can carry [2] [Missile] units"],
 		"attackSound": "torpedo"
 	},
 	{
@@ -1413,7 +1429,7 @@
 		"interceptRange": 2,
 		"cost": 425,
 		"requiredTech": "Robotics",
-		"uniques": ["[100]% chance to intercept air attacks", "Can attack submarines",
+		"uniques": ["[100]% chance to intercept air attacks", "Can see invisible [Submarine] units",
 			"Ranged attacks may be performed over obstacles", "Can carry [3] [Missile] units",
 			"+[100]% Strength vs [submarine units]"],
 		"attackSound": "shipguns"
@@ -1441,7 +1457,7 @@
 		"cost": 425,
 		"requiredTech": "Lasers",
 		"requiredResource": "Aluminum",
-		"uniques": ["[100]% chance to intercept air attacks", "+[150]% Strength vs [Bomber]"],
+		"uniques": ["[100]% chance to intercept air attacks", "+[150]% Strength vs [Bomber]", "+[150]% Strength vs [Helicopter]"],
 		"attackSound": "jetgun"
 	},
 	{
@@ -1474,40 +1490,44 @@
 	{
 		"name": "Great Artist",
 		"unitType": "Civilian",
-		"uniques": ["Can start an [8]-turn golden age", "Can construct [Landmark]", "Great Person - [Culture]", "Unbuildable"],
+		"uniques": ["Can start an [8]-turn golden age", "Can construct [Landmark]", "Great Person - [Culture]", "Unbuildable", "Uncapturable"],
 		"movement": 2
 	},
 	{
 		"name": "Great Scientist",
 		"unitType": "Civilian",
-		"uniques": ["Can hurry technology research", "Can construct [Academy]", "Great Person - [Science]", "Unbuildable"],
+		"uniques": ["Can hurry technology research", "Can construct [Academy]", "Great Person - [Science]", "Unbuildable", "Uncapturable"],
 		"movement": 2
 	},
 	{
 		"name": "Great Merchant",
 		"unitType": "Civilian",
 		"uniques": ["Can undertake a trade mission with City-State, giving a large sum of gold and [30] Influence",
-			"Can construct [Customs house]", "Great Person - [Gold]", "Unbuildable"],
+			"Can construct [Customs house]", "Great Person - [Gold]", "Unbuildable", "Uncapturable"],
 		"movement": 2
 	},
 	{
 		"name": "Great Engineer",
 		"unitType": "Civilian",
-		"uniques": ["Can speed up construction of a wonder", "Can construct [Manufactory]", "Great Person - [Production]", "Unbuildable"],
+		"uniques": ["Can speed up construction of a building", "Can construct [Manufactory]", "Great Person - [Production]", "Unbuildable", "Uncapturable"],
 		"movement": 2
 	},
 	{
 		"name": "Great Prophet",
 		"unitType": "Civilian",
-		"uniques": ["Can construct [Holy site] if it hasn't spread religion yet", "Can spread religion [4] times",
-			"May found a religion", "Great Person - [Faith]", "Unbuildable", "Religious Unit", "Hidden when religion is disabled"],
-		"movement": 2
+		"uniques": ["Can construct [Holy site] if it hasn't used other actions yet", "Can [Spread Religion] [4] times",
+			"Removes other religions when spreading religion", "May found a religion", "May enhance a religion", 
+			"May enter foreign tiles without open borders", "[-1] Visibility Range", "Great Person - [Faith]", 
+			"Unbuildable", "Religious Unit", "Hidden when religion is disabled", 
+			"Takes your religion over the one in their birth city"],
+		"movement": 2,
+		"religiousStrength": 1000
 	},
 	{
 		"name": "Great General",
 		"unitType": "Civilian",
 		"uniques": ["Can start an [8]-turn golden age", "Bonus for units in 2 tile radius 15%", "Can construct [Citadel]",
-			"Great Person - [War]", "Unbuildable"],
+			"Great Person - [War]", "Unbuildable", "Uncapturable"],
 		"movement": 2
 	},
 	{
@@ -1516,7 +1536,7 @@
 		"uniqueTo": "Mongolia",
 		"replaces": "Great General",
 		"uniques": ["Can start an [8]-turn golden age","Bonus for units in 2 tile radius 15%",
-			"Heal adjacent units for an additional 15 HP per turn", "Can construct [Citadel]", "Great Person - [War]", "Unbuildable"],
+			"Heal adjacent units for an additional 15 HP per turn", "Can construct [Citadel]", "Great Person - [War]", "Unbuildable", "Uncapturable"],
 		"movement": 5
 	},
 
@@ -1525,9 +1545,21 @@
 	{
 		"name": "Missionary",
 		"unitType": "Civilian",
-		"uniques": ["Can spread religion [2] times", "Can be purchased with [Faith] [in all cities in which the majority religion is a major religion]",
-			"Unbuildable", "Religious Unit", "Hidden when religion is disabled"],
-		"movement": 4
+		"uniques": ["Can [Spread Religion] [2] times", "May enter foreign tiles without open borders, but loses [250] religious strength each turn it ends there",
+			"Can be purchased with [Faith] [in all cities in which the majority religion is a major religion]", 
+			"[-1] Visibility Range", "Unbuildable", "Religious Unit", "Hidden when religion is disabled"],
+		"movement": 4,
+		"religiousStrength": 1000
+	},
+	{
+		"name": "Inquisitor",
+		"unitType": "Civilian",
+		"uniques": ["Prevents spreading of religion to the city it is next to",
+			"Can [Remove Foreign religions from your own cities] [1] times",
+			"Can be purchased with [Faith] [in all cities in which the majority religion is an enhanced religion]",
+			"[+1] Visibility Range", "Hidden when religion is disabled", "Unbuildable", "Religious Unit"
+		],
+		"movement": 3,
 	}
 
 	/* Spaceship Parts */
