@@ -93,10 +93,10 @@ object Battle {
         // Add culture when defeating a barbarian when Honor policy is adopted, gold from enemy killed when honor is complete
         // or any enemy military unit with Sacrificial captives unique (can be either attacker or defender!)
         if (defender.isDefeated() && defender is MapUnitCombatant && !defender.unit.isCivilian()) {
-            tryEarnFromKilling(attacker, defender, attackedTile)
+            tryEarnFromKilling(attacker, defender)
             tryHealAfterKilling(attacker)
         } else if (attacker.isDefeated() && attacker is MapUnitCombatant && !attacker.unit.isCivilian()) {
-            tryEarnFromKilling(defender, attacker, attackedTile)
+            tryEarnFromKilling(defender, attacker)
             tryHealAfterKilling(defender)
         }
 
@@ -116,7 +116,7 @@ object Battle {
         if (!isAlreadyDefeatedCity) postBattleAddXp(attacker, defender)
     }
 
-    private fun tryEarnFromKilling(civUnit: ICombatant, defeatedUnit: MapUnitCombatant, attackedTile: TileInfo) {
+    private fun tryEarnFromKilling(civUnit: ICombatant, defeatedUnit: MapUnitCombatant) {
         val unitStr = max(defeatedUnit.unit.baseUnit.strength, defeatedUnit.unit.baseUnit.rangedStrength)
         val unitCost = defeatedUnit.unit.baseUnit.cost
         var bonusUniquePlaceholderText = "Earn []% of killed [] unit's [] as []"
@@ -156,9 +156,9 @@ object Battle {
         }
 
         // CS friendship from killing barbarians
-        if (defeatedUnit.matchesCategory("{Barbarian} {Military}") && civUnit.getCivInfo().isMajorCiv()) {
+        if (defeatedUnit.matchesCategory("Barbarian") && defeatedUnit.matchesCategory("Military") && civUnit.getCivInfo().isMajorCiv()) {
             for (cityState in UncivGame.Current.gameInfo.getAliveCityStates()) {
-                if (attackedTile.getOwner() == cityState || attackedTile.neighbors.any { it.getOwner() == cityState }) {
+                if (defeatedUnit.unit.threatensCiv(cityState)) {
                     cityState.threateningBarbarianKilledBy(civUnit.getCivInfo())
                 }
             }
