@@ -375,8 +375,6 @@ class Ruleset {
                 lines += "${building.name} requires ${building.requiredBuilding} which does not exist!"
             if (building.requiredBuildingInAllCities != null && !buildings.containsKey(building.requiredBuildingInAllCities!!))
                 lines += "${building.name} requires ${building.requiredBuildingInAllCities} in all cities which does not exist!"
-            if (building.providesFreeBuilding != null && !buildings.containsKey(building.providesFreeBuilding!!))
-                lines += "${building.name} provides a free ${building.providesFreeBuilding} which does not exist!"
             for (unique in building.uniqueObjects)
                 if (unique.placeholderText == "Creates a [] improvement on a specific tile" && !tileImprovements.containsKey(unique.params[0]))
                     lines += "${building.name} creates a ${unique.params[0]} improvement which does not exist!"

@@ -7,7 +7,7 @@ plugins {
 }
 
 android {
-    compileSdkVersion(30)
+    compileSdk = 30
     sourceSets {
         getByName("main").apply {
             manifest.srcFile("AndroidManifest.xml")

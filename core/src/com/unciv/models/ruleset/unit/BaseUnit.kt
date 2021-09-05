@@ -257,14 +257,6 @@ class BaseUnit : INamed, INonPerpetualConstruction, ICivilopediaText {
         var cost = getBaseBuyCost(cityInfo, stat)?.toDouble()
         if (cost == null) return null
 
-
-        // Deprecated since 3.15.15
-            if (stat == Stat.Gold) {
-                for (unique in cityInfo.getMatchingUniques("Cost of purchasing items in cities reduced by []%"))
-                    cost *= 1f - (unique.params[0].toFloat() / 100f)
-            }
-        //
-
         for (unique in cityInfo.getMatchingUniques("[] cost of purchasing [] units []%")) {
             if (stat.name == unique.params[0] && matchesFilter(unique.params[1]))
                 cost *= unique.params[2].toPercent()
