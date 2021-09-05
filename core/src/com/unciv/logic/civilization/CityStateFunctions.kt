@@ -231,15 +231,15 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
         if (civInfo.getDiplomacyManager(demandingCiv).influence < -30)
             modifiers["Influence below -30"] = -300
 
-        // Slight optimization, we don't do the expensive stuff if we have no chance of getting a positive result
-        if (!requireWholeList && modifiers.values.sum() <= -200)
+        // Slight optimization, we don't do the expensive stuff if we have no chance of getting a >= 0 result
+        if (!requireWholeList && modifiers.values.sum() < -200)
             return modifiers
 
         val forceRank = civInfo.gameInfo.getAliveMajorCivs().sortedByDescending { it.getStatForRanking(
             RankingType.Force) }.indexOf(demandingCiv)
         modifiers["Military Rank"] = 100 - ((100 / civInfo.gameInfo.gameParameters.players.size) * forceRank)
 
-        if (!requireWholeList && modifiers.values.sum() <= -100)
+        if (!requireWholeList && modifiers.values.sum() < -100)
             return modifiers
 
         val bullyRange = max(5, civInfo.gameInfo.tileMap.tileMatrix.size / 10)   // Longer range for larger maps
