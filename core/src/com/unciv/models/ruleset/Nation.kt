@@ -248,7 +248,7 @@ class Nation : INamed, ICivilopediaText, IHasUniques {
 
         textList += FormattedLine("Type: [$cityStateType]", header = 4, color = cityStateType!!.color)
         val viewingCiv = UncivGame.Current.gameInfo.currentPlayerCiv
-        val era = viewingCiv.getEraObject() ?: Era.getLegacyCityStateBonusEra(viewingCiv.getEraNumber())
+        val era = viewingCiv.getEra()
         var showResources = false
 
         val friendBonus = era.friendBonus[cityStateType!!.name]

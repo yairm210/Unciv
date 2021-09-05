@@ -100,16 +100,12 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
                     .relationshipLevel() >= RelationshipLevel.Friend
             ) {
                 val cityStateBonus = Stats()
-                val eraInfo = civInfo.getEraObject()
+                val eraInfo = civInfo.getEra()
 
                 val relevantBonuses =
-                    when {
-                        eraInfo == null -> null
-                        otherCiv.getDiplomacyManager(civInfo.civName)
-                            .relationshipLevel() == RelationshipLevel.Friend ->
-                            eraInfo.friendBonus[otherCiv.cityStateType.name]
-                        else -> eraInfo.allyBonus[otherCiv.cityStateType.name]
-                    }
+                    if (otherCiv.getDiplomacyManager(civInfo.civName).relationshipLevel() == RelationshipLevel.Friend)
+                        eraInfo.friendBonus[otherCiv.cityStateType.name]
+                    else eraInfo.allyBonus[otherCiv.cityStateType.name]
 
                 if (relevantBonuses != null) {
                     for (bonus in relevantBonuses) {
@@ -299,16 +295,11 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
             if (otherCiv.isCityState() && otherCiv.getDiplomacyManager(civInfo)
                     .relationshipLevel() >= RelationshipLevel.Friend
             ) {
-                val eraInfo = civInfo.getEraObject()
+                val eraInfo = civInfo.getEra()
                 val relevantBonuses =
-                    when {
-                        eraInfo == null -> null
-                        otherCiv.getDiplomacyManager(civInfo)
-                            .relationshipLevel() == RelationshipLevel.Friend ->
-                            eraInfo.friendBonus[otherCiv.cityStateType.name]
-                        else ->
-                            eraInfo.allyBonus[otherCiv.cityStateType.name]
-                    }
+                    if (otherCiv.getDiplomacyManager(civInfo).relationshipLevel() == RelationshipLevel.Friend)
+                        eraInfo.friendBonus[otherCiv.cityStateType.name]
+                    else eraInfo.allyBonus[otherCiv.cityStateType.name]
 
                 if (relevantBonuses != null) {
                     for (bonus in relevantBonuses) {

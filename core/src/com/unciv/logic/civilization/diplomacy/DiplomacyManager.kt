@@ -531,18 +531,15 @@ class DiplomacyManager() {
             revertToZero(DiplomaticModifiers.DeclarationOfFriendship, 1 / 2f) //decreases slowly and will revert to full if it is declared later
 
         if (otherCiv().isCityState()) {
-            val eraInfo = civInfo.getEraObject()
+            val eraInfo = civInfo.getEra()
 
             if (relationshipLevel() < RelationshipLevel.Friend) {
                 if (hasFlag(DiplomacyFlags.ProvideMilitaryUnit)) removeFlag(DiplomacyFlags.ProvideMilitaryUnit)
             } else {
                 val relevantBonuses =
-                    when {
-                        eraInfo == null -> null
-                        relationshipLevel() == RelationshipLevel.Friend ->
-                            eraInfo.friendBonus[otherCiv().cityStateType.name]    
-                        else -> eraInfo.allyBonus[otherCiv().cityStateType.name]
-                    }
+                    if (relationshipLevel() == RelationshipLevel.Friend)
+                        eraInfo.friendBonus[otherCiv().cityStateType.name]    
+                    else eraInfo.allyBonus[otherCiv().cityStateType.name]
                         
                 if (relevantBonuses == null && otherCiv().cityStateType == CityStateType.Militaristic) {
                     // Deprecated, assume Civ V values for compatibility
