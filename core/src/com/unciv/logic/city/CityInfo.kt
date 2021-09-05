@@ -43,15 +43,15 @@ class CityInfo {
     lateinit var tilesInRange: HashSet<TileInfo>
 
     @Transient
-    var hasJustBeenConquered =
-        false  // this is so that military units can enter the city, even before we decide what to do with it
+    // This is so that military units can enter the city, even before we decide what to do with it
+    var hasJustBeenConquered = false  
 
     var location: Vector2 = Vector2.Zero
     var id: String = UUID.randomUUID().toString()
     var name: String = ""
     var foundingCiv = ""
-    var previousOwner =
-        "" // This is so that cities in resistance that re recaptured aren't in resistance anymore
+    // This is so that cities in resistance that are recaptured aren't in resistance anymore
+    var previousOwner = "" 
     var turnAcquired = 0
     var health = 200
     var resistanceCounter = 0
@@ -248,8 +248,10 @@ class CityInfo {
     fun isCapital(): Boolean = cityConstructions.builtBuildings.contains(capitalCityIndicator())
     fun isCoastal(): Boolean = centerTileInfo.isCoastalTile()
     fun capitalCityIndicator(): String {
-        val indicatorBuildings = getRuleset().buildings.values.asSequence()
+        val indicatorBuildings = getRuleset().buildings.values
+            .asSequence()
             .filter { it.uniques.contains("Indicates the capital city") }
+        
         val civSpecificBuilding = indicatorBuildings.firstOrNull { it.uniqueTo == civInfo.civName }
         if (civSpecificBuilding != null) return civSpecificBuilding.name
         else return indicatorBuildings.first().name
@@ -297,8 +299,9 @@ class CityInfo {
             val resource = getRuleset().tileResources[unique.params[1]]
             if (resource != null) {
                 cityResources.add(
-                    resource, unique.params[0].toInt()
-                            * civInfo.getResourceModifier(resource), "Tiles"
+                    resource, 
+                    unique.params[0].toInt() * civInfo.getResourceModifier(resource), 
+                    "Tiles"
                 )
             }
         }
@@ -599,11 +602,15 @@ class CityInfo {
      */
     private fun triggerCitiesSettledNearOtherCiv() {
         val citiesWithin6Tiles =
-            civInfo.gameInfo.civilizations.filter { it.isMajorCiv() && it != civInfo }
+            civInfo.gameInfo.civilizations
+                .filter { it.isMajorCiv() && it != civInfo }
                 .flatMap { it.cities }
                 .filter { it.getCenterTile().aerialDistanceTo(getCenterTile()) <= 6 }
-        val civsWithCloseCities = citiesWithin6Tiles.map { it.civInfo }.distinct()
-            .filter { it.knows(civInfo) && it.exploredTiles.contains(location) }
+        val civsWithCloseCities = 
+            citiesWithin6Tiles
+                .map { it.civInfo }
+                .distinct()
+                .filter { it.knows(civInfo) && it.exploredTiles.contains(location) }
         for (otherCiv in civsWithCloseCities)
             otherCiv.getDiplomacyManager(civInfo).setFlag(DiplomacyFlags.SettledCitiesNearUs, 30)
     }
@@ -630,13 +637,13 @@ class CityInfo {
             "in all cities with a garrison" -> getCenterTile().militaryUnit != null
             "in all cities in which the majority religion is a major religion" ->
                 religion.getMajorityReligionName() != null
-                        && religion.getMajorityReligion()!!.isMajorReligion()
+                && religion.getMajorityReligion()!!.isMajorReligion()
             "in all cities in which the majority religion is an enhanced religion" ->
                 religion.getMajorityReligionName() != null
-                        && religion.getMajorityReligion()!!.isEnhancedReligion()
+                && religion.getMajorityReligion()!!.isEnhancedReligion()
             "in non-enemy foreign cities" ->
                 viewingCiv != civInfo
-                        && !civInfo.isAtWarWith(viewingCiv)
+                && !civInfo.isAtWarWith(viewingCiv)
             "in foreign cities" -> viewingCiv != civInfo
             "in annexed cities" -> foundingCiv != civInfo.civName && !isPuppet
             "in holy cities" -> religion.religionThisIsTheHolyCityOf != null
@@ -718,9 +725,12 @@ class CityInfo {
                 if (!tilesList.contains(tile))
                     cityPositionList.add(tile)
 
-        return cityPositionList.asSequence()
-            .map { it.getOwner()?.civName }.filterNotNull()
-            .distinct().toList()
+        return cityPositionList
+            .asSequence()
+            .map { it.getOwner()?.civName }
+            .filterNotNull()
+            .distinct()
+            .toList()
     }
 
     fun getImprovableTiles(): Sequence<TileInfo> = getTiles()
