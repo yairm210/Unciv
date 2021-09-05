@@ -139,7 +139,7 @@
         },
         "iconRGB": [63, 81, 182],
         "uniques": ["May not generate great prophet equivalents naturally",
-            "May buy [Great Prophet] units for [1000] [Faith] [in all cities in which the majority religion is a major religion] at an increasing price ([500])",
+            "May buy [Great Prophet] units for [200] [Faith] [in all cities in which the majority religion is a major religion] at an increasing price ([100])",
             "Starting in this era disables religion"
         ]
     },
@@ -174,7 +174,7 @@
         },
         "iconRGB": [33, 150, 243],
         "uniques": ["May not generate great prophet equivalents naturally",
-            "May buy [Great Prophet] units for [1000] [Faith] [in all cities in which the majority religion is a major religion] at an increasing price ([500])",
+            "May buy [Great Prophet] units for [200] [Faith] [in all cities in which the majority religion is a major religion] at an increasing price ([100])",
             "Starting in this era disables religion"
         ]
     },
@@ -210,7 +210,7 @@
         },
         "iconRGB": [0, 150, 136],
         "uniques": ["May not generate great prophet equivalents naturally",
-            "May buy [Great Prophet] units for [1000] [Faith] [in all cities in which the majority religion is a major religion] at an increasing price ([500])",
+            "May buy [Great Prophet] units for [200] [Faith] [in all cities in which the majority religion is a major religion] at an increasing price ([100])",
             "Starting in this era disables religion"
         ]
     },
@@ -250,7 +250,7 @@
         },
         "iconRGB": [76, 176, 81],
         "uniques": ["May not generate great prophet equivalents naturally",
-            "May buy [Great Prophet] units for [1000] [Faith] [in all cities in which the majority religion is a major religion] at an increasing price ([500])",
+            "May buy [Great Prophet] units for [200] [Faith] [in all cities in which the majority religion is a major religion] at an increasing price ([100])",
             "Starting in this era disables religion"
         ]
     },
@@ -289,7 +289,7 @@
         },
         "iconRGB": [76, 176, 81],
         "uniques": ["May not generate great prophet equivalents naturally",
-            "May buy [Great Prophet] units for [1000] [Faith] [in all cities in which the majority religion is a major religion] at an increasing price ([500])",
+            "May buy [Great Prophet] units for [200] [Faith] [in all cities in which the majority religion is a major religion] at an increasing price ([100])",
             "Starting in this era disables religion"
         ]
     }

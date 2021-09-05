@@ -27,8 +27,11 @@ class ReligionManager {
     // But the other one should still be _somewhere_. So our only option is to have the GameInfo
     // contain the master list, and the ReligionManagers retrieve it from there every time the game loads.
 
-    var greatProphetsEarned = 0
-        private set
+    // Deprecated since 3.16.13
+        @Deprecated("Replace by adding to `civInfo.boughtConstructionsWithGloballyIncreasingPrice`")
+        var greatProphetsEarned = 0
+            private set
+    //
 
     var religionState = ReligionState.None
         private set
@@ -47,7 +50,6 @@ class ReligionManager {
         clone.shouldChoosePantheonBelief = shouldChoosePantheonBelief
         clone.storedFaith = storedFaith
         clone.religionState = religionState
-        clone.greatProphetsEarned = greatProphetsEarned
         return clone
     }
 
@@ -62,6 +64,13 @@ class ReligionManager {
         religion = civInfo.gameInfo.religions.values.firstOrNull {
             it.foundingCivName == civInfo.civName
         }
+        
+        // greatProphetsEarned deprecated since 3.16.13, replacement code
+            if (greatProphetsEarned != 0) {
+                civInfo.boughtConstructionsWithGloballyIncreasingPrice[getGreatProphetEquivalent()!!] = greatProphetsEarned
+                greatProphetsEarned = 0
+            }
+        //
     }
 
     fun startTurn() {
@@ -106,6 +115,8 @@ class ReligionManager {
     // https://www.reddit.com/r/civ/comments/2m82wu/can_anyone_detail_the_finer_points_of_great/
     // Game files (globaldefines.xml)
     fun faithForNextGreatProphet(): Int {
+        val greatProphetsEarned = civInfo.boughtConstructionsWithGloballyIncreasingPrice[getGreatProphetEquivalent()!!] ?: 0
+        
         var faithCost = 
             (200 + 100 * greatProphetsEarned * (greatProphetsEarned + 1) / 2f) * 
             civInfo.gameInfo.gameParameters.gameSpeed.modifier
@@ -123,18 +134,25 @@ class ReligionManager {
         if (civInfo.hasUnique("May not generate great prophet equivalents naturally")) return false
         return true
     }
+    
+    fun getGreatProphetEquivalent(): String? {
+        return civInfo.gameInfo.ruleSet.units.values.firstOrNull { it.hasUnique("May found a religion") }?.name
+    }
 
     private fun generateProphet() {
+        val prophetUnitName = getGreatProphetEquivalent() ?: return // No prophet units in this mod
+        
         val prophetSpawnChange = (5f + storedFaith - faithForNextGreatProphet()) / 100f
 
         if (Random(civInfo.gameInfo.turns).nextFloat() < prophetSpawnChange) {
             val birthCity =
                 if (religionState <= ReligionState.Pantheon) civInfo.getCapital()
                 else civInfo.cities.firstOrNull { it.religion.religionThisIsTheHolyCityOf == religion!!.name }
-            val prophet = civInfo.addUnit("Great Prophet", birthCity) ?: return
+            val prophet = civInfo.addUnit(prophetUnitName, birthCity) ?: return
             prophet.religion = religion!!.name
             storedFaith -= faithForNextGreatProphet()
-            greatProphetsEarned += 1
+            civInfo.boughtConstructionsWithGloballyIncreasingPrice[prophetUnitName] = 
+                (civInfo.boughtConstructionsWithGloballyIncreasingPrice[prophetUnitName] ?: 0) + 1
         }
     }
 
