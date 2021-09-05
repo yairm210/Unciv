@@ -595,7 +595,7 @@ class DiplomacyManager() {
         }
 
         otherCivDiplomacy.setModifier(DiplomaticModifiers.DeclaredWarOnUs, -20f)
-        if (otherCiv.isCityState()) otherCivDiplomacy.influence -= 60
+        if (otherCiv.isCityState()) otherCivDiplomacy.setInfluence(-60f)
 
         for (thirdCiv in civInfo.getKnownCivs()) {
             if (thirdCiv.isAtWarWith(otherCiv)) {
