@@ -32,6 +32,10 @@ object GameStarter {
         val gameInfo = GameInfo()
         lateinit var tileMap: TileMap
 
+        // In the case where we used to have a mod, and now we don't, we cannot "unselect" it in the UI.
+        // We need to remove the dead mods so there aren't problems later.
+        gameSetupInfo.gameParameters.mods.removeAll{ !RulesetCache.containsKey(it) }
+
         gameInfo.gameParameters = gameSetupInfo.gameParameters
         val ruleset = RulesetCache.getComplexRuleset(gameInfo.gameParameters.mods)
 
