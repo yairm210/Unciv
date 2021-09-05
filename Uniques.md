@@ -451,7 +451,7 @@ These last two uniques may seem like they only have a one-time effect. However, 
 
 "Hidden when [victoryType] victory is disabled"
 
-"Population loss from nuclear attacks -[amount]%"
+"Population loss from nuclear attacks [amount]% [cityFilter]"
 
 "New [unitFilter] units start with [amount] Experience [cityFilter]"
 
@@ -523,8 +523,6 @@ Follower uniques are uniques applied to each city following a religion which inc
 "Great Improvement"
 
 "[stats] for each adjacent [tileFilter]"
-
-"Can only be built on Coastal tiles"
 
 "Cannot be built on bonus resource"
 
@@ -767,10 +765,6 @@ These uniques have been recently deprecated. While they are still supported, the
 
 "+50% attacking strength for cities with garrisoned units" - Replaced with "+[amount]% attacking strength for cities with garrisoned units"
 
-"Worker construction increased 25%" - Replaced with "[-amount]% tile improvement construction time"
-
-"Tile improvement speed +25%" - Replaced with "[-amount]% tile improvement construction time"
-
 "+15% combat strength for melee units which have another military unit in an adjacent tile" - Replaced with "+[amount]% Strength for [unitFilter] units which have another [unitFilter] unit in an adjacent tile"
 
 "Gold cost of upgrading military units reduced by 33%" - Replaced with "Gold cost of upgrading [unitFilter] units reduced by [amount]%"
@@ -824,5 +818,3 @@ These uniques have been recently deprecated. While they are still supported, the
 "New [unitFilter] units start with [amount] Experience in this city" - Replaced with "New [unitFilter] units start with [amount] Experience [cityFilter]"
 
 "[amount]% of food is carried over after population increases" - Replaced with "[amount]% of food is carried over [cityFilter] after population increases"
-
-"Cost of purchasing [buildingFilter] buildings reduced by [amount]%" - Replaced with "[Stat] cost of purchasing [buildingFilter] buildings [amount]%"
