@@ -40,7 +40,8 @@ enum class DiplomacyFlags{
     ProvideMilitaryUnit,
     EverBeenFriends,
     MarriageCooldown,
-    NotifiedAfraid
+    NotifiedAfraid,
+    AngerFreeIntrusion
 }
 
 enum class DiplomaticModifiers{
@@ -322,7 +323,8 @@ class DiplomacyManager() {
      *  This includes friendly and allied city-states and the open border treaties.
      */
     fun isConsideredFriendlyTerritory(): Boolean {
-        if (civInfo.isCityState() && relationshipLevel() >= RelationshipLevel.Friend)
+        if (civInfo.isCityState() &&
+            (relationshipLevel() >= RelationshipLevel.Friend || otherCiv().hasUnique("City-State territory always counts as friendly territory")))
             return true
         return hasOpenBorders
     }

@@ -1037,5 +1037,11 @@ class MapUnit {
         return power
     }
 
+    fun threatensCiv(civInfo: CivilizationInfo): Boolean {
+        if (getTile().getOwner() == civInfo)
+            return true
+        return getTile().neighbors.any { it.getOwner() == civInfo }
+    }
+
     //endregion
 }
