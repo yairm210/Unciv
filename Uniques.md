@@ -210,14 +210,6 @@ For units, the UnitFilter is called. For Buildings, the following options are im
 
 "[stats] if this city has at least [amount] specialists"
 
-"Can be purchased with [Stat] [cityFilter]"
-
-"Can be purchased for [amount] [Stat] [cityFilter]"
-
-"May buy [constructionFilter] buildings for [amount] [Stat] [cityFilter]"
-
-"May buy [unitFilter] units for [amount] [Stat] [cityFilter] starting from the [eraName] at an increasing price ([amount2])" - Price increases quadratically based on the the "amount" parameters
-
 "[Stats] when a city adopts this religion for the first time"
 
 "[Stats] when a city adopts this religion for the first time (modified by game speed)" - The difference with the previous is that the stats for these are multiplied by a value dependent on the game speed: 0.67 for quick, 1 for normal, 1.5 for epic and 3 for marathon
@@ -316,10 +308,6 @@ For units, the UnitFilter is called. For Buildings, the following options are im
 "+[amount]% attack strength to all [unitFilter] units for [amount] turns"
 
 "When spreading religion to a city, gain [amount] times the amount of followers of other religions as [Stat]" - "Stat" may be Science, Culture, Faith or Gold
-
-"Takes your religion over the one in their birth city" - Whenever a unit with this unique spawns, is purchased or built, it will take the religion of your civilization instead of the religion of the city in which it appears.
-
-"Removes other religions when spreading religion" - removes all existing pressure from other religions during the 'spread religion' action
 
 
 
@@ -432,6 +420,12 @@ These last two uniques may seem like they only have a one-time effect. However, 
 "When declaring friendship, both parties gain a [amount]% boost to great people generation"
 
 "Hidden after generating a Great Prophet" - Used for ancient ruins to disable a reward after generating a great prophet
+
+"May buy [constructionFilter] buildings for [amount] [Stat] [cityFilter]"
+
+"May buy [unitFilter] units for [amount] [Stat] [cityFilter] starting from the [eraName] at an increasing price ([amount2])" - Price increases quadratically based on the the "amount" parameters
+
+
 
 ## Buildings-only
 
@@ -698,8 +692,6 @@ May be added in promotions or ancient ruins equivalents
 
 "May withdraw before melee ([amount]%)"
 
-"Amphibious"
-
 "Can see invisible [unitFilter] units"
 
 "Can carry [amount] [unitFilter] units" - Currently, only Air & Missile units can be carried
@@ -738,11 +730,20 @@ May be added in promotions or ancient ruins equivalents
 
 "Religious unit" - Will make sure that the unit has a religion upon being built/purchased in a city with a religion
 
+"Takes your religion over the one in their birth city" - Whenever a unit with this unique spawns, is purchased or built, it will take the religion of your civilization instead of the religion of the city in which it appears.
+
+"Removes other religions when spreading religion" - removes all existing pressure from other religions during the 'spread religion' action
+
 "May upgrade to [unitName] through ruins-like effects"
 
 "Can [unitAction] [amount] times" - "unitAction" may be one of: "Spread Religion", "Remove Foreign religions from your own cities"
 
 "Prevents spreading of religion to the city it is next to"
+
+"Can be purchased with [Stat] [cityFilter]"
+
+"Can be purchased for [amount] [Stat] [cityFilter]"
+
 
 
 # Terrain uniques
