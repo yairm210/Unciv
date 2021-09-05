@@ -1,3 +1,24 @@
+## 3.16.12
+
+Can no longer enter city-screen that is not yours
+
+Spectator cannot take over player diplomacy options
+
+Better check for units with no unitType defined
+
+Fixed crash where deleting mods meant you could never start a game again
+
+By xlenstra:
+- You can now input distinct numbers when trading gold
+- Fixed religion bugs
+
+By SimonCeder:
+- Correct year shown when starting in later eras
+
+By SomeTroglodyte
+- Options displays well for portrait mode
+- Fixed rare map generation crash 
+
 ## 3.16.11
 
 Resolved crash due to evaluating distance to city state when we have no cities
