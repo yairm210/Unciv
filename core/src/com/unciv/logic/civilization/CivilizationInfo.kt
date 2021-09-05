@@ -514,18 +514,15 @@ class CivilizationInfo {
     }
 
     private fun calculateMilitaryMight(): Int {
-        println("Calculating military might for " + civName)
         var sum = 0
         for (unit in units) {
             sum += if (unit.baseUnit.isWaterUnit())
                 unit.getForceEvaluation() / 2   // Really don't value water units highly
             else
                 unit.getForceEvaluation()
-            println(unit.baseUnit.name + ", sum " + sum.toString())
         }
         val goldBonus = sqrt(gold.toFloat()).toPercent()  // 2f if gold == 10000
         sum = (sum * min(goldBonus, 2f)).toInt()    // 2f is max bonus
-        println("Gold " + gold.toString() + ", bonus " + goldBonus.toString() + ", final sum " + sum.toString())
 
         return sum
     }
