@@ -66,13 +66,13 @@ class ReligionOverviewTable(
     private fun loadReligion(religion: Religion) {
         statsTable.clear()
         beliefsTable.clear()
-        topButtonLabel.setText(religion.displayName!!.tr())
+        topButtonLabel.setText(religion.getReligionDisplayName().tr())
         for (belief in religion.getAllBeliefsOrdered()) {
             beliefsTable.add(createBeliefDescription(belief)).pad(10f).row()
         }
         
         statsTable.add("Religion Name:".toLabel())
-        statsTable.add(religion.displayName!!.toLabel()).pad(5f).row()
+        statsTable.add(religion.getReligionDisplayName().toLabel()).pad(5f).row()
         statsTable.add("Founding Civ:".toLabel())
         val foundingCivName =
             if (viewingPlayer.knows(religion.foundingCivName) || viewingPlayer.civName == religion.foundingCivName) 

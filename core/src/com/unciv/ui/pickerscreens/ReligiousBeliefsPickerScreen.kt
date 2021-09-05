@@ -50,7 +50,7 @@ class ReligiousBeliefsPickerScreen (
         topTable.add(middlePanes)
         
         if (pickIconAndName) rightSideButton.label = "Choose a religion".toLabel()
-        else rightSideButton.label = "Enhance [${choosingCiv.religionManager.religion!!.displayName}]".toLabel()
+        else rightSideButton.label = "Enhance [${choosingCiv.religionManager.religion!!.getReligionDisplayName()}]".toLabel()
         rightSideButton.onClick(UncivSound.Choir) {
             choosingCiv.religionManager.chooseBeliefs(displayName, religionName, beliefsContainer.chosenBeliefs.map { it!! })            
             UncivGame.Current.setWorldScreen()
