@@ -492,7 +492,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
             !cityScreen.canChangeState -> false
             city.isInResistance() -> false
             !construction.isPurchasable(city.cityConstructions) -> false    // checks via 'rejection reason'
-            !city.canPurchase(construction) -> false    // checks room on map for units
+            construction is BaseUnit && !city.canPlaceNewUnit(construction) -> false
             city.civInfo.gameInfo.gameParameters.godMode -> true
             constructionBuyCost == 0 -> true
             else -> city.getStatReserve(stat) >= constructionBuyCost
