@@ -33,7 +33,7 @@
 
 Every type of object has some traits that are shared across all, or most, objects of its kind. For example, a building's stat increase, cost and required tech; a unit's type, movement and attack; a resource's type, improvement and bonus stats from improvement. All such traits have their own fields in the said object types.
 
-But there are also other traits, that are only in a small subset of objects will have. Units that can attack submarines, or can move after attacking, or  has a combat bonus against a certain other type of unit. Buildings that give a free great person, or improve stats dependent on the population of a city, or provide extra yield to certain tiles. These traits cannot be given their own fields due to the huge number of them.
+But there are also other traits, that are only in a small subset of objects will have. Units that can see submarines from more than one tile away, or can move after attacking, or  has a combat bonus against a certain other type of unit. Buildings that give a free great person, or improve stats dependent on the population of a city, or provide extra yield to certain tiles. These traits cannot be given their own fields due to the huge number of them.
 
 Instead, every special trait that an object has is encoded into a single parameter: the list of unique traits, or "uniques".
 
@@ -94,6 +94,7 @@ terrainFilters allow us to specify tiles according to a number of different aspe
     - "Open terrain", "Rough terrain" (note all terrain not having the rough unique is counted as open)
     - "Friendly Land" - land belonging to you, or other civs with open borders to you
     - "Foreign Land" - any land that isn't friendly land
+    - "Enemy land" - any land belonging to a civ you are at war with
     - "Water resource", "Strategic resource", "Luxury resource", "Bonus resource"
     - "Natural Wonder" (as opposed to above which means testing for a specific Natural Wonder by name, this tests for any of them)
 
@@ -126,13 +127,18 @@ unitFilters allow us to activate uniques for specific units, based on:
 - "land units", "water units", "air units"
 - "non-air" for non-air non-missile units
 - "Military", "military units"
+- "Civilian", "civilian units"
 - "All"
-- "Missile"
-- "Submarine", "submarine units"
+- "Melee"
+- "Ranged"
 - "Nuclear Weapon"
+- "Great Person", "Great"
 - "Embarked"
 - "Wounded", "wounded units"
 - "Barbarians", "Barbarian"
+- "City-State"
+- Any exact unique the unit has
+- Any exact unique the unit type has
 - Any combination of the above (will match only if all match). The format is "{filter1} {filter2}" and can match any number of filters. For example: "[{Military} {Water}]" units, "[{Wounded} {Armor}]" units, etc. No space or other text is allowed between the "[" and the first "{".
 
 #### cityFilter
@@ -147,9 +153,11 @@ cityFilters allow us to choose the range of cities affected by this unique:
 - "in all cities with a world wonder"
 - "in all cities connected to capital"
 - "in all cities with a garrison"
-- "in all cities in which the majority religion is a major religion"
 - "in non-enemy foreign cities" - In all cities owned by civs other than you that you are not at war with
 - "in foreign cities"
+- "in annexed cities"
+- "in holy cities"
+- "in City-State cities"
 - "in cities following this religion" - Should only be used in pantheon/follower uniques for religions
 - "in all cities in which the majority religion is a major religion"
 - "in all cities in which the majority religion is a enhanced religion"
@@ -163,6 +171,7 @@ For units, the UnitFilter is called. For Buildings, the following options are im
 - "Buildings", "Building"
 - "Wonders", "Wonders"
 - building name
+- The name of the building it replaces (so for example uniques for libraries will apply to paper makers as well)
 - an exact unique the building has (e.g.: "spaceship part")
 - if the building is "stat-related" for some stat. Stat-related buildings are defined as one of the following:
   - Provides that stat directly (e.g. +1 Culture)
@@ -180,7 +189,7 @@ For units, the UnitFilter is called. For Buildings, the following options are im
 
 "[stats] [cityFilter]" - for example "[+3 Culture] [in capital]", "[+2 Food] [in all cities]". "[stats] in capital", "[stats] in all cities" are to be deprecated and should not be used.
 
-"[stats] from every specialist"
+"[stats] from every specialist [cityFilter]"
 
 "[stats] from every [object]" - where 'object' can be one of:
 - Building name
@@ -195,7 +204,7 @@ For units, the UnitFilter is called. For Buildings, the following options are im
 
 "[amount]% [Stat] while the empire is happy"
 
-"Specialists only produce [amount]% of normal unhappiness"
+"[signedAmount]% unhappiness from specialists [cityFilter]"
 
 "-[amount]% food consumption by specialists"
 
@@ -206,6 +215,8 @@ For units, the UnitFilter is called. For Buildings, the following options are im
 "Can be purchased for [amount] [Stat] [cityFilter]"
 
 "May buy [constructionFilter] buildings for [amount] [Stat] [cityFilter]"
+
+"May buy [unitFilter] units for [amount] [Stat] [cityFilter] starting from the [eraName] at an increasing price ([amount2])" - Price increases quadratically based on the the "amount" parameters
 
 "[Stats] when a city adopts this religion for the first time"
 
@@ -308,6 +319,11 @@ For units, the UnitFilter is called. For Buildings, the following options are im
 
 "When spreading religion to a city, gain [amount] times the amount of followers of other religions as [Stat]" - "Stat" may be Science, Culture, Faith or Gold
 
+"Takes your religion over the one in their birth city" - Whenever a unit with this unique spawns, is purchased or built, it will take the religion of your civilization instead of the religion of the city in which it appears.
+
+"Removes other religions when spreading religion" - removes all existing pressure from other religions during the 'spread religion' action
+
+
 
 ### City-state related uniques
 
@@ -343,9 +359,7 @@ For units, the UnitFilter is called. For Buildings, the following options are im
 
 "No Maintenance costs for improvements in [tileFilter] tiles"
 
-"Unhappiness from population decreased by [amount]%" - Despite appearances, this is a global unique, affecting all cities.
-
-"Unhappiness from population decreased by [amount]% [cityFilter]" - Same as above, but only for cities passing cityFilter
+"[amount]% unhappiness from population [cityFilter]"
 
 "+[amount]% Production when constructing [unitFilter] units", "+[amount]% Production when constructing [unitFilter] units [cityFilter]" - The city produces extra Production when a unit fitting the filter in under construction.
 
@@ -459,6 +473,7 @@ These last two uniques may seem like they only have a one-time effect. However, 
 
 "Never destroyed when the city is captured"
 
+"[unitFilter] units built [cityFilter] can [unitAction] [amount] extra times" - "unitAction" may be one of: "Spread Religion", "Remove Foreign religions from your own cities"
 
 ### Stat uniques
 
@@ -583,6 +598,8 @@ May be added in promotions or ancient ruins equivalents
 
 "May found a religion"
 
+"May enhance a religion"
+
 
 ### Visibility
 
@@ -685,7 +702,7 @@ May be added in promotions or ancient ruins equivalents
 
 "Amphibious"
 
-"Can attack submarines"
+"Can see invisible [unitFilter] units"
 
 "Can carry [amount] [unitFilter] units" - Currently, only Air & Missile units can be carried
 
@@ -694,6 +711,8 @@ May be added in promotions or ancient ruins equivalents
 "Cannot be carried by [unitFilter] units" - Currently, only Air & Missile units can be carried, and only Carrier units can carry them
 
 "Invisible to others"
+
+"Invisible to non-adjacent units"
 
 "Can only attack [unitFilter] units"
 
@@ -818,3 +837,19 @@ These uniques have been recently deprecated. While they are still supported, the
 "New [unitFilter] units start with [amount] Experience in this city" - Replaced with "New [unitFilter] units start with [amount] Experience [cityFilter]"
 
 "[amount]% of food is carried over after population increases" - Replaced with "[amount]% of food is carried over [cityFilter] after population increases"
+
+"Can attack submarines" - Replaced with "Can see invisible [unitFilter] units"
+
+"Unhappiness from population decreased by [amount]%" - Replaced with "[amount]% Unhappiness from population [cityFilter]"
+
+"[stats] from every specialist" - Replaced with "[stats] from every specialist [cityFilter]"
+
+"+2 Culture per turn from cities before discovering Steam Power" - Replaced with "[stats] per turn from cities before [techName]"
+
+"Population loss from nuclear attacks -[amount]%" - Replaced with "Population loss from nuclear attacks [amount]% [cityFilter]"
+
+"Specialists only produce [amount]% of normal unhappiness" - Replaced with "[signedAmount]% unhappiness from specialists [cityFilter]"
+
+"Increases embarked movement +1" - Replaced with "+[1] movement for all [Embarked] units"
+
+"+1 Movement for all embarked units" - Replaced with "+[1] movement for all [Embarked] units"
