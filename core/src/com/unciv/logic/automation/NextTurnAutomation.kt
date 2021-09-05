@@ -185,6 +185,9 @@ object NextTurnAutomation {
             if (distance < 20)
                 value -= (20 - distance) / 4
         }
+        else if (civInfo.victoryType() == VictoryType.Diplomatic) {
+            value += 5  // Generally be friendly
+        }
         if (civInfo.gold < 100) {
             // Consider bullying for cash
             value -= 5
@@ -229,7 +232,7 @@ object NextTurnAutomation {
             if(diplomacyManager.relationshipLevel() < RelationshipLevel.Friend
                     && diplomacyManager.diplomaticStatus == DiplomaticStatus.Peace
                     && valueCityStateAlliance(civInfo, state) <= 0
-                    && state.getTributeWillingness(civInfo) > 0) {
+                    && state.getTributeWillingness(civInfo) >= 0) {
                 if (state.getTributeWillingness(civInfo, demandingWorker = true) > 0)
                     state.tributeWorker(civInfo)
                 else
