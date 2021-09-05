@@ -299,8 +299,6 @@ For units, the UnitFilter is called. For Buildings, the following options are im
 
 "[amount] Movement" - ex.: "[+1] Movement"
 
-"+1 Movement for all embarked units"
-
 "Units pay only 1 movement point to embark and disembark"
 
 "Melee units pay no movement cost to pillage"
@@ -850,6 +848,6 @@ These uniques have been recently deprecated. While they are still supported, the
 
 "Specialists only produce [amount]% of normal unhappiness" - Replaced with "[signedAmount]% unhappiness from specialists [cityFilter]"
 
-"Increases embarked movement +1" - Replaced with "+[1] movement for all [Embarked] units"
+"Increases embarked movement +1" - Replaced with "+[1] Movement for all [Embarked] units"
 
-"+1 Movement for all embarked units" - Replaced with "+[1] movement for all [Embarked] units"
+"+1 Movement for all embarked units" - Replaced with "+[1] Movement for all [Embarked] units"
