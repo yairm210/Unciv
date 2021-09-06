@@ -34,12 +34,6 @@ class TileImprovement : NamedStats(), ICivilopediaText, IHasUniques {
         for (unique in civInfo.getMatchingUniques("[]% tile improvement construction time")) {
             realTurnsToBuild *= unique.params[0].toPercent()
         }
-        // Deprecated since 3.14.17
-            if (civInfo.hasUnique("Worker construction increased 25%"))
-                realTurnsToBuild *= 0.75f
-            if (civInfo.hasUnique("Tile improvement speed +25%"))
-                realTurnsToBuild *= 0.75f
-        //
         // In some weird cases it was possible for something to take 0 turns, leading to it instead never finishing
         if (realTurnsToBuild < 1) realTurnsToBuild = 1f
         return realTurnsToBuild.roundToInt()

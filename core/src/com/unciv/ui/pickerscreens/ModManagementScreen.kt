@@ -177,6 +177,11 @@ class ModManagementScreen: PickerScreen(disableScroll = true) {
                 for (repo in repoSearch.items) {
                     if (stopBackgroundTasks) return@postRunnable
                     repo.name = repo.name.replace('-', ' ')
+                    
+                    // Mods we have manually decided to remove for instability are removed here
+                    // If at some later point these mods are updated, we should definitely remove
+                    // this piece of code. This is a band-aid, not a full solution.
+                    if (repo.html_url in modsToHide) continue 
 
                     modDescriptionsOnline[repo.name] =
                             (repo.description ?: "-{No description provided}-".tr()) +
@@ -502,5 +507,10 @@ class ModManagementScreen: PickerScreen(disableScroll = true) {
         if (stage.viewport.screenWidth != width || stage.viewport.screenHeight != height) {
             game.setScreen(ModManagementScreen())
         }
+    }
+    
+    companion object {
+        private val blockedModsFile = FileHandle("jsons/ManuallyBlockedMods.json")
+        val modsToHide = JsonParser().getFromJson(Array<String>::class.java, blockedModsFile)
     }
 }

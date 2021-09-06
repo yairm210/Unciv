@@ -30,15 +30,13 @@ import com.unciv.models.stats.Stats
 import com.unciv.models.translations.getPlaceholderParameters
 import com.unciv.models.translations.getPlaceholderText
 import com.unciv.models.translations.tr
+import com.unciv.ui.utils.toPercent
 import com.unciv.ui.victoryscreen.RankingType
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 import kotlin.collections.LinkedHashMap
-import kotlin.math.max
-import kotlin.math.min
-import kotlin.math.pow
-import kotlin.math.roundToInt
+import kotlin.math.*
 
 class CivilizationInfo {
 
@@ -93,6 +91,9 @@ class CivilizationInfo {
 
     @Transient
     val cityStateFunctions = CityStateFunctions(this)
+
+    @Transient
+    private var cachedMilitaryMight = -1
 
     var playerType = PlayerType.AI
 
@@ -437,20 +438,18 @@ class CivilizationInfo {
         else -> getCivUnits().none()
     }
 
-    fun getEra(): String {
-        if (gameInfo.ruleSet.technologies.isEmpty()) return "None"
-        if (tech.researchedTechnologies.isEmpty())
-            return gameInfo.ruleSet.getEras().first()
-        return tech.researchedTechnologies
+    fun getEra(): Era {
+        if (gameInfo.ruleSet.technologies.isEmpty() || tech.researchedTechnologies.isEmpty()) 
+            return Era()
+        val eraName = tech.researchedTechnologies
                 .asSequence()
                 .map { it.column!! }
                 .maxByOrNull { it.columnNumber }!!
                 .era
+        return gameInfo.ruleSet.eras[eraName]!!
     }
 
-    fun getEraNumber(): Int = gameInfo.ruleSet.getEraNumber(getEra())
-
-    fun getEraObject(): Era? = gameInfo.ruleSet.eras[getEra()]
+    fun getEraNumber(): Int = getEra().eraNumber
 
     fun isAtWarWith(otherCiv: CivilizationInfo): Boolean {
         if (otherCiv.civName == civName) return false // never at war with itself
@@ -508,11 +507,31 @@ class CivilizationInfo {
             RankingType.Production -> statsForNextTurn.production.roundToInt()
             RankingType.Gold -> gold
             RankingType.Territory -> cities.sumBy { it.tiles.size }
-            RankingType.Force -> units.sumBy { it.baseUnit.strength }
+            RankingType.Force -> getMilitaryMight()
             RankingType.Happiness -> getHappiness()
             RankingType.Technologies -> tech.researchedTechnologies.size
             RankingType.Culture -> policies.adoptedPolicies.count { !Policy.isBranchCompleteByName(it) }
         }
+    }
+
+    private fun getMilitaryMight(): Int {
+        if (cachedMilitaryMight < 0)
+            cachedMilitaryMight = calculateMilitaryMight()
+        return  cachedMilitaryMight
+    }
+
+    private fun calculateMilitaryMight(): Int {
+        var sum = 0
+        for (unit in units) {
+            sum += if (unit.baseUnit.isWaterUnit())
+                unit.getForceEvaluation() / 2   // Really don't value water units highly
+            else
+                unit.getForceEvaluation()
+        }
+        val goldBonus = sqrt(gold.toFloat()).toPercent()  // 2f if gold == 10000
+        sum = (sum * min(goldBonus, 2f)).toInt()    // 2f is max bonus
+
+        return sum
     }
 
 
@@ -664,6 +683,8 @@ class CivilizationInfo {
         diplomacy.values.toList().forEach { it.nextTurn() } // we copy the diplomacy values so if it changes in-loop we won't crash
         updateAllyCivForCityState()
         updateHasActiveGreatWall()
+
+        cachedMilitaryMight = -1    // Reset so we don't use a value from a previous turn
     }
 
     private fun startTurnFlags() {
@@ -873,8 +894,9 @@ class CivilizationInfo {
     
     fun getResearchAgreementCost(): Int {
         // https://forums.civfanatics.com/resources/research-agreements-bnw.25568/
-        val era = if (getEra() in gameInfo.ruleSet.eras) gameInfo.ruleSet.eras[getEra()]!! else Era()
-        return (era.researchAgreementCost * gameInfo.gameParameters.gameSpeed.modifier).toInt()
+        return (
+            getEra().researchAgreementCost * gameInfo.gameParameters.gameSpeed.modifier
+        ).toInt()
     }
     
     //////////////////////// City State wrapper functions ////////////////////////
@@ -918,6 +940,15 @@ class CivilizationInfo {
         cityStateFunctions.tributeWorker(demandingCiv)
     }
     fun canGiveStat(statType: Stat) = cityStateFunctions.canGiveStat(statType)
+    fun updateDiplomaticRelationshipForCityState() {
+        cityStateFunctions.updateDiplomaticRelationshipForCityState()
+    }
+    fun getFreeTechForCityState() {
+        cityStateFunctions.getFreeTechForCityState()
+    }
+    fun threateningBarbarianKilledBy(otherCiv: CivilizationInfo) {
+        cityStateFunctions.threateningBarbarianKilledBy(otherCiv)
+    }
     
     fun getAllyCiv() = allyCivName
     fun setAllyCiv(newAllyName: String?) { allyCivName = newAllyName }

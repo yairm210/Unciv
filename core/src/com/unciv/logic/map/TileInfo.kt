@@ -276,24 +276,27 @@ open class TileInfo {
     fun getTileStartScore(): Float {
         var sum = 0f
         for (tile in getTilesInDistance(2)) {
-            if (tile == this)
-                continue
-            sum += tile.getTileStartYield()
+            val tileYield = tile.getTileStartYield(tile == this)
+            sum += tileYield
             if (tile in neighbors)
-                sum += tile.getTileStartYield()
+                sum += tileYield
         }
 
         if (isHill())
-            sum -= 2
+            sum -= 2f
         if (isAdjacentToRiver())
-            sum += 2
+            sum += 2f
         if (neighbors.any { it.baseTerrain == Constants.mountain })
-            sum += 2
+            sum += 2f
+        if (isCoastalTile())
+            sum += 3f
+        if (!isCoastalTile() && neighbors.any { it.isCoastalTile() })
+            sum -= 7f
 
         return sum
     }
 
-    private fun getTileStartYield(): Float {
+    private fun getTileStartYield(isCenter: Boolean): Float {
         var stats = getBaseTerrain().clone()
 
         for (terrainFeatureBase in getTerrainFeatures()) {
@@ -303,7 +306,12 @@ open class TileInfo {
                 stats.add(terrainFeatureBase)
         }
         if (resource != null) stats.add(getTileResource())
+
         if (stats.production < 0) stats.production = 0f
+        if (isCenter) {
+            if (stats.food < 2) stats.food = 2f
+            if (stats.production < 1) stats.production = 1f
+        }
 
         return stats.food + stats.production + stats.gold
     }
@@ -411,9 +419,6 @@ open class TileInfo {
             topTerrain.unbuildable && !improvement.isAllowedOnFeature(topTerrain.name) -> false
             // DO NOT reverse this &&. isAdjacentToFreshwater() is a lazy which calls a function, and reversing it breaks the tests.
             improvement.hasUnique("Can also be built on tiles adjacent to fresh water") && isAdjacentToFreshwater -> true
-            // deprecated as of 3.15.15
-                "Can only be built on Coastal tiles" in improvement.uniques && isCoastalTile() -> true
-            //
 
             // If an unique of this type exists, we want all to match (e.g. Hill _and_ Forest would be meaningful).
             improvement.uniqueObjects.filter { it.placeholderText == "Can only be built on [] tiles" }.let {

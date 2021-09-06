@@ -87,7 +87,7 @@ class CityStatsTable(val cityScreen: CityScreen): Table() {
             ?: "None"
         val icon = 
             if (label == "None") "Religion" 
-            else cityInfo.religion.getMajorityReligion()!!.name
+            else cityInfo.religion.getMajorityReligion()!!.getIconName()
         val expanderTab =
             ExpanderTab(
                 title = "Majority Religion: [$label]",

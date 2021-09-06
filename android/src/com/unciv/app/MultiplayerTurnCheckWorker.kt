@@ -42,7 +42,6 @@ class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParame
 
         private const val FAIL_COUNT = "FAIL_COUNT"
         private const val GAME_ID = "GAME_ID"
-        private const val GAME_NAMES = "GAME_NAMES"
         private const val USER_ID = "USER_ID"
         private const val CONFIGURED_DELAY = "CONFIGURED_DELAY"
         private const val PERSISTENT_NOTIFICATION_ENABLED = "PERSISTENT_NOTIFICATION_ENABLED"
@@ -184,7 +183,7 @@ class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParame
                 // May be useful to remind a player that he forgot to complete his turn.
                 notifyUserAboutTurn(applicationContext)
             } else {
-                val inputData = workDataOf(Pair(FAIL_COUNT, 0), Pair(GAME_ID, gameIds), Pair(GAME_NAMES, gameNames),
+                val inputData = workDataOf(Pair(FAIL_COUNT, 0), Pair(GAME_ID, gameIds),
                         Pair(USER_ID, settings.userId), Pair(CONFIGURED_DELAY, settings.multiplayerTurnCheckerDelayInMinutes),
                         Pair(PERSISTENT_NOTIFICATION_ENABLED, settings.multiplayerTurnCheckerPersistentNotificationEnabled))
 
@@ -227,7 +226,6 @@ class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParame
 
         try {
             val gameIds = inputData.getStringArray(GAME_ID)!!
-            val gameNames = inputData.getStringArray(GAME_NAMES)!!
             var arrayIndex = 0
             // We only want to notify the user or update persisted notification once but still want
             // to download all games to update the files hence this bool

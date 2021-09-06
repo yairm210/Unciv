@@ -220,7 +220,7 @@ class BaseUnit : INamed, INonPerpetualConstruction, ICivilopediaText {
             .any { 
                 matchesFilter(it.params[0])
                 && cityInfo.matchesFilter(it.params[3])        
-                && cityInfo.civInfo.getEraNumber() >= ruleset.getEraNumber(it.params[4]) 
+                && cityInfo.civInfo.getEraNumber() >= ruleset.eras[it.params[4]]!!.eraNumber 
                 && it.params[2] == stat.name
             }
         ) return true
@@ -250,7 +250,7 @@ class BaseUnit : INamed, INonPerpetualConstruction, ICivilopediaText {
                 .filter {
                     matchesFilter(it.params[0])
                     && cityInfo.matchesFilter(it.params[3])
-                    && cityInfo.civInfo.getEraNumber() >= ruleset.getEraNumber(it.params[4])
+                    && cityInfo.civInfo.getEraNumber() >= ruleset.eras[it.params[4]]!!.eraNumber
                     && it.params[2] == stat.name
                 }.map {
                     getCostForConstructionsIncreasingInPrice(
@@ -279,14 +279,6 @@ class BaseUnit : INamed, INonPerpetualConstruction, ICivilopediaText {
     override fun getStatBuyCost(cityInfo: CityInfo, stat: Stat): Int? {
         var cost = getBaseBuyCost(cityInfo, stat)?.toDouble()
         if (cost == null) return null
-
-
-        // Deprecated since 3.15.15
-            if (stat == Stat.Gold) {
-                for (unique in cityInfo.getMatchingUniques("Cost of purchasing items in cities reduced by []%"))
-                    cost *= 1f - (unique.params[0].toFloat() / 100f)
-            }
-        //
 
         for (unique in cityInfo.getMatchingUniques("[] cost of purchasing [] units []%")) {
             if (stat.name == unique.params[0] && matchesFilter(unique.params[1]))
@@ -365,9 +357,8 @@ class BaseUnit : INamed, INonPerpetualConstruction, ICivilopediaText {
                 ruleSet.policies.contains(filter) ->
                     if (!civInfo.policies.isAdopted(filter))
                         rejectionReasons.add(RejectionReason.RequiresPolicy.apply { errorMessage = unique.text })
-                // ToDo: Fix this when eras.json is required
-                ruleSet.getEraNumber(filter) != -1 ->
-                    if (civInfo.getEraNumber() < ruleSet.getEraNumber(filter))
+                ruleSet.eras.contains(filter) ->
+                    if (civInfo.getEraNumber() < ruleSet.eras[filter]!!.eraNumber)
                         rejectionReasons.add(RejectionReason.UnlockedWithEra.apply { errorMessage = unique.text })
                 ruleSet.buildings.contains(filter) ->
                     if (civInfo.cities.none { it.cityConstructions.containsBuildingOrEquivalent(filter) })
@@ -423,7 +414,7 @@ class BaseUnit : INamed, INonPerpetualConstruction, ICivilopediaText {
             .any {
                 matchesFilter(it.params[0])
                 && cityConstructions.cityInfo.matchesFilter(it.params[3])
-                && cityConstructions.cityInfo.civInfo.getEraNumber() >= ruleset.getEraNumber(it.params[4])
+                && cityConstructions.cityInfo.civInfo.getEraNumber() >= ruleset.eras[it.params[4]]!!.eraNumber
                 && it.params[2] == boughtWith.name
             }
         ) {

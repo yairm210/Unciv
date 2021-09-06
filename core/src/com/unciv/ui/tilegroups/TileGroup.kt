@@ -11,7 +11,6 @@ import com.unciv.UncivGame
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.RoadStatus
 import com.unciv.logic.map.TileInfo
-import com.unciv.logic.map.TileMap
 import com.unciv.ui.cityscreen.YieldGroup
 import com.unciv.ui.utils.ImageGetter
 import com.unciv.ui.utils.center
@@ -239,7 +238,7 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings, 
             var locationToCheck = baseLocation
             if (tileInfo.owningCity != null) {
                 val ownersEra = tileInfo.getOwner()!!.getEra()
-                val eraSpecificLocation = tileSetStrings.getString(locationToCheck, tileSetStrings.tag, ownersEra)
+                val eraSpecificLocation = tileSetStrings.getString(locationToCheck, tileSetStrings.tag, ownersEra.name)
                 if (ImageGetter.imageExists(eraSpecificLocation))
                     locationToCheck = eraSpecificLocation
             }

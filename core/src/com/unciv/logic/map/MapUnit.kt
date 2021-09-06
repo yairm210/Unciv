@@ -35,6 +35,9 @@ class MapUnit {
 
     @Transient
     val movement = UnitMovementAlgorithms(this)
+    
+    @Transient
+    var isDestroyed = false
 
     // This is saved per each unit because if we need to recalculate viewable tiles every time a unit moves,
     //  and we need to go over ALL the units, that's a lot of time spent on updating information we should already know!
@@ -732,6 +735,7 @@ class MapUnit {
         currentTile.getUnits().filter { it.isTransported && isTransportTypeOf(it) }
             .toList() // because we're changing the list
             .forEach { unit -> unit.destroy() }
+        isDestroyed = true
     }
 
     fun gift(recipient: CivilizationInfo) {
@@ -864,7 +868,7 @@ class MapUnit {
         return getMatchingUniques("Can carry [] [] units").any { mapUnit.matchesFilter(it.params[1]) }
     }
     
-    fun carryCapacity(unit: MapUnit): Int {
+    private fun carryCapacity(unit: MapUnit): Int {
         var capacity = getMatchingUniques("Can carry [] [] units").filter { unit.matchesFilter(it.params[1]) }
                 .sumBy { it.params[0].toInt() }
         capacity += getMatchingUniques("Can carry [] extra [] units").filter { unit.matchesFilter(it.params[1]) }
@@ -1035,6 +1039,12 @@ class MapUnit {
         power *= health
         power /= 100
         return power
+    }
+
+    fun threatensCiv(civInfo: CivilizationInfo): Boolean {
+        if (getTile().getOwner() == civInfo)
+            return true
+        return getTile().neighbors.any { it.getOwner() == civInfo }
     }
 
     //endregion

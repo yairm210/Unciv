@@ -20,7 +20,9 @@ interface NativeFontImplementation {
 }
 
 // This class is loosely based on libgdx's FreeTypeBitmapFontData
-class NativeBitmapFontData(val fontImplementation: NativeFontImplementation) : BitmapFontData(), Disposable {
+class NativeBitmapFontData(
+    private val fontImplementation: NativeFontImplementation
+) : BitmapFontData(), Disposable {
 
     val regions: Array<TextureRegion>
 
@@ -59,7 +61,7 @@ class NativeBitmapFontData(val fontImplementation: NativeFontImplementation) : B
             val charPixmap = getPixmapFromChar(ch)
 
             glyph = Glyph()
-            glyph.id = ch.toInt()
+            glyph.id = ch.code
             glyph.width = charPixmap.width
             glyph.height = charPixmap.height
             glyph.xadvance = glyph.width
@@ -75,7 +77,7 @@ class NativeBitmapFontData(val fontImplementation: NativeFontImplementation) : B
                 packer.updateTextureRegions(regions, filter, filter, false)
 
             setGlyphRegion(glyph, regions.get(glyph.page))
-            setGlyph(ch.toInt(), glyph)
+            setGlyph(ch.code, glyph)
             dirty = true
         }
         return glyph

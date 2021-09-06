@@ -2,6 +2,8 @@ package com.unciv.logic
 
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.math.Vector3
+import com.unciv.logic.map.MapParameters
+import com.unciv.logic.map.MapShape
 import kotlin.math.*
 
 @Suppress("MemberVisibilityCanBePrivate", "unused")  // this is a library offering optional services
@@ -20,7 +22,7 @@ object HexMath {
         if (size < 0) return 0
         return 1 + 6 * size * (size + 1) / 2
     }
-    
+
     /** Almost inverse of [getNumberOfTilesInHexagon] - get equivalent fractional Hexagon radius for an Area */
     fun getHexagonalRadiusForArea(numberOfTiles: Int) =
         if (numberOfTiles < 1) 0f else ((sqrt(12f * numberOfTiles - 3) - 3) / 6)
@@ -194,4 +196,34 @@ object HexMath {
 
     fun getClockDirectionToWorldVector(clockDirection: Int): Vector2 =
         clockToWorldVectors[clockDirection] ?: Vector2.Zero
+
+    fun getDistanceFromEdge(vector: Vector2, mapParameters: MapParameters): Int {
+        val x = vector.x.toInt()
+        val y = vector.y.toInt()
+        if (mapParameters.shape == MapShape.rectangular) {
+            val height = mapParameters.mapSize.height
+            val width = mapParameters.mapSize.width
+            val left = if (mapParameters.worldWrap) Int.MAX_VALUE else width / 2 - (x - y)
+            val right = if (mapParameters.worldWrap) Int.MAX_VALUE else (width - 1) / 2 - (y - x)
+            val top = height / 2 -  (x + y) / 2
+            // kotlin's Int division rounds in different directions depending on sign! Thus 1 extra `-1`
+            val bottom = (x + y - 1) / 2 + (height - 1) / 2
+            return min(min(left, right), min(top, bottom))
+        } else {
+            val radius = mapParameters.mapSize.radius
+            if (mapParameters.worldWrap) {
+                // The non-wrapping method holds in the upper two and lower two 'triangles' of the hexagon
+                // but needs special casing for left and right 'wedges', where only distance from the
+                // 'choke points' counts (upper and lower hex at the 'seam' where height is smallest).
+                // These are at (radius,0) and (0,-radius)
+                if (x.sign == y.sign) return radius - getDistance(vector, Vector2.Zero)
+                // left wedge - the 'choke points' are not wrapped relative to us
+                if (x > 0) return min(getDistance(vector, Vector2(radius.toFloat(),0f)), getDistance(vector, Vector2(0f, -radius.toFloat())))
+                // right wedge - compensate wrap by using a hex 1 off along the edge - same result
+                return min(getDistance(vector, Vector2(1f, radius.toFloat())), getDistance(vector, Vector2(-radius.toFloat(), -1f)))
+            } else {
+                return radius - getDistance(vector, Vector2.Zero)
+            }
+        }
+    }
 }

@@ -416,8 +416,21 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
 
         // If this unit is a carrier, keep record of its air payload whereabouts.
         val origin = unit.getTile()
-        unit.removeFromTile()
-        unit.putInTile(lastReachableTile)
+        var needToFindNewRoute = false
+        for (tile in pathToLastReachableTile) {
+            if (!unit.movement.canPassThrough(tile)) {
+                // AAAH something happened making our previous path invalid
+                // Maybe we spawned a unit using ancient ruins, or our old route went through
+                // fog of war, and we found an obstacle halfway?
+                // Anyway: PANIC!! We stop this route, and after leaving the game in a valid state,
+                // we try again.
+                needToFindNewRoute = true
+                break
+            }
+            unit.removeFromTile()
+            unit.putInTile(tile)
+            if (unit.isDestroyed) break
+        }
 
         // The .toList() here is because we have a sequence that's running on the units in the tile,
         // then if we move one of the units we'll get a ConcurrentModificationException, se we save them all to a list
@@ -429,8 +442,8 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
 
         // Unit maintenance changed
         if (unit.canGarrison()
-                && (origin.isCityCenter() || lastReachableTile.isCityCenter())
-                && unit.civInfo.hasUnique("Units in cities cost no Maintenance")
+            && (origin.isCityCenter() || lastReachableTile.isCityCenter())
+            && unit.civInfo.hasUnique("Units in cities cost no Maintenance")
         ) unit.civInfo.updateStatsForNextTurn()
 
         // Move through all intermediate tiles to get ancient ruins, barb encampments
@@ -439,10 +452,18 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
         // If you're going to (or past) a ruin, and you activate the ruin bonus, and A UNIT spawns.
         // That unit could now be blocking your entrance to the destination, so the putInTile would fail! =0
         // Instead, we move you to the destination directly, and only afterwards activate the various tiles on the way.
-        for (tile in pathToLastReachableTile) {
-            unit.moveThroughTile(tile)
-        }
-
+        
+        // Actually, we will now stop doing that becasue of _another_ really weird bug (actually two)
+        // 1. Through some ancient ruins bonuses, we could upgrade our unit, effectively replacing it
+        // with another unit. However, doing so halfway through a movement would make it impossible
+        // to reach the last tile, as the new unit spawns with 0 movement points and not taking
+        // the old route again. Therefore, we might trigger barbarian encampments or ancient ruins
+        // at the destination field we in fact never reach
+        // 2. Which tile we reach might change during the route. Maybe our route used to go through
+        // fog of war, and it turns out there was an enemy city on the route we should take.
+        // As we can't go through cities, we need to find another route, and therefore this
+        // route should be impossible.
+        if (needToFindNewRoute) moveToTile(destination, considerZoneOfControl)
     }
 
     /**
