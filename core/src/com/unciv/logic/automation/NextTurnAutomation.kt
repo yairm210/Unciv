@@ -23,6 +23,7 @@ import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
 import com.unciv.models.translations.tr
 import com.unciv.ui.pickerscreens.BeliefContainer
+import com.unciv.ui.victoryscreen.RankingType
 import kotlin.math.min
 
 object NextTurnAutomation {
@@ -185,6 +186,9 @@ object NextTurnAutomation {
             if (distance < 20)
                 value -= (20 - distance) / 4
         }
+        else if (civInfo.victoryType() == VictoryType.Diplomatic) {
+            value += 5  // Generally be friendly
+        }
         if (civInfo.gold < 100) {
             // Consider bullying for cash
             value -= 5
@@ -229,7 +233,7 @@ object NextTurnAutomation {
             if(diplomacyManager.relationshipLevel() < RelationshipLevel.Friend
                     && diplomacyManager.diplomaticStatus == DiplomaticStatus.Peace
                     && valueCityStateAlliance(civInfo, state) <= 0
-                    && state.getTributeWillingness(civInfo) > 0) {
+                    && state.getTributeWillingness(civInfo) >= 0) {
                 if (state.getTributeWillingness(civInfo, demandingWorker = true) > 0)
                     state.tributeWorker(civInfo)
                 else
@@ -493,12 +497,12 @@ object NextTurnAutomation {
     }
 
     private fun motivationToAttack(civInfo: CivilizationInfo, otherCiv: CivilizationInfo): Int {
-        val ourCombatStrength = Automation.evaluateCombatStrength(civInfo).toFloat()
-        var theirCombatStrength = Automation.evaluateCombatStrength(otherCiv)
+        val ourCombatStrength = civInfo.getStatForRanking(RankingType.Force).toFloat()
+        var theirCombatStrength = otherCiv.getStatForRanking(RankingType.Force).toFloat()
 
         //for city-states, also consider there protectors
         if(otherCiv.isCityState() and otherCiv.getProtectorCivs().isNotEmpty()) {
-            theirCombatStrength += otherCiv.getProtectorCivs().sumOf{Automation.evaluateCombatStrength(it)}
+            theirCombatStrength += otherCiv.getProtectorCivs().sumOf{it.getStatForRanking(RankingType.Force)}
         }
 
         if (theirCombatStrength > ourCombatStrength) return 0
