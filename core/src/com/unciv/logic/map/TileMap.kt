@@ -195,7 +195,7 @@ class TileMap {
                 }.filterNotNull()
 
     /** @return tile at hex coordinates ([x],[y]) or null if they are outside the map. Respects map edges and world wrap. */
-    private fun getIfTileExistsOrNull(x: Int, y: Int): TileInfo? {
+    fun getIfTileExistsOrNull(x: Int, y: Int): TileInfo? {
         if (contains(x, y))
             return get(x, y)
 
