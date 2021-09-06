@@ -196,7 +196,7 @@ class UncivTooltip <T: Actor>(
          * @param always override requirement: presence of physical keyboard
          */
         fun Group.addTooltip(char: Char, size: Float = 26f, always: Boolean = false) {
-            addTooltip((if (char in "Ii") 'i' else char.toUpperCase()).toString(), size, always)
+            addTooltip((if (char in "Ii") 'i' else char.uppercaseChar()).toString(), size, always)
         }
 
         /**
