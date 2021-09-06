@@ -25,7 +25,7 @@ enum class RelationshipLevel(val color: Color) {
     Ally(Color.CHARTREUSE)           // HSV(90,100,100)
 }
 
-enum class DiplomacyFlags{
+enum class DiplomacyFlags {
     DeclinedLuxExchange,
     DeclinedPeace,
     DeclinedResearchAgreement,
@@ -44,7 +44,7 @@ enum class DiplomacyFlags{
     AngerFreeIntrusion
 }
 
-enum class DiplomaticModifiers{
+enum class DiplomaticModifiers {
     DeclaredWarOnUs,
     WarMongerer,
     CapturedOurCities,
@@ -197,11 +197,11 @@ class DiplomacyManager() {
             else -> false
         }
     }
-    
+
     fun addInfluence(amount: Float) {
         setInfluence(influence + amount)
     }
-    
+
     fun setInfluence(amount: Float) {
         influence = max(amount, MINIMUM_INFLUENCE)
         civInfo.updateAllyCivForCityState()
@@ -741,6 +741,7 @@ class DiplomacyManager() {
         for (thirdCiv in getCommonKnownCivs()
                 .filter { it.getDiplomacyManager(civInfo).hasFlag(DiplomacyFlags.DeclarationOfFriendship) }) {
             val otherCivRelationshipWithThirdCiv = otherCiv().getDiplomacyManager(thirdCiv).relationshipLevel()
+            @Suppress("NON_EXHAUSTIVE_WHEN")  // Better readability
             when (otherCivRelationshipWithThirdCiv) {
                 RelationshipLevel.Unforgivable -> addModifier(DiplomaticModifiers.DeclaredFriendshipWithOurEnemies, -15f)
                 RelationshipLevel.Enemy -> addModifier(DiplomaticModifiers.DeclaredFriendshipWithOurEnemies, -5f)
@@ -763,6 +764,7 @@ class DiplomacyManager() {
             thirdCiv.addNotification("[${civInfo.civName}] has denounced [$otherCivName]!", civInfo.civName, NotificationIcon.Diplomacy, otherCivName)
             val thirdCivRelationshipWithOtherCiv = thirdCiv.getDiplomacyManager(otherCiv()).relationshipLevel()
             val thirdCivDiplomacyManager = thirdCiv.getDiplomacyManager(civInfo)
+            @Suppress("NON_EXHAUSTIVE_WHEN")  // Better readability
             when (thirdCivRelationshipWithOtherCiv) {
                 RelationshipLevel.Unforgivable -> thirdCivDiplomacyManager.addModifier(DiplomaticModifiers.DenouncedOurEnemies, 15f)
                 RelationshipLevel.Enemy -> thirdCivDiplomacyManager.addModifier(DiplomaticModifiers.DenouncedOurEnemies, 5f)
