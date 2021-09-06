@@ -482,8 +482,8 @@ class BaseUnit : INamed, INonPerpetualConstruction, ICivilopediaText {
                 if (getType().matchesFilter(filter)) return true
                 if (
                     filter.endsWith(" units")
-                    // "military units" --> "Military"
-                    && matchesFilter(filter.removeSuffix(" units").toLowerCase(Locale.ENGLISH).capitalize(Locale.ENGLISH))
+                    // "military units" --> "Military", using invariant locale
+                    && matchesFilter(filter.removeSuffix(" units").lowercase().replaceFirstChar { it.uppercaseChar() })
                 ) return true
                 return uniques.contains(filter)
             }
