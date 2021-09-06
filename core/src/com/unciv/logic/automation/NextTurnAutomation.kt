@@ -618,8 +618,8 @@ object NextTurnAutomation {
         for (unit in civInfo.getCivUnits()) {
             if (unit.promotions.canBePromoted()) {
                 val availablePromotions = unit.promotions.getAvailablePromotions()
-                if (availablePromotions.isNotEmpty())
-                    unit.promotions.addPromotion(availablePromotions.random().name)
+                if (availablePromotions.any())
+                    unit.promotions.addPromotion(availablePromotions.toList().random().name)
             }
 
             when {
