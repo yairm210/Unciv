@@ -407,16 +407,18 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
             return
         val pathToLastReachableTile = distanceToTiles.getPathToTile(lastReachableTile)
 
-        if (!unit.civInfo.gameInfo.gameParameters.godMode) {
-            unit.currentMovement -= distanceToTiles[lastReachableTile]!!.totalDistance
-            if (unit.currentMovement < 0.1) unit.currentMovement = 0f // silly floats which are "almost zero"
-        }
-        if (unit.isFortified() || unit.isSetUpForSiege() || unit.isSleeping())
-            unit.action = null // un-fortify/un-setup after moving
+        if (unit.isFortified() || unit.isSetUpForSiege() || unit.isSleeping() || unit.isAutomated())
+            unit.action = null // un-fortify/un-setup/un-sleep/un-automate after moving
 
         // If this unit is a carrier, keep record of its air payload whereabouts.
         val origin = unit.getTile()
         var needToFindNewRoute = false
+        // Cache this in case something goes wrong
+        
+        var lastReachedEnterableTile = unit.getTile()
+        
+        unit.removeFromTile()
+        
         for (tile in pathToLastReachableTile) {
             if (!unit.movement.canPassThrough(tile)) {
                 // AAAH something happened making our previous path invalid
@@ -427,9 +429,23 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
                 needToFindNewRoute = true
                 break
             }
-            unit.removeFromTile()
-            unit.putInTile(tile)
+            unit.moveThroughTile(tile)
+            
+            // In case something goes wrong, cache the last tile we were able to end on
+            if (unit.movement.canMoveTo(tile)) {
+                lastReachedEnterableTile = tile
+            }
+            
             if (unit.isDestroyed) break
+        }
+        
+        if (!unit.isDestroyed)
+            unit.putInTile(lastReachedEnterableTile)
+
+        if (!unit.civInfo.gameInfo.gameParameters.godMode) {
+            unit.currentMovement -= distanceToTiles[lastReachedEnterableTile]!!.totalDistance
+            if (unit.currentMovement < 0.1) unit.currentMovement = 0f // silly floats which are "almost zero"
+            // const Epsilon, anyone?
         }
 
         // The .toList() here is because we have a sequence that's running on the units in the tile,
