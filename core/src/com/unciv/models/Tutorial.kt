@@ -36,6 +36,10 @@ enum class Tutorial(val value: String, val isCivilopedia: Boolean = !value.start
     RemovingTerrainFeatures("Removing_Terrain_Features"),
     Keyboard("Keyboard"),
     WorldScreen("World_Screen"),
+    Faith("Faith"),
+    Religion("Religion"),
+    Beliefs("Beliefs"),
+    SpreadingReligion("Spreading_Religion"),
     ;
 
     companion object {
