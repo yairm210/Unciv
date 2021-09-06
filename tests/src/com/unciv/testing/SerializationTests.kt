@@ -51,7 +51,6 @@ class SerializationTests {
             players.add(Player("Rome").apply { playerType = PlayerType.Human })
             players.add(Player("Greece"))
             religionEnabled = true
-            startingEra = "Ancient era"
         }
         val mapParameters = MapParameters().apply {
             mapSize = MapSizeNew(MapSize.Tiny)
