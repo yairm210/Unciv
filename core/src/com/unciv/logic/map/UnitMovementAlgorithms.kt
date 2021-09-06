@@ -427,12 +427,13 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
                 // Anyway: PANIC!! We stop this route, and after leaving the game in a valid state,
                 // we try again.
                 needToFindNewRoute = true
-                break
+                break // If you ever remove this break, remove the `assumeCanPassThrough` param below
             }
             unit.moveThroughTile(tile)
             
             // In case something goes wrong, cache the last tile we were able to end on
-            if (unit.movement.canMoveTo(tile)) {
+            // We can assume we can pass through this tile, as we would have broken earlier
+            if (unit.movement.canMoveTo(tile, assumeCanPassThrough = true)) {
                 lastReachedEnterableTile = tile
             }
             
@@ -510,11 +511,11 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
      * Designates whether we can enter the tile - without attacking
      * DOES NOT designate whether we can reach that tile in the current turn
      */
-    fun canMoveTo(tile: TileInfo): Boolean {
+    fun canMoveTo(tile: TileInfo, assumeCanPassThrough: Boolean = false): Boolean {
         if (unit.baseUnit.movesLikeAirUnits())
             return canAirUnitMoveTo(tile, unit)
 
-        if (!canPassThrough(tile))
+        if (!assumeCanPassThrough && !canPassThrough(tile))
             return false
 
         // even if they'll let us pass through, we can't enter their city - unless we just captured it
