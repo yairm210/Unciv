@@ -316,9 +316,8 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
     fun canGiveStat(statType: Stat): Boolean {
         if (!civInfo.isCityState())
             return false
-        val eraInfo = civInfo.getEraObject()
-        val allyBonuses = if (eraInfo == null) null
-        else eraInfo.allyBonus[civInfo.cityStateType.name]
+        val eraInfo = civInfo.getEra()
+        val allyBonuses = eraInfo.allyBonus[civInfo.cityStateType.name]
         if (allyBonuses != null) {
             // Defined city states in json
             val bonuses = allyBonuses + eraInfo!!.friendBonus[civInfo.cityStateType.name]!!

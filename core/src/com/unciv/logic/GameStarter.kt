@@ -143,7 +143,7 @@ object GameStarter {
                         civInfo.tech.addTechnology(tech.name)
 
             for (tech in ruleset.technologies.values
-                    .filter { ruleset.getEraNumber(it.era()) < ruleset.getEraNumber(gameSetupInfo.gameParameters.startingEra) })
+                    .filter { ruleset.eras[it.era()]!!.eraNumber < ruleset.eras[gameSetupInfo.gameParameters.startingEra]!!.eraNumber })
                 if (!civInfo.tech.isResearched(tech.name))
                     civInfo.tech.addTechnology(tech.name)
 
@@ -154,12 +154,7 @@ object GameStarter {
     private fun addCivStats(gameInfo: GameInfo) {
         val ruleSet = gameInfo.ruleSet
         val startingEra = gameInfo.gameParameters.startingEra
-        val era =
-        if (startingEra in ruleSet.eras.keys) {
-            ruleSet.eras[startingEra]!!
-        } else {
-            Era()
-        }
+        val era = ruleSet.eras[startingEra]!!
         for (civInfo in gameInfo.civilizations.filter { !it.isBarbarian() }) {
             civInfo.addGold((era.startingGold * gameInfo.gameParameters.gameSpeed.modifier).toInt())
             civInfo.policies.addCulture((era.startingCulture * gameInfo.gameParameters.gameSpeed.modifier).toInt())
@@ -277,35 +272,9 @@ object GameStarter {
                 civ.placeUnitNearTile(startingLocation.position, unitName)
             }
             
-            // We are using an older mod, so we only look at the difficulty file
-            if (ruleSet.eras.isEmpty()) { 
-                startingUnits = (when {
-                    civ.isPlayerCivilization() -> gameInfo.getDifficulty().startingUnits
-                    civ.isMajorCiv() -> gameInfo.getDifficulty().aiMajorCivStartingUnits
-                    else -> gameInfo.getDifficulty().aiCityStateStartingUnits
-                }).toMutableList()
-
-                val warriorEquivalent = ruleSet.units.values
-                    .filter { it.isLandUnit() && it.isMilitary() && it.isBuildable(civ) }
-                    .maxByOrNull {max(it.strength, it.rangedStrength)}
-                    ?.name
-                
-                for (unit in startingUnits) {
-                    val unitToAdd = if (unit == "Warrior") warriorEquivalent else unit 
-                    if (unitToAdd != null) placeNearStartingPosition(unitToAdd)
-                }
-                
-                continue
-            }
-
             // Determine starting units based on starting era   
-            if (startingEra in ruleSet.eras.keys) {
-                startingUnits = ruleSet.eras[startingEra]!!.getStartingUnits().toMutableList()
-                eraUnitReplacement = ruleSet.eras[startingEra]!!.startingMilitaryUnit
-            } else {
-                startingUnits = Era().getStartingUnits().toMutableList()
-                eraUnitReplacement = Era().startingMilitaryUnit
-            }
+            startingUnits = ruleSet.eras[startingEra]!!.getStartingUnits().toMutableList()
+            eraUnitReplacement = ruleSet.eras[startingEra]!!.startingMilitaryUnit
             
             // Add extra units granted by difficulty
             startingUnits.addAll(when {

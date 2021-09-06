@@ -504,9 +504,8 @@ class Building : NamedStats(), INonPerpetualConstruction, ICivilopediaText {
                 ruleSet.policies.contains(filter) ->
                     if (!civInfo.policies.isAdopted(filter))
                         rejectionReasons.add(RejectionReason.RequiresPolicy.apply { errorMessage = unique.text })
-                // ToDo: Fix this when eras.json is required
-                ruleSet.getEraNumber(filter) != -1 ->
-                    if (civInfo.getEraNumber() < ruleSet.getEraNumber(filter))
+                ruleSet.eras.contains(filter) ->
+                    if (civInfo.getEraNumber() < ruleSet.eras[filter]!!.eraNumber)
                         rejectionReasons.add(RejectionReason.UnlockedWithEra.apply { errorMessage = unique.text })
                 ruleSet.buildings.contains(filter) ->
                     if (civInfo.cities.none { it.cityConstructions.containsBuildingOrEquivalent(filter) })
@@ -526,7 +525,7 @@ class Building : NamedStats(), INonPerpetualConstruction, ICivilopediaText {
                 rejectionReasons.add(RejectionReason.CityStateWonder)
 
             val startingEra = civInfo.gameInfo.gameParameters.startingEra
-            if (startingEra in ruleSet.eras && name in ruleSet.eras[startingEra]!!.startingObsoleteWonders)
+            if (name in ruleSet.eras[startingEra]!!.startingObsoleteWonders)
                 rejectionReasons.add(RejectionReason.WonderDisabledEra)
         }
 

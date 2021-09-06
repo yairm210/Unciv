@@ -428,20 +428,18 @@ class CivilizationInfo {
         else -> getCivUnits().none()
     }
 
-    fun getEra(): String {
-        if (gameInfo.ruleSet.technologies.isEmpty()) return "None"
-        if (tech.researchedTechnologies.isEmpty())
-            return gameInfo.ruleSet.getEras().first()
-        return tech.researchedTechnologies
+    fun getEra(): Era {
+        if (gameInfo.ruleSet.technologies.isEmpty() || tech.researchedTechnologies.isEmpty()) 
+            return Era()
+        val eraName = tech.researchedTechnologies
                 .asSequence()
                 .map { it.column!! }
                 .maxByOrNull { it.columnNumber }!!
                 .era
+        return gameInfo.ruleSet.eras[eraName]!!
     }
 
-    fun getEraNumber(): Int = gameInfo.ruleSet.getEraNumber(getEra())
-
-    fun getEraObject(): Era? = gameInfo.ruleSet.eras[getEra()]
+    fun getEraNumber(): Int = getEra().eraNumber
 
     fun isAtWarWith(otherCiv: CivilizationInfo): Boolean {
         if (otherCiv.civName == civName) return false // never at war with itself
@@ -864,8 +862,9 @@ class CivilizationInfo {
     
     fun getResearchAgreementCost(): Int {
         // https://forums.civfanatics.com/resources/research-agreements-bnw.25568/
-        val era = if (getEra() in gameInfo.ruleSet.eras) gameInfo.ruleSet.eras[getEra()]!! else Era()
-        return (era.researchAgreementCost * gameInfo.gameParameters.gameSpeed.modifier).toInt()
+        return (
+            getEra().researchAgreementCost * gameInfo.gameParameters.gameSpeed.modifier
+        ).toInt()
     }
     
     //////////////////////// City State wrapper functions ////////////////////////

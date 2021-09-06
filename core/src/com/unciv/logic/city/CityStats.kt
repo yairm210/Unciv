@@ -113,9 +113,9 @@ class CityStats(val cityInfo: CityInfo) {
 
         for (otherCiv in cityInfo.civInfo.getKnownCivs()) {
             if (otherCiv.isCityState() && otherCiv.getDiplomacyManager(cityInfo.civInfo).relationshipLevel() >= RelationshipLevel.Friend) {
-                val eraInfo = cityInfo.civInfo.getEraObject()
+                val eraInfo = cityInfo.civInfo.getEra()
 
-                if (eraInfo == null || eraInfo.friendBonus[otherCiv.cityStateType.name] == null || eraInfo.allyBonus[otherCiv.cityStateType.name] == null) {
+                if (eraInfo.friendBonus[otherCiv.cityStateType.name] == null || eraInfo.allyBonus[otherCiv.cityStateType.name] == null) {
                     // Deprecated, assume Civ V values for compatibility
                     if (otherCiv.cityStateType == CityStateType.Maritime && otherCiv.getDiplomacyManager(cityInfo.civInfo).relationshipLevel() == RelationshipLevel.Ally)
                         stats.food += 1
