@@ -1,5 +1,6 @@
 package com.unciv.models.ruleset.unit
 
+import com.unciv.models.ruleset.IHasUniques
 import com.unciv.models.ruleset.Unique
 import com.unciv.models.stats.INamed
 
@@ -16,13 +17,13 @@ enum class UnitMovementType { // The types of tiles the unit can by default ente
     Air // Only city tiles and carrying units
 }
 
-class UnitType() : INamed {
+class UnitType() : INamed, IHasUniques {
     override lateinit var name: String
     private var movementType: String? = null
     private val unitMovementType: UnitMovementType? by lazy { if (movementType == null) null else UnitMovementType.valueOf(movementType!!) }
     
-    val uniques: ArrayList<String> = ArrayList()
-    val uniqueObjects: List<Unique> by lazy { uniques.map { Unique(it) } }
+    override var uniques: ArrayList<String> = ArrayList()
+    override val uniqueObjects: List<Unique> by lazy { uniques.map { Unique(it) } }
     
     constructor(name: String, domain: String? = null) : this() {
         this.name = name

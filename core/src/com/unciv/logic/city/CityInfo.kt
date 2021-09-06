@@ -724,8 +724,7 @@ class CityInfo {
 
         return cityPositionList
             .asSequence()
-            .map { it.getOwner()?.civName }
-            .filterNotNull()
+            .mapNotNull { it.getOwner()?.civName }
             .distinct()
             .toList()
     }

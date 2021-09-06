@@ -3,6 +3,7 @@ package com.unciv.models.ruleset.tile
 import com.badlogic.gdx.graphics.Color
 import com.unciv.Constants
 import com.unciv.models.ruleset.Belief
+import com.unciv.models.ruleset.IHasUniques
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.Unique
 import com.unciv.models.stats.NamedStats
@@ -10,7 +11,7 @@ import com.unciv.ui.civilopedia.FormattedLine
 import com.unciv.ui.civilopedia.ICivilopediaText
 import com.unciv.ui.utils.colorFromRGB
 
-class Terrain : NamedStats(), ICivilopediaText {
+class Terrain : NamedStats(), ICivilopediaText, IHasUniques {
 
     lateinit var type: TerrainType
 
@@ -26,8 +27,8 @@ class Terrain : NamedStats(), ICivilopediaText {
     val turnsInto: String? = null
 
     /** Uniques (Properties such as Temp/humidity, Fresh water, elevation, rough, defense, Natural Wonder specials) */
-    val uniques = ArrayList<String>()
-    val uniqueObjects: List<Unique> by lazy { uniques.map { Unique(it) } }
+    override var uniques = ArrayList<String>()
+    override val uniqueObjects: List<Unique> by lazy { uniques.map { Unique(it) } }
 
     /** Natural Wonder weight: probability to be picked */
     var weight = 10

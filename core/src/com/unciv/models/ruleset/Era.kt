@@ -42,8 +42,4 @@ class Era : INamed, IHasUniques {
     }
 
     fun getHexColor() = "#" + getColor().toString().substring(0, 6)
-
-    fun hasUnique(uniqueTemplate: String) = uniqueObjects.any { it.placeholderText == uniqueTemplate }
-    
-    fun getMatchingUniques(uniqueTemplate: String) = uniqueObjects.filter { it.placeholderText == uniqueTemplate }
 }

@@ -173,7 +173,6 @@ class CivilopediaScreen(
         onBackButtonClicked { UncivGame.Current.setWorldScreen() }
 
         val hideReligionItems = !game.gameInfo.hasReligionEnabled()
-        val noCulturalVictory = VictoryType.Cultural !in game.gameInfo.gameParameters.victoryTypes
 
         fun shouldBeDisplayed(uniqueObjects: List<Unique>): Boolean {
             val uniques = uniqueObjects.map { it.placeholderText }
