@@ -281,8 +281,13 @@ class WorkerAutomation(
         val city = tile.getCity()
         if (city == null || city.civInfo != civInfo)
             return false
-        if (tile.improvement != null && !UncivGame.Current.settings.automatedWorkersReplaceImprovements && UncivGame.Current.gameInfo.currentPlayerCiv.isPlayerCivilization())
-            return false
+        if (tile.improvement != null && !UncivGame.Current.settings.automatedWorkersReplaceImprovements) {
+            if (unit != null) {
+                if (unit.civInfo.isPlayerCivilization())
+                    return false
+            } else if (UncivGame.Current.gameInfo.currentPlayerCiv.isPlayerCivilization())
+                return false
+        }
 
         if (tile.improvement == null) {
             if (unit == null) return true
