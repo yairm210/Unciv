@@ -45,8 +45,17 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo, centerOnTech: Tec
 
 
     private val turnsToTech = civInfo.gameInfo.ruleSet.technologies.values.associateBy({ it.name }, { civTech.turnsToTech(it.name) })
-    
+
     init {
+        // Replace the PickerScreen AutoScrollPane with a ZoomableScrollPane
+        topTable.remove()
+        scrollPane.remove()
+        scrollPane = ZoomableScrollPane(0.1f, 4f) {
+            scrollPane.setSize(stage.width / it, (stage.height - bottomTable.height) / it)
+        }
+        scrollPane.actor = topTable
+        splitPane.setFirstWidget(scrollPane)
+
         setDefaultCloseAction()
         onBackButtonClicked { UncivGame.Current.setWorldScreen() }
         scrollPane.setOverscroll(false, false)

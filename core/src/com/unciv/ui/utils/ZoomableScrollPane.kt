@@ -7,7 +7,11 @@ import com.badlogic.gdx.scenes.scene2d.utils.ActorGestureListener
 import kotlin.math.sqrt
 
 
-open class ZoomableScrollPane: ScrollPane(null) {
+open class ZoomableScrollPane(
+    private val minScale: Float = 0.5f,
+    private val maxScale: Float = 2f,
+    private val notifyZoom: ((Float)->Unit)? = null
+): ScrollPane(null) {
     var continuousScrollingX = false
 
     init{
@@ -15,8 +19,9 @@ open class ZoomableScrollPane: ScrollPane(null) {
     }
 
     open fun zoom(zoomScale: Float) {
-        if (zoomScale < 0.5f || zoomScale > 2f) return
+        if (zoomScale < minScale || zoomScale > maxScale) return
         setScale(zoomScale)
+        notifyZoom?.invoke(zoomScale)
     }
     fun zoomIn() {
         zoom(scaleX / 0.8f)
