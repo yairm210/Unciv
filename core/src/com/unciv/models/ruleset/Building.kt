@@ -65,8 +65,6 @@ class Building : NamedStats(), INonPerpetualConstruction, ICivilopediaText {
     var replaces: String? = null
     var uniqueTo: String? = null
     var quote: String = ""
-    @Deprecated("As of 3.15.16 - replaced with 'Provides a free [buildingName] [cityFilter]'")
-    var providesFreeBuilding: String? = null
     override var uniques = ArrayList<String>()
     override val uniqueObjects: List<Unique> by lazy { uniques.map { Unique(it) } }
     var replacementTextForUniques = ""
@@ -130,8 +128,6 @@ class Building : NamedStats(), INonPerpetualConstruction, ICivilopediaText {
             lines += if (amount == 1) "Consumes 1 [$resource]" // For now, to keep the existing translations
             else "Consumes [$amount] [$resource]"
         }
-        if (providesFreeBuilding != null)
-            lines += "Provides a free [$providesFreeBuilding] in the city"
         if (uniques.isNotEmpty()) {
             if (replacementTextForUniques != "") lines += replacementTextForUniques
             else lines += getUniquesStringsWithoutDisablers()
@@ -256,12 +252,6 @@ class Building : NamedStats(), INonPerpetualConstruction, ICivilopediaText {
             }
         }
 
-        if (providesFreeBuilding != null) {
-            textList += FormattedLine()
-            textList += FormattedLine("Provides a free [$providesFreeBuilding] in the city",
-                link="Building/$providesFreeBuilding")
-        }
-
         val stats = this.clone()
         val percentStats = getStatPercentageBonuses(null)
         val specialists = newSpecialists()
@@ -314,7 +304,7 @@ class Building : NamedStats(), INonPerpetualConstruction, ICivilopediaText {
 
         val seeAlso = ArrayList<FormattedLine>()
         for (building in ruleset.buildings.values) {
-            if (building.replaces == name || building.providesFreeBuilding == name
+            if (building.replaces == name
                     || building.uniqueObjects.any { unique -> unique.params.any { it ==name } })
                 seeAlso += FormattedLine(building.name, link=building.makeLink(), indent=1)
         }
@@ -514,9 +504,8 @@ class Building : NamedStats(), INonPerpetualConstruction, ICivilopediaText {
                 ruleSet.policies.contains(filter) ->
                     if (!civInfo.policies.isAdopted(filter))
                         rejectionReasons.add(RejectionReason.RequiresPolicy.apply { errorMessage = unique.text })
-                // ToDo: Fix this when eras.json is required
-                ruleSet.getEraNumber(filter) != -1 ->
-                    if (civInfo.getEraNumber() < ruleSet.getEraNumber(filter))
+                ruleSet.eras.contains(filter) ->
+                    if (civInfo.getEraNumber() < ruleSet.eras[filter]!!.eraNumber)
                         rejectionReasons.add(RejectionReason.UnlockedWithEra.apply { errorMessage = unique.text })
                 ruleSet.buildings.contains(filter) ->
                     if (civInfo.cities.none { it.cityConstructions.containsBuildingOrEquivalent(filter) })
@@ -536,7 +525,7 @@ class Building : NamedStats(), INonPerpetualConstruction, ICivilopediaText {
                 rejectionReasons.add(RejectionReason.CityStateWonder)
 
             val startingEra = civInfo.gameInfo.gameParameters.startingEra
-            if (startingEra in ruleSet.eras && name in ruleSet.eras[startingEra]!!.startingObsoleteWonders)
+            if (name in ruleSet.eras[startingEra]!!.startingObsoleteWonders)
                 rejectionReasons.add(RejectionReason.WonderDisabledEra)
         }
 
@@ -611,12 +600,6 @@ class Building : NamedStats(), INonPerpetualConstruction, ICivilopediaText {
                 if (!civInfo.gameInfo.gameParameters.victoryTypes.contains(VictoryType.valueOf(unique.params[0])))
                     rejectionReasons.add(RejectionReason.HiddenWithoutVictory.apply { errorMessage = unique.text })
             }
-            // Deprecated since 3.15.14
-                "Hidden when cultural victory is disabled" -> {
-                    if (!civInfo.gameInfo.gameParameters.victoryTypes.contains(VictoryType.Cultural))
-                        rejectionReasons.add(RejectionReason.HiddenWithoutVictory.apply { errorMessage = unique.text })
-                }
-            //
         }
 
         if (requiredBuilding != null && !cityConstructions.containsBuildingOrEquivalent(requiredBuilding!!)) {
@@ -631,11 +614,9 @@ class Building : NamedStats(), INonPerpetualConstruction, ICivilopediaText {
                 )
             }
         }
-        // cannotBeBuiltWith is Deprecated as of 3.15.19
         val cannotBeBuiltWith = uniqueObjects
             .firstOrNull { it.placeholderText == "Cannot be built with []" }
             ?.params?.get(0)
-            ?: this.cannotBeBuiltWith
         if (cannotBeBuiltWith != null && cityConstructions.isBuilt(cannotBeBuiltWith))
             rejectionReasons.add(RejectionReason.CannotBeBuiltWith.apply { errorMessage = "Cannot be built with [$cannotBeBuiltWith]" })
 
@@ -687,8 +668,7 @@ class Building : NamedStats(), INonPerpetualConstruction, ICivilopediaText {
         }
 
         // "Provides a free [buildingName] [cityFilter]"
-        var freeBuildingUniques = uniqueObjects.asSequence().filter { it.placeholderText=="Provides a free [] []" }
-        if (providesFreeBuilding!=null) freeBuildingUniques += sequenceOf(Unique("Provides a free [$providesFreeBuilding] [in this city]"))
+        val freeBuildingUniques = uniqueObjects.asSequence().filter { it.placeholderText=="Provides a free [] []" }
 
         for (unique in freeBuildingUniques) {
             val affectedCities =

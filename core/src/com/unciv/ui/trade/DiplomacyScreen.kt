@@ -25,7 +25,6 @@ import com.unciv.ui.civilopedia.CivilopediaScreen
 import com.unciv.ui.tilegroups.CityButton
 import com.unciv.ui.utils.*
 import com.unciv.ui.utils.UncivTooltip.Companion.addTooltip
-import java.text.Collator
 import kotlin.math.floor
 import kotlin.math.roundToInt
 import com.unciv.ui.utils.AutoScrollPane as ScrollPane
@@ -35,7 +34,7 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
     private val leftSideTable = Table().apply { defaults().pad(10f) }
     private val rightSideTable = Table()
 
-    private fun isNotPlayersTurn() = !UncivGame.Current.worldScreen.isPlayersTurn
+    private fun isNotPlayersTurn() = !UncivGame.Current.worldScreen.canChangeState
 
     init {
         onBackButtonClicked { UncivGame.Current.setWorldScreen() }
@@ -70,7 +69,7 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
             }
             .sortedWith(
                 compareByDescending<CivilizationInfo>{ it.isMajorCiv() }
-                    .thenBy (Collator.getInstance(), { it.civName.tr() })
+                    .thenBy (UncivGame.Current.settings.getCollatorFromLocale(), { it.civName.tr() })
             )
 
         for (civ in civsToDisplay) {
@@ -178,7 +177,7 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
             diplomacyTable.add(nextLevelString.toLabel()).row()
         }
 
-        val eraInfo = viewingCiv.getEraObject() ?: Era.getLegacyCityStateBonusEra(viewingCiv.getEraNumber())
+        val eraInfo = viewingCiv.getEra()
 
         var friendBonusText = "{When Friends:} ".tr()
         val friendBonuses = eraInfo.friendBonus[otherCiv.cityStateType.name]
@@ -432,17 +431,17 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
         val diplomacyTable = getCityStateDiplomacyTableHeader(otherCiv)
         diplomacyTable.addSeparator()
         diplomacyTable.add("Tribute Willingness".toLabel()).row()
-        diplomacyTable.add(">0 to take gold, >30 and size 4 city for worker".toLabel()).row()
         val modifierTable = Table()
         val tributeModifiers = otherCiv.getTributeModifiers(viewingCiv, requireWholeList = true)
         for (item in tributeModifiers) {
-            val color = if (item.value > 0) Color.GREEN else Color.RED
+            val color = if (item.value >= 0) Color.GREEN else Color.RED
             modifierTable.add(item.key.toLabel(color))
             modifierTable.add(item.value.toString().toLabel(color)).row()
         }
         modifierTable.add("Sum:".toLabel())
         modifierTable.add(tributeModifiers.values.sum().toLabel()).row()
         diplomacyTable.add(modifierTable).row()
+        diplomacyTable.add("At least 0 to take gold, at least 30 and size 4 city for worker".toLabel()).row()
         diplomacyTable.addSeparator()
 
         val demandGoldButton = "Take [${otherCiv.goldGainedByTribute()}] gold (-15 Influence)".toTextButton()
@@ -452,7 +451,7 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
             rightSideTable.add(ScrollPane(getCityStateDiplomacyTable(otherCiv)))
         }
         diplomacyTable.add(demandGoldButton).row()
-        if (otherCiv.getTributeWillingness(viewingCiv, demandingWorker = false) <= 0)   demandGoldButton.disable()
+        if (otherCiv.getTributeWillingness(viewingCiv, demandingWorker = false) < 0)   demandGoldButton.disable()
 
         val demandWorkerButton = "Take worker (-50 Influence)".toTextButton()
         demandWorkerButton.onClick {
@@ -461,7 +460,7 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
             rightSideTable.add(ScrollPane(getCityStateDiplomacyTable(otherCiv)))
         }
         diplomacyTable.add(demandWorkerButton).row()
-        if (otherCiv.getTributeWillingness(viewingCiv, demandingWorker = true) <= 0)    demandWorkerButton.disable()
+        if (otherCiv.getTributeWillingness(viewingCiv, demandingWorker = true) < 0)    demandWorkerButton.disable()
 
         val backButton = "Back".toTextButton()
         backButton.onClick {

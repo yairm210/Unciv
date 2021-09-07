@@ -76,7 +76,8 @@ class TechAction(val techName: String = "") : NotificationAction {
 data class CityAction(val city: Vector2 = Vector2.Zero): NotificationAction {
     override fun execute(worldScreen: WorldScreen) {
         worldScreen.mapHolder.tileMap[city].getCity()?.let {
-            worldScreen.game.setScreen(CityScreen(it))
+            if (it.civInfo == worldScreen.viewingCiv)
+                worldScreen.game.setScreen(CityScreen(it))
         }
     }
 }

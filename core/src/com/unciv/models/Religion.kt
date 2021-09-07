@@ -21,7 +21,6 @@ class Religion() : INamed {
 
     constructor(name: String, gameInfo: GameInfo, foundingCivName: String) : this() {
         this.name = name
-        this.displayName = name
         this.foundingCivName = foundingCivName
         this.gameInfo = gameInfo
     }
@@ -40,6 +39,10 @@ class Religion() : INamed {
     
     fun getIconName() = 
         if (isPantheon()) "Pantheon"
+        else name
+    
+    fun getReligionDisplayName() =
+        if (displayName != null) displayName!!
         else name
     
     private fun mapToExistingBeliefs(beliefs: HashSet<String>): List<Belief> {

@@ -503,7 +503,7 @@ object UnitActions {
         if (!unit.hasUnique("May enhance a religion")) return
         if (!unit.civInfo.religionManager.mayEnhanceReligionAtAll(unit)) return
         actionList += UnitAction(UnitActionType.EnhanceReligion,
-            title = "Enhance [${unit.civInfo.religionManager.religion!!.displayName}]",
+            title = "Enhance [${unit.civInfo.religionManager.religion!!.getReligionDisplayName()}]",
             action = getEnhanceReligionAction(unit).takeIf { unit.civInfo.religionManager.mayEnhanceReligionNow(unit) }
         )
     }

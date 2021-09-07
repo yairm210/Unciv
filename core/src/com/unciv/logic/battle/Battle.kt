@@ -154,6 +154,15 @@ object Battle {
             } catch (ex: Exception) {
             } // parameter is not a stat
         }
+
+        // CS friendship from killing barbarians
+        if (defeatedUnit.matchesCategory("Barbarian") && defeatedUnit.matchesCategory("Military") && civUnit.getCivInfo().isMajorCiv()) {
+            for (cityState in UncivGame.Current.gameInfo.getAliveCityStates()) {
+                if (defeatedUnit.unit.threatensCiv(cityState)) {
+                    cityState.threateningBarbarianKilledBy(civUnit.getCivInfo())
+                }
+            }
+        }
     }
 
     private fun tryCaptureUnit(attacker: MapUnitCombatant, defender: MapUnitCombatant): Boolean {
@@ -659,12 +668,6 @@ object Battle {
             } else {
                 var populationLoss = city.population.population * (0.6 + Random().nextFloat() * 0.2)
                 var populationLossReduced = false
-                // Deprecated since 3.15.11
-                    for (unique in city.getLocalMatchingUniques("Population loss from nuclear attacks -[]%")) {
-                        populationLoss *= 1 - unique.params[0].toFloat() / 100f
-                        populationLossReduced = true
-                    }
-                //
                 for (unique in city.getMatchingUniques("Population loss from nuclear attacks []% []")) {
                     if (!city.matchesFilter(unique.params[1]))
                     populationLoss *= unique.params[0].toPercent()

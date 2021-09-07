@@ -176,7 +176,7 @@ object TranslationFileWriter {
 
     // used for unit test only
     fun getGeneratedStringsSize(): Int {
-        return generateStringsFromJSONs(Gdx.files.local("jsons/Civ V - Vanilla")).values.sumBy { // exclude empty lines
+        return generateStringsFromJSONs(Gdx.files.local("jsons/Civ V - Vanilla")).values.sumOf { // exclude empty lines
             it.count { line: String -> !line.startsWith(specialNewLineCode) }
         }
     }

@@ -43,13 +43,15 @@ class CityInfo {
     lateinit var tilesInRange: HashSet<TileInfo>
 
     @Transient
-    var hasJustBeenConquered = false  // this is so that military units can enter the city, even before we decide what to do with it
+    var hasJustBeenConquered =
+        false  // this is so that military units can enter the city, even before we decide what to do with it
 
     var location: Vector2 = Vector2.Zero
     var id: String = UUID.randomUUID().toString()
     var name: String = ""
     var foundingCiv = ""
-    var previousOwner = "" // This is so that cities in resistance that re recaptured aren't in resistance anymore
+    var previousOwner =
+        "" // This is so that cities in resistance that re recaptured aren't in resistance anymore
     var turnAcquired = 0
     var health = 200
     var resistanceCounter = 0
@@ -58,7 +60,7 @@ class CityInfo {
     var population = PopulationManager()
     var cityConstructions = CityConstructions()
     var expansion = CityExpansionManager()
-    
+
     @Transient  // CityStats has no serializable fields
     var cityStats = CityStats(this)
 
@@ -105,7 +107,11 @@ class CityInfo {
         tryUpdateRoadStatus()
 
         val tile = getCenterTile()
-        for (terrainFeature in tile.terrainFeatures.filter { getRuleset().tileImprovements.containsKey("Remove $it") })
+        for (terrainFeature in tile.terrainFeatures.filter {
+            getRuleset().tileImprovements.containsKey(
+                "Remove $it"
+            )
+        })
             tile.terrainFeatures.remove(terrainFeature)
 
         tile.improvement = null
@@ -113,14 +119,16 @@ class CityInfo {
 
         val ruleset = civInfo.gameInfo.ruleSet
         workedTiles = hashSetOf() //reassign 1st working tile
-        
-        if (startingEra in ruleset.eras)
-            population.setPopulation(ruleset.eras[startingEra]!!.settlerPopulation)
+
+        population.setPopulation(ruleset.eras[startingEra]!!.settlerPopulation)
 
         if (civInfo.religionManager.religionState == ReligionState.Pantheon) {
-            religion.addPressure(civInfo.religionManager.religion!!.name, 200 * population.population)
+            religion.addPressure(
+                civInfo.religionManager.religion!!.name,
+                200 * population.population
+            )
         }
-        
+
         population.autoAssignPopulation()
         cityStats.update()
 
@@ -132,13 +140,11 @@ class CityInfo {
         if (civInfo.cities.size == 1) cityConstructions.addBuilding(capitalCityIndicator())
 
         // Add buildings and pop we get from starting in this era
-        if (startingEra in ruleset.eras) {
-            for (buildingName in ruleset.eras[startingEra]!!.settlerBuildings) {
-                val building = ruleset.buildings[buildingName] ?: continue
-                val uniqueBuilding = civInfo.getEquivalentBuilding(building)
-                if (uniqueBuilding.isBuildable(cityConstructions))
-                    cityConstructions.addBuilding(uniqueBuilding.name)
-            }
+        for (buildingName in ruleset.eras[startingEra]!!.settlerBuildings) {
+            val building = ruleset.buildings[buildingName] ?: continue
+            val uniqueBuilding = civInfo.getEquivalentBuilding(building)
+            if (uniqueBuilding.isBuildable(cityConstructions))
+                cityConstructions.addBuilding(uniqueBuilding.name)
         }
 
         civInfo.policies.tryToAddPolicyBuildings()
@@ -178,8 +184,9 @@ class CityInfo {
         // names are exhausted, and choose a random one from that pool if it's not empty.
         var newNames = civInfo.gameInfo.civilizations
             .filter { it.isMajorCiv() && it != civInfo }
-            .mapNotNull { it.nation.cities
-                .lastOrNull { city -> city !in usedCityNames }
+            .mapNotNull {
+                it.nation.cities
+                    .lastOrNull { city -> city !in usedCityNames }
             }
         if (newNames.isNotEmpty()) {
             return newNames.random()
@@ -193,7 +200,7 @@ class CityInfo {
             .values
             .map {
                 it.cities
-                .filter { city -> city !in usedCityNames }
+                    .filter { city -> city !in usedCityNames }
             }.flatten()
         if (newNames.isNotEmpty()) {
             return newNames.random()
@@ -238,7 +245,8 @@ class CityInfo {
     fun isCapital(): Boolean = cityConstructions.builtBuildings.contains(capitalCityIndicator())
     fun isCoastal(): Boolean = centerTileInfo.isCoastalTile()
     fun capitalCityIndicator(): String {
-        val indicatorBuildings = getRuleset().buildings.values.asSequence().filter { it.uniques.contains("Indicates the capital city") }
+        val indicatorBuildings = getRuleset().buildings.values.asSequence()
+            .filter { it.uniques.contains("Indicates the capital city") }
         val civSpecificBuilding = indicatorBuildings.firstOrNull { it.uniqueTo == civInfo.civName }
         if (civSpecificBuilding != null) return civSpecificBuilding.name
         else return indicatorBuildings.first().name
@@ -269,7 +277,11 @@ class CityInfo {
             for (unique in tileImprovement!!.uniqueObjects)
                 if (unique.placeholderText == "Provides [] []") {
                     val resource = getRuleset().tileResources[unique.params[1]] ?: continue
-                    cityResources.add(resource, unique.params[0].toInt() * civInfo.getResourceModifier(resource), "Tiles")
+                    cityResources.add(
+                        resource,
+                        unique.params[0].toInt() * civInfo.getResourceModifier(resource),
+                        "Tiles"
+                    )
                 }
         }
         for (building in cityConstructions.getBuiltBuildings()) {
@@ -281,12 +293,18 @@ class CityInfo {
         for (unique in getLocalMatchingUniques("Provides [] []")) { // E.G "Provides [1] [Iron]"
             val resource = getRuleset().tileResources[unique.params[1]]
             if (resource != null) {
-                cityResources.add(resource, unique.params[0].toInt()
-                        * civInfo.getResourceModifier(resource), "Tiles")
+                cityResources.add(
+                    resource, unique.params[0].toInt()
+                            * civInfo.getResourceModifier(resource), "Tiles"
+                )
             }
         }
         if (civInfo.isCityState() && isCapital() && civInfo.cityStateResource != null) {
-            cityResources.add(getRuleset().tileResources[civInfo.cityStateResource]!!, 1, "Mercantile City-State")
+            cityResources.add(
+                getRuleset().tileResources[civInfo.cityStateResource]!!,
+                1,
+                "Mercantile City-State"
+            )
         }
 
         return cityResources
@@ -304,14 +322,16 @@ class CityInfo {
         }
 
         if (resource.improvement == tileInfo.improvement || tileInfo.isCityCenter()
-                // Per https://gaming.stackexchange.com/questions/53155/do-manufactories-and-customs-houses-sacrifice-the-strategic-or-luxury-resources
-                || (resource.resourceType == ResourceType.Strategic && tileInfo.containsGreatImprovement())) {
+            // Per https://gaming.stackexchange.com/questions/53155/do-manufactories-and-customs-houses-sacrifice-the-strategic-or-luxury-resources
+            || resource.resourceType == ResourceType.Strategic && tileInfo.containsGreatImprovement()
+        ) {
             var amountToAdd = 1
             if (resource.resourceType == ResourceType.Strategic) {
                 amountToAdd = 2
             }
             if (resource.resourceType == ResourceType.Luxury
-                    && containsBuildingUnique("Provides 1 extra copy of each improved luxury resource near this City"))
+                && containsBuildingUnique("Provides 1 extra copy of each improved luxury resource near this City")
+            )
                 amountToAdd *= 2
 
             return amountToAdd
@@ -340,7 +360,8 @@ class CityInfo {
         return population.foodStored / -foodForNextTurn() + 1
     }
 
-    fun containsBuildingUnique(unique: String) = cityConstructions.getBuiltBuildings().any { it.uniques.contains(unique) }
+    fun containsBuildingUnique(unique: String) =
+        cityConstructions.getBuiltBuildings().any { it.uniques.contains(unique) }
 
     fun getGreatPersonPointsForNextTurn(): HashMap<String, Counter<String>> {
         val sourceToGPP = HashMap<String, Counter<String>>()
@@ -412,7 +433,8 @@ class CityInfo {
         }
     }
 
-    internal fun getMaxHealth() = 200 + cityConstructions.getBuiltBuildings().sumBy { it.cityHealth }
+    internal fun getMaxHealth() =
+        200 + cityConstructions.getBuiltBuildings().sumBy { it.cityHealth }
 
     override fun toString() = name // for debug
     //endregion
@@ -440,7 +462,11 @@ class CityInfo {
         if (isInResistance()) {
             resistanceCounter--
             if (!isInResistance())
-                civInfo.addNotification("The resistance in [$name] has ended!", location, "StatIcons/Resistance")
+                civInfo.addNotification(
+                    "The resistance in [$name] has ended!",
+                    location,
+                    "StatIcons/Resistance"
+                )
         }
 
         if (isPuppet) reassignPopulation()
@@ -467,14 +493,21 @@ class CityInfo {
         cityConstructions.endTurn(stats)
         expansion.nextTurn(stats.culture)
         if (isBeingRazed) {
-            val removedPopulation = 1 + civInfo.getMatchingUniques("Cities are razed [] times as fast").sumBy { it.params[0].toInt() - 1 }
+            val removedPopulation =
+                1 + civInfo.getMatchingUniques("Cities are razed [] times as fast")
+                    .sumBy { it.params[0].toInt() - 1 }
             population.addPopulation(-1 * removedPopulation)
             if (population.population <= 0) {
-                civInfo.addNotification("[$name] has been razed to the ground!", location, "OtherIcons/Fire")
+                civInfo.addNotification(
+                    "[$name] has been razed to the ground!",
+                    location,
+                    "OtherIcons/Fire"
+                )
                 destroyCity()
             } else { //if not razed yet:
                 if (population.foodStored >= population.getFoodToNextPopulation()) { //if surplus in the granary...
-                    population.foodStored = population.getFoodToNextPopulation() - 1 //...reduce below the new growth threshold
+                    population.foodStored =
+                        population.getFoodToNextPopulation() - 1 //...reduce below the new growth threshold
                 }
             }
         } else population.nextTurn(foodForNextTurn())
@@ -513,15 +546,18 @@ class CityInfo {
         }
     }
 
-    fun annexCity()  = CityInfoConquestFunctions(this).annexCity()
+    fun annexCity() = CityInfoConquestFunctions(this).annexCity()
 
     /** This happens when we either puppet OR annex, basically whenever we conquer a city and don't liberate it */
-    fun puppetCity(conqueringCiv: CivilizationInfo)  = CityInfoConquestFunctions(this).puppetCity(conqueringCiv)
+    fun puppetCity(conqueringCiv: CivilizationInfo) =
+        CityInfoConquestFunctions(this).puppetCity(conqueringCiv)
 
     /* Liberating is returning a city to its founder - makes you LOSE warmongering points **/
-    fun liberateCity(conqueringCiv: CivilizationInfo)  = CityInfoConquestFunctions(this).liberateCity(conqueringCiv)
+    fun liberateCity(conqueringCiv: CivilizationInfo) =
+        CityInfoConquestFunctions(this).liberateCity(conqueringCiv)
 
-    fun moveToCiv(newCivInfo: CivilizationInfo)  = CityInfoConquestFunctions(this).moveToCiv(newCivInfo)
+    fun moveToCiv(newCivInfo: CivilizationInfo) =
+        CityInfoConquestFunctions(this).moveToCiv(newCivInfo)
 
     internal fun tryUpdateRoadStatus() {
         if (getCenterTile().roadStatus == RoadStatus.None) {
@@ -535,7 +571,8 @@ class CityInfo {
         }
     }
 
-    fun getGoldForSellingBuilding(buildingName: String) = getRuleset().buildings[buildingName]!!.cost / 10
+    fun getGoldForSellingBuilding(buildingName: String) =
+        getRuleset().buildings[buildingName]!!.cost / 10
 
     fun sellBuilding(buildingName: String) {
         cityConstructions.removeBuilding(buildingName)
@@ -558,25 +595,23 @@ class CityInfo {
      There's a lot of triggering going on here.
      */
     private fun triggerCitiesSettledNearOtherCiv() {
-        val citiesWithin6Tiles = civInfo.gameInfo.civilizations.filter { it.isMajorCiv() && it != civInfo }
+        val citiesWithin6Tiles =
+            civInfo.gameInfo.civilizations.filter { it.isMajorCiv() && it != civInfo }
                 .flatMap { it.cities }
                 .filter { it.getCenterTile().aerialDistanceTo(getCenterTile()) <= 6 }
         val civsWithCloseCities = citiesWithin6Tiles.map { it.civInfo }.distinct()
-                .filter { it.knows(civInfo) && it.exploredTiles.contains(location) }
+            .filter { it.knows(civInfo) && it.exploredTiles.contains(location) }
         for (otherCiv in civsWithCloseCities)
             otherCiv.getDiplomacyManager(civInfo).setFlag(DiplomacyFlags.SettledCitiesNearUs, 30)
     }
 
-    fun canPurchase(construction: INonPerpetualConstruction): Boolean {
-        if (construction is BaseUnit) {
-            val tile = getCenterTile()
-            if (construction.isCivilian())
-                return tile.civilianUnit == null
-            if (construction.movesLikeAirUnits())
-                return tile.airUnits.filter { !it.isTransported }.size < 6
-            else return tile.militaryUnit == null
+    fun canPlaceNewUnit(construction: BaseUnit): Boolean {
+        val tile = getCenterTile()
+        return when {
+            construction.isCivilian() -> tile.civilianUnit == null
+            construction.movesLikeAirUnits() -> tile.airUnits.filter { !it.isTransported }.size < 6
+            else -> tile.militaryUnit == null
         }
-        return true
     }
 
     fun matchesFilter(filter: String, viewingCiv: CivilizationInfo = civInfo): Boolean {
@@ -586,18 +621,19 @@ class CityInfo {
             "in all coastal cities" -> isCoastal()
             "in capital" -> isCapital()
             "in all non-occupied cities" -> !cityStats.hasExtraAnnexUnhappiness() || isPuppet
-            "in all cities with a world wonder" -> cityConstructions.getBuiltBuildings().any { it.isWonder }
+            "in all cities with a world wonder" -> cityConstructions.getBuiltBuildings()
+                .any { it.isWonder }
             "in all cities connected to capital" -> isConnectedToCapital()
             "in all cities with a garrison" -> getCenterTile().militaryUnit != null
             "in all cities in which the majority religion is a major religion" ->
                 religion.getMajorityReligionName() != null
-                && religion.getMajorityReligion()!!.isMajorReligion()
+                        && religion.getMajorityReligion()!!.isMajorReligion()
             "in all cities in which the majority religion is an enhanced religion" ->
                 religion.getMajorityReligionName() != null
-                && religion.getMajorityReligion()!!.isEnhancedReligion()
+                        && religion.getMajorityReligion()!!.isEnhancedReligion()
             "in non-enemy foreign cities" ->
                 viewingCiv != civInfo
-                && !civInfo.isAtWarWith(viewingCiv)
+                        && !civInfo.isAtWarWith(viewingCiv)
             "in foreign cities" -> viewingCiv != civInfo
             "in annexed cities" -> foundingCiv != civInfo.civName && !isPuppet
             "in holy cities" -> religion.religionThisIsTheHolyCityOf != null
@@ -628,7 +664,7 @@ class CityInfo {
         // The localUniques might not be filtered when passed as a parameter, so we filter it anyway
         // The time loss shouldn't be that large I don't think
         return civInfo.getMatchingUniques(placeholderText, this) +
-               localUniques.filter { it.placeholderText == placeholderText }
+                localUniques.filter { it.placeholderText == placeholderText }
     }
 
     // Matching uniques provided by sources in the city itself
@@ -680,11 +716,12 @@ class CityInfo {
                     cityPositionList.add(tile)
 
         return cityPositionList.asSequence()
-            .map { it.getOwner()?.civName }.filterNotNull().toSet()
+            .map { it.getOwner()?.civName }.filterNotNull()
             .distinct().toList()
     }
+
     fun getImprovableTiles(): Sequence<TileInfo> = getTiles()
-        .filter {it.hasViewableResource(civInfo) && it.improvement == null}
-           
+        .filter { it.hasViewableResource(civInfo) && it.improvement == null }
+
     //endregion
 }

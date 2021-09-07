@@ -50,7 +50,7 @@ class ReligiousBeliefsPickerScreen (
         topTable.add(middlePanes)
         
         if (pickIconAndName) rightSideButton.label = "Choose a religion".toLabel()
-        else rightSideButton.label = "Enhance [${choosingCiv.religionManager.religion!!.displayName}]".toLabel()
+        else rightSideButton.label = "Enhance [${choosingCiv.religionManager.religion!!.getReligionDisplayName()}]".toLabel()
         rightSideButton.onClick(UncivSound.Choir) {
             choosingCiv.religionManager.chooseBeliefs(displayName, religionName, beliefsContainer.chosenBeliefs.map { it!! })            
             UncivGame.Current.setWorldScreen()
@@ -117,16 +117,12 @@ class ReligiousBeliefsPickerScreen (
                 label = "Choose a name for your religion",
                 icon = ImageGetter.getCircledReligionIcon(religionName!!, 80f),
                 defaultText = religionName!!,
-                actionOnOk = { religionName ->
-                    if (religionName == Constants.noReligionName 
-                        || gameInfo.ruleSet.religions.any { it == religionName } 
-                        || gameInfo.religions.any { it.value.name == religionName }
-                    ) {
-                        return@AskTextPopup false
-                    }
-                    changeDisplayedReligionName(religionName)
-                    return@AskTextPopup true
-                }
+                validate = { religionName ->
+                    religionName != Constants.noReligionName
+                    && gameInfo.ruleSet.religions.none { it == religionName }
+                    && gameInfo.religions.none { it.value.name == religionName }
+                },
+                actionOnOk = { changeDisplayedReligionName(it) }
             ).open()
         }
         changeReligionNameButton.disable()

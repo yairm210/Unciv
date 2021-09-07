@@ -83,11 +83,11 @@ class CityStatsTable(val cityScreen: CityScreen): Table() {
     }
 
     private fun addReligionInfo() {
-        val label = cityInfo.religion.getMajorityReligion()?.displayName
+        val label = cityInfo.religion.getMajorityReligion()?.getReligionDisplayName()
             ?: "None"
         val icon = 
             if (label == "None") "Religion" 
-            else cityInfo.religion.getMajorityReligion()!!.name
+            else cityInfo.religion.getMajorityReligion()!!.getIconName()
         val expanderTab =
             ExpanderTab(
                 title = "Majority Religion: [$label]",
@@ -107,7 +107,7 @@ class CityStatsTable(val cityScreen: CityScreen): Table() {
                     // I want this to be centered, but `.center()` doesn't seem to do anything,
                     // regardless of where I place it :(
                     it.add(
-                        "Holy city of: [${cityInfo.civInfo.gameInfo.religions[cityInfo.religion.religionThisIsTheHolyCityOf!!]!!.displayName}]".toLabel()
+                        "Holy city of: [${cityInfo.civInfo.gameInfo.religions[cityInfo.religion.religionThisIsTheHolyCityOf!!]!!.getReligionDisplayName()}]".toLabel()
                     ).center().colspan(2).pad(5f).row()
                 }
                 it.add(getReligionsTable()).colspan(2).pad(5f)

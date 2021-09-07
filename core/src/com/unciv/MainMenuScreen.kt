@@ -236,8 +236,12 @@ class MainMenuScreen: CameraStageBaseScreen() {
     }
 
     private fun quickstartNewGame() {
-        val newGame = GameStarter.startNewGame(GameSetupInfo.fromSettings("Chieftain"))
-        game.loadGame(newGame)
+        try {
+            val newGame = GameStarter.startNewGame(GameSetupInfo.fromSettings("Chieftain"))
+            game.loadGame(newGame)
+        } catch (ex: Exception) {
+            ToastPopup("Cannot start game with the default new game parameters!", this)
+        }
     }
 
     override fun resize(width: Int, height: Int) {

@@ -5,7 +5,6 @@ import com.unciv.models.stats.INamed
 import com.unciv.models.translations.tr
 import com.unciv.ui.civilopedia.FormattedLine
 import com.unciv.ui.civilopedia.ICivilopediaText
-import java.text.Collator
 import java.util.ArrayList
 
 class Belief : INamed, ICivilopediaText, IHasUniques {
@@ -62,7 +61,7 @@ class Belief : INamed, ICivilopediaText, IHasUniques {
             name = "Religions"
             val lines = ArrayList<FormattedLine>()
             lines += FormattedLine(separator = true)
-            ruleset.religions.sortedWith(compareBy(Collator.getInstance(), { it.tr() })).forEach {
+            ruleset.religions.sortedWith(compareBy(UncivGame.Current.settings.getCollatorFromLocale(), { it.tr() })).forEach {
                 lines += FormattedLine(it, icon = "Belief/$it")
             }
             civilopediaText = lines

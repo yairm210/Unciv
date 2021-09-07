@@ -20,7 +20,6 @@ import com.unciv.models.translations.tr
 import com.unciv.ui.mapeditor.GameParametersScreen
 import com.unciv.ui.pickerscreens.PickerScreen
 import com.unciv.ui.utils.*
-import java.text.Collator
 import java.util.*
 
 /**
@@ -273,7 +272,7 @@ private class NationPickerPopup(
         if (spectator != null) nations += spectator
 
         nations += playerPicker.getAvailablePlayerCivs(player.chosenCiv)
-            .sortedWith(compareBy(Collator.getInstance(), { it.name.tr() }))
+            .sortedWith(compareBy(UncivGame.Current.settings.getCollatorFromLocale(), { it.name.tr() }))
 
         var nationListScrollY = 0f
         var currentY = 0f
