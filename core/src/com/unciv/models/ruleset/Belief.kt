@@ -17,8 +17,6 @@ class Belief : INamed, ICivilopediaText, IHasUniques {
 
     override fun makeLink() = "Belief/$name"
     override fun getCivilopediaTextHeader() = FormattedLine(name, icon = makeLink(), header = 2, color = if (type == BeliefType.None) "#e34a2b" else "")
-    override fun replacesCivilopediaDescription() = true
-    override fun hasCivilopediaTextLines() = true
     override fun getSortGroup(ruleset: Ruleset) = type.ordinal
     override fun getIconName() = if (type == BeliefType.None) "Religion" else type.name
 
