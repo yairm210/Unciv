@@ -1,12 +1,10 @@
 package com.unciv.logic.civilization
 
 import com.unciv.Constants
-import com.unciv.UncivGame
 import com.unciv.logic.automation.NextTurnAutomation
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
-import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.metadata.GameSpeed
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.stats.Stat
@@ -14,7 +12,6 @@ import com.unciv.models.translations.getPlaceholderParameters
 import com.unciv.models.translations.getPlaceholderText
 import com.unciv.ui.victoryscreen.RankingType
 import java.util.*
-import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 import kotlin.collections.LinkedHashMap
 import kotlin.math.max
@@ -56,9 +53,8 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
                 && ruleset.getEraNumber(ruleset.technologies[it.requiredTech!!]!!.era()) > ruleset.getEraNumber(startingEra) // Not from the start era or before
                 && it.uniqueTo != null && it.uniqueTo in unusedMajorCivs // Must be from a major civ not in the game
                 && ruleset.unitTypes[it.unitType]!!.isLandUnit() && ( it.strength > 0 || it.rangedStrength > 0 ) } // Must be a land military unit
-            println(possibleUnits)
             if (possibleUnits.isNotEmpty())
-                civInfo.cityStateUniqueUnit = possibleUnits.random()
+                civInfo.cityStateUniqueUnit = possibleUnits.random().name
         }
     }
 
@@ -80,7 +76,12 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
     fun giveMilitaryUnitToPatron(receivingCiv: CivilizationInfo) {
         val cities = NextTurnAutomation.getClosestCities(receivingCiv, civInfo)
         val city = cities.city1
-        val militaryUnit = city.cityConstructions.getConstructableUnits()
+        val uniqueUnit = civInfo.gameInfo.ruleSet.units[civInfo.cityStateUniqueUnit]
+        // If the receiving civ has discovered the required tech and not the obsolete tech for our unique, always give them the unique
+        val militaryUnit = if (uniqueUnit != null && receivingCiv.tech.isResearched(uniqueUnit.requiredTech!!)
+            && (uniqueUnit.obsoleteTech == null || !receivingCiv.tech.isResearched(uniqueUnit.obsoleteTech!!))) uniqueUnit
+            // Otherwise pick at random
+            else city.cityConstructions.getConstructableUnits()
             .filter { !it.isCivilian() && it.isLandUnit() && it.uniqueTo==null }
             .toList().random()
         // placing the unit may fail - in that case stay quiet

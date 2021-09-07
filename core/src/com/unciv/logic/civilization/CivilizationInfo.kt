@@ -213,7 +213,7 @@ class CivilizationInfo {
     val cityStateType: CityStateType get() = nation.cityStateType!!
     var cityStatePersonality: CityStatePersonality = CityStatePersonality.Neutral
     var cityStateResource: String? = null
-    var cityStateUniqueUnit: BaseUnit? = null // Unique unit for militaristic city state. Might still be null if there are no appropriate units
+    var cityStateUniqueUnit: String? = null // Unique unit for militaristic city state. Might still be null if there are no appropriate units
     fun isMajorCiv() = nation.isMajorCiv()
     fun isAlive(): Boolean = !isDefeated()
     fun hasEverBeenFriendWith(otherCiv: CivilizationInfo): Boolean = getDiplomacyManager(otherCiv).everBeenFriends()

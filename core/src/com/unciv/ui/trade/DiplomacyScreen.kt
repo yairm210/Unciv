@@ -205,6 +205,12 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
             .apply { setAlignment(Align.center) }
         diplomacyTable.add(allyBonusLabel).row()
 
+        if (otherCiv.cityStateUniqueUnit != null) {
+            val unitName = otherCiv.cityStateUniqueUnit
+            val techName = viewingCiv.gameInfo.ruleSet.units[otherCiv.cityStateUniqueUnit]!!.requiredTech
+            diplomacyTable.add("[${otherCiv.civName}] is able to provide [${unitName}] once [${techName}] is researched.".toLabel())
+        }
+
         return diplomacyTable
     }
 
