@@ -276,9 +276,13 @@ class CivilizationInfo {
 
     fun hasResource(resourceName: String): Boolean = getCivResourcesByName()[resourceName]!! > 0
 
-    fun getCivWideBuildingUniques(): Sequence<Unique> = cities.asSequence().flatMap {
-        city -> city.getAllUniquesWithNonLocalEffects()
-    }
+    fun getCivWideBuildingUniques(cityItIsFor: CityInfo?): Sequence<Unique> = 
+        cities.asSequence().flatMap {
+            city ->
+                if (cityItIsFor != null && city == cityItIsFor)
+                    city.getAllUniquesWithNonLocalEffects().filter { it.params.none { param -> param == "in other cities" } }
+                else city.getAllUniquesWithNonLocalEffects()
+        }
 
     fun hasUnique(unique: String) = getMatchingUniques(unique).any()
 

@@ -420,7 +420,7 @@ class CityStats(val cityInfo: CityInfo) {
 
         newHappinessList["National ability"] = getStatsFromUniques(cityInfo.civInfo.nation.uniqueObjects.asSequence()).happiness
 
-        newHappinessList["Wonders"] = getStatsFromUniques(civInfo.getCivWideBuildingUniques()).happiness
+        newHappinessList["Wonders"] = getStatsFromUniques(civInfo.getCivWideBuildingUniques(cityInfo)).happiness
 
         newHappinessList["Religion"] = getStatsFromUniques(cityInfo.religion.getUniques()).happiness
 
@@ -445,7 +445,7 @@ class CityStats(val cityInfo: CityInfo) {
         newBaseStatList["Buildings"] = cityInfo.cityConstructions.getStats()
         newBaseStatList["Policies"] = getStatsFromUniques(civInfo.policies.policyUniques.getAllUniques())
         newBaseStatList["National ability"] = getStatsFromNationUnique()
-        newBaseStatList["Wonders"] = getStatsFromUniques(civInfo.getCivWideBuildingUniques())
+        newBaseStatList["Wonders"] = getStatsFromUniques(civInfo.getCivWideBuildingUniques(cityInfo))
         newBaseStatList["City-States"] = getStatsFromCityStates()
         newBaseStatList["Religion"] = getStatsFromUniques(cityInfo.religion.getUniques())
 
@@ -459,7 +459,7 @@ class CityStats(val cityInfo: CityInfo) {
         newStatPercentBonusList["Policies"] = getStatPercentBonusesFromUniques(currentConstruction, cityInfo.civInfo.policies.policyUniques.getAllUniques())
         newStatPercentBonusList["Buildings"] = getStatPercentBonusesFromUniques(currentConstruction, localBuildingUniques)
                 .plus(cityInfo.cityConstructions.getStatPercentBonuses()) // This function is to be deprecated but it'll take a while.
-        newStatPercentBonusList["Wonders"] = getStatPercentBonusesFromUniques(currentConstruction, cityInfo.civInfo.getCivWideBuildingUniques())
+        newStatPercentBonusList["Wonders"] = getStatPercentBonusesFromUniques(currentConstruction, cityInfo.civInfo.getCivWideBuildingUniques(cityInfo))
         newStatPercentBonusList["Railroads"] = getStatPercentBonusesFromRailroad()  // Name chosen same as tech, for translation, but theoretically independent
         newStatPercentBonusList["Resources"] = getStatPercentBonusesFromResources(currentConstruction)
         newStatPercentBonusList["National ability"] = getStatPercentBonusesFromNationUnique(currentConstruction)
