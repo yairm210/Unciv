@@ -1,6 +1,5 @@
 package com.unciv.logic
 
-import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.*
@@ -9,12 +8,12 @@ import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
 import com.unciv.logic.map.mapgenerator.MapGenerator
 import com.unciv.models.metadata.GameParameters
+import com.unciv.models.metadata.GameSetupInfo
 import com.unciv.models.ruleset.Era
 import com.unciv.models.ruleset.ModOptionsConstants
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.tile.ResourceType
-import com.unciv.models.metadata.GameSetupInfo
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
@@ -143,7 +142,7 @@ object GameStarter {
                         civInfo.tech.addTechnology(tech.name)
 
             for (tech in ruleset.technologies.values
-                    .filter { ruleset.getEraNumber(it.era()) < ruleset.getEraNumber(gameSetupInfo.gameParameters.startingEra) })
+                    .filter { ruleset.eras[it.era()]!!.eraNumber < ruleset.eras[gameSetupInfo.gameParameters.startingEra]!!.eraNumber })
                 if (!civInfo.tech.isResearched(tech.name))
                     civInfo.tech.addTechnology(tech.name)
 
@@ -154,12 +153,7 @@ object GameStarter {
     private fun addCivStats(gameInfo: GameInfo) {
         val ruleSet = gameInfo.ruleSet
         val startingEra = gameInfo.gameParameters.startingEra
-        val era =
-        if (startingEra in ruleSet.eras.keys) {
-            ruleSet.eras[startingEra]!!
-        } else {
-            Era()
-        }
+        val era = ruleSet.eras[startingEra]!!
         for (civInfo in gameInfo.civilizations.filter { !it.isBarbarian() }) {
             civInfo.addGold((era.startingGold * gameInfo.gameParameters.gameSpeed.modifier).toInt())
             civInfo.policies.addCulture((era.startingCulture * gameInfo.gameParameters.gameSpeed.modifier).toInt())
@@ -172,7 +166,7 @@ object GameStarter {
         availableCivNames.addAll(ruleset.nations.filter { it.value.isMajorCiv() }.keys.shuffled())
         availableCivNames.removeAll(newGameParameters.players.map { it.chosenCiv })
         availableCivNames.remove(Constants.barbarians)
-        
+
         val startingTechs = ruleset.technologies.values.filter { it.uniques.contains("Starting tech") }
 
         if (!newGameParameters.noBarbarians && ruleset.nations.containsKey(Constants.barbarians)) {
@@ -261,7 +255,7 @@ object GameStarter {
                 // An unusually bad spawning location
                 addConsolationPrize(gameInfo, startingLocation, 45 - startingLocation.getTileStartScore().toInt())
             }
-            
+
             if(civ.isCityState())
                 addCityStateLuxury(gameInfo, startingLocation)
 
@@ -276,45 +270,19 @@ object GameStarter {
             fun placeNearStartingPosition(unitName: String) {
                 civ.placeUnitNearTile(startingLocation.position, unitName)
             }
-            
-            // We are using an older mod, so we only look at the difficulty file
-            if (ruleSet.eras.isEmpty()) { 
-                startingUnits = (when {
-                    civ.isPlayerCivilization() -> gameInfo.getDifficulty().startingUnits
-                    civ.isMajorCiv() -> gameInfo.getDifficulty().aiMajorCivStartingUnits
-                    else -> gameInfo.getDifficulty().aiCityStateStartingUnits
-                }).toMutableList()
-
-                val warriorEquivalent = ruleSet.units.values
-                    .filter { it.isLandUnit() && it.isMilitary() && it.isBuildable(civ) }
-                    .maxByOrNull {max(it.strength, it.rangedStrength)}
-                    ?.name
-                
-                for (unit in startingUnits) {
-                    val unitToAdd = if (unit == "Warrior") warriorEquivalent else unit 
-                    if (unitToAdd != null) placeNearStartingPosition(unitToAdd)
-                }
-                
-                continue
-            }
 
             // Determine starting units based on starting era   
-            if (startingEra in ruleSet.eras.keys) {
-                startingUnits = ruleSet.eras[startingEra]!!.getStartingUnits().toMutableList()
-                eraUnitReplacement = ruleSet.eras[startingEra]!!.startingMilitaryUnit
-            } else {
-                startingUnits = Era().getStartingUnits().toMutableList()
-                eraUnitReplacement = Era().startingMilitaryUnit
-            }
-            
+            startingUnits = ruleSet.eras[startingEra]!!.getStartingUnits().toMutableList()
+            eraUnitReplacement = ruleSet.eras[startingEra]!!.startingMilitaryUnit
+
             // Add extra units granted by difficulty
             startingUnits.addAll(when {
                 civ.isPlayerCivilization() -> gameInfo.getDifficulty().playerBonusStartingUnits
                 civ.isMajorCiv() -> gameInfo.getDifficulty().aiMajorCivBonusStartingUnits
                 else -> gameInfo.getDifficulty().aiCityStateBonusStartingUnits
             })
-            
-            
+
+
             fun getEquivalentUnit(civ: CivilizationInfo, unitParam: String): String? {
                 var unit = unitParam // We want to change it and this is the easiest way to do so
                 if (unit == Constants.eraSpecificUnit) unit = eraUnitReplacement
@@ -346,11 +314,11 @@ object GameStarter {
                 startingUnits.clear()
                 startingUnits.add(startingSettlers.random())
             }
-            
+
             // One city challengers should spawn with one settler only regardless of era and difficulty
             if (civ.playerType == PlayerType.Human && gameInfo.gameParameters.oneCityChallenge) {
                 val startingSettlers = startingUnits.filter { settlerLikeUnits.contains(it) }
-                
+
                 startingUnits.removeAll(startingSettlers)
                 startingUnits.add(startingSettlers.random())
             }
@@ -389,8 +357,10 @@ object GameStarter {
 
         for (minimumDistanceBetweenStartingLocations in tileMap.tileMatrix.size / 4 downTo 0) {
             val freeTiles = landTilesInBigEnoughGroup
-                    .filter { vectorIsAtLeastNTilesAwayFromEdge(it.position, (minimumDistanceBetweenStartingLocations * 2) /3, tileMap) }
-                    .toMutableList()
+                    .filter {
+                        HexMath.getDistanceFromEdge(it.position, tileMap.mapParameters) >=
+                                (minimumDistanceBetweenStartingLocations * 2) /3
+                    }.toMutableList()
 
             val startingLocations = HashMap<CivilizationInfo, TileInfo>()
             for (civ in civsOrderedByAvailableLocations) {
@@ -476,14 +446,5 @@ object GameStarter {
                 return
             }
         }
-    }
-
-    private fun vectorIsAtLeastNTilesAwayFromEdge(vector: Vector2, n: Int, tileMap: TileMap): Boolean {
-        // Since all maps are HEXAGONAL, the easiest way of checking if a tile is n steps away from the
-        // edge is checking the distance to the CENTER POINT
-        // Can't believe we used a dumb way of calculating this before!
-        val hexagonalRadius = -tileMap.leftX
-        val distanceFromCenter = HexMath.getDistance(vector, Vector2.Zero)
-        return hexagonalRadius - distanceFromCenter >= n
     }
 }

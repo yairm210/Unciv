@@ -154,6 +154,15 @@ object Battle {
             } catch (ex: Exception) {
             } // parameter is not a stat
         }
+
+        // CS friendship from killing barbarians
+        if (defeatedUnit.matchesCategory("Barbarian") && defeatedUnit.matchesCategory("Military") && civUnit.getCivInfo().isMajorCiv()) {
+            for (cityState in UncivGame.Current.gameInfo.getAliveCityStates()) {
+                if (defeatedUnit.unit.threatensCiv(cityState)) {
+                    cityState.threateningBarbarianKilledBy(civUnit.getCivInfo())
+                }
+            }
+        }
     }
 
     private fun tryCaptureUnit(attacker: MapUnitCombatant, defender: MapUnitCombatant): Boolean {

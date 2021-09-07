@@ -267,15 +267,15 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
         if (civInfo.getDiplomacyManager(demandingCiv).influence < -30)
             modifiers["Influence below -30"] = -300
 
-        // Slight optimization, we don't do the expensive stuff if we have no chance of getting a positive result
-        if (!requireWholeList && modifiers.values.sum() <= -200)
+        // Slight optimization, we don't do the expensive stuff if we have no chance of getting a >= 0 result
+        if (!requireWholeList && modifiers.values.sum() < -200)
             return modifiers
 
         val forceRank = civInfo.gameInfo.getAliveMajorCivs().sortedByDescending { it.getStatForRanking(
             RankingType.Force) }.indexOf(demandingCiv)
         modifiers["Military Rank"] = 100 - ((100 / civInfo.gameInfo.gameParameters.players.size) * forceRank)
 
-        if (!requireWholeList && modifiers.values.sum() <= -100)
+        if (!requireWholeList && modifiers.values.sum() < -100)
             return modifiers
 
         val bullyRange = max(5, civInfo.gameInfo.tileMap.tileMatrix.size / 10)   // Longer range for larger maps
@@ -352,9 +352,8 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
     fun canGiveStat(statType: Stat): Boolean {
         if (!civInfo.isCityState())
             return false
-        val eraInfo = civInfo.getEraObject()
-        val allyBonuses = if (eraInfo == null) null
-        else eraInfo.allyBonus[civInfo.cityStateType.name]
+        val eraInfo = civInfo.getEra()
+        val allyBonuses = eraInfo.allyBonus[civInfo.cityStateType.name]
         if (allyBonuses != null) {
             // Defined city states in json
             val bonuses = allyBonuses + eraInfo!!.friendBonus[civInfo.cityStateType.name]!!
@@ -378,6 +377,52 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
         }
 
         return false
+    }
+
+    fun updateDiplomaticRelationshipForCityState() {
+        // Check if city-state invaded by other civs
+        if (getNumThreateningBarbarians() > 0) return // Assume any players are there to fight barbarians
+
+        for (otherCiv in civInfo.getKnownCivs().filter { it.isMajorCiv() }) {
+            if (civInfo.isAtWarWith(otherCiv)) continue
+            if (otherCiv.hasUnique("City-State territory always counts as friendly territory")) continue
+            val diplomacy = civInfo.getDiplomacyManager(otherCiv)
+            if (diplomacy.hasFlag(DiplomacyFlags.AngerFreeIntrusion)) continue // They recently helped us
+
+            val unitsInBorder = otherCiv.getCivUnits().count { !it.isCivilian() && it.getTile().getOwner() == civInfo }
+            if (unitsInBorder > 0 && diplomacy.relationshipLevel() < RelationshipLevel.Friend) {
+                diplomacy.addInfluence(-10f)
+                if (!diplomacy.hasFlag(DiplomacyFlags.BorderConflict)) {
+                    otherCiv.popupAlerts.add(PopupAlert(AlertType.BorderConflict, civInfo.civName))
+                    diplomacy.setFlag(DiplomacyFlags.BorderConflict, 10)
+                }
+            }
+        }
+    }
+
+    fun getFreeTechForCityState() {
+        // City-States automatically get all techs that at least half of the major civs know
+        val researchableTechs = civInfo.gameInfo.ruleSet.technologies.keys
+            .filter { civInfo.tech.canBeResearched(it) }
+        for (tech in researchableTechs) {
+            val aliveMajorCivs = civInfo.gameInfo.getAliveMajorCivs()
+            if (aliveMajorCivs.count { it.tech.isResearched(tech) } >= aliveMajorCivs.count() / 2)
+                civInfo.tech.addTechnology(tech)
+        }
+        return
+    }
+
+    private fun getNumThreateningBarbarians(): Int {
+        return civInfo.gameInfo.getBarbarianCivilization().getCivUnits().count { it.threatensCiv(civInfo) }
+    }
+
+    fun threateningBarbarianKilledBy(otherCiv: CivilizationInfo) {
+        val diplomacy = civInfo.getDiplomacyManager(otherCiv)
+        diplomacy.addInfluence(12f)
+        if (diplomacy.hasFlag(DiplomacyFlags.AngerFreeIntrusion))
+            diplomacy.setFlag(DiplomacyFlags.AngerFreeIntrusion, diplomacy.getFlag(DiplomacyFlags.AngerFreeIntrusion) + 5)
+        else
+            diplomacy.setFlag(DiplomacyFlags.AngerFreeIntrusion, 5)
     }
 
 }

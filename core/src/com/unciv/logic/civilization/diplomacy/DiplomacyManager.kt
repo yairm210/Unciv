@@ -43,6 +43,7 @@ enum class DiplomacyFlags{
     NotifiedAfraid,
     RecentlyPledgedProtection,
     RecentlyWithdrewProtection,
+    AngerFreeIntrusion
 }
 
 enum class DiplomaticModifiers{
@@ -324,7 +325,8 @@ class DiplomacyManager() {
      *  This includes friendly and allied city-states and the open border treaties.
      */
     fun isConsideredFriendlyTerritory(): Boolean {
-        if (civInfo.isCityState() && relationshipLevel() >= RelationshipLevel.Friend)
+        if (civInfo.isCityState() &&
+            (relationshipLevel() >= RelationshipLevel.Friend || otherCiv().hasUnique("City-State territory always counts as friendly territory")))
             return true
         return hasOpenBorders
     }
@@ -531,18 +533,15 @@ class DiplomacyManager() {
             revertToZero(DiplomaticModifiers.DeclarationOfFriendship, 1 / 2f) //decreases slowly and will revert to full if it is declared later
 
         if (otherCiv().isCityState()) {
-            val eraInfo = civInfo.getEraObject()
+            val eraInfo = civInfo.getEra()
 
             if (relationshipLevel() < RelationshipLevel.Friend) {
                 if (hasFlag(DiplomacyFlags.ProvideMilitaryUnit)) removeFlag(DiplomacyFlags.ProvideMilitaryUnit)
             } else {
                 val relevantBonuses =
-                    when {
-                        eraInfo == null -> null
-                        relationshipLevel() == RelationshipLevel.Friend ->
-                            eraInfo.friendBonus[otherCiv().cityStateType.name]    
-                        else -> eraInfo.allyBonus[otherCiv().cityStateType.name]
-                    }
+                    if (relationshipLevel() == RelationshipLevel.Friend)
+                        eraInfo.friendBonus[otherCiv().cityStateType.name]    
+                    else eraInfo.allyBonus[otherCiv().cityStateType.name]
                         
                 if (relevantBonuses == null && otherCiv().cityStateType == CityStateType.Militaristic) {
                     // Deprecated, assume Civ V values for compatibility
@@ -597,7 +596,7 @@ class DiplomacyManager() {
         }
 
         otherCivDiplomacy.setModifier(DiplomaticModifiers.DeclaredWarOnUs, -20f)
-        if (otherCiv.isCityState()) otherCivDiplomacy.influence -= 60
+        if (otherCiv.isCityState()) otherCivDiplomacy.setInfluence(-60f)
 
         for (thirdCiv in civInfo.getKnownCivs()) {
             if (thirdCiv.isAtWarWith(otherCiv)) {

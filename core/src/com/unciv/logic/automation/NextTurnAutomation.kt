@@ -23,6 +23,7 @@ import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
 import com.unciv.models.translations.tr
 import com.unciv.ui.pickerscreens.BeliefContainer
+import com.unciv.ui.victoryscreen.RankingType
 import kotlin.math.min
 
 object NextTurnAutomation {
@@ -45,8 +46,8 @@ object NextTurnAutomation {
             issueRequests(civInfo)
             adoptPolicy(civInfo)  // todo can take a second - why?
         } else {
-            getFreeTechForCityStates(civInfo)
-            updateDiplomaticRelationshipForCityStates(civInfo)
+            civInfo.getFreeTechForCityState()
+            civInfo.updateDiplomaticRelationshipForCityState()
         }
 
         chooseTechToResearch(civInfo)
@@ -185,6 +186,9 @@ object NextTurnAutomation {
             if (distance < 20)
                 value -= (20 - distance) / 4
         }
+        else if (civInfo.victoryType() == VictoryType.Diplomatic) {
+            value += 5  // Generally be friendly
+        }
         if (civInfo.gold < 100) {
             // Consider bullying for cash
             value -= 5
@@ -229,25 +233,13 @@ object NextTurnAutomation {
             if(diplomacyManager.relationshipLevel() < RelationshipLevel.Friend
                     && diplomacyManager.diplomaticStatus == DiplomaticStatus.Peace
                     && valueCityStateAlliance(civInfo, state) <= 0
-                    && state.getTributeWillingness(civInfo) > 0) {
+                    && state.getTributeWillingness(civInfo) >= 0) {
                 if (state.getTributeWillingness(civInfo, demandingWorker = true) > 0)
                     state.tributeWorker(civInfo)
                 else
                     state.tributeGold(civInfo)
             }
         }
-    }
-
-    private fun getFreeTechForCityStates(civInfo: CivilizationInfo) {
-        // City-States automatically get all techs that at least half of the major civs know
-        val researchableTechs = civInfo.gameInfo.ruleSet.technologies.keys
-            .filter { civInfo.tech.canBeResearched(it) }
-        for (tech in researchableTechs) {
-            val aliveMajorCivs = civInfo.gameInfo.getAliveMajorCivs()
-            if (aliveMajorCivs.count { it.tech.isResearched(tech) } >= aliveMajorCivs.count() / 2)
-                civInfo.tech.addTechnology(tech)
-        }
-        return
     }
 
     private fun chooseTechToResearch(civInfo: CivilizationInfo) {
@@ -477,23 +469,6 @@ object NextTurnAutomation {
         }
     }
 
-    private fun updateDiplomaticRelationshipForCityStates(civInfo: CivilizationInfo) {
-        // Check if city-state invaded by other civs
-        for (otherCiv in civInfo.getKnownCivs().filter { it.isMajorCiv() }) {
-            if (civInfo.isAtWarWith(otherCiv)) continue
-            val diplomacy = civInfo.getDiplomacyManager(otherCiv)
-
-            val unitsInBorder = otherCiv.getCivUnits().count { !it.isCivilian() && it.getTile().getOwner() == civInfo }
-            if (unitsInBorder > 0 && diplomacy.relationshipLevel() < RelationshipLevel.Friend) {
-                diplomacy.addInfluence(-10f)
-                if (!diplomacy.hasFlag(DiplomacyFlags.BorderConflict)) {
-                    otherCiv.popupAlerts.add(PopupAlert(AlertType.BorderConflict, civInfo.civName))
-                    diplomacy.setFlag(DiplomacyFlags.BorderConflict, 10)
-                }
-            }
-        }
-    }
-
     private fun declareWar(civInfo: CivilizationInfo) {
         if (civInfo.victoryType() == VictoryType.Cultural) return
         if (civInfo.cities.isEmpty() || civInfo.diplomacy.isEmpty()) return
@@ -522,12 +497,12 @@ object NextTurnAutomation {
     }
 
     private fun motivationToAttack(civInfo: CivilizationInfo, otherCiv: CivilizationInfo): Int {
-        val ourCombatStrength = Automation.evaluateCombatStrength(civInfo).toFloat()
-        var theirCombatStrength = Automation.evaluateCombatStrength(otherCiv)
+        val ourCombatStrength = civInfo.getStatForRanking(RankingType.Force).toFloat()
+        var theirCombatStrength = otherCiv.getStatForRanking(RankingType.Force).toFloat()
 
         //for city-states, also consider there protectors
         if(otherCiv.isCityState() and otherCiv.getProtectorCivs().isNotEmpty()) {
-            theirCombatStrength += otherCiv.getProtectorCivs().sumOf{Automation.evaluateCombatStrength(it)}
+            theirCombatStrength += otherCiv.getProtectorCivs().sumOf{it.getStatForRanking(RankingType.Force)}
         }
 
         if (theirCombatStrength > ourCombatStrength) return 0
