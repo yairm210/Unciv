@@ -200,22 +200,12 @@ object GameStarter {
         availableCityStatesNames.addAll(ruleset.nations.filter { it.value.isCityState() }.keys
                 .shuffled().sortedByDescending { it in civNamesWithStartingLocations })
 
-        val allMercantileResources = ruleset.tileResources.values.filter { it.unique == "Can only be created by Mercantile City-States" }.map { it.name }
-        val unusedMercantileResources = Stack<String>()
-        unusedMercantileResources.addAll(allMercantileResources.shuffled())
-
         for (cityStateName in availableCityStatesNames.take(newGameParameters.numberOfCityStates)) {
             val civ = CivilizationInfo(cityStateName)
-            civ.cityStatePersonality = CityStatePersonality.values().random()
-            civ.cityStateResource = when {
-                ruleset.nations[cityStateName]?.cityStateType != CityStateType.Mercantile -> null
-                allMercantileResources.isEmpty() -> null
-                unusedMercantileResources.empty() -> allMercantileResources.random()  // When unused luxuries exhausted, random
-                else -> unusedMercantileResources.pop()  // First pick an unused luxury if possible
-            }
             gameInfo.civilizations.add(civ)
             for (tech in startingTechs)
                 civ.tech.techsResearched.add(tech.name) // can't be .addTechnology because the civInfo isn't assigned yet
+            civ.initCityState(ruleset, newGameParameters.startingEra, availableCivNames)
         }
     }
 

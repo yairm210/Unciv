@@ -1,16 +1,20 @@
 package com.unciv.logic.civilization
 
 import com.unciv.Constants
+import com.unciv.UncivGame
 import com.unciv.logic.automation.NextTurnAutomation
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
+import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.metadata.GameSpeed
+import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.stats.Stat
 import com.unciv.models.translations.getPlaceholderParameters
 import com.unciv.models.translations.getPlaceholderText
 import com.unciv.ui.victoryscreen.RankingType
 import java.util.*
+import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 import kotlin.collections.LinkedHashMap
 import kotlin.math.max
@@ -19,6 +23,44 @@ import kotlin.math.pow
 
 /** Class containing city-state-specific functions */
 class CityStateFunctions(val civInfo: CivilizationInfo) {
+
+    fun initCityState(ruleset: Ruleset, startingEra: String, unusedMajorCivs: Collection<String>) {
+        val cityStateType = ruleset.nations[civInfo.civName]?.cityStateType
+        if (cityStateType == null)  return
+
+        val allMercantileResources = ruleset.tileResources.values.filter { it.unique == "Can only be created by Mercantile City-States" }.map { it.name }
+        val allPossibleBonuses = HashSet<String>()    // We look through these to determine what kind of city state we are
+        for (era in ruleset.eras.values) {
+            val allyBonuses = era.allyBonus[cityStateType.name]
+            val friendBonuses = era.friendBonus[cityStateType.name]
+            if (allyBonuses != null)
+                allPossibleBonuses.addAll(allyBonuses.map { it.getPlaceholderText() })
+            if (friendBonuses != null)
+                allPossibleBonuses.addAll(friendBonuses.map { it.getPlaceholderText() })
+        }
+
+        // CS Personality
+        civInfo.cityStatePersonality = CityStatePersonality.values().random()
+
+        // Mercantile bonus resources
+        if ("Provides a unique luxury" in allPossibleBonuses
+            || (allPossibleBonuses.isEmpty() && cityStateType == CityStateType.Mercantile)) { // Fallback for badly defined Eras.json
+            civInfo.cityStateResource = allMercantileResources.random()
+        }
+
+        // Unique unit for militaristic city-states
+        if ("Provides military units every [] turns" in allPossibleBonuses
+            || (allPossibleBonuses.isEmpty() && cityStateType == CityStateType.Militaristic)) { // Fallback for badly defined Eras.json
+
+            val possibleUnits = ruleset.units.values.filter { it.requiredTech != null
+                && ruleset.getEraNumber(ruleset.technologies[it.requiredTech!!]!!.era()) > ruleset.getEraNumber(startingEra) // Not from the start era or before
+                && it.uniqueTo != null && it.uniqueTo in unusedMajorCivs // Must be from a major civ not in the game
+                && ruleset.unitTypes[it.unitType]!!.isLandUnit() && ( it.strength > 0 || it.rangedStrength > 0 ) } // Must be a land military unit
+            println(possibleUnits)
+            if (possibleUnits.isNotEmpty())
+                civInfo.cityStateUniqueUnit = possibleUnits.random()
+        }
+    }
 
     /** Gain a random great person from the city state */
     fun giveGreatPersonToPatron(receivingCiv: CivilizationInfo) {
