@@ -274,7 +274,7 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
 
     fun canReachInCurrentTurn(destination: TileInfo): Boolean {
         if (unit.baseUnit.movesLikeAirUnits())
-            return unit.currentTile.aerialDistanceTo(destination) <= unit.getRange()*2
+            return unit.currentTile.aerialDistanceTo(destination) <= unit.getMaxMovementForAirUnits()
         if (unit.isPreparingParadrop())
             return getDistance(unit.currentTile.position, destination.position) <= unit.paradropRange && canParadropOn(destination)
         return getDistanceToTiles().containsKey(destination)
@@ -283,7 +283,7 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
     fun getReachableTilesInCurrentTurn(): Sequence<TileInfo> {
         return when {
             unit.baseUnit.movesLikeAirUnits() ->
-                unit.getTile().getTilesInDistanceRange(IntRange(1, unit.getRange() * 2))
+                unit.getTile().getTilesInDistanceRange(IntRange(1, unit.getMaxMovementForAirUnits()))
             unit.isPreparingParadrop() ->
                 unit.getTile().getTilesInDistance(unit.paradropRange)
                     .filter { unit.movement.canParadropOn(it) }
@@ -445,7 +445,8 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
 
         if (!unit.civInfo.gameInfo.gameParameters.godMode) {
             unit.currentMovement -= distanceToTiles[lastReachedEnterableTile]!!.totalDistance
-            if (unit.currentMovement < 0.1) unit.currentMovement = 0f // silly floats which are "almost zero"
+            if (unit.currentMovement < Constants.minimumMovementEpsilon) 
+                unit.currentMovement = 0f // silly floats which are "almost zero"
             // const Epsilon, anyone?
         }
 
