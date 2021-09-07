@@ -585,11 +585,15 @@ object UnitActions {
         var uniquesToCheck = unit.getMatchingUniques("Can construct []")
         if (unit.religiousActionsUnitCanDo().all { unit.abilityUsesLeft[it] == unit.maxAbilityUses[it] })
             uniquesToCheck += unit.getMatchingUniques("Can construct [] if it hasn't used other actions yet")
+        val civResources = unit.civInfo.getCivResourcesByName()
         
         for (unique in uniquesToCheck) {
             val improvementName = unique.params[0]
             val improvement = tile.ruleset.tileImprovements[improvementName]
                 ?: continue
+            if (improvement.uniqueObjects.any { 
+                    it.placeholderText == "Consumes [] []" && civResources[unique.params[1]] ?: 0 < unique.params[0].toInt() 
+            }) continue
             finalActions += UnitAction(UnitActionType.Create,
                 title = "Create [$improvementName]",
                 action = {

@@ -385,7 +385,7 @@ open class TileInfo {
             } -> false
             improvement.uniqueObjects.any {
                 it.placeholderText == "Consumes [] []"
-                && civInfo.getCivResourcesByName()[it.params[1]]!! <= it.params[0].toInt()
+                && civInfo.getCivResourcesByName()[it.params[1]]!! < it.params[0].toInt()
             } -> false
             else -> canImprovementBeBuiltHere(improvement, hasViewableResource(civInfo))
         }
