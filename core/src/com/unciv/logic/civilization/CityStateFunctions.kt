@@ -54,7 +54,7 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
             || (allPossibleBonuses.isEmpty() && cityStateType == CityStateType.Militaristic)) { // Fallback for badly defined Eras.json
 
             val possibleUnits = ruleset.units.values.filter { it.requiredTech != null
-                && ruleset.getEraNumber(ruleset.technologies[it.requiredTech!!]!!.era()) > ruleset.getEraNumber(startingEra) // Not from the start era or before
+                && ruleset.eras[ruleset.technologies[it.requiredTech!!]!!.era()]!!.eraNumber > ruleset.eras[startingEra]!!.eraNumber // Not from the start era or before
                 && it.uniqueTo != null && it.uniqueTo in unusedMajorCivs // Must be from a major civ not in the game
                 && ruleset.unitTypes[it.unitType]!!.isLandUnit() && ( it.strength > 0 || it.rangedStrength > 0 ) } // Must be a land military unit
             if (possibleUnits.isNotEmpty())
