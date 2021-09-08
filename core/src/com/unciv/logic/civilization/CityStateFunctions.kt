@@ -20,10 +20,15 @@ import kotlin.math.pow
 
 /** Class containing city-state-specific functions */
 class CityStateFunctions(val civInfo: CivilizationInfo) {
-
-    fun initCityState(ruleset: Ruleset, startingEra: String, unusedMajorCivs: Collection<String>) {
+    /** Attempts to initialize the city state, returning true if successful. */
+    fun initCityState(ruleset: Ruleset, startingEra: String, unusedMajorCivs: Collection<String>): Boolean {
         val cityStateType = ruleset.nations[civInfo.civName]?.cityStateType
-        if (cityStateType == null)  return
+        if (cityStateType == null)  return false
+        if (cityStateType != CityStateType.Militaristic)    return false
+
+        val startingTechs = ruleset.technologies.values.filter { it.uniques.contains("Starting tech") }
+        for (tech in startingTechs)
+            civInfo.tech.techsResearched.add(tech.name) // can't be .addTechnology because the civInfo isn't assigned yet
 
         val allMercantileResources = ruleset.tileResources.values.filter { it.unique == "Can only be created by Mercantile City-States" }.map { it.name }
         val allPossibleBonuses = HashSet<String>()    // We look through these to determine what kind of city state we are
@@ -31,9 +36,9 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
             val allyBonuses = era.allyBonus[cityStateType.name]
             val friendBonuses = era.friendBonus[cityStateType.name]
             if (allyBonuses != null)
-                allPossibleBonuses.addAll(allyBonuses.map { it.getPlaceholderText() })
+                allPossibleBonuses.addAll(allyBonuses)
             if (friendBonuses != null)
-                allPossibleBonuses.addAll(friendBonuses.map { it.getPlaceholderText() })
+                allPossibleBonuses.addAll(friendBonuses)
         }
 
         // CS Personality
@@ -46,7 +51,7 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
         }
 
         // Unique unit for militaristic city-states
-        if ("Provides military units every [] turns" in allPossibleBonuses
+        if (allPossibleBonuses.any { it.getPlaceholderText() == "Provides military units every [] turns" }
             || (allPossibleBonuses.isEmpty() && cityStateType == CityStateType.Militaristic)) { // Fallback for badly defined Eras.json
 
             val possibleUnits = ruleset.units.values.filter { it.requiredTech != null
@@ -56,6 +61,10 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
             if (possibleUnits.isNotEmpty())
                 civInfo.cityStateUniqueUnit = possibleUnits.random().name
         }
+
+        // TODO: Return false if attempting to put a religious city-state in a game without religion
+
+        return true
     }
 
     /** Gain a random great person from the city state */

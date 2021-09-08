@@ -199,13 +199,17 @@ object GameStarter {
         //   and then all the other City-States in a random order! Because the sortedBy function is stable!
         availableCityStatesNames.addAll(ruleset.nations.filter { it.value.isCityState() }.keys
                 .shuffled().sortedByDescending { it in civNamesWithStartingLocations })
-
-        for (cityStateName in availableCityStatesNames.take(newGameParameters.numberOfCityStates)) {
+        var addedCityStates = 0
+        // Keep trying to add city states until we reach the target number.
+        while (addedCityStates < newGameParameters.numberOfCityStates) {
+            if (availableCityStatesNames.isEmpty()) // We ran out of city-states somehow
+                break
+            val cityStateName = availableCityStatesNames.pop()
             val civ = CivilizationInfo(cityStateName)
-            gameInfo.civilizations.add(civ)
-            for (tech in startingTechs)
-                civ.tech.techsResearched.add(tech.name) // can't be .addTechnology because the civInfo isn't assigned yet
-            civ.initCityState(ruleset, newGameParameters.startingEra, availableCivNames)
+            if (civ.initCityState(ruleset, newGameParameters.startingEra, availableCivNames)) {  // true if successful init
+                gameInfo.civilizations.add(civ)
+                addedCityStates++
+            }
         }
     }
 

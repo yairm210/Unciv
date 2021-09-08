@@ -871,9 +871,9 @@ class CivilizationInfo {
     }
     
     //////////////////////// City State wrapper functions ////////////////////////
-    fun initCityState(ruleset: Ruleset, startingEra: String, unusedMajorCivs: Collection<String>) {
-        cityStateFunctions.initCityState(ruleset, startingEra, unusedMajorCivs)
-    }
+
+    fun initCityState(ruleset: Ruleset, startingEra: String, unusedMajorCivs: Collection<String>)
+        = cityStateFunctions.initCityState(ruleset, startingEra, unusedMajorCivs)
     /** Gain a random great person from the city state */
     private fun giveGreatPersonToPatron(receivingCiv: CivilizationInfo) {
         cityStateFunctions.giveGreatPersonToPatron(receivingCiv)
