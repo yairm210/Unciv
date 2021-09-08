@@ -38,8 +38,10 @@ enum class Tutorial(val value: String, val isCivilopedia: Boolean = !value.start
     WorldScreen("World_Screen"),
     Faith("Faith"),
     Religion("Religion"),
+    Religion_inside_cities("Religion_inside_cities"),
     Beliefs("Beliefs"),
     SpreadingReligion("Spreading_Religion"),
+    Inquisitors("Inquisitors"),
     ;
 
     companion object {
