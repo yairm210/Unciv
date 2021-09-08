@@ -1,9 +1,11 @@
 package com.unciv.logic.civilization
 
+import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.logic.map.MapUnit
 import com.unciv.models.Religion
 import com.unciv.models.ruleset.Belief
 import com.unciv.models.ruleset.BeliefType
+import com.unciv.models.ruleset.Era
 import com.unciv.ui.pickerscreens.BeliefContainer
 import com.unciv.ui.utils.toPercent
 import kotlin.random.Random
@@ -293,8 +295,17 @@ class ReligionManager {
     private fun getFaithFromCityStates(): Int {
         var faithFromCityState = 0
         for (civ in civInfo.getKnownCivs()){
-            if (civ.isCityState() && civ.cityStateType == CityStateType.Religious && civ.getDiplomacyManager(civInfo).influence >= 60) faithFromCityState += 2 * civInfo.getEraNumber()
+            if (civ.isCityState() && civ.cityStateType == CityStateType.Religious && civ.getDiplomacyManager(civInfo).relationshipLevel() == RelationshipLevel.Friend)
+                faithFromCityState += when(civ.getEraNumber()){
+                    0 -> 3
+                    1 -> 3
+                    2 -> 6
+                    3 -> 6
+                    else -> 13
+                }
+            if (civ.isCityState() && civ.cityStateType == CityStateType.Religious && civ.getDiplomacyManager(civInfo).relationshipLevel() == RelationshipLevel.Ally) faithFromCityState *= 2
         }
+
         return faithFromCityState
     }
 }
