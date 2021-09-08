@@ -3,7 +3,7 @@ This is a guide to editing, building, running and deploying Unciv from code
 So first things first - the initial "No assumptions" setup to have Unciv run from-code on your computer!
 
 * Install Android Studio - it's free and awesome! Be aware that it's a long download!
-* Install Git, it's the way for us to work together on this project. UI is optional, Android Studio has good Gut tools built in :)
+* Install Git, it's the way for us to work together on this project. UI is optional, Android Studio has good Git tools built in :)
 * Getting the code
    * Create a Github account, if you don't already have one
    * Fork the repo (click the "Fork" button on the top-right corner of https://github.com/yairm210/Unciv) - this will create a "copy" of the code on your account, at https://github.com/YourUsername/Unciv
