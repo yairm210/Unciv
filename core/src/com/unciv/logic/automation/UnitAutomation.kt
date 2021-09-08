@@ -495,7 +495,7 @@ object UnitAutomation {
         if (unit.isDestroyed) return // Opening ruins _might_ have upgraded us to another unit
         if (unit.health < 80 && tryHealUnit(unit)) return
         if (tryExplore(unit)) return
-        unit.civInfo.addNotification("${unit.displayName()} finished exploring.", unit.currentTile.position, unit.name, "OtherIcons/Sleep")
+        unit.civInfo.addNotification("${unit.shortDisplayName()} finished exploring.", unit.currentTile.position, unit.name, "OtherIcons/Sleep")
         unit.action = null
     }
     

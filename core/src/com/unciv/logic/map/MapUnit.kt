@@ -116,6 +116,11 @@ class MapUnit {
         return if (religion == null) baseName
         else "$baseName ([${getReligionDisplayName()}])"
     }
+    
+    fun shortDisplayName(): String {
+        return if (instanceName != null) "[$instanceName]"!!
+            else "[$name]" 
+    }
 
     var currentMovement: Float = 0f
     var health: Int = 100

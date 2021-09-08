@@ -170,7 +170,7 @@ class WorkerAutomation(
 
         if (WorkerAutomationConst.consoleOutput)
             println("WorkerAutomation: ${unit.label()} -> nothing to do")
-        unit.civInfo.addNotification("${unit.displayName()} has no work to do.", currentTile.position, unit.name, "OtherIcons/Sleep")
+        unit.civInfo.addNotification("${unit.shortDisplayName()} has no work to do.", currentTile.position, unit.name, "OtherIcons/Sleep")
     }
 
     /**
