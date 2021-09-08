@@ -111,7 +111,7 @@ class MapUnit {
     fun displayName(): String {
         val baseName =
             if (instanceName == null) "[$name]"
-            else "instanceName ([$name])"
+            else "$instanceName ([$name])"
 
         return if (religion == null) baseName
         else "$baseName ([${getReligionDisplayName()}])"
