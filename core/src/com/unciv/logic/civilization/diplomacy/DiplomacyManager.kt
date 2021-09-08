@@ -41,6 +41,8 @@ enum class DiplomacyFlags{
     EverBeenFriends,
     MarriageCooldown,
     NotifiedAfraid,
+    RecentlyPledgedProtection,
+    RecentlyWithdrewProtection,
     AngerFreeIntrusion
 }
 

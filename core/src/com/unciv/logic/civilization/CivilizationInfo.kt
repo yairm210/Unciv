@@ -911,6 +911,8 @@ class CivilizationInfo {
     fun removeProtectorCiv(otherCiv: CivilizationInfo) {
         cityStateFunctions.removeProtectorCiv(otherCiv)
     }
+    fun otherCivCanPledgeProtection(otherCiv: CivilizationInfo) = cityStateFunctions.otherCivCanPledgeProtection(otherCiv)
+    fun otherCivCanWithdrawProtection(otherCiv: CivilizationInfo) = cityStateFunctions.otherCivCanWithdrawProtection(otherCiv)
     fun updateAllyCivForCityState() {
         cityStateFunctions.updateAllyCivForCityState()
     }
