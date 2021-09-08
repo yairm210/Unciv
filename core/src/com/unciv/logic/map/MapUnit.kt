@@ -359,6 +359,10 @@ class MapUnit {
         range += getMatchingUniques("[] Range").sumOf { it.params[0].toInt() }
         return range
     }
+    
+    fun getMaxMovementForAirUnits(): Int {
+        return getRange() * 2
+    }
 
     fun isEmbarked(): Boolean {
         if (!baseUnit.isLandUnit()) return false
@@ -815,15 +819,20 @@ class MapUnit {
 
     fun disband() {
         // evacuation of transported units before disbanding, if possible. toListed because we're modifying the unit list.
-        for (unit in currentTile.getUnits().filter { it.isTransported && isTransportTypeOf(it) }
-            .toList()) {
+        for (unit in currentTile.getUnits()
+            .filter { it.isTransported && isTransportTypeOf(it) }
+            .toList()
+        ) {
             // if we disbanded a unit carrying other units in a city, the carried units can still stay in the city
-            if (currentTile.isCityCenter() && unit.movement.canMoveTo(currentTile)) continue
+            if (currentTile.isCityCenter() && unit.movement.canMoveTo(currentTile)) {
+                unit.isTransported = false
+                continue
+            }
             // if no "fuel" to escape, should be disbanded as well
-            if (unit.currentMovement < 0.1)
+            if (unit.currentMovement < Constants.minimumMovementEpsilon)
                 unit.disband()
             // let's find closest city or another carrier where it can be evacuated
-            val tileCanMoveTo = unit.currentTile.getTilesInDistance(unit.getRange() * 2)
+            val tileCanMoveTo = unit.currentTile.getTilesInDistance(unit.getMaxMovementForAirUnits())
                 .filterNot { it == currentTile }.firstOrNull { unit.movement.canMoveTo(it) }
 
             if (tileCanMoveTo != null)
