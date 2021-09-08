@@ -199,7 +199,7 @@ class PolicyManager {
         // If we have "create a free aqueduct in first 3 cities" and "create free aqueduct in first 4 cities", we do: "create free aqueduct in first 3+4=7 cities"
         val sortedUniques = matchingUniques.groupBy {it.params[0]}
         for (unique in sortedUniques) {
-            tryAddSpecificBuilding(unique.key, unique.value.sumBy {it.params[1].toInt()})
+            tryAddSpecificBuilding(unique.key, unique.value.sumOf {it.params[1].toInt()})
         }
     }
 
