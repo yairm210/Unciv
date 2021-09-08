@@ -81,9 +81,6 @@ jobs:
           echo "${{ env.RELEASE_BODY }}" > whatsNewDirectory/whatsnew-en-US
           ./gradlew :android:bundleRelease
           ./gradlew :android:assembleRelease
-          mkdir deploy
-          mv android/build/outputs/apk/release/Unciv-release-unsigned.apk deploy/Unciv.apk
-
 
       - name: Sign AAB for Google Play upload
         uses: r0adkll/sign-android-release@v1
@@ -94,6 +91,19 @@ jobs:
           alias: ${{ secrets.BUNDLE_SIGNING_KEY_ALIAS }}
           keyStorePassword: ${{ secrets.BUNDLE_SIGNING_KEYSTORE_PASSWORD }}
           keyPassword: ${{ secrets.BUNDLE_SIGNING_KEY_PASSWORD }}
+
+      - name: Upload AAB to google play
+        if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
+        continue-on-error: true
+        uses: r0adkll/upload-google-play@v1
+        with:
+          serviceAccountJsonPlainText: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON  }}
+          packageName: com.unciv.app
+          releaseFiles: android/build/outputs/bundle/release/Unciv-release.aab
+          track: production
+          userFraction: 0.1
+          whatsNewDirectory: whatsNewDirectory
+
 
       - name: Sign APK for Github upload
         uses: r0adkll/sign-android-release@v1
@@ -106,17 +116,14 @@ jobs:
           keyStorePassword: ${{ secrets.BUNDLE_SIGNING_KEYSTORE_PASSWORD }}
           keyPassword: ${{ secrets.BUNDLE_SIGNING_KEY_PASSWORD }}
 
-      - name: Upload apk to google play
-        if: github.event_name == 'push' && contains(github.ref, 'refs/tags/') 
+
+      - name: Move APK to deploy folder
         continue-on-error: true
-        uses: r0adkll/upload-google-play@v1
-        with:
-          serviceAccountJsonPlainText: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON  }}
-          packageName: com.unciv.app
-          releaseFiles: android/build/outputs/bundle/release/Unciv-release.aab
-          track: production
-          userFraction: 0.1
-          whatsNewDirectory: whatsNewDirectory
+        if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
+        shell: bash
+        run: |
+          mkdir deploy
+          mv android/build/outputs/apk/release/Unciv-signed.apk deploy/Unciv-signed.apk
 
 ## DESKTOP
       
