@@ -111,10 +111,15 @@ class MapUnit {
     fun displayName(): String {
         val baseName =
             if (instanceName == null) "[$name]"
-            else "instanceName ([$name])"
+            else "$instanceName ([$name])"
 
         return if (religion == null) baseName
         else "$baseName ([${getReligionDisplayName()}])"
+    }
+    
+    fun shortDisplayName(): String {
+        return if (instanceName != null) "[$instanceName]"!!
+            else "[$name]" 
     }
 
     var currentMovement: Float = 0f
