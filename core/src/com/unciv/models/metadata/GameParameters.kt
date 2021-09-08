@@ -25,7 +25,7 @@ class GameParameters { // Default values are the default new game
 
     // By default, all victory types except Diplomacy as it is quite new
     var victoryTypes: ArrayList<VictoryType> = arrayListOf(VictoryType.Cultural, VictoryType.Domination, VictoryType.Scientific)  
-    var startingEra = "Ancient Era"
+    var startingEra = "Ancient era"
 
     var isOnlineMultiplayer = false
     var baseRuleset: BaseRuleset = BaseRuleset.Civ_V_Vanilla

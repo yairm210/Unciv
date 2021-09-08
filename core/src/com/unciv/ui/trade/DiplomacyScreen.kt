@@ -236,7 +236,7 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
                 }, this).open()
             }
             diplomacyTable.add(revokeProtectionButton).row()
-            if (isNotPlayersTurn()) revokeProtectionButton.disable()
+            if (isNotPlayersTurn() || !otherCiv.otherCivCanWithdrawProtection(viewingCiv)) revokeProtectionButton.disable()
         } else {
             val protectionButton = "Pledge to protect".toTextButton()
             protectionButton.onClick {
@@ -246,11 +246,8 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
                     updateRightSide(otherCiv)
                 }, this).open()
             }
-            if (viewingCiv.isAtWarWith(otherCiv)) {
-                protectionButton.disable()
-            }
             diplomacyTable.add(protectionButton).row()
-            if (isNotPlayersTurn()) protectionButton.disable()
+            if (isNotPlayersTurn() || !otherCiv.otherCivCanPledgeProtection(viewingCiv)) protectionButton.disable()
         }
 
         val demandTributeButton = "Demand Tribute".toTextButton()

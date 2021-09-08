@@ -24,13 +24,6 @@ interface INonPerpetualConstruction : IConstruction, INamed, IHasUniques {
     fun getRejectionReasons(cityConstructions: CityConstructions): RejectionReasons
     fun postBuildEvent(cityConstructions: CityConstructions, boughtWith: Stat? = null): Boolean  // Yes I'm hilarious.
     
-    fun getMatchingUniques(uniqueTemplate: String): Sequence<Unique> {
-        return uniqueObjects.asSequence().filter { it.placeholderText == uniqueTemplate }
-    }
-    fun hasUnique(uniqueTemplate: String): Boolean {
-        return uniqueObjects.any { it.placeholderText == uniqueTemplate }
-    }
-    
     fun canBePurchasedWithStat(cityInfo: CityInfo?, stat: Stat): Boolean {
         if (stat in listOf(Stat.Production, Stat.Happiness)) return false
         if ("Cannot be purchased" in uniques) return false
@@ -82,40 +75,45 @@ interface INonPerpetualConstruction : IConstruction, INamed, IHasUniques {
 
 
 class RejectionReasons(): HashSet<RejectionReason>() {
-    private val techPolicyEraWonderRequirements = hashSetOf(
-        RejectionReason.Obsoleted,
-        RejectionReason.RequiresTech,
-        RejectionReason.RequiresPolicy,
-        RejectionReason.MorePolicyBranches,
-        RejectionReason.RequiresBuildingInSomeCity
-    )
+    
     fun filterTechPolicyEraWonderRequirements(): HashSet<RejectionReason> {
         return filterNot { it in techPolicyEraWonderRequirements }.toHashSet()
     }
-
-    private val reasonsToDefinitivelyRemoveFromQueue = hashSetOf(
-        RejectionReason.Obsoleted,
-        RejectionReason.WonderAlreadyBuilt,
-        RejectionReason.NationalWonderAlreadyBuilt,
-        RejectionReason.CannotBeBuiltWith,
-        RejectionReason.ReachedBuildCap
-    )
+    
     fun hasAReasonToBeRemovedFromQueue(): Boolean {
         return any { it in reasonsToDefinitivelyRemoveFromQueue }
     }
-
-    private val orderOfErrorMessages = listOf(
-        RejectionReason.WonderBeingBuiltElsewhere,
-        RejectionReason.NationalWonderBeingBuiltElsewhere,
-        RejectionReason.RequiresBuildingInAllCities,
-        RejectionReason.RequiresBuildingInThisCity,
-        RejectionReason.RequiresBuildingInSomeCity,
-        RejectionReason.PopulationRequirement,
-        RejectionReason.ConsumesResources,
-        RejectionReason.CanOnlyBePurchased
-    )
+    
     fun getMostImportantRejectionReason(): String? {
         return orderOfErrorMessages.firstOrNull { it in this }?.errorMessage
+    }
+    
+    // Used for constant variables in the functions above
+    companion object {
+        private val techPolicyEraWonderRequirements = hashSetOf(
+            RejectionReason.Obsoleted,
+            RejectionReason.RequiresTech,
+            RejectionReason.RequiresPolicy,
+            RejectionReason.MorePolicyBranches,
+            RejectionReason.RequiresBuildingInSomeCity
+        )
+        private val reasonsToDefinitivelyRemoveFromQueue = hashSetOf(
+            RejectionReason.Obsoleted,
+            RejectionReason.WonderAlreadyBuilt,
+            RejectionReason.NationalWonderAlreadyBuilt,
+            RejectionReason.CannotBeBuiltWith,
+            RejectionReason.ReachedBuildCap
+        )
+        private val orderOfErrorMessages = listOf(
+            RejectionReason.WonderBeingBuiltElsewhere,
+            RejectionReason.NationalWonderBeingBuiltElsewhere,
+            RejectionReason.RequiresBuildingInAllCities,
+            RejectionReason.RequiresBuildingInThisCity,
+            RejectionReason.RequiresBuildingInSomeCity,
+            RejectionReason.PopulationRequirement,
+            RejectionReason.ConsumesResources,
+            RejectionReason.CanOnlyBePurchased
+        )
     }
 } 
 

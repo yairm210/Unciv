@@ -13,8 +13,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextField
  * @param maxLength The maximal amount of characters the user may input
  * @param validate Function that should return `true` when a valid input is entered, false otherwise
  * @param actionOnOk Lambda that will be executed after pressing 'OK'. 
- * Gets the text the user inputted as a parameter. Should return `true` if ready to close,
- * `false` if `errorText` is to be displayed
+ * Gets the text the user inputted as a parameter.
  */
 class AskTextPopup(
     screen: CameraStageBaseScreen,

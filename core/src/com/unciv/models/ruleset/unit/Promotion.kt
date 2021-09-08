@@ -12,7 +12,9 @@ import com.unciv.ui.civilopedia.ICivilopediaText
 class Promotion : INamed, ICivilopediaText, IHasUniques {
     override lateinit var name: String
     var prerequisites = listOf<String>()
-    var effect = ""
+    // effect deprecated since 3.16.12, use uniques instead
+        var effect = ""
+    //
     var unitTypes = listOf<String>() // The json parser wouldn't agree to deserialize this as a list of UnitTypes. =(
 
     override var uniques = ArrayList<String>()

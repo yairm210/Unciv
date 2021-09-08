@@ -94,20 +94,56 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
     }
 
     fun addProtectorCiv(otherCiv: CivilizationInfo) {
-        if(!civInfo.isCityState() or !otherCiv.isMajorCiv() or otherCiv.isDefeated()) return
-        if(!civInfo.knows(otherCiv) or civInfo.isAtWarWith(otherCiv)) return //Exception
+        if(!otherCivCanPledgeProtection(otherCiv))
+            return
 
         val diplomacy = civInfo.getDiplomacyManager(otherCiv.civName)
         diplomacy.diplomaticStatus = DiplomaticStatus.Protector
+        diplomacy.setFlag(DiplomacyFlags.RecentlyPledgedProtection, 10) // Can't break for 10 turns
     }
 
     fun removeProtectorCiv(otherCiv: CivilizationInfo) {
-        if(!civInfo.isCityState() or !otherCiv.isMajorCiv() or otherCiv.isDefeated()) return
-        if(!civInfo.knows(otherCiv) or civInfo.isAtWarWith(otherCiv)) return //Exception
+        if(!otherCivCanWithdrawProtection(otherCiv))
+            return
 
-        val diplomacy = civInfo.getDiplomacyManager(otherCiv.civName)
+        val diplomacy = civInfo.getDiplomacyManager(otherCiv)
         diplomacy.diplomaticStatus = DiplomaticStatus.Peace
+        diplomacy.setFlag(DiplomacyFlags.RecentlyWithdrewProtection, 20) // Can't re-pledge for 20 turns
         diplomacy.addInfluence(-20f)
+    }
+
+    fun otherCivCanPledgeProtection(otherCiv: CivilizationInfo): Boolean {
+        // Must be a known city state
+        if(!civInfo.isCityState() || !otherCiv.isMajorCiv() || otherCiv.isDefeated() || !civInfo.knows(otherCiv))
+            return false
+        val diplomacy = civInfo.getDiplomacyManager(otherCiv)
+        // Can't pledge too soon after withdrawing
+        if (diplomacy.hasFlag(DiplomacyFlags.RecentlyWithdrewProtection))
+            return false
+        // Must have at least 0 influence
+        if (diplomacy.influence < 0)
+            return false
+        // can't be at war
+        if (civInfo.isAtWarWith(otherCiv))
+            return false
+        // Must not be protected already
+        if (diplomacy.diplomaticStatus == DiplomaticStatus.Protector)
+            return false
+        return true
+    }
+
+    fun otherCivCanWithdrawProtection(otherCiv: CivilizationInfo): Boolean {
+        // Must be a known city state
+        if(!civInfo.isCityState() || !otherCiv.isMajorCiv() || otherCiv.isDefeated() || !civInfo.knows(otherCiv))
+            return false
+        val diplomacy = civInfo.getDiplomacyManager(otherCiv)
+        // Can't withdraw too soon after pledging
+        if (diplomacy.hasFlag(DiplomacyFlags.RecentlyPledgedProtection))
+            return false
+        // Must be protected
+        if (diplomacy.diplomaticStatus != DiplomaticStatus.Protector)
+            return false
+        return true
     }
 
     fun updateAllyCivForCityState() {

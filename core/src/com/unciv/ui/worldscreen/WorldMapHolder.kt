@@ -85,6 +85,9 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
             }
             tileGroup.onClick { onTileClicked(tileGroup.tileInfo) }
 
+            // On 'droid two-finger tap is mapped to right click and dissent has been expressed
+            if (Gdx.app.type == Application.ApplicationType.Android) continue
+
             // Right mouse click listener
             tileGroup.addListener(object : ClickListener() {
                 init {
@@ -93,7 +96,7 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
 
                 override fun clicked(event: InputEvent?, x: Float, y: Float) {
                     val unit = worldScreen.bottomUnitTable.selectedUnit
-                    if (unit == null) return
+                        ?: return
                     thread {
                         val tile = tileGroup.tileInfo
 

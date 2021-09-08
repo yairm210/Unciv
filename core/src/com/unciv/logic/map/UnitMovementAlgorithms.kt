@@ -274,7 +274,7 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
 
     fun canReachInCurrentTurn(destination: TileInfo): Boolean {
         if (unit.baseUnit.movesLikeAirUnits())
-            return unit.currentTile.aerialDistanceTo(destination) <= unit.getRange()*2
+            return unit.currentTile.aerialDistanceTo(destination) <= unit.getMaxMovementForAirUnits()
         if (unit.isPreparingParadrop())
             return getDistance(unit.currentTile.position, destination.position) <= unit.paradropRange && canParadropOn(destination)
         return getDistanceToTiles().containsKey(destination)
@@ -283,7 +283,7 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
     fun getReachableTilesInCurrentTurn(): Sequence<TileInfo> {
         return when {
             unit.baseUnit.movesLikeAirUnits() ->
-                unit.getTile().getTilesInDistanceRange(IntRange(1, unit.getRange() * 2))
+                unit.getTile().getTilesInDistanceRange(IntRange(1, unit.getMaxMovementForAirUnits()))
             unit.isPreparingParadrop() ->
                 unit.getTile().getTilesInDistance(unit.paradropRange)
                     .filter { unit.movement.canParadropOn(it) }
@@ -407,16 +407,18 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
             return
         val pathToLastReachableTile = distanceToTiles.getPathToTile(lastReachableTile)
 
-        if (!unit.civInfo.gameInfo.gameParameters.godMode) {
-            unit.currentMovement -= distanceToTiles[lastReachableTile]!!.totalDistance
-            if (unit.currentMovement < 0.1) unit.currentMovement = 0f // silly floats which are "almost zero"
-        }
-        if (unit.isFortified() || unit.isSetUpForSiege() || unit.isSleeping())
-            unit.action = null // un-fortify/un-setup after moving
+        if (unit.isFortified() || unit.isSetUpForSiege() || unit.isSleeping() || unit.isAutomated())
+            unit.action = null // un-fortify/un-setup/un-sleep/un-automate after moving
 
         // If this unit is a carrier, keep record of its air payload whereabouts.
         val origin = unit.getTile()
         var needToFindNewRoute = false
+        // Cache this in case something goes wrong
+        
+        var lastReachedEnterableTile = unit.getTile()
+        
+        unit.removeFromTile()
+        
         for (tile in pathToLastReachableTile) {
             if (!unit.movement.canPassThrough(tile)) {
                 // AAAH something happened making our previous path invalid
@@ -425,11 +427,27 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
                 // Anyway: PANIC!! We stop this route, and after leaving the game in a valid state,
                 // we try again.
                 needToFindNewRoute = true
-                break
+                break // If you ever remove this break, remove the `assumeCanPassThrough` param below
             }
-            unit.removeFromTile()
-            unit.putInTile(tile)
+            unit.moveThroughTile(tile)
+            
+            // In case something goes wrong, cache the last tile we were able to end on
+            // We can assume we can pass through this tile, as we would have broken earlier
+            if (unit.movement.canMoveTo(tile, assumeCanPassThrough = true)) {
+                lastReachedEnterableTile = tile
+            }
+            
             if (unit.isDestroyed) break
+        }
+        
+        if (!unit.isDestroyed)
+            unit.putInTile(lastReachedEnterableTile)
+
+        if (!unit.civInfo.gameInfo.gameParameters.godMode) {
+            unit.currentMovement -= distanceToTiles[lastReachedEnterableTile]!!.totalDistance
+            if (unit.currentMovement < Constants.minimumMovementEpsilon) 
+                unit.currentMovement = 0f // silly floats which are "almost zero"
+            // const Epsilon, anyone?
         }
 
         // The .toList() here is because we have a sequence that's running on the units in the tile,
@@ -445,24 +463,6 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
             && (origin.isCityCenter() || lastReachableTile.isCityCenter())
             && unit.civInfo.hasUnique("Units in cities cost no Maintenance")
         ) unit.civInfo.updateStatsForNextTurn()
-
-        // Move through all intermediate tiles to get ancient ruins, barb encampments
-        // and to view tiles along the way
-        // We only activate the moveThroughTile AFTER the putInTile because of a really weird bug -
-        // If you're going to (or past) a ruin, and you activate the ruin bonus, and A UNIT spawns.
-        // That unit could now be blocking your entrance to the destination, so the putInTile would fail! =0
-        // Instead, we move you to the destination directly, and only afterwards activate the various tiles on the way.
-        
-        // Actually, we will now stop doing that becasue of _another_ really weird bug (actually two)
-        // 1. Through some ancient ruins bonuses, we could upgrade our unit, effectively replacing it
-        // with another unit. However, doing so halfway through a movement would make it impossible
-        // to reach the last tile, as the new unit spawns with 0 movement points and not taking
-        // the old route again. Therefore, we might trigger barbarian encampments or ancient ruins
-        // at the destination field we in fact never reach
-        // 2. Which tile we reach might change during the route. Maybe our route used to go through
-        // fog of war, and it turns out there was an enemy city on the route we should take.
-        // As we can't go through cities, we need to find another route, and therefore this
-        // route should be impossible.
         if (needToFindNewRoute) moveToTile(destination, considerZoneOfControl)
     }
 
@@ -494,11 +494,11 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
      * Designates whether we can enter the tile - without attacking
      * DOES NOT designate whether we can reach that tile in the current turn
      */
-    fun canMoveTo(tile: TileInfo): Boolean {
+    fun canMoveTo(tile: TileInfo, assumeCanPassThrough: Boolean = false): Boolean {
         if (unit.baseUnit.movesLikeAirUnits())
             return canAirUnitMoveTo(tile, unit)
 
-        if (!canPassThrough(tile))
+        if (!assumeCanPassThrough && !canPassThrough(tile))
             return false
 
         // even if they'll let us pass through, we can't enter their city - unless we just captured it

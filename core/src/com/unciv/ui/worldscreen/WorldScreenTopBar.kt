@@ -294,8 +294,7 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
 
     private fun getEquivalentTurn(gameInfo: GameInfo): Int {
         val totalTurns = 500f * gameInfo.gameParameters.gameSpeed.modifier
-        val startPercent = gameInfo.ruleSet.eras[gameInfo.gameParameters.startingEra]?.startPercent
-        if (startPercent == null) return gameInfo.turns
+        val startPercent = gameInfo.ruleSet.eras[gameInfo.gameParameters.startingEra]!!.startPercent
         return gameInfo.turns + ((totalTurns * startPercent).toInt() / 100)
     }
 }
