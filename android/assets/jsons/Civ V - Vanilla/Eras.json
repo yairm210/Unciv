@@ -147,7 +147,11 @@
             "Religious": ["Provides [26] [Faith] per turn"],
             "Militaristic": ["Provides military units every [17] turns"]
         },
-        "iconRGB": [63, 81, 182]
+        "iconRGB": [63, 81, 182],
+        "uniques": ["May not generate great prophet equivalents naturally",
+            "May buy [Great Prophet] units for [200] [Faith] [in all cities in which the majority religion is a major religion] at an increasing price ([100])",
+            "Starting in this era disables religion"
+        ]
     },
     {
         "name": "Modern era",
@@ -180,7 +184,11 @@
             "Religious": ["Provides [26] [Faith] per turn"],
             "Militaristic": ["Provides military units every [17] turns"]
         },
-        "iconRGB": [33, 150, 243]
+        "iconRGB": [33, 150, 243],
+        "uniques": ["May not generate great prophet equivalents naturally",
+            "May buy [Great Prophet] units for [200] [Faith] [in all cities in which the majority religion is a major religion] at an increasing price ([100])",
+            "Starting in this era disables religion"
+        ]
     },
     {
         "name": "Atomic era",
@@ -214,7 +222,11 @@
             "Religious": ["Provides [26] [Faith] per turn"],
             "Militaristic": ["Provides military units every [17] turns"]
         },
-        "iconRGB": [0, 150, 136]
+        "iconRGB": [0, 150, 136],
+        "uniques": ["May not generate great prophet equivalents naturally",
+            "May buy [Great Prophet] units for [200] [Faith] [in all cities in which the majority religion is a major religion] at an increasing price ([100])",
+            "Starting in this era disables religion"
+        ]
     },
     {
         "name": "Information era",
@@ -252,7 +264,11 @@
             "Religious": ["Provides [26] [Faith] per turn"],
             "Militaristic": ["Provides military units every [17] turns"]
         },
-        "iconRGB": [76, 176, 81]
+        "iconRGB": [76, 176, 81],
+        "uniques": ["May not generate great prophet equivalents naturally",
+            "May buy [Great Prophet] units for [200] [Faith] [in all cities in which the majority religion is a major religion] at an increasing price ([100])",
+            "Starting in this era disables religion"
+        ]
     },
     { // Technically, this Era doesn't exist in the original game. 
       // But as it is _really_ usefull to have for testing, I'd like to keep it. 
@@ -289,6 +305,10 @@
             "Religious": ["Provides [26] [Faith] per turn"],
             "Militaristic": ["Provides military units every [17] turns"]
         },
-        "iconRGB": [76, 176, 81]
+        "iconRGB": [76, 176, 81],
+        "uniques": ["May not generate great prophet equivalents naturally",
+            "May buy [Great Prophet] units for [200] [Faith] [in all cities in which the majority religion is a major religion] at an increasing price ([100])",
+            "Starting in this era disables religion"
+        ]
     }
 ]

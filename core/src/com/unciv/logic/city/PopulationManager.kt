@@ -64,7 +64,7 @@ class PopulationManager {
             var percentOfFoodCarriedOver = cityInfo
                 .getMatchingUniques("[]% of food is carried over [] after population increases")
                 .filter { cityInfo.matchesFilter(it.params[1]) }
-                .sumBy { it.params[0].toInt() }
+                .sumOf { it.params[0].toInt() }
             // Try to avoid runaway food gain in mods, just in case 
             if (percentOfFoodCarriedOver > 95) percentOfFoodCarriedOver = 95 
             foodStored += (getFoodToNextPopulation() * percentOfFoodCarriedOver / 100f).toInt()
@@ -87,10 +87,10 @@ class PopulationManager {
         } else {
             autoAssignPopulation()
         }
-        
+
         cityInfo.religion.updatePressureOnPopulationChange(changedAmount)
     }
-    
+
     internal fun setPopulation(count: Int) {
         addPopulation(-population + count)
     }

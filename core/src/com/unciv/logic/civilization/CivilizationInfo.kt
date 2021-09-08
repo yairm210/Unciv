@@ -276,9 +276,13 @@ class CivilizationInfo {
 
     fun hasResource(resourceName: String): Boolean = getCivResourcesByName()[resourceName]!! > 0
 
-    fun getCivWideBuildingUniques(): Sequence<Unique> = cities.asSequence().flatMap {
-        city -> city.getAllUniquesWithNonLocalEffects()
-    }
+    fun getCivWideBuildingUniques(cityItIsFor: CityInfo?): Sequence<Unique> = 
+        cities.asSequence().flatMap {
+            city ->
+                if (cityItIsFor != null && city == cityItIsFor)
+                    city.getAllUniquesWithNonLocalEffects().filter { it.params.none { param -> param == "in other cities" } }
+                else city.getAllUniquesWithNonLocalEffects()
+        }
 
     fun hasUnique(unique: String) = getMatchingUniques(unique).any()
 
@@ -293,11 +297,15 @@ class CivilizationInfo {
                 temporaryUniques
                     .asSequence()
                     .filter { it.first.placeholderText == uniqueTemplate }.map { it.first } +
-                if (religionManager.religion != null) 
-                    religionManager.religion!!.getFounderUniques()
-                        .asSequence()
-                        .filter { it.placeholderText == uniqueTemplate }
-                else sequenceOf()
+                getEra().getMatchingUniques(uniqueTemplate)
+                    .asSequence() +
+                (
+                    if (religionManager.religion != null) 
+                        religionManager.religion!!.getFounderUniques()
+                            .asSequence()
+                            .filter { it.placeholderText == uniqueTemplate }
+                    else sequenceOf()
+                )
     }
 
     //region Units
@@ -644,8 +652,8 @@ class CivilizationInfo {
                     val unitToDisband = civMilitaryUnits.first()
                     unitToDisband.disband()
                     civMilitaryUnits -= unitToDisband
-                    val unitName = unitToDisband.displayName()
-                    addNotification("Cannot provide unit upkeep for [$unitName] - unit has been disbanded!", unitName, NotificationIcon.Death)
+                    val unitName = unitToDisband.shortDisplayName()
+                    addNotification("Cannot provide unit upkeep for $unitName - unit has been disbanded!", unitName, NotificationIcon.Death)
                 }
             }
         }
@@ -911,6 +919,8 @@ class CivilizationInfo {
     fun removeProtectorCiv(otherCiv: CivilizationInfo) {
         cityStateFunctions.removeProtectorCiv(otherCiv)
     }
+    fun otherCivCanPledgeProtection(otherCiv: CivilizationInfo) = cityStateFunctions.otherCivCanPledgeProtection(otherCiv)
+    fun otherCivCanWithdrawProtection(otherCiv: CivilizationInfo) = cityStateFunctions.otherCivCanWithdrawProtection(otherCiv)
     fun updateAllyCivForCityState() {
         cityStateFunctions.updateAllyCivForCityState()
     }

@@ -5,7 +5,7 @@ import com.unciv.logic.civilization.CityStateType
 import com.unciv.models.stats.INamed
 import com.unciv.ui.utils.colorFromRGB
 
-class Era : INamed {
+class Era : INamed, IHasUniques {
     override var name: String = ""
     var eraNumber: Int = -1
     var researchAgreementCost = 300
@@ -25,6 +25,8 @@ class Era : INamed {
     var friendBonus = HashMap<String, List<String>>()
     var allyBonus = HashMap<String, List<String>>()
     var iconRGB: List<Int>? = null
+    override var uniques: ArrayList<String> = arrayListOf()
+    override val uniqueObjects: List<Unique> by lazy { uniques.map { Unique(it) } }
 
     fun getStartingUnits(): List<String> {
         val startingUnits = mutableListOf<String>()

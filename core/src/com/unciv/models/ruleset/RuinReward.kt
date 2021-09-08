@@ -10,6 +10,7 @@ class RuinReward : INamed, ICivilopediaText, IHasUniques {
     override var uniques = ArrayList<String>()
     @delegate:Transient     // Defense in depth against mad modders
     override val uniqueObjects: List<Unique> by lazy { uniques.map { Unique(it) } }
+    
     val excludedDifficulties: List<String> = listOf()
     val weight: Int = 1
     val color: String = ""  // For Civilopedia

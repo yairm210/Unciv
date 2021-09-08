@@ -225,6 +225,15 @@ class BaseUnit : INamed, INonPerpetualConstruction, ICivilopediaText {
             }
         ) return true
         
+        // May buy [unitFilter] units for [amount] [Stat] [cityFilter] at an increasing price ([amount])
+        if (cityInfo != null && cityInfo.civInfo.getMatchingUniques("May buy [] units for [] [] [] at an increasing price ([])")
+            .any {
+                matchesFilter(it.params[0])
+                && cityInfo.matchesFilter(it.params[3])
+                && it.params[2] == stat.name
+            }
+        ) return true
+        
         return super.canBePurchasedWithStat(cityInfo, stat)
     }
     
@@ -237,12 +246,12 @@ class BaseUnit : INamed, INonPerpetualConstruction, ICivilopediaText {
         return (
             sequenceOf(super.getBaseBuyCost(cityInfo, stat)).filterNotNull()
                 // May buy [unitFilter] units for [amount] [Stat] starting from the [eraName] at an increasing price ([amount])
-            + cityInfo.civInfo.getMatchingUniques("May buy [] units for [] [] [] starting from the [] at an increasing price ([])")
+            + (cityInfo.civInfo.getMatchingUniques("May buy [] units for [] [] [] starting from the [] at an increasing price ([])")
                 .filter {
                     matchesFilter(it.params[0])
-                        && cityInfo.matchesFilter(it.params[3])
-                        && cityInfo.civInfo.getEraNumber() >= ruleset.eras[it.params[4]]!!.eraNumber
-                        && it.params[2] == stat.name
+                    && cityInfo.matchesFilter(it.params[3])
+                    && cityInfo.civInfo.getEraNumber() >= ruleset.eras[it.params[4]]!!.eraNumber
+                    && it.params[2] == stat.name
                 }.map {
                     getCostForConstructionsIncreasingInPrice(
                         it.params[1].toInt(),
@@ -250,6 +259,20 @@ class BaseUnit : INamed, INonPerpetualConstruction, ICivilopediaText {
                         cityInfo.civInfo.boughtConstructionsWithGloballyIncreasingPrice[name] ?: 0
                     )
                 }
+            )
+            + (cityInfo.civInfo.getMatchingUniques("May buy [] units for [] [] [] at an increasing price ([])")
+                .filter {
+                    matchesFilter(it.params[0])
+                    && cityInfo.matchesFilter(it.params[3])
+                    && it.params[2] == stat.name
+                }.map {
+                    getCostForConstructionsIncreasingInPrice(
+                        it.params[1].toInt(),
+                        it.params[4].toInt(),
+                        cityInfo.civInfo.boughtConstructionsWithGloballyIncreasingPrice[name] ?: 0
+                    )        
+                }
+            )
         ).minOrNull()
     }
     
@@ -482,8 +505,8 @@ class BaseUnit : INamed, INonPerpetualConstruction, ICivilopediaText {
                 if (getType().matchesFilter(filter)) return true
                 if (
                     filter.endsWith(" units")
-                    // "military units" --> "Military"
-                    && matchesFilter(filter.removeSuffix(" units").toLowerCase(Locale.ENGLISH).capitalize(Locale.ENGLISH))
+                    // "military units" --> "Military", using invariant locale
+                    && matchesFilter(filter.removeSuffix(" units").lowercase().replaceFirstChar { it.uppercaseChar() })
                 ) return true
                 return uniques.contains(filter)
             }

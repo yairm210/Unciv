@@ -2,6 +2,7 @@
 package com.unciv.logic.map
 
 import com.unciv.Constants
+import com.unciv.logic.GameInfo
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.diplomacy.DiplomacyManager
@@ -37,6 +38,8 @@ class UnitMovementAlgorithmsTests {
             name = "My nation"
             cities = arrayListOf("The Capital")
         }
+        civInfo.gameInfo = GameInfo()
+        civInfo.gameInfo.ruleSet = ruleSet
         unit.civInfo = civInfo
 
 
@@ -117,10 +120,13 @@ class UnitMovementAlgorithmsTests {
             unit.baseUnit = BaseUnit().apply { unitType = type.key; ruleset = ruleSet }
             unit.updateUniques()
 
-            Assert.assertTrue("$type cannot be in Ice", (
-                                type.value.uniques.contains("Can enter ice tiles"))
-                                || type.value.uniques.contains("Can pass through impassable tiles"
-                            ) == unit.movement.canPassThrough(tile))
+            Assert.assertTrue(
+                "$type cannot be in Ice",
+                unit.movement.canPassThrough(tile) == (
+                    type.value.uniques.contains("Can enter ice tiles")
+                    || type.value.uniques.contains("Can pass through impassable tiles")
+                )
+            )
         }
     }
 

@@ -78,7 +78,7 @@ class OptionsPopup(val previousScreen: CameraStageBaseScreen) : Popup(previousSc
                 if (modCheckFirstRun) runModChecker()
             }
         }
-        if (Gdx.input.isKeyPressed(Input.Keys.SHIFT_RIGHT) && Gdx.input.isKeyPressed(Input.Keys.CONTROL_RIGHT)) {
+        if (Gdx.input.isKeyPressed(Input.Keys.SHIFT_RIGHT) && (Gdx.input.isKeyPressed(Input.Keys.CONTROL_RIGHT) || Gdx.input.isKeyPressed(Input.Keys.ALT_RIGHT))) {
             tabs.addPage("Debug", getDebugTab(), ImageGetter.getImage("OtherIcons/SecretOptions"), 24f, secret = true)
         }
 

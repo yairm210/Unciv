@@ -6,6 +6,7 @@ import com.unciv.ui.utils.toPercent
 import java.util.*
 import kotlin.collections.set
 import kotlin.math.max
+import kotlin.math.min
 import kotlin.math.pow
 import kotlin.math.roundToInt
 
@@ -38,7 +39,10 @@ object BattleDamage {
                 modifiers.add("Combat Strength", unique.params[0].toInt())
 
             //https://www.carlsguides.com/strategy/civilization5/war/combatbonuses.php
-            val civHappiness = civInfo.getHappiness()
+            val civHappiness = if (civInfo.isCityState() && civInfo.getAllyCiv() != null)
+                // If we are a city state with an ally we are vulnerable to their unhappiness.
+                min(civInfo.gameInfo.getCivilization(civInfo.getAllyCiv()!!).getHappiness(), civInfo.getHappiness())
+                else civInfo.getHappiness()
             if (civHappiness < 0)
                 modifiers["Unhappiness"] = max(
                     2 * civHappiness,

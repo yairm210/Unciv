@@ -17,6 +17,7 @@ import com.unciv.ui.utils.randomWeighted
 import kotlin.math.max
 import kotlin.random.Random
 
+@Suppress("NON_EXHAUSTIVE_WHEN")  // Many when uses in here are much clearer this way
 class QuestManager {
 
     companion object {
@@ -338,7 +339,7 @@ class QuestManager {
         }
     }
 
-    /** Increments [assignedQuest.assignee] influence on [civInfo] and adds a [Notification] */
+    /** Increments [assignedQuest.assignee][AssignedQuest.assignee] influence on [civInfo] and adds a [Notification] */
     private fun giveReward(assignedQuest: AssignedQuest) {
         val rewardInfluence = civInfo.gameInfo.ruleSet.quests[assignedQuest.questName]!!.influece
         val assignee = civInfo.gameInfo.getCivilization(assignedQuest.assignee)
@@ -357,6 +358,7 @@ class QuestManager {
 
     /** Returns the score for the [assignedQuest] */
     private fun getScoreForQuest(assignedQuest: AssignedQuest): Int {
+        @Suppress("UNUSED_VARIABLE")  // This is a work in progress
         val assignee = civInfo.gameInfo.getCivilization(assignedQuest.assignee)
         return when (assignedQuest.questName) {
             // Waiting for contest quests

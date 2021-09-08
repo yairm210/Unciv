@@ -217,11 +217,11 @@ object NextTurnAutomation {
         for (state in civInfo.getKnownCivs().filter{!it.isDefeated() && it.isCityState()}) {
             val diplomacyManager = state.getDiplomacyManager(civInfo.civName)
             if(diplomacyManager.relationshipLevel() >= RelationshipLevel.Friend
-                    && diplomacyManager.diplomaticStatus == DiplomaticStatus.Peace)
+                && state.otherCivCanPledgeProtection(civInfo))
             {
                 state.addProtectorCiv(civInfo)
             } else if (diplomacyManager.relationshipLevel() < RelationshipLevel.Friend
-                    && diplomacyManager.diplomaticStatus == DiplomaticStatus.Protector) {
+                && state.otherCivCanWithdrawProtection(civInfo)) {
                 state.removeProtectorCiv(civInfo)
             }
         }
@@ -618,8 +618,8 @@ object NextTurnAutomation {
         for (unit in civInfo.getCivUnits()) {
             if (unit.promotions.canBePromoted()) {
                 val availablePromotions = unit.promotions.getAvailablePromotions()
-                if (availablePromotions.isNotEmpty())
-                    unit.promotions.addPromotion(availablePromotions.random().name)
+                if (availablePromotions.any())
+                    unit.promotions.addPromotion(availablePromotions.toList().random().name)
             }
 
             when {

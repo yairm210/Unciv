@@ -2,6 +2,7 @@ package com.unciv.logic.map
 
 import com.unciv.models.ruleset.UniqueTriggerActivation
 import com.unciv.models.ruleset.unit.Promotion
+import com.unciv.models.translations.equalsPlaceholderText
 
 class UnitPromotions {
     // Having this as mandatory constructor parameter would be safer, but this class is part of a
@@ -27,7 +28,7 @@ class UnitPromotions {
     fun xpForNextPromotion() = (numberOfPromotions+1)*10
     fun canBePromoted(): Boolean {
         if (XP < xpForNextPromotion()) return false
-        if (getAvailablePromotions().isEmpty()) return false
+        if (getAvailablePromotions().none()) return false
         return true
     }
 
@@ -57,10 +58,17 @@ class UnitPromotions {
         }
     }
 
-    fun getAvailablePromotions(): List<Promotion> {
+    fun getAvailablePromotions(): Sequence<Promotion> {
         return unit.civInfo.gameInfo.ruleSet.unitPromotions.values
-                .filter { unit.type.name in it.unitTypes && it.name !in promotions }
-                .filter { it.prerequisites.isEmpty() || it.prerequisites.any { p->p in promotions } }
+            .asSequence()
+            .filter { unit.type.name in it.unitTypes && it.name !in promotions }
+            .filter { it.prerequisites.isEmpty() || it.prerequisites.any { p->p in promotions } }
+            .filter { 
+                it.uniqueObjects.none { 
+                    unique -> unique.placeholderText == "Incompatible with []" 
+                    && promotions.any { chosenPromotions -> chosenPromotions == unique.params[0] } 
+                }
+            }
     }
 
     fun clone(): UnitPromotions {
