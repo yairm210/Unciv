@@ -110,7 +110,7 @@ jobs:
         continue-on-error: true
         if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
         with:
-          releaseDirectory: deploy
+          releaseDirectory: android/build/outputs/apk/release
           signingKeyBase64: ${{ secrets.BUNDLE_SIGNING_KEY_BASE64 }}
           alias: ${{ secrets.BUNDLE_SIGNING_KEY_ALIAS }}
           keyStorePassword: ${{ secrets.BUNDLE_SIGNING_KEYSTORE_PASSWORD }}
