@@ -624,7 +624,8 @@ class CityInfo {
     fun matchesFilter(filter: String, viewingCiv: CivilizationInfo = civInfo): Boolean {
         return when (filter) {
             "in this city" -> true
-            "in all cities" -> true
+            "in all cities" -> true // Filtered by the way uniques our found
+            "in other cities" -> true // Filtered by the way uniques our found
             "in all coastal cities" -> isCoastal()
             "in capital" -> isCapital()
             "in all non-occupied cities" -> !cityStats.hasExtraAnnexUnhappiness() || isPuppet
@@ -671,12 +672,16 @@ class CityInfo {
         // The localUniques might not be filtered when passed as a parameter, so we filter it anyway
         // The time loss shouldn't be that large I don't think
         return civInfo.getMatchingUniques(placeholderText, this) +
-                localUniques.filter { it.placeholderText == placeholderText }
+                localUniques.filter { 
+                    it.placeholderText == placeholderText
+                    && it.params.none { param -> param == "in other cities" }
+                }
     }
 
     // Matching uniques provided by sources in the city itself
     fun getLocalMatchingUniques(placeholderText: String): Sequence<Unique> {
-        return cityConstructions.builtBuildingUniqueMap.getUniques(placeholderText) +
+        return cityConstructions.builtBuildingUniqueMap.getUniques(placeholderText)
+            .filter { it.params.none { param -> param == "in other cities" } } +
                 religion.getMatchingUniques(placeholderText)
     }
 
