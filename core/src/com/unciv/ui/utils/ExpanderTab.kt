@@ -115,4 +115,9 @@ class ExpanderTab(
     fun toggle() {
         isOpen = !isOpen
     }
+
+    /** Change header label text after initialization */
+    fun setText(text: String) {
+        headerLabel.setText(text)
+    }
 }

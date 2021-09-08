@@ -14,6 +14,7 @@ import com.unciv.models.ruleset.ModOptions
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.translations.tr
+import com.unciv.ui.pickerscreens.ModManagementOptions.SortType
 import com.unciv.ui.utils.*
 import com.unciv.ui.utils.UncivDateFormat.formatDate
 import com.unciv.ui.utils.UncivDateFormat.parseDate
@@ -34,6 +35,7 @@ class ModManagementScreen: PickerScreen(disableScroll = true) {
     private val downloadTable = Table().apply { defaults().pad(10f) }
     private val scrollOnlineMods = AutoScrollPane(downloadTable)
     private val modActionTable = Table().apply { defaults().pad(10f) }
+    private val optionsManager = ModManagementOptions(this)
 
     val amountPerPage = 30
 
@@ -45,6 +47,11 @@ class ModManagementScreen: PickerScreen(disableScroll = true) {
     private val deprecationLabel: WrappableLabel
     private val deprecationCell: Cell<WrappableLabel>
     private val modDescriptionLabel: WrappableLabel
+
+    private var installedHeaderLabel: Label? = null
+    private var onlineHeaderLabel: Label? = null
+    private var installedExpanderTab: ExpanderTab? = null
+    private var onlineExpanderTab: ExpanderTab? = null
 
     // keep running count of mods fetched from online search for comparison to total count as reported by GitHub
     private var downloadModCount = 0
@@ -60,8 +67,9 @@ class ModManagementScreen: PickerScreen(disableScroll = true) {
         modDescriptionLabel.setText(online + separator + installed)
     }
 
-    // Enable syncing entries in 'installed' and 'repo search ScrollPanes
-    private class ScrollToEntry(val y: Float, val height: Float, val button: Button)
+    // Enable syncing entries in 'installed' and 'repo search' ScrollPanes
+    // The stargazers field is just a kludge way to preserve the count for re-sorting
+    private class ScrollToEntry(val y: Float, val height: Float, val button: Button, val stargazers: Int = 0)
     private val installedScrollIndex = HashMap<String,ScrollToEntry>(30)
     private val onlineScrollIndex = HashMap<String,ScrollToEntry>(30)
     private var onlineScrollCurrentY = -1f
@@ -91,10 +99,11 @@ class ModManagementScreen: PickerScreen(disableScroll = true) {
         ) {
         // mad but it's really initializing with the primary constructor parameter and not calling update()
         var isVisual: Boolean = isVisual 
-            set(value) { if(field!=value) { field = value; update() } }
+            set(value) { if (field!=value) { field = value; update() } }
         var isUpdated: Boolean = isUpdated
-            set(value) { if(field!=value) { field = value; update() } }
+            set(value) { if (field!=value) { field = value; update() } }
         private val spacer = Table().apply { width = 20f; height = 0f }
+
         fun update() {
             container.run {
                 clear()
@@ -104,9 +113,16 @@ class ModManagementScreen: PickerScreen(disableScroll = true) {
                 pack()
             }
         }
+
+        fun sortWeight() = when {
+            isUpdated && isVisual -> 3
+            isUpdated -> 2
+            isVisual -> 1
+            else -> 0
+        }
     }
     private val modStateImages = HashMap<String,ModStateImages>(30)
-
+    internal fun getModStateSortWeight(name: String) = modStateImages[name]?.sortWeight() ?: -1
 
     init {
         //setDefaultCloseAction(screen) // this would initialize the new MainMenuScreen immediately
@@ -122,7 +138,7 @@ class ModManagementScreen: PickerScreen(disableScroll = true) {
         onBackButtonClicked(closeAction)
 
         val labelWidth = max(stage.width / 2f - 60f,60f)
-        deprecationLabel = WrappableLabel("Deprecated until update conforms to current requirements", labelWidth, Color.FIREBRICK)
+        deprecationLabel = WrappableLabel(deprecationText, labelWidth, Color.FIREBRICK)
         deprecationLabel.wrap = true
         modDescriptionLabel = WrappableLabel("", labelWidth)
         modDescriptionLabel.wrap = true
@@ -149,13 +165,17 @@ class ModManagementScreen: PickerScreen(disableScroll = true) {
     private fun initPortrait() {
         topTable.defaults().top().pad(0f)
 
-        topTable.add(ExpanderTab("Current mods", expanderWidth = stage.width) {
-            it.add(scrollInstalledMods).growX()
-        }).top().growX().row()
+        topTable.add(optionsManager.expander).top().growX().row()
 
-        topTable.add(ExpanderTab("Downloadable mods", expanderWidth = stage.width) {
+        installedExpanderTab = ExpanderTab(installedHeaderText, expanderWidth = stage.width) {
+            it.add(scrollInstalledMods).growX()
+        }
+        topTable.add(installedExpanderTab).top().growX().row()
+
+        onlineExpanderTab = ExpanderTab(onlineHeaderText, expanderWidth = stage.width) {
             it.add(scrollOnlineMods).growX()
-        }).top().padTop(10f).growX().row()
+        }
+        topTable.add(onlineExpanderTab).top().padTop(10f).growX().row()
 
         topTable.add().expandY().row() // helps with top() being ignored
 
@@ -167,9 +187,17 @@ class ModManagementScreen: PickerScreen(disableScroll = true) {
     private fun initLandscape() {
         // Header row
         topTable.add().expandX()                // empty cols left and right for separator
-        topTable.add("Current mods".toLabel()).pad(5f).minWidth(200f).padLeft(25f)
+        installedHeaderLabel = installedHeaderText.toLabel()
+        installedHeaderLabel!!.onClick {
+            optionsManager.installedHeaderClicked()
+        }
+        topTable.add(installedHeaderLabel).pad(5f).minWidth(200f).padLeft(25f)
             // 30 = 5 default pad + 20 to compensate for 'permanent visual mod' decoration icon
-        topTable.add("Downloadable mods".toLabel()).pad(5f)
+        onlineHeaderLabel = onlineHeaderText.toLabel()
+        onlineHeaderLabel!!.onClick {
+            optionsManager.onlineHeaderClicked()
+        }
+        topTable.add(onlineHeaderLabel).pad(5f)
         topTable.add("".toLabel()).minWidth(200f)  // placeholder for "Mod actions"
         topTable.add().expandX()
         topTable.row()
@@ -217,7 +245,7 @@ class ModManagementScreen: PickerScreen(disableScroll = true) {
                 val lastCell = downloadTable.cells.lastOrNull()
                 if (lastCell != null && lastCell.actor is Label && (lastCell.actor as Label).text.toString() == "...") {
                     lastCell.setActor<Actor>(null)
-                    lastCell.pad(0f)
+                    downloadTable.cells.removeValue(lastCell, true)
                 }
 
                 for (repo in repoSearch.items) {
@@ -252,7 +280,7 @@ class ModManagementScreen: PickerScreen(disableScroll = true) {
                     val cell = downloadTable.add(downloadButton)
                     downloadTable.row()
                     if (onlineScrollCurrentY < 0f) onlineScrollCurrentY = cell.padTop
-                    onlineScrollIndex[repo.name] = ScrollToEntry(onlineScrollCurrentY, cell.prefHeight, downloadButton)
+                    onlineScrollIndex[repo.name] = ScrollToEntry(onlineScrollCurrentY, cell.prefHeight, downloadButton, repo.stargazers_count)
                     onlineScrollCurrentY += cell.padBottom + cell.prefHeight + cell.padTop
                     downloadModCount++
                 }
@@ -273,7 +301,7 @@ class ModManagementScreen: PickerScreen(disableScroll = true) {
                     }
                     duplicates.forEach {
                         it.setActor(null)
-                        it.pad(0f)  // the cell itself cannot be removed so stop it occupying height
+                        downloadTable.cells.removeValue(it, true)
                     }
                     downloadModCount -= duplicates.size
                     // Check: It is also not impossible we missed a mod - just inform user
@@ -485,12 +513,20 @@ class ModManagementScreen: PickerScreen(disableScroll = true) {
     }
 
     /** Rebuild the left-hand column containing all installed mods */
-    private fun refreshInstalledModTable() {
+    internal fun refreshInstalledModTable() {
         modTable.clear()
         installedScrollIndex.clear()
 
+        val sort = optionsManager.sortInstalled
+        val newHeaderText = installedHeaderText.tr() + " " + sort.symbols
+        installedHeaderLabel?.setText(newHeaderText)
+        installedExpanderTab?.setText(newHeaderText)
+        val comparator = sort.getComparator(this)
+
         var currentY = -1f
-        val currentMods = RulesetCache.values.asSequence().filter { it.name != "" }.sortedBy { it.name }
+        val currentMods = RulesetCache.values.asSequence()
+            .filter { it.name != "" }
+            .sortedWith(comparator)
         for (mod in currentMods) {
             val summary = mod.getSummary()
             modDescriptionsInstalled[mod.name] = "Installed".tr() +
@@ -556,7 +592,22 @@ class ModManagementScreen: PickerScreen(disableScroll = true) {
         }
     }
 
+    internal fun getStars(name: String) = onlineScrollIndex[name]?.stargazers ?: 0
+
+    internal fun resortOnlineModTable() {
+        if (runningSearchThread != null) return  // cowardice: prevent concurrent modification, avoid a manager layer
+
+        val comparator = optionsManager.sortOnline.getComparator(this)
+        val sortedMods = onlineScrollIndex
+            .mapNotNull { RulesetCache[it.key] }
+            .sortedWith(comparator)
+        //todo need true cache, the online list cannot be mapped to RuleSet via RulesetCache
+    }
+
     companion object {
+        const val installedHeaderText = "Current mods"
+        const val onlineHeaderText = "Downloadable mods"
+
         val modsToHideAsUrl = run {
             val blockedModsFile = Gdx.files.internal("jsons/ManuallyBlockedMods.json")
             JsonParser().getFromJson(Array<String>::class.java, blockedModsFile)
@@ -567,5 +618,6 @@ class ModManagementScreen: PickerScreen(disableScroll = true) {
                 regex.replace(url) { it.groups[1]!!.value }.replace('-', ' ')
             }
         }
+        const val deprecationText = "Deprecated until update conforms to current requirements"
     }
 }
