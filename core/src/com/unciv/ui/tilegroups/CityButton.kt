@@ -15,6 +15,7 @@ import com.unciv.logic.city.CityConstructions
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.city.INonPerpetualConstruction
 import com.unciv.logic.city.PerpetualConstruction
+import com.unciv.logic.civilization.CityStateType
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.ui.cityscreen.CityScreen
 import com.unciv.ui.trade.DiplomacyScreen
@@ -236,6 +237,17 @@ class CityButton(val city: CityInfo, private val tileGroup: WorldTileGroup): Tab
         val cityStrengthLabel = "${Fonts.strength}$cityStrength".toLabel(city.civInfo.nation.getInnerColor(), 10)
         iconTable.addActor(cityStrengthLabel)        // We create this here to we can .toBack() it as well.
         cityStrengthLabel.toBack()
+
+        if (city.civInfo.isCityState()) {
+            val cityStateImage = when (city.civInfo.cityStateType) {
+                CityStateType.Militaristic  -> ImageGetter.getImage("PolicyIcons/Military Tradition").apply { color = secondaryColor }
+                CityStateType.Cultured      -> ImageGetter.getImage("PolicyIcons/Constitution").apply { color = secondaryColor }
+                CityStateType.Maritime      -> ImageGetter.getImage("PolicyIcons/Naval Tradition").apply { color = secondaryColor }
+                CityStateType.Mercantile    -> ImageGetter.getImage("StatIcons/CityConnection").apply { color = secondaryColor }
+                //CityStateType.Religious     -> ImageGetter.getReligionImage("Religion").apply { color = secondaryColor }
+            }
+            iconTable.add(cityStateImage).size(20f).padRight(10f).fillY()
+        }
 
         if (uncivGame.viewEntireMapForDebug || belongsToViewingCiv() || worldScreen.viewingCiv.isSpectator()) {
             val constructionGroup = getConstructionGroup(city.cityConstructions)
