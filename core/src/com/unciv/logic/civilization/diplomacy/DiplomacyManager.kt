@@ -642,15 +642,6 @@ class DiplomacyManager() {
                 }
             }
         }
-
-        if (otherCiv.isCityState()) {
-            for (thirdCiv in otherCiv.getProtectorCivs()) {
-                if (thirdCiv.knows(civInfo)
-                    && thirdCiv.getDiplomacyManager(civInfo).canDeclareWar()) {
-                    thirdCiv.getDiplomacyManager(civInfo).declareWar()
-                }
-            }
-        }
     }
 
     /** Should only be called from makePeace */
