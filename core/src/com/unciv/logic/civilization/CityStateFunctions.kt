@@ -24,7 +24,6 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
     fun initCityState(ruleset: Ruleset, startingEra: String, unusedMajorCivs: Collection<String>): Boolean {
         val cityStateType = ruleset.nations[civInfo.civName]?.cityStateType
         if (cityStateType == null)  return false
-        if (cityStateType != CityStateType.Militaristic)    return false
 
         val startingTechs = ruleset.technologies.values.filter { it.uniques.contains("Starting tech") }
         for (tech in startingTechs)
