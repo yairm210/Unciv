@@ -10,7 +10,7 @@ open class PickerScreen(disableScroll: Boolean = false) : CameraStageBaseScreen(
 
     internal var closeButton: TextButton = Constants.close.toTextButton()
     protected var descriptionLabel: Label
-    private var rightSideGroup = VerticalGroup()
+    protected var rightSideGroup = VerticalGroup()
     protected var rightSideButton: TextButton
     private val screenSplit = 0.85f
     private val maxBottomTableHeight = 150f     // about 7 lines of normal text
