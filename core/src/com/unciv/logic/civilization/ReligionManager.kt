@@ -293,7 +293,7 @@ class ReligionManager {
     private fun getFaithFromCityStates(): Int {
         var faithFromCityState = 0
         for (civ in civInfo.getKnownCivs()){
-            if (civ.isCityState() && civ.cityStateType == CityStateType.Religious ) faithFromCityState += 2 * civInfo.getEraNumber()
+            if (civ.isCityState() && civ.cityStateType == CityStateType.Religious && civ.getDiplomacyManager(civInfo).influence >= 60) faithFromCityState += 2 * civInfo.getEraNumber()
         }
         return faithFromCityState
     }
