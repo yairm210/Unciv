@@ -4,7 +4,6 @@ By xlenstra:
 - From the industrial era onwards, things change in religion
 - Fixed bugs with unit movement, renamed units, and default starting era
 - Unique additions for modding
-- Fixes #5113
 
 By SomeTroglodyte:
 - New game is more wrap and shape aware
