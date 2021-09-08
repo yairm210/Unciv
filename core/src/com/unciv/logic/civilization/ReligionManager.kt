@@ -70,6 +70,7 @@ class ReligionManager {
 
     fun endTurn(faithFromNewTurn: Int) {
         storedFaith += faithFromNewTurn
+        storedFaith += getFaithFromCityStates()
     }
 
     fun faithForPantheon(additionalCivs: Int = 0) =
@@ -288,6 +289,13 @@ class ReligionManager {
         return civInfo.gameInfo.getCities()
             .filter { it.matchesFilter(cityFilter, civInfo) }
             .sumBy { it.religion.getFollowersOf(religion!!.name)!! }
+    }
+    private fun getFaithFromCityStates(): Int {
+        var faithFromCityState = 0
+        for (civ in civInfo.getKnownCivs()){
+            if (civ.isCityState() && civ.cityStateType == CityStateType.Religious ) faithFromCityState += 2 * civInfo.getEraNumber()
+        }
+        return faithFromCityState
     }
 }
 
