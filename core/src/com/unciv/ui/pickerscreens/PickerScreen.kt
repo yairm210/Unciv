@@ -11,9 +11,11 @@ open class PickerScreen(disableScroll: Boolean = false) : CameraStageBaseScreen(
     protected var closeButton: TextButton = Constants.close.toTextButton()
     /** A scrollable wrapped Label you can use to show descriptions in the [bottomTable], starts empty */
     protected var descriptionLabel: Label
-    private var rightSideGroup = VerticalGroup()
+    /** A wrapper containing [rightSideButton]. You can add buttons, they will be arranged vertically */
+    protected var rightSideGroup = VerticalGroup()
     /** A button on the lower right of [bottomTable] you can use for a "OK"-type action, starts disabled */
     protected var rightSideButton: TextButton
+
     private val screenSplit = 0.85f
     private val maxBottomTableHeight = 150f     // about 7 lines of normal text
 
