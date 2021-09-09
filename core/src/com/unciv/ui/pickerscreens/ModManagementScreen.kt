@@ -558,7 +558,7 @@ class ModManagementScreen: PickerScreen(disableScroll = true) {
 
     companion object {
         val modsToHideAsUrl = run {
-            val blockedModsFile = FileHandle("jsons/ManuallyBlockedMods.json")
+            val blockedModsFile = Gdx.files.internal("jsons/ManuallyBlockedMods.json")
             JsonParser().getFromJson(Array<String>::class.java, blockedModsFile)
         }
         val modsToHideNames = run {
