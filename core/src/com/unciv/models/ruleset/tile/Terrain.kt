@@ -62,8 +62,6 @@ class Terrain : NamedStats(), ICivilopediaText, IHasUniques {
     }
 
     override fun makeLink() = "Terrain/$name"
-    override fun hasCivilopediaTextLines() = true
-    override fun replacesCivilopediaDescription() = true
 
     override fun getCivilopediaTextLines(ruleset: Ruleset): List<FormattedLine> {
         //todo where should we explain Rivers?

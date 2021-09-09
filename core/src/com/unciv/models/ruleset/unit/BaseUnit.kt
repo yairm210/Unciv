@@ -38,10 +38,10 @@ class BaseUnit : INamed, INonPerpetualConstruction, ICivilopediaText {
     lateinit var unitType: String
     fun getType() = ruleset.unitTypes[unitType]!!
     var requiredTech: String? = null
-    var requiredResource: String? = null
+    private var requiredResource: String? = null
     override var uniques = ArrayList<String>() // Can not be a hashset as that would remove doubles
     override val uniqueObjects: List<Unique> by lazy { uniques.map { Unique(it) } }
-    var replacementTextForUniques = ""
+    private var replacementTextForUniques = ""
     var promotions = HashSet<String>()
     var obsoleteTech: String? = null
     var upgradesTo: String? = null
@@ -105,8 +105,6 @@ class BaseUnit : INamed, INonPerpetualConstruction, ICivilopediaText {
     }
 
     override fun makeLink() = "Unit/$name"
-    override fun replacesCivilopediaDescription() = true
-    override fun hasCivilopediaTextLines() = true
 
     override fun getCivilopediaTextLines(ruleset: Ruleset): List<FormattedLine> {
         val textList = ArrayList<FormattedLine>()
@@ -323,27 +321,23 @@ class BaseUnit : INamed, INonPerpetualConstruction, ICivilopediaText {
         return rejectionReasons
     }
 
-    /** @param ignoreTechPolicyRequirements: its `true` value is used when upgrading via ancient ruins,
-     * as there we don't care whether we have the required tech, policy or building for the unit,
-     * but do still care whether we have the resources required for the unit
-     */
     fun getRejectionReasons(civInfo: CivilizationInfo): RejectionReasons {
         val rejectionReasons = RejectionReasons()
         val ruleSet = civInfo.gameInfo.ruleSet
-        
+
         if (uniques.contains("Unbuildable")) 
             rejectionReasons.add(RejectionReason.Unbuildable)
-        
+
         if (requiredTech != null && !civInfo.tech.isResearched(requiredTech!!)) 
             rejectionReasons.add(RejectionReason.RequiresTech.apply { this.errorMessage = "$requiredTech not researched" }) 
         if (obsoleteTech != null && civInfo.tech.isResearched(obsoleteTech!!))
             rejectionReasons.add(RejectionReason.Obsoleted.apply { this.errorMessage = "Obsolete by $obsoleteTech" })
-        
+
         if (uniqueTo != null && uniqueTo != civInfo.civName) 
             rejectionReasons.add(RejectionReason.UniqueToOtherNation.apply { this.errorMessage = "Unique to $uniqueTo" })
         if (ruleSet.units.values.any { it.uniqueTo == civInfo.civName && it.replaces == name })
             rejectionReasons.add(RejectionReason.ReplacedByOurUnique.apply { this.errorMessage = "Our unique unit replaces this" })
-        
+
         if (!civInfo.gameInfo.gameParameters.nuclearWeaponsEnabled && isNuclearWeapon()) 
             rejectionReasons.add(RejectionReason.DisabledBySetting)
 
@@ -372,7 +366,7 @@ class BaseUnit : INamed, INonPerpetualConstruction, ICivilopediaText {
                     errorMessage = "Consumes [$amount] [$resource]"
                 })
             }
-        
+
         if (uniques.contains(Constants.settlerUnique) &&
             (civInfo.isCityState() || civInfo.isOneCityChallenger())
         )
@@ -385,7 +379,7 @@ class BaseUnit : INamed, INonPerpetualConstruction, ICivilopediaText {
     override fun isBuildable(cityConstructions: CityConstructions): Boolean {
         return getRejectionReasons(cityConstructions).isEmpty()
     }
-    
+
     fun isBuildableIgnoringTechs(civInfo: CivilizationInfo): Boolean {
         val rejectionReasons = getRejectionReasons(civInfo)
         return rejectionReasons.filterTechPolicyEraWonderRequirements().isEmpty()

@@ -194,8 +194,6 @@ class Nation : INamed, ICivilopediaText, IHasUniques {
     }
 
     override fun makeLink() = "Nation/$name"
-    override fun replacesCivilopediaDescription() = true
-    override fun hasCivilopediaTextLines() = true
     override fun getSortGroup(ruleset: Ruleset) = when {
         isCityState() -> 1
         isBarbarian() -> 9

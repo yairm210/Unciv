@@ -208,7 +208,7 @@ object HexMath {
             val top = height / 2 -  (x + y) / 2
             // kotlin's Int division rounds in different directions depending on sign! Thus 1 extra `-1`
             val bottom = (x + y - 1) / 2 + (height - 1) / 2
-            return min(min(left, right), min(top, bottom))
+            return minOf(left, right, top, bottom)
         } else {
             val radius = mapParameters.mapSize.radius
             if (mapParameters.worldWrap) {

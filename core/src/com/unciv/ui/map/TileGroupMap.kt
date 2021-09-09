@@ -9,7 +9,13 @@ import com.unciv.ui.tilegroups.TileGroup
 import kotlin.math.max
 import kotlin.math.min
 
-class TileGroupMap<T: TileGroup>(tileGroups: Collection<T>, private val leftAndRightPadding: Float, private val topAndBottomPadding: Float, worldWrap: Boolean = false, tileGroupsToUnwrap: Collection<T>? = null): Group(){
+class TileGroupMap<T: TileGroup>(
+    tileGroups: Collection<T>,
+    private val leftAndRightPadding: Float,
+    private val topAndBottomPadding: Float,
+    worldWrap: Boolean = false,
+    tileGroupsToUnwrap: Collection<T>? = null
+): Group() {
     var topX = -Float.MAX_VALUE
     var topY = -Float.MAX_VALUE
     var bottomX = Float.MAX_VALUE
@@ -17,17 +23,18 @@ class TileGroupMap<T: TileGroup>(tileGroups: Collection<T>, private val leftAndR
     private val groupSize = 50
     private val mirrorTileGroups = HashMap<TileInfo, Pair<T, T>>()
 
-    init{
+    init {
         if (worldWrap) {
-            for(tileGroup in tileGroups) {
+            for (tileGroup in tileGroups) {
+                @Suppress("UNCHECKED_CAST")  // T is constrained such that casting these TileGroup clones to T should be OK
                 mirrorTileGroups[tileGroup.tileInfo] = Pair(tileGroup.clone() as T, tileGroup.clone() as T)
             }
         }
 
-        for(tileGroup in tileGroups) {
-            val positionalVector = if (tileGroupsToUnwrap != null && tileGroupsToUnwrap.contains(tileGroup)){
+        for (tileGroup in tileGroups) {
+            val positionalVector = if (tileGroupsToUnwrap != null && tileGroupsToUnwrap.contains(tileGroup)) {
                 HexMath.hex2WorldCoords(
-                        tileGroup.tileInfo.tileMap.getUnWrappedPosition(tileGroup.tileInfo.position)
+                    tileGroup.tileInfo.tileMap.getUnWrappedPosition(tileGroup.tileInfo.position)
                 )
             } else {
                 HexMath.hex2WorldCoords(tileGroup.tileInfo.position)
@@ -80,7 +87,7 @@ class TileGroupMap<T: TileGroup>(tileGroups: Collection<T>, private val leftAndR
         val circleCrosshairFogLayers = ArrayList<Group>()
 
         // Apparently the sortedByDescending is kinda memory-intensive because it needs to sort ALL the tiles
-        for(group in tileGroups.sortedByDescending { it.tileInfo.position.x + it.tileInfo.position.y }){
+        for (group in tileGroups.sortedByDescending { it.tileInfo.position.x + it.tileInfo.position.y }) {
             // now, we steal the subgroups from all the tilegroups, that's how we form layers!
             baseLayers.add(group.baseLayerGroup.apply { setPosition(group.x,group.y) })
             featureLayers.add(group.terrainFeatureLayerGroup.apply { setPosition(group.x,group.y) })
@@ -90,8 +97,8 @@ class TileGroupMap<T: TileGroup>(tileGroups: Collection<T>, private val leftAndR
             cityButtonLayers.add(group.cityButtonLayerGroup.apply { setPosition(group.x,group.y) })
             circleCrosshairFogLayers.add(group.circleCrosshairFogLayerGroup.apply { setPosition(group.x,group.y) })
 
-            if (worldWrap){
-                for (mirrorTile in mirrorTileGroups[group.tileInfo]!!.toList()){
+            if (worldWrap) {
+                for (mirrorTile in mirrorTileGroups[group.tileInfo]!!.toList()) {
                     baseLayers.add(mirrorTile.baseLayerGroup.apply { setPosition(mirrorTile.x,mirrorTile.y) })
                     featureLayers.add(mirrorTile.terrainFeatureLayerGroup.apply { setPosition(mirrorTile.x,mirrorTile.y) })
                     miscLayers.add(mirrorTile.miscLayerGroup.apply { setPosition(mirrorTile.x,mirrorTile.y) })
@@ -102,20 +109,20 @@ class TileGroupMap<T: TileGroup>(tileGroups: Collection<T>, private val leftAndR
                 }
             }
         }
-        for(group in baseLayers) addActor(group)
-        for(group in featureLayers) addActor(group)
-        for(group in miscLayers) addActor(group)
-        for(group in circleCrosshairFogLayers) addActor(group)
-        for(group in tileGroups) addActor(group) // The above layers are for the visual layers, this is for the clickability of the tile
-        if (worldWrap){
-            for (mirrorTiles in mirrorTileGroups.values){
+        for (group in baseLayers) addActor(group)
+        for (group in featureLayers) addActor(group)
+        for (group in miscLayers) addActor(group)
+        for (group in circleCrosshairFogLayers) addActor(group)
+        for (group in tileGroups) addActor(group) // The above layers are for the visual layers, this is for the clickability of the tile
+        if (worldWrap) {
+            for (mirrorTiles in mirrorTileGroups.values) {
                 addActor(mirrorTiles.first)
                 addActor(mirrorTiles.second)
             }
         }
-        for(group in unitLayers) addActor(group) // Aaand units above everything else.
-        for(group in unitImageLayers) addActor(group) // This is so the individual textures for the units are rendered together
-        for(group in cityButtonLayers) addActor(group) // city buttons + clickability
+        for (group in unitLayers) addActor(group) // Aaand units above everything else.
+        for (group in unitImageLayers) addActor(group) // This is so the individual textures for the units are rendered together
+        for (group in cityButtonLayers) addActor(group) // city buttons + clickability
 
 
         // there are tiles "below the zero",

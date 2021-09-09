@@ -74,7 +74,7 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
         for (city in civInfo.cities) {
             for (tile in city.getTiles()) {
                 if (tile.isCityCenter()) continue
-                if (tile.roadStatus == RoadStatus.None) continue // Cheap checks before pricy checks
+                if (tile.roadStatus == RoadStatus.None) continue // Cheap checks before pricey checks
                 if (ignoredTileTypes.any { tile.matchesFilter(it, civInfo) }) continue
 
                 transportationUpkeep += tile.roadStatus.upkeep
@@ -193,7 +193,7 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
             )// Leave at least 1
             statMap["Treasury deficit"] = Stats(science = scienceDeficit)
         }
-        val goldDifferenceFromTrade = civInfo.diplomacy.values.sumBy { it.goldPerTurn() }
+        val goldDifferenceFromTrade = civInfo.diplomacy.values.sumOf { it.goldPerTurn() }
         if (goldDifferenceFromTrade != 0)
             statMap["Trade"] = Stats(gold = goldDifferenceFromTrade.toFloat())
 
@@ -218,7 +218,7 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
 
         val happinessBonusForCityStateProvidedLuxuries =
             civInfo.getMatchingUniques("Happiness from Luxury Resources gifted by City-States increased by []%")
-                .sumBy { it.params[0].toInt() } / 100f
+                .sumOf { it.params[0].toInt() } / 100f
 
         val luxuriesProvidedByCityStates = civInfo.getKnownCivs().asSequence()
             .filter { it.isCityState() && it.getAllyCiv() == civInfo.civName }
@@ -240,7 +240,7 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
         statMap["Traded Luxuries"] =
             luxuriesAllOfWhichAreTradedAway.count() * happinessPerUniqueLuxury *
                     civInfo.getMatchingUniques("Retain []% of the happiness from a luxury after the last copy has been traded away")
-                        .sumBy { it.params[0].toInt() } / 100f
+                        .sumOf { it.params[0].toInt() } / 100f
 
         for (city in civInfo.cities) {
             // There appears to be a concurrency problem? In concurrent thread in ConstructionsTable.getConstructionButtonDTOs

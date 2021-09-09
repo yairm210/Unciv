@@ -223,24 +223,24 @@ class CityStats(val cityInfo: CityInfo) {
                 val amountOfEffects = (cityInfo.population.population / unique.params[1].toInt()).toFloat()
                 stats.add(unique.stats.times(amountOfEffects))
             }
-            
+
             // "[stats] in cities with [amount] or more population
             if (unique.placeholderText == "[] in cities with [] or more population" && cityInfo.population.population >= unique.params[1].toInt())
                 stats.add(unique.stats)
-            
+
             // "[stats] in cities on [tileFilter] tiles"
             if (unique.placeholderText == "[] in cities on [] tiles" && cityInfo.getCenterTile().matchesTerrainFilter(unique.params[1]))
                 stats.add(unique.stats)
-            
+
             // "[stats] if this city has at least [amount] specialists"
             if (unique.placeholderText == "[] if this city has at least [] specialists" && cityInfo.population.getNumberOfSpecialists() >= unique.params[1].toInt())
                 stats.add(unique.stats)
-            
+
             // Deprecated since a very long time ago, moved here from another code section
                 if (unique.placeholderText == "+2 Culture per turn from cities before discovering Steam Power" && !cityInfo.civInfo.tech.isResearched("Steam Power"))
                     stats.culture += 2
             //
-            
+
             if (unique.placeholderText == "[] per turn from cities before []" && !cityInfo.civInfo.hasTechOrPolicy(unique.params[1]))
                 stats.add(unique.stats)
         }
@@ -378,7 +378,7 @@ class CityStats(val cityInfo: CityInfo) {
             for (unique in civInfo.getMatchingUniques("Specialists only produce []% of normal unhappiness"))
                 unhappinessFromSpecialists *= (1f - unique.params[0].toFloat() / 100f)
         //
-        
+
         for (unique in cityInfo.getMatchingUniques("[]% unhappiness from specialists []")) {
             if (cityInfo.matchesFilter(unique.params[1]))
                 unhappinessFromSpecialists *= unique.params[0].toPercent()
@@ -394,12 +394,12 @@ class CityStats(val cityInfo: CityInfo) {
         // Deprecated since 3.16.11
             for (unique in civInfo.getMatchingUniques("Unhappiness from population decreased by []%"))
                 unhappinessFromCitizens *= (1 - unique.params[0].toFloat() / 100)
-    
+
             for (unique in civInfo.getMatchingUniques("Unhappiness from population decreased by []% []"))
                 if (cityInfo.matchesFilter(unique.params[1]))
                     unhappinessFromCitizens *= (1 - unique.params[0].toFloat() / 100)
         //
-        
+
         for (unique in cityInfo.getMatchingUniques("[]% unhappiness from population []"))
             if (cityInfo.matchesFilter(unique.params[1]))
                 unhappinessFromCitizens *= unique.params[0].toPercent()
@@ -520,7 +520,7 @@ class CityStats(val cityInfo: CityInfo) {
 
         // AFTER we've gotten all the gold stats figured out, only THEN do we plonk that gold into Science
         if (cityInfo.getRuleset().modOptions.uniques.contains(ModOptionsConstants.convertGoldToScience)) {
-            val amountConverted = (newFinalStatList.values.sumByDouble { it.gold.toDouble() }
+            val amountConverted = (newFinalStatList.values.sumOf { it.gold.toDouble() }
                     * cityInfo.civInfo.tech.goldPercentConvertedToScience).toInt().toFloat()
             if (amountConverted > 0) // Don't want you converting negative gold to negative science yaknow
                 newFinalStatList["Gold -> Science"] = Stats(science = amountConverted, gold = -amountConverted)
@@ -582,7 +582,7 @@ class CityStats(val cityInfo: CityInfo) {
             for (unique in cityInfo.civInfo.getMatchingUniques("-[]% food consumption by specialists"))
                 foodEatenBySpecialists *= 1f - unique.params[0].toFloat() / 100f
         //
-        
+
         for (unique in cityInfo.getMatchingUniques("[]% food consumption by specialists []"))
             if (cityInfo.matchesFilter(unique.params[1]))
                 foodEatenBySpecialists *= unique.params[0].toPercent()

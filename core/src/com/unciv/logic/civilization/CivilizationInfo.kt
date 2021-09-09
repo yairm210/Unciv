@@ -29,7 +29,9 @@ import com.unciv.ui.victoryscreen.RankingType
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
-import kotlin.math.*
+import kotlin.math.min
+import kotlin.math.roundToInt
+import kotlin.math.sqrt
 
 class CivilizationInfo {
 
@@ -120,8 +122,8 @@ class CivilizationInfo {
      * If the counter reaches 0 at the end of a turn, it is removed immediately
      */
     val temporaryUniques = ArrayList<Pair<Unique, Int>>()
-    
-    /** Maps the name of the construction to the amount of times bouhgt */
+
+    /** Maps the name of the construction to the amount of times bought */
     val boughtConstructionsWithGloballyIncreasingPrice = HashMap<String, Int>()
 
     // if we only use lists, and change the list each time the cities are changed,
@@ -379,7 +381,7 @@ class CivilizationInfo {
         meetCiv(otherCiv)
         otherCiv.meetCiv(this)
     }
-    
+
     private fun meetCiv(otherCiv: CivilizationInfo) {
         diplomacy[otherCiv.civName] = DiplomacyManager(this, otherCiv.civName)
             .apply { diplomaticStatus = DiplomaticStatus.Peace }
@@ -502,11 +504,11 @@ class CivilizationInfo {
 
     fun getStatForRanking(category: RankingType): Int {
         return when (category) {
-            RankingType.Population -> cities.sumBy { it.population.population }
+            RankingType.Population -> cities.sumOf { it.population.population }
             RankingType.Crop_Yield -> statsForNextTurn.food.roundToInt()
             RankingType.Production -> statsForNextTurn.production.roundToInt()
             RankingType.Gold -> gold
-            RankingType.Territory -> cities.sumBy { it.tiles.size }
+            RankingType.Territory -> cities.sumOf { it.tiles.size }
             RankingType.Force -> getMilitaryMight()
             RankingType.Happiness -> getHappiness()
             RankingType.Technologies -> tech.researchedTechnologies.size
@@ -541,7 +543,7 @@ class CivilizationInfo {
         return if (!gameInfo.hasReligionEnabled()) greatPeople.filter { !it.uniques.contains("Great Person - [Faith]")}.toHashSet()
         else greatPeople.toHashSet()
     }
-    
+
     fun hasTechOrPolicy(techOrPolicyName: String) =
         tech.isResearched(techOrPolicyName) || policies.isAdopted(techOrPolicyName)
 
@@ -711,9 +713,9 @@ class CivilizationInfo {
 
             if (flagsCountdown[flag]!! > 0)
                 flagsCountdown[flag] = flagsCountdown[flag]!! - 1
-            
+
             if (flagsCountdown[flag]!! != 0) continue
-            
+
             when (flag) {
                 CivFlags.TurnsTillNextDiplomaticVote.name -> addFlag(CivFlags.ShowDiplomaticVotingResults.name, 1)
                 CivFlags.ShouldResetDiplomaticVotes.name -> {
@@ -722,12 +724,12 @@ class CivilizationInfo {
                     removeFlag(CivFlags.ShowDiplomaticVotingResults.name)
                 }
                 CivFlags.ShowDiplomaticVotingResults.name -> {
-                    
+
                     if (gameInfo.civilizations.any { it.victoryManager.hasWon() } )
                         // We have either already done this calculation, or it doesn't matter anymore, 
                         // so don't waste resources doing it
                         continue
-                    
+
                     addFlag(CivFlags.ShouldResetDiplomaticVotes.name, 1)
                 }
             }
@@ -738,27 +740,27 @@ class CivilizationInfo {
     fun removeFlag(flag: String) { flagsCountdown.remove(flag) }
 
     fun getTurnsBetweenDiplomaticVotings() = (15 * gameInfo.gameParameters.gameSpeed.modifier).toInt() // Dunno the exact calculation, hidden in Lua files
-    
+
     fun getTurnsTillNextDiplomaticVote() = flagsCountdown[CivFlags.TurnsTillNextDiplomaticVote.name]
 
     fun getRecentBullyingCountdown() = flagsCountdown[CivFlags.RecentlyBullied.name]
-    
+
     fun mayVoteForDiplomaticVictory() =
         getTurnsTillNextDiplomaticVote() == 0 
         && civName !in gameInfo.diplomaticVictoryVotesCast.keys
-    
+
     fun diplomaticVoteForCiv(chosenCivName: String?) {
         if (chosenCivName != null) gameInfo.diplomaticVictoryVotesCast[civName] = chosenCivName
         addFlag(CivFlags.TurnsTillNextDiplomaticVote.name, getTurnsBetweenDiplomaticVotings())
     }
-    
+
     fun shouldShowDiplomaticVotingResults() =
          flagsCountdown[CivFlags.ShowDiplomaticVotingResults.name] == 0
-    
+
     // Yes, this is the same function as above, but with a different use case so it has a different name.
     fun shouldCheckForDiplomaticVictory() =
         flagsCountdown[CivFlags.ShowDiplomaticVotingResults.name] == 0
-    
+
     /** Modify gold by a given amount making sure it does neither overflow nor underflow.
      * @param delta the amount to add (can be negative)
      */
@@ -782,7 +784,7 @@ class CivilizationInfo {
             // Happiness cannot be added as it is recalculated again, use a unique instead
         }
     }
-    
+
     fun getStatReserve(stat: Stat): Int {
         return when (stat) {
             Stat.Culture -> policies.storedCulture
@@ -843,7 +845,7 @@ class CivilizationInfo {
         val unit = getEquivalentUnit(unitName)
         val placedUnit = placeUnitNearTile(cityToAddTo.location, unit.name)
         // silently bail if no tile to place the unit is found
-        if (placedUnit == null) return null
+            ?: return null
         if (unit.isGreatPerson()) {
             addNotification("A [${unit.name}] has been born in [${cityToAddTo.name}]!", placedUnit.getTile().position, unit.name)
         }
@@ -891,14 +893,14 @@ class CivilizationInfo {
                 diplomacyManager.otherCiv().tradeRequests.remove(tradeRequest) // it  would be really weird to get a trade request from a dead civ
         }
     }
-    
+
     fun getResearchAgreementCost(): Int {
         // https://forums.civfanatics.com/resources/research-agreements-bnw.25568/
         return (
             getEra().researchAgreementCost * gameInfo.gameParameters.gameSpeed.modifier
         ).toInt()
     }
-    
+
     //////////////////////// City State wrapper functions ////////////////////////
     /** Gain a random great person from the city state */
     private fun giveGreatPersonToPatron(receivingCiv: CivilizationInfo) {
@@ -951,7 +953,7 @@ class CivilizationInfo {
     fun threateningBarbarianKilledBy(otherCiv: CivilizationInfo) {
         cityStateFunctions.threateningBarbarianKilledBy(otherCiv)
     }
-    
+
     fun getAllyCiv() = allyCivName
     fun setAllyCiv(newAllyName: String?) { allyCivName = newAllyName }
 
