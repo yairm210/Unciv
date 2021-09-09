@@ -194,8 +194,6 @@ class Nation : INamed, ICivilopediaText, IHasUniques {
     }
 
     override fun makeLink() = "Nation/$name"
-    override fun replacesCivilopediaDescription() = true
-    override fun hasCivilopediaTextLines() = true
     override fun getSortGroup(ruleset: Ruleset) = when {
         isCityState() -> 1
         isBarbarian() -> 9
@@ -248,7 +246,7 @@ class Nation : INamed, ICivilopediaText, IHasUniques {
 
         textList += FormattedLine("Type: [$cityStateType]", header = 4, color = cityStateType!!.color)
         val viewingCiv = UncivGame.Current.gameInfo.currentPlayerCiv
-        val era = viewingCiv.getEraObject() ?: Era.getLegacyCityStateBonusEra(viewingCiv.getEraNumber())
+        val era = viewingCiv.getEra()
         var showResources = false
 
         val friendBonus = era.friendBonus[cityStateType!!.name]

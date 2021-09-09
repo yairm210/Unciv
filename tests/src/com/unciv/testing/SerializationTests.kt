@@ -14,6 +14,7 @@ import com.unciv.models.metadata.GameSettings
 import com.unciv.models.metadata.Player
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.metadata.GameSetupInfo
+import org.junit.After
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
@@ -24,6 +25,7 @@ import org.junit.runner.RunWith
 class SerializationTests {
 
     private var game = GameInfo()
+    private var settingsBackup = GameSettings()
 
     /** A runtime Class object for [kotlin.SynchronizedLazyImpl] to enable helping Gdx.Json to
      * not StackOverflow on them, as a direct compile time retrieval is forbidden */
@@ -56,6 +58,10 @@ class SerializationTests {
         }
         val setup = GameSetupInfo(param, mapParameters)
         UncivGame.Current = UncivGame("")
+
+        // Both startNewGame and makeCivilizationsMeet will cause a save to storage of our empty settings
+        settingsBackup = GameSaver.getGeneralSettings()
+
         UncivGame.Current.settings = GameSettings()
         game = GameStarter.startNewGame(setup)
         UncivGame.Current.gameInfo = game
@@ -68,7 +74,7 @@ class SerializationTests {
         if (tile.ruleset.tileImprovements.containsKey("City center"))
             tile.improvement = "City center"
         unit.destroy()
-        
+
         // Ensure some diplomacy objects are instantiated
         val otherCiv = game.getCivilization("Greece")
         civ.makeCivilizationsMeet(otherCiv)
@@ -106,5 +112,10 @@ class SerializationTests {
         }
         val result = matches.any()
         Assert.assertFalse("This test will only pass when no serializable lazy fields are found", result)
+    }
+
+    @After
+    fun cleanup() {
+        settingsBackup.save()
     }
 }

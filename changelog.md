@@ -1,3 +1,21 @@
+## 3.16.13
+
+By xlenstra:
+- From the industrial era onwards, things change in religion
+- Fixed bugs with unit movement, renamed units, and default starting era
+- Unique additions for modding
+
+By SomeTroglodyte:
+- New game is more wrap and shape aware
+- No right-click on Android
+- Code cleanup
+
+By SimonCeder:
+- CS vulnerable to ally unhappiness
+- checks for protection, delays
+- Force ranking, bullying improvements
+- City state intrusion anger
+
 ## 3.16.12
 
 Can no longer enter city-screen that is not yours

@@ -78,7 +78,7 @@ class OptionsPopup(val previousScreen: CameraStageBaseScreen) : Popup(previousSc
                 if (modCheckFirstRun) runModChecker()
             }
         }
-        if (Gdx.input.isKeyPressed(Input.Keys.SHIFT_RIGHT) && Gdx.input.isKeyPressed(Input.Keys.CONTROL_RIGHT)) {
+        if (Gdx.input.isKeyPressed(Input.Keys.SHIFT_RIGHT) && (Gdx.input.isKeyPressed(Input.Keys.CONTROL_RIGHT) || Gdx.input.isKeyPressed(Input.Keys.ALT_RIGHT))) {
             tabs.addPage("Debug", getDebugTab(), ImageGetter.getImage("OtherIcons/SecretOptions"), 24f, secret = true)
         }
 
@@ -240,10 +240,6 @@ class OptionsPopup(val previousScreen: CameraStageBaseScreen) : Popup(previousSc
         addYesNoRow("{Show experimental world wrap for maps}\n{HIGHLY EXPERIMENTAL - YOU HAVE BEEN WARNED!}",
             settings.showExperimentalWorldWrap) {
             settings.showExperimentalWorldWrap = it
-        }
-        addYesNoRow("{Enable experimental religion in start games}\n{HIGHLY EXPERIMENTAL - UPDATES WILL BREAK SAVES!}",
-            settings.showExperimentalReligion) {
-            settings.showExperimentalReligion = it
         }
 
         if (previousScreen.game.limitOrientationsHelper != null) {

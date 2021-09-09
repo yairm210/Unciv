@@ -58,7 +58,6 @@ class CityScreenCityPickerTable(private val cityScreen: CityScreen) : Table() {
                 actionOnOk = { text ->
                     city.name = text
                     cityScreen.game.setScreen(CityScreen(city))
-                    true
                 }
             ).open()
         }

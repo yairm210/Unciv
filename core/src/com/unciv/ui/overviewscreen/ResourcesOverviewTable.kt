@@ -16,8 +16,7 @@ class ResourcesOverviewTable (
     viewingPlayer: CivilizationInfo,
     overviewScreen: EmpireOverviewScreen
 ) : Table() {
-    //val game = overviewScreen.game
-    
+
     init {
         defaults().pad(10f)
 
@@ -79,7 +78,7 @@ class ResourcesOverviewTable (
 
         add("Total".toLabel())
         for (resource in resources) {
-            val sum = resourceDrilldown.filter { it.resource == resource }.sumBy { it.amount }
+            val sum = resourceDrilldown.filter { it.resource == resource }.sumOf { it.amount }
             add(sum.toLabel())
         }
     }

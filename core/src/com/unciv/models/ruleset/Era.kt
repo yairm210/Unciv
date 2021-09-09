@@ -5,8 +5,9 @@ import com.unciv.logic.civilization.CityStateType
 import com.unciv.models.stats.INamed
 import com.unciv.ui.utils.colorFromRGB
 
-class Era : INamed {
+class Era : INamed, IHasUniques {
     override var name: String = ""
+    var eraNumber: Int = -1
     var researchAgreementCost = 300
     var startingSettlerCount = 1
     var startingSettlerUnit = "Settler" // For mods which have differently named settlers
@@ -24,6 +25,8 @@ class Era : INamed {
     var friendBonus = HashMap<String, List<String>>()
     var allyBonus = HashMap<String, List<String>>()
     var iconRGB: List<Int>? = null
+    override var uniques: ArrayList<String> = arrayListOf()
+    override val uniqueObjects: List<Unique> by lazy { uniques.map { Unique(it) } }
 
     fun getStartingUnits(): List<String> {
         val startingUnits = mutableListOf<String>()
@@ -39,30 +42,4 @@ class Era : INamed {
     }
 
     fun getHexColor() = "#" + getColor().toString().substring(0, 6)
-
-    companion object {
-        // User for CS bonuses in case the Eras file is missing (legacy mods)
-        fun getLegacyCityStateBonusEra(eraNumber: Int) = Era().apply {
-            val cultureBonus = if (eraNumber in 0..1) 3 else if (eraNumber in 2..3) 6 else 13
-            val happinessBonus = if (eraNumber in 0..1) 2 else 3
-            friendBonus[CityStateType.Militaristic.name] =
-                arrayListOf("Provides military units every ≈[20] turns")
-            friendBonus[CityStateType.Cultured.name] =
-                arrayListOf("Provides [$cultureBonus] [Culture] per turn")
-            friendBonus[CityStateType.Mercantile.name] =
-                arrayListOf("Provides [$happinessBonus] Happiness")
-            friendBonus[CityStateType.Maritime.name] =
-                arrayListOf("Provides [2] [Food] [in capital]")
-            allyBonus[CityStateType.Militaristic.name] =
-                arrayListOf("Provides military units every ≈[17] turns")
-            allyBonus[CityStateType.Cultured.name] =
-                arrayListOf("Provides [${cultureBonus * 2}] [Culture] per turn")
-            allyBonus[CityStateType.Mercantile.name] =
-                arrayListOf("Provides [$happinessBonus] Happiness", "Provides a unique luxury")
-            allyBonus[CityStateType.Maritime.name] = arrayListOf(
-                "Provides [2] [Food] [in capital]",
-                "Provides [1] [Food] [in all cities]"
-            )
-        }
-    }
 }

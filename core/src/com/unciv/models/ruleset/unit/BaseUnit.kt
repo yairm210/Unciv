@@ -38,10 +38,10 @@ class BaseUnit : INamed, INonPerpetualConstruction, ICivilopediaText {
     lateinit var unitType: String
     fun getType() = ruleset.unitTypes[unitType]!!
     var requiredTech: String? = null
-    var requiredResource: String? = null
+    private var requiredResource: String? = null
     override var uniques = ArrayList<String>() // Can not be a hashset as that would remove doubles
     override val uniqueObjects: List<Unique> by lazy { uniques.map { Unique(it) } }
-    var replacementTextForUniques = ""
+    private var replacementTextForUniques = ""
     var promotions = HashSet<String>()
     var obsoleteTech: String? = null
     var upgradesTo: String? = null
@@ -105,8 +105,6 @@ class BaseUnit : INamed, INonPerpetualConstruction, ICivilopediaText {
     }
 
     override fun makeLink() = "Unit/$name"
-    override fun replacesCivilopediaDescription() = true
-    override fun hasCivilopediaTextLines() = true
 
     override fun getCivilopediaTextLines(ruleset: Ruleset): List<FormattedLine> {
         val textList = ArrayList<FormattedLine>()
@@ -220,7 +218,16 @@ class BaseUnit : INamed, INonPerpetualConstruction, ICivilopediaText {
             .any { 
                 matchesFilter(it.params[0])
                 && cityInfo.matchesFilter(it.params[3])        
-                && cityInfo.civInfo.getEraNumber() >= ruleset.getEraNumber(it.params[4]) 
+                && cityInfo.civInfo.getEraNumber() >= ruleset.eras[it.params[4]]!!.eraNumber 
+                && it.params[2] == stat.name
+            }
+        ) return true
+        
+        // May buy [unitFilter] units for [amount] [Stat] [cityFilter] at an increasing price ([amount])
+        if (cityInfo != null && cityInfo.civInfo.getMatchingUniques("May buy [] units for [] [] [] at an increasing price ([])")
+            .any {
+                matchesFilter(it.params[0])
+                && cityInfo.matchesFilter(it.params[3])
                 && it.params[2] == stat.name
             }
         ) return true
@@ -237,12 +244,12 @@ class BaseUnit : INamed, INonPerpetualConstruction, ICivilopediaText {
         return (
             sequenceOf(super.getBaseBuyCost(cityInfo, stat)).filterNotNull()
                 // May buy [unitFilter] units for [amount] [Stat] starting from the [eraName] at an increasing price ([amount])
-            + cityInfo.civInfo.getMatchingUniques("May buy [] units for [] [] [] starting from the [] at an increasing price ([])")
+            + (cityInfo.civInfo.getMatchingUniques("May buy [] units for [] [] [] starting from the [] at an increasing price ([])")
                 .filter {
                     matchesFilter(it.params[0])
-                        && cityInfo.matchesFilter(it.params[3])
-                        && cityInfo.civInfo.getEraNumber() >= ruleset.getEraNumber(it.params[4])
-                        && it.params[2] == stat.name
+                    && cityInfo.matchesFilter(it.params[3])
+                    && cityInfo.civInfo.getEraNumber() >= ruleset.eras[it.params[4]]!!.eraNumber
+                    && it.params[2] == stat.name
                 }.map {
                     getCostForConstructionsIncreasingInPrice(
                         it.params[1].toInt(),
@@ -250,6 +257,20 @@ class BaseUnit : INamed, INonPerpetualConstruction, ICivilopediaText {
                         cityInfo.civInfo.boughtConstructionsWithGloballyIncreasingPrice[name] ?: 0
                     )
                 }
+            )
+            + (cityInfo.civInfo.getMatchingUniques("May buy [] units for [] [] [] at an increasing price ([])")
+                .filter {
+                    matchesFilter(it.params[0])
+                    && cityInfo.matchesFilter(it.params[3])
+                    && it.params[2] == stat.name
+                }.map {
+                    getCostForConstructionsIncreasingInPrice(
+                        it.params[1].toInt(),
+                        it.params[4].toInt(),
+                        cityInfo.civInfo.boughtConstructionsWithGloballyIncreasingPrice[name] ?: 0
+                    )        
+                }
+            )
         ).minOrNull()
     }
     
@@ -300,27 +321,23 @@ class BaseUnit : INamed, INonPerpetualConstruction, ICivilopediaText {
         return rejectionReasons
     }
 
-    /** @param ignoreTechPolicyRequirements: its `true` value is used when upgrading via ancient ruins,
-     * as there we don't care whether we have the required tech, policy or building for the unit,
-     * but do still care whether we have the resources required for the unit
-     */
     fun getRejectionReasons(civInfo: CivilizationInfo): RejectionReasons {
         val rejectionReasons = RejectionReasons()
         val ruleSet = civInfo.gameInfo.ruleSet
-        
+
         if (uniques.contains("Unbuildable")) 
             rejectionReasons.add(RejectionReason.Unbuildable)
-        
+
         if (requiredTech != null && !civInfo.tech.isResearched(requiredTech!!)) 
             rejectionReasons.add(RejectionReason.RequiresTech.apply { this.errorMessage = "$requiredTech not researched" }) 
         if (obsoleteTech != null && civInfo.tech.isResearched(obsoleteTech!!))
             rejectionReasons.add(RejectionReason.Obsoleted.apply { this.errorMessage = "Obsolete by $obsoleteTech" })
-        
+
         if (uniqueTo != null && uniqueTo != civInfo.civName) 
             rejectionReasons.add(RejectionReason.UniqueToOtherNation.apply { this.errorMessage = "Unique to $uniqueTo" })
         if (ruleSet.units.values.any { it.uniqueTo == civInfo.civName && it.replaces == name })
             rejectionReasons.add(RejectionReason.ReplacedByOurUnique.apply { this.errorMessage = "Our unique unit replaces this" })
-        
+
         if (!civInfo.gameInfo.gameParameters.nuclearWeaponsEnabled && isNuclearWeapon()) 
             rejectionReasons.add(RejectionReason.DisabledBySetting)
 
@@ -334,9 +351,8 @@ class BaseUnit : INamed, INonPerpetualConstruction, ICivilopediaText {
                 ruleSet.policies.contains(filter) ->
                     if (!civInfo.policies.isAdopted(filter))
                         rejectionReasons.add(RejectionReason.RequiresPolicy.apply { errorMessage = unique.text })
-                // ToDo: Fix this when eras.json is required
-                ruleSet.getEraNumber(filter) != -1 ->
-                    if (civInfo.getEraNumber() < ruleSet.getEraNumber(filter))
+                ruleSet.eras.contains(filter) ->
+                    if (civInfo.getEraNumber() < ruleSet.eras[filter]!!.eraNumber)
                         rejectionReasons.add(RejectionReason.UnlockedWithEra.apply { errorMessage = unique.text })
                 ruleSet.buildings.contains(filter) ->
                     if (civInfo.cities.none { it.cityConstructions.containsBuildingOrEquivalent(filter) })
@@ -350,7 +366,7 @@ class BaseUnit : INamed, INonPerpetualConstruction, ICivilopediaText {
                     errorMessage = "Consumes [$amount] [$resource]"
                 })
             }
-        
+
         if (uniques.contains(Constants.settlerUnique) &&
             (civInfo.isCityState() || civInfo.isOneCityChallenger())
         )
@@ -363,7 +379,7 @@ class BaseUnit : INamed, INonPerpetualConstruction, ICivilopediaText {
     override fun isBuildable(cityConstructions: CityConstructions): Boolean {
         return getRejectionReasons(cityConstructions).isEmpty()
     }
-    
+
     fun isBuildableIgnoringTechs(civInfo: CivilizationInfo): Boolean {
         val rejectionReasons = getRejectionReasons(civInfo)
         return rejectionReasons.filterTechPolicyEraWonderRequirements().isEmpty()
@@ -392,7 +408,7 @@ class BaseUnit : INamed, INonPerpetualConstruction, ICivilopediaText {
             .any {
                 matchesFilter(it.params[0])
                 && cityConstructions.cityInfo.matchesFilter(it.params[3])
-                && cityConstructions.cityInfo.civInfo.getEraNumber() >= ruleset.getEraNumber(it.params[4])
+                && cityConstructions.cityInfo.civInfo.getEraNumber() >= ruleset.eras[it.params[4]]!!.eraNumber
                 && it.params[2] == boughtWith.name
             }
         ) {
@@ -483,8 +499,8 @@ class BaseUnit : INamed, INonPerpetualConstruction, ICivilopediaText {
                 if (getType().matchesFilter(filter)) return true
                 if (
                     filter.endsWith(" units")
-                    // "military units" --> "Military"
-                    && matchesFilter(filter.removeSuffix(" units").toLowerCase(Locale.ENGLISH).capitalize(Locale.ENGLISH))
+                    // "military units" --> "Military", using invariant locale
+                    && matchesFilter(filter.removeSuffix(" units").lowercase().replaceFirstChar { it.uppercaseChar() })
                 ) return true
                 return uniques.contains(filter)
             }

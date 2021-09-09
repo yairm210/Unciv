@@ -62,8 +62,7 @@ class TutorialController(screen: CameraStageBaseScreen) {
         lines: Array<String>
     ) : INamed, SimpleCivilopediaText(
         sequenceOf(FormattedLine(extraImage = rawName)),
-        lines.asSequence(),
-        true
+        lines.asSequence()
     ) {
         override var name = rawName.replace("_", " ")
     }

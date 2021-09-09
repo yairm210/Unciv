@@ -114,7 +114,7 @@ class PolicyManager {
         if (isAdopted(policy.name)) return false
         if (policy.policyBranchType == PolicyBranchType.BranchComplete) return false
         if (!getAdoptedPolicies().containsAll(policy.requires!!)) return false
-        if (checkEra && civInfo.gameInfo.ruleSet.getEraNumber(policy.branch.era) > civInfo.getEraNumber()) return false
+        if (checkEra && civInfo.gameInfo.ruleSet.eras[policy.branch.era]!!.eraNumber > civInfo.getEraNumber()) return false
         if (policy.uniqueObjects.any { it.placeholderText == "Incompatible with []" && adoptedPolicies.contains(it.params[0]) }) return false
         return true
     }
@@ -199,7 +199,7 @@ class PolicyManager {
         // If we have "create a free aqueduct in first 3 cities" and "create free aqueduct in first 4 cities", we do: "create free aqueduct in first 3+4=7 cities"
         val sortedUniques = matchingUniques.groupBy {it.params[0]}
         for (unique in sortedUniques) {
-            tryAddSpecificBuilding(unique.key, unique.value.sumBy {it.params[1].toInt()})
+            tryAddSpecificBuilding(unique.key, unique.value.sumOf {it.params[1].toInt()})
         }
     }
 

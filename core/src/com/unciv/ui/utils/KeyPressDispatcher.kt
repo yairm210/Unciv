@@ -32,8 +32,6 @@ data class KeyCharAndCode(val char: Char, val code: Int) {
     /** express keys that only have a keyCode like F1 */
     constructor(code: Int): this(Char.MIN_VALUE, code)
 
-    // From Kotlin 1.5? on the Ctrl- line will need Char(char.code+64)
-    // see https://github.com/Kotlin/KEEP/blob/master/proposals/stdlib/char-int-conversions.md
     override fun toString(): String {
         // debug helper, but also used for tooltips
         fun fixedKeysToString(code: Int) = when (code) {
@@ -44,7 +42,7 @@ data class KeyCharAndCode(val char: Char, val code: Int) {
         return when {
             char == Char.MIN_VALUE -> fixedKeysToString(code)
             this == ESC -> "ESC"
-            char < ' ' -> "Ctrl-" + (char.toInt()+64).toChar()
+            char < ' ' -> "Ctrl-" + Char(char.code+64)
             else -> "\"$char\""
         }
     }
@@ -66,14 +64,14 @@ data class KeyCharAndCode(val char: Char, val code: Int) {
         val UNKNOWN = KeyCharAndCode(Input.Keys.UNKNOWN)
 
         /** mini-factory for control codes - case insensitive */
-        fun ctrl(letter: Char) = KeyCharAndCode((letter.toInt() and 31).toChar(), 0)
+        fun ctrl(letter: Char) = KeyCharAndCode(Char(letter.code and 31), 0)
 
         /** mini-factory for KeyCharAndCode values to be compared by character, not by code */
-        fun ascii(char: Char) = KeyCharAndCode(char.toLowerCase(), 0)
+        fun ascii(char: Char) = KeyCharAndCode(char.lowercaseChar(), 0)
         
         /** factory maps a Char to a keyCode if possible, returns a Char-based instance otherwise */
         fun mapChar(char: Char): KeyCharAndCode {
-            val code = Input.Keys.valueOf(char.toUpperCase().toString())
+            val code = Input.Keys.valueOf(char.uppercaseChar().toString())
             return if (code == -1) KeyCharAndCode(char,0) else KeyCharAndCode(Char.MIN_VALUE, code)
         }
     }

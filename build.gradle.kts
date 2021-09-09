@@ -26,7 +26,7 @@ buildscript {
     dependencies {
         classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${com.unciv.build.BuildConfig.kotlinVersion}")
         classpath("de.richsource.gradle.plugins:gwt-gradle-plugin:0.6")
-        classpath("com.android.tools.build:gradle:7.0.1")
+        classpath("com.android.tools.build:gradle:7.0.2")
         classpath("com.mobidevelop.robovm:robovm-gradle-plugin:2.3.1")
 
         // This is for wrapping the .jar file into a standalone executable
@@ -131,13 +131,6 @@ project(":core") {
             "testImplementation"("com.badlogicgames.gdx:gdx-backend-headless:$gdxVersion")
             "testImplementation"("com.badlogicgames.gdx:gdx:$gdxVersion")
             "testImplementation"("com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop")
-        }
-    }}
-
-tasks {
-    "eclipse" {
-        doLast {
-            delete(".project")
         }
     }
 }

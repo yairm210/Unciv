@@ -48,13 +48,13 @@ object UnitAutomation {
         if (!unit.civInfo.isMajorCiv()) return false // barbs don't have anything to do in ruins
         val unitDistanceToTiles = unit.movement.getDistanceToTiles()
         val tileWithRuinOrEncampment = unitDistanceToTiles.keys
-                .firstOrNull {
-                    (
-                        (it.improvement != null && it.getTileImprovement()!!.isAncientRuinsEquivalent()) 
-                        || it.improvement == Constants.barbarianEncampment
-                    )
-                    && unit.movement.canMoveTo(it)
-                } ?: return false
+            .firstOrNull {
+                (
+                    (it.improvement != null && it.getTileImprovement()!!.isAncientRuinsEquivalent()) 
+                    || it.improvement == Constants.barbarianEncampment
+                )
+                && unit.movement.canMoveTo(it)
+            } ?: return false
         unit.movement.moveToTile(tileWithRuinOrEncampment)
         return true
     }
@@ -492,9 +492,10 @@ object UnitAutomation {
     It also explores, but also has other functions, like healing if necessary. */
     fun automatedExplore(unit: MapUnit) {
         if (tryGoToRuinAndEncampment(unit) && unit.currentMovement == 0f) return
+        if (unit.isDestroyed) return // Opening ruins _might_ have upgraded us to another unit
         if (unit.health < 80 && tryHealUnit(unit)) return
         if (tryExplore(unit)) return
-        unit.civInfo.addNotification("[${unit.displayName()}] finished exploring.", unit.currentTile.position, unit.name, "OtherIcons/Sleep")
+        unit.civInfo.addNotification("${unit.shortDisplayName()} finished exploring.", unit.currentTile.position, unit.name, "OtherIcons/Sleep")
         unit.action = null
     }
     

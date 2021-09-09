@@ -6,10 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.unciv.Constants
 import com.unciv.UncivGame
-import com.unciv.models.ruleset.Belief
-import com.unciv.models.ruleset.Ruleset
-import com.unciv.models.ruleset.Unique
-import com.unciv.models.ruleset.VictoryType
+import com.unciv.models.ruleset.*
 import com.unciv.models.stats.INamed
 import com.unciv.models.translations.tr
 import com.unciv.ui.utils.*
@@ -29,7 +26,6 @@ class CivilopediaScreen(
 
     /** Container collecting data per Civilopedia entry
      * @param name From [Ruleset] object [INamed.name]
-     * @param description Multiline text
      * @param image Icon for button
      * @param flavour [ICivilopediaText]
      * @param y Y coordinate for scrolling to
@@ -37,14 +33,13 @@ class CivilopediaScreen(
      */
     private class CivilopediaEntry (
         val name: String,
-        val description: String,
         val image: Actor? = null,
         val flavour: ICivilopediaText? = null,
         val y: Float = 0f,              // coordinates of button cell used to scroll to entry
         val height: Float = 0f,
         val sortBy: Int = 0             // optional, enabling overriding alphabetical order
     ) {
-        fun withCoordinates(y: Float, height: Float) = CivilopediaEntry(name, description, image, flavour, y, height, sortBy)
+        fun withCoordinates(y: Float, height: Float) = CivilopediaEntry(name, image, flavour, y, height, sortBy)
     }
 
     private val categoryToEntries = LinkedHashMap<CivilopediaCategories, Collection<CivilopediaEntry>>()
@@ -53,7 +48,6 @@ class CivilopediaScreen(
 
     private val entrySelectTable = Table().apply { defaults().pad(6f).left() }
     private val entrySelectScroll: ScrollPane
-    private val descriptionLabel = "".toLabel()
     private val flavourTable = Table()
 
     private var currentCategory: CivilopediaCategories = CivilopediaCategories.Tutorial
@@ -90,7 +84,6 @@ class CivilopediaScreen(
         currentCategory = category
         entrySelectTable.clear()
         entryIndex.clear()
-        descriptionLabel.setText("")
         flavourTable.clear()
 
         for (button in categoryToButtons.values) button.color = Color.WHITE
@@ -147,13 +140,6 @@ class CivilopediaScreen(
     }
     private fun selectEntry(entry: CivilopediaEntry) {
         currentEntry = entry.name
-        if(entry.flavour != null && entry.flavour.replacesCivilopediaDescription()) {
-            descriptionLabel.setText("")
-            descriptionLabel.isVisible = false
-        } else {
-            descriptionLabel.setText(entry.description)
-            descriptionLabel.isVisible = true
-        }
         flavourTable.clear()
         if (entry.flavour != null) {
             flavourTable.isVisible = true
@@ -173,7 +159,6 @@ class CivilopediaScreen(
         onBackButtonClicked { UncivGame.Current.setWorldScreen() }
 
         val hideReligionItems = !game.gameInfo.hasReligionEnabled()
-        val noCulturalVictory = VictoryType.Cultural !in game.gameInfo.gameParameters.victoryTypes
 
         fun shouldBeDisplayed(uniqueObjects: List<Unique>): Boolean {
             val uniques = uniqueObjects.map { it.placeholderText }
@@ -208,11 +193,11 @@ class CivilopediaScreen(
             if (hideReligionItems && loopCategory == CivilopediaCategories.Belief) continue
             categoryToEntries[loopCategory] =
                 getCategoryIterator(loopCategory)
-                    .filter { it.getUniquesAsObjects()?.let { uniques -> shouldBeDisplayed(uniques) } ?: true }
+                    .filter { (it as? IHasUniques)?.let { obj -> shouldBeDisplayed(obj.uniqueObjects) } ?: true }
                     .map { CivilopediaEntry(
-                        (it as INamed).name, "",
+                        (it as INamed).name,
                         loopCategory.getImage?.invoke(it.getIconName(), imageSize),
-                        it.takeUnless { ct -> ct.isCivilopediaTextEmpty() },
+                        flavour = it,
                         sortBy = it.getSortGroup(ruleset)
                     ) }
         }
@@ -258,8 +243,6 @@ class CivilopediaScreen(
         entrySelectScroll.setOverscroll(false, false)
         val descriptionTable = Table()
         descriptionTable.add(flavourTable).row()
-        descriptionLabel.wrap = true            // requires explicit cell width!
-        descriptionTable.add(descriptionLabel).width(stage.width * 0.5f).padTop(10f).row()
         val entrySplitPane = SplitPane(entrySelectScroll, ScrollPane(descriptionTable), false, skin)
         entrySplitPane.splitAmount = 0.3f
         entryTable.addActor(entrySplitPane)

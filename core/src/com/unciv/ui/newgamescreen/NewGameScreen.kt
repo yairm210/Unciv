@@ -44,6 +44,15 @@ class NewGameScreen(
 
         updateRuleset()
 
+        if (UncivGame.Current.settings.lastGameSetup != null) {
+            val resetToDefaultsButton = "Reset to defaults".toTextButton()
+            resetToDefaultsButton.padBottom(5f)
+            rightSideGroup.addActorAt(0, resetToDefaultsButton)
+            resetToDefaultsButton.onClick {
+                game.setScreen(NewGameScreen(previousScreen, GameSetupInfo()))
+            }
+        }
+
         rightSideButton.enable()
         rightSideButton.setText("Start game!".tr())
         rightSideButton.onClick {

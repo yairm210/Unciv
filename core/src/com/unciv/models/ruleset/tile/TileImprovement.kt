@@ -70,7 +70,6 @@ class TileImprovement : NamedStats(), ICivilopediaText, IHasUniques {
         return lines.joinToString("\n")
     }
 
-    fun hasUnique(unique: String) = uniques.contains(unique)
     fun isGreatImprovement() = hasUnique("Great Improvement")
     fun isRoad() = RoadStatus.values().any { it != RoadStatus.None && it.name == this.name }
     fun isAncientRuinsEquivalent() = hasUnique("Provides a random bonus when entered")
@@ -102,8 +101,6 @@ class TileImprovement : NamedStats(), ICivilopediaText, IHasUniques {
     }
 
     override fun makeLink() = "Improvement/$name"
-    override fun hasCivilopediaTextLines() = true
-    override fun replacesCivilopediaDescription() = true
 
     override fun getCivilopediaTextLines(ruleset: Ruleset): List<FormattedLine> {
         val textList = ArrayList<FormattedLine>()

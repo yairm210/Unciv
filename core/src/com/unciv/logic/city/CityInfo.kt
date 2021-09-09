@@ -3,7 +3,6 @@ package com.unciv.logic.city
 import com.badlogic.gdx.math.Vector2
 import com.unciv.logic.battle.CityCombatant
 import com.unciv.logic.civilization.CivilizationInfo
-import com.unciv.logic.civilization.GreatPersonManager
 import com.unciv.logic.civilization.ReligionState
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.map.RoadStatus
@@ -15,10 +14,7 @@ import com.unciv.models.ruleset.tile.ResourceSupplyList
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
-import com.unciv.models.translations.equalsPlaceholderText
-import com.unciv.models.translations.getPlaceholderParameters
 import java.util.*
-import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 import kotlin.collections.HashSet
 import kotlin.math.ceil
@@ -27,6 +23,7 @@ import kotlin.math.pow
 import kotlin.math.roundToInt
 
 class CityInfo {
+    @Suppress("JoinDeclarationAndAssignment")
     @Transient
     lateinit var civInfo: CivilizationInfo
 
@@ -43,15 +40,15 @@ class CityInfo {
     lateinit var tilesInRange: HashSet<TileInfo>
 
     @Transient
-    var hasJustBeenConquered =
-        false  // this is so that military units can enter the city, even before we decide what to do with it
+    // This is so that military units can enter the city, even before we decide what to do with it
+    var hasJustBeenConquered = false  
 
     var location: Vector2 = Vector2.Zero
     var id: String = UUID.randomUUID().toString()
     var name: String = ""
     var foundingCiv = ""
-    var previousOwner =
-        "" // This is so that cities in resistance that re recaptured aren't in resistance anymore
+    // This is so that cities in resistance that are recaptured aren't in resistance anymore
+    var previousOwner = "" 
     var turnAcquired = 0
     var health = 200
     var resistanceCounter = 0
@@ -87,7 +84,7 @@ class CityInfo {
         this.civInfo = civInfo
         foundingCiv = civInfo.civName
         turnAcquired = civInfo.gameInfo.turns
-        this.location = cityLocation
+        location = cityLocation
         setTransients()
 
         setNewCityName(civInfo)
@@ -120,8 +117,7 @@ class CityInfo {
         val ruleset = civInfo.gameInfo.ruleSet
         workedTiles = hashSetOf() //reassign 1st working tile
 
-        if (startingEra in ruleset.eras)
-            population.setPopulation(ruleset.eras[startingEra]!!.settlerPopulation)
+        population.setPopulation(ruleset.eras[startingEra]!!.settlerPopulation)
 
         if (civInfo.religionManager.religionState == ReligionState.Pantheon) {
             religion.addPressure(
@@ -141,13 +137,11 @@ class CityInfo {
         if (civInfo.cities.size == 1) cityConstructions.addBuilding(capitalCityIndicator())
 
         // Add buildings and pop we get from starting in this era
-        if (startingEra in ruleset.eras) {
-            for (buildingName in ruleset.eras[startingEra]!!.settlerBuildings) {
-                val building = ruleset.buildings[buildingName] ?: continue
-                val uniqueBuilding = civInfo.getEquivalentBuilding(building)
-                if (uniqueBuilding.isBuildable(cityConstructions))
-                    cityConstructions.addBuilding(uniqueBuilding.name)
-            }
+        for (buildingName in ruleset.eras[startingEra]!!.settlerBuildings) {
+            val building = ruleset.buildings[buildingName] ?: continue
+            val uniqueBuilding = civInfo.getEquivalentBuilding(building)
+            if (uniqueBuilding.isBuildable(cityConstructions))
+                cityConstructions.addBuilding(uniqueBuilding.name)
         }
 
         civInfo.policies.tryToAddPolicyBuildings()
@@ -248,11 +242,12 @@ class CityInfo {
     fun isCapital(): Boolean = cityConstructions.builtBuildings.contains(capitalCityIndicator())
     fun isCoastal(): Boolean = centerTileInfo.isCoastalTile()
     fun capitalCityIndicator(): String {
-        val indicatorBuildings = getRuleset().buildings.values.asSequence()
+        val indicatorBuildings = getRuleset().buildings.values
+            .asSequence()
             .filter { it.uniques.contains("Indicates the capital city") }
+
         val civSpecificBuilding = indicatorBuildings.firstOrNull { it.uniqueTo == civInfo.civName }
-        if (civSpecificBuilding != null) return civSpecificBuilding.name
-        else return indicatorBuildings.first().name
+        return civSpecificBuilding?.name ?: indicatorBuildings.first().name
     }
 
     fun isConnectedToCapital(connectionTypePredicate: (Set<String>) -> Boolean = { true }): Boolean {
@@ -297,8 +292,9 @@ class CityInfo {
             val resource = getRuleset().tileResources[unique.params[1]]
             if (resource != null) {
                 cityResources.add(
-                    resource, unique.params[0].toInt()
-                            * civInfo.getResourceModifier(resource), "Tiles"
+                    resource, 
+                    unique.params[0].toInt() * civInfo.getResourceModifier(resource), 
+                    "Tiles"
                 )
             }
         }
@@ -382,7 +378,7 @@ class CityInfo {
             buildingsCounter.add(building.greatPersonPoints)
         sourceToGPP["Buildings"] = buildingsCounter
 
-        for ((source, gppCounter) in sourceToGPP) {
+        for ((_, gppCounter) in sourceToGPP) {
             for (unique in civInfo.getMatchingUniques("[] is earned []% faster")) {
                 val unitName = unique.params[0]
                 if (!gppCounter.containsKey(unitName)) continue
@@ -437,7 +433,7 @@ class CityInfo {
     }
 
     internal fun getMaxHealth() =
-        200 + cityConstructions.getBuiltBuildings().sumBy { it.cityHealth }
+        200 + cityConstructions.getBuiltBuildings().sumOf { it.cityHealth }
 
     override fun toString() = name // for debug
     //endregion
@@ -498,7 +494,7 @@ class CityInfo {
         if (isBeingRazed) {
             val removedPopulation =
                 1 + civInfo.getMatchingUniques("Cities are razed [] times as fast")
-                    .sumBy { it.params[0].toInt() - 1 }
+                    .sumOf { it.params[0].toInt() - 1 }
             population.addPopulation(-1 * removedPopulation)
             if (population.population <= 0) {
                 civInfo.addNotification(
@@ -599,11 +595,15 @@ class CityInfo {
      */
     private fun triggerCitiesSettledNearOtherCiv() {
         val citiesWithin6Tiles =
-            civInfo.gameInfo.civilizations.filter { it.isMajorCiv() && it != civInfo }
+            civInfo.gameInfo.civilizations
+                .filter { it.isMajorCiv() && it != civInfo }
                 .flatMap { it.cities }
                 .filter { it.getCenterTile().aerialDistanceTo(getCenterTile()) <= 6 }
-        val civsWithCloseCities = citiesWithin6Tiles.map { it.civInfo }.distinct()
-            .filter { it.knows(civInfo) && it.exploredTiles.contains(location) }
+        val civsWithCloseCities = 
+            citiesWithin6Tiles
+                .map { it.civInfo }
+                .distinct()
+                .filter { it.knows(civInfo) && it.exploredTiles.contains(location) }
         for (otherCiv in civsWithCloseCities)
             otherCiv.getDiplomacyManager(civInfo).setFlag(DiplomacyFlags.SettledCitiesNearUs, 30)
     }
@@ -620,7 +620,8 @@ class CityInfo {
     fun matchesFilter(filter: String, viewingCiv: CivilizationInfo = civInfo): Boolean {
         return when (filter) {
             "in this city" -> true
-            "in all cities" -> true
+            "in all cities" -> true // Filtered by the way uniques our found
+            "in other cities" -> true // Filtered by the way uniques our found
             "in all coastal cities" -> isCoastal()
             "in capital" -> isCapital()
             "in all non-occupied cities" -> !cityStats.hasExtraAnnexUnhappiness() || isPuppet
@@ -630,13 +631,13 @@ class CityInfo {
             "in all cities with a garrison" -> getCenterTile().militaryUnit != null
             "in all cities in which the majority religion is a major religion" ->
                 religion.getMajorityReligionName() != null
-                        && religion.getMajorityReligion()!!.isMajorReligion()
+                && religion.getMajorityReligion()!!.isMajorReligion()
             "in all cities in which the majority religion is an enhanced religion" ->
                 religion.getMajorityReligionName() != null
-                        && religion.getMajorityReligion()!!.isEnhancedReligion()
+                && religion.getMajorityReligion()!!.isEnhancedReligion()
             "in non-enemy foreign cities" ->
                 viewingCiv != civInfo
-                        && !civInfo.isAtWarWith(viewingCiv)
+                && !civInfo.isAtWarWith(viewingCiv)
             "in foreign cities" -> viewingCiv != civInfo
             "in annexed cities" -> foundingCiv != civInfo.civName && !isPuppet
             "in holy cities" -> religion.religionThisIsTheHolyCityOf != null
@@ -667,12 +668,16 @@ class CityInfo {
         // The localUniques might not be filtered when passed as a parameter, so we filter it anyway
         // The time loss shouldn't be that large I don't think
         return civInfo.getMatchingUniques(placeholderText, this) +
-                localUniques.filter { it.placeholderText == placeholderText }
+                localUniques.filter { 
+                    it.placeholderText == placeholderText
+                    && it.params.none { param -> param == "in other cities" }
+                }
     }
 
     // Matching uniques provided by sources in the city itself
     fun getLocalMatchingUniques(placeholderText: String): Sequence<Unique> {
-        return cityConstructions.builtBuildingUniqueMap.getUniques(placeholderText) +
+        return cityConstructions.builtBuildingUniqueMap.getUniques(placeholderText)
+            .filter { it.params.none { param -> param == "in other cities" } } +
                 religion.getMatchingUniques(placeholderText)
     }
 
@@ -718,9 +723,11 @@ class CityInfo {
                 if (!tilesList.contains(tile))
                     cityPositionList.add(tile)
 
-        return cityPositionList.asSequence()
-            .map { it.getOwner()?.civName }.filterNotNull()
-            .distinct().toList()
+        return cityPositionList
+            .asSequence()
+            .mapNotNull { it.getOwner()?.civName }
+            .distinct()
+            .toList()
     }
 
     fun getImprovableTiles(): Sequence<TileInfo> = getTiles()

@@ -11,7 +11,6 @@ import com.unciv.models.stats.Stat
 import com.unciv.models.translations.getPlaceholderParameters
 import com.unciv.models.translations.getPlaceholderText
 import com.unciv.ui.victoryscreen.RankingType
-import java.util.*
 import kotlin.collections.HashMap
 import kotlin.collections.LinkedHashMap
 import kotlin.math.max
@@ -145,20 +144,56 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
     }
 
     fun addProtectorCiv(otherCiv: CivilizationInfo) {
-        if(!civInfo.isCityState() or !otherCiv.isMajorCiv() or otherCiv.isDefeated()) return
-        if(!civInfo.knows(otherCiv) or civInfo.isAtWarWith(otherCiv)) return //Exception
+        if(!otherCivCanPledgeProtection(otherCiv))
+            return
 
         val diplomacy = civInfo.getDiplomacyManager(otherCiv.civName)
         diplomacy.diplomaticStatus = DiplomaticStatus.Protector
+        diplomacy.setFlag(DiplomacyFlags.RecentlyPledgedProtection, 10) // Can't break for 10 turns
     }
 
     fun removeProtectorCiv(otherCiv: CivilizationInfo) {
-        if(!civInfo.isCityState() or !otherCiv.isMajorCiv() or otherCiv.isDefeated()) return
-        if(!civInfo.knows(otherCiv) or civInfo.isAtWarWith(otherCiv)) return //Exception
+        if(!otherCivCanWithdrawProtection(otherCiv))
+            return
 
-        val diplomacy = civInfo.getDiplomacyManager(otherCiv.civName)
+        val diplomacy = civInfo.getDiplomacyManager(otherCiv)
         diplomacy.diplomaticStatus = DiplomaticStatus.Peace
+        diplomacy.setFlag(DiplomacyFlags.RecentlyWithdrewProtection, 20) // Can't re-pledge for 20 turns
         diplomacy.addInfluence(-20f)
+    }
+
+    fun otherCivCanPledgeProtection(otherCiv: CivilizationInfo): Boolean {
+        // Must be a known city state
+        if(!civInfo.isCityState() || !otherCiv.isMajorCiv() || otherCiv.isDefeated() || !civInfo.knows(otherCiv))
+            return false
+        val diplomacy = civInfo.getDiplomacyManager(otherCiv)
+        // Can't pledge too soon after withdrawing
+        if (diplomacy.hasFlag(DiplomacyFlags.RecentlyWithdrewProtection))
+            return false
+        // Must have at least 0 influence
+        if (diplomacy.influence < 0)
+            return false
+        // can't be at war
+        if (civInfo.isAtWarWith(otherCiv))
+            return false
+        // Must not be protected already
+        if (diplomacy.diplomaticStatus == DiplomaticStatus.Protector)
+            return false
+        return true
+    }
+
+    fun otherCivCanWithdrawProtection(otherCiv: CivilizationInfo): Boolean {
+        // Must be a known city state
+        if(!civInfo.isCityState() || !otherCiv.isMajorCiv() || otherCiv.isDefeated() || !civInfo.knows(otherCiv))
+            return false
+        val diplomacy = civInfo.getDiplomacyManager(otherCiv)
+        // Can't withdraw too soon after pledging
+        if (diplomacy.hasFlag(DiplomacyFlags.RecentlyPledgedProtection))
+            return false
+        // Must be protected
+        if (diplomacy.diplomaticStatus != DiplomaticStatus.Protector)
+            return false
+        return true
     }
 
     fun updateAllyCivForCityState() {
@@ -282,28 +317,28 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
         if (civInfo.getDiplomacyManager(demandingCiv).influence < -30)
             modifiers["Influence below -30"] = -300
 
-        // Slight optimization, we don't do the expensive stuff if we have no chance of getting a positive result
-        if (!requireWholeList && modifiers.values.sum() <= -200)
+        // Slight optimization, we don't do the expensive stuff if we have no chance of getting a >= 0 result
+        if (!requireWholeList && modifiers.values.sum() < -200)
             return modifiers
 
         val forceRank = civInfo.gameInfo.getAliveMajorCivs().sortedByDescending { it.getStatForRanking(
             RankingType.Force) }.indexOf(demandingCiv)
         modifiers["Military Rank"] = 100 - ((100 / civInfo.gameInfo.gameParameters.players.size) * forceRank)
 
-        if (!requireWholeList && modifiers.values.sum() <= -100)
+        if (!requireWholeList && modifiers.values.sum() < -100)
             return modifiers
 
         val bullyRange = max(5, civInfo.gameInfo.tileMap.tileMatrix.size / 10)   // Longer range for larger maps
         val inRangeTiles = civInfo.getCapital().getCenterTile().getTilesInDistanceRange(1..bullyRange)
         val forceNearCity = inRangeTiles
-            .sumBy { if (it.militaryUnit?.civInfo == demandingCiv)
-                it.militaryUnit!!.getForceEvaluation()
-            else 0
+            .sumOf { if (it.militaryUnit?.civInfo == demandingCiv)
+                    it.militaryUnit!!.getForceEvaluation()
+                else 0
             }
         val csForce = civInfo.getCapital().getForceEvaluation() + inRangeTiles
-            .sumBy { if (it.militaryUnit?.civInfo == civInfo)
-                it.militaryUnit!!.getForceEvaluation()
-            else 0
+            .sumOf { if (it.militaryUnit?.civInfo == civInfo)
+                    it.militaryUnit!!.getForceEvaluation()
+                else 0
             }
         val forceRatio = forceNearCity.toFloat() / csForce.toFloat()
 
@@ -352,9 +387,9 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
         if (!civInfo.isCityState()) throw Exception("You can only demand workers from City-States!")
 
         val buildableWorkerLikeUnits = civInfo.gameInfo.ruleSet.units.filter {
-            it.value.uniqueObjects.any { it.placeholderText == Constants.canBuildImprovements }
-                    && it.value.isBuildable(civInfo)
+            it.value.uniqueObjects.any { unique -> unique.placeholderText == Constants.canBuildImprovements }
                     && it.value.isCivilian()
+                    && it.value.isBuildable(civInfo)
         }
         if (buildableWorkerLikeUnits.isEmpty()) return  // Bad luck?
         demandingCiv.placeUnitNearTile(civInfo.getCapital().location, buildableWorkerLikeUnits.keys.random())
@@ -367,12 +402,11 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
     fun canGiveStat(statType: Stat): Boolean {
         if (!civInfo.isCityState())
             return false
-        val eraInfo = civInfo.getEraObject()
-        val allyBonuses = if (eraInfo == null) null
-        else eraInfo.allyBonus[civInfo.cityStateType.name]
+        val eraInfo = civInfo.getEra()
+        val allyBonuses = eraInfo.allyBonus[civInfo.cityStateType.name]
         if (allyBonuses != null) {
             // Defined city states in json
-            val bonuses = allyBonuses + eraInfo!!.friendBonus[civInfo.cityStateType.name]!!
+            val bonuses = allyBonuses + eraInfo.friendBonus[civInfo.cityStateType.name]!!
             for (bonus in bonuses) {
                 if (statType == Stat.Happiness && bonus.getPlaceholderText() == "Provides [] Happiness")
                     return true
@@ -393,6 +427,52 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
         }
 
         return false
+    }
+
+    fun updateDiplomaticRelationshipForCityState() {
+        // Check if city-state invaded by other civs
+        if (getNumThreateningBarbarians() > 0) return // Assume any players are there to fight barbarians
+
+        for (otherCiv in civInfo.getKnownCivs().filter { it.isMajorCiv() }) {
+            if (civInfo.isAtWarWith(otherCiv)) continue
+            if (otherCiv.hasUnique("City-State territory always counts as friendly territory")) continue
+            val diplomacy = civInfo.getDiplomacyManager(otherCiv)
+            if (diplomacy.hasFlag(DiplomacyFlags.AngerFreeIntrusion)) continue // They recently helped us
+
+            val unitsInBorder = otherCiv.getCivUnits().count { !it.isCivilian() && it.getTile().getOwner() == civInfo }
+            if (unitsInBorder > 0 && diplomacy.relationshipLevel() < RelationshipLevel.Friend) {
+                diplomacy.addInfluence(-10f)
+                if (!diplomacy.hasFlag(DiplomacyFlags.BorderConflict)) {
+                    otherCiv.popupAlerts.add(PopupAlert(AlertType.BorderConflict, civInfo.civName))
+                    diplomacy.setFlag(DiplomacyFlags.BorderConflict, 10)
+                }
+            }
+        }
+    }
+
+    fun getFreeTechForCityState() {
+        // City-States automatically get all techs that at least half of the major civs know
+        val researchableTechs = civInfo.gameInfo.ruleSet.technologies.keys
+            .filter { civInfo.tech.canBeResearched(it) }
+        for (tech in researchableTechs) {
+            val aliveMajorCivs = civInfo.gameInfo.getAliveMajorCivs()
+            if (aliveMajorCivs.count { it.tech.isResearched(tech) } >= aliveMajorCivs.count() / 2)
+                civInfo.tech.addTechnology(tech)
+        }
+        return
+    }
+
+    private fun getNumThreateningBarbarians(): Int {
+        return civInfo.gameInfo.getBarbarianCivilization().getCivUnits().count { it.threatensCiv(civInfo) }
+    }
+
+    fun threateningBarbarianKilledBy(otherCiv: CivilizationInfo) {
+        val diplomacy = civInfo.getDiplomacyManager(otherCiv)
+        diplomacy.addInfluence(12f)
+        if (diplomacy.hasFlag(DiplomacyFlags.AngerFreeIntrusion))
+            diplomacy.setFlag(DiplomacyFlags.AngerFreeIntrusion, diplomacy.getFlag(DiplomacyFlags.AngerFreeIntrusion) + 5)
+        else
+            diplomacy.setFlag(DiplomacyFlags.AngerFreeIntrusion, 5)
     }
 
 }

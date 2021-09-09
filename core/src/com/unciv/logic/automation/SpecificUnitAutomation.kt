@@ -273,7 +273,7 @@ object SpecificUnitAutomation {
 
         val citiesByNearbyAirUnits = pathsToCities.keys
                 .groupBy { key ->
-                    key.getTilesInDistance(unit.getRange() * 2)
+                    key.getTilesInDistance(unit.getMaxMovementForAirUnits())
                             .count {
                                 val firstAirUnit = it.airUnits.firstOrNull()
                                 firstAirUnit != null && firstAirUnit.civInfo.isAtWarWith(unit.civInfo)
@@ -358,7 +358,7 @@ object SpecificUnitAutomation {
 
     private fun tryRelocateToCitiesWithEnemyNearBy(unit: MapUnit): Boolean {
         val immediatelyReachableCitiesAndCarriers = unit.currentTile
-                .getTilesInDistance(unit.getRange() * 2).filter { unit.movement.canMoveTo(it) }
+                .getTilesInDistance(unit.getMaxMovementForAirUnits()).filter { unit.movement.canMoveTo(it) }
 
         for (city in immediatelyReachableCitiesAndCarriers) {
             if (city.getTilesInDistance(unit.getRange())
