@@ -6,6 +6,7 @@ import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.models.metadata.GameSpeed
+import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.stats.Stat
 import com.unciv.models.translations.getPlaceholderParameters
 import com.unciv.models.translations.getPlaceholderText
@@ -18,6 +19,51 @@ import kotlin.math.pow
 
 /** Class containing city-state-specific functions */
 class CityStateFunctions(val civInfo: CivilizationInfo) {
+    /** Attempts to initialize the city state, returning true if successful. */
+    fun initCityState(ruleset: Ruleset, startingEra: String, unusedMajorCivs: Collection<String>): Boolean {
+        val cityStateType = ruleset.nations[civInfo.civName]?.cityStateType
+        if (cityStateType == null)  return false
+
+        val startingTechs = ruleset.technologies.values.filter { it.uniques.contains("Starting tech") }
+        for (tech in startingTechs)
+            civInfo.tech.techsResearched.add(tech.name) // can't be .addTechnology because the civInfo isn't assigned yet
+
+        val allMercantileResources = ruleset.tileResources.values.filter { it.unique == "Can only be created by Mercantile City-States" }.map { it.name }
+        val allPossibleBonuses = HashSet<String>()    // We look through these to determine what kind of city state we are
+        for (era in ruleset.eras.values) {
+            val allyBonuses = era.allyBonus[cityStateType.name]
+            val friendBonuses = era.friendBonus[cityStateType.name]
+            if (allyBonuses != null)
+                allPossibleBonuses.addAll(allyBonuses)
+            if (friendBonuses != null)
+                allPossibleBonuses.addAll(friendBonuses)
+        }
+
+        // CS Personality
+        civInfo.cityStatePersonality = CityStatePersonality.values().random()
+
+        // Mercantile bonus resources
+        if ("Provides a unique luxury" in allPossibleBonuses
+            || (allPossibleBonuses.isEmpty() && cityStateType == CityStateType.Mercantile)) { // Fallback for badly defined Eras.json
+            civInfo.cityStateResource = allMercantileResources.random()
+        }
+
+        // Unique unit for militaristic city-states
+        if (allPossibleBonuses.any { it.getPlaceholderText() == "Provides military units every ≈[] turns" }
+            || (allPossibleBonuses.isEmpty() && cityStateType == CityStateType.Militaristic)) { // Fallback for badly defined Eras.json
+
+            val possibleUnits = ruleset.units.values.filter { it.requiredTech != null
+                && ruleset.eras[ruleset.technologies[it.requiredTech!!]!!.era()]!!.eraNumber > ruleset.eras[startingEra]!!.eraNumber // Not from the start era or before
+                && it.uniqueTo != null && it.uniqueTo in unusedMajorCivs // Must be from a major civ not in the game
+                && ruleset.unitTypes[it.unitType]!!.isLandUnit() && ( it.strength > 0 || it.rangedStrength > 0 ) } // Must be a land military unit
+            if (possibleUnits.isNotEmpty())
+                civInfo.cityStateUniqueUnit = possibleUnits.random().name
+        }
+
+        // TODO: Return false if attempting to put a religious city-state in a game without religion
+
+        return true
+    }
 
     /** Gain a random great person from the city state */
     fun giveGreatPersonToPatron(receivingCiv: CivilizationInfo) {
@@ -37,7 +83,12 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
     fun giveMilitaryUnitToPatron(receivingCiv: CivilizationInfo) {
         val cities = NextTurnAutomation.getClosestCities(receivingCiv, civInfo)
         val city = cities.city1
-        val militaryUnit = city.cityConstructions.getConstructableUnits()
+        val uniqueUnit = civInfo.gameInfo.ruleSet.units[civInfo.cityStateUniqueUnit]
+        // If the receiving civ has discovered the required tech and not the obsolete tech for our unique, always give them the unique
+        val militaryUnit = if (uniqueUnit != null && receivingCiv.tech.isResearched(uniqueUnit.requiredTech!!)
+            && (uniqueUnit.obsoleteTech == null || !receivingCiv.tech.isResearched(uniqueUnit.obsoleteTech!!))) uniqueUnit
+            // Otherwise pick at random
+            else city.cityConstructions.getConstructableUnits()
             .filter { !it.isCivilian() && it.isLandUnit() && it.uniqueTo==null }
             .toList().random()
         // placing the unit may fail - in that case stay quiet
