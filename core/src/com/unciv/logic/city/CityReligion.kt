@@ -5,9 +5,10 @@ import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.models.Counter
 import com.unciv.models.Religion
 import com.unciv.models.metadata.GameSpeed
+import com.unciv.models.ruleset.IHasUniqueMatching
 import com.unciv.models.ruleset.Unique
 
-class CityInfoReligionManager {
+class CityInfoReligionManager : IHasUniqueMatching {
     @Transient
     lateinit var cityInfo: CityInfo
     
@@ -63,7 +64,7 @@ class CityInfoReligionManager {
         return majorityReligion.getFollowerUniques()
     }
     
-    fun getMatchingUniques(unique: String): Sequence<Unique> {
+    override fun getMatchingUniques(unique: String): Sequence<Unique> {
         return getUniques().filter { it.placeholderText == unique }
     }
     
@@ -255,7 +256,7 @@ class CityInfoReligionManager {
 
     private fun getSpreadRange(): Int {
         var spreadRange = 10
-        for (unique in cityInfo.getMatchingUniques("Religion naturally spreads to cities [] tiles away"))
+        for (unique in cityInfo.getMatchingApplyingUniques("Religion naturally spreads to cities [] tiles away"))
             spreadRange += unique.params[0].toInt()
         
         if (getMajorityReligion() != null)
@@ -289,12 +290,12 @@ class CityInfoReligionManager {
     private fun pressureAmountToAdjacentCities(pressuredCity: CityInfo): Int {
         var pressure = pressureFromAdjacentCities.toFloat()
         
-        for (unique in cityInfo.getMatchingUniques("[]% Natural religion spread []")) {
+        for (unique in cityInfo.getMatchingApplyingUniques("[]% Natural religion spread []")) {
             if (pressuredCity.matchesFilter(unique.params[1]))
                 pressure *= 1f + unique.params[0].toFloat() / 100f
         }
         
-        for (unique in cityInfo.getMatchingUniques("[]% Natural religion spread [] with []"))
+        for (unique in cityInfo.getMatchingApplyingUniques("[]% Natural religion spread [] with []"))
             if (pressuredCity.matchesFilter(unique.params[1]) 
                 && cityInfo.civInfo.hasTechOrPolicy(unique.params[2])
             ) pressure *= 1f + unique.params[0].toFloat() / 100f

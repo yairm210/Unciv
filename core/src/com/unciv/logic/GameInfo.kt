@@ -265,11 +265,14 @@ class GameInfo {
      * adopted Honor policy and have explored the [tile] where the Barbarian Encampment has spawned.
      */
     fun notifyCivsOfBarbarianEncampment(tile: TileInfo) {
-        civilizations.filter {
-            it.hasUnique("Notified of new Barbarian encampments")
-                    && it.exploredTiles.contains(tile.position)
+        for (civ in civilizations
+            .filter {
+                it.hasApplyingUnique("Notified of new Barbarian encampments")
+                && it.exploredTiles.contains(tile.position)
+            }
+        ) {
+            civ.addNotification("A new barbarian encampment has spawned!", tile.position, NotificationIcon.War)
         }
-                .forEach { it.addNotification("A new barbarian encampment has spawned!", tile.position, NotificationIcon.War) }
     }
 
     // All cross-game data which needs to be altered (e.g. when removing or changing a name of a building/tech)

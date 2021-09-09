@@ -25,7 +25,7 @@ class CityInfoConquestFunctions(val city: CityInfo){
         val baseGold = 20 + 10 * city.population.population + tileBasedRandom.nextInt(40)
         val turnModifier = max(0, min(50, city.civInfo.gameInfo.turns - city.turnAcquired)) / 50f
         val cityModifier = if (city.containsBuildingUnique("Doubles Gold given to enemy if city is captured")) 2f else 1f
-        val conqueringCivModifier = if (conqueringCiv.hasUnique("Receive triple Gold from Barbarian encampments and pillaging Cities")) 3f else 1f
+        val conqueringCivModifier = if (conqueringCiv.hasApplyingUnique("Receive triple Gold from Barbarian encampments and pillaging Cities")) 3f else 1f
 
         val goldPlundered = baseGold * turnModifier * cityModifier * conqueringCivModifier
         return goldPlundered.toInt()
@@ -35,8 +35,8 @@ class CityInfoConquestFunctions(val city: CityInfo){
         city.apply {
             for (building in cityConstructions.getBuiltBuildings()) {
                 when {
-                    building.hasUnique("Never destroyed when the city is captured") || building.isWonder -> continue
-                    building.hasUnique("Destroyed when the city is captured") ->
+                    building.hasApplyingUnique("Never destroyed when the city is captured", civInfo) || building.isWonder -> continue
+                    building.hasApplyingUnique("Destroyed when the city is captured", civInfo) ->
                         cityConstructions.removeBuilding(building.name)
                     else -> {
                         if (tileBasedRandom.nextInt(100) < 34) {
@@ -225,7 +225,7 @@ class CityInfoConquestFunctions(val city: CityInfo){
             }
 
             for (building in cityConstructions.getBuiltBuildings()) {
-                if (building.isNationalWonder && !building.hasUnique("Never destroyed when the city is captured"))
+                if (building.isNationalWonder && !building.hasApplyingUnique("Never destroyed when the city is captured", civInfo))
                     cityConstructions.removeBuilding(building.name)
             }
 

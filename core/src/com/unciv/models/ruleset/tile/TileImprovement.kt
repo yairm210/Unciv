@@ -31,7 +31,7 @@ class TileImprovement : NamedStats(), ICivilopediaText, IHasUniques {
 
     fun getTurnsToBuild(civInfo: CivilizationInfo): Int {
         var realTurnsToBuild = turnsToBuild.toFloat() * civInfo.gameInfo.gameParameters.gameSpeed.modifier
-        for (unique in civInfo.getMatchingUniques("[]% tile improvement construction time")) {
+        for (unique in civInfo.getMatchingApplyingUniques("[]% tile improvement construction time")) {
             realTurnsToBuild *= unique.params[0].toPercent()
         }
         // In some weird cases it was possible for something to take 0 turns, leading to it instead never finishing
@@ -72,6 +72,7 @@ class TileImprovement : NamedStats(), ICivilopediaText, IHasUniques {
 
     fun isGreatImprovement() = hasUnique("Great Improvement")
     fun isRoad() = RoadStatus.values().any { it != RoadStatus.None && it.name == this.name }
+
     fun isAncientRuinsEquivalent() = hasUnique("Provides a random bonus when entered")
 
     /**
@@ -89,7 +90,7 @@ class TileImprovement : NamedStats(), ICivilopediaText, IHasUniques {
                 && it.params[0] == name
         }.any()
     }
-    
+
     fun matchesFilter(filter: String): Boolean {
         return when (filter) {
             name -> true
@@ -99,7 +100,6 @@ class TileImprovement : NamedStats(), ICivilopediaText, IHasUniques {
             else -> false
         }
     }
-
     override fun makeLink() = "Improvement/$name"
 
     override fun getCivilopediaTextLines(ruleset: Ruleset): List<FormattedLine> {

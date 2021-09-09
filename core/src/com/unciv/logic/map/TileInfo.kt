@@ -6,7 +6,9 @@ import com.unciv.UncivGame
 import com.unciv.logic.HexMath
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.models.ruleset.IHasUniqueMatching
 import com.unciv.models.ruleset.Ruleset
+import com.unciv.models.ruleset.Unique
 import com.unciv.models.ruleset.tile.*
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.tr
@@ -16,7 +18,7 @@ import com.unciv.ui.utils.toPercent
 import kotlin.math.abs
 import kotlin.math.min
 
-open class TileInfo {
+open class TileInfo: IHasUniqueMatching {
     @Transient
     lateinit var tileMap: TileMap
 
@@ -190,7 +192,10 @@ open class TileInfo {
 
     fun isRoughTerrain() = getAllTerrains().any{ it.isRough() }
 
-    fun hasUnique(unique: String) = getAllTerrains().any { it.uniques.contains(unique) }
+    override fun hasUnique(uniqueTemplate: String) = getAllTerrains().any { it.uniques.contains(uniqueTemplate) }
+    override fun getMatchingUniques(uniqueTemplate: String): Sequence<Unique> {
+        return getAllTerrains().flatMap { it.getMatchingUniques(uniqueTemplate) }
+    }
 
     fun getWorkingCity(): CityInfo? {
         val civInfo = getOwner() ?: return null
@@ -219,20 +224,20 @@ open class TileInfo {
         }
 
         if (city != null) {
-            var tileUniques = city.getMatchingUniques("[] from [] tiles []")
+            var tileUniques = city.getMatchingApplyingUniques("[] from [] tiles []")
                 .filter { city.matchesFilter(it.params[2]) }
-            tileUniques += city.getMatchingUniques("[] from every []")
+            tileUniques += city.getMatchingApplyingUniques("[] from every []")
             for (unique in tileUniques) {
                 val tileType = unique.params[1]
                 if (tileType == improvement) continue // This is added to the calculation in getImprovementStats. we don't want to add it twice
                 if (matchesTerrainFilter(tileType, observingCiv)) 
                     stats.add(unique.stats)
-                if (tileType == "Natural Wonder" && naturalWonder != null && city.civInfo.hasUnique("Tile yields from Natural Wonders doubled")) {
+                if (tileType == "Natural Wonder" && naturalWonder != null && city.civInfo.hasApplyingUnique("Tile yields from Natural Wonders doubled")) {
                     stats.add(unique.stats)
                 }
             }
 
-            for (unique in city.getMatchingUniques("[] from [] tiles without [] []")) 
+            for (unique in city.getMatchingApplyingUniques("[] from [] tiles without [] []")) 
                 if (
                     matchesTerrainFilter(unique.params[1]) &&
                     !matchesTerrainFilter(unique.params[2]) &&
@@ -246,7 +251,7 @@ open class TileInfo {
             stats.add(wonder)
 
             // Spain doubles tile yield
-            if (city != null && city.civInfo.hasUnique("Tile yields from Natural Wonders doubled")) {
+            if (city != null && city.civInfo.hasApplyingUnique("Tile yields from Natural Wonders doubled")) {
                 stats.add(wonder)
             }
         }
@@ -326,7 +331,7 @@ open class TileInfo {
                 stats.add(unique.stats)
 
         if (city != null) {
-            val tileUniques = city.getMatchingUniques("[] from [] tiles []")
+            val tileUniques = city.getMatchingApplyingUniques("[] from [] tiles []")
                 .filter { city.matchesFilter(it.params[2]) }
             val improvementUniques = improvement.uniqueObjects.filter {
                 it.placeholderText == "[] on [] tiles once [] is discovered"
@@ -341,7 +346,7 @@ open class TileInfo {
                         stats.add(unique.stats)
             }
 
-            for (unique in city.getMatchingUniques("[] from every []")) {
+            for (unique in city.getMatchingApplyingUniques("[] from every []")) {
                 if (improvement.matchesFilter(unique.params[1])) {
                     stats.add(unique.stats)
                 }
@@ -358,7 +363,7 @@ open class TileInfo {
                 stats.add(unique.stats.times(numberOfBonuses.toFloat()))
             }
 
-        for (unique in observingCiv.getMatchingUniques("+[]% yield from every []"))
+        for (unique in observingCiv.getMatchingApplyingUniques("+[]% yield from every []"))
             if (improvement.matchesFilter(unique.params[1]))
                 stats.timesInPlace(unique.params[0].toPercent())
 
@@ -371,9 +376,9 @@ open class TileInfo {
             improvement.uniqueTo != null && improvement.uniqueTo != civInfo.civName -> false
             improvement.techRequired != null && !civInfo.tech.isResearched(improvement.techRequired!!) -> false
             getOwner() != civInfo && !(
-                    improvement.hasUnique("Can be built outside your borders")
+                    improvement.hasApplyingUnique("Can be built outside your borders", civInfo)
                             // citadel can be built only next to or within own borders
-                            || improvement.hasUnique("Can be built just outside your borders")
+                            || improvement.hasApplyingUnique("Can be built just outside your borders", civInfo)
                                 && neighbors.any { it.getOwner() == civInfo } && civInfo.cities.isNotEmpty()
                     ) -> false
             improvement.uniqueObjects.any {
@@ -401,8 +406,10 @@ open class TileInfo {
             } -> false
 
             // Road improvements can change on tiles with irremovable improvements - nothing else can, though.
-            RoadStatus.values().none { it.name == improvement.name || it.removeAction == improvement.name }
-                    && getTileImprovement().let { it != null && it.hasUnique("Irremovable") } -> false
+            RoadStatus.values()
+                    .none { it.name == improvement.name || it.removeAction == improvement.name }
+                && getTileImprovement()
+                    .let { it != null && it.hasUnique("Irremovable") } -> false
 
             // Decide cancelImprovementOrder earlier, otherwise next check breaks it
             improvement.name == Constants.cancelImprovementOrder -> (this.improvementInProgress != null)

@@ -13,18 +13,19 @@ class CivInfoTransientUpdater(val civInfo: CivilizationInfo) {
         val newViewableInvisibleTiles = HashSet<TileInfo>()
         newViewableInvisibleTiles.addAll(civInfo.getCivUnits()
             // "Can attack submarines" unique deprecated since 3.16.9
-            .filter { attacker -> attacker.hasUnique("Can see invisible [] units") || attacker.hasUnique("Can attack submarines") }
-            .flatMap { attacker ->
+            .filter { attacker -> attacker.hasApplyingUnique("Can see invisible [] units") 
+                || attacker.hasApplyingUnique("Can attack submarines") 
+            }.flatMap { attacker ->
                 attacker.viewableTiles
                     .asSequence()
                     .filter { tile -> 
                         ( tile.militaryUnit != null 
-                            && attacker.getMatchingUniques("Can see invisible [] units")
+                            && attacker.getMatchingApplyingUniques("Can see invisible [] units")
                                 .any { unique -> tile.militaryUnit!!.matchesFilter(unique.params[0]) }
                         ) || (
                             tile.militaryUnit != null
                             // "Can attack submarines" unique deprecated since 3.16.9
-                            && attacker.hasUnique("Can attack submarines") 
+                            && attacker.hasApplyingUnique("Can attack submarines") 
                             && tile.militaryUnit!!.matchesFilter("Submarine")
                         )
                     } 
@@ -116,7 +117,7 @@ class CivInfoTransientUpdater(val civInfo: CivilizationInfo) {
                 goldGained += 500
             }
 
-            if (civInfo.hasUnique("100 Gold for discovering a Natural Wonder (bonus enhanced to 500 Gold if first to discover it)")) {
+            if (civInfo.hasApplyingUnique("100 Gold for discovering a Natural Wonder (bonus enhanced to 500 Gold if first to discover it)")) {
                 if (!discoveredNaturalWonders.contains(tile.naturalWonder!!))
                     goldGained += 500
                 else goldGained += 100
@@ -131,8 +132,8 @@ class CivInfoTransientUpdater(val civInfo: CivilizationInfo) {
     }
 
     fun updateHasActiveGreatWall() {
-        civInfo.hasActiveGreatWall = !civInfo.tech.isResearched("Dynamite") &&
-                civInfo.hasUnique("Enemy land units must spend 1 extra movement point when inside your territory (obsolete upon Dynamite)")
+        civInfo.hasActiveGreatWall = !civInfo.tech.isResearched("Dynamite") 
+            && civInfo.hasApplyingUnique("Enemy land units must spend 1 extra movement point when inside your territory (obsolete upon Dynamite)")
     }
 
 
@@ -161,7 +162,7 @@ class CivInfoTransientUpdater(val civInfo: CivilizationInfo) {
 
         if (!civInfo.isCityState()) {
             var resourceBonusPercentage = 1f
-            for (unique in civInfo.getMatchingUniques("Quantity of Resources gifted by City-States increased by []%"))
+            for (unique in civInfo.getMatchingApplyingUniques("Quantity of Resources gifted by City-States increased by []%"))
                 resourceBonusPercentage += unique.params[0].toFloat() / 100
             for (city in civInfo.getKnownCivs().filter { it.getAllyCiv() == civInfo.civName }
                 .flatMap { it.cities }) {

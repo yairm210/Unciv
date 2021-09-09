@@ -155,12 +155,12 @@ class Building : NamedStats(), INonPerpetualConstruction, ICivilopediaText {
         if (city == null) return stats
         val civInfo = city.civInfo
 
-        for (unique in city.getMatchingUniques("[] from every []")) {
+        for (unique in city.getMatchingApplyingUniques("[] from every []")) {
             if (!matchesFilter(unique.params[1])) continue
             stats.add(unique.stats)
         }
 
-        for (unique in city.getMatchingUniques("[] from every [] in cities where this religion has at least [] followers"))
+        for (unique in city.getMatchingApplyingUniques("[] from every [] in cities where this religion has at least [] followers"))
             if (unique.params[2].toInt() <= city.religion.getFollowersOfMajorityReligion() && matchesFilter(unique.params[1]))
                 stats.add(unique.stats)
 
@@ -171,12 +171,12 @@ class Building : NamedStats(), INonPerpetualConstruction, ICivilopediaText {
                 stats.add(unique.stats)
 
         if (!isWonder)
-            for (unique in city.getMatchingUniques("[] from all [] buildings")) {
+            for (unique in city.getMatchingApplyingUniques("[] from all [] buildings")) {
                 if (matchesFilter(unique.params[1]))
                     stats.add(unique.stats)
             }
         else
-            for (unique in city.getMatchingUniques("[] from every Wonder"))
+            for (unique in city.getMatchingApplyingUniques("[] from every Wonder"))
                 stats.add(unique.stats)
         return stats
     }
@@ -185,7 +185,7 @@ class Building : NamedStats(), INonPerpetualConstruction, ICivilopediaText {
         val stats = percentStatBonus?.clone() ?: Stats()
         val civInfo = cityInfo?.civInfo ?: return stats  // initial stats
 
-        for (unique in civInfo.getMatchingUniques("+[]% [] from every []")) {
+        for (unique in civInfo.getMatchingApplyingUniques("+[]% [] from every []")) {
             if (matchesFilter(unique.params[2]))
                 stats.add(Stat.valueOf(unique.params[1]), unique.params[0].toFloat())
         }
@@ -339,8 +339,8 @@ class Building : NamedStats(), INonPerpetualConstruction, ICivilopediaText {
     override fun canBePurchasedWithStat(cityInfo: CityInfo?, stat: Stat): Boolean {
         if (stat == Stat.Gold && isAnyWonder()) return false
         // May buy [buildingFilter] buildings for [amount] [Stat] [cityFilter]
-        if (cityInfo != null && cityInfo.getMatchingUniques("May buy [] buildings for [] [] []")
-                .any { it.params[2] == stat.name && matchesFilter(it.params[0]) && cityInfo.matchesFilter(it.params[3]) }
+        if (cityInfo != null && cityInfo.getMatchingApplyingUniques("May buy [] buildings for [] [] []")
+            .any { it.params[2] == stat.name && matchesFilter(it.params[0]) && cityInfo.matchesFilter(it.params[3]) }
         ) return true
         return super.canBePurchasedWithStat(cityInfo, stat)
     }
@@ -351,11 +351,11 @@ class Building : NamedStats(), INonPerpetualConstruction, ICivilopediaText {
         return (
             sequenceOf(super.getBaseBuyCost(cityInfo, stat)).filterNotNull()
             // May buy [buildingFilter] buildings for [amount] [Stat] [cityFilter]
-            + cityInfo.getMatchingUniques("May buy [] buildings for [] [] []")
+            + cityInfo.getMatchingApplyingUniques("May buy [] buildings for [] [] []")
                 .filter {
-                    it.params[2] == stat.name && matchesFilter(it.params[0]) && cityInfo.matchesFilter(
-                        it.params[3]
-                    )
+                    it.params[2] == stat.name 
+                    && matchesFilter(it.params[0]) 
+                    && cityInfo.matchesFilter(it.params[3])
                 }
                 .map { it.params[1].toInt() }
         ).minOrNull()
@@ -367,21 +367,21 @@ class Building : NamedStats(), INonPerpetualConstruction, ICivilopediaText {
 
         // Deprecated since 3.15.15
             if (stat == Stat.Gold) {
-                for (unique in cityInfo.getMatchingUniques("Cost of purchasing items in cities reduced by []%"))
+                for (unique in cityInfo.getMatchingApplyingUniques("Cost of purchasing items in cities reduced by []%"))
                     cost *= 1 - (unique.params[0].toFloat() / 100)
 
-                for (unique in cityInfo.getMatchingUniques("Cost of purchasing [] buildings reduced by []%")) {
+                for (unique in cityInfo.getMatchingApplyingUniques("Cost of purchasing [] buildings reduced by []%")) {
                     if (matchesFilter(unique.params[0]))
                         cost *= 1 - (unique.params[1].toFloat() / 100)
                 }
             }
         //
 
-        for (unique in cityInfo.getMatchingUniques("[] cost of purchasing items in cities []%"))
+        for (unique in cityInfo.getMatchingApplyingUniques("[] cost of purchasing items in cities []%"))
             if (stat.name == unique.params[0])
                 cost *= unique.params[1].toPercent()
 
-        for (unique in cityInfo.getMatchingUniques("[] cost of purchasing [] buildings []%")) {
+        for (unique in cityInfo.getMatchingApplyingUniques("[] cost of purchasing [] buildings []%")) {
             if (stat.name == unique.params[0] && matchesFilter(unique.params[1]))
                 cost *= unique.params[2].toPercent()
         }
@@ -552,7 +552,7 @@ class Building : NamedStats(), INonPerpetualConstruction, ICivilopediaText {
         }
 
         if ("Spaceship part" in uniques) {
-            if (!civInfo.hasUnique("Enables construction of Spaceship parts")) 
+            if (!civInfo.hasApplyingUnique("Enables construction of Spaceship parts")) 
                 rejectionReasons.add(
                     RejectionReason.RequiresBuildingInSomeCity.apply { errorMessage = "Apollo project not built!" }
                 )
@@ -685,7 +685,7 @@ class Building : NamedStats(), INonPerpetualConstruction, ICivilopediaText {
             civInfo.updateHasActiveGreatWall()
 
         // Korean unique - apparently gives the same as the research agreement
-        if (science > 0 && civInfo.hasUnique("Receive a tech boost when scientific buildings/wonders are built in capital"))
+        if (science > 0 && civInfo.hasApplyingUnique("Receive a tech boost when scientific buildings/wonders are built in capital"))
             civInfo.tech.addScience(civInfo.tech.scienceOfLast8Turns.sum() / 8)
 
         cityConstructions.cityInfo.cityStats.update() // new building, new stats

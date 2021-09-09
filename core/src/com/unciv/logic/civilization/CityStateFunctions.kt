@@ -47,7 +47,7 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
         militaryUnit.addConstructionBonuses(placedUnit, civInfo.getCapital().cityConstructions)
 
         // Siam gets +10 XP for all CS units
-        for (unique in receivingCiv.getMatchingUniques("Military Units gifted from City-States start with [] XP")) {
+        for (unique in receivingCiv.getMatchingApplyingUniques("Military Units gifted from City-States start with [] XP")) {
             placedUnit.promotions.XP += unique.params[0].toInt()
         }
 
@@ -69,7 +69,7 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
             GameSpeed.Epic -> 0.75f
             GameSpeed.Marathon -> 0.67f
         }
-        for (unique in donorCiv.getMatchingUniques("Gifts of Gold to City-States generate []% more Influence"))
+        for (unique in donorCiv.getMatchingApplyingUniques("Gifts of Gold to City-States generate []% more Influence"))
             influenceGained *= 1f + unique.params[0].toFloat() / 100f
         influenceGained -= influenceGained % 5
         if (influenceGained < 5f) influenceGained = 5f
@@ -170,7 +170,7 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
                 else newAllyCiv.addNotification(text, civInfo.civName, NotificationIcon.Diplomacy)
                 newAllyCiv.updateViewableTiles()
                 newAllyCiv.updateDetailedCivResources()
-                for (unique in newAllyCiv.getMatchingUniques("Can spend Gold to annex or puppet a City-State that has been your ally for [] turns."))
+                for (unique in newAllyCiv.getMatchingApplyingUniques("Can spend Gold to annex or puppet a City-State that has been your ally for [] turns."))
                     newAllyCiv.getDiplomacyManager(civInfo.civName).setFlag(DiplomacyFlags.MarriageCooldown, unique.params[0].toInt())
             }
             if (oldAllyName != null) {
@@ -203,7 +203,7 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
                 && civInfo.isCityState()
                 && civInfo.getDiplomacyManager(otherCiv).relationshipLevel() == RelationshipLevel.Ally
                 && !otherCiv.getDiplomacyManager(civInfo).hasFlag(DiplomacyFlags.MarriageCooldown)
-                && otherCiv.getMatchingUniques("Can spend Gold to annex or puppet a City-State that has been your ally for [] turns.").any()
+                && otherCiv.getMatchingApplyingUniques("Can spend Gold to annex or puppet a City-State that has been your ally for [] turns.").any()
                 && otherCiv.gold >= getDiplomaticMarriageCost())
 
     }
@@ -384,7 +384,7 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
 
         for (otherCiv in civInfo.getKnownCivs().filter { it.isMajorCiv() }) {
             if (civInfo.isAtWarWith(otherCiv)) continue
-            if (otherCiv.hasUnique("City-State territory always counts as friendly territory")) continue
+            if (otherCiv.hasApplyingUnique("City-State territory always counts as friendly territory")) continue
             val diplomacy = civInfo.getDiplomacyManager(otherCiv)
             if (diplomacy.hasFlag(DiplomacyFlags.AngerFreeIntrusion)) continue // They recently helped us
 

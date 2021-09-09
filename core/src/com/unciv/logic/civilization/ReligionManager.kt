@@ -121,7 +121,7 @@ class ReligionManager {
             (200 + 100 * greatProphetsEarned * (greatProphetsEarned + 1) / 2f) * 
             civInfo.gameInfo.gameParameters.gameSpeed.modifier
 
-        for (unique in civInfo.getMatchingUniques("[]% Faith cost of generating Great Prophet equivalents"))
+        for (unique in civInfo.getMatchingApplyingUniques("[]% Faith cost of generating Great Prophet equivalents"))
             faithCost *= unique.params[0].toPercent()
 
         return faithCost.toInt()
@@ -131,7 +131,7 @@ class ReligionManager {
         if (religion == null || religionState == ReligionState.None) return false // First get a pantheon, then we'll talk about a real religion
         if (storedFaith < faithForNextGreatProphet()) return false
         if (!civInfo.isMajorCiv()) return false
-        if (civInfo.hasUnique("May not generate great prophet equivalents naturally")) return false
+        if (civInfo.hasApplyingUnique("May not generate great prophet equivalents naturally")) return false
         return true
     }
     
@@ -249,7 +249,7 @@ class ReligionManager {
         shouldChoosePantheonBelief = false
 
         for (unit in civInfo.getCivUnits()) 
-            if (unit.hasUnique("Religious Unit") && unit.hasUnique("Takes your religion over the one in their birth city"))
+            if (unit.hasUnique("Religious Unit") && unit.hasApplyingUnique("Takes your religion over the one in their birth city"))
                 unit.religion = newReligion.name
     }
 

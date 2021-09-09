@@ -4,11 +4,13 @@ import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.UncivSound
+import com.unciv.models.ruleset.IHasUniqueMatching
+import com.unciv.models.ruleset.Unique
 import com.unciv.models.ruleset.unit.UnitType
 import kotlin.math.pow
 import kotlin.math.roundToInt
 
-class CityCombatant(val city: CityInfo) : ICombatant {
+class CityCombatant(val city: CityInfo) : ICombatant, IHasUniqueMatching {
     override fun getMaxHealth(): Int {
         return city.getMaxHealth()
     }
@@ -58,7 +60,7 @@ class CityCombatant(val city: CityInfo) : ICombatant {
             strength += cityTile.militaryUnit!!.baseUnit().strength * (cityTile.militaryUnit!!.health / 100f) * 0.2f
 
         var buildingsStrength = city.cityConstructions.getBuiltBuildings().sumOf { it.cityStrength }.toFloat()
-        if (getCivInfo().hasUnique("Defensive buildings in all cities are 25% more effective"))
+        if (getCivInfo().hasApplyingUnique("Defensive buildings in all cities are 25% more effective"))
             buildingsStrength *= 1.25f
         strength += buildingsStrength
 
@@ -66,4 +68,8 @@ class CityCombatant(val city: CityInfo) : ICombatant {
     }
 
     override fun toString() = city.name // for debug
+
+    override fun getMatchingUniques(uniqueTemplate: String): Sequence<Unique> {
+        return city.getMatchingUniques(uniqueTemplate)
+    }
 }

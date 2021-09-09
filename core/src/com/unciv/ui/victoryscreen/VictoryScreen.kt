@@ -126,18 +126,18 @@ class VictoryScreen(val worldScreen: WorldScreen) : PickerScreen() {
     }
 
     private fun scienceVictoryColumn(): Table {
-        val t = Table()
-        t.defaults().pad(5f)
-        t.add(getMilestone("Built Apollo Program",
+        val column = Table()
+        column.defaults().pad(5f)
+        column.add(getMilestone("Built Apollo Program",
                 playerCivInfo.hasUnique("Enables construction of Spaceship parts"))).row()
 
         val victoryManager = playerCivInfo.victoryManager
 
         for (key in victoryManager.requiredSpaceshipParts.keys)
             for (i in 0 until victoryManager.requiredSpaceshipParts[key]!!)
-                t.add(getMilestone(key, victoryManager.currentsSpaceshipParts[key]!! > i)).row()     //(key, builtSpaceshipParts)
+                column.add(getMilestone(key, victoryManager.currentsSpaceshipParts[key]!! > i)).row()     //(key, builtSpaceshipParts)
 
-        return t
+        return column
     }
 
     private fun culturalVictoryColumn(): Table {

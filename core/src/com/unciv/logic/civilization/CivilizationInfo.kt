@@ -33,7 +33,7 @@ import kotlin.math.min
 import kotlin.math.roundToInt
 import kotlin.math.sqrt
 
-class CivilizationInfo {
+class CivilizationInfo: IHasUniqueMatching {
 
     @Transient
     private var workerAutomationCache: WorkerAutomation? = null
@@ -258,11 +258,11 @@ class CivilizationInfo {
 
     fun getResourceModifier(resource: TileResource): Int {
         var resourceModifier = 1f
-        for (unique in getMatchingUniques("Double quantity of [] produced"))
+        for (unique in getMatchingApplyingUniques("Double quantity of [] produced"))
             if (unique.params[0] == resource.name)
                 resourceModifier *= 2f
         if (resource.resourceType == ResourceType.Strategic) {
-            resourceModifier *= 1f + getMatchingUniques("Quantity of strategic resources produced by the empire +[]%")
+            resourceModifier *= 1f + getMatchingApplyingUniques("Quantity of strategic resources produced by the empire +[]%")
                 .map { it.params[0].toFloat() / 100f }.sum()
 
         }
@@ -279,8 +279,6 @@ class CivilizationInfo {
                 else city.getAllUniquesWithNonLocalEffects()
         }
 
-    fun hasUnique(unique: String) = getMatchingUniques(unique).any()
-
     // Does not return local uniques, only global ones.
     fun getMatchingUniques(uniqueTemplate: String, cityToIgnore: CityInfo? = null): Sequence<Unique> {
         return nation.uniqueObjects.asSequence().filter { it.placeholderText == uniqueTemplate } +
@@ -292,7 +290,7 @@ class CivilizationInfo {
                 temporaryUniques
                     .asSequence()
                     .filter { it.first.placeholderText == uniqueTemplate }.map { it.first } +
-                getEra().getMatchingUniques(uniqueTemplate)
+                getEra().getMatchingApplyingUniques(uniqueTemplate, this)
                     .asSequence() +
                 (
                     if (religionManager.religion != null) 
@@ -301,6 +299,19 @@ class CivilizationInfo {
                             .filter { it.placeholderText == uniqueTemplate }
                     else sequenceOf()
                 )
+    }
+
+    override fun getMatchingUniques(uniqueTemplate: String): Sequence<Unique> {
+        return getMatchingUniques(uniqueTemplate, null)
+    }
+    
+    fun getMatchingApplyingUniques(uniqueTemplate: String, cityToIgnore: CityInfo? = null): Sequence<Unique> {
+        return getMatchingUniques(uniqueTemplate, cityToIgnore)
+            .filter { it.conditionalsApply(this) }
+    }
+    
+    fun hasApplyingUnique(uniqueTemplate: String): Boolean {
+        return hasApplyingUnique(uniqueTemplate, this)
     }
 
     //region Units
@@ -478,7 +489,7 @@ class CivilizationInfo {
 
     fun canSignResearchAgreement(): Boolean {
         if (!isMajorCiv()) return false
-        if (!hasUnique("Enables Research agreements")) return false
+        if (!hasApplyingUnique("Enables Research agreements")) return false
         if (gameInfo.ruleSet.technologies.values
                         .none { tech.canBeResearched(it.name) && !tech.isResearched(it.name) }) return false
         return true
@@ -845,7 +856,7 @@ class CivilizationInfo {
         if (placedUnit.hasUnique("Religious Unit")) {
             placedUnit.religion = 
                 when {
-                    placedUnit.hasUnique("Takes your religion over the one in their birth city") ->
+                    placedUnit.hasApplyingUnique("Takes your religion over the one in their birth city") ->
                         religionManager.religion?.name
                     city != null -> city.cityConstructions.cityInfo.religion.getMajorityReligionName()
                     else -> religionManager.religion?.name

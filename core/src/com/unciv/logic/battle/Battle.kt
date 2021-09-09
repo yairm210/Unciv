@@ -36,7 +36,7 @@ object Battle {
              * but the hidden tile is actually IMPASSIBLE so you stop halfway!
              */
             if (attacker.getTile() != attackableTile.tileToAttackFrom) return
-            if (attacker.unit.hasUnique("Must set up to ranged attack") && !attacker.unit.isSetUpForSiege()) {
+            if (attacker.unit.hasApplyingUnique("Must set up to ranged attack") && !attacker.unit.isSetUpForSiege()) {
                 attacker.unit.action = UnitActionType.SetUp.value
                 attacker.unit.useMovementPoints(1f)
             }
@@ -61,7 +61,7 @@ object Battle {
 
         // Withdraw from melee ability
         if (attacker is MapUnitCombatant && attacker.isMelee() && defender is MapUnitCombatant) {
-            val withdraw = defender.unit.getMatchingUniques("May withdraw before melee ([]%)")
+            val withdraw = defender.getMatchingApplyingUniques("May withdraw before melee ([]%)", defender.getCivInfo())
                 .maxByOrNull{ it.params[0] }  // If a mod allows multiple withdraw properties, ensure the best is used
             if (withdraw != null && doWithdrawFromMeleeAbility(attacker, defender, withdraw)) return
         }
@@ -83,7 +83,7 @@ object Battle {
 
         // This needs to come BEFORE the move-to-tile, because if we haven't conquered it we can't move there =)
         if (defender.isDefeated() && defender is CityCombatant && attacker is MapUnitCombatant
-                && attacker.isMelee() && !attacker.unit.hasUnique("Unable to capture cities"))
+                && attacker.isMelee() && !attacker.unit.hasApplyingUnique("Unable to capture cities"))
             conquerCity(defender.city, attacker)
 
         // Exploring units surviving an attack should "wake up"
@@ -101,7 +101,7 @@ object Battle {
         }
 
         if (attacker is MapUnitCombatant) {
-            if (attacker.unit.hasUnique("Self-destructs when attacking"))
+            if (attacker.unit.hasApplyingUnique("Self-destructs when attacking"))
                 attacker.unit.destroy()
             else if (attacker.unit.isMoving())
                 attacker.unit.action = null
@@ -123,17 +123,17 @@ object Battle {
 
         val bonusUniques = ArrayList<Unique>()
 
-
+        
         if (civUnit is MapUnitCombatant) {
-            bonusUniques.addAll(civUnit.getMatchingUniques(bonusUniquePlaceholderText))
-        } else {
-            bonusUniques.addAll(civUnit.getCivInfo().getMatchingUniques(bonusUniquePlaceholderText))
+            bonusUniques.addAll(civUnit.getMatchingApplyingUniques(bonusUniquePlaceholderText, civUnit.getCivInfo()))
+        } else if (civUnit is CityCombatant) {
+            bonusUniques.addAll(civUnit.getMatchingApplyingUniques(bonusUniquePlaceholderText, civUnit.getCivInfo()))
         }
 
         bonusUniquePlaceholderText = "Earn []% of [] unit's [] as [] when killed within 4 tiles of a city following this religion"
         val cityWithReligion =
             civUnit.getTile().getTilesInDistance(4).firstOrNull {
-                it.isCityCenter() && it.getCity()!!.getMatchingUniques(bonusUniquePlaceholderText).any()
+                it.isCityCenter() && it.getCity()!!.getMatchingApplyingUniques(bonusUniquePlaceholderText).any()
             }?.getCity()
         if (cityWithReligion != null) {
             bonusUniques.addAll(cityWithReligion.getLocalMatchingUniques(bonusUniquePlaceholderText))
@@ -169,7 +169,9 @@ object Battle {
         // https://forums.civfanatics.com/threads/prize-ships-for-land-units.650196/
         // https://civilization.fandom.com/wiki/Module:Data/Civ5/GK/Defines
 
-        if (attacker.unit.getMatchingUniques("May capture killed [] units").none { defender.matchesCategory(it.params[0]) }) return false
+        if (attacker.getMatchingApplyingUniques("May capture killed [] units", attacker.getCivInfo())
+            .none { defender.matchesCategory(it.params[0]) }
+        ) return false
 
         val captureChance = min(0.8f, 0.1f + attacker.getAttackingStrength().toFloat() / defender.getDefendingStrength().toFloat() * 0.4f)
         if (Random().nextFloat() > captureChance) return false
@@ -232,7 +234,10 @@ object Battle {
         if (plunderingUnit !is MapUnitCombatant) return
         val plunderedGoods = Stats()
 
-        for (unique in plunderingUnit.unit.getMatchingUniques("Earn []% of the damage done to [] units as []")) {
+        for (unique in plunderingUnit.getMatchingApplyingUniques(
+            "Earn []% of the damage done to [] units as []", 
+            plunderingUnit.getCivInfo())
+        ) {
             if (plunderedUnit.matchesCategory(unique.params[1])) {
                 // silently ignore bad mods here - or test in checkModLinks
                 val stat = Stat.values().firstOrNull { it.name == unique.params[2] }
@@ -298,7 +303,7 @@ object Battle {
 
     private fun tryHealAfterKilling(attacker: ICombatant) {
         if (attacker is MapUnitCombatant)
-            for (unique in attacker.unit.getMatchingUniques("Heals [] damage if it kills a unit")) {
+            for (unique in attacker.getMatchingApplyingUniques("Heals [] damage if it kills a unit", attacker.getCivInfo())) {
                 val amountToHeal = unique.params[0].toInt()
                 attacker.unit.healBy(amountToHeal)
             }
@@ -308,7 +313,8 @@ object Battle {
         // German unique - needs to be checked before we try to move to the enemy tile, since the encampment disappears after we move in
         if (defender.isDefeated() && defender.getCivInfo().isBarbarian()
                 && attackedTile.improvement == Constants.barbarianEncampment
-                && attacker.getCivInfo().hasUnique("67% chance to earn 25 Gold and recruit a Barbarian unit from a conquered encampment")
+            // ToDo: Moddability in this unique
+                && attacker.getCivInfo().hasApplyingUnique("67% chance to earn 25 Gold and recruit a Barbarian unit from a conquered encampment")
                 && Random().nextDouble() < 0.67) {
             attacker.getCivInfo().placeUnitNearTile(attackedTile.position, defender.getName())
             attacker.getCivInfo().addGold(25)
@@ -316,7 +322,7 @@ object Battle {
         }
 
         // Similarly, Ottoman unique
-        if (attacker.getCivInfo().hasUnique("50% chance of capturing defeated Barbarian naval units and earning 25 Gold")
+        if (attacker.getCivInfo().hasApplyingUnique("50% chance of capturing defeated Barbarian naval units and earning 25 Gold")
                 && defender.isDefeated()
                 && defender is MapUnitCombatant
                 && defender.unit.baseUnit.isWaterUnit()
@@ -363,7 +369,7 @@ object Battle {
         if (attacker is MapUnitCombatant) {
             val unit = attacker.unit
             unit.attacksThisTurn += 1
-            if (unit.hasUnique("Can move after attacking") || unit.maxAttacksPerTurn() > unit.attacksThisTurn) {
+            if (unit.hasApplyingUnique("Can move after attacking") || unit.maxAttacksPerTurn() > unit.attacksThisTurn) {
                 // if it was a melee attack and we won, then the unit ALREADY got movement points deducted,
                 // for the movement to the enemy's tile!
                 // and if it's an air unit, it only has 1 movement anyway, so...
@@ -385,11 +391,11 @@ object Battle {
             return
 
         var xpModifier = 1f
-        for (unique in thisCombatant.getCivInfo().getMatchingUniques("[] units gain []% more Experience from combat")) {
+        for (unique in thisCombatant.getCivInfo().getMatchingApplyingUniques("[] units gain []% more Experience from combat")) {
             if (thisCombatant.unit.matchesFilter(unique.params[0]))
                 xpModifier += unique.params[1].toFloat() / 100
         }
-        for (unique in thisCombatant.unit.getMatchingUniques("[]% Bonus XP gain"))
+        for (unique in thisCombatant.getMatchingApplyingUniques("[]% Bonus XP gain", thisCombatant.getCivInfo()))
             xpModifier += unique.params[0].toFloat() / 100
 
         val xpGained = (amount * xpModifier).toInt()
@@ -398,7 +404,7 @@ object Battle {
 
         if (thisCombatant.getCivInfo().isMajorCiv()) {
             var greatGeneralPointsModifier = 1f
-            for (unique in thisCombatant.getMatchingUniques("[] is earned []% faster")) {
+            for (unique in thisCombatant.getMatchingApplyingUniques("[] is earned []% faster", thisCombatant.getCivInfo())) {
                 val unitName = unique.params[0]
                 val unit = thisCombatant.getCivInfo().gameInfo.ruleSet.units[unitName]
                 if (unit != null && unit.uniques.contains("Great Person - [War]"))
@@ -422,7 +428,7 @@ object Battle {
             for (airUnit in airUnits.toList()) airUnit.destroy()
         }
 
-        for (unique in attacker.getMatchingUniques("Upon capturing a city, receive [] times its [] production as [] immediately")) {
+        for (unique in attacker.getMatchingApplyingUniques("Upon capturing a city, receive [] times its [] production as [] immediately", attackerCiv)) {
             attackerCiv.addStat(
                 Stat.valueOf(unique.params[2]),
                 unique.params[0].toInt() * city.cityStats.currentCityStats[Stat.valueOf(unique.params[1])].toInt()
@@ -465,7 +471,7 @@ object Battle {
 
         when {
             // Uncapturable units are destroyed (units captured by barbarians also - for now)
-            defender.unit.hasUnique("Uncapturable") || attacker.getCivInfo().isBarbarian() -> {
+            defender.unit.hasApplyingUnique("Uncapturable") || attacker.getCivInfo().isBarbarian() -> {
                 capturedUnit.destroy()
             }
             // Captured settlers are converted to workers.
@@ -514,12 +520,12 @@ object Battle {
         }
 
         val blastRadius =
-            if (!attacker.unit.hasUnique("Blast radius []")) 2
-            else attacker.unit.getMatchingUniques("Blast radius []").first().params[0].toInt()
+            if (!attacker.hasUnique("Blast radius []")) 2
+            else attacker.getMatchingUniques("Blast radius []").first().params[0].toInt()
 
         val strength = when {
-            (attacker.unit.hasUnique("Nuclear weapon of Strength []")) ->
-                attacker.unit.getMatchingUniques("Nuclear weapon of Strength []").first().params[0].toInt()
+            (attacker.hasUnique("Nuclear weapon of Strength []")) ->
+                attacker.getMatchingUniques("Nuclear weapon of Strength []").first().params[0].toInt()
             else -> return
         }
 
@@ -562,7 +568,7 @@ object Battle {
         }
 
         // Instead of postBattleAction() just destroy the unit, all other functions are not relevant
-        if (attacker.unit.hasUnique("Self-destructs when attacking")) attacker.unit.destroy()
+        if (attacker.unit.hasApplyingUnique("Self-destructs when attacking")) attacker.unit.destroy()
 
         // It's unclear whether using nukes results in a penalty with all civs, or only affected civs.
         // For now I'll make it give a diplomatic penalty to all known civs, but some testing for this would be appreciated
@@ -598,7 +604,7 @@ object Battle {
                     populationLossReduced = true
                 }
             //
-            for (unique in city.getMatchingUniques("Population loss from nuclear attacks []% []")) {
+            for (unique in city.getMatchingApplyingUniques("Population loss from nuclear attacks []% []")) {
                 if (!city.matchesFilter(unique.params[1])) continue
                 populationLoss *= unique.params[0].toPercent()
                 populationLossReduced = true
@@ -629,7 +635,7 @@ object Battle {
         }
 
         // Remove improvements, add fallout
-        if (tile.improvement != null && !tile.getTileImprovement()!!.hasUnique("Indestructible")) {
+        if (tile.improvement != null && !tile.getTileImprovement()!!.hasApplyingUnique("Indestructible", tile.getOwner())) {
             tile.improvement = null
         }
         tile.improvementInProgress = null
@@ -668,7 +674,7 @@ object Battle {
             } else {
                 var populationLoss = city.population.population * (0.6 + Random().nextFloat() * 0.2)
                 var populationLossReduced = false
-                for (unique in city.getMatchingUniques("Population loss from nuclear attacks []% []")) {
+                for (unique in city.getMatchingApplyingUniques("Population loss from nuclear attacks []% []")) {
                     if (!city.matchesFilter(unique.params[1]))
                     populationLoss *= unique.params[0].toPercent()
                     populationLossReduced = true
@@ -692,7 +698,7 @@ object Battle {
         }
 
         // Remove improvements
-        if (tile.improvement != null && !tile.getTileImprovement()!!.hasUnique("Indestructible")) {
+        if (tile.improvement != null && !tile.getTileImprovement()!!.hasApplyingUnique("Indestructible", tile.getOwner())) {
             tile.improvement = null
         }
         tile.improvementInProgress = null
@@ -712,7 +718,7 @@ object Battle {
     }
 
     private fun tryInterceptAirAttack(attacker: MapUnitCombatant, attackedTile:TileInfo, interceptingCiv:CivilizationInfo) {
-        if (attacker.unit.hasUnique("Cannot be intercepted")) return
+        if (attacker.unit.hasApplyingUnique("Cannot be intercepted")) return
         for (interceptor in interceptingCiv.getCivUnits()
             .filter { it.canIntercept(attackedTile) }) {
             if (Random().nextFloat() > 100f / interceptor.interceptChance()) continue

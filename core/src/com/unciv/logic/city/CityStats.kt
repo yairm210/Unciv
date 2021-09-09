@@ -44,8 +44,15 @@ class CityStats(val cityInfo: CityInfo) {
     private fun getStatsFromTiles(): Stats {
         val stats = Stats()
         for (cell in cityInfo.tilesInRange
-                .filter { cityInfo.location == it.position || cityInfo.isWorked(it) ||
-                        it.getTileImprovement()?.hasUnique("Tile provides yield without assigned population")==true && it.owningCity == cityInfo })
+            .filter { 
+                ( cityInfo.location == it.position 
+                    || cityInfo.isWorked(it) 
+                    || it.getTileImprovement()?.hasApplyingUnique(
+                        "Tile provides yield without assigned population", cityInfo.civInfo
+                    ) == true
+                ) && it.owningCity == cityInfo 
+            }
+        )
             stats.add(cell.getTileStats(cityInfo, cityInfo.civInfo))
         return stats
     }
@@ -55,9 +62,9 @@ class CityStats(val cityInfo: CityInfo) {
         if (!cityInfo.isCapital() && cityInfo.isConnectedToCapital()) {
             val civInfo = cityInfo.civInfo
             stats.gold = civInfo.getCapital().population.population * 0.15f + cityInfo.population.population * 1.1f - 1 // Calculated by http://civilization.wikia.com/wiki/Trade_route_(Civ5)
-            for (unique in cityInfo.getMatchingUniques("[] from each Trade Route"))
+            for (unique in cityInfo.getMatchingApplyingUniques("[] from each Trade Route"))
                 stats.add(unique.stats)
-            if (civInfo.hasUnique("Gold from all trade routes +25%")) stats.gold *= 1.25f // Machu Picchu speciality
+            if (civInfo.hasApplyingUnique("Gold from all trade routes +25%", civInfo)) stats.gold *= 1.25f // Machu Picchu speciality
         }
         return stats
     }
@@ -74,7 +81,7 @@ class CityStats(val cityInfo: CityInfo) {
 
     fun getScienceConversionRate(): Float {
         var conversionRate = 1 / 4f
-        if (cityInfo.civInfo.hasUnique("Production to science conversion in cities increased by 33%"))
+        if (cityInfo.civInfo.hasApplyingUnique("Production to science conversion in cities increased by 33%"))
             conversionRate *= 1.33f
         return conversionRate
     }
@@ -122,7 +129,7 @@ class CityStats(val cityInfo: CityInfo) {
                     if (otherCiv.cityStateType == CityStateType.Maritime && cityInfo.isCapital())
                         stats.food += 2
 
-                    if (cityInfo.civInfo.hasUnique("Food and Culture from Friendly City-States are increased by 50%"))
+                    if (cityInfo.civInfo.hasApplyingUnique("Food and Culture from Friendly City-States are increased by 50%"))
                         stats.food *= 1.5f
                     return stats
                 }
@@ -137,7 +144,7 @@ class CityStats(val cityInfo: CityInfo) {
                     }
                 }
 
-                if (cityInfo.civInfo.hasUnique("Food and Culture from Friendly City-States are increased by 50%")) {
+                if (cityInfo.civInfo.hasApplyingUnique("Food and Culture from Friendly City-States are increased by 50%")) {
                     stats.food *= 1.5f
                     stats.culture *= 1.5f
                 }
@@ -154,7 +161,7 @@ class CityStats(val cityInfo: CityInfo) {
 
         if (currentConstruction is Building
                 && cityInfo.civInfo.getCapital().cityConstructions.builtBuildings.contains(currentConstruction.name)
-                && cityInfo.civInfo.hasUnique("+25% Production towards any buildings that already exist in the Capital"))
+                && cityInfo.civInfo.hasApplyingUnique("+25% Production towards any buildings that already exist in the Capital"))
             stats.production += 25f
 
         return stats
@@ -172,12 +179,14 @@ class CityStats(val cityInfo: CityInfo) {
     private fun getGrowthBonusFromPoliciesAndWonders(): Float {
         var bonus = 0f
         // "+[amount]% growth [cityFilter]"
-        for (unique in cityInfo.getMatchingUniques("+[]% growth []"))
+        for (unique in cityInfo.getMatchingApplyingUniques("+[]% growth []"))
             if (cityInfo.matchesFilter(unique.params[1]))
                 bonus += unique.params[0].toFloat()
-        for (unique in cityInfo.getMatchingUniques("+[]% growth [] when not at war"))
-            if (cityInfo.matchesFilter(unique.params[1]) && !cityInfo.civInfo.isAtWar())
-                bonus += unique.params[0].toFloat()
+        // Deprecated since 3.16.14
+            for (unique in cityInfo.getMatchingApplyingUniques("+[]% growth [] when not at war"))
+                if (cityInfo.matchesFilter(unique.params[1]) && !cityInfo.civInfo.isAtWar())
+                    bonus += unique.params[0].toFloat()
+        //
         return bonus / 100
     }
 
@@ -191,13 +200,13 @@ class CityStats(val cityInfo: CityInfo) {
             ?: return Stats()
         val stats = specialist.clone()
         // Deprecated since 3.16.11
-            for (unique in cityInfo.civInfo.getMatchingUniques("[] from every specialist"))
+            for (unique in cityInfo.civInfo.getMatchingApplyingUniques("[] from every specialist"))
                 stats.add(unique.stats)
         //
-        for (unique in cityInfo.getMatchingUniques("[] from every specialist []"))
+        for (unique in cityInfo.getMatchingApplyingUniques("[] from every specialist []"))
             if (cityInfo.matchesFilter(unique.params[1]))
                 stats.add(unique.stats)
-        for (unique in cityInfo.civInfo.getMatchingUniques("[] from every []"))
+        for (unique in cityInfo.civInfo.getMatchingApplyingUniques("[] from every []"))
             if (unique.params[1] == specialistName)
                 stats.add(unique.stats)
         return stats
@@ -366,7 +375,7 @@ class CityStats(val cityInfo: CityInfo) {
             unhappinessModifier *= civInfo.gameInfo.getDifficulty().aiUnhappinessModifier
 
         var unhappinessFromCity = -3f // -3 happiness per city
-        if (civInfo.hasUnique("Unhappiness from number of Cities doubled"))
+        if (civInfo.hasApplyingUnique("Unhappiness from number of Cities doubled"))
             unhappinessFromCity *= 2f //doubled for the Indian
 
         newHappinessList["Cities"] = unhappinessFromCity * unhappinessModifier
@@ -375,11 +384,11 @@ class CityStats(val cityInfo: CityInfo) {
         var unhappinessFromSpecialists = cityInfo.population.getNumberOfSpecialists().toFloat()
 
         // Deprecated since 3.16.11
-            for (unique in civInfo.getMatchingUniques("Specialists only produce []% of normal unhappiness"))
+            for (unique in civInfo.getMatchingApplyingUniques("Specialists only produce []% of normal unhappiness"))
                 unhappinessFromSpecialists *= (1f - unique.params[0].toFloat() / 100f)
         //
 
-        for (unique in cityInfo.getMatchingUniques("[]% unhappiness from specialists []")) {
+        for (unique in cityInfo.getMatchingApplyingUniques("[]% unhappiness from specialists []")) {
             if (cityInfo.matchesFilter(unique.params[1]))
                 unhappinessFromSpecialists *= unique.params[0].toPercent()
         }
@@ -392,15 +401,15 @@ class CityStats(val cityInfo: CityInfo) {
             unhappinessFromCitizens *= 2f
 
         // Deprecated since 3.16.11
-            for (unique in civInfo.getMatchingUniques("Unhappiness from population decreased by []%"))
+            for (unique in civInfo.getMatchingApplyingUniques("Unhappiness from population decreased by []%"))
                 unhappinessFromCitizens *= (1 - unique.params[0].toFloat() / 100)
 
-            for (unique in civInfo.getMatchingUniques("Unhappiness from population decreased by []% []"))
+            for (unique in civInfo.getMatchingApplyingUniques("Unhappiness from population decreased by []% []"))
                 if (cityInfo.matchesFilter(unique.params[1]))
                     unhappinessFromCitizens *= (1 - unique.params[0].toFloat() / 100)
         //
 
-        for (unique in cityInfo.getMatchingUniques("[]% unhappiness from population []"))
+        for (unique in cityInfo.getMatchingApplyingUniques("[]% unhappiness from population []"))
             if (cityInfo.matchesFilter(unique.params[1]))
                 unhappinessFromCitizens *= unique.params[0].toPercent()
 
@@ -579,11 +588,11 @@ class CityStats(val cityInfo: CityInfo) {
         var foodEatenBySpecialists = 2f * cityInfo.population.getNumberOfSpecialists()
 
         // Deprecated since 3.16.11
-            for (unique in cityInfo.civInfo.getMatchingUniques("-[]% food consumption by specialists"))
+            for (unique in cityInfo.civInfo.getMatchingApplyingUniques("-[]% food consumption by specialists"))
                 foodEatenBySpecialists *= 1f - unique.params[0].toFloat() / 100f
         //
 
-        for (unique in cityInfo.getMatchingUniques("[]% food consumption by specialists []"))
+        for (unique in cityInfo.getMatchingApplyingUniques("[]% food consumption by specialists []"))
             if (cityInfo.matchesFilter(unique.params[1]))
                 foodEatenBySpecialists *= unique.params[0].toPercent()
 

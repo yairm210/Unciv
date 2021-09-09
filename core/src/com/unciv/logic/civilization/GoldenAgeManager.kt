@@ -26,7 +26,7 @@ class GoldenAgeManager {
 
     fun enterGoldenAge(unmodifiedNumberOfTurns: Int = 10) {
         var turnsToGoldenAge = unmodifiedNumberOfTurns.toFloat()
-        for (unique in civInfo.getMatchingUniques("Golden Age length increased by []%"))
+        for (unique in civInfo.getMatchingApplyingUniques("Golden Age length increased by []%"))
             turnsToGoldenAge *= unique.params[0].toPercent()
         turnsToGoldenAge *= civInfo.gameInfo.gameParameters.gameSpeed.modifier
         turnsLeftForCurrentGoldenAge += turnsToGoldenAge.toInt()

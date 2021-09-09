@@ -213,10 +213,10 @@ class DiplomacyManager() {
     fun getCityStateInfluenceRestingPoint(): Float {
         var restingPoint = 0f
 
-        for (unique in otherCiv().getMatchingUniques("Resting point for Influence with City-States is increased by []"))
+        for (unique in otherCiv().getMatchingApplyingUniques("Resting point for Influence with City-States is increased by []"))
             restingPoint += unique.params[0].toInt()
 
-        for (unique in otherCiv().getMatchingUniques("Resting point for Influence with City-States following this religion []"))
+        for (unique in otherCiv().getMatchingApplyingUniques("Resting point for Influence with City-States following this religion []"))
             if (otherCiv().religionManager.religion?.name == civInfo.getCapital().religion.getMajorityReligionName())
                 restingPoint += unique.params[0].toInt()
 
@@ -240,11 +240,11 @@ class DiplomacyManager() {
             else -> 1f
         }
 
-        for (unique in otherCiv().getMatchingUniques("City-State Influence degrades []% slower"))
+        for (unique in otherCiv().getMatchingApplyingUniques("City-State Influence degrades []% slower"))
             modifier *= 1f - unique.params[0].toFloat() / 100f
 
         for (civ in civInfo.gameInfo.civilizations.filter { it.isMajorCiv() && it != otherCiv()}) {
-            for (unique in civ.getMatchingUniques("Influence of all other civilizations with all city-states degrades []% faster")) {
+            for (unique in civ.getMatchingApplyingUniques("Influence of all other civilizations with all city-states degrades []% faster")) {
                 modifier *= 1f + unique.params[0].toFloat() / 100f
             }
         }
@@ -265,7 +265,7 @@ class DiplomacyManager() {
             else -> 1f
         }
 
-        if (otherCiv().hasUnique("City-State Influence recovers at twice the normal rate"))
+        if (otherCiv().hasApplyingUnique("City-State Influence recovers at twice the normal rate"))
             modifier *= 2f
 
         return max(0f, increment) * max(0f, modifier)
@@ -326,7 +326,7 @@ class DiplomacyManager() {
      */
     fun isConsideredFriendlyTerritory(): Boolean {
         if (civInfo.isCityState() &&
-            (relationshipLevel() >= RelationshipLevel.Friend || otherCiv().hasUnique("City-State territory always counts as friendly territory")))
+            (relationshipLevel() >= RelationshipLevel.Friend || otherCiv().hasApplyingUnique("City-State territory always counts as friendly territory")))
             return true
         return hasOpenBorders
     }
@@ -439,9 +439,12 @@ class DiplomacyManager() {
                 flagsCountdown[flag] = flagsCountdown[flag]!! - 1
 
             // If we have uniques that make city states grant military units faster when at war with a common enemy, add higher numbers to this flag
-            if (flag == DiplomacyFlags.ProvideMilitaryUnit.name && civInfo.isMajorCiv() && otherCiv().isCityState() && 
-                    civInfo.gameInfo.civilizations.filter { civInfo.isAtWarWith(it) && otherCiv().isAtWarWith(it) }.any()) {
-                for (unique in civInfo.getMatchingUniques("Militaristic City-States grant units [] times as fast when you are at war with a common nation")) {
+            if (flag == DiplomacyFlags.ProvideMilitaryUnit.name 
+                && civInfo.isMajorCiv() 
+                && otherCiv().isCityState() 
+                && civInfo.gameInfo.civilizations.filter { civInfo.isAtWarWith(it) && otherCiv().isAtWarWith(it) }.any()
+            ) {
+                for (unique in civInfo.getMatchingApplyingUniques("Militaristic City-States grant units [] times as fast when you are at war with a common nation")) {
                     flagsCountdown[DiplomacyFlags.ProvideMilitaryUnit.name] =
                         flagsCountdown[DiplomacyFlags.ProvideMilitaryUnit.name]!! - unique.params[0].toInt() + 1
                     if (flagsCountdown[DiplomacyFlags.ProvideMilitaryUnit.name]!! <= 0) {

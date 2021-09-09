@@ -12,7 +12,7 @@ import com.unciv.models.AttackableTile
 object BattleHelper {
 
     fun tryAttackNearbyEnemy(unit: MapUnit): Boolean {
-        if (unit.hasUnique("Cannot attack")) return false
+        if (unit.hasApplyingUnique("Cannot attack")) return false
         val attackableEnemies = getAttackableEnemies(unit, unit.movement.getDistanceToTiles())
                 // Only take enemies we can fight without dying
                 .filter {
@@ -47,22 +47,22 @@ object BattleHelper {
         // So the poor unit thought it could attack from the tile, but when it comes to do so it has no movement points!
         // Silly floats, basically
 
-        val unitMustBeSetUp = unit.hasUnique("Must set up to ranged attack")
+        val unitMustBeSetUp = unit.hasApplyingUnique("Must set up to ranged attack")
         val tilesToAttackFrom = if (unit.baseUnit.movesLikeAirUnits()) sequenceOf(unit.currentTile)
         else
             unitDistanceToTiles.asSequence()
-                    .filter {
-                        val movementPointsToExpendAfterMovement = if (unitMustBeSetUp) 1 else 0
-                        val movementPointsToExpendHere = if (unitMustBeSetUp && !unit.isSetUpForSiege()) 1 else 0
-                        val movementPointsToExpendBeforeAttack = if (it.key == unit.currentTile) movementPointsToExpendHere else movementPointsToExpendAfterMovement
-                        unit.currentMovement - it.value.totalDistance - movementPointsToExpendBeforeAttack > 0.1
-                    } // still got leftover movement points after all that, to attack (0.1 is because of Float nonsense, see MapUnit.moveToTile(...)
-                    .map { it.key }
-                    .filter { unit.movement.canMoveTo(it) || it == unit.getTile() }
+                .filter {
+                    val movementPointsToExpendAfterMovement = if (unitMustBeSetUp) 1 else 0
+                    val movementPointsToExpendHere = if (unitMustBeSetUp && !unit.isSetUpForSiege()) 1 else 0
+                    val movementPointsToExpendBeforeAttack = if (it.key == unit.currentTile) movementPointsToExpendHere else movementPointsToExpendAfterMovement
+                    unit.currentMovement - it.value.totalDistance - movementPointsToExpendBeforeAttack > 0.1
+                } // still got leftover movement points after all that, to attack (0.1 is because of Float nonsense, see MapUnit.moveToTile(...)
+                .map { it.key }
+                .filter { unit.movement.canMoveTo(it) || it == unit.getTile() }
 
         for (reachableTile in tilesToAttackFrom) {  // tiles we'll still have energy after we reach there
             val tilesInAttackRange =
-                    if (unit.hasUnique("Ranged attacks may be performed over obstacles") || unit.baseUnit.movesLikeAirUnits())
+                    if (unit.hasApplyingUnique("Ranged attacks may be performed over obstacles") || unit.baseUnit.movesLikeAirUnits())
                         reachableTile.getTilesInDistance(rangeOfAttack)
                     else reachableTile.getViewableTilesList(rangeOfAttack)
                             .asSequence()
@@ -84,14 +84,14 @@ object BattleHelper {
         if (!combatant.getCivInfo().isAtWarWith(tileCombatant.getCivInfo())) return false
 
         if (combatant is MapUnitCombatant && 
-            combatant.unit.hasUnique("Can only attack [] units") &&
-            combatant.unit.getMatchingUniques("Can only attack [] units").none { tileCombatant.matchesCategory(it.params[0]) }
+            combatant.hasApplyingUnique("Can only attack [] units") &&
+            combatant.getMatchingApplyingUniques("Can only attack [] units").none { tileCombatant.matchesCategory(it.params[0]) }
         )
             return false
 
         if (combatant is MapUnitCombatant &&
-            combatant.unit.hasUnique("Can only attack [] tiles") &&
-            combatant.unit.getMatchingUniques("Can only attack [] tiles").none { tile.matchesFilter(it.params[0]) }
+            combatant.hasApplyingUnique("Can only attack [] tiles") &&
+            combatant.getMatchingApplyingUniques("Can only attack [] tiles").none { tile.matchesFilter(it.params[0]) }
         )
             return false
 

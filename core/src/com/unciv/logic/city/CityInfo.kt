@@ -9,6 +9,7 @@ import com.unciv.logic.map.RoadStatus
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
 import com.unciv.models.Counter
+import com.unciv.models.ruleset.IHasUniqueMatching
 import com.unciv.models.ruleset.Unique
 import com.unciv.models.ruleset.tile.ResourceSupplyList
 import com.unciv.models.ruleset.tile.ResourceType
@@ -22,7 +23,7 @@ import kotlin.math.min
 import kotlin.math.pow
 import kotlin.math.roundToInt
 
-class CityInfo {
+class CityInfo: IHasUniqueMatching {
     @Suppress("JoinDeclarationAndAssignment")
     @Transient
     lateinit var civInfo: CivilizationInfo
@@ -146,7 +147,7 @@ class CityInfo {
 
         civInfo.policies.tryToAddPolicyBuildings()
 
-        for (unique in getMatchingUniques("Gain a free [] []")) {
+        for (unique in getMatchingApplyingUniques("Gain a free [] []")) {
             val freeBuildingName = unique.params[0]
             if (matchesFilter(unique.params[1])) {
                 if (!cityConstructions.isBuilt(freeBuildingName))
@@ -272,15 +273,14 @@ class CityInfo {
         for (tileInfo in getTiles()) {
             if (tileInfo.improvement == null) continue
             val tileImprovement = tileInfo.getTileImprovement()
-            for (unique in tileImprovement!!.uniqueObjects)
-                if (unique.placeholderText == "Provides [] []") {
-                    val resource = getRuleset().tileResources[unique.params[1]] ?: continue
-                    cityResources.add(
-                        resource,
-                        unique.params[0].toInt() * civInfo.getResourceModifier(resource),
-                        "Tiles"
-                    )
-                }
+            for (unique in tileImprovement!!.getMatchingApplyingUniques("Provides [] []", civInfo)) {
+                val resource = getRuleset().tileResources[unique.params[1]] ?: continue
+                cityResources.add(
+                    resource,
+                    unique.params[0].toInt() * civInfo.getResourceModifier(resource),
+                    "Tiles"
+                )
+            }
         }
         for (building in cityConstructions.getBuiltBuildings()) {
             for ((resourceName, amount) in building.getResourceRequirements()) {
@@ -288,7 +288,7 @@ class CityInfo {
                 cityResources.add(resource, -amount, "Buildings")
             }
         }
-        for (unique in getLocalMatchingUniques("Provides [] []")) { // E.G "Provides [1] [Iron]"
+        for (unique in getLocalMatchingApplyingUniques("Provides [] []")) { // E.G "Provides [1] [Iron]"
             val resource = getRuleset().tileResources[unique.params[1]]
             if (resource != null) {
                 cityResources.add(
@@ -379,14 +379,14 @@ class CityInfo {
         sourceToGPP["Buildings"] = buildingsCounter
 
         for ((_, gppCounter) in sourceToGPP) {
-            for (unique in civInfo.getMatchingUniques("[] is earned []% faster")) {
+            for (unique in civInfo.getMatchingApplyingUniques("[] is earned []% faster")) {
                 val unitName = unique.params[0]
                 if (!gppCounter.containsKey(unitName)) continue
                 gppCounter.add(unitName, gppCounter[unitName]!! * unique.params[1].toInt() / 100)
             }
 
             var allGppPercentageBonus = 0
-            for (unique in getMatchingUniques("[]% great person generation []")) {
+            for (unique in getMatchingApplyingUniques("[]% great person generation []")) {
                 if (!matchesFilter(unique.params[1])) continue
                 allGppPercentageBonus += unique.params[0].toInt()
             }
@@ -397,10 +397,12 @@ class CityInfo {
                         .hasFlag(DiplomacyFlags.DeclarationOfFriendship)
                 ) continue
 
-                for (ourUnique in civInfo.getMatchingUniques("When declaring friendship, both parties gain a []% boost to great person generation"))
+                for (ourUnique in civInfo.getMatchingApplyingUniques("When declaring friendship, both parties gain a []% boost to great person generation")) {
                     allGppPercentageBonus += ourUnique.params[0].toInt()
-                for (theirUnique in otherCiv.getMatchingUniques("When declaring friendship, both parties gain a []% boost to great person generation"))
+                }
+                for (theirUnique in otherCiv.getMatchingApplyingUniques("When declaring friendship, both parties gain a []% boost to great person generation")) {
                     allGppPercentageBonus += theirUnique.params[0].toInt()
+                }
             }
 
             for (unitName in gppCounter.keys)
@@ -493,8 +495,9 @@ class CityInfo {
         expansion.nextTurn(stats.culture)
         if (isBeingRazed) {
             val removedPopulation =
-                1 + civInfo.getMatchingUniques("Cities are razed [] times as fast")
+                1 + civInfo.getMatchingApplyingUniques("Cities are razed [] times as fast")
                     .sumOf { it.params[0].toInt() - 1 }
+            // ToDo: This calculation yields incorrect results for more than one unique
             population.addPopulation(-1 * removedPopulation)
             if (population.population <= 0) {
                 civInfo.addNotification(
@@ -674,11 +677,32 @@ class CityInfo {
                 }
     }
 
+    override fun getMatchingUniques(uniqueTemplate: String): Sequence<Unique> {
+        return getMatchingUniques(uniqueTemplate, getLocalMatchingUniques(uniqueTemplate))
+    }
+    
+    // Finds matching uniques provided from both local and non-local sources that are applicable to this situation
+    fun getMatchingApplyingUniques(
+        placeholderText: String,
+        localUniques: Sequence<Unique> = getLocalMatchingUniques(placeholderText),
+    ): Sequence<Unique> {
+        return getMatchingUniques(placeholderText, localUniques)
+            .filter { it.conditionalsApply(civInfo) }
+    }
+    
+    fun hasApplyingUnique(placeholderText: String) = hasApplyingUnique(placeholderText, civInfo)
+
     // Matching uniques provided by sources in the city itself
     fun getLocalMatchingUniques(placeholderText: String): Sequence<Unique> {
         return cityConstructions.builtBuildingUniqueMap.getUniques(placeholderText)
             .filter { it.params.none { param -> param == "in other cities" } } +
                 religion.getMatchingUniques(placeholderText)
+    }
+    
+    // Matching uniques provided by sources in the city itself applicable to this situation
+    fun getLocalMatchingApplyingUniques(placeholderText: String): Sequence<Unique> {
+        return getLocalMatchingUniques(placeholderText)
+            .filter { it.conditionalsApply(civInfo) }
     }
 
     // Get all uniques that originate from this city

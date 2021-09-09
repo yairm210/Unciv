@@ -11,10 +11,11 @@ import com.unciv.models.translations.fillPlaceholders
 import com.unciv.models.translations.getPlaceholderParameters
 import com.unciv.models.translations.getPlaceholderText
 import com.unciv.models.translations.hasPlaceholderParameters
+import com.unciv.models.translations.getConditionals
 import com.unciv.ui.worldscreen.unit.UnitActions
 import kotlin.random.Random
 
-class Unique(val text:String){
+class Unique(val text: String) {
     val placeholderText = text.getPlaceholderText()
     val params = text.getPlaceholderParameters()
     /** This is so the heavy regex-based parsing is only activated once per unique, instead of every time it's called
@@ -23,6 +24,27 @@ class Unique(val text:String){
         val firstStatParam = params.firstOrNull { Stats.isStats(it) }
         if (firstStatParam == null) Stats() // So badly-defined stats don't crash the entire game
         else Stats.parse(firstStatParam)
+    }
+    val conditionals: List<Unique> = text.getConditionals()
+    
+    init {
+        if (conditionals.isNotEmpty())
+            println(conditionals.map { it.text })
+        if (text.contains("when not at war"))
+            println("\"$placeholderText\"")
+    }
+    
+    
+    // This function will get LARGE, I'm open for better ideas
+    fun conditionalsApply(civInfo: CivilizationInfo?): Boolean {
+        for (condition in conditionals) {
+            when (condition.placeholderText) {
+                "when not at war" -> if (civInfo == null || civInfo.isAtWar()) return false
+                "when at war" -> if (civInfo == null || !civInfo.isAtWar()) return false
+                else -> return false
+            }
+        }
+        return true
     }
 }
 

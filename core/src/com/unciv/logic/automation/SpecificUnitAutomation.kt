@@ -217,7 +217,7 @@ object SpecificUnitAutomation {
     }
 
     fun automateImprovementPlacer(unit: MapUnit) {
-        val improvementName = unit.getMatchingUniques("Can construct []").first().params[0]
+        val improvementName = unit.getMatchingApplyingUniques("Can construct []", unit.civInfo).first().params[0]
         val improvement = unit.civInfo.gameInfo.ruleSet.tileImprovements[improvementName]
             ?: return
         val relatedStat = improvement.maxByOrNull { it.value }?.key ?: Stat.Culture

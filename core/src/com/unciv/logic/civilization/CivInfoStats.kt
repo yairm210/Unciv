@@ -22,22 +22,23 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
     private fun getUnitMaintenance(): Int {
         val baseUnitCost = 0.5f
         var freeUnits = 3
-        for (unique in civInfo.getMatchingUniques("[] units cost no maintenance")) {
+        for (unique in civInfo.getMatchingApplyingUniques("[] units cost no maintenance")) {
             freeUnits += unique.params[0].toInt()
         }
 
         var unitsToPayFor = civInfo.getCivUnits()
-        if (civInfo.hasUnique("Units in cities cost no Maintenance"))
-        // Only land military units can truly "garrison"
+        if (civInfo.hasApplyingUnique("Units in cities cost no Maintenance", civInfo)) {
+            // Only land military units can truly "garrison"
             unitsToPayFor = unitsToPayFor.filterNot {
                 it.getTile().isCityCenter() && it.canGarrison()
             }
+        }
 
 
         var numberOfUnitsToPayFor = max(0f, unitsToPayFor.count().toFloat() - freeUnits)
 
 
-        for (unique in civInfo.getMatchingUniques("-[]% [] unit maintenance costs")) {
+        for (unique in civInfo.getMatchingApplyingUniques("-[]% [] unit maintenance costs")) {
             val numberOfUnitsWithDiscount = min(
                 numberOfUnitsToPayFor,
                 unitsToPayFor.count { it.matchesFilter(unique.params[1]) }.toFloat()
@@ -54,7 +55,7 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
         if (!civInfo.isPlayerCivilization())
             cost *= civInfo.gameInfo.getDifficulty().aiUnitMaintenanceModifier
 
-        for (unique in civInfo.getMatchingUniques("-[]% unit upkeep costs")) {
+        for (unique in civInfo.getMatchingApplyingUniques("-[]% unit upkeep costs")) {
             cost *= 1f - unique.params[0].toFloat() / 100f
         }
 
@@ -67,8 +68,9 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
         // just to go over them once is a waste of memory - there are low-end phones who don't have much ram
 
         val ignoredTileTypes =
-            civInfo.getMatchingUniques("No Maintenance costs for improvements in [] tiles")
-                .map { it.params[0] }.toHashSet() // needs to be .toHashSet()ed,
+            civInfo.getMatchingApplyingUniques("No Maintenance costs for improvements in [] tiles")
+                .map { it.params[0] }
+                .toHashSet() // needs to be .toHashSet()ed,
         // Because we go over every tile in every city and check if it's in this list, which can get real heavy.
 
         for (city in civInfo.cities) {
@@ -80,9 +82,10 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
                 transportationUpkeep += tile.roadStatus.upkeep
             }
         }
-        for (unique in civInfo.getMatchingUniques("Maintenance on roads & railroads reduced by []%"))
+        for (unique in civInfo.getMatchingApplyingUniques("Maintenance on roads & railroads reduced by []%")) {
             transportationUpkeep =
                 (transportationUpkeep * (100f - unique.params[0].toInt()) / 100).toInt()
+        }
 
         return transportationUpkeep
     }
@@ -132,14 +135,14 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
                     }
                 }
 
-                if (civInfo.hasUnique("Food and Culture from Friendly City-States are increased by 50%"))
+                if (civInfo.hasApplyingUnique("Food and Culture from Friendly City-States are increased by 50%", civInfo))
                     cityStateBonus.culture *= 1.5f
 
                 statMap.add("City-States", cityStateBonus)
             }
 
             if (otherCiv.isCityState())
-                for (unique in civInfo.getMatchingUniques("Allied City-States provide [] equal to []% of what they produce for themselves")) {
+                for (unique in civInfo.getMatchingApplyingUniques("Allied City-States provide [] equal to []% of what they produce for themselves")) {
                     if (otherCiv.getDiplomacyManager(civInfo.civName)
                             .relationshipLevel() != RelationshipLevel.Ally
                     ) continue
@@ -158,7 +161,9 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
 
         if (civInfo.religionManager.religion != null) {
             for (unique in civInfo.religionManager.religion!!.getBeliefs(BeliefType.Founder)
-                .flatMap { it.uniqueObjects }) {
+                .flatMap { it.uniqueObjects }
+            ) {
+                if (!unique.conditionalsApply(civInfo)) continue
                 if (unique.placeholderText == "[] for each global city following this religion") {
                     statMap.add(
                         "Religion",
@@ -166,20 +171,22 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
                     )
                 }
             }
-            for (unique in civInfo.religionManager.religion!!.getFounderUniques())
+            for (unique in civInfo.religionManager.religion!!.getFounderUniques()) {
+                if (!unique.conditionalsApply(civInfo)) continue
                 if (unique.placeholderText == "[] for every [] global followers []")
                     statMap.add(
                         "Religion",
                         unique.stats *
-                                civInfo.religionManager.numberOfFollowersFollowingThisReligion(
-                                    unique.params[2]
-                                ).toFloat() /
-                                unique.params[1].toFloat()
+                        civInfo.religionManager.numberOfFollowersFollowingThisReligion(
+                            unique.params[2]
+                        ).toFloat() /
+                        unique.params[1].toFloat()
                     )
+            }
         }
 
 
-        if (civInfo.hasUnique("50% of excess happiness added to culture towards policies")) {
+        if (civInfo.hasApplyingUnique("50% of excess happiness added to culture towards policies", civInfo)) {
             val happiness = civInfo.getHappiness()
             if (happiness > 0) statMap.add("Policies", Stats(culture = happiness / 2f))
         }
@@ -206,8 +213,9 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
         statMap["Base happiness"] = civInfo.getDifficulty().baseHappiness.toFloat()
 
         var happinessPerUniqueLuxury = 4f + civInfo.getDifficulty().extraHappinessPerLuxury
-        for (unique in civInfo.getMatchingUniques("+[] happiness from each type of luxury resource"))
+        for (unique in civInfo.getMatchingApplyingUniques("+[] happiness from each type of luxury resource")) {
             happinessPerUniqueLuxury += unique.params[0].toInt()
+        }
 
         val ownedLuxuries = civInfo.getCivResources().map { it.resource }
             .filter { it.resourceType == ResourceType.Luxury }
@@ -217,7 +225,7 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
             .count { it.resourceType === ResourceType.Luxury } * happinessPerUniqueLuxury
 
         val happinessBonusForCityStateProvidedLuxuries =
-            civInfo.getMatchingUniques("Happiness from Luxury Resources gifted by City-States increased by []%")
+            civInfo.getMatchingApplyingUniques("Happiness from Luxury Resources gifted by City-States increased by []%")
                 .sumOf { it.params[0].toInt() } / 100f
 
         val luxuriesProvidedByCityStates = civInfo.getKnownCivs().asSequence()
@@ -239,7 +247,7 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
 
         statMap["Traded Luxuries"] =
             luxuriesAllOfWhichAreTradedAway.count() * happinessPerUniqueLuxury *
-                    civInfo.getMatchingUniques("Retain []% of the happiness from a luxury after the last copy has been traded away")
+                    civInfo.getMatchingApplyingUniques("Retain []% of the happiness from a luxury after the last copy has been traded away")
                         .sumOf { it.params[0].toInt() } / 100f
 
         for (city in civInfo.cities) {
@@ -253,15 +261,15 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
             }
         }
 
-        if (civInfo.hasUnique("Provides 1 happiness per 2 additional social policies adopted")) {
+        if (civInfo.hasApplyingUnique("Provides 1 happiness per 2 additional social policies adopted", civInfo)) {
             if (!statMap.containsKey("Policies")) statMap["Policies"] = 0f
             statMap["Policies"] = statMap["Policies"]!! +
-                    civInfo.policies.getAdoptedPolicies()
-                        .count { !Policy.isBranchCompleteByName(it) } / 2
+                civInfo.policies.getAdoptedPolicies()
+                    .count { !Policy.isBranchCompleteByName(it) } / 2
         }
 
         var happinessPerNaturalWonder = 1f
-        if (civInfo.hasUnique("Double Happiness from Natural Wonders"))
+        if (civInfo.hasApplyingUnique("Double Happiness from Natural Wonders"))
             happinessPerNaturalWonder *= 2
 
         statMap["Natural Wonders"] = happinessPerNaturalWonder * civInfo.naturalWonders.size
@@ -271,12 +279,14 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
             for (unique in civInfo.religionManager.religion!!.getBeliefs(BeliefType.Founder)
                 .flatMap { it.uniqueObjects }) {
                 if (unique.placeholderText == "[] for each global city following this religion") {
+                    if (!unique.conditionalsApply(civInfo)) continue
                     statMap["Religion"] =
                         statMap["Religion"]!! +
                                 unique.stats.happiness * civInfo.religionManager.numberOfCitiesFollowingThisReligion()
                             .toFloat()
                 }
                 if (unique.placeholderText == "[] for every [] global followers []") {
+                    if (!unique.conditionalsApply(civInfo)) continue
                     statMap["Religion"] =
                         statMap["Religion"]!! +
                                 unique.stats.happiness *

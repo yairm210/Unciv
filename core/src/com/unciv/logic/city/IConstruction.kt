@@ -1,6 +1,7 @@
 package com.unciv.logic.city
 
 import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.models.ruleset.IHasUniqueMatching
 import com.unciv.models.ruleset.IHasUniques
 import com.unciv.models.ruleset.Unique
 import com.unciv.models.stats.INamed
@@ -16,7 +17,7 @@ interface IConstruction : INamed {
     fun getResourceRequirements(): HashMap<String,Int>
 }
 
-interface INonPerpetualConstruction : IConstruction, INamed, IHasUniques {
+interface INonPerpetualConstruction : IConstruction, INamed, IHasUniques, IHasUniqueMatching {
     val hurryCostModifier: Int
 
     fun getProductionCost(civInfo: CivilizationInfo): Int
@@ -30,10 +31,12 @@ interface INonPerpetualConstruction : IConstruction, INamed, IHasUniques {
         if (stat == Stat.Gold) return !uniques.contains("Unbuildable")
         // Can be purchased with [Stat] [cityFilter]
         if (getMatchingUniques("Can be purchased with [] []")
+                .filter { it.conditionalsApply(cityInfo?.civInfo) }
                 .any { it.params[0] == stat.name && (cityInfo != null && cityInfo.matchesFilter(it.params[1])) }
         ) return true
         // Can be purchased for [amount] [Stat] [cityFilter]
         if (getMatchingUniques("Can be purchased for [] [] []")
+                .filter { it.conditionalsApply(cityInfo?.civInfo) }
                 .any { it.params[1] == stat.name && (cityInfo != null && cityInfo.matchesFilter(it.params[2])) }
         ) return true
         return false
@@ -59,13 +62,16 @@ interface INonPerpetualConstruction : IConstruction, INamed, IHasUniques {
 
         // Can be purchased for [amount] [Stat] [cityFilter]
         val lowestCostUnique = getMatchingUniques("Can be purchased for [] [] []")
-            .filter { it.params[1] == stat.name && cityInfo.matchesFilter(it.params[2]) }
+            .filter { it.params[1] == stat.name && cityInfo.matchesFilter(it.params[2]) && it.conditionalsApply(cityInfo.civInfo) }
             .minByOrNull { it.params[0].toInt() }
         if (lowestCostUnique != null) return lowestCostUnique.params[0].toInt()
 
         // Can be purchased with [Stat] [cityFilter]
         if (getMatchingUniques("Can be purchased with [] []")
-                .any { it.params[0] == stat.name && cityInfo.matchesFilter(it.params[1])}
+            .any { it.params[0] == stat.name 
+                && cityInfo.matchesFilter(it.params[1]) 
+                && it.conditionalsApply(cityInfo.civInfo) 
+            }
         ) return cityInfo.civInfo.getEra().baseUnitBuyCost
         return null
     }
@@ -184,7 +190,7 @@ open class PerpetualConstruction(override var name: String, val description: Str
         const val CONVERSION_RATE: Int = 4
         val science = object : PerpetualConstruction("Science", "Convert production to science at a rate of [rate] to 1") {
             override fun isBuildable(cityConstructions: CityConstructions): Boolean {
-                return cityConstructions.cityInfo.civInfo.hasUnique("Enables conversion of city production to science")
+                return cityConstructions.cityInfo.civInfo.hasApplyingUnique("Enables conversion of city production to science")
             }
             override fun getProductionTooltip(cityInfo: CityInfo): String {
                 return "\r\n${(cityInfo.cityStats.currentCityStats.production / getConversionRate(cityInfo)).roundToInt()}/${Fonts.turn}"
@@ -193,7 +199,7 @@ open class PerpetualConstruction(override var name: String, val description: Str
         }
         val gold = object : PerpetualConstruction("Gold", "Convert production to gold at a rate of $CONVERSION_RATE to 1") {
             override fun isBuildable(cityConstructions: CityConstructions): Boolean {
-                return cityConstructions.cityInfo.civInfo.hasUnique("Enables conversion of city production to gold")
+                return cityConstructions.cityInfo.civInfo.hasApplyingUnique("Enables conversion of city production to gold")
             }
         }
         val idle = object : PerpetualConstruction("Nothing", "The city will not produce anything.") {

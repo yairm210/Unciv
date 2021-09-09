@@ -394,7 +394,7 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
             // As we can not reach our destination in a single turn
             if (unit.canGarrison()
                 && (unit.getTile().isCityCenter() || destination.isCityCenter())
-                && unit.civInfo.hasUnique("Units in cities cost no Maintenance")
+                && unit.civInfo.hasApplyingUnique("Units in cities cost no Maintenance")
             ) unit.civInfo.updateStatsForNextTurn()
             return
         }
@@ -461,7 +461,7 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
         // Unit maintenance changed
         if (unit.canGarrison()
             && (origin.isCityCenter() || lastReachableTile.isCityCenter())
-            && unit.civInfo.hasUnique("Units in cities cost no Maintenance")
+            && unit.civInfo.hasApplyingUnique("Units in cities cost no Maintenance")
         ) unit.civInfo.updateStatsForNextTurn()
         if (needToFindNewRoute) moveToTile(destination, considerZoneOfControl)
     }

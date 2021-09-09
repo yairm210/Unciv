@@ -40,12 +40,12 @@ class CityExpansionManager {
         if (cityInfo.civInfo.isCityState())
             cultureToNextTile *= 1.5f   // City states grow slower, perhaps 150% cost?
 
-        for (unique in cityInfo.getMatchingUniques("-[]% Culture cost of acquiring tiles []")) {
+        for (unique in cityInfo.getMatchingApplyingUniques("-[]% Culture cost of acquiring tiles []")) {
             if (cityInfo.matchesFilter(unique.params[1]))
                 cultureToNextTile /= unique.params[0].toPercent()
         }
         
-        for (unique in cityInfo.getMatchingUniques("[]% cost of natural border growth")) 
+        for (unique in cityInfo.getMatchingApplyingUniques("[]% cost of natural border growth")) 
             cultureToNextTile *= unique.params[0].toPercent()
 
         return cultureToNextTile.roundToInt()
@@ -66,7 +66,7 @@ class CityExpansionManager {
         val distanceFromCenter = tileInfo.aerialDistanceTo(cityInfo.getCenterTile())
         var cost = baseCost * (distanceFromCenter - 1) + tilesClaimed() * 5.0
 
-        for (unique in cityInfo.getMatchingUniques("-[]% Gold cost of acquiring tiles []")) {
+        for (unique in cityInfo.getMatchingApplyingUniques("-[]% Gold cost of acquiring tiles []")) {
             if (cityInfo.matchesFilter(unique.params[1]))
                 cost *= (100 - unique.params[0].toFloat()) / 100
         }

@@ -56,13 +56,16 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
 
     private fun tryGetAttacker(): ICombatant? {
         val unitTable = worldScreen.bottomUnitTable
-        return if (unitTable.selectedUnit != null
+        return when {
+            unitTable.selectedUnit != null
                 && !unitTable.selectedUnit!!.isCivilian()
-                && !unitTable.selectedUnit!!.hasUnique("Cannot attack"))
-                    MapUnitCombatant(unitTable.selectedUnit!!)
-        else if (unitTable.selectedCity != null)
-            CityCombatant(unitTable.selectedCity!!)
-        else null // no attacker
+                && !unitTable.selectedUnit!!.hasApplyingUnique("Cannot attack") 
+            ->
+                MapUnitCombatant(unitTable.selectedUnit!!)
+            unitTable.selectedCity != null ->
+                CityCombatant(unitTable.selectedCity!!)
+            else -> null // no attacker
+        }
     }
 
     private fun tryGetDefender(): ICombatant? {
@@ -158,12 +161,15 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
         else if (damageToDefender>defender.getHealth()) damageToDefender=defender.getHealth()
 
 
-        if(attacker.isMelee() && (defender.isCivilian()
-                        || defender is CityCombatant && defender.isDefeated())) {
+        if (attacker.isMelee() && 
+            (defender.isCivilian()
+                || defender is CityCombatant && defender.isDefeated()
+            )
+        ) {
             add("")
             add(
                 if (defender.isCivilian()
-                    && (defender as MapUnitCombatant).unit.hasUnique("Uncapturable")
+                    && (defender as MapUnitCombatant).unit.hasApplyingUnique("Uncapturable")
                 ) ""
                 else if (defender.isCivilian()) "Captured!".tr()
                 else "Occupied!".tr()

@@ -21,8 +21,8 @@ class TradeLogic(val ourCivilization:CivilizationInfo, val otherCivilization: Ci
 
         if (!otherCivilization.getDiplomacyManager(civInfo).hasOpenBorders
                 && !otherCivilization.isCityState()
-                && civInfo.hasUnique("Enables Open Borders agreements")
-                && otherCivilization.hasUnique("Enables Open Borders agreements")) {
+                && civInfo.hasApplyingUnique("Enables Open Borders agreements")
+                && otherCivilization.hasApplyingUnique("Enables Open Borders agreements")) {
             offers.add(TradeOffer(Constants.openBorders, TradeType.Agreement))
         }
 

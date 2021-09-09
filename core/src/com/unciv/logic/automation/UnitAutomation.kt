@@ -174,7 +174,7 @@ object UnitAutomation {
     }
 
     private fun tryHeadTowardsEncampment(unit: MapUnit): Boolean {
-        if (unit.hasUnique("Self-destructs when attacking")) return false // don't use single-use units against barbarians...
+        if (unit.hasApplyingUnique("Self-destructs when attacking")) return false // don't use single-use units against barbarians...
         val knownEncampments = unit.civInfo.gameInfo.tileMap.values.asSequence()
                 .filter { it.improvement == Constants.barbarianEncampment && unit.civInfo.exploredTiles.contains(it.position) }
         val cities = unit.civInfo.cities
@@ -187,7 +187,7 @@ object UnitAutomation {
     }
 
     private fun tryHealUnit(unit: MapUnit): Boolean {
-        if (unit.baseUnit.isRanged() && unit.hasUnique("Unit will heal every turn, even if it performs an action"))
+        if (unit.baseUnit.isRanged() && unit.hasApplyingUnique("Unit will heal every turn, even if it performs an action"))
             return false // will heal anyway, and attacks don't hurt
 
         val unitDistanceToTiles = unit.movement.getDistanceToTiles()

@@ -127,7 +127,8 @@ object NextTurnAutomation {
     /** allow AI to spend money to purchase city-state friendship, buildings & unit */
     private fun useGold(civInfo: CivilizationInfo) {
         if (civInfo.getHappiness() > 0
-        && civInfo.hasUnique("Can spend Gold to annex or puppet a City-State that has been your ally for [] turns.")) {
+            && civInfo.hasUnique("Can spend Gold to annex or puppet a City-State that has been your ally for [] turns.")
+        ) {
             for (cityState in civInfo.getKnownCivs().filter { it.isCityState() } ) {
                 if (cityState.canBeMarriedBy(civInfo))
                     cityState.diplomaticMarriage(civInfo)
@@ -669,8 +670,8 @@ object NextTurnAutomation {
                 && civInfo.cities.none {
                     val currentConstruction = it.cityConstructions.getCurrentConstruction()
                     currentConstruction is BaseUnit && currentConstruction.uniques.contains(Constants.settlerUnique)
-                }) {
-
+                }
+        ) {
             val bestCity = civInfo.cities.maxByOrNull { it.cityStats.currentCityStats.production }!!
             if (bestCity.cityConstructions.builtBuildings.size > 1) // 2 buildings or more, otherwise focus on self first
                 bestCity.cityConstructions.currentConstructionFromQueue = settlerUnits.minByOrNull { it.cost }!!.name

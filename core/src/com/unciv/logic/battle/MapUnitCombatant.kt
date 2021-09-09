@@ -4,10 +4,11 @@ import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.UncivSound
+import com.unciv.models.ruleset.IHasUniqueMatching
 import com.unciv.models.ruleset.Unique
 import com.unciv.models.ruleset.unit.UnitType
 
-class MapUnitCombatant(val unit: MapUnit) : ICombatant {
+class MapUnitCombatant(val unit: MapUnit) : ICombatant, IHasUniqueMatching {
     override fun getHealth(): Int = unit.health
     override fun getMaxHealth() = 100
     override fun getCivInfo(): CivilizationInfo = unit.civInfo
@@ -44,6 +45,11 @@ class MapUnitCombatant(val unit: MapUnit) : ICombatant {
         return unit.name+" of "+unit.civInfo.civName
     }
 
-    fun getMatchingUniques(uniqueTemplate: String): Sequence<Unique> = unit.getMatchingUniques(uniqueTemplate)
+    override fun getMatchingUniques(uniqueTemplate: String): Sequence<Unique> = unit.getMatchingUniques(uniqueTemplate)
+    
+    fun getMatchingApplyingUniques(uniqueTemplate: String) = getMatchingApplyingUniques(uniqueTemplate, getCivInfo())
 
+    override fun hasUnique(uniqueTemplate: String): Boolean = unit.hasUnique(uniqueTemplate)
+    
+    fun hasApplyingUnique(uniqueTemplate: String) = hasApplyingUnique(uniqueTemplate, getCivInfo())
 }

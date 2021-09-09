@@ -2,6 +2,7 @@ package com.unciv.models.translations
 
 import com.badlogic.gdx.Gdx
 import com.unciv.UncivGame
+import com.unciv.models.ruleset.Unique
 import com.unciv.models.stats.Stats
 import java.util.*
 import kotlin.collections.HashMap
@@ -196,6 +197,9 @@ val eitherSquareBraceRegex = Regex("""\[|\]""")
 // Analogous as above: Expect a {} pair with any chars but } in between and capture that
 val curlyBraceRegex = Regex("""\{([^}]*)\}""")
 
+// Analogous as above: Expect a {} pair with any chars but } in between and capture that
+val pointyBraceRegex = Regex("""\<([^>]*)\>""")
+
 /**
  *  This function does the actual translation work,
  *      using an instance of [Translations] stored in UncivGame.Current
@@ -269,7 +273,16 @@ fun String.tr(): String {
     return UncivGame.Current.translations.getText(this, UncivGame.Current.settings.language, activeMods)
 }
 
-fun String.getPlaceholderText() = this.replace(squareBraceRegex, "[]")
+fun String.getPlaceholderText() = 
+    this.replace(squareBraceRegex, "[]")
+        .replace(pointyBraceRegex, "")
+        // So, this is a quick hack, but it works as long as nobody uses word separators different from " " (space) and "" (none).
+        // According to https://linguistics.stackexchange.com/questions/6131/is-there-a-long-list-of-languages-whose-writing-systems-dont-use-spaces
+        // This is a reasonable but not fully correct assumption to make.
+        // By doing it like these, we exclude languages such as Tibetan, Dzongkha (Bhutan), and Ethiopian.
+        // If we ever start getting translations for these, we'll fix them then.
+        .replace("  ", " ")
+        .trim()
 
 fun String.equalsPlaceholderText(str:String): Boolean {
     if (first() != str.first()) return false // for quick negative return 95% of the time
@@ -279,6 +292,8 @@ fun String.equalsPlaceholderText(str:String): Boolean {
 fun String.hasPlaceholderParameters() = squareBraceRegex.containsMatchIn(this)
 
 fun String.getPlaceholderParameters() = squareBraceRegex.findAll(this).map { it.groups[1]!!.value }.toList()
+
+fun String.getConditionals() = pointyBraceRegex.findAll(this).map { Unique(it.groups[1]!!.value) }.toList()
 
 /** Substitutes placeholders with [strings], respecting order of appearance. */
 fun String.fillPlaceholders(vararg strings: String): String {

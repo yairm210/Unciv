@@ -88,9 +88,9 @@ class PolicyManager {
         }
         var cityModifier = worldSizeModifier * (civInfo.cities.count { !it.isPuppet } - 1)
 
-        for (unique in civInfo.getMatchingUniques("Each city founded increases culture cost of policies []% less than normal"))
+        for (unique in civInfo.getMatchingApplyingUniques("Each city founded increases culture cost of policies []% less than normal"))
             cityModifier *= 1 - unique.params[0].toFloat() / 100
-        for (unique in civInfo.getMatchingUniques("Culture cost of adopting new Policies reduced by []%"))
+        for (unique in civInfo.getMatchingApplyingUniques("Culture cost of adopting new Policies reduced by []%"))
             policyCultureCost *= 1 - unique.params[0].toFloat() / 100
         if (civInfo.isPlayerCivilization())
             policyCultureCost *= civInfo.getDifficulty().policyCostModifier
@@ -175,7 +175,7 @@ class PolicyManager {
     }
 
     private fun tryAddCultureBuildings() {
-        val cultureBuildingUniques = civInfo.getMatchingUniques("Immediately creates the cheapest available cultural building in each of your first [] cities for free")
+        val cultureBuildingUniques = civInfo.getMatchingApplyingUniques("Immediately creates the cheapest available cultural building in each of your first [] cities for free")
         val citiesToReceiveCultureBuilding = cultureBuildingUniques.sumOf { it.params[0].toInt() }
         if (!cultureBuildingUniques.any()) return
         if (cultureBuildingsAdded.size >= citiesToReceiveCultureBuilding) return
@@ -195,7 +195,7 @@ class PolicyManager {
     }
 
     private fun tryAddFreeBuildings() {
-        val matchingUniques = civInfo.getMatchingUniques("Immediately creates a [] in each of your first [] cities for free")
+        val matchingUniques = civInfo.getMatchingApplyingUniques("Immediately creates a [] in each of your first [] cities for free")
         // If we have "create a free aqueduct in first 3 cities" and "create free aqueduct in first 4 cities", we do: "create free aqueduct in first 3+4=7 cities"
         val sortedUniques = matchingUniques.groupBy {it.params[0]}
         for (unique in sortedUniques) {

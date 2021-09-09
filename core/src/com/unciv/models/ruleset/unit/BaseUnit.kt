@@ -214,7 +214,7 @@ class BaseUnit : INamed, INonPerpetualConstruction, ICivilopediaText {
 
     override fun canBePurchasedWithStat(cityInfo: CityInfo?, stat: Stat): Boolean {
         // May buy [unitFilter] units for [amount] [Stat] [cityFilter] starting from the [eraName] at an increasing price ([amount])
-        if (cityInfo != null && cityInfo.civInfo.getMatchingUniques("May buy [] units for [] [] [] starting from the [] at an increasing price ([])")
+        if (cityInfo != null && cityInfo.civInfo.getMatchingApplyingUniques("May buy [] units for [] [] [] starting from the [] at an increasing price ([])")
             .any { 
                 matchesFilter(it.params[0])
                 && cityInfo.matchesFilter(it.params[3])        
@@ -224,7 +224,7 @@ class BaseUnit : INamed, INonPerpetualConstruction, ICivilopediaText {
         ) return true
         
         // May buy [unitFilter] units for [amount] [Stat] [cityFilter] at an increasing price ([amount])
-        if (cityInfo != null && cityInfo.civInfo.getMatchingUniques("May buy [] units for [] [] [] at an increasing price ([])")
+        if (cityInfo != null && cityInfo.civInfo.getMatchingApplyingUniques("May buy [] units for [] [] [] at an increasing price ([])")
             .any {
                 matchesFilter(it.params[0])
                 && cityInfo.matchesFilter(it.params[3])
@@ -244,7 +244,7 @@ class BaseUnit : INamed, INonPerpetualConstruction, ICivilopediaText {
         return (
             sequenceOf(super.getBaseBuyCost(cityInfo, stat)).filterNotNull()
                 // May buy [unitFilter] units for [amount] [Stat] starting from the [eraName] at an increasing price ([amount])
-            + (cityInfo.civInfo.getMatchingUniques("May buy [] units for [] [] [] starting from the [] at an increasing price ([])")
+            + (cityInfo.civInfo.getMatchingApplyingUniques("May buy [] units for [] [] [] starting from the [] at an increasing price ([])")
                 .filter {
                     matchesFilter(it.params[0])
                     && cityInfo.matchesFilter(it.params[3])
@@ -258,7 +258,7 @@ class BaseUnit : INamed, INonPerpetualConstruction, ICivilopediaText {
                     )
                 }
             )
-            + (cityInfo.civInfo.getMatchingUniques("May buy [] units for [] [] [] at an increasing price ([])")
+            + (cityInfo.civInfo.getMatchingApplyingUniques("May buy [] units for [] [] [] at an increasing price ([])")
                 .filter {
                     matchesFilter(it.params[0])
                     && cityInfo.matchesFilter(it.params[3])
@@ -278,11 +278,11 @@ class BaseUnit : INamed, INonPerpetualConstruction, ICivilopediaText {
         var cost = getBaseBuyCost(cityInfo, stat)?.toDouble()
         if (cost == null) return null
 
-        for (unique in cityInfo.getMatchingUniques("[] cost of purchasing [] units []%")) {
+        for (unique in cityInfo.getMatchingApplyingUniques("[] cost of purchasing [] units []%")) {
             if (stat.name == unique.params[0] && matchesFilter(unique.params[1]))
                 cost *= unique.params[2].toPercent()
         }
-        for (unique in cityInfo.getMatchingUniques("[] cost of purchasing items in cities []%"))
+        for (unique in cityInfo.getMatchingApplyingUniques("[] cost of purchasing items in cities []%"))
             if (stat.name == unique.params[0])
                 cost *= unique.params[1].toPercent()
 
@@ -391,20 +391,20 @@ class BaseUnit : INamed, INonPerpetualConstruction, ICivilopediaText {
             ?: return false  // couldn't place the unit, so there's actually no unit =(
 
         //movement penalty
-        if (boughtWith != null && !civInfo.gameInfo.gameParameters.godMode && !unit.hasUnique("Can move immediately once bought"))
+        if (boughtWith != null && !civInfo.gameInfo.gameParameters.godMode && !unit.hasApplyingUnique("Can move immediately once bought"))
             unit.currentMovement = 0f
 
         // If this unit has special abilities that need to be kept track of, start doing so here
         if (unit.hasUnique("Religious Unit")) {
             unit.religion =  
-                if (unit.hasUnique("Takes your religion over the one in their birth city"))
+                if (unit.hasApplyingUnique("Takes your religion over the one in their birth city"))
                     civInfo.religionManager.religion?.name
                 else cityConstructions.cityInfo.religion.getMajorityReligionName()
             
             unit.setupAbilityUses(cityConstructions.cityInfo)
         }
         
-        if (boughtWith != null && cityConstructions.cityInfo.civInfo.getMatchingUniques("May buy [] units for [] [] [] starting from the [] at an increasing price ([])")
+        if (boughtWith != null && cityConstructions.cityInfo.civInfo.getMatchingApplyingUniques("May buy [] units for [] [] [] starting from the [] at an increasing price ([])")
             .any {
                 matchesFilter(it.params[0])
                 && cityConstructions.cityInfo.matchesFilter(it.params[3])
@@ -429,7 +429,7 @@ class BaseUnit : INamed, INonPerpetualConstruction, ICivilopediaText {
         var XP = 0
 
         for (unique in
-        cityConstructions.cityInfo.getMatchingUniques("New [] units start with [] Experience []")
+        cityConstructions.cityInfo.getMatchingApplyingUniques("New [] units start with [] Experience []")
             .filter { cityConstructions.cityInfo.matchesFilter(it.params[2]) }
         ) {
             if (unit.matchesFilter(unique.params[0]))
@@ -438,7 +438,7 @@ class BaseUnit : INamed, INonPerpetualConstruction, ICivilopediaText {
         unit.promotions.XP = XP
 
         for (unique in
-        cityConstructions.cityInfo.getMatchingUniques("All newly-trained [] units [] receive the [] promotion")
+        cityConstructions.cityInfo.getMatchingApplyingUniques("All newly-trained [] units [] receive the [] promotion")
             .filter { cityConstructions.cityInfo.matchesFilter(it.params[1]) } +
             // Deprecated since 3.15.9
                 cityConstructions.cityInfo.getLocalMatchingUniques("All newly-trained [] units in this city receive the [] promotion")

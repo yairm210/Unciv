@@ -10,6 +10,7 @@ import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.LocationAction
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.models.UnitActionType
+import com.unciv.models.ruleset.IHasUniqueMatching
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.Unique
 import com.unciv.models.ruleset.tile.TileImprovement
@@ -22,7 +23,7 @@ import kotlin.math.pow
 /**
  * The immutable properties and mutable game state of an individual unit present on the map
  */
-class MapUnit {
+class MapUnit: IHasUniqueMatching {
 
     @Transient
     lateinit var civInfo: CivilizationInfo
@@ -182,21 +183,21 @@ class MapUnit {
             if (isEmbarked()) 2
             else baseUnit.movement
 
-        movement += getMatchingUniques("[] Movement").sumOf { it.params[0].toInt() }
+        movement += getMatchingApplyingUniques("[] Movement").sumOf { it.params[0].toInt() }
 
-        for (unique in civInfo.getMatchingUniques("+[] Movement for all [] units"))
+        for (unique in civInfo.getMatchingApplyingUniques("+[] Movement for all [] units"))
             if (matchesFilter(unique.params[1]))
                 movement += unique.params[0].toInt()
 
         if (civInfo.goldenAges.isGoldenAge() &&
-            civInfo.hasUnique("+1 Movement for all units during Golden Age")
+            civInfo.hasApplyingUnique("+1 Movement for all units during Golden Age")
         )
             movement += 1
 
         // Deprecated since 3.16.11
             if (isEmbarked()) {
-                movement += civInfo.getMatchingUniques("Increases embarked movement +1").count()
-                if (civInfo.hasUnique("+1 Movement for all embarked units")) movement += 1
+                movement += civInfo.getMatchingApplyingUniques("Increases embarked movement +1").count()
+                if (civInfo.hasApplyingUnique("+1 Movement for all embarked units")) movement += 1
             }
         //
 
@@ -211,13 +212,19 @@ class MapUnit {
 
     fun getUniques(): ArrayList<Unique> = tempUniques
 
-    fun getMatchingUniques(placeholderText: String): Sequence<Unique> =
-        tempUniques.asSequence().filter { it.placeholderText == placeholderText } + 
-            civInfo.getMatchingUniques(placeholderText)
+    override fun getMatchingUniques(uniqueTemplate: String): Sequence<Unique> =
+        tempUniques.asSequence().filter { it.placeholderText == uniqueTemplate } + 
+            civInfo.getMatchingUniques(uniqueTemplate)
 
-    fun hasUnique(unique: String): Boolean {
-        return getUniques().any { it.placeholderText == unique } || civInfo.hasUnique(unique)
+    fun getMatchingApplyingUniques(uniqueTemplate: String): Sequence<Unique> =
+        getMatchingApplyingUniques(uniqueTemplate, civInfo)
+    
+    override fun hasUnique(uniqueTemplate: String): Boolean {
+        return getUniques().any { it.placeholderText == uniqueTemplate } || civInfo.hasUnique(uniqueTemplate)
     }
+    
+    fun hasApplyingUnique(uniqueTemplate: String): Boolean =
+        hasApplyingUnique(uniqueTemplate, civInfo)
 
     fun updateUniques() {
         val uniques = ArrayList<Unique>()
@@ -272,14 +279,14 @@ class MapUnit {
      */
     private fun getVisibilityRange(): Int {
         var visibilityRange = 2
-        for (unique in civInfo.getMatchingUniques("+[] Sight for all [] units"))
+        for (unique in civInfo.getMatchingApplyingUniques("+[] Sight for all [] units"))
             if (matchesFilter(unique.params[1]))
                 visibilityRange += unique.params[0].toInt()
 
         // TODO: This should be replaced with "Sight" like others, for naming consistency
-        visibilityRange += getMatchingUniques("[] Visibility Range").sumOf { it.params[0].toInt() }
+        visibilityRange += getMatchingApplyingUniques("[] Visibility Range").sumOf { it.params[0].toInt() }
 
-        if (hasUnique("Limited Visibility")) visibilityRange -= 1
+        if (hasApplyingUnique("Limited Visibility")) visibilityRange -= 1
 
 
         for (unique in getTile().getAllTerrains().flatMap { it.uniqueObjects })
@@ -296,7 +303,7 @@ class MapUnit {
      */
     fun updateVisibleTiles() {
         if (baseUnit.isAirUnit()) {
-            viewableTiles = if (hasUnique("6 tiles in every direction always visible"))
+            viewableTiles = if (hasApplyingUnique("6 tiles in every direction always visible"))
                 getTile().getTilesInDistance(6).toList()  // it's that simple
             else listOf() // bomber units don't do recon
             civInfo.updateViewableTiles() // for the civ
@@ -343,10 +350,8 @@ class MapUnit {
         return !(isFortified() || isExploring() || isSleeping() || isAutomated() || isMoving())
     }
 
-    fun maxAttacksPerTurn(): Int {
-        return 1 + getMatchingUniques("[] additional attacks per turn").sumOf { it.params[0].toInt() }
-    }
-
+    fun maxAttacksPerTurn() = 1 + getMatchingApplyingUniques("[] additional attacks per turn").sumOf { it.params[0].toInt() }
+    
     fun canAttack(): Boolean {
         if (currentMovement == 0f) return false
         return attacksThisTurn < maxAttacksPerTurn()
@@ -355,7 +360,7 @@ class MapUnit {
     fun getRange(): Int {
         if (baseUnit.isMelee()) return 1
         var range = baseUnit().range
-        range += getMatchingUniques("[] Range").sumOf { it.params[0].toInt() }
+        range += getMatchingApplyingUniques("[] Range").sumOf { it.params[0].toInt() }
         return range
     }
 
@@ -369,9 +374,9 @@ class MapUnit {
     }
 
     fun isInvisible(to: CivilizationInfo): Boolean {
-        if (hasUnique("Invisible to others"))
+        if (hasApplyingUnique("Invisible to others"))
             return true
-        if (hasUnique("Invisible to non-adjacent units"))
+        if (hasApplyingUnique("Invisible to non-adjacent units"))
             return getTile().getTilesInDistance(1).none {
                 it.getOwner() == to || it.getUnits().any { unit -> unit.owner == to.civName }
             }
@@ -410,7 +415,7 @@ class MapUnit {
     fun getCostOfUpgrade(): Int {
         val unitToUpgradeTo = getUnitToUpgradeTo()
         var goldCostOfUpgrade = (unitToUpgradeTo.cost - baseUnit().cost) * 2f + 10f
-        for (unique in civInfo.getMatchingUniques("Gold cost of upgrading [] units reduced by []%")) {
+        for (unique in civInfo.getMatchingApplyingUniques("Gold cost of upgrading [] units reduced by []%")) {
             if (matchesFilter(unique.params[0]))
                 goldCostOfUpgrade *= (1 - unique.params[1].toFloat() / 100f)
         }
@@ -425,7 +430,7 @@ class MapUnit {
         if (isCivilian()) return false
         if (baseUnit.movesLikeAirUnits()) return false
         if (isEmbarked()) return false
-        if (hasUnique("No defensive terrain bonus")) return false
+        if (hasApplyingUnique("No defensive terrain bonus")) return false
         if (isFortified()) return false
         return true
     }
@@ -443,7 +448,7 @@ class MapUnit {
     }
 
     private fun adjacentHealingBonus(): Int {
-        return getMatchingUniques("All adjacent units heal [] HP when healing").sumOf { it.params[0].toInt() }
+        return getMatchingApplyingUniques("All adjacent units heal [] HP when healing").sumOf { it.params[0].toInt() }
     }
 
     fun canGarrison() = baseUnit.isMilitary() && baseUnit.isLandUnit()
@@ -470,7 +475,7 @@ class MapUnit {
         // abilityUsedCount deprecated since 3.16.11, this is replacement code
             if (abilityUsedCount.isNotEmpty()) {
                 for (ability in abilityUsedCount) {
-                    val maxUsesOfThisAbility = getMatchingUniques("Can [] [] times")
+                    val maxUsesOfThisAbility = getMatchingApplyingUniques("Can [] [] times")
                         .filter { it.params[0] == ability.key }
                         .sumOf { it.params[1].toInt() }
                     abilityUsesLeft[ability.key] = maxUsesOfThisAbility - ability.value
@@ -593,18 +598,22 @@ class MapUnit {
 
     private fun heal() {
         if (isEmbarked()) return // embarked units can't heal
-        if (civInfo.hasUnique("Can only heal by pillaging")) return
+        if (civInfo.hasApplyingUnique("Can only heal by pillaging")) return
 
         var amountToHealBy = rankTileForHealing(getTile())
-        if (amountToHealBy == 0 && !(hasUnique("May heal outside of friendly territory") && !getTile().isFriendlyTerritory(civInfo))) return
+        if (amountToHealBy == 0 
+            && !(hasApplyingUnique("May heal outside of friendly territory") 
+                && !getTile().isFriendlyTerritory(civInfo)
+            )
+        ) return
 
-        amountToHealBy += getMatchingUniques("[] HP when healing").sumOf { it.params[0].toInt() }
+        amountToHealBy += getMatchingApplyingUniques("[] HP when healing").sumOf { it.params[0].toInt() }
 
         val maxAdjacentHealingBonus = currentTile.getTilesInDistance(1)
             .flatMap { it.getUnits().asSequence() }.map { it.adjacentHealingBonus() }.maxOrNull()
         if (maxAdjacentHealingBonus != null)
             amountToHealBy += maxAdjacentHealingBonus
-        if (hasUnique("All healing effects doubled"))
+        if (hasApplyingUnique("All healing effects doubled"))
             amountToHealBy *= 2
         healBy(amountToHealBy)
     }
@@ -627,21 +636,21 @@ class MapUnit {
             else -> 5 // Enemy territory
         }
 
-        val mayHeal = healing > 0 || (tileInfo.isWater && hasUnique("May heal outside of friendly territory"))
+        val mayHeal = healing > 0 || (tileInfo.isWater && hasApplyingUnique("May heal outside of friendly territory"))
         if (!mayHeal) return healing
 
 
-        for (unique in getMatchingUniques("[] HP when healing in [] tiles")) {
+        for (unique in getMatchingApplyingUniques("[] HP when healing in [] tiles")) {
             if (tileInfo.matchesFilter(unique.params[1], civInfo)) {
                 healing += unique.params[0].toInt()
             }
         }
 
         val healingCity = tileInfo.getTilesInDistance(1).firstOrNull {
-            it.isCityCenter() && it.getCity()!!.getMatchingUniques("[] Units adjacent to this city heal [] HP per turn when healing").any()
+            it.isCityCenter() && it.getCity()!!.hasApplyingUnique("[] Units adjacent to this city heal [] HP per turn when healing")
         }?.getCity()
         if (healingCity != null) {
-            for (unique in healingCity.getMatchingUniques("[] Units adjacent to this city heal [] HP per turn when healing")) {
+            for (unique in healingCity.getMatchingApplyingUniques("[] Units adjacent to this city heal [] HP per turn when healing")) {
                 if (!matchesFilter(unique.params[0])) continue
                 healing += unique.params[1].toInt()
             }
@@ -666,11 +675,11 @@ class MapUnit {
                     true
                 )
         }
-        if (hasUnique("Heal adjacent units for an additional 15 HP per turn"))
+        if (hasApplyingUnique("Heal adjacent units for an additional 15 HP per turn"))
             currentTile.neighbors.flatMap { it.getUnits() }.forEach { it.healBy(15) }
 
         if (currentMovement == getMaxMovement().toFloat() // didn't move this turn
-            || hasUnique("Unit will heal every turn, even if it performs an action")
+            || hasApplyingUnique("Unit will heal every turn, even if it performs an action")
         ) heal()
 
         if (action != null && health > 99)
@@ -687,7 +696,7 @@ class MapUnit {
             && !civInfo.canPassThroughTiles(getTile().getOwner()!!)
         ) {
             val lostReligiousStrength =
-                getMatchingUniques("May enter foreign tiles without open borders, but loses [] religious strength each turn it ends there")
+                getMatchingApplyingUniques("May enter foreign tiles without open borders, but loses [] religious strength each turn it ends there")
                     .map { it.params[0].toInt() }
                     .minOrNull()
             if (lostReligiousStrength != null)
@@ -716,7 +725,7 @@ class MapUnit {
                 if (unit == this)
                     continue
 
-                if (unit.getMatchingUniques("Transfer Movement to []").any { matchesFilter(it.params[0]) } )
+                if (unit.getMatchingApplyingUniques("Transfer Movement to []").any { matchesFilter(it.params[0]) } )
                     currentMovement = maxOf(getMaxMovement().toFloat(), unit.getMaxMovement().toFloat())
             }
         }
@@ -772,10 +781,10 @@ class MapUnit {
         if (tile.improvement == Constants.barbarianEncampment && !civInfo.isBarbarian())
             clearEncampment(tile)
 
-        if (!hasUnique("All healing effects doubled") && baseUnit.isLandUnit() && baseUnit.isMilitary()) {
+        if (!hasApplyingUnique("All healing effects doubled") && baseUnit.isLandUnit() && baseUnit.isMilitary()) {
             //todo: Grants [promotion] to adjacent [unitFilter] units for the rest of the game
             val gainDoubleHealPromotion = tile.neighbors
-                .any { it.hasUnique("Grants Rejuvenation (all healing effects doubled) to adjacent military land units for the rest of the game") }
+                .any { it.hasApplyingUnique("Grants Rejuvenation (all healing effects doubled) to adjacent military land units for the rest of the game", tile.getOwner()) }
             if (gainDoubleHealPromotion && civInfo.gameInfo.ruleSet.unitPromotions.containsKey("Rejuvenation"))
                 promotions.addPromotion("Rejuvenation", true)
         }
@@ -805,7 +814,7 @@ class MapUnit {
 
         var goldGained =
             civInfo.getDifficulty().clearBarbarianCampReward * civInfo.gameInfo.gameParameters.gameSpeed.modifier
-        if (civInfo.hasUnique("Receive triple Gold from Barbarian encampments and pillaging Cities"))
+        if (civInfo.hasApplyingUnique("Receive triple Gold from Barbarian encampments and pillaging Cities"))
             goldGained *= 3f
 
         civInfo.addGold(goldGained.toInt())
@@ -866,24 +875,24 @@ class MapUnit {
     fun canIntercept(): Boolean {
         if (interceptChance() == 0) return false
         val maxAttacksPerTurn = 1 +
-            getMatchingUniques("[] extra interceptions may be made per turn").sumOf { it.params[0].toInt() }
+            getMatchingApplyingUniques("[] extra interceptions may be made per turn").sumOf { it.params[0].toInt() }
         if (attacksThisTurn >= maxAttacksPerTurn) return false
         return true
     }
 
     fun interceptChance(): Int {
-        return getMatchingUniques("[]% chance to intercept air attacks").sumOf { it.params[0].toInt() }
+        return getMatchingApplyingUniques("[]% chance to intercept air attacks").sumOf { it.params[0].toInt() }
     }
 
     fun isTransportTypeOf(mapUnit: MapUnit): Boolean {
         // Currently, only missiles and airplanes can be carried
         if (!mapUnit.baseUnit.movesLikeAirUnits()) return false
-        return getMatchingUniques("Can carry [] [] units").any { mapUnit.matchesFilter(it.params[1]) }
+        return getMatchingApplyingUniques("Can carry [] [] units").any { mapUnit.matchesFilter(it.params[1]) }
     }
 
     private fun carryCapacity(unit: MapUnit): Int {
-        return (getMatchingUniques("Can carry [] [] units")
-                + getMatchingUniques("Can carry [] extra [] units"))
+        return (getMatchingApplyingUniques("Can carry [] [] units")
+                + getMatchingApplyingUniques("Can carry [] extra [] units"))
             .filter { unit.matchesFilter(it.params[1]) }
             .sumOf { it.params[0].toInt() }
     }
@@ -891,7 +900,7 @@ class MapUnit {
     fun canTransport(unit: MapUnit): Boolean {
         if (owner != unit.owner) return false
         if (!isTransportTypeOf(unit)) return false
-        if (unit.getMatchingUniques("Cannot be carried by [] units").any{matchesFilter(it.params[0])}) return false
+        if (unit.getMatchingApplyingUniques("Cannot be carried by [] units").any{matchesFilter(it.params[0])}) return false
         if (currentTile.airUnits.count { it.isTransported } >= carryCapacity(unit)) return false
         return true
     }
@@ -903,7 +912,7 @@ class MapUnit {
 
     fun receivedInterceptDamageFactor(): Float {
         var damageFactor = 1f
-        for (unique in getMatchingUniques("Damage taken from interception reduced by []%"))
+        for (unique in getMatchingApplyingUniques("Damage taken from interception reduced by []%"))
             damageFactor *= 1f - unique.params[0].toFloat() / 100f
         return damageFactor
     }
@@ -936,9 +945,9 @@ class MapUnit {
         val citadelTile = currentTile.neighbors
             .firstOrNull {
                 it.getOwner() != null && civInfo.isAtWarWith(it.getOwner()!!) &&
-                        with(it.getTileImprovement()) {
-                            this != null && this.hasUnique("Deal 30 damage to adjacent enemy units")
-                        }
+                    with(it.getTileImprovement()) {
+                        this != null && this.hasApplyingUnique("Deal 30 damage to adjacent enemy units", it.getOwner())
+                    }
             }
 
         if (citadelTile != null) {
@@ -983,7 +992,7 @@ class MapUnit {
     }
 
     fun canBuildImprovement(improvement: TileImprovement, tile: TileInfo = currentTile): Boolean {
-        val matchingUniques = getMatchingUniques(Constants.canBuildImprovements)
+        val matchingUniques = getMatchingApplyingUniques(Constants.canBuildImprovements)
         return matchingUniques.any { improvement.matchesFilter(it.params[0]) || tile.matchesTerrainFilter(it.params[0]) }
     }
 
@@ -993,18 +1002,18 @@ class MapUnit {
     }
 
     fun religiousActionsUnitCanDo(): Sequence<String> {
-        return getMatchingUniques("Can [] [] times")
+        return getMatchingApplyingUniques("Can [] [] times")
             .map { it.params[0] }
     }
 
     fun canDoReligiousAction(action: String): Boolean {
-        return getMatchingUniques("Can [] [] times").any { it.params[0] == action }
+        return getMatchingApplyingUniques("Can [] [] times").any { it.params[0] == action }
     }
 
     /** For the actual value, check the member variable `maxAbilityUses`
      */
     fun getBaseMaxActionUses(action: String): Int {
-        return getMatchingUniques("Can [] [] times")
+        return getMatchingApplyingUniques("Can [] [] times")
             .filter { it.params[0] == action }
             .sumOf { it.params[1].toInt() }
     }
@@ -1014,7 +1023,7 @@ class MapUnit {
             val baseAmount = getBaseMaxActionUses(action)
             val additional =
                 if (buildCity == null) 0
-                else buildCity.getMatchingUniques("[] units built [] can [] [] extra times")
+                else buildCity.getMatchingApplyingUniques("[] units built [] can [] [] extra times")
                     .filter { matchesFilter(it.params[0]) && buildCity.matchesFilter(it.params[1]) && it.params[2] == action }
                     .sumOf { it.params[3].toInt() }
 
@@ -1026,7 +1035,7 @@ class MapUnit {
 
     fun getPressureAddedFromSpread(): Int {
         var pressureAdded = baseUnit.religiousStrength.toFloat()
-        for (unique in civInfo.getMatchingUniques("[]% Spread Religion Strength for [] units"))
+        for (unique in civInfo.getMatchingApplyingUniques("[]% Spread Religion Strength for [] units"))
             if (matchesFilter(unique.params[0]))
                 pressureAdded *= unique.params[0].toPercent()
 

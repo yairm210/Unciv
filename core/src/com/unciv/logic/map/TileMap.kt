@@ -434,7 +434,7 @@ class TileMap {
         for (promotion in unit.baseUnit.promotions)
             unit.promotions.addPromotion(promotion, true)
 
-        for (unique in civInfo.getMatchingUniques("[] units gain the [] promotion")) {
+        for (unique in civInfo.getMatchingApplyingUniques("[] units gain the [] promotion")) {
             if (unit.matchesFilter(unique.params[0])) {
                 unit.promotions.addPromotion(unique.params[1], true)
             }
