@@ -541,6 +541,8 @@ class DiplomacyManager() {
             if (relationshipLevel() < RelationshipLevel.Friend) {
                 if (hasFlag(DiplomacyFlags.ProvideMilitaryUnit)) removeFlag(DiplomacyFlags.ProvideMilitaryUnit)
             } else {
+                val variance = listOf(-1, 0, 1).random()
+
                 val relevantBonuses =
                     if (relationshipLevel() == RelationshipLevel.Friend)
                         eraInfo.friendBonus[otherCiv().cityStateType.name]    
@@ -549,19 +551,19 @@ class DiplomacyManager() {
                 if (relevantBonuses == null && otherCiv().cityStateType == CityStateType.Militaristic) {
                     // Deprecated, assume Civ V values for compatibility
                     if (!hasFlag(DiplomacyFlags.ProvideMilitaryUnit) && relationshipLevel() == RelationshipLevel.Friend)
-                        setFlag(DiplomacyFlags.ProvideMilitaryUnit, 20)
+                        setFlag(DiplomacyFlags.ProvideMilitaryUnit, 20 + variance)
 
                     if ((!hasFlag(DiplomacyFlags.ProvideMilitaryUnit) || getFlag(DiplomacyFlags.ProvideMilitaryUnit) > 17)
                         && relationshipLevel() == RelationshipLevel.Ally)
-                        setFlag(DiplomacyFlags.ProvideMilitaryUnit, 17)
+                        setFlag(DiplomacyFlags.ProvideMilitaryUnit, 17 + variance)
                 }
                 if (relevantBonuses == null) return
 
                 for (bonus in relevantBonuses) {
                     // Reset the countdown if it has ended, or if we have longer to go than the current maximum (can happen when going from friend to ally)
-                    if (bonus.getPlaceholderText() == "Provides military units every [] turns" &&
+                    if (bonus.getPlaceholderText() == "Provides military units every ≈[] turns" &&
                        (!hasFlag(DiplomacyFlags.ProvideMilitaryUnit) || getFlag(DiplomacyFlags.ProvideMilitaryUnit) > bonus.getPlaceholderParameters()[0].toInt()))
-                            setFlag(DiplomacyFlags.ProvideMilitaryUnit, bonus.getPlaceholderParameters()[0].toInt())
+                            setFlag(DiplomacyFlags.ProvideMilitaryUnit, bonus.getPlaceholderParameters()[0].toInt() + variance)
                 }
             }
         }
