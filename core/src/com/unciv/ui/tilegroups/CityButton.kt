@@ -227,7 +227,8 @@ class CityButton(val city: CityInfo, private val tileGroup: WorldTileGroup): Tab
 
         val cityButtonText = city.name
         val label = cityButtonText.toLabel(secondaryColor)
-        iconTable.add(label).padRight(20f).padLeft(20f) // sufficient horizontal padding
+        val rightPadding = if (city.civInfo.isCityState()) 10f else 20f // CS needs less padding here as there will be an icon
+        iconTable.add(label).padRight(rightPadding).padLeft(20f) // sufficient horizontal padding
                 .fillY() // provide full-height clicking area
         label.toBack() // this is so the label is rendered right before the population group,
         //  so we save the font texture and avoid another texture switch
@@ -240,10 +241,10 @@ class CityButton(val city: CityInfo, private val tileGroup: WorldTileGroup): Tab
 
         if (city.civInfo.isCityState()) {
             val cityStateImage = when (city.civInfo.cityStateType) {
-                CityStateType.Militaristic  -> ImageGetter.getImage("PolicyIcons/Military Tradition").apply { color = secondaryColor }
-                CityStateType.Cultured      -> ImageGetter.getImage("PolicyIcons/Constitution").apply { color = secondaryColor }
-                CityStateType.Maritime      -> ImageGetter.getImage("PolicyIcons/Naval Tradition").apply { color = secondaryColor }
-                CityStateType.Mercantile    -> ImageGetter.getImage("StatIcons/CityConnection").apply { color = secondaryColor }
+                CityStateType.Militaristic  -> ImageGetter.getImage("OtherIcons/Militaristic").apply { color = secondaryColor }
+                CityStateType.Cultured      -> ImageGetter.getImage("OtherIcons/Cultured").apply { color = secondaryColor }
+                CityStateType.Maritime      -> ImageGetter.getImage("OtherIcons/Maritime").apply { color = secondaryColor }
+                CityStateType.Mercantile    -> ImageGetter.getImage("OtherIcons/Mercantile").apply { color = secondaryColor }
                 //CityStateType.Religious     -> ImageGetter.getReligionImage("Religion").apply { color = secondaryColor }
             }
             iconTable.add(cityStateImage).size(20f).padRight(10f).fillY()
