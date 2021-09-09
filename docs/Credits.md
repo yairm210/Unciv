@@ -604,6 +604,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [praying](https://thenounproject.com/term/praying/740809/) by parkjisun for Religion (Civilopedia concept entry)
 * [praying](https://thenounproject.com/term/praying/886367/) by Gan Khoon Lay for Follower
 * [Hero](https://thenounproject.com/term/preacher/195465/) by Andrew J. Young for Founder
+* [yell](https://thenounproject.com/term/yell/4159889/) by Adrien Coquet for Enhancer
 
 ## Others
 
