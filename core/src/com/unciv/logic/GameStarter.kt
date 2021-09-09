@@ -188,23 +188,26 @@ object GameStarter {
 
         val civNamesWithStartingLocations = gameInfo.tileMap.startingLocationsByNation.keys
 
-        val availableCityStatesNames = Stack<String>()
+        var availableCityStatesNames = Stack<String>()
         // since we shuffle and then order by, we end up with all the City-States with starting tiles first in a random order,
         //   and then all the other City-States in a random order! Because the sortedBy function is stable!
         availableCityStatesNames.addAll(ruleset.nations.filter { it.value.isCityState() }.keys
                 .shuffled().sortedByDescending { it in civNamesWithStartingLocations })
 
+        if (!newGameParameters.religionEnabled){
+            for(cityStateName in availableCityStatesNames){
+                val civ = CivilizationInfo(cityStateName)
+                if (civ.cityStateType == CityStateType.Religious)
+                    availableCityStatesNames.remove(cityStateName)
+            }
+        }
+
         val allMercantileResources = ruleset.tileResources.values.filter { it.unique == "Can only be created by Mercantile City-States" }.map { it.name }
         val unusedMercantileResources = Stack<String>()
         unusedMercantileResources.addAll(allMercantileResources.shuffled())
-        var numbersToTake = newGameParameters.numberOfCityStates
 
-        for (cityStateName in availableCityStatesNames.take(numbersToTake)) {
+        for (cityStateName in availableCityStatesNames.take(newGameParameters.numberOfCityStates)) {
             val civ = CivilizationInfo(cityStateName)
-            if (civ.cityStateType == CityStateType.Religious && !newGameParameters.religionEnabled){
-                numbersToTake++
-                continue
-            }
             civ.cityStatePersonality = CityStatePersonality.values().random()
             civ.cityStateResource = when {
                 ruleset.nations[cityStateName]?.cityStateType != CityStateType.Mercantile -> null

@@ -1126,9 +1126,9 @@
 		"adjective": ["Bratislava"],
 		"cityStateType": "Religious",
 
-		"declaringWar": "You leave us no choice. War it must be.",
-		"attacked": "Very well, this shall not be forgotten.",
-		"defeated": "Unacceptable!",
+		"declaringWar": "I didn't want to do this. We declare war.",
+		"attacked": "I will fear no evil. For god is with me!",
+		"defeated": "Why have you forsaken us my lord?",
 		"outerColor": [0, 0, 0],
 		"innerColor": [255,255,255],
 		"cities": ["Bratislava"]
@@ -1138,11 +1138,11 @@
 		"adjective": ["Cahokia"],
 		"cityStateType": "Religious",
 
-		"declaringWar": "You leave us no choice. War it must be.",
-		"attacked": "Very well, this shall not be forgotten.",
-		"defeated": "Unacceptable!",
+		"declaringWar": "We have wanted this for a LONG time. War it shall be.",
+		"attacked": "Very well, we will kick you back to the ancient era!",
+		"defeated": "This isn't how it is supposed to be!",
 		"outerColor": [0, 0, 0],
-		"innerColor": [255,255,255],
+		"innerColor": [203, 253, 232],
 		"cities": ["Cahokia"]
 	},
 	{
@@ -1150,11 +1150,11 @@
 		"adjective": ["Jerusalem"],
 		"cityStateType": "Religious",
 
-		"declaringWar": "You leave us no choice. War it must be.",
-		"attacked": "Very well, this shall not be forgotten.",
-		"defeated": "Unacceptable!",
+		"declaringWar": "By god's grace we will not allow these atrocities to occur any longer. We declare war!",
+		"attacked": "May god have mercy on your evil soul.",
+		"defeated": "Must be part of god's plan.",
 		"outerColor": [0, 0, 0],
-		"innerColor": [255,255,255],
+		"innerColor": [198,255,192],
 		"cities": ["Jerusalem"]
 	},
 	
