@@ -240,7 +240,7 @@ class CityButton(val city: CityInfo, private val tileGroup: WorldTileGroup): Tab
         cityStrengthLabel.toBack()
 
         if (city.civInfo.isCityState()) {
-            val cityStateImage = ImageGetter.getImage("OtherIcons/${city.civInfo.cityStateType.name}").apply { color = secondaryColor }
+            val cityStateImage = ImageGetter.getImage(city.civInfo.cityStateType.icon).apply { color = secondaryColor }
             iconTable.add(cityStateImage).size(20f).fillY()
         }
 
