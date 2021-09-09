@@ -48,8 +48,7 @@ class GameOptionsTable(
         checkboxTable.addOneCityChallengeCheckbox()
         checkboxTable.addNuclearWeaponsCheckbox()
         checkboxTable.addIsOnlineMultiplayerCheckbox()
-        if (UncivGame.Current.settings.showExperimentalReligion)
-            checkboxTable.addReligionCheckbox()
+        checkboxTable.addReligionCheckbox()
         add(checkboxTable).center().row()
 
         if (!withoutMods)
