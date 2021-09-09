@@ -801,15 +801,9 @@ These uniques have been recently deprecated. While they are still supported, the
 
 "Quantity of Resources gifted by City-States increased by 100%" - Replaced with "Quantity of Resources gifted by City-States increased by [amount]%"
 
-"+[amount]% Strength for units fighting in [tileFilter]"- Replaced with "+[amount]% Strength for units fighting in [tileFilter]"
-
 "-[amount]% building maintenance costs []" - Replaced with "[-amount]% maintenance cost for buildings []"
 
 "Allied City-States provide Science equal to [amount]% of what they produce for themselves" - Replaced with "Allied City-States provide [Stat] equal to [amount]% of what they produce for themselves"
-
-"Nuclear weapon" - Replaced with "Nuclear Weapon of Strength [amount]" - [amount] should be 1 (atomic bomb) or 2 (nuclear missile)
-
-"+1 population in each city" - Replaced with "[amount] population [cityFilter]"
 
 "Reduces damage taken from interception by 50%" - Replaced with "Damage taken from interception reduced by [amount]%"
 
@@ -830,8 +824,6 @@ These uniques have been recently deprecated. While they are still supported, the
 "+[amount]% great person generation in this city" - Replaced with "[amount]% great person generation [cityFilter]"
 
 "+[amount]% great person generation in all cities" - Replaced with "[amount]% great person generation [cityFilter]"
-
-"All newly-trained [unitFilter] units in this city receive the [promotionName] promotion" - Replaced with "All newly-trained [unitFilter] units [cityFilter] receive the [promotionName] promotion"
 
 "New [unitFilter] units start with [amount] Experience in this city" - Replaced with "New [unitFilter] units start with [amount] Experience [cityFilter]"
 
