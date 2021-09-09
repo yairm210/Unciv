@@ -50,7 +50,7 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
         }
 
         // Unique unit for militaristic city-states
-        if (allPossibleBonuses.any { it.getPlaceholderText() == "Provides military units every [] turns" }
+        if (allPossibleBonuses.any { it.getPlaceholderText() == "Provides military units every ≈[] turns" }
             || (allPossibleBonuses.isEmpty() && cityStateType == CityStateType.Militaristic)) { // Fallback for badly defined Eras.json
 
             val possibleUnits = ruleset.units.values.filter { it.requiredTech != null

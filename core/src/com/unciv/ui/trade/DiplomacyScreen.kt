@@ -122,9 +122,9 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
         val otherCivDiplomacyManager = otherCiv.getDiplomacyManager(viewingCiv)
 
         val diplomacyTable = Table()
-        diplomacyTable.defaults().pad(10f)
+        diplomacyTable.defaults().pad(2.5f)
 
-        diplomacyTable.add(LeaderIntroTable(otherCiv)).row()
+        diplomacyTable.add(LeaderIntroTable(otherCiv)).padBottom(15f).row()
 
         diplomacyTable.add("{Type}:  {${otherCiv.cityStateType}}".toLabel()).row()
         diplomacyTable.add("{Personality}:  {${otherCiv.cityStatePersonality}}".toLabel()).row()
@@ -152,6 +152,7 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
             }
             diplomacyTable.add(resourcesTable).row()
         }
+        diplomacyTable.row().padTop(15f)
 
         otherCiv.updateAllyCivForCityState()
         val ally = otherCiv.getAllyCiv()
@@ -176,6 +177,7 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
         if (nextLevelString.isNotEmpty()) {
             diplomacyTable.add(nextLevelString.toLabel()).row()
         }
+        diplomacyTable.row().padTop(15f)
 
         val eraInfo = viewingCiv.getEraObject() ?: Era.getLegacyCityStateBonusEra(viewingCiv.getEraNumber())
 
@@ -208,7 +210,7 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
         if (otherCiv.cityStateUniqueUnit != null) {
             val unitName = otherCiv.cityStateUniqueUnit
             val techName = viewingCiv.gameInfo.ruleSet.units[otherCiv.cityStateUniqueUnit]!!.requiredTech
-            diplomacyTable.add("[${otherCiv.civName}] is able to provide [${unitName}] once [${techName}] is researched.".toLabel())
+            diplomacyTable.add("[${otherCiv.civName}] is able to provide [${unitName}] once [${techName}] is researched.".toLabel(fontSize = 18)).row()
         }
 
         return diplomacyTable

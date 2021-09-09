@@ -46,7 +46,7 @@ class Era : INamed {
             val cultureBonus = if (eraNumber in 0..1) 3 else if (eraNumber in 2..3) 6 else 13
             val happinessBonus = if (eraNumber in 0..1) 2 else 3
             friendBonus[CityStateType.Militaristic.name] =
-                arrayListOf("Provides military units every [20] turns")
+                arrayListOf("Provides military units every ≈[20] turns")
             friendBonus[CityStateType.Cultured.name] =
                 arrayListOf("Provides [$cultureBonus] [Culture] per turn")
             friendBonus[CityStateType.Mercantile.name] =
@@ -54,7 +54,7 @@ class Era : INamed {
             friendBonus[CityStateType.Maritime.name] =
                 arrayListOf("Provides [2] [Food] [in capital]")
             allyBonus[CityStateType.Militaristic.name] =
-                arrayListOf("Provides military units every [17] turns")
+                arrayListOf("Provides military units every ≈[17] turns")
             allyBonus[CityStateType.Cultured.name] =
                 arrayListOf("Provides [${cultureBonus * 2}] [Culture] per turn")
             allyBonus[CityStateType.Mercantile.name] =

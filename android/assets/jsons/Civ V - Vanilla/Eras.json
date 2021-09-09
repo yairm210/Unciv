@@ -16,13 +16,13 @@
             "Cultured": ["Provides [3] [Culture] per turn"],
             "Maritime": ["Provides [2] [Food] [in capital]"],
             "Mercantile": ["Provides [2] Happiness"],
-            "Militaristic": ["Provides military units every [20] turns"]
+            "Militaristic": ["Provides military units every ≈[20] turns"]
         },
         "allyBonus": {
             "Cultured": ["Provides [6] [Culture] per turn"],
             "Maritime": ["Provides [2] [Food] [in capital]", "Provides [1] [Food] [in all cities]"],
             "Mercantile": ["Provides [2] Happiness", "Provides a unique luxury"],
-            "Militaristic": ["Provides military units every [17] turns"]
+            "Militaristic": ["Provides military units every ≈[17] turns"]
         },
         "iconRGB": [255, 87, 35]
     },
@@ -42,13 +42,13 @@
             "Cultured": ["Provides [3] [Culture] per turn"],
             "Maritime": ["Provides [2] [Food] [in capital]"],
             "Mercantile": ["Provides [2] Happiness"],
-            "Militaristic": ["Provides military units every [20] turns"]
+            "Militaristic": ["Provides military units every ≈[20] turns"]
         },
         "allyBonus": {
             "Cultured": ["Provides [6] [Culture] per turn"],
             "Maritime": ["Provides [2] [Food] [in capital]", "Provides [1] [Food] [in all cities]"],
             "Mercantile": ["Provides [2] Happiness", "Provides a unique luxury"],
-            "Militaristic": ["Provides military units every [17] turns"]
+            "Militaristic": ["Provides military units every ≈[17] turns"]
         },
         "iconRGB": [233, 31, 99]
     },
@@ -70,13 +70,13 @@
             "Cultured": ["Provides [6] [Culture] per turn"],
             "Maritime": ["Provides [2] [Food] [in capital]"],
             "Mercantile": ["Provides [3] Happiness"],
-            "Militaristic": ["Provides military units every [20] turns"]
+            "Militaristic": ["Provides military units every ≈[20] turns"]
         },
         "allyBonus": {
             "Cultured": ["Provides [12] [Culture] per turn"],
             "Maritime": ["Provides [2] [Food] [in capital]", "Provides [1] [Food] [in all cities]"],
             "Mercantile": ["Provides [3] Happiness", "Provides a unique luxury"],
-            "Militaristic": ["Provides military units every [17] turns"]
+            "Militaristic": ["Provides military units every ≈[17] turns"]
         },
         "iconRGB": [157, 39, 176]
     },
@@ -99,13 +99,13 @@
             "Cultured": ["Provides [6] [Culture] per turn"],
             "Maritime": ["Provides [2] [Food] [in capital]"],
             "Mercantile": ["Provides [3] Happiness"],
-            "Militaristic": ["Provides military units every [20] turns"]
+            "Militaristic": ["Provides military units every ≈[20] turns"]
         },
         "allyBonus": {
             "Cultured": ["Provides [12] [Culture] per turn"],
             "Maritime": ["Provides [2] [Food] [in capital]", "Provides [1] [Food] [in all cities]"],
             "Mercantile": ["Provides [3] Happiness", "Provides a unique luxury"],
-            "Militaristic": ["Provides military units every [17] turns"]
+            "Militaristic": ["Provides military units every ≈[17] turns"]
         },
         "iconRGB": [104, 58, 183]
     },
@@ -129,13 +129,13 @@
             "Cultured": ["Provides [13] [Culture] per turn"],
             "Maritime": ["Provides [2] [Food] [in capital]"],
             "Mercantile": ["Provides [3] Happiness"],
-            "Militaristic": ["Provides military units every [20] turns"]
+            "Militaristic": ["Provides military units every ≈[20] turns"]
         },
         "allyBonus": {
             "Cultured": ["Provides [26] [Culture] per turn"],
             "Maritime": ["Provides [2] [Food] [in capital]", "Provides [1] [Food] [in all cities]"],
             "Mercantile": ["Provides [3] Happiness", "Provides a unique luxury"],
-            "Militaristic": ["Provides military units every [17] turns"]
+            "Militaristic": ["Provides military units every ≈[17] turns"]
         },
         "iconRGB": [63, 81, 182]
     },
@@ -160,13 +160,13 @@
             "Cultured": ["Provides [13] [Culture] per turn"],
             "Maritime": ["Provides [2] [Food] [in capital]"],
             "Mercantile": ["Provides [3] Happiness"],
-            "Militaristic": ["Provides military units every [20] turns"]
+            "Militaristic": ["Provides military units every ≈[20] turns"]
         },
         "allyBonus": {
             "Cultured": ["Provides [26] [Culture] per turn"],
             "Maritime": ["Provides [2] [Food] [in capital]", "Provides [1] [Food] [in all cities]"],
             "Mercantile": ["Provides [3] Happiness", "Provides a unique luxury"],
-            "Militaristic": ["Provides military units every [17] turns"]
+            "Militaristic": ["Provides military units every ≈[17] turns"]
         },
         "iconRGB": [33, 150, 243]
     },
@@ -192,13 +192,13 @@
             "Cultured": ["Provides [13] [Culture] per turn"],
             "Maritime": ["Provides [2] [Food] [in capital]"],
             "Mercantile": ["Provides [3] Happiness"],
-            "Militaristic": ["Provides military units every [20] turns"]
+            "Militaristic": ["Provides military units every ≈[20] turns"]
         },
         "allyBonus": {
             "Cultured": ["Provides [26] [Culture] per turn"],
             "Maritime": ["Provides [2] [Food] [in capital]", "Provides [1] [Food] [in all cities]"],
             "Mercantile": ["Provides [3] Happiness", "Provides a unique luxury"],
-            "Militaristic": ["Provides military units every [17] turns"]
+            "Militaristic": ["Provides military units every ≈[17] turns"]
         },
         "iconRGB": [0, 150, 136]
     },
@@ -228,13 +228,13 @@
             "Cultured": ["Provides [13] [Culture] per turn"],
             "Maritime": ["Provides [2] [Food] [in capital]"],
             "Mercantile": ["Provides [3] Happiness"],
-            "Militaristic": ["Provides military units every [20] turns"]
+            "Militaristic": ["Provides military units every ≈[20] turns"]
         },
         "allyBonus": {
             "Cultured": ["Provides [26] [Culture] per turn"],
             "Maritime": ["Provides [2] [Food] [in capital]", "Provides [1] [Food] [in all cities]"],
             "Mercantile": ["Provides [3] Happiness", "Provides a unique luxury"],
-            "Militaristic": ["Provides military units every [17] turns"]
+            "Militaristic": ["Provides military units every ≈[17] turns"]
         },
         "iconRGB": [76, 176, 81]
     },
@@ -263,13 +263,13 @@
             "Cultured": ["Provides [13] [Culture] per turn"],
             "Maritime": ["Provides [2] [Food] [in capital]"],
             "Mercantile": ["Provides [3] Happiness"],
-            "Militaristic": ["Provides military units every [20] turns"]
+            "Militaristic": ["Provides military units every ≈[20] turns"]
         },
         "allyBonus": {
             "Cultured": ["Provides [26] [Culture] per turn"],
             "Maritime": ["Provides [2] [Food] [in capital]", "Provides [1] [Food] [in all cities]"],
             "Mercantile": ["Provides [3] Happiness", "Provides a unique luxury"],
-            "Militaristic": ["Provides military units every [17] turns"]
+            "Militaristic": ["Provides military units every ≈[17] turns"]
         },
         "iconRGB": [76, 176, 81]
     }
