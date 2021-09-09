@@ -3,7 +3,6 @@ package com.unciv.logic.city
 import com.badlogic.gdx.math.Vector2
 import com.unciv.logic.battle.CityCombatant
 import com.unciv.logic.civilization.CivilizationInfo
-import com.unciv.logic.civilization.GreatPersonManager
 import com.unciv.logic.civilization.ReligionState
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.map.RoadStatus
@@ -15,10 +14,7 @@ import com.unciv.models.ruleset.tile.ResourceSupplyList
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
-import com.unciv.models.translations.equalsPlaceholderText
-import com.unciv.models.translations.getPlaceholderParameters
 import java.util.*
-import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 import kotlin.collections.HashSet
 import kotlin.math.ceil
@@ -27,6 +23,7 @@ import kotlin.math.pow
 import kotlin.math.roundToInt
 
 class CityInfo {
+    @Suppress("JoinDeclarationAndAssignment")
     @Transient
     lateinit var civInfo: CivilizationInfo
 
@@ -87,7 +84,7 @@ class CityInfo {
         this.civInfo = civInfo
         foundingCiv = civInfo.civName
         turnAcquired = civInfo.gameInfo.turns
-        this.location = cityLocation
+        location = cityLocation
         setTransients()
 
         setNewCityName(civInfo)
@@ -248,10 +245,9 @@ class CityInfo {
         val indicatorBuildings = getRuleset().buildings.values
             .asSequence()
             .filter { it.uniques.contains("Indicates the capital city") }
-        
+
         val civSpecificBuilding = indicatorBuildings.firstOrNull { it.uniqueTo == civInfo.civName }
-        if (civSpecificBuilding != null) return civSpecificBuilding.name
-        else return indicatorBuildings.first().name
+        return civSpecificBuilding?.name ?: indicatorBuildings.first().name
     }
 
     fun isConnectedToCapital(connectionTypePredicate: (Set<String>) -> Boolean = { true }): Boolean {
@@ -382,7 +378,7 @@ class CityInfo {
             buildingsCounter.add(building.greatPersonPoints)
         sourceToGPP["Buildings"] = buildingsCounter
 
-        for ((source, gppCounter) in sourceToGPP) {
+        for ((_, gppCounter) in sourceToGPP) {
             for (unique in civInfo.getMatchingUniques("[] is earned []% faster")) {
                 val unitName = unique.params[0]
                 if (!gppCounter.containsKey(unitName)) continue
@@ -437,7 +433,7 @@ class CityInfo {
     }
 
     internal fun getMaxHealth() =
-        200 + cityConstructions.getBuiltBuildings().sumBy { it.cityHealth }
+        200 + cityConstructions.getBuiltBuildings().sumOf { it.cityHealth }
 
     override fun toString() = name // for debug
     //endregion
@@ -498,7 +494,7 @@ class CityInfo {
         if (isBeingRazed) {
             val removedPopulation =
                 1 + civInfo.getMatchingUniques("Cities are razed [] times as fast")
-                    .sumBy { it.params[0].toInt() - 1 }
+                    .sumOf { it.params[0].toInt() - 1 }
             population.addPopulation(-1 * removedPopulation)
             if (population.population <= 0) {
                 civInfo.addNotification(

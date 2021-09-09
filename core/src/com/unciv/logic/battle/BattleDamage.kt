@@ -170,7 +170,7 @@ object BattleDamage {
         } else if (attacker is CityCombatant) {
             if (attacker.city.getCenterTile().militaryUnit != null) {
                 val garrisonBonus = attacker.city.getMatchingUniques("+[]% attacking strength for cities with garrisoned units")
-                    .sumBy { it.params[0].toInt() }
+                    .sumOf { it.params[0].toInt() }
                 if (garrisonBonus != 0)
                     modifiers["Garrisoned unit"] = garrisonBonus
             }

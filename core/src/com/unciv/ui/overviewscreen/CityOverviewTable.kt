@@ -87,11 +87,11 @@ class CityOverviewTable(private val viewingPlayer: CivilizationInfo, private val
             .minWidth(iconSize) //we need the min width so we can align the different tables
 
         cityInfoTableTotal.add("Total".toLabel())
-        cityInfoTableTotal.add(viewingPlayer.cities.sumBy { it.population.population }.toString().toLabel()).myAlign(Align.center)
+        cityInfoTableTotal.add(viewingPlayer.cities.sumOf { it.population.population }.toString().toLabel()).myAlign(Align.center)
         for (column in columnsNames.filter { it.isStat() }) {
             val stat = Stat.valueOf(column)
             if (stat == Stat.Food || stat == Stat.Production) cityInfoTableTotal.add() // an intended empty space
-            else cityInfoTableTotal.add(viewingPlayer.cities.sumBy { getStatOfCity(it, stat) }.toLabel()).myAlign(Align.center)
+            else cityInfoTableTotal.add(viewingPlayer.cities.sumOf { getStatOfCity(it, stat) }.toLabel()).myAlign(Align.center)
         }
         cityInfoTableTotal.pack()
 
@@ -111,7 +111,7 @@ class CityOverviewTable(private val viewingPlayer: CivilizationInfo, private val
     private fun getStatOfCity(cityInfo: CityInfo, stat: Stat): Int {
         return if (stat == Stat.Happiness)
              cityInfo.cityStats.happinessList.values.sum().roundToInt()
-        else cityInfo.cityStats.currentCityStats.get(stat).roundToInt()
+        else cityInfo.cityStats.currentCityStats[stat].roundToInt()
     }
 
     private fun fillCitiesTable(citiesTable: Table, sortType: String, descending: Boolean) {
