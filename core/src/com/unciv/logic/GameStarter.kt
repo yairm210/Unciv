@@ -217,11 +217,6 @@ object GameStarter {
                 civ.tech.techsResearched.add(tech.name) // can't be .addTechnology because the civInfo isn't assigned yet
         }
     }
-    private fun filterReligion(civ: CivilizationInfo): CivilizationInfo{
-        if (civ.cityStateType != CityStateType.Religious)
-            return civ
-        return filterReligion(civ)
-    }
 
     private fun addCivStartingUnits(gameInfo: GameInfo) {
 
