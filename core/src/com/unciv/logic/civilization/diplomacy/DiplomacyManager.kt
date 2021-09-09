@@ -44,9 +44,9 @@ enum class DiplomacyFlags {
     RecentlyPledgedProtection,
     RecentlyWithdrewProtection,
     AngerFreeIntrusion,
-    RecentlyDestroyedProtectedMinor,
-    RecentlyAttackedProtectedMinor,
-    RecentlyBulliedProtectedMinor
+    RememberDestroyedProtectedMinor,
+    RememberAttackedProtectedMinor,
+    RememberBulliedProtectedMinor
 }
 
 enum class DiplomaticModifiers {
@@ -144,7 +144,13 @@ class DiplomacyManager() {
         return 0
     }
 
-    fun opinionOfOtherCiv() = diplomaticModifiers.values.sum()
+    fun opinionOfOtherCiv(): Float {
+        var modifierSum = diplomaticModifiers.values.sum()
+        // Angry about attacked CS and destroyed CS do not stack
+        if (hasModifier(DiplomaticModifiers.DestroyedProtectedMinor) && hasModifier(DiplomaticModifiers.AttackedProtectedMinor))
+            modifierSum -= getModifier(DiplomaticModifiers.AttackedProtectedMinor)
+        return modifierSum
+    }
 
     fun relationshipLevel(): RelationshipLevel {
         if (civInfo.isPlayerCivilization() && otherCiv().isPlayerCivilization())
@@ -464,11 +470,11 @@ class DiplomacyManager() {
             // These modifiers decrease slightly @ 50
             if (flagsCountdown[flag] == 50) {
                 when (flag) {
-                    DiplomacyFlags.RecentlyAttackedProtectedMinor.name -> {
-                        addModifier(DiplomaticModifiers.AttackedProtectedMinor, -5f)
+                    DiplomacyFlags.RememberAttackedProtectedMinor.name -> {
+                        addModifier(DiplomaticModifiers.AttackedProtectedMinor, 5f)
                     }
-                    DiplomacyFlags.RecentlyBulliedProtectedMinor.name -> {
-                        addModifier(DiplomaticModifiers.BulliedProtectedMinor, -5f)
+                    DiplomacyFlags.RememberBulliedProtectedMinor.name -> {
+                        addModifier(DiplomaticModifiers.BulliedProtectedMinor, 5f)
                     }
                 }
             }
@@ -491,14 +497,14 @@ class DiplomacyManager() {
                     DiplomacyFlags.AgreedToNotSettleNearUs.name -> {
                         addModifier(DiplomaticModifiers.FulfilledPromiseToNotSettleCitiesNearUs, 10f)
                     }
-                    // These modifiers don't tick down naturally, instead there is a threshold number of turns
-                    DiplomacyFlags.RecentlyDestroyedProtectedMinor.name -> {    // 125
+                    // These modifiers don't tick down normally, instead there is a threshold number of turns
+                    DiplomacyFlags.RememberDestroyedProtectedMinor.name -> {    // 125
                         removeModifier(DiplomaticModifiers.DestroyedProtectedMinor)
                     }
-                    DiplomacyFlags.RecentlyAttackedProtectedMinor.name -> {     // 75
+                    DiplomacyFlags.RememberAttackedProtectedMinor.name -> {     // 75
                         removeModifier(DiplomaticModifiers.AttackedProtectedMinor)
                     }
-                    DiplomacyFlags.RecentlyBulliedProtectedMinor.name -> {      // 75
+                    DiplomacyFlags.RememberBulliedProtectedMinor.name -> {      // 75
                         removeModifier(DiplomaticModifiers.BulliedProtectedMinor)
                     }
                 }

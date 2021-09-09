@@ -8,11 +8,8 @@ import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.*
-import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
-import com.unciv.logic.civilization.diplomacy.DiplomacyManager
+import com.unciv.logic.civilization.diplomacy.*
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers.*
-import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
-import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.logic.trade.TradeLogic
 import com.unciv.logic.trade.TradeOffer
 import com.unciv.logic.trade.TradeType
@@ -647,6 +644,11 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
     private fun getDiplomacyModifiersTable(otherCivDiplomacyManager: DiplomacyManager): Table {
         val diplomacyModifiersTable = Table()
         for (modifier in otherCivDiplomacyManager.diplomaticModifiers) {
+            // Angry about attacked CS and destroyed CS do not stack
+            if (modifier.key == AttackedProtectedMinor.name
+                && otherCivDiplomacyManager.hasModifier(DestroyedProtectedMinor))
+                continue
+
             var text = when (valueOf(modifier.key)) {
                 DeclaredWarOnUs -> "You declared war on us!"
                 WarMongerer -> "Your warmongering ways are unacceptable to us."

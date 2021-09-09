@@ -952,6 +952,9 @@ class CivilizationInfo {
     fun cityStateAttacked(attacker: CivilizationInfo) {
         cityStateFunctions.cityStateAttacked(attacker)
     }
+    fun cityStateDestroyed(attacker: CivilizationInfo) {
+        cityStateFunctions.cityStateDestroyed(attacker)
+    }
 
     //endregion
 }
