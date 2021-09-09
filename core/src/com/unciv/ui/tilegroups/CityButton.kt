@@ -241,7 +241,7 @@ class CityButton(val city: CityInfo, private val tileGroup: WorldTileGroup): Tab
 
         if (city.civInfo.isCityState()) {
             val cityStateImage = ImageGetter.getImage("OtherIcons/${city.civInfo.cityStateType.name}").apply { color = secondaryColor }
-            iconTable.add(cityStateImage).size(20f).padRight(10f).fillY()
+            iconTable.add(cityStateImage).size(20f).fillY()
         }
 
         if (uncivGame.viewEntireMapForDebug || belongsToViewingCiv() || worldScreen.viewingCiv.isSpectator()) {
