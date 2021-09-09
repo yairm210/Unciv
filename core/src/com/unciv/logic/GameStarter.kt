@@ -194,16 +194,17 @@ object GameStarter {
         availableCityStatesNames.addAll(ruleset.nations.filter { it.value.isCityState() }.keys
                 .shuffled().sortedByDescending { it in civNamesWithStartingLocations })
 
-        if (!newGameParameters.religionEnabled){
-            availableCityStatesNames.filter { it == "Jerusalem" }.filter { it == "Cahokia" }
-                .filter{it == "Bratislava"}
-        }
         val allMercantileResources = ruleset.tileResources.values.filter { it.unique == "Can only be created by Mercantile City-States" }.map { it.name }
         val unusedMercantileResources = Stack<String>()
         unusedMercantileResources.addAll(allMercantileResources.shuffled())
+        var numbersToTake = newGameParameters.numberOfCityStates
 
-        for (cityStateName in availableCityStatesNames.take(newGameParameters.numberOfCityStates)) {
+        for (cityStateName in availableCityStatesNames.take(numbersToTake)) {
             val civ = CivilizationInfo(cityStateName)
+            if (civ.cityStateType == CityStateType.Religious && !newGameParameters.religionEnabled){
+                numbersToTake++
+                continue
+            }
             civ.cityStatePersonality = CityStatePersonality.values().random()
             civ.cityStateResource = when {
                 ruleset.nations[cityStateName]?.cityStateType != CityStateType.Mercantile -> null
@@ -215,6 +216,11 @@ object GameStarter {
             for (tech in startingTechs)
                 civ.tech.techsResearched.add(tech.name) // can't be .addTechnology because the civInfo isn't assigned yet
         }
+    }
+    private fun filterReligion(civ: CivilizationInfo): CivilizationInfo{
+        if (civ.cityStateType != CityStateType.Religious)
+            return civ
+        return filterReligion(civ)
     }
 
     private fun addCivStartingUnits(gameInfo: GameInfo) {
