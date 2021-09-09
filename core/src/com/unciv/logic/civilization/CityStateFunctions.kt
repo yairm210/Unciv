@@ -3,6 +3,7 @@ package com.unciv.logic.civilization
 import com.unciv.Constants
 import com.unciv.logic.automation.NextTurnAutomation
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
+import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.models.metadata.GameSpeed
@@ -327,6 +328,7 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
         val goldAmount = goldGainedByTribute()
         demandingCiv.addGold(goldAmount)
         civInfo.getDiplomacyManager(demandingCiv).addInfluence(-15f)
+        cityStateBullied(demandingCiv)
         civInfo.addFlag(CivFlags.RecentlyBullied.name, 20)
         updateAllyCivForCityState()
         civInfo.updateStatsForNextTurn()
@@ -344,6 +346,7 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
         demandingCiv.placeUnitNearTile(civInfo.getCapital().location, buildableWorkerLikeUnits.keys.random())
 
         civInfo.getDiplomacyManager(demandingCiv).addInfluence(-50f)
+        cityStateBullied(demandingCiv)
         civInfo.addFlag(CivFlags.RecentlyBullied.name, 20)
         updateAllyCivForCityState()
     }
@@ -422,6 +425,42 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
             diplomacy.setFlag(DiplomacyFlags.AngerFreeIntrusion, diplomacy.getFlag(DiplomacyFlags.AngerFreeIntrusion) + 5)
         else
             diplomacy.setFlag(DiplomacyFlags.AngerFreeIntrusion, 5)
+    }
+
+    /** A city state was bullied. What are its protectors going to do about it??? */
+    private fun cityStateBullied(bully: CivilizationInfo) {
+        if (!civInfo.isCityState()) return // What are we doing here?
+
+        for (protector in civInfo.getProtectorCivs()) {
+            val protectorDiplomacy = protector.getDiplomacyManager(bully)
+            if (protectorDiplomacy.hasModifier(DiplomaticModifiers.BulliedProtectedMinor))
+                protectorDiplomacy.addModifier(DiplomaticModifiers.BulliedProtectedMinor, 10f) // Penalty less severe for second offence
+            else
+                protectorDiplomacy.addModifier(DiplomaticModifiers.BulliedProtectedMinor, 15f)
+            protectorDiplomacy.setFlag(DiplomacyFlags.RecentlyBulliedProtectedMinor, 75)
+
+            if (protector.playerType != PlayerType.Human)   // Humans can have their own emotions
+                bully.addNotification("[${protector.civName}] is upset that you demanded tribute from [${civInfo.civName}], whom they have pledged to protect!", NotificationIcon.Diplomacy, protector.civName)
+            protector.addNotification("[${bully.civName}] has demanded tribute from [${civInfo.civName}], whom you have pledged to protect!", bully.civName, NotificationIcon.Diplomacy, civInfo.civName)
+        }
+    }
+
+    /** A city state was attacked. What are its protectors going to do about it??? */
+    fun cityStateAttacked(attacker: CivilizationInfo) {
+        if (!civInfo.isCityState()) return // What are we doing here?
+
+        for (protector in civInfo.getProtectorCivs()) {
+            val protectorDiplomacy = protector.getDiplomacyManager(attacker)
+            if (protectorDiplomacy.hasModifier(DiplomaticModifiers.AttackedProtectedMinor))
+                protectorDiplomacy.addModifier(DiplomaticModifiers.AttackedProtectedMinor, 15f) // Penalty less severe for second offence
+            else
+                protectorDiplomacy.addModifier(DiplomaticModifiers.AttackedProtectedMinor, 20f)
+            protectorDiplomacy.setFlag(DiplomacyFlags.RecentlyAttackedProtectedMinor, 75)
+
+            if (protector.playerType != PlayerType.Human)   // Humans can have their own emotions
+                attacker.addNotification("[${protector.civName}] is upset that you attacked [${civInfo.civName}], whom they have pledged to protect!", NotificationIcon.Diplomacy, protector.civName)
+            protector.addNotification("[${attacker.civName}] has declared war on [${civInfo.civName}], whom you have pledged to protect!", attacker.civName, NotificationIcon.War, civInfo.civName)
+        }
     }
 
 }

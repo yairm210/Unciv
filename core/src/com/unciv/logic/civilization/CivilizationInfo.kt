@@ -949,6 +949,10 @@ class CivilizationInfo {
     fun getAllyCiv() = allyCivName
     fun setAllyCiv(newAllyName: String?) { allyCivName = newAllyName }
 
+    fun cityStateAttacked(attacker: CivilizationInfo) {
+        cityStateFunctions.cityStateAttacked(attacker)
+    }
+
     //endregion
 }
 

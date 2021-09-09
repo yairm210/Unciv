@@ -669,6 +669,9 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
                 UsedNuclearWeapons -> "Your use of nuclear weapons is disgusting!"
                 StealingTerritory -> "You have stolen our lands!"
                 GaveUsUnits -> "You gave us units!"
+                DestroyedProtectedMinor -> "You destroyed City States that were under our protection!"
+                AttackedProtectedMinor -> "You attacked City States that were under our protection!"
+                BulliedProtectedMinor -> "You demanded tribute from City States that were under our protection!"
             }
             text = text.tr() + " "
             if (modifier.value > 0) text += "+"

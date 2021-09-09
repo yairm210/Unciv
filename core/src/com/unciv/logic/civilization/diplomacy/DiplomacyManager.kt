@@ -43,7 +43,10 @@ enum class DiplomacyFlags {
     NotifiedAfraid,
     RecentlyPledgedProtection,
     RecentlyWithdrewProtection,
-    AngerFreeIntrusion
+    AngerFreeIntrusion,
+    RecentlyDestroyedProtectedMinor,
+    RecentlyAttackedProtectedMinor,
+    RecentlyBulliedProtectedMinor
 }
 
 enum class DiplomaticModifiers {
@@ -68,7 +71,10 @@ enum class DiplomaticModifiers {
     DenouncedOurEnemies,
     OpenBorders,
     FulfilledPromiseToNotSettleCitiesNearUs,
-    GaveUsUnits
+    GaveUsUnits,
+    DestroyedProtectedMinor,
+    AttackedProtectedMinor,
+    BulliedProtectedMinor
 }
 
 class DiplomacyManager() {
@@ -455,6 +461,18 @@ class DiplomacyManager() {
             if (flag == DiplomacyFlags.ResearchAgreement.name)
                 totalOfScienceDuringRA += civInfo.statsForNextTurn.science.toInt()
 
+            // These modifiers decrease slightly @ 50
+            if (flagsCountdown[flag] == 50) {
+                when (flag) {
+                    DiplomacyFlags.RecentlyAttackedProtectedMinor.name -> {
+                        addModifier(DiplomaticModifiers.AttackedProtectedMinor, -5f)
+                    }
+                    DiplomacyFlags.RecentlyBulliedProtectedMinor.name -> {
+                        addModifier(DiplomaticModifiers.BulliedProtectedMinor, -5f)
+                    }
+                }
+            }
+
             // Only when flag is expired
             if (flagsCountdown[flag] == 0) {
                 when (flag) {
@@ -472,6 +490,16 @@ class DiplomacyManager() {
                     }
                     DiplomacyFlags.AgreedToNotSettleNearUs.name -> {
                         addModifier(DiplomaticModifiers.FulfilledPromiseToNotSettleCitiesNearUs, 10f)
+                    }
+                    // These modifiers don't tick down naturally, instead there is a threshold number of turns
+                    DiplomacyFlags.RecentlyDestroyedProtectedMinor.name -> {    // 125
+                        removeModifier(DiplomaticModifiers.DestroyedProtectedMinor)
+                    }
+                    DiplomacyFlags.RecentlyAttackedProtectedMinor.name -> {     // 75
+                        removeModifier(DiplomaticModifiers.AttackedProtectedMinor)
+                    }
+                    DiplomacyFlags.RecentlyBulliedProtectedMinor.name -> {      // 75
+                        removeModifier(DiplomaticModifiers.BulliedProtectedMinor)
                     }
                 }
 
@@ -596,7 +624,10 @@ class DiplomacyManager() {
         }
 
         otherCivDiplomacy.setModifier(DiplomaticModifiers.DeclaredWarOnUs, -20f)
-        if (otherCiv.isCityState()) otherCivDiplomacy.setInfluence(-60f)
+        if (otherCiv.isCityState()) {
+            otherCivDiplomacy.setInfluence(-60f)
+            otherCiv.cityStateAttacked(civInfo)
+        }
 
         for (thirdCiv in civInfo.getKnownCivs()) {
             if (thirdCiv.isAtWarWith(otherCiv)) {
