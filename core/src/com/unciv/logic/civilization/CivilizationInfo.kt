@@ -1,25 +1,21 @@
 package com.unciv.logic.civilization
 
 import com.badlogic.gdx.math.Vector2
-import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
 import com.unciv.logic.UncivShowableException
-import com.unciv.logic.automation.NextTurnAutomation
 import com.unciv.logic.automation.WorkerAutomation
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.RuinsManager.RuinsManager
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomacyManager
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
-import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.UnitMovementAlgorithms
 import com.unciv.logic.trade.TradeEvaluation
 import com.unciv.logic.trade.TradeRequest
 import com.unciv.models.Counter
-import com.unciv.models.metadata.GameSpeed
 import com.unciv.models.ruleset.*
 import com.unciv.models.ruleset.tile.ResourceSupplyList
 import com.unciv.models.ruleset.tile.ResourceType
@@ -27,15 +23,12 @@ import com.unciv.models.ruleset.tile.TileResource
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
-import com.unciv.models.translations.getPlaceholderParameters
-import com.unciv.models.translations.getPlaceholderText
 import com.unciv.models.translations.tr
 import com.unciv.ui.utils.toPercent
 import com.unciv.ui.victoryscreen.RankingType
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
-import kotlin.collections.LinkedHashMap
 import kotlin.math.*
 
 class CivilizationInfo {
@@ -401,9 +394,11 @@ class CivilizationInfo {
         val cityStateLocation = if (cities.isEmpty()) null else getCapital().location
 
         val giftAmount = Stats(gold = 15f)
+        val faithAmount = Stats(faith = 15f)
         // Later, religious city-states will also gift gold, making this the better implementation
         // For now, it might be overkill though.
         var meetString = "[${civName}] has given us [${giftAmount}] as a token of goodwill for meeting us"
+        val religionMeetString = "[${civName}] has also given us [${faithAmount}]"
         if (diplomacy.filter { it.value.otherCiv().isMajorCiv() }.count() == 1) {
             giftAmount.timesInPlace(2f)
             meetString = "[${civName}] has given us [${giftAmount}] as we are the first major civ to meet them"
@@ -413,6 +408,12 @@ class CivilizationInfo {
         else
             otherCiv.addNotification(meetString, NotificationIcon.Gold)
 
+        if (otherCiv.isCityState() && otherCiv.cityStateType == CityStateType.Religious){
+            otherCiv.addNotification(religionMeetString, NotificationIcon.Faith)
+
+            for ((key, value) in faithAmount)
+                otherCiv.addStat(key, value.toInt())
+        }
         for ((key, value) in giftAmount)
             otherCiv.addStat(key, value.toInt())
     }
