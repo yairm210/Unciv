@@ -194,6 +194,9 @@ object GameStarter {
         availableCityStatesNames.addAll(ruleset.nations.filter { it.value.isCityState() }.keys
                 .shuffled().sortedByDescending { it in civNamesWithStartingLocations })
 
+        if (!gameInfo.hasReligionEnabled()){
+            println(1) //erronous code
+        }
         val allMercantileResources = ruleset.tileResources.values.filter { it.unique == "Can only be created by Mercantile City-States" }.map { it.name }
         val unusedMercantileResources = Stack<String>()
         unusedMercantileResources.addAll(allMercantileResources.shuffled())
