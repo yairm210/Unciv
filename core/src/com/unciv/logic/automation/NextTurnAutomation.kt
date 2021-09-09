@@ -103,7 +103,7 @@ object NextTurnAutomation {
                 val requestingCiv = civInfo.gameInfo.getCivilization(popupAlert.value)
                 val diploManager = civInfo.getDiplomacyManager(requestingCiv)
                 if (diploManager.relationshipLevel() > RelationshipLevel.Neutral
-                        && !diploManager.otherCivDiplomacy().hasFlag(DiplomacyFlags.Denunceation)) {
+                        && !diploManager.otherCivDiplomacy().hasFlag(DiplomacyFlags.Denunciation)) {
                     diploManager.signDeclarationOfFriendship()
                     requestingCiv.addNotification("We have signed a Declaration of Friendship with [${civInfo.civName}]!", NotificationIcon.Diplomacy, civInfo.civName)
                 } else requestingCiv.addNotification("[${civInfo.civName}] has denied our Declaration of Friendship!", NotificationIcon.Diplomacy, civInfo.civName)
@@ -206,8 +206,9 @@ object NextTurnAutomation {
         }
 
         // Bonus for luxury resources we can get from them
-        value += cityState.detailedCivResources.count { it.resource.resourceType == ResourceType.Luxury
-                && it.resource !in civInfo.detailedCivResources.map { it.resource }
+        value += cityState.detailedCivResources.count {
+            it.resource.resourceType == ResourceType.Luxury
+            && it.resource !in civInfo.detailedCivResources.map { supply -> supply.resource }
         }
 
         return value
@@ -341,7 +342,7 @@ object NextTurnAutomation {
     private fun chooseBeliefs(civInfo: CivilizationInfo, beliefContainer: BeliefContainer): HashSet<Belief> {
         val chosenBeliefs = hashSetOf<Belief>()
         // The 'continues' should never be reached, but just in case I'd rather have AI have a
-        // belief less than make the game crash. The 'continue's should only be reached whenever
+        // belief less than make the game crash. The 'continues' should only be reached whenever
         // there are not enough beliefs to choose, but there should be, as otherwise we could
         // not have used a great prophet to found/enhance our religion.
         for (counter in 0 until beliefContainer.pantheonBeliefCount)
@@ -436,7 +437,7 @@ object NextTurnAutomation {
                     it.isMajorCiv() && !it.isAtWarWith(civInfo)
                             && it.getDiplomacyManager(civInfo).relationshipLevel() > RelationshipLevel.Neutral
                             && !civInfo.getDiplomacyManager(it).hasFlag(DiplomacyFlags.DeclarationOfFriendship)
-                            && !civInfo.getDiplomacyManager(it).hasFlag(DiplomacyFlags.Denunceation)
+                            && !civInfo.getDiplomacyManager(it).hasFlag(DiplomacyFlags.Denunciation)
                 }
                 .sortedByDescending { it.getDiplomacyManager(civInfo).relationshipLevel() }
         for (civ in civsThatWeCanDeclareFriendshipWith) {
