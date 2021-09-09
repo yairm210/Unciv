@@ -89,6 +89,17 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
                 }
             civIndicator.addActor(relationshipIcon)
 
+            if (civ.isCityState()) {
+                val innerColor = civ.gameInfo.ruleSet.nations[civ.civName]!!.getInnerColor()
+                val typeIcon = ImageGetter.getImage(civ.cityStateType.icon)
+                    .surroundWithCircle(size = 35f, color = innerColor).apply {
+                        actor.color = Color.BLACK
+                    }
+                civIndicator.addActor(typeIcon)
+                typeIcon.y = floor(civIndicator.height - typeIcon.height)
+                typeIcon.x = floor(civIndicator.width - typeIcon.width)
+            }
+
             if (civ.isCityState() && civ.questManager.haveQuestsFor(viewingCiv)) {
                 val questIcon = ImageGetter.getImage("OtherIcons/Quest")
                     .surroundWithCircle(size = 30f, color = Color.GOLDENROD)

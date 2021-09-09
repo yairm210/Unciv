@@ -634,6 +634,10 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Shield](https://thenounproject.com/search/?q=shield&i=813568) by Gregor Cresnar for Religious Strength
 * [skill sword flame](https://thenounproject.com/term/skill-sword-flame/2360212/) by Maxicons) for Remove Heresy
 * [Pencil](https://thenounproject.com/search/?q=pencil&i=4195852) by Muhamad Aldi Maulana for Enter Text Prompt Button / Pencil
+* [Parchment](https://thenounproject.com/term/parchment/1516378/) by hans draiman for Cultured City-States
+* [connection](https://thenounproject.com/term/connection/1365233/) by Popular for Mercantile City-States
+* [crossed sword](https://thenounproject.com/term/crossed-sword/2427559/) by ProSymbols for Militaristic City-States
+* [ship helm](https://thenounproject.com/term/ship-helm/2170591/) by Vectors Market for Maritime City-States
 
 ## Main menu
 
