@@ -240,13 +240,7 @@ class CityButton(val city: CityInfo, private val tileGroup: WorldTileGroup): Tab
         cityStrengthLabel.toBack()
 
         if (city.civInfo.isCityState()) {
-            val cityStateImage = when (city.civInfo.cityStateType) {
-                CityStateType.Militaristic  -> ImageGetter.getImage("OtherIcons/Militaristic").apply { color = secondaryColor }
-                CityStateType.Cultured      -> ImageGetter.getImage("OtherIcons/Cultured").apply { color = secondaryColor }
-                CityStateType.Maritime      -> ImageGetter.getImage("OtherIcons/Maritime").apply { color = secondaryColor }
-                CityStateType.Mercantile    -> ImageGetter.getImage("OtherIcons/Mercantile").apply { color = secondaryColor }
-                //CityStateType.Religious     -> ImageGetter.getReligionImage("Religion").apply { color = secondaryColor }
-            }
+            val cityStateImage = ImageGetter.getImage("OtherIcons/${city.civInfo.cityStateType.name}").apply { color = secondaryColor }
             iconTable.add(cityStateImage).size(20f).padRight(10f).fillY()
         }
 
