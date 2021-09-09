@@ -415,11 +415,11 @@ class Ruleset {
                 fun getPrereqTree(technologyName: String): Set<String> {
                     if (prereqsHashMap.containsKey(technologyName)) return prereqsHashMap[technologyName]!!
                     val technology = technologies[technologyName]
-                    if (technology == null) return emptySet()
+                        ?: return emptySet()
                     val techHashSet = HashSet<String>()
                     techHashSet += technology.prerequisites
-                    for (prereq in technology.prerequisites)
-                        techHashSet += getPrereqTree(prereq)
+                    for (prerequisite in technology.prerequisites)
+                        techHashSet += getPrereqTree(prerequisite)
                     prereqsHashMap[technologyName] = techHashSet
                     return techHashSet
                 }

@@ -46,8 +46,6 @@ class Promotion : INamed, ICivilopediaText, IHasUniques {
     }
 
     override fun makeLink() = "Promotion/$name"
-    override fun hasCivilopediaTextLines() = true
-    override fun replacesCivilopediaDescription() = true
 
     override fun getCivilopediaTextLines(ruleset: Ruleset): List<FormattedLine> {
         val textList = ArrayList<FormattedLine>()

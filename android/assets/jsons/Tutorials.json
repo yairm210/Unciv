@@ -168,5 +168,59 @@
 "ⓨ: By the way, here's how an empire border looks like - it's in the national colours of the nation owning the territory.",
 "ⓩ: And this is the red targeting circle that led to the attack pane back under ⑬.",
 "What you don't see: The phone/tablet's back button will pop the question whether you wish to leave Unciv and go back to Real Life. On desktop versions, you can use the ESC key."
-  ]
+  ],
+    "Faith": [
+        "After building a shrine, your civilization will start generating Faith☮.",
+        "When enough Faith☮ has been generated, you will be able to found a pantheon.",
+        "A pantheon will provide a small bonus for your civilization that will apply to all your cities.",
+        "Each civilization can only choose a single pantheon belief, and each pantheon can only be chosen once.",
+        "Generating more faith will allow you to found a religion."
+    ],
+    "Religion": [
+        "Keep generating Faith☮, and eventually a great prophet will be born in one of your cities.",
+        "This great prophet can be used for multiple things: Constructing a holy site, founding a religion and spreading your religion.",
+        "When founding your religion, you may choose another two beliefs. The founder belief will only apply to you, while the follower belief will apply to all cities following your religion.",
+        "Additionally, the city where you used your great prophet will become the holy city of that religion.",
+        "Once you have founded a religion, great prophets will keep being born every so often, though the amount of Faith☮ you have to save up will be higher.",
+	    "One of these great prophets can then be used to enhance your religion.",
+        "This will allow you to choose another follower belief, as well as an enhancer belief, that only applies to you.",
+        "Do take care founding a religion soon, only about half the players in the game are able to found a religion!"
+    ],
+    "Beliefs": [
+        "There are four types of beliefs: Pantheon, Founder, Follower and Enhancer beliefs.",
+        "Pantheon and Follower beliefs apply to each city following your religion, while Founder and Enhancer beliefs only apply to the founder of a religion."
+    ],
+    "Religion_inside_cities": [
+        "When founding a city, it won't follow a religion immediately.",
+        "The religion a city follows depends on the total pressure each religion has within the city.",
+        "Followers are allocated in the same proportions as these pressures, and these followers can be viewed in the city screen.",
+        "Based on this, you can get a feel for which religions have a lot of pressure built up in the city, and which have almost none.",
+        "The city follows a religion if a majority of its population follows that religion, and will only then receive the effects of Follower and Pantheon beliefs of that religion.",
+    ],
+    "Spreading_Religion": [
+        "Spreading religion happens naturally, but can be sped up using missionaries or great prophets.",
+        "Missionaries can be bought in cities following a major religion, and will take the religion of that city.",
+        "So do take care where you are buying them! If another civilization has converted one of your cities to their religion, missionaries bought there will follow their religion.",
+        "Great prophets always have your religion when they appear, even if they are bought in cities following other religions, but captured great prophets do retain their original religion.",
+        "Both great prophets and missionaries are able to spread religion to cities when they are inside its borders, even cities of other civilizations.",
+        "These two units can even enter tiles of civilizations with whom you don't have an open borders agreement!",
+        "But do take care, missionaries will lose 250 religious strength each turn they end while in foreign lands.",
+        "This diminishes their effectiveness when spreading religion, and if their religious strength ever reaches 0, they have lost their faith and disappear.",
+        "When you do spread your religion, the religious strength of the unit is added as pressure for that religion.",
+        "",
+        "Cities also passively add pressure of their majority religion to nearby cities.",
+        "Each city provides +6 pressure per turn to all cities within 10 tiles, though the exact amount of pressure depends on the game speed.",
+        "This pressure can also be seen in the city screen, and gives you an idea of how religions in your cities will evolve if you don't do anything.",
+        "Holy cities also provide +30 pressure of the religion founded there to themselves, making it very difficult to effectively convert a holy city.",
+        "Lastly, before founding a religion, new cities you settle will start with 200 pressure for your pantheon.",
+        "This way, all your cities will starting following your pantheon as long as you haven't founded a religion yet.",
+        
+    ],
+    "Inquisitors": [
+        "Inquisitors are the last religious unit, and their strength is removing other religions.",
+        "They can remove all other religions from one of your own cities, removing any pressures built up.",
+        "Great prophets also have this ability, and remove all other religions in the city when spreading their religion.",
+        "Often this results in the city immediately converting to their religion",
+        "Additionally, when an inquisitor is stationed in or directly next to a city center, units of other religions cannot spread their faith there, though natural spread is uneffected."
+    ]
 }
