@@ -408,7 +408,7 @@ class CivilizationInfo {
         else
             otherCiv.addNotification(meetString, NotificationIcon.Gold)
 
-        if (otherCiv.isCityState() && otherCiv.cityStateType == CityStateType.Religious){
+        if (otherCiv.isCityState() && otherCiv.canGiveStat(Stat.Faith)){
             otherCiv.addNotification(religionMeetString, NotificationIcon.Faith)
 
             for ((key, value) in faithAmount)
