@@ -425,6 +425,7 @@ class BaseUnit : INamed, INonPerpetualConstruction, ICivilopediaText {
 
     fun addConstructionBonuses(unit: MapUnit, cityConstructions: CityConstructions) {
         val civInfo = cityConstructions.cityInfo.civInfo
+
         @Suppress("LocalVariableName")
         var XP = 0
 
@@ -437,25 +438,20 @@ class BaseUnit : INamed, INonPerpetualConstruction, ICivilopediaText {
         }
         unit.promotions.XP = XP
 
-        for (unique in
-        cityConstructions.cityInfo.getMatchingUniques("All newly-trained [] units [] receive the [] promotion")
-            .filter { cityConstructions.cityInfo.matchesFilter(it.params[1]) } +
-            // Deprecated since 3.15.9
-                cityConstructions.cityInfo.getLocalMatchingUniques("All newly-trained [] units in this city receive the [] promotion")
-            //
-        ) {
+        for (unique in cityConstructions.cityInfo.getMatchingUniques("All newly-trained [] units [] receive the [] promotion")
+            .filter { cityConstructions.cityInfo.matchesFilter(it.params[1]) }) {
             val filter = unique.params[0]
             val promotion = unique.params.last()
 
-            if (unit.matchesFilter(filter) 
+            if (unit.matchesFilter(filter)
                 || (
-                    filter == "relevant" 
-                    && civInfo.gameInfo.ruleSet.unitPromotions.values
-                        .any {
-                            it.name == promotion
-                            && unit.type.name in it.unitTypes
-                        }
-                )
+                        filter == "relevant"
+                                && civInfo.gameInfo.ruleSet.unitPromotions.values
+                            .any {
+                                it.name == promotion
+                                        && unit.type.name in it.unitTypes
+                            }
+                        )
             ) {
                 unit.promotions.addPromotion(promotion, isFree = true)
             }
@@ -492,9 +488,6 @@ class BaseUnit : INamed, INonPerpetualConstruction, ICivilopediaText {
 
             "Nuclear Weapon" -> isNuclearWeapon()
             "Great Person", "Great" -> isGreatPerson()
-            // Deprecated as of 3.15.2
-                "military water" -> isMilitary() && isWaterUnit()
-            //
             else -> {
                 if (getType().matchesFilter(filter)) return true
                 if (
@@ -509,8 +502,7 @@ class BaseUnit : INamed, INonPerpetualConstruction, ICivilopediaText {
 
     fun isGreatPerson() = uniqueObjects.any { it.placeholderText == "Great Person - []" }
 
-    // "Nuclear Weapon" unique deprecated since 3.15.4
-    fun isNuclearWeapon() = uniqueObjects.any { it.placeholderText == "Nuclear Weapon" || it.placeholderText == "Nuclear weapon of Strength []" }
+    fun isNuclearWeapon() = uniqueObjects.any { it.placeholderText == "Nuclear weapon of Strength []" }
 
     fun movesLikeAirUnits() = getType().getMovementType() == UnitMovementType.Air
 
