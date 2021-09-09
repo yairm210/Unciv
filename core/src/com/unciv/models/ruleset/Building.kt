@@ -16,7 +16,6 @@ import com.unciv.ui.civilopedia.FormattedLine
 import com.unciv.ui.civilopedia.ICivilopediaText
 import com.unciv.ui.utils.Fonts
 import com.unciv.ui.utils.toPercent
-import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 
@@ -28,7 +27,7 @@ class Building : NamedStats(), INonPerpetualConstruction, ICivilopediaText {
     var cost: Int = 0
     var maintenance = 0
     private var percentStatBonus: Stats? = null
-    var specialistSlots: Counter<String>? = null
+    private var specialistSlots: Counter<String>? = null
     fun newSpecialists(): Counter<String> {
         if (specialistSlots == null) return Counter()
         // Could have old specialist values of "gold", "science" etc - change them to the new specialist names
@@ -58,8 +57,6 @@ class Building : NamedStats(), INonPerpetualConstruction, ICivilopediaText {
 
     /** City can only be built if one of these resources is nearby - it must be improved! */
     var requiredNearbyImprovedResources: List<String>? = null
-    @Deprecated("As of 3.15.19, replace with 'Cannot be built with []' unique")
-    private var cannotBeBuiltWith: String? = null
     var cityStrength = 0
     var cityHealth = 0
     var replaces: String? = null
@@ -67,7 +64,7 @@ class Building : NamedStats(), INonPerpetualConstruction, ICivilopediaText {
     var quote: String = ""
     override var uniques = ArrayList<String>()
     override val uniqueObjects: List<Unique> by lazy { uniques.map { Unique(it) } }
-    var replacementTextForUniques = ""
+    private var replacementTextForUniques = ""
 
     override var civilopediaText = listOf<FormattedLine>()
 
@@ -167,6 +164,7 @@ class Building : NamedStats(), INonPerpetualConstruction, ICivilopediaText {
             if (unique.params[2].toInt() <= city.religion.getFollowersOfMajorityReligion() && matchesFilter(unique.params[1]))
                 stats.add(unique.stats)
 
+        @Suppress("RemoveRedundantQualifierName")  // make it clearer Building inherits Stats
         for (unique in uniqueObjects)
             if (unique.placeholderText == "[] with []" && civInfo.hasResource(unique.params[1])
                     && Stats.isStats(unique.params[0]))
@@ -198,10 +196,7 @@ class Building : NamedStats(), INonPerpetualConstruction, ICivilopediaText {
         return stats
     }
 
-    override fun getCivilopediaTextHeader() = FormattedLine(name, header=2, icon=makeLink())
     override fun makeLink() = if (isAnyWonder()) "Wonder/$name" else "Building/$name"
-    override fun hasCivilopediaTextLines() = true
-    override fun replacesCivilopediaDescription() = true
 
     override fun getCivilopediaTextLines(ruleset: Ruleset): List<FormattedLine> {
         fun Float.formatSignedInt() = (if (this > 0f) "+" else "") + this.toInt().toString()

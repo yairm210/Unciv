@@ -51,8 +51,6 @@ open class Policy : INamed, IHasUniques, ICivilopediaText {
     }
 
     override fun makeLink() = "Policy/$name"
-    override fun replacesCivilopediaDescription() = true
-    override fun hasCivilopediaTextLines() = true
     override fun getSortGroup(ruleset: Ruleset) =
         ruleset.eras[branch.era]!!.eraNumber * 10000 +
                 ruleset.policyBranches.keys.indexOf(branch.name) * 100 +

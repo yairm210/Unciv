@@ -1,6 +1,5 @@
 package com.unciv.models.ruleset
 
-import com.unciv.Constants
 import com.unciv.models.stats.INamed
 import com.unciv.ui.civilopedia.ICivilopediaText
 import com.unciv.ui.civilopedia.FormattedLine
@@ -33,7 +32,7 @@ class Difficulty: INamed, ICivilopediaText {
     var aiUnhappinessModifier = 1f
     var turnBarbariansCanEnterPlayerTiles = 0
     var clearBarbarianCampReward = 25
-    
+
     // property defined in json but so far unused:
     // var aisExchangeTechs = false
 
@@ -41,8 +40,6 @@ class Difficulty: INamed, ICivilopediaText {
 
 
     override fun makeLink() = "Difficulty/$name"
-    override fun replacesCivilopediaDescription() = true
-    override fun hasCivilopediaTextLines() = true
 
     private fun Float.toPercent() = (this * 100).toInt()
     override fun getCivilopediaTextLines(ruleset: Ruleset): List<FormattedLine> {

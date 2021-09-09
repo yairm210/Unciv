@@ -7,7 +7,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.UncivGame
 import com.unciv.models.metadata.BaseRuleset
-import com.unciv.models.ruleset.IHasUniques
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.Unique
@@ -381,16 +380,13 @@ object MarkupRenderer {
 
 /** Storage class for instantiation of the simplest form containing only the lines collection */
 open class SimpleCivilopediaText(
-    override var civilopediaText: List<FormattedLine>,
-    val isComplete: Boolean = false
+    override var civilopediaText: List<FormattedLine>
 ) : ICivilopediaText {
-    constructor(strings: Sequence<String>, isComplete: Boolean = false) : this(
-        strings.map { FormattedLine(it) }.toList(), isComplete)
-    constructor(first: Sequence<FormattedLine>, strings: Sequence<String>, isComplete: Boolean = false) : this(
-        (first + strings.map { FormattedLine(it) }).toList(), isComplete)
+    constructor(strings: Sequence<String>) : this(
+        strings.map { FormattedLine(it) }.toList())
+    constructor(first: Sequence<FormattedLine>, strings: Sequence<String>) : this(
+        (first + strings.map { FormattedLine(it) }).toList())
 
-    override fun hasCivilopediaTextLines() = true
-    override fun replacesCivilopediaDescription() = isComplete
     override fun makeLink() = ""
 }
 
@@ -428,13 +424,6 @@ interface ICivilopediaText {
      */
     fun getCivilopediaTextLines(ruleset: Ruleset): List<FormattedLine> = listOf()
 
-    /** Override this and return true to tell the Civilopedia that the legacy description is no longer needed */
-    fun replacesCivilopediaDescription() = false
-    /** Override this and return true to tell the Civilopedia that this is not empty even if nothing came from json */
-    fun hasCivilopediaTextLines() = false
-    /** Indicates that neither json nor getCivilopediaTextLines have content */
-    fun isCivilopediaTextEmpty() = civilopediaText.isEmpty() && !hasCivilopediaTextLines()
-
     /** Build a Gdx [Table] showing our [formatted][FormattedLine] [content][civilopediaText]. */
     fun renderCivilopediaText (labelWidth: Float, linkAction: ((id: String)->Unit)? = null): Table {
         return MarkupRenderer.render(civilopediaText, labelWidth, linkAction = linkAction)
@@ -461,31 +450,23 @@ interface ICivilopediaText {
                 val next = outerLines.next()
                 if (!middleDone && !next.isEmpty() && next.linkType != FormattedLine.LinkType.None) {
                     middleDone = true
-                    if (hasCivilopediaTextLines()) {
-                        if (outerNotEmpty) yield(FormattedLine())
-                        yieldAll(getCivilopediaTextLines(ruleset))
-                        yield(FormattedLine())
-                    }
+                    if (outerNotEmpty) yield(FormattedLine())
+                    yieldAll(getCivilopediaTextLines(ruleset))
+                    yield(FormattedLine())
                 }
                 outerNotEmpty = true
                 yield(next)
             }
             if (!middleDone) {
-                if (outerNotEmpty && hasCivilopediaTextLines()) yield(FormattedLine())
+                if (outerNotEmpty) yield(FormattedLine())
                 yieldAll(getCivilopediaTextLines(ruleset))
             }
         }
-        return SimpleCivilopediaText(newLines.toList(), isComplete = true)
+        return SimpleCivilopediaText(newLines.toList())
     }
 
     /** Create the correct string for a Civilopedia link */
     fun makeLink(): String
-
-    /** This just marshals access to the uniques so they can be queried as part of the ICivilopediaText interface.
-     *  Used exclusively by CivilopediaScreen, named to avoid JVM signature confusion
-     *  (a getUniqueObjects exists in IHasUniques and most civilopedia objects will implement that interface)
-     */
-    fun getUniquesAsObjects() = (this as? IHasUniques)?.uniqueObjects
 
     /** Overrides alphabetical sorting in Civilopedia
      *  @param ruleset The current ruleset in case the function needs to do lookups
