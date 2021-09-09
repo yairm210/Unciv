@@ -394,7 +394,7 @@ class CivilizationInfo {
         val cityStateLocation = if (cities.isEmpty()) null else getCapital().location
 
         val giftAmount = Stats(gold = 15f)
-        val faithAmount = Stats(faith = 15f)
+        val faithAmount = Stats(faith = 4f)
         // Later, religious city-states will also gift gold, making this the better implementation
         // For now, it might be overkill though.
         var meetString = "[${civName}] has given us [${giftAmount}] as a token of goodwill for meeting us"
