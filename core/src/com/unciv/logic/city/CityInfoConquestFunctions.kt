@@ -20,7 +20,7 @@ import kotlin.random.Random
 /** Helper class for containing 200 lines of "how to move cities between civs" */
 class CityInfoConquestFunctions(val city: CityInfo){
     private val tileBasedRandom = Random(city.getCenterTile().position.toString().hashCode())
-    
+
     private fun getGoldForCapturingCity(conqueringCiv: CivilizationInfo): Int {
         val baseGold = 20 + 10 * city.population.population + tileBasedRandom.nextInt(40)
         val turnModifier = max(0, min(50, city.civInfo.gameInfo.turns - city.turnAcquired)) / 50f
@@ -30,7 +30,7 @@ class CityInfoConquestFunctions(val city: CityInfo){
         val goldPlundered = baseGold * turnModifier * cityModifier * conqueringCivModifier
         return goldPlundered.toInt()
     }
-    
+
     private fun destroyBuildingsOnCapture() {
         city.apply {
             for (building in cityConstructions.getBuiltBuildings()) {
@@ -47,7 +47,7 @@ class CityInfoConquestFunctions(val city: CityInfo){
             }
         }
     }
-    
+
     /** Function for stuff that should happen on any capture, be it puppet, annex or liberate. 
      * Stuff that should happen any time a city is moved between civs, so also when trading,
      * should go in `this.moveToCiv()`, which this function also calls. 
@@ -59,11 +59,11 @@ class CityInfoConquestFunctions(val city: CityInfo){
             conqueringCiv.addNotification("Received [$goldPlundered] Gold for capturing [$name]", getCenterTile().position, NotificationIcon.Gold)
 
             val reconqueredCityWhileStillInResistance = previousOwner == conqueringCiv.civName && resistanceCounter != 0
-            
+
             this@CityInfoConquestFunctions.moveToCiv(receivingCiv)
 
             destroyBuildingsOnCapture()
-            
+
             Battle.destroyIfDefeated(conqueredCiv, conqueringCiv)
 
             health = getMaxHealth() / 2 // I think that cities recover to half health when conquered?
@@ -80,9 +80,9 @@ class CityInfoConquestFunctions(val city: CityInfo){
     /** This happens when we either puppet OR annex, basically whenever we conquer a city and don't liberate it */
     fun puppetCity(conqueringCiv: CivilizationInfo) {
         // Gain gold for plundering city
-        val goldPlundered = getGoldForCapturingCity(conqueringCiv)
+        val goldPlundered = getGoldForCapturingCity(conqueringCiv)  // todo: use this val
         city.apply {
-            
+
             val oldCiv = civInfo
 
             // must be before moving the city to the conquering civ,
@@ -90,7 +90,7 @@ class CityInfoConquestFunctions(val city: CityInfo){
             diplomaticRepercussionsForConqueringCity(oldCiv, conqueringCiv)
 
             conquerCity(conqueringCiv, oldCiv, conqueringCiv)
-            
+
             isPuppet = true
             cityStats.update()
             // The city could be producing something that puppets shouldn't, like units
@@ -111,7 +111,7 @@ class CityInfoConquestFunctions(val city: CityInfo){
     private fun diplomaticRepercussionsForConqueringCity(oldCiv: CivilizationInfo, conqueringCiv: CivilizationInfo) {
         val currentPopulation = city.population.population
         val percentageOfCivPopulationInThatCity = currentPopulation * 100f /
-                oldCiv.cities.sumBy { it.population.population }
+                oldCiv.cities.sumOf { it.population.population }
         val aggroGenerated = 10f + percentageOfCivPopulationInThatCity.roundToInt()
 
         // How can you conquer a city but not know the civ you conquered it from?!
@@ -147,9 +147,9 @@ class CityInfoConquestFunctions(val city: CityInfo){
                         diploManager.makePeace()
 
             val oldCiv = civInfo
-            
+
             diplomaticRepercussionsForLiberatingCity(conqueringCiv, oldCiv)
-            
+
             conquerCity(conqueringCiv, oldCiv, foundingCiv)
 
             if (foundingCiv.cities.size == 1) cityConstructions.addBuilding(capitalCityIndicator()) // Resurrection!
@@ -169,7 +169,7 @@ class CityInfoConquestFunctions(val city: CityInfo){
     private fun diplomaticRepercussionsForLiberatingCity(conqueringCiv: CivilizationInfo, conqueredCiv: CivilizationInfo) {
         val foundingCiv = conqueredCiv.gameInfo.civilizations.first { it.civName == city.foundingCiv }
         val percentageOfCivPopulationInThatCity = city.population.population *
-                100f / (foundingCiv.cities.sumBy { it.population.population } + city.population.population)
+                100f / (foundingCiv.cities.sumOf { it.population.population } + city.population.population)
         val respectForLiberatingOurCity = 10f + percentageOfCivPopulationInThatCity.roundToInt()
 
         // In order to get "plus points" in Diplomacy, you have to establish diplomatic relations if you haven't yet
@@ -190,10 +190,10 @@ class CityInfoConquestFunctions(val city: CityInfo){
             }
         }
 
-        val otherCivsRespecForLiberating = (respectForLiberatingOurCity / 10).roundToInt().toFloat()
+        val otherCivsRespectForLiberating = (respectForLiberatingOurCity / 10).roundToInt().toFloat()
         for (thirdPartyCiv in conqueringCiv.getKnownCivs().filter { it.isMajorCiv() && it != conqueredCiv }) {
             thirdPartyCiv.getDiplomacyManager(conqueringCiv)
-                    .addModifier(DiplomaticModifiers.LiberatedCity, otherCivsRespecForLiberating) // Cool, keep at at! =D
+                    .addModifier(DiplomaticModifiers.LiberatedCity, otherCivsRespectForLiberating) // Cool, keep at at! =D
         }
     }
 
@@ -244,13 +244,12 @@ class CityInfoConquestFunctions(val city: CityInfo){
                     cityConstructions.addBuilding(civEquivalentBuilding.name)
                 }
             }
-            
+
             if (civInfo.gameInfo.hasReligionEnabled()) religion.removeUnknownPantheons()
 
             tryUpdateRoadStatus()
             cityStats.update()
         }
     }
-
 
 }

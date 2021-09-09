@@ -10,7 +10,6 @@ import com.unciv.models.stats.Stat
 import com.unciv.models.translations.getPlaceholderParameters
 import com.unciv.models.translations.getPlaceholderText
 import com.unciv.ui.victoryscreen.RankingType
-import java.util.*
 import kotlin.collections.HashMap
 import kotlin.collections.LinkedHashMap
 import kotlin.math.max
@@ -281,14 +280,14 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
         val bullyRange = max(5, civInfo.gameInfo.tileMap.tileMatrix.size / 10)   // Longer range for larger maps
         val inRangeTiles = civInfo.getCapital().getCenterTile().getTilesInDistanceRange(1..bullyRange)
         val forceNearCity = inRangeTiles
-            .sumBy { if (it.militaryUnit?.civInfo == demandingCiv)
-                it.militaryUnit!!.getForceEvaluation()
-            else 0
+            .sumOf { if (it.militaryUnit?.civInfo == demandingCiv)
+                    it.militaryUnit!!.getForceEvaluation()
+                else 0
             }
         val csForce = civInfo.getCapital().getForceEvaluation() + inRangeTiles
-            .sumBy { if (it.militaryUnit?.civInfo == civInfo)
-                it.militaryUnit!!.getForceEvaluation()
-            else 0
+            .sumOf { if (it.militaryUnit?.civInfo == civInfo)
+                    it.militaryUnit!!.getForceEvaluation()
+                else 0
             }
         val forceRatio = forceNearCity.toFloat() / csForce.toFloat()
 
@@ -337,9 +336,9 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
         if (!civInfo.isCityState()) throw Exception("You can only demand workers from City-States!")
 
         val buildableWorkerLikeUnits = civInfo.gameInfo.ruleSet.units.filter {
-            it.value.uniqueObjects.any { it.placeholderText == Constants.canBuildImprovements }
-                    && it.value.isBuildable(civInfo)
+            it.value.uniqueObjects.any { unique -> unique.placeholderText == Constants.canBuildImprovements }
                     && it.value.isCivilian()
+                    && it.value.isBuildable(civInfo)
         }
         if (buildableWorkerLikeUnits.isEmpty()) return  // Bad luck?
         demandingCiv.placeUnitNearTile(civInfo.getCapital().location, buildableWorkerLikeUnits.keys.random())
@@ -356,7 +355,7 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
         val allyBonuses = eraInfo.allyBonus[civInfo.cityStateType.name]
         if (allyBonuses != null) {
             // Defined city states in json
-            val bonuses = allyBonuses + eraInfo!!.friendBonus[civInfo.cityStateType.name]!!
+            val bonuses = allyBonuses + eraInfo.friendBonus[civInfo.cityStateType.name]!!
             for (bonus in bonuses) {
                 if (statType == Stat.Happiness && bonus.getPlaceholderText() == "Provides [] Happiness")
                     return true

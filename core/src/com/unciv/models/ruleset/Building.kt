@@ -34,7 +34,7 @@ class Building : NamedStats(), INonPerpetualConstruction, ICivilopediaText {
         // Could have old specialist values of "gold", "science" etc - change them to the new specialist names
         val counter = Counter<String>()
         for ((entry, amount) in specialistSlots!!) {
-            val equivalentStat = Stat.values().firstOrNull { it.name.toLowerCase(Locale.ENGLISH) == entry }
+            val equivalentStat = Stat.values().firstOrNull { it.name.lowercase() == entry }
 
             if (equivalentStat != null)
                 counter[Specialist.specialistNameByStat(equivalentStat)] = amount
