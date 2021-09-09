@@ -32,6 +32,7 @@ enum class DiplomacyFlags {
     DeclaredWar,
     DeclarationOfFriendship,
     ResearchAgreement,
+    @Deprecated("Deprecated after 3.16.13", ReplaceWith("Denunciation"))
     Denunceation,
     BorderConflict,
     SettledCitiesNearUs,
@@ -43,7 +44,8 @@ enum class DiplomacyFlags {
     NotifiedAfraid,
     RecentlyPledgedProtection,
     RecentlyWithdrewProtection,
-    AngerFreeIntrusion
+    AngerFreeIntrusion,
+    Denunciation
 }
 
 enum class DiplomaticModifiers {
@@ -107,7 +109,7 @@ class DiplomacyManager() {
         get() = if (civInfo.isAtWarWith(otherCiv())) MINIMUM_INFLUENCE else field
 
     /** Total of each turn Science during Research Agreement */
-    var totalOfScienceDuringRA = 0
+    private var totalOfScienceDuringRA = 0
 
     fun clone(): DiplomacyManager {
         val toReturn = DiplomacyManager()
@@ -188,6 +190,7 @@ class DiplomacyManager() {
         return 0
     }
 
+    @Suppress("unused")  //todo Finish original intent or remove
     fun matchesCityStateRelationshipFilter(filter: String): Boolean {
         val relationshipLevel = relationshipLevel()
         return when (filter) {
@@ -210,7 +213,7 @@ class DiplomacyManager() {
     }
 
     // To be run from City-State DiplomacyManager, which holds the influence. Resting point for every major civ can be different.
-    fun getCityStateInfluenceRestingPoint(): Float {
+    private fun getCityStateInfluenceRestingPoint(): Float {
         var restingPoint = 0f
 
         for (unique in otherCiv().getMatchingUniques("Resting point for Influence with City-States is increased by []"))
@@ -287,7 +290,7 @@ class DiplomacyManager() {
         return goldPerTurnForUs
     }
 
-    fun scienceFromResearchAgreement() {
+    private fun scienceFromResearchAgreement() {
         // https://forums.civfanatics.com/resources/research-agreements-bnw.25568/
         val scienceFromResearchAgreement = min(totalOfScienceDuringRA, otherCivDiplomacy().totalOfScienceDuringRA)
         civInfo.tech.scienceFromResearchAgreements += scienceFromResearchAgreement
@@ -696,16 +699,16 @@ class DiplomacyManager() {
         diplomaticModifiers[modifier.name] = amount
     }
 
-    fun getModifier(modifier: DiplomaticModifiers): Float {
+    private fun getModifier(modifier: DiplomaticModifiers): Float {
         if (!hasModifier(modifier)) return 0f
         return diplomaticModifiers[modifier.name]!!
     }
 
-    fun removeModifier(modifier: DiplomaticModifiers) = diplomaticModifiers.remove(modifier.name)
+    private fun removeModifier(modifier: DiplomaticModifiers) = diplomaticModifiers.remove(modifier.name)
     fun hasModifier(modifier: DiplomaticModifiers) = diplomaticModifiers.containsKey(modifier.name)
 
     /** @param amount always positive, so you don't need to think about it */
-    fun revertToZero(modifier: DiplomaticModifiers, amount: Float) {
+    private fun revertToZero(modifier: DiplomaticModifiers, amount: Float) {
         if (!hasModifier(modifier)) return
         val currentAmount = getModifier(modifier)
         if (currentAmount > 0) addModifier(modifier, -amount)
@@ -728,7 +731,7 @@ class DiplomacyManager() {
         }
     }
 
-    fun setFriendshipBasedModifier() {
+    private fun setFriendshipBasedModifier() {
         removeModifier(DiplomaticModifiers.DeclaredFriendshipWithOurAllies)
         removeModifier(DiplomaticModifiers.DeclaredFriendshipWithOurEnemies)
         for (thirdCiv in getCommonKnownCivs()
@@ -747,8 +750,8 @@ class DiplomacyManager() {
     fun denounce() {
         setModifier(DiplomaticModifiers.Denunciation, -35f)
         otherCivDiplomacy().setModifier(DiplomaticModifiers.Denunciation, -35f)
-        setFlag(DiplomacyFlags.Denunceation, 30)
-        otherCivDiplomacy().setFlag(DiplomacyFlags.Denunceation, 30)
+        setFlag(DiplomacyFlags.Denunciation, 30)
+        otherCivDiplomacy().setFlag(DiplomacyFlags.Denunciation, 30)
 
         otherCiv().addNotification("[${civInfo.civName}] has denounced us!", NotificationIcon.Diplomacy, civInfo.civName)
 
