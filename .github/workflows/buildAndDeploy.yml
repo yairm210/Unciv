@@ -123,7 +123,8 @@ jobs:
         shell: bash
         run: |
           mkdir deploy
-          mv android/build/outputs/apk/release/Unciv-signed.apk deploy/Unciv-signed.apk
+          ls android/build/outputs/apk/release
+          mv android/build/outputs/apk/release/Unciv-release-unsigned-signed.apk deploy/Unciv-signed.apk
 
 ## DESKTOP
       
