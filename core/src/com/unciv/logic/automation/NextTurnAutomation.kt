@@ -63,7 +63,7 @@ object NextTurnAutomation {
             // Can only be done now, as the prophet first has to decide to found/enhance a religion
             chooseReligiousBeliefs(civInfo)
         }
-        
+
         reassignWorkedTiles(civInfo)  // second most expensive
         trainSettler(civInfo)
         tryVoteForDiplomaticVictory(civInfo)
@@ -103,7 +103,7 @@ object NextTurnAutomation {
                 val requestingCiv = civInfo.gameInfo.getCivilization(popupAlert.value)
                 val diploManager = civInfo.getDiplomacyManager(requestingCiv)
                 if (diploManager.relationshipLevel() > RelationshipLevel.Neutral
-                        && !diploManager.otherCivDiplomacy().hasFlag(DiplomacyFlags.Denunceation)) {
+                        && !diploManager.otherCivDiplomacy().hasFlag(DiplomacyFlags.Denunciation)) {
                     diploManager.signDeclarationOfFriendship()
                     requestingCiv.addNotification("We have signed a Declaration of Friendship with [${civInfo.civName}]!", NotificationIcon.Diplomacy, civInfo.civName)
                 } else requestingCiv.addNotification("[${civInfo.civName}] has denied our Declaration of Friendship!", NotificationIcon.Diplomacy, civInfo.civName)
@@ -207,8 +207,9 @@ object NextTurnAutomation {
         }
 
         // Bonus for luxury resources we can get from them
-        value += cityState.detailedCivResources.count { it.resource.resourceType == ResourceType.Luxury
-                && it.resource !in civInfo.detailedCivResources.map { it.resource }
+        value += cityState.detailedCivResources.count {
+            it.resource.resourceType == ResourceType.Luxury
+            && it.resource !in civInfo.detailedCivResources.map { supply -> supply.resource }
         }
 
         return value
@@ -299,13 +300,13 @@ object NextTurnAutomation {
             civInfo.policies.adopt(policyToAdopt)
         }
     }
-    
+
     private fun chooseReligiousBeliefs(civInfo: CivilizationInfo) {
         choosePantheon(civInfo)
         foundReligion(civInfo)
         enhanceReligion(civInfo)
     }
-    
+
     private fun choosePantheon(civInfo: CivilizationInfo) {
         if (!civInfo.religionManager.canFoundPantheon()) return
         // So looking through the source code of the base game available online,
@@ -320,7 +321,7 @@ object NextTurnAutomation {
         val chosenPantheon = availablePantheons.random() // Why calculate stuff?
         civInfo.religionManager.choosePantheonBelief(chosenPantheon)
     }
-    
+
     private fun foundReligion(civInfo: CivilizationInfo) {
         if (civInfo.religionManager.religionState != ReligionState.FoundingReligion) return
         val religionIcon = civInfo.gameInfo.ruleSet.religions
@@ -330,7 +331,7 @@ object NextTurnAutomation {
         val chosenBeliefs = chooseBeliefs(civInfo, civInfo.religionManager.getBeliefsToChooseAtFounding()).toList()
         civInfo.religionManager.chooseBeliefs(religionIcon, religionIcon, chosenBeliefs)
     }
-    
+
     private fun enhanceReligion(civInfo: CivilizationInfo) {
         civInfo.religionManager.chooseBeliefs(
             null, 
@@ -338,11 +339,11 @@ object NextTurnAutomation {
             chooseBeliefs(civInfo, civInfo.religionManager.getBeliefsToChooseAtEnhancing()).toList()
         )
     }
-    
+
     private fun chooseBeliefs(civInfo: CivilizationInfo, beliefContainer: BeliefContainer): HashSet<Belief> {
         val chosenBeliefs = hashSetOf<Belief>()
-        // The 'continues' should never be reached, but just in case I'd rather have AI have a
-        // belief less than make the game crash. The 'continue's should only be reached whenever
+        // The `continue`s should never be reached, but just in case I'd rather have the AI have a
+        // belief less than make the game crash. The `continue`s should only be reached whenever
         // there are not enough beliefs to choose, but there should be, as otherwise we could
         // not have used a great prophet to found/enhance our religion.
         for (counter in 0 until beliefContainer.pantheonBeliefCount)
@@ -363,7 +364,7 @@ object NextTurnAutomation {
             )
         return chosenBeliefs
     }
-    
+
     private fun chooseBeliefOfType(civInfo: CivilizationInfo, beliefType: BeliefType, additionalBeliefsToExclude: HashSet<Belief> = hashSetOf()): Belief? {
         return civInfo.gameInfo.ruleSet.beliefs
             .filter { 
@@ -437,7 +438,7 @@ object NextTurnAutomation {
                     it.isMajorCiv() && !it.isAtWarWith(civInfo)
                             && it.getDiplomacyManager(civInfo).relationshipLevel() > RelationshipLevel.Neutral
                             && !civInfo.getDiplomacyManager(it).hasFlag(DiplomacyFlags.DeclarationOfFriendship)
-                            && !civInfo.getDiplomacyManager(it).hasFlag(DiplomacyFlags.Denunceation)
+                            && !civInfo.getDiplomacyManager(it).hasFlag(DiplomacyFlags.Denunciation)
                 }
                 .sortedByDescending { it.getDiplomacyManager(civInfo).relationshipLevel() }
         for (civ in civsThatWeCanDeclareFriendshipWith) {
@@ -683,20 +684,20 @@ object NextTurnAutomation {
     private fun tryVoteForDiplomaticVictory(civInfo: CivilizationInfo) {
         if (!civInfo.mayVoteForDiplomaticVictory()) return
         val chosenCiv: String? = if (civInfo.isMajorCiv()) {
-            
+
             val knownMajorCivs = civInfo.getKnownCivs().filter { it.isMajorCiv() }
             val highestOpinion = knownMajorCivs
                 .maxOfOrNull {
                     civInfo.getDiplomacyManager(it).opinionOfOtherCiv()
                 }
-            
+
             if (highestOpinion == null) null
             else knownMajorCivs.filter { civInfo.getDiplomacyManager(it).opinionOfOtherCiv() == highestOpinion}.random().civName
-            
+
         } else {
             civInfo.getAllyCiv()
         }
-        
+
         civInfo.diplomaticVoteForCiv(chosenCiv)
     }
 

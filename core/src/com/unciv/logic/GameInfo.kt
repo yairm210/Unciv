@@ -2,10 +2,11 @@ package com.unciv.logic
 
 import com.unciv.Constants
 import com.unciv.UncivGame
+import com.unciv.logic.BackwardCompatibility.removeMissingModReferences
+import com.unciv.logic.BackwardCompatibility.replaceDiplomacyFlag
 import com.unciv.logic.automation.NextTurnAutomation
-import com.unciv.logic.city.CityConstructions
-import com.unciv.logic.city.PerpetualConstruction
 import com.unciv.logic.civilization.*
+import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
 import com.unciv.models.Religion
@@ -18,20 +19,7 @@ import java.util.*
 class UncivShowableException(missingMods: String) : Exception(missingMods)
 
 class GameInfo {
-    @Transient
-    lateinit var difficultyObject: Difficulty // Since this is static game-wide, and was taking a large part of nextTurn
-
-    @Transient
-    lateinit var currentPlayerCiv: CivilizationInfo // this is called thousands of times, no reason to search for it with a find{} every time
-
-    /** This is used in multiplayer games, where I may have a saved game state on my phone
-     * that is inconsistent with the saved game on the cloud */
-    @Transient
-    var isUpToDate = false
-
-    @Transient
-    lateinit var ruleSet: Ruleset
-
+    //region Fields - Serialized
     var civilizations = mutableListOf<CivilizationInfo>()
     var religions: HashMap<String, Religion> = hashMapOf()
     var difficulty = "Chieftain" // difficulty is game-wide, think what would happen if 2 human players could play on different difficulties?
@@ -54,15 +42,36 @@ class GameInfo {
     @Volatile
     var customSaveLocation: String? = null
 
+    //endregion
+    //region Fields - Transient
+
+    @Transient
+    lateinit var difficultyObject: Difficulty // Since this is static game-wide, and was taking a large part of nextTurn
+
+    @Transient
+    lateinit var currentPlayerCiv: CivilizationInfo // this is called thousands of times, no reason to search for it with a find{} every time
+
+    /** This is used in multiplayer games, where I may have a saved game state on my phone
+     * that is inconsistent with the saved game on the cloud */
+    @Transient
+    var isUpToDate = false
+
+    @Transient
+    lateinit var ruleSet: Ruleset
+
     /** Simulate until any player wins,
      *  or turns exceeds indicated number
      *  Does not update World View until finished.
      *  Should be set manually on each new game start.
      */
+    @Transient
     var simulateMaxTurns: Int = 1000
+    @Transient
     var simulateUntilWin = false
 
-    //region pure functions
+    //endregion
+    //region Pure functions
+
     fun clone(): GameInfo {
         val toReturn = GameInfo()
         toReturn.tileMap = tileMap.clone()
@@ -103,7 +112,14 @@ class GameInfo {
     fun getCities() = civilizations.asSequence().flatMap { it.cities }
     fun getAliveCityStates() = civilizations.filter { it.isAlive() && it.isCityState() }
     fun getAliveMajorCivs() = civilizations.filter { it.isAlive() && it.isMajorCiv() }
+
+    fun hasReligionEnabled() =
+        // Temporary function to check whether religion should be used for this game
+        (gameParameters.religionEnabled || ruleSet.hasReligion())
+                && (ruleSet.eras.isEmpty() || !ruleSet.eras[gameParameters.startingEra]!!.hasUnique("Starting in this era disables religion"))
+
     //endregion
+    //region State changing functions
 
     fun nextTurn() {
         val previousHumanPlayer = getCurrentPlayerCivilization()
@@ -236,7 +252,7 @@ class GameInfo {
         return tile
     }
 
-    fun placeBarbarianUnit(tileToPlace: TileInfo) {
+    private fun placeBarbarianUnit(tileToPlace: TileInfo) {
         // if we don't make this into a separate list then the retain() will happen on the Tech keys,
         // which effectively removes those techs from the game and causes all sorts of problems
         val allResearchedTechs = ruleSet.technologies.keys.toMutableList()
@@ -252,10 +268,9 @@ class GameInfo {
         val landUnits = unitList.filter { it.isLandUnit() }
         val waterUnits = unitList.filter { it.isWaterUnit() }
 
-        val unit: String
-        if (waterUnits.isNotEmpty() && tileToPlace.isCoastalTile() && Random().nextBoolean())
-            unit = waterUnits.random().name
-        else unit = landUnits.random().name
+        val unit: String = if (waterUnits.isNotEmpty() && tileToPlace.isCoastalTile() && Random().nextBoolean())
+            waterUnits.random().name
+        else landUnits.random().name
 
         tileMap.placeUnitNearTile(tileToPlace.position, unit, getBarbarianCivilization())
     }
@@ -264,7 +279,7 @@ class GameInfo {
      * [CivilizationInfo.addNotification][Add a notification] to every civilization that have
      * adopted Honor policy and have explored the [tile] where the Barbarian Encampment has spawned.
      */
-    fun notifyCivsOfBarbarianEncampment(tile: TileInfo) {
+    private fun notifyCivsOfBarbarianEncampment(tile: TileInfo) {
         for (civ in civilizations
             .filter {
                 it.hasApplyingUnique("Notified of new Barbarian encampments")
@@ -292,6 +307,8 @@ class GameInfo {
 
         removeMissingModReferences()
 
+        replaceDiplomacyFlag(DiplomacyFlags.Denunceation, DiplomacyFlags.Denunciation)
+
         for (baseUnit in ruleSet.units.values)
             baseUnit.ruleset = ruleSet
 
@@ -299,14 +316,14 @@ class GameInfo {
         // the nation of their civilization when setting transients
         for (civInfo in civilizations) civInfo.gameInfo = this
         for (civInfo in civilizations) civInfo.setNationTransient()
-        
+
         tileMap.setTransients(ruleSet)
 
         if (currentPlayer == "") currentPlayer = civilizations.first { it.isPlayerCivilization() }.civName
         currentPlayerCiv = getCivilization(currentPlayer)
 
         difficultyObject = ruleSet.difficulties[difficulty]!!
-        
+
         for (religion in religions.values) religion.setTransients(this)
 
         for (civInfo in civilizations) civInfo.setTransients()
@@ -341,105 +358,7 @@ class GameInfo {
         }
     }
 
-
-    // Mods can change, leading to things on the map that are no longer defined in the mod.
-    // So we remove them so the game doesn't crash when it tries to access them.
-    private fun removeMissingModReferences() {
-        for (tile in tileMap.values) {
-            for (terrainFeature in tile.terrainFeatures.filter{ !ruleSet.terrains.containsKey(it) })
-                tile.terrainFeatures.remove(terrainFeature)
-            if (tile.resource != null && !ruleSet.tileResources.containsKey(tile.resource!!))
-                tile.resource = null
-            if (tile.improvement != null && !ruleSet.tileImprovements.containsKey(tile.improvement!!))
-                tile.improvement = null
-
-            for (unit in tile.getUnits()) {
-                if (!ruleSet.units.containsKey(unit.name)) tile.removeUnit(unit)
-
-                for (promotion in unit.promotions.promotions.toList())
-                    if (!ruleSet.unitPromotions.containsKey(promotion))
-                        unit.promotions.promotions.remove(promotion)
-            }
-        }
-
-        for (city in civilizations.asSequence().flatMap { it.cities.asSequence() }) {
-            
-            for (building in city.cityConstructions.builtBuildings.toHashSet())
-                if (!ruleSet.buildings.containsKey(building))
-                    city.cityConstructions.builtBuildings.remove(building)
-
-            fun isInvalidConstruction(construction: String) = 
-                    !ruleSet.buildings.containsKey(construction) 
-                    && !ruleSet.units.containsKey(construction)
-                    && !PerpetualConstruction.perpetualConstructionsMap.containsKey(construction)
-
-            // Remove invalid buildings or units from the queue - don't just check buildings and units because it might be a special construction as well
-            for (construction in city.cityConstructions.constructionQueue.toList()) {
-                if (isInvalidConstruction(construction))
-                    city.cityConstructions.constructionQueue.remove(construction)
-            }
-            // And from being in progress
-            for (construction in city.cityConstructions.inProgressConstructions.keys.toList())
-                if (isInvalidConstruction(construction))
-                    city.cityConstructions.inProgressConstructions.remove(construction)
-        }
-
-        for (civinfo in civilizations) {
-            for (tech in civinfo.tech.techsResearched.toList())
-                if (!ruleSet.technologies.containsKey(tech))
-                    civinfo.tech.techsResearched.remove(tech)
-        }
-    }
-
-    /**
-     * Replaces all occurrences of [oldBuildingName] in [cityConstructions] with [newBuildingName]
-     * if the former is not contained in the ruleset.
-     * This function can be used for backwards compatibility with older save files when a building
-     * name is changed.
-     */
-    @Suppress("unused")   // it's OK if there's no deprecation currently needing this
-    private fun changeBuildingNameIfNotInRuleset(cityConstructions: CityConstructions, oldBuildingName: String, newBuildingName: String) {
-        if (ruleSet.buildings.containsKey(oldBuildingName))
-            return
-        // Replace in built buildings
-        if (cityConstructions.builtBuildings.contains(oldBuildingName)) {
-            cityConstructions.builtBuildings.remove(oldBuildingName)
-            cityConstructions.builtBuildings.add(newBuildingName)
-        }
-        // Replace in construction queue
-        if (!cityConstructions.builtBuildings.contains(newBuildingName) && !cityConstructions.constructionQueue.contains(newBuildingName))
-            cityConstructions.constructionQueue = cityConstructions.constructionQueue.map{ if (it == oldBuildingName) newBuildingName else it }.toMutableList()
-        else
-            cityConstructions.constructionQueue.remove(oldBuildingName)
-        // Replace in in-progress constructions
-        if (cityConstructions.inProgressConstructions.containsKey(oldBuildingName)) {
-            if (!cityConstructions.builtBuildings.contains(newBuildingName) && !cityConstructions.inProgressConstructions.containsKey(newBuildingName))
-                cityConstructions.inProgressConstructions[newBuildingName] = cityConstructions.inProgressConstructions[oldBuildingName]!!
-            cityConstructions.inProgressConstructions.remove(oldBuildingName)
-        }
-    }
-
-    /** Replace a changed tech name, only temporarily used for breaking ruleset updates */
-    private fun TechManager.replaceUpdatedTechName(oldTechName: String, newTechName: String) {
-        if (oldTechName in techsResearched) {
-            techsResearched.remove(oldTechName)
-            techsResearched.add(newTechName)
-        }
-        val index = techsToResearch.indexOf(oldTechName)
-        if (index >= 0) {
-            techsToResearch[index] = newTechName
-        }
-        if (oldTechName in techsInProgress) {
-            techsInProgress[newTechName] = researchOfTech(oldTechName)
-            techsInProgress.remove(oldTechName)
-        }
-    }
-
-
-    fun hasReligionEnabled() =
-        // Temporary function to check whether religion should be used for this game
-        (gameParameters.religionEnabled || ruleSet.hasReligion())
-        && (ruleSet.eras.isEmpty() || !ruleSet.eras[gameParameters.startingEra]!!.hasUnique("Starting in this era disables religion"))
+    //endregion
 }
 
 // reduced variant only for load preview

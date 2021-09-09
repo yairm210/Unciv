@@ -190,21 +190,6 @@ object UniqueTriggerActivation {
                     return civInfo.addUnit(greatPerson.name, chosenCity) != null
                 }
             }
-            // Deprecated since 3.15.4
-            "+1 population in each city" -> {
-                for (city in civInfo.cities) {
-                    city.population.addPopulation(1)
-                }
-                if (notification != null) {
-                    civInfo.addNotification(
-                        notification,
-                        LocationAction(civInfo.cities.map { it.location }),
-                        NotificationIcon.Population
-                    )
-                }
-                return true
-            }
-            //
             "[] population []" -> {
                 val citiesWithPopulationChanged: MutableList<Vector2> = mutableListOf()
                 for (city in civInfo.cities) {
