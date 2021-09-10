@@ -328,13 +328,12 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
         otherCivDiplomacyManager: DiplomacyManager
     ): TextButton? {
         if (otherCiv.cities.isEmpty()) return null
-        val improvableTiles = otherCiv.getCapital().getImprovableTiles()
-            .filterNot { it.getTileResource().resourceType == ResourceType.Bonus }.toList()
+        val improvableResourceTiles = getImprovableResourceTiles(otherCiv)
         val improvements =
             otherCiv.gameInfo.ruleSet.tileImprovements.filter { it.value.turnsToBuild != 0 }
         var needsImprovements = false
 
-        for (improvableTile in improvableTiles)
+        for (improvableTile in improvableResourceTiles)
             for (tileImprovement in improvements.values)
                 if (improvableTile.canBuildImprovement(
                         tileImprovement,
@@ -401,16 +400,19 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
         return diplomacyTable
     }
 
+    fun getImprovableResourceTiles(otherCiv:CivilizationInfo) =  otherCiv.getCapital().getTiles()
+        .filter { it.hasViewableResource(otherCiv) && it.improvement == null
+                && it.getTileResource().resourceType!=ResourceType.Bonus }
+
     private fun getImprovementGiftTable(otherCiv: CivilizationInfo): Table {
         val improvementGiftTable = getCityStateDiplomacyTableHeader(otherCiv)
         improvementGiftTable.addSeparator()
 
-        val improvableTiles = otherCiv.getCapital().getImprovableTiles()
-            .filterNot { it.getTileResource().resourceType == ResourceType.Bonus }.toList()
+        val improvableResourceTiles = getImprovableResourceTiles(otherCiv)
         val tileImprovements =
             otherCiv.gameInfo.ruleSet.tileImprovements.filter { it.value.turnsToBuild != 0 }
 
-        for (improvableTile in improvableTiles) {
+        for (improvableTile in improvableResourceTiles) {
             for (tileImprovement in tileImprovements.values) {
                 if (improvableTile.canBuildImprovement(tileImprovement, otherCiv) &&
                     improvableTile.getTileResource().improvement == tileImprovement.name
