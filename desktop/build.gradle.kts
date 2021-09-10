@@ -68,6 +68,21 @@ for (platform in PackrConfig.Platform.values()) {
     tasks.create("packr${platformName}") {
         dependsOn(tasks.getByName("dist"))
 
+        // Needs to be here and not in doLast because the zip task depends on the outDir
+        val jarFile = "$rootDir/desktop/build/libs/${BuildConfig.appName}.jar"
+        val config = PackrConfig()
+        config.platform = platform
+
+        config.apply {
+            executable = "Unciv"
+            classpath = listOf(jarFile)
+            removePlatformLibs = config.classpath
+            mainClass = mainClassName
+            vmArgs = listOf("Xmx1G")
+            minimizeJre = "desktop/packrConfig.json"
+            outDir = file("packr")
+        }
+
 
         doLast {
             //  https://gist.github.com/seanf/58b76e278f4b7ec0a2920d8e5870eed6
@@ -88,20 +103,6 @@ for (platform in PackrConfig.Platform.values()) {
                 println(process.inputStream.bufferedReader().readText())
             }
 
-
-            val jarFile = "$rootDir/desktop/build/libs/${BuildConfig.appName}.jar"
-            val config = PackrConfig()
-            config.platform = platform
-
-            config.apply {
-                executable = "Unciv"
-                classpath = listOf(jarFile)
-                removePlatformLibs = config.classpath
-                mainClass = mainClassName
-                vmArgs = listOf("Xmx1G")
-                minimizeJre = "desktop/packrConfig.json"
-                outDir = file("packr")
-            }
 
             if (config.outDir.exists()) delete(config.outDir)
 
