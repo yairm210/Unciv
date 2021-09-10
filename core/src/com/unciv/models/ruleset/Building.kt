@@ -365,18 +365,6 @@ class Building : NamedStats(), INonPerpetualConstruction, ICivilopediaText {
         var cost = getBaseBuyCost(cityInfo, stat)?.toDouble()
         if (cost == null) return null
 
-        // Deprecated since 3.15.15
-            if (stat == Stat.Gold) {
-                for (unique in cityInfo.getMatchingUniques("Cost of purchasing items in cities reduced by []%"))
-                    cost *= 1 - (unique.params[0].toFloat() / 100)
-
-                for (unique in cityInfo.getMatchingUniques("Cost of purchasing [] buildings reduced by []%")) {
-                    if (matchesFilter(unique.params[0]))
-                        cost *= 1 - (unique.params[1].toFloat() / 100)
-                }
-            }
-        //
-
         for (unique in cityInfo.getMatchingUniques("[] cost of purchasing items in cities []%"))
             if (stat.name == unique.params[0])
                 cost *= unique.params[1].toPercent()

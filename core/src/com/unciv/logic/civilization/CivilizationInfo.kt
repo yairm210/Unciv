@@ -174,6 +174,7 @@ class CivilizationInfo {
         toReturn.naturalWonders.addAll(naturalWonders)
         toReturn.cityStatePersonality = cityStatePersonality
         toReturn.cityStateResource = cityStateResource
+        toReturn.cityStateUniqueUnit = cityStateUniqueUnit
         toReturn.flagsCountdown.putAll(flagsCountdown)
         toReturn.temporaryUniques.addAll(temporaryUniques)
         toReturn.boughtConstructionsWithGloballyIncreasingPrice.putAll(boughtConstructionsWithGloballyIncreasingPrice)
@@ -208,6 +209,7 @@ class CivilizationInfo {
     val cityStateType: CityStateType get() = nation.cityStateType!!
     var cityStatePersonality: CityStatePersonality = CityStatePersonality.Neutral
     var cityStateResource: String? = null
+    var cityStateUniqueUnit: String? = null // Unique unit for militaristic city state. Might still be null if there are no appropriate units
     fun isMajorCiv() = nation.isMajorCiv()
     fun isAlive(): Boolean = !isDefeated()
     fun hasEverBeenFriendWith(otherCiv: CivilizationInfo): Boolean = getDiplomacyManager(otherCiv).everBeenFriends()
@@ -902,6 +904,9 @@ class CivilizationInfo {
     }
 
     //////////////////////// City State wrapper functions ////////////////////////
+
+    fun initCityState(ruleset: Ruleset, startingEra: String, unusedMajorCivs: Collection<String>)
+        = cityStateFunctions.initCityState(ruleset, startingEra, unusedMajorCivs)
     /** Gain a random great person from the city state */
     private fun giveGreatPersonToPatron(receivingCiv: CivilizationInfo) {
         cityStateFunctions.giveGreatPersonToPatron(receivingCiv)
