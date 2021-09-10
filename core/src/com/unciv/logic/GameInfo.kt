@@ -126,6 +126,8 @@ class GameInfo {
             it.playerType = PlayerType.Human
             it.playerId = playerId
             civilizations.add(it)
+            it.gameInfo = this
+            it.setNationTransient()
             it.setTransients()
         }
 
