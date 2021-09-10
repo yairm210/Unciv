@@ -197,7 +197,7 @@ object GameStarter {
 
         if (!newGameParameters.religionEnabled){
             for(cityStateName in availableCityStatesNames){
-                val civ = CivilizationInfo(cityStateName) // testx
+                val civ = CivilizationInfo(cityStateName)
                 if (civ.cityStateType == CityStateType.Religious)
                     availableCityStatesNames.remove(cityStateName)
             }
