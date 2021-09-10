@@ -72,8 +72,13 @@ internal object ImagePacker {
         val modDirectory = File("mods")
         if (modDirectory.exists()) {
             for (mod in modDirectory.listFiles()!!) {
-                if (!mod.isHidden && File(mod.path + "/Images").exists())
-                    packImagesIfOutdated(defaultSettings, mod.path + "/Images", mod.path, "game")
+                if (!mod.isHidden && File(mod.path + "/Images").exists()) {
+                    try {
+                        packImagesIfOutdated(defaultSettings, mod.path + "/Images", mod.path, "game")
+                    } catch (ex: Throwable) {
+                        println("Exception in ImagePacker: ${ex.message}")
+                    }
+                }
             }
         }
 
