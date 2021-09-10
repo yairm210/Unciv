@@ -58,9 +58,15 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo, centerOnTech: Tec
 
         rightSideButton.setText("Pick a tech".tr())
         rightSideButton.onClick(UncivSound.Paper) {
-            game.settings.addCompletedTutorialTask("Pick technology")
-            if (freeTechPick) civTech.getFreeTechnology(selectedTech!!.name)
+            if (freeTechPick) {
+                val freeTech = selectedTech!!.name
+                // More evil people fast-clicking to cheat - #4977
+                if (researchableTechs.contains(freeTech)) return@onClick
+                civTech.getFreeTechnology(selectedTech!!.name)
+            }
             else civTech.techsToResearch = tempTechsToResearch
+
+            game.settings.addCompletedTutorialTask("Pick technology")
 
             game.setWorldScreen()
             game.worldScreen.shouldUpdate = true

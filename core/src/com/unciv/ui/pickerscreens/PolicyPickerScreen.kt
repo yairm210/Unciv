@@ -40,7 +40,12 @@ class PolicyPickerScreen(val worldScreen: WorldScreen, civInfo: CivilizationInfo
         } else onBackButtonClicked { UncivGame.Current.setWorldScreen() }
 
         rightSideButton.onClick(UncivSound.Policy) {
-            viewingCiv.policies.adopt(pickedPolicy!!)
+            val policy = pickedPolicy!!
+
+            // Evil people clicking on buttons too fast to confuse the screen - #4977
+            if (!policyIsPickable(policy)) return@onClick
+
+            viewingCiv.policies.adopt(policy)
 
             // If we've moved to another screen in the meantime (great person pick, victory screen) ignore this
             if (game.screen !is PolicyPickerScreen || !policies.canAdoptPolicy()) {
@@ -106,14 +111,21 @@ class PolicyPickerScreen(val worldScreen: WorldScreen, civInfo: CivilizationInfo
         scrollPane.updateVisualScroll()
     }
 
-    private fun pickPolicy(policy: Policy) {
+    fun policyIsPickable(policy: Policy):Boolean {
         if (!worldScreen.isPlayersTurn
-                || worldScreen.viewingCiv.isSpectator() // viewingCiv var points to selectedCiv in case of spectator
-                || viewingCiv.isDefeated()
-                || viewingCiv.policies.isAdopted(policy.name)
-                || policy.policyBranchType == PolicyBranchType.BranchComplete
-                || !viewingCiv.policies.isAdoptable(policy)
-                || !viewingCiv.policies.canAdoptPolicy()) {
+            || worldScreen.viewingCiv.isSpectator() // viewingCiv var points to selectedCiv in case of spectator
+            || viewingCiv.isDefeated()
+            || viewingCiv.policies.isAdopted(policy.name)
+            || policy.policyBranchType == PolicyBranchType.BranchComplete
+            || !viewingCiv.policies.isAdoptable(policy)
+            || !viewingCiv.policies.canAdoptPolicy()
+        )
+            return false
+        return true
+    }
+
+    private fun pickPolicy(policy: Policy) {
+        if (!policyIsPickable(policy)) {
             rightSideButton.disable()
         } else {
             rightSideButton.enable()
