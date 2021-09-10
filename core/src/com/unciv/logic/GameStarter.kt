@@ -195,9 +195,14 @@ object GameStarter {
         availableCityStatesNames.addAll(ruleset.nations.filter { it.value.isCityState() }.keys
                 .shuffled().sortedByDescending { it in civNamesWithStartingLocations })
 
-        if (!newGameParameters.religionEnabled)
-            availableCityStatesNames.map { CivilizationInfo(it) }
-                .filter { it.cityStateType == CityStateType.Religious }
+        if (!newGameParameters.religionEnabled){
+            for(cityStateName in availableCityStatesNames){
+                val civ = CivilizationInfo(cityStateName)
+                if (civ.cityStateType == CityStateType.Religious)
+                    availableCityStatesNames.remove(cityStateName)
+            }
+        }
+
 
         
         var addedCityStates = 0
