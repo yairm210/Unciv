@@ -45,12 +45,11 @@ object GameStarter {
             tileMap = MapGenerator(ruleset).generateMap(gameSetupInfo.mapParameters)
             tileMap.mapParameters = gameSetupInfo.mapParameters
         }
-        //gameInfo.ruleSet = ruleset // need to set this transient so that we can get the starting era
-        // this code for some reason doesn't work
 
         runAndMeasure("addCivilizations") {
             gameInfo.tileMap = tileMap
             tileMap.gameInfo = gameInfo // need to set this transient before placing units in the map
+            gameInfo.ruleSet = ruleset
             addCivilizations(gameSetupInfo.gameParameters, gameInfo, ruleset) // this is before gameInfo.setTransients, so gameInfo doesn't yet have the gameBasics
         }
 
