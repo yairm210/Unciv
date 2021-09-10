@@ -274,7 +274,7 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
                     "We asked [${cityState.civName}] for a tribute recently and they gave in.\nYou promised to protect them from such things, but we both know you cannot back that up."
                 addGoodSizedLabel(text).row()
 
-                add(getCloseButton("You'll pay for this.", 'y') {
+                add(getCloseButton("You'll pay for this!", 'y') {
                     player.getDiplomacyManager(bully).sideWithCityState()
                 }).row()
                 add(getCloseButton("Very well.", 'n') {
@@ -300,7 +300,7 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
                     "I thought you might like to know that I've launched an invasion of one of your little pet states.\nThe lands of [${cityState.civName}] will make a fine addition to my own."
                 addGoodSizedLabel(text).row()
 
-                add(getCloseButton("You'll pay for this.", 'y') {
+                add(getCloseButton("You'll pay for this!", 'y') {
                     player.getDiplomacyManager(attacker).sideWithCityState()
                 }).row()
                 add(getCloseButton("Very well.", 'n') {
