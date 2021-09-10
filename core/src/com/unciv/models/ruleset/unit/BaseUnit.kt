@@ -403,18 +403,6 @@ class BaseUnit : INamed, INonPerpetualConstruction, ICivilopediaText {
             
             unit.setupAbilityUses(cityConstructions.cityInfo)
         }
-        
-        if (boughtWith != null && cityConstructions.cityInfo.civInfo.getMatchingUniques("May buy [] units for [] [] [] starting from the [] at an increasing price ([])")
-            .any {
-                matchesFilter(it.params[0])
-                && cityConstructions.cityInfo.matchesFilter(it.params[3])
-                && cityConstructions.cityInfo.civInfo.getEraNumber() >= ruleset.eras[it.params[4]]!!.eraNumber
-                && it.params[2] == boughtWith.name
-            }
-        ) {
-            cityConstructions.cityInfo.civInfo.boughtConstructionsWithGloballyIncreasingPrice[name] = 
-                (cityConstructions.cityInfo.civInfo.boughtConstructionsWithGloballyIncreasingPrice[name] ?: 0) + 1
-        }
 
         if (this.isCivilian()) return true // tiny optimization makes save files a few bytes smaller
 
