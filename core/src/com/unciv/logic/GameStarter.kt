@@ -49,7 +49,7 @@ object GameStarter {
         runAndMeasure("addCivilizations") {
             gameInfo.tileMap = tileMap
             tileMap.gameInfo = gameInfo // need to set this transient before placing units in the map
-            gameInfo.ruleSet = ruleset
+            //gameInfo.ruleSet = ruleset doesn't work for some reason
             addCivilizations(gameSetupInfo.gameParameters, gameInfo, ruleset) // this is before gameInfo.setTransients, so gameInfo doesn't yet have the gameBasics
         }
 
@@ -195,7 +195,7 @@ object GameStarter {
         availableCityStatesNames.addAll(ruleset.nations.filter { it.value.isCityState() }.keys
                 .shuffled().sortedByDescending { it in civNamesWithStartingLocations })
 
-        if (newGameParameters.religionEnabled){
+        if (!newGameParameters.religionEnabled){
             for(cityStateName in availableCityStatesNames){
                 val civ = CivilizationInfo(cityStateName) // testx
                 if (civ.cityStateType == CityStateType.Religious)
