@@ -45,6 +45,7 @@ object GameStarter {
             tileMap = MapGenerator(ruleset).generateMap(gameSetupInfo.mapParameters)
             tileMap.mapParameters = gameSetupInfo.mapParameters
         }
+        gameInfo.ruleSet = ruleset // need to set this transient so that we can get the starting era
 
         runAndMeasure("addCivilizations") {
             gameInfo.tileMap = tileMap
@@ -194,7 +195,7 @@ object GameStarter {
         availableCityStatesNames.addAll(ruleset.nations.filter { it.value.isCityState() }.keys
                 .shuffled().sortedByDescending { it in civNamesWithStartingLocations })
 
-        if (!newGameParameters.religionEnabled){
+        if (gameInfo.hasReligionEnabled()){
             for(cityStateName in availableCityStatesNames){
                 val civ = CivilizationInfo(cityStateName)
                 if (civ.cityStateType == CityStateType.Religious)
