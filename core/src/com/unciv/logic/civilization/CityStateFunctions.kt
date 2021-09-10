@@ -153,8 +153,8 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
         diplomacy.setFlag(DiplomacyFlags.RecentlyPledgedProtection, 10) // Can't break for 10 turns
     }
 
-    fun removeProtectorCiv(otherCiv: CivilizationInfo) {
-        if(!otherCivCanWithdrawProtection(otherCiv))
+    fun removeProtectorCiv(otherCiv: CivilizationInfo, forced: Boolean = false) {
+        if(!otherCivCanWithdrawProtection(otherCiv) && !forced)
             return
 
         val diplomacy = civInfo.getDiplomacyManager(otherCiv)
@@ -494,8 +494,11 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
             protectorDiplomacy.setFlag(DiplomacyFlags.RememberBulliedProtectedMinor, 75)    // Reset their memory
 
             if (protector.playerType != PlayerType.Human)   // Humans can have their own emotions
-                bully.addNotification("[${protector.civName}] is upset that you demanded tribute from [${civInfo.civName}], whom they have pledged to protect!", NotificationIcon.Diplomacy, protector.civName)
-            protector.addNotification("[${bully.civName}] has demanded tribute from [${civInfo.civName}], whom you have pledged to protect!", bully.civName, NotificationIcon.Diplomacy, civInfo.civName)
+                bully.addNotification("[${protector.civName}] is upset that you demanded tribute from [${civInfo.civName}], whom they have pledged to protect!",
+                    NotificationIcon.Diplomacy, protector.civName)
+            else    // Let humans choose who to side with
+                protector.popupAlerts.add(PopupAlert(AlertType.BulliedProtectedMinor,
+                    bully.civName + "@" + civInfo.civName))   // we need to pass both civs as argument, hence the horrible chimera
         }
     }
 
@@ -515,8 +518,11 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
             protectorDiplomacy.setFlag(DiplomacyFlags.RememberAttackedProtectedMinor, 75)   // Reset their memory
 
             if (protector.playerType != PlayerType.Human)   // Humans can have their own emotions
-                attacker.addNotification("[${protector.civName}] is upset that you attacked [${civInfo.civName}], whom they have pledged to protect!", NotificationIcon.Diplomacy, protector.civName)
-            protector.addNotification("[${attacker.civName}] has declared war on [${civInfo.civName}], whom you have pledged to protect!", attacker.civName, NotificationIcon.War, civInfo.civName)
+                attacker.addNotification("[${protector.civName}] is upset that you attacked [${civInfo.civName}], whom they have pledged to protect!",
+                    NotificationIcon.Diplomacy, protector.civName)
+            else    // Let humans choose who to side with
+                protector.popupAlerts.add(PopupAlert(AlertType.AttackedProtectedMinor,
+                    attacker.civName + "@" + civInfo.civName))   // we need to pass both civs as argument, hence the horrible chimera
         }
     }
 
@@ -535,8 +541,10 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
             protectorDiplomacy.setFlag(DiplomacyFlags.RememberDestroyedProtectedMinor, 125)   // Reset their memory
 
             if (protector.playerType != PlayerType.Human)   // Humans can have their own emotions
-                attacker.addNotification("[${protector.civName}] is outraged that you destroyed [${civInfo.civName}], whom they had pledged to protect!", NotificationIcon.Diplomacy, protector.civName)
-            protector.addNotification("[${attacker.civName}] has destroyed [${civInfo.civName}], whom you had pledged to protect!", attacker.civName, NotificationIcon.Death, civInfo.civName)
+                attacker.addNotification("[${protector.civName}] is outraged that you destroyed [${civInfo.civName}], whom they had pledged to protect!",
+                    NotificationIcon.Diplomacy, protector.civName)
+            protector.addNotification("[${attacker.civName}] has destroyed [${civInfo.civName}], whom you had pledged to protect!", attacker.civName,
+                NotificationIcon.Death, civInfo.civName)
         }
     }
 

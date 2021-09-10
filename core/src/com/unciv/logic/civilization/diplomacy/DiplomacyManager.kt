@@ -48,6 +48,7 @@ enum class DiplomacyFlags {
     RememberDestroyedProtectedMinor,
     RememberAttackedProtectedMinor,
     RememberBulliedProtectedMinor,
+    RememberSidedWithProtectedMinor,
     Denunciation
 }
 
@@ -76,7 +77,8 @@ enum class DiplomaticModifiers {
     GaveUsUnits,
     DestroyedProtectedMinor,
     AttackedProtectedMinor,
-    BulliedProtectedMinor
+    BulliedProtectedMinor,
+    SidedWithProtectedMinor,
 }
 
 class DiplomacyManager() {
@@ -235,7 +237,7 @@ class DiplomacyManager() {
             if (otherCiv().religionManager.religion?.name == civInfo.getCapital().religion.getMajorityReligionName())
                 restingPoint += unique.params[0].toInt()
 
-        if (diplomaticStatus == DiplomaticStatus.Protector) restingPoint += 5
+        if (diplomaticStatus == DiplomaticStatus.Protector) restingPoint += 10
         return restingPoint
     }
 
@@ -509,6 +511,9 @@ class DiplomacyManager() {
                     }
                     DiplomacyFlags.RememberBulliedProtectedMinor.name -> {      // 75
                         removeModifier(DiplomaticModifiers.BulliedProtectedMinor)
+                    }
+                    DiplomacyFlags.RememberSidedWithProtectedMinor.name -> {      // 25
+                        removeModifier(DiplomaticModifiers.SidedWithProtectedMinor)
                     }
                 }
 
@@ -822,6 +827,10 @@ class DiplomacyManager() {
         otherCiv().addNotification("[${civInfo.civName}] refused to stop settling cities near us!", NotificationIcon.Diplomacy, civInfo.civName)
     }
 
+    fun sideWithCityState() {
+        otherCivDiplomacy().setModifier(DiplomaticModifiers.SidedWithProtectedMinor, -5f)
+        otherCivDiplomacy().setFlag(DiplomacyFlags.RememberSidedWithProtectedMinor, 25)
+    }
 
     //endregion
 }
