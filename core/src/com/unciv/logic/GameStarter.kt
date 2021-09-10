@@ -203,9 +203,7 @@ object GameStarter {
             }
         }
 
-        val allMercantileResources = ruleset.tileResources.values.filter { it.unique == "Can only be created by Mercantile City-States" }.map { it.name }
-        val unusedMercantileResources = Stack<String>()
-        unusedMercantileResources.addAll(allMercantileResources.shuffled())
+
         
         var addedCityStates = 0
         // Keep trying to add city states until we reach the target number.
