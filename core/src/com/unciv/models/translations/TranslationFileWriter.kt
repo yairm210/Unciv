@@ -92,9 +92,9 @@ object TranslationFileWriter {
                 }
 
                 val translationKey = line.split(" = ")[0].replace("\\n", "\n")
-                val hashMapKey = if (translationKey.contains('['))
-                    translationKey.replace(squareBraceRegex, "[]")
-                else translationKey
+                val hashMapKey = translationKey
+                    .replace(pointyBraceRegex, "")
+                    .replace(squareBraceRegex, "[]")
 
                 if (existingTranslationKeys.contains(hashMapKey)) continue // don't add it twice
                 existingTranslationKeys.add(hashMapKey)
@@ -259,7 +259,7 @@ object TranslationFileWriter {
             val resultStrings = generatedStrings[filename]!!
 
             fun submitString(item: Any) {
-                val string = item.toString()
+                val string = item.toString().removeConditionals()
 
                 val parameters = string.getPlaceholderParameters()
                 var stringToTranslate = string

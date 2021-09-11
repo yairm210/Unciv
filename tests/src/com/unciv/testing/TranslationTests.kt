@@ -7,10 +7,7 @@ import com.unciv.models.UnitActionType
 import com.unciv.models.metadata.GameSettings
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
-import com.unciv.models.translations.TranslationFileWriter
-import com.unciv.models.translations.Translations
-import com.unciv.models.translations.squareBraceRegex
-import com.unciv.models.translations.tr
+import com.unciv.models.translations.*
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
@@ -27,7 +24,7 @@ class TranslationTests {
     @Before
     fun loadTranslations() {
         // Since the ruleset and translation loader have their own output,
-        // We 'disable' the output stream for their outputs, and only enable it for the twst itself.
+        // We 'disable' the output stream for their outputs, and only enable it for the test itself.
         val outputChannel = System.out
         System.setOut(PrintStream(object : OutputStream() {
             override fun write(b: Int) {}
@@ -186,6 +183,50 @@ class TranslationTests {
         Assert.assertTrue(
             "This test will only pass when all phrases properly translate to their language",
             allWordsTranslatedCorrectly
+        )
+    }
+    
+    @Test
+    fun wordBoundaryTranslationIsFormattedCorrectly() {
+        val translationEntry = translations["\" \""]!!
+                
+        var allTranslationsCheckedOut = true
+        for ((language, translation) in translationEntry) {
+            if (!translation.startsWith("\"")
+                || !translation.endsWith("\"")
+                || translation.count { it == '\"' } != 2
+            ) {
+                allTranslationsCheckedOut = false
+                println("Translation of the word boundary in $language was incorrectly formatted")
+            }
+        }
+        
+        Assert.assertTrue(
+            "This test will only pass when the word boundrary translation succeeds",
+            allTranslationsCheckedOut
+        )
+    }
+    
+    @Test
+    fun allConditionalsAreContainedInConditionalOrderTranslation() {
+        val orderedConditionals = Translations.defaultConditionalOrderingString
+        val orderedConditionalsSet = orderedConditionals.getConditionals().map { it.placeholderText }
+        val translationEntry = translations[orderedConditionals]!!
+        
+        var allTranslationsCheckedOut = true
+        for ((language, translation) in translationEntry) {
+            val translationConditionals = translation.getConditionals().map { it.placeholderText }
+            if (translationConditionals.toHashSet() != orderedConditionalsSet.toHashSet()
+                || translationConditionals.count() != translationConditionals.distinct().count()
+            ) {
+                allTranslationsCheckedOut = false
+                println("Not all or double parameters found in the conditional ordering for $language")
+            }
+        }
+        
+        Assert.assertTrue(
+            "This test will only pass when each of the conditionals exists exactly once in the translations for the conditional ordering",
+            allTranslationsCheckedOut
         )
     }
 }
