@@ -15,9 +15,14 @@ import com.unciv.models.translations.tr
 import com.unciv.ui.utils.*
 import java.util.*
 import kotlin.collections.ArrayList
+import kotlin.math.ulp
 
 
-class TechPickerScreen(internal val civInfo: CivilizationInfo, centerOnTech: Technology? = null, private val freeTechPick: Boolean = false) : PickerScreen() {
+class TechPickerScreen(
+    private val civInfo: CivilizationInfo,
+    centerOnTech: Technology? = null,
+    private val freeTechPick: Boolean = false
+) : PickerScreen() {
 
     private var techNameToButton = HashMap<String, TechButton>()
     private var selectedTech: Technology? = null
@@ -43,18 +48,23 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo, centerOnTech: Tec
     private val researchableTechColor = colorFromRGB(28, 170, 0)
     private val queuedTechColor = colorFromRGB(39, 114, 154)
 
-
     private val turnsToTech = civInfo.gameInfo.ruleSet.technologies.values.associateBy({ it.name }, { civTech.turnsToTech(it.name) })
+
+    private fun resizeScroll() {
+        scrollPane.setSize(
+            stage.width / scrollPane.scaleX,
+            (stage.height - bottomTable.height) / scrollPane.scaleX
+        )
+    }
 
     init {
         // Replace the PickerScreen AutoScrollPane with a ZoomableScrollPane
         topTable.remove()
         scrollPane.remove()
-        scrollPane = ZoomableScrollPane(0.1f, 4f) {
-            scrollPane.setSize(stage.width / it, (stage.height - bottomTable.height) / it)
-        }
+        scrollPane = ZoomableScrollPane(0.25f, 2.5f, true) { resizeScroll() }
         scrollPane.actor = topTable
         splitPane.setFirstWidget(scrollPane)
+        stage.scrollFocus = scrollPane
 
         setDefaultCloseAction()
         onBackButtonClicked { UncivGame.Current.setWorldScreen() }
@@ -63,7 +73,7 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo, centerOnTech: Tec
 
         createTechTable()
         setButtonsInfo()
-        topTable.add(techTable)
+        topTable.add(techTable).padBottom(5f)
 
         rightSideButton.setText("Pick a tech".tr())
         rightSideButton.onClick(UncivSound.Paper) {
@@ -103,42 +113,78 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo, centerOnTech: Tec
     private fun createTechTable() {
         val allTechs = civInfo.gameInfo.ruleSet.technologies.values
         if (allTechs.isEmpty()) return
+
+        // Techs are displayed by json column/row numbers. We display starting at column 0 up to
+        // their defined max, Rows were starting at 1 before, and looped to max+1 -
+        // now, for compatibility, we _determine_ min and max row.
         val columns = allTechs.map { it.column!!.columnNumber }.maxOrNull()!! + 1
-        val rows = allTechs.map { it.row }.maxOrNull()!! + 1
-        val techMatrix = Array<Array<Technology?>>(columns) { arrayOfNulls(rows) } // Divided into columns, then rows
+        val minRow = allTechs.map { it.row }.minOrNull()!!
+        val rows = allTechs.map { it.row }.maxOrNull()!! - minRow + 1
+        val techMatrix = Array<Array<Technology?>>(rows) { arrayOfNulls(columns) } // Divided into rows, then columns
+
+        // The tech json can associate any number of eras with a column and an era with any number of columns
+        // To ensure deterministic and contiguous column headers we first collect the column _range_ per era... 
+        val erasNamesToColumns = HashMap<String, IntRange>()
 
         for (technology in allTechs) {
-            techMatrix[technology.column!!.columnNumber][technology.row - 1] = technology
+            val era = technology.era()
+            val columnNumber = technology.column!!.columnNumber
+            if (columnNumber < 0) continue
+
+            techMatrix[technology.row - minRow][columnNumber] = technology
+
+            if (era !in erasNamesToColumns)
+                erasNamesToColumns[era] = columnNumber..columnNumber
+            else {
+                val range = erasNamesToColumns[era]!!
+                if (columnNumber < range.first)
+                    erasNamesToColumns[era] = columnNumber..range.last
+                else if (columnNumber > range.last)
+                    erasNamesToColumns[era] = range.first..columnNumber
+            }
         }
 
-        val erasNamesToColumns = LinkedHashMap<String, ArrayList<Int>>()
-        for (tech in allTechs) {
-            val era = tech.era()
-            if (!erasNamesToColumns.containsKey(era)) erasNamesToColumns[era] = ArrayList()
-            val columnNumber = tech.column!!.columnNumber
-            if (!erasNamesToColumns[era]!!.contains(columnNumber)) erasNamesToColumns[era]!!.add(columnNumber)
-        }
-        var i = 0
-        for ((era, eraColumns) in erasNamesToColumns) {
-            val columnSpan = eraColumns.size
-            val color = if (i % 2 == 0) Color.BLUE else Color.FIREBRICK
-            i++
-            techTable.add(era.toLabel().addBorder(2f, color)).fill().colspan(columnSpan)
+        // .. then we sort by column range start, then shortest first, with fallback era number ..
+        val sortedEraToColumns = erasNamesToColumns.asSequence()
+            .sortedWith(
+                compareBy<Map.Entry<String,IntRange>> { it.value.first }
+                    .thenBy { it.value.last }
+                    .thenBy { civInfo.gameInfo.ruleSet.eras[it.key]?.eraNumber ?: Int.MAX_VALUE }
+            )
+        // .. then iterate that keeping track of a monotonically increasing column number, skip entries
+        // to the left of that column, fulfilling the others by creating the header label with a
+        // matching colspan, then bumping the column number past their end column. 
+        var column = 0
+        var color = Color.BLUE
+        for ((era, range) in sortedEraToColumns) {
+            if (column > range.last) continue // skip eras whose column range is already past
+            if (column < range.first) {
+                // fill up columns with no era
+                techTable.add().colspan(range.first - column)
+                column = range.first
+            }
+            techTable.add(era.toLabel().addBorder(2f, color))
+                .fill().colspan(range.last - column + 1).padBottom(5f)
+            column = range.last + 1
+            color = if (color == Color.BLUE) Color.FIREBRICK else Color.BLUE
         }
 
         for (rowIndex in 0 until rows) {
-            techTable.row().pad(5f).padRight(40f)
-
-            for (columnIndex in techMatrix.indices) {
-                val tech = techMatrix[columnIndex][rowIndex]
-                if (tech == null)
+            techTable.row().pad(5f, 20f)
+            for (tech in techMatrix[rowIndex]) {
+                if (tech == null) {
                     techTable.add() // empty cell
-
-                else {
+                } else {
                     val techButton = TechButton(tech.name, civTech, false)
-
                     techNameToButton[tech.name] = techButton
-                    techButton.onClick { selectTechnology(tech, false) }
+                    techButton.onClick {
+                        selectTechnology(tech, false)
+//                        val scale = scrollPane.scaleX
+//                        scrollPane.setScale(scale+scale.ulp)
+//                        scrollPane.setScale(scale)
+//                        resizeScroll()
+//                        scrollPane.updateVisualScroll()
+                    }
                     techTable.add(techButton).fillX()
                 }
             }
@@ -155,20 +201,16 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo, centerOnTech: Tec
                 researchableTechs.contains(techName) -> researchableTechColor
                 tempTechsToResearch.contains(techName) -> queuedTechColor
                 else -> Color.GRAY
+            }.let {
+                if (techName == selectedTech?.name) Color(it).lerp(Color.BLACK, 0.5f) else it
             }
 
             var text = techName.tr()
-
-            if (techName == selectedTech?.name) {
-                techButton.color = techButton.color.cpy().lerp(Color.BLACK, 0.5f)
-            }
-
             if (tempTechsToResearch.contains(techName) && tempTechsToResearch.size > 1) {
                 text += " (" + tempTechsToResearch.indexOf(techName) + ")"
             }
-
             if (!civTech.isResearched(techName) || techName == Constants.futureTech)
-                text += "\r\n" + turnsToTech[techName] + "${Fonts.turn}".tr()
+                text += "\n" + turnsToTech[techName] + Fonts.turn
 
             techButton.text.setText(text)
         }
@@ -221,14 +263,10 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo, centerOnTech: Tec
         }
     }
 
-    private fun selectTechnology(tech: Technology?, center: Boolean = false, switchFromWorldScreen: Boolean = true) {
-
+    private fun selectTechnology(tech: Technology?, center: Boolean = false) {
         val previousSelectedTech = selectedTech
         selectedTech = tech
         descriptionLabel.setText(tech?.getDescription(civInfo.gameInfo.ruleSet))
-
-        if (!switchFromWorldScreen)
-            return
 
         if (tech == null)
             return
@@ -273,11 +311,11 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo, centerOnTech: Tec
 
         val label = "Research [${tempTechsToResearch[0]}]".tr()
         val techProgression = getTechProgressLabel(tempTechsToResearch)
-        
+
         pick("${label}\n${techProgression}")
         setButtonsInfo()
     }
-    
+
     private fun getTechProgressLabel(techs: List<String>): String {
         val progress = techs.sumOf { tech -> civTech.researchOfTech(tech) }
         val techCost = techs.sumOf { tech -> civInfo.tech.costOfTech(tech) }
