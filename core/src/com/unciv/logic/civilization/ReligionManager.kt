@@ -129,6 +129,7 @@ class ReligionManager {
 
     private fun canGenerateProphet(): Boolean {
         if (religion == null || religionState == ReligionState.None) return false // First get a pantheon, then we'll talk about a real religion
+        if (getGreatProphetEquivalent() == null) return false
         if (storedFaith < faithForNextGreatProphet()) return false
         if (!civInfo.isMajorCiv()) return false
         if (civInfo.hasUnique("May not generate great prophet equivalents naturally")) return false
