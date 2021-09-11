@@ -407,8 +407,8 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
             return
         val pathToLastReachableTile = distanceToTiles.getPathToTile(lastReachableTile)
 
-        if (unit.isFortified() || unit.isSetUpForSiege() || unit.isSleeping() || unit.isAutomated())
-            unit.action = null // un-fortify/un-setup/un-sleep/un-automate after moving
+        if (unit.isFortified() || unit.isSetUpForSiege() || unit.isSleeping())
+            unit.action = null // un-fortify/un-setup/un-sleep after moving
 
         // If this unit is a carrier, keep record of its air payload whereabouts.
         val origin = unit.getTile()
