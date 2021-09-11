@@ -15,6 +15,7 @@ import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.translations.tr
 import com.unciv.ui.utils.*
+import com.unciv.ui.pickerscreens.ModManagementOptions.SortType
 import com.unciv.ui.utils.UncivDateFormat.formatDate
 import com.unciv.ui.utils.UncivDateFormat.parseDate
 import com.unciv.ui.worldscreen.mainmenu.Github
@@ -29,7 +30,10 @@ import kotlin.math.max
  */
 // All picker screens auto-wrap the top table in a ScrollPane.
 // Since we want the different parts to scroll separately, we disable the default ScrollPane, which would scroll everything at once.
-class ModManagementScreen(previousOnlineMods: HashMap<String, ModUIData>? = null): PickerScreen(disableScroll = true) {
+class ModManagementScreen(
+    previousInstalledMods: HashMap<String, ModUIData>? = null,
+    previousOnlineMods: HashMap<String, ModUIData>? = null
+): PickerScreen(disableScroll = true) {
 
     private val modTable = Table().apply { defaults().pad(10f) }
     private val scrollInstalledMods = AutoScrollPane(modTable)
@@ -58,8 +62,8 @@ class ModManagementScreen(previousOnlineMods: HashMap<String, ModUIData>? = null
     private var downloadModCount = 0
 
     // Enable re-sorting and syncing entries in 'installed' and 'repo search' ScrollPanes
-    private val installedModInfo = HashMap<String, ModUIData>(30)
-    private val onlineModInfo = previousOnlineMods ?: HashMap<String, ModUIData>(30)
+    private val installedModInfo = previousInstalledMods ?: HashMap(10) // HashMap<String, ModUIData> inferred
+    private val onlineModInfo = previousOnlineMods ?: HashMap(90) // HashMap<String, ModUIData> inferred
 
     private var onlineScrollCurrentY = -1f
 
@@ -109,6 +113,8 @@ class ModManagementScreen(previousOnlineMods: HashMap<String, ModUIData>? = null
         if (isNarrowerThan4to3()) initPortrait()
         else initLandscape()
 
+        keyPressDispatcher[KeyCharAndCode.RETURN] = optionsManager.filterAction
+
         if (onlineModInfo.isEmpty())
             reloadOnlineMods()
         else
@@ -120,12 +126,12 @@ class ModManagementScreen(previousOnlineMods: HashMap<String, ModUIData>? = null
 
         topTable.add(optionsManager.expander).top().growX().row()
 
-        installedExpanderTab = ExpanderTab(getInstalledHeader(), expanderWidth = stage.width) {
+        installedExpanderTab = ExpanderTab(optionsManager.getInstalledHeader(), expanderWidth = stage.width) {
             it.add(scrollInstalledMods).growX()
         }
         topTable.add(installedExpanderTab).top().growX().row()
 
-        onlineExpanderTab = ExpanderTab(getOnlineHeader(), expanderWidth = stage.width) {
+        onlineExpanderTab = ExpanderTab(optionsManager.getOnlineHeader(), expanderWidth = stage.width) {
             it.add(scrollOnlineMods).growX()
         }
         topTable.add(onlineExpanderTab).top().padTop(10f).growX().row()
@@ -140,13 +146,13 @@ class ModManagementScreen(previousOnlineMods: HashMap<String, ModUIData>? = null
     private fun initLandscape() {
         // Header row
         topTable.add().expandX()                // empty cols left and right for separator
-        installedHeaderLabel = getInstalledHeader().toLabel()
+        installedHeaderLabel = optionsManager.getInstalledHeader().toLabel()
         installedHeaderLabel!!.onClick {
             optionsManager.installedHeaderClicked()
         }
         topTable.add(installedHeaderLabel).pad(5f).minWidth(200f).padLeft(25f)
             // 30 = 5 default pad + 20 to compensate for 'permanent visual mod' decoration icon
-        onlineHeaderLabel = getOnlineHeader().toLabel()
+        onlineHeaderLabel = optionsManager.getOnlineHeader().toLabel()
         onlineHeaderLabel!!.onClick {
             optionsManager.onlineHeaderClicked()
         }
@@ -161,10 +167,10 @@ class ModManagementScreen(previousOnlineMods: HashMap<String, ModUIData>? = null
         // main row containing the three 'blocks' installed, online and information
         topTable.add()      // skip empty first column
         topTable.add(scrollInstalledMods)
-
         topTable.add(scrollOnlineMods)
-
         topTable.add(modActionTable)
+        topTable.add().row()
+        topTable.add().expandY()  // So short lists won't vertically center everything including headers 
 
         stage.addActor(optionsManager.expander)
         optionsManager.expanderChangeEvent = {
@@ -407,6 +413,9 @@ class ModManagementScreen(previousOnlineMods: HashMap<String, ModUIData>? = null
                 Gdx.app.postRunnable {
                     ToastPopup("[${repo.name}] Downloaded!", this)
                     RulesetCache.loadRulesets()
+                    RulesetCache[repo.name]?.let { 
+                        installedModInfo[repo.name] = ModUIData(it)
+                    }
                     refreshInstalledModTable()
                     showModDescription(repo.name)
                     unMarkUpdatedMod(repo.name)
@@ -443,8 +452,13 @@ class ModManagementScreen(previousOnlineMods: HashMap<String, ModUIData>? = null
      */
     private fun unMarkUpdatedMod(name: String) {
         installedModInfo[name]?.state?.isUpdated = false
-        val button = (onlineModInfo[name]?.button as? TextButton) ?: return
-        button.setText(name)
+        onlineModInfo[name]?.state?.isUpdated = false
+        val button = (onlineModInfo[name]?.button as? TextButton)
+        button?.setText(name)
+        if (optionsManager.sortInstalled == SortType.Status)
+            refreshInstalledModTable()
+        if (optionsManager.sortOnline == SortType.Status)
+            refreshOnlineModTable()
     }
 
     /** Rebuild the right-hand column for clicks on installed mods
@@ -469,56 +483,38 @@ class ModManagementScreen(previousOnlineMods: HashMap<String, ModUIData>? = null
             game.settings.save()
             ImageGetter.setNewRuleset(ImageGetter.ruleset)
             refreshModActions(mod)
+            if (optionsManager.sortInstalled == SortType.Status)
+                refreshInstalledModTable()
         }
         modActionTable.add(visualCheckBox).row()
     }
 
     /** Rebuild the left-hand column containing all installed mods */
     internal fun refreshInstalledModTable() {
-        val knownUpdatedMods = installedModInfo.values
-            .filter { it.state.isUpdated }.map { it.name }.toHashSet()
-
-        modTable.clear()
-        installedModInfo.clear()
-
-        // pre-init as basis for sorting
-        for (mod in RulesetCache.values.asSequence().filter { it.name != "" }) {
-            ModUIData(mod).run {
-                state.isVisual = mod.name in game.settings.visualMods
-                state.isUpdated = mod.name in knownUpdatedMods
-                installedModInfo[mod.name] = this
+        // pre-init if not already done - important: keep the ModUIData instances later on or
+        // at least the button references otherwise sync will not work
+        if (installedModInfo.isEmpty()) {
+            for (mod in RulesetCache.values.asSequence().filter { it.name != "" }) {
+                ModUIData(mod).run {
+                    state.isVisual = mod.name in game.settings.visualMods
+                    installedModInfo[mod.name] = this
+                }
             }
         }
 
-        val sort = optionsManager.sortInstalled
-        val newHeaderText = getInstalledHeader()
+        val newHeaderText = optionsManager.getInstalledHeader()
         installedHeaderLabel?.setText(newHeaderText)
         installedExpanderTab?.setText(newHeaderText)
 
+        modTable.clear()
         var currentY = -1f
         val filter = optionsManager.getFilterText()
-        for (mod in installedModInfo.values.sortedWith(sort.comparator)) {
+        for (mod in installedModInfo.values.sortedWith(optionsManager.sortInstalled.comparator)) {
             if (!mod.matchesFilter(filter)) continue
-            mod.button.onClick {
-                syncInstalledSelected(mod.name, mod.button)
-                refreshModActions(mod.ruleset!!)
-                rightSideButton.setText("Delete [${mod.name}]".tr())
-                rightSideButton.isEnabled = true
-                showModDescription(mod.name)
-                removeRightSideClickListeners()
-                rightSideButton.onClick {
-                    rightSideButton.isEnabled = false
-                    YesNoPopup(
-                        question = "Are you SURE you want to delete this mod?",
-                        action = {
-                            deleteMod(mod.name)
-                            rightSideButton.setText("[${mod.name}] was deleted.".tr())
-                        },
-                        screen = this,
-                        restoreDefault = { rightSideButton.isEnabled = true }
-                    ).open()
-                }
-            }
+            // Prevent building up listeners. The virgin Button has one: for mouseover styling.
+            // The captures for our listener shouldn't need updating, so assign only once
+            if (mod.button.listeners.none { it.javaClass.`package`.name.startsWith("com.unciv") })
+                mod.button.onClick { installedButtonAction(mod) }
             val decoratedButton = Table()
             decoratedButton.add(mod.button)
             decoratedButton.add(mod.state.container).align(Align.center+Align.left)
@@ -528,6 +524,27 @@ class ModManagementScreen(previousOnlineMods: HashMap<String, ModUIData>? = null
             mod.y = currentY
             mod.height = cell.prefHeight
             currentY += cell.padBottom + cell.prefHeight + cell.padTop
+        }
+    }
+
+    private fun installedButtonAction(mod: ModUIData) {
+        syncInstalledSelected(mod.name, mod.button)
+        refreshModActions(mod.ruleset!!)
+        rightSideButton.setText("Delete [${mod.name}]".tr())
+        rightSideButton.isEnabled = true
+        showModDescription(mod.name)
+        removeRightSideClickListeners()
+        rightSideButton.onClick {
+            rightSideButton.isEnabled = false
+            YesNoPopup(
+                question = "Are you SURE you want to delete this mod?",
+                action = {
+                    deleteMod(mod.name)
+                    rightSideButton.setText("[${mod.name}] was deleted.".tr())
+                },
+                screen = this,
+                restoreDefault = { rightSideButton.isEnabled = true }
+            ).open()
         }
     }
 
@@ -544,8 +561,7 @@ class ModManagementScreen(previousOnlineMods: HashMap<String, ModUIData>? = null
     internal fun refreshOnlineModTable() {
         if (runningSearchThread != null) return  // cowardice: prevent concurrent modification, avoid a manager layer
 
-        val sort = optionsManager.sortOnline
-        val newHeaderText = getOnlineHeader()
+        val newHeaderText = optionsManager.getOnlineHeader()
         onlineHeaderLabel?.setText(newHeaderText)
         onlineExpanderTab?.setText(newHeaderText)
 
@@ -553,7 +569,9 @@ class ModManagementScreen(previousOnlineMods: HashMap<String, ModUIData>? = null
         onlineScrollCurrentY = -1f
 
         val filter = optionsManager.getFilterText()
-        val sortedMods = onlineModInfo.values.asSequence().sortedWith(sort.comparator)
+        // Important: sortedMods holds references to the original values, so the referenced buttons stay valid.
+        // We update y and height here, we do not replace the ModUIData instances do the referenced buttons stay valid.
+        val sortedMods = onlineModInfo.values.asSequence().sortedWith(optionsManager.sortOnline.comparator)
         for (mod in sortedMods) {
             if (!mod.matchesFilter(filter)) continue
             val cell = downloadTable.add(mod.button)
@@ -568,9 +586,6 @@ class ModManagementScreen(previousOnlineMods: HashMap<String, ModUIData>? = null
         (downloadTable.parent as ScrollPane).actor = downloadTable
     }
 
-    private fun getInstalledHeader() = installedHeaderText.tr() + " " + optionsManager.sortInstalled.symbols
-    private fun getOnlineHeader() = onlineHeaderText.tr() + " " + optionsManager.sortOnline.symbols
-
     private fun showModDescription(modName: String) {
         val online = onlineModInfo[modName]?.description ?: ""
         val installed = installedModInfo[modName]?.description ?: ""
@@ -581,15 +596,12 @@ class ModManagementScreen(previousOnlineMods: HashMap<String, ModUIData>? = null
 
     override fun resize(width: Int, height: Int) {
         if (stage.viewport.screenWidth != width || stage.viewport.screenHeight != height) {
-            game.setScreen(ModManagementScreen(onlineModInfo))
+            game.setScreen(ModManagementScreen(installedModInfo, onlineModInfo))
             dispose()  // interrupt background loader - sorry, the resized new screen won't continue
         }
     }
 
     companion object {
-        const val installedHeaderText = "Current mods"
-        const val onlineHeaderText = "Downloadable mods"
-
         val modsToHideAsUrl = run {
             val blockedModsFile = Gdx.files.internal("jsons/ManuallyBlockedMods.json")
             JsonParser().getFromJson(Array<String>::class.java, blockedModsFile)

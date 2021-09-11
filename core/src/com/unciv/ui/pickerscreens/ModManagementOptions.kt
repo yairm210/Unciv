@@ -1,33 +1,40 @@
 package com.unciv.ui.pickerscreens
 
 import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.badlogic.gdx.utils.Align
-import com.unciv.models.ruleset.ModOptions
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.translations.tr
 import com.unciv.ui.newgamescreen.TranslatedSelectBox
 import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.mainmenu.Github
-import java.util.HashMap
 import kotlin.math.sign
 
+/**
+ * Helper class for Mod Manager - filtering and sorting.
+ * 
+ * This isn't a UI Widget, but offers one: [expander] can be used to offer filtering and sorting options.
+ * It holds the variables [sortInstalled] and [sortOnline] for the [modManagementScreen] and knows
+ * how to sort collections of [ModUIData] by providing comparators.
+ */
 class ModManagementOptions(private val modManagementScreen: ModManagementScreen) {
     companion object {
-        val sortByName = Comparator { mod1, mod2: ModUIData -> mod1.name.compareTo(mod2.name) }
-        val sortByNameDesc = Comparator { mod1, mod2: ModUIData -> mod2.name.compareTo(mod1.name) }
+        val sortByName = Comparator { mod1, mod2: ModUIData -> mod1.name.compareTo(mod2.name, true) }
+        val sortByNameDesc = Comparator { mod1, mod2: ModUIData -> mod2.name.compareTo(mod1.name, true) }
         // lastUpdated is compared as string, but that should be OK as it's ISO format
         val sortByDate = Comparator { mod1, mod2: ModUIData -> mod1.lastUpdated().compareTo(mod2.lastUpdated()) }
         val sortByDateDesc = Comparator { mod1, mod2: ModUIData -> mod2.lastUpdated().compareTo(mod1.lastUpdated()) }
         // comparators for stars or status
         val sortByStars = Comparator { mod1, mod2: ModUIData -> 
-            10 * (mod2.stargazers() - mod1.stargazers()) + mod1.name.compareTo(mod2.name).sign
+            10 * (mod2.stargazers() - mod1.stargazers()) + mod1.name.compareTo(mod2.name, true).sign
         }
         val sortByStatus = Comparator { mod1, mod2: ModUIData ->
-            10 * (mod2.state.sortWeight() - mod1.state.sortWeight()) + mod1.name.compareTo(mod2.name).sign
+            10 * (mod2.state.sortWeight() - mod1.state.sortWeight()) + mod1.name.compareTo(mod2.name, true).sign
         }
+
+        const val installedHeaderText = "Current mods"
+        const val onlineHeaderText = "Downloadable mods"
     }
 
     enum class SortType(
@@ -43,6 +50,7 @@ class ModManagementOptions(private val modManagementScreen: ModManagementScreen)
         Status("Status ￬", "◉￬", sortByStatus);
 
         fun next() = values()[(ordinal + 1) % values().size]
+
         companion object {
             fun fromSelectBox(selectBox: TranslatedSelectBox): SortType {
                 val selected = selectBox.selected.value
@@ -53,6 +61,7 @@ class ModManagementOptions(private val modManagementScreen: ModManagementScreen)
 
     private val textField = TextField("", CameraStageBaseScreen.skin)
     fun getFilterText(): String = textField.text
+    val filterAction: ()->Unit
 
     var sortInstalled = SortType.Name
     var sortOnline = SortType.Stars
@@ -68,15 +77,9 @@ class ModManagementOptions(private val modManagementScreen: ModManagementScreen)
 
         val searchIcon = ImageGetter.getImage("OtherIcons/Search")
             .surroundWithCircle(50f, color = Color.CLEAR)
-        searchIcon.touchable = Touchable.enabled
-        searchIcon.onClick {
-            modManagementScreen.refreshInstalledModTable()
-            modManagementScreen.refreshOnlineModTable()
-        }
 
         sortInstalledSelect = TranslatedSelectBox(
-            SortType.values().filter { sort -> sort != SortType.Stars }
-                .map { sort -> sort.label },
+            SortType.values().filter { sort -> sort != SortType.Stars }.map { sort -> sort.label },
             sortInstalled.label,
             CameraStageBaseScreen.skin
         )
@@ -86,8 +89,7 @@ class ModManagementOptions(private val modManagementScreen: ModManagementScreen)
         }
 
         sortOnlineSelect = TranslatedSelectBox(
-            SortType.values().filter { sort -> sort != SortType.Status }
-                .map { sort -> sort.label },
+            SortType.values().map { sort -> sort.label },
             sortOnline.label,
             CameraStageBaseScreen.skin
         )
@@ -101,7 +103,8 @@ class ModManagementOptions(private val modManagementScreen: ModManagementScreen)
             fontSize = 18,
             startsOutOpened = false,
             defaultPad = 2.5f,
-            expanderWidth = 340f,
+            headerPad = 5f,
+            expanderWidth = 360f,
             onChange = { expanderChangeEvent?.invoke() }
         ) {
             it.background = ImageGetter.getBackground(Color(0x203050ff))
@@ -116,7 +119,22 @@ class ModManagementOptions(private val modManagementScreen: ModManagementScreen)
             it.add("Sort Downloadable:".toLabel()).left()
             it.add(sortOnlineSelect).right().row()
         }
+
+        searchIcon.touchable = Touchable.enabled
+        filterAction = {
+            if (expander.isOpen) {
+                modManagementScreen.refreshInstalledModTable()
+                modManagementScreen.refreshOnlineModTable()
+            } else {
+                modManagementScreen.stage.keyboardFocus = textField
+            }
+            expander.toggle()
+        }
+        searchIcon.onClick(filterAction)
     }
+
+    fun getInstalledHeader() = installedHeaderText.tr() + " " + sortInstalled.symbols
+    fun getOnlineHeader() = onlineHeaderText.tr() + " " + sortOnline.symbols
 
     fun installedHeaderClicked() {
         do {
@@ -127,13 +145,10 @@ class ModManagementOptions(private val modManagementScreen: ModManagementScreen)
     }
 
     fun onlineHeaderClicked() {
-        do {
-            sortOnline = sortOnline.next()
-        } while (sortOnline == SortType.Status)
+        sortOnline = sortOnline.next()
         sortOnlineSelect.selected = TranslatedSelectBox.TranslatedString(sortOnline.label)
         modManagementScreen.refreshOnlineModTable()
     }
-
 }
 
 /** Helper class holds combined mod info for ModManagementScreen, used for both installed and online lists */
@@ -146,6 +161,8 @@ class ModUIData(
     var height: Float,
     var button: Button
 ) {
+    var state = ModStateImages()  // visible only on the 'installed' side - todo?
+
     constructor(ruleset: Ruleset): this (
         ruleset.name,
         ruleset.getSummary().let {
@@ -160,9 +177,9 @@ class ModUIData(
                 "\n" + "[${repo.stargazers_count}]✯".tr(),
         null, repo, 0f, 0f,
         (repo.name + (if (isUpdated) " - {Updated}" else "" )).toTextButton()
-    )
-
-    var state = ModStateImages()
+    ) {
+        state.isUpdated = isUpdated
+    }
 
     fun lastUpdated() = ruleset?.modOptions?.lastUpdated ?: repo?.updated_at ?: ""
     fun stargazers() = repo?.stargazers_count ?: 0
@@ -170,7 +187,7 @@ class ModUIData(
     fun matchesFilter(filterText: String): Boolean = when {
         filterText.isEmpty() -> true
         name.contains(filterText, true) -> true
-        description.contains(filterText, true) -> true
+        // description.contains(filterText, true) -> true // too many surprises as description is different in the two columns
         author().contains(filterText, true) -> true
         else -> false
     }

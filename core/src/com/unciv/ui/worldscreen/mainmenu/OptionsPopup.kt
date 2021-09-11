@@ -314,6 +314,9 @@ class OptionsPopup(val previousScreen: CameraStageBaseScreen) : Popup(previousSc
                 game.gameInfo.gameParameters.godMode = it
             }).row()
         }
+        add("Gdx Scene2D debug".toCheckBox(CameraStageBaseScreen.enableSceneDebug) {
+            CameraStageBaseScreen.enableSceneDebug = it
+        }).row()
     }
 
     //endregion

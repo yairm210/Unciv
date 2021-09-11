@@ -20,8 +20,8 @@ import kotlin.concurrent.thread
 
 open class CameraStageBaseScreen : Screen {
 
-    var game: UncivGame = UncivGame.Current
-    var stage: Stage
+    val game: UncivGame = UncivGame.Current
+    val stage: Stage
 
     protected val tutorialController by lazy { TutorialController(this) }
 
@@ -33,6 +33,12 @@ open class CameraStageBaseScreen : Screen {
 
         /** The ExtendViewport sets the _minimum_(!) world size - the actual world size will be larger, fitted to screen/window aspect ratio. */
         stage = Stage(ExtendViewport(height, height), SpriteBatch())
+
+        if (enableSceneDebug) {
+            stage.setDebugUnderMouse(true)
+            stage.setDebugTableUnderMouse(true)
+            stage.setDebugParentUnderMouse(true)
+        }
 
         keyPressDispatcher.install(stage) { hasOpenPopups() }
     }
@@ -69,7 +75,9 @@ open class CameraStageBaseScreen : Screen {
     }
 
     companion object {
-        lateinit var skin:Skin
+        var enableSceneDebug = false
+
+        lateinit var skin: Skin
         fun setSkin() {
             Fonts.resetFont()
             skin = Skin().apply {
@@ -93,7 +101,6 @@ open class CameraStageBaseScreen : Screen {
             skin.get(TextField.TextFieldStyle::class.java).font = Fonts.font.apply { data.setScale(18 / Fonts.ORIGINAL_FONT_SIZE) }
             skin.get(SelectBox.SelectBoxStyle::class.java).font = Fonts.font.apply { data.setScale(20 / Fonts.ORIGINAL_FONT_SIZE) }
             skin.get(SelectBox.SelectBoxStyle::class.java).listStyle.font = Fonts.font.apply { data.setScale(20 / Fonts.ORIGINAL_FONT_SIZE) }
-            skin
         }
     }
 

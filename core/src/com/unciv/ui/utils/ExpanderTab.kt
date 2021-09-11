@@ -15,7 +15,8 @@ import com.unciv.UncivGame
  * @param title The header text, automatically translated.
  * @param fontSize Size applied to header text (only)
  * @param icon Optional icon - please use [Image][com.badlogic.gdx.scenes.scene2d.ui.Image] or [IconCircleGroup]
- * @param defaultPad Padding between content and wrapper. Header padding is currently not modifiable.
+ * @param defaultPad Padding between content and wrapper.
+ * @param headerPad Default padding for the header Table.
  * @param expanderWidth If set initializes header width
  * @param persistenceID If specified, the ExpanderTab will remember its open/closed state for the duration of one app run
  * @param onChange If specified, this will be called after the visual change for a change in [isOpen] completes (e.g. to react to changed size) 
@@ -27,6 +28,7 @@ class ExpanderTab(
     icon: Actor? = null,
     startsOutOpened: Boolean = true,
     defaultPad: Float = 10f,
+    headerPad: Float = 10f,
     expanderWidth: Float = 0f,
     private val persistenceID: String? = null,
     private val onChange: (() -> Unit)? = null,
@@ -37,7 +39,7 @@ class ExpanderTab(
         const val arrowImage = "OtherIcons/BackArrow"
         val arrowColor = Color(1f,0.96f,0.75f,1f)
         const val animationDuration = 0.2f
-        
+
         val persistedStates = HashMap<String, Boolean>()
     }
 
@@ -59,7 +61,7 @@ class ExpanderTab(
         }
 
     init {
-        header.defaults().pad(10f)
+        header.defaults().pad(headerPad)
         headerIcon.setSize(arrowSize, arrowSize)
         headerIcon.setOrigin(Align.center)
         headerIcon.rotation = 180f
