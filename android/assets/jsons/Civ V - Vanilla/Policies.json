@@ -24,7 +24,7 @@
 			},
 			{
 				"name": "Landed Elite",
-				"uniques": ["+[10]% growth [in capital]", "[+2 Food] [in capital]"],
+				"uniques": ["[+10]% growth [in capital]", "[+2 Food] [in capital]"],
 				"requires": ["Legalism"],
 				"row": 2,
 				"column": 2
@@ -38,7 +38,7 @@
 			},
 			{
 				"name": "Tradition Complete",
-				"uniques": ["+[15]% growth [in all cities]","Immediately creates a [Aqueduct] in each of your first [4] cities for free"]
+				"uniques": ["[+15]% growth [in all cities]","Immediately creates a [Aqueduct] in each of your first [4] cities for free"]
 			}
 		]
 	},

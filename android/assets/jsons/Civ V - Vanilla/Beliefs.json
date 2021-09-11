@@ -24,7 +24,7 @@
     {
         "name": "Fertility Rites",
         "type": "Pantheon",
-        "uniques": ["+[10]% Growth [in this city]"] 
+        "uniques": ["[+10]% Growth [in this city]"] 
         // Preferably I would not have a cityFilter here, but doing so requires no additional implementation 
     },
     {
