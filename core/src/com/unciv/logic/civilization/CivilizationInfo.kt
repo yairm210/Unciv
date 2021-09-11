@@ -916,8 +916,8 @@ class CivilizationInfo {
     fun addProtectorCiv(otherCiv: CivilizationInfo) {
         cityStateFunctions.addProtectorCiv(otherCiv)
     }
-    fun removeProtectorCiv(otherCiv: CivilizationInfo) {
-        cityStateFunctions.removeProtectorCiv(otherCiv)
+    fun removeProtectorCiv(otherCiv: CivilizationInfo, forced: Boolean = false) {
+        cityStateFunctions.removeProtectorCiv(otherCiv, forced)
     }
     fun otherCivCanPledgeProtection(otherCiv: CivilizationInfo) = cityStateFunctions.otherCivCanPledgeProtection(otherCiv)
     fun otherCivCanWithdrawProtection(otherCiv: CivilizationInfo) = cityStateFunctions.otherCivCanWithdrawProtection(otherCiv)
@@ -953,6 +953,13 @@ class CivilizationInfo {
 
     fun getAllyCiv() = allyCivName
     fun setAllyCiv(newAllyName: String?) { allyCivName = newAllyName }
+
+    fun cityStateAttacked(attacker: CivilizationInfo) {
+        cityStateFunctions.cityStateAttacked(attacker)
+    }
+    fun cityStateDestroyed(attacker: CivilizationInfo) {
+        cityStateFunctions.cityStateDestroyed(attacker)
+    }
 
     //endregion
 }
