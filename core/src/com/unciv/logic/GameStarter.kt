@@ -49,7 +49,6 @@ object GameStarter {
         runAndMeasure("addCivilizations") {
             gameInfo.tileMap = tileMap
             tileMap.gameInfo = gameInfo // need to set this transient before placing units in the map
-            //gameInfo.ruleSet = ruleset doesn't work for some reason
             addCivilizations(gameSetupInfo.gameParameters, gameInfo, ruleset) // this is before gameInfo.setTransients, so gameInfo doesn't yet have the gameBasics
         }
 
