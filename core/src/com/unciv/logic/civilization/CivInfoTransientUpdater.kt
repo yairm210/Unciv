@@ -12,22 +12,15 @@ class CivInfoTransientUpdater(val civInfo: CivilizationInfo) {
 
         val newViewableInvisibleTiles = HashSet<TileInfo>()
         newViewableInvisibleTiles.addAll(civInfo.getCivUnits()
-            // "Can attack submarines" unique deprecated since 3.16.9
-            .filter { attacker -> attacker.hasUnique("Can see invisible [] units") || attacker.hasUnique("Can attack submarines") }
+            .filter { attacker -> attacker.hasUnique("Can see invisible [] units")  }
             .flatMap { attacker ->
                 attacker.viewableTiles
                     .asSequence()
-                    .filter { tile -> 
-                        ( tile.militaryUnit != null 
-                            && attacker.getMatchingUniques("Can see invisible [] units")
-                                .any { unique -> tile.militaryUnit!!.matchesFilter(unique.params[0]) }
-                        ) || (
-                            tile.militaryUnit != null
-                            // "Can attack submarines" unique deprecated since 3.16.9
-                            && attacker.hasUnique("Can attack submarines") 
-                            && tile.militaryUnit!!.matchesFilter("Submarine")
-                        )
-                    } 
+                    .filter { tile ->
+                        tile.militaryUnit != null
+                                && attacker.getMatchingUniques("Can see invisible [] units")
+                            .any { unique -> tile.militaryUnit!!.matchesFilter(unique.params[0]) }
+                    }
             }
         )
         civInfo.viewableInvisibleUnitsTiles = newViewableInvisibleTiles

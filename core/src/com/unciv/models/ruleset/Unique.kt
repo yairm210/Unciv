@@ -404,6 +404,7 @@ object UniqueTriggerActivation {
                 return true
             }
             "Gain enough Faith for []% of a Great Prophet" -> {
+                if (civInfo.religionManager.getGreatProphetEquivalent() == null) return false
                 val gainedFaith =
                     (civInfo.religionManager.faithForNextGreatProphet() * (unique.params[0].toFloat() / 100f)).toInt()
                 if (gainedFaith == 0) return false

@@ -3,6 +3,7 @@ package com.unciv.logic.civilization
 import com.unciv.Constants
 import com.unciv.logic.automation.NextTurnAutomation
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
+import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.models.metadata.GameSpeed
@@ -152,8 +153,8 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
         diplomacy.setFlag(DiplomacyFlags.RecentlyPledgedProtection, 10) // Can't break for 10 turns
     }
 
-    fun removeProtectorCiv(otherCiv: CivilizationInfo) {
-        if(!otherCivCanWithdrawProtection(otherCiv))
+    fun removeProtectorCiv(otherCiv: CivilizationInfo, forced: Boolean = false) {
+        if(!otherCivCanWithdrawProtection(otherCiv) && !forced)
             return
 
         val diplomacy = civInfo.getDiplomacyManager(otherCiv)
@@ -378,6 +379,7 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
         val goldAmount = goldGainedByTribute()
         demandingCiv.addGold(goldAmount)
         civInfo.getDiplomacyManager(demandingCiv).addInfluence(-15f)
+        cityStateBullied(demandingCiv)
         civInfo.addFlag(CivFlags.RecentlyBullied.name, 20)
         updateAllyCivForCityState()
         civInfo.updateStatsForNextTurn()
@@ -395,6 +397,7 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
         demandingCiv.placeUnitNearTile(civInfo.getCapital().location, buildableWorkerLikeUnits.keys.random())
 
         civInfo.getDiplomacyManager(demandingCiv).addInfluence(-50f)
+        cityStateBullied(demandingCiv)
         civInfo.addFlag(CivFlags.RecentlyBullied.name, 20)
         updateAllyCivForCityState()
     }
@@ -463,7 +466,10 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
     }
 
     private fun getNumThreateningBarbarians(): Int {
-        return civInfo.gameInfo.getBarbarianCivilization().getCivUnits().count { it.threatensCiv(civInfo) }
+        if (civInfo.gameInfo.gameParameters.noBarbarians) return 0
+        val barbarianCiv = civInfo.gameInfo.civilizations.firstOrNull { it.isBarbarian() }
+            ?: return 0
+        return barbarianCiv.getCivUnits().count { it.threatensCiv(civInfo) }
     }
 
     fun threateningBarbarianKilledBy(otherCiv: CivilizationInfo) {
@@ -473,6 +479,76 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
             diplomacy.setFlag(DiplomacyFlags.AngerFreeIntrusion, diplomacy.getFlag(DiplomacyFlags.AngerFreeIntrusion) + 5)
         else
             diplomacy.setFlag(DiplomacyFlags.AngerFreeIntrusion, 5)
+    }
+
+    /** A city state was bullied. What are its protectors going to do about it??? */
+    private fun cityStateBullied(bully: CivilizationInfo) {
+        if (!civInfo.isCityState()) return // What are we doing here?
+
+        for (protector in civInfo.getProtectorCivs()) {
+            if (!protector.knows(bully)) // Who?
+                continue
+            val protectorDiplomacy = protector.getDiplomacyManager(bully)
+            if (protectorDiplomacy.hasModifier(DiplomaticModifiers.BulliedProtectedMinor)
+                && protectorDiplomacy.getFlag(DiplomacyFlags.RememberBulliedProtectedMinor) > 50)
+                protectorDiplomacy.addModifier(DiplomaticModifiers.BulliedProtectedMinor, -10f) // Penalty less severe for second offence
+            else
+                protectorDiplomacy.addModifier(DiplomaticModifiers.BulliedProtectedMinor, -15f)
+            protectorDiplomacy.setFlag(DiplomacyFlags.RememberBulliedProtectedMinor, 75)    // Reset their memory
+
+            if (protector.playerType != PlayerType.Human)   // Humans can have their own emotions
+                bully.addNotification("[${protector.civName}] is upset that you demanded tribute from [${civInfo.civName}], whom they have pledged to protect!",
+                    NotificationIcon.Diplomacy, protector.civName)
+            else    // Let humans choose who to side with
+                protector.popupAlerts.add(PopupAlert(AlertType.BulliedProtectedMinor,
+                    bully.civName + "@" + civInfo.civName))   // we need to pass both civs as argument, hence the horrible chimera
+        }
+    }
+
+    /** A city state was attacked. What are its protectors going to do about it??? */
+    fun cityStateAttacked(attacker: CivilizationInfo) {
+        if (!civInfo.isCityState()) return // What are we doing here?
+
+        for (protector in civInfo.getProtectorCivs()) {
+            if (!protector.knows(attacker)) // Who?
+                continue
+            val protectorDiplomacy = protector.getDiplomacyManager(attacker)
+            if (protectorDiplomacy.hasModifier(DiplomaticModifiers.AttackedProtectedMinor)
+                && protectorDiplomacy.getFlag(DiplomacyFlags.RememberAttackedProtectedMinor) > 50)
+                protectorDiplomacy.addModifier(DiplomaticModifiers.AttackedProtectedMinor, -15f) // Penalty less severe for second offence
+            else
+                protectorDiplomacy.addModifier(DiplomaticModifiers.AttackedProtectedMinor, -20f)
+            protectorDiplomacy.setFlag(DiplomacyFlags.RememberAttackedProtectedMinor, 75)   // Reset their memory
+
+            if (protector.playerType != PlayerType.Human)   // Humans can have their own emotions
+                attacker.addNotification("[${protector.civName}] is upset that you attacked [${civInfo.civName}], whom they have pledged to protect!",
+                    NotificationIcon.Diplomacy, protector.civName)
+            else    // Let humans choose who to side with
+                protector.popupAlerts.add(PopupAlert(AlertType.AttackedProtectedMinor,
+                    attacker.civName + "@" + civInfo.civName))   // we need to pass both civs as argument, hence the horrible chimera
+        }
+    }
+
+    /** A city state was destroyed. Its protectors are going to be upset! */
+    fun cityStateDestroyed(attacker: CivilizationInfo) {
+        if (!civInfo.isCityState()) return // What are we doing here?
+
+        for (protector in civInfo.getProtectorCivs()) {
+            if (!protector.knows(attacker)) // Who?
+                continue
+            val protectorDiplomacy = protector.getDiplomacyManager(attacker)
+            if (protectorDiplomacy.hasModifier(DiplomaticModifiers.DestroyedProtectedMinor))
+                protectorDiplomacy.addModifier(DiplomaticModifiers.DestroyedProtectedMinor, -10f) // Penalty less severe for second offence
+            else
+                protectorDiplomacy.addModifier(DiplomaticModifiers.DestroyedProtectedMinor, -40f) // Oof
+            protectorDiplomacy.setFlag(DiplomacyFlags.RememberDestroyedProtectedMinor, 125)   // Reset their memory
+
+            if (protector.playerType != PlayerType.Human)   // Humans can have their own emotions
+                attacker.addNotification("[${protector.civName}] is outraged that you destroyed [${civInfo.civName}], whom they had pledged to protect!",
+                    NotificationIcon.Diplomacy, protector.civName)
+            protector.addNotification("[${attacker.civName}] has destroyed [${civInfo.civName}], whom you had pledged to protect!", attacker.civName,
+                NotificationIcon.Death, civInfo.civName)
+        }
     }
 
 }

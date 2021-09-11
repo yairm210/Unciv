@@ -61,7 +61,7 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo, centerOnTech: Tec
             if (freeTechPick) {
                 val freeTech = selectedTech!!.name
                 // More evil people fast-clicking to cheat - #4977
-                if (researchableTechs.contains(freeTech)) return@onClick
+                if (!researchableTechs.contains(freeTech)) return@onClick
                 civTech.getFreeTechnology(selectedTech!!.name)
             }
             else civTech.techsToResearch = tempTechsToResearch

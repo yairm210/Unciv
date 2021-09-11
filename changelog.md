@@ -1,3 +1,24 @@
+## 3.16.14
+
+Fixed crashes when mod had religion but no great prophet
+
+Can no longer fast-tap to confuse policy/construction screens
+
+By xlenstra:
+- Fixed some bugs
+- Fix Civil Society policy
+- Wrote an extensive tutorial documenting most of religion
+
+By SimonCeder:
+- Proper pledge to protect implementation
+- Unique units from Militaristic city states
+- Icons for city states
+
+By SomeTroglodyte:
+- Fixed crash with no-barbarian mods
+- Fix era notification
+- Mod manager portrait and auto scroll
+
 ## 3.16.13
 
 By xlenstra:
