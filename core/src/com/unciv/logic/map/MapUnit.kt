@@ -134,11 +134,6 @@ class MapUnit {
     var due: Boolean = true
     var isTransported: Boolean = false
 
-    // Deprecated since 3.16.11
-        @Deprecated("Deprecated since 3.16.11", replaceWith = ReplaceWith("abilityUsesLeft"))
-        var abilityUsedCount: HashMap<String, Int> = hashMapOf()
-    //
-
     var abilityUsesLeft: HashMap<String, Int> = hashMapOf()
     var maxAbilityUses: HashMap<String, Int> = hashMapOf()
 
@@ -159,9 +154,6 @@ class MapUnit {
         toReturn.attacksThisTurn = attacksThisTurn
         toReturn.promotions = promotions.clone()
         toReturn.isTransported = isTransported
-        // Deprecated since 3.16.11
-            toReturn.abilityUsedCount.putAll(abilityUsedCount)
-        //
         toReturn.abilityUsesLeft.putAll(abilityUsesLeft)
         toReturn.maxAbilityUses.putAll(maxAbilityUses)
         toReturn.religion = religion
@@ -458,28 +450,7 @@ class MapUnit {
         baseUnit = ruleset.units[name]
             ?: throw java.lang.Exception("Unit $name is not found!")
 
-        // "Religion Spread" ability deprecated since 3.16.7, replaced with "Spread Religion"
-            if ("Religion Spread" in abilityUsedCount) {
-                abilityUsedCount[Constants.spreadReligionAbilityCount] = abilityUsedCount["Religion Spread"]!!
-                abilityUsedCount.remove("Religion Spread")
-            }
-        //
-
         updateUniques()
-
-        // abilityUsedCount deprecated since 3.16.11, this is replacement code
-            if (abilityUsedCount.isNotEmpty()) {
-                for (ability in abilityUsedCount) {
-                    val maxUsesOfThisAbility = getMatchingUniques("Can [] [] times")
-                        .filter { it.params[0] == ability.key }
-                        .sumOf { it.params[1].toInt() }
-                    abilityUsesLeft[ability.key] = maxUsesOfThisAbility - ability.value
-                    maxAbilityUses[ability.key] = maxUsesOfThisAbility
-                }
-                abilityUsedCount.clear()
-            }
-        //
-
     }
 
     fun useMovementPoints(amount: Float) {
