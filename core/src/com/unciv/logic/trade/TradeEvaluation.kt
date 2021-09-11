@@ -163,15 +163,14 @@ class TradeEvaluation {
             }
         }
     }
-    private fun surroundedByOurCities(city: CityInfo, civInfo: CivilizationInfo): Int{
-        val borderingCivs: List<String> = city.getNeighbouringCivs()
-        if (borderingCivs.size == 1 && borderingCivs.contains(civInfo.civName)){
-            return 10*civInfo.getEraNumber() // if the city is surrounded only by trading civ
+    private fun surroundedByOurCities(city: CityInfo, civInfo: CivilizationInfo): Int {
+        val borderingCivs: Set<String> = city.getNeighbouringCivs()
+        if (borderingCivs.size == 1 && borderingCivs.contains(civInfo.civName)) {
+            return 10 * civInfo.getEraNumber() // if the city is surrounded only by trading civ
         }
         if (borderingCivs.contains(civInfo.civName))
-            return 2*civInfo.getEraNumber() // if the city has a border with trading civ
+            return 2 * civInfo.getEraNumber() // if the city has a border with trading civ
         return 0
-
     }
 
     private fun evaluateSellCost(offer: TradeOffer, civInfo: CivilizationInfo, tradePartner: CivilizationInfo): Int {

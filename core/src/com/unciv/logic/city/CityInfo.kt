@@ -714,7 +714,7 @@ class CityInfo {
     }
 
 
-    fun getNeighbouringCivs(): List<String> {
+    fun getNeighbouringCivs(): Set<String> {
         val tilesList: HashSet<TileInfo> = getTiles().toHashSet()
         val cityPositionList: ArrayList<TileInfo> = arrayListOf()
 
@@ -726,12 +726,8 @@ class CityInfo {
         return cityPositionList
             .asSequence()
             .mapNotNull { it.getOwner()?.civName }
-            .distinct()
-            .toList()
+            .toSet()
     }
-
-    fun getImprovableTiles(): Sequence<TileInfo> = getTiles()
-        .filter { it.hasViewableResource(civInfo) && it.improvement == null }
 
     //endregion
 }

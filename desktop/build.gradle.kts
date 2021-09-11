@@ -62,20 +62,16 @@ tasks.register<Jar>("dist") { // Compiles the jar file
     }
 }
 
-for(platform in PackrConfig.Platform.values()) {
+for (platform in PackrConfig.Platform.values()) {
     val platformName = platform.toString()
 
     tasks.create("packr${platformName}") {
         dependsOn(tasks.getByName("dist"))
 
+        // Needs to be here and not in doLast because the zip task depends on the outDir
         val jarFile = "$rootDir/desktop/build/libs/${BuildConfig.appName}.jar"
         val config = PackrConfig()
         config.platform = platform
-
-        if (platform == PackrConfig.Platform.Windows64)
-            config.jdk = "jdk-windows-64.zip" // see how we download and name this in travis yml
-        if (platform == PackrConfig.Platform.Windows32)
-            config.jdk = "jdk-windows-32.zip" // see how we download and name this in travis yml
 
         config.apply {
             executable = "Unciv"
@@ -107,16 +103,27 @@ for(platform in PackrConfig.Platform.values()) {
                 println(process.inputStream.bufferedReader().readText())
             }
 
+
             if (config.outDir.exists()) delete(config.outDir)
 
-            // Requires that both packr and the linux jre are downloaded, as per buildAndDeploy.yml, "Upload to itch.io"
-            if (platform == PackrConfig.Platform.Linux64 || platform == PackrConfig.Platform.MacOS) {
+            // Requires that both packr and the jre are downloaded, as per buildAndDeploy.yml, "Upload to itch.io"
+
+            // Use old version of packr - newer versions aren't Windows32-compliant
+            if (platform == PackrConfig.Platform.Windows32) {
+                config.jdk = "jdk-windows-32.zip"
+                Packr().pack(config)
+            } else {
                 val jdkFile =
-                    if (platform == PackrConfig.Platform.Linux64) "jre-linux-64.tar.gz"
-                    else "jre-macOS.tar.gz"
+                    when (platform) {
+                        PackrConfig.Platform.Linux64 -> "jre-linux-64.tar.gz"
+                        PackrConfig.Platform.Windows64 -> "jdk-windows-64.zip"
+                        else -> "jre-macOS.tar.gz"
+                    }
+
                 val platformNameForPackrCmd =
-                    if (platform == PackrConfig.Platform.Linux64) "linux64"
-                    else "mac"
+                    if (platform == PackrConfig.Platform.MacOS) "mac"
+                    else platform.name.toLowerCase()
+
                 val command = "java -jar $rootDir/packr-all-4.0.0.jar" +
                         " --platform $platformNameForPackrCmd" +
                         " --jdk $jdkFile" +
@@ -126,7 +133,7 @@ for(platform in PackrConfig.Platform.values()) {
                         " --vmargs Xmx1G " + (if (platform == PackrConfig.Platform.MacOS) "XstartOnFirstThread" else "") +
                         " --output ${config.outDir}"
                 command.runCommand(rootDir)
-            } else Packr().pack(config)
+            }
         }
 
         tasks.register<Zip>("zip${platformName}") {

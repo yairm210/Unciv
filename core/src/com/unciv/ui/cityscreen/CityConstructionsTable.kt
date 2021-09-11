@@ -395,6 +395,9 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
     }
 
     private fun addConstructionToQueue(construction: IConstruction, cityConstructions: CityConstructions) {
+        // Some evil person decided to double tap real fast - #4977
+        if (cannotAddConstructionToQueue(construction, cityScreen.city, cityScreen.city.cityConstructions))
+            return
         if (construction is Building && construction.uniqueObjects.any { it.placeholderText == "Creates a [] improvement on a specific tile" }) {
             cityScreen.selectedTile
             improvementBuildingToConstruct = construction
