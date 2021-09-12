@@ -130,18 +130,12 @@ class CityInfo {
         population.autoAssignPopulation()
         cityStats.update()
 
-        // Update proximity rankings - to everyone
-        for (otherCiv in civInfo.gameInfo.getAliveCityStates()) {
+        // Update proximity rankings for all known civs
+        for (otherCiv in civInfo.getKnownCivs()) {
             val ourDiplomacy = civInfo.getDiplomacyManager(otherCiv)
             if (ourDiplomacy.getProximity() != Proximity.Neighbors) // unless already neighbors
                 ourDiplomacy.updateProximity(
                 otherCiv.getDiplomacyManager(civInfo).updateProximity())
-        }
-        for (otherCiv in civInfo.gameInfo.getAliveMajorCivs()) {
-            val ourDiplomacy = civInfo.getDiplomacyManager(otherCiv)
-            if (ourDiplomacy.getProximity() != Proximity.Neighbors) // unless already neighbors
-                ourDiplomacy.updateProximity(
-                    otherCiv.getDiplomacyManager(civInfo).updateProximity())
         }
 
         triggerCitiesSettledNearOtherCiv()
@@ -559,14 +553,10 @@ class CityInfo {
             civInfo.cities.first().cityConstructions.addBuilding(capitalCityIndicator())
         }
 
-        // Update proximity rankings - to everyone
-        for (otherCiv in civInfo.gameInfo.getAliveCityStates()) {
+        // Update proximity rankings for all known civs
+        for (otherCiv in civInfo.getKnownCivs()) {
             civInfo.getDiplomacyManager(otherCiv).updateProximity(
                 otherCiv.getDiplomacyManager(civInfo).updateProximity())
-        }
-        for (otherCiv in civInfo.gameInfo.getAliveMajorCivs()) {
-                civInfo.getDiplomacyManager(otherCiv).updateProximity(
-                    otherCiv.getDiplomacyManager(civInfo).updateProximity())
         }
     }
 

@@ -2,10 +2,7 @@ package com.unciv.logic.civilization
 
 import com.unciv.Constants
 import com.unciv.logic.automation.NextTurnAutomation
-import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
-import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
-import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
-import com.unciv.logic.civilization.diplomacy.RelationshipLevel
+import com.unciv.logic.civilization.diplomacy.*
 import com.unciv.models.metadata.GameSpeed
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.stats.Stat
@@ -507,32 +504,56 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
         }
     }
 
-    private fun declarePermanentWar(otherCiv: CivilizationInfo) { // TODO: Move this elsewhere
-        val ourDiplomacy = civInfo.getDiplomacyManager(otherCiv)
-        ourDiplomacy.setFlag(DiplomacyFlags.WaryOf, -1) // Never expires
-        ourDiplomacy.setFlag(DiplomacyFlags.PermanentWar, -1) // Never expires
-    }
-
-    private fun becomeWary(otherCiv: CivilizationInfo) {
-        // Some message
-    }
-
     /** A city state was attacked. What are its protectors going to do about it??? */
     fun cityStateAttacked(attacker: CivilizationInfo) {
         if (!civInfo.isCityState()) return // What are we doing here?
 
         // We might declare permanent war!
         if (attacker.isMinorCivWarmonger()) { // They've attacked a lot of city-states
-            declarePermanentWar(attacker)
+            civInfo.getDiplomacyManager(attacker).permanentWarOrWary()
         }
         else if (attacker.isMinorCivAggressor()) { // They've attacked a few
             if (Random().nextBoolean()) { // 50% chance
-                declarePermanentWar(attacker)
+                civInfo.getDiplomacyManager(attacker).permanentWarOrWary()
             }
         }
-        // Others might join in!
+        // Others might declare permanent war!
         if (attacker.isMinorCivAggressor()) {
-            // TODO: CvMinorAI.cpp, 9019
+            for (cityState in civInfo.gameInfo.getAliveCityStates()) {
+                if (cityState == civInfo) // Must be a different minor
+                    continue
+                if (cityState.getAllyCiv() == attacker.civName) // Must not be allied to the attacker
+                    continue
+                if (!cityState.knows(attacker)) // Must have met
+                    continue
+
+                var warProbability = 0
+                if (attacker.isMinorCivWarmonger()) {
+                    // High probability if very aggressive
+                    warProbability = when (cityState.getDiplomacyManager(attacker).getProximity()) {
+                        Proximity.Neighbors -> 100
+                        Proximity.Close     -> 75
+                        Proximity.Far       -> 50
+                        Proximity.Distant   -> 25
+                        else                -> 0
+                    }
+                } else {
+                    // Lower probability if only somewhat aggressive
+                    warProbability = when (cityState.getDiplomacyManager(attacker).getProximity()) {
+                        Proximity.Neighbors -> 50
+                        Proximity.Close     -> 20
+                        else                -> 0
+                    }
+                }
+
+                // Higher probability if already at (non-permanent) war
+                if (cityState.isAtWarWith(attacker))
+                    warProbability += 50
+
+                if (Random().nextInt(100) <= warProbability) {
+                    cityState.getDiplomacyManager(attacker).permanentWarOrWary()
+                }
+            }
         }
 
         for (protector in civInfo.getProtectorCivs()) {

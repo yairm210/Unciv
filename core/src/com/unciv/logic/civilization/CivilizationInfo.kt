@@ -386,6 +386,10 @@ class CivilizationInfo {
     fun makeCivilizationsMeet(otherCiv: CivilizationInfo) {
         meetCiv(otherCiv)
         otherCiv.meetCiv(this)
+
+        // Generate proximity rankings
+        getDiplomacyManager(otherCiv).updateProximity(
+            otherCiv.getDiplomacyManager(this).updateProximity())
     }
 
     private fun meetCiv(otherCiv: CivilizationInfo) {

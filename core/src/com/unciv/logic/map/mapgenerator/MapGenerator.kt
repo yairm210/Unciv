@@ -473,7 +473,6 @@ class MapGenerator(val ruleset: Ruleset) {
             bfs.stepToEnd()
             val continent = bfs.getReachedTiles()
             continent.forEach { it.setContinent(numAssignedContinents) }
-            println("Assigned " + continent.size.toString() + " tiles to continent " + numAssignedContinents.toString())    // TODO: remove
             numAssignedContinents++
             landTiles = landTiles.filter { it !in continent }
         }

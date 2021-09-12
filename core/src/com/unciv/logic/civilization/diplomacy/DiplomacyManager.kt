@@ -2,6 +2,7 @@ package com.unciv.logic.civilization.diplomacy
 
 import com.badlogic.gdx.graphics.Color
 import com.unciv.Constants
+import com.unciv.UncivGame
 import com.unciv.logic.civilization.*
 import com.unciv.logic.map.MapType
 import com.unciv.logic.trade.Trade
@@ -254,7 +255,7 @@ class DiplomacyManager() {
 
         if (diplomaticStatus == DiplomaticStatus.Protector) restingPoint += 10
 
-        // TODO: "Wary Of" -20
+        if (hasFlag(DiplomacyFlags.WaryOf)) restingPoint -= 20
 
         return restingPoint
     }
@@ -273,7 +274,8 @@ class DiplomacyManager() {
         for (unique in otherCiv().getMatchingUniques("City-State Influence degrades []% slower"))
             modifierPercent -= unique.params[0].toFloat()
 
-        val religion = civInfo.getCapital().religion.getMajorityReligionName()
+        val religion = if (civInfo.cities.isEmpty()) null
+            else civInfo.getCapital().religion.getMajorityReligionName()
         if (religion != null && religion == otherCiv().religionManager.religion?.name)
             modifierPercent -= 25f  // 25% slower degrade when sharing a religion
 
@@ -297,7 +299,8 @@ class DiplomacyManager() {
         if (otherCiv().hasUnique("City-State Influence recovers at twice the normal rate"))
             modifierPercent += 100f
 
-        val religion = civInfo.getCapital().religion.getMajorityReligionName()
+        val religion = if (civInfo.cities.isEmpty()) null
+            else civInfo.getCapital().religion.getMajorityReligionName()
         if (religion != null && religion == otherCiv().religionManager.religion?.name)
             modifierPercent += 50f  // 50% quicker recovery when sharing a religion
 
@@ -645,18 +648,29 @@ class DiplomacyManager() {
         removeFlag(DiplomacyFlags.BorderConflict)
     }
 
-    fun declareWar() {
+    fun declareWar(suppressNotifications: Boolean = false) {
         val otherCiv = otherCiv()
         val otherCivDiplomacy = otherCivDiplomacy()
 
         onWarDeclared()
         otherCivDiplomacy.onWarDeclared()
 
-        otherCiv.addNotification("[${civInfo.civName}] has declared war on us!", NotificationIcon.War, civInfo.civName)
-        otherCiv.popupAlerts.add(PopupAlert(AlertType.WarDeclaration, civInfo.civName))
+        if (!suppressNotifications) {
+            otherCiv.addNotification(
+                "[${civInfo.civName}] has declared war on us!",
+                NotificationIcon.War,
+                civInfo.civName
+            )
+            otherCiv.popupAlerts.add(PopupAlert(AlertType.WarDeclaration, civInfo.civName))
 
-        getCommonKnownCivs().forEach {
-            it.addNotification("[${civInfo.civName}] has declared war on [$otherCivName]!", civInfo.civName, NotificationIcon.War, otherCivName)
+            getCommonKnownCivs().forEach {
+                it.addNotification(
+                    "[${civInfo.civName}] has declared war on [$otherCivName]!",
+                    civInfo.civName,
+                    NotificationIcon.War,
+                    otherCivName
+                )
+            }
         }
 
         otherCivDiplomacy.setModifier(DiplomaticModifiers.DeclaredWarOnUs, -20f)
@@ -853,6 +867,37 @@ class DiplomacyManager() {
         otherCivDiplomacy().setFlag(DiplomacyFlags.RememberSidedWithProtectedMinor, 25)
     }
 
+    /** Declares permanent war if this option is enabled, otherwise just becomes wary. */
+    fun permanentWarOrWary() {
+        if (hasFlag(DiplomacyFlags.PermanentWar)) return // once is enough
+        if (!civInfo.gameInfo.gameParameters.permanentWarEnabled) {
+            becomeWary()
+            return
+        }
+        setFlag(DiplomacyFlags.WaryOf, -1) // Never expires
+        setFlag(DiplomacyFlags.PermanentWar, -1) // Never expires
+
+        if (diplomaticStatus != DiplomaticStatus.War) {
+            declareWar(suppressNotifications = true)    // We'll tell them alright
+            otherCiv().popupAlerts.add(PopupAlert(AlertType.PermanentWarDeclaration, civInfo.civName))
+        }
+
+        // Tell them
+        otherCiv().addNotification("City States are shocked by your continued aggression! [${civInfo.civName}] has declared permanent war on you!",
+            NotificationIcon.War, civInfo.civName)
+        // Tell the world
+        for (thirdCiv in otherCiv().getKnownCivs()) {
+            thirdCiv.addNotification("[${civInfo.civName}] has declared permanent war on [${otherCivName}] because of their continued aggression towards City States!",
+                civInfo.civName, NotificationIcon.War, otherCivName)
+        }
+    }
+
+    private fun becomeWary() {
+        if (hasFlag(DiplomacyFlags.WaryOf)) return // once is enough
+        setFlag(DiplomacyFlags.WaryOf, -1) // Never expires
+        otherCiv().addNotification("City-States grow wary of your aggression. The resting point for Influence has decreased by [20] for [${civInfo.civName}]", civInfo.civName)
+    }
+
     fun updateProximity(preCalculated: Proximity? = null): Proximity {
         if (preCalculated != null) {
             // We usually want to update this for a pair of civs at the same time
@@ -918,8 +963,6 @@ class DiplomacyManager() {
             proximity = Proximity.Far
 
         this.proximity = proximity
-
-        println(civInfo.civName + " and " + otherCivName + " are " + proximity.name)    // TODO: remove
 
         return proximity
     }

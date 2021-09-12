@@ -313,6 +313,16 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
                     cityState.removeProtectorCiv(player, forced = true)
                 }).row()
             }
+            AlertType.PermanentWarDeclaration -> {
+                val civInfo = worldScreen.gameInfo.getCivilization(popupAlert.value)
+                addLeaderName(civInfo)
+                addGoodSizedLabel("Your aggression towards City States ends here! We'll bring you down if it's the last thing we do!").row()
+                val responseTable = Table()
+                responseTable.defaults().pad(0f, 5f)
+                responseTable.add(getCloseButton("You'll pay for this!"))
+                responseTable.add(getCloseButton("Very well."))
+                add(responseTable)
+            }
         }
     }
 
