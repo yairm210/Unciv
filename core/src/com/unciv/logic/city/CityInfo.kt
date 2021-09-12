@@ -5,6 +5,7 @@ import com.unciv.logic.battle.CityCombatant
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.ReligionState
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
+import com.unciv.logic.civilization.diplomacy.Proximity
 import com.unciv.logic.map.RoadStatus
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
@@ -128,6 +129,20 @@ class CityInfo {
 
         population.autoAssignPopulation()
         cityStats.update()
+
+        // Update proximity rankings - to everyone
+        for (otherCiv in civInfo.gameInfo.getAliveCityStates()) {
+            val ourDiplomacy = civInfo.getDiplomacyManager(otherCiv)
+            if (ourDiplomacy.getProximity() != Proximity.Neighbors) // unless already neighbors
+                ourDiplomacy.updateProximity(
+                otherCiv.getDiplomacyManager(civInfo).updateProximity())
+        }
+        for (otherCiv in civInfo.gameInfo.getAliveMajorCivs()) {
+            val ourDiplomacy = civInfo.getDiplomacyManager(otherCiv)
+            if (ourDiplomacy.getProximity() != Proximity.Neighbors) // unless already neighbors
+                ourDiplomacy.updateProximity(
+                    otherCiv.getDiplomacyManager(civInfo).updateProximity())
+        }
 
         triggerCitiesSettledNearOtherCiv()
     }
@@ -542,6 +557,16 @@ class CityInfo {
 
         if (isCapital() && civInfo.cities.isNotEmpty()) { // Move the capital if destroyed (by a nuke or by razing)
             civInfo.cities.first().cityConstructions.addBuilding(capitalCityIndicator())
+        }
+
+        // Update proximity rankings - to everyone
+        for (otherCiv in civInfo.gameInfo.getAliveCityStates()) {
+            civInfo.getDiplomacyManager(otherCiv).updateProximity(
+                otherCiv.getDiplomacyManager(civInfo).updateProximity())
+        }
+        for (otherCiv in civInfo.gameInfo.getAliveMajorCivs()) {
+                civInfo.getDiplomacyManager(otherCiv).updateProximity(
+                    otherCiv.getDiplomacyManager(civInfo).updateProximity())
         }
     }
 

@@ -3,6 +3,7 @@ package com.unciv.logic.civilization.diplomacy
 import com.badlogic.gdx.graphics.Color
 import com.unciv.Constants
 import com.unciv.logic.civilization.*
+import com.unciv.logic.map.MapType
 import com.unciv.logic.trade.Trade
 import com.unciv.logic.trade.TradeOffer
 import com.unciv.logic.trade.TradeType
@@ -50,7 +51,9 @@ enum class DiplomacyFlags {
     RememberAttackedProtectedMinor,
     RememberBulliedProtectedMinor,
     RememberSidedWithProtectedMinor,
-    Denunciation
+    Denunciation,
+    WaryOf,
+    PermanentWar,
 }
 
 enum class DiplomaticModifiers {
@@ -80,6 +83,14 @@ enum class DiplomaticModifiers {
     AttackedProtectedMinor,
     BulliedProtectedMinor,
     SidedWithProtectedMinor,
+}
+
+enum class Proximity {
+    None, // ie no cities
+    Neighbors,
+    Close,
+    Far,
+    Distant
 }
 
 class DiplomacyManager() {
@@ -120,6 +131,8 @@ class DiplomacyManager() {
     /** Total of each turn Science during Research Agreement */
     private var totalOfScienceDuringRA = 0
 
+    private var proximity = Proximity.None
+
     fun clone(): DiplomacyManager {
         val toReturn = DiplomacyManager()
         toReturn.otherCivName = otherCivName
@@ -129,6 +142,7 @@ class DiplomacyManager() {
         toReturn.flagsCountdown.putAll(flagsCountdown)
         toReturn.diplomaticModifiers.putAll(diplomaticModifiers)
         toReturn.totalOfScienceDuringRA = totalOfScienceDuringRA
+        toReturn.proximity = proximity
         return toReturn
     }
 
@@ -249,9 +263,9 @@ class DiplomacyManager() {
         if (influence < getCityStateInfluenceRestingPoint())
             return 0f
 
-        val decrement = when (civInfo.cityStatePersonality) {
-            CityStatePersonality.Hostile -> 1.5f
-            // TODO: Minor civ aggressor -> 2f
+        val decrement = when {
+            civInfo.cityStatePersonality == CityStatePersonality.Hostile -> 1.5f
+            otherCiv().isMinorCivAggressor() -> 2f
             else -> 1f
         }
 
@@ -348,6 +362,10 @@ class DiplomacyManager() {
             (relationshipLevel() >= RelationshipLevel.Friend || otherCiv().hasUnique("City-State territory always counts as friendly territory")))
             return true
         return hasOpenBorders
+    }
+
+    fun getProximity(): Proximity {
+        return proximity
     }
     //endregion
 
@@ -644,6 +662,7 @@ class DiplomacyManager() {
         otherCivDiplomacy.setModifier(DiplomaticModifiers.DeclaredWarOnUs, -20f)
         if (otherCiv.isCityState()) {
             otherCivDiplomacy.setInfluence(-60f)
+            civInfo.changeMinorCivsAttacked(1)
             otherCiv.cityStateAttacked(civInfo)
         }
 
@@ -832,6 +851,77 @@ class DiplomacyManager() {
     fun sideWithCityState() {
         otherCivDiplomacy().setModifier(DiplomaticModifiers.SidedWithProtectedMinor, -5f)
         otherCivDiplomacy().setFlag(DiplomacyFlags.RememberSidedWithProtectedMinor, 25)
+    }
+
+    fun updateProximity(preCalculated: Proximity? = null): Proximity {
+        if (preCalculated != null) {
+            // We usually want to update this for a pair of civs at the same time
+            // Since this function *should* be symmetrical for both civs, we can just do it once
+            this.proximity = preCalculated
+            return this.proximity
+        }
+
+        val height = civInfo.gameInfo.tileMap.mapParameters.mapSize.height
+        val width = civInfo.gameInfo.tileMap.mapParameters.mapSize.width
+        var minDistance = height + width // a long distance
+        var totalDistance = 0
+        var connections = 0
+
+        var proximity = Proximity.None
+
+        for (ourCity in civInfo.cities) {
+            for (theirCity in otherCiv().cities) {
+                val distance = ourCity.getCenterTile().aerialDistanceTo(theirCity.getCenterTile())
+                totalDistance += distance
+                connections++
+                if (minDistance > distance) minDistance = distance
+            }
+        }
+
+        if (minDistance <= 7) {
+            proximity = Proximity.Neighbors
+        }
+        else if (connections > 0) {
+            val averageDistance = totalDistance / connections
+            val mapFactor = (height + width) / 2 // Perhaps slightly lower for hexagonal maps??
+            val closeDistance = ((mapFactor * 25) / 100).coerceIn(10, 20)
+            val farDistance = ((mapFactor * 45) / 100).coerceIn(20, 50)
+
+            proximity = if (minDistance <= 11 && averageDistance <= closeDistance)
+                Proximity.Close
+            else if (averageDistance <= farDistance)
+                Proximity.Far
+            else
+                Proximity.Distant
+        }
+
+        // Check if different continents (unless already max distance, or water map)
+        if (connections > 0 && proximity != Proximity.Distant
+            && civInfo.gameInfo.tileMap.mapParameters.type != MapType.archipelago) {
+
+            if (civInfo.getCapital().getCenterTile().getContinent() != otherCiv().getCapital().getCenterTile().getContinent()) {
+                // Different continents - increase separation by one step
+                proximity = when (proximity) {
+                    Proximity.Far -> Proximity.Distant
+                    Proximity.Close -> Proximity.Far
+                    Proximity.Neighbors -> Proximity.Close
+                    else -> proximity
+                }
+            }
+        }
+
+        // If there aren't many players (left) we can't be that far
+        val numMajors = civInfo.gameInfo.getAliveMajorCivs().count()
+        if (numMajors <= 2 && proximity > Proximity.Close)
+            proximity = Proximity.Close
+        if (numMajors <= 4 && proximity > Proximity.Far)
+            proximity = Proximity.Far
+
+        this.proximity = proximity
+
+        println(civInfo.civName + " and " + otherCivName + " are " + proximity.name)    // TODO: remove
+
+        return proximity
     }
 
     //endregion

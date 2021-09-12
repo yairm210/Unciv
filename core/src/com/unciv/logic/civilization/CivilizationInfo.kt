@@ -138,6 +138,9 @@ class CivilizationInfo {
     // default false once we no longer want legacy save-game compatibility
     var hasEverOwnedOriginalCapital: Boolean? = null
 
+    // For Aggressor, Warmonger status
+    private var numMinorCivsAttacked = 0
+
     constructor()
 
     constructor(civName: String) {
@@ -179,6 +182,7 @@ class CivilizationInfo {
         toReturn.temporaryUniques.addAll(temporaryUniques)
         toReturn.boughtConstructionsWithGloballyIncreasingPrice.putAll(boughtConstructionsWithGloballyIncreasingPrice)
         toReturn.hasEverOwnedOriginalCapital = hasEverOwnedOriginalCapital
+        toReturn.numMinorCivsAttacked = numMinorCivsAttacked
         return toReturn
     }
 
@@ -541,6 +545,9 @@ class CivilizationInfo {
     fun hasTechOrPolicy(techOrPolicyName: String) =
         tech.isResearched(techOrPolicyName) || policies.isAdopted(techOrPolicyName)
 
+    fun isMinorCivAggressor() = numMinorCivsAttacked >= 2
+    fun isMinorCivWarmonger() = numMinorCivsAttacked >= 4
+
     //endregion
 
     //region state-changing functions
@@ -593,6 +600,11 @@ class CivilizationInfo {
         updateViewableTiles()
         updateHasActiveGreatWall()
         updateDetailedCivResources()
+    }
+
+    fun changeMinorCivsAttacked(count: Int) {
+        numMinorCivsAttacked += count
+        println(civName + " has now attacked " + numMinorCivsAttacked + " minor civs.") // TODO: remove
     }
 
     // implementation in a separate class, to not clog up CivInfo

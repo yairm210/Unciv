@@ -83,6 +83,9 @@ class MapGenerator(val ruleset: Ruleset) {
         runAndMeasure("spreadAncientRuins") {
             spreadAncientRuins(map)
         }
+        runAndMeasure("assignContinents") {
+            assignContinents(map)
+        }
         return map
     }
 
@@ -456,6 +459,23 @@ class MapGenerator(val ruleset: Ruleset) {
             temperature = abs(temperature).pow(1.0 - tileMap.mapParameters.temperatureExtremeness) * temperature.sign
             if (temperature < -0.8)
                 tile.terrainFeatures.add(Constants.ice)
+        }
+    }
+
+    // Set a continent id for each tile, so we can quickly see which tiles are connected.
+    private fun assignContinents(tileMap: TileMap) {
+        var landTiles = tileMap.values
+            .filter { it.isLand && !it.isImpassible()}
+
+        var numAssignedContinents = 0
+        while (landTiles.any()) {
+            val bfs = BFS(landTiles.random()) { it.isLand && !it.isImpassible() }
+            bfs.stepToEnd()
+            val continent = bfs.getReachedTiles()
+            continent.forEach { it.setContinent(numAssignedContinents) }
+            println("Assigned " + continent.size.toString() + " tiles to continent " + numAssignedContinents.toString())    // TODO: remove
+            numAssignedContinents++
+            landTiles = landTiles.filter { it !in continent }
         }
     }
 

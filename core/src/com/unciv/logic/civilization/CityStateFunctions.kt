@@ -12,7 +12,9 @@ import com.unciv.models.stats.Stat
 import com.unciv.models.translations.getPlaceholderParameters
 import com.unciv.models.translations.getPlaceholderText
 import com.unciv.ui.victoryscreen.RankingType
+import java.util.*
 import kotlin.collections.HashMap
+import kotlin.collections.HashSet
 import kotlin.collections.LinkedHashMap
 import kotlin.math.max
 import kotlin.math.min
@@ -505,9 +507,33 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
         }
     }
 
+    private fun declarePermanentWar(otherCiv: CivilizationInfo) { // TODO: Move this elsewhere
+        val ourDiplomacy = civInfo.getDiplomacyManager(otherCiv)
+        ourDiplomacy.setFlag(DiplomacyFlags.WaryOf, -1) // Never expires
+        ourDiplomacy.setFlag(DiplomacyFlags.PermanentWar, -1) // Never expires
+    }
+
+    private fun becomeWary(otherCiv: CivilizationInfo) {
+        // Some message
+    }
+
     /** A city state was attacked. What are its protectors going to do about it??? */
     fun cityStateAttacked(attacker: CivilizationInfo) {
         if (!civInfo.isCityState()) return // What are we doing here?
+
+        // We might declare permanent war!
+        if (attacker.isMinorCivWarmonger()) { // They've attacked a lot of city-states
+            declarePermanentWar(attacker)
+        }
+        else if (attacker.isMinorCivAggressor()) { // They've attacked a few
+            if (Random().nextBoolean()) { // 50% chance
+                declarePermanentWar(attacker)
+            }
+        }
+        // Others might join in!
+        if (attacker.isMinorCivAggressor()) {
+            // TODO: CvMinorAI.cpp, 9019
+        }
 
         for (protector in civInfo.getProtectorCivs()) {
             if (!protector.knows(attacker)) // Who?

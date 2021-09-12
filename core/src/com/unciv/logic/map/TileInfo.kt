@@ -70,6 +70,8 @@ open class TileInfo {
     var hasBottomRiver = false
     var hasBottomLeftRiver = false
 
+    private var continent = -1
+
     val latitude: Float
         get() = HexMath.getLatitude(position)
     val longitude: Float
@@ -92,6 +94,7 @@ open class TileInfo {
         toReturn.hasBottomLeftRiver = hasBottomLeftRiver
         toReturn.hasBottomRightRiver = hasBottomRightRiver
         toReturn.hasBottomRiver = hasBottomRiver
+        toReturn.continent = continent
         return toReturn
     }
 
@@ -650,6 +653,7 @@ open class TileInfo {
         return out
     }
 
+    fun getContinent() = continent
 
     //endregion
 
@@ -767,6 +771,12 @@ open class TileInfo {
             terrainFeatures.add(Constants.hill)
             terrainFeatures.addAll(copy)
         }
+    }
+
+    fun setContinent(continent: Int) {
+        if (this.continent != -1)
+            throw java.lang.Exception("continent already assigned!")
+        this.continent = continent
     }
 
     //endregion
