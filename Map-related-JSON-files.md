@@ -70,7 +70,7 @@ Each resource can have the following properties:
 | improvement | String | Default empty | The improvement ([TileImprovements.json](#tileimprovementsjson)) for this resource |
 | improvementStats | Object | Default empty | The additional yield when improved as sub-object with one or more [Stats](#stats) |
 | revealedBy | String | Default empty | The technology name required to see, work and improve this resource |
-| unique | String | Default empty | Effects, [see here](../Uniques#terrain-uniques) - sorry, at the moment only a single one |
+| unique | String | Default empty | Effects, [see here](Uniques#resource-uniques) - at the moment only one unique may be added |
 | civilopediaText | List | Default empty | see [civilopediaText chapter](#civilopedia-text) |
 
 
