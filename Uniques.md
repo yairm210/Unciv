@@ -764,6 +764,13 @@ May be added in promotions or ancient ruins equivalents
 
 "Can be destroyed by nukes" - Features with this unique will be removed when fallout is placed on this tile
 
+"Rough Terrain"
+
+"Occurs in groups around high elevations"
+
+"Occurs in chains at high elevations"
+
+
 
 # ModOptions Uniques
 These are valid only in a [ModOptions.json](/yairm210/Unciv/wiki/Miscellaneous-JSON-files#modoptionsjson) file.
