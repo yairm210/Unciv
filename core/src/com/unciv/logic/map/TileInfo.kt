@@ -383,6 +383,10 @@ open class TileInfo {
                 it.placeholderText == "Cannot be built on [] tiles until [] is discovered" &&
                 matchesTerrainFilter(it.params[0]) && !civInfo.tech.isResearched(it.params[1])
             } -> false
+            improvement.uniqueObjects.any {
+                it.placeholderText == "Consumes [] []"
+                && civInfo.getCivResourcesByName()[it.params[1]]!! < it.params[0].toInt()
+            } -> false
             else -> canImprovementBeBuiltHere(improvement, hasViewableResource(civInfo))
         }
     }
