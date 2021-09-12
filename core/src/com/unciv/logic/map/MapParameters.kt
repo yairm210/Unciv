@@ -171,6 +171,7 @@ class MapParameters {
         it.rareFeaturesRichness = rareFeaturesRichness
         it.resourceRichness = resourceRichness
         it.waterThreshold = waterThreshold
+        it.createdWithVersion = createdWithVersion
     }
 
     fun reseed() {

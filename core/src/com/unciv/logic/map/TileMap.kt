@@ -86,8 +86,6 @@ class TileMap {
 
     /** creates a hexagonal map of given radius (filled with grassland) */
     constructor(radius: Int, ruleset: Ruleset, worldWrap: Boolean = false) {
-        mapParameters.createdWithVersion = UncivGame.Current.version
-
         startingLocations.clear()
         for (vector in HexMath.getVectorsInDistance(Vector2.Zero, radius, worldWrap))
             tileList.add(TileInfo().apply { position = vector; baseTerrain = Constants.grassland })
@@ -96,8 +94,6 @@ class TileMap {
 
     /** creates a rectangular map of given width and height (filled with grassland) */
     constructor(width: Int, height: Int, ruleset: Ruleset, worldWrap: Boolean = false) {
-        mapParameters.createdWithVersion = UncivGame.Current.version
-
         startingLocations.clear()
 
         // world-wrap maps must always have an even width, so round down
