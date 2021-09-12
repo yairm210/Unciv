@@ -25,8 +25,9 @@
   * [Combat bonuses](#combat-bonuses)
   * [Other](#other)
 - [Terrain uniques](#terrain-uniques)
-- [Deprecated uniques](#deprecated-uniques)
+- [Resource uniques](#resource-uniques)
 - [ModOptions uniques](#modoptions-uniques)
+- [Deprecated uniques](#deprecated-uniques)
 
 
 ## Overview
@@ -770,6 +771,12 @@ May be added in promotions or ancient ruins equivalents
 
 "Occurs in chains at high elevations"
 
+
+# Resource Uniques
+
+"+15% production towards Wonder construction"
+
+"Can only be created by Mercantile City-States"
 
 
 # ModOptions Uniques
