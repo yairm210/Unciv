@@ -43,7 +43,7 @@ Each improvement can have the following properties:
 | uniqueTo | String | Default none | The name of the nation this improvement is unique for |
 | `<stats>` | Float | Optional | Per-turn bonus yield for the tile, see [Stats](#stats) |
 | turnsToBuild | Integer |  | Number of turns a worker spends building this (ignored for 'create' actions) |
-| uniques | List | Default empty | List of effects, [see here](../Uniques#terrain-uniques) |
+| uniques | List | Default empty | List of effects, [see here](Uniques#improvement-uniques) |
 | shortcutKey | String | Default none | Keyboard binding. At the moment a single character (no function keys or Ctrl combinations) |
 | civilopediaText | List | Default empty | see [civilopediaText chapter](#civilopedia-text) |
 
