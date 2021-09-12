@@ -365,9 +365,8 @@ class DiplomacyManager() {
         return hasOpenBorders
     }
 
-    fun getProximity(): Proximity {
-        return proximity
-    }
+    fun getProximity() = proximity
+
     //endregion
 
     //region state-changing functions
