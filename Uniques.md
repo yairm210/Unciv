@@ -526,6 +526,8 @@ Follower uniques are uniques applied to each city following a religion which inc
 
 "Can be built outside your borders"
 
+"Can be built just outside your borders" - one tile outside your borders
+
 "Costs [amount] gold per turn when in your territory"
 
 "Great Improvement"
@@ -543,6 +545,8 @@ Follower uniques are uniques applied to each city following a religion which inc
 "Indestructable" - Cannot be removed by nukes (might be used more later, for now only this)
 
 "Provides a random bonus when entered" - Effectively makes this improvement ancient ruins, including it being removed when it is entered.
+
+
 
 ## Unit uniques
 
