@@ -44,8 +44,7 @@ class Unique(val text: String){
             "when at war" -> if (civInfo == null || !civInfo.isAtWar()) return false
             else -> return false
         }
-        // What kind of weird conditional is this?
-        return false
+        return true
     }
 }
 
