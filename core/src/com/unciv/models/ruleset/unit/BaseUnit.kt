@@ -476,6 +476,7 @@ class BaseUnit : INamed, INonPerpetualConstruction, ICivilopediaText {
 
             "Nuclear Weapon" -> isNuclearWeapon()
             "Great Person", "Great" -> isGreatPerson()
+            "Religious", "religious" -> uniques.contains("Religious Unit")
             else -> {
                 if (getType().matchesFilter(filter)) return true
                 if (

@@ -135,24 +135,24 @@
 	},{
 		"name": "Piety",
 		"era": "Classical era",
-		"uniques": ["+[15]% Production when constructing [Culture] buildings", "Incompatible with [Rationalism]"],
+		"uniques": ["+[100]% Production when constructing [Shrine] buildings", "+[100]% Production when constructing [Temple] buildings", 
+			"Incompatible with [Rationalism]"],
 		"policies": [
 			{
 				"name": "Organized Religion",
-				"uniques": ["[+1 Happiness] from every [Monument]","[+1 Happiness] from every [Amphitheater]",
-					"[+1 Happiness] from every [Monastery]"],
+				"uniques": ["[+1 Faith] from every [Shrine]","[+1 Faith] from every [Temple]"],
 				"row": 1,
 				"column": 2
 			},
 			{
 				"name": "Mandate Of Heaven",
-				"uniques": ["50% of excess happiness added to culture towards policies"],
+				"uniques": ["[50]% of excess happiness converted to [Culture]"],
 				"row": 1,
 				"column": 5
 			},
 			{
 				"name": "Theocracy",
-				"uniques": ["+[10]% [Gold] from every [Amphitheater]"],
+				"uniques": ["+[10]% [Gold] from every [Temple]"],
 				"requires": ["Organized Religion"],
 				"row": 2,
 				"column": 1
@@ -166,26 +166,19 @@
 			},
 			{
 				"name": "Free Religion",
-				"uniques": ["[+1 Culture] from every [Monument]", "[+1 Culture] from every [Amphitheater]", "[+1 Culture] from every [Monastery]",
-					"Free Social Policy"],
-				"requires": ["Mandate Of Heaven","Reformation"],
+				"uniques": ["Culture cost of adopting new Policies reduced by [10]%"],
+				"requires": ["Mandate Of Heaven", "Reformation"],
 				"row": 3,
 				"column": 4
 			},
 			{
 				"name": "Piety Complete",
-				"uniques": ["Culture cost of adopting new Policies reduced by [10]%"]
+				"uniques": ["[Faith] cost of purchasing [Religious] units [-20]%", "[+3 Gold, +3 Culture] from every [Holy site]"]
 			}
 		]
 	},
 	{
-		"name": "Patronage ",
-		// Yes, there is a space behind this word, and yes, this is necessary
-		// This is, because at the time of writing there existed another policy called 'Patronage' that was recently deprecated
-		// It would, however, still be possible for save-files to contain this policy
-		// Therefore, we had to differentiate between these two, and this was the least intrusive way to do so
-		// NOTE: If you remove the space here, also remove the extra space between 'patronage' and 'complete' in the 'patronage  complete' policy.
-		// Otherwise, weird stuff will happen.
+		"name": "Patronage",
 		"era": "Classical era",
 		"uniques": ["City-State Influence degrades [25]% slower"],
 		"policies": [
@@ -224,11 +217,9 @@
 				"column": 4
 			},
 			{
-				"name": "Patronage  Complete",
-				// This extra space is intentional, see above.
+				"name": "Patronage Complete",
 				"uniques": ["Influence of all other civilizations with all city-states degrades [33]% faster", 
 					"Triggers the following global alert: [Our influence with City-States has started dropping faster!]"]
-				// This triggers a global alert in the G&K game also, based on my memory of playing it
 			} 
 		]
 	},
