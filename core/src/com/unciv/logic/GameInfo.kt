@@ -102,16 +102,34 @@ class GameInfo {
                 civIndex++
             }
         }
-        else return getBarbarianCivilization()// you aren't anyone. How did you even get this game? Can you spectate?
+        else return getSpectator(userId)// you aren't anyone. How did you even get this game? Can you spectate?
     }
 
+    /** Get a civ by name
+     *  @throws NoSuchElementException if no civ of than name is in the game (alive or dead)! */
     fun getCivilization(civName: String) = civilizations.first { it.civName == civName }
     fun getCurrentPlayerCivilization() = currentPlayerCiv
-    fun getBarbarianCivilization() = getCivilization(Constants.barbarians)
+    /** Get barbarian civ
+     *  @throws NoSuchElementException in no-barbarians games! */
+    private fun getBarbarianCivilization() = getCivilization(Constants.barbarians)
     fun getDifficulty() = difficultyObject
     fun getCities() = civilizations.asSequence().flatMap { it.cities }
     fun getAliveCityStates() = civilizations.filter { it.isAlive() && it.isCityState() }
     fun getAliveMajorCivs() = civilizations.filter { it.isAlive() && it.isMajorCiv() }
+
+    /** Returns the first spectator for a [playerId] or creates one if none found */
+    fun getSpectator(playerId: String) =
+        civilizations.firstOrNull {
+            it.isSpectator() && it.playerId == playerId
+        } ?:
+        CivilizationInfo(Constants.spectator).also { 
+            it.playerType = PlayerType.Human
+            it.playerId = playerId
+            civilizations.add(it)
+            it.gameInfo = this
+            it.setNationTransient()
+            it.setTransients()
+        }
 
     fun hasReligionEnabled() =
         // Temporary function to check whether religion should be used for this game

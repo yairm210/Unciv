@@ -94,11 +94,12 @@ class ReligiousBeliefsPickerScreen (
                 }
                 previouslySelectedIcon = button
                 button.disable()
-                checkAndEnableRightSideButton()
                 
                 changeDisplayedReligionName(religionName)
                 this.religionName = religionName
                 changeReligionNameButton.enable()
+                
+                checkAndEnableRightSideButton()
             }
             if (religionName == this.religionName || gameInfo.religions.keys.any { it == religionName }) button.disable()
             iconsTable.add(button).pad(5f)
