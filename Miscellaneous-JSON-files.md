@@ -41,7 +41,7 @@ Each difficulty level can have the following attributes:
 ## Eras.json
 [Link to original](https://github.com/yairm210/Unciv/blob/master/android/assets/jsons/Civ%20V%20-%20Vanilla/Eras.json)
 
-This file should contain all the era's you want to use in your mod. Due to this file being recently added, it is not required, yet it will be in the future.
+This file should contain all the era's you want to use in your mod.
 
 Each era can have the following attributes:
 | attribute | Type | optional or not | notes |
