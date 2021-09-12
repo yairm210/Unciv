@@ -1,6 +1,7 @@
 package com.unciv.logic.map.mapgenerator
 
 import com.unciv.Constants
+import com.unciv.UncivGame
 import com.unciv.logic.HexMath
 import com.unciv.logic.map.*
 import com.unciv.models.Counter
@@ -38,6 +39,7 @@ class MapGenerator(val ruleset: Ruleset) {
         else
             TileMap(mapSize.radius, ruleset, mapParameters.worldWrap)
 
+        mapParameters.createdWithVersion = UncivGame.Current.version
         map.mapParameters = mapParameters
 
         if (mapType == MapType.empty) {

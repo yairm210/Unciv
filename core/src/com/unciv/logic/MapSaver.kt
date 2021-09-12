@@ -10,17 +10,27 @@ object MapSaver {
     fun json() = GameSaver.json()
 
     private const val mapsFolder = "maps"
-    private const val saveZipped = true
+    var saveZipped = true
 
     private fun getMap(mapName:String) = Gdx.files.local("$mapsFolder/$mapName")
 
-    fun mapFromSavedString(mapString: String): TileMap {
+    fun mapFromSavedString(mapString: String, checkSizeErrors: Boolean = true): TileMap {
         val unzippedJson = try {
             Gzip.unzip(mapString)
         } catch (ex: Exception) {
             mapString
         }
-        return mapFromJson(unzippedJson)
+        return mapFromJson(unzippedJson).apply {
+            // old maps (rarely) can come with mapSize fields not matching tile list
+            if (checkSizeErrors && mapParameters.getArea() != values.size)
+                throw UncivShowableException("Invalid map: Area ([${values.size}]) does not match saved dimensions ([${mapParameters.displayMapDimensions()}]).")
+            // compatibility with rare maps saved with old mod names
+            if (!checkSizeErrors)
+                mapParameters.mods.filter { '-' in it }.forEach {
+                    mapParameters.mods.remove(it)
+                    mapParameters.mods.add(it.replace('-',' '))
+                }
+        }
     }
     fun mapToSavedString(tileMap: TileMap): String {
         val mapJson = json().toJson(tileMap)
@@ -31,8 +41,8 @@ object MapSaver {
         getMap(mapName).writeString(mapToSavedString(tileMap), false)
     }
 
-    fun loadMap(mapFile:FileHandle):TileMap {
-        return mapFromSavedString(mapFile.readString())
+    fun loadMap(mapFile:FileHandle, checkSizeErrors: Boolean = true):TileMap {
+        return mapFromSavedString(mapFile.readString(), checkSizeErrors)
     }
 
     fun getMaps(): Array<FileHandle> = Gdx.files.local(mapsFolder).list()
