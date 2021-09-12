@@ -8,7 +8,6 @@ import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.PlayerType
-import com.unciv.logic.civilization.ReligionState
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.map.MapUnit
@@ -591,9 +590,13 @@ object UnitActions {
             val improvementName = unique.params[0]
             val improvement = tile.ruleset.tileImprovements[improvementName]
                 ?: continue
+            
+            var resourcesAvailable = true
             if (improvement.uniqueObjects.any { 
                     it.placeholderText == "Consumes [] []" && civResources[unique.params[1]] ?: 0 < unique.params[0].toInt() 
-            }) continue
+            }) 
+                resourcesAvailable = false
+            
             finalActions += UnitAction(UnitActionType.Create,
                 title = "Create [$improvementName]",
                 action = {
@@ -613,8 +616,10 @@ object UnitActions {
                     addStatsPerGreatPersonUsage(unit)
                     unit.destroy()
                 }.takeIf {
-                    unit.currentMovement > 0f && tile.canBuildImprovement(improvement, unit.civInfo)
-                            && !tile.isImpassible() // Not 100% sure that this check is necessary...
+                    resourcesAvailable 
+                    && unit.currentMovement > 0f 
+                    && tile.canBuildImprovement(improvement, unit.civInfo)
+                    && !tile.isImpassible() // Not 100% sure that this check is necessary...
                 })
         }
         return finalActions
