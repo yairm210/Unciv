@@ -10,6 +10,7 @@ import com.unciv.logic.civilization.RuinsManager.RuinsManager
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomacyManager
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
+import com.unciv.logic.map.MapType
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.UnitMovementAlgorithms
@@ -32,6 +33,14 @@ import kotlin.collections.HashMap
 import kotlin.math.min
 import kotlin.math.roundToInt
 import kotlin.math.sqrt
+
+enum class Proximity {
+    None, // ie no cities
+    Neighbors,
+    Close,
+    Far,
+    Distant
+}
 
 class CivilizationInfo {
 
@@ -107,6 +116,7 @@ class CivilizationInfo {
     var victoryManager = VictoryManager()
     var ruinsManager = RuinsManager()
     var diplomacy = HashMap<String, DiplomacyManager>()
+    var proximity = HashMap<String, Proximity>()
     var notifications = ArrayList<Notification>()
     val popupAlerts = ArrayList<PopupAlert>()
     private var allyCivName: String? = null
@@ -164,6 +174,7 @@ class CivilizationInfo {
         toReturn.allyCivName = allyCivName
         for (diplomacyManager in diplomacy.values.map { it.clone() })
             toReturn.diplomacy[diplomacyManager.otherCivName] = diplomacyManager
+        toReturn.proximity.putAll(proximity)
         toReturn.cities = cities.map { it.clone() }
 
         // This is the only thing that is NOT switched out, which makes it a source of ConcurrentModification errors.
@@ -194,6 +205,9 @@ class CivilizationInfo {
 
     fun getDiplomacyManager(civInfo: CivilizationInfo) = getDiplomacyManager(civInfo.civName)
     fun getDiplomacyManager(civName: String) = diplomacy[civName]!!
+
+    fun getProximity(civInfo: CivilizationInfo) = getProximity(civInfo.civName)
+    fun getProximity(civName: String) = proximity[civName] ?: Proximity.None
 
     /** Returns only undefeated civs, aka the ones we care about */
     fun getKnownCivs() = diplomacy.values.map { it.otherCiv() }.filter { !it.isDefeated() }
@@ -386,10 +400,6 @@ class CivilizationInfo {
     fun makeCivilizationsMeet(otherCiv: CivilizationInfo) {
         meetCiv(otherCiv)
         otherCiv.meetCiv(this)
-
-        // Generate proximity rankings
-        getDiplomacyManager(otherCiv).updateProximity(
-            otherCiv.getDiplomacyManager(this).updateProximity())
     }
 
     private fun meetCiv(otherCiv: CivilizationInfo) {
@@ -908,6 +918,80 @@ class CivilizationInfo {
         return (
             getEra().researchAgreementCost * gameInfo.gameParameters.gameSpeed.modifier
         ).toInt()
+    }
+
+    fun updateProximity(otherCiv: CivilizationInfo, preCalculated: Proximity? = null): Proximity {
+        if (otherCiv == this)   return Proximity.None
+        if (preCalculated != null) {
+            // We usually want to update this for a pair of civs at the same time
+            // Since this function *should* be symmetrical for both civs, we can just do it once
+            this.proximity[otherCiv.civName] = preCalculated
+            return preCalculated
+        }
+        if (cities.isEmpty() || otherCiv.cities.isEmpty()) {
+            proximity[otherCiv.civName] = Proximity.None
+            return Proximity.None
+        }
+
+        val height = gameInfo.tileMap.mapParameters.mapSize.height
+        val width = gameInfo.tileMap.mapParameters.mapSize.width
+        var minDistance = height + width // a long distance
+        var totalDistance = 0
+        var connections = 0
+
+        var proximity = Proximity.None
+
+        for (ourCity in cities) {
+            for (theirCity in otherCiv.cities) {
+                val distance = ourCity.getCenterTile().aerialDistanceTo(theirCity.getCenterTile())
+                totalDistance += distance
+                connections++
+                if (minDistance > distance) minDistance = distance
+            }
+        }
+
+        if (minDistance <= 7) {
+            proximity = Proximity.Neighbors
+        }
+        else if (connections > 0) {
+            val averageDistance = totalDistance / connections
+            val mapFactor = (height + width) / 2 // Perhaps slightly lower for hexagonal maps??
+            val closeDistance = ((mapFactor * 25) / 100).coerceIn(10, 20)
+            val farDistance = ((mapFactor * 45) / 100).coerceIn(20, 50)
+
+            proximity = if (minDistance <= 11 && averageDistance <= closeDistance)
+                Proximity.Close
+            else if (averageDistance <= farDistance)
+                Proximity.Far
+            else
+                Proximity.Distant
+        }
+
+        // Check if different continents (unless already max distance, or water map)
+        if (connections > 0 && proximity != Proximity.Distant
+            && gameInfo.tileMap.mapParameters.type != MapType.archipelago) {
+
+            if (getCapital().getCenterTile().getContinent() != otherCiv.getCapital().getCenterTile().getContinent()) {
+                // Different continents - increase separation by one step
+                proximity = when (proximity) {
+                    Proximity.Far -> Proximity.Distant
+                    Proximity.Close -> Proximity.Far
+                    Proximity.Neighbors -> Proximity.Close
+                    else -> proximity
+                }
+            }
+        }
+
+        // If there aren't many players (left) we can't be that far
+        val numMajors = gameInfo.getAliveMajorCivs().count()
+        if (numMajors <= 2 && proximity > Proximity.Close)
+            proximity = Proximity.Close
+        if (numMajors <= 4 && proximity > Proximity.Far)
+            proximity = Proximity.Far
+
+        this.proximity[otherCiv.civName] = proximity
+
+        return proximity
     }
 
     //////////////////////// City State wrapper functions ////////////////////////

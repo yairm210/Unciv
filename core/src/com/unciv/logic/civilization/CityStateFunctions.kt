@@ -530,7 +530,7 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
                 var probability: Int
                 if (attacker.isMinorCivWarmonger()) {
                     // High probability if very aggressive
-                    probability = when (cityState.getDiplomacyManager(attacker).getProximity()) {
+                    probability = when (cityState.getProximity(attacker)) {
                         Proximity.Neighbors -> 100
                         Proximity.Close     -> 75
                         Proximity.Far       -> 50
@@ -539,7 +539,7 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
                     }
                 } else {
                     // Lower probability if only somewhat aggressive
-                    probability = when (cityState.getDiplomacyManager(attacker).getProximity()) {
+                    probability = when (cityState.getProximity(attacker)) {
                         Proximity.Neighbors -> 50
                         Proximity.Close     -> 20
                         else                -> 0

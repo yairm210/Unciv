@@ -251,8 +251,8 @@ class CityInfoConquestFunctions(val city: CityInfo){
             cityStats.update()
 
             // Update proximity rankings
-            civInfo.getDiplomacyManager(oldCiv).updateProximity(
-                oldCiv.getDiplomacyManager(civInfo).updateProximity())
+            civInfo.updateProximity(oldCiv,
+                oldCiv.updateProximity(civInfo))
         }
     }
 

@@ -3,9 +3,9 @@ package com.unciv.logic.city
 import com.badlogic.gdx.math.Vector2
 import com.unciv.logic.battle.CityCombatant
 import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.Proximity
 import com.unciv.logic.civilization.ReligionState
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
-import com.unciv.logic.civilization.diplomacy.Proximity
 import com.unciv.logic.map.RoadStatus
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
@@ -130,12 +130,16 @@ class CityInfo {
         population.autoAssignPopulation()
         cityStats.update()
 
-        // Update proximity rankings for all known civs
-        for (otherCiv in civInfo.getKnownCivs()) {
-            val ourDiplomacy = civInfo.getDiplomacyManager(otherCiv)
-            if (ourDiplomacy.getProximity() != Proximity.Neighbors) // unless already neighbors
-                ourDiplomacy.updateProximity(
-                otherCiv.getDiplomacyManager(civInfo).updateProximity())
+        // Update proximity rankings for all civs
+        for (otherCiv in civInfo.gameInfo.getAliveMajorCivs()) {
+            if (civInfo.getProximity(otherCiv) != Proximity.Neighbors) // unless already neighbors
+                civInfo.updateProximity(otherCiv,
+                otherCiv.updateProximity(civInfo))
+        }
+        for (otherCiv in civInfo.gameInfo.getAliveCityStates()) {
+            if (civInfo.getProximity(otherCiv) != Proximity.Neighbors) // unless already neighbors
+                civInfo.updateProximity(otherCiv,
+                    otherCiv.updateProximity(civInfo))
         }
 
         triggerCitiesSettledNearOtherCiv()
@@ -553,10 +557,14 @@ class CityInfo {
             civInfo.cities.first().cityConstructions.addBuilding(capitalCityIndicator())
         }
 
-        // Update proximity rankings for all known civs
-        for (otherCiv in civInfo.getKnownCivs()) {
-            civInfo.getDiplomacyManager(otherCiv).updateProximity(
-                otherCiv.getDiplomacyManager(civInfo).updateProximity())
+        // Update proximity rankings for all civs
+        for (otherCiv in civInfo.gameInfo.getAliveMajorCivs()) {
+            civInfo.updateProximity(otherCiv,
+                otherCiv.updateProximity(civInfo))
+        }
+        for (otherCiv in civInfo.gameInfo.getAliveCityStates()) {
+            civInfo.updateProximity(otherCiv,
+                otherCiv.updateProximity(civInfo))
         }
     }
 

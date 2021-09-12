@@ -84,14 +84,6 @@ enum class DiplomaticModifiers {
     SidedWithProtectedMinor,
 }
 
-enum class Proximity {
-    None, // ie no cities
-    Neighbors,
-    Close,
-    Far,
-    Distant
-}
-
 class DiplomacyManager() {
 
     companion object {
@@ -130,8 +122,6 @@ class DiplomacyManager() {
     /** Total of each turn Science during Research Agreement */
     private var totalOfScienceDuringRA = 0
 
-    private var proximity = Proximity.None
-
     fun clone(): DiplomacyManager {
         val toReturn = DiplomacyManager()
         toReturn.otherCivName = otherCivName
@@ -141,7 +131,6 @@ class DiplomacyManager() {
         toReturn.flagsCountdown.putAll(flagsCountdown)
         toReturn.diplomaticModifiers.putAll(diplomaticModifiers)
         toReturn.totalOfScienceDuringRA = totalOfScienceDuringRA
-        toReturn.proximity = proximity
         return toReturn
     }
 
@@ -364,8 +353,6 @@ class DiplomacyManager() {
             return true
         return hasOpenBorders
     }
-
-    fun getProximity() = proximity
 
     //endregion
 
@@ -857,79 +844,6 @@ class DiplomacyManager() {
         if (hasFlag(DiplomacyFlags.WaryOf)) return // once is enough
         setFlag(DiplomacyFlags.WaryOf, -1) // Never expires
         otherCiv().addNotification("City-States grow wary of your aggression. The resting point for Influence has decreased by [20] for [${civInfo.civName}].", civInfo.civName)
-    }
-
-    fun updateProximity(preCalculated: Proximity? = null): Proximity {
-        if (preCalculated != null) {
-            // We usually want to update this for a pair of civs at the same time
-            // Since this function *should* be symmetrical for both civs, we can just do it once
-            this.proximity = preCalculated
-            return this.proximity
-        }
-        if (civInfo.cities.isEmpty() || otherCiv().cities.isEmpty()) {
-            this.proximity = Proximity.None
-            return this.proximity
-        }
-
-        val height = civInfo.gameInfo.tileMap.mapParameters.mapSize.height
-        val width = civInfo.gameInfo.tileMap.mapParameters.mapSize.width
-        var minDistance = height + width // a long distance
-        var totalDistance = 0
-        var connections = 0
-
-        var proximity = Proximity.None
-
-        for (ourCity in civInfo.cities) {
-            for (theirCity in otherCiv().cities) {
-                val distance = ourCity.getCenterTile().aerialDistanceTo(theirCity.getCenterTile())
-                totalDistance += distance
-                connections++
-                if (minDistance > distance) minDistance = distance
-            }
-        }
-
-        if (minDistance <= 7) {
-            proximity = Proximity.Neighbors
-        }
-        else if (connections > 0) {
-            val averageDistance = totalDistance / connections
-            val mapFactor = (height + width) / 2 // Perhaps slightly lower for hexagonal maps??
-            val closeDistance = ((mapFactor * 25) / 100).coerceIn(10, 20)
-            val farDistance = ((mapFactor * 45) / 100).coerceIn(20, 50)
-
-            proximity = if (minDistance <= 11 && averageDistance <= closeDistance)
-                Proximity.Close
-            else if (averageDistance <= farDistance)
-                Proximity.Far
-            else
-                Proximity.Distant
-        }
-
-        // Check if different continents (unless already max distance, or water map)
-        if (connections > 0 && proximity != Proximity.Distant
-            && civInfo.gameInfo.tileMap.mapParameters.type != MapType.archipelago) {
-
-            if (civInfo.getCapital().getCenterTile().getContinent() != otherCiv().getCapital().getCenterTile().getContinent()) {
-                // Different continents - increase separation by one step
-                proximity = when (proximity) {
-                    Proximity.Far -> Proximity.Distant
-                    Proximity.Close -> Proximity.Far
-                    Proximity.Neighbors -> Proximity.Close
-                    else -> proximity
-                }
-            }
-        }
-
-        // If there aren't many players (left) we can't be that far
-        val numMajors = civInfo.gameInfo.getAliveMajorCivs().count()
-        if (numMajors <= 2 && proximity > Proximity.Close)
-            proximity = Proximity.Close
-        if (numMajors <= 4 && proximity > Proximity.Far)
-            proximity = Proximity.Far
-
-        this.proximity = proximity
-
-        return proximity
     }
 
     //endregion
