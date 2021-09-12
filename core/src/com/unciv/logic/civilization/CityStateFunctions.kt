@@ -504,20 +504,20 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
         }
     }
 
-    /** A city state was attacked. What are its protectors going to do about it??? */
+    /** A city state was attacked. What are its protectors going to do about it??? Also checks for Wary */
     fun cityStateAttacked(attacker: CivilizationInfo) {
         if (!civInfo.isCityState()) return // What are we doing here?
 
-        // We might declare permanent war!
+        // We might become wary!
         if (attacker.isMinorCivWarmonger()) { // They've attacked a lot of city-states
-            civInfo.getDiplomacyManager(attacker).permanentWarOrWary()
+            civInfo.getDiplomacyManager(attacker).becomeWary()
         }
         else if (attacker.isMinorCivAggressor()) { // They've attacked a few
             if (Random().nextBoolean()) { // 50% chance
-                civInfo.getDiplomacyManager(attacker).permanentWarOrWary()
+                civInfo.getDiplomacyManager(attacker).becomeWary()
             }
         }
-        // Others might declare permanent war!
+        // Others might become wary!
         if (attacker.isMinorCivAggressor()) {
             for (cityState in civInfo.gameInfo.getAliveCityStates()) {
                 if (cityState == civInfo) // Must be a different minor
@@ -527,10 +527,10 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
                 if (!cityState.knows(attacker)) // Must have met
                     continue
 
-                var warProbability = 0
+                var probability: Int
                 if (attacker.isMinorCivWarmonger()) {
                     // High probability if very aggressive
-                    warProbability = when (cityState.getDiplomacyManager(attacker).getProximity()) {
+                    probability = when (cityState.getDiplomacyManager(attacker).getProximity()) {
                         Proximity.Neighbors -> 100
                         Proximity.Close     -> 75
                         Proximity.Far       -> 50
@@ -539,19 +539,19 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
                     }
                 } else {
                     // Lower probability if only somewhat aggressive
-                    warProbability = when (cityState.getDiplomacyManager(attacker).getProximity()) {
+                    probability = when (cityState.getDiplomacyManager(attacker).getProximity()) {
                         Proximity.Neighbors -> 50
                         Proximity.Close     -> 20
                         else                -> 0
                     }
                 }
 
-                // Higher probability if already at (non-permanent) war
+                // Higher probability if already at war
                 if (cityState.isAtWarWith(attacker))
-                    warProbability += 50
+                    probability += 50
 
-                if (Random().nextInt(100) <= warProbability) {
-                    cityState.getDiplomacyManager(attacker).permanentWarOrWary()
+                if (Random().nextInt(100) <= probability) {
+                    cityState.getDiplomacyManager(attacker).becomeWary()
                 }
             }
         }

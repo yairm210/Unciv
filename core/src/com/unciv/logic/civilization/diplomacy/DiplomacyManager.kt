@@ -54,7 +54,6 @@ enum class DiplomacyFlags {
     RememberSidedWithProtectedMinor,
     Denunciation,
     WaryOf,
-    PermanentWar,
 }
 
 enum class DiplomaticModifiers {
@@ -867,32 +866,7 @@ class DiplomacyManager() {
         otherCivDiplomacy().setFlag(DiplomacyFlags.RememberSidedWithProtectedMinor, 25)
     }
 
-    /** Declares permanent war if this option is enabled, otherwise just becomes wary. */
-    fun permanentWarOrWary() {
-        if (hasFlag(DiplomacyFlags.PermanentWar)) return // once is enough
-        if (!civInfo.gameInfo.gameParameters.permanentWarEnabled) {
-            becomeWary()
-            return
-        }
-        setFlag(DiplomacyFlags.WaryOf, -1) // Never expires
-        setFlag(DiplomacyFlags.PermanentWar, -1) // Never expires
-
-        if (diplomaticStatus != DiplomaticStatus.War) {
-            declareWar(suppressNotifications = true)    // We'll tell them alright
-            otherCiv().popupAlerts.add(PopupAlert(AlertType.PermanentWarDeclaration, civInfo.civName))
-        }
-
-        // Tell them
-        otherCiv().addNotification("City States are shocked by your continued aggression! [${civInfo.civName}] has declared permanent war on you!",
-            NotificationIcon.War, civInfo.civName)
-        // Tell the world
-        for (thirdCiv in otherCiv().getKnownCivs()) {
-            thirdCiv.addNotification("[${civInfo.civName}] has declared permanent war on [${otherCivName}] because of their continued aggression towards City States!",
-                civInfo.civName, NotificationIcon.War, otherCivName)
-        }
-    }
-
-    private fun becomeWary() {
+    fun becomeWary() {
         if (hasFlag(DiplomacyFlags.WaryOf)) return // once is enough
         setFlag(DiplomacyFlags.WaryOf, -1) // Never expires
         otherCiv().addNotification("City-States grow wary of your aggression. The resting point for Influence has decreased by [20] for [${civInfo.civName}]", civInfo.civName)

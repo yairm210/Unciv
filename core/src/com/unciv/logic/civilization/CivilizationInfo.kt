@@ -608,7 +608,6 @@ class CivilizationInfo {
 
     fun changeMinorCivsAttacked(count: Int) {
         numMinorCivsAttacked += count
-        println(civName + " has now attacked " + numMinorCivsAttacked + " minor civs.") // TODO: remove
     }
 
     // implementation in a separate class, to not clog up CivInfo

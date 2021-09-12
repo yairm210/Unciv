@@ -49,7 +49,6 @@ class GameOptionsTable(
         checkboxTable.addNuclearWeaponsCheckbox()
         checkboxTable.addIsOnlineMultiplayerCheckbox()
         checkboxTable.addReligionCheckbox()
-        checkboxTable.addPermanentWarCheckbox()
         add(checkboxTable).center().row()
 
         if (!withoutMods)
@@ -87,10 +86,6 @@ class GameOptionsTable(
     private fun Table.addReligionCheckbox() =
             addCheckbox("Enable Religion", gameParameters.religionEnabled)
             { gameParameters.religionEnabled = it }
-
-    private fun Table.addPermanentWarCheckbox() =
-        addCheckbox("Enable Permanent War", gameParameters.permanentWarEnabled)
-        { gameParameters.permanentWarEnabled = it }
 
     private fun Table.addCityStatesSlider() {
         val numberOfCityStates = ruleset.nations.filter { it.value.isCityState() }.size

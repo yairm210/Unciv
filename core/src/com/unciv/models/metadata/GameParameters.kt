@@ -22,7 +22,6 @@ class GameParameters { // Default values are the default new game
     var godMode = false
     var nuclearWeaponsEnabled = true
     var religionEnabled = false
-    var permanentWarEnabled = false
 
     // By default, all victory types except Diplomacy as it is quite new
     var victoryTypes: ArrayList<VictoryType> = arrayListOf(VictoryType.Cultural, VictoryType.Domination, VictoryType.Scientific)  
@@ -42,7 +41,6 @@ class GameParameters { // Default values are the default new game
         parameters.oneCityChallenge = oneCityChallenge
         parameters.nuclearWeaponsEnabled = nuclearWeaponsEnabled
         parameters.religionEnabled = religionEnabled
-        parameters.permanentWarEnabled = permanentWarEnabled
         parameters.victoryTypes = ArrayList(victoryTypes)
         parameters.startingEra = startingEra
         parameters.isOnlineMultiplayer = isOnlineMultiplayer
@@ -62,7 +60,6 @@ class GameParameters { // Default values are the default new game
             if (oneCityChallenge) yield("OCC")
             if (!nuclearWeaponsEnabled) yield("No nukes")
             if (religionEnabled) yield("Religion")
-            if (!permanentWarEnabled) yield("No Permanent War")
             if (godMode) yield("God mode")
             for (victoryType in VictoryType.values()) {
                 if (victoryType !in victoryTypes) yield("No $victoryType Victory")

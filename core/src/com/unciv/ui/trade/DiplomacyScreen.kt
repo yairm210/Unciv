@@ -771,11 +771,7 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
         declareWarButton.onClick {
             YesNoPopup("Declare war on [${otherCiv.civName}]?", {
                 diplomacyManager.declareWar()
-                if (otherCiv.getDiplomacyManager(viewingCiv).hasFlag(DiplomacyFlags.PermanentWar)) // Did they just permanent war us back?
-                    setRightSideFlavorText(otherCiv,
-                        "Your aggression towards City States ends here! We'll bring you down if it's the last thing we do!", "Very well.")
-                else
-                    setRightSideFlavorText(otherCiv, otherCiv.nation.attacked, "Very well.")
+                setRightSideFlavorText(otherCiv, otherCiv.nation.attacked, "Very well.")
                 updateLeftSideTable()
             }, this).open()
         }
