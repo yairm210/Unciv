@@ -856,7 +856,7 @@ class DiplomacyManager() {
     fun becomeWary() {
         if (hasFlag(DiplomacyFlags.WaryOf)) return // once is enough
         setFlag(DiplomacyFlags.WaryOf, -1) // Never expires
-        otherCiv().addNotification("City-States grow wary of your aggression. The resting point for Influence has decreased by [20] for [${civInfo.civName}]", civInfo.civName)
+        otherCiv().addNotification("City-States grow wary of your aggression. The resting point for Influence has decreased by [20] for [${civInfo.civName}].", civInfo.civName)
     }
 
     fun updateProximity(preCalculated: Proximity? = null): Proximity {
@@ -864,6 +864,10 @@ class DiplomacyManager() {
             // We usually want to update this for a pair of civs at the same time
             // Since this function *should* be symmetrical for both civs, we can just do it once
             this.proximity = preCalculated
+            return this.proximity
+        }
+        if (civInfo.cities.isEmpty() || otherCiv().cities.isEmpty()) {
+            this.proximity = Proximity.None
             return this.proximity
         }
 
