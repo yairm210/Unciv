@@ -2,7 +2,6 @@ package com.unciv.logic.civilization.diplomacy
 
 import com.badlogic.gdx.graphics.Color
 import com.unciv.Constants
-import com.unciv.UncivGame
 import com.unciv.logic.civilization.*
 import com.unciv.logic.map.MapType
 import com.unciv.logic.trade.Trade
@@ -647,29 +646,18 @@ class DiplomacyManager() {
         removeFlag(DiplomacyFlags.BorderConflict)
     }
 
-    fun declareWar(suppressNotifications: Boolean = false) {
+    fun declareWar() {
         val otherCiv = otherCiv()
         val otherCivDiplomacy = otherCivDiplomacy()
 
         onWarDeclared()
         otherCivDiplomacy.onWarDeclared()
 
-        if (!suppressNotifications) {
-            otherCiv.addNotification(
-                "[${civInfo.civName}] has declared war on us!",
-                NotificationIcon.War,
-                civInfo.civName
-            )
-            otherCiv.popupAlerts.add(PopupAlert(AlertType.WarDeclaration, civInfo.civName))
+        otherCiv.addNotification("[${civInfo.civName}] has declared war on us!", NotificationIcon.War, civInfo.civName)
+        otherCiv.popupAlerts.add(PopupAlert(AlertType.WarDeclaration, civInfo.civName))
 
-            getCommonKnownCivs().forEach {
-                it.addNotification(
-                    "[${civInfo.civName}] has declared war on [$otherCivName]!",
-                    civInfo.civName,
-                    NotificationIcon.War,
-                    otherCivName
-                )
-            }
+        getCommonKnownCivs().forEach {
+            it.addNotification("[${civInfo.civName}] has declared war on [$otherCivName]!", civInfo.civName, NotificationIcon.War, otherCivName)
         }
 
         otherCivDiplomacy.setModifier(DiplomaticModifiers.DeclaredWarOnUs, -20f)
