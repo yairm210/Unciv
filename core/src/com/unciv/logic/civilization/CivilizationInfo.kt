@@ -29,6 +29,7 @@ import com.unciv.ui.victoryscreen.RankingType
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
+import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.roundToInt
 import kotlin.math.sqrt
@@ -524,9 +525,8 @@ class CivilizationInfo {
             else
                 unit.getForceEvaluation()
         }
-        val goldBonus = sqrt(gold.toFloat()).toPercent()  // 2f if gold == 10000
+        val goldBonus = sqrt(max(0f, gold.toFloat())).toPercent()  // 2f if gold == 10000
         sum = (sum * min(goldBonus, 2f)).toInt()    // 2f is max bonus
-
         return sum
     }
 
