@@ -2,6 +2,7 @@ package com.unciv.logic.map
 
 import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
+import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
 import com.unciv.logic.HexMath
 import com.unciv.logic.civilization.CivilizationInfo
@@ -85,6 +86,8 @@ class TileMap {
 
     /** creates a hexagonal map of given radius (filled with grassland) */
     constructor(radius: Int, ruleset: Ruleset, worldWrap: Boolean = false) {
+        mapParameters.createdWithVersion = UncivGame.Current.version
+
         startingLocations.clear()
         for (vector in HexMath.getVectorsInDistance(Vector2.Zero, radius, worldWrap))
             tileList.add(TileInfo().apply { position = vector; baseTerrain = Constants.grassland })
@@ -93,10 +96,12 @@ class TileMap {
 
     /** creates a rectangular map of given width and height (filled with grassland) */
     constructor(width: Int, height: Int, ruleset: Ruleset, worldWrap: Boolean = false) {
+        mapParameters.createdWithVersion = UncivGame.Current.version
+
         startingLocations.clear()
 
         // world-wrap maps must always have an even width, so round down
-        val wrapAdjustedWidth = if (worldWrap && width % 2 != 0 ) width -1 else width
+        val wrapAdjustedWidth = if (worldWrap && width % 2 != 0) width -1 else width
 
         // Even widths will have coordinates ranging -x..(x-1), not -x..x, which is always an odd-sized range
         // e.g. w=4 -> -2..1, w=5 -> -2..2, w=6 -> -3..2, w=7 -> -3..3
@@ -153,7 +158,7 @@ class TileMap {
      *  Respects map edges and world wrap. */
     fun getTilesInDistance(origin: Vector2, distance: Int): Sequence<TileInfo> =
             getTilesInDistanceRange(origin, 0..distance)
-    
+
     /** @return All tiles in a hexagonal ring around [origin] with the distances in [range]. Excludes the [origin] tile unless [range] starts at 0.
      *  Respects map edges and world wrap. */
     fun getTilesInDistanceRange(origin: Vector2, range: IntRange): Sequence<TileInfo> =
