@@ -7,6 +7,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.scenes.scene2d.ui.TextField
 import com.unciv.logic.MapSaver
+import com.unciv.logic.UncivShowableException
 import com.unciv.logic.map.MapType
 import com.unciv.logic.map.TileMap
 import com.unciv.models.ruleset.RulesetCache
@@ -64,7 +65,8 @@ class SaveAndLoadMapScreen(mapToSave: TileMap?, save:Boolean = false, previousSc
                         }
                     }
                     try {
-                        val map = MapSaver.loadMap(chosenMap!!)
+                        val map = MapSaver.loadMap(chosenMap!!, checkSizeErrors = false)
+
                         val missingMods = map.mapParameters.mods.filter { it !in RulesetCache }
                         if (missingMods.isNotEmpty()) {
                             Gdx.app.postRunnable {
@@ -90,7 +92,8 @@ class SaveAndLoadMapScreen(mapToSave: TileMap?, save:Boolean = false, previousSc
                         Gdx.app.postRunnable {
                             popup?.close()
                             println("Error loading map \"$chosenMap\": ${ex.localizedMessage}")
-                            ToastPopup("Error loading map!", this)
+                            ToastPopup("Error loading map!".tr() +
+                                (if (ex is UncivShowableException) "\n" + ex.message else ""), this)
                         }
                     }
                 }
@@ -128,7 +131,7 @@ class SaveAndLoadMapScreen(mapToSave: TileMap?, save:Boolean = false, previousSc
             val loadFromClipboardAction = {
                 try {
                     val clipboardContentsString = Gdx.app.clipboard.contents.trim()
-                    val loadedMap = MapSaver.mapFromSavedString(clipboardContentsString)
+                    val loadedMap = MapSaver.mapFromSavedString(clipboardContentsString, checkSizeErrors = false)
                     game.setScreen(MapEditorScreen(loadedMap))
                 } catch (ex: Exception) {
                     couldNotLoadMapLabel.isVisible = true

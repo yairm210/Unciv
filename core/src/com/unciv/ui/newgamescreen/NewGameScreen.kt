@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox
 import com.badlogic.gdx.scenes.scene2d.ui.Skin
+import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup
 import com.badlogic.gdx.utils.Array
 import com.unciv.UncivGame
 import com.unciv.logic.*
@@ -45,8 +46,8 @@ class NewGameScreen(
         updateRuleset()
 
         if (UncivGame.Current.settings.lastGameSetup != null) {
+            rightSideGroup.addActorAt(0, VerticalGroup().padBottom(5f))
             val resetToDefaultsButton = "Reset to defaults".toTextButton()
-            resetToDefaultsButton.padBottom(5f)
             rightSideGroup.addActorAt(0, resetToDefaultsButton)
             resetToDefaultsButton.onClick {
                 game.setScreen(NewGameScreen(previousScreen, GameSetupInfo()))
@@ -80,10 +81,16 @@ class NewGameScreen(
 
             Gdx.input.inputProcessor = null // remove input processing - nothing will be clicked!
 
-            if (mapOptionsTable.mapTypeSelectBox.selected.value == MapType.custom){
-                val map = MapSaver.loadMap(gameSetupInfo.mapFile!!)
-                val rulesetIncompatibilities = map.getRulesetIncompatibility(ruleset)
+            if (mapOptionsTable.mapTypeSelectBox.selected.value == MapType.custom) {
+                val map = try {
+                    MapSaver.loadMap(gameSetupInfo.mapFile!!)
+                } catch (ex: Throwable) {
+                    game.setScreen(this)
+                    ToastPopup("Could not load map!", this)
+                    return@onClick
+                }
 
+                val rulesetIncompatibilities = map.getRulesetIncompatibility(ruleset)
                 if (rulesetIncompatibilities.isNotEmpty()) {
                     val incompatibleMap = Popup(this)
                     incompatibleMap.addGoodSizedLabel("Map is incompatible with the chosen ruleset!".tr()).row()

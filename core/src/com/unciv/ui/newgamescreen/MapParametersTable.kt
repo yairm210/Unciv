@@ -252,7 +252,7 @@ class MapParametersTable(
         addSlider("Water level", {mapParameters.waterThreshold}, -0.1f, 0.1f)
         { mapParameters.waterThreshold = it }
 
-        val resetToDefaultButton = "Reset to default".toTextButton()
+        val resetToDefaultButton = "Reset to defaults".toTextButton()
         resetToDefaultButton.onClick {
             mapParameters.resetAdvancedSettings()
             seedTextField.text = mapParameters.seed.toString()

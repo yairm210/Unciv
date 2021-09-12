@@ -11,6 +11,7 @@ import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.MainMenuScreen
 import com.unciv.UncivGame
+import com.unciv.logic.MapSaver
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.models.UncivSound
 import com.unciv.models.metadata.BaseRuleset
@@ -314,6 +315,9 @@ class OptionsPopup(val previousScreen: CameraStageBaseScreen) : Popup(previousSc
                 game.gameInfo.gameParameters.godMode = it
             }).row()
         }
+        add("Save maps compressed".toCheckBox(MapSaver.saveZipped) {
+            MapSaver.saveZipped = it
+        }).row()
         add("Gdx Scene2D debug".toCheckBox(CameraStageBaseScreen.enableSceneDebug) {
             CameraStageBaseScreen.enableSceneDebug = it
         }).row()
