@@ -651,20 +651,7 @@ class Building : NamedStats(), INonPerpetualConstruction, ICivilopediaText {
         }
 
         // "Provides a free [buildingName] [cityFilter]"
-        val freeBuildingUniques = uniqueObjects.asSequence().filter { it.placeholderText=="Provides a free [] []" }
-
-        for (unique in freeBuildingUniques) {
-            val affectedCities =
-                if (unique.params[1] == "in this city") sequenceOf(cityConstructions.cityInfo)
-                else civInfo.cities.asSequence().filter { it.matchesFilter(unique.params[1]) }
-
-            val freeBuildingName = civInfo.getEquivalentBuilding(unique.params[0]).name
-
-            for (city in affectedCities) {
-                if (cityConstructions.containsBuildingOrEquivalent(freeBuildingName)) continue
-                cityConstructions.addBuilding(freeBuildingName)
-            }
-        }
+        cityConstructions.addFreeBuildings()
 
         for (unique in uniqueObjects)
             UniqueTriggerActivation.triggerCivwideUnique(unique, civInfo, cityConstructions.cityInfo)

@@ -15,10 +15,11 @@ class CivConstructions() {
     val boughtItemsWithIncreasingPrice: Counter<String> = Counter()
 
     // Maps to cities to all free buildings they contain
-    private val maintenanceFreeBuildings: HashMap<String,HashSet<String>> = hashMapOf()
+    private val freeBuildings: HashMap<String,HashSet<String>> = hashMapOf()
 
     // Maps stats to the cities that have received a building of that stat
-    // Android Studio said an EnumMap would be better, so I've used that
+    // Android Studio says an EnumMap would be better, but that thing isn't serializable.
+    // I don't know how to suppress that hint :( 
     private val freeStatBuildingsProvided: HashMap<Stat, HashSet<String>> = hashMapOf()
     
     // Maps buildings to the cities that have received that building
@@ -33,7 +34,7 @@ class CivConstructions() {
     fun clone(): CivConstructions {
         val toReturn = CivConstructions()
         toReturn.civInfo = civInfo
-        toReturn.maintenanceFreeBuildings.putAll(maintenanceFreeBuildings)
+        toReturn.freeBuildings.putAll(freeBuildings)
         toReturn.freeStatBuildingsProvided.putAll(freeStatBuildingsProvided)
         toReturn.freeSpecificBuildingsProvided.putAll(freeSpecificBuildingsProvided)
         toReturn.boughtItemsWithIncreasingPrice.add(boughtItemsWithIncreasingPrice.clone())
@@ -60,9 +61,9 @@ class CivConstructions() {
                             freeSpecificBuildingsProvided[building] = hashSetOf()
                         freeSpecificBuildingsProvided[building]!!.add(cityId)
 
-                        if (cityId !in maintenanceFreeBuildings)
-                            maintenanceFreeBuildings[cityId] = hashSetOf()
-                        maintenanceFreeBuildings[cityId]!!.add(building)
+                        if (cityId !in freeBuildings)
+                            freeBuildings[cityId] = hashSetOf()
+                        freeBuildings[cityId]!!.add(building)
                     }
                 }
                 civInfo.policies.specificBuildingsAdded.clear()
@@ -72,9 +73,9 @@ class CivConstructions() {
                 for ((cityId, building) in civInfo.policies.cultureBuildingsAdded) {
                     freeStatBuildingsProvided[Stat.Culture]!!.add(cityId)
                     
-                    if (cityId !in maintenanceFreeBuildings)
-                        maintenanceFreeBuildings[cityId] = hashSetOf()
-                    maintenanceFreeBuildings[cityId]!!.add(building)
+                    if (cityId !in freeBuildings)
+                        freeBuildings[cityId] = hashSetOf()
+                    freeBuildings[cityId]!!.add(building)
                 }
                 civInfo.policies.cultureBuildingsAdded.clear()
             }
@@ -90,8 +91,19 @@ class CivConstructions() {
         addFreeSpecificBuildings()
     }
     
-    fun getMaintenanceFreeBuildings(cityId: String) = maintenanceFreeBuildings[cityId] ?: hashSetOf()
+    fun getFreeBuildings(cityId: String): HashSet<String> {
+        val toReturn = freeBuildings[cityId] ?: hashSetOf()
+        for (city in civInfo.cities) {
+            toReturn.addAll(city.cityConstructions.freeBuildingsProvidedFromThisCity[city.id] ?: hashSetOf())
+        }
+        return toReturn
+    }
     
+    private fun addFreeBuilding(cityId: String, building: String) {
+        if (!freeBuildings.containsKey(cityId))
+            freeBuildings[cityId] = hashSetOf()
+        freeBuildings[cityId]!!.add(building)
+    }
     
     private fun addFreeStatsBuildings() {
         val statUniquesData = civInfo.getMatchingUniques("Provides the cheapest [] building in your first [] cities for free")
@@ -119,9 +131,7 @@ class CivConstructions() {
             val builtBuilding = city.cityConstructions.addCheapestBuildableStatBuilding(stat)
             if (builtBuilding != null) {
                 freeStatBuildingsProvided[stat]!!.add(city.id)
-                if (!maintenanceFreeBuildings.containsKey(city.id))
-                    maintenanceFreeBuildings[city.id] = hashSetOf()
-                maintenanceFreeBuildings[city.id]!!.add(builtBuilding)
+                addFreeBuilding(city.id, builtBuilding)
             }
         }
     }
@@ -149,9 +159,7 @@ class CivConstructions() {
                 freeSpecificBuildingsProvided[building] = hashSetOf()
             freeSpecificBuildingsProvided[building]!!.add(city.id)
 
-            if (!maintenanceFreeBuildings.containsKey(city.id))
-                maintenanceFreeBuildings[city.id] = hashSetOf()
-            maintenanceFreeBuildings[city.id]!!.add(building)
+            addFreeBuilding(city.id, building)
         }
     }
 }

@@ -467,6 +467,7 @@ class CityInfo {
         // Construct units at the beginning of the turn,
         // so they won't be generated out in the open and vulnerable to enemy attacks before you can control them
         cityConstructions.constructIfEnough()
+        cityConstructions.addFreeBuildings()
         cityStats.update()
         tryUpdateRoadStatus()
         attackedThisTurn = false
@@ -632,8 +633,8 @@ class CityInfo {
     fun matchesFilter(filter: String, viewingCiv: CivilizationInfo = civInfo): Boolean {
         return when (filter) {
             "in this city" -> true
-            "in all cities" -> true // Filtered by the way uniques our found
-            "in other cities" -> true // Filtered by the way uniques our found
+            "in all cities" -> true // Filtered by the way uniques are found
+            "in other cities" -> true // Filtered by the way uniques are found
             "in all coastal cities" -> isCoastal()
             "in capital" -> isCapital()
             "in all non-occupied cities" -> !cityStats.hasExtraAnnexUnhappiness() || isPuppet

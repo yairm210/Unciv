@@ -43,7 +43,8 @@ class CityConstructions {
     val inProgressConstructions = HashMap<String, Int>()
     var currentConstructionFromQueue: String
         get() {
-            if (constructionQueue.isEmpty()) return "" else return constructionQueue.first()
+            return if (constructionQueue.isEmpty()) "" 
+                else constructionQueue.first()
         }
         set(value) {
             if (constructionQueue.isEmpty()) constructionQueue.add(value) else constructionQueue[0] = value
@@ -53,6 +54,9 @@ class CityConstructions {
     var productionOverflow = 0
     val queueMaxSize = 10
 
+    // Maps cities to the buildings they received
+    val freeBuildingsProvidedFromThisCity: HashMap<String, HashSet<String>> = hashMapOf()
+    
     //region pure functions
     fun clone(): CityConstructions {
         val toReturn = CityConstructions()
@@ -61,6 +65,7 @@ class CityConstructions {
         toReturn.currentConstructionIsUserSet = currentConstructionIsUserSet
         toReturn.constructionQueue.addAll(constructionQueue)
         toReturn.productionOverflow = productionOverflow
+        toReturn.freeBuildingsProvidedFromThisCity.putAll(freeBuildingsProvidedFromThisCity)
         return toReturn
     }
 
@@ -125,7 +130,7 @@ class CityConstructions {
      */
     fun getMaintenanceCosts(): Int {
         var maintenanceCost = 0
-        val freeBuildings = cityInfo.civInfo.civConstructions.getMaintenanceFreeBuildings(cityInfo.id)
+        val freeBuildings = cityInfo.civInfo.civConstructions.getFreeBuildings(cityInfo.id)
         
         for (building in getBuiltBuildings()) {
             if (building.name !in freeBuildings) {
@@ -156,7 +161,27 @@ class CityConstructions {
         }
         return result
     }
+    
+    fun addFreeBuildings() {
+        // "Provides a free [buildingName] [cityFilter]"
+        for (unique in cityInfo.getMatchingUniques("Provides a free [] []")) {
+            val freeBuildingName = cityInfo.civInfo.getEquivalentBuilding(unique.params[0]).name
+            val citiesThatApply = when (unique.params[1]) {
+                "in this city" -> listOf(cityInfo)
+                "in other cities" -> cityInfo.civInfo.cities.filter { it !== cityInfo }
+                else -> cityInfo.civInfo.cities.filter { it.matchesFilter(unique.params[1]) }
+            }
+            
+            for (city in citiesThatApply) {
+                if (city.cityConstructions.containsBuildingOrEquivalent(freeBuildingName)) continue
+                city.cityConstructions.addBuilding(freeBuildingName)
+                if (city.id !in freeBuildingsProvidedFromThisCity)
+                    freeBuildingsProvidedFromThisCity[city.id] = hashSetOf()
 
+                freeBuildingsProvidedFromThisCity[city.id]!!.add(freeBuildingName)
+            }
+        }
+    }
 
     /** @constructionName needs to be a non-perpetual construction, else an empty string is returned */
     internal fun getTurnsToConstructionString(constructionName: String, useStoredProduction:Boolean = true): String {
@@ -176,20 +201,6 @@ class CityConstructions {
         }.joinToString(" / ") { "${construction.getStatBuyCost(cityInfo, it)}${it.character}" }
         if (otherStats.isNotEmpty()) lines += otherStats
         return lines.joinToString("\n", "\n")
-    }
-
-    // This function appears unused, can it be removed?
-    fun getProductionForTileInfo(): String {
-        /* this is because there were rare errors that I assume were caused because
-           currentConstruction changed on another thread */
-        val currentConstructionSnapshot = currentConstructionFromQueue
-        var result = currentConstructionSnapshot.tr()
-        if (currentConstructionSnapshot != ""
-                && !PerpetualConstruction.perpetualConstructionsMap.containsKey(currentConstructionSnapshot)) {
-            val turnsLeft = turnsToConstruction(currentConstructionSnapshot)
-            result += " - $turnsLeft${Fonts.turn}"
-        }
-        return result
     }
 
     fun getProductionMarkup(ruleset: Ruleset): FormattedLine {
