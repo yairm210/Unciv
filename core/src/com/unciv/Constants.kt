@@ -45,6 +45,15 @@ object Constants {
     const val cerroDePotosi = "Cerro de Potosi"
     const val elDorado = "El Dorado"
     const val fountainOfYouth = "Fountain of Youth"
+	const val mountKailash = "Mount Kailash"
+	const val mountSinai = "Mount Sinai"
+	const val sriPada = "Sri Pada"
+	const val uluru = "Uluru"
+	/* 
+	const val kingSolomonsMines = "King Solomon's Mines" //BNW
+	const val lakeVictoria = "Lake Victoria" //BNW
+	const val mountKilimanjaro = "Mount Kilimanjaro" //BNW
+	*/
 
     const val barbarianEncampment = "Barbarian encampment"
 
@@ -78,6 +87,6 @@ object Constants {
 
     const val rising = "Rising"
     const val lowering = "Lowering"
-    
-    const val minimumMovementEpsilon = 0.05
+	
+	const val minimumMovementEpsilon = 0.05
 }
