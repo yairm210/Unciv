@@ -151,7 +151,8 @@ class Building : NamedStats(), INonPerpetualConstruction, ICivilopediaText {
     }
 
     fun getStats(city: CityInfo?): Stats {
-        val stats = this.clone()
+        // Calls the clone function of the NamedStats this class is derived from, not a clone function of this class
+        val stats = this.clone() 
         if (city == null) return stats
         val civInfo = city.civInfo
 
