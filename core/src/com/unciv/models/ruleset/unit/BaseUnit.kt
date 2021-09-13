@@ -155,6 +155,22 @@ class BaseUnit : INamed, INonPerpetualConstruction, ICivilopediaText {
 
         if (requiredTech != null || upgradesTo != null || obsoleteTech != null) textList += FormattedLine()
         if (requiredTech != null) textList += FormattedLine("Required tech: [$requiredTech]", link="Technology/$requiredTech")
+
+        val canUpgradeFrom = ruleset.units
+            .filterValues {
+                (it.upgradesTo == name || it.upgradesTo != null && it.upgradesTo == replaces)
+                && (it.uniqueTo == uniqueTo || it.uniqueTo == null)
+            }.keys
+        if (canUpgradeFrom.isNotEmpty()) {
+            if (canUpgradeFrom.size == 1)
+                textList += FormattedLine("Can upgrade from [${canUpgradeFrom.first()}]", link = "Unit/${canUpgradeFrom.first()}")
+            else {
+                textList += FormattedLine("Can upgrade from:")
+                for (unitName in canUpgradeFrom.sorted())
+                    textList += FormattedLine(unitName, indent = 2, link = "Unit/$unitName")
+            }
+        }
+
         if (upgradesTo != null) textList += FormattedLine("Upgrades to [$upgradesTo]", link="Unit/$upgradesTo")
         if (obsoleteTech != null) textList += FormattedLine("Obsolete with [$obsoleteTech]", link="Technology/$obsoleteTech")
 
