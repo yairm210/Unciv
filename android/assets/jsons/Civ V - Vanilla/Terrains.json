@@ -356,7 +356,7 @@
 		"name": "King Solomon's Mines",
 		"type": "NaturalWonder",
 		"production": 6,
-		"occursOn": ["Plains","Desert","Tundra","Snow","Grassland"],
+		"occursOn": ["Plains","Desert"],
 		"turnsInto": "Plains",
 		"impassable": true,
 		"unbuildable": true,
