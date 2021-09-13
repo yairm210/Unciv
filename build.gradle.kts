@@ -1,6 +1,12 @@
 import com.unciv.build.BuildConfig.gdxVersion
-import com.unciv.build.BuildConfig.kotlinVersion
 import com.unciv.build.BuildConfig.roboVMVersion
+
+
+// You'll still get kotlin-reflect-1.3.70.jar in your classpath, but will no longer be used
+configurations.all { resolutionStrategy {
+    force("org.jetbrains.kotlin:kotlin-reflect:${com.unciv.build.BuildConfig.kotlinVersion}")
+} }
+
 
 buildscript {
 
@@ -20,7 +26,7 @@ buildscript {
     dependencies {
         classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${com.unciv.build.BuildConfig.kotlinVersion}")
         classpath("de.richsource.gradle.plugins:gwt-gradle-plugin:0.6")
-        classpath("com.android.tools.build:gradle:4.2.0")
+        classpath("com.android.tools.build:gradle:7.0.2")
         classpath("com.mobidevelop.robovm:robovm-gradle-plugin:2.3.1")
 
         // This is for wrapping the .jar file into a standalone executable
@@ -60,10 +66,8 @@ project(":desktop") {
         "implementation"("com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop")
 
         "implementation"("com.badlogicgames.gdx:gdx-tools:$gdxVersion")  // This is for the TexturePacker class
-        "implementation"("org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion") // This is so the JAR works with Kotlin
 
         "implementation"("com.github.MinnDevelopment:java-discord-rpc:v2.0.1")
-        "implementation"("io.ktor:ktor-server-netty:1.3.2")
     }
 
 }
@@ -103,7 +107,6 @@ project(":core") {
 
     dependencies {
         "implementation"("com.badlogicgames.gdx:gdx:$gdxVersion")
-        "implementation"("org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion")
     }
 
 
@@ -113,40 +116,21 @@ project(":core") {
         apply(plugin = "kotlin")
 
         dependencies {
-
-            /**
-             * If you do have some classes to test in os specific code you may want to uncomment
-             * some of these lines.
-             *
-             * BUT: I recommend to create seperate test sub projects for each platform. Trust me :)
-             *
-             */
-
-
             "implementation"(project(":core"))
 
-            "implementation"("org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion")
-
             "implementation"("junit:junit:4.13.1")
-            "implementation"("org.mockito:mockito-all:1.9.5")
+            "implementation"("org.mockito:mockito-all:1.10.19")
 
             "implementation"("com.badlogicgames.gdx:gdx-backend-headless:$gdxVersion")
             "implementation"("com.badlogicgames.gdx:gdx:$gdxVersion")
 
             "testImplementation"("junit:junit:4.13.1")
-            "testImplementation"("org.mockito:mockito-all:1.9.5")
+            "testImplementation"("org.mockito:mockito-all:1.10.19")
             "testImplementation"("io.mockk:mockk:1.9.3")
 
             "testImplementation"("com.badlogicgames.gdx:gdx-backend-headless:$gdxVersion")
             "testImplementation"("com.badlogicgames.gdx:gdx:$gdxVersion")
             "testImplementation"("com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop")
-        }
-    }}
-
-tasks {
-    "eclipse" {
-        doLast {
-            delete(".project")
         }
     }
 }

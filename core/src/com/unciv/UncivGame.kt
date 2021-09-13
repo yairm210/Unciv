@@ -43,7 +43,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
      */
     var viewEntireMapForDebug = false
     /** For when you need to test something in an advanced game and don't have time to faff around */
-    val superchargedForDebug = false
+    var superchargedForDebug = false
 
     /** Simulate until this turn on the first "Next turn" button press.
      *  Does not update World View changes until finished.
@@ -84,8 +84,10 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
          * - Skin (hence CameraStageBaseScreen.setSkin())
          * - Font (hence Fonts.resetFont() inside setSkin())
          */
-        ImageGetter.resetAtlases()
         settings = GameSaver.getGeneralSettings() // needed for the screen
+        screen = LoadingScreen()  // NOT dependent on any atlas or skin
+
+        ImageGetter.resetAtlases()
         ImageGetter.setNewRuleset(ImageGetter.ruleset)  // This needs to come after the settings, since we may have default visual mods
         if(settings.tileSet !in ImageGetter.getAvailableTilesets()) { // If one of the tilesets is no longer available, default back
             settings.tileSet = "FantasyHex"
@@ -94,8 +96,6 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
         CameraStageBaseScreen.setSkin() // needs to come AFTER the Texture reset, since the buttons depend on it
 
         Gdx.graphics.isContinuousRendering = settings.continuousRendering
-        screen = LoadingScreen()
-
 
         thread(name = "LoadJSON") {
             RulesetCache.loadRulesets(printOutput = true)
@@ -206,9 +206,9 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
     }
 }
 
-class LoadingScreen:CameraStageBaseScreen() {
+private class LoadingScreen : CameraStageBaseScreen() {
     init {
-        val happinessImage = ImageGetter.getImage("StatIcons/Happiness")
+        val happinessImage = ImageGetter.getExternalImage("LoadScreen.png")
         happinessImage.center(stage)
         happinessImage.setOrigin(Align.center)
         happinessImage.addAction(Actions.sequence(

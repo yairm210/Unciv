@@ -6,6 +6,7 @@ import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.*
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
+import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.RoadStatus
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.AttackableTile
@@ -13,6 +14,7 @@ import com.unciv.models.UnitActionType
 import com.unciv.models.ruleset.Unique
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
+import com.unciv.ui.utils.toPercent
 import java.util.*
 import kotlin.math.max
 import kotlin.math.min
@@ -121,10 +123,11 @@ object Battle {
 
         val bonusUniques = ArrayList<Unique>()
 
-        bonusUniques.addAll(civUnit.getCivInfo().getMatchingUniques(bonusUniquePlaceholderText))
 
         if (civUnit is MapUnitCombatant) {
-            bonusUniques.addAll(civUnit.unit.getMatchingUniques(bonusUniquePlaceholderText))
+            bonusUniques.addAll(civUnit.getMatchingUniques(bonusUniquePlaceholderText))
+        } else {
+            bonusUniques.addAll(civUnit.getCivInfo().getMatchingUniques(bonusUniquePlaceholderText))
         }
 
         bonusUniquePlaceholderText = "Earn []% of [] unit's [] as [] when killed within 4 tiles of a city following this religion"
@@ -150,6 +153,15 @@ object Battle {
                 civUnit.getCivInfo().addStat(stat, yieldAmount)
             } catch (ex: Exception) {
             } // parameter is not a stat
+        }
+
+        // CS friendship from killing barbarians
+        if (defeatedUnit.matchesCategory("Barbarian") && defeatedUnit.matchesCategory("Military") && civUnit.getCivInfo().isMajorCiv()) {
+            for (cityState in UncivGame.Current.gameInfo.getAliveCityStates()) {
+                if (defeatedUnit.unit.threatensCiv(cityState)) {
+                    cityState.threateningBarbarianKilledBy(civUnit.getCivInfo())
+                }
+            }
         }
     }
 
@@ -234,13 +246,13 @@ object Battle {
         }
 
         val civ = plunderingUnit.getCivInfo()
-        plunderedGoods.toHashMap().filterNot { it.value == 0f }.forEach {
-            val plunderedAmount = it.value.toInt()
-            civ.addStat(it.key, plunderedAmount)
+        for ((key, value) in plunderedGoods) {
+            val plunderedAmount = value.toInt()
+            civ.addStat(key, plunderedAmount)
             civ.addNotification(
-                "Your [${plunderingUnit.getName()}] plundered [${plunderedAmount}] [${it.key.name}] from [${plunderedUnit.getName()}]",
+                "Your [${plunderingUnit.getName()}] plundered [${plunderedAmount}] [${key.name}] from [${plunderedUnit.getName()}]",
                 plunderedUnit.getTile().position,
-                plunderingUnit.getName(), NotificationIcon.War, "StatIcons/${it.key.name}",
+                plunderingUnit.getName(), NotificationIcon.War, "StatIcons/${key.name}",
                 if (plunderedUnit is CityCombatant) NotificationIcon.City else plunderedUnit.getName()
             )
         }
@@ -386,9 +398,7 @@ object Battle {
 
         if (thisCombatant.getCivInfo().isMajorCiv()) {
             var greatGeneralPointsModifier = 1f
-            val unitUniques = thisCombatant.unit.getMatchingUniques("[] is earned []% faster")
-            val civUniques = thisCombatant.getCivInfo().getMatchingUniques("[] is earned []% faster")
-            for (unique in unitUniques + civUniques) {
+            for (unique in thisCombatant.getMatchingUniques("[] is earned []% faster")) {
                 val unitName = unique.params[0]
                 val unit = thisCombatant.getCivInfo().gameInfo.ruleSet.units[unitName]
                 if (unit != null && unit.uniques.contains("Great Person - [War]"))
@@ -400,7 +410,7 @@ object Battle {
         }
     }
 
-    private fun conquerCity(city: CityInfo, attacker: ICombatant) {
+    private fun conquerCity(city: CityInfo, attacker: MapUnitCombatant) {
         val attackerCiv = attacker.getCivInfo()
 
         attackerCiv.addNotification("We have conquered the city of [${city.name}]!", city.location, NotificationIcon.War)
@@ -412,10 +422,10 @@ object Battle {
             for (airUnit in airUnits.toList()) airUnit.destroy()
         }
 
-        for (unique in attackerCiv.getMatchingUniques("Upon capturing a city, receive [] times its [] production as [] immediately")) {
+        for (unique in attacker.getMatchingUniques("Upon capturing a city, receive [] times its [] production as [] immediately")) {
             attackerCiv.addStat(
                 Stat.valueOf(unique.params[2]),
-                unique.params[0].toInt() * city.cityStats.currentCityStats.get(Stat.valueOf(unique.params[1])).toInt()
+                unique.params[0].toInt() * city.cityStats.currentCityStats[Stat.valueOf(unique.params[1])].toInt()
             )
         }
 
@@ -429,7 +439,7 @@ object Battle {
             UncivGame.Current.settings.addCompletedTutorialTask("Conquer a city")
         } else {
             city.puppetCity(attackerCiv)
-            if (city.population.population < 4 && city.canBeDestroyed()) {
+            if (city.population.population < 4 && city.canBeDestroyed(justCaptured = true)) {
                 city.annexCity()
                 city.isBeingRazed = true
             }
@@ -444,13 +454,6 @@ object Battle {
     }
 
     private fun captureCivilianUnit(attacker: ICombatant, defender: MapUnitCombatant, checkDefeat: Boolean = true) {
-        // barbarians don't capture civilians
-        if (attacker.getCivInfo().isBarbarian()
-                || defender.unit.hasUnique("Uncapturable")) {
-            defender.takeDamage(100)
-            return
-        }
-
         // need to save this because if the unit is captured its owner wil be overwritten
         val defenderCiv = defender.getCivInfo()
 
@@ -460,21 +463,28 @@ object Battle {
 
         val capturedUnitTile = capturedUnit.getTile()
 
-        // Apparently in Civ V, captured settlers are converted to workers.
-        if (capturedUnit.name == Constants.settler) {
-            capturedUnit.destroy()
-            // This is so that future checks which check if a unit has been captured are caught give the right answer
-            //  For example, in postBattleMoveToAttackedTile
-            capturedUnit.civInfo = attacker.getCivInfo()
-            attacker.getCivInfo().placeUnitNearTile(capturedUnitTile.position, Constants.worker)
-        } else {
-            capturedUnit.civInfo.removeUnit(capturedUnit)
-            capturedUnit.assignOwner(attacker.getCivInfo())
-            capturedUnit.currentMovement = 0f
-            // It's possible that the unit can no longer stand on the tile it was captured on.
-            // For example, because it's embarked and the capturing civ cannot embark units yet.
-            if (!capturedUnit.movement.canPassThrough(capturedUnitTile)) {
-                capturedUnit.movement.teleportToClosestMoveableTile()
+        when {
+            // Uncapturable units are destroyed (units captured by barbarians also - for now)
+            defender.unit.hasUnique("Uncapturable") || attacker.getCivInfo().isBarbarian() -> {
+                capturedUnit.destroy()
+            }
+            // Captured settlers are converted to workers.
+            capturedUnit.name == Constants.settler -> {
+                capturedUnit.destroy()
+                // This is so that future checks which check if a unit has been captured are caught give the right answer
+                //  For example, in postBattleMoveToAttackedTile
+                capturedUnit.civInfo = attacker.getCivInfo()
+                attacker.getCivInfo().placeUnitNearTile(capturedUnitTile.position, Constants.worker)
+            }
+            else -> {
+                capturedUnit.civInfo.removeUnit(capturedUnit)
+                capturedUnit.assignOwner(attacker.getCivInfo())
+                capturedUnit.currentMovement = 0f
+                // It's possible that the unit can no longer stand on the tile it was captured on.
+                // For example, because it's embarked and the capturing civ cannot embark units yet.
+                if (!capturedUnit.movement.canPassThrough(capturedUnitTile)) {
+                    capturedUnit.movement.teleportToClosestMoveableTile()
+                }
             }
         }
 
@@ -485,6 +495,8 @@ object Battle {
 
     fun destroyIfDefeated(attackedCiv: CivilizationInfo, attacker: CivilizationInfo) {
         if (attackedCiv.isDefeated()) {
+            if (attackedCiv.isCityState())
+                attackedCiv.cityStateDestroyed(attacker)
             attackedCiv.destroy()
             attacker.popupAlerts.add(PopupAlert(AlertType.Defeated, attackedCiv.civName))
         }
@@ -559,6 +571,10 @@ object Battle {
         for (civ in attackingCiv.getKnownCivs()) {
             civ.getDiplomacyManager(attackingCiv).setModifier(DiplomaticModifiers.UsedNuclearWeapons, -50f)
         }
+        
+        if (!attacker.isDefeated()) {
+            attacker.unit.attacksThisTurn += 1
+        }
     }
 
     // todo: reduce extreme code duplication, parameterize probabilities where an unique already used
@@ -578,8 +594,15 @@ object Battle {
         if (city != null && tile.position == city.location) {
             var populationLoss = city.population.population * (0.3 + Random().nextFloat() * 0.4)
             var populationLossReduced = false
-            for (unique in city.civInfo.getMatchingUniques("Population loss from nuclear attacks -[]%")) {
-                populationLoss *= 1 - unique.params[0].toFloat() / 100f
+            // Deprecated since 3.16.11
+                for (unique in city.getLocalMatchingUniques("Population loss from nuclear attacks -[]%")) {
+                    populationLoss *= 1 - unique.params[0].toFloat() / 100f
+                    populationLossReduced = true
+                }
+            //
+            for (unique in city.getMatchingUniques("Population loss from nuclear attacks []% []")) {
+                if (!city.matchesFilter(unique.params[1])) continue
+                populationLoss *= unique.params[0].toPercent()
                 populationLossReduced = true
             }
             if (city.population.population < 5 && !populationLossReduced) {
@@ -647,8 +670,9 @@ object Battle {
             } else {
                 var populationLoss = city.population.population * (0.6 + Random().nextFloat() * 0.2)
                 var populationLossReduced = false
-                for (unique in city.civInfo.getMatchingUniques("Population loss from nuclear attacks -[]%")) {
-                    populationLoss *= 1 - unique.params[0].toFloat() / 100f
+                for (unique in city.getMatchingUniques("Population loss from nuclear attacks []% []")) {
+                    if (!city.matchesFilter(unique.params[1]))
+                    populationLoss *= unique.params[0].toPercent()
                     populationLossReduced = true
                 }
                 city.population.addPopulation(-populationLoss.toInt())

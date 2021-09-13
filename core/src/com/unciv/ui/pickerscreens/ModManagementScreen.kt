@@ -20,6 +20,7 @@ import com.unciv.ui.utils.UncivDateFormat.parseDate
 import com.unciv.ui.worldscreen.mainmenu.Github
 import java.util.*
 import kotlin.concurrent.thread
+import kotlin.math.max
 
 /**
  * The Mod Management Screen - called only from [MainMenuScreen]
@@ -29,9 +30,9 @@ import kotlin.concurrent.thread
 class ModManagementScreen: PickerScreen(disableScroll = true) {
 
     private val modTable = Table().apply { defaults().pad(10f) }
-    private val scrollInstalledMods = ScrollPane(modTable)
+    private val scrollInstalledMods = AutoScrollPane(modTable)
     private val downloadTable = Table().apply { defaults().pad(10f) }
-    private val scrollOnlineMods = ScrollPane(downloadTable)
+    private val scrollOnlineMods = AutoScrollPane(downloadTable)
     private val modActionTable = Table().apply { defaults().pad(10f) }
 
     val amountPerPage = 30
@@ -40,6 +41,10 @@ class ModManagementScreen: PickerScreen(disableScroll = true) {
     private var lastSyncMarkedButton: Button? = null
     private var selectedModName = ""
     private var selectedAuthor = ""
+
+    private val deprecationLabel: WrappableLabel
+    private val deprecationCell: Cell<WrappableLabel>
+    private val modDescriptionLabel: WrappableLabel
 
     // keep running count of mods fetched from online search for comparison to total count as reported by GitHub
     private var downloadModCount = 0
@@ -50,8 +55,9 @@ class ModManagementScreen: PickerScreen(disableScroll = true) {
     private fun showModDescription(modName: String) {
         val online = modDescriptionsOnline[modName] ?: ""
         val installed = modDescriptionsInstalled[modName] ?: ""
-        val separator = if(online.isEmpty() || installed.isEmpty()) "" else "\n"
-        descriptionLabel.setText(online + separator + installed)
+        val separator = if (online.isEmpty() || installed.isEmpty()) "" else "\n"
+        deprecationCell.setActor(if (modName in modsToHideNames) deprecationLabel else null)
+        modDescriptionLabel.setText(online + separator + installed)
     }
 
     // Enable syncing entries in 'installed' and 'repo search ScrollPanes
@@ -59,7 +65,6 @@ class ModManagementScreen: PickerScreen(disableScroll = true) {
     private val installedScrollIndex = HashMap<String,ScrollToEntry>(30)
     private val onlineScrollIndex = HashMap<String,ScrollToEntry>(30)
     private var onlineScrollCurrentY = -1f
-
 
     // cleanup - background processing needs to be stopped on exit and memory freed
     private var runningSearchThread: Thread? = null
@@ -116,8 +121,50 @@ class ModManagementScreen: PickerScreen(disableScroll = true) {
         closeButton.onClick(closeAction)
         onBackButtonClicked(closeAction)
 
+        val labelWidth = max(stage.width / 2f - 60f,60f)
+        deprecationLabel = WrappableLabel("Deprecated until update conforms to current requirements", labelWidth, Color.FIREBRICK)
+        deprecationLabel.wrap = true
+        modDescriptionLabel = WrappableLabel("", labelWidth)
+        modDescriptionLabel.wrap = true
+
+        // Replace the PickerScreen's descriptionLabel
+        val labelWrapper = Table()
+        labelWrapper.defaults().top().left().growX()
+        val labelScroll = descriptionLabel.parent as ScrollPane
+        descriptionLabel.remove()
+        deprecationCell = labelWrapper.add(deprecationLabel).padBottom(10f)
+        deprecationLabel.remove()
+        labelWrapper.row()
+        labelWrapper.add(modDescriptionLabel).row()
+        labelScroll.actor = labelWrapper
+
         refreshInstalledModTable()
 
+        if (isNarrowerThan4to3()) initPortrait()
+        else initLandscape()
+
+        reloadOnlineMods()
+    }
+
+    private fun initPortrait() {
+        topTable.defaults().top().pad(0f)
+
+        topTable.add(ExpanderTab("Current mods", expanderWidth = stage.width) {
+            it.add(scrollInstalledMods).growX()
+        }).top().growX().row()
+
+        topTable.add(ExpanderTab("Downloadable mods", expanderWidth = stage.width) {
+            it.add(scrollOnlineMods).growX()
+        }).top().padTop(10f).growX().row()
+
+        topTable.add().expandY().row() // helps with top() being ignored
+
+        topTable.add(ExpanderTab("Mod info and options", expanderWidth = stage.width) {
+            it.add(modActionTable).growX()
+        }).bottom().padTop(10f).growX().row()
+    }
+
+    private fun initLandscape() {
         // Header row
         topTable.add().expandX()                // empty cols left and right for separator
         topTable.add("Current mods".toLabel()).pad(5f).minWidth(200f).padLeft(25f)
@@ -134,7 +181,6 @@ class ModManagementScreen: PickerScreen(disableScroll = true) {
         topTable.add()      // skip empty first column
         topTable.add(scrollInstalledMods)
 
-        reloadOnlineMods()
         topTable.add(scrollOnlineMods)
 
         topTable.add(modActionTable)
@@ -177,6 +223,11 @@ class ModManagementScreen: PickerScreen(disableScroll = true) {
                 for (repo in repoSearch.items) {
                     if (stopBackgroundTasks) return@postRunnable
                     repo.name = repo.name.replace('-', ' ')
+
+                    // Mods we have manually decided to remove for instability are removed here
+                    // If at some later point these mods are updated, we should definitely remove
+                    // this piece of code. This is a band-aid, not a full solution.
+                    if (repo.html_url in modsToHideAsUrl) continue 
 
                     modDescriptionsOnline[repo.name] =
                             (repo.description ?: "-{No description provided}-".tr()) +
@@ -262,13 +313,14 @@ class ModManagementScreen: PickerScreen(disableScroll = true) {
         lastSelectedButton?.color = Color.WHITE
         button.color = Color.BLUE
         lastSelectedButton = button
-        if (lastSelectedButton == lastSyncMarkedButton) lastSyncMarkedButton = null
+        if (lastSelectedButton != lastSyncMarkedButton)
+            lastSyncMarkedButton?.color = Color.WHITE
+        lastSyncMarkedButton = null
         // look for sync-able same mod in other list
         val pos = index[name] ?: return
         // scroll into view
         scroll.scrollY = (pos.y + (pos.height - scroll.height) / 2).coerceIn(0f, scroll.maxY)
         // and color it so it's easier to find. ROYAL and SLATE too dark.
-        lastSyncMarkedButton?.color = Color.WHITE
         pos.button.color = Color.valueOf("7499ab")  // about halfway between royal and sky
         lastSyncMarkedButton = pos.button
     }
@@ -501,6 +553,19 @@ class ModManagementScreen: PickerScreen(disableScroll = true) {
     override fun resize(width: Int, height: Int) {
         if (stage.viewport.screenWidth != width || stage.viewport.screenHeight != height) {
             game.setScreen(ModManagementScreen())
+        }
+    }
+
+    companion object {
+        val modsToHideAsUrl = run {
+            val blockedModsFile = Gdx.files.internal("jsons/ManuallyBlockedMods.json")
+            JsonParser().getFromJson(Array<String>::class.java, blockedModsFile)
+        }
+        val modsToHideNames = run {
+            val regex = Regex(""".*/([^/]+)/?$""")
+            modsToHideAsUrl.map { url ->
+                regex.replace(url) { it.groups[1]!!.value }.replace('-', ' ')
+            }
         }
     }
 }

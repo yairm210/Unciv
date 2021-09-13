@@ -35,8 +35,9 @@ data class UnitAction(
             type == UnitActionType.SpreadReligion
                     && title.equalsPlaceholderText("Spread []") -> {
                 val religionName = title.getPlaceholderParameters()[0]
-                ImageGetter.getReligionIcon(
-                    if (ImageGetter.religionIconExists(religionName)) religionName else "Pantheon"
+                ImageGetter.getReligionImage(
+                    if (ImageGetter.religionIconExists(religionName)) religionName 
+                    else "Pantheon"
                 ).apply { color = Color.BLACK }
             }
             type == UnitActionType.Fortify || type == UnitActionType.FortifyUntilHealed -> {
@@ -108,22 +109,25 @@ enum class UnitActionType(
         { ImageGetter.getUnitIcon(Constants.settler) }, 'c', UncivSound.Silent),
     ConstructImprovement("Construct improvement",
         { ImageGetter.getUnitIcon(Constants.worker) }, 'i'),
-    // Deprecated since 3.15.4
-        ConstructRoad("Construct road", {ImageGetter.getImprovementIcon("Road")}, 'r'),
-    //
     Create("Create",
         null, 'i', UncivSound.Chimes),
-    SpreadReligion("Spread Religion",
-        null, 'g', UncivSound.Choir),
     HurryResearch("Hurry Research",
         { ImageGetter.getUnitIcon("Great Scientist") }, 'g', UncivSound.Chimes),
     StartGoldenAge("Start Golden Age",
         { ImageGetter.getUnitIcon("Great Artist") }, 'g', UncivSound.Chimes),
     HurryWonder("Hurry Wonder",
         { ImageGetter.getUnitIcon("Great Engineer") }, 'g', UncivSound.Chimes),
+    HurryBuilding("Hurry Construction",
+        { ImageGetter.getUnitIcon("Great Engineer") }, 'g', UncivSound.Chimes),
     ConductTradeMission("Conduct Trade Mission",
         { ImageGetter.getUnitIcon("Great Merchant") }, 'g', UncivSound.Chimes),
     FoundReligion("Found a Religion",
+        { ImageGetter.getUnitIcon("Great Prophet") }, 'g', UncivSound.Choir),
+    SpreadReligion("Spread Religion",
+        null, 'g', UncivSound.Choir),
+    RemoveHeresy("Remove Heresy",
+        { ImageGetter.getImage("OtherIcons/Remove Heresy") }, 'h', UncivSound.Fire),
+    EnhanceReligion("Enhance a Religion",
         { ImageGetter.getUnitIcon("Great Prophet") }, 'g', UncivSound.Choir),
     DisbandUnit("Disband unit",
         { ImageGetter.getImage("OtherIcons/DisbandUnit") }, KeyCharAndCode.DEL),

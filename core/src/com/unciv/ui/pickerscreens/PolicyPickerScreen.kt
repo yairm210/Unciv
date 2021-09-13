@@ -9,6 +9,7 @@ import com.unciv.models.Tutorial
 import com.unciv.models.UncivSound
 import com.unciv.models.ruleset.Policy
 import com.unciv.models.ruleset.PolicyBranch
+import com.unciv.models.ruleset.Policy.PolicyBranchType
 import com.unciv.models.translations.tr
 import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.WorldScreen
@@ -39,7 +40,12 @@ class PolicyPickerScreen(val worldScreen: WorldScreen, civInfo: CivilizationInfo
         } else onBackButtonClicked { UncivGame.Current.setWorldScreen() }
 
         rightSideButton.onClick(UncivSound.Policy) {
-            viewingCiv.policies.adopt(pickedPolicy!!)
+            val policy = pickedPolicy!!
+
+            // Evil people clicking on buttons too fast to confuse the screen - #4977
+            if (!policyIsPickable(policy)) return@onClick
+
+            viewingCiv.policies.adopt(policy)
 
             // If we've moved to another screen in the meantime (great person pick, victory screen) ignore this
             if (game.screen !is PolicyPickerScreen || !policies.canAdoptPolicy()) {
@@ -105,14 +111,21 @@ class PolicyPickerScreen(val worldScreen: WorldScreen, civInfo: CivilizationInfo
         scrollPane.updateVisualScroll()
     }
 
-    private fun pickPolicy(policy: Policy) {
+    fun policyIsPickable(policy: Policy):Boolean {
         if (!worldScreen.isPlayersTurn
-                || worldScreen.viewingCiv.isSpectator() // viewingCiv var points to selectedCiv in case of spectator
-                || viewingCiv.isDefeated()
-                || viewingCiv.policies.isAdopted(policy.name)
-                || policy.name.endsWith("Complete")
-                || !viewingCiv.policies.isAdoptable(policy)
-                || !viewingCiv.policies.canAdoptPolicy()) {
+            || worldScreen.viewingCiv.isSpectator() // viewingCiv var points to selectedCiv in case of spectator
+            || viewingCiv.isDefeated()
+            || viewingCiv.policies.isAdopted(policy.name)
+            || policy.policyBranchType == PolicyBranchType.BranchComplete
+            || !viewingCiv.policies.isAdoptable(policy)
+            || !viewingCiv.policies.canAdoptPolicy()
+        )
+            return false
+        return true
+    }
+
+    private fun pickPolicy(policy: Policy) {
+        if (!policyIsPickable(policy)) {
             rightSideButton.disable()
         } else {
             rightSideButton.enable()
@@ -123,17 +136,8 @@ class PolicyPickerScreen(val worldScreen: WorldScreen, civInfo: CivilizationInfo
             game.setScreen(PolicyPickerScreen(worldScreen))
         }
         pickedPolicy = policy
-        val policyText = mutableListOf<String>()
-        policyText += policy.name
-        policyText += policy.uniques
-
-        if (!policy.name.endsWith("Complete")) {
-            if (policy.requires!!.isNotEmpty())
-                policyText += "Requires [" + policy.requires!!.joinToString { it.tr() } + "]"
-            else
-                policyText += "{Unlocked at} {" + policy.branch.era + "}"
-        }
-        descriptionLabel.setText(policyText.joinToString("\n") { it.tr() })
+        
+        descriptionLabel.setText(policy.getDescription())
     }
 
     /**
@@ -151,7 +155,7 @@ class PolicyPickerScreen(val worldScreen: WorldScreen, civInfo: CivilizationInfo
         var currentColumn = 1
         val branchTable = Table()
         for (policy in branch.policies) {
-            if (policy.name.endsWith("Complete")) continue
+            if (policy.policyBranchType == PolicyBranchType.BranchComplete) continue
             if (policy.row > currentRow) {
                 branchTable.row().pad(2.5f)
                 currentRow++

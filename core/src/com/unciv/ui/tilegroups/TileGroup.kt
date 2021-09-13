@@ -238,7 +238,7 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings, 
             var locationToCheck = baseLocation
             if (tileInfo.owningCity != null) {
                 val ownersEra = tileInfo.getOwner()!!.getEra()
-                val eraSpecificLocation = tileSetStrings.getString(locationToCheck, tileSetStrings.tag, ownersEra)
+                val eraSpecificLocation = tileSetStrings.getString(locationToCheck, tileSetStrings.tag, ownersEra.name)
                 if (ImageGetter.imageExists(eraSpecificLocation))
                     locationToCheck = eraSpecificLocation
             }
@@ -331,13 +331,6 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings, 
     }
 
     private fun removeMissingModReferences() {
-        val improvementName = tileInfo.improvement
-        if(improvementName != null && improvementName.startsWith("StartingLocation ")){
-            val nationName = improvementName.removePrefix("StartingLocation ")
-            if (!tileInfo.ruleset.nations.containsKey(nationName))
-                tileInfo.improvement = null
-        }
-
         for (unit in tileInfo.getUnits())
             if (!tileInfo.ruleset.nations.containsKey(unit.owner)) unit.removeFromTile()
     }

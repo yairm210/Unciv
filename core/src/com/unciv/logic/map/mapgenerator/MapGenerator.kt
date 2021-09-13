@@ -1,7 +1,7 @@
 package com.unciv.logic.map.mapgenerator
 
-import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
+import com.unciv.UncivGame
 import com.unciv.logic.HexMath
 import com.unciv.logic.map.*
 import com.unciv.models.Counter
@@ -9,7 +9,10 @@ import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.tile.Terrain
 import com.unciv.models.ruleset.tile.TerrainType
-import kotlin.math.*
+import kotlin.math.abs
+import kotlin.math.max
+import kotlin.math.pow
+import kotlin.math.sign
 import kotlin.random.Random
 
 
@@ -19,7 +22,7 @@ class MapGenerator(val ruleset: Ruleset) {
         const val consoleOutput = false
         private const val consoleTimings = false
     }
-    
+
     private var randomness = MapGenerationRandomness()
 
     fun generateMap(mapParameters: MapParameters): TileMap {
@@ -36,6 +39,7 @@ class MapGenerator(val ruleset: Ruleset) {
         else
             TileMap(mapSize.radius, ruleset, mapParameters.worldWrap)
 
+        mapParameters.createdWithVersion = UncivGame.Current.version
         map.mapParameters = mapParameters
 
         if (mapType == MapType.empty) {
@@ -73,7 +77,7 @@ class MapGenerator(val ruleset: Ruleset) {
             NaturalWonderGenerator(ruleset, randomness).spawnNaturalWonders(map)
         }
         runAndMeasure("RiverGenerator") {
-            RiverGenerator(randomness).spawnRivers(map)
+            RiverGenerator(map, randomness).spawnRivers()
         }
         runAndMeasure("spreadResources") {
             spreadResources(map)
@@ -459,7 +463,7 @@ class MapGenerator(val ruleset: Ruleset) {
 
 }
 
-class MapGenerationRandomness{
+class MapGenerationRandomness {
     var RNG = Random(42)
 
     fun seedRNG(seed: Long = 42) {
@@ -530,32 +534,5 @@ class MapGenerationRandomness{
         }
         // unreachable due to last loop iteration always returning and initialDistance >= 1
         throw Exception()
-    }
-}
-
-
-class RiverCoordinate(val position: Vector2, val bottomRightOrLeft: BottomRightOrLeft) {
-    enum class BottomRightOrLeft {
-        /** 7 O'Clock of the tile */
-        BottomLeft,
-
-        /** 5 O'Clock of the tile */
-        BottomRight
-    }
-
-    fun getAdjacentPositions(): Sequence<RiverCoordinate> {
-        // What's nice is that adjacents are always the OPPOSITE in terms of right-left - rights are adjacent to only lefts, and vice-versa
-        // This means that a lot of obviously-wrong assignments are simple to spot
-        return if (bottomRightOrLeft == BottomRightOrLeft.BottomLeft) {
-            sequenceOf(RiverCoordinate(position, BottomRightOrLeft.BottomRight), // same tile, other side
-                RiverCoordinate(position.cpy().add(1f, 0f), BottomRightOrLeft.BottomRight), // tile to MY top-left, take its bottom right corner
-                RiverCoordinate(position.cpy().add(0f, -1f), BottomRightOrLeft.BottomRight) // Tile to MY bottom-left, take its bottom right
-            )
-        } else {
-            sequenceOf(RiverCoordinate(position, BottomRightOrLeft.BottomLeft), // same tile, other side
-                RiverCoordinate(position.cpy().add(0f, 1f), BottomRightOrLeft.BottomLeft), // tile to MY top-right, take its bottom left
-                RiverCoordinate(position.cpy().add(-1f, 0f), BottomRightOrLeft.BottomLeft)  // tile to MY bottom-right, take its bottom left
-            )
-        }
     }
 }

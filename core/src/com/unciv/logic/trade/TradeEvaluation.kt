@@ -9,6 +9,7 @@ import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.models.ruleset.ModOptionsConstants
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tile.ResourceType
+import com.unciv.ui.victoryscreen.RankingType
 import kotlin.math.min
 import kotlin.math.sqrt
 
@@ -162,15 +163,14 @@ class TradeEvaluation {
             }
         }
     }
-    private fun surroundedByOurCities(city: CityInfo, civInfo: CivilizationInfo): Int{
-        val borderingCivs: List<String> = city.getNeighbouringCivs()
-        if (borderingCivs.size == 1 && borderingCivs.contains(civInfo.civName)){
-            return 10*civInfo.getEraNumber() // if the city is surrounded only by trading civ
+    private fun surroundedByOurCities(city: CityInfo, civInfo: CivilizationInfo): Int {
+        val borderingCivs: Set<String> = city.getNeighbouringCivs()
+        if (borderingCivs.size == 1 && borderingCivs.contains(civInfo.civName)) {
+            return 10 * civInfo.getEraNumber() // if the city is surrounded only by trading civ
         }
         if (borderingCivs.contains(civInfo.civName))
-            return 2*civInfo.getEraNumber() // if the city has a border with trading civ
+            return 2 * civInfo.getEraNumber() // if the city has a border with trading civ
         return 0
-
     }
 
     private fun evaluateSellCost(offer: TradeOffer, civInfo: CivilizationInfo, tradePartner: CivilizationInfo): Int {
@@ -243,7 +243,7 @@ class TradeEvaluation {
                         RelationshipLevel.Unforgivable -> 10000
                         RelationshipLevel.Enemy -> 2000
                         RelationshipLevel.Competitor -> 500
-                        RelationshipLevel.Neutral -> 200
+                        RelationshipLevel.Neutral, RelationshipLevel.Afraid -> 200
                         RelationshipLevel.Favorable, RelationshipLevel.Friend, RelationshipLevel.Ally -> 100
                     }
                 }
@@ -259,12 +259,12 @@ class TradeEvaluation {
     }
 
     fun evaluatePeaceCostForThem(ourCivilization: CivilizationInfo, otherCivilization: CivilizationInfo): Int {
-        val ourCombatStrength = Automation.evaluateCombatStrength(ourCivilization)
-        val theirCombatStrength = Automation.evaluateCombatStrength(otherCivilization)
+        val ourCombatStrength = ourCivilization.getStatForRanking(RankingType.Force)
+        val theirCombatStrength = otherCivilization.getStatForRanking(RankingType.Force)
         if (ourCombatStrength*1.5f >= theirCombatStrength && theirCombatStrength * 1.5f >= ourCombatStrength)
             return 0 // we're roughly equal, there's no huge power imbalance
         if (ourCombatStrength == 0) return -1000
-        if (theirCombatStrength == 0) return 1000 // Chumps got no cities or units
+        if (theirCombatStrength == 0) return 1000 // Chumps got no combat units
         if (ourCombatStrength > theirCombatStrength) {
             val absoluteAdvantage = ourCombatStrength - theirCombatStrength
             val percentageAdvantage = absoluteAdvantage / theirCombatStrength.toFloat()

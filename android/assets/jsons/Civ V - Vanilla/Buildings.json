@@ -18,7 +18,8 @@
 		"culture": 2,
 		"cost": 40,
 		"hurryCostModifier": 40,
-		"maintenance": 1
+		"maintenance": 1,
+		"uniques": ["Destroyed when the city is captured"]
 	},
 	// Column 1
 	{
@@ -128,7 +129,8 @@
 		"cityStrength": 5,
 		"cityHealth": 50,
 		"hurryCostModifier": 25,
-		"requiredTech": "Masonry"
+		"requiredTech": "Masonry",
+		"uniques": ["Destroyed when the city is captured"]
 	},
 	{
 		"name": "Walls of Babylon",
@@ -138,7 +140,8 @@
 		"cityStrength": 6,
 		"cityHealth": 100,
 		"hurryCostModifier": 25,
-		"requiredTech": "Masonry"
+		"requiredTech": "Masonry",
+		"uniques": ["Destroyed when the city is captured"]
 	},
 	{
 		"name": "The Pyramids",
@@ -163,7 +166,7 @@
 		"name": "Barracks",
 		"hurryCostModifier": 25,
 		"maintenance": 1,
-		"uniques": ["New [Military] units start with [15] Experience [in this city]"]
+		"uniques": ["New [Military] units start with [15] Experience [in this city]", "Destroyed when the city is captured"],
 		"requiredTech": "Bronze Working"
 	},
 	{
@@ -173,7 +176,7 @@
 		"hurryCostModifier": 25,
 		"maintenance": 1,
 		"uniques": ["-[25]% Culture cost of acquiring tiles [in this city]","-[25]% Gold cost of acquiring tiles [in this city]",
-			"New [Military] units start with [15] Experience [in this city]"],
+			"New [Military] units start with [15] Experience [in this city]", "Destroyed when the city is captured"],
 		"requiredTech": "Bronze Working"
 	},
 	{
@@ -234,7 +237,7 @@
 		"maintenance": 4,
 		"hurryCostModifier": 50,
 		"uniques": ["Remove extra unhappiness from annexed cities",
-			"Can only be built in annexed cities"],
+			"Can only be built [in annexed cities]"],
 		"requiredTech": "Mathematics"
 	},
 	{
@@ -270,7 +273,7 @@
 		"maintenance": 2,
 		"hurryCostModifier": 25,
 		"requiredTech": "Philosophy",
-		"uniques": ["Hidden when religion is disabled"]
+		"uniques": ["Hidden when religion is disabled", "Destroyed when the city is captured"]
 	},
 	{
 		"name": "National College",
@@ -298,6 +301,7 @@
 		"requiredBuilding": "Monument",
 		"maintenance": 2,
 		"hurryCostModifier": 25,
+		"uniques": ["Destroyed when the city is captured"],
 		"requiredTech": "Drama and Poetry"
 	},
 	{
@@ -452,6 +456,26 @@
 		"quote": "'For it soars to a height to match the sky, and as if surging up from among the other buildings it stands on high and looks down upon the remainder of the city, adorning it, because it is a part of it, but glorying in its own beauty'  - Procopius, De Aedificis"
 	},
 	{
+		"name": "Great Mosque of Djenne",
+		"culture": 1,
+		"faith": 3,
+		"greatPersonPoints": {"Great Engineer": 1},
+		"isWonder": true,
+		"uniques": ["Provides a free [Mosque] [in this city]", "Hidden when religion is disabled",
+			"[Missionary] units built [in this city] can [Spread Religion] [1] extra times", "[Great Prophet] units built [in this city] can [Spread Religion] [1] extra times"],
+		"requiredTech": "Theology",
+		"quote": "'With the magnificence of eternity before us, let time, with all its fluctuations, dwindle into its own littleness.' - Thomas Chalmers"
+	},
+	{
+		"name": "Grand Temple",
+		"culture": 1,
+		"faith": 8,
+		"uniques": ["Requires a [Temple] in all cities", "Cost increases by [30] per owned city",
+			"[+100]% Natural religion spread [in this city]", "Hidden when religion is disabled", "Can only be built [in holy cities]"],
+		"requiredTech": "Theology",
+		"isNationalWonder": true
+	},
+	{
 		"name": "Chichen Itza",
 		"culture": 1,
 		"happiness": 4,
@@ -570,8 +594,8 @@
 		"cityHealth": 25,
 		"hurryCostModifier": 25,
 		"requiredBuilding": "Walls",
-		"requiredTech": "Chivalry"
-		// 4 cityStrength in vanilla, no ExtraCityHitPoints in vanilla
+		"requiredTech": "Chivalry",
+		"uniques": ["Destroyed when the city is captured"]
 	},
 	{
 		"name": "Mughal Fort",
@@ -583,7 +607,7 @@
 		"culture": 2,
 		"hurryCostModifier": 25,
 		"requiredBuilding": "Walls",
-		"uniques": ["[+1 Gold] once [Flight] is discovered"],
+		"uniques": ["[+1 Gold] once [Flight] is discovered", "Destroyed when the city is captured"],
 		"requiredTech": "Chivalry"
 	},
 	{
@@ -620,7 +644,7 @@
 		"hurryCostModifier": 25,
 		"maintenance": 1,
 		"requiredBuilding": "Barracks",
-		"uniques": ["New [Military] units start with [15] Experience [in this city]"]
+		"uniques": ["New [Military] units start with [15] Experience [in this city]", "Destroyed when the city is captured"],
 		"requiredTech": "Steel"
 	},
 
@@ -643,7 +667,8 @@
 		"hurryCostModifier": 10,
 		"requiredBuilding": "Amphitheater",
 		"maintenance": 2,
-		"requiredTech": "Acoustics"
+		"requiredTech": "Acoustics",
+		"uniques": ["Destroyed when the city is captured"]
 	},
 	{
 		"name": "Sistine Chapel",
@@ -693,7 +718,7 @@
 		"culture": 1,
 		"isWonder": true,
 		"greatPersonPoints": {"Great Artist": 1},
-		"uniques": ["Unhappiness from population decreased by [10]%"],
+		"uniques": ["[-10]% unhappiness from population [in all cities]"],
 		"requiredTech": "Banking",
 		"quote": "'Most of us can, as we choose, make of this world either a palace or a prison' - John Lubbock"
 	},
@@ -719,7 +744,7 @@
 		"culture": 3,
 		"isWonder": true,
 		"greatPersonPoints": {"Great Engineer": 2},
-		"uniques": ["+[15]% Strength for units fighting in [Friendly Land]",
+		"uniques": ["+[15]% Strength for [Non-City] units fighting in [Friendly Land]",
 			"Provides a free [Castle] [in this city]"],
 		"requiredTech": "Gunpowder",
 		"quote": "'Bushido is realized in the presence of death. This means choosing death whenever there is a choice between life and death. There is no other reasoning.'  - Yamamoto Tsunetomo"
@@ -772,6 +797,18 @@
 		"requiredTech": "Economics"
 	},
 	{
+		"name": "Coffee House",
+		"replaces": "Windmill",
+		"uniqueTo": "Austria",
+		"production": 2,
+		"percentStatBonus": {"production": 10},
+		"specialistSlots": {"Engineer": 1},
+		"hurryCostModifier": 25,
+		"maintenance": 2,
+		"uniques": ["[+25]% great person generation [in this city]"],
+		"requiredTech": "Economics"
+	},
+	{
 		"name": "Arsenal",
 		"cost": 300,
 		"cityStrength": 9,
@@ -800,7 +837,8 @@
 		"requiredBuilding": "Opera House",
 		"maintenance": 3,
 		"hurryCostModifier": 0,
-		"requiredTech": "Archaeology"
+		"requiredTech": "Archaeology",
+		"uniques": ["Destroyed when the city is captured"]
 	},
 	{
 		"name": "The Louvre",
@@ -848,7 +886,7 @@
 		"hurryCostModifier": 0,
 		"maintenance": 1,
 		"requiredBuilding": "Armory",
-		"uniques": ["New [Military] units start with [15] Experience [in this city]"],
+		"uniques": ["New [Military] units start with [15] Experience [in this city]", "Destroyed when the city is captured"],
 		"requiredTech": "Military Science"
 	},
 	{
@@ -905,7 +943,8 @@
 		"percentStatBonus": {"culture": 33},
 		"requiredBuilding": "Museum",
 		"maintenance": 3,
-		"requiredTech": "Radio"
+		"requiredTech": "Radio",
+		"uniques": ["Destroyed when the city is captured"]
 	},
 	{
 		"name": "Eiffel Tower",
@@ -923,14 +962,15 @@
 		"cityHealth": 25,
 		"hurryCostModifier": 25,
 		"requiredBuilding": "Arsenal",
-		"requiredTech": "Replaceable Parts"
+		"requiredTech": "Replaceable Parts",
+		"uniques": ["Destroyed when the city is captured"]
 	},
 	{
 		"name": "Statue of Liberty",
 		"culture": 1,
 		"isWonder": true,
 		"greatPersonPoints": {"Great Engineer": 2},
-		"uniques": ["[+1 Production] from every specialist"],
+		"uniques": ["[+1 Production] from every specialist [in all cities]"],
 		"requiredTech": "Replaceable Parts",
 		"quote": "'Give me your tired, your poor, your huddled masses yearning to breathe free, the wretched refuse of your teeming shore. Send these, the homeless, tempest-tossed to me, I lift my lamp beside the golden door!'  - Emma Lazarus"
 	},
@@ -1025,7 +1065,8 @@
 		"name": "Apollo Program",
 		"cost": 750,
 		"isNationalWonder": true,
-		"uniques": ["Enables construction of Spaceship parts", "Triggers a global alert upon completion"],
+		"uniques": ["Enables construction of Spaceship parts", "Triggers a global alert upon completion", 
+			"Hidden when [Scientific] Victory is disabled"],
 		"requiredTech": "Rocketry"
 	},
 
@@ -1046,13 +1087,13 @@
 		"cost": 300,
 		"maintenance": 1,
 		"requiredTech": "Telecommunications",
-		"uniques": ["Population loss from nuclear attacks -[75]%"]
+		"uniques": ["Population loss from nuclear attacks [-75]% [in this city]"]
 	},
 	{
 		"name": "SS Cockpit",
 		"requiredResource": "Aluminum",
 		"requiredTech": "Satellites",
-		"uniques": ["Spaceship part", "Triggers a global alert upon completion", "Cannot be purchased"]
+		"uniques": ["Spaceship part", "Triggers a global alert upon completion", "Cannot be purchased", "Hidden when [Scientific] Victory is disabled"]
 	},
 	{
 		"name": "Hubble Space Telescope",
@@ -1070,7 +1111,7 @@
 		"name": "SS Booster",
 		"requiredResource": "Aluminum",
 		"requiredTech": "Advanced Ballistics",
-		"uniques": ["Spaceship part", "Triggers a global alert upon completion", "Cannot be purchased"]
+		"uniques": ["Spaceship part", "Triggers a global alert upon completion", "Cannot be purchased", "Hidden when [Scientific] Victory is disabled"]
 	},
 	{
 		"name": "Spaceship Factory",
@@ -1097,13 +1138,13 @@
 		"name": "SS Engine",
 		"requiredResource": "Aluminum",
 		"requiredTech": "Particle Physics",
-		"uniques": ["Spaceship part", "Triggers a global alert upon completion", "Cannot be purchased"]
+		"uniques": ["Spaceship part", "Triggers a global alert upon completion", "Cannot be purchased", "Hidden when [Scientific] Victory is disabled"]
 	},
 	{
 		"name": "SS Stasis Chamber",
 		"requiredResource": "Aluminum",
 		"requiredTech": "Nanotechnology",
-		"uniques": ["Spaceship part", "Triggers a global alert upon completion", "Cannot be purchased"]
+		"uniques": ["Spaceship part", "Triggers a global alert upon completion", "Cannot be purchased", "Hidden when [Scientific] Victory is disabled"]
 	},
 
 	// All Eras
@@ -1134,7 +1175,7 @@
 		"faith": 2,
 		"uniques": ["[+1 Culture, +1 Faith] from [Wine] tiles [in this city]", 
 			"[+1 Culture, +1 Faith] from [Incense] tiles [in this city]",
-			"Unbuildable", "Hidden when religion is disabled"]
+			"Unbuildable", "Hidden when religion is disabled", "Destroyed when the city is captured"]
 	},
 	{
 		"name": "Mosque",

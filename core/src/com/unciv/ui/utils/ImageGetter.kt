@@ -3,6 +3,7 @@ package com.unciv.ui.utils
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.Texture
+import com.badlogic.gdx.graphics.Texture.TextureFilter
 import com.badlogic.gdx.graphics.g2d.NinePatch
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
 import com.badlogic.gdx.graphics.g2d.TextureRegion
@@ -16,6 +17,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.UncivGame
+import com.unciv.logic.GameSaver
 import com.unciv.models.ruleset.Era
 import com.unciv.models.ruleset.Nation
 import com.unciv.models.ruleset.Ruleset
@@ -41,7 +43,7 @@ object ImageGetter {
 
     // We then shove all the drawables into a hashmap, because the atlas specifically tells us
     //   that the search on it is inefficient
-    internal val textureRegionDrawables = HashMap<String, TextureRegionDrawable>()
+    private val textureRegionDrawables = HashMap<String, TextureRegionDrawable>()
 
     fun resetAtlases() {
         atlases.values.forEach { it.dispose() }
@@ -60,19 +62,19 @@ object ImageGetter {
             textureRegionDrawables[region.name] = drawable
         }
 
-        for (singleImagesFolder in sequenceOf("BuildingIcons", "FlagIcons", "UnitIcons")) {
-            if (!atlases.containsKey(singleImagesFolder)) atlases[singleImagesFolder] = TextureAtlas("$singleImagesFolder.atlas")
-            val tempAtlas = atlases[singleImagesFolder]!!
+        // See #4993 - you can't .list() on a jar file, so the ImagePacker leaves us the list of actual atlases.
+        val fileNames = GameSaver.json().fromJson(Array<String>::class.java, Gdx.files.internal("Atlases.json"))
+        for (fileName in fileNames) {
+            val file = Gdx.files.internal("$fileName.atlas")
+            val extraAtlas = file.nameWithoutExtension()
+            val tempAtlas = atlases[extraAtlas]  // fetch if cached
+                ?: TextureAtlas(file.name()).apply {  // load if not
+                    atlases[extraAtlas] = this  // cache the freshly loaded
+                }
             for (region in tempAtlas.regions) {
                 val drawable = TextureRegionDrawable(region)
-                textureRegionDrawables["$singleImagesFolder/" + region.name] = drawable
+                textureRegionDrawables[region.name] = drawable
             }
-        }
-
-        if (!atlases.containsKey("Skin")) atlases["Skin"] = TextureAtlas("Skin.atlas")
-        for (region in atlases["Skin"]!!.regions) {
-            val drawable = TextureRegionDrawable(region)
-            textureRegionDrawables["Skin/" + region.name] = drawable
         }
 
         // These are from the mods
@@ -112,7 +114,7 @@ object ImageGetter {
      *      getLayeredImageColored("TileSets/FantasyHex/Units/Warrior", null, Color.GOLD, Color.RED)
      *
      *      All images in the atlas that match the pattern "TileSets/FantasyHex/Units/Warrior" or
-     *      "TileSets/FantasyHex/Units/Warrior-NUMBER" are retrieved. NUMBERs must start from 1 and
+     *      "TileSets/FantasyHex/Units/Warrior-NUMBER" are retrieved. NUMBER must start from 1 and
      *      be incremented by 1 per layer. If the n-th NUMBER is missing, the (n-1)-th layer is the
      *      last one retrieved:
      *      Given the layer names:
@@ -131,10 +133,10 @@ object ImageGetter {
         val layerNames = mutableListOf(baseFileName)
         val layerList = arrayListOf<Image>()
 
-        var i = 1
-        while (imageExists("$baseFileName-$i")) {
-            layerNames.add("$baseFileName-$i")
-            ++i
+        var number = 1
+        while (imageExists("$baseFileName-$number")) {
+            layerNames.add("$baseFileName-$number")
+            ++number
         }
 
         for (i in layerNames.indices) {
@@ -151,7 +153,12 @@ object ImageGetter {
     fun getDot(dotColor: Color) = getWhiteDot().apply { color = dotColor }
 
     fun getExternalImage(fileName: String): Image {
-        return Image(TextureRegion(Texture("ExtraImages/$fileName")))
+        // Since these are not packed in an atlas, they have no scaling filter metadata and
+        // default to Nearest filter, anisotropic level 1. Use Linear instead, helps
+        // loading screen and Tutorial.WorldScreen quite a bit. More anisotropy barely helps.
+        val texture = Texture("ExtraImages/$fileName")
+        texture.setFilter(TextureFilter.Linear, TextureFilter.Linear)
+        return Image(TextureRegion(texture))
     }
 
     fun getImage(fileName: String): Image {
@@ -253,11 +260,6 @@ object ImageGetter {
     fun getImprovementIcon(improvementName: String, size: Float = 20f): Actor {
         if (improvementName.startsWith("Remove") || improvementName == Constants.cancelImprovementOrder)
             return Table().apply { add(getImage("OtherIcons/Stop")).size(size) }
-        if (improvementName.startsWith("StartingLocation ")) {
-            val nationName = improvementName.removePrefix("StartingLocation ")
-            val nation = ruleset.nations[nationName]!!
-            return getNationIndicator(nation, size)
-        }
 
         val iconGroup = getImage("ImprovementIcons/$improvementName").surroundWithCircle(size)
 
@@ -301,8 +303,11 @@ object ImageGetter {
     }
     
     fun religionIconExists(iconName: String) = imageExists("ReligionIcons/$iconName")
-    fun getReligionIcon(iconName: String): Image {
+    fun getReligionImage(iconName: String): Image {
         return getImage("ReligionIcons/$iconName")
+    }
+    fun getCircledReligionIcon(iconName: String, size: Float): IconCircleGroup {
+        return getReligionImage(iconName).surroundWithCircle(size, color = Color.BLACK )
     }
 
     fun getBlue() = Color(0x004085bf)
@@ -342,10 +347,7 @@ object ImageGetter {
     fun getTechIconGroup(techName: String, circleSize: Float) = getTechIcon(techName).surroundWithCircle(circleSize)
 
     fun getTechIcon(techName: String): Image {
-        val era = ruleset.technologies[techName]!!.era()
-        val techIconColor = 
-            if (era !in ruleset.eras) Era().getColor()
-            else ruleset.eras[ruleset.technologies[techName]!!.era()]!!.getColor()
+        val techIconColor = ruleset.eras[ruleset.technologies[techName]!!.era()]!!.getColor()
         return getImage("TechIcons/$techName").apply { color = techIconColor.lerp(Color.BLACK, 0.6f) }
     }
 

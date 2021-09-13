@@ -3,93 +3,159 @@ package com.unciv.ui.worldscreen.mainmenu
 import com.badlogic.gdx.Application
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
+import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.ui.*
+import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.MainMenuScreen
+import com.unciv.UncivGame
+import com.unciv.logic.MapSaver
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.models.UncivSound
+import com.unciv.models.metadata.BaseRuleset
+import com.unciv.models.ruleset.Ruleset.CheckModLinksStatus
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.tilesets.TileSetCache
 import com.unciv.models.translations.TranslationFileWriter
 import com.unciv.models.translations.Translations
 import com.unciv.models.translations.tr
+import com.unciv.ui.civilopedia.FormattedLine
+import com.unciv.ui.civilopedia.MarkupRenderer
+import com.unciv.ui.civilopedia.SimpleCivilopediaText
 import com.unciv.ui.utils.*
+import com.unciv.ui.utils.LanguageTable.Companion.addLanguageTables
 import com.unciv.ui.utils.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.worldscreen.WorldScreen
 import java.util.*
 import kotlin.concurrent.thread
-import kotlin.math.min
 import com.badlogic.gdx.utils.Array as GdxArray
-import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 
-class Language(val language:String, val percentComplete:Int){
-    override fun toString(): String {
-        val spaceSplitLang = language.replace("_"," ")
-        return "$spaceSplitLang - $percentComplete%"
-    }
-}
-
-class OptionsPopup(val previousScreen:CameraStageBaseScreen) : Popup(previousScreen) {
-    private var selectedLanguage: String = "English"
+/**
+ * The Options (Settings) Popup
+ * @param previousScreen Tha caller - note if this is a [WorldScreen] or [MainMenuScreen] they will be rebuilt when major options change.
+ */
+//region Fields
+class OptionsPopup(val previousScreen: CameraStageBaseScreen) : Popup(previousScreen) {
     private val settings = previousScreen.game.settings
-    private val optionsTable = Table(CameraStageBaseScreen.skin)
-    private val resolutionArray = GdxArray(arrayOf("750x500", "900x600", "1050x700", "1200x800", "1500x1000"))
+    private val tabs: TabbedPager
+    private val resolutionArray = com.badlogic.gdx.utils.Array(arrayOf("750x500", "900x600", "1050x700", "1200x800", "1500x1000"))
+    private var modCheckFirstRun = true   // marker for automatic first run on selecting the page
+    private var modCheckCheckBox: CheckBox? = null
+    private var modCheckResultCell: Cell<Actor>? = null
+    private val selectBoxMinWidth: Float
+
+    //endregion
 
     init {
         settings.addCompletedTutorialTask("Open the options table")
 
-        optionsTable.defaults().pad(2.5f)
-        rebuildOptionsTable()
+        innerTable.pad(0f)
+        val tabMaxWidth: Float
+        val tabMinWidth: Float
+        val tabMaxHeight: Float
+        previousScreen.run {
+            selectBoxMinWidth = if (stage.width < 600f) 200f else 240f
+            tabMaxWidth = if (isPortrait()) stage.width - 10f else 0.8f * stage.width
+            tabMinWidth = 0.6f * stage.width
+            tabMaxHeight = (if (isPortrait()) 0.7f else 0.8f) * stage.height
+        }
+        tabs = TabbedPager(tabMinWidth, tabMaxWidth, 0f, tabMaxHeight,
+            headerFontSize = 21, backgroundColor = Color.CLEAR, capacity = 8)
+        add(tabs).pad(0f).grow().row()
 
-        val scrollPane = ScrollPane(optionsTable, skin)
-        scrollPane.setOverscroll(false, false)
-        scrollPane.fadeScrollBars = false
-        scrollPane.setScrollingDisabled(true, false)
-        add(scrollPane).maxHeight(screen.stage.height * 0.6f).row()
+        tabs.addPage("About", getAboutTab(), ImageGetter.getExternalImage("Icon.png"), 24f)
+        tabs.addPage("Display", getDisplayTab(), ImageGetter.getImage("UnitPromotionIcons/Scouting"), 24f)
+        tabs.addPage("Gameplay", getGamePlayTab(), ImageGetter.getImage("OtherIcons/Options"), 24f)
+        tabs.addPage("Language", getLanguageTab(), ImageGetter.getImage("FlagIcons/${settings.language}"), 24f)
+        tabs.addPage("Sound", getSoundTab(), ImageGetter.getImage("OtherIcons/Speaker"), 24f)
+        // at the moment the notification service only exists on Android
+        if (Gdx.app.type == Application.ApplicationType.Android)
+            tabs.addPage("Multiplayer", getMultiplayerTab(), ImageGetter.getImage("OtherIcons/Multiplayer"), 24f)
+        tabs.addPage("Advanced", getAdvancedTab(), ImageGetter.getImage("OtherIcons/Settings"), 24f)
+        if (RulesetCache.size > 1) {
+            tabs.addPage("Locate mod errors", getModCheckTab(), ImageGetter.getImage("OtherIcons/Mods"), 24f) { _, _ ->
+                if (modCheckFirstRun) runModChecker()
+            }
+        }
+        if (Gdx.input.isKeyPressed(Input.Keys.SHIFT_RIGHT) && (Gdx.input.isKeyPressed(Input.Keys.CONTROL_RIGHT) || Gdx.input.isKeyPressed(Input.Keys.ALT_RIGHT))) {
+            tabs.addPage("Debug", getDebugTab(), ImageGetter.getImage("OtherIcons/SecretOptions"), 24f, secret = true)
+        }
 
         addCloseButton {
             previousScreen.game.limitOrientationsHelper?.allowPortrait(settings.allowAndroidPortrait)
             if (previousScreen is WorldScreen)
                 previousScreen.enableNextTurnButtonAfterOptions()
-        }
+        }.padBottom(10f)
 
         pack() // Needed to show the background.
         center(previousScreen.stage)
     }
 
-    private fun addHeader(text: String) {
-        optionsTable.add(text.toLabel(fontSize = 24)).colspan(2).padTop(if (optionsTable.cells.isEmpty) 0f else 20f).row()
+    override fun setVisible(visible: Boolean) {
+        super.setVisible(visible)
+        if (!visible) return
+        tabs.askForPassword(secretHashCode = 2747985)
+        if (tabs.activePage < 0) tabs.selectPage(2)
     }
 
-    private fun addYesNoRow(text: String, initialValue: Boolean, updateWorld: Boolean = false, action: ((Boolean) -> Unit)) {
-        optionsTable.add(text.toLabel())
-        val button = YesNoButton(initialValue, CameraStageBaseScreen.skin) {
-            action(it)
-            settings.save()
-            if (updateWorld && previousScreen is WorldScreen)
-                previousScreen.shouldUpdate = true
-        }
-        optionsTable.add(button).row()
-    }
-
+    /** Reload this Popup after major changes (resolution, tileset, language) */
     private fun reloadWorldAndOptions() {
         settings.save()
         if (previousScreen is WorldScreen) {
             previousScreen.game.worldScreen = WorldScreen(previousScreen.gameInfo, previousScreen.viewingCiv)
             previousScreen.game.setWorldScreen()
-
         } else if (previousScreen is MainMenuScreen) {
             previousScreen.game.setScreen(MainMenuScreen())
         }
         (previousScreen.game.screen as CameraStageBaseScreen).openOptionsPopup()
     }
 
-    private fun rebuildOptionsTable() {
-        settings.save()
-        optionsTable.clear()
+    //region Page builders
 
-        addHeader("Display options")
+    private fun getAboutTab(): Table {
+        defaults().pad(5f)
+        val version = previousScreen.game.version
+        val versionAnchor = version.replace(".","")
+        val lines = sequence {
+            yield(FormattedLine(extraImage = "banner", imageSize = 240f, centered = true))
+            yield(FormattedLine())
+            yield(FormattedLine("{Version}: $version", link = "https://github.com/yairm210/Unciv/blob/master/changelog.md#$versionAnchor"))
+            yield(FormattedLine("See online Readme", link = "https://github.com/yairm210/Unciv/blob/master/README.md#unciv---foss-civ-v-for-androiddesktop"))
+            yield(FormattedLine("Visit repository", link = "https://github.com/yairm210/Unciv"))
+        }
+        return MarkupRenderer.render(lines.toList()).pad(20f)
+    }
+
+    private fun getLanguageTab() = Table(CameraStageBaseScreen.skin).apply {
+        val languageTables = this.addLanguageTables(tabs.prefWidth * 0.9f - 10f)
+
+        var chosenLanguage = settings.language
+        fun selectLanguage() {
+            settings.language = chosenLanguage
+            settings.updateLocaleFromLanguage()
+            previousScreen.game.translations.tryReadTranslationForCurrentLanguage()
+            reloadWorldAndOptions()
+        }
+        fun updateSelection() {
+            languageTables.forEach { it.update(chosenLanguage) }
+            if (chosenLanguage != settings.language)
+                selectLanguage()
+        }
+        updateSelection()
+
+        languageTables.forEach {
+            it.onClick {
+                chosenLanguage = it.language
+                updateSelection()
+            }
+        }
+    }
+
+    private fun getDisplayTab() = Table(CameraStageBaseScreen.skin).apply {
+        pad(10f)
+        defaults().pad(2.5f)
 
         addYesNoRow("Show worked tiles", settings.showWorkedTiles, true) { settings.showWorkedTiles = it }
         addYesNoRow("Show resources and improvements", settings.showResourcesAndImprovements, true) { settings.showResourcesAndImprovements = it }
@@ -99,8 +165,6 @@ class OptionsPopup(val previousScreen:CameraStageBaseScreen) : Popup(previousScr
 
         addYesNoRow("Show pixel units", settings.showPixelUnits, true) { settings.showPixelUnits = it }
         addYesNoRow("Show pixel improvements", settings.showPixelImprovements, true) { settings.showPixelImprovements = it }
-
-        addLanguageSelectBox()
 
         addResolutionSelectBox()
 
@@ -112,16 +176,21 @@ class OptionsPopup(val previousScreen:CameraStageBaseScreen) : Popup(previousScr
         }
 
         val continuousRenderingDescription = "When disabled, saves battery life but certain animations will be suspended"
-        optionsTable.add(continuousRenderingDescription.toLabel(fontSize = 14)).colspan(2).padTop(20f).row()
+        val continuousRenderingLabel = WrappableLabel(continuousRenderingDescription,
+                tabs.prefWidth, Color.ORANGE.cpy().lerp(Color.WHITE, 0.7f), 14)
+        continuousRenderingLabel.wrap = true
+        add(continuousRenderingLabel).colspan(2).padTop(10f).row()
+    }
 
-        addHeader("Gameplay options")
-
+    private fun getGamePlayTab() = Table(CameraStageBaseScreen.skin).apply {
+        pad(10f)
+        defaults().pad(5f)
         addYesNoRow("Check for idle units", settings.checkForDueUnits, true) { settings.checkForDueUnits = it }
         addYesNoRow("Move units with a single tap", settings.singleTapMove) { settings.singleTapMove = it }
         addYesNoRow("Auto-assign city production", settings.autoAssignCityProduction, true) {
             settings.autoAssignCityProduction = it
             if (it && previousScreen is WorldScreen &&
-                    previousScreen.viewingCiv.isCurrentPlayer() && previousScreen.viewingCiv.playerType == PlayerType.Human) {
+                previousScreen.viewingCiv.isCurrentPlayer() && previousScreen.viewingCiv.playerType == PlayerType.Human) {
                 previousScreen.gameInfo.currentPlayerCiv.cities.forEach { city ->
                     city.cityConstructions.chooseNextConstruction()
                 }
@@ -130,24 +199,49 @@ class OptionsPopup(val previousScreen:CameraStageBaseScreen) : Popup(previousScr
         addYesNoRow("Auto-build roads", settings.autoBuildingRoads) { settings.autoBuildingRoads = it }
         addYesNoRow("Automated workers replace improvements", settings.automatedWorkersReplaceImprovements) { settings.automatedWorkersReplaceImprovements = it }
         addYesNoRow("Order trade offers by amount", settings.orderTradeOffersByAmount) { settings.orderTradeOffersByAmount = it }
+    }
+
+    private fun getSoundTab() = Table(CameraStageBaseScreen.skin).apply {
+        pad(10f)
+        defaults().pad(5f)
+
+        addSoundEffectsVolumeSlider()
+
+        val musicLocation = Gdx.files.local(previousScreen.game.musicLocation)
+        if (musicLocation.exists())
+            addMusicVolumeSlider()
+        else
+            addDownloadMusic(musicLocation)
+    }
+
+    private fun getMultiplayerTab(): Table = Table(CameraStageBaseScreen.skin).apply {
+        pad(10f)
+        defaults().pad(5f)
+
+        addYesNoRow("Enable out-of-game turn notifications", settings.multiplayerTurnCheckerEnabled) {
+            settings.multiplayerTurnCheckerEnabled = it
+            settings.save()
+            tabs.replacePage("Multiplayer", getMultiplayerTab())
+        }
+
+        if (settings.multiplayerTurnCheckerEnabled) {
+            addMultiplayerTurnCheckerDelayBox()
+
+            addYesNoRow("Show persistent notification for turn notifier service", settings.multiplayerTurnCheckerPersistentNotificationEnabled)
+                { settings.multiplayerTurnCheckerPersistentNotificationEnabled = it }
+        }
+    }
+
+    private fun getAdvancedTab() = Table(CameraStageBaseScreen.skin).apply {
+        pad(10f)
+        defaults().pad(5f)
 
         addAutosaveTurnsSelectBox()
 
-        // at the moment the notification service only exists on Android
-        addNotificationOptions()
-
-        addHeader("Other options")
-
-
-        addYesNoRow("{Show experimental world wrap for maps}\n{HIGHLY EXPERIMENTAL - YOU HAVE BEEN WARNED!}".tr(),
-                settings.showExperimentalWorldWrap) {
+        addYesNoRow("{Show experimental world wrap for maps}\n{HIGHLY EXPERIMENTAL - YOU HAVE BEEN WARNED!}",
+            settings.showExperimentalWorldWrap) {
             settings.showExperimentalWorldWrap = it
         }
-        addYesNoRow("{Enable experimental religion in start games}\n{HIGHLY EXPERIMENTAL - UPDATES WILL BREAK SAVES!}".tr(),
-                settings.showExperimentalReligion) {
-            settings.showExperimentalReligion = it
-        }
-
 
         if (previousScreen.game.limitOrientationsHelper != null) {
             addYesNoRow("Enable portrait orientation", settings.allowAndroidPortrait) {
@@ -157,26 +251,80 @@ class OptionsPopup(val previousScreen:CameraStageBaseScreen) : Popup(previousScr
             }
         }
 
-        addSoundEffectsVolumeSlider()
-        addMusicVolumeSlider()
-
         addTranslationGeneration()
-        addModCheckerPopup()
-        addSetUserId()
 
-        optionsTable.add("Version".toLabel()).pad(10f)
-        val versionLabel = previousScreen.game.version.toLabel()
-        if (previousScreen.game.version[0] in '0'..'9')
-            versionLabel.onClick {
-                val url = "https://github.com/yairm210/Unciv/blob/master/changelog.md#" +
-                        previousScreen.game.version.replace(".","")
-                Gdx.net.openURI(url)
-            }
-        optionsTable.add(versionLabel).pad(10f).row()
+        addSetUserId()
     }
 
-    private fun addMinimapSizeSlider() {
-        optionsTable.add("Show minimap".tr())
+    private fun getModCheckTab() = Table(CameraStageBaseScreen.skin).apply {
+        defaults().pad(10f).align(Align.top)
+        modCheckCheckBox = "Check extension mods based on vanilla".toCheckBox {
+            runModChecker(it)
+        }
+        add(modCheckCheckBox).row()
+        modCheckResultCell = add("Checking mods for errors...".toLabel())
+    }
+
+    private fun runModChecker(complex: Boolean = false) {
+        modCheckFirstRun = false
+        if (modCheckCheckBox == null) return
+        modCheckCheckBox!!.disable()
+        if (modCheckResultCell == null) return
+        thread(name="ModChecker") {
+            val lines = ArrayList<FormattedLine>()
+            var noProblem = true
+            for (mod in RulesetCache.values.sortedBy { it.name }) {
+                val modLinks = if (complex) RulesetCache.checkCombinedModLinks(linkedSetOf(mod.name))
+                    else mod.checkModLinks()
+                val color = when (modLinks.status) {
+                    CheckModLinksStatus.OK -> "#0F0"
+                    CheckModLinksStatus.Warning -> "#FF0"
+                    CheckModLinksStatus.Error -> "#F00"
+                }
+                val label = if (mod.name.isEmpty()) BaseRuleset.Civ_V_Vanilla.fullName else mod.name
+                lines += FormattedLine("$label{}", starred = true, color = color, header = 3)
+                if (modLinks.isNotOK()) {
+                    lines += FormattedLine(modLinks.message)
+                    noProblem = false
+                }
+                lines += FormattedLine()
+            }
+            if (noProblem) lines += FormattedLine("{No problems found}.")
+
+            Gdx.app.postRunnable {
+                val result = SimpleCivilopediaText(lines).renderCivilopediaText(tabs.prefWidth - 25f)
+                modCheckResultCell?.setActor(result)
+                modCheckCheckBox!!.enable()
+            }
+        }
+    }
+
+    private fun getDebugTab() = Table(CameraStageBaseScreen.skin).apply {
+        pad(10f)
+        defaults().pad(5f)
+
+        val game = UncivGame.Current
+        add("Supercharged".toCheckBox(game.superchargedForDebug) {
+            game.superchargedForDebug = it
+        }).row()
+        add("View entire map".toCheckBox(game.viewEntireMapForDebug) {
+            game.viewEntireMapForDebug = it
+        }).row()
+        if (game.isGameInfoInitialized()) {
+            add("God mode (current game)".toCheckBox(game.gameInfo.gameParameters.godMode) {
+                game.gameInfo.gameParameters.godMode = it
+            }).row()
+        }
+        add("Save maps compressed".toCheckBox(MapSaver.saveZipped) {
+            MapSaver.saveZipped = it
+        }).row()
+    }
+
+    //endregion
+    //region Row builders
+
+    private fun Table.addMinimapSizeSlider() {
+        add("Show minimap".toLabel()).left().fillX()
 
         // The meaning of the values needs a formula to be synchronized between here and
         // [Minimap.init]. It goes off-10%-11%..29%-30%-35%-40%-45%-50% - and the percentages
@@ -203,49 +351,161 @@ class OptionsPopup(val previousScreen:CameraStageBaseScreen) : Popup(previousScr
             if (previousScreen is WorldScreen)
                 previousScreen.shouldUpdate = true
         }
-        optionsTable.add(minimapSlider).pad(10f).row()
+        add(minimapSlider).pad(10f).row()
     }
 
-    private fun addSetUserId() {
-        val idSetLabel = "".toLabel()
-        val takeUserIdFromClipboardButton = "Take user ID from clipboard".toTextButton()
-                .onClick {
-                    try {
-                        val clipboardContents = Gdx.app.clipboard.contents.trim()
-                        UUID.fromString(clipboardContents)
-                        YesNoPopup("Doing this will reset your current user ID to the clipboard contents - are you sure?",
-                                {
-                                    settings.userId = clipboardContents
-                                    settings.save()
-                                    idSetLabel.setFontColor(Color.WHITE).setText("ID successfully set!".tr())
-                                }, previousScreen).open(true)
-                        idSetLabel.isVisible = true
-                    } catch (ex: Exception) {
-                        idSetLabel.isVisible = true
-                        idSetLabel.setFontColor(Color.RED).setText("Invalid ID!".tr())
+    private fun Table.addResolutionSelectBox() {
+        add("Resolution".toLabel()).left().fillX()
+
+        val resolutionSelectBox = SelectBox<String>(skin)
+        resolutionSelectBox.items = resolutionArray
+        resolutionSelectBox.selected = settings.resolution
+        add(resolutionSelectBox).minWidth(selectBoxMinWidth).pad(10f).row()
+
+        resolutionSelectBox.onChange {
+            settings.resolution = resolutionSelectBox.selected
+            reloadWorldAndOptions()
+        }
+    }
+
+    private fun Table.addTileSetSelectBox() {
+        add("Tileset".toLabel()).left().fillX()
+
+        val tileSetSelectBox = SelectBox<String>(skin)
+        val tileSetArray = GdxArray<String>()
+        val tileSets = ImageGetter.getAvailableTilesets()
+        for (tileset in tileSets) tileSetArray.add(tileset)
+        tileSetSelectBox.items = tileSetArray
+        tileSetSelectBox.selected = settings.tileSet
+        add(tileSetSelectBox).minWidth(selectBoxMinWidth).pad(10f).row()
+
+        tileSetSelectBox.onChange {
+            settings.tileSet = tileSetSelectBox.selected
+            TileSetCache.assembleTileSetConfigs()
+            reloadWorldAndOptions()
+        }
+    }
+
+    private fun Table.addSoundEffectsVolumeSlider() {
+        add("Sound effects volume".tr()).left().fillX()
+
+        val soundEffectsVolumeSlider = UncivSlider(0f, 1.0f, 0.1f,
+            initial = settings.soundEffectsVolume
+        ) {
+            settings.soundEffectsVolume = it
+            settings.save()
+        }
+        add(soundEffectsVolumeSlider).pad(5f).row()
+    }
+
+    private fun Table.addMusicVolumeSlider() {
+        add("Music volume".tr()).left().fillX()
+
+        val musicVolumeSlider = UncivSlider(0f, 1.0f, 0.1f,
+            initial = settings.musicVolume,
+            sound = UncivSound.Silent
+        ) {
+            settings.musicVolume = it
+            settings.save()
+
+            val music = previousScreen.game.music
+            if (music == null) // restart music, if it was off at the app start
+                thread(name = "Music") { previousScreen.game.startMusic() }
+
+            music?.volume = 0.4f * it
+        }
+        musicVolumeSlider.value = settings.musicVolume
+        add(musicVolumeSlider).pad(5f).row()
+    }
+
+    private fun Table.addDownloadMusic(musicLocation: FileHandle) {
+        val downloadMusicButton = "Download music".toTextButton()
+        add(downloadMusicButton).colspan(2).row()
+        val errorTable = Table()
+        add(errorTable).colspan(2).row()
+
+        downloadMusicButton.onClick {
+            downloadMusicButton.disable()
+            errorTable.clear()
+            errorTable.add("Downloading...".toLabel())
+
+            // So the whole game doesn't get stuck while downloading the file
+            thread(name = "Music") {
+                try {
+                    val file = DropBox.downloadFile("/Music/thatched-villagers.mp3")
+                    musicLocation.write(file, false)
+                    Gdx.app.postRunnable {
+                        tabs.replacePage("Sound", getSoundTab())
+                        previousScreen.game.startMusic()
+                    }
+                } catch (ex: Exception) {
+                    Gdx.app.postRunnable {
+                        errorTable.clear()
+                        errorTable.add("Could not download music!".toLabel(Color.RED))
                     }
                 }
-        optionsTable.add(takeUserIdFromClipboardButton).pad(5f).colspan(2).row()
-        optionsTable.add(idSetLabel).colspan(2).row()
-    }
-
-    private fun addNotificationOptions() {
-        if (Gdx.app.type == Application.ApplicationType.Android) {
-            addHeader("Multiplayer options")
-
-            addYesNoRow("Enable out-of-game turn notifications", settings.multiplayerTurnCheckerEnabled)
-            { settings.multiplayerTurnCheckerEnabled = it }
-
-            if (settings.multiplayerTurnCheckerEnabled) {
-                addMultiplayerTurnCheckerDelayBox()
-
-                addYesNoRow("Show persistent notification for turn notifier service", settings.multiplayerTurnCheckerPersistentNotificationEnabled)
-                { settings.multiplayerTurnCheckerPersistentNotificationEnabled = it }
             }
         }
     }
 
-    private fun addTranslationGeneration() {
+    private fun Table.addMultiplayerTurnCheckerDelayBox() {
+        add("Time between turn checks out-of-game (in minutes)".toLabel()).left().fillX()
+
+        val checkDelaySelectBox = SelectBox<Int>(skin)
+        val possibleDelaysArray = GdxArray<Int>()
+        possibleDelaysArray.addAll(1, 2, 5, 15)
+        checkDelaySelectBox.items = possibleDelaysArray
+        checkDelaySelectBox.selected = settings.multiplayerTurnCheckerDelayInMinutes
+
+        add(checkDelaySelectBox).pad(10f).row()
+
+        checkDelaySelectBox.onChange {
+            settings.multiplayerTurnCheckerDelayInMinutes = checkDelaySelectBox.selected
+            settings.save()
+        }
+    }
+
+    private fun Table.addSetUserId() {
+        val idSetLabel = "".toLabel()
+        val takeUserIdFromClipboardButton = "Take user ID from clipboard".toTextButton()
+            .onClick {
+                try {
+                    val clipboardContents = Gdx.app.clipboard.contents.trim()
+                    UUID.fromString(clipboardContents)
+                    YesNoPopup("Doing this will reset your current user ID to the clipboard contents - are you sure?",
+                        {
+                            settings.userId = clipboardContents
+                            settings.save()
+                            idSetLabel.setFontColor(Color.WHITE).setText("ID successfully set!".tr())
+                        }, previousScreen).open(true)
+                    idSetLabel.isVisible = true
+                } catch (ex: Exception) {
+                    idSetLabel.isVisible = true
+                    idSetLabel.setFontColor(Color.RED).setText("Invalid ID!".tr())
+                }
+            }
+        add(takeUserIdFromClipboardButton).pad(5f).colspan(2).row()
+        add(idSetLabel).colspan(2).row()
+    }
+
+    private fun Table.addAutosaveTurnsSelectBox() {
+        add("Turns between autosaves".toLabel()).left().fillX()
+
+        val autosaveTurnsSelectBox = SelectBox<Int>(skin)
+        val autosaveTurnsArray = GdxArray<Int>()
+        autosaveTurnsArray.addAll(1, 2, 5, 10)
+        autosaveTurnsSelectBox.items = autosaveTurnsArray
+        autosaveTurnsSelectBox.selected = settings.turnsBetweenAutosaves
+
+        add(autosaveTurnsSelectBox).pad(10f).row()
+
+        autosaveTurnsSelectBox.onChange {
+            settings.turnsBetweenAutosaves = autosaveTurnsSelectBox.selected
+            settings.save()
+        }
+    }
+
+    private fun Table.addTranslationGeneration() {
         if (Gdx.app.type == Application.ApplicationType.Desktop) {
             val generateTranslationsButton = "Generate translation files".toTextButton()
             val generateAction = {
@@ -259,218 +519,55 @@ class OptionsPopup(val previousScreen:CameraStageBaseScreen) : Popup(previousScr
             generateTranslationsButton.onClick(generateAction)
             keyPressDispatcher[Input.Keys.F12] = generateAction
             generateTranslationsButton.addTooltip("F12",18f)
-            optionsTable.add(generateTranslationsButton).colspan(2).row()
+            add(generateTranslationsButton).colspan(2).row()
         }
     }
 
-    private fun addModCheckerPopup() {
-        //if (RulesetCache.isEmpty()) return
-        val modCheckerButton = "Locate mod errors".toTextButton()
-        modCheckerButton.onClick {
-            val lines = ArrayList<String>()
-            for (mod in RulesetCache.values) {
-                val modLinks = mod.checkModLinks()
-                if (modLinks.isNotOK()) {
-                    lines += ""
-                    lines += mod.name
-                    lines += ""
-                    lines += modLinks.message
-                    lines += ""
-                }
-            }
-            if (lines.isEmpty()) lines += "{No problems found}."
-            val popup = Popup(screen)
-            popup.name = "ModCheckerPopup"
-            popup.add(ScrollPane(lines.joinToString("\n").toLabel()).apply { setOverscroll(false, false) })
-                    .maxHeight(screen.stage.height / 2).row()
-            popup.addCloseButton()
-            popup.open(true)
-        }
-        optionsTable.add(modCheckerButton).colspan(2).row()
-    }
 
-    private fun addSoundEffectsVolumeSlider() {
-        optionsTable.add("Sound effects volume".tr())
-
-        val soundEffectsVolumeSlider = UncivSlider(0f, 1.0f, 0.1f,
-            initial = settings.soundEffectsVolume
-        ) {
-            settings.soundEffectsVolume = it
+    private fun Table.addYesNoRow(text: String, initialValue: Boolean, updateWorld: Boolean = false, action: ((Boolean) -> Unit)) {
+        val wrapWidth = tabs.prefWidth - 60f
+        add(WrappableLabel(text, wrapWidth).apply { wrap = true })
+            .left().fillX()
+            .maxWidth(wrapWidth)
+        val button = YesNoButton(initialValue, CameraStageBaseScreen.skin) {
+            action(it)
             settings.save()
+            if (updateWorld && previousScreen is WorldScreen)
+                previousScreen.shouldUpdate = true
         }
-        optionsTable.add(soundEffectsVolumeSlider).pad(5f).row()
+        add(button).row()
     }
 
-    private fun addMusicVolumeSlider() {
-        val musicLocation = Gdx.files.local(previousScreen.game.musicLocation)
-        if (musicLocation.exists()) {
-            optionsTable.add("Music volume".tr())
+    //endregion
 
-            val musicVolumeSlider = UncivSlider(0f, 1.0f, 0.1f,
-                initial = settings.musicVolume,
-                sound = UncivSound.Silent
-            ) {
-                settings.musicVolume = it
-                settings.save()
+    /**
+     *  This TextButton subclass helps to keep looks and behaviour of our Yes/No
+     *  in one place, but it also helps keeping context for those action lambdas.
+     *
+     *  Usage: YesNoButton(someSetting: Boolean, skin) { someSetting = it; sideEffects() }
+     */
+    private class YesNoButton(
+        initialValue: Boolean,
+        skin: Skin,
+        action: (Boolean) -> Unit
+    ) : TextButton (initialValue.toYesNo(), skin ) {
 
-                val music = previousScreen.game.music
-                if (music == null) // restart music, if it was off at the app start
-                    thread(name = "Music") { previousScreen.game.startMusic() }
-
-                music?.volume = 0.4f * it
+        var value = initialValue
+            private set(value) {
+                field = value
+                setText(value.toYesNo())
             }
-            musicVolumeSlider.value = settings.musicVolume
-            optionsTable.add(musicVolumeSlider).pad(5f).row()
-        } else {
-            val downloadMusicButton = "Download music".toTextButton()
-            optionsTable.add(downloadMusicButton).colspan(2).row()
-            val errorTable = Table()
-            optionsTable.add(errorTable).colspan(2).row()
 
-            downloadMusicButton.onClick {
-                downloadMusicButton.disable()
-                errorTable.clear()
-                errorTable.add("Downloading...".toLabel())
-
-                // So the whole game doesn't get stuck while downloading the file
-                thread(name = "Music") {
-                    try {
-                        val file = DropBox.downloadFile("/Music/thatched-villagers.mp3")
-                        musicLocation.write(file, false)
-                        Gdx.app.postRunnable {
-                            rebuildOptionsTable()
-                            previousScreen.game.startMusic()
-                        }
-                    } catch (ex: Exception) {
-                        Gdx.app.postRunnable {
-                            errorTable.clear()
-                            errorTable.add("Could not download music!".toLabel(Color.RED))
-                        }
-                    }
-                }
+        init {
+            color = ImageGetter.getBlue()
+            onClick {
+                value = !value
+                action.invoke(value)
             }
         }
-    }
 
-    private fun addResolutionSelectBox() {
-        optionsTable.add("Resolution".toLabel())
-
-        val resolutionSelectBox = SelectBox<String>(skin)
-        resolutionSelectBox.items = resolutionArray
-        resolutionSelectBox.selected = settings.resolution
-        optionsTable.add(resolutionSelectBox).minWidth(240f).pad(10f).row()
-
-        resolutionSelectBox.onChange {
-            settings.resolution = resolutionSelectBox.selected
-            reloadWorldAndOptions()
-        }
-    }
-
-    private fun addTileSetSelectBox() {
-        optionsTable.add("Tileset".toLabel())
-
-        val tileSetSelectBox = SelectBox<String>(skin)
-        val tileSetArray = GdxArray<String>()
-        val tileSets = ImageGetter.getAvailableTilesets()
-        for (tileset in tileSets) tileSetArray.add(tileset)
-        tileSetSelectBox.items = tileSetArray
-        tileSetSelectBox.selected = settings.tileSet
-        optionsTable.add(tileSetSelectBox).minWidth(240f).pad(10f).row()
-
-        tileSetSelectBox.onChange {
-            settings.tileSet = tileSetSelectBox.selected
-            TileSetCache.assembleTileSetConfigs()
-            reloadWorldAndOptions()
-        }
-    }
-
-    private fun addAutosaveTurnsSelectBox() {
-        optionsTable.add("Turns between autosaves".toLabel())
-
-        val autosaveTurnsSelectBox = SelectBox<Int>(skin)
-        val autosaveTurnsArray = GdxArray<Int>()
-        autosaveTurnsArray.addAll(1, 2, 5, 10)
-        autosaveTurnsSelectBox.items = autosaveTurnsArray
-        autosaveTurnsSelectBox.selected = settings.turnsBetweenAutosaves
-
-        optionsTable.add(autosaveTurnsSelectBox).pad(10f).row()
-
-        autosaveTurnsSelectBox.onChange {
-            settings.turnsBetweenAutosaves = autosaveTurnsSelectBox.selected
-            settings.save()
-        }
-    }
-
-    private fun addMultiplayerTurnCheckerDelayBox() {
-        optionsTable.add("Time between turn checks out-of-game (in minutes)".toLabel())
-
-        val checkDelaySelectBox = SelectBox<Int>(skin)
-        val possibleDelaysArray = GdxArray<Int>()
-        possibleDelaysArray.addAll(1, 2, 5, 15)
-        checkDelaySelectBox.items = possibleDelaysArray
-        checkDelaySelectBox.selected = settings.multiplayerTurnCheckerDelayInMinutes
-
-        optionsTable.add(checkDelaySelectBox).pad(10f).row()
-
-        checkDelaySelectBox.onChange {
-            settings.multiplayerTurnCheckerDelayInMinutes = checkDelaySelectBox.selected
-            settings.save()
-        }
-    }
-
-    private fun addLanguageSelectBox() {
-        val languageSelectBox = SelectBox<Language>(skin)
-        val languageArray = GdxArray<Language>()
-        previousScreen.game.translations.percentCompleteOfLanguages
-                .map { Language(it.key, if (it.key == "English") 100 else it.value) }
-                .sortedByDescending { it.percentComplete }
-                .forEach { languageArray.add(it) }
-        if (languageArray.size == 0) return
-
-        optionsTable.add("Language".toLabel())
-        languageSelectBox.items = languageArray
-        val matchingLanguage = languageArray.firstOrNull { it.language == settings.language }
-        languageSelectBox.selected = matchingLanguage ?: languageArray.first()
-        optionsTable.add(languageSelectBox).minWidth(240f).pad(10f).row()
-
-        languageSelectBox.onChange {
-            // Sometimes the "changed" is triggered even when we didn't choose something
-            selectedLanguage = languageSelectBox.selected.language
-
-            if (selectedLanguage != settings.language)
-                selectLanguage()
-        }
-    }
-
-    private fun selectLanguage() {
-        settings.language = selectedLanguage
-        previousScreen.game.translations.tryReadTranslationForCurrentLanguage()
-        reloadWorldAndOptions()
-    }
-
-}
-
-/*
-        This TextButton subclass helps to keep looks and behaviour of our Yes/No
-        in one place, but it also helps keeping context for those action lambdas.
-
-        Usage: YesNoButton(someSetting: Boolean, skin) { someSetting = it; sideEffects() }
- */
-private fun Boolean.toYesNo(): String = (if (this) Constants.yes else Constants.no).tr()
-private class YesNoButton(initialValue: Boolean, skin: Skin, action: (Boolean) -> Unit)
-        : TextButton (initialValue.toYesNo(), skin ) {
-
-    var value = initialValue
-        private set(value) {
-            field = value
-            setText(value.toYesNo())
-        }
-
-    init {
-        color = ImageGetter.getBlue()
-        onClick {
-            value = !value
-            action.invoke(value)
+        companion object {
+            fun Boolean.toYesNo(): String = (if (this) Constants.yes else Constants.no).tr()
         }
     }
 }

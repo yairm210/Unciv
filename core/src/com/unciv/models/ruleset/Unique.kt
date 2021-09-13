@@ -168,21 +168,6 @@ object UniqueTriggerActivation {
                     return civInfo.addUnit(greatPerson.name, chosenCity) != null
                 }
             }
-            // Deprecated since 3.15.4
-            "+1 population in each city" -> {
-                for (city in civInfo.cities) {
-                    city.population.addPopulation(1)
-                }
-                if (notification != null) {
-                    civInfo.addNotification(
-                        notification,
-                        LocationAction(civInfo.cities.map { it.location }),
-                        NotificationIcon.Population
-                    )
-                }
-                return true
-            }
-            //
             "[] population []" -> {
                 val citiesWithPopulationChanged: MutableList<Vector2> = mutableListOf()
                 for (city in civInfo.cities) {
@@ -396,6 +381,7 @@ object UniqueTriggerActivation {
                 return true
             }
             "Gain enough Faith for []% of a Great Prophet" -> {
+                if (civInfo.religionManager.getGreatProphetEquivalent() == null) return false
                 val gainedFaith =
                     (civInfo.religionManager.faithForNextGreatProphet() * (unique.params[0].toFloat() / 100f)).toInt()
                 if (gainedFaith == 0) return false

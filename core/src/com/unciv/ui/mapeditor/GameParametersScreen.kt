@@ -5,6 +5,7 @@ import com.unciv.UncivGame
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.translations.tr
 import com.unciv.ui.newgamescreen.GameOptionsTable
+import com.unciv.models.metadata.GameSetupInfo
 import com.unciv.ui.newgamescreen.PlayerPickerTable
 import com.unciv.ui.newgamescreen.IPreviousScreen
 import com.unciv.ui.pickerscreens.PickerScreen
@@ -18,7 +19,7 @@ import com.unciv.ui.utils.*
  * @param [mapEditorScreen] previous screen from map editor.
  */
 class GameParametersScreen(var mapEditorScreen: MapEditorScreen): IPreviousScreen, PickerScreen(disableScroll = true) {
-    override var gameSetupInfo = mapEditorScreen.gameSetupInfo.clone()
+    override var gameSetupInfo = GameSetupInfo(mapEditorScreen.gameSetupInfo)
     override var ruleset = RulesetCache.getComplexRuleset(gameSetupInfo.gameParameters.mods)
     var playerPickerTable = PlayerPickerTable(this, gameSetupInfo.gameParameters)
     var gameOptionsTable = GameOptionsTable(this) { desiredCiv: String -> playerPickerTable.update(desiredCiv) }

@@ -7,7 +7,7 @@ plugins {
 }
 
 android {
-    compileSdkVersion(30)
+    compileSdk = 30
     sourceSets {
         getByName("main").apply {
             manifest.srcFile("AndroidManifest.xml")
@@ -20,12 +20,12 @@ android {
         }
     }
     packagingOptions {
-        exclude("META-INF/robovm/ios/robovm.xml")
+        resources.excludes.add("META-INF/robovm/ios/robovm.xml")
     }
     defaultConfig {
         applicationId = "com.unciv.app"
-        minSdkVersion(14)
-        targetSdkVersion(30)
+        minSdk = 17
+        targetSdk = 30 // See #5044
         versionCode = BuildConfig.appCodeNumber
         versionName = BuildConfig.appVersion
 
@@ -56,16 +56,16 @@ android {
         }
 
     }
-    aaptOptions {
-        // Don't add local save files and fonts to release, obviously
-        ignoreAssetsPattern = "!SaveFiles:!fonts:!maps:!music:!mods"
-    }
-    lintOptions {
+    lint {
         disable("MissingTranslation")
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_7
-        targetCompatibility = JavaVersion.VERSION_1_7
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
+    }
+    androidResources {
+        // Don't add local save files and fonts to release, obviously
+        ignoreAssetsPattern = "!SaveFiles:!fonts:!maps:!music:!mods"
     }
 }
 
@@ -120,6 +120,8 @@ tasks.register<JavaExec>("run") {
 }
 
 dependencies {
-    implementation("androidx.core:core-ktx:1.3.2")
-    implementation("androidx.work:work-runtime-ktx:2.6.0-alpha02")
+    // Updating to latest version would require upgrading sourceCompatability and targetCompatability to 1_8 -
+    //   run `./gradlew build --scan` to see details
+    implementation("androidx.core:core-ktx:1.6.0")
+    implementation("androidx.work:work-runtime-ktx:2.6.0")
 }

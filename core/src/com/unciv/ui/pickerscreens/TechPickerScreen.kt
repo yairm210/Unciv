@@ -58,9 +58,15 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo, centerOnTech: Tec
 
         rightSideButton.setText("Pick a tech".tr())
         rightSideButton.onClick(UncivSound.Paper) {
-            game.settings.addCompletedTutorialTask("Pick technology")
-            if (freeTechPick) civTech.getFreeTechnology(selectedTech!!.name)
+            if (freeTechPick) {
+                val freeTech = selectedTech!!.name
+                // More evil people fast-clicking to cheat - #4977
+                if (!researchableTechs.contains(freeTech)) return@onClick
+                civTech.getFreeTechnology(selectedTech!!.name)
+            }
             else civTech.techsToResearch = tempTechsToResearch
+
+            game.settings.addCompletedTutorialTask("Pick technology")
 
             game.setWorldScreen()
             game.worldScreen.shouldUpdate = true
@@ -104,14 +110,14 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo, centerOnTech: Tec
             if (!erasNamesToColumns[era]!!.contains(columnNumber)) erasNamesToColumns[era]!!.add(columnNumber)
         }
         var i = 0
-        for ((era, columns) in erasNamesToColumns) {
-            val columnSpan = columns.size
+        for ((era, eraColumns) in erasNamesToColumns) {
+            val columnSpan = eraColumns.size
             val color = if (i % 2 == 0) Color.BLUE else Color.FIREBRICK
             i++
             techTable.add(era.toLabel().addBorder(2f, color)).fill().colspan(columnSpan)
         }
 
-        for (rowIndex in 0..rows - 1) {
+        for (rowIndex in 0 until rows) {
             techTable.row().pad(5f).padRight(40f)
 
             for (columnIndex in techMatrix.indices) {
@@ -206,13 +212,13 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo, centerOnTech: Tec
         }
     }
 
-    private fun selectTechnology(tech: Technology?, center: Boolean = false, switchfromWorldScreen: Boolean = true) {
+    private fun selectTechnology(tech: Technology?, center: Boolean = false, switchFromWorldScreen: Boolean = true) {
 
         val previousSelectedTech = selectedTech
         selectedTech = tech
         descriptionLabel.setText(tech?.getDescription(civInfo.gameInfo.ruleSet))
 
-        if (!switchfromWorldScreen)
+        if (!switchFromWorldScreen)
             return
 
         if (tech == null)
@@ -264,8 +270,8 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo, centerOnTech: Tec
     }
     
     private fun getTechProgressLabel(techs: List<String>): String {
-        val progress = techs.sumBy { tech -> civTech.researchOfTech(tech) }
-        val techCost = techs.sumBy { tech -> civInfo.tech.costOfTech(tech) }
+        val progress = techs.sumOf { tech -> civTech.researchOfTech(tech) }
+        val techCost = techs.sumOf { tech -> civInfo.tech.costOfTech(tech) }
         return "(${progress}/${techCost})"
     }
 

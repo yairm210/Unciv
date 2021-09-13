@@ -2,21 +2,33 @@ package com.unciv.logic.map
 
 import com.unciv.models.ruleset.UniqueTriggerActivation
 import com.unciv.models.ruleset.unit.Promotion
+import com.unciv.models.translations.equalsPlaceholderText
 
-class UnitPromotions{
-    @Transient lateinit var unit:MapUnit
+class UnitPromotions {
+    // Having this as mandatory constructor parameter would be safer, but this class is part of a
+    // saved game and as usual the json deserializer needs a default constructor.
+    // Initialization occurs in setTransients() - called as part of MapUnit.setTransients,
+    // or copied in clone() as part of the UnitAction `Upgrade`.
+    @Transient 
+    private lateinit var unit: MapUnit
+
     @Suppress("PropertyName")
     var XP = 0
+
     var promotions = HashSet<String>()
     // The number of times this unit has been promoted
     // some promotions don't come from being promoted but from other things,
     // like from being constructed in a specific city etc.
     var numberOfPromotions = 0
 
+    fun setTransients(unit: MapUnit) {
+        this.unit = unit
+    }
+
     fun xpForNextPromotion() = (numberOfPromotions+1)*10
     fun canBePromoted(): Boolean {
         if (XP < xpForNextPromotion()) return false
-        if (getAvailablePromotions().isEmpty()) return false
+        if (getAvailablePromotions().none()) return false
         return true
     }
 
@@ -29,8 +41,7 @@ class UnitPromotions{
         val promotion = unit.civInfo.gameInfo.ruleSet.unitPromotions[promotionName]!!
         doDirectPromotionEffects(promotion)
         
-        // This usage of a promotion name as its identifier is deprecated since 3.15.6
-        if (promotionName != "Heal Instantly" && promotion.uniqueObjects.none { it.placeholderText == "Doing so will consume this opportunity to choose a Promotion" }) 
+        if (promotion.uniqueObjects.none { it.placeholderText == "Doing so will consume this opportunity to choose a Promotion" })
             promotions.add(promotionName)
 
         unit.updateUniques()
@@ -47,10 +58,17 @@ class UnitPromotions{
         }
     }
 
-    fun getAvailablePromotions(): List<Promotion> {
+    fun getAvailablePromotions(): Sequence<Promotion> {
         return unit.civInfo.gameInfo.ruleSet.unitPromotions.values
-                .filter { unit.type.name in it.unitTypes && it.name !in promotions }
-                .filter { it.prerequisites.isEmpty() || it.prerequisites.any { p->p in promotions } }
+            .asSequence()
+            .filter { unit.type.name in it.unitTypes && it.name !in promotions }
+            .filter { it.prerequisites.isEmpty() || it.prerequisites.any { p->p in promotions } }
+            .filter { 
+                it.uniqueObjects.none { 
+                    unique -> unique.placeholderText == "Incompatible with []" 
+                    && promotions.any { chosenPromotions -> chosenPromotions == unique.params[0] } 
+                }
+            }
     }
 
     fun clone(): UnitPromotions {
@@ -58,6 +76,7 @@ class UnitPromotions{
         toReturn.XP = XP
         toReturn.promotions.addAll(promotions)
         toReturn.numberOfPromotions = numberOfPromotions
+        toReturn.unit = unit
         return toReturn
     }
 
@@ -66,5 +85,4 @@ class UnitPromotions{
         for(i in 1..numberOfPromotions) sum += 10*i
         return sum
     }
-
 }

@@ -1,7 +1,9 @@
 package com.unciv.logic.civilization
 
+import com.unciv.logic.city.INonPerpetualConstruction
 import com.unciv.logic.map.MapSize
 import com.unciv.models.ruleset.Policy
+import com.unciv.models.ruleset.Policy.PolicyBranchType
 import com.unciv.models.ruleset.UniqueMap
 import com.unciv.models.ruleset.UniqueTriggerActivation
 import com.unciv.models.translations.equalsPlaceholderText
@@ -48,20 +50,17 @@ class PolicyManager {
     fun getPolicyByName(name: String): Policy = civInfo.gameInfo.ruleSet.policies[name]!!
 
     fun setTransients() {
-        // Reassign policies deprecated in 3.14.17, left for backwards compatibility
-            if (adoptedPolicies.contains("Patronage") && 
-                !civInfo.gameInfo.ruleSet.policies.contains("Patronage")
-            ) {
-                adoptedPolicies.add("Merchant Navy")
-                adoptedPolicies.remove("Patronage")
+        // Deprecated "Patronage " policy since 3.16.15
+            if (adoptedPolicies.contains("Patronage ")) {
+                adoptedPolicies.remove("Patronage ")
+                adoptedPolicies.add("Patronage")
             }
-            if (adoptedPolicies.contains("Entrepreneurship") &&
-                !civInfo.gameInfo.ruleSet.policies.contains("Entrepreneurship")
-            ) {
-                adoptedPolicies.add("Naval Tradition")
-                adoptedPolicies.remove("Entrepreneurship")
+            if (adoptedPolicies.contains("Patronage  Complete")) {
+                adoptedPolicies.remove("Patronage  Complete")
+                adoptedPolicies.add("Patronage Complete")
             }
         //
+        
         for (policyName in adoptedPolicies)
             addPolicyToTransients(getPolicyByName(policyName))
     }
@@ -124,9 +123,9 @@ class PolicyManager {
      */
     fun isAdoptable(policy: Policy, checkEra: Boolean = true): Boolean {
         if (isAdopted(policy.name)) return false
-        if (policy.name.endsWith("Complete")) return false
+        if (policy.policyBranchType == PolicyBranchType.BranchComplete) return false
         if (!getAdoptedPolicies().containsAll(policy.requires!!)) return false
-        if (checkEra && civInfo.gameInfo.ruleSet.getEraNumber(policy.branch.era) > civInfo.getEraNumber()) return false
+        if (checkEra && civInfo.gameInfo.ruleSet.eras[policy.branch.era]!!.eraNumber > civInfo.getEraNumber()) return false
         if (policy.uniqueObjects.any { it.placeholderText == "Incompatible with []" && adoptedPolicies.contains(it.params[0]) }) return false
         return true
     }
@@ -211,7 +210,7 @@ class PolicyManager {
         // If we have "create a free aqueduct in first 3 cities" and "create free aqueduct in first 4 cities", we do: "create free aqueduct in first 3+4=7 cities"
         val sortedUniques = matchingUniques.groupBy {it.params[0]}
         for (unique in sortedUniques) {
-            tryAddSpecificBuilding(unique.key, unique.value.sumBy {it.params[1].toInt()})
+            tryAddSpecificBuilding(unique.key, unique.value.sumOf {it.params[1].toInt()})
         }
     }
 
@@ -227,7 +226,7 @@ class PolicyManager {
             }
 
         for (city in candidateCities) {
-            city.cityConstructions.getConstruction(building).postBuildEvent(city.cityConstructions, false)
+            (city.cityConstructions.getConstruction(building) as INonPerpetualConstruction).postBuildEvent(city.cityConstructions)
             citiesAlreadyGivenBuilding.add(city.id)
         }
     }

@@ -15,7 +15,7 @@
       "The first thing coming out of your city should be either a Scout or Warrior.\nI generally prefer the Warrior because it can be used for defense and because it can be upgraded\n  to the Swordsman unit later in the game for a relatively modest sum of gold.\nScouts can be effective, however, if you seem to be located in an area of dense forest and hills.\nScouts don’t suffer a movement penalty in this terrain.\nIf you’re a veteran of the 4x strategy genre your first Warrior or Scout will be followed by a Settler.\nFast expanding is absolutely critical in most games of this type."
   ],
   _Slow_Start: [
-      "In your first couple of turns, you will have very little options, but as your civilization grows, so do the number of things requiring your attention"
+      "In your first couple of turns, you will have very little options, but as your civilization grows, so do the number of things requiring your attention."
   ],
   Culture_and_Policies: [
       "Each turn, the culture you gain from all your cities is added to your Civilization's culture.\nWhen you have enough culture, you may pick a Social Policy, each one giving you a certain bonus."	,
@@ -24,18 +24,18 @@
   ],
   City_Expansion: [
 	"Once a city has gathered enough Culture, it will expand into a neighboring tile.\nYou have no control over the tile it will expand into, but tiles with resources and higher yields are prioritized.",
-	"Each additional tile will require more culture, but generally your first cities will eventually expand to a wide tile range."
+	"Each additional tile will require more culture, but generally your first cities will eventually expand to a wide tile range.",
 	"Although your city will keep expanding forever, your citizens can only work 3 tiles away from city center.\nThis should be taken into account when placing new cities."
-  ]
+  ],
   Happiness: [   
       "As cities grow in size and influence, you have to deal with a happiness mechanic that is no longer tied to each individual city.\nInstead, your entire empire shares the same level of satisfaction.\nAs your cities grow in population you’ll find that it is more and more difficult to keep your empire happy."    ,
       "In addition, you can’t even build any city improvements that increase happiness until you’ve done the appropriate research.\nIf your empire’s happiness ever goes below zero the growth rate of your cities will be hurt.\nIf your empire becomes severely unhappy (as indicated by the smiley-face icon at the top of the interface)\n  your armies will have a big penalty slapped on to their overall combat effectiveness."    ,
-      "This means that it is very difficult to expand quickly in Unciv.\nIt isn’t impossible, but as a new player you probably shouldn’t do it.\nSo what should you do? Chill out, scout, and improve the land that you do have by building Workers.\nOnly build new cities once you have found a spot that you believe is appropriate."    
+      "This means that it is very difficult to expand quickly in Unciv.\nIt isn’t impossible, but as a new player you probably shouldn't do it.\nSo what should you do? Chill out, scout, and improve the land that you do have by building Workers.\nOnly build new cities once you have found a spot that you believe is appropriate."    
   ],
   Unhappiness: [    
       "It seems that your citizens are unhappy!\nWhile unhappy, cities  will grow at 1/4 the speed, and your units will suffer a 2% penalty for each unhappiness",
-      "Unhappiness has two main causes: Population and cities\n  Each city causes 3 unhappiness, and each population, 1",
-      "There are 2 main ways to combat unhappiness:\n  by building happiness buildings for your population\n  or by having improved luxury resources within your borders"  
+      "Unhappiness has two main causes: Population and cities.\n  Each city causes 3 unhappiness, and each population, 1",
+      "There are 2 main ways to combat unhappiness:\n  by building happiness buildings for your population\n  or by having improved luxury resources within your borders."  
   ],
   Golden_Age: [
       "You have entered a Golden Age!\nGolden age points are accumulated each turn by the total happiness \n  of your civilization\nWhen in a golden age, culture and production generation increases +20%,\n  and every tile already providing at least one gold will provide an extra gold."
@@ -76,10 +76,10 @@
       "Once you have completed the Apollo Program, you can start constructing spaceship parts in your cities\n (with the relevant technologies) to win a scientific victory!"
   ],
   Injured_Units: [
-      "Injured units deal less damage, but recover after turns that they have been inactive\nUnits heal 5 health per turn in enemy territory, 10 in neutral land,\n  15 inside your territory and 20 in your cities"
+      "Injured units deal less damage, but recover after turns that they have been inactive.\nUnits heal 5 health per turn in enemy territory, 10 in neutral land,\n  15 inside your territory and 20 in your cities."
   ],
   Workers: [
-      "Workers are vital to your cities' growth, since only they can construct improvements on tiles\nImprovements raise the yield of your tiles, allowing your city to produce more and grow faster while working the same amount of tiles!"
+      "Workers are vital to your cities' growth, since only they can construct improvements on tiles.\nImprovements raise the yield of your tiles, allowing your city to produce more and grow faster while working the same amount of tiles!"
   ],
   Siege_Units: [
       "Siege units are extremely powerful against cities, but need to be Set Up before they can attack.\nOnce your siege unit is set up, it can attack from the current tile,\n  but once moved to another tile, it will need to be set up again."
@@ -88,7 +88,7 @@
       "Once a certain tech is researched, your land units can embark, allowing them to traverse water tiles.\nEntering or leaving water takes the entire turn.\nUnits are defenseless while embarked, so be careful!"
   ],
   Idle_Units: [
-      "If you don't want to move a unit this turn, you can skip it by clicking 'Next unit' again.\nIf you won't be moving it for a while, you can have the unit enter Fortify or Sleep mode - \n  units in Fortify or Sleep are not considered idle units.\nIf you want to disable the 'Next unit' feature entirely, you can toggle it in Menu -> Check for idle units"
+      "If you don't want to move a unit this turn, you can skip it by clicking 'Next unit' again.\nIf you won't be moving it for a while, you can have the unit enter Fortify or Sleep mode - \n  units in Fortify or Sleep are not considered idle units.\nIf you want to disable the 'Next unit' feature entirely, you can toggle it in Menu -> Check for idle units."
   ],
   Contact_Me: [
       "Hi there! If you've played this far, you've probably seen that the game is currently incomplete.\n UnCiv is meant to be open-source and free, forever.\n That means no ads or any other nonsense.",
@@ -101,12 +101,12 @@
   Experience: [
 	"Units that enter combat gain experience, which can then be used on promotions for that unit.\nUnits gain more experience when in Melee combat than Ranged, and more when attacking than when defending.",
 	"Units can only gain up to 30 XP from Barbarian units - meaning up to 2 promotions. After that, Barbarian units will provide no experience."
-  ]
+  ],
   Combat: [
 	"Unit and cities are worn down by combat, which is affected by a number of different values.\nEach unit has a certain 'base' combat value, which can be improved by certain conditions, promotions and locations.",
 	"Units use the 'Strength' value as the base combat value when melee attacking and when defending.\nWhen using a ranged attack, they will the use the 'Ranged Strength' value instead.",
 	"Ranged attacks can be done from a distance, dependent on the 'Range' value of the unit.\nWhile melee attacks allow the defender to damage the attacker in retaliation, ranged attacks do not."
-  ]
+  ],
   Research_Agreements: [
 	"In research agreements, you and another civilization decide to jointly research technology.\nAt the end of the agreement, you will both receive a 'lump sum' of Science, which will go towards one of your unresearched technologies.",
 	"The amount of Science you receive at the end is dependent on the science generated by your cities and the other civilization's cities during the agreement - the more, the better!"
@@ -122,7 +122,7 @@
 	"Great Improvements also provide any strategic resources that are under them, so you don't need to worry if resources are revealed underneath your improvements!"
   ],
   Removing_Terrain_Features: [
-	"Certain tiles have terrain features - like Flood plains or Forests -  on top of them. Some of these layers, like Jungle, Marsh and Forest, can be removed by workers.\nRemoving the terrain feature does not remove any resources in the tile, and is usually required in order to work those resources."
+	"Certain tiles have terrain features - like Flood plains or Forests -  on top of them. Some of these layers, like Jungle, Marsh and Forest, can be removed by workers.\nRemoving the terrain feature does not remove any resources in the tile, and is usually required in order to add improvements exploiting those resources."
   ],
   Natural_Wonders: [
     "Natural Wonders, such as the Mt. Fuji, the Rock of Gibraltar and the Great Barrier Reef, are unique, impassable terrain features, masterpieces of mother Nature, which possess exceptional qualities that make them very different from the average terrain.\nThey benefit by giving you large sums of Culture, Science, Gold or Production if worked by your Cities, which is why you might need to bring them under your empire as soon as possible."
@@ -150,7 +150,7 @@
 "⑪: Remaining/per turn movement points, strength and experience / XP needed for promotion. For cities, you get its combat strength.",
 "⑫: This button closes the selected unit/city info pane.",
 "⑬: This pane appears when you order a unit to attack an enemy. On top are attacker and defender with their respective base strengths.",
-"⑭: Below that are strength boni or mali and health bars projecting before / after the attack.",
+"⑭: Below that are strength bonuses or penalties and health bars projecting before / after the attack.",
 "⑮: The Attack Button - let blood flow!",
 "⑯: The minimap shows an overview over the world, with known cities, terrain and fog of war. Clicking will position the main map.",
 "⑰: To the side of the minimap are display feature toggling buttons - tile yield, worked indicator, show/hide resources. These mirror setting on the options screen and are hidden if you deactivate the minimap.",
@@ -167,6 +167,60 @@
 "ⓧ: In the center of all this - the world map! Here, the \"X\" marks a spot outside the map. Yes, unless the wrap option was used, Unciv worlds are flat. Don't worry, your ships won't fall off the edge.",
 "ⓨ: By the way, here's how an empire border looks like - it's in the national colours of the nation owning the territory.",
 "ⓩ: And this is the red targeting circle that led to the attack pane back under ⑬.",
-"What you don't see: The phone/tablet's back button will pop the question whether you wish to leave Unciv and go back to Real Life. On desktop versions, you can use the ESC key.",
-  ]
+"What you don't see: The phone/tablet's back button will pop the question whether you wish to leave Unciv and go back to Real Life. On desktop versions, you can use the ESC key."
+  ],
+    "Faith": [
+        "After building a shrine, your civilization will start generating Faith☮.",
+        "When enough Faith☮ has been generated, you will be able to found a pantheon.",
+        "A pantheon will provide a small bonus for your civilization that will apply to all your cities.",
+        "Each civilization can only choose a single pantheon belief, and each pantheon can only be chosen once.",
+        "Generating more faith will allow you to found a religion."
+    ],
+    "Religion": [
+        "Keep generating Faith☮, and eventually a great prophet will be born in one of your cities.",
+        "This great prophet can be used for multiple things: Constructing a holy site, founding a religion and spreading your religion.",
+        "When founding your religion, you may choose another two beliefs. The founder belief will only apply to you, while the follower belief will apply to all cities following your religion.",
+        "Additionally, the city where you used your great prophet will become the holy city of that religion.",
+        "Once you have founded a religion, great prophets will keep being born every so often, though the amount of Faith☮ you have to save up will be higher.",
+	    "One of these great prophets can then be used to enhance your religion.",
+        "This will allow you to choose another follower belief, as well as an enhancer belief, that only applies to you.",
+        "Do take care founding a religion soon, only about half the players in the game are able to found a religion!"
+    ],
+    "Beliefs": [
+        "There are four types of beliefs: Pantheon, Founder, Follower and Enhancer beliefs.",
+        "Pantheon and Follower beliefs apply to each city following your religion, while Founder and Enhancer beliefs only apply to the founder of a religion."
+    ],
+    "Religion_inside_cities": [
+        "When founding a city, it won't follow a religion immediately.",
+        "The religion a city follows depends on the total pressure each religion has within the city.",
+        "Followers are allocated in the same proportions as these pressures, and these followers can be viewed in the city screen.",
+        "Based on this, you can get a feel for which religions have a lot of pressure built up in the city, and which have almost none.",
+        "The city follows a religion if a majority of its population follows that religion, and will only then receive the effects of Follower and Pantheon beliefs of that religion.",
+    ],
+    "Spreading_Religion": [
+        "Spreading religion happens naturally, but can be sped up using missionaries or great prophets.",
+        "Missionaries can be bought in cities following a major religion, and will take the religion of that city.",
+        "So do take care where you are buying them! If another civilization has converted one of your cities to their religion, missionaries bought there will follow their religion.",
+        "Great prophets always have your religion when they appear, even if they are bought in cities following other religions, but captured great prophets do retain their original religion.",
+        "Both great prophets and missionaries are able to spread religion to cities when they are inside its borders, even cities of other civilizations.",
+        "These two units can even enter tiles of civilizations with whom you don't have an open borders agreement!",
+        "But do take care, missionaries will lose 250 religious strength each turn they end while in foreign lands.",
+        "This diminishes their effectiveness when spreading religion, and if their religious strength ever reaches 0, they have lost their faith and disappear.",
+        "When you do spread your religion, the religious strength of the unit is added as pressure for that religion.",
+        "",
+        "Cities also passively add pressure of their majority religion to nearby cities.",
+        "Each city provides +6 pressure per turn to all cities within 10 tiles, though the exact amount of pressure depends on the game speed.",
+        "This pressure can also be seen in the city screen, and gives you an idea of how religions in your cities will evolve if you don't do anything.",
+        "Holy cities also provide +30 pressure of the religion founded there to themselves, making it very difficult to effectively convert a holy city.",
+        "Lastly, before founding a religion, new cities you settle will start with 200 pressure for your pantheon.",
+        "This way, all your cities will starting following your pantheon as long as you haven't founded a religion yet.",
+        
+    ],
+    "Inquisitors": [
+        "Inquisitors are the last religious unit, and their strength is removing other religions.",
+        "They can remove all other religions from one of your own cities, removing any pressures built up.",
+        "Great prophets also have this ability, and remove all other religions in the city when spreading their religion.",
+        "Often this results in the city immediately converting to their religion",
+        "Additionally, when an inquisitor is stationed in or directly next to a city center, units of other religions cannot spread their faith there, though natural spread is uneffected."
+    ]
 }

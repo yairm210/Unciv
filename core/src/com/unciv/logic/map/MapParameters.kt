@@ -3,6 +3,7 @@ package com.unciv.logic.map
 import com.unciv.Constants
 import com.unciv.logic.HexMath.getEquivalentHexagonalRadius
 import com.unciv.logic.HexMath.getEquivalentRectangularSize
+import com.unciv.logic.HexMath.getNumberOfTilesInHexagon
 
 
 enum class MapSize(val radius: Int, val width: Int, val height: Int) {
@@ -44,10 +45,7 @@ class MapSizeNew {
 
     constructor(radius: Int) {
         name = Constants.custom
-        this.radius = radius
-        val size = getEquivalentRectangularSize(radius)
-        this.width = size.x.toInt()
-        this.height = size.y.toInt()
+        setNewRadius(radius)
     }
 
     constructor(width: Int, height: Int) {
@@ -55,6 +53,13 @@ class MapSizeNew {
         this.width = width
         this.height = height
         this.radius = getEquivalentHexagonalRadius(width, height)
+    }
+
+    fun clone() = MapSizeNew().also { 
+        it.name = name
+        it.radius = radius
+        it.width = width
+        it.height = height
     }
 
     /** Check custom dimensions, fix if too extreme
@@ -79,18 +84,22 @@ class MapSizeNew {
         } ?: return null
 
         // fix the size - not knowing whether hexagonal or rectangular is used
-        radius = when {
+        setNewRadius(when {
             radius < 2 -> 2
             radius > 500 -> 500
             worldWrap && radius < 15 -> 15    // minimum for hexagonal but more than required for rectangular
             else -> radius
-        }
-        val size = getEquivalentRectangularSize(radius)
-        width = size.x.toInt()
-        height = size.y.toInt()
+        })
 
         // tell the caller that map dimensions have changed and why
         return message
+    }
+
+    private fun setNewRadius(radius: Int) {
+        this.radius = radius
+        val size = getEquivalentRectangularSize(radius)
+        width = size.x.toInt()
+        height = size.y.toInt()
     }
 
     // For debugging and MapGenerator console output
@@ -131,6 +140,9 @@ class MapParameters {
     /** This is used mainly for the map editor, so you can continue editing a map under the same ruleset you started with */
     var mods = LinkedHashSet<String>()
 
+    /** Unciv Version of creation for support cases */
+    var createdWithVersion = ""
+
     var seed: Long = System.currentTimeMillis()
     var tilesPerBiomeArea = 6
     var maxCoastExtension = 2
@@ -140,6 +152,27 @@ class MapParameters {
     var rareFeaturesRichness = 0.05f
     var resourceRichness = 0.1f
     var waterThreshold = 0f
+
+    fun clone() = MapParameters().also {
+        it.name = name
+        it.type = type
+        it.shape = shape
+        it.mapSize = mapSize.clone()
+        it.noRuins = noRuins
+        it.noNaturalWonders = noNaturalWonders
+        it.worldWrap = worldWrap
+        it.mods = LinkedHashSet(mods)
+        it.seed = seed
+        it.tilesPerBiomeArea = tilesPerBiomeArea
+        it.maxCoastExtension = maxCoastExtension
+        it.elevationExponent = elevationExponent
+        it.temperatureExtremeness = temperatureExtremeness
+        it.vegetationRichness = vegetationRichness
+        it.rareFeaturesRichness = rareFeaturesRichness
+        it.resourceRichness = resourceRichness
+        it.waterThreshold = waterThreshold
+        it.createdWithVersion = createdWithVersion
+    }
 
     fun reseed() {
         seed = System.currentTimeMillis()
@@ -157,6 +190,27 @@ class MapParameters {
         waterThreshold = 0f
     }
 
+    fun getArea() = when {
+        shape == MapShape.hexagonal -> getNumberOfTilesInHexagon(mapSize.radius)
+        worldWrap && mapSize.width % 2 != 0 -> (mapSize.width - 1) * mapSize.height
+        else -> mapSize.width * mapSize.height
+    }
+    fun displayMapDimensions() = mapSize.run {
+        (if (shape == MapShape.hexagonal) "R$radius" else "${width}x$height") +
+        (if (worldWrap) "w" else "")
+    }
+
     // For debugging and MapGenerator console output
-    override fun toString() = "($mapSize ${if (worldWrap)"wrapped " else ""}$shape $type, Seed $seed, $elevationExponent/$temperatureExtremeness/$resourceRichness/$vegetationRichness/$rareFeaturesRichness/$maxCoastExtension/$tilesPerBiomeArea/$waterThreshold)"
+    override fun toString() = sequence {
+        if (name.isNotEmpty()) yield("\"$name\" ")
+        yield("(")
+        if (mapSize.name != Constants.custom) yield(mapSize.name + " ")
+        if (worldWrap) yield("wrapped ")
+        yield(shape)
+        yield(" " + displayMapDimensions())
+        if (name.isEmpty()) return@sequence
+        yield(", $type, Seed $seed, ")
+        yield("$elevationExponent/$temperatureExtremeness/$resourceRichness/$vegetationRichness/")
+        yield("$rareFeaturesRichness/$maxCoastExtension/$tilesPerBiomeArea/$waterThreshold")
+    }.joinToString("", postfix = ")")
 }

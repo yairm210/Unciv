@@ -141,7 +141,7 @@ class FormattedLine (
         /** Padding distance per [indent] level */
         const val indentPad = 30f
         /** Where indent==1 will be, measured as icon count */
-        const val indentOneAtNumIcons = 3
+        const val indentOneAtNumIcons = 2
 
         private var rulesetCachedInNameMap: Ruleset? = null
         // Cache to quickly match Categories to names. Takes a few ms to build on a slower desktop and will use just a few 10k bytes.
@@ -248,7 +248,7 @@ class FormattedLine (
         }
 
         val fontSize = when {
-            header in headerSizes.indices -> headerSizes[header]
+            header in 1 until headerSizes.size -> headerSizes[header]
             size == Int.MIN_VALUE -> defaultSize
             else -> size
         }
@@ -303,13 +303,7 @@ class FormattedLine (
         val parts = iconToDisplay.split('/', limit = 2)
         if (parts.size != 2) return 0
         val category = CivilopediaCategories.fromLink(parts[0]) ?: return 0
-        if (category.getImage == null) return 0
-
-        // That Enum custom property is a nullable reference to a lambda which
-        // in turn is allowed to return null. Sorry, but without `!!` the code
-        // won't compile and with we would get the incorrect warning.
-        @Suppress("UNNECESSARY_NOT_NULL_ASSERTION")
-        val image = category.getImage!!(parts[1], iconSize) ?: return 0
+        val image = category.getImage?.invoke(parts[1], iconSize) ?: return 0
 
         table.add(image).size(iconSize).padRight(iconPad)
         return 1
@@ -384,30 +378,22 @@ object MarkupRenderer {
     }
 }
 
-/** Storage class for interface [ICivilopediaText] for use as base class */
-@Deprecated("As of 3.16.1, use ICivilopediaText directly please")
-abstract class CivilopediaText : ICivilopediaText {
-    override var civilopediaText = listOf<FormattedLine>()
-}
 /** Storage class for instantiation of the simplest form containing only the lines collection */
 open class SimpleCivilopediaText(
-    override var civilopediaText: List<FormattedLine>,
-    val isComplete: Boolean = false
+    override var civilopediaText: List<FormattedLine>
 ) : ICivilopediaText {
-    constructor(strings: Sequence<String>, isComplete: Boolean = false) : this(
-        strings.map { FormattedLine(it) }.toList(), isComplete)
-    constructor(first: Sequence<FormattedLine>, strings: Sequence<String>, isComplete: Boolean = false) : this(
-        (first + strings.map { FormattedLine(it) }).toList(), isComplete)
+    constructor(strings: Sequence<String>) : this(
+        strings.map { FormattedLine(it) }.toList())
+    constructor(first: Sequence<FormattedLine>, strings: Sequence<String>) : this(
+        (first + strings.map { FormattedLine(it) }).toList())
 
-    override fun hasCivilopediaTextLines() = true
-    override fun replacesCivilopediaDescription() = isComplete
     override fun makeLink() = ""
 }
 
 /** Addon common to most ruleset game objects managing civilopedia display
  *
  * ### Usage:
- * 1. Let [Ruleset] object implement this (e.g. by inheriting class [CivilopediaText] or adding var [civilopediaText] itself)
+ * 1. Let [Ruleset] object implement this (by inheriting and implementing class [ICivilopediaText])
  * 2. Add `"civilopediaText": ["",…],` in the json for these objects
  * 3. Optionally override [getCivilopediaTextHeader] to supply a different header line
  * 4. Optionally override [getCivilopediaTextLines] to supply automatic stuff like tech prerequisites, uniques, etc.
@@ -438,13 +424,6 @@ interface ICivilopediaText {
      */
     fun getCivilopediaTextLines(ruleset: Ruleset): List<FormattedLine> = listOf()
 
-    /** Override this and return true to tell the Civilopedia that the legacy description is no longer needed */
-    fun replacesCivilopediaDescription() = false
-    /** Override this and return true to tell the Civilopedia that this is not empty even if nothing came from json */
-    fun hasCivilopediaTextLines() = false
-    /** Indicates that neither json nor getCivilopediaTextLines have content */
-    fun isCivilopediaTextEmpty() = civilopediaText.isEmpty() && !hasCivilopediaTextLines()
-
     /** Build a Gdx [Table] showing our [formatted][FormattedLine] [content][civilopediaText]. */
     fun renderCivilopediaText (labelWidth: Float, linkAction: ((id: String)->Unit)? = null): Table {
         return MarkupRenderer.render(civilopediaText, labelWidth, linkAction = linkAction)
@@ -471,23 +450,31 @@ interface ICivilopediaText {
                 val next = outerLines.next()
                 if (!middleDone && !next.isEmpty() && next.linkType != FormattedLine.LinkType.None) {
                     middleDone = true
-                    if (hasCivilopediaTextLines()) {
-                        if (outerNotEmpty) yield(FormattedLine())
-                        yieldAll(getCivilopediaTextLines(ruleset))
-                        yield(FormattedLine())
-                    }
+                    if (outerNotEmpty) yield(FormattedLine())
+                    yieldAll(getCivilopediaTextLines(ruleset))
+                    yield(FormattedLine())
                 }
                 outerNotEmpty = true
                 yield(next)
             }
             if (!middleDone) {
-                if (outerNotEmpty && hasCivilopediaTextLines()) yield(FormattedLine())
+                if (outerNotEmpty) yield(FormattedLine())
                 yieldAll(getCivilopediaTextLines(ruleset))
             }
         }
-        return SimpleCivilopediaText(newLines.toList(), isComplete = true)
+        return SimpleCivilopediaText(newLines.toList())
     }
 
     /** Create the correct string for a Civilopedia link */
     fun makeLink(): String
+
+    /** Overrides alphabetical sorting in Civilopedia
+     *  @param ruleset The current ruleset in case the function needs to do lookups
+     */
+    fun getSortGroup(ruleset: Ruleset): Int = 0
+
+    /** Overrides Icon used for Civilopedia entry list (where you select the instance)
+     *  This will still be passed to the category-specific image getter.
+     */
+    fun getIconName() = if (this is INamed) name else ""
 }

@@ -15,6 +15,7 @@ import com.unciv.logic.city.CityConstructions
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.city.INonPerpetualConstruction
 import com.unciv.logic.city.PerpetualConstruction
+import com.unciv.logic.civilization.CityStateType
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.ui.cityscreen.CityScreen
 import com.unciv.ui.trade.DiplomacyScreen
@@ -226,7 +227,8 @@ class CityButton(val city: CityInfo, private val tileGroup: WorldTileGroup): Tab
 
         val cityButtonText = city.name
         val label = cityButtonText.toLabel(secondaryColor)
-        iconTable.add(label).padRight(20f).padLeft(20f) // sufficient horizontal padding
+        val rightPadding = if (city.civInfo.isCityState()) 10f else 20f // CS needs less padding here as there will be an icon
+        iconTable.add(label).padRight(rightPadding).padLeft(20f) // sufficient horizontal padding
                 .fillY() // provide full-height clicking area
         label.toBack() // this is so the label is rendered right before the population group,
         //  so we save the font texture and avoid another texture switch
@@ -236,6 +238,11 @@ class CityButton(val city: CityInfo, private val tileGroup: WorldTileGroup): Tab
         val cityStrengthLabel = "${Fonts.strength}$cityStrength".toLabel(city.civInfo.nation.getInnerColor(), 10)
         iconTable.addActor(cityStrengthLabel)        // We create this here to we can .toBack() it as well.
         cityStrengthLabel.toBack()
+
+        if (city.civInfo.isCityState()) {
+            val cityStateImage = ImageGetter.getImage(city.civInfo.cityStateType.icon).apply { color = secondaryColor }
+            iconTable.add(cityStateImage).size(20f).fillY()
+        }
 
         if (uncivGame.viewEntireMapForDebug || belongsToViewingCiv() || worldScreen.viewingCiv.isSpectator()) {
             val constructionGroup = getConstructionGroup(city.cityConstructions)
@@ -253,10 +260,9 @@ class CityButton(val city: CityInfo, private val tileGroup: WorldTileGroup): Tab
             iconTable.add(nationIcon).size(20f)
         }
         
-        val cityReligionName = city.religion.getMajorityReligion()
-        if (cityReligionName != null) {
-            val cityReligion = city.civInfo.gameInfo.religions[cityReligionName]!!
-            val religionImage = ImageGetter.getReligionIcon(cityReligion.iconName)
+        val cityReligion = city.religion.getMajorityReligion()
+        if (cityReligion != null) {
+            val religionImage = ImageGetter.getReligionImage(cityReligion.getIconName())
             iconTable.add(religionImage).size(20f).padLeft(5f).fillY()
         }
 
@@ -410,6 +416,7 @@ class CityButton(val city: CityInfo, private val tileGroup: WorldTileGroup): Tab
             val color = when (relationshipLevel) {
                 RelationshipLevel.Unforgivable -> Color.RED
                 RelationshipLevel.Enemy -> Color.ORANGE
+                RelationshipLevel.Afraid -> Color.YELLOW
                 RelationshipLevel.Neutral, RelationshipLevel.Friend -> Color.LIME
                 RelationshipLevel.Ally -> Color.SKY
                 else -> Color.DARK_GRAY

@@ -48,7 +48,7 @@ object TranslationFileWriter {
         if (modFolder == null) { // base game
             val templateFile = getFileHandle(modFolder, templateFileLocation) // read the template
             if (templateFile.exists())
-                linesFromTemplates.addAll(templateFile.reader().readLines())
+                linesFromTemplates.addAll(templateFile.reader(TranslationFileReader.charset).readLines())
 
             for (baseRuleset in BaseRuleset.values()) {
                 val generatedStringsFromBaseRuleset =
@@ -176,7 +176,7 @@ object TranslationFileWriter {
 
     // used for unit test only
     fun getGeneratedStringsSize(): Int {
-        return generateStringsFromJSONs(Gdx.files.local("jsons/Civ V - Vanilla")).values.sumBy { // exclude empty lines
+        return generateStringsFromJSONs(Gdx.files.local("jsons/Civ V - Vanilla")).values.sumOf { // exclude empty lines
             it.count { line: String -> !line.startsWith(specialNewLineCode) }
         }
     }
@@ -226,6 +226,12 @@ object TranslationFileWriter {
             "in all cities connected to capital",
             "in all cities with a garrison",
             "in all cities in which the majority religion is a major religion",
+            "in all cities in which the majority religion is an enhanced religion",
+            "in non-enemy foreign cities",
+            "in foreign cities",
+            "in annexed cities",
+            "in holy cities",
+            "in City-State cities",
             "in cities following this religion",
         )
 
@@ -250,7 +256,7 @@ object TranslationFileWriter {
             val array = jsonParser.getFromJson(javaClass, jsonFile.path())
 
             generatedStrings[filename] = mutableSetOf()
-            val resultStrings = generatedStrings[filename]
+            val resultStrings = generatedStrings[filename]!!
 
             fun submitString(item: Any) {
                 val string = item.toString()
@@ -285,8 +291,15 @@ object TranslationFileWriter {
 
                         stringToTranslate = stringToTranslate.replaceFirst(parameter, parameterName)
                     }
+                } else if (string.contains('{')) {
+                    val matches = curlyBraceRegex.findAll(string)
+                    if (matches.any()) {
+                        // Ignore outer string, only translate the parts within `{}`
+                        matches.forEach { submitString(it.groups[1]!!.value) }
+                        return
+                    }
                 }
-                resultStrings!!.add("$stringToTranslate = ")
+                resultStrings.add("$stringToTranslate = ")
                 return
             }
 
@@ -311,7 +324,7 @@ object TranslationFileWriter {
                 for (field in allFields) {
                     field.isAccessible = true
                     val fieldValue = field.get(element)
-                    if (isFieldTranslatable(field, fieldValue)) { // skip fields which must not be translated
+                    if (isFieldTranslatable(javaClass, field, fieldValue)) { // skip fields which must not be translated
                         // this field can contain sub-objects, let's serialize them as well
                         @Suppress("RemoveRedundantQualifierName")  // to clarify List does _not_ inherit from anything in java.util
                         when (fieldValue) {
@@ -331,7 +344,7 @@ object TranslationFileWriter {
                 for (element in array) {
                     serializeElement(element!!) // let's serialize the strings recursively
                     // This is a small hack to insert multiple /n into the set, which can't contain identical lines
-                    resultStrings!!.add("$specialNewLineCode ${uniqueIndexOfNewLine++}")
+                    resultStrings.add("$specialNewLineCode ${uniqueIndexOfNewLine++}")
                 }
         }
         println("Translation writer took ${System.currentTimeMillis()-startMillis}ms for ${jsonsFolder.name()}")
@@ -339,6 +352,12 @@ object TranslationFileWriter {
         return generatedStrings
     }
 
+    /** Exclude fields by name that contain references to items defined elsewhere
+     * or are otherwise Strings but not user-displayed.
+     *
+     * An exclusion applies either over _all_ json files and all classes contained in them
+     * or Class-specific by using a "Class.Field" notation.
+     */
     private val untranslatableFieldSet = setOf(
             "aiFreeTechs", "aiFreeUnits", "attackSound", "building",
             "cannotBeBuiltWith", "cultureBuildings", "improvement", "improvingTech",
@@ -347,21 +366,24 @@ object TranslationFileWriter {
             "requiredNearbyImprovedResources", "requiredResource", "requiredTech", "requires",
             "resourceTerrainAllow", "revealedBy", "startBias", "techRequired",
             "terrainsCanBeBuiltOn", "terrainsCanBeFoundOn", "turnsInto", "uniqueTo", "upgradesTo",
-            "link", "icon", "extraImage", "color"  // FormattedLine
+            "link", "icon", "extraImage", "color",  // FormattedLine
+            "excludedDifficulties", "RuinReward.uniques"      // RuinReward
     )
+    /** Specifies Enums where the name property _is_ translatable, by Class name */
     private val translatableEnumsSet = setOf("BeliefType")
 
-    private fun isFieldTranslatable(field: Field, fieldValue: Any?): Boolean {
-        // Exclude fields by name that contain references to items defined elsewhere
-        // or are otherwise Strings but not user-displayed.
-        // The Modifier.STATIC exclusion removes fields from e.g. companion objects.
-        // Fields of enum types need that type explicitly allowed in translatableEnumsSet
-        // (Using an annotation failed, even with @Retention RUNTIME they were invisible to reflection)
+    /** Checks whether a field's value should be included in the translation templates.
+     * Applies explicit field exclusions from [untranslatableFieldSet].
+     * The Modifier.STATIC exclusion removes fields from e.g. companion objects.
+     * Fields of enum types need that type explicitly allowed in [translatableEnumsSet]
+     */
+    private fun isFieldTranslatable(clazz: Class<*>, field: Field, fieldValue: Any?): Boolean {
         return fieldValue != null &&
                 fieldValue != "" &&
                 (field.modifiers and Modifier.STATIC) == 0 &&
                 (!field.type.isEnum || field.type.simpleName in translatableEnumsSet) &&
-                field.name !in untranslatableFieldSet
+                field.name !in untranslatableFieldSet &&
+                (clazz.componentType?.simpleName ?: clazz.simpleName) + "." + field.name !in untranslatableFieldSet
     }
 
     private fun getJavaClassByName(name: String): Class<Any> {
@@ -374,6 +396,7 @@ object TranslationFileWriter {
             "Policies" -> emptyArray<PolicyBranch>().javaClass
             "Quests" -> emptyArray<Quest>().javaClass
             "Religions" -> emptyArray<String>().javaClass
+            "Ruins" -> emptyArray<RuinReward>().javaClass
             "Specialists" -> emptyArray<Specialist>().javaClass
             "Techs" -> emptyArray<TechColumn>().javaClass
             "Terrains" -> emptyArray<Terrain>().javaClass

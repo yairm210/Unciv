@@ -1,5 +1,6 @@
 package com.unciv.logic.civilization.diplomacy
 
+import com.badlogic.gdx.graphics.Color
 import com.unciv.Constants
 import com.unciv.logic.civilization.*
 import com.unciv.logic.trade.Trade
@@ -8,38 +9,50 @@ import com.unciv.logic.trade.TradeType
 import com.unciv.models.ruleset.tile.ResourceSupplyList
 import com.unciv.models.translations.getPlaceholderParameters
 import com.unciv.models.translations.getPlaceholderText
-import javax.management.relation.Relation
 import kotlin.math.ceil
 import kotlin.math.max
 import kotlin.math.min
 
-enum class RelationshipLevel{
-    Unforgivable,
-    Enemy,
-    Competitor,
-    Neutral,
-    Favorable,
-    Friend,
-    Ally
+enum class RelationshipLevel(val color: Color) {
+    // War is tested separately for the Diplomacy Screen. Colored RED. 
+    Unforgivable(Color.FIREBRICK),
+    Afraid(Color(0x5300ffff)),     // HSV(260,100,100)
+    Enemy(Color.YELLOW),
+    Competitor(Color(0x1f998fff)), // HSV(175,80,60)
+    Neutral(Color(0x1bb371ff)),    // HSV(154,85,70)
+    Favorable(Color(0x14cc3cff)),  // HSV(133,90,80)
+    Friend(Color(0x2ce60bff)),     // HSV(111,95,90)
+    Ally(Color.CHARTREUSE)           // HSV(90,100,100)
 }
 
-enum class DiplomacyFlags{
+enum class DiplomacyFlags {
     DeclinedLuxExchange,
     DeclinedPeace,
     DeclinedResearchAgreement,
     DeclaredWar,
     DeclarationOfFriendship,
     ResearchAgreement,
+    @Deprecated("Deprecated after 3.16.13", ReplaceWith("Denunciation"))
     Denunceation,
     BorderConflict,
     SettledCitiesNearUs,
     AgreedToNotSettleNearUs,
     IgnoreThemSettlingNearUs,
     ProvideMilitaryUnit,
-    EverBeenFriends
+    EverBeenFriends,
+    MarriageCooldown,
+    NotifiedAfraid,
+    RecentlyPledgedProtection,
+    RecentlyWithdrewProtection,
+    AngerFreeIntrusion,
+    RememberDestroyedProtectedMinor,
+    RememberAttackedProtectedMinor,
+    RememberBulliedProtectedMinor,
+    RememberSidedWithProtectedMinor,
+    Denunciation
 }
 
-enum class DiplomaticModifiers{
+enum class DiplomaticModifiers {
     DeclaredWarOnUs,
     WarMongerer,
     CapturedOurCities,
@@ -61,7 +74,11 @@ enum class DiplomaticModifiers{
     DenouncedOurEnemies,
     OpenBorders,
     FulfilledPromiseToNotSettleCitiesNearUs,
-    GaveUsUnits
+    GaveUsUnits,
+    DestroyedProtectedMinor,
+    AttackedProtectedMinor,
+    BulliedProtectedMinor,
+    SidedWithProtectedMinor,
 }
 
 class DiplomacyManager() {
@@ -71,6 +88,7 @@ class DiplomacyManager() {
         const val MINIMUM_INFLUENCE = -60f
     }
 
+    @Suppress("JoinDeclarationAndAssignment")  // incorrect warning - constructor would need to be higher in scope
     @Transient
     lateinit var civInfo: CivilizationInfo
 
@@ -92,16 +110,14 @@ class DiplomacyManager() {
      * As for why it's String and not DiplomaticModifier see FlagsCountdown comment */
     var diplomaticModifiers = HashMap<String, Float>()
 
-    /** For city-states. Influence is saved in the CITY STATE -> major civ Diplomacy, NOT in the major civ -> cty state diplomacy.
-     *  Won't go below [MINIMUM_INFLUENCE] */
+    /** For city-states. Influence is saved in the CITY STATE -> major civ Diplomacy, NOT in the major civ -> city state diplomacy.
+     *  Won't go below [MINIMUM_INFLUENCE]. Note this declaration leads to Major Civs getting MINIMUM_INFLUENCE serialized, but that is ignored. */
     var influence = 0f
-        set(value) {
-            field = max(value, MINIMUM_INFLUENCE)
-        }
+        private set
         get() = if (civInfo.isAtWarWith(otherCiv())) MINIMUM_INFLUENCE else field
 
     /** Total of each turn Science during Research Agreement */
-    var totalOfScienceDuringRA = 0
+    private var totalOfScienceDuringRA = 0
 
     fun clone(): DiplomacyManager {
         val toReturn = DiplomacyManager()
@@ -132,7 +148,13 @@ class DiplomacyManager() {
         return 0
     }
 
-    fun opinionOfOtherCiv() = diplomaticModifiers.values.sum()
+    fun opinionOfOtherCiv(): Float {
+        var modifierSum = diplomaticModifiers.values.sum()
+        // Angry about attacked CS and destroyed CS do not stack
+        if (hasModifier(DiplomaticModifiers.DestroyedProtectedMinor) && hasModifier(DiplomaticModifiers.AttackedProtectedMinor))
+            modifierSum -= getModifier(DiplomaticModifiers.AttackedProtectedMinor)
+        return modifierSum
+    }
 
     fun relationshipLevel(): RelationshipLevel {
         if (civInfo.isPlayerCivilization() && otherCiv().isPlayerCivilization())
@@ -141,12 +163,13 @@ class DiplomacyManager() {
         if (civInfo.isPlayerCivilization())
             return otherCiv().getDiplomacyManager(civInfo).relationshipLevel()
 
-        if (civInfo.isCityState()) {
-            if (influence <= -30 || civInfo.isAtWarWith(otherCiv())) return RelationshipLevel.Unforgivable
-            if (influence < 0) return RelationshipLevel.Enemy
-            if (influence >= 60 && civInfo.getAllyCiv() == otherCivName) return RelationshipLevel.Ally
-            if (influence >= 30) return RelationshipLevel.Friend
-            return RelationshipLevel.Neutral
+        if (civInfo.isCityState()) return when {
+            influence <= -30 || civInfo.isAtWarWith(otherCiv()) -> RelationshipLevel.Unforgivable
+            influence < 30 && civInfo.getTributeWillingness(otherCiv()) > 0 -> RelationshipLevel.Afraid
+            influence < 0 -> RelationshipLevel.Enemy
+            influence >= 60 && civInfo.getAllyCiv() == otherCivName -> RelationshipLevel.Ally
+            influence >= 30 -> RelationshipLevel.Friend
+            else -> RelationshipLevel.Neutral
         }
 
         // not entirely sure what to do between AI civs, because they probably have different views of each other,
@@ -180,7 +203,8 @@ class DiplomacyManager() {
         }
         return 0
     }
-    
+
+    @Suppress("unused")  //todo Finish original intent or remove
     fun matchesCityStateRelationshipFilter(filter: String): Boolean {
         val relationshipLevel = relationshipLevel()
         return when (filter) {
@@ -193,18 +217,27 @@ class DiplomacyManager() {
         }
     }
 
+    fun addInfluence(amount: Float) {
+        setInfluence(influence + amount)
+    }
+
+    fun setInfluence(amount: Float) {
+        influence = max(amount, MINIMUM_INFLUENCE)
+        civInfo.updateAllyCivForCityState()
+    }
+
     // To be run from City-State DiplomacyManager, which holds the influence. Resting point for every major civ can be different.
-    fun getCityStateInfluenceRestingPoint(): Float {
+    private fun getCityStateInfluenceRestingPoint(): Float {
         var restingPoint = 0f
-        
+
         for (unique in otherCiv().getMatchingUniques("Resting point for Influence with City-States is increased by []"))
             restingPoint += unique.params[0].toInt()
-        
+
         for (unique in otherCiv().getMatchingUniques("Resting point for Influence with City-States following this religion []"))
-            if (otherCiv().religionManager.religion?.name == civInfo.getCapital().religion.getMajorityReligion())
+            if (otherCiv().religionManager.religion?.name == civInfo.getCapital().religion.getMajorityReligionName())
                 restingPoint += unique.params[0].toInt()
-        
-        if (diplomaticStatus == DiplomaticStatus.Protector) restingPoint += 5
+
+        if (diplomaticStatus == DiplomaticStatus.Protector) restingPoint += 10
         return restingPoint
     }
 
@@ -226,7 +259,7 @@ class DiplomacyManager() {
 
         for (unique in otherCiv().getMatchingUniques("City-State Influence degrades []% slower"))
             modifier *= 1f - unique.params[0].toFloat() / 100f
-        
+
         for (civ in civInfo.gameInfo.civilizations.filter { it.isMajorCiv() && it != otherCiv()}) {
             for (unique in civ.getMatchingUniques("Influence of all other civilizations with all city-states degrades []% faster")) {
                 modifier *= 1f + unique.params[0].toFloat() / 100f
@@ -271,7 +304,7 @@ class DiplomacyManager() {
         return goldPerTurnForUs
     }
 
-    fun scienceFromResearchAgreement() {
+    private fun scienceFromResearchAgreement() {
         // https://forums.civfanatics.com/resources/research-agreements-bnw.25568/
         val scienceFromResearchAgreement = min(totalOfScienceDuringRA, otherCivDiplomacy().totalOfScienceDuringRA)
         civInfo.tech.scienceFromResearchAgreements += scienceFromResearchAgreement
@@ -309,7 +342,8 @@ class DiplomacyManager() {
      *  This includes friendly and allied city-states and the open border treaties.
      */
     fun isConsideredFriendlyTerritory(): Boolean {
-        if (civInfo.isCityState() && relationshipLevel() >= RelationshipLevel.Friend)
+        if (civInfo.isCityState() &&
+            (relationshipLevel() >= RelationshipLevel.Friend || otherCiv().hasUnique("City-State territory always counts as friendly territory")))
             return true
         return hasOpenBorders
     }
@@ -387,6 +421,7 @@ class DiplomacyManager() {
             val increment = getCityStateInfluenceRecovery()
             influence = min(restingPoint, influence + increment)
         }
+        civInfo.updateAllyCivForCityState()
 
         if (!civInfo.isDefeated()) { // don't display city state relationship notifications when the city state is currently defeated
             val civCapitalLocation = if (civInfo.cities.isNotEmpty()) civInfo.getCapital().location else null
@@ -401,6 +436,16 @@ class DiplomacyManager() {
                 if (civCapitalLocation != null) otherCiv().addNotification(text, civCapitalLocation, civInfo.civName, NotificationIcon.Diplomacy)
                 else otherCiv().addNotification(text, civInfo.civName, NotificationIcon.Diplomacy)
             }
+
+            // Potentially notify about afraid status
+            if (influence < 30  // We usually don't want to bully our friends
+            && !hasFlag(DiplomacyFlags.NotifiedAfraid)
+            && civInfo.getTributeWillingness(otherCiv()) > 0) {
+                setFlag(DiplomacyFlags.NotifiedAfraid, 20)  // Wait 20 turns until next reminder
+                val text = "[${civInfo.civName}] is afraid of your military power!"
+                if (civCapitalLocation != null) otherCiv().addNotification(text, civCapitalLocation, civInfo.civName, NotificationIcon.Diplomacy)
+                else otherCiv().addNotification(text, civInfo.civName, NotificationIcon.Diplomacy)
+            }
         }
     }
 
@@ -409,7 +454,7 @@ class DiplomacyManager() {
             // No need to decrement negative countdown flags: they do not expire
             if (flagsCountdown[flag]!! > 0)
                 flagsCountdown[flag] = flagsCountdown[flag]!! - 1
-            
+
             // If we have uniques that make city states grant military units faster when at war with a common enemy, add higher numbers to this flag
             if (flag == DiplomacyFlags.ProvideMilitaryUnit.name && civInfo.isMajorCiv() && otherCiv().isCityState() && 
                     civInfo.gameInfo.civilizations.filter { civInfo.isAtWarWith(it) && otherCiv().isAtWarWith(it) }.any()) {
@@ -427,6 +472,18 @@ class DiplomacyManager() {
             if (flag == DiplomacyFlags.ResearchAgreement.name)
                 totalOfScienceDuringRA += civInfo.statsForNextTurn.science.toInt()
 
+            // These modifiers decrease slightly @ 50
+            if (flagsCountdown[flag] == 50) {
+                when (flag) {
+                    DiplomacyFlags.RememberAttackedProtectedMinor.name -> {
+                        addModifier(DiplomaticModifiers.AttackedProtectedMinor, 5f)
+                    }
+                    DiplomacyFlags.RememberBulliedProtectedMinor.name -> {
+                        addModifier(DiplomaticModifiers.BulliedProtectedMinor, 5f)
+                    }
+                }
+            }
+
             // Only when flag is expired
             if (flagsCountdown[flag] == 0) {
                 when (flag) {
@@ -440,10 +497,23 @@ class DiplomacyManager() {
                         if (civInfo.cities.isEmpty() || otherCiv().cities.isEmpty())
                             continue@loop
                         else
-                            civInfo.gainMilitaryUnitFromCityState(otherCiv())
+                            otherCiv().giveMilitaryUnitToPatron(civInfo)
                     }
                     DiplomacyFlags.AgreedToNotSettleNearUs.name -> {
                         addModifier(DiplomaticModifiers.FulfilledPromiseToNotSettleCitiesNearUs, 10f)
+                    }
+                    // These modifiers don't tick down normally, instead there is a threshold number of turns
+                    DiplomacyFlags.RememberDestroyedProtectedMinor.name -> {    // 125
+                        removeModifier(DiplomaticModifiers.DestroyedProtectedMinor)
+                    }
+                    DiplomacyFlags.RememberAttackedProtectedMinor.name -> {     // 75
+                        removeModifier(DiplomaticModifiers.AttackedProtectedMinor)
+                    }
+                    DiplomacyFlags.RememberBulliedProtectedMinor.name -> {      // 75
+                        removeModifier(DiplomaticModifiers.BulliedProtectedMinor)
+                    }
+                    DiplomacyFlags.RememberSidedWithProtectedMinor.name -> {      // 25
+                        removeModifier(DiplomaticModifiers.SidedWithProtectedMinor)
                     }
                 }
 
@@ -505,35 +575,40 @@ class DiplomacyManager() {
             revertToZero(DiplomaticModifiers.DeclarationOfFriendship, 1 / 2f) //decreases slowly and will revert to full if it is declared later
 
         if (otherCiv().isCityState()) {
-            val eraInfo = civInfo.getEraObject()
+            val eraInfo = civInfo.getEra()
 
             if (relationshipLevel() < RelationshipLevel.Friend) {
                 if (hasFlag(DiplomacyFlags.ProvideMilitaryUnit)) removeFlag(DiplomacyFlags.ProvideMilitaryUnit)
             } else {
-                val relevantBonuses = if (relationshipLevel() == RelationshipLevel.Friend) eraInfo.friendBonus[otherCiv().cityStateType.name]
-                                    else eraInfo.allyBonus[otherCiv().cityStateType.name]
+                val variance = listOf(-1, 0, 1).random()
+
+                val relevantBonuses =
+                    if (relationshipLevel() == RelationshipLevel.Friend)
+                        eraInfo.friendBonus[otherCiv().cityStateType.name]    
+                    else eraInfo.allyBonus[otherCiv().cityStateType.name]
+                        
                 if (relevantBonuses == null && otherCiv().cityStateType == CityStateType.Militaristic) {
                     // Deprecated, assume Civ V values for compatibility
                     if (!hasFlag(DiplomacyFlags.ProvideMilitaryUnit) && relationshipLevel() == RelationshipLevel.Friend)
-                        setFlag(DiplomacyFlags.ProvideMilitaryUnit, 20)
+                        setFlag(DiplomacyFlags.ProvideMilitaryUnit, 20 + variance)
 
                     if ((!hasFlag(DiplomacyFlags.ProvideMilitaryUnit) || getFlag(DiplomacyFlags.ProvideMilitaryUnit) > 17)
                         && relationshipLevel() == RelationshipLevel.Ally)
-                        setFlag(DiplomacyFlags.ProvideMilitaryUnit, 17)
+                        setFlag(DiplomacyFlags.ProvideMilitaryUnit, 17 + variance)
                 }
                 if (relevantBonuses == null) return
 
                 for (bonus in relevantBonuses) {
                     // Reset the countdown if it has ended, or if we have longer to go than the current maximum (can happen when going from friend to ally)
-                    if (bonus.getPlaceholderText() == "Provides military units every [] turns" &&
+                    if (bonus.getPlaceholderText() == "Provides military units every ≈[] turns" &&
                        (!hasFlag(DiplomacyFlags.ProvideMilitaryUnit) || getFlag(DiplomacyFlags.ProvideMilitaryUnit) > bonus.getPlaceholderParameters()[0].toInt()))
-                            setFlag(DiplomacyFlags.ProvideMilitaryUnit, bonus.getPlaceholderParameters()[0].toInt())
+                            setFlag(DiplomacyFlags.ProvideMilitaryUnit, bonus.getPlaceholderParameters()[0].toInt() + variance)
                 }
             }
         }
     }
 
-    /** Everything that happens to both sides equally when war is delcared by one side on the other */
+    /** Everything that happens to both sides equally when war is declared by one side on the other */
     private fun onWarDeclared() {
         // Cancel all trades.
         for (trade in trades)
@@ -543,7 +618,7 @@ class DiplomacyManager() {
         updateHasOpenBorders()
 
         diplomaticStatus = DiplomaticStatus.War
-        
+
         removeModifier(DiplomaticModifiers.YearsOfPeace)
         setFlag(DiplomacyFlags.DeclinedPeace, 10)/// AI won't propose peace for 10 turns
         setFlag(DiplomacyFlags.DeclaredWar, 10) // AI won't agree to trade for 10 turns
@@ -556,7 +631,7 @@ class DiplomacyManager() {
 
         onWarDeclared()
         otherCivDiplomacy.onWarDeclared()
-        
+
         otherCiv.addNotification("[${civInfo.civName}] has declared war on us!", NotificationIcon.War, civInfo.civName)
         otherCiv.popupAlerts.add(PopupAlert(AlertType.WarDeclaration, civInfo.civName))
 
@@ -565,7 +640,10 @@ class DiplomacyManager() {
         }
 
         otherCivDiplomacy.setModifier(DiplomaticModifiers.DeclaredWarOnUs, -20f)
-        if (otherCiv.isCityState()) otherCivDiplomacy.influence -= 60
+        if (otherCiv.isCityState()) {
+            otherCivDiplomacy.setInfluence(-60f)
+            otherCiv.cityStateAttacked(civInfo)
+        }
 
         for (thirdCiv in civInfo.getKnownCivs()) {
             if (thirdCiv.isAtWarWith(otherCiv)) {
@@ -611,15 +689,6 @@ class DiplomacyManager() {
                 }
             }
         }
-
-        if (otherCiv.isCityState()) {
-            for (thirdCiv in otherCiv.getProtectorCivs()) {
-                if (thirdCiv.knows(civInfo)
-                    && thirdCiv.getDiplomacyManager(civInfo).canDeclareWar()) {
-                    thirdCiv.getDiplomacyManager(civInfo).declareWar()
-                }
-            }
-        }
     }
 
     /** Should only be called from makePeace */
@@ -634,9 +703,9 @@ class DiplomacyManager() {
             // Our ally city states make peace with us
             if (thirdCiv.getAllyCiv() == civInfo.civName && thirdCiv.isAtWarWith(otherCiv))
                 thirdCiv.getDiplomacyManager(otherCiv).makePeace()
-            // Other ccity states that are not our ally don't like the fact that we made peace with their enemy
+            // Other city states that are not our ally don't like the fact that we made peace with their enemy
             if (thirdCiv.getAllyCiv() != civInfo.civName && thirdCiv.isAtWarWith(otherCiv))
-                thirdCiv.getDiplomacyManager(civInfo).influence -= 10
+                thirdCiv.getDiplomacyManager(civInfo).addInfluence(-10f)
         }
     }
 
@@ -674,16 +743,16 @@ class DiplomacyManager() {
         diplomaticModifiers[modifier.name] = amount
     }
 
-    fun getModifier(modifier: DiplomaticModifiers): Float {
+    private fun getModifier(modifier: DiplomaticModifiers): Float {
         if (!hasModifier(modifier)) return 0f
         return diplomaticModifiers[modifier.name]!!
     }
 
-    fun removeModifier(modifier: DiplomaticModifiers) = diplomaticModifiers.remove(modifier.name)
+    private fun removeModifier(modifier: DiplomaticModifiers) = diplomaticModifiers.remove(modifier.name)
     fun hasModifier(modifier: DiplomaticModifiers) = diplomaticModifiers.containsKey(modifier.name)
 
     /** @param amount always positive, so you don't need to think about it */
-    fun revertToZero(modifier: DiplomaticModifiers, amount: Float) {
+    private fun revertToZero(modifier: DiplomaticModifiers, amount: Float) {
         if (!hasModifier(modifier)) return
         val currentAmount = getModifier(modifier)
         if (currentAmount > 0) addModifier(modifier, -amount)
@@ -706,12 +775,13 @@ class DiplomacyManager() {
         }
     }
 
-    fun setFriendshipBasedModifier() {
+    private fun setFriendshipBasedModifier() {
         removeModifier(DiplomaticModifiers.DeclaredFriendshipWithOurAllies)
         removeModifier(DiplomaticModifiers.DeclaredFriendshipWithOurEnemies)
         for (thirdCiv in getCommonKnownCivs()
                 .filter { it.getDiplomacyManager(civInfo).hasFlag(DiplomacyFlags.DeclarationOfFriendship) }) {
             val otherCivRelationshipWithThirdCiv = otherCiv().getDiplomacyManager(thirdCiv).relationshipLevel()
+            @Suppress("NON_EXHAUSTIVE_WHEN")  // Better readability
             when (otherCivRelationshipWithThirdCiv) {
                 RelationshipLevel.Unforgivable -> addModifier(DiplomaticModifiers.DeclaredFriendshipWithOurEnemies, -15f)
                 RelationshipLevel.Enemy -> addModifier(DiplomaticModifiers.DeclaredFriendshipWithOurEnemies, -5f)
@@ -724,8 +794,8 @@ class DiplomacyManager() {
     fun denounce() {
         setModifier(DiplomaticModifiers.Denunciation, -35f)
         otherCivDiplomacy().setModifier(DiplomaticModifiers.Denunciation, -35f)
-        setFlag(DiplomacyFlags.Denunceation, 30)
-        otherCivDiplomacy().setFlag(DiplomacyFlags.Denunceation, 30)
+        setFlag(DiplomacyFlags.Denunciation, 30)
+        otherCivDiplomacy().setFlag(DiplomacyFlags.Denunciation, 30)
 
         otherCiv().addNotification("[${civInfo.civName}] has denounced us!", NotificationIcon.Diplomacy, civInfo.civName)
 
@@ -734,6 +804,7 @@ class DiplomacyManager() {
             thirdCiv.addNotification("[${civInfo.civName}] has denounced [$otherCivName]!", civInfo.civName, NotificationIcon.Diplomacy, otherCivName)
             val thirdCivRelationshipWithOtherCiv = thirdCiv.getDiplomacyManager(otherCiv()).relationshipLevel()
             val thirdCivDiplomacyManager = thirdCiv.getDiplomacyManager(civInfo)
+            @Suppress("NON_EXHAUSTIVE_WHEN")  // Better readability
             when (thirdCivRelationshipWithOtherCiv) {
                 RelationshipLevel.Unforgivable -> thirdCivDiplomacyManager.addModifier(DiplomaticModifiers.DenouncedOurEnemies, 15f)
                 RelationshipLevel.Enemy -> thirdCivDiplomacyManager.addModifier(DiplomaticModifiers.DenouncedOurEnemies, 5f)
@@ -756,6 +827,10 @@ class DiplomacyManager() {
         otherCiv().addNotification("[${civInfo.civName}] refused to stop settling cities near us!", NotificationIcon.Diplomacy, civInfo.civName)
     }
 
+    fun sideWithCityState() {
+        otherCivDiplomacy().setModifier(DiplomaticModifiers.SidedWithProtectedMinor, -5f)
+        otherCivDiplomacy().setFlag(DiplomacyFlags.RememberSidedWithProtectedMinor, 25)
+    }
 
     //endregion
 }

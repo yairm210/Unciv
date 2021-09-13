@@ -142,18 +142,26 @@ open class Popup(val screen: CameraStageBaseScreen): Table(CameraStageBaseScreen
     }
 
     /**
-     * Adds a [TextButton] that closes the popup, with [RETURN][KeyCharAndCode.RETURN] already mapped.
+     * Adds a [TextButton] that can close the popup, with [RETURN][KeyCharAndCode.RETURN] already mapped.
      * @param text The button's caption, defaults to "OK".
      * @param additionalKey An additional key that should act like a click.
+     * @param validate Function that should return true when the popup can be closed and `action` can be run.
+     * When this function returns false, nothing happens.
      * @param action A lambda to be executed after closing the popup when the button is clicked.
      * @return The new [Cell], NOT marked as end of row.
      */
     fun addOKButton(
         text: String = Constants.OK,
         additionalKey: KeyCharAndCode? = null,
-        action: (()->Unit)
+        validate: (() -> Boolean) = { true },
+        action: (() -> Unit),
     ): Cell<TextButton> {
-        val okAction = { close(); action() }
+        val okAction = {
+            if (validate()) {
+                close()
+                action()
+            }
+        }
         keyPressDispatcher[KeyCharAndCode.RETURN] = okAction
         return addButtonInRow(text, additionalKey, okAction)
     }

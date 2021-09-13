@@ -15,6 +15,7 @@ import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
 import com.unciv.models.translations.tr
 import com.unciv.ui.utils.*
+import com.unciv.ui.utils.UncivTooltip.Companion.addTooltip
 import kotlin.concurrent.thread
 import kotlin.math.max
 import kotlin.math.min
@@ -29,6 +30,7 @@ import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 class CityConstructionsTable(private val cityScreen: CityScreen) {
     /* -1 = Nothing, >= 0 queue entry (0 = current construction) */
     private var selectedQueueEntry = -1 // None
+    private var preferredBuyStat = Stat.Gold  // Used for keyboard buy
     var improvementBuildingToConstruct: Building? = null
 
     private val upperTable = Table(CameraStageBaseScreen.skin)
@@ -163,19 +165,30 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
             val useStoredProduction = entry is Building || !cityConstructions.isBeingConstructedOrEnqueued(entry.name)
             var buttonText = entry.name.tr() + cityConstructions.getTurnsToConstructionString(entry.name, useStoredProduction)
             for ((resource, amount) in entry.getResourceRequirements()) {
-                buttonText += "\n" + (if (amount == 1) "Consumes 1 [$resource]"
-                    else "Consumes [$amount] [$resource]").tr()
+                buttonText += "\n" + (
+                    if (amount == 1) "Consumes 1 [$resource]"
+                    else "Consumes [$amount] [$resource]"
+                ).tr()
             }
 
-            constructionButtonDTOList.add(ConstructionButtonDTO(entry, buttonText,
-                entry.getRejectionReason(cityConstructions)))
+            constructionButtonDTOList.add(
+                ConstructionButtonDTO(
+                    entry, 
+                    buttonText,
+                    entry.getRejectionReasons(cityConstructions).getMostImportantRejectionReason()
+                )
+            )
         }
 
         for (specialConstruction in PerpetualConstruction.perpetualConstructionsMap.values
-                .filter { it.shouldBeDisplayed(cityConstructions) }) {
-            constructionButtonDTOList.add(ConstructionButtonDTO(specialConstruction,
-                    "Produce [${specialConstruction.name}]".tr()
-                            + specialConstruction.getProductionTooltip(city)))
+                .filter { it.shouldBeDisplayed(cityConstructions) }
+        ) {
+            constructionButtonDTOList.add(
+                ConstructionButtonDTO(
+                    specialConstruction,
+                    "Produce [${specialConstruction.name}]".tr() + specialConstruction.getProductionTooltip(city)
+                )
+            )
         }
 
         return constructionButtonDTOList
@@ -295,7 +308,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
                 Color.BROWN.cpy().lerp(Color.WHITE, 0.5f), Color.WHITE)
     }
 
-    private class ConstructionButtonDTO(val construction: IConstruction, val buttonText: String, val rejectionReason: String = "")
+    private class ConstructionButtonDTO(val construction: IConstruction, val buttonText: String, val rejectionReason: String? = null)
 
     private fun getConstructionButton(constructionButtonDTO: ConstructionButtonDTO): Table {
         val construction = constructionButtonDTO.construction
@@ -323,7 +336,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
         pickConstructionButton.row()
 
         // no rejection reason means we can build it!
-        if (constructionButtonDTO.rejectionReason != "") {
+        if (constructionButtonDTO.rejectionReason != null) {
             pickConstructionButton.color = Color.GRAY
             pickConstructionButton.add(constructionButtonDTO.rejectionReason.toLabel(Color.RED).apply { wrap = true })
                     .colspan(pickConstructionButton.columns).fillX().left().padTop(2f)
@@ -382,6 +395,9 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
     }
 
     private fun addConstructionToQueue(construction: IConstruction, cityConstructions: CityConstructions) {
+        // Some evil person decided to double tap real fast - #4977
+        if (cannotAddConstructionToQueue(construction, cityScreen.city, cityScreen.city.cityConstructions))
+            return
         if (construction is Building && construction.uniqueObjects.any { it.placeholderText == "Creates a [] improvement on a specific tile" }) {
             cityScreen.selectedTile
             improvementBuildingToConstruct = construction
@@ -405,7 +421,90 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
         }
     }
 
+    private fun getBuyButtons(construction: INonPerpetualConstruction?): List<TextButton> {
+        return Stat.statsUsableToBuy.mapNotNull { getBuyButton(construction, it) }
+    }
+
+    private fun getBuyButton(construction: INonPerpetualConstruction?, stat: Stat = Stat.Gold): TextButton? {
+        if (stat !in Stat.statsUsableToBuy || construction == null)
+            return null
+
+        val city = cityScreen.city
+        val button = "".toTextButton()
+
+        if (!isConstructionPurchaseShown(construction, stat)) {
+            // This can't ever be bought with the given currency.
+            // We want one disabled "buy" button without a price for "priceless" buildings such as wonders
+            // We don't want such a button when the construction can be bought using a different currency
+            if (stat != Stat.Gold || construction.canBePurchasedWithAnyStat(city))
+                return null
+            button.setText("Buy".tr())
+            button.disable()
+        } else {
+            val constructionBuyCost = construction.getStatBuyCost(city, stat)!!
+            button.setText("Buy".tr() + " " + constructionBuyCost + stat.character)
+
+            button.onClick {
+                button.disable()
+                askToBuyConstruction(construction, stat)
+            }
+            button.isEnabled = isConstructionPurchaseAllowed(construction, stat, constructionBuyCost)
+            button.addTooltip('B')  // The key binding is done in CityScreen constructor
+            preferredBuyStat = stat  // Not very intelligent, but the least common currency "wins"
+        }
+
+        button.labelCell.pad(5f)
+
+        return button
+    }
+    
+    /** Ask whether user wants to buy [construction] for [stat].
+     *
+     * Used from onClick and keyboard dispatch, thus only minimal parameters are passed,
+     * and it needs to do all checks and the sound as appropriate.
+     */
+    fun askToBuyConstruction(construction: INonPerpetualConstruction, stat: Stat = preferredBuyStat) {
+        if (!isConstructionPurchaseShown(construction, stat)) return
+        val city = cityScreen.city
+        val constructionBuyCost = construction.getStatBuyCost(city, stat)!!
+        if (!isConstructionPurchaseAllowed(construction, stat, constructionBuyCost)) return
+
+        cityScreen.closeAllPopups()
+
+        val purchasePrompt = "Currently you have [${city.getStatReserve(stat)}] [${stat.name}].".tr() + "\n\n" +
+                "Would you like to purchase [${construction.name}] for [$constructionBuyCost] [${stat.character}]?".tr()
+        YesNoPopup(
+            purchasePrompt,
+            action = { purchaseConstruction(construction, stat) },
+            screen = cityScreen,
+            restoreDefault = { cityScreen.update() }
+        ).open()
+    }
+
+    /** This tests whether the buy button should be _shown_ */
+    private fun isConstructionPurchaseShown(construction: INonPerpetualConstruction, stat: Stat): Boolean {
+        val city = cityScreen.city
+        return construction.canBePurchasedWithStat(city, stat)
+    }
+
+    /** This tests whether the buy button should be _enabled_ */
+    private fun isConstructionPurchaseAllowed(construction: INonPerpetualConstruction, stat: Stat, constructionBuyCost: Int): Boolean {
+        val city = cityScreen.city
+        return when {
+            city.isPuppet -> false
+            !cityScreen.canChangeState -> false
+            city.isInResistance() -> false
+            !construction.isPurchasable(city.cityConstructions) -> false    // checks via 'rejection reason'
+            construction is BaseUnit && !city.canPlaceNewUnit(construction) -> false
+            city.civInfo.gameInfo.gameParameters.godMode -> true
+            constructionBuyCost == 0 -> true
+            else -> city.getStatReserve(stat) >= constructionBuyCost
+        }
+}
+
+    // called only by askToBuyConstruction's Yes answer
     private fun purchaseConstruction(construction: INonPerpetualConstruction, stat: Stat = Stat.Gold) {
+        Sounds.play(stat.purchaseSound)
         val city = cityScreen.city
         if (!city.cityConstructions.purchaseConstruction(construction.name, selectedQueueEntry, false, stat)) {
             Popup(cityScreen).apply {
@@ -418,62 +517,13 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
         if (isSelectedQueueEntry() || cityScreen.selectedConstruction?.isBuildable(city.cityConstructions) != true) {
             selectedQueueEntry = -1
             cityScreen.selectedConstruction = null
+            
+            // Allow buying next queued or auto-assigned construction right away
+            city.cityConstructions.chooseNextConstruction()
+            if (city.cityConstructions.currentConstructionFromQueue.isNotEmpty())
+                cityScreen.selectedConstruction = city.cityConstructions.getCurrentConstruction().takeIf { it is INonPerpetualConstruction }
         }
         cityScreen.update()
-    }
-    
-    private fun getBuyButtons(construction: INonPerpetualConstruction?): List<TextButton> {
-        return Stat.statsUsableToBuy.mapNotNull { getBuyButton(construction, it) }
-    }
-
-    private fun getBuyButton(construction: INonPerpetualConstruction?, stat: Stat = Stat.Gold): TextButton? {
-        if (stat !in Stat.statsUsableToBuy || construction == null)
-            return null
-
-        val city = cityScreen.city
-        val button = "".toTextButton()
-
-        if (!construction.canBePurchasedWithStat(city, stat) && !city.civInfo.gameInfo.gameParameters.godMode) {
-            // This can't ever be bought with the given currency.
-            // We want one disabled "buy" button without a price for "priceless" buildings such as wonders
-            // We don't want such a button when the construction can be bought using a different currency
-            if (stat != Stat.Gold || construction.canBePurchasedWithAnyStat(city))
-                return null
-            button.setText("Buy".tr())
-            button.disable()
-        } else {
-            val constructionBuyCost = construction.getStatBuyCost(city, stat)!!
-            button.setText("Buy".tr() + " " + constructionBuyCost + stat.character)
-
-            button.onClick(stat.purchaseSound) {
-                button.disable()
-                cityScreen.closeAllPopups()
-                
-                val purchasePrompt = "Currently you have [${city.getStatReserve(stat)}] [${stat.name}].".tr() + "\n\n" +
-                        "Would you like to purchase [${construction.name}] for [$constructionBuyCost] [${stat.character}]?".tr()
-                YesNoPopup(
-                    purchasePrompt,
-                    action = { purchaseConstruction(construction, stat) },
-                    screen = cityScreen,
-                    restoreDefault = { cityScreen.update() }
-                ).apply {
-                    promptLabel.setAlignment(Align.center)
-                    open()
-                }
-            }
-            
-            if (!cityScreen.canChangeState
-                || !construction.isPurchasable(city.cityConstructions)
-                || city.isPuppet 
-                || city.isInResistance()
-                || !city.canPurchase(construction)
-                || (constructionBuyCost > city.getStatReserve(stat) && !city.civInfo.gameInfo.gameParameters.godMode)
-            ) button.disable()
-        }
-
-        button.labelCell.pad(5f)
-
-        return button
     }
     
     private fun getRaisePriorityButton(constructionQueueIndex: Int, name: String, city: CityInfo): Table {

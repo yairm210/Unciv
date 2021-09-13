@@ -18,7 +18,7 @@ class CityCombatant(val city: CityInfo) : ICombatant {
     override fun getTile(): TileInfo = city.getCenterTile()
     override fun getName(): String = city.name
     override fun isDefeated(): Boolean = city.health == 1
-    override fun isInvisible(): Boolean = false
+    override fun isInvisible(to: CivilizationInfo): Boolean = false
     override fun canAttack(): Boolean = city.canBombard()
     override fun matchesCategory(category: String) = category == "City" || category == "All"
     override fun getAttackSound() = UncivSound.Bombard
@@ -57,7 +57,7 @@ class CityCombatant(val city: CityInfo) : ICombatant {
         if (cityTile.militaryUnit != null)
             strength += cityTile.militaryUnit!!.baseUnit().strength * (cityTile.militaryUnit!!.health / 100f) * 0.2f
 
-        var buildingsStrength = city.cityConstructions.getBuiltBuildings().sumBy { it.cityStrength }.toFloat()
+        var buildingsStrength = city.cityConstructions.getBuiltBuildings().sumOf { it.cityStrength }.toFloat()
         if (getCivInfo().hasUnique("Defensive buildings in all cities are 25% more effective"))
             buildingsStrength *= 1.25f
         strength += buildingsStrength

@@ -29,12 +29,12 @@ class TradeTable(val otherCivilization: CivilizationInfo, stage: DiplomacyScreen
         val lowerTable = Table().apply { defaults().pad(10f) }
 
         val existingOffer = otherCivilization.tradeRequests.firstOrNull{it.requestingCiv==currentPlayerCiv.civName}
-        if(existingOffer!=null){
+        if (existingOffer != null){
             tradeLogic.currentTrade.set(existingOffer.trade.reverse())
             offerColumnsTable.update()
         }
 
-        if(isTradeOffered()) offerButton.setText("Retract offer".tr())
+        if (isTradeOffered()) offerButton.setText("Retract offer".tr())
         else offerButton.setText("Offer trade".tr())
 
         offerButton.onClick {
@@ -59,7 +59,7 @@ class TradeTable(val otherCivilization: CivilizationInfo, stage: DiplomacyScreen
     private fun onChange(){
         offerColumnsTable.update()
         retractOffer()
-        offerButton.isEnabled = !(tradeLogic.currentTrade.theirOffers.size==0 && tradeLogic.currentTrade.ourOffers.size==0)
+        offerButton.isEnabled = !(tradeLogic.currentTrade.theirOffers.size == 0 && tradeLogic.currentTrade.ourOffers.size == 0)
     }
 
 }

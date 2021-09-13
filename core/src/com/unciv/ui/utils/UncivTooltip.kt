@@ -12,7 +12,7 @@ import com.unciv.models.translations.tr
 /**
  * A **Replacement** for Gdx [Tooltip], placement does not follow the mouse.
  * 
- * Usage: [group][Group].addStaticTip([text][String], size) builds a [Label] as tip actor and attaches it to your [Group].
+ * Usage: [group][Group].addTooltip([text][String], size) builds a [Label] as tip actor and attaches it to your [Group].
  *
  * @param target        The widget the tooltip will be added to - take care this is the same for which addListener is called
  * @param content       The actor to display as Tooltip
@@ -145,7 +145,7 @@ class UncivTooltip <T: Actor>(
         return super.touchDown(event, x, y, pointer, button)
     }
     //endregion
-    
+
     companion object {
         /**
          * Add a [Label]-based Tooltip with a rounded-corner background to a [Table] or other [Group].
@@ -196,7 +196,7 @@ class UncivTooltip <T: Actor>(
          * @param always override requirement: presence of physical keyboard
          */
         fun Group.addTooltip(char: Char, size: Float = 26f, always: Boolean = false) {
-            addTooltip((if (char in "Ii") 'i' else char.toUpperCase()).toString(), size, always)
+            addTooltip((if (char in "Ii") 'i' else char.uppercaseChar()).toString(), size, always)
         }
 
         /**

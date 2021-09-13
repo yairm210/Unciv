@@ -3,34 +3,37 @@ package com.unciv.models.simulation
 import com.unciv.logic.GameInfo
 import com.unciv.logic.GameStarter
 import com.unciv.models.ruleset.VictoryType
-import com.unciv.ui.newgamescreen.GameSetupInfo
-import java.lang.Integer.max
-import java.time.Duration
+import com.unciv.models.metadata.GameSetupInfo
+import kotlin.time.Duration
 import kotlin.concurrent.thread
+import kotlin.math.max
+import kotlin.time.ExperimentalTime
 
-class Simulation(val newGameInfo: GameInfo,
-                 val simulationsPerThread: Int = 5,
-                 val threadsNumber: Int = 1,
-                 val maxTurns: Int = 1000
+@ExperimentalTime
+class Simulation(
+    private val newGameInfo: GameInfo,
+    val simulationsPerThread: Int = 5,
+    private val threadsNumber: Int = 1,
+    private val maxTurns: Int = 1000
 ) {
-    val maxSimulations = threadsNumber * simulationsPerThread
+    private val maxSimulations = threadsNumber * simulationsPerThread
     val civilizations = newGameInfo.civilizations.filter { it.civName != "Spectator" }.map { it.civName }
     private var startTime: Long = 0
     private var endTime: Long = 0
     var steps = ArrayList<SimulationStep>()
     var winRate = mutableMapOf<String, MutableInt>()
-    var winRateByVictory = HashMap<String, MutableMap<VictoryType, MutableInt>>()
-    var avgSpeed = 0f
-    var avgDuration: Duration = Duration.ZERO
+    private var winRateByVictory = HashMap<String, MutableMap<VictoryType, MutableInt>>()
+    private var avgSpeed = 0f
+    private var avgDuration: Duration = Duration.ZERO
     private var totalTurns = 0
     private var totalDuration: Duration = Duration.ZERO
-    var stepCounter: Int = 0
+    private var stepCounter: Int = 0
 
 
     init{
         for (civ in civilizations) {
             this.winRate[civ] = MutableInt(0)
-            winRateByVictory[civ] = mutableMapOf<VictoryType,MutableInt>()
+            winRateByVictory[civ] = mutableMapOf()
             for (victory in VictoryType.values())
                 winRateByVictory[civ]!![victory] = MutableInt(0)
         }
@@ -48,7 +51,7 @@ class Simulation(val newGameInfo: GameInfo,
                     gameInfo.simulateUntilWin = true
                     gameInfo.nextTurn()
 
-                    var step = SimulationStep(gameInfo)
+                    val step = SimulationStep(gameInfo)
 
                     if (step.victoryType != null) {
                         step.winner = step.currentPlayer
@@ -67,11 +70,13 @@ class Simulation(val newGameInfo: GameInfo,
         endTime = System.currentTimeMillis()
     }
 
+    @Suppress("UNUSED_PARAMETER")   // used when activating debug output
     @Synchronized fun add(step: SimulationStep, threadId: Int = 1) {
 //        println("Thread $threadId: End simulation ($stepCounter/$maxSimulations)")
         steps.add(step)
     }
 
+    @Suppress("UNUSED_PARAMETER")   // used when activating debug output
     @Synchronized fun updateCounter(threadId: Int = 1) {
         stepCounter++
 //        println("Thread $threadId: Start simulation ($stepCounter/$maxSimulations)")
@@ -100,10 +105,10 @@ class Simulation(val newGameInfo: GameInfo,
                 winRateByVictory[it.winner!!]!![it.victoryType]!!.inc()
             }
         }
-        totalTurns = steps.sumBy { it.turns }
-        totalDuration = Duration.ofMillis(endTime - startTime)
-        avgSpeed = totalTurns.toFloat() / totalDuration.seconds
-        avgDuration = totalDuration.dividedBy(steps.size.toLong())
+        totalTurns = steps.sumOf { it.turns }
+        totalDuration = Duration.milliseconds(endTime - startTime)
+        avgSpeed = totalTurns.toFloat() / totalDuration.inWholeSeconds
+        avgDuration = totalDuration / steps.size
     }
 
     override fun toString(): String {
@@ -119,8 +124,8 @@ class Simulation(val newGameInfo: GameInfo,
              outString += "\n"
         }
         outString += "\nAverage speed: %.1f turns/s \n".format(avgSpeed)
-        outString += "Average game duration: " + formatDuration(avgDuration) + "\n"
-        outString += "Total time: " + formatDuration(totalDuration) + "\n"
+        outString += "Average game duration: $avgDuration\n"
+        outString += "Total time: $totalDuration\n"
 
         return outString
     }

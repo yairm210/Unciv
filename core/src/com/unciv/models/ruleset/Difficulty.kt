@@ -1,6 +1,5 @@
 package com.unciv.models.ruleset
 
-import com.unciv.Constants
 import com.unciv.models.stats.INamed
 import com.unciv.ui.civilopedia.ICivilopediaText
 import com.unciv.ui.civilopedia.FormattedLine
@@ -18,7 +17,6 @@ class Difficulty: INamed, ICivilopediaText {
     var policyCostModifier:Float = 1f
     var unhappinessModifier:Float = 1f
     var barbarianBonus:Float = 0f
-    var startingUnits = ArrayList<String>() // Deprecated since 3.15.8
     var playerBonusStartingUnits = ArrayList<String>()
 
     var aiCityGrowthModifier:Float = 1f
@@ -29,14 +27,12 @@ class Difficulty: INamed, ICivilopediaText {
     var aiUnitMaintenanceModifier = 1f
     var aiUnitSupplyModifier: Float = 0f
     var aiFreeTechs = ArrayList<String>()
-    var aiMajorCivStartingUnits = ArrayList<String>() // Deprecated since 3.15.8
     var aiMajorCivBonusStartingUnits = ArrayList<String>()
-    var aiCityStateStartingUnits = ArrayList<String>() // Deprecated since 3.15.8
     var aiCityStateBonusStartingUnits = ArrayList<String>()
     var aiUnhappinessModifier = 1f
     var turnBarbariansCanEnterPlayerTiles = 0
     var clearBarbarianCampReward = 25
-    
+
     // property defined in json but so far unused:
     // var aisExchangeTechs = false
 
@@ -44,8 +40,6 @@ class Difficulty: INamed, ICivilopediaText {
 
 
     override fun makeLink() = "Difficulty/$name"
-    override fun replacesCivilopediaDescription() = true
-    override fun hasCivilopediaTextLines() = true
 
     private fun Float.toPercent() = (this * 100).toInt()
     override fun getCivilopediaTextLines(ruleset: Ruleset): List<FormattedLine> {

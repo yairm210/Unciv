@@ -3,6 +3,7 @@ package com.unciv.logic.city
 import com.unciv.Constants
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.models.Counter
+import com.unciv.models.Religion
 import com.unciv.models.metadata.GameSpeed
 import com.unciv.models.ruleset.Unique
 
@@ -15,7 +16,7 @@ class CityInfoReligionManager {
     val religionsAtSomePointAdopted: HashSet<String> = hashSetOf()
 
     private val pressures: Counter<String> = Counter()
-    // `getNumberOfFollowers()` was called a surprisingly large amount of time, so caching it feels useful
+    // Cached because using `updateNumberOfFollowers` to get this value resulted in many calls
     @Transient
     private val followers: Counter<String> = Counter()
     
@@ -37,6 +38,7 @@ class CityInfoReligionManager {
     
     fun clone(): CityInfoReligionManager {
         val toReturn = CityInfoReligionManager()
+        toReturn.cityInfo = cityInfo
         toReturn.religionsAtSomePointAdopted.addAll(religionsAtSomePointAdopted)
         toReturn.pressures.putAll(pressures)
         toReturn.followers.putAll(followers)
@@ -46,7 +48,10 @@ class CityInfoReligionManager {
     
     fun setTransients(cityInfo: CityInfo) {
         this.cityInfo = cityInfo
-        updateNumberOfFollowers()
+        // We don't need to check for changes in the majority religion, and as this
+        // loads in the religion, _of course_ the religion changes, but it shouldn't
+        // have any effect
+        updateNumberOfFollowers(false)
     }
     
     fun endTurn() {
@@ -54,16 +59,19 @@ class CityInfoReligionManager {
     }
     
     fun getUniques(): Sequence<Unique> {
-        val majorityReligion = getMajorityReligion()
-        if (majorityReligion == null) return sequenceOf()
-        return cityInfo.civInfo.gameInfo.religions[majorityReligion]!!.getFollowerUniques()
+        val majorityReligion = getMajorityReligion() ?: return sequenceOf()
+        return majorityReligion.getFollowerUniques()
     }
     
     fun getMatchingUniques(unique: String): Sequence<Unique> {
         return getUniques().filter { it.placeholderText == unique }
     }
     
-    fun clearAllPressures() {
+    fun getPressures(): Counter<String> {
+        return pressures.clone()
+    }
+    
+    private fun clearAllPressures() {
         pressures.clear()
         // We add pressure for following no religion
         // Basically used as a failsafe so that there is always some religion, 
@@ -77,13 +85,23 @@ class CityInfoReligionManager {
         pressures.add(religionName, amount)
         
         if (shouldUpdateFollowers) {
-            updateNumberOfFollowers()
+            updateNumberOfFollowers(shouldUpdateFollowers)
         }
+    }
+
+    fun removeAllPressuresExceptFor(religion: String) {
+        val pressureFromThisReligion = pressures[religion]!!
+        // Atheism is never removed
+        val pressureFromAtheism = pressures[Constants.noReligionName]
+        clearAllPressures()
+        pressures.add(religion, pressureFromThisReligion)
+        if (pressureFromAtheism != null) pressures[Constants.noReligionName] = pressureFromAtheism
+        updateNumberOfFollowers()
     }
     
     fun updatePressureOnPopulationChange(populationChangeAmount: Int) {
         val majorityReligion =
-            if (getMajorityReligion() != null) getMajorityReligion()!!
+            if (getMajorityReligionName() != null) getMajorityReligionName()!!
             else Constants.noReligionName
         
         if (populationChangeAmount > 0) {
@@ -105,8 +123,8 @@ class CityInfoReligionManager {
                 "[] when a city adopts this religion for the first time" -> unique.stats
                 else -> continue
             }
-            for (stat in statsGranted.toHashMap())
-                religionOwningCiv.addStat(stat.key, stat.value.toInt())
+            for ((key, value) in statsGranted)
+                religionOwningCiv.addStat(key, value.toInt())
             if (cityInfo.location in religionOwningCiv.exploredTiles)
                 religionOwningCiv.addNotification(
                     "You gained [$statsGranted] as your religion was spread to [${cityInfo.name}]",
@@ -122,8 +140,10 @@ class CityInfoReligionManager {
         religionsAtSomePointAdopted.add(newMajorityReligion)
     }
     
-    private fun updateNumberOfFollowers() {
-        val oldMajorityReligion = getMajorityReligion()
+    private fun updateNumberOfFollowers(checkForReligionAdoption: Boolean = true) {
+        val oldMajorityReligion = 
+            if (checkForReligionAdoption) getMajorityReligionName()
+            else null
         
         followers.clear()
         if (cityInfo.population.population <= 0) return
@@ -154,41 +174,59 @@ class CityInfoReligionManager {
         
         followers.remove(Constants.noReligionName)
 
-        val newMajorityReligion = getMajorityReligion()
-        if (oldMajorityReligion != newMajorityReligion && newMajorityReligion != null) {
-            triggerReligionAdoption(newMajorityReligion)
+        if (checkForReligionAdoption) {
+            val newMajorityReligion = getMajorityReligionName()
+            if (oldMajorityReligion != newMajorityReligion && newMajorityReligion != null) {
+                triggerReligionAdoption(newMajorityReligion)
+            }
         }
     }
     
     fun getNumberOfFollowers(): Counter<String> {
-        
-        // println(followers) // ToDo: remove this when a UI for viewing followers is added
-        
-        return followers
+        return followers.clone()
+    }
+    
+    fun getFollowersOf(religion: String): Int? {
+        return followers[religion]
+    }
+    
+    fun getFollowersOfMajorityReligion(): Int {
+        val majorityReligion = getMajorityReligionName() ?: return 0
+        return followers[majorityReligion]!!
+    }
+    
+    fun getFollowersOfOtherReligionsThan(religion: String): Int {
+        return followers.filterNot { it.key == religion }.values.sum()
     }
     
     /** Removes all pantheons except for the one founded by the current owner of the city
      *  Should be called whenever a city changes hands, e.g. conquering and trading
      */
     fun removeUnknownPantheons() {
-        for (pressure in pressures) {
-            if (pressure.key == Constants.noReligionName) continue
-            val correspondingReligion = cityInfo.civInfo.gameInfo.religions[pressure.key]!!
+        for (pressure in pressures.keys.toList()) {  // Copy the keys because we might modify
+            if (pressure == Constants.noReligionName) continue
+            val correspondingReligion = cityInfo.civInfo.gameInfo.religions[pressure]!!
             if (correspondingReligion.isPantheon() 
                 && correspondingReligion.foundingCivName != cityInfo.civInfo.civName
             ) {
-                pressures.remove(pressure.key)
+                pressures.remove(pressure)
             }
         }
         updateNumberOfFollowers()
     }
 
-    fun getMajorityReligion(): String? {
-        val followersPerReligion = getNumberOfFollowers()
-        if (followersPerReligion.isEmpty()) return null
-        val religionWithMaxFollowers = followersPerReligion.maxByOrNull { it.value }!!
-        return if (religionWithMaxFollowers.value >= cityInfo.population.population / 2) religionWithMaxFollowers.key
-        else null
+    fun getMajorityReligionName(): String? {
+        if (followers.isEmpty()) return null
+        val religionWithMaxPressure = pressures.maxByOrNull { it.value }!!.key
+        return when {
+            religionWithMaxPressure == Constants.noReligionName -> null
+            followers[religionWithMaxPressure]!! >= cityInfo.population.population / 2 -> religionWithMaxPressure
+            else -> null
+        }
+    }
+    
+    fun getMajorityReligion(): Religion? {
+        return cityInfo.civInfo.gameInfo.religions[getMajorityReligionName()]
     }
 
     private fun getAffectedBySurroundingCities() {
@@ -200,18 +238,67 @@ class CityInfoReligionManager {
             addPressure(religionThisIsTheHolyCityOf!!,5 * pressureFromAdjacentCities, false)
         }
         
-        val allCitiesWithin10Tiles =
+        val allCitiesWithinSpreadRange =
             cityInfo.civInfo.gameInfo.getCities()
                 .filter {
                     it != cityInfo 
-                    && it.getCenterTile().aerialDistanceTo(cityInfo.getCenterTile()) <= 10
+                    && it.getCenterTile().aerialDistanceTo(cityInfo.getCenterTile()) <= it.religion.getSpreadRange() 
                 }
-        for (city in allCitiesWithin10Tiles) {
-            val majorityReligionOfCity = city.religion.getMajorityReligion() ?: continue
+        for (city in allCitiesWithinSpreadRange) {
+            val majorityReligionOfCity = city.religion.getMajorityReligionName() ?: continue
             if (!cityInfo.civInfo.gameInfo.religions[majorityReligionOfCity]!!.isMajorReligion()) continue
-            addPressure(majorityReligionOfCity, pressureFromAdjacentCities, false) 
+            addPressure(majorityReligionOfCity, city.religion.pressureAmountToAdjacentCities(cityInfo), false) 
         }
         
         updateNumberOfFollowers()
+    }
+
+    private fun getSpreadRange(): Int {
+        var spreadRange = 10
+        for (unique in cityInfo.getMatchingUniques("Religion naturally spreads to cities [] tiles away"))
+            spreadRange += unique.params[0].toInt()
+        
+        if (getMajorityReligion() != null)
+            for (unique in getMajorityReligion()!!.getFounderUniques()
+                .filter { it.placeholderText == "Religion naturally spreads to cities [] tiles away"}
+            ) spreadRange += unique.params[0].toInt()
+        
+        return spreadRange
+    }
+
+    /** Doesn't update the pressures, only returns what they are if the update were to happen right now */
+    fun getPressuresFromSurroundingCities(): Counter<String> {
+        val addedPressure = Counter<String>()
+        if (cityInfo.isHolyCity()) {
+            addedPressure[religionThisIsTheHolyCityOf!!] = 5 * pressureFromAdjacentCities
+        }
+        val allCitiesWithin10Tiles =
+            cityInfo.civInfo.gameInfo.getCities()
+                .filter {
+                    it != cityInfo
+                    && it.getCenterTile().aerialDistanceTo(cityInfo.getCenterTile()) <= it.religion.getSpreadRange()
+                }
+        for (city in allCitiesWithin10Tiles) {
+            val majorityReligionOfCity = city.religion.getMajorityReligion() ?: continue
+            if (!majorityReligionOfCity.isMajorReligion()) continue
+            addedPressure.add(majorityReligionOfCity.name, city.religion.pressureAmountToAdjacentCities(cityInfo))
+        }
+        return addedPressure
+    }
+    
+    private fun pressureAmountToAdjacentCities(pressuredCity: CityInfo): Int {
+        var pressure = pressureFromAdjacentCities.toFloat()
+        
+        for (unique in cityInfo.getMatchingUniques("[]% Natural religion spread []")) {
+            if (pressuredCity.matchesFilter(unique.params[1]))
+                pressure *= 1f + unique.params[0].toFloat() / 100f
+        }
+        
+        for (unique in cityInfo.getMatchingUniques("[]% Natural religion spread [] with []"))
+            if (pressuredCity.matchesFilter(unique.params[1]) 
+                && cityInfo.civInfo.hasTechOrPolicy(unique.params[2])
+            ) pressure *= 1f + unique.params[0].toFloat() / 100f
+        
+        return pressure.toInt()
     }
 }

@@ -422,13 +422,14 @@
 	},
 	{
 		"name": "Anti-Armor I",
-		"uniques": ["+[25]% vs [Armored]"],
-		"unitTypes:": ["Helicopter"]
+		"uniques": ["+[25]% Strength vs [Armored]"],
+		"unitTypes": ["Helicopter"]
 	},
 	{
 		"name": "Anti-Armor II",
-		"uniques": ["+[25]% vs [Armored]"],
-		"unitTypes:": ["Helicopter"]
+		"prerequisites": ["Anti-Armor I"],
+		"uniques": ["+[25]% Strength vs [Armored]"],
+		"unitTypes": ["Helicopter"]
 	},
 
 	// Mixed
@@ -503,7 +504,7 @@
 		"unitTypes": ["Ranged Water","Fighter","Bomber"]
 	},
 
-	// Uniques
+	// Uniques that should be kept on upgrades
 	{
 		"name": "Morale", // Heroic Epic
 		"uniques": ["+[15]% Combat Strength"]
@@ -531,5 +532,9 @@
 	{
 		"name": "Slinger Withdraw", // only for Slinger and subsequent upgrades
 		"uniques": ["May withdraw before melee ([80]%)"]
+	},
+	{
+		"name": "Ignore terrain cost",
+		"uniques": ["Ignores terrain cost"]
 	}
 ]
