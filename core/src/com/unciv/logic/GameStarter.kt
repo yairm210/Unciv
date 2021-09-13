@@ -18,7 +18,6 @@ import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 import kotlin.math.max
-import kotlin.system.measureNanoTime
 
 object GameStarter {
     // temporary instrumentation while tuning/debugging
@@ -34,7 +33,7 @@ object GameStarter {
 
         // In the case where we used to have a mod, and now we don't, we cannot "unselect" it in the UI.
         // We need to remove the dead mods so there aren't problems later.
-        gameSetupInfo.gameParameters.mods.removeAll{ !RulesetCache.containsKey(it) }
+        gameSetupInfo.gameParameters.mods.removeAll { !RulesetCache.containsKey(it) }
 
         gameInfo.gameParameters = gameSetupInfo.gameParameters
         val ruleset = RulesetCache.getComplexRuleset(gameInfo.gameParameters.mods)
@@ -49,8 +48,13 @@ object GameStarter {
 
         runAndMeasure("addCivilizations") {
             gameInfo.tileMap = tileMap
-            tileMap.gameInfo = gameInfo // need to set this transient before placing units in the map
-            addCivilizations(gameSetupInfo.gameParameters, gameInfo, ruleset) // this is before gameInfo.setTransients, so gameInfo doesn't yet have the gameBasics
+            tileMap.gameInfo =
+                gameInfo // need to set this transient before placing units in the map
+            addCivilizations(
+                gameSetupInfo.gameParameters,
+                gameInfo,
+                ruleset
+            ) // this is before gameInfo.setTransients, so gameInfo doesn't yet have the gameBasics
         }
 
         runAndMeasure("Remove units") {
@@ -77,6 +81,10 @@ object GameStarter {
             addCivTechs(gameInfo, ruleset, gameSetupInfo)
 
             addCivStats(gameInfo)
+        }
+
+        runAndMeasure("assignContinents") {
+            assignContinents(tileMap)
         }
 
         runAndMeasure("addCivStartingUnits") {
@@ -322,6 +330,26 @@ object GameStarter {
                 val unitToAdd = getEquivalentUnit(civ, unit)
                 if (unitToAdd != null) placeNearStartingPosition(unitToAdd)
             }
+        }
+    }
+
+    // Set a continent id for each tile, so we can quickly see which tiles are connected.
+    private fun assignContinents(tileMap: TileMap) {
+        var landTiles = tileMap.values
+            .filter { it.isLand && !it.isImpassible()}
+        var currentContinent = 0
+
+        while (landTiles.any()) {
+            val bfs = BFS(landTiles.random()) { it.isLand && !it.isImpassible() }
+            bfs.stepToEnd(currentContinent)
+            val continent = bfs.getReachedTiles()
+            tileMap.continentSizes[currentContinent] = continent.size
+            if (continent.size > 20) {
+                tileMap.landTilesInBigEnoughGroup.addAll(continent)
+            }
+
+            currentContinent++
+            landTiles = landTiles.filter { it !in continent }
         }
     }
 

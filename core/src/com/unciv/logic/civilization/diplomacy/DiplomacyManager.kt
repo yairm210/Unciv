@@ -352,7 +352,6 @@ class DiplomacyManager() {
             return true
         return hasOpenBorders
     }
-
     //endregion
 
     //region state-changing functions
