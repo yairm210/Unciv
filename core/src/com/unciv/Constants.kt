@@ -49,7 +49,7 @@ object Constants {
     const val mountSinai = "Mount Sinai"
     const val sriPada = "Sri Pada"
     const val uluru = "Uluru"
-    /* 
+    /*
     const val kingSolomonsMines = "King Solomon's Mines" //BNW
     const val lakeVictoria = "Lake Victoria" //BNW
     const val mountKilimanjaro = "Mount Kilimanjaro" //BNW
