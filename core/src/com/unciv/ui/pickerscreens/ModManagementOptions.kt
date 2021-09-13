@@ -8,6 +8,7 @@ import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.translations.tr
 import com.unciv.ui.newgamescreen.TranslatedSelectBox
 import com.unciv.ui.utils.*
+import com.unciv.ui.utils.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.worldscreen.mainmenu.Github
 import kotlin.math.sign
 
@@ -131,6 +132,7 @@ class ModManagementOptions(private val modManagementScreen: ModManagementScreen)
             expander.toggle()
         }
         searchIcon.onClick(filterAction)
+        searchIcon.addTooltip(KeyCharAndCode.RETURN, 18f)
     }
 
     fun getInstalledHeader() = installedHeaderText.tr() + " " + sortInstalled.symbols
