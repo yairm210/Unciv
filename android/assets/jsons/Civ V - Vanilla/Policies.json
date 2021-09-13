@@ -135,7 +135,7 @@
 	},{
 		"name": "Piety",
 		"era": "Classical era",
-		"uniques": ["+[100]% Production when constructing [Shrine] buildings", "+[100]% Production when constructing [Temple] buildings", 
+		"uniques": ["+[100]% Production when constructing a [Shrine]", "+[100]% Production when constructing a [Temple]", 
 			"Incompatible with [Rationalism]"],
 		"policies": [
 			{
