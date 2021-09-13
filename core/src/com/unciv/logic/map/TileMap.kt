@@ -33,6 +33,7 @@ class TileMap {
     var mapParameters = MapParameters()
 
     private var tileList = ArrayList<TileInfo>()
+    val continentSizes = HashMap<Int, Int>()    // Continent ID, Continent size
 
     /** Structure geared for simple serialization by Gdx.Json (which is a little blind to kotlin collections, especially HashSet)
      * @param position [Vector2] of the location
@@ -76,6 +77,9 @@ class TileMap {
 
     @Transient
     val startingLocationsByNation = HashMap<String,HashSet<TileInfo>>()
+
+    @Transient
+    val landTilesInBigEnoughGroup = ArrayList<TileInfo>() // cached at map gen
 
     //endregion
     //region Constructors
@@ -122,6 +126,7 @@ class TileMap {
         toReturn.startingLocations.clear()
         toReturn.startingLocations.ensureCapacity(startingLocations.size)
         toReturn.startingLocations.addAll(startingLocations)
+        toReturn.continentSizes.putAll(continentSizes)
         return toReturn
     }
 
@@ -344,9 +349,9 @@ class TileMap {
     }
 
     fun isWaterMap(): Boolean {
-        // TODO
-
-        return false
+        val bigIslands = continentSizes.count { it.value > 20 }
+        val players = gameInfo.gameParameters.players.count()
+        return bigIslands >= players
     }
 
     //endregion

@@ -19,7 +19,7 @@ class MapGenerator(val ruleset: Ruleset) {
     companion object {
         // temporary instrumentation while tuning/debugging
         const val consoleOutput = false
-        private const val consoleTimings = true
+        private const val consoleTimings = false
     }
 
     private var randomness = MapGenerationRandomness()
@@ -467,17 +467,20 @@ class MapGenerator(val ruleset: Ruleset) {
         var landTiles = tileMap.values
             .filter { it.isLand && !it.isImpassible()}
 
-        var numAssignedContinents = 0
+        var currentContinent = 0
+
         while (landTiles.any()) {
             val bfs = BFS(landTiles.random()) { it.isLand && !it.isImpassible() }
-            bfs.stepToEnd()
+            bfs.stepToEnd(currentContinent)
             val continent = bfs.getReachedTiles()
-            continent.forEach { it.setContinent(numAssignedContinents) }
-            numAssignedContinents++
+            tileMap.continentSizes[currentContinent] = continent.size
+            if (continent.size > 20)
+                tileMap.landTilesInBigEnoughGroup.addAll(continent)
+
+            currentContinent++
             landTiles = landTiles.filter { it !in continent }
         }
     }
-
 }
 
 class MapGenerationRandomness {

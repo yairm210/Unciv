@@ -330,18 +330,8 @@ object GameStarter {
                 // Games starting on snow might as well start over...
                 .filter { it.isLand && !it.isImpassible() && it.baseTerrain != Constants.snow }
 
-        val landTilesInBigEnoughGroup = ArrayList<TileInfo>()
-        val delta = measureNanoTime {
-            while (landTiles.any()) {
-                val bfs = BFS(landTiles.random()) { it.isLand && !it.isImpassible() }
-                bfs.stepToEnd()
-                val tilesInGroup = bfs.getReachedTiles()
-                landTiles = landTiles.filter { it !in tilesInGroup }
-                if (tilesInGroup.size > 20) // is this a good number? I dunno, but it's easy enough to change later on
-                    landTilesInBigEnoughGroup.addAll(tilesInGroup)
-            }
-        }
-        println("getStartingLocations BFS took ${delta/1000000L}.${(delta/10000L).rem(100)}ms")
+        val landTilesInBigEnoughGroup = tileMap.landTilesInBigEnoughGroup
+        if (landTilesInBigEnoughGroup.isEmpty()) throw Exception("landTilesInBigEnoughGroup was not properly generated at mapgen")
 
         val civsOrderedByAvailableLocations = civs.shuffled()   // Order should be random since it determines who gets best start
             .sortedBy { civ ->
