@@ -305,18 +305,85 @@
 		"impassable": true,
 		"unbuildable": true,
 		"weight": 10
-	}
+	},
+	{
+		"name": "Mount Kailash",
+		"type": "NaturalWonder",
+		"faith": 6,
+		"happiness": 2,
+		"occursOn": ["Plains","Grassland"],
+		"turnsInto": "Mountain",
+		"impassable": true,
+		"unbuildable": true,
+		"weight": 10
+	},
+	{
+		"name": "Mount Sinai",
+		"type": "NaturalWonder",
+		"faith": 8,
+		"occursOn": ["Desert","Plains"],
+		"turnsInto": "Mountain",
+		"impassable": true,
+		"unbuildable": true,
+		"weight": 10
+	},
+	{
+		"name": "Sri Pada",
+		"type": "NaturalWonder",
+		"food": 2,
+		"faith": 4,
+		"happiness": 2,
+		"occursOn": ["Plains","Grassland"],
+		"turnsInto": "Mountain",
+		"impassable": true,
+		"unbuildable": true,
+		"weight": 10
+	},	
+	{
+		"name": "Uluru",
+		"type": "NaturalWonder",
+		"food": 2,
+		"faith": 6,
+		"occursOn": ["Plains","Desert"],
+		"turnsInto": "Mountain",
+		"impassable": true,
+		"unbuildable": true,
+		"weight": 10
+	}	
 	/*
+	// BNW wonders
+	{
+		"name": "King Solomon's Mines",
+		"type": "NaturalWonder",
+		"production": 6,
+		"occursOn": ["Plains","Desert"],
+		"turnsInto": "Plains",
+		"impassable": true,
+		"unbuildable": true,
+		"weight": 4
+	},
 	{// Will be introduced in Brave New World. Despite being a lake, it cannot be sailed on and it blocks line of sight like a mountain.
 		"name": "Lake Victoria",
 		"type": "NaturalWonder",
 		"food": 6,
-		"occursOn": [Plains"],
+		"occursOn": ["Plains"],
 		"turnsInto": "Mountain",
 		"impassable": true,
 		"unbuildable": true,
 		"uniques": ["Fresh water"],
-		"weight": 5
+		"weight": 10
+	},
+	{
+		"name": "Mount Kilimanjaro",
+		"type": "NaturalWonder",
+		"food": 3,
+		"culture": 2,
+		"occursOn": ["Plains","Grassland"],
+		"turnsInto": "Mountain",
+		"impassable": true,
+		"unbuildable": true,
+		"uniques": ["Grants Altitude Training (double movement and +10% Strength in hills) to adjacent land units for the rest of the game"], //ToDo
+		"weight": 10
 	}
 	*/
 ]
