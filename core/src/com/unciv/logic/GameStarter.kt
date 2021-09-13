@@ -37,12 +37,13 @@ object GameStarter {
 
         gameInfo.gameParameters = gameSetupInfo.gameParameters
         val ruleset = RulesetCache.getComplexRuleset(gameInfo.gameParameters.mods)
+        val mapGen = MapGenerator(ruleset)
 
         if (gameSetupInfo.mapParameters.name != "") runAndMeasure("loadMap") {
             tileMap = MapSaver.loadMap(gameSetupInfo.mapFile!!)
             // Don't override the map parameters - this can include if we world wrap or not!
         } else runAndMeasure("generateMap") {
-            tileMap = MapGenerator(ruleset).generateMap(gameSetupInfo.mapParameters)
+            tileMap = mapGen.generateMap(gameSetupInfo.mapParameters)
             tileMap.mapParameters = gameSetupInfo.mapParameters
         }
 
@@ -83,8 +84,9 @@ object GameStarter {
             addCivStats(gameInfo)
         }
 
-        runAndMeasure("assignContinents") {
-            assignContinents(tileMap)
+        runAndMeasure("assignContinents?") {
+            if (tileMap.continentSizes.isEmpty())   // Probably saved map without continent data
+                mapGen.assignContinents(tileMap)
         }
 
         runAndMeasure("addCivStartingUnits") {
@@ -333,33 +335,24 @@ object GameStarter {
         }
     }
 
-    // Set a continent id for each tile, so we can quickly see which tiles are connected.
-    private fun assignContinents(tileMap: TileMap) {
-        var landTiles = tileMap.values
-            .filter { it.isLand && !it.isImpassible()}
-        var currentContinent = 0
-
-        while (landTiles.any()) {
-            val bfs = BFS(landTiles.random()) { it.isLand && !it.isImpassible() }
-            bfs.stepToEnd(currentContinent)
-            val continent = bfs.getReachedTiles()
-            tileMap.continentSizes[currentContinent] = continent.size
-            if (continent.size > 20) {
-                tileMap.landTilesInBigEnoughGroup.addAll(continent)
-            }
-
-            currentContinent++
-            landTiles = landTiles.filter { it !in continent }
-        }
-    }
 
     private fun getStartingLocations(civs: List<CivilizationInfo>, tileMap: TileMap, startScores: HashMap<TileInfo, Float>): HashMap<CivilizationInfo, TileInfo> {
-        var landTiles = tileMap.values
+        val landTilesInBigEnoughGroup = tileMap.landTilesInBigEnoughGroup
+        if (landTilesInBigEnoughGroup.isEmpty()) {
+            // Worst case - a pre-made map with continent data. This means we didn't re-run assignContinents,
+            // so we don't have a cached landTilesInBigEnoughGroup. So we need to do it the hard way.
+            var landTiles = tileMap.values
                 // Games starting on snow might as well start over...
                 .filter { it.isLand && !it.isImpassible() && it.baseTerrain != Constants.snow }
-
-        val landTilesInBigEnoughGroup = tileMap.landTilesInBigEnoughGroup
-        if (landTilesInBigEnoughGroup.isEmpty()) throw Exception("landTilesInBigEnoughGroup was not properly generated at mapgen")
+            while (landTiles.any()) {
+                val bfs = BFS(landTiles.random()) { it.isLand && !it.isImpassible() }
+                bfs.stepToEnd()
+                val tilesInGroup = bfs.getReachedTiles()
+                landTiles = landTiles.filter { it !in tilesInGroup }
+                if (tilesInGroup.size > 20) // is this a good number? I dunno, but it's easy enough to change later on
+                    landTilesInBigEnoughGroup.addAll(tilesInGroup)
+            }
+        }
 
         val civsOrderedByAvailableLocations = civs.shuffled()   // Order should be random since it determines who gets best start
             .sortedBy { civ ->
