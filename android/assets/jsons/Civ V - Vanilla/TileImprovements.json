@@ -44,7 +44,7 @@
 		"name": "Camp",
 		"turnsToBuild": 7,
 		"techRequired": "Trapping",
-		"uniques": ["Does not need removal of [Forest]","[+1 Gold] once [Economics] is discovered"],
+		"uniques": ["Does not need removal of [Forest]","Does not need removal of [Jungle]","[+1 Gold] once [Economics] is discovered"],
 		"shortcutKey": "C"
 	},
 	{
