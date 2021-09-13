@@ -39,12 +39,11 @@ class Unique(val text: String){
         condition: Unique, 
         civInfo: CivilizationInfo? = null
     ): Boolean {
-        when (condition.placeholderText) {
-            "when not at war" -> if (civInfo == null || civInfo.isAtWar()) return false
-            "when at war" -> if (civInfo == null || !civInfo.isAtWar()) return false
-            else -> return false
+        return when (condition.placeholderText) {
+            "when not at war" -> civInfo?.isAtWar() == false
+            "when at war" -> civInfo?.isAtWar() == true
+            else -> false
         }
-        return true
     }
 }
 

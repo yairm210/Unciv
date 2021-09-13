@@ -273,7 +273,7 @@ fun String.tr(): String {
         // translated conditionals, removing the <> surrounding them, and removing placeholder text
         // where if it exists.
         val conditionalOrdering = UncivGame.Current.translations.getConditionalOrder(language)
-        for (placedConditional in pointyBraceRegex.findAll(conditionalOrdering).map { it.value.substring(1, it.value.length-1).getPlaceholderText() }.toList()) {
+        for (placedConditional in pointyBraceRegex.findAll(conditionalOrdering).map { it.value.substring(1, it.value.length-1).getPlaceholderText() }) {
             if (placedConditional in conditionals) {
                 translatedConditionals.add(conditionsWithTranslation[placedConditional]!!)
                 conditionsWithTranslation.remove(placedConditional)
@@ -344,7 +344,7 @@ fun String.tr(): String {
 
     if (Stats.isStats(this)) return Stats.parse(this).toString()
 
-    return UncivGame.Current.translations.getText(this, UncivGame.Current.settings.language, activeMods)
+    return UncivGame.Current.translations.getText(this, language, activeMods)
 }
 
 fun String.getPlaceholderText() = this
