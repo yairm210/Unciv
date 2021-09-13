@@ -87,6 +87,6 @@ object Constants {
 
     const val rising = "Rising"
     const val lowering = "Lowering"
-	
+    
     const val minimumMovementEpsilon = 0.05
 }
