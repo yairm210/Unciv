@@ -381,8 +381,8 @@ class NaturalWonderGenerator(val ruleset: Ruleset, val randomness: MapGeneration
     /*
     Lake Victoria: Avoids oceans; becomes flatland plains
     */
-    private fun spawnUluru(tileMap: TileMap) {
-        val wonder = ruleset.terrains[Constants.uluru]!!
+    private fun spawnLakeVictoria(tileMap: TileMap) {
+        val wonder = ruleset.terrains[Constants.lakeVictoria]!!
         val suitableLocations = tileMap.values.filter {
             it.resource == null && it.improvement == null
                     && wonder.occursOn.contains(it.getLastTerrain().name)
@@ -395,8 +395,8 @@ class NaturalWonderGenerator(val ruleset: Ruleset, val randomness: MapGeneration
     Mount Kilimanjaro:  Must be in plains or grassland, and must be adjacent to at least 2 hills;
     cannot be adjacent to more than 2 mountains; avoids oceans; becomes mountain
     */
-    private fun spawnSolomonMines(tileMap: TileMap) {
-        val wonder = ruleset.terrains[Constants.kingSolomonsMines]!!
+    private fun spawnMountKilimanjaro(tileMap: TileMap) {
+        val wonder = ruleset.terrains[Constants.mountKilimanjaro]!!
         val suitableLocations = tileMap.values.filter {
             it.resource == null && it.improvement == null
                     && wonder.occursOn.contains(it.getLastTerrain().name)
