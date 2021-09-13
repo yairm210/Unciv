@@ -26,7 +26,6 @@ import kotlin.math.max
  */
 
 
-// Kdoc not using the @property syntax because Android Studio 4.2.2 renders those _twice_
 /** Represents a decorated text line with optional linking capability.
  *  A line can have [text] with optional [size], [color], [indent] or as [header];
  *  and up to three icons: [link], [object][icon], [star][starred] in that order.
@@ -261,7 +260,7 @@ class FormattedLine (
             table.add(ImageGetter.getImage(linkImage)).size(iconSize).padRight(iconPad)
             iconCount++
         }
-        if (!noLinkImages)
+        //if (!noLinkImages)
             iconCount += renderIcon(table, iconToDisplay, iconSize)
         if (starred) {
             val image = ImageGetter.getImage(starImage)
@@ -275,7 +274,7 @@ class FormattedLine (
                 centered -> -usedWidth
                 indent == 0 && iconCount == 0 -> 0f
                 indent == 0 -> iconPad
-                noLinkImages -> indent * indentPad - usedWidth
+                iconCount == 0 -> indent * indentPad - usedWidth
                 else -> (indent-1) * indentPad +
                         indentOneAtNumIcons * (minIconSize + iconPad) + iconPad - usedWidth
             }

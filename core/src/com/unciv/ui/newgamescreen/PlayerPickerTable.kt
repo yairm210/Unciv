@@ -316,8 +316,6 @@ private class NationPickerPopup(
     private fun setNationDetails(nation: Nation) {
         nationDetailsTable.clear()
 
-//                val nationUniqueLabel = nation.getUniqueString(ruleset).toLabel(nation.getInnerColor())
-//                nationUniqueLabel.wrap = true
         nationDetailsTable.add(NationTable(nation, civBlocksWidth, partHeight, ruleset))
         nationDetailsTable.onClick {
             if (previousScreen is GameParametersScreen)
