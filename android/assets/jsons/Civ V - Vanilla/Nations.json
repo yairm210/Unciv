@@ -791,7 +791,7 @@
 		"outerColor": [205,205,205],
 		"innerColor": [81,0,137],
 		"uniqueName": "Phoenician Heritage",
-		"uniques": ["Gain a free [Harbor] [in all coastal cities]","[Land] units may cross [Mountains] after the first Great General is earned","Units ending their turn on a [Mountain] take 50 damage"],
+		"uniques": ["Gain a free [Harbor] [in all coastal cities]","Land units may cross [Mountain] after the first [Great General] is earned","Units ending their turn on a [Mountain] take 50 damage"],
 		"cities": ["Carthage","Utique","Hippo Regius","Gades","Saguntum","Carthago Nova","Panormus","Lilybaeum","Hadrumetum","Zama Regia",
 			"Karalis","Malaca","Leptis Magna","Hippo Diarrhytus","Motya","Sulci","Leptis Parva","Tharros","Soluntum","Lixus",
 			"Oea","Theveste","Ibossim","Thapsus","Aleria","Tingis","Abyla","Sabratha","Rusadir","Baecula",

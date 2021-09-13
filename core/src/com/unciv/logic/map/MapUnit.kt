@@ -12,6 +12,7 @@ import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.models.UnitActionType
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.Unique
+import com.unciv.models.ruleset.tile.Terrain
 import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.ruleset.unit.UnitType
@@ -59,6 +60,9 @@ class MapUnit {
 
     @Transient
     var canPassThroughImpassableTiles = false
+
+    @Transient
+    var canSometimesPassThroughImpassableTiles = false
 
     @Transient
     var roughTerrainPenalty = false
@@ -227,6 +231,7 @@ class MapUnit {
 
         allTilesCosts1 = hasUnique("All tiles cost 1 movement")
         canPassThroughImpassableTiles = hasUnique("Can pass through impassable tiles")
+        canSometimesPassThroughImpassableTiles = hasUnique("Land units may cross [] after the first [] is earned") && matchesFilter("Land")
         ignoresTerrainCost = hasUnique("Ignores terrain cost")
         ignoresZoneOfControl = hasUnique("Ignores Zone of Control")
         roughTerrainPenalty = hasUnique("Rough terrain penalty")
@@ -441,6 +446,14 @@ class MapUnit {
     fun canGarrison() = baseUnit.isMilitary() && baseUnit.isLandUnit()
 
     fun isGreatPerson() = baseUnit.isGreatPerson()
+
+    fun canPassThroughByUnique(terrain: Terrain): Boolean {
+        if (getMatchingUniques("Land units may cross [] after the first [] is earned")
+            .any { it.params[0] == terrain.name}
+            && civInfo.hasEverEarnedGreatPersonForMovement)
+                return true
+        return false
+    }
 
     //endregion
 

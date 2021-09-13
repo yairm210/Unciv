@@ -139,6 +139,8 @@ class CivilizationInfo {
     // default false once we no longer want legacy save-game compatibility
     var hasEverOwnedOriginalCapital: Boolean? = null
 
+    var hasEverEarnedGreatPersonForMovement: Boolean = false    // Carthage unique
+
     constructor()
 
     constructor(civName: String) {
@@ -180,6 +182,7 @@ class CivilizationInfo {
         toReturn.temporaryUniques.addAll(temporaryUniques)
         toReturn.boughtConstructionsWithGloballyIncreasingPrice.putAll(boughtConstructionsWithGloballyIncreasingPrice)
         toReturn.hasEverOwnedOriginalCapital = hasEverOwnedOriginalCapital
+        toReturn.hasEverEarnedGreatPersonForMovement = hasEverEarnedGreatPersonForMovement
         return toReturn
     }
 
@@ -842,6 +845,8 @@ class CivilizationInfo {
             ?: return null
         if (unit.isGreatPerson()) {
             addNotification("A [${unit.name}] has been born in [${cityToAddTo.name}]!", placedUnit.getTile().position, unit.name)
+            if(unit.getMatchingUniques("Land units may cross [] after the first [] is earned").any { unit.matchesFilter(it.params[1]) })
+                hasEverEarnedGreatPersonForMovement = true
         }
 
         if (placedUnit.hasUnique("Religious Unit")) {
