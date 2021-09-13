@@ -65,13 +65,17 @@ class CityConstructions {
     }
 
     internal fun getBuildableBuildings(): Sequence<Building> = cityInfo.getRuleset().buildings.values
-            .asSequence().filter { it.isBuildable(this) }
+        .asSequence().filter { it.isBuildable(this) }
 
     fun getConstructableUnits() = cityInfo.getRuleset().units.values
-            .asSequence().filter { it.isBuildable(this) }
+        .asSequence().filter { it.isBuildable(this) }
 
     fun getBasicCultureBuildings() = cityInfo.getRuleset().buildings.values
-            .asSequence().filter { it.culture > 0f && !it.isAnyWonder() && it.replaces == null }
+        .asSequence().filter { it.culture > 0f && !it.isAnyWonder() && it.replaces == null }
+    
+    fun getBasicStatBuildings(stat: Stat) = cityInfo.getRuleset().buildings.values
+        .asSequence()
+        .filter { !it.isAnyWonder() && it.replaces == null && it.getStats(cityInfo)[stat] > 0f }
 
     /**
      * @return [Stats] provided by all built buildings in city plus the bonus from Library
@@ -121,13 +125,14 @@ class CityConstructions {
      */
     fun getMaintenanceCosts(): Int {
         var maintenanceCost = 0
-        // We cache this to increase performance
-        val freeBuildings = cityInfo.civInfo.policies.getListOfFreeBuildings(cityInfo.id)
+        val freeBuildings = cityInfo.civInfo.civConstructions.getMaintenanceFreeBuildings(cityInfo.id)
+        
         for (building in getBuiltBuildings()) {
             if (building.name !in freeBuildings) {
                 maintenanceCost += building.maintenance
             }
         }
+        
         return maintenanceCost
     }
 
@@ -519,8 +524,7 @@ class CityConstructions {
                     && it.params[2] == stat.name
                 }
             ) {
-                cityInfo.civInfo.boughtConstructionsWithGloballyIncreasingPrice[constructionName] =
-                    (cityInfo.civInfo.boughtConstructionsWithGloballyIncreasingPrice[constructionName] ?: 0) + 1
+                cityInfo.civInfo.civConstructions.boughtItemsWithIncreasingPrice.add(constructionName, 1)
             }
         }
 
@@ -530,26 +534,26 @@ class CityConstructions {
 
         return true
     }
-
-    fun hasBuildableCultureBuilding(): Boolean {
-        return getBasicCultureBuildings()
-                .map { cityInfo.civInfo.getEquivalentBuilding(it.name) }
-                .filter { it.isBuildable(this) || isBeingConstructedOrEnqueued(it.name) }
-                .any()
+    
+    fun hasBuildableStatBuildings(stat: Stat): Boolean {
+        return getBasicStatBuildings(stat)
+            .map { cityInfo.civInfo.getEquivalentBuilding(it.name) }
+            .filter { it.isBuildable(this) || isBeingConstructedOrEnqueued(it.name) }
+            .any()
     }
 
-    fun addCultureBuilding(): String? {
-        val buildableCultureBuildings = getBasicCultureBuildings()
-                .map { cityInfo.civInfo.getEquivalentBuilding(it.name) }
-                .filter { it.isBuildable(this) || isBeingConstructedOrEnqueued(it.name) }
+    fun addCheapestBuildableStatBuilding(stat: Stat): String? {
+        val cheapestBuildableStatBuilding = getBasicStatBuildings(stat)
+            .map { cityInfo.civInfo.getEquivalentBuilding(it.name) }
+            .filter { it.isBuildable(this) || isBeingConstructedOrEnqueued(it.name) }
+            .minByOrNull { it.cost }?.name
 
-        if (!buildableCultureBuildings.any())
+        if (cheapestBuildableStatBuilding == null)
             return null
 
-        val cultureBuildingToBuild = buildableCultureBuildings.minByOrNull { it.cost }!!.name
-        constructionComplete(getConstruction(cultureBuildingToBuild) as INonPerpetualConstruction)
+        constructionComplete(getConstruction(cheapestBuildableStatBuilding) as INonPerpetualConstruction)
 
-        return cultureBuildingToBuild
+        return cheapestBuildableStatBuilding
     }
 
     private fun removeCurrentConstruction() = removeFromQueue(0, true)

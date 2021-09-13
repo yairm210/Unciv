@@ -144,7 +144,7 @@ class CityInfo {
                 cityConstructions.addBuilding(uniqueBuilding.name)
         }
 
-        civInfo.policies.tryToAddPolicyBuildings()
+        civInfo.civConstructions.tryAddFreeBuildings()
 
         for (unique in getMatchingUniques("Gain a free [] []")) {
             val freeBuildingName = unique.params[0]

@@ -101,6 +101,7 @@ class CivilizationInfo {
     var civName = ""
     var tech = TechManager()
     var policies = PolicyManager()
+    var civConstructions = CivConstructions()
     var questManager = QuestManager()
     var religionManager = ReligionManager()
     var goldenAges = GoldenAgeManager()
@@ -124,8 +125,11 @@ class CivilizationInfo {
      */
     val temporaryUniques = ArrayList<Pair<Unique, Int>>()
 
-    /** Maps the name of the construction to the amount of times bought */
-    val boughtConstructionsWithGloballyIncreasingPrice = HashMap<String, Int>()
+    // Deprecated since 3.16.15
+        /** Maps the name of the construction to the amount of times bought */
+        @Deprecated("Deprecated since 3.16.15", replaceWith = ReplaceWith("civWideConstructions.boughtItemsWithIncreasingPrice"))
+        val boughtConstructionsWithGloballyIncreasingPrice = HashMap<String, Int>()
+    //
 
     // if we only use lists, and change the list each time the cities are changed,
     // we won't get concurrent modification exceptions.
@@ -153,6 +157,7 @@ class CivilizationInfo {
         toReturn.civName = civName
         toReturn.tech = tech.clone()
         toReturn.policies = policies.clone()
+        toReturn.civConstructions = civConstructions.clone()
         toReturn.religionManager = religionManager.clone()
         toReturn.questManager = questManager.clone()
         toReturn.goldenAges = goldenAges.clone()
@@ -178,7 +183,9 @@ class CivilizationInfo {
         toReturn.cityStateUniqueUnit = cityStateUniqueUnit
         toReturn.flagsCountdown.putAll(flagsCountdown)
         toReturn.temporaryUniques.addAll(temporaryUniques)
-        toReturn.boughtConstructionsWithGloballyIncreasingPrice.putAll(boughtConstructionsWithGloballyIncreasingPrice)
+        // Deprecated since 3.16.15
+            toReturn.boughtConstructionsWithGloballyIncreasingPrice.putAll(boughtConstructionsWithGloballyIncreasingPrice)
+        //
         toReturn.hasEverOwnedOriginalCapital = hasEverOwnedOriginalCapital
         return toReturn
     }
@@ -557,6 +564,8 @@ class CivilizationInfo {
     fun setTransients() {
         goldenAges.civInfo = this
 
+        civConstructions.setTransients(civInfo = this)
+        
         policies.civInfo = this
         if (policies.adoptedPolicies.size > 0 && policies.numberOfAdoptedPolicies == 0)
             policies.numberOfAdoptedPolicies = policies.adoptedPolicies.count { !Policy.isBranchCompleteByName(it) }
@@ -602,7 +611,7 @@ class CivilizationInfo {
     fun updateDetailedCivResources() = transients().updateDetailedCivResources()
 
     fun startTurn() {
-        policies.startTurn()
+        civConstructions.startTurn()
         updateStatsForNextTurn() // for things that change when turn passes e.g. golden age, city state influence
 
         // Generate great people at the start of the turn,
