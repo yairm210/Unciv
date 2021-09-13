@@ -18,6 +18,7 @@ import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 import kotlin.math.max
+import kotlin.system.measureNanoTime
 
 object GameStarter {
     // temporary instrumentation while tuning/debugging
@@ -330,14 +331,17 @@ object GameStarter {
                 .filter { it.isLand && !it.isImpassible() && it.baseTerrain != Constants.snow }
 
         val landTilesInBigEnoughGroup = ArrayList<TileInfo>()
-        while (landTiles.any()) {
-            val bfs = BFS(landTiles.random()) { it.isLand && !it.isImpassible() }
-            bfs.stepToEnd()
-            val tilesInGroup = bfs.getReachedTiles()
-            landTiles = landTiles.filter { it !in tilesInGroup }
-            if (tilesInGroup.size > 20) // is this a good number? I dunno, but it's easy enough to change later on
-                landTilesInBigEnoughGroup.addAll(tilesInGroup)
+        val delta = measureNanoTime {
+            while (landTiles.any()) {
+                val bfs = BFS(landTiles.random()) { it.isLand && !it.isImpassible() }
+                bfs.stepToEnd()
+                val tilesInGroup = bfs.getReachedTiles()
+                landTiles = landTiles.filter { it !in tilesInGroup }
+                if (tilesInGroup.size > 20) // is this a good number? I dunno, but it's easy enough to change later on
+                    landTilesInBigEnoughGroup.addAll(tilesInGroup)
+            }
         }
+        println("getStartingLocations BFS took ${delta/1000000L}.${(delta/10000L).rem(100)}ms")
 
         val civsOrderedByAvailableLocations = civs.shuffled()   // Order should be random since it determines who gets best start
             .sortedBy { civ ->

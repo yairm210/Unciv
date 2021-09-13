@@ -343,6 +343,12 @@ class TileMap {
         return rulesetIncompatibilities
     }
 
+    fun isWaterMap(): Boolean {
+        // TODO
+
+        return false
+    }
+
     //endregion
     //region State-Changing Methods
 

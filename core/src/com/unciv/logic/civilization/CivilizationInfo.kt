@@ -10,10 +10,7 @@ import com.unciv.logic.civilization.RuinsManager.RuinsManager
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomacyManager
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
-import com.unciv.logic.map.MapType
-import com.unciv.logic.map.MapUnit
-import com.unciv.logic.map.TileInfo
-import com.unciv.logic.map.UnitMovementAlgorithms
+import com.unciv.logic.map.*
 import com.unciv.logic.trade.TradeEvaluation
 import com.unciv.logic.trade.TradeRequest
 import com.unciv.models.Counter
@@ -933,9 +930,8 @@ class CivilizationInfo {
             return Proximity.None
         }
 
-        val height = gameInfo.tileMap.mapParameters.mapSize.height
-        val width = gameInfo.tileMap.mapParameters.mapSize.width
-        var minDistance = height + width // a long distance
+        val mapParams = gameInfo.tileMap.mapParameters
+        var minDistance = 100000 // a long distance
         var totalDistance = 0
         var connections = 0
 
@@ -952,10 +948,12 @@ class CivilizationInfo {
 
         if (minDistance <= 7) {
             proximity = Proximity.Neighbors
-        }
-        else if (connections > 0) {
+        } else if (connections > 0) {
             val averageDistance = totalDistance / connections
-            val mapFactor = (height + width) / 2 // Perhaps slightly lower for hexagonal maps??
+            val mapFactor = if (mapParams.shape == MapShape.rectangular)
+                (mapParams.mapSize.height + mapParams.mapSize.width) / 2
+                else  (mapParams.mapSize.radius * 3) / 2 // slightly less area than equal size rect
+
             val closeDistance = ((mapFactor * 25) / 100).coerceIn(10, 20)
             val farDistance = ((mapFactor * 45) / 100).coerceIn(20, 50)
 
@@ -969,7 +967,7 @@ class CivilizationInfo {
 
         // Check if different continents (unless already max distance, or water map)
         if (connections > 0 && proximity != Proximity.Distant
-            && gameInfo.tileMap.mapParameters.type != MapType.archipelago) {
+            && !gameInfo.tileMap.isWaterMap()) {
 
             if (getCapital().getCenterTile().getContinent() != otherCiv.getCapital().getCenterTile().getContinent()) {
                 // Different continents - increase separation by one step

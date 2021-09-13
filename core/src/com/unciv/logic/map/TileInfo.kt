@@ -776,7 +776,7 @@ open class TileInfo {
     // Should only be set once at map generation
     fun setContinent(continent: Int) {
         if (this.continent != -1)
-            throw java.lang.Exception("continent already assigned!")
+            throw Exception("Continent already assigned @ $position")
         this.continent = continent
     }
 
