@@ -112,11 +112,13 @@ class CityInfoReligionManager {
     }
 
     private fun triggerReligionAdoption(newMajorityReligion: String) {
-        cityInfo.civInfo.addNotification("Your city [${cityInfo.name}] was converted to [$newMajorityReligion]!", cityInfo.location, NotificationIcon.Faith)
+        val newMajorityReligionObject = cityInfo.civInfo.gameInfo.religions[newMajorityReligion]!!
+        cityInfo.civInfo.addNotification("Your city [${cityInfo.name}] was converted to [${newMajorityReligionObject.getReligionDisplayName()}]!", cityInfo.location, NotificationIcon.Faith)
+        
         if (newMajorityReligion in religionsAtSomePointAdopted) return
         
-        val religionOwningCiv = cityInfo.civInfo.gameInfo.getCivilization(cityInfo.civInfo.gameInfo.religions[newMajorityReligion]!!.foundingCivName)
-        for (unique in cityInfo.civInfo.gameInfo.religions[newMajorityReligion]!!.getFounderUniques()) {
+        val religionOwningCiv = cityInfo.civInfo.gameInfo.getCivilization(newMajorityReligionObject.foundingCivName)
+        for (unique in newMajorityReligionObject.getFounderUniques()) {
             val statsGranted = when (unique.placeholderText) {
                 "[] when a city adopts this religion for the first time (modified by game speed)" ->
                     unique.stats.times(cityInfo.civInfo.gameInfo.gameParameters.gameSpeed.modifier)
