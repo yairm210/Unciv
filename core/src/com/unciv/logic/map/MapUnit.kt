@@ -571,7 +571,7 @@ class MapUnit {
 
         amountToHealBy += getMatchingUniques("[] HP when healing").sumOf { it.params[0].toInt() }
 
-        val maxAdjacentHealingBonus = currentTile.getTilesAtDistance(1)
+        val maxAdjacentHealingBonus = currentTile.neighbors
             .flatMap { it.getUnits().asSequence() }.map { it.adjacentHealingBonus() }.maxOrNull()
         if (maxAdjacentHealingBonus != null)
             amountToHealBy += maxAdjacentHealingBonus
