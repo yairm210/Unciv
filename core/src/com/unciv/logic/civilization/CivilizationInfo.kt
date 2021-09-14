@@ -564,7 +564,7 @@ class CivilizationInfo {
     fun getGreatPeople(): HashSet<BaseUnit> {
         val greatPeople = gameInfo.ruleSet.units.values.asSequence()
             .filter { it.isGreatPerson() }.map { getEquivalentUnit(it.name) }
-        return if (!gameInfo.hasReligionEnabled()) greatPeople.filter { !it.uniques.contains("Great Person - [Faith]")}.toHashSet()
+        return if (!gameInfo.isReligionEnabled()) greatPeople.filter { !it.uniques.contains("Hidden when religion is disabled")}.toHashSet()
         else greatPeople.toHashSet()
     }
 
@@ -883,7 +883,7 @@ class CivilizationInfo {
             addNotification("A [${unit.name}] has been born in [${cityToAddTo.name}]!", placedUnit.getTile().position, unit.name)
         }
 
-        if (placedUnit.hasUnique("Religious Unit")) {
+        if (placedUnit.hasUnique("Religious Unit") && gameInfo.isReligionEnabled()) {
             placedUnit.religion = 
                 when {
                     placedUnit.hasUnique("Takes your religion over the one in their birth city") ->

@@ -464,7 +464,7 @@ class Building : NamedStats(), INonPerpetualConstruction, ICivilopediaText {
                         rejectionReasons.add(RejectionReason.Obsoleted.apply { errorMessage = unique.text })
                 
                 Constants.hiddenWithoutReligionUnique -> 
-                    if (!civInfo.gameInfo.hasReligionEnabled())
+                    if (!civInfo.gameInfo.isReligionEnabled())
                         rejectionReasons.add(RejectionReason.DisabledBySetting)
             }
         }
