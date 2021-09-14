@@ -263,8 +263,11 @@ class MapUnit {
      * @return Maximum distance of tiles this unit may possibly see
      */
     private fun getVisibilityRange(): Int {
-        var visibilityRange = 2
-        for (unique in civInfo.getMatchingUniques("+[] Sight for all [] units"))
+        var visibilityRange =
+            if (isEmbarked()) 1
+            else 2
+        
+        for (unique in getMatchingUniques("[] Sight for all [] units"))
             if (matchesFilter(unique.params[1]))
                 visibilityRange += unique.params[0].toInt()
 
@@ -272,7 +275,6 @@ class MapUnit {
         visibilityRange += getMatchingUniques("[] Visibility Range").sumOf { it.params[0].toInt() }
 
         if (hasUnique("Limited Visibility")) visibilityRange -= 1
-
 
         for (unique in getTile().getAllTerrains().flatMap { it.uniqueObjects })
             if (unique.placeholderText == "[] Sight for [] units" && matchesFilter(unique.params[1]))
