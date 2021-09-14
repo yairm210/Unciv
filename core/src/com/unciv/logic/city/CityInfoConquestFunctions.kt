@@ -272,7 +272,7 @@ class CityInfoConquestFunctions(val city: CityInfo){
                 }
             }
 
-            if (civInfo.gameInfo.hasReligionEnabled()) religion.removeUnknownPantheons()
+            if (civInfo.gameInfo.isReligionEnabled()) religion.removeUnknownPantheons()
 
             tryUpdateRoadStatus()
             cityStats.update()
