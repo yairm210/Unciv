@@ -209,7 +209,7 @@ class TranslationTests {
     
     @Test
     fun allConditionalsAreContainedInConditionalOrderTranslation() {
-        val orderedConditionals = Translations.defaultConditionalOrderingString
+        val orderedConditionals = Translations.englishConditionalOrderingString
         val orderedConditionalsSet = orderedConditionals.getConditionals().map { it.placeholderText }
         val translationEntry = translations[orderedConditionals]!!
         

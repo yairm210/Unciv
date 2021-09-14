@@ -182,7 +182,7 @@ class Translations : LinkedHashMap<String, TranslationEntry>(){
     }
     
     fun getConditionalOrder(language: String): String {
-        return getText(defaultConditionalOrderingString, language, null)
+        return getText(englishConditionalOrderingString, language, null)
     }
 
     /** Returns the equivalent of a space in the given language
@@ -199,8 +199,9 @@ class Translations : LinkedHashMap<String, TranslationEntry>(){
     
     companion object {
         // Whenever this string is changed, it should also be changed in the translation files!
-        const val defaultConditionalOrderingString = "<UNIQUE> <when at war> <when not at war>"
-        const val shouldCapitalizeString = "StartWithCapital"
+        // It is mostly used as the template for translating the order of conditionals   
+        const val englishConditionalOrderingString = "<UNIQUE> <when at war> <when not at war>"
+        const val shouldCapitalizeString = "StartWithCapitalLetter"
     }
 }
 
