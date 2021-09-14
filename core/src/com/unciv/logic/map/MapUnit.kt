@@ -12,7 +12,6 @@ import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.models.UnitActionType
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.Unique
-import com.unciv.models.ruleset.tile.Terrain
 import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.ruleset.unit.UnitType
@@ -901,10 +900,16 @@ class MapUnit {
 
     fun getDamageFromTerrain(terrainName: String): Int {
         var totalDamage = 0
-        for (unique in getMatchingUniques("Units ending their turn on a [] take [] damage")) {
-            if (unique.params[0] == terrainName)
-                totalDamage += unique.params[1].toInt()
+        if (terrainName == Constants.mountain)
+            totalDamage += 50   // The norm
+        if (civInfo.nonStandardTerrainDamage) {
+            println("${civInfo.civName}: weird civ")
+            for (unique in getMatchingUniques("Units ending their turn on a [] take [] damage")) {
+                if (unique.params[0] == terrainName)
+                    totalDamage += unique.params[1].toInt()
+            }
         }
+
         return  totalDamage
     }
 

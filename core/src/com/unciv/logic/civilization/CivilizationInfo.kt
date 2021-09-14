@@ -1,6 +1,7 @@
 package com.unciv.logic.civilization
 
 import com.badlogic.gdx.math.Vector2
+import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
 import com.unciv.logic.UncivShowableException
@@ -93,6 +94,9 @@ class CivilizationInfo {
 
     @Transient
     var passThroughImpassableUnlocked = false   // Cached Boolean equal to passableImpassables.isNotEmpty()
+
+    @Transient
+    var nonStandardTerrainDamage = false
 
     var playerType = PlayerType.AI
 
@@ -595,6 +599,9 @@ class CivilizationInfo {
         }
 
         passThroughImpassableUnlocked = passableImpassables.isNotEmpty()
+        // All civs normally take 50 damage on a mountain. Cache whether this civ is an exception for performance reasons.
+        nonStandardTerrainDamage = getMatchingUniques("Units ending their turn on a [] take [] damage")
+            .any { it.params[0] != Constants.mountain || it.params[1].toInt() != 50 }
     }
 
     fun updateSightAndResources() {
