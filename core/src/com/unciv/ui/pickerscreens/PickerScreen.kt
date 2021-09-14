@@ -4,7 +4,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.ui.utils.*
-import com.unciv.ui.utils.AutoScrollPane as ScrollPane
+import com.unciv.ui.utils.AutoScrollPane
 
 open class PickerScreen(disableScroll: Boolean = false) : CameraStageBaseScreen() {
     /** The close button on the lower left of [bottomTable], see [setDefaultCloseAction] */
@@ -47,7 +47,7 @@ open class PickerScreen(disableScroll: Boolean = false) : CameraStageBaseScreen(
         bottomTable.height = (stage.height * (1 - screenSplit)).coerceAtMost(maxBottomTableHeight)
 
         topTable = Table()
-        scrollPane = ScrollPane(topTable)
+        scrollPane = AutoScrollPane(topTable)
 
         scrollPane.setScrollingDisabled(disableScroll, disableScroll)  // lock scrollPane
         if (disableScroll) scrollPane.clearListeners()  // remove focus capture of AutoScrollPane too

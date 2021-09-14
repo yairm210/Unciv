@@ -1,13 +1,22 @@
 package com.unciv.ui.utils
 
+import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.Input
 import com.badlogic.gdx.scenes.scene2d.InputEvent
 import com.badlogic.gdx.scenes.scene2d.InputListener
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.utils.ActorGestureListener
+import kotlin.math.max
+import kotlin.math.min
 import kotlin.math.sqrt
 
 
-open class ZoomableScrollPane: ScrollPane(null) {
+open class ZoomableScrollPane(
+    private val minScale: Float = 0.5f,
+    private val maxScale: Float = 2f,
+    private val dynamicOrigin: Boolean = false,
+    private val notifyZoom: (()->Unit)? = null
+): ScrollPane(null) {
     var continuousScrollingX = false
 
     init{
@@ -15,14 +24,24 @@ open class ZoomableScrollPane: ScrollPane(null) {
     }
 
     open fun zoom(zoomScale: Float) {
-        if (zoomScale < 0.5f || zoomScale > 2f) return
+        if (zoomScale < minScale || zoomScale > maxScale) return
         setScale(zoomScale)
+        notifyZoom?.invoke()
     }
     fun zoomIn() {
         zoom(scaleX / 0.8f)
     }
     fun zoomOut() {
         zoom(scaleX * 0.8f)
+    }
+    private fun zoomCenteredOn(x: Float, y: Float, out: Boolean) {
+        //todo this is not pixel-accurate, but better than nothing
+        val xOld = x / scaleX + scrollX
+        val yOld = y / scaleY + scrollY
+        if (out) zoomOut() else zoomIn()
+        scrollX = xOld - x / scaleX
+        scrollY = yOld - y / scaleY
+        updateVisualScroll()
     }
 
     private fun addZoomListeners() {
@@ -32,9 +51,20 @@ open class ZoomableScrollPane: ScrollPane(null) {
         removeListener(zoomListener)
         addListener(object : InputListener() {
             override fun scrolled(event: InputEvent?, x: Float, y: Float, amountX: Float, amountY: Float): Boolean {
-                if (amountX > 0 || amountY > 0) zoomOut()
-                else zoomIn()
-                return false
+                val amount = if (amountX + amountY > 0f) max(amountX, amountY) else min(amountX, amountY)
+                when {
+                    !dynamicOrigin && amount > 0f ->
+                        zoomOut()
+                    !dynamicOrigin ->
+                        zoomIn()
+                    Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT) || Gdx.input.isKeyPressed(Input.Keys.CONTROL_RIGHT) ->
+                        zoomCenteredOn(x, y, amount > 0f)
+                    Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT) || Gdx.input.isKeyPressed(Input.Keys.SHIFT_RIGHT) ->
+                        scrollX += mouseWheelX * amount
+                    else ->
+                        scrollY += mouseWheelY * amount
+                }
+                return true
             }
         })
 
