@@ -19,7 +19,8 @@ object UnitAutomation {
                 && (tile.getOwner() == null || !tile.getOwner()!!.isCityState())
                 && tile.neighbors.any { it.position !in unit.civInfo.exploredTiles }
                 && unit.movement.canReach(tile)
-                && (!unit.civInfo.isCityState() || tile.neighbors.any { it.getOwner() == unit.civInfo }) // Don't want city-states exploring far outside their borders
+                && (!unit.civInfo.isCityState() || tile.neighbors.any { it.getOwner() == unit.civInfo } // Don't want city-states exploring far outside their borders
+                && unit.getDamageFromTerrain(tile.baseTerrain) == 0)    // Don't take unnecessary damage
     }
 
     internal fun tryExplore(unit: MapUnit): Boolean {
@@ -209,7 +210,10 @@ object UnitAutomation {
                 .filter { it.isCityCenter() && it.getCity()!!.civInfo.isAtWarWith(unit.civInfo) }
                 .flatMap { it.getTilesInDistance(it.getCity()!!.range) }
 
-        val dangerousTiles = (tilesInRangeOfAttack + tilesWithinBombardmentRange).toHashSet()
+        val tilesWithTerrainDamage = unit.currentTile.getTilesInDistance(3)
+                .filter { unit.getDamageFromTerrain(it.baseTerrain) > 0 }
+
+        val dangerousTiles = (tilesInRangeOfAttack + tilesWithinBombardmentRange + tilesWithTerrainDamage).toHashSet()
 
 
         val viableTilesForHealing = unitDistanceToTiles.keys

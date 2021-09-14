@@ -670,8 +670,8 @@ class MapUnit {
             }
         }
 
-        getCitadelDamage()
-        getTerrainDamage()
+        doCitadelDamage()
+        doTerrainDamage()
     }
 
     fun startTurn() {
@@ -880,30 +880,35 @@ class MapUnit {
         return damageFactor
     }
 
-    private fun getTerrainDamage() {
-        // hard coded mountain damage for now
-        if (getTile().baseTerrain == Constants.mountain) {
-            val tileDamage = 50
-            health -= tileDamage
+    private fun doTerrainDamage() {
+        val tileDamage = getDamageFromTerrain(currentTile.baseTerrain)
+        health -= tileDamage
 
-            if (health <= 0) {
-                civInfo.addNotification(
-                    "Our [$name] took [$tileDamage] tile damage and was destroyed",
-                    currentTile.position,
-                    name,
-                    NotificationIcon.Death
-                )
-                destroy()
-            } else civInfo.addNotification(
-                "Our [$name] took [$tileDamage] tile damage",
+        if (health <= 0) {
+            civInfo.addNotification(
+                "Our [$name] took [$tileDamage] tile damage and was destroyed",
                 currentTile.position,
-                name
+                name,
+                NotificationIcon.Death
             )
-        }
-
+            destroy()
+        } else if (tileDamage > 0) civInfo.addNotification(
+            "Our [$name] took [$tileDamage] tile damage",
+            currentTile.position,
+            name
+        )
     }
 
-    private fun getCitadelDamage() {
+    fun getDamageFromTerrain(terrainName: String): Int {
+        var totalDamage = 0
+        for (unique in getMatchingUniques("Units ending their turn on a [] take [] damage")) {
+            if (unique.params[0] == terrainName)
+                totalDamage += unique.params[1].toInt()
+        }
+        return  totalDamage
+    }
+
+    private fun doCitadelDamage() {
         // Check for Citadel damage - note: 'Damage does not stack with other Citadels'
         val citadelTile = currentTile.neighbors
             .firstOrNull {
