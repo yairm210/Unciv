@@ -32,7 +32,8 @@ class CityInfoConquestFunctions(val city: CityInfo){
     }
 
     private fun destroyBuildingsOnCapture() {
-        city.apply {
+        city.apply {            
+            // Possibly remove other buildings
             for (building in cityConstructions.getBuiltBuildings()) {
                 when {
                     building.hasUnique("Never destroyed when the city is captured") || building.isWonder -> continue
@@ -44,6 +45,32 @@ class CityInfoConquestFunctions(val city: CityInfo){
                         }
                     }
                 }
+            }
+        }
+    }
+    
+    private fun removeBuildingsOnMoveToCiv(oldCiv: CivilizationInfo) {
+        city.apply {
+            // Remove all buildings provided for free to this city
+            for (building in civInfo.civConstructions.getFreeBuildings(id)) {
+                cityConstructions.removeBuilding(building)
+            }
+
+            // Remove all buildings provided for free from here to other cities (e.g. CN Tower)
+            println("Removing buildings: ${cityConstructions.freeBuildingsProvidedFromThisCity}")
+            for ((cityId, buildings) in cityConstructions.freeBuildingsProvidedFromThisCity) {
+                val city = oldCiv.cities.firstOrNull { it.id == cityId } ?: continue
+                println("Removing buildings $buildings from city ${city.name}")
+                for (building in buildings) {
+                    city.cityConstructions.removeBuilding(building)
+                }
+            }
+            cityConstructions.freeBuildingsProvidedFromThisCity.clear()
+
+            // Remove national wonders
+            for (building in cityConstructions.getBuiltBuildings()) {
+                if (building.isNationalWonder && !building.hasUnique("Never destroyed when the city is captured"))
+                    cityConstructions.removeBuilding(building.name)
             }
         }
     }
@@ -223,11 +250,11 @@ class CityInfoConquestFunctions(val city: CityInfo){
                     oldCiv.cities.first().cityConstructions.addBuilding(capitalCityIndicator) // relocate palace
                 }
             }
-
-            for (building in cityConstructions.getBuiltBuildings()) {
-                if (building.isNationalWonder && !building.hasUnique("Never destroyed when the city is captured"))
-                    cityConstructions.removeBuilding(building.name)
-            }
+    
+            // Remove their free buildings from this city and remove free buildings provided by the city from their cities
+            removeBuildingsOnMoveToCiv(oldCiv)
+            // Add our free buildings to this city and add free buildings provided by the city to other cities
+            civInfo.civConstructions.tryAddFreeBuildings() 
 
             // Place palace for newCiv if this is the only city they have
             if (newCivInfo.cities.count() == 1) {

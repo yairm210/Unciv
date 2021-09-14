@@ -12,7 +12,7 @@
 			},
 			{
 				"name": "Legalism",
-				"uniques":["Immediately creates the cheapest available cultural building in each of your first [4] cities for free"],
+				"uniques":["Provides the cheapest [Culture] building in your first [4] cities for free"],
 				"row": 1,
 				"column": 3
 			},
@@ -38,7 +38,7 @@
 			},
 			{
 				"name": "Tradition Complete",
-				"uniques": ["+[15]% growth [in all cities]","Immediately creates a [Aqueduct] in each of your first [4] cities for free"]
+				"uniques": ["+[15]% growth [in all cities]","Provides a [Aqueduct] in your first [4] cities for free"]
 			}
 		]
 	},

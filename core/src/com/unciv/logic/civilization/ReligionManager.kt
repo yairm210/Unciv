@@ -28,7 +28,7 @@ class ReligionManager {
     // contain the master list, and the ReligionManagers retrieve it from there every time the game loads.
 
     // Deprecated since 3.16.13
-        @Deprecated("Replace by adding to `civInfo.boughtConstructionsWithGloballyIncreasingPrice`")
+        @Deprecated("Replace by adding to `civInfo.civWideConstructions.boughtItemsWithIncreasingPrice`")
         var greatProphetsEarned = 0
             private set
     //
@@ -67,7 +67,7 @@ class ReligionManager {
         
         // greatProphetsEarned deprecated since 3.16.13, replacement code
             if (greatProphetsEarned != 0) {
-                civInfo.boughtConstructionsWithGloballyIncreasingPrice[getGreatProphetEquivalent()!!] = greatProphetsEarned
+                civInfo.civConstructions.boughtItemsWithIncreasingPrice[getGreatProphetEquivalent()!!] = greatProphetsEarned
                 greatProphetsEarned = 0
             }
         //
@@ -115,7 +115,7 @@ class ReligionManager {
     // https://www.reddit.com/r/civ/comments/2m82wu/can_anyone_detail_the_finer_points_of_great/
     // Game files (globaldefines.xml)
     fun faithForNextGreatProphet(): Int {
-        val greatProphetsEarned = civInfo.boughtConstructionsWithGloballyIncreasingPrice[getGreatProphetEquivalent()!!] ?: 0
+        val greatProphetsEarned = civInfo.civConstructions.boughtItemsWithIncreasingPrice[getGreatProphetEquivalent()!!] ?: 0
         
         var faithCost = 
             (200 + 100 * greatProphetsEarned * (greatProphetsEarned + 1) / 2f) * 
@@ -152,8 +152,7 @@ class ReligionManager {
             val prophet = civInfo.addUnit(prophetUnitName, birthCity) ?: return
             prophet.religion = religion!!.name
             storedFaith -= faithForNextGreatProphet()
-            civInfo.boughtConstructionsWithGloballyIncreasingPrice[prophetUnitName] = 
-                (civInfo.boughtConstructionsWithGloballyIncreasingPrice[prophetUnitName] ?: 0) + 1
+            civInfo.civConstructions.boughtItemsWithIncreasingPrice.add(prophetUnitName, 1)
         }
     }
 
