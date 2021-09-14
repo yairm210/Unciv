@@ -67,7 +67,8 @@ object UnitAutomation {
                 .filter { unit.movement.canMoveTo(it.key) && unit.movement.canReach(it.key) }
 
         val reachableTilesMaxWalkingDistance = reachableTiles
-                .filter { it.value.totalDistance == unit.currentMovement }
+                .filter { it.value.totalDistance == unit.currentMovement
+                        && unit.getDamageFromTerrain(it.key.baseTerrain) <= 0 } // Don't end turn on damaging terrain for no good reason
         if (reachableTilesMaxWalkingDistance.any()) unit.movement.moveToTile(reachableTilesMaxWalkingDistance.toList().random().first)
         else if (reachableTiles.any()) unit.movement.moveToTile(reachableTiles.keys.random())
     }
@@ -87,6 +88,9 @@ object UnitAutomation {
     fun automateUnitMoves(unit: MapUnit) {
         if (unit.civInfo.isBarbarian())
             throw IllegalStateException("Barbarians is not allowed here.")
+
+        // Might die next turn - move!
+        if (unit.health <= unit.getDamageFromTerrain() && tryHealUnit(unit)) return
 
         if (unit.isCivilian()) {
             if (tryRunAwayIfNeccessary(unit)) return
@@ -234,7 +238,7 @@ object UnitAutomation {
         val bestTileForHealingRank = unit.rankTileForHealing(bestTileForHealing)
 
         if (currentUnitTile != bestTileForHealing
-                && bestTileForHealingRank > unit.rankTileForHealing(currentUnitTile))
+                && bestTileForHealingRank > unit.rankTileForHealing(currentUnitTile) - unit.getDamageFromTerrain())
             unit.movement.moveToTile(bestTileForHealing)
 
         unit.fortifyIfCan()
@@ -276,16 +280,18 @@ object UnitAutomation {
                 unitDistanceToTiles,
                 tilesToCheck = unit.getTile().getTilesInDistance(CLOSE_ENEMY_TILES_AWAY_LIMIT).toList()
         ).filter {
-            // Ignore units that would 1-shot you if you attacked
+            // Ignore units that would 1-shot you if you attacked. Account for taking terrain damage after the fact.
             BattleDamage.calculateDamageToAttacker(MapUnitCombatant(unit),
                     it.tileToAttackFrom,
-                    Battle.getMapCombatantOfTile(it.tileToAttack)!!) < unit.health
+                    Battle.getMapCombatantOfTile(it.tileToAttack)!!)
+                    + unit.getDamageFromTerrain(it.tileToAttackFrom.baseTerrain) < unit.health
         }
 
         if (unit.baseUnit.isRanged())
             closeEnemies = closeEnemies.filterNot { it.tileToAttack.isCityCenter() && it.tileToAttack.getCity()!!.health == 1 }
 
-        val closestEnemy = closeEnemies.minByOrNull { it.tileToAttack.aerialDistanceTo(unit.getTile()) }
+        val closestEnemy = closeEnemies.filter { unit.getDamageFromTerrain(it.tileToAttackFrom.baseTerrain) <= 0 }  // Don't attack from a mountain
+                                        .minByOrNull { it.tileToAttack.aerialDistanceTo(unit.getTile()) }
 
         if (closestEnemy != null) {
             unit.movement.headTowards(closestEnemy.tileToAttackFrom)
@@ -317,7 +323,8 @@ object UnitAutomation {
         val reachableTileNearSiegedCity = siegedCities
                 .flatMap { it.getCenterTile().getTilesAtDistance(2) }
                 .sortedBy { it.aerialDistanceTo(unit.currentTile) }
-                .firstOrNull { unit.movement.canMoveTo(it) && unit.movement.canReach(it) }
+                .firstOrNull { unit.movement.canMoveTo(it) && unit.movement.canReach(it)
+                        && unit.getDamageFromTerrain(it.baseTerrain) <= 0 } // Avoid ending up on damaging terrain
 
         if (reachableTileNearSiegedCity != null) {
             unit.movement.headTowards(reachableTileNearSiegedCity)
@@ -363,6 +370,7 @@ object UnitAutomation {
                             .filter {
                                 it.key.aerialDistanceTo(closestReachableEnemyCity) <=
                                         unitRange && it.key !in tilesInBombardRange
+                                        && unit.getDamageFromTerrain(it.key.baseTerrain) <= 0 // Don't set up on a mountain
                             }
                         .minByOrNull { it.value.totalDistance }?.key
 
@@ -381,7 +389,7 @@ object UnitAutomation {
             // don't head straight to the city, try to head to landing grounds -
             // this is against tha AI's brilliant plan of having everyone embarked and attacking via sea when unnecessary.
             val tileToHeadTo = closestReachableEnemyCity.getTilesInDistanceRange(3..4)
-                    .filter { it.isLand }
+                    .filter { it.isLand && unit.getDamageFromTerrain(it.baseTerrain) <= 0 } // Don't head for hurty terrain
                     .sortedBy { it.aerialDistanceTo(unit.currentTile) }
                     .firstOrNull { unit.movement.canReach(it) }
 
@@ -504,7 +512,7 @@ object UnitAutomation {
     }
     
     /** Returns whether the civilian spends its turn hiding and not moving */
-    fun tryRunAwayIfNeccessary(unit: MapUnit): Boolean {        
+    fun tryRunAwayIfNeccessary(unit: MapUnit): Boolean {
         // This is a little 'Bugblatter Beast of Traal': Run if we can attack an enemy
         // Cheaper than determining which enemies could attack us next turn
         //todo - stay when we're stacked with a good military unit???
@@ -538,7 +546,7 @@ object UnitAutomation {
             return
         }
         val tileFurthestFromEnemy = reachableTiles.keys
-            .filter { unit.movement.canMoveTo(it) }
+            .filter { unit.movement.canMoveTo(it) && unit.getDamageFromTerrain(it.baseTerrain) < unit.health }
             .maxByOrNull { countDistanceToClosestEnemy(unit, it) }
             ?: return // can't move anywhere!
         unit.movement.moveToTile(tileFurthestFromEnemy)

@@ -880,7 +880,7 @@ class MapUnit {
     }
 
     private fun doTerrainDamage() {
-        val tileDamage = getDamageFromTerrain(currentTile.baseTerrain)
+        val tileDamage = getDamageFromTerrain()
         health -= tileDamage
 
         if (health <= 0) {
@@ -898,7 +898,7 @@ class MapUnit {
         )
     }
 
-    fun getDamageFromTerrain(terrainName: String): Int {
+    fun getDamageFromTerrain(terrainName: String = currentTile.baseTerrain): Int {
         var totalDamage = 0
         if (terrainName == Constants.mountain)
             totalDamage += 50   // The norm
