@@ -72,6 +72,7 @@ enum class UniqueType(val text:String){
 class Unique(val text:String) {
     val placeholderText = text.getPlaceholderText()
     val params = text.getPlaceholderParameters()
+    val type = UniqueType.values().firstOrNull { it.placeholderText == placeholderText }
 
     /** This is so the heavy regex-based parsing is only activated once per unique, instead of every time it's called
      *  - for instance, in the city screen, we call every tile unique for every tile, which can lead to ANRs */
@@ -81,7 +82,8 @@ class Unique(val text:String) {
         else Stats.parse(firstStatParam)
     }
 
-    fun isOfType(uniqueType: UniqueType) = placeholderText == uniqueType.placeholderText
+
+    fun isOfType(uniqueType: UniqueType) = uniqueType == type
     fun matches(uniqueType: UniqueType, ruleset: Ruleset) = isOfType(uniqueType)
             && uniqueType.checkCompliance(this, ruleset)
 }
