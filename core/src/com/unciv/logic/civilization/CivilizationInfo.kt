@@ -406,9 +406,11 @@ class CivilizationInfo {
         val cityStateLocation = if (cities.isEmpty()) null else getCapital().location
 
         val giftAmount = Stats(gold = 15f)
+        val faithAmount = Stats(faith = 4f)
         // Later, religious city-states will also gift gold, making this the better implementation
         // For now, it might be overkill though.
         var meetString = "[${civName}] has given us [${giftAmount}] as a token of goodwill for meeting us"
+        val religionMeetString = "[${civName}] has also given us [${faithAmount}]"
         if (diplomacy.filter { it.value.otherCiv().isMajorCiv() }.count() == 1) {
             giftAmount.timesInPlace(2f)
             meetString = "[${civName}] has given us [${giftAmount}] as we are the first major civ to meet them"
@@ -418,6 +420,12 @@ class CivilizationInfo {
         else
             otherCiv.addNotification(meetString, NotificationIcon.Gold)
 
+        if (otherCiv.isCityState() && otherCiv.canGiveStat(Stat.Faith)){
+            otherCiv.addNotification(religionMeetString, NotificationIcon.Faith)
+
+            for ((key, value) in faithAmount)
+                otherCiv.addStat(key, value.toInt())
+        }
         for ((key, value) in giftAmount)
             otherCiv.addStat(key, value.toInt())
     }

@@ -425,6 +425,7 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
                 civInfo.cityStateType == CityStateType.Mercantile && statType == Stat.Happiness -> true
                 civInfo.cityStateType == CityStateType.Cultured && statType == Stat.Culture -> true
                 civInfo.cityStateType == CityStateType.Maritime && statType == Stat.Food -> true
+                civInfo.cityStateType == CityStateType.Religious && statType == Stat.Faith ->true
                 else -> false
             }
         }

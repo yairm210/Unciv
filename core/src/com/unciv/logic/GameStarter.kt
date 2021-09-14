@@ -191,16 +191,26 @@ object GameStarter {
         val availableCityStatesNames = Stack<String>()
         // since we shuffle and then order by, we end up with all the City-States with starting tiles first in a random order,
         //   and then all the other City-States in a random order! Because the sortedBy function is stable!
-        availableCityStatesNames.addAll(ruleset.nations.filter { it.value.isCityState() }.keys
-                .shuffled().sortedByDescending { it in civNamesWithStartingLocations })
+        availableCityStatesNames.addAll( ruleset.nations
+            .filter { it.value.isCityState() && (it.value.cityStateType != CityStateType.Religious || newGameParameters.religionEnabled) }
+            .keys
+            .shuffled()
+            .sortedByDescending { it in civNamesWithStartingLocations } )
+
+
+        val allMercantileResources = ruleset.tileResources.values.filter { it.unique == "Can only be created by Mercantile City-States" }.map { it.name }
+        val unusedMercantileResources = Stack<String>()
+        unusedMercantileResources.addAll(allMercantileResources.shuffled())
+        
         var addedCityStates = 0
         // Keep trying to add city states until we reach the target number.
         while (addedCityStates < newGameParameters.numberOfCityStates) {
             if (availableCityStatesNames.isEmpty()) // We ran out of city-states somehow
                 break
+
             val cityStateName = availableCityStatesNames.pop()
             val civ = CivilizationInfo(cityStateName)
-            if (civ.initCityState(ruleset, newGameParameters.startingEra, availableCivNames)) {  // true if successful init
+            if (civ.initCityState(ruleset, newGameParameters.startingEra, availableCivNames)) {
                 gameInfo.civilizations.add(civ)
                 addedCityStates++
             }
