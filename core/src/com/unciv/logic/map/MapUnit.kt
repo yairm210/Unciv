@@ -903,7 +903,6 @@ class MapUnit {
         if (terrainName == Constants.mountain)
             totalDamage += 50   // The norm
         if (civInfo.nonStandardTerrainDamage) {
-            println("${civInfo.civName}: weird civ")
             for (unique in getMatchingUniques("Units ending their turn on a [] take [] damage")) {
                 if (unique.params[0] == terrainName)
                     totalDamage += unique.params[1].toInt()
