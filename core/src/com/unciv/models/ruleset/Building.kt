@@ -151,7 +151,8 @@ class Building : NamedStats(), INonPerpetualConstruction, ICivilopediaText {
     }
 
     fun getStats(city: CityInfo?): Stats {
-        val stats = this.clone()
+        // Calls the clone function of the NamedStats this class is derived from, not a clone function of this class
+        val stats = this.clone() 
         if (city == null) return stats
         val civInfo = city.civInfo
 
@@ -463,7 +464,7 @@ class Building : NamedStats(), INonPerpetualConstruction, ICivilopediaText {
                         rejectionReasons.add(RejectionReason.Obsoleted.apply { errorMessage = unique.text })
                 
                 Constants.hiddenWithoutReligionUnique -> 
-                    if (!civInfo.gameInfo.hasReligionEnabled())
+                    if (!civInfo.gameInfo.isReligionEnabled())
                         rejectionReasons.add(RejectionReason.DisabledBySetting)
             }
         }
@@ -651,20 +652,7 @@ class Building : NamedStats(), INonPerpetualConstruction, ICivilopediaText {
         }
 
         // "Provides a free [buildingName] [cityFilter]"
-        val freeBuildingUniques = uniqueObjects.asSequence().filter { it.placeholderText=="Provides a free [] []" }
-
-        for (unique in freeBuildingUniques) {
-            val affectedCities =
-                if (unique.params[1] == "in this city") sequenceOf(cityConstructions.cityInfo)
-                else civInfo.cities.asSequence().filter { it.matchesFilter(unique.params[1]) }
-
-            val freeBuildingName = civInfo.getEquivalentBuilding(unique.params[0]).name
-
-            for (city in affectedCities) {
-                if (cityConstructions.containsBuildingOrEquivalent(freeBuildingName)) continue
-                cityConstructions.addBuilding(freeBuildingName)
-            }
-        }
+        cityConstructions.addFreeBuildings()
 
         for (unique in uniqueObjects)
             UniqueTriggerActivation.triggerCivwideUnique(unique, civInfo, cityConstructions.cityInfo)

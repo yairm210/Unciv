@@ -5,7 +5,7 @@ enum class CityStateType(val color: String = "", val icon: String) {
     Maritime("#38ff70", "OtherIcons/Maritime"),
     Mercantile("#ffd800", "OtherIcons/Mercantile"),
     Militaristic("#ff0000", "OtherIcons/Militaristic"),
-    //Religious("#FFFFFF", "OtherIcons/Religious")
+    Religious("#FFFFFF", "OtherIcons/Religious")
 }
 
 enum class CityStatePersonality {

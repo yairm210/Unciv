@@ -158,7 +158,7 @@ class CivilopediaScreen(
         val imageSize = 50f
         onBackButtonClicked { UncivGame.Current.setWorldScreen() }
 
-        val hideReligionItems = !game.gameInfo.hasReligionEnabled()
+        val hideReligionItems = !game.gameInfo.isReligionEnabled()
 
         fun shouldBeDisplayed(uniqueObjects: List<Unique>): Boolean {
             val uniques = uniqueObjects.map { it.placeholderText }

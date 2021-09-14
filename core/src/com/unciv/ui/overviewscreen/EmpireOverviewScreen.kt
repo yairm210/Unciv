@@ -86,7 +86,7 @@ class EmpireOverviewScreen(private var viewingPlayer:CivilizationInfo, defaultPa
         addCategory("Units", UnitOverviewTable(viewingPlayer, this), viewingPlayer.getCivUnits().none())
         addCategory("Diplomacy", DiplomacyOverviewTable(viewingPlayer, this), viewingPlayer.diplomacy.isEmpty())
         addCategory("Resources", ResourcesOverviewTable(viewingPlayer, this), viewingPlayer.detailedCivResources.isEmpty())
-        if (viewingPlayer.gameInfo.hasReligionEnabled())
+        if (viewingPlayer.gameInfo.isReligionEnabled())
             addCategory("Religion", ReligionOverviewTable(viewingPlayer, this), viewingPlayer.gameInfo.religions.isEmpty())
 
         val closeButton = Constants.close.toTextButton().apply {

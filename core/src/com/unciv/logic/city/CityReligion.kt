@@ -82,6 +82,7 @@ class CityInfoReligionManager {
     }
     
     fun addPressure(religionName: String, amount: Int, shouldUpdateFollowers: Boolean = true) {
+        if (!cityInfo.civInfo.gameInfo.isReligionEnabled()) return // No religion, no pressures
         pressures.add(religionName, amount)
         
         if (shouldUpdateFollowers) {
@@ -112,11 +113,13 @@ class CityInfoReligionManager {
     }
 
     private fun triggerReligionAdoption(newMajorityReligion: String) {
-        cityInfo.civInfo.addNotification("Your city [${cityInfo.name}] was converted to [$newMajorityReligion]!", cityInfo.location, NotificationIcon.Faith)
+        val newMajorityReligionObject = cityInfo.civInfo.gameInfo.religions[newMajorityReligion]!!
+        cityInfo.civInfo.addNotification("Your city [${cityInfo.name}] was converted to [${newMajorityReligionObject.getReligionDisplayName()}]!", cityInfo.location, NotificationIcon.Faith)
+        
         if (newMajorityReligion in religionsAtSomePointAdopted) return
         
-        val religionOwningCiv = cityInfo.civInfo.gameInfo.getCivilization(cityInfo.civInfo.gameInfo.religions[newMajorityReligion]!!.foundingCivName)
-        for (unique in cityInfo.civInfo.gameInfo.religions[newMajorityReligion]!!.getFounderUniques()) {
+        val religionOwningCiv = cityInfo.civInfo.gameInfo.getCivilization(newMajorityReligionObject.foundingCivName)
+        for (unique in newMajorityReligionObject.getFounderUniques()) {
             val statsGranted = when (unique.placeholderText) {
                 "[] when a city adopts this religion for the first time (modified by game speed)" ->
                     unique.stats.times(cityInfo.civInfo.gameInfo.gameParameters.gameSpeed.modifier)
@@ -230,6 +233,7 @@ class CityInfoReligionManager {
     }
 
     private fun getAffectedBySurroundingCities() {
+        if (!cityInfo.civInfo.gameInfo.isReligionEnabled()) return // No religion, no spreading
         // We don't update the amount of followers yet, as only the end result should matter
         // If multiple religions would become the majority religion due to pressure, 
         // this will make it so we only receive a notification for the last one.

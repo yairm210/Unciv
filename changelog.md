@@ -1,3 +1,22 @@
+## 3.16.15
+
+City-States can become wary of civs - By SimonCeder
+
+Added Religious city states - By Interdice
+
+By xlenstra:
+- Made CN tower functional, and free buildings are removed on capture
+- Updated piety policy tree
+- Added "Consumes [amount] [resource]" for improvements
+
+By SomeTroglodyte:
+- Panzer can upgrade according to fandom wiki
+- Handle maps with invalid mapSize more gracefully
+
+By ravignir:
+- Add missing Natural Wonders
+- Made camps buildable on jungles.
+
 ## 3.16.14
 
 Fixed crashes when mod had religion but no great prophet
