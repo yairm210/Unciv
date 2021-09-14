@@ -538,7 +538,7 @@ class CityInfo {
         } else population.nextTurn(foodForNextTurn())
 
         // This should go after the population change, as that might impact the amount of followers in this city
-        if (civInfo.gameInfo.hasReligionEnabled()) religion.endTurn()
+        if (civInfo.gameInfo.isReligionEnabled()) religion.endTurn()
 
         if (this in civInfo.cities) { // city was not destroyed
             health = min(health + 20, getMaxHealth())

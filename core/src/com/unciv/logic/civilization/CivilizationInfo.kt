@@ -564,7 +564,7 @@ class CivilizationInfo {
     fun getGreatPeople(): HashSet<BaseUnit> {
         val greatPeople = gameInfo.ruleSet.units.values.asSequence()
             .filter { it.isGreatPerson() }.map { getEquivalentUnit(it.name) }
-        return if (!gameInfo.hasReligionEnabled()) greatPeople.filter { !it.uniques.contains("Great Person - [Faith]")}.toHashSet()
+        return if (!gameInfo.isReligionEnabled()) greatPeople.filter { !it.uniques.contains("Great Person - [Faith]")}.toHashSet()
         else greatPeople.toHashSet()
     }
 

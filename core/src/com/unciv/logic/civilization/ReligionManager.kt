@@ -87,7 +87,7 @@ class ReligionManager {
         10 + (civInfo.gameInfo.civilizations.count { it.isMajorCiv() && it.religionManager.religion != null } + additionalCivs) * 5
 
     fun canFoundPantheon(): Boolean {
-        if (!civInfo.gameInfo.hasReligionEnabled()) return false
+        if (!civInfo.gameInfo.isReligionEnabled()) return false
         if (religionState != ReligionState.None) return false
         if (!civInfo.isMajorCiv()) return false
         if (civInfo.gameInfo.ruleSet.beliefs.values.none { isPickablePantheonBelief(it) })
