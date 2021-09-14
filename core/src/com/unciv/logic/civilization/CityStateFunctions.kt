@@ -69,7 +69,7 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
     fun giveGreatPersonToPatron(receivingCiv: CivilizationInfo) {
 
         var giftableUnits = civInfo.gameInfo.ruleSet.units.values.filter { it.isGreatPerson() }
-        if (!civInfo.gameInfo.isReligionEnabled()) giftableUnits = giftableUnits.filterNot { it.uniques.contains("Great Person - [Faith]")}
+        if (!civInfo.gameInfo.isReligionEnabled()) giftableUnits = giftableUnits.filterNot { it.uniques.contains("Hidden when religion is disabled")}
         if (giftableUnits.isEmpty()) // For badly defined mods that don't have great people but do have the policy that makes city states grant them
             return
         val giftedUnit = giftableUnits.random()

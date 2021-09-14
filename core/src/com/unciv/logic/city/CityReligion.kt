@@ -82,6 +82,7 @@ class CityInfoReligionManager {
     }
     
     fun addPressure(religionName: String, amount: Int, shouldUpdateFollowers: Boolean = true) {
+        if (!cityInfo.civInfo.gameInfo.isReligionEnabled()) return // No religion, no pressures
         pressures.add(religionName, amount)
         
         if (shouldUpdateFollowers) {
@@ -230,6 +231,7 @@ class CityInfoReligionManager {
     }
 
     private fun getAffectedBySurroundingCities() {
+        if (!cityInfo.civInfo.gameInfo.isReligionEnabled()) return // No religion, no spreading
         // We don't update the amount of followers yet, as only the end result should matter
         // If multiple religions would become the majority religion due to pressure, 
         // this will make it so we only receive a notification for the last one.

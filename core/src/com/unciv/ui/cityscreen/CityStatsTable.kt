@@ -43,7 +43,7 @@ class CityStatsTable(val cityScreen: CityScreen): Table() {
             innerTable.add(SpecialistAllocationTable(cityScreen).apply { update() }).row()
         }
         
-        if (cityInfo.religion.getNumberOfFollowers().isNotEmpty())
+        if (cityInfo.religion.getNumberOfFollowers().isNotEmpty() && cityInfo.civInfo.gameInfo.isReligionEnabled())
             addReligionInfo()
 
         pack()
