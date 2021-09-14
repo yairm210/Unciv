@@ -165,6 +165,7 @@
 		"name": "Quinquereme",
 		"unitType": "Melee Water",
 		"uniqueTo": "Carthage",
+		"replaces": "Trireme",
 		"movement": 4,
 		"strength": 13,
 		"cost": 45,

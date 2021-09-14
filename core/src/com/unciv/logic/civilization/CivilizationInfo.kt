@@ -91,6 +91,9 @@ class CivilizationInfo {
     @Transient
     private var cachedMilitaryMight = -1
 
+    @Transient
+    var passThroughImpassableUnlocked = false   // Cached Boolean equal to passableImpassables.isNotEmpty()
+
     var playerType = PlayerType.AI
 
     /** Used in online multiplayer for human players */
@@ -139,7 +142,7 @@ class CivilizationInfo {
     // default false once we no longer want legacy save-game compatibility
     var hasEverOwnedOriginalCapital: Boolean? = null
 
-    var hasEverEarnedGreatPersonForMovement: Boolean = false    // Carthage unique
+    val passableImpassables = HashSet<String>() // For Carthage-like uniques
 
     constructor()
 
@@ -182,7 +185,7 @@ class CivilizationInfo {
         toReturn.temporaryUniques.addAll(temporaryUniques)
         toReturn.boughtConstructionsWithGloballyIncreasingPrice.putAll(boughtConstructionsWithGloballyIncreasingPrice)
         toReturn.hasEverOwnedOriginalCapital = hasEverOwnedOriginalCapital
-        toReturn.hasEverEarnedGreatPersonForMovement = hasEverEarnedGreatPersonForMovement
+        toReturn.passableImpassables.addAll(passableImpassables)
         return toReturn
     }
 
@@ -590,6 +593,8 @@ class CivilizationInfo {
             cityInfo.civInfo = this // must be before the city's setTransients because it depends on the tilemap, that comes from the currentPlayerCivInfo
             cityInfo.setTransients()
         }
+
+        passThroughImpassableUnlocked = passableImpassables.isNotEmpty()
     }
 
     fun updateSightAndResources() {
@@ -845,8 +850,12 @@ class CivilizationInfo {
             ?: return null
         if (unit.isGreatPerson()) {
             addNotification("A [${unit.name}] has been born in [${cityToAddTo.name}]!", placedUnit.getTile().position, unit.name)
-            if(unit.getMatchingUniques("Land units may cross [] after the first [] is earned").any { unit.matchesFilter(it.params[1]) })
-                hasEverEarnedGreatPersonForMovement = true
+            for (unique in getMatchingUniques("Land units may cross [] after the first [] is earned")) {
+                if (unit.matchesFilter(unique.params[1])) {
+                    passThroughImpassableUnlocked = true    // Update the cached Boolean
+                    passableImpassables.add(unique.params[0])   // Add to list of passable impassables
+                }
+            }
         }
 
         if (placedUnit.hasUnique("Religious Unit")) {

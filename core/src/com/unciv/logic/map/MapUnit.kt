@@ -62,9 +62,6 @@ class MapUnit {
     var canPassThroughImpassableTiles = false
 
     @Transient
-    var canSometimesPassThroughImpassableTiles = false
-
-    @Transient
     var roughTerrainPenalty = false
 
     @Transient
@@ -231,7 +228,6 @@ class MapUnit {
 
         allTilesCosts1 = hasUnique("All tiles cost 1 movement")
         canPassThroughImpassableTiles = hasUnique("Can pass through impassable tiles")
-        canSometimesPassThroughImpassableTiles = hasUnique("Land units may cross [] after the first [] is earned") && matchesFilter("Land")
         ignoresTerrainCost = hasUnique("Ignores terrain cost")
         ignoresZoneOfControl = hasUnique("Ignores Zone of Control")
         roughTerrainPenalty = hasUnique("Rough terrain penalty")
@@ -446,14 +442,6 @@ class MapUnit {
     fun canGarrison() = baseUnit.isMilitary() && baseUnit.isLandUnit()
 
     fun isGreatPerson() = baseUnit.isGreatPerson()
-
-    fun canPassThroughByUnique(terrain: Terrain): Boolean {
-        if (getMatchingUniques("Land units may cross [] after the first [] is earned")
-            .any { it.params[0] == terrain.name}
-            && civInfo.hasEverEarnedGreatPersonForMovement)
-                return true
-        return false
-    }
 
     //endregion
 
