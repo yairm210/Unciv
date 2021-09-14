@@ -42,24 +42,26 @@ enum class UniqueParameterType(val parameterName:String, val complianceCheck:(St
     }
 }
 
-enum class UniqueType(val text:String){
+enum class UniqueType(val text:String) {
 
     ConsumesResources("Consumes [amount] [resource]");
 
     /** For uniques that have "special" parameters that can accept multiple types, we can override them manually
      *  For 95% of cases, auto-matching is fine. */
-    val parameterTypeMap= ArrayList<List<UniqueParameterType>>()
+    private val parameterTypeMap = ArrayList<List<UniqueParameterType>>()
+
     init {
         for (placeholder in text.getPlaceholderParameters()) {
             val matchingParameterType =
                 UniqueParameterType.values().firstOrNull { it.parameterName == placeholder }
-            if (matchingParameterType != null) parameterTypeMap.add(listOf(matchingParameterType))
-            else parameterTypeMap.add(listOf(UniqueParameterType.Unknown))
+                    ?: UniqueParameterType.Unknown
+            parameterTypeMap.add(listOf(matchingParameterType))
         }
     }
+
     val placeholderText = text.getPlaceholderText()
 
-    fun checkCompliance(unique:Unique, ruleset: Ruleset):Boolean {
+    fun checkCompliance(unique: Unique, ruleset: Ruleset): Boolean {
         for ((index, param) in unique.params.withIndex())
             if (parameterTypeMap[index].none { it.complianceCheck(param, ruleset) })
                 return false
