@@ -24,31 +24,48 @@ object TranslationFileWriter {
     const val templateFileLocation = "jsons/translations/template.properties"
     private const val languageFileLocation = "jsons/translations/%s.properties"
 
-    fun writeNewTranslationFiles(translations: Translations) {
+    fun writeNewTranslationFiles(): String {
+        try {
+            val translations = Translations()
+            translations.readAllLanguagesTranslation()
 
-        val percentages = generateTranslationFiles(translations)
-        writeLanguagePercentages(percentages)
+            val percentages = generateTranslationFiles(translations)
+            writeLanguagePercentages(percentages)
 
-        // try to do the same for the mods
-        for (modFolder in Gdx.files.local("mods").list().filter { it.isDirectory })
-            generateTranslationFiles(translations, modFolder)
-        // write percentages is not needed: for an individual mod it makes no sense
+            // See #5168 for some background on this
+            for ((modName, modTranslations) in translations.modsWithTranslations) {
+                val modFolder = Gdx.files.local("mods").child(modName)
+                val modPercentages = generateTranslationFiles(modTranslations, modFolder, translations)
+                writeLanguagePercentages(modPercentages, modFolder)  // unused by the game but maybe helpful for the mod developer
+            }
 
+            return "Translation files are generated successfully."
+        } catch (ex: Throwable) {
+            return ex.localizedMessage
+        }
     }
 
     private fun getFileHandle(modFolder: FileHandle?, fileLocation: String) =
             if (modFolder != null) modFolder.child(fileLocation)
             else Gdx.files.local(fileLocation)
 
-    private fun generateTranslationFiles(translations: Translations, modFolder: FileHandle? = null): HashMap<String, Int> {
+    /**
+     * Writes new language files per Mod or for BaseRuleset - only each language that exists in [translations].
+     * @return a map with the percentages of translated lines per language
+     */
+    private fun generateTranslationFiles(
+        translations: Translations,
+        modFolder: FileHandle? = null,
+        fallbackTranslations: Translations? = null
+    ): HashMap<String, Int> {
 
         val fileNameToGeneratedStrings = LinkedHashMap<String, MutableSet<String>>()
-        val linesFromTemplates = mutableListOf<String>()
+        val linesToTranslate = mutableListOf<String>()
 
         if (modFolder == null) { // base game
             val templateFile = getFileHandle(modFolder, templateFileLocation) // read the template
             if (templateFile.exists())
-                linesFromTemplates.addAll(templateFile.reader(TranslationFileReader.charset).readLines())
+                linesToTranslate.addAll(templateFile.reader(TranslationFileReader.charset).readLines())
 
             for (baseRuleset in BaseRuleset.values()) {
                 val generatedStringsFromBaseRuleset =
@@ -58,28 +75,27 @@ object TranslationFileWriter {
             }
 
             fileNameToGeneratedStrings["Tutorials"] = generateTutorialsStrings()
-        } else fileNameToGeneratedStrings.putAll(generateStringsFromJSONs(modFolder))
+        } else {
+            fileNameToGeneratedStrings.putAll(generateStringsFromJSONs(modFolder.child("jsons")))
+        }
 
-        // Tutorials are a bit special
-        if (modFolder == null)          // this is for base only, not mods
-
-            for (key in fileNameToGeneratedStrings.keys) {
-                linesFromTemplates.add("\n#################### Lines from $key ####################\n")
-                linesFromTemplates.addAll(fileNameToGeneratedStrings.getValue(key))
-            }
+        for (key in fileNameToGeneratedStrings.keys) {
+            linesToTranslate.add("\n#################### Lines from $key ####################\n")
+            linesToTranslate.addAll(fileNameToGeneratedStrings.getValue(key))
+        }
 
         var countOfTranslatableLines = 0
         val countOfTranslatedLines = HashMap<String, Int>()
 
         // iterate through all available languages
-        for (language in translations.getLanguages()) {
+        for ((languageIndex, language) in translations.getLanguages().withIndex()) {
             var translationsOfThisLanguage = 0
             val stringBuilder = StringBuilder()
 
             // This is so we don't add the same keys twice if we have the same value in both Vanilla and G&K
             val existingTranslationKeys = HashSet<String>()
 
-            for (line in linesFromTemplates) {
+            for (line in linesToTranslate) {
                 if (!line.contains(" = ")) {
                     // small hack to insert empty lines
                     if (line.startsWith(specialNewLineCode)) {
@@ -99,16 +115,25 @@ object TranslationFileWriter {
                 if (existingTranslationKeys.contains(hashMapKey)) continue // don't add it twice
                 existingTranslationKeys.add(hashMapKey)
 
-                // count translatable lines only once (e.g. for English)
-                if (language == "English") countOfTranslatableLines++
+                // count translatable lines only once
+                if (languageIndex == 0) countOfTranslatableLines++
 
-                var translationValue = ""
-
-                val translationEntry = translations[hashMapKey]
-                if (translationEntry != null && translationEntry.containsKey(language)) {
-                    translationValue = translationEntry[language]!!
-                    translationsOfThisLanguage++
-                } else stringBuilder.appendLine(" # Requires translation!")
+                var translationValue = fun (): String {
+                    translations[hashMapKey]?.let {
+                        if (language in it) {
+                            translationsOfThisLanguage++
+                            return it[language]!!
+                        }
+                    }
+                    fallbackTranslations?.get(hashMapKey)?.also {
+                        if (language in it) {
+                            stringBuilder.appendLine(" # Copied from base translations:")
+                            return it[language]!!
+                        }
+                    }
+                    stringBuilder.appendLine(" # Requires translation!")
+                    return ""
+                }()
 
                 // THE PROBLEM
                 // When we come to change params written in the TranslationFileWriter,
@@ -141,21 +166,18 @@ object TranslationFileWriter {
 
         // Calculate the percentages of translations
         // It should be done after the loop of languages, since the countOfTranslatableLines is not known in the 1st iteration
-        for (key in countOfTranslatedLines.keys)
-            countOfTranslatedLines[key] = if (countOfTranslatableLines > 0) countOfTranslatedLines.getValue(key) * 100 / countOfTranslatableLines
-            else 100
+        for (entry in countOfTranslatedLines)
+            entry.setValue(if (countOfTranslatableLines <= 0) 100 else entry.value * 100 / countOfTranslatableLines)
 
         return countOfTranslatedLines
     }
 
-    private fun writeLanguagePercentages(percentages: HashMap<String, Int>) {
-        val stringBuilder = StringBuilder()
-        for (entry in percentages) {
-            stringBuilder.appendLine(entry.key + " = " + entry.value)
-        }
-        Gdx.files.local(TranslationFileReader.percentagesFileLocation).writeString(stringBuilder.toString(), false)
+    private fun writeLanguagePercentages(percentages: HashMap<String, Int>, modFolder: FileHandle? = null) {
+        val output = percentages.asSequence()
+            .joinToString("\n", postfix = "\n") { "${it.key} = ${it.value}" }
+        getFileHandle(modFolder, TranslationFileReader.percentagesFileLocation)
+            .writeString(output, false)
     }
-
 
     private fun generateTutorialsStrings(): MutableSet<String> {
 

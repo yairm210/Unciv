@@ -5,6 +5,7 @@ import com.unciv.UncivGame
 import com.unciv.models.stats.Stats
 import java.util.*
 import kotlin.collections.HashMap
+import kotlin.collections.LinkedHashSet
 
 /**
  *  This collection holds all translations for the game.
@@ -30,7 +31,7 @@ class Translations : LinkedHashMap<String, TranslationEntry>(){
     var percentCompleteOfLanguages = HashMap<String,Int>()
             .apply { put("English",100) } // So even if we don't manage to load the percentages, we can still pass the language screen
 
-    private var modsWithTranslations: HashMap<String, Translations> = hashMapOf() // key == mod name
+    internal var modsWithTranslations: HashMap<String, Translations> = hashMapOf() // key == mod name
 
     // used by tr() whenever GameInfo not initialized (allowing new game screen to use mod translations)
     var translationActiveMods = LinkedHashSet<String>()
@@ -64,17 +65,16 @@ class Translations : LinkedHashMap<String, TranslationEntry>(){
         return get(text, language, activeMods)?.get(language) ?: text
     }
 
-    fun getLanguages(): List<String> {
-        val toReturn =  mutableListOf<String>()
+    /** Get all languages present in `this`, used for [TranslationFileWriter] and `TranslationTests` */
+    fun getLanguages() = linkedSetOf<String>().apply {
+            for (entry in values)
+                for (languageName in entry.keys)
+                    add(languageName)
+        }
 
-        for(entry in values)
-            for(languageName in entry.keys)
-                if(!toReturn.contains(languageName)) toReturn.add(languageName)
-
-        return toReturn
-    }
-
-
+    /** This reads all translations for a specific language, including _all_ installed mods.
+     *  Vanilla translations go into `this` instance, mod translations into [modsWithTranslations].
+     */
     private fun tryReadTranslationForLanguage(language: String, printOutput: Boolean) {
         val translationStart = System.currentTimeMillis()
 
@@ -86,6 +86,7 @@ class Translations : LinkedHashMap<String, TranslationEntry>(){
             // which is super odd because everyone should support UTF-8
             languageTranslations = TranslationFileReader.read(Gdx.files.internal(translationFileName))
         } catch (ex: Exception) {
+            println("Exception reading translations for $language: ${ex.message}")
             return
         }
 
@@ -93,33 +94,31 @@ class Translations : LinkedHashMap<String, TranslationEntry>(){
         for (modFolder in Gdx.files.local("mods").list()) {
             val modTranslationFile = modFolder.child(translationFileName)
             if (modTranslationFile.exists()) {
-                val translationsForMod = Translations()
-                createTranslations(language, TranslationFileReader.read(modTranslationFile), translationsForMod)
-
-                modsWithTranslations[modFolder.name()] = translationsForMod
+                val translationsForMod = modsWithTranslations[modFolder.name()]
+                    ?: Translations().also {
+                        modsWithTranslations[modFolder.name()] = it
+                    }
+                try {
+                    translationsForMod.createTranslations(language, TranslationFileReader.read(modTranslationFile))
+                } catch (ex: Exception) {
+                    println("Exception reading translations for ${modFolder.name()} $language: ${ex.message}")
+                }
             }
         }
 
         createTranslations(language, languageTranslations)
 
         val translationFilesTime = System.currentTimeMillis() - translationStart
-        if(printOutput) println("Loading translation file for $language - " + translationFilesTime + "ms")
+        if (printOutput) println("Loading translation file for $language - " + translationFilesTime + "ms")
     }
 
-    private fun createTranslations(language: String,
-                                  languageTranslations: HashMap<String,String>,
-                                  targetTranslations: Translations = this) {
+    private fun createTranslations(language: String, languageTranslations: HashMap<String,String>) {
         for (translation in languageTranslations) {
             val hashKey = if (translation.key.contains('['))
                 translation.key.getPlaceholderText()
             else translation.key
-            if (!containsKey(hashKey))
-                targetTranslations[hashKey] = TranslationEntry(translation.key)
-
-            // why not in one line, Because there were actual crashes.
-            // I'm pretty sure I solved this already, but hey double-checking doesn't cost anything.
-            val entry = targetTranslations[hashKey]
-            if (entry != null) entry[language] = translation.value
+            val entry = this[hashKey] ?: TranslationEntry(translation.key).also { this[hashKey] = it }
+            entry[language] = translation.value
         }
     }
 
@@ -127,6 +126,7 @@ class Translations : LinkedHashMap<String, TranslationEntry>(){
         tryReadTranslationForLanguage(UncivGame.Current.settings.language, false)
     }
 
+    /** Get a list of supported languages for [readAllLanguagesTranslation] */
     // This function is too strange for me, however, let's keep it "as is" for now. - JackRainy
     private fun getLanguagesWithTranslationFile(): List<String> {
 
@@ -134,10 +134,10 @@ class Translations : LinkedHashMap<String, TranslationEntry>(){
         // So apparently the Locales don't work for everyone, which is horrendous
         // So for those players, which seem to be Android-y, we try to see what files exist directly...yeah =/
         try{
-            for(file in Gdx.files.internal("jsons/translations").list())
+            for (file in Gdx.files.internal("jsons/translations").list())
                 languages.add(file.nameWithoutExtension())
         }
-        catch (ex:Exception){} // Iterating on internal files will not work when running from a .jar
+        catch (ex:Exception) {} // Iterating on internal files will not work when running from a .jar
 
         languages.addAll(Locale.getAvailableLocales() // And this should work for Desktop, meaning from a .jar
                 .map { it.getDisplayName(Locale.ENGLISH) }) // Maybe THIS is the problem, that the DISPLAY locale wasn't english
@@ -156,6 +156,7 @@ class Translations : LinkedHashMap<String, TranslationEntry>(){
                 .filter { Gdx.files.internal("jsons/translations/$it.properties").exists() }
     }
 
+    /** Ensure _all_ languages are loaded, used by [TranslationFileWriter] and `TranslationTests` */
     fun readAllLanguagesTranslation(printOutput:Boolean=false) {
         // Apparently you can't iterate over the files in a directory when running out of a .jar...
         // https://www.badlogicgames.com/forum/viewtopic.php?f=11&t=27250
@@ -168,7 +169,7 @@ class Translations : LinkedHashMap<String, TranslationEntry>(){
         }
 
         val translationFilesTime = System.currentTimeMillis() - translationStart
-        if(printOutput) println("Loading translation files - "+translationFilesTime+"ms")
+        if(printOutput) println("Loading translation files - ${translationFilesTime}ms")
     }
 
     fun loadPercentageCompleteOfLanguages(){
@@ -177,7 +178,7 @@ class Translations : LinkedHashMap<String, TranslationEntry>(){
         percentCompleteOfLanguages = TranslationFileReader.readLanguagePercentages()
 
         val translationFilesTime = System.currentTimeMillis() - startTime
-        println("Loading percent complete of languages - "+translationFilesTime+"ms")
+        println("Loading percent complete of languages - ${translationFilesTime}ms")
     }
 }
 
