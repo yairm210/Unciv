@@ -167,7 +167,13 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
      * Does not consider if the [destination] tile can actually be entered, use [canMoveTo] for that.
      * Returns an empty list if there's no way to get to the destination.
      */
-    fun getShortestPath(destination: TileInfo): List<TileInfo> {
+    fun getShortestPath(destination: TileInfo, avoidDamagingTerrain: Boolean = false): List<TileInfo> {
+        // First try and find a path without damaging terrain
+        if (!avoidDamagingTerrain && unit.civInfo.passThroughImpassableUnlocked && unit.baseUnit.isLandUnit()) {
+            val damageFreePath = getShortestPath(destination, true)
+            if (damageFreePath.isNotEmpty()) return damageFreePath
+        }
+
         val currentTile = unit.getTile()
         if (currentTile.position == destination) return listOf(currentTile) // edge case that's needed, so that workers will know that they can reach their own tile. *sigh*
 
@@ -187,6 +193,9 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
             for (tileToCheck in tilesToCheck) {
                 val distanceToTilesThisTurn = getDistanceToTilesWithinTurn(tileToCheck.position, movementThisTurn)
                 for (reachableTile in distanceToTilesThisTurn.keys) {
+                    // Avoid damaging terrain on first pass
+                    if (avoidDamagingTerrain && unit.getDamageFromTerrain(reachableTile.baseTerrain) > 0)
+                        continue
                     if (reachableTile == destination)
                         distanceToDestination[tileToCheck] = distanceToTilesThisTurn[reachableTile]!!.totalDistance
                     else {
