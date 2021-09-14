@@ -200,22 +200,7 @@ object TranslationFileWriter {
             "Buildings",
             "Building"
         )) }
-        val unitTypeMap = ruleset.unitTypes.keys.toMutableSet().apply { addAll(sequenceOf(
-            "Military",
-            "Civilian",
-            "non-air",
-            "relevant",
-            "Nuclear Weapon",
-            "City",
-            // These are up for debate
-            "Air",
-            "land units",
-            "water units",
-            "air units",
-            "military units",
-            "submarine units",
-            // Note: this can't handle combinations of parameters (e.g. [{Military} {Water}])
-        )) }
+        val unitTypeMap = ruleset.unitTypes.keys.toMutableSet().apply { addAll(UniqueParameterType.unitTypeStrings) }
         val cityFilterMap = setOf(
             "in this city",
             "in all cities",

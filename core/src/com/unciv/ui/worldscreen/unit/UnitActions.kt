@@ -16,6 +16,7 @@ import com.unciv.models.UncivSound
 import com.unciv.models.UnitAction
 import com.unciv.models.UnitActionType
 import com.unciv.models.ruleset.Building
+import com.unciv.models.ruleset.UniqueType
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.tr
@@ -593,7 +594,7 @@ object UnitActions {
             
             var resourcesAvailable = true
             if (improvement.uniqueObjects.any { 
-                    it.placeholderText == "Consumes [] []" && civResources[unique.params[1]] ?: 0 < unique.params[0].toInt() 
+                    it.matches(UniqueType.ConsumesResources, tile.ruleset) && civResources[unique.params[1]] ?: 0 < unique.params[0].toInt()
             }) 
                 resourcesAvailable = false
             

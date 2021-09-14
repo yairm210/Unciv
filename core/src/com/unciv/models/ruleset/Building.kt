@@ -95,7 +95,7 @@ class Building : NamedStats(), INonPerpetualConstruction, ICivilopediaText {
                 if (!tileBonusHashmap.containsKey(stats)) tileBonusHashmap[stats] = ArrayList()
                 tileBonusHashmap[stats]!!.add(unique.params[1])
             }
-            unique.placeholderText == "Consumes [] []" -> Unit    // skip these,
+            unique.isOfType(UniqueType.ConsumesResources) -> Unit    // skip these,
             else -> yield(unique.text)
         }
         for ((key, value) in tileBonusHashmap)
@@ -706,7 +706,7 @@ class Building : NamedStats(), INonPerpetualConstruction, ICivilopediaText {
         val resourceRequirements = HashMap<String, Int>()
         if (requiredResource != null) resourceRequirements[requiredResource!!] = 1
         for (unique in uniqueObjects)
-            if (unique.placeholderText == "Consumes [] []")
+            if (unique.isOfType(UniqueType.ConsumesResources))
                 resourceRequirements[unique.params[1]] = unique.params[0].toInt()
         return resourceRequirements
     }
