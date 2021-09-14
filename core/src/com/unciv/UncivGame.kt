@@ -98,8 +98,8 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
         Gdx.graphics.isContinuousRendering = settings.continuousRendering
 
         thread(name = "LoadJSON") {
-            RulesetCache.loadRulesets(printOutput = true)
             translations.tryReadTranslationForCurrentLanguage()
+            RulesetCache.loadRulesets(printOutput = true) // needs to be after translation loading, for the ruleset checks
             translations.loadPercentageCompleteOfLanguages()
             TileSetCache.loadTileSetConfigs(printOutput = true)
 

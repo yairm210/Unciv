@@ -3,6 +3,7 @@ package com.unciv.models.ruleset
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.files.FileHandle
 import com.unciv.JsonParser
+import com.unciv.UncivGame
 import com.unciv.logic.UncivShowableException
 import com.unciv.models.Counter
 import com.unciv.models.metadata.BaseRuleset
@@ -18,6 +19,7 @@ import com.unciv.models.stats.INamed
 import com.unciv.models.stats.NamedStats
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
+import com.unciv.models.translations.TranslationFileReader
 import com.unciv.models.translations.tr
 import com.unciv.ui.utils.colorFromRGB
 import kotlin.collections.set
@@ -377,9 +379,44 @@ class Ruleset {
                 lines += "${building.name} requires ${building.requiredBuilding} which does not exist!"
             if (building.requiredBuildingInAllCities != null && !buildings.containsKey(building.requiredBuildingInAllCities!!))
                 lines += "${building.name} requires ${building.requiredBuildingInAllCities} in all cities which does not exist!"
-            for (unique in building.uniqueObjects)
-                if (unique.placeholderText == "Creates a [] improvement on a specific tile" && !tileImprovements.containsKey(unique.params[0]))
+
+            // "translations" only holds translations that have actually been translated.
+            // If we want to get all of them, we need to read the file without filtering.
+            val allTranslationKeys = TranslationFileReader.read(Gdx.files.internal("jsons/translations/English.properties")).keys
+            val placeholdersToUnique = HashMap<String,Unique>()
+            for (translation in allTranslationKeys) {
+                val unique = Unique(translation)
+                placeholdersToUnique[unique.placeholderText] = unique
+            }
+
+
+            for (unique in building.uniqueObjects) {
+                val baseUnique = placeholdersToUnique[unique.placeholderText]
+                if (baseUnique==null) {
+                    lines += "${building.name} contains a unique of ${unique.placeholderText}, which is not a defined unique!"
+                    warningCount++
+                    continue
+                }
+                else {
+                    for ((i, paramValue) in baseUnique.params.withIndex()) {
+                        val paramOfOurUnique = unique.params[i]
+                        if (paramValue == "amount") {
+                            try {
+                                paramOfOurUnique.toInt()
+                            } catch (ex: Exception) {
+                                lines += "${building.name}'s unique ${unique.text} contains $paramOfOurUnique which should be a number!"
+                                warningCount++
+                            }
+                        }
+                    }
+                }
+
+                if (unique.placeholderText == "Creates a [] improvement on a specific tile" && !tileImprovements.containsKey(
+                        unique.params[0]
+                    )
+                )
                     lines += "${building.name} creates a ${unique.params[0]} improvement which does not exist!"
+            }
         }
 
         for (resource in tileResources.values) {

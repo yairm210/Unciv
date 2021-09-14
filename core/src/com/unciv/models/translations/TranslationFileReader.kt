@@ -10,30 +10,35 @@ object TranslationFileReader {
     const val percentagesFileLocation = "jsons/translations/completionPercentages.properties"
     val charset: String = Charset.forName("UTF-8").name()
 
-    fun read(file: FileHandle): LinkedHashMap<String, String> {
+    fun read(file:FileHandle): LinkedHashMap<String, String> {
         val translations = LinkedHashMap<String, String>()
         file.reader(charset).forEachLine { line ->
-            if(!line.contains(" = ")) return@forEachLine
+            if (!line.contains(" = ")) return@forEachLine
             val splitLine = line.split(" = ")
-            if(splitLine[1]!="") { // the value is empty, this means this wasn't translated yet
-                val value = splitLine[1].replace("\\n","\n")
-                val key = splitLine[0].replace("\\n","\n")
-                translations[key] = value
-            }
+            val value = splitLine[1].replace("\\n", "\n")
+            val key = splitLine[0].replace("\\n", "\n")
+            translations[key] = value
         }
         return translations
     }
 
-    fun readLanguagePercentages():HashMap<String,Int>{
+    fun readAndFilterEmpty(file: FileHandle): LinkedHashMap<String, String> {
+        val allTranslations = read(file)
+        for ((key, value) in allTranslations.toList())
+            if (value == "")
+                allTranslations.remove(key)
+        return allTranslations
+    }
 
-        val hashmap = HashMap<String,Int>()
+    fun readLanguagePercentages(): HashMap<String, Int> {
+
+        val hashmap = HashMap<String, Int>()
         val percentageFile = Gdx.files.internal(percentagesFileLocation)
-        if(!percentageFile.exists()) return hashmap
-        for(line in percentageFile.reader().readLines()){
+        if (!percentageFile.exists()) return hashmap
+        for (line in percentageFile.reader().readLines()) {
             val splitLine = line.split(" = ")
-            hashmap[splitLine[0]]=splitLine[1].toInt()
+            hashmap[splitLine[0]] = splitLine[1].toInt()
         }
         return hashmap
     }
-
 }
