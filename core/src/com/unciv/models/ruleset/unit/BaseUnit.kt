@@ -14,7 +14,6 @@ import com.unciv.ui.civilopedia.FormattedLine
 import com.unciv.ui.civilopedia.ICivilopediaText
 import com.unciv.ui.utils.Fonts
 import com.unciv.ui.utils.toPercent
-import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 import kotlin.collections.HashSet
@@ -270,7 +269,7 @@ class BaseUnit : INamed, INonPerpetualConstruction, ICivilopediaText {
                     getCostForConstructionsIncreasingInPrice(
                         it.params[1].toInt(),
                         it.params[5].toInt(),
-                        cityInfo.civInfo.boughtConstructionsWithGloballyIncreasingPrice[name] ?: 0
+                        cityInfo.civInfo.civConstructions.boughtItemsWithIncreasingPrice[name] ?: 0
                     )
                 }
             )
@@ -283,7 +282,7 @@ class BaseUnit : INamed, INonPerpetualConstruction, ICivilopediaText {
                     getCostForConstructionsIncreasingInPrice(
                         it.params[1].toInt(),
                         it.params[4].toInt(),
-                        cityInfo.civInfo.boughtConstructionsWithGloballyIncreasingPrice[name] ?: 0
+                        cityInfo.civInfo.civConstructions.boughtItemsWithIncreasingPrice[name] ?: 0
                     )        
                 }
             )
@@ -411,7 +410,7 @@ class BaseUnit : INamed, INonPerpetualConstruction, ICivilopediaText {
             unit.currentMovement = 0f
 
         // If this unit has special abilities that need to be kept track of, start doing so here
-        if (unit.hasUnique("Religious Unit")) {
+        if (unit.hasUnique("Religious Unit") && civInfo.gameInfo.isReligionEnabled()) {
             unit.religion =  
                 if (unit.hasUnique("Takes your religion over the one in their birth city"))
                     civInfo.religionManager.religion?.name

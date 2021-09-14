@@ -12,6 +12,7 @@ import com.unciv.logic.map.TileMap
 import com.unciv.models.Religion
 import com.unciv.models.metadata.GameParameters
 import com.unciv.models.ruleset.Difficulty
+import com.unciv.models.ruleset.ModOptionsConstants
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import java.util.*
@@ -131,10 +132,14 @@ class GameInfo {
             it.setTransients()
         }
 
-    fun hasReligionEnabled() =
-        // Temporary function to check whether religion should be used for this game
-        (gameParameters.religionEnabled || ruleSet.hasReligion())
-                && (ruleSet.eras.isEmpty() || !ruleSet.eras[gameParameters.startingEra]!!.hasUnique("Starting in this era disables religion"))
+    fun isReligionEnabled(): Boolean {
+        if (ruleSet.eras[gameParameters.startingEra]!!.hasUnique("Starting in this era disables religion")
+            || ruleSet.modOptions.uniques.contains(ModOptionsConstants.disableReligion)
+        ) {
+            return false
+        }
+        return gameParameters.religionEnabled
+    }
 
     //endregion
     //region State changing functions
