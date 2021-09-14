@@ -14,7 +14,6 @@ import com.unciv.ui.civilopedia.FormattedLine
 import com.unciv.ui.civilopedia.ICivilopediaText
 import com.unciv.ui.utils.Fonts
 import com.unciv.ui.utils.toPercent
-import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 import kotlin.collections.HashSet
@@ -254,7 +253,7 @@ class BaseUnit : INamed, INonPerpetualConstruction, ICivilopediaText {
                     getCostForConstructionsIncreasingInPrice(
                         it.params[1].toInt(),
                         it.params[5].toInt(),
-                        cityInfo.civInfo.boughtConstructionsWithGloballyIncreasingPrice[name] ?: 0
+                        cityInfo.civInfo.civConstructions.boughtItemsWithIncreasingPrice[name] ?: 0
                     )
                 }
             )
@@ -267,7 +266,7 @@ class BaseUnit : INamed, INonPerpetualConstruction, ICivilopediaText {
                     getCostForConstructionsIncreasingInPrice(
                         it.params[1].toInt(),
                         it.params[4].toInt(),
-                        cityInfo.civInfo.boughtConstructionsWithGloballyIncreasingPrice[name] ?: 0
+                        cityInfo.civInfo.civConstructions.boughtItemsWithIncreasingPrice[name] ?: 0
                     )        
                 }
             )
@@ -476,6 +475,7 @@ class BaseUnit : INamed, INonPerpetualConstruction, ICivilopediaText {
 
             "Nuclear Weapon" -> isNuclearWeapon()
             "Great Person", "Great" -> isGreatPerson()
+            "Religious" -> uniques.contains("Religious Unit")
             else -> {
                 if (getType().matchesFilter(filter)) return true
                 if (

@@ -178,10 +178,19 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
                     )
         }
 
-
-        if (civInfo.hasUnique("50% of excess happiness added to culture towards policies")) {
-            val happiness = civInfo.getHappiness()
-            if (happiness > 0) statMap.add("Policies", Stats(culture = happiness / 2f))
+        // Deprecated since 3.16.15
+            if (civInfo.hasUnique("50% of excess happiness added to culture towards policies")) {
+                val happiness = civInfo.getHappiness()
+                if (happiness > 0) statMap.add("Policies", Stats(culture = happiness / 2f))
+            }
+        //
+        
+        if (civInfo.getHappiness() > 0) {
+            val excessHappinessConversion = Stats()
+            for (unique in civInfo.getMatchingUniques("[]% of excess happiness converted to []")) {
+                excessHappinessConversion.add(Stat.valueOf(unique.params[1]), (unique.params[0].toInt() / 100 * civInfo.getHappiness()).toFloat())
+            }
+            statMap.add("Policies", excessHappinessConversion)
         }
 
         // negative gold hurts science

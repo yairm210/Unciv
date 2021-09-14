@@ -2,6 +2,7 @@ package com.unciv.logic.map
 
 import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
+import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
 import com.unciv.logic.HexMath
 import com.unciv.logic.civilization.CivilizationInfo
@@ -33,6 +34,7 @@ class TileMap {
     var mapParameters = MapParameters()
 
     private var tileList = ArrayList<TileInfo>()
+    val continentSizes = HashMap<Int, Int>()    // Continent ID, Continent size
 
     /** Structure geared for simple serialization by Gdx.Json (which is a little blind to kotlin collections, especially HashSet)
      * @param position [Vector2] of the location
@@ -77,6 +79,9 @@ class TileMap {
     @Transient
     val startingLocationsByNation = HashMap<String,HashSet<TileInfo>>()
 
+    @Transient
+    val landTilesInBigEnoughGroup = ArrayList<TileInfo>() // cached at map gen
+
     //endregion
     //region Constructors
 
@@ -96,7 +101,7 @@ class TileMap {
         startingLocations.clear()
 
         // world-wrap maps must always have an even width, so round down
-        val wrapAdjustedWidth = if (worldWrap && width % 2 != 0 ) width -1 else width
+        val wrapAdjustedWidth = if (worldWrap && width % 2 != 0) width -1 else width
 
         // Even widths will have coordinates ranging -x..(x-1), not -x..x, which is always an odd-sized range
         // e.g. w=4 -> -2..1, w=5 -> -2..2, w=6 -> -3..2, w=7 -> -3..3
@@ -122,6 +127,7 @@ class TileMap {
         toReturn.startingLocations.clear()
         toReturn.startingLocations.ensureCapacity(startingLocations.size)
         toReturn.startingLocations.addAll(startingLocations)
+        toReturn.continentSizes.putAll(continentSizes)
         return toReturn
     }
 
@@ -153,7 +159,7 @@ class TileMap {
      *  Respects map edges and world wrap. */
     fun getTilesInDistance(origin: Vector2, distance: Int): Sequence<TileInfo> =
             getTilesInDistanceRange(origin, 0..distance)
-    
+
     /** @return All tiles in a hexagonal ring around [origin] with the distances in [range]. Excludes the [origin] tile unless [range] starts at 0.
      *  Respects map edges and world wrap. */
     fun getTilesInDistanceRange(origin: Vector2, range: IntRange): Sequence<TileInfo> =
@@ -341,6 +347,12 @@ class TileMap {
         }
         rulesetIncompatibilities.remove("")
         return rulesetIncompatibilities
+    }
+
+    fun isWaterMap(): Boolean {
+        val bigIslands = continentSizes.count { it.value > 20 }
+        val players = gameInfo.gameParameters.players.count()
+        return bigIslands >= players
     }
 
     //endregion

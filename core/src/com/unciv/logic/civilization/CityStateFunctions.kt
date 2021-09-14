@@ -2,17 +2,16 @@ package com.unciv.logic.civilization
 
 import com.unciv.Constants
 import com.unciv.logic.automation.NextTurnAutomation
-import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
-import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
-import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
-import com.unciv.logic.civilization.diplomacy.RelationshipLevel
+import com.unciv.logic.civilization.diplomacy.*
 import com.unciv.models.metadata.GameSpeed
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.stats.Stat
 import com.unciv.models.translations.getPlaceholderParameters
 import com.unciv.models.translations.getPlaceholderText
 import com.unciv.ui.victoryscreen.RankingType
+import java.util.*
 import kotlin.collections.HashMap
+import kotlin.collections.HashSet
 import kotlin.collections.LinkedHashMap
 import kotlin.math.max
 import kotlin.math.min
@@ -425,6 +424,7 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
                 civInfo.cityStateType == CityStateType.Mercantile && statType == Stat.Happiness -> true
                 civInfo.cityStateType == CityStateType.Cultured && statType == Stat.Culture -> true
                 civInfo.cityStateType == CityStateType.Maritime && statType == Stat.Food -> true
+                civInfo.cityStateType == CityStateType.Religious && statType == Stat.Faith ->true
                 else -> false
             }
         }
@@ -505,9 +505,57 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
         }
     }
 
-    /** A city state was attacked. What are its protectors going to do about it??? */
+    /** A city state was attacked. What are its protectors going to do about it??? Also checks for Wary */
     fun cityStateAttacked(attacker: CivilizationInfo) {
         if (!civInfo.isCityState()) return // What are we doing here?
+
+        // We might become wary!
+        if (attacker.isMinorCivWarmonger()) { // They've attacked a lot of city-states
+            civInfo.getDiplomacyManager(attacker).becomeWary()
+        }
+        else if (attacker.isMinorCivAggressor()) { // They've attacked a few
+            if (Random().nextBoolean()) { // 50% chance
+                civInfo.getDiplomacyManager(attacker).becomeWary()
+            }
+        }
+        // Others might become wary!
+        if (attacker.isMinorCivAggressor()) {
+            for (cityState in civInfo.gameInfo.getAliveCityStates()) {
+                if (cityState == civInfo) // Must be a different minor
+                    continue
+                if (cityState.getAllyCiv() == attacker.civName) // Must not be allied to the attacker
+                    continue
+                if (!cityState.knows(attacker)) // Must have met
+                    continue
+
+                var probability: Int
+                if (attacker.isMinorCivWarmonger()) {
+                    // High probability if very aggressive
+                    probability = when (cityState.getProximity(attacker)) {
+                        Proximity.Neighbors -> 100
+                        Proximity.Close     -> 75
+                        Proximity.Far       -> 50
+                        Proximity.Distant   -> 25
+                        else                -> 0
+                    }
+                } else {
+                    // Lower probability if only somewhat aggressive
+                    probability = when (cityState.getProximity(attacker)) {
+                        Proximity.Neighbors -> 50
+                        Proximity.Close     -> 20
+                        else                -> 0
+                    }
+                }
+
+                // Higher probability if already at war
+                if (cityState.isAtWarWith(attacker))
+                    probability += 50
+
+                if (Random().nextInt(100) <= probability) {
+                    cityState.getDiplomacyManager(attacker).becomeWary()
+                }
+            }
+        }
 
         for (protector in civInfo.getProtectorCivs()) {
             if (!protector.knows(attacker)) // Who?

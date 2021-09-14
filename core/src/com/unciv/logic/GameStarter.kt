@@ -33,23 +33,29 @@ object GameStarter {
 
         // In the case where we used to have a mod, and now we don't, we cannot "unselect" it in the UI.
         // We need to remove the dead mods so there aren't problems later.
-        gameSetupInfo.gameParameters.mods.removeAll{ !RulesetCache.containsKey(it) }
+        gameSetupInfo.gameParameters.mods.removeAll { !RulesetCache.containsKey(it) }
 
         gameInfo.gameParameters = gameSetupInfo.gameParameters
         val ruleset = RulesetCache.getComplexRuleset(gameInfo.gameParameters.mods)
+        val mapGen = MapGenerator(ruleset)
 
         if (gameSetupInfo.mapParameters.name != "") runAndMeasure("loadMap") {
             tileMap = MapSaver.loadMap(gameSetupInfo.mapFile!!)
             // Don't override the map parameters - this can include if we world wrap or not!
         } else runAndMeasure("generateMap") {
-            tileMap = MapGenerator(ruleset).generateMap(gameSetupInfo.mapParameters)
+            tileMap = mapGen.generateMap(gameSetupInfo.mapParameters)
             tileMap.mapParameters = gameSetupInfo.mapParameters
         }
 
         runAndMeasure("addCivilizations") {
             gameInfo.tileMap = tileMap
-            tileMap.gameInfo = gameInfo // need to set this transient before placing units in the map
-            addCivilizations(gameSetupInfo.gameParameters, gameInfo, ruleset) // this is before gameInfo.setTransients, so gameInfo doesn't yet have the gameBasics
+            tileMap.gameInfo =
+                gameInfo // need to set this transient before placing units in the map
+            addCivilizations(
+                gameSetupInfo.gameParameters,
+                gameInfo,
+                ruleset
+            ) // this is before gameInfo.setTransients, so gameInfo doesn't yet have the gameBasics
         }
 
         runAndMeasure("Remove units") {
@@ -76,6 +82,11 @@ object GameStarter {
             addCivTechs(gameInfo, ruleset, gameSetupInfo)
 
             addCivStats(gameInfo)
+        }
+
+        runAndMeasure("assignContinents?") {
+            if (tileMap.continentSizes.isEmpty())   // Probably saved map without continent data
+                mapGen.assignContinents(tileMap)
         }
 
         runAndMeasure("addCivStartingUnits") {
@@ -191,16 +202,26 @@ object GameStarter {
         val availableCityStatesNames = Stack<String>()
         // since we shuffle and then order by, we end up with all the City-States with starting tiles first in a random order,
         //   and then all the other City-States in a random order! Because the sortedBy function is stable!
-        availableCityStatesNames.addAll(ruleset.nations.filter { it.value.isCityState() }.keys
-                .shuffled().sortedByDescending { it in civNamesWithStartingLocations })
+        availableCityStatesNames.addAll( ruleset.nations
+            .filter { it.value.isCityState() && (it.value.cityStateType != CityStateType.Religious || newGameParameters.religionEnabled) }
+            .keys
+            .shuffled()
+            .sortedByDescending { it in civNamesWithStartingLocations } )
+
+
+        val allMercantileResources = ruleset.tileResources.values.filter { it.unique == "Can only be created by Mercantile City-States" }.map { it.name }
+        val unusedMercantileResources = Stack<String>()
+        unusedMercantileResources.addAll(allMercantileResources.shuffled())
+        
         var addedCityStates = 0
         // Keep trying to add city states until we reach the target number.
         while (addedCityStates < newGameParameters.numberOfCityStates) {
             if (availableCityStatesNames.isEmpty()) // We ran out of city-states somehow
                 break
+
             val cityStateName = availableCityStatesNames.pop()
             val civ = CivilizationInfo(cityStateName)
-            if (civ.initCityState(ruleset, newGameParameters.startingEra, availableCivNames)) {  // true if successful init
+            if (civ.initCityState(ruleset, newGameParameters.startingEra, availableCivNames)) {
                 gameInfo.civilizations.add(civ)
                 addedCityStates++
             }
@@ -324,19 +345,23 @@ object GameStarter {
         }
     }
 
+
     private fun getStartingLocations(civs: List<CivilizationInfo>, tileMap: TileMap, startScores: HashMap<TileInfo, Float>): HashMap<CivilizationInfo, TileInfo> {
-        var landTiles = tileMap.values
+        val landTilesInBigEnoughGroup = tileMap.landTilesInBigEnoughGroup
+        if (landTilesInBigEnoughGroup.isEmpty()) {
+            // Worst case - a pre-made map with continent data. This means we didn't re-run assignContinents,
+            // so we don't have a cached landTilesInBigEnoughGroup. So we need to do it the hard way.
+            var landTiles = tileMap.values
                 // Games starting on snow might as well start over...
                 .filter { it.isLand && !it.isImpassible() && it.baseTerrain != Constants.snow }
-
-        val landTilesInBigEnoughGroup = ArrayList<TileInfo>()
-        while (landTiles.any()) {
-            val bfs = BFS(landTiles.random()) { it.isLand && !it.isImpassible() }
-            bfs.stepToEnd()
-            val tilesInGroup = bfs.getReachedTiles()
-            landTiles = landTiles.filter { it !in tilesInGroup }
-            if (tilesInGroup.size > 20) // is this a good number? I dunno, but it's easy enough to change later on
-                landTilesInBigEnoughGroup.addAll(tilesInGroup)
+            while (landTiles.any()) {
+                val bfs = BFS(landTiles.random()) { it.isLand && !it.isImpassible() }
+                bfs.stepToEnd()
+                val tilesInGroup = bfs.getReachedTiles()
+                landTiles = landTiles.filter { it !in tilesInGroup }
+                if (tilesInGroup.size > 20) // is this a good number? I dunno, but it's easy enough to change later on
+                    landTilesInBigEnoughGroup.addAll(tilesInGroup)
+            }
         }
 
         val civsOrderedByAvailableLocations = civs.shuffled()   // Order should be random since it determines who gets best start

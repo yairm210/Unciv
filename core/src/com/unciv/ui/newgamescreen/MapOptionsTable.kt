@@ -6,6 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.SelectBox
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Array
 import com.unciv.logic.MapSaver
+import com.unciv.logic.UncivShowableException
 import com.unciv.logic.map.MapType
 import com.unciv.logic.map.TileMap
 import com.unciv.ui.utils.CameraStageBaseScreen
@@ -90,7 +91,9 @@ class MapOptionsTable(private val newGameScreen: NewGameScreen): Table() {
                 map = MapSaver.loadMap(mapFile)
             } catch (ex:Exception){
                 Popup(newGameScreen).apply {
-                    addGoodSizedLabel("Could not load map!")
+                    addGoodSizedLabel("Could not load map!").row()
+                    if (ex is UncivShowableException)
+                        addGoodSizedLabel(ex.message!!).row()
                     addCloseButton()
                     open()
                 }

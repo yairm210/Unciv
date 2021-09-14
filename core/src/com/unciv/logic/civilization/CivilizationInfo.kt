@@ -10,9 +10,7 @@ import com.unciv.logic.civilization.RuinsManager.RuinsManager
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomacyManager
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
-import com.unciv.logic.map.MapUnit
-import com.unciv.logic.map.TileInfo
-import com.unciv.logic.map.UnitMovementAlgorithms
+import com.unciv.logic.map.*
 import com.unciv.logic.trade.TradeEvaluation
 import com.unciv.logic.trade.TradeRequest
 import com.unciv.models.Counter
@@ -29,9 +27,18 @@ import com.unciv.ui.victoryscreen.RankingType
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
+import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.roundToInt
 import kotlin.math.sqrt
+
+enum class Proximity {
+    None, // ie no cities
+    Neighbors,
+    Close,
+    Far,
+    Distant
+}
 
 class CivilizationInfo {
 
@@ -100,6 +107,7 @@ class CivilizationInfo {
     var civName = ""
     var tech = TechManager()
     var policies = PolicyManager()
+    var civConstructions = CivConstructions()
     var questManager = QuestManager()
     var religionManager = ReligionManager()
     var goldenAges = GoldenAgeManager()
@@ -107,6 +115,7 @@ class CivilizationInfo {
     var victoryManager = VictoryManager()
     var ruinsManager = RuinsManager()
     var diplomacy = HashMap<String, DiplomacyManager>()
+    var proximity = HashMap<String, Proximity>()
     var notifications = ArrayList<Notification>()
     val popupAlerts = ArrayList<PopupAlert>()
     private var allyCivName: String? = null
@@ -123,8 +132,11 @@ class CivilizationInfo {
      */
     val temporaryUniques = ArrayList<Pair<Unique, Int>>()
 
-    /** Maps the name of the construction to the amount of times bought */
-    val boughtConstructionsWithGloballyIncreasingPrice = HashMap<String, Int>()
+    // Deprecated since 3.16.15
+        /** Maps the name of the construction to the amount of times bought */
+        @Deprecated("Deprecated since 3.16.15", replaceWith = ReplaceWith("civWideConstructions.boughtItemsWithIncreasingPrice"))
+        val boughtConstructionsWithGloballyIncreasingPrice = HashMap<String, Int>()
+    //
 
     // if we only use lists, and change the list each time the cities are changed,
     // we won't get concurrent modification exceptions.
@@ -137,6 +149,9 @@ class CivilizationInfo {
     // Nullable type meant to be deprecated and converted to non-nullable,
     // default false once we no longer want legacy save-game compatibility
     var hasEverOwnedOriginalCapital: Boolean? = null
+
+    // For Aggressor, Warmonger status
+    private var numMinorCivsAttacked = 0
 
     constructor()
 
@@ -152,6 +167,7 @@ class CivilizationInfo {
         toReturn.civName = civName
         toReturn.tech = tech.clone()
         toReturn.policies = policies.clone()
+        toReturn.civConstructions = civConstructions.clone()
         toReturn.religionManager = religionManager.clone()
         toReturn.questManager = questManager.clone()
         toReturn.goldenAges = goldenAges.clone()
@@ -161,6 +177,7 @@ class CivilizationInfo {
         toReturn.allyCivName = allyCivName
         for (diplomacyManager in diplomacy.values.map { it.clone() })
             toReturn.diplomacy[diplomacyManager.otherCivName] = diplomacyManager
+        toReturn.proximity.putAll(proximity)
         toReturn.cities = cities.map { it.clone() }
 
         // This is the only thing that is NOT switched out, which makes it a source of ConcurrentModification errors.
@@ -177,8 +194,11 @@ class CivilizationInfo {
         toReturn.cityStateUniqueUnit = cityStateUniqueUnit
         toReturn.flagsCountdown.putAll(flagsCountdown)
         toReturn.temporaryUniques.addAll(temporaryUniques)
-        toReturn.boughtConstructionsWithGloballyIncreasingPrice.putAll(boughtConstructionsWithGloballyIncreasingPrice)
+        // Deprecated since 3.16.15
+            toReturn.boughtConstructionsWithGloballyIncreasingPrice.putAll(boughtConstructionsWithGloballyIncreasingPrice)
+        //
         toReturn.hasEverOwnedOriginalCapital = hasEverOwnedOriginalCapital
+        toReturn.numMinorCivsAttacked = numMinorCivsAttacked
         return toReturn
     }
 
@@ -190,6 +210,9 @@ class CivilizationInfo {
 
     fun getDiplomacyManager(civInfo: CivilizationInfo) = getDiplomacyManager(civInfo.civName)
     fun getDiplomacyManager(civName: String) = diplomacy[civName]!!
+
+    fun getProximity(civInfo: CivilizationInfo) = getProximity(civInfo.civName)
+    fun getProximity(civName: String) = proximity[civName] ?: Proximity.None
 
     /** Returns only undefeated civs, aka the ones we care about */
     fun getKnownCivs() = diplomacy.values.map { it.otherCiv() }.filter { !it.isDefeated() }
@@ -398,9 +421,11 @@ class CivilizationInfo {
         val cityStateLocation = if (cities.isEmpty()) null else getCapital().location
 
         val giftAmount = Stats(gold = 15f)
+        val faithAmount = Stats(faith = 4f)
         // Later, religious city-states will also gift gold, making this the better implementation
         // For now, it might be overkill though.
         var meetString = "[${civName}] has given us [${giftAmount}] as a token of goodwill for meeting us"
+        val religionMeetString = "[${civName}] has also given us [${faithAmount}]"
         if (diplomacy.filter { it.value.otherCiv().isMajorCiv() }.count() == 1) {
             giftAmount.timesInPlace(2f)
             meetString = "[${civName}] has given us [${giftAmount}] as we are the first major civ to meet them"
@@ -410,6 +435,12 @@ class CivilizationInfo {
         else
             otherCiv.addNotification(meetString, NotificationIcon.Gold)
 
+        if (otherCiv.isCityState() && otherCiv.canGiveStat(Stat.Faith)){
+            otherCiv.addNotification(religionMeetString, NotificationIcon.Faith)
+
+            for ((key, value) in faithAmount)
+                otherCiv.addStat(key, value.toInt())
+        }
         for ((key, value) in giftAmount)
             otherCiv.addStat(key, value.toInt())
     }
@@ -524,9 +555,8 @@ class CivilizationInfo {
             else
                 unit.getForceEvaluation()
         }
-        val goldBonus = sqrt(gold.toFloat()).toPercent()  // 2f if gold == 10000
+        val goldBonus = sqrt(max(0f, gold.toFloat())).toPercent()  // 2f if gold == 10000
         sum = (sum * min(goldBonus, 2f)).toInt()    // 2f is max bonus
-
         return sum
     }
 
@@ -540,6 +570,9 @@ class CivilizationInfo {
 
     fun hasTechOrPolicy(techOrPolicyName: String) =
         tech.isResearched(techOrPolicyName) || policies.isAdopted(techOrPolicyName)
+
+    fun isMinorCivAggressor() = numMinorCivsAttacked >= 2
+    fun isMinorCivWarmonger() = numMinorCivsAttacked >= 4
 
     //endregion
 
@@ -557,6 +590,8 @@ class CivilizationInfo {
     fun setTransients() {
         goldenAges.civInfo = this
 
+        civConstructions.setTransients(civInfo = this)
+        
         policies.civInfo = this
         if (policies.adoptedPolicies.size > 0 && policies.numberOfAdoptedPolicies == 0)
             policies.numberOfAdoptedPolicies = policies.adoptedPolicies.count { !Policy.isBranchCompleteByName(it) }
@@ -595,6 +630,10 @@ class CivilizationInfo {
         updateDetailedCivResources()
     }
 
+    fun changeMinorCivsAttacked(count: Int) {
+        numMinorCivsAttacked += count
+    }
+
     // implementation in a separate class, to not clog up CivInfo
     fun initialSetCitiesConnectedToCapitalTransients() = transients().updateCitiesConnectedToCapital(true)
     fun updateHasActiveGreatWall() = transients().updateHasActiveGreatWall()
@@ -602,7 +641,7 @@ class CivilizationInfo {
     fun updateDetailedCivResources() = transients().updateDetailedCivResources()
 
     fun startTurn() {
-        policies.startTurn()
+        civConstructions.startTurn()
         updateStatsForNextTurn() // for things that change when turn passes e.g. golden age, city state influence
 
         // Generate great people at the start of the turn,
@@ -893,6 +932,81 @@ class CivilizationInfo {
         return (
             getEra().researchAgreementCost * gameInfo.gameParameters.gameSpeed.modifier
         ).toInt()
+    }
+
+    fun updateProximity(otherCiv: CivilizationInfo, preCalculated: Proximity? = null): Proximity {
+        if (otherCiv == this)   return Proximity.None
+        if (preCalculated != null) {
+            // We usually want to update this for a pair of civs at the same time
+            // Since this function *should* be symmetrical for both civs, we can just do it once
+            this.proximity[otherCiv.civName] = preCalculated
+            return preCalculated
+        }
+        if (cities.isEmpty() || otherCiv.cities.isEmpty()) {
+            proximity[otherCiv.civName] = Proximity.None
+            return Proximity.None
+        }
+
+        val mapParams = gameInfo.tileMap.mapParameters
+        var minDistance = 100000 // a long distance
+        var totalDistance = 0
+        var connections = 0
+
+        var proximity = Proximity.None
+
+        for (ourCity in cities) {
+            for (theirCity in otherCiv.cities) {
+                val distance = ourCity.getCenterTile().aerialDistanceTo(theirCity.getCenterTile())
+                totalDistance += distance
+                connections++
+                if (minDistance > distance) minDistance = distance
+            }
+        }
+
+        if (minDistance <= 7) {
+            proximity = Proximity.Neighbors
+        } else if (connections > 0) {
+            val averageDistance = totalDistance / connections
+            val mapFactor = if (mapParams.shape == MapShape.rectangular)
+                (mapParams.mapSize.height + mapParams.mapSize.width) / 2
+                else  (mapParams.mapSize.radius * 3) / 2 // slightly less area than equal size rect
+
+            val closeDistance = ((mapFactor * 25) / 100).coerceIn(10, 20)
+            val farDistance = ((mapFactor * 45) / 100).coerceIn(20, 50)
+
+            proximity = if (minDistance <= 11 && averageDistance <= closeDistance)
+                Proximity.Close
+            else if (averageDistance <= farDistance)
+                Proximity.Far
+            else
+                Proximity.Distant
+        }
+
+        // Check if different continents (unless already max distance, or water map)
+        if (connections > 0 && proximity != Proximity.Distant
+            && !gameInfo.tileMap.isWaterMap()) {
+
+            if (getCapital().getCenterTile().getContinent() != otherCiv.getCapital().getCenterTile().getContinent()) {
+                // Different continents - increase separation by one step
+                proximity = when (proximity) {
+                    Proximity.Far -> Proximity.Distant
+                    Proximity.Close -> Proximity.Far
+                    Proximity.Neighbors -> Proximity.Close
+                    else -> proximity
+                }
+            }
+        }
+
+        // If there aren't many players (left) we can't be that far
+        val numMajors = gameInfo.getAliveMajorCivs().count()
+        if (numMajors <= 2 && proximity > Proximity.Close)
+            proximity = Proximity.Close
+        if (numMajors <= 4 && proximity > Proximity.Far)
+            proximity = Proximity.Far
+
+        this.proximity[otherCiv.civName] = proximity
+
+        return proximity
     }
 
     //////////////////////// City State wrapper functions ////////////////////////

@@ -23,10 +23,13 @@ class BFS(
         tilesReached[startingPoint] = startingPoint
     }
 
-    /** Process fully until there's nowhere left to check */
-    fun stepToEnd() {
+    /** Process fully until there's nowhere left to check
+     *  Optionally assigns a continent ID as it goes */
+    fun stepToEnd(continent: Int? = null) {
+        if (continent != null)
+            startingPoint.setContinent(continent)
         while (!hasEnded())
-            nextStep()
+            nextStep(continent)
     }
 
     /**
@@ -46,13 +49,15 @@ class BFS(
      * 
      * Will do nothing when [hasEnded] returns `true`
      */
-    fun nextStep() {
+    fun nextStep(continent: Int? = null) {
         if (tilesReached.size >= maxSize) { tilesToCheck.clear(); return }
         val current = tilesToCheck.removeFirstOrNull() ?: return
         for (neighbor in current.neighbors) {
             if (neighbor !in tilesReached && predicate(neighbor)) {
                 tilesReached[neighbor] = current
                 tilesToCheck.add(neighbor)
+                if (continent != null)
+                    neighbor.setContinent(continent)
             }
         }
     }

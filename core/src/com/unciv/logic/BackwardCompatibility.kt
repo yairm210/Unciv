@@ -65,6 +65,13 @@ object BackwardCompatibility {
             for (tech in civInfo.tech.techsResearched.toList())
                 if (!ruleSet.technologies.containsKey(tech))
                     civInfo.tech.techsResearched.remove(tech)
+            for (policy in civInfo.policies.adoptedPolicies.toList())
+                if (!ruleSet.policies.containsKey(policy)
+                    // Converstion code for deprecated policies since 3.16.15
+                        && !(policy == "Patronage " || policy == "Patronage  Complete")
+                    //
+                )
+                    civInfo.policies.adoptedPolicies.remove(policy)
         }
     }
 

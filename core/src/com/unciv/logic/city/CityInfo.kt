@@ -3,6 +3,7 @@ package com.unciv.logic.city
 import com.badlogic.gdx.math.Vector2
 import com.unciv.logic.battle.CityCombatant
 import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.Proximity
 import com.unciv.logic.civilization.ReligionState
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.map.RoadStatus
@@ -129,6 +130,18 @@ class CityInfo {
         population.autoAssignPopulation()
         cityStats.update()
 
+        // Update proximity rankings for all civs
+        for (otherCiv in civInfo.gameInfo.getAliveMajorCivs()) {
+            if (civInfo.getProximity(otherCiv) != Proximity.Neighbors) // unless already neighbors
+                civInfo.updateProximity(otherCiv,
+                otherCiv.updateProximity(civInfo))
+        }
+        for (otherCiv in civInfo.gameInfo.getAliveCityStates()) {
+            if (civInfo.getProximity(otherCiv) != Proximity.Neighbors) // unless already neighbors
+                civInfo.updateProximity(otherCiv,
+                    otherCiv.updateProximity(civInfo))
+        }
+
         triggerCitiesSettledNearOtherCiv()
     }
 
@@ -144,7 +157,7 @@ class CityInfo {
                 cityConstructions.addBuilding(uniqueBuilding.name)
         }
 
-        civInfo.policies.tryToAddPolicyBuildings()
+        civInfo.civConstructions.tryAddFreeBuildings()
 
         for (unique in getMatchingUniques("Gain a free [] []")) {
             val freeBuildingName = unique.params[0]
@@ -269,10 +282,11 @@ class CityInfo {
             val amount = getTileResourceAmount(tileInfo) * civInfo.getResourceModifier(resource)
             if (amount > 0) cityResources.add(resource, amount, "Tiles")
         }
+        
         for (tileInfo in getTiles()) {
             if (tileInfo.improvement == null) continue
             val tileImprovement = tileInfo.getTileImprovement()
-            for (unique in tileImprovement!!.uniqueObjects)
+            for (unique in tileImprovement!!.uniqueObjects) {
                 if (unique.placeholderText == "Provides [] []") {
                     val resource = getRuleset().tileResources[unique.params[1]] ?: continue
                     cityResources.add(
@@ -281,13 +295,24 @@ class CityInfo {
                         "Tiles"
                     )
                 }
+                if (unique.placeholderText == "Consumes [] []") {
+                    val resource = getRuleset().tileResources[unique.params[1]] ?: continue
+                    cityResources.add(
+                        resource,
+                        -1 * unique.params[0].toInt(),
+                        "Improvements"
+                    )
+                }
+            }
         }
+        
         for (building in cityConstructions.getBuiltBuildings()) {
             for ((resourceName, amount) in building.getResourceRequirements()) {
                 val resource = getRuleset().tileResources[resourceName]!!
                 cityResources.add(resource, -amount, "Buildings")
             }
         }
+        
         for (unique in getLocalMatchingUniques("Provides [] []")) { // E.G "Provides [1] [Iron]"
             val resource = getRuleset().tileResources[unique.params[1]]
             if (resource != null) {
@@ -455,6 +480,7 @@ class CityInfo {
         // Construct units at the beginning of the turn,
         // so they won't be generated out in the open and vulnerable to enemy attacks before you can control them
         cityConstructions.constructIfEnough()
+        cityConstructions.addFreeBuildings()
         cityStats.update()
         tryUpdateRoadStatus()
         attackedThisTurn = false
@@ -543,6 +569,16 @@ class CityInfo {
         if (isCapital() && civInfo.cities.isNotEmpty()) { // Move the capital if destroyed (by a nuke or by razing)
             civInfo.cities.first().cityConstructions.addBuilding(capitalCityIndicator())
         }
+
+        // Update proximity rankings for all civs
+        for (otherCiv in civInfo.gameInfo.getAliveMajorCivs()) {
+            civInfo.updateProximity(otherCiv,
+                otherCiv.updateProximity(civInfo))
+        }
+        for (otherCiv in civInfo.gameInfo.getAliveCityStates()) {
+            civInfo.updateProximity(otherCiv,
+                otherCiv.updateProximity(civInfo))
+        }
     }
 
     fun annexCity() = CityInfoConquestFunctions(this).annexCity()
@@ -620,8 +656,8 @@ class CityInfo {
     fun matchesFilter(filter: String, viewingCiv: CivilizationInfo = civInfo): Boolean {
         return when (filter) {
             "in this city" -> true
-            "in all cities" -> true // Filtered by the way uniques our found
-            "in other cities" -> true // Filtered by the way uniques our found
+            "in all cities" -> true // Filtered by the way uniques are found
+            "in other cities" -> true // Filtered by the way uniques are found
             "in all coastal cities" -> isCoastal()
             "in capital" -> isCapital()
             "in all non-occupied cities" -> !cityStats.hasExtraAnnexUnhappiness() || isPuppet
