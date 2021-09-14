@@ -276,6 +276,10 @@ class CityInfoConquestFunctions(val city: CityInfo){
 
             tryUpdateRoadStatus()
             cityStats.update()
+
+            // Update proximity rankings
+            civInfo.updateProximity(oldCiv,
+                oldCiv.updateProximity(civInfo))
         }
     }
 

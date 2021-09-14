@@ -9,6 +9,7 @@ import com.unciv.logic.trade.TradeType
 import com.unciv.models.ruleset.tile.ResourceSupplyList
 import com.unciv.models.translations.getPlaceholderParameters
 import com.unciv.models.translations.getPlaceholderText
+import com.unciv.ui.utils.toPercent
 import kotlin.math.ceil
 import kotlin.math.max
 import kotlin.math.min
@@ -49,7 +50,8 @@ enum class DiplomacyFlags {
     RememberAttackedProtectedMinor,
     RememberBulliedProtectedMinor,
     RememberSidedWithProtectedMinor,
-    Denunciation
+    Denunciation,
+    WaryOf,
 }
 
 enum class DiplomaticModifiers {
@@ -238,6 +240,9 @@ class DiplomacyManager() {
                 restingPoint += unique.params[0].toInt()
 
         if (diplomaticStatus == DiplomaticStatus.Protector) restingPoint += 10
+
+        if (hasFlag(DiplomacyFlags.WaryOf)) restingPoint -= 20
+
         return restingPoint
     }
 
@@ -245,47 +250,47 @@ class DiplomacyManager() {
         if (influence < getCityStateInfluenceRestingPoint())
             return 0f
 
-        val decrement = when (civInfo.cityStatePersonality) {
-            CityStatePersonality.Hostile -> 1.5f
+        val decrement = when {
+            civInfo.cityStatePersonality == CityStatePersonality.Hostile -> 1.5f
+            otherCiv().isMinorCivAggressor() -> 2f
             else -> 1f
         }
 
-        var modifier = when (civInfo.cityStatePersonality) {
-            CityStatePersonality.Hostile -> 2f
-            CityStatePersonality.Irrational -> 1.5f
-            CityStatePersonality.Friendly -> .5f
-            else -> 1f
-        }
-
+        var modifierPercent = 0f
         for (unique in otherCiv().getMatchingUniques("City-State Influence degrades []% slower"))
-            modifier *= 1f - unique.params[0].toFloat() / 100f
+            modifierPercent -= unique.params[0].toFloat()
+
+        val religion = if (civInfo.cities.isEmpty()) null
+            else civInfo.getCapital().religion.getMajorityReligionName()
+        if (religion != null && religion == otherCiv().religionManager.religion?.name)
+            modifierPercent -= 25f  // 25% slower degrade when sharing a religion
 
         for (civ in civInfo.gameInfo.civilizations.filter { it.isMajorCiv() && it != otherCiv()}) {
             for (unique in civ.getMatchingUniques("Influence of all other civilizations with all city-states degrades []% faster")) {
-                modifier *= 1f + unique.params[0].toFloat() / 100f
+                modifierPercent += unique.params[0].toFloat()
             }
         }
 
-        return max(0f, decrement) * max(0f, modifier)
+        return max(0f, decrement) * max(-100f, modifierPercent).toPercent()
     }
 
     private fun getCityStateInfluenceRecovery(): Float {
         if (influence > getCityStateInfluenceRestingPoint())
             return 0f
 
-        val increment = 1f
+        val increment = 1f  // sic: personality does not matter here
 
-        var modifier = when (civInfo.cityStatePersonality) {
-            CityStatePersonality.Friendly -> 2f
-            CityStatePersonality.Irrational -> 1.5f
-            CityStatePersonality.Hostile -> .5f
-            else -> 1f
-        }
+        var modifierPercent = 0f
 
         if (otherCiv().hasUnique("City-State Influence recovers at twice the normal rate"))
-            modifier *= 2f
+            modifierPercent += 100f
 
-        return max(0f, increment) * max(0f, modifier)
+        val religion = if (civInfo.cities.isEmpty()) null
+            else civInfo.getCapital().religion.getMajorityReligionName()
+        if (religion != null && religion == otherCiv().religionManager.religion?.name)
+            modifierPercent += 50f  // 50% quicker recovery when sharing a religion
+
+        return max(0f, increment) * max(0f, modifierPercent).toPercent()
     }
 
     fun canDeclareWar() = turnsToPeaceTreaty() == 0 && diplomaticStatus != DiplomaticStatus.War
@@ -642,6 +647,7 @@ class DiplomacyManager() {
         otherCivDiplomacy.setModifier(DiplomaticModifiers.DeclaredWarOnUs, -20f)
         if (otherCiv.isCityState()) {
             otherCivDiplomacy.setInfluence(-60f)
+            civInfo.changeMinorCivsAttacked(1)
             otherCiv.cityStateAttacked(civInfo)
         }
 
@@ -830,6 +836,12 @@ class DiplomacyManager() {
     fun sideWithCityState() {
         otherCivDiplomacy().setModifier(DiplomaticModifiers.SidedWithProtectedMinor, -5f)
         otherCivDiplomacy().setFlag(DiplomacyFlags.RememberSidedWithProtectedMinor, 25)
+    }
+
+    fun becomeWary() {
+        if (hasFlag(DiplomacyFlags.WaryOf)) return // once is enough
+        setFlag(DiplomacyFlags.WaryOf, -1) // Never expires
+        otherCiv().addNotification("City-States grow wary of your aggression. The resting point for Influence has decreased by [20] for [${civInfo.civName}].", civInfo.civName)
     }
 
     //endregion

@@ -73,6 +73,9 @@ class MapGenerator(val ruleset: Ruleset) {
         runAndMeasure("spawnIce") {
             spawnIce(map)
         }
+        runAndMeasure("assignContinents") {
+            assignContinents(map)
+        }
         runAndMeasure("NaturalWonderGenerator") {
             NaturalWonderGenerator(ruleset, randomness).spawnNaturalWonders(map)
         }
@@ -461,6 +464,26 @@ class MapGenerator(val ruleset: Ruleset) {
         }
     }
 
+    // Set a continent id for each tile, so we can quickly see which tiles are connected.
+    // Can also be called on saved maps
+    fun assignContinents(tileMap: TileMap) {
+        var landTiles = tileMap.values
+            .filter { it.isLand && !it.isImpassible()}
+        var currentContinent = 0
+
+        while (landTiles.any()) {
+            val bfs = BFS(landTiles.random()) { it.isLand && !it.isImpassible() }
+            bfs.stepToEnd(currentContinent)
+            val continent = bfs.getReachedTiles()
+            tileMap.continentSizes[currentContinent] = continent.size
+            if (continent.size > 20) {
+                tileMap.landTilesInBigEnoughGroup.addAll(continent)
+            }
+
+            currentContinent++
+            landTiles = landTiles.filter { it !in continent }
+        }
+    }
 }
 
 class MapGenerationRandomness {
