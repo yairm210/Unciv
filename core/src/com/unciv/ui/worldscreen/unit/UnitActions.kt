@@ -160,7 +160,7 @@ object UnitActions {
      * (no movement left, too close to another city).
       */
     fun getFoundCityAction(unit: MapUnit, tile: TileInfo): UnitAction? {
-        if (!unit.hasUnique("Founds a new city") || tile.isWater) return null
+        if (!unit.hasUnique("Founds a new city") || tile.isWater || tile.isImpassible()) return null
 
         if (unit.currentMovement <= 0 || tile.getTilesInDistance(3).any { it.isCityCenter() })
             return UnitAction(UnitActionType.FoundCity, action = null)

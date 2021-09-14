@@ -156,7 +156,8 @@ object SpecificUnitAutomation {
         }
 
         if (unit.getTile().militaryUnit == null     // Don't move until you're accompanied by a military unit
-            && !unit.civInfo.isCityState()) return  // ..unless you're a city state that was unable to settle its city on turn 1
+            && !unit.civInfo.isCityState()          // ..unless you're a city state that was unable to settle its city on turn 1
+            && unit.getDamageFromTerrain() < unit.health) return    // Also make sure we won't die waiting
 
         val tilesNearCities = unit.civInfo.gameInfo.getCities().asSequence()
                 .flatMap {
@@ -177,7 +178,7 @@ object SpecificUnitAutomation {
         val possibleCityLocations = unit.getTile().getTilesInDistance(5)
                 .filter {
                     val tileOwner = it.getOwner()
-                    it.isLand && (tileOwner == null || tileOwner == unit.civInfo) // don't allow settler to settle inside other civ's territory
+                    it.isLand && !it.isImpassible() && (tileOwner == null || tileOwner == unit.civInfo) // don't allow settler to settle inside other civ's territory
                             && (unit.currentTile == it || unit.movement.canMoveTo(it))
                             && it !in tilesNearCities
                 }.toList()
