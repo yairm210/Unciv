@@ -164,9 +164,11 @@ class BaseUnit : INamed, INonPerpetualConstruction, ICivilopediaText {
             if (canUpgradeFrom.size == 1)
                 textList += FormattedLine("Can upgrade from [${canUpgradeFrom.first()}]", link = "Unit/${canUpgradeFrom.first()}")
             else {
+                textList += FormattedLine()
                 textList += FormattedLine("Can upgrade from:")
                 for (unitName in canUpgradeFrom.sorted())
                     textList += FormattedLine(unitName, indent = 2, link = "Unit/$unitName")
+                textList += FormattedLine()
             }
         }
 
