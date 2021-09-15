@@ -135,7 +135,7 @@
 		"overrideStats": true,
 		"unbuildable": true,
 		"defenceBonus": 0.25,
-		"occursOn": ["Plains","Grassland"],
+		"occursOn": ["Plains","Grassland","Hill"],
 		"uniques": ["Rough terrain", "Blocks line-of-sight from tiles at same elevation", "Resistant to nukes", "Can be destroyed by nukes"]
 	},
 	{
