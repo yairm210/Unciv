@@ -1,11 +1,9 @@
 package com.unciv.logic.civilization
 
-import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.logic.map.MapUnit
 import com.unciv.models.Religion
 import com.unciv.models.ruleset.Belief
 import com.unciv.models.ruleset.BeliefType
-import com.unciv.models.ruleset.Era
 import com.unciv.ui.pickerscreens.BeliefContainer
 import com.unciv.ui.utils.toPercent
 import kotlin.random.Random
@@ -87,7 +85,7 @@ class ReligionManager {
         10 + (civInfo.gameInfo.civilizations.count { it.isMajorCiv() && it.religionManager.religion != null } + additionalCivs) * 5
 
     fun canFoundPantheon(): Boolean {
-        if (!civInfo.gameInfo.hasReligionEnabled()) return false
+        if (!civInfo.gameInfo.isReligionEnabled()) return false
         if (religionState != ReligionState.None) return false
         if (!civInfo.isMajorCiv()) return false
         if (civInfo.gameInfo.ruleSet.beliefs.values.none { isPickablePantheonBelief(it) })
@@ -130,6 +128,7 @@ class ReligionManager {
     }
 
     private fun canGenerateProphet(): Boolean {
+        if (!civInfo.gameInfo.isReligionEnabled()) return false // No religion, no prophets
         if (religion == null || religionState == ReligionState.None) return false // First get a pantheon, then we'll talk about a real religion
         if (getGreatProphetEquivalent() == null) return false
         if (storedFaith < faithForNextGreatProphet()) return false
@@ -159,6 +158,8 @@ class ReligionManager {
     }
 
     fun mayFoundReligionAtAll(prophet: MapUnit): Boolean {
+        if (!civInfo.gameInfo.isReligionEnabled()) return false // No religion
+        
         if (religionState >= ReligionState.Religion) return false // Already created a major religion
 
         // Already used its power for other things
@@ -256,6 +257,7 @@ class ReligionManager {
     }
 
     fun mayEnhanceReligionAtAll(prophet: MapUnit): Boolean {
+        if (!civInfo.gameInfo.isReligionEnabled()) return false // No religion, no enhancing
         if (religion == null) return false // First found a pantheon
         if (religionState != ReligionState.Religion) return false // First found an actual religion
         // Already used its power for other things

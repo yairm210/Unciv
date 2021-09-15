@@ -88,7 +88,8 @@ class PopulationManager {
             autoAssignPopulation()
         }
 
-        cityInfo.religion.updatePressureOnPopulationChange(changedAmount)
+        if (cityInfo.civInfo.gameInfo.isReligionEnabled())
+            cityInfo.religion.updatePressureOnPopulationChange(changedAmount)
     }
 
     internal fun setPopulation(count: Int) {

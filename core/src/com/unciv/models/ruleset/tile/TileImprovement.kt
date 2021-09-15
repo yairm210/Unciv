@@ -163,7 +163,7 @@ class TileImprovement : NamedStats(), ICivilopediaText, IHasUniques {
 
         if (isAncientRuinsEquivalent() && ruleset.ruinRewards.isNotEmpty()) {
             val difficulty = UncivGame.Current.gameInfo.gameParameters.difficulty
-            val religionEnabled = UncivGame.Current.gameInfo.hasReligionEnabled()
+            val religionEnabled = UncivGame.Current.gameInfo.isReligionEnabled()
             textList += FormattedLine()
             textList += FormattedLine("The possible rewards are:")
             ruleset.ruinRewards.values.asSequence()

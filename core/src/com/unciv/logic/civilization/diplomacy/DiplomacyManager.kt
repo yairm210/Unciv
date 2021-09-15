@@ -675,7 +675,6 @@ class DiplomacyManager() {
             otherCivDiplomacy.totalOfScienceDuringRA = 0
         }
         otherCivDiplomacy.removeFlag(DiplomacyFlags.ResearchAgreement)
-        if (otherCiv.isCityState()) otherCiv.updateAllyCivForCityState()
 
         if (!civInfo.isCityState()) {
             for (thirdCiv in civInfo.getKnownCivs()) {
