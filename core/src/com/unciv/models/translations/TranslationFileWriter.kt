@@ -51,12 +51,13 @@ object TranslationFileWriter {
 
     /**
      * Writes new language files per Mod or for BaseRuleset - only each language that exists in [translations].
+     * @param baseTranslations For a mod, pass the base translations here so strings already existing there can be seen
      * @return a map with the percentages of translated lines per language
      */
     private fun generateTranslationFiles(
         translations: Translations,
         modFolder: FileHandle? = null,
-        fallbackTranslations: Translations? = null
+        baseTranslations: Translations? = null
     ): HashMap<String, Int> {
 
         val fileNameToGeneratedStrings = LinkedHashMap<String, MutableSet<String>>()
@@ -118,22 +119,18 @@ object TranslationFileWriter {
                 // count translatable lines only once
                 if (languageIndex == 0) countOfTranslatableLines++
 
-                var translationValue = fun (): String {
-                    translations[hashMapKey]?.let {
-                        if (language in it) {
-                            translationsOfThisLanguage++
-                            return it[language]!!
-                        }
-                    }
-                    fallbackTranslations?.get(hashMapKey)?.also {
-                        if (language in it) {
-                            stringBuilder.appendLine(" # Copied from base translations:")
-                            return it[language]!!
-                        }
-                    }
+                val existingTranslation = translations[hashMapKey]
+                var translationValue = if (existingTranslation != null && language in existingTranslation){
+                    translationsOfThisLanguage++
+                    existingTranslation[language]!!
+                } else if (baseTranslations?.get(hashMapKey)?.containsKey(language) == true) {
+                    // String is used in the mod but also exists in base - ignore
+                    continue
+                } else {
+                    // String is not translated either here or in base
                     stringBuilder.appendLine(" # Requires translation!")
-                    return ""
-                }()
+                    ""
+                }
 
                 // THE PROBLEM
                 // When we come to change params written in the TranslationFileWriter,

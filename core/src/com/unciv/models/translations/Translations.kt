@@ -94,10 +94,11 @@ class Translations : LinkedHashMap<String, TranslationEntry>(){
         for (modFolder in Gdx.files.local("mods").list()) {
             val modTranslationFile = modFolder.child(translationFileName)
             if (modTranslationFile.exists()) {
-                val translationsForMod = modsWithTranslations[modFolder.name()]
-                    ?: Translations().also {
-                        modsWithTranslations[modFolder.name()] = it
-                    }
+                var translationsForMod = modsWithTranslations[modFolder.name()]
+                if (translationsForMod == null) {
+                    translationsForMod = Translations()
+                    modsWithTranslations[modFolder.name()] = translationsForMod
+                }
                 try {
                     translationsForMod.createTranslations(language, TranslationFileReader.read(modTranslationFile))
                 } catch (ex: Exception) {
@@ -117,7 +118,11 @@ class Translations : LinkedHashMap<String, TranslationEntry>(){
             val hashKey = if (translation.key.contains('['))
                 translation.key.getPlaceholderText()
             else translation.key
-            val entry = this[hashKey] ?: TranslationEntry(translation.key).also { this[hashKey] = it }
+            var entry = this[hashKey]
+            if (entry == null) {
+                entry = TranslationEntry(hashKey)
+                this[hashKey] = entry
+            }
             entry[language] = translation.value
         }
     }
