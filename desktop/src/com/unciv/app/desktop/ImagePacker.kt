@@ -65,7 +65,7 @@ internal object ImagePacker {
                 packImagesIfOutdated(defaultSettings, file, ".", packFileName)
             }
             atlasList.remove("game")
-            File("Atlases.json").writeText(atlasList.joinToString(",","[","]"))
+            File("Atlases.json").writeText(atlasList.sorted().joinToString(",","[","]"))
         }
 
         // pack for mods as well

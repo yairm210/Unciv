@@ -131,7 +131,7 @@ class ReligiousBeliefsPickerScreen (
 
     private fun setupVisibleReligionIcons() {
         topReligionIcons.clear()
-        val descriptionLabel = choosingCiv.religionManager.religion!!.name.toLabel()
+        val descriptionLabel = choosingCiv.religionManager.religion!!.getReligionDisplayName().toLabel()
         
         val iconsTable = Table()
         

@@ -3,6 +3,7 @@ package com.unciv.logic.city
 import com.badlogic.gdx.math.Vector2
 import com.unciv.logic.battle.CityCombatant
 import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.Proximity
 import com.unciv.logic.civilization.ReligionState
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.map.RoadStatus
@@ -129,6 +130,18 @@ class CityInfo {
         population.autoAssignPopulation()
         cityStats.update()
 
+        // Update proximity rankings for all civs
+        for (otherCiv in civInfo.gameInfo.getAliveMajorCivs()) {
+            if (civInfo.getProximity(otherCiv) != Proximity.Neighbors) // unless already neighbors
+                civInfo.updateProximity(otherCiv,
+                otherCiv.updateProximity(civInfo))
+        }
+        for (otherCiv in civInfo.gameInfo.getAliveCityStates()) {
+            if (civInfo.getProximity(otherCiv) != Proximity.Neighbors) // unless already neighbors
+                civInfo.updateProximity(otherCiv,
+                    otherCiv.updateProximity(civInfo))
+        }
+
         triggerCitiesSettledNearOtherCiv()
     }
 
@@ -144,7 +157,7 @@ class CityInfo {
                 cityConstructions.addBuilding(uniqueBuilding.name)
         }
 
-        civInfo.policies.tryToAddPolicyBuildings()
+        civInfo.civConstructions.tryAddFreeBuildings()
 
         for (unique in getMatchingUniques("Gain a free [] []")) {
             val freeBuildingName = unique.params[0]
@@ -467,6 +480,7 @@ class CityInfo {
         // Construct units at the beginning of the turn,
         // so they won't be generated out in the open and vulnerable to enemy attacks before you can control them
         cityConstructions.constructIfEnough()
+        cityConstructions.addFreeBuildings()
         cityStats.update()
         tryUpdateRoadStatus()
         attackedThisTurn = false
@@ -524,7 +538,7 @@ class CityInfo {
         } else population.nextTurn(foodForNextTurn())
 
         // This should go after the population change, as that might impact the amount of followers in this city
-        if (civInfo.gameInfo.hasReligionEnabled()) religion.endTurn()
+        if (civInfo.gameInfo.isReligionEnabled()) religion.endTurn()
 
         if (this in civInfo.cities) { // city was not destroyed
             health = min(health + 20, getMaxHealth())
@@ -554,6 +568,16 @@ class CityInfo {
 
         if (isCapital() && civInfo.cities.isNotEmpty()) { // Move the capital if destroyed (by a nuke or by razing)
             civInfo.cities.first().cityConstructions.addBuilding(capitalCityIndicator())
+        }
+
+        // Update proximity rankings for all civs
+        for (otherCiv in civInfo.gameInfo.getAliveMajorCivs()) {
+            civInfo.updateProximity(otherCiv,
+                otherCiv.updateProximity(civInfo))
+        }
+        for (otherCiv in civInfo.gameInfo.getAliveCityStates()) {
+            civInfo.updateProximity(otherCiv,
+                otherCiv.updateProximity(civInfo))
         }
     }
 
@@ -632,8 +656,8 @@ class CityInfo {
     fun matchesFilter(filter: String, viewingCiv: CivilizationInfo = civInfo): Boolean {
         return when (filter) {
             "in this city" -> true
-            "in all cities" -> true // Filtered by the way uniques our found
-            "in other cities" -> true // Filtered by the way uniques our found
+            "in all cities" -> true // Filtered by the way uniques are found
+            "in other cities" -> true // Filtered by the way uniques are found
             "in all coastal cities" -> isCoastal()
             "in capital" -> isCapital()
             "in all non-occupied cities" -> !cityStats.hasExtraAnnexUnhappiness() || isPuppet
