@@ -322,6 +322,19 @@ class Ruleset {
         for (building in buildings.values) {
             if (building.requiredTech == null && building.cost == 0 && !building.uniques.contains("Unbuildable"))
                 lines += "${building.name} is buildable and therefore must either have an explicit cost or reference an existing tech!"
+
+            for (unique in building.uniqueObjects) {
+                if (unique.type == null) continue
+                val complianceErrors = unique.type.getComplianceErrors(unique, this)
+                for (complianceError in complianceErrors) {
+                    // When not checking the entire ruleset, we can only really detect ruleset-invariant errors
+                    if (complianceError.errorType == UniqueType.UniqueComplianceErrorType.RulesetInvariant)
+                        lines += "${building.name}'s unique \"${unique.text}\" contains parameter ${complianceError.parameterName}," +
+                                " which does not fit parameter type" +
+                                " ${complianceError.acceptableParameterTypes.joinToString(" or ") { it.parameterName }} !"
+                }
+            }
+
         }
         
         for (nation in nations.values) {
