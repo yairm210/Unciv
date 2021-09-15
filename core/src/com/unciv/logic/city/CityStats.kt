@@ -121,15 +121,15 @@ class CityStats(val cityInfo: CityInfo) {
                         stats.food += 1
                     if (otherCiv.cityStateType == CityStateType.Maritime && cityInfo.isCapital())
                         stats.food += 2
-                }
-
-                for (bonus in 
-                    if (otherCiv.getDiplomacyManager(cityInfo.civInfo).relationshipLevel() == RelationshipLevel.Friend)
-                        eraInfo.friendBonus[otherCiv.cityStateType.name]!! 
-                    else eraInfo.allyBonus[otherCiv.cityStateType.name]!!
-                ) {
-                    if (bonus.getPlaceholderText() == "Provides [] [] []" && cityInfo.matchesFilter(bonus.getPlaceholderParameters()[2])) {
-                        stats.add(Stat.valueOf(bonus.getPlaceholderParameters()[1]), bonus.getPlaceholderParameters()[0].toFloat())
+                } else {
+                    for (bonus in
+                        if (otherCiv.getDiplomacyManager(cityInfo.civInfo).relationshipLevel() == RelationshipLevel.Friend)
+                            eraInfo.friendBonus[otherCiv.cityStateType.name]!!
+                        else eraInfo.allyBonus[otherCiv.cityStateType.name]!!
+                    ) {
+                        if (bonus.getPlaceholderText() == "Provides [] [] []" && cityInfo.matchesFilter(bonus.getPlaceholderParameters()[2])) {
+                            stats.add(Stat.valueOf(bonus.getPlaceholderParameters()[1]), bonus.getPlaceholderParameters()[0].toFloat())
+                        }
                     }
                 }
 
