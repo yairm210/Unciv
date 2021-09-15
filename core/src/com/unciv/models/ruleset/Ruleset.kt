@@ -170,7 +170,10 @@ class Ruleset {
         if (buildingsFile.exists()) buildings += createHashmap(jsonParser.getFromJson(Array<Building>::class.java, buildingsFile))
 
         val terrainsFile = folderHandle.child("Terrains.json")
-        if (terrainsFile.exists()) terrains += createHashmap(jsonParser.getFromJson(Array<Terrain>::class.java, terrainsFile))
+        if (terrainsFile.exists()) {
+            terrains += createHashmap(jsonParser.getFromJson(Array<Terrain>::class.java, terrainsFile))
+            for (terrain in terrains.values) terrain.setTransients()
+        }
 
         val resourcesFile = folderHandle.child("TileResources.json")
         if (resourcesFile.exists()) tileResources += createHashmap(jsonParser.getFromJson(Array<TileResource>::class.java, resourcesFile))

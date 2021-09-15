@@ -20,7 +20,7 @@ object UnitAutomation {
                 && tile.neighbors.any { it.position !in unit.civInfo.exploredTiles }
                 && unit.movement.canReach(tile)
                 && (!unit.civInfo.isCityState() || tile.neighbors.any { it.getOwner() == unit.civInfo } // Don't want city-states exploring far outside their borders
-                && unit.getDamageFromTerrain(tile.baseTerrain) <= 0)    // Don't take unnecessary damage
+                && unit.getDamageFromTerrain(tile) <= 0)    // Don't take unnecessary damage
     }
 
     internal fun tryExplore(unit: MapUnit): Boolean {
@@ -68,7 +68,7 @@ object UnitAutomation {
 
         val reachableTilesMaxWalkingDistance = reachableTiles
                 .filter { it.value.totalDistance == unit.currentMovement
-                        && unit.getDamageFromTerrain(it.key.baseTerrain) <= 0 } // Don't end turn on damaging terrain for no good reason
+                        && unit.getDamageFromTerrain(it.key) <= 0 } // Don't end turn on damaging terrain for no good reason
         if (reachableTilesMaxWalkingDistance.any()) unit.movement.moveToTile(reachableTilesMaxWalkingDistance.toList().random().first)
         else if (reachableTiles.any()) unit.movement.moveToTile(reachableTiles.keys.random())
     }
@@ -215,7 +215,7 @@ object UnitAutomation {
                 .flatMap { it.getTilesInDistance(it.getCity()!!.range) }
 
         val tilesWithTerrainDamage = unit.currentTile.getTilesInDistance(3)
-                .filter { unit.getDamageFromTerrain(it.baseTerrain) > 0 }
+                .filter { unit.getDamageFromTerrain(it) > 0 }
 
         val dangerousTiles = (tilesInRangeOfAttack + tilesWithinBombardmentRange + tilesWithTerrainDamage).toHashSet()
 
@@ -284,13 +284,13 @@ object UnitAutomation {
             BattleDamage.calculateDamageToAttacker(MapUnitCombatant(unit),
                     it.tileToAttackFrom,
                     Battle.getMapCombatantOfTile(it.tileToAttack)!!)
-                    + unit.getDamageFromTerrain(it.tileToAttackFrom.baseTerrain) < unit.health
+                    + unit.getDamageFromTerrain(it.tileToAttackFrom) < unit.health
         }
 
         if (unit.baseUnit.isRanged())
             closeEnemies = closeEnemies.filterNot { it.tileToAttack.isCityCenter() && it.tileToAttack.getCity()!!.health == 1 }
 
-        val closestEnemy = closeEnemies.filter { unit.getDamageFromTerrain(it.tileToAttackFrom.baseTerrain) <= 0 }  // Don't attack from a mountain
+        val closestEnemy = closeEnemies.filter { unit.getDamageFromTerrain(it.tileToAttackFrom) <= 0 }  // Don't attack from a mountain
                                         .minByOrNull { it.tileToAttack.aerialDistanceTo(unit.getTile()) }
 
         if (closestEnemy != null) {
@@ -324,7 +324,7 @@ object UnitAutomation {
                 .flatMap { it.getCenterTile().getTilesAtDistance(2) }
                 .sortedBy { it.aerialDistanceTo(unit.currentTile) }
                 .firstOrNull { unit.movement.canMoveTo(it) && unit.movement.canReach(it)
-                        && unit.getDamageFromTerrain(it.baseTerrain) <= 0 } // Avoid ending up on damaging terrain
+                        && unit.getDamageFromTerrain(it) <= 0 } // Avoid ending up on damaging terrain
 
         if (reachableTileNearSiegedCity != null) {
             unit.movement.headTowards(reachableTileNearSiegedCity)
@@ -370,7 +370,7 @@ object UnitAutomation {
                             .filter {
                                 it.key.aerialDistanceTo(closestReachableEnemyCity) <=
                                         unitRange && it.key !in tilesInBombardRange
-                                        && unit.getDamageFromTerrain(it.key.baseTerrain) <= 0 // Don't set up on a mountain
+                                        && unit.getDamageFromTerrain(it.key) <= 0 // Don't set up on a mountain
                             }
                         .minByOrNull { it.value.totalDistance }?.key
 
@@ -389,7 +389,7 @@ object UnitAutomation {
             // don't head straight to the city, try to head to landing grounds -
             // this is against tha AI's brilliant plan of having everyone embarked and attacking via sea when unnecessary.
             val tileToHeadTo = closestReachableEnemyCity.getTilesInDistanceRange(3..4)
-                    .filter { it.isLand && unit.getDamageFromTerrain(it.baseTerrain) <= 0 } // Don't head for hurty terrain
+                    .filter { it.isLand && unit.getDamageFromTerrain(it) <= 0 } // Don't head for hurty terrain
                     .sortedBy { it.aerialDistanceTo(unit.currentTile) }
                     .firstOrNull { unit.movement.canReach(it) }
 
@@ -546,7 +546,7 @@ object UnitAutomation {
             return
         }
         val tileFurthestFromEnemy = reachableTiles.keys
-            .filter { unit.movement.canMoveTo(it) && unit.getDamageFromTerrain(it.baseTerrain) < unit.health }
+            .filter { unit.movement.canMoveTo(it) && unit.getDamageFromTerrain(it) < unit.health }
             .maxByOrNull { countDistanceToClosestEnemy(unit, it) }
             ?: return // can't move anywhere!
         unit.movement.moveToTile(tileFurthestFromEnemy)

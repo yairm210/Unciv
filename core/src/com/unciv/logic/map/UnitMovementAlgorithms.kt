@@ -194,7 +194,7 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
                 val distanceToTilesThisTurn = getDistanceToTilesWithinTurn(tileToCheck.position, movementThisTurn)
                 for (reachableTile in distanceToTilesThisTurn.keys) {
                     // Avoid damaging terrain on first pass
-                    if (avoidDamagingTerrain && unit.getDamageFromTerrain(reachableTile.baseTerrain) > 0)
+                    if (avoidDamagingTerrain && unit.getDamageFromTerrain(reachableTile) > 0)
                         continue
                     if (reachableTile == destination)
                         distanceToDestination[tileToCheck] = distanceToTilesThisTurn[reachableTile]!!.totalDistance
