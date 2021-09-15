@@ -899,17 +899,15 @@ class MapUnit {
     }
 
     fun getDamageFromTerrain(terrainName: String = currentTile.baseTerrain): Int {
-        var totalDamage = 0
-        if (terrainName == Constants.mountain)
-            totalDamage += 50   // The norm
         if (civInfo.nonStandardTerrainDamage) {
-            for (unique in getMatchingUniques("Units ending their turn on a [] take [] damage")) {
-                if (unique.params[0] == terrainName)
-                    totalDamage += unique.params[1].toInt()
+            for (unique in getMatchingUniques("Units ending their turn on [] tiles take [] damage")) {
+                if (unique.params[0] == terrainName) {
+                    return unique.params[1].toInt() // Use the damage from the unique
+                }
             }
         }
-
-        return  totalDamage
+        // Otherwise fall back to the defined standard damage
+        return  civInfo.gameInfo.ruleSet.terrains[terrainName]!!.damagePerTurn
     }
 
     private fun doCitadelDamage() {

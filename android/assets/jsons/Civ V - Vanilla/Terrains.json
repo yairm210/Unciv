@@ -83,9 +83,9 @@
 	{
 		"name": "Mountain",
 		"type": "Land",
-		"movementCost": 1,
 		"impassable": true,
 		"defenceBonus": 0.25,
+		"damagePerTurn": 50,
 		"RGB": [120, 120, 120],
 		"uniques":["Rough terrain", "Has an elevation of [4] for visibility calculations", "Occurs in chains at high elevations"]
 	},

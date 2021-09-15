@@ -599,9 +599,9 @@ class CivilizationInfo {
         }
 
         passThroughImpassableUnlocked = passableImpassables.isNotEmpty()
-        // All civs normally take 50 damage on a mountain. Cache whether this civ is an exception for performance reasons.
-        nonStandardTerrainDamage = getMatchingUniques("Units ending their turn on a [] take [] damage")
-            .any { it.params[0] != Constants.mountain || it.params[1].toInt() != 50 }
+        // Cache whether this civ gets nonstandard terrain damage for performance reasons.
+        nonStandardTerrainDamage = getMatchingUniques("Units ending their turn on [] tiles take [] damage")
+            .any { gameInfo.ruleSet.terrains[it.params[0]]!!.damagePerTurn != it.params[1].toInt() }
     }
 
     fun updateSightAndResources() {
@@ -857,12 +857,6 @@ class CivilizationInfo {
             ?: return null
         if (unit.isGreatPerson()) {
             addNotification("A [${unit.name}] has been born in [${cityToAddTo.name}]!", placedUnit.getTile().position, unit.name)
-            for (unique in getMatchingUniques("Land units may cross [] after the first [] is earned")) {
-                if (unit.matchesFilter(unique.params[1])) {
-                    passThroughImpassableUnlocked = true    // Update the cached Boolean
-                    passableImpassables.add(unique.params[0])   // Add to list of passable impassables
-                }
-            }
         }
 
         if (placedUnit.hasUnique("Religious Unit")) {
@@ -874,6 +868,13 @@ class CivilizationInfo {
                     else -> religionManager.religion?.name
                 }
             placedUnit.setupAbilityUses()
+        }
+
+        for (unique in getMatchingUniques("Land units may cross [] tiles after the first [] is earned")) {
+            if (unit.matchesFilter(unique.params[1])) {
+                passThroughImpassableUnlocked = true    // Update the cached Boolean
+                passableImpassables.add(unique.params[0])   // Add to list of passable impassables
+            }
         }
         
         return placedUnit
