@@ -115,7 +115,7 @@ class CivConstructions() {
         // Deprecated since 3.16.15
             statUniquesData[Stat.Culture] = (statUniquesData[Stat.Culture] ?: 0) +
                 civInfo.getMatchingUniques("Immediately creates the cheapest available cultural building in each of your first [] cities for free")
-                    .sumOf { it.params[1].toInt() }
+                    .sumOf { it.params[0].toInt() }
         //
         
         
