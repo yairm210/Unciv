@@ -47,14 +47,13 @@ class UnitOverviewTable(
             add("Supply Deficit".tr()).left()
             add(deficit.toLabel()).right().row()
             add("Production Penalty".tr()).left()
-            add((viewingPlayer.stats().getUnitSupplyProductionMalus()).toInt().toString()+"%").right().row()
+            add((viewingPlayer.stats().getUnitSupplyProductionPenalty()).toInt().toString()+"%").right().row()
             if (deficit > 0) {
-                add("Increase your supply or reduce the amount of units to remove the production malus"
-                    .toLabel().apply { wrap = true; color = Color.FIREBRICK })
-                    .colspan(2)
-                    .width(overviewScreen.stage.width * 0.2f)
-                    .left()
-                    .row()
+                val penaltyLabel = "Increase your supply or reduce the amount of units to remove the production penalty"
+                    .toLabel(Color.FIREBRICK)
+                penaltyLabel.wrap = true
+                add(penaltyLabel).colspan(2).left()
+                    .width(overviewScreen.stage.width * 0.2f).row()
             }
             pack()
         }

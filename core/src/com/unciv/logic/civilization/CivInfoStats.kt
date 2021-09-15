@@ -99,11 +99,11 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
 
     fun getBaseUnitSupply(): Int = civInfo.getDifficulty().unitSupplyBase
     fun getUnitSupplyFromCities(): Int = civInfo.cities.size * civInfo.getDifficulty().unitSupplyPerCity
-    fun getUnitSupplyFromPop(): Int = civInfo.cities.sumBy { it.population.population } / 2
+    fun getUnitSupplyFromPop(): Int = civInfo.cities.sumOf { it.population.population } / 2
     fun getUnitSupplyDeficit(): Int = max(0,civInfo.getCivUnitsSize() - getUnitSupply())
 
     /** Per each supply missing, a player gets -10% production. Capped at -70%. */
-    fun getUnitSupplyProductionMalus(): Float = -min(getUnitSupplyDeficit() * 10f, 70f)
+    fun getUnitSupplyProductionPenalty(): Float = -min(getUnitSupplyDeficit() * 10f, 70f)
 
     fun getStatMapForNextTurn(): StatMap {
         val statMap = StatMap()
